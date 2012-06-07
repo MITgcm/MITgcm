@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1664 2012/06/04 21:05:46 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1665 2012/06/07 17:17:04 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/diagnostics:
+  - implement calendarDumps also for stats-diags
+  - implement calendarDumps also for snap-shot output (negative freq)
+  - for now, ignores calendarDumps if non-zero phase-lag.
 
 checkpoint63n (2012/06/04)
 o model/src:
