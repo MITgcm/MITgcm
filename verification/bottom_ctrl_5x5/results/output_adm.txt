@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint63e
-(PID.TID 0000.0001) // Build user:        jmc
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint63n
+(PID.TID 0000.0001) // Build user:        heimbach
 (PID.TID 0000.0001) // Build host:        baudelaire
-(PID.TID 0000.0001) // Build date:        Tue Nov  8 08:38:45 EST 2011
+(PID.TID 0000.0001) // Build date:        Fri Jun  8 13:43:10 EDT 2012
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -631,16 +631,19 @@
 (PID.TID 0000.0001) eosType =  /* Type of Equation of State */
 (PID.TID 0000.0001)               'LINEAR'
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) tAlpha =   /* Linear EOS thermal expansion coefficient ( 1/oC ) */
+(PID.TID 0000.0001) tAlpha = /* Linear EOS thermal expansion coefficient ( 1/oC ) */
 (PID.TID 0000.0001)                 2.000000000000000E-04
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) sBeta =   /* Linear EOS haline contraction coefficient ( 1/psu ) */
+(PID.TID 0000.0001) sBeta  = /* Linear EOS haline contraction coefficient ( 1/psu ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) rhonil =   /* Reference density ( kg/m^3 ) */
+(PID.TID 0000.0001) rhoNil    = /* Reference density for Linear EOS ( kg/m^3 ) */
 (PID.TID 0000.0001)                 9.998000000000000E+02
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) rhoConst =   /* Reference density ( kg/m^3 ) */
+(PID.TID 0000.0001) celsius2K = /* 0 degree Celsius converted to Kelvin ( K ) */
+(PID.TID 0000.0001)                 2.731500000000000E+02
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rhoConst  = /* Reference density (Boussinesq)  ( kg/m^3 ) */
 (PID.TID 0000.0001)                 9.998000000000000E+02
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rhoFacC = /* normalized Reference density @ cell-Center (-) */
@@ -649,7 +652,7 @@
 (PID.TID 0000.0001) rhoFacF = /* normalized Reference density @ W-Interface (-) */
 (PID.TID 0000.0001)     5 @  1.000000000000000E+00              /* K =  1:  5 */
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) rhoConstFresh =   /* Reference density ( kg/m^3 ) */
+(PID.TID 0000.0001) rhoConstFresh = /* Fresh-water reference density ( kg/m^3 ) */
 (PID.TID 0000.0001)                 9.998000000000000E+02
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) gravity =   /* Gravitational acceleration ( m/s^2 ) */
@@ -688,13 +691,10 @@
 (PID.TID 0000.0001) implicDiv2Dflow =  /* Barot. Flow Div. implicit factor (0-1)*/
 (PID.TID 0000.0001)                 1.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) exactConserv =  /* Exact Volume Conservation on/off flag*/
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) linFSConserveTr = /* Tracer correction for Lin Free Surface on/off flag*/
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) uniformLin_PhiSurf = /* use uniform Bo_surf on/off flag*/
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) uniformFreeSurfLev = /* free-surface level-index is uniform */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) hFacMin =   /* minimum partial cell factor (hFac) */
@@ -702,6 +702,12 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) hFacMinDr = /* minimum partial cell thickness ( m) */
 (PID.TID 0000.0001)                 5.000000000000000E-02
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) exactConserv =  /* Exact Volume Conservation on/off flag*/
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) linFSConserveTr = /* Tracer correction for Lin Free Surface on/off flag*/
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) nonlinFreeSurf = /* Non-linear Free Surf. options (-1,0,1,2,3)*/
 (PID.TID 0000.0001)                       0
@@ -716,9 +722,6 @@
 (PID.TID 0000.0001) select_rStar = /* r* Vertical coord. options (=0 r coord.; >0 uses r*)*/
 (PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) selectAddFluid = /* option for mass source/sink of fluid (=0: off) */
-(PID.TID 0000.0001)                       0
-(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) useRealFreshWaterFlux = /* Real Fresh Water Flux on/off flag*/
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
@@ -727,6 +730,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) salt_EvPrRn = /* Salin. of Evap/Prec/R (UNSET=use local S)(psu)*/
 (PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) selectAddFluid = /* option for mass source/sink of fluid (=0: off) */
+(PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) temp_addMass = /* Temp. of addMass array (UNSET=use local T)(oC)*/
 (PID.TID 0000.0001)                 1.234567000000000E+05
@@ -754,6 +760,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) quasiHydrostatic = /* Quasi-Hydrostatic on/off flag */
 (PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) calc_wVelocity = /* vertical velocity calculation on/off flag */
+(PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) momStepping =  /* Momentum equation on/off flag */
 (PID.TID 0000.0001)                   T
@@ -833,10 +842,13 @@
 (PID.TID 0000.0001) implicitIntGravWave= /* Implicit Internal Gravity Wave flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) staggerTimeStep =   /* Stagger time stepping on/off flag */
+(PID.TID 0000.0001) staggerTimeStep =    /* Stagger time stepping on/off flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) multiDimAdvection =   /* enable/disable Multi-Dim Advection */
+(PID.TID 0000.0001) doResetHFactors = /* reset thickness factors @ each time-step */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) multiDimAdvection =  /* enable/disable Multi-Dim Advection */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) useMultiDimAdvec =   /* Multi-Dim Advection is/is-not used */
@@ -1307,9 +1319,9 @@
  cg2d: Sum(rhs),rhsMax =  -4.70217533455405E+00  1.51019014093810E-03
  cg2d: Sum(rhs),rhsMax =  -2.72440685927924E+00  1.65833738310011E-03
  cg2d: Sum(rhs),rhsMax =  -1.27958669047308E+00  1.70565508827135E-03
-(PID.TID 0000.0001)                    cg2d_init_res =    3.28931945877901E-01
-(PID.TID 0000.0001)                       cg2d_iters =    15
-(PID.TID 0000.0001)                         cg2d_res =    3.65014481666670E-17
+(PID.TID 0000.0001)      cg2d_init_res =   3.28931945877901E-01
+(PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      15
+(PID.TID 0000.0001)      cg2d_last_res =   3.65014481666670E-17
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -1368,9 +1380,9 @@
  cg2d: Sum(rhs),rhsMax =  -5.41358311299291E+00  1.89900434709078E-03
  cg2d: Sum(rhs),rhsMax =  -4.53080676713558E+00  1.96213934573591E-03
  cg2d: Sum(rhs),rhsMax =  -3.22587898908490E+00  2.12611202720459E-03
-(PID.TID 0000.0001)                    cg2d_init_res =    3.42829930432872E-01
-(PID.TID 0000.0001)                       cg2d_iters =    14
-(PID.TID 0000.0001)                         cg2d_res =    2.46991612461676E-14
+(PID.TID 0000.0001)      cg2d_init_res =   3.42829930432872E-01
+(PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      14
+(PID.TID 0000.0001)      cg2d_last_res =   2.46991612461676E-14
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -1429,9 +1441,9 @@
  cg2d: Sum(rhs),rhsMax =  -3.85508917834432E+00  2.50195598359617E-03
  cg2d: Sum(rhs),rhsMax =  -4.03589978211305E+00  2.51830322545866E-03
  cg2d: Sum(rhs),rhsMax =  -3.87512848171552E+00  2.52047519086831E-03
-(PID.TID 0000.0001)                    cg2d_init_res =    2.33015551533523E-01
-(PID.TID 0000.0001)                       cg2d_iters =    14
-(PID.TID 0000.0001)                         cg2d_res =    7.19966733593989E-14
+(PID.TID 0000.0001)      cg2d_init_res =   2.33015551533523E-01
+(PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      14
+(PID.TID 0000.0001)      cg2d_last_res =   7.19966733593989E-14
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -1490,9 +1502,9 @@
  cg2d: Sum(rhs),rhsMax =  -2.43940636469674E+00  2.63568090232622E-03
  cg2d: Sum(rhs),rhsMax =  -3.03203010255973E+00  2.68092813759028E-03
  cg2d: Sum(rhs),rhsMax =  -3.40991311853902E+00  2.73286304448481E-03
-(PID.TID 0000.0001)                    cg2d_init_res =    1.34801658790775E-01
-(PID.TID 0000.0001)                       cg2d_iters =    14
-(PID.TID 0000.0001)                         cg2d_res =    7.73137702801053E-14
+(PID.TID 0000.0001)      cg2d_init_res =   1.34801658790775E-01
+(PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      14
+(PID.TID 0000.0001)      cg2d_last_res =   7.73137702801053E-14
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -1551,9 +1563,9 @@
  cg2d: Sum(rhs),rhsMax =  -1.31074338891574E+00  2.59464768533879E-03
  cg2d: Sum(rhs),rhsMax =  -1.82960843215049E+00  2.67470088166808E-03
  cg2d: Sum(rhs),rhsMax =  -2.36415409295813E+00  2.77096212192831E-03
-(PID.TID 0000.0001)                    cg2d_init_res =    1.40501452001064E-01
-(PID.TID 0000.0001)                       cg2d_iters =    14
-(PID.TID 0000.0001)                         cg2d_res =    5.02991681969387E-14
+(PID.TID 0000.0001)      cg2d_init_res =   1.40501452001064E-01
+(PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      14
+(PID.TID 0000.0001)      cg2d_last_res =   5.02991681969387E-14
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -1612,9 +1624,9 @@
  cg2d: Sum(rhs),rhsMax =  -9.49612083397624E-01  2.80059569221645E-03
  cg2d: Sum(rhs),rhsMax =  -1.10546681688730E+00  2.68802011902948E-03
  cg2d: Sum(rhs),rhsMax =  -1.41911846031720E+00  2.73183503865475E-03
-(PID.TID 0000.0001)                    cg2d_init_res =    1.57477350793971E-01
-(PID.TID 0000.0001)                       cg2d_iters =    14
-(PID.TID 0000.0001)                         cg2d_res =    3.98037203166659E-15
+(PID.TID 0000.0001)      cg2d_init_res =   1.57477350793971E-01
+(PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      14
+(PID.TID 0000.0001)      cg2d_last_res =   3.98037203166659E-15
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -1673,9 +1685,9 @@
  cg2d: Sum(rhs),rhsMax =  -1.39603742971207E+00  3.10114912749771E-03
  cg2d: Sum(rhs),rhsMax =  -1.16177139472085E+00  2.99876546018411E-03
  cg2d: Sum(rhs),rhsMax =  -1.10293746482228E+00  2.87411083831753E-03
-(PID.TID 0000.0001)                    cg2d_init_res =    1.05337918151204E-01
-(PID.TID 0000.0001)                       cg2d_iters =    14
-(PID.TID 0000.0001)                         cg2d_res =    4.09162691712672E-14
+(PID.TID 0000.0001)      cg2d_init_res =   1.05337918151204E-01
+(PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      14
+(PID.TID 0000.0001)      cg2d_last_res =   4.09162691712672E-14
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -1734,9 +1746,9 @@
  cg2d: Sum(rhs),rhsMax =  -2.14123729035315E+00  3.18959324319447E-03
  cg2d: Sum(rhs),rhsMax =  -1.76835917692967E+00  3.18714933359252E-03
  cg2d: Sum(rhs),rhsMax =  -1.45590348225905E+00  3.13272230350791E-03
-(PID.TID 0000.0001)                    cg2d_init_res =    7.71253611967993E-02
-(PID.TID 0000.0001)                       cg2d_iters =    14
-(PID.TID 0000.0001)                         cg2d_res =    6.10706943004413E-14
+(PID.TID 0000.0001)      cg2d_init_res =   7.71253611967993E-02
+(PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      14
+(PID.TID 0000.0001)      cg2d_last_res =   6.10706943004413E-14
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2152,9 +2164,9 @@ grad-res -------------------------------
  global fc =  0.509071974567757D-01
 grad-res -------------------------------
  grad-res     0    1    1    1    1    1    1    1   5.09071982062E-02  5.09071989555E-02  5.09071974568E-02
- grad-res     0    1    1    1    0    1    1    1   7.49375305958E-06  7.49375589360E-06 -3.78183005356E-07
+ grad-res     0    1    1    1    0    1    1    1   7.49375618274E-06  7.49375589360E-06  3.85841918416E-08
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061511E-02
-(PID.TID 0000.0001)  ADM  adjoint_gradient       =  7.49375305958497E-06
+(PID.TID 0000.0001)  ADM  adjoint_gradient       =  7.49375618273555E-06
 (PID.TID 0000.0001)  ADM  finite-diff_grad       =  7.49375589359502E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =            1 , ichknum =            1
@@ -2401,9 +2413,9 @@ grad-res -------------------------------
  global fc =  0.509071981599531D-01
 grad-res -------------------------------
  grad-res     0    2    4    1    1    1    1    1   5.09071982062E-02  5.09071982523E-02  5.09071981600E-02
- grad-res     0    2    2    4    0    1    1    1   4.61982295465E-07  4.61980141642E-07  4.66213361328E-06
+ grad-res     0    2    2    4    0    1    1    1   4.61980250829E-07  4.61980141642E-07  2.36347205806E-07
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061511E-02
-(PID.TID 0000.0001)  ADM  adjoint_gradient       =  4.61982295464860E-07
+(PID.TID 0000.0001)  ADM  adjoint_gradient       =  4.61980250829413E-07
 (PID.TID 0000.0001)  ADM  finite-diff_grad       =  4.61980141641671E-07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =            4 , ichknum =            2
@@ -2650,9 +2662,9 @@ grad-res -------------------------------
  global fc =  0.509071981743367D-01
 grad-res -------------------------------
  grad-res     0    3    2    2    1    1    1    1   5.09071982062E-02  5.09071982380E-02  5.09071981743E-02
- grad-res     0    3    3    7    0    1    1    1   3.18142114632E-07  3.18144122158E-07 -6.31015380170E-06
+ grad-res     0    3    3    7    0    1    1    1   3.18144113012E-07  3.18144122158E-07 -2.87467374349E-08
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061511E-02
-(PID.TID 0000.0001)  ADM  adjoint_gradient       =  3.18142114632130E-07
+(PID.TID 0000.0001)  ADM  adjoint_gradient       =  3.18144113012199E-07
 (PID.TID 0000.0001)  ADM  finite-diff_grad       =  3.18144122157804E-07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =            7 , ichknum =            3
@@ -2899,9 +2911,9 @@ grad-res -------------------------------
  global fc =  0.509071980970052D-01
 grad-res -------------------------------
  grad-res     0    4    5    2    1    1    1    1   5.09071982062E-02  5.09071983153E-02  5.09071980970E-02
- grad-res     0    4    4   10    0    1    1    1   1.09145564708E-06  1.09145945754E-06 -3.49116850584E-06
+ grad-res     0    4    4   10    0    1    1    1   1.09145991058E-06  1.09145945754E-06  4.15077272553E-07
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061511E-02
-(PID.TID 0000.0001)  ADM  adjoint_gradient       =  1.09145564708061E-06
+(PID.TID 0000.0001)  ADM  adjoint_gradient       =  1.09145991057640E-06
 (PID.TID 0000.0001)  ADM  finite-diff_grad       =  1.09145945753619E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =           10 , ichknum =            4
@@ -3148,9 +3160,9 @@ grad-res -------------------------------
  global fc =  0.509071979050171D-01
 grad-res -------------------------------
  grad-res     0    5    3    3    1    1    1    1   5.09071982062E-02  5.09071985073E-02  5.09071979050E-02
- grad-res     0    5    5   13    0    1    1    1   3.01136318542E-06  3.01134006619E-06  7.67732835405E-06
+ grad-res     0    5    5   13    0    1    1    1   3.01134011200E-06  3.01134006619E-06  1.52096534256E-08
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061511E-02
-(PID.TID 0000.0001)  ADM  adjoint_gradient       =  3.01136318541860E-06
+(PID.TID 0000.0001)  ADM  adjoint_gradient       =  3.01134011199607E-06
 (PID.TID 0000.0001)  ADM  finite-diff_grad       =  3.01134006619463E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =           13 , ichknum =            5
@@ -3397,9 +3409,9 @@ grad-res -------------------------------
  global fc =  0.509071981882222D-01
 grad-res -------------------------------
  grad-res     0    6    1    4    1    1    1    1   5.09071982062E-02  5.09071982241E-02  5.09071981882E-02
- grad-res     0    6    6   16    0    1    1    1   1.79296360702E-07  1.79289395830E-07  3.88455867446E-05
+ grad-res     0    6    6   16    0    1    1    1   1.79289495660E-07  1.79289395830E-07  5.56810461072E-07
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061511E-02
-(PID.TID 0000.0001)  ADM  adjoint_gradient       =  1.79296360702006E-07
+(PID.TID 0000.0001)  ADM  adjoint_gradient       =  1.79289495659940E-07
 (PID.TID 0000.0001)  ADM  finite-diff_grad       =  1.79289395829674E-07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =           16 , ichknum =            6
@@ -3646,9 +3658,9 @@ grad-res -------------------------------
  global fc =  0.509071982332791D-01
 grad-res -------------------------------
  grad-res     0    7    4    4    1    1    1    1   5.09071982062E-02  5.09071981790E-02  5.09071982333E-02
- grad-res     0    7    7   19    0    1    1    1  -2.71246381529E-07 -2.71279422537E-07 -1.21811791125E-04
+ grad-res     0    7    7   19    0    1    1    1  -2.71279968073E-07 -2.71279422537E-07  2.01097286745E-06
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061511E-02
-(PID.TID 0000.0001)  ADM  adjoint_gradient       = -2.71246381529226E-07
+(PID.TID 0000.0001)  ADM  adjoint_gradient       = -2.71279968073452E-07
 (PID.TID 0000.0001)  ADM  finite-diff_grad       = -2.71279422536796E-07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =           19 , ichknum =            7
@@ -3895,9 +3907,9 @@ grad-res -------------------------------
  global fc =  0.509071977491675D-01
 grad-res -------------------------------
  grad-res     0    8    2    5    1    1    1    1   5.09071982062E-02  5.09071986631E-02  5.09071977492E-02
- grad-res     0    8    8   22    0    1    1    1   4.56982825183E-06  4.56983645369E-06 -1.79478538276E-06
+ grad-res     0    8    8   22    0    1    1    1   4.56983659399E-06  4.56983645369E-06  3.07015241008E-08
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061511E-02
-(PID.TID 0000.0001)  ADM  adjoint_gradient       =  4.56982825183296E-06
+(PID.TID 0000.0001)  ADM  adjoint_gradient       =  4.56983659399486E-06
 (PID.TID 0000.0001)  ADM  finite-diff_grad       =  4.56983645369391E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =           22 , ichknum =            8
@@ -4144,9 +4156,9 @@ grad-res -------------------------------
  global fc =  0.509071994208851D-01
 grad-res -------------------------------
  grad-res     0    9    5    5    1    1    1    1   5.09071982062E-02  5.09071969914E-02  5.09071994209E-02
- grad-res     0    9    9   25    0    1    1    1  -1.21473765876E-05 -1.21473390721E-05  3.08835729135E-06
+ grad-res     0    9    9   25    0    1    1    1  -1.21473388180E-05 -1.21473390721E-05 -2.09227426495E-08
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  5.09071982061511E-02
-(PID.TID 0000.0001)  ADM  adjoint_gradient       = -1.21473765875607E-05
+(PID.TID 0000.0001)  ADM  adjoint_gradient       = -1.21473388179660E-05
 (PID.TID 0000.0001)  ADM  finite-diff_grad       = -1.21473390721216E-05
  ph-grd  ierr ---------------------------
  ph-grd  ierr =            0 , icomp =           25 , ichknum =            9
@@ -4163,192 +4175,200 @@ grad-res -------------------------------
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   1     1     1     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   1  5.0907198206151E-02  5.0907198955527E-02  5.0907197456776E-02
-(PID.TID 0000.0001) grdchk output (g):   1     7.4937558935950E-06  7.4937530595850E-06 -3.7818300535619E-07
+(PID.TID 0000.0001) grdchk output (g):   1     7.4937558935950E-06  7.4937561827355E-06  3.8584191841551E-08
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   2     4     1     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   2  5.0907198206151E-02  5.0907198252349E-02  5.0907198159953E-02
-(PID.TID 0000.0001) grdchk output (g):   2     4.6198014164167E-07  4.6198229546486E-07  4.6621336132757E-06
+(PID.TID 0000.0001) grdchk output (g):   2     4.6198014164167E-07  4.6198025082941E-07  2.3634720580645E-07
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   3     2     2     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   3  5.0907198206151E-02  5.0907198237966E-02  5.0907198174337E-02
-(PID.TID 0000.0001) grdchk output (g):   3     3.1814412215780E-07  3.1814211463213E-07 -6.3101538017030E-06
+(PID.TID 0000.0001) grdchk output (g):   3     3.1814412215780E-07  3.1814411301220E-07 -2.8746737434915E-08
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   4     5     2     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   4  5.0907198206151E-02  5.0907198315297E-02  5.0907198097005E-02
-(PID.TID 0000.0001) grdchk output (g):   4     1.0914594575362E-06  1.0914556470806E-06 -3.4911685058425E-06
+(PID.TID 0000.0001) grdchk output (g):   4     1.0914594575362E-06  1.0914599105764E-06  4.1507727255308E-07
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   5     3     3     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   5  5.0907198206151E-02  5.0907198507285E-02  5.0907197905017E-02
-(PID.TID 0000.0001) grdchk output (g):   5     3.0113400661946E-06  3.0113631854186E-06  7.6773283540499E-06
+(PID.TID 0000.0001) grdchk output (g):   5     3.0113400661946E-06  3.0113401119961E-06  1.5209653425607E-08
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   6     1     4     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   6  5.0907198206151E-02  5.0907198224080E-02  5.0907198188222E-02
-(PID.TID 0000.0001) grdchk output (g):   6     1.7928939582967E-07  1.7929636070201E-07  3.8845586744607E-05
+(PID.TID 0000.0001) grdchk output (g):   6     1.7928939582967E-07  1.7928949565994E-07  5.5681046107203E-07
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   7     4     4     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   7  5.0907198206151E-02  5.0907198179023E-02  5.0907198233279E-02
-(PID.TID 0000.0001) grdchk output (g):   7    -2.7127942253680E-07 -2.7124638152923E-07 -1.2181179112547E-04
+(PID.TID 0000.0001) grdchk output (g):   7    -2.7127942253680E-07 -2.7127996807345E-07  2.0109728674500E-06
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   8     2     5     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   8  5.0907198206151E-02  5.0907198663135E-02  5.0907197749168E-02
-(PID.TID 0000.0001) grdchk output (g):   8     4.5698364536939E-06  4.5698282518330E-06 -1.7947853827582E-06
+(PID.TID 0000.0001) grdchk output (g):   8     4.5698364536939E-06  4.5698365939949E-06  3.0701524100785E-08
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   9     5     5     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   9  5.0907198206151E-02  5.0907196991417E-02  5.0907199420885E-02
-(PID.TID 0000.0001) grdchk output (g):   9    -1.2147339072122E-05 -1.2147376587561E-05  3.0883572913476E-06
+(PID.TID 0000.0001) grdchk output (g):   9    -1.2147339072122E-05 -1.2147338817966E-05 -2.0922742649532E-08
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) grdchk  summary  :  RMS of    9 ratios =  7.1384138450861E-07
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient check results  >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   6.5700000000000003
-(PID.TID 0000.0001)         System time:  5.00000000000000028E-002
-(PID.TID 0000.0001)     Wall clock time:   6.6377031803131104
+(PID.TID 0000.0001)           User time:   2.8399999999999999
+(PID.TID 0000.0001)         System time:  5.99999999999999978E-002
+(PID.TID 0000.0001)     Wall clock time:   2.9405589103698730
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  1.00000000000000002E-002
+(PID.TID 0000.0001)           User time:  2.00000000000000004E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.74109935760498047E-002
+(PID.TID 0000.0001)     Wall clock time:  2.68230438232421875E-002
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:   1.9399999999999999
-(PID.TID 0000.0001)         System time:  2.00000000000000004E-002
-(PID.TID 0000.0001)     Wall clock time:   1.9543859958648682
+(PID.TID 0000.0001)           User time:  0.70999999999999996
+(PID.TID 0000.0001)         System time:  1.00000000000000002E-002
+(PID.TID 0000.0001)     Wall clock time:  0.72808218002319336
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  4.99999999999998224E-002
-(PID.TID 0000.0001)         System time:  2.00000000000000039E-002
-(PID.TID 0000.0001)     Wall clock time:  5.28771877288818359E-002
+(PID.TID 0000.0001)           User time:  2.99999999999998046E-002
+(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
+(PID.TID 0000.0001)     Wall clock time:  5.06312847137451172E-002
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  9.99999999999978684E-003
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.95741653442382813E-002
+(PID.TID 0000.0001)     Wall clock time:  1.86910629272460938E-002
 (PID.TID 0000.0001)          No. starts:        2200
 (PID.TID 0000.0001)           No. stops:        2200
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.99999999999993605E-002
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.77309513092041016E-002
+(PID.TID 0000.0001)     Wall clock time:  1.69596672058105469E-002
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.23999999999999844
+(PID.TID 0000.0001)           User time:  0.11999999999999877
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.25179457664489746
+(PID.TID 0000.0001)     Wall clock time:  0.11881256103515625
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.0599999999999872
+(PID.TID 0000.0001)           User time:  0.55999999999999250
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.0513858795166016
+(PID.TID 0000.0001)     Wall clock time:  0.46049785614013672
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   2.2899999999999832
-(PID.TID 0000.0001)         System time:  1.00000000000000019E-002
-(PID.TID 0000.0001)     Wall clock time:   2.2093710899353027
+(PID.TID 0000.0001)           User time:  0.81999999999998963
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.87812018394470215
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.68999999999999240
+(PID.TID 0000.0001)           User time:  0.19999999999999618
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.70601677894592285
+(PID.TID 0000.0001)     Wall clock time:  0.28075551986694336
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.12000000000000011
+(PID.TID 0000.0001)           User time:  1.99999999999995737E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.14503645896911621
+(PID.TID 0000.0001)     Wall clock time:  4.52547073364257813E-002
+(PID.TID 0000.0001)          No. starts:        2000
+(PID.TID 0000.0001)           No. stops:        2000
+(PID.TID 0000.0001)   Seconds in section "INTEGR_CONTINUITY   [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  2.00000000000000178E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  4.06773090362548828E-002
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  6.00000000000004974E-002
+(PID.TID 0000.0001)           User time:  3.99999999999995914E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.98616695404052734E-002
+(PID.TID 0000.0001)     Wall clock time:  3.07035446166992188E-002
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.12999999999999812
+(PID.TID 0000.0001)           User time:  6.99999999999989519E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.17624735832214355
+(PID.TID 0000.0001)     Wall clock time:  7.70626068115234375E-002
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  9.99999999999978684E-003
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.83911323547363281E-002
+(PID.TID 0000.0001)     Wall clock time:  1.74551010131835938E-002
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  4.99999999999989342E-002
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.34470367431640625E-002
-(PID.TID 0000.0001)          No. starts:        2000
-(PID.TID 0000.0001)           No. stops:        2000
+(PID.TID 0000.0001)     Wall clock time:  4.81367111206054688E-003
+(PID.TID 0000.0001)          No. starts:         100
+(PID.TID 0000.0001)           No. stops:         100
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  7.99999999999982947E-002
+(PID.TID 0000.0001)           User time:  4.99999999999993783E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  8.61072540283203125E-002
+(PID.TID 0000.0001)     Wall clock time:  4.27811145782470703E-002
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)           User time:  1.00000000000002309E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.94621086120605469E-002
+(PID.TID 0000.0001)     Wall clock time:  1.85194015502929688E-002
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  1.99999999999995737E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.92389488220214844E-002
+(PID.TID 0000.0001)     Wall clock time:  1.83312892913818359E-002
 (PID.TID 0000.0001)          No. starts:        2000
 (PID.TID 0000.0001)           No. stops:        2000
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK           [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.86850738525390625E-004
+(PID.TID 0000.0001)     Wall clock time:  5.38825988769531250E-004
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK     [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.20093536376953125E-004
+(PID.TID 0000.0001)     Wall clock time:  4.67061996459960938E-004
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   4.6200000000000001
-(PID.TID 0000.0001)         System time:  3.00000000000000024E-002
-(PID.TID 0000.0001)     Wall clock time:   4.6649260520935059
+(PID.TID 0000.0001)           User time:   2.1099999999999999
+(PID.TID 0000.0001)         System time:  4.99999999999999958E-002
+(PID.TID 0000.0001)     Wall clock time:   2.1845710277557373
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  2.99999999999993605E-002
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.46477127075195313E-002
+(PID.TID 0000.0001)     Wall clock time:  1.51515007019042969E-002
 (PID.TID 0000.0001)          No. starts:          18
 (PID.TID 0000.0001)           No. stops:          18
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   4.5800000000000001
-(PID.TID 0000.0001)         System time:  3.00000000000000128E-002
-(PID.TID 0000.0001)     Wall clock time:   4.6337242126464844
+(PID.TID 0000.0001)           User time:   2.1000000000000019
+(PID.TID 0000.0001)         System time:  4.99999999999999889E-002
+(PID.TID 0000.0001)     Wall clock time:   2.1446781158447266
 (PID.TID 0000.0001)          No. starts:          18
 (PID.TID 0000.0001)           No. stops:          18
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   4.5500000000000167
-(PID.TID 0000.0001)         System time:  3.00000000000000128E-002
-(PID.TID 0000.0001)     Wall clock time:   4.5837888717651367
+(PID.TID 0000.0001)           User time:   2.0899999999999537
+(PID.TID 0000.0001)         System time:  4.99999999999999889E-002
+(PID.TID 0000.0001)     Wall clock time:   2.1160583496093750
 (PID.TID 0000.0001)          No. starts:        1800
 (PID.TID 0000.0001)           No. stops:        1800
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  5.59329986572265625E-004
+(PID.TID 0000.0001)     Wall clock time:  4.59909439086914063E-004
 (PID.TID 0000.0001)          No. starts:          18
 (PID.TID 0000.0001)           No. stops:          18
 (PID.TID 0000.0001) // ======================================================
