@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_VARS.h,v 1.8 2011/04/19 21:34:32 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_VARS.h,v 1.9 2012/06/08 20:31:10 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -86,6 +86,7 @@ C  DIC_atmospFile  :: file name of atmospheric pressure
 C  DIC_iceFile     :: file name of seaice fraction
 C  DIC_ironFile    :: file name of aeolian iron flux
 C  DIC_silicaFile  :: file name of surface silica
+C  DIC_parFile     :: file name of photosynthetically available radiation (PAR)
 C  DIC_forcingPeriod :: periodic forcing parameter specific for dic (seconds)
 C  DIC_forcingCycle  :: periodic forcing parameter specific for dic (seconds)
 C  dic_pCO2          :: Atmospheric pCO2 to be rad in data.dic
@@ -93,7 +94,7 @@ C  dic_int*          :: place holder to read in a integer number, set at run tim
 
       COMMON /DIC_FILENAMES/
      &        DIC_windFile, DIC_atmospFile, DIC_iceFile,
-     &        DIC_ironFile, DIC_silicaFile,
+     &        DIC_ironFile, DIC_silicaFile, DIC_parFile,
      &        DIC_forcingPeriod, DIC_forcingCycle,
      &        dic_pCO2, dic_int1, dic_int2, dic_int3, dic_int4
 
@@ -102,6 +103,7 @@ C  dic_int*          :: place holder to read in a integer number, set at run tim
       CHARACTER*(MAX_LEN_FNAM) DIC_iceFile
       CHARACTER*(MAX_LEN_FNAM) DIC_ironFile
       CHARACTER*(MAX_LEN_FNAM) DIC_silicaFile
+      CHARACTER*(MAX_LEN_FNAM) DIC_parFile
       _RL     DIC_forcingPeriod
       _RL     DIC_forcingCycle
       _RL dic_pCO2

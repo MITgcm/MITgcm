@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.10 2010/04/11 20:54:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.11 2012/06/08 20:31:10 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -91,7 +91,7 @@ C                  read in rainRatioUniform and filled in 2d array rain_ratio
 
       NAMELIST /DIC_FORCING/
      &          DIC_windFile, DIC_atmospFile, DIC_iceFile,
-     &          DIC_ironFile, DIC_silicaFile,
+     &          DIC_ironFile, DIC_silicaFile, DIC_parFile,
      &          DIC_forcingPeriod, DIC_forcingCycle,
      &          dic_int1, dic_int2, dic_int3, dic_int4, dic_pCO2
 
@@ -130,6 +130,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DIC_iceFile   = ' '
        DIC_ironFile  = ' '
        DIC_silicaFile= ' '
+       DIC_parFile   = ' '
        dic_int1    = 0
        dic_int2    = 0
        dic_int3    = 0
@@ -263,6 +264,8 @@ C- namelist DIC_FORCING
      & '  /* File name of aeolian iron flux */')
        CALL WRITE_0D_C( DIC_silicaFile, -1,INDEX_NONE,'DIC_silicaFile=',
      & '  /* File name of surface silica */')
+       CALL WRITE_0D_C( DIC_parFile, -1,INDEX_NONE,'DIC_parFile=',
+     & '  /* File name of photosynthetically available radiation */')
        CALL WRITE_0D_RL( DIC_forcingPeriod,
      &   INDEX_NONE,'DIC_forcingPeriod =',
      &  ' /* Periodic forcing parameter specific for DIC (s) */')
