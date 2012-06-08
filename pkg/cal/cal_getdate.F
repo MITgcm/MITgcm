@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_getdate.F,v 1.5 2012/04/07 22:02:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_getdate.F,v 1.6 2012/06/08 02:17:01 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -15,6 +15,7 @@ C     ==================================================================
 C
 C     o Determine the current date given the iteration number and/or the
 C       current time of integration.
+C     <- changed to be function of current time only (less ambiguous)
 C
 C     started: Christian Eckert eckert@mit.edu  30-Jun-1999
 C     changed: Christian Eckert eckert@mit.edu  29-Dec-1999
@@ -64,29 +65,30 @@ C-    Special case to return starDate_1 & _2 :
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R CAL_GETDATE'
 
-      ELSEIF ( myIter.EQ.modeliter0 .OR. myTime.EQ.modelstart ) THEN
+c     ELSEIF ( myIter.EQ.modelIter0 .OR. myTime.EQ.modelStart ) THEN
+      ELSEIF ( myTime.EQ.modelStart ) THEN
 
-C-    faster to just copy modelstartdate:
-        mydate(1) = modelstartdate(1)
-        mydate(2) = modelstartdate(2)
-        mydate(3) = modelstartdate(3)
-        mydate(4) = modelstartdate(4)
+C-    faster to just copy modelStartDate:
+        mydate(1) = modelStartDate(1)
+        mydate(2) = modelStartDate(2)
+        mydate(3) = modelStartDate(3)
+        mydate(4) = modelStartDate(4)
 
       ELSE
 
-        if (myTime .lt. 0) then
-          if (myIter .ge. 0) then
-            secs = float(myIter - modeliter0)*modelstep
-          else
-            print*,' cal_GetDate: Not a valid input!'
-            STOP 'ABNORMAL END: S/R CAL_GETDATE'
-          endif
-        else
-          secs = myTime - modelstart
-        endif
+c       if ( myTime.lt.0. ) then
+c         if (myIter .ge. 0) then
+c           secs = float(myIter - modelIter0)*modelStep
+c         else
+c           print*,' cal_GetDate: Not a valid input!'
+c           STOP 'ABNORMAL END: S/R CAL_GETDATE'
+c         endif
+c       else
+          secs = myTime - modelStart
+c       endif
 
-        call cal_TimeInterval( secs, 'secs', workdate, myThid )
-        call cal_AddTime( modelstartdate, workdate, mydate, myThid )
+        CALL CAL_TIMEINTERVAL( secs, 'secs', workdate, myThid )
+        CALL CAL_ADDTIME( modelStartDate, workdate, mydate, myThid )
 
       ENDIF
 
