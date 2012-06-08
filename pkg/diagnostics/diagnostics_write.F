@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.36 2012/06/07 17:12:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.37 2012/06/08 15:01:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -85,7 +85,7 @@ C       state-variable time-step:
           IF ( useCAL ) THEN
             CALL CAL_TIME2DUMP( phiSec, freqSec, deltaTClock,
      U                          dump2fileNow,
-     I                          wrTime, wrIter, myThid )
+     I                          wrTime, myIter, myThid )
           ENDIF
 #endif /* ALLOW_CAL */
           IF ( dumpAtLast .AND. modelEnd
@@ -127,7 +127,7 @@ C       state-variable time-step:
           IF ( useCAL ) THEN
             CALL CAL_TIME2DUMP( phiSec, freqSec, deltaTClock,
      U                          dump2fileNow,
-     I                          wrTime, wrIter, myThid )
+     I                          wrTime, myIter, myThid )
           ENDIF
 #endif /* ALLOW_CAL */
           IF ( dumpAtLast .AND. modelEnd
@@ -170,11 +170,9 @@ C--     Clear storage space:
 #endif
 #ifdef ALLOW_CAL
           IF ( useCAL ) THEN
-            wrIter = myIter
-            IF ( freqSec.LT.0. ) wrIter = myItM1
             CALL CAL_TIME2DUMP( phiSec, freqSec, deltaTClock,
      U                          dump2fileNow,
-     I                          wrTime, wrIter, myThid )
+     I                          wrTime, myIter, myThid )
           ENDIF
 #endif /* ALLOW_CAL */
           IF ( dumpAtLast .AND. modelEnd
@@ -197,11 +195,9 @@ C--     Clear storage space:
 #endif
 #ifdef ALLOW_CAL
           IF ( useCAL ) THEN
-            wrIter = myIter
-            IF ( freqSec.LT.0. ) wrIter = myItM1
             CALL CAL_TIME2DUMP( phiSec, freqSec, deltaTClock,
      U                          dump2fileNow,
-     I                          wrTime, wrIter, myThid )
+     I                          wrTime, myIter, myThid )
           ENDIF
 #endif /* ALLOW_CAL */
           IF ( dumpAtLast .AND. modelEnd
