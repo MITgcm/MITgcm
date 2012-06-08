@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1667 2012/06/08 15:12:09 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1668 2012/06/08 17:58:50 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/bottom_ctrl_5x5/
+  update reference output (results changed quite some time ago,
+  not sure when; but new reference results look ok in terms of grdchk)
 o verification/1D_ocean_ice_column/
   For verification purposes, the exact adjoint rather than an approx.
   should be used (e.g., to comare against F.D. or TLM).
