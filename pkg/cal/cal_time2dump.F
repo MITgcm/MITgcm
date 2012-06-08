@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_time2dump.F,v 1.2 2012/06/07 17:08:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_time2dump.F,v 1.3 2012/06/08 14:59:05 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -29,13 +29,15 @@ c     == routine arguments ==
 c     == local variables ==
       INTEGER thisDate(4), prevDate(4)
       _RL posFreq
+      _RL shTime, prTime
 
-c     IF ( calendarDumps ) THEN
-      IF ( calendarDumps .AND. phase.EQ.0. _d 0 ) THEN
+      IF ( calendarDumps ) THEN
         posFreq = ABS(freq)
 C-    First determine calendar dates for this and previous time step.
-        CALL CAL_GETDATE( myIter  ,myTime     ,thisDate,myThid )
-        CALL CAL_GETDATE( myIter-1,myTime-step,prevDate,myThid )
+        shTime = myTime - phase
+        prTime = shTime - step
+        CALL CAL_GETDATE( myIter, shTime, thisDate, myThid )
+        CALL CAL_GETDATE( myIter, prTime, prevDate, myThid )
 C-    Monthly Freq:
         IF ( posFreq.GE.2592000. .AND. posFreq.LE.2678400. ) THEN
            time2write = .FALSE.
