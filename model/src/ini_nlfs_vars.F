@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_nlfs_vars.F,v 1.7 2011/12/22 19:00:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_nlfs_vars.F,v 1.8 2012/06/15 18:26:46 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -112,9 +112,9 @@ C--  to make TAF happy: reset hFac to h0Fac (copied from hFac in ini_linear_phis
          DO k=1,Nr
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            _hFacC(i,j,k,bi,bj) = h0FacC(i,j,k,bi,bj)
-            _hFacW(i,j,k,bi,bj) = h0FacW(i,j,k,bi,bj)
-            _hFacS(i,j,k,bi,bj) = h0FacS(i,j,k,bi,bj)
+            hFacC(i,j,k,bi,bj) = h0FacC(i,j,k,bi,bj)
+            hFacW(i,j,k,bi,bj) = h0FacW(i,j,k,bi,bj)
+            hFacS(i,j,k,bi,bj) = h0FacS(i,j,k,bi,bj)
            ENDDO
           ENDDO
          ENDDO
