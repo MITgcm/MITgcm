@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.45 2012/03/08 17:08:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.46 2012/06/15 13:30:36 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -89,6 +89,7 @@ C  GAD_TR               :: passive tracer id (GAD_TR1+iTracer-1)
       LOGICAL calcAdvection
       INTEGER iterNb
       _RL gTr_AB (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dummy(Nr)
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
       CHARACTER*4 diagSufx
@@ -155,14 +156,14 @@ C (advection, [explicit] diffusion, parameterizations,...)
      I                   uTrans, vTrans, rTrans, rTransKp1,
      I                   PTRACERS_diffKh(iTracer),
      I                   PTRACERS_diffK4(iTracer),
-     I                   KappaRtr(1-OLx,1-OLy,iTracer),
+     I                   KappaRtr(1-OLx,1-OLy,iTracer), dummy,
      I                   gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),
      I                   pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      I                   PTRACERS_dTLev, GAD_TR,
      I                   PTRACERS_advScheme(iTracer),
      I                   PTRACERS_advScheme(iTracer),
      I                   calcAdvection, PTRACERS_ImplVertAdv(iTracer),
-     I                   .FALSE.,
+     I                   .FALSE., .FALSE.,
      I                   PTRACERS_useGMRedi(iTracer),
      I                   PTRACERS_useKPP(iTracer),
      U                   rFlx(1-OLx,1-OLy,1,iTracer),

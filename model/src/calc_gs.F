@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.54 2011/11/23 09:29:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.55 2012/06/15 13:29:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -164,11 +164,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA, yA, maskUp, uFld, vFld, wFld,
      I           uTrans, vTrans, rTrans, rTransKp1,
-     I           diffKhS, diffK4S, KappaRS,
+     I           diffKhS, diffK4S, KappaRS, diffKr4S,
      I           gsNm(1-Olx,1-Oly,1,1,1,m2), salt, dTtracerLev,
      I           GAD_SALINITY, saltAdvScheme, saltVertAdvScheme,
      I           calcAdvection, saltImplVertAdv, AdamsBashforth_S,
-     I           useGMRedi, useKPP,
+     I           saltVertDiff4, useGMRedi, useKPP,
      U           fVerS, gS,
      I           myTime, myIter, myThid )
 #else /* ALLOW_ADAMSBASHFORTH_3 */
@@ -176,10 +176,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA, yA, maskUp, uFld, vFld, wFld,
      I           uTrans, vTrans, rTrans, rTransKp1,
-     I           diffKhS, diffK4S, KappaRS, gsNm1, salt, dTtracerLev,
+     I           diffKhS, diffK4S, KappaRS, diffKr4S,
+     I           gsNm1, salt, dTtracerLev,
      I           GAD_SALINITY, saltAdvScheme, saltVertAdvScheme,
      I           calcAdvection, saltImplVertAdv, AdamsBashforth_S,
-     I           useGMRedi, useKPP,
+     I           saltVertDiff4, useGMRedi, useKPP,
      U           fVerS, gS,
      I           myTime, myIter, myThid )
 #endif /* ALLOW_ADAMSBASHFORTH_3 */

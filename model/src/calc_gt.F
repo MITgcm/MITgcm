@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.58 2011/11/23 09:29:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.59 2012/06/15 13:29:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -163,11 +163,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA, yA, maskUp, uFld, vFld, wFld,
      I           uTrans, vTrans, rTrans, rTransKp1,
-     I           diffKhT, diffK4T, KappaRT,
+     I           diffKhT, diffK4T, KappaRT, diffKr4T,
      I           gtNm(1-Olx,1-Oly,1,1,1,m2), theta, dTtracerLev,
      I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
      I           calcAdvection, tempImplVertAdv, AdamsBashforth_T,
-     I           useGMRedi, useKPP,
+     I           tempVertDiff4, useGMRedi, useKPP,
      U           fVerT, gT,
      I           myTime, myIter, myThid )
 #else /* ALLOW_ADAMSBASHFORTH_3 */
@@ -175,10 +175,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA, yA, maskUp, uFld, vFld, wFld,
      I           uTrans, vTrans, rTrans, rTransKp1,
-     I           diffKhT, diffK4T, KappaRT, gtNm1, theta, dTtracerLev,
+     I           diffKhT, diffK4T, KappaRT, diffKr4T,
+     I           gtNm1, theta, dTtracerLev,
      I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
      I           calcAdvection, tempImplVertAdv, AdamsBashforth_T,
-     I           useGMRedi, useKPP,
+     I           tempVertDiff4, useGMRedi, useKPP,
      U           fVerT, gT,
      I           myTime, myIter, myThid )
 #endif
