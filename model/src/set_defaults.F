@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.159 2012/03/02 01:45:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.160 2012/06/15 13:20:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -103,6 +103,7 @@ c     rhoConstFresh       = 999.8 _d 0
       fPrime              = 0. _d 0
 C-    Earth rotation period is 86400*365.25/366.25 (use to be 1.day)
       rotationPeriod      = 86164. _d 0
+C-    viscosity and diffusivity default value:
       viscAh              = 0. _d 3
       viscAhGrid          = 0. _d 0
       viscAhGridMin       = 0. _d 0
@@ -112,26 +113,12 @@ C-    Earth rotation period is 86400*365.25/366.25 (use to be 1.day)
       viscC2leith         = 0. _d 0
       viscC2leithD        = 0. _d 0
       viscC2smag          = 0. _d 0
-      diffKhT             = 0. _d 3
-      diffKhS             = 0. _d 3
       viscArDefault       = 0. _d -3
       no_slip_sides       = .TRUE.
       no_slip_bottom      = .TRUE.
       sideDragFactor      = 2. _d 0
       bottomDragLinear    = 0.
       bottomDragQuadratic = 0.
-      smoothAbsFuncRange  = 0. _d 0
-      diffKrTDefault      = 0. _d -3
-      diffKrSDefault      = 0. _d -3
-      diffKrBL79surf      = 0. _d 0
-      diffKrBL79deep      = 0. _d 0
-      diffKrBL79scl       = 200. _d 0
-      diffKrBL79Ho        = -2000. _d 0
-      BL79LatVary         = 30
-      diffKrBLEQsurf      = UNSET_RL
-      diffKrBLEQdeep      = UNSET_RL
-      diffKrBLEQscl       = UNSET_RL
-      diffKrBLEQHo        = UNSET_RL
       viscA4              = 0. _d 11
       viscA4Grid          = 0. _d 0
       viscA4GridMax       = 1. _d 21
@@ -141,14 +128,37 @@ C-    Earth rotation period is 86400*365.25/366.25 (use to be 1.day)
       viscC4leith         = 0. _d 0
       viscC4leithD        = 0. _d 0
       viscC4smag          = 0. _d 0
+      DO k=1,Nr
+       viscArNr(k)        = UNSET_RL
+      ENDDO
+      cosPower            = 0.
+      diffKhT             = 0. _d 3
+      diffKhS             = 0. _d 3
       diffK4T             = 0. _d 11
       diffK4S             = 0. _d 11
-      cosPower            = 0.
+      diffKrTDefault      = 0. _d -3
+      diffKrSDefault      = 0. _d -3
+      diffKrBL79surf      = 0. _d 0
+      diffKrBL79deep      = 0. _d 0
+      diffKrBL79scl       = 200. _d 0
+      diffKrBL79Ho        = -2000. _d 0
+      BL79LatVary         = 30.
+      diffKrBLEQsurf      = UNSET_RL
+      diffKrBLEQdeep      = UNSET_RL
+      diffKrBLEQscl       = UNSET_RL
+      diffKrBLEQHo        = UNSET_RL
+      DO k=1,Nr
+       diffKrNrT(k)       = UNSET_RL
+       diffKrNrS(k)       = UNSET_RL
+       diffKr4T(k)        = 0.
+       diffKr4S(k)        = 0.
+      ENDDO
       HeatCapacity_Cp     = 3994. _d 0
 Cml      tAlpha              = 2. _d -4
 Cml      sBeta               = 7.4 _d -4
       eosType             = 'LINEAR'
       buoyancyRelation    = 'OCEANIC'
+      smoothAbsFuncRange  = 0. _d 0
       hFacMin             = 1. _d 0
       hFacMinDrDefault    = 0. _d 0
       implicitIntGravWave = .FALSE.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.135 2012/04/11 03:55:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.136 2012/06/15 13:20:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -179,9 +179,17 @@ C     i, k   :: Loop counters.
       CALL WRITE_1D_RL( diffKrNrT, Nr, INDEX_K, 'diffKrNrT =',
      &  ' /* vertical profile of vertical diffusion of Temp ('
      &  //rUnits//'^2/s )*/')
+      IF ( tempVertDiff4 )
+     & CALL WRITE_1D_RL( diffKr4T, Nr, INDEX_K, 'diffKr4T =',
+     &  ' /* profile of vertical biharmonic diffusion of Temp ('
+     &  //rUnits//'^4/s )*/')
       CALL WRITE_1D_RL( diffKrNrS, Nr, INDEX_K, 'diffKrNrS =',
      &  ' /* vertical profile of vertical diffusion of Salt ('
      &  //rUnits//'^2/s )*/')
+      IF ( saltVertDiff4 )
+     & CALL WRITE_1D_RL( diffKr4S, Nr, INDEX_K, 'diffKr4S =',
+     &  ' /* profile of vertical biharmonic diffusion of Salt ('
+     &  //rUnits//'^4/s )*/')
       CALL WRITE_0D_RL( diffKrBL79surf, INDEX_NONE,'diffKrBL79surf =',
      &  ' /* Surface diffusion for Bryan and Lewis 79 ( m^2/s ) */')
       CALL WRITE_0D_RL( diffKrBL79deep, INDEX_NONE,'diffKrBL79deep =',

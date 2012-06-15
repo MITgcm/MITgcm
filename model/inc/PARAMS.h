@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.260 2012/04/11 03:52:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.261 2012/06/15 13:17:34 jmc Exp $
 C $Name:  $
 C
 
@@ -287,10 +287,12 @@ C- Temp. & Salt params:
 C     tempStepping   :: Turns temperature equation time-stepping off
 C     saltStepping   :: Turns salinity equation time-stepping off
 C     tempAdvection  :: Flag which turns advection of temperature on and off.
+C     tempVertDiff4  :: use vertical bi-harmonic diffusion for temperature
 C     tempIsActiveTr :: Pot.Temp. is a dynamically active tracer
 C     tempForcing    :: Flag which turns external forcing of temperature on
 C                       and off.
 C     saltAdvection  :: Flag which turns advection of salinity on and off.
+C     saltVertDiff4  :: use vertical bi-harmonic diffusion for salinity
 C     saltIsActiveTr :: Salinity  is a dynamically active tracer
 C     saltForcing    :: Flag which turns external forcing of salinity on
 C                       and off.
@@ -378,8 +380,8 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
      & upwindVorticity, highOrderVorticity,
      & useAbsVorticity, upwindShear,
      & momStepping, calc_wVelocity, tempStepping, saltStepping,
-     & tempAdvection, tempIsActiveTr, tempForcing,
-     & saltAdvection, saltIsActiveTr, saltForcing,
+     & tempAdvection, tempVertDiff4, tempIsActiveTr, tempForcing,
+     & saltAdvection, saltVertDiff4, saltIsActiveTr, saltForcing,
      & maskIniTemp, maskIniSalt, checkIniTemp, checkIniSalt,
      & useSRCGSolver,
      & rigidLid, implicitFreeSurface,
@@ -429,9 +431,11 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL useCoriolis
       LOGICAL vectorInvariantMomentum
       LOGICAL tempAdvection
+      LOGICAL tempVertDiff4
       LOGICAL tempIsActiveTr
       LOGICAL tempForcing
       LOGICAL saltAdvection
+      LOGICAL saltVertDiff4
       LOGICAL saltIsActiveTr
       LOGICAL saltForcing
       LOGICAL maskIniTemp
@@ -608,16 +612,20 @@ C     viscA4GridMax:: maximum and minimum biharmonic viscosity coefficients ...
 C     viscA4GridMin::  in terms of non-dimensional grid-size dependent viscosity
 C     diffKhT   :: Laplacian diffusion coeff. for mixing of
 C                 heat laterally ( m^2/s )
-C     diffKrNrT :: vertical profile of Laplacian diffusion coeff.
-C                 for mixing of heat vertically ( units of r^2/s )
 C     diffK4T   :: Biharmonic diffusion coeff. for mixing of
 C                 heat laterally ( m^4/s )
+C     diffKrNrT :: vertical profile of Laplacian diffusion coeff.
+C                 for mixing of heat vertically ( units of r^2/s )
+C     diffKr4T  :: vertical profile of Biharmonic diffusion coeff.
+C                 for mixing of heat vertically ( units of r^4/s )
 C     diffKhS  ::  Laplacian diffusion coeff. for mixing of
 C                 salt laterally ( m^2/s )
-C     diffKrNrS :: vertical profile of Laplacian diffusion coeff.
-C                 for mixing of salt vertically ( units of r^2/s ),
 C     diffK4S   :: Biharmonic diffusion coeff. for mixing of
 C                 salt laterally ( m^4/s )
+C     diffKrNrS :: vertical profile of Laplacian diffusion coeff.
+C                 for mixing of salt vertically ( units of r^2/s ),
+C     diffKr4S  :: vertical profile of Biharmonic diffusion coeff.
+C                 for mixing of salt vertically ( units of r^4/s )
 C     diffKrBL79surf :: T/S surface diffusivity (m^2/s) Bryan and Lewis, 1979
 C     diffKrBL79deep :: T/S deep diffusivity (m^2/s) Bryan and Lewis, 1979
 C     diffKrBL79scl  :: depth scale for arctan fn (m) Bryan and Lewis, 1979
@@ -735,8 +743,8 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & viscA4Grid, viscA4GridMax, viscA4GridMin,
      & viscAhReMax, viscA4ReMax,
      & viscC4leith, viscC4leithD, viscArNr,
-     & diffKhT, diffK4T, diffKrNrT,
-     & diffKhS, diffK4S, diffKrNrS,
+     & diffKhT, diffK4T, diffKrNrT, diffKr4T,
+     & diffKhS, diffK4S, diffKrNrS, diffKr4S,
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
      & BL79LatVary,
      & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
@@ -819,11 +827,13 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL viscC4leithD
       _RL viscC4smag
       _RL diffKhT
-      _RL diffKrNrT(Nr)
       _RL diffK4T
+      _RL diffKrNrT(Nr)
+      _RL diffKr4T(Nr)
       _RL diffKhS
-      _RL diffKrNrS(Nr)
       _RL diffK4S
+      _RL diffKrNrS(Nr)
+      _RL diffKr4S(Nr)
       _RL diffKrBL79surf
       _RL diffKrBL79deep
       _RL diffKrBL79scl

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.247 2012/04/03 22:38:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.248 2012/06/15 13:20:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -204,8 +204,8 @@ C--   Continuous equation parameters
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
      & viscAz, diffKzT, diffKzS, viscAp, diffKpT, diffKpS,
      & viscAr, diffKrT, diffKrS, viscArNr, diffKrNrT, diffKrNrS,
+     & diffKr4T, diffKr4S, BL79LatVary,
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
-     & BL79LatVary,
      & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
      & rhoConst, rhoConstFresh, buoyancyRelation, HeatCapacity_Cp,
      & writeBinaryPrec, readBinaryPrec, writeStatePrec,
@@ -360,9 +360,6 @@ C--   Set default "physical" parameters
       diffKpS  = UNSET_RL
       diffKrS  = UNSET_RL
       DO k=1,Nr
-       viscArNr(k)  = UNSET_RL
-       diffKrNrT(k) = UNSET_RL
-       diffKrNrS(k) = UNSET_RL
        tRef(k)      = UNSET_RL
        sRef(k)      = UNSET_RL
       ENDDO

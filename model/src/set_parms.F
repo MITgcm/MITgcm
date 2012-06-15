@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.14 2012/04/26 13:46:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.15 2012/06/15 13:20:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -32,6 +32,7 @@ c     EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER k
       _RL tmpVar
 CEOP
 
@@ -134,9 +135,17 @@ C--   Metric terms on/off flag.
       ENDIF
 
 C--   Advection and Forcing for Temp and salt  on/off flags
+      tempVertDiff4 = .FALSE.
+      saltVertDiff4 = .FALSE.
+      DO k=1,Nr
+        tempVertDiff4 = tempVertDiff4 .OR. ( diffKr4T(k).GT.0. _d 0 )
+        saltVertDiff4 = saltVertDiff4 .OR. ( diffKr4S(k).GT.0. _d 0 )
+      ENDDO
       tempAdvection = tempStepping .AND. tempAdvection
+      tempVertDiff4 = tempStepping .AND. tempVertDiff4
       tempForcing   = tempStepping .AND. tempForcing
       saltAdvection = saltStepping .AND. saltAdvection
+      saltVertDiff4 = saltStepping .AND. saltVertDiff4
       saltForcing   = saltStepping .AND. saltForcing
       tempImplVertAdv = tempAdvection .AND. tempImplVertAdv
       saltImplVertAdv = saltAdvection .AND. saltImplVertAdv
