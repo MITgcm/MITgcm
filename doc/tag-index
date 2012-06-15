@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1668 2012/06/08 17:58:50 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1669 2012/06/15 13:40:36 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/generic_advdiff:
+  - implement vertical bi-harmonic diffusion (for now, only for T & S and
+    only explicitly).
 o verification/bottom_ctrl_5x5/
   update reference output (results changed quite some time ago,
   not sure when; but new reference results look ok in terms of grdchk)
