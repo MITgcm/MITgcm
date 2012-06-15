@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.60 2012/03/09 20:13:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.61 2012/06/15 13:28:41 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -11,11 +11,11 @@ C !INTERFACE: ==========================================================
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA, yA, maskUp, uFld, vFld, wFld,
      I           uTrans, vTrans, rTrans, rTransKp1,
-     I           diffKh, diffK4, KappaR, TracerN, TracAB,
+     I           diffKh, diffK4, KappaR, diffKr4, TracerN, TracAB,
      I           deltaTLev, trIdentity,
      I           advectionScheme, vertAdvecScheme,
      I           calcAdvection, implicitAdvection, applyAB_onTracer,
-     I           trUseGMRedi, trUseKPP,
+     I           trUseDiffKr4, trUseGMRedi, trUseKPP,
      U           fVerT, gTracer,
      I           myTime, myIter, myThid )
 
@@ -67,8 +67,9 @@ C uTrans,vTrans    :: 2-D arrays of volume transports at U,V points
 C rTrans           :: 2-D arrays of volume transports at W points
 C rTransKp1        :: 2-D array of volume trans at W pts, interf k+1
 C diffKh           :: horizontal diffusion coefficient
-C diffK4           :: bi-harmonic diffusion coefficient
+C diffK4           :: horizontal bi-harmonic diffusion coefficient
 C KappaR           :: 2-D array for vertical diffusion coefficient, interf k
+C diffKr4          :: 1-D array for vertical bi-harmonic diffusion coefficient
 C TracerN          :: tracer field @ time-step n (Note: only used
 C                     if applying AB on tracer field rather than on tendency gTr)
 C TracAB           :: current tracer field (@ time-step n if applying AB on gTr
@@ -79,6 +80,7 @@ C vertAdvecScheme  :: advection scheme to use (Vertical direction)
 C calcAdvection    :: =False if Advec computed with multiDim scheme
 C implicitAdvection:: =True if vertical Advec computed implicitly
 C applyAB_onTracer :: apply Adams-Bashforth on Tracer (rather than on gTr)
+C trUseDiffKr4     :: true if this tracer uses vertical bi-harmonic diffusion
 C trUseGMRedi      :: true if this tracer uses GM-Redi
 C trUseKPP         :: true if this tracer uses KPP
 C myTime           :: current time
@@ -98,6 +100,7 @@ C myThid           :: thread number
       _RL rTransKp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL diffKh, diffK4
       _RL KappaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL diffKr4(Nr)
       _RL TracerN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL TracAB (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL deltaTLev(Nr)
@@ -105,7 +108,7 @@ C myThid           :: thread number
       INTEGER advectionScheme, vertAdvecScheme
       LOGICAL calcAdvection
       LOGICAL implicitAdvection, applyAB_onTracer
-      LOGICAL trUseGMRedi, trUseKPP
+      LOGICAL trUseDiffKr4, trUseGMRedi, trUseKPP
       _RL     myTime
       INTEGER myIter, myThid
 
@@ -570,6 +573,14 @@ C           boundary condition.
          CALL GAD_DIFF_R(bi,bj,k,KappaR,TracerN,df,myThid)
        ELSE
          CALL GAD_DIFF_R(bi,bj,k,KappaR,TracAB, df,myThid)
+       ENDIF
+      ENDIF
+
+      IF ( trUseDiffKr4 ) THEN
+       IF ( applyAB_onTracer ) THEN
+         CALL GAD_BIHARM_R( bi,bj,k, diffKr4, TracerN, df, myThid )
+       ELSE
+         CALL GAD_BIHARM_R( bi,bj,k, diffKr4, TracAB,  df, myThid )
        ENDIF
       ENDIF
 
