@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.50 2011/05/18 01:15:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.51 2012/06/15 20:13:16 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -78,6 +78,11 @@ C     but safer when EXCH do not fill all the overlap regions.
         ENDDO
        ENDDO
       ENDDO
+
+C--   Init. scalars
+      cg2dNorm = 0. _d 0
+      cg2dNormaliseRHS = .FALSE.
+      cg2dtolerance = 0. _d 0
 
 C--   Initialise laplace operator
 C     aW2d: integral in Z Ax/dX
