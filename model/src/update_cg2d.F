@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_cg2d.F,v 1.8 2011/05/18 23:37:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_cg2d.F,v 1.9 2012/06/15 21:54:51 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -15,8 +15,8 @@ C     | o Update 2d conjugate gradient solver operators
 C     |   account for Free-Surf effect on total column thickness
 C     *==========================================================*
 C     | This routine is based on INI_CG2D, and simplified. It is
-C     | only active when the non-linear free surface mode of
-C     | equations is active.
+C     | used when the non-linear free surface mode is activated
+C     | or when bottom depth is part of the control vector.
 C     *==========================================================*
 C     \ev
 
@@ -40,9 +40,8 @@ C     myThid :: Thread number for this instance of the routine.
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-#ifdef NONLIN_FRSURF
 C-- Note : compared to "INI_CG2D", no needs to compute again
-C   the solver norn=malisation factor of the solver tolerance
+C   the solver normalisation factor or the solver tolerance
 C     === Local variables ===
 C     bi,bj  :: tile indices
 C     i,j,k  :: Loop counters
@@ -106,7 +105,7 @@ C--   compute matrix main diagonal :
         IF ( deepAtmosphere ) THEN
          DO j=1,sNy
           DO i=1,sNx
-           ks = ksurfC(i,j,bi,bj)
+           ks = kSurfC(i,j,bi,bj)
            aC2d(i,j,bi,bj) = -(
      &       aW2d(i,j,bi,bj) + aW2d(i+1, j ,bi,bj)
      &      +aS2d(i,j,bi,bj) + aS2d( i ,j+1,bi,bj)
@@ -165,8 +164,6 @@ C--   Initialise preconditioner
       ENDDO
 C-    if update Preconditioner : end
       ENDIF
-
-#endif /* NONLIN_FRSURF */
 
       RETURN
       END
