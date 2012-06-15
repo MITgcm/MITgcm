@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1669 2012/06/15 13:40:36 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1670 2012/06/15 22:01:45 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - fix S/R UPDATE_CG2D for ALLOW_DEPTH_CONTROL case (was empty before); 
+    update output of test experiment bottom_ctrl_5x5.
 o pkg/generic_advdiff:
   - implement vertical bi-harmonic diffusion (for now, only for T & S and
     only explicitly).
