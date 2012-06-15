@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.62 2012/05/14 13:21:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.63 2012/06/15 21:03:22 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -140,12 +140,12 @@ C       code is being compiled
 #endif
 
 #ifdef ALLOW_DEPTH_CONTROL
-      IF ( implicitDiffusion ) THEN
-        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
-     &       'implicitDiffusion not available with DEPTH_CONTROL'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-      ENDIF
+cc      IF ( implicitDiffusion ) THEN
+cc        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+cc     &       'implicitDiffusion not available with DEPTH_CONTROL'
+cc        CALL PRINT_ERROR( msgBuf, myThid )
+cc        errCount = errCount + 1
+cc      ENDIF
       IF ( useOBCS ) THEN
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: DEPTH_CONTROL code not compatible with OBCS'
