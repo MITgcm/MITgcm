@@ -1,4 +1,5 @@
 gad_advection.f
+gad_biharm_r.f
 gad_biharm_x.f
 gad_biharm_y.f
 gad_c2_adv_r.f
