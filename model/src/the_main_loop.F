@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.127 2012/06/15 20:11:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.128 2012/06/17 03:35:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -28,13 +28,13 @@ C     | o Run the ocean model and evaluate the specified cost function.
 C     *================================================================*
 C     |
 C     | THE_MAIN_LOOP is the toplevel routine for the Tangent Linear and
-C     | Adjoint Model Compiler (TAMC). 
+C     | Adjoint Model Compiler (TAMC).
 C     | For this purpose the initialization
 C     | of the model was split into two parts. Those parameters that do
 C     | not depend on a specific model run are set in INITIALISE_FIXED,
 C     | whereas those that do depend on the specific realization are
-C     | initialized in INITIALISE_VARIA. 
-C     | This routine is to be used in conjuction with the MITgcmuv 
+C     | initialized in INITIALISE_VARIA.
+C     | This routine is to be used in conjuction with the MITgcmuv
 C     | checkpoint 37.
 C     *================================================================*
 C     \ev
@@ -50,8 +50,8 @@ c**************************************
 #ifdef ALLOW_AUTODIFF
 # ifndef ALLOW_AUTODIFF_OPENAD
 
-c These includes are needed for 
-c AD-checkpointing. 
+c These includes are needed for
+c AD-checkpointing.
 c They provide the fields to be stored.
 
 #  include "AUTODIFF_MYFIELDS.h"
@@ -158,17 +158,17 @@ c**************************************
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     note: under the multi-threaded model myiter and 
-C           mytime are local variables passed around as routine 
-C           arguments. Although this is fiddly it saves the need to 
-C           impose additional synchronisation points when they are 
+C     note: under the multi-threaded model myiter and
+C           mytime are local variables passed around as routine
+C           arguments. Although this is fiddly it saves the need to
+C           impose additional synchronisation points when they are
 C           updated.
 C     myTime :: time counter for this thread
 C     myIter :: iteration counter for this thread
 C     myThid :: thread number for this instance of the routine.
       _RL     myTime
       INTEGER myIter
-      INTEGER myThid 
+      INTEGER myThid
 
 C     !FUNCTIONS:
 C     == Functions ==
@@ -232,22 +232,22 @@ c$openad INDEPENDENT(xx_theta)
 c$openad INDEPENDENT(xx_salt)
 # endif
 # ifdef ALLOW_HFLUX0_CONTROL
-c$openad INDEPENDENT(xx_hflux0)    
+c$openad INDEPENDENT(xx_hflux0)
 # endif
 # ifdef ALLOW_SFLUX0_CONTROL
-c$openad INDEPENDENT(xx_sflux0) 
+c$openad INDEPENDENT(xx_sflux0)
 # endif
-# ifdef ALLOW_TAUU0_CONTROL 
-c$openad INDEPENDENT(xx_tauu0)    
+# ifdef ALLOW_TAUU0_CONTROL
+c$openad INDEPENDENT(xx_tauu0)
 # endif
-# ifdef ALLOW_TAUV0_CONTROL 
-c$openad INDEPENDENT(xx_tauv0) 
+# ifdef ALLOW_TAUV0_CONTROL
+c$openad INDEPENDENT(xx_tauv0)
 # endif
 # ifdef ALLOW_DIFFKR_CONTROL
-c$openad INDEPENDENT(xx_diffkr) 
+c$openad INDEPENDENT(xx_diffkr)
 # endif
 # ifdef ALLOW_ KAPGM_CONTROL
-c$openad INDEPENDENT(xx_kapgm) 
+c$openad INDEPENDENT(xx_kapgm)
 # endif
 #endif
 
@@ -302,9 +302,9 @@ c**************************************
             CALL AUTODIFF_STORE( myThid )
 #include "checkpoint_lev4_directives.h"
             CALL AUTODIFF_RESTORE( myThid )
-#ifdef ALLOW_AUTODIFF_WHTAPEIO     
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
             CALL AUTODIFF_WHTAPEIO_SYNC( 4 , 1, mythid )
-#endif      
+#endif
 c**************************************
 c--     Initialise storage for the middle loop.
 CADJ    INIT tapelev3 = USER
@@ -314,13 +314,13 @@ CADJ    INIT tapelev3 = USER
       do ilev_3 = 1,nchklev_3
          if(ilev_3.le.max_lev3) then
 c**************************************
-#ifdef ALLOW_AUTODIFF_WHTAPEIO     
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
             CALL AUTODIFF_WHTAPEIO_SYNC( 3 , 0, mythid )
 #endif
             CALL AUTODIFF_STORE( myThid )
 #include "checkpoint_lev3_directives.h"
             CALL AUTODIFF_RESTORE( myThid )
-#ifdef ALLOW_AUTODIFF_WHTAPEIO     
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
             CALL AUTODIFF_WHTAPEIO_SYNC( 3 , 1, mythid )
 #endif
 c**************************************
@@ -331,13 +331,13 @@ CADJ    INIT tapelev2 = USER
         do ilev_2 = 1,nchklev_2
          if(ilev_2.le.max_lev2) then
 c**************************************
-#ifdef ALLOW_AUTODIFF_WHTAPEIO     
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
             CALL AUTODIFF_WHTAPEIO_SYNC( 2 , 0, mythid )
 #endif
             CALL AUTODIFF_STORE( myThid )
 #include "checkpoint_lev2_directives.h"
             CALL AUTODIFF_RESTORE( myThid )
-#ifdef ALLOW_AUTODIFF_WHTAPEIO     
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
             CALL AUTODIFF_WHTAPEIO_SYNC( 2 , 1, mythid )
 #endif
 c**************************************
@@ -398,7 +398,7 @@ c--
 #    ifdef SEAICE_ALLOW_DYNAMICS
 CADJ INIT comlev1_dynsol = COMMON,nchklev_1*MPSEUDOTIMESTEPS
 #    ifdef SEAICE_LSR_ADJOINT_ITER
-CADJ INIT comlev1_dyniter = 
+CADJ INIT comlev1_dyniter =
 CADJ &    COMMON,nchklev_1*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
 #    endif
 #    endif
@@ -406,7 +406,7 @@ CADJ &    COMMON,nchklev_1*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
 CADJ INIT comlev1_evp = COMMON,nEVPstepMax*nchklev_1
 #   endif
 #   ifdef SEAICE_MULTICATEGORY
-CADJ INIT comlev1_multdim 
+CADJ INIT comlev1_multdim
 CADJ &    = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt*multdim
 #   endif
 #    ifndef DISABLE_MULTIDIM_ADVECTION
@@ -428,7 +428,7 @@ CADJ INIT comlev1_thsice_4
 CADJ &     = COMMON,nchklev_1*nsx*nsy*maxpass*nthreads_chkpt
 #   endif /* ALLOW_THSICE */
 c--
-#   ifdef ALLOW_DEPTH_CONTROL
+#   ifdef ALLOW_CG2D_NSA
 CADJ INIT comlev1_cg2d
 CADJ &     = COMMON,nchklev_1*nthreads_chkpt
 CADJ INIT comlev1_cg2d_iter
@@ -472,19 +472,19 @@ c--         choice of the 3-tupel ( nchklev_1, nchklev_2, nchklev_3 ).
 #endif /* undef ALLOW_AUTODIFF_OPENAD */
 
 #ifdef ALLOW_AUTODIFF_OPENAD
-      call openad_checkpointinit(uCheckLev1, 
-     +        uCheckLev2, 
+      call openad_checkpointinit(uCheckLev1,
+     +        uCheckLev2,
      +        uCheckLev3,
      +        uCheckLev4 )
-      
+
       theCurrentStep=0
 
-      if (uCheckLev4 .gt. 0 ) then 
+      if (uCheckLev4 .gt. 0 ) then
        do ilev_4 = 1, uCheckLev4
 
 #endif
 
-#ifndef ALLOW_AUTODIFF 
+#ifndef ALLOW_AUTODIFF
 
 c--   Start the main loop of adjoint_Objfunc. Automatic differentiation
 c--   NOT enabled.
@@ -527,11 +527,11 @@ C--   Reset the model iteration counter and the model time.
 #else
         CALL TIMER_START('FORWARD_STEP        [THE_MAIN_LOOP]',mythid)
 # ifdef ALLOW_AUTODIFF_OPENAD
-            CALL THE_FOURTH_LEVEL_LOOP( ilev_4, 
+            CALL THE_FOURTH_LEVEL_LOOP( ilev_4,
      +uCheckLev1, uCheckLev2, uCheckLev3,uCheckLev4,
      +theCurrentStep,
      +myTime, myIter, myThid )
-# else 
+# else
         CALL FORWARD_STEP( iloop, mytime, myiter, mythid )
 # endif
         CALL TIMER_STOP ('FORWARD_STEP        [THE_MAIN_LOOP]',mythid)
@@ -541,7 +541,7 @@ c--     >>> Loop body end <<<
 #ifdef ALLOW_AUTODIFF
 # ifndef ALLOW_AUTODIFF_OPENAD
 
-#   ifdef ALLOW_TAMC_CHECKPOINTING 
+#   ifdef ALLOW_TAMC_CHECKPOINTING
             endif
           enddo
           endif
@@ -560,7 +560,7 @@ c--     >>> Loop body end <<<
 # else /* ALLOW_AUTODIFF_OPENAD */
          end do
       else
-         CALL THE_FOURTH_LEVEL_PLAIN( 
+         CALL THE_FOURTH_LEVEL_PLAIN(
      +uCheckLev1, uCheckLev2, uCheckLev3,uCheckLev4,
      +theCurrentStep,
      +myTime, myIter, myThid )
