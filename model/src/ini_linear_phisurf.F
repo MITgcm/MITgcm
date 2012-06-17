@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.19 2011/03/15 00:21:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.20 2012/06/17 02:22:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -62,32 +62,26 @@ C     i,j,k  :: Loop counters
 CEOP
 
 C--   Initialisation
+#ifdef ALLOW_AUTODIFF_TAMC
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-#ifdef ALLOW_AUTODIFF_TAMC
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
            Bo_surf(i,j,bi,bj)  = 0. _d 0
            recip_Bo(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
+       ENDDO
+      ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef NONLIN_FRSURF
 C--   Save initial geometrical hFac factor into h0Fac (fixed in time):
-C     better here (after packages_init_fixed call) than in ini_mask_etc
+C     better here (after packages_init_fixed call) than in INI_MASKS_ETC
 C     in case 1 pkg would need to modify them.
-        DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           h0FacC(i,j,k,bi,bj) = _hFacC(i,j,k,bi,bj)
-           h0FacW(i,j,k,bi,bj) = _hFacW(i,j,k,bi,bj)
-           h0FacS(i,j,k,bi,bj) = _hFacS(i,j,k,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
+C    <= moved to INI_MASK_ETC , despite comment above, since:
+C      a) in case 1 pkg is changing hFac, this pkg should also update h0Fac
+C      b) pkg/shelfice does modify hFac but done directly within ini_masks_etc
 #endif /* NONLIN_FRSURF */
-       ENDDO
-      ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -156,8 +150,8 @@ C--
 C-  gBaro = gravity (except for External mode test with reduced gravity)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-Oly,sNy+Oly
-           DO I=1-Olx,sNx+Olx
+          DO J=1-OLy,sNy+OLy
+           DO I=1-OLx,sNx+OLx
              Bo_surf(I,J,bi,bj) = gBaro
              recip_Bo(I,J,bi,bj) = 1. _d 0 / gBaro
            ENDDO
@@ -168,8 +162,8 @@ C-  gBaro = gravity (except for External mode test with reduced gravity)
 C-  use a linear (in ps) uniform relation : Phi'_surf = 1/rhoConst * ps'_surf
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-Oly,sNy+Oly
-           DO I=1-Olx,sNx+Olx
+          DO J=1-OLy,sNy+OLy
+           DO I=1-OLx,sNx+OLx
 c            Bo_surf(I,J,bi,bj)  = rVel2wUnit(1)*gravity
 c            recip_Bo(I,J,bi,bj) = wUnit2rVel(1)*recip_gravity
              Bo_surf(I,J,bi,bj)  = recip_rhoConst
@@ -181,11 +175,11 @@ c            recip_Bo(I,J,bi,bj) = wUnit2rVel(1)*recip_gravity
       ELSEIF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-Oly,sNy+Oly
-           DO I=1-Olx,sNx+Olx
+          DO J=1-OLy,sNy+OLy
+           DO I=1-OLx,sNx+OLx
             IF ( Ro_surf(I,J,bi,bj).GT.0. _d 0
-     &          .AND. ksurfC(I,J,bi,bj).LE.Nr ) THEN
-             k = ksurfC(I,J,bi,bj)
+     &          .AND. kSurfC(I,J,bi,bj).LE.Nr ) THEN
+             k = kSurfC(I,J,bi,bj)
              pLoc = Ro_surf(I,J,bi,bj)
              CALL FIND_RHO_SCALAR(
      I            tRef(k), sRef(k), pLoc,
@@ -209,13 +203,13 @@ C-  use a linearized (in ps) Non-uniform relation : Bo_surf(Po_surf,tRef_surf)
 C--- Bo = d/d_p(Phi_surf) = tRef_surf*d/d_p(PI) ; PI = Cp*(p/Po)^kappa
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-Oly,sNy+Oly
-           DO I=1-Olx,sNx+Olx
+          DO J=1-OLy,sNy+OLy
+           DO I=1-OLx,sNx+OLx
             IF ( Ro_surf(I,J,bi,bj).GT.0. _d 0
-     &          .AND. ksurfC(I,J,bi,bj).LE.Nr ) THEN
+     &          .AND. kSurfC(I,J,bi,bj).LE.Nr ) THEN
               dPIdp = (atm_Cp*atm_kappa/atm_Po)*
      &         (Ro_surf(I,J,bi,bj)/atm_Po)**(atm_kappa-1. _d 0)
-              Bo_surf(I,J,bi,bj) = dPIdp*tRef(ksurfC(I,J,bi,bj))
+              Bo_surf(I,J,bi,bj) = dPIdp*tRef(kSurfC(I,J,bi,bj))
               recip_Bo(I,J,bi,bj) = 1. _d 0 / Bo_surf(I,J,bi,bj)
             ELSE
               Bo_surf(I,J,bi,bj) = 0.
@@ -250,8 +244,8 @@ C                               or topographic geopotential anom. (p-coord)
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-Oly,sNy+Oly
-           DO I=1-Olx,sNx+Olx
+          DO J=1-OLy,sNy+OLy
+           DO I=1-OLx,sNx+OLx
              phi0surf(I,J,bi,bj) = 0.
            ENDDO
           ENDDO
