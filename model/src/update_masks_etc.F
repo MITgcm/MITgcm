@@ -1,8 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_masks_etc.F,v 1.7 2012/03/19 14:32:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_masks_etc.F,v 1.8 2012/06/17 14:17:26 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+C--  File update_masks_etc.F:
+C--   Contents
+C--   o S/R UPDATE_MASKS_ETC
+C--   o FCT SMOOTHMIN_RS( a, b )
+C--   o FCT SMOOTHMIN_RL( a, b )
+C--   o FCT SMOOTHABS_RS( x )
+C--   o FCT SMOOTHABS_RL( x )
+Cml   o S/R LIMIT_HFACC_TO_ONE
+Cml   o S/R ADLIMIT_HFACC_TO_ONE
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: UPDATE_MASKS_ETC
 C     !INTERFACE:
@@ -42,6 +53,10 @@ C     myThid -  Number of this instance of INI_MASKS_ETC
       INTEGER myThid
 
 #ifdef ALLOW_DEPTH_CONTROL
+C     !FUNCTIONS:
+      _RS SMOOTHMIN_RS
+      EXTERNAL SMOOTHMIN_RS
+
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     bi,bj   :: Loop counters
@@ -55,8 +70,6 @@ Cml(
       INTEGER Im1, Jm1
       _RL hFacCtmp, hFacCtmp2
       _RL hFacMnSz
-      _RS smoothMin_R4
-      EXTERNAL smoothMin_R4
 Cml)
 CEOP
 
@@ -66,27 +79,27 @@ C    taking into account the lower_R Boundary (Bathymetrie / Top of Atmos)
        DO bi=myBxLo(myThid), myBxHi(myThid)
         DO K=1, Nr
          hFacMnSz=max( hFacMin, min(hFacMinDr*recip_drF(k),1. _d 0) )
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
 C      o Non-dimensional distance between grid bound. and domain lower_R bound.
 #ifdef ALLOW_DEPTH_CONTROL
            hFacCtmp = (rF(K)-xx_r_low(I,J,bi,bj))*recip_drF(K)
 #else
            hFacCtmp = (rF(K)-R_low(I,J,bi,bj))*recip_drF(K)
 #endif /* ALLOW_DEPTH_CONTROL */
-Cml           IF ( hFacCtmp .le. 0. _d 0 ) THEN
-CmlC           IF ( hFacCtmp .lt. 0.5*hfacMnSz ) THEN
+Cml           IF ( hFacCtmp .LE. 0. _d 0 ) THEN
+CmlC           IF ( hFacCtmp .LT. 0.5*hfacMnSz ) THEN
 Cml            hFacCtmp2 = 0. _d 0
 Cml           ELSE
 Cml            hFacCtmp2 = hFacCtmp + hFacMnSz*(
 Cml     &           EXP(-hFacCtmp/hFacMnSz)-EXP(-1./hFacMnSz) )
 Cml           ENDIF
-Cml           call limit_hfacc_to_one( hFacCtmp2 )
+Cml           CALL limit_hfacc_to_one( hFacCtmp2 )
 Cml           hFacC(I,J,K,bi,bj) = hFacCtmp2
-           IF ( hFacCtmp .le. 0. _d 0 ) THEN
-C           IF ( hFacCtmp .lt. 0.5*hfacMnSz ) THEN
+           IF ( hFacCtmp .LE. 0. _d 0 ) THEN
+C           IF ( hFacCtmp .LT. 0.5*hfacMnSz ) THEN
             hFacC(I,J,K,bi,bj) = 0. _d 0
-           ELSEIF ( hFacCtmp .gt. 1. _d 0 ) THEN
+           ELSEIF ( hFacCtmp .GT. 1. _d 0 ) THEN
             hFacC(I,J,K,bi,bj) = 1. _d 0
            ELSE
             hFacC(I,J,K,bi,bj) = hFacCtmp + hFacMnSz*(
@@ -113,20 +126,20 @@ Cml           print '(A,F15.4,F20.16)', 'ml-hfac:', R_low(i,j,bi,bj),hFacC(I,J,K
 C - end bi,bj loops.
        ENDDO
       ENDDO
-C
+
 C      _EXCH_XYZ_RS(hFacC,myThid)
-C
+
 C-  Re-calculate lower-R Boundary position, taking into account hFacC
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
           R_low(i,j,bi,bj) = rF(1)
          ENDDO
         ENDDO
         DO K=Nr,1,-1
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
            R_low(I,J,bi,bj) = R_low(I,J,bi,bj)
      &                      - drF(K)*hFacC(I,J,K,bi,bj)
           ENDDO
@@ -135,25 +148,16 @@ C-  Re-calculate lower-R Boundary position, taking into account hFacC
 C - end bi,bj loops.
        ENDDO
       ENDDO
-C
 
 Cml      DO bj=myByLo(myThid), myByHi(myThid)
 Cml       DO bi=myBxLo(myThid), myBxHi(myThid)
 CmlC-  Re-calculate Reference surface position, taking into account hFacC
-CmlC   initialize Total column fluid thickness and surface k index
-CmlC       Note: if no fluid (continent) ==> ksurf = Nr+1
-Cml        DO J=1-Oly,sNy+Oly
-Cml         DO I=1-Olx,sNx+Olx
-Cml          tmpfld(I,J,bi,bj) = 0.
-Cml          ksurfC(I,J,bi,bj) = Nr+1
+Cml        DO J=1-OLy,sNy+OLy
+Cml         DO I=1-OLx,sNx+OLx
 Cml          Ro_surf(I,J,bi,bj) = R_low(I,J,bi,bj)
 Cml          DO K=Nr,1,-1
 Cml           Ro_surf(I,J,bi,bj) = Ro_surf(I,J,bi,bj)
 Cml     &                        + drF(k)*hFacC(I,J,K,bi,bj)
-Cml           IF (maskC(I,J,K,bi,bj).NE.0.) THEN
-Cml            ksurfC(I,J,bi,bj) = k
-Cml            tmpfld(i,j,bi,bj) = tmpfld(i,j,bi,bj) + 1.
-Cml           ENDIF
 Cml          ENDDO
 Cml         ENDDO
 Cml        ENDDO
@@ -175,8 +179,8 @@ CML  &         'Model Ro_surf (update_masks_etc)', 1, myThid )
 C     Calculate quantities derived from XY depth map
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
 C         Total fluid column thickness (r_unit) :
           tmpfld(i,j,bi,bj) = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
 C         Inverse of fluid column thickness (1/r_unit)
@@ -202,12 +206,8 @@ CML   configurations.
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
         DO K=1, Nr
-CML         DO J=1-Oly+1,sNy+Oly
-CML          DO I=1-Olx+1,sNx+Olx
-CML         DO J=1,sNy+1
-CML          DO I=1,sNx+1
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
            Im1=MAX(I-1,1-OLx)
            Jm1=MAX(J-1,1-OLy)
            IF (DYG(I,J,bi,bj).EQ.0.) THEN
@@ -216,10 +216,9 @@ C     boundaries such as happen on the lat-lon grid at the N/S poles.
 C     We should really supply a flag for doing this.
               hFacW(I,J,K,bi,bj)=0.
            ELSE
-Cml              hFacW(I,J,K,bi,bj)=
               hFacW(I,J,K,bi,bj)=maskW(I,J,K,bi,bj)*
 #ifdef USE_SMOOTH_MIN
-     &           smoothMin_R4(hFacC(I,J,K,bi,bj),hFacC(Im1,J,K,bi,bj))
+     &           SMOOTHMIN_RS(hFacC(I,J,K,bi,bj),hFacC(Im1,J,K,bi,bj))
 #else
      &                    MIN(hFacC(I,J,K,bi,bj),hFacC(Im1,J,K,bi,bj))
 #endif /* USE_SMOOTH_MIN */
@@ -227,10 +226,9 @@ Cml              hFacW(I,J,K,bi,bj)=
            IF (DXG(I,J,bi,bj).EQ.0.) THEN
               hFacS(I,J,K,bi,bj)=0.
            ELSE
-Cml              hFacS(I,J,K,bi,bj)=
               hFacS(I,J,K,bi,bj)=maskS(I,J,K,bi,bj)*
 #ifdef USE_SMOOTH_MIN
-     &           smoothMin_R4(hFacC(I,J,K,bi,bj),hFacC(I,Jm1,K,bi,bj))
+     &           SMOOTHMIN_RS(hFacC(I,J,K,bi,bj),hFacC(I,Jm1,K,bi,bj))
 #else
      &                    MIN(hFacC(I,J,K,bi,bj),hFacC(I,Jm1,K,bi,bj))
 #endif /* USE_SMOOTH_MIN */
@@ -240,29 +238,24 @@ Cml              hFacS(I,J,K,bi,bj)=
         ENDDO
        ENDDO
       ENDDO
-#if (defined (ALLOW_AUTODIFF_TAMC) && \
-     defined (ALLOW_AUTODIFF_MONITOR) && \
-     defined (ALLOW_DEPTH_CONTROL))
-C     Include call to a dummy routine. Its adjoint will be
-C     called at the proper place in the adjoint code.
-C     The adjoint routine will print out adjoint values
-C     if requested. The location of the call is important,
-C     it has to be after the adjoint of the exchanges
-C     (DO_GTERM_BLOCKING_EXCHANGES).
+#if ( defined (ALLOW_AUTODIFF_TAMC) && \
+      defined (ALLOW_AUTODIFF_MONITOR) && \
+      defined (ALLOW_DEPTH_CONTROL) )
+C     Include call to a dummy routine. Its adjoint will be called at the proper
+C     place in the adjoint code. The adjoint routine will print out adjoint
+C     values if requested. The location of the call is important, it has to be
+C     after the adjoint of the exchanges (DO_GTERM_BLOCKING_EXCHANGES).
 Cml      CALL DUMMY_IN_HFAC( 'W', 0, myThid )
 Cml      CALL DUMMY_IN_HFAC( 'S', 0, myThid )
 #endif
-Cml      CALL EXCH_UV_XYZ_RL(hFacW,hFacS,.FALSE.,myThid)
       CALL EXCH_UV_XYZ_RS(hFacW,hFacS,.FALSE.,myThid)
-#if (defined (ALLOW_AUTODIFF_TAMC) && \
-     defined (ALLOW_AUTODIFF_MONITOR) && \
-     defined (ALLOW_DEPTH_CONTROL))
-C     Include call to a dummy routine. Its adjoint will be
-C     called at the proper place in the adjoint code.
-C     The adjoint routine will print out adjoint values
-C     if requested. The location of the call is important,
-C     it has to be after the adjoint of the exchanges
-C     (DO_GTERM_BLOCKING_EXCHANGES).
+#if ( defined (ALLOW_AUTODIFF_TAMC) && \
+      defined (ALLOW_AUTODIFF_MONITOR) && \
+      defined (ALLOW_DEPTH_CONTROL) )
+C     Include call to a dummy routine. Its adjoint will be called at the proper
+C     place in the adjoint code. The adjoint routine will print out adjoint
+C     values if requested. The location of the call is important, it has to be
+C     after the adjoint of the exchanges (DO_GTERM_BLOCKING_EXCHANGES).
 Cml      CALL DUMMY_IN_HFAC( 'W', 1, myThid )
 Cml      CALL DUMMY_IN_HFAC( 'S', 1, myThid )
 #endif
@@ -295,8 +288,8 @@ Cml   optimization!
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
            IF (hFacC(I,J,K,bi,bj) .NE. 0. ) THEN
 Cml           IF (maskC(I,J,K,bi,bj) .NE. 0. ) THEN
             recip_hFacC(I,J,K,bi,bj) = 1. _d 0 / hFacC(I,J,K,bi,bj)
@@ -336,73 +329,66 @@ Cml      _EXCH_XYZ_RS(maskS    , myThid )
 Cml      DO bj = myByLo(myThid), myByHi(myThid)
 Cml       DO bi = myBxLo(myThid), myBxHi(myThid)
 CmlCml)
-C-    Calculate surface k index for interface W & S (U & V points)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-          ksurfW(I,J,bi,bj) = Nr+1
-          ksurfS(I,J,bi,bj) = Nr+1
-          DO k=Nr,1,-1
-Cml           IF (hFacW(I,J,K,bi,bj).NE.0.) THEN
-           IF (maskW(I,J,K,bi,bj).NE.0.) THEN
-              ksurfW(I,J,bi,bj) = k
-           ENDIF
-Cml           IF (hFacS(I,J,K,bi,bj).NE.0.) THEN
-           IF (maskS(I,J,K,bi,bj).NE.0.) THEN
-              ksurfS(I,J,bi,bj) = k
-
-           ENDIF
+#ifdef NONLIN_FRSURF
+C--   Save initial geometrical hFac factor into h0Fac (fixed in time):
+C     Note: In case 1 pkg modifies hFac (from packages_init_fixed, called
+C     later in sequence of calls) this pkg would need also to update h0Fac.
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           h0FacC(i,j,k,bi,bj) = _hFacC(i,j,k,bi,bj)
+           h0FacW(i,j,k,bi,bj) = _hFacW(i,j,k,bi,bj)
+           h0FacS(i,j,k,bi,bj) = _hFacS(i,j,k,bi,bj)
           ENDDO
          ENDDO
         ENDDO
+#endif /* NONLIN_FRSURF */
 C - end bi,bj loops.
        ENDDO
       ENDDO
-
-c #ifdef ALLOW_NONHYDROSTATIC
-C--   Calculate "recip_hFacU" = reciprocal hfac distance/volume for W cells
-C     not used ; computed locally in CALC_GW
-c #endif
 
 #endif /* ALLOW_DEPTH_CONTROL */
       RETURN
       END
 
 #ifdef USE_SMOOTH_MIN
-      _RS function smoothMin_R4( a, b )
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      implicit none
+      _RS FUNCTION SMOOTHMIN_RS( a, b )
+
+      IMPLICIT NONE
 
       _RS a, b
 
-      _RS smoothAbs_R4
-      external smoothAbs_R4
+      _RS SMOOTHABS_RS
+      EXTERNAL SMOOTHABS_RS
 
 Cml      smoothMin_R4 = .5*(a+b)
-      smoothMin_R4 = .5*( a+b - smoothAbs_R4(a-b) )
+      SMOOTHMIN_RS = .5*( a+b - SMOOTHABS_RS(a-b) )
 CML      smoothMin_R4 = MIN(a,b)
 
-      return
-      end
+      RETURN
+      END
 
-      _RL function smoothMin_R8( a, b )
+      _RL FUNCTION SMOOTHMIN_RL( a, b )
 
-      implicit none
+      IMPLICIT NONE
 
       _RL a, b
 
-      _RL smoothAbs_R8
-      external smoothAbs_R8
+      _RL SMOOTHABS_RL
+      EXTERNAL SMOOTHABS_RL
 
 Cml      smoothMin_R8 = .5*(a+b)
-      smoothMin_R8 = .5*( a+b - smoothAbs_R8(a-b) )
+      SMOOTHMIN_RL = .5*( a+b - SMOOTHABS_RL(a-b) )
 Cml      smoothMin_R8 = MIN(a,b)
 
-      return
-      end
+      RETURN
+      END
 
-      _RS function smoothAbs_R4( x )
+      _RS FUNCTION SMOOTHABS_RS( x )
 
-      implicit none
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -412,34 +398,34 @@ C     input parameter
 c     local variable
       _RS sf, rsf
 
-      if ( smoothAbsFuncRange .lt. 0.0 ) then
+      IF ( smoothAbsFuncRange .LT. 0.0 ) THEN
 c     limit of smoothMin(a,b) = .5*(a+b)
-         smoothAbs_R4 = 0.
-      else
-         if ( smoothAbsFuncRange .ne. 0.0 ) then
+         SMOOTHABS_RS = 0.
+      ELSE
+         IF ( smoothAbsFuncRange .NE. 0.0 ) THEN
             sf  = 10.0/smoothAbsFuncRange
             rsf = 1./sf
-         else
+         ELSE
 c     limit of smoothMin(a,b) = min(a,b)
             sf  = 0.
             rsf = 0.
-         end if
+         ENDIF
 c
-         if ( x .gt. smoothAbsFuncRange ) then
-            smoothAbs_R4 = x
-         else if ( x .lt. -smoothAbsFuncRange ) then
-            smoothAbs_R4 = -x
-         else
-            smoothAbs_R4 = log(.5*(exp(x*sf)+exp(-x*sf)))*rsf
-         end if
-      end if
+         IF ( x .GT. smoothAbsFuncRange ) THEN
+            SMOOTHABS_RS = x
+         ELSEIF ( x .LT. -smoothAbsFuncRange ) THEN
+            SMOOTHABS_RS = -x
+         ELSE
+            SMOOTHABS_RS = log(.5*(exp(x*sf)+exp(-x*sf)))*rsf
+         ENDIF
+      ENDIF
 
-      return
-      end
+      RETURN
+      END
 
-      _RL function smoothAbs_R8( x )
+      _RL FUNCTION SMOOTHABS_RL( x )
 
-      implicit none
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -449,30 +435,30 @@ C     input parameter
 c     local variable
       _RL sf, rsf
 
-      if ( smoothAbsFuncRange .lt. 0.0 ) then
+      IF ( smoothAbsFuncRange .LT. 0.0 ) THEN
 c     limit of smoothMin(a,b) = .5*(a+b)
-         smoothAbs_R8 = 0.
-      else
-         if ( smoothAbsFuncRange .ne. 0.0 ) then
+         SMOOTHABS_RL = 0.
+      ELSE
+         IF ( smoothAbsFuncRange .NE. 0.0 ) THEN
             sf  = 10.0D0/smoothAbsFuncRange
             rsf = 1.D0/sf
-         else
+         ELSE
 c     limit of smoothMin(a,b) = min(a,b)
             sf  = 0.D0
             rsf = 0.D0
-         end if
+         ENDIF
 c
-         if ( x .ge. smoothAbsFuncRange ) then
-            smoothAbs_R8 = x
-         else if ( x .le. -smoothAbsFuncRange ) then
-            smoothAbs_R8 = -x
-         else
-            smoothAbs_R8 = log(.5*(exp(x*sf)+exp(-x*sf)))*rsf
-         end if
-      end if
+         IF ( x .GE. smoothAbsFuncRange ) THEN
+            SMOOTHABS_RL = x
+         ELSEIF ( x .LE. -smoothAbsFuncRange ) THEN
+            SMOOTHABS_RL = -x
+         ELSE
+            SMOOTHABS_RL = log(.5*(exp(x*sf)+exp(-x*sf)))*rsf
+         ENDIF
+      ENDIF
 
-      return
-      end
+      RETURN
+      END
 #endif /* USE_SMOOTH_MIN */
 
 Cml#ifdef ALLOW_DEPTH_CONTROL
@@ -483,23 +469,23 @@ Cmlcadj SUBROUTINE limit_hfacc_to_one DEPEND  = 1
 Cmlcadj SUBROUTINE limit_hfacc_to_one REQUIRED
 Cmlcadj SUBROUTINE limit_hfacc_to_one ADNAME  = adlimit_hfacc_to_one
 Cml#endif /* ALLOW_DEPTH_CONTROL */
-Cml      subroutine limit_hfacc_to_one( hf )
+Cml      SUBROUTINE LIMIT_HFACC_TO_ONE( hf )
 Cml
 Cml      _RL hf
 Cml
-Cml      if ( hf .gt. 1. _d 0 ) then
+Cml      IF ( hf .GT. 1. _d 0 ) THEN
 Cml       hf = 1. _d 0
-Cml      endif
+Cml      ENDIF
 Cml
-Cml      return
-Cml      end
+Cml      RETURN
+Cml      END
 Cml
-Cml      subroutine adlimit_hfacc_to_one( hf, adhf )
+Cml      SUBROUTINE ADLIMIT_HFACC_TO_ONE( hf, adhf )
 Cml
 Cml      _RL hf, adhf
 Cml
-Cml      return
-Cml      end
+Cml      RETURN
+Cml      END
 
 #ifdef ALLOW_DEPTH_CONTROL
 cadj SUBROUTINE dummy_in_hfac INPUT   = 1, 2, 3
@@ -511,4 +497,3 @@ cadj SUBROUTINE dummy_in_hfac INFLUENCED
 cadj SUBROUTINE dummy_in_hfac ADNAME  = addummy_in_hfac
 cadj SUBROUTINE dummy_in_hfac FTLNAME = g_dummy_in_hfac
 #endif /* ALLOW_DEPTH_CONTROL */
-
