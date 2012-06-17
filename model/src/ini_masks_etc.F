@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.51 2012/06/01 03:20:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.52 2012/06/17 02:21:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -46,40 +46,6 @@ C     tmpfld  :: Temporary array used to compute & write Total Depth
       _RL hFacCtmp
       _RL hFacMnSz
 CEOP
-
-C---  Calculate reciprocals grid lengths (should be part of INI_GRID)
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          IF ( dxG(i,j,bi,bj) .NE. 0. )
-     &    recip_dxG(i,j,bi,bj) = 1. _d 0/dxG(i,j,bi,bj)
-          IF ( dyG(i,j,bi,bj) .NE. 0. )
-     &    recip_dyG(i,j,bi,bj) = 1. _d 0/dyG(i,j,bi,bj)
-          IF ( dxC(i,j,bi,bj) .NE. 0. )
-     &    recip_dxC(i,j,bi,bj) = 1. _d 0/dxC(i,j,bi,bj)
-          IF ( dyC(i,j,bi,bj) .NE. 0. )
-     &    recip_dyC(i,j,bi,bj) = 1. _d 0/dyC(i,j,bi,bj)
-          IF ( dxF(i,j,bi,bj) .NE. 0. )
-     &    recip_dxF(i,j,bi,bj) = 1. _d 0/dxF(i,j,bi,bj)
-          IF ( dyF(i,j,bi,bj) .NE. 0. )
-     &    recip_dyF(i,j,bi,bj) = 1. _d 0/dyF(i,j,bi,bj)
-          IF ( dxV(i,j,bi,bj) .NE. 0. )
-     &    recip_dxV(i,j,bi,bj) = 1. _d 0/dxV(i,j,bi,bj)
-          IF ( dyU(i,j,bi,bj) .NE. 0. )
-     &    recip_dyU(i,j,bi,bj) = 1. _d 0/dyU(i,j,bi,bj)
-          IF ( rA (i,j,bi,bj) .NE. 0. )
-     &    recip_rA (i,j,bi,bj) = 1. _d 0/rA (i,j,bi,bj)
-          IF ( rAs(i,j,bi,bj) .NE. 0. )
-     &    recip_rAs(i,j,bi,bj) = 1. _d 0/rAs(i,j,bi,bj)
-          IF ( rAw(i,j,bi,bj) .NE. 0. )
-     &    recip_rAw(i,j,bi,bj) = 1. _d 0/rAw(i,j,bi,bj)
-          IF ( rAz(i,j,bi,bj) .NE. 0. )
-     &    recip_rAz(i,j,bi,bj) = 1. _d 0/rAz(i,j,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -402,6 +368,20 @@ C--   Masks and reciprocals of hFac[CWS]
           ENDDO
          ENDDO
         ENDDO
+#ifdef NONLIN_FRSURF
+C--   Save initial geometrical hFac factor into h0Fac (fixed in time):
+C     Note: In case 1 pkg modifies hFac (from packages_init_fixed, called
+C     later in sequence of calls) this pkg would need also to update h0Fac.
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           h0FacC(i,j,k,bi,bj) = _hFacC(i,j,k,bi,bj)
+           h0FacW(i,j,k,bi,bj) = _hFacW(i,j,k,bi,bj)
+           h0FacS(i,j,k,bi,bj) = _hFacS(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+#endif /* NONLIN_FRSURF */
 C-    end bi,bj loops.
        ENDDO
       ENDDO
