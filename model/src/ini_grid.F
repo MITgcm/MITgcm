@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.33 2010/03/16 00:08:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.34 2012/06/17 02:20:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -40,20 +40,23 @@ C     !USES:
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid  :: my Thread Id number
       INTEGER myThid
-CEOP
 
-C     === Functions ====
+C     !FUNCTIONS:
       LOGICAL  MASTER_CPU_IO
       EXTERNAL MASTER_CPU_IO
 
 C     !LOCAL VARIABLES:
+C     bi, bj  :: tile indices
+C     i, j    :: Loop counters
 C     msgBuf  :: Informational/error message buffer
+      INTEGER bi, bj
+      INTEGER i, j
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-#ifdef ALLOW_MNC
-      INTEGER i
-#endif
+CEOP
 
-C     load grid spacing (vector) from files
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C     Load grid spacing (vector) from files
       CALL LOAD_GRID_SPACING( myThid )
 
 C     Set up vertical grid and coordinate system
@@ -89,9 +92,46 @@ C     Set up horizontal grid and coordinate system
         WRITE(msgBuf,'(2A)') 'S/R INI_GRID: ',
      &       'No grid coordinate system has been selected'
         CALL PRINT_ERROR( msgBuf , myThid)
+        CALL ALL_PROC_DIE( 0 )
         STOP 'ABNORMAL END: S/R INI_GRID'
         _END_MASTER(myThid)
       ENDIF
+
+C---  Calculate reciprocals grid lengths (formerly part of INI_MASKS_ETC)
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          IF ( dxG(i,j,bi,bj) .NE. 0. )
+     &    recip_dxG(i,j,bi,bj) = 1. _d 0/dxG(i,j,bi,bj)
+          IF ( dyG(i,j,bi,bj) .NE. 0. )
+     &    recip_dyG(i,j,bi,bj) = 1. _d 0/dyG(i,j,bi,bj)
+          IF ( dxC(i,j,bi,bj) .NE. 0. )
+     &    recip_dxC(i,j,bi,bj) = 1. _d 0/dxC(i,j,bi,bj)
+          IF ( dyC(i,j,bi,bj) .NE. 0. )
+     &    recip_dyC(i,j,bi,bj) = 1. _d 0/dyC(i,j,bi,bj)
+          IF ( dxF(i,j,bi,bj) .NE. 0. )
+     &    recip_dxF(i,j,bi,bj) = 1. _d 0/dxF(i,j,bi,bj)
+          IF ( dyF(i,j,bi,bj) .NE. 0. )
+     &    recip_dyF(i,j,bi,bj) = 1. _d 0/dyF(i,j,bi,bj)
+          IF ( dxV(i,j,bi,bj) .NE. 0. )
+     &    recip_dxV(i,j,bi,bj) = 1. _d 0/dxV(i,j,bi,bj)
+          IF ( dyU(i,j,bi,bj) .NE. 0. )
+     &    recip_dyU(i,j,bi,bj) = 1. _d 0/dyU(i,j,bi,bj)
+          IF ( rA (i,j,bi,bj) .NE. 0. )
+     &    recip_rA (i,j,bi,bj) = 1. _d 0/rA (i,j,bi,bj)
+          IF ( rAs(i,j,bi,bj) .NE. 0. )
+     &    recip_rAs(i,j,bi,bj) = 1. _d 0/rAs(i,j,bi,bj)
+          IF ( rAw(i,j,bi,bj) .NE. 0. )
+     &    recip_rAw(i,j,bi,bj) = 1. _d 0/rAw(i,j,bi,bj)
+          IF ( rAz(i,j,bi,bj) .NE. 0. )
+     &    recip_rAz(i,j,bi,bj) = 1. _d 0/rAz(i,j,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_MONITOR
       IF ( MASTER_CPU_IO(myThid) ) THEN
@@ -117,8 +157,7 @@ C     & mon_write_mnc (since it is the only thread that uses those flags):
 
       ENDIF
 
-C     Print out statistics of each horizontal grid array (helps when
-C     debugging)
+C     Print out statistics of each horizontal grid array (helps when debugging)
       CALL MON_PRINTSTATS_RS(1,xC,'XC',myThid)
       CALL MON_PRINTSTATS_RS(1,xG,'XG',myThid)
       CALL MON_PRINTSTATS_RS(1,dxC,'DXC',myThid)
