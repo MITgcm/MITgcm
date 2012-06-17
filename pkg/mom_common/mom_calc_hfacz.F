@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hfacz.F,v 1.6 2009/06/28 01:08:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hfacz.F,v 1.7 2012/06/17 14:18:00 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -27,7 +27,6 @@ C !USES: ===============================================================
 #endif /* ALLOW_EXCH2 */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-c # include "EEPARAMS.h"
 # include "tamc.h"
 # include "tamc_keys.h"
 #endif
@@ -60,8 +59,8 @@ C                    without topography)
       _RL hFacZOpenI(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hFacZOpenJ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 # ifdef USE_SMOOTH_MIN
-      _RS      smoothMin_R4
-      EXTERNAL smoothMin_R4
+      _RS      SMOOTHMIN_RS
+      EXTERNAL SMOOTHMIN_RS
 # endif /* USE_SMOOTH_MIN */
 #else
       _RS     hFacZOpen
@@ -95,8 +94,8 @@ CEOP
 C--   Calculate open water fraction at vorticity points
 
 #ifdef ALLOW_DEPTH_CONTROL
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         hFacZ(i,j)     =0.
         r_hFacZ(i,j)   =0.
         hFacZOpen(i,j) =0.
@@ -109,11 +108,11 @@ C--   Calculate open water fraction at vorticity points
 CADJ STORE      hFacZ(:,:) = comlev1_bibj_k , key=kkey, byte=isbyte
 CADJ STORE    r_hFacZ(:,:) = comlev1_bibj_k , key=kkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
-      DO j=2-Oly,sNy+Oly
-       DO i=2-Olx,sNx+Olx
+      DO j=2-OLy,sNy+OLy
+       DO i=2-OLx,sNx+OLx
         hFacZOpenJ(i,j)=
 #ifdef USE_SMOOTH_MIN
-     &       smoothMin_R4(_hFacW(i  ,j  ,k,bi,bj),
+     &       SMOOTHMIN_RS(_hFacW(i  ,j  ,k,bi,bj),
 #else
      &                MIN(_hFacW(i  ,j  ,k,bi,bj),
 #endif /* USE_SMOOTH_MIN */
@@ -121,7 +120,7 @@ CADJ STORE    r_hFacZ(:,:) = comlev1_bibj_k , key=kkey, byte=isbyte
      &       *maskW(i,j,k,bi,bj)*maskW(i,j-1,k,bi,bj)
         hFacZOpenI(i,j)=
 #ifdef USE_SMOOTH_MIN
-     &       smoothMin_R4(_hFacS(i  ,j  ,k,bi,bj),
+     &       SMOOTHMIN_RS(_hFacS(i  ,j  ,k,bi,bj),
 #else
      &                MIN(_hFacS(i  ,j  ,k,bi,bj),
 #endif /* USE_SMOOTH_MIN */
@@ -135,11 +134,11 @@ CADJ STORE hFacZOpenI(:,:) = comlev1_bibj_k , key=kkey, byte=isbyte
 CADJ STORE hFacZOpenJ(:,:) = comlev1_bibj_k , key=kkey, byte=isbyte
 #endif /* ALLOW_DEPTH_CONTROL */
 #endif    /* ALLOW_AUTODIFF_TAMC */
-      DO j=2-Oly,sNy+Oly
-       DO i=2-Olx,sNx+Olx
+      DO j=2-OLy,sNy+OLy
+       DO i=2-OLx,sNx+OLx
         hFacZ(i,j) =
 #ifdef USE_SMOOTH_MIN
-     &       smoothMin_R4(hFacZOpenI(i,j),hFacZOpenJ(i,j))
+     &       SMOOTHMIN_RS(hFacZOpenI(i,j),hFacZOpenJ(i,j))
 #else
      &                MIN(hFacZOpenI(i,j),hFacZOpenJ(i,j))
 #endif /* USE_SMOOTH_MIN */
@@ -152,8 +151,8 @@ CADJ STORE hFacZOpenJ(:,:) = comlev1_bibj_k , key=kkey, byte=isbyte
 CADJ STORE hFacZ(:,:) = comlev1_bibj_k , key=kkey, byte=isbyte
 #endif /* ALLOW_DEPTH_CONTROL */
 #endif    /* ALLOW_AUTODIFF_TAMC */
-      DO j=2-Oly,sNy+Oly
-       DO i=2-Olx,sNx+Olx
+      DO j=2-OLy,sNy+OLy
+       DO i=2-OLx,sNx+OLx
         IF (hFacZ(i,j).EQ.0.) THEN
          r_hFacZ(i,j)=0.
         ELSE
@@ -172,25 +171,25 @@ CADJ STORE    r_hFacZ(:,:) = comlev1_bibj_k , key=kkey, byte=isbyte
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Initialize hFacZ:
-c     DO j=1-Oly,sNy+Oly
-c      DO i=1-Olx,sNx+Olx
+c     DO j=1-OLy,sNy+OLy
+c      DO i=1-OLx,sNx+OLx
 c        hFacZ(i,j)=0.
 c      ENDDO
 c     ENDDO
 
 C--   1rst row & column are not computed: fill with zero
-      DO i=1-Olx,sNx+Olx
-        hFacZ(i,1-Oly)=0.
+      DO i=1-OLx,sNx+OLx
+        hFacZ(i,1-OLy)=0.
       ENDDO
-      DO j=2-Oly,sNy+Oly
-        hFacZ(1-Olx,j)=0.
+      DO j=2-OLy,sNy+OLy
+        hFacZ(1-OLx,j)=0.
       ENDDO
 
 C--   Calculate open water fraction at vorticity points
 
       IF ( hZoption.EQ.2 ) THEN
-        DO j=2-Oly,sNy+Oly
-         DO i=2-Olx,sNx+Olx
+        DO j=2-OLy,sNy+OLy
+         DO i=2-OLx,sNx+OLx
 c         hFacZOpen=
 c    &               ( _hFacW(i, j ,k,bi,bj)*rAw(i, j ,bi,bj)
 c    &                +_hFacW(i,j-1,k,bi,bj)*rAw(i,j-1,bi,bj) )
@@ -206,8 +205,8 @@ c         hFacZ(i,j) = 0.25 _d 0 * hFacZOpen*recip_rAz(i,j,bi,bj)
          ENDDO
         ENDDO
       ELSEIF ( hZoption.EQ.1 ) THEN
-        DO j=2-Oly,sNy+Oly
-         DO i=2-Olx,sNx+Olx
+        DO j=2-OLy,sNy+OLy
+         DO i=2-OLx,sNx+OLx
 c         hFacZOpen=MIN(
 c    &                  _hFacW(i, j ,k,bi,bj)*rAw(i, j ,bi,bj)
 c    &                + _hFacW(i,j-1,k,bi,bj)*rAw(i,j-1,bi,bj)
@@ -225,8 +224,8 @@ c         hFacZ(i,j) = 0.5 _d 0 * hFacZOpen*recip_rAz(i,j,bi,bj)
          ENDDO
         ENDDO
       ELSE
-        DO j=2-Oly,sNy+Oly
-         DO i=2-Olx,sNx+Olx
+        DO j=2-OLy,sNy+OLy
+         DO i=2-OLx,sNx+OLx
           hFacZOpen=MIN(_hFacW(i,j,k,bi,bj),
      &                  _hFacW(i,j-1,k,bi,bj))
           hFacZOpen=MIN(_hFacS(i,j,k,bi,bj),hFacZOpen)
@@ -372,8 +371,8 @@ C-    to get the same truncation, independent from the face Nb:
 C---+----1----+----2----+----3----+----4
 
 C--   Calculate reciprol:
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         IF (hFacZ(i,j).EQ.0.) THEN
          r_hFacZ(i,j) = 0.
         ELSE
