@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1670 2012/06/15 22:01:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1671 2012/06/20 23:23:26 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src/the_main_loop.F, forward_step.F and pkg/exf/EXF_OPTIONS.h :
+  - changes to use model/src/the_main_loop.F rather than the ecco version
+    in ecco type adjoint runs.
 o model/src:
   - fix S/R UPDATE_CG2D for ALLOW_DEPTH_CONTROL case (was empty before); 
     update output of test experiment bottom_ctrl_5x5.
