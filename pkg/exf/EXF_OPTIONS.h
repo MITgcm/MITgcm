@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.23 2012/01/16 22:58:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.24 2012/06/20 23:20:20 gforget Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -10,7 +10,7 @@ C $Name:  $
 #ifdef ALLOW_EXF
 C     Package-specific Options & Macros go here
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#if (defined (ALLOW_AUTODIFF_TAMC) && !defined (ALLOW_ECCO_EVOLUTION))
 
 C When compile for AD mode,
 C this package is currently configured by ECCO_CPPOPTIONS.h
