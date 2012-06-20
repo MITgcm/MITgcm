@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.204 2012/06/15 20:11:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.205 2012/06/20 23:18:55 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -15,6 +15,12 @@ C $Name:  $
 #endif
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_OPTIONS.h"
+#endif
+#ifdef ALLOW_GGL90
+# include "GGL90_OPTIONS.h"
+#endif
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
 #endif
 
 CBOP
@@ -275,16 +281,6 @@ C--   State-variables diagnostics
         CALL NEST_PARENT_IO_1( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_NEST_PARENT */
-
-#ifdef ALLOW_PROFILES
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('',myThid)
-#endif
-c--     Accumulate in-situ time averages of theta, salt, and SSH.
-      CALL TIMER_START('PROFILES_INLOOP    [FORWARD_STEP]', mythid)
-      CALL PROFILES_INLOOP( mytime, mythid )
-      CALL TIMER_STOP ('PROFILES_INLOOP    [FORWARD_STEP]', mythid)
-#endif
 
 C--   Call driver to load external forcing fields from file
 #ifdef ALLOW_DEBUG
