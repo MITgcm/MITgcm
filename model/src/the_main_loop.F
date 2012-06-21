@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.129 2012/06/20 23:18:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.130 2012/06/21 03:45:21 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -603,7 +603,7 @@ c--     >>> Loop body end <<<
 #ifdef ALLOW_ECCO_EVOLUTION
 c--     Accumulate time averages of temperature, salinity
       CALL TIMER_START('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',mythid)
-      CALL COST_AVERAGESFIELDS( mytime, mythid )
+      CALL COST_AVERAGESFIELDS( endtime, mythid )
       CALL TIMER_STOP ('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',mythid)
 #endif /* ALLOW_ECCO_EVOLUTION */
 
@@ -614,7 +614,7 @@ c--   Accumulate in-situ time averages of temperature, salinity, SSH.
       CALL TIMER_STOP ('PROFILES_INLOOP    [THE_MAIN_LOOP]', mythid)
 #endif
 
-#if ALLOW_ECCO_EVOLUTION
+#ifdef ALLOW_ECCO_EVOLUTION
 c--   Compute all ecco cost function contributions.
       CALL TIMER_START('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', mythid)
       CALL ECCO_COST_DRIVER ( endTime, myIter, mythid )
