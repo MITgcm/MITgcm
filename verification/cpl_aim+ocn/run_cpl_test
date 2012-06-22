@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.18 2011/11/08 22:56:52 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.19 2012/06/22 20:46:06 jmc Exp $
 # $Name:  $
 
 #- default:
@@ -224,8 +224,10 @@ then
   mpichmx=$?
   echo $mpich | grep 'mpich2' > /dev/null 2>&1
   mpich2=$?
-  if test $mpich2 == 0 ; then
-  #- with Hydra mpich2 (on baudelaire):
+  echo $mpich | grep 'openmpi' > /dev/null 2>&1
+  opnmpi=$?
+  if test $mpich2 == 0 -o $opnmpi == 0 ; then
+  #- with Hydra mpich2 (on baudelaire) or with openmpi:
     echo "execute 'mpirun $RunOpt' :"
     mpirun $RunOpt  > std_outp 2>&1
   elif test $mpichmx == 0 ; then
