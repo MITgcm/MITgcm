@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1671 2012/06/20 23:23:26 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1672 2012/06/22 02:07:35 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/profiles : refine profiles and files handling.
+o model/src and pkg/ecco : introduce run-time switch usePROFILES.
 o model/src/the_main_loop.F, forward_step.F and pkg/exf/EXF_OPTIONS.h :
   - changes to use model/src/the_main_loop.F rather than the ecco version
     in ecco type adjoint runs.
