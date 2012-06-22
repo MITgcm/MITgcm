@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.69 2012/02/04 01:43:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.70 2012/06/22 02:03:03 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -302,7 +302,7 @@ c--   Initialize ECCO package parameters
 
 #ifdef ALLOW_PROFILES
 c--   Initialize PROFILES package parameters
-      CALL PROFILES_READPARMS ( myThid )
+      IF ( usePROFILES) CALL PROFILES_READPARMS ( myThid )
 #endif
 
 #ifdef ALLOW_FLT

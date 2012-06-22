@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.6 2009/03/23 23:29:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.7 2012/06/22 02:04:06 gforget Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -50,6 +50,18 @@ C     msgBuf      - Informational/error meesage buffer
        CALL PRINT_ERROR( msgBuf , myThid )
        STOP 'ABNORMAL END: S/R ECCO_CHECK'
       ENDIF
+
+#ifdef ALLOW_PROFILES_CONTRIBUTION
+      IF ( .NOT.usePROFILES ) THEN
+       WRITE(msgBuf,'(2A)')
+     &        'ECCO_CHECK: for ALLOW_PROFILES_CONTRIBUTION ',
+     &        'requires usePROFILES to be .true.'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       CALL PRINT_ERROR( msgBuf , myThid )
+       STOP 'ABNORMAL END: S/R ECCO_CHECK'
+      ENDIF
+#endif
 
       _END_MASTER(myThid)
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.5 2012/02/28 00:51:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.6 2012/06/22 02:04:06 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -625,6 +625,7 @@ cgf     2) mean_psMtpobs is the (unsmoothed) sample mean <psbar-tpobs>.
 cgf             And similarly for ers and gfo, each treated separately.
 
 #ifdef ALLOW_PROFILES
+      if ( usePROFILES ) then
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do j = 1,sny
@@ -635,6 +636,7 @@ cgf             And similarly for ers and gfo, each treated separately.
         enddo
       enddo
       _EXCH_XY_RL( prof_etan_mean, mythid )
+      endif
 #endif
 
 

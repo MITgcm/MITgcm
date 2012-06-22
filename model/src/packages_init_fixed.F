@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.79 2012/04/05 22:01:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.80 2012/06/22 02:03:03 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -394,10 +394,12 @@ C--   in order to provide the weight files
 #endif
 
 #ifdef ALLOW_PROFILES
+      IF (usePROFILES) THEN
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('PROFILES_INIT_FIXED',myThid)
 # endif
-      CALL PROFILES_INIT_FIXED( myThid )
+        CALL PROFILES_INIT_FIXED( myThid )
+      ENDIF
 #endif
 
 #ifdef ALLOW_AUTODIFF

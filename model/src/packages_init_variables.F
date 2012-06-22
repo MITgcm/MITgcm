@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.86 2012/03/02 01:45:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.87 2012/06/22 02:03:03 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -355,7 +355,9 @@ ceh3 needs an IF ( useCOST ) THEN
 
 #ifdef ALLOW_PROFILES
 c--   Initialise the cost function.
-      CALL PROFILES_INIT_VARIA( myThid )
+      IF (usePROFILES) THEN
+        CALL PROFILES_INIT_VARIA( myThid )
+      ENDIF
       _BARRIER
 #endif /* ALLOW_PROFILES */
 

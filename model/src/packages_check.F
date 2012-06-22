@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.60 2012/06/06 23:41:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.61 2012/06/22 02:03:03 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -330,6 +330,10 @@ C---  Continue with standard packages (with standard usePKG flag)
 
 #ifndef ALLOW_SMOOTH
       IF (useSMOOTH) CALL PACKAGES_ERROR_MSG('SMOOTH',' ',myThid)
+#endif
+
+#ifndef ALLOW_PROFILES
+      IF (usePROFILES) CALL PACKAGES_ERROR_MSG('PROFILES',' ',myThid)
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS

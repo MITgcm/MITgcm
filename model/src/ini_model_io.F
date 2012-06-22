@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.43 2011/06/08 01:21:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.44 2012/06/22 02:03:03 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -210,9 +210,9 @@ C       belonging to the core dynamical model
 #endif
 
 #ifdef ALLOW_PROFILES
-c     IF ( useProfiles ) THEN
+      IF ( usePROFILES ) THEN
         CALL PROFILES_INI_IO( myThid )
-c     ENDIF
+      ENDIF
 #endif
 
 #ifdef ALLOW_MONITOR

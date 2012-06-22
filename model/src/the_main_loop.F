@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.130 2012/06/21 03:45:21 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.131 2012/06/22 02:03:03 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -532,18 +532,20 @@ C--   Reset the model iteration counter and the model time.
 #endif /* ALLOW_ECCO_EVOLUTION */
 
 #ifdef ALLOW_PROFILES
+      IF (usePROFILES) THEN
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('profiles_inloop',myThid)
+        IF (debugMode) CALL DEBUG_CALL('profiles_inloop',myThid)
 #endif
 c--     Accumulate in-situ time averages of theta, salt, and SSH.
 #ifdef ALLOW_AUTODIFF
 C--   Reset the model iteration counter and the model time.
-      myIter = nIter0 + (iloop-1)
-      myTime = startTime + float(iloop-1)*deltaTclock
+        myIter = nIter0 + (iloop-1)
+        myTime = startTime + float(iloop-1)*deltaTclock
 #endif
-      CALL TIMER_START('PROFILES_INLOOP    [FORWARD_STEP]', mythid)
-      CALL PROFILES_INLOOP( mytime, mythid )
-      CALL TIMER_STOP ('PROFILES_INLOOP    [FORWARD_STEP]', mythid)
+        CALL TIMER_START('PROFILES_INLOOP    [FORWARD_STEP]', mythid)
+        CALL PROFILES_INLOOP( mytime, mythid )
+        CALL TIMER_STOP ('PROFILES_INLOOP    [FORWARD_STEP]', mythid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_DEBUG
@@ -608,10 +610,12 @@ c--     Accumulate time averages of temperature, salinity
 #endif /* ALLOW_ECCO_EVOLUTION */
 
 #ifdef ALLOW_PROFILES
+      IF (usePROFILES) THEN
 c--   Accumulate in-situ time averages of temperature, salinity, SSH.
-      CALL TIMER_START('PROFILES_INLOOP    [THE_MAIN_LOOP]', mythid)
-      CALL PROFILES_INLOOP( endtime, mythid )
-      CALL TIMER_STOP ('PROFILES_INLOOP    [THE_MAIN_LOOP]', mythid)
+        CALL TIMER_START('PROFILES_INLOOP    [THE_MAIN_LOOP]', mythid)
+        CALL PROFILES_INLOOP( endtime, mythid )
+        CALL TIMER_STOP ('PROFILES_INLOOP    [THE_MAIN_LOOP]', mythid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_ECCO_EVOLUTION

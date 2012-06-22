@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.58 2012/06/06 23:41:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.59 2012/06/22 02:03:03 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -63,6 +63,7 @@ C     data.pkg namelists
      &          useCheapAML,
      &          useGrdchk,
 c    &          useSMOOTH,
+     &          usePROFILES,
      &          useECCO,
      &          useSBO,
      &          useFLT,
@@ -125,6 +126,7 @@ c     useGAD          =.FALSE.
       useCheapAML     =.FALSE.
       useGrdchk       =.FALSE.
       useSMOOTH       =.FALSE.
+      usePROFILES     =.FALSE.
       useECCO         =.FALSE.
       useSBO          =.FALSE.
       useFLT          =.FALSE.
@@ -174,7 +176,7 @@ C--   packages with hard-coded switch
 #endif
 
 #ifdef ALLOW_PROFILES
-      useCAL = .TRUE.
+      IF (usePROFILES) useCAL = .TRUE.
 #endif
 
 #ifdef ALLOW_ECCO

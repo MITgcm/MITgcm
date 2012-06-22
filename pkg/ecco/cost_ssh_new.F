@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_new.F,v 1.6 2010/08/24 14:34:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_new.F,v 1.7 2012/06/22 02:04:06 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -285,6 +285,7 @@ c--   Do a global summation.
       offset = offset / offset_sum
 
 #ifdef ALLOW_PROFILES
+      if ( usePROFILES ) then
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do j = 1,sny
@@ -295,6 +296,7 @@ c--   Do a global summation.
         enddo
       enddo
       _EXCH_XY_RL( prof_etan_mean, mythid )
+      endif
 #endif
 
 #ifdef ALLOW_SSH_MEAN_COST_CONTRIBUTION
