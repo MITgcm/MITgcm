@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.8 2007/11/05 19:17:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.9 2012/06/22 22:07:34 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -55,7 +55,7 @@ C ==================== Routine Variables ==========================
 C ==================== Local Variables ==========================
       _RL tab_coeffs1(2,2),tab_coeffs2(2,2),tab_coeffs3(2,2)
       _RL ponderations(2,2),pondsSUM,distance1,distance2
-      integer i,j,k,kk,kcur,iG,jG,bi,bj
+      integer i,j,k,kk,kcur,bi,bj
       _RL traj_cur(nR),mask_cur(nR)
       integer prof_i,prof_j
       _RL lon_tmp1,lon_tmp2,lon_1,lon_2,lat_1,lat_2,tmp_coeff

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_varia.F,v 1.7 2007/10/09 00:07:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_varia.F,v 1.8 2012/06/22 22:07:34 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -42,10 +42,7 @@ c     == local variables ==
       integer bi,bj
       integer itlo,ithi
       integer jtlo,jthi
-      integer i,j,k
       integer num_file,num_var
-
-      logical exst
 
 c     == external functions ==
 

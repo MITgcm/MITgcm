@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.8 2012/06/22 02:00:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.9 2012/06/22 22:07:34 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -45,7 +45,8 @@ c--   Read the namelist input.
      &                   profilesDir,
      &                   profilesfiles,
      &                   mult_profiles,
-     &                   profilesfile_equi_type
+     &                   profilesDoNcOutput,
+     &                   profilesDoGenGrid
 
       _BEGIN_MASTER( myThid )
 
@@ -80,7 +81,12 @@ c--     Set default values.
       prof_namesweight(4)='prof_Vweight'
       prof_namesweight(5)='prof_ptrweight'
       prof_namesweight(6)='prof_sshweight'
-      profilesfile_equi_type=2
+      profilesDoNcOutput=.false.
+#ifdef ALLOW_PROFILES_GENERICGRID
+      profilesDoGenGrid=.true.
+#else
+      profilesDoGenGrid=.false.
+#endif
 
       if (NVARMAX.GT.6) then
         WRITE(msgBuf,'(A)')

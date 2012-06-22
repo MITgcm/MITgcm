@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_ncfile.F,v 1.8 2010/08/24 15:03:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_ncfile.F,v 1.9 2012/06/22 22:07:34 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -27,14 +27,14 @@ C ==================== Global Variables ===========================
 C ==================== Routine Variables ==========================
       integer fid1,fid2,dimid1,dimid2,varid(10),varid0
       integer myThid,bi,bj,err,vecid(2), length, Zlength
-      character*(80) file1, file2
+      character*(80) file2
       integer irec, num_var,num_file
       real*8 tmp_vec(Zlength+1)
 c     == end of interface ==
 
 #ifdef ALLOW_PROFILES
 
-      if (profilesfile_equi_type.EQ.1) then
+      if (profilesDoNcOutput) then
 c1) creation :
       err = NF_CREATE(file2 , NF_CLOBBER, fid2)
       err = NF_DEF_DIM(fid2,'iDEPTH', Zlength ,dimid1)

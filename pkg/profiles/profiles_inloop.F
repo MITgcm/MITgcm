@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_inloop.F,v 1.10 2008/02/22 21:16:52 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_inloop.F,v 1.11 2012/06/22 22:07:34 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -40,7 +40,7 @@ C ==================== Routine Variables ==========================
 
 C ==================== Local Variables ==========================
       integer k,bi,bj,prof_num, num_file, num_var
-      _RL tmp_lon,prof_traj1D(NLEVELMAX),prof_mask1D(NLEVELMAX)
+      _RL prof_traj1D(NLEVELMAX),prof_mask1D(NLEVELMAX)
 #ifdef ALLOW_PROFILES_GENERICGRID
       integer prof_i1D(NUM_INTERP_POINTS),prof_j1D(NUM_INTERP_POINTS)
       _RL prof_w1D(NUM_INTERP_POINTS)
@@ -81,20 +81,24 @@ c     == end of interface ==
       prof_mask1D(k)=0
       enddo
       if (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) then
-#ifndef ALLOW_PROFILES_GENERICGRID
-              call profiles_interp(prof_traj1D,
-     & prof_lon(num_file,prof_num,bi,bj), 
-     & prof_lat(num_file,prof_num,bi,bj),
-     & num_var,num_file,mytime,bi,bj,myThid)
-#else
-              call profiles_interp_gg(prof_traj1D,
-     & prof_i1D,prof_j1D,prof_w1D,
-     & num_var,num_file,mytime,bi,bj,myThid)
+#ifdef ALLOW_PROFILES_GENERICGRID
+        if (.NOT.profilesDoGenGrid) then
 #endif
-              call active_write_profile(num_file,
-     &ProfDepthNo(num_file,bi,bj),prof_traj1D,num_var,
-     &prof_num,optimcycle,bi,bj,mythid,
-     &profiles_dummy(num_file,num_var,bi,bj))
+          call profiles_interp(prof_traj1D,
+     &        prof_lon(num_file,prof_num,bi,bj), 
+     &        prof_lat(num_file,prof_num,bi,bj),
+     &        num_var,num_file,mytime,bi,bj,myThid)
+#ifdef ALLOW_PROFILES_GENERICGRID
+        else
+          call profiles_interp_gg(prof_traj1D,
+     &        prof_i1D,prof_j1D,prof_w1D,
+     &        num_var,num_file,mytime,bi,bj,myThid)
+        endif
+#endif
+        call active_write_profile(num_file,
+     &      ProfDepthNo(num_file,bi,bj),prof_traj1D,num_var,
+     &      prof_num,optimcycle,bi,bj,mythid,
+     &      profiles_dummy(num_file,num_var,bi,bj))
       endif
       enddo
 

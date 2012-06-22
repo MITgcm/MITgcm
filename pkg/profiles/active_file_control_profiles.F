@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/active_file_control_profiles.F,v 1.6 2010/08/24 15:03:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/active_file_control_profiles.F,v 1.7 2012/06/22 22:07:34 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -70,7 +70,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-      if (profilesfile_equi_type.EQ.1) then
+      if (profilesDoNcOutput) then
       vec_start(1)=1
       vec_start(2)=irec
       vec_count(1)=nactive_var
@@ -120,7 +120,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-      if (profilesfile_equi_type.EQ.1) then
+      if (profilesDoNcOutput) then
 
       vec_start(1)=1
       vec_start(2)=irec
@@ -198,7 +198,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-      if (profilesfile_equi_type.EQ.1) then
+      if (profilesDoNcOutput) then
 
       vec_start(1)=1
       vec_start(2)=irec
@@ -297,7 +297,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-      if (profilesfile_equi_type.EQ.1) then
+      if (profilesDoNcOutput) then
 
       vec_start(1)=1
       vec_start(2)=irec
@@ -356,7 +356,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-      if (profilesfile_equi_type.EQ.1) then
+      if (profilesDoNcOutput) then
 
       vec_start(1)=1
       vec_start(2)=irec
@@ -426,7 +426,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-      if (profilesfile_equi_type.EQ.1) then
+      if (profilesDoNcOutput) then
 
       vec_start(1)=1
       vec_start(2)=irec

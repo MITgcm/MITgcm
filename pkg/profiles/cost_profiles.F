@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.17 2012/06/22 02:00:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.18 2012/06/22 22:07:34 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -68,7 +68,7 @@ c     == end of interface ==
          fid=fiddata(num_file,bi,bj)
 
          if ( (ProfNo(num_file,bi,bj).GT.0).AND.
-     &        (profilesfile_equi_type.EQ.1) ) then
+     &        (profilesDoNcOutput) ) then
 c need to close the file so that the data is not lost when run finishes
            err = NF_CLOSE(fidforward(num_file,bi,bj))
 c then re-open it to compute cost function
@@ -111,16 +111,19 @@ c
 cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
              if (num_var.EQ.6) then
-#ifndef ALLOW_PROFILES_GENERICGRID
+#ifdef ALLOW_PROFILES_GENERICGRID
+             if (profilesDoGenGrid) then
+              call profiles_interp_mean_gg(prof_traj1D_mean,
+     &         prof_i1D,prof_j1D,prof_w1D,
+     &         num_var,num_file,mytime,bi,bj,myThid)
+             else
+#endif
               call profiles_interp_mean(prof_traj1D_mean,
      &         prof_lon(num_file,prof_num,bi,bj),
      &         prof_lat(num_file,prof_num,bi,bj),
      &         num_var,num_file,mytime,bi,bj,myThid)
-#else
-              call profiles_interp_mean_gg(prof_traj1D_mean,
-     &         prof_i1D,prof_j1D,prof_w1D,
-     &         num_var,num_file,mytime,bi,bj,myThid)
-
+#ifdef ALLOW_PROFILES_GENERICGRID              
+             endif
 #endif
              else
 #endif
@@ -132,6 +135,9 @@ cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
 #endif
 
 #ifdef ALLOW_PROFILES_ANOM_COST
+c the following does not currently work, since prof_theta_mean and 
+c prof_salt_mean are never filled. SO I put a stop here.
+             STOP 'ABNORMAL END: S/R COST_PROFILES'
              if (num_var .le. 2) then
               call profiles_interp_mean(prof_traj1D_mean,
      &         prof_lon(num_file,prof_num,bi,bj),
