@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.59 2012/06/22 02:03:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.60 2012/06/22 22:06:47 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -173,6 +173,29 @@ C--   Close the open data file
 C--   packages with hard-coded switch
 #ifdef ALLOW_CAL
       IF (useEXF) useCAL = .TRUE.
+#endif
+
+#ifndef ALLOW_PROFILES
+cgf This is a preliminary fix for the case when netcdf is missing
+cgf which would have lead genmake2 to undef ALLOW_PROFILES.
+cgf The test should later be based upon HAVE_NETCDF.
+      IF (usePROFILES) THEN
+        _BEGIN_MASTER(myThid)
+        WRITE(msgBuf,'(2A)') '** WARNING **',
+     &   ' PACKAGES_CHECK: usePROFILES is TRUE but'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING **',
+     &   ' pkg/profiles has not been compiled (#undef ALLOW_PROFILES)'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING **',
+     &   ' so we here reset usePROFILES to FALSE'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        usePROFILES=.FALSE.
+        _END_MASTER(myThid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_PROFILES

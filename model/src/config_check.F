@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.64 2012/06/22 02:03:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.65 2012/06/22 22:06:47 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -696,8 +696,7 @@ C--   Grid limitations:
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-       IF ( useFLT .OR. useZonal_Filt .OR. useECCO .OR. 
-     &      usePROFILES ) THEN
+       IF ( useFLT .OR. useZonal_Filt .OR. useECCO ) THEN
         WRITE(msgBuf,'(2A)')
      &       'CONFIG_CHECK: specifying Euler angles will probably ',
      &       'not work with pkgs FLT, ZONAL_FLT, ECCO'
