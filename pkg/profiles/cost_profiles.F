@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.16 2012/04/19 19:49:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.17 2012/06/22 02:00:48 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -41,7 +41,7 @@ c     == routine arguments ==
 
 C     ========= Local variables =======================
       integer K,num_file,num_var,prof_num
-      integer bi,bj,iG,jG,err,fid
+      integer bi,bj,iG,jG,fid
       _RL tmp_lon
       _RL prof_traj1D(NLEVELMAX), prof_traj1D_mean(NLEVELMAX)
       _RL prof_data1D(NLEVELMAX), prof_weights1D(NLEVELMAX)
@@ -50,6 +50,13 @@ C     ========= Local variables =======================
       _RL prof_w1D(NUM_INTERP_POINTS)
 #endif
       character*(max_len_mbuf) msgbuf
+      character*(80) profilesfile, fnameequinc
+      integer IL, JL, err
+
+C     !FUNCTIONS
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 c     == end of interface ==
 
         _BEGIN_MASTER( mythid )
@@ -59,6 +66,26 @@ c     == end of interface ==
 
         do num_file=1,NFILESPROFMAX
          fid=fiddata(num_file,bi,bj)
+
+         if ( (ProfNo(num_file,bi,bj).GT.0).AND.
+     &        (profilesfile_equi_type.EQ.1) ) then
+c need to close the file so that the data is not lost when run finishes
+           err = NF_CLOSE(fidforward(num_file,bi,bj))
+c then re-open it to compute cost function
+           iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
+           jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
+           IL  = ILNBLNK( profilesfiles(num_file) )
+           write(profilesfile(1:80),'(1a)') 
+     &     profilesfiles(num_file)(1:IL)
+           IL  = ILNBLNK( profilesfile )
+           JL  = ILNBLNK( profilesDir )
+           write(fnameequinc(1:80),'(3a,i3.3,a,i3.3,a)')
+     &     profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
+c
+           err = NF_OPEN(fnameequinc,NF_NOWRITE,
+     &     fidforward(num_file,bi,bj))
+         endif
+
          do prof_num=1,NOBSGLOB
           if (prof_num.LE.ProfNo(num_file,bi,bj)) then
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.18 2012/02/23 23:29:52 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.19 2012/06/22 02:00:48 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -34,7 +34,7 @@ C ==================== Routine Variables ==========================
       integer fid, dimid, varid1, varid1a, varid1b
       integer varid2,varid3
       _RL tmpyymmdd(1000),tmphhmmss(1000),diffsecs
-      integer tmpdate(4),tmpdiff(4)
+      integer tmpdate(4),tmpdiff(4),profIsInRunTime
       _RL  tmp_lon, tmp_lon2(1000), tmp_lat2(1000)
       integer vec_start(2), vec_count(2), profno_div1000, kk
       character*(80) profilesfile, fnamedatanc
@@ -59,7 +59,9 @@ C ==================== Routine Variables ==========================
 
 c     == external functions ==
       integer ILNBLNK
+      EXTERNAL ILNBLNK
       integer MDS_RECLEN
+      EXTERNAL MDS_RECLEN
       character*(max_len_mbuf) msgbuf
 
 c--   == end of interface ==
@@ -268,11 +270,20 @@ c5.2) loop through this chunk
 
       if ( stopProfiles .EQ. 0.) then
 
-      call cal_FullDate( int(tmpyymmdd(k)),int(tmphhmmss(k)),
-     & tmpdate,mythid )
-      call cal_TimePassed( modelstartdate,tmpdate,tmpdiff,mythid )
-      call cal_ToSeconds (tmpdiff,diffsecs,mythid)
-      diffsecs=diffsecs+nIter0*deltaTclock
+      profIsInRunTime=1
+
+      if (( tmpyymmdd(k).GT.modelstartdate(1)+1. _d 0 ).AND.
+     &    ( tmpyymmdd(k).LT.modelenddate(1)-1. _d 0 )) then
+        profIsInRunTime=1
+        call cal_FullDate( int(tmpyymmdd(k)),int(tmphhmmss(k)),
+     &   tmpdate,mythid )
+        call cal_TimePassed( modelstartdate,tmpdate,tmpdiff,mythid )
+        call cal_ToSeconds (tmpdiff,diffsecs,mythid)
+        diffsecs=diffsecs+nIter0*deltaTclock
+      else
+        profIsInRunTime=0
+        diffsecs=-deltaTclock
+      endif
 
 #ifndef ALLOW_PROFILES_GENERICGRID
        if (xC(sNx+1,1,bi,bj).LT.xC(1,1,bi,bj)) then
@@ -284,7 +295,7 @@ c5.2) loop through this chunk
      & (tmp_lon.GT.tmp_lon2(k)).AND.
      & (yC(1,1,bi,bj).LE.tmp_lat2(k)).AND.
      & (yC(1,sNy+1,bi,bj).GT.tmp_lat2(k))
-     & ) then
+     & .AND.(profIsInRunTime.EQ.1)) then
         length_for_tile=length_for_tile+1
         prof_time(num_file,length_for_tile,bi,bj)=diffsecs
         prof_lon(num_file,length_for_tile,bi,bj)=tmp_lon2(k)
@@ -325,7 +336,8 @@ c5.2) loop through this chunk
        if ( ( abs( tmp_xC11(k) - xC(1,1,bi,bj) ).LT.0.0001 ) .AND.
      & ( abs( tmp_yC11(k) - yC(1,1,bi,bj) ).LT.0.0001 ) .AND.
      & ( abs( tmp_xCNINJ(k) - xC(sNx,sNy,bi,bj) ).LT.0.0001 ) .AND.
-     & ( abs( tmp_yCNINJ(k) - yC(sNx,sNy,bi,bj) ).LT.0.0001 ) ) then
+     & ( abs( tmp_yCNINJ(k) - yC(sNx,sNy,bi,bj) ).LT.0.0001 )
+     & .AND.(profIsInRunTime.EQ.1)) then
 
          length_for_tile=length_for_tile+1
          prof_time(num_file,length_for_tile,bi,bj)=diffsecs
@@ -501,19 +513,25 @@ C===========================================================
 
       inquire( file=fnameequinc, exist=exst )
       if (.NOT.exst) then
-      call profiles_init_ncfile(num_file,
-     & fiddata(num_file,bi,bj),fnameequinc,
-     & fidforward(num_file,bi,bj),ProfNo(num_file,bi,bj),
-     & ProfDepthNo(num_file,bi,bj),
-     & bi,bj,myThid)
-      call profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
-     & adfnameequinc, fidadjoint(num_file,bi,bj),ProfNo(num_file,bi,bj),
-     & ProfDepthNo(num_file,bi,bj),bi,bj, myThid)
+        call profiles_init_ncfile(num_file,
+     &   fiddata(num_file,bi,bj),fnameequinc,
+     &   fidforward(num_file,bi,bj),ProfNo(num_file,bi,bj),
+     &   ProfDepthNo(num_file,bi,bj),
+     &   bi,bj,myThid)
       else
-      err = NF_OPEN(fnameequinc,NF_WRITE,fidforward(num_file,bi,bj))
-      err = NF_OPEN(adfnameequinc,NF_WRITE,fidadjoint(num_file,bi,bj))
+        err = NF_OPEN(fnameequinc,NF_WRITE,fidforward(num_file,bi,bj))
       endif
-
+#ifdef ALLOW_ADJOINT_RUN
+      inquire( file=adfnameequinc, exist=exst )
+      if (.NOT.exst) then
+        call profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
+     &   adfnameequinc, fidadjoint(num_file,bi,bj),
+     &   ProfNo(num_file,bi,bj),ProfDepthNo(num_file,bi,bj),
+     & bi,bj, myThid)
+      else
+        err = NF_OPEN(adfnameequinc,NF_WRITE,fidadjoint(num_file,bi,bj))
+      endif
+#endif
       else
 
       write(fnameequinc(1:80),'(3a,i3.3,a,i3.3,a)')
@@ -524,27 +542,30 @@ C===========================================================
 
       inquire( file=fnameequinc, exist=exst )
       if (.NOT.exst) then
-      call profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
-     & fnameequinc,fidforward(num_file,bi,bj),
-     & ProfNo(num_file,bi,bj),ProfDepthNo(num_file,bi,bj),
-     & bi,bj,myThid)
-#ifdef ALLOW_ADJOINT_RUN
-      call profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
-     & adfnameequinc, fidadjoint(num_file,bi,bj),ProfNo(num_file,bi,bj),
-     & ProfDepthNo(num_file,bi,bj),bi,bj, myThid)
-#endif
+        call profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
+     &   fnameequinc,fidforward(num_file,bi,bj),
+     &   ProfNo(num_file,bi,bj),ProfDepthNo(num_file,bi,bj),
+     &   bi,bj,myThid)
       else
-       call MDSFINDUNIT( fidforward(num_file,bi,bj) , mythid )
-       open( fidforward(num_file,bi,bj),file=fnameequinc,
-     & form ='unformatted',status='unknown', access='direct',
-     & recl=  (ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
-#ifdef ALLOW_ADJOINT_RUN
-       call MDSFINDUNIT( fidadjoint(num_file,bi,bj) , mythid )
-       open( fidadjoint(num_file,bi,bj),file=adfnameequinc,
-     & form ='unformatted',status='unknown', access='direct',
-     & recl=  (ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
-#endif
+         call MDSFINDUNIT( fidforward(num_file,bi,bj) , mythid )
+         open( fidforward(num_file,bi,bj),file=fnameequinc,
+     &   form ='unformatted',status='unknown', access='direct',
+     &   recl=  (ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
       endif
+#ifdef ALLOW_ADJOINT_RUN
+      inquire( file=adfnameequinc, exist=exst )
+      if (.NOT.exst) then
+        call profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
+     &   adfnameequinc, fidadjoint(num_file,bi,bj),
+     &   ProfNo(num_file,bi,bj),ProfDepthNo(num_file,bi,bj),
+     &   bi,bj, myThid)
+      else
+         call MDSFINDUNIT( fidadjoint(num_file,bi,bj) , mythid )
+         open( fidadjoint(num_file,bi,bj),file=adfnameequinc,
+     &   form ='unformatted',status='unknown', access='direct',
+     &   recl=  (ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
+      endif
+#endif
 
       endif
 
