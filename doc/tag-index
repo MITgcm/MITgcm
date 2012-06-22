@@ -1,16 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1672 2012/06/22 02:07:35 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1673 2012/06/22 18:31:45 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification (atmospheric set-up):
+  - change eosType='IDEALGAS' to eosType='IDEALG' to match variable declaration
 o pkg/profiles : refine profiles and files handling.
 o model/src and pkg/ecco : introduce run-time switch usePROFILES.
 o model/src/the_main_loop.F, forward_step.F and pkg/exf/EXF_OPTIONS.h :
   - changes to use model/src/the_main_loop.F rather than the ecco version
     in ecco type adjoint runs.
 o model/src:
-  - fix S/R UPDATE_CG2D for ALLOW_DEPTH_CONTROL case (was empty before); 
+  - move computation of recip of grid distance & area from INI_MASKS_ETC to INI_GRID
+  - move setting of h0Fac[C,W,S] from INI_LINEAR_PHISURF to INI_MASKS_ETC
+  - update_masks_etc.F: rename SMOOTH*_R4,R8 function to the corresponding type (RS,RL)
+o model/src:
+  - fix S/R UPDATE_CG2D for ALLOW_DEPTH_CONTROL case (was empty before);
     update output of test experiment bottom_ctrl_5x5.
 o pkg/generic_advdiff:
   - implement vertical bi-harmonic diffusion (for now, only for T & S and
