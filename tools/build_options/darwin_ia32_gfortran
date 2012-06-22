@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.14 2012/03/19 15:08:32 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.15 2012/06/22 17:06:05 jmc Exp $
 # $Name:  $
 
 # Tested on MacBook Pro with Snow Leopard
@@ -34,7 +34,7 @@ fi
 #FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
 #FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
 # for adjoint runs we might need this
-#MAKEDEPEND=cyrus_makedepend
+#MAKEDEPEND=tools_xmakedepend
 
 S64='$(TOOLSDIR)/set64bitConst.sh'
 DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
@@ -47,6 +47,10 @@ EXTENDED_SRC_FLAG='-ffixed-line-length-132'
 
 NOOPTFLAGS='-O0'
 NOOPTFILES=''
+
+FFLAGS="$FFLAGS -fsecond-underscore -fconvert=big-endian"
+#- might want to use '-fdefault-real-8' for fizhi pkg:
+#FFLAGS="$FFLAGS -fdefault-real-8 -fdefault-double-8"
 
 if test "x$IEEE" = x ; then     #- with optimisation:
     FFLAGS="$FFLAGS -Wunused -Wuninitialized"
@@ -66,10 +70,6 @@ else                            #- no optimisation + IEEE :
     FFLAGS="$FFLAGS -Wunused -ffloat-store"
     FOPTIM='-O0'
 fi
-
-FFLAGS="$FFLAGS -fsecond-underscore -fconvert=big-endian"
-#- might want to use '-fdefault-real-8' for fizhi pkg:
-#FFLAGS="$FFLAGS -fdefault-real-8"
 
 INCLUDEDIRS=''
 INCLUDES=''
