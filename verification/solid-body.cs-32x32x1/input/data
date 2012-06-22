@@ -15,7 +15,7 @@
  diffKhS=0.,
  diffK4S=0.,
  buoyancyRelation='ATMOSPHERIC',
- eosType='IDEALGAS',
+ eosType='IDEALG',
  rotationPeriod=86400.,
  gravity=9.81,
  rhonil=1.0,

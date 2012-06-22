@@ -9,7 +9,7 @@
  no_slip_sides=.FALSE.,
  no_slip_bottom=.FALSE.,
  buoyancyRelation='ATMOSPHERIC',
- eosType='IDEALGAS',
+ eosType='IDEALG',
  rhoConst=1.0,
  implicitFreeSurface=.TRUE.,
  hFacMin=1.0,

@@ -9,7 +9,7 @@
  no_slip_sides=.FALSE.,
  no_slip_bottom=.FALSE.,
  buoyancyRelation='ATMOSPHERIC',
- eosType='IDEALGAS',
+ eosType='IDEALG',
  atm_Rq=0.6078E-3,
 #- set wrong celsius2K to reproduce old results:
  celsius2K=273.16,
