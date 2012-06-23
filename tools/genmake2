@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.229 2012/01/24 14:54:57 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.230 2012/06/23 23:21:43 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -450,7 +450,6 @@ build_embed_encode()
 	    RETVAL=$?
 	    if test "x$RETVAL" = x0 ; then
 		echo "OK"
-		DEFINES="$DEFINES -DHAVE_EMBED_SRC"
 		return 0
 	    fi
 	done
@@ -462,7 +461,6 @@ build_embed_encode()
 	return 1
     fi
     echo "OK"
-    DEFINES="$DEFINES -DHAVE_EMBED_SRC"
 }
 
 #  look for possible C compilers
@@ -784,7 +782,6 @@ EOF
     RETVAL=$?
     if test "x$RETVAL" = x0 ; then
 	HAVE_CLOC=t
-	DEFINES="$DEFINES -DHAVE_CLOC"
     fi
     rm -f genmake_tc*
     echo " --> set HAVE_CLOC='$HAVE_CLOC'" >> $LOGFILE
@@ -846,17 +843,12 @@ EOF
     RETVAL=$?
     if test "x$RETVAL" = x0 ; then
 	HAVE_SIGREG=t
-	DEFINES="$DEFINES -DHAVE_SIGREG"
     fi
     rm -f genmake_tc*
     echo " --> set HAVE_SIGREG='$HAVE_SIGREG'" >> $LOGFILE
 }
 
 check_HAVE_SETRLSTK()  {
-    if test "x$HAVE_SETRLSTK" = xt ; then
-	DEFINES="$DEFINES -DHAVE_SETRLSTK"
-	return
-    fi	
     if test ! "x$HAVE_SETRLSTK" = x ; then
 	return
     fi
@@ -894,7 +886,6 @@ EOF
     RETVAL=$?
     if test "x$RETVAL" = x0 ; then
 	HAVE_SETRLSTK=t
-	DEFINES="$DEFINES -DHAVE_SETRLSTK"
     fi
     rm -f genmake_tc*
     echo " --> set HAVE_SETRLSTK='$HAVE_SETRLSTK'" >> $LOGFILE
@@ -941,7 +932,6 @@ EOF
     RETVAL=$?
     if test "x$RETVAL" = x0 ; then
 	HAVE_STAT=t
-	DEFINES="$DEFINES -DHAVE_STAT"
     fi
     rm -f genmake_tc*
     echo " --> set HAVE_STAT='$HAVE_STAT'" >> $LOGFILE
@@ -1768,6 +1758,7 @@ rm -f genmake_tcomp*
 printf "  Can we call simple C routines (here, \"cloc()\") using $FC...  "
 check_HAVE_CLOC
 if test "x$HAVE_CLOC" != x ; then
+    DEFINES="$DEFINES -DHAVE_CLOC"
     echo "yes"
 else
     echo "no"
@@ -1782,6 +1773,7 @@ rm -f genmake_t*
 printf "  Can we unlimit the stack size using $FC...  "
 check_HAVE_SETRLSTK
 if test "x$HAVE_SETRLSTK" = xt ; then
+    DEFINES="$DEFINES -DHAVE_SETRLSTK"
     echo "yes"
 else
     echo "no"
@@ -1791,6 +1783,7 @@ rm -f genmake_t*
 printf "  Can we register a signal handler using $FC...  "
 check_HAVE_SIGREG
 if test "x$HAVE_SIGREG" = xt ; then
+    DEFINES="$DEFINES -DHAVE_SIGREG"
     echo "yes"
 else
     echo "no"
@@ -1800,6 +1793,7 @@ rm -f genmake_t*
 printf "  Can we use stat() through C calls...  "
 check_HAVE_STAT
 if test "x$HAVE_STAT" != x ; then
+    DEFINES="$DEFINES -DHAVE_STAT"
     echo "yes"
 else
     echo "no"
@@ -1809,6 +1803,7 @@ rm -f genmake_t*
 printf "  Can we create NetCDF-enabled binaries...  "
 check_netcdf_libs
 if test "x$HAVE_NETCDF" != x ; then
+    DEFINES="$DEFINES -DHAVE_NETCDF"
     echo "yes"
 else
     echo "no"
@@ -1820,6 +1815,7 @@ if test "x$EMBED_SRC" = xt ; then
 fi
 if test "x$EMBED_SRC" = xt ; then
     ENABLE="$ENABLE embed_files"
+#   DEFINES="$DEFINES -DHAVE_EMBED_SRC"
 fi
 
 printf "\n===  Setting defaults  ===\n"
