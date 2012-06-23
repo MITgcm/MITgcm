@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.20 2012/06/22 22:07:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.21 2012/06/23 17:06:12 jmc Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -119,27 +119,27 @@ c--   == end of interface ==
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,X,l)') 'general packages parameters :'
+      write(msgbuf,'(a)') 'general packages parameters :'
       JL  = ILNBLNK( profilesDir )
       if (JL.NE.0) then
-        write(msgbuf,'(2X,a,X,a)') 'profilesDir',profilesDir
+        write(msgbuf,'(a,a)') '  profilesDir ',profilesDir
       else
-        write(msgbuf,'(2X,a,X,a)') 'profilesDir','./'
+        write(msgbuf,'(a,a)') '  profilesDir ','./'
       endif
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(2X,a,X,a)') 'ALLOW_PROFILES_GENERICGRID ',
+      write(msgbuf,'(a,a)') '  ALLOW_PROFILES_GENERICGRID ',
 #ifdef ALLOW_PROFILES_GENERICGRID
      &   'was compiled'
 #else
      &   'was NOT compiled'
-#endif      
+#endif
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(2X,a,X,l)') 'profilesDoGenGrid',profilesDoGenGrid
+      write(msgbuf,'(a,l5)') '  profilesDoGenGrid  ',profilesDoGenGrid
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(2X,a,X,l)') 'profilesDoNcOutput',profilesDoNcOutput
+      write(msgbuf,'(a,l5)') '  profilesDoNcOutput ',profilesDoNcOutput
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)') ' '
@@ -149,7 +149,7 @@ c--   == end of interface ==
 
       _BEGIN_MASTER( mythid )
       DO bj=1,nSy
-       DO bi=1,nSx
+      DO bi=1,nSx
 
         profiles_curfile_buff(bi,bj)=0
 
@@ -164,9 +164,9 @@ c--   == end of interface ==
 
         do num_file=1,NFILESPROFMAX
 
-      write(msgbuf,'(a)') ' ' 
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)      
+     &                    SQUEEZE_RIGHT , mythid)
 
       IL  = ILNBLNK( profilesfiles(num_file) )
       if (IL.NE.0) then
@@ -192,7 +192,7 @@ c open data files and read information
 C===========================================================
 
       write(fnamedatanc(1:80),'(2a)') profilesfile(1:IL),'.nc'
-      write(msgbuf,'(2X,a,X,a)') 'opening ', fnamedatanc(1:80)
+      write(msgbuf,'(a,a)') '  opening ', fnamedatanc(1:80)
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
       err = NF_OPEN(fnamedatanc, 0, fiddata(num_file,bi,bj))
@@ -207,16 +207,16 @@ c1)  read the number of profiles :
       endif
       err = NF_INQ_DIMLEN(fid, dimid, ProfDepthNo(num_file,bi,bj) )
 
-      write(msgbuf,'(2X,a,X,i9)') 
-     &   'file ID is      ', fid
+      write(msgbuf,'(a,i9)')
+     &   '  file ID is        ', fid
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(2X,a,X,i4)')
-     &   'no. of depth levels ',ProfDepthNo(num_file,bi,bj)
+      write(msgbuf,'(a,i5)')
+     &   '  no. of depth levels   ',ProfDepthNo(num_file,bi,bj)
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(2X,a,X,i9)') 
-     &   'no. of profiles ', ProfNo(num_file,bi,bj)
+      write(msgbuf,'(a,i9)')
+     &   '  no. of profiles   ', ProfNo(num_file,bi,bj)
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
 
@@ -497,7 +497,7 @@ c interpolation information consistent (self and with grid)
      &     '.nc includes inconsistent interpolation ',
      &     'weights (profilesDoGenGrid; dont add up to 1)'
           CALL PRINT_ERROR( msgBuf, myThid)
-          stopGenericGrid=1. _d 0            
+          stopGenericGrid=1. _d 0
        endif
 
          prof_ind_glob(num_file,length_for_tile,bi,bj)=k+1000*(kk-1)
@@ -520,8 +520,8 @@ c interpolation information consistent (self and with grid)
 
       ProfNo(num_file,bi,bj)=length_for_tile
 
-      write(msgbuf,'(2X,a,X,i9)')
-     &   'within tile & run', ProfNo(num_file,bi,bj)
+      write(msgbuf,'(a,i9)')
+     &   '  within tile & run ', ProfNo(num_file,bi,bj)
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
 
@@ -553,7 +553,7 @@ c6) available variablesin the data set
       vec_quantities(num_file,2,bi,bj)=.FALSE.
       endif
 #ifndef ALLOW_PROFILES_GENERICGRID
-cgf This bloc won't work when model u/v are not 
+cgf This bloc won't work when model u/v are not
 cgf zonal/meridional components, while prof_U/V are.
       err = NF_INQ_VARID(fid,'prof_U', varid1 )
       if (err.EQ.NF_NOERR) then
@@ -597,7 +597,7 @@ cgf zonal/meridional components, while prof_U/V are.
       vec_quantities(num_file,6,bi,bj)=.FALSE.
       endif
 
-      write(msgbuf,'(2X,a,X,6l)') 'incl. variables (T/F flags)'
+      write(msgbuf,'(a,6L5)') '  incl. variables (T/F flags)'
      &,vec_quantities(num_file,1,bi,bj),vec_quantities(num_file,2,bi,bj)
      &,vec_quantities(num_file,3,bi,bj),vec_quantities(num_file,4,bi,bj)
      &,vec_quantities(num_file,5,bi,bj),vec_quantities(num_file,6,bi,bj)
@@ -618,7 +618,7 @@ C===========================================================
 
       write(fnameequinc(1:80),'(3a,i3.3,a,i3.3,a)')
      & profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
-      write(adfnameequinc(1:80),'(4a,i3.3,a,i3.3,a)') 
+      write(adfnameequinc(1:80),'(4a,i3.3,a,i3.3,a)')
      & profilesDir(1:JL),'ad',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
 
@@ -647,7 +647,7 @@ C===========================================================
 
       write(fnameequinc(1:80),'(3a,i3.3,a,i3.3,a)')
      & profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
-      write(adfnameequinc(1:80),'(4a,i3.3,a,i3.3,a)') 
+      write(adfnameequinc(1:80),'(4a,i3.3,a,i3.3,a)')
      & profilesDir(1:JL),'ad',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
 
