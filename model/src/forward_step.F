@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.205 2012/06/20 23:18:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.206 2012/06/25 18:38:11 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -153,7 +153,7 @@ C     == Global variables ==
 # ifdef ALLOW_OFFLINE
 #  include "OFFLINE.h"
 # endif
-# ifdef ALLOW_DEPTH_CONTROL
+# ifdef ALLOW_CG2D_NSA
 #  include "CG2D.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -682,7 +682,7 @@ CADJ STORE hFacC, hFacS, hFacW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW  =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
-#  ifdef ALLOW_DEPTH_CONTROL
+#  ifdef ALLOW_CG2D_NSA
 CADJ STORE aW2d, aS2d, aC2d =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE pc, ps, pw =
