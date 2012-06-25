@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1674 2012/06/25 16:13:38 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1675 2012/06/25 19:25:41 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/tutorial_tracer_adjsens/
+  - compile with ALLOW_CG2D_NSA
+  - run with nonlinFreeSurf=3
+  - update reference output_adm.txt
 o tools/genmake2:
   - add "-DHAVE_NETCDF" to the DEFINES list when NetCDF is available ;
     refine usePROFILES switching off (only when NetCDF is not available).
