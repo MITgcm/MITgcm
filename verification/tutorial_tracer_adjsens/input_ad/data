@@ -36,7 +36,7 @@
 #nonlinear free surface
  hFacInf=0.2,
  hFacSup=2.0,
- nonlinFreeSurf=2,
+ nonlinFreeSurf=3,
  select_rStar=2,
 #
 # readPickupWithTracer  = .FALSE.,
@@ -45,7 +45,7 @@
 
 # Elliptic solver parameters
  &PARM02
- cg2dMaxIters=1000,
+ cg2dMaxIters=100,
  cg2dTargetResidual=1.E-17,
  &
 

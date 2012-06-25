@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/tamc.h,v 1.2 2009/02/13 21:52:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/tamc.h,v 1.3 2012/06/25 19:01:02 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -130,6 +130,14 @@ cph      PARAMETER( maxpass     = PTRACERS_num + 2 )
       INTEGER max0, max1, max2, max3
       INTEGER iikey, kkey, passkey, igadkey, 
      &        itdkey, idynkey, igmkey
+
+#ifdef ALLOW_CG2D_NSA
+C     Parameter that is needed for the tape complev_cg2d_iter
+C     cannot be smaller than the allowed number of iterations in cg2d
+C     (numItersMax >= cg2dMaxIters in data-file)
+      INTEGER numItersMax
+      PARAMETER ( numItersMax = 100 )
+#endif /* ALLOW_CG2D_NSA */
 
 c     ================================================================
 c     END OF HEADER TAMC

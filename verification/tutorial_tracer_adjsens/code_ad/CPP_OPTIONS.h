@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/CPP_OPTIONS.h,v 1.4 2011/01/18 22:59:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/CPP_OPTIONS.h,v 1.5 2012/06/25 19:01:02 heimbach Exp $
 C $Name:  $
 
 C
@@ -19,6 +19,9 @@ C o Nonlinear free surface
 #define NONLIN_FRSURF
 cph#define DISABLE_RSTAR_CODE
 #define DISABLE_SIGMA_CODE
+
+#define ALLOW_CG2D_NSA
+#define USE_SMOOTH_MIN
 
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
