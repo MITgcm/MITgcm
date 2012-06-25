@@ -28,6 +28,8 @@
  readBinaryPrec=64,
  hFacMin=.05,
  smoothAbsFuncRange = -1.e-2,
+ nonlinFreeSurf=0,
+ exactConserv=.FALSE.,
 #momAdvection = .false.,
 #momViscosity = .false.,
 #momPressureForcing = .false.,
