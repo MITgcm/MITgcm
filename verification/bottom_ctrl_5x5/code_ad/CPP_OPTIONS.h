@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/CPP_OPTIONS.h,v 1.3 2008/08/21 16:03:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/CPP_OPTIONS.h,v 1.4 2012/06/25 18:06:44 heimbach Exp $
 C $Name:  $
 
 C
@@ -35,7 +35,9 @@ C o Allow nonHydrostatic code
 #undef  ALLOW_NONHYDROSTATIC
 
 C o NEW OPTION to disable rStar (z*) code
+#undef NONLIN_FRSURF
 #define DISABLE_RSTAR_CODE
+#define DISABLE_SIGMA_CODE
 
 C o Exact volume conservation
 #define EXACT_CONSERV
