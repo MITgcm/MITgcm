@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.172 2012/05/02 14:30:28 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.173 2012/06/26 22:30:54 jmc Exp $
 #  $Name:  $
 #
 
@@ -526,31 +526,54 @@ makemodel()
 
 mk_mpi_size()
 {
-    # mk_mpi_size input_file output_file proc_Nb prefer_to_split_X
+    # mk_mpi_size input_file output_file proc_Nb threads_Nb_X threads_Nb_Y
     #
-    # make new SIZE.h (=output_file) from SIZE.h_mpi (=input_file)
+    #  make new SIZE.h (=output_file) from SIZE.h_mpi (=input_file)
     #     for an MPI build with no more than proc_Nb processors ;
-    # return the effective number of processors.
+    #  ensure that enough tiles per proc (nSx,nSy) remain for the given
+    #     number of threads (nTx,nTy) ;
+    #  return the effective number of processors.
 
     inp=$1
     out=$2
     np=$3
-    dirX=$4
+    tx=$4
+    ty=$5
     tmp=TTT.$$
+
+    # dirX : select with direction to favor in MPI process repartition
+    #   dirX=1 : prefer to put more proc in X direction
+    #   dirX=0 : prefer to put more proc in Y direction
+    dirX=0
 
     px=`grep "^     & *nPx *=" $inp | sed "s/^     & *nPx *= *//" | sed 's/, *$//'`
     py=`grep "^     & *nPy *=" $inp | sed "s/^     & *nPy *= *//" | sed 's/, *$//'`
     sx=`grep "^     & *nSx *=" $inp | sed "s/^     & *nSx *= *//" | sed 's/, *$//'`
     sy=`grep "^     & *nSy *=" $inp | sed "s/^     & *nSy *= *//" | sed 's/, *$//'`
 
+    #- for each direction, assume # of threads is a multiple of total number of tiles
+    nx=$px
+    if [ `expr $sx % $tx` -ne 0 -a `expr $sx \* $px % $tx` -eq 0 ] ; then
+	nx=`expr $sx \* $px / $tx`
+	if [ $verbose -gt 1 ]; then
+	    echo " change px from $px to $nx to accommodate $tx threads"
+	fi
+    fi
+    ny=$py
+    if [ `expr $sy % $ty` -ne 0 -a `expr $sy \* $py % $ty` -eq 0 ] ; then
+	ny=`expr $sy \* $py / $ty`
+	if [ $verbose -gt 1 ]; then
+	    echo " change py from $py to $ny to accommodate $ty threads"
+	fi
+    fi
     #- find the largest divisor of input_file proc Nb, but not larger than $np
     pp=0
     i=1
-    while [ $i -le $px ] ; do
-      if [ `expr $px % $i` -eq 0 ] ; then
+    while [ $i -le $nx ] ; do
+      if [ `expr $nx % $i` -eq 0 ] ; then
 	j=1
-	while [ $j -le $py ] ; do
-	  if [ `expr $py % $j` -eq 0 ] ; then
+	while [ $j -le $ny ] ; do
+	  if [ `expr $ny % $j` -eq 0 ] ; then
 	    ij=`expr $i \* $j`
 	    if [ $ij -gt $pp ] ; then
 		flag=1
@@ -1384,13 +1407,14 @@ for dir in $TESTDIRS ; do
     fi
 
     if test "x$MPI" != "x0" ; then
-	prefer_X=0
+	ntx=1 ; nty=1
 	if test "x$MULTI_THREAD" = "xt" ; then
-	    retv=`check_eedata $dir"/input/eedata.mth"`
-	    if test $retv = 1 ; then prefer_X=1 ; fi
+          ff=$dir"/input/eedata.mth"
+          ntx=`grep "^ *nTx *=" $ff | tail -1 | sed 's/^ *nTx *= *//' | sed "s/, *$//"`
+          nty=`grep "^ *nTy *=" $ff | tail -1 | sed 's/^ *nTy *= *//' | sed "s/, *$//"`
 	fi
 	#- create new SIZE.h with no more than '$MPI' Procs
-	mk_mpi_size $CODE_DIR"/SIZE.h_mpi" $BUILD_DIR"/tr_size.mpi" $MPI $prefer_X
+	mk_mpi_size $CODE_DIR"/SIZE.h_mpi" $BUILD_DIR"/tr_size.mpi" $MPI $ntx $nty
 	LOC_NPROC=$?
 	(   cd $BUILD_DIR
 	    if test -r SIZE.h.mpi ; then
