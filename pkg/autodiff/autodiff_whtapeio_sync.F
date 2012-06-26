@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_whtapeio_sync.F,v 1.5 2011/05/20 22:24:49 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_whtapeio_sync.F,v 1.6 2012/06/26 21:36:04 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -47,6 +47,11 @@ C     gloNyWh :: global sum of sNyWh
       PARAMETER ( sNyWh = sNy+2*Oly )
       PARAMETER ( procNyWh = sNyWh*nSy*nSx )
       PARAMETER ( gloNyWh = procNyWh*nPy*nPx )
+      logical  exst
+#ifdef ALLOW_WHIO_3D
+      character*(max_len_mbuf) msgBuf
+      integer ioUnit
+#endif
 
 c     == functions ==
       INTEGER  ILNBLNK
@@ -91,12 +96,19 @@ C Only do I/O if I am the master thread (and mpi process 0 IF tapeSingleCpuIO):
 
       IF ( iAmDoingIO.AND.(myStep.EQ.0).AND.
      &    (myLev.GT.0).AND.(tapeFileUnit.EQ.0) ) THEN
+        inquire( file=fName, exist=exst )
         CALL MDSFINDUNIT( tapeFileUnit, myThid )
         OPEN( tapeFileUnit, file=fName, status='unknown',
      &         access='direct', recl=length_of_rec )
         tapeFileUnitS(myLev)=tapeFileUnit
 #if (defined (ALLOW_INIT_WHTAPEIO) && defined (ALLOW_WHIO_3D))
+c exst needs to have been tested before opening the file
+        IF (.NOT.exst) then
           iWh=tapeMaxCounter*MAX(nchklev_2,nchklev_3)/nWh+1
+          write(msgBuf,'(a,i1,a,i3)') 'whio : create lev ',
+     &          myLev,' rec ',iWh
+          ioUnit=standardMessageUnit
+          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           IF ( .NOT.tapeSingleCpuIO ) then
             IF (filePrec .EQ. precFloat32) THEN
               WRITE(tapeFileUnit,rec=iWh) fld3d_procbuff_r4
@@ -113,6 +125,7 @@ C Only do I/O if I am the master thread (and mpi process 0 IF tapeSingleCpuIO):
 #  endif  
           ENDIF
           iWh=0
+      ENDIF
 #endif    
       ENDIF
 
@@ -121,6 +134,10 @@ C Only do I/O if I am the master thread (and mpi process 0 IF tapeSingleCpuIO):
       IF ((myStep.EQ.1).AND.iAmDoingIO.AND.
      &    tapeBufferIO.AND.writeWh) THEN
       if (iWh.LT.1) stop
+          write(msgBuf,'(a,i1,a,i3)') 'whio : write lev ',
+     &          myLev,' rec ',iWh
+          ioUnit=standardMessageUnit
+          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           IF ( .NOT.tapeSingleCpuIO ) then
             IF (filePrec .EQ. precFloat32) THEN
               WRITE(tapeFileUnit,rec=iWh) fld3d_procbuff_r4
