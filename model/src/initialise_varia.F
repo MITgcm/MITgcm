@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.70 2011/12/08 22:37:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.71 2012/06/26 02:14:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -26,23 +26,12 @@ C     !CALLING SEQUENCE:
 C     INITIALISE_VARIA
 C       |
 C #ifdef ALLOW_AUTODIFF_TAMC
-C       |-- INI_HFAC           \
-C       |-- INI_DEPTHS          \
-C       |-- INI_MASKS_ETC        } ALLOW_DEPTH_CONTROL case
-C       |-- INI_LINEAR_PHISURF  /
-C       |
-C       |-- INI_NLFS_VARS
-C       |
-C       |-- INI_CG2D
-C       |
+C       |-- INI_DEPTHS         \
 C       |-- CTRL_DEPTH_INI      \
 C       |-- UPDATE_MASKS_ETC     } ALLOW_DEPTH_CONTROL case
 C       |-- UPDATE_CG2D         /
-C       |
-C       |-- INI_CG3D
-C #else
-C       |-- INI_NLFS_VARS
 C #endif
+C       |-- INI_NLFS_VARS
 C       |-- INI_DYNVARS
 C       |-- INI_NH_VARS
 C       |
@@ -108,29 +97,9 @@ CEOP
       nIter0 = NINT( (startTime-baseTime)/deltaTClock )
 
 # ifdef ALLOW_DEPTH_CONTROL
-C--   Intialize the hFacC for TAF/TAMC
-      CALL INI_HFAC( myThid )
+C--   Intialize the depth for TAF/TAMC
       CALL INI_DEPTHS( myThid )
-      CALL INI_MASKS_ETC( myThid )
-
-C--   Set Bo_surf => define the Linear Relation: Phi_surf(eta)
-# ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('INI_LINEAR_PHISURF',myThid)
-# endif
-      CALL INI_LINEAR_PHISURF( myThid )
-# endif /* ALLOW_DEPTH_CONTROL */
-
-C--   Initialise Non-Lin FreeSurf variables:
-      CALL INI_NLFS_VARS( myThid )
-
-C--   Set laplace operators for use in 2D conjugate gradient solver.
-# ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('INI_CG2D',myThid)
-# endif
-      CALL INI_CG2D( myThid )
-
-# ifdef ALLOW_DEPTH_CONTROL
-C--   get control parameter depth
+C--   Get control parameter depth
       CALL CTRL_DEPTH_INI( myThid )
 C--   Re-calculate hFacS/W and some other parameters from hFacC
       CALL UPDATE_MASKS_ETC( myThid )
@@ -138,20 +107,10 @@ C--   Update laplace operators for use in 2D conjugate gradient solver.
       CALL UPDATE_CG2D( startTime, nIter0, myThid )
 # endif /* ALLOW_DEPTH_CONTROL */
 
-# ifdef ALLOW_NONHYDROSTATIC
-C--   Set laplace operators for use in 3D conjugate gradient solver.
-#  ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('INI_CG3D',myThid)
-#  endif
-      CALL INI_CG3D( myThid )
-# endif
-
-#else /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Initialise Non-Lin FreeSurf variables:
       CALL INI_NLFS_VARS( myThid )
-
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Initialize DYNVARS arrays (state fields + G terms: Gu,Gv,...) to zero [always]
 #ifdef ALLOW_DEBUG
