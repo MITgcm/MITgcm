@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/RBCS_PARAMS.h,v 1.1 2011/05/14 19:52:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/RBCS_PARAMS.h,v 1.2 2012/06/26 22:19:17 gforget Exp $
 C $Name:  $
 
 #ifdef ALLOW_RBCS
@@ -20,6 +20,8 @@ C     rbcsSingleTimeFiles :: if .TRUE., rbc fields are given 1 file per time
 C                         :: labeled by iteration number (see rbcsIter0,deltaTrbcs)
 C     deltaTrbcs :: time step used to compute iteration numbers for singleTimeFiles
 C     rbcsIter0  :: singleTimeFile iteration number corresponding to rbcsForcingOffset
+C     rbcsVanishingTime :: when rbcsVanishingTime .NE. 0. the relaxation strength reduces
+C                       :: linearly to vanish at myTime .EQ. rbcsVanishingTime
 C
       _RL tauRelaxU
       _RL tauRelaxV
@@ -29,6 +31,7 @@ C
       _RL rbcsForcingCycle
       _RL rbcsForcingOffset
       _RL deltaTrbcs
+      _RL rbcsVanishingTime
       INTEGER rbcsIniter
       INTEGER rbcsIter0
       LOGICAL rbcsSingleTimeFiles
@@ -52,6 +55,7 @@ C
      &          rbcsForcingPeriod,
      &          rbcsForcingCycle,
      &          rbcsForcingOffset,
+     &          rbcsVanishingTime,
      &          deltaTrbcs
       COMMON /RBCS_PARM01_I/
      &          rbcsIniter,

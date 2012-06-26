@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_add_tendency.F,v 1.8 2011/05/21 00:44:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_add_tendency.F,v 1.9 2012/06/26 22:19:17 gforget Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -45,6 +45,7 @@ c     INTEGER myIter
 C !LOCAL VARIABLES: ====================================================
 C  i,j            :: loop indices
       INTEGER i,j
+      _RL rbcsVanishingFac
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer
       INTEGER irbc
@@ -53,6 +54,13 @@ CEOP
 
 #ifdef ALLOW_RBCS
 
+      if (rbcsVanishingTime.GT.0. _d 0) then
+        rbcsVanishingFac = 
+     &  MAX( 0. _d 0 , 1. _d 0 - mytime / rbcsVanishingTime )
+      else
+        rbcsVanishingFac = 1. _d 0
+      endif
+ 
 #ifndef DISABLE_RBCS_MOM
       IF ( tracerNum.EQ.-1 .AND. useRBCuVel ) THEN
         DO j=0,sNy+1
@@ -61,6 +69,7 @@ CEOP
      &       - RBC_maskU(i,j,k,bi,bj)/tauRelaxU
      &        *( uVel(i,j,k,bi,bj)- RBCuVel(i,j,k,bi,bj) )
 c    &        *maskW(i,j,k,bi,bj)
+     &        *rbcsVanishingFac         
          ENDDO
         ENDDO
       ENDIF
@@ -71,6 +80,7 @@ c    &        *maskW(i,j,k,bi,bj)
      &       - RBC_maskV(i,j,k,bi,bj)/tauRelaxV
      &        *( vVel(i,j,k,bi,bj)- RBCvVel(i,j,k,bi,bj) )
 c    &        *maskS(i,j,k,bi,bj)
+     &        *rbcsVanishingFac         
          ENDDO
         ENDDO
       ENDIF
@@ -83,9 +93,8 @@ c    &        *maskS(i,j,k,bi,bj)
      &       - RBC_mask(i,j,k,bi,bj,1)/tauRelaxT
      &        *( theta(i,j,k,bi,bj)- RBCtemp(i,j,k,bi,bj) )
 c    &        *maskC(i,j,k,bi,bj)
-#ifdef ALLOW_RBCS_SPIN
-     &        *MAX( 0. _d 0 , 1. _d 0 - mytime/( 94608000. _d 0 ) )
-#endif
+     &        *rbcsVanishingFac
+
          ENDDO
         ENDDO
       ENDIF
@@ -97,9 +106,7 @@ c    &        *maskC(i,j,k,bi,bj)
      &       - RBC_mask(i,j,k,bi,bj,2)/tauRelaxS
      &        *( salt(i,j,k,bi,bj)- RBCsalt(i,j,k,bi,bj) )
 c    &        *maskC(i,j,k,bi,bj)
-#ifdef ALLOW_RBCS_SPIN
-     &        *MAX( 0. _d 0 , 1. _d 0 - mytime/( 94608000. _d 0 ) )
-#endif
+     &        *rbcsVanishingFac
          ENDDO
         ENDDO
       ENDIF
@@ -116,6 +123,7 @@ c    &        *maskC(i,j,k,bi,bj)
      &        *( pTracer(i,j,k,bi,bj,iTracer)
      &           - RBC_ptracers(i,j,k,bi,bj,iTracer) )
 c    &        *maskC(i,j,k,bi,bj)
+     &        *rbcsVanishingFac
          ENDDO
         ENDDO
        ENDIF

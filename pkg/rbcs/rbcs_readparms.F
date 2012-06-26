@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_readparms.F,v 1.9 2011/12/05 22:33:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_readparms.F,v 1.10 2012/06/26 22:19:17 gforget Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -67,6 +67,7 @@ C--   RBCS parameters:
      &          rbcsForcingPeriod,
      &          rbcsForcingCycle,
      &          rbcsForcingOffset,
+     &          rbcsVanishingTime,
      &          rbcsSingleTimeFiles,
      &          deltaTrbcs,
      &          rbcsIter0
@@ -103,6 +104,7 @@ C--   Default values
       rbcsForcingPeriod = 0. _d 0
       rbcsForcingCycle  = 0. _d 0
       rbcsForcingOffset = 0. _d 0
+      rbcsVanishingTime = 0. _d 0
       rbcsSingleTimeFiles = .FALSE.
       deltaTrbcs = deltaTclock
       rbcsIter0 = 0
