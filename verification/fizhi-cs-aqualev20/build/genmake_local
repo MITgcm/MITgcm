@@ -1,1 +1,7 @@
-FFLAGS='-r8'
+if test "x$GFORTRAN_OPTFILE" = xt ; then
+  FFLAGS='-fdefault-real-8 -fdefault-double-8'
+  echo "    local gfortran setting: FFLAGS='$FFLAGS'"
+else
+  FFLAGS='-r8'
+  echo "    local default setting: FFLAGS='$FFLAGS'"
+fi
