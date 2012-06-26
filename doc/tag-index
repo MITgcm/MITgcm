@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1675 2012/06/25 19:25:41 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1676 2012/06/26 02:14:33 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - remove 2nd set of calls at the top of initialise_varia.F (Adjoint part)
+    related to Non_Lin Free-Surf or Bottom-Control (but not longer necessary).
 o verification/tutorial_tracer_adjsens/
   - compile with ALLOW_CG2D_NSA
   - run with nonlinFreeSurf=3
