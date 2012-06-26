@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.4 2012/04/13 18:04:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.5 2012/06/26 21:36:42 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -185,8 +185,10 @@ c get observed sst:
              call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
              ymod = locstartdate(1)/10000
              if ( ymod .GE. yday ) then
-                call cal_FullDate(locstartdate(1),0,middate,mythid)
+               middate(1)=1
+               call cal_FullDate(locstartdate(1),0,middate,mythid)
              else
+               middate(1)=1
                tempDate_1 = yday*10000+100+1
                call cal_FullDate( tempDate_1, 0, middate, mythid)
              endif
@@ -210,7 +212,7 @@ c
         CALL CAL_PRINTDATE(difftime,mythid)
 #endif
 
-             if ( localrec .GT. 0 ) then
+             if ( ( localrec .GT. 0 ).AND.(diffsecs .GT. 0.d0) ) then
                call mdsreadfield( fname2, cost_iprec, cost_yftype, 1,
      &           tmp_sst, localrec, mythid )
              else
@@ -333,10 +335,12 @@ c get observed sst:
              call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
              ymod = locstartdate(1)/10000
              if ( ymod .GE. yday ) then
-                call cal_FullDate(locstartdate(1),0,middate,mythid)
+               middate(1)=1
+               call cal_FullDate(locstartdate(1),0,middate,mythid)
              else
-               middate(1) = yday*10000+100+1
-               call cal_FullDate( middate(1), 0, middate, mythid)
+               middate(1)=1
+               tempDate_1 = yday*10000+100+1
+               call cal_FullDate( tempDate_1, 0, middate, mythid)
              endif
              call cal_TimePassed( middate, daydate, difftime, mythid )
              call cal_ToSeconds( difftime, diffsecs, mythid )
@@ -358,7 +362,7 @@ c
         CALL CAL_PRINTDATE(difftime,mythid)
 #endif
 
-             if ( localrec .GT. 0 ) then
+             if ( ( localrec .GT. 0 ).AND.(diffsecs .GT. 0.d0) ) then
                call mdsreadfield( fname2, cost_iprec, cost_yftype, 1,
      &           tmp_sst, localrec, mythid )
              else
