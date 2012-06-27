@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.115 2012/04/28 19:04:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.116 2012/06/27 22:36:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -563,6 +563,7 @@ c#endif /* ALLOW_AUTODIFF_TAMC */
 C--       Calculate gradients of potential density for isoneutral
 C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
           IF ( useGMRedi .OR. (k.GT.1 .AND. ivdc_kappa.NE.0.)
+     &         .OR. usePP81 .OR. useMY82 .OR. useGGL90
      &         .OR. useSALT_PLUME .OR. doDiagsRho.GE.1 ) THEN
             IF (k.GT.1) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -742,7 +743,7 @@ C--     Compute PP81 mixing coefficients
           IF (debugMode) CALL DEBUG_CALL('PP81_CALC',myThid)
 #endif
           CALL PP81_CALC(
-     I                  bi, bj, myTime, myThid )
+     I                     bi, bj, sigmaR, myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_PP81 */
 
@@ -753,7 +754,7 @@ C--     Compute MY82 mixing coefficients
           IF (debugMode) CALL DEBUG_CALL('MY82_CALC',myThid)
 #endif
           CALL MY82_CALC(
-     I                  bi, bj, myTime, myThid )
+     I                     bi, bj, sigmaR, myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_MY82 */
 
@@ -769,7 +770,7 @@ C--     Compute GGL90 mixing coefficients
 #endif
           CALL TIMER_START('GGL90_CALC [DO_OCEANIC_PHYS]', myThid)
           CALL GGL90_CALC(
-     I                  bi, bj, myTime, myIter, myThid )
+     I                     bi, bj, sigmaR, myTime, myIter, myThid )
           CALL TIMER_STOP ('GGL90_CALC [DO_OCEANIC_PHYS]', myThid)
         ENDIF
 #endif /* ALLOW_GGL90 */
