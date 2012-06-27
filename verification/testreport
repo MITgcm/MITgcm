@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.173 2012/06/26 22:30:54 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.174 2012/06/27 15:20:51 jmc Exp $
 #  $Name:  $
 #
 
@@ -1409,9 +1409,11 @@ for dir in $TESTDIRS ; do
     if test "x$MPI" != "x0" ; then
 	ntx=1 ; nty=1
 	if test "x$MULTI_THREAD" = "xt" ; then
-          ff=$dir"/input/eedata.mth"
-          ntx=`grep "^ *nTx *=" $ff | tail -1 | sed 's/^ *nTx *= *//' | sed "s/, *$//"`
-          nty=`grep "^ *nTy *=" $ff | tail -1 | sed 's/^ *nTy *= *//' | sed "s/, *$//"`
+	  ff=$dir"/input/eedata.mth"
+	  ntx=`grep "^ *nTx *=" $ff | tail -1 | sed 's/^ *nTx *= *//' | sed "s/, *$//"`
+	  nty=`grep "^ *nTy *=" $ff | tail -1 | sed 's/^ *nTy *= *//' | sed "s/, *$//"`
+	  if test "x$ntx" = x ; then ntx=1 ; fi
+	  if test "x$nty" = x ; then nty=1 ; fi
 	fi
 	#- create new SIZE.h with no more than '$MPI' Procs
 	mk_mpi_size $CODE_DIR"/SIZE.h_mpi" $BUILD_DIR"/tr_size.mpi" $MPI $ntx $nty
