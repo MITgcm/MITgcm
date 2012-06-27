@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc.F,v 1.6 2009/10/08 20:07:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc.F,v 1.7 2012/06/27 22:39:09 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: MY82_CALC
 
 C !INTERFACE: ======================================================
       subroutine MY82_CALC(
-     I     bi, bj, myTime, myThid )
+     I                bi, bj, sigmaR, myTime, myIter, myThid )
 
 C !DESCRIPTION: \bv
 C     *==========================================================*
@@ -31,22 +31,23 @@ C !USES: ============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-c#include "DYNVARS.h"
 #include "MY82.h"
-c#include "FFIELDS.h"
 #include "GRID.h"
 
 C !INPUT PARAMETERS: ===================================================
-c Routine arguments
-c     bi, bj - array indices on which to apply calculations
-c     myTime - Current time in simulation
-
+C Routine arguments
+C     bi, bj :: Current tile indices
+C     sigmaR :: Vertical gradient of iso-neutral density
+C     myTime :: Current time in simulation
+C     myIter :: Current time-step number
+C     myThid :: My Thread Id number
       INTEGER bi, bj
+      _RL     sigmaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 
 #ifdef ALLOW_MY82
-
 C !LOCAL VARIABLES: ====================================================
 c Local constants
 C     imin, imax, jmin, jmax  - array computation indices
@@ -72,15 +73,15 @@ CEOP
       jMax = sNy+OLy-1
 
 C     Initialize local fields
-      DO J=1-Oly,sNy+Oly
-       DO I=1-Olx,sNx+Olx
+      DO J=1-OLy,sNy+OLy
+       DO I=1-OLx,sNx+OLx
         GH(I,J) = 0. _d 0
         GM(I,J) = 0. _d 0
        ENDDO
       ENDDO
       DO K = 1, Nr
-       DO J=1-Oly,sNy+Oly
-        DO I=1-Olx,sNx+Olx
+       DO J=1-OLy,sNy+OLy
+        DO I=1-OLx,sNx+OLx
          SH(I,J,K)  = 0. _d 0
          SM(I,J,K)  = 0. _d 0
          tke(I,J,K) = 0. _d 0

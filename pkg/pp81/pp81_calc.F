@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_calc.F,v 1.5 2010/01/03 19:17:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_calc.F,v 1.6 2012/06/27 22:39:09 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: PP81_CALC
 
 C !INTERFACE: =======================================================
       subroutine PP81_CALC(
-     I     bi, bj, myTime, myThid )
+     I                bi, bj, sigmaR, myTime, myIter, myThid )
 
 C !DESCRIPTION: \bv
 C     *==========================================================*
@@ -29,9 +29,7 @@ C !USES: ============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
 #include "PP81.h"
-#include "FFIELDS.h"
 #include "GRID.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
@@ -39,17 +37,19 @@ C !USES: ============================================================
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C !INPUT PARAMETERS: ===================================================
-c Routine arguments
-c     bi, bj :: array indices on which to apply calculations
-c     myTime :: Current time in simulation
-c     myThid :: My Tread Id number
-
+C Routine arguments
+C     bi, bj :: Current tile indices
+C     sigmaR :: Vertical gradient of iso-neutral density
+C     myTime :: Current time in simulation
+C     myIter :: Current time-step number
+C     myThid :: My Thread Id number
       INTEGER bi, bj
+      _RL     sigmaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 
 #ifdef ALLOW_PP81
-
 C !LOCAL VARIABLES: ====================================================
 c Local constants
 C     imin, imax, jmin, jmax  - array computation indices

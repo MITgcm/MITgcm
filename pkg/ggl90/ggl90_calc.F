@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.20 2012/03/15 15:23:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.21 2012/06/27 22:39:09 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -8,7 +8,8 @@ C !ROUTINE: GGL90_CALC
 
 C !INTERFACE: ======================================================
       SUBROUTINE GGL90_CALC(
-     I     bi, bj, myTime, myIter, myThid )
+     I                 bi, bj, sigmaR, myTime, myIter, myThid )
+
 
 C !DESCRIPTION: \bv
 C     *==========================================================*
@@ -41,11 +42,13 @@ C !USES: ============================================================
 
 C !INPUT PARAMETERS: ===================================================
 C Routine arguments
-C     bi, bj :: array indices on which to apply calculations
+C     bi, bj :: Current tile indices
+C     sigmaR :: Vertical gradient of iso-neutral density
 C     myTime :: Current time in simulation
 C     myIter :: Current time-step number
 C     myThid :: My Thread Id number
       INTEGER bi, bj
+      _RL     sigmaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -133,8 +136,8 @@ C     explicit/implicit timestepping weights for dissipation
 
 C     Initialize local fields
       DO k = 1, Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          KappaE(i,j,k)            = 0. _d 0
          TKEPrandtlNumber(i,j,k)  = 1. _d 0
          GGL90mixingLength(i,j,k) = GGL90mixingLengthMin
@@ -147,8 +150,8 @@ C     Initialize local fields
         ENDDO
        ENDDO
       ENDDO
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         rhoK(i,j)          = 0. _d 0
         rhoKm1(i,j)        = 0. _d 0
         totalDepth(i,j)    = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
@@ -178,6 +181,8 @@ c      kp1 = MIN(Nr,k+1)
          SQRTTKE(i,j,k)=SQRT( GGL90TKE(i,j,k,bi,bj) )
 
 C     buoyancy frequency
+         Nsquare(i,j,k) = gravity*gravitySign*recip_rhoConst
+     &                  * sigmaR(i,j,k)
          Nsquare(i,j,k) = - gravity*recip_rhoConst*recip_drC(k)
      &        * ( rhoKm1(i,j) - rhoK(i,j) )*maskC(i,j,k,bi,bj)
 cC     vertical shear term (dU/dz)^2+(dV/dz)^2
@@ -202,7 +207,7 @@ C     mixing length
 
 C- Impose upper and lower bound for mixing length
       IF ( mxlMaxFlag .EQ. 0 ) THEN
-C-
+
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -224,7 +229,7 @@ C-
        ENDDO
 
       ELSEIF ( mxlMaxFlag .EQ. 1 ) THEN
-C-
+
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -247,7 +252,7 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
        ENDDO
 
       ELSEIF ( mxlMaxFlag .EQ. 2 ) THEN
-C-
+
 cgf ensure mixing between first and second level
 c      DO j=jMin,jMax
 c        DO i=iMin,iMax
@@ -289,7 +294,7 @@ cgf
        ENDDO
 
       ELSEIF ( mxlMaxFlag .EQ. 3 ) THEN
-C-
+
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -348,8 +353,8 @@ c     ENDDO
 C     horizontal diffusion of TKE (requires an exchange in
 C      do_fields_blocking_exchanges)
 C     common factors
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           xA(i,j) = _dyG(i,j,bi,bj)
      &         *drF(k)*_hFacW(i,j,k,bi,bj)
           yA(i,j) = _dxG(i,j,bi,bj)
@@ -358,9 +363,9 @@ C     common factors
         ENDDO
 C     Compute diffusive fluxes
 C     ... across x-faces
-        DO j=1-Oly,sNy+Oly
-         dfx(1-Olx,j)=0. _d 0
-         DO i=1-Olx+1,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         dfx(1-OLx,j)=0. _d 0
+         DO i=1-OLx+1,sNx+OLx
           dfx(i,j) = -GGL90diffTKEh*xA(i,j)
      &      *_recip_dxC(i,j,bi,bj)
      &      *(GGL90TKE(i,j,k,bi,bj)-GGL90TKE(i-1,j,k,bi,bj))
@@ -368,11 +373,11 @@ C     ... across x-faces
          ENDDO
         ENDDO
 C     ... across y-faces
-        DO i=1-Olx,sNx+Olx
-         dfy(i,1-Oly)=0. _d 0
+        DO i=1-OLx,sNx+OLx
+         dfy(i,1-OLy)=0. _d 0
         ENDDO
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           dfy(i,j) = -GGL90diffTKEh*yA(i,j)
      &      *_recip_dyC(i,j,bi,bj)
      &      *(GGL90TKE(i,j,k,bi,bj)-GGL90TKE(i,j-1,k,bi,bj))
@@ -382,8 +387,8 @@ C     ... across y-faces
          ENDDO
         ENDDO
 C     Compute divergence of fluxes
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
           gTKE(i,j) =
      &    -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)*recip_rA(i,j,bi,bj)
      &         *( (dfx(i+1,j)-dfx(i,j))
