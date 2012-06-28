@@ -58,12 +58,12 @@
 #                (see "available_diagnostics.log" file for the full list of diags)
 #--------------------
  &DIAG_STATIS_PARMS
-#  diagSt_mnc   =.FALSE.,
-# --
-#stat_fields(1:9,1)  = 'ETAN    ','UVEL    ','VVEL    ','WVEL    ',
-#                      'THETA   ','PHIHYD  ','KPPdbsfc','KPPhbl  ','KPPRi   ',
-# stat_fName(1) = 'dynStDiag',
-#  stat_freq(1) = -86400.,
-# stat_phase(1) = 0.,
+   diagSt_mnc   =.FALSE.,
+#--
+ stat_fields(1:6,1)  = 'GGL90TKE','GGL90Lmx','GGL90Kr ',
+                       'GGL90ArU','GGL90ArV','GGL90Prl',
+  stat_fName(1) = 'dynStDiag',
+   stat_freq(1) = -18000.,
+  stat_phase(1) = 0.,
  &
 
