@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.21 2012/06/27 22:39:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.22 2012/06/28 15:35:52 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -75,7 +75,6 @@ C     GGL90mixingLength:: mixing length of scheme following Banke+Delecuse
 C         rMixingLength:: inverse of mixing length
 C     totalDepth       :: thickness of water column (inverse of recip_Rcol)
 C     TKEPrandtlNumber :: here, an empirical function of the Richardson number
-C     rhoK, rhoKm1     :: density at layer k and km1 (relative to k)
       INTEGER iMin ,iMax ,jMin ,jMax
       INTEGER i, j, k, kp1, km1, kSurf, kBottom
       _RL     explDissFac, implDissFac
@@ -96,8 +95,6 @@ c     _RL     SQRTTKE
       _RL     rMixingLength    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     mxLength_Dn      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     KappaE           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     rhoK             (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     rhoKm1           (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     totalDepth       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     GGL90visctmp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 C-    tri-diagonal matrix
@@ -152,8 +149,6 @@ C     Initialize local fields
       ENDDO
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        rhoK(i,j)          = 0. _d 0
-        rhoKm1(i,j)        = 0. _d 0
         totalDepth(i,j)    = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
         rMixingLength(i,j,1) = 0. _d 0
         mxLength_Dn(i,j,1) = GGL90mixingLengthMin
@@ -163,19 +158,8 @@ C     Initialize local fields
 
 C     start k-loop
       DO k = 2, Nr
-       km1 = k-1
+c      km1 = k-1
 c      kp1 = MIN(Nr,k+1)
-       CALL FIND_RHO_2D(
-     I      iMin, iMax, jMin, jMax, k,
-     I      theta(1-OLx,1-OLy,km1,bi,bj), salt(1-OLx,1-OLy,km1,bi,bj),
-     O      rhoKm1,
-     I      km1, bi, bj, myThid )
-
-       CALL FIND_RHO_2D(
-     I      iMin, iMax, jMin, jMax, k,
-     I      theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
-     O      rhoK,
-     I      k, bi, bj, myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          SQRTTKE(i,j,k)=SQRT( GGL90TKE(i,j,k,bi,bj) )
@@ -183,8 +167,6 @@ c      kp1 = MIN(Nr,k+1)
 C     buoyancy frequency
          Nsquare(i,j,k) = gravity*gravitySign*recip_rhoConst
      &                  * sigmaR(i,j,k)
-         Nsquare(i,j,k) = - gravity*recip_rhoConst*recip_drC(k)
-     &        * ( rhoKm1(i,j) - rhoK(i,j) )*maskC(i,j,k,bi,bj)
 cC     vertical shear term (dU/dz)^2+(dV/dz)^2
 c         tempU= .5 _d 0*( uVel(i,j,km1,bi,bj)+uVel(i+1,j,km1,bi,bj)
 c     &                 -( uVel(i,j,k  ,bi,bj)+uVel(i+1,j,k  ,bi,bj)) )
