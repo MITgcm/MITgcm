@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1677 2012/06/26 22:41:32 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1678 2012/06/28 15:36:41 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o vertical mixing schemes:
+  - remove unused S/R CALC_BUOYANCY (left from branch-atmos merging)
+  - replace computation of density (in Function STATE1, opps_calc.F) by a call
+    to S/R FIND_RHO_SCALAR
+  - pass sigmaR to S/R PP81_CALC, MY82_CALC (but not yet used) and to GGL90_CALC
+    and use it for N^2 calculation in ggl90_calc.F (save 2 density computations);
+    affects output (vermix.ggl90) at truncation level.
 o testreport:
   - change adjustment of SIZE.h for mpi+mth testing: preserve enough tiles
     (nSx,nSy) for the number of threads (from eedata.mth)
