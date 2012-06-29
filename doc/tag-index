@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1678 2012/06/28 15:36:41 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1679 2012/06/29 13:51:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint63o (2012/06/29)
 o vertical mixing schemes:
   - remove unused S/R CALC_BUOYANCY (left from branch-atmos merging)
   - replace computation of density (in Function STATE1, opps_calc.F) by a call
