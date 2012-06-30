@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.65 2012/06/22 22:06:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.66 2012/06/30 01:24:35 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -273,6 +273,19 @@ C       code is being compiled
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &  'Re-compile with  ALLOW_BALANCE_FLUXES defined'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif
+
+#ifndef ALLOW_BALANCE_RELAX
+      IF (balanceThetaClimRelax .OR. balanceSaltClimRelax) THEN
+        WRITE(msgBuf,'(A,A)')
+     &  'CONFIG_CHECK: balanceTheta/SaltClimRelax is set ',
+     &  'but balance code is not compiled.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &  'Re-compile with  ALLOW_BALANCE_RELAX defined'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF

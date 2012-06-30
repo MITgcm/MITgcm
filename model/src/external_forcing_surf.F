@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.55 2012/03/06 15:10:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.56 2012/06/30 01:24:35 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -193,20 +193,42 @@ C     of surf.thickness (hFac): account for change in surf.thickness
        ENDIF
 #endif /* NONLIN_FRSURF */
 
+#ifdef ALLOW_BALANCE_RELAX
+       SSTrlxTile(bi,bj) = 0. _d 0
+       SSSrlxTile(bi,bj) = 0. _d 0
+       DO j=1,sNy
+        DO i=1,sNx
+         SSTrlx(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
+         SSTrlxTile(bi,bj) = 
+     &      SSTrlxTile(bi,bj) + surfaceForcingT(i,j,bi,bj)
+     &      * rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
+c     
+         SSSrlx(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
+         SSSrlxTile(bi,bj) = 
+     &      SSSrlxTile(bi,bj) + surfaceForcingS(i,j,bi,bj)
+     &      * rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
+        ENDDO
+       ENDDO
+#endif /* ALLOW_BALANCE_RELAX */
+
 #ifdef ALLOW_DIAGNOSTICS
        IF ( useDiagnostics ) THEN
 
 C     tRelax (temperature relaxation [W/m2], positive <-> increasing Theta)
+        IF (.NOT.balanceThetaClimRelax) THEN
         tmpFac = HeatCapacity_Cp*rUnit2mass
         CALL DIAGNOSTICS_SCALE_FILL(
      &           surfaceForcingT(1-OLx,1-OLy,bi,bj),tmpFac,1,
      &                             'TRELAX  ',0, 1,2,bi,bj,myThid)
+        ENDIF
 
 C     sRelax (salt relaxation [g/m2/s], positive <-> increasing Salt)
+        IF (.NOT.balanceSaltClimRelax) THEN
         tmpFac = rUnit2mass
         CALL DIAGNOSTICS_SCALE_FILL(
      &           surfaceForcingS(1-OLx,1-OLy,bi,bj),tmpFac,1,
      &                             'SRELAX  ',0, 1,2,bi,bj,myThid)
+        ENDIF
 
        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */

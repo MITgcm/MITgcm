@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.41 2011/04/15 20:15:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.42 2012/06/30 01:23:05 gforget Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h
@@ -95,6 +95,17 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       COMMON /FFIELDS_lambdaSaltClimRelax/ lambdaSaltClimRelax
       COMMON /FFIELDS_pLoad/ pLoad
       COMMON /FFIELDS_sIceLoad/ sIceLoad
+
+#ifdef ALLOW_BALANCE_RELAX
+      COMMON/RMMEANRLX/ SSSrlx,SSSrlxTile,SSSrlxGlob,
+     &                  SSTrlx,SSTrlxTile,SSTrlxGlob
+      _RL SSTrlx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SSTrlxTile(nSx,nSy)
+      _RL SSTrlxGlob
+      _RL SSSrlx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SSSrlxTile(nSx,nSy)
+      _RL SSSrlxGlob
+#endif
 
       _RS  fu       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  fv       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

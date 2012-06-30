@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.262 2012/06/22 02:03:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.263 2012/06/30 01:23:05 gforget Exp $
 C $Name:  $
 C
 
@@ -341,6 +341,8 @@ C     doThetaClimRelax :: Set true if relaxation to temperature
 C                        climatology is required.
 C     doSaltClimRelax  :: Set true if relaxation to salinity
 C                        climatology is required.
+C     balanceThetaClimRelax :: substract global mean effect at every time step
+C     balanceSaltClimRelax :: substract global mean effect at every time step
 C     allowFreezing  :: Allows surface water to freeze and form ice
 C     useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-12)
 C     periodicExternalForcing :: Set true if forcing is time-dependant
@@ -394,6 +396,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
      & multiDimAdvection, useMultiDimAdvec,
      & momDissip_In_AB, doAB_onGtGs,
      & balanceEmPmR, balanceQnet, balancePrintMean,
+     & balanceThetaClimRelax, balanceSaltClimRelax,
      & doThetaClimRelax, doSaltClimRelax,
      & allowFreezing, useOldFreezing,
      & periodicExternalForcing,
@@ -484,6 +487,8 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL balancePrintMean
       LOGICAL doThetaClimRelax
       LOGICAL doSaltClimRelax
+      LOGICAL balanceThetaClimRelax
+      LOGICAL balanceSaltClimRelax
       LOGICAL allowFreezing
       LOGICAL useOldFreezing
       LOGICAL periodicExternalForcing
