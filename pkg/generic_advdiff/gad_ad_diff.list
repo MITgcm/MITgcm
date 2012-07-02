@@ -36,8 +36,17 @@ gad_init_varia.f
 gad_os7mp_adv_x.f
 gad_os7mp_adv_y.f
 gad_os7mp_adv_r.f
+gad_read_pickup.f
 gad_u3_adv_r.f
 gad_u3c4_impl_r.f
 gad_u3_adv_x.f
 gad_u3_adv_y.f
+gad_som_advect.f
+gad_som_adv_r.f
+gad_som_adv_x.f
+gad_som_adv_y.f
+gad_som_fill_cs_corner.f
+gad_som_lim_r.f
+gad_som_prep_cs_corner.f
 gad_som_exchanges.f
+gad_exch_som.f
