@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.139 2011/12/01 14:25:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.140 2012/07/02 23:03:54 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -275,6 +275,9 @@ C     uninitialised but inert locations.
           fVerS  (i,j,2) = 0. _d 0
           kappaRT(i,j)   = 0. _d 0
           kappaRS(i,j)   = 0. _d 0
+          DO k=1,Nr
+           recip_hFacNew(i,j,k) = 0. _d 0
+          ENDDO
          ENDDO
         ENDDO
 
@@ -373,6 +376,16 @@ C recomputation. It *is* differentiable, if you need it.
 C Edit GAD_OPTIONS.h and #define DISABLE_MULTIDIM_ADVECTION to
 C disable this section of code.
 #ifdef GAD_ALLOW_TS_SOM_ADV
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,:,bi,bj)  = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE salt(:,:,:,bi,bj)   = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE gtnm(:,:,:,bi,bj,1) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE gtnm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE gsnm(:,:,:,bi,bj,1) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE gsnm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE som_t = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE som_s = comlev1_bibj, key=itdkey, byte=isbyte
+# endif
         IF ( tempSOM_Advection ) THEN
 #ifdef ALLOW_DEBUG
           IF (debugMode) CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
@@ -872,6 +885,7 @@ CADJ STORE kappaRk(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE wvel(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
+CADJ STORE recip_hFacNew(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL GAD_IMPLICIT_R(
      I         tempImplVertAdv, tempVertAdvScheme, GAD_TEMPERATURE,
@@ -923,6 +937,7 @@ CADJ STORE kappaRk(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE wvel(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE salt(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
+CADJ STORE recip_hFacNew(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL GAD_IMPLICIT_R(
      I         saltImplVertAdv, saltVertAdvScheme, GAD_SALINITY,

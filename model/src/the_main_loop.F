@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.132 2012/06/25 19:08:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.133 2012/07/02 23:03:54 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,6 +8,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
+#endif
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD_OPTIONS.h"
 #endif
 #ifdef ALLOW_GMREDI
 # include "GMREDI_OPTIONS.h"
@@ -70,6 +73,7 @@ c They provide the fields to be stored.
 
 #  ifdef ALLOW_GENERIC_ADVDIFF
 #   include "GAD.h"
+#   include "GAD_SOM_VARS.h"
 #  endif
 #  ifdef ALLOW_MOM_FLUXFORM
 #   include "MOM_FLUXFORM.h"

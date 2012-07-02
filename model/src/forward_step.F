@@ -1,9 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.206 2012/06/25 18:38:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.207 2012/07/02 23:03:54 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD_OPTIONS.h"
+#endif
 #ifdef ALLOW_GMREDI
 # include "GMREDI_OPTIONS.h"
 #endif
@@ -108,6 +111,10 @@ C     == Global variables ==
 #  include "DIC_LOAD.h"
 #  include "DIC_ATMOS.h"
 #  include "DIC_COST.h"
+# endif
+# ifdef ALLOW_GENERIC_ADVDIFF
+#  include "GAD.h"
+#  include "GAD_SOM_VARS.h"
 # endif
 # ifdef ALLOW_OBCS
 #  include "OBCS_FIELDS.h"
