@@ -1,5 +1,6 @@
 exch2_3d_rl.f
 exch2_3d_rs.f
+exch2_sm_3d_rl.f
 exch2_uv_3d_rs.f
 exch2_uv_3d_rl.f
 exch2_uv_agrid_3d_rs.f
