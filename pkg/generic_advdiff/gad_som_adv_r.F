@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_r.F,v 1.6 2012/03/05 17:59:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_r.F,v 1.7 2012/07/03 19:53:39 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -116,6 +116,33 @@ C  wLoc         :: volume transported (per time step)
       _RL  alfp, alpq, alp1, locTp
       _RL  alfn, alnq, aln1, locTn
 CEOP
+
+#ifdef ALLOW_AUTODIFF_TAMC
+      alp(1,1,kDw) = alp(1,1,kDw)
+      aln(1,1,kDw) = aln(1,1,kDw)
+      fp_v(1,1,kDw) = fp_v(1,1,kDw)
+      fn_v(1,1,kDw) = fn_v(1,1,kDw)
+      fp_o(1,1,kDw) = fp_o(1,1,kDw)
+      fn_o(1,1,kDw) = fn_o(1,1,kDw)
+      fp_x(1,1,kDw) = fp_x(1,1,kDw)
+      fn_x(1,1,kDw) = fn_x(1,1,kDw)
+      fp_y(1,1,kDw) = fp_y(1,1,kDw)
+      fn_y(1,1,kDw) = fn_y(1,1,kDw)
+      fp_z(1,1,kDw) = fp_z(1,1,kDw)
+      fn_z(1,1,kDw) = fn_z(1,1,kDw)
+      fp_xx(1,1,kDw) = fp_xx(1,1,kDw)
+      fn_xx(1,1,kDw) = fn_xx(1,1,kDw)
+      fp_yy(1,1,kDw) = fp_yy(1,1,kDw)
+      fn_yy(1,1,kDw) = fn_yy(1,1,kDw)
+      fp_zz(1,1,kDw) = fp_zz(1,1,kDw)
+      fn_zz(1,1,kDw) = fn_zz(1,1,kDw)
+      fp_xy(1,1,kDw) = fp_xy(1,1,kDw)
+      fn_xy(1,1,kDw) = fn_xy(1,1,kDw)
+      fp_xz(1,1,kDw) = fp_xz(1,1,kDw)
+      fn_xz(1,1,kDw) = fn_xz(1,1,kDw)
+      fp_yz(1,1,kDw) = fp_yz(1,1,kDw)
+      fn_yz(1,1,kDw) = fn_yz(1,1,kDw)
+#endif
 
       recip_dT = 0.
       IF ( deltaTloc.GT.0. _d 0 ) recip_dT = 1.0 _d 0 / deltaTloc
