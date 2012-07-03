@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.140 2012/07/02 23:03:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.141 2012/07/03 16:30:07 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -379,12 +379,14 @@ C disable this section of code.
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj)  = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE salt(:,:,:,bi,bj)   = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE som_t = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE som_s = comlev1_bibj, key=itdkey, byte=isbyte
+#  ifdef ALLOW_ADAMSBASHFORTH_3
 CADJ STORE gtnm(:,:,:,bi,bj,1) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE gtnm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE gsnm(:,:,:,bi,bj,1) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE gsnm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE som_t = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE som_s = comlev1_bibj, key=itdkey, byte=isbyte
+#  endif
 # endif
         IF ( tempSOM_Advection ) THEN
 #ifdef ALLOW_DEBUG
