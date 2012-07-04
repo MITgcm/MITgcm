@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.48 2010/01/20 01:32:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.49 2012/07/04 20:23:23 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "KPP_OPTIONS.h"
 
 C-- File kpp_routines.F: subroutines needed to implement
@@ -824,6 +823,7 @@ c     to static instability (local Richardson number < 0).
 #include "PARAMS.h"
 #include "KPP_PARAMS.h"
 #ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_PARAMS.h"
 # include "tamc.h"
 #endif
 
@@ -945,22 +945,25 @@ c            evaluate diffusivities and viscosity
 c    mixing due to internal waves, and shear and static instability
 
             kp1 = MIN(ki+1,Nr)
-#ifndef EXCLUDE_KPP_SHEAR_MIX
-            if ( .NOT. inAdMode ) then
-               diffus(i,ki,1) = viscArNr(1) + fcon*difmcon + fRi*difm0
-               diffus(i,ki,2) = diffusKzS(i,kp1)+fcon*difscon+fRi*difs0
-               diffus(i,ki,3) = diffusKzT(i,kp1)+fcon*diftcon+fRi*dift0
-            else
-               diffus(i,ki,1) = viscArnr(1)
-               diffus(i,ki,2) = diffusKzS(i,kp1)
-               diffus(i,ki,3) = diffusKzT(i,kp1)
-            endif
-#else
+#ifdef EXCLUDE_KPP_SHEAR_MIX
             diffus(i,ki,1) = viscArNr(1)
             diffus(i,ki,2) = diffusKzS(i,kp1)
             diffus(i,ki,3) = diffusKzT(i,kp1)
-#endif
-
+#else /* EXCLUDE_KPP_SHEAR_MIX */
+# ifdef ALLOW_AUTODIFF
+            if ( inAdMode ) then
+              diffus(i,ki,1) = viscArNr(1)
+              diffus(i,ki,2) = diffusKzS(i,kp1)
+              diffus(i,ki,3) = diffusKzT(i,kp1)
+            else
+# else /* ALLOW_AUTODIFF */
+            if ( .TRUE. ) then
+# endif /* ALLOW_AUTODIFF */
+              diffus(i,ki,1) = viscArNr(1) + fcon*difmcon + fRi*difm0
+              diffus(i,ki,2) = diffusKzS(i,kp1)+fcon*difscon+fRi*difs0
+              diffus(i,ki,3) = diffusKzT(i,kp1)+fcon*diftcon+fRi*dift0
+            endif
+#endif /* EXCLUDE_KPP_SHEAR_MIX */
          end do
       end do
 
