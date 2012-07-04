@@ -40,7 +40,6 @@ freeze.f
 freeze_surface.f
 grad_sigma.f	
 impldiff.f	
-ini_autodiff.f	
 ini_cartesian_grid.f
 ini_cg2d.f	
 ini_cori.f	

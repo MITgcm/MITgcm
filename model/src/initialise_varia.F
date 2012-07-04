@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.71 2012/06/26 02:14:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.72 2012/07/04 20:30:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -43,7 +43,7 @@ C       |-- TAUEDDY_INIT_VARIA
 C       |
 C       |-- INI_FORCING
 C       |
-C       |-- INI_AUTODIFF
+C       |-- AUTODIFF_INIT_VARIA
 C       |
 C       |-- PACKAGES_INIT_VARIABLES
 C       |
@@ -149,9 +149,9 @@ C--   Initialise model forcing fields.
 #endif
       CALL INI_FORCING( myThid )
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 C--   Initialise active fields to help TAMC
-      CALL INI_AUTODIFF( myThid )
+      CALL AUTODIFF_INIT_VARIA( myThid )
 #endif
 
 C--   Initialize variable data for packages
