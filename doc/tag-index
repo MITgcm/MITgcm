@@ -1,17 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1680 2012/07/03 20:20:51 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1681 2012/07/04 20:39:21 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  - rename S/R INI_AUTODIFF to AUTODIFF_INIT_VARIA ;
+  - create new header file "AUTODIFF_PARAMS.h" for pkg/autodiff parameters
+    which are now read from new parameter file "data.autodiff" (inAdExact
+    previously in "data", use{KPP/GMRedi/SEAICE}inAdMode previously in data.pkg)
+  - add file "data.autodiff" in all verification/*/input_ad/ directories.
 o verification/tutorial_tracer_adjsens/
   - add extra sub-verification which uses "SOM" advection scheme
     (2nd Order-Moment Advection Scheme, Prather Limiter) with
-    #define GAD_ALLOW_TS_SOM_ADV in GAD_OPTIONS.h
+      #define GAD_ALLOW_TS_SOM_ADV in GAD_OPTIONS.h
     and in data:
-    multiDimAdvection=.TRUE.,
-    tempAdvScheme=81,
-    saltAdvScheme=81,
+      multiDimAdvection=.TRUE.,
+      tempAdvScheme=81,
+      saltAdvScheme=81,
 
 checkpoint63o (2012/06/29)
 o vertical mixing schemes:
