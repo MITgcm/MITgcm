@@ -1,17 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/ini_autodiff.F,v 1.9 2007/08/16 04:15:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_init_varia.F,v 1.1 2012/07/04 20:29:38 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: INI_AUTODIFF
+C     !ROUTINE: AUTODIFF_INIT_VARIA
 C     !INTERFACE:
-      SUBROUTINE INI_AUTODIFF( myThid )
+      SUBROUTINE AUTODIFF_INIT_VARIA( myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INI_AUTODIFF                                    
-C     | o Initialise to zero some active arrays  
-C     |   These ini                
+C     | SUBROUTINE AUTODIFF_INIT_VARIA
+C     | o Initialise to zero some active arrays
 C     *==========================================================*
 C     \ev
 
@@ -26,49 +26,48 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_UVEL 
+C     myThid :: My Thread Id number
       INTEGER myThid
 
-#ifdef ALLOW_AUTODIFF_TAMC
-
+#ifdef ALLOW_AUTODIFF
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     bi,bj  - Loop counters
-C     I,J,K
+C     bi,bj  :: tile indices
+C     i,j,k  :: Loop counters
       INTEGER bi, bj
-      INTEGER  I, J, K
+      INTEGER i, j, k
 CEOP
 
 C--   Scalar fields
-      TsurfCor=0. _d 0
-      SsurfCor=0. _d 0
+      TsurfCor = 0. _d 0
+      SsurfCor = 0. _d 0
 
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 C-      3D arrays
-        DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
 #ifdef ALLOW_EP_FLUX
-           EfluxY(i,j,k,bi,bj)=0.
-           EfluxP(i,j,k,bi,bj)=0.
-#endif
+        DO k=1,Nr
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           EfluxY(i,j,k,bi,bj) = 0.
+           EfluxP(i,j,k,bi,bj) = 0.
           ENDDO
          ENDDO
         ENDDO
+#endif
 
 C-      2D arrays
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
 #ifdef EXACT_CONSERV
-         dEtaHdt(i,j,bi,bj) = 0. _d 0
-         PmEpR(i,j,bi,bj) = 0. _d 0
-cph          hDivFlow(I,J,bi,bj)=0. _d 0
+          dEtaHdt(i,j,bi,bj) = 0. _d 0
+          PmEpR(i,j,bi,bj) = 0. _d 0
+cph       hDivFlow(i,j,bi,bj) = 0. _d 0
 #endif
 #ifdef ALLOW_EXF
-          EmPmR(I,J,bi,bj) = 0. _d 0
+          EmPmR(i,j,bi,bj) = 0. _d 0
 #endif
          ENDDO
         ENDDO
@@ -76,6 +75,6 @@ cph          hDivFlow(I,J,bi,bj)=0. _d 0
        ENDDO
       ENDDO
 
-#endif /* ALLOW_AUTODIFF_TAMC */
-
+#endif /* ALLOW_AUTODIFF */
+      RETURN
       END
