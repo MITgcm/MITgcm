@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_y.F,v 1.13 2011/03/29 15:47:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_y.F,v 1.14 2012/07/04 20:22:26 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -63,20 +63,20 @@ C  vCFL              :: Courant-Friedrich-Levy number
       _RL smallNo
 c     _RL Rjjm,Rjjp
 
-      IF (inAdMode) THEN
+c     IF (inAdMode) THEN
+c      smallNo = 1.0D-20
+c     ELSE
        smallNo = 1.0D-20
-      ELSE
-       smallNo = 1.0D-20
-      ENDIF
+c     ENDIF
 #endif
 
-      DO i=1-Olx,sNx+Olx
-       vT(i,1-Oly)=0.
-       vT(i,2-Oly)=0.
-       vT(i,sNy+Oly)=0.
+      DO i=1-OLx,sNx+OLx
+       vT(i,1-OLy)=0.
+       vT(i,2-OLy)=0.
+       vT(i,sNy+OLy)=0.
       ENDDO
-      DO j=1-Oly+2,sNy+Oly-1
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy+2,sNy+OLy-1
+       DO i=1-OLx,sNx+OLx
         Rjp=(tracer(i,j+1)-tracer(i, j ))*maskLocS(i,j+1)
         Rj =(tracer(i, j )-tracer(i,j-1))*maskLocS(i, j )
         Rjm=(tracer(i,j-1)-tracer(i,j-2))*maskLocS(i,j-1)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_r.F,v 1.10 2011/03/29 15:47:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_r.F,v 1.11 2012/07/04 20:22:26 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -63,19 +63,19 @@ C  wCFL              :: Courant-Friedrich-Levy number
       _RL psiP,psiM,thetaP,thetaM
       _RL smallNo
 
-      IF (inAdMode) THEN
+c     IF (inAdMode) THEN
+c      smallNo = 1.0D-20
+c     ELSE
        smallNo = 1.0D-20
-      ELSE
-       smallNo = 1.0D-20
-      ENDIF
+c     ENDIF
 #endif
 
       km2=MAX(1,k-2)
       km1=MAX(1,k-1)
       kp1=MIN(Nr,k+1)
 
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         Rjp=(tracer(i,j,k)-tracer(i,j,kp1))
      &         *maskC(i,j,kp1,bi,bj)
         Rj =(tracer(i,j,km1)-tracer(i,j,k))
