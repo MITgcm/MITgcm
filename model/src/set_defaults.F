@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.161 2012/06/30 01:24:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.162 2012/07/04 20:19:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -220,8 +220,6 @@ Cml      sBeta               = 7.4 _d -4
         debugLevel        = debLevA
 #endif
       ENDIF
-      inAdMode            = .FALSE.
-      inAdExact           = .TRUE.
 
 C--   Set (free)surface-related parameters
       implicitFreeSurface = .FALSE.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.61 2012/06/24 01:53:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.62 2012/07/04 20:19:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -42,6 +42,7 @@ C     msgBuf   :: Informational/error message buffer
 C     iUnit    :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
+CEOP
 
 C     data.pkg namelists
       NAMELIST /PACKAGES/
@@ -91,8 +92,6 @@ c    &          useSMOOTH,
      &          useRunClock,
      &          useEMBED_FILES,
      &          useMYPACKAGE
-     &         ,useKPPinAdMode, useGMrediInAdMode, useSEAICEinAdMode
-CEOP
 
       _BEGIN_MASTER(myThid)
 
@@ -155,13 +154,8 @@ c     useGAD          =.FALSE.
       useEMBED_FILES  =.FALSE.
       useMYPACKAGE    =.FALSE.
 
-      useKPPinAdMode     = .TRUE.
-      useGMrediInAdMode  = .TRUE.
-      useSEAICEinAdMode  = .TRUE.
-
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=PACKAGES)
-
 
       WRITE(msgBuf,'(A)') ' PACKAGES_BOOT: finished reading data.pkg'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -207,19 +201,6 @@ C--   packages with hard-coded switch
 
 C--   packages with an implied switch
       useGAD = tempStepping .OR. saltStepping .OR. usePTRACERS
-
-C--   packages in adjoint mode
-C--   store value of use$pkg as it will be reset in
-C--   S/R AUTODIFF_INADMODE_SET_AD
-      useKPPinFwdMode    = useKPP
-      useGMrediInFwdMode = useGMredi
-      useSEAICEinFwdMode = useSEAICE
-
-      IF ( useKPPinAdMode.AND..NOT.useKPP ) useKPPinAdMode = .FALSE.
-      IF ( useGMrediinAdMode.AND..NOT.useGMredi )
-     &     useGMrediinAdMode = .FALSE.
-      IF ( useSEAICEinAdMode.AND..NOT.useSEAICE )
-     &     useSEAICEinAdMode = .FALSE.
 
       _END_MASTER(myThid)
 

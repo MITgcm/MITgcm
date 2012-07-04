@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.249 2012/06/30 01:24:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.250 2012/07/04 20:19:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -222,7 +222,7 @@ C--   Continuous equation parameters
      & selectAddFluid, useRealFreshWaterFlux, convertFW2Salt,
      & temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
      & temp_addMass, salt_addMass, zonal_filt_lat,
-     & inAdExact, smoothAbsFuncRange,
+     & smoothAbsFuncRange,
      & balanceEmPmR, balanceQnet, balancePrintMean,
      & balanceThetaClimRelax, balanceSaltClimRelax
 
@@ -1337,15 +1337,6 @@ C--   For backward compatibility, set temp_addMass and salt_addMass
 C     to temp_EvPrRn and salt_EvPrRn in they are not set in data file
       IF (temp_addMass .EQ. UNSET_RL) temp_addMass = temp_EvPrRn
       IF (salt_addMass .EQ. UNSET_RL) salt_addMass = salt_EvPrRn
-
-C--   flag for approximate adjoint
-      IF ( inAdExact ) THEN
-       inAdTrue  = .FALSE.
-       inAdFALSE = .FALSE.
-      ELSE
-       inAdTrue  = .TRUE.
-       inAdFALSE = .FALSE.
-      ENDIF
 
 C--   Close the open data file
       CLOSE(iUnit)

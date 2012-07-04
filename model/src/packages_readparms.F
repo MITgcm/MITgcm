@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.70 2012/06/22 02:03:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.71 2012/07/04 20:19:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -82,6 +82,8 @@ C       |
 C       |-- SALT_PLUME_READPARMS
 C       |
 C       |-- CHEAPAML_READPARMS
+C       |
+C       |-- AUTODIFF_READPARMS
 C       |
 C       |-- OPTIM_READPARMS
 C       |
@@ -267,6 +269,11 @@ C-- note: need to call LONGSTEP_READPARMS before PTRACERS_READPARMS
 #ifdef ALLOW_CHEAPAML
 C -- initialize cheapaml parameters
       IF (useCheapAML) CALL CHEAPAML_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_AUTODIFF
+C--   Initialise autodiff parameters
+      CALL AUTODIFF_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_CTRL
