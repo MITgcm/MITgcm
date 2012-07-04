@@ -48,7 +48,6 @@
  saltVertAdvScheme=20,
  tempImplVertAdv=.TRUE.,
  saltImplVertAdv=.TRUE.,
- inAdExact=.TRUE.,
 #ph)
  &
 

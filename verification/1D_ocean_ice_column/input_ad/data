@@ -30,12 +30,10 @@
  tRef               = -1.930,-1.931,-1.932,-1.2854,-0.6,-0.6,-0.9,-1.2,-1.2,-1.3,
                       -1.4,-1.4,-1.5,-1.5,-1.5,-1.5,-1.3,-0.9,-0.3, 0.2,
                        0.5, 0.5, 0.5,
-
 # tRef to use for 11,000 time step adjoint calculations
 # tRef = -1.8420,-1.8464,-1.8392,-1.2854,-0.6,-0.6,-0.9,-1.2,-1.2,-1.3,
 # 	-1.4,-1.4,-1.5,-1.5,-1.5,-1.5,-1.3,-0.9,-0.3, 0.2,
 # 	0.5, 0.5, 0.5
-
  sRef               = 29.0079,29.0080,29.0086,29.0775,30.7,31.6,31.9,32.1,32.3,32.4,
                       32.5,32.7,32.8,32.9,33.1,33.4,33.8,34.2,34.5,34.7,
                       34.8,34.8,34.8,
@@ -61,9 +59,6 @@
  momStepping=.TRUE.,
  implicitDiffusion=.TRUE.,
  implicitViscosity=.TRUE.,
-#globalFiles=.TRUE.,
-#- not safe to use globalFiles in multi-processors runs; set instead useSingleCpuIO
- useSingleCpuIO=.FALSE.,
  allowFreezing=.FALSE.,
 #- set wrong celsius2K to reproduce old results:
  celsius2K=273.16,
@@ -72,12 +67,10 @@
  rhoConst        = 1027.0,
  rhoConstFresh   = 999.8,
  useCDscheme=.FALSE.,
- inAdExact=.TRUE.,
  staggerTimeStep=.TRUE.,
  multiDimAdvection=.false.,
  tempAdvScheme=30,
  saltAdvScheme=30,
-
  vectorInvariantMomentum=.TRUE.,
  useRealFreshWaterFlux = .TRUE.,
 # debugLevel=1,
@@ -109,29 +102,24 @@
 #   tauSaltClimRelax  - Relaxation to climatology time scale     (s)
 #
  &PARM03
-
  startTime=0.0,
  nTimeSteps= 10,
 # nTimeSteps= 11000,
-
  deltaTtracer=3600.0,
  deltaTClock =3600.0,
-
  cAdjFreq=0.,
  abEps=0.1,
+ tracForcingOutAB=1,
  pChkptFreq=0.,
  chkptFreq= 0.,
  dumpFreq = 0.,
- tavefreq = 0.,
- monitorFreq=1.,
- adjDumpFreq=1.,
- adjMonitorFreq = 1.,
-
+ taveFreq = 0.,
 # monitorFreq=86400.,
 # adjDumpFreq=86400.,
 # adjMonitorFreq = 86400.,
- tracForcingOutAB=1,
-
+ monitorFreq=1.,
+ adjDumpFreq=1.,
+ adjMonitorFreq = 1.,
  &
 
 # Gridding parameters
@@ -146,15 +134,12 @@
  usingCartesianGrid=.TRUE.,
  dXspacing=5000.,
  dYspacing=5000.,
-
 # usingSphericalPolarGrid=.TRUE.,
 # delX=1*2.E0,
 # delY=1*2.E0,
-
  delZ   = 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.00, 10.01,
  10.03, 10.11, 10.32, 10.80, 11.76, 13.42, 16.04 , 19.82, 24.85,
  31.10, 38.42, 46.50, 55.00, 63.50, 71.58,
-
 # ygOrigin=65.,
 # xgOrigin=280.,
 # rSphere = 6371.D3,

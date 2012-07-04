@@ -38,7 +38,6 @@
  diffKzT=1.46e-5,
  diffKhS=0.0,
  diffKzS=1.46e-5,
- rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  eosType='JMD95Z',
  saltStepping=.TRUE.,
@@ -54,7 +53,6 @@
  rhoConst        = 1027.D0,
  rhoConstFresh   = 999.8,
  useCDscheme=.TRUE.,
- inAdExact=.TRUE.,
 #ph(
  staggerTimeStep=.TRUE.,
  multiDimAdvection=.TRUE.,
