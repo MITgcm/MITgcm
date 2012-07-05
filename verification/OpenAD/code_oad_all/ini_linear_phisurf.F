@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/ini_linear_phisurf.F,v 1.2 2009/04/28 18:06:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/ini_linear_phisurf.F,v 1.3 2012/07/05 22:50:54 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -13,7 +14,8 @@ C     *==========================================================*
 C     | SUBROUTINE INI_LINEAR_PHISURF
 C     | o Initialise the Linear Relation Phi_surf(eta)
 C     *==========================================================*
-C     | Initialise -Boyancy at surface level (Bo_surf)
+C     | Compute global domain Area ;
+C     | Initialise -Buoyancy at surface level (Bo_surf)
 C     |  to setup the Linear relation: Phi_surf(eta)=Bo_surf*eta
 C     | Initialise phi0surf = starting point for integrating
 C     |                       phiHyd (= phiHyd at r=RoSurf)
@@ -28,6 +30,11 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
+#ifdef ALLOW_EXCH2
+# include "W2_EXCH2_SIZE.h"
+# include "W2_EXCH2_TOPOLOGY.h"
+#endif /* ALLOW_EXCH2 */
+
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -35,42 +42,105 @@ C     myThid - Thread no. that called this routine.
       INTEGER myThid
 
 C     == Local variables in common ==
-C     Hloc  - Temporary array used to write surface topography
-C             has to be in common for multi threading
-      COMMON / LOCAL_INI_PHISURF / topoHloc
-      _RS topoHloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     topoHloc had to be in common for multi threading but no longer
+C     needed since MDSIO now allows (2009/06/07) to write local arrays
+      _RL tileArea(nSx,nSy), threadArea
+C     put tileArea in (local) common block to print from master-thread:
+      COMMON / LOCAL_INI_PHISURF / tileArea
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     bi,bj  - Loop counters
-C     I,J,K
+C     topoHloc  :: Temporary array used to write surface topography
+C     bi,bj  :: tile indices
+C     i,j,k  :: Loop counters
+      _RS topoHloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER bi, bj
-      INTEGER I, J, K
+      INTEGER i, j, k
       _RL     pLoc, rhoLoc
       _RL     dPIdp
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
+C--   Initialisation
 #ifdef ALLOW_AUTODIFF_TAMC
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-           Bo_surf(I,J,bi,bj)  = 0. _d 0
-           recip_Bo(I,J,bi,bj) = 0. _d 0
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+           Bo_surf(i,j,bi,bj)  = 0. _d 0
+           recip_Bo(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-#endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+#ifdef NONLIN_FRSURF
+C--   Save initial geometrical hFac factor into h0Fac (fixed in time):
+C     better here (after packages_init_fixed call) than in INI_MASKS_ETC
+C     in case 1 pkg would need to modify them.
+C    <= moved to INI_MASK_ETC , despite comment above, since:
+C      a) in case 1 pkg is changing hFac, this pkg should also update h0Fac
+C      b) pkg/shelfice does modify hFac but done directly within ini_masks_etc
+#endif /* NONLIN_FRSURF */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C-- Initialise -Boyancy at surface level : Bo_surf
+C--   Calculate global domain area:
+C     use to be in ini_masks_etc.F but has been move after packages_init_fixed
+C     in case 1 pkg (e.g., OBCS) modifies the domain size.
+      threadArea = 0. _d 0
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+C-      Compute the domain Area:
+        tileArea(bi,bj) = 0. _d 0
+        DO j=1,sNy
+         DO i=1,sNx
+          tileArea(bi,bj) = tileArea(bi,bj)
+     &                    + rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
+         ENDDO
+        ENDDO
+c       threadArea = threadArea + tileArea(bi,bj)
+       ENDDO
+      ENDDO
+c#ifdef ALLOW_AUTODIFF_TAMC
+C_jmc: apply GLOBAL_SUM to thread-local variable (not in common block)
+c      _GLOBAL_SUM_RL( threadArea, myThid )
+c#else
+      CALL GLOBAL_SUM_TILE_RL( tileArea, threadArea, myThid )
+c#endif
+      _BEGIN_MASTER( myThid )
+      globalArea = threadArea
+C-    list empty tiles:
+      msgBuf(1:1) = ' '
+      DO bj = 1,nSy
+       DO bi = 1,nSx
+        IF ( tileArea(bi,bj).EQ.0. _d 0 ) THEN
+#ifdef ALLOW_EXCH2
+         WRITE(msgBuf,'(A,I6,A,2I4,A)')
+     &    'Empty tile: #', W2_myTileList(bi,bj), ' (bi,bj=',bi,bj,' )'
+#else
+         WRITE(msgBuf,'(A,I6,I6)') 'Empty tile bi,bj=', bi, bj
+#endif
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
+       ENDDO
+      ENDDO
+      IF ( msgBuf(1:1).NE.' ' ) THEN
+         WRITE(msgBuf,'(A)') ' '
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ENDIF
+      _END_MASTER( myThid )
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C-- Initialise -Buoyancy at surface level : Bo_surf
 C   Bo_surf is defined as d/dr(Phi_surf) and set to g/z2rUnit with
 C     z2rUnit = conversion factor from z-unit to r-unit: [z] * z2rUnit = [r]
 C   an accurate formulation includes P_surf and T,S_ref effects on rho_surf:
 C    (setting uniformLin_PhiSurf=.FALSE.):
-C    z-coord (z2rUnit=1): Bo_surf = - Boyancy
+C    z-coord (z2rUnit=1): Bo_surf = - Buoyancy
 C                                 = g * rho_surf(Tref,Sref,pSurf_0)/rho_0
 C    p-coord (z2rUnit=rho*g): Bo_surf = 1/rho(Tref(ksurf),pSurf_0)
 C   Note: on Phi_surf splitting : Non-linear Time-dependent effects on B_surf
@@ -80,8 +150,8 @@ C--
 C-  gBaro = gravity (except for External mode test with reduced gravity)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-Oly,sNy+Oly
-           DO I=1-Olx,sNx+Olx
+          DO J=1-OLy,sNy+OLy
+           DO I=1-OLx,sNx+OLx
              Bo_surf(I,J,bi,bj) = gBaro
              recip_Bo(I,J,bi,bj) = 1. _d 0 / gBaro
            ENDDO
@@ -92,8 +162,8 @@ C-  gBaro = gravity (except for External mode test with reduced gravity)
 C-  use a linear (in ps) uniform relation : Phi'_surf = 1/rhoConst * ps'_surf
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-Oly,sNy+Oly
-           DO I=1-Olx,sNx+Olx
+          DO J=1-OLy,sNy+OLy
+           DO I=1-OLx,sNx+OLx
 c            Bo_surf(I,J,bi,bj)  = rVel2wUnit(1)*gravity
 c            recip_Bo(I,J,bi,bj) = wUnit2rVel(1)*recip_gravity
              Bo_surf(I,J,bi,bj)  = recip_rhoConst
@@ -105,14 +175,14 @@ c            recip_Bo(I,J,bi,bj) = wUnit2rVel(1)*recip_gravity
       ELSEIF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-Oly,sNy+Oly
-           DO I=1-Olx,sNx+Olx
+          DO J=1-OLy,sNy+OLy
+           DO I=1-OLx,sNx+OLx
             IF ( Ro_surf(I,J,bi,bj).GT.0. _d 0
-     &          .AND. ksurfC(I,J,bi,bj).LE.Nr ) THEN
+     &          .AND. kSurfC(I,J,bi,bj).LE.Nr ) THEN
              pLoc = Ro_surf(I,J,bi,bj)
              CALL FIND_RHO_SCALAR(
-     I            tRef(ksurfC(I,J,bi,bj)), 
-     I            sRef(ksurfC(I,J,bi,bj)), 
+     I            tRef(kSurfC(I,J,bi,bj)),
+     I            sRef(kSurfC(I,J,bi,bj)),
      I            pLoc,
      O            rhoLoc, myThid )
              IF ( rhoLoc .EQ. 0. _d 0 ) THEN
@@ -134,13 +204,13 @@ C-  use a linearized (in ps) Non-uniform relation : Bo_surf(Po_surf,tRef_surf)
 C--- Bo = d/d_p(Phi_surf) = tRef_surf*d/d_p(PI) ; PI = Cp*(p/Po)^kappa
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-Oly,sNy+Oly
-           DO I=1-Olx,sNx+Olx
+          DO J=1-OLy,sNy+OLy
+           DO I=1-OLx,sNx+OLx
             IF ( Ro_surf(I,J,bi,bj).GT.0. _d 0
-     &          .AND. ksurfC(I,J,bi,bj).LE.Nr ) THEN
+     &          .AND. kSurfC(I,J,bi,bj).LE.Nr ) THEN
               dPIdp = (atm_Cp*atm_kappa/atm_Po)*
      &         (Ro_surf(I,J,bi,bj)/atm_Po)**(atm_kappa-1. _d 0)
-              Bo_surf(I,J,bi,bj) = dPIdp*tRef(ksurfC(I,J,bi,bj))
+              Bo_surf(I,J,bi,bj) = dPIdp*tRef(kSurfC(I,J,bi,bj))
               recip_Bo(I,J,bi,bj) = 1. _d 0 / Bo_surf(I,J,bi,bj)
             ELSE
               Bo_surf(I,J,bi,bj) = 0.
@@ -164,8 +234,6 @@ C--   Update overlap regions (jmc: is it really needed ?)
      &       buoyancyRelation .EQ. 'OCEANICP'         )
      &       .AND. .NOT.uniformLin_PhiSurf              ) THEN
 
-C--     EXCH (above) contains barrier calls
-c       _BARRIER
         CALL WRITE_FLD_XY_RL( 'Bo_surf',' ',Bo_surf,0,myThid)
 
       ENDIF
@@ -177,8 +245,8 @@ C                               or topographic geopotential anom. (p-coord)
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-Oly,sNy+Oly
-           DO I=1-Olx,sNx+Olx
+          DO J=1-OLy,sNy+OLy
+           DO I=1-OLx,sNx+OLx
              phi0surf(I,J,bi,bj) = 0.
            ENDDO
           ENDDO
@@ -204,10 +272,7 @@ C--   AND set phi0surf = starting point for integrating Geopotential;
 
        IF (selectFindRoSurf.NE.0) THEN
         _EXCH_XY_RS(phi0surf, myThid)
-
         CALL WRITE_FLD_XY_RS( 'phi0surf',' ',phi0surf,0,myThid)
-       ELSE
-        _BARRIER
        ENDIF
 
         CALL WRITE_FLD_XY_RS( 'topo_H',' ',topoHloc,0,myThid)

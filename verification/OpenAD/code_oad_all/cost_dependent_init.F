@@ -1,10 +1,7 @@
-C
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/cost_dependent_init.F,v 1.1 2009/01/29 21:46:50 utke Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/cost_dependent_init.F,v 1.2 2012/07/05 22:50:54 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
-
 
       subroutine cost_dependent_init( mythid )
 
@@ -81,4 +78,3 @@ cph because we need it in ADM*TLM
 
       return
       end
-

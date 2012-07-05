@@ -1,4 +1,4 @@
-C$Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/seawater.F,v 1.2 2009/10/23 15:00:42 utke Exp $
+C$Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/seawater.F,v 1.3 2012/07/05 22:50:54 jmc Exp $
 C$Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -93,8 +93,8 @@ C     seawater, 1983. _Unesco Tech. Pap. in Mar. Sci._, No. 44, 53 pp.
 C     Eqn.(31) p.39
 C
 C     Bryden, H. 1973.
-C     "New Polynomials for thermal expansion, adiabatic temperature gradient
-C     and potential temperature of sea water."
+C     New Polynomials for thermal expansion, adiabatic temperature gradient
+C     and potential temperature of sea water.
 C     DEEP-SEA RES., 1973, Vol20,401-408.
 
 C     !USES:
