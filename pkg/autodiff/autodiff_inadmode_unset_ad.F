@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_inadmode_unset_ad.F,v 1.5 2012/07/04 20:21:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_inadmode_unset_ad.F,v 1.6 2012/07/05 19:32:54 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -14,13 +14,14 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "AUTODIFF_PARAMS.h"
+#ifdef ALLOW_SEAICE
+#include "SEAICE_PARAMS.h"
+#endif
 
 C     == Routine arguments ==
 C     myThid :: my Thread Id number
       INTEGER myThid
-#ifdef ALLOW_DEBUG
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-#endif
 
       inAdMode  = inAdFalse
 
@@ -28,7 +29,6 @@ C     myThid :: my Thread Id number
       useGMRedi = useGMRediInFwdMode
       useSEAICE = useSEAICEinFwdMode
 
-#ifdef ALLOW_DEBUG
       IF ( debugLevel.GE.debLevC ) THEN
        WRITE(msgBuf,'(A,L5)')
      &      'S/R ADAUTODIFF_INADMODE_UNSET: useKPP    =', useKPP
@@ -43,7 +43,18 @@ C     myThid :: my Thread Id number
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
-#endif
+
+#ifdef ALLOW_SEAICE
+      IF ( turnFreeDriftInAdMode ) THEN
+        SEAICEuseFREEDRIFT = .FALSE.
+        IF ( debugLevel.GE.debLevC ) THEN
+          WRITE(msgBuf,'(2A,L5)') 'S/R ADAUTODIFF_INADMODE_UNSET: ',
+     &         'SEAICEuseFREEDRIFT =', SEAICEuseFREEDRIFT
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+        ENDIF
+      ENDIF
+#endif /* ALLOW_SEAICE */
 
       RETURN
       END

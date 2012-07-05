@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.1 2012/07/04 20:16:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.2 2012/07/05 19:32:54 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -35,7 +35,7 @@ C     iUnit      :: Work variable for IO unit number
       NAMELIST /AUTODIFF_PARM01/
      &       useKPPinAdMode,
      &       useGMRediInAdMode,
-     &       useSEAICEinAdMode,
+     &       useSEAICEinAdMode, turnFreeDriftInAdMode,
      &       inAdExact
 
       _BEGIN_MASTER(myThid)
@@ -45,6 +45,7 @@ C--   Default values for AUTODIFF
       useGMRediInAdMode  = .TRUE.
       useSEAICEinAdMode  = .TRUE.
       inAdExact          = .TRUE.
+      turnFreeDriftInAdMode = .FALSE.
 
       WRITE(msgBuf,'(A)') 'AUTODIFF_READPARMS: opening data.autodiff'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -83,6 +84,39 @@ C     store value of usePKG as it will be set in S/R ADAUTODIFF_INADMODE_SET
       useKPPinAdMode    = useKPPinAdMode    .AND. useKPP
       useGMRediInAdMode = useGMRediInAdMode .AND. useGMRedi
       useSEAICEinAdMode = useSEAICEinAdMode .AND. useSEAICE
+
+C--   Print out some kee parameters :
+      WRITE(msgBuf,'(A)') '// ==================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// AUTODIFF parameters :'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// ==================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+       CALL WRITE_0D_L( inAdExact, INDEX_NONE,
+     &  'inAdExact =', ' /* get an exact adjoint (no approximation) */')
+       CALL WRITE_0D_L( useKPPinAdMode, INDEX_NONE,
+     &   'useKPPinAdMode =',      ' /* use KPP in adjoint mode */')
+       CALL WRITE_0D_L( useGMRediInAdMode, INDEX_NONE,
+     &  'useGMRediInAdMode =', ' /* use GMRedi in adjoint mode */')
+       CALL WRITE_0D_L( useSEAICEinAdMode, INDEX_NONE,
+     &  'useSEAICEinAdMode =', ' /* use SEAICE in adjoint mode */')
+#ifdef ALLOW_SEAICE
+       CALL WRITE_0D_L( turnFreeDriftInAdMode, INDEX_NONE,
+     &  'turnFreeDriftInAdMode=',
+     &             ' /* turn On/Off Free-Drift in adj/fwd mode */')
+#endif /* ALLOW_SEAICE */
+
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+
+C--   Check parameters :
+
+C- Note: would be safer to add a stop if both turnFreeDriftInAdMode and
+C     SEAICEuseFREEDRIFT are set to true ; but better in seaice_check than here
 
       _END_MASTER(myThid)
 
