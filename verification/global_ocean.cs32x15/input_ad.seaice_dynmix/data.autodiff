@@ -1,0 +1,10 @@
+# =========================
+# pkg AUTODIFF parameters :
+# =========================
+#  inAdExact :: get an exact adjoint (no approximation) (def=.True.)
+#  turnFreeDriftInAdMode :: switch SEAICE to Free-Drift in adjoint mode (def=F)
+#
+ &AUTODIFF_PARM01
+# inAdExact = .FALSE.,
+  turnFreeDriftInAdMode = .TRUE.,
+ &
