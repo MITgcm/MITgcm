@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1681 2012/07/04 20:39:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1682 2012/07/05 19:38:02 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -10,6 +10,8 @@ o pkg/autodiff:
     which are now read from new parameter file "data.autodiff" (inAdExact
     previously in "data", use{KPP/GMRedi/SEAICE}inAdMode previously in data.pkg)
   - add file "data.autodiff" in all verification/*/input_ad/ directories.
+  - add run-time parameter to turn On/Off SEAICEuseFREEDRIFT in adjoint/forward
+    mode (used in global_ocean.cs32x15.seaice_dynmix test exp.)
 o verification/tutorial_tracer_adjsens/
   - add extra sub-verification which uses "SOM" advection scheme
     (2nd Order-Moment Advection Scheme, Prather Limiter) with
