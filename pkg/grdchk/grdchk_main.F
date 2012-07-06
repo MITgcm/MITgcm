@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.35 2012/02/09 17:55:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.36 2012/07/06 23:10:28 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
+#include "AD_CONFIG.h"
 
 CBOI
 C

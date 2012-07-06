@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_dummy_in_dynamics.F,v 1.1 2011/02/26 00:41:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_dummy_in_dynamics.F,v 1.2 2012/07/06 23:10:28 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
+#include "AD_CONFIG.h"
 
 CBOP
 C     !ROUTINE: g_dummy_in_dynamics

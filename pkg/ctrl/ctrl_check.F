@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.10 2011/06/24 01:18:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.11 2012/07/06 23:10:28 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -7,6 +7,7 @@ C $Name:  $
 # include "EXF_OPTIONS.h"
 #endif
 #endif
+#include "AD_CONFIG.h"
 
       SUBROUTINE CTRL_CHECK( myThid )
 C     /==========================================================\

@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots__g.F,v 1.3 2007/10/09 00:04:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots__g.F,v 1.4 2012/07/06 23:10:28 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
+#include "AD_CONFIG.h"
 
 CBOP
 C     !ROUTINE: g_exf_adjoint_snapshots
@@ -138,13 +139,5 @@ C--     Read IO error counter
 #endif /* ALLOW_AUTODIFF_MONITOR */
 #endif /* ALLOW_TANGENTLINEAR_RUN */
 
-      end
-
-
-
-
-
-
-
-
-
+      RETURN
+      END

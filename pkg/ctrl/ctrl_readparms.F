@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.36 2012/04/21 14:56:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.37 2012/07/06 23:10:28 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
+#include "AD_CONFIG.h"
 
       subroutine ctrl_readparms( mythid )
 

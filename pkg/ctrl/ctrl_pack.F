@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.40 2012/02/28 00:26:11 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.41 2012/07/06 23:10:28 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
+#include "AD_CONFIG.h"
 
       subroutine ctrl_pack( first, mythid )
 
