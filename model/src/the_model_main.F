@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.111 2012/03/04 15:07:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.112 2012/07/06 21:44:39 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -191,9 +191,9 @@ C \ev
 C
 CEOI
 
-#include "AD_CONFIG.h"
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#include "AD_CONFIG.h"
 
 CBOP
 C     !ROUTINE: THE_MODEL_MAIN

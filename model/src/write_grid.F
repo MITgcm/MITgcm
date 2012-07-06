@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.35 2012/06/01 03:19:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.36 2012/07/06 21:44:39 jmc Exp $
 C $Name:  $
 
-#include "AD_CONFIG.h"
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#include "AD_CONFIG.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP

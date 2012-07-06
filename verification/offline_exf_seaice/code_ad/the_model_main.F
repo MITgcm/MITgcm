@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/Attic/the_model_main.F,v 1.3 2011/11/01 21:11:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/Attic/the_model_main.F,v 1.4 2012/07/06 21:43:36 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -395,10 +395,9 @@ C
 C
 CEOI
 
-
-#include "AD_CONFIG.h"
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#include "AD_CONFIG.h"
 
 CBOP
 
