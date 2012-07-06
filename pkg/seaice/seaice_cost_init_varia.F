@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_varia.F,v 1.7 2012/03/06 16:45:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_varia.F,v 1.8 2012/07/06 23:07:23 jmc Exp $
 C $Name:  $
 
-#include "AD_CONFIG.h"
 #include "SEAICE_OPTIONS.h"
 
       subroutine seaice_cost_init_varia( mythid )
