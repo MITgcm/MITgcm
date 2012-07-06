@@ -1,9 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor_ad.F,v 1.4 2012/02/03 13:34:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor_ad.F,v 1.5 2012/07/06 23:07:55 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
-#include "AD_CONFIG.h"
-#include "CPP_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
