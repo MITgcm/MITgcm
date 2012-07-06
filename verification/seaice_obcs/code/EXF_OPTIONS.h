@@ -1,10 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/code/Attic/EXF_OPTIONS.h,v 1.1 2012/01/16 19:13:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/code/Attic/EXF_OPTIONS.h,v 1.2 2012/07/06 23:14:08 jmc Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
 #define EXF_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#include "AD_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_EXF

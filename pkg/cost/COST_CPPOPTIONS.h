@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/Attic/COST_CPPOPTIONS.h,v 1.4 2011/12/24 01:04:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/Attic/COST_CPPOPTIONS.h,v 1.5 2012/07/06 23:12:45 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -16,7 +16,6 @@ CEOP
 #ifndef COST_OPTIONS_H
 #define COST_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#include "AD_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_COST

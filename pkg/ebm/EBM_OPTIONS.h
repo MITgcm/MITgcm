@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/EBM_OPTIONS.h,v 1.2 2011/12/24 01:04:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/EBM_OPTIONS.h,v 1.3 2012/07/06 23:12:45 jmc Exp $
 C $Name:  $
 
 C CPP options file for EBM package
@@ -7,7 +7,6 @@ C Use this file for selecting CPP options within the EBM package
 #ifndef EBM_OPTIONS_H
 #define EBM_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#include "AD_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_EBM
