@@ -1,9 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.26 2012/04/07 00:12:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.27 2012/07/06 23:03:40 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "AD_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
+#include "AD_CONFIG.h"
 
       subroutine ecco_cost_init_fixed( mythid )
 

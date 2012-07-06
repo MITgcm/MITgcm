@@ -1,9 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.6 2009/08/27 18:00:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.7 2012/07/06 23:03:40 jmc Exp $
 C $Name:  $
 
-#include "AD_CONFIG.h"
-#include "PACKAGES_CONFIG.h"
 #include "SEAICE_OPTIONS.h"
+#include "AD_CONFIG.h"
 
 CBOP
 C     !ROUTINE: seaice_ad_dump
