@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/addummy_in_stepping.F,v 1.2 2007/10/09 02:36:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/addummy_in_stepping.F,v 1.3 2012/07/06 21:40:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
+#include "AD_CONFIG.h"
 
 CBOP
 C     !ROUTINE: addummy_in_stepping
@@ -174,13 +175,5 @@ C--     Check for IO errors
 #endif /* ALLOW_AUTODIFF_MONITOR */
 #endif /* ALLOW_ADJOINT_RUN */
 
-      end
-
-
-
-
-
-
-
-
-
+      RETURN
+      END
