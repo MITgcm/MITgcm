@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1683 2012/07/06 06:27:17 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1684 2012/07/06 15:32:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint63p (2012/07/06)
 o pkg/autodiff:
   - rename S/R INI_AUTODIFF to AUTODIFF_INIT_VARIA ;
   - create new header file "AUTODIFF_PARAMS.h" for pkg/autodiff parameters
@@ -24,14 +25,14 @@ o model/src:
   - introduce ALLOW_BALANCE_RELAX which allow the removal
    of the global mean of relaxation terms by setting
    balanceThetaClimRelax and balanceSaltClimRelax
-  - disable balanceEmPmR and balanceQnet in the case when useSeaice. 
+  - disable balanceEmPmR and balanceQnet in the case when useSeaice.
    This case is now treated appropriately in seaice_growth.F
 o pkg/seaice:
-- do balanceEmPmR and balanceQnet based on the net fluxes 
-  (SItflux) that enter the ocean+ice system rather than QNET
-  and EMPMR. Works best in real fresh water.
-- SIatmFW, SIatmQnet, and SItflux computations had to be moved 
-  out of the diagnotics bloc, and stored in global arrays.
+  - do balanceEmPmR and balanceQnet based on the net fluxes
+    (SItflux) that enter the ocean+ice system rather than QNET
+    and EMPMR. Works best in real fresh water.
+  - SIatmFW, SIatmQnet, and SItflux computations had to be moved
+    out of the diagnotics bloc, and stored in global arrays.
 
 checkpoint63o (2012/06/29)
 o vertical mixing schemes:
