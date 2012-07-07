@@ -1,11 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_update.F,v 1.10 2006/08/03 19:03:15 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_update.F,v 1.11 2012/07/07 00:08:09 jmc Exp $
 C $Name:  $
+
+#include "GRIDALT_OPTIONS.h"
 
        subroutine gridalt_update(myThid)
 c***********************************************************************
 c subroutine gridalt_update
-c 
-c Purpose: Update the pressure thicknesses of the layers of the 
+c
+c Purpose: Update the pressure thicknesses of the layers of the
 c          alternative vertical grid (used now for atmospheric physics).
 c
 c Calculate: dpphys    - new delta r (p*) edge-to-edge of physics grid
@@ -13,9 +15,7 @@ c                        using dpphys0 (initial value) and rstarfacC
 c
 c***********************************************************************
        implicit none
-c
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"

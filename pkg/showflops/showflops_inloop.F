@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/showflops/showflops_inloop.F,v 1.2 2007/07/31 22:33:43 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/showflops/showflops_inloop.F,v 1.3 2012/07/07 00:08:09 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "SHOWFLOPS_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: SHOWFLOPS_INLOOP
@@ -26,14 +25,14 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     note: under the multi-threaded model myiter and 
-C           mytime are local variables passed around as routine 
-C           arguments. Although this is fiddly it saves the need to 
-C           impose additional synchronisation points when they are 
+C     note: under the multi-threaded model myiter and
+C           mytime are local variables passed around as routine
+C           arguments. Although this is fiddly it saves the need to
+C           impose additional synchronisation points when they are
 C           updated.
 C     myThid - thread number for this instance of the routine.
       integer iloop
-      INTEGER myThid 
+      INTEGER myThid
 
 C     !FUNCTIONS:
 C     == Functions ==
@@ -80,13 +79,13 @@ CCE107 PAPI summary performance
 #endif
       WRITE(msgBuf,'(F12.6,A,F12.6,A34,I8)')
      $     mflops, ' ', mflops*proc_time/(real_time + 1E-36),
-     $     'Mflop/s during timestep ', iloop 
+     $     'Mflop/s during timestep ', iloop
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #ifdef PAPI_VERSION
       call PAPIF_ipc(real_time, proc_time, instr, ipc, check)
       WRITE(msgBuf,'(F12.6,A,F12.6,A34,I8)')
      $     ipc, ' ', ipc*proc_time/(real_time + 1E-36),
-     $     'IPC during timestep ', iloop 
+     $     'IPC during timestep ', iloop
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #endif
       _END_MASTER( myThid )

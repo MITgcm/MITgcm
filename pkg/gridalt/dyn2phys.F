@@ -1,5 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/dyn2phys.F,v 1.6 2008/11/18 21:39:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/dyn2phys.F,v 1.7 2012/07/07 00:08:08 jmc Exp $
 C $Name:  $
+
+#include "GRIDALT_OPTIONS.h"
 
       subroutine dyn2phys(qdyn,pedyn,im1,im2,jm1,jm2,lmdyn,Nsx,Nsy,
      . idim1,idim2,jdim1,jdim2,bi,bj,windphy,pephy,Lbot,lmphy,nlperdyn,
@@ -7,11 +9,11 @@ C $Name:  $
 C***********************************************************************
 C Purpose:
 C   To interpolate an arbitrary quantity from the 'dynamics' eta (pstar)
-C               grid to the higher resolution physics grid 
+C               grid to the higher resolution physics grid
 C Algorithm:
 C   Routine works one layer (edge to edge pressure) at a time.
 C   Dynamics -> Physics retains the dynamics layer mean value,
-C   weights the field either with the profile of the physics grid 
+C   weights the field either with the profile of the physics grid
 C   wind speed (for U and V fields), or uniformly (T and Q)
 C
 C Input:
@@ -40,8 +42,6 @@ C   1) This algorithm assumes that the output (physics) grid levels
 C      fit exactly into the input (dynamics) grid levels
 C***********************************************************************
       implicit none
-cinterp1 #include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
 
       integer  im1, im2, jm1, jm2, lmdyn, lmphy, Nsx, Nsy, flg
       integer idim1, idim2, jdim1, jdim2, bi, bj
@@ -76,7 +76,7 @@ C define physics grid mid level pressures
       do Lphy = 1,lmphy
        do j = jdim1,jdim2
         do i = idim1,idim2
-         pphy(i,j,Lphy) = 
+         pphy(i,j,Lphy) =
      .       (pephy(i,j,Lphy,bi,bj)+pephy(i,j,Lphy+1,bi,bj))/2.
         enddo
        enddo
@@ -115,11 +115,11 @@ c do loop for all physics levels contained in this dynamics level
            if( (flg.eq.1).and.(windsum.ne.0.) )
      .                weights(i,j,Lphy)=windphy(i,j,Lphy,bi,bj)/windsum
            if( (flg.eq.2) .and. (pedyn(i,j,L,bi,bj).lt.10000.)) then
-            weights(i,j,Lphy) = 
+            weights(i,j,Lphy) =
      .   (qd-5. + (10.*(pedyn(i,j,L,bi,bj)-pphy(i,j,Lphy))/dpkedyn))/qd
            elseif( (flg.eq.2) .and. (pedyn(i,j,L,bi,bj).ge.10000.)) then
             weights(i,j,Lphy) = 1.
-           endif 
+           endif
            qphy(i,j,Lphy,bi,bj) = qd * weights(i,j,Lphy)
           enddo
          endif
