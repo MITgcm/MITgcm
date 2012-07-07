@@ -1,11 +1,9 @@
-C
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_dsvd2model.F,v 1.6 2008/05/30 02:47:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_dsvd2model.F,v 1.7 2012/07/07 00:09:49 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
 
-      subroutine admtlm_dsvd2model( 
+      subroutine admtlm_dsvd2model(
      &     first, postprocev, mythid )
 
 c     ==================================================================
@@ -82,7 +80,7 @@ c     == local variables ==
       character*( 80) weighttype
 
       logical lxxadxx
-      
+
 cgg(  Add OBCS mask names.
 #ifdef ALLOW_OBCSN_CONTROL
       integer        filenWetobcsnGlo(nr,nobcs)
@@ -168,7 +166,7 @@ c     >>> Initialise control vector for optimcycle=0 <<<
           lxxadxx   = .TRUE.
           ictrlgrad = 1
           write(cfile(1:128),'(4a,i4.4)')
-     &         ctrlname(1:9),'_',yctrlid(1:10), 
+     &         ctrlname(1:9),'_',yctrlid(1:10),
      &         yctrlposunpack(1:4), optimcycle
           print *, 'ph-pack: unpacking ', ctrlname(1:9)
       else
@@ -189,11 +187,11 @@ c     >>> Write gradient vector <<<
 cph do a dummy read of initialized EV fields
 cph they will be overwritten by array phtmpadmtlm
           write(cfile(1:128),'(a)') ' '
-          write(cfile,'(a,i4.4)') 
+          write(cfile,'(a,i4.4)')
      &         'admtlm_eigen', optimcycle
        else
           write(cfile(1:128),'(a)') ' '
-          write(cfile,'(a,i4.4)') 
+          write(cfile,'(a,i4.4)')
      &         'admtlm_vector.it', optimcycle
        endif
        print *, 'ph-pack: unpacking ', cfile
@@ -278,7 +276,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSN_CONTROL
        do iobcs = 1, nobcs
          do k = 1, nr
-           if (filenWetobcsnGlo(k,iobcs) .NE. 
+           if (filenWetobcsnGlo(k,iobcs) .NE.
      &           nWetobcsnGlo(k,iobcs)) then
              print *, 'WARNING: OBCSN wrong nWet?Global for k = ', k
              STOP
@@ -290,7 +288,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSS_CONTROL
        do iobcs = 1, nobcs
          do k = 1, nr
-           if (filenWetobcssGlo(k,iobcs) .NE. 
+           if (filenWetobcssGlo(k,iobcs) .NE.
      &           nWetobcssGlo(k,iobcs)) then
              print *, 'WARNING: OBCSS wrong nWet?Global for k = ', k
              STOP
@@ -302,7 +300,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSW_CONTROL
        do iobcs = 1, nobcs
          do k = 1, nr
-           if (filenWetobcswGlo(k,iobcs) .NE. 
+           if (filenWetobcswGlo(k,iobcs) .NE.
      &           nWetobcswGlo(k,iobcs)) then
              print *, 'WARNING: OBCSW wrong nWet?Global for k = ', k
              STOP
@@ -314,7 +312,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSE_CONTROL
        do iobcs = 1, nobcs
          do k = 1, nr
-           if (filenWetobcseGlo(k,iobcs) .NE. 
+           if (filenWetobcseGlo(k,iobcs) .NE.
      &           nWetobcseGlo(k,iobcs)) then
              print *, 'WARNING: OBCSE wrong nWet?Global for k = ', k
              STOP
@@ -624,7 +622,7 @@ c----------------------------------------------------------------------
 #endif
 
          close ( cunit )
- 
+
       _END_MASTER( mythid )
 
 #endif /* EXCLUDE_CTRL_PACK */

@@ -1,10 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_model2dsvd.F,v 1.6 2008/05/30 02:47:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_model2dsvd.F,v 1.7 2012/07/07 00:09:49 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
 
-      subroutine admtlm_model2dsvd( 
+      subroutine admtlm_model2dsvd(
      &     first, preprocev, mythid )
 
 c     ==================================================================
@@ -19,7 +18,7 @@ c
 c     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
 c              - Transferred some filename declarations
 c                from here to namelist in ctrl_init
-c  
+c
 c              Patrick Heimbach heimbach@mit.edu 16-Jun-2000
 c              - single file name convention with or without
 c                ALLOW_ECCO_OPTIMIZATION
@@ -77,7 +76,7 @@ c     == local variables ==
       logical ladinit
       integer cbuffindex
       logical lxxadxx
-      
+
       integer cunit
       integer ictrlgrad
 
@@ -158,7 +157,7 @@ c     >>> Initialise control vector for optimcycle=0 <<<
           ictrlgrad = 1
           fcloc     = fmin
           write(cfile(1:128),'(4a,i4.4)')
-     &         ctrlname(1:9),'_',yctrlid(1:10), 
+     &         ctrlname(1:9),'_',yctrlid(1:10),
      &         yctrlpospack, optimcycle
           print *, 'ph-pack: packing ', ctrlname(1:9)
       else
@@ -167,7 +166,7 @@ c     >>> Write gradient vector <<<
           ictrlgrad = 2
           fcloc     = fc
           write(cfile(1:128),'(4a,i4.4)')
-     &         costname(1:9),'_',yctrlid(1:10), 
+     &         costname(1:9),'_',yctrlid(1:10),
      &         yctrlpospack, optimcycle
           print *, 'ph-pack: packing ', costname(1:9)
        endif
@@ -179,11 +178,11 @@ c     >>> Write gradient vector <<<
        if ( preprocev ) then
 cph do a dummy write of initial EV fields
           write(cfile(1:128),'(a)') ' '
-          write(cfile,'(a,i4.4)') 
+          write(cfile,'(a,i4.4)')
      &         'admtlm_eigen', optimcycle
        else
           write(cfile(1:128),'(a)') ' '
-          write(cfile,'(a,i4.4)') 
+          write(cfile,'(a,i4.4)')
      &         'admtlm_vector.it', optimcycle + 1
        endif
        print *, 'ph-pack: unpacking ', cfile

@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_impldiff.F,v 1.1 2010/02/15 23:46:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_impldiff.F,v 1.2 2012/07/07 00:09:49 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "SMOOTH_OPTIONS.h"
 
       SUBROUTINE SMOOTH_IMPLDIFF( bi, bj, iMin, iMax, jMin, jMax,
@@ -72,7 +71,7 @@ C--   Initialise
 C--   Old aLower
       DO j=jMin,jMax
        DO i=iMin,iMax
-         a(i,j,1) = 0. _d 0 
+         a(i,j,1) = 0. _d 0
        ENDDO
       ENDDO
       DO k=2,Nr
@@ -146,7 +145,7 @@ CADJ loop = sequential
         DO j=jMin,jMax
          DO i=iMin,iMax
           gam(i,j,k) = c(i,j,k-1)*bet(i,j,k-1)
-          IF ( ( b(i,j,k) - a(i,j,k)*gam(i,j,k) ) .NE. 0.) 
+          IF ( ( b(i,j,k) - a(i,j,k)*gam(i,j,k) ) .NE. 0.)
      &        bet(i,j,k) = 1. _d 0 / ( b(i,j,k) - a(i,j,k)*gam(i,j,k) )
          ENDDO
         ENDDO
