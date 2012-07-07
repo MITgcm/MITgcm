@@ -1,13 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_check.F,v 1.9 2009/09/18 11:40:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_check.F,v 1.10 2012/07/07 22:23:46 jmc Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
       SUBROUTINE KPP_CHECK( myThid )
-C     /==========================================================\
-C     | SUBROUTINE KPP_CHECK                                     |
-C     | o Validate basic package setup and inter-package         |
-C     | dependencies.                                            |
-C     \==========================================================/
+
+C     *==========================================================*
+C     | SUBROUTINE KPP_CHECK
+C     | o Validate basic package setup and inter-package
+C     |   dependencies.
+C     *==========================================================*
+
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -17,14 +19,15 @@ C     === Global variables ===
 #include "KPP_PARAMS.h"
 
 C     === Routine arguments ===
-C     myThid -  Number of this instance of KPP_INIT
+C     myThid :: my Thread Id Number
       INTEGER myThid
 
 #ifdef ALLOW_KPP
-
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+      _BEGIN_MASTER(myThid)
 
       WRITE(msgBuf,'(A)') 'KPP_CHECK: #define ALLOW_KPP'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -89,7 +92,8 @@ C     Hence overlap region needs to be set OLx=4, OLy=4.
       ENDIF
 #endif /* EXCLUDE_KPP_DOUBLEDIFF */
 
-#endif /* ALLOW_KPP */
+      _END_MASTER(myThid)
 
+#endif /* ALLOW_KPP */
       RETURN
       END
