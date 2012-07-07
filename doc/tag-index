@@ -1,8 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1684 2012/07/06 15:32:20 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1685 2012/07/07 01:54:30 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o AD_CONFIG.h file:
+ - in genmake2: remove "#undef ALLOW_ECCO_OPTIMIZATION" from AD_CONFIG.h;
+ - remove #include "AD_CONFIG.h" from all included OPTIONS files and
+   add it explicitly in each fortran src file where it is needed.
+   motivation: header file AD_CONFIG.h is generated/modified after "make depend"
+   thus introducing potentially wrong dependency; therefore, better to include
+   it only where it's really needed, and after any other included OPTIONS file
+   (less tempting to bring conditional includes according to ALLOW_ADJOINT_RUN
+   or ALLOW_TANGENTLINEAR_RUN).
 
 checkpoint63p (2012/07/06)
 o pkg/autodiff:
