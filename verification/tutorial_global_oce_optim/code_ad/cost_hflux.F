@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_hflux.F,v 1.4 2009/10/09 01:21:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_hflux.F,v 1.5 2012/07/07 01:48:48 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
 
       SUBROUTINE COST_HFLUX( myThid )
