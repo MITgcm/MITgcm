@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.66 2012/06/30 01:24:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.67 2012/07/07 16:31:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -443,6 +443,16 @@ C--   Free-surface related limitations:
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: without exactConserv'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+
+      IF ( select_rStar.GE.1 .AND. nonlinFreeSurf.LE.0 ) THEN
+        WRITE(msgBuf,'(2A,I3,A)') 'CONFIG_CHECK: r* Coordinate',
+     &   ' (select_rStar=', select_rStar, ' ) cannot be used'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A,I3,A)') 'CONFIG_CHECK: ',
+     &   ' with Linear FreeSurf (nonlinFreeSurf=', nonlinFreeSurf,' )'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
