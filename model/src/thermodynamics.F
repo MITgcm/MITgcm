@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.141 2012/07/03 16:30:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.142 2012/07/09 19:22:16 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -6,8 +6,8 @@ C $Name:  $
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD_OPTIONS.h"
 #endif
-#ifdef ALLOW_LONGSTEP
-#include "LONGSTEP_OPTIONS.h"
+#if (defined ALLOW_PTRACERS) && (!defined ALLOW_LONGSTEP)
+# define DO_PTRACERS_HERE
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -89,12 +89,10 @@ C     == Global variables ===
 # include "GAD.h"
 # include "GAD_SOM_VARS.h"
 #endif
-#ifdef ALLOW_PTRACERS
-#ifndef ALLOW_LONGSTEP
+#ifdef DO_PTRACERS_HERE
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_PARAMS.h"
 # include "PTRACERS_FIELDS.h"
-#endif
 #endif
 #ifdef ALLOW_TIMEAVE
 # include "TIMEAVE_STATV.h"
@@ -169,11 +167,9 @@ C                      index into fVerTerm.
       _RL fVerS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL kappaRT (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL kappaRS (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#ifdef ALLOW_PTRACERS
-#ifndef ALLOW_LONGSTEP
+#ifdef DO_PTRACERS_HERE
       _RL fVerP   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2,PTRACERS_num)
       _RL kappaRTr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,PTRACERS_num)
-#endif
 #endif
       _RL kappaRk (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RS recip_hFacNew(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -189,10 +185,8 @@ C                      index into fVerTerm.
 #ifdef ALLOW_TIMEAVE
       LOGICAL useVariableK
 #endif
-#ifdef ALLOW_PTRACERS
-#ifndef ALLOW_LONGSTEP
+#ifdef DO_PTRACERS_HERE
       INTEGER iTracer, ip
-#endif
 #endif
 
 CEOP
@@ -233,10 +227,8 @@ CHPF$  INDEPENDENT, NEW (rTrans,fVerT,fVerS
 CHPF$&                  ,utrans,vtrans,xA,yA
 CHPF$&                  ,kappaRT,kappaRS
 CHPF$&                  )
-# ifdef ALLOW_PTRACERS
-# ifndef ALLOW_LONGSTEP
+# ifdef DO_PTRACERS_HERE
 CHPF$  INDEPENDENT, NEW (fVerP,kappaRTr)
-# endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -293,8 +285,7 @@ C- tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
          ENDDO
         ENDDO
 
-#ifdef ALLOW_PTRACERS
-#ifndef ALLOW_LONGSTEP
+#ifdef DO_PTRACERS_HERE
         IF ( usePTRACERS ) THEN
          DO ip=1,PTRACERS_num
            DO j=1-OLy,sNy+OLy
@@ -316,7 +307,6 @@ C-      set tracer tendency to zero:
           ENDDO
          ENDDO
         ENDIF
-#endif
 #endif
 
 #ifdef ALLOW_ADAMSBASHFORTH_3
@@ -443,16 +433,14 @@ CADJ STORE gsnm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
 C Since passive tracers are configurable separately from T,S we
 C call the multi-dimensional method for PTRACERS regardless
 C of whether multiDimAdvection is set or not.
-#ifdef ALLOW_PTRACERS
-#ifndef ALLOW_LONGSTEP
+#ifdef DO_PTRACERS_HERE
         IF ( usePTRACERS ) THEN
 #ifdef ALLOW_DEBUG
          IF (debugMode) CALL DEBUG_CALL('PTRACERS_ADVECTION',myThid)
 #endif
          CALL PTRACERS_ADVECTION( bi,bj,myTime,myIter,myThid )
         ENDIF
-#endif /* ALLOW_LONGSTEP */
-#endif /* ALLOW_PTRACERS */
+#endif /* DO_PTRACERS_HERE */
 #endif /* DISABLE_MULTIDIM_ADVECTION */
 
 #ifdef ALLOW_DEBUG
@@ -714,8 +702,7 @@ CADJ STORE fvers(:,:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
          ENDIF
 
-#ifdef ALLOW_PTRACERS
-#ifndef ALLOW_LONGSTEP
+#ifdef DO_PTRACERS_HERE
          IF ( usePTRACERS ) THEN
            IF ( .NOT.implicitDiffusion ) THEN
              CALL PTRACERS_CALC_DIFF(
@@ -735,8 +722,7 @@ CADJ STORE kappaRTr(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
      U          fVerP,
      I          myTime,myIter,myThid)
          ENDIF
-#endif /*ALLOW_LONGSTEP */
-#endif /* ALLOW_PTRACERS */
+#endif /* DO_PTRACERS_HERE */
 
 C--      Freeze water
 C  this bit of code is left here for backward compatibility.
@@ -846,14 +832,12 @@ C--     Compute new reciprocal hFac for implicit calculation
      I                  myTime, myIter, myThid )
           ENDIF
         ENDIF
-#ifdef ALLOW_PTRACERS
-#ifndef ALLOW_LONGSTEP
+#ifdef DO_PTRACERS_HERE
         IF ( usePTRACERS .AND. useDOWN_SLOPE ) THEN
           CALL PTRACERS_DWNSLP_APPLY(
      I                  bi, bj, myTime, myIter, myThid )
         ENDIF
-#endif /*ALLOW_LONGSTEP */
-#endif /* ALLOW_PTRACERS */
+#endif /* DO_PTRACERS_HERE */
 #endif /* ALLOW_DOWN_SLOPE */
 
 C       All explicit advection/diffusion/sources should now be
@@ -872,7 +856,6 @@ C       field for implicit matrix calculation
         jMax = sNy
 
 C--     Implicit vertical advection & diffusion
-#ifndef ALLOW_DEPTH_CONTROL
         IF ( tempStepping .AND. implicitDiffusion ) THEN
           CALL CALC_3D_DIFFUSIVITY(
      I         bi,bj,iMin,iMax,jMin,jMax,
@@ -961,10 +944,8 @@ CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
      U         gS,
      I         myThid )
         ENDIF
-#endif /* ndef ALLOW_DEPTH_CONTROL */
 
-#ifdef ALLOW_PTRACERS
-#ifndef ALLOW_LONGSTEP
+#ifdef DO_PTRACERS_HERE
         IF     ( usePTRACERS ) THEN
 C--     Vertical advection/diffusion (implicit) for passive tracers
 C       Also apply open boundary conditions for each passive tracer
@@ -973,8 +954,7 @@ C       Also apply open boundary conditions for each passive tracer
      I                             recip_hFacNew,
      I                             bi, bj, myTime, myIter, myThid )
         ENDIF
-#endif /* ALLOW_LONGSTEP */
-#endif /* ALLOW_PTRACERS */
+#endif /* DO_PTRACERS_HERE */
 
 #ifdef   ALLOW_OBCS
 C--      Apply open boundary conditions
@@ -1002,13 +982,11 @@ C--   end bi,bj loops.
        CALL DEBUG_STATS_RL(Nr,gtNm1,'GtNm1 (THERMODYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,gsNm1,'GsNm1 (THERMODYNAMICS)',myThid)
 #endif
-#ifdef ALLOW_PTRACERS
-#ifndef ALLOW_LONGSTEP
+#ifdef DO_PTRACERS_HERE
        IF ( usePTRACERS ) THEN
          CALL PTRACERS_DEBUG(myThid)
        ENDIF
-#endif /* ALLOW_LONGSTEP */
-#endif /* ALLOW_PTRACERS */
+#endif /* DO_PTRACERS_HERE */
       ENDIF
 #endif /* ALLOW_DEBUG */
 
