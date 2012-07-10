@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1685 2012/07/07 01:54:30 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1686 2012/07/10 15:47:30 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/salt_plume: added diagnotic for salt tendency (oceSPtnd).
 o AD_CONFIG.h file:
  - in genmake2: remove "#undef ALLOW_ECCO_OPTIMIZATION" from AD_CONFIG.h;
  - remove #include "AD_CONFIG.h" from all included OPTIONS files and
