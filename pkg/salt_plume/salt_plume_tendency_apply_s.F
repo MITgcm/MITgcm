@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_tendency_apply_s.F,v 1.7 2012/01/30 11:19:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_tendency_apply_s.F,v 1.8 2012/07/10 15:45:11 gforget Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -38,6 +38,7 @@ C     !LOCAL VARIABLES:
       _RL minusone
       parameter(minusone = -1.)
       _RL plumefrac(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL plumetend(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef TARGET_NEC_SX
       integer imt
       parameter( imt=(sNx+2*OLx)*(sNy+2*OLy) )
@@ -77,11 +78,12 @@ C     Penetrating saltplume fraction:
          IF ( SaltPlumeDepth(i,j,bi,bj) .GT. -rF(kLev) ) THEN
           plumefrac(i,j)     = plumefrac(i,j)
      &         -plumekb2D(i,j)*maskC(i,j,klev,bi,bj)
-          gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)
-     &         +saltPlumeFlux(i,j,bi,bj)*plumefrac(I,J)*mass2rUnit
-     &         *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+          plumetend(I,J) = saltPlumeFlux(i,j,bi,bj)*plumefrac(I,J)
+          gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)+plumetend(I,J)
+     &        *recip_drF(kLev)*mass2rUnit*_recip_hFacC(i,j,kLev,bi,bj)
          ELSE
           plumefrac(i,j)=0. _d 0         
+          plumetend(I,J) = 0. _d 0
          ENDIF
         ENDDO
        ENDDO
@@ -101,9 +103,12 @@ C Penetrating saltplume fraction:
      U                   plumekb,
      I                   myTime, 1, myThid )
          plumefrac(I,J)=(plumekb(1)-plumekb(2))*maskC(i,j,klev,bi,bj)
-         gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
-     &        +saltPlumeFlux(i,j,bi,bj)*plumefrac(I,J)*mass2rUnit
-     &        *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+         plumetend(I,J) = saltPlumeFlux(i,j,bi,bj)*plumefrac(I,J)
+         gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)+plumetend(I,J)
+     &        *recip_drF(kLev)*mass2rUnit*_recip_hFacC(i,j,kLev,bi,bj)
+        ELSE
+         plumefrac(I,J) = 0. _d 0
+         plumetend(I,J) = 0. _d 0
         ENDIF
        ENDDO
       ENDDO
@@ -113,6 +118,8 @@ C Penetrating saltplume fraction:
       IF ( useDiagnostics ) THEN
        CALL DIAGNOSTICS_FILL (
      &      plumefrac,'PLUMEKB ',kLev,1,2,bi,bj,myThid )
+       CALL DIAGNOSTICS_FILL (
+     &      plumetend,'oceSPtnd',kLev,1,2,bi,bj,myThid )
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
       

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_diagnostics_init.F,v 1.3 2010/01/12 21:31:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_diagnostics_init.F,v 1.4 2012/07/10 15:45:11 gforget Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -40,6 +40,14 @@ C     diagTitle :: local string (80c): description of field in diagnostic
       diagName  = 'PLUMEKB '
       diagTitle = 'fractional plume: [0-1] (unitless)'
       diagUnits = '                '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'oceSPtnd'
+      diagTitle = 'salt tendency due to salt plume flux' 
+     &          //' >0 increases salinity'
+      diagUnits = 'g/m^2/s         '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
