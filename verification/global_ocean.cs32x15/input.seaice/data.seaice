@@ -14,6 +14,7 @@
  SEAICE_wetAlbTemp     = 0.,
  SEAICE_mcPheePiston   = 0.00057,
  SEAICE_areaLossFormula= 2,
+ SEAICEheatConsFix     = .TRUE.,
 #SEAICE_monFreq        = 2592000.,
 #SEAICEwriteState      = .TRUE.,
  &

@@ -59,6 +59,40 @@
   frequency(5) = 1555200000.,
  averagingFreq(5) = 2592000.,
    repeatCycle(5) = 12,
+#---
+  frequency(6) = 86400.0,
+  fields(1:12,6) ='UVELMASS','VVELMASS',
+                 'ADVx_TH ','ADVy_TH ','DFxE_TH ','DFyE_TH ',
+                 'ADVx_SLT','ADVy_SLT','DFxE_SLT','DFyE_SLT',
+                 'AB_gT   ','AB_gS   ',
+#  filename(6) = 'budg2d_hflux_set2',
+   fileFlags(6) = 'DI      ',
+#---
+  frequency(7) = -86400.0,
+   fields(1:3,7) = 'ETAN    ','SIheff  ','SIhsnow ',
+#  filename(7) = 'budg2d_snap_set1',
+   timePhase(7)= 0.,
+   fileFlags(7) = 'D       ',
+#---
+  frequency(8) = -86400.0,
+   fields(1:2,8) = 'THETA   ','SALT    ',
+#  filename(8) = 'budg2d_snap_set2',
+   timePhase(8)= 0.,
+   fileFlags(8) = 'DI      ',
+#---
+  frequency(9) = 86400.0,
+   fields(1:16,9) = 'oceFWflx','SIatmFW ','TFLUX   ','SItflux ','SFLUX   ',
+                  'SRELAX  ','TRELAX  ','oceSflux','oceQnet ','SIatmQnt','oceQsw  ',
+                  'WTHMASS ','WSLTMASS','SIaaflux','SIsnPrcp','SIacSubl',
+   levels(1,9) = 1.,
+#  filename(9) = 'budg2d_zflux_set1',
+   fileFlags(9) = 'D       ',
+#---
+  frequency(10) = 86400.0,
+   fields(1:8,10) ='ADVxHEFF','ADVyHEFF','DFxEHEFF','DFyEHEFF',
+                 'ADVxSNOW','ADVySNOW','DFxESNOW','DFyESNOW',
+#  filename(10) = 'budg2d_hflux_set1',
+   fileFlags(10) = 'D       ',
  &
 
 #--------------------
