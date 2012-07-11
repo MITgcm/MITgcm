@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1686 2012/07/10 15:47:30 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1687 2012/07/11 21:51:27 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/global_ocean.cs32x15/input.seaice :
+ - add SEAICEheatConsFix in data.seaice, ensuring closed ocean+ice heat budget.
+ - add diagnostics (commented out) for budget test using my matlab codes (gcmfaces).
+ - update results (output.seaice.txt) accordingly.
+o verification/lab_sea/input/data.seaice :
+ - remove SEAICEheatConsFix, which is now be tested
+   in global_ocean.cs32x15. The presently coded fix 
+   is only consistent with real fresh water + nlfs.
+ - update results (output.txt) accordingly.
 o pkg/salt_plume: added diagnotic for salt tendency (oceSPtnd).
 o AD_CONFIG.h file:
  - in genmake2: remove "#undef ALLOW_ECCO_OPTIMIZATION" from AD_CONFIG.h;
