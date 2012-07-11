@@ -17,7 +17,6 @@
   SEAICE_wetAlbTemp  = 0.0,
 # this value should be default for the McPhee parameterization
   SEAICE_mcPheeTaper = 0.92,
-  SEAICEheatConsFix  = .TRUE.,
 #- seaice I/O params:
   SEAICEwriteState   = .TRUE.,
  &
