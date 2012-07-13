@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.172 2012/06/30 01:31:21 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.173 2012/07/13 02:38:02 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1596,21 +1596,19 @@ CADJ STORE d_HSNWbyATMonSNW = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE theta(:,:,kSurface,bi,bj) = comlev1_bibj,
 CADJ &                       key = iicekey, byte = isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
-      IF ( SEAICEheatConsFix ) THEN
-C Unlike for evap and precip, the temperature of gained/lost
+cgf Unlike for evap and precip, the temperature of gained/lost
 C ocean liquid water due to melt/freeze of solid water cannot be chosen
-C to be e.g. the ocean SST. It must be done at 0degC. The fix below anticipates
-C on external_forcing_surf.F and applies the correction to QNET.
-      IF ((convertFW2Salt.EQ.-1.).OR.(temp_EvPrRn.EQ.UNSET_RL)) THEN
-C I leave alone the exotic case when onvertFW2Salt.NE.-1 and temp_EvPrRn.NE.UNSET_RL and
-C the small error of the synchronous time stepping case (see external_forcing_surf.F).
+C arbitrarily to be e.g. the ocean SST. Indeed the present seaice model 
+C implies a constant ice temperature of 0degC. If melt/freeze water is exchanged 
+C at a different temperature, it leads to a loss of conservation in the 
+C ocean+ice system. While this is mostly a serious issue in the 
+C real fresh water + non linear free surface framework, a mismatch
+C between ice and ocean boundary condition can result in all cases.
+C Below we therefore anticipate on external_forcing_surf.F 
+C to diagnoze and/or apply the correction to QNET.
         DO J=1,sNy
          DO I=1,sNx
-#ifdef ALLOW_DIAGNOSTICS
-C store unaltered QNET for diagnostic purposes
-           DIAGarrayA(I,J)=QNET(I,J,bi,bj)
-#endif
-C compute the ocean water going to ice/snow, in precip units
+C ocean water going to ice/snow, in precip units
            tmpscal3=rhoConstFresh*maskC(I,J,kSurface,bi,bj)*(
      &       ( d_HSNWbyATMonSNW(I,J)*SNOW2ICE
      &       + d_HSNWbyOCNonSNW(I,J)*SNOW2ICE
@@ -1618,35 +1616,41 @@ C compute the ocean water going to ice/snow, in precip units
      &       + d_HEFFbyNEG(I,J) + d_HSNWbyNEG(I,J)*SNOW2ICE )
      &       * convertHI2PRECIP
      &       - snowPrecip(i,j,bi,bj) * (ONE-AREApreTH(I,J)) )
-C factor in the heat content that external_forcing_surf.F
-C will associate with EMPMR, and remove it from QNET, so that
-C melt/freez water is in effect consistently gained/lost at 0degC
-           IF (temp_EvPrRn.NE.UNSET_RL) THEN
-             QNET(I,J,bi,bj)=QNET(I,J,bi,bj) - tmpscal3*
+C factor in the heat content as done in external_forcing_surf.F
+      IF ( (temp_EvPrRn.NE.UNSET_RL).AND.useRealFreshWaterFlux
+     &     .AND.(nonlinFreeSurf.NE.0) ) THEN
+             tmpscal1 = - tmpscal3*
      &         HeatCapacity_Cp * temp_EvPrRn
-           ELSE
-             QNET(I,J,bi,bj)=QNET(I,J,bi,bj) - tmpscal3*
+      ELSEIF ( (temp_EvPrRn.EQ.UNSET_RL).AND.useRealFreshWaterFlux
+     &         .AND.(nonlinFreeSurf.NE.0) ) THEN
+             tmpscal1 = - tmpscal3*
      &         HeatCapacity_Cp * theta(I,J,kSurface,bi,bj)
-           ENDIF
+      ELSEIF ( (temp_EvPrRn.NE.UNSET_RL) ) THEN
+           tmpscal1 = - tmpscal3*HeatCapacity_Cp*
+     &       ( temp_EvPrRn - theta(I,J,kSurface,bi,bj) )
+      ELSEIF ( (temp_EvPrRn.EQ.UNSET_RL) ) THEN
+           tmpscal1 = ZERO
+      ENDIF
 #ifdef ALLOW_DIAGNOSTICS
-C back out the eventual TFLUX adjustement and fill diag
-           DIAGarrayA(I,J)=QNET(I,J,bi,bj)-DIAGarrayA(I,J)
+C in all cases, diagnoze the boundary condition mismatch to SIaaflux
+           DIAGarrayA(I,J)=tmpscal1
 #endif
+C remove the mismatch when real fresh water is exchanged (at 0degC here)
+      IF ( useRealFreshWaterFlux.AND.(nonlinFreeSurf.GT.0).AND.
+     &   SEAICEheatConsFix ) QNET(I,J,bi,bj)=QNET(I,J,bi,bj)+tmpscal1
          ENDDO
         ENDDO
-      ENDIF
 #ifdef ALLOW_DIAGNOSTICS
         CALL DIAGNOSTICS_FILL(DIAGarrayA,
      &      'SIaaflux',0,1,3,bi,bj,myThid)
 #endif
-      ENDIF
 #endif /* ndef SEAICE_DISABLE_HEATCONSFIX */
 
 C compute the net heat flux, incl. adv. by water, entering ocean+ice
 C ===================================================================
          DO J=1,sNy
           DO I=1,sNx
-cgf 1) compute SIatmQnt (analogous to qnet; excl. adv. by water)
+cgf 1) SIatmQnt (analogous to qnet; excl. adv. by water exch.)
 CML If I consider the atmosphere above the ice, the surface flux
 CML which is relevant for the air temperature dT/dt Eq
 CML accounts for sensible and radiation (with different treatment
@@ -1660,12 +1664,13 @@ CML the ice-ocean system.
      &            a_QSWbyATM_cover(I,J) +
 #endif /* SEAICE_GROWTH_LEGACY */
      &            a_QbyATM_cover(I,J) + a_QbyATM_open(I,J) )
-cgf 2) compute advection by atm to ocean+ice water exchange
-C compute ice/snow water going to atm, in precip units
+cgf 2) SItflux (analogous to tflux; includes advection by water 
+C             exchanged between atmosphere and ocean+ice)
+C solid water going to atm, in precip units
            tmpscal1 = rhoConstFresh*maskC(I,J,kSurface,bi,bj)
      &       * convertHI2PRECIP * ( - d_HSNWbyRAIN(I,J)*SNOW2ICE
      &       + a_FWbySublim(I,J) - r_FWbySublim(I,J) )
-C compute ocean water going to atm, in precip units
+C liquid water going to atm, in precip units
            tmpscal2=rhoConstFresh*maskC(I,J,kSurface,bi,bj)*
      &       ( ( EVAP(I,J,bi,bj)-PRECIP(I,J,bi,bj) )
      &         * ( ONE - AREApreTH(I,J) )
@@ -1674,17 +1679,25 @@ C compute ocean water going to atm, in precip units
 #endif /* ALLOW_RUNOFF */
      &         + ( d_HFRWbyRAIN(I,J) + r_FWbySublim(I,J) )
      &         *convertHI2PRECIP )
-C factor in the advected specific energy (referenced to 0 for 0deC liquid water)
+C In real fresh water flux + nonlinFS, we factor in the advected specific
+C energy (referenced to 0 for 0deC liquid water). In virtual salt flux or
+C linFS, rain/evap get a special treatment (see external_forcing_surf.F).
            tmpscal1= - tmpscal1*
      &       ( -SEAICE_lhFusion + HeatCapacity_Cp * ZERO )
-           IF (temp_EvPrRn.NE.UNSET_RL) THEN
+      IF ( (temp_EvPrRn.NE.UNSET_RL).AND.useRealFreshWaterFlux
+     &     .AND.(nonlinFreeSurf.NE.0) ) THEN
            tmpscal2= - tmpscal2*
      &       ( ZERO + HeatCapacity_Cp * temp_EvPrRn )
-           ELSE
+      ELSEIF ( (temp_EvPrRn.EQ.UNSET_RL).AND.useRealFreshWaterFlux
+     &        .AND.(nonlinFreeSurf.NE.0) ) THEN
            tmpscal2= - tmpscal2*
      &       ( ZERO + HeatCapacity_Cp * theta(I,J,kSurface,bi,bj) )
-           ENDIF
-cgf 3) add the two terms, leadng to SItflux (analogous to TFLUX)
+      ELSEIF ( (temp_EvPrRn.NE.UNSET_RL) ) THEN
+           tmpscal2= - tmpscal2*HeatCapacity_Cp*
+     &       ( temp_EvPrRn - theta(I,J,kSurface,bi,bj) )
+      ELSEIF ( (temp_EvPrRn.EQ.UNSET_RL) ) THEN
+           tmpscal2= ZERO
+      ENDIF
            SItflux(I,J,bi,bj)=
      &            SIatmQnt(I,J,bi,bj)-tmpscal1-tmpscal2     
           ENDDO
