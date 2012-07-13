@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.15 2012/06/15 13:20:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.16 2012/07/13 20:44:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -84,6 +84,7 @@ C        calculation in surface grid-cell below ice-shelf
 #ifndef NONLIN_FRSURF
       doResetHFactors = .FALSE.
 #endif
+
 C--   Set default Vorticity-Term Scheme:
       IF ( vectorInvariantMomentum ) THEN
         IF ( selectVortScheme.EQ.UNSET_I ) THEN
@@ -157,7 +158,7 @@ C--   Advection and Forcing for Temp and salt  on/off flags
 C--   Dynamically Active Tracers : set flags
       tempIsActiveTr = momPressureForcing .AND. tempAdvection
       saltIsActiveTr = momPressureForcing .AND. saltAdvection
-      IF ( eosType.EQ.'IDEALGAS' .AND. atm_Rq.EQ.0. ) THEN
+      IF ( eosType.EQ.'IDEALG' .AND. atm_Rq.EQ.0. ) THEN
         saltIsActiveTr = .FALSE.
       ELSEIF ( eosType.EQ.'LINEAR' ) THEN
         IF ( tAlpha.EQ.0. ) tempIsActiveTr = .FALSE.
