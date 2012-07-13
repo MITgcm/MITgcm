@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.264 2012/07/04 20:17:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.265 2012/07/13 20:34:31 jmc Exp $
 C $Name:  $
 C
 
@@ -241,16 +241,17 @@ C     usingPCoords     :: Set to indicate that we are working in a pressure
 C                         type coordinate (p or p*).
 C     usingZCoords     :: Set to indicate that we are working in a height
 C                         type coordinate (z or z*)
-C     useDynP_inEos_Zc   :: use the dynamical pressure in EOS (with Z-coord.)
-C                           this requires specific code for restart & exchange
+C     useDynP_inEos_Zc :: use the dynamical pressure in EOS (with Z-coord.)
+C                         this requires specific code for restart & exchange
 C     usingCartesianGrid :: If TRUE grid generation will be in a cartesian
 C                           coordinate frame.
 C     usingSphericalPolarGrid :: If TRUE grid generation will be in a
 C                                spherical polar frame.
 C     rotateGrid      :: rotate grid coordinates to geographical coordinates
 C                        according to Euler angles phiEuler, thetaEuler, psiEuler
-C     usingCurvilinearGrid :: If TRUE, use a curvilinear grid (to be provided)
 C     usingCylindricalGrid :: If TRUE grid generation will be Cylindrical
+C     usingCurvilinearGrid :: If TRUE, use a curvilinear grid (to be provided)
+C     hasWetCSCorners :: domain contains CS-type corners where dynamics is solved
 C     deepAtmosphere :: deep model (drop the shallow-atmosphere approximation)
 C     setInterFDr    :: set Interface depth (put cell-Center at the middle)
 C     setCenterDr    :: set cell-Center depth (put Interface at the middle)
@@ -370,7 +371,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
      & fluidIsAir, fluidIsWater,
      & usingPCoords, usingZCoords, useDynP_inEos_Zc,
      & usingCartesianGrid, usingSphericalPolarGrid, rotateGrid,
-     & usingCurvilinearGrid, usingCylindricalGrid,
+     & usingCylindricalGrid, usingCurvilinearGrid, hasWetCSCorners,
      & deepAtmosphere, setInterFDr, setCenterDr,
      & no_slip_sides, no_slip_bottom,
      & useFullLeith, useStrainTensionVisc, useAreaViscLength,
@@ -416,7 +417,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid, rotateGrid
       LOGICAL usingCylindricalGrid
-      LOGICAL usingCurvilinearGrid
+      LOGICAL usingCurvilinearGrid, hasWetCSCorners
       LOGICAL deepAtmosphere
       LOGICAL setInterFDr
       LOGICAL setCenterDr
