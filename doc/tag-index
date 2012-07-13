@@ -1,36 +1,46 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1688 2012/07/13 02:38:11 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1689 2012/07/13 23:25:59 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - fix saltIsActiveTr setting for IdealGas eosType (eosType is 6 character long);
+  - to refine CS-grid check, add logical flag "hasWetCSCorners": true if using
+    Cubed-Sphere Exch with CS-corners inside the domain;
+    make new S/R INI_GLOBAL_DOMAIN from code in ini_linear_phisurf.F to calculate
+    globalArea and to set hasWetCSCorners.
+  - add warning if usingCurvilinearGrid and momAdvection in flux-form (missing
+    metric terms); stop if hasWetCSCorners=T and momAdvection in flux-form.
+  - re-activate the stop if useCDscheme and hasWetCSCorners=T (previously if
+    useCDscheme and useCubedSphereExchange).
 o pkg/seaice/seaice_growth.F :
- - compute the SEAICE_DISABLE_HEATCONSFIX term accordingly 
-   for the (.NOT.useRealFreshWaterFlux).OR.(nonlinFreeSurf.EQ.0)
-   when the previous code was not correct.
- - in all cases diagnoze the boundary condition mismatch to SIaaflux
- - in the case of useRealFreshWaterFlux.AND.(nonlinFreeSurf.GT.0) add
-   that term to QNET (essentially to set the melt/freeze water to 0degC).
-   when SEAICEheatConsFix is true, so that the ocean+ice budget heat is closed.
+  - compute the SEAICE_DISABLE_HEATCONSFIX term accordingly
+    for the (.NOT.useRealFreshWaterFlux).OR.(nonlinFreeSurf.EQ.0)
+    when the previous code was not correct.
+  - in all cases diagnoze the boundary condition mismatch to SIaaflux
+  - in the case of useRealFreshWaterFlux.AND.(nonlinFreeSurf.GT.0) add
+    that term to QNET (essentially to set the melt/freeze water to 0degC).
+    when SEAICEheatConsFix is true, so that the ocean+ice budget heat is closed.
 o verification/global_ocean.cs32x15/input.seaice :
- - add SEAICEheatConsFix in data.seaice, ensuring closed ocean+ice heat budget.
- - add diagnostics (commented out) for budget test using my matlab codes (gcmfaces).
- - update results (output.seaice.txt) accordingly.
+  - add SEAICEheatConsFix in data.seaice, ensuring closed ocean+ice heat budget.
+  - add diagnostics (commented out) for budget test using my matlab codes (gcmfaces).
+  - update results (output.seaice.txt) accordingly.
 o verification/lab_sea/input/data.seaice :
- - remove SEAICEheatConsFix, which is now be tested
-   in global_ocean.cs32x15. The presently coded fix 
-   is only consistent with real fresh water + nlfs.
- - update results (output.txt) accordingly.
+  - remove SEAICEheatConsFix, which is now be tested
+    in global_ocean.cs32x15. The presently coded fix
+    is only consistent with real fresh water + nlfs.
+  - update results (output.txt) accordingly.
 o pkg/salt_plume: added diagnotic for salt tendency (oceSPtnd).
 o AD_CONFIG.h file:
- - in genmake2: remove "#undef ALLOW_ECCO_OPTIMIZATION" from AD_CONFIG.h;
- - remove #include "AD_CONFIG.h" from all included OPTIONS files and
-   add it explicitly in each fortran src file where it is needed.
-   motivation: header file AD_CONFIG.h is generated/modified after "make depend"
-   thus introducing potentially wrong dependency; therefore, better to include
-   it only where it's really needed, and after any other included OPTIONS file
-   (less tempting to bring conditional includes according to ALLOW_ADJOINT_RUN
-   or ALLOW_TANGENTLINEAR_RUN).
+  - in genmake2: remove "#undef ALLOW_ECCO_OPTIMIZATION" from AD_CONFIG.h;
+  - remove #include "AD_CONFIG.h" from all included OPTIONS files and
+    add it explicitly in each fortran src file where it is needed.
+    motivation: header file AD_CONFIG.h is generated/modified after "make depend"
+    thus introducing potentially wrong dependency; therefore, better to include
+    it only where it's really needed, and after any other included OPTIONS file
+    (less tempting to bring conditional includes according to ALLOW_ADJOINT_RUN
+    or ALLOW_TANGENTLINEAR_RUN).
 
 checkpoint63p (2012/07/06)
 o pkg/autodiff:
