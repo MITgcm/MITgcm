@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.53 2011/10/12 01:58:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.54 2012/07/13 22:07:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -56,6 +56,8 @@ C      |-- INI_MASKS_ETC
 C      |
 C      |-- PACKAGES_INIT_FIXED
 C      |  |- ${PKG}_INIT_FIXED
+C      |
+C      |-- INI_GLOBAL_DOMAIN
 C      |
 C      |-- INI_LINEAR_PHISURF
 C      |
@@ -186,6 +188,12 @@ C--   Call fixed data initialization phase of packages
       IF (debugMode) CALL DEBUG_CALL('PACKAGES_INIT_FIXED',myThid)
 #endif
       CALL PACKAGES_INIT_FIXED( myThid )
+
+C--   Set some domain-dependent (global) constant (e.g., globalArea)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_GLOBAL_DOMAIN',myThid)
+#endif
+      CALL INI_GLOBAL_DOMAIN( myThid )
 
 C--   Set Bo_surf => define the Linear Relation: Phi_surf(eta)
 #ifdef ALLOW_DEBUG

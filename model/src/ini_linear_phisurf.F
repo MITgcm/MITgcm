@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.20 2012/06/17 02:22:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.21 2012/07/13 22:07:09 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -14,7 +13,6 @@ C     *==========================================================*
 C     | SUBROUTINE INI_LINEAR_PHISURF
 C     | o Initialise the Linear Relation Phi_surf(eta)
 C     *==========================================================*
-C     | Compute global domain Area ;
 C     | Initialise -Buoyancy at surface level (Bo_surf)
 C     |  to setup the Linear relation: Phi_surf(eta)=Bo_surf*eta
 C     | Initialise phi0surf = starting point for integrating
@@ -30,23 +28,15 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#ifdef ALLOW_EXCH2
-# include "W2_EXCH2_SIZE.h"
-# include "W2_EXCH2_TOPOLOGY.h"
-#endif /* ALLOW_EXCH2 */
-
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid - Thread no. that called this routine.
+C     myThid :: my Thread Id number
       INTEGER myThid
 
 C     == Local variables in common ==
 C     topoHloc had to be in common for multi threading but no longer
 C     needed since MDSIO now allows (2009/06/07) to write local arrays
-      _RL tileArea(nSx,nSy), threadArea
-C     put tileArea in (local) common block to print from master-thread:
-      COMMON / LOCAL_INI_PHISURF / tileArea
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
@@ -58,7 +48,6 @@ C     i,j,k  :: Loop counters
       INTEGER i, j, k
       _RL     pLoc, rhoLoc
       _RL     dPIdp
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 C--   Initialisation
@@ -74,64 +63,6 @@ C--   Initialisation
        ENDDO
       ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
-#ifdef NONLIN_FRSURF
-C--   Save initial geometrical hFac factor into h0Fac (fixed in time):
-C     better here (after packages_init_fixed call) than in INI_MASKS_ETC
-C     in case 1 pkg would need to modify them.
-C    <= moved to INI_MASK_ETC , despite comment above, since:
-C      a) in case 1 pkg is changing hFac, this pkg should also update h0Fac
-C      b) pkg/shelfice does modify hFac but done directly within ini_masks_etc
-#endif /* NONLIN_FRSURF */
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-C--   Calculate global domain area:
-C     use to be in ini_masks_etc.F but has been move after packages_init_fixed
-C     in case 1 pkg (e.g., OBCS) modifies the domain size.
-      threadArea = 0. _d 0
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-C-      Compute the domain Area:
-        tileArea(bi,bj) = 0. _d 0
-        DO j=1,sNy
-         DO i=1,sNx
-          tileArea(bi,bj) = tileArea(bi,bj)
-     &                    + rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
-         ENDDO
-        ENDDO
-c       threadArea = threadArea + tileArea(bi,bj)
-       ENDDO
-      ENDDO
-c#ifdef ALLOW_AUTODIFF_TAMC
-C_jmc: apply GLOBAL_SUM to thread-local variable (not in common block)
-c      _GLOBAL_SUM_RL( threadArea, myThid )
-c#else
-      CALL GLOBAL_SUM_TILE_RL( tileArea, threadArea, myThid )
-c#endif
-      _BEGIN_MASTER( myThid )
-      globalArea = threadArea
-C-    list empty tiles:
-      msgBuf(1:1) = ' '
-      DO bj = 1,nSy
-       DO bi = 1,nSx
-        IF ( tileArea(bi,bj).EQ.0. _d 0 ) THEN
-#ifdef ALLOW_EXCH2
-         WRITE(msgBuf,'(A,I6,A,2I4,A)')
-     &    'Empty tile: #', W2_myTileList(bi,bj), ' (bi,bj=',bi,bj,' )'
-#else
-         WRITE(msgBuf,'(A,I6,I6)') 'Empty tile bi,bj=', bi, bj
-#endif
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-        ENDIF
-       ENDDO
-      ENDDO
-      IF ( msgBuf(1:1).NE.' ' ) THEN
-         WRITE(msgBuf,'(A)') ' '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-      ENDIF
-      _END_MASTER( myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -146,7 +77,7 @@ C    p-coord (z2rUnit=rho*g): Bo_surf = 1/rho(Tref(ksurf),pSurf_0)
 C   Note: on Phi_surf splitting : Non-linear Time-dependent effects on B_surf
 C   [through eta & (T-tRef)_surf] are included in PhiHyd rather than in Bo_surf
 C--
-      IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
+      IF ( usingZCoords ) THEN
 C-  gBaro = gravity (except for External mode test with reduced gravity)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -172,7 +103,7 @@ c            recip_Bo(I,J,bi,bj) = wUnit2rVel(1)*recip_gravity
           ENDDO
          ENDDO
         ENDDO
-      ELSEIF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      ELSEIF ( fluidIsWater ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO J=1-OLy,sNy+OLy
@@ -198,7 +129,7 @@ c            recip_Bo(I,J,bi,bj) = wUnit2rVel(1)*recip_gravity
           ENDDO
          ENDDO
         ENDDO
-      ELSEIF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
+      ELSEIF ( fluidIsAir ) THEN
 C-  use a linearized (in ps) Non-uniform relation : Bo_surf(Po_surf,tRef_surf)
 C--- Bo = d/d_p(Phi_surf) = tRef_surf*d/d_p(PI) ; PI = Cp*(p/Po)^kappa
         DO bj=myByLo(myThid),myByHi(myThid)
@@ -229,12 +160,8 @@ C--   Update overlap regions (jmc: is it really needed ?)
       _EXCH_XY_RL(Bo_surf, myThid)
       _EXCH_XY_RL(recip_Bo, myThid)
 
-      IF ( ( buoyancyRelation .EQ. 'ATMOSPHERIC' .OR.
-     &       buoyancyRelation .EQ. 'OCEANICP'         )
-     &       .AND. .NOT.uniformLin_PhiSurf              ) THEN
-
+      IF ( usingPCoords .AND. .NOT.uniformLin_PhiSurf ) THEN
         CALL WRITE_FLD_XY_RL( 'Bo_surf',' ',Bo_surf,0,myThid)
-
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -252,8 +179,7 @@ C                               or topographic geopotential anom. (p-coord)
          ENDDO
         ENDDO
 
-      IF ( buoyancyRelation .EQ. 'ATMOSPHERIC'
-     &                   .AND. topoFile.NE.' ' ) THEN
+      IF ( fluidIsAir .AND. topoFile.NE.' ' ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
          STOP 'CANNOT PRESENTLY USE THIS OPTION WITH ADJOINT'
