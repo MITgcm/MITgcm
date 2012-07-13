@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1687 2012/07/11 21:51:27 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1688 2012/07/13 02:38:11 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_growth.F :
+ - compute the SEAICE_DISABLE_HEATCONSFIX term accordingly 
+   for the (.NOT.useRealFreshWaterFlux).OR.(nonlinFreeSurf.EQ.0)
+   when the previous code was not correct.
+ - in all cases diagnoze the boundary condition mismatch to SIaaflux
+ - in the case of useRealFreshWaterFlux.AND.(nonlinFreeSurf.GT.0) add
+   that term to QNET (essentially to set the melt/freeze water to 0degC).
+   when SEAICEheatConsFix is true, so that the ocean+ice budget heat is closed.
 o verification/global_ocean.cs32x15/input.seaice :
  - add SEAICEheatConsFix in data.seaice, ensuring closed ocean+ice heat budget.
  - add diagnostics (commented out) for budget test using my matlab codes (gcmfaces).
