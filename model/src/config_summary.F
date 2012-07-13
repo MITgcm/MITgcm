@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.136 2012/06/15 13:20:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.137 2012/07/13 20:48:02 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -695,23 +695,22 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
        CALL WRITE_COPY1D_RS( bufRL,dBHybSigF,Nr,INDEX_K,'dBHybSigF =',
      &  ' /* vertical increment of Hybrid-sigma Coeff. (-) */')
       ENDIF
-      IF ( .NOT.usingCurvilinearGrid ) THEN
-       CALL WRITE_1D_RL( delX, gridNx, INDEX_I, 'delX = ',
-     &  ' /* U spacing ( m - cartesian, degrees - spherical ) */')
-       CALL WRITE_1D_RL( delY, gridNy, INDEX_J, 'delY = ',
-     &  ' /* V spacing ( m - cartesian, degrees - spherical ) */')
-      ENDIF
-      CALL WRITE_0D_RL( xgOrigin, INDEX_NONE,'xgOrigin = ',
-     &'/* X-axis origin of West  edge (cartesian: m, lat-lon: deg.) */')
-      CALL WRITE_0D_RL( ygOrigin, INDEX_NONE,'ygOrigin = ',
-     &'/* Y-axis origin of South edge (cartesian: m, lat-lon: deg.) */')
-      CALL WRITE_0D_RL( rSphere, INDEX_NONE,'rSphere = ',
-     &  ' /* Radius ( ignored - cartesian, m - spherical ) */')
       IF ( usingCurvilinearGrid ) THEN
        CALL WRITE_0D_RL( radius_fromHorizGrid, INDEX_NONE,
      &  'radius_fromHorizGrid = ',
      &  '/* sphere Radius of input horiz. grid */')
+      ELSE
+       CALL WRITE_1D_RL( delX, gridNx, INDEX_I, 'delX = ',
+     &  ' /* U spacing ( m - cartesian, degrees - spherical ) */')
+       CALL WRITE_1D_RL( delY, gridNy, INDEX_J, 'delY = ',
+     &  ' /* V spacing ( m - cartesian, degrees - spherical ) */')
+       CALL WRITE_0D_RL( xgOrigin, INDEX_NONE,'xgOrigin = ',
+     & '/* X-axis origin of West  edge (cartesian: m, lat-lon: deg) */')
+       CALL WRITE_0D_RL( ygOrigin, INDEX_NONE,'ygOrigin = ',
+     & '/* Y-axis origin of South edge (cartesian: m, lat-lon: deg) */')
       ENDIF
+      CALL WRITE_0D_RL( rSphere, INDEX_NONE,'rSphere = ',
+     &  ' /* Radius ( ignored - cartesian, m - spherical ) */')
       CALL WRITE_0D_L(deepAtmosphere,INDEX_NONE, 'deepAtmosphere =',
      &  ' /* Deep/Shallow Atmosphere flag (True/False) */')
       coordLine = 1
@@ -799,6 +798,10 @@ C     Grid along selected grid lines
 
       CALL WRITE_0D_RL( globalArea, INDEX_NONE, 'globalArea =',
      & ' /* Integrated horizontal Area (m^2) */')
+      IF ( useCubedSphereExchange ) THEN
+       CALL WRITE_0D_L( hasWetCSCorners,INDEX_NONE,'hasWetCSCorners =',
+     &  ' /* Domain contains CS corners (True/False) */')
+      ENDIF
 
       i = ILNBLNK(the_run_name)
       IF ( i.GT.0 ) THEN

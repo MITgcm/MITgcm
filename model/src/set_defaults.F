@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.162 2012/07/04 20:19:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.163 2012/07/13 20:46:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -80,6 +80,7 @@ C     In spherical polar distances are in degrees
 C     General curvilinear coordinate system
       usingCurvilinearGrid= .FALSE.
       radius_fromHorizGrid= UNSET_RL
+      hasWetCSCorners     = .FALSE.
 C     General cylindrical coordinate system
       usingCylindricalGrid= .FALSE.
 C     Coriolis map:
