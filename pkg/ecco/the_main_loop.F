@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.116 2012/07/14 19:15:07 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.117 2012/07/14 19:29:56 mmazloff Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1187,7 +1187,7 @@ c--     Accumulate in-situ time averages of temperature, salinity, and SSH.
 #ifdef ALLOW_DIVIDED_ADJOINT
 CADJ STORE mytime = onetape
 #ifdef ALLOW_IESTAU_COST_CONTRIBUTION
-CADJ STORE etan,niter0,salt,theta,totphihyd = onetape
+CADJ STORE etan,salt,theta,totphihyd = onetape
 #endif
 #endif
 c--   Accumulate time averages of temperature, salinity, and SSH.
