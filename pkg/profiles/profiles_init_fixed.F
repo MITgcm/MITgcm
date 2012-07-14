@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.22 2012/07/06 23:10:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.23 2012/07/14 19:57:16 mmazloff Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -123,7 +123,7 @@ c--   == end of interface ==
       write(msgbuf,'(a)') 'general packages parameters :'
       JL  = ILNBLNK( profilesDir )
       if (JL.NE.0) then
-        write(msgbuf,'(a,a)') '  profilesDir ',profilesDir
+        write(msgbuf,'(a,a)') '  profilesDir ',profilesDir(1:JL)
       else
         write(msgbuf,'(a,a)') '  profilesDir ','./'
       endif
