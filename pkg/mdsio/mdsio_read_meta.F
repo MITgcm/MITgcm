@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_meta.F,v 1.5 2011/06/07 22:30:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_meta.F,v 1.6 2012/07/16 19:14:49 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -73,18 +73,17 @@ c     INTEGER map2gl(2)
 CEOP
 
 C     !FUNCTIONS
-      INTEGER  IFNBLNK, ILNBLNK
-      EXTERNAL IFNBLNK, ILNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-C     i, j        :: loop indices
-C     ii,jj       :: indices
+C     i, j, ii    :: loop indices
 C     iG,jG       :: global tile indices
 C     iL,pL,iLm   :: length of character strings (temp. variables)
 C     nDimFil     :: number of dimensions (in meta file)
 C     nFldFil     :: number of fields in "fldList" (in meta file)
 C     nTimFil     :: number of time-specification in "timList" (meta file)
-      INTEGER i,j,ii,jj
+      INTEGER i,j,ii
       INTEGER iG,jG
       INTEGER iL,pL,iLm
       INTEGER mUnit, errIO
@@ -240,17 +239,16 @@ C     3  global end   (ie. the global position of the end   of this file)
           DO j=1,nDimFil
 C-    This is to accomodate with the 2 versions of meta file:
            READ( mUnit, FMT='(A)', END=1001 ) lineBuf
-           ii = IFNBLNK(lineBuf)
-           jj = ILNBLNK(lineBuf)
-           IF ( ii.GT.6 ) THEN
-C     Old version (S/R MDSWRITEMETA, file mdsio_writemeta.F):
-C          start each line with 10 blanks.
-            READ(lineBuf, FMT='(9X,3(1X,I5))', ERR=1002, END=1002 )
-     &                  (dimList(i,j),i=1,3)
-           ELSEIF ( jj.LT.30 ) THEN
+           ii = ILNBLNK(lineBuf)
+           IF ( ii.LT.20 ) THEN
 C     New version (S/R MDS_WRITE_META, file mdsio_write_meta.F):
 C          small-size domain without starting blanks.
             READ(lineBuf, FMT='(3(1X,I5))',    ERR=1002, END=1002 )
+     &                  (dimList(i,j),i=1,3)
+           ELSEIF ( ii.LT.30 ) THEN
+C     Old version (S/R MDSWRITEMETA, file mdsio_writemeta.F):
+C          start each line with 10 blanks.
+            READ(lineBuf, FMT='(9X,3(1X,I5))', ERR=1002, END=1002 )
      &                  (dimList(i,j),i=1,3)
            ELSE
 C     New version (S/R MDS_WRITE_META, file mdsio_write_meta.F):
