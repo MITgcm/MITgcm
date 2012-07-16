@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1689 2012/07/13 23:25:59 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1690 2012/07/16 20:26:46 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exch2:
+  - with empty facet: fix compact-format (W2_mapIO=1) definition (was previously
+    reset to 0 = 1 long line in X)
+o pkg/mdsio:
+  - fix reading of dimensions from meta file for large-size domain
 o model/src:
   - fix saltIsActiveTr setting for IdealGas eosType (eosType is 6 character long);
   - to refine CS-grid check, add logical flag "hasWetCSCorners": true if using
