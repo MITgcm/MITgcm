@@ -1,11 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1691 2012/07/17 01:15:26 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1692 2012/07/17 22:55:19 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src: CG2D_NSA
+  - clean-up:  stop if cg2dNormaliseRHS=T and AUTODIFF
+     and replace GLOBAL_SUM calls with GLOBAL_SUM_TILE.
+  - in test-exp that uses CG2D_NSA (bottom_ctrl & tutorial_tracer_adjsens),
+     change cg2d residual target to be expressed in Wunits (=> do not normalise
+     RHS ; this fix global_max Pb with TAF); update output.
 o verification/tutorial_tracer_adjsens:
-   improve parameter consistencyi (and get rid of warnings):
+   improve parameter consistency (and get rid of warnings):
    - use deltaTFreeSurf=deltaTtracer (better with NonLin FreeSurf);
    - switch Temp Adv Scheme from 81 to 80 (no limiter since theta < 0 is physical)
    - use staggerTimeStep (for stability) in som81; use default rotation period.
