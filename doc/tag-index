@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1690 2012/07/16 20:26:46 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1691 2012/07/17 01:15:26 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/tutorial_tracer_adjsens:
+   improve parameter consistencyi (and get rid of warnings):
+   - use deltaTFreeSurf=deltaTtracer (better with NonLin FreeSurf);
+   - switch Temp Adv Scheme from 81 to 80 (no limiter since theta < 0 is physical)
+   - use staggerTimeStep (for stability) in som81; use default rotation period.
 o pkg/exch2:
   - with empty facet: fix compact-format (W2_mapIO=1) definition (was previously
     reset to 0 = 1 long line in X)
