@@ -11,7 +11,7 @@
  no_slip_bottom=.TRUE.,
  diffKhT=4.E2,
  diffKzT=1.E-4,
- diffKhS=0.0,  
+ diffKhS=0.0,
  diffKzS=3.E-5,
  f0=-1.1914E-04,
  beta=1.3094E-11,
@@ -39,7 +39,8 @@
 # Elliptic solver parameters
  &PARM02
  cg2dMaxIters=100,
- cg2dTargetResidual=1.E-13,
+#cg2dTargetResidual=1.E-13,
+ cg2dTargetResWunit=1.E-18,
  &
 # Time stepping parameters
  &PARM03
