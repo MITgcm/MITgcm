@@ -1,11 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d_nsa.F,v 1.4 2012/05/11 23:29:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d_nsa.F,v 1.5 2012/07/17 21:31:52 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_USE_MPI
-C HACK to avoid global_max
-# define ALLOW_CONST_RHSMAX
-#endif
 
 CML THIS DOES NOT WORK +++++
 #undef ALLOW_LOOP_DIRECTIVE
@@ -91,7 +87,7 @@ C     eta_qrNM1     denote current and previous iterations respectively.
 C     recip_eta_qrNM1 :: reciprocal of eta_qrNM1
 C     cgBeta     :: coeff used to update conjugate direction vector "s".
 C     alpha      :: coeff used to update solution & residual
-C     alpha_aux  :: to avoid the statement: alpha = 1./alpha (for TAMC/TAF)
+C     alphaSum   :: to avoid the statement: alpha = 1./alpha (for TAMC/TAF)
 C     sumRHS     :: Sum of right-hand-side. Sometimes this is a useful
 C                   debugging/trouble shooting diagnostic. For neumann problems
 C                   sumRHS needs to be ~0 or it converge at a non-zero residual.
@@ -101,25 +97,31 @@ C     msgBuf     :: Informational/error message buffer
       INTEGER i, j, it2d
       INTEGER actualIts
       _RL    cg2dTolerance_sq
-      _RL    err_sq
-      _RL    eta_qrN
-      _RL    eta_qrNM1
-      _RL    recip_eta_qrNM1
-      _RL    cgBeta
-      _RL    alpha
-      _RL    alpha_aux
-      _RL    sumRHS
-      _RL    rhsMax, rhsMaxGlobal
-      _RL    rhsNorm
+      _RL    err_sq,  errTile(nSx,nSy)
+      _RL    eta_qrN, eta_qrNtile(nSx,nSy)
+      _RL    eta_qrNM1, recip_eta_qrNM1
+      _RL    cgBeta,  alpha
+      _RL    alphaSum,alphaTile(nSx,nSy)
+      _RL    sumRHS,  sumRHStile(nSx,nSy)
+      _RL    rhsMax,  rhsNorm
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL printResidual
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
       IF ( numIters .GT. numItersMax ) THEN
-         WRITE(standardMessageUnit,'(A,I10)')
-     &        'CG2D_NSA: numIters > numItersMax = ', numItersMax
-         STOP 'NON-NORMAL in CG2D_NSA'
+        WRITE(msgBuf,'(A,I10)')
+     &    'CG2D_NSA: numIters > numItersMax =', numItersMax
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CG2D_NSA'
+      ENDIF
+      IF ( cg2dNormaliseRHS ) THEN
+        WRITE(msgBuf,'(A)') 'CG2D_NSA: cg2dNormaliseRHS is disabled'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &    'set cg2dTargetResWunit (instead of cg2dTargetResidual)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CG2D_NSA'
       ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -137,9 +139,6 @@ C--   Initialise auxiliary constant, some output variable and inverter
       recip_eta_qrNM1= 1. _d 0
 
 C--   Normalise RHS
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE cg2d_b = comlev1_cg2d, key = ikey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
       rhsMax = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -152,52 +151,38 @@ CADJ STORE cg2d_b = comlev1_cg2d, key = ikey, byte = isbyte
        ENDDO
       ENDDO
 
+#ifndef ALLOW_AUTODIFF_TAMC
       IF (cg2dNormaliseRHS) THEN
-C     -  Normalise RHS :
-#ifdef ALLOW_CONST_RHSMAX
-      rhsMaxGlobal=1.
-#else
-      rhsMaxGlobal=rhsMax
-      _GLOBAL_MAX_RL( rhsMaxGlobal, myThid )
-#endif /* ALLOW_CONST_RHSMAX */
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE rhsNorm = comlev1_cg2d, key = ikey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-      IF ( rhsMaxGlobal .NE. 0. ) THEN
-       rhsNorm = 1. _d 0 / rhsMaxGlobal
-      ELSE
+C-    Normalise RHS :
+       _GLOBAL_MAX_RL( rhsMax, myThid )
        rhsNorm = 1. _d 0
-      ENDIF
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE cg2d_b = comlev1_cg2d, key = ikey, byte = isbyte
-CADJ STORE cg2d_x = comlev1_cg2d, key = ikey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
-          cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)*rhsNorm
-          cg2d_x(i,j,bi,bj) = cg2d_x(i,j,bi,bj)*rhsNorm
+       IF ( rhsMax .NE. 0. ) rhsNorm = 1. _d 0 / rhsMax
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)*rhsNorm
+           cg2d_x(i,j,bi,bj) = cg2d_x(i,j,bi,bj)*rhsNorm
+          ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
-C- end Normalise RHS
+C-    end Normalise RHS
       ENDIF
+#endif /* ndef ALLOW_AUTODIFF_TAMC */
 
 C--   Update overlaps
       CALL EXCH_XY_RL( cg2d_x, myThid )
 
 C--   Initial residual calculation
-      err_sq = 0. _d 0
-      sumRHS = 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE cg2d_b = comlev1_cg2d, key = ikey, byte = isbyte
 CADJ STORE cg2d_x = comlev1_cg2d, key = ikey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+        errTile(bi,bj)    = 0. _d 0
+        sumRHStile(bi,bj) = 0. _d 0
         DO j=0,sNy+1
          DO i=0,sNx+1
           cg2d_s(i,j,bi,bj) = 0.
@@ -212,10 +197,9 @@ CADJ STORE cg2d_x = comlev1_cg2d, key = ikey, byte = isbyte
      &    +aS2d(i  ,j+1,bi,bj)*cg2d_x(i  ,j+1,bi,bj)
      &    +aC2d(i  ,j  ,bi,bj)*cg2d_x(i  ,j  ,bi,bj)
      &    )
-          err_sq         = err_sq         +
-     &     cg2d_r(i,j,bi,bj)*cg2d_r(i,j,bi,bj)
-          sumRHS            = sumRHS            +
-     &     cg2d_b(i,j,bi,bj)
+          errTile(bi,bj)    = errTile(bi,bj)
+     &                      + cg2d_r(i,j,bi,bj)*cg2d_r(i,j,bi,bj)
+          sumRHStile(bi,bj) = sumRHStile(bi,bj) + cg2d_b(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -223,8 +207,8 @@ CADJ STORE cg2d_x = comlev1_cg2d, key = ikey, byte = isbyte
 
 c     CALL EXCH_S3D_RL( cg2d_r, 1, myThid )
       CALL EXCH_XY_RL ( cg2d_r, myThid )
-      _GLOBAL_SUM_RL( sumRHS, myThid )
-      _GLOBAL_SUM_RL( err_sq, myThid )
+      CALL GLOBAL_SUM_TILE_RL( errTile,    err_sq, myThid )
+      CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
       actualIts = 0
       IF ( err_sq .NE. 0. ) THEN
         firstResidual = SQRT(err_sq)
@@ -237,7 +221,7 @@ c     CALL EXCH_S3D_RL( cg2d_r, 1, myThid )
         _BEGIN_MASTER( myThid )
         printResidual = printResidualFreq.GE.1
         WRITE(standardmessageunit,'(A,1P2E22.14)')
-     &  ' cg2d: Sum(rhs),rhsMax = ', sumRHS,rhsMaxGlobal
+     &  ' cg2d: Sum(rhs),rhsMax = ', sumRHS,rhsMax
         _END_MASTER( myThid )
       ENDIF
 
@@ -261,13 +245,13 @@ CADJ STORE err_sq = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
 
 C--    Solve preconditioning equation and update
 C--    conjugate direction vector "s".
-       eta_qrN = 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE cg2d_r = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
 CADJ STORE cg2d_s = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
+         eta_qrNtile(bi,bj) = 0. _d 0
          DO j=1,sNy
           DO i=1,sNx
            cg2d_z(i,j,bi,bj) =
@@ -276,25 +260,24 @@ CADJ STORE cg2d_s = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
      &     +pW(i+1,j  ,bi,bj)*cg2d_r(i+1,j  ,bi,bj)
      &     +pS(i  ,j  ,bi,bj)*cg2d_r(i  ,j-1,bi,bj)
      &     +pS(i  ,j+1,bi,bj)*cg2d_r(i  ,j+1,bi,bj)
-           eta_qrN = eta_qrN
+           eta_qrNtile(bi,bj) = eta_qrNtile(bi,bj)
      &     +cg2d_z(i,j,bi,bj)*cg2d_r(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
        ENDDO
 
-       _GLOBAL_SUM_RL(eta_qrN, myThid)
+       CALL GLOBAL_SUM_TILE_RL( eta_qrNtile,eta_qrN,myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
 CMLCADJ STORE eta_qrNM1 = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
 CADJ STORE recip_eta_qrNM1 = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 CML       cgBeta   = eta_qrN/eta_qrNM1
        cgBeta   = eta_qrN*recip_eta_qrNM1
-Cml    store normalisation factor for the next interation
-Cml    (in case there is one).
+Cml    store normalisation factor for the next interation (in case there is one).
 CML    store the inverse of the normalization factor for higher precision
 CML       eta_qrNM1 = eta_qrN
-       recip_eta_qrNM1 = 1./eta_qrN
+       recip_eta_qrNM1 = 1. _d 0/eta_qrN
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -314,8 +297,6 @@ c      CALL EXCH_S3D_RL( cg2d_s, 1, myThid )
 
 C==    Evaluate laplace operator on conjugate gradient vector
 C==    q = A.s
-       alpha     = 0. _d 0
-       alpha_aux = 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifndef ALLOW_LOOP_DIRECTIVE
 CADJ STORE cg2d_s = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
@@ -323,6 +304,7 @@ CADJ STORE cg2d_s = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
+         alphaTile(bi,bj) = 0. _d 0
          DO j=1,sNy
           DO i=1,sNx
            cg2d_q(i,j,bi,bj) =
@@ -331,17 +313,17 @@ CADJ STORE cg2d_s = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
      &    +aS2d(i  ,j  ,bi,bj)*cg2d_s(i  ,j-1,bi,bj)
      &    +aS2d(i  ,j+1,bi,bj)*cg2d_s(i  ,j+1,bi,bj)
      &    +aC2d(i  ,j  ,bi,bj)*cg2d_s(i  ,j  ,bi,bj)
-           alpha_aux = alpha_aux+cg2d_s(i,j,bi,bj)*cg2d_q(i,j,bi,bj)
+           alphaTile(bi,bj) = alphaTile(bi,bj)
+     &                      + cg2d_s(i,j,bi,bj)*cg2d_q(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
        ENDDO
-       _GLOBAL_SUM_RL(alpha_aux,myThid)
-       alpha = eta_qrN/alpha_aux
+       CALL GLOBAL_SUM_TILE_RL( alphaTile, alphaSum, myThid )
+       alpha = eta_qrN/alphaSum
 
 C==    Update simultaneously solution and residual vectors (and Iter number)
 C      Now compute "interior" points.
-       err_sq = 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifndef ALLOW_LOOP_DIRECTIVE
 CADJ STORE cg2d_r = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
@@ -349,18 +331,20 @@ CADJ STORE cg2d_r = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
+         errTile(bi,bj) = 0. _d 0
          DO j=1,sNy
           DO i=1,sNx
            cg2d_x(i,j,bi,bj)=cg2d_x(i,j,bi,bj)+alpha*cg2d_s(i,j,bi,bj)
            cg2d_r(i,j,bi,bj)=cg2d_r(i,j,bi,bj)-alpha*cg2d_q(i,j,bi,bj)
-           err_sq = err_sq+cg2d_r(i,j,bi,bj)*cg2d_r(i,j,bi,bj)
+           errTile(bi,bj) = errTile(bi,bj)
+     &                    + cg2d_r(i,j,bi,bj)*cg2d_r(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
        ENDDO
        actualIts = it2d
 
-       _GLOBAL_SUM_RL( err_sq   , myThid )
+       CALL GLOBAL_SUM_TILE_RL( errTile,    err_sq,    myThid )
        IF ( printResidual ) THEN
         IF ( MOD( it2d-1, printResidualFreq ).EQ.0 ) THEN
          WRITE(msgBuf,'(A,I6,A,1PE21.14)')
@@ -377,11 +361,8 @@ Cml   end of if "err >= cg2dTolerance" block ; end main solver loop
       ENDIF
       ENDDO
 
+#ifndef ALLOW_AUTODIFF_TAMC
       IF (cg2dNormaliseRHS) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE rhsNorm = comlev1_cg2d, key = ikey, byte = isbyte
-CADJ STORE cg2d_x = comlev1_cg2d, key = ikey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
 C--   Un-normalise the answer
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -393,6 +374,7 @@ C--   Un-normalise the answer
          ENDDO
         ENDDO
       ENDIF
+#endif /* ndef ALLOW_AUTODIFF_TAMC */
 
 C--   Return parameters to caller
       IF ( err_sq .NE. 0. ) THEN
@@ -407,10 +389,10 @@ C--   Return parameters to caller
       END
 
 #if ((defined ALLOW_AUTODIFF_TAMC) && (defined ALLOW_LOOP_DIRECTIVE))
-C
+
 C     These routines are routinely part of the TAMC/TAF library that is
 C     not included in the MITcgm, therefore they are mimicked here.
-C
+
       subroutine adstore(chardum,int1,idow,int2,int3,icount)
 
       implicit none
@@ -453,7 +435,6 @@ C     twice the number of timesteps
 
       character*(*) chardum
       integer int1, int2, int3, idow, icount
-
 
 C     the length of this vector must be greater or equal
 C     twice the number of timesteps
