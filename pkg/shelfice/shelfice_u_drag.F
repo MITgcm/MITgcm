@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_u_drag.F,v 1.7 2010/08/24 15:09:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_u_drag.F,v 1.8 2012/07/19 11:26:17 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE.h"
@@ -79,7 +79,7 @@ CML        IF (k.EQ.kTop) maskUp=0.
      &     - 2.*KappaRU(i,j,kUpC)*rdrckp1*viscFac
      &     + SHELFICEDragLinear
      &    )*(1.-maskUp)*uFld(i,j)
-        IF ( (KE(i,j)+KE(i-1,j)) .NE. 0. ) THEN
+        IF ( (KE(i,j)+KE(i-1,j)) .GT. 0. ) THEN
          uDragTerms(i,j)=uDragTerms(i,j)
      &    -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
      &    *SHELFICEDragQuadratic*sqrt(KE(i,j)+KE(i-1,j))
