@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_bottomdrag.F,v 1.10 2012/04/26 21:23:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_bottomdrag.F,v 1.11 2012/07/19 11:22:24 mlosch Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -93,7 +93,7 @@ c      dragFac = wUnit2rVel(k)
 #endif
      &     + bottomDragLinear*dragFac
      &    )*(1.-maskDown)*vFld(i,j)
-        IF ( (KE(i,j)+KE(i,j-1)) .NE. 0. ) THEN
+        IF ( (KE(i,j)+KE(i,j-1)) .GT. 0. ) THEN
          vDragTerms(i,j)=vDragTerms(i,j)
      &    -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
      &    *bottomDragQuadratic*SQRT(KE(i,j)+KE(i,j-1))*dragFac
