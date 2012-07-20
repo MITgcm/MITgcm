@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.19 2012/03/26 01:47:08 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.20 2012/07/20 12:32:27 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -113,6 +113,12 @@ C                    and stagger/synchronous TimeStep
         ENDDO
        ENDIF
 #endif /* ALLOW_THSICE */
+
+#ifdef ALLOW_STREAMICE
+       IF ( seqFlag.EQ.2 .AND. useStreamIce ) THEN
+        CALL STREAMICE_DIAGNOSTICS_STATE( myTime, myIter, myThid )
+       ENDIF
+#endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_LAND
        IF ( seqFlag.EQ.0 .AND. useLand ) THEN
