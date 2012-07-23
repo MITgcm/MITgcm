@@ -1,12 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1693 2012/07/19 11:28:51 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1694 2012/07/23 23:27:10 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification (adjoint exp):
+  - reduce length of simulation by half for experiment global_ocean.cs32x15
+    (std, seaice & seaice_dynmix) and exp tutorial_dic_adjoffline; update output.
 o pkg/mom_common (mom_u/v_bottomdrag), pkg/shelfice (shelfice_u/v_drag)
-  - replace if statements KE.ne.0 with KE.gt.0 to avoid sqrt of negative numbers 
+  - replace if statements KE.ne.0 with KE.gt.0 to avoid sqrt of negative numbers
     of KE that can occur with aggressive optimization
+  + put quadratic bottom drag calculation in separated loops (only done if
+    using bottomDragQuadratic)
 o model/src: CG2D_NSA
   - clean-up:  stop if cg2dNormaliseRHS=T and AUTODIFF
      and replace GLOBAL_SUM calls with GLOBAL_SUM_TILE.
