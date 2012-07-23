@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.11 2012/07/19 11:22:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.12 2012/07/23 15:52:48 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -48,52 +48,74 @@ C  uDragTerms           :: drag term
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
-C  Kp1                  :: =k+1 for k<Nr, =Nr for k>=Nr
-      INTEGER i,j,kDown,kDownC,kBottom
+      INTEGER i,j,kDown,kLowF,kBottom
       _RL viscFac, dragFac
-      _RL rdrckp1, maskDown
+      _RL recDrC
+      _RL recDrF_bot(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
 C-  No-slip BCs impose a drag at bottom
+      viscFac = 0.
+      IF (no_slip_bottom) viscFac = 2.
       IF ( usingZCoords ) THEN
        kBottom = Nr
-       kDown   = min(k+1,kBottom)
-       kDownC  = kDown
+       kDown   = MIN(k+1,Nr)
+       kLowF   = kDown
 c      dragFac = mass2rUnit*rhoConst
 c      dragFac = wUnit2rVel(k+1)
        dragFac = 1. _d 0
       ELSE
        kBottom = 1
-       kDown   = max(k-1,kBottom)
-       kDownC  = k
+       kDown   = MAX(k-1,1)
+       kLowF   = k
        dragFac = mass2rUnit*rhoConst
 c      dragFac = wUnit2rVel(k)
       ENDIF
-      rdrckp1=recip_drC(kDownC)
-      IF (k.EQ.kBottom) rdrckp1=recip_drF(k)
-      viscFac=0.
-      IF (no_slip_bottom) viscFac=1.
-      DO j=1-Oly,sNy+Oly-1
-       DO i=1-Olx+1,sNx+Olx-1
-        maskDown=_maskW(i,j,kDown,bi,bj)
-        IF (k.EQ.kBottom) maskDown=0.
-        uDragTerms(i,j)=
-     &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
-     &   *(
-     &      2.*KappaRU(i,j,kDownC)*rdrckp1*viscFac
+      IF ( k.EQ.kBottom ) THEN
+       recDrC = recip_drF(k)
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          recDrF_bot(i,j) = _recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+        ENDDO
+       ENDDO
+      ELSE
+       recDrC = recip_drC(kLowF)
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          recDrF_bot(i,j) = _recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &                    * ( 1. _d 0 -_maskW(i,j,kDown,bi,bj) )
+        ENDDO
+       ENDDO
+      ENDIF
+
+C-    viscous (no-slip BC) and linear bottom drag
+      DO j=1-OLy,sNy+OLy-1
+       DO i=1-OLx+1,sNx+OLx-1
+         uDragTerms(i,j)=
+     &    - recDrF_bot(i,j)
+     &    *(
+     &       KappaRU(i,j,kLowF)*recDrC*viscFac
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
      &     + bottomdragfld(i,j,bi,bj)*dragFac
 #endif
      &     + bottomDragLinear*dragFac
-     &    )*(1.-maskDown)*uFld(i,j)
-        IF ( (KE(i,j)+KE(i-1,j)) .GT. 0. ) THEN
-         uDragTerms(i,j)=uDragTerms(i,j)
-     &    -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
-     &    *bottomDragQuadratic*SQRT(KE(i,j)+KE(i-1,j))*dragFac
-     &    *(1.-maskDown)*uFld(i,j)
-        ENDIF
+     &     )*uFld(i,j)
        ENDDO
       ENDDO
+
+C-    Add quadratic bottom drag
+      IF ( bottomDragQuadratic.NE.0. _d 0 ) THEN
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
+         IF ( (KE(i,j)+KE(i-1,j)) .GT. 0. ) THEN
+          uDragTerms(i,j) = uDragTerms(i,j)
+     &     - recDrF_bot(i,j)
+     &      *bottomDragQuadratic*SQRT(KE(i,j)+KE(i-1,j))*dragFac
+     &      *uFld(i,j)
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
