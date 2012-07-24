@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.72 2012/04/19 16:06:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.73 2012/07/24 20:16:32 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -8,43 +8,43 @@ C $Name:  $
 
       SUBROUTINE EXF_READPARMS( myThid )
 
-c     ==================================================================
-c     SUBROUTINE exf_readparms
-c     ==================================================================
-c
-c     o This routine initialises the package that calculates external
-c       forcing fields for a given timestep of the MITgcmUV. Parameters
-c       for this package are set in "data.externalforcing". Some additional
-c       precompiler switches have to be specified in "EXF_OPTIONS.h".
-c
-c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu  11-Jan-2000
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c              Christian Eckert eckert@mit.edu  12-Feb-2000
-c              - Changed Routine names (package prefix: exf_)
-c     changed: Patrick Heimbach, heimbach@mit.edu  04-May-2000
-c              - changed the handling of precip and sflux with respect
-c                to CPP options ALLOW_BULKFORMULAE and ALLOW_ATM_TEMP
-c     changed: Ralf.Giering@FastOpt.de 25-Mai-20000
-c              - moved relaxation and climatology to extra routines
-c              Patrick Heimbach, heimbach@mit.edu  04-May-2000
-c              - added obcs parameters
-c     changed: Virginie Thierry, vthierry@ucsd.edu 04-June-2001
-c              - added new obcs parameters (for each boundaries)
-c     included runoff D. Stammer, Nov. 25, 2001
-c     included pressure forcing. heimbach@mit.edu 05-Nov-2002
-c     added "repeatPeriod" for cycling of forcing datasets 19-Dec-2002
-c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
-c
-c     ==================================================================
-c     SUBROUTINE exf_readparms
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE exf_readparms
+C     ==================================================================
+C
+C     o This routine initialises the package that calculates external
+C       forcing fields for a given timestep of the MITgcmUV. Parameters
+C       for this package are set in "data.externalforcing". Some additional
+C       precompiler switches have to be specified in "EXF_OPTIONS.h".
+C
+C     started: Christian Eckert eckert@mit.edu  30-Jun-1999
+C
+C     changed: Christian Eckert eckert@mit.edu  11-Jan-2000
+C              - Restructured the code in order to create a package
+C                for the MITgcmUV.
+C              Christian Eckert eckert@mit.edu  12-Feb-2000
+C              - Changed Routine names (package prefix: exf_)
+C     changed: Patrick Heimbach, heimbach@mit.edu  04-May-2000
+C              - changed the handling of precip and sflux with respect
+C                to CPP options ALLOW_BULKFORMULAE and ALLOW_ATM_TEMP
+C     changed: Ralf.Giering@FastOpt.de 25-Mai-20000
+C              - moved relaxation and climatology to extra routines
+C              Patrick Heimbach, heimbach@mit.edu  04-May-2000
+C              - added obcs parameters
+C     changed: Virginie Thierry, vthierry@ucsd.edu 04-June-2001
+C              - added new obcs parameters (for each boundaries)
+C     included runoff D. Stammer, Nov. 25, 2001
+C     included pressure forcing. heimbach@mit.edu 05-Nov-2002
+C     added "repeatPeriod" for cycling of forcing datasets 19-Dec-2002
+C     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
+C
+C     ==================================================================
+C     SUBROUTINE exf_readparms
+C     ==================================================================
 
       implicit none
 
-c     == global variables ==
+C     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
@@ -60,12 +60,10 @@ c#include "cal.h"
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
 
-c     == routine arguments ==
-
+C     == routine arguments ==
       INTEGER myThid
 
-c     == local variables ==
-
+C     == local variables ==
 #ifdef USE_EXF_INTERPOLATION
       INTEGER gridNx, gridNy
       INTEGER j
@@ -74,10 +72,9 @@ c     == local variables ==
       INTEGER iUnit
       CHARACTER*(2) exf_yftype
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+C     == end of interface ==
 
-c     == end of interface ==
-
-c     Surface flux data.
+C     Surface flux data.
       NAMELIST /EXF_NML_01/
      &      windstressmax,       repeatPeriod,    exf_albedo,
      &   ocean_emissivity,     ice_emissivity, snow_emissivity,
@@ -257,9 +254,9 @@ c     Surface flux data.
 # endif /* ALLOW_EXCH2 */
 #endif /* USE_EXF_INTERPOLATION */
 
-      _BEGIN_MASTER(mythid)
+      _BEGIN_MASTER(myThid)
 
-c     Set default values.
+C     Set default values.
 
       year2sec           = 365.*86400.
       exf_verbose        = debugMode
@@ -310,13 +307,13 @@ c     humid_fac   =  atm_Rq     <- default is zero !!!
       exf_iceCe        = 1.63 _d -3
       exf_iceCh        = 1.63 _d -3
       exf_albedo       = 0.1 _d 0
-c--   this default is chosen to be backward compatible with
-c--   an earlier setting of 5.5 = ocean_emissivity*stefanBoltzmann
+C--   this default is chosen to be backward compatible with
+C--   an earlier setting of 5.5 = ocean_emissivity*stefanBoltzmann
       ocean_emissivity = 5.50 _d-8 / 5.670 _d-8
       ice_emissivity   = 0.95 _d 0
       snow_emissivity  = 0.95 _d 0
 
-c     Calendar data.
+C     Calendar data.
       hfluxstartdate1    = 0
       hfluxstartdate2    = 0
       hfluxperiod        = 0.0 _d 0
@@ -524,10 +521,10 @@ c     Calendar data.
 
       exf_scal_BulkCdn   = 1.0  _d 0
 
-c     Initialise freezing temperature of sea water
+C     Initialise freezing temperature of sea water
       climtempfreeze     = -1.9 _d 0
 
-c     Data files.
+C     Data files.
       hfluxfile          = ' '
       atempfile          = ' '
       aqhfile            = ' '
@@ -552,7 +549,7 @@ c     Data files.
       climustrfile       = ' '
       climvstrfile       = ' '
 
-c     Start dates.
+C     Start dates.
       hfluxstartdate     = 0.
       atempstartdate     = 0.
       aqhstartdate       = 0.
@@ -585,14 +582,14 @@ c     Start dates.
       climustrstartdate  = 0.
       climvstrstartdate  = 0.
 
-c     Initialise file type and field precision
+C     Initialise file type and field precision
       exf_iprec            = 32
       exf_iprec_obcs       = UNSET_I
       exf_yftype           = 'RL'
       useExfYearlyFields   = .FALSE.
       twoDigitYear         = .FALSE.
 
-c     Input scaling factors.
+C     Input scaling factors.
       exf_inscal_hflux     =  1. _d 0
       exf_inscal_sflux     =  1. _d 0
       exf_inscal_ustress   =  1. _d 0
@@ -620,7 +617,7 @@ c     Input scaling factors.
       exf_inscal_climvstr  =  1. _d 0
       exf_inscal_areamask  =  1. _d 0
 
-c     Output scaling factors.
+C     Output scaling factors.
       exf_outscal_hflux    =  1. _d 0
       exf_outscal_sflux    =  1. _d 0
       exf_outscal_ustress  =  1. _d 0
@@ -813,7 +810,7 @@ C     model grid cell-center position (leading to trivial interpolation)
 
 #endif /* USE_EXF_INTERPOLATION */
 
-c     Next, read the forcing data file.
+C     Next, read the forcing data file.
       WRITE(msgBuf,'(A)') 'EXF_READPARMS: opening data.exf'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
@@ -908,77 +905,38 @@ C--   Derive other parameters:
            useExfZenAlbedo=.TRUE.
       ENDIf
 
-#ifdef ALLOW_CLIMSST_RELAXATION
-cgf warning before we overwrite tauThetaClimRelax/thetaClimFile:
-      IF ( doThetaClimRelax ) THEN
-        WRITE(msgBuf,'(2A)') '** WARNING ** EXF_READPARMS:',
-     &   ' useEXF implies that tauThetaClimRelax'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)
-        WRITE(msgBuf,'(2A)') '** WARNING ** ',
-     &   ' and thetaClimFile from "data" file are overwritten'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)
+C--   Overwrite tauThetaClimRelax but stop if already set.
+C- Note: need this, even if EXF option ALLOW_CLIMSST_RELAXATION is undef;
+C        this prevents to apply relaxation towards potentially wrong SST since,
+C        with EXF, we skip the update of loaded SST in EXTERNAL_FIELDS_LOAD.
+      IF ( tauThetaClimRelax.NE.0. _d 0 ) THEN
+        WRITE(msgBuf,'(2A)') 'EXF_READPARMS: ',
+     &   'with EXF, cannot use "tauThetaClimRelax" in "data"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'since SST relax. is handled by EXF',
+     &   ' (data.exf, "climsstTauRelax")'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R EXF_READPARMS'
       ENDIF
-cgf overwrite tauThetaClimRelax/thetaClimFile:
-      tauThetaClimRelax=climsstTauRelax
-      thetaClimFile=' '
-cgf overwrite doThetaClimRelax based on data.exf:
-      IF ( climsstTauRelax.NE.0.) THEN
-        IF (climsstfile.EQ.' ') THEN
-           WRITE(msgBuf,'(A)')
-     &     'S/R EXF_READPARMS: climsstTauRelax > 0 but'
-           CALL PRINT_ERROR( msgBuf, myThid )
-           WRITE(msgBuf,'(A)')
-     &     'S/R EXF_READPARMS: climsstfile is undefined'
-           CALL PRINT_ERROR( msgBuf, myThid )
-           STOP 'ABNORMAL END: S/R EXF_READPARMS'
-        ELSE
-           doThetaClimRelax=.TRUE.
-        ENDIF
-      ELSE
-           doThetaClimRelax=.FALSE.
-      ENDIf
-#endif
+      tauThetaClimRelax = climsstTauRelax
 
-#ifdef ALLOW_CLIMSSS_RELAXATION
-cgf warning before we overwrite tauSaltClimRelax/saltClimFile:
-      IF ( doSaltClimRelax ) THEN
-        WRITE(msgBuf,'(2A)') '** WARNING ** EXF_READPARMS:',
-     &   ' useEXF implies that tauSaltClimRelax'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)
-        WRITE(msgBuf,'(2A)') '** WARNING ** ',
-     &   ' and saltClimFile from "data" file are overwritten'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)
+C--   Overwrite tauSaltClimRelax but stop if already set.
+      IF ( tauSaltClimRelax.NE.0. _d 0 ) THEN
+        WRITE(msgBuf,'(2A)') 'EXF_READPARMS: ',
+     &   'with EXF, cannot use "tauSaltClimRelax" in "data"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'since SSS relax. is handled by EXF',
+     &   ' (data.exf, "climsssTauRelax")'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R EXF_READPARMS'
       ENDIF
-cgf overwrite tauSaltClimRelax/saltClimFile:
-      tauSaltClimRelax=climsssTauRelax
-      saltClimFile=' '
-cgf overwrite doSaltClimRelax based on data.exf:
-      IF ( climsssTauRelax.NE.0.) THEN
-        IF (climsssfile.EQ.' ') THEN
-           WRITE(msgBuf,'(A)')
-     &     'S/R EXF_READPARMS: climsssTauRelax > 0 but'
-           CALL PRINT_ERROR( msgBuf, myThid )
-           WRITE(msgBuf,'(A)')
-     &     'S/R EXF_READPARMS: climsssfile is undefined'
-           CALL PRINT_ERROR( msgBuf, myThid )
-           STOP 'ABNORMAL END: S/R EXF_READPARMS'
-        ELSE
-           doSaltClimRelax=.TRUE.
-        ENDIF
-      ELSE
-           doSaltClimRelax=.FALSE.
-      ENDIF
-#endif
+      tauSaltClimRelax = climsssTauRelax
 
-c     Complete the start date specifications for the forcing
-c     fields to get a complete calendar date array.
+C     Complete the start date specifications for the forcing
+C     fields to get a complete calendar date array.
 C     => moved to EXF_INIT_FIXED
 
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
       _BARRIER
 
       RETURN

@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.16 2012/01/05 23:41:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.17 2012/07/24 20:16:32 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
-      SUBROUTINE EXF_CHECK( mythid )
+      SUBROUTINE EXF_CHECK( myThid )
 
 c     ==================================================================
 c     SUBROUTINE EXF_CHECK
@@ -21,9 +21,9 @@ c     == global variables ==
 #include "EXF_CONSTANTS.h"
 c     == routine arguments ==
 
-c     mythid - thread number for this instance of the routine.
+c     myThid - thread number for this instance of the routine.
 
-      INTEGER mythid
+      INTEGER myThid
 
 c     == local variables ==
 
@@ -68,7 +68,7 @@ c     check for consistency
      &     select_ZenAlbedo .NE. 0 ) THEN
         WRITE(msgBuf,'(A,A)') 'EXF_CHECK: unsupported option',
      &        ' when ALLOW_ZENITHANGLE is not defined'
-        CALL PRINT_ERROR( msgBuf , mythid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R EXF_CHECK'
       ENDIF
 #endif
@@ -77,13 +77,13 @@ c     check for consistency
       IF ( usingCartesianGrid .OR. usingCylindricalGrid ) then
         WRITE(msgBuf,'(A,A)') 'EXF_CHECK: ALLOW_ZENITHANGLE does ',
      &        'not work for carthesian and cylindrical grids'
-        CALL PRINT_ERROR( msgBuf , mythid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R EXF_CHECK'
       ENDIF
       IF ( select_ZenAlbedo.LT.0 .OR. select_ZenAlbedo.GT.3 ) then
         WRITE(msgBuf,'(A,A)') 'EXF_CHECK: unsupported ',
      &        'select_ZenAlbedo choice'
-        CALL PRINT_ERROR( msgBuf , mythid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R EXF_CHECK'
       ENDIF
       IF ( select_ZenAlbedo.EQ.2 .) then
@@ -94,7 +94,7 @@ c     check for consistency
       IF ( select_ZenAlbedo.GT.2 .AND. swdownperiod.GT. 21600 ) then
        WRITE(msgBuf,'(A,A)') 'EXF_CHECK: using diurnal albedo ',
      &        'formula requires diurnal downward shortwave forcing'
-        CALL PRINT_ERROR( msgBuf , mythid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R EXF_CHECK'
       ENDIF
       IF ( select_ZenAlbedo.GT.2 .AND. swdownperiod.GT. 3600 ) then
@@ -187,6 +187,46 @@ C-    stop if one expects interp+rotation (Curvilin-G) which will not happen
 #ifdef ALLOW_CLIMSALT_RELAXATION
       STOP 'ALLOW_CLIMSALT_RELAXATION no longer supported. Use pkg/rbcs'
 #endif
+
+      IF ( climsstTauRelax.NE.0. ) THEN
+#ifndef ALLOW_CLIMSST_RELAXATION
+        WRITE(msgBuf,'(A)') 'EXF_CHECK: climsstTauRelax > 0'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &        'but ALLOW_CLIMSST_RELAXATION is not defined'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R EXF_CHECK'
+#endif
+       IF ( climsstfile.EQ.' ' ) THEN
+        WRITE(msgBuf,'(A)')
+     &     'S/R EXF_CHECK: climsstTauRelax > 0 but'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &     'S/R EXF_CHECK: climsstfile is not set'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R EXF_CHECK'
+       ENDIf
+      ENDIf
+
+      IF ( climsssTauRelax.NE.0. ) THEN
+#ifndef ALLOW_CLIMSSS_RELAXATION
+        WRITE(msgBuf,'(A)') 'EXF_CHECK: climsssTauRelax > 0'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &        'but ALLOW_CLIMSSS_RELAXATION is not defined'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R EXF_CHECK'
+#endif
+       IF ( climsssfile.EQ.' ' ) THEN
+        WRITE(msgBuf,'(A)')
+     &     'S/R EXF_CHECK: climsssTauRelax > 0 but'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &     'S/R EXF_CHECK: climsssfile is not set'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R EXF_CHECK'
+       ENDIF
+      ENDIF
 
       RETURN
       END
