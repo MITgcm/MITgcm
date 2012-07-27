@@ -1,30 +1,36 @@
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/crontab_jmc,v 1.3 2010/10/29 21:19:46 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/crontab_jmc,v 1.4 2012/07/27 12:44:48 jmc Exp $
 
 ------------------------------------
-#-from: jmc@faulks.csail.mit.edu 
-#  current output of: crontab -l
-# note: csail scripts update has been moved to mitgcm.org/scripts/daily_update
-MAILTO=jmc@ocean.mit.edu
-
-#30 23 * * * /u/u2/jmc/testing/scripts/daily_update
-05 00 * * *  /u/u2/jmc/testing/csail/test_faulks
-
-------------------------------------
-#-from: jmc@baudelaire.csail.mit.edu 
+#-from: jmc@baudelaire.csail.mit.edu
 #  current output of: crontab -l
 MAILTO=jmc@ocean.mit.edu
 
 10 00 * * *  /u/u2/jmc/testing/csail/test_baudelaire
 
 ------------------------------------
-#-from: jmc@hugo.csail.mit.edu (down since March 30, 2009)
-#  current output of: crontab -l
-#05 01 * * 1,3,6  /u/u2/jmc/testing/csail/test_hugo
-
-#-from: jmc@dickens.csail.mit.edu 
+#-from: jmc@dickens.csail.mit.edu
 #  current output of: crontab -l
 MAILTO=jmc@ocean.mit.edu
 
-15 00 * * *        /u/u2/jmc/testing/csail/test_dickens
+15 00 * * *  /u/u2/jmc/testing/csail/test_dickens
 
 ------------------------------------
+# and the update of ~jmc/testing/csail/ dir is part of the script
+#  mitgcm.org/scripts/daily_update run daily from cron on forge.csail.mit.edu:
+30 23 * * * /u/u2/jmc/testing/scripts/daily_update
+
+------------------------------------
+#-----------------
+# older cron-jobs:
+#-----------------
+#-from: jmc@faulks.csail.mit.edu (down since March 30, 2009)
+#  current output of: crontab -l
+#MAILTO=jmc@ocean.mit.edu
+##30 23 * * * /u/u2/jmc/testing/scripts/daily_update
+#05 00 * * *  /u/u2/jmc/testing/csail/test_faulks
+#
+#-from: jmc@hugo.csail.mit.edu (down since March 30, 2009)
+#  current output of: crontab -l
+#05 01 * * 1,3,6  /u/u2/jmc/testing/csail/test_hugo
+------------------------------------
+
