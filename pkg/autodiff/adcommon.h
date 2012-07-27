@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.29 2011/08/18 09:10:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.30 2012/07/27 19:55:08 jmc Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -20,7 +20,6 @@ c#ifdef ALLOW_SEAICE
 c# include "SEAICE_OPTIONS.h"
 c#endif
 
-
       common /addynvars_r/
      &                     adetan,
      &                     aduvel, advvel, adwvel,
@@ -41,7 +40,7 @@ c#endif
       _RL aduvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL advvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adwvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-#ifdef ALLOW_ADAMSBASHFORTH_3     
+#ifdef ALLOW_ADAMSBASHFORTH_3
       _RL adgtnm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy,2)
       _RL adgsnm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy,2)
       _RL adgunm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy,2)
@@ -58,7 +57,7 @@ c#endif
       _RL adetah(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
 #ifdef ALLOW_AUTODIFF_MONITOR_DIAG
-      common /addynvars_diag/ 
+      common /addynvars_diag/
      &                     adtotphihyd, adrhoinsitu
       _RL adrhoinsitu(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adtotphihyd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -124,19 +123,16 @@ c#endif
       COMMON /ADDYNVARS_KAPREDI/
      &                       adkapredi
       _RL  adkapredi (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif 
+#endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
       COMMON /ADDYNVARS_BOTTOMDRAG/
      &                adbottomdragfld
       _RL  adbottomdragfld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 #ifdef ALLOW_EDDYPSI_CONTROL
-      double precision adeddypsix(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,
-     $nsy)
-      double precision adeddypsiy(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,
-     $nsy)
+      _RS adEddyPsiX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS adEddyPsiY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       common /adeddypsiffields/ adeddypsix, adeddypsiy
-
 #endif
 
 #ifdef ALLOW_EXF
@@ -144,11 +140,11 @@ c#endif
       _RL adhflux(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adsflux(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /adexf_hsflux_r/ adhflux, adsflux
-c
+
       _RL adustress(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL advstress(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /adexf_stress_r/ adustress, advstress
-c
+
       _RL adwspeed(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /adexf_wspeed_r/ adwspeed
 
@@ -157,7 +153,7 @@ c
       _RL adaqh       (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adlwflux    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adprecip    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      common /adexf_atm_temp_r/ adatemp, adaqh, adlwflux, 
+      common /adexf_atm_temp_r/ adatemp, adaqh, adlwflux,
      & adprecip
 #  ifdef SHORTWAVE_HEATING
       _RL adswflux    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -192,11 +188,11 @@ c
       _RL adhsnow (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL aduice  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL advice  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      common /adseaice_dynvars_1/ 
+      common /adseaice_dynvars_1/
      &     adarea, adheff, adhsnow, aduice, advice
 # ifdef SEAICE_VARIABLE_SALINITY
       _RL adhsalt (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      common /seaice_salinity_r/ 
+      common /seaice_salinity_r/
      &     adhsalt
 # endif
 #endif /* ALLOW_SEAICE */
