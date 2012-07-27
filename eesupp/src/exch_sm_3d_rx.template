@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_sm_3d_rx.template,v 1.4 2012/05/14 13:15:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_sm_3d_rx.template,v 1.5 2012/07/27 18:54:40 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -73,8 +73,8 @@ CEOP
       negOne = 1.
       IF (withSigns) negOne = -1.
 
-      IF (useCubedSphereExchange) THEN
-C---  using CubedSphereExchange:
+      IF ( useCubedSphereExchange .AND. withSigns ) THEN
+C---  using CubedSphereExchange with Signs:
 
 C--   First call the exchanges
 
@@ -142,7 +142,7 @@ C--   end of Loops on tile and level indices (k,bi,bj).
        ENDDO
 
       ELSE
-C---  not using CubedSphereExchange:
+C---  not using CubedSphereExchange or without Signs:
 
 #ifdef DISCONNECTED_TILES
        CALL EXCH0_RX( phi,
@@ -156,7 +156,7 @@ C---  not using CubedSphereExchange:
      I            EXCH_UPDATE_CORNERS, myThid )
 #endif /* DISCONNECTED_TILES */
 
-C---  using or not using CubedSphereExchange: end
+C---  using or not using CubedSphereExchange with Signs: end
       ENDIF
 
 #endif /* ALLOW_EXCH2 */

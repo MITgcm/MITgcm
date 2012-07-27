@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_sm_3d_rx.template,v 1.6 2012/03/26 19:43:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_sm_3d_rx.template,v 1.7 2012/07/27 18:55:18 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -80,8 +80,8 @@ C--   First call the exchanges
 C- note: can substitute the low-level S/R call above with:
 c      CALL EXCH2_3D_RX( phi, myNz, myThid )
 
-      IF ( useCubedSphereExchange ) THEN
-C---  using CubedSphereExchange:
+      IF ( useCubedSphereExchange .AND. withSigns ) THEN
+C---  using CubedSphereExchange with Signs:
 
 C--   Then we may need to switch the signs depending on which cube face
 C     we are located.
@@ -178,7 +178,7 @@ C--    end of Loops on tile and level indices (k,bi,bj).
         ENDDO
        ENDDO
 
-C---  using or not using CubedSphereExchange: end
+C---  using or not using CubedSphereExchange with Signs: end
       ENDIF
 
       RETURN
