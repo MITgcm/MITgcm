@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.29 2011/11/05 22:39:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.30 2012/07/27 18:12:57 heimbach Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -62,6 +62,7 @@ c     == local variables ==
       _RL     dumtime
       _RL     dummy
 
+      integer iarr
       logical doglobalread
       logical ladinit
 
@@ -1038,6 +1039,61 @@ c--   == end of interface ==
      &                         optimcycle,
      &                         mythid, dummy)
 #endif /* ALLOW_ETAN0_CONTROL */
+
+#ifdef ALLOW_GENARR2D_CONTROL
+      else if ( grdchkvarindex .ge. 101 .and.
+     &          grdchkvarindex .le. 100+maxCtrlArr2D ) then
+       do iarr = 1, maxCtrlArr2D
+        if ( grdchkvarindex .eq. 100+iarr ) then
+         il=ilnblnk( xx_genarr2d_file(iarr) )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_genarr2d_file(iarr)(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_genarr2d_file(iarr)(1:il),'.',optimcycle
+         end if
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         xx_comp_pert = xx_comp_ref + localEps
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
+         call active_write_xy( fname, tmpfld2d, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+        endif
+       enddo
+#endif /* ALLOW_GENARR2D_CONTROL */
+
+#ifdef ALLOW_GENARR3D_CONTROL
+      else if ( grdchkvarindex .ge. 201 .and.
+     &          grdchkvarindex .le. 200+maxCtrlArr3D ) then
+       do iarr = 1, maxCtrlArr3D
+        if ( grdchkvarindex .eq. 200+iarr ) then
+         il=ilnblnk( xx_genarr3d_file(iarr) )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_genarr3d_file(iarr)(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_genarr3d_file(iarr)(1:il),'.',optimcycle
+         end if
+
+         call active_read_xyz( fname, tmpfld3d, 1,
+     &                         doglobalread, ladinit, optimcycle,
+     &                         mythid, dummy)
+
+         xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
+         xx_comp_pert = xx_comp_ref + localEps
+         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
+
+         call active_write_xyz( fname, tmpfld3d, 1,
+     &                          optimcycle,
+     &                          mythid, dummy)
+        endif
+       enddo
+#endif /* ALLOW_GENARR3D_CONTROL */
 
       else
 ce      --> this index does not exist yet.
