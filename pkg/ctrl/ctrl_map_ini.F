@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.33 2011/03/13 22:25:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.34 2012/07/27 18:22:42 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -555,6 +555,10 @@ c--   SSS relaxation coefficient.
           enddo
         enddo
       enddo
+#endif
+
+#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL))
+      call ctrl_map_ini_genarr( mythid )
 #endif
 
 #ifdef ALLOW_SEAICE

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.58 2012/04/19 20:01:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.59 2012/07/27 18:22:42 heimbach Exp $
 C $Name:  $
 
 
@@ -23,15 +23,16 @@ c
 c     nwet[c/s/w]tile - Number of wet points in a tile for center (c),
 c                       south (s), and western (w) mask, resp. .
 
-      integer     dimgen2d
-      integer     dimgen3d
-      parameter ( dimgen2d = 1, dimgen3d = 0 )
+      integer     maxCtrlArr2D, maxCtrlArr3D
+      parameter ( maxCtrlArr2D = 3, maxCtrlArr3D = 3 )
 
       integer     maxcvars
 #if (defined (CTRL_SET_OLD_MAXCVARS_30))
       parameter ( maxcvars = 30 )
 #elif (defined (CTRL_SET_OLD_MAXCVARS_40))
       parameter ( maxcvars = 40 )
+#elif (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL))
+      parameter ( maxcvars = 300 )
 #else
       parameter ( maxcvars = 60 )
 #endif
@@ -713,6 +714,13 @@ cHFLUXM_CONTROL
       character*(MAX_LEN_FNAM) xx_hfluxm_file
 cHFLUXM_CONTROL
       character*(MAX_LEN_FNAM) xx_shifwflx_file
+
+      common /controlfiles_carr/
+     &     xx_genarr2d_file
+     &   , xx_genarr3d_file
+      character*(MAX_LEN_FNAM)
+     &     xx_genarr2d_file(maxCtrlArr2D)
+     &   , xx_genarr3d_file(maxCtrlArr3D)
 
       common /packnames_c/
      &                      yadmark,

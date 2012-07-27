@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_tamc_compatibility,v 1.5 2012/04/19 20:01:29 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_tamc_compatibility,v 1.6 2012/07/27 18:25:39 heimbach Exp $
 #  $Name:  $
 #
 
@@ -62,6 +62,8 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_uvel_dummy        \
                     xx_vvel_dummy        \
                     xx_etan_dummy        \
+                    xx_genarr2d_dummy    \
+                    xx_genarr3d_dummy    \
                     xx_siarea_dummy        \
                     xx_siheff_dummy        \
                     xx_sihsnow_dummy        \

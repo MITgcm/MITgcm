@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.37 2012/07/06 23:10:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.38 2012/07/27 18:22:42 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -54,6 +54,7 @@ c     == local variables ==
       character*(max_len_mbuf) msgbuf
 
       integer nwetc3d
+      integer iarr
 
 c     == external ==
 
@@ -116,9 +117,9 @@ c--   Read the namelist input.
      &  xx_sss_file, xx_sss_remo_intercept, xx_sss_remo_slope,
      &  xx_sststartdate1, xx_sststartdate2, xx_sstperiod,
      &  xx_sssstartdate1, xx_sssstartdate2, xx_sssperiod,
-     &  xx_depth_file, xx_gen2d_file, xx_gen3d_file,
-     &  xx_efluxy_file, xx_efluxp_file,
-     &  xx_bottomdrag_file,
+     &  xx_depth_file, xx_gen2d_file, xx_gen3d_file, 
+     &  xx_genarr2d_file, xx_genarr3d_file,
+     &  xx_efluxy_file, xx_efluxp_file, xx_bottomdrag_file,
      &  xx_edtaux_file, xx_edtauy_file,
      &  xx_uvel_file, xx_vvel_file, xx_etan_file,
      &  xx_siarea_file, xx_siheff_file, xx_sihsnow_file,
@@ -165,6 +166,17 @@ c--     Set default values.
 c
         xx_gen2d_file      = 'xx_gen2d'
         xx_gen3d_file      = 'xx_gen3d'
+        do iarr = 1, maxCtrlArr2D
+         write(xx_genarr2d_file(iarr)(1:14),'(a,i2.2)')
+     &        'xx_genarr2d_', iarr
+         write(xx_genarr2d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
+        enddo
+c
+        do iarr = 1, maxCtrlArr3D
+         write(xx_genarr3d_file(iarr)(1:14),'(a,i2.2)')
+     &        'xx_genarr3d_', iarr
+         write(xx_genarr3d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
+        enddo
 c
         xx_hfluxstartdate1 =   0
         xx_hfluxstartdate2 =   0

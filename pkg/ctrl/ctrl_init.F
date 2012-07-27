@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.45 2012/04/21 14:56:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.46 2012/07/27 18:22:42 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -54,6 +54,7 @@ c     == local variables ==
       integer startrec
       integer endrec
       integer diffrec
+      integer iarr
 
 #ifdef ALLOW_OBCS_CONTROL_MODES
       INTEGER  k,length_of_rec,dUnit
@@ -744,6 +745,28 @@ c--
      &       snx, sny, 1, 'c', 'xy', mythid )
 # endif
 #endif /* ALLOW_ATM_MEAN_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_GENARR2D_CONTROL
+       do iarr = 1, maxCtrlArr2D
+        call ctrl_init_ctrlvar (
+     &       xx_genarr2d_file(iarr)(1:MAX_LEN_FNAM), 
+     &       100+iarr, 200+iarr, 1, 1, 1,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+       enddo
+#endif /* ALLOW_GENARR2D_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_GENARR3D_CONTROL
+       do iarr = 1, maxCtrlArr3D
+        call ctrl_init_ctrlvar (
+     &       xx_genarr3d_file(iarr)(1:MAX_LEN_FNAM), 
+     &       200+iarr, 300+iarr, 1, 1, 1,
+     &       snx, sny, nr, 'c', '3d', mythid )
+       enddo
+#endif /* ALLOW_GENARR3D_CONTROL */
 
 c----------------------------------------------------------------------
 c----------------------------------------------------------------------
