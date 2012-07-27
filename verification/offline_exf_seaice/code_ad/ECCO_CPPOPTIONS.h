@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/ECCO_CPPOPTIONS.h,v 1.2 2012/01/17 15:28:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/ECCO_CPPOPTIONS.h,v 1.3 2012/07/27 21:13:27 jmc Exp $
 C $Name:  $
 
 C CPP flags controlling which code is included in the files that
@@ -30,7 +30,7 @@ c       >>> Reduce to 2-level checkpointing
 #define AUTODIFF_2_LEVEL_CHECKPOINT
 C
 C       >>> Extract adjoint state
-#define ALLOW_AUTODIFF_MONITOR
+#undef ALLOW_AUTODIFF_MONITOR
 C
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
