@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_stagger_fields_exchanges.F,v 1.7 2009/04/28 18:01:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_stagger_fields_exchanges.F,v 1.8 2012/07/27 18:56:40 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -29,18 +29,25 @@ C     myIter  :: Current iteration number in simulation
 C     myThid  :: Thread number for this instance of the routine.
       _RL myTime
       INTEGER myIter
-      INTEGER myThid   
+      INTEGER myThid
 CEOP
 
+C- note: use less common EXCH S/R here (instead of usual ones) to
+C        force TAF to also generate AD version for these rare ones
       IF ( staggerTimeStep .AND. useMultiDimAdvec) THEN
-        CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
+c       CALL EXCH_UV_XYZ_RL( uVel,vVel, .TRUE., myThid )
+        CALL EXCH_UV_3D_RL( uVel, vVel, .TRUE., Nr, myThid )
+c       IF ( .NOT.implicitIntGravWave )
+c    &  _EXCH_XYZ_RL( wVel, myThid )
         IF ( .NOT.implicitIntGravWave )
-     &  _EXCH_XYZ_RL( wVel , myThid )
+     &   CALL EXCH_3D_RL( wVel, Nr, myThid )
       ENDIF
 c #ifdef ALLOW_NONHYDROSTATIC
       IF ( implicitIntGravWave ) THEN
-        _EXCH_XYZ_RL( gT , myThid )
-        _EXCH_XYZ_RL( gS , myThid )
+c       _EXCH_XYZ_RL( gT , myThid )
+c       _EXCH_XYZ_RL( gS , myThid )
+        CALL EXCH_SM_3D_RL( gT, .FALSE., Nr, myThid )
+        CALL EXCH_SM_3D_RL( gS, .FALSE., Nr, myThid )
       ENDIF
 c #endif
 
