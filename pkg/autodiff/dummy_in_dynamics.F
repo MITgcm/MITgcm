@@ -1,36 +1,37 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/dummy_in_dynamics.F,v 1.1 2011/02/26 00:41:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/dummy_in_dynamics.F,v 1.2 2012/07/27 21:12:02 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 
-      subroutine dummy_in_dynamics( mytime, myiter, myThid )
-      IMPLICIT NONE
-C     /==========================================================\
-C     | SUBROUTINE dummy_in_stepping                             |
-C     |==========================================================|
-C     == Global variables ===
+CBOP
+C     !ROUTINE: DUMMY_IN_DYNAMICS
+C     !INTERFACE:
+      SUBROUTINE DUMMY_IN_DYNAMICS( myTime, myIter, myThid )
 
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE DUMMY_IN_DYNAMICS                             |
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-C     == Routine arguments ==
-C     myThid - Thread number for this instance of the routine.
-      integer myThid
-      integer myiter
-      _RL     mytime
+C     !INPUT/OUTPUT PARAMETERS:
+C     myTime :: time counter for this thread
+C     myIter :: iteration counter for this thread
+C     myThid :: Thread number for this instance of the routine.
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
-      call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
+C     !LOCAL VARIABLES:
+CEOP
 
-      call TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
-      end
-
-
-
-
-
-
-
-
-
+      RETURN
+      END
