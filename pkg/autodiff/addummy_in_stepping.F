@@ -1,17 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.54 2012/07/06 23:11:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.55 2012/07/28 20:01:23 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 #include "AD_CONFIG.h"
 
 CBOP
-C     !ROUTINE: addummy_in_stepping
+C     !ROUTINE: ADDUMMY_IN_STEPPING
 C     !INTERFACE:
-      subroutine addummy_in_stepping( mytime, myiter, myThid )
+      SUBROUTINE ADDUMMY_IN_STEPPING( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE addummy_in_stepping                           |
+C     | SUBROUTINE ADDUMMY_IN_STEPPING                           |
 C     *==========================================================*
 C     Extract adjoint variable from TAMC/TAF-generated
 C     adjoint common blocks, contained in adcommon.h
@@ -19,7 +19,7 @@ C     and write fields to file;
 C     Make sure common blocks in adcommon.h are up-to-date
 C     w.r.t. current adjoint code.
 C     *==========================================================*
-C     | SUBROUTINE addummy_in_stepping                           |
+C     | SUBROUTINE ADDUMMY_IN_STEPPING                           |
 C     *==========================================================*
 C     \ev
 
@@ -30,210 +30,274 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "AUTODIFF_PARAMS.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
-#include "GRID.h"
+c#include "GRID.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
 # include "adcommon.h"
 #endif
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER  IO_ERRCOUNT
-      EXTERNAL IO_ERRCOUNT
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myIter - iteration counter for this thread
-C     myTime - time counter for this thread
-C     myThid - Thread number for this instance of the routine.
-      integer myThid
-      integer myiter
-      _RL     mytime
+C     myTime  :: time counter for this thread
+C     myIter  :: iteration counter for this thread
+C     myThid  :: Thread number for this instance of the routine.
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
 #ifdef ALLOW_AUTODIFF_MONITOR
 
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
 C     !LOCAL VARIABLES:
 c     == local variables ==
-C     suff - Hold suffix part of a filename
-C     beginIOErrCount - Begin and end IO error counts
-C     endIOErrCount
-C     msgBuf - Error message buffer
+C     suff    :: Hold suffix part of a filename
+C     msgBuf  :: Error message buffer
       CHARACTER*(MAX_LEN_FNAM) suff
-      INTEGER beginIOErrCount
-      INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
-c     == end of interface ==
+      _RL var2Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL var2Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL var3Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL var3Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS dumRS(1)
+      _RL dumRL(1)
 CEOP
 
-      call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
       IF (
-     &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,deltaTClock)
+     &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
      & ) THEN
 
+        CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
+
+        IF ( dumpAdVarExch.EQ.1 ) THEN
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
-       call adexch_xy_rl( mythid,adetan)
-       call adexch_xyz_rl( mythid,adtheta)
-       call adexch_xyz_rl( mythid,adsalt)
-       call adexch_xyz_rl( mythid,adwvel )
-       call adexch_uv_xyz_rl(  .true. ,mythid,aduvel,advvel )
-c
-       call adexch_xy_rl( mythid,adfu )
-       call adexch_xy_rl( mythid,adfv )
-       call adexch_xy_rl( mythid,adqnet )
-       call adexch_xy_rl( mythid,adempmr )
+
+         call adexch_xy_rl( myThid,adetan)
+         call adexch_xyz_rl( myThid,adtheta)
+         call adexch_xyz_rl( myThid,adsalt)
+         call adexch_xyz_rl( myThid,adwvel )
+         call adexch_uv_xyz_rl(  .true. ,myThid,aduvel,advvel )
+
+         call adexch_uv_xy_rs( .true., myThid, adfu, adfv )
+         call adexch_xy_rs( myThid,adqnet )
+         call adexch_xy_rs( myThid,adempmr )
 # ifdef ALLOW_EDDYPSI_CONTROL
-       call adexch_xyz_rl( mythid,adeddypsix )
-       call adexch_xyz_rl( mythid,adeddypsiy )
+         call adexch_uv_xyz_rs(  .true. ,myThid,adeddypsix,adeddypsiy )
 # endif
 # ifdef ALLOW_DIFFKR_CONTROL
-       call adexch_xyz_rl( mythid,addiffkr )
+         call adexch_xyz_rl( myThid,addiffkr )
 # endif
 # ifdef ALLOW_KAPGM_CONTROL
-       call adexch_xyz_rl( mythid,adkapgm )
+         call adexch_xyz_rl( myThid,adkapgm )
 # endif
 # ifdef ALLOW_KAPREDI_CONTROL
-       call adexch_xyz_rl( mythid,adkapredi )
+         call adexch_xyz_rl( myThid,adkapredi )
 # endif
 # ifdef ALLOW_SST0_CONTROL
-       call adexch_xy_rl( mythid,adsst )
+         call adexch_xy_rl( myThid,adsst )
 # endif
 # ifdef ALLOW_SSS0_CONTROL
-       call adexch_xy_rl( mythid,adsss )
+         call adexch_xy_rl( myThid,adsss )
 # endif
 # ifdef ALLOW_BOTTOMDRAG_CONTROL
-       call adexch_xy_rl( mythid,adbottomdragfld)
+         call adexch_xy_rl( myThid,adbottomdragfld)
 # endif
+
 # else /* ndfef AUTODIFF_TAMC_COMPATIBILITY */
-       call adexch_xy_rl( adetan, mythid )
+
+         CALL ADEXCH_3D_RL( adEtaN, 1 , myThid )
 #  ifndef ALLOW_BULK_OFFLINE
-       call adexch_xyz_rl( adtheta, mythid )
-       call adexch_xyz_rl( adsalt, mythid )
-       call adexch_xyz_rl( adwvel, mythid )
-       call adexch_uv_xyz_rl( aduvel,advvel, .true. ,mythid )
-#  endif 
-c
-       call adexch_xy_rl( adfu, mythid )
-       call adexch_xy_rl( adfv, mythid )
-       call adexch_xy_rl( adqnet, mythid )
-       call adexch_xy_rl( adempmr, mythid )
+         CALL ADEXCH_3D_RL( adTheta,Nr, myThid )
+         CALL ADEXCH_3D_RL( adSalt, Nr, myThid )
+         CALL ADEXCH_3D_RL( adwVel, Nr, myThid )
+         CALL ADEXCH_UV_3D_RL( aduVel,advVel, .TRUE., Nr, myThid )
+#  endif
+         CALL ADEXCH_UV_XY_RS( adFu, adFv, .TRUE., myThid )
+         CALL ADEXCH_XY_RS( adQnet, myThid )
+         CALL ADEXCH_XY_RS( adEmPmR, myThid )
 # ifdef ALLOW_EDDYPSI_CONTROL
-       call adexch_xyz_rl( adeddypsix, mythid )
-       call adexch_xyz_rl( adeddypsiy, mythid )
+         CALL ADEXCH_UV_XYZ_RS( adEddyPsiX, adEddyPsiY, .TRUE., myThid )
 # endif
 # ifdef ALLOW_DIFFKR_CONTROL
-       call adexch_xyz_rl( addiffkr, mythid )
+         CALL ADEXCH_3D_RL( adDiffKr, Nr, myThid )
 # endif
 # ifdef ALLOW_KAPGM_CONTROL
-       call adexch_xyz_rl( adkapgm, mythid )
+         CALL ADEXCH_3D_RL( adKapGM, Nr, myThid )
 # endif
 # ifdef ALLOW_KAPREDI_CONTROL
-       call adexch_xyz_rl( adkapredi, mythid )
+         CALL ADEXCH_3D_RL( adKapRedi, Nr, myThid )
 # endif
 # ifdef ALLOW_SST0_CONTROL
-       call adexch_xy_rl( adsst, mythid )
+         CALL ADEXCH_XY_RS( adSST, myThid )
 # endif
 # ifdef ALLOW_SSS0_CONTROL
-       call adexch_xy_rl( adsss, mythid )
+         CALL ADEXCH_XY_RS( adSSS, myThid )
 # endif
 # ifdef ALLOW_BOTTOMDRAG_CONTROL
-       call adexch_xy_rl( adbottomdragfld, mythid )
+         CALL ADEXCH_3D_RL( adBottomDragFld, 1 , myThid )
 # endif
+
 #endif /* AUTODIFF_TAMC_COMPATIBILITY */
+        ENDIF
 
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
         writeBinaryPrec = writeStatePrec
 
-C--     Read IO error counter
-        beginIOErrCount = IO_ERRCOUNT(myThid)
+        IF ( dumpAdVarExch.NE.2 ) THEN
+          CALL WRITE_FLD_XYZ_RL( 'ADJtheta.', suff,
+     &                           adTheta, myIter, myThid )
+          CALL WRITE_FLD_XYZ_RL( 'ADJsalt.', suff,
+     &                           adSalt, myIter, myThid )
+          CALL WRITE_FLD_XYZ_RL( 'ADJuvel.', suff,
+     &                           aduVel, myIter, myThid )
+          CALL WRITE_FLD_XYZ_RL( 'ADJvvel.', suff,
+     &                           advVel, myIter, myThid )
+          CALL WRITE_FLD_XYZ_RL( 'ADJwvel.', suff,
+     &                           adwVel, myIter, myThid )
+          CALL WRITE_FLD_XY_RL ( 'ADJetan.', suff,
+     &                           adEtaN, myIter, myThid )
 
-        CALL WRITE_FLD_XYZ_RL(
-     &       'ADJtheta.',suff, adtheta, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL(
-     &       'ADJsalt.',suff, adsalt, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL(
-     &       'ADJuvel.',suff, aduvel, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL(
-     &       'ADJvvel.',suff, advvel, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL(
-     &       'ADJwvel.',suff, adwvel, myIter, myThid)
-        CALL WRITE_FLD_XY_RL(
-     &       'ADJetan.',suff, adetan, myIter, myThid)
-
-        if ( .NOT. useSEAICE .AND. .NOT. useEXF ) then
-        CALL WRITE_FLD_XY_RL ( 'ADJtaux.',suff, adfu, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'ADJtauy.',suff, adfv, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'ADJqnet.',suff, adqnet, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'ADJempr.',suff, adempmr, myIter, myThid)
+          IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
+           CALL WRITE_FLD_XY_RS('ADJtaux.',suff, adFu, myIter, myThid )
+           CALL WRITE_FLD_XY_RS('ADJtauy.',suff, adFv, myIter, myThid )
+           CALL WRITE_FLD_XY_RS('ADJqnet.',suff, adQnet,myIter,myThid )
+           CALL WRITE_FLD_XY_RS('ADJempr.',suff,adEmPmR,myIter,myThid )
 #ifdef SHORTWAVE_HEATING
-        CALL WRITE_FLD_XY_RL ( 'ADJqsw.',suff, adqsw, myIter, myThid)
+           CALL WRITE_FLD_XY_RS('ADJqsw.', suff, adQsw,myIter, myThid )
 #endif
-        endif
+          ENDIF
 
 #ifdef ALLOW_GGL90
-c        CALL WRITE_FLD_XYZ_RL ( 'ADJggl90diffkr.',suff, adggl90diffkr,
-c     &       myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL ( 'ADJggl90tke.',suff, adggl90tke,
-     &       myIter, myThid)
+c         CALL WRITE_FLD_XYZ_RL ( 'ADJggl90diffkr.',suff,
+c    &                             adGGL90DiffKr, myIter, myThid)
+          CALL WRITE_FLD_XYZ_RL( 'ADJggl90tke.', suff,
+     &                           adGGL90TKE, myIter, myThid )
 #endif
 #ifdef ALLOW_DIFFKR_CONTROL
-        CALL WRITE_FLD_XYZ_RL ( 'ADJdiffkr.',suff, addiffkr,
-     &       myIter, myThid)
+          CALL WRITE_FLD_XYZ_RL( 'ADJdiffkr.', suff,
+     &                           adDiffKr, myIter, myThid )
 #endif
 #ifdef ALLOW_KAPGM_CONTROL
-        CALL WRITE_FLD_XYZ_RL ( 'ADJkapgm.',suff, adkapgm,
-     &       myIter, myThid)
+          CALL WRITE_FLD_XYZ_RL( 'ADJkapgm.', suff,
+     &                           adKapGM, myIter, myThid )
 #endif
 #ifdef ALLOW_KAPREDI_CONTROL
-        CALL WRITE_FLD_XYZ_RL ( 'ADJkapredi.',suff, adkapredi,
-     &       myIter, myThid)
+          CALL WRITE_FLD_XYZ_RL( 'ADJkapredi.', suff,
+     &                           adKapRedi, myIter, myThid )
 #endif
 #ifdef ALLOW_EDDYPSI_CONTROL
-        CALL WRITE_FLD_XYZ_RL(
-     &       'ADJeddypsix. ',suff, adeddypsix, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL(
-     &       'ADJeddypsiy. ',suff, adeddypsiy, myIter, myThid)
+          CALL WRITE_FLD_XYZ_RS( 'ADJeddypsix.', suff,
+     &                           adEddyPsiX, myIter, myThid )
+          CALL WRITE_FLD_XYZ_RS( 'ADJeddypsiy.', suff,
+     &                           adEddyPsiY, myIter, myThid )
 #endif
 #ifdef ALLOW_SST0_CONTROL
-        CALL WRITE_FLD_XY_RL( 'ADJsst.',suff, adsst, myIter, myThid)
+          CALL WRITE_FLD_XY_RS( 'ADJsst.',suff, adSST, myIter, myThid )
 #endif
 #ifdef ALLOW_SSS0_CONTROL
-        CALL WRITE_FLD_XY_RL( 'ADJsss.',suff, adsss, myIter, myThid)
+          CALL WRITE_FLD_XY_RS( 'ADJsss.',suff, adSSS, myIter, myThid )
 #endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-        CALL WRITE_FLD_XY_RL ( 'ADJbottomdrag.',suff,
-     & adbottomdragfld, myIter, myThid)
+          CALL WRITE_FLD_XY_RL ( 'ADJbottomdrag.', suff,
+     &                           adBottomDragFld, myIter, myThid )
 #endif
 
-#ifdef ALLOW_EXF
-cph        IF ( useEXF ) CALL EXF_AD_DUMP( mytime, myiter, myThid )
-#endif
+        ELSE
+C       case dumpAdVarExch = 2
+          CALL COPY_ADVAR_OUTP( dumRS, adTheta,var3Du, Nr, 12, myThid )
+          CALL WRITE_FLD_XYZ_RL( 'ADJtheta.', suff,
+     &                           var3Du, myIter, myThid )
+          CALL COPY_ADVAR_OUTP( dumRS, adSalt, var3Du, Nr, 12, myThid )
+          CALL WRITE_FLD_XYZ_RL( 'ADJsalt.', suff,
+     &                           var3Du, myIter, myThid )
+          CALL COPY_AD_UV_OUTP( dumRS, dumRS, aduVel, advVel,
+     &                                 var3Du, var3Dv, Nr, 34, myThid )
+          CALL WRITE_FLD_XYZ_RL( 'ADJuvel.', suff,
+     &                           var3Du, myIter, myThid )
+          CALL WRITE_FLD_XYZ_RL( 'ADJvvel.', suff,
+     &                           var3Dv, myIter, myThid )
+          CALL COPY_ADVAR_OUTP( dumRS, adwVel, var3Du, Nr, 12, myThid )
+          CALL WRITE_FLD_XYZ_RL( 'ADJwvel.', suff,
+     &                           var3Du, myIter, myThid )
+          CALL COPY_ADVAR_OUTP( dumRS, adEtaN, var2Du, 1 , 12, myThid )
+          CALL WRITE_FLD_XY_RL(  'ADJetan.', suff,
+     &                           var2Du, myIter, myThid )
 
-#ifdef ALLOW_SEAICE
-        IF ( useSEAICE ) 
-     &   CALL SEAICE_AD_DUMP( mytime, myiter, myThid )
+          IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
+           CALL COPY_AD_UV_OUTP( adFu, adFv, dumRL, dumRL,
+     &                                  var2Du, var2Dv, 1, 33, myThid )
+           CALL WRITE_FLD_XY_RL( 'ADJtaux.',suff,var2Du,myIter,myThid )
+           CALL WRITE_FLD_XY_RL( 'ADJtauy.',suff,var2Dv,myIter,myThid )
+           CALL COPY_ADVAR_OUTP( adQnet, dumRL, var2Du, 1, 11, myThid )
+           CALL WRITE_FLD_XY_RL( 'ADJqnet.',suff,var2Du,myIter,myThid )
+           CALL COPY_ADVAR_OUTP( adEmPmR,dumRL, var2Du, 1, 11, myThid )
+           CALL WRITE_FLD_XY_RL( 'ADJempr.',suff,var2Du,myIter,myThid )
+#ifdef SHORTWAVE_HEATING
+           CALL COPY_ADVAR_OUTP( adQsw,  dumRL, var2Du, 1, 11, myThid )
+           CALL WRITE_FLD_XY_RL( 'ADJqsw.', suff,var2Du,myIter,myThid )
 #endif
-
-#ifdef ALLOW_PTRACERS
-        IF ( usePTRACERS ) 
-     &   CALL PTRACERS_AD_DUMP( mytime, myiter, myThid )
+          ENDIF
+#ifdef ALLOW_GGL90
+          CALL COPY_ADVAR_OUTP( dumRS,adGGL90TKE,var3Du,Nr, 12,myThid )
+          CALL WRITE_FLD_XYZ_RL( 'ADJggl90tke.', suff,
+     &                           var3Du, myIter, myThid )
 #endif
+#ifdef ALLOW_DIFFKR_CONTROL
+          CALL COPY_ADVAR_OUTP( dumRS, adDiffKr,var3Du, Nr, 12,myThid )
+          CALL WRITE_FLD_XYZ_RL( 'ADJdiffkr.', suff,
+     &                           var3Du, myIter, myThid )
+#endif
+#ifdef ALLOW_KAPGM_CONTROL
+          CALL COPY_ADVAR_OUTP( dumRS, adKapGM, var3Du, Nr, 12,myThid )
+          CALL WRITE_FLD_XYZ_RL( 'ADJkapgm.', suff,
+     &                           var3Du, myIter, myThid )
+#endif
+#ifdef ALLOW_KAPREDI_CONTROL
+          CALL COPY_ADVAR_OUTP( dumRS,adKapRedi,var3Du, Nr, 12,myThid )
+          CALL WRITE_FLD_XYZ_RL( 'ADJkapredi.', suff,
+     &                           var3Du, myIter, myThid )
+#endif
+#ifdef ALLOW_EDDYPSI_CONTROL
+          CALL COPY_AD_UV_OUTP( adEddyPsiX, adEddyPsiY, dumRL, dumRL,
+     &                                 var3Du, var3Dv, Nr, 33, myThid )
+          CALL WRITE_FLD_XYZ_RL( 'ADJeddypsix.', suff,
+     &                           var3Du, myIter, myThid )
+          CALL WRITE_FLD_XYZ_RL( 'ADJeddypsiy.', suff,
+     &                           var3Dv, myIter, myThid )
+#endif
+#ifdef ALLOW_SST0_CONTROL
+          CALL COPY_ADVAR_OUTP( adSST, dumRL, var2Du, 1, 11, myThid )
+          CALL WRITE_FLD_XY_RL( 'ADJsst.',suff,var2Du,myIter,myThid )
+#endif
+#ifdef ALLOW_SSS0_CONTROL
+          CALL COPY_ADVAR_OUTP( adSSS, dumRL, var2Du, 1, 11, myThid )
+          CALL WRITE_FLD_XY_RL( 'ADJsss.',suff,var2Du,myIter,myThid )
+#endif
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+          CALL COPY_ADVAR_OUTP( dumRS, adBottomDragFld,
+     &                                        var2Du, 1, 12, myThid )
+          CALL WRITE_FLD_XY_RL( 'ADJbottomdrag.', suff,
+     &                           var2Du, myIter, myThid )
+#endif
+C       end if dumpAdVarExch = 2
+        ENDIF
 
 #ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
-c
           CALL MNC_CW_SET_UDIM('adstate', -1, myThid)
           CALL MNC_CW_RL_W_S('D','adstate',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('adstate', 0, myThid)
           CALL MNC_CW_I_W_S('I','adstate',0,0,'iter',myIter,myThid)
           CALL MNC_CW_RL_W_S('D','adstate',0,0,'model_time',myTime,
      &         myThid)
-c
+
           CALL MNC_CW_RL_W('D','adstate',0,0,'adU', aduVel, myThid)
           CALL MNC_CW_RL_W('D','adstate',0,0,'adV', advVel, myThid)
           CALL MNC_CW_RL_W('D','adstate',0,0,'adT', adtheta, myThid)
@@ -272,21 +336,26 @@ c
         ENDIF
 #endif /* ALLOW_MNC */
 
-      ENDIF
+#ifdef ALLOW_EXF
+cph        IF ( useEXF ) CALL EXF_AD_DUMP( myTime, myIter, myThid )
+#endif
 
-      call TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
+#ifdef ALLOW_SEAICE
+        IF ( useSEAICE )
+     &   CALL SEAICE_AD_DUMP( myTime, myIter, myThid )
+#endif
+
+#ifdef ALLOW_PTRACERS
+        IF ( usePTRACERS )
+     &   CALL PTRACERS_AD_DUMP( myTime, myIter, myThid )
+#endif
+
+        CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
+
+      ENDIF
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
 #endif /* ALLOW_ADJOINT_RUN */
 
       RETURN
       END
-
-
-
-
-
-
-
-
-
