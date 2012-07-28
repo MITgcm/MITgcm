@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.F,v 1.11 2012/07/06 23:06:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.F,v 1.12 2012/07/28 20:04:15 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -22,13 +22,12 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
-#include "FFIELDS.h"
 #include "MONITOR.h"
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
 #endif
 #ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_PARAMS.h"
 # ifdef ALLOW_AUTODIFF_MONITOR
 #  include "adcommon.h"
 # endif
@@ -51,9 +50,14 @@ C     === Functions ====
 
 C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL dT
       _RL dummyRL(6)
       INTEGER k
+      _RL var2Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL var2Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL var3Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL var3Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS dumRS(1)
+      _RL dumRL(1)
 
       IF ( DIFFERENT_MULTIPLE(adjmonitorFreq,myTime,deltaTClock) ) THEN
 
@@ -106,53 +110,109 @@ C       Print the time to make grepping the stdout easier
 
 C       Print the basic statistics of model state variables
         CALL MON_SET_PREF('ad_dynstat',myThid)
-        CALL MON_WRITESTATS_RL(  1, adEtaN, '_adeta',
-     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
-        CALL MON_WRITESTATS_RL( Nr, aduVel, '_aduvel',
-     &           hFacW, maskInW, rAw, drF, dummyRL, myThid )
-        CALL MON_WRITESTATS_RL( Nr, advVel, '_advvel',
-     &           hFacS, maskInS, rAs, drF, dummyRL, myThid )
-        CALL MON_WRITESTATS_RL( Nr, adwVel, '_adwvel',
-     &           maskC, maskInC, rA , drC, dummyRL, myThid )
-        CALL MON_WRITESTATS_RL( Nr, adtheta,'_adtheta',
-     &           hFacC, maskInC, rA , drF, dummyRL, myThid )
-        CALL MON_WRITESTATS_RL( Nr, adsalt, '_adsalt',
-     &           hFacC, maskInC, rA , drF, dummyRL, myThid )
-        IF ( nSx.EQ.1 .AND. nSy.EQ.1 ) THEN
+        IF ( mon_AdVarExch.EQ.1 ) THEN
+#ifndef AUTODIFF_TAMC_COMPATIBILITY
+          CALL ADEXCH_3D_RL(  adEtaN, 1 , myThid )
+          CALL ADEXCH_UV_3D_RL( aduVel, advVel, .TRUE., Nr, myThid )
+          CALL ADEXCH_3D_RL( adwVel,  Nr, myThid )
+          CALL ADEXCH_3D_RL( adTheta, Nr, myThid )
+          CALL ADEXCH_3D_RL( adSalt,  Nr, myThid )
+#endif
+        ENDIF
+        IF ( mon_AdVarExch.NE.2 ) THEN
+          CALL MON_WRITESTATS_RL(  1, adEtaN, '_adeta',
+     &             maskInC, maskInC, rA , drF, dummyRL, myThid )
+          CALL MON_WRITESTATS_RL( Nr, aduVel, '_aduvel',
+     &             hFacW, maskInW, rAw, drF, dummyRL, myThid )
+          CALL MON_WRITESTATS_RL( Nr, advVel, '_advvel',
+     &             hFacS, maskInS, rAs, drF, dummyRL, myThid )
+          CALL MON_WRITESTATS_RL( Nr, adwVel, '_adwvel',
+     &             maskC, maskInC, rA , drC, dummyRL, myThid )
+          CALL MON_WRITESTATS_RL( Nr, adTheta,'_adtheta',
+     &             hFacC, maskInC, rA , drF, dummyRL, myThid )
+          CALL MON_WRITESTATS_RL( Nr, adSalt, '_adsalt',
+     &             hFacC, maskInC, rA , drF, dummyRL, myThid )
+          IF ( monitorSelect.GE.3 .AND.
+     &         nSx.EQ.1 .AND. nSy.EQ.1 ) THEN
 C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
-         k = 1
-         IF ( usingPCoords ) k = Nr
-         CALL MON_WRITESTATS_RL( 1,adtheta(1-OLx,1-OLy,k,1,1),'_adsst',
-     &            maskInC, maskInC, rA , drF, dummyRL, myThid )
-         CALL MON_WRITESTATS_RL( 1, adsalt(1-OLx,1-OLy,k,1,1),'_adsss',
-     &            maskInC, maskInC, rA , drF, dummyRL, myThid )
+           k = 1
+           IF ( usingPCoords ) k = Nr
+           CALL MON_WRITESTATS_RL( 1, adTheta(1-OLx,1-OLy,k,1,1),
+     &          '_adsst', maskInC, maskInC, rA, drF, dummyRL, myThid )
+           CALL MON_WRITESTATS_RL( 1, adSalt(1-OLx,1-OLy,k,1,1),
+     &          '_adsss', maskInC, maskInC, rA, drF, dummyRL, myThid )
+          ENDIF
+        ELSE
+C       case dumpAdVarExch = 2
+          CALL COPY_ADVAR_OUTP( dumRS, adEtaN, var2Du, 1 , 12, myThid )
+          CALL MON_WRITESTATS_RL(  1, var2Du, '_adeta',
+     &             maskInC, maskInC, rA , drF, dummyRL, myThid )
+
+          CALL COPY_AD_UV_OUTP( dumRS, dumRS, aduVel, advVel,
+     &                                 var3Du, var3Dv, Nr, 34, myThid )
+          CALL MON_WRITESTATS_RL( Nr, var3Du, '_aduvel',
+     &             hFacW, maskInW, rAw, drF, dummyRL, myThid )
+          CALL MON_WRITESTATS_RL( Nr, var3Dv, '_advvel',
+     &             hFacS, maskInS, rAs, drF, dummyRL, myThid )
+
+          CALL COPY_ADVAR_OUTP( dumRS, adwVel, var3Du, Nr, 12, myThid )
+          CALL MON_WRITESTATS_RL( Nr, var3Du, '_adwvel',
+     &             maskC, maskInC, rA , drC, dummyRL, myThid )
+          CALL COPY_ADVAR_OUTP( dumRS, adTheta,var3Du, Nr, 12, myThid )
+          CALL COPY_ADVAR_OUTP( dumRS, adSalt, var3Dv, Nr, 12, myThid )
+          CALL MON_WRITESTATS_RL( Nr, var3Du, '_adtheta',
+     &             hFacC, maskInC, rA , drF, dummyRL, myThid )
+          CALL MON_WRITESTATS_RL( Nr, var3Dv, '_adsalt',
+     &             hFacC, maskInC, rA , drF, dummyRL, myThid )
+          IF ( monitorSelect.GE.3 .AND.
+     &         nSx.EQ.1 .AND. nSy.EQ.1 ) THEN
+C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
+           k = 1
+           IF ( usingPCoords ) k = Nr
+           CALL MON_WRITESTATS_RL( 1, var3Du(1-OLx,1-OLy,k,1,1),
+     &          '_adsst', maskInC, maskInC, rA, drF, dummyRL, myThid )
+           CALL MON_WRITESTATS_RL( 1, var3Dv(1-OLx,1-OLy,k,1,1),
+     &          '_adsss', maskInC, maskInC, rA, drF, dummyRL, myThid )
+          ENDIF
         ENDIF
 
 C       Print the basic statistics of external forcing
-c       IF ( monitorSelect.GE.3 ) THEN
-         CALL MON_SET_PREF('ad_forcing',myThid)
-         CALL MON_WRITESTATS_RS( 1, adQnet, '_adqnet',
-     &            maskInC, maskInC, rA , drF, dummyRL, myThid )
+        IF ( monitorSelect.GE.3 ) THEN
+          CALL MON_SET_PREF('ad_forcing',myThid)
+          IF ( mon_AdVarExch.NE.2 ) THEN
+           CALL MON_WRITESTATS_RS( 1, adQnet, '_adqnet',
+     &              maskInC, maskInC, rA , drF, dummyRL, myThid )
 #ifdef SHORTWAVE_HEATING
-         CALL MON_WRITESTATS_RS( 1, adQsw , '_adqsw',
-     &            maskInC, maskInC, rA , drF, dummyRL, myThid )
+           CALL MON_WRITESTATS_RS( 1, adQsw , '_adqsw',
+     &              maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif
-         CALL MON_WRITESTATS_RS( 1, adEmPmR,'_adempmr',
-     &            maskInC, maskInC, rA , drF, dummyRL, myThid )
-         CALL MON_WRITESTATS_RS( 1, adfu ,  '_adfu',
-     &            maskInW, maskInW, rAw, drF, dummyRL, myThid )
-         CALL MON_WRITESTATS_RS( 1, adfv ,  '_adfv',
-     &            maskInS, maskInS, rAs, drF, dummyRL, myThid )
-c       ENDIF
-
-C       Print the numerical stablility parameters for current state
-        CALL MON_SET_PREF('ad_advcfl',myThid)
-        dT = MAX(dTtracerLev(1),deltaTmom)
-        CALL MON_ADVCFL( '_aduvel', aduVel,recip_dxC,dT,myThid )
-        CALL MON_ADVCFL( '_advvel', advVel,recip_dyC,dT,myThid )
-        CALL MON_ADVCFLW('_adwvel', adwVel,recip_drC,dT,myThid )
-        CALL MON_ADVCFLW2('_adW_hf',adwVel,recip_hFacC,
-     &                                     recip_drF,dT,myThid )
+           CALL MON_WRITESTATS_RS( 1, adEmPmR,'_adempmr',
+     &              maskInC, maskInC, rA , drF, dummyRL, myThid )
+           CALL MON_WRITESTATS_RS( 1, adfu ,  '_adfu',
+     &              maskInW, maskInW, rAw, drF, dummyRL, myThid )
+           CALL MON_WRITESTATS_RS( 1, adfv ,  '_adfv',
+     &              maskInS, maskInS, rAs, drF, dummyRL, myThid )
+          ELSE
+C       case dumpAdVarExch = 2
+           CALL COPY_ADVAR_OUTP( adQnet, dumRL, var2Du, 1, 11, myThid )
+           CALL MON_WRITESTATS_RL( 1, var2Du, '_adqnet',
+     &              maskInC, maskInC, rA , drF, dummyRL, myThid )
+#ifdef SHORTWAVE_HEATING
+           CALL COPY_ADVAR_OUTP( adQsw,  dumRL, var2Du, 1, 11, myThid )
+           CALL MON_WRITESTATS_RL( 1, var2Du, '_adqsw',
+     &              maskInC, maskInC, rA , drF, dummyRL, myThid )
+#endif
+           CALL COPY_ADVAR_OUTP( adEmPmR,dumRL, var2Du, 1, 11, myThid )
+           CALL MON_WRITESTATS_RL( 1, var2Du, '_adempmr',
+     &              maskInC, maskInC, rA , drF, dummyRL, myThid )
+           CALL COPY_AD_UV_OUTP( adFu, adFv, dumRL, dumRL,
+     &                                  var2Du, var2Dv, 1, 33, myThid )
+           CALL MON_WRITESTATS_RL( 1, var2Du, '_adfu',
+     &              maskInW, maskInW, rAw, drF, dummyRL, myThid )
+           CALL MON_WRITESTATS_RL( 1, var2Dv, '_adfv',
+     &              maskInS, maskInS, rAs, drF, dummyRL, myThid )
+          ENDIF
+        ENDIF
 
 C       Dynamics field monitor finish
         IF ( MASTER_CPU_IO(myThid) ) THEN
