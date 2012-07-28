@@ -1,17 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_dynamics.F,v 1.4 2012/07/06 23:11:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_dynamics.F,v 1.5 2012/07/28 19:59:18 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 #include "AD_CONFIG.h"
 
 CBOP
-C     !ROUTINE: addummy_in_stepping
+C     !ROUTINE: ADDUMMY_IN_DYNAMICS
 C     !INTERFACE:
-      subroutine addummy_in_dynamics( mytime, myiter, myThid )
+      SUBROUTINE ADDUMMY_IN_DYNAMICS( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE addummy_in_stepping                           |
+C     | SUBROUTINE ADDUMMY_IN_DYNAMICS                           |
 C     *==========================================================*
 C     Extract adjoint variable from TAMC/TAF-generated
 C     adjoint common blocks, contained in adcommon.h
@@ -19,7 +19,7 @@ C     and write fields to file;
 C     Make sure common blocks in adcommon.h are up-to-date
 C     w.r.t. current adjoint code.
 C     *==========================================================*
-C     | SUBROUTINE addummy_in_stepping                           |
+C     | SUBROUTINE ADDUMMY_IN_DYNAMICS                           |
 C     *==========================================================*
 C     \ev
 
@@ -30,91 +30,86 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "AUTODIFF_PARAMS.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
-#include "GRID.h"
+c#include "GRID.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
 # include "adcommon.h"
 #endif
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER  IO_ERRCOUNT
-      EXTERNAL IO_ERRCOUNT
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myIter - iteration counter for this thread
-C     myTime - time counter for this thread
-C     myThid - Thread number for this instance of the routine.
-      integer myThid
-      integer myiter
-      _RL     mytime
+C     myTime :: time counter for this thread
+C     myIter :: iteration counter for this thread
+C     myThid :: Thread number for this instance of the routine.
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
 #ifdef ALLOW_AUTODIFF_MONITOR
 
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
 C     !LOCAL VARIABLES:
 c     == local variables ==
-C     suff - Hold suffix part of a filename
-C     beginIOErrCount - Begin and end IO error counts
-C     endIOErrCount
-C     msgBuf - Error message buffer
+C     suff   :: Hold suffix part of a filename
+C     msgBuf :: Error message buffer
       CHARACTER*(MAX_LEN_FNAM) suff
-      INTEGER beginIOErrCount
-      INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
-c     == end of interface ==
+#ifdef ALLOW_AUTODIFF_MONITOR_DIAG
+      _RL var3Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS dumRS(1)
+#endif
 CEOP
 
-      call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
       IF (
-     &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,deltaTClock)
+     &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
      & ) THEN
 
+        CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
+
+        IF ( dumpAdVarExch.EQ.1 ) THEN
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
 C
-# else /* ndfef AUTODIFF_TAMC_COMPATIBILITY */
+#else /* ndfef AUTODIFF_TAMC_COMPATIBILITY */
 #   ifdef ALLOW_AUTODIFF_MONITOR_DIAG
-       call adexch_xyz_rl( adrhoinsitu, mythid )
-       call adexch_xyz_rl( adtotphihyd, mythid )
+         CALL ADEXCH_3D_RL( adrhoinsitu, Nr, myThid )
+         CALL ADEXCH_3D_RL( adtotphihyd, Nr, myThid )
 #   endif
 #endif /* AUTODIFF_TAMC_COMPATIBILITY */
+        ENDIF
 
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
         writeBinaryPrec = writeStatePrec
 
-C--     Read IO error counter
-        beginIOErrCount = IO_ERRCOUNT(myThid)
-
 #ifdef ALLOW_AUTODIFF_MONITOR_DIAG
-        CALL WRITE_FLD_XYZ_RL(
-     &       'ADJrhoinsitu.',suff, adrhoinsitu, myIter, myThid)
+        IF ( dumpAdVarExch.NE.2 ) THEN
+          CALL WRITE_FLD_XYZ_RL( 'ADJrhoinsitu.', suff,
+     &                           adrhoinsitu, myIter, myThid )
 cph( is set to zero in addiags_phi_hyd
-c        CALL WRITE_FLD_XYZ_RL(
-c     &       'ADJtotphihyd.',suff, adtotphihyd, myIter, myThid)
+c          CALL WRITE_FLD_XYZ_RL( 'ADJtotphihyd.', suff,
+c                                 adtotphihyd, myIter, myThid )
 cph)
+        ELSE
+C       case dumpAdVarExch = 2
+          CALL COPY_ADVAR_OUTP( dumRS,adrhoinsitu,var3Du,Nr,12,myThid )
+          CALL WRITE_FLD_XYZ_RL( 'ADJrhoinsitu.', suff,
+     &                           var3Du, myIter, myThid )
+        ENDIF
 #endif
 
-      ENDIF
+        CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
-      call TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
+      ENDIF
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
 #endif /* ALLOW_ADJOINT_RUN */
 
       RETURN
       END
-
-
-
-
-
-
-
-
-
