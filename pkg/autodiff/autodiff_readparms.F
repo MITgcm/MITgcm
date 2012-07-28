@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.2 2012/07/05 19:32:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.3 2012/07/28 19:55:08 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -33,6 +33,7 @@ C     iUnit      :: Work variable for IO unit number
       INTEGER iUnit
 
       NAMELIST /AUTODIFF_PARM01/
+     &       dumpAdVarExch, mon_AdVarExch,
      &       useKPPinAdMode,
      &       useGMRediInAdMode,
      &       useSEAICEinAdMode, turnFreeDriftInAdMode,
@@ -41,6 +42,11 @@ C     iUnit      :: Work variable for IO unit number
       _BEGIN_MASTER(myThid)
 
 C--   Default values for AUTODIFF
+      dumpAdVarExch      = 2
+      mon_AdVarExch      = 2
+C-    to recover old ad-monitor & ad-dump behaviour:
+      dumpAdVarExch      = 1
+      mon_AdVarExch      = 0
       useKPPinAdMode     = .TRUE.
       useGMRediInAdMode  = .TRUE.
       useSEAICEinAdMode  = .TRUE.
@@ -108,7 +114,10 @@ C--   Print out some kee parameters :
      &  'turnFreeDriftInAdMode=',
      &             ' /* turn On/Off Free-Drift in adj/fwd mode */')
 #endif /* ALLOW_SEAICE */
-
+       CALL WRITE_0D_I( dumpAdVarExch, INDEX_NONE,
+     &  'dumpAdVarExch =', ' /* control adexch before dumpinp */')
+       CALL WRITE_0D_I( mon_AdVarExch, INDEX_NONE,
+     &  'mon_AdVarExch =', ' /* control adexch before monitor */')
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
