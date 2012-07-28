@@ -1,9 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1696 2012/07/27 18:29:17 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1697 2012/07/28 20:13:24 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  note about monitor and snap-shot of ad-variables:
+  a) need to apply ADEXCH before monitor or output of ad-vars to include
+   overlap contributions (was done for adjDump but missing for monitor).
+  b) since ADEXCH implies adding overlap values to interior array, machine
+   truncation error is expected when adding an ADEXCH call in the middle of
+   the time-stepping (although mathematically identical).
+  modifs:
+  - add new run-time params (dumpAdVarExch & mon_AdVarExch) to select how  to
+    apply ADEXCH before monitor or snap-shot of ad-variables:
+       =0 : no ADEXCH ; =1 : do ADEXCH ; =2 : apply ADEXCH on a local copy.
+  - implement new method (copy+adexch) for snap-shot and monitor of main model
+    ad-vars (but not yet used by default).
+  - fix some incorrect type (RL/RS, UV/scalar) in ADEXCH calls and ad-vars
+    declaration (adEddyPsiX,adEddyPsiY in adcommon.h).
 o pkg/ctrl:
   enable the use of a variable number (maxCtrlArr2D, maxCtrlArr3D) of
   generic control variables via
