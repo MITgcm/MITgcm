@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/copy_advar_outp.F,v 1.1 2012/07/28 19:56:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/copy_advar_outp.F,v 1.2 2012/07/29 16:31:10 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
+#include "AD_CONFIG.h"
 
 CBOP
 C !ROUTINE: COPY_ADVAR_OUTP
@@ -43,6 +44,7 @@ C myThid  (integer):: my Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_AUTODIFF_MONITOR
+#if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
 C !LOCAL VARIABLES:
 C   i,j,k   :: loop indices
 C   bi,bj   :: tile indices
@@ -113,6 +115,7 @@ c       CALL ADEXCH_Z_3D_RL( outFld, nNz, myThid )
        ENDIF
       ENDIF
 
+#endif /* ALLOW_ADJOINT_RUN or ALLOW_ADMTLM */
 #endif /* ALLOW_AUTODIFF_MONITOR */
       RETURN
       END
