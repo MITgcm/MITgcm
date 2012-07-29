@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.3 2012/07/28 19:55:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.4 2012/07/29 19:00:16 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -45,8 +45,8 @@ C--   Default values for AUTODIFF
       dumpAdVarExch      = 2
       mon_AdVarExch      = 2
 C-    to recover old ad-monitor & ad-dump behaviour:
-      dumpAdVarExch      = 1
-      mon_AdVarExch      = 0
+c     dumpAdVarExch      = 1
+c     mon_AdVarExch      = 0
       useKPPinAdMode     = .TRUE.
       useGMRediInAdMode  = .TRUE.
       useSEAICEinAdMode  = .TRUE.
