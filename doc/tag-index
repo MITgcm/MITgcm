@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1697 2012/07/28 20:13:24 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1698 2012/07/29 22:44:01 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -12,13 +12,18 @@ o pkg/autodiff:
    truncation error is expected when adding an ADEXCH call in the middle of
    the time-stepping (although mathematically identical).
   modifs:
+  - fix some incorrect type (RL/RS, UV/scalar) in ADEXCH calls and ad-vars
+    declaration (adEddyPsiX,adEddyPsiY in adcommon.h).
   - add new run-time params (dumpAdVarExch & mon_AdVarExch) to select how  to
     apply ADEXCH before monitor or snap-shot of ad-variables:
        =0 : no ADEXCH ; =1 : do ADEXCH ; =2 : apply ADEXCH on a local copy.
   - implement new method (copy+adexch) for snap-shot and monitor of main model
-    ad-vars (but not yet used by default).
-  - fix some incorrect type (RL/RS, UV/scalar) in ADEXCH calls and ad-vars
-    declaration (adEddyPsiX,adEddyPsiY in adcommon.h).
+    ad-vars (initially not used by default -> output unchanged).
+  - change default (set to 2) to use new method and update few output_adm.txt
+    with accurate ad-monitor (global_ocean.90x40x15, tutorial_global_oce_biogeo
+    and both tutorial_tracer_adjsens tests).
+  - switch 2 global_ocean.cs32x15 AD-tests to AB-2 (seaice_dynmix & thsice)
+    and turn off momDissip_In_AB in the 2 other (needed for stable AB-3).
 o pkg/ctrl:
   enable the use of a variable number (maxCtrlArr2D, maxCtrlArr3D) of
   generic control variables via
