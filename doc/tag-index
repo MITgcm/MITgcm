@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1698 2012/07/29 22:44:01 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1699 2012/07/30 16:13:19 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint63q (2012/07/30)
 o pkg/autodiff:
   note about monitor and snap-shot of ad-variables:
   a) need to apply ADEXCH before monitor or output of ad-vars to include
