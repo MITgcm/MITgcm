@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1699 2012/07/30 16:13:19 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1700 2012/07/31 18:11:51 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+  - new header file CTRL_SIZE.h for parameters maxCtrlArr2D, maxCtrlArr3D
+  - redefine CPP option ALLOW_BOTTOMDRAG_CONTROL to
+                        ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
+  - verification/hs94.1x64x5/ tests ALLOW_GENARR{2D,3D}_CONTROL
 checkpoint63q (2012/07/30)
 o pkg/autodiff:
   note about monitor and snap-shot of ad-variables:
