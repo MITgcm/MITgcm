@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.47 2012/07/31 16:05:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.48 2012/07/31 17:43:52 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -448,7 +448,7 @@ c--
 
 c----------------------------------------------------------------------
 c--
-#ifdef ALLOW_BOTTOMDRAG_CONTROL
+#ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
         call ctrl_init_ctrlvar (
      &       xx_bottomdrag_file, 23, 123, 1, 1, 1,
      &       snx, sny, 1, 'c', 'xy', mythid )

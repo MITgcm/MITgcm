@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.55 2012/07/28 20:01:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.56 2012/07/31 17:43:52 heimbach Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -105,7 +105,7 @@ CEOP
 # ifdef ALLOW_SSS0_CONTROL
          call adexch_xy_rl( myThid,adsss )
 # endif
-# ifdef ALLOW_BOTTOMDRAG_CONTROL
+# ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
          call adexch_xy_rl( myThid,adbottomdragfld)
 # endif
 
@@ -139,7 +139,7 @@ CEOP
 # ifdef ALLOW_SSS0_CONTROL
          CALL ADEXCH_XY_RS( adSSS, myThid )
 # endif
-# ifdef ALLOW_BOTTOMDRAG_CONTROL
+# ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
          CALL ADEXCH_3D_RL( adBottomDragFld, 1 , myThid )
 # endif
 
@@ -204,7 +204,7 @@ c    &                             adGGL90DiffKr, myIter, myThid)
 #ifdef ALLOW_SSS0_CONTROL
           CALL WRITE_FLD_XY_RS( 'ADJsss.',suff, adSSS, myIter, myThid )
 #endif
-#ifdef ALLOW_BOTTOMDRAG_CONTROL
+#ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
           CALL WRITE_FLD_XY_RL ( 'ADJbottomdrag.', suff,
      &                           adBottomDragFld, myIter, myThid )
 #endif
@@ -280,7 +280,7 @@ C       case dumpAdVarExch = 2
           CALL COPY_ADVAR_OUTP( adSSS, dumRL, var2Du, 1, 11, myThid )
           CALL WRITE_FLD_XY_RL( 'ADJsss.',suff,var2Du,myIter,myThid )
 #endif
-#ifdef ALLOW_BOTTOMDRAG_CONTROL
+#ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
           CALL COPY_ADVAR_OUTP( dumRS, adBottomDragFld,
      &                                        var2Du, 1, 12, myThid )
           CALL WRITE_FLD_XY_RL( 'ADJbottomdrag.', suff,
@@ -316,7 +316,7 @@ C       end if dumpAdVarExch = 2
 #ifdef ALLOW_SSS0_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,'adSSS', adsss, myThid)
 #endif
-#ifdef ALLOW_BOTTOMDRAG_CONTROL
+#ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
           CALL MNC_CW_RL_W('D','adstate',0,0,'adBottomDrag',
      &         adbottomdragfld, myThid)
 #endif

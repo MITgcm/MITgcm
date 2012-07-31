@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.35 2012/07/31 16:05:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.36 2012/07/31 17:43:52 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -375,7 +375,7 @@ cph     &                                  *fac*tmpfld3d(i,j,k,bi,bj)
       enddo
 #endif
 
-#ifdef ALLOW_BOTTOMDRAG_CONTROL
+#ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
 c--   bottom drag
       il=ilnblnk( xx_bottomdrag_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
