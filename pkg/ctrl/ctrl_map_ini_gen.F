@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.17 2011/05/28 18:10:46 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.18 2012/07/31 16:05:57 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -30,8 +30,9 @@ c     == global variables ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-
+#include "CTRL_SIZE.h"
 #include "ctrl.h"
+#include "CTRL_GENARR.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
 #ifdef ALLOW_ECCO
@@ -209,7 +210,7 @@ c     == global variables ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-
+#include "CTRL_SIZE.h"
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"

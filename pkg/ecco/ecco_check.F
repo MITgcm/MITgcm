@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.7 2012/06/22 02:04:06 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.8 2012/07/31 16:07:32 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -20,12 +20,10 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-
+#include "DYNVARS.h"
 #include "ecco_cost.h"
 #include "ctrl.h"
-#include "ctrl_dummy.h"
 #include "optim.h"
-#include "DYNVARS.h"
 #ifdef ALLOW_PROFILES
 #include "profiles.h"
 #endif

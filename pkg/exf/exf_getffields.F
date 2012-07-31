@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.47 2012/04/26 14:19:44 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.48 2012/07/31 16:08:16 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -33,6 +33,7 @@ c     == global variables ==
 #include "EXF_CONSTANTS.h"
 
 #ifdef ALLOW_AUTODIFF
+# include "CTRL_SIZE.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 #endif

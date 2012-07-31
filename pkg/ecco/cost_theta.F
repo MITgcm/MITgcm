@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta.F,v 1.10 2012/03/06 00:02:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta.F,v 1.11 2012/07/31 16:07:32 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -38,6 +38,7 @@ c     == global variables ==
 
 #include "cal.h"
 #include "ecco_cost.h"
+#include "CTRL_SIZE.h"
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"

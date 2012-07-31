@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_hfacc_ini.F,v 1.6 2009/04/28 18:09:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_hfacc_ini.F,v 1.7 2012/07/31 16:05:57 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -24,6 +24,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
+#include "CTRL_SIZE.h"
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"

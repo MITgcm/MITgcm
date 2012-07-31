@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ctrl_map_ini.F,v 1.6 2012/03/06 16:45:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ctrl_map_ini.F,v 1.7 2012/07/31 16:09:04 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -30,6 +30,7 @@ c     == global variables ==
 #include "SEAICE_SIZE.h"
 #include "SEAICE.h"
 #ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 # include "optim.h"

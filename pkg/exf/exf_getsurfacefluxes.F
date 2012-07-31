@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.13 2010/07/13 00:02:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.14 2012/07/31 16:08:16 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -42,6 +42,7 @@ c     == global variables ==
 #include "EXF_FIELDS.h"
 #include "EXF_PARAM.h"
 #ifdef ALLOW_AUTODIFF
+# include "CTRL_SIZE.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 #endif

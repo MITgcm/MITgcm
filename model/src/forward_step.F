@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.207 2012/07/02 23:03:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.208 2012/07/31 16:09:43 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -80,6 +80,7 @@ C     == Global variables ==
 # include "SURFACE.h"
 
 # include "tamc.h"
+#include "CTRL_SIZE.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 # include "cost.h"

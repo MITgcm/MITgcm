@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.21 2011/05/18 03:14:11 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.22 2012/07/31 16:05:57 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -42,8 +42,9 @@ c     == global variables ==
 #ifdef ALLOW_GMREDI
 # include "GMREDI_OPTIONS.h"
 #endif
-
+#include "CTRL_SIZE.h"
 #include "ctrl.h"
+#include "CTRL_GENARR.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
 #ifdef ALLOW_ECCO

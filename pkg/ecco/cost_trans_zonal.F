@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_trans_zonal.F,v 1.5 2010/08/24 14:34:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_trans_zonal.F,v 1.6 2012/07/31 16:07:32 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -29,7 +29,6 @@ c     == global variables ==
 #include "optim.h"
 #include "cost.h"
 #include "ecco_cost.h"
-#include "ctrl_dummy.h"
 
 c     == routine arguments ==
 

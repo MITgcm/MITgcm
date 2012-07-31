@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.30 2012/07/27 18:12:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.31 2012/07/31 16:08:41 heimbach Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -33,7 +33,9 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "CTRL_SIZE.h"
 #include "ctrl.h"
+#include "CTRL_GENARR.h"
 #include "optim.h"
 #include "grdchk.h"
 

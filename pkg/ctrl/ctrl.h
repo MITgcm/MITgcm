@@ -1,6 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.59 2012/07/27 18:22:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.60 2012/07/31 16:05:56 heimbach Exp $
 C $Name:  $
-
 
 c     ==================================================================
 c     HEADER CONTROLVARS
@@ -13,18 +12,19 @@ c     modify this header file.
 c
 c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
 c
-c     changed: Christian Eckert eckert@mit.edu
-c
-c
 c     ==================================================================
-c     HEADER CONTROLVARS
+c     HEADER CONTROLVARS ctrl.h
 c     ==================================================================
-c
-c     nwet[c/s/w]tile - Number of wet points in a tile for center (c),
-c                       south (s), and western (w) mask, resp. .
 
-      integer     maxCtrlArr2D, maxCtrlArr3D
-      parameter ( maxCtrlArr2D = 3, maxCtrlArr3D = 3 )
+#ifndef ALLOW_GENARR2D_CONTROL
+      integer     maxCtrlArr2D
+      parameter ( maxCtrlArr2D = 3 )
+#endif
+
+#ifndef ALLOW_GENARR3D_CONTROL
+      integer     maxCtrlArr3D
+      parameter ( maxCtrlArr3D = 3 )
+#endif
 
       integer     maxcvars
 #if (defined (CTRL_SET_OLD_MAXCVARS_30))
@@ -715,13 +715,6 @@ cHFLUXM_CONTROL
 cHFLUXM_CONTROL
       character*(MAX_LEN_FNAM) xx_shifwflx_file
 
-      common /controlfiles_carr/
-     &     xx_genarr2d_file
-     &   , xx_genarr3d_file
-      character*(MAX_LEN_FNAM)
-     &     xx_genarr2d_file(maxCtrlArr2D)
-     &   , xx_genarr3d_file(maxCtrlArr3D)
-
       common /packnames_c/
      &                      yadmark,
      &                      ctrlname,
@@ -1094,7 +1087,7 @@ cHFLUXM_CONTROL
 
 
 c     ==================================================================
-c     END OF HEADER CONTROLVARS
+c     END OF HEADER CONTROLVARS ctrl.h
 c     ==================================================================
 
 

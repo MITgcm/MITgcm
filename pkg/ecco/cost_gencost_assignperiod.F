@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_assignperiod.F,v 1.5 2011/06/27 13:13:38 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_assignperiod.F,v 1.6 2012/07/31 16:07:32 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -24,7 +24,6 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "optim.h"
 #include "ecco_cost.h"
-#include "ctrl_dummy.h"
 
 c     == routine arguments ==
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.11 2010/03/15 18:31:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.12 2012/07/31 16:09:04 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -28,6 +28,7 @@ c     == global variables ==
 # include "cal.h"
 #endif
 #ifdef ALLOW_COST
+# include "CTRL_SIZE.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 # ifdef ALLOW_ECCO

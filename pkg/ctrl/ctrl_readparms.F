@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.38 2012/07/27 18:22:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.39 2012/07/31 16:05:57 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -11,9 +11,6 @@ c     SUBROUTINE ctrl_readparms
 c     ==================================================================
 c
 c     o read ctrl parameters
-c       split from ctrl_init
-c
-c     started: heimbach@mit.edu 12-Jun-2003
 c
 c     ==================================================================
 c     SUBROUTINE ctrl_readparms
@@ -26,8 +23,9 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-c#include "GRID.h"
+#include "CTRL_SIZE.h"
 #include "ctrl.h"
+#include "CTRL_GENARR.h"
 
 c     == routine arguments ==
 

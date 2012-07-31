@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.21 2012/03/22 03:55:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.22 2012/07/31 16:08:16 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -46,6 +46,7 @@ c     == global variables ==
 #include "EXF_CONSTANTS.h"
 #include "EXF_FIELDS.h"
 #ifdef ALLOW_AUTODIFF
+# include "CTRL_SIZE.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 #endif

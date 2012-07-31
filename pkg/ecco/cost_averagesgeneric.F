@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesgeneric.F,v 1.4 2009/03/14 11:53:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesgeneric.F,v 1.5 2012/07/31 16:07:32 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -30,6 +30,8 @@ c     == global variables ==
 #ifdef ALLOW_COST
 # include "optim.h"
 # include "ecco_cost.h"
+#include "CTRL_SIZE.h"
+#include "ctrl.h"
 # include "ctrl_dummy.h"
 #endif
 

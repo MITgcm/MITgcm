@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.1 2012/07/27 18:22:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.2 2012/07/31 16:05:57 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -27,7 +27,9 @@ c     == global variables ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#include "CTRL_SIZE.h"
 #include "ctrl.h"
+#include "CTRL_GENARR.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
 #ifdef ALLOW_PTRACERS

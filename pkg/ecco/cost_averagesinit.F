@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.14 2011/12/06 04:14:04 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.15 2012/07/31 16:07:32 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -32,6 +32,8 @@ c     == global variables ==
 #include "SIZE.h"
 
 #include "ecco_cost.h"
+#include "CTRL_SIZE.h"
+#include "ctrl.h"
 #include "ctrl_dummy.h"
 #ifdef ALLOW_SEAICE
 # include "SEAICE_COST.h"

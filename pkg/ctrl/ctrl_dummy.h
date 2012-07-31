@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.29 2012/07/28 17:05:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.30 2012/07/31 16:05:56 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -185,11 +185,11 @@ cHFLUXM_CONTROL
       common /ctrl_dummy_arr/
      &    xx_genarr2d_dummy
      &  , xx_genarr3d_dummy
-c     _RL xx_genarr2d_dummy(maxCtrlArr2D)
-c     _RL xx_genarr3d_dummy(maxCtrlArr3D)
+      _RL xx_genarr2d_dummy(maxCtrlArr2D)
+      _RL xx_genarr3d_dummy(maxCtrlArr3D)
 C-- This is a hack to allow to compile ctrl_dummy.h without ctrl.h:
-      _RL xx_genarr2d_dummy( 3 )
-      _RL xx_genarr3d_dummy( 3 )
+cc      _RL xx_genarr2d_dummy( 3 )
+cc      _RL xx_genarr3d_dummy( 3 )
 
 c     ==================================================================
 c     END OF HEADER CONTROL DUMMIES

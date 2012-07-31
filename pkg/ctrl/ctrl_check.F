@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.11 2012/07/06 23:10:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.12 2012/07/31 16:05:56 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -21,7 +21,6 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-
 #include "ctrl.h"
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
