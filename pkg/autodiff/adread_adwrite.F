@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.18 2012/07/07 00:09:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.19 2012/07/31 16:04:39 heimbach Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -361,7 +361,17 @@ c
           else
             tapeFileCounter=tapeFileCounter+1
             jrec=tapeFileCounter+tapeMaxCounter*(irec-1)
-            if (tapeFileCounter.GT.tapeMaxCounter) stop
+            if (tapeFileCounter.GT.tapeMaxCounter) then
+               write(msgBuf,'(A,2I5)')
+     &              'ADWRITE: tapeFileCounter > tapeMaxCounter ',
+     &              tapeFileCounter, tapeMaxCounter
+               call print_message( msgBuf, errorMessageUnit,
+     &              SQUEEZE_RIGHT , myThid)
+               write(msgBuf,'(2A)') 'for file ', fname(1:lenLoc)
+               call print_message( msgBuf, errorMessageUnit,
+     &              SQUEEZE_RIGHT , myThid)
+               STOP 'in S/R ADWRITE'
+            endif
           endif
           j2d=(i2d-1)*length2d+1
           call mds_write_whalos(fname,lenLoc,sizetmp,tapeFileUnit,
