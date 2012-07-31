@@ -11,6 +11,7 @@
  viscA4=0.,
  no_slip_sides=.FALSE.,
  no_slip_bottom=.FALSE.,
+ bottomDragQuadratic=2.E-3,
  diffKrT=0.,
  diffKhT=0.,
  diffK4T=0.,
