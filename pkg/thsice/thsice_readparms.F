@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.17 2009/09/23 20:24:47 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.18 2012/08/01 18:20:55 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -42,6 +42,7 @@ C     === Local variables ===
 C     msgBuf    :: Informational/error message buffer
 C     iUnit     :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(20) fmtR, fmtI, fmtL, fmtC
       INTEGER iUnit
 
 C--   Th-Sea-ICE parameter
@@ -65,6 +66,7 @@ C--   Th-Sea-ICE parameter
      &     ocean_deltaT, tauRelax_MxL, tauRelax_MxL_salt,
      &     hMxL_default, sMxL_default, vMxL_default,
      &     thSIce_diffK, thSIceAdvScheme, stressReduction,
+     &     thSIceBalanceAtmFW,
      &     thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq,
      &     thSIce_tave_mnc, thSIce_snapshot_mnc, thSIce_mon_mnc,
      &     thSIce_pickup_read_mnc, thSIce_pickup_write_mnc,
@@ -141,6 +143,7 @@ C--   Default values (parameters)
       thSIceAdvScheme = 0
       stressReduction = 1. _d 0
       IF ( useSEAICE ) stressReduction = 0. _d 0
+      thSIceBalanceAtmFW  = 0
       thSIce_taveFreq = taveFreq
       thSIce_diagFreq = dumpFreq
       thSIce_monFreq  = monitorFreq
@@ -216,100 +219,99 @@ C     Set I/O parameters
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C--   Check parameter consistency:
-      IF ( thSIceAdvScheme.EQ.0 .AND. thSIce_diffK.NE.0. ) THEN
-        WRITE(msgBuf,'(2A)')
-     &   'THSICE_READPARMS: to use thSIce_diffK, needs to select',
-     &   ' one advection scheme (thSIceAdvScheme<>0)'
-        CALL PRINT_ERROR( msgBuf , myThid )
-        STOP 'ABNORMAL END: THSICE_READPARMS'
-      ENDIF
-#ifndef ALLOW_GENERIC_ADVDIFF
-      IF ( thSIceAdvScheme.NE.0 ) THEN
-        WRITE(msgBuf,'(2A)')
-     &   'THSICE_READPARMS: Need to compile "generic_advdiff" pkg',
-     &   ' in order to use thSIceAdvScheme'
-        CALL PRINT_ERROR( msgBuf , myThid )
-        STOP 'ABNORMAL END: THSICE_READPARMS'
-      ENDIF
-#endif /* ndef ALLOW_GENERIC_ADVDIFF */
-
+C--   Check/reset parameters:
       IF ( useSEAICE .AND. stressReduction.NE.0. _d 0 ) THEN
 C--     If useSEAICE=.true., the stress is computed in seaice_model,
 C--     so that it does not need any further reduction
-        WRITE(msgBuf,'(2A)')
-     &   'THSICE_READPARMS: if useSEAICE, stress will be computed',
-     &   ' by SEAICE pkg => no reduction'
+        WRITE(msgBuf,'(2A)') '** WARNING ** THSICE_READPARMS:',
+     &                       ' reset stressReduction to zero'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
-        WRITE(msgBuf,'(A)')
-     &   'THSICE_READPARMS: WARNING: reset stressReduction to zero'
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') 'THSICE_READPARMS: useSEAICE=T =>',
+     &       ' stress is be computed by SEAICE pkg => no reduction'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                      SQUEEZE_RIGHT, myThid )
         stressReduction = 0. _d 0
+      ENDIF
+      IF ( fluidIsAir .AND. thSIceBalanceAtmFW.NE.0 ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** THSICE_READPARMS:',
+     &                       ' reset thSIceBalanceAtmFW to zero'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') 'THSICE_READPARMS:',
+     &       ' since it is not available in Atmospheric set-up'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        thSIceBalanceAtmFW = 0
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       iUnit = standardMessageUnit
+      fmtR = '(A6,A20,1PE21.13)'
+      fmtI = '(A6,A20,I10)'
+      fmtL = '(A6,A20,L10)'
+      fmtC = '(A26,1X,A)'
 c     CALL MDSFINDUNIT( iUnit, mythid )
 c     OPEN(iUnit,file='thsice_check_params',status='unknown')
-      WRITE(iUnit,*) 'ThSI: rhos      =',rhos
-      WRITE(iUnit,*) 'ThSI: rhoi      =',rhoi
-      WRITE(iUnit,*) 'ThSI: rhosw     =',rhosw
-      WRITE(iUnit,*) 'ThSI: rhofw     =',rhofw
-      WRITE(iUnit,*) 'ThSI: floodFac  =',floodFac
-      WRITE(iUnit,*) 'ThSI: cpIce     =',cpIce
-      WRITE(iUnit,*) 'ThSI: cpWater   =',cpWater
-      WRITE(iUnit,*) 'ThSI: kIce      =',kIce
-      WRITE(iUnit,*) 'ThSI: kSnow     =',kSnow
-      WRITE(iUnit,*) 'ThSI: bMeltCoef =',bMeltCoef
-      WRITE(iUnit,*) 'ThSI: Lfresh    =',Lfresh
-      WRITE(iUnit,*) 'ThSI: qsnow     =',qsnow
-      WRITE(iUnit,*) 'ThSI: albColdSnow=',albColdSnow
-      WRITE(iUnit,*) 'ThSI: albWarmSnow=',albWarmSnow
-      WRITE(iUnit,*) 'ThSI: tempSnowAlb=',tempSnowAlb
-      WRITE(iUnit,*) 'ThSI: albOldSnow =',albOldSnow
-      WRITE(iUnit,*) 'ThSI: hNewSnowAge=',hNewSnowAge
-      WRITE(iUnit,*) 'ThSI: snowAgTime =',snowAgTime
-      WRITE(iUnit,*) 'ThSI: albIceMax =',albIceMax
-      WRITE(iUnit,*) 'ThSI: albIceMin =',albIceMin
-      WRITE(iUnit,*) 'ThSI: hAlbIce   =',hAlbIce
-      WRITE(iUnit,*) 'ThSI: hAlbSnow  =',hAlbSnow
-      WRITE(iUnit,*) 'ThSI: i0swFrac  =',i0swFrac
-      WRITE(iUnit,*) 'ThSI: ksolar    =',ksolar
-      WRITE(iUnit,*) 'ThSI: dhSnowLin =',dhSnowLin
-      WRITE(iUnit,*) 'ThSI: saltIce   =',saltIce
-      WRITE(iUnit,*) 'ThSI: S_winton  =',S_winton
-      WRITE(iUnit,*) 'ThSI: mu_Tf     =',mu_Tf
-      WRITE(iUnit,*) 'ThSI: Tf0kel    =',Tf0kel
-      WRITE(iUnit,*) 'ThSI: Tmlt1     =',Tmlt1
-      WRITE(iUnit,*) 'ThSI: Terrmax   =',Terrmax
-      WRITE(iUnit,*) 'ThSI: nitMaxTsf =',nitMaxTsf
-      WRITE(iUnit,*) 'ThSI: hIceMin   =',hIceMin
-      WRITE(iUnit,*) 'ThSI: hiMax     =',hiMax
-      WRITE(iUnit,*) 'ThSI: hsMax     =',hsMax
-      WRITE(iUnit,*) 'ThSI: iceMaskMax =',iceMaskMax
-      WRITE(iUnit,*) 'ThSI: iceMaskMin =',iceMaskMin
-      WRITE(iUnit,*) 'ThSI: fracEnMelt =',fracEnMelt
-      WRITE(iUnit,*) 'ThSI: fracEnFreez=',fracEnFreez
-      WRITE(iUnit,*) 'ThSI: hThinIce   =',hThinIce
-      WRITE(iUnit,*) 'ThSI: hThickIce  =',hThickIce
-      WRITE(iUnit,*) 'ThSI: hNewIceMax =',hNewIceMax
-      WRITE(iUnit,*) 'ThSI: stressReduction =',stressReduction
-      WRITE(iUnit,*) 'ThSI: thSIceAdvScheme =',thSIceAdvScheme
-      WRITE(iUnit,*) 'ThSI: thSIce_diffK  =',thSIce_diffK
-      WRITE(iUnit,*) 'ThSI: thSIce_deltaT =',thSIce_deltaT
-      WRITE(iUnit,*) 'ThSI: ocean_deltaT  =',ocean_deltaT
-      WRITE(iUnit,*) 'ThSI: stepFwd_oceMxL=',stepFwd_oceMxL
-      WRITE(iUnit,*) 'ThSI: tauRelax_MxL  =',tauRelax_MxL
-      WRITE(iUnit,*) 'ThSI: tauRelax_MxL_salt  =',tauRelax_MxL_salt
-      WRITE(iUnit,*) 'ThSI: hMxL_default  =',hMxL_default
-      WRITE(iUnit,*) 'ThSI: sMxL_default  =',sMxL_default
-      WRITE(iUnit,*) 'ThSI: vMxL_default  =',vMxL_default
-      WRITE(iUnit,*) 'ThSI: thSIce_taveFreq=',thSIce_taveFreq
-      WRITE(iUnit,*) 'ThSI: thSIce_diagFreq=',thSIce_diagFreq
-      WRITE(iUnit,*) 'ThSI: thSIce_monFreq =',thSIce_monFreq
-      WRITE(iUnit,*) 'ThSI: startIceModel =',startIceModel
+      WRITE(iUnit,fmtR) 'ThSI:', 'rhos        =', rhos
+      WRITE(iUnit,fmtR) 'ThSI:', 'rhoi        =', rhoi
+      WRITE(iUnit,fmtR) 'ThSI:', 'rhosw       =', rhosw
+      WRITE(iUnit,fmtR) 'ThSI:', 'rhofw       =', rhofw
+      WRITE(iUnit,fmtR) 'ThSI:', 'floodFac    =', floodFac
+      WRITE(iUnit,fmtR) 'ThSI:', 'cpIce       =', cpIce
+      WRITE(iUnit,fmtR) 'ThSI:', 'cpWater     =', cpWater
+      WRITE(iUnit,fmtR) 'ThSI:', 'kIce        =', kIce
+      WRITE(iUnit,fmtR) 'ThSI:', 'kSnow       =', kSnow
+      WRITE(iUnit,fmtR) 'ThSI:', 'bMeltCoef   =', bMeltCoef
+      WRITE(iUnit,fmtR) 'ThSI:', 'Lfresh      =', Lfresh
+      WRITE(iUnit,fmtR) 'ThSI:', 'qsnow       =', qsnow
+      WRITE(iUnit,fmtR) 'ThSI:', 'albColdSnow =', albColdSnow
+      WRITE(iUnit,fmtR) 'ThSI:', 'albWarmSnow =', albWarmSnow
+      WRITE(iUnit,fmtR) 'ThSI:', 'tempSnowAlb =', tempSnowAlb
+      WRITE(iUnit,fmtR) 'ThSI:', 'albOldSnow  =', albOldSnow
+      WRITE(iUnit,fmtR) 'ThSI:', 'hNewSnowAge =', hNewSnowAge
+      WRITE(iUnit,fmtR) 'ThSI:', 'snowAgTime  =', snowAgTime
+      WRITE(iUnit,fmtR) 'ThSI:', 'albIceMax   =', albIceMax
+      WRITE(iUnit,fmtR) 'ThSI:', 'albIceMin   =', albIceMin
+      WRITE(iUnit,fmtR) 'ThSI:', 'hAlbIce     =', hAlbIce
+      WRITE(iUnit,fmtR) 'ThSI:', 'hAlbSnow    =', hAlbSnow
+      WRITE(iUnit,fmtR) 'ThSI:', 'i0swFrac    =', i0swFrac
+      WRITE(iUnit,fmtR) 'ThSI:', 'ksolar      =', ksolar
+      WRITE(iUnit,fmtR) 'ThSI:', 'dhSnowLin   =', dhSnowLin
+      WRITE(iUnit,fmtR) 'ThSI:', 'saltIce     =', saltIce
+      WRITE(iUnit,fmtR) 'ThSI:', 'S_winton    =', S_winton
+      WRITE(iUnit,fmtR) 'ThSI:', 'mu_Tf       =', mu_Tf
+      WRITE(iUnit,fmtR) 'ThSI:', 'Tf0kel      =', Tf0kel
+      WRITE(iUnit,fmtR) 'ThSI:', 'Tmlt1       =', Tmlt1
+      WRITE(iUnit,fmtR) 'ThSI:', 'Terrmax     =', Terrmax
+      WRITE(iUnit,fmtI) 'ThSI:', 'nitMaxTsf   =', nitMaxTsf
+      WRITE(iUnit,fmtR) 'ThSI:', 'hIceMin     =', hIceMin
+      WRITE(iUnit,fmtR) 'ThSI:', 'hiMax       =', hiMax
+      WRITE(iUnit,fmtR) 'ThSI:', 'hsMax       =', hsMax
+      WRITE(iUnit,fmtR) 'ThSI:', 'iceMaskMax  =', iceMaskMax
+      WRITE(iUnit,fmtR) 'ThSI:', 'iceMaskMin  =', iceMaskMin
+      WRITE(iUnit,fmtR) 'ThSI:', 'fracEnMelt  =', fracEnMelt
+      WRITE(iUnit,fmtR) 'ThSI:', 'fracEnFreez =', fracEnFreez
+      WRITE(iUnit,fmtR) 'ThSI:', 'hThinIce    =', hThinIce
+      WRITE(iUnit,fmtR) 'ThSI:', 'hThickIce   =', hThickIce
+      WRITE(iUnit,fmtR) 'ThSI:', 'hNewIceMax  =', hNewIceMax
+      WRITE(iUnit,fmtR) 'ThSI:','stressReduction   =',stressReduction
+      WRITE(iUnit,fmtI) 'ThSI:','thSIceAdvScheme   =',thSIceAdvScheme
+      WRITE(iUnit,fmtI) 'ThSI:','thSIceBalanceAtmFW=',thSIceBalanceAtmFW
+      WRITE(iUnit,fmtR) 'ThSI:','thSIce_diffK      =',thSIce_diffK
+      WRITE(iUnit,fmtR) 'ThSI:','thSIce_deltaT     =',thSIce_deltaT
+      WRITE(iUnit,fmtR) 'ThSI:','ocean_deltaT      =',ocean_deltaT
+      WRITE(iUnit,fmtL) 'ThSI:','stepFwd_oceMxL    =',stepFwd_oceMxL
+      WRITE(iUnit,fmtR) 'ThSI:','tauRelax_MxL      =',tauRelax_MxL
+      WRITE(iUnit,fmtR) 'ThSI:','tauRelax_MxL_salt =',tauRelax_MxL_salt
+      WRITE(iUnit,fmtR) 'ThSI:','hMxL_default      =',hMxL_default
+      WRITE(iUnit,fmtR) 'ThSI:','sMxL_default      =',sMxL_default
+      WRITE(iUnit,fmtR) 'ThSI:','vMxL_default      =',vMxL_default
+      WRITE(iUnit,fmtR) 'ThSI:','thSIce_taveFreq   =',thSIce_taveFreq
+      WRITE(iUnit,fmtR) 'ThSI:','thSIce_diagFreq   =',thSIce_diagFreq
+      WRITE(iUnit,fmtR) 'ThSI:','thSIce_monFreq    =',thSIce_monFreq
+      WRITE(iUnit,fmtI) 'ThSI:','startIceModel     =',startIceModel
+c     WRITE(iUnit,fmtC) 'thSIceFract_InitFile    =',thSIceFract_InitFile
       IF (iUnit.NE.standardMessageUnit) CLOSE(iUnit)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

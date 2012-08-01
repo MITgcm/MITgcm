@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.15 2010/12/17 04:00:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.16 2012/08/01 18:20:55 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -170,12 +170,15 @@ C     startIceModel   :: =1 : start ice model at nIter0 ; =0 : use pickup files
 C                     :: -1 : start from a small pickup (without Mix.Layer)
 C     nitMaxTsf       :: maximum Nb of iter to find Surface Temp (Trsf)
 C     thSIceAdvScheme :: thSIce Advection scheme selector
+C     thSIceBalanceAtmFW :: select balancing Fresh-Water flux from Atm+Land
+C                        :: =0 : none ; =1 : uniform ; =2 : scaled by Precip
       COMMON / THSICE_PAR_I /
-     &  startIceModel, nitMaxTsf, thSIceAdvScheme
+     &  startIceModel, nitMaxTsf, thSIceAdvScheme, thSIceBalanceAtmFW
 
       INTEGER startIceModel
       INTEGER nitMaxTsf
       INTEGER thSIceAdvScheme
+      INTEGER thSIceBalanceAtmFW
 
 C--   COMMON / THSICE_PAR_R / ice model (real) parameters
 C     thSIce_deltaT   :: ice model time-step, seaice thicken/extend [s]

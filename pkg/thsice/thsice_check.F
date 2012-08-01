@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check.F,v 1.3 2007/09/17 21:48:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check.F,v 1.4 2012/08/01 18:20:55 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -13,14 +13,15 @@ c
 
 c     == global variables ==
 
-#include "EEPARAMS.h"
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
 
 c     == routine arguments ==
 
-c     myThid :: thread number for this instance of the routine.
+c     myThid :: my Thread Id number
 
       INTEGER myThid
 
@@ -35,9 +36,42 @@ c     == end of interface ==
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
 
+C--   Check parameter consistency:
+      IF ( thSIceAdvScheme.EQ.0 .AND. thSIce_diffK.NE.0. ) THEN
+        WRITE(msgBuf,'(2A)')
+     &   'THSICE_CHECK: to use thSIce_diffK, needs to select',
+     &   ' one advection scheme (thSIceAdvScheme<>0)'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R THSICE_CHECK'
+      ENDIF
+#ifndef ALLOW_GENERIC_ADVDIFF
+      IF ( thSIceAdvScheme.NE.0 ) THEN
+        WRITE(msgBuf,'(2A)') 'THSICE_CHECK: Need to compile ',
+     &     '"generic_advdiff" pkg in order to use thSIceAdvScheme'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R THSICE_CHECK'
+      ENDIF
+#endif /* ndef ALLOW_GENERIC_ADVDIFF */
+
+      IF ( thSIceBalanceAtmFW.NE.0 ) THEN
+#ifndef ALLOW_BALANCE_FLUXES
+        WRITE(msgBuf,'(2A)') 'THSICE_CHECK: to use thSIceBalanceAtmFW',
+     &       'needs to compile with ALLOW_BALANCE_FLUXES defined'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R THSICE_CHECK'
+#endif
+       IF ( balanceEmPmR ) THEN
+        WRITE(msgBuf,'(2A)') 'THSICE_CHECK: cannot use',
+     &       ' both balanceEmPmR and thSIceBalanceAtmFW'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R THSICE_CHECK'
+       ENDIF
+      ENDIF
+
 #ifdef ALLOW_AUTODIFF_TAMC
       IF ( nitMaxTsf .GT. MaxTsf ) THEN
-        WRITE(msgBuf,'(A)') 'Need to set MaxTsf >= nitMaxTsf for TAF'
+        WRITE(msgBuf,'(2A)')
+     &   'THSICE_CHECK: Need to set MaxTsf >= nitMaxTsf for TAF'
         CALL PRINT_ERROR( msgBuf , myThid )
         STOP 'ABNORMAL END: S/R THSICE_CHECK'
       ENDIF
