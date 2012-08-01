@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/ctrl_map_ini_genarr.F,v 1.1 2012/07/31 17:49:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/ctrl_map_ini_genarr.F,v 1.2 2012/08/01 13:24:38 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -22,7 +22,7 @@ C     !USES:
 
 c     == global variables ==
 #include "SIZE.h"
-#include "EEPARAMS.h"#include "
+#include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
@@ -172,4 +172,3 @@ c--
 
       return
       end
-
