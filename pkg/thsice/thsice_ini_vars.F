@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.20 2009/09/02 19:28:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.21 2012/08/01 18:22:41 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -106,6 +106,7 @@ C         and this mask is used in thsice_advdiff and if coupled
 #endif /* ALLOW_AIM */
         ENDDO
       ENDDO
+      adjustFrW = 0. _d 0
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

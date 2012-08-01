@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.24 2010/12/24 00:55:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.25 2012/08/01 18:22:41 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -52,7 +52,7 @@ C     === Local variables ===
       INTEGER bi,bj
       INTEGER iMin, iMax
       INTEGER jMin, jMax
-      _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 c     _RL evpAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 c     _RL flxAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 c     _RL flxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -127,7 +127,7 @@ C--     Mixed layer thickness: take the 1rst layer
          ELSE
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            IF ( ksurfC(i,j,bi,bj).EQ.1 ) THEN
+            IF ( kSurfC(i,j,bi,bj).EQ.1 ) THEN
              hOceMxL(i,j,bi,bj) = drF(1)*hFac_surfC(i,j,bi,bj)
             ELSE
              hOceMxL(i,j,bi,bj) = drF(1)*hFacC(i,j,1,bi,bj)
@@ -161,12 +161,12 @@ CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
      &              + vvel(i,j+1,1,bi,bj)*vvel(i,j+1,1,bi,bj)
      &              + vvel(i,j,1,bi,bj)*vvel(i,j,1,bi,bj)
      &              )*0.5 _d 0
-          prcAtm(i,j) = 0.
+          prcAtm  (i,j,bi,bj) = 0. _d 0
           icFrwAtm(i,j,bi,bj) = 0. _d 0
           icFlxAtm(i,j,bi,bj) = 0. _d 0
           icFlxSW (i,j,bi,bj) = 0. _d 0
-          snowPrc(i,j,bi,bj) = 0. _d 0
-          siceAlb(i,j,bi,bj) = 0. _d 0
+          snowPrc (i,j,bi,bj) = 0. _d 0
+          siceAlb (i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
 
@@ -196,7 +196,8 @@ C Note: will inline this S/R once thSIce in Atmos. set-up is settled
         IF ( useBulkforce ) THEN
          CALL THSICE_GET_PRECIP(
      I                  iceMask,
-     O                  prcAtm, snowPrc(1-OLx,1-OLy,bi,bj),
+     O                  prcAtm(1-OLx,1-OLy,bi,bj),
+     O                  snowPrc(1-OLx,1-OLy,bi,bj),
      O                  icFlxSW(1-OLx,1-OLy,bi,bj),
      I                  iMin,iMax,jMin,jMax, bi,bj, myThid )
         ENDIF
@@ -205,7 +206,8 @@ C Note: will inline this S/R once thSIce in Atmos. set-up is settled
         IF ( useEXF ) THEN
          CALL THSICE_MAP_EXF(
      I                  iceMask,
-     O                  prcAtm, snowPrc(1-OLx,1-OLy,bi,bj),
+     O                  prcAtm(1-OLx,1-OLy,bi,bj),
+     O                  snowPrc(1-OLx,1-OLy,bi,bj),
      O                  icFlxSW(1-OLx,1-OLy,bi,bj),
      I                  iMin,iMax,jMin,jMax, bi,bj, myThid )
         ENDIF
@@ -235,13 +237,26 @@ CADJ STORE sheating(:,:,bi,bj) = comlev1_bibj, key = ticekey
 
         CALL THSICE_STEP_FWD(
      I                     bi, bj, iMin, iMax, jMin, jMax,
-     I                     prcAtm,
+     I                     prcAtm(1-OLx,1-OLy,bi,bj),
      I                     myTime, myIter, myThid )
 
+C--  end bi,bj loop
+       ENDDO
+      ENDDO
+
+#ifdef ALLOW_BALANCE_FLUXES
+C--   Balance net Fresh-Water flux from Atm+Land
+      IF ( thSIceBalanceAtmFW.NE.0 ) THEN
+        CALL THSICE_BALANCE_FRW( 
+     I                      iMin, iMax, jMin, jMax,
+     I                      prcAtm, myTime, myIter, myThid )
+      ENDIF
+#endif
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
         CALL THSICE_AVE(
      I                     bi,bj, myTime, myIter, myThid )
-
-C--  end bi,bj loop
        ENDDO
       ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.17 2010/03/16 00:23:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.18 2012/08/01 18:22:41 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -55,6 +55,7 @@ C     == Local variables ==
       _RL theMeanG, theVolG
       _RL theMean1, theMean2, theEnergy
       _RL theMin0, theMax0, theSD, theDel2
+      _RL dummyRL(6)
       INTEGER i,j,bi,bj
 #ifdef ALLOW_MNC
       INTEGER k
@@ -255,6 +256,15 @@ C-- Total Energy :
         theEnergy = theEnergy -rhoi*(theMean1+theMean2)*theVolG/2
         mon_var='TotEnerg'
         CALL MON_OUT_RL(mon_var, theEnergy, mon_sufx(0), myThid)
+
+C-- Surface fluxes
+c       IF ( fluidIsWater .AND. monitorSelect.GE.3 ) THEN
+c          CALL MON_WRITESTATS_RL( 1, icFrwAtm,'atmFrW',
+c    &            maskInC, maskInC, rA , drF, dummyRL, myThid )
+c       ENDIF
+        IF ( thSIceBalanceAtmFW.NE.0 ) THEN
+         CALL MON_OUT_RL('adjustFrW',adjustFrW,mon_string_none,myThid)
+        ENDIF
 
         IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout

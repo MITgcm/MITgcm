@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_VARS.h,v 1.11 2009/07/08 23:35:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_VARS.h,v 1.12 2012/08/01 18:22:41 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -51,11 +51,13 @@ C   oceQnet  :: net heat flux  to the ocean         (+=down) [W/m2]
 C   oceQsw   :: net short-wave that enter the ocean (+=down) [W/m2]
 C   oceFWfx  :: net fresh water flux to the ocean   (+=down) [kg/m2]
 C   oceSflx  :: net salt flux to the ocean      (+=down) [psu.kg/m2]
+C   adjustFrW :: global adjustment to surface fresh-water flux [kg/m2/s]
       COMMON / THSICE_FLUX /
 c    &       oceQsw, oceQnet, oceFWfx, oceSflx,
      &       sHeating, flxCndBt,
      &       snowPrc, siceAlb, icAlbNIR,
-     &       icFlxSW, icFlxAtm, icFrwAtm
+     &       icFlxSW, icFlxAtm, icFrwAtm,
+     &       adjustFrW
 
 c     _RL oceQnet(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 c     _RL oceQsw (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -69,6 +71,7 @@ c     _RL oceSflx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL icFlxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL icFlxAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL icFrwAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL adjustFrW
 
 C-- COMMON /THSICE_DYN_R/  variables used with sea-ice advection/diffusion
 C   oceFWfx   :: fresh water flux to the ocean  [kg/m^2/s]
