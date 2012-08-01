@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.48 2012/05/11 23:36:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.49 2012/08/01 14:02:11 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -41,6 +41,12 @@ C o exclude/allow external forcing-fields load
 C   this allows to read & do simple linear time interpolation of oceanic
 C   forcing fields, if no specific pkg (e.g., EXF) is used to compute them.
 #undef EXCLUDE_FFIELDS_LOAD
+
+C o Include/exclude balancing surface forcing fluxes code
+#undef ALLOW_BALANCE_FLUXES
+
+C o Include/exclude balancing surface forcing relaxation code
+#undef ALLOW_BALANCE_RELAX
 
 C o Include/exclude GM-like eddy stress in momentum code
 #undef ALLOW_EDDYPSI
@@ -99,15 +105,13 @@ C   is still useful with, e.g., single-domain curvilinear configurations.
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
 
-C o Include/exclude code specific to the ECCO/SEALION version.
-C   AUTODIFF or EXF package.
-C   Currently controled by a single header file
-C   For this to work, PACKAGES_CONFIG.h needs to be included!
-cph#if (defined (ALLOW_AUTODIFF) || \
-cph     defined (ALLOW_ECCO) || \
-cph     defined (ALLOW_EXF))
-cph# include "ECCO_CPPOPTIONS.h"
-cph#endif
+C o Include/exclude single header file containing multiple packages options
+C   (AUTODIFF, COST, CTRL, ECCO, EXF ...) instead of the standard way where
+C   each of the above pkg get its own options from its specific option file.
+C   Although this method, inherited from ECCO setup, has been traditionally
+C   used for all adjoint built, the alternative standard way is currently
+C   going through rehabilitation.
+c#include "ECCO_CPPOPTIONS.h"
 
 C o Allow full 3D specification of vertical diffusivity
 #ifdef ALLOW_DIFFKR_CONTROL
