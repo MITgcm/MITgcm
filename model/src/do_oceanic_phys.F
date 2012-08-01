@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.117 2012/06/30 01:24:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.118 2012/08/01 03:00:59 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -44,7 +44,7 @@ C     == Global variables ===
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
 #endif
-#if defined (ALLOW_BALANCE_FLUXES) && !(defined ALLOW_AUTODIFF_TAMC)
+#ifdef ALLOW_BALANCE_FLUXES
 #include "FFIELDS.h"
 #endif
 
@@ -52,7 +52,9 @@ C     == Global variables ===
 # include "AUTODIFF_MYFIELDS.h"
 # include "tamc.h"
 # include "tamc_keys.h"
+#ifndef ALLOW_BALANCE_FLUXES
 # include "FFIELDS.h"
+#endif
 # include "SURFACE.h"
 # include "EOS.h"
 # ifdef ALLOW_KPP
@@ -117,7 +119,7 @@ C     i,j,k         :: loop indices
       EXTERNAL DIAGNOSTICS_IS_ON
 #endif /* ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_BALANCE_RELAX
-      CHARACTER*(max_len_mbuf) msgbuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL tmpFac
 #endif /* ALLOW_BALANCE_RELAX */
 
@@ -368,10 +370,10 @@ C jmc: do not know precisely where to put this call (bf or af thSIce ?)
 
 #ifdef ALLOW_BALANCE_FLUXES
 C     balance fluxes
-      IF ( ( balanceEmPmR ).AND.( .NOT.useSeaice ) )
+      IF ( balanceEmPmR .AND. (.NOT.useSeaice .OR. useThSIce) )
      &      CALL REMOVE_MEAN_RS( 1, EmPmR, maskInC, maskInC, rA, drF,
      &        'EmPmR', myTime, myThid )
-      IF ( ( balanceQnet ).AND.( .NOT.useSeaice ) )
+      IF ( balanceQnet  .AND. (.NOT.useSeaice .OR. useThSIce) )
      &      CALL REMOVE_MEAN_RS( 1, Qnet,  maskInC, maskInC, rA, drF,
      &        'Qnet ', myTime, myThid )
 #endif /* ALLOW_BALANCE_FLUXES */
@@ -847,7 +849,6 @@ C--   end bi,bj loops.
       ENDDO
 
 #ifdef ALLOW_BALANCE_RELAX
-C
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE SSSrlx = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE SSSrlxTile = comlev1, key=ikey_dynamics, kind=isbyte
@@ -857,7 +858,7 @@ CADJ STORE SSTrlxTile = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE SSTrlxGlob = comlev1, key=ikey_dynamics, kind=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
       IF ( balanceThetaClimRelax ) THEN
-      CALL GLOBAL_SUM_TILE_RL( SSTrlxTile, SSTrlxGlob, myThid )      
+      CALL GLOBAL_SUM_TILE_RL( SSTrlxTile, SSTrlxGlob, myThid )
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
@@ -903,16 +904,16 @@ C     sRelax (salt relaxation [g/m2/s], positive <-> increasing Salt)
 # endif /* ALLOW_DIAGNOSTICS */
       IF ( balancePrintMean.AND.balanceThetaClimRelax ) THEN
        _BEGIN_MASTER( myThid )
-       WRITE(msgbuf,'(a,a,e24.17)') 'rm Global mean of ',
+       WRITE(msgBuf,'(A,A,E24.17)') 'rm Global mean of ',
      &      'SSTrlx = ', SSTrlxGlob / globalArea
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT , myThid)
        _END_MASTER( myThid )
       ENDIF
-c      
+
       IF ( balancePrintMean.AND.balanceSaltClimRelax ) THEN
        _BEGIN_MASTER( myThid )
-       WRITE(msgbuf,'(a,a,e24.17)') 'rm Global mean of ',
+       WRITE(msgBuf,'(A,A,E24.17)') 'rm Global mean of ',
      &      'SSSrlx = ', SSSrlxGlob / globalArea
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT , myThid)
