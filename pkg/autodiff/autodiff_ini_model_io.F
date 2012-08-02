@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.22 2011/08/18 09:10:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.23 2012/08/02 01:12:36 jmc Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -27,20 +27,13 @@ C     \ev
 
       IMPLICIT NONE
 #include "SIZE.h"
-#include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "AUTODIFF.h"
-#ifdef ALLOW_AUTODIFF_MONITOR
-# include "adcommon.h"
-# ifdef ALLOW_PTRACERS
-#  include "PTRACERS_SIZE.h"
-#  include "ptracers_adcommon.h"
-# endif
-#endif /* ALLOW_AUTODIFF_MONITOR */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     myThid -  Number of this instances
+C     myThid  :: my Thread Id number
       INTEGER myThid
 
 C     !FUNCTIONS
@@ -84,7 +77,7 @@ C      create directory
 
 #ifdef EXCLUDE_WHIO_GLOBUFF_2D
       tapeSingleCpuIO=.FALSE.
-#endif 
+#endif
 #ifdef ALLOW_WHIO_3D
 #ifndef INCLUDE_WHIO_GLOBUFF_3D
       tapeSingleCpuIO=.FALSE.
@@ -193,7 +186,7 @@ C      create directory
 
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
       CALL MNC_CW_ADD_VNAME('adBottomDrag', 'Cen_xy_Hn__-__t',
-     .3,4, myThid)
+     &                       3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adBottomDrag',
      &     'units','[cost]/[N/m^2]', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adBottomDrag','long_name',
@@ -228,7 +221,7 @@ C      create directory
      & 'units','[cost]/[m^2/s]', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adkapredi',
      & 'long_name','adjoint isopycnal diffusion', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('adkapredi', 
+      CALL MNC_CW_ADD_VATTR_TEXT('adkapredi',
      &     'coordinates','XC YC RC iter', myThid)
 #endif
 
@@ -427,7 +420,7 @@ C      CALL MNC_CW_RS_W('R','adseaice',0,0,'RF',rF, myThid)
 C#endif
 
       ENDIF
-#endif
+#endif /* ALLOW_MNC and ALLOW_AUTODIFF_MONITOR */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
