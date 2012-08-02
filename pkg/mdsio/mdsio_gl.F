@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.19 2011/06/07 22:30:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.20 2012/08/02 02:07:03 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -97,6 +97,15 @@ C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
+
+#ifndef REAL4_IS_SLOW
+      if (arrType .eq. 'RS') then
+       write(msgbuf,'(a)')
+     &   ' MDSREADFIELD_GL is wrong for arrType="RS" (=real*4)'
+       call print_error( msgbuf, mythid )
+       stop 'ABNORMAL END: S/R MDSREADFIELD_GL'
+      endif
+#endif
 
 C Record number must be >= 1
       if (irecord .LT. 1) then
@@ -272,7 +281,9 @@ C (This is a place-holder for the active/passive mechanism
             call MDS_BYTESWAPR4( sNx, r4seg )
 #endif
             if (arrType .eq. 'RS') then
+#ifdef REAL4_IS_SLOW
              call MDS_SEG4toRS( j,bi,bj,k,Nr, r4seg, .TRUE., arr )
+#endif
             elseif (arrType .eq. 'RL') then
              call MDS_SEG4toRL( j,bi,bj,k,Nr, r4seg, .TRUE., arr )
             else
@@ -287,7 +298,9 @@ C (This is a place-holder for the active/passive mechanism
             call MDS_BYTESWAPR8( sNx, r8seg )
 #endif
             if (arrType .eq. 'RS') then
+#ifdef REAL4_IS_SLOW
              call MDS_SEG8toRS( j,bi,bj,k,Nr, r8seg, .TRUE., arr )
+#endif
             elseif (arrType .eq. 'RL') then
              call MDS_SEG8toRL( j,bi,bj,k,Nr, r8seg, .TRUE., arr )
             else
@@ -510,6 +523,15 @@ C     ------------------------------------------------------------------
 C Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
 
+#ifndef REAL4_IS_SLOW
+      if (arrType .eq. 'RS') then
+       write(msgbuf,'(a)')
+     &   ' MDSWRITEFIELD_GL is wrong for arrType="RS" (=real*4)'
+       call print_error( msgbuf, mythid )
+       stop 'ABNORMAL END: S/R MDSWRITEFIELD_GL'
+      endif
+#endif
+
 C Record number must be >= 1
       if (irecord .LT. 1) then
        write(msgbuf,'(a,i9.8)')
@@ -676,7 +698,9 @@ C If we are writing to a tiled MDS file then we open each one here
             irec=j + sNy*(k-1) + sNy*Nr*(irecord-1)
            if (filePrec .eq. precFloat32) then
             if (arrType .eq. 'RS') then
+#ifdef REAL4_IS_SLOW
              call MDS_SEG4toRS( j,bi,bj,k,Nr, r4seg, .FALSE., arr )
+#endif
             elseif (arrType .eq. 'RL') then
              call MDS_SEG4toRL( j,bi,bj,k,Nr, r4seg, .FALSE., arr )
             else
@@ -691,7 +715,9 @@ C If we are writing to a tiled MDS file then we open each one here
             write(dUnit,rec=irec) r4seg
            elseif (filePrec .eq. precFloat64) then
             if (arrType .eq. 'RS') then
+#ifdef REAL4_IS_SLOW
              call MDS_SEG8toRS( j,bi,bj,k,Nr, r8seg, .FALSE., arr )
+#endif
             elseif (arrType .eq. 'RL') then
              call MDS_SEG8toRL( j,bi,bj,k,Nr, r8seg, .FALSE., arr )
             else
@@ -858,6 +884,15 @@ C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
+
+#ifndef REAL4_IS_SLOW
+      if (arrType .eq. 'RS') then
+       write(msgbuf,'(a)')
+     &   ' MDSREADFIELD_GL is wrong for arrType="RS" (=real*4)'
+       call print_error( msgbuf, mythid )
+       stop 'ABNORMAL END: S/R MDSREADFIELD_GL'
+      endif
+#endif
 
 C Record number must be >= 1
       if (irecord .LT. 1) then
@@ -1033,7 +1068,9 @@ C (This is a place-holder for the active/passive mechanism
             call MDS_BYTESWAPR4( sNx, r4seg )
 #endif
             if (arrType .eq. 'RS') then
+#ifdef REAL4_IS_SLOW
              call MDS_SEG4toRS( j,bi,bj,k,nLocz, r4seg, .TRUE., arr )
+#endif
             elseif (arrType .eq. 'RL') then
              call MDS_SEG4toRL( j,bi,bj,k,nLocz, r4seg, .TRUE., arr )
             else
@@ -1048,7 +1085,9 @@ C (This is a place-holder for the active/passive mechanism
             call MDS_BYTESWAPR8( sNx, r8seg )
 #endif
             if (arrType .eq. 'RS') then
+#ifdef REAL4_IS_SLOW
              call MDS_SEG8toRS( j,bi,bj,k,nLocz, r8seg, .TRUE., arr )
+#endif
             elseif (arrType .eq. 'RL') then
              call MDS_SEG8toRL( j,bi,bj,k,nLocz, r8seg, .TRUE., arr )
             else
@@ -1272,6 +1311,15 @@ C     ------------------------------------------------------------------
 C Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
 
+#ifndef REAL4_IS_SLOW
+      if (arrType .eq. 'RS') then
+       write(msgbuf,'(a)')
+     &   ' MDSWRITEFIELD_GL is wrong for arrType="RS" (=real*4)'
+       call print_error( msgbuf, mythid )
+       stop 'ABNORMAL END: S/R MDSWRITEFIELD_GL'
+      endif
+#endif
+
 C Record number must be >= 1
       if (irecord .LT. 1) then
        write(msgbuf,'(a,i9.8)')
@@ -1439,7 +1487,9 @@ C If we are writing to a tiled MDS file then we open each one here
             irec=j + sNy*(k-1) + sNy*nLocz*(irecord-1)
            if (filePrec .eq. precFloat32) then
             if (arrType .eq. 'RS') then
+#ifdef REAL4_IS_SLOW
              call MDS_SEG4toRS( j,bi,bj,k,nLocz, r4seg, .FALSE., arr )
+#endif
             elseif (arrType .eq. 'RL') then
              call MDS_SEG4toRL( j,bi,bj,k,nLocz, r4seg, .FALSE., arr )
             else
@@ -1454,7 +1504,9 @@ C If we are writing to a tiled MDS file then we open each one here
             write(dUnit,rec=irec) r4seg
            elseif (filePrec .eq. precFloat64) then
             if (arrType .eq. 'RS') then
+#ifdef REAL4_IS_SLOW
              call MDS_SEG8toRS( j,bi,bj,k,nLocz, r8seg, .FALSE., arr )
+#endif
             elseif (arrType .eq. 'RL') then
              call MDS_SEG8toRL( j,bi,bj,k,nLocz, r8seg, .FALSE., arr )
             else
