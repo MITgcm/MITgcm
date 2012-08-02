@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_control_slice.F,v 1.10 2010/03/22 02:15:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_control_slice.F,v 1.11 2012/08/02 16:04:08 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -349,7 +349,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 c             Add active_var from appropriate location to data.
         do bj = 1,nsy
            do bi = 1,nsx
-              do k = 1,nr
+              do k = 1,mynr
                  do i = 1,snx
                     active_var(i,k,bi,bj) =
      &                   active_var(i,k,bi,bj) +
