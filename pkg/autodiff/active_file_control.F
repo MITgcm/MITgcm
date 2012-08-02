@@ -1,433 +1,620 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_control.F,v 1.11 2011/11/05 19:20:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_control.F,v 1.12 2012/08/02 22:06:55 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 
-c     ==================================================================
-c
-c     active_file_control.F: Routines to handle the i/o of active vari-
-c                            ables for the adjoint calculations. All
-c                            files are direct access files.
-c
-c     Routines:
-c
-c     o  active_read_rl         - Basic routine to handle active read
-c                                 operations.
-c     o  active_write_rl        - Basic routine to handle active write
-c                                 operations.
-c
-c        changed: Christian Eckert eckert@mit.edu 24-Apr-2000
-c                 - Added routines that do active writes on tiles
-c                   instead of a whole thread.
-c
-c     ==================================================================
+C     ==================================================================
+C     active_file_control.F: Routines to handle the I/O of active
+C                            variables for the adjoint calculations.
+C                            All files are direct access files.
+C     Routines:
+C     o  ACTIVE_READ_3D_RL  : Basic routine to handle active 3D read operations
+C     o  ACTIVE_READ_3D_RS  : Basic routine to handle active 3D read operations
+C     o  ACTIVE_WRITE_3D_RL : Basic routine to handle active 3D write operations
+C     o  ACTIVE_WRITE_3D_RS : Basic routine to handle active 3D write operations
+C
+C        changed: Christian Eckert eckert@mit.edu 24-Apr-2000
+C        - Added routines that do active writes on tiles
+C                   instead of a whole thread.
+C     ==================================================================
 
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: active_read_rl
+C     !ROUTINE: ACTIVE_READ_3D_RL
 C     !INTERFACE:
-      subroutine active_read_rl(
-     I                           active_var_file,
-     O                           active_var,
-     I                           globalfile,
-     I                           lAdInit,
-     I                           irec,
-     I                           mynr,
-     I                           theSimulationMode,
-     I                           myOptimIter,
-     I                           mythid
-     &                         )
-
+      SUBROUTINE ACTIVE_READ_3D_RL(
+     I                          activeVar_file,
+     O                          active_var,
+     I                          globalFile,
+     I                          useCurrentDir,
+     I                          lAdInit,
+     I                          iRec,
+     I                          myNr,
+     I                          theSimulationMode,
+     I                          myOptimIter,
+     I                          myThid )
 C     !DESCRIPTION: \bv
-c     ==================================================================
-c     SUBROUTINE active_read_rl
-c     ==================================================================
-c     o Read an active _RL variable from file.
-c     The variable *globalfile* can be used as a switch, which allows
-c     to read from a global file. The adjoint files are, however, always
-c     treated as tiled files.
-c     started: Christian Eckert eckert@mit.edu    Jan-1999
-c     ==================================================================
-c     SUBROUTINE active_read_rl
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE ACTIVE_READ_3D_RL
+C     ==================================================================
+C     o Read an active 3D _RL variable from file.
+C     The variable *globalfile* can be used as a switch, which allows
+C     to read from a global file. The adjoint files are, however, always
+C     treated as tiled files.
+C     started: Christian Eckert eckert@mit.edu    Jan-1999
+C     ==================================================================
+C     SUBROUTINE ACTIVE_READ_3D_RL
+C     ==================================================================
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "ctrl.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-c     == routine arguments ==
-c     active_var_file: filename
-c     active_var:      array
-c     irec:            record number
-c     myOptimIter:     number of optimization iteration (default: 0)
-c     mythid:          thread number for this instance
-c     doglobalread:    flag for global or local read/write
-c                      (default: .false.)
-c     lAdInit:         initialisation of corresponding adjoint
-c                      variable and write to active file
-c     mynr:            vertical array dimension
-c     theSimulationMode: forward mode or reverse mode simulation
-      character*(*) active_var_file
-      logical  globalfile
-      logical  lAdInit
-      integer  irec
-      integer  mynr
-      integer  theSimulationMode
-      integer  myOptimIter
-      integer  mythid
-      _RL     active_var(1-olx:snx+olx,1-oly:sny+oly,mynr,nsx,nsy)
+C     activeVar_file :: filename
+C     active_var     :: array
+C     globalFile     ::
+C     useCurrentDir  :: always read from the current directory
+C                        (even if "mdsioLocalDir" is set)
+C     lAdInit        :: initialisation of corresponding adjoint variable
+C                        and write to active file
+C     iRec           :: record number
+C     myNr           :: vertical array dimension
+C     theSimulationMode :: forward mode or reverse mode simulation
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
+      CHARACTER*(*) activeVar_file
+      INTEGER  myNr
+      _RL      active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
+      LOGICAL  globalFile
+      LOGICAL  useCurrentDir
+      LOGICAL  lAdInit
+      INTEGER  iRec
+      INTEGER  theSimulationMode
+      INTEGER  myOptimIter
+      INTEGER  myThid
+
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-c     == local variables ==
-      character*(2)  adpref
-      character*(80) adfname
-      integer bi,bj
-      integer i,j,k
-      integer oldprec
-      integer prec
-      integer il
-      integer ilnblnk
-      logical writeglobalfile
-      _RL  active_data_t(1-olx:snx+olx,1-oly:sny+oly,mynr,nsx,nsy)
-
-c     == functions ==
-      external ilnblnk
-
-c     == end of interface ==
+      CHARACTER*(2)  adpref
+      CHARACTER*(80) adfname
+      INTEGER bi,bj
+      INTEGER i,j,k
+      INTEGER prec
+      INTEGER il
+      LOGICAL w_globFile
+      _RS  dummyRS(1)
+      _RL  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
 CEOP
 
-c     force 64-bit io
-      oldPrec        = readBinaryPrec
-      readBinaryPrec = ctrlprec
-      prec           = ctrlprec
+C     force 64-bit io
+      prec = ctrlprec
 
-      write(adfname(1:80),'(80a)') ' '
       adpref = 'ad'
-      il = ilnblnk( active_var_file )
+      il = ILNBLNK( activeVar_file )
+      WRITE(adfname(1:80),'(80a)') ' '
+      WRITE(adfname(1:il+2),'(2A)') adpref, activeVar_file(1:il)
 
-      write(adfname(1:2),'(a)') adpref
-      write(adfname(3:il+2),'(a)') active_var_file(1:il)
+C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
 
-c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+C     Read the active variable from file.
+        CALL MDS_READ_FIELD(
+     I                activeVar_file, prec, useCurrentDir,
+     I                'RL', myNr, 1, myNr,
+     O                active_var, dummyRS,
+     I                iRec, myThid )
 
-      if (theSimulationMode .eq. FORWARD_SIMULATION) then
+        IF ( lAdInit ) THEN
+C     Initialise the corresponding adjoint variable on the
+C     adjoint variable file. These files are tiled.
 
-        _BEGIN_MASTER( mythid )
+          DO bj = myByLo(myThid), myByHi(myThid)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO k = 1, myNr
+             DO j=1,sNy
+              DO i=1,sNx
+                active_data_t(i,j,k,bi,bj) = 0. _d 0
+              ENDDO
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
 
-c       Read the active variable from file.
+          CALL MDS_WRITE_FIELD(
+     I                adfname, prec, globalFile, useCurrentDir,
+     I                'RL', myNr, 1, myNr,
+     I                active_data_t, dummyRS,
+     I                iRec, myOptimIter, myThid )
 
-        call mdsreadfield(
-     &                     active_var_file,
-     &                     prec,
-     &                     'RL',
-     &                     mynr,
-     &                     active_var,
-     &                     irec,
-     &                     mythid )
+        ENDIF
 
-        if (lAdInit) then
-c         Initialise the corresponding adjoint variable on the
-c         adjoint variable file. These files are tiled.
+      ENDIF
 
-          writeglobalfile = .false.
-          do bj = 1,nsy
-             do bi = 1,nsx
-                do k = 1,mynr
-                   do j=1,sny
-                      do i=1,snx
-                         active_data_t(i,j,k,bi,bj)= 0. _d 0
-                      enddo
-                   enddo
-                enddo
-             enddo
-          enddo
+C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. REVERSE_SIMULATION) THEN
 
-          call mdswritefield(
-     &                           adfname,
-     &                           prec,
-     &                           globalfile,
-     &                           'RL',
-     &                           mynr,
-     &                           active_data_t,
-     &                           irec,
-     &                           myOptimIter,
-     &                           mythid )
-        endif
+        CALL MDS_READ_FIELD(
+     I                activeVar_file, prec, useCurrentDir,
+     I                'RL', myNr, 1, myNr,
+     O                active_data_t, dummyRS,
+     I                iRec, myThid )
 
-        _END_MASTER( mythid )
+C     Add active_var from appropriate location to data.
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO k = 1, myNr
+           DO j=1,sNy
+            DO i=1,sNx
+              active_data_t(i,j,k,bi,bj) = active_data_t(i,j,k,bi,bj)
+     &                                   + active_var(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
 
-      endif
+C     Store the result on disk.
+        w_globFile = .FALSE.
+        CALL MDS_WRITE_FIELD(
+     I                activeVar_file, prec, w_globFile, useCurrentDir,
+     I                'RL', myNr, 1, myNr,
+     I                active_data_t, dummyRS,
+     I                iRec, myOptimIter, myThid )
 
-c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+C     Set active_var to zero.
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO k = 1, myNr
+           DO j=1,sNy
+            DO i=1,sNx
+              active_var(i,j,k,bi,bj) = 0 _d 0
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
 
-      if (theSimulationMode .eq. REVERSE_SIMULATION) then
+      ENDIF
 
-        _BEGIN_MASTER( mythid )
+C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
+C     Read the active variable from file.
+        CALL MDS_READ_FIELD(
+     I                activeVar_file, prec, useCurrentDir,
+     I                'RL', myNr, 1, myNr,
+     O                active_var, dummyRS,
+     I                iRec, myThid )
+      ENDIF
 
-        writeglobalfile = .false.
-           call mdsreadfield(
-     &                        active_var_file,
-     &                        prec,
-     &                        'RL',
-     &                        mynr,
-     &                        active_data_t,
-     &                        irec,
-     &                        mythid )
+      RETURN
+      END
 
-c             Add active_var from appropriate location to data.
-           do bj = 1,nsy
-              do bi = 1,nsx
-                 do k = 1,mynr
-                    do j=1,sny
-                       do i=1,snx
-                          active_data_t(i,j,k,bi,bj) =
-     &                         active_data_t(i,j,k,bi,bj) +
-     &                         active_var(i,j,k,bi,bj)
-                       enddo
-                    enddo
-                 enddo
-              enddo
-           enddo
-
-c             Store the result on disk.
-           call mdswritefield(
-     &                         active_var_file,
-     &                         prec,
-     &                         writeglobalfile,
-     &                         'RL',
-     &                         mynr,
-     &                         active_data_t,
-     &                         irec,
-     &                         myOptimIter,
-     &                         mythid )
-
-c       Set active_var to zero.
-        do bj = 1,nsy
-           do bi = 1,nsx
-              do k=1,mynr
-                 do j=1,sny
-                    do i=1,snx
-                       active_var(i,j,k,bi,bj) = 0. _d 0
-                    enddo
-                 enddo
-              enddo
-           enddo
-        enddo
-
-        _END_MASTER( mythid )
-      endif
-
-c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
-
-      if (theSimulationMode .eq. TANGENT_SIMULATION) then
-
-        _BEGIN_MASTER( mythid )
-
-c       Read the active variable from file.
-
-        call mdsreadfield(
-     &                     active_var_file,
-     &                     prec,
-     &                     'RL',
-     &                     mynr,
-     &                     active_var,
-     &                     irec,
-     &                     mythid )
-
-        _END_MASTER( mythid )
-      endif
-
-c     Reset default io precision.
-      readBinaryPrec = oldPrec
-
-      _BARRIER
-
-      return
-      end
-
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: active_write_rl
+C     !ROUTINE: ACTIVE_READ_3D_RS
 C     !INTERFACE:
-      subroutine active_write_rl(
-     I                            active_var_file,
-     I                            active_var,
-     I                            globalfile,
-     I                            irec,
-     I                            mynr,
-     I                            theSimulationMode,
-     I                            myOptimIter,
-     I                            mythid
-     &                          )
+      SUBROUTINE ACTIVE_READ_3D_RS(
+     I                          activeVar_file,
+     O                          active_var,
+     I                          globalFile,
+     I                          useCurrentDir,
+     I                          lAdInit,
+     I                          iRec,
+     I                          myNr,
+     I                          theSimulationMode,
+     I                          myOptimIter,
+     I                          myThid )
 
 C     !DESCRIPTION: \bv
-c     ==================================================================
-c     SUBROUTINE active_write_rl
-c     ==================================================================
-c     o Write an active _RL variable to a file.
-c     started: Christian Eckert eckert@mit.edu    Jan-1999
-c     ==================================================================
-c     SUBROUTINE active_write_rl
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE ACTIVE_READ_3D_RS
+C     ==================================================================
+C     o Read an active 3D _RS variable from file.
+C     The variable *globalfile* can be used as a switch, which allows
+C     to read from a global file. The adjoint files are, however, always
+C     treated as tiled files.
+C     started: Christian Eckert eckert@mit.edu    Jan-1999
+C     ==================================================================
+C     SUBROUTINE ACTIVE_READ_3D_RS
+C     ==================================================================
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "ctrl.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-c     == routine arguments ==
-c     active_var_file: filename
-c     active_var:      array
-c     irec:            record number
-c     myOptimIter:     number of optimization iteration (default: 0)
-c     mythid:          thread number for this instance
-c     doglobalread:    flag for global or local read/write
-c                      (default: .false.)
-c     lAdInit:         initialisation of corresponding adjoint
-c                      variable and write to active file
-c     mynr:            vertical array dimension
-c     theSimulationMode: forward mode or reverse mode simulation
-      character*(*) active_var_file
-      integer  mynr
-      logical  globalfile
-      integer  irec
-      integer  theSimulationMode
-      integer  myOptimIter
-      integer  mythid
-      _RL     active_var(1-olx:snx+olx,1-oly:sny+oly,mynr,nsx,nsy)
+C     activeVar_file :: filename
+C     active_var     :: array
+C     globalFile     ::
+C     useCurrentDir  :: always read from the current directory
+C                        (even if "mdsioLocalDir" is set)
+C     lAdInit        :: initialisation of corresponding adjoint variable
+C                        and write to active file
+C     iRec           :: record number
+C     myNr           :: vertical array dimension
+C     theSimulationMode :: forward mode or reverse mode simulation
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
+      CHARACTER*(*) activeVar_file
+      INTEGER  myNr
+      _RS      active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
+      LOGICAL  globalFile
+      LOGICAL  useCurrentDir
+      LOGICAL  lAdInit
+      INTEGER  iRec
+      INTEGER  theSimulationMode
+      INTEGER  myOptimIter
+      INTEGER  myThid
+
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-c     == local variables ==
-      integer  i,j,k
-      integer  bi,bj
-      _RL  active_data_t(1-olx:snx+olx,1-oly:sny+oly,mynr,nsx,nsy)
-      integer  oldprec
-      integer  prec
-
-c     == end of interface ==
+      CHARACTER*(2)  adpref
+      CHARACTER*(80) adfname
+      INTEGER bi,bj
+      INTEGER i,j,k
+      INTEGER prec
+      INTEGER il
+      LOGICAL w_globFile
+      _RS  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
+      _RL  dummyRL(1)
 CEOP
 
-c     force 64-bit io
-      oldPrec        = readBinaryPrec
-      readBinaryPrec = ctrlprec
-      prec           = ctrlprec
+C     force 64-bit io
+      prec = ctrlprec
 
-c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+      adpref = 'ad'
+      il = ILNBLNK( activeVar_file )
+      WRITE(adfname(1:80),'(80a)') ' '
+      WRITE(adfname(1:il+2),'(2A)') adpref, activeVar_file(1:il)
 
-      if (theSimulationMode .eq. FORWARD_SIMULATION) then
+C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
 
-        _BEGIN_MASTER( mythid )
+C     Read the active variable from file.
+        CALL MDS_READ_FIELD(
+     I                activeVar_file, prec, useCurrentDir,
+     I                'RS', myNr, 1, myNr,
+     O                dummyRL, active_var,
+     I                iRec, myThid )
 
-          call mdswritefield(
-     &                        active_var_file,
-     &                        prec,
-     &                        globalfile,
-     &                        'RL',
-     &                        mynr,
-     &                        active_var,
-     &                        irec,
-     &                        myOptimIter,
-     &                        mythid )
+        IF ( lAdInit ) THEN
+C     Initialise the corresponding adjoint variable on the
+C     adjoint variable file. These files are tiled.
 
-        _END_MASTER( mythid )
+          DO bj = myByLo(myThid), myByHi(myThid)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO k = 1, myNr
+             DO j=1,sNy
+              DO i=1,sNx
+                active_data_t(i,j,k,bi,bj) = 0. _d 0
+              ENDDO
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
 
-      endif
+          CALL MDS_WRITE_FIELD(
+     I                adfname, prec, globalFile, useCurrentDir,
+     I                'RS', myNr, 1, myNr,
+     I                dummyRL, active_data_t,
+     I                iRec, myOptimIter, myThid )
 
-c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+        ENDIF
 
-      if (theSimulationMode .eq. REVERSE_SIMULATION) then
+      ENDIF
 
-        _BEGIN_MASTER( mythid )
+C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. REVERSE_SIMULATION) THEN
 
-        call mdsreadfield(
-     &                           active_var_file,
-     &                           prec,
-     &                           'RL',
-     &                            mynr,
-     &                            active_data_t,
-     &                            irec,
-     &                            mythid )
+        CALL MDS_READ_FIELD(
+     I                activeVar_file, prec, useCurrentDir,
+     I                'RS', myNr, 1, myNr,
+     O                dummyRL, active_data_t,
+     I                iRec, myThid )
 
-c             Add active_var from appropriate location to data.
-        do bj = 1,nsy
-           do bi = 1,nsx
-              do k = 1, mynr
-                 do j=1,sny
-                    do i=1,snx
-                       active_var(i,j,k,bi,bj) =
-     &                      active_var(i,j,k,bi,bj) +
-     &                      active_data_t(i,j,k,bi,bj)
-                       active_data_t(i,j,k,bi,bj) = 0. _d 0
-                    enddo
-                 enddo
-              enddo
-           enddo
-        enddo
-        call mdswritefield(
-     &                            active_var_file,
-     &                            prec,
-     &                            globalfile,
-     &                            'RL',
-     &                            mynr,
-     &                            active_data_t,
-     &                            irec,
-     &                            myOptimIter,
-     &                            mythid )
+C     Add active_var from appropriate location to data.
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO k = 1, myNr
+           DO j=1,sNy
+            DO i=1,sNx
+              active_data_t(i,j,k,bi,bj) = active_data_t(i,j,k,bi,bj)
+     &                                   + active_var(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
 
-        _END_MASTER( mythid )
+C     Store the result on disk.
+        w_globFile = .FALSE.
+        CALL MDS_WRITE_FIELD(
+     I                activeVar_file, prec, w_globFile, useCurrentDir,
+     I                'RS', myNr, 1, myNr,
+     I                dummyRL, active_data_t,
+     I                iRec, myOptimIter, myThid )
 
-      endif
+C     Set active_var to zero.
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO k = 1, myNr
+           DO j=1,sNy
+            DO i=1,sNx
+              active_var(i,j,k,bi,bj) = 0 _d 0
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
 
-c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+      ENDIF
 
-      if (theSimulationMode .eq. TANGENT_SIMULATION) then
+C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
+C     Read the active variable from file.
+        CALL MDS_READ_FIELD(
+     I                activeVar_file, prec, useCurrentDir,
+     I                'RS', myNr, 1, myNr,
+     O                dummyRL, active_var,
+     I                iRec, myThid )
+      ENDIF
 
-        _BEGIN_MASTER( mythid )
+      RETURN
+      END
 
-          call mdswritefield(
-     &                        active_var_file,
-     &                        prec,
-     &                        globalfile,
-     &                        'RL',
-     &                        mynr,
-     &                        active_var,
-     &                        irec,
-     &                        myOptimIter,
-     &                        mythid )
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ACTIVE_WRITE_3D_RL
+C     !INTERFACE:
+      SUBROUTINE ACTIVE_WRITE_3D_RL(
+     I                          activeVar_file,
+     I                          active_var,
+     I                          globalFile,
+     I                          useCurrentDir,
+     I                          iRec,
+     I                          myNr,
+     I                          theSimulationMode,
+     I                          myOptimIter,
+     I                          myThid )
 
-        _END_MASTER( mythid )
+C     !DESCRIPTION: \bv
+C     ==================================================================
+C     SUBROUTINE ACTIVE_WRITE_3D_RL
+C     ==================================================================
+C     o Write an active 3D _RL variable to a file.
+C     started: Christian Eckert eckert@mit.edu    Jan-1999
+C     ==================================================================
+C     SUBROUTINE ACTIVE_WRITE_3D_RL
+C     ==================================================================
+C     \ev
 
-      endif
+C     !USES:
+      IMPLICIT NONE
 
-c     Reset default io precision.
-      readBinaryPrec = oldPrec
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#include "ctrl.h"
 
-      _BARRIER
+C     !INPUT/OUTPUT PARAMETERS:
+C     activeVar_file :: filename
+C     active_var     :: array
+C     globalFile     ::
+C     useCurrentDir  :: always write to the current directory
+C                        (even if "mdsioLocalDir" is set)
+C     iRec           :: record number
+C     myNr           :: vertical array dimension
+C     theSimulationMode :: forward mode or reverse mode simulation
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
+      CHARACTER*(*) activeVar_file
+      INTEGER  myNr
+      _RL      active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
+      LOGICAL  globalFile
+      LOGICAL  useCurrentDir
+      INTEGER  iRec
+      INTEGER  theSimulationMode
+      INTEGER  myOptimIter
+      INTEGER  myThid
 
-      return
-      end
+C     !LOCAL VARIABLES:
+      INTEGER  i,j,k
+      INTEGER  bi,bj
+      INTEGER  prec
+      _RS  dummyRS(1)
+      _RL  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
+CEOP
+
+C     force 64-bit io
+      prec = ctrlprec
+
+C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
+        CALL MDS_WRITE_FIELD(
+     I                activeVar_file, prec, globalFile, useCurrentDir,
+     I                'RL', myNr, 1, myNr,
+     I                active_var, dummyRS,
+     I                iRec, myOptimIter, myThid )
+      ENDIF
+
+C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. REVERSE_SIMULATION) THEN
+
+        CALL MDS_READ_FIELD(
+     I                activeVar_file, prec, useCurrentDir,
+     I                'RL', myNr, 1, myNr,
+     O                active_data_t, dummyRS,
+     I                iRec, myThid )
+
+C     Add active_var from appropriate location to data.
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO k = 1, myNr
+           DO j=1,sNy
+            DO i=1,sNx
+              active_var(i,j,k,bi,bj) = active_var(i,j,k,bi,bj)
+     &                                + active_data_t(i,j,k,bi,bj)
+              active_data_t(i,j,k,bi,bj) = 0. _d 0
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL MDS_WRITE_FIELD(
+     I                activeVar_file, prec, globalFile, useCurrentDir,
+     I                'RL', myNr, 1, myNr,
+     I                active_data_t, dummyRS,
+     I                iRec, myOptimIter, myThid )
+
+      ENDIF
+
+C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
+        CALL MDS_WRITE_FIELD(
+     I                activeVar_file, prec, globalFile, useCurrentDir,
+     I                'RL', myNr, 1, myNr,
+     I                active_var, dummyRS,
+     I                iRec, myOptimIter, myThid )
+      ENDIF
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ACTIVE_WRITE_3D_RS
+C     !INTERFACE:
+      SUBROUTINE ACTIVE_WRITE_3D_RS(
+     I                          activeVar_file,
+     I                          active_var,
+     I                          globalFile,
+     I                          useCurrentDir,
+     I                          iRec,
+     I                          myNr,
+     I                          theSimulationMode,
+     I                          myOptimIter,
+     I                          myThid )
+
+C     !DESCRIPTION: \bv
+C     ==================================================================
+C     SUBROUTINE ACTIVE_WRITE_3D_RS
+C     ==================================================================
+C     o Write an active 3D _RS variable to a file.
+C     started: Christian Eckert eckert@mit.edu    Jan-1999
+C     ==================================================================
+C     SUBROUTINE ACTIVE_WRITE_3D_RS
+C     ==================================================================
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#include "ctrl.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     activeVar_file :: filename
+C     active_var     :: array
+C     globalFile     ::
+C     useCurrentDir  :: always write to the current directory
+C                        (even if "mdsioLocalDir" is set)
+C     iRec           :: record number
+C     myNr           :: vertical array dimension
+C     theSimulationMode :: forward mode or reverse mode simulation
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
+      CHARACTER*(*) activeVar_file
+      INTEGER  myNr
+      _RS      active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
+      LOGICAL  globalFile
+      LOGICAL  useCurrentDir
+      INTEGER  iRec
+      INTEGER  theSimulationMode
+      INTEGER  myOptimIter
+      INTEGER  myThid
+
+C     !LOCAL VARIABLES:
+      INTEGER  i,j,k
+      INTEGER  bi,bj
+      INTEGER  prec
+      _RS  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
+      _RL  dummyRL(1)
+CEOP
+
+C     force 64-bit io
+      prec = ctrlprec
+
+C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
+        CALL MDS_WRITE_FIELD(
+     I                activeVar_file, prec, globalFile, useCurrentDir,
+     I                'RS', myNr, 1, myNr,
+     I                dummyRL, active_var,
+     I                iRec, myOptimIter, myThid )
+      ENDIF
+
+C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. REVERSE_SIMULATION) THEN
+
+        CALL MDS_READ_FIELD(
+     I                activeVar_file, prec, useCurrentDir,
+     I                'RS', myNr, 1, myNr,
+     O                dummyRL, active_data_t,
+     I                iRec, myThid )
+
+C     Add active_var from appropriate location to data.
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO k = 1, myNr
+           DO j=1,sNy
+            DO i=1,sNx
+              active_var(i,j,k,bi,bj) = active_var(i,j,k,bi,bj)
+     &                                + active_data_t(i,j,k,bi,bj)
+              active_data_t(i,j,k,bi,bj) = 0. _d 0
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL MDS_WRITE_FIELD(
+     I                activeVar_file, prec, globalFile, useCurrentDir,
+     I                'RS', myNr, 1, myNr,
+     I                dummyRL, active_data_t,
+     I                iRec, myOptimIter, myThid )
+
+      ENDIF
+
+C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
+        CALL MDS_WRITE_FIELD(
+     I                activeVar_file, prec, globalFile, useCurrentDir,
+     I                'RS', myNr, 1, myNr,
+     I                dummyRL, active_var,
+     I                iRec, myOptimIter, myThid )
+      ENDIF
+
+      RETURN
+      END
