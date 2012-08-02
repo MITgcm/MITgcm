@@ -1,9 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1701 2012/08/01 18:24:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1702 2012/08/02 22:48:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  re-write active I/O high-level (control) S/R:
+  - rename  S/R ACTIVE_READ/WRITE_RL to ACTIVE_READ/WRITE_3D_RL
+  - add 1 more argument (useCurrentDir) to replace the "_LOC" 2nd set of S/R.
+  - use standard pkg/mdsio I/O routines (MDS_READ/WRITE_SEC_XZ/YZ  and
+    MDS_READ/WRITE_FIELD); change loops to multi-threads.
+  - update and merge active_file_control_slice.flow into active_file_control.flow
+  - update the calls in lower level S/R (active_file.F, active_file_g.F and
+    active_file_ad.F) keeping the argument list and function unchanged.
+o autodiff and RS=real*4:
+  - call the right type (_RS instead of _RL) of S/R in few output S/R (pkg/exf
+    ad-monitor and snapshots); disable arrType='RS' in mdsio_gl*.F ;
+  - change argument type of 3-D mask argument to _RS to match type in the call
+    (in seaice_cost*.F, ctrl_*_gen.F and *ctrl_bound.F); to be continued.
 o pkg/thsice:
   - re-anable balanceEmPmR when useSEAICE=T with useThSIce=T.
   - option to correct ocean fresh-water flux for imbalance of Atmos+Land
