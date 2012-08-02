@@ -1,17 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_control.flow,v 1.4 2011/11/05 19:20:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_control.flow,v 1.5 2012/08/02 22:09:15 jmc Exp $
 C $Name:  $
 
 CBOP
-C     !ROUTINE: flow directives for active_file_control.F
+C     !ROUTINE: flow directives for active_file_control[_slice].F
 C     !INTERFACE:
 C     !DESCRIPTION: \bv
 c     ==================================================================
 c     active_file_control.flow
 c     ==================================================================
 c     provides flow directives for routines in active_file_control.F
+c                                       and in active_file_control_slice.F
 c     required by TAMC/TAF
-c     * active_read_rl
-c     * active_write_rl
+c     * active_read_3d_rl , active_read_3d_rs
+c     * active_read_xz_rl , active_read_xz_rs
+c     * active_read_yz_rl , active_read_yz_rs
+c     * active_write_3d_rl, active_write_3d_rl
+c     * active_write_xz_rl, active_write_xz_rl
+c     * active_write_yz_rl, active_write_yz_rl
 c     ==================================================================
 c     active_file_control.flow
 c     ==================================================================
@@ -19,13 +24,74 @@ C     \ev
 CEOP
 
 c----------------------------------------
-c subroutine active_read_rl
+c subroutine active_read_3d_rl
 c----------------------------------------
-cadj SUBROUTINE active_read_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
-cadj SUBROUTINE active_read_rl OUTPUT  =    2
+cadj SUBROUTINE active_read_3d_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+cadj SUBROUTINE active_read_3d_rl OUTPUT  =    2
 
 c----------------------------------------
-c subroutine active_write_rl
+c subroutine active_read_3d_rs
 c----------------------------------------
-cadj SUBROUTINE active_write_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8
-cadj SUBROUTINE active_write_rl OUTPUT  =    2
+cadj SUBROUTINE active_read_3d_rs INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+cadj SUBROUTINE active_read_3d_rs OUTPUT  =    2
+
+c----------------------------------------
+c subroutine active_read_xz_rl
+c----------------------------------------
+cadj SUBROUTINE active_read_xz_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+cadj SUBROUTINE active_read_xz_rl OUTPUT  =    2
+
+c----------------------------------------
+c subroutine active_read_xz_rs
+c----------------------------------------
+cadj SUBROUTINE active_read_xz_rs INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+cadj SUBROUTINE active_read_xz_rs OUTPUT  =    2
+
+c----------------------------------------
+c subroutine active_read_yz_rl
+c----------------------------------------
+cadj SUBROUTINE active_read_yz_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+cadj SUBROUTINE active_read_yz_rl OUTPUT  =    2
+
+c----------------------------------------
+c subroutine active_read_yz_rs
+c----------------------------------------
+cadj SUBROUTINE active_read_yz_rs INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+cadj SUBROUTINE active_read_yz_rs OUTPUT  =    2
+
+c----------------------------------------
+c subroutine active_write_3d_rl
+c----------------------------------------
+cadj SUBROUTINE active_write_3d_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
+cadj SUBROUTINE active_write_3d_rl OUTPUT  =    2
+
+c----------------------------------------
+c subroutine active_write_3d_rs
+c----------------------------------------
+cadj SUBROUTINE active_write_3d_rs INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
+cadj SUBROUTINE active_write_3d_rs OUTPUT  =    2
+
+c----------------------------------------
+c subroutine active_write_xz_rl
+c----------------------------------------
+cadj SUBROUTINE active_write_xz_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
+cadj SUBROUTINE active_write_xz_rl OUTPUT  =    2
+
+c----------------------------------------
+c subroutine active_write_xz_rs
+c----------------------------------------
+cadj SUBROUTINE active_write_xz_rs INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
+cadj SUBROUTINE active_write_xz_rs OUTPUT  =    2
+
+c----------------------------------------
+c subroutine active_write_yz_rl
+c----------------------------------------
+cadj SUBROUTINE active_write_yz_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
+cadj SUBROUTINE active_write_yz_rl OUTPUT  =    2
+
+c----------------------------------------
+c subroutine active_write_yz_rs
+c----------------------------------------
+cadj SUBROUTINE active_write_yz_rs INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
+cadj SUBROUTINE active_write_yz_rs OUTPUT  =    2
+
