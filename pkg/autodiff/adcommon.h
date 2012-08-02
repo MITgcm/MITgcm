@@ -1,24 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.30 2012/07/27 19:55:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.31 2012/08/02 01:13:29 jmc Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
 C--   automatically created tangent linear code.
 C--   You need to make sure that they are up-to-date
-C--   (i.e. in right order), and customize them
-C--   accordingly.
+C--   (i.e. in right order), and customize them accordingly.
 C--
 C--   heimbach@mit.edu 11-Jan-2001
 
 #ifdef ALLOW_AUTODIFF_MONITOR
-
-#include "PACKAGES_CONFIG.h"
-
-#ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
-#endif
-c#ifdef ALLOW_SEAICE
-c# include "SEAICE_OPTIONS.h"
-c#endif
 
       common /addynvars_r/
      &                     adetan,
