@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.6 2012/07/06 23:10:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.7 2012/08/02 01:23:16 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -8,7 +8,7 @@ CBOP
 C     !ROUTINE: adexf_adjoint_snapshots
 C     !INTERFACE:
       subroutine adexf_adjoint_snapshots(
-     &     iwhen, mytime, myiter, myThid )
+     &     iwhen, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -39,52 +39,40 @@ C     == Global variables ===
 # include "adcommon.h"
 #endif
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER  IO_ERRCOUNT
-      EXTERNAL IO_ERRCOUNT
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myIter - iteration counter for this thread
-C     myTime - time counter for this thread
-C     myThid - Thread number for this instance of the routine.
+C     myTime :: time counter for this thread
+C     myIter :: iteration counter for this thread
+C     myThid :: Thread number for this instance of the routine.
       integer iwhen
+      _RL     myTime
+      integer myIter
       integer myThid
-      integer myiter
-      _RL     mytime
 
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
 #ifdef ALLOW_AUTODIFF_MONITOR
 
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
 C     !LOCAL VARIABLES:
 c     == local variables ==
-C     suff - Hold suffix part of a filename
-C     beginIOErrCount - Begin and end IO error counts
-C     endIOErrCount
-C     msgBuf - Error message buffer
+C     suff   :: Hold suffix part of a filename
+C     msgBuf :: Error message buffer
       CHARACTER*(MAX_LEN_FNAM) suff
-      INTEGER beginIOErrCount
-      INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
-c     == end of interface ==
 CEOP
 
-      call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
+      CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
       IF (
-     &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,deltaTClock)
+     &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
      & ) THEN
-
-       _BEGIN_MASTER( myThid )
 
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
         writeBinaryPrec = writeStatePrec
-
-C--     Read IO error counter
-        beginIOErrCount = IO_ERRCOUNT(myThid)
 
         IF ( iwhen .EQ.1 ) THEN
 
@@ -128,18 +116,15 @@ C--     Read IO error counter
 
         ELSEIF ( iwhen .EQ.3 ) THEN
 
-        CALL WRITE_FLD_XY_RL ( 'ADJtaux.',suff, adfu, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'ADJtauy.',suff, adfv, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'ADJqnet.',suff, adqnet, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'ADJempr.',suff, adempmr, myIter, myThid)
+        CALL WRITE_FLD_XY_RS ( 'ADJtaux.',suff, adfu, myIter, myThid)
+        CALL WRITE_FLD_XY_RS ( 'ADJtauy.',suff, adfv, myIter, myThid)
+        CALL WRITE_FLD_XY_RS ( 'ADJqnet.',suff, adqnet, myIter, myThid)
+        CALL WRITE_FLD_XY_RS ( 'ADJempr.',suff, adempmr, myIter, myThid)
 #ifdef SHORTWAVE_HEATING
-        CALL WRITE_FLD_XY_RL ( 'ADJqsw.',suff, adqsw, myIter, myThid)
+        CALL WRITE_FLD_XY_RS ( 'ADJqsw.',suff, adqsw, myIter, myThid)
 #endif
 
         ENDIF
-
-       _END_MASTER( myThid )
-       _BARRIER
 
 #ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
@@ -200,7 +185,7 @@ c
       CALL ADEXF_MONITOR ( iwhen, myTime, myIter, myThid )
 #endif
 
-      call TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
+      CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
 #endif /* ALLOW_ADJOINT_RUN */

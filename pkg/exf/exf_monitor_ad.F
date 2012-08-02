@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor_ad.F,v 1.4 2012/04/19 16:06:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor_ad.F,v 1.5 2012/08/02 01:23:16 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -35,9 +35,9 @@ C     !USES:
 #endif
 
 C     !INPUT PARAMETERS:
-      INTEGER myIter
-      _RL myTime
       INTEGER iwhen
+      _RL myTime
+      INTEGER myIter
       INTEGER myThid
 CEOP
 
@@ -182,13 +182,13 @@ cph     &             maskInS, maskInS, rAs, drF, dummyRL, myThid )
 
         ELSEIF ( iwhen .EQ.3 ) THEN
 
-          CALL MON_WRITESTATS_RL( 1, adfu, '_adfu',
+          CALL MON_WRITESTATS_RS( 1, adfu, '_adfu',
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )
-          CALL MON_WRITESTATS_RL( 1, adfv, '_adfv',
+          CALL MON_WRITESTATS_RS( 1, adfv, '_adfv',
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )
-          CALL MON_WRITESTATS_RL( 1, adqnet,   '_adqnet',
+          CALL MON_WRITESTATS_RS( 1, adqnet,   '_adqnet',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
-          CALL MON_WRITESTATS_RL( 1, adempmr,   '_adempmr',
+          CALL MON_WRITESTATS_RS( 1, adempmr,   '_adempmr',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 
         ENDIF
