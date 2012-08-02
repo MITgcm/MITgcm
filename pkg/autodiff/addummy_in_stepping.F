@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.56 2012/07/31 17:43:52 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.57 2012/08/02 01:15:22 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -305,32 +305,32 @@ C       end if dumpAdVarExch = 2
           CALL MNC_CW_RL_W('D','adstate',0,0,'adEta', adetaN, myThid)
           CALL MNC_CW_RL_W('D','adstate',0,0,'adW', adwVel, myThid)
 
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adQnet', adQnet, myThid)
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adEmpmr', adEmpmr, myThid)
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adFu', adfu, myThid)
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adFv', adfv, myThid)
+          CALL MNC_CW_RS_W('D','adstate',0,0,'adQnet', adQnet, myThid)
+          CALL MNC_CW_RS_W('D','adstate',0,0,'adEmpmr', adEmpmr, myThid)
+          CALL MNC_CW_RS_W('D','adstate',0,0,'adFu', adfu, myThid)
+          CALL MNC_CW_RS_W('D','adstate',0,0,'adFv', adfv, myThid)
 
 #ifdef ALLOW_SST0_CONTROL
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adSST', adsst, myThid)
+          CALL MNC_CW_RS_W('D','adstate',0,0,'adSST', adsst, myThid)
 #endif
 #ifdef ALLOW_SSS0_CONTROL
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adSSS', adsss, myThid)
+          CALL MNC_CW_RS_W('D','adstate',0,0,'adSSS', adsss, myThid)
 #endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adBottomDrag',
-     &         adbottomdragfld, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &                     'adBottomDrag', adbottomdragfld, myThid)
 #endif
 #ifdef ALLOW_DIFFKR_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,
-     &         'adDiffkr', addiffkr, myThid)
+     &                     'adDiffkr', addiffkr, myThid)
 #endif
 #ifdef ALLOW_KAPGM_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,
-     &         'adkapgm', adkapgm, myThid)
+     &                     'adkapgm', adkapgm, myThid)
 #endif
 #ifdef ALLOW_KAPREDI_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,
-     &         'adkapredi', adkapredi, myThid)
+     &                     'adkapredi', adkapredi, myThid)
 #endif
 
         ENDIF
