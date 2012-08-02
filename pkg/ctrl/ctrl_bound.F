@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_bound.F,v 1.3 2008/02/09 23:28:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_bound.F,v 1.4 2012/08/02 01:30:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -23,7 +23,7 @@ C     *==========================================================*
       integer myThid,bi,bj,i,j,k
       integer itlo,ithi,jtlo,jthi
       _RL fieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
-      _RL maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
+      _RS maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
       _RL boundsVec(5)
 
       jtlo = mybylo(mythid)
@@ -32,7 +32,7 @@ C     *==========================================================*
       ithi = mybxhi(mythid)
 
       if (boundsVec(1).LT.boundsVec(4)) then
- 
+
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do k = 1,nr
@@ -77,7 +77,7 @@ C     *==========================================================*
       integer myThid,bi,bj,i,j,k
       integer itlo,ithi,jtlo,jthi
       _RL fieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nsx,nsy)
-      _RL maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
+      _RS maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
       _RL boundsVec(5)
 
       jtlo = mybylo(mythid)
@@ -86,7 +86,7 @@ C     *==========================================================*
       ithi = mybxhi(mythid)
 
       if (boundsVec(1).LT.boundsVec(4)) then
- 
+
       do bj = jtlo,jthi
         do bi = itlo,ithi
             do j = 1-oly,sny+oly
@@ -106,6 +106,5 @@ C     *==========================================================*
 
       endif
 
-
-      end
-
+      RETURN
+      END

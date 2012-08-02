@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_concentration.F,v 1.6 2010/03/24 03:05:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_concentration.F,v 1.7 2012/08/02 01:26:45 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -52,7 +52,7 @@ c     == routine arguments ==
       _RL areaSigma
 #endif
 
-      _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RS localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL xx_localbar_mean_dummy
       _RL mult_local
       _RL mytime

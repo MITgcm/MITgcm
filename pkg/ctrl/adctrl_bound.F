@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/adctrl_bound.F,v 1.9 2010/10/25 21:44:13 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/adctrl_bound.F,v 1.10 2012/08/02 01:30:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -22,7 +22,7 @@ C     *==========================================================*
 #include "PARAMS.h"
 
       _RL fieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
-      _RL maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
+      _RS maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
       _RL adjFieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
       _RL boundsVec(5)
       integer myThid
@@ -88,8 +88,10 @@ C  otherwise    => error
 
 #endif
 
-      end
+      RETURN
+      END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     !ROUTINE: ADCTRL_BOUND_2D
 C     !INTERFACE:
       SUBROUTINE ADCTRL_BOUND_2D(
@@ -111,7 +113,7 @@ C     *==========================================================*
       integer myThid,bi,bj,i,j,k
       integer itlo,ithi,jtlo,jthi
       _RL fieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nsx,nsy)
-      _RL maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
+      _RS maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
       _RL adjFieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nsx,nsy)
       _RL boundsVec(5)
       _RL x0,x0p5,l0p5,x1,x2,x2p5,l2p5,x3
@@ -172,5 +174,5 @@ C  otherwise    => error
 
 #endif
 
-      end
-
+      RETURN
+      END
