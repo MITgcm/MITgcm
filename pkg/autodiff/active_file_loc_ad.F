@@ -1,656 +1,644 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_loc_ad.F,v 1.7 2011/11/05 19:20:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_loc_ad.F,v 1.8 2012/08/03 18:49:34 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 
-c     ==================================================================
-c
-c     active_files_ad.F: Routines to handle the I/O of the active file
-c                        for the adjoint calculations. All files are
-c                        direct access files.
-c
-c     Routines
-c
-c     o  adactive_read_xy         - Adjoint of active_read_xy
-c     o  adactive_read_xyz        - Adjoint of active_read_xyz
-c     o  adactive_write_xy        - Adjoint of active_write_xy
-c     o  adactive_write_xyz       - Adjoint of active_write_xyz
-c
-c     o  adactive_read_xz         - Adjoint of active_read_xz
-c     o  adactive_read_yz         - Adjoint of active_read_yz
-c     o  adactive_write_xz        - Adjoint of active_write_xz
-c     o  adactive_write_yz        - Adjoint of active_write_yz
-c
-c        changed: Christian Eckert eckert@mit.edu 24-Apr-2000
-c                 - Added routines that do active writes on tiles
-c                   instead of a whole thread.
-c        changed: Patrick Heimbach heimbach@mit.edu 27-May-2000
-c                 - changed suboutine argument list:
-c                   dropped mycurrentiter, mycurrenttime
-c        changed: heimbach@mit.edu 25-Mar-2002
-c                 - added active file handling of xz-/yz-arrays
-c
-c     ==================================================================
+C     ==================================================================
+C     active_files_ad.F: Routines to handle the I/O of the active file
+C                        for the adjoint calculations. All files are
+C                        direct access files.
+C     Routines
+C     o  adactive_read_xy_loc     - Adjoint of active_read_xy_loc
+C     o  adactive_read_xyz_loc    - Adjoint of active_read_xyz_loc
+C     o  adactive_read_xz_loc     - Adjoint of active_read_xz_loc
+C     o  adactive_read_yz_loc     - Adjoint of active_read_yz_loc
+C
+C     o  adactive_write_xy_loc    - Adjoint of active_write_xy_loc
+C     o  adactive_write_xyz_loc   - Adjoint of active_write_xyz_loc
+C     o  adactive_write_xz_loc    - Adjoint of active_write_xz_loc
+C     o  adactive_write_yz_loc    - Adjoint of active_write_yz_loc
+C
+C        changed: Christian Eckert eckert@mit.edu 24-Apr-2000
+C                 - Added routines that do active writes on tiles
+C                   instead of a whole thread.
+C        changed: Patrick Heimbach heimbach@mit.edu 27-May-2000
+C                 - changed suboutine argument list:
+C                   dropped mycurrentiter, mycurrenttime
+C        changed: heimbach@mit.edu 25-Mar-2002
+C                 - added active file handling of xz-/yz-arrays
+C     ==================================================================
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: adactive_read_xy_loc
 C     !INTERFACE:
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
       subroutine adactive_read_xy_loc(
      I                             active_var_file,
-     I                             irec,
+     I                             iRec,
      I                             doglobalread,
      I                             lAdInit,
-     I                             myiter,
-     I                             mythid,
+     I                             myIter,
+     I                             myThid,
      I                             adactive_var
      &                           )
 #else
       subroutine adactive_read_xy_loc(
      I                             active_var_file,
      I                             adactive_var,
-     I                             irec,
+     I                             iRec,
      I                             doglobalread,
      I                             lAdInit,
-     I                             myiter,
-     I                             mythid,
+     I                             myIter,
+     I                             myThid,
      I                             dummy,
-     O                             addummy 
+     O                             addummy
      &                           )
 #endif
 
 C     !DESCRIPTION: \bv
-c     ==================================================================
-c     SUBROUTINE adactive_read_xy_loc
-c     ==================================================================
-c     o Adjoint of active_read_xy_loc.
-c     started: Christian Eckert eckert@mit.edu 24-May-1999
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE adactive_read_xy_loc
+C     ==================================================================
+C     o Adjoint of active_read_xy_loc.
+C     started: Christian Eckert eckert@mit.edu 24-May-1999
+C     ==================================================================
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-c     == routine arguments ==
-c     active_var_file: filename
-c     adactive_var:    array
-c     irec:            record number
-c     myIter:          number of optimization iteration (default: 0)
-c     mythid:          thread number for this instance
-c     doglobalread:    flag for global or local read/write
-c                      (default: .false.)
-c     lAdInit:         initialisation of corresponding adjoint
-c                      variable and write to active file
-      character*(*) active_var_file
-      _RL     adactive_var(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      integer irec
-      integer myiter,mythid
-      logical doglobalread
-      logical lAdInit
+C     active_var_file: filename
+C     adactive_var:    array
+C     iRec:            record number
+C     myIter:          number of optimization iteration (default: 0)
+C     myThid:          thread number for this instance
+C     doglobalread:    flag for global or local read/write
+C                      (default: .false.)
+C     lAdInit:         initialisation of corresponding adjoint
+C                      variable and write to active file
+      CHARACTER*(*) active_var_file
+      _RL     adactive_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter,myThid
+      LOGICAL doglobalread
+      LOGICAL lAdInit
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
-c     == local variables ==
-      integer mynr
-      integer il
-      integer ilnblnk
-      character*(2) adpref
-      character*(80) fname
-
-c     == functions ==
-      external ilnblnk
-
-c     == end of interface ==
+      CHARACTER*(2) adpref
+      CHARACTER*(80) fname
+      INTEGER il
+      INTEGER myNr
+      LOGICAL useCurrentDir
 CEOP
 
-      mynr   = 1
       adpref = 'ad'
-      write(fname(1:80),'(a)') ' '
+      il   = ILNBLNK( active_var_file )
+      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      myNr = 1
+      useCurrentDir = .TRUE.
 
-      il     = ilnblnk(active_var_file)
+      CALL ACTIVE_READ_3D_RL(
+     &                 fname, adactive_var, doglobalread,
+     &                 useCurrentDir, lAdInit, iRec, myNr,
+     &                 REVERSE_SIMULATION, myIter, myThid )
 
-      write(fname(1:2),'(a)') adpref
-      write(fname(3:2+il),'(a)') active_var_file(1:il)
+      RETURN
+      END
 
-      call active_read_rl_loc( fname, adactive_var,
-     &                     doglobalread, lAdInit, irec, mynr,
-     &                     REVERSE_SIMULATION, myiter, mythid )
-
-      end
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: adactive_read_xyz_loc
 C     !INTERFACE:
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
       subroutine adactive_read_xyz_loc(
      I                              active_var_file,
-     I                              irec,
+     I                              iRec,
      I                              doglobalread,
      I                              lAdInit,
-     I                              myiter,
-     I                              mythid,
+     I                              myIter,
+     I                              myThid,
      I                              adactive_var
      &                            )
 #else
       subroutine adactive_read_xyz_loc(
      I                              active_var_file,
      I                              adactive_var,
-     I                              irec,
+     I                              iRec,
      I                              doglobalread,
      I                              lAdInit,
-     I                              myiter,
-     I                              mythid,
+     I                              myIter,
+     I                              myThid,
      I                              dummy,
      I                              addummy
      &                            )
 #endif
 
 C     !DESCRIPTION: \bv
-c     ==================================================================
-c     SUBROUTINE adactive_read_xyz_loc
-c     ==================================================================
-c     o Adjoint of active_read_xyz_loc.
-c     started: Christian Eckert eckert@mit.edu 24-May-1999
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE adactive_read_xyz_loc
+C     ==================================================================
+C     o Adjoint of active_read_xyz_loc.
+C     started: Christian Eckert eckert@mit.edu 24-May-1999
+C     ==================================================================
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-c     == routine arguments ==
-c     active_var_file: filename
-c     adactive_var:    array
-c     irec:            record number
-c     myIter:          number of optimization iteration (default: 0)
-c     mythid:          thread number for this instance
-c     doglobalread:    flag for global or local read/write
-c                      (default: .false.)
-c     lAdInit:         initialisation of corresponding adjoint
-c                      variable and write to active file
-      character*(*) active_var_file
-      _RL     adactive_var(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      integer irec
-      integer myiter,mythid
-      logical doglobalread
-      logical lAdInit
+C     !INPUT/OUTPUT PARAMETERS:
+C     active_var_file: filename
+C     adactive_var:    array
+C     iRec:            record number
+C     myIter:          number of optimization iteration (default: 0)
+C     myThid:          thread number for this instance
+C     doglobalread:    flag for global or local read/write
+C                      (default: .false.)
+C     lAdInit:         initialisation of corresponding adjoint
+C                      variable and write to active file
+      CHARACTER*(*) active_var_file
+      _RL     adactive_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter,myThid
+      LOGICAL doglobalread
+      LOGICAL lAdInit
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
-c     == local variables ==
-      integer mynr
-      integer il
-      integer ilnblnk
-      character*(2) adpref
-      character*(80) fname
-
-c     == functions ==
-      external ilnblnk
-
-c     == end of interface ==
+      CHARACTER*(2) adpref
+      CHARACTER*(80) fname
+      INTEGER il
+      INTEGER myNr
+      LOGICAL useCurrentDir
 CEOP
 
-      mynr   = nr
       adpref = 'ad'
-      write(fname(1:80),'(a)') ' '
+      il   = ILNBLNK( active_var_file )
+      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      myNr = Nr
+      useCurrentDir = .TRUE.
 
-      il     = ilnblnk(active_var_file)
+      CALL ACTIVE_READ_3D_RL(
+     &                 fname, adactive_var, doglobalread,
+     &                 useCurrentDir, lAdInit, iRec, myNr,
+     &                 REVERSE_SIMULATION, myIter, myThid )
 
-      write(fname(1:2),'(a)') adpref
-      write(fname(3:2+il),'(a)') active_var_file(1:il)
+      RETURN
+      END
 
-      call active_read_rl_loc( fname, adactive_var,
-     &                     doglobalread, lAdInit, irec, mynr,
-     &                     REVERSE_SIMULATION, myiter, mythid )
-
-      end
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: adactive_read_xz_loc
 C     !INTERFACE:
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
       subroutine adactive_read_xz_loc(
      I                              active_var_file,
-     I                              irec,
+     I                              iRec,
      I                              doglobalread,
      I                              lAdInit,
-     I                              myiter,
-     I                              mythid,
+     I                              myIter,
+     I                              myThid,
      I                              adactive_var
      &                            )
 #else
       subroutine adactive_read_xz_loc(
      I                              active_var_file,
      I                              adactive_var,
-     I                              irec,
+     I                              iRec,
      I                              doglobalread,
      I                              lAdInit,
-     I                              myiter,
-     I                              mythid,
-     I                              dummy,
-     O                              addummy 
-     &                            )
-#endif
-
-C     !DESCRIPTION: \bv
-c     ==================================================================
-c     SUBROUTINE adactive_read_xz_loc
-c     ==================================================================
-c     o Adjoint of active_read_xz_loc.
-c     started: heimbach@mit.edu 05-Mar-2001
-c     ==================================================================
-C     \ev
-
-C     !USES:
-      implicit none
-
-c     == global variables ==
-#include "EEPARAMS.h"
-#include "SIZE.h"
-
-c     == routine arguments ==
-c     active_var_file: filename
-c     adactive_var:    array
-c     irec:            record number
-c     myIter:          number of optimization iteration (default: 0)
-c     mythid:          thread number for this instance
-c     doglobalread:    flag for global or local read/write
-c                      (default: .false.)
-c     lAdInit:         initialisation of corresponding adjoint
-c                      variable and write to active file
-      character*(*) active_var_file
-      _RL     adactive_var(1-olx:snx+olx,nr,nsx,nsy)
-      integer irec
-      integer myiter,mythid
-      logical doglobalread
-      logical lAdInit
-      _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
-
-C     !LOCAL VARIABLES:
-c     == local variables ==
-      integer mynr
-      integer il
-      integer ilnblnk
-      character*(2) adpref
-      character*(80) fname
-
-c     == functions ==
-      external ilnblnk
-
-c     == end of interface ==
-CEOP
-
-      mynr   = nr
-      adpref = 'ad'
-      write(fname(1:80),'(a)') ' '
-
-      il     = ilnblnk(active_var_file)
-
-      write(fname(1:2),'(a)') adpref
-      write(fname(3:2+il),'(a)') active_var_file(1:il)
-
-      call active_read_xz_rl_loc( fname, adactive_var,
-     &                     doglobalread, lAdInit, irec, mynr,
-     &                     REVERSE_SIMULATION, myiter, mythid )
-
-      end
-
-CBOP
-C     !ROUTINE: adactive_read_yz_loc
-C     !INTERFACE:
-#ifdef AUTODIFF_TAMC_COMPATIBILITY
-      subroutine adactive_read_yz_loc(
-     I                              active_var_file,
-     I                              irec,
-     I                              doglobalread,
-     I                              lAdInit,
-     I                              myiter,
-     I                              mythid,
-     I                              adactive_var
-     &                            )
-#else
-      subroutine adactive_read_yz_loc(
-     I                              active_var_file,
-     I                              adactive_var,
-     I                              irec,
-     I                              doglobalread,
-     I                              lAdInit,
-     I                              myiter,
-     I                              mythid,
+     I                              myIter,
+     I                              myThid,
      I                              dummy,
      O                              addummy
      &                            )
 #endif
 
 C     !DESCRIPTION: \bv
-c     ==================================================================
-c     SUBROUTINE adactive_read_yz_loc
-c     ==================================================================
-c     o Adjoint of active_read_yz_loc.
-c     started: heimbach@mit.edu 05-Mar-2001
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE adactive_read_xz_loc
+C     ==================================================================
+C     o Adjoint of active_read_xz_loc.
+C     started: heimbach@mit.edu 05-Mar-2001
+C     ==================================================================
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-c     == routine arguments ==
-c     active_var_file: filename
-c     adactive_var:    array
-c     irec:            record number
-c     myIter:          number of optimization iteration (default: 0)
-c     mythid:          thread number for this instance
-c     doglobalread:    flag for global or local read/write
-c                      (default: .false.)
-c     lAdInit:         initialisation of corresponding adjoint
-c                      variable and write to active file
-      character*(*) active_var_file
-      _RL     adactive_var(1-oly:sny+oly,nr,nsx,nsy)
-      integer irec
-      integer myiter,mythid
-      logical doglobalread
-      logical lAdInit
+C     !INPUT/OUTPUT PARAMETERS:
+C     active_var_file: filename
+C     adactive_var:    array
+C     iRec:            record number
+C     myIter:          number of optimization iteration (default: 0)
+C     myThid:          thread number for this instance
+C     doglobalread:    flag for global or local read/write
+C                      (default: .false.)
+C     lAdInit:         initialisation of corresponding adjoint
+C                      variable and write to active file
+      CHARACTER*(*) active_var_file
+      _RL     adactive_var(1-OLx:sNx+OLx,Nr,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter,myThid
+      LOGICAL doglobalread
+      LOGICAL lAdInit
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
-C     !LOCAL VARIABLES:
-c     == local variables ==
-      integer mynr
-      integer il
-      integer ilnblnk
-      character*(2) adpref
-      character*(80) fname
-
-c     == functions ==
-      external ilnblnk
-
-c     == end of interface ==
-CEOP
-
-      mynr   = nr
-      adpref = 'ad'
-      write(fname(1:80),'(a)') ' '
-
-      il     = ilnblnk(active_var_file)
-
-      write(fname(1:2),'(a)') adpref
-      write(fname(3:2+il),'(a)') active_var_file(1:il)
-
-      call active_read_yz_rl_loc( fname, adactive_var,
-     &                     doglobalread, lAdInit, irec, mynr,
-     &                     REVERSE_SIMULATION, myiter, mythid )
-
-      end
-
-CBOP
-C     !ROUTINE: adactive_read_xy_loc
-C     !INTERFACE:
-#ifdef AUTODIFF_TAMC_COMPATIBILITY
-      subroutine adactive_write_xy_loc(
-     I                              active_var_file,
-     I                              irec,
-     I                              myiter,
-     I                              mythid,
-     U                              adactive_var,
-     I                              dummy
-     &                            )
-#else
-      subroutine adactive_write_xy_loc(
-     I                              active_var_file,
-     U                              adactive_var,
-     I                              irec,
-     I                              myiter,
-     I                              mythid,
-     I                              dummy
-     &                            )
-#endif
-
-C     !DESCRIPTION: \bv
-c     ==================================================================
-c     SUBROUTINE adactive_write_xy_loc
-c     ==================================================================
-c     o Adjoint of active_write_xy_loc.
-c     started: Christian Eckert eckert@mit.edu 24-May-1999
-c     ==================================================================
-C     \ev
-
-C     !USES:
-      implicit none
-
-c     == global variables ==
-#include "EEPARAMS.h"
-#include "SIZE.h"
-
-c     == routine arguments ==
-c     active_var_file: filename
-c     adactive_var:    array
-c     irec:            record number
-c     myIter:          number of optimization iteration (default: 0)
-c     mythid:          thread number for this instance
-      character*(*) active_var_file
-      _RL     adactive_var(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      integer irec
-      integer myiter,mythid
-      _RL     dummy
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-c     == local variables ==
-      integer mynr
-      integer il
-      integer ilnblnk
-      character*(2) adpref
-      character*(80) fname
-      logical globalfile
-
-c     == functions ==
-      external ilnblnk
-
-c     == end of interface ==
+      CHARACTER*(2) adpref
+      CHARACTER*(80) fname
+      INTEGER il
+      INTEGER myNr
+      LOGICAL useCurrentDir
 CEOP
 
-      mynr   = 1
       adpref = 'ad'
-      write(fname(1:80),'(a)') ' '
+      il   = ILNBLNK( active_var_file )
+      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      myNr = Nr
+      useCurrentDir = .TRUE.
 
-      il     = ilnblnk(active_var_file)
+      CALL ACTIVE_READ_XZ_RL(
+     &                 fname, adactive_var, doglobalread,
+     &                 useCurrentDir, lAdInit, iRec, myNr,
+     &                 REVERSE_SIMULATION, myIter, myThid )
 
-      write(fname(1:2),'(a)') adpref
-      write(fname(3:2+il),'(a)') active_var_file(1:il)
+      RETURN
+      END
 
-      globalfile = .false.
-
-      call active_write_rl_loc( fname, adactive_var,
-     &                      globalfile, irec, mynr,
-     &                      REVERSE_SIMULATION, myiter, mythid )
-
-      end
-
-CBOP
-C     !ROUTINE: adactive_read_xyz_loc
-C     !INTERFACE:
-#ifdef AUTODIFF_TAMC_COMPATIBILITY
-      subroutine adactive_write_xyz_loc(
-     I                               active_var_file,
-     I                               irec,
-     I                               myiter,
-     I                               mythid,
-     U                               adactive_var,
-     I                               dummy
-     &                             )
-#else
-      subroutine adactive_write_xyz_loc(
-     I                               active_var_file,
-     U                               adactive_var,
-     I                               irec,
-     I                               myiter,
-     I                               mythid,
-     I                               dummy
-     &                             )
-#endif
-
-C     !DESCRIPTION: \bv
-c     ==================================================================
-c     SUBROUTINE adactive_write_xyz_loc
-c     ==================================================================
-c     o Adjoint of active_write_xyz_loc.
-c     started: Christian Eckert eckert@mit.edu 24-May-1999
-c     ==================================================================
-C     \ev
-
-C     !USES:
-      implicit none
-
-c     == global variables ==
-#include "EEPARAMS.h"
-#include "SIZE.h"
-
-c     == routine arguments ==
-c     active_var_file: filename
-c     adactive_var:    array
-c     irec:            record number
-c     myIter:          number of optimization iteration (default: 0)
-c     mythid:          thread number for this instance
-      character*(*) active_var_file
-      _RL     adactive_var(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      integer irec
-      integer myiter,mythid
-      _RL dummy
-
-C     !LOCAL VARIABLES:
-c     == local variables ==
-      integer mynr
-      integer il
-      integer ilnblnk
-      character*(2) adpref
-      character*(80) fname
-      logical globalfile
-
-c     == functions ==
-      external ilnblnk
-
-c     == end of interface ==
-CEOP
-
-      mynr   = nr
-      adpref = 'ad'
-      write(fname(1:80),'(a)') ' '
-
-      il     = ilnblnk(active_var_file)
-
-      write(fname(1:2),'(a)') adpref
-      write(fname(3:2+il),'(a)') active_var_file(1:il)
-
-      globalfile = .false.
-
-      call active_write_rl_loc( fname, adactive_var,
-     &                      globalfile, irec, mynr,
-     &                      REVERSE_SIMULATION, myiter, mythid )
-
-      end
-
-CBOP
-C     !ROUTINE: adactive_read_xz_loc
-C     !INTERFACE:
-#ifdef AUTODIFF_TAMC_COMPATIBILITY
-      subroutine adactive_write_xz_loc(
-     I                               active_var_file,
-     I                               irec,
-     I                               myiter,
-     I                               mythid,
-     U                               adactive_var,
-     I                               dummy
-     &                             )
-#else
-      subroutine adactive_write_xz_loc(
-     I                               active_var_file,
-     U                               adactive_var,
-     I                               irec,
-     I                               myiter,
-     I                               mythid,
-     I                               dummy
-     &                             )
-#endif
-
-C     !DESCRIPTION: \bv
-c     ==================================================================
-c     SUBROUTINE adactive_write_xz_loc
-c     ==================================================================
-c     o Adjoint of active_write_xz_loc.
-c     started: heimbach@mit.edu 05-Mar-2001
-c     ==================================================================
-C     \ev
-
-C     !USES:
-      implicit none
-
-c     == global variables ==
-#include "EEPARAMS.h"
-#include "SIZE.h"
-
-c     == routine arguments ==
-c     active_var_file: filename
-c     adactive_var:    array
-c     irec:            record number
-c     myIter:          number of optimization iteration (default: 0)
-c     mythid:          thread number for this instance
-      character*(*) active_var_file
-      _RL     adactive_var(1-olx:snx+olx,nr,nsx,nsy)
-      integer irec
-      integer myiter,mythid
-      _RL dummy
-
-C     !LOCAL VARIABLES:
-c     == local variables ==
-      integer mynr
-      integer il
-      integer ilnblnk
-      character*(2) adpref
-      character*(80) fname
-      logical globalfile
-
-c     == functions ==
-      external ilnblnk
-
-c     == end of interface ==
-CEOP
-
-      mynr   = nr
-      adpref = 'ad'
-      write(fname(1:80),'(a)') ' '
-
-      il     = ilnblnk(active_var_file)
-
-      write(fname(1:2),'(a)') adpref
-      write(fname(3:2+il),'(a)') active_var_file(1:il)
-
-      globalfile = .false.
-
-      call active_write_xz_rl_loc( fname, adactive_var,
-     &                      globalfile, irec, mynr,
-     &                      REVERSE_SIMULATION, myiter, mythid )
-
-      end
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: adactive_read_yz_loc
 C     !INTERFACE:
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
+      subroutine adactive_read_yz_loc(
+     I                              active_var_file,
+     I                              iRec,
+     I                              doglobalread,
+     I                              lAdInit,
+     I                              myIter,
+     I                              myThid,
+     I                              adactive_var
+     &                            )
+#else
+      subroutine adactive_read_yz_loc(
+     I                              active_var_file,
+     I                              adactive_var,
+     I                              iRec,
+     I                              doglobalread,
+     I                              lAdInit,
+     I                              myIter,
+     I                              myThid,
+     I                              dummy,
+     O                              addummy
+     &                            )
+#endif
+
+C     !DESCRIPTION: \bv
+C     ==================================================================
+C     SUBROUTINE adactive_read_yz_loc
+C     ==================================================================
+C     o Adjoint of active_read_yz_loc.
+C     started: heimbach@mit.edu 05-Mar-2001
+C     ==================================================================
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     active_var_file: filename
+C     adactive_var:    array
+C     iRec:            record number
+C     myIter:          number of optimization iteration (default: 0)
+C     myThid:          thread number for this instance
+C     doglobalread:    flag for global or local read/write
+C                      (default: .false.)
+C     lAdInit:         initialisation of corresponding adjoint
+C                      variable and write to active file
+      CHARACTER*(*) active_var_file
+      _RL     adactive_var(1-OLy:sNy+OLy,Nr,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter,myThid
+      LOGICAL doglobalread
+      LOGICAL lAdInit
+      _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
+
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+      CHARACTER*(2) adpref
+      CHARACTER*(80) fname
+      INTEGER il
+      INTEGER myNr
+      LOGICAL useCurrentDir
+CEOP
+
+      adpref = 'ad'
+      il   = ILNBLNK( active_var_file )
+      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      myNr = Nr
+      useCurrentDir = .TRUE.
+
+      CALL ACTIVE_READ_YZ_RL(
+     &                 fname, adactive_var, doglobalread,
+     &                 useCurrentDir, lAdInit, iRec, myNr,
+     &                 REVERSE_SIMULATION, myIter, myThid )
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: adactive_write_xy_loc
+C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
+      subroutine adactive_write_xy_loc(
+     I                              active_var_file,
+     I                              iRec,
+     I                              myIter,
+     I                              myThid,
+     U                              adactive_var,
+     I                              dummy
+     &                            )
+#else
+      subroutine adactive_write_xy_loc(
+     I                              active_var_file,
+     U                              adactive_var,
+     I                              iRec,
+     I                              myIter,
+     I                              myThid,
+     I                              dummy
+     &                            )
+#endif
+
+
+C     !DESCRIPTION: \bv
+C     ==================================================================
+C     SUBROUTINE adactive_write_xy_loc
+C     ==================================================================
+C     o Adjoint of active_write_xy_loc.
+C     started: Christian Eckert eckert@mit.edu 24-May-1999
+C     ==================================================================
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     active_var_file: filename
+C     adactive_var:    array
+C     iRec:            record number
+C     myIter:          number of optimization iteration (default: 0)
+C     myThid:          thread number for this instance
+      CHARACTER*(*) active_var_file
+      _RL     adactive_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter,myThid
+      _RL     dummy
+
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+      CHARACTER*(2) adpref
+      CHARACTER*(80) fname
+      INTEGER il
+      INTEGER myNr
+      LOGICAL globalFile
+      LOGICAL useCurrentDir
+CEOP
+
+      adpref = 'ad'
+      il   = ILNBLNK( active_var_file )
+      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      myNr = 1
+      globalFile = .FALSE.
+      useCurrentDir = .TRUE.
+
+      CALL ACTIVE_WRITE_3D_RL(
+     &                 fname, adactive_var, globalFile,
+     &                 useCurrentDir, iRec, myNr,
+     &                 REVERSE_SIMULATION, myIter, myThid )
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: adactive_write_xyz_loc
+C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
+      subroutine adactive_write_xyz_loc(
+     I                               active_var_file,
+     I                               iRec,
+     I                               myIter,
+     I                               myThid,
+     U                               adactive_var,
+     I                               dummy
+     &                             )
+#else
+      subroutine adactive_write_xyz_loc(
+     I                               active_var_file,
+     U                               adactive_var,
+     I                               iRec,
+     I                               myIter,
+     I                               myThid,
+     I                               dummy
+     &                             )
+#endif
+
+
+C     !DESCRIPTION: \bv
+C     ==================================================================
+C     SUBROUTINE adactive_write_xyz_loc
+C     ==================================================================
+C     o Adjoint of active_write_xyz_loc.
+C     started: Christian Eckert eckert@mit.edu 24-May-1999
+C     ==================================================================
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     active_var_file: filename
+C     adactive_var:    array
+C     iRec:            record number
+C     myIter:          number of optimization iteration (default: 0)
+C     myThid:          thread number for this instance
+      CHARACTER*(*) active_var_file
+      _RL     adactive_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter,myThid
+      _RL dummy
+
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+      CHARACTER*(2) adpref
+      CHARACTER*(80) fname
+      INTEGER il
+      INTEGER myNr
+      LOGICAL globalFile
+      LOGICAL useCurrentDir
+CEOP
+
+      adpref = 'ad'
+      il   = ILNBLNK( active_var_file )
+      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      myNr = Nr
+      globalFile = .FALSE.
+      useCurrentDir = .TRUE.
+
+      CALL ACTIVE_WRITE_3D_RL(
+     &                 fname, adactive_var, globalFile,
+     &                 useCurrentDir, iRec, myNr,
+     &                 REVERSE_SIMULATION, myIter, myThid )
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: adactive_write_xz_loc
+C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
+      subroutine adactive_write_xz_loc(
+     I                               active_var_file,
+     I                               iRec,
+     I                               myIter,
+     I                               myThid,
+     U                               adactive_var,
+     I                               dummy
+     &                             )
+#else
+      subroutine adactive_write_xz_loc(
+     I                               active_var_file,
+     U                               adactive_var,
+     I                               iRec,
+     I                               myIter,
+     I                               myThid,
+     I                               dummy
+     &                             )
+#endif
+
+C     !DESCRIPTION: \bv
+C     ==================================================================
+C     SUBROUTINE adactive_write_xz_loc
+C     ==================================================================
+C     o Adjoint of active_write_xz_loc.
+C     started: heimbach@mit.edu 05-Mar-2001
+C     ==================================================================
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     active_var_file: filename
+C     adactive_var:    array
+C     iRec:            record number
+C     myIter:          number of optimization iteration (default: 0)
+C     myThid:          thread number for this instance
+      CHARACTER*(*) active_var_file
+      _RL     adactive_var(1-OLx:sNx+OLx,Nr,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter,myThid
+      _RL dummy
+
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+      CHARACTER*(2) adpref
+      CHARACTER*(80) fname
+      INTEGER il
+      INTEGER myNr
+      LOGICAL globalFile
+      LOGICAL useCurrentDir
+CEOP
+
+      adpref = 'ad'
+      il   = ILNBLNK( active_var_file )
+      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      myNr = Nr
+      globalFile = .FALSE.
+      useCurrentDir = .TRUE.
+
+      CALL ACTIVE_WRITE_XZ_RL(
+     &                 fname, adactive_var, globalFile,
+     &                 useCurrentDir, iRec, myNr,
+     &                 REVERSE_SIMULATION, myIter, myThid )
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: adactive_write_yz_loc
+C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       subroutine adactive_write_yz_loc(
      I                               active_var_file,
-     I                               irec,
-     I                               myiter,
-     I                               mythid,
+     I                               iRec,
+     I                               myIter,
+     I                               myThid,
      U                               adactive_var,
      I                               dummy
      &                             )
@@ -658,71 +646,67 @@ C     !INTERFACE:
       subroutine adactive_write_yz_loc(
      I                               active_var_file,
      U                               adactive_var,
-     I                               irec,
-     I                               myiter,
-     I                               mythid,
+     I                               iRec,
+     I                               myIter,
+     I                               myThid,
      I                               dummy
      &                             )
 #endif
 
+
 C     !DESCRIPTION: \bv
-c     ==================================================================
-c     SUBROUTINE adactive_write_yz_loc
-c     ==================================================================
-c     o Adjoint of active_write_yz_loc.
-c     started: heimbach@mit.edu 05-Mar-2001
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE adactive_write_yz_loc
+C     ==================================================================
+C     o Adjoint of active_write_yz_loc.
+C     started: heimbach@mit.edu 05-Mar-2001
+C     ==================================================================
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-c     == routine arguments ==
-c     active_var_file: filename
-c     adactive_var:    array
-c     irec:            record number
-c     myIter:          number of optimization iteration (default: 0)
-c     mythid:          thread number for this instance
-      character*(*) active_var_file
-      _RL     adactive_var(1-oly:sny+oly,nr,nsx,nsy)
-      integer irec
-      integer myiter,mythid
+C     !INPUT/OUTPUT PARAMETERS:
+C     active_var_file: filename
+C     adactive_var:    array
+C     iRec:            record number
+C     myIter:          number of optimization iteration (default: 0)
+C     myThid:          thread number for this instance
+      CHARACTER*(*) active_var_file
+      _RL     adactive_var(1-OLy:sNy+OLy,Nr,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter,myThid
       _RL dummy
 
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
-c     == local variables ==
-      integer mynr
-      integer il
-      integer ilnblnk
-      character*(2) adpref
-      character*(80) fname
-      logical globalfile
-
-c     == functions ==
-      external ilnblnk
-
-c     == end of interface ==
+      CHARACTER*(2) adpref
+      CHARACTER*(80) fname
+      INTEGER il
+      INTEGER myNr
+      LOGICAL globalFile
+      LOGICAL useCurrentDir
 CEOP
 
-      mynr   = nr
       adpref = 'ad'
-      write(fname(1:80),'(a)') ' '
+      il   = ILNBLNK( active_var_file )
+      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      myNr = Nr
+      globalFile = .FALSE.
+      useCurrentDir = .TRUE.
 
-      il     = ilnblnk(active_var_file)
+      CALL ACTIVE_WRITE_YZ_RL(
+     &                 fname, adactive_var, globalFile,
+     &                 useCurrentDir, iRec, myNr,
+     &                 REVERSE_SIMULATION, myIter, myThid )
 
-      write(fname(1:2),'(a)') adpref
-      write(fname(3:2+il),'(a)') active_var_file(1:il)
-
-      globalfile = .false.
-
-      call active_write_yz_rl_loc( fname, adactive_var,
-     &                      globalfile, irec, mynr,
-     &                      REVERSE_SIMULATION, myiter, mythid )
-
-      end
-
-
+      RETURN
+      END
