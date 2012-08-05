@@ -1,0 +1,371 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_gen.F,v 1.1 2012/08/05 20:24:48 jmc Exp $
+C $Name:  $
+
+#include "AUTODIFF_OPTIONS.h"
+
+C     ==================================================================
+C     active_file_gen.F: Routines to handle the I/O of the active file
+C                        for the adjoint calculations.
+C     Routines
+C    o  ACTIVE_READ_GEN_RL     - Read  an active RL variable from file.
+C    o  ACTIVE_READ_GEN_RS     - Read  an active RS variable from file.
+C
+C    o  ACTIVE_WRITE_GEN_RL    - Write an active RL variable to a file.
+C    o  ACTIVE_WRITE_GEN_RS    - Write an active RS variable to a file.
+C
+C     Generic version for each array type (_RL or _RS).
+C     Note: the _RL version can replace the 4 x 2 shape-specific
+C           (_xy,_xyz,_xz,_yz) and standard or "_loc' routines.
+C     ==================================================================
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ACTIVE_READ_GEN_RL
+C     !INTERFACE:
+      SUBROUTINE ACTIVE_READ_GEN_RL(
+     I                               activeVar_file,
+     O                               active_var,
+     I                               arrShape, myNr,
+     I                               iRec,
+     I                               globalFile,
+     I                               useCurrentDir,
+     I                               lAdInit,
+     I                               myOptimIter,
+     I                               myThid,
+     I                               dummy )
+
+C     !DESCRIPTION: \bv
+C     ==================================================================
+C     SUBROUTINE ACTIVE_READ_GEN_RL
+C     ==================================================================
+C     o Read an active (_RL) variable from file (generic version).
+C     Accept active variable of various (XY,XZ,YZ) shape and level
+C     number, according to arguments arrShape and myNr.
+C     ==================================================================
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     activeVar_file :: filename
+C     active_var     :: active variable array
+C     arrShape       :: shape of active-var array ('XY','XZ' or 'YZ')
+C     myNr           :: number of vertical-levels in active-var array
+C     iRec           :: record number in file
+C     globalFile     :: used for writing global (if =T) or tiled files
+C     useCurrentDir  :: always read from the current directory
+C                        (even if "mdsioLocalDir" is set)
+C     lAdInit        :: initialisation of corresponding adjoint variable
+C                        and write to active file
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: my Thread Id number
+C     dummy          :: (needed for 2nd derivative code)
+      CHARACTER*(*) activeVar_file
+      _RL     active_var(*)
+      CHARACTER*(2) arrShape
+      INTEGER myNr
+      INTEGER iRec
+      LOGICAL globalFile
+      LOGICAL useCurrentDir
+      LOGICAL lAdInit
+      INTEGER myOptimIter
+      INTEGER myThid
+      _RL     dummy
+
+C     !LOCAL VARIABLES:
+CEOP
+
+      IF ( arrShape.EQ.'XY' ) THEN
+
+        CALL ACTIVE_READ_3D_RL(
+     &                 activeVar_file, active_var, globalFile,
+     &                 useCurrentDir, lAdInit, iRec, myNr,
+     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+
+      ELSEIF ( arrShape.EQ.'XZ' ) THEN
+
+        CALL ACTIVE_READ_XZ_RL(
+     &                 activeVar_file, active_var, globalFile,
+     &                 useCurrentDir, lAdInit, iRec, myNr,
+     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+
+      ELSEIF ( arrShape.EQ.'YZ' ) THEN
+
+        CALL ACTIVE_READ_YZ_RL(
+     &                 activeVar_file, active_var, globalFile,
+     &                 useCurrentDir, lAdInit, iRec, myNr,
+     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+
+      ELSE
+        STOP
+     &   'ABNORMAL END: S/R ACTIVE_READ_GEN_RL: invalid arrShape'
+      ENDIF
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ACTIVE_READ_GEN_RS
+C     !INTERFACE:
+      SUBROUTINE ACTIVE_READ_GEN_RS(
+     I                               activeVar_file,
+     O                               active_var,
+     I                               arrShape, myNr,
+     I                               iRec,
+     I                               globalFile,
+     I                               useCurrentDir,
+     I                               lAdInit,
+     I                               myOptimIter,
+     I                               myThid,
+     I                               dummy )
+
+C     !DESCRIPTION: \bv
+C     ==================================================================
+C     SUBROUTINE ACTIVE_READ_GEN_RS
+C     ==================================================================
+C     o Read an active (_RS) variable from file (generic version).
+C     Accept active variable of various (XY,XZ,YZ) shape and level
+C     number, according to arguments arrShape and myNr.
+C     ==================================================================
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     activeVar_file :: filename
+C     active_var     :: active variable array
+C     arrShape       :: shape of active-var array ('XY','XZ' or 'YZ')
+C     myNr           :: number of vertical-levels in active-var array
+C     iRec           :: record number in file
+C     globalFile     :: used for writing global (if =T) or tiled files
+C     useCurrentDir  :: always read from the current directory
+C                        (even if "mdsioLocalDir" is set)
+C     lAdInit        :: initialisation of corresponding adjoint variable
+C                        and write to active file
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: my Thread Id number
+C     dummy          :: (needed for 2nd derivative code)
+      CHARACTER*(*) activeVar_file
+      _RS     active_var(*)
+      CHARACTER*(2) arrShape
+      INTEGER myNr
+      INTEGER iRec
+      LOGICAL globalFile
+      LOGICAL useCurrentDir
+      LOGICAL lAdInit
+      INTEGER myOptimIter
+      INTEGER myThid
+      _RS     dummy
+
+C     !LOCAL VARIABLES:
+CEOP
+
+      IF ( arrShape.EQ.'XY' ) THEN
+
+        CALL ACTIVE_READ_3D_RS(
+     &                 activeVar_file, active_var, globalFile,
+     &                 useCurrentDir, lAdInit, iRec, myNr,
+     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+
+      ELSEIF ( arrShape.EQ.'XZ' ) THEN
+
+        CALL ACTIVE_READ_XZ_RS(
+     &                 activeVar_file, active_var, globalFile,
+     &                 useCurrentDir, lAdInit, iRec, myNr,
+     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+
+      ELSEIF ( arrShape.EQ.'YZ' ) THEN
+
+        CALL ACTIVE_READ_YZ_RS(
+     &                 activeVar_file, active_var, globalFile,
+     &                 useCurrentDir, lAdInit, iRec, myNr,
+     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+
+      ELSE
+        STOP
+     &   'ABNORMAL END: S/R ACTIVE_READ_GEN_RS: invalid arrShape'
+      ENDIF
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ACTIVE_WRITE_GEN_RL
+C     !INTERFACE:
+      SUBROUTINE ACTIVE_WRITE_GEN_RL(
+     I                               activeVar_file,
+     I                               active_var,
+     I                               arrShape, myNr,
+     I                               iRec,
+     I                               useCurrentDir,
+     I                               myOptimIter,
+     I                               myThid,
+     I                               dummy )
+
+C     !DESCRIPTION: \bv
+C     ==================================================================
+C     SUBROUTINE ACTIVE_WRITE_GEN_RL
+C     ==================================================================
+C     o Write an active (_RL) variable from file (generic version).
+C     Accept active variable of various (XY,XZ,YZ) shape and level
+C     number, according to arguments arrShape and myNr.
+C     ==================================================================
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     activeVar_file :: filename
+C     active_var     :: active variable array
+C     arrShape       :: shape of active-var array ('XY','XZ' or 'YZ')
+C     myNr           :: number of vertical-levels in active-var array
+C     iRec           :: record number in file
+C     useCurrentDir  :: always write to the current directory
+C                        (even if "mdsioLocalDir" is set)
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: my Thread Id number
+C     dummy          :: (needed for 2nd derivative code)
+      CHARACTER*(*) activeVar_file
+      _RL     active_var(*)
+      CHARACTER*(2) arrShape
+      INTEGER myNr
+      INTEGER iRec
+      LOGICAL useCurrentDir
+      INTEGER myOptimIter
+      INTEGER myThid
+      _RL     dummy
+
+C     !LOCAL VARIABLES:
+C     globalFile     :: used for writing global (if =T) or tiled files
+      LOGICAL globalFile
+CEOP
+
+      globalFile = .FALSE.
+      IF ( arrShape.EQ.'XY' ) THEN
+
+        CALL ACTIVE_WRITE_3D_RL(
+     &                 activeVar_file, active_var, globalFile,
+     &                 useCurrentDir, iRec, myNr,
+     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+
+      ELSEIF ( arrShape.EQ.'XZ' ) THEN
+
+        CALL ACTIVE_WRITE_XZ_RL(
+     &                 activeVar_file, active_var, globalFile,
+     &                 useCurrentDir, iRec, myNr,
+     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+
+      ELSEIF ( arrShape.EQ.'YZ' ) THEN
+
+        CALL ACTIVE_WRITE_YZ_RL(
+     &                 activeVar_file, active_var, globalFile,
+     &                 useCurrentDir, iRec, myNr,
+     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+
+      ELSE
+        STOP
+     &   'ABNORMAL END: S/R ACTIVE_WRITE_GEN_RL: invalid arrShape'
+      ENDIF
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ACTIVE_WRITE_GEN_RS
+C     !INTERFACE:
+      SUBROUTINE ACTIVE_WRITE_GEN_RS(
+     I                               activeVar_file,
+     I                               active_var,
+     I                               arrShape, myNr,
+     I                               iRec,
+     I                               useCurrentDir,
+     I                               myOptimIter,
+     I                               myThid,
+     I                               dummy )
+
+C     !DESCRIPTION: \bv
+C     ==================================================================
+C     SUBROUTINE ACTIVE_WRITE_GEN_RS
+C     ==================================================================
+C     o Write an active (_RS) variable from file (generic version).
+C     Accept active variable of various (XY,XZ,YZ) shape and level
+C     number, according to arguments arrShape and myNr.
+C     ==================================================================
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     activeVar_file :: filename
+C     active_var     :: active variable array
+C     arrShape       :: shape of active-var array ('XY','XZ' or 'YZ')
+C     myNr           :: number of vertical-levels in active-var array
+C     iRec           :: record number in file
+C     useCurrentDir  :: always write to the current directory
+C                        (even if "mdsioLocalDir" is set)
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: my Thread Id number
+C     dummy          :: (needed for 2nd derivative code)
+      CHARACTER*(*) activeVar_file
+      _RS     active_var(*)
+      CHARACTER*(2) arrShape
+      INTEGER myNr
+      INTEGER iRec
+      LOGICAL useCurrentDir
+      INTEGER myOptimIter
+      INTEGER myThid
+      _RS     dummy
+
+C     !LOCAL VARIABLES:
+C     globalFile     :: used for writing global (if =T) or tiled files
+      LOGICAL globalFile
+CEOP
+
+      globalFile = .FALSE.
+      IF ( arrShape.EQ.'XY' ) THEN
+
+        CALL ACTIVE_WRITE_3D_RS(
+     &                 activeVar_file, active_var, globalFile,
+     &                 useCurrentDir, iRec, myNr,
+     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+
+      ELSEIF ( arrShape.EQ.'XZ' ) THEN
+
+        CALL ACTIVE_WRITE_XZ_RS(
+     &                 activeVar_file, active_var, globalFile,
+     &                 useCurrentDir, iRec, myNr,
+     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+
+      ELSEIF ( arrShape.EQ.'YZ' ) THEN
+
+        CALL ACTIVE_WRITE_YZ_RS(
+     &                 activeVar_file, active_var, globalFile,
+     &                 useCurrentDir, iRec, myNr,
+     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+
+      ELSE
+        STOP
+     &   'ABNORMAL END: S/R ACTIVE_WRITE_GEN_RS: invalid arrShape'
+      ENDIF
+
+      RETURN
+      END
