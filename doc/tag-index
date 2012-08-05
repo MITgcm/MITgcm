@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1703 2012/08/03 18:51:48 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1704 2012/08/05 20:28:36 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -15,6 +15,10 @@ o pkg/autodiff:
     active_file_ad.F) keeping the argument list and function unchanged.
   - also update lower-level "_LOC" version (call same S/R with "useCurrentDir
     =.TRUE.") and remove high-level (control) _loc version (not called anymore).
+  - new low-level active I/O routines, one for each type (RL/RS), for active var
+    of various (XY,XZ,YZ) shape and level number (arguments: arrShape, myNr);
+    fix ctrl_init_wet.F & ecco_cost_weights.F by calling the new S/R with the
+    right type.
 o autodiff and RS=real*4:
   - call the right type (_RS instead of _RL) of S/R in few output S/R (pkg/exf
     ad-monitor and snapshots); disable arrType='RS' in mdsio_gl*.F ;
