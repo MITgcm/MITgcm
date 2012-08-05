@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort11,v 1.8 2011/09/27 19:02:59 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort11,v 1.9 2012/08/05 16:35:54 jmc Exp $
 # $Name:  $
 
 #  Build options for version 11 and newer of intel compiler on Linux AMD64 platform
@@ -70,7 +70,8 @@ else
    #FFLAGS="$FFLAGS -debug all -debug-parameters all -fp-model strict"
     FOPTIM="-O0 -noalign -g -traceback $PROCF"
     NOOPTFLAGS=$FOPTIM
-    NOOPTFILES='adread_adwrite.F'
+    NOOPTFILES='adread_adwrite.F mdsio_rw_field.F mdsio_rw_slice.F'
+    NOOPTFILES="$NOOPTFILES mdsio_readvector.F mdsio_writevector.F"
     FOPTIM="$FOPTIM -warn all -warn nounused"
     FOPTIM="$FOPTIM -fpe0 -ftz -fp-stack-check -check all -ftrapuv"
   fi
