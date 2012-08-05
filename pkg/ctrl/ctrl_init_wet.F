@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.11 2011/05/24 20:48:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.12 2012/08/05 20:26:20 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -49,6 +49,7 @@ c     == local variables ==
       integer ntmpob(nobcs)
 #endif
       _RL     dummy
+      _RS     dummyRS
 
       character*(80) ymaskobcs
       character*(max_len_mbuf) msgbuf
@@ -604,16 +605,31 @@ c
 
 c     write masks and weights to files to be read by a master process
 c
-      call active_write_xyz( 'maskCtrlC', maskC, 1, 0, mythid, dummy)
-      call active_write_xyz( 'maskCtrlW', maskW, 1, 0, mythid, dummy)
-      call active_write_xyz( 'maskCtrlS', maskS, 1, 0, mythid, dummy)
+c#ifdef REAL4_IS_SLOW
+C     leave this commented out (in case of problems with ACTIVE_WRITE_GEN_RS)
+c     call active_write_xyz( 'maskCtrlC', maskC, 1, 0, mythid, dummy)
+c     call active_write_xyz( 'maskCtrlW', maskW, 1, 0, mythid, dummy)
+c     call active_write_xyz( 'maskCtrlS', maskS, 1, 0, mythid, dummy)
+c#else
+      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlC', maskC, 'XY', Nr,
+     I                          1, .FALSE., 0, mythid, dummyRS )
+      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlW', maskW, 'XY', Nr,
+     I                          1, .FALSE., 0, mythid, dummyRS )
+      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlS', maskS, 'XY', Nr,
+     I                          1, .FALSE., 0, mythid, dummyRS )
+c#endif
 #if (defined (ALLOW_EFLUXP0_CONTROL))
       call active_write_xyz( 'maskhFacV', hFacV, 1, 0, mythid, dummy)
 #endif
       call active_write_xyz( 'wunit', tmpfld3d, 1, 0, mythid, dummy)
 #ifdef ALLOW_SHIFWFLX_CONTROL
-      call active_write_xyz( 'maskCtrlI', maskSHI, 1, 0, mythid, dummy)
+c#ifdef REAL4_IS_SLOW
+c     call active_write_xyz( 'maskCtrlI', maskSHI, 1, 0, mythid, dummy)
+c#else
+      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlI', maskSHI, 'XY', Nr,
+     I                          1, .FALSE., 0, mythid, dummyRS )
+c#endif
 #endif
 
-      return
-      end
+      RETURN
+      END

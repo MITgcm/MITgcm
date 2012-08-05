@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.46 2011/12/06 04:14:04 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.47 2012/08/05 20:26:20 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -68,6 +68,7 @@ c     == local variables ==
       _RL wtau0m
       _RL ratio
       _RL dummy
+      _RS dummyRS
       _RL wsshv4tmp ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
 
       logical lwtheta2InUse
@@ -2009,12 +2010,22 @@ c
 c
 c     write masks and weights to files to be read by a master process
 c
-      call active_write_xyz_loc( 'maskCtrlC', maskC,
-     &     1, 0, mythid, dummy)
-      call active_write_xyz_loc( 'maskCtrlW', maskW,
-     &     1, 0, mythid, dummy)
-      call active_write_xyz_loc( 'maskCtrlS', maskS,
-     &     1, 0, mythid, dummy)
+c#ifdef REAL4_IS_SLOW
+C     leave this commented out (in case of problems with ACTIVE_WRITE_GEN_RS)
+c     call active_write_xyz_loc( 'maskCtrlC', maskC,
+c    &     1, 0, mythid, dummy)
+c     call active_write_xyz_loc( 'maskCtrlW', maskW,
+c    &     1, 0, mythid, dummy)
+c     call active_write_xyz_loc( 'maskCtrlS', maskS,
+c    &     1, 0, mythid, dummy)
+c#else
+      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlC', maskC, 'XY', Nr,
+     I                          1, .TRUE., 0, mythid, dummyRS )
+      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlW', maskW, 'XY', Nr,
+     I                          1, .TRUE., 0, mythid, dummyRS )
+      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlS', maskS, 'XY', Nr,
+     I                          1, .TRUE., 0, mythid, dummyRS )
+c#endif
 
 #if   (defined (ALLOW_HFLUX_COST_CONTRIBUTION) || defined (ALLOW_HFLUX_CONTROL))
       call active_write_xy_loc( 'whflux', whflux, 1, 0, mythid, dummy)
@@ -2111,4 +2122,5 @@ c
       call active_write_xy_loc( 'wbottomdrag', wbottomdrag
      & , 1, 0, mythid, dummy)
 #endif
-      end
+      RETURN
+      END
