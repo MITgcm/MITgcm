@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file.flow,v 1.7 2011/11/05 19:20:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file.flow,v 1.8 2012/08/05 14:16:39 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -89,18 +89,18 @@ c subroutine active_write_xz
 c----------------------------------------
 cadj SUBROUTINE active_write_xz FTLNAME = g_active_write_xz
 cadj SUBROUTINE active_write_xz ADNAME  = adactive_write_xz
-cadj SUBROUTINE active_write_xz INPUT   = 1   , 3, 4, 5, 6, 7, 8
-cadj SUBROUTINE active_write_xz OUTPUT  =    2
-cadj SUBROUTINE active_write_xz ACTIVE  =    2
-cadj SUBROUTINE active_write_xz DEPEND  = 1,    3, 4, 5, 6, 7
+cadj SUBROUTINE active_write_xz INPUT   = 1, 2, 3, 4, 5, 6
+cadj SUBROUTINE active_write_xz OUTPUT  =                6
+cadj SUBROUTINE active_write_xz ACTIVE  =    2         , 6
+cadj SUBROUTINE active_write_xz DEPEND  = 1,    3, 4, 5
 
 c----------------------------------------
 c subroutine active_write_yz
 c----------------------------------------
 cadj SUBROUTINE active_write_yz FTLNAME = g_active_write_yz
 cadj SUBROUTINE active_write_yz ADNAME  = adactive_write_yz
-cadj SUBROUTINE active_write_yz INPUT   = 1   , 3, 4, 5, 6, 7, 8
-cadj SUBROUTINE active_write_yz OUTPUT  =    2
-cadj SUBROUTINE active_write_yz ACTIVE  =    2
-cadj SUBROUTINE active_write_yz DEPEND  = 1,    3, 4, 5, 6, 7
+cadj SUBROUTINE active_write_yz INPUT   = 1, 2, 3, 4, 5, 6
+cadj SUBROUTINE active_write_yz OUTPUT  =                6
+cadj SUBROUTINE active_write_yz ACTIVE  =    2         , 6
+cadj SUBROUTINE active_write_yz DEPEND  = 1,    3, 4, 5
 
