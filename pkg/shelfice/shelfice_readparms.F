@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.15 2012/08/06 18:32:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.16 2012/08/06 20:14:01 heimbach Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -141,9 +141,10 @@ C Now set-up any remaining parameters that result from the input parameters
 C Set quadratic bottom drag depending on choices:
       IF ( SHELFICEDragQuadratic .EQ. UNSET_RL) THEN
        IF ( SHELFICEuseGammaFrict ) THEN
-       SHELFICEDragQuadratic = shiCdrag
-      ELSE
-       SHELFICEDragQuadratic = bottomDragQuadratic
+        SHELFICEDragQuadratic = shiCdrag
+       ELSE
+        SHELFICEDragQuadratic = bottomDragQuadratic
+       ENDIF
       ENDIF
 
 
