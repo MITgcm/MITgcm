@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.60 2012/07/31 16:05:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.61 2012/08/06 20:42:40 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -15,16 +15,6 @@ c
 c     ==================================================================
 c     HEADER CONTROLVARS ctrl.h
 c     ==================================================================
-
-#ifndef ALLOW_GENARR2D_CONTROL
-      integer     maxCtrlArr2D
-      parameter ( maxCtrlArr2D = 3 )
-#endif
-
-#ifndef ALLOW_GENARR3D_CONTROL
-      integer     maxCtrlArr3D
-      parameter ( maxCtrlArr3D = 3 )
-#endif
 
       integer     maxcvars
 #if (defined (CTRL_SET_OLD_MAXCVARS_30))

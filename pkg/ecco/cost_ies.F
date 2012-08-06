@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ies.F,v 1.1 2011/12/06 04:26:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ies.F,v 1.2 2012/08/06 20:41:55 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -33,6 +33,7 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "ecco_cost.h"
+#include "CTRL_SIZE.h"
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
