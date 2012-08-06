@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/CPP_OPTIONS.h,v 1.12 2012/08/01 14:04:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/CPP_OPTIONS.h,v 1.13 2012/08/06 19:32:43 gforget Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -46,7 +46,7 @@ C o Include/exclude balancing surface forcing fluxes code
 #define ALLOW_BALANCE_FLUXES
 
 C o Include/exclude balancing surface forcing relaxation code
-#undef ALLOW_BALANCE_RELAX
+#define ALLOW_BALANCE_RELAX
 
 C o Include/exclude GM-like eddy stress in momentum code
 #undef ALLOW_EDDYPSI
