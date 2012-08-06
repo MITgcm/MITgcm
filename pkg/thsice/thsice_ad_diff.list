@@ -2,6 +2,7 @@ thsice_advdiff.f
 thsice_advection.f
 thsice_albedo.f
 thsice_ave.f
+thsice_balance_frw.f
 thsice_calc_thickn.f
 thsice_diffusion.f
 thsice_do_advect.f
