@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1704 2012/08/05 20:28:36 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1705 2012/08/06 14:24:24 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src: move balancing of relaxation terms to new S/R balance_relax.F.
 o pkg/autodiff:
   re-write active I/O high-level (control) S/R:
   - rename  S/R ACTIVE_READ/WRITE_RL to ACTIVE_READ/WRITE_3D_RL
