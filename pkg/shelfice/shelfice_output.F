@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_output.F,v 1.3 2012/06/07 17:09:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_output.F,v 1.4 2012/08/06 16:56:59 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -45,8 +45,6 @@ C     == Local variables ==
 #ifdef ALLOW_TIMEAVE
       INTEGER i, j, bi, bj
       LOGICAL dumpFiles
-      _RL zeroRL
-      PARAMETER( zeroRL = 0. _d 0 )
 #endif
 #ifdef ALLOW_MNC
       CHARACTER*(1) pf

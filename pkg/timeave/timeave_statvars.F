@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.26 2012/06/07 17:09:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.27 2012/08/06 16:56:59 jmc Exp $
 C $Name:  $
 
 #include "TIMEAVE_OPTIONS.h"
@@ -45,8 +45,6 @@ C     !FUNCTIONS:
 C     !LOCAL VARIABLES:
       LOGICAL dumpFiles
       _RL DDTT
-      _RL zeroRL
-      PARAMETER( zeroRL = 0. _d 0 )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

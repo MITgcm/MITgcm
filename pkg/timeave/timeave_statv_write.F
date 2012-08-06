@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.42 2012/06/07 17:09:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.43 2012/08/06 16:56:59 jmc Exp $
 C $Name:  $
 
 #include "TIMEAVE_OPTIONS.h"
@@ -52,8 +52,6 @@ C     useVariableK :: T when vertical diffusion is not constant
       INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL dumpFiles
-      _RL zeroRL
-      PARAMETER( zeroRL = 0. _d 0 )
 #ifdef ALLOW_MNC
       CHARACTER*(1) pf
 #endif

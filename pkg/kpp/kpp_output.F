@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_output.F,v 1.5 2012/06/07 17:09:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_output.F,v 1.6 2012/08/06 16:56:59 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -88,8 +88,6 @@ C     local variable:
 #endif
 #ifdef ALLOW_TIMEAVE
       _RL DDTT
-      _RL zeroRL
-      PARAMETER( zeroRL = 0. _d 0 )
       LOGICAL dumpFiles
 #endif
 #ifdef ALLOW_DIAGNOSTICS

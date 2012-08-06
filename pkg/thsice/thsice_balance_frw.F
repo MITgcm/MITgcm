@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_balance_frw.F,v 1.1 2012/08/01 18:22:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_balance_frw.F,v 1.2 2012/08/06 16:56:59 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -54,8 +54,6 @@ C     i, j      :: loop indices
       _RL sumPrc, sumTilePrc(nSx,nSy)
       _RL sumFrW, sumTileFrW(nSx,nSy)
       _RL tmpFac, tmpVar
-      _RL zeroRL
-      PARAMETER( zeroRL = 0. _d 0 )
 
 C--   Calculate and global-mean precip (+RunOff)
 C     and global-mean imbalance of net Atmos Fresh-Water flux
