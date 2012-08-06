@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.173 2012/07/13 02:38:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.174 2012/08/06 16:15:30 jscott Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1352,7 +1352,7 @@ CADJ &                       key = iicekey, byte = isbyte
      &               d_HEFFbyATMonOCN(I,J) + d_HEFFbyFLOODING(I,J)
      &             + d_HEFFbySublim(I,J)
 #ifdef EXF_ALLOW_SEAICE_RELAX
-                   + d_HEFFbyRLX(I,J)
+     &             + d_HEFFbyRLX(I,J)
 #endif
           tmpscal2 = tmpscal1 * SEAICE_salt0 * HEFFM(I,J,bi,bj)
      &            * recip_deltaTtherm * SEAICE_rhoIce
