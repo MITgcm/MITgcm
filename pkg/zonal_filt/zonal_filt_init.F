@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_init.F,v 1.7 2011/02/18 00:33:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_init.F,v 1.8 2012/08/06 16:55:37 jmc Exp $
 C $Name:  $
 
 #include "ZONAL_FILT_OPTIONS.h"
@@ -60,9 +60,7 @@ c     INTEGER nWv
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C     !FUNCTIONS:
-      _RL oneRL
       _RL ampfact
-      PARAMETER( oneRL = 1. _d 0 )
       _RS lat
       ampfact(lat,i) = MIN( oneRL,
      &   ( COS( ABS(lat)*deg2rad )
