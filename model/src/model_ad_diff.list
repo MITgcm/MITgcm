@@ -1,5 +1,6 @@
 adams_bashforth2.f
 adams_bashforth3.f
+balance_relax.f
 calc_3d_diffusivity.f
 calc_common_factors.f
 calc_diffusivity.f
