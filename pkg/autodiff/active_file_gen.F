@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_gen.F,v 1.1 2012/08/05 20:24:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_gen.F,v 1.2 2012/08/06 19:27:13 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -15,7 +15,7 @@ C    o  ACTIVE_WRITE_GEN_RS    - Write an active RS variable to a file.
 C
 C     Generic version for each array type (_RL or _RS).
 C     Note: the _RL version can replace the 4 x 2 shape-specific
-C           (_xy,_xyz,_xz,_yz) and standard or "_loc' routines.
+C           (_xy,_xyz,_xz,_yz) and standard or "_loc" routines.
 C     ==================================================================
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
