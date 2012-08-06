@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.14 2012/05/18 12:17:01 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.15 2012/08/06 18:32:59 heimbach Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -87,7 +87,7 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEthetaSurface     = - 20.0 _d 0
       no_slip_shelfice         = no_slip_bottom
       SHELFICEDragLinear       = bottomDragLinear
-      SHELFICEDragQuadratic    = bottomDragQuadratic
+      SHELFICEDragQuadratic    = UNSET_RL
       SHELFICEwriteState       = .FALSE.
       SHELFICE_dumpFreq        = dumpFreq
       SHELFICE_taveFreq        = taveFreq
@@ -137,6 +137,15 @@ C Now set-up any remaining parameters that result from the input parameters
       IF ( SHELFICEsaltTransCoeff .EQ. UNSET_RL )
      &     SHELFICEsaltTransCoeff =
      &     5.05 _d -3 *SHELFICEheatTransCoeff
+
+C Set quadratic bottom drag depending on choices:
+      IF ( SHELFICEDragQuadratic .EQ. UNSET_RL) THEN
+       IF ( SHELFICEuseGammaFrict ) THEN
+       SHELFICEDragQuadratic = shiCdrag
+      ELSE
+       SHELFICEDragQuadratic = bottomDragQuadratic
+      ENDIF
+
 
 C-    Set Output type flags :
       SHELFICE_tave_mdsio = .TRUE.
