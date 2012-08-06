@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.48 2012/03/16 21:40:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.49 2012/08/06 16:54:40 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -96,10 +96,6 @@ C     i,j,k         :: Loop counters
       _RL  tmp_WbarZ
       _RL  uTrans, vTrans, rTrans
       _RL  viscLoc
-      _RL  halfRL
-      _RS  halfRS, zeroRS
-      PARAMETER( halfRL = 0.5 _d 0 )
-      PARAMETER( halfRS = 0.5 , zeroRS = 0. )
       PARAMETER( iMin = 1 , iMax = sNx )
       PARAMETER( jMin = 1 , jMax = sNy )
 CEOP

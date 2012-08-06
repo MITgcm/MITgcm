@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_write_pickup.F,v 1.7 2012/06/07 17:10:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_write_pickup.F,v 1.8 2012/08/06 16:54:40 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -57,8 +57,6 @@ C     msgBuf     :: message buffer
       LOGICAL permPickup, tempPickup
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL zeroRL
-      PARAMETER( zeroRL = 0. _d 0 )
 
       permPickup = .FALSE.
       tempPickup = .FALSE.
