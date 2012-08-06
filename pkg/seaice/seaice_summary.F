@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.50 2012/03/14 22:55:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.51 2012/08/06 15:24:05 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -132,9 +132,6 @@ C--  Seaice-Dynamics parameters
       CALL WRITE_0D_L ( SEAICEuseFREEDRIFT, INDEX_NONE,
      & 'SEAICEuseFREEDRIFT =', ' /* use free drift solution */')
 #endif /* SEAICE_ALLOW_FREEDRIFT */
-      CALL WRITE_0D_RL( SEAICE_tauAreaObsRelax,INDEX_NONE,
-     & 'SEAICE_tauAreaObsRelax=',
-     & ' /* relaxation timescale of sea-ice concentration */')
       CALL WRITE_0D_RL( OCEAN_drag        ,INDEX_NONE,
      & 'OCEAN_drag        =', ' /* air-ocean drag coefficient */')
       CALL WRITE_0D_RL( SEAICE_drag       ,INDEX_NONE,
@@ -145,6 +142,8 @@ C--  Seaice-Dynamics parameters
      & 'SEAICE_waterDrag  =', ' /* water-ice drag * density */')
       CALL WRITE_0D_RL( SEAICE_waterDrag_south  ,INDEX_NONE,
      & 'SEAICE_waterDrag_south =', ' /* Southern Ocean waterDrag */')
+      CALL WRITE_0D_L ( SEAICEuseTILT, INDEX_NONE,
+     & 'SEAICEuseTILT     =', ' /* include surface tilt in dyna. */')
       CALL WRITE_0D_L ( SEAICEuseTEM, INDEX_NONE,
      & 'SEAICEuseTEM      =', ' /* use truncated ellipse rheology */')
       CALL WRITE_0D_RL( SEAICE_strength   ,INDEX_NONE,
@@ -275,6 +274,12 @@ c
       WRITE(msgBuf,'(A)') '    3=from predicted melt by ATM'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
+c
+#ifdef EXF_ALLOW_SEAICE_RELAX
+      CALL WRITE_0D_RL( SEAICE_tauAreaObsRelax,INDEX_NONE,
+     & 'SEAICE_tauAreaObsRelax=',
+     & ' /* relaxation timescale of sea-ice concentration */')
+#endif
 c
       CALL WRITE_0D_RL( HO                ,INDEX_NONE,
      & 'HO                =', ' /* nominal thickness of new ice */')

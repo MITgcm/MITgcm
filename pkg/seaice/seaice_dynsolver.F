@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.48 2012/03/06 16:45:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.49 2012/08/06 15:24:05 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -213,15 +213,25 @@ C-    add atmospheric loading and Sea-Ice loading
 #endif /* ATMOSPHERIC_LOADING */
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
-C--   now add in wind stress ant tilt
+C--   basic forcing by wind stress
           FORCEX0(I,J,bi,bj)=TAUX(I,J,bi,bj)
+          FORCEY0(I,J,bi,bj)=TAUY(I,J,bi,bj)
+         ENDDO
+        ENDDO
+
+        IF ( SEAICEuseTILT ) then
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
+C--   now add in tilt
+          FORCEX0(I,J,bi,bj)=FORCEX0(I,J,bi,bj)
      &         -seaiceMassU(I,J,bi,bj)*_recip_dxC(I,J,bi,bj)
      &         *( phiSurf(i,j)-phiSurf(i-1,j) )
-          FORCEY0(I,J,bi,bj)=TAUY(I,J,bi,bj)
+          FORCEY0(I,J,bi,bj)=FORCEY0(I,J,bi,bj)
      &         -seaiceMassV(I,J,bi,bj)* _recip_dyC(I,J,bi,bj)
      &         *( phiSurf(i,j)-phiSurf(i,j-1) )
          ENDDO
         ENDDO
+        ENDIF
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx

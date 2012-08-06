@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.92 2012/03/14 22:55:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.93 2012/08/06 15:24:05 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -18,6 +18,7 @@ C     SEAICEuseEVP      :: If false, use Zhangs LSR solver for VP equations
 C                          if true use elastic viscous plastic solver
 C     SEAICEuseFREEDRIFT :: If True use free drift velocity instead of EVP
 C                           or LSR
+C     SEAICEuseTILT      :: If true then include surface tilt term in dynamics
 C     SEAICEheatConsFix  :: If true then fix ocn<->seaice advective heat flux.
 C     SEAICEuseEVPpickup :: Set to false in order to start EVP solver with
 C                          non-EVP pickup files.  Default is true.
@@ -64,7 +65,7 @@ C     SEAICE_dump_mnc   :: write snap-shot output   using MNC
 C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
-     &     SEAICEuseFREEDRIFT, SEAICEuseTEM,
+     &     SEAICEuseFREEDRIFT, SEAICEuseTILT, SEAICEuseTEM,
      &     SEAICEheatConsFix,
      &     SEAICEuseMetricTerms,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding,
@@ -81,7 +82,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
-     &     SEAICEuseFREEDRIFT, SEAICEuseTEM,
+     &     SEAICEuseFREEDRIFT, SEAICEuseTILT, SEAICEuseTEM,
      &     SEAICEheatConsFix,
      &     SEAICEuseMetricTerms,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding,
