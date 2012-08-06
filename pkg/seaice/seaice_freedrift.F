@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_freedrift.F,v 1.5 2012/03/06 16:45:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_freedrift.F,v 1.6 2012/08/06 19:26:19 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -77,17 +77,11 @@ C ==================
 
 C preliminary computations:
 C =========================
-C factor to convert air-sea stress to air-ice stresss
-           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
-            tmpscal1 = SEAICE_drag_south/OCEAN_drag
-           ELSE
-            tmpscal1 = SEAICE_drag      /OCEAN_drag
-           ENDIF
 C air-ice stress at cell center
-           taux_onIce_cntr=
-     &       tmpscal1*HALF*(TAUX(i,j,bi,bj)+TAUX(i+1,j,bi,bj))
-           tauy_onIce_cntr=
-     &       tmpscal1*HALF*(TAUY(i,j,bi,bj)+TAUY(i,j+1,bi,bj))
+           taux_onIce_cntr=HALF*
+     &       (FORCEX0(i,j,bi,bj)+FORCEX0(i+1,j,bi,bj))
+           tauy_onIce_cntr=HALF*
+     &       (FORCEY0(i,j,bi,bj)+FORCEY0(i,j+1,bi,bj))
 C mass of ice per unit area (kg/m2) times coriolis f
            mIceCor=SEAICE_rhoIce*HEFF(i,j,bi,bj)*_fCori(I,J,bi,bj)
 C ocean velocity at cell center
