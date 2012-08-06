@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_balance_flow.F,v 1.5 2011/06/07 22:23:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_balance_flow.F,v 1.6 2012/08/06 16:47:24 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -53,8 +53,6 @@ C     msgBuf       :: Informational/error message buffer
       _RL tileFlow(nSx,nSy)
       _RL tileAreaOB(nSx,nSy)
       _RL tileInFlow(nSx,nSy)
-      _RS zeroRS
-      PARAMETER( zeroRS = 0. )
       LOGICAL flag
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
