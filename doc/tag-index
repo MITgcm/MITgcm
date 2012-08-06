@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1707 2012/08/06 18:35:05 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1708 2012/08/06 19:29:29 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+ - Added SEAICEuseTILT run time switch : if set to
+ false then omit the tilt term in seaice dynamics.
+ - Fix free drift calculation.
 o pkg/shelfice:
   When initializing SHELFICEDragQuadratic, set default to be 
   consistent with shiCdrag in case SHELFICEuseGammaFrict is used, 
