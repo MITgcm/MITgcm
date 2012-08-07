@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_set_control.F,v 1.6 2010/04/11 22:03:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_set_control.F,v 1.7 2012/08/07 05:40:53 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -25,6 +25,7 @@ C     == GLobal variables ==
 # include "DIC_CTRL.h"
 #endif
 #ifdef ALLOW_CTRL
+#include "CTRL_SIZE.h"
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
