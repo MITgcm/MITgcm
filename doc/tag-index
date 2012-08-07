@@ -1,9 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1708 2012/08/06 19:29:29 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1709 2012/08/07 22:24:00 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/1D_ocean_ice_column/input_ad/data.autodiff :
+  - add test of newly added dumpAdByRec=T option where 
+    we write all records to one file per variable.
+o verification/global_ocean.cs32x15/code_ad/CPP_OPTIONS.h :
+  - switch to #define ALLOW_BALANCE_RELAX and ALLOW_BALANCE_FLUXES
+    to check that this code is ok with taf and compiles in adjoint.
+o pkg/autodiff :
+  - added run time param dumpAdByRec : ad dump format switch.
+   If true then write all records to one file per variable.
+   Else write one file per record (remains the default).
+  - revise seaice_ad_dump.F and exf_adjoint_snapshots_ad.F accordingly.
 o pkg/seaice:
  - Added SEAICEuseTILT run time switch : if set to
  false then omit the tilt term in seaice dynamics.
