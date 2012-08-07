@@ -7,6 +7,8 @@ CD_CODE_VARS
 CG2D
 CG3D
 cost
+CTRL_SIZE
+CTRL_GENARR
 ctrl_dummy
 ctrl
 ctrl_weights
