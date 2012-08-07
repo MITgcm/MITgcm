@@ -5,4 +5,6 @@
 #
  &AUTODIFF_PARM01
 # inAdExact = .FALSE.,
+# dumpAdVarExch = 2,
+  dumpAdByRec   = .TRUE.,
  &
