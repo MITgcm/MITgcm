@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/CPP_OPTIONS.h,v 1.4 2010/09/17 03:47:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/CPP_OPTIONS.h,v 1.5 2012/08/07 21:24:55 gforget Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -40,6 +40,12 @@ C o exclude/allow external forcing-fields load
 C   this allows to read & do simple linear time interpolation of oceanic
 C   forcing fields, if no specific pkg (e.g., EXF) is used to compute them.
 #undef EXCLUDE_FFIELDS_LOAD
+
+C o Include/exclude balancing surface forcing fluxes code
+#define ALLOW_BALANCE_FLUXES
+
+C o Include/exclude balancing surface forcing relaxation code
+#define ALLOW_BALANCE_RELAX
 
 C o Use "Exact Convervation" of fluid in Free-Surface formulation
 C   so that d/dt(eta) is exactly equal to - Div.Transport
