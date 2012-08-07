@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.7 2012/08/02 01:23:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.8 2012/08/07 21:19:56 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -36,6 +36,8 @@ C     == Global variables ===
 #endif
 #include "GRID.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
+# include "AUTODIFF_PARAMS.h"
+# include "AUTODIFF.h"
 # include "adcommon.h"
 #endif
 
@@ -62,10 +64,11 @@ C     suff   :: Hold suffix part of a filename
 C     msgBuf :: Error message buffer
       CHARACTER*(MAX_LEN_FNAM) suff
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER dumpAdRecEx
 CEOP
 
       CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
+      
       IF (
      &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
      & ) THEN
@@ -73,6 +76,18 @@ CEOP
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
         writeBinaryPrec = writeStatePrec
+
+c determine ad dump record number (used only if dumpAdByRec is true)
+        IF (useSeaice.AND.(iWhen.EQ.3)) THEN
+          dumpAdRecEx=dumpAdRecMn+1
+        ELSE
+          dumpAdRecEx=dumpAdRecMn
+        ENDIF
+c#ifdef ALLOW_DEBUG
+c      IF ( debugMode ) print*,'dumpAdRecEx',dumpAdRecEx
+c#endif
+
+        IF (.NOT.dumpAdByRec) THEN
 
         IF ( iwhen .EQ.1 ) THEN
 
@@ -125,7 +140,68 @@ C--     Set suffix for this set of data files.
 #endif
 
         ENDIF
+        
+        ELSEIF ( dumpAdRecEx .GT. 0 ) THEN
 
+        IF ( iwhen .EQ.1 ) THEN
+
+        CALL WRITE_REC_XY_RL ( 'ADJustress',
+     &       adustress, dumpAdRecEx, myIter, myThid)
+        CALL WRITE_REC_XY_RL ( 'ADJvstress',
+     &       advstress, dumpAdRecEx, myIter, myThid)
+        CALL WRITE_REC_XY_RL ( 'ADJhflux',
+     &       adhflux, dumpAdRecEx, myIter, myThid)
+        CALL WRITE_REC_XY_RL ( 'ADJsflux',
+     &       adsflux, dumpAdRecEx, myIter, myThid)
+
+        ELSEIF ( iwhen .EQ.2 ) THEN
+
+# ifdef ALLOW_ATM_TEMP
+        CALL WRITE_REC_XY_RL ( 'ADJatemp',
+     &       adatemp, dumpAdRecEx, myIter, myThid)
+        CALL WRITE_REC_XY_RL ( 'ADJaqh',
+     &       adaqh, dumpAdRecEx, myIter, myThid)
+        CALL WRITE_REC_XY_RL ( 'ADJprecip',
+     &       adprecip, dumpAdRecEx, myIter, myThid)
+# endif
+# ifdef ALLOW_ATM_WIND
+        CALL WRITE_REC_XY_RL ( 'ADJuwind',
+     &       aduwind, dumpAdRecEx, myIter, myThid)
+        CALL WRITE_REC_XY_RL ( 'ADJvwind',
+     &       advwind, dumpAdRecEx, myIter, myThid)
+# endif
+# ifdef ALLOW_DOWNWARD_RADIATION
+        CALL WRITE_REC_XY_RL ( 'ADJswdown',
+     &       adswdown, dumpAdRecEx, myIter, myThid)
+# endif
+# ifdef ALLOW_CLIMSST_RELAXATION
+        CALL WRITE_REC_XY_RL ( 'ADJclimsst',
+     &       adclimsst, dumpAdRecEx, myIter, myThid)
+# endif
+# ifdef ALLOW_CLIMSSS_RELAXATION
+        CALL WRITE_REC_XY_RL ( 'ADJclimsss',
+     &       adclimsss, dumpAdRecEx, myIter, myThid)
+# endif
+
+        ELSEIF ( iwhen .EQ.3 ) THEN
+
+        CALL WRITE_REC_XY_RS ( 'ADJtaux',
+     &       adfu, dumpAdRecEx, myIter, myThid)
+        CALL WRITE_REC_XY_RS ( 'ADJtauy',
+     &       adfv, dumpAdRecEx, myIter, myThid)
+        CALL WRITE_REC_XY_RS ( 'ADJqnet',
+     &       adqnet, dumpAdRecEx, myIter, myThid)
+        CALL WRITE_REC_XY_RS ( 'ADJempr',
+     &       adempmr, dumpAdRecEx, myIter, myThid)
+#ifdef SHORTWAVE_HEATING
+        CALL WRITE_REC_XY_RS ( 'ADJqsw',
+     &       adqsw, dumpAdRecEx, myIter, myThid)
+#endif
+
+        ENDIF
+
+        ENDIF
+        
 #ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.7 2012/07/06 23:03:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.8 2012/08/07 21:19:18 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -36,6 +36,8 @@ C     == Global variables ===
 #endif
 #include "GRID.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
+# include "AUTODIFF_PARAMS.h"
+# include "AUTODIFF.h"
 # include "adcommon.h"
 #endif
 
@@ -76,12 +78,21 @@ CEOP
      &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,deltaTClock)
      & ) THEN
 
+c increment ad dump record number (used only if dumpAdByRec is true)
+        dumpAdRecSi=dumpAdRecSi+1
+c#ifdef ALLOW_DEBUG
+c      IF ( debugMode ) print*,'dumpAdRecSi',dumpAdRecSi
+c#endif
+
+
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
         writeBinaryPrec = writeStatePrec
 
 C--     Read IO error counter
         beginIOErrCount = IO_ERRCOUNT(myThid)
+
+        IF (.NOT.dumpAdByRec) THEN
 
         CALL WRITE_REC_3D_RL(
      &       'ADJarea.'//suff, writeBinaryPrec,
@@ -102,6 +113,29 @@ cph        IF ( SEAICEuseDynamics ) THEN
      &       1,  advice, 1, myIter, myThid )
 cph        ENDIF
 # endif
+
+        ELSE
+
+        CALL WRITE_REC_3D_RL(
+     &       'ADJarea', writeBinaryPrec,
+     &       1,  adarea, dumpAdRecSi, myIter, myThid )
+        CALL WRITE_REC_3D_RL(
+     &       'ADJheff', writeBinaryPrec,
+     &       1,  adheff, dumpAdRecSi, myIter, myThid )
+        CALL WRITE_REC_3D_RL(
+     &       'ADJhsnow', writeBinaryPrec,
+     &       1,  adhsnow, dumpAdRecSi, myIter, myThid )
+# ifdef SEAICE_ALLOW_DYNAMICS
+cph        IF ( SEAICEuseDynamics ) THEN
+          CALL WRITE_REC_3D_RL(
+     &       'ADJuice', writeBinaryPrec,
+     &       1,  aduice, dumpAdRecSi, myIter, myThid )
+          CALL WRITE_REC_3D_RL(
+     &       'ADJvice', writeBinaryPrec,
+     &       1,  advice, dumpAdRecSi, myIter, myThid )
+cph        ENDIF
+# endif
+        ENDIF
 
 #ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
