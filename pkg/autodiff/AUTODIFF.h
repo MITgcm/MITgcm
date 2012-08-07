@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF.h,v 1.11 2011/01/21 01:19:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF.h,v 1.12 2012/08/07 21:17:34 gforget Exp $
 C $Name:  $
 
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
@@ -10,6 +10,13 @@ C $Name:  $
      &  tapeConcatIO, tapeSingleCpuIO, tapeBufferIO
       logical tapeConcatIO, tapeSingleCpuIO, tapeBufferIO
 #endif
+
+c ad dump record number (used only if dumpAdByRec is true)
+      integer dumpAdRecMn
+      integer dumpAdRecDy
+      integer dumpAdRecSi
+      COMMON /AUTODIFF_DUMP_AD_REC/ 
+     &       dumpAdRecMn, dumpAdRecDy, dumpAdRecSi
 
       integer ilev_1
       integer ilev_2

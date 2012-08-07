@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.23 2012/08/02 01:12:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.24 2012/08/07 21:17:34 gforget Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -44,6 +44,11 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_FNAM) namBuf
       INTEGER iL, pIL, myLev
 CEOP
+
+c     initialize ad dump record number (used only if dumpAdByRec is true)
+      dumpAdRecMn=0
+      dumpAdRecDy=0
+      dumpAdRecSi=0
 
       IF ( adTapeDir .NE. ' ' ) THEN
        iL = ILNBLNK( adTapeDir )

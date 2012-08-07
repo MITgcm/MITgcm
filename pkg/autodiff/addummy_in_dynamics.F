@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_dynamics.F,v 1.5 2012/07/28 19:59:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_dynamics.F,v 1.6 2012/08/07 21:17:34 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -37,6 +37,7 @@ C     == Global variables ===
 c#include "GRID.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
 # include "adcommon.h"
+# include "AUTODIFF.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -73,6 +74,12 @@ CEOP
 
         CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
+c increment ad dump record number (used only if dumpAdByRec is true)
+        dumpAdRecDy=dumpAdRecDy+1
+c#ifdef ALLOW_DEBUG
+c      IF ( debugMode ) print*,'dumpAdRecDy',dumpAdRecDy
+c#endif
+
         IF ( dumpAdVarExch.EQ.1 ) THEN
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
 C
@@ -90,8 +97,10 @@ C--     Set suffix for this set of data files.
 
 #ifdef ALLOW_AUTODIFF_MONITOR_DIAG
         IF ( dumpAdVarExch.NE.2 ) THEN
-          CALL WRITE_FLD_XYZ_RL( 'ADJrhoinsitu.', suff,
-     &                           adrhoinsitu, myIter, myThid )
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJrhoinsitu.',
+     &                          suff, adrhoinsitu, myIter, myThid )
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJrhoinsitu',
+     &                      adrhoinsitu, dumpAdRecDy, myIter, myThid)     
 cph( is set to zero in addiags_phi_hyd
 c          CALL WRITE_FLD_XYZ_RL( 'ADJtotphihyd.', suff,
 c                                 adtotphihyd, myIter, myThid )
@@ -99,8 +108,10 @@ cph)
         ELSE
 C       case dumpAdVarExch = 2
           CALL COPY_ADVAR_OUTP( dumRS,adrhoinsitu,var3Du,Nr,12,myThid )
-          CALL WRITE_FLD_XYZ_RL( 'ADJrhoinsitu.', suff,
-     &                           var3Du, myIter, myThid )
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJrhoinsitu.',
+     &                          suff, var3Du, myIter, myThid )
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJrhoinsitu',
+     &                          var3Du, dumpAdRecDy, myIter, myThid)
         ENDIF
 #endif
 
