@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.18 2012/06/22 22:07:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.19 2012/08/07 05:59:18 jmc Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -22,6 +22,7 @@ C     ======== Global data ============================
 #include "cal.h"
 #endif
 #ifdef ALLOW_CTRL
+#include "CTRL_SIZE.h"
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
@@ -75,7 +76,7 @@ c then re-open it to compute cost function
            iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
            jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
            IL  = ILNBLNK( profilesfiles(num_file) )
-           write(profilesfile(1:80),'(1a)') 
+           write(profilesfile(1:80),'(1a)')
      &     profilesfiles(num_file)(1:IL)
            IL  = ILNBLNK( profilesfile )
            JL  = ILNBLNK( profilesDir )
@@ -122,7 +123,7 @@ cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
      &         prof_lon(num_file,prof_num,bi,bj),
      &         prof_lat(num_file,prof_num,bi,bj),
      &         num_var,num_file,mytime,bi,bj,myThid)
-#ifdef ALLOW_PROFILES_GENERICGRID              
+#ifdef ALLOW_PROFILES_GENERICGRID
              endif
 #endif
              else
@@ -135,7 +136,7 @@ cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
 #endif
 
 #ifdef ALLOW_PROFILES_ANOM_COST
-c the following does not currently work, since prof_theta_mean and 
+c the following does not currently work, since prof_theta_mean and
 c prof_salt_mean are never filled. SO I put a stop here.
              STOP 'ABNORMAL END: S/R COST_PROFILES'
              if (num_var .le. 2) then
@@ -201,4 +202,5 @@ C===========================================================
 #endif
 #endif
 
+      RETURN
       END
