@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_shifwflx.F,v 1.3 2011/06/24 19:40:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_shifwflx.F,v 1.4 2012/08/07 05:49:28 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -36,6 +36,7 @@ c     == global variables ==
 #endif
 
 #ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 # include "optim.h"

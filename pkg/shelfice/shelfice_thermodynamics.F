@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.30 2012/05/18 12:43:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.31 2012/08/07 05:49:28 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -31,6 +31,7 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "SHELFICE.h"
 #ifdef ALLOW_AUTODIFF
+# include "CTRL_SIZE.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 #endif /* ALLOW_AUTODIFF */
