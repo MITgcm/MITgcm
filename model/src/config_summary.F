@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.137 2012/07/13 20:48:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.138 2012/08/07 00:33:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -457,21 +457,43 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L( tempStepping,  INDEX_NONE,
      & 'tempStepping =', '  /* Temperature equation on/off flag */')
       CALL WRITE_0D_L( tempAdvection,  INDEX_NONE,
-     & 'tempAdvection=', '  /* Temperature advection on/off flag */')
+     & 'tempAdvection =', ' /* Temperature advection on/off flag */')
       CALL WRITE_0D_L( tempImplVertAdv,INDEX_NONE,'tempImplVertAdv =',
      &                ' /* Temp. implicit vert. advection on/off */')
       CALL WRITE_0D_L( tempForcing,  INDEX_NONE,
      & 'tempForcing  =', '  /* Temperature forcing on/off flag */')
+#ifdef ALLOW_BALANCE_FLUXES
+      CALL WRITE_0D_L( balanceQnet, INDEX_NONE, 'balanceQnet  =',
+     &             '  /* balance net heat-flux on/off flag */')
+#endif
+      CALL WRITE_0D_L( doThetaClimRelax, INDEX_NONE,
+     & 'doThetaClimRelax =', ' /* apply SST relaxation on/off flag */')
+#ifdef ALLOW_BALANCE_RELAX
+      CALL WRITE_0D_L( balanceThetaClimRelax, INDEX_NONE,
+     &             'balanceThetaClimRelax=',
+     &             ' /* balance SST relaxation on/off flag */')
+#endif
       CALL WRITE_0D_L( tempIsActiveTr, INDEX_NONE, 'tempIsActiveTr =',
      & ' /* Temp. is a dynamically Active Tracer */')
       CALL WRITE_0D_L( saltStepping,  INDEX_NONE,
      & 'saltStepping =', '  /* Salinity equation on/off flag */')
       CALL WRITE_0D_L( saltAdvection,  INDEX_NONE,
-     & 'saltAdvection=', '  /* Salinity advection on/off flag */')
+     & 'saltAdvection =', ' /* Salinity advection on/off flag */')
       CALL WRITE_0D_L( saltImplVertAdv,INDEX_NONE,'saltImplVertAdv =',
      &                ' /* Sali. implicit vert. advection on/off */')
       CALL WRITE_0D_L( saltForcing,  INDEX_NONE,
      & 'saltForcing  =', '  /* Salinity forcing on/off flag */')
+#ifdef ALLOW_BALANCE_FLUXES
+      CALL WRITE_0D_L( balanceQnet, INDEX_NONE, 'balanceEmPmR =',
+     &             '  /* balance net fresh-water flux on/off flag */')
+#endif
+      CALL WRITE_0D_L( doSaltClimRelax, INDEX_NONE,
+     & 'doSaltClimRelax =', ' /* apply SSS relaxation on/off flag */')
+#ifdef ALLOW_BALANCE_RELAX
+      CALL WRITE_0D_L( balanceSaltClimRelax, INDEX_NONE,
+     &             'balanceSaltClimRelax=',
+     &             ' /* balance SSS relaxation on/off flag */')
+#endif
       CALL WRITE_0D_L( saltIsActiveTr, INDEX_NONE, 'saltIsActiveTr =',
      & ' /* Salt  is a dynamically Active Tracer */')
       CALL WRITE_0D_I( readBinaryPrec, INDEX_NONE, ' readBinaryPrec =',
@@ -537,9 +559,9 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      CALL WRITE_0D_RL( deltaTmom, INDEX_NONE,'deltaTmom =',
+      CALL WRITE_0D_RL( deltaTMom, INDEX_NONE,'deltaTMom =',
      &'   /* Momentum equation timestep ( s ) */')
-      CALL WRITE_0D_RL( deltaTfreesurf,INDEX_NONE,'deltaTfreesurf =',
+      CALL WRITE_0D_RL( deltaTFreeSurf,INDEX_NONE,'deltaTFreeSurf =',
      &  ' /* FreeSurface equation timestep ( s ) */')
       CALL WRITE_1D_RL( dTtracerLev, Nr, INDEX_K, 'dTtracerLev =',
      & '  /* Tracer equation timestep ( s ) */')
