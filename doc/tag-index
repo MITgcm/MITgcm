@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1709 2012/08/07 22:24:00 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1710 2012/08/08 22:24:19 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice :
+  - added possibility to change ice strength/PRESS0 relationship to 
+    HEFF, according to the following run time parameters 
+    SEAICEpresPow0    :: HEFF exponent for ice strength below SEAICEpresH0 (positive integer)
+    SEAICEpresPow1    :: HEFF exponent for ice strength above SEAICEpresH0 (positive integer)
+    SEAICEpresH0       :: HEFF threshold for ice strength            (m)
+o pkg/ggl90 :
+  - added run time flag mxlSurfFlag to include the code that ensure 
+    mixing between first and second level (previously included as a comment)
 o verification/1D_ocean_ice_column/input_ad/data.autodiff :
   - add test of newly added dumpAdByRec=T option where 
     we write all records to one file per variable.
