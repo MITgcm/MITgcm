@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.11 2009/04/28 23:27:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.12 2012/08/08 22:22:42 gforget Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -41,7 +41,7 @@ C--   GGL90 vertical mixing parameters
      &     GGL90mixingMaps, GGL90writeState,
      &     GGL90ck, GGL90ceps, GGL90alpha, GGL90m2,
      &     GGL90TKEmin, GGL90TKEsurfMin, GGL90TKEbottom,
-     &     GGL90mixingLengthMin, mxlMaxFlag,
+     &     GGL90mixingLengthMin, mxlMaxFlag, mxlSurfFlag,
      &     GGL90viscMax, GGL90diffMax, GGL90TKEFile
       _BEGIN_MASTER(myThid)
 
@@ -74,6 +74,7 @@ C     Blanke and Delecluse (1993, JPO) use
       GGL90diffTKEh        = 0.0 _d 0
       GGL90mixingLengthMin = 1.0 _d -08
       mxlMaxFlag           = 0
+      mxlSurfFlag    = .FALSE.
       GGL90TKEFile         = ' '
 
 C-----------------------------------------------------------------------
@@ -188,6 +189,9 @@ C--   print TKE vertical mixing parameters to stdout for better debugging
      &     '   /* GGL90 minimum mixing length ( m ). */')
       CALL WRITE_0D_I(mxlMaxFlag, INDEX_NONE, 'mxlMaxFlag =',
      &     '   /* Flag for limiting mixing-length method */')
+      CALL WRITE_0D_L(mxlSurfFlag,INDEX_NONE,
+     &     'mxlSurfFlag =',
+     &     '   /* GGL90 flag for near surface mixing. */')
       iL = MAX_LEN_MBUF - 22
       iL = MIN( iL, MAX(ILNBLNK(GGL90TKEFile),1) )
       WRITE(msgBuf,'(A,A)')'GGL90: GGL90TKEFile = ',GGL90TKEFile(1:iL)

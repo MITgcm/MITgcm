@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.22 2012/06/28 15:35:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.23 2012/08/08 22:22:42 gforget Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -187,6 +187,15 @@ C     mixing length
        ENDDO
       ENDDO
 
+C- ensure mixing between first and second level
+      IF (mxlSurfFlag) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         GGL90mixingLength(i,j,2)=drF(1)
+        ENDDO
+       ENDDO
+      ENDIF
+
 C- Impose upper and lower bound for mixing length
       IF ( mxlMaxFlag .EQ. 0 ) THEN
 
@@ -235,13 +244,6 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
 
       ELSEIF ( mxlMaxFlag .EQ. 2 ) THEN
 
-cgf ensure mixing between first and second level
-c      DO j=jMin,jMax
-c        DO i=iMin,iMax
-c         GGL90mixingLength(i,j,2)=drF(1)
-c        ENDDO
-c      ENDDO
-cgf
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax

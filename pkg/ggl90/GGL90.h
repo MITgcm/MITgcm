@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/GGL90.h,v 1.5 2010/08/06 18:37:05 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/GGL90.h,v 1.6 2012/08/08 22:22:42 gforget Exp $
 C $Name:  $
 
 #ifdef ALLOW_GGL90
@@ -33,6 +33,9 @@ C     GGL90TKEmin     - minimum kinetic energy, leads to minimum mixing if TKE=0
 C     GGL90TKEbottom  - bottom bounardy condition for kinetic energy 
 C                      (default=GGL90TKEmin)
 C     GGL90TKEFile    - File with initial field of TKE
+C     GGL90mixingLengthMin - Mininum mixing length
+C     mxlMaxFlag      - Flag for limiting mixing-length method (default=0)
+C     mxlSurfFlag     - Flag to force mixing near ocean surface (default=.FALSE.)
 C
 C     GGL90dumpFreq   - analogue of dumpFreq (= default)
 C     GGL90taveFreq   - analogue of taveFreq (= default)
@@ -84,8 +87,10 @@ c      _RL recip_hFacI(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 c     &     ,recip_hFacI
 
       LOGICAL GGL90isOn, GGL90mixingMaps, GGL90writeState
+      LOGICAL mxlSurfFlag
       COMMON /GGL90_PARMS_L/
-     &     GGL90isOn, GGL90mixingMaps, GGL90writeState
+     &     GGL90isOn, GGL90mixingMaps, GGL90writeState,
+     &     mxlSurfFlag
 
 #ifdef ALLOW_GGL90_SMOOTH
       COMMON /GGL90_CORNER/ mskCor
