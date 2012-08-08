@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.51 2012/08/06 15:24:05 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.52 2012/08/08 22:20:51 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -148,6 +148,12 @@ C--  Seaice-Dynamics parameters
      & 'SEAICEuseTEM      =', ' /* use truncated ellipse rheology */')
       CALL WRITE_0D_RL( SEAICE_strength   ,INDEX_NONE,
      & 'SEAICE_strength   =', ' /* sea-ice strength Pstar */')
+      CALL WRITE_0D_RL( SEAICEpresH0   ,INDEX_NONE,
+     & 'SEAICEpresH0   =', ' /* sea-ice strength Heff threshold */')
+       CALL WRITE_0D_I ( SEAICEpresPow0,    INDEX_NONE,
+     & 'SEAICEpresPow0 =', ' /* exponent for Heff<SEAICEpresH0 */')
+       CALL WRITE_0D_I ( SEAICEpresPow1,    INDEX_NONE,
+     & 'SEAICEpresPow1 =', ' /* exponent for Heff>SEAICEpresH0 */')
       CALL WRITE_0D_RL( SEAICE_zetaMin  ,INDEX_NONE,
      & 'SEAICE_zetaMin    =', ' /* lower bound for viscosity */')
       CALL WRITE_0D_RL( SEAICE_eccen,INDEX_NONE,'SEAICE_eccen    =',

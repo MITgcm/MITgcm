@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.93 2012/08/06 15:24:05 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.94 2012/08/08 22:20:51 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -108,6 +108,8 @@ C     SOLV_NCHECK       :: iteration interval for solver convergence test
 C     NPSEUDOTIMESTEPS  :: number of extra pseudo time steps (>= 2)
 C     LSR_mixIniGuess   :: control mixing of free-drift sol. into LSR initial guess
 C                       :: =0 : no mix ; =2,4 : mix with (1/err)^2,4 factor
+C     SEAICEpresPow0    :: HEFF exponent for ice strength below SEAICEpresH0
+C     SEAICEpresPow1    :: HEFF exponent for ice strength above SEAICEpresH0
 C     SEAICEadvScheme   :: sets the advection scheme for thickness and area
 C     SEAICEadvSchArea  :: sets the advection scheme for area
 C     SEAICEadvSchHeff  :: sets the advection scheme for effective thickness
@@ -141,11 +143,13 @@ C
       INTEGER SEAICE_multDim
       INTEGER SEAICE_debugPointI
       INTEGER SEAICE_debugPointJ
+      INTEGER SEAICEpresPow0, SEAICEpresPow1
       COMMON /SEAICE_PARM_I/
      &     IMAX_TICE, postSolvTempIter,
      &     SOLV_MAX_ITERS, SOLV_NCHECK,
      &     NPSEUDOTIMESTEPS,
      &     LSR_mixIniGuess,
+     &     SEAICEpresPow0, SEAICEpresPow1,
      &     SEAICEadvScheme,
      &     SEAICEadvSchArea,
      &     SEAICEadvSchHeff,
@@ -191,6 +195,7 @@ C     SEAICE_evpDampC    :: evp damping constant (Hunke,JCP,2001)       (kg/m^2)
 C     SEAICE_zetaMaxFac  :: factor determining the maximum viscosity    (s)
 C                          (default = 5.e+12/2.e4 = 2.5e8)
 C     SEAICE_zetaMin     :: lower bound for viscosity (default = 0)    (N s/m^2)
+C     SEAICEpresH0       :: HEFF threshold for ice strength            (m)
 C     SEAICE_monFreq     :: SEAICE monitor frequency.                   (s)
 C     SEAICE_dumpFreq    :: SEAICE dump frequency.                      (s)
 C     SEAICE_taveFreq    :: SEAICE time-averaging frequency.            (s)
@@ -309,6 +314,7 @@ C
       _RL SEAICE_airTurnAngle, SEAICE_waterTurnAngle
       _RL SEAICE_elasticParm, SEAICE_evpTauRelax
       _RL SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac
+      _RL SEAICEpresH0
       _RL SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow
       _RL SEAICEdiffKhSalt
       _RL SEAICE_tauAreaObsRelax
@@ -317,6 +323,7 @@ C
      &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      &    SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
      &    SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
+     &    SEAICEpresH0,
      &    SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      &    SEAICE_initialHEFF,
      &    SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
