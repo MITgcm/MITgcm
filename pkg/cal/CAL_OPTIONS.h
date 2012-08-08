@@ -1,5 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/CAL_OPTIONS.h,v 1.4 2011/12/24 01:04:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/CAL_OPTIONS.h,v 1.5 2012/08/08 20:11:32 jmc Exp $
 C $Name:  $
+
+CBOP
+C !ROUTINE: CAL_OPTIONS.h
+C !INTERFACE:
+C #include "CAL_OPTIONS.h"
+
+C !DESCRIPTION:
+C *==================================================================*
+C | CPP options file for Calendar (cal) package:
+C | Control which optional features to compile in this package code.
+C *==================================================================*
+CEOP
 
 #ifndef CAL_OPTIONS_H
 #define CAL_OPTIONS_H
@@ -7,21 +19,16 @@ C $Name:  $
 #include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_CAL
+#ifdef ECCO_CPPOPTIONS_H
 
-CPH >>>>>> ALL CAL OPTIONS ARE CURRENTLY SET IN <<<<<<
-CPH >>>>>> ECCO_CPPOPTIONS.h                    <<<<<<
-CPH >>>>>> SHOULD REMAIN LIKE THIS UNTIL WE     <<<<<<
-CPH >>>>>> DEFINE A CONSISTENT CHANGE OF POLICY <<<<<<
+C-- When multi-package option-file ECCO_CPPOPTIONS.h is used (directly included
+C    in CPP_OPTIONS.h), this option file is left empty since all options that
+C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 
-C This package is currently controlled by the ECCO_CPPOPTIONS.h and
-C to avoid compatibility issues you should *NOT* customize this file.
-cph#define ALLOW_CALENDAR
+#else /* ndef ECCO_CPPOPTIONS_H */
 
-C This CPP flag must be set for no apparent reason other than to stop
-C cal_readparms() for causing to issue a fatal warning that it is
-C undefined!!!
-C TODO: delete this and related code!? AJA
-cph#define ALLOW_CAL_NENDITER
+C-- Package-specific Options & Macros go here
 
+#endif /* ndef ECCO_CPPOPTIONS_H */
 #endif /* ALLOW_CAL */
 #endif /* CAL_OPTIONS_H */
