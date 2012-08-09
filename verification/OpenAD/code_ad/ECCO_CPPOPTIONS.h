@@ -1,9 +1,16 @@
-C
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.7 2007/11/19 14:01:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.8 2012/08/09 18:15:57 jmc Exp $
 C $Name:  $
 
-C CPP flags controlling which code is included in the files that
-C will be compiled.
+#ifndef ECCO_CPPOPTIONS_H
+#define ECCO_CPPOPTIONS_H
+
+C-- Collect here, in a single option-file, options to control which optional
+C   features to compile in packages AUTODIFF, COST, CTRL, ECCO, CAL and EXF.
+C   If used, this option-file needs to be directly included in CPP_OPTIONS.h
+C   Although this method, inherited from ECCO setup, has been traditionally
+C   used for all adjoint built, work is in progess to allow to use the
+C   standard metod (each of the above pkg get its own options from its
+C   specific option-file) also for adjoint built.
 
 C ********************************************************************
 C ***                  Adjoint Support Package                     ***
@@ -12,25 +19,25 @@ C ********************************************************************
 C o Include/exclude code in order to be able to automatically
 C   differentiate the MITgcmUV by using the Tangent Linear and
 C   Adjoint Model Compiler (TAMC).
-C
+
 #define ALLOW_AUTODIFF_TAMC
-C
+
 C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
-C
+
 C       >>> Extract adjoint state
 #define ALLOW_AUTODIFF_MONITOR
-C
+
 C       >>> DO 2-level checkpointing instead of 3-level
 #undef AUTODIFF_2_LEVEL_CHECKPOINT
-C
+
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
 
 C ********************************************************************
-C ***                     Calender Package                         ***
+C ***                     Calendar Package                         ***
 C ********************************************************************
-C
+
 C CPP flags controlling which code is included in the files that
 C will be compiled.
 
@@ -39,19 +46,18 @@ CPH >>>>>> THERE ARE NO MORE CAL OPTIONS TO BE SET <<<<<<
 C ********************************************************************
 C ***                Cost function Package                         ***
 C ********************************************************************
-C 
+
 C       >>> Cost function contributions
-#define ALLOW_COST
 #define ALLOW_COST_TEST
 #define ALLOW_COST_TSQUARED
 #undef ALLOW_COST_TRACER
 #undef ALLOW_COST_ATLANTIC_HEAT
-#undef ALLOW_COST_ATLANTIC_HEAT_DOMASS 
+#undef ALLOW_COST_ATLANTIC_HEAT_DOMASS
 
 C ********************************************************************
 C ***               Control vector Package                         ***
 C ********************************************************************
-C 
+
 #define DISABLE_CTRL_THETA_LIMIT
 #undef ALLOW_NONDIMENSIONAL_CONTROL_IO
 C       >>> Initial values.
@@ -67,7 +73,5 @@ C       >>> Initial values.
 #define ALLOW_DIFFKR_CONTROL
 #define ALLOW_KAPGM_CONTROL
 
-C
-C o Enable some temporary constructs for OpenAD
-#undef ALLOW_OPENAD
-
+C ********************************************************************
+#endif /* ECCO_CPPOPTIONS_H */

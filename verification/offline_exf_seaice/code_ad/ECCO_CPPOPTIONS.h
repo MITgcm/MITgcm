@@ -1,13 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/ECCO_CPPOPTIONS.h,v 1.3 2012/07/27 21:13:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/ECCO_CPPOPTIONS.h,v 1.4 2012/08/09 18:15:57 jmc Exp $
 C $Name:  $
 
-C CPP flags controlling which code is included in the files that
-C will be compiled.
-C
+#ifndef ECCO_CPPOPTIONS_H
+#define ECCO_CPPOPTIONS_H
+
+C-- Collect here, in a single option-file, options to control which optional
+C   features to compile in packages AUTODIFF, COST, CTRL, ECCO, CAL and EXF.
+C   If used, this option-file needs to be directly included in CPP_OPTIONS.h
+C   Although this method, inherited from ECCO setup, has been traditionally
+C   used for all adjoint built, work is in progess to allow to use the
+C   standard metod (each of the above pkg get its own options from its
+C   specific option-file) also for adjoint built.
+
 C ********************************************************************
 C ***                         ECCO Package                         ***
 C ********************************************************************
-C
+
 #undef  ALLOW_ECCO_FORWARD_RUN
 #undef  ALLOW_ECCO_DIAGNOSTICS_RUN
 #define  ALLOW_ECCO_OPTIMIZATION
@@ -19,26 +27,24 @@ C ********************************************************************
 C o Include/exclude code in order to be able to automatically
 C   differentiate the MITgcmUV by using the Tangent Linear and
 C   Adjoint Model Compiler (TAMC).
-#define INCLUDE_AUTODIFF_PACKAGE
-C
 #define ALLOW_AUTODIFF_TAMC
-C
+
 C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
 c
 c       >>> Reduce to 2-level checkpointing
 #define AUTODIFF_2_LEVEL_CHECKPOINT
-C
+
 C       >>> Extract adjoint state
 #undef ALLOW_AUTODIFF_MONITOR
-C
+
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
 
 C ********************************************************************
 C ***                Cost function Package                         ***
 C ********************************************************************
-C
+
 # define ALLOW_ATEMP_COST_CONTRIBUTION
 # define ALLOW_AQH_COST_CONTRIBUTION
 # define ALLOW_UWIND_COST_CONTRIBUTION
@@ -54,7 +60,7 @@ c       >>> Sea-ice volume
 C ********************************************************************
 C ***               Control vector Package                         ***
 C ********************************************************************
-C
+
 #define  EXCLUDE_CTRL_PACK
 
 C       >>> Initial values.
@@ -111,3 +117,6 @@ C   forcing files from input grid to model grid.
 #if ( defined (EXF_INTERP_USE_DYNALLOC) && defined (USING_THREADS) )
 # define EXF_IREAD_USE_GLOBAL_POINTER
 #endif
+
+C ********************************************************************
+#endif /* ECCO_CPPOPTIONS_H */

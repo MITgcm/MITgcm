@@ -1,15 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/verification/obcs_ctrl/code_ad/ECCO_CPPOPTIONS.h,v 1.1 2011/04/20 19:17:39 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/verification/obcs_ctrl/code_ad/ECCO_CPPOPTIONS.h,v 1.2 2012/08/09 18:15:57 jmc Exp $
 C $Name:  $
 
-C
-C CPP flags controlling which code is included in the files that
-C will be compiled.
-C
+#ifndef ECCO_CPPOPTIONS_H
+#define ECCO_CPPOPTIONS_H
+
+C-- Collect here, in a single option-file, options to control which optional
+C   features to compile in packages AUTODIFF, COST, CTRL, ECCO, CAL and EXF.
+C   If used, this option-file needs to be directly included in CPP_OPTIONS.h
+C   Although this method, inherited from ECCO setup, has been traditionally
+C   used for all adjoint built, work is in progess to allow to use the
+C   standard metod (each of the above pkg get its own options from its
+C   specific option-file) also for adjoint built.
+
 C ********************************************************************
 C ***                         ECCO Package                         ***
 C ********************************************************************
-C
-
 
 cph#define  ALLOW_ECCO_FORWARD_RUN
 #define  ALLOW_ECCO_OPTIMIZATION
@@ -22,28 +27,28 @@ C ***                  Adjoint Support Package                     ***
 C ********************************************************************
 
 C o Include/exclude code in order to be able to automatically
-C
+
 #define ALLOW_AUTODIFF_TAMC
-C
+
 C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
-C
+
 C extend to 4-level checkpointing
 #undef AUTODIFF_4_LEVEL_CHECKPOINT
-C
+
 C       >>> Extract adjoint state
 #define ALLOW_AUTODIFF_MONITOR
-C
+
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
-C
+
 C o TAMC compatible subroutine parameter list
 #undef AUTODIFF_TAMC_COMPATIBILITY
 
 C ********************************************************************
 C ***                     Calendar Package                         ***
 C ********************************************************************
-C
+
 C CPP flags controlling which code is included in the files that
 C will be compiled.
 
@@ -52,9 +57,7 @@ CPH >>>>>> THERE ARE NO MORE CAL OPTIONS TO BE SET <<<<<<
 C ********************************************************************
 C ***                Cost function Package                         ***
 C ********************************************************************
-C
-#define ALLOW_COST
-#ifdef ALLOW_COST
+
 C       >>> Use the EGM-96 geoid error covariance.
 # undef  ALLOW_EGM96_ERROR_COV
 # undef  ALLOW_READ_EGM_DATA
@@ -113,7 +116,7 @@ c       >>> Make sure that ALLOW_OBCS is defined
       defined (ALLOW_OBCSE_COST_CONTRIBUTION))
 #  define ALLOW_OBCS_COST_CONTRIBUTION
 # endif
-CMM 
+CMM
 # undef ALLOW_IESTAU_COST_CONTRIBUTION
 c       >>> Sea-ice volume
 # undef ALLOW_COST_ICE
@@ -121,12 +124,10 @@ c       >>> Sea-ice volume
 c       >>> Sea-ice misfit to obs
 # undef ALLOW_SEAICE_COST_SMR_AREA
 
-#endif /* ALLOW_COST */
-
 C ********************************************************************
 C ***               Control vector Package                         ***
 C ********************************************************************
-C
+
 #define  ALLOW_NONDIMENSIONAL_CONTROL_IO
 #undef  ALLOW_TAMC_SINGLEPREC_COMLEV
 
@@ -183,11 +184,6 @@ c       >>> Make sure that ALLOW_OBCS is defined
 C ********************************************************************
 C ***             External forcing Package                         ***
 C ********************************************************************
-C
-C o Include/exclude the external forcing package. To use this package,
-C   you have to include the calendar tool as well. KPP can be switched
-C   on or off. The implementation automatically takes care of this.
-#define INCLUDE_EXTERNAL_FORCING_PACKAGE
 
 C   Do more printout for the protocol file than usual.
 #undef EXF_VERBOSE
@@ -204,3 +200,6 @@ C   Bulk formulae related flags.
 C   Relaxation to monthly climatologies.
 #undef  ALLOW_CLIMSST_RELAXATION
 #undef  ALLOW_CLIMSSS_RELAXATION
+
+C ********************************************************************
+#endif /* ECCO_CPPOPTIONS_H */

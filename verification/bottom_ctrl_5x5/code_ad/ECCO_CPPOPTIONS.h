@@ -1,14 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/ECCO_CPPOPTIONS.h,v 1.2 2007/10/09 02:36:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/ECCO_CPPOPTIONS.h,v 1.3 2012/08/09 18:15:57 jmc Exp $
 C $Name:  $
 
-C
-C CPP flags controlling which code is included in the files that
-C will be compiled.
-C
+#ifndef ECCO_CPPOPTIONS_H
+#define ECCO_CPPOPTIONS_H
+
+C-- Collect here, in a single option-file, options to control which optional
+C   features to compile in packages AUTODIFF, COST, CTRL, ECCO, CAL and EXF.
+C   If used, this option-file needs to be directly included in CPP_OPTIONS.h
+C   Although this method, inherited from ECCO setup, has been traditionally
+C   used for all adjoint built, work is in progess to allow to use the
+C   standard metod (each of the above pkg get its own options from its
+C   specific option-file) also for adjoint built.
+
 C ********************************************************************
 C ***                         ECCO Package                         ***
 C ********************************************************************
-C
+
 #undef  ALLOW_ECCO_FORWARD_RUN
 #undef  ALLOW_ECCO_DIAGNOSTICS_RUN
 #undef  ALLOW_ECCO_OPTIMIZATION
@@ -23,34 +30,28 @@ C ********************************************************************
 C o Include/exclude code in order to be able to automatically
 C   differentiate the MITgcmUV by using the Tangent Linear and
 C   Adjoint Model Compiler (TAMC).
-cph#define INCLUDE_AUTODIFF_PACKAGE
-C
+
 #define ALLOW_AUTODIFF_TAMC
 C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
 C       Include/exclude adjoint monitor routine
 #undef ALLOW_AUTODIFF_MONITOR
-C#define ALLOW_AUTODIFF_MONITOR
+
 C       Include/exclude atmosphere-specific code
 #undef ALLOW_AUTODIFF_ATMOSPHERE
 
 C ********************************************************************
-C ***                     Calender Package                         ***
+C ***                     Calendar Package                         ***
 C ********************************************************************
-C
+
 C CPP flags controlling which code is included in the files that
 C will be compiled.
-C
-C o Include the calendar tool.
-#undef ALLOW_CALENDAR
-#undef ALLOW_CAL_NENDITER
 
 C ********************************************************************
 C ***                Cost function Package                         ***
 C ********************************************************************
-C
+
 C       >>> Cost function contributions
-#define ALLOW_COST
 #define ALLOW_COST_TEST
 Cml#define ALLOW_COST_TRACER
 #undef ALLOW_COST_TRACER
@@ -59,7 +60,7 @@ Cml#define ALLOW_COST_TRACER
 C ********************************************************************
 C ***               Control vector Package                         ***
 C ********************************************************************
-C
+
 #undef  ALLOW_NONDIMENSIONAL_CONTROL_IO
 C       >>> Initial values.
 Cml#define ALLOW_THETA0_CONTROL
@@ -80,3 +81,5 @@ C o only topography as a control vector
 # define USE_SMOOTH_MIN
 #endif /* ALLOW_DEPTH_CONTROL */
 
+C ********************************************************************
+#endif /* ECCO_CPPOPTIONS_H */
