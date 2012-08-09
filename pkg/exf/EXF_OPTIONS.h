@@ -1,5 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.25 2012/07/06 23:12:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.26 2012/08/09 20:27:49 jmc Exp $
 C $Name:  $
+
+CBOP
+C !ROUTINE: EXF_OPTIONS.h
+C !INTERFACE:
+C #include "EXF_OPTIONS.h"
+
+C !DESCRIPTION:
+C *==================================================================*
+C | CPP options file for EXternal Forcing (EXF) package:
+C | Control which optional features to compile in this package code.
+C *==================================================================*
+CEOP
 
 #ifndef EXF_OPTIONS_H
 #define EXF_OPTIONS_H
@@ -7,132 +19,129 @@ C $Name:  $
 #include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_EXF
-C     Package-specific Options & Macros go here
+#ifdef ECCO_CPPOPTIONS_H
 
-#if (defined (ALLOW_AUTODIFF_TAMC) && !defined (ALLOW_ECCO_EVOLUTION))
+C-- When multi-package option-file ECCO_CPPOPTIONS.h is used (directly included
+C    in CPP_OPTIONS.h), this option file is left empty since all options that
+C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 
-C When compile for AD mode,
-C this package is currently configured by ECCO_CPPOPTIONS.h
-C which is directly included in CPP_OPTIONS.h
+#else /* ndef ECCO_CPPOPTIONS_H */
 
-#else /* ndef ALLOW_AUTODIFF_TAMC */
+C-- Package-specific Options & Macros go here
 
-C CPP flags controlling which code is included in the files that
-C will be compiled.
-
-c   pkg/exf CPP options:
-c   --------------------
-c
-c   > ( EXF_VERBOSE ) < replaced with run-time, logical parameter "exf_verbose".
-c
-c   >>> ALLOW_ATM_WIND <<<
-c       If defined, 10-m wind fields can be read-in from files.
-c
-c   >>> ALLOW_ATM_TEMP <<<
-c       If defined, atmospheric temperature and specific
-c       humidity fields can be read-in from files.
-c
-c   >>> ALLOW_DOWNWARD_RADIATION <<<
-c       If defined, downward long-wave and short-wave radiation
-c       can be read-in form files or computed from lwflux and swflux.
-c
-c   >>> ALLOW_ZENITHANGLE <<<
-c       If defined, ocean albedo varies with the zenith angle, and
-c       incoming fluxes at the top of the atmosphere are computed
-c
-c   >>> ALLOW_BULKFORMULAE <<<
-c       Allows the use of bulk formulae in order to estimate
-c       turbulent and radiative fluxes at the ocean surface.
-c
-c   >>> EXF_READ_EVAP <<<
-c       If defined, evaporation fields are read-in, rather than
-c       computed from atmospheric state.
-c
-c   >>> ALLOW_RUNOFF <<<
-c       If defined, river and glacier runoff can be read-in from files.
-c
-c   >>> ATMOSPHERIC_LOADING <<<
-c       If defined, atmospheric pressure can be read-in from files.
-c   WARNING: this flag is set (define/undef) in CPP_OPTIONS.h
-c            and cannot be changed here (in EXF_OPTIONS)
-c
-c   >>> ICE_AREAMASK <<<
-c       If defined, fractional ice-covered area MASK can be read-in from files.
-c
-c   >>> ALLOW_CLIMSST_RELAXATION <<<
-c       Allow the relaxation to a monthly climatology of sea surface
-c       temperature, e.g. the Reynolds climatology.
-c
-c   >>> ALLOW_CLIMSSS_RELAXATION <<<
-c       Allow the relaxation to a monthly climatology of sea surface
-c       salinity, e.g. the Levitus climatology.
-c
-c   >>> USE_EXF_INTERPOLATION <<<
-c       Allows specification of arbitrary Cartesian input grids.
-c
-c   ====================================================================
-c
-c       The following CPP options:
-c
-c          ALLOW_ATM_WIND              (WIND)
-c          ALLOW_ATM_TEMP              (TEMP)
-c          ALLOW_DOWNWARD_RADIATION    (DOWN)
-c          ALLOW_BULKFORMULAE          (BULK)
-c          EXF_READ_EVAP               (EVAP)
-c
-c       permit the ocean-model forcing configurations listed in the
-c       table below.  The first configuration is the default,
-c       flux-forced, ocean model.  The next four are stand-alone
-c       configurations that use pkg/exf, open-water bulk formulae to
-c       compute the missing surface fluxes from atmospheric variables.
-c       The last four configurations can be used in conjunction with
-c       pkg/seaice to model ice-covered regions.  The forcing fields
-c       in the rightmost column are defined in exf_fields.
-c
-c
-c    WIND |TEMP |DOWN |BULK |EVAP |            actions
-c    -----|-----|-----|-----|-----|-------------------------------------
-c         |     |     |     |     |
-c      -  |  -  |  -  |  -  |  -  | Read-in ustress, vstress, hflux,
-c         |     |     |     |     | swflux, and sflux.
-c         |     |     |     |     |
-c     def | def | def | def |  -  | Read-in uwind, vwind, atemp, aqh,
-c         |     |     |     |     | swdown, lwdown, precip, and runoff.
-c         |     |     |     |     | Compute ustress, vstress, hflux,
-c         |     |     |     |     | swflux, and sflux.
-c         |     |     |     |     |
-c     def | def |  -  | def |  -  | Read-in uwind, vwind, atemp, aqh,
-c         |     |     |     |     | swflux, lwflux, precip, and runoff.
-c         |     |     |     |     | Compute ustress, vstress, hflux,
-c         |     |     |     |     | and sflux.
-c         |     |     |     |     |
-c     def |  -  |  -  | def |  -  | Read-in uwind, vwind, hflux,
-c         |     |     |     |     | swflux, and sflux.
-c         |     |     |     |     | Compute ustress and vstress.
-c         |     |     |     |     |
-c      -  | def |  -  | def |  -  | Read-in ustress, vstress, atemp,
-c         |     |     |     |     | aqh, swflux, lwflux, precip, and
-c         |     |     |     |     | runoff.  Compute hflux and sflux.
-c         |     |     |     |     |
-c     def | def |  -  |  -  | def | Read-in uwind, vwind, atemp, aqh,
-c         |     |     |     |     | swflux, lwflux, precip, runoff,
-c         |     |     |     |     | and evap.
-c         |     |     |     |     |
-c     def | def |  -  | def |  -  | Read-in uwind, vwind, atemp, aqh,
-c         |     |     |     |     | swflux, lwflux, precip, and runoff.
-c         |     |     |     |     | Compute open-water ustress, vstress,
-c         |     |     |     |     | hflux, swflux, and evap.
-c         |     |     |     |     |
-c     def | def | def |  -  | def | Read-in uwind, vwind, atemp, aqh,
-c         |     |     |     |     | swdown, lwdown, precip, runoff,
-c         |     |     |     |     | and evap.
-c         |     |     |     |     |
-c     def | def | def | def |  -  | Read-in uwind, vwind, atemp, aqh,
-c         |     |     |     |     | swdown, lwdown, precip, and runoff.
-c         |     |     |     |     | Compute open-water ustress, vstress,
-c         |     |     |     |     | hflux, swflux, and evap.
-c
-c   ====================================================================
+C   pkg/exf CPP options:
+C   --------------------
+C
+C   > ( EXF_VERBOSE ) < replaced with run-time, logical parameter "exf_verbose".
+C
+C   >>> ALLOW_ATM_WIND <<<
+C       If defined, 10-m wind fields can be read-in from files.
+C
+C   >>> ALLOW_ATM_TEMP <<<
+C       If defined, atmospheric temperature and specific
+C       humidity fields can be read-in from files.
+C
+C   >>> ALLOW_DOWNWARD_RADIATION <<<
+C       If defined, downward long-wave and short-wave radiation
+C       can be read-in form files or computed from lwflux and swflux.
+C
+C   >>> ALLOW_ZENITHANGLE <<<
+C       If defined, ocean albedo varies with the zenith angle, and
+C       incoming fluxes at the top of the atmosphere are computed
+C
+C   >>> ALLOW_BULKFORMULAE <<<
+C       Allows the use of bulk formulae in order to estimate
+C       turbulent and radiative fluxes at the ocean surface.
+C
+C   >>> EXF_READ_EVAP <<<
+C       If defined, evaporation fields are read-in, rather than
+C       computed from atmospheric state.
+C
+C   >>> ALLOW_RUNOFF <<<
+C       If defined, river and glacier runoff can be read-in from files.
+C
+C   >>> ATMOSPHERIC_LOADING <<<
+C       If defined, atmospheric pressure can be read-in from files.
+C   WARNING: this flag is set (define/undef) in CPP_OPTIONS.h
+C            and cannot be changed here (in EXF_OPTIONS)
+C
+C   >>> ICE_AREAMASK <<<
+C       If defined, fractional ice-covered area MASK can be read-in from files.
+C
+C   >>> ALLOW_CLIMSST_RELAXATION <<<
+C       Allow the relaxation to a monthly climatology of sea surface
+C       temperature, e.g. the Reynolds climatology.
+C
+C   >>> ALLOW_CLIMSSS_RELAXATION <<<
+C       Allow the relaxation to a monthly climatology of sea surface
+C       salinity, e.g. the Levitus climatology.
+C
+C   >>> USE_EXF_INTERPOLATION <<<
+C       Allows specification of arbitrary Cartesian input grids.
+C
+C   ====================================================================
+C
+C       The following CPP options:
+C
+C          ALLOW_ATM_WIND              (WIND)
+C          ALLOW_ATM_TEMP              (TEMP)
+C          ALLOW_DOWNWARD_RADIATION    (DOWN)
+C          ALLOW_BULKFORMULAE          (BULK)
+C          EXF_READ_EVAP               (EVAP)
+C
+C       permit the ocean-model forcing configurations listed in the
+C       table below.  The first configuration is the default,
+C       flux-forced, ocean model.  The next four are stand-alone
+C       configurations that use pkg/exf, open-water bulk formulae to
+C       compute the missing surface fluxes from atmospheric variables.
+C       The last four configurations can be used in conjunction with
+C       pkg/seaice to model ice-covered regions.  The forcing fields
+C       in the rightmost column are defined in exf_fields.
+C
+C
+C    WIND |TEMP |DOWN |BULK |EVAP |            actions
+C    -----|-----|-----|-----|-----|-------------------------------------
+C         |     |     |     |     |
+C      -  |  -  |  -  |  -  |  -  | Read-in ustress, vstress, hflux,
+C         |     |     |     |     | swflux, and sflux.
+C         |     |     |     |     |
+C     def | def | def | def |  -  | Read-in uwind, vwind, atemp, aqh,
+C         |     |     |     |     | swdown, lwdown, precip, and runoff.
+C         |     |     |     |     | Compute ustress, vstress, hflux,
+C         |     |     |     |     | swflux, and sflux.
+C         |     |     |     |     |
+C     def | def |  -  | def |  -  | Read-in uwind, vwind, atemp, aqh,
+C         |     |     |     |     | swflux, lwflux, precip, and runoff.
+C         |     |     |     |     | Compute ustress, vstress, hflux,
+C         |     |     |     |     | and sflux.
+C         |     |     |     |     |
+C     def |  -  |  -  | def |  -  | Read-in uwind, vwind, hflux,
+C         |     |     |     |     | swflux, and sflux.
+C         |     |     |     |     | Compute ustress and vstress.
+C         |     |     |     |     |
+C      -  | def |  -  | def |  -  | Read-in ustress, vstress, atemp,
+C         |     |     |     |     | aqh, swflux, lwflux, precip, and
+C         |     |     |     |     | runoff.  Compute hflux and sflux.
+C         |     |     |     |     |
+C     def | def |  -  |  -  | def | Read-in uwind, vwind, atemp, aqh,
+C         |     |     |     |     | swflux, lwflux, precip, runoff,
+C         |     |     |     |     | and evap.
+C         |     |     |     |     |
+C     def | def |  -  | def |  -  | Read-in uwind, vwind, atemp, aqh,
+C         |     |     |     |     | swflux, lwflux, precip, and runoff.
+C         |     |     |     |     | Compute open-water ustress, vstress,
+C         |     |     |     |     | hflux, swflux, and evap.
+C         |     |     |     |     |
+C     def | def | def |  -  | def | Read-in uwind, vwind, atemp, aqh,
+C         |     |     |     |     | swdown, lwdown, precip, runoff,
+C         |     |     |     |     | and evap.
+C         |     |     |     |     |
+C     def | def | def | def |  -  | Read-in uwind, vwind, atemp, aqh,
+C         |     |     |     |     | swdown, lwdown, precip, and runoff.
+C         |     |     |     |     | Compute open-water ustress, vstress,
+C         |     |     |     |     | hflux, swflux, and evap.
+C
+C   ====================================================================
 
 C   Bulk formulae related flags.
 #define  ALLOW_ATM_TEMP
@@ -141,7 +150,7 @@ C   Bulk formulae related flags.
 #define  ALLOW_RUNOFF
 #if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
 # define ALLOW_BULKFORMULAE
-# undef ALLOW_BULK_LARGEYEAGER04
+# undef  ALLOW_BULK_LARGEYEAGER04
 #endif
 
 C   Zenith Angle/Albedo related flags.
@@ -174,6 +183,6 @@ C   (no pole symmetry, single vector-comp interp, reset to 0 zonal-comp @ N.pole
 # define EXF_IREAD_USE_GLOBAL_POINTER
 #endif
 
-#endif /* ndef ALLOW_AUTODIFF_TAMC */
+#endif /* ndef ECCO_CPPOPTIONS_H */
 #endif /* ALLOW_EXF */
 #endif /* EXF_OPTIONS_H */
