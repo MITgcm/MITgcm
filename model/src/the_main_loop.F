@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.134 2012/07/31 16:09:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.135 2012/08/09 21:27:54 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -268,7 +268,7 @@ c$openad INDEPENDENT(xx_tauv0)
 # ifdef ALLOW_DIFFKR_CONTROL
 c$openad INDEPENDENT(xx_diffkr)
 # endif
-# ifdef ALLOW_ KAPGM_CONTROL
+# ifdef ALLOW_KAPGM_CONTROL
 c$openad INDEPENDENT(xx_kapgm)
 # endif
 #endif
