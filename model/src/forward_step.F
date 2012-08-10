@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.208 2012/07/31 16:09:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.209 2012/08/10 14:09:15 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -80,10 +80,14 @@ C     == Global variables ==
 # include "SURFACE.h"
 
 # include "tamc.h"
-#include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
-# include "cost.h"
+# ifdef ALLOW_CTRL
+#  include "CTRL_SIZE.h"
+#  include "ctrl.h"
+#  include "ctrl_dummy.h"
+# endif
+# ifdef ALLOW_COST
+#  include "cost.h"
+# endif
 # ifdef ALLOW_ECCO
 #  include "ecco_cost.h"
 # endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.80 2012/06/22 02:03:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.81 2012/08/10 14:09:15 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -364,7 +364,7 @@ C--   Initialise & Read Land package parameters
       ENDIF
 #endif
 
-#if (defined (ALLOW_SEAICE) && defined (ALLOW_COST))
+#ifdef ALLOW_SEAICE
 C--   Initialise ecco-specific cost function.
 C--   This needs to preceed the call ctrl_init
 C--   in order to provide the weight files
@@ -383,7 +383,7 @@ C--   in order to provide the weight files
       CALL SMOOTH_INIT_FIXED(myThid)
 #endif /* ALLOW_SMOOTH */
 
-#if (defined (ALLOW_ECCO) && defined (ALLOW_COST))
+#ifdef ALLOW_ECCO
 C--   Initialise ecco-specific cost function.
 C--   This needs to preceed the call ctrl_init
 C--   in order to provide the weight files
