@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bottomdrag.F,v 1.6 2012/08/06 20:41:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bottomdrag.F,v 1.7 2012/08/10 19:45:25 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "ECCO_OPTIONS.h"
 
 
       subroutine cost_bottomdrag(

@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.22 2012/08/10 14:34:41 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.23 2012/08/10 19:45:27 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "ECCO_OPTIONS.h"
 #include "AD_CONFIG.h"
 
       subroutine ecco_cost_init_varia( mythid )

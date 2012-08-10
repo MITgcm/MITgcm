@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopexmean.F,v 1.5 2010/03/24 01:34:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopexmean.F,v 1.6 2012/08/10 19:45:26 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "ECCO_OPTIONS.h"
 
 
       subroutine cost_ReadTopexMean(

@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_sla_read.F,v 1.4 2012/04/13 18:04:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_sla_read.F,v 1.5 2012/08/10 19:45:26 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "ECCO_OPTIONS.h"
 
 
       subroutine cost_sla_read( sla_file, sla_startdate, sla_period,

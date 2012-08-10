@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.8 2012/07/31 16:07:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.9 2012/08/10 19:45:26 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "ECCO_OPTIONS.h"
 
 
       subroutine cost_gencost_all( myiter, mytime, mythid )
@@ -67,13 +67,13 @@ c     == end of interface ==
          nnzbar = 1
          nnzobs = 1
          call cost_generic(
-     &        nnzbar, gencost_barfile(k), 
-     &        gencost_barfld(1-Olx,1-Oly,1,1,k), 
+     &        nnzbar, gencost_barfile(k),
+     &        gencost_barfld(1-Olx,1-Oly,1,1,k),
      &        xx_genbar_dummy(k),
      &        nnzobs, gencost_datafile(k), mult_gencost(k),
      &        gencost_nrec(k), modelstartdate, gencost_period(k),
      &        gencost_mask(k), gencost_weight(1-Olx,1-Oly,1,1,k),
-     &        gencost_spmin(k), gencost_spmax(k), 
+     &        gencost_spmin(k), gencost_spmax(k),
      &        gencost_spzero(k),
      &        objf_gencost(1,1,k), num_gencost(1,1,k),
      &        myiter, mytime, mythid )
@@ -86,7 +86,7 @@ c     == end of interface ==
       call cost_gencost_sshv4( myiter, mytime, mythid )
 #endif /* ALLOW_GENCOST_SSHV4 */
 
-# if (defined(ALLOW_GENCOST_SSTV4)) 
+# if (defined(ALLOW_GENCOST_SSTV4))
       call cost_gencost_sstv4( myiter, mytime, mythid )
 #endif /* ALLOW_GENCOST_SSTV4 */
 

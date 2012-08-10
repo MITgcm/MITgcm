@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.56 2012/08/10 14:34:41 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.57 2012/08/10 19:45:27 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "ECCO_OPTIONS.h"
 
 
       subroutine ecco_cost_final( mythid )
@@ -101,7 +101,7 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL f_transp, f_ies
 
       _RL no_temp0, no_salt0,  no_temp, no_salt
-      _RL no_etan0, no_uvel0, no_vvel0 
+      _RL no_etan0, no_uvel0, no_vvel0
       _RL no_uwind, no_vwind
       _RL no_atemp, no_aqh, no_precip, no_swflux, no_swdown
       _RL no_uwindm, no_vwindm
@@ -456,7 +456,7 @@ c--   Sum up all contributions.
           f_salt0 = f_salt0 + objf_salt0(bi,bj)
           f_temp0smoo = f_temp0smoo + objf_temp0smoo(bi,bj)
           f_salt0smoo = f_salt0smoo + objf_salt0smoo(bi,bj)
-          f_etan0 = f_etan0 + objf_etan0(bi,bj)   
+          f_etan0 = f_etan0 + objf_etan0(bi,bj)
           f_uvel0 = f_uvel0 + objf_uvel0(bi,bj)
           f_vvel0 = f_vvel0 + objf_vvel0(bi,bj)
           f_tauu = f_tauu + objf_tauu(bi,bj)

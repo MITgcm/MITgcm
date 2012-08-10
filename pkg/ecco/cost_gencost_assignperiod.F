@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_assignperiod.F,v 1.6 2012/07/31 16:07:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_assignperiod.F,v 1.7 2012/08/10 19:45:26 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "ECCO_OPTIONS.h"
 
       subroutine cost_gencost_assignperiod(
      I                    startofday, startofmonth, startofyear,
@@ -85,7 +85,7 @@ c     == end of interface ==
        end if
 #endif
       end do
-      
+
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
       end

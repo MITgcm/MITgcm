@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ies.F,v 1.2 2012/08/06 20:41:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ies.F,v 1.3 2012/08/10 19:45:26 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "ECCO_OPTIONS.h"
 
 
       subroutine cost_ies(
@@ -15,7 +15,7 @@ c     SUBROUTINE cost_ies
 c     ==================================================================
 c
 c     o Evaluate cost function contribution of invertted echo sounders
-c       => uses travel time (daily average) 
+c       => uses travel time (daily average)
 c
 c     started: Matt Mazloff May-2010
 c
@@ -130,9 +130,9 @@ c--     Compute the mean over all iesdat records.
               do i = imin,imax
       if (iesmask(i,j,bi,bj).NE.0.) then
                 iesmean(i,j,bi,bj) = iesmean(i,j,bi,bj) +
-     &              iestaubar(i,j,bi,bj) 
+     &              iestaubar(i,j,bi,bj)
                 datmean(i,j,bi,bj) = datmean(i,j,bi,bj) +
-     &                iesdat(i,j,bi,bj) 
+     &                iesdat(i,j,bi,bj)
                 iescount(i,j,bi,bj) = iescount(i,j,bi,bj) +1.
       endif
               enddo

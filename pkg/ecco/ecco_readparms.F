@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.57 2012/04/07 00:12:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.58 2012/08/10 19:45:27 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "ECCO_OPTIONS.h"
 
       subroutine ecco_readparms( mythid )
 
@@ -61,7 +61,7 @@ c--   Read the namelist input.
      &                   scatstartdate1, scatstartdate2,
      &                   scatperiod, scatxdatfile, scatydatfile,
      &                   scatx_errfile, scaty_errfile,
-     &                   ssh_errfile, sshv4cost_scalefile, 
+     &                   ssh_errfile, sshv4cost_scalefile,
      &                   sshv4cost_errfile, sshv4cost_errfactor,
      &                   tp_errfile, ers_errfile, gfo_errfile,
      &                   tmistartdate1, tmistartdate2, tmidatfile,
@@ -133,7 +133,7 @@ c--   Read the namelist input.
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       namelist /ecco_gencost_nml/
      &         gencost_barfile,
-     &         gencost_datafile, 
+     &         gencost_datafile,
      &         gencost_name,
      &         gencost_scalefile,
      &         gencost_errfile,
@@ -396,7 +396,7 @@ c--     Next, read the cost data file.
 
         READ(  iUnit, nml = ecco_cost_nml )
 
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &       'ECCO_READPARMS: finished reading #1: ecco_cost_nml'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &       SQUEEZE_RIGHT , 1)
@@ -431,7 +431,7 @@ cgf     &        'genbar', k
 
       READ(  iUnit, nml = ecco_gencost_nml )
 
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &     'ECCO_READPARMS: finished reading #2: ecco_gencost_nml'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
@@ -451,7 +451,7 @@ C--   Check parameters:
      &        gencost_avgperiod(k) .NE. 'MONTH' .AND.
      &        gencost_avgperiod(k) .NE. 'year ' .AND.
      &        gencost_avgperiod(k) .NE. 'YEAR ' ) then
-            STOP 
+            STOP
      &           'ECCO_READPARMS: gencost_avgperiod not properly set'
           end if
 
@@ -481,7 +481,7 @@ C--   Check parameters:
 
       _END_MASTER( myThid )
 
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &     'ECCO_READPARMS: done'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)

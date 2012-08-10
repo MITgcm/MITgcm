@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcss.F,v 1.9 2012/08/06 20:41:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcss.F,v 1.10 2012/08/10 19:45:26 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "ECCO_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: COST_OBCSS

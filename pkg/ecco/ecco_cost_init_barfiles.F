@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.26 2012/08/10 14:34:41 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.27 2012/08/10 19:45:27 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "ECCO_OPTIONS.h"
 #include "AD_CONFIG.h"
 
       subroutine ecco_cost_init_barfiles( mythid )
@@ -366,13 +366,13 @@ c initialize smr area bar
      &     yadprefix, smrareabarfile(1:ilps), '.', optimcycle
 c initialize smr sst bar
       ilps=ilnblnk( smrsstbarfile )
-      write(fnamesmrsstbar,'(2a,i10.10)') 
+      write(fnamesmrsstbar,'(2a,i10.10)')
      &     smrsstbarfile(1:ilps), '.', optimcycle
       write(adfnamesmrsstbar,'(3a,i10.10)')
      &     yadprefix, smrsstbarfile(1:ilps), '.', optimcycle
 c initialize smr sss bar
       ilps=ilnblnk( smrsssbarfile )
-      write(fnamesmrsssbar,'(2a,i10.10)') 
+      write(fnamesmrsssbar,'(2a,i10.10)')
      &     smrsssbarfile(1:ilps), '.', optimcycle
       write(adfnamesmrsssbar,'(3a,i10.10)')
      &     yadprefix, smrsssbarfile(1:ilps), '.', optimcycle
@@ -409,7 +409,7 @@ c--   Save gencost_barfile on file.
 #endif
       enddo
       endif
-      enddo 
+      enddo
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
 #ifdef ALLOW_IESTAU_COST_CONTRIBUTION
@@ -425,7 +425,7 @@ c--   Save gencost_barfile on file.
 #endif
       enddo
 
-#endif 
+#endif
 
       return
       end

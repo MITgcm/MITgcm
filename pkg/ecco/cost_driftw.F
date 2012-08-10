@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_driftw.F,v 1.9 2012/08/06 20:41:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_driftw.F,v 1.10 2012/08/10 19:45:26 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "ECCO_OPTIONS.h"
 
 
       subroutine cost_driftw(
@@ -149,7 +149,7 @@ c--     Read time averages and the monthly mean data.
       enddo
 
       do irec = nmonsrec-minrec+1, nmonsrec
- 
+
 c--     Read time averages and the monthly mean data.
         call active_read_xyz( fnamew, wbar, irec,
      &                        doglobalread, ladinit,

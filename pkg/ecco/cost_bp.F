@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bp.F,v 1.5 2012/08/06 20:41:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bp.F,v 1.6 2012/08/10 19:45:25 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "ECCO_OPTIONS.h"
 
 
       subroutine cost_bp(
@@ -14,7 +14,7 @@ c     ==================================================================
 c     SUBROUTINE cost_bp
 c     ==================================================================
 c
-c     o Evaluate cost function contribution of bottom pressure anoamlies 
+c     o Evaluate cost function contribution of bottom pressure anoamlies
 c       => GRACE data
 c
 c     started: Gael Forget Oct-2009
@@ -138,7 +138,7 @@ c--     Compute the mean over all bpdat records.
                   bpdifmean(i,j,bi,bj) = bpdifmean(i,j,bi,bj) +
      &              ( fac*bpbar(i,j,bi,bj) - bpdat(i,j,bi,bj) )
                   bpdatmean(i,j,bi,bj) = bpdatmean(i,j,bi,bj) +
-     &              bpdat(i,j,bi,bj) 
+     &              bpdat(i,j,bi,bj)
                   bpcount(i,j,bi,bj) = bpcount(i,j,bi,bj) + 1. _d 0
                 endif
               enddo
@@ -153,9 +153,9 @@ c--     Compute the mean over all bpdat records.
             do j = 1,sny
               do i = 1,snx
                 if (bpcount(i,j,bi,bj).GT. 0. _d 0) then
-                  bpdifmean(i,j,bi,bj) = 
+                  bpdifmean(i,j,bi,bj) =
      &              bpdifmean(i,j,bi,bj)/bpcount(i,j,bi,bj)
-                  bpdatmean(i,j,bi,bj) = 
+                  bpdatmean(i,j,bi,bj) =
      &              bpdatmean(i,j,bi,bj)/bpcount(i,j,bi,bj)
                 endif
               enddo
@@ -183,8 +183,8 @@ c--    Compute field of anomalies
               do i = 1,snx
                 if ( (bpmask(i,j,bi,bj).NE. 0. _d 0).AND.
      &               (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
-                  bpdifanom(i,j,bi,bj) = 
-     &              ( fac*bpbar(i,j,bi,bj) - bpdat(i,j,bi,bj) ) 
+                  bpdifanom(i,j,bi,bj) =
+     &              ( fac*bpbar(i,j,bi,bj) - bpdat(i,j,bi,bj) )
      &              - bpdifmean(i,j,bi,bj)
                   bpdatanom(i,j,bi,bj) =
      &              bpdat(i,j,bi,bj) - bpdatmean(i,j,bi,bj)

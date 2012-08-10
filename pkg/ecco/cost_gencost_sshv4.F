@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.7 2012/08/06 20:41:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.8 2012/08/10 19:45:26 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "ECCO_OPTIONS.h"
 
 
       subroutine cost_gencost_sshv4(
@@ -81,7 +81,7 @@ c     == local variables ==
 
 c mapping to gencost
       integer igen_mdt, igen_lsc
-      integer igen_tp, igen_ers, igen_gfo      
+      integer igen_tp, igen_ers, igen_gfo
 
       _RL offset,fac
       _RL offset_sum
@@ -467,7 +467,7 @@ c--   END loop over records for the first time.
                endif
 #endif
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-               if ( ( mean_psMersobs_NUM(i,j,bi,bj) .NE. 0. ).AND. 
+               if ( ( mean_psMersobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
      &              ( abs(YC(i,j,bi,bj)) .LE. 66. ) ) then
                   mean_psMssh_all(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) +
@@ -482,7 +482,7 @@ c--   END loop over records for the first time.
                endif
 #endif
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-               if ( ( mean_psMgfoobs_NUM(i,j,bi,bj) .NE. 0. ).AND. 
+               if ( ( mean_psMgfoobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
      &              ( abs(YC(i,j,bi,bj)) .LE. 66. ) ) then
                   mean_psMssh_all(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) +
@@ -655,9 +655,9 @@ cgf =======================================================
        junk = mean_psMssh_all(i,j,bi,bj)
        junkweight = gencost_weight(i,j,bi,bj,igen_mdt)
      &      *tpmeanmask(i,j,bi,bj)
-       objf_gencost(igen_mdt,bi,bj) = objf_gencost(igen_mdt,bi,bj) 
+       objf_gencost(igen_mdt,bi,bj) = objf_gencost(igen_mdt,bi,bj)
      &      + junk*junk*junkweight
-       if ( junkweight .ne. 0. ) num_gencost(igen_mdt,bi,bj) = 
+       if ( junkweight .ne. 0. ) num_gencost(igen_mdt,bi,bj) =
      &      num_gencost(igen_mdt,bi,bj) + 1. _d 0
        diagnosfld(i,j,bi,bj) = junk*junk*junkweight
             enddo
@@ -886,7 +886,7 @@ c ------------------------------------
           if ( (gencost_weight(i,j,bi,bj,igen_lsc).GT.0.).AND.
      &         (anom_psMslaobs_NUM(i,j,bi,bj).GT.0.).AND.
      &         (maskc(i,j,1,bi,bj) .ne. 0.) )
-     &         num_gencost(igen_lsc,bi,bj) = 
+     &         num_gencost(igen_lsc,bi,bj) =
      &         num_gencost(igen_lsc,bi,bj) + 1. _d 0 /ndaysaveRL
 #endif
            enddo
@@ -994,7 +994,7 @@ cgf =======================================================
       write(fname4test(1:80),'(1a)') 'slaobs_gfo_raw'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,anom_gfoobs,irec,1,mythid)
-#endif 
+#endif
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1007,7 +1007,7 @@ c--             The array psobs contains SSH anomalies.
      &                      *tpmask(i,j,bi,bj)
      &                      *cosphi(i,j,bi,bj)
                 junk = anom_psMtpobs(i,j,bi,bj)
-                objf_gencost(igen_tp,bi,bj) = 
+                objf_gencost(igen_tp,bi,bj) =
      &              objf_gencost(igen_tp,bi,bj)+junk*junk*junkweight
                 if ( junkweight .ne. 0. )
      &              num_gencost(igen_tp,bi,bj) =

@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ies_read.F,v 1.1 2011/12/06 04:26:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ies_read.F,v 1.2 2012/08/10 19:45:26 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "ECCO_OPTIONS.h"
 
 
       subroutine cost_ies_read(

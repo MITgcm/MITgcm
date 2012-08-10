@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.27 2012/07/06 23:03:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.28 2012/08/10 19:45:27 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "ECCO_OPTIONS.h"
 #include "AD_CONFIG.h"
 
       subroutine ecco_cost_init_fixed( mythid )
@@ -150,11 +150,11 @@ c--     ... ARGO data.
      &        gencost_avgperiod(k) .EQ. 'YEAR' ) then
            STOP
      &      'ecco_cost_init_fixed: yearly data not yet implemented'
-#ifndef ALLOW_GENCOST_FREEFORM         
+#ifndef ALLOW_GENCOST_FREEFORM
          else
-           STOP 
+           STOP
      &      'ecco_cost_init_fixed: gencost_avgperiod wrongly specified'
-#endif   
+#endif
          endif
 #ifndef ALLOW_GENCOST_FREEFORM
        endif
@@ -278,7 +278,7 @@ c
 #endif
 c
        do irec = 1, ndaysrec
-        if ( 
+        if (
      &   ( tpTimeMask(irec).NE.0. .AND. tpTimeMask(irec).NE.1. ) .OR.
      &   ( ersTimeMask(irec).NE.0. .AND. ersTimeMask(irec).NE.1. ) .OR.
      &   ( ersTimeMask(irec).NE.0. .AND. ersTimeMask(irec).NE.1. ) )
