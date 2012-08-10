@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.14 2008/01/17 20:53:08 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.15 2012/08/10 14:43:57 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -102,6 +102,7 @@ c--     Next, read the cost data file.
 #if (defined ALLOW_COST_HFLUXM) || (defined ALLOW_COST_TEMP)
 c-- get the weights for the cost functions
       CALL COST_WEIGHTS( myThid )
+cgf : to compile previous line user is expected to provide cost_weights.F
 #endif
       _END_MASTER( mythid )
 

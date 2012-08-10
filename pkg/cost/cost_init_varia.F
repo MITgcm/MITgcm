@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.10 2011/05/24 22:14:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.11 2012/08/10 14:43:57 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -53,7 +53,9 @@ c     == end of interface ==
 c--   Initialize the tiled cost function contributions.
       do bj = jtlo,jthi
         do bi = itlo,ithi
+#if ( !defined (ALLOW_ECCO) || !defined (ALLOW_COST_ATLANTIC) )
           objf_atl(bi,bj)  = 0. _d 0
+#endif
           objf_test(bi,bj) = 0. _d 0
           objf_tracer(bi,bj) = 0. _d 0
 #ifdef ALLOW_COST_TRANSPORT

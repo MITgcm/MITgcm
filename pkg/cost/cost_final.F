@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.27 2011/08/17 10:19:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.28 2012/08/10 14:43:57 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -61,30 +61,39 @@ c     == end of interface ==
       CALL SHELFICE_COST_FINAL (myThid)
 #endif
 
-#if (defined (ALLOW_ECCO))
+#ifdef ALLOW_ECCO
       CALL ECCO_COST_FINAL (myThid)
+#endif
 
-#elif (defined (ALLOW_COST_VECTOR))
-      CALL COST_VECTOR (myThid)
-
-#elif (defined (ALLOW_COST_STATE_FINAL))
+#ifdef ALLOW_COST_STATE_FINAL
       CALL COST_STATE_FINAL (myThid)
+cgf : effectively using this in adjoint requires the 
+c     use of adjoint_state_final. That will activate the
+c     objf_state_final vector in place of the fc scalar.
+c     objf_state_final is therefore not added to fc.
+#endif
 
-#endif /* above stuff undef */
-
-#ifndef ALLOW_ECCO
+#ifdef ALLOW_COST_VECTOR
+cgf : same idea as for ALLOW_COST_STATE_FINAL
+      CALL COST_VECTOR (myThid)
+#endif
 
 # ifdef ALLOW_COST_TEST
       CALL COST_TEST (myThid)
 # endif
+
 # ifdef ALLOW_COST_ATLANTIC_HEAT
       CALL COST_ATLANTIC_HEAT (myThid)
 # endif
+
 #ifdef ALLOW_COST_HFLUXM
+cgf : to compile previous line user is expected to provide cost_hflux.F
       CALL COST_HFLUX (myThid)
 #endif
+
 #ifdef ALLOW_COST_TEMP
       CALL COST_TEMP (myThid)
+cgf : to compile previous line user is expected to provide cost_temp.F
 #endif
 
 c--   Sum up all contributions.
@@ -95,8 +104,10 @@ c--   Sum up all contributions.
      &          ' --> objf_test(bi,bj)   = ', objf_test(bi,bj)
           write(standardmessageunit,'(A,D22.15)')
      &         ' --> objf_tracer(bi,bj) = ', objf_tracer(bi,bj)
+#if ( !defined (ALLOW_ECCO) || !defined (ALLOW_COST_ATLANTIC) )
           write(standardmessageunit,'(A,D22.15)')
      &         ' --> objf_atl(bi,bj)    = ', objf_atl(bi,bj)
+#endif
 #ifdef ALLOW_COST_TEMP
           write(standardmessageunit,'(A,D22.15)')
      &          ' --> objf_temp_tut(bi,bj)   = ', objf_temp_tut(bi,bj)
@@ -113,7 +124,9 @@ c--   Sum up all contributions.
           fc = fc
      &            + mult_test   * objf_test(bi,bj)
      &            + mult_tracer * objf_tracer(bi,bj)
+#if ( !defined (ALLOW_ECCO) || !defined (ALLOW_COST_ATLANTIC) )
      &            + mult_atl    * objf_atl(bi,bj)
+#endif
 #ifdef ALLOW_COST_TRANSPORT
      &            + mult_transport * objf_transport(bi,bj)
 #endif
@@ -137,8 +150,6 @@ cph-- quickly for testing
 #endif
 
       write(standardmessageunit,'(A,D22.15)') ' global fc = ', fc
-
-#endif /* ALLOW_ECCO */
 
 c--   to avoid re-write of output in reverse checkpointing loops,
 c--   switch off output flag :

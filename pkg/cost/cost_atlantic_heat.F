@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_atlantic_heat.F,v 1.9 2008/10/14 18:04:53 utke Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_atlantic_heat.F,v 1.10 2012/08/10 14:43:57 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -182,12 +182,15 @@ c
          end if
         end do
 
+
+#if ( !defined (ALLOW_ECCO) || !defined (ALLOW_COST_ATLANTIC) )
 #ifdef ALLOW_COST_ATLANTIC_HEAT_DOMASS
         objf_atl(bi,bj) =
      &     sum*1.E-6
 #else
         objf_atl(bi,bj) =
      &     sum*HeatCapacity_Cp*rhoConst/petawatt
+#endif
 #endif
 
 c--   end of bi,bj loop
