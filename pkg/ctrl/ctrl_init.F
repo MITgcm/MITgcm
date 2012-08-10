@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.48 2012/07/31 17:43:52 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.49 2012/08/10 19:38:57 jmc Exp $
 C $Name:  $
 
-#include "CTRL_CPPOPTIONS.h"
+#include "CTRL_OPTIONS.h"
 
 C--  File ctrl_init.F:
 C--   Contents
@@ -16,7 +16,7 @@ c     ==================================================================
 c     SUBROUTINE ctrl_init
 c     ==================================================================
 c
-c     o The vector of control variables is defined here. 
+c     o The vector of control variables is defined here.
 c
 c     ==================================================================
 c     SUBROUTINE ctrl_init
@@ -753,7 +753,7 @@ c--
 #ifdef ALLOW_GENARR2D_CONTROL
        do iarr = 1, maxCtrlArr2D
         call ctrl_init_ctrlvar (
-     &       xx_genarr2d_file(iarr)(1:MAX_LEN_FNAM), 
+     &       xx_genarr2d_file(iarr)(1:MAX_LEN_FNAM),
      &       100+iarr, 200+iarr, 1, 1, 1,
      &       snx, sny, 1, 'c', 'xy', mythid )
        enddo
@@ -764,7 +764,7 @@ c--
 #ifdef ALLOW_GENARR3D_CONTROL
        do iarr = 1, maxCtrlArr3D
         call ctrl_init_ctrlvar (
-     &       xx_genarr3d_file(iarr)(1:MAX_LEN_FNAM), 
+     &       xx_genarr3d_file(iarr)(1:MAX_LEN_FNAM),
      &       200+iarr, 300+iarr, 1, 1, 1,
      &       snx, sny, nr, 'c', '3d', mythid )
        enddo
@@ -895,7 +895,7 @@ c     == functions ==
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT , myThid )
       endif
-      
+
 c     initialise some output
       do i = 1,4
        fldstartdate(i) = 0
@@ -933,11 +933,11 @@ c     This is the case of obcs.
       diffrec  = endrec - startrec + 1
 
       if ( debugLevel .GE. debLevB ) then
-       WRITE( msgBuf,'(A,A,A)') 
+       WRITE( msgBuf,'(A,A,A)')
      &      'CTRL_INIT_REC: Record indices for ',fldname(1:il),':'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT , myThid )
-       WRITE( msgBuf,'(A,I10,A,I10)') 
+       WRITE( msgBuf,'(A,I10,A,I10)')
      &      'CTRL_INIT_REC: startrec = ',startrec,', endrec = ',endrec
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT , myThid )

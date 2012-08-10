@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.5 2011/05/24 22:02:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.6 2012/08/10 19:38:58 jmc Exp $
 C $Name:  $
 
-#include "CTRL_CPPOPTIONS.h"
+#include "CTRL_OPTIONS.h"
 
       subroutine ctrl_Summary( mythid )
 

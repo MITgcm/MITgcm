@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_obcs_variables.F,v 1.8 2011/05/24 20:52:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_obcs_variables.F,v 1.9 2012/08/10 19:38:57 jmc Exp $
 C $Name:  $
 
-#include "CTRL_CPPOPTIONS.h"
+#include "CTRL_OPTIONS.h"
 
       subroutine ctrl_init_obcs_variables( mythid )
 

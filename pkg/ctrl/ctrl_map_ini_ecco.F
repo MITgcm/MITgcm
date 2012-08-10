@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.22 2012/07/31 16:05:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.23 2012/08/10 19:38:57 jmc Exp $
 C $Name:  $
 
-#include "CTRL_CPPOPTIONS.h"
+#include "CTRL_OPTIONS.h"
 
 
       subroutine ctrl_map_ini_ecco( mythid )
@@ -11,7 +11,7 @@ c     SUBROUTINE ctrl_map_ini_ecco
 c     ==================================================================
 c
 c     o Add the temperature and salinity etc. parts of the control vector to
-c       the model state and params and update the tile edges. 
+c       the model state and params and update the tile edges.
 c     o The control vector is defined in the header file "ctrl.h".
 c
 c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
@@ -22,7 +22,7 @@ c              - Restructured the code in order to create a package
 c                for the MITgcmUV.
 c
 c     o rewritten: Gael Forget gforget@mit.edu 09-Feb-2008
-c              - Introduce a generic routine (ctrl_map_ini_gen.F) 
+c              - Introduce a generic routine (ctrl_map_ini_gen.F)
 c                handling individual ctrl vector terms
 c
 c     ==================================================================
@@ -144,9 +144,9 @@ c--   Temperature field.
       boundsVec(4)=40.
       boundsVec(5)=5.
       paramSmooth=1
-      call ctrl_map_ini_gen3D(xx_theta_file, 'wthetaLev', 
+      call ctrl_map_ini_gen3D(xx_theta_file, 'wthetaLev',
      & xx_theta_dummy, boundsVec, theta, maskc, paramSmooth,
-     &  mythid ) 
+     &  mythid )
       _EXCH_XYZ_RL( theta, mythid)
 #endif
 
@@ -158,9 +158,9 @@ c--   Salinity field.
       boundsVec(3)=40.5
       boundsVec(4)=41.
       boundsVec(5)=5.
-      paramSmooth=1      
-      call ctrl_map_ini_gen3D(xx_salt_file, 'wsaltLev', 
-     & xx_salt_dummy, boundsVec, salt, maskc, paramSmooth, 
+      paramSmooth=1
+      call ctrl_map_ini_gen3D(xx_salt_file, 'wsaltLev',
+     & xx_salt_dummy, boundsVec, salt, maskc, paramSmooth,
      & mythid )
       _EXCH_XYZ_RL( salt, mythid)
 #endif
@@ -171,15 +171,15 @@ c--   Salinity field.
       boundsVec(2)=0.
       boundsVec(3)=0.
       boundsVec(4)=0.
-      boundsVec(5)=0.      
-      paramSmooth=1      
+      boundsVec(5)=0.
+      paramSmooth=1
 c-- initial zonal velocity
-      call ctrl_map_ini_gen3D(xx_uvel_file, 'wuvel', 
-     & xx_uvel_dummy, boundsVec, uvel, maskw, paramSmooth, 
+      call ctrl_map_ini_gen3D(xx_uvel_file, 'wuvel',
+     & xx_uvel_dummy, boundsVec, uvel, maskw, paramSmooth,
      & mythid )
 c-- initial merid. velocity
-      call ctrl_map_ini_gen3D(xx_vvel_file, 'wvvel', 
-     & xx_vvel_dummy, boundsVec, vvel, masks, paramSmooth, 
+      call ctrl_map_ini_gen3D(xx_vvel_file, 'wvvel',
+     & xx_vvel_dummy, boundsVec, vvel, masks, paramSmooth,
      & mythid )
 c-- eschange UV:
        CALL EXCH_UV_XYZ_RS(uvel,vvel,.TRUE.,myThid)
@@ -193,9 +193,9 @@ c--   initial Eta.
       boundsVec(3)=0.
       boundsVec(4)=0.
       boundsVec(5)=0.
-      paramSmooth=1      
-      call ctrl_map_ini_gen2D(xx_etan_file, 'wetan', 
-     & xx_etan_dummy, boundsVec, etan, maskc, paramSmooth, 
+      paramSmooth=1
+      call ctrl_map_ini_gen2D(xx_etan_file, 'wetan',
+     & xx_etan_dummy, boundsVec, etan, maskc, paramSmooth,
      & mythid )
       _EXCH_XY_RL( etan, mythid)
 #endif
@@ -210,9 +210,9 @@ c--   SST relaxation coefficient.
       boundsVec(3)=0.
       boundsVec(4)=0.
       boundsVec(5)=0.
-      paramSmooth=1      
-      call ctrl_map_ini_gen2D(xx_relaxsst_file, 'wrelaxsst', 
-     & xx_relaxsst_dummy, boundsVec, 
+      paramSmooth=1
+      call ctrl_map_ini_gen2D(xx_relaxsst_file, 'wrelaxsst',
+     & xx_relaxsst_dummy, boundsVec,
      & lambdaThetaClimRelax, maskc, paramSmooth, mythid )
       _EXCH_XY_RS( lambdaThetaClimRelax, mythid)
 #endif
@@ -225,9 +225,9 @@ c--   SSS relaxation coefficient.
       boundsVec(3)=0.
       boundsVec(4)=0.
       boundsVec(5)=0.
-      paramSmooth=1      
-      call ctrl_map_ini_gen2D(xx_relaxsss_file, 'wrelaxsss', 
-     & xx_relaxsss_dummy, boundsVec, 
+      paramSmooth=1
+      call ctrl_map_ini_gen2D(xx_relaxsss_file, 'wrelaxsss',
+     & xx_relaxsss_dummy, boundsVec,
      & lambdaSaltClimRelax, maskc, paramSmooth, mythid )
       _EXCH_XY_RS( lambdaSaltClimRelax, mythid)
 #endif
@@ -246,9 +246,9 @@ c--   SSS relaxation coefficient.
       boundsVec(3)=0.9 _d -2
       boundsVec(4)=1. _d -2
       boundsVec(5)=0.
-      paramSmooth=1      
-      call ctrl_map_ini_gen2D(xx_bottomdrag_file, 'wbottomdrag', 
-     & xx_bottomdrag_dummy, boundsVec, bottomdragfld, maskc, 
+      paramSmooth=1
+      call ctrl_map_ini_gen2D(xx_bottomdrag_file, 'wbottomdrag',
+     & xx_bottomdrag_dummy, boundsVec, bottomdragfld, maskc,
      & paramSmooth, mythid )
       _EXCH_XY_RL( bottomdragfld, mythid)
 #endif
@@ -260,14 +260,14 @@ c--   SSS relaxation coefficient.
       boundsVec(3)=0.3
       boundsVec(4)=0.4
       boundsVec(5)=0.
-      paramSmooth=1      
+      paramSmooth=1
 c-- zonal eddy streamfunction : eddyPsiX
-      call ctrl_map_ini_gen3D(xx_edtaux_file, 'wedtauxFld', 
+      call ctrl_map_ini_gen3D(xx_edtaux_file, 'wedtauxFld',
      & xx_edtaux_dummy, boundsVec, eddyPsiX, maskw, paramSmooth,
      & mythid )
 c-- meridional eddy streamfunction : eddyPsiY
-      call ctrl_map_ini_gen3D(xx_edtauy_file, 'wedtauyFld', 
-     & xx_edtauy_dummy, boundsVec, eddyPsiY, masks, paramSmooth, 
+      call ctrl_map_ini_gen3D(xx_edtauy_file, 'wedtauyFld',
+     & xx_edtauy_dummy, boundsVec, eddyPsiY, masks, paramSmooth,
      & mythid )
 c-- exchange UV:
        CALL EXCH_UV_XYZ_RS(eddyPsiX,eddyPsiY,.TRUE.,myThid)
@@ -280,9 +280,9 @@ c-- exchange UV:
       boundsVec(3)=4. _d -4
       boundsVec(4)=5. _d -4
       boundsVec(5)=0.
-      paramSmooth=1      
-      call ctrl_map_ini_gen3D(xx_diffkr_file, 'wdiffkrFld', 
-     & xx_diffkr_dummy, boundsVec, diffkr, maskc, paramSmooth, 
+      paramSmooth=1
+      call ctrl_map_ini_gen3D(xx_diffkr_file, 'wdiffkrFld',
+     & xx_diffkr_dummy, boundsVec, diffkr, maskc, paramSmooth,
      & mythid )
       _EXCH_XYZ_RL( diffkr, mythid)
 #endif
@@ -294,9 +294,9 @@ c-- exchange UV:
       boundsVec(3)=0.9 _d 4
       boundsVec(4)=1. _d 4
       boundsVec(5)=0.
-      paramSmooth=1      
-      call ctrl_map_ini_gen3D(xx_kapgm_file, 'wkapgmFld', 
-     & xx_kapgm_dummy, boundsVec, kapgm, maskc, paramSmooth, 
+      paramSmooth=1
+      call ctrl_map_ini_gen3D(xx_kapgm_file, 'wkapgmFld',
+     & xx_kapgm_dummy, boundsVec, kapgm, maskc, paramSmooth,
      & mythid )
       _EXCH_XYZ_RL( kapgm, mythid)
 #endif
@@ -308,9 +308,9 @@ c-- exchange UV:
       boundsVec(3)=0.9 _d 4
       boundsVec(4)=1.0 _d 4
       boundsVec(5)=0.
-      paramSmooth=1      
-      call ctrl_map_ini_gen3D(xx_kapredi_file, 'wkaprediFld', 
-     & xx_kapredi_dummy, boundsVec, kapredi, maskc, paramSmooth, 
+      paramSmooth=1
+      call ctrl_map_ini_gen3D(xx_kapredi_file, 'wkaprediFld',
+     & xx_kapredi_dummy, boundsVec, kapredi, maskc, paramSmooth,
      & mythid )
       _EXCH_XYZ_RL( kapredi, mythid)
 #endif

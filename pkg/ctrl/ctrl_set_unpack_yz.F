@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_yz.F,v 1.17 2011/07/19 12:44:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_yz.F,v 1.18 2012/08/10 19:38:58 jmc Exp $
 C $Name:  $
 
-#include "CTRL_CPPOPTIONS.h"
+#include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_unpack_yz(
      &     cunit, ivartype, fname, masktype, weighttype,
@@ -232,7 +232,7 @@ c     And now back-calculate what iobcs should be.
                        globfld3d(ii,bi,ip,jj,bj,jp,kk) =
      &                      cbuff(cbuffindex)
 cph(
-                       globfldtmp2(bi,ip,jj,bj,jp) = 
+                       globfldtmp2(bi,ip,jj,bj,jp) =
      &                      cbuff(cbuffindex)
 cph)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO

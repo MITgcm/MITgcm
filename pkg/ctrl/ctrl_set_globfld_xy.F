@@ -1,10 +1,10 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_xy.F,v 1.13 2011/05/09 08:55:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_xy.F,v 1.14 2012/08/10 19:38:57 jmc Exp $
 C $Name:  $
 
-#include "CTRL_CPPOPTIONS.h"
+#include "CTRL_OPTIONS.h"
 
-      subroutine ctrl_set_globfld_xy( 
+      subroutine ctrl_set_globfld_xy(
      I     fname, ivartype, mythid )
 
 c     ==================================================================

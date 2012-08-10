@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xy.F,v 1.25 2011/05/05 09:22:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xy.F,v 1.26 2012/08/10 19:38:58 jmc Exp $
 C $Name:  $
 
-#include "CTRL_CPPOPTIONS.h"
+#include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_unpack_xy(
      &     lxxadxx, cunit, ivartype, fname, masktype, weighttype,

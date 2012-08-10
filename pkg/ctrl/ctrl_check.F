@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.12 2012/07/31 16:05:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.13 2012/08/10 19:38:56 jmc Exp $
 C $Name:  $
 
-#include "CTRL_CPPOPTIONS.h"
+#include "CTRL_OPTIONS.h"
 #ifdef ALLOW_ECCO_EVOLUTION
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"

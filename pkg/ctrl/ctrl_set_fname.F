@@ -1,8 +1,8 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_fname.F,v 1.9 2011/12/02 18:43:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_fname.F,v 1.10 2012/08/10 19:38:57 jmc Exp $
 C $Name:  $
 
-#include "CTRL_CPPOPTIONS.h"
+#include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_fname( xx_fname, fname, mythid )
 

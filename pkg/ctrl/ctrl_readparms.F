@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.39 2012/07/31 16:05:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.40 2012/08/10 19:38:57 jmc Exp $
 C $Name:  $
 
-#include "CTRL_CPPOPTIONS.h"
+#include "CTRL_OPTIONS.h"
 #include "AD_CONFIG.h"
 
       subroutine ctrl_readparms( mythid )
@@ -115,7 +115,7 @@ c--   Read the namelist input.
      &  xx_sss_file, xx_sss_remo_intercept, xx_sss_remo_slope,
      &  xx_sststartdate1, xx_sststartdate2, xx_sstperiod,
      &  xx_sssstartdate1, xx_sssstartdate2, xx_sssperiod,
-     &  xx_depth_file, xx_gen2d_file, xx_gen3d_file, 
+     &  xx_depth_file, xx_gen2d_file, xx_gen3d_file,
      &  xx_genarr2d_file, xx_genarr3d_file,
      &  xx_efluxy_file, xx_efluxp_file, xx_bottomdrag_file,
      &  xx_edtaux_file, xx_edtauy_file,

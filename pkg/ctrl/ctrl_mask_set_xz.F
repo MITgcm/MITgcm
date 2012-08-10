@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_mask_set_xz.F,v 1.7 2011/05/24 20:56:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_mask_set_xz.F,v 1.8 2012/08/10 19:38:57 jmc Exp $
 C $Name:  $
 
-#include "CTRL_CPPOPTIONS.h"
+#include "CTRL_OPTIONS.h"
 
       subroutine ctrl_mask_set_xz(
      &     jp1, OB_J, nwetobcs, ymaskobcs, mythid )
