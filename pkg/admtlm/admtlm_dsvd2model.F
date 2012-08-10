@@ -1,7 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_dsvd2model.F,v 1.7 2012/07/07 00:09:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_dsvd2model.F,v 1.8 2012/08/10 19:33:04 jmc Exp $
 C $Name:  $
 
-#include "CTRL_CPPOPTIONS.h"
+#include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       subroutine admtlm_dsvd2model(
      &     first, postprocev, mythid )
