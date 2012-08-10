@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost.h,v 1.16 2008/01/17 20:53:08 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost.h,v 1.17 2012/08/10 22:57:20 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -31,12 +31,14 @@ c     The cost function, its contributions, and multipliers:
 c     ======================================================
 c
 c     fc         - Final cost function.
+c     glofc      - contributions from global mean constraints
 c     mult_"var" - multipliers for the individual cost
 c                  function contributions.
 
       common /cost_r/
-     &                fc
+     &                fc, glofc
       _RL  fc
+      _RL  glofc
 
       common /cost_objf/
      &                objf_atl,

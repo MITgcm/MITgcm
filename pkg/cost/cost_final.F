@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.29 2012/08/10 19:36:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.30 2012/08/10 22:57:20 gforget Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
@@ -143,6 +143,9 @@ c--   Sum up all contributions.
 
 c--   Do global summation.
       _GLOBAL_SUM_RL( fc , myThid )
+
+c--   Add contributions from global mean constraints
+      fc = fc +glofc 
 
 #ifdef ALLOW_DIC_COST
 cph-- quickly for testing

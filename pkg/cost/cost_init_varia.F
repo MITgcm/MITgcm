@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.12 2012/08/10 19:36:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.13 2012/08/10 22:57:20 gforget Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
@@ -110,6 +110,7 @@ cph because we need it in ADM*TLM
 c--   Initialise the "global" parts of the cost function.
       _BEGIN_MASTER( mythid )
         fc         = 0. _d 0
+        glofc      = 0. _d 0
       _END_MASTER( mythid )
 
       _BARRIER
