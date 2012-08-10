@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.57 2012/08/10 19:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.58 2012/08/10 22:55:05 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -63,7 +63,7 @@ c     == local variables ==
 #ifndef ALLOW_COST
 c This quick fix allows to compile and run fwd but, as far as
 c the adjoint, pkg/autodiff most likely require cost though.
-      _RL fc
+      _RL fc, glofc
 #endif
 
       _RL f_temp0, f_salt0, f_temp0smoo, f_salt0smoo
@@ -1047,7 +1047,7 @@ c--   Do global summation for each part of the cost function
 
 c--   Each process has calculated the global part for itself.
 
-        fc = fc
+        glofc = glofc
      &          + mult_hmean*objf_hmean
         no_hmean = num_hmean
 
@@ -1064,9 +1064,14 @@ c
 
         no_transp = num_transp
 cph)
-        fc = fc
+        glofc = glofc
      &          + f_hfluxmm2 + f_sfluxmm2
      &          + f_transp
+
+#ifndef ALLOW_COST
+cgf this sum is now done in cost_final if allow_cost
+        fc = fc + glofc
+#endif
 
 C     only master thread of master CPU open and write to file
       IF ( MASTER_CPU_THREAD(myThid) ) THEN
