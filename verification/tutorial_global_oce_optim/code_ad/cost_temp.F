@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_temp.F,v 1.5 2009/10/09 01:20:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_temp.F,v 1.6 2012/08/10 19:31:56 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "COST_OPTIONS.h"
 
       SUBROUTINE COST_TEMP( myThid )
 C     *==========================================================*

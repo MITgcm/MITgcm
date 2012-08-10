@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_areasst.F,v 1.6 2012/07/31 16:09:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_areasst.F,v 1.7 2012/08/10 19:33:56 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_COST
-#include "COST_CPPOPTIONS.h"
+#include "COST_OPTIONS.h"
 #endif
 
       subroutine seaice_cost_areasst(

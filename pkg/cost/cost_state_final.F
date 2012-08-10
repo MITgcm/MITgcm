@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_state_final.F,v 1.6 2009/04/28 18:08:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_state_final.F,v 1.7 2012/08/10 19:36:02 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "COST_OPTIONS.h"
 
       subroutine cost_state_final( myThid )
 C     /==========================================================\

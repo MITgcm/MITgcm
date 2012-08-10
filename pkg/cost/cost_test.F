@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.9 2011/05/24 22:11:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.10 2012/08/10 19:36:02 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "COST_OPTIONS.h"
 
       subroutine cost_test( myThid )
 C     /==========================================================\

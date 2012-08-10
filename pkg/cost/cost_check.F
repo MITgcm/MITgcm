@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_check.F,v 1.7 2007/07/31 23:01:58 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_check.F,v 1.8 2012/08/10 19:36:02 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "COST_OPTIONS.h"
 
       SUBROUTINE COST_CHECK( myThid )
 C     /==========================================================\
@@ -33,7 +33,7 @@ C     msgBuf      - Informational/error meesage buffer
       !defined (ALLOW_HFLUX_COST_CONTRIBUTION)) || \
      (!defined (ALLOW_HFLUX_CONTROL) && \
       defined (ALLOW_HFLUX_COST_CONTRIBUTION)))
-c      WRITE(msgBuf,'(A,A)') 
+c      WRITE(msgBuf,'(A,A)')
 c     &     'Must have both ',
 c     &     'ALLOW_HFLUX_CONTROL & ALLOW_HFLUX_COST_CONTRIBUTION'
 c      CALL PRINT_ERROR( msgBuf , 1)
@@ -42,7 +42,7 @@ cph      STOP 'ABNORMAL END: S/R COST_CHECK'
       !defined (ALLOW_ATEMP_COST_CONTRIBUTION)) || \
      (!defined (ALLOW_ATEMP_CONTROL) && \
       defined (ALLOW_ATEMP_COST_CONTRIBUTION)))
-c      WRITE(msgBuf,'(A,A)') 
+c      WRITE(msgBuf,'(A,A)')
 c     &     'Must have both ',
 c     &     'ALLOW_ATEMP_CONTROL & ALLOW_ATEMP_COST_CONTRIBUTION'
 c      CALL PRINT_ERROR( msgBuf , 1)
@@ -53,7 +53,7 @@ cph      STOP 'ABNORMAL END: S/R COST_CHECK'
       !defined (ALLOW_SFLUX_COST_CONTRIBUTION)) || \
      (!defined (ALLOW_SFLUX_CONTROL) && \
       defined (ALLOW_SFLUX_COST_CONTRIBUTION)))
-c      WRITE(msgBuf,'(A,A)') 
+c      WRITE(msgBuf,'(A,A)')
 c     &     'Must have both ',
 c     &     'ALLOW_SFLUX_CONTROL & ALLOW_SFLUX_COST_CONTRIBUTION'
 c      CALL PRINT_ERROR( msgBuf , 1)
@@ -62,7 +62,7 @@ cph      STOP 'ABNORMAL END: S/R COST_CHECK'
       !defined (ALLOW_AQH_COST_CONTRIBUTION)) || \
      (!defined (ALLOW_AQH_CONTROL) && \
       defined (ALLOW_AQH_COST_CONTRIBUTION)))
-c      WRITE(msgBuf,'(A,A)') 
+c      WRITE(msgBuf,'(A,A)')
 c     &     'Must have both ',
 c     &     'ALLOW_AQH_CONTROL & ALLOW_AQH_COST_CONTRIBUTION'
 c      CALL PRINT_ERROR( msgBuf , 1)
@@ -73,7 +73,7 @@ cph      STOP 'ABNORMAL END: S/R COST_CHECK'
       !defined (ALLOW_USTRESS_COST_CONTRIBUTION)) || \
      (!defined (ALLOW_USTRESS_CONTROL) && \
       defined (ALLOW_USTRESS_COST_CONTRIBUTION)))
-c      WRITE(msgBuf,'(A,A)') 
+c      WRITE(msgBuf,'(A,A)')
 c     &     'Must have both ',
 c     &     'ALLOW_USTRESS_CONTROL & ALLOW_USTRESS_COST_CONTRIBUTION'
 c      CALL PRINT_ERROR( msgBuf , 1)
@@ -82,7 +82,7 @@ cph      STOP 'ABNORMAL END: S/R COST_CHECK'
       !defined (ALLOW_UWIND_COST_CONTRIBUTION)) || \
      (!defined (ALLOW_UWIND_CONTROL) && \
       defined (ALLOW_UWIND_COST_CONTRIBUTION)))
-c      WRITE(msgBuf,'(A,A)') 
+c      WRITE(msgBuf,'(A,A)')
 c     &     'Must have both ',
 c     &     'ALLOW_UWIND_CONTROL & ALLOW_UWIND_COST_CONTRIBUTION'
 c      CALL PRINT_ERROR( msgBuf , 1)
@@ -93,7 +93,7 @@ cph      STOP 'ABNORMAL END: S/R COST_CHECK'
       !defined (ALLOW_VSTRESS_COST_CONTRIBUTION)) || \
      (!defined (ALLOW_VSTRESS_CONTROL) && \
       defined (ALLOW_VSTRESS_COST_CONTRIBUTION)))
-c      WRITE(msgBuf,'(A,A)') 
+c      WRITE(msgBuf,'(A,A)')
 c     &     'Must have both ',
 c     &     'ALLOW_VSTRESS_CONTROL & ALLOW_VSTRESS_COST_CONTRIBUTION'
 c      CALL PRINT_ERROR( msgBuf , 1)
@@ -102,7 +102,7 @@ cph      STOP 'ABNORMAL END: S/R COST_CHECK'
       !defined (ALLOW_VWIND_COST_CONTRIBUTION)) || \
      (!defined (ALLOW_VWIND_CONTROL) && \
       defined (ALLOW_VWIND_COST_CONTRIBUTION)))
-c      WRITE(msgBuf,'(A,A)') 
+c      WRITE(msgBuf,'(A,A)')
 c     &     'Must have both ',
 c     &     'ALLOW_VWIND_CONTROL & ALLOW_VWIND_COST_CONTRIBUTION'
 c      CALL PRINT_ERROR( msgBuf , 1)

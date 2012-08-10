@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final_restore.F,v 1.5 2010/04/26 20:28:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final_restore.F,v 1.6 2012/08/10 19:36:02 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "COST_OPTIONS.h"
 
 
       subroutine cost_final_restore ( mythid, lastdiva )

@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_vector.F,v 1.4 2007/10/08 23:59:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_vector.F,v 1.5 2012/08/10 19:36:02 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "COST_OPTIONS.h"
 
       subroutine cost_vector( myThid )
 C     /==========================================================\

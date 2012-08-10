@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_weights.F,v 1.4 2009/10/09 01:26:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_weights.F,v 1.5 2012/08/10 19:31:56 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "COST_OPTIONS.h"
 
       SUBROUTINE COST_WEIGHTS( myThid )
 

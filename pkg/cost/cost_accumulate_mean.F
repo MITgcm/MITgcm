@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_accumulate_mean.F,v 1.7 2011/05/24 22:11:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_accumulate_mean.F,v 1.8 2012/08/10 19:36:02 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "COST_OPTIONS.h"
 
       subroutine cost_accumulate_mean( myThid )
 C     *==========================================================*

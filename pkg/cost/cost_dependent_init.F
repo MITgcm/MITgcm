@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.11 2011/05/24 22:14:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.12 2012/08/10 19:36:02 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "COST_OPTIONS.h"
 
       subroutine cost_dependent_init( mythid )
 
