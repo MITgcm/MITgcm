@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.11 2012/07/06 23:01:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.12 2012/08/10 19:43:48 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "ECCO_OPTIONS.h"
 #include "AD_CONFIG.h"
 
       subroutine ecco_Summary(

@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.8 2012/07/31 16:07:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.9 2012/08/10 19:43:48 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "ECCO_OPTIONS.h"
 
       SUBROUTINE ECCO_CHECK( myThid )
 C     /==========================================================\
