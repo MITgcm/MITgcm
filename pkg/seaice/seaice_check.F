@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.67 2012/03/27 22:36:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.68 2012/08/10 14:55:10 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -394,6 +394,17 @@ C     Avoid using both type of diffusion scheme (DIFF1 & SEAICEdiffKh)
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 
+      IF ( SEAICEpresH0    .LE. 0. _d 0 .OR.
+     &     SEAICEpresPow0  .LT. 0 .OR. SEAICEpresPow1  .LT. 0 ) THEN
+        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
+     &      'SEAICEpresH0 (real), SEAICEpresPow0 (integer)'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: OR SEAICEpresPow1 ',
+     &      '(integer) has been specified as negative (data.seaice)'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+      
 C--
 #ifdef ALLOW_AUTODIFF_TAMC
       IF ( NPSEUDOTIMESTEPS .GT. MPSEUDOTIMESTEPS ) THEN
@@ -665,6 +676,7 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif /* SEAICE_ALLOW_CLIPZETA */
+
 
 #if !defined(SEAICE_ALLOW_TEM) || !defined(SEAICE_CGRID)
       IF ( SEAICEuseTEM ) THEN
