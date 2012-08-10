@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/cost_dependent_init.F,v 1.2 2012/07/05 22:50:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/cost_dependent_init.F,v 1.3 2012/08/10 19:29:52 jmc Exp $
 C $Name:  $
 
-#include "COST_CPPOPTIONS.h"
+#include "COST_OPTIONS.h"
 
       subroutine cost_dependent_init( mythid )
 
