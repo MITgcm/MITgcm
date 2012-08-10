@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1711 2012/08/09 20:36:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1712 2012/08/10 14:52:02 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cost and pkg/ecco : attempt to sort out some of the limiting intricacies.
+  - pkg/cost.cost_final.F : allow for use of pkg/ecco and pkg/cost cost functions jointly. 
+   The exclusive ifdefs were removed, to add costs terms (when defined) from both packages. 
+  - the fc global sum in pkg/ecco/ecco_cost_final.F was removed accordingly.
+  - for objf_atl we use either the pkg/ecco or the pkg/cost term depending on CPPs.
+  - pkg/ecco and model/src : add CPP brackets around pkg/cost and pkg/ctrl includes of 
+   "CTRL_SIZE.h" "ctrl.h" "ctrl_dummy.h" "optim.h" / "cost.h" accordingly.
+o pkg/cost : add comments to explain special and/or untested setups.
 o pkg/exf:
   - use EXF_OPTIONS.h to set pkg/exf options except if done in ECCO_CPPOPTIONS.h
     (previously, ALLOW_AUTODIFF_TAMC was controling this switch).
