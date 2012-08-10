@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.231 2012/07/06 18:55:13 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.232 2012/08/10 17:59:13 jahn Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -1029,6 +1029,109 @@ EOF
     echo " --> set HAVE_NETCDF='$HAVE_NETCDF'" >> $LOGFILE
 }
 
+check_lapack_libs()  {
+    if test ! "x$SKIP_LAPACK_CHECK" = x ; then
+	return
+    fi
+    echo >> $LOGFILE
+    echo "running: check_lapack_libs()" >> $LOGFILE
+    cat <<EOF > genmake_tla.F
+      program fgenla
+      integer info 
+      integer ipiv( 2 )
+      double precision ab( 4, 2 ), b( 2 )
+      data ab / 0., 0., 1., 2., 0., 2., 1., 0. /
+      data b / 1., 1. /
+      call dgbsv( 2, 1, 1, 1, ab, 4, ipiv, b, 2, info )
+      IF (info .NE. 0) write(*,*) 'Error:', info
+      write(*,*) b
+      end
+EOF
+    echo "===  genmake_tla.F  >>>" > genmake_tla.log
+    cat genmake_tla.F >> genmake_tla.log
+    echo "<<<  genmake_tla.F  ===" >> genmake_tla.log
+    RET_CPP=f
+    COMM="cat genmake_tla.F | $CPP $DEFINES $INCLUDES"
+    echo "$COMM" >> genmake_tla.log
+    eval $COMM > genmake_tla.$FS 2>/dev/null  &&  RET_CPP=t
+    if test "x$RET_CPP" = xf ; then
+	echo "  WARNING: CPP failed to pre-process the lapack test." \
+	    >> genmake_tla.log
+	echo "    Please check that \$INCLUDES is properly set." \
+	    >> genmake_tla.log
+    fi
+    echo "$FC $FFLAGS $FOPTIM -c genmake_tla.$FS  \ " >> genmake_tla.log
+    echo "  &&  $LINK $FFLAGS $FOPTIM -o genmake_tla.o $LIBS" >> genmake_tla.log
+    $FC $FFLAGS $FOPTIM -c genmake_tla.$FS >> genmake_tla.log 2>&1  \
+	&&  $LINK $FFLAGS $FOPTIM -o genmake_tla genmake_tla.o $LIBS >> genmake_tla.log 2>&1
+    RET_COMPILE=$?
+    cat genmake_tla.log >> $LOGFILE
+
+    # test program execution not always possible (see check_netcdf_libs)
+    #
+    #test -x ./genmake_tla  &&  ./genmake_tla >> genmake_tla.log 2>&1
+    #RETVAL=$?
+    #if test "x$RET_COMPILE" = x0 -a "x$RETVAL" = x0 ; then
+
+    if test "x$RET_COMPILE" = x0 ; then
+	HAVE_LAPACK=t
+	echo "check_lapack: successful" >> $LOGFILE
+    else
+	# try again with "-llapack" added to the libs
+	echo "==> try again with added '-llapack'" > genmake_tla.log
+	echo "cat genmake_tla.F | $CPP $DEFINES $INCLUDES > genmake_tla.$FS \ " >> genmake_tla.log
+	echo " &&  $FC $FFLAGS $FOPTIM -c genmake_tla.$FS \ " >> genmake_tla.log
+	echo " &&  $LINK $FFLAGS $FOPTIM -o genmake_tla genmake_tla.o $LIBS -llapack" >> genmake_tla.log
+	cat genmake_tla.F | $CPP $DEFINES $INCLUDES > genmake_tla.$FS 2>/dev/null  \
+	    &&  $FC $FFLAGS $FOPTIM -c genmake_tla.$FS >> genmake_tla.log 2>&1  \
+	    &&  $LINK $FFLAGS $FOPTIM -o genmake_tla genmake_tla.o $LIBS -llapack >> genmake_tla.log 2>&1
+	RET_COMPILE=$?
+	echo >> $LOGFILE
+	cat genmake_tla.log >> $LOGFILE
+	if test "x$RET_COMPILE" = x0 ; then
+	    LIBS="$LIBS -llapack"
+	    HAVE_LAPACK=t
+	    echo "check_lapack: successful" >> $LOGFILE
+	else
+	# try again with "-lf77blas -lcblas" added to the libs
+	    echo "==> try again with added '-llapack -lf77blas -lcblas'" > genmake_tla.log
+	    echo "cat genmake_tla.F | $CPP $DEFINES $INCLUDES > genmake_tla.$FS \ " >> genmake_tla.log
+	    echo " &&  $FC $FFLAGS $FOPTIM -c genmake_tla.$FS \ " >> genmake_tla.log
+	    echo " &&  $LINK $FFLAGS $FOPTIM -o genmake_tla genmake_tla.o $LIBS -llapack -lf77blas -lcblas" >> genmake_tla.log
+	    cat genmake_tla.F | $CPP $DEFINES $INCLUDES > genmake_tla.$FS 2>/dev/null  \
+		&&  $FC $FFLAGS $FOPTIM -c genmake_tla.$FS >> genmake_tla.log 2>&1  \
+		&&  $LINK $FFLAGS $FOPTIM -o genmake_tla genmake_tla.o $LIBS -llapack -lf77blas -lcblas >> genmake_tla.log 2>&1
+	    RET_COMPILE=$?
+	    echo >> $LOGFILE
+	    cat genmake_tla.log >> $LOGFILE
+	    if test "x$RET_COMPILE" = x0 ; then
+		LIBS="$LIBS -llapack -lf77blas -lcblas"
+		HAVE_LAPACK=t
+		echo "check_lapack: successful" >> $LOGFILE
+            else
+            # try again with "-latlas" added to the libs
+                echo "==> try again with added '-llapack -lf77blas -lcblas -latlas'" > genmake_tla.log
+                echo "cat genmake_tla.F | $CPP $DEFINES $INCLUDES > genmake_tla.$FS \ " >> genmake_tla.log
+                echo " &&  $FC $FFLAGS $FOPTIM -c genmake_tla.$FS \ " >> genmake_tla.log
+                echo " &&  $LINK $FFLAGS $FOPTIM -o genmake_tla genmake_tla.o $LIBS -llapack -lf77blas -lcblas -latlas" >> genmake_tla.log
+                cat genmake_tla.F | $CPP $DEFINES $INCLUDES > genmake_tla.$FS 2>/dev/null  \
+                    &&  $FC $FFLAGS $FOPTIM -c genmake_tla.$FS >> genmake_tla.log 2>&1  \
+                    &&  $LINK $FFLAGS $FOPTIM -o genmake_tla genmake_tla.o $LIBS -llapack -lf77blas -lcblas -latlas >> genmake_tla.log 2>&1
+                RET_COMPILE=$?
+                echo >> $LOGFILE
+                cat genmake_tla.log >> $LOGFILE
+                if test "x$RET_COMPILE" = x0 ; then
+                    LIBS="$LIBS -llapack -lf77blas -lcblas -latlas"
+                    HAVE_LAPACK=t
+                    echo "check_lapack: successful" >> $LOGFILE
+                fi
+	    fi
+	fi
+    fi
+    rm -f genmake_tla*
+    echo " --> set HAVE_LAPACK='$HAVE_LAPACK'" >> $LOGFILE
+}
+
 
 ###############################################################################
 #   Sequential part of script starts here
@@ -1096,6 +1199,7 @@ HAVE_STAT=
 HAVE_NETCDF=
 HAVE_ETIME=
 IGNORE_TIME=
+HAVE_LAPACK=
 
 MODS=
 TOOLSDIR=
@@ -1148,7 +1252,7 @@ gm_s4="LN S64 LINK MAKE PACKAGES INCLUDES FFLAGS FOPTIM"
 gm_s5="CFLAGS LIBS KPP KFLAGS1 KFLAGS2 KPPFILES NOOPTFILES NOOPTFLAGS"
 gm_s6="TOOLSDIR SOURCEDIRS INCLUDEDIRS EXEDIR EXECUTABLE EXEHOOK"
 gm_s7="PWD THISHOST THISUSER THISDATE THISVER MACHINE"
-gm_s8="FC_NAMEMANGLE HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME"
+gm_s8="FC_NAMEMANGLE HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME HAVE_LAPACK"
 
 #  The following are all related to adjoint/tangent-linear stuff
 gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
@@ -1808,6 +1912,15 @@ if test "x$HAVE_NETCDF" != x ; then
 else
     echo "no"
 fi
+
+printf "  Can we create LAPACK-enabled binaries...  "
+check_lapack_libs
+if test "x$HAVE_LAPACK" != x ; then
+    DEFINES="$DEFINES -DHAVE_LAPACK"
+    echo "yes"
+else
+    echo "no"
+fi
 DEFINES="$DEFINES $IGNORE_TIME"
 
 if test "x$EMBED_SRC" = xt ; then
@@ -2118,6 +2231,27 @@ EOF
     else
     #  this prevent to add profiles (due to pdepend rules) if not available
 	DISABLE="$DISABLE profiles"
+    fi
+fi
+
+#  Check for package RADTRANS: if LAPACK is not available,
+#  then issue a warning that the direct radtrans solver is not available.
+if test "x$HAVE_LAPACK" != xt ; then
+    echo " $PACKAGES " | grep ' radtrans ' > /dev/null 2>&1
+    RETVAL=$?
+    if test "x$RETVAL" = x0 ; then
+	cat <<EOF
+*********************************************************************
+WARNING: the "radtrans" package was enabled but tests failed to
+  compile LAPACK applications.  This means that the direct radtrans
+  solver is not available and compilation will fail if it is enabled.
+  If you want to use the direct solver, please check that:
+
+  1) LAPACK is correctly installed for this compiler and
+  2) the LIBS variable (within the "optfile") specifies the correct
+     LAPACK library to link against.
+*********************************************************************
+EOF
     fi
 fi
 
