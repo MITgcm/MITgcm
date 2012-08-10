@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_atlantic.F,v 1.7 2012/08/06 14:18:06 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_atlantic.F,v 1.8 2012/08/10 14:34:41 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -28,7 +28,6 @@ c     ==================================================================
       implicit none
 
 c     == global variables ==
-#ifdef ALLOW_COST_ATLANTIC
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
@@ -37,14 +36,16 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "CG2D.h"
 
-#include "optim.h"
-#include "cost.h"
+#ifdef ALLOW_CTRL
+# include "optim.h"
+#endif
+#ifdef ALLOW_COST
+# include "cost.h"
+#endif
 #include "ecco_cost.h"
 c#include "CTRL_SIZE.h"
 c#include "ctrl.h"
 c#include "ctrl_dummy.h"
-
-#endif
 
 c     == routine arguments ==
 
@@ -84,9 +85,9 @@ c     == local variables ==
       _RL ylat2,beglon2,endlon2
       _RL ylat3,beglon3,endlon3
 c      parameter(ylat= 29., beglon=-42., endlon =-2.)
-c      parameter(ylat= 29., beglon=282., endlon =352.)
+      parameter(ylat= 29., beglon=282., endlon =352.)
 c      parameter(ylat= 29., beglon=-82., endlon =-2.)
-      parameter(ylat= 66.75,beglon=-34.5,endlon =-22.5)
+c      parameter(ylat= 66.75,beglon=-34.5,endlon =-22.5)
       parameter(ylat2= 63.8,beglon2=-20,endlon2 =-5.)
       parameter(ylat3= 63.8,beglon3=-98.5,endlon3 =-80.0)
 c     == external functions ==
@@ -108,6 +109,8 @@ c     == end of interface ==
 
 
 c--   Get the time flags and record numbers for the time averaging.
+
+      myiter = niter0 + INT((mytime-starttime)/deltaTClock+0.5)
 
       call cost_AveragesFlags(
      I                    myiter,     mytime,       mythid,
@@ -168,7 +171,9 @@ c--     Assign the first value to the array holding the average.
                 enddo
               enddo
             enddo
+#ifdef ALLOW_COST
             objf_atl(bi,bj) = tv
+#endif
           enddo
         enddo
       else if (last ) then
@@ -177,8 +182,10 @@ c--     Add the last value and devide by the number of accumulated
 c--     records.
         do bj = jtlo,jthi
           do bi = itlo,ithi
+#ifdef ALLOW_COST
                     objf_atl(bi,bj) = (objf_atl(bi,bj)
      &                                 )/float(nTimeSteps)
+#endif
           enddo
         enddo
       else
@@ -212,7 +219,9 @@ c--     Accumulate the array holding the average.
                 enddo
               enddo
             enddo
+#ifdef ALLOW_COST
             objf_atl(bi,bj)  =  objf_atl(bi,bj) +tv
+#endif
           enddo
         enddo
       endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.37 2012/07/31 16:07:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.38 2012/08/10 14:34:41 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -625,11 +625,6 @@ cph currently all assumed to be surface fields, i.e. 2-d
       end do
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
-#if (defined (ALLOW_PROFILES) && defined (ALLOW_PROFILES_CONTRIBUTION))
-cph moved to the_main_loop to separate from cost package
-cph      CALL profiles_inloop(mytime,mythid)
-#endif
-
 #ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
 c--   Currently hard-coded Florida Strait transport for 1x1 deg.
 c--   ECCO-GODAE version 1,2,3
@@ -667,6 +662,15 @@ cph   In the mean time increment ad hoc during day
          endif
         enddo
        enddo
+#endif
+
+#ifdef ALLOW_ECCO_EVOLUTION
+#ifdef ALLOW_COST_ATLANTIC
+c--   Compute meridional heat transport
+      call timer_start('cost_atlantic      [ECCO SPIN-DOWN]', mythid)
+      call cost_atlantic(  mytime, myiter,mythid )
+      call timer_stop ('cost_atlantic      [ECCO SPIN-DOWN]', mythid)
+#endif
 #endif
 
 #ifdef ALLOW_DEBUG

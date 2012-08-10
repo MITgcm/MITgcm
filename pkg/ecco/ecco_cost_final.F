@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.55 2011/12/06 04:14:04 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.56 2012/08/10 14:34:41 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -24,17 +24,16 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 
-#include "cost.h"
+#ifdef ALLOW_COST
+# include "cost.h"
+#endif
 #include "ecco_cost.h"
-#include "ctrl.h"
-#include "optim.h"
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+# include "optim.h"
+#endif
 #ifdef ALLOW_PROFILES
 # include "profiles.h"
-#else
-      integer NFILESPROFMAX
-      parameter (NFILESPROFMAX=1)
-      integer NVARMAX
-      parameter (NVARMAX=1)
 #endif
 
 c     == routine arguments ==
@@ -53,6 +52,19 @@ c     == local variables ==
       integer ifc
       integer totnum
       integer num_file,num_var
+
+#ifndef ALLOW_PROFILES
+      integer NFILESPROFMAX
+      parameter (NFILESPROFMAX=1)
+      integer NVARMAX
+      parameter (NVARMAX=1)
+#endif
+
+#ifndef ALLOW_COST
+c This quick fix allows to compile and run fwd but, as far as
+c the adjoint, pkg/autodiff most likely require cost though.
+      _RL fc
+#endif
 
       _RL f_temp0, f_salt0, f_temp0smoo, f_salt0smoo
       _RL f_etan0, f_uvel0, f_vvel0
@@ -80,7 +92,9 @@ c     == local variables ==
       _RL f_ini_fin
       _RL f_kapgm, f_kapredi, f_diffkr
       _RL f_eddytau, f_bottomdrag
+#ifdef ALLOW_PROFILES
       _RL f_profiles(NFILESPROFMAX,NVARMAX)
+#endif
       _RL f_gencost(NGENCOST)
       _RL f_usercost(NUSERCOST)
       _RL f_sshv4cost(NSSHV4COST)
@@ -106,7 +120,9 @@ c     == local variables ==
       _RL no_kapgm, no_kapredi, no_diffkr
       _RL no_eddytau, no_bottomdrag
       _RL no_hmean
+#ifdef ALLOW_PROFILES
       _RL no_profiles(NFILESPROFMAX,NVARMAX)
+#endif
       _RL no_gencost(NGENCOST)
       _RL no_usercost(NUSERCOST)
       _RL no_sshv4cost(NSSHV4COST)
@@ -359,7 +375,9 @@ c--   Sum up all contributions.
      &         + mult_h       * ( mult_tp  * objf_tp(bi,bj)
      &                          + mult_ers * objf_ers(bi,bj)
      &                          + mult_gfo * objf_gfo(bi,bj) )
+#if ( defined (ALLOW_COST) && defined (ALLOW_COST_ATLANTIC) )
      &         + mult_atl     * objf_atl(bi,bj)
+#endif
      &         + mult_ctdt    * objf_ctdt(bi,bj)
      &         + mult_ctds    * objf_ctds(bi,bj)
      &         + mult_ctdtclim* objf_ctdtclim(bi,bj)
@@ -481,7 +499,9 @@ c--   Sum up all contributions.
           f_sss  = f_sss + objf_sss(bi,bj)
           f_bp   = f_bp  + objf_bp(bi,bj)
           f_ies  = f_ies + objf_ies(bi,bj)
+#if ( defined (ALLOW_COST) && defined (ALLOW_COST_ATLANTIC) )
           f_atl  = f_atl + objf_atl(bi,bj)
+#endif
           f_ctdt = f_ctdt + objf_ctdt(bi,bj)
           f_ctds = f_ctds + objf_ctds(bi,bj)
           f_ctdtclim = f_ctdtclim + objf_ctdtclim(bi,bj)
@@ -633,8 +653,11 @@ c--   Sum up all contributions.
       enddo
 
 
+#ifndef ALLOW_COST
+cgf global sum is now done in cost_final if allow_cost
 c--   Do global summation.
       _GLOBAL_SUM_RL( fc , myThid )
+#endif
 
 c--   Do global summation for each part of the cost function
 

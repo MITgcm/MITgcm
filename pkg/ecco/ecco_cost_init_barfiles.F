@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.25 2012/07/31 16:07:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.26 2012/08/10 14:34:41 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -27,11 +27,13 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 
-#include "optim.h"
 #include "ecco_cost.h"
-#include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
+#ifdef ALLOW_CTRL
+# include "optim.h"
+# include "CTRL_SIZE.h"
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+#endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE_COST.h"
 #endif
@@ -40,7 +42,6 @@ c     == routine arguments ==
 
       integer mythid
 
-#ifdef ALLOW_COST
 c     == local variables ==
 
       integer bi,bj
@@ -425,8 +426,6 @@ c--   Save gencost_barfile on file.
       enddo
 
 #endif 
-
-#endif /* ALLOW_COST */
 
       return
       end

@@ -1,8 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_ad_check_lev4_dir.h,v 1.2 2010/11/10 22:10:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_ad_check_lev4_dir.h,v 1.3 2012/08/10 14:34:41 gforget Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
 c
+
+#ifdef ALLOW_ECCO_EVOLUTION
+#ifdef ALLOW_COST_ATLANTIC
+CADJ STORE theta = tapelev4, key=ilev_4
+CADJ STORE vVel  = tapelev4, key=ilev_4
+# ifdef NONLIN_FRSURF
+CADJ STORE hFacS  = tapelev4, key=ilev_4
+# endif
+#endif
+#endif /* ALLOW_ECCO_EVOLUTION */
 
 #ifdef ALLOW_ECCO_BARSTORES
 
@@ -50,5 +60,5 @@ CADJ STORE xx_smrsstbar_mean_dummy  = dummytape, key=1, kind=isbyte
 CADJ STORE xx_smrsssbar_mean_dummy  = dummytape, key=1, kind=isbyte
 #endif /* ALLOW_SEAICE */
 
-#endif /* ALLOW_ECCO_EVOLUTION */
+#endif /* ALLOW_ECCO_BARSTORES */
 

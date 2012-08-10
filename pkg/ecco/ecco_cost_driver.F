@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.4 2012/02/23 23:31:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.5 2012/08/10 14:34:41 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -39,16 +39,6 @@ c     == routine arguments ==
 # ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
 #  include "ecco_cost.h"
 # endif
-#endif
-
-#ifdef ALLOW_COST_ATLANTIC
-c--   Compute meridional heat transport
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('cost_atlantic',myThid)
-#endif
-      call timer_start('cost_atlantic      [ECCO SPIN-DOWN]', mythid)
-      call cost_atlantic(  mytime, myiter,mythid )
-      call timer_stop ('cost_atlantic      [ECCO SPIN-DOWN]', mythid)
 #endif
 
 c--   Compute the cost function contribution of the boundary forcing,

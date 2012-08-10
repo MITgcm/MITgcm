@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.56 2011/12/06 04:14:04 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.57 2012/08/10 14:34:41 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -160,6 +160,7 @@ c             intantaneous field.
      defined (ALLOW_CTDT_COST_CONTRIBUTION) || \
      defined (ALLOW_XBT_COST_CONTRIBUTION) || \
      defined (ALLOW_DRIFT_COST_CONTRIBUTION) || \
+     defined (ALLOW_COST_TRANSPORT) || \
      defined (ALLOW_OBCS_COST_CONTRIBUTION))
       _RL tbar  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 #else
@@ -187,6 +188,7 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
 #if (defined (ALLOW_SALT_COST_CONTRIBUTION) || \
      defined (ALLOW_CTDS_COST_CONTRIBUTION) || \
      defined (ALLOW_DRIFT_COST_CONTRIBUTION) || \
+     defined (ALLOW_COST_TRANSPORT) || \
      defined (ALLOW_OBCS_COST_CONTRIBUTION))
       _RL sbar  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 #else
@@ -216,6 +218,7 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
 #endif
 
 #if (defined (ALLOW_DRIFTER_COST_CONTRIBUTION) || \
+     defined (ALLOW_COST_TRANSPORT) || \
      defined (ALLOW_OBCS_COST_CONTRIBUTION))
       _RL ubar  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL vbar  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)

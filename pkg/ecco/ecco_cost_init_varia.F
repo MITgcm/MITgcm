@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.21 2012/07/06 23:01:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.22 2012/08/10 14:34:41 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -31,6 +31,9 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "ecco_cost.h"
+#ifdef ALLOW_COST
+# include "cost.h"
+#endif
 
 c     == routine arguments ==
 
@@ -131,6 +134,9 @@ c--   Initialize the tiled cost function contributions.
           objf_obcsw(bi,bj)    = 0. _d 0
           objf_obcse(bi,bj)    = 0. _d 0
           objf_curmtr(bi,bj)   = 0. _d 0
+#if ( defined (ALLOW_COST) && defined (ALLOW_COST_ATLANTIC) )
+          objf_atl(bi,bj)      = 0. _d 0
+#endif
           objf_ageos(bi,bj)    = 0. _d 0
           objf_diffkr(bi,bj)   = 0. _d 0
           objf_kapgm(bi,bj)    = 0. _d 0
