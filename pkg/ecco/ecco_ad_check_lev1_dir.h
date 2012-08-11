@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_ad_check_lev1_dir.h,v 1.2 2010/11/10 22:10:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_ad_check_lev1_dir.h,v 1.3 2012/08/11 21:40:25 jmc Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -50,5 +50,5 @@ CADJ STORE xx_smrsstbar_mean_dummy  = dummytape, key=1, kind=isbyte
 CADJ STORE xx_smrsssbar_mean_dummy  = dummytape, key=1, kind=isbyte
 #endif /* ALLOW_SEAICE */
 
-#endif /* ALLOW_ECCO_EVOLUTION */
+#endif /* ALLOW_ECCO_BARSTORES */
 
