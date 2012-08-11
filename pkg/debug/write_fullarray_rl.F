@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/write_fullarray_rl.F,v 1.7 2011/03/29 02:22:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/write_fullarray_rl.F,v 1.8 2012/08/11 18:13:23 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
 
 CBOP
 C     !ROUTINE: WRITE_FULLARRAY_RL
@@ -51,7 +51,6 @@ C     == Local variables ==
       INTEGER s1Lo,s1Hi, dUnit, filePrec, length_of_rec, kRec
       CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
-
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
