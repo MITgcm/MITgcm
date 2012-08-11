@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/Attic/timestep_2d_tracer.F,v 1.4 2011/12/28 16:50:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/Attic/timestep_2d_tracer.F,v 1.5 2012/08/11 19:50:47 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "CHEAPAML_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: TIMESTEP_2d_TRACER
@@ -50,4 +50,3 @@ C     -    Extrapolate tendancies to mid-time level (n+1/2)
 
       RETURN
       END
-

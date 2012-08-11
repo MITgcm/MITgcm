@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/Attic/cycle_2d_tracer.F,v 1.4 2011/12/28 16:50:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/Attic/cycle_2d_tracer.F,v 1.5 2012/08/11 19:50:47 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "CHEAPAML_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: CYCLE_2d_TRACER
@@ -17,12 +17,14 @@ C     *==========================================================*
 C     | o Cycles the time-stepping arrays for a tracer field
 C     *==========================================================*
 C     \ev
+
 C     !USES:
       IMPLICIT NONE
 C Common
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
 C     bi,bj                        :: Loop counters

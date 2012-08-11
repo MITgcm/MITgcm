@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.7 2011/11/16 20:00:31 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.8 2012/08/11 19:50:47 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "CHEAPAML_OPTIONS.h"
 
       SUBROUTINE CHEAPAML_READPARMS( myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE CHEAPAML_READPARMS                            |
 C     | o Routine to initialize CHEAPAML variables and consts.   |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -28,24 +28,24 @@ C     iUnit       - Work variable for IO unit number
 C--   Bulk Formula parameter
       NAMELIST /CHEAPAML_CONST/
      &  cheapaml_ntim, cheapaml_mask_width,
-     &  cheapaml_h, cheapaml_kdiff, 
-     &  cheapaml_taurelax, 
+     &  cheapaml_h, cheapaml_kdiff,
+     &  cheapaml_taurelax,
      &  cdrag_1,cdrag_2,cdrag_3,
      &  rhoa, cpair, stefan, gasR,xkar,
      &   dsolms,dsolmn,zu,zt,zq,
      &   xphaseinit,gamma_blk,humid_fac,p0,
      &   cheap_pr1,cheap_pr2
       NAMELIST /CHEAPAML_PARM01/
-     &         AirTempFile, 
-     &         SolarFile, 
+     &         AirTempFile,
+     &         SolarFile,
      &         UWindFile,
-     &         VWindFile, 
+     &         VWindFile,
      &         TrFile,
      &         QrFile,
      &         AirQFile,
      &         UStressFile, VStressFile,
      &         WaveHFile,WavePFile,
-     &         TracerFile,TracerRfile, 
+     &         TracerFile,TracerRfile,
      &         CheapMaskFile,Cheap_hFile,
      &         cheap_clfile,
      &         periodicExternalForcing_cheap,
@@ -67,16 +67,16 @@ C--   Bulk Formula parameter
       WRITE(msgBuf,'(A)') ' BULKF_READPARMS: opening data.cheapaml'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-    
 
-     
+
+
       CALL OPEN_COPY_DATA_FILE(
      I                          'data.cheapaml', 'CHEAPAML_READPARMS',
      O                          iUnit,
      I                          myThid )
 
 
-C--   Default values 
+C--   Default values
 C-    Physical constant :
       cheapaml_ntim = 5
       cheapaml_h=1000. _d 0
@@ -112,8 +112,8 @@ c von Karman constant
         xkar=0.4 _d 0
 c periodic forcing
         periodicExternalForcing_cheap = periodicExternalForcing
-        externForcingPeriod_cheap = externForcingPeriod    
-        externForcingCycle_cheap = externForcingCycle     
+        externForcingPeriod_cheap = externForcingPeriod
+        externForcingCycle_cheap = externForcingCycle
 C precipitation time constant
         cheap_pr1 = 12*3600.0 _d 0
         cheap_pr2 = 120*3600.0 _d 0
@@ -131,9 +131,9 @@ C-    Input data files names :
       TracerFile=' '
       TracerRFile=' '
       CheapMaskFile=' '
-      Cheap_hFile =' ' 
-      Cheap_prFile =' ' 
-      Cheap_clFile =' ' 
+      Cheap_hFile =' '
+      Cheap_prFile =' '
+      Cheap_clFile =' '
       FluxFormula='LANL'
       WaveModel='Smith'
 
@@ -147,14 +147,14 @@ C-    turn off stress option by default
         useStressOption=.FALSE.
 
 C-    turn off passive tracer option by default
-        useCheapTracer=.FALSE.    
+        useCheapTracer=.FALSE.
 
 
 C-    turn off time varying BL height option by default
-        usetimevarblh=.FALSE.        
+        usetimevarblh=.FALSE.
 
 C-    turn off clouds option by default
-        useclouds=.FALSE.        
+        useclouds=.FALSE.
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=CHEAPAML_CONST)

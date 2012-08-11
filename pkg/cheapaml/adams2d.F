@@ -1,20 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/Attic/adams2d.F,v 1.3 2011/02/24 16:11:41 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/Attic/adams2d.F,v 1.4 2012/08/11 19:50:47 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "CHEAPAML_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: ADAMS2d
 C     !INTERFACE:
       SUBROUTINE ADAMS2d(
-     I                     bi, bj, 
+     I                     bi, bj,
      U                     gTracer, gTrNm1,
      I                     startAB, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R ADAMS2d                                      
-C     | o Extrapolate tendencies forward in time using            
-C     |   quasi-second order Adams-Bashforth method.              
+C     | S/R ADAMS2d
+C     | o Extrapolate tendencies forward in time using
+C     |   quasi-second order Adams-Bashforth method.
 C     *==========================================================*
 C     \ev
 
@@ -57,12 +57,12 @@ C     Adams-Bashforth timestepping weights
         ab05 = -( 0.5 _d 0 + abEps )
       ENDIF
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+---- 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----
 
 C-    Compute effective G-term with Adams-Bashforth weights:
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        gTrtmp = ab15*gTracer(i,j,bi,bj) 
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        gTrtmp = ab15*gTracer(i,j,bi,bj)
      &         + ab05*gTrNm1(i,j,bi,bj)
         gTrNm1(i,j,bi,bj) = gTracer(i,j,bi,bj)
         gTracer(i,j,bi,bj) = gTrtmp
