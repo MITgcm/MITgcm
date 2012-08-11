@@ -1,22 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_metric_cylinder.F,v 1.3 2005/07/12 00:44:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_metric_cylinder.F,v 1.4 2012/08/11 19:01:35 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "MOM_FLUXFORM_OPTIONS.h"
 
 CBOP
-C !ROUTINE: MOM_U_METRIC_SPHERE
+C !ROUTINE: MOM_V_METRIC_CYLINDER
 
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_V_METRIC_CYLINDER(
      I        bi,bj,k,
      I        uFld, vFld,
      O        vMetricTerms,
-     I        myThid)
+     I        myThid )
 
 C !DESCRIPTION:
-C Calculates the zonal metric term due to sphericity:
+C Calculates the meridional metric term due to cylinder curvature:
 C \begin{equation}
-C -\frac{v^2}{r}     
+C -\frac{u^2}{r}
 C \end{equation}
 
 C !USES: ===============================================================
@@ -47,15 +47,15 @@ C  i,j                  :: loop indices
       _RL radius
 CEOP
 
-      DO j=1-Oly+1,sNy+Oly
-       DO i=1-Olx,sNx+Olx-1
+      DO j=1-OLy+1,sNy+OLy
+       DO i=1-OLx,sNx+OLx-1
           radius = (yG(i,j,bi,bj)+yG(i+1,j,bi,bj))*0.5 _d 0
 C-   to get the same results as before:
 c         radius = yC(i,j,bi,bj)
-          IF ( radius.GT.0. ) THEN 
-             vMetricTerms(i,j) = 
+          IF ( radius.GT.0. ) THEN
+             vMetricTerms(i,j) =
      &           -0.25*(uFld(i,j) + uFld(i+1,j) +
-     &                  uFld(i,j-1)+uFld(i+1,j-1)) 
+     &                  uFld(i,j-1)+uFld(i+1,j-1))
      &           *0.25*(uFld(i,j) + uFld(i+1,j) +
      &                  uFld(i,j-1)+uFld(i+1,j-1))/radius
           ELSE
