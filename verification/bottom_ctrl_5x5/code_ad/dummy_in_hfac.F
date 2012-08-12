@@ -1,31 +1,30 @@
-C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/dummy_in_hfac.F,v 1.3 2010/03/22 01:15:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/dummy_in_hfac.F,v 1.4 2012/08/12 01:34:44 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "AUTODIFF_OPTIONS.h"
 
       subroutine dummy_in_hfac( myname, myIter, myThid )
-      IMPLICIT NONE
-C     /==========================================================\
-C     | SUBROUTINE dummy_in_hfac                                |
-C     |==========================================================|
-C     == Global variables ===
 
+C     *==========================================================*
+C     | SUBROUTINE dummy_in_hfac
+C     *==========================================================*
+
+      IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      INTEGER myThid
-      INTEGER myIter
       CHARACTER*(*) myname
+      INTEGER myIter
+      INTEGER myThid
 
-      call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
+      RETURN
+      END
 
-      call TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
-      end
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: addummy_in_hfac
 C     !INTERFACE:
@@ -33,7 +32,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE addummy_in_hfac                              |
+C     | SUBROUTINE addummy_in_hfac
 C     *==========================================================*
 C     Extract adjoint variable from TAMC/TAF-generated
 C     adjoint common blocks, contained in adcommon.h
@@ -41,7 +40,7 @@ C     and write fields to file;
 C     Make sure common blocks in adcommon.h are up-to-date
 C     w.r.t. current adjoint code.
 C     *==========================================================*
-C     | SUBROUTINE addummy_in_hfac                              |
+C     | SUBROUTINE addummy_in_hfac
 C     *==========================================================*
 C     \ev
 
@@ -64,9 +63,9 @@ C     == Global variables ===
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      integer myThid
-      integer myIter
       CHARACTER*(1) myname
+      integer myIter
+      integer myThid
 
 #ifdef ALLOW_AUTODIFF_MONITOR
 C     !LOCAL VARIABLES:
@@ -89,15 +88,12 @@ CEOP
 
       mytime = 0.
 
-      call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
       IF (
      &  DIFFERENT_MULTIPLE(dumpFreq,mytime,
      &                     mytime-deltaTClock)
      & ) THEN
 
-       _BARRIER
-       _BEGIN_MASTER( myThid )
+        CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
@@ -142,13 +138,12 @@ C--     Check for IO errors
      &    SQUEEZE_RIGHT, 1 )
         ENDIF
 
-       _END_MASTER( myThid )
-       _BARRIER
+        CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
       ENDIF
 
-      call TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 #endif /* ALLOW_DEPTH_CONTROL */
 #endif /* ALLOW_AUTODIFF_MONITOR */
 
-      end
+      RETURN
+      END

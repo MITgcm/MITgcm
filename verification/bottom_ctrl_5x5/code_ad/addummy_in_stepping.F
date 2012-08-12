@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/addummy_in_stepping.F,v 1.3 2012/07/06 21:40:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/addummy_in_stepping.F,v 1.4 2012/08/12 01:34:44 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "AUTODIFF_OPTIONS.h"
 #include "AD_CONFIG.h"
 
 CBOP
