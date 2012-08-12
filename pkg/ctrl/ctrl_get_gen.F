@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.26 2012/08/10 19:38:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.27 2012/08/12 19:46:19 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -122,7 +122,7 @@ c--   Get the counters, flags, and the interpolation factor.
 #ifdef ALLOW_CTRL_SMOOTH
         if ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file )
-     &     call ctrl_smooth(xx_gen1,genmask)
+     &     call ctrl_smooth(xx_gen1,genmask,myThid)
 #endif
 
 #ifdef ALLOW_SMOOTH_CORREL2D
@@ -150,7 +150,7 @@ c--   Get the counters, flags, and the interpolation factor.
 #ifdef ALLOW_CTRL_SMOOTH
         if ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file )
-     &     call ctrl_smooth(xx_gen1,genmask)
+     &     call ctrl_smooth(xx_gen1,genmask,myThid)
 #endif
 
 #ifdef ALLOW_SMOOTH_CORREL2D
@@ -244,5 +244,5 @@ cph)
 
 #endif /* ALLOW_EXF */
 
-      end
-
+      RETURN
+      END
