@@ -1,13 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_bound.F,v 1.4 2012/08/02 01:30:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_bound.F,v 1.5 2012/08/12 19:34:22 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "CTRL_OPTIONS.h"
+C- note: although we just need CPP_EEOPTIONS.h here, prefer to
+C        include the same option-file above as in the AD version.
 
+C--  File ctrl_bound.F:
+C--   Contents
+C--   o CTRL_BOUND_3D
+C--   o CTRL_BOUND_2D
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
 C     !ROUTINE: CTRL_BOUND_3D
 C     !INTERFACE:
       SUBROUTINE CTRL_BOUND_3D(
-     I             fieldCur,maskFld3d,
-     I             boundsVec,myThid)
+     U                fieldCur,
+     I                maskFld3d, boundsVec, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | started: Gael Forget gforget@mit.edu 20-Aug-2007
@@ -15,52 +24,59 @@ C     |
 C     | o in forward mode: impose bounds on ctrl vector values
 C     | o in adjoint mode: do nothing ... or emulate local minimum
 C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
 
-      integer myThid,bi,bj,i,j,k
-      integer itlo,ithi,jtlo,jthi
-      _RL fieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
-      _RS maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
+C     !INPUT/OUTPUT PARAMETERS:
+      _RL fieldCur (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RS maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL boundsVec(5)
+      INTEGER myThid
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+C     !LOCAL VARIABLES:
+      INTEGER bi,bj,i,j,k
+CEOP
 
-      if (boundsVec(1).LT.boundsVec(4)) then
+      IF (boundsVec(1).LT.boundsVec(4)) THEN
 
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = 1,sny
-              do i = 1,snx
-          IF (maskFld3d(i,j,k,bi,bj).NE.0.) then
-            IF (fieldCur(i,j,k,bi,bj).gt.boundsVec(4)) then
-             fieldCur(i,j,k,bi,bj)=boundsVec(4)
-            ENDIF
-            IF (fieldCur(i,j,k,bi,bj).lt.boundsVec(1)) then
-             fieldCur(i,j,k,bi,bj)=boundsVec(1)
-            ENDIF
-          ENDIF
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
+       DO bj=myByLo(myThid), myByHi(myThid)
+        DO bi=myBxLo(myThid), myBxHi(myThid)
 
-      endif
+         DO k = 1,Nr
+          DO j = 1,sNy
+           DO i = 1,sNx
+             IF (maskFld3d(i,j,k,bi,bj).NE.0.) THEN
+              IF (fieldCur(i,j,k,bi,bj).GT.boundsVec(4)) THEN
+               fieldCur(i,j,k,bi,bj)=boundsVec(4)
+              ENDIF
+              IF (fieldCur(i,j,k,bi,bj).LT.boundsVec(1)) THEN
+               fieldCur(i,j,k,bi,bj)=boundsVec(1)
+              ENDIF
+             ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
 
-      end
+        ENDDO
+       ENDDO
 
+      ENDIF
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C
 C     !ROUTINE: CTRL_BOUND_2D
 C     !INTERFACE:
       SUBROUTINE CTRL_BOUND_2D(
-     I             fieldCur,maskFld3d,
-     I             boundsVec,myThid)
+     U                fieldCur,
+     I                maskFld3d, boundsVec, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | started: Gael Forget gforget@mit.edu 20-Aug-2007
@@ -68,43 +84,45 @@ C     |
 C     | o in forward mode: impose bounds on ctrl vector values
 C     | o in adjoint mode: do nothing ... or emulate local minimum
 C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
 
-
-      integer myThid,bi,bj,i,j,k
-      integer itlo,ithi,jtlo,jthi
-      _RL fieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nsx,nsy)
-      _RS maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
+C     !INPUT/OUTPUT PARAMETERS:
+      _RL fieldCur (1-Olx:sNx+Olx,1-Oly:sNy+Oly,   nSx,nSy)
+      _RS maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL boundsVec(5)
+      INTEGER myThid
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+C     !LOCAL VARIABLES:
+      INTEGER bi,bj,i,j
+CEOP
 
-      if (boundsVec(1).LT.boundsVec(4)) then
+      IF (boundsVec(1).LT.boundsVec(4)) THEN
 
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-            do j = 1-oly,sny+oly
-              do i = 1-olx,snx+olx
-          IF (maskFld3d(i,j,1,bi,bj).NE.0.) then
-            IF (fieldCur(i,j,bi,bj).gt.boundsVec(4)) then
-             fieldCur(i,j,bi,bj)=boundsVec(4)
-            ENDIF
-            IF (fieldCur(i,j,bi,bj).lt.boundsVec(1)) then
-             fieldCur(i,j,bi,bj)=boundsVec(1)
-            ENDIF
-          ENDIF
-              enddo
-            enddo
-        enddo
-      enddo
+       DO bj=myByLo(myThid), myByHi(myThid)
+        DO bi=myBxLo(myThid), myBxHi(myThid)
 
-      endif
+          DO j = 1-OLy,sNy+OLy
+           DO i = 1-OLx,sNx+OLx
+             IF (maskFld3d(i,j,1,bi,bj).NE.0.) THEN
+              IF (fieldCur(i,j,bi,bj).GT.boundsVec(4)) THEN
+               fieldCur(i,j,bi,bj)=boundsVec(4)
+              ENDIF
+              IF (fieldCur(i,j,bi,bj).LT.boundsVec(1)) THEN
+               fieldCur(i,j,bi,bj)=boundsVec(1)
+              ENDIF
+             ENDIF
+           ENDDO
+          ENDDO
+
+        ENDDO
+       ENDDO
+
+      ENDIF
 
       RETURN
       END
