@@ -1,18 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.10 2012/08/10 19:36:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.11 2012/08/12 01:38:02 jmc Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
 
       subroutine cost_test( myThid )
-C     /==========================================================\
-C     | subroutine cost_test                                     |
-C     | o this routine computes the cost function for the tiles  |
-C     |   of this processor                                      |
-C     |==========================================================|
-C     |                                                          |
-C     | Notes                                                    |
-C     | =====                                                    |
-C     \==========================================================/
+C     *==========================================================*
+C     | subroutine cost_test
+C     | o this routine computes the cost function for the tiles
+C     |   of this processor
+C     *==========================================================*
+C     | Notes
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == Global variables ===
@@ -26,13 +24,12 @@ C     == Global variables ===
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      integer bi, bj
       integer myThid
 
 #ifdef ALLOW_COST_TEST
 C     == Local variables
+      integer bi, bj
       _RL thetaRef
-
       integer i, j, k
       integer ig, jg
       integer itlo,ithi
@@ -54,7 +51,7 @@ C     == Local variables
       endif
 
 ce    some reference temperature
-      thetaRef = 24.0D0
+      thetaRef = 24.0 _d 0
 
 C--   Calculate mask for tracer cells  (0 => land, 1 => water)
       k=1
@@ -82,12 +79,12 @@ cph)
      &                         theta(i,j,kLocOut,bi,bj)**2
 #endif
 
-            end do
-          end do
-        end do
-      end do
+            enddo
+          enddo
+        enddo
+      enddo
 
-#endif
+#endif  /* ALLOW_COST_TEST */
 
       RETURN
       END
