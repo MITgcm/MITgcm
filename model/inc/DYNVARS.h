@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.41 2010/02/17 23:39:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.42 2012/08/12 20:31:25 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -28,7 +28,7 @@ C     etaH  :: surface r-anomaly, advanced in time consistently
 C              with 2.D flow divergence (Exact-Conservation):
 C                etaH^n+1 = etaH^n - delta_t*Div.(H^n U^n)
 C  note: a) used with "exactConserv" but strictly necessary for NonLinFreeSurf
-C        b) same as etaN but not necessarely at the same time, e.g.:
+C        b) same as etaN but not necessarily at the same time, e.g.:
 C           implicDiv2DFlow=0 => etaH=etaN ; =1 => etaH=etaNm1 ;
 
 #ifdef ALLOW_ADAMSBASHFORTH_3
@@ -70,7 +70,7 @@ C           implicDiv2DFlow=0 => etaH=etaN ; =1 => etaH=etaNm1 ;
      &                   etaH
       _RL  etaH  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#ifdef ALLOW_3D_DIFFKR
+#if (defined (ALLOW_3D_DIFFKR) || defined (ALLOW_DIFFKR_CONTROL))
 C     diffKr :: full 3D specification of Laplacian diffusion coeff.
 C               for mixing of tracers vertically ( units of r^2/s )
       COMMON /DYNVARS_DIFFKR/
@@ -81,23 +81,21 @@ C               for mixing of tracers vertically ( units of r^2/s )
 cph(
 cph the following block will eventually move to a separate
 cph header file containing requires anomaly fields of control vars.
-cph
-#if (defined (ALLOW_AUTODIFF) && defined (ALLOW_KAPGM_CONTROL))
+#ifdef ALLOW_KAPGM_CONTROL
       COMMON /DYNVARS_KAPGM/
-     &                       kapgm
-      _RL  kapgm  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+     &                       kapGM
+      _RL  kapGM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
-#if (defined (ALLOW_AUTODIFF) && defined (ALLOW_KAPREDI_CONTROL))
+#ifdef ALLOW_KAPREDI_CONTROL
       COMMON /DYNVARS_KAPREDI/
-     &                       kapredi
-      _RL  kapredi  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+     &                       kapRedi
+      _RL  kapRedi  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
-#if (defined (ALLOW_AUTODIFF) && defined (ALLOW_BOTTOMDRAG_CONTROL))
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
       COMMON /DYNVARS_BOTTOMDRAG/
-     &                       bottomdragfld
-      _RL  bottomdragfld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+     &                       bottomdragFld
+      _RL  bottomdragFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
-cph
 cph)
 
 #ifdef ALLOW_BL79_LAT_VARY
