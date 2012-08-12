@@ -1,18 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/cost_test.F,v 1.2 2007/10/09 02:36:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/cost_test.F,v 1.3 2012/08/12 01:32:50 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "COST_OPTIONS.h"
 
       subroutine cost_test( myThid )
-C     /==========================================================\
-C     | subroutine cost_test                                     |
-C     | o this routine computes the cost function for the tiles  |
-C     |   of this processor                                      |
-C     |==========================================================|
-C     |                                                          |
-C     | Notes                                                    |
-C     | =====                                                    |
-C     \==========================================================/
+C     *==========================================================*
+C     | subroutine cost_test
+C     | o this routine computes the cost function for the tiles
+C     |   of this processor
+C     *==========================================================*
+C     | Notes
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == Global variables ===
@@ -21,21 +19,17 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#ifdef ALLOW_PASSIVE_TRACER
-# include "TR1.h"
-#endif
 
 #include "cost.h"
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      integer bi, bj
       integer myThid
 
 #ifdef ALLOW_COST_TEST
 C     == Local variables
+      integer bi, bj
       _RL thetaRef
-
       integer i, j, k
       integer ig, jg
       integer itlo,ithi
@@ -57,7 +51,7 @@ C     == Local variables
       enddo
 
 ce    some reference temperature
-      thetaRef = 24.0D0
+      thetaRef = 24.0 _d 0
 C--   Calculate mask for tracer cells  (0 => land, 1 => water)
       k=1
 
@@ -78,14 +72,15 @@ c
      &              ig,jg,kLocOut,' TILE ',i,j,bi,bj
             endif
 
-            end do
-          end do
+            enddo
+          enddo
 c
           objf_test(bi,bj) = objf_test(bi,bj) / 9. _d 0
 c
-        end do
-      end do
+        enddo
+      enddo
 
-#endif
+#endif  /* ALLOW_COST_TEST */
 
+      RETURN
       END

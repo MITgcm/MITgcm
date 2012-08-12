@@ -1,18 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/verification/isomip/code_ad/cost_test.F,v 1.1 2012/01/06 13:01:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/isomip/code_ad/cost_test.F,v 1.2 2012/08/12 01:32:50 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "COST_OPTIONS.h"
 
       subroutine cost_test( myThid )
-C     /==========================================================\
-C     | subroutine cost_test                                     |
-C     | o this routine computes the cost function for the tiles  |
-C     |   of this processor                                      |
-C     |==========================================================|
-C     |                                                          |
-C     | Notes                                                    |
-C     | =====                                                    |
-C     \==========================================================/
+C     *==========================================================*
+C     | subroutine cost_test
+C     | o this routine computes the cost function for the tiles
+C     |   of this processor
+C     *==========================================================*
+C     | Notes
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == Global variables ===
@@ -26,18 +24,17 @@ C     == Global variables ===
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      integer bi, bj
       integer myThid
 
 #ifdef ALLOW_COST_TEST
 C     == Local variables
+      integer bi, bj
       _RL thetaRef
-
       integer i, j, k
       integer ig, jg
       integer itlo,ithi
       integer jtlo,jthi
-      _RL  thetaLev(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+c     _RL  thetaLev(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -54,10 +51,10 @@ C     == Local variables
          kLocOut =  1
       endif
 
-cph      CALL READ_FLD_XYZ_RL( hydrogThetaFile, ' ', thetaLev, 0, myThid )
+c     CALL READ_FLD_XYZ_RL( hydrogThetaFile, ' ', thetaLev, 0, myThid )
 
 ce    some reference temperature
-      thetaRef = 24.0D0
+      thetaRef = 24.0 _d 0
 
 C--   Calculate mask for tracer cells  (0 => land, 1 => water)
       k=1
@@ -89,11 +86,12 @@ cph)
        enddo
 #endif
 
-            end do
-          end do
-        end do
-      end do
+            enddo
+          enddo
+        enddo
+      enddo
 
-#endif
+#endif  /* ALLOW_COST_TEST */
 
+      RETURN
       END

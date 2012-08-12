@@ -1,18 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/cost_test.F,v 1.2 2007/10/09 02:36:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/cost_test.F,v 1.3 2012/08/12 01:32:50 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "COST_OPTIONS.h"
 
       subroutine cost_test( myThid )
-C     /==========================================================\
-C     | subroutine cost_test                                     |
-C     | o this routine computes the cost function for the tiles  |
-C     |   of this processor                                      |
-C     |==========================================================|
-C     |                                                          |
-C     | Notes                                                    |
-C     | =====                                                    |
-C     \==========================================================/
+C     *==========================================================*
+C     | subroutine cost_test
+C     | o this routine computes the cost function for the tiles
+C     |   of this processor
+C     *==========================================================*
+C     | Notes
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == Global variables ===
@@ -26,22 +24,20 @@ C     == Global variables ===
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      integer bi, bj
       integer myThid
 
 #ifdef ALLOW_COST_TEST
 C     == Local variables
+      integer bi, bj
       integer i, j, k
       integer ig, jg
       integer itlo,ithi
       integer jtlo,jthi
-
       _RL vol_trans
 C--   index values at which the transport is to be calculated
       INTEGER iysecmin, iysecmax, ixsec
       PARAMETER (ixsec = 4, iysecmin = 3, iysecmax = 3)
 
-C
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
@@ -66,7 +62,7 @@ C
             ENDDO
            ENDIF
           ENDDO
-         ENDIF	
+         ENDIF
         ENDDO
         objf_test(bi,bj) = vol_trans*1.0e-06
        END DO
@@ -77,7 +73,7 @@ Cml      jLocOut =  35
 Cml      kLocOut =  1
 Cml
 Cmlce    some reference temperature
-Cml      thetaRef = 24.0D0
+Cml      thetaRef = 24.0 _d 0
 Cml
 CmlC--   Calculate cost function on tile of this instance
 Cml      do bj = jtlo,jthi
@@ -93,11 +89,12 @@ Cml     &              'COST    ',ig,jg,kLocOut,' TILE ',i,j,bi,bj
 Cml               objf_test(bi,bj) = theta(i,j,kLocOut,bi,bj)
 Cml            endif
 Cml
-Cml            end do
-Cml          end do
-Cml        end do
-Cml      end do
+Cml            enddo
+Cml          enddo
+Cml        enddo
+Cml      enddo
 
-#endif
+#endif /* ALLOW_COST_TEST */
 
+      RETURN
       END
