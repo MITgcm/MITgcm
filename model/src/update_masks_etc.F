@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_masks_etc.F,v 1.8 2012/06/17 14:17:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_masks_etc.F,v 1.9 2012/08/12 20:24:23 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 C--  File update_masks_etc.F:

@@ -1,9 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.19 2012/01/20 15:26:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.20 2012/08/12 20:24:23 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #define USE_FACTORIZED_POLY
 
+C--  File find_alpha.F: Calculate expansion Coeff
+C--   Contents
+C--   o FIND_ALPHA
+C--   o FIND_BETA
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: FIND_ALPHA
 C     !INTERFACE:
@@ -17,13 +24,10 @@ C     *==========================================================*
 C     | o SUBROUTINE FIND_ALPHA
 C     |   Calculates [drho(S,T,z) / dT] of a horizontal slice
 C     *==========================================================*
-C     |
-C     | k - is the Theta/Salt level
-C     | kRef - determines pressure reference level
-C     |        (not used in 'LINEAR' mode)
-C     |
+C     | k        - is the Theta/Salt level
+C     | kRef     - determines pressure reference level
+C     |            (not used in 'LINEAR' mode)
 C     | alphaLoc - drho / dT (kg/m^3/C)
-C     |
 C     *==========================================================*
 C     \ev
 
@@ -46,7 +50,7 @@ c     myThid :: thread number for this instance of the routine
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER k
       INTEGER kRef
-      _RL alphaLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL alphaLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -56,12 +60,12 @@ C     == Local variables ==
       _RL ct, sa, sqrtsa, p
       _RL drhoP0dtheta, drhoP0dthetaFresh, drhoP0dthetaSalt
       _RL dKdtheta, dKdthetaFresh, dKdthetaSalt, dKdthetaPres
-      _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rhoP0  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL locPres(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhoP0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL bulkMod(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dnum_dtheta, dden_dtheta
-      _RL rhoDen (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rhoLoc (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoDen (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhoLoc (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
 #ifdef CHECK_SALINITY_FOR_NEGATIVE_VALUES
@@ -215,7 +219,6 @@ C     of sea water at p
      &              - rhoP0(i,j)*p1*dKdtheta )
      &              /( bulkmod(i,j) - p1 )**2
 
-
             ENDDO
          ENDDO
       ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
@@ -306,18 +309,18 @@ C     this line makes TAF create vectorizable code
          p       = locPres(i,j)*SItodBar
 
          dnum_dtheta = teos(02)
-     &   + ct*(2.*teos(03) + 3.*teos(04)*ct)  
+     &   + ct*(2.*teos(03) + 3.*teos(04)*ct)
      &   + sa*(teos(06) + 2.*teos(07)*ct
      &   + sqrtsa*(teos(09) + ct*(2.*teos(10) + 3.*teos(11)*ct)))
      &   + p*(     teos(13) + 2.*teos(14)*ct  + sa*2.*teos(16)
      &        + p*(teos(18) + 2.*teos(19)*ct))
-         
-         dden_dtheta = teos(22) 
+
+         dden_dtheta = teos(22)
      &   + ct*(2.*teos(23) + ct*(3.*teos(24) + 4.*teos(25)*ct))
-     &   + sa*(teos(27) 
+     &   + sa*(teos(27)
      &   + ct*(2.*teos(28) + ct*(3.*teos(29) + 4.*teos(30)*ct))
-     &   + sqrtsa*(teos(32) 
-     &   + ct*(2.*teos(33) + ct*(3.*teos(34) + 4.*teos(35)*ct))))  
+     &   + sqrtsa*(teos(32)
+     &   + ct*(2.*teos(33) + ct*(3.*teos(34) + 4.*teos(35)*ct))))
      &   + p*(teos(38) + ct*(2.*teos(39) + 3.*teos(40)*ct)
      &   + teos(42)
      &   + p*(teos(44) + 2.*teos(45)*ct + teos(46)*sa
@@ -325,7 +328,7 @@ C     this line makes TAF create vectorizable code
 
          alphaLoc(i,j)    = rhoDen(i,j)*(dnum_dtheta
      &        - (rhoLoc(i,j)*rhoDen(i,j))*dden_dtheta)
-         
+
         ENDDO
        ENDDO
 
@@ -337,24 +340,29 @@ C     this line makes TAF create vectorizable code
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: FIND_BETA
+C     !INTERFACE:
       SUBROUTINE FIND_BETA (
      I     bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
      O     betaLoc,
      I     myThid )
-C     /==========================================================\
-C     | o SUBROUTINE FIND_BETA                                   |
-C     |   Calculates [drho(S,T,z) / dS] of a horizontal slice    |
-C     |==========================================================|
-C     |                                                          |
-C     | k - is the Theta/Salt level                              |
-C     | kRef - determines pressure reference level               |
-C     |        (not used in 'LINEAR' mode)                       |
-C     |                                                          |
-C     | betaLoc - drho / dS (kg/m^3/PSU)                         |
-C     |                                                          |
-C     \==========================================================/
-      IMPLICIT NONE
 
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | o SUBROUTINE FIND_BETA
+C     |   Calculates [drho(S,T,z) / dS] of a horizontal slice
+C     |==========================================================*
+C     | k       - is the Theta/Salt level
+C     | kRef    - determines pressure reference level
+C     |           (not used in 'LINEAR' mode)
+C     | betaLoc - drho / dS (kg/m^3/PSU)
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "DYNVARS.h"
@@ -363,6 +371,7 @@ C     === Global variables ===
 #include "EOS.h"
 #include "GRID.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     k      :: Level of Theta/Salt slice
 C     kRef   :: Pressure reference level
@@ -371,8 +380,9 @@ c     myThid :: thread number for this instance of the routine
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER k
       INTEGER kRef
-      _RL betaLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL betaLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j
       _RL refTemp,refSalt,tP,sP
@@ -380,12 +390,12 @@ C     == Local variables ==
       _RL ct, sa, sqrtsa, p
       _RL drhoP0dS
       _RL dKdS, dKdSSalt, dKdSPres
-      _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rhoP0  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL locPres(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhoP0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL bulkMod(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dnum_dsalt, dden_dsalt
-      _RL rhoDen (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rhoLoc (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoDen (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhoLoc (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
 #ifdef CHECK_SALINITY_FOR_NEGATIVE_VALUES
@@ -523,7 +533,6 @@ C     of sea water at p
      &              - rhoP0(i,j)*p1*dKdS )
      &              /( bulkmod(i,j) - p1 )**2
 
-
             ENDDO
          ENDDO
       ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
@@ -589,7 +598,7 @@ C     this line makes TAF create vectorizable code
      I      theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
      O      rhoLoc, rhoDen,
      I      myThid )
-       
+
        DO j=jMin,jMax
         DO i=iMin,iMax
          ct      = theta(i,j,k,bi,bj)
@@ -611,10 +620,10 @@ C     this line makes TAF create vectorizable code
      &           + ct*(teos(09) + ct*(teos(10) + teos(11)*ct)))
      &   + p*(teos(15) + teos(16)*ct + p*teos(20))
 
-         dden_dsalt = teos(26) 
+         dden_dsalt = teos(26)
      &   + ct*(teos(27) + ct*(teos(28) + ct*(teos(29) + teos(30)*ct)))
-     &   + 2.*teos(36)*sa 
-     &   + 1.5*sqrtsa*(teos(31) + ct*(teos(32) + ct*(teos(33) 
+     &   + 2.*teos(36)*sa
+     &   + 1.5*sqrtsa*(teos(31) + ct*(teos(32) + ct*(teos(33)
      &                          + ct*(teos(34) + teos(35)*ct))))
      &   + p*(teos(41) + teos(42)*ct + p*teos(46))
 

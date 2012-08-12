@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d_nsa.F,v 1.5 2012/07/17 21:31:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d_nsa.F,v 1.6 2012/08/12 20:24:23 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CML THIS DOES NOT WORK +++++

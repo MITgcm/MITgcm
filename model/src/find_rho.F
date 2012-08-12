@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.40 2012/01/23 14:16:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.41 2012/08/12 20:24:23 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef TARGET_NEC_SX
 C     make sure that the factorized EOS is used on NEC vector computers
@@ -34,7 +35,6 @@ C     *==========================================================*
 C     | o SUBROUTINE FIND_RHO_2D
 C     |   Calculates [rho(S,T,z)-rhoConst] of a 2-D slice
 C     *==========================================================*
-C     |
 C     | kRef - determines pressure reference level
 C     |        (not used in 'LINEAR' mode)
 C     | Note:  k is not used ; keep it for debugging.
@@ -57,7 +57,7 @@ C     kRef :: Pressure reference level
       INTEGER kRef
       _RL tFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rhoLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER k, bi, bj
       INTEGER myThid
 
@@ -65,11 +65,11 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j
       _RL refTemp,refSalt,sigRef,tP,sP,deltaSig,dRho
-      _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rhoP0  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rhoNum (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rhoDen (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL locPres(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhoP0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL bulkMod(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhoNum (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhoDen (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -277,7 +277,7 @@ C     == Routine arguments ==
       INTEGER iMin,iMax,jMin,jMax
       _RL tFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rhoP0(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoP0(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -292,7 +292,7 @@ C     == Local variables ==
 #endif /* USE_FACTORIZED_EOS */
 CEOP
 #ifdef USE_FACTORIZED_EOS
-      eosF1 = eosJMDCFw(1) 
+      eosF1 = eosJMDCFw(1)
       eosF2 = eosJMDCFw(2)
       eosF3 = eosJMDCFw(3)
       eosF4 = eosJMDCFw(4)
@@ -308,7 +308,7 @@ CEOP
       eosS8 = eosJMDCSw(8)
       eosS9 = eosJMDCSw(9)
 #endif /* USE_FACTORIZED_EOS */
-      
+
       DO j=jMin,jMax
          DO i=iMin,iMax
 C     abbreviations
@@ -331,7 +331,7 @@ C     this line makes TAF create vectorizable code
 
 C     density of freshwater at the surface
 #ifdef USE_FACTORIZED_EOS
-            rfresh =      
+            rfresh =
      &                    eosF1 +
      &               t* ( eosF2 +
      &               t* ( eosF3 +
@@ -339,7 +339,7 @@ C     density of freshwater at the surface
      &               t* ( eosF5 +
      &               t*   eosF6  ))))
 #else
-            rfresh =      
+            rfresh =
      &             eosJMDCFw(1)
      &           + eosJMDCFw(2)*t
      &           + eosJMDCFw(3)*t2
@@ -355,7 +355,7 @@ C     density of sea water at the surface
      &               t * ( eosS4 +
      &               t *   eosS5  ))))
      &          + s3o2 * ( eosS6 +
-     &               t * ( eosS7 + 
+     &               t * ( eosS7 +
      &               t *   eosS8  ))
      &          + s*s  *   eosS9
 #else
@@ -413,10 +413,10 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER iMin,iMax,jMin,jMax
-      _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL locPres(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL bulkMod(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -596,10 +596,10 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER iMin,iMax,jMin,jMax
-      _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL locPres(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rhoNum (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoNum (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -662,10 +662,10 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER iMin,iMax,jMin,jMax
-      _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL locPres(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rhoDen (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoDen (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -727,7 +727,7 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | o SUBROUTINE FIND_RHOTEOS
-C     |   Calculates numerator and inverse of denominator of the 
+C     |   Calculates numerator and inverse of denominator of the
 C     |   TEOS-10 (McDougall et al. 2011) equation of state
 C     |   - the code is more or less a copy the teos-10 toolbox
 C     |     available at http://www.teos-10.org
@@ -745,11 +745,11 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER iMin,iMax,jMin,jMax
-      _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL locPres(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rhoNum (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rhoDen (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoNum (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhoDen (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -775,28 +775,28 @@ C     this line makes TAF create vectorizable code
          sqrtsa = 0. _d 0
         ENDIF
         p       = locPres(i,j)*SItodBar
-        
-        rhoNum(i,j) = teos(01) 
-     &   + ct*(teos(02) + ct*(teos(03) + teos(04)*ct))  
-     &   + sa*(teos(05) + ct*(teos(06) + teos(07)*ct) 
-     &   + sqrtsa*(teos(08) + ct*(teos(09) 
+
+        rhoNum(i,j) = teos(01)
+     &   + ct*(teos(02) + ct*(teos(03) + teos(04)*ct))
+     &   + sa*(teos(05) + ct*(teos(06) + teos(07)*ct)
+     &   + sqrtsa*(teos(08) + ct*(teos(09)
      &                      + ct*(teos(10) + teos(11)*ct))))
-     &   + p*(teos(12) + ct*(teos(13) + teos(14)*ct) 
-     &                 + sa*(teos(15) + teos(16)*ct) 
+     &   + p*(teos(12) + ct*(teos(13) + teos(14)*ct)
+     &                 + sa*(teos(15) + teos(16)*ct)
      &   + p*(teos(17) + ct*(teos(18) + teos(19)*ct) + teos(20)*sa))
-        
-        den = teos(21) 
-     &   + ct*(teos(22) + ct*(teos(23) + ct*(teos(24) + teos(25)*ct))) 
-     &   + sa*(teos(26) + ct*(teos(27) + ct*(teos(28) 
-     &   + ct*(teos(29) + teos(30)*ct))) 
-     &   + teos(36)*sa 
-     &   + sqrtsa*(teos(31) + ct*(teos(32) + ct*(teos(33) 
-     &            + ct*(teos(34) + teos(35)*ct)))))  
-     &   + p*(teos(37) + ct*(teos(38) + ct*(teos(39) + teos(40)*ct))  
-     &   + sa*(teos(41) + teos(42)*ct) 
-     &   + p*(teos(43) + ct*(teos(44) + teos(45)*ct + teos(46)*sa) 
+
+        den = teos(21)
+     &   + ct*(teos(22) + ct*(teos(23) + ct*(teos(24) + teos(25)*ct)))
+     &   + sa*(teos(26) + ct*(teos(27) + ct*(teos(28)
+     &   + ct*(teos(29) + teos(30)*ct)))
+     &   + teos(36)*sa
+     &   + sqrtsa*(teos(31) + ct*(teos(32) + ct*(teos(33)
+     &            + ct*(teos(34) + teos(35)*ct)))))
+     &   + p*(teos(37) + ct*(teos(38) + ct*(teos(39) + teos(40)*ct))
+     &   + sa*(teos(41) + teos(42)*ct)
+     &   + p*(teos(43) + ct*(teos(44) + teos(45)*ct + teos(46)*sa)
      &   + p*(teos(47) + teos(48)*ct)))
-        
+
         rhoDen(i,j) = 1.0/(epsln+den)
 
        ENDDO
@@ -853,7 +853,7 @@ C     == Local variables ==
 #endif /* USE_FACTORIZED_EOS */
 CEOP
 #ifdef USE_FACTORIZED_EOS
-      eosF1 = eosJMDCFw(1) 
+      eosF1 = eosJMDCFw(1)
       eosF2 = eosJMDCFw(2)
       eosF3 = eosJMDCFw(3)
       eosF4 = eosJMDCFw(4)
@@ -945,7 +945,7 @@ C     nonlinear equation of state in pressure coordinates
 
 C     density of freshwater at the surface
 #ifdef USE_FACTORIZED_EOS
-         rfresh =      
+         rfresh =
      &              eosF1 +
      &        t1* ( eosF2 +
      &        t1* ( eosF3 +
@@ -969,7 +969,7 @@ C     density of sea water at the surface
      &             t1 * ( eosS4 +
      &             t1 *   eosS5  ))))
      &         + s3o2 * ( eosS6 +
-     &             t1 * ( eosS7 + 
+     &             t1 * ( eosS7 +
      &             t1 *   eosS8  ))
      &         + s1*s1*   eosS9
 #else
@@ -998,7 +998,7 @@ C     secant bulk modulus of fresh water at the surface
      &        t1 * ( eosF3 +
      &        t1 * ( eosF4 +
      &        t1 *   eosF5  )))
-#else 
+#else
          bMfresh =
      &             eosJMDCKFw(1)
      &           + eosJMDCKFw(2)*t1
@@ -1085,7 +1085,6 @@ C     density of sea water at pressure p
      &      +     eosMDJWFnum(9)*s1
      &      +     p1*(eosMDJWFnum(10) + eosMDJWFnum(11)*t2) )
 
-
        den = eosMDJWFden(0)
      &      + t1*(eosMDJWFden(1)
      &      +     t1*(eosMDJWFden(2)
@@ -1098,7 +1097,7 @@ C     density of sea water at pressure p
      &      +     p1t1*(eosMDJWFden(11)*t2 + eosMDJWFden(12)*p1) )
 
        rhoDen = 1.0/(epsln+den)
-       
+
        rhoLoc = rhoNum*rhoDen
 
       ELSEIF( equationOfState .EQ. 'TEOS10' ) THEN
@@ -1112,31 +1111,30 @@ C     density of sea water at pressure p
         sqrtsa = 0. _d 0
        ENDIF
        p       = pLoc*SItodBar
-        
-       rhoNum = teos(01) 
-     &   + ct*(teos(02) + ct*(teos(03) + teos(04)*ct))  
-     &   + sa*(teos(05) + ct*(teos(06) + teos(07)*ct) 
-     &   + sqrtsa*(teos(08) + ct*(teos(09) 
+
+       rhoNum = teos(01)
+     &   + ct*(teos(02) + ct*(teos(03) + teos(04)*ct))
+     &   + sa*(teos(05) + ct*(teos(06) + teos(07)*ct)
+     &   + sqrtsa*(teos(08) + ct*(teos(09)
      &            + ct*(teos(10) + teos(11)*ct))))
-     &   + p*(teos(12) + ct*(teos(13) + teos(14)*ct) 
-     &                      + sa*(teos(15) + teos(16)*ct) 
+     &   + p*(teos(12) + ct*(teos(13) + teos(14)*ct)
+     &                      + sa*(teos(15) + teos(16)*ct)
      &   + p*(teos(17) + ct*(teos(18) + teos(19)*ct) + teos(20)*sa))
-        
-       den = teos(21) 
-     &   + ct*(teos(22) + ct*(teos(23) + ct*(teos(24) + teos(25)*ct))) 
-     &   + sa*(teos(26) + ct*(teos(27) + ct*(teos(28) 
-     &   + ct*(teos(29) + teos(30)*ct))) 
-     &   + teos(36)*sa 
-     %   + sqrtsa*(teos(31) + ct*(teos(32) + ct*(teos(33) 
-     &            + ct*(teos(34) + teos(35)*ct)))))  
-     %   + p*(teos(37) + ct*(teos(38) + ct*(teos(39) + teos(40)*ct))  
-     %   + sa*(teos(41) + teos(42)*ct) 
-     %   + p*(teos(43) + ct*(teos(44) + teos(45)*ct + teos(46)*sa) 
+
+       den = teos(21)
+     &   + ct*(teos(22) + ct*(teos(23) + ct*(teos(24) + teos(25)*ct)))
+     &   + sa*(teos(26) + ct*(teos(27) + ct*(teos(28)
+     &   + ct*(teos(29) + teos(30)*ct)))
+     &   + teos(36)*sa
+     %   + sqrtsa*(teos(31) + ct*(teos(32) + ct*(teos(33)
+     &            + ct*(teos(34) + teos(35)*ct)))))
+     %   + p*(teos(37) + ct*(teos(38) + ct*(teos(39) + teos(40)*ct))
+     %   + sa*(teos(41) + teos(42)*ct)
+     %   + p*(teos(43) + ct*(teos(44) + teos(45)*ct + teos(46)*sa)
      %   + p*(teos(47) + teos(48)*ct)))
-        
-        
+
        rhoDen = 1.0/(epsln+den)
-       
+
        rhoLoc = rhoNum*rhoDen
 
       ELSEIF( equationOfState .EQ. 'IDEALG' ) THEN
