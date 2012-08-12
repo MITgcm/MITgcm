@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_driver.F,v 1.9 2010/11/22 23:47:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_driver.F,v 1.10 2012/08/12 18:29:25 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "ADMTLM_OPTIONS.h"
 
 CBOP
 

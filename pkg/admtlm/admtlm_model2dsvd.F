@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_model2dsvd.F,v 1.8 2012/08/10 19:33:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_model2dsvd.F,v 1.9 2012/08/12 18:29:25 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "ADMTLM_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
@@ -546,4 +545,3 @@ C     place holder of obsolete variable jG
 
       return
       end
-

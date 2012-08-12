@@ -1,19 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_dsvd.F,v 1.6 2006/01/26 19:39:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_dsvd.F,v 1.7 2012/08/12 18:29:25 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "ADMTLM_OPTIONS.h"
 
       subroutine admtlm_dsvd ( mythid )
 c
-c     This example program is intended to illustrate the 
+c     This example program is intended to illustrate the
 c     the use of ARPACK to compute the Singular Value Decomposition.
-c   
+c
 c     This code shows how to use ARPACK to find a few of the
-c     largest singular values(sigma) and corresponding right singular 
+c     largest singular values(sigma) and corresponding right singular
 c     vectors (v) for the the matrix A by solving the symmetric problem:
-c          
+c
 c                        (A'*A)*v = sigma*v
-c 
+c
 c     where A is an m by n real matrix.
 c
 c     This code may be easily modified to estimate the 2-norm
@@ -26,20 +26,20 @@ c
 c     This formulation is appropriate when  m  .ge.  n.
 c     Reverse the roles of A and A' in the case that  m .le. n.
 c
-c     The main points illustrated here are 
+c     The main points illustrated here are
 c
-c        1) How to declare sufficient memory to find NEV 
-c           largest singular values of A .  
+c        1) How to declare sufficient memory to find NEV
+c           largest singular values of A .
 c
-c        2) Illustration of the reverse communication interface 
-c           needed to utilize the top level ARPACK routine DSAUPD 
+c        2) Illustration of the reverse communication interface
+c           needed to utilize the top level ARPACK routine DSAUPD
 c           that computes the quantities needed to construct
 c           the desired singular values and vectors(if requested).
 c
 c        3) How to extract the desired singular values and vectors
 c           using the ARPACK routine DSEUPD.
 c
-c        4) How to construct the left singular vectors U from the 
+c        4) How to construct the left singular vectors U from the
 c           right singular vectors V to obtain the decomposition
 c
 c                        A*V = U*S
@@ -47,14 +47,14 @@ c
 c           where S = diag(sigma_1, sigma_2, ..., sigma_k).
 c
 c     The only thing that must be supplied in order to use this
-c     routine on your problem is to change the array dimensions 
-c     appropriately, to specify WHICH singular values you want to 
-c     compute and to supply a the matrix-vector products 
+c     routine on your problem is to change the array dimensions
+c     appropriately, to specify WHICH singular values you want to
+c     compute and to supply a the matrix-vector products
 c
 c                         w <-  Ax
 c                         y <-  A'w
 c
-c     in place of the calls  to AV( ) and ATV( ) respectively below.  
+c     in place of the calls  to AV( ) and ATV( ) respectively below.
 c
 c     Further documentation is available in the header of DSAUPD
 c     which may be found in the SRC directory.
@@ -63,11 +63,11 @@ c     This codes implements
 c
 c\Example-1
 c     ... Suppose we want to solve A'A*v = sigma*v in regular mode,
-c         where A is derived from the simplest finite difference 
+c         where A is derived from the simplest finite difference
 c         discretization of the 2-dimensional kernel  K(s,t)dt  where
 c
 c                 K(s,t) =  s(t-1)   if 0 .le. s .le. t .le. 1,
-c                           t(s-1)   if 0 .le. t .lt. s .le. 1. 
+c                           t(s-1)   if 0 .le. t .lt. s .le. 1.
 c
 c         See subroutines AV  and ATV for details.
 c     ... OP = A'*A  and  B = I.
@@ -167,8 +167,8 @@ c     | Local Arrays |
 c     %--------------%
 c
       Double precision
-     &                 v(ldv,maxncv), u(ldu, maxnev), 
-     &                 workl(maxncv*(maxncv+8)), workd(3*maxn), 
+     &                 v(ldv,maxncv), u(ldu, maxnev),
+     &                 workl(maxncv*(maxncv+8)), workd(3*maxn),
      &                 s(maxncv,2), resid(maxn), ax(maxm)
       logical          select(maxncv)
       integer          iparam(11), ipntr(11)
@@ -181,7 +181,7 @@ c
       integer          ido, m, n, nev, ncv, lworkl, info, ierr,
      &                 j, ishfts, maxitr, mode, nconv
       logical          rvec
-      Double precision      
+      Double precision
      &                 tol, sigma, temp
 c
 c     %------------%
@@ -191,12 +191,12 @@ c
       Double precision
      &                 one, zero
       parameter        (one = 1.0D+0, zero = 0.0D+0)
-c  
+c
 c     %-----------------------------%
 c     | BLAS & LAPACK routines used |
 c     %-----------------------------%
 c
-      Double precision           
+      Double precision
      &                 dnrm2
       external         dnrm2, daxpy, dcopy, dscal
 
@@ -215,7 +215,7 @@ cph      double precision metricTriag(maxn,maxn)
 cph      double precision metricInv(maxn,maxn)
 
 cph      DATA (metricInv(ii,1),ii=1,maxn)
-cph     &     / 9.9896D+07, 0.0519D+07, -0.0415D+07, 
+cph     &     / 9.9896D+07, 0.0519D+07, -0.0415D+07,
 cph     &     0.0486D+07, -0.2432D+07, 0.1945D+07 /
 cph      DATA (metricInv(ii,2),ii=1,maxn)
 cph     &     / 0.0519D+07, 9.7403D+07, 0.2077D+07,
@@ -252,7 +252,7 @@ c
       ndigit = -3
       logfil = 6
       msgets = 0
-      msaitr = 0 
+      msaitr = 0
       msapps = 0
       msaupd = 1
       msaup2 = 0
@@ -269,11 +269,11 @@ cph(
 cph)
 c
 c     %------------------------------------------------%
-c     | Specifications for ARPACK usage are set        | 
+c     | Specifications for ARPACK usage are set        |
 c     | below:                                         |
 c     |                                                |
-c     |    1) NEV = 4 asks for 4 singular values to be |  
-c     |       computed.                                | 
+c     |    1) NEV = 4 asks for 4 singular values to be |
+c     |       computed.                                |
 c     |                                                |
 c     |    2) NCV = 20 sets the length of the Arnoldi  |
 c     |       factorization                            |
@@ -285,7 +285,7 @@ c     |    4) Ask for the NEV singular values of       |
 c     |       largest magnitude                        |
 c     |         (indicated by which = 'LM')            |
 c     |       See documentation in DSAUPD for the      |
-c     |       other options SM, BE.                    | 
+c     |       other options SM, BE.                    |
 c     |                                                |
 c     | Note: NEV and NCV must satisfy the following   |
 c     |       conditions:                              |
@@ -329,26 +329,26 @@ c     |      used to specify actions to be taken on return  |
 c     |      from DSAUPD. (See usage below.)                |
 c     |                                                     |
 c     |      It MUST initially be set to 0 before the first |
-c     |      call to DSAUPD.                                | 
+c     |      call to DSAUPD.                                |
 c     |                                                     |
 c     | INFO on entry specifies starting vector information |
 c     |      and on return indicates error codes            |
 c     |                                                     |
-c     |      Initially, setting INFO=0 indicates that a     | 
+c     |      Initially, setting INFO=0 indicates that a     |
 c     |      random starting vector is requested to         |
 c     |      start the ARNOLDI iteration.  Setting INFO to  |
 c     |      a nonzero value on the initial call is used    |
 c     |      if you want to specify your own starting       |
-c     |      vector (This vector must be placed in RESID.)  | 
+c     |      vector (This vector must be placed in RESID.)  |
 c     |                                                     |
-c     | The work array WORKL is used in DSAUPD as           | 
+c     | The work array WORKL is used in DSAUPD as           |
 c     | workspace.  Its dimension LWORKL is set as          |
 c     | illustrated below.                                  |
 c     %-----------------------------------------------------%
 c
       lworkl = ncv*(ncv+8)
 cph(
-      tol = zero 
+      tol = zero
 cph      tol = 1.D-10
 cph)
       info = 0
@@ -374,9 +374,9 @@ c
       mode = 1
 cph)
       iparam(1) = ishfts
-c                
+c
       iparam(3) = maxitr
-c                  
+c
       iparam(7) = mode
 c
 c     %------------------------------------------------%
@@ -393,21 +393,21 @@ c
       print *, 'ph----------------------------------------------------'
 c
 c        %---------------------------------------------%
-c        | Repeatedly call the routine DSAUPD and take | 
+c        | Repeatedly call the routine DSAUPD and take |
 c        | actions indicated by parameter IDO until    |
 c        | either convergence is indicated or maxitr   |
 c        | has been exceeded.                          |
 c        %---------------------------------------------%
 c
 ctest(
-         CALL DSAUPD ( ido, bmat, n, which, nev, tol, resid, 
+         CALL DSAUPD ( ido, bmat, n, which, nev, tol, resid,
      &                 ncv, v, ldv, iparam, ipntr, workd, workl,
      &                 lworkl, info )
 ctest         ido = -1
 ctest)
 c
 cph(
-         print *, 'ph-count: optimcycle, ido, info, ipntr(1) ', 
+         print *, 'ph-count: optimcycle, ido, info, ipntr(1) ',
      &        optimcycle, ido, info, ipntr(1)
 cph)
 
@@ -424,12 +424,12 @@ c           | the input, and returns the result in  |
 c           | workd(ipntr(2)).                      |
 c           %---------------------------------------%
 c
-c           call  av (m, n, workd(ipntr(1)), ax) 
+c           call  av (m, n, workd(ipntr(1)), ax)
 c           call atv (m, n, ax, workd(ipntr(2)))
 c
 cph(
 c            do l = 1, n
-c               print *, 'ph-test A ', l, 
+c               print *, 'ph-test A ', l,
 c     &              workd(ipntr(1)+l), workd(ipntr(2)+l), workd(l)
 c            enddo
 cph)
@@ -481,7 +481,7 @@ c     &           'E', 'U', maxn, 1, metricLoc, 6, metricTriag, 6,
 c     &           'N', tmpvec1, phtmpout, 6, phxout, 6, tmpvec2,
 c     &           ferr, berr, phrwork, phiwork, ilinsysinfo)
 cph
-c            call dgesv ( maxn, 1, metricLoc, maxn, 
+c            call dgesv ( maxn, 1, metricLoc, maxn,
 c     &                 ipiv, phtmpout, maxn, ilinsysinfo )
 cph
 c
@@ -499,7 +499,7 @@ c
 
             go to 10
 c
-         end if 
+         end if
 c
 cph(
  1001    continue
@@ -523,31 +523,31 @@ c
          print *, ' Check documentation in _saupd '
          print *, ' '
 c
-      else 
+      else
 c
 c        %--------------------------------------------%
 c        | No fatal errors occurred.                  |
 c        | Post-Process using DSEUPD.                 |
 c        |                                            |
-c        | Computed singular values may be extracted. |  
+c        | Computed singular values may be extracted. |
 c        |                                            |
 c        | Singular vectors may also be computed now  |
-c        | if desired.  (indicated by rvec = .true.)  | 
+c        | if desired.  (indicated by rvec = .true.)  |
 c        |                                            |
 c        | The routine DSEUPD now called to do this   |
-c        | post processing                            | 
+c        | post processing                            |
 c        %--------------------------------------------%
-c           
+c
          rvec = .true.
 c
-         call dseupd ( rvec, 'All', select, s, v, ldv, sigma, 
-     &        bmat, n, which, nev, tol, resid, ncv, v, ldv, 
+         call dseupd ( rvec, 'All', select, s, v, ldv, sigma,
+     &        bmat, n, which, nev, tol, resid, ncv, v, ldv,
      &        iparam, ipntr, workd, workl, lworkl, ierr )
 c
 c        %-----------------------------------------------%
 c        | Singular values are returned in the first     |
 c        | column of the two dimensional array S         |
-c        | and the corresponding right singular vectors  | 
+c        | and the corresponding right singular vectors  |
 c        | are returned in the first NEV columns of the  |
 c        | two dimensional array V as requested here.    |
 c        %-----------------------------------------------%
@@ -648,11 +648,11 @@ c
             print *, ' Maximum number of iterations reached.'
             print *, ' '
          else if ( info .eq. 3) then
-            print *, ' ' 
+            print *, ' '
             print *, ' No shifts could be applied during implicit',
      &               ' Arnoldi update, try increasing NCV.'
             print *, ' '
-         end if      
+         end if
 c
          print *, ' '
          print *, ' _SVD '
@@ -663,8 +663,8 @@ c
          print *, ' The number of Arnoldi vectors generated',
      &            ' (NCV) is ', ncv
          print *, ' What portion of the spectrum: ', which
-         print *, ' The number of converged Ritz values is ', 
-     &              nconv 
+         print *, ' The number of converged Ritz values is ',
+     &              nconv
          print *, ' The number of Implicit Arnoldi update',
      &            ' iterations taken is ', iparam(3)
          print *, ' The number of OP*x is ', iparam(9)
