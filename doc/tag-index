@@ -1,9 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1713 2012/08/10 20:04:46 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1714 2012/08/13 13:14:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o some cleaning:
+  - pkg source files: ensure that all *.F files from each pkg included the 
+    corresponding ${PKG}_OPTIONS.h file (except stand-alone src file which
+    only includes CPP_EEOPTIONS.h); fix S/R CTRL_SMOOTH ; update AD experiment 
+    code_ad/*.F src files; add new option-file in pkg/admtlm + corresponding
+    includes; 
+  - model/src: add PACKAGES_CONFIG.h wherever ALLOW_AUTODIFF[_TAMC] is used.
+  - ALLOW_DIFFKR_CONTROL: add a stop in S/R CTRL_CHECK in case ALLOW_3D_DIFFKR 
+    is undef; also define /DYNVARS_DIFFKR/ common block in DYNVARS.h when 
+    ALLOW_DIFFKR_CONTROL is defined, to allow to compile and reach this stop.
+  - update option-file CPP_OPTIONS.h of all AD experiments:
+    * no longer include PACKAGES_CONFIG.h ; 
+    * includes ECCO_CPPOPTIONS.h if PACKAGES_CONFIG.h has been included ; 
+    * def/undef ALLOW_3D_DIFFKR independently of ALLOW_DIFFKR_CONTROL (before 
+      including ECCO_CPPOPTIONS.h).
 o pkg/cost, pkg/ctrl, pkg/ecco option-file:
   - clean-up and split content of old pkg/ecco/ECCO_CPPOPTIONS.h file into
     separated pkg option-file (done according to old doc from ECCO_CPPOPTIONS.h,
