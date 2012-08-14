@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.232 2012/08/10 17:59:13 jahn Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.233 2012/08/14 22:10:39 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -2859,14 +2859,14 @@ Clean:
 	@make -f \$(MAKEFILE) clean
 	@make -f \$(MAKEFILE) cleanlinks
 	-rm -f \$(SPECIAL_FILES) f90mkdepend.log $MAKEFILE.old
-	-rm -f taf_command taf_output taf_ad.log taf_ad_flow.log
+	-rm -f taf_command taf_output taf_ad.log taf_ad_flow.log taf_ftl.log
 	-rm -f genmake_warnings genmake_errors make.log
 
 # remove also the executable, files that "genmake2" generates (except Makefile)
 #         and output from a run (plus log files from testreport)
 CLEAN:
 	@make -f \$(MAKEFILE) Clean
-	-rm -f \$(EXECUTABLE) \$(EXE_AD) *.bak
+	-rm -f \$(EXECUTABLE) \$(EXE_AD) \$(EXE_FTL) *.bak
 	-rm -f $LOGFILE genmake_state genmake_*optfile
 	-rm -f SIZE.h.mpi genmake.tr_log make.tr_log
 	-find \$(EXEDIR) -name "*.meta" -exec rm {} \;
@@ -3037,7 +3037,7 @@ adtrick:
 adobj: ad_taf_output.o \$(OBJFILES)
 
 # ... FTL ...
-ftlall: ftl_taf
+ftlall: \$(EXE_FTL)
 ftltaf: ftl_taf_output.$FS
 ftltamc: ftl_tamc_output.$FS
 
@@ -3059,8 +3059,8 @@ ftltafonly:
 	ls -l ftl_input_code_ftl.$FS
 	cat ftl_input_code_ftl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
 
-ftl_taf: ftl_taf_output.o \$(OBJFILES)
-	\$(LINK) -o ${EXE_FTL} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ftl_taf_output.o \$(LIBS)
+\${EXE_FTL}: ftl_taf_output.o \$(OBJFILES)
+	\$(LINK) -o \${EXE_FTL} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ftl_taf_output.o \$(LIBS)
 
 ftl_tamc_output.$FS: ftl_input_code.$FS
 	\$(TAMC) \$(FTL_TAMC_FLAGS) \$(TAMC_EXTRA) ftl_input_code.$FS
