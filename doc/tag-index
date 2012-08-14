@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1714 2012/08/13 13:14:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1715 2012/08/14 18:01:13 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco/ecco_cost_final.F :
+  - fix fc print statements (to stdout and costfunction0000) so 
+    that the printed value is always after the global sum.
+o pkg/seaice/seaice_dynsolver.F :
+  - fix ice strength assymptote at SEAICE_area_max<1
+    (no change for the standard case of SEAICE_area_max=1)
 o some cleaning:
   - pkg source files: ensure that all *.F files from each pkg included the 
     corresponding ${PKG}_OPTIONS.h file (except stand-alone src file which
