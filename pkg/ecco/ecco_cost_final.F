@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.58 2012/08/10 22:55:05 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.59 2012/08/14 17:59:57 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -65,6 +65,7 @@ c This quick fix allows to compile and run fwd but, as far as
 c the adjoint, pkg/autodiff most likely require cost though.
       _RL fc, glofc
 #endif
+      _RL locfc
 
       _RL f_temp0, f_salt0, f_temp0smoo, f_salt0smoo
       _RL f_etan0, f_uvel0, f_vvel0
@@ -146,6 +147,7 @@ c     == end of interface ==
 
       ifc = 30
 
+      locfc = 0. _d 0
       f_temp = 0. _d 0
       f_salt = 0. _d 0
       f_temp0 = 0. _d 0
@@ -653,6 +655,11 @@ c--   Sum up all contributions.
       enddo
 
 
+c local copy used in print statements, for
+c which we always want to do the global sum.
+      locfc=fc
+      _GLOBAL_SUM_RL( locfc , myThid )
+
 #ifndef ALLOW_COST
 cgf global sum is now done in cost_final if allow_cost
 c--   Do global summation.
@@ -1073,6 +1080,8 @@ cgf this sum is now done in cost_final if allow_cost
         fc = fc + glofc
 #endif
 
+      locfc=locfc+glofc
+
 C     only master thread of master CPU open and write to file
       IF ( MASTER_CPU_THREAD(myThid) ) THEN
 
@@ -1085,7 +1094,7 @@ C     only master thread of master CPU open and write to file
         write(standardmessageunit,'(A,D22.15)')
      &           ' --> objf_hmean           =',objf_hmean
         write(standardmessageunit,'(A,D22.15)')
-     &           ' --> fc               =', fc
+     &           ' --> fc               =', locfc
 
         write(cfname,'(A,i4.4)') 'costfunction',optimcycle
         open(unit=ifc,file=cfname)
@@ -1095,7 +1104,7 @@ C     only master thread of master CPU open and write to file
 #else
         write(ifc,'(A,2D22.15)')
 #endif
-     &       'fc =', fc, 0.
+     &       'fc =', locfc, 0.
         write(ifc,'(A,2D22.15)')
      &       'f_temp =', f_temp, no_temp
         write(ifc,'(A,2D22.15)')
@@ -1320,7 +1329,7 @@ C     only master thread of master CPU open and write to file
 
 #ifdef ECCO_VERBOSE
       write(msgbuf,'(a,D22.15)')
-     &  ' cost_Final: final cost function = ',fc
+     &  ' cost_Final: final cost function = ',locfc
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)') ' '
