@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.50 2012/08/08 22:20:51 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.51 2012/08/14 17:58:26 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -249,7 +249,7 @@ C--   now set up ice pressure and viscosities
             tmpscal2=HEFF(i,j,bi,bj)         
           ENDIF
           PRESS0(I,J,bi,bj)=PSTAR*tmpscal2
-     &         *EXP(-20.0 _d 0*(ONE-AREA(i,j,bi,bj)))
+     &         *EXP(-20.0 _d 0*(SEAICE_area_max-AREA(i,j,bi,bj)))
           ZMAX(I,J,bi,bj)  = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
           ZMIN(I,J,bi,bj)  = SEAICE_zetaMin
           PRESS0(I,J,bi,bj)= PRESS0(I,J,bi,bj)*HEFFM(I,J,bi,bj)
