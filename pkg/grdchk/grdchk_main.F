@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.36 2012/07/06 23:10:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.37 2012/08/15 23:05:48 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -241,7 +241,6 @@ cph)
               icglo    = 0
               itest    = 0
             endif
-            _BARRIER
 
 c******************************************************
 c--   (A): get gradient component calculated via adjoint
@@ -257,7 +256,6 @@ c--   get gradient component calculated via adjoint
             endif
 C--   Add a global-sum call so that all proc will get the adjoint gradient
             _GLOBAL_SUM_RL( adxxmemo, myThid )
-c           _BARRIER
 
 #ifdef ALLOW_TANGENTLINEAR_RUN
 c******************************************************
@@ -278,7 +276,6 @@ c--   1. perturb control vector component: xx(i)=1.
               xxmemo_ref  = 0.
               xxmemo_pert = 0.
             endif
-            _BARRIER
 
 c--
 c--   2. perform tangent linear run
@@ -297,7 +294,6 @@ c--   2. perform tangent linear run
 #endif
 
             call g_the_main_loop( mytime, myiter, mythid )
-            _BARRIER
 #ifdef ALLOW_ADMTLM
             ftlxxmemo = g_objf_state_final(idep,jdep,1,1,1)
 #else
@@ -313,7 +309,6 @@ c--   3. reset control vector
      &              itilepos, jtilepos,
      &              xxmemo_ref, mythid )
             endif
-            _BARRIER
 
 #endif /* ALLOW_TANGENTLINEAR_RUN */
 
@@ -337,7 +332,6 @@ c--   positive perturbation
               xxmemo_ref  = 0.
               xxmemo_pert = 0.
             endif
-            _BARRIER
 
 c--   forward run with perturbed control vector
             mytime = starttime
@@ -348,8 +342,7 @@ c--   forward run with perturbed control vector
 #else
             fcpertplus = fc
 #endif
-            print *, 'ph-check fcpertplus = ', fcpertplus
-            _BARRIER
+            print *, 'ph-check fcpertplus  = ', fcpertplus
 
 c--   Reset control vector.
             if ( myProcId .EQ. grdchkwhichproc .AND.
@@ -359,7 +352,6 @@ c--   Reset control vector.
      &              itilepos, jtilepos,
      &              xxmemo_ref, mythid )
             endif
-            _BARRIER
 
             fcpertminus = fcref
             print *, 'ph-check fcpertminus = ', fcpertminus
@@ -381,13 +373,11 @@ c--   repeat the proceedure for a negative perturbation
                  xxmemo_ref  = 0.
                  xxmemo_pert = 0.
                endif
-               _BARRIER
 
 c--   forward run with perturbed control vector
                mytime = starttime
                myiter = niter0
                call the_main_loop( mytime, myiter, mythid )
-               _BARRIER
 #ifdef ALLOW_ADMTLM
                fcpertminus = objf_state_final(idep,jdep,1,1,1)
 #else
@@ -402,7 +392,6 @@ c--   Reset control vector.
      &                 itilepos, jtilepos,
      &                 xxmemo_ref, mythid )
                endif
-               _BARRIER
 
 c-- end of if useCentralDiff ...
             end if
@@ -490,14 +479,18 @@ c******************************************************
 #endif
             endif
 #ifdef ALLOW_TANGENTLINEAR_RUN
-            WRITE(msgBuf,'(A34,1PE24.14)')
-     &              ' TLM  precision_derivative_cost =', fcref
-            CALL PRINT_MESSAGE
-     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,myThid)
-            WRITE(msgBuf,'(A34,1PE24.14)')
-     &              ' TLM  precision_derivative_grad =', ftlxxmemo
-            CALL PRINT_MESSAGE
-     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,myThid)
+            WRITE(msgBuf,'(A30,1PE22.14)')
+     &              ' TLM  ref_cost_function      =', fcref
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
+            WRITE(msgBuf,'(A30,1PE22.14)')
+     &              ' TLM  tangent-lin_grad       =', ftlxxmemo
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
+            WRITE(msgBuf,'(A30,1PE22.14)')
+     &              ' TLM  finite-diff_grad       =', gfd
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
 #else
             WRITE(msgBuf,'(A30,1PE22.14)')
      &              ' ADM  ref_cost_function      =', fcref
@@ -516,8 +509,6 @@ c******************************************************
             print *, 'ph-grd  ierr ---------------------------'
             print *, 'ph-grd  ierr = ', ierr, ', icomp = ', icomp,
      &           ', ichknum = ', ichknum
-
-            _BARRIER
 
 c-- else of if ( ichknum ...
          else
@@ -539,7 +530,7 @@ c-- end of do icomp = ...
       endif
 
 c--   Everyone has to wait for the component to be reset.
-      _BARRIER
+c     _BARRIER
 
 c--   Print the results of the gradient check.
       call grdchk_print( ichknum, ierr_grdchk, mythid )
