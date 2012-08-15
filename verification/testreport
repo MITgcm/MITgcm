@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.174 2012/06/27 15:20:51 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.175 2012/08/15 23:19:21 jmc Exp $
 #  $Name:  $
 #
 
@@ -35,6 +35,7 @@ usage()
     echo "  (-bash|-b) STRING        preferred location of a \"bash\" or"
     echo "                             Bourne-compatible \"sh\" shell"
     echo "                             (DEF=\"\" for \"bash\")"
+    echo "  (-tlm)                   perform a Tangent Linear run"
     echo "  (-adm|-ad)               perform an adjoint run"
     echo "  (-oad)                   perform an OpenAD adjoint run"
     echo "  (-command|-c) STRING     command to run"
@@ -117,7 +118,7 @@ testoutput_var()
     # testoutput_var dir s1 label subdir reference_output
     #
     #  compares 1 variable output selected from file $dir/$subdir/$OUTPUTFILE
-    #     with same output from reference file $dir/results/$reference_output
+    #     with same output from reference file $dir/$reference_output
     #  using search strings s1 and text label
 
     if [ $debug -gt 0 ]; then
@@ -130,38 +131,38 @@ testoutput_var()
 	    if [ $verbose -gt 0 ]; then
 		echo Not enough lines of output when searching for "$2" 1>&2
 	    fi
-	    return 99
+	    rm -f tmp1.txt ; return 99
 	fi
     else
 	echo testoutput_var: $OUTPUTFILE from model run was not readable 1>&2
 	return 99
     fi
     if [ $debug -gt 0 ]; then
-	echo testoutput_var: grep "$2" $1/results/$5 1>&2
+	echo testoutput_var: grep "$2" $1/$5 1>&2
     fi
-    grep "$2" $1/results/$5 | sed 's/.*=//' | cat -n > tmp2.txt
+    grep "$2" $1/$5 | sed 's/.*=//' | cat -n > tmp2.txt
     lncntB=`wc -l tmp2.txt | awk '{print $1}' `
     if [ $lncntB -lt 2 ]; then
 	if [ $verbose -gt 0 ]; then
 	    echo Not enough lines of output when searching for "$2" 1>&2
 	fi
-	return 99
+	rm -f tmp1.txt tmp2.txt ; return 99
     fi
     if [ $lncntA -ne $lncntB ]; then
-        if [ $verbose -gt 0 ]; then
-            echo Not same Nb of lines when searching for "$2" ":" $lncntA $lncntB 1>&2
-        fi
-        return 99
+	if [ $verbose -gt 0 ]; then
+	    echo Not same Nb of lines when searching for "$2" ":" $lncntA $lncntB 1>&2
+	fi
+	rm -f tmp1.txt tmp2.txt ; return 99
     fi
     has_nan=`cat tmp1.txt | grep -i nan | wc -l`
     if [ $has_nan -gt 0  ] ; then
 	echo testoutput_var: $OUTPUTFILE contains $has_nan NaN values  1>&2
-	return 99
+	rm -f tmp1.txt tmp2.txt ; return 99
     fi
     has_inf=`cat tmp1.txt | grep -i inf | wc -l`
     if [ $has_inf -gt 0  ] ; then
 	echo testoutput_var: $OUTPUTFILE contains $has_inf Inf values  1>&2
-	return 99
+	rm -f tmp1.txt tmp2.txt ; return 99
     fi
     if [ $debug -gt 0 ]; then
 	echo testoutput_var: join tmp1.txt tmp2.txt 1>&2
@@ -198,126 +199,146 @@ testoutput_run()
     #
     #  test output from 1 run in "directory"
 # --> same processing for adjoint & forward test
-        # default list of output variables to be checked:
-        #  1rst : main variable used to decide if it pass or FAIL
-        #  others : number of matching digits to be printed in summary.txt
-        listChk=$DEF_CHECK_LIST
+	# default list of output variables to be checked:
+	#  1rst : main variable used to decide if it pass or FAIL
+	#  others : number of matching digits to be printed in summary.txt
+	listChk=$DEF_CHECK_LIST
 	#  load experiment-specific list from file "tr_checklist" (if it exist)
-        if test -r $1/$2/tr_checklist ; then listChk=`cat $1/$2/tr_checklist` ; fi
-        sVar=`echo $listChk | awk '{print $1}'`
-        # remove 1rst var and expand the list: + => min max mean s.d
-        listVar=`echo $listChk | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' \
-                               | sed 's/+//g' | sed "s/^$sVar//"`
+	if test -r $1/$2/tr_checklist ; then listChk=`cat $1/$2/tr_checklist` ; fi
+	sVar=`echo $listChk | awk '{print $1}'`
+	# remove 1rst var and expand the list: + => min max mean s.d
+	listVar=`echo $listChk | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' \
+			       | sed 's/+//g' | sed "s/^$sVar//"`
 	if [ $debug -gt 0 ]; then echo "testoutput_run: listVar(I)='$listVar'" 1>&2 ; fi
-        # check for ptracer output in reference_output file :
-        outpref=$1/results/$3
-	ptr_mon="trcstat_ptracerXX_min trcstat_ptracerXX_max"
-	ptr_mon="$ptr_mon trcstat_ptracerXX_mean trcstat_ptracerXX_sd"
-	for ii in $PTRACERS_NUM ; do
+	# set ref.outp file-name and, if compressed, uncompress it into subdir
+	refoutp=results/$3
+	if test ! -r $1/results/$3 ; then
+	  if test -r $1/results/${3}.gz ; then
+	    tmpNam1=$3
+	    tmpNam2=`echo $tmpNam1 | sed 's/\..*\././'`
+	    if test "x$tmpNam1" = "x$tmpNam2" ; then
+		tmpNam1=`echo $tmpNam2 | sed 's/\./.std./'`
+	    fi
+	    refoutp=$2/$tmpNam1
+	    if [ $debug -gt 0 ]; then
+		echo "testoutput_run: gunzip 'results/$3.gz' into '$refoutp'" 1>&2
+	    fi
+	    gzip -cd $1/results/${3}.gz > $1/$refoutp
+	  else
+	    echo "missing reference output file '$3' (.gz) in '$1/results/'"
+	  fi
+	fi
+	# check for ptracer output in reference_output file :
+	if test $KIND = 0 ; then
+	  ptr_mon="trcstat_ptracerXX_min trcstat_ptracerXX_max"
+	  ptr_mon="$ptr_mon trcstat_ptracerXX_mean trcstat_ptracerXX_sd"
+	  for ii in $PTRACERS_NUM ; do
 	    ptrfound=0
 	    for jj in $ptr_mon ; do
 		name=`eval "echo $jj | sed -e 's|XX|0"$ii"|g'"`
-		tst=`grep $name $outpref | wc -l | awk '{print $1}'`
+		tst=`grep $name $1/$refoutp | wc -l | awk '{print $1}'`
 		if test ! "x$tst" = x0 ; then ptrfound=1 ; fi
 	    done
 	    if test $ptrfound = '1' ; then
 		eval "HAVE_PTR0"$ii"=t"
 	    else
 		eval "HAVE_PTR0"$ii"=f"
-	      if test "x$ADM" = x -a "x$OADM" = x; then
 	      # remove this ptr from the list of output variable to check
 	      # echo "-- ptr test=" $tst "number of var=" `echo $listVar | awk '{print NF}'` 1>&2
 		listVar=`echo "$listVar" | sed "s/ pt$ii..//g"`
-	      fi
 	    fi
-	#   eval 'echo "HAVE_PTR0'$ii' = $HAVE_PTR0'$ii'"' 1>&2
-	done
-        tst=`echo $sVar $listVar | awk '{ for(i=2;i<=NF;i++){if($i==$1)t+=1}; print t }'`
-        if test $tst != 1 ; then
-          if test $tst = 0 ; then echo "==> WARNING: selected var >$sVar< not found" 1>&2
-                 else echo "==> WARNING: found selected var >$sVar< $tst times" 1>&2 ; fi
-          echo "==> WARNING: in checked list:" $listVar 1>&2
-        #- put it back once:
-          listVar=" $sVar "`echo "$listVar " | sed "s/ $sVar / /g"`
-        fi
+	  # eval 'echo "HAVE_PTR0'$ii' = $HAVE_PTR0'$ii'"' 1>&2
+	  done
+	fi
+	tst=`echo $sVar $listVar | awk '{ for(i=2;i<=NF;i++){if($i==$1)t+=1}; print t }'`
+	if test $tst != 1 ; then
+	  if test $tst = 0 ; then echo "==> WARNING: selected var >$sVar< not found" 1>&2
+		 else echo "==> WARNING: found selected var >$sVar< $tst times" 1>&2 ; fi
+	  echo "==> WARNING: in checked list:" $listVar 1>&2
+	#- put it back once:
+	  listVar=" $sVar "`echo "$listVar " | sed "s/ $sVar / /g"`
+	fi
 	if [ $debug -gt 0 ]; then echo "testoutput_run: listVar(M)='$listVar'" 1>&2 ; fi
 	echo "listVar='$listVar'" >> $locDIR"/summary.txt"
-        #---
-        allargs=""
-        for xx in $listVar
-        do
-          case $xx in
+	#---
+	allargs=""
+	for xx in $listVar
+	do
+	  case $xx in
 	   'PS')  if [ $debug -gt 0 ]
 		  then echo testoutput_run: testoutput_var $1 cg2d_init_res 1>&2 ; fi
-		  testoutput_var $1 "cg2d_init_res" "Press. Solver (cg2d)" $2 $3; yy=$?
+		  testoutput_var $1 "cg2d_init_res" "Press. Solver (cg2d)" $2 $refoutp ; yy=$?
 		  if [ $debug -gt 0 ] ; then echo testoutput_run: cg2dres=$yy 1>&2 ; fi ;;
- 	  'Cost') testoutput_var $1 "ADM  ref_cost_function" "ADM CostFct" $2 $3; yy=$? ;;
- 	 'AdGrd') testoutput_var $1 "ADM  adjoint_gradient"  "ADM Ad Grad" $2 $3; yy=$? ;;
- 	 'FDGrd') testoutput_var $1 "ADM  finite-diff_grad"  "ADM FD Grad" $2 $3; yy=$? ;;
- 	   'Tmn') testoutput_var $1 "dynstat_theta_min"  "Theta minimum"  $2 $3; yy=$? ;;
- 	   'Tmx') testoutput_var $1 "dynstat_theta_max"  "Theta maximum"  $2 $3; yy=$? ;;
- 	   'Tav') testoutput_var $1 "dynstat_theta_mean" "Theta mean"	  $2 $3; yy=$? ;;
-	   'Tsd') testoutput_var $1 "dynstat_theta_sd"   "Theta Std.Dev"  $2 $3; yy=$? ;;
-	   'Smn') testoutput_var $1 "dynstat_salt_min"  "Salt minimum"	  $2 $3; yy=$? ;;
-	   'Smx') testoutput_var $1 "dynstat_salt_max"  "Salt maximum"	  $2 $3; yy=$? ;;
-	   'Sav') testoutput_var $1 "dynstat_salt_mean" "Salt mean"	  $2 $3; yy=$? ;;
-	   'Ssd') testoutput_var $1 "dynstat_salt_sd"   "Salt Std.Dev"	  $2 $3; yy=$? ;;
-	   'Umn') testoutput_var $1 "dynstat_uvel_min"  "U minimum"	  $2 $3; yy=$? ;;
-	   'Umx') testoutput_var $1 "dynstat_uvel_max"  "U maximum"	  $2 $3; yy=$? ;;
-	   'Uav') testoutput_var $1 "dynstat_uvel_mean" "U mean"	  $2 $3; yy=$? ;;
-	   'Usd') testoutput_var $1 "dynstat_uvel_sd"   "U Std.Dev"	  $2 $3; yy=$? ;;
-	   'Vmn') testoutput_var $1 "dynstat_vvel_min"  "V minimum"	  $2 $3; yy=$? ;;
-	   'Vmx') testoutput_var $1 "dynstat_vvel_max"  "V maximum"	  $2 $3; yy=$? ;;
-	   'Vav') testoutput_var $1 "dynstat_vvel_mean" "V mean"	  $2 $3; yy=$? ;;
-	   'Vsd') testoutput_var $1 "dynstat_vvel_sd"   "V Std.Dev"	  $2 $3; yy=$? ;;
+	  'Cost') testoutput_var $1 "ADM  ref_cost_function" "ADM CostFct" $2 $refoutp ; yy=$? ;;
+	 'AdGrd') testoutput_var $1 "ADM  adjoint_gradient"  "ADM Ad Grad" $2 $refoutp ; yy=$? ;;
+	 'FDGrd') testoutput_var $1 "ADM  finite-diff_grad"  "ADM FD Grad" $2 $refoutp ; yy=$? ;;
+	'tlmCst') testoutput_var $1 "TLM  ref_cost_function" "TLM CostFct" $2 $refoutp ; yy=$? ;;
+	'tlmGrd') testoutput_var $1 "TLM  tangent-lin_grad"  "TLM TL Grad" $2 $refoutp ; yy=$? ;;
+	'fwdGrd') testoutput_var $1 "TLM  finite-diff_grad"  "TLM FD Grad" $2 $refoutp ; yy=$? ;;
+	   'Tmn') testoutput_var $1 "dynstat_theta_min"  "Theta minimum"  $2 $refoutp ; yy=$? ;;
+	   'Tmx') testoutput_var $1 "dynstat_theta_max"  "Theta maximum"  $2 $refoutp ; yy=$? ;;
+	   'Tav') testoutput_var $1 "dynstat_theta_mean" "Theta mean"	  $2 $refoutp ; yy=$? ;;
+	   'Tsd') testoutput_var $1 "dynstat_theta_sd"   "Theta Std.Dev"  $2 $refoutp ; yy=$? ;;
+	   'Smn') testoutput_var $1 "dynstat_salt_min"  "Salt minimum"	  $2 $refoutp ; yy=$? ;;
+	   'Smx') testoutput_var $1 "dynstat_salt_max"  "Salt maximum"	  $2 $refoutp ; yy=$? ;;
+	   'Sav') testoutput_var $1 "dynstat_salt_mean" "Salt mean"	  $2 $refoutp ; yy=$? ;;
+	   'Ssd') testoutput_var $1 "dynstat_salt_sd"   "Salt Std.Dev"	  $2 $refoutp ; yy=$? ;;
+	   'Umn') testoutput_var $1 "dynstat_uvel_min"  "U minimum"	  $2 $refoutp ; yy=$? ;;
+	   'Umx') testoutput_var $1 "dynstat_uvel_max"  "U maximum"	  $2 $refoutp ; yy=$? ;;
+	   'Uav') testoutput_var $1 "dynstat_uvel_mean" "U mean"	  $2 $refoutp ; yy=$? ;;
+	   'Usd') testoutput_var $1 "dynstat_uvel_sd"   "U Std.Dev"	  $2 $refoutp ; yy=$? ;;
+	   'Vmn') testoutput_var $1 "dynstat_vvel_min"  "V minimum"	  $2 $refoutp ; yy=$? ;;
+	   'Vmx') testoutput_var $1 "dynstat_vvel_max"  "V maximum"	  $2 $refoutp ; yy=$? ;;
+	   'Vav') testoutput_var $1 "dynstat_vvel_mean" "V mean"	  $2 $refoutp ; yy=$? ;;
+	   'Vsd') testoutput_var $1 "dynstat_vvel_sd"   "V Std.Dev"	  $2 $refoutp ; yy=$? ;;
 	'pt1mn'|'pt2mn'|'pt3mn'|'pt4mn'|'pt5mn') ii=`echo $xx | sed 's/pt//' | sed 's/..$//'`
-	   testoutput_var $1 "trcstat_ptracer0"$ii"_min"  "p0"$ii"_min"	  $2 $3; yy=$? ;;
+	   testoutput_var $1 "trcstat_ptracer0"$ii"_min"  "p0"$ii"_min"	  $2 $refoutp ; yy=$? ;;
 	'pt1mx'|'pt2mx'|'pt3mx'|'pt4mx'|'pt5mx') ii=`echo $xx | sed 's/pt//' | sed 's/..$//'`
-	   testoutput_var $1 "trcstat_ptracer0"$ii"_max"  "p0"$ii"_max"	  $2 $3; yy=$? ;;
+	   testoutput_var $1 "trcstat_ptracer0"$ii"_max"  "p0"$ii"_max"	  $2 $refoutp ; yy=$? ;;
 	'pt1av'|'pt2av'|'pt3av'|'pt4av'|'pt5av') ii=`echo $xx | sed 's/pt//' | sed 's/..$//'`
-	   testoutput_var $1 "trcstat_ptracer0"$ii"_mean" "p0"$ii"_mean" $2 $3; yy=$? ;;
+	   testoutput_var $1 "trcstat_ptracer0"$ii"_mean" "p0"$ii"_mean" $2 $refoutp ; yy=$? ;;
 	'pt1sd'|'pt2sd'|'pt3sd'|'pt4sd'|'pt5sd') ii=`echo $xx | sed 's/pt//' | sed 's/..$//'`
-	   testoutput_var $1 "trcstat_ptracer0"$ii"_sd"   "p0"$ii"_StDv"  $2 $3; yy=$? ;;
-	 'Qntmn') testoutput_var $1 "forcing_qnet_min" "Qnet minimum"  $2 $3; yy=$? ;;
-	 'Qntmx') testoutput_var $1 "forcing_qnet_max" "Qnet maximum"  $2 $3; yy=$? ;;
-	 'Qntav') testoutput_var $1 "forcing_qnet_mean" "Qnet mean"	  $2 $3; yy=$? ;;
-	 'Qntsd') testoutput_var $1 "forcing_qnet_sd"  "Qnet Std.Dev"  $2 $3; yy=$? ;;
-	 'aSImn') testoutput_var $1 "seaice_area_min"   "SIce Area min"	  $2 $3; yy=$? ;;
-	 'aSImx') testoutput_var $1 "seaice_area_max"   "SIce Area max"	  $2 $3; yy=$? ;;
-	 'aSIav') testoutput_var $1 "seaice_area_mean"  "SIce Area mean"  $2 $3; yy=$? ;;
-	 'aSIsd') testoutput_var $1 "seaice_area_sd"    "SIce Area StDv"  $2 $3; yy=$? ;;
-	 'hSImn') testoutput_var $1 "seaice_heff_min"   "SIce Heff min"	  $2 $3; yy=$? ;;
-	 'hSImx') testoutput_var $1 "seaice_heff_max"   "SIce Heff max"	  $2 $3; yy=$? ;;
-	 'hSIav') testoutput_var $1 "seaice_heff_mean"  "SIce Heff mean"  $2 $3; yy=$? ;;
-	 'hSIsd') testoutput_var $1 "seaice_heff_sd"    "SIce Heff StDv"  $2 $3; yy=$? ;;
-	 'uSImn') testoutput_var $1 "seaice_uice_min"   "SIce Uice min"	  $2 $3; yy=$? ;;
-	 'uSImx') testoutput_var $1 "seaice_uice_max"   "SIce Uice max"	  $2 $3; yy=$? ;;
-	 'uSIav') testoutput_var $1 "seaice_uice_mean"  "SIce Uice mean"  $2 $3; yy=$? ;;
-	 'uSIsd') testoutput_var $1 "seaice_uice_sd"    "SIce Uice StDv"  $2 $3; yy=$? ;;
-	 'vSImn') testoutput_var $1 "seaice_vice_min"   "SIce Vice min"	  $2 $3; yy=$? ;;
-	 'vSImx') testoutput_var $1 "seaice_vice_max"   "SIce Vice max"	  $2 $3; yy=$? ;;
-	 'vSIav') testoutput_var $1 "seaice_vice_mean"  "SIce Vice mean"  $2 $3; yy=$? ;;
-	 'vSIsd') testoutput_var $1 "seaice_vice_sd"    "SIce Vice StDv"  $2 $3; yy=$? ;;
-	'AthSiG') testoutput_var $1 "thSI_Ice_Area_G" "thSIc Area Global" $2 $3; yy=$? ;;
-	'AthSiS') testoutput_var $1 "thSI_Ice_Area_S" "thSIc Area South"  $2 $3; yy=$? ;;
-	'AthSiN') testoutput_var $1 "thSI_Ice_Area_N" "thSIc Area North"  $2 $3; yy=$? ;;
-	'HthSiG') testoutput_var $1 "thSI_IceH_ave_G" "thSIc H Global"	  $2 $3; yy=$? ;;
-	'HthSiS') testoutput_var $1 "thSI_IceH_ave_S" "thSIc H South"	  $2 $3; yy=$? ;;
-	'HthSiN') testoutput_var $1 "thSI_IceH_ave_N" "thSIc H North"	  $2 $3; yy=$? ;;
-              *) yy=99; echo "WARNING: asking for var=$xx : not recognized !" 1>&2 ;;
-          esac
-          if test $xx = $sVar
-          then allargs="$allargs > $yy <"
-          else allargs="$allargs $yy"
-          fi
-        done
+	   testoutput_var $1 "trcstat_ptracer0"$ii"_sd"   "p0"$ii"_StDv"  $2 $refoutp ; yy=$? ;;
+	 'Qntmn') testoutput_var $1 "forcing_qnet_min" "Qnet minimum"  $2 $refoutp ; yy=$? ;;
+	 'Qntmx') testoutput_var $1 "forcing_qnet_max" "Qnet maximum"  $2 $refoutp ; yy=$? ;;
+	 'Qntav') testoutput_var $1 "forcing_qnet_mean" "Qnet mean"	  $2 $refoutp ; yy=$? ;;
+	 'Qntsd') testoutput_var $1 "forcing_qnet_sd"  "Qnet Std.Dev"  $2 $refoutp ; yy=$? ;;
+	 'aSImn') testoutput_var $1 "seaice_area_min"   "SIce Area min"	  $2 $refoutp ; yy=$? ;;
+	 'aSImx') testoutput_var $1 "seaice_area_max"   "SIce Area max"	  $2 $refoutp ; yy=$? ;;
+	 'aSIav') testoutput_var $1 "seaice_area_mean"  "SIce Area mean"  $2 $refoutp ; yy=$? ;;
+	 'aSIsd') testoutput_var $1 "seaice_area_sd"    "SIce Area StDv"  $2 $refoutp ; yy=$? ;;
+	 'hSImn') testoutput_var $1 "seaice_heff_min"   "SIce Heff min"	  $2 $refoutp ; yy=$? ;;
+	 'hSImx') testoutput_var $1 "seaice_heff_max"   "SIce Heff max"	  $2 $refoutp ; yy=$? ;;
+	 'hSIav') testoutput_var $1 "seaice_heff_mean"  "SIce Heff mean"  $2 $refoutp ; yy=$? ;;
+	 'hSIsd') testoutput_var $1 "seaice_heff_sd"    "SIce Heff StDv"  $2 $refoutp ; yy=$? ;;
+	 'uSImn') testoutput_var $1 "seaice_uice_min"   "SIce Uice min"	  $2 $refoutp ; yy=$? ;;
+	 'uSImx') testoutput_var $1 "seaice_uice_max"   "SIce Uice max"	  $2 $refoutp ; yy=$? ;;
+	 'uSIav') testoutput_var $1 "seaice_uice_mean"  "SIce Uice mean"  $2 $refoutp ; yy=$? ;;
+	 'uSIsd') testoutput_var $1 "seaice_uice_sd"    "SIce Uice StDv"  $2 $refoutp ; yy=$? ;;
+	 'vSImn') testoutput_var $1 "seaice_vice_min"   "SIce Vice min"	  $2 $refoutp ; yy=$? ;;
+	 'vSImx') testoutput_var $1 "seaice_vice_max"   "SIce Vice max"	  $2 $refoutp ; yy=$? ;;
+	 'vSIav') testoutput_var $1 "seaice_vice_mean"  "SIce Vice mean"  $2 $refoutp ; yy=$? ;;
+	 'vSIsd') testoutput_var $1 "seaice_vice_sd"    "SIce Vice StDv"  $2 $refoutp ; yy=$? ;;
+	'AthSiG') testoutput_var $1 "thSI_Ice_Area_G" "thSIc Area Global" $2 $refoutp ; yy=$? ;;
+	'AthSiS') testoutput_var $1 "thSI_Ice_Area_S" "thSIc Area South"  $2 $refoutp ; yy=$? ;;
+	'AthSiN') testoutput_var $1 "thSI_Ice_Area_N" "thSIc Area North"  $2 $refoutp ; yy=$? ;;
+	'HthSiG') testoutput_var $1 "thSI_IceH_ave_G" "thSIc H Global"	  $2 $refoutp ; yy=$? ;;
+	'HthSiS') testoutput_var $1 "thSI_IceH_ave_S" "thSIc H South"	  $2 $refoutp ; yy=$? ;;
+	'HthSiN') testoutput_var $1 "thSI_IceH_ave_N" "thSIc H North"	  $2 $refoutp ; yy=$? ;;
+	      *) yy=99; echo "WARNING: asking for var=$xx : not recognized !" 1>&2 ;;
+	  esac
+	  if test $xx = $sVar
+	  then allargs="$allargs > $yy <"
+	  else allargs="$allargs $yy"
+	  fi
+	done
 
 	nbVar=`echo $listVar | awk '{print NF}'`
-        if [ $nbVar -lt $LEN_CHECK_LIST ] ; then
-        #-- fill line (up to standard length) with dot:
-          adNul=`expr $LEN_CHECK_LIST - $nbVar | awk '{for(i=1;i<=$1;i++){print "."}}'`
+	if [ $nbVar -lt $LEN_CHECK_LIST ] ; then
+	#-- fill line (up to standard length) with dot:
+	  adNul=`expr $LEN_CHECK_LIST - $nbVar | awk '{for(i=1;i<=$1;i++){print "."}}'`
 	  echo $allargs $adNul
-        else
+	else
 	  echo $allargs
         fi
 # <-- same processing for adjoint & forward test
@@ -340,9 +361,9 @@ genmakemodel()
 	    if test "x$MKDEPEND" != x ; then
 		command="$command -makedepend=$MKDEPEND"
 	    fi
-	    if test "x$ADM" = xt ; then
+	    if test $KIND = 1 -o $KIND = 2 ; then
 		command="$command --mods=../code_ad"
-	    elif test "x$OADM" = xt ; then
+	    elif test $KIND = 4 ; then
 		command="$command -adof ../../../tools/adjoint_options/adjoint_oad -mods '../code_oad ../../OpenAD/code_oad_all'"
 	    else
 		command="$command -mods=../code"
@@ -351,8 +372,8 @@ genmakemodel()
 		command="$command -optfile=$OPTFILE"
 	    fi
 	    if test $OptLev = 1 ; then
- 		command="$command -ieee"
- 	    fi
+		command="$command -ieee"
+	    fi
 	    if test $OptLev = 0 ; then
 		command="$command -devel"
 	    fi
@@ -445,7 +466,7 @@ run_clean()
 	    #- should remove executable only if sym-link (alredy done above)
 	    rm -f $RUNLOG *.txt STD* w2_tile_topology.????.log *diagnostics.log datetime
 	    rm -rf mnc_test_*
- 	    rm -f *_MIT_CE_000.opt0000 costfunction*0000
+	    rm -f *_MIT_CE_000.opt0000 costfunction*0000
 	    echo successful
 	    exit 0
 	)
@@ -513,7 +534,7 @@ makemodel()
 	    mk_fail=2
 	fi
     fi
-    if test "x$ADM" = xt -a -f taf_ad.log ; then
+    if test $KIND = 2 -a -f taf_ad.log ; then
 	    head -1 taf_ad.log >> $CDIR"/summary.txt"
 	    nerr=`grep -c 'TAF *.* ERROR ' taf_ad.log`
 	    nwar=`grep -c 'TAF RECOMPUTATION *.* WARNING ' taf_ad.log`
@@ -666,10 +687,10 @@ linkdata()
 	(
 	    cd $1 ; shift
 	    echo 'linkdata from dirs:' $*
-            inpMPI=`(cd ../$1 ; find . -name "*.mpi" -print | sed 's:^\./::')`
+	    inpMPI=`(cd ../$1 ; find . -name "*.mpi" -print | sed 's:^\./::')`
 	    for xx in $inpMPI ; do
 	      if test -r "../"$1"/"$xx ; then
-	        # found 1 _mpi sfx file in 1rst input dir and it is readable
+		# found 1 _mpi sfx file in 1rst input dir and it is readable
 		yy=`echo $xx | sed 's:\.mpi$::'`
 		if test "x$MPI" = "x0" ; then
 		    # not mpi test: remove symbolic link
@@ -701,7 +722,7 @@ linkdata()
 	    prevDir='NONE'
 	    for ldir in $* ; do
 		if test -d "../"$ldir -a $ldir != $prevDir ; then
-                    printf " ldir=${ldir}:" 1>&2
+		    printf " ldir=${ldir}:" 1>&2
 		    files=`( cd "../"$ldir ; ls -1 | grep -v CVS )`
 		    for i in $files ; do
 			if test ! -d "../"$ldir/$i ; then
@@ -749,19 +770,19 @@ runmodel()
 	  else rm -f $EXECUTABLE
 	  fi
 	fi
-        if test ! -x $EXECUTABLE -a -x "../"$builddir"/"$EXECUTABLE ; then
+	if test ! -x $EXECUTABLE -a -x "../"$builddir"/"$EXECUTABLE ; then
 	    echo " link" $EXECUTABLE "from dir ../"$builddir > run.log_tmp
 	    ln -sf "../"$builddir"/"$EXECUTABLE .
 	fi
-        if test ! -x $EXECUTABLE ; then
+	if test ! -x $EXECUTABLE ; then
 	    rm -f $RUNLOG ; touch $RUNLOG
 	    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
 	    echo " no executable:" $EXECUTABLE >> $RUNLOG
 	    RETVAL=8
 	    ENDVAL=-1
 	else
-          if test ! -f $OUTPUTFILE -o $OUTPUTFILE -ot $EXECUTABLE ; then
-            # output do not exist or is older than executable:
+	  if test ! -f $OUTPUTFILE -o $OUTPUTFILE -ot $EXECUTABLE ; then
+	    # output do not exist or is older than executable:
 	    rm -f $OUTPUTFILE $RUNLOG ; touch $RUNLOG
 	    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
 	    ( eval $COMMAND ) >> $RUNLOG 2>&1
@@ -777,7 +798,7 @@ runmodel()
 	    ENDVAL=`tail $OUTPUTFILE | grep -c 'PROGRAM MAIN: Execution ended Normally'`
 	    touch $RUNLOG
 	    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
-     	    echo "---------->> $OUTPUTFILE is up to date " >> $RUNLOG 2>&1
+	    echo "---------->> $OUTPUTFILE is up to date " >> $RUNLOG 2>&1
 	  fi
 	fi
 	rm -f run.log_tmp
@@ -785,7 +806,7 @@ runmodel()
 	if test -f $OUTPUTFILE ; then
 	  grep '(PID\.TID 0000\.0001)      n.. =' $OUTPUTFILE \
 		| sed 's/(PID.TID 0000.0001)     //' >> $CDIR"/summary.txt"
-	  if test "x$ADM" = xt ; then
+	  if test $KIND = 2 ; then
 	    grep -A3 'Seconds in section "ALL' $OUTPUTFILE >> $CDIR"/summary.txt"
 	  fi
 	fi
@@ -897,7 +918,8 @@ scandirs()
 {
     if [ $# -eq 1 ]; then
  	for arg in * ; do
- 	    test -f $arg/$1 && echo $arg
+ 	   #test -f $arg/$1 && echo $arg
+ 	    test -f $arg/$1 -o -f $arg/$1.gz && echo $arg
  	done
     else
  	echo $*
@@ -992,8 +1014,10 @@ DELDIR=
 USE_R4=
 EXTRFLG=
 
-ADM=
-OADM=
+#- type of testing (KIND):
+#   KIND=0 : forward (= default) ;  KIND=1 : Tangent Linear with TAF ;
+#   KIND=2 : Adjoint with TAF ;     KIND=4 : Adjoint with OpenAD
+KIND=0
 
 # list of pTracers to check for monitor output
 PTRACERS_NUM="1 2 3 4 5"
@@ -1083,13 +1107,20 @@ for ac_option ; do
 
 	-mth) MULTI_THREAD=t ;;
 
-	-adm | -ad) ADM=t ;;
-	-oad) OADM=t; NODEPEND=t ;;
+	-tlm) if test $KIND = 0 ; then KIND=1 ; else
+		echo "Error: '-tlm', '-adm' and '-oad' are exclusive" ; usage
+	      fi ;;
+	-adm | -ad) if test $KIND = 0 ; then KIND=2 ; else
+		echo "Error: '-tlm', '-adm' and '-oad' are exclusive" ; usage
+	      fi ;;
+	-oad) if test $KIND = 0 ; then KIND=4 ; NODEPEND=t ; else
+		echo "Error: '-tlm', '-adm' and '-oad' are exclusive" ; usage
+	      fi ;;
 
 	-ieee)   echo "Warning: ignore option '-ieee' (already the default)"
-                 printf " ... " ;;
+		 printf " ... " ;;
 	-noieee) echo "Warning: will use option '-fast' instead of '-noieee' (obsolete)"
-                 printf " ... " ; OptLev=`expr $OptLev \* 2` ;;
+		 printf " ... " ; OptLev=`expr $OptLev \* 2` ;;
 	-fast)  OptLev=`expr $OptLev \* 2` ;;
 	-devel) OptLev=0 ;;
 	-gsl) GSL=t ;;
@@ -1126,26 +1157,32 @@ if test "x$MPI" != x0 -a "x$MPI_MFILE" != x ; then
     if test -r $MPI_MFILE ; then
 	nl=`wc -l $MPI_MFILE | awk '{print $1}'`
 	if [ $nl -lt $MPI ] ; then
-          echo "Error: need at least $MPI nodes (currently only $nl) in MPI_MFILE=$MPI_FILE"
-          usage
+	  echo "Error: need at least $MPI nodes (currently only $nl) in MPI_MFILE=$MPI_FILE"
+	  usage
 	fi
 	if [ $verbose -gt 1 ]; then
 	    echo " MPI_MFILE=$MPI_MFILE : $nl procs for MPI=$MPI run"
 	fi
     else
-          echo "Error: cannot access MPI_MFILE=$MPI_FILE"
-          usage
+	  echo "Error: cannot access MPI_MFILE=$MPI_FILE"
+	  usage
     fi
 fi
 
 #- setting for forward or ADM testing
-if test "x$ADM" = xt ; then
+if test $KIND = 1 ; then
+    TARG=ftlall
+    code_dir=code_ad
+    inputdir=input_ad
+    ref_outp="output_tlm.txt"
+    EXECUTABLE="mitgcmuv_ftl"
+elif test $KIND = 2 ; then
     if test "x$TARG" = xobj ; then TARG=adobj ; else TARG=adall ; fi
     code_dir=code_ad
     inputdir=input_ad
     ref_outp="output_adm.txt"
     EXECUTABLE="mitgcmuv_ad"
-elif test "x$OADM" = xt ; then
+elif test $KIND = 4 ; then
     TARG=adAll
     code_dir=code_oad
     inputdir=input_oad
@@ -1196,7 +1233,7 @@ do
 	    echo ""; echo -n " -- skip \"$xx\" (not a directory !)"
 	fi
     else
-        if test $count = 1 ; then echo -n ", \"$xx\""
+	if test $count = 1 ; then echo -n ", \"$xx\""
 	else count=1 ; echo "" ;  echo -n " skip: \"$xx\""
 	fi
     fi
@@ -1224,16 +1261,20 @@ echo "OK (COMMAND= $COMMAND )"
 #  (use default or load experiment-specific list from file "tr_checklist")
 # content : 1rst = main variable used to decide if it pass or FAIL
 #         others = number of matching digits to be printed in summary.txt
-if test "x$ADM" = x -a "x$OADM" = x; then
+if test $KIND = 1 ; then
+    DEF_CHECK_LIST='tlmGrd tlmCst tlmGrd fwdGrd'
+    EMPTY_RESULTS='.. .. ..'
+    LEN_CHECK_LIST=`echo $DEF_CHECK_LIST | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' | awk '{print NF-1}'`
+elif test $KIND = 2 -o $KIND = 4 ; then
+    DEF_CHECK_LIST='AdGrd Cost AdGrd FDGrd'
+    EMPTY_RESULTS='.. .. ..'
+    LEN_CHECK_LIST=`echo $DEF_CHECK_LIST | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' | awk '{print NF-1}'`
+else
     DEF_CHECK_LIST='PS PS T+ S+ U+ V+ pt1+ pt2+ pt3+ pt4+ pt5+'
     EMPTY_RESULTS='.. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. ..'
     LEN_CHECK_LIST=`echo $DEF_CHECK_LIST | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' | awk '{print NF-1}'`
     ii=`echo $EMPTY_RESULTS | awk '{print NF}'`
     EMPTY_RESULTS=$EMPTY_RESULTS`expr $LEN_CHECK_LIST - $ii | awk 'BEGIN{FS=":"}{for(i=1;i<=$1;i++){printf "  ."}}'`
-else
-    DEF_CHECK_LIST='AdGrd Cost AdGrd FDGrd'
-    EMPTY_RESULTS='.. .. ..'
-    LEN_CHECK_LIST=`echo $DEF_CHECK_LIST | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' | awk '{print NF-1}'`
 fi
 
 #  create the FORTRAN comparison code
@@ -1312,10 +1353,8 @@ else
 fi
 echo
 echo >> $SUMMARY
-if test "x$ADM" = x -a "x$OADM" = x; then
-    if [ $MATCH_CRIT -lt 10 ] ;
-    then line_0="default  "$MATCH_CRIT ;
-    else line_0="default "$MATCH_CRIT ; fi
+if test $KIND = 0 ; then
+    line_0=`printf '%s %2i' 'default' $MATCH_CRIT`
        line_0="$line_0  ----T-----  ----S-----  ----U-----  ----V-----"
     line_1="G D M    c        m  s        m  s        m  s        m  s"
     line_2="e p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  ."
@@ -1328,27 +1367,27 @@ if test "x$ADM" = x -a "x$OADM" = x; then
 	line_3="$line_3  i  a  a  d"
 	line_4="$line_4  n  x  n  ."
     done
+else
+    line_0=`printf '%s %2i' 'default   ' $MATCH_CRIT`
+  if test $KIND = 1 ; then
+    echo "TANGLIN=true" >> $SUMMARY
+    line_1="G D M    C  T  F"
+    line_2="e p a R  o  L  D"
+  else
+    echo "ADJOINT=true" >> $SUMMARY
+    line_1="G D M    C  A  F"
+    line_2="e p a R  o  d  D"
+  fi
+    line_3="n n k u  s  G  G"
+    line_4="2 d e n  t  r  r"
+    echo >> $SUMMARY
+fi
     echo "$line_0" | tee -a $SUMMARY
     echo "$line_1" | tee -a $SUMMARY
     echo "$line_2" | tee -a $SUMMARY
     echo "$line_3" | tee -a $SUMMARY
     echo "$line_4" | tee -a $SUMMARY
-    echo " "       | tee -a $SUMMARY
-else
-    echo "ADJOINT=true" >> $SUMMARY
-    echo >> $SUMMARY
-    if [ $MATCH_CRIT -lt 10 ] ;
-    then line_0="default     "$MATCH_CRIT ;
-    else line_0="default    "$MATCH_CRIT ; fi
-    echo "$line_0" | tee -a $SUMMARY
-    cat << EOF | tee -a $SUMMARY
-G D M    C  A  F
-e p a R  o  d  D
-n n k u  s  G  G
-2 d e n  t  r  r
-
-EOF
-fi
+    echo ""        | tee -a $SUMMARY
 echo "-------------------------------------------------------------------------------"
 
 #  ...and each test directory...
@@ -1375,7 +1414,7 @@ for dir in $TESTDIRS ; do
 	    rm -f SIZE.h.mpi genmake.tr_log make.tr_log
 	)
 	if test -d $dir/$rundir/CVS ; then
-            echo -n '  --- dir:' $dir/$rundir ': '
+	    echo -n '  --- dir:' $dir/$rundir ': '
 	    run_clean $dir/$rundir
 	fi
 	trdir=`( cd $dir ; find . -type d -name "$pfxdir.*" -print | sed 's/^.\///')`
@@ -1390,7 +1429,8 @@ for dir in $TESTDIRS ; do
     #  Verify that the testdir exists and contains previous
     #  results in the correct location--or skip this directory!
     fout=$dir"/results/"$ref_outp
-    if test ! -r $fout ; then
+   #if test ! -r $fout ; then
+    if test ! -r $fout -a ! -r ${fout}.gz ; then
 	echo "can't read \"$fout\" -- skipping $dir"
 	continue
     fi
@@ -1463,7 +1503,8 @@ for dir in $TESTDIRS ; do
 	name=`echo $exd | sed -e "s/$inputdir\.//"`
 	refExOut=`echo $ref_outp | sed "s/\./.${name}./"`
 	outf="$dir/results/$refExOut"
-        if test -f $outf -a -r $outf ; then
+	#if test -f $outf -a -r $outf ; then
+	if test -r $outf -o -r ${outf}.gz ; then
 	  if test "x$MULTI_THREAD" = "xt" ; then
 	    if test -r $dir"/"$exd"/eedata.mth" ; then
 	      if test "x$MPI" = "x0" ; then
@@ -1486,9 +1527,9 @@ for dir in $TESTDIRS ; do
 
     echo
     if test "x$extra_runs" = "x" ; then
-       echo "Experiment:  $dir"
+	echo "Experiment:  $dir"
     else
-       echo "Experiment:  $dir ; extra_runs=$extra_runs"
+	echo "Experiment:  $dir ; extra_runs=$extra_runs"
     fi
     echo
     unset genmake makedepend make run
@@ -1507,13 +1548,13 @@ for dir in $TESTDIRS ; do
 	    run=N
 	genmakemodel $dir/$builddir && genmake=Y \
 	    && makeclean $dir/$builddir \
-            && symlink_mpifiles $dir $code_dir $builddir \
+	    && symlink_mpifiles $dir $code_dir $builddir \
 	    && makedependmodel $dir/$builddir && makedepend=Y \
 	    && makemodel $dir/$builddir && make=Y
     else
 	genmakemodel $dir/$builddir && genmake=Y \
 	    && makeclean $dir/$builddir \
-            && symlink_mpifiles $dir $code_dir $builddir \
+	    && symlink_mpifiles $dir $code_dir $builddir \
 	    && makedependmodel $dir/$builddir && makedepend=Y \
 	    && makemodel $dir/$builddir && make=Y \
 	    && run_clean $dir/$rundir \
@@ -1525,12 +1566,12 @@ for dir in $TESTDIRS ; do
 
 	fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	echo 1>&2
- 	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
+	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
 	echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
 
 	for ex in $extra_runs ; do
 	    unset run
-            results=$EMPTY_RESULTS
+	    results=$EMPTY_RESULTS
 	    #  reference output file
 	    refExOut=`echo $ref_outp | sed "s/\./.${ex}./g"`
 	    #  Create an output dir & summary.txt file for each extra run (tdir.ex)
@@ -1588,8 +1629,8 @@ for dir in $TESTDIRS ; do
     fi
     #postclean $dir/$builddir
     if test "x$POSTCLEAN" = x2 ; then
- 	makeclean $dir/$builddir \
- 	    && run_clean $dir/$rundir
+	makeclean $dir/$builddir \
+	    && run_clean $dir/$rundir
     fi
     if test "x$MPI" != x0 -a "x$MPI_MFILE" != x ; then rm -f $LOC_MFILE ; fi
 
@@ -1636,7 +1677,7 @@ fi
 if test "x$CLEANUP" != xt ; then
     cat $SUMMARY | sed 's/ \.  \.  \.  \.  \.  \.  \.  \.  \.  \.  \.  \. //'
     if test -e tr_out.txt ; then
-        mv tr_out.txt tr_out.txt.old
+	mv tr_out.txt tr_out.txt.old
     fi
     cat $SUMMARY | sed '/^[YN] [YN] [YN] [YN]/ s/ \. //g' > tr_out.txt
 fi
@@ -1644,4 +1685,3 @@ fi
 if test "x$DELDIR" = xt ; then
     rm -rf $DRESULTS
 fi
-
