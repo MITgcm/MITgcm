@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1716 2012/08/15 14:44:48 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1717 2012/08/16 03:18:52 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o verification/testreport:
+  - add option '-tlm' for Tangent-Linear test (-adm,-oad,-tlm are all exclusive);
+  - can also use compressed (gzip) reference output file;
+  - change format (in pkg/grdchk) of TLM output (+ add forward gradient)
+    to be easier to collect by testreport.
+  - update existing TLM output (half out-of-date by more than 3 yrs).
 
 checkpoint63r (2012/08/15)
 o tools/genmake2:
