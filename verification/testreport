@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.175 2012/08/15 23:19:21 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.176 2012/08/16 18:44:48 jmc Exp $
 #  $Name:  $
 #
 
@@ -1597,7 +1597,7 @@ for dir in $TESTDIRS ; do
 	    fi
 	done
 
-    if test -f $DRESULTS"/"genmake_state ; then : ; else
+    if test ! -f $DRESULTS"/"genmake_state ; then
 	if test -f $dir/$builddir/Makefile ; then
 	    mkOpt=`grep '^# OPTFILE=' $dir/$builddir/Makefile 2>/dev/null | head -1 | sed 's/^# //'`
 	    echo "from '$dir/$builddir/Makefile', extract:" > $DRESULTS/genmake_state
@@ -1606,24 +1606,31 @@ for dir in $TESTDIRS ; do
 	    if test "x$OPTFILE" = xNONE ; then
 		eval $mkOpt
 		sed "/^No \"OPTFILE\" was specified ; genmake2/a\  OPTFILE=${OPTFILE}"\
-			$SUMMARY > tr_0.tmp_log
+			$SUMMARY > tmp.tr_log
 		RETVAL=$?
 		if test "x$RETVAL" = x0 ; then rm -f $SUMMARY
-			cp tr_0.tmp_log $SUMMARY
-		else rm -f tr_0.tmp_log
+			cp tmp.tr_log $SUMMARY
+		else rm -f tmp.tr_log
 		fi
 	    fi
 	    gmkLog=$dir/$builddir/genmake.log
-	    grep '^Get compiler version using:' $gmkLog > /dev/null 2>&1
-	    RETVAL=$?
-	    if test "x$RETVAL" = x0 ; then
-		echo "from '$gmkLog', extract compiler version:" >> $DRESULTS/genmake_state
-		sed -n '/Get compiler version/,/<-- compiler version/p' $gmkLog \
-			| grep -v '^... compiler version ' > tr_1.tmp_log
-		sed -n '1p' tr_1.tmp_log >> $DRESULTS/genmake_state
-		sed -n '2,/^$/p' tr_1.tmp_log | sed '/^$/d' | sed 's/^./ &/' \
-			>> $DRESULTS/genmake_state
-		rm -f tr_1.tmp_log
+	    if test -r $gmkLog ; then
+		grep '^Get compiler version using:' $gmkLog > /dev/null 2>&1
+		RETVAL=$?
+		if test "x$RETVAL" = x0 ; then
+		  echo -n "from '$gmkLog', " >> $DRESULTS/genmake_state
+		  echo "extract compiler version:"   >> $DRESULTS/genmake_state
+		  sed -n '/Get compiler version/,/<-- compiler version/p' \
+		     $gmkLog | grep -v '^... compiler version ' > tmp.tr_log
+		  sed -n '1p' tmp.tr_log >> $DRESULTS/genmake_state
+		  sed -n '2,/^$/p' tmp.tr_log | sed '/^$/d' | sed 's/^./ &/' \
+					 >> $DRESULTS/genmake_state
+		  rm -f tmp.tr_log
+		fi
+		echo -n "from '$gmkLog', " >> $DRESULTS/genmake_state
+		echo "get NETCDF & LAPACK settings:" >> $DRESULTS/genmake_state
+		sed -n '/set HAVE_NETCDF=/p' $gmkLog >> $DRESULTS/genmake_state
+		sed -n '/set HAVE_LAPACK=/p' $gmkLog >> $DRESULTS/genmake_state
 	    fi
 	fi
     fi
