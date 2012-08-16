@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.10 2012/06/27 18:55:31 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.11 2012/08/16 17:12:17 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu
 #  Linux machines.
@@ -25,12 +25,14 @@ ulimit -s unlimited
 cmdCVS='cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack'
 cmdCVS='cvs -d /u/gcmpack'
 
+dInWeek=`date +%a`
 TESTDIR="/scratch/jmc/test_"`hostname -s`
 MC=13
 checkOut=1
 sepDir=1
 option=
 tst_list='g7a adm mpa g77 gfo+rs mth mp2+rs mpi ifc'
+if test "x$dInWeek" = xSun ; then tst_list="$tst_list tlm" ; fi
 #tst_list='g77 adm gfo ifc mth pgi+rs'
 #tst_list='adm gfo+rs mth'
 
@@ -115,8 +117,9 @@ do
   nbl='-100'
   comm="./testreport"
   if test $typ = 'g7a' -o  $typ = 'adm' -o  $typ = 'mpa' ; then
-    nbl='-60'
-    comm="$comm -adm"
+    comm="$comm -adm" ; nbl='-60'
+  elif test $typ = 'tlm' ; then
+    comm="$comm -tlm" ; nbl='-60'
   elif test $typ = 'mth' -o  $typ = 'mp2' ; then
     export GOMP_STACKSIZE=400m
     export OMP_NUM_THREADS=2
@@ -127,12 +130,12 @@ do
   MPI=0
   case $typ in
    'g77'|'g7a')		OPTFILE='../tools/build_options/linux_amd64_g77' ;;
-   'gfo'|'adm'|'mth')	OPTFILE='../tools/build_options/linux_amd64_gfortran'
-			comm="$comm -match $MC -devel" ;;
+   'gfo'|'adm'|'tlm'|'mth') comm="$comm -match $MC -devel"
+			OPTFILE='../tools/build_options/linux_amd64_gfortran' ;;
    'ifc')		OPTFILE='../tools/build_options/linux_amd64_ifort11' ;;
    'pgi')		OPTFILE='../tools/build_options/linux_amd64_pgf77' ;;
-   'mpa'|'mpi'|'mp2')	OPTFILE='../tools/build_options/linux_amd64_gfortran'
-			comm="$comm -match $MC -devel" ; MPI=6 ;;
+   'mpa'|'mpi'|'mp2')	comm="$comm -match $MC -devel" ; MPI=6
+			OPTFILE='../tools/build_options/linux_amd64_gfortran' ;;
        *)		OPTFILE= ;;
   esac
 #-- set MPI command:
