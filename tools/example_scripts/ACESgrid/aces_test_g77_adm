@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_g77.stderr
 #PBS -o /home/jmc/test_aces/output/tst_g77.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_g77_adm,v 1.10 2012/05/01 13:20:39 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_g77_adm,v 1.11 2012/08/17 17:15:30 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for Adjoint test using g77 compiler
@@ -29,14 +29,14 @@ sfx='g77'
 #module add netcdf/3.6.1/icc
 #export MPI_INC_DIR='/usr/local/pkg/mpich/mpich-intel/include/'
  OPTFILE="../tools/build_options/linux_ia32_g77"
- options='-adm -do'
+ options='-adm'
 #- need this to get "staf":
  export PATH="$PATH:$HOME/bin"
 
 #- keep a copy of MPI_MFILE:
 cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
 
-checkOut=1
+checkOut=1 ; options="$options -do"
 #options="$options -nc" ; checkOut=0
 #options="$options -q"  ; checkOut=0
 

@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_ifc.stderr
 #PBS -o /home/jmc/test_aces/output/tst_ifc.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mpi,v 1.23 2012/05/01 13:20:39 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mpi,v 1.24 2012/08/17 17:15:30 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for MPI test using ifort (default=v8) & mpich
@@ -38,7 +38,7 @@ sfx='ifc'
 #- keep a copy of MPI_MFILE:
 cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
 
-checkOut=1
+checkOut=1 ; #options="$options -do"
 #options="$options -nc" ; checkOut=0
 #options="$options -q"  ; checkOut=0
 
