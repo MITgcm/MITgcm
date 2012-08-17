@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.176 2012/08/16 18:44:48 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.177 2012/08/17 21:29:51 jmc Exp $
 #  $Name:  $
 #
 
@@ -534,6 +534,9 @@ makemodel()
 	    mk_fail=2
 	fi
     fi
+    if test $KIND = 1 -a -f taf_ftl.log ; then
+	    head -1 taf_ftl.log >> $CDIR"/summary.txt"
+    fi
     if test $KIND = 2 -a -f taf_ad.log ; then
 	    head -1 taf_ad.log >> $CDIR"/summary.txt"
 	    nerr=`grep -c 'TAF *.* ERROR ' taf_ad.log`
@@ -802,13 +805,12 @@ runmodel()
 	  fi
 	fi
 	rm -f run.log_tmp
-	#- in all cases where OutputFile exists, report SIZE (and AD time)
+	#- in all cases where OutputFile exists, report SIZE and time
 	if test -f $OUTPUTFILE ; then
 	  grep '(PID\.TID 0000\.0001)      n.. =' $OUTPUTFILE \
-		| sed 's/(PID.TID 0000.0001)     //' >> $CDIR"/summary.txt"
-	  if test $KIND = 2 ; then
-	    grep -A3 'Seconds in section "ALL' $OUTPUTFILE >> $CDIR"/summary.txt"
-	  fi
+		| sed 's/(PID.TID 0000.0001)   //' >> $CDIR"/summary.txt"
+	  grep -A3 'Seconds in section "ALL' $OUTPUTFILE \
+		| sed 's/(PID.TID 0000.0001)   //' >> $CDIR"/summary.txt"
 	fi
 	if test -s STDERR.0000 ; then cp STDERR.0000 $CDIR"/STDERR.0000" ; fi
 	if [ $RETVAL -eq 0 -a $ENDVAL -gt 0 ] ; then
