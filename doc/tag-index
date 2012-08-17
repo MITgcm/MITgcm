@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1717 2012/08/16 03:18:52 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1718 2012/08/17 21:30:51 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -10,6 +10,10 @@ o verification/testreport:
   - change format (in pkg/grdchk) of TLM output (+ add forward gradient)
     to be easier to collect by testreport.
   - update existing TLM output (half out-of-date by more than 3 yrs).
+  - report NETCDF & LAPACK settings (from genmake2) in output dir.
+  - report run-time in each individual summary (previously only for AD test);
+    for TLM test, add also TAF version.
+  - add daily TLM test on (old) aces cluster + weekly test on baudelaire.
 
 checkpoint63r (2012/08/15)
 o tools/genmake2:
