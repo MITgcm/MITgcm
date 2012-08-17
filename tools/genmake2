@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.233 2012/08/14 22:10:39 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.234 2012/08/17 17:27:57 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -3047,7 +3047,7 @@ ftl_input_code.$FS: \$(AD_FILES) \$(H_SRC_FILES)
 	-rm -f ftl_config.template
 	@make -f \$(MAKEFILE) \$(F77_PP_SRC_FILES)
 	@make -f \$(MAKEFILE) \$(AD_FLOW_FILES)
-	cat \$(AD_FLOW_FILES) \$(AD_FILES) > ftl_input_code.$FS
+	cat \$(AD_FLOW_FILES) \$(AD_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ftl_input_code.$FS
 
 ftl_taf_output.$FS: ftl_input_code.$FS
 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) ftl_input_code.$FS
