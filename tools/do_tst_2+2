@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.14 2012/04/29 22:11:17 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.15 2012/08/18 18:59:14 jmc Exp $
 # $Name:  $
 
 usage()
@@ -78,19 +78,11 @@ do
   fi
 done
 
-if test -x $SCRIPT ; then
- echo "run script '$SCRIPT' for experiment in:"
- echo " $LIST"
- yy=`echo $SCRIPT | grep -c '^\/'`
- if test $yy = 0 ; then SCRIPT="../../$SCRIPT" ; fi
-else
- echo "ERROR: script '$SCRIPT' not found or not executable"
- exit
-fi
-echo ""
 #------------------------
-
 if test $CLEAN = 1 ; then
+ echo "clean output from script '$SCRIPT' for experiment in:"
+ echo " $LIST"
+ echo ""
  for xx in $LIST
  do
   listD='run '`(cd $xx/results ; ls output.*.txt 2> /dev/null | sed 's/^output\./tr_run./g' | sed 's/\.txt$//g' )`
@@ -108,6 +100,17 @@ if test $CLEAN = 1 ; then
  done
  exit
 fi
+if test -x $SCRIPT ; then
+ echo "run script '$SCRIPT' for experiment in:"
+ echo " $LIST"
+ echo ""
+ yy=`echo $SCRIPT | grep -c '^\/'`
+ if test $yy = 0 ; then SCRIPT="../../$SCRIPT" ; fi
+else
+ echo "ERROR: script '$SCRIPT' not found or not executable"
+ exit
+fi
+
 #------------------------
 #  Create a uniquely named directory to store results
 CMDLINE=$0
@@ -163,7 +166,7 @@ fi
 
 for xx in $LIST
 do
-  echo ==============================================================================
+  echo '------------------------------------------------------------------------------'
   if [ $mpi -le 0 ] ; then
     rCommand=$COMMAND
   else
@@ -286,4 +289,3 @@ cp -p $SUMMARY tst_2+2_out.txt
 if test "x$ADDRESS" = x ; then
   rm -rf $DRESULTS
 fi
-
