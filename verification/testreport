@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.177 2012/08/17 21:29:51 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.178 2012/08/18 19:01:54 jmc Exp $
 #  $Name:  $
 #
 
@@ -1280,7 +1280,7 @@ else
 fi
 
 #  create the FORTRAN comparison code
-if test -x tr_cmpnum ; then
+if test "x$CLEANUP" = xt -o -x tr_cmpnum ; then
     echo "skipping comparison code build"
 else
     createcodelet
@@ -1384,12 +1384,14 @@ else
     line_4="2 d e n  t  r  r"
     echo >> $SUMMARY
 fi
+if test "x$CLEANUP" != xt ; then
     echo "$line_0" | tee -a $SUMMARY
     echo "$line_1" | tee -a $SUMMARY
     echo "$line_2" | tee -a $SUMMARY
     echo "$line_3" | tee -a $SUMMARY
     echo "$line_4" | tee -a $SUMMARY
     echo ""        | tee -a $SUMMARY
+fi
 echo "-------------------------------------------------------------------------------"
 
 #  ...and each test directory...
@@ -1694,3 +1696,4 @@ fi
 if test "x$DELDIR" = xt ; then
     rm -rf $DRESULTS
 fi
+echo "======== End of testreport execution ========"
