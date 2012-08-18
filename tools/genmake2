@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.234 2012/08/17 17:27:57 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.235 2012/08/18 05:48:34 utke Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -3191,45 +3191,24 @@ f95_test.out: f95_test_mods.f90 f95_test.f90
 	f95 -fixed -w=unused -maxcontin=132 -c f95_test_mods.f90 > \$@ 2>&1
 	f95 -fixed -w=unused -maxcontin=132 -c -fixed f95_test.f90 >> \$@ 2>&1
 
-# the file included below is created by the
-# postProcessor and its inclusion sets the
-# variable POSTPROCESSEDFILES
-# used below. Because the file is made during
-# make it won't be read until the second (recursive)
-# invocation in the rule below
--include postProcess.make
+CB2M_AD_FILES=\$(AD_FILES:.f=_cb2m.f$FS90)
 
-AD_OBJ_FILES_S1=\$(OPENAD_SUPPORT_F90_SRC_FILES:.F90=.o) \$(OPENAD_SUPPORT_C_SRC_FILES:.c=.o) \$(POSTPROCESSEDFILES:.f$FS90=.o)
+AD_OBJ_FILES_S1=\$(OPENAD_SUPPORT_F90_SRC_FILES:.F90=.o) \$(OPENAD_SUPPORT_C_SRC_FILES:.c=.o)  OAD_intrinsics_oad.o \$(CB2M_AD_FILES:.f$FS90=_oad.o)
 
 AD_OBJ_FILES_S2=\$(AD_OBJ_FILES_S1) \$(NON_AD_F77_SRC_FILES:.F=_cb2m.o) \$(C_SRC_FILES:.c=.o) \$(F90_SRC_FILES:.F90=.o)
 
-postProcess.comp: \$(ALL_LINKED_FILES) \$(addsuffix _mod.h, \$(CB2M_F90_SRC_NAMES)) postProcess.tag \$(AD_OBJ_FILES_S1)
-ifeq (\$(MAKELEVEL),0)
-	\$(MAKE) adAll
-else
-	touch \$@
-endif
-
-\$(EXE_AD): \$(ALL_LINKED_FILES) \$(addsuffix _mod.h, \$(CB2M_F90_SRC_NAMES)) postProcess.comp \$(AD_OBJ_FILES_S2)
-ifeq (\$(MAKELEVEL),1)
+\$(EXE_AD): \$(ALL_LINKED_FILES) \$(addsuffix _mod.h, \$(CB2M_F90_SRC_NAMES)) postProcess.tag \$(AD_OBJ_FILES_S2)
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(AD_OBJ_FILES_S2) \$(LIBS)
-else
-	touch \$@
-endif
 
-# makefile debug rule
-openad: ad_input_code.w2f.pre.xb.x2w.w2f.td.pp.f$FS90
-.PHONY: openad
-
-# create the module files
+# create sources files modules from header files containing common blocks
 %_mod.FF90 : %.h ../OAD_support/cb2mGetModules.csh ../OAD_support/cb2mGetModules.awk
 	../OAD_support/cb2mGetModules.csh $< ../OAD_support/cb2mGetModules.awk
 
-# create the header files
+# create new header files with USE statements for the new modules made above 
 %_mod.h : %.h ../OAD_support/cb2mGetHeaders.csh ../OAD_support/cb2mGetHeaders.awk
 	../OAD_support/cb2mGetHeaders.csh $< ../OAD_support/cb2mGetHeaders.awk \$(CB2M_F90_SRC_NAMES)
 
-# change everybody else to use the new module files:
+# change the include directives of everybody to refer to  the new header files with the USE statements
 %_cb2m.FF90 : %.F ../OAD_support/cb2mUseModules.bash
 	../OAD_support/cb2mUseModules.bash $< ${MPI}
 
@@ -3244,93 +3223,59 @@ ad_output.txt: \$(EXE_AD)
 	@printf 'running ... '
 	@./\$(EXE_AD) > \$@
 
-CB2M_AD_FILES=\$(AD_FILES:.f=_cb2m.f$FS90)
 ad_input_code.f$FS90:  \$(CB2M_AD_FILES)
 	cat \$^ > \$@
 
-# strip all comments and blanks to reduce
-# the file size in order to reduce perl's memory requirements
-ad_input_code_sf.f$FS90 : ad_input_code.f$FS90
-	cat \$^ | sed -f ../OAD_support/strip.sed | sed -f ../OAD_support/stop2print.sed > \$@
-
-# mfef90 preprocessing
-# expand statement functions
-# expose mfef90 specific substring handling
-# add the w2f__types module
-ad_input_code_sf.w2f.f$FS90: ad_input_code_sf.f$FS90 mfef90 whirl2f whirl2f_be w2f__types.f90
-	./mfef90 -r8 -z -F -N132 \$<
-	mv \$<.B \$(basename \$<).B
-	./whirl2f -openad \$(basename \$<).B
-	cat w2f__types.f90 \$(basename \$<).w2f.f > \$@
-
 # canonicalizer
-ad_input_code_sf.w2f.pre.f$FS90: ad_input_code_sf.w2f.f$FS90 preProcess.py
-	./preProcess.py --timing --r8 -H -S \$< -o \$@
+ad_input_code_sf.pre.f90 : \$(CB2M_AD_FILES) 
+	\${OPENADFORTTK_BASE}/tools/SourceProcessing/preProcess.py --timing --r8 -H -S  -o \$@ \$^
+
+# replace stop statements (to avoid the implied unstructured control flow)  with print statements
+ad_input_code_sf.pre.s2p.f90 : ad_input_code_sf.pre.f90
+	cat \$< | sed -f ../OAD_support/stop2print.sed > ad_input_code_sf.pre.s2p.f90
 
 # F -> WHIRL
-# note that the canonicalized version cuts off at col 72
-# doing this also for string constants which is ok as long
-# as we are in fixed mode and cut of exactly there.
-# Otherwise mfef90 patches in spaces to fill up to 72 (or 132)
-# characters respectively.
-ad_input_code_sf.w2f.pre.B: ad_input_code_sf.w2f.pre.f$FS90 mfef90
-	./mfef90 -r8 -z -F \$<
-	mv \$<.B \$@
+ad_input_code_sf.pre.s2p.B: ad_input_code_sf.pre.s2p.f90
+	\${OPEN64ROOT}/crayf90/sgi/mfef90 -r8 -z -F ad_input_code_sf.pre.s2p.f90
 
 # WHIRL -> XAIF
-ad_input_code_sf.w2f.pre.xaif : ad_input_code_sf.w2f.pre.B whirl2xaif
-	./whirl2xaif -s -n --debug 1 -o \$@ \$<
+ad_input_code_sf.pre.s2p.xaif : ad_input_code_sf.pre.s2p.B 
+	\${OPENADFORTTK}/bin/whirl2xaif -s -n --debug 1 -o \$@ \$<
 
 # XAIF -> XAIF'
-ad_input_code_sf.w2f.pre.xb.xaif : ad_input_code_sf.w2f.pre.xaif xaif.xsd xaif_base.xsd xaif_inlinable_intrinsics.xsd xaif_derivative_propagator.xsd xaif_output.xsd oadDriver
-	./oadDriver -f -t forward_step -i \$< -c \${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif -o \$@ -I -r
+ad_input_code_sf.pre.s2p.xb.xaif : ad_input_code_sf.pre.s2p.xaif xaif.xsd xaif_base.xsd xaif_inlinable_intrinsics.xsd xaif_derivative_propagator.xsd xaif_output.xsd 
+	\${XAIFBOOSTERROOT}/xaifBooster/algorithms/BasicBlockPreaccumulationReverse/driver/oadDriver -f -t forward_step -i \$< -c \${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif -o \$@ -I -r
 
 # XAIF' -> WHIRL'
-ad_input_code_sf.w2f.pre.xb.x2w.B : ad_input_code_sf.w2f.pre.xb.xaif xaif2whirl
-	./xaif2whirl --debug 1 ad_input_code_sf.w2f.pre.B \$<
+ad_input_code_sf.pre.s2p.xb.x2w.B : ad_input_code_sf.pre.s2p.xb.xaif 
+	\${OPENADFORTTK}/bin/xaif2whirl --debug 1 ad_input_code_sf.pre.s2p.B \$<
 
 # WHIRL' -> F'
-ad_input_code_sf.w2f.pre.xb.x2w.w2f.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.B whirl2f whirl2f_be
-	./whirl2f -FLIST:ftn_file=\$@ -openad \$<
+ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.B 
+	\${OPEN64ROOT}/whirl2f/whirl2f -FLIST:ftn_file=\$@ -openad \$<
 
 # insert template directives
-ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.w2f.f$FS90 ../OAD_support/insertTemplateDir.bash
+ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90 ../OAD_support/insertTemplateDir.bash
 	../OAD_support/insertTemplateDir.bash \$< \$@
 
 PPEXTRAS=\$(wildcard ../OAD_support/ad_template.*.F) ../OAD_support/ad_inline.F
 # postprocess F'
-postProcess.tag: ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.f$FS90 postProcess.py \$(PPEXTRAS:.F=.f)
-	# the target is a placeholder to signal execution of the rule
+postProcess.tag: ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90 \$(PPEXTRAS:.F=.f) | w2f__types.f90
+	\${OPENADFORTTK_BASE}/tools/SourceProcessing/postProcess.py --progress --timing --infoUnitFile w2f__types.f90 --outputFormat=fixed --separateOutput --pathSuffix "" --filenameSuffix "_oad" -m r -i ../OAD_support/ad_inline.f \$<
+	# the target is a placeholder to trigger a single execution of the rule
 	touch \$@
-	# this step also creates the file postProcess.make but we cannot
-	# name it as the target or else make will try to remake it for
-	# the include directive above for any rule, e.g. make clean
-	./postProcess.py --progress --timing --infoUnitFile w2f__types.f90 --outputFormat=fixed -m r -i ../OAD_support/ad_inline.f --width 4 \$<
+# put this so make knows about the postprocessing output 
+OAD_intrinsics_oad.f \$(CB2M_AD_FILES:.f$FS90=_oad.f): postProcess.tag
 
-# setup some links
+# link the XAIF schema files
 %.xsd:
 	\$(LN) \${XAIFSCHEMAROOT}/schema/\$@ .
-
-mfef90:
-	\$(LN) \${OPEN64ROOT}/crayf90/sgi/mfef90 .
 
 # link the support files:
 \$(OPENAD_SUPPORT_F90_SRC_FILES) \$(OPENAD_SUPPORT_C_SRC_FILES):
 	\$(LN) ../OAD_support/\$@ .
 
-whirl2xaif xaif2whirl:
-	\$(LN) \${OPENADFORTTK}/bin/\$@ .
-
-preProcess.py postProcess.py:
-	\$(LN) \${OPENADFORTTK_BASE}/tools/SourceProcessing/\$@ .
-
-whirl2f whirl2f_be:
-	\$(LN) \${OPEN64ROOT}/whirl2f/\$@ .
-
-oadDriver:
-	\$(LN) \${XAIFBOOSTERROOT}/xaifBooster/algorithms/BasicBlockPreaccumulationReverse/driver/oadDriver \$@
-
-AD_CLEAN += *_mod.h *_mod.F90 *.FF90 *.mod-whirl temp.sed oad_cp.* postProcess.make postProcess.tag postProcess.comp \$(PPEXTRAS:.F=.f)
+AD_CLEAN += *_mod.h *_mod.F90 *.FF90 *.mod-whirl temp.sed oad_cp.* postProcess.tag \$(PPEXTRAS:.F=.f)
 
 # ============ end OpenAD specific section ==============
 
