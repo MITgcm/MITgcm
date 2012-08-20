@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.23 2012/08/20 17:51:24 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.24 2012/08/20 19:04:41 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -393,15 +393,15 @@ C If necessary, next line can be moved outside OCEAN_3D for IGSM2.2 cleanups
         PRINT *,' CH4=',ch4ann,' N2O=',n2oann
 #  endif
         OPEN(333,ACCESS='APPEND',FILE=caruptfile,STATUS='old')
-#    ifdef CPL_TEM
-C   For ocean carbon model only
+#    ifndef CPL_TEM
+C       For ocean carbon model only
         WRITE(333,'(i7,3e15.5)')iyr,ocuptp
 #    else
 #      ifndef CPL_OCEANCO2
 C       For ocean TEM only
         WRITE(333,'(i7,3e15.5)')iyr,nepan,nepan-1.e-12*ch4ann*12./16.
 #      else
-C For ocean both TEM OCM
+C        For ocean both TEM OCM
         WRITE(333,'(i7,3e15.5)')iyr,nepan,nepan-1.e-12*ch4ann*12./16.
      &                  ,ocuptp
 #      endif
