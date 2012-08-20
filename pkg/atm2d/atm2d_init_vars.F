@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_init_vars.F,v 1.8 2012/01/10 21:58:22 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_init_vars.F,v 1.9 2012/08/20 17:51:24 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -20,15 +20,30 @@ C     myThid - thread number for this instance of the routine.
 C     === Local variables ===
 
 #ifdef PREDICTED_AEROSOL
-      print *,' Before eppaemission'
+      PRINT *,' Before eppaemission'
       CALL eppaemission (0)
 #endif
 
 #ifdef CLM
+#  ifndef CLM35 
+      CALL atmosphere(0,0)     ! initialize the atmospheric model
+#  endif
       CALL clm4mit2d           ! initialize CLM
+#  ifdef CLM35 
+      PRINT *,'After clm4mit2d  initialization'
+      PRINT *,'orbfix=',orbfix,' dyn_pft=',dyn_pft
+      PRINT *,'orbyr=',orbyr,' rampyr_dynpft=',rampyr_dynpft
+#    ifdef ORBITAL_FOR 
+      IF (orbyr.ne.2000) THEN
+         PRINT *,'Wrong orbyr for CLM3.5'
+         STOP
+      ENDIF
+#    endif
+      CALL atmosphere(0,0)
+#  endif
+#else
+      CALL atmosphere(0,0)
 #endif
-
-      CALL atmosphere(0,0)   ! initialize the atmospheric model
 
 #ifdef ML_2D
 C    2D mixed layer model  initialization
@@ -45,10 +60,7 @@ C    2D mixed layer model  initialization
 #  ifdef DATA4TEM
       nfile=1
 #  endif
-#  ifdef CPL_NEM
-C      PRINT *,' Reading climate data to run NEM during '
-C      CALL rd_rstrt_nem
-#  endif
+c      call tem_init(inyear,lyear)
       CALL climate2tem(0,0)
       CALL temclm_init
       CALL lcluc_init

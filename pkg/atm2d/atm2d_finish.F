@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_finish.F,v 1.5 2012/01/13 15:53:33 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_finish.F,v 1.6 2012/08/20 17:51:24 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -32,9 +32,9 @@ C     === Local variables ===
 #endif
 
 #ifdef CLM35
-C     next line is hack to call atmos one more time step
+C     next line is hack to call clm one more time step
 C     as CLM35 writes end-of-year file at start of next year
-      CALL atmosphere(1,1)
+      CALL clm4mit2d 
 #endif
 
 #ifdef ATM2D_MPI_ON
