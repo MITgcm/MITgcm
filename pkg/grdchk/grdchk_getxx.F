@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.31 2012/07/31 16:08:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.32 2012/08/21 14:00:04 gforget Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -14,6 +14,7 @@ C $Name:  $
      I                       xx_comp_ref,
      I                       xx_comp_pert,
      I                       localEps,
+     I                       ierr,
      I                       mythid
      &                     )
 
@@ -54,6 +55,7 @@ c     == routine arguments ==
       _RL     xx_comp_ref
       _RL     xx_comp_pert
       _RL     localEps
+      integer ierr
       integer mythid
 
 #ifdef ALLOW_GRDCHK
@@ -103,15 +105,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_theta_file(1:il),'.',optimcycle
          end if
-         call active_read_xyz( fname, tmpfld3d, 1,
-     &                         doglobalread, ladinit, optimcycle,
-     &                         mythid, dummy)
-         xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
-         call active_write_xyz( fname, tmpfld3d, 1,
-     &                          optimcycle,
-     &                          mythid, dummy)
 #endif /* ALLOW_THETA0_CONTROL */
 
 #ifdef ALLOW_SALT0_CONTROL
@@ -124,15 +117,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_salt_file(1:il),'.',optimcycle
          end if
-         call active_read_xyz( fname, tmpfld3d, 1,
-     &                         doglobalread, ladinit, optimcycle,
-     &                         mythid, dummy)
-         xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
-         call active_write_xyz( fname, tmpfld3d, 1,
-     &                          optimcycle,
-     &                          mythid, dummy)
 #endif /* ALLOW_SALT0_CONTROL */
 
 #ifdef ALLOW_UVEL0_CONTROL
@@ -145,15 +129,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_uvel_file(1:il),'.',optimcycle
          end if
-         call active_read_xyz( fname, tmpfld3d, 1,
-     &                         doglobalread, ladinit, optimcycle,
-     &                         mythid, dummy)
-         xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
-         call active_write_xyz( fname, tmpfld3d, 1,
-     &                          optimcycle,
-     &                          mythid, dummy)
 #endif /* ALLOW_UVEL0_CONTROL */
 
 #ifdef ALLOW_VVEL0_CONTROL
@@ -166,15 +141,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_vvel_file(1:il),'.',optimcycle
          end if
-         call active_read_xyz( fname, tmpfld3d, 1,
-     &                         doglobalread, ladinit, optimcycle,
-     &                         mythid, dummy)
-         xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
-         call active_write_xyz( fname, tmpfld3d, 1,
-     &                          optimcycle,
-     &                          mythid, dummy)
 #endif /* ALLOW_VVEL0_CONTROL */
 
 #ifdef ALLOW_HFLUX_CONTROL
@@ -187,15 +153,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_hflux_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_HFLUX_CONTROL */
 
 #ifdef ALLOW_SFLUX_CONTROL
@@ -208,15 +165,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_sflux_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_SFLUX_CONTROL */
 
 #if (defined (ALLOW_USTRESS_CONTROL) || defined (ALLOW_TAUU0_CONTROL))
@@ -229,15 +177,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_tauu_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_USTRESS_CONTROL */
 
 #if (defined (ALLOW_VSTRESS_CONTROL) || defined (ALLOW_TAUV0_CONTROL))
@@ -250,15 +189,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_tauv_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_VSTRESS_CONTROL */
 
 #ifdef ALLOW_ATEMP_CONTROL
@@ -271,15 +201,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_atemp_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_ATEMP_CONTROL */
 
 #ifdef ALLOW_AQH_CONTROL
@@ -292,15 +213,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_aqh_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_AQH_CONTROL */
 
 #ifdef ALLOW_UWIND_CONTROL
@@ -313,15 +225,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_uwind_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_UWIND_CONTROL */
 
 #ifdef ALLOW_VWIND_CONTROL
@@ -334,15 +237,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_vwind_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_VWIND_CONTROL */
 
 #ifdef ALLOW_OBCSN_CONTROL
@@ -355,19 +249,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_obcsn_file(1:il),'.',optimcycle
          end if
-
-         call active_read_xz( fname, tmpfldxz, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-
-         xx_comp_ref = tmpfldxz( itilepos,layer,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfldxz( itilepos,layer,itile,jtile ) = xx_comp_pert
-
-         call active_write_xz( fname, tmpfldxz, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
-
 #endif /* ALLOW_OBCSN_CONTROL */
 
 #ifdef ALLOW_OBCSS_CONTROL
@@ -380,19 +261,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_obcss_file(1:il),'.',optimcycle
          end if
-
-         call active_read_xz( fname, tmpfldxz, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-
-         xx_comp_ref = tmpfldxz( itilepos,layer,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfldxz( itilepos,layer,itile,jtile ) = xx_comp_pert
-
-         call active_write_xz( fname, tmpfldxz, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
-
 #endif /* ALLOW_OBCSS_CONTROL */
 
 #ifdef ALLOW_OBCSW_CONTROL
@@ -405,19 +273,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_obcsw_file(1:il),'.',optimcycle
          end if
-
-         call active_read_yz( fname, tmpfldyz, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-
-         xx_comp_ref = tmpfldyz( jtilepos,layer,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfldyz( jtilepos,layer,itile,jtile ) = xx_comp_pert
-
-         call active_write_yz( fname, tmpfldyz, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
-
 #endif /* ALLOW_OBCSW_CONTROL */
 
 #ifdef ALLOW_OBCSE_CONTROL
@@ -430,19 +285,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_obcse_file(1:il),'.',optimcycle
          end if
-
-         call active_read_yz( fname, tmpfldyz, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-
-         xx_comp_ref = tmpfldyz( jtilepos,layer,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfldyz( jtilepos,layer,itile,jtile ) = xx_comp_pert
-
-         call active_write_yz( fname, tmpfldyz, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
-
 #endif /* ALLOW_OBCSE_CONTROL */
 
 #ifdef ALLOW_DIFFKR_CONTROL
@@ -455,19 +297,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_diffkr_file(1:il),'.',optimcycle
          end if
-
-         call active_read_xyz( fname, tmpfld3d, 1,
-     &                         doglobalread, ladinit, optimcycle,
-     &                         mythid, dummy)
-
-         xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
-
-         call active_write_xyz( fname, tmpfld3d, 1,
-     &                          optimcycle,
-     &                          mythid, dummy)
-
 #endif /* ALLOW_DIFFKR_CONTROL */
 
 #ifdef ALLOW_KAPGM_CONTROL
@@ -480,19 +309,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_kapgm_file(1:il),'.',optimcycle
          end if
-
-         call active_read_xyz( fname, tmpfld3d, 1,
-     &                         doglobalread, ladinit, optimcycle,
-     &                         mythid, dummy)
-
-         xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
-
-         call active_write_xyz( fname, tmpfld3d, 1,
-     &                          optimcycle,
-     &                          mythid, dummy)
-
 #endif /* ALLOW_KAPGM_CONTROL */
 
 #ifdef ALLOW_KAPREDI_CONTROL
@@ -505,19 +321,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_kapredi_file(1:il),'.',optimcycle
          end if
-
-         call active_read_xyz( fname, tmpfld3d, 1,
-     &                         doglobalread, ladinit, optimcycle,
-     &                         mythid, dummy)
-
-         xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
-
-         call active_write_xyz( fname, tmpfld3d, 1,
-     &                          optimcycle,
-     &                          mythid, dummy)
-
 #endif /* ALLOW_KAPREDI_CONTROL */
 
 
@@ -531,19 +334,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_tr1_file(1:il),'.',optimcycle
          end if
-
-         call active_read_xyz( fname, tmpfld3d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-
-         xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
-
-         call active_write_xyz( fname, tmpfld3d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
-
 #endif /* ALLOW_TR10_CONTROL */
 
 #if (defined (ALLOW_SST_CONTROL) || defined (ALLOW_SST0_CONTROL))
@@ -556,15 +346,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_sst_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_SST0_CONTROL */
 
 #if (defined (ALLOW_SSS_CONTROL) || defined (ALLOW_SSS0_CONTROL))
@@ -577,15 +358,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_sss_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_SSS0_CONTROL */
 
 #ifdef ALLOW_DEPTH_CONTROL
@@ -598,15 +370,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_depth_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_DEPTH_CONTROL */
 
 #ifdef ALLOW_EFLUXY0_CONTROL
@@ -620,19 +383,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_efluxy_file(1:il),'.',optimcycle
          end if
-
-         call active_read_xyz( fname, tmpfld3d, 1,
-     &                         doglobalread, ladinit, optimcycle,
-     &                         mythid, dummy)
-
-         xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
-
-         call active_write_xyz( fname, tmpfld3d, 1,
-     &                          optimcycle,
-     &                          mythid, dummy)
-
 #endif /* ALLOW_EFLUXY0_CONTROL */
 
 #ifdef ALLOW_EFLUXP0_CONTROL
@@ -646,19 +396,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_efluxp_file(1:il),'.',optimcycle
          end if
-
-         call active_read_xyz( fname, tmpfld3d, 1,
-     &                         doglobalread, ladinit, optimcycle,
-     &                         mythid, dummy)
-
-         xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
-
-         call active_write_xyz( fname, tmpfld3d, 1,
-     &                          optimcycle,
-     &                          mythid, dummy)
-
 #endif /* ALLOW_EFLUXP0_CONTROL */
 
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
@@ -671,15 +408,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_bottomdrag_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_BOTTOMDRAG_CONTROL */
 
 #ifdef ALLOW_HFLUXM_CONTROL
@@ -692,15 +420,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_hfluxm_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_HFLUXM_CONTROL */
 
 #ifdef ALLOW_GEN2D_CONTROL
@@ -713,15 +432,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_gen2d_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_GEN2D_CONTROL */
 
 #ifdef ALLOW_GEN3D_CONTROL
@@ -734,18 +444,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_gen3d_file(1:il),'.',optimcycle
          end if
-
-         call active_read_xyz( fname, tmpfld3d, 1,
-     &                         doglobalread, ladinit, optimcycle,
-     &                         mythid, dummy)
-
-         xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
-
-         call active_write_xyz( fname, tmpfld3d, 1,
-     &                          optimcycle,
-     &                          mythid, dummy)
 #endif /* ALLOW_GEN3D_CONTROL */
 
 #ifdef ALLOW_PRECIP_CONTROL
@@ -758,15 +456,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_precip_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_PRECIP_CONTROL */
 
 #ifdef ALLOW_SWFLUX_CONTROL
@@ -779,15 +468,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_swflux_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_SWFLUX_CONTROL */
 
 #ifdef ALLOW_SWDOWN_CONTROL
@@ -800,15 +480,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_swdown_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_SWDOWN_CONTROL */
 
 #ifdef ALLOW_LWFLUX_CONTROL
@@ -821,15 +492,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_lwflux_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_LWFLUX_CONTROL */
 
 #ifdef ALLOW_LWDOWN_CONTROL
@@ -842,15 +504,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_lwdown_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_LWDOWN_CONTROL */
 
 #ifdef ALLOW_EVAP_CONTROL
@@ -863,15 +516,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_evap_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_EVAP_CONTROL */
 
 #ifdef ALLOW_SNOWPRECIP_CONTROL
@@ -884,15 +528,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_snowprecip_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_SNOWPRECIP_CONTROL */
 
 #ifdef ALLOW_APRESSURE_CONTROL
@@ -905,15 +540,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_apressure_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_APRESSURE_CONTROL */
 
 #ifdef ALLOW_RUNOFF_CONTROL
@@ -926,15 +552,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_runoff_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_RUNOFF_CONTROL */
 
 #ifdef ALLOW_SIAREA_CONTROL
@@ -947,15 +564,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_siarea_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_SIAREA_CONTROL */
 
 #ifdef ALLOW_SIHEFF_CONTROL
@@ -968,15 +576,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_siheff_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_SIHEFF_CONTROL */
 
 #ifdef ALLOW_SIHSNOW_CONTROL
@@ -989,15 +588,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_sihsnow_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_SIHSNOW_CONTROL */
 
 #ifdef ALLOW_SHIFWFLX_CONTROL
@@ -1010,15 +600,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_shifwflx_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_SHIFWFLX_CONTROL */
 
 #ifdef ALLOW_ETAN0_CONTROL
@@ -1031,15 +612,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_etan_file(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, 1,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, 1,
-     &                         optimcycle,
-     &                         mythid, dummy)
 #endif /* ALLOW_ETAN0_CONTROL */
 
 #ifdef ALLOW_GENARR2D_CONTROL
@@ -1055,15 +627,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_genarr2d_file(iarr)(1:il),'.',optimcycle
          end if
-         call active_read_xy( fname, tmpfld2d, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
-     &                        mythid, dummy)
-         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
-     &                         optimcycle,
-     &                         mythid, dummy)
         endif
        enddo
 #endif /* ALLOW_GENARR2D_CONTROL */
@@ -1081,18 +644,6 @@ c--   == end of interface ==
             write(fname(1:80),'(2a,i10.10)')
      &           xx_genarr3d_file(iarr)(1:il),'.',optimcycle
          end if
-
-         call active_read_xyz( fname, tmpfld3d, 1,
-     &                         doglobalread, ladinit, optimcycle,
-     &                         mythid, dummy)
-
-         xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
-         xx_comp_pert = xx_comp_ref + localEps
-         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
-
-         call active_write_xyz( fname, tmpfld3d, 1,
-     &                          optimcycle,
-     &                          mythid, dummy)
         endif
        enddo
 #endif /* ALLOW_GENARR3D_CONTROL */
@@ -1100,6 +651,82 @@ c--   == end of interface ==
       else
 ce      --> this index does not exist yet.
       endif
+
+
+      xx_comp_ref=0. _d 0
+      xx_comp_pert=0. _d 0
+
+      if ( grdchkvarindex.EQ.1 .OR. grdchkvarindex.EQ.2 .OR.
+     &     grdchkvarindex.EQ.27 .OR. grdchkvarindex.EQ.28 .OR.
+     &     grdchkvarindex.EQ.15 .OR. grdchkvarindex.EQ.16 .OR.
+     &     grdchkvarindex.EQ.17 .OR. grdchkvarindex.EQ.21 .OR.
+     &     grdchkvarindex.EQ.22 .OR. grdchkvarindex.EQ.31 .OR.
+     &     ( grdchkvarindex .ge. 201 .and.
+     &     grdchkvarindex .le. 200+maxCtrlArr3D ) ) then
+
+         call active_read_xyz( fname, tmpfld3d, 1,
+     &                         doglobalread, ladinit, optimcycle,
+     &                         mythid, dummy)
+         if ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 )
+     &   xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
+         if ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 )
+     &   xx_comp_pert = xx_comp_ref + localEps
+         if ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 )
+     &   tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
+         call active_write_xyz( fname, tmpfld3d, 1,
+     &                          optimcycle,
+     &                          mythid, dummy)
+
+#if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
+      elseif ( grdchkvarindex.EQ.11 .OR. grdchkvarindex.EQ.12) then
+         call active_read_xz( fname, tmpfldxz, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+         if ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 )
+     &   xx_comp_ref = tmpfldxz( itilepos,layer,itile,jtile )
+         if ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 )
+     &   xx_comp_pert = xx_comp_ref + localEps
+         if ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 )
+     &   tmpfldxz( itilepos,layer,itile,jtile ) = xx_comp_pert
+         call active_write_xz( fname, tmpfldxz, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+#endif
+
+#if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
+      elseif ( grdchkvarindex.EQ.13 .OR. grdchkvarindex.EQ.14) then
+         call active_read_yz( fname, tmpfldyz, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+         if ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 )
+     &   xx_comp_ref = tmpfldyz( jtilepos,layer,itile,jtile )
+         if ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 )
+     &   xx_comp_pert = xx_comp_ref + localEps
+         if ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 )
+     &   tmpfldyz( jtilepos,layer,itile,jtile ) = xx_comp_pert
+         call active_write_yz( fname, tmpfldyz, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+#endif
+
+      else
+
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+         if ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 )
+     &   xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         if ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 )
+     &   xx_comp_pert = xx_comp_ref + localEps
+         if ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 )
+     &   tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
+         call active_write_xy( fname, tmpfld2d, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+
+      endif
+
+
 
 #endif /* ALLOW_GRDCHK */
 

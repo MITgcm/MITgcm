@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.37 2012/08/15 23:05:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.38 2012/08/21 14:00:04 gforget Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -242,18 +242,19 @@ cph)
               itest    = 0
             endif
 
+c make sure that all procs have correct file records, so that useSingleCpuIO works
+      CALL GLOBAL_SUM_INT( icvrec , myThid )
+      CALL GLOBAL_SUM_INT( layer , myThid )
+
 c******************************************************
 c--   (A): get gradient component calculated via adjoint
 c******************************************************
 
 c--   get gradient component calculated via adjoint
-            if ( myProcId .EQ. grdchkwhichproc .AND.
-     &           ierr .EQ. 0 ) then
                call grdchk_getadxx( icvrec,
      &              itile, jtile, layer,
      &              itilepos, jtilepos,
-     &              adxxmemo, mythid )
-            endif
+     &              adxxmemo, ierr, mythid )
 C--   Add a global-sum call so that all proc will get the adjoint gradient
             _GLOBAL_SUM_RL( adxxmemo, myThid )
 
@@ -264,18 +265,12 @@ c******************************************************
 c--
 c--   1. perturb control vector component: xx(i)=1.
 
-            if ( myProcId .EQ. grdchkwhichproc .AND.
-     &           ierr .EQ. 0 ) then
                localEps = 1. _d 0
                call grdchk_getxx( icvrec, TANGENT_SIMULATION,
      &              itile, jtile, layer,
      &              itilepos, jtilepos,
      &              xxmemo_ref, xxmemo_pert, localEps,
-     &              mythid )
-            else
-              xxmemo_ref  = 0.
-              xxmemo_pert = 0.
-            endif
+     &              ierr, mythid )
 
 c--
 c--   2. perform tangent linear run
@@ -302,13 +297,10 @@ c--   2. perform tangent linear run
 
 c--
 c--   3. reset control vector
-            if ( myProcId .EQ. grdchkwhichproc .AND.
-     &           ierr .EQ. 0 ) then
                call grdchk_setxx( icvrec, TANGENT_SIMULATION,
      &              itile, jtile, layer,
      &              itilepos, jtilepos,
-     &              xxmemo_ref, mythid )
-            endif
+     &              xxmemo_ref, ierr, mythid )
 
 #endif /* ALLOW_TANGENTLINEAR_RUN */
 
@@ -321,17 +313,11 @@ c--   get control vector component from file
 c--   perturb it and write back to file
 c--   positive perturbation
             localEps = abs(grdchk_eps)
-            if ( myProcId .EQ. grdchkwhichproc .AND.
-     &           ierr .EQ. 0 ) then
-               call grdchk_getxx( icvrec, FORWARD_SIMULATION,
+            call grdchk_getxx( icvrec, FORWARD_SIMULATION,
      &              itile, jtile, layer,
      &              itilepos, jtilepos,
      &              xxmemo_ref, xxmemo_pert, localEps,
-     &              mythid )
-            else
-              xxmemo_ref  = 0.
-              xxmemo_pert = 0.
-            endif
+     &              ierr, mythid )
 
 c--   forward run with perturbed control vector
             mytime = starttime
@@ -345,13 +331,10 @@ c--   forward run with perturbed control vector
             print *, 'ph-check fcpertplus  = ', fcpertplus
 
 c--   Reset control vector.
-            if ( myProcId .EQ. grdchkwhichproc .AND.
-     &           ierr .EQ. 0 ) then
-               call grdchk_setxx( icvrec, FORWARD_SIMULATION,
+            call grdchk_setxx( icvrec, FORWARD_SIMULATION,
      &              itile, jtile, layer,
      &              itilepos, jtilepos,
-     &              xxmemo_ref, mythid )
-            endif
+     &              xxmemo_ref, ierr, mythid )
 
             fcpertminus = fcref
             print *, 'ph-check fcpertminus = ', fcpertminus
@@ -361,18 +344,12 @@ c--   Reset control vector.
 c--   get control vector component from file
 c--   perturb it and write back to file
 c--   repeat the proceedure for a negative perturbation
-               if ( myProcId .EQ. grdchkwhichproc .AND.
-     &           ierr .EQ. 0 ) then
-                  localEps = - abs(grdchk_eps)
-                  call grdchk_getxx( icvrec, FORWARD_SIMULATION,
+               localEps = - abs(grdchk_eps)
+               call grdchk_getxx( icvrec, FORWARD_SIMULATION,
      &                 itile, jtile, layer,
      &                 itilepos, jtilepos,
      &                 xxmemo_ref, xxmemo_pert, localEps,
-     &                 mythid )
-               else
-                 xxmemo_ref  = 0.
-                 xxmemo_pert = 0.
-               endif
+     &                 ierr, mythid )
 
 c--   forward run with perturbed control vector
                mytime = starttime
@@ -385,13 +362,10 @@ c--   forward run with perturbed control vector
 #endif
 
 c--   Reset control vector.
-               if ( myProcId .EQ. grdchkwhichproc .AND.
-     &           ierr .EQ. 0 ) then
-                  call grdchk_setxx( icvrec, FORWARD_SIMULATION,
+               call grdchk_setxx( icvrec, FORWARD_SIMULATION,
      &                 itile, jtile, layer,
      &                 itilepos, jtilepos,
-     &                 xxmemo_ref, mythid )
-               endif
+     &                 xxmemo_ref, ierr, mythid )
 
 c-- end of if useCentralDiff ...
             end if
@@ -520,7 +494,7 @@ c-- end of if ( ichknum ...
 c-- end of do icomp = ...
       enddo
 
-      if ( myProcId .EQ. grdchkwhichproc ) then
+      if (myProcId .EQ. grdchkwhichproc .AND. .NOT.useSingleCpuIO) then
          CALL WRITE_REC_XYZ_RL(
      &        'grd_findiff'   , tmpplot1, 1, 0, myThid)
          CALL WRITE_REC_XYZ_RL(
