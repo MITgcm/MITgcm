@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/DRIVER.h,v 1.11 2012/08/21 16:45:01 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/DRIVER.h,v 1.12 2012/08/21 18:39:28 jscott Exp $
 C $Name:  $
 
       COMMON /DRIVER_VARS/
@@ -12,6 +12,9 @@ C $Name:  $
        INTEGER taveDump  ! frequency of tave dumps for atm2ocn fluxes (yrs)
        INTEGER ncall_atm ! number of atm steps in a coupling period
        INTEGER ncall_ocean ! number of ocn steps in a coupling period
+#ifdef NCEPWIND
+       LOGICAL rand_newseed
+#endif
 
 
       COMMON /DRIVER_FILENAMES/
