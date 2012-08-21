@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.19 2012/07/31 16:04:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.20 2012/08/21 14:06:26 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -184,7 +184,7 @@ c
         enddo
       else
 c   The other case actually does not (and should not) occur within the main loop,
-c   where we only store global arrays (i.e. with bi,bj indices) to disk.
+c   where we only store global arrays (i.e. with i,j,bi,bj indices) to disk.
 c     At init and final time it is always be possible to recompute or store in
 c   memory without much trouble or computational cost.
 c
@@ -198,10 +198,11 @@ c   which is not supported with ALLOW_AUTODIFF_WHTAPEIO (side-note:
 c   tapelev_ini_bibj_k is likely unsafe with mdsreadvector/mdsreadvector)
 c
 c   The issue could be revisited if needed.
+c   But for now we stop if any otehr instance is met.
          WRITE(msgBuf,'(3A)')
      &        'ADWRITE: ',name,'was not saved to tape.'
-         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                       SQUEEZE_RIGHT , myThid)
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R ADWRITE'
       endif
 
 #else

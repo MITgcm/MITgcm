@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.24 2012/08/07 21:17:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.25 2012/08/21 14:06:26 gforget Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -31,6 +31,9 @@ C     \ev
 #include "PARAMS.h"
 #include "GRID.h"
 #include "AUTODIFF.h"
+#ifdef ALLOW_WHIO
+#include "MDSIO_BUFF_WH.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid  :: my Thread Id number
@@ -74,7 +77,7 @@ C      create directory
       enddo
 
       tapeFileCounter=0
-      tapeMaxCounter=30*nR
+      tapeMaxCounter=nWh
 
       tapeConcatIO=.TRUE.
       tapeSingleCpuIO=useSingleCpuIO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.14 2012/07/06 23:10:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.15 2012/08/21 14:06:26 gforget Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -112,12 +112,14 @@ c--   to nTimeSteps: (nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps)
        ENDIF
 #endif
 
-#ifdef ALLOW_GRDCHK
-       IF ( useSingleCpuIO .AND. useGrdchk ) THEN
-        WRITE(msgBuf,'(A)') 
-     &         'Need to have useSingleCpuIO=.FALSE. with useGrdchk'
-        CALL PRINT_ERROR( msgBuf , myThid )
-        STOP 'ABNORMAL END: S/R AUTODIFF_CHECK'
+
+#ifndef ALLOW_AUTODIFF_WHTAPEIO
+       IF ( useSingleCpuIO ) THEN
+        WRITE(msgBuf,'(3A)') '** WARNING ** AUTODIFF_CHECK: ',
+     &        'relying on mdsio_read/writevector.F to write ',
+     &        'tapes is unsafe when useSingleCpuIO is true.'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit, 
+     &  SQUEEZE_RIGHT, myThid )
        ENDIF
 #endif
 
