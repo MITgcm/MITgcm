@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_init_vars.F,v 1.9 2012/08/20 17:51:24 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_init_vars.F,v 1.10 2012/08/21 21:02:22 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -33,7 +33,7 @@ C     === Local variables ===
       PRINT *,'After clm4mit2d  initialization'
       PRINT *,'orbfix=',orbfix,' dyn_pft=',dyn_pft
       PRINT *,'orbyr=',orbyr,' rampyr_dynpft=',rampyr_dynpft
-#    ifdef ORBITAL_FOR 
+#    ifndef ORBITAL_FOR 
       IF (orbyr.ne.2000) THEN
          PRINT *,'Wrong orbyr for CLM3.5'
          STOP
