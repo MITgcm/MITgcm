@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.18 2012/06/27 18:55:31 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.19 2012/08/21 18:15:07 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu
 #  Linux machines.
@@ -25,6 +25,7 @@ ulimit -s unlimited
 cmdCVS='cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack'
 cmdCVS='cvs -d /u/gcmpack'
 
+dInWeek=`date +%a`
 TESTDIR="/tmp/jmc/test_"`hostname -s`
 MC=13
 checkOut=1
@@ -93,6 +94,7 @@ do
   fi
   #- clean-up old output files
   rm -f $tdir/output_${typ}*
+  touch $tdir/output_$tt
   if test $sepDir = 1 ; then
     new_dir="MITgcm_$typ"
     if test -d $new_dir/CVS -a $checkOut = '0' ; then
@@ -112,11 +114,11 @@ do
   cd verification
 
 #-- set the testreport command:
-  nbl='-100'
   comm="./testreport"
   if test $typ = 'g7a' -o  $typ = 'adm' -o  $typ = 'mpa' ; then
-    nbl='-60'
     comm="$comm -adm"
+  elif test $typ = 'tlm' ; then
+    comm="$comm -tlm"
   elif test $typ = 'mth' -o  $typ = 'mp2' ; then
     export GOMP_STACKSIZE=400m
     export OMP_NUM_THREADS=2
@@ -127,12 +129,12 @@ do
   MPI=0
   case $typ in
    'g77'|'g7a')		OPTFILE='../tools/build_options/linux_amd64_g77' ;;
-   'gfo'|'adm'|'mth')	OPTFILE='../tools/build_options/linux_amd64_gfortran'
-			comm="$comm -match $MC" ;;
+   'gfo'|'adm'|'tlm'|'mth')	comm="$comm -match $MC"
+			OPTFILE='../tools/build_options/linux_amd64_gfortran' ;;
    'ifc')		OPTFILE='../tools/build_options/linux_amd64_ifort11' ;;
    'pgi')		OPTFILE='../tools/build_options/linux_amd64_pgf77' ;;
-   'mpa'|'mpi'|'mp2')	OPTFILE='../tools/build_options/linux_amd64_gfortran+mpi_generic'
-			comm="$comm -match $MC" ; MPI=6 ;;
+   'mpa'|'mpi'|'mp2')	comm="$comm -match $MC" ; MPI=6
+			OPTFILE='../tools/build_options/linux_amd64_gfortran' ;;
        *)		OPTFILE= ;;
   esac
 #-- set MPI command:
@@ -155,53 +157,52 @@ do
     export PATH="$PATH:$PGI/linux86-64/10.9/bin"
     export LM_LICENSE_FILE=$PGI/license.dat
   fi
-  basename $OPTFILE | grep gfortran > /dev/null 2>&1 ; retv=$? ; 
-  GFORTRAN_OPTFILE=f ; if test $retv == 0 ; then GFORTRAN_OPTFILE='t' ; fi 
+  basename $OPTFILE | grep gfortran > /dev/null 2>&1 ; retv=$? ;
+  GFORTRAN_OPTFILE=f ; if test $retv == 0 ; then GFORTRAN_OPTFILE='t' ; fi
   export GFORTRAN_OPTFILE
 
   if test $sepDir = 0 -a $checkOut = '1' -a  $tt = $firstTst ; then
 #-- cleaning:
     echo "======================"
-    echo "Cleaning test directories:"
+    echo "Cleaning test directories:"	| tee -a $tdir/output_$tt
     cmdCLN="./testreport -clean"
-    echo " clean dir running: $cmdCLN"
-    $cmdCLN > /dev/null 2>&1
+    echo " clean dir running: $cmdCLN"	| tee -a $tdir/output_$tt
+    $cmdCLN >> $tdir/output_$tt 2>&1
     echo "======================"
-    echo
+    echo ""				| tee -a $tdir/output_$tt
   fi
 
 #-- run the testreport command:
-  echo -n "Running testreport using:"
+  echo -n "Running testreport using:"	| tee -a $tdir/output_$tt
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
-  if test $MPI = 0 ; then  echo ''
-  else echo " (EXE='$EXE')"
+  if test $MPI = 0 ; then  echo ''	| tee -a $tdir/output_$tt
+  else echo " (EXE='$EXE')"		| tee -a $tdir/output_$tt
     comm="$comm -MPI $MPI -command \"\$EXE\""
   fi
   if test "x$option" != x ; then comm="$comm $option" ; fi
  #if test $typ = 'pgi' ; then comm="$comm -t \"\$listT\"" ; fi
-  echo "  \"eval $comm\""
+  echo "  \"eval $comm\""		| tee -a $tdir/output_$tt
   echo "======================"
-  eval $comm > $tdir/output_$typ 2>&1
-  tail $nbl $tdir/output_$typ
-  echo
+  eval $comm >> $tdir/output_$tt 2>&1
+  sed -n "/^An email /,/^======== End of testreport / p" $tdir/output_$tt
+  echo ""				| tee -a $tdir/output_$tt
 
 #-- also test restart (test 2+2=4)
   if test $tt != $typ
   then
-    echo "testing restart using:"
+    echo "testing restart using:"	| tee -a $tdir/output_$tt
     comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
     if test $MPI = 0 ; then
-      echo "  \"$comm\""
+      echo "  \"$comm\""		| tee -a $tdir/output_$tt
       echo "======================"
-      $comm > $tdir/output_2+2 2>&1
+      $comm >> $tdir/output_$tt 2>&1
     else
-      echo "  \"$comm -mpi -exe $EXE\""
+      echo "  \"$comm -mpi -exe $EXE\""	| tee -a $tdir/output_$tt
       echo "======================"
-      $comm -mpi -exe "$EXE" > $tdir/output_2+2 2>&1
+      $comm -mpi -exe "$EXE" >> $tdir/output_$tt 2>&1
     fi
-   #tail $nbl $tdir/output_2+2
     echo ; cat tst_2+2_out.txt
     echo
   fi
@@ -210,16 +211,16 @@ do
   if test $sepDir = 0 ; then
 #-- cleaning:
     echo "======================"
-    echo "Cleaning test directories:"
+    echo "Cleaning test directories:"	| tee -a $tdir/output_$tt
     if test $tt != $typ ; then
       cmdCLN="../tools/do_tst_2+2 -clean"
-      echo " clean tst_2+2 running: $cmdCLN"
-      $cmdCLN >> $tdir/output_2+2 2>&1
+      echo " clean tst_2+2 running: $cmdCLN"	| tee -a $tdir/output_$tt
+      $cmdCLN >> $tdir/output_$tt 2>&1
     fi
     if test $tt != $last_Tst ; then
       cmdCLN="./testreport -clean"
-      echo " clean dir running: $cmdCLN"
-      $cmdCLN > /dev/null 2>&1
+      echo " clean dir running: $cmdCLN"	| tee -a $tdir/output_$tt
+      $cmdCLN >> $tdir/output_$tt 2>&1
     fi
     echo "======================"
     echo
