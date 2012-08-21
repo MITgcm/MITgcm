@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.48 2012/08/10 19:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.49 2012/08/21 13:48:48 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -294,8 +294,9 @@ c--   Read error information and set up weight matrices.
       do bj = jtlo,jthi
         do bi = itlo,ithi
 
-          wsfluxmm(bi,bj) = 1.
-          whfluxmm(bi,bj) = 1.
+c indices are inconsistent with ecco_cost.h declaration
+c          wsfluxmm(bi,bj) = 1.
+c          whfluxmm(bi,bj) = 1.
 
 c--       The "classic" state estimation tool wastes memory here;
 c--       as long as there is not more information available there
@@ -598,6 +599,8 @@ cgf use general hydrography weights
       call active_write_xy_loc( 'wsss', wsss, 1, 0, mythid, dummy)
 #endif
 
+#if (defined (ALLOW_SSH_MEAN_COST_CONTRIBUTION) || \
+     defined (ALLOW_SSH_COST_CONTRIBUTION) )
 #ifdef ALLOW_EGM96_ERROR_DIAG
 c--   Read egm-96 geoid covariance. Data in units of meters.
       nnz   =  1
@@ -632,6 +635,7 @@ cph-indonesian)
           enddo
         enddo
       enddo
+#endif
 #endif
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
@@ -1845,10 +1849,12 @@ c--   Units have to be checked!
               else
                 wbottomdrag(i,j,bi,bj) = 0.0 _d 0
               endif
-              if (wsfluxmm(bi,bj).ne.0.)
-     &             wsfluxmm(bi,bj) = 1./wsfluxmm(bi,bj)*wsfluxmm(bi,bj)
-              if (whfluxmm(bi,bj).ne.0.)
-     &             whfluxmm(bi,bj) = 1./whfluxmm(bi,bj)*whfluxmm(bi,bj)
+
+c the following makes no sense inside i,j loop
+c              if (wsfluxmm(bi,bj).ne.0.)
+c     &             wsfluxmm(bi,bj) = 1./wsfluxmm(bi,bj)*wsfluxmm(bi,bj)
+c              if (whfluxmm(bi,bj).ne.0.)
+c     &             whfluxmm(bi,bj) = 1./whfluxmm(bi,bj)*whfluxmm(bi,bj)
 
 cph(
               if (whflux2(i,j,bi,bj) .ne. 0.) then
