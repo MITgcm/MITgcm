@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/DRIVER.h,v 1.10 2012/03/21 15:39:34 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/DRIVER.h,v 1.11 2012/08/21 16:45:01 jscott Exp $
 C $Name:  $
 
       COMMON /DRIVER_VARS/
@@ -33,12 +33,6 @@ C $Name:  $
 
 #ifdef CPL_OCEANCO2
 #  include "OCM.h"
-C moved to OCM.h
-C      COMMON /DRIVER_VAR_CO2/
-C     &         ocumn, fluxco2mn
-C       REAL*8 ocumn
-C       REAL*8 fluxco2mn(jm0)
-
       COMMON /GARYFLUX/pC_atm, wind_amp, fluxco2
        REAL*8 pC_atm(jm0)
        REAL*8 wind_amp
@@ -46,12 +40,8 @@ C       REAL*8 fluxco2mn(jm0)
 #endif
 
 #ifdef IPCC_EMI
-      COMMON /DRIVER_VAR_IPCC/nemis, tcumn
+      COMMON /DRIVER_VAR_IPCC/nemis
        INTEGER nemis
-       REAL*8 tcumn
-
-C      COMMON/ BACKGRGHG/ghgbgr
-C       REAL*8 ghgbgr(5)
 #endif
 
 #ifdef CLM
