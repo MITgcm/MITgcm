@@ -1,9 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/DRIVER.h,v 1.12 2012/08/21 18:39:28 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/DRIVER.h,v 1.13 2012/08/21 18:43:13 jscott Exp $
 C $Name:  $
 
       COMMON /DRIVER_VARS/
      &        dtcouple, dtatm, dtocn, startYear, endYear, taveDump,
      &        ncall_atm, ncall_ocean
+#ifdef NCEPWIND
+     &        , rand_newseed
+#endif
        INTEGER dtcouple  ! coupling period (hrs)
        INTEGER dtatm     ! atmos time step (hrs)
        INTEGER dtocn     ! ocean time step (hrs)
