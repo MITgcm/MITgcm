@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xy.F,v 1.26 2012/08/10 19:38:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xy.F,v 1.27 2012/08/21 14:08:48 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -423,8 +423,10 @@ c     == end of interface ==
 
 c-- part 1: preliminary reads and definitions
 
+#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
       call active_read_xy(weighttype, wei2d, 1,
      &    .FALSE., .FALSE., 0 , mythid, 1)
+#endif
 
       call active_read_xyz(masktype, msk3d, 1,
      &    .FALSE., .FALSE., 0 , mythid, 1)
