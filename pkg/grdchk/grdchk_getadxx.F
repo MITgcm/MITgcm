@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.32 2012/08/21 14:00:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.33 2012/08/21 19:49:41 gforget Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -465,6 +465,7 @@ c--   == end of interface ==
       endif
 
 
+      if (ierr .EQ. 0 ) then
       if ( grdchkvarindex.EQ.1 .OR. grdchkvarindex.EQ.2 .OR.
      &     grdchkvarindex.EQ.27 .OR. grdchkvarindex.EQ.28 .OR.
      &     grdchkvarindex.EQ.15 .OR. grdchkvarindex.EQ.16 .OR.
@@ -476,7 +477,7 @@ c--   == end of interface ==
          call active_read_xyz( fname, tmpfld3d, 1,
      &                         doglobalread, ladinit, optimcycle,
      &                         mythid, dummy)
-         if ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 )
+         if ( myProcId .EQ. grdchkwhichproc )
      &   xx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
 
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
@@ -484,7 +485,7 @@ c--   == end of interface ==
          call active_read_xz( fname, tmpfldxz, icvrec,
      &                        doglobalread, ladinit, optimcycle,
      &                        mythid, dummy)
-         if ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 )
+         if ( myProcId .EQ. grdchkwhichproc )
      &   xx_comp = tmpfldxz( itilepos,layer,itile,jtile )
 #endif
 
@@ -493,7 +494,7 @@ c--   == end of interface ==
          call active_read_yz( fname, tmpfldyz, icvrec,
      &                        doglobalread, ladinit, optimcycle,
      &                        mythid, dummy)
-         if ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 )
+         if ( myProcId .EQ. grdchkwhichproc )
      &   xx_comp = tmpfldyz( jtilepos,layer,itile,jtile )
 #endif
 
@@ -502,9 +503,10 @@ c--   == end of interface ==
          call active_read_xy( fname, tmpfld2d, icvrec,
      &                        doglobalread, ladinit, optimcycle,
      &                        mythid, dummy)
-         if ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 ) 
+         if ( myProcId .EQ. grdchkwhichproc ) 
      &   xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
 
+      endif
       endif
 
 #endif /* ALLOW_GRDCHK */

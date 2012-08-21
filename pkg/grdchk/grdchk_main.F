@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.38 2012/08/21 14:00:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.39 2012/08/21 19:49:41 gforget Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -245,6 +245,7 @@ cph)
 c make sure that all procs have correct file records, so that useSingleCpuIO works
       CALL GLOBAL_SUM_INT( icvrec , myThid )
       CALL GLOBAL_SUM_INT( layer , myThid )
+      CALL GLOBAL_SUM_INT( ierr , myThid )
 
 c******************************************************
 c--   (A): get gradient component calculated via adjoint
