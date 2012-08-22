@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.88 2012/07/06 21:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.89 2012/08/22 22:55:27 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -47,6 +47,8 @@ C       |-- SHELFICE_INIT_VARIA
 C       |
 C       |-- ICEFRONT_INIT_VARIA
 C       |
+C       |-- STREAMICE_INIT_VARIA
+C       |
 C       |-- PTRACERS_INIT_VARIA
 C       |
 C       |-- GCHEM_INIT_VARI
@@ -60,8 +62,6 @@ C       |
 C       |-- EXF_INIT
 C       |
 C       |-- EBM_INI_VARS
-C       |
-C       |-- COST_INIT_VARIA
 C       |
 C       |-- PROFILES_INIT_VARIA
 C       |
@@ -216,16 +216,12 @@ C--   Initialize GGL90 vertical mixing scheme.
 
 #ifdef ALLOW_SEAICE
 C--   Initialize SEAICE model.
-cph# ifndef ALLOW_AUTODIFF_TAMC
       IF (useSEAICE) THEN
-cph# endif
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('SEAICE_INIT_VARIA',myThid)
 # endif
        CALL SEAICE_INIT_VARIA( myThid )
-cph# ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
-cph# endif
 #endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_SHELFICE
@@ -285,13 +281,9 @@ cph# endif
 #endif /* ALLOW_OFFLINE */
 
 #ifdef ALLOW_GCHEM
-cph# ifndef ALLOW_AUTODIFF_TAMC
       IF (useGCHEM) THEN
-cph# endif
         CALL GCHEM_INIT_VARI( myThid )
-cph# ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
-cph# endif
 #endif /* ALLOW_GCHEM */
 
 #ifdef ALLOW_LAND
@@ -313,10 +305,10 @@ CADJ STORE salt   = tapelev_init, key = 1
 # ifdef ALLOW_DIFFKR_CONTROL
 CADJ STORE diffkr = tapelev_init, key = 1
 # endif
-c--   Initialise auxiliary xx_ fields
+C--   Initialise auxiliary xx_ fields
       IF (debugMode) CALL DEBUG_CALL('CTRL_INIT_VARIABLES',myThid)
       CALL CTRL_INIT_VARIABLES ( myThid )
-c--   Map the control variables onto the model state.
+C--   Map the control variables onto the model state.
 # ifdef ALLOW_ECCO
       IF (debugMode) CALL DEBUG_CALL('CTRL_MAP_INI_ECCO',myThid)
       CALL CTRL_MAP_INI_ECCO( myThid )
@@ -324,7 +316,6 @@ c--   Map the control variables onto the model state.
       IF (debugMode) CALL DEBUG_CALL('CTRL_MAP_INI',myThid)
       CALL CTRL_MAP_INI( myThid )
 # endif
-      _BARRIER
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_EXF
@@ -345,23 +336,15 @@ CADJ STORE theta = tapelev_init, key = 1
       ENDIF
 #endif /* ALLOW_EBM */
 
-#ifdef ALLOW_COST
-c--   Initialise the cost function.
-ceh3 needs an IF ( useCOST ) THEN
-      CALL COST_INIT_VARIA( myThid )
-      _BARRIER
-#endif /* ALLOW_COST */
-
 #ifdef ALLOW_PROFILES
-c--   Initialise the cost function.
+C--   Initialise Profiles cost function.
       IF (usePROFILES) THEN
         CALL PROFILES_INIT_VARIA( myThid )
       ENDIF
-      _BARRIER
 #endif /* ALLOW_PROFILES */
 
 #ifdef ALLOW_FLT
-c--   Initialise float position
+C--   Initialise float position
       IF ( useFLT ) THEN
         CALL FLT_INIT_VARIA( myThid )
       ENDIF
