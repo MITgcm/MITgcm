@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1721 2012/08/22 00:49:12 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1722 2012/08/22 22:57:06 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - move call to COST_INIT_VARIA out of packages_init_variables.F directly
+    into initialise_varia.F (just after calling PACKAGES_INIT_VARIABLES):
+    this prevents getting cost-funct reset in adinitialise_varia recomputations.
 o pkg/dic:
   - move initialisation of "freefe" array from from dic_biotic_forcing.F to
     fe_chem.F: this prevents TAF from dropping this initialisation in TLM code.
