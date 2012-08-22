@@ -1,24 +1,27 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1720 2012/08/21 19:50:23 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1721 2012/08/22 00:49:12 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/grdchk :
+o pkg/dic:
+  - move initialisation of "freefe" array from from dic_biotic_forcing.F to
+    fe_chem.F: this prevents TAF from dropping this initialisation in TLM code.
+o pkg/grdchk:
   - grdchk_main.F : added CALL GLOBAL_SUM_INT( ierr , myThid )
-  - grdchk_getadxx.F etc. : omit I/O if ierr.EQ.0 
+  - grdchk_getadxx.F etc. : omit I/O if ierr.EQ.0
 o pkg/autodiff/ctrl/grdchk :
-  - attempt to sort out what works and what does not, 
+  - attempt to sort out what works and what does not,
     with regard to I/O, and to warn/stop accordingly.
-o pkg/grdchk :
+o pkg/grdchk:
   - attempt to fix grdchk in the case of useSingleCpuIO.
   - "if ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 )"
    statements were moved from grdchk_main.F and into
    grdchk_getadxx.F grdchk_getxx.F grdchk_setxx.F.
   - a global sum is applied to record numbers icvrec/layer
    out of grdchk_loc so that they be passed to I/O routines.
-o pkg/smooth : 
-  - fix recomputation that appeared with nlfs : use smooth_recip_hFacC, 
+o pkg/smooth:
+  - fix recomputation that appeared with nlfs : use smooth_recip_hFacC,
     smooth_hFacW, smooth_hFacS (copied at init_fixed) in 3d case.
 o verification/testreport:
   - add option '-tlm' for Tangent-Linear test (-adm,-oad,-tlm are all exclusive);
