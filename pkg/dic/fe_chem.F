@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.16 2010/04/13 03:06:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.17 2012/08/22 00:40:56 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -8,7 +8,8 @@ C     !ROUTINE: Fe_CHEM
 C     !INTERFACE:
       SUBROUTINE Fe_CHEM(
      I           bi,bj, iMin,iMax,jMin,jMax,
-     I           fe, freefe,
+     I           fe,
+     O           freefe,
      I           myIter, myThid )
 
 C     !DESCRIPTION: \bv
@@ -54,6 +55,14 @@ C
 C  ADAPTED FROM PAYAL
 C
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+
+      DO k=1,Nr
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          freefe(i,j,k) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDDO
 
 C ligand balance in surface layer
 C in surface layer

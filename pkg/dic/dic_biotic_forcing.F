@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.27 2012/06/02 20:42:11 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.28 2012/08/22 00:40:56 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -124,7 +124,8 @@ CEOP
 #endif
 #ifdef ALLOW_FE
            GFE(i,j,k)     =0. _d 0
-           freefe(i,j,k)  =0. _d 0
+C  no longer needed after adding full initialisation of freefe in S/R FE_CHEM
+c          freefe(i,j,k)  =0. _d 0
 #endif
           ENDDO
          ENDDO
@@ -156,8 +157,8 @@ C oxygen air-sea interaction
 
 #ifdef ALLOW_FE
 C find free iron
-       CALL FE_CHEM(bi,bj,iMin,iMax,jMin,jMax, PTR_FE, freefe,
-     &                myIter, mythid)
+       CALL FE_CHEM( bi,bj,iMin,iMax,jMin,jMax, PTR_FE, freefe,
+     &               myIter, myThid )
 #endif
 
 
@@ -285,8 +286,8 @@ C update
 #ifdef ALLOW_FE
 #ifdef MINFE
 c find free iron and get rid of insoluble part
-       call fe_chem(bi,bj,iMin,iMax,jMin,jMax, PTR_FE, freefe,
-     &                myIter, mythid)
+       CALL FE_CHEM( bi,bj,iMin,iMax,jMin,jMax, PTR_FE, freefe,
+     &               myIter, myThid )
 #endif
 #endif
 
@@ -298,37 +299,37 @@ C save averages
          DO j=jmin,jmax
           DO i=imin,imax
             BIOave(i,j,k,bi,bj)   =BIOave(i,j,k,bi,bj)+
-     &                             BIOac(i,j,k)*deltaTclock
+     &                             BIOac(i,j,k)*deltaTClock
             CARave(i,j,k,bi,bj)   =CARave(i,j,k,bi,bj)+
-     &                             CAR(i,j,k)*deltaTclock
+     &                             CAR(i,j,k)*deltaTClock
             OmegaCave(i,j,k,bi,bj)=OmegaCave(i,j,k,bi,bj)+
-     &                             OmegaC(i,j,k,bi,bj)*deltaTclock
+     &                             OmegaC(i,j,k,bi,bj)*deltaTClock
             pfluxave(i,j,k,bi,bj) =pfluxave(i,j,k,bi,bj) +
-     &                             pflux(i,j,k)*deltaTclock
+     &                             pflux(i,j,k)*deltaTClock
             epfluxave(i,j,k,bi,bj)=epfluxave(i,j,k,bi,bj) +
-     &                             exportflux(i,j,k)*deltaTclock
+     &                             exportflux(i,j,k)*deltaTClock
             cfluxave(i,j,k,bi,bj) =cfluxave(i,j,k,bi,bj) +
-     &                             cflux(i,j,k)*deltaTclock
+     &                             cflux(i,j,k)*deltaTClock
           ENDDO
          ENDDO
         ENDDO
          DO j=jmin,jmax
           DO i=imin,imax
               SURave(i,j,bi,bj)    =SURave(i,j,bi,bj)+
-     &                              SURC(i,j)*deltaTclock
+     &                              SURC(i,j)*deltaTClock
 #ifdef ALLOW_O2
               SUROave(i,j,bi,bj)   =SUROave(i,j,bi,bj)+
-     &                              SURO(i,j)*deltaTclock
+     &                              SURO(i,j)*deltaTClock
 #endif
               pCO2ave(i,j,bi,bj)   =pCO2ave(i,j,bi,bj)+
-     &                              pCO2(i,j,bi,bj)*deltaTclock
+     &                              pCO2(i,j,bi,bj)*deltaTClock
               pHave(i,j,bi,bj)     =pHave(i,j,bi,bj)+
-     &                              pH(i,j,bi,bj)*deltaTclock
+     &                              pH(i,j,bi,bj)*deltaTClock
               fluxCO2ave(i,j,bi,bj)=fluxCO2ave(i,j,bi,bj)+
-     &                           fluxCO2(i,j,bi,bj)*deltaTclock
+     &                           fluxCO2(i,j,bi,bj)*deltaTClock
           ENDDO
          ENDDO
-         DIC_timeAve(bi,bj) = DIC_timeAve(bi,bj)+deltaTclock
+         DIC_timeAve(bi,bj) = DIC_timeAve(bi,bj)+deltaTClock
        ENDIF
 #endif /* ALLOW_TIMEAVE*/
 
