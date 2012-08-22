@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.33 2011/10/07 21:36:39 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.34 2012/08/22 21:45:28 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -41,7 +41,6 @@ C !LOCAL VARIABLES: ====================================================
 C Number of iterations for pCO2 solvers...
 C Solubility relation coefficients
 C local variables for carbon chem
-      _RL  PTR_CO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER iMin,iMax,jMin,jMax, bi, bj
       _RL surfalk(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfphos(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -70,7 +69,7 @@ C--   Now calculate whether it is time to update the forcing arrays
        CALL GET_PERIODIC_INTERVAL(
      O                   intimeP, intime0, intime1, bWght, aWght,
      I                   externForcingCycle, externForcingPeriod,
-     I                   deltaTclock, startTime, myThid )
+     I                   deltaTClock, startTime, myThid )
 
        _BARRIER
        _BEGIN_MASTER(myThid)
@@ -98,8 +97,8 @@ C--   Now calculate whether it is time to update the forcing arrays
        IF ( DIC_silicaFile .NE. ' '  ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
              SILICA(i,j,bi,bj)= bWght*silica0(i,j,bi,bj)
      &                        + aWght*silica1(i,j,bi,bj)
            ENDDO
@@ -121,7 +120,7 @@ C =================================================================
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
-          DO i=1-Olx,sNx+OLx
+          DO i=1-OLx,sNx+OLx
             pH(i,j,bi,bj) = 8. _d 0
           ENDDO
          ENDDO
@@ -172,15 +171,15 @@ C determine inorganic carbon chem coefficients
 #ifdef DIC_BIOTIC
 #ifdef DIC_BOUNDS
              surfalk(i,j) = max(0.4 _d 0,
-     &                          min(10. _d 0,PTRACER(i,j,klev,bi,bj,2)))
+     &                          min(10. _d 0,PTRACER(i,j,kLev,bi,bj,2)))
      &                          * maskC(i,j,kLev,bi,bj)
              surfphos(i,j)  = max(1.0 _d -11,
-     &                          min(1._d -1, PTRACER(i,j,klev,bi,bj,3)))
+     &                          min(1._d -1, PTRACER(i,j,kLev,bi,bj,3)))
      &                          * maskC(i,j,kLev,bi,bj)
 #else
-             surfalk(i,j) = PTRACER(i,j,klev,bi,bj,2)
+             surfalk(i,j) = PTRACER(i,j,kLev,bi,bj,2)
      &                          * maskC(i,j,kLev,bi,bj)
-             surfphos(i,j)= PTRACER(i,j,klev,bi,bj,3)
+             surfphos(i,j)= PTRACER(i,j,kLev,bi,bj,3)
      &                          * maskC(i,j,kLev,bi,bj)
 #endif
 #else
@@ -190,19 +189,18 @@ C determine inorganic carbon chem coefficients
 #endif
 C FOR NON-INTERACTIVE Si
              surfsi(i,j)   =  Silica(i,j,bi,bj) * maskC(i,j,kLev,bi,bj)
-             PTR_CO2(i,j,kLev) = PTRACER(i,j,klev,bi,bj,1)
-     &                          * maskC(i,j,kLev,bi,bj)
 #ifdef DIC_BOUNDS
             surftemp(i,j) = max(-4. _d 0,
      &                          min(50. _d 0, theta(i,j,kLev,bi,bj)))
             surfsalt(i,j) = max(4. _d 0,
      &                          min(50. _d 0, salt(i,j,kLev,bi,bj)))
             surfdic(i,j)  = max(0.4 _d 0,
-     &                         min(10. _d 0, PTRACER(i,j,klev,bi,bj,1)))
+     &                         min(10. _d 0, PTRACER(i,j,kLev,bi,bj,1)))
 #else
             surftemp(i,j) = theta(i,j,kLev,bi,bj)
             surfsalt(i,j) = salt(i,j,kLev,bi,bj)
-            surfdic(i,j)  = PTR_CO2(i,j,kLev)
+            surfdic(i,j)  = PTRACER(i,j,kLev,bi,bj,1)
+     &                    * maskC(i,j,kLev,bi,bj)
 #endif
          ENDDO
         ENDDO
@@ -225,7 +223,7 @@ C$TAF LOOP = parallel
             IF ( maskC(i,j,kLev,bi,bj) .NE. 0. _d 0) THEN
 C$TAF init dic_surf = static, 10
              DO it=1,10
-C$TAF STORE pH(i,j,bi,bj), PTR_CO2(i,j,kLev)           = dic_surf
+C$TAF STORE pH(i,j,bi,bj)                              = dic_surf
 C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
               CALL CALC_PCO2_APPROX(
      I        surftemp(i,j),surfsalt(i,j),
@@ -249,7 +247,7 @@ C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
           WRITE(standardMessageUnit,*) 'QQ first guess pH',
      &        pH(iprt,jprt,bi,bj),
      &        theta(iprt,jprt,1,bi,bj), salt(iprt,jprt,1,bi,bj),
-     &        PTR_CO2(iprt,jprt,1), surfphos(iprt,jprt),
+     &        surfdic(iprt,jprt), surfphos(iprt,jprt),
      &        surfsi(iprt,jprt),surfalk(iprt,jprt)
 
         ENDIF
