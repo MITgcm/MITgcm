@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.178 2012/08/18 19:01:54 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.179 2012/08/23 02:01:27 jmc Exp $
 #  $Name:  $
 #
 
@@ -1344,8 +1344,8 @@ if test "x$OPTFILE" != xNONE ; then
 	echo >> $SUMMARY
 	echo "  OPTFILE=$OPTFILE" >> $SUMMARY
     else
-	echo | tee $SUMMARY
-	echo "ERROR: can't read OPTFILE=\"$OPTFILE\"" | tee $SUMMARY
+	echo | tee -a $SUMMARY
+	echo "ERROR: can't read OPTFILE=\"$OPTFILE\"" | tee -a $SUMMARY
 	exit 1
     fi
 else
