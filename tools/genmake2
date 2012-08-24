@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.236 2012/08/24 23:07:27 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.237 2012/08/24 23:41:17 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -17,139 +17,139 @@ Usage: "$0" [OPTIONS]
   where [OPTIONS] can be:
 
     -help | --help | -h | --h
-          Print this help message and exit.
+	  Print this help message and exit.
 
     -adoptfile NAME | --adoptfile NAME | -adof NAME | --adof NAME
       -adoptfile=NAME | --adoptfile=NAME | -adof=NAME | --adof=NAME
-          Use "NAME" as the adoptfile.  By default, the file at
-          "tools/adjoint_options/adjoint_default" will be used.
+	  Use "NAME" as the adoptfile.  By default, the file at
+	  "tools/adjoint_options/adjoint_default" will be used.
 
     -nooptfile | --nooptfile
       -optfile NAME | --optfile NAME | -of NAME | --of NAME
       -optfile=NAME | --optfile=NAME | -of=NAME | --of=NAME
-          Use "NAME" as the optfile.  By default, an attempt will be
-          made to find an appropriate "standard" optfile in the
-          tools/build_options/ directory.
+	  Use "NAME" as the optfile.  By default, an attempt will be
+	  made to find an appropriate "standard" optfile in the
+	  tools/build_options/ directory.
 
     -pdepend NAME | --pdepend NAME
       -pdepend=NAME | --pdepend=NAME
-          Get package dependency information from "NAME".
+	  Get package dependency information from "NAME".
 
     -pgroups NAME | --pgroups NAME
       -pgroups=NAME | --pgroups=NAME
-          Get the package groups information from "NAME".
+	  Get the package groups information from "NAME".
 
     -bash NAME
-          Explicitly specify the Bourne or BASH shell to use
+	  Explicitly specify the Bourne or BASH shell to use
 
     -make NAME | -m NAME
       --make=NAME | -m=NAME
-          Use "NAME" for the MAKE program. The default is "make" but
-          many platforms, "gmake" is the preferred choice.
+	  Use "NAME" for the MAKE program. The default is "make" but
+	  many platforms, "gmake" is the preferred choice.
 
     -makefile NAME | -mf NAME
       --makefile=NAME | -mf=NAME
-          Call the makefile "NAME".  The default is "Makefile".
+	  Call the makefile "NAME".  The default is "Makefile".
 
     -makedepend NAME | -md NAME
       --makedepend=NAME | -md=NAME
-          Use "NAME" for the MAKEDEPEND program.
+	  Use "NAME" for the MAKEDEPEND program.
 
     -rootdir NAME | --rootdir NAME | -rd NAME | --rd NAME
       -rootdir=NAME | --rootdir=NAME | -rd=NAME | --rd=NAME
-          Specify the location of the MITgcm ROOTDIR as "NAME".
-          By default, genamke will try to find the location by
-          looking in parent directories (up to the 5th parent).
+	  Specify the location of the MITgcm ROOTDIR as "NAME".
+	  By default, genamke will try to find the location by
+	  looking in parent directories (up to the 5th parent).
 
     -mods NAME | --mods NAME | -mo NAME | --mo NAME
       -mods=NAME | --mods=NAME | -mo=NAME | --mo=NAME
-          Here, "NAME" specifies a list of directories that are
-          used for additional source code.  Files found in the
-          "mods list" are given preference over files of the same
-          name found elsewhere.
+	  Here, "NAME" specifies a list of directories that are
+	  used for additional source code.  Files found in the
+	  "mods list" are given preference over files of the same
+	  name found elsewhere.
 
     -disable NAME | --disable NAME
       -disable=NAME | --disable=NAME
-          Here "NAME" specifies a list of packages that we don't
-          want to use.  If this violates package dependencies,
-          genamke will exit with an error message.
+	  Here "NAME" specifies a list of packages that we don't
+	  want to use.  If this violates package dependencies,
+	  genamke will exit with an error message.
 
     -enable NAME | --enable NAME
       -enable=NAME | --enable=NAME
-          Here "NAME" specifies a list of packages that we wish
-          to specifically enable.  If this violates package
-          dependencies, genamke will exit with an error message.
+	  Here "NAME" specifies a list of packages that we wish
+	  to specifically enable.  If this violates package
+	  dependencies, genamke will exit with an error message.
 
     -standarddirs NAME | --standarddirs NAME
       -standarddirs=NAME | --standarddirs=NAME
-          Here, "NAME" specifies a list of directories to be
-          used as the "standard" code.
+	  Here, "NAME" specifies a list of directories to be
+	  used as the "standard" code.
 
     -fortran NAME | --fortran NAME | -fc NAME | --fc NAME
       -fc=NAME | --fc=NAME
-          Use "NAME" as the fortran compiler.  By default, genmake
-          will search for a working compiler by trying a list of
-          "usual suspects" such as g77, f77, etc.
+	  Use "NAME" as the fortran compiler.  By default, genmake
+	  will search for a working compiler by trying a list of
+	  "usual suspects" such as g77, f77, etc.
 
     -cc NAME | --cc NAME | -cc=NAME | --cc=NAME
-          Use "NAME" as the C compiler.  By default, genmake
-          will search for a working compiler by trying a list of
-          "usual suspects" such as gcc, c89, cc, etc.
+	  Use "NAME" as the C compiler.  By default, genmake
+	  will search for a working compiler by trying a list of
+	  "usual suspects" such as gcc, c89, cc, etc.
 
     -use_real4 | -use_r4 | -ur4 | --use_real4 | --use_r4 | --ur4
-          Use "real*4" type for _RS variable (#undef REAL4_IS_SLOW)
-          *only* works if CPP_EEOPTIONS.h allows this.
+	  Use "real*4" type for _RS variable (#undef REAL4_IS_SLOW)
+	  *only* works if CPP_EEOPTIONS.h allows this.
 
     -ignoretime | -ignore_time | --ignoretime | --ignore_time
-          Ignore all the "wall clock" routines entirely.  This will
-          not in any way hurt the model results -- it simply means
-          that the code that checks how long the model spends in
-          various routines will give junk values.
+	  Ignore all the "wall clock" routines entirely.  This will
+	  not in any way hurt the model results -- it simply means
+	  that the code that checks how long the model spends in
+	  various routines will give junk values.
 
     -ts | --ts
-          Produce timing information per timestep
+	  Produce timing information per timestep
     -papis | --papis
-          Produce summary MFlop/s (and IPC) with PAPI per timestep
+	  Produce summary MFlop/s (and IPC) with PAPI per timestep
     -pcls | --pcls
-          Produce summary MFlop/s etc. with PCL per timestep
+	  Produce summary MFlop/s etc. with PCL per timestep
     -foolad | --foolad
-          Fool the AD code generator
+	  Fool the AD code generator
     -papi | --papi
-          Performance analysis with PAPI
+	  Performance analysis with PAPI
     -pcl | --pcl
-          Performance analysis with PCL
+	  Performance analysis with PCL
     -hpmt | --hpmt
-          Performance analysis with the HPM Toolkit
+	  Performance analysis with the HPM Toolkit
 
     -ieee | --ieee
-          use IEEE numerics.  Note that this option *only* works
-          if it is supported by the OPTFILE that is being used.
+	  use IEEE numerics.  Note that this option *only* works
+	  if it is supported by the OPTFILE that is being used.
     -devel | --devel
-          Add additional warning and debugging flags for development
-          (if supported by the OPTFILE); also switch to IEEE numerics.
+	  Add additional warning and debugging flags for development
+	  (if supported by the OPTFILE); also switch to IEEE numerics.
     -gsl | --gsl
-          Use GSL to control floating point rounding and precision
+	  Use GSL to control floating point rounding and precision
 
     -mpi | --mpi
-          Include MPI header files and link to MPI libraries
+	  Include MPI header files and link to MPI libraries
     -mpi=PATH | --mpi=PATH
-          Include MPI header files and link to MPI libraries using MPI_ROOT
-          set to PATH. i.e. Include files from \$PATH/include, link to libraries
-          from \$PATH/lib and use binaries from \$PATH/bin.
+	  Include MPI header files and link to MPI libraries using MPI_ROOT
+	  set to PATH. i.e. Include files from \$PATH/include, link to libraries
+	  from \$PATH/lib and use binaries from \$PATH/bin.
 
     -omp | --omp
-          Activate OpenMP code + use Compiler option OMPFLAG
+	  Activate OpenMP code + use Compiler option OMPFLAG
     -omp=OMPFLAG | --omp=OMPFLAG
-          Activate OpenMP code + use Compiler option OMPFLAG
+	  Activate OpenMP code + use Compiler option OMPFLAG
 
     -es | --es | -embed-source | --embed-source
-          Embed a tarball containing the full source code
-          (including the Makefile, etc.) used to build the
-          executable [off by default]
+	  Embed a tarball containing the full source code
+	  (including the Makefile, etc.) used to build the
+	  executable [off by default]
 
     -ds | --ds
-          Report genmake internal variables status (DUMPSTATE)
-          to file "genmake_state" (for debug purpose)
+	  Report genmake internal variables status (DUMPSTATE)
+	  to file "genmake_state" (for debug purpose)
 
   While it is most often a single word, the "NAME" variables specified
   above can in many cases be a space-delimited string such as:
@@ -207,7 +207,7 @@ test_for_string_in_file() {
     RETVAL=$?
     if test "x${RETVAL}" = x0 ; then
 	printf "Error: In $file there is an illegal line: "
-        grep -i "$strng" $file
+	grep -i "$strng" $file
 	exit 99
     fi
     return 0
@@ -435,13 +435,13 @@ build_embed_encode()
 {
     printf "  building the embed-encode utility...  "
     if test ! -e "$ROOTDIR/tools/embed_encode/encode_files" ; then
-        if test ! -d "$ROOTDIR/tools/embed_encode" ; then
-            echo
-            echo "    Error: can't locate \"$ROOTDIR/tools/embed_encode\""
-            echo
-            EMBED_SRC=f
+	if test ! -d "$ROOTDIR/tools/embed_encode" ; then
+	    echo
+	    echo "    Error: can't locate \"$ROOTDIR/tools/embed_encode\""
+	    echo
+	    EMBED_SRC=f
 	    return 1
-        fi
+	fi
 	clist="cc gcc c89 $CC"
 	for ic in $clist ; do
 	    comm="$ic -o encode_files encode_files.c"
@@ -1206,6 +1206,9 @@ SOURCEDIRS=
 INCLUDEDIRS=
 STANDARDDIRS="USE_THE_DEFAULT"
 
+#- local config file
+gm_local="genmake_local"
+
 G2ARGS=
 BASH=
 PWD=`pwd`
@@ -1277,16 +1280,6 @@ LOGFILE="genmake.log"
 rm -f genmake_state genmake_*optfile $LOGFILE
 
 echo "===  Processing options files and arguments  ==="
-gm_local="genmake_local"
-printf "  getting local config information:  "
-if test -f $gm_local ; then
-    echo "using $gm_local"
-    . $gm_local
-    # echo "DISABLE=$DISABLE"
-    # echo "ENABLE=$ENABLE"
-else
-    echo "none found"
-fi
 
 #echo "$0::$1:$2:$3:$4:$5:$6:$7:"
 #parse_options
@@ -1346,9 +1339,9 @@ for ac_option in "$@" ; do
 	-makedepend=* | --makedepend=* | -md=* | --md=*)
 	    MAKEDEPEND=$ac_optarg ;;
 
-	-makefile | --makefile | -ma | --ma)
+	-makefile | --makefile | -mf | --mf)
 	    ac_prev=MAKEFILE ;;
-	-makefile=* | --makefile=* | -ma=* | --ma=*)
+	-makefile=* | --makefile=* | -mf=* | --mf=*)
 	    MAKEFILE=$ac_optarg ;;
 
 	-platform | --platform | -pl | --pl | -platform=* | --platform=* | -pl=* | --pl=*)
@@ -1415,9 +1408,9 @@ for ac_option in "$@" ; do
 	    IEEE=true ;;
 	-noieee | --noieee)
 	    echo "Warning: ignore option '$ac_option' (default is already without '-ieee')" ;;
-        -devel | --devel)
+	-devel | --devel)
 	    IEEE=true ; DEVEL=true ;;
-        -gsl | --gsl)
+	-gsl | --gsl)
 	    GSL=true ;;
 
 	-ts | --ts)
@@ -1484,6 +1477,14 @@ for ac_option in "$@" ; do
     esac
 
 done
+
+printf "  getting local config information:  "
+if test -f $gm_local ; then
+    echo "using $gm_local"
+    . $gm_local
+else
+    echo "none found"
+fi
 
 if test -f ./.genmakerc ; then
     echo
@@ -1771,16 +1772,17 @@ if test ! "x$HPMT" = x ; then
       if test ! "x$PAPI" = x ; then
 	  echo "  PAPI and the HPM Toolkit cannot co-exist!"
 	  echo "  Sticking with PAPI!"
-      else if test ! "x$PCL" = x ; then
+      else
+	if test ! "x$PCL" = x ; then
 	  echo "  PCL and the HPM Toolkit cannot co-exist!"
 	  echo "  Sticking with PCL!"
-      else
+	else
 	  echo "  Turning on performance analysis with the HPM Toolkit"
 	  echo "  Please make sure HPMTINC, HPMTLIB are defined"
 	  DEFINES="$DEFINES -DUSE_LIBHPM"
 	  INCLUDES="$INCLUDES $HPMTINC"
 	  LIBS="$LIBS $HPMTLIB"
-      fi
+	fi
       fi
 fi
 if test ! "x$GSL" = x ; then
@@ -2105,7 +2107,7 @@ else
 	exit 1
     else
 	echo "    using PKG_LIST=\"$PKG_LIST\""
-        #  Strip the comments and add all the names
+	#  Strip the comments and add all the names
 	pkg_list=`cat $PKG_LIST | sed -e 's/#.*$//g' | $AWK '(NF>0){print $0}'`
 	RETVAL=$?
 	if test "x${RETVAL}" != x0 ; then
@@ -2200,7 +2202,7 @@ else
 	echo "Error: problem encountered while building source files in pkg/mnc:"
 	cat make_mnc.errors 1>&2
 	if test "x$mnc_in" = x0 ; then
-            exit 1
+	    exit 1
 	else
 	    DISABLE="$DISABLE mnc"
 	fi
@@ -2679,7 +2681,7 @@ echo "" >> ad_flow_files.tmp
 CMDLINE=$0
 for xx in "$@" ; do nw=`echo $xx | wc -w`
     if test $nw = '1' ; then CMDLINE="$CMDLINE $xx"
-                        else CMDLINE="$CMDLINE '$xx'" ; fi
+			else CMDLINE="$CMDLINE '$xx'" ; fi
 done
 
 if test -f $MAKEFILE ; then
