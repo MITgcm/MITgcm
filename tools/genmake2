@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.235 2012/08/18 05:48:34 utke Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.236 2012/08/24 23:07:27 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -305,13 +305,12 @@ EOF
 	    FS90='fr9'
 	    check_for_broken_Ff
 	else
-	    cat <<EOF 2>&1
-ERROR: Your file system cannot distinguish between *.F and *.f files
-  (fails the "make/ln" test) and this program cannot find a suitable
-  replacement extension.  Please try a different build environment or
-  contact the <MITgcm-support@mitgcm.org> list for help.
-
-EOF
+	    echo "ERROR: test: '$MAKE -f $MAKEFILE genmake_hello.$tfs' Failed"
+	    echo "       see simple makefile: '$MAKEFILE' (left here)"
+	    echo "  Please check (1) your '$MAKE' command, (2) your '$LN' command"
+	    echo "           and (3) the allowed sufix '.F' and '.$tfs' in makefile"
+	    echo "  or contact the <MITgcm-support@mitgcm.org> list for help."
+	    echo ""
 	    exit -1
 	    return
 	fi
@@ -578,8 +577,8 @@ EOF
     if test "x$OPTFILE" = x ; then
 	OPTFILE=$ROOTDIR"/tools/build_options/"$PLATFORM"_"$FC
 	if test ! -r $OPTFILE ; then
-             echo "  I looked for the file "$OPTFILE" but did not find it"
-        fi
+	     echo "  I looked for the file "$OPTFILE" but did not find it"
+	fi
     fi
 
     if test "x$OPTFILE" = x ; then
@@ -650,7 +649,7 @@ get_fortran_c_namemangling()  {
 
     #echo "FC_NAMEMANGLE = \"$FC_NAMEMANGLE\""
     if test ! "x$FC_NAMEMANGLE" = x ; then
-        return 0
+	return 0
     fi
     echo " running: get_fortran_c_namemangling()" >> $LOGFILE
 
@@ -1037,7 +1036,7 @@ check_lapack_libs()  {
     echo "running: check_lapack_libs()" >> $LOGFILE
     cat <<EOF > genmake_tla.F
       program fgenla
-      integer info 
+      integer info
       integer ipiv( 2 )
       double precision ab( 4, 2 ), b( 2 )
       data ab / 0., 0., 1., 2., 0., 2., 1., 0. /
@@ -1108,23 +1107,23 @@ EOF
 		LIBS="$LIBS -llapack -lf77blas -lcblas"
 		HAVE_LAPACK=t
 		echo "check_lapack: successful" >> $LOGFILE
-            else
-            # try again with "-latlas" added to the libs
-                echo "==> try again with added '-llapack -lf77blas -lcblas -latlas'" > genmake_tla.log
-                echo "cat genmake_tla.F | $CPP $DEFINES $INCLUDES > genmake_tla.$FS \ " >> genmake_tla.log
-                echo " &&  $FC $FFLAGS $FOPTIM -c genmake_tla.$FS \ " >> genmake_tla.log
-                echo " &&  $LINK $FFLAGS $FOPTIM -o genmake_tla genmake_tla.o $LIBS -llapack -lf77blas -lcblas -latlas" >> genmake_tla.log
-                cat genmake_tla.F | $CPP $DEFINES $INCLUDES > genmake_tla.$FS 2>/dev/null  \
-                    &&  $FC $FFLAGS $FOPTIM -c genmake_tla.$FS >> genmake_tla.log 2>&1  \
-                    &&  $LINK $FFLAGS $FOPTIM -o genmake_tla genmake_tla.o $LIBS -llapack -lf77blas -lcblas -latlas >> genmake_tla.log 2>&1
-                RET_COMPILE=$?
-                echo >> $LOGFILE
-                cat genmake_tla.log >> $LOGFILE
-                if test "x$RET_COMPILE" = x0 ; then
-                    LIBS="$LIBS -llapack -lf77blas -lcblas -latlas"
-                    HAVE_LAPACK=t
-                    echo "check_lapack: successful" >> $LOGFILE
-                fi
+	    else
+	    # try again with "-latlas" added to the libs
+		echo "==> try again with added '-llapack -lf77blas -lcblas -latlas'" > genmake_tla.log
+		echo "cat genmake_tla.F | $CPP $DEFINES $INCLUDES > genmake_tla.$FS \ " >> genmake_tla.log
+		echo " &&  $FC $FFLAGS $FOPTIM -c genmake_tla.$FS \ " >> genmake_tla.log
+		echo " &&  $LINK $FFLAGS $FOPTIM -o genmake_tla genmake_tla.o $LIBS -llapack -lf77blas -lcblas -latlas" >> genmake_tla.log
+		cat genmake_tla.F | $CPP $DEFINES $INCLUDES > genmake_tla.$FS 2>/dev/null  \
+		    &&  $FC $FFLAGS $FOPTIM -c genmake_tla.$FS >> genmake_tla.log 2>&1  \
+		    &&  $LINK $FFLAGS $FOPTIM -o genmake_tla genmake_tla.o $LIBS -llapack -lf77blas -lcblas -latlas >> genmake_tla.log 2>&1
+		RET_COMPILE=$?
+		echo >> $LOGFILE
+		cat genmake_tla.log >> $LOGFILE
+		if test "x$RET_COMPILE" = x0 ; then
+		    LIBS="$LIBS -llapack -lf77blas -lcblas -latlas"
+		    HAVE_LAPACK=t
+		    echo "check_lapack: successful" >> $LOGFILE
+		fi
 	    fi
 	fi
     fi
@@ -1306,79 +1305,79 @@ for ac_option in "$@" ; do
     ac_optarg=`expr "x$ac_option" : 'x[^=]*=\(.*\)'`
 
     case $ac_option in
-	
+
 	-help | --help | -h | --h)
 	    usage ;;
-	
+
 	-nooptfile | --nooptfile)
 	    OPTFILE="NONE" ;;
 	-optfile | --optfile | -of | --of)
 	    ac_prev=OPTFILE ;;
 	-optfile=* | --optfile=* | -of=* | --of=*)
 	    OPTFILE=$ac_optarg ;;
-	
+
 	-adoptfile | --adoptfile | -adof | --adof)
 	    ac_prev=AD_OPTFILE ;;
 	-adoptfile=* | --adoptfile=* | -adof=* | --adof=*)
 	    AD_OPTFILE=$ac_optarg ;;
-	
+
 	-pdepend | --pdepend)
 	    ac_prev=PKG_DEPEND ;;
 	-pdepend=* | --pdepend=*)
 	    PKG_DEPEND=$ac_optarg ;;
-	
+
 	-pgroups | --pgroups)
 	    ac_prev=PKG_GROUPS ;;
 	-pgroups=* | --pgroups=*)
 	    PKG_GROUPS=$ac_optarg ;;
-	
+
 	-make | --make | -m | --m)
 	    ac_prev=MAKE ;;
 	-make=* | --make=* | -m=* | --m=*)
 	    MAKE=$ac_optarg ;;
-	
+
 	-bash | --bash)
 	    ac_prev=BASH ;;
 	-bash=* | --bash=*)
 	    BASH=$ac_optarg ;;
-	
+
 	-makedepend | --makedepend | -md | --md)
 	    ac_prev=MAKEDEPEND ;;
 	-makedepend=* | --makedepend=* | -md=* | --md=*)
 	    MAKEDEPEND=$ac_optarg ;;
-	
+
 	-makefile | --makefile | -ma | --ma)
 	    ac_prev=MAKEFILE ;;
 	-makefile=* | --makefile=* | -ma=* | --ma=*)
 	    MAKEFILE=$ac_optarg ;;
-	
+
 	-platform | --platform | -pl | --pl | -platform=* | --platform=* | -pl=* | --pl=*)
 	    echo "ERROR: The platform option has been removed.  Please specify"
 	    echo "  the build options using the \"optfile\" mechanism."
 	    echo
 	    usage
 	    ;;
-	
+
 	-rootdir | --rootdir | -rd | --rd)
 	    ac_prev=ROOTDIR ;;
 	-rootdir=* | --rootdir=* | -rd=* | --rd=*)
 	    ROOTDIR=$ac_optarg ;;
-	
+
 	-mods | --mods | -mo | --mo)
 	    ac_prev=MODS ;;
 	-mods=* | --mods=* | -mo=* | --mo=*)
 	    MODS=$ac_optarg ;;
-	
+
 	-disable | --disable)
 	    ac_prev=DISABLE ;;
 	-disable=* | --disable=*)
 	    DISABLE=$ac_optarg ;;
-	
+
 	-enable | --enable)
 	    ac_prev=ENABLE ;;
 	-enable=* | --enable=*)
 	    ENABLE=$ac_optarg ;;
-	
+
 	-standarddirs | --standarddirs)
 	    ac_prev=STANDARDDIRS ;;
 	-standarddirs=* | --standarddirs=*)
@@ -1388,27 +1387,27 @@ for ac_option in "$@" ; do
 #		ac_prev=cpp ;;
 #	    -cpp=* | --cpp=*)
 #		CPP=$ac_optarg ;;
-	
+
 	-cc | --cc)
 	    ac_prev=CC ;;
 	-cc=* | --cc=*)
 	    CC=$ac_optarg ;;
-	
+
 	-fortran | --fortran | -fc | --fc)
 	    ac_prev=FC ;;
 	-fc=* | --fc=*)
 	    FC=$ac_optarg ;;
-	
+
 	-fs | --fs)
 	    ac_prev=FS ;;
 	-fs=* | --fs=*)
 	    FS=$ac_optarg ;;
-	
+
 	-fs90 | --fs90)
 	    ac_prev=FS90 ;;
 	-fs90=* | --fs90=*)
 	    FS90=$ac_optarg ;;
-	
+
 	-use_real4 | -use_r4 | -ur4 | --use_real4 | --use_r4 | --ur4 )
 	    USE_R4=true ;;
 
@@ -1441,21 +1440,21 @@ for ac_option in "$@" ; do
 	-mpi=* | --mpi=*)
 	    MPIPATH=$ac_optarg
 	    MPI=true ;;
-	
- 	-omp | --omp)
- 	    OMP=true ;;
+
+	-omp | --omp)
+	    OMP=true ;;
 	-omp=* | --omp=*)
 	    OMPFLAG=$ac_optarg
 	    OMP=true ;;
-	
+
 	-ds | --ds)
 	    DUMPSTATE=t ;;
-	
+
 	-extra_flag | --extra_flag)
 	    ac_prev=FEXTRAFLAGS ;;
 	-extra_flag=* | --extra_flag=*)
 	    FEXTRAFLAGS=$ac_optarg ;;
-	
+
 	-taf_extra | --taf_extra)
 	    ac_prev=TAF_EXTRA ;;
 	-taf_extra=* | --taf_extra=*)
@@ -1465,7 +1464,7 @@ for ac_option in "$@" ; do
 	    ac_prev=TAMC_EXTRA ;;
 	-tamc_extra=* | --tamc_extra=*)
 	    TAMC_EXTRA=$ac_optarg ;;
-	
+
 	-ignoretime | -ignore_time | --ignoretime | --ignore_time)
 	    IGNORE_TIME="-DIGNORE_TIME" ;;
 
@@ -1476,12 +1475,12 @@ for ac_option in "$@" ; do
 	    echo "Error: unrecognized option: "$ac_option
 	    usage
 	    ;;
-	
+
 	*)
 	    echo "Error: unrecognized argument: "$ac_option
 	    usage
 	    ;;
-	
+
     esac
 
 done
@@ -1714,7 +1713,7 @@ fi
 if test ! "x$TS" = x ; then
       echo "  Turning on timing per timestep"
       if test ! "x$FOOLAD" = x ; then
-            DEFINES="$DEFINES -DTIME_PER_TIMESTEP_SFP"
+	    DEFINES="$DEFINES -DTIME_PER_TIMESTEP_SFP"
       else
 	    DEFINES="$DEFINES -DTIME_PER_TIMESTEP"
       fi
@@ -1750,7 +1749,7 @@ if test ! "x$PAPI" = x ; then
 	  echo "  Sticking with PAPI flop summary per timestep!"
       else
 	  echo "  Turning on performance analysis with PAPI"
-          echo "  Please make sure PAPIINC, PAPILIB are defined"
+	  echo "  Please make sure PAPIINC, PAPILIB are defined"
 	  DEFINES="$DEFINES -DUSE_PAPI"
 	  INCLUDES="$INCLUDES $PAPIINC"
 	  LIBS="$LIBS $PAPILIB"
@@ -1762,7 +1761,7 @@ if test ! "x$PCL" = x ; then
 	  echo "  Sticking with PCL flop summary per timestep!"
       else
 	  echo "  Turning on performance analysis with PCL"
-          echo "  Please make sure PCLINC, PCLLIB are defined"
+	  echo "  Please make sure PCLINC, PCLLIB are defined"
 	  DEFINES="$DEFINES -DUSE_PCL"
 	  INCLUDES="$INCLUDES $PCLINC"
 	  LIBS="$LIBS $PCLLIB"
@@ -1777,9 +1776,9 @@ if test ! "x$HPMT" = x ; then
 	  echo "  Sticking with PCL!"
       else
 	  echo "  Turning on performance analysis with the HPM Toolkit"
-          echo "  Please make sure HPMTINC, HPMTLIB are defined"
+	  echo "  Please make sure HPMTINC, HPMTLIB are defined"
 	  DEFINES="$DEFINES -DUSE_LIBHPM"
-          INCLUDES="$INCLUDES $HPMTINC"
+	  INCLUDES="$INCLUDES $HPMTINC"
 	  LIBS="$LIBS $HPMTLIB"
       fi
       fi
@@ -2156,7 +2155,7 @@ for i in $PACKAGES ; do
     j=`echo $i | sed 's/[-+]//'`
     if test ! -d "$ROOTDIR/pkg/$j" ; then
 	echo "Error: dir '$ROOTDIR/pkg/$i' missing for package '$i'"
- 	exit 1
+	exit 1
     fi
     echo $i >> ./.tmp_pack
 done
@@ -2300,7 +2299,7 @@ if  test "x${PKG_DEPEND}" != x ; then
 
 	#  Do we need to add $dname according to the dependency rules?
 	if test "x$pin" = xt -a "x$plus" = "x+" -a "x$din" = xf ; then
-            #echo "   " $pname ": need to add :" $dname
+	    #echo "   " $pname ": need to add :" $dname
 	    in_dis="f"
 	    for dis in $DISABLE ; do
 		if test "x$dis" = "x$dname" ; then
@@ -2325,7 +2324,7 @@ if  test "x${PKG_DEPEND}" != x ; then
 	    echo "  the dependency rules for \"$dname\""
 	    exit 1
 	fi
-        i=`echo "$i + 1" | bc -l`
+	i=`echo "$i + 1" | bc -l`
 	#i=$(( $i + 1 ))
     done
     ck=$ck"t"
@@ -2366,7 +2365,7 @@ for n in $names ; do
 	done
 	if test "x$has_pack" = xf ; then
 	    undef=`echo "ALLOW_$n" | sed -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
-            DISABLED_PACKAGES="$DISABLED_PACKAGES -U$undef"
+	    DISABLED_PACKAGES="$DISABLED_PACKAGES -U$undef"
 	fi
     fi
 done
@@ -2379,7 +2378,7 @@ for i in $PACKAGES ; do
 #EH3  WARNING :  This is an UGLY HACK that needs to be removed!!!
     case $i in
 	aim_v23)
-            ENABLED_PACKAGES="$ENABLED_PACKAGES -DALLOW_AIM"
+	    ENABLED_PACKAGES="$ENABLED_PACKAGES -DALLOW_AIM"
 	    echo "Warning: ALLOW_AIM is set to enable aim_v23."
 	    ;;
     esac
@@ -2421,15 +2420,15 @@ for i in $spaths ; do
     if test -f $try -a -r $try -a "x$CPP_OPTIONS" = x ; then
 	echo "    found CPP_OPTIONS=\"$try\""
 	CPP_OPTIONS="$try"
-        # New safety test: make sure packages are not mentioned in CPP_OPTIONS.h
-        for n in $names ; do
-            test_for_package_in_cpp_options $CPP_OPTIONS $n
-        done
+	# New safety test: make sure packages are not mentioned in CPP_OPTIONS.h
+	for n in $names ; do
+	    test_for_package_in_cpp_options $CPP_OPTIONS $n
+	done
     fi
     try="$i/CPP_EEOPTIONS.h"
     if test -f $try -a -r $try -a "x$CPP_EEOPTIONS" = x ; then
 	echo "    found CPP_EEOPTIONS=\"$try\""
-        # New safety test: make sure MPI is not determined by CPP_EEOPTIONS.h
+	# New safety test: make sure MPI is not determined by CPP_EEOPTIONS.h
 #**** not yet enabled ****
 #        test_for_mpi_in_cpp_eeoptions $try
 #**** not yet enabled ****
@@ -2575,23 +2574,23 @@ for d in $alldirs ; do
 	if test ! -r ".links.tmp/$sf" ; then
 	    if test -f "$d/$sf" ; then
 		ignore_f=f
-                case $d/$sf in
-                  ./$PACKAGES_DOT_H)
+		case $d/$sf in
+		  ./$PACKAGES_DOT_H)
 			ignore_f=t
 			;;
-                  ./AD_CONFIG.h)
+		  ./AD_CONFIG.h)
 			ignore_f=t
 			;;
-                  ./FC_NAMEMANGLE.h)
+		  ./FC_NAMEMANGLE.h)
 			ignore_f=t
 			;;
-                  ./BUILD_INFO.h)
+		  ./BUILD_INFO.h)
 			ignore_f=t
 			;;
-                  ./EMBEDDED_FILES.h)
+		  ./EMBEDDED_FILES.h)
 			ignore_f=t
 			;;
-                  *)
+		  *)
 			#  For the local directory *ONLY*,
 			#  ignore all soft-links
 			if test "x$HAVE_TEST_L" = xt -a "x$d" = x. -a -L $sf ; then
@@ -2601,7 +2600,7 @@ for d in $alldirs ; do
 			    deplist="$deplist $sf"
 			fi
 			;;
-                esac
+		esac
 		if test "x$ignore_f" = xf ; then
 		    extn=`echo $sf | $AWK -F. '{print $NF}'`
 		    case $extn in
@@ -2648,7 +2647,7 @@ for d in $alldirs ; do
 			echo    " \\"  >> hsrclist.tmp
 			printf " $sf" >> hsrclist.tmp
 			;;
-  		    flow)
+		    flow)
 			echo    " \\"  >> ad_flow_files.tmp
 			printf " $sf" >> ad_flow_files.tmp
 			;;
@@ -2659,7 +2658,7 @@ for d in $alldirs ; do
     done
     if test "x$deplist" != x ; then
       if test "$d" != "." ; then
-  	echo "" >> srclinks.tmp
+	echo "" >> srclinks.tmp
 	echo "#  These files are linked from $d" >> srclinks.tmp
 	echo "$deplist :" >> srclinks.tmp
 # We need to make sure that the link isn't already there.
@@ -2813,7 +2812,7 @@ echo >> $MAKEFILE
 echo 'F77_PP_SRC_FILES = $(F77_SRC_FILES:.F=.'$FS')'      >> $MAKEFILE
 echo 'F90_PP_SRC_FILES = $(F90_SRC_FILES:.F90=.'$FS90')' >> $MAKEFILE
 echo 'OBJFILES= $(F77_SRC_FILES:.F=.o) $(C_SRC_FILES:.c=.o) $(F90_SRC_FILES:.F90=.o)' >> $MAKEFILE
-echo 'FLOFILES =  $(AD_FLOW_FILES:.flow=.flowdir)' >> $MAKEFILE
+echo 'FLOWFILES =  $(AD_FLOW_FILES:.flow=.flowdir)' >> $MAKEFILE
 echo >> $MAKEFILE
 echo '.SUFFIXES:' >> $MAKEFILE
 echo '.SUFFIXES: .o .'$FS' .p .F .c .f'$FS90' .'$FS90' .FF90 .F90 .flowdir .flow' >> $MAKEFILE
@@ -3005,8 +3004,8 @@ ad_input_code.$FS: \$(AD_FILES) \$(H_SRC_FILES) \$(AD_FLOW_FILES)
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	-rm -f ad_config.template
 	@make -f \$(MAKEFILE) \$(F77_PP_SRC_FILES)
-	@make -f \$(MAKEFILE) \$(FLOFILES)
-	cat \$(FLOFILES) \$(AD_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ad_input_code.$FS
+	@make -f \$(MAKEFILE) \$(FLOWFILES)
+	cat \$(FLOWFILES) \$(AD_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ad_input_code.$FS
 
 ad_taf_output.$FS: ad_input_code.$FS
 	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.$FS
@@ -3204,7 +3203,7 @@ AD_OBJ_FILES_S2=\$(AD_OBJ_FILES_S1) \$(NON_AD_F77_SRC_FILES:.F=_cb2m.o) \$(C_SRC
 %_mod.FF90 : %.h ../OAD_support/cb2mGetModules.csh ../OAD_support/cb2mGetModules.awk
 	../OAD_support/cb2mGetModules.csh $< ../OAD_support/cb2mGetModules.awk
 
-# create new header files with USE statements for the new modules made above 
+# create new header files with USE statements for the new modules made above
 %_mod.h : %.h ../OAD_support/cb2mGetHeaders.csh ../OAD_support/cb2mGetHeaders.awk
 	../OAD_support/cb2mGetHeaders.csh $< ../OAD_support/cb2mGetHeaders.awk \$(CB2M_F90_SRC_NAMES)
 
@@ -3227,7 +3226,7 @@ ad_input_code.f$FS90:  \$(CB2M_AD_FILES)
 	cat \$^ > \$@
 
 # canonicalizer
-ad_input_code_sf.pre.f90 : \$(CB2M_AD_FILES) 
+ad_input_code_sf.pre.f90 : \$(CB2M_AD_FILES)
 	\${OPENADFORTTK_BASE}/tools/SourceProcessing/preProcess.py --timing --r8 -H -S  -o \$@ \$^
 
 # replace stop statements (to avoid the implied unstructured control flow)  with print statements
@@ -3239,19 +3238,19 @@ ad_input_code_sf.pre.s2p.B: ad_input_code_sf.pre.s2p.f90
 	\${OPEN64ROOT}/crayf90/sgi/mfef90 -r8 -z -F ad_input_code_sf.pre.s2p.f90
 
 # WHIRL -> XAIF
-ad_input_code_sf.pre.s2p.xaif : ad_input_code_sf.pre.s2p.B 
+ad_input_code_sf.pre.s2p.xaif : ad_input_code_sf.pre.s2p.B
 	\${OPENADFORTTK}/bin/whirl2xaif -s -n --debug 1 -o \$@ \$<
 
 # XAIF -> XAIF'
-ad_input_code_sf.pre.s2p.xb.xaif : ad_input_code_sf.pre.s2p.xaif xaif.xsd xaif_base.xsd xaif_inlinable_intrinsics.xsd xaif_derivative_propagator.xsd xaif_output.xsd 
+ad_input_code_sf.pre.s2p.xb.xaif : ad_input_code_sf.pre.s2p.xaif xaif.xsd xaif_base.xsd xaif_inlinable_intrinsics.xsd xaif_derivative_propagator.xsd xaif_output.xsd
 	\${XAIFBOOSTERROOT}/xaifBooster/algorithms/BasicBlockPreaccumulationReverse/driver/oadDriver -f -t forward_step -i \$< -c \${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif -o \$@ -I -r
 
 # XAIF' -> WHIRL'
-ad_input_code_sf.pre.s2p.xb.x2w.B : ad_input_code_sf.pre.s2p.xb.xaif 
+ad_input_code_sf.pre.s2p.xb.x2w.B : ad_input_code_sf.pre.s2p.xb.xaif
 	\${OPENADFORTTK}/bin/xaif2whirl --debug 1 ad_input_code_sf.pre.s2p.B \$<
 
 # WHIRL' -> F'
-ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.B 
+ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.B
 	\${OPEN64ROOT}/whirl2f/whirl2f -FLIST:ftn_file=\$@ -openad \$<
 
 # insert template directives
@@ -3264,7 +3263,7 @@ postProcess.tag: ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90 \$(PPEXTRAS:.F=.f
 	\${OPENADFORTTK_BASE}/tools/SourceProcessing/postProcess.py --progress --timing --infoUnitFile w2f__types.f90 --outputFormat=fixed --separateOutput --pathSuffix "" --filenameSuffix "_oad" -m r -i ../OAD_support/ad_inline.f \$<
 	# the target is a placeholder to trigger a single execution of the rule
 	touch \$@
-# put this so make knows about the postprocessing output 
+# put this so make knows about the postprocessing output
 OAD_intrinsics_oad.f \$(CB2M_AD_FILES:.f$FS90=_oad.f): postProcess.tag
 
 # link the XAIF schema files
