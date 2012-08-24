@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1722 2012/08/22 22:57:06 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1723 2012/08/24 18:58:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/grdchk:
+  - add a call to TURNOFF_MODEL_IO for Tangent-Linear run (in this case, call
+    to this routine from cost_final has been dropped in g_cost_final)
+  - improve printed information (more explicit msg, no longer using "print *,"
+     fix fcpertminus printed value).
 o model/src:
   - move call to COST_INIT_VARIA out of packages_init_variables.F directly
     into initialise_varia.F (just after calling PACKAGES_INIT_VARIABLES):
