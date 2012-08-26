@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.19 2012/08/21 18:15:07 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.20 2012/08/26 18:03:10 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu
 #  Linux machines.
@@ -157,9 +157,6 @@ do
     export PATH="$PATH:$PGI/linux86-64/10.9/bin"
     export LM_LICENSE_FILE=$PGI/license.dat
   fi
-  basename $OPTFILE | grep gfortran > /dev/null 2>&1 ; retv=$? ;
-  GFORTRAN_OPTFILE=f ; if test $retv == 0 ; then GFORTRAN_OPTFILE='t' ; fi
-  export GFORTRAN_OPTFILE
 
   if test $sepDir = 0 -a $checkOut = '1' -a  $tt = $firstTst ; then
 #-- cleaning:
