@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.12 2012/08/27 17:06:49 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.13 2012/08/27 19:24:02 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -39,7 +39,7 @@ c     == global variables ==
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"      
+#include "EESUPPORT.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
@@ -68,9 +68,10 @@ c zonal and meridional transports
         _RL vTrans(1-olx:snx+olx,1-oly:sny+oly)
 C       AML timestep
         _RL deltaTTracer,deltaTm,ts,xalwu
-        _RL dm,pt,fsha,flha,evp,xalwd,xolw,Fclouds,xlwnet
+        _RL dm,pt,fsha,flha,evp,xalwd,xolw,xlwnet
         _RL dtemp,xflu,xfld,dq,dtr
-        _RL q,precip,ssqt,ttt,ttt2,q100,entrain,cdq
+c       _RL Fclouds, ttt2
+        _RL q,precip,ssqt,ttt,q100,entrain,cdq
 
 C temp var
         _RL SH_sauv(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -135,11 +136,11 @@ C                if (i.le.100) lsm(i,j) = 1.0
                 t_htf(i,j) = Tair(i,j,bi,bj) + Celsius2K
                 qisw(i,j) = solar(i,j,bi,bj)
                 ppi(i,j) = 0.0 _d 0
-                wspd_htf(i,j) = sqrt(uwind(i,j,bi,bj)**2 
+                wspd_htf(i,j) = sqrt(uwind(i,j,bi,bj)**2
      $             + vwind(i,j,bi,bj)**2)
 
                 cice(i,j) = 0.0 _d 0
-C je met la temperature de la glace la dedans                
+C je met la temperature de la glace la dedans
                 tsnw(i,j) = 0.0 _d 0 + Celsius2K
 
 
@@ -163,7 +164,7 @@ C                qswi(snx,sny)
 C                albedo(snx,sny) = 0. _d 0
               ENDDO
             ENDDO
-            
+
 c     close bi, bj loops
           ENDDO
         ENDDO
@@ -194,7 +195,7 @@ C     OUTPUT
 
               ENDDO
             ENDDO
-            
+
 c     close bi, bj loops
           ENDDO
         ENDDO
@@ -224,7 +225,7 @@ c cycle through atmospheric advective/diffusive
 c surface temperature evolution
 
         do nt=1,cheapaml_ntim
-                
+
            DO bj=myByLo(myThid),myByHi(myThid)
            DO bi=myBxLo(myThid),myBxHi(myThid)
 
@@ -286,7 +287,7 @@ c do water
           vTrans(i,j)=vwind(i,j,bi,bj)
           enddo
           enddo
-        
+
          call GAD_2d_CALC_RHS(
      I           bi,bj,1-olx,nsx+olx,1-oly,nsy+oly,
      I           uTrans,vTrans,
@@ -308,7 +309,7 @@ c do water
      I                     bi, bj,
      U                     qair, gqair,nt,
      I                     myTime, myIter, myThid )
-                                       
+
 c close bi, bj loops
         enddo
         enddo
@@ -319,7 +320,7 @@ c update edges
 
 
 
-        
+
         if(useCheapTracer)then
 c     do tracer
           DO bj=myByLo(myThid),myByHi(myThid)
@@ -331,7 +332,7 @@ c     do tracer
                   vTrans(i,j)=vwind(i,j,bi,bj)
                 enddo
               enddo
-              
+
               call GAD_2d_CALC_RHS(
      I           bi,bj,1-olx,nsx+olx,1-oly,nsy+oly,
      I           uTrans,vTrans,
@@ -353,7 +354,7 @@ c     do tracer
      I           bi, bj,
      U           Cheaptracer, gCheaptracer,nt,
      I           myTime, myIter, myThid )
-              
+
 c     close bi, bj loops
             enddo
           enddo
@@ -415,8 +416,8 @@ c reset boundaries to open boundary profile
             ENDDO
           ENDDO
         endif
-                          
-        
+
+
       enddo
 c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
 c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
@@ -436,7 +437,7 @@ c     now continue with diabatic forcing
                 call cheapaml_COARE3_flux(i,j,bi,bj,fsha,flha,evp,
      &             xolw,ssqt,q100,cdq)
               endif
-              
+
 c atmospheric upwelled long wave
         ttt=Tair(i,j,bi,bj)-gamma_blk*(cheaphgrid(i,j,bi,bj)-zt)
 C        xalwu=stefan*(ttt+Celsius2K)**4*0.5 _d 0
@@ -445,7 +446,7 @@ c atmospheric downwelled long wave
         xalwd=stefan*(Tair(i,j,bi,bj)+Celsius2K)**4*0.5 _d 0
 c total flux at upper atmospheric layer interface
         xflu=(-solar(i,j,bi,bj)+xalwu+flha)*xef*maskC(i,j,1,bi,bj)
-c lower flux calculation. 
+c lower flux calculation.
         xfld=(-solar(i,j,bi,bj)-xalwd+xolw+fsha+flha)
      .*xef*maskC(i,j,1,bi,bj)
 
@@ -459,7 +460,7 @@ C convert spec humidity in water vapor pressure (mbar) using coef 1000/0.622=160
      $       *(0.39-0.05*sqrt(qair(i,j,bi,bj)*1607.7))
      $       *(1-(0.5+abs(yG(i,j,bi,bj))/230)*cheapclouds(i,j,bi,bj)**2)
      $       + 4*0.98*stefan*(theta(i,j,1,bi,bj)+273.1)**3
-     $       *(theta(i,j,1,bi,bj)-Tair(i,j,bi,bj));          
+     $       *(theta(i,j,1,bi,bj)-Tair(i,j,bi,bj));
 
 C          xlwnet = xolw-stefan*(theta(i,j,1,bi,bj)+273.1)**4.
 C     $       *(0.65+11.22*qair(i,j,bi,bj) + 0.25*cheapclouds(i,j,bi,bj)
@@ -527,7 +528,7 @@ c       CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
         enddo
 
 c it is not necessary to use the Adams2d subroutine as
-c the forcing is always computed at the current time step. 
+c the forcing is always computed at the current time step.
 
         call timestep_2d_tracer(
      I                     bi, bj, 1-olx,snx+olx ,1-oly, sny+oly,
@@ -557,7 +558,7 @@ c do water
      I       qair,gqair,
      I       myIter, myThid )
           call cycle_2d_tracer(
-     I       bi, bj, 
+     I       bi, bj,
      U       qair,gqair,nt,
      I       myTime,myIter,myThid )
 c     do implicit time stepping over land and or buffer
@@ -580,7 +581,7 @@ c     do implicit time stepping over land and or buffer
             enddo
           enddo
         endif
-        
+
 c close bi,bj loops
         enddo
         enddo
@@ -619,7 +620,7 @@ c reset edges to open boundary profiles
           enddo
         enddo
       enddo
-      
+
       if(useFreshWaterFlux)then
         DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -649,7 +650,7 @@ c reset edges to open boundary profiles
               jG = myYGlobalLo-1+(bj-1)*sNy+j
               do i=1-olx,snx+olx
                 iG=myXGlobalLo-1+(bi-1)*sNx+i
-              if(notUsingXPeriodicity)then  
+              if(notUsingXPeriodicity)then
               if(iG.le.1) Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
               if(iG.ge.Nx)Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
               endif
@@ -662,7 +663,7 @@ c reset edges to open boundary profiles
           ENDDO
         ENDDO
       endif
-      
+
 c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
 c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
 c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
@@ -670,14 +671,14 @@ c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 cswd move wind stresses to u and v points
-           DO j = 1-Oly,sNy+Oly
-            DO i = 1-Olx+1,sNx+Olx
+           DO j = 1-OLy,sNy+OLy
+            DO i = 1-OLx+1,sNx+OLx
               fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)
      &          *(ustress(i,j,bi,bj)+ustress(i-1,j,bi,bj))*0.5 _d 0
             ENDDO
            ENDDO
-           DO j = 1-Oly+1,sNy+Oly
-            DO i = 1-Olx,sNx+Olx
+           DO j = 1-OLy+1,sNy+OLy
+            DO i = 1-OLx,sNx+OLx
               fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)
      &          *(vstress(i,j,bi,bj)+vstress(i,j-1,bi,bj))*0.5 _d 0
             ENDDO
@@ -687,7 +688,7 @@ C--   end bi,bj loops
        ENDDO
       ENDDO
 
-      
+
 #endif /*  ALLOW_SEAGER */
 
 
@@ -708,8 +709,8 @@ C--   end bi,bj loops
 #endif /* ALLOW_DIAGNOSTICS */
       DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j = 1-Oly,sNy+Oly
-            DO i = 1-Olx+1,sNx+Olx
+          DO j = 1-OLy,sNy+OLy
+            DO i = 1-OLx+1,sNx+OLx
 C              fu(i,j,bi,bj) = 0.0
 C              fv(i,j,bi,bj) = 0.0
 C              Qnet(i,j,bi,bj) = 0.0
@@ -719,7 +720,7 @@ C              EmPmR(i,j,bi,bj) = 0.0
           ENDDO
         ENDDO
       ENDDO
-      
+
 
       RETURN
       END
