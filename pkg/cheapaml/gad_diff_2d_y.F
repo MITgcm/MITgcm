@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_diff_2d_y.F,v 1.5 2011/12/28 16:50:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_diff_2d_y.F,v 1.6 2012/08/27 17:14:02 wienders Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: GAD_DIFF_Y
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_DIFF_2d_Y(
+      SUBROUTINE GAD_DIFF_2d_Y( 
      I           bi,bj,
      I           diffKh,
      I           tracer,
@@ -32,7 +32,7 @@ C  bi,bj                :: tile indices
 C  diffKh               :: horizontal diffusivity
 C  tracer               :: tracer field
 C  myThid               :: thread number
-      INTEGER bi,bj
+      INTEGER bi,bj,k,jG
       _RL diffKh
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
@@ -43,7 +43,7 @@ C  dfx                  :: meridional diffusive flux
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
-      INTEGER i,j,jG
+      INTEGER i,j
 CEOP
 
       DO i=1-Olx,sNx+Olx
@@ -61,7 +61,7 @@ CEOP
           if(jG.eq.ny.or.jG.eq.1)dfy(i,j)=0.d0
         ENDDO
       ENDDO
-
+      
       RETURN
       END
-
+      
