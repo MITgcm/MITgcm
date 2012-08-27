@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.9 2011/11/16 20:00:31 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.10 2012/08/27 17:09:28 wienders Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -127,72 +127,73 @@ C End start-from-iter-zero if/else block
        
 C Do  mask
 
-        IF ( CheapMaskFile .NE. ' ') THEN
-        write(*,*)'CheapMask initialized from  ->',CheapMaskFile
-        CALL READ_FLD_XY_RL( CheapMaskFile,' ',Cheapmask,0,myThid )
-        ELSE
+       IF ( CheapMaskFile .NE. ' ') THEN
+         write(*,*)'CheapMask initialized from  ->',CheapMaskFile
+         CALL READ_FLD_XY_RL( CheapMaskFile,' ',Cheapmask,0,myThid )
+       ELSE
 
-        write(*,*)' Generate Cheapaml mask'
-        xmw=Cheapaml_mask_width
+         write(*,*)' Generate Cheapaml mask'
+         xmw=Cheapaml_mask_width
          DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-              DO j=1,sNy
-                 DO i=1,sNx
-                  Cheapmask(i,j,bi,bj)=0. _d 0
-                  iG=myXGlobalLo-1+(bi-1)*sNx+i
-                  jG = myYGlobalLo-1+(bj-1)*sNy+j
-                  if(jG.gt.xmw)then
-                        if(jG.lt.Ny-xmw+1)then
-                                if(iG.le.xmw)
-     .        Cheapmask(i,j,bi,bj)=1. _d 0 -(iG-1)/(xmw-1. _d 0)
-                                if(iG.ge.Nx-xmw+1)
-     .        Cheapmask(i,j,bi,bj)=1. _d 0 - (Nx-iG)/(xmw-1. _d 0)
-                        else
-                        xmf=1. _d 0-(Ny-jG)/(xmw-1 _d 0)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+             DO j=1,sNy
+               DO i=1,sNx
+                 Cheapmask(i,j,bi,bj)=0. _d 0
+                 iG=myXGlobalLo-1+(bi-1)*sNx+i
+                 jG = myYGlobalLo-1+(bj-1)*sNy+j
+                 if(jG.gt.xmw)then
+                   if(jG.lt.Ny-xmw+1)then
+                     if(iG.le.xmw)
+     .               Cheapmask(i,j,bi,bj)=1. _d 0 -(iG-1)/(xmw-1. _d 0)
+                     if(iG.ge.Nx-xmw+1)
+     .               Cheapmask(i,j,bi,bj)=1. _d 0 - (Nx-iG)/(xmw-1. _d 0)
+                   else
+                     xmf=1. _d 0-(Ny-jG)/(xmw-1 _d 0)
+                     if(iG.le.xmw)then
+                       xmf=(1. _d 0 - (iG-1)/(xmw-1. _d 0)*
+     .                    (Ny-jG)/(xmw-1. _d 0)) 
+                     elseif(iG.ge.Nx-xmw+1) then 
+                       xmf=1. _d 0-(Nx - iG)/(xmw - 1. _d 0)*
+     .                    (Ny-jG)/(xmw-1. _d 0) 
+                     endif
+                     Cheapmask(i,j,bi,bj)=xmf
+                   endif
+                 else
+                   xmf=1. _d 0 - (jG-1)/(xmw-1. _d 0)
                    if(iG.le.xmw)then
-                   xmf=(1. _d 0 - (iG-1)/(xmw-1. _d 0)*
-     .             (Ny-jG)/(xmw-1. _d 0)) 
-                    elseif(iG.ge.Nx-xmw+1) then 
-                   xmf=1. _d 0-(Nx - iG)/(xmw - 1. _d 0)*
-     .             (Ny-jG)/(xmw-1. _d 0) 
-                        endif
-                 Cheapmask(i,j,bi,bj)=xmf
-                        endif
-                else
-                xmf=1. _d 0 - (jG-1)/(xmw-1. _d 0)
-                    if(iG.le.xmw)then
-             xmf=(1. _d 0 - (iG-1)/(xmw-1. _d 0)*(jG-1)/(xmw-1. _d 0))
-                    elseif(iG.ge.Nx-xmw+1) then
-             xmf=(1. _d 0-(Nx - iG)/(xmw - 1. _d 0)*(jG-1)/
-     .        (xmw-1. _d 0))
-                endif
-                  Cheapmask(i,j,bi,bj)=xmf
-                endif
-                  
+               xmf=(1. _d 0 - (iG-1)/(xmw-1. _d 0)*(jG-1)/(xmw-1. _d 0))
+                   elseif(iG.ge.Nx-xmw+1) then
+                     xmf=(1. _d 0-(Nx - iG)/(xmw - 1. _d 0)*(jG-1)/
+     .                  (xmw-1. _d 0))
+                   endif
+                   Cheapmask(i,j,bi,bj)=xmf
+                 endif
+                 
              Cheapmask(i,j,bi,bj)=Cheapmask(i,j,bi,bj)*cheapaml_taurelax
-                 ENDDO
-              ENDDO
+               ENDDO
+             ENDDO
            ENDDO
-        ENDDO
-               
-        ENDIF
+         ENDDO
+         
+       ENDIF
 
 C     relaxation forced on land
-          DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1,sNy
-          DO i=1,sNx 
-          if(maskC(i,j,1,bi,bj).eq.0. _d 0) 
-     .             Cheapmask(i,j,bi,bj)=cheapaml_taurelax
-          ENDDO
-          ENDDO
-          ENDDO
-          ENDDO
+       DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+             DO i=1,sNx 
+               if(maskC(i,j,1,bi,bj).eq.0. _d 0) then
+                 Cheapmask(i,j,bi,bj)=cheapaml_taurelax
+C     relaxation over the ocean
+               elseif(Cheapmask(i,j,bi,bj).eq.0. _d 0) then
+                 Cheapmask(i,j,bi,bj)=cheapaml_taurelaxocean
+               endif
+             ENDDO
+           ENDDO
+         ENDDO
+       ENDDO
 
-
-
-
-        _EXCH_XY_RL(Cheapmask, mythid)
+       _EXCH_XY_RL(Cheapmask, mythid)
 
 
 c relaxation time scales from input
