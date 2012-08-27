@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_gad_c2_adv_r.F,v 1.2 2011/02/24 16:11:41 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_gad_c2_adv_r.F,v 1.3 2012/08/27 19:13:35 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: CHEAPAML_GAD_C2_ADV_R
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE CHEAPAML_GAD_C2_ADV_R( 
+      SUBROUTINE CHEAPAML_GAD_C2_ADV_R(
      I           bi,bj,
      I           rTrans,
      I           tracer,
@@ -36,7 +36,7 @@ C  tracer               :: tracer field
 C  myThid               :: thread number
       INTEGER bi,bj
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -49,10 +49,10 @@ C  i,j                  :: loop indices
 CEOP
 
 
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          wT(i,j) = rTrans(i,j)*
-     &        (Tracer(i,j,bi,bj)+Tracer(i,j,bi,bj))*0.5 _d 0
+     &        (Tracer(i,j)+Tracer(i,j))*0.5 _d 0
         ENDDO
        ENDDO
 
