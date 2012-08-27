@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.11 2011/11/16 20:00:31 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.12 2012/08/27 17:06:49 wienders Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -68,9 +68,9 @@ c zonal and meridional transports
         _RL vTrans(1-olx:snx+olx,1-oly:sny+oly)
 C       AML timestep
         _RL deltaTTracer,deltaTm,ts,xalwu
-        _RL dm,pt,fsha,flha,evp,xalwd,xolw,Fclouds
+        _RL dm,pt,fsha,flha,evp,xalwd,xolw,Fclouds,xlwnet
         _RL dtemp,xflu,xfld,dq,dtr
-        _RL q,precip,ssqt,ttt,ttt2,q100,entrain
+        _RL q,precip,ssqt,ttt,ttt2,q100,entrain,cdq
 
 C temp var
         _RL SH_sauv(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -434,7 +434,7 @@ c     now continue with diabatic forcing
      &             xolw,ssqt,q100)
               elseif(FluxFormula.eq.'COARE3')then
                 call cheapaml_COARE3_flux(i,j,bi,bj,fsha,flha,evp,
-     &             xolw,ssqt,q100)
+     &             xolw,ssqt,q100,cdq)
               endif
               
 c atmospheric upwelled long wave
@@ -448,18 +448,36 @@ c total flux at upper atmospheric layer interface
 c lower flux calculation. 
         xfld=(-solar(i,j,bi,bj)-xalwd+xolw+fsha+flha)
      .*xef*maskC(i,j,1,bi,bj)
+
+        if (usedlongwave) THEN
+          xlwnet = xolw-cheapdlongwave(i,j,bi,bj)
+        ELSE
+C net long wave (see Josey et al. JGR 1997)
+C coef lambda replaced by 0.5+lat/230
+C convert spec humidity in water vapor pressure (mbar) using coef 1000/0.622=1607.7
+          xlwnet = 0.98*stefan*(theta(i,j,1,bi,bj)+273.1)**4.
+     $       *(0.39-0.05*sqrt(qair(i,j,bi,bj)*1607.7))
+     $       *(1-(0.5+abs(yG(i,j,bi,bj))/230)*cheapclouds(i,j,bi,bj)**2)
+     $       + 4*0.98*stefan*(theta(i,j,1,bi,bj)+273.1)**3
+     $       *(theta(i,j,1,bi,bj)-Tair(i,j,bi,bj));          
+
+C          xlwnet = xolw-stefan*(theta(i,j,1,bi,bj)+273.1)**4.
+C     $       *(0.65+11.22*qair(i,j,bi,bj) + 0.25*cheapclouds(i,j,bi,bj)
+C     $       -8.23*qair(i,j,bi,bj)*cheapclouds(i,j,bi,bj))
+        endif
 C clouds
 C        ttt2=Tair(i,j,bi,bj)-1.5*gamma_blk*cheaphgrid(i,j,bi,bj)
 C        Fclouds = stefan*ttt2**4*(0.4*cheapclouds(i,j,bi,bj)+1-0.4)/2
-        ttt2=Tair(i,j,bi,bj)-3*gamma_blk*cheaphgrid(i,j,bi,bj)+Celsius2K
-        Fclouds = 0.3*stefan*ttt2**4 + 0.22*xolw*cheapclouds(i,j,bi,bj)
+C        ttt2=Tair(i,j,bi,bj)-3*gamma_blk*cheaphgrid(i,j,bi,bj)+Celsius2K
+C        Fclouds = 0.3*stefan*ttt2**4 + 0.22*xolw*cheapclouds(i,j,bi,bj)
 c add flux divergences into atmospheric temperature tendency
         gTair(i,j,bi,bj)= (xfld-xflu)/cheaphgrid(i,j,bi,bj)
         Qnet(i,j,bi,bj)=(
      $     -solar(i,j,bi,bj)
-     $     -xalwd
-     $     -Fclouds
-     $     +xolw
+C     $     -xalwd
+C     $     -Fclouds
+C     $     +xolw
+     $     +xlwnet
      $     +fsha
      $     +flha
      $     )*maskC(i,j,1,bi,bj)
@@ -480,22 +498,27 @@ c ts is surface atmospheric temperature
         pt=p0*(1-gamma_blk*cheaphgrid(i,j,bi,bj)/ts)
      $     **(gravity/gamma_blk/gasR)
 
-        if(q.gt.ssqt.AND.wwind(i,j,bi,bj).GT.0.0)then
+
 c factor to compute rainfall from specific humidity
         dm=100*(p0-pt)*recip_gravity
-        precip=((q-ssqt)*dm/cheap_pr1)
-     $     *min(wwind(i,j,bi,bj)*10/1.e-4,1.0)
-C     10 is the height
-        entrain = 0. _d 0
-        else
-          entrain =(q*dm/cheap_pr2)
-
-        precip=0. _d 0
+C     Large scale precip
+        precip = 0
+        if(wwind(i,j,bi,bj).GT.0.and.q.gt.ssqt*0.7)then
+          precip = precip + ((q-ssqt*0.7)*dm/(cheap_pr2))
+     $     *(wwind(i,j,bi,bj)/0.75e-5)**2
         endif
 
-        gqair(i,j,bi,bj)=(evp-precip-entrain)/cheaphgrid(i,j,bi,bj)
+C     Convective precip
+        if (q>0.0214.and.q.gt.ssqt*0.9) then
+          precip = precip + ((q-ssqt*0.9)*dm/cheap_pr1)
+        endif
+
+        entrain = cdq*q*0.25
+
+C        gqair(i,j,bi,bj)=(evp-precip-entrain)/cheaphgrid(i,j,bi,bj)
+        gqair(i,j,bi,bj)=(evp-entrain)/cheaphgrid(i,j,bi,bj)
      $     /rhoa*maskC(i,j,1,bi,bj)
-        EmPmR(i,j,bi,bj)=(evp-precip*2500/cheaphgrid(i,j,bi,bj)
+        EmPmR(i,j,bi,bj)=(evp-precip*1200/cheaphgrid(i,j,bi,bj)
      $     )*maskC(i,j,1,bi,bj)
         endif
 
