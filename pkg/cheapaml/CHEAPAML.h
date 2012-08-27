@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.7 2011/11/16 20:00:31 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.8 2012/08/27 17:05:49 wienders Exp $
 C $Name:  $
 
 c #ifdef ALLOW_CHEAPAML
@@ -29,7 +29,7 @@ C     gCheaptracerm :: passive tracer tendency
      &       wwind,
      &       ustress, vstress,
      &       wavesh, wavesp, Cheapmask, CheapHgrid,
-     &       Cheapclouds,
+     &       Cheapclouds,Cheapdlongwave,
      &       Cheaptracer, CheaptracerR, gCheaptracerm,
      &       Cheapprgrid,xgs,xrelf
 
@@ -54,6 +54,7 @@ C     gCheaptracerm :: passive tracer tendency
       _RL    CheapHgrid(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    Cheapprgrid(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    Cheapclouds(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL    Cheapdlongwave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    Cheaptracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    CheaptracerR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    gCheaptracerm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -63,6 +64,7 @@ C     gCheaptracerm :: passive tracer tendency
      &       cheapaml_h,
      &       cheapaml_kdiff,
      &       cheapaml_taurelax,
+     &       cheapaml_taurelaxocean,
      &       rhoa, cpair, stefan,
      &       lath, xkar, gasR,
      &       dsolms, dsolmn,
@@ -76,6 +78,7 @@ C     gCheaptracerm :: passive tracer tendency
       _RL    cheapaml_h
       _RL    cheapaml_kdiff
       _RL    cheapaml_taurelax
+      _RL    cheapaml_taurelaxocean
       _RL    rhoa, cpair, stefan
       _RL    lath, xkar, gasR
       _RL    dsolms, dsolmn
@@ -101,7 +104,8 @@ C     gCheaptracerm :: passive tracer tendency
      &       periodicExternalForcing_cheap,
      &       useCheapTracer,
      &       usetimevarblh,
-     &       useclouds
+     &       useclouds,
+     &       usedlongwave
       LOGICAL useFreshwaterFlux
       LOGICAL useFluxLimit
       LOGICAL useStressOption
@@ -110,6 +114,7 @@ C     gCheaptracerm :: passive tracer tendency
       LOGICAL useCheapTracer
       LOGICAL usetimevarblh
       LOGICAL useclouds
+      LOGICAL usedlongwave
 
       COMMON /CHEAPAML_PARMS_C/
      &       AirTempFile, AirQFile, SolarFile,
@@ -117,7 +122,7 @@ C     gCheaptracerm :: passive tracer tendency
      &       TrFile, QrFile,
      &       WaveHFile, WavePFile, FluxFormula, WaveModel,
      &       TracerFile, TracerRFile, CheapMaskFile, Cheap_hFile,
-     &       Cheap_prfile, cheap_clfile
+     &       Cheap_prfile, cheap_clfile,cheap_dlwFile
 
       CHARACTER*(MAX_LEN_FNAM) AirTempFile
       CHARACTER*(MAX_LEN_FNAM) AirQFile
@@ -138,5 +143,6 @@ C     gCheaptracerm :: passive tracer tendency
       CHARACTER*(MAX_LEN_FNAM) Cheap_hFile
       CHARACTER*(MAX_LEN_FNAM) Cheap_prFile
       CHARACTER*(MAX_LEN_FNAM) Cheap_clFile
+      CHARACTER*(MAX_LEN_FNAM) cheap_dlwFile
 
 c #endif /* ALLOW_CHEAPAML */
