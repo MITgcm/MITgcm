@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1724 2012/08/25 00:07:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1725 2012/08/28 19:44:16 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+
+o pkg/exf : added run time switch useAtmWind to replace ALLOW_ATM_WIND       
+  cpp switch. ALLOW_ATM_WIND now just sets the useAtmWind default (see 
+  exf_readparms.F) and force defines ALLOW_BULKFORMULAE (EXF_OPTIONS.h).
+o pkg/exf, autodiff, ctrl, ecco and seaice : remove ALLOW_ATM_WIND
+  brackets, or replace them with useAtmWind ones.
+o pkg/ctrl, ecco : allow to compile both ALLOW_U/VSTRESS_CONTROL and 
+  ALLOW_U/VWIND_CONTROL. Depending on useAtmWind, one is inactive, 
+  and the other is active (see exf_getffields.F/exf_getsurfacefluxes.F).
 o tools/genmake2:
   - improve error msg when failing in 2nd test of check_for_broken_Ff
   - fix option '-makefile' short-name (-mf according to genmake2 -help)
