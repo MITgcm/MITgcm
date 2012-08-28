@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots__g.F,v 1.4 2012/07/06 23:10:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots__g.F,v 1.5 2012/08/28 19:17:46 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -105,12 +105,12 @@ C--     Read IO error counter
         CALL WRITE_FLD_XY_RL ( 'G_Jprecip.',
      &       suff, g_precip, myIter, myThid)
 # endif
-# ifdef ALLOW_ATM_WIND
+      IF ( useAtmWind ) THEN
         CALL WRITE_FLD_XY_RL ( 'G_Juwind.',
      &       suff, g_uwind, myIter, myThid)
         CALL WRITE_FLD_XY_RL ( 'G_Jvwind.',
      &       suff, g_vwind, myIter, myThid)
-# endif
+      ENDIF
 # ifdef ALLOW_DOWNWARD_RADIATION
         CALL WRITE_FLD_XY_RL ( 'G_Jswdown.',
      &       suff, g_swdown, myIter, myThid)

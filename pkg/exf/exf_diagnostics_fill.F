@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_fill.F,v 1.12 2010/05/19 08:32:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_fill.F,v 1.13 2012/08/28 19:17:46 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -43,10 +43,8 @@ c
 #ifdef SHORTWAVE_HEATING
          CALL DIAGNOSTICS_FILL(swflux,     'EXFswnet',0,1,0,1,1,myThid)
 #endif
-#ifdef ALLOW_ATM_WIND
          CALL DIAGNOSTICS_FILL(uwind,      'EXFuwind',0,1,0,1,1,myThid)
          CALL DIAGNOSTICS_FILL(vwind,      'EXFvwind',0,1,0,1,1,myThid)
-#endif
 #ifdef ALLOW_ATM_TEMP
          CALL DIAGNOSTICS_FILL(atemp,      'EXFatemp',0,1,0,1,1,myThid)
          CALL DIAGNOSTICS_FILL(aqh,        'EXFaqh  ',0,1,0,1,1,myThid)

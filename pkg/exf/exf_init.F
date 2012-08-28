@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.29 2012/04/19 16:06:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.30 2012/08/28 19:17:46 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -61,6 +61,8 @@ C--   Initialise to zero intermediate fields (in common block)
        ENDDO
       ENDDO
 
+      IF ( .NOT.useAtmWind ) THEN
+
       if ( useCubedSphereExchange
      &     .and. ustressperiod .eq. 0
      &     .and. ustressfile .NE. ' ' ) then
@@ -91,7 +93,20 @@ C--   Initialise to zero intermediate fields (in common block)
 #endif
      &     mythid )
 
-#ifdef ALLOW_ATM_WIND
+      ELSE
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          uwind(i,j,bi,bj) = 0.
+          vwind(i,j,bi,bj) = 0.
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      ENDIF
+
+      IF ( useAtmWind ) THEN
 
       if ( useCubedSphereExchange
      &     .and. uwindperiod .eq. 0
@@ -123,7 +138,18 @@ C--   Initialise to zero intermediate fields (in common block)
 #endif
      &     mythid )
 
-#endif /* ALLOW_ATM_WIND */
+      ELSE
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          uwind(i,j,bi,bj) = 0.
+          vwind(i,j,bi,bj) = 0.
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      ENDIF
 
       call exf_init_gen (
      &     wspeedfile, wspeedperiod, exf_inscal_wspeed, wspeedmask,

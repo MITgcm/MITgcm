@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.22 2011/02/24 07:30:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.23 2012/08/28 19:18:45 gforget Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -151,11 +151,11 @@ cph larger common block, so be careful
       _RL g_precip    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /g_exf_atm_temp_r/ g_atemp, g_aqh, g_lwflux, g_precip
 # endif
-# ifdef ALLOW_ATM_WIND
+
       _RL g_uwind     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_vwind     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /g_exf_atm_wind_r/ g_uwind, g_vwind
-# endif
+
 # ifdef ALLOW_DOWNWARD_RADIATION
       _RL g_swdown    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_lwdown    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)

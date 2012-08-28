@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.15 2012/08/21 14:08:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.16 2012/08/28 19:18:26 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -75,20 +75,6 @@ C-    to use DIFFKR_CONTROL, needs to define ALLOW_3D_DIFFKR in CPP_OPTIONS.h
       STOP 'ABNORMAL END: S/R CTRL_CHECK'
 #endif
 
-#if (defined (ALLOW_USTRESS_CONTROL) && defined (ALLOW_UWIND_CONTROL))
-      WRITE(msgBuf,'(A)')
-     &  'Cannot have both ALLOW_USTRESS_CONTROL & ALLOW_UWIND_CONTROL'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      STOP 'ABNORMAL END: S/R CTRL_CHECK'
-#endif
-
-#if (defined (ALLOW_VSTRESS_CONTROL) && defined (ALLOW_VWIND_CONTROL))
-      WRITE(msgBuf,'(A)')
-     &  'Cannot have both ALLOW_VSTRESS_CONTROL & ALLOW_VWIND_CONTROL'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      STOP 'ABNORMAL END: S/R CTRL_CHECK'
-#endif
-
 #ifdef  ALLOW_ATEMP_CONTROL
 #ifndef ALLOW_ATM_TEMP
       WRITE(msgBuf,'(A)')
@@ -107,21 +93,29 @@ C-    to use DIFFKR_CONTROL, needs to define ALLOW_3D_DIFFKR in CPP_OPTIONS.h
 #endif
 #endif
 
-#ifdef  ALLOW_UWIND_CONTROL
-#ifndef ALLOW_ATM_WIND
-      WRITE(msgBuf,'(A)')
-     &     'ALLOW_UWIND_CONTROL used without ALLOW_ATM_WIND'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      STOP 'ABNORMAL END: S/R CTRL_CHECK'
+#if ( defined ALLOW_UWIND_CONTROL || defined ALLOW_VWIND_CONTROL )
+#ifdef ALLOW_EXF
+      IF ( .NOT.useEXF .OR. .NOT.useAtmWind ) THEN 
+#endif
+      WRITE(msgBuf,'(3A)') 'CTRL_CHECK : ',
+     &     'ALLOW_U / VWIND_CONTROL used without exf & ',
+     &     'useAtmWind will have no effect '      
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &  SQUEEZE_RIGHT, myThid )
+#ifdef ALLOW_EXF
+      ENDIF
 #endif
 #endif
 
-#ifdef  ALLOW_VWIND_CONTROL
-#ifndef ALLOW_ATM_WIND
-      WRITE(msgBuf,'(A)')
-     &     'ALLOW_VWIND_CONTROL used without ALLOW_ATM_WIND'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      STOP 'ABNORMAL END: S/R CTRL_CHECK'
+#if ( defined ALLOW_USTRESS_CONTROL || defined ALLOW_VSTRESS_CONTROL )
+#ifdef ALLOW_EXF
+      IF ( useAtmWind ) THEN
+      WRITE(msgBuf,'(3A)') 'CTRL_CHECK : ',
+     &     'ALLOW_U / VSTRESS_CONTROL used with exf & ',
+     &     'useAtmWind will have no effect '
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &  SQUEEZE_RIGHT, myThid )
+      ENDIF
 #endif
 #endif
 
@@ -141,11 +135,15 @@ C     which in turn require a particular set of input fields
       STOP 'ABNORMAL END: S/R CTRL_CHECK'
 # endif
 # if ( defined ALLOW_USTRESS_CONTROL || defined ALLOW_VSTRESS_CONTROL )
+      if ( useAtmWind ) then
+        solve4Stress = .TRUE.
+      else
 #  ifdef ALLOW_BULK_LARGEYEAGER04
       solve4Stress = wspeedfile .NE. ' '
 #  else
       solve4Stress = .FALSE.
 #  endif
+      endif
       if (.NOT.solve4Stress) then
         WRITE(msgBuf,'(A)')
      &     'The SEAICE adjoint does not allow the surface fluxes'

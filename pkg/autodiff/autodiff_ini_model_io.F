@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.25 2012/08/21 14:06:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.26 2012/08/28 19:18:45 gforget Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -29,6 +29,9 @@ C     \ev
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_EXF
+# include "EXF_PARAM.h"
+#endif
 #include "GRID.h"
 #include "AUTODIFF.h"
 #ifdef ALLOW_WHIO
@@ -293,7 +296,7 @@ c
      &     'coordinates','XC YC RC iter', myThid)
 # endif
 
-# ifdef ALLOW_ATM_WIND
+      IF ( useAtmWind ) THEN
       CALL MNC_CW_ADD_VNAME('aduwind', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('aduwind',
      &     'units','[cost]/[m/s]', myThid)
@@ -309,7 +312,8 @@ c
      &     'adjoint meridional wind speed', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('advwind',
      &     'coordinates','XC YC RC iter', myThid)
-# endif
+      ENDIF
+
 # ifdef ALLOW_DOWNWARD_RADIATION
       CALL MNC_CW_ADD_VNAME('adswdown', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adswdown',

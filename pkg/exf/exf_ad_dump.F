@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_dump.F,v 1.4 2012/07/06 23:03:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_dump.F,v 1.5 2012/08/28 19:17:45 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -30,6 +30,7 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "EXF_PARAM.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
@@ -103,14 +104,14 @@ C--     Set suffix for this set of data files.
      &       'ADJprecip.'//suff, writeBinaryPrec, 1,
      &        adprecip, 1, myIter, myThid )
 # endif
-# ifdef ALLOW_ATM_WIND
+      IF ( useAtmWind ) THEN
         CALL WRITE_REC_3D_RL(
      &       'ADJuwind.'//suff, writeBinaryPrec, 1,
      &        aduwind, 1, myIter, myThid )
         CALL WRITE_REC_3D_RL(
      &       'ADJvwind.'//suff, writeBinaryPrec, 1,
      &        advwind, 1, myIter, myThid )
-# endif
+      ENDIF
 # ifdef ALLOW_DOWNWARD_RADIATION
         CALL WRITE_REC_3D_RL(
      &       'ADJswdown.'//suff, writeBinaryPrec, 1,

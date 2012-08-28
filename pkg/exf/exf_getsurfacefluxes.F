@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.14 2012/07/31 16:08:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.15 2012/08/28 19:17:46 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -82,6 +82,7 @@ c     == end of interface ==
      &     mytime, myiter, mythid )
 #endif
 
+      IF ( .NOT.useAtmWind ) THEN
 #ifndef ALLOW_ROTATE_UV_CONTROLS
 
 #ifdef ALLOW_USTRESS_CONTROL
@@ -154,7 +155,7 @@ c     == end of interface ==
 
 #endif
 #endif /* ALLOW_ROTATE_UV_CONTROLS */
-
+      ENDIF
 
 
       end

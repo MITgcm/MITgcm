@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.17 2012/07/24 20:16:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.18 2012/08/28 19:17:46 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -49,19 +49,29 @@ c     check for consistency
        stop 'ABNORMAL END: S/R EXF_CHECK'
       endif
 
-#if ( defined (ALLOW_BULKFORMULAE) && defined (ALLOW_ATM_WIND) )
-      IF ( ustressfile .NE. ' ' .OR. ustressfile .NE. ' ' ) THEN
-        STOP
-     & 'S/R EXF_CHECK: use u,v_wind components but not wind-stress'
+      IF ( .NOT.useAtmWind ) THEN
+       IF ( ustressfile .EQ. ' ' .OR. vstressfile .EQ. ' ' ) THEN
+        WRITE(msgBuf,'(A,A)') ' ** WARNING ** EXF_CHECK : no specs.',
+     &        'of u & vstressfile in data.exf, while .NOT.useAtmWind.'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+       ENDIF
       ENDIF
-#endif
 
-#ifndef ALLOW_ATM_WIND
-      IF ( uwindfile .NE. ' ' .OR. vwindfile .NE. ' ' ) THEN
-        STOP
-     & 'S/R EXF_CHECK: read-in wind-stress but not u,v_wind components'
-      ENDIF
+      IF ( useAtmWind.OR.useRelativeWind ) THEN
+#ifndef ALLOW_BULKFORMULAE
+        WRITE(msgBuf,'(A,A)') 'EXF_CHECK: useAtmWind or ',
+     &        'useRelativeWind require ALLOW_BULKFORMULAE'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R EXF_CHECK'
 #endif
+       IF ( uwindfile .EQ. ' ' .OR. vwindfile .EQ. ' ' ) THEN
+        WRITE(msgBuf,'(A,A)') 'EXF_CHECK: useAtmWind or ',
+     &        'useRelativeWind require u & vwindfile spec.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R EXF_CHECK'
+       ENDIF
+      ENDIF
 
 #ifndef ALLOW_ZENITHANGLE
       IF ( useExfZenAlbedo .OR. useExfZenIncoming .OR.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.48 2012/07/31 16:08:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.49 2012/08/28 19:17:46 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -60,6 +60,7 @@ c     == end of interface ==
 c--   read forcing fields from files and temporal interpolation
 
 c     Zonal and meridional wind stress.
+      IF ( .NOT.useAtmWind ) THEN
       call exf_set_uv(
      I     ustressfile, ustressstartdate, ustressperiod,
      I     exf_inscal_ustress,
@@ -77,6 +78,18 @@ c     Zonal and meridional wind stress.
      I     uvInterp_stress,
 #endif /* USE_EXF_INTERPOLATION */
      I     mytime, myiter, mythid )
+      ELSE
+       do bj = mybylo(mythid),mybyhi(mythid)
+        do bi = mybxlo(mythid),mybxhi(mythid)
+         do j=1-Oly,sNy+Oly
+          do i=1-Olx,sNx+Olx
+           ustress(i,j,bi,bj) = 0. _d 0
+           vstress(i,j,bi,bj) = 0. _d 0
+          enddo
+         enddo
+        enddo
+       enddo
+      ENDIF
 
 c--   wind speed
       call exf_set_gen(
@@ -91,9 +104,8 @@ c--   wind speed
 #endif
      &     mytime, myiter, mythid )
 
-#ifdef ALLOW_ATM_WIND
-
 c     Zonal and meridional wind.
+      IF ( useAtmWind ) THEN
       call exf_set_uv(
      I     uwindfile, uwindstartdate, uwindperiod,
      I     exf_inscal_uwind,
@@ -127,7 +139,18 @@ C     Subtract UVEL and VVEL from UWIND and VWIND.
        enddo
       endif
 
-#endif /* ALLOW_ATM_WIND */
+      ELSE
+       do bj = mybylo(mythid),mybyhi(mythid)
+        do bi = mybxlo(mythid),mybxhi(mythid)
+         do j=1-Oly,sNy+Oly
+          do i=1-Olx,sNx+Olx
+           uwind(i,j,bi,bj) = 0. _d 0
+           vwind(i,j,bi,bj) = 0. _d 0
+          enddo
+         enddo
+        enddo
+       enddo
+      ENDIF
 
 c     Atmospheric heat flux.
       call exf_set_gen  (
@@ -427,6 +450,7 @@ c-- Control variables for atmos. state
      &     mytime, myiter, mythid )
 #endif
 
+      IF ( useAtmWind ) THEN
 #ifndef ALLOW_ROTATE_UV_CONTROLS
 
 #ifdef ALLOW_UWIND_CONTROL
@@ -489,6 +513,7 @@ c-- Control variables for atmos. state
 #endif
 
 #endif /* ALLOW_ROTATE_UV_CONTROLS */
+      ENDIF
 
 #ifdef ALLOW_ATM_MEAN_CONTROL
       do bj = mybylo(mythid),mybyhi(mythid)

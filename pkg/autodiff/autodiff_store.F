@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.20 2012/03/06 15:37:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.21 2012/08/28 19:18:45 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -233,7 +233,7 @@ C-      2D arrays
        enddo
       enddo
 
-# if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
+# ifdef ALLOW_BULKFORMULAE
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -270,17 +270,10 @@ C-      2D arrays
           StoreEXF2(I,J,bi,bj,16) = 0.0
 #   endif
 #  endif /* ALLOW_ATM_TEMP */
-#  ifdef ALLOW_ATM_WIND
           StoreEXF2(I,J,bi,bj,17) = uwind0(I,J,bi,bj)
           StoreEXF2(I,J,bi,bj,18) = uwind1(I,J,bi,bj)
           StoreEXF2(I,J,bi,bj,19) = vwind0(I,J,bi,bj)
           StoreEXF2(I,J,bi,bj,20) = vwind1(I,J,bi,bj)
-#  else /* ALLOW_ATM_WIND undef */
-          StoreEXF2(I,J,bi,bj,17) = 0.0
-          StoreEXF2(I,J,bi,bj,18) = 0.0
-          StoreEXF2(I,J,bi,bj,19) = 0.0
-          StoreEXF2(I,J,bi,bj,20) = 0.0
-#  endif  /* ALLOW_ATM_WIND */
          enddo
         enddo
        enddo

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.12 2012/01/30 16:49:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.13 2012/08/28 19:19:32 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -60,9 +60,7 @@ C     ks        :: vertical index of surface layer
       INTEGER ks
       _RL  COSWIN
       _RS  SINWIN
-#if !defined(SEAICE_EXTERNAL_FLUXES) || defined(ALLOW_ATM_WIND)
       _RL  U1, V1, AAA
-#endif
 C     CDAIR   :: local wind stress coefficient (used twice)
 C     oceTauX :: wind-stress over open-ocean (on Arakawa A-grid), X direction
 C     oceTauY :: wind-stress over open-ocean (on Arakawa A-grid), Y direction
@@ -80,7 +78,9 @@ C--   introduce turning angle (default is zero)
 
 C--   NOW SET UP FORCING FIELDS
 
-#if !defined(SEAICE_EXTERNAL_FLUXES) || defined(ALLOW_ATM_WIND)
+#ifdef SEAICE_EXTERNAL_FLUXES
+      IF (useAtmWind) THEN
+#endif
 C--   Wind stress is computed on center of C-grid cell
 C     and interpolated to U and V points later
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -231,7 +231,9 @@ C     interpolate to V points
 
        ENDDO
       ENDDO
-#else /* not SEAICE_EXTERNAL_FLUXES or ALLOW_ATM_WIND */
+
+#ifdef SEAICE_EXTERNAL_FLUXES
+      ELSE
 C--   Wind stress is available on U and V points, copy it to seaice variables.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -251,7 +253,8 @@ C now ice surface stress
         ENDDO
        ENDDO
       ENDDO
-#endif /* not SEAICE_EXTERNAL_FLUXES or ALLOW_ATM_WIND */
+      ENDIF
+#endif /* SEAICE_EXTERNAL_FLUXES */
 #endif /* SEAICE_CGRID */
 
       RETURN

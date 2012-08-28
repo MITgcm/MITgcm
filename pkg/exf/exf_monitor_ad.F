@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor_ad.F,v 1.5 2012/08/02 01:23:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor_ad.F,v 1.6 2012/08/28 19:17:46 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -127,12 +127,12 @@ C       Print some statistics about input forcing fields
 
         ELSEIF ( iwhen .EQ.2 ) THEN
 
-#ifdef ALLOW_ATM_WIND
+      IF ( useAtmWind ) THEN
         CALL MON_WRITESTATS_RL( 1, aduwind,   '_aduwind',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
         CALL MON_WRITESTATS_RL( 1, advwind,   '_advwind',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
-#endif /* ALLOW_ATM_WIND */
+      ENDIF
 #ifdef ALLOW_ATM_TEMP
         CALL MON_WRITESTATS_RL( 1, adatemp,   '_adatemp',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )

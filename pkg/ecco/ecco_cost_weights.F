@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.49 2012/08/21 13:48:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.50 2012/08/28 19:19:18 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -942,9 +942,9 @@ cph)
           enddo
         enddo
       enddo
+#endif
 
-#elif (defined (ALLOW_UWIND_COST_CONTRIBUTION) || defined (ALLOW_UWIND_CONTROL))
-
+#if (defined (ALLOW_UWIND_COST_CONTRIBUTION) || defined (ALLOW_UWIND_CONTROL))
       nnz   =   1
 ce      irec  =   2
 ce(   due to Patrick processing:
@@ -1012,9 +1012,9 @@ cph)
           enddo
         enddo
       enddo
+#endif
 
-#elif (defined (ALLOW_VWIND_COST_CONTRIBUTION) || defined (ALLOW_VWIND_CONTROL))
-
+#if (defined (ALLOW_VWIND_COST_CONTRIBUTION) || defined (ALLOW_VWIND_CONTROL))
       nnz   =   1
 ce      irec  =   2
 ce(   due to Patrick processing:
@@ -2088,14 +2088,18 @@ c#endif
 #if   (defined (ALLOW_USTRESS_COST_CONTRIBUTION) || defined (ALLOW_USTRESS_CONTROL))
       call active_write_xy_loc( 'wtauu', wtauu,   1, 0, mythid, dummy)
       call active_write_xy_loc( 'wtauu2', wtauu2,   1, 0, mythid, dummy)
-#elif (defined (ALLOW_UWIND_COST_CONTRIBUTION) || defined (ALLOW_UWIND_CONTROL))
+#endif
+
+#if   (defined (ALLOW_UWIND_COST_CONTRIBUTION) || defined (ALLOW_UWIND_CONTROL))
       call active_write_xy_loc( 'wuwind', wuwind, 1, 0, mythid, dummy)
 #endif
 
 #if   (defined (ALLOW_VSTRESS_COST_CONTRIBUTION) || defined (ALLOW_VSTRESS_CONTROL))
       call active_write_xy_loc( 'wtauv', wtauv,   1, 0, mythid, dummy)
       call active_write_xy_loc( 'wtauv2', wtauv2,   1, 0, mythid, dummy)
-#elif (defined (ALLOW_VWIND_COST_CONTRIBUTION) || defined (ALLOW_VWIND_CONTROL))
+#endif
+
+#if   (defined (ALLOW_VWIND_COST_CONTRIBUTION) || defined (ALLOW_VWIND_CONTROL))
       call active_write_xy_loc( 'wvwind', wvwind, 1, 0, mythid, dummy)
 #endif
 

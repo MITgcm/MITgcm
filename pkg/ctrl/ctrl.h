@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.61 2012/08/06 20:42:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.62 2012/08/28 19:18:26 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -354,7 +354,9 @@ c     xx_tauv1 - meridional wind stress record after  current date.
       common /controlaux_ustress_r/
      &                      xx_tauu0,
      &                      xx_tauu1
-#elif   (defined  (ALLOW_UWIND_CONTROL))
+#endif
+
+#if     (defined  (ALLOW_UWIND_CONTROL))
       common /controlaux_uwind_r/
      &                      xx_uwind0,
      &                      xx_uwind1
@@ -364,7 +366,9 @@ c     xx_tauv1 - meridional wind stress record after  current date.
       common /controlaux_vstress_r/
      &                      xx_tauv0,
      &                      xx_tauv1
-#elif   (defined  (ALLOW_VWIND_CONTROL))
+#endif
+
+#if   (defined  (ALLOW_VWIND_CONTROL))
       common /controlaux_vwind_r/
      &                      xx_vwind0,
      &                      xx_vwind1
@@ -488,14 +492,16 @@ c     xx_tauv1 - meridional wind stress record after  current date.
 #if     (defined  (ALLOW_USTRESS_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined (ALLOW_TAUU0_CONTROL)))
       _RL xx_tauu0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_tauu1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#elif   (defined  (ALLOW_UWIND_CONTROL))
+#endif
+#if     (defined  (ALLOW_UWIND_CONTROL))
       _RL xx_uwind0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_uwind1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 #if     (defined  (ALLOW_VSTRESS_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined (ALLOW_TAUV0_CONTROL)))
       _RL xx_tauv0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_tauv1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#elif   (defined  (ALLOW_VWIND_CONTROL))
+#endif
+#if     (defined  (ALLOW_VWIND_CONTROL))
       _RL xx_vwind0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_vwind1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif

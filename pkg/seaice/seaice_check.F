@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.68 2012/08/10 14:55:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.69 2012/08/28 19:19:32 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -26,6 +26,9 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_EXF
+# include "EXF_PARAM.h"
+#endif
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
@@ -598,11 +601,13 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
      &        SQUEEZE_RIGHT , myThid )
          CALL PRINT_ERROR( msgBuf, myThid )
 #endif /* SEAICE_EXTERNAL_FLUXES */
-#if !defined(ALLOW_ATM_WIND) && !defined(SEAICE_CGRID)
-         WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
-     &        'need to define pkg/exf ALLOW_ATM_WIND'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+#ifndef SEAICE_CGRID
+         IF ( .NOT.useAtmWind ) THEN
+           WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
+     &        'needs pkg/exf useAtmWind to be true'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+         ENDIF
 #endif
 #endif /* ALLOW_EXF */
 

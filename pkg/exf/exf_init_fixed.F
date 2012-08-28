@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.24 2012/04/19 16:06:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.25 2012/08/28 19:17:46 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -117,7 +117,7 @@ C     returns time in seconds of first FLD record from the
 C     beginning of the model integration or, if useYearlyFields,
 C     from the beginning of the year.
 
-#ifdef ALLOW_ATM_WIND
+      IF ( useAtmWind ) THEN
       IF ( uwindfile .NE. ' ' .AND. uwindperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START uwind',myThid)
@@ -136,7 +136,8 @@ C     from the beginning of the year.
      O                          vwindstartdate,
      I                          myThid )
       ENDIF
-#endif /* ALLOW_ATM_WIND */
+      ENDIF
+
       IF ( wspeedfile .NE. ' ' .AND. wspeedperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START wspeed',myThid)
@@ -146,6 +147,8 @@ C     from the beginning of the year.
      O                          wspeedstartdate,
      I                          myThid )
       ENDIF
+
+      IF ( .NOT.useAtmWind ) THEN
       IF ( ustressfile .NE. ' ' .AND. ustressperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START ustress',myThid)
@@ -163,6 +166,7 @@ C     from the beginning of the year.
      I                          vstressstartdate1, vstressstartdate2,
      O                          vstressstartdate,
      I                          myThid )
+      ENDIF
       ENDIF
 
 #ifdef ALLOW_ATM_TEMP
@@ -453,6 +457,7 @@ C     from the beginning of the year.
 #ifdef USE_EXF_INTERPOLATION
 C--   For vector fields, set flag to interpolate the 2 components together
 C-    wind-stress:
+      IF ( .NOT.useAtmWind ) THEN
       uvInterp_stress = ustressfile.NE.' ' .AND. vstressfile.NE.' '
      &  .AND. ustress_interpMethod.GE.1 .AND. vstress_interpMethod.GE.1
       uvInterp_stress = uvInterp_stress
@@ -470,7 +475,9 @@ C-    wind-stress:
      &     .AND. ustress_lat_inc(j) .EQ. vstress_lat_inc(j)
         ENDDO
       ENDIF
+      ENDIF
 C-    wind:
+      IF ( useAtmWind ) THEN
       uvInterp_wind = uwindfile.NE.' ' .AND. vwindfile.NE.' '
      &  .AND. uwind_interpMethod.GE.1 .AND. vwind_interpMethod.GE.1
       uvInterp_wind = uvInterp_wind
@@ -487,6 +494,7 @@ C-    wind:
           uvInterp_wind = uvInterp_wind
      &     .AND. uwind_lat_inc(j) .EQ. vwind_lat_inc(j)
         ENDDO
+      ENDIF
       ENDIF
 C-    clim wind-stress:
       uvInterp_climstr = climustrfile.NE.' ' .AND. climvstrfile.NE.' '

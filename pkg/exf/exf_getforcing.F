@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.42 2012/04/28 22:16:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.43 2012/08/28 19:17:46 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -168,11 +168,11 @@ CADJ STORE snowprecip1 = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
 c     Get the surface forcing fields.
       call exf_getffields( mytime, myiter, mythid )
-#ifndef ALLOW_ATM_WIND
+      IF ( .NOT.useAtmWind ) THEN
       IF ( stressIsOnCgrid .AND. ustressfile.NE.' '
      &                     .AND. vstressfile.NE.' ' )
      &  CALL EXCH_UV_XY_RL( ustress, vstress, .TRUE., myThid )
-#endif
+      ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # if (defined (ALLOW_AUTODIFF_MONITOR))
@@ -185,17 +185,21 @@ c     Set radiative fluxes
       call exf_radiation( mytime, myiter, mythid )
 
 # ifdef ALLOW_AUTODIFF_TAMC
-#  ifndef ALLOW_ATM_WIND
 CADJ STORE ustress      = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vstress      = comlev1, key=ikey_dynamics, kind=isbyte
-#  else
 CADJ STORE uwind        = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vwind        = comlev1, key=ikey_dynamics, kind=isbyte
-#  endif
 CADJ STORE wspeed       = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 c     Set wind fields
       call exf_wind( mytime, myiter, mythid )
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ustress      = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vstress      = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE uwind        = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vwind        = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE wspeed       = comlev1, key=ikey_dynamics, kind=isbyte
+# endif
 c     Compute turbulent fluxes (and surface stress) from bulk formulae
       call exf_bulkformulae( mytime, myiter, mythid )
 #endif

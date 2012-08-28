@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.28 2012/04/19 16:06:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.29 2012/08/28 19:17:46 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -231,17 +231,17 @@ C--   Print settings of some CPP flags.
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
-#ifdef ALLOW_ATM_WIND
+      IF ( useAtmWind ) THEN
       write(msgbuf,'(a)')
-     &'// ALLOW_ATM_WIND:                     defined'
+     &'// ALLOW_ATM_WIND (useAtmWind):        defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-#else
+      ELSE
       write(msgbuf,'(a)')
-     &'// ALLOW_ATM_WIND:                 NOT defined'
+     &'// ALLOW_ATM_WIND (useAtmWind):    NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-#endif
+      ENDIF
 
 #ifdef ALLOW_DOWNWARD_RADIATION
       write(msgbuf,'(a)')
@@ -272,7 +272,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   For each data set used the summary prints the calendar data
 C     and the corresponding file from which the data will be read.
 
-#ifndef ALLOW_ATM_WIND
+      IF ( useAtmWind ) THEN
 C--   Zonal wind stress.
       il = ilnblnk(ustressfile)
       write(msgbuf,'(a)') ' '
@@ -334,7 +334,7 @@ C--   Meridional wind stress.
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 #endif
-#endif /* ndef ALLOW_ATM_WIND */
+      ENDIF
 
 #ifndef ALLOW_ATM_TEMP
 C--   Heat flux.
@@ -427,7 +427,7 @@ C--   Net shortwave.
 #endif
 #endif /* ALLOW_ATM_TEMP or SHORTWAVE_HEATING */
 
-#ifdef ALLOW_ATM_WIND
+      IF ( useAtmWind ) THEN
 C--   Zonal wind.
       il = ilnblnk(uwindfile)
       write(msgbuf,'(a)') ' '
@@ -489,7 +489,7 @@ C--   Meridional wind.
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 #endif
-#endif /* ALLOW_ATM_WIND */
+      ENDIF
 
 #ifdef ALLOW_ATM_TEMP
 C--   Atmospheric temperature.

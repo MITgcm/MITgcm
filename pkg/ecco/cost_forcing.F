@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.15 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.16 2012/08/28 19:19:18 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -124,8 +124,10 @@ c--   Zonal wind stress contribution to the cost function.
      &     objf_tauu, objf_tauum, objf_tauusmoo,
      &     xx_tauu_remo_intercept, xx_tauu_remo_slope,
      &     maskW, mythid )
-#elif (defined (ALLOW_UWIND_COST_CONTRIBUTION )&& \
-       defined (ALLOW_UWIND_CONTROL))
+#endif
+
+#if (defined (ALLOW_UWIND_COST_CONTRIBUTION )&& \
+     defined (ALLOW_UWIND_CONTROL))
 c--   Zonal wind speed contribution to the cost function.
       startrec = ncvarrecstart(9)
       endrec   = ncvarrecsend(9)
@@ -152,8 +154,10 @@ c--   Meridional wind stress contribution to the cost function.
      &     objf_tauv, objf_tauvm, objf_tauvsmoo,
      &     xx_tauv_remo_intercept, xx_tauv_remo_slope,
      &     maskS, mythid )
-#elif (defined (ALLOW_VWIND_COST_CONTRIBUTION) && \
-       defined (ALLOW_VWIND_CONTROL))
+#endif
+
+#if (defined (ALLOW_VWIND_COST_CONTRIBUTION) && \
+     defined (ALLOW_VWIND_CONTROL))
 c--   Meridional wind speed contribution to the cost function.
       startrec = ncvarrecstart(10)
       endrec   = ncvarrecsend(10)

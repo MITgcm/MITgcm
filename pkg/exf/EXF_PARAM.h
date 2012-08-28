@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.27 2012/04/19 16:06:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.28 2012/08/28 19:17:45 gforget Exp $
 C $Name:  $
 c
 c
@@ -365,6 +365,7 @@ C     stressIsOnCgrid    :: ustress & vstress are positioned on Arakawa C-grid
 C     useStabilityFct_overIce :: over sea-ice, compute turbulent transfert
 C                                coeff. function of stability (like over
 C                                open ocean) rather than using fixed Coeff.
+C     useAtmWind         :: use wind vector (uwind/vwind) to compute the wind stress (ustress/vstress)
 C     useRelativeWind    :: Subtract U/VVEL or U/VICE from U/VWIND before computing U/VSTRESS
 C     noNegativeEvap     :: prevent negative evaporation (= sea-surface condensation)
 C     useExfZenAlbedo    :: ocean albedo (direct part) may vary with zenith angle (see select_ZenAlbedo)
@@ -385,6 +386,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
       logical useStabilityFct_overIce
       logical useRelativeWind
       logical noNegativeEvap
+      logical useAtmWind
 
       logical useExfZenAlbedo
       integer select_ZenAlbedo
@@ -397,7 +399,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
      &       useExfZenAlbedo, useExfZenIncoming,
      &       readStressOnAgrid, readStressOnCgrid,
      &       stressIsOnCgrid, useStabilityFct_overIce,
-     &       useRelativeWind, noNegativeEvap
+     &       useAtmWind, useRelativeWind, noNegativeEvap
       COMMON /EXF_PARAM_I/
      &       select_ZenAlbedo,
      &       hfluxstartdate1,   hfluxstartdate2,

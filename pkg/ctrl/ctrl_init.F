@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.49 2012/08/10 19:38:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.50 2012/08/28 19:18:26 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -224,7 +224,15 @@ c--   Zonal wind stress.
      &     snx, sny, 1, 'c', 'xy', mythid )
 #endif
 
-#elif (defined (ALLOW_UWIND_CONTROL))
+#elif (defined (ALLOW_TAUU0_CONTROL))
+c--   initial forcing only
+      call ctrl_init_ctrlvar (
+     &     xx_tauu_file, 5, 105, 1, 1, 1,
+     &     snx, sny, 1, 'w', 'xy', mythid )
+
+#endif /* ALLOW_USTRESS_CONTROL */
+
+#if (defined (ALLOW_UWIND_CONTROL))
 c--   Zonal wind speed.
       call ctrl_init_rec ( xx_uwind_file,
      I     xx_uwindstartdate1, xx_uwindstartdate2, xx_uwindperiod, 1,
@@ -233,14 +241,7 @@ c--   Zonal wind speed.
       call ctrl_init_ctrlvar (
      &     xx_uwind_file, 9, 109, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
-
-#elif (defined (ALLOW_TAUU0_CONTROL))
-c--   initial forcing only
-      call ctrl_init_ctrlvar (
-     &     xx_tauu_file, 5, 105, 1, 1, 1,
-     &     snx, sny, 1, 'w', 'xy', mythid )
-
-#endif /* ALLOW_USTRESS_CONTROL */
+#endif /* ALLOW_UWIND_CONTROL */
 
 c----------------------------------------------------------------------
 c--
@@ -258,7 +259,15 @@ c--   Meridional wind stress.
      &     snx, sny, 1, 'c', 'xy', mythid )
 #endif
 
-#elif (defined (ALLOW_VWIND_CONTROL))
+#elif (defined (ALLOW_TAUV0_CONTROL))
+c--   initial forcing only
+      call ctrl_init_ctrlvar (
+     &     xx_tauv_file, 6, 106, 1, 1, 1,
+     &     snx, sny, 1, 's', 'xy', mythid )
+
+#endif /* ALLOW_VSTRESS_CONTROL */
+
+#if (defined (ALLOW_VWIND_CONTROL))
 c--   Meridional wind speed.
       call ctrl_init_rec ( xx_vwind_file,
      I     xx_vwindstartdate1, xx_vwindstartdate2, xx_vwindperiod, 1,
@@ -267,14 +276,7 @@ c--   Meridional wind speed.
       call ctrl_init_ctrlvar (
      &     xx_vwind_file, 10, 110, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
-
-#elif (defined (ALLOW_TAUV0_CONTROL))
-c--   initial forcing only
-      call ctrl_init_ctrlvar (
-     &     xx_tauv_file, 6, 106, 1, 1, 1,
-     &     snx, sny, 1, 's', 'xy', mythid )
-
-#endif /* ALLOW_VSTRESS_CONTROL */
+#endif /* ALLOW_VWIND_CONTROL */
 
 c--   ===========================
 c--   Open boundary contributions.

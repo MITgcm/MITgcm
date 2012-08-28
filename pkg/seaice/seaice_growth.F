@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.174 2012/08/06 16:15:30 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.175 2012/08/28 19:19:32 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -107,10 +107,8 @@ C     Factor by which we increase the upper ocean friction velocity (u*) when
 C     ice is absent in a grid cell  (dimensionless)
       _RL MixedLayerTurbulenceFactor
 
-#ifdef ALLOW_ATM_WIND
 C     wind speed square
       _RL SPEED_SQ
-#endif
 
 C     Regularization values squared
       _RL area_reg_sq, hice_reg_sq
@@ -721,8 +719,7 @@ cCADJ STORE TmixLoc = comlev1_bibj, key = iicekey,byte=isbyte
 C determine available heat due to the atmosphere -- for ice covered water
 C =======================================================================
 
-#ifdef ALLOW_ATM_WIND
-        IF (useRelativeWind) THEN
+        IF (useRelativeWind.AND.useAtmWind) THEN
 C     Compute relative wind speed over sea ice.
          DO J=1,sNy
           DO I=1,sNx
@@ -743,7 +740,6 @@ C     Compute relative wind speed over sea ice.
           ENDDO
          ENDDO
         ENDIF
-#endif /* ALLOW_ATM_WIND */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE tice(:,:,bi,bj)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.73 2012/07/24 20:16:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.74 2012/08/28 19:17:46 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -84,7 +84,7 @@ C     Surface flux data.
      &        exf_verbose,   useExfCheckRange,     exf_monFreq,
      & useExfYearlyFields,  twoDigitYear,
      & useStabilityFct_overIce, readStressOnAgrid, readStressOnCgrid,
-     & useRelativeWind, noNegativeEvap,
+     & useAtmWind, useRelativeWind, noNegativeEvap,
      & select_ZenAlbedo, useExfZenIncoming,
      & hu, ht, umin, atmrho, atmcp, cen2kel, gravity_mks,
      & cdrag_1, cdrag_2, cdrag_3, cstanton_1, cstanton_2, cdalton,
@@ -267,6 +267,11 @@ C     Set default values.
       useExfZenIncoming  = .FALSE.
       readStressOnAgrid  = .FALSE.
       readStressOnCgrid  = .FALSE.
+#ifdef ALLOW_ATM_WIND
+      useAtmWind         = .TRUE.
+#else
+      useAtmWind         = .FALSE.
+#endif
       useRelativeWind    = .FALSE.
       noNegativeEvap     = .FALSE.
 
@@ -892,8 +897,8 @@ C--   Retired parameters
 C--   Derive other parameters:
       hq = ht
       stressIsOnCgrid = readStressOnCgrid
-#if ( defined (ALLOW_BULKFORMULAE) && defined (ALLOW_ATM_WIND) )
-      stressIsOnCgrid = .FALSE.
+#if ( defined (ALLOW_BULKFORMULAE) )
+      IF ( useAtmWind ) stressIsOnCgrid = .FALSE.
 #endif
 #ifdef USE_EXF_INTERPOLATION
       IF ( (ustress_interpMethod.GE.1 .AND. ustressfile.NE.' ') .OR.

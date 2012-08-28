@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.24 2012/04/21 21:00:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.25 2012/08/28 19:17:46 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -124,12 +124,12 @@ C       Print some statistics about input forcing fields
           CALL MON_WRITESTATS_RL( 1, sflux,   '_sflux',
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )
         ENDIF
-#ifdef ALLOW_ATM_WIND
+        IF ( useAtmWind ) THEN
           CALL MON_WRITESTATS_RL( 1, uwind,   '_uwind',
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )
           CALL MON_WRITESTATS_RL( 1, vwind,   '_vwind',
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )
-#endif /* ALLOW_ATM_WIND */
+        ENDIF
         IF ( computed .OR. wspeedfile .NE. ' ' ) THEN
           CALL MON_WRITESTATS_RL( 1, wspeed,  '_wspeed',
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )
