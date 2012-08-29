@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.9 2012/08/28 19:17:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.10 2012/08/29 02:14:13 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -69,14 +69,18 @@ C     msgBuf :: Error message buffer
 CEOP
 
       CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-      
+
       IF (
      &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
      & ) THEN
 
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
-        writeBinaryPrec = writeStatePrec
+C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
+C ==>>  is very very very nasty !!!
+c       writeBinaryPrec = writeStatePrec
+C <<==  If you really want to mess-up with this at your own risk,
+C <<==  uncomment the line above
 
 c determine ad dump record number (used only if dumpAdByRec is true)
         IF (useSeaice.AND.(iWhen.EQ.3)) THEN
@@ -141,7 +145,7 @@ c#endif
 #endif
 
         ENDIF
-        
+
         ELSEIF ( dumpAdRecEx .GT. 0 ) THEN
 
         IF ( iwhen .EQ.1 ) THEN
@@ -202,7 +206,7 @@ c#endif
         ENDIF
 
         ENDIF
-        
+
 #ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
 

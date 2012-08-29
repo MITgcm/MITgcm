@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_dump.F,v 1.5 2012/08/28 19:17:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_dump.F,v 1.6 2012/08/29 02:14:13 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -75,7 +75,11 @@ CEOP
 
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
-        writeBinaryPrec = writeStatePrec
+C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
+C ==>>  is very very very nasty !!!
+c       writeBinaryPrec = writeStatePrec
+C <<==  If you really want to mess-up with this at your own risk,
+C <<==  uncomment the line above
 
         CALL WRITE_REC_3D_RL(
      &       'ADJhflux.'//suff, writeBinaryPrec, 1,
