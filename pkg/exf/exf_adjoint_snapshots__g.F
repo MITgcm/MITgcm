@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots__g.F,v 1.5 2012/08/28 19:17:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots__g.F,v 1.6 2012/08/29 01:59:36 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -8,7 +8,7 @@ CBOP
 C     !ROUTINE: g_exf_adjoint_snapshots
 C     !INTERFACE:
       subroutine g_exf_adjoint_snapshots(
-     &     iwhen, mytime, myiter, myThid )
+     &     iwhen, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -31,110 +31,97 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "EXF_PARAM.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
 # include "g_common.h"
 #endif
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER  IO_ERRCOUNT
-      EXTERNAL IO_ERRCOUNT
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myIter - iteration counter for this thread
-C     myTime - time counter for this thread
-C     myThid - Thread number for this instance of the routine.
-      integer iwhen
-      integer myThid
-      integer myiter
-      _RL     mytime
+C     myIter :: iteration counter for this thread
+C     myTime :: time counter for this thread
+C     myThid :: Thread number for this instance of the routine.
+      INTEGER iwhen
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 #ifdef ALLOW_TANGENTLINEAR_RUN
 #ifdef ALLOW_AUTODIFF_MONITOR
 
-C     !LOCAL VARIABLES:
-c     == local variables ==
-C     suff - Hold suffix part of a filename
-C     beginIOErrCount - Begin and end IO error counts
-C     endIOErrCount
-C     msgBuf - Error message buffer
-      CHARACTER*(MAX_LEN_FNAM) suff
-      INTEGER beginIOErrCount
-      INTEGER endIOErrCount
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
-c     == end of interface ==
+C     !LOCAL VARIABLES:
+C     == local variables ==
+C     suff   :: Hold suffix part of a filename
+C     msgBuf :: Error message buffer
+      CHARACTER*(MAX_LEN_FNAM) suff
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-      call TIMER_START('I/O (WRITE)        [TLM LOOP]', myThid )
-
       IF (useEXF) THEN
+       IF (
+     &      DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
+     &    ) THEN
 
-      IF (
-     &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,deltaTClock)
-     & ) THEN
-
-       _BEGIN_MASTER( myThid )
+        CALL TIMER_START('I/O (WRITE)        [TLM LOOP]', myThid )
 
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
-        writeBinaryPrec = writeStatePrec
-
-C--     Read IO error counter
-        beginIOErrCount = IO_ERRCOUNT(myThid)
+C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
+C ==>>  is very very very nasty !!!
+c       writeBinaryPrec = writeStatePrec
+C <<==  If you really want to mess-up with this at your own risk,
+C <<==  uncomment the line above
 
         IF ( iwhen .EQ.1 ) THEN
 
         CALL WRITE_FLD_XY_RL ( 'G_Justress.',
-     &       suff, g_ustress, myIter, myThid)
+     &       suff, g_ustress, myIter, myThid )
         CALL WRITE_FLD_XY_RL ( 'G_Jvstress.',
-     &       suff, g_vstress, myIter, myThid)
+     &       suff, g_vstress, myIter, myThid )
         CALL WRITE_FLD_XY_RL ( 'G_Jhflux.',
-     &       suff, g_hflux, myIter, myThid)
+     &       suff, g_hflux, myIter, myThid )
         CALL WRITE_FLD_XY_RL ( 'G_Jsflux.',
-     &       suff, g_sflux, myIter, myThid)
+     &       suff, g_sflux, myIter, myThid )
 
         ELSEIF ( iwhen .EQ.2 ) THEN
 
 # ifdef ALLOW_ATM_TEMP
         CALL WRITE_FLD_XY_RL ( 'G_Jatemp.',
-     &       suff, g_atemp, myIter, myThid)
+     &       suff, g_atemp, myIter, myThid )
         CALL WRITE_FLD_XY_RL ( 'G_Jaqh.',
-     &       suff, g_aqh, myIter, myThid)
+     &       suff, g_aqh, myIter, myThid )
         CALL WRITE_FLD_XY_RL ( 'G_Jprecip.',
-     &       suff, g_precip, myIter, myThid)
+     &       suff, g_precip, myIter, myThid )
 # endif
-      IF ( useAtmWind ) THEN
-        CALL WRITE_FLD_XY_RL ( 'G_Juwind.',
-     &       suff, g_uwind, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'G_Jvwind.',
-     &       suff, g_vwind, myIter, myThid)
-      ENDIF
+        IF ( useAtmWind ) THEN
+          CALL WRITE_FLD_XY_RL ( 'G_Juwind.',
+     &         suff, g_uwind, myIter, myThid )
+          CALL WRITE_FLD_XY_RL ( 'G_Jvwind.',
+     &         suff, g_vwind, myIter, myThid )
+        ENDIF
 # ifdef ALLOW_DOWNWARD_RADIATION
         CALL WRITE_FLD_XY_RL ( 'G_Jswdown.',
-     &       suff, g_swdown, myIter, myThid)
+     &       suff, g_swdown, myIter, myThid )
 # endif
 # ifdef ALLOW_CLIMSST_RELAXATION
         CALL WRITE_FLD_XY_RL ( 'G_Jclimsst.',
-     &       suff, g_climsst, myIter, myThid)
+     &       suff, g_climsst, myIter, myThid )
 # endif
 # ifdef ALLOW_CLIMSSS_RELAXATION
         CALL WRITE_FLD_XY_RL ( 'G_Jclimsss.',
-     &       suff, g_climsss, myIter, myThid)
+     &       suff, g_climsss, myIter, myThid )
 # endif
 
         ENDIF
 
-       _END_MASTER( myThid )
-       _BARRIER
+        CALL TIMER_STOP( 'I/O (WRITE)        [TLM LOOP]', myThid )
 
-
+       ENDIF
       ENDIF
-
-      ENDIF
-
-      call TIMER_STOP( 'I/O (WRITE)        [TLM LOOP]', myThid )
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
 #endif /* ALLOW_TANGENTLINEAR_RUN */
