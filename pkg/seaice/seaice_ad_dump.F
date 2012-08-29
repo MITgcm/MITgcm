@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.8 2012/08/07 21:19:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.9 2012/08/29 13:11:29 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -7,11 +7,11 @@ C $Name:  $
 CBOP
 C     !ROUTINE: seaice_ad_dump
 C     !INTERFACE:
-      subroutine seaice_ad_dump( mytime, myiter, myThid )
+      subroutine seaice_ad_dump( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE seaice_ad_dump                           |
+C     | SUBROUTINE seaice_ad_dump
 C     *==========================================================*
 C     Extract adjoint variable from TAMC/TAF-generated
 C     adjoint common blocks, contained in adcommon.h
@@ -19,7 +19,7 @@ C     and write fields to file;
 C     Make sure common blocks in adcommon.h are up-to-date
 C     w.r.t. current adjoint code.
 C     *==========================================================*
-C     | SUBROUTINE seaice_ad_dump                           |
+C     | SUBROUTINE seaice_ad_dump
 C     *==========================================================*
 C     \ev
 
@@ -41,42 +41,35 @@ C     == Global variables ===
 # include "adcommon.h"
 #endif
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER  IO_ERRCOUNT
-      EXTERNAL IO_ERRCOUNT
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myIter - iteration counter for this thread
-C     myTime - time counter for this thread
-C     myThid - Thread number for this instance of the routine.
-      integer myThid
-      integer myiter
-      _RL     mytime
+C     myTime :: time counter for this thread
+C     myIter :: iteration counter for this thread
+C     myThid :: Thread number for this instance of the routine.
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
 #ifdef ALLOW_AUTODIFF_MONITOR
 
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
 C     !LOCAL VARIABLES:
 c     == local variables ==
-C     suff - Hold suffix part of a filename
-C     beginIOErrCount - Begin and end IO error counts
-C     endIOErrCount
-C     msgBuf - Error message buffer
+C     suff   :: Hold suffix part of a filename
+C     msgBuf :: Error message buffer
       CHARACTER*(MAX_LEN_FNAM) suff
-      INTEGER beginIOErrCount
-      INTEGER endIOErrCount
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-
-c     == end of interface ==
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-      call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
       IF (
-     &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,deltaTClock)
-     & ) THEN
+     &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
+     &   ) THEN
+
+        CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
 c increment ad dump record number (used only if dumpAdByRec is true)
         dumpAdRecSi=dumpAdRecSi+1
@@ -84,13 +77,13 @@ c#ifdef ALLOW_DEBUG
 c      IF ( debugMode ) print*,'dumpAdRecSi',dumpAdRecSi
 c#endif
 
-
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
-        writeBinaryPrec = writeStatePrec
-
-C--     Read IO error counter
-        beginIOErrCount = IO_ERRCOUNT(myThid)
+C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
+C ==>>  is very very very nasty !!!
+c       writeBinaryPrec = writeStatePrec
+C <<==  If you really want to mess-up with this at your own risk,
+C <<==  uncomment the line above
 
         IF (.NOT.dumpAdByRec) THEN
 
@@ -165,9 +158,9 @@ c
         ENDIF
 #endif /* ALLOW_MNC */
 
-      ENDIF
+        CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
-      CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
+      ENDIF
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
 #endif /* ALLOW_ADJOINT_RUN */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.58 2012/08/07 21:17:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.59 2012/08/29 13:12:21 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -155,7 +155,11 @@ c#endif
 
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
-        writeBinaryPrec = writeStatePrec
+C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
+C ==>>  is very very very nasty !!!
+c       writeBinaryPrec = writeStatePrec
+C <<==  If you really want to mess-up with this at your own risk,
+C <<==  uncomment the line above
 
         IF ( ( dumpAdVarExch.NE.2 ).AND.(.NOT.dumpAdByRec) ) THEN
           CALL WRITE_FLD_XYZ_RL( 'ADJtheta.', suff,
@@ -183,7 +187,7 @@ C--     Set suffix for this set of data files.
 
 #ifdef ALLOW_GGL90
 c         CALL WRITE_FLD_XYZ_RL ( 'ADJggl90diffkr.',suff,
-c    &                             adGGL90DiffKr, myIter, myThid)
+c    &                             adGGL90DiffKr, myIter, myThid )
           CALL WRITE_FLD_XYZ_RL( 'ADJggl90tke.', suff,
      &                           adGGL90TKE, myIter, myThid )
 #endif
@@ -218,17 +222,17 @@ c    &                             adGGL90DiffKr, myIter, myThid)
 
         ELSEIF ( ( dumpAdVarExch.NE.2 ).AND.(dumpAdByRec) ) THEN
 
-          CALL WRITE_REC_XYZ_RL( 'ADJtheta', 
-     &                           adTheta, dumpAdRecMn, myIter, myThid)
-          CALL WRITE_REC_XYZ_RL( 'ADJsalt', 
+          CALL WRITE_REC_XYZ_RL( 'ADJtheta',
+     &                           adTheta, dumpAdRecMn, myIter,myThid )
+          CALL WRITE_REC_XYZ_RL( 'ADJsalt',
      &                           adSalt, dumpAdRecMn, myIter, myThid )
-          CALL WRITE_REC_XYZ_RL( 'ADJuvel', 
+          CALL WRITE_REC_XYZ_RL( 'ADJuvel',
      &                           aduVel, dumpAdRecMn, myIter, myThid )
-          CALL WRITE_REC_XYZ_RL( 'ADJvvel', 
+          CALL WRITE_REC_XYZ_RL( 'ADJvvel',
      &                           advVel, dumpAdRecMn, myIter, myThid )
-          CALL WRITE_REC_XYZ_RL( 'ADJwvel', 
+          CALL WRITE_REC_XYZ_RL( 'ADJwvel',
      &                           adwVel, dumpAdRecMn, myIter, myThid )
-          CALL WRITE_REC_XY_RL ( 'ADJetan', 
+          CALL WRITE_REC_XY_RL ( 'ADJetan',
      &                           adEtaN, dumpAdRecMn, myIter, myThid )
 
           IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
@@ -248,34 +252,34 @@ c    &                             adGGL90DiffKr, myIter, myThid)
 
 #ifdef ALLOW_GGL90
 c         CALL WRITE_REC_XYZ_RL ( 'ADJggl90diffkr',
-c    &         adGGL90DiffKr, dumpAdRecMn, myIter, myThid)
-          CALL WRITE_REC_XYZ_RL( 'ADJggl90tke', 
+c    &         adGGL90DiffKr, dumpAdRecMn, myIter, myThid )
+          CALL WRITE_REC_XYZ_RL( 'ADJggl90tke',
      &         adGGL90TKE, dumpAdRecMn, myIter, myThid )
 #endif
 #ifdef ALLOW_DIFFKR_CONTROL
-          CALL WRITE_REC_XYZ_RL( 'ADJdiffkr', 
+          CALL WRITE_REC_XYZ_RL( 'ADJdiffkr',
      &         adDiffKr, dumpAdRecMn, myIter, myThid )
 #endif
 #ifdef ALLOW_KAPGM_CONTROL
-          CALL WRITE_REC_XYZ_RL( 'ADJkapgm', 
+          CALL WRITE_REC_XYZ_RL( 'ADJkapgm',
      &         adKapGM, dumpAdRecMn, myIter, myThid )
 #endif
 #ifdef ALLOW_KAPREDI_CONTROL
-          CALL WRITE_REC_XYZ_RL( 'ADJkapredi', 
+          CALL WRITE_REC_XYZ_RL( 'ADJkapredi',
      &         adKapRedi, dumpAdRecMn, myIter, myThid )
 #endif
 #ifdef ALLOW_EDDYPSI_CONTROL
-          CALL WRITE_REC_XYZ_RS( 'ADJeddypsix', 
+          CALL WRITE_REC_XYZ_RS( 'ADJeddypsix',
      &         adEddyPsiX, dumpAdRecMn, myIter, myThid )
-          CALL WRITE_REC_XYZ_RS( 'ADJeddypsiy', 
+          CALL WRITE_REC_XYZ_RS( 'ADJeddypsiy',
      &         adEddyPsiY, dumpAdRecMn, myIter, myThid )
 #endif
 #ifdef ALLOW_SST0_CONTROL
-          CALL WRITE_REC_XY_RS( 'ADJsst', 
+          CALL WRITE_REC_XY_RS( 'ADJsst',
      &         adSST, dumpAdRecMn, myIter, myThid )
 #endif
 #ifdef ALLOW_SSS0_CONTROL
-          CALL WRITE_REC_XY_RS( 'ADJsss', 
+          CALL WRITE_REC_XY_RS( 'ADJsss',
      &         adSSS, dumpAdRecMn, myIter, myThid )
 #endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
@@ -286,9 +290,9 @@ c    &         adGGL90DiffKr, dumpAdRecMn, myIter, myThid)
         ELSE
 C       case dumpAdVarExch = 2
           CALL COPY_ADVAR_OUTP( dumRS, adTheta,var3Du, Nr, 12, myThid )
-          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJtheta.', 
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJtheta.',
      &                           suff, var3Du, myIter, myThid )
-          IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJtheta', 
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJtheta',
      &                           var3Du, dumpAdRecMn, myIter, myThid )
           CALL COPY_ADVAR_OUTP( dumRS, adSalt, var3Du, Nr, 12, myThid )
           IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJsalt.',
@@ -339,17 +343,17 @@ C       case dumpAdVarExch = 2
      &                           var2Du,dumpAdRecMn, myIter,myThid )
 #ifdef SHORTWAVE_HEATING
            CALL COPY_ADVAR_OUTP( adQsw,  dumRL, var2Du, 1, 11, myThid )
-           IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJqsw.', 
+           IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJqsw.',
      &                           suff,var2Du,myIter,myThid )
-           IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJqsw', 
+           IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJqsw',
      &                           var2Du,dumpAdRecMn, myIter,myThid )
 #endif
           ENDIF
 #ifdef ALLOW_GGL90
           CALL COPY_ADVAR_OUTP( dumRS,adGGL90TKE,var3Du,Nr, 12,myThid )
-          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJggl90tke.', 
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJggl90tke.',
      &                           suff, var3Du, myIter, myThid )
-          IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJggl90tke', 
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJggl90tke',
      &                           var3Du, dumpAdRecMn, myIter, myThid )
 #endif
 #ifdef ALLOW_DIFFKR_CONTROL
@@ -402,9 +406,9 @@ C       case dumpAdVarExch = 2
 #ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
           CALL COPY_ADVAR_OUTP( dumRS, adBottomDragFld,
      &                                        var2Du, 1, 12, myThid )
-          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJbottomdrag.', 
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJbottomdrag.',
      &                           suff, var2Du, myIter, myThid )
-          IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJbottomdrag', 
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJbottomdrag',
      &                           var2Du, dumpAdRecMn, myIter, myThid )
 #endif
 C       end if dumpAdVarExch = 2

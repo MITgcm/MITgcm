@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_ad_dump.F,v 1.3 2012/07/06 23:03:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_ad_dump.F,v 1.4 2012/08/29 13:11:29 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -7,11 +7,11 @@ C $Name:  $
 CBOP
 C     !ROUTINE: ptracers_ad_dump
 C     !INTERFACE:
-      subroutine ptracers_ad_dump( mytime, myiter, myThid )
+      subroutine ptracers_ad_dump( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE ptracers_ad_dump                           |
+C     | SUBROUTINE ptracers_ad_dump
 C     *==========================================================*
 C     Extract adjoint variable from TAMC/TAF-generated
 C     adjoint common blocks, contained in adcommon.h
@@ -19,7 +19,7 @@ C     and write fields to file;
 C     Make sure common blocks in adcommon.h are up-to-date
 C     w.r.t. current adjoint code.
 C     *==========================================================*
-C     | SUBROUTINE ptracers_ad_dump                           |
+C     | SUBROUTINE ptracers_ad_dump
 C     *==========================================================*
 C     \ev
 
@@ -32,72 +32,62 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
-#include "GRID.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
 # include "ptracers_adcommon.h"
 #endif
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER  IO_ERRCOUNT
-      EXTERNAL IO_ERRCOUNT
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myIter - iteration counter for this thread
-C     myTime - time counter for this thread
-C     myThid - Thread number for this instance of the routine.
-      integer myThid
-      integer myiter
-      _RL     mytime
+C     myTime :: time counter for this thread
+C     myIter :: iteration counter for this thread
+C     myThid :: Thread number for this instance of the routine.
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
 #ifdef ALLOW_AUTODIFF_MONITOR
 
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
 C     !LOCAL VARIABLES:
 c     == local variables ==
-C     suff - Hold suffix part of a filename
-C     beginIOErrCount - Begin and end IO error counts
-C     endIOErrCount
-C     msgBuf - Error message buffer
+C     suff   :: Hold suffix part of a filename
+C     msgBuf :: Error message buffer
       INTEGER ip
       CHARACTER*(MAX_LEN_FNAM) suff1,suff2
-      INTEGER beginIOErrCount
-      INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
-c     == end of interface ==
 CEOP
 
-      call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
       IF (
-     &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,deltaTClock)
-     & ) THEN
+     &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
+     &   ) THEN
+
+        CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
 C--     Set suffix for this set of data files.
         WRITE(suff1,'(I10.10)') myIter
-        writeBinaryPrec = writeStatePrec
+C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
+C ==>>  is very very very nasty !!!
+c       writeBinaryPrec = writeStatePrec
+C <<==  If you really want to mess-up with this at your own risk,
+C <<==  uncomment the line above
 
         DO ip = 1, PTRACERS_numInUse
-         WRITE(suff2,'(A10,A2,A1)') 
+         WRITE(suff2,'(A10,A2,A1)')
      &          'ADJptracer',PTRACERS_ioLabel(ip),'.'
 
          CALL WRITE_FLD_XYZ_RL(
-     &        suff2,suff1, 
-     &        adptracer(1-OLx,1-OLy,1,1,1,ip), 1, myThid)
+     &        suff2,suff1,
+     &        adptracer(1-OLx,1-OLy,1,1,1,ip), 1, myThid )
 
         ENDDO
 
-C--     Read IO error counter
-        beginIOErrCount = IO_ERRCOUNT(myThid)
+        CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
       ENDIF
-
-      CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
 #endif /* ALLOW_ADJOINT_RUN */

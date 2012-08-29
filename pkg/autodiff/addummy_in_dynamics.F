@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_dynamics.F,v 1.6 2012/08/07 21:17:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_dynamics.F,v 1.7 2012/08/29 13:12:21 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -93,14 +93,18 @@ C
 
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
-        writeBinaryPrec = writeStatePrec
+C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
+C ==>>  is very very very nasty !!!
+c       writeBinaryPrec = writeStatePrec
+C <<==  If you really want to mess-up with this at your own risk,
+C <<==  uncomment the line above
 
 #ifdef ALLOW_AUTODIFF_MONITOR_DIAG
         IF ( dumpAdVarExch.NE.2 ) THEN
           IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJrhoinsitu.',
      &                          suff, adrhoinsitu, myIter, myThid )
           IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJrhoinsitu',
-     &                      adrhoinsitu, dumpAdRecDy, myIter, myThid)     
+     &                      adrhoinsitu, dumpAdRecDy, myIter, myThid )
 cph( is set to zero in addiags_phi_hyd
 c          CALL WRITE_FLD_XYZ_RL( 'ADJtotphihyd.', suff,
 c                                 adtotphihyd, myIter, myThid )
@@ -111,7 +115,7 @@ C       case dumpAdVarExch = 2
           IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJrhoinsitu.',
      &                          suff, var3Du, myIter, myThid )
           IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJrhoinsitu',
-     &                          var3Du, dumpAdRecDy, myIter, myThid)
+     &                          var3Du, dumpAdRecDy, myIter, myThid )
         ENDIF
 #endif
 

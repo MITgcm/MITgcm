@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_dummy_in_stepping.F,v 1.15 2012/07/06 23:10:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_dummy_in_stepping.F,v 1.16 2012/08/29 13:12:22 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -7,7 +7,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: g_dummy_in_stepping
 C     !INTERFACE:
-      subroutine g_dummy_in_stepping( mytime, myiter, myThid )
+      subroutine g_dummy_in_stepping( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -34,92 +34,89 @@ C     == Global variables ===
 # include "g_common.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     myIter :: iteration counter for this thread
+C     myTime :: time counter for this thread
+C     myThid :: Thread number for this instance of the routine.
+      INTEGER myThid
+      INTEGER myIter
+      _RL     myTime
+
+#ifdef ALLOW_TANGENTLINEAR_RUN
+#ifdef ALLOW_AUTODIFF_MONITOR
+
+C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
 
-C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     myIter - iteration counter for this thread
-C     myTime - time counter for this thread
-C     myThid - Thread number for this instance of the routine.
-      integer myThid
-      integer myiter
-      _RL     mytime
-
-#ifdef ALLOW_TANGENTLINEAR_RUN
-#ifdef ALLOW_AUTODIFF_MONITOR
-
 C     !LOCAL VARIABLES:
 c     == local variables ==
-C     suff - Hold suffix part of a filename
-C     beginIOErrCount - Begin and end IO error counts
-C     endIOErrCount
-C     msgBuf - Error message buffer
+C     suff   :: Hold suffix part of a filename
+C     msgBuf :: Error message buffer
       CHARACTER*(MAX_LEN_FNAM) suff
       INTEGER beginIOErrCount
       INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
-c     == end of interface ==
 CEOP
 
-      call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
       IF (
-     &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,deltaTClock)
-     & ) THEN
+     &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
+     &   ) THEN
 
-         write(*,*) 'myIter= ',myiter
-
-       _BARRIER
-       _BEGIN_MASTER( myThid )
+        CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
+c       write(*,*) 'myIter= ',myIter
 
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
-        writeBinaryPrec = writeStatePrec
+C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
+C ==>>  is very very very nasty !!!
+c       writeBinaryPrec = writeStatePrec
+C <<==  If you really want to mess-up with this at your own risk,
+C <<==  uncomment the line above
 
 C--     Read IO error counter
         beginIOErrCount = IO_ERRCOUNT(myThid)
 
-        CALL WRITE_FLD_XY_RL ( 'G_Jtaux.',suff, g_fu, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'G_Jtauy.',suff, g_fv, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'G_Jqnet.',suff, g_qnet, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'G_Jempr.',suff, g_empmr, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'G_Jtaux.',suff, g_fu, myIter, myThid )
+        CALL WRITE_FLD_XY_RL ( 'G_Jtauy.',suff, g_fv, myIter, myThid )
+        CALL WRITE_FLD_XY_RL ( 'G_Jqnet.',suff, g_qnet, myIter,myThid )
+        CALL WRITE_FLD_XY_RL ( 'G_Jempr.',suff, g_empmr,myIter,myThid )
 c
         CALL WRITE_FLD_XYZ_RL(
-     &       'G_Jtheta.',suff, g_theta, myIter, myThid)
+     &       'G_Jtheta.',suff, g_theta, myIter, myThid )
         CALL WRITE_FLD_XYZ_RL(
-     &       'G_Jsalt.',suff, g_salt, myIter, myThid)
+     &       'G_Jsalt.',suff, g_salt, myIter, myThid )
         CALL WRITE_FLD_XYZ_RL(
-     &       'G_Juvel.',suff, g_uvel, myIter, myThid)
+     &       'G_Juvel.',suff, g_uvel, myIter, myThid )
         CALL WRITE_FLD_XYZ_RL(
-     &       'G_Jvvel.',suff, g_vvel, myIter, myThid)
+     &       'G_Jvvel.',suff, g_vvel, myIter, myThid )
         CALL WRITE_FLD_XYZ_RL(
-     &       'G_Jwvel.',suff, g_wvel, myIter, myThid)
+     &       'G_Jwvel.',suff, g_wvel, myIter, myThid )
         CALL WRITE_FLD_XY_RL(
-     &       'G_Jetan.',suff, g_etan, myIter, myThid)
+     &       'G_Jetan.',suff, g_etan, myIter, myThid )
 
 #ifdef ALLOW_DIFFKR_CONTROL
         CALL WRITE_FLD_XYZ_RL ( 'G_Jdiffkr.',suff, g_diffkr,
-     &       myIter, myThid)
+     &       myIter, myThid )
 #endif
 #ifdef ALLOW_KAPGM_CONTROL
         CALL WRITE_FLD_XYZ_RL ( 'G_Jkapgm.',suff, g_kapgm,
-     &       myIter, myThid)
+     &       myIter, myThid )
 #endif
 #ifdef ALLOW_KAPREDI_CONTROL
         CALL WRITE_FLD_XYZ_RL ( 'G_Jkapredi.',suff, g_kapredi,
-     &       myIter, myThid)
+     &       myIter, myThid )
 #endif
 
-cph        CALL WRITE_FLD_XY_RL( 'G_J_sst.',suff, g_sst, myIter, myThid)
-cph        CALL WRITE_FLD_XY_RL( 'G_J_sss.',suff, g_sss, myIter, myThid)
+cph        CALL WRITE_FLD_XY_RL( 'G_J_sst.',suff, g_sst, myIter, myThid )
+cph        CALL WRITE_FLD_XY_RL( 'G_J_sss.',suff, g_sss, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_MONITOR_PHIHYD
         CALL WRITE_FLD_XYZ_RL(
-     &       'G_Jphihyd.',suff, g_totphihyd, myIter, myThid)
+     &       'G_Jphihyd.',suff, g_totphihyd, myIter, myThid )
 #endif
 
 C--     Reread IO error counter
@@ -128,38 +125,27 @@ C--     Reread IO error counter
 C--     Check for IO errors
         IF ( endIOErrCount .NE. beginIOErrCount ) THEN
          WRITE(msgBuf,'(A)')  'S/R WRITE_STATE'
-         CALL PRINT_ERROR( msgBuf, 1 )
+         CALL PRINT_ERROR( msgBuf, myThid )
          WRITE(msgBuf,'(A)')  'Error writing out model state'
-         CALL PRINT_ERROR( msgBuf, 1 )
+         CALL PRINT_ERROR( msgBuf, myThid )
          WRITE(msgBuf,'(A,I10)') 'Timestep ',myIter
-         CALL PRINT_ERROR( msgBuf, 1 )
+         CALL PRINT_ERROR( msgBuf, myThid )
         ELSE
          WRITE(msgBuf,'(A,I10)')
      &    '// Model state written, timestep', myIter
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT, 1 )
+     &                       SQUEEZE_RIGHT, myThid )
          WRITE(msgBuf,'(A)')  ' '
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT, 1 )
+     &                       SQUEEZE_RIGHT, myThid )
         ENDIF
 
-       _END_MASTER( myThid )
-       _BARRIER
+        CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
       ENDIF
-
-      call TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
 #endif /* ALLOW_TANGENTLINEAR_RUN */
 
-      end
-
-
-
-
-
-
-
-
-
+      RETURN
+      END

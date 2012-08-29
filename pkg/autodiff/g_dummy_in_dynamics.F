@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_dummy_in_dynamics.F,v 1.2 2012/07/06 23:10:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_dummy_in_dynamics.F,v 1.3 2012/08/29 13:12:22 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -7,7 +7,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: g_dummy_in_dynamics
 C     !INTERFACE:
-      subroutine g_dummy_in_dynamics( mytime, myiter, myThid )
+      subroutine g_dummy_in_dynamics( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -34,54 +34,45 @@ C     == Global variables ===
 # include "g_common.h"
 #endif
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER  IO_ERRCOUNT
-      EXTERNAL IO_ERRCOUNT
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myIter - iteration counter for this thread
-C     myTime - time counter for this thread
-C     myThid - Thread number for this instance of the routine.
-      integer myThid
-      integer myiter
-      _RL     mytime
+C     myTime :: time counter for this thread
+C     myIter :: iteration counter for this thread
+C     myThid :: Thread number for this instance of the routine.
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 #ifdef ALLOW_TANGENTLINEAR_RUN
 #ifdef ALLOW_AUTODIFF_MONITOR
 
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
 C     !LOCAL VARIABLES:
 c     == local variables ==
-C     suff - Hold suffix part of a filename
-C     beginIOErrCount - Begin and end IO error counts
-C     endIOErrCount
-C     msgBuf - Error message buffer
+C     suff   :: Hold suffix part of a filename
+C     msgBuf :: Error message buffer
       CHARACTER*(MAX_LEN_FNAM) suff
-      INTEGER beginIOErrCount
-      INTEGER endIOErrCount
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-
-c     == end of interface ==
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-      call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
       IF (
-     &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,deltaTClock)
+     &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
      & ) THEN
 
-         write(*,*) 'myIter= ',myiter
+        CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
+c       write(*,*) 'myIter= ',myIter
 
-       _BARRIER
-       _BEGIN_MASTER( myThid )
 
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
-        writeBinaryPrec = writeStatePrec
-
-C--     Read IO error counter
-        beginIOErrCount = IO_ERRCOUNT(myThid)
+C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
+C ==>>  is very very very nasty !!!
+c       writeBinaryPrec = writeStatePrec
+C <<==  If you really want to mess-up with this at your own risk,
+C <<==  uncomment the line above
 
 #ifdef ALLOW_AUTODIFF_MONITOR_DIAG
         CALL WRITE_FLD_XYZ_RL(
@@ -90,23 +81,12 @@ C--     Read IO error counter
      &       'G_Jtotphihyd.',suff, g_totphihyd, myIter, myThid)
 #endif
 
-       _END_MASTER( myThid )
-       _BARRIER
+        CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
       ENDIF
-
-      call TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
 #endif /* ALLOW_TANGENTLINEAR_RUN */
 
-      end
-
-
-
-
-
-
-
-
-
+      RETURN
+      END
