@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_lf95,v 1.4 2010/03/21 22:22:52 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_lf95,v 1.5 2012/08/30 20:06:37 jmc Exp $
 # $Name:  $
 
-DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_TERMINATOR=" /"'
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_TERMINATOR'
 CPP='/lib/cpp -traditional -P'
 FC='lf95'
 # FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'

@@ -1,12 +1,11 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ppc_xlf_panther+wienders,v 1.3 2010/03/21 22:22:52 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ppc_xlf_panther+wienders,v 1.4 2012/08/30 20:06:37 jmc Exp $
 # $Name:  $
 
 #  Notes:
 #    This optfile was created by Nicolas Wienders and Ed Hill and
-#    is known to work (complete with netCDF) on at least one Mac
-#    system.
+#    is known to work (complete with netCDF) on at least one Mac system.
 
 CPP='/usr/bin/cpp -traditional -P -xassembler-with-cpp'
 FC=/opt/ibmcmp/xlf/8.1/bin/f77
@@ -22,4 +21,4 @@ FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
 
 S64='$(TOOLSDIR)/set64bitConst.sh'
 MAKEDEPEND='$(TOOLSDIR)/cyrus-imapd-makedepend/makedepend'
-DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR=" /"'
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
