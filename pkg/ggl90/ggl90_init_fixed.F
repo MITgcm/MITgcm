@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_init_fixed.F,v 1.3 2010/01/03 18:48:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_init_fixed.F,v 1.4 2012/08/30 23:08:02 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -46,14 +46,15 @@ C#endif /* ALLOW_MNC */
 #ifdef ALLOW_GGL90_SMOOTH
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           mskCor(i,j,bi,bj) = 1. _d 0
          ENDDO
         ENDDO
         IF ( useCubedSphereExchange ) THEN
           CALL FILL_CS_CORNER_TR_RL( 0, .FALSE.,
-     &                               mskCor, bi,bj, myThid )
+     U                               mskCor(1-OLx,1-OLy,bi,bj),
+     I                               bi,bj, myThid )
         ENDIF
        ENDDO
       ENDDO
