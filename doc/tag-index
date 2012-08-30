@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1727 2012/08/29 13:49:44 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1728 2012/08/30 23:13:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90:
+  - fix bug in filling corner mask array "mskCor" (FILL_CS_CORNER_TR_RL call)
+    used in ALLOW_GGL90_SMOOTH code.
+o pkg/flt:
+  - fix typo in FLT_WITHOUT_Y_PERIODICITY (the effect was to ignore stopping
+    floats at the Southern end of the domain).
+o eesupp/inc:
+  - add a list of CPP-options which can be set by Makefile (DEF_IN_MAKEFILE.h);
+    but not used (and not to be used) anywhere, just for documentation.
 o pkg/autodiff, exf, ptracers & seaice (AD & TL output):
   - comment out the very nasty "writeBinaryPrec = writeStatePrec" line, since:
     a) can damage previously written records in any other multi-record files.
