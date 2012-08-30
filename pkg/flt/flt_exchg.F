@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.15 2011/08/31 21:35:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.16 2012/08/30 22:32:48 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -366,16 +366,16 @@ c              CALL PRINT_ERROR( msgBuf, myThid )
               ENDIF
              ENDIF
 
-#ifdef FLT_WITHOUT_y_PERIODICITY
+#ifdef FLT_WITHOUT_Y_PERIODICITY
              IF ( sSide .AND.
      &           (myTime.LE.tend(ip,bi,bj) .OR. tend(ip,bi,bj).EQ.-1.)
      &           .AND. jpart(ip,bi,bj).LT.jlo ) THEN
 C          stop the float:
               tend(ip,bi,bj) = flt_stopped
              ELSEIF ( jpart(ip,bi,bj).LT.jlo ) THEN
-#else /* FLT_WITHOUT_y_PERIODICITY */
+#else /* FLT_WITHOUT_Y_PERIODICITY */
              IF ( jpart(ip,bi,bj).LT.jlo ) THEN
-#endif /* FLT_WITHOUT_y_PERIODICITY */
+#endif /* FLT_WITHOUT_Y_PERIODICITY */
               icountS=icountS+1
               IF ( icountS.LE.max_npart_exch ) THEN
 
