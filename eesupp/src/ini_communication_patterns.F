@@ -1,16 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_communication_patterns.F,v 1.10 2009/11/24 00:16:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_communication_patterns.F,v 1.11 2012/09/01 17:37:30 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_EEOPTIONS.h"
 
 CBOP
-
 C     !ROUTINE: INI_COMMUNICATION_PATTERNS
 
 C     !INTERFACE:
       SUBROUTINE INI_COMMUNICATION_PATTERNS( myThid )
-      IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE INI\_COMMUNICATION\_PATTERNS
@@ -22,6 +20,7 @@ C     | For each neighbor a communication method is defined.
 C     *==========================================================*
 
 C     !USES:
+      IMPLICIT NONE
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -62,16 +61,6 @@ C                 coord).
       INTEGER biE, biW, bjN, bjS
       INTEGER thePx, thePy, theBj, theBi
 CEOP
-
-#ifndef ALWAYS_USE_MPI
-C--   Turn off memsync by default (e.g. needed for threads on SUNs)
-      exchNeedsMemsync = .TRUE.
-      exchUsesBarrier  = .TRUE.
-#else
-C--   ... except that MPI needs this until some counter problem is fixed.
-      exchNeedsMemsync = .FALSE.
-      exchUsesBarrier  = .FALSE.
-#endif
 
 C--   Define a globally unique tile numbers for each tile.
 C--   We aslo define the tile numbers for our east, west, south
@@ -269,11 +258,9 @@ C       o Tag on messages I receive from my north
        ENDDO
       ENDDO
 
-C--   Set the form of excahnge to use between neighboring
-C --  tiles.
+C--   Set the form of excahnge to use between neighboring tiles.
 C     For now use either shared memory, messages or nothing. Further
-C     rules can be added later to allow shm regions and ump regions
-C     etc...
+C     rules can be added later to allow shm regions and ump regions etc...
 C     Notes -
 C     1. We require symmetry here. If one face of a tile uses
 C        communication method A then the matching face on its neighbor
