@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_sm_3d_rx.template,v 1.5 2012/07/27 18:54:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_sm_3d_rx.template,v 1.6 2012/09/01 16:16:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -71,10 +71,9 @@ CEOP
       exchWidthX = OLx
       exchWidthY = OLy
       negOne = 1.
-      IF (withSigns) negOne = -1.
 
-      IF ( useCubedSphereExchange .AND. withSigns ) THEN
-C---  using CubedSphereExchange with Signs:
+      IF (useCubedSphereExchange) THEN
+C---  using CubedSphereExchange:
 
 C--   First call the exchanges
 
@@ -83,12 +82,14 @@ C--   First call the exchanges
      I            exchWidthX, exchWidthY,
      I            EXCH_UPDATE_CORNERS, myThid )
 
+       IF (withSigns) THEN
 C--   Then we may need to switch the signs depending on which cube face
 C      we are located (we assume that bj is always=1).
 C     Choose what to do at each edge of the halo based on which face
+        negOne = -1.
 
 C--   Loops on tile and level indices:
-       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO k = 1,myNz
 
@@ -139,10 +140,13 @@ C--   End odd / even faces
 C--   end of Loops on tile and level indices (k,bi,bj).
          ENDDO
         ENDDO
-       ENDDO
+        ENDDO
+
+C--   End withSigns
+       ENDIF
 
       ELSE
-C---  not using CubedSphereExchange or without Signs:
+C---  not using CubedSphereExchange:
 
 #ifdef DISCONNECTED_TILES
        CALL EXCH0_RX( phi,
@@ -156,7 +160,7 @@ C---  not using CubedSphereExchange or without Signs:
      I            EXCH_UPDATE_CORNERS, myThid )
 #endif /* DISCONNECTED_TILES */
 
-C---  using or not using CubedSphereExchange with Signs: end
+C---  using or not using CubedSphereExchange: end
       ENDIF
 
 #endif /* ALLOW_EXCH2 */
