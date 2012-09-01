@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.33 2012/04/03 00:08:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.34 2012/09/01 17:36:24 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -28,6 +28,7 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
+#include "EXCH.h"
 
 C     !INPUT PARAMETERS:
 C     doReport :: if false, skip error stop and any report to std-out/err
@@ -64,35 +65,29 @@ CEOP
      & useSETRLSTK, useSIGREG,
      & debugMode, printMapIncludesZeros, maxLengthPrt1D
 
-C--   For now these options are fixed as the code does
-C     not fully support features for overlapping communication
-C     and computation.
+C--   For now these options are fixed as the code does not fully support
+C     features for overlapping communication and computation.
       usingSyncMessages          = .TRUE.
 
-C--   The remaining parameters here are set to default values.
-C--   and then any different values are read from an input
-C--   file called "eedata".
+C--   The remaining parameters here are set to default values; and then
+C--   any different values are read from an input file called "eedata".
 C     The defaults set here are for serial execution.
 C
-C     nTx and nTy are the number of threads in the X and Y
-C     directions.
+C     nTx and nTy are the number of threads in the X and Y directions.
 C     nSx/nTx and nSy/nTy be whole numbers at present.
 C
-C     notUsingXPeriodicity and notUsingYPeriodicity affect
-C     the identifying of neighbor processes in a multi-process
-C     mode. On the whole the numerical model code should not
-C     customise itself based on these numbers as they may be
-C     removed if they do not prove useful.
+C     notUsingXPeriodicity and notUsingYPeriodicity affect the identifying
+C     of neighbor processes in a multi-process mode.
+C     On the whole the numerical model code should not customise itself based
+C     on these numbers as they may be removed if they do not prove useful.
 C
-C     usingMPI is a flag which controls whether MPI message
-C     passing library calls are actually made. Note that under
-C     MPI it is necessary to start a program a special way -
-C     normally using a command of the form
+C     usingMPI is a flag which controls whether MPI message passing library
+C     calls are actually made. Note that under MPI it is necessary to start
+C     a program a special way - normally using a command of the form
 C     % mpirun program_name
-C     If usingMPI is set to TRUE but % mpirun .... was not
-C     used to launch the program then an internal MPI error
-C     may be generated when the first MPI call ( CALL MPI_Init )
-C     is made.
+C     If usingMPI is set to TRUE but % mpirun .... was not used to launch
+C     the program then an internal MPI error may be generated when the first
+C     MPI call ( CALL MPI_Init ) is made.
 C
 C     useCoupler is a flag which controls communications with other
 C     model components through a coupler interface.
@@ -271,6 +266,23 @@ Cdbg   CALL PRINT_ERROR( msgBuf , 1)
 Cdbg  ELSE
 C--    Write summary of settings that were selected
 Cdbg  ENDIF
+
+      IF ( doReport ) THEN
+C--   Set parameters for EXCH communication routines
+C     Note: only done once when called with doReport=T
+
+        exchCollectStatistics = .TRUE.
+C--   Turn off memsync by default (e.g. needed for threads on SUNs)
+        exchNeedsMemsync = .TRUE.
+        exchUsesBarrier  = .TRUE.
+        IF ( usingMPI ) THEN
+C--   ... except that MPI needs this until some counter problem is fixed.
+          exchNeedsMemsync = .FALSE.
+          exchUsesBarrier  = .FALSE.
+        ENDIF
+
+C--   End setting parameters for EXCH communication routines
+      ENDIF
 
       RETURN
       END
