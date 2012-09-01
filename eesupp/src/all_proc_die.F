@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/all_proc_die.F,v 1.6 2012/03/30 18:14:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/all_proc_die.F,v 1.7 2012/09/01 22:43:55 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -59,7 +59,9 @@ C--   Finishes
       eeEndError = .TRUE.
       fatalError = .TRUE.
 #ifdef ALLOW_USE_MPI
-      IF ( usingMPI ) THEN
+C- Note: since MPI_INIT is always called, better to also always terminate MPI
+C        (even if usingMPI=F) --> comment out test on usingMPI
+c     IF ( usingMPI ) THEN
 C     better to avoid this call if multi-components set-up ; otherwise will
 C     hang here since procs of other comp. are not calling MPI_finalize now.
        IF ( .NOT.( useCoupler
@@ -76,7 +78,7 @@ C     hang here since procs of other comp. are not calling MPI_finalize now.
           CALL PRINT_ERROR( msgBuf, myThid )
          ENDIF
        ENDIF
-      ENDIF
+c     ENDIF
 #endif /* ALLOW_USE_MPI */
 
 C-    Some systems do not always flush the IO buffer to disk.
@@ -86,10 +88,14 @@ C     Note: function "flush" is not standard fortran and might not
 C     be available (genmake2 should check for this)
 c       CLOSE( errorMessageUnit )
 c       CALL FLUSH( errorMessageUnit )
-c     IF ( usingMPI ) THEN
+#ifdef ALLOW_USE_MPI
+C- Note: comment out if usingMPI ... since we always open standardMessageUnit
+C        when ALLOW_USE_MPI is defined, better to flush/close also if usingMPI=F
+cc    IF ( usingMPI ) THEN
 c       CLOSE( standardMessageUnit )
 c       CALL FLUSH( standardMessageUnit )
-c     ENDIF
+cc    ENDIF
+#endif /* ALLOW_USE_MPI */
 
       _END_MASTER(myThid)
 

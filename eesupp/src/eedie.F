@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.11 2012/03/28 20:22:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.12 2012/09/01 22:43:55 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -73,13 +73,14 @@ C--   end if/else eebootError
 #ifdef USE_LIBHPM
       CALL F_HPMTERMINATE(myProcId)
 #endif
+
 #ifdef ALLOW_USE_MPI
-C--
+C- Note: since MPI_INIT is always called, better to also always terminate MPI
+C        (even if usingMPI=F) --> comment out test on usingMPI
+c     IF ( usingMPI ) THEN
+
 C--   MPI style multiple-process termination
 C--   ======================================
-#ifndef ALWAYS_USE_MPI
-      IF ( usingMPI ) THEN
-#endif
 #ifdef COMPONENT_MODULE
        IF ( useCoupler) CALL MPI_BARRIER( MPI_COMM_WORLD, mpiRC )
 #endif
@@ -95,10 +96,8 @@ C--   ======================================
      &       mpiRC
         CALL PRINT_ERROR( msgBuf, 1 )
        ENDIF
-C
-#ifndef ALWAYS_USE_MPI
-      ENDIF
-#endif
+
+c     ENDIF
 #endif /* ALLOW_USE_MPI */
 
       RETURN
