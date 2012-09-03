@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_cumulsum_z_tile.F,v 1.3 2011/10/03 12:45:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_cumulsum_z_tile.F,v 1.4 2012/09/03 19:40:09 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -69,7 +69,7 @@ C         all 4 needs to have the same length as MPI_DOUBLE_PRECISION
       INTEGER i, j
 #endif
 #ifdef ALLOW_USE_MPI
-      INTEGER npe, np1
+      INTEGER np, pId
       INTEGER lbuf1, lbuf2, idest, itag, ready_to_receive
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       Real*8  loc1Buf  (nSx,nSy)
@@ -99,9 +99,7 @@ C--   Master thread cannot start until everyone is ready:
       _BEGIN_MASTER( myThid )
 
 #ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
       IF ( usingMPI ) THEN
-#endif
 
        lbuf1 = nSx*nSy
        lbuf2 = 2*lbuf1
@@ -126,31 +124,30 @@ C--   All proceses except 0 receive result from process 0
        ELSE
 
 C--   Process 0 polls and receives data from each process in turn
-         DO npe = 1, numberOfProcs-1
+         DO np = 2, nPx*nPy
+           pId = np - 1
 #ifndef DISABLE_MPI_READY_TO_RECEIVE
            CALL MPI_SEND (ready_to_receive, 1, MPI_INTEGER,
-     &                    npe, itag, MPI_COMM_MODEL, ierr)
+     &                    pId, itag, MPI_COMM_MODEL, ierr)
 #endif
            CALL MPI_RECV (loc2Buf, lbuf2, MPI_DOUBLE_PRECISION,
-     &                    npe, itag, MPI_COMM_MODEL, istatus, ierr)
+     &                    pId, itag, MPI_COMM_MODEL, istatus, ierr)
 
 C--   Process 0 gathers the local arrays into a global array.
-           np1 = npe + 1
            DO bj=1,nSy
             DO bi=1,nSx
-              tN = W2_procTileList(bi,bj,np1)
+              tN = W2_procTileList(bi,bj,np)
               globalBuf(1,tN) = loc2Buf(1,bi,bj)
               globalBuf(2,tN) = loc2Buf(2,bi,bj)
             ENDDO
            ENDDO
+C-       end loop on np
          ENDDO
 
 C--   end if process not 0 / else = 0
        ENDIF
 
-#ifndef ALWAYS_USE_MPI
       ENDIF
-#endif
 #endif /* ALLOW_USE_MPI */
 
       IF ( myProcId.EQ.0 ) THEN
@@ -250,26 +247,22 @@ C--   Process 0 fills-in its local data
          ENDDO
 
 #ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
         IF ( usingMPI ) THEN
-#endif
 C--   Process 0 sends result to all other processes
-         DO npe = 1, numberOfProcs-1
+         DO np = 2, nPx*nPy
+           pId = np - 1
 C-    fill local array with relevant portion of global array
-           np1 = npe + 1
            DO bj=1,nSy
             DO bi=1,nSx
-              tN = W2_procTileList(bi,bj,np1)
+              tN = W2_procTileList(bi,bj,np)
               loc1Buf(bi,bj) = globalBuf(3,tN)
             ENDDO
            ENDDO
            CALL MPI_SEND (loc1Buf, lbuf1, MPI_DOUBLE_PRECISION,
-     &                    npe, itag, MPI_COMM_MODEL, ierr)
+     &                    pId, itag, MPI_COMM_MODEL, ierr)
          ENDDO
 
-#ifndef ALWAYS_USE_MPI
         ENDIF
-#endif
 #endif /* ALLOW_USE_MPI */
 
 C--   end if process 0
