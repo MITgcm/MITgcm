@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_y.template,v 1.14 2010/05/17 02:28:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_y.template,v 1.15 2012/09/03 19:37:54 jmc Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 #undef EXCH_USE_SPINNING
@@ -81,9 +81,12 @@ C     mpiStatus                  :: MPI error code
       INTEGER spinCount
 #endif
 #ifdef ALLOW_USE_MPI
-      INTEGER theProc, theTag, theType, theSize, pReqI
+      INTEGER theProc, theTag, theType, theSize
       INTEGER mpiStatus(MPI_STATUS_SIZE,4), mpiRc
-#endif
+# ifdef ALLOW_AUTODIFF_OPENAD_AMPI
+      INTEGER pReqI
+# endif
+#endif /* ALLOW_USE_MPI */
 CEOP
 
 C--   Under a "put" scenario we
@@ -97,9 +100,8 @@ C--    ii. Read the data.
 C--   iii. Set data read flag + memory sync.
 
 #ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
       IF ( usingMPI ) THEN
-#endif
+
 C--   Receive buffer data: Only Master Thread do proc communication
       _BEGIN_MASTER(myThid)
 
@@ -195,9 +197,7 @@ C--   need to sync threads after master has received data ;
 C     (done after mpi waitall in case waitall is really needed)
       _BARRIER
 
-#ifndef ALWAYS_USE_MPI
       ENDIF
-#endif
 #endif /* ALLOW_USE_MPI */
 
 C--   Threads wait for buffers I am going to read to be ready.
