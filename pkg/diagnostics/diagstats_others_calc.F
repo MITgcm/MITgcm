@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_others_calc.F,v 1.2 2009/09/03 14:53:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_others_calc.F,v 1.3 2012/09/03 20:29:47 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -98,13 +98,13 @@ c     IF ( useFIZHI ) THEN
         drLoc = 1. _d 0
 
 #ifdef REAL4_IS_SLOW
-        CALL  DIAGSTATS_CALC(
+        CALL DIAGSTATS_CALC(
      O            statArr,
      I            inpArr, frcArr, scaleFact, power, useFract,
      I            regId, regMskVal,
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            regMask, arrMask,
-     I            dpphys(1-Olx,1-Oly,kl,bi,bj), arrArea,
+     I            dpphys(1-OLx,1-OLy,kl,bi,bj), arrArea,
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
 #else /* REAL4_IS_SLOW */
 C    make local copy of dpphys (RL type) into RS array tmp_hFac
@@ -113,7 +113,7 @@ C    make local copy of dpphys (RL type) into RS array tmp_hFac
           tmp_hFac(i,j) = dpphys(i,j,kl,bi,bj)
          ENDDO
         ENDDO
-        CALL  DIAGSTATS_CALC(
+        CALL DIAGSTATS_CALC(
      O            statArr,
      I            inpArr, frcArr, scaleFact, power, useFract,
      I            regId, regMskVal,
@@ -216,13 +216,13 @@ c     IF ( useLand ) THEN
         ENDIF
         useWeight = .TRUE.
 
-        CALL  DIAGSTATS_CALC(
+        CALL DIAGSTATS_CALC(
      O            statArr,
      I            inpArr, frcArr, scaleFact, power, useFract,
      I            regId, regMskVal,
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
-     I            regMask, aim_landFr(1-Olx,1-Oly,bi,bj),
-     I            aim_landFr(1-Olx,1-Oly,bi,bj), arrArea,
+     I            regMask, aim_landFr(1-OLx,1-OLy,bi,bj),
+     I            aim_landFr(1-OLx,1-OLy,bi,bj), arrArea,
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
 
 c     ENDIF

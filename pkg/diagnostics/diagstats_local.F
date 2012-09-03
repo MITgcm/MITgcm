@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_local.F,v 1.9 2009/12/21 00:10:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_local.F,v 1.10 2012/09/03 20:29:47 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -117,65 +117,65 @@ C---   Compute statistics for this tile, level and region:
           IF ( parsFld(9:9).EQ.'M') useWeight = .TRUE.
 
           IF     ( parsFld(2:2).EQ.'U' ) THEN
-           CALL  DIAGSTATS_CALC(
+           CALL DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
      I            frcFld(sizI1,sizJ1,kFr,biIn,bjIn),
      I            scaleFact, power, useFract, n, diagSt_vRegMsk(n),
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
-     I            diagSt_regMask(1-Olx,1-Oly,kRegMsk,bi,bj),
-     I            maskW(1-Olx,1-Oly,k,bi,bj),
-     I            hFacW(1-Olx,1-Oly,k,bi,bj), rAw(1-Olx,1-Oly,bi,bj),
+     I            diagSt_regMask(1-OLx,1-OLy,kRegMsk,bi,bj),
+     I            maskW(1-OLx,1-OLy,k,bi,bj),
+     I            hFacW(1-OLx,1-OLy,k,bi,bj), rAw(1-OLx,1-OLy,bi,bj),
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
 c    I            drLoc, k,bi,bj, parsFld, myThid )
           ELSEIF ( parsFld(2:2).EQ.'V' ) THEN
-           CALL  DIAGSTATS_CALC(
+           CALL DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
      I            frcFld(sizI1,sizJ1,kFr,biIn,bjIn),
      I            scaleFact, power, useFract, n, diagSt_vRegMsk(n),
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
-     I            diagSt_regMask(1-Olx,1-Oly,kRegMsk,bi,bj),
-     I            maskS(1-Olx,1-Oly,k,bi,bj),
-     I            hFacS(1-Olx,1-Oly,k,bi,bj), rAs(1-Olx,1-Oly,bi,bj),
+     I            diagSt_regMask(1-OLx,1-OLy,kRegMsk,bi,bj),
+     I            maskS(1-OLx,1-OLy,k,bi,bj),
+     I            hFacS(1-OLx,1-OLy,k,bi,bj), rAs(1-OLx,1-OLy,bi,bj),
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
           ELSE
-           CALL  DIAGSTATS_CALC(
+           CALL DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
      I            frcFld(sizI1,sizJ1,kFr,biIn,bjIn),
      I            scaleFact, power, useFract, n, diagSt_vRegMsk(n),
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
-     I            diagSt_regMask(1-Olx,1-Oly,kRegMsk,bi,bj),
-     I            maskC(1-Olx,1-Oly,k,bi,bj),
-     I            hFacC(1-Olx,1-Oly,k,bi,bj), rA(1-Olx,1-Oly,bi,bj),
+     I            diagSt_regMask(1-OLx,1-OLy,kRegMsk,bi,bj),
+     I            maskC(1-OLx,1-OLy,k,bi,bj),
+     I            hFacC(1-OLx,1-OLy,k,bi,bj), rA(1-OLx,1-OLy,bi,bj),
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
           ENDIF
 
          ELSEIF ( useFIZHI .AND.
      &           (parsFld(10:10).EQ.'L' .OR. parsFld(10:10).EQ.'M')
      &          ) THEN
-           CALL  DIAGSTATS_LM_CALC(
+           CALL DIAGSTATS_LM_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
      I            frcFld(sizI1,sizJ1,kFr,biIn,bjIn),
      I            scaleFact, power, useFract, n, diagSt_vRegMsk(n),
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
-     I            diagSt_regMask(1-Olx,1-Oly,kRegMsk,bi,bj),
-     I            maskInC(1-Olx,1-Oly,bi,bj), rA(1-Olx,1-Oly,bi,bj),
+     I            diagSt_regMask(1-OLx,1-OLy,kRegMsk,bi,bj),
+     I            maskInC(1-OLx,1-OLy,bi,bj), rA(1-OLx,1-OLy,bi,bj),
      I            specialVal, exclSpVal,
      I            k,bi,bj, parsFld, myThid )
          ELSEIF ( useLand .AND.
      &           (parsFld(10:10).EQ.'G' .OR. parsFld(10:10).EQ.'g')
      &          ) THEN
-           CALL  DIAGSTATS_G_CALC(
+           CALL DIAGSTATS_G_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
      I            frcFld(sizI1,sizJ1,kFr,biIn,bjIn),
      I            scaleFact, power, useFract, n, diagSt_vRegMsk(n),
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
-     I            diagSt_regMask(1-Olx,1-Oly,kRegMsk,bi,bj),
-     I            rA(1-Olx,1-Oly,bi,bj),
+     I            diagSt_regMask(1-OLx,1-OLy,kRegMsk,bi,bj),
+     I            rA(1-OLx,1-OLy,bi,bj),
      I            specialVal, exclSpVal,
      I            k,bi,bj, parsFld, myThid )
 c        ELSEIF ( parsFld(10:10) .EQ. 'I' ) THEN
@@ -184,37 +184,37 @@ c        ELSEIF ( parsFld(10:10) .EQ. '1' ) THEN
 
           drLoc = 1. _d 0
           IF     ( parsFld(2:2).EQ.'U' ) THEN
-           CALL  DIAGSTATS_CALC(
+           CALL DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
      I            frcFld(sizI1,sizJ1,kFr,biIn,bjIn),
      I            scaleFact, power, useFract, n, diagSt_vRegMsk(n),
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
-     I            diagSt_regMask(1-Olx,1-Oly,kRegMsk,bi,bj),
-     I            maskInW(1-Olx,1-Oly,bi,bj),
-     I            maskInW(1-Olx,1-Oly,bi,bj),rAw(1-Olx,1-Oly,bi,bj),
+     I            diagSt_regMask(1-OLx,1-OLy,kRegMsk,bi,bj),
+     I            maskInW(1-OLx,1-OLy,bi,bj),
+     I            maskInW(1-OLx,1-OLy,bi,bj),rAw(1-OLx,1-OLy,bi,bj),
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
           ELSEIF ( parsFld(2:2).EQ.'V' ) THEN
-           CALL  DIAGSTATS_CALC(
+           CALL DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
      I            frcFld(sizI1,sizJ1,kFr,biIn,bjIn),
      I            scaleFact, power, useFract, n, diagSt_vRegMsk(n),
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
-     I            diagSt_regMask(1-Olx,1-Oly,kRegMsk,bi,bj),
-     I            maskInS(1-Olx,1-Oly,bi,bj),
-     I            maskInS(1-Olx,1-Oly,bi,bj),rAs(1-Olx,1-Oly,bi,bj),
+     I            diagSt_regMask(1-OLx,1-OLy,kRegMsk,bi,bj),
+     I            maskInS(1-OLx,1-OLy,bi,bj),
+     I            maskInS(1-OLx,1-OLy,bi,bj),rAs(1-OLx,1-OLy,bi,bj),
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
           ELSE
-           CALL  DIAGSTATS_CALC(
+           CALL DIAGSTATS_CALC(
      O            statLoc,
      I            inpFld(sizI1,sizJ1,kIn,biIn,bjIn),
      I            frcFld(sizI1,sizJ1,kFr,biIn,bjIn),
      I            scaleFact, power, useFract, n, diagSt_vRegMsk(n),
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
-     I            diagSt_regMask(1-Olx,1-Oly,kRegMsk,bi,bj),
-     I            maskInC(1-Olx,1-Oly,bi,bj),
-     I            maskInC(1-Olx,1-Oly,bi,bj), rA(1-Olx,1-Oly,bi,bj),
+     I            diagSt_regMask(1-OLx,1-OLy,kRegMsk,bi,bj),
+     I            maskInC(1-OLx,1-OLy,bi,bj),
+     I            maskInC(1-OLx,1-OLy,bi,bj), rA(1-OLx,1-OLy,bi,bj),
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
           ENDIF
 
