@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.18 2012/08/01 18:22:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.19 2012/09/03 19:41:14 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -55,7 +55,7 @@ C     == Local variables ==
       _RL theMeanG, theVolG
       _RL theMean1, theMean2, theEnergy
       _RL theMin0, theMax0, theSD, theDel2
-      _RL dummyRL(6)
+c     _RL dummyRL(6)
       INTEGER i,j,bi,bj
 #ifdef ALLOW_MNC
       INTEGER k
@@ -245,11 +245,11 @@ C-- 2nd  level (volume-mean) Temp. :
         CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
 
 C-- Total Energy :
-        CALL  MON_CALC_STATS_RL(
+        CALL MON_CALC_STATS_RL(
      I                1, Qice1, locMask, maskInC, rA, locDr,
      O                theMin0,theMax0,theMean1,theSD,theDel2,theVolG,
      I                myThid )
-        CALL  MON_CALC_STATS_RL(
+        CALL MON_CALC_STATS_RL(
      I                1, Qice2, locMask, maskInC, rA, locDr,
      O                theMin0,theMax0,theMean2,theSD,theDel2,theVolG,
      I                myThid )
