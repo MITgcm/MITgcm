@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/scatter_2d_rx.template,v 1.6 2009/06/28 01:02:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/scatter_2d_rx.template,v 1.7 2012/09/03 19:36:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -55,7 +55,7 @@ C !LOCAL VARIABLES:
       INTEGER tN
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_USE_MPI
-      INTEGER np0, np
+      INTEGER np, pId
       _RX     temp(1:sNx,1:sNy,nSx,nSy)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER lbuff, isource, itag
@@ -64,16 +64,16 @@ C !LOCAL VARIABLES:
       _BEGIN_MASTER( myThid )
 
 #ifdef ALLOW_USE_MPI
+      IF ( usingMPI ) THEN
 
-      lbuff = sNx*nSx*sNy*nSy
-      isource = 0
-      itag  = 0
+       lbuff = sNx*nSx*sNy*nSy
+       isource = 0
+       itag  = 0
 
-      IF( mpiMyId .EQ. 0 ) THEN
+       IF( mpiMyId .EQ. 0 ) THEN
 
 C--   Process 0 sends local arrays to all other processes
-        DO np = 2, numberOfProcs
-         np0 = np - 1
+        DO np = 2, nPx*nPy
 
 C--   Process 0 extract the local arrays from the global buffer.
 
@@ -138,20 +138,22 @@ C        end if-else useExch2GlobLayOut
          ENDIF
 
 C--   Process 0 sends local arrays to all other processes
+         pId = np - 1
          CALL MPI_SEND (temp, lbuff, _MPI_TYPE_RX,
-     &           np0, itag, MPI_COMM_MODEL, ierr)
+     &           pId, itag, MPI_COMM_MODEL, ierr)
 
 C-      end loop on np
         ENDDO
 
-      ELSE
+       ELSE
 
 C--   All proceses except 0 receive local array from process 0
          CALL MPI_RECV (myField, lbuff, _MPI_TYPE_RX,
      &        isource, itag, MPI_COMM_MODEL, istatus, ierr)
 
-      ENDIF
+       ENDIF
 
+      ENDIF
 #endif /* ALLOW_USE_MPI */
 
       IF( myProcId .EQ. 0 ) THEN

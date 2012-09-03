@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/gather_2d_rx.template,v 1.6 2009/06/28 01:02:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/gather_2d_rx.template,v 1.7 2012/09/03 19:36:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -55,7 +55,7 @@ C !LOCAL VARIABLES:
       INTEGER tN
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_USE_MPI
-      INTEGER np0, np
+      INTEGER np, pId
       _RX     temp(1:sNx,1:sNy,nSx,nSy)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER lbuff, idest, itag, ready_to_receive
@@ -139,23 +139,24 @@ C-    end if myProcId = 0
       ENDIF
 
 #ifdef ALLOW_USE_MPI
+      IF ( usingMPI ) THEN
 
-      lbuff = sNx*nSx*sNy*nSy
-      idest = 0
-      itag  = 0
-      ready_to_receive = 0
+       lbuff = sNx*nSx*sNy*nSy
+       idest = 0
+       itag  = 0
+       ready_to_receive = 0
 
-      IF( mpiMyId .EQ. 0 ) THEN
+       IF( mpiMyId .EQ. 0 ) THEN
 
 C--   Process 0 polls and receives data from each process in turn
-        DO np = 2, numberOfProcs
-         np0 = np - 1
+        DO np = 2, nPx*nPy
+         pId = np - 1
 #ifndef DISABLE_MPI_READY_TO_RECEIVE
          CALL MPI_SEND (ready_to_receive, 1, MPI_INTEGER,
-     &           np0, itag, MPI_COMM_MODEL, ierr)
+     &           pId, itag, MPI_COMM_MODEL, ierr)
 #endif
          CALL MPI_RECV (temp, lbuff, _MPI_TYPE_RX,
-     &           np0, itag, MPI_COMM_MODEL, istatus, ierr)
+     &           pId, itag, MPI_COMM_MODEL, istatus, ierr)
 
 C--   Process 0 gathers the local arrays into the global buffer.
 #ifdef ALLOW_EXCH2
@@ -221,7 +222,7 @@ C        end if-else useExch2GlobLayOut
 C-      end loop on np
         ENDDO
 
-      ELSE
+       ELSE
 
 C--   All proceses except 0 wait to be polled then send local array
 #ifndef DISABLE_MPI_READY_TO_RECEIVE
@@ -231,8 +232,9 @@ C--   All proceses except 0 wait to be polled then send local array
          CALL MPI_SEND (myField, lbuff, _MPI_TYPE_RX,
      &        idest, itag, MPI_COMM_MODEL, ierr)
 
-      ENDIF
+       ENDIF
 
+      ENDIF
 #endif /* ALLOW_USE_MPI */
 
       _END_MASTER( myThid )

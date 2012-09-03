@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum_singlecpu.F,v 1.4 2009/06/10 03:47:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum_singlecpu.F,v 1.5 2012/09/03 19:36:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -63,8 +63,7 @@ C         sumAll needs to have the same length as MPI_DOUBLE_PRECISION
       INTEGER bi, bj
       Real*8  sumAll
 #ifdef ALLOW_USE_MPI
-      INTEGER npe
-      INTEGER lbuff, idest, itag
+      INTEGER pId, idest, itag
       INTEGER istatus(MPI_STATUS_SIZE), ierr
 #endif /* ALLOW_USE_MPI */
 CEOP
@@ -80,6 +79,10 @@ CEOP
       xSize = Nx
       ySize = Ny
 #endif /* ALLOW_EXCH2 */
+#ifdef ALLOW_USE_MPI
+      idest = 0
+      itag  = 0
+#endif
 
 C--   copy (and conversion to real*8) to Shared buffer:
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -104,12 +107,7 @@ C--   Gather local arrays
      I                       xSize, ySize,
      I                       useExch2GlobLayOut, zeroBuff, myThid )
 
-#ifdef ALLOW_USE_MPI
-       idest = 0
-       itag  = 0
-
-       IF ( mpiMyId.EQ.0 ) THEN
-#endif
+      IF ( myProcId.EQ.0 ) THEN
 
 C--   Process 0 sums the global array
         sumAll = 0. _d 0
@@ -119,20 +117,22 @@ C--   Process 0 sums the global array
 
 #ifdef ALLOW_USE_MPI
 C--   Process 0 sends result to all other processes
-        lbuff = 1
-        DO npe = 1, numberOfProcs-1
+        IF ( usingMPI ) THEN
+         DO pId = 1, (nPx*nPy)-1
           CALL MPI_SEND (sumAll, 1, MPI_DOUBLE_PRECISION,
-     &                   npe, itag, MPI_COMM_MODEL, ierr)
-        ENDDO
+     &                   pId, itag, MPI_COMM_MODEL, ierr)
+         ENDDO
+        ENDIF
 
-       ELSE
+      ELSEIF ( usingMPI ) THEN
 
 C--   All proceses except 0 receive result from process 0
           CALL MPI_RECV (sumAll, 1, MPI_DOUBLE_PRECISION,
      &         idest, itag, MPI_COMM_MODEL, istatus, ierr)
 
-       ENDIF
-#endif /* not ALLOW_USE_MPI */
+#endif /* ALLOW_USE_MPI */
+
+      ENDIF
 
 C--   Write solution to shared buffer (all threads can see it)
       phiGSR8(1,0) = sumAll
