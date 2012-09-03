@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx1_cube.template,v 1.14 2010/05/19 01:25:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx1_cube.template,v 1.15 2012/09/03 19:39:25 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -140,6 +140,8 @@ C     Wait until all threads finish filling buffer
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_USE_MPI
+      IF ( usingMPI ) THEN
+
       _BEGIN_MASTER( myThid )
 
 C--   Send my data (in buffer, level 1) to target Process
@@ -218,6 +220,7 @@ C           that he has consumed the buffer the sender filled here.
 C     Everyone waits until master-thread finishes receiving
       CALL BAR2( myThid )
 
+      ENDIF
 #endif /* ALLOW_USE_MPI */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
