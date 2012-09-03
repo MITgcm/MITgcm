@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.29 2010/07/06 23:12:51 zhc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.30 2012/09/03 19:27:47 jmc Exp $
 C $Name:  $
-#include "CPP_EEOPTIONS.h"
-CBOP
 
+#include "CPP_EEOPTIONS.h"
+
+CBOP
 C     !ROUTINE: INI_PROCS
 
 C     !INTERFACE:
       SUBROUTINE INI_PROCS
-      IMPLICIT NONE
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -23,6 +23,7 @@ C     | This is OK and should work fine.
 C     *==========================================================*
 
 C     !USES:
+      IMPLICIT NONE
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -33,25 +34,20 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuffer        :: IO buffer
-C     myThid           :: Dummy thread id
-C     mpiRC            :: Error code reporting variable used
-C                         with MPI.
-C     mpiGridSpec      :: No. of processes in X and Y.
-C     mpiPeriodicity   :: Flag indicating XY priodicity to MPI.
-C     arrElSize        :: Size of an array element in bytes used
-C                         to define MPI datatypes for communication
-C                         operations.
-C     arrElSep         :: Separation in units of array elements between
-C                         blocks to be communicated.
-C     elCount          :: No. of blocks that are associated with MPI
-C                         datatype.
-C     elLen            :: Length of an MPI datatype in terms of preexisting
-C                         datatype.
-C     elStride         :: Distance between starting location of elements
-C                         in an MPI datatype - can be bytes of datatype
-C                         units.
-      CHARACTER*(MAX_LEN_MBUF) msgBuffer
+C     msgBuf         :: IO buffer
+C     myThid         :: Dummy thread id
+C     mpiRC          :: Error code reporting variable used with MPI.
+C     mpiGridSpec    :: No. of processes in X and Y.
+C     mpiPeriodicity :: Flag indicating XY priodicity to MPI.
+C     arrElSize      :: Size of an array element in bytes used to define
+C                       MPI datatypes for communication operations.
+C     arrElSep       :: Separation in units of array elements between
+C                       blocks to be communicated.
+C     elCount        :: No. of blocks that are associated with MPI datatype.
+C     elLen          :: Length of an MPI datatype in terms of preexisting
+C                       datatype.
+C     elStride       :: Distance between starting location of elements in
+C                       an MPI datatype - can be bytes of datatype units.
       INTEGER mpiRC
       INTEGER mpiGridSpec(2)
       INTEGER mpiPeriodicity(2)
@@ -62,36 +58,35 @@ C                         units.
       INTEGER elCount
       INTEGER elLen
       INTEGER elStride
-      INTEGER npe,itemp(2),ierr,istatus(MPI_STATUS_SIZE)
-      INTEGER mpiBufSize,mpiRequest
+      INTEGER np, pId, itemp(2)
+      INTEGER ierr
 #endif /* ALLOW_USE_MPI */
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER myThid
 CEOP
 
 C--   Default values set to single processor case
-C     pid[W-SE] are the MPI process id of the neighbor
-C     processes. A process can be its own neighbor!
+C     pid[W-SE] are the MPI process id of the neighbor processes.
+C     A process can be its own neighbor!
       myThid      = 1
-      myPid       = 1
+      myPid       = 0
       nProcs      = 1
       myPx        = 1
       myPy        = 1
       myXGlobalLo = 1
       myYGlobalLo = 1
-      pidW        = 1
-      pidE        = 1
-      pidN        = 1
-      pidS        = 1
+      pidW        = 0
+      pidE        = 0
+      pidN        = 0
+      pidS        = 0
 c     errorMessageUnit    = 0
 c     standardMessageUnit = 6
 
+      IF ( usingMPI ) THEN
 #ifdef ALLOW_USE_MPI
 C--
 C--   MPI style full multiple-process initialisation
 C--   ==============================================
-#ifndef ALWAYS_USE_MPI
-      IF ( usingMPI ) THEN
-#endif
 
 C--    Arrange MPI processes on a cartesian grid
 C      Set variable indicating which MPI process is to the north,
@@ -101,31 +96,29 @@ C
 C      Plan view of model domain centered on process ME
 C      ================================================
 C
-C               :         :         :        :    
-C               :         :         :        :    
-C               :         :         :        :    
-C          .....------------------------------.....
-C               |         |         |        |    
-C               |  NW     |   N     |  NE    |    
-C               |         |         |        |    
-C          .....------------------------------.....
-C               |         |         |        |    
-C               |  W      |   ME    |  E     |    
-C               |         |         |        |    
-C          .....------------------------------.....
-C               |         |         |        |    
-C               |  SW     |   S     |  SE    |    
-C               |         |         |        |    
-C          .....------------------------------.....
-C               :         :         :        :    
-C  Y            :         :         :        :    
-C / \           :         :         :        :    
-C  |
+C            :         :         :        :
+C            :         :         :        :
+C            :         :         :        :
+C       .....------------------------------.....
+C            |         |         |        |
+C            |  NW     |   N     |  NE    |
+C            |         |         |        |
+C       .....------------------------------.....
+C            |         |         |        |
+C            |  W      |   ME    |  E     |
+C            |         |         |        |
+C       .....------------------------------.....
+C            |         |         |        |
+C            |  SW     |   S     |  SE    |
+C            |         |         |        |
+C       .....------------------------------.....
+C  Y         :         :         :        :
+C / \        :         :         :        :
+C  |         :         :         :        :
 C  |
 C  |----> X
 C
 C--    Set default MPI communicator to XY processor grid
-       myThid        = 1
        mpiGridSpec(1) = nPx
        mpiGridSpec(2) = nPy
 C      Could be periodic in X and/or Y - set at run time or compile time!
@@ -155,10 +148,10 @@ C      Could be periodic in X and/or Y - set at run time or compile time!
      O  mpiComm, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &        'S/R INI_PROCS: MPI_CART_CREATE return code',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         GOTO 999
        ENDIF
 
@@ -166,10 +159,10 @@ C--    Get my location on the grid
        CALL MPI_CART_COORDS( mpiComm, mpiMyId, 2, mpiGridSpec, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &        'S/R INI_PROCS: MPI_CART_COORDS return code',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         GOTO 999
        ENDIF
        myPid = mpiMyId
@@ -184,13 +177,14 @@ C--   To speed-up mpi gather and scatter routines, myXGlobalLo
 C     and myYGlobalLo from each process are transferred to
 C     a common block array.  This allows process 0 to know
 C     the location of the domains controlled by each process.
-       DO npe = 0, numberOfProcs-1
+       DO np = 1, nPx*nPy
           itemp(1) = myXGlobalLo
           itemp(2) = myYGlobalLo
-          CALL MPI_BCAST(itemp, 2, MPI_INTEGER, npe,
+          pId = np - 1
+          CALL MPI_BCAST(itemp, 2, MPI_INTEGER, pId,
      &         MPI_COMM_MODEL, ierr)
-          mpi_myXGlobalLo(npe+1) = itemp(1)
-          mpi_myYGlobalLo(npe+1) = itemp(2)
+          mpi_myXGlobalLo(np) = itemp(1)
+          mpi_myYGlobalLo(np) = itemp(2)
        ENDDO
 
        myPx = mpiPx+1
@@ -210,14 +204,13 @@ C--    Get MPI id for neighboring procs.
       ENDIF
 #endif /* ALLOW_NEST_CHILD */
 
-
        CALL MPI_CART_RANK( mpiComm, mpiGridSpec, mpiPidW , mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &        'S/R INI_PROCS: MPI_CART_RANK (pidW) return code',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         GOTO 999
        ENDIF
        pidW = mpiPidW
@@ -238,10 +231,10 @@ C--    Get MPI id for neighboring procs.
        CALL MPI_CART_RANK( mpiComm, mpiGridSpec, mpiPidE , mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &        'S/R INI_PROCS: MPI_CART_RANK (pidE) return code',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         GOTO 999
        ENDIF
        pidE = mpiPidE
@@ -253,10 +246,10 @@ C--    Get MPI id for neighboring procs.
        CALL MPI_CART_RANK( mpiComm, mpiGridSpec, mpiPidS , mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &        'S/R INI_PROCS: MPI_CART_RANK (pidS) return code',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         GOTO 999
        ENDIF
        pidS = mpiPidS
@@ -268,10 +261,10 @@ C--    Get MPI id for neighboring procs.
        CALL MPI_CART_RANK( mpiComm, mpiGridSpec, mpiPidN , mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &        'S/R INI_PROCS: MPI_CART_RANK (pidN) return code',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         GOTO 999
        ENDIF
        pidN = mpiPidN
@@ -280,47 +273,47 @@ C--    Print summary of processor mapping on standard output
        CALL MPI_GET_PROCESSOR_NAME( mpiProcNam, mpilProcNam, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &        'S/R INI_PROCS: MPI_GET_PROCESSOR_NAME return code',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         GOTO 999
        ENDIF
-       WRITE(msgBuffer,'(A)')
+       WRITE(msgBuf,'(A)')
      &   '======= Starting MPI parallel Run ========='
-       CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit,
-     &  SQUEEZE_BOTH , myThid)
-       WRITE(msgBuffer,'(A,I3,A,A)') ' My Processor Name (len:',
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_BOTH , myThid )
+       WRITE(msgBuf,'(A,I3,A,A)') ' My Processor Name (len:',
      &  mpilProcNam, ' ) = ', mpiProcNam(1:mpilProcNam)
-       CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit,
-     &  SQUEEZE_RIGHT , myThid)
-       WRITE(msgBuffer,'(A,I3,A,I3,A,I3,A,I3,A)') ' Located at (',
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       WRITE(msgBuf,'(A,I3,A,I3,A,I3,A,I3,A)') ' Located at (',
      &  mpiPx,',',mpiPy,
      &  ') on processor grid (0:',nPx-1,',0:',nPy-1,')'
-       CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit,
-     &  SQUEEZE_RIGHT , myThid)
-       WRITE(msgBuffer,'(A,I6,A,I6,A,I6,A,I6,A)') ' Origin at  (',
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       WRITE(msgBuf,'(A,I6,A,I6,A,I6,A,I6,A)') ' Origin at  (',
      &  mpiXGlobalLo,',',mpiYGLobalLo,
      &  ') on global grid (1:',nPx*sNx*nSx,',1:',nPy*sNy*nSy,')'
-       CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit,
-     &  SQUEEZE_RIGHT , myThid)
-       WRITE(msgBuffer,'(A,I4.4)')
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       WRITE(msgBuf,'(A,I4.4)')
      &   ' North neighbor = processor ', mpiPidN
-       CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit,
-     &  SQUEEZE_RIGHT , myThid)
-       WRITE(msgBuffer,'(A,I4.4)')
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       WRITE(msgBuf,'(A,I4.4)')
      &   ' South neighbor = processor ', mpiPidS
-       CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit,
-     &  SQUEEZE_RIGHT , myThid)
-       WRITE(msgBuffer,'(A,I4.4)')
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       WRITE(msgBuf,'(A,I4.4)')
      &   '  East neighbor = processor ', mpiPidE
-       CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit,
-     &  SQUEEZE_RIGHT , myThid)
-       WRITE(msgBuffer,'(A,I4.4)')
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       WRITE(msgBuf,'(A,I4.4)')
      &   '  West neighbor = processor ', mpiPidW
-       CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit,
-     &  SQUEEZE_RIGHT , myThid)
-C
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+
 C--    Create MPI types for transfer of array edges.
 C--    Four and eight byte primitive (one block only) datatypes.
 C--    These are common to all threads in the process.
@@ -331,7 +324,7 @@ C      If they are not defined code must be added to create them -
 C      the MPI standard leaves optional whether they exist.
 C      2. Per thread datatypes that handle all the edges for a thread
 C      are defined based on the type defined here.
-C--
+
 C--    xFace datatypes (east<-->west messages)
 C--
 C      xFace (y=constant) for XY arrays with real*4 declaration.
@@ -348,18 +341,18 @@ C      xFace (y=constant) for XY arrays with real*4 declaration.
 #endif
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_VECTOR (mpiTypeXFaceBlock_xy_r4)',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
        CALL MPI_TYPE_COMMIT( mpiTypeXFaceBlock_xy_r4, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeXFaceBlock_xy_r4)',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
 
 C      xFace (y=constant) for XY arrays with real*8 declaration.
@@ -372,18 +365,18 @@ C      xFace (y=constant) for XY arrays with real*8 declaration.
 #endif
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_VECTOR (mpiTypeXFaceBlock_xy_r8)',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
        CALL MPI_TYPE_COMMIT( mpiTypeXFaceBlock_xy_r8, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeXFaceBlock_xy_r8)',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
 
 C      xFace (y=constant) for XYZ arrays with real*4 declaration.
@@ -397,18 +390,18 @@ C      xFace (y=constant) for XYZ arrays with real*4 declaration.
      &                       mpiTypeXFaceBlock_xyz_r4, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_HVECTOR (mpiTypeXFaceBlock_xyz_r4)',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
        CALL MPI_TYPE_COMMIT( mpiTypeXFaceBlock_xyz_r4, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_COMMIT  (mpiTypeXFaceBlock_xyz_r4)',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
 
 C      xFace (y=constant) for XYZ arrays with real*8 declaration.
@@ -419,20 +412,20 @@ C      xFace (y=constant) for XYZ arrays with real*8 declaration.
      &                       mpiTypeXFaceBlock_xyz_r8, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_HVECTOR (mpiTypeXFaceBlock_xyz_r8)',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
        CALL MPI_TYPE_COMMIT( mpiTypeXFaceBlock_xyz_r8, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeXFaceBlock_xyz_r8)',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
-C--
+
 C--    yFace datatypes (north<-->south messages)
 C--
 C      yFace (x=constant) for XY arrays with real*4 declaration
@@ -446,18 +439,18 @@ C      yFace (x=constant) for XY arrays with real*4 declaration
 #endif
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_CONTIGUOUS (mpiTypeYFaceBlock_xy_r4)',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
        CALL MPI_TYPE_COMMIT( mpiTypeYFaceBlock_xy_r4, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeYFaceBlock_xy_r4)',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
 C      yFace (x=constant) for XY arrays with real*8 declaration
 #if (defined (TARGET_SGI) || defined (TARGET_AIX) || defined(TARGET_LAM))
@@ -469,18 +462,18 @@ C      yFace (x=constant) for XY arrays with real*8 declaration
 #endif
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_CONTIGUOUS (mpiTypeYFaceBlock_xy_r8)',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
        CALL MPI_TYPE_COMMIT( mpiTypeYFaceBlock_xy_r8, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeYFaceBlock_xy_r8)',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
 C      yFace (x=constant) for XYZ arrays with real*4 declaration
        arrElSize = 4
@@ -493,18 +486,18 @@ C      yFace (x=constant) for XYZ arrays with real*4 declaration
      &                       mpiTypeYFaceBlock_xyz_r4, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_HVECTOR (mpiTypeYFaceBlock_xyz_r4)',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
        CALL MPI_TYPE_COMMIT( mpiTypeYFaceBlock_xyz_r4, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeYFaceBlock_xyz_r4)',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
 C      yFace (x=constant) for XYZ arrays with real*8 declaration
        arrElSize = 8
@@ -514,18 +507,18 @@ C      yFace (x=constant) for XYZ arrays with real*8 declaration
      &                       mpiTypeYFaceBlock_xyz_r8, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_HVECTOR (mpiTypeYFaceBlock_xyz_r8)',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
        CALL MPI_TYPE_COMMIT( mpiTypeYFaceBlock_xyz_r8, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I5)')
+        WRITE(msgBuf,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeYFaceBlock_xyz_r8)',
      &        mpiRC
-        CALL PRINT_ERROR( msgBuffer , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
 
 C--    Assign MPI values used in generating unique tags for messages.
@@ -534,15 +527,27 @@ C--    Assign MPI values used in generating unique tags for messages.
        mpiTagS    = 3
        mpiTagN    = 4
 
-C
        CALL MPI_Barrier(MPI_COMM_MODEL,mpiRC)
 
-
-C
-#ifndef ALWAYS_USE_MPI
-      ENDIF
-#endif
 #endif /* ALLOW_USE_MPI */
+      ELSE
+C--   Case without using MPI (usingMPI=F)
+
+C--   case without tile-communication (DISCONNECTED_TILES defined) is not
+C     yet coded for multi-procs; for now, just stop if multi-procs domain
+       IF ( nPx*nPy .NE. 1 ) THEN
+c       eeBootError = .TRUE.
+        WRITE(msgBuf,'(2A,I6,A)') 'INI_PROCS: ',
+     &    'needs MPI for multi-procs (nPx*nPy=',  nPx*nPy, ') setup'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'INI_PROCS: ',
+     &    ' but presently usingMPI = False (in "eedata")'
+        CALL PRINT_ERROR( msgBuf, myThid )
+c       GOTO 999
+       ENDIF
+
+C--   End if usingMPI
+      ENDIF
 
  999  CONTINUE
 
