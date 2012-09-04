@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_TOPOLOGY.h,v 1.11 2011/09/21 16:27:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_TOPOLOGY.h,v 1.12 2012/09/04 00:43:13 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -36,7 +36,6 @@ C      exch2_yStack_Nx   :: Length of domain used for east/west OBCS.
 C      exch2_yStack_Ny   :: Height of domain used for east/west OBCS.
 C---   Tiling and Exch data structures
 C      exch2_nTiles      :: Number of tiles in this topology
-C      exch2_tProc       :: Rank of process owning tile (filled at run time).
 C      exch2_myFace      :: Face number for each tile (used for I/O).
 C      exch2_mydNx       :: Face size in X for each tile (for I/O).
 C      exch2_mydNy       :: Face size in Y for each tile (for I/O).
@@ -71,7 +70,6 @@ C                        :: to source connection (neighbour entry "n").
        INTEGER exch2_yStack_Nx
        INTEGER exch2_yStack_Ny
        INTEGER exch2_nTiles
-       INTEGER exch2_tProc( W2_maxNbTiles )
        INTEGER exch2_myFace( W2_maxNbTiles )
        INTEGER exch2_mydNx( W2_maxNbTiles )
        INTEGER exch2_mydNy( W2_maxNbTiles )
@@ -101,7 +99,7 @@ C                        :: to source connection (neighbour entry "n").
      &        exch2_global_Nx, exch2_global_Ny,
      &        exch2_xStack_Nx, exch2_xStack_Ny,
      &        exch2_yStack_Nx, exch2_yStack_Ny,
-     &        exch2_nTiles, exch2_tProc,
+     &        exch2_nTiles,
      &        exch2_myFace, exch2_mydNx, exch2_mydNy,
      &        exch2_tNx, exch2_tNy,
      &        exch2_tBasex, exch2_tBasey,
@@ -151,15 +149,41 @@ C                                  tile t1 Y-increment
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C--   COMMON /W2_EXCH2_TILE_ID/ tile ids
-C     W2 tile id variables (tile ids are no longer a function of
-C                           process and subgrid indices).
+C--   COMMON /W2_MAP_TILE2PROC/ mapping of tiles to process:
+C     get W2 tile Id from process Id + subgrid indices (bi,bj) or the reverse
+C     (tile ids are no longer a simple function of process and subgrid indices).
+C
+C     W2_tileProc(tN) :: Rank of process owning tile tN (filled at run time).
+C     W2_tileIndex(tN):: local subgrid index of tile tN
+C     W2_tileRank(tN) :: rank of tile tN in full-tile list (without blank)
 C     W2_myTileList   :: list of tiles owned by this process
 C     W2_procTileList :: same as W2_myTileList, but contains
 C                        information for all processes
-      INTEGER W2_myTileList(nSx,nSy)
-      INTEGER W2_procTileList(nSx,nSy,nPx*nPy)
-      COMMON /W2_EXCH2_TILE_ID/
+      INTEGER W2_tileProc ( W2_maxNbTiles )
+c     INTEGER W2_tileIndex( W2_maxNbTiles )
+c     INTEGER W2_tileRank ( W2_maxNbTiles )
+      INTEGER W2_myTileList ( nSx,nSy )
+      INTEGER W2_procTileList(nSx,nSy,nPx*nPy )
+      COMMON /W2_MAP_TILE2PROC/
+     &        W2_tileProc,
+c    &        W2_tileIndex,
+c    &        W2_tileRank,
      &        W2_myTileList, W2_procTileList
+
+C--   COMMON /W2_EXCH2_COMMFLAG/ EXCH2 character Flag for type of communication
+      CHARACTER W2_myCommFlag( W2_maxNeighbours, nSx, nSy )
+      COMMON /W2_EXCH2_COMMFLAG/ W2_myCommFlag
+
+C--   COMMON /EXCH2_FILLVAL_RX/ real type filling value used by EXCH2
+C     e2FillValue_RX :: filling value for null regions (facet-corner
+C                    :: halo regions)
+      _RL e2FillValue_RL
+      _RS e2FillValue_RS
+      _R4 e2FillValue_R4
+      _R8 e2FillValue_R8
+      COMMON /EXCH2_FILLVAL_RL/ e2FillValue_RL
+      COMMON /EXCH2_FILLVAL_RS/ e2FillValue_RS
+      COMMON /EXCH2_FILLVAL_R4/ e2FillValue_R4
+      COMMON /EXCH2_FILLVAL_R8/ e2FillValue_R8
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

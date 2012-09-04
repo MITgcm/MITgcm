@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_PARAMS.h,v 1.12 2011/07/09 22:09:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_PARAMS.h,v 1.13 2012/09/04 00:43:13 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -85,17 +85,5 @@ C       is connected to Northern edge of face "XX" ; similarly,
 C       = XX.2 : to Southern.E, XX.3 = Eastern.E, XX.4 = Western.E of face "XX".
       Real*4  facet_link( 4, W2_maxNbFacets )
       COMMON /W2_EXCH2_PARM_R/ facet_link
-
-C--   COMMON /EXCH2_FILLVAL_RX/ real type filling value used by EXCH2
-C     e2FillValue_RX :: filling value for null regions (facet-corner
-C                    :: halo regions)
-      _RL e2FillValue_RL
-      _RS e2FillValue_RS
-      _R4 e2FillValue_R4
-      _R8 e2FillValue_R8
-      COMMON /EXCH2_FILLVAL_RL/ e2FillValue_RL
-      COMMON /EXCH2_FILLVAL_RS/ e2FillValue_RS
-      COMMON /EXCH2_FILLVAL_R4/ e2FillValue_R4
-      COMMON /EXCH2_FILLVAL_R8/ e2FillValue_R8
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_BUFFER.h,v 1.3 2009/06/28 00:58:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_BUFFER.h,v 1.4 2012/09/04 00:43:13 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -39,9 +39,5 @@ C     iBuf2Filled :: actual length of buffer-2 which has been filled in.
       INTEGER iBuf1Filled( W2_maxNeighbours, nSx, nSy )
       INTEGER iBuf2Filled( W2_maxNeighbours, nSx, nSy )
       COMMON /W2_EXCH2_BUF_I/ iBuf1Filled, iBuf2Filled
-
-C--   COMMON /W2_EXCH2_COMMFLAG/ EXCH2 character Flag for type of communication
-      CHARACTER W2_myCommFlag( W2_maxNeighbours, nSx, nSy )
-      COMMON /W2_EXCH2_COMMFLAG/ W2_myCommFlag
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
