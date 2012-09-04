@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.44 2012/06/22 02:03:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.45 2012/09/04 22:16:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -48,9 +48,6 @@ C     msgBuf :: Informational/error message buffer
 #ifdef ALLOW_EXCH2
       INTEGER xySize
 #endif /* ALLOW_EXCH2 */
-#ifdef ALLOW_USE_MPI
-      INTEGER iG,jG,np
-#endif /* ALLOW_USE_MPI */
 CEOP
 
 C-    Safety check:
