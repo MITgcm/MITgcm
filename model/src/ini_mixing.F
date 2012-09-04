@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mixing.F,v 1.10 2009/06/14 21:49:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_mixing.F,v 1.11 2012/09/04 14:23:54 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,10 +52,10 @@ CEOP
 #ifdef ALLOW_3D_DIFFKR
             diffKr(i,j,k,bi,bj) = diffKrNrS(k)
 #endif
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_KAPGM_CONTROL))
+#if (defined (ALLOW_GMREDI) && defined (ALLOW_KAPGM_CONTROL))
             KapGM(i,j,k,bi,bj) = GM_background_K
 #endif
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_KAPREDI_CONTROL))
+#if (defined (ALLOW_GMREDI) && defined (ALLOW_KAPREDI_CONTROL))
             kapredi(i,j,k,bi,bj) = GM_isopycK
 #endif
            ENDDO
@@ -85,10 +85,10 @@ CEOP
           _EXCH_XYZ_RL(diffKr , myThid )
        ENDIF
 #endif
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_KAPGM_CONTROL))
+#if (defined (ALLOW_GMREDI) && defined (ALLOW_KAPGM_CONTROL))
       _EXCH_XYZ_RL(KapGM,   myThid )
 #endif
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_KAPREDI_CONTROL))
+#if (defined (ALLOW_GMREDI) && defined (ALLOW_KAPREDI_CONTROL))
       _EXCH_XYZ_RL(kapredi,   myThid )
 #endif
       RETURN
