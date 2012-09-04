@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.23 2012/08/10 19:38:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.24 2012/09/04 14:58:30 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -172,7 +172,7 @@ c--   Salinity field.
       boundsVec(3)=0.
       boundsVec(4)=0.
       boundsVec(5)=0.
-      paramSmooth=1
+      paramSmooth=0
 c-- initial zonal velocity
       call ctrl_map_ini_gen3D(xx_uvel_file, 'wuvel',
      & xx_uvel_dummy, boundsVec, uvel, maskw, paramSmooth,
@@ -260,7 +260,7 @@ c--   SSS relaxation coefficient.
       boundsVec(3)=0.3
       boundsVec(4)=0.4
       boundsVec(5)=0.
-      paramSmooth=1
+      paramSmooth=0
 c-- zonal eddy streamfunction : eddyPsiX
       call ctrl_map_ini_gen3D(xx_edtaux_file, 'wedtauxFld',
      & xx_edtaux_dummy, boundsVec, eddyPsiX, maskw, paramSmooth,
