@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_comm_sequence.F,v 1.10 2011/07/09 21:49:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_comm_sequence.F,v 1.11 2012/09/04 00:45:25 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -66,10 +66,10 @@ C     Send loop for cell centered
        DO bi=1,nSx
         myTileId=W2_myTileList(bi,bj)
         nN=exch2_nNeighbours(myTileId)
-        sourceProc=exch2_tProc(myTileId)
+        sourceProc=W2_tileProc(myTileId)
         DO N=1,nN
          targetTile=exch2_neighbourId(N,myTileId)
-         targetProc=exch2_tProc(targetTile)
+         targetProc=W2_tileProc(targetTile)
          tN = exch2_opposingSend(N,myTileId)
          pi(1)     =exch2_pij(1,N,myTileId)
          pi(2)     =exch2_pij(2,N,myTileId)
@@ -122,10 +122,10 @@ C     Recv loop for cell centered
        DO bi=1,nSx
         myTileId=W2_myTileList(bi,bj)
         nN=exch2_nNeighbours(myTileId)
-        sourceProc=exch2_tProc(myTileId)
+        sourceProc=W2_tileProc(myTileId)
         DO N=1,nN
          targetTile=exch2_neighbourId(N,myTileId)
-         targetProc=exch2_tProc(targetTile)
+         targetProc=W2_tileProc(targetTile)
 C        Find entry for tile targetTile entry that sent to this edge.
          tN=exch2_opposingSend(N,myTileId)
 C        Get the range of points associated with that entry

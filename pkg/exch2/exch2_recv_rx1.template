@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_recv_rx1.template,v 1.11 2010/04/23 20:21:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_recv_rx1.template,v 1.12 2012/09/04 00:45:25 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -77,8 +77,8 @@ C     between source and target tile
       IF ( commSetting .EQ. 'M' ) THEN
 C      Setup MPI stuff here
        theTag =  (soT-1)*W2_maxNeighbours + oNb
-       tProc = exch2_tProc(thisTile)-1
-       sProc = exch2_tProc(soT)-1
+       tProc = W2_tileProc(thisTile)-1
+       sProc = W2_tileProc(soT)-1
        theType = _MPI_TYPE_RX
        CALL MPI_Recv( e2Bufr1_RX, iBufr, theType, sProc,
      &                theTag, MPI_COMM_MODEL, mpiStatus, mpiRc )

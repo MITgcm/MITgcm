@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx1.template,v 1.12 2010/04/23 20:21:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx1.template,v 1.13 2012/09/04 00:45:25 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -83,8 +83,8 @@ C     source and target tile
       IF ( commSetting .EQ. 'M' ) THEN
 C      Setup MPI stuff here
        theTag =  (thisTile-1)*W2_maxNeighbours + nN
-       tProc = exch2_tProc(tgT)-1
-       sProc = exch2_tProc(thisTile)-1
+       tProc = W2_tileProc(tgT)-1
+       sProc = W2_tileProc(thisTile)-1
        theType = _MPI_TYPE_RX
 #ifdef W2_E2_DEBUG_ON
        WRITE(msgBuf,'(A,I5,A,I5,A)')
