@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xy.F,v 1.27 2012/08/21 14:08:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xy.F,v 1.28 2012/09/04 14:58:53 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -214,7 +214,7 @@ cph(
      &                 phtmpadmtlm(nveccount)
 cph)
 #endif
-#ifndef ALLOW_SMOOTH_CORREL2D
+                     IF ( .NOT.ctrlSmoothCorrel2D ) THEN
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if ( lxxadxx ) then
                         globfld3d(i,bi,ip,j,bj,jp,k) =
@@ -228,7 +228,7 @@ cph)
      &                       / forcingPrecond
                      endif
 #endif
-#else /* ALLOW_SMOOTH_CORREL2D */
+                     ELSE !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
                      if ( lxxadxx ) then
                         globfld3d(i,bi,ip,j,bj,jp,k) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k)
@@ -238,7 +238,7 @@ cph)
      &                       globfld3d(i,bi,ip,j,bj,jp,k)
      &                       / forcingPrecond
                      endif
-#endif /* ALLOW_SMOOTH_CORREL2D */
+                     ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
                   else
                      globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
                   endif
@@ -322,7 +322,7 @@ cph(
      &                 phtmpadmtlm(nveccount)
 cph)
 #endif
-#ifndef ALLOW_SMOOTH_CORREL2D
+                     IF ( .NOT.ctrlSmoothCorrel2D ) THEN
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if ( lxxadxx ) then
                         globfld3d(i,bi,ip,j,bj,jp,k) =
@@ -336,7 +336,7 @@ cph)
      &                       / forcingPrecond
                      endif
 #endif
-#else /* ALLOW_SMOOTH_CORREL2D */
+                     ELSE !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
                      if ( lxxadxx ) then
                         globfld3d(i,bi,ip,j,bj,jp,k) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k)
@@ -346,7 +346,7 @@ cph)
      &                       globfld3d(i,bi,ip,j,bj,jp,k)
      &                       / forcingPrecond
                      endif
-#endif /* ALLOW_SMOOTH_CORREL2D */
+                     ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
                   else
                      globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
                   endif
@@ -535,7 +535,7 @@ c-- 2.2: normalize field if needed
             nveccount = nveccount + 1
             fld2dNodim(i,j,bi,bj)=phtmpadmtlm(nveccount)
 #endif
-#ifdef ALLOW_SMOOTH_CORREL2D
+           IF ( ctrlSmoothCorrel2D ) THEN
             if (lxxadxx) then
                fld2dDim(i,j,bi,bj) =
      &              fld2dNodim(i,j,bi,bj) * forcingPrecond
@@ -543,7 +543,7 @@ c-- 2.2: normalize field if needed
                fld2dDim(i,j,bi,bj) =
      &              fld2dNodim(i,j,bi,bj) / forcingPrecond
             endif
-#else
+           ELSE !IF ( ctrlSmoothCorrel2D ) THEN
 # ifndef ALLOW_NONDIMENSIONAL_CONTROL_IO
             fld2dDim(i,j,bi,bj) = fld2dNodim(i,j,bi,bj)
 # else
@@ -557,7 +557,7 @@ c-- 2.2: normalize field if needed
      &                       / forcingPrecond
             endif
 # endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
-#endif /* ALLOW_SMOOTH_CORREL2D */
+           ENDIF !IF ( ctrlSmoothCorrel2D ) THEN
            endif
           ENDDO
          ENDDO

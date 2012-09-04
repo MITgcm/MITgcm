@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.27 2012/08/12 19:46:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.28 2012/09/04 14:58:53 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -125,20 +125,26 @@ c--   Get the counters, flags, and the interpolation factor.
      &     call ctrl_smooth(xx_gen1,genmask,myThid)
 #endif
 
-#ifdef ALLOW_SMOOTH_CORREL2D
+#ifdef ALLOW_SMOOTH
+      IF ( ctrlSmoothCorrel2D ) THEN
+      IF ( useSMOOTH ) THEN
       call smooth_correl2D(xx_gen1,genmask,1,mythid)
       call smooth_correl2Dw(xx_gen1,genmask,xx_gen_file,mythid)
+      ENDIF
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xx_gen_file(1:ilgen),'.effective.',optimcycle
       call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
      & 1, xx_gen1, gencount0, optimcycle, mythid)
-#elif (defined (ALLOW_SMOOTH_CTRL2D))
-      call smooth2D(xx_gen1,genmask,1,mythid)
+      ENDIF
+#ifdef ALLOW_SMOOTH_CTRL2D
+      if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xx_gen_file(1:ilgen),'.smooth.',optimcycle
       call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
      & 1, xx_gen1, gencount1, optimcycle, mythid)
-#endif
+#endif /* ALLOW_SMOOTH_CTRL2D */
+#endif /* ALLOW_SMOOTH */
+
       endif
 
       if (( genfirst ) .or. ( genchanged )) then
@@ -153,20 +159,26 @@ c--   Get the counters, flags, and the interpolation factor.
      &     call ctrl_smooth(xx_gen1,genmask,myThid)
 #endif
 
-#ifdef ALLOW_SMOOTH_CORREL2D
+#ifdef ALLOW_SMOOTH
+      IF ( ctrlSmoothCorrel2D ) THEN
+      IF ( useSMOOTH ) THEN
       call smooth_correl2D(xx_gen1,genmask,1,mythid)
       call smooth_correl2Dw(xx_gen1,genmask,xx_gen_file,mythid)
+      ENDIF
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xx_gen_file(1:ilgen),'.effective.',optimcycle
       call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
      & 1, xx_gen1, gencount1, optimcycle, mythid)
-#elif (defined (ALLOW_SMOOTH_CTRL2D))
-      call smooth2D(xx_gen1,genmask,1,mythid)
+      ENDIF
+#ifdef ALLOW_SMOOTH_CTRL2D
+      if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xx_gen_file(1:ilgen),'.smooth.',optimcycle
       call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
      & 1, xx_gen1, gencount0, optimcycle, mythid)
-#endif
+#endif /* ALLOW_SMOOTH_CTRL2D */
+#endif /* ALLOW_SMOOTH */
+
       endif
 
 c--   Add control to model variable.

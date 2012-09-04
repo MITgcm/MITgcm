@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xyz.F,v 1.23 2012/08/10 19:38:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xyz.F,v 1.24 2012/09/04 14:58:53 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -194,7 +194,7 @@ cph(
                      globfldtmp3(i,bi,ip,j,bj,jp) =
      &                    globfld3d(i,bi,ip,j,bj,jp,k)
 cph)
-#ifndef ALLOW_SMOOTH_CORREL3D
+                  IF ( .NOT.ctrlSmoothCorrel3D ) THEN
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
                         cbuff(cbuffindex) = 1/delZnorm
@@ -219,9 +219,9 @@ cph)
 #else /* ALLOW_NONDIMENSIONAL_CONTROL_IO undef */
                      cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
 #endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
-#else  /* ALLOW_SMOOTH_CORREL3D */
+                     ELSE !IF ( .NOT.ctrlSmoothCorrel3D ) THEN
                      cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
-#endif /* ALLOW_SMOOTH_CORREL3D */
+                     ENDIF !IF ( .NOT.ctrlSmoothCorrel3D ) THEN
 #ifdef ALLOW_ADMTLM
                      nveccount = nveccount + 1
                      phtmpadmtlm(nveccount) = cbuff(cbuffindex)
@@ -348,9 +348,9 @@ c-- 2.2: normalize field if needed
             fld3dDim(i,j,k,bi,bj)=0. _d 0
             fld3dNodim(i,j,k,bi,bj)=0. _d 0
            else
-#ifdef ALLOW_SMOOTH_CORREL3D
+           IF ( ctrlSmoothCorrel3D ) THEN
             fld3dNodim(i,j,k,bi,bj)=fld3dDim(i,j,k,bi,bj)
-#else
+           ELSE !IF ( ctrlSmoothCorrel3D ) THEN
 # ifndef ALLOW_NONDIMENSIONAL_CONTROL_IO
             fld3dNodim(i,j,k,bi,bj) = fld3dDim(i,j,k,bi,bj)
 # else
@@ -372,7 +372,7 @@ c-- 2.2: normalize field if needed
 #  endif
             endif
 # endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
-#endif /* ALLOW_SMOOTH_CORREL3D */
+           ENDIF !IF ( ctrlSmoothCorrel3D ) THEN
            endif
           ENDDO
          ENDDO

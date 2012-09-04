@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.20 2012/08/10 19:38:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.21 2012/09/04 14:58:53 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -109,9 +109,10 @@ c--   only do interior, and exchange outside
      & doglobalread, ladinit, optimcycle, mythid, xxDummyCur )
 
 
-#ifndef ALLOW_SMOOTH_CORREL3D
+      IF ( .NOT.ctrlSmoothCorrel3D ) THEN
+
 c avoid xx larger than boundsVec(5) X uncertainty
-      if ( boundsVec(5).GT.0.) then
+      if ( boundsVec(5).GT.0. ) then
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do k = 1,nr
@@ -132,16 +133,35 @@ c avoid xx larger than boundsVec(5) X uncertainty
        enddo
       enddo
       endif
+
+#ifdef ALLOW_SMOOTH
 # ifdef ALLOW_SMOOTH_CTRL3D
-      call smooth3D(xxFld3d,paramSmooth,mythid)
+      if (useSMOOTH) call smooth3D(xxFld3d,paramSmooth,mythid)
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xxFileCur(1:il),'.smooth.',optimcycle
       call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
      & nr, xxFld3d, 1, optimcycle, mythid)
 # endif
-#else
+#endif
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+      paramFld3d(i,j,k,bi,bj) = paramFld3d(i,j,k,bi,bj)
+     & + xxFld3d(i,j,k,bi,bj)
+              enddo
+            enddo
+          enddo
+       enddo
+      enddo
+
+      ELSE !IF ( .NOT.ctrlSmoothCorrel3D ) THEN
+
+#ifdef ALLOW_SMOOTH
 c apply Weaver And Courtier correlation operator
-      if (paramSmooth.NE.0) then
+      if ( paramSmooth.NE.0 .AND. useSMOOTH ) then
        call smooth_correl3D(xxFld3d,paramSmooth,mythid)
       endif
 #endif
@@ -151,7 +171,6 @@ c apply Weaver And Courtier correlation operator
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-#ifdef ALLOW_SMOOTH_CORREL3D
 c scale param adjustment
       if ( (maskFld3d(i,j,k,bi,bj).NE.0.)
      & .AND. (wFld3d(i,j,k,bi,bj).GT.0.) ) then
@@ -160,7 +179,6 @@ c scale param adjustment
       else
       xxFld3d(i,j,k,bi,bj)=0.
       endif
-#endif
       paramFld3d(i,j,k,bi,bj) = paramFld3d(i,j,k,bi,bj)
      & + xxFld3d(i,j,k,bi,bj)
               enddo
@@ -169,15 +187,17 @@ c scale param adjustment
        enddo
       enddo
 
+      ENDIF !IF ( .NOT.ctrlSmoothCorrel3D ) THEN
+
 c avoid param out of [boundsVec(1) boundsVec(4)]
       CALL CTRL_BOUND_3D(paramFld3d,maskFld3d,boundsVec,myThid)
 
-#ifdef ALLOW_SMOOTH_CORREL3D
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     & xxFileCur(1:il),'.effective.',optimcycle
-      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
-     & nr, paramFld3d, 1, optimcycle, mythid)
-#endif
+      IF ( ctrlSmoothCorrel3D ) THEN
+        write(fnamegeneric(1:80),'(2a,i10.10)')
+     &    xxFileCur(1:il),'.effective.',optimcycle
+        call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
+     &    nr, paramFld3d, 1, optimcycle, mythid)
+      ENDIF
 
 
       RETURN
@@ -289,7 +309,8 @@ c--   only do interior, and exchange outside
      & doglobalread, ladinit, optimcycle, mythid, xxDummyCur )
 
 
-#ifndef ALLOW_SMOOTH_CORREL2D
+      IF ( .NOT.ctrlSmoothCorrel2D ) THEN
+
 c avoid xx larger than boundsVec(5) X uncertainty
       if ( boundsVec(5).GT.0.) then
       do bj = jtlo,jthi
@@ -310,16 +331,33 @@ c avoid xx larger than boundsVec(5) X uncertainty
        enddo
       enddo
       endif
+
+#ifdef ALLOW_SMOOTH
 # ifdef ALLOW_SMOOTH_CTRL2D
-      call smooth2d(xxFld2d,maskFld3d,paramSmooth,mythid)
+      if (useSMOOTH) call smooth2d(xxFld2d,maskFld3d,paramSmooth,mythid)
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xxFileCur(1:il),'.smooth.',optimcycle
       call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
      & 1, xxFld2d, 1, optimcycle, mythid)
 # endif
-#else
+#endif
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+            do j = jmin,jmax
+              do i = imin,imax
+      paramFld2d(i,j,bi,bj) = paramFld2d(i,j,bi,bj)
+     & + xxFld2d(i,j,bi,bj)
+              enddo
+            enddo
+       enddo
+      enddo
+
+      ELSE !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
+
+#ifdef ALLOW_SMOOTH
 c apply Weaver And Courtier correlation operator
-      if (paramSmooth.NE.0) then
+      if ( paramSmooth.NE.0 .AND. useSMOOTH ) then
        call smooth_correl2d(xxFld2d,maskFld3d,paramSmooth,mythid)
       endif
 #endif
@@ -328,7 +366,6 @@ c apply Weaver And Courtier correlation operator
         do bi = itlo,ithi
             do j = jmin,jmax
               do i = imin,imax
-#ifdef ALLOW_SMOOTH_CORREL2D
 c scale param adjustment
       if ( (maskFld3d(i,j,1,bi,bj).NE.0.)
      & .AND. (wFld2d(i,j,bi,bj).GT.0.) ) then
@@ -337,7 +374,6 @@ c scale param adjustment
       else
       xxFld2d(i,j,bi,bj)=0.
       endif
-#endif
       paramFld2d(i,j,bi,bj) = paramFld2d(i,j,bi,bj)
      & + xxFld2d(i,j,bi,bj)
               enddo
@@ -345,14 +381,16 @@ c scale param adjustment
        enddo
       enddo
 
+      ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
+
       CALL CTRL_BOUND_2D(paramFld2d,maskFld3d,boundsVec,myThid)
 
-#ifdef ALLOW_SMOOTH_CORREL2D
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     & xxFileCur(1:il),'.effective.',optimcycle
-      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
-     & 1, paramFld2d, 1, optimcycle, mythid)
-#endif
+      IF ( ctrlSmoothCorrel2D ) THEN
+        write(fnamegeneric(1:80),'(2a,i10.10)')
+     &   xxFileCur(1:il),'.effective.',optimcycle
+        call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
+     &   1, paramFld2d, 1, optimcycle, mythid)
+      endif
 
       RETURN
       END
