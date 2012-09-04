@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.62 2012/07/04 20:19:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.63 2012/09/04 14:24:36 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -63,7 +63,7 @@ C     data.pkg namelists
      &          useEBM,
      &          useCheapAML,
      &          useGrdchk,
-c    &          useSMOOTH,
+     &          useSMOOTH,
      &          usePROFILES,
      &          useECCO,
      &          useSBO,
@@ -193,10 +193,6 @@ C--   packages with hard-coded switch
 
 #ifdef ALLOW_ECCO
       useCAL = .TRUE.
-#endif
-
-#ifdef ALLOW_SMOOTH
-      useSMOOTH = .TRUE.
 #endif
 
 C--   packages with an implied switch
