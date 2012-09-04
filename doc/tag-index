@@ -1,9 +1,31 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1728 2012/08/30 23:13:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1729 2012/09/04 01:04:23 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exch2:
+  - add "if usingMPI" where it was missing (in exch2_rx?_cube*.template)
+    + to remove ALWAYS_USE_MPI in source code that TAF does not see.
+  - make new S/R W2_MAP_PROCS out of w2_eeboot.F to setup exch2 CommonFlag
+    and tiles to process mapping.
+  - re-arrange 3 header files (W2_EXCH2_PARAMS.h, _BUFFER.h & _TOPOLOGY.h)
+    moving /EXCH2_FILLVAL_RX/ & /W2_EXCH2_COMMFLAG/ to W2_EXCH2_TOPOLOGY.h;
+    rename "exch2_tProc" to "W2_tileProc" and move seting of e2FillValue_RX
+    from w2_eeboot.F to w2_readparms.F.
+o eesupp/src:
+  - set exchNeedsMemsync & exchUsesBarrier according to "usingMPI" (instead of
+    ALWAYS_USE_MPI) + moved from ini_communication_patterns.F to eeset_parms.F;
+    also move setting of exchCollectStatistics from exch_init.F to eeset_parms.F
+  - in eedie.F and all_proc_die.F, always call MPI_FINALIZE when ALLOW_USE_MPI
+    is defined (remove condition on usingMPI) to match cases where MPI_INIT
+    has been called.
+  - fix bug I put in previous modif of exch_sm_3d_rx.template (not much used);
+  - change default (non-MPI) value of myPid (from 1 to 0) to match MPI settings
+    (so that on 1 proc, get same myPid independently of usingMPI)
+  - add a stop if multi-procs but usingMPI=F ; stop also if usingMPI=T and
+    useCubedSphereExchange with EXCH-1 (safer).
+  - add "if usingMPI" where it was missing (+ start to remove ALWAYS_USE_MPI).
 o pkg/ggl90:
   - fix bug in filling corner mask array "mskCor" (FILL_CS_CORNER_TR_RL call)
     used in ALLOW_GGL90_SMOOTH code.
