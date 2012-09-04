@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_readparms.F,v 1.4 2011/07/09 21:53:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_readparms.F,v 1.5 2012/09/04 00:44:30 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -94,6 +94,17 @@ C-    Initialise other parameters:
           facet_link(i,j) = 0.
         ENDDO
       ENDDO
+
+C     Set filling value for face-corner halo regions
+      e2FillValue_RL = 0. _d 0
+      e2FillValue_RS = 0. _d 0
+      e2FillValue_R4 = 0.e0
+      e2FillValue_R8 = 0.d0
+C-    for testing only: put a large value (should not affects the results)
+c     e2FillValue_RL = 1. _d+20
+c     e2FillValue_RS = 1. _d+20
+c     e2FillValue_R4 = 1.e+20
+c     e2FillValue_R8 = 1.d+20
 
 C-    Check for file "data.ech2":
       fileExist = .FALSE.
