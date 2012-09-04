@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_inadmode_unset_ad.F,v 1.6 2012/07/05 19:32:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_inadmode_unset_ad.F,v 1.7 2012/09/04 14:31:29 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -28,6 +28,8 @@ C     myThid :: my Thread Id number
       useKPP    = useKPPinFwdMode
       useGMRedi = useGMRediInFwdMode
       useSEAICE = useSEAICEinFwdMode
+      useGGL90    = useGGL90inFwdMode
+      useSALT_PLUME    = useSALT_PLUMEinFwdMode
 
       IF ( debugLevel.GE.debLevC ) THEN
        WRITE(msgBuf,'(A,L5)')
@@ -40,6 +42,15 @@ C     myThid :: my Thread Id number
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,L5)')
      &      'S/R ADAUTODIFF_INADMODE_UNSET: useSEAICE =', useSEAICE
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,L5)')
+     &      'S/R ADAUTODIFF_INADMODE_UNSET: useGGL90    =', useGGL90
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,L5)')
+     &      'S/R ADAUTODIFF_INADMODE_UNSET: useSALT_PLUME    =', 
+     &      useSALT_PLUME
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF

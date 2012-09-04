@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.5 2012/08/07 21:17:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.6 2012/09/04 14:31:29 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -35,8 +35,8 @@ C     iUnit      :: Work variable for IO unit number
       NAMELIST /AUTODIFF_PARM01/
      &       dumpAdVarExch, mon_AdVarExch,
      &       dumpAdByRec, 
-     &       useKPPinAdMode,
-     &       useGMRediInAdMode,
+     &       useKPPinAdMode, useGGL90inAdMode,
+     &       useGMRediInAdMode, useSALT_PLUMEinAdMode,
      &       useSEAICEinAdMode, turnFreeDriftInAdMode,
      &       inAdExact
 
@@ -53,6 +53,8 @@ C--   default : write one file per record
       useKPPinAdMode     = .TRUE.
       useGMRediInAdMode  = .TRUE.
       useSEAICEinAdMode  = .TRUE.
+      useGGL90inAdMode   = .TRUE.
+      useSALT_PLUMEinAdMode = .TRUE.
       inAdExact          = .TRUE.
       turnFreeDriftInAdMode = .FALSE.
 
@@ -88,11 +90,15 @@ C     store value of usePKG as it will be reset in S/R ADAUTODIFF_INADMODE_UNSET
       useKPPinFwdMode    = useKPP
       useGMRediInFwdMode = useGMRedi
       useSEAICEinFwdMode = useSEAICE
+      useGGL90inFwdMode   = useGGL90
+      useSALT_PLUMEinFwdMode = useSALT_PLUME
 
 C     store value of usePKG as it will be set in S/R ADAUTODIFF_INADMODE_SET
       useKPPinAdMode    = useKPPinAdMode    .AND. useKPP
       useGMRediInAdMode = useGMRediInAdMode .AND. useGMRedi
       useSEAICEinAdMode = useSEAICEinAdMode .AND. useSEAICE
+      useGGL90inAdMode    = useGGL90inAdMode    .AND. useGGL90
+      useSALT_PLUMEinAdMode = useSALT_PLUMEinAdMode .AND. useSALT_PLUME
 
 C--   Print out some kee parameters :
       WRITE(msgBuf,'(A)') '// ==================================='
@@ -112,6 +118,11 @@ C--   Print out some kee parameters :
      &  'useGMRediInAdMode =', ' /* use GMRedi in adjoint mode */')
        CALL WRITE_0D_L( useSEAICEinAdMode, INDEX_NONE,
      &  'useSEAICEinAdMode =', ' /* use SEAICE in adjoint mode */')
+       CALL WRITE_0D_L( useGGL90inAdMode, INDEX_NONE,
+     &   'useGGL90inAdMode =',      ' /* use GGL90 in adjoint mode */')
+       CALL WRITE_0D_L( useSALT_PLUMEinAdMode, INDEX_NONE,
+     &   'useSALT_PLUMEinAdMode =',
+     &   ' /* use SALT_PLUME in adjoint mode */')
 #ifdef ALLOW_SEAICE
        CALL WRITE_0D_L( turnFreeDriftInAdMode, INDEX_NONE,
      &  'turnFreeDriftInAdMode=',
