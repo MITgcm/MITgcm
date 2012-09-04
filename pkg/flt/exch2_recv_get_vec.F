@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch2_recv_get_vec.F,v 1.1 2010/12/22 21:24:58 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch2_recv_get_vec.F,v 1.2 2012/09/04 00:46:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -97,7 +97,7 @@ C- loop over neighboring tiles
 #ifndef ALWAYS_USE_MPI
          IF ( usingMPI ) THEN
 #endif
-         theProc = exch2_tProc(tgT) - 1
+         theProc = W2_tileProc(tgT) - 1
          theTag  = (tgT-1)*W2_maxNeighbours + oNb
          theSize = myd1
          theType = _MPI_TYPE_RL

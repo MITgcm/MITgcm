@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch2_send_put_vec.F,v 1.1 2010/12/22 21:24:58 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch2_send_put_vec.F,v 1.2 2012/09/04 00:46:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -14,8 +14,8 @@ C !ROUTINE: EXCH2_RL_SEND_PUT_VEC
 
 C !INTERFACE:
       SUBROUTINE EXCH2_RL_SEND_PUT_VEC(
-     I                        array, 
-     O                        bufRec, 
+     I                        array,
+     O                        bufRec,
      O                        theHandle,
      I                        myd1, myThid )
 C     !DESCRIPTION:
@@ -122,7 +122,7 @@ C        Send the data
 #ifndef ALWAYS_USE_MPI
          IF ( usingMPI ) THEN
 #endif
-         theProc = exch2_tProc(tgT) - 1
+         theProc = W2_tileProc(tgT) - 1
          theTag  = (thisTile-1)*W2_maxNeighbours + nN
          theSize = myd1
          theType = _MPI_TYPE_RL
