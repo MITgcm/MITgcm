@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.23 2012/07/14 19:57:16 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.24 2012/09/04 14:32:29 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -554,7 +554,7 @@ c6) available variablesin the data set
       vec_quantities(num_file,2,bi,bj)=.FALSE.
       endif
 #ifndef ALLOW_PROFILES_GENERICGRID
-cgf This bloc won't work when model u/v are not
+cgf This bloc wont work when model u/v are not
 cgf zonal/meridional components, while prof_U/V are.
       err = NF_INQ_VARID(fid,'prof_U', varid1 )
       if (err.EQ.NF_NOERR) then
