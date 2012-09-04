@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.42 2012/08/10 19:38:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.43 2012/09/04 14:58:15 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
 #include "AD_CONFIG.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
       subroutine ctrl_pack( first, mythid )
 
@@ -51,6 +54,9 @@ c     == global variables ==
 # include "ecco_cost.h"
 #else
 # include "ctrl_weights.h"
+#endif
+#ifdef ALLOW_EXF
+# include "EXF_PARAM.h"
 #endif
 
 c     == routine arguments ==
@@ -272,6 +278,9 @@ c          write(cunit) nWetiGlobal(1)
 #endif
 
 #if (defined (ALLOW_USTRESS_CONTROL) || defined (ALLOW_TAUU0_CONTROL))
+#ifdef ALLOW_EXF
+      IF ( .NOT.useAtmWind ) THEN
+#endif
           ivartype = 5
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wtauu"
@@ -282,9 +291,15 @@ c          write(cunit) nWetiGlobal(1)
      &         cunit, ivartype, fname_tauu(ictrlgrad), "maskCtrlC",
 #endif
      &         weighttype, lxxadxx, mythid)
+#ifdef ALLOW_EXF
+      ENDIF
+#endif
 #endif
 
 #if (defined (ALLOW_VSTRESS_CONTROL) || defined (ALLOW_TAUV0_CONTROL))
+#ifdef ALLOW_EXF
+      IF ( .NOT.useAtmWind ) THEN
+#endif
           ivartype = 6
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wtauv"
@@ -295,6 +310,9 @@ c          write(cunit) nWetiGlobal(1)
      &         cunit, ivartype, fname_tauv(ictrlgrad), "maskCtrlC",
 #endif
      &         weighttype, lxxadxx, mythid)
+#ifdef ALLOW_EXF
+      ENDIF
+#endif
 #endif
 
 #ifdef ALLOW_ATEMP_CONTROL
@@ -316,21 +334,33 @@ c          write(cunit) nWetiGlobal(1)
 #endif
 
 #ifdef ALLOW_UWIND_CONTROL
+#ifdef ALLOW_EXF
+      IF ( useAtmWind ) THEN
+#endif
           ivartype = 9
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wuwind"
           call ctrl_set_pack_xy(
      &         cunit, ivartype, fname_uwind(ictrlgrad), "maskCtrlC",
      &         weighttype, lxxadxx, mythid)
+#ifdef ALLOW_EXF
+      ENDIF
+#endif
 #endif
 
 #ifdef ALLOW_VWIND_CONTROL
+#ifdef ALLOW_EXF
+      IF ( useAtmWind ) THEN
+#endif
           ivartype = 10
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wvwind"
           call ctrl_set_pack_xy(
      &         cunit, ivartype, fname_vwind(ictrlgrad), "maskCtrlC",
      &         weighttype, lxxadxx, mythid)
+#ifdef ALLOW_EXF
+      ENDIF
+#endif
 #endif
 
 #ifdef ALLOW_OBCSN_CONTROL

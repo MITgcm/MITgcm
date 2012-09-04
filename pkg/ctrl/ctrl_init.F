@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.50 2012/08/28 19:18:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.51 2012/09/04 14:58:15 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 C--  File ctrl_init.F:
 C--   Contents
@@ -34,7 +37,9 @@ c     == global variables ==
 #include "ctrl.h"
 #include "CTRL_GENARR.h"
 #include "optim.h"
-
+#ifdef ALLOW_EXF
+# include "EXF_PARAM.h"
+#endif
 #ifdef ALLOW_DIC_CONTROL
 # include "DIC_CTRL.h"
 #endif
@@ -210,6 +215,9 @@ c--   initial forcing only
 
 c----------------------------------------------------------------------
 c--
+#ifdef ALLOW_EXF
+      IF ( .NOT.useAtmWind ) THEN
+#endif
 #if (defined (ALLOW_USTRESS_CONTROL))
 c--   Zonal wind stress.
       call ctrl_init_rec ( xx_tauu_file,
@@ -231,8 +239,14 @@ c--   initial forcing only
      &     snx, sny, 1, 'w', 'xy', mythid )
 
 #endif /* ALLOW_USTRESS_CONTROL */
+#ifdef ALLOW_EXF
+      ENDIF
+#endif
 
 #if (defined (ALLOW_UWIND_CONTROL))
+#ifdef ALLOW_EXF
+      IF ( useAtmWind ) THEN 
+#endif
 c--   Zonal wind speed.
       call ctrl_init_rec ( xx_uwind_file,
      I     xx_uwindstartdate1, xx_uwindstartdate2, xx_uwindperiod, 1,
@@ -241,10 +255,16 @@ c--   Zonal wind speed.
       call ctrl_init_ctrlvar (
      &     xx_uwind_file, 9, 109, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
+#ifdef ALLOW_EXF
+      ENDIF
+#endif
 #endif /* ALLOW_UWIND_CONTROL */
 
 c----------------------------------------------------------------------
 c--
+#ifdef ALLOW_EXF
+      IF ( .NOT.useAtmWind ) THEN
+#endif
 #if (defined (ALLOW_VSTRESS_CONTROL))
 c--   Meridional wind stress.
       call ctrl_init_rec ( xx_tauv_file,
@@ -266,8 +286,14 @@ c--   initial forcing only
      &     snx, sny, 1, 's', 'xy', mythid )
 
 #endif /* ALLOW_VSTRESS_CONTROL */
+#ifdef ALLOW_EXF
+      ENDIF
+#endif
 
 #if (defined (ALLOW_VWIND_CONTROL))
+#ifdef ALLOW_EXF
+      IF ( useAtmWind ) THEN
+#endif
 c--   Meridional wind speed.
       call ctrl_init_rec ( xx_vwind_file,
      I     xx_vwindstartdate1, xx_vwindstartdate2, xx_vwindperiod, 1,
@@ -276,6 +302,9 @@ c--   Meridional wind speed.
       call ctrl_init_ctrlvar (
      &     xx_vwind_file, 10, 110, diffrec, startrec, endrec,
      &     snx, sny, 1, 'c', 'xy', mythid )
+#ifdef ALLOW_EXF
+      ENDIF
+#endif
 #endif /* ALLOW_VWIND_CONTROL */
 
 c--   ===========================
