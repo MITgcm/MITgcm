@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.62 2012/08/28 19:18:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.63 2012/09/04 14:57:06 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -53,7 +53,17 @@ cph Need to put this in namelist at some point!
       _RL delZexp
       _RL forcingPrecond
 
+C     doInitXX               ::   at iter 0 only, set ctrls to 0 and write to xx*000.data
+C     doMainPack             ::   pack adxx*data files into ecco_cost_* file (usually for optim.x)
+C     doMainUnpack           ::   unpack ecco_ctrl_* file (usually from optim.x) into xx_*data files 
+C     doPackDiag             ::   output diag_pack*/diag_unpack* files during ctrl_pack/ctrl_unpack
+C     doSinglePrecTapelev    ::   reduce precision of ad tape files to float32 (only used in pkg/autodiff ...)
+C     ctrlSmoothCorrel2D     ::   use pkg/smooth correlation operator (incl. smoother) for 2D controls (Weaver, Courtier 01)
+C     ctrlSmoothCorrel3D     ::   use pkg/smooth correlation operator (incl. smoother) for 3D controls (Weaver, Courtier 01)
+
       common /controlvars_l /
+     &                       ctrlSmoothCorrel2D,
+     &                       ctrlSmoothCorrel3D,
      &                       doInitXX,
      &                       doAdmTlm,
      &                       doPackDiag,
@@ -64,6 +74,7 @@ cph Need to put this in namelist at some point!
      &                       doSinglePrecTapelev,
      &                       doAdmtlmBypassAD
 
+      logical ctrlSmoothCorrel2D, ctrlSmoothCorrel3D 
       logical doInitXX
       logical doAdmTlm
       logical doPackDiag
