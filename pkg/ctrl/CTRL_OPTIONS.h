@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_OPTIONS.h,v 1.1 2012/08/10 17:28:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_OPTIONS.h,v 1.2 2012/09/04 14:56:52 gforget Exp $
 C $Name:  $
 
 CBOP
@@ -53,6 +53,20 @@ C       >>> Atmospheric state.
 C  o Rotation of wind/stress controls adjustments
 C    from Eastward/Northward to model grid directions
 #undef ALLOW_ROTATE_UV_CONTROLS
+
+C  o use pkg/smooth correlation operator (incl. smoother) for 2D controls (Weaver, Courtier 01)
+C    This CPP option just sets the default for ctrlSmoothCorrel2D to .TRUE.
+#undef ALLOW_SMOOTH_CORREL2D
+C  o use pkg/smooth correlation operator (incl. smoother) for 3D controls (Weaver, Courtier 01)
+C    This CPP option just sets the default for ctrlSmoothCorrel3D to .TRUE.
+#undef ALLOW_SMOOTH_CORREL3D
+
+C  o apply pkg/ctrl/ctrl_smooth.F to 2D controls (outside of ctrlSmoothCorrel2D)
+#undef ALLOW_CTRL_SMOOTH
+C  o apply pkg/smooth/smooth_diff2d.F to 2D controls (outside of ctrlSmoothCorrel2D)
+#undef ALLOW_SMOOTH_CTRL2D
+C  o apply pkg/smooth/smooth_diff3d.F to 3D controls (outside of ctrlSmoothCorrel3D)
+#undef ALLOW_SMOOTH_CTRL3D
 
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */
