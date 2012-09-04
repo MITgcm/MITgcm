@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_diffkr.F,v 1.7 2012/08/10 19:45:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_diffkr.F,v 1.8 2012/09/04 15:04:51 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -107,13 +107,13 @@ c--         Determine the weights to be used.
                 if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
 c                  tmpx = (tmpfld3d(i,j,k,bi,bj)-GM_background_K)
                   tmpx = tmpfld3d(i,j,k,bi,bj)
-#ifndef ALLOW_SMOOTH_CORREL3D
+                IF ( .NOT.ctrlSmoothCorrel3D ) THEN
                   fctile = fctile
      &                 + wdiffkrFld(i,j,k,bi,bj)*cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx
-#else
+                ELSE !IF ( .NOT.ctrlSmoothCorrel3D ) THEN
                   fctile = fctile + tmpx*tmpx
-#endif
+                ENDIF !IF ( .NOT.ctrlSmoothCorrel3D ) THEN
                   if (wdiffkrFld(i,j,k,bi,bj).ne.0.)
      &                 num_diffkr(bi,bj) = num_diffkr(bi,bj) + 1. _d 0
                 endif

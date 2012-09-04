@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_vvel0.F,v 1.4 2012/08/10 19:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_vvel0.F,v 1.5 2012/09/04 15:04:51 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -118,13 +118,13 @@ c--         Determine the weights to be used.
               do i = imin,imax
                 if (_hFacS(i,j,k,bi,bj) .ne. 0.) then
                   tmpx = tmpfld3d(i,j,k,bi,bj)
-#ifndef ALLOW_SMOOTH_CORREL3D
+                  IF ( .NOT.ctrlSmoothCorrel3D ) THEN
                   fctile = fctile
      &                 + wvvel3d(i,j,k,bi,bj)*cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx
-#else
+                  ELSE !IF ( .NOT.ctrlSmoothCorrel3D ) THEN
                   fctile = fctile + tmpx*tmpx
-#endif
+                  ENDIF !IF ( .NOT.ctrlSmoothCorrel3D ) THEN
                   if ( wvvel3d(i,j,k,bi,bj)*cosphi(i,j,bi,bj).ne.0. )
      &                 num_vvel0(bi,bj) = num_vvel0(bi,bj) + 1. _d 0
                 endif

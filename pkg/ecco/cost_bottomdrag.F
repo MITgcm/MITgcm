@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bottomdrag.F,v 1.7 2012/08/10 19:45:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bottomdrag.F,v 1.8 2012/09/04 15:04:51 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -105,13 +105,13 @@ c--         Determine the weights to be used.
               do i = imin,imax
                 if (_hFacC(i,j,1,bi,bj) .ne. 0.) then
                   tmpx = tmpfld2d(i,j,bi,bj)
-#ifndef ALLOW_SMOOTH_CORREL3D
+                IF ( .NOT.ctrlSmoothCorrel2D ) THEN
                   fctile = fctile
      &                 + wbottomdrag(i,j,bi,bj)*cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx
-#else
+                ELSE !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
                   fctile = fctile + tmpx*tmpx
-#endif
+                ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
                 endif
               enddo
             enddo

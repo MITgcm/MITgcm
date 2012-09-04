@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.16 2012/08/28 19:19:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.17 2012/09/04 15:04:51 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -39,6 +39,9 @@ c     == global variables ==
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "ecco_cost.h"
+#ifdef ALLOW_EXF
+# include "EXF_PARAM.h"
+#endif
 
 c     == routine arguments ==
 
@@ -50,6 +53,11 @@ c     == local variables ==
 
       integer startrec
       integer endrec
+
+#ifndef ALLOW_EXF
+      LOGICAL useAtmWind
+      PARAMETER ( useAtmWind = .TRUE. )
+#endif
 
 c     == end of interface ==
 
@@ -113,6 +121,7 @@ c--   Specific humidity contribution to the cost function.
 
 #if (defined (ALLOW_USTRESS_COST_CONTRIBUTION )&& \
      defined (ALLOW_USTRESS_CONTROL))
+      IF ( .NOT.useAtmWind ) THEN
 c--   Zonal wind stress contribution to the cost function.
       startrec = ncvarrecstart(5)
       endrec   = ncvarrecsend(5)
@@ -124,10 +133,12 @@ c--   Zonal wind stress contribution to the cost function.
      &     objf_tauu, objf_tauum, objf_tauusmoo,
      &     xx_tauu_remo_intercept, xx_tauu_remo_slope,
      &     maskW, mythid )
+      ENDIF
 #endif
 
 #if (defined (ALLOW_UWIND_COST_CONTRIBUTION )&& \
      defined (ALLOW_UWIND_CONTROL))
+      IF ( useAtmWind ) THEN
 c--   Zonal wind speed contribution to the cost function.
       startrec = ncvarrecstart(9)
       endrec   = ncvarrecsend(9)
@@ -139,10 +150,12 @@ c--   Zonal wind speed contribution to the cost function.
      &     objf_uwind, objf_uwindm, objf_uwindsmoo,
      &     xx_uwind_remo_intercept, xx_uwind_remo_slope,
      &     maskC, mythid )
+      ENDIF
 #endif
 
 #if (defined (ALLOW_VSTRESS_COST_CONTRIBUTION) && \
      defined (ALLOW_VSTRESS_CONTROL))
+      IF ( .NOT.useAtmWind ) THEN
 c--   Meridional wind stress contribution to the cost function.
       startrec = ncvarrecstart(6)
       endrec   = ncvarrecsend(6)
@@ -154,10 +167,12 @@ c--   Meridional wind stress contribution to the cost function.
      &     objf_tauv, objf_tauvm, objf_tauvsmoo,
      &     xx_tauv_remo_intercept, xx_tauv_remo_slope,
      &     maskS, mythid )
+      ENDIF
 #endif
 
 #if (defined (ALLOW_VWIND_COST_CONTRIBUTION) && \
      defined (ALLOW_VWIND_CONTROL))
+      IF ( useAtmWind ) THEN
 c--   Meridional wind speed contribution to the cost function.
       startrec = ncvarrecstart(10)
       endrec   = ncvarrecsend(10)
@@ -169,6 +184,7 @@ c--   Meridional wind speed contribution to the cost function.
      &     objf_vwind, objf_vwindm, objf_vwindsmoo,
      &     xx_vwind_remo_intercept, xx_vwind_remo_slope,
      &     maskC, mythid )
+      ENDIF
 #endif
 
 #if (defined (ALLOW_PRECIP_COST_CONTRIBUTION) && \

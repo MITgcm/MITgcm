@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.8 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.9 2012/09/04 15:04:51 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -61,7 +61,6 @@ c     == routine arguments ==
       integer mythid
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
-#ifdef ALLOW_SMOOTH
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 #ifdef ALLOW_GENCOST_FREEFORM
 c     == local variables ==
@@ -305,8 +304,11 @@ c--   smooth mean_slaobs:
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,mean_slaobs,1,1,mythid)
 
-      call smooth_hetero2d(mean_slaobs,maskc,
+#ifdef ALLOW_SMOOTH
+      if ( useSMOOTH )
+     &  call smooth_hetero2d(mean_slaobs,maskc,
      &     gencost_scalefile(igen_mdt),300,mythid)
+#endif
 
       write(fname4test(1:80),'(1a)') 'sla2mdt_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
@@ -601,8 +603,11 @@ c--    smooth mean_psMssh_all
       call mdswritefield(fname4test,32,.false.,'RL',
      &    1,mean_psMssh_all,1,1,mythid)
 
-      call smooth_hetero2d(mean_psMssh_all,maskc,
+#ifdef ALLOW_SMOOTH
+      if ( useSMOOTH )
+     &  call smooth_hetero2d(mean_psMssh_all,maskc,
      &     gencost_scalefile(igen_mdt),300,mythid)
+#endif
 
       write(fname4test(1:80),'(1a)') 'mdtdiff_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
@@ -612,8 +617,11 @@ c--    smooth mean_psMssh_all
       call mdswritefield(fname4test,32,.false.,'RL',
      &    1,mean_slaobs2,1,1,mythid)
 
-      call smooth_hetero2d(mean_slaobs2,maskc,
+#ifdef ALLOW_SMOOTH
+      if ( useSMOOTH )
+     &  call smooth_hetero2d(mean_slaobs2,maskc,
      &     gencost_scalefile(igen_mdt),300,mythid)
+#endif
 
       write(fname4test(1:80),'(1a)') 'sla2model_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
@@ -853,12 +861,18 @@ c ----------------------------------------
      & 1,anom_slaobs,irec,1,mythid)
 #endif
 
-      call smooth_hetero2d(anom_psMslaobs,maskc,
+#ifdef ALLOW_SMOOTH
+      if ( useSMOOTH )
+     &  call smooth_hetero2d(anom_psMslaobs,maskc,
      &     gencost_scalefile(igen_lsc),300,mythid)
+#endif
 
 #ifdef ALLOW_GENCOST_SSHV4_OUTPUT
-      call smooth_hetero2d(anom_slaobs,maskc,
+#ifdef ALLOW_SMOOTH
+      if ( useSMOOTH )
+     &  call smooth_hetero2d(anom_slaobs,maskc,
      &     gencost_scalefile(igen_lsc),300,mythid)
+#endif
 
       write(fname4test(1:80),'(1a)') 'sladiff_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
@@ -1049,7 +1063,6 @@ c--             The array gfoobs contains SSH anomalies.
 
 #endif /* ifdef ALLOW_GENCOST_FREEFORM */
 #endif /* ifdef ALLOW_GENCOST_CONTRIBUTION */
-#endif /* ifdef ALLOW_SMOOTH */
 #endif /* ifdef ALLOW_SSH_COST_CONTRIBUTION */
 
       end

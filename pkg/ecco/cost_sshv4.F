@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.10 2012/08/10 19:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.11 2012/09/04 15:04:51 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -60,7 +60,6 @@ c     == routine arguments ==
       integer mythid
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
-#ifdef ALLOW_SMOOTH
 c     == local variables ==
 
       integer bi,bj
@@ -273,8 +272,11 @@ c--   smooth mean_slaobs:
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,mean_slaobs,1,1,mythid)
 
-      call smooth_hetero2d(mean_slaobs,maskc,
+#ifdef ALLOW_SMOOTH
+      if ( useSMOOTH )
+     &  call smooth_hetero2d(mean_slaobs,maskc,
      &     sshv4cost_scalefile(1),300,mythid)
+#endif
 
       write(fname4test(1:80),'(1a)') 'sla2mdt_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
@@ -536,8 +538,11 @@ c--    smooth mean_psMssh_all
       call mdswritefield(fname4test,32,.false.,'RL',
      &    1,mean_psMssh_all,1,1,mythid)
 
-      call smooth_hetero2d(mean_psMssh_all,maskc,
+#ifdef ALLOW_SMOOTH
+      if ( useSMOOTH )
+     &  call smooth_hetero2d(mean_psMssh_all,maskc,
      &     sshv4cost_scalefile(1),300,mythid)
+#endif
 
       write(fname4test(1:80),'(1a)') 'mdtdiff_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
@@ -547,8 +552,11 @@ c--    smooth mean_psMssh_all
       call mdswritefield(fname4test,32,.false.,'RL',
      &    1,mean_slaobs2,1,1,mythid)
 
-      call smooth_hetero2d(mean_slaobs2,maskc,
+#ifdef ALLOW_SMOOTH
+      if ( useSMOOTH )
+     &  call smooth_hetero2d(mean_slaobs2,maskc,
      &     sshv4cost_scalefile(1),300,mythid)
+#endif
 
       write(fname4test(1:80),'(1a)') 'sla2model_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
@@ -781,12 +789,18 @@ c ----------------------------------------
      & 1,anom_slaobs,irec,1,mythid)
 #endif
 
-      call smooth_hetero2d(anom_psMslaobs,maskc,
+#ifdef ALLOW_SMOOTH
+      if ( useSMOOTH )
+     &  call smooth_hetero2d(anom_psMslaobs,maskc,
      &     sshv4cost_scalefile(5),300,mythid)
+#endif
 
 #ifdef ALLOW_SSHV4_OUTPUT
-      call smooth_hetero2d(anom_slaobs,maskc,
+#ifdef ALLOW_SMOOTH
+      if ( useSMOOTH )
+     &  call smooth_hetero2d(anom_slaobs,maskc,
      &     sshv4cost_scalefile(5),300,mythid)
+#endif
 
       write(fname4test(1:80),'(1a)') 'sladiff_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
@@ -991,7 +1005,6 @@ c       will be used directly (with multipliers) as part of fc
         enddo
       enddo
 
-#endif /* ifdef ALLOW_SMOOTH */
 #endif /* ifdef ALLOW_SSH_COST_CONTRIBUTION */
 
       end
