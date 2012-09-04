@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_filtervar3d.F,v 1.1 2010/02/15 23:46:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_filtervar3d.F,v 1.2 2012/09/04 14:37:18 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -18,22 +18,20 @@ C     *==========================================================*
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
 #include "GRID.h"
-c#include "tamc.h"
-#include "FFIELDS.h"
 #include "SMOOTH.h"
+
+      integer smoothOpNb, myThid
 
       integer i,j,k, bi, bj, ii, jj, kk
       integer itlo,ithi, jtlo,jthi
       integer diLoc, djLoc,  dkLoc
-      integer myThid, nbRand
+      integer nbRand, nbt_in
       character*( 80) fnamegeneric
       _RL smoothTmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL smoothTmpMean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL smoothTmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL port_rand, port_rand_norm
-      integer nbt_in,smoothOpNb
 
       jtlo = mybylo(myThid)
       jthi = mybyhi(myThid)

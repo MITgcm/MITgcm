@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_impldiff.F,v 1.2 2012/07/07 00:09:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_impldiff.F,v 1.3 2012/09/04 14:37:18 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -19,23 +19,9 @@ C     !USES:
       IMPLICIT NONE
 C     == Global data ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef ALLOW_GENERIC_ADVDIFF
-#include "GAD.h"
-#endif
-#ifdef ALLOW_LONGSTEP
-#include "LONGSTEP_PARAMS.h"
-#endif
-#ifdef ALLOW_PTRACERS
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS_PARAMS.h"
-#endif
-#ifdef ALLOW_AUTODIFF_TAMC
-#include "tamc_keys.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==

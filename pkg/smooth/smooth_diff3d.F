@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_diff3d.F,v 1.4 2011/11/15 23:44:41 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_diff3d.F,v 1.5 2012/09/04 14:37:18 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -15,11 +15,6 @@ C     *==========================================================*
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
-#include "FFIELDS.h"
-c#include "ctrl.h"
-c#include "ctrl_dummy.h"
-c#include "optim.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
 #include "tamc_keys.h"

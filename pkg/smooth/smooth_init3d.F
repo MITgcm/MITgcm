@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_init3d.F,v 1.2 2010/10/20 19:22:11 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_init3d.F,v 1.3 2012/09/04 14:37:18 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -23,11 +23,7 @@ cgf for now I focus on the simpler smooth3DtypeH=1 case
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
 #include "GRID.h"
-c#include "tamc.h"
-#include "FFIELDS.h"
-#include "EOS.h"
 #include "SMOOTH.h"
 
       integer i,j,k, bi, bj, imin, imax, jmin, jmax
