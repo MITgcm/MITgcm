@@ -1,5 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_get_uv_bounds.F,v 1.3 2012/03/26 19:13:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_get_uv_bounds.F,v 1.4 2012/09/04 00:40:25 jmc Exp $
 C $Name:  $
+
+#include "CPP_EEOPTIONS.h"
 
 CBOP
 C     !ROUTINE: EXCH2_GET_UV_BOUNDS
