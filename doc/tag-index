@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1731 2012/09/05 22:12:09 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1732 2012/09/05 23:07:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -6,36 +6,36 @@ $Name:  $
 
 checkpoint63s (2012/09/05)
 o pkg/ecco:
-   - remove #ifdef ALLOW_SMOOTH_CORREL3D brackets.
-   - add more relevant #ifdef ALLOW_SMOOTH ones.
-   - sort out useAtmWind, useSMOOTH, ctrlSmoothCorrel2D.
+  - remove #ifdef ALLOW_SMOOTH_CORREL3D brackets.
+  - add more relevant #ifdef ALLOW_SMOOTH ones.
+  - sort out useAtmWind, useSMOOTH, ctrlSmoothCorrel2D.
 o pkg/ctrl:
   - CTRL_OPTIONS.h : document CPPs related to smoothing; ALLOW_SMOOTH_CORREL2D/3D,
     ALLOW_CTRL_SMOOTH, ALLOW_SMOOTH_CTRL2D, ALLOW_SMOOTH_CTRL3D.
-  - ctrl.h : document run time params doInitXX, doMainPack, doMainUnpack, doPackDiag, 
-    doSinglePrecTapelev (audodiff param!), ctrlSmoothCorrel2D (new) and ctrlSmoothCorrel3D (new).
+  - ctrl.h : document run time params doInitXX, doMainPack, doMainUnpack, doPackDiag,
+    doSinglePrecTapelev (audodiff param!), ctrlSmoothCorrel2D (new) and
+    ctrlSmoothCorrel3D (new).
     The added ctrlSmoothCorrel2D/3D replace the old ALLOW_SMOOTH_CORREL2D/3D CPP.
   - ctrl_readparms.F : initialise ctrlSmoothCorrel2D/3D and read from namelist.
-  - ctrl_init.F ctrl_pack.F ctrl_unpack.F : switch off ustress/vstress 
+  - ctrl_init.F ctrl_pack.F ctrl_unpack.F : switch off ustress/vstress
     controls when useAtmWind, and vice versa.
   - ctrl_map_ini_ecco.F : UVEL0, VVEL0, edtaux, edtauy cannot be smoothed as tracers.
   - ctrl_get_gen.F : replace #ifdef ALLOW_SMOOTH_CORREL2D with
-   #ifdef ALLOW_SMOOTH, IF ctrlSmoothCorrel2D, IF useSMOOTH.
-  - ctrl_map_ini_gen.F : replace #ifdef ALLOW_SMOOTH_CORREL3D with 
-   #ifdef ALLOW_SMOOTH, IF ctrlSmoothCorrel3D, IF useSMOOTH.
-  - ctrl_set_pack_xy.F, ctrl_set_unpack_xy.F, ctrl_set_pack_xyz.F, ctrl_set_unpack_xyz.F : 
-   replace ALLOW_SMOOTH_CORREL2D/3D brackets with ctrlSmoothCorrel2D/3D.
+      #ifdef ALLOW_SMOOTH, IF ctrlSmoothCorrel2D, IF useSMOOTH.
+  - ctrl_map_ini_gen.F : replace #ifdef ALLOW_SMOOTH_CORREL3D with
+      #ifdef ALLOW_SMOOTH, IF ctrlSmoothCorrel3D, IF useSMOOTH.
+  - ctrl_set_pack_xy[z].F, ctrl_set_unpack_xy[z].F:
+    replace ALLOW_SMOOTH_CORREL2D/3D brackets with ctrlSmoothCorrel2D/3D.
 o pkg/smooth:
-- remove in-necessary includes.
-- remove ALLOW_SMOOTH*D and ALLOW_SMOOTH_CORREL*D brakets. 
-  Those CPP options were never defined, and not necessary.
+  - remove un-necessary includes.
+  - remove ALLOW_SMOOTH*D and ALLOW_SMOOTH_CORREL*D brakets.
+    Those CPP options were never defined, and not necessary.
 o model/src:
   - fix CPP brackets in ini_mixing.F (GM_background_K belongs to gmredi).
   - standard treatment of useSMOOTH.
 o pkg/autodiff:
-  - add LOGICAL useGGL90inAdMode,    useGGL90inFwdMode
-    useSALT_PLUMEinAdMode, useSALT_PLUMEInFwdMode
-    allowing to switch off ggl90 and salt_plume adjoint.
+  - add LOGICAL useGGL90inAdMode, useGGL90inFwdMode, useSALT_PLUMEinAdMode,
+    useSALT_PLUMEInFwdMode allowing to switch off ggl90 and salt_plume adjoint.
 o pkg/exch2:
   - add "if usingMPI" where it was missing (in exch2_rx?_cube*.template)
     + start to remove ALWAYS_USE_MPI in source code that TAF does not see.
