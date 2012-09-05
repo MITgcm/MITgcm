@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1729 2012/09/04 01:04:23 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1730 2012/09/05 15:07:03 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint63s (2012/09/05)
 o pkg/exch2:
   - add "if usingMPI" where it was missing (in exch2_rx?_cube*.template)
     + to remove ALWAYS_USE_MPI in source code that TAF does not see.
