@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_fixed.F,v 1.5 2010/12/22 21:26:15 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_fixed.F,v 1.6 2012/09/06 14:47:54 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -19,6 +19,7 @@ C     !USES:
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_PARAMS.h"
 #endif
 #include "FLT_SIZE.h"
