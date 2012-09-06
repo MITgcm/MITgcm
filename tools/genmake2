@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.238 2012/08/28 21:11:22 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.239 2012/09/06 22:54:19 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -174,28 +174,18 @@ EOF
 test_for_package_in_cpp_options() {
     cpp_options=$1
     pkg=$2
-    test_for_string_in_file $cpp_options "^[ ]*#define.*ALLOW_$pkg[ ]"
-    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALLOW_$pkg[ ]"
-    test_for_string_in_file $cpp_options "^[ ]*#define.*DISABLE_$pkg[ ]"
-    test_for_string_in_file $cpp_options "^[ ]*#undef.*DISABLE_$pkg[ ]"
-    test_for_string_in_file $cpp_options "^[ ]*#define.*ALLOW_$pkg$"
-    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALLOW_$pkg$"
-    test_for_string_in_file $cpp_options "^[ ]*#define.*DISABLE_$pkg$"
-    test_for_string_in_file $cpp_options "^[ ]*#undef.*DISABLE_$pkg$"
+    test_for_string_in_file $cpp_options "^ *# *define *\<ALLOW_$pkg\>"
+    test_for_string_in_file $cpp_options "^ *# *undef *\<ALLOW_$pkg\>"
+    test_for_string_in_file $cpp_options "^ *# *define *\<DISABLE_$pkg\>"
+    test_for_string_in_file $cpp_options "^ *# *undef *\<DISABLE_$pkg\>"
 }
 
 # Search for particular CPP #cmds associated with MPI
 # usage: test_for_mpi_in_cpp_eeoptions CPP_file
 test_for_mpi_in_cpp_eeoptions() {
     cpp_options=$1
-    test_for_string_in_file $cpp_options "^[ ]*#define.*ALLOW_USE_MPI[ ]"
-    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALLOW_USE_MPI[ ]"
-    test_for_string_in_file $cpp_options "^[ ]*#define.*ALWAYS_USE_MPI[ ]"
-    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALWAYS_USE_MPI[ ]"
-    test_for_string_in_file $cpp_options "^[ ]*#define.*ALLOW_USE_MPI$"
-    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALLOW_USE_MPI$"
-    test_for_string_in_file $cpp_options "^[ ]*#define.*ALWAYS_USE_MPI$"
-    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALWAYS_USE_MPI$"
+    test_for_string_in_file $cpp_options "^ *# *define *\<ALLOW_USE_MPI\>"
+    test_for_string_in_file $cpp_options "^ *# *undef *\<ALLOW_USE_MPI\>"
 }
 
 # Search for particular string in a file. Return 1 if detected, 0 if not
@@ -203,7 +193,7 @@ test_for_mpi_in_cpp_eeoptions() {
 test_for_string_in_file() {
     file=$1
     strng=$2
-    grep -i "$strng" $file > /dev/null 2>&1
+    grep "$strng" $file > /dev/null 2>&1
     RETVAL=$?
     if test "x${RETVAL}" = x0 ; then
 	printf "Error: In $file there is an illegal line: "
@@ -1668,7 +1658,7 @@ check_for_broken_Ff
 
 if test ! "x$MPI" = x ; then
       echo "  Turning on MPI cpp macros"
-      DEFINES="$DEFINES -DALLOW_USE_MPI -DALWAYS_USE_MPI"
+      DEFINES="$DEFINES -DALLOW_USE_MPI"
 fi
 if test ! "x$OMP" = x ; then
       echo "  Add OMPFLAG and turn on OpenMP cpp macros"
