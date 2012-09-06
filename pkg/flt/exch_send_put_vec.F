@@ -1,25 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_send_put_vec.F,v 1.8 2011/08/31 21:35:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_send_put_vec.F,v 1.9 2012/09/06 16:13:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 #undef DBUG_EXCH_VEC
 
 C--   Contents
-C--   o EXCH_RL_SEND_PUT_VEC_X
-C--   o EXCH_RL_SEND_PUT_VEC_Y
+C--   o EXCH_SEND_PUT_VEC_X_RL
+C--   o EXCH_SEND_PUT_VEC_Y_RL
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
-C !ROUTINE: EXCH_RL_SEND_PUT_VEC_X
+C !ROUTINE: EXCH_SEND_PUT_VEC_X_RL
 
 C !INTERFACE:
-      SUBROUTINE EXCH_RL_SEND_PUT_VEC_X(
+      SUBROUTINE EXCH_SEND_PUT_VEC_X_RL(
      I                        arrayE, arrayW,
      O                        bufRecE, bufRecW,
      I                        myd1, myThid )
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH_RL_SEND_PUT_VEC_X
+C     | SUBROUTINE EXCH_SEND_PUT_VEC_X_RL
 C     | o "Send" or "put" X edges for RL array.
 C     *==========================================================*
 C     | Routine that invokes actual message passing send or
@@ -120,25 +120,22 @@ C       o Send or Put west edge
         IF ( westCommMode .EQ. COMM_MSG  ) THEN
 C        Send the data
 #ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
          IF ( usingMPI ) THEN
-#endif
-         theProc = tilePidW(bi,bj)
-         theTag  = _tileTagSendW(bi,bj)
-         theSize = myd1
-         theType = _MPI_TYPE_RL
-         exchNReqsX(1,bi,bj) = exchNReqsX(1,bi,bj)+1
+          theProc = tilePidW(bi,bj)
+          theTag  = _tileTagSendW(bi,bj)
+          theSize = myd1
+          theType = _MPI_TYPE_RL
+          exchNReqsX(1,bi,bj) = exchNReqsX(1,bi,bj)+1
 #ifdef DBUG_EXCH_VEC
           write(ioUnit,'(A,7I5,I8)') 'qq1xW: ',myProcId,bi,bj,
-     &       theProc,theTag, exchNReqsX(1,bi,bj),
-     &       exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), theSize
+     &          theProc,theTag, exchNReqsX(1,bi,bj),
+     &          exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), theSize
 #endif
-         CALL MPI_Isend(arrayW(1,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_MODEL,
-     &                  exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), mpiRc)
-#ifndef ALWAYS_USE_MPI
+          CALL MPI_Isend( arrayW(1,bi,bj), theSize, theType,
+     &                    theProc, theTag, MPI_COMM_MODEL,
+     &                    exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj),
+     &                    mpiRc )
          ENDIF
-#endif
 #endif /* ALLOW_USE_MPI */
          eastRecvAck(1,biW,bjW) = 1
         ELSEIF ( westCommMode .EQ. COMM_PUT  ) THEN
@@ -154,14 +151,12 @@ C       o Send or Put east edge
         IF ( eastCommMode .EQ. COMM_MSG  ) THEN
 C        Send the data
 #ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
          IF ( usingMPI ) THEN
-#endif
-         theProc = tilePidE(bi,bj)
-         theTag  = _tileTagSendE(bi,bj)
-         theSize = myd1
-         theType = _MPI_TYPE_RL
-         exchNReqsX(1,bi,bj) = exchNReqsX(1,bi,bj)+1
+          theProc = tilePidE(bi,bj)
+          theTag  = _tileTagSendE(bi,bj)
+          theSize = myd1
+          theType = _MPI_TYPE_RL
+          exchNReqsX(1,bi,bj) = exchNReqsX(1,bi,bj)+1
 #ifdef DBUG_EXCH_VEC
 c         if (theProc .eq. 2 .or. theProc .eq. 4) then
 c         if (arrayE(1,bi,bj) .ne. 0.) then
@@ -171,12 +166,11 @@ c         if (arrayE(1,bi,bj) .ne. 0.) then
 c         endif
 c         endif
 #endif
-         CALL MPI_Isend(arrayE(1,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_MODEL,
-     &                  exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), mpiRc)
-#ifndef ALWAYS_USE_MPI
+          CALL MPI_Isend( arrayE(1,bi,bj), theSize, theType,
+     &                    theProc, theTag, MPI_COMM_MODEL,
+     &                    exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj),
+     &                    mpiRc)
          ENDIF
-#endif
 #endif /* ALLOW_USE_MPI */
          westRecvAck(1,biE,bjE) = 1
         ELSEIF ( eastCommMode .EQ. COMM_PUT  ) THEN
@@ -237,16 +231,16 @@ C     Wait until all threads finish filling buffer <-- jmc: really needed ?
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
-C !ROUTINE: EXCH_RL_SEND_PUT_VEC_Y
+C !ROUTINE: EXCH_SEND_PUT_VEC_Y_RL
 
 C !INTERFACE:
-      SUBROUTINE EXCH_RL_SEND_PUT_VEC_Y(
+      SUBROUTINE EXCH_SEND_PUT_VEC_Y_RL(
      I                        arrayN, arrayS,
      O                        bufRecN, bufRecS,
      I                        myd1, myThid )
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH_RL_SEND_PUT_VEC_Y
+C     | SUBROUTINE EXCH_SEND_PUT_VEC_Y_RL
 C     | o "Send" or "put" Y edges for RL array.
 C     *==========================================================*
 C     | Routine that invokes actual message passing send or
@@ -348,20 +342,17 @@ C       o Send or Put south edge
         IF ( southCommMode .EQ. COMM_MSG  ) THEN
 C        Send the data
 #ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
          IF ( usingMPI ) THEN
-#endif
-         theProc = tilePidS(bi,bj)
-         theTag  = _tileTagSendS(bi,bj)
-         theSize = myd1
-         theType = _MPI_TYPE_RL
-         exchNReqsY(1,bi,bj) = exchNReqsY(1,bi,bj)+1
-         CALL MPI_Isend(arrayS(1,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_MODEL,
-     &                  exchReqIdY(exchNReqsY(1,bi,bj),1,bi,bj), mpiRc)
-#ifndef ALWAYS_USE_MPI
+          theProc = tilePidS(bi,bj)
+          theTag  = _tileTagSendS(bi,bj)
+          theSize = myd1
+          theType = _MPI_TYPE_RL
+          exchNReqsY(1,bi,bj) = exchNReqsY(1,bi,bj)+1
+          CALL MPI_Isend( arrayS(1,bi,bj), theSize, theType,
+     &                    theProc, theTag, MPI_COMM_MODEL,
+     &                    exchReqIdY(exchNReqsY(1,bi,bj),1,bi,bj),
+     &                    mpiRc )
          ENDIF
-#endif
 #endif /* ALLOW_USE_MPI */
          northRecvAck(1,biS,bjS) = 1
         ELSEIF ( southCommMode .EQ. COMM_PUT  ) THEN
@@ -377,20 +368,17 @@ C       o Send or Put north edge
         IF ( northCommMode .EQ. COMM_MSG  ) THEN
 C        Send the data
 #ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
          IF ( usingMPI ) THEN
-#endif
-         theProc = tilePidN(bi,bj)
-         theTag  = _tileTagSendN(bi,bj)
-         theSize = myd1
-         theType = _MPI_TYPE_RL
-         exchNReqsY(1,bi,bj) = exchNReqsY(1,bi,bj)+1
-         CALL MPI_Isend(arrayN(1,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_MODEL,
-     &                  exchReqIdY(exchNReqsY(1,bi,bj),1,bi,bj), mpiRc)
-#ifndef ALWAYS_USE_MPI
+          theProc = tilePidN(bi,bj)
+          theTag  = _tileTagSendN(bi,bj)
+          theSize = myd1
+          theType = _MPI_TYPE_RL
+          exchNReqsY(1,bi,bj) = exchNReqsY(1,bi,bj)+1
+          CALL MPI_Isend( arrayN(1,bi,bj), theSize, theType,
+     &                    theProc, theTag, MPI_COMM_MODEL,
+     &                    exchReqIdY(exchNReqsY(1,bi,bj),1,bi,bj),
+     &                    mpiRc )
          ENDIF
-#endif
 #endif /* ALLOW_USE_MPI */
          southRecvAck(1,biN,bjN) = 1
         ELSEIF ( northCommMode .EQ. COMM_PUT  ) THEN

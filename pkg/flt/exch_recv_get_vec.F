@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_recv_get_vec.F,v 1.9 2011/12/22 19:04:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_recv_get_vec.F,v 1.10 2012/09/06 16:13:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -6,20 +6,20 @@ C $Name:  $
 #undef DBUG_EXCH_VEC
 
 C--   Contents
-C--   o EXCH_RL_RECV_GET_VEC_X
-C--   o EXCH_RL_RECV_GET_VEC_Y
+C--   o EXCH_RECV_GET_VEC_X_RL
+C--   o EXCH_RECV_GET_VEC_Y_RL
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
-C !ROUTINE: EXCH_RL_RECV_GET_VEC_X
+C !ROUTINE: EXCH_RECV_GET_VEC_X_RL
 
 C !INTERFACE:
-      SUBROUTINE EXCH_RL_RECV_GET_VEC_X(
+      SUBROUTINE EXCH_RECV_GET_VEC_X_RL(
      U                        arrayE, arrayW,
      I                        myd1, myThid )
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH_RL_RECV_GET_VEC_X
+C     | SUBROUTINE EXCH_RECV_GET_VEC_X_RL
 C     | o "Receive" or "Get" X edges for RL array.
 C     *==========================================================*
 C     | Routine that invokes actual message passing receive
@@ -95,20 +95,18 @@ c       biW =  _tileBiW(bi,bj)
 c       bjW =  _tileBjW(bi,bj)
         IF ( westCommMode .EQ. COMM_MSG ) THEN
 #ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
          IF ( usingMPI ) THEN
-#endif
-         theProc = tilePidW(bi,bj)
-         theTag  = _tileTagRecvW(bi,bj)
-         theType = _MPI_TYPE_RL
-         theSize = myd1
+          theProc = tilePidW(bi,bj)
+          theTag  = _tileTagRecvW(bi,bj)
+          theType = _MPI_TYPE_RL
+          theSize = myd1
 #ifdef DBUG_EXCH_VEC
-         write(ioUnit,'(A,5I5,I8)') 'qq2xW: ',myProcId,bi,bj,
-     &       theProc,theTag,theSize
+          write(ioUnit,'(A,5I5,I8)') 'qq2xW: ',myProcId,bi,bj,
+     &          theProc,theTag,theSize
 #endif
-         CALL MPI_Recv( arrayW(1,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_MODEL,
-     &                  mpiStatus, mpiRc )
+          CALL MPI_Recv( arrayW(1,bi,bj), theSize, theType,
+     &                   theProc, theTag, MPI_COMM_MODEL,
+     &                   mpiStatus, mpiRc )
 c         if (theProc .eq. 0 .or. theProc .eq. 2) then
 c         if (arrayW(1,bi,bj) .ne. 0.) then
 c            write(errormessageunit,*) 'qq2y: ',myProcId,
@@ -118,33 +116,28 @@ c            write(errormessageunit,*) 'qq2n: ',myProcId,
 c     &      theProc,theTag,theSize,(arrayW(i,bi,bj),i=1,32)
 c         endif
 c         endif
-#ifndef ALWAYS_USE_MPI
          ENDIF
-#endif
 #endif /* ALLOW_USE_MPI */
         ENDIF
 #ifdef DBUG_EXCH_VEC
         write(ioUnit,'(A,5I6)') 'RECV_X,1 :',myProcId,bi,bj
 #endif
+
         IF ( eastCommMode .EQ. COMM_MSG ) THEN
 #ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
          IF ( usingMPI ) THEN
-#endif
-         theProc = tilePidE(bi,bj)
-         theTag  = _tileTagRecvE(bi,bj)
-         theType = _MPI_TYPE_RL
-         theSize = myd1
+          theProc = tilePidE(bi,bj)
+          theTag  = _tileTagRecvE(bi,bj)
+          theType = _MPI_TYPE_RL
+          theSize = myd1
 #ifdef DBUG_EXCH_VEC
-         write(ioUnit,'(A,5I5,I8)') 'qq2xE: ',myProcId,bi,bj,
-     &       theProc,theTag,theSize
+          write(ioUnit,'(A,5I5,I8)') 'qq2xE: ',myProcId,bi,bj,
+     &          theProc,theTag,theSize
 #endif
-         CALL MPI_Recv( arrayE(1,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_MODEL,
-     &                  mpiStatus, mpiRc )
-#ifndef ALWAYS_USE_MPI
+          CALL MPI_Recv( arrayE(1,bi,bj), theSize, theType,
+     &                   theProc, theTag, MPI_COMM_MODEL,
+     &                   mpiStatus, mpiRc )
          ENDIF
-#endif
 #endif /* ALLOW_USE_MPI */
         ENDIF
 #ifdef DBUG_EXCH_VEC
@@ -161,14 +154,9 @@ c         endif
         DO bi=1,nSx
          IF ( exchNReqsX(1,bi,bj) .GT. 0 ) THEN
 #ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
-          IF ( usingMPI ) THEN
-#endif
-          CALL MPI_Waitall( exchNReqsX(1,bi,bj), exchReqIdX(1,1,bi,bj),
+          IF ( usingMPI )
+     &    CALL MPI_Waitall( exchNReqsX(1,bi,bj), exchReqIdX(1,1,bi,bj),
      &                      mpiStatus, mpiRC )
-#ifndef ALWAYS_USE_MPI
-          ENDIF
-#endif
 #endif /* ALLOW_USE_MPI */
          ENDIF
 C        Clear outstanding requests counter
@@ -227,15 +215,15 @@ C        Clear outstanding requests
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
-C !ROUTINE: EXCH_RL_RECV_GET_VEC_Y
+C !ROUTINE: EXCH_RECV_GET_VEC_Y_RL
 
 C !INTERFACE:
-      SUBROUTINE EXCH_RL_RECV_GET_VEC_Y(
+      SUBROUTINE EXCH_RECV_GET_VEC_Y_RL(
      U                        arrayN, arrayS,
      I                        myd1, myThid )
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH_RL_RECV_GET_VEC_Y
+C     | SUBROUTINE EXCH_RECV_GET_VEC_Y_RL
 C     | o "Receive" or "Get" Y edges for RL array.
 C     *==========================================================*
 C     | Routine that invokes actual message passing receive
@@ -311,39 +299,32 @@ c       biS =  _tileBiS(bi,bj)
 c       bjS =  _tileBjS(bi,bj)
         IF ( southCommMode .EQ. COMM_MSG ) THEN
 #ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
          IF ( usingMPI ) THEN
-#endif
-         theProc = tilePidS(bi,bj)
-         theTag  = _tileTagRecvS(bi,bj)
-         theType = _MPI_TYPE_RL
-         theSize = myd1
-         CALL MPI_Recv( arrayS(1,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_MODEL,
-     &                  mpiStatus, mpiRc )
-#ifndef ALWAYS_USE_MPI
+          theProc = tilePidS(bi,bj)
+          theTag  = _tileTagRecvS(bi,bj)
+          theType = _MPI_TYPE_RL
+          theSize = myd1
+          CALL MPI_Recv( arrayS(1,bi,bj), theSize, theType,
+     &                   theProc, theTag, MPI_COMM_MODEL,
+     &                   mpiStatus, mpiRc )
          ENDIF
-#endif
 #endif /* ALLOW_USE_MPI */
         ENDIF
 #ifdef DBUG_EXCH_VEC
         write(ioUnit,'(A,5I6)') 'RECV_Y,1 :',myProcId,bi,bj
 #endif
+
         IF ( northCommMode .EQ. COMM_MSG ) THEN
 #ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
          IF ( usingMPI ) THEN
-#endif
-         theProc = tilePidN(bi,bj)
-         theTag  = _tileTagRecvN(bi,bj)
-         theType = _MPI_TYPE_RL
-         theSize = myd1
-         CALL MPI_Recv( arrayN(1,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_MODEL,
-     &                  mpiStatus, mpiRc )
-#ifndef ALWAYS_USE_MPI
+          theProc = tilePidN(bi,bj)
+          theTag  = _tileTagRecvN(bi,bj)
+          theType = _MPI_TYPE_RL
+          theSize = myd1
+          CALL MPI_Recv( arrayN(1,bi,bj), theSize, theType,
+     &                   theProc, theTag, MPI_COMM_MODEL,
+     &                   mpiStatus, mpiRc )
          ENDIF
-#endif
 #endif /* ALLOW_USE_MPI */
         ENDIF
 #ifdef DBUG_EXCH_VEC
@@ -361,14 +342,9 @@ C--   Processes wait for buffers I am going to read to be ready.
         DO bi=1,nSx
          IF ( exchNReqsY(1,bi,bj) .GT. 0 ) THEN
 #ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
-          IF ( usingMPI ) THEN
-#endif
-          CALL MPI_Waitall( exchNReqsY(1,bi,bj), exchReqIdY(1,1,bi,bj),
+          IF ( usingMPI )
+     &    CALL MPI_Waitall( exchNReqsY(1,bi,bj), exchReqIdY(1,1,bi,bj),
      &                      mpiStatus, mpiRC )
-#ifndef ALWAYS_USE_MPI
-          ENDIF
-#endif
 #endif /* ALLOW_USE_MPI */
          ENDIF
 C        Clear outstanding requests counter

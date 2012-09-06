@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.16 2012/08/30 22:32:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.17 2012/09/06 16:13:53 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -211,7 +211,7 @@ C--   Send or Put east and west edges.
 #ifdef DBUG_EXCH_VEC
         WRITE(errorMessageUnit,'(A,I8)') 'FLT_EXCH: 0x', myIter
 #endif
-        CALL EXCH_RL_SEND_PUT_VEC_X(
+        CALL EXCH_SEND_PUT_VEC_X_RL(
      I                               fltbuf_sendE, fltbuf_sendW,
      O                               fltbuf_recvE, fltbuf_recvW,
      I                               imax2, myThid )
@@ -219,7 +219,7 @@ C--   Send or Put east and west edges.
         WRITE(errorMessageUnit,'(A,I8)') 'FLT_EXCH: 1x', myIter
 #endif
 C--   Receive east/west arrays
-        CALL EXCH_RL_RECV_GET_VEC_X(
+        CALL EXCH_RECV_GET_VEC_X_RL(
      U                               fltbuf_recvE, fltbuf_recvW,
      I                               imax2, myThid )
 #ifdef DBUG_EXCH_VEC
@@ -453,7 +453,7 @@ C     Send or Put north and south arrays.
 #ifdef DBUG_EXCH_VEC
         WRITE(errorMessageUnit,'(A,I8)') 'FLT_EXCH: 0y', myIter
 #endif
-        CALL EXCH_RL_SEND_PUT_VEC_Y(
+        CALL EXCH_SEND_PUT_VEC_Y_RL(
      I                               fltbuf_sendE, fltbuf_sendW,
      O                               fltbuf_recvE, fltbuf_recvW,
      I                               imax2, myThid )
@@ -461,7 +461,7 @@ C     Send or Put north and south arrays.
         WRITE(errorMessageUnit,'(A,I8)') 'FLT_EXCH: 1y', myIter
 #endif
 C     Receive north and south arrays
-        CALL EXCH_RL_RECV_GET_VEC_Y(
+        CALL EXCH_RECV_GET_VEC_Y_RL(
      U                               fltbuf_recvE, fltbuf_recvW,
      I                               imax2, myThid )
 #ifdef DBUG_EXCH_VEC
