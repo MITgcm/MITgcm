@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sphere/exch_all_2d_rl.F,v 1.2 2007/10/09 00:11:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sphere/exch_all_2d_rl.F,v 1.3 2012/09/06 14:55:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
       subroutine exch_allgather_2d_rl(
      I       arr
      O     , full
-     I     , mythid
+     I     , myThid
      &     )
 
 c     ==================================================================
@@ -34,7 +34,7 @@ c     == routine arguments ==
 
       _RL arr ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL full( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy, nPx, nPy )
-      integer mythid
+      integer myThid
 
 c     == local variables ==
 #ifdef ALLOW_USE_MPI
@@ -61,9 +61,7 @@ c--   Only the master thread is doing communication
       _BEGIN_MASTER( myThid )
 
 #ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
       IF ( usingMPI ) THEN
-#endif
 
       call MPI_Allgather(  arr    , sendsize, MPI_DOUBLE_PRECISION
      &                   , recvbuf, recvsize, MPI_DOUBLE_PRECISION
@@ -94,9 +92,7 @@ c--     get coordinates of processor (iporc-1)
 
       enddo
 
-#ifndef ALWAYS_USE_MPI
       ENDIF
-#endif
 #endif /* ALLOW_USE_MPI */
 
 c--   end of master thread only computations
@@ -104,5 +100,5 @@ c--   end of master thread only computations
 
       _BARRIER
 
-      end
-
+      RETURN
+      END
