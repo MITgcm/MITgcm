@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/CPP_EEOPTIONS.h,v 1.1 2010/03/24 21:53:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/CPP_EEOPTIONS.h,v 1.2 2012/09/06 23:04:31 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -65,9 +65,6 @@ C--   Control use of "double" precision constants.
 C     Use D0 where it means REAL*8 but not where it means REAL*16
 #define D0 d0
 
-C--   Enable some old macro conventions for backward compatibility
-#undef USE_OLD_MACROS_R4R8toRSRL
-
 C=== IO related options ===
 C--   Flag used to indicate whether Fortran formatted write
 C     and read are threadsafe. On SGI the routines can be thread
@@ -91,13 +88,6 @@ C--   Flag turns off MPI_SEND ready_to_receive polling in the
 C     gather_* subroutines to speed up integrations.
 #undef DISABLE_MPI_READY_TO_RECEIVE
 
-C--   Control MPI based parallel processing
-CXXX We no longer select the use of MPI via this file (CPP_EEOPTIONS.h)
-CXXX To use MPI, use an appropriate genmake2 options file or use
-CXXX genmake2 -mpi .
-CXXX #undef  ALLOW_USE_MPI
-CXXX #undef  ALWAYS_USE_MPI
-
 C--   Control use of communication that might overlap computation.
 C     Under MPI selects/deselects "non-blocking" sends and receives.
 #define ALLOW_ASYNC_COMMUNICATION
@@ -107,13 +97,6 @@ C--   Control use of communication that is atomic to computation.
 C     Under MPI selects/deselects "blocking" sends and receives.
 #define ALLOW_SYNC_COMMUNICATION
 #undef  ALWAYS_USE_SYNC_COMMUNICATION
-
-C--   Control use of JAM routines for Artic network
-C     These invoke optimized versions of "exchange" and "sum" that
-C     utilize the programmable aspect of Artic cards.
-CXXX No longer supported ; started to remove JAM routines.
-CXXX #undef  LETS_MAKE_JAM
-CXXX #undef  JAM_WITH_TWO_PROCS_PER_NODE
 
 C--   Control XY periodicity in processor to grid mappings
 C     Note: Model code does not need to know whether a domain is
@@ -125,14 +108,18 @@ C           filled in some way.
 #define CAN_PREVENT_X_PERIODICITY
 #define CAN_PREVENT_Y_PERIODICITY
 
+C--   disconnect tiles (no exchange between tiles, just fill-in edges
+C     assuming locally periodic subdomain)
+#undef DISCONNECTED_TILES
+
 C--   Alternative way of doing global sum without MPI allreduce call
 C     but instead, explicit MPI send & recv calls.
-#undef GLOBAL_SUM_SEND_RECV
+#define GLOBAL_SUM_SEND_RECV
 
 C--   Alternative way of doing global sum on a single CPU
 C     to eliminate tiling-dependent roundoff errors.
 C     Note: This is slow.
-#define  CG2D_SINGLECPU_SUM
+#define CG2D_SINGLECPU_SUM
 
 C=== Other options (to add/remove pieces of code) ===
 C--   Flag to turn on checking for errors from all threads and procs
