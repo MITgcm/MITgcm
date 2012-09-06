@@ -1,8 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1732 2012/09/05 23:07:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1733 2012/09/06 23:26:18 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o eesupp/src (+ few pkg src files) & genmake2:
+  - finish to remove ALWAYS_USE_MPI in source code that TAF does not see;
+  - no longer set ALWAYS_USE_MPI in Makefile (was done by genmake2).
+  - improve genmake2 checking for ALLOW_${PKG} in CPP_OPTIONS.h files (distingues
+     upper/lower case ; account for space between "#" and undef/define)
+o pkg/flt (with exch2):
+  - cleaning: fix so that it compiles; move remaining MPI calls out of flt_exch2.F;
+  - simplify threads syncronisation; fix (many issues) multi-threaded with MPI.
 
 checkpoint63s (2012/09/05)
 o pkg/ecco:
