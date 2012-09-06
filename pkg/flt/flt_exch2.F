@@ -1,9 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exch2.F,v 1.2 2010/12/22 21:25:18 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exch2.F,v 1.3 2012/09/06 16:14:28 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
 #undef DBUG_EXCH_VEC
-#define FLT_WITHOUT_X_PERIODICITY
 
       SUBROUTINE FLT_EXCH2 (
      I                       myTime, myIter, myThid )
@@ -31,7 +30,6 @@ C     == global variables ==
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_PARAMS.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_BUFFER.h"
 #endif
 
 C     == routine arguments ==
@@ -46,22 +44,14 @@ C     == local variables ==
       INTEGER icountE, icountW, icountN, icountS
       INTEGER deleteList(max_npart_exch*2)
       INTEGER imax, imax2, m
-      INTEGER nT, ipass, myFace
+      INTEGER N, nT, ipass, myFace
       INTEGER e2_msgHandles( 2, W2_maxNeighbours, nSx, nSy )
       _RL ilo, ihi, jlo, jhi, iNew, jNew
       PARAMETER(imax=9)
       PARAMETER(imax2=imax*max_npart_exch)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-#ifdef ALLOW_USE_MPI
-C     MPI stuff (should be in a routine call)
-      INTEGER mpiStatus(MPI_STATUS_SIZE)
-      INTEGER mpiRc
-      INTEGER wHandle
-      INTEGER nN, N, farTile
-#endif
 
-
-C     buffer for sending/receiving variables (E/W are also used for S/N)
+C     buffer for sending/receiving variables (4 levels <-> N,S,E,W)
       COMMON/FLTBUF/fltbuf_send,fltbuf_recv
       _RL fltbuf_send(imax2,nSx,nSy,4)
       _RL fltbuf_recv(imax2,nSx,nSy,4)
@@ -74,7 +64,9 @@ C have to do 2 passes to get into tiles diagonally across
       DO ipass=1,2
 
 C     Prevent anyone to access shared buffer while an other thread modifies it
-        CALL BAR2( myThid )
+C--   not needed here since send buffer is different fron recv buffer
+C     (which is not the case for usual 3-D field exch in EXCH2)
+c       CALL BAR2( myThid )
 
 C--   Choose floats that have to exchanged with eastern and western tiles
 C     and pack to arrays
@@ -86,10 +78,10 @@ C     and pack to arrays
 
 C initialize buffers
            DO N=1,4
-           DO m=1,imax2
+            DO m=1,imax2
              fltbuf_send(m,bi,bj,N) = 0.
              fltbuf_recv(m,bi,bj,N) = 0.
-           ENDDO
+            ENDDO
            ENDDO
 
            icountE=0
@@ -98,8 +90,10 @@ C initialize buffers
 
            ilo = 0.5 _d 0
            ihi = 0.5 _d 0 + DFLOAT(sNx)
-           wSide=exch2_isWedge(nT).AND.facet_link(W2_WEST,myFace).EQ.0.
-           eSide=exch2_isEedge(nT).AND.facet_link(W2_EAST,myFace).EQ.0.
+           wSide = exch2_isWedge(nT).EQ.1
+     &       .AND. facet_link(W2_WEST,myFace).EQ.0.
+           eSide = exch2_isEedge(nT).EQ.1
+     &       .AND. facet_link(W2_EAST,myFace).EQ.0.
            flt_stopped = -2.
            flt_stopped = MIN( baseTime, flt_stopped )
 
@@ -211,8 +205,10 @@ C        copy: ip <-- jp
 
            jlo = 0.5 _d 0
            jhi = 0.5 _d 0 + DFLOAT(sNy)
-           sSide=exch2_isSedge(nT).AND.facet_link(W2_SOUTH,myFace).EQ.0.
-           nSide=exch2_isNedge(nT).AND.facet_link(W2_NORTH,myFace).EQ.0.
+           sSide = exch2_isSedge(nT).EQ.1
+     &       .AND. facet_link(W2_SOUTH,myFace).EQ.0.
+           nSide = exch2_isNedge(nT).EQ.1
+     &       .AND. facet_link(W2_NORTH,myFace).EQ.0.
            flt_stopped = -2.
            flt_stopped = MIN( baseTime, flt_stopped )
 
@@ -335,50 +331,39 @@ C        copy: ip <-- jp
          ENDDO
         ENDDO
 
+C     Prevent anyone to access shared buffer while an other thread modifies it
+        _BARRIER
+
 C--   Send or Put east and west edges.
 
 #ifdef DBUG_EXCH_VEC
         WRITE(errorMessageUnit,'(A,I8)') 'FLT_EXCH: 0x', myIter
 #endif
-        CALL EXCH2_RL_SEND_PUT_VEC(
-     I                               fltbuf_send, fltbuf_recv,
+        CALL EXCH2_SEND_PUT_VEC_RL(
+     I                               fltbuf_send,
+     O                               fltbuf_recv,
      O                               e2_msgHandles(1,1,1,1),
      I                               imax2, myThid )
 #ifdef DBUG_EXCH_VEC
         WRITE(errorMessageUnit,'(A,I8)') 'FLT_EXCH2: 1x', myIter
 #endif
-C--   Receive east/west arrays
-        CALL EXCH2_RL_RECV_GET_VEC(
-     U                               fltbuf_recv,
-     I                               imax2, myThid )
-#ifdef DBUG_EXCH_VEC
-        WRITE(errorMessageUnit,'(A,I8)') 'FLT_EXCH2: 2x', myIter
-#endif
 
 #ifdef ALLOW_USE_MPI
-C--   Clear message handles/locks
-        DO bj=1,nSy
-         DO bi=1,nSx
-          nT=W2_myTileList(bi,bj)
-          nN=exch2_nNeighbours(nT)
-          DO N=1,nN
-C       Note: In a between process tile-tile data transport using
-C             MPI the sender needs to clear an Isend wait handle here.
-C             In a within process tile-tile data transport using true
-C             shared address space/or direct transfer through commonly
-C             addressable memory blocks the receiver needs to assert
-C             that he has consumed the buffer the sender filled here.
-           farTile=exch2_neighbourId(N,nT)
-           IF     ( W2_myCommFlag(N,bi,bj) .EQ. 'M' ) THEN
-            wHandle = e2_msgHandles(1,N,bi,bj)
-            CALL MPI_Wait( wHandle, mpiStatus, mpiRc )
-           ELSEIF ( W2_myCommFlag(N,bi,bj) .EQ. 'P' ) THEN
-           ELSE
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDDO
+        IF ( usingMPI ) THEN
+C--   Receive east/west arrays
+         CALL EXCH2_RECV_GET_VEC_RL(
+     U                               fltbuf_recv,
+     I                               e2_msgHandles(1,1,1,1),
+     I                               imax2, myThid )
+#ifdef DBUG_EXCH_VEC
+         WRITE(errorMessageUnit,'(A,I8)') 'FLT_EXCH2: 2x', myIter
 #endif
+        ENDIF
+#endif /* ALLOW_USE_MPI */
+
+C--   need to sync threads after master has received data ;
+C     (done after mpi waitall in case waitall is really needed)
+        _BARRIER
 
 C--   Unpack arrays on new tiles
 
