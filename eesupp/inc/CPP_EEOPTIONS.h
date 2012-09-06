@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.34 2012/05/14 13:13:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.35 2012/09/06 21:55:59 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -96,7 +96,6 @@ CXXX We no longer select the use of MPI via this file (CPP_EEOPTIONS.h)
 CXXX To use MPI, use an appropriate genmake2 options file or use
 CXXX genmake2 -mpi .
 CXXX #undef  ALLOW_USE_MPI
-CXXX #undef  ALWAYS_USE_MPI
 
 C--   Control use of communication that might overlap computation.
 C     Under MPI selects/deselects "non-blocking" sends and receives.
