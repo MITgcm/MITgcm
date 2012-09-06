@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.15 2010/04/27 16:09:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.16 2012/09/06 15:25:01 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -55,7 +55,7 @@ C     I      :: Loop counters
 C     mpiRC  :: MPI return code
       INTEGER I
       Real*4  tmp
-#ifdef   ALLOW_USE_MPI
+#ifdef ALLOW_USE_MPI
       INTEGER mpiRC
 #endif /* ALLOW_USE_MPI */
 CEOP
@@ -73,16 +73,12 @@ C--   Sum within the process first
         tmp = tmp + phiGSR4(1,I)
        ENDDO
        sumPhi = tmp
-#ifdef  ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
+#ifdef ALLOW_USE_MPI
        IF ( usingMPI ) THEN
-#endif
         CALL MPI_Allreduce(tmp,sumPhi,1,MPI_REAL,MPI_SUM,
      &                   MPI_COMM_MODEL,mpiRC)
-#ifndef ALWAYS_USE_MPI
        ENDIF
-#endif
-#endif /*  ALLOW_USE_MPI */
+#endif /* ALLOW_USE_MPI */
 C--     Write solution to place where all threads can see it
        phiGSR4(1,0) = sumPhi
 
@@ -142,7 +138,7 @@ C     I      :: Loop counters
 C     mpiRC  :: MPI return code
       INTEGER I
       Real*8  tmp
-#ifdef   ALLOW_USE_MPI
+#ifdef ALLOW_USE_MPI
       INTEGER mpiRC
 #endif   /* ALLOW_USE_MPI */
 CEOP
@@ -165,16 +161,12 @@ C--   Sum within the process first
         tmp = tmp + phiGSR8(1,I)
        ENDDO
        sumPhi = tmp
-#ifdef  ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
+#ifdef ALLOW_USE_MPI
        IF ( usingMPI ) THEN
-#endif
         CALL MPI_Allreduce(tmp,sumPhi,1,MPI_DOUBLE_PRECISION,MPI_SUM,
      &                   MPI_COMM_MODEL,mpiRC)
-#ifndef ALWAYS_USE_MPI
        ENDIF
-#endif
-#endif /*  ALLOW_USE_MPI */
+#endif /* ALLOW_USE_MPI */
 C--     Write solution to place where all threads can see it
        phiGSR8(1,0) = sumPhi
       _END_MASTER( myThid )
@@ -237,7 +229,7 @@ C     I      :: Loop counters
 C     mpiRC  :: MPI return code
       INTEGER I
       INTEGER  tmp
-#ifdef   ALLOW_USE_MPI
+#ifdef ALLOW_USE_MPI
       INTEGER mpiRC
 #endif   /* ALLOW_USE_MPI */
 CEOP
@@ -255,16 +247,12 @@ C--   Sum within the process first
         tmp = tmp + phiGSI(1,I)
        ENDDO
        sumPhi = tmp
-#ifdef  ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
+#ifdef ALLOW_USE_MPI
        IF ( usingMPI ) THEN
-#endif
         CALL MPI_Allreduce(tmp,sumPhi,1,MPI_INTEGER,MPI_SUM,
      &                   MPI_COMM_MODEL,mpiRC)
-#ifndef ALWAYS_USE_MPI
        ENDIF
-#endif
-#endif /*  ALLOW_USE_MPI */
+#endif /* ALLOW_USE_MPI */
 C--     Write solution to place where all threads can see it
        phiGSI(1,0) = sumPhi
       _END_MASTER( myThid )

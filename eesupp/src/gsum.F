@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/gsum.F,v 1.8 2009/08/02 20:16:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/gsum.F,v 1.9 2012/09/06 15:25:01 jmc Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -138,18 +138,14 @@ C
         answer = answer+GSR8_value(curLev,I)
        ENDDO
 
-#ifdef  ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
+#ifdef ALLOW_USE_MPI
        IF ( usingMPI ) THEN
-#endif
         tmp = answer
         CALL MPI_Allreduce(tmp,sumPhi,1,MPI_DOUBLE_PRECISION,MPI_SUM,
      &                   MPI_COMM_MODEL,mpiRC)
         answer = sumPhi
-#ifndef ALWAYS_USE_MPI
        ENDIF
-#endif
-#endif /*  ALLOW_USE_MPI */
+#endif /* ALLOW_USE_MPI */
 
        GSR8_value(curLev,1) = answer
 

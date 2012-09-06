@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_max.F,v 1.12 2009/06/10 03:47:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_max.F,v 1.13 2012/09/06 15:25:01 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -56,7 +56,7 @@ C     I      :: Loop counters
 C     mpiRC  :: MPI return code
       INTEGER I
       Real*4  tmp
-#ifdef   ALLOW_USE_MPI
+#ifdef ALLOW_USE_MPI
       INTEGER mpiRC
 #endif /* ALLOW_USE_MPI */
 CEOP
@@ -74,19 +74,16 @@ C--   Max within the process first
         tmp = MAX(tmp,phiGMR4(1,I))
        ENDDO
        maxPhi = tmp
-#ifdef  ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
+#ifdef ALLOW_USE_MPI
        IF ( usingMPI ) THEN
-#endif
         CALL MPI_Allreduce(tmp,maxPhi,1,MPI_REAL,MPI_MAX,
      &                   MPI_COMM_MODEL,mpiRC)
-#ifndef ALWAYS_USE_MPI
        ENDIF
-#endif
-#endif /*  ALLOW_USE_MPI */
+#endif /* ALLOW_USE_MPI */
        phiGMR4(1,0) = maxPhi
       _END_MASTER( myThid )
-C--
+
+C--   Do not leave until we are sure that the max is done
       CALL BAR2( myThid )
 
 C--   set result for every process
@@ -142,7 +139,7 @@ C     I      :: Loop counters
 C     mpiRC  :: MPI return code
       INTEGER I
       Real*8  tmp
-#ifdef   ALLOW_USE_MPI
+#ifdef ALLOW_USE_MPI
       INTEGER mpiRC
 #endif   /* ALLOW_USE_MPI */
 CEOP
@@ -160,16 +157,12 @@ C--   Max within the process first
         tmp = MAX(tmp,phiGMR8(1,I))
        ENDDO
        maxPhi = tmp
-#ifdef  ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
+#ifdef ALLOW_USE_MPI
        IF ( usingMPI ) THEN
-#endif
         CALL MPI_Allreduce(tmp,maxPhi,1,MPI_DOUBLE_PRECISION,MPI_MAX,
      &                   MPI_COMM_MODEL,mpiRC)
-#ifndef ALWAYS_USE_MPI
        ENDIF
-#endif
-#endif /*  ALLOW_USE_MPI */
+#endif /* ALLOW_USE_MPI */
 C--     Write solution to place where all threads can see it
        phiGMR8(1,0) = maxPhi
       _END_MASTER( myThid )

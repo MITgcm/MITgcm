@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/cumulsum_z_tile.F,v 1.2 2011/07/09 22:13:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/cumulsum_z_tile.F,v 1.3 2012/09/06 15:25:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -74,9 +74,8 @@ CEOP
       CALL W2_CUMULSUM_Z_TILE_RL(
      O                       psiZ, psiLoc,
      I                       dPsiX, dPsiY, myThid )
-      RETURN
-#else /* ALLOW_EXCH2 */
 
+#else /* ALLOW_EXCH2 */
 C--   write input into shared-buffer array
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -92,11 +91,7 @@ C--   Master thread cannot start until everyone is ready:
       _BEGIN_MASTER( myThid )
 
 #ifdef ALLOW_USE_MPI
-#ifdef ALWAYS_USE_MPI
-      IF ( .TRUE. ) THEN
-#else
       IF ( usingMPI ) THEN
-#endif
 
         lbuf1 = nSx*nSy
         lbuf2 = 2*lbuf1
@@ -243,6 +238,6 @@ C--   set result for every threads
        ENDDO
       ENDDO
 
-      RETURN
 #endif /* ALLOW_EXCH2 */
+      RETURN
       END
