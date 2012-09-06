@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/DEF_IN_MAKEFILE.h,v 1.1 2012/08/30 21:41:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/DEF_IN_MAKEFILE.h,v 1.2 2012/09/06 22:54:49 jmc Exp $
 C $Name:  $
 
 C=====  WARNING: DO NOT include this file in any source code =====
@@ -15,7 +15,6 @@ C-- options set in Makefile by genmake2:
 #undef ALLOW_AIM
 #undef IGNORE_TIME
 #undef ALLOW_USE_MPI
-#undef ALWAYS_USE_MPI
 #undef USE_OMP_THREADING
 #undef LET_RS_BE_REAL4
 #undef TIME_PER_TIMESTEP_SFP
@@ -53,6 +52,7 @@ C-  platform specific options:
 #undef TARGET_T3E
 C-  others options found in optfiles in dir tools/build_options:
 #undef _BYTESWAPIO
+#undef ALWAYS_USE_MPI
 #undef CG2D_OUTERLOOPITERS
 #undef CG3D_OUTERLOOPITERS
 #undef IFORT
