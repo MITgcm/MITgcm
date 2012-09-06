@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch2_send_put_vec.F,v 1.2 2012/09/04 00:46:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch2_send_put_vec.F,v 1.3 2012/09/06 16:17:21 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -6,21 +6,21 @@ C $Name:  $
 #undef DBUG_EXCH_VEC
 
 C--   Contents
-C--   o EXCH2_RL_SEND_PUT_VEC
+C--   o EXCH2_SEND_PUT_VEC_RL
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
-C !ROUTINE: EXCH2_RL_SEND_PUT_VEC
+C !ROUTINE: EXCH2_SEND_PUT_VEC_RL
 
 C !INTERFACE:
-      SUBROUTINE EXCH2_RL_SEND_PUT_VEC(
+      SUBROUTINE EXCH2_SEND_PUT_VEC_RL(
      I                        array,
      O                        bufRec,
      O                        theHandle,
      I                        myd1, myThid )
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH2_RL_SEND_PUT_VEC
+C     | SUBROUTINE EXCH2_SEND_PUT_VEC_RL
 C     | o "Send" or "put" edges for RL array.
 C     *==========================================================*
 C     | Routine that invokes actual message passing send or
@@ -37,7 +37,6 @@ C     == Global variables ==
 #ifdef ALLOW_EXCH2
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_BUFFER.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -92,18 +91,18 @@ C     COMM_PUT   "Put" communication ( UMP_, shmemput, etc... )
 C                Fill east receive buffer of west-neighbor tile
 C                Fill west receive buffer of east-neighbor tile
 C                Sync. memory
-C                Write data-ready Ack for east edge of west-neighbor
-C                tile
-C                Write data-ready Ack for west edge of east-neighbor
-C                tile
+C                Write data-ready Ack for east edge of west-neighbor tile
+C                Write data-ready Ack for west edge of east-neighbor tile
 C                Sync. memory
+
+      _BEGIN_MASTER(myThid)
 
 #ifdef DBUG_EXCH_VEC
       ioUnit = errorMessageUnit
 #endif
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-      DO bi=myBxLo(myThid),myBxHi(myThid)
+      DO bj=1,nSy
+      DO bi=1,nSx
 
        thisTile = W2_myTileList(bi,bj)
 
@@ -115,30 +114,7 @@ C- loop over neighboring tiles
         tgN = exch2_opposingSend(nN,thisTIle)
         sDir = exch2_neighbourDir(tgN,tgT)
 
-        IF ( W2_myCommFlag(nN,bi,bj) .EQ. 'M'  ) THEN
-C        Send the data
-#ifdef ALLOW_USE_MPI
-         _BEGIN_MASTER( myThid )
-#ifndef ALWAYS_USE_MPI
-         IF ( usingMPI ) THEN
-#endif
-         theProc = W2_tileProc(tgT) - 1
-         theTag  = (thisTile-1)*W2_maxNeighbours + nN
-         theSize = myd1
-         theType = _MPI_TYPE_RL
-#ifdef DBUG_EXCH_VEC
-          write(ioUnit,'(A,5I5,I8)') 'qq1xW: ',myProcId,bi,bj,
-     &       theProc,theTag, theSize
-#endif
-         CALL MPI_Isend(array(1,bi,bj,dir), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_MODEL,
-     &                  theHandle(1,nN,bi,bj), mpiRc)
-#ifndef ALWAYS_USE_MPI
-         ENDIF
-#endif
-         _END_MASTER( myThid )
-#endif /* ALLOW_USE_MPI */
-        ELSEIF ( W2_myCommFlag(nN,bi,bj) .EQ. 'P' ) THEN
+        IF ( W2_myCommFlag(nN,bi,bj) .EQ. 'P' ) THEN
 C         find bi,bj of target tile
           DO j=1,nSy
            DO i=1,nSx
@@ -149,10 +125,26 @@ C         find bi,bj of target tile
            ENDDO
           ENDDO
           DO I=1,myd1
-           bufRec(I,sBi,sBj,sDir) = array(I,bi,bj,dir)
+            bufRec(I,sBi,sBj,sDir) = array(I,bi,bj,dir)
           ENDDO
+#ifdef ALLOW_USE_MPI
+        ELSEIF ( usingMPI .AND.
+     &           W2_myCommFlag(nN,bi,bj) .EQ. 'M' ) THEN
+C        Send the data
+          theProc = W2_tileProc(tgT) - 1
+          theTag  = (thisTile-1)*W2_maxNeighbours + nN
+          theSize = myd1
+          theType = _MPI_TYPE_RL
+#ifdef DBUG_EXCH_VEC
+          write(ioUnit,'(A,5I5,I8)') 'qq1xW: ',myProcId,bi,bj,
+     &          theProc,theTag, theSize
+#endif
+          CALL MPI_Isend(array(1,bi,bj,dir), theSize, theType,
+     &                  theProc, theTag, MPI_COMM_MODEL,
+     &                  theHandle(1,nN,bi,bj), mpiRc)
+#endif /* ALLOW_USE_MPI */
         ELSE
-         STOP ' S/R EXCH: Invalid commFlag.'
+         STOP 'S/R EXCH2_SEND_PUT_VEC_RL: Invalid commFlag.'
         ENDIF
 
 C-     nN
@@ -161,6 +153,8 @@ C-     nN
 C-    bj,bi
       ENDDO
       ENDDO
+
+      _END_MASTER(myThid)
 
 #endif /* ALLOW_EXCH2 */
 

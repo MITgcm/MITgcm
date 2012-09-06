@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch2_recv_get_vec.F,v 1.2 2012/09/04 00:46:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch2_recv_get_vec.F,v 1.3 2012/09/06 16:17:21 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -6,20 +6,21 @@ C $Name:  $
 #undef DBUG_EXCH_VEC
 
 C--   Contents
-C--   o EXCH2_RL_RECV_GET_VEC
+C--   o EXCH2_RECV_GET_VEC_RL
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
-C !ROUTINE: EXCH2_RL_RECV_GET_VEC
+C !ROUTINE: EXCH2_RECV_GET_VEC_RL
 
 C !INTERFACE:
-      SUBROUTINE EXCH2_RL_RECV_GET_VEC(
+      SUBROUTINE EXCH2_RECV_GET_VEC_RL(
      U                        array,
+     I                        theHandle,
      I                        myd1, myThid )
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH2_RL_RECV_GET_VEC
-C     | o "Receive" or "Get" edges for RL array.
+C     | SUBROUTINE EXCH2_RECV_GET_VEC_RL
+C     | o "Receive" edges for RL array.
 C     *==========================================================*
 C     | Routine that invokes actual message passing receive
 C     | of data to update buffer
@@ -35,7 +36,6 @@ C     == Global variables ==
 #ifdef ALLOW_EXCH2
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_BUFFER.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -45,11 +45,16 @@ C     myd1          :: size
 C     myThid        :: my Thread Id. number
       INTEGER myd1
       _RL array(myd1, nSx, nSy, 4)
+#ifdef ALLOW_EXCH2
+      INTEGER theHandle(2,W2_maxNeighbours,nSx,nSy)
+#else
+      INTEGER theHandle
+#endif
       INTEGER myThid
 CEOP
 
 #ifdef ALLOW_EXCH2
-
+#ifdef ALLOW_USE_MPI
 C     !LOCAL VARIABLES:
 C     bi, bj        :: tile indices
 C     theProc       :: Variables used in message building
@@ -60,10 +65,9 @@ C     theSize       :: Variables used in message building
       INTEGER spinCount
       INTEGER ioUnit
       INTEGER thisTile, nN, tgT, oNb, dir
-#ifdef ALLOW_USE_MPI
       INTEGER theProc, theTag, theType, theSize
+      INTEGER wHandle
       INTEGER mpiStatus(MPI_STATUS_SIZE,4), mpiRc
-#endif
 
 C--   Under a "put" scenario we
 C--     i. set completetion signal for buffer we put into.
@@ -77,54 +81,75 @@ C--   iii. Set data read flag + memory sync.
 
       ioUnit = errorMessageUnit
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-      DO bi=myBxLo(myThid),myBxHi(myThid)
+      _BEGIN_MASTER(myThid)
 
-       thisTile = W2_myTileList(bi,bj)
+      DO bj=1,nSy
+       DO bi=1,nSx
+         thisTile = W2_myTileList(bi,bj)
 
 C- loop over neighboring tiles
-       DO nN=1,exch2_nNeighbours(thisTile)
+         DO nN=1,exch2_nNeighbours(thisTile)
 
-        tgT = exch2_neighbourId(nN, thisTile )
-        oNb = exch2_opposingSend(nN, thisTile )
-        dir = exch2_neighbourDir(nN,thisTile)
+          tgT = exch2_neighbourId(nN, thisTile )
+          oNb = exch2_opposingSend(nN, thisTile )
+          dir = exch2_neighbourDir(nN,thisTile)
 
 #ifdef DBUG_EXCH_VEC
-        write(ioUnit,'(A,5I6)') 'RECV,0 :',myProcId,bi,bj
+          write(ioUnit,'(A,5I6)') 'RECV,0 :',myProcId,bi,bj
 #endif
-        IF ( W2_myCommFlag(nN,bi,bj) .EQ. 'M'  ) THEN
-#ifdef ALLOW_USE_MPI
-#ifndef ALWAYS_USE_MPI
-         IF ( usingMPI ) THEN
-#endif
-         theProc = W2_tileProc(tgT) - 1
-         theTag  = (tgT-1)*W2_maxNeighbours + oNb
-         theSize = myd1
-         theType = _MPI_TYPE_RL
+          IF ( W2_myCommFlag(nN,bi,bj) .EQ. 'M' ) THEN
+           theProc = W2_tileProc(tgT) - 1
+           theTag  = (tgT-1)*W2_maxNeighbours + oNb
+           theSize = myd1
+           theType = _MPI_TYPE_RL
 #ifdef DBUG_EXCH_VEC
-         write(ioUnit,'(A,5I5,I8)') 'qq2xW: ',myProcId,bi,bj,
-     &       theProc,theTag,theSize
+           write(ioUnit,'(A,5I5,I8)') 'qq2xW: ',myProcId,bi,bj,
+     &           theProc,theTag,theSize
 #endif
-         CALL MPI_Recv( array(1,bi,bj,dir), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_MODEL,
-     &                  mpiStatus, mpiRc )
-#ifndef ALWAYS_USE_MPI
-         ENDIF
-#endif
-#endif /* ALLOW_USE_MPI */
-        ENDIF
+           CALL MPI_Recv( array(1,bi,bj,dir), theSize, theType,
+     &                    theProc, theTag, MPI_COMM_MODEL,
+     &                    mpiStatus, mpiRc )
+          ENDIF
 #ifdef DBUG_EXCH_VEC
-        write(ioUnit,'(A,5I6)') 'RECV,1 :',myProcId,bi,bj
+          write(ioUnit,'(A,5I6)') 'RECV,1 :',myProcId,bi,bj
 #endif
-C-     nN
+C-       nN
+         ENDDO
+C-     bj,bi
        ENDDO
-C-    bj,bi
-      ENDDO
       ENDDO
 #ifdef DBUG_EXCH_VEC
-      write(ioUnit,'(A,5I6,I12)') 'RECV:',myProcId
+       write(ioUnit,'(A,5I6,I12)') 'RECV:',myProcId
 #endif
 
+C--   Clear message handles/locks
+      DO bj=1,nSy
+       DO bi=1,nSx
+         thisTile = W2_myTileList(bi,bj)
+         DO nN=1,exch2_nNeighbours(thisTile)
+c          tgT = exch2_neighbourId(nN, thisTile )
+
+C-    Note: In a between process tile-tile data transport using
+C           MPI the sender needs to clear an Isend wait handle here.
+C           In a within process tile-tile data transport using true
+C           shared address space/or direct transfer through commonly
+C           addressable memory blocks the receiver needs to assert
+C           that he has consumed the buffer the sender filled here.
+           IF ( W2_myCommFlag(nN,bi,bj) .EQ. 'M' ) THEN
+            wHandle = theHandle(1,nN,bi,bj)
+            CALL MPI_Wait( wHandle, mpiStatus, mpiRc )
+           ENDIF
+
+         ENDDO
+       ENDDO
+      ENDDO
+
+      _END_MASTER(myThid)
+
+C--   need to sync threads after master has received data
+      _BARRIER
+
+#endif /* ALLOW_USE_MPI */
 #endif /* ALLOW_EXCH2 */
 
       RETURN
