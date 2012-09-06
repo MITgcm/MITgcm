@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_mean.F,v 1.11 2012/08/10 19:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_mean.F,v 1.12 2012/09/06 14:52:44 jmc Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -45,7 +45,7 @@ c     == global variables ==
 #include "optim.h"
 
 #ifdef ALLOW_EGM96_ERROR_COV
-# if (defined (ALLOW_USE_MPI) || defined (ALWAYS_USE_MPI))
+# ifdef ALLOW_USE_MPI
 #  include "EESUPPORT.h"
 # else
       INTEGER nProcs
@@ -130,7 +130,7 @@ c--   compute misfit on local domain
       enddo
 
 c--   communicate to get misfit on full 2d model surface grid
-#if (defined (ALLOW_USE_MPI) || defined (ALWAYS_USE_MPI))
+#ifdef ALLOW_USE_MPI
       call exch_all_2d_rl( misfit, misfitgl, mythid )
 #else
       do bj = jtlo,jthi
@@ -167,7 +167,7 @@ c--   so far we assume that the model grid is already regular
 
       do iproc = 1, nprocs
 
-#if (defined (ALLOW_USE_MPI) || defined (ALWAYS_USE_MPI))
+#ifdef ALLOW_USE_MPI
 c--     get coordinates of processor (iporc-1)
         call MPI_Cart_coords(
      I          MPI_COMM_MODEL, iproc-1, 2, mpicrd
