@@ -1,17 +1,26 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1733 2012/09/06 23:26:18 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1734 2012/09/08 20:32:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/genmake2:
+  - add similar dependences for target EXE_AD & EXE_FTL as we have for EXECUTABLE
+    (added by Alistair in version 1.51 for building without make depend);
+  - remove Header files list (H_SRC_FILES) from the dependence of targets
+     ad_input_code.f & ftl_input_code.f (not clear why it was added in the first
+    place in version 1.23): this save going through staf when unrelated header
+    file has been modified.
+   Note: for an intermediate target (e.g., ad_input_code.f or adtaf) without
+    "make depend" step, still need to do "make links" before "make adtaf".
 o eesupp/src (+ few pkg src files) & genmake2:
   - finish to remove ALWAYS_USE_MPI in source code that TAF does not see;
   - no longer set ALWAYS_USE_MPI in Makefile (was done by genmake2).
-  - improve genmake2 checking for ALLOW_${PKG} in CPP_OPTIONS.h files (distingues
+  - improve genmake2 checking for ALLOW_${PKG} in CPP_OPTIONS.h files (distinguish
      upper/lower case ; account for space between "#" and undef/define)
 o pkg/flt (with exch2):
   - cleaning: fix so that it compiles; move remaining MPI calls out of flt_exch2.F;
-  - simplify threads syncronisation; fix (many issues) multi-threaded with MPI.
+  - simplify threads synchronisation; fix (many issues) multi-threaded with MPI.
 
 checkpoint63s (2012/09/05)
 o pkg/ecco:
