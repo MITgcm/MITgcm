@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.15 2011/12/01 14:20:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.16 2012/09/11 01:32:02 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -187,7 +187,11 @@ C--    Compute transport
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
             wFld(i,j)   = wVel(i,j,k,bi,bj)
+#ifdef ALLOW_AUTODIFF_OPENAD
+            rTrans(i,j) = wFld(i,j)*rA(i,j,bi,bj)%v*maskC(i,j,k-1,bi,bj)
+#else
             rTrans(i,j) = wFld(i,j)*rA(i,j,bi,bj)*maskC(i,j,k-1,bi,bj)
+#endif
           ENDDO
          ENDDO
 #ifdef ALLOW_GMREDI
@@ -301,7 +305,11 @@ C--   Set diagnostic suffix for the current tracer
             DO j=jMin,jMax
              DO i=iMin,iMax
                df(i,j) =
+#ifdef ALLOW_AUTODIFF_OPENAD
+     &             -rA(i,j,bi,bj)%v
+#else
      &             -rA(i,j,bi,bj)
+#endif
      &            * KappaRX(i,j,k)*recip_drC(k)*rkSign
      &            * (gTracer(i,j,k,bi,bj) - gTracer(i,j,k-1,bi,bj))
      &            * maskC(i,j,k,bi,bj)
@@ -389,7 +397,11 @@ C--    use current hFac (consistent with solver matrix)
            DO j=jMin,jMax
             DO i=iMin,iMax
               af(i,j) = af(i,j)
+#ifdef ALLOW_AUTODIFF_OPENAD
+     &                - rkSign*div(i,j)*rA(i,j,bi,bj)%v/deltaTLev(k)
+#else
      &                - rkSign*div(i,j)*rA(i,j,bi,bj)/deltaTLev(k)
+#endif
      &                - df(i,j)
             ENDDO
            ENDDO

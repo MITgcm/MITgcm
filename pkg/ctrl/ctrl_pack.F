@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.43 2012/09/04 14:58:15 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.44 2012/09/11 01:32:02 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -176,7 +176,11 @@ c     >>> Initialise control vector for optimcycle=0 <<<
 c     >>> Write gradient vector <<<
           lxxadxx   = .FALSE.
           ictrlgrad = 2
+#ifdef ALLOW_AUTODIFF_OPENAD
+          fcloc     = fc%v
+#else
           fcloc     = fc
+#endif
           write(cfile(1:128),'(4a,i4.4)')
      &         costname(1:9),'_',yctrlid(1:10),
      &         yctrlpospack, optimcycle
