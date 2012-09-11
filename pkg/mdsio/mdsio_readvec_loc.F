@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_readvec_loc.F,v 1.3 2010/12/23 14:54:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_readvec_loc.F,v 1.4 2012/09/11 22:13:29 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -124,7 +124,7 @@ C--   Check buffer size
 C--   Assume file Unit is already open with correct Rec-Length & Precision
          fileIsOpen = .TRUE.
          dUnit = ioUnit
-      ELSE
+      ELSEIF ( ioUnit.GE.-2 ) THEN
 C--   Need to open file IO unit with File-name, Rec-Length & Precision
 
 C-    Assign special directory
@@ -176,7 +176,7 @@ C--   Open the file:
             WRITE(msgBuf,'(2A)')
      &      ' MDS_READVEC_LOC: open file: ',dataFname(1:iLfn)
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT , 1)
+     &                          SQUEEZE_RIGHT, myThid )
           ENDIF
           length_of_rec = MDS_RECLEN( filePrec, nSize, myThid )
           OPEN( dUnit, file=dataFname, status=_OLD_STATUS,
@@ -184,13 +184,21 @@ C--   Open the file:
           fileIsOpen=.TRUE.
         ELSE
           fileIsOpen=.FALSE.
-          IF ( ioUnit.EQ.-1 ) THEN
-           WRITE(msgbuf,'(3A)')
+          WRITE(msgBuf,'(3A)')
      &     'S/R MDS_READVEC_LOC: file=',dataFname(1:iLfn),' not found'
-           CALL PRINT_ERROR( msgbuf, myThid )
+          IF ( ioUnit.GE.-1 ) THEN
+           CALL PRINT_ERROR( msgBuf, myThid )
            STOP 'ABNORMAL END: S/R MDS_READVEC_LOC'
+          ELSEIF ( debugLevel.GE.debLevA ) THEN
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
           ENDIF
         ENDIF
+      ELSE
+         WRITE(msgBuf,'(A,I9,A)')  ' MDS_READVEC_LOC:',
+     &         ioUnit, ' = invalid value for ioUnit argument'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R MDS_READVEC_LOC'
 C--   End if block: File Unit is already open / Need to open it
       ENDIF
 
@@ -214,7 +222,7 @@ C--   Close file
       IF ( fileIsOpen ) THEN
         IF ( ioUnit.EQ.-2 .OR. ioUnit.EQ.-1 ) THEN
           ioUnit = dUnit
-        ELSE IF ( ioUnit.EQ.0 ) THEN
+        ELSEIF ( ioUnit.EQ.0 ) THEN
           CLOSE( dUnit )
           fileIsOpen = .FALSE.
         ENDIF
