@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.40 2012/09/04 14:58:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.41 2012/09/11 23:46:15 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -48,6 +48,8 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "ctrl.h"
+#include "CTRL_SIZE.h"
+#include "CTRL_GENARR.h"
 #include "optim.h"
 
 #ifdef ALLOW_COST
@@ -76,6 +78,7 @@ c     == local variables ==
       integer irec
       integer ivartype
       integer ictrlgrad
+      integer iarr
 
       integer cbuffindex
       integer cunit
@@ -160,10 +163,24 @@ c--   Assign file names.
       call ctrl_set_fname(xx_siarea_file, fname_siarea, mythid)
       call ctrl_set_fname(xx_siheff_file, fname_siheff, mythid)
       call ctrl_set_fname(xx_sihsnow_file, fname_sihsnow, mythid)
+      call ctrl_set_fname(xx_shifwflx_file, fname_shifwflx, mythid)
 cHFLUXM_CONTROL
       call ctrl_set_fname(xx_hfluxm_file, fname_hfluxm, mythid)
 cHFLUXM_CONTROL
-      call ctrl_set_fname(xx_shifwflx_file, fname_shifwflx, mythid)
+#ifdef ALLOW_GENARR2D_CONTROL
+      do iarr = 1, maxCtrlArr2D
+       call ctrl_set_fname(
+     &  xx_genarr2d_file(iarr), 
+     &  fname_genarr2d(:,iarr), mythid) 
+      enddo
+#endif
+#ifdef ALLOW_GENARR3D_CONTROL
+      do iarr = 1, maxCtrlArr3D
+       call ctrl_set_fname(
+     &  xx_genarr3d_file(iarr), 
+     &  fname_genarr3d(:,iarr), mythid) 
+      enddo
+#endif
 
 c--     Only the master thread will do I/O.
         _BEGIN_MASTER( mythid )
@@ -772,6 +789,28 @@ c----------------------------------------------------------------------
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
      &         fname_shifwflx(ictrlgrad), "maskCtrlI",
      &         weighttype, nwetiglobal, mythid)
+#endif
+
+#ifdef ALLOW_GENARR2D_CONTROL
+       do iarr = 1, maxCtrlArr2D
+          ivartype    = 100+iarr
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wunit"
+          call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
+     &         fname_genarr2d(ictrlgrad,iarr), "maskCtrlC",
+     &         weighttype, nwetcglobal, mythid)
+       enddo
+#endif
+
+#ifdef ALLOW_GENARR3D_CONTROL
+       do iarr = 1, maxCtrlArr3D
+          ivartype    = 200+iarr
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wunit"
+          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
+     &         fname_genarr3d(ictrlgrad,iarr), "maskCtrlC",
+     &         weighttype, nwetcglobal, mythid)
+       enddo
 #endif
 
 #ifdef ALLOW_PACKUNPACK_METHOD2
