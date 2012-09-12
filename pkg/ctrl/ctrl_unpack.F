@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.41 2012/09/11 23:46:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.42 2012/09/12 15:10:04 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -70,6 +70,10 @@ c     == routine arguments ==
       integer mythid
 
 #ifndef EXCLUDE_CTRL_PACK
+c     == external ==
+      integer  ilnblnk
+      external ilnblnk
+
 c     == local variables ==
 
       integer i, j, k
@@ -78,7 +82,9 @@ c     == local variables ==
       integer irec
       integer ivartype
       integer ictrlgrad
+#if (defined ALLOW_GENARR2D_CONTROL) || (defined ALLOW_GENARR3D_CONTROL)
       integer iarr
+#endif
 
       integer cbuffindex
       integer cunit
@@ -103,11 +109,6 @@ cgg(  Add OBCS mask names.
 #endif
       integer iobcs
 cgg)
-
-c     == external ==
-
-      integer  ilnblnk
-      external ilnblnk
 
 c     == end of interface ==
 
@@ -170,15 +171,15 @@ cHFLUXM_CONTROL
 #ifdef ALLOW_GENARR2D_CONTROL
       do iarr = 1, maxCtrlArr2D
        call ctrl_set_fname(
-     &  xx_genarr2d_file(iarr), 
-     &  fname_genarr2d(:,iarr), mythid) 
+     &  xx_genarr2d_file(iarr),
+     &  fname_genarr2d(1,iarr), mythid)
       enddo
 #endif
 #ifdef ALLOW_GENARR3D_CONTROL
       do iarr = 1, maxCtrlArr3D
        call ctrl_set_fname(
-     &  xx_genarr3d_file(iarr), 
-     &  fname_genarr3d(:,iarr), mythid) 
+     &  xx_genarr3d_file(iarr),
+     &  fname_genarr3d(1,iarr), mythid)
       enddo
 #endif
 

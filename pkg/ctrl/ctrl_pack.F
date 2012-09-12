@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.45 2012/09/11 23:46:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.46 2012/09/12 15:10:04 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -62,12 +62,15 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-
       logical first
       integer mythid
 
 #ifndef EXCLUDE_CTRL_PACK
 #if (defined (ALLOW_ADJOINT_RUN)||defined (ALLOW_TANGENTLINEAR_RUN))
+c     == external ==
+      integer  ilnblnk
+      external ilnblnk
+
 c     == local variables ==
 
       _RL    fcloc
@@ -79,7 +82,9 @@ c     == local variables ==
       integer ig,jg
       integer ivartype
       integer iobcs
+#if (defined ALLOW_GENARR2D_CONTROL) || (defined ALLOW_GENARR3D_CONTROL)
       integer iarr
+#endif
 
       logical doglobalread
       logical ladinit
@@ -91,11 +96,6 @@ c     == local variables ==
 
       character*(128) cfile
       character*( 80) weighttype
-
-c     == external ==
-
-      integer  ilnblnk
-      external ilnblnk
 
 c     == end of interface ==
 
@@ -164,15 +164,15 @@ cHFLUXM_CONTROL
 #ifdef ALLOW_GENARR2D_CONTROL
       do iarr = 1, maxCtrlArr2D
        call ctrl_set_fname(
-     &  xx_genarr2d_file(iarr), 
-     &  fname_genarr2d(:,iarr), mythid) 
+     &  xx_genarr2d_file(iarr),
+     &  fname_genarr2d(1,iarr), mythid)
       enddo
 #endif
 #ifdef ALLOW_GENARR3D_CONTROL
       do iarr = 1, maxCtrlArr3D
        call ctrl_set_fname(
-     &  xx_genarr3d_file(iarr), 
-     &  fname_genarr3d(:,iarr), mythid) 
+     &  xx_genarr3d_file(iarr),
+     &  fname_genarr3d(1,iarr), mythid)
       enddo
 #endif
 
@@ -713,7 +713,7 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_pack_xyz(
-     &         cunit, ivartype, fname_genarr3d(ictrlgrad,iarr), 
+     &         cunit, ivartype, fname_genarr3d(ictrlgrad,iarr),
      &         "maskCtrlC", weighttype, wunit, lxxadxx, mythid)
        enddo
 #endif
