@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.46 2012/09/12 15:10:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.47 2012/09/12 22:20:06 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -83,7 +83,11 @@ c     == local variables ==
       integer ivartype
       integer iobcs
 #if (defined ALLOW_GENARR2D_CONTROL) || (defined ALLOW_GENARR3D_CONTROL)
+C-    Providing we set the file-name just before calling ctrl_set_pack,
+C     the same local file-name variable can be used for different variables.
+C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
       integer iarr
+      character*(80) fname_local(3)
 #endif
 
       logical doglobalread
@@ -161,20 +165,6 @@ c--   Assign file names.
 cHFLUXM_CONTROL
       call ctrl_set_fname(xx_hfluxm_file, fname_hfluxm, mythid)
 cHFLUXM_CONTROL
-#ifdef ALLOW_GENARR2D_CONTROL
-      do iarr = 1, maxCtrlArr2D
-       call ctrl_set_fname(
-     &  xx_genarr2d_file(iarr),
-     &  fname_genarr2d(1,iarr), mythid)
-      enddo
-#endif
-#ifdef ALLOW_GENARR3D_CONTROL
-      do iarr = 1, maxCtrlArr3D
-       call ctrl_set_fname(
-     &  xx_genarr3d_file(iarr),
-     &  fname_genarr3d(1,iarr), mythid)
-      enddo
-#endif
 
 c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
@@ -698,22 +688,26 @@ c          write(cunit) nWetiGlobal(1)
 
 #ifdef ALLOW_GENARR2D_CONTROL
        do iarr = 1, maxCtrlArr2D
+          call ctrl_set_fname( xx_genarr2d_file(iarr),
+     O                         fname_local, mythid )
           ivartype    = 100+iarr
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_genarr2d(ictrlgrad,iarr),
+     &         cunit, ivartype, fname_local(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
        enddo
 #endif
 
 #ifdef ALLOW_GENARR3D_CONTROL
        do iarr = 1, maxCtrlArr3D
+          call ctrl_set_fname( xx_genarr3d_file(iarr),
+     O                         fname_local, mythid )
           ivartype    = 200+iarr
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_pack_xyz(
-     &         cunit, ivartype, fname_genarr3d(ictrlgrad,iarr),
+     &         cunit, ivartype, fname_local(ictrlgrad),
      &         "maskCtrlC", weighttype, wunit, lxxadxx, mythid)
        enddo
 #endif
