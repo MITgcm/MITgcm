@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_varia.F,v 1.10 2011/08/31 21:43:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_varia.F,v 1.11 2012/09/12 22:03:00 dfer Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -83,12 +83,20 @@ C-    all threads initialise local var:
       ENDDO
 
 C read floats initial condition from file
-      IF ( nIter0.EQ.0 ) THEN
+      IF ( nIter0.EQ.FLT_Iter0 ) THEN
         fn = flt_file
         fp = readBinaryPrec
-      ELSE
+      ELSEIF (nIter0.GT.FLT_Iter0) THEN
         WRITE(fn,'(A,I10.10)') 'pickup_flt.', nIter0
         fp = precFloat64
+      ELSE
+        WRITE(msgBuf,'(2A,I3,A)') 'FLT_INIT_VARIA:',
+     &       ' wrong setting of FLT_Iter0 :'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A,I3,A)') 'FLT_INIT_VARIA:',
+     &       ' nIter0 < FLT_Iter0 not supported'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R FLT_INIT_VARIA'
       ENDIF
       iL = ILNBLNK(fn)
       WRITE(msgBuf,'(2A)')
@@ -102,7 +110,7 @@ C--   Initial position: first try to read from a global file.
       ioUnit = -2
       bi = 0
       bj = 0
-      IF ( nIter0.EQ.0 ) THEN
+      IF ( nIter0.EQ.FLT_Iter0 ) THEN
 C-    read actual number of floats from file
         CALL MDS_READVEC_LOC( fn, fp, ioUnit,
      &                        'RL', imax, tmp, dummyRS,
@@ -182,7 +190,7 @@ C-    read individual float position from file
              CALL MDS_READVEC_LOC( fn, fp, ioUnit,
      &                             'RL', imax, tmp, dummyRS,
      &                             bi, bj, ip+1, myThid )
-             IF ( nIter0.EQ.0 .AND. mapIniPos2Index ) THEN
+             IF ( nIter0.EQ.FLT_Iter0 .AND. mapIniPos2Index ) THEN
 C--   For initial condition only, convert coordinates to index map:
               CALL FLT_MAP_XY2IJLOCAL( ix, jy,
      I                                 tmp(3), tmp(4),bi,bj,myThid )

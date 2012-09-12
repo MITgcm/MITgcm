@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_readparms.F,v 1.7 2011/08/31 21:41:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_readparms.F,v 1.8 2012/09/12 22:03:00 dfer Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -30,7 +30,7 @@ C     == local variables ==
 
       NAMELIST /FLT_NML/ flt_int_traj, flt_int_prof,
      &                   flt_selectTrajOutp, flt_selectProfOutp,
-     &                   flt_noise, flt_deltaT,
+     &                   flt_noise, flt_deltaT, FLT_Iter0,
      &                   flt_file, mapIniPos2Index
 
 C     == end of interface ==
@@ -39,6 +39,7 @@ C     == end of interface ==
 
 C     Set default values.
       flt_deltaT   = deltaTClock
+      FLT_Iter0 = 0
       flt_int_traj =  3600.
       flt_int_prof = 43200.
       flt_noise    = 0.0
