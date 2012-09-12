@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1734 2012/09/08 20:32:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1735 2012/09/12 15:18:58 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mdsio:
+  - fix missing STOP in mdsio_readvec_loc.F (case ioUnit=0) when file is missing
 o tools/genmake2:
   - add similar dependences for target EXE_AD & EXE_FTL as we have for EXECUTABLE
     (added by Alistair in version 1.51 for building without make depend);
