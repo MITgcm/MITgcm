@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1735 2012/09/12 15:18:58 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1736 2012/09/12 22:38:05 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl (pack & unpack):
+  - in ctrl_pack.F & ctrl_unpack.F, use the same local file-name variable
+    (locally defined) for different variables (+ remove the variable-specific
+    file name in CTRL_GENARR.h). For now, only implemented for GENARR2/3D_CONTROL
+    (to be extended to other local file names in ctrl.h).
+o pkg/flt:
+  - add a FLT_Iter0 option (similar to PTRACERS_Iter0).
 o pkg/mdsio:
   - fix missing STOP in mdsio_readvec_loc.F (case ioUnit=0) when file is missing
 o tools/genmake2:
