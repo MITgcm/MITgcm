@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.41 2012/09/04 14:57:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.42 2012/09/13 19:55:17 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -143,12 +143,12 @@ cHFLUXM_CONTROL
 
 c--     Set default values.
         doInitXX            = .TRUE.
-#ifdef ALLOW_SMOOTH_CORREL3D 
+#ifdef ALLOW_SMOOTH_CORREL3D
         ctrlSmoothCorrel3D  = .TRUE.
 #else
         ctrlSmoothCorrel3D  = .FALSE.
 #endif
-#ifdef ALLOW_SMOOTH_CORREL2D 
+#ifdef ALLOW_SMOOTH_CORREL2D
         ctrlSmoothCorrel2D  = .TRUE.
 #else
         ctrlSmoothCorrel2D  = .FALSE.
@@ -162,7 +162,11 @@ c--     Set default values.
         doZscaleUnpack      = .FALSE.
         doZscalePack        = .FALSE.
         doMainUnpack        = .TRUE.
+#if (defined (ALLOW_ADJOINT_RUN)||defined (ALLOW_TANGENTLINEAR_RUN))
         doMainPack          = .TRUE.
+#else
+        doMainPack          = .FALSE.
+#endif
         doSinglePrecTapelev = .FALSE.
         doAdmtlmBypassAD    = .FALSE.
 
