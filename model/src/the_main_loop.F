@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.136 2012/08/10 14:09:15 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.137 2012/09/13 19:36:08 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -453,6 +453,12 @@ CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*MaxTsf*nthreads_chkpt
 CADJ INIT comlev1_thsice_4
 CADJ &     = COMMON,nchklev_1*nsx*nsy*maxpass*nthreads_chkpt
 #   endif /* ALLOW_THSICE */
+c--
+#   ifdef ALLOW_STREAMICE
+CADJ INIT comlev1_stream_nl = COMMON,nchklev_1*streamice_max_nl
+CADJ INIT comlev1_stream_front = COMMON,nchklev_1*4
+CADJ INIT comlev1_stream_ij = COMMON,nchklev_1*4*snx*nsx*sny*nsy
+#   endif
 c--
 #   ifdef ALLOW_CG2D_NSA
 CADJ INIT comlev1_cg2d

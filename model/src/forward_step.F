@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.209 2012/08/10 14:09:15 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.210 2012/09/13 19:36:08 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -24,6 +24,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
+#endif
+#ifdef ALLOW_STREAMICE
+# include "STREAMICE_OPTIONS.h"
 #endif
 
 CBOP
@@ -145,6 +148,12 @@ C     == Global variables ==
 # ifdef ALLOW_SHELFICE
 #  include "SHELFICE.h"
 #  include "SHELFICE_COST.h"
+# endif
+# ifdef ALLOW_STREAMICE
+#  include "STREAMICE.h"
+#  include "STREAMICE_ADV.h"
+#  include "STREAMICE_BDRY.h"
+#  include "STREAMICE_CG.h"
 # endif
 # ifdef ALLOW_EBM
 #  include "EBM.h"
@@ -427,6 +436,14 @@ CADJ STORE hFacC = comlev1, key = ikey_dynamics, kind = isbyte
        CALL TIMER_START('DO_OCEANIC_PHYS     [FORWARD_STEP]',myThid)
        CALL DO_OCEANIC_PHYS( myTime, myIter, myThid )
        CALL TIMER_STOP ('DO_OCEANIC_PHYS     [FORWARD_STEP]',myThid)
+
+
+# ifdef ALLOW_STREAMICE
+       CALL STREAMICE_SOLO_TIMESTEP ( myThid, myiter, 
+     &   iLoop, mytime )        
+#endif
+
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE EmPmR    = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
