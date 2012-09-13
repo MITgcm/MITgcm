@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.11 2011/10/19 15:00:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.12 2012/09/13 17:57:36 dfer Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -345,8 +345,10 @@ C--   Time-average
 #endif /* LAYERS_VFLUX */
 
 #ifdef LAYERS_PRHO_REF
+      IF (LAYER_nb .EQ. 3) THEN
          CALL TIMEAVE_CUMULATE( prho_tave, prho, Nr,
      &                          deltaTclock, bi, bj, myThid )
+      ENDIF
 #endif /* LAYERS_PRHO_REF */
 
          layers_TimeAve(bi,bj)=layers_TimeAve(bi,bj)+deltaTclock

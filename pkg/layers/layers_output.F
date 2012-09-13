@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.5 2011/10/19 01:28:45 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.6 2012/09/13 17:57:36 dfer Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -84,8 +84,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 #ifdef LAYERS_PRHO_REF
+       IF (LAYER_nb .EQ. 3) THEN
             CALL WRITE_FLD_3D_RL( 'layers_prho.', suff, Nr,
      &                             prho, myIter, myThid )
+       ENDIF
 #endif /* LAYERS_PRHO_REF */
           ENDIF
         ENDIF
@@ -151,8 +153,10 @@ C      Normalize by integrated time
 #endif /* LAYERS_VFLUX */
 
 #ifdef LAYERS_PRHO_REF
+       IF (LAYER_nb .EQ. 3) THEN
           CALL TIMEAVE_NORMALIZE( prho_tave, layers_timeave,
      &                            Nr, bi, bj, myThid )
+       ENDIF
 #endif /* LAYERS_PRHO_REF */
 
          ENDDO
@@ -178,8 +182,10 @@ C      Normalize by integrated time
 #endif /* LAYERS_VFLUX */
 
 #ifdef LAYERS_PRHO_REF
+      IF (LAYER_nb .EQ. 3) THEN
          CALL WRITE_FLD_3D_RL( 'layers_prho-tave.', suff, Nr,
      &                          prho_tave, myIter, myThid )
+      ENDIF
 #endif /* LAYERS_PRHO_REF */
 
         ENDIF
@@ -206,7 +212,9 @@ C      Reset averages to zero
 #endif /* LAYERS_VFLUX */
 
 #ifdef LAYERS_PRHO_REF
+          IF (LAYER_nb .EQ. 3) THEN
           CALL TIMEAVE_RESET(prho_tave,Nr,bi,bj,myThid)
+          ENDIF
 #endif /* LAYERS_PRHO_REF */
 
           layers_TimeAve(bi,bj) = 0.
