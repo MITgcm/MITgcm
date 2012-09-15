@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_ad_put_rx2.template,v 1.2 2010/04/23 20:21:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_ad_put_rx2.template,v 1.3 2012/09/15 23:01:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -41,7 +41,9 @@ C !USES:
 #include "EEPARAMS.h"
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-
+#ifdef W2_E2_DEBUG_ON
+# include "W2_EXCH2_PARAMS.h"
+#endif
 
 C !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -120,12 +122,13 @@ C     iBufr2      :: number of buffer-2 elements filled in
       INTEGER tgT
       INTEGER itb, jtb
       INTEGER isb, jsb
-      INTEGER iBufr1, iBufr2
+      INTEGER iBufr1, iBufr2, iLoc
       INTEGER pi(2), pj(2)
       _RX     sa1, sa2, val1, val2
 
-#if ( (defined W2_E2_DEBUG_ON) || (defined W2_USE_E2_SAFEMODE) )
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef W2_E2_DEBUG_ON
+      LOGICAL prtFlag
 #endif
 
       IF     ( commSetting .EQ. 'P' ) THEN
@@ -158,10 +161,13 @@ C     if pj(1) is -1 then +i in target <=> -j in source so bufr1 should get -arr
 C     if pi(1) is 1 then +i in source aligns with +i in target
 C     if pj(1) is 1 then +i in source aligns with +j in target
 #ifdef W2_E2_DEBUG_ON
-      WRITE(msgBuf,'(A,I5,A,I5)')
-     &  'EXCH2_AD_PUT_RX2 sourceTile=', thisTile, ' targetTile=', tgT
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     I                    SQUEEZE_BOTH, myThid )
+      IF ( ABS(W2_printMsg).GE.2 ) THEN
+        WRITE(msgBuf,'(2A,I5,I3,A,I5)') 'EXCH2_AD_PUT_RX2',
+     &    ' sourceTile,neighb=', thisTile, nN, ' : targetTile=', tgT
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                      SQUEEZE_BOTH, myThid )
+      ENDIF
+      prtFlag = ABS(W2_printMsg).GE.3
 #endif /* W2_E2_DEBUG_ON */
       iBufr1=0
       DO ktl=tKlo,tKhi,tkStride
@@ -175,77 +181,70 @@ C     if pj(1) is 1 then +i in source aligns with +j in target
          isl = isc-isb
          jsl = jsc-jsb
 #ifdef W2_E2_DEBUG_ON
-         WRITE(msgBuf,'(A,2I4)')
-     &           'EXCH2_AD_PUT_RX2 target  u(itl, jtl) = ', itl, jtl
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     I                       SQUEEZE_RIGHT, myThid )
-         IF (     pi(1) .EQ. 1 ) THEN
-C         i index aligns
-          WRITE(msgBuf,'(A,2I4)')
-     &           '               source +u(isl, jsl) = ', isl, jsl
-         ELSEIF ( pi(1) .EQ. -1 ) THEN
-C         reversed i index aligns
-          WRITE(msgBuf,'(A,2I4)')
-     &            '               source -u(isl, jsl) = ', isl, jsl
-         ELSEIF ( pj(1) .EQ.  1 ) THEN
-          WRITE(msgBuf,'(A,2I4)')
-     &            '               source +v(isl, jsl) = ', isl, jsl
-         ELSEIF ( pj(1) .EQ. -1 ) THEN
-          WRITE(msgBuf,'(A,2I4)')
-     &            '               source -v(isl, jsl) = ', isl, jsl
-         ENDIF
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     I                       SQUEEZE_RIGHT, myThid )
-         IF ( isl .LT. i1Lo .OR. isl .GT. i1Hi ) THEN
-          WRITE(msgBuf,'(A,2I4)')
-     &           '               *** isl is out of bounds '
+         IF ( prtFlag ) THEN
+          WRITE(msgBuf,'(A,2I5)')
+     &          'EXCH2_AD_PUT_RX2 target  u(itl,jtl) =', itl, jtl
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      I                        SQUEEZE_RIGHT, myThid )
-         ENDIF
-         IF ( jsl .LT. j1Lo .OR. jsl .GT. j1Hi ) THEN
-          WRITE(msgBuf,'(A,2I4)')
-     &           '               *** jsl is out of bounds '
+          IF (     pi(1) .EQ. 1 ) THEN
+C        i index aligns
+           WRITE(msgBuf,'(A,2I5)')
+     &          '                 source +u(isl,jsl) =', isl, jsl
+          ELSEIF ( pi(1) .EQ. -1 ) THEN
+C        reversed i index aligns
+           WRITE(msgBuf,'(A,2I5)')
+     &          '                 source -u(isl,jsl) =', isl, jsl
+          ELSEIF ( pj(1) .EQ.  1 ) THEN
+           WRITE(msgBuf,'(A,2I5)')
+     &          '                 source +v(isl,jsl) =', isl, jsl
+          ELSEIF ( pj(1) .EQ. -1 ) THEN
+           WRITE(msgBuf,'(A,2I5)')
+     &          '                 source -v(isl,jsl) =', isl, jsl
+          ENDIF
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      I                        SQUEEZE_RIGHT, myThid )
-         ENDIF
-#endif /* W2_E2_DEBUG_ON */
-#ifdef   W2_USE_E2_SAFEMODE
-         IF ( iBufr1 .GT. e2BufrRecSize ) THEN
-C         Ran off end of buffer. This should not happen
-          STOP 'EXCH2_AD_PUT_RX2:: E2BUFR LIMIT EXCEEDED'
          ENDIF
          IF ( isl .LT. i1Lo .OR. isl .GT. i1Hi ) THEN
 C         Forward mode send getting from points outside of the
 C         tiles exclusive domain bounds in X. This should not happen
-          WRITE(msgBuf,'(A,I4,I4)')
-     &     'EXCH2_AD_PUT_RX2 tIlo1,tIhi1=', tIlo1, tIhi1
-          CALL PRINT_ERROR (msgBuf, myThid )
-          WRITE(msgBuf,'(A,3I4)')
-     &     'EXCH2_AD_PUT_RX2 itl, jtl, isl =', itl, jtl, isl
-          CALL PRINT_ERROR (msgBuf, myThid )
-          STOP 'EXCH2_AD_PUT_RX2:: ISL OUTSIDE TILE EXCLUSIVE DOMAIN'
+          WRITE(msgBuf,'(2A,I4,A,2I4,A)') 'EXCH2_AD_PUT_RX2:',
+     &      ' isl=', isl, ' is out of bounds (i1Lo,Hi=',i1Lo,i1Hi,')'
+          CALL PRINT_ERROR ( msgBuf, myThid )
+          WRITE(msgBuf,'(2A,2I4,A,3I6)') 'EXCH2_AD_PUT_RX2:',
+     &     ' for itl,jtl=', itl, jtl, ' itc,jtc,isc=', itc, jtc, isc
+          CALL PRINT_ERROR ( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R EXCH2_AD_PUT_RX2 (isl out of bounds)'
          ENDIF
          IF ( jsl .LT. j1Lo .OR. jsl .GT. j1Hi ) THEN
 C         Forward mode send getting from points outside of the
 C         tiles exclusive domain bounds in Y. This should not happen
-          WRITE(msgBuf,'(A,I4,I4)')
-     &     'EXCH2_AD_PUT_RX2 tJlo1,tJhi1=', tJlo1, tJhi1
-          CALL PRINT_ERROR (msgBuf, myThid )
-          WRITE(msgBuf,'(A,2I4)')
-     &     'EXCH2_AD_PUT_RX2 itl, jtl =', itl, jtl
-          CALL PRINT_ERROR (msgBuf, myThid )
-          WRITE(msgBuf,'(A,2I4)')
-     &     'EXCH2_AD_PUT_RX2 isl, jsl =', isl, jsl
-          CALL PRINT_ERROR (msgBuf, myThid )
-          STOP 'EXCH2_AD_PUT_RX2:: JSL OUTSIDE TILE EXCLUSIVE DOMAIN'
+          WRITE(msgBuf,'(2A,I4,A,2I4,A)') 'EXCH2_AD_PUT_RX2:',
+     &      ' jsl=', jsl, ' is out of bounds (j1Lo,Hi=',j1Lo,j1Hi,')'
+          CALL PRINT_ERROR ( msgBuf, myThid )
+          WRITE(msgBuf,'(2A,2I4,A,3I6)') 'EXCH2_AD_PUT_RX2:',
+     &     ' for itl,jtl=', itl, jtl, ' itc,jtc,jsc=', itc, jtc, jsc
+          CALL PRINT_ERROR ( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R EXCH2_AD_PUT_RX2 (jsl out of bounds)'
          ENDIF
-#endif /* W2_USE_E2_SAFEMODE */
-         val1 = e2Bufr1_RX(iBufr1)
+#endif /* W2_E2_DEBUG_ON */
+#ifdef W2_USE_E2_SAFEMODE
+         iLoc = MIN( iBufr1, e2BufrRecSize )
+#else
+         iLoc = iBufr1
+#endif
+         val1 = e2Bufr1_RX(iLoc)
          array1(isl,jsl,ktl) = array1(isl,jsl,ktl) + sa1*val1
          array2(isl,jsl,ktl) = array2(isl,jsl,ktl) + sa2*val1
         ENDDO
        ENDDO
       ENDDO
+      IF ( iBufr1 .GT. e2BufrRecSize ) THEN
+C     Ran off end of buffer. This should not happen
+        WRITE(msgBuf,'(2A,I9,A,I9)') 'EXCH2_AD_PUT_RX2:',
+     &   ' iBufr1=', iBufr1, ' exceeds E2BUFR size=', e2BufrRecSize
+        CALL PRINT_ERROR ( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R EXCH2_AD_PUT_RX2 (iBufr1 over limit)'
+      ENDIF
 
 C     Extract values into bufr2
 C     if pi(2) is  1 then +j in target <=> +i in source so bufr1 should get +array1
@@ -270,77 +269,70 @@ C     if pj(2) is -1 then +j in target <=> -j in source so bufr1 should get -arr
          isl = isc-isb
          jsl = jsc-jsb
 #ifdef W2_E2_DEBUG_ON
-         WRITE(msgBuf,'(A,2I4)')
-     &            'EXCH2_AD_PUT_RX2 target  v(itl, jtl) = ', itl, jtl
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     I                       SQUEEZE_RIGHT, myThid )
-         IF (     pi(2) .EQ. 1 ) THEN
-C         i index aligns
-          WRITE(msgBuf,'(A,2I4)')
-     &          '               source +u(isl, jsl) = ', isl, jsl
-         ELSEIF ( pi(2) .EQ. -1 ) THEN
-C         reversed i index aligns
-          WRITE(msgBuf,'(A,2I4)')
-     &          '               source -u(isl, jsl) = ', isl, jsl
-         ELSEIF ( pj(2) .EQ.  1 ) THEN
-          WRITE(msgBuf,'(A,2I4)')
-     &          '               source +v(isl, jsl) = ', isl, jsl
-         ELSEIF ( pj(2) .EQ. -1 ) THEN
-          WRITE(msgBuf,'(A,2I4)')
-     &          '               source -v(isl, jsl) = ', isl, jsl
-         ENDIF
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     I                       SQUEEZE_RIGHT, myThid )
-         IF ( isl .LT. i1Lo .OR. isl .GT. i1Hi ) THEN
-          WRITE(msgBuf,'(A,2I4)')
-     &          '               *** isl is out of bounds '
+         IF ( prtFlag ) THEN
+          WRITE(msgBuf,'(A,2I5)')
+     &          'EXCH2_AD_PUT_RX2 target  v(itl,jtl) =', itl, jtl
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                        SQUEEZE_RIGHT, myThid )
+          IF (     pi(2) .EQ. 1 ) THEN
+C        i index aligns
+           WRITE(msgBuf,'(A,2I5)')
+     &          '                 source +u(isl,jsl) =', isl, jsl
+          ELSEIF ( pi(2) .EQ. -1 ) THEN
+C        reversed i index aligns
+           WRITE(msgBuf,'(A,2I5)')
+     &          '                 source -u(isl,jsl) =', isl, jsl
+          ELSEIF ( pj(2) .EQ.  1 ) THEN
+           WRITE(msgBuf,'(A,2I5)')
+     &          '                 source +v(isl,jsl) =', isl, jsl
+          ELSEIF ( pj(2) .EQ. -1 ) THEN
+           WRITE(msgBuf,'(A,2I5)')
+     &          '                 source -v(isl,jsl) =', isl, jsl
+          ENDIF
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      I                        SQUEEZE_RIGHT, myThid )
          ENDIF
-         IF ( jsl .LT. j1Lo .OR. jsl .GT. j1Hi ) THEN
-          WRITE(msgBuf,'(A,2I4)')
-     &          '               *** jsl is out of bounds '
-          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     I                        SQUEEZE_RIGHT, myThid )
-         ENDIF
-#endif /* W2_E2_DEBUG_ON */
-#ifdef   W2_USE_E2_SAFEMODE
-         IF ( iBufr2 .GT. e2BufrRecSize ) THEN
-C         Ran off end of buffer. This should not happen
-          STOP 'EXCH2_AD_PUT_RX2:: E2BUFR LIMIT EXCEEDED'
-         ENDIF
-         IF ( isl .LT. i1Lo .OR. isl .GT. i1Hi ) THEN
+         IF ( isl .LT. i2Lo .OR. isl .GT. i2Hi ) THEN
 C         Forward mode send getting from points outside of the
 C         tiles exclusive domain bounds in X. This should not happen
-          WRITE(msgBuf,'(A,I4,I4)')
-     &     'EXCH2_AD_PUT_RX2 tIlo2,tIhi2=', tIlo2, tIhi2
-          CALL PRINT_ERROR (msgBuf, myThid )
-          WRITE(msgBuf,'(A,3I4)')
-     &     'EXCH2_AD_PUT_RX2 itl, jtl, isl =', itl, jtl, isl
-          CALL PRINT_ERROR (msgBuf, myThid )
-          STOP 'EXCH2_AD_PUT_RX2:: ISL OUTSIDE TILE EXCLUSIVE DOMAIN'
+          WRITE(msgBuf,'(2A,I4,A,2I4,A)') 'EXCH2_AD_PUT_RX2:',
+     &      ' isl=', isl, ' is out of bounds (i2Lo,Hi=',i2Lo,i2Hi,')'
+          CALL PRINT_ERROR ( msgBuf, myThid )
+          WRITE(msgBuf,'(2A,2I4,A,3I6)') 'EXCH2_AD_PUT_RX2:',
+     &     ' for itl,jtl=', itl, jtl, ' itc,jtc,isc=', itc, jtc, isc
+          CALL PRINT_ERROR ( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R EXCH2_AD_PUT_RX2 (isl out of bounds)'
          ENDIF
-         IF ( jsl .LT. j1Lo .OR. jsl .GT. j1Hi ) THEN
+         IF ( jsl .LT. j2Lo .OR. jsl .GT. j2Hi ) THEN
 C         Forward mode send getting from points outside of the
 C         tiles exclusive domain bounds in Y. This should not happen
-          WRITE(msgBuf,'(A,I4,I4)')
-     &     'EXCH2_AD_PUT_RX2 tJlo2,tJhi2=', tJlo2, tJhi2
-          CALL PRINT_ERROR (msgBuf, myThid )
-          WRITE(msgBuf,'(A,2I4)')
-     &     'EXCH2_AD_PUT_RX2 itl, jtl =', itl, jtl
-          CALL PRINT_ERROR (msgBuf, myThid )
-          WRITE(msgBuf,'(A,2I4)')
-     &     'EXCH2_AD_PUT_RX2 isl, jsl =', isl, jsl
-          CALL PRINT_ERROR (msgBuf, myThid )
-          STOP 'EXCH2_AD_PUT_RX2:: JSL OUTSIDE TILE EXCLUSIVE DOMAIN'
+          WRITE(msgBuf,'(2A,I4,A,2I4,A)') 'EXCH2_AD_PUT_RX2:',
+     &      ' jsl=', jsl, ' is out of bounds (j2Lo,Hi=',j2Lo,j2Hi,')'
+          CALL PRINT_ERROR ( msgBuf, myThid )
+          WRITE(msgBuf,'(2A,2I4,A,3I6)') 'EXCH2_AD_PUT_RX2:',
+     &     ' for itl,jtl=', itl, jtl, ' itc,jtc,jsc=', itc, jtc, jsc
+          CALL PRINT_ERROR ( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R EXCH2_AD_PUT_RX2 (jsl out of bounds)'
          ENDIF
-#endif /* W2_USE_E2_SAFEMODE */
-         val2 = e2Bufr2_RX(iBufr2)
+#endif /* W2_E2_DEBUG_ON */
+#ifdef W2_USE_E2_SAFEMODE
+         iLoc = MIN( iBufr2, e2BufrRecSize )
+#else
+         iLoc = iBufr2
+#endif
+         val2 = e2Bufr2_RX(iLoc)
          array1(isl,jsl,ktl) = array1(isl,jsl,ktl) + sa1*val2
          array2(isl,jsl,ktl) = array2(isl,jsl,ktl) + sa2*val2
         ENDDO
        ENDDO
       ENDDO
+      IF ( iBufr2 .GT. e2BufrRecSize ) THEN
+C     Ran off end of buffer. This should not happen
+        WRITE(msgBuf,'(2A,I9,A,I9)') 'EXCH2_AD_PUT_RX2:',
+     &   ' iBufr2=', iBufr2, ' exceeds E2BUFR size=', e2BufrRecSize
+        CALL PRINT_ERROR ( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R EXCH2_AD_PUT_RX2 (iBufr2 over limit)'
+      ENDIF
 
       RETURN
       END

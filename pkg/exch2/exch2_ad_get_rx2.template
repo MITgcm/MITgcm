@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_ad_get_rx2.template,v 1.3 2010/04/23 20:21:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_ad_get_rx2.template,v 1.4 2012/09/15 23:01:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -121,7 +121,8 @@ C     i,j    :: Loop counters
       INTEGER oNb
       INTEGER sNb, sBi, sBj, sLv
       INTEGER i,j
-c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER iLoc
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       soT = exch2_neighbourId( nN, thisTile )
       oNb = exch2_opposingSend(nN, thisTile )
@@ -161,11 +162,22 @@ C      this source tile Id "soT"
         DO itl=tILo1, tIHi1, tiStride
 C     Read from e2Bufr1_RX(iBufr,sNb,sBi,sBj,sLv)
          iBufr1 = iBufr1+1
-         e2Bufr1_RX(iBufr1,sNb,sBi,sBj,sLv) = array1(itl,jtl,ktl)
+#ifdef W2_USE_E2_SAFEMODE
+         iLoc = MIN( iBufr1, e2BufrRecSize )
+#else
+         iLoc = iBufr1
+#endif
+         e2Bufr1_RX(iLoc,sNb,sBi,sBj,sLv) = array1(itl,jtl,ktl)
          array1(itl,jtl,ktl) = 0.
         ENDDO
        ENDDO
       ENDDO
+      IF ( iBufr1 .GT. e2BufrRecSize ) THEN
+        WRITE(msgBuf,'(2A,I9,A,I9)') 'EXCH2_AD_GET_RX2:',
+     &   ' iBufr1=', iBufr1, ' exceeds E2BUFR size=', e2BufrRecSize
+        CALL PRINT_ERROR ( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R EXCH2_AD_GET_RX2 (iBufr1 over limit)'
+      ENDIF
 
       iBufr2=0
       DO ktl=tKlo,tKhi,tkStride
@@ -173,11 +185,22 @@ C     Read from e2Bufr1_RX(iBufr,sNb,sBi,sBj,sLv)
         DO itl=tILo2, tIHi2, tiStride
 C     Read from e2Bufr2_RX(iBufr,sNb,sBi,sBj,sLv)
          iBufr2 = iBufr2+1
-         e2Bufr2_RX(iBufr2,sNb,sBi,sBj,sLv) = array2(itl,jtl,ktl)
+#ifdef W2_USE_E2_SAFEMODE
+         iLoc = MIN( iBufr2, e2BufrRecSize )
+#else
+         iLoc = iBufr2
+#endif
+         e2Bufr2_RX(iLoc,sNb,sBi,sBj,sLv) = array2(itl,jtl,ktl)
          array2(itl,jtl,ktl) = 0.
         ENDDO
        ENDDO
       ENDDO
+      IF ( iBufr2 .GT. e2BufrRecSize ) THEN
+        WRITE(msgBuf,'(2A,I9,A,I9)') 'EXCH2_AD_GET_RX2:',
+     &   ' iBufr2=', iBufr2, ' exceeds E2BUFR size=', e2BufrRecSize
+        CALL PRINT_ERROR ( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R EXCH2_AD_GET_RX2 (iBufr2 over limit)'
+      ENDIF
 
       RETURN
       END
