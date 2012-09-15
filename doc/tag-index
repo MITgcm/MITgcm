@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1736 2012/09/12 22:38:05 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1737 2012/09/15 23:01:51 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exch2:
+  - improve W2_USE_E2_SAFEMODE (faster) and W2_E2_DEBUG_ON:
+    always check buffer-size (but outside the loop); move checking for valid
+    index from W2_USE_E2_SAFEMODE to W2_E2_DEBUG_ON; in W2_E2_DEBUG_ON,
+    print each tile and point connection only if |W2_printMsg|>= 2 and 3.
 o pkg/ctrl (pack & unpack):
   - in ctrl_pack.F & ctrl_unpack.F, use the same local file-name variable
     (locally defined) for different variables (+ remove the variable-specific
