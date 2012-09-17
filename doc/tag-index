@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1737 2012/09/15 23:01:51 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1738 2012/09/17 22:32:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  - change settings of OB index in case OB coincides with tile edge (shared by
+    2 tiles), so that common OB location is registered by both tiles (instead of
+    only 1). However, for Southern and Western OB, index value = 0 is not
+    recognized as valid OB index (=default null value) and needs to be fixed.
+  - modify accordingly OBCS_BALANCE_FLOW and OBCS_MONITOR (avoid double counting)
+  - new parameter "OB_indexNone" for null index value (for now, still zero) 
+    to replace hard-coded null index value of zero.
 o pkg/exch2:
   - improve W2_USE_E2_SAFEMODE (faster) and W2_E2_DEBUG_ON:
     always check buffer-size (but outside the loop); move checking for valid
