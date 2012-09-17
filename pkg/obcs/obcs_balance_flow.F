@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_balance_flow.F,v 1.6 2012/08/06 16:47:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_balance_flow.F,v 1.7 2012/09/17 22:03:18 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -95,7 +95,9 @@ C--   Integrate the transport through each OB
          DO k=1,Nr
           DO j=1,sNy
            iB = OB_Ie(j,bi,bj)
-           IF ( iB.NE.0 ) THEN
+C-    If 1 OB location is on 2 tiles (@ edge of 2 tiles), select the one which
+C     communicates with tile interior (sNx+1) rather than with halo region (i=1)
+           IF ( iB.NE.OB_indexNone .AND. iB.GT.1 ) THEN
             tmpA = drF(k)*hFacW(iB,j,k,bi,bj)*dyG(iB,j,bi,bj)
      &                   *maskInW(iB,j,bi,bj)
             tileArea(bi,bj) = tileArea(bi,bj) + tmpA
@@ -142,7 +144,9 @@ c    &   'OBCS_balance it,areaE,flowE=', myIter, areaE, flowE
          DO k=1,Nr
           DO j=1,sNy
            iB = OB_Iw(j,bi,bj)
-           IF ( iB.NE.0 ) THEN
+C-    If 1 OB location is on 2 tiles (@ edge of 2 tiles), select the one which
+C     communicates with tile interior (i=0) rather than with halo region (i=sNx)
+           IF ( iB.NE.OB_indexNone .AND. iB.LT.sNx ) THEN
             tmpA = drF(k)*hFacW(1+iB,j,k,bi,bj)*dyG(1+iB,j,bi,bj)
      &                   *maskInW(1+iB,j,bi,bj)
             tileArea(bi,bj) = tileArea(bi,bj) + tmpA
@@ -189,7 +193,9 @@ c    &   'OBCS_balance it,areaW,flowW=', myIter, areaW, flowW
          DO k=1,Nr
           DO i=1,sNx
            jB = OB_Jn(i,bi,bj)
-           IF ( jB.NE.0 ) THEN
+C-    If 1 OB location is on 2 tiles (@ edge of 2 tiles), select the one which
+C     communicates with tile interior (sNy+1) rather than with halo region (j=1)
+           IF ( jB.NE.OB_indexNone .AND. jB.GT.1 ) THEN
             tmpA = drF(k)*hFacS(i,jB,k,bi,bj)*dxG(i,jB,bi,bj)
      &                   *maskInS(i,jB,bi,bj)
             tileArea(bi,bj) = tileArea(bi,bj) + tmpA
@@ -236,7 +242,9 @@ c    &   'OBCS_balance it,areaN,flowN=', myIter, areaN, flowN
          DO k=1,Nr
           DO i=1,sNx
            jB = OB_Js(i,bi,bj)
-           IF ( jB.NE.0 ) THEN
+C-    If 1 OB location is on 2 tiles (@ edge of 2 tiles), select the one which
+C     communicates with tile interior (j=0) rather than with halo region (j=sNy)
+           IF ( jB.NE.OB_indexNone .AND. jB.LT.sNy ) THEN
             tmpA = drF(k)*hFacS(i,1+jB,k,bi,bj)*dxG(i,1+jB,bi,bj)
      &                   *maskInS(i,1+jB,bi,bj)
             tileArea(bi,bj) = tileArea(bi,bj) + tmpA
@@ -313,9 +321,9 @@ C--   Add correction:
         DO bi=myBxLo(myThid),myBxHi(myThid)
          IF ( tileHasOBE(bi,bj) ) THEN
           DO k=1,Nr
-           DO j=1-Oly,sNy+Oly
+           DO j=1-OLy,sNy+OLy
             iB = OB_Ie(j,bi,bj)
-            IF ( iB.NE.0 ) THEN
+            IF ( iB.NE.OB_indexNone ) THEN
              OBEu(j,k,bi,bj) = OBEu(j,k,bi,bj)
      &                       + flowE*maskW(iB,j,k,bi,bj)
             ENDIF
@@ -333,9 +341,9 @@ C--   Add correction:
         DO bi=myBxLo(myThid),myBxHi(myThid)
          IF ( tileHasOBW(bi,bj) ) THEN
           DO k=1,Nr
-           DO j=1-Oly,sNy+Oly
+           DO j=1-OLy,sNy+OLy
             iB = OB_Iw(j,bi,bj)
-            IF ( iB.NE.0 ) THEN
+            IF ( iB.NE.OB_indexNone ) THEN
              OBWu(j,k,bi,bj) = OBWu(j,k,bi,bj)
      &                       + flowW*maskW(1+iB,j,k,bi,bj)
             ENDIF
@@ -353,9 +361,9 @@ C--   Add correction:
         DO bi=myBxLo(myThid),myBxHi(myThid)
          IF ( tileHasOBN(bi,bj) ) THEN
           DO k=1,Nr
-           DO i=1-Olx,sNx+Olx
+           DO i=1-OLx,sNx+OLx
             jB = OB_Jn(i,bi,bj)
-            IF ( jB.NE.0 ) THEN
+            IF ( jB.NE.OB_indexNone ) THEN
              OBNv(i,k,bi,bj) = OBNv(i,k,bi,bj)
      &                       + flowN*maskS(i,jB,k,bi,bj)
             ENDIF
@@ -373,9 +381,9 @@ C--   Add correction:
         DO bi=myBxLo(myThid),myBxHi(myThid)
          IF ( tileHasOBS(bi,bj) ) THEN
           DO k=1,Nr
-           DO i=1-Olx,sNx+Olx
+           DO i=1-OLx,sNx+OLx
             jB = OB_Js(i,bi,bj)
-            IF ( jB.NE.0 ) THEN
+            IF ( jB.NE.OB_indexNone ) THEN
              OBSv(i,k,bi,bj) = OBSv(i,k,bi,bj)
      &                       + flowS*maskS(i,1+jB,k,bi,bj)
             ENDIF
