@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.38 2012/03/09 20:13:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.39 2012/09/17 21:47:33 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -47,10 +47,12 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     msgBuf      :: Informational/error message buffer
 C     iUnit       :: Work variable for IO unit number
+C  OB_indexUnset  :: OB index value for places where no OB is defined
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
       INTEGER i, j
       INTEGER bi, bj, iG, jG, iGm, jGm
+      INTEGER OB_indexUnset
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer
 #endif
@@ -180,14 +182,16 @@ C     retired parameters
 #endif
 
 C--   Default flags and values for OBCS
+      OB_indexNone  = 0
+      OB_indexUnset = 0
       insideOBmaskFile = ' '
       DO i=1,OBNS_Nx
-       OB_Jnorth(i)=0
-       OB_Jsouth(i)=0
+       OB_Jnorth(i) = OB_indexUnset
+       OB_Jsouth(i) = OB_indexUnset
       ENDDO
       DO j=1,OBEW_Ny
-       OB_Ieast(j)=0
-       OB_Iwest(j)=0
+       OB_Ieast(j) = OB_indexUnset
+       OB_Iwest(j) = OB_indexUnset
       ENDDO
       OBCS_indexStatus = 0
       useOrlanskiNorth   =.FALSE.
@@ -359,12 +363,16 @@ C-    retired parameter
 
 C-    Account for periodicity if negative indices were supplied
       DO j=1,OBEW_Ny
-       IF (OB_Ieast(j) .LT.0) OB_Ieast(j) = OB_Ieast(j)+OBEW_Nx+1
+       IF ( OB_Ieast(j) .NE.OB_indexUnset .AND.
+     &      OB_Ieast(j) .LT.0 ) OB_Ieast(j) = OB_Ieast(j)+OBEW_Nx+1
       ENDDO
       DO i=1,OBNS_Nx
-       IF (OB_Jnorth(i).LT.0) OB_Jnorth(i)=OB_Jnorth(i)+OBNS_Ny+1
+       IF ( OB_Jnorth(i).NE.OB_indexUnset .AND.
+     &      OB_Jnorth(i).LT.0 ) OB_Jnorth(i)=OB_Jnorth(i)+OBNS_Ny+1
       ENDDO
       IF ( debugLevel.GE.debLevA ) THEN
+        CALL WRITE_0D_I( OB_indexUnset, INDEX_NONE,' OB_indexUnset =',
+     &                   ' /* unset OB index value (i.e. no OB) */')
 c       write(*,*) 'OB Jn =',OB_Jnorth
 c       write(*,*) 'OB Js =',OB_Jsouth
 c       write(*,*) 'OB Ie =',OB_Ieast
@@ -400,50 +408,70 @@ C--   Everyone else must wait for the parameters to be loaded
 
 C--   Calculate the tiled index arrays OB_Jn/Js/Ie/Iw here from the
 C     global arrays OB_Jnorth/Jsouth/Ieast/Iwest.
-C     Note: This part of the code has been moved from obcs_init_fixed to
-C     routine routine because the OB_Jn/Js/Ie/Iw index arrays are
+C     Note: This part of the code has been moved from obcs_init_fixed
+C     to this routine because the OB_Jn/Js/Ie/Iw index arrays are
 C     required by INI_DEPTH (calling OBCS_CHECK_DEPTHS, but only needs
 C     valid interior indices) which is called before OBCS_INIT_FIXED.
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
         DO i=1-OLx,sNx+OLx
-         OB_Jn(i,bi,bj)=0
-         OB_Js(i,bi,bj)=0
+         OB_Jn(i,bi,bj) = OB_indexNone
+         OB_Js(i,bi,bj) = OB_indexNone
         ENDDO
 
         DO j=1-OLy,sNy+OLy
-         OB_Ie(j,bi,bj)=0
-         OB_Iw(J,bi,bj)=0
+         OB_Ie(j,bi,bj) = OB_indexNone
+         OB_Iw(J,bi,bj) = OB_indexNone
         ENDDO
 
 #ifdef ALLOW_EXCH2
-C       We apply OBCS only inside tile and exchange overlaps later
+
+C--   We apply OBCS only inside tile and exchange overlaps later
         tN = W2_myTileList(bi,bj)
 C 1. N/S boundaries
-        DO j=1,sNy
-C   convert from local y index J to global y index jG
-c   for N/S boundaries, we use faces stacked in x direction
-         jG = exch2_tyXStackLo(tN)+j-1
-C   loop over local x index I
-         DO i=1,sNx
-          iG = exch2_txXStackLo(tN)+i-1
-          IF (jG.EQ.OB_Jnorth(iG)) OB_Jn(i,bi,bj)=j
-          IF (jG.EQ.OB_Jsouth(iG)) OB_Js(i,bi,bj)=j
-         ENDDO
+C     convert from local y index J to global y index jG
+C     for N/S boundaries, we use faces stacked in x direction
+        DO i=1,sNx
+         iG = exch2_txXStackLo(tN)+i-1
+C-    Northern boundaries
+         IF ( OB_Jnorth(iG).NE.OB_indexUnset ) THEN
+C     loop over local y index J
+          DO j=1,sNy+1
+           jG = exch2_tyXStackLo(tN)+j-1
+           IF ( jG.EQ.OB_Jnorth(iG) ) OB_Jn(i,bi,bj) = j
+          ENDDO
+         ENDIF
+C-    Southern boundaries
+         IF ( OB_Jsouth(iG).NE.OB_indexUnset ) THEN
+          DO j=0,sNy
+           jG = exch2_tyXStackLo(tN)+j-1
+           IF ( jG.EQ.OB_Jsouth(iG) ) OB_Js(i,bi,bj) = j
+          ENDDO
+         ENDIF
         ENDDO
 C 2. E/W boundaries
+C     convert from local y index J to global y index jG
+c     for E/W boundaries, we use faces stacked in y direction
         DO j=1,sNy
-C   convert from local y index J to global y index jG
-c   for E/W boundaries, we use faces stacked in y direction
          jG = exch2_tyYStackLo(tN)+j-1
-C   loop over local x index I
-         DO i=1,sNx
-          iG = exch2_txYStackLo(tN)+i-1
-          IF (iG.EQ.OB_Ieast(jG))  OB_Ie(j,bi,bj)=i
-          IF (iG.EQ.OB_Iwest(jG))  OB_Iw(j,bi,bj)=i
-         ENDDO
+C-    Eastern  boundaries
+         IF ( OB_Ieast(jG).NE.OB_indexUnset ) THEN
+C     loop over local x index I
+          DO i=1,sNx+1
+           iG = exch2_txYStackLo(tN)+i-1
+           IF ( iG.EQ.OB_Ieast(jG) )  OB_Ie(j,bi,bj) = i
+          ENDDO
+         ENDIF
+C-    Western  boundaries
+         IF ( OB_Iwest(jG).NE.OB_indexUnset ) THEN
+          DO i=0,sNx
+           iG = exch2_txYStackLo(tN)+i-1
+           IF ( iG.EQ.OB_Iwest(jG) )  OB_Iw(j,bi,bj) = i
+          ENDDO
+         ENDIF
         ENDDO
+
         _BEGIN_MASTER(myThid)
 C-    OB-index tiled-arrays are set for tile-interior region
          OBCS_indexStatus = 1
@@ -452,36 +480,59 @@ C-    OB-index tiled-arrays are set for tile-interior region
 #else /* ALLOW_EXCH2 */
 
         DO j=1-OLy,sNy+OLy
-C convert from local y index J to global y index jG
+C     convert from local y index J to global y index jG
          jG = myYGlobalLo+(bj-1)*sNy+j-1
-C use periodicity to deal with out of range points caused by the overlaps.
-C they will be excluded by the mask in any case, but this saves array
-C out-of-bounds errors here.
-         jGm = 1+mod( jG-1+Ny , Ny )
-C loop over local x index I
-         DO i=1,sNx
-          iG = myXGlobalLo+(bi-1)*sNx+i-1
-          iGm = 1+mod( iG-1+Nx , Nx )
-C OB_Ieast(jGm) allows for the eastern boundary to be at variable x locations
-          IF (iG.EQ.OB_Ieast(jGm))  OB_Ie(j,bi,bj)=i
-          IF (iG.EQ.OB_Iwest(jGm))  OB_Iw(j,bi,bj)=i
-         ENDDO
+C     use periodicity to deal with out of range points caused by the overlaps.
+C     they will be excluded by the mask in any case, but this saves array
+C     out-of-bounds errors here.
+         jGm = 1+MOD( jG-1+Ny , Ny )
+C-    Eastern  boundaries
+C     OB_Ieast(jGm) allows to put the eastern boundary at variable x locations
+         IF ( OB_Ieast(jGm).NE.OB_indexUnset ) THEN
+C     loop over local x index I
+          DO i=1,sNx+1
+           iG = myXGlobalLo+(bi-1)*sNx+i-1
+           iGm = 1+MOD( iG-1+Nx , Nx )
+           IF ( iG.EQ.OB_Ieast(jGm) )  OB_Ie(j,bi,bj) = i
+          ENDDO
+         ENDIF
+C-    Western  boundaries
+         IF ( OB_Iwest(jGm).NE.OB_indexUnset ) THEN
+          DO i=0,sNx
+           iG = myXGlobalLo+(bi-1)*sNx+i-1
+           iGm = 1+MOD( iG-1+Nx , Nx )
+           IF ( iG.EQ.OB_Iwest(jGm) )  OB_Iw(j,bi,bj) = i
+          ENDDO
+         ENDIF
         ENDDO
-        DO j=1,sNy
-         jG = myYGlobalLo+(bj-1)*sNy+j-1
-         jGm = 1+mod( jG-1+Ny , Ny )
-         DO i=1-OLx,sNx+OLx
-          iG = myXGlobalLo+(bi-1)*sNx+i-1
-          iGm = 1+mod( iG-1+Nx , Nx )
-C OB_Jnorth(iGm) allows for the northern boundary to be at variable y locations
-          IF (jG.EQ.OB_Jnorth(iGm)) OB_Jn(i,bi,bj)=j
-          IF (jG.EQ.OB_Jsouth(iGm)) OB_Js(i,bi,bj)=j
-         ENDDO
+
+        DO i=1-OLx,sNx+OLx
+         iG = myXGlobalLo+(bi-1)*sNx+i-1
+         iGm = 1+MOD( iG-1+Nx , Nx )
+C-    Northern boundaries
+C     OB_Jnorth(iG) allows to put the northern boundary at variable y locations
+         IF ( OB_Jnorth(iGm).NE.OB_indexUnset ) THEN
+          DO j=1,sNy+1
+           jG = myYGlobalLo+(bj-1)*sNy+j-1
+           jGm = 1+MOD( jG-1+Ny , Ny )
+           IF ( jG.EQ.OB_Jnorth(iGm) ) OB_Jn(i,bi,bj) = j
+          ENDDO
+         ENDIF
+C-    Southern boundaries
+         IF ( OB_Jsouth(iGm).NE.OB_indexUnset ) THEN
+          DO j=0,sNy
+           jG = myYGlobalLo+(bj-1)*sNy+j-1
+           jGm = 1+MOD( jG-1+Ny , Ny )
+           IF ( jG.EQ.OB_Jsouth(iGm) ) OB_Js(i,bi,bj) = j
+          ENDDO
+         ENDIF
         ENDDO
+
         _BEGIN_MASTER(myThid)
 C-    OB-index tiled-arrays are set for interior and overlap regions
         OBCS_indexStatus = 2
         _END_MASTER(myThid)
+
 #endif /* ALLOW_EXCH2 */
 
 C     bi,bj-loops
