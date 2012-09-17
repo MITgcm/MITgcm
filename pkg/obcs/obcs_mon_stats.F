@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_mon_stats.F,v 1.2 2011/03/01 23:39:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_mon_stats.F,v 1.3 2012/09/17 22:06:17 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -14,7 +14,7 @@ C     !ROUTINE: OBCS_MON_STATS_EW_RL
 
 C     !INTERFACE:
       SUBROUTINE OBCS_MON_STATS_EW_RL(
-     I     tHasOBE, tHasOBW, iEb, iWb,
+     I     tHasOBE, tHasOBW, iEb, iWb, iNone,
      I     kSize, mSize, gPos,
      I     arr, arrhFac, arrDy, arrDr, mskInC,
      O     arrStats,
@@ -38,6 +38,7 @@ C     tHasOBE  :: list of OBE active tiles
 C     tHasOBW  :: list of OBW active tiles
 C     iEb      :: index of Eastern OB
 C     iWb      :: index of Western OB
+C     iNone    :: null index value
 C     kSize    :: field-array 3rd dimension
 C     mSize    :: hFac-array  3rd dimension
 C     gPos     :: field position on C-grid ( 0=center , 1=U , 2=V , 3=Corner)
@@ -51,6 +52,7 @@ C     myThid   :: my Thread Id number
       LOGICAL tHasOBW(nSx,nSy)
       INTEGER iEb(1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iWb(1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER iNone
       INTEGER kSize
       INTEGER mSize
       INTEGER gPos
@@ -109,7 +111,9 @@ c     IF ( usingEast_OB ) THEN
             DO j=1,sNy
              tmpMask = 0.
              ii = iEb(j,bi,bj)
-             IF ( ii.NE.0 ) THEN
+C-    If 1 OB location is on 2 tiles (@ edge of 2 tiles), select the one which
+C     communicates with tile interior (sNx+1) rather than with halo region (i=1)
+             IF ( ii.NE.iNone .AND. ii.GT.1 ) THEN
               iB = ii
               tmpMask = arrhFac(iB,j,km,bi,bj)
      &                *( mskInC(ii-1,j,bi,bj)-mskInC(ii,j,bi,bj) )
@@ -179,7 +183,9 @@ c     IF ( usingWest_OB ) THEN
             DO j=1,sNy
              tmpMask = 0.
              ii = iWb(j,bi,bj)
-             IF ( ii.NE.0 ) THEN
+C-    If 1 OB location is on 2 tiles (@ edge of 2 tiles), select the one which
+C     communicates with tile interior (i=0) rather than with halo region (i=sNx)
+             IF ( ii.NE.iNone .AND. ii.LT.sNx ) THEN
               iB = ii+1
               tmpMask = arrhFac(iB,j,km,bi,bj)
      &                *( mskInC(ii+1,j,bi,bj)-mskInC(ii,j,bi,bj) )
@@ -240,7 +246,7 @@ C     !ROUTINE: OBCS_MON_STATS_NS_RL
 
 C     !INTERFACE:
       SUBROUTINE OBCS_MON_STATS_NS_RL(
-     I     tHasOBN, tHasOBS, jNb, jSb,
+     I     tHasOBN, tHasOBS, jNb, jSb, jNone,
      I     kSize, mSize, gPos,
      I     arr, arrhFac, arrDx, arrDr, mskInC,
      O     arrStats,
@@ -264,6 +270,7 @@ C     tHasOBN  :: list of OBN active tiles
 C     tHasOBS  :: list of OBS active tiles
 C     jNb      :: index of Northern OB
 C     jSb      :: index of Southern OB
+C     jNone    :: null index value
 C     kSize    :: field-array 3rd dimension
 C     mSize    :: hFac-array  3rd dimension
 C     gPos     :: field position on C-grid ( 0=center , 1=U , 2=V , 3=Corner)
@@ -277,6 +284,7 @@ C     myThid   :: my Thread Id number
       LOGICAL tHasOBS(nSx,nSy)
       INTEGER jNb(1-OLx:sNx+OLx,nSx,nSy)
       INTEGER jSb(1-OLx:sNx+OLx,nSx,nSy)
+      INTEGER jNone
       INTEGER kSize
       INTEGER mSize
       INTEGER gPos
@@ -335,7 +343,9 @@ c     IF ( usingNorth_OB ) THEN
             DO i=1,sNx
              tmpMask = 0.
              jj = jNb(i,bi,bj)
-             IF ( jj.NE.0 ) THEN
+C-    If 1 OB location is on 2 tiles (@ edge of 2 tiles), select the one which
+C     communicates with tile interior (sNy+1) rather than with halo region (j=1)
+             IF ( jj.NE.jNone .AND. jj.GT.1 ) THEN
               jB = jj
               tmpMask = arrhFac(i,jB,km,bi,bj)
      &                *( mskInC(i,jj-1,bi,bj)-mskInC(i,jj,bi,bj) )
@@ -405,7 +415,9 @@ c     IF ( usingSouth_OB ) THEN
             DO i=1,sNx
              tmpMask = 0.
              jj = jSb(i,bi,bj)
-             IF ( jj.NE.0 ) THEN
+C-    If 1 OB location is on 2 tiles (@ edge of 2 tiles), select the one which
+C     communicates with tile interior (j=0) rather than with halo region (j=sNy)
+             IF ( jj.NE.jNone .AND. jj.LT.sNy ) THEN
               jB = jj+1
               tmpMask = arrhFac(i,jB,km,bi,bj)
      &                *( mskInC(i,jj+1,bi,bj)-mskInC(i,jj,bi,bj) )

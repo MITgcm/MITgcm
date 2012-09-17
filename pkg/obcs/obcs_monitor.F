@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_monitor.F,v 1.4 2011/05/24 14:31:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_monitor.F,v 1.5 2012/09/17 22:06:17 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -105,12 +105,14 @@ C--     Calculate and print Flow field Stats:
         IF ( OBCS_monSelect.GE.0 ) THEN
 
          CALL OBCS_MON_STATS_EW_RL(
-     I             tileHasOBE, tileHasOBW, OB_Ie, OB_Iw,
+     I             tileHasOBE, tileHasOBW,
+     I             OB_Ie, OB_Iw, OB_indexNone,
      I             Nr, Nr, 1, uVel, hFacW, dyG, drF, maskInC,
      O             fldStats(0,1),
      I             myThid )
          CALL OBCS_MON_STATS_NS_RL(
-     I             tileHasOBN, tileHasOBS, OB_Jn, OB_Js,
+     I             tileHasOBN, tileHasOBS,
+     I             OB_Jn, OB_Js, OB_indexNone,
      I             Nr, Nr, 2, vVel, hFacS, dxG, drF, maskInC,
      O             fldStats(0,3),
      I             myThid )
@@ -125,12 +127,14 @@ C--     Calculate and print Temp. field Stats:
         IF ( OBCS_monSelect.GE.1 ) THEN
 
          CALL OBCS_MON_STATS_EW_RL(
-     I             tileHasOBE, tileHasOBW, OB_Ie, OB_Iw,
+     I             tileHasOBE, tileHasOBW,
+     I             OB_Ie, OB_Iw, OB_indexNone,
      I             Nr, Nr, 0, theta, hFacW, dyG, drF, maskInC,
      O             fldStats(0,1),
      I             myThid )
          CALL OBCS_MON_STATS_NS_RL(
-     I             tileHasOBN, tileHasOBS, OB_Jn, OB_Js,
+     I             tileHasOBN, tileHasOBS,
+     I             OB_Jn, OB_Js, OB_indexNone,
      I             Nr, Nr, 0, theta, hFacS, dxG, drF, maskInC,
      O             fldStats(0,3),
      I             myThid )
@@ -145,12 +149,14 @@ C--     Calculate and print Salt field Stats:
         IF ( OBCS_monSelect.GE.2 ) THEN
 
          CALL OBCS_MON_STATS_EW_RL(
-     I             tileHasOBE, tileHasOBW, OB_Ie, OB_Iw,
+     I             tileHasOBE, tileHasOBW,
+     I             OB_Ie, OB_Iw, OB_indexNone,
      I             Nr, Nr, 0, salt, hFacW, dyG, drF, maskInC,
      O             fldStats(0,1),
      I             myThid )
          CALL OBCS_MON_STATS_NS_RL(
-     I             tileHasOBN, tileHasOBS, OB_Jn, OB_Js,
+     I             tileHasOBN, tileHasOBS,
+     I             OB_Jn, OB_Js, OB_indexNone,
      I             Nr, Nr, 0, salt, hFacS, dxG, drF, maskInC,
      O             fldStats(0,3),
      I             myThid )
