@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check_depths.F,v 1.4 2012/04/03 00:13:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check_depths.F,v 1.5 2012/09/18 19:45:21 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -29,7 +29,7 @@ C     myThid    :: my Thread Id number
 C     === Local variables ===
 C     msgBuf    :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER bi, bj, I, J, K, ichanged
+      INTEGER bi, bj, i, j, ichanged
 
       IF ( OBCSfixTopo ) THEN
 C--   Modify topography to ensure that outward d(topography)/dn >= 0,
@@ -39,69 +39,71 @@ C     topography one grid-point inward from open boundary
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
-        DO K=1,Nr
 #ifdef ALLOW_OBCS_NORTH
-         DO I=1,sNx
-          J=OB_Jn(I,bi,bj)
-          IF ( J .NE. 0 .AND.
-     &         ( R_low(I,J,bi,bj) .LT. R_low(I,J-1,bi,bj) ) ) THEN
+        DO i=1,sNx
+         j = OB_Jn(i,bi,bj)
+         IF ( j.NE.OB_indexNone ) THEN
+          IF ( R_low(i,j,bi,bj) .LT. R_low(i,j-1,bi,bj) ) THEN
            ichanged = ichanged + 1
-           R_low(I,J,bi,bj) = R_low(I,J-1,bi,bj)
+           R_low(i,j,bi,bj) = R_low(i,j-1,bi,bj)
            WRITE(msgBuf,'(2A,2I6,2I4)')
      &          'OBCS_CHECK_DEPTHS: fixed topography at ',
-     &          '(i,j,bi,bj)=',  I, J, bi, bj
+     &          '(i,j,bi,bj)=',  i, j, bi, bj
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &          SQUEEZE_RIGHT, myThid)
           ENDIF
-         ENDDO
+         ENDIF
+        ENDDO
 #endif
 #ifdef ALLOW_OBCS_SOUTH
-         DO I=1,sNx
-          J=OB_Js(I,bi,bj)
-          IF ( J .NE. 0 .AND.
-     &         ( R_low(I,J,bi,bj) .LT. R_low(I,J+1,bi,bj) ) ) THEN
+        DO i=1,sNx
+         j = OB_Js(i,bi,bj)
+         IF ( j.NE.OB_indexNone ) THEN
+          IF ( R_low(i,j,bi,bj) .LT. R_low(i,j+1,bi,bj) ) THEN
            ichanged = ichanged + 1
-           R_low(I,J,bi,bj) = R_low(I,J+1,bi,bj)
+           R_low(i,j,bi,bj) = R_low(i,j+1,bi,bj)
            WRITE(msgBuf,'(2A,2I6,2I4)')
      &          'OBCS_CHECK_DEPTHS: fixed topography at ',
-     &          '(i,j,bi,bj)=',  I, J, bi, bj
+     &          '(i,j,bi,bj)=',  i, j, bi, bj
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &          SQUEEZE_RIGHT, myThid)
           ENDIF
-         ENDDO
+         ENDIF
+        ENDDO
 #endif
 #ifdef ALLOW_OBCS_EAST
-         DO J=1,sNy
-          I = OB_Ie(J,bi,bj)
-          IF ( I .NE. 0 .AND.
-     &         ( R_low(I,J,bi,bj) .LT. R_low(I-1,J,bi,bj) ) ) THEN
+        DO j=1,sNy
+         i = OB_Ie(j,bi,bj)
+         IF ( i.NE.OB_indexNone ) THEN
+          IF ( R_low(i,j,bi,bj) .LT. R_low(i-1,j,bi,bj) ) THEN
            ichanged = ichanged + 1
-           R_low(I,J,bi,bj) = R_low(I-1,J,bi,bj)
+           R_low(i,j,bi,bj) = R_low(i-1,j,bi,bj)
            WRITE(msgBuf,'(2A,2I6,2I4)')
      &          'OBCS_CHECK_DEPTHS: fixed topography at ',
-     &          '(i,j,bi,bj)=',  I, J, bi, bj
+     &          '(i,j,bi,bj)=',  i, j, bi, bj
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &          SQUEEZE_RIGHT, myThid)
           ENDIF
-         ENDDO
+         ENDIF
+        ENDDO
 #endif
 C Western boundary
 #ifdef ALLOW_OBCS_WEST
-         DO J=1,sNy
-          I = OB_Iw(J,bi,bj)
-          IF ( I .NE. 0 .AND.
-     &         ( R_low(I,J,bi,bj) .LT. R_low(I+1,J,bi,bj) ) ) THEN
+        DO j=1,sNy
+         i = OB_Iw(j,bi,bj)
+         IF ( i.NE.OB_indexNone ) THEN
+          IF ( R_low(i,j,bi,bj) .LT. R_low(i+1,j,bi,bj) ) THEN
            ichanged = ichanged + 1
-           R_low(I,J,bi,bj) = R_low(I+1,J,bi,bj)
+           R_low(i,j,bi,bj) = R_low(i+1,j,bi,bj)
            WRITE(msgBuf,'(2A,2I6,2I4)')
      &          'OBCS_CHECK_DEPTHS: fixed topography at ',
-     &          '(i,j,bi,bj)=',  I, J, bi, bj
+     &          '(i,j,bi,bj)=',  i, j, bi, bj
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &          SQUEEZE_RIGHT, myThid)
           ENDIF
-         ENDDO
-#endif
+         ENDIF
         ENDDO
+#endif
 
        ENDDO
       ENDDO
