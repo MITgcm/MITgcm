@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.6 2012/09/13 17:57:36 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.7 2012/09/18 21:30:36 gforget Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -53,6 +53,11 @@ C     == Local variables ==
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics )
+     &  CALL LAYERS_DIAGNOSTICS_FILL( myThid )
+#endif
 
 #ifdef ALLOW_MNC
       IF ( writeBinaryPrec .EQ. precFloat64 ) THEN

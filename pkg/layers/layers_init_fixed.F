@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_fixed.F,v 1.5 2011/06/07 22:20:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_fixed.F,v 1.6 2012/09/18 21:30:35 gforget Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -139,6 +139,12 @@ C       See which grid box the point lies in
 C     Output the layer coordinates
       CALL WRITE_GLVEC_RL( 'layers_G', ' ', layers_G, 1+Nlayers,
      & -1, myThid )
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL LAYERS_DIAGNOSTICS_INIT( myThid )
+      ENDIF
+#endif
 
       RETURN
       END
