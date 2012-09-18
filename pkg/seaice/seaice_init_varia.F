@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.72 2012/03/14 22:55:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.73 2012/09/18 20:14:28 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -198,15 +198,15 @@ C--   If OBCS is turned on, close southern and western boundaries
          DO i=1-OLx,sNx+OLx
 C Southern boundary
           J_obc = OB_Js(i,bi,bj)
-          IF (J_obc.NE.0) THEN
+          IF ( J_obc.NE.OB_indexNone ) THEN
            seaiceMaskU(i,J_obc,bi,bj)=   0.0 _d 0
            seaiceMaskV(i,J_obc,bi,bj)=   0.0 _d 0
           ENDIF
          ENDDO
          DO j=1-OLy,sNy+OLy
 C Western boundary
-          I_obc=OB_Iw(j,bi,bj)
-          IF (I_obc.NE.0) THEN
+          I_obc = OB_Iw(j,bi,bj)
+          IF ( I_obc.NE.OB_indexNone ) THEN
            seaiceMaskU(I_obc,j,bi,bj)=   0.0 _d 0
            seaiceMaskV(I_obc,j,bi,bj)=   0.0 _d 0
           ENDIF
