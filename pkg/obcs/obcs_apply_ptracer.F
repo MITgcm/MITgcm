@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_ptracer.F,v 1.6 2011/05/24 14:31:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_ptracer.F,v 1.7 2012/09/18 20:09:17 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -68,9 +68,9 @@ C     Set model variables to OB values on North/South Boundaries
 #ifdef ALLOW_OBCS_NORTH
       IF ( tileHasOBN(bi,bj) ) THEN
 C Northern boundary
-       DO i=1-Olx,sNx+Olx
+       DO i=1-OLx,sNx+OLx
         Jobc = OB_Jn(i,bi,bj)
-        IF (Jobc.NE.0) THEN
+        IF ( Jobc.NE.OB_indexNone ) THEN
          DO k = kLo,kHi
           kl = MIN(k,kMx)
           pFld(i,Jobc,kl) = OBNptr(i,k,bi,bj,iTracer)
@@ -83,9 +83,9 @@ C Northern boundary
 #ifdef ALLOW_OBCS_SOUTH
       IF ( tileHasOBS(bi,bj) ) THEN
 C Southern boundary
-       DO i=1-Olx,sNx+Olx
+       DO i=1-OLx,sNx+OLx
         Jobc = OB_Js(i,bi,bj)
-        IF (Jobc.NE.0) THEN
+        IF ( Jobc.NE.OB_indexNone ) THEN
          DO k = kLo,kHi
           kl = MIN(k,kMx)
           pFld(i,Jobc,kl) = OBSptr(i,k,bi,bj,iTracer)
@@ -99,9 +99,9 @@ C     Set model variables to OB values on East/West Boundaries
 #ifdef ALLOW_OBCS_EAST
       IF ( tileHasOBE(bi,bj) ) THEN
 C Eastern boundary
-       DO j=1-Oly,sNy+Oly
+       DO j=1-OLy,sNy+OLy
         Iobc = OB_Ie(j,bi,bj)
-        IF (Iobc.NE.0) THEN
+        IF ( Iobc.NE.OB_indexNone ) THEN
          DO k = kLo,kHi
           kl = MIN(k,kMx)
           pFld(Iobc,j,kl) = OBEptr(j,k,bi,bj,iTracer)
@@ -114,9 +114,9 @@ C Eastern boundary
 #ifdef ALLOW_OBCS_WEST
       IF ( tileHasOBW(bi,bj) ) THEN
 C Western boundary
-       DO j=1-Oly,sNy+Oly
+       DO j=1-OLy,sNy+OLy
         Iobc = OB_Iw(j,bi,bj)
-        IF (Iobc.NE.0) THEN
+        IF ( Iobc.NE.OB_indexNone ) THEN
          DO k = kLo,kHi
           kl = MIN(k,kMx)
           pFld(Iobc,j,kl) = OBWptr(j,k,bi,bj,iTracer)

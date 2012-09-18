@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.17 2012/01/23 21:57:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.18 2012/09/18 20:09:17 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -72,7 +72,7 @@ C--   If no maskFile is provided, set Interior mask from OB list of indices
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
 C-    Eastern boundary
-          IF ( OB_Ie(j,bi,bj).NE.0 ) THEN
+          IF ( OB_Ie(j,bi,bj).NE.OB_indexNone ) THEN
            flag = .TRUE.
            DO i=OB_Ie(j,bi,bj),sNx
              flag = flag .AND.
@@ -81,7 +81,7 @@ C-    Eastern boundary
            ENDDO
           ENDIF
 C-    Western boundary
-          IF ( OB_Iw(j,bi,bj).NE.0 ) THEN
+          IF ( OB_Iw(j,bi,bj).NE.OB_indexNone ) THEN
            flag = .TRUE.
            DO i=OB_Iw(j,bi,bj),1,-1
              flag = flag .AND.
@@ -92,7 +92,7 @@ C-    Western boundary
          ENDDO
          DO i=1,sNx
 C-    Northern boundary
-          IF ( OB_Jn(i,bi,bj).NE.0 ) THEN
+          IF ( OB_Jn(i,bi,bj).NE.OB_indexNone ) THEN
            flag = .TRUE.
            DO j=OB_Jn(i,bi,bj),sNy
              flag = flag .AND.
@@ -101,7 +101,7 @@ C-    Northern boundary
            ENDDO
           ENDIF
 C-    Southern boundary
-          IF ( OB_Js(i,bi,bj).NE.0 ) THEN
+          IF ( OB_Js(i,bi,bj).NE.OB_indexNone ) THEN
            flag = .TRUE.
            DO j=OB_Js(i,bi,bj),1,-1
              flag = flag .AND.
@@ -180,7 +180,7 @@ C-    Eastern boundary
      &          OBCS_insideMask(i-1,j,bi,bj)
      &          .AND. ( j.LT.1 .OR. j.GT.sNy )
      &          .AND. ksurfW(i,j,bi,bj).LE.Nr ) THEN
-            IF ( OB_Ie(j,bi,bj).EQ.0 ) THEN
+            IF ( OB_Ie(j,bi,bj).EQ.OB_indexNone ) THEN
               OB_Ie(j,bi,bj) = i
               WRITE(msgBuf,'(A,I5,2(A,I3),2(A,I5))')
      &        ' Sets OBE(j,bi,bj=',j,',',bi,',',bj,')=', OB_Ie(j,bi,bj)
@@ -198,14 +198,12 @@ C-    Eastern boundary
          ENDDO
 C-    Western boundary
          DO j=1-OLy,sNy+OLy
-c         DO i=0,sNx
-C- note: loop should start at 0, but OBCS index convention excludes OB_I=0
-          DO i=1,sNx
+          DO i=0,sNx
            IF ( OBCS_insideMask(i,j,bi,bj).LT.
      &          OBCS_insideMask(i+1,j,bi,bj)
      &          .AND. ( j.LT.1 .OR. j.GT.sNy )
      &          .AND. ksurfW(i+1,j,bi,bj).LE.Nr ) THEN
-            IF ( OB_Iw(j,bi,bj).EQ.0 ) THEN
+            IF ( OB_Iw(j,bi,bj).EQ.OB_indexNone ) THEN
               OB_Iw(j,bi,bj) = i
               WRITE(msgBuf,'(A,I5,2(A,I3),2(A,I5))')
      &        ' Sets OBW(j,bi,bj=',j,',',bi,',',bj,')=', OB_Iw(j,bi,bj)
@@ -228,7 +226,7 @@ C-    Northern boundary
      &          OBCS_insideMask(i,j-1,bi,bj)
      &          .AND. ( i.LT.1 .OR. i.GT.sNx )
      &          .AND. ksurfS(i,j,bi,bj).LE.Nr ) THEN
-            IF ( OB_Jn(i,bi,bj).EQ.0 ) THEN
+            IF ( OB_Jn(i,bi,bj).EQ.OB_indexNone ) THEN
               OB_Jn(i,bi,bj) = j
               WRITE(msgBuf,'(A,I5,2(A,I3),2(A,I5))')
      &        ' Sets OBN(i,bi,bj=',i,',',bi,',',bj,')=', OB_Jn(i,bi,bj)
@@ -245,15 +243,13 @@ C-    Northern boundary
           ENDDO
          ENDDO
 C-    Southern boundary
-c        DO j=0,sNy
-C- note: loop should start at 0, but OBCS index convention excludes OB_I=0
-         DO j=1,sNy
+         DO j=0,sNy
           DO i=1-OLx,sNx+OLx
            IF ( OBCS_insideMask(i,j,bi,bj).LT.
      &          OBCS_insideMask(i,j+1,bi,bj)
      &          .AND. ( i.LT.1 .OR. i.GT.sNx )
      &          .AND. ksurfS(i,j+1,bi,bj).LE.Nr ) THEN
-            IF ( OB_Js(i,bi,bj).EQ.0 ) THEN
+            IF ( OB_Js(i,bi,bj).EQ.OB_indexNone ) THEN
               OB_Js(i,bi,bj) = j
               WRITE(msgBuf,'(A,I5,2(A,I3),2(A,I5))')
      &        ' Sets OBS(i,bi,bj=',i,',',bi,',',bj,')=', OB_Js(i,bi,bj)
@@ -295,78 +291,76 @@ C-    Eastern boundary
         DO j=1-OLy,sNy+OLy
          jm = MAX( j-1, 1-OLy )
          iB = OB_Ie(j,bi,bj)
-         IF ( iB.NE.0 ) THEN
+         IF ( iB.NE.OB_indexNone ) THEN
            DO i=iB,iB+OB_ApplX-1
              OBCS_insideMask(i,j,bi,bj) = 0.
            ENDDO
            DO i=iB+1,iB+OB_ApplX-1
              maskInW(i,j,bi,bj) = 0.
            ENDDO
-           iB = MAX( iB, OB_Ie(jm,bi,bj) )
-           IF (OB_Ie(jm,bi,bj).EQ.0 ) iB = 0
-         ENDIF
-         IF ( iB.NE.0 ) THEN
-           DO i=iB,iB+OB_ApplX-1
+           IF ( OB_Ie(jm,bi,bj).NE.OB_indexNone ) THEN
+            iB = MAX( iB, OB_Ie(jm,bi,bj) )
+            DO i=iB,iB+OB_ApplX-1
              maskInS(i,j,bi,bj) = 0.
-           ENDDO
+            ENDDO
+           ENDIF
          ENDIF
         ENDDO
 C-    Western boundary
         DO j=1-OLy,sNy+OLy
          jm = MAX( j-1, 1-OLy )
          iB = OB_Iw(j,bi,bj)
-         IF ( iB.NE.0 ) THEN
+         IF ( iB.NE.OB_indexNone ) THEN
            DO i=1-OB_ApplX+iB,iB
              OBCS_insideMask(i,j,bi,bj) = 0.
            ENDDO
            DO i=2-OB_ApplX+iB,iB
              maskInW(i,j,bi,bj) = 0.
            ENDDO
-           iB = MIN( iB, OB_Iw(jm,bi,bj) )
-         ENDIF
-         IF ( iB.NE.0 ) THEN
-           DO i=1-OB_ApplX+iB,iB
+           IF ( OB_Iw(jm,bi,bj).NE.OB_indexNone ) THEN
+            iB = MIN( iB, OB_Iw(jm,bi,bj) )
+            DO i=1-OB_ApplX+iB,iB
              maskInS(i,j,bi,bj) = 0.
-           ENDDO
+            ENDDO
+           ENDIF
          ENDIF
         ENDDO
 C-    Northern boundary
         DO i=1-OLx,sNx+OLx
          im = MAX( i-1, 1-OLx )
          jB = OB_Jn(i,bi,bj)
-         IF ( jB.NE.0 ) THEN
+         IF ( jB.NE.OB_indexNone ) THEN
            DO j=jB,jB+OB_ApplY-1
              OBCS_insideMask(i,j,bi,bj) = 0.
            ENDDO
            DO j=jB+1,jB+OB_ApplY-1
              maskInS(i,j,bi,bj) = 0.
            ENDDO
-           jB = MAX( jB, OB_Jn(im,bi,bj) )
-           IF (OB_Jn(im,bi,bj).EQ.0 ) jB = 0
-         ENDIF
-         IF ( jB.NE.0 ) THEN
-           DO j=jB,jB+OB_ApplY-1
+           IF ( OB_Jn(im,bi,bj).NE.OB_indexNone ) THEN
+            jB = MAX( jB, OB_Jn(im,bi,bj) )
+            DO j=jB,jB+OB_ApplY-1
              maskInW(i,j,bi,bj) = 0.
-           ENDDO
+            ENDDO
+           ENDIF
          ENDIF
         ENDDO
 C-    Southern boundary
         DO i=1-OLx,sNx+OLx
          im = MAX( i-1, 1-OLx )
          jB = OB_Js(i,bi,bj)
-         IF ( jB.NE.0 ) THEN
+         IF ( jB.NE.OB_indexNone ) THEN
            DO j=1-OB_ApplY+jB,jB
              OBCS_insideMask(i,j,bi,bj) = 0.
            ENDDO
            DO j=2-OB_ApplY+jB,jB
              maskInS(i,j,bi,bj) = 0.
            ENDDO
-           jB = MIN( jB, OB_Js(im,bi,bj) )
-         ENDIF
-         IF ( jB.NE.0 ) THEN
-           DO j=1-OB_ApplY+jB,jB
+           IF ( OB_Js(im,bi,bj).NE.OB_indexNone ) THEN
+            jB = MIN( jB, OB_Js(im,bi,bj) )
+            DO j=1-OB_ApplY+jB,jB
              maskInW(i,j,bi,bj) = 0.
-           ENDDO
+            ENDDO
+           ENDIF
          ENDIF
         ENDDO
 
@@ -387,17 +381,21 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Set OB active tiles:
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-         tileHasOBN(bi,bj) = .FALSE.
-         tileHasOBS(bi,bj) = .FALSE.
          tileHasOBE(bi,bj) = .FALSE.
          tileHasOBW(bi,bj) = .FALSE.
+         tileHasOBN(bi,bj) = .FALSE.
+         tileHasOBS(bi,bj) = .FALSE.
          DO j=1-OLy,sNy+OLy
-          IF ( OB_Ie(j,bi,bj).NE.0 ) tileHasOBE(bi,bj) = .TRUE.
-          IF ( OB_Iw(j,bi,bj).NE.0 ) tileHasOBW(bi,bj) = .TRUE.
+          tileHasOBE(bi,bj) = tileHasOBE(bi,bj) .OR.
+     &                      ( OB_Ie(j,bi,bj).NE.OB_indexNone )
+          tileHasOBW(bi,bj) = tileHasOBW(bi,bj) .OR.
+     &                      ( OB_Iw(j,bi,bj).NE.OB_indexNone )
          ENDDO
          DO i=1-OLx,sNx+OLx
-          IF ( OB_Jn(i,bi,bj).NE.0 ) tileHasOBN(bi,bj) = .TRUE.
-          IF ( OB_Js(i,bi,bj).NE.0 ) tileHasOBS(bi,bj) = .TRUE.
+          tileHasOBN(bi,bj) = tileHasOBN(bi,bj) .OR.
+     &                      ( OB_Jn(i,bi,bj).NE.OB_indexNone )
+          tileHasOBS(bi,bj) = tileHasOBS(bi,bj) .OR.
+     &                      ( OB_Js(i,bi,bj).NE.OB_indexNone )
          ENDDO
        ENDDO
       ENDDO

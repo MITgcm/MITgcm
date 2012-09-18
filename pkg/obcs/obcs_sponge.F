@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_sponge.F,v 1.10 2012/07/06 23:07:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_sponge.F,v 1.11 2012/09/18 20:09:17 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -51,12 +51,12 @@ C     Loop counters
       INTEGER i, j, isl, jsl
       _RL urelax, lambda_obcs_u
 
-      IF (useOBCSsponge) THEN
+      IF ( useOBCSsponge .AND. spongeThickness.NE.0 ) THEN
 
 C Northern Open Boundary
 #ifdef ALLOW_OBCS_NORTH
       DO i=iMin,iMax
-       IF ((OB_Jn(i,bi,bj).ne.0).and.(spongeThickness.ne.0)) THEN
+       IF ( OB_Jn(i,bi,bj).NE.OB_indexNone ) THEN
         DO jsl= 1,spongeThickness
          j=OB_Jn(i,bi,bj)-jsl
 
@@ -90,7 +90,7 @@ C Northern Open Boundary
 C Southern Open Boundary
 #ifdef ALLOW_OBCS_SOUTH
       DO i=iMin,iMax
-       IF ((OB_Js(i,bi,bj).ne.0).and.(spongeThickness.ne.0)) THEN
+       IF ( OB_Js(i,bi,bj).NE.OB_indexNone ) THEN
         DO jsl= 1,spongeThickness
          j=OB_Js(i,bi,bj)+jsl
 
@@ -124,7 +124,7 @@ C Southern Open Boundary
 C Eastern Open Boundary
 #ifdef ALLOW_OBCS_EAST
       DO j=jMin,jMax
-       IF ((OB_Ie(j,bi,bj).ne.0).and.(spongeThickness.ne.0)) THEN
+       IF ( OB_Ie(j,bi,bj).NE.OB_indexNone ) THEN
         DO isl= 1,spongeThickness
          i=OB_Ie(j,bi,bj)-isl
 
@@ -158,7 +158,7 @@ C Eastern Open Boundary
 C Western Open Boundary
 #ifdef ALLOW_OBCS_WEST
       DO j=jMin,jMax
-       IF ((OB_Iw(j,bi,bj).ne.0).and.(spongeThickness.ne.0)) THEN
+       IF ( OB_Iw(j,bi,bj).NE.OB_indexNone ) THEN
         DO isl= 1,spongeThickness
          i=OB_Iw(j,bi,bj)+isl+1
 
@@ -237,12 +237,12 @@ C     Loop counters
       INTEGER i, j, isl, jsl
       _RL vrelax,lambda_obcs_v
 
-      IF (useOBCSsponge) THEN
+      IF ( useOBCSsponge .AND. spongeThickness.NE.0 ) THEN
 
 C Northern Open Boundary
 #ifdef ALLOW_OBCS_NORTH
       DO i=iMin,iMax
-       IF ((OB_Jn(i,bi,bj).ne.0).and.(spongeThickness.ne.0)) THEN
+       IF ( OB_Jn(i,bi,bj).NE.OB_indexNone ) THEN
         DO jsl= 1,spongeThickness
          j=OB_Jn(i,bi,bj)-jsl
 
@@ -276,7 +276,7 @@ C Northern Open Boundary
 C Southern Open Boundary
 #ifdef ALLOW_OBCS_SOUTH
       DO i=iMin,iMax
-       IF ((OB_Js(i,bi,bj).ne.0).and.(spongeThickness.ne.0)) THEN
+       IF ( OB_Js(i,bi,bj).NE.OB_indexNone ) THEN
         DO jsl= 1,spongeThickness
          j=OB_Js(i,bi,bj)+jsl+1
 
@@ -310,7 +310,7 @@ C Southern Open Boundary
 C Eastern Open Boundary
 #ifdef ALLOW_OBCS_EAST
       DO j=jMin,jMax
-       IF ((OB_Ie(j,bi,bj).ne.0).and.(spongeThickness.ne.0)) THEN
+       IF ( OB_Ie(j,bi,bj).NE.OB_indexNone ) THEN
         DO isl= 1,spongeThickness
          i=OB_Ie(j,bi,bj)-isl
 
@@ -344,7 +344,7 @@ C Eastern Open Boundary
 C Western Open Boundary
 #ifdef ALLOW_OBCS_WEST
       DO j=jMin,jMax
-       IF ((OB_Iw(j,bi,bj).ne.0).and.(spongeThickness.ne.0)) THEN
+       IF ( OB_Iw(j,bi,bj).NE.OB_indexNone ) THEN
         DO isl= 1,spongeThickness
          i=OB_Iw(j,bi,bj)+isl
 
@@ -428,7 +428,7 @@ C     Loop counters
       INTEGER i, j, isl, jsl
       _RL trelax, lambda_obcs_t
 
-      IF (useOBCSsponge) THEN
+      IF ( useOBCSsponge .AND. spongeThickness.NE.0 ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act1 = bi - myBxLo(myThid)
@@ -452,7 +452,7 @@ CADJ STORE OBNt(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
       DO i=iMin,iMax
-       IF ((OB_Jn(i,bi,bj).ne.0).and.(spongeThickness.ne.0)) THEN
+       IF ( OB_Jn(i,bi,bj).NE.OB_indexNone ) THEN
         DO jsl= 1,spongeThickness
          j=OB_Jn(i,bi,bj)-jsl
 
@@ -492,7 +492,7 @@ CADJ STORE OBSt(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
       DO i=iMin,iMax
-       IF ((OB_Js(i,bi,bj).ne.0).and.(spongeThickness.ne.0)) THEN
+       IF ( OB_Js(i,bi,bj).NE.OB_indexNone ) THEN
         DO jsl= 1,spongeThickness
          j=OB_Js(i,bi,bj)+jsl
 
@@ -533,7 +533,7 @@ CADJ STORE OBEt(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
       DO j=jMin,jMax
-       IF ((OB_Ie(j,bi,bj).ne.0).and.(spongeThickness.ne.0)) THEN
+       IF ( OB_Ie(j,bi,bj).NE.OB_indexNone ) THEN
         DO isl= 1,spongeThickness
          i=OB_Ie(j,bi,bj)-isl
 
@@ -574,7 +574,7 @@ CADJ STORE OBWt(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
       DO j=jMin,jMax
-       IF ((OB_Iw(j,bi,bj).ne.0).and.(spongeThickness.ne.0)) THEN
+       IF ( OB_Iw(j,bi,bj).NE.OB_indexNone ) THEN
         DO isl= 1,spongeThickness
 cgg         i=OB_Iw(j,bi,bj)+isl+1
 cgg  Needed to fix the coordinate of the tracer open boundary. This is the classic "cut-and-paste" bug.
@@ -661,7 +661,7 @@ C     Loop counters
       INTEGER i, j, isl, jsl
       _RL srelax, lambda_obcs_s
 
-      IF (useOBCSsponge) THEN
+      IF ( useOBCSsponge .AND. spongeThickness.NE.0 ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act1 = bi - myBxLo(myThid)
@@ -685,7 +685,7 @@ CADJ STORE OBNs(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
       DO i=iMin,iMax
-       IF ((OB_Jn(i,bi,bj).ne.0).and.(spongeThickness.ne.0)) THEN
+       IF ( OB_Jn(i,bi,bj).NE.OB_indexNone ) THEN
         DO jsl= 1,spongeThickness
          j=OB_Jn(i,bi,bj)-jsl
 
@@ -726,7 +726,7 @@ CADJ STORE OBSs(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
       DO i=iMin,iMax
-       IF ((OB_Js(i,bi,bj).ne.0).and.(spongeThickness.ne.0)) THEN
+       IF ( OB_Js(i,bi,bj).NE.OB_indexNone ) THEN
         DO jsl= 1,spongeThickness
          j=OB_Js(i,bi,bj)+jsl
 
@@ -767,7 +767,7 @@ CADJ STORE OBEs(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
       DO j=jMin,jMax
-       IF ((OB_Ie(j,bi,bj).ne.0).and.(spongeThickness.ne.0)) THEN
+       IF ( OB_Ie(j,bi,bj).NE.OB_indexNone ) THEN
         DO isl= 1,spongeThickness
          i=OB_Ie(j,bi,bj)-isl
 
@@ -808,7 +808,7 @@ CADJ STORE OBWs(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
       DO j=jMin,jMax
-       IF ((OB_Iw(j,bi,bj).ne.0).and.(spongeThickness.ne.0)) THEN
+       IF ( OB_Iw(j,bi,bj).NE.OB_indexNone ) THEN
         DO isl= 1,spongeThickness
 
 cgg         i=OB_Iw(j,bi,bj)+isl+1

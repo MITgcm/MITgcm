@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uv.F,v 1.7 2011/05/24 14:31:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uv.F,v 1.8 2012/09/18 20:09:17 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -83,9 +83,9 @@ C--   Set Tangential component first:
 #ifdef ALLOW_OBCS_NORTH
         IF ( tileHasOBN(bi,bj) ) THEN
 C Northern boundary
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
           Jobc = OB_Jn(i,bi,bj)
-          IF ( Jobc.NE.0 ) THEN
+          IF ( Jobc.NE.OB_indexNone ) THEN
            DO k = kLo,kHi
              uFld(i,Jobc,k,bi,bj) = OBNu(i,k,bi,bj)
      &                            *_maskW(i,Jobc,k,bi,bj)
@@ -97,9 +97,9 @@ C Northern boundary
 #ifdef ALLOW_OBCS_SOUTH
         IF ( tileHasOBS(bi,bj) ) THEN
 C Southern boundary
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
           Jobc = OB_Js(i,bi,bj)
-          IF ( Jobc.NE.0 ) THEN
+          IF ( Jobc.NE.OB_indexNone ) THEN
            DO k = kLo,kHi
              uFld(i,Jobc,k,bi,bj) = OBSu(i,k,bi,bj)
      &                            *_maskW(i,Jobc,k,bi,bj)
@@ -113,9 +113,9 @@ C     Set model variables to OB values on East/West Boundaries
 #ifdef ALLOW_OBCS_EAST
         IF ( tileHasOBE(bi,bj) ) THEN
 C Eastern boundary
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
           Iobc = OB_Ie(j,bi,bj)
-          IF ( Iobc.NE.0 ) THEN
+          IF ( Iobc.NE.OB_indexNone ) THEN
            DO k = kLo,kHi
              vFld(Iobc,j,k,bi,bj) = OBEv(j,k,bi,bj)
      &                            *_maskS(Iobc,j,k,bi,bj)
@@ -127,9 +127,9 @@ C Eastern boundary
 #ifdef ALLOW_OBCS_WEST
         IF ( tileHasOBW(bi,bj) ) THEN
 C Western boundary
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
           Iobc = OB_Iw(j,bi,bj)
-          IF ( Iobc.NE.0 ) THEN
+          IF ( Iobc.NE.OB_indexNone ) THEN
            DO k = kLo,kHi
              vFld(Iobc,j,k,bi,bj) = OBWv(j,k,bi,bj)
      &                            *_maskS(Iobc,j,k,bi,bj)
@@ -144,9 +144,9 @@ C--   Then set Normal component:
 #ifdef ALLOW_OBCS_NORTH
         IF ( tileHasOBN(bi,bj) ) THEN
 C Northern boundary
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
           Jobc = OB_Jn(i,bi,bj)
-          IF ( Jobc.NE.0 ) THEN
+          IF ( Jobc.NE.OB_indexNone ) THEN
            DO k = kLo,kHi
              vFld(i,Jobc,k,bi,bj)   = OBNv(i,k,bi,bj)
      &                              *_maskS(i,Jobc,k,bi,bj)
@@ -161,9 +161,9 @@ C Northern boundary
 #ifdef ALLOW_OBCS_SOUTH
         IF ( tileHasOBS(bi,bj) ) THEN
 C Southern boundary
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
           Jobc = OB_Js(i,bi,bj)
-          IF ( Jobc.NE.0 ) THEN
+          IF ( Jobc.NE.OB_indexNone ) THEN
            DO k = kLo,kHi
              vFld(i,Jobc+1,k,bi,bj) = OBSv(i,k,bi,bj)
      &                              *_maskS(i,Jobc+1,k,bi,bj)
@@ -180,9 +180,9 @@ C     Set model variables to OB values on East/West Boundaries
 #ifdef ALLOW_OBCS_EAST
         IF ( tileHasOBE(bi,bj) ) THEN
 C Eastern boundary
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
           Iobc = OB_Ie(j,bi,bj)
-          IF ( Iobc.NE.0 ) THEN
+          IF ( Iobc.NE.OB_indexNone ) THEN
            DO k = kLo,kHi
              uFld(Iobc,j,k,bi,bj)   = OBEu(j,k,bi,bj)
      &                              *_maskW(Iobc,j,k,bi,bj)
@@ -197,9 +197,9 @@ C Eastern boundary
 #ifdef ALLOW_OBCS_WEST
         IF ( tileHasOBW(bi,bj) ) THEN
 C Western boundary
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
           Iobc = OB_Iw(j,bi,bj)
-          IF ( Iobc.NE.0 ) THEN
+          IF ( Iobc.NE.OB_indexNone ) THEN
            DO k = kLo,kHi
              uFld(Iobc+1,j,k,bi,bj) = OBWu(j,k,bi,bj)
      &                              *_maskW(Iobc+1,j,k,bi,bj)

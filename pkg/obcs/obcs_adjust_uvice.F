@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_adjust_uvice.F,v 1.1 2011/10/21 17:11:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_adjust_uvice.F,v 1.2 2012/09/18 20:09:17 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -47,9 +47,9 @@ CEOP
 C     Set model variables to OB values on North/South Boundaries
 # ifdef ALLOW_OBCS_NORTH
       IF ( tileHasOBN(bi,bj) ) THEN
-      DO I=1-Olx,sNx+Olx
+      DO I=1-OLx,sNx+OLx
 C     Northern boundary
-       IF (OB_Jn(I,bi,bj).NE.0) THEN
+       IF (OB_Jn(I,bi,bj).NE.OB_indexNone) THEN
 #  ifdef OBCS_SEAICE_COMPUTE_UVICE
         uFld(I,OB_Jn(I,bi,bj)  ,bi,bj) =
      &       _maskW(I,OB_Jn(I,bi,bj),K,bi,bj) *
@@ -92,9 +92,9 @@ C     Northern boundary
 
 # ifdef ALLOW_OBCS_SOUTH
       IF ( tileHasOBS(bi,bj) ) THEN
-      DO I=1-Olx,sNx+Olx
+      DO I=1-OLx,sNx+OLx
 C     Southern boundary
-       IF (OB_Js(I,bi,bj).NE.0) THEN
+       IF (OB_Js(I,bi,bj).NE.OB_indexNone) THEN
 #  ifdef OBCS_SEAICE_COMPUTE_UVICE
 C-jmc: this uFld looks like a bug; should be:
 c       uFld(I,OB_Js(I,bi,bj),bi,bj) =
@@ -143,9 +143,9 @@ C- rather than:
 C     Set model variables to OB values on East/West Boundaries
 # ifdef ALLOW_OBCS_EAST
       IF ( tileHasOBE(bi,bj) ) THEN
-      DO J=1-Oly,sNy+Oly
+      DO J=1-OLy,sNy+OLy
 C     Eastern boundary
-       IF (OB_Ie(J,bi,bj).NE.0) THEN
+       IF (OB_Ie(J,bi,bj).NE.OB_indexNone) THEN
 #  ifdef OBCS_SEAICE_COMPUTE_UVICE
         uFld(OB_Ie(J,bi,bj),J,bi,bj) =
      &         _maskW(OB_Ie(J,bi,bj),J,K,bi,bj) *
@@ -188,9 +188,9 @@ C     Eastern boundary
 
 # ifdef ALLOW_OBCS_WEST
       IF ( tileHasOBW(bi,bj) ) THEN
-      DO J=1-Oly,sNy+Oly
+      DO J=1-OLy,sNy+OLy
 C     Western boundary
-       IF (OB_Iw(J,bi,bj).NE.0) THEN
+       IF (OB_Iw(J,bi,bj).NE.OB_indexNone) THEN
 #  ifdef OBCS_SEAICE_COMPUTE_UVICE
         uFld(OB_Iw(J,bi,bj)+1,J,bi,bj)=
      &         _maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj) *

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_surf_dr.F,v 1.6 2011/05/24 14:31:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_surf_dr.F,v 1.7 2012/09/18 20:09:17 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -40,7 +40,7 @@ C     myTime    :: current time in simlation
 C     myIter    :: current time-step number
 C     myThid    :: my Thread Id number
       INTEGER bi,bj
-      _RL etaFld   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL etaFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS hFac_FldC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS hFac_FldW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS hFac_FldS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -67,9 +67,9 @@ C   Use current "etaFld" values instead, only for this 1rst call (myIter=-1).
 C- Set model surface h_Factor to OB values on North/South Boundaries
       IF ( tileHasOBN(bi,bj) ) THEN
 C  Northern boundary
-       DO i=1-Olx,sNx+Olx
-        j = OB_Jn(i,bi,bj)
-        IF (j.NE.0) THEN
+       DO i=1-OLx,sNx+OLx
+        IF ( OB_Jn(i,bi,bj).NE.OB_indexNone ) THEN
+         j = OB_Jn(i,bi,bj)
          ks = kSurfS(i,j,bi,bj)
          IF (ks.LE.Nr) THEN
           IF ( useOBeta ) THEN
@@ -86,9 +86,9 @@ C  Northern boundary
       ENDIF
       IF ( tileHasOBS(bi,bj) ) THEN
 C  Southern boundary
-       DO i=1-Olx,sNx+Olx
-        j = 1+OB_Js(i,bi,bj)
-        IF (j.NE.1) THEN
+       DO i=1-OLx,sNx+OLx
+        IF ( OB_Js(i,bi,bj).NE.OB_indexNone ) THEN
+         j = OB_Js(i,bi,bj)+1
          ks = kSurfS(i,j,bi,bj)
          IF (ks.LE.Nr) THEN
           IF ( useOBeta ) THEN
@@ -107,9 +107,9 @@ C  Southern boundary
 C- Set model surface h_Factor to OB values on East/West Boundaries
       IF ( tileHasOBE(bi,bj) ) THEN
 C  Eastern boundary
-       DO j=1-Oly,sNy+Oly
-        i = OB_Ie(J,bi,bj)
-        IF (i.NE.0) THEN
+       DO j=1-OLy,sNy+OLy
+        IF ( OB_Ie(j,bi,bj).NE.OB_indexNone ) THEN
+         i = OB_Ie(j,bi,bj)
          ks = kSurfW(i,j,bi,bj)
          IF (ks.LE.Nr) THEN
           IF ( useOBeta ) THEN
@@ -126,9 +126,9 @@ C  Eastern boundary
       ENDIF
       IF ( tileHasOBW(bi,bj) ) THEN
 C  Western boundary
-       DO j=1-Oly,sNy+Oly
-        i = 1+OB_Iw(j,bi,bj)
-        IF (i.NE.1) THEN
+       DO j=1-OLy,sNy+OLy
+        IF ( OB_Iw(j,bi,bj).NE.OB_indexNone ) THEN
+         i = OB_Iw(j,bi,bj)+1
          ks = kSurfW(i,j,bi,bj)
          IF (ks.LE.Nr) THEN
           IF ( useOBeta ) THEN

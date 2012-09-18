@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_save_uv_n.F,v 1.1 2011/10/25 15:09:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_save_uv_n.F,v 1.2 2012/09/18 20:09:17 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -68,7 +68,7 @@ C--   Save model velocity normal to OB for next time step.
 C Northern boundary
        DO i=iMin,iMax
         Jobc = OB_Jn(i,bi,bj)
-        IF ( Jobc.NE.0 ) THEN
+        IF ( Jobc.NE.OB_indexNone ) THEN
          DO k = kLo,kHi
           OBNvStevens(i,k,bi,bj) = vFld(i,Jobc,k,bi,bj)
      &         *_maskS(i,Jobc,k,bi,bj)
@@ -82,7 +82,7 @@ C Northern boundary
 C Southern boundary
        DO i=iMin,iMax
         Jobc = OB_Js(i,bi,bj)
-        IF ( Jobc.NE.0 ) THEN
+        IF ( Jobc.NE.OB_indexNone ) THEN
          DO k = kLo,kHi
           OBSvStevens(i,k,bi,bj) = vFld(i,Jobc+1,k,bi,bj)
      &         *_maskS(i,Jobc+1,k,bi,bj)
@@ -97,7 +97,7 @@ C Southern boundary
 C Eastern boundary
        DO j=jMin,jMax
         Iobc = OB_Ie(j,bi,bj)
-        IF ( Iobc.NE.0 ) THEN
+        IF ( Iobc.NE.OB_indexNone ) THEN
          DO k = kLo,kHi
           OBEuStevens(j,k,bi,bj) = uFld(Iobc,j,k,bi,bj)
      &         *_maskW(Iobc,j,k,bi,bj)
@@ -111,7 +111,7 @@ C Eastern boundary
 C Western boundary
        DO j=jMin,jMax
         Iobc = OB_Iw(j,bi,bj)
-        IF ( Iobc.NE.0 ) THEN
+        IF ( Iobc.NE.OB_indexNone ) THEN
          DO k = kLo,kHi
           OBWuStevens(j,k,bi,bj) = uFld(Iobc+1,j,k,bi,bj)
      &         *_maskW(Iobc+1,j,k,bi,bj)

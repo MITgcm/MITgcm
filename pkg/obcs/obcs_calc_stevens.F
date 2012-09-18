@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.12 2012/01/03 11:06:58 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.13 2012/09/18 20:09:17 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -37,8 +37,8 @@ C     |    are MOM jargon and --- to my mind ---- should not be used)
 C     |  - a wave phase speed is estimated from temporal and
 C     |    horizontal variations of the tracer fields for each
 C     |    tracer individually, this similar to Orlanski BCs,
-C     |    but for simplicity the fields of the previous time step 
-C     |    are used, and the time derivative is estimated 
+C     |    but for simplicity the fields of the previous time step
+C     |    are used, and the time derivative is estimated
 C     |    independently of the time stepping procedure by simple
 C     |    differencing
 C     |  - velocity tangential to the boundary is always zero
@@ -115,7 +115,7 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL gFacZ  (1-OLx:sNx+OLx,Nr)
       _RL vZonPri(Nr)
       _RL vZonBar
-      _RL drFBar 
+      _RL drFBar
       _RL gammat, gammas, pFac, aFac
 #ifdef ALLOW_PTRACERS
 c     INTEGER iTracer
@@ -169,9 +169,9 @@ C     Eastern OB
 #endif
 C     compute vertical average and deviation from vertical
 C     average for I_obe
-         DO J=1-Oly,sNy+Oly
-          I=OB_Ie(J,bi,bj)
-          IF (I.NE.0) THEN
+         DO J=1-OLy,sNy+OLy
+          I = OB_Ie(J,bi,bj)
+          IF ( I.NE.OB_indexNone ) THEN
 C     first initialize some fields
            drFbar  = 0. _d 0
            uMerBar = 0. _d 0
@@ -191,7 +191,7 @@ C     first initialize some fields
            DO K=1,Nr
 #ifdef OBCS_STEVENS_USE_INTERIOR_VELOCITY
             uMerPri(K) = (uVel(I-1,J,K,bi,bj)-uMerBar)
-#else 
+#else
             uMerPri(K) = (OBEuStevens(J,K,bi,bj)-uMerBar)
 #endif /*  OBCS_STEVENS_USE_INTERIOR_VELOCITY */
      &           * _maskW(I,J,K,bi,bj)
@@ -220,9 +220,9 @@ CML            OBEv(J,K,bi,bj) = 0. _d 0
 #ifdef NONLIN_FRSURF
 C     this is a bit of a hack
          IF ( nonlinFreeSurf.GT.0 ) THEN
-          DO J=1-Oly,sNy+Oly
-           I=OB_Ie(J,bi,bj)
-           IF (I.ne.0) THEN
+          DO J=1-OLy,sNy+OLy
+           I = OB_Ie(J,bi,bj)
+           IF ( I.NE.OB_indexNone ) THEN
             OBEeta(J,bi,bj) = etaN(I-1,J,bi,bj)
            ENDIF
           ENDDO
@@ -231,9 +231,9 @@ C     this is a bit of a hack
 C     Next, we compute the phase speed correction, which depends on the
 C     tracer!
          DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           I=OB_Ie(J,bi,bj)
-           IF (I.NE.0) THEN
+          DO J=1-OLy,sNy+OLy
+           I = OB_Ie(J,bi,bj)
+           IF ( I.NE.OB_indexNone ) THEN
             cflMer(J,K) = 0.5 _d 0 * _dxC(I-1,J,bi,bj)/dTtracerLev(K)
 CML         gFacM(J,K)  = 0. _d 0
 CML         IF ( uVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFacM(J,K) = 1. _d 0
@@ -245,16 +245,16 @@ CML         IF ( uVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFacM(J,K) = 1. _d 0
           ENDDO
          ENDDO
          DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           I=OB_Ie(J,bi,bj)
-           IF (I.NE.0) THEN
+          DO J=1-OLy,sNy+OLy
+           I = OB_Ie(J,bi,bj)
+           IF ( I.NE.OB_indexNone ) THEN
 C     Theta first:
             dTracSpace = (theta(I-1,J,K,bi,bj)-theta(I-2,J,K,bi,bj))
      &           * _maskW(I-1,J,K,bi,bj)
             dTracTime  = (theta(I-1,J,K,bi,bj)-OBEtStevens(J,K,bi,bj))
             uPhase = cflMer(J,K) * pFac
             IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             uPhase = MIN( cflMer(J,K), 
+             uPhase = MIN( cflMer(J,K),
      &        MAX( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
      &            ) * pFac
             ENDIF
@@ -264,7 +264,7 @@ C     with a simple Euler forward step in S/R obcs_apply_ts
      &          - ( aFac*MAX(0.D0,uVel(I,J,K,bi,bj)) + uPhase )
      &          *(theta(I,J,K,bi,bj)-theta(I-1,J,K,bi,bj))
      &          * _recip_dxC(I,J,bi,bj)
-     &          - gFacM(J,K) * gammat 
+     &          - gFacM(J,K) * gammat
      &           * (theta(I,J,K,bi,bj)-OBEt(J,K,bi,bj)) )
 C     Now salinity:
             dTracSpace = (salt(I-1,J,K,bi,bj)-salt(I-2,J,K,bi,bj))
@@ -282,7 +282,7 @@ C     with a simple Euler forward step in S/R obcs_apply_ts
      &          - ( aFac*MAX(0.D0,uVel(I,J,K,bi,bj)) + uPhase )
      &          *(salt(I,J,K,bi,bj)-salt(I-1,J,K,bi,bj))
      &          * _recip_dxC(I,J,bi,bj)
-     &          - gFacM(J,K) * gammas 
+     &          - gFacM(J,K) * gammas
      &           * (salt(I,J,K,bi,bj)-OBEs(J,K,bi,bj)) )
            ENDIF
           ENDDO
@@ -307,9 +307,9 @@ C     Western OB
 #endif
 C     compute vertical average and deviation from vertical
 C     average for I_obw+1
-         DO J=1-Oly,sNy+Oly
-          I=OB_Iw(J,bi,bj)
-          IF (I.NE.0) THEN
+         DO J=1-OLy,sNy+OLy
+          I = OB_Iw(J,bi,bj)
+          IF ( I.NE.OB_indexNone ) THEN
 C     first initialize some fields
            drFBar  = 0. _d 0
            uMerBar = 0. _d 0
@@ -358,20 +358,20 @@ CML            OBWv(J,K,bi,bj) = 0. _d 0
 #ifdef NONLIN_FRSURF
 C     this is a bit of a hack
          IF ( nonlinFreeSurf.GT.0 ) THEN
-          DO J=1-Oly,sNy+Oly
-           I=OB_Iw(J,bi,bj)
-           IF (I.ne.0) THEN
+          DO J=1-OLy,sNy+OLy
+           I = OB_Iw(J,bi,bj)
+           IF ( I.NE.OB_indexNone ) THEN
             OBWeta(J,bi,bj) = etaN(I+1,J,bi,bj)
            ENDIF
           ENDDO
          ENDIF
 #endif /* NONLIN_FRSURF */
 C     Next, we compute the phase speed correction, which depends on the
-C     tracer! 
+C     tracer!
          DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           I=OB_Iw(J,bi,bj)
-           IF (I.NE.0) THEN
+          DO J=1-OLy,sNy+OLy
+           I = OB_Iw(J,bi,bj)
+           IF ( I.NE.OB_indexNone ) THEN
             cflMer(J,K) = 0.5 _d 0 * _dxC(I+2,J,bi,bj)/dTtracerLev(K)
 CML         gFacM = 0. _d 0
 CML         IF ( uVel(I+1,J,K,bi,bj) .GT. 0. _d 0 ) gFacM = 1. _d 0
@@ -383,9 +383,9 @@ CML         IF ( uVel(I+1,J,K,bi,bj) .GT. 0. _d 0 ) gFacM = 1. _d 0
           ENDDO
          ENDDO
          DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           I=OB_Iw(J,bi,bj)
-           IF (I.NE.0) THEN
+          DO J=1-OLy,sNy+OLy
+           I = OB_Iw(J,bi,bj)
+           IF ( I.NE.OB_indexNone ) THEN
 C     Theta first:
             dTracSpace = (theta(I+2,J,K,bi,bj)-theta(I+1,J,K,bi,bj))
      &        * _maskW(I+2,J,K,bi,bj)
@@ -402,7 +402,7 @@ C     with a simple Euler forward step in S/R obcs_apply_ts
      &        - ( aFac*MIN(0.D0,uVel(I+1,J,K,bi,bj)) + uPhase )
      &        *(theta(I+1,J,K,bi,bj)-theta(I,J,K,bi,bj))
      &        * _recip_dxC(I+1,J,bi,bj)
-     &        - gFacM(J,K) * gammat 
+     &        - gFacM(J,K) * gammat
      &           * (theta(I,J,K,bi,bj)-OBWt(J,K,bi,bj)) )
 C     Now salinity:
             dTracSpace = (salt(I+2,J,K,bi,bj)-salt(I+1,J,K,bi,bj))
@@ -420,7 +420,7 @@ C     with a simple Euler forward step in S/R obcs_apply_ts
      &        - ( aFac*MIN(0.D0,uVel(I+1,J,K,bi,bj)) + uPhase )
      &        *(salt(I+1,J,K,bi,bj)-salt(I,J,K,bi,bj))
      &        * _recip_dxC(I+1,J,bi,bj)
-     &        - gFacM(J,K) * gammas 
+     &        - gFacM(J,K) * gammas
      &           * (salt(I,J,K,bi,bj)-OBWs(J,K,bi,bj)) )
            ENDIF
           ENDDO
@@ -444,9 +444,9 @@ C         Northern OB
 #endif
 C     compute vertical average and deviation from vertical
 C     average for J_obn
-         DO I=1-Olx,sNx+Olx
-          J=OB_Jn(I,bi,bj)
-          IF (J.NE.0) THEN
+         DO I=1-OLx,sNx+OLx
+          J = OB_Jn(I,bi,bj)
+          IF ( J.NE.OB_indexNone ) THEN
 C     first initialize some fields
            drFBar  = 0. _d 0
            vZonBar = 0. _d 0
@@ -495,20 +495,20 @@ CML            OBNu(I,K,bi,bj) = 0. _d 0
 #ifdef NONLIN_FRSURF
 C     this is a bit of a hack
          IF ( nonlinFreeSurf.GT.0 ) THEN
-          DO I=1-Olx,sNx+Olx
-           J=OB_Jn(I,bi,bj)
-           IF (J.ne.0) THEN
+          DO I=1-OLx,sNx+OLx
+           J = OB_Jn(I,bi,bj)
+           IF ( J.NE.OB_indexNone ) THEN
             OBNeta(I,bi,bj) = etaN(I,J-1,bi,bj)
            ENDIF
           ENDDO
          ENDIF
 #endif /* NONLIN_FRSURF */
 C     Next, we compute the phase speed correction, which depends on the
-C     tracer! 
+C     tracer!
          DO K=1,Nr
-          DO I=1-Olx,sNx+Olx
-           J=OB_Jn(I,bi,bj)
-           IF (J.NE.0) THEN
+          DO I=1-OLx,sNx+OLx
+           J = OB_Jn(I,bi,bj)
+           IF ( J.NE.OB_indexNone ) THEN
             cflZon(I,K) = 0.5 _d 0 * _dyC(I,J-1,bi,bj)/dTtracerLev(K)
 CML         gFacZ(I,K) = 0. _d 0
 CML         IF ( vVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFacZ(I,K) = 1. _d 0
@@ -520,9 +520,9 @@ CML         IF ( vVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFacZ(I,K) = 1. _d 0
           ENDDO
          ENDDO
          DO K=1,Nr
-          DO I=1-Olx,sNx+Olx
-           J=OB_Jn(I,bi,bj)
-           IF (J.NE.0) THEN
+          DO I=1-OLx,sNx+OLx
+           J = OB_Jn(I,bi,bj)
+           IF ( J.NE.OB_indexNone ) THEN
 C     Theta first:
             dTracSpace = (theta(I,J-1,K,bi,bj)-theta(I,J-2,K,bi,bj))
      &        * _maskS(I,J-1,K,bi,bj)
@@ -539,7 +539,7 @@ C     with a simple Euler forward step in S/R obcs_apply_ts
      &        - ( aFac*MAX(0.D0,vVel(I,J,K,bi,bj)) + vPhase )
      &        *(theta(I,J,K,bi,bj)-theta(I,J-1,K,bi,bj))
      &        * _recip_dyC(I,J,bi,bj)
-     &        - gFacZ(I,K) * gammat 
+     &        - gFacZ(I,K) * gammat
      &           * (theta(I,J,K,bi,bj)-OBNt(I,K,bi,bj)) )
 C     Now salinity:
             dTracSpace = (salt(I,J-1,K,bi,bj)-salt(I,J-2,K,bi,bj))
@@ -557,7 +557,7 @@ C     with a simple Euler forward step in S/R obcs_apply_ts
      &        - ( aFac*MAX(0.D0,vVel(I,J,K,bi,bj)) + vPhase )
      &        *(salt(I,J,K,bi,bj)-salt(I,J-1,K,bi,bj))
      &        * _recip_dyC(I,J,bi,bj)
-     &        - gFacZ(I,K) * gammas 
+     &        - gFacZ(I,K) * gammas
      &           * (salt(I,J,K,bi,bj)-OBNs(I,K,bi,bj)) )
            ENDIF
           ENDDO
@@ -582,9 +582,9 @@ C         Southern OB
 #endif
 C     compute vertical average and deviation from vertical
 C     average for J_obs+1
-         DO I=1-Olx,sNx+Olx
-          J=OB_Js(I,bi,bj)
-          IF (J.NE.0) THEN
+         DO I=1-OLx,sNx+OLx
+          J = OB_Js(I,bi,bj)
+          IF ( J.NE.OB_indexNone ) THEN
 C     first initialize some fields
            drFBar  = 0. _d 0
            vZonBar = 0. _d 0
@@ -633,20 +633,20 @@ CML            OBSu(I,K,bi,bj) = 0. _d 0
 #ifdef NONLIN_FRSURF
 C     this is a bit of a hack
          IF ( nonlinFreeSurf.GT.0 ) THEN
-          DO I=1-Olx,sNx+Olx
-           J=OB_Js(I,bi,bj)
-           IF (J.ne.0) THEN
+          DO I=1-OLx,sNx+OLx
+           J = OB_Js(I,bi,bj)
+           IF ( J.NE.OB_indexNone ) THEN
             OBSeta(I,bi,bj) = etaN(I,J+1,bi,bj)
            ENDIF
           ENDDO
          ENDIF
 #endif /* NONLIN_FRSURF */
 C     Next, we compute the phase speed correction, which depends on the
-C     tracer! 
+C     tracer!
          DO K=1,Nr
-          DO I=1-Olx,sNx+Olx
-           J=OB_Js(I,bi,bj)
-           IF (J.NE.0) THEN
+          DO I=1-OLx,sNx+OLx
+           J = OB_Js(I,bi,bj)
+           IF ( J.NE.OB_indexNone ) THEN
             cflZon(I,K) = 0.5 _d 0 * _dyC(I,J+2,bi,bj)/dTtracerLev(K)
 CML         gFacZ = 0. _d 0
 CML         IF ( vVel(I,J+1,K,bi,bj) .GT. 0. _d 0 ) gFacZ = 1. _d 0
@@ -658,9 +658,9 @@ CML         IF ( vVel(I,J+1,K,bi,bj) .GT. 0. _d 0 ) gFacZ = 1. _d 0
           ENDDO
          ENDDO
          DO K=1,Nr
-          DO I=1-Olx,sNx+Olx
-           J=OB_Js(I,bi,bj)
-           IF (J.NE.0) THEN
+          DO I=1-OLx,sNx+OLx
+           J = OB_Js(I,bi,bj)
+           IF ( J.NE.OB_indexNone ) THEN
 C     Theta first:
             dTracSpace = (theta(I,J+2,K,bi,bj)-theta(I,J+1,K,bi,bj))
      &        * _maskS(I,J+2,K,bi,bj)
@@ -677,7 +677,7 @@ C     with a simple Euler forward step in S/R obcs_apply_ts
      &        - ( aFac*MIN(0.D0,vVel(I,J+1,K,bi,bj)) + vPhase )
      &        *(theta(I,J+1,K,bi,bj)-theta(I,J,K,bi,bj))
      &        * _recip_dyC(I,J+1,bi,bj)
-     &        - gFacZ(I,K) * gammat 
+     &        - gFacZ(I,K) * gammat
      &           * (theta(I,J,K,bi,bj)-OBSt(I,K,bi,bj)) )
 C     Now salinity:
             dTracSpace = (salt(I,J+2,K,bi,bj)-salt(I,J+1,K,bi,bj))
@@ -720,13 +720,15 @@ C ------------------------------------------------------------------------------
         uPhase=0.
         vPhase=0.
         uVelLoc = 0.
-        DO J=1-Oly,sNy+Oly
+        DO J=1-OLy,sNy+OLy
          uMerBar=0. _d 0
          DO K=1,Nr
-          I=OB_Ie(J,bi,bj)
+          I = OB_Ie(J,bi,bj)
+          IF ( I.EQ.OB_indexNone ) I = 1
           uPhase = uPhase + OBEu(J,K,bi,bj)
      &         *drF(k)* _hFacW(I,J,K,bi,bj)*dyG(I,J,bi,bj)
-          I=OB_Iw(J,bi,bj)
+          I = OB_Iw(J,bi,bj)
+          IF ( I.EQ.OB_indexNone ) I = 1
           vPhase = vPhase + OBWu(J,K,bi,bj)
      &         *drF(k)* _hFacW(I+1,J,K,bi,bj)*dyG(I+1,J,bi,bj)
 CML          uVelLoc = uVelLoc + uMerPri(J,K)
@@ -764,8 +766,8 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE OBCS_STEVENS_SAVE_TRACERS
-C     | Save tracers (of previous time step) at the OB location 
-C     | to be used in the next time step for Stevens boundary 
+C     | Save tracers (of previous time step) at the OB location
+C     | to be used in the next time step for Stevens boundary
 C     | conditions
 C     *==========================================================*
 C     \ev
@@ -806,9 +808,9 @@ CEOP
 #ifdef ALLOW_OBCS_NORTH
         IF ( tileHasOBN(bi,bj) .AND. useStevensNorth ) THEN
 C Northern boundary
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
           Jobc = OB_Jn(i,bi,bj)
-          IF ( Jobc.NE.0 ) THEN
+          IF ( Jobc.NE.OB_indexNone ) THEN
            DO k = 1,Nr
             OBNtStevens(i,k,bi,bj) = theta(i,Jobc-1,k,bi,bj)
      &           *maskC(i,Jobc+1,k,bi,bj)
@@ -822,9 +824,9 @@ C Northern boundary
 #ifdef ALLOW_OBCS_SOUTH
         IF ( tileHasOBS(bi,bj) .AND. useStevensSouth ) THEN
 C Southern boundary
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
           Jobc = OB_Js(i,bi,bj)
-          IF ( Jobc.NE.0 ) THEN
+          IF ( Jobc.NE.OB_indexNone ) THEN
            DO k = 1,Nr
             OBStStevens(i,k,bi,bj) = theta(i,Jobc+1,k,bi,bj)
      &           *maskC(i,Jobc+1,k,bi,bj)
@@ -838,9 +840,9 @@ C Southern boundary
 #ifdef ALLOW_OBCS_EAST
         IF ( tileHasOBE(bi,bj) .AND. useStevensEast ) THEN
 C Eastern boundary
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
           Iobc = OB_Ie(j,bi,bj)
-          IF ( Iobc.NE.0 ) THEN
+          IF ( Iobc.NE.OB_indexNone ) THEN
            DO k = 1,Nr
             OBEtStevens(j,k,bi,bj) = theta(Iobc-1,j,k,bi,bj)
      &           *maskC(Iobc-1,j,k,bi,bj)
@@ -854,9 +856,9 @@ C Eastern boundary
 #ifdef ALLOW_OBCS_WEST
         IF ( tileHasOBW(bi,bj) .AND. useStevensWest ) THEN
 C Western boundary
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
           Iobc = OB_Iw(j,bi,bj)
-          IF ( Iobc.NE.0 ) THEN
+          IF ( Iobc.NE.OB_indexNone ) THEN
            DO k = 1,Nr
             OBWtStevens(j,k,bi,bj) = theta(Iobc+1,j,k,bi,bj)
      &           *maskC(Iobc+1,j,k,bi,bj)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_copy_tracer.F,v 1.2 2011/05/24 14:31:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_copy_tracer.F,v 1.3 2012/09/18 20:09:17 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -56,11 +56,11 @@ C     Set model variables to OB values on North/South Boundaries
 #ifdef ALLOW_OBCS_NORTH
       IF ( tileHasOBN(bi,bj) ) THEN
 C Northern boundary
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
           Jobc = OB_Jn(i,bi,bj)
-          IF ( Jobc.NE.0 ) THEN
+          IF ( Jobc.NE.OB_indexNone ) THEN
            DO k = 1,kSiz
-            DO j = Jobc+1, Jobc+Oly
+            DO j = Jobc+1, Jobc+OLy
              trFld(i,j,k) = trFld(i,Jobc,k)
             ENDDO
            ENDDO
@@ -72,11 +72,11 @@ C Northern boundary
 #ifdef ALLOW_OBCS_SOUTH
       IF ( tileHasOBS(bi,bj) ) THEN
 C Southern boundary
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
           Jobc = OB_Js(i,bi,bj)
-          IF ( Jobc.NE.0 ) THEN
+          IF ( Jobc.NE.OB_indexNone ) THEN
            DO k = 1,kSiz
-            DO j = Jobc-Oly, Jobc-1
+            DO j = Jobc-OLy, Jobc-1
              trFld(i,j,k) = trFld(i,Jobc,k)
             ENDDO
            ENDDO
@@ -89,11 +89,11 @@ C     Set model variables to OB values on East/West Boundaries
 #ifdef ALLOW_OBCS_EAST
       IF ( tileHasOBE(bi,bj) ) THEN
 C Eastern boundary
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
           Iobc = OB_Ie(j,bi,bj)
-          IF ( Iobc.NE.0 ) THEN
+          IF ( Iobc.NE.OB_indexNone ) THEN
            DO k = 1,kSiz
-            DO i = Iobc+1, Iobc+Olx
+            DO i = Iobc+1, Iobc+OLx
              trFld(i,j,k) = trFld(Iobc,j,k)
             ENDDO
            ENDDO
@@ -105,11 +105,11 @@ C Eastern boundary
 #ifdef ALLOW_OBCS_WEST
       IF ( tileHasOBW(bi,bj) ) THEN
 C Western boundary
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
           Iobc = OB_Iw(j,bi,bj)
-          IF ( Iobc.NE.0 ) THEN
+          IF ( Iobc.NE.OB_indexNone ) THEN
            DO k = 1,kSiz
-            DO i = Iobc-Olx, Iobc-1
+            DO i = Iobc-OLx, Iobc-1
              trFld(i,j,k) = trFld(Iobc,j,k)
             ENDDO
            ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.16 2012/03/06 15:37:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.17 2012/09/18 20:09:17 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -79,7 +79,7 @@ C     Set model variables to OB values on North/South Boundaries
 C     Northern boundary
          DO i=1-OLx,sNx+OLx
           Jobc = OB_Jn(i,bi,bj)
-          IF ( Jobc.NE.0 ) THEN
+          IF ( Jobc.NE.OB_indexNone ) THEN
            uFld(i,Jobc,bi,bj) = OBNuice(i,bi,bj)
      &                        *seaiceMaskU(i,Jobc,bi,bj)
           ENDIF
@@ -92,7 +92,7 @@ C     Northern boundary
 C     Southern boundary
          DO i=1-OLx,sNx+OLx
           Jobc = OB_Js(i,bi,bj)
-          IF ( Jobc.NE.0 ) THEN
+          IF ( Jobc.NE.OB_indexNone ) THEN
            uFld(i,Jobc,bi,bj) = OBSuice(i,bi,bj)
      &                        *seaiceMaskU(i,Jobc,bi,bj)
           ENDIF
@@ -106,7 +106,7 @@ C     Set model variables to OB values on East/West Boundaries
 C     Eastern boundary
          DO j=1-OLy,sNy+OLy
           Iobc = OB_Ie(j,bi,bj)
-          IF ( Iobc.NE.0 ) THEN
+          IF ( Iobc.NE.OB_indexNone ) THEN
            vFld(Iobc,j,bi,bj) = OBEvice(j,bi,bj)
      &                        *seaiceMaskV(Iobc,j,bi,bj)
           ENDIF
@@ -119,7 +119,7 @@ C     Eastern boundary
 C     Western boundary
          DO j=1-OLy,sNy+OLy
           Iobc = OB_Iw(j,bi,bj)
-          IF ( Iobc.NE.0 ) THEN
+          IF ( Iobc.NE.OB_indexNone ) THEN
            vFld(Iobc,j,bi,bj) = OBWvice(j,bi,bj)
      &                        *seaiceMaskV(Iobc,j,bi,bj)
           ENDIF
@@ -135,7 +135,7 @@ C     Set model variables to OB values on North/South Boundaries
 C     Northern boundary
          DO i=1-OLx,sNx+OLx
           Jobc = OB_Jn(i,bi,bj)
-          IF ( Jobc.NE.0 ) THEN
+          IF ( Jobc.NE.OB_indexNone ) THEN
            vFld(i,Jobc,bi,bj)   = OBNvice(i,bi,bj)
      &                          *seaiceMaskV(i,Jobc,bi,bj)
            IF ( uvIceApplyFac.GE.0. )
@@ -152,7 +152,7 @@ C     Northern boundary
 C     Southern boundary
          DO i=1-OLx,sNx+OLx
           Jobc = OB_Js(i,bi,bj)
-          IF ( Jobc.NE.0 ) THEN
+          IF ( Jobc.NE.OB_indexNone ) THEN
            vFld(i,Jobc+1,bi,bj) = OBSvice(i,bi,bj)
      &                          *seaiceMaskV(i,Jobc+1,bi,bj)
            IF ( uvIceApplyFac.GE.0. )
@@ -170,7 +170,7 @@ C     Set model variables to OB values on East/West Boundaries
 C     Eastern boundary
          DO j=1-OLy,sNy+OLy
           Iobc = OB_Ie(j,bi,bj)
-          IF ( Iobc.NE.0 ) THEN
+          IF ( Iobc.NE.OB_indexNone ) THEN
            uFld(Iobc,j,bi,bj)   = OBEuice(j,bi,bj)
      &                          *seaiceMaskU(Iobc,j,bi,bj)
            IF ( uvIceApplyFac.GE.0. )
@@ -187,7 +187,7 @@ C     Eastern boundary
 C     Western boundary
          DO j=1-OLy,sNy+OLy
           Iobc = OB_Iw(j,bi,bj)
-          IF ( Iobc.NE.0 ) THEN
+          IF ( Iobc.NE.OB_indexNone ) THEN
            uFld(Iobc+1,j,bi,bj) = OBWuice(j,bi,bj)
      &                          *seaiceMaskU(Iobc+1,j,bi,bj)
            IF ( uvIceApplyFac.GE.0. )

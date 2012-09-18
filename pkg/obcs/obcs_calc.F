@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.32 2011/05/24 14:31:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.33 2012/09/18 20:09:17 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -54,12 +54,13 @@ C     == Routine arguments ==
 
 C     !LOCAL VARIABLES:
 C     bi, bj       :: tile indices
-C     I,J,K        :: loop indices
+C     i,j,k        :: loop indices
 C     I_obc, J_obc :: local index of open boundary
 C     msgBuf       :: Informational/error message buffer
       INTEGER bi, bj
-      INTEGER I, J, K, I_obc, J_obc
+      INTEGER i, j, k
 #ifdef ALLOW_PTRACERS
+      INTEGER I_obc, J_obc
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iTracer
 #endif /* ALLOW_PTRACERS */
@@ -98,9 +99,8 @@ C     Eastern OB
 #ifdef ALLOW_NEST_CHILD
       ELSEIF ( useNEST_CHILD ) THEN
         DO k=1,Nr
-          DO j=1-Oly,sNy+Oly
-            I_obc=OB_Ie(j,bi,bj)
-            IF (I_obc.ne.0) THEN
+          DO j=1-OLy,sNy+OLy
+            IF ( OB_Ie(j,bi,bj).NE.OB_indexNone ) THEN
               OBEu(j,k,bi,bj)= U_F1(j,k,2)
               OBEv(j,k,bi,bj)= V_F1(j,k,2)
               OBEt(j,k,bi,bj)= T_F1(j,k,2)
@@ -113,19 +113,18 @@ C     Eastern OB
         ENDDO
 #endif /* ALLOW_NEST_CHILD */
       ELSE
-        DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-            I_obc=OB_Ie(J,bi,bj)
-            IF (I_obc.ne.0) THEN
-              OBEu(J,K,bi,bj)=0.
-              OBEv(J,K,bi,bj)=0.
-              OBEt(J,K,bi,bj)=tRef(K)
-              OBEs(J,K,bi,bj)=sRef(K)
+        DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+            IF ( OB_Ie(j,bi,bj).NE.OB_indexNone ) THEN
+              OBEu(j,k,bi,bj)=0.
+              OBEv(j,k,bi,bj)=0.
+              OBEt(j,k,bi,bj)=tRef(k)
+              OBEs(j,k,bi,bj)=sRef(k)
 #ifdef ALLOW_NONHYDROSTATIC
-              OBEw(J,K,bi,bj)=0.
+              OBEw(j,k,bi,bj)=0.
 #endif
 #ifdef NONLIN_FRSURF
-              OBEeta(J,bi,bj)=0.
+              OBEeta(j,bi,bj)=0.
 #endif
             ENDIF
           ENDDO
@@ -150,9 +149,8 @@ C     Western OB
 #ifdef ALLOW_NEST_CHILD
       ELSEIF ( useNEST_CHILD ) THEN
         DO k=1,Nr
-          DO j=1-Oly,sNy+Oly
-            I_obc=OB_Iw(j,bi,bj)
-            IF (I_obc.ne.0) THEN
+          DO j=1-OLy,sNy+OLy
+            IF ( OB_Iw(j,bi,bj).NE.OB_indexNone ) THEN
               OBWu(j,k,bi,bj)= U_F1(j,k,1)
               OBWv(j,k,bi,bj)= V_F1(j,k,1)
               OBWt(j,k,bi,bj)= T_F1(j,k,1)
@@ -165,19 +163,18 @@ C     Western OB
         ENDDO
 #endif /* ALLOW_NEST_CHILD */
       ELSE
-        DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-            I_obc=OB_Iw(J,bi,bj)
-            IF (I_obc.ne.0) THEN
-              OBWu(J,K,bi,bj)=0.
-              OBWv(J,K,bi,bj)=0.
-              OBWt(J,K,bi,bj)=tRef(K)
-              OBWs(J,K,bi,bj)=sRef(K)
+        DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+            IF ( OB_Iw(j,bi,bj).NE.OB_indexNone ) THEN
+              OBWu(j,k,bi,bj)=0.
+              OBWv(j,k,bi,bj)=0.
+              OBWt(j,k,bi,bj)=tRef(k)
+              OBWs(j,k,bi,bj)=sRef(k)
 #ifdef ALLOW_NONHYDROSTATIC
-              OBWw(J,K,bi,bj)=0.
+              OBWw(j,k,bi,bj)=0.
 #endif
 #ifdef NONLIN_FRSURF
-              OBWeta(J,bi,bj)=0.
+              OBWeta(j,bi,bj)=0.
 #endif
            ENDIF
           ENDDO
@@ -200,19 +197,18 @@ C         Northern OB
      &          myThid )
 #endif
       ELSE
-        DO K=1,Nr
-          DO I=1-Olx,sNx+Olx
-            J_obc=OB_Jn(I,bi,bj)
-            IF (J_obc.ne.0) THEN
-              OBNv(I,K,bi,bj)=0.
-              OBNu(I,K,bi,bj)=0.
-              OBNt(I,K,bi,bj)=tRef(K)
-              OBNs(I,K,bi,bj)=sRef(K)
+        DO k=1,Nr
+          DO i=1-OLx,sNx+OLx
+            IF ( OB_Jn(i,bi,bj).NE.OB_indexNone ) THEN
+              OBNv(i,k,bi,bj)=0.
+              OBNu(i,k,bi,bj)=0.
+              OBNt(i,k,bi,bj)=tRef(k)
+              OBNs(i,k,bi,bj)=sRef(k)
 #ifdef ALLOW_NONHYDROSTATIC
-              OBNw(I,K,bi,bj)=0.
+              OBNw(i,k,bi,bj)=0.
 #endif
 #ifdef NONLIN_FRSURF
-              OBNeta(I,bi,bj)=0.
+              OBNeta(i,bi,bj)=0.
 #endif
             ENDIF
           ENDDO
@@ -235,19 +231,18 @@ C         Southern OB
      &          myThid )
 #endif
       ELSE
-        DO K=1,Nr
-          DO I=1-Olx,sNx+Olx
-            J_obc=OB_Js(I,bi,bj)
-            IF (J_obc.ne.0) THEN
-              OBSu(I,K,bi,bj)=0.
-              OBSv(I,K,bi,bj)=0.
-              OBSt(I,K,bi,bj)=tRef(K)
-              OBSs(I,K,bi,bj)=sRef(K)
+        DO k=1,Nr
+          DO i=1-OLx,sNx+OLx
+            IF ( OB_Js(i,bi,bj).NE.OB_indexNone ) THEN
+              OBSu(i,k,bi,bj)=0.
+              OBSv(i,k,bi,bj)=0.
+              OBSt(i,k,bi,bj)=tRef(k)
+              OBSs(i,k,bi,bj)=sRef(k)
 #ifdef ALLOW_NONHYDROSTATIC
-              OBSw(I,K,bi,bj)=0.
+              OBSw(i,k,bi,bj)=0.
 #endif
 #ifdef NONLIN_FRSURF
-              OBSeta(I,bi,bj)=0.
+              OBSeta(i,bi,bj)=0.
 #endif
             ENDIF
           ENDDO
@@ -285,13 +280,13 @@ C     Eastern OB
         STOP 'ABNORMAL END: S/R OBCS_CALC'
        ELSE
         DO iTracer=1,PTRACERS_numInUse
-         DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           I_obc=OB_Ie(J,bi,bj)
-           IF (I_obc.ne.0) THEN
-            OBEptr(J,K,bi,bj,iTracer) =
-     &           pTracer(I_obc-1,J,K,bi,bj,iTracer)
-     &           *_maskW(I_obc,J,K,bi,bj)
+         DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+           IF ( OB_Ie(j,bi,bj).NE.OB_indexNone ) THEN
+            I_obc = OB_Ie(j,bi,bj)
+            OBEptr(j,k,bi,bj,iTracer) =
+     &           pTracer(I_obc-1,j,k,bi,bj,iTracer)
+     &           *_maskW(I_obc,j,k,bi,bj)
            ENDIF
           ENDDO
          ENDDO
@@ -317,13 +312,13 @@ C     Western OB
         STOP 'ABNORMAL END: S/R OBCS_CALC'
        ELSE
         DO iTracer=1,PTRACERS_numInUse
-         DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           I_obc=OB_Iw(J,bi,bj)
-           IF (I_obc.ne.0) THEN
-            OBWptr(J,K,bi,bj,iTracer) =
-     &           pTracer(I_obc+1,J,K,bi,bj,iTracer)
-     &           *_maskW(I_obc+1,J,K,bi,bj)
+         DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+           IF ( OB_Iw(j,bi,bj).NE.OB_indexNone ) THEN
+            I_obc = OB_Iw(j,bi,bj)
+            OBWptr(j,k,bi,bj,iTracer) =
+     &           pTracer(I_obc+1,j,k,bi,bj,iTracer)
+     &           *_maskW(I_obc+1,j,k,bi,bj)
            ENDIF
           ENDDO
          ENDDO
@@ -349,13 +344,13 @@ C         Northern OB
         STOP 'ABNORMAL END: S/R OBCS_CALC'
        ELSE
         DO iTracer=1,PTRACERS_numInUse
-         DO K=1,Nr
-          DO I=1-Olx,sNx+Olx
-           J_obc=OB_Jn(I,bi,bj)
-           IF (J_obc.ne.0) THEN
-            OBNptr(I,K,bi,bj,iTracer) =
-     &           pTracer(I,J_obc-1,K,bi,bj,iTracer)
-     &           *_maskS(I,J_obc,K,bi,bj)
+         DO k=1,Nr
+          DO i=1-OLx,sNx+OLx
+           IF ( OB_Jn(i,bi,bj).NE.OB_indexNone ) THEN
+            J_obc = OB_Jn(i,bi,bj)
+            OBNptr(i,k,bi,bj,iTracer) =
+     &           pTracer(i,J_obc-1,k,bi,bj,iTracer)
+     &           *_maskS(i,J_obc,k,bi,bj)
            ENDIF
           ENDDO
          ENDDO
@@ -381,13 +376,13 @@ C         Southern OB
         STOP 'ABNORMAL END: S/R OBCS_CALC'
        ELSE
         DO iTracer=1,PTRACERS_numInUse
-         DO K=1,Nr
-          DO I=1-Olx,sNx+Olx
-           J_obc=OB_Js(I,bi,bj)
-           IF (J_obc.ne.0) THEN
-            OBSptr(I,K,bi,bj,iTracer) =
-     &           pTracer(I,J_obc+1,K,bi,bj,iTracer)
-     &           *_maskS(I,J_obc+1,K,bi,bj)
+         DO k=1,Nr
+          DO i=1-OLx,sNx+OLx
+           IF ( OB_Js(i,bi,bj).NE.OB_indexNone ) THEN
+            J_obc = OB_Js(i,bi,bj)
+            OBSptr(i,k,bi,bj,iTracer) =
+     &           pTracer(i,J_obc+1,k,bi,bj,iTracer)
+     &           *_maskS(i,J_obc+1,k,bi,bj)
            ENDIF
           ENDDO
          ENDDO

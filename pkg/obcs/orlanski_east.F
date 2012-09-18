@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_east.F,v 1.12 2011/05/24 14:31:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_east.F,v 1.13 2012/09/18 20:09:17 jmc Exp $
 C $Name:  $
 cc
 
@@ -104,9 +104,9 @@ C     == Local variables ==
 
 C     Eastern OB (Orlanski Radiation Condition)
       DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
+         DO J=1-OLy,sNy+OLy
             I_obc=OB_Ie(J,bi,bj)
-            IF (I_obc.ne.0) THEN
+            IF ( I_obc.NE.OB_indexNone ) THEN
 C              uVel
                IF ((UE_STORE_2(J,K,bi,bj).eq.0.).and.
      &            (UE_STORE_3(J,K,bi,bj).eq.0.)) THEN

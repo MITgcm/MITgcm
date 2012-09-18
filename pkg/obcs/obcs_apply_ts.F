@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_ts.F,v 1.9 2011/12/28 16:31:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_ts.F,v 1.10 2012/09/18 20:09:17 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -83,7 +83,7 @@ C Northern boundary
           DO i=1-OLx,sNx+OLx
 C     add tendency term instead of overwriting field with boundary value
            Jobc = OB_Jn(i,bi,bj)
-           IF (Jobc.NE.0) THEN
+           IF ( Jobc.NE.OB_indexNone ) THEN
             DO k = kLo,kHi
              tFld(i,Jobc,k,bi,bj) = tFld(i,Jobc,k,bi,bj)
      &            + dTtracerLev(k)*OBNt(i,k,bi,bj)
@@ -98,7 +98,7 @@ C     add tendency term instead of overwriting field with boundary value
 # endif /* ALLOW_OBCS_STEVENS */
           DO i=1-OLx,sNx+OLx
            Jobc = OB_Jn(i,bi,bj)
-           IF (Jobc.NE.0) THEN
+           IF ( Jobc.NE.OB_indexNone ) THEN
             DO k = kLo,kHi
              tFld(i,Jobc,k,bi,bj) = OBNt(i,k,bi,bj)
              sFld(i,Jobc,k,bi,bj) = OBNs(i,k,bi,bj)
@@ -117,7 +117,7 @@ C Southern boundary
 C     add tendency term instead of overwriting field with boundary value
           DO i=1-OLx,sNx+OLx
            Jobc = OB_Js(i,bi,bj)
-           IF (Jobc.NE.0) THEN
+           IF ( Jobc.NE.OB_indexNone ) THEN
             DO k = kLo,kHi
              tFld(i,Jobc,k,bi,bj) = tFld(i,Jobc,k,bi,bj)
      &            + dTtracerLev(k)*OBSt(i,k,bi,bj)
@@ -132,7 +132,7 @@ C     add tendency term instead of overwriting field with boundary value
 # endif /* ALLOW_OBCS_STEVENS */
           DO i=1-OLx,sNx+OLx
            Jobc = OB_Js(i,bi,bj)
-           IF (Jobc.NE.0) THEN
+           IF ( Jobc.NE.OB_indexNone ) THEN
             DO k = kLo,kHi
              tFld(i,Jobc,k,bi,bj) = OBSt(i,k,bi,bj)
              sFld(i,Jobc,k,bi,bj) = OBSs(i,k,bi,bj)
@@ -152,7 +152,7 @@ C Eastern boundary
 C     add tendency term instead of overwriting field with boundary value
           DO j=1-OLy,sNy+OLy
            Iobc = OB_Ie(j,bi,bj)
-           IF (Iobc.NE.0) THEN
+           IF ( Iobc.NE.OB_indexNone ) THEN
             DO k = kLo,kHi
              tFld(Iobc,j,k,bi,bj) = tFld(Iobc,j,k,bi,bj)
      &            + dTtracerLev(k)*OBEt(j,k,bi,bj)
@@ -167,7 +167,7 @@ C     add tendency term instead of overwriting field with boundary value
 # endif /* ALLOW_OBCS_STEVENS */
           DO j=1-OLy,sNy+OLy
            Iobc = OB_Ie(j,bi,bj)
-           IF (Iobc.NE.0) THEN
+           IF ( Iobc.NE.OB_indexNone ) THEN
             DO k = kLo,kHi
              tFld(Iobc,j,k,bi,bj) = OBEt(j,k,bi,bj)
              sFld(Iobc,j,k,bi,bj) = OBEs(j,k,bi,bj)
@@ -186,7 +186,7 @@ C Western boundary
 C     add tendency term instead of overwriting field with boundary value
           DO j=1-OLy,sNy+OLy
            Iobc = OB_Iw(j,bi,bj)
-           IF (Iobc.NE.0) THEN
+           IF ( Iobc.NE.OB_indexNone ) THEN
             DO k = kLo,kHi
              tFld(Iobc,j,k,bi,bj) = tFld(Iobc,j,k,bi,bj)
      &            + dTtracerLev(k)*OBWt(j,k,bi,bj)
@@ -201,7 +201,7 @@ C     add tendency term instead of overwriting field with boundary value
 # endif /* ALLOW_OBCS_STEVENS */
           DO j=1-OLy,sNy+OLy
            Iobc = OB_Iw(j,bi,bj)
-           IF (Iobc.NE.0) THEN
+           IF ( Iobc.NE.OB_indexNone ) THEN
             DO k = kLo,kHi
              tFld(Iobc,j,k,bi,bj) = OBWt(j,k,bi,bj)
              sFld(Iobc,j,k,bi,bj) = OBWs(j,k,bi,bj)

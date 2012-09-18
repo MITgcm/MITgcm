@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_w.F,v 1.8 2011/05/24 14:31:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_w.F,v 1.9 2012/09/18 20:09:17 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -63,15 +63,15 @@ C     Set model variables to OB values on North/South Boundaries
 #ifdef ALLOW_OBCS_NORTH
         IF ( tileHasOBN(bi,bj) ) THEN
 C Northern boundary
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
           Jobc = OB_Jn(i,bi,bj)
-          IF ( Jobc.NE.0 .AND. kArg.EQ.0 ) THEN
+          IF ( Jobc.NE.OB_indexNone .AND. kArg.EQ.0 ) THEN
            DO k = kLo,kHi
             km1 = MAX( k-1, 1 )
             obc_mask = maskC(i,Jobc,km1,bi,bj)*maskC(i,Jobc,k,bi,bj)
             wFld(i,Jobc,k,bi,bj) = OBNw(i,k,bi,bj)*obc_mask
            ENDDO
-          ELSEIF ( Jobc.NE.0 ) THEN
+          ELSEIF ( Jobc.NE.OB_indexNone ) THEN
             obc_mask = maskC(i,Jobc,km1,bi,bj)*maskC(i,Jobc,k,bi,bj)
             wFld(i,Jobc,k,bi,bj) = OBNw(i,k,bi,bj)*obc_mask
           ENDIF
@@ -82,15 +82,15 @@ C Northern boundary
 #ifdef ALLOW_OBCS_SOUTH
         IF ( tileHasOBS(bi,bj) ) THEN
 C Southern boundary
-         DO i=1-Olx,sNx+Olx
+         DO i=1-OLx,sNx+OLx
           Jobc = OB_Js(i,bi,bj)
-          IF ( Jobc.NE.0 .AND. kArg.EQ.0 ) THEN
+          IF ( Jobc.NE.OB_indexNone .AND. kArg.EQ.0 ) THEN
            DO k = kLo,kHi
             km1 = MAX( k-1, 1 )
             obc_mask = maskC(i,Jobc,km1,bi,bj)*maskC(i,Jobc,k,bi,bj)
             wFld(i,Jobc,k,bi,bj) = OBSw(i,k,bi,bj)*obc_mask
            ENDDO
-          ELSEIF ( Jobc.NE.0 ) THEN
+          ELSEIF ( Jobc.NE.OB_indexNone ) THEN
             obc_mask = maskC(i,Jobc,km1,bi,bj)*maskC(i,Jobc,k,bi,bj)
             wFld(i,Jobc,k,bi,bj) = OBSw(i,k,bi,bj)*obc_mask
           ENDIF
@@ -102,15 +102,15 @@ C     Set model variables to OB values on East/West Boundaries
 #ifdef ALLOW_OBCS_EAST
         IF ( tileHasOBE(bi,bj) ) THEN
 C Eastern boundary
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
           Iobc = OB_Ie(j,bi,bj)
-          IF ( Iobc.NE.0 .AND. kArg.EQ.0 ) THEN
+          IF ( Iobc.NE.OB_indexNone .AND. kArg.EQ.0 ) THEN
            DO k = kLo,kHi
             km1 = MAX( k-1, 1 )
             obc_mask = maskC(Iobc,j,km1,bi,bj)*maskC(Iobc,j,k,bi,bj)
             wFld(Iobc,j,k,bi,bj) = OBEw(j,k,bi,bj)*obc_mask
            ENDDO
-          ELSEIF ( Iobc.NE.0 ) THEN
+          ELSEIF ( Iobc.NE.OB_indexNone ) THEN
             obc_mask = maskC(Iobc,j,km1,bi,bj)*maskC(Iobc,j,k,bi,bj)
             wFld(Iobc,j,k,bi,bj) = OBEw(j,k,bi,bj)*obc_mask
           ENDIF
@@ -121,15 +121,15 @@ C Eastern boundary
 #ifdef ALLOW_OBCS_WEST
         IF ( tileHasOBW(bi,bj) ) THEN
 C Western boundary
-         DO j=1-Oly,sNy+Oly
+         DO j=1-OLy,sNy+OLy
           Iobc = OB_Iw(j,bi,bj)
-          IF ( Iobc.NE.0 .AND. kArg.EQ.0 ) THEN
+          IF ( Iobc.NE.OB_indexNone .AND. kArg.EQ.0 ) THEN
            DO k = kLo,kHi
             km1 = MAX( k-1, 1 )
             obc_mask = maskC(Iobc,j,km1,bi,bj)*maskC(Iobc,j,k,bi,bj)
             wFld(Iobc,j,k,bi,bj) = OBWw(j,k,bi,bj)*obc_mask
            ENDDO
-          ELSEIF ( Iobc.NE.0 ) THEN
+          ELSEIF ( Iobc.NE.OB_indexNone ) THEN
             obc_mask = maskC(Iobc,j,km1,bi,bj)*maskC(Iobc,j,k,bi,bj)
             wFld(Iobc,j,k,bi,bj) = OBWw(j,k,bi,bj)*obc_mask
           ENDIF
