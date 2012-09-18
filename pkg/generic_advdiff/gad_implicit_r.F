@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.16 2012/09/11 01:32:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.17 2012/09/18 21:29:36 gforget Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -94,6 +94,7 @@ C errCode   :: > 0 if singular matrix
       _RL df (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL af (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL div(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL flx(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 #endif
 CEOP
 
@@ -297,7 +298,7 @@ C--   Set diagnostic suffix for the current tracer
         IF ( diagDif .OR. diagAdv ) THEN
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            af(i,j) = 0. _d 0
+            flx(i,j) = 0. _d 0
           ENDDO
          ENDDO
          DO k= Nr,1,-1
@@ -396,13 +397,13 @@ C--    use current hFac (consistent with solver matrix)
            ENDIF
            DO j=jMin,jMax
             DO i=iMin,iMax
-              af(i,j) = af(i,j)
+              flx(i,j) = flx(i,j)
 #ifdef ALLOW_AUTODIFF_OPENAD
      &                - rkSign*div(i,j)*rA(i,j,bi,bj)%v/deltaTLev(k)
 #else
      &                - rkSign*div(i,j)*rA(i,j,bi,bj)/deltaTLev(k)
 #endif
-     &                - df(i,j)
+              af(i,j) = flx(i,j) - df(i,j)
             ENDDO
            ENDDO
            diagName = 'ADVr'//diagSufx
