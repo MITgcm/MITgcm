@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.28 2012/09/17 21:47:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.29 2012/09/18 19:54:29 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -421,13 +421,15 @@ c     IF ( insideOBmaskFile.NE.' ' ) THEN
          DO j=1,sNy
 C-    Eastern boundary
           i = OB_Ie(j,bi,bj)
-          IF ( i.NE.OB_indexNone .AND. maskInC(i,j,bi,bj).NE.0. ) THEN
+          IF ( i.NE.OB_indexNone ) THEN
+           IF ( maskInC(i,j,bi,bj).NE.0. ) THEN
             IF ( errCount.EQ.0 ) CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(2(A,I3),2(A,I5))')
      &        ' from OB_Ie (bi,bj=', bi, ',', bj,
      &        ') expects Mask=0 @ i,j=', i, ',', j
             CALL PRINT_ERROR( msgBuf, myThid )
             errCount = errCount + 1
+           ENDIF
           ENDIF
           DO i=1,sNx+1
            IF ( maskInC(i-1,j,bi,bj).GT.maskInC(i,j,bi,bj)
@@ -443,13 +445,15 @@ C-    Eastern boundary
           ENDDO
 C-    Western boundary
           i = OB_Iw(j,bi,bj)
-          IF ( i.NE.OB_indexNone .AND. maskInC(i,j,bi,bj).NE.0. ) THEN
+          IF ( i.NE.OB_indexNone ) THEN
+           IF ( maskInC(i,j,bi,bj).NE.0. ) THEN
             IF ( errCount.EQ.0 ) CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(2(A,I3),2(A,I5))')
      &        ' from OB_Iw (bi,bj=', bi, ',', bj,
      &        ') expects Mask=0 @ i,j=', i, ',', j
             CALL PRINT_ERROR( msgBuf, myThid )
             errCount = errCount + 1
+           ENDIF
           ENDIF
           DO i=1,sNx+1
            IF ( maskInC(i-1,j,bi,bj).LT.maskInC(i,j,bi,bj)
@@ -468,13 +472,15 @@ C-    Western boundary
          DO i=1,sNx
 C-    Northern boundary
           j = OB_Jn(i,bi,bj)
-          IF ( j.NE.OB_indexNone .AND. maskInC(i,j,bi,bj).NE.0. ) THEN
+          IF ( j.NE.OB_indexNone ) THEN
+           IF ( maskInC(i,j,bi,bj).NE.0. ) THEN
             IF ( errCount.EQ.0 ) CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(2(A,I3),2(A,I5))')
      &        ' from OB_Jn (bi,bj=', bi, ',', bj,
      &        ') expects Mask=0 @ i,j=', i, ',', j
             CALL PRINT_ERROR( msgBuf, myThid )
             errCount = errCount + 1
+           ENDIF
           ENDIF
           DO j=1,sNy+1
            IF ( maskInC(i,j-1,bi,bj).GT.maskInC(i,j,bi,bj)
@@ -490,13 +496,15 @@ C-    Northern boundary
           ENDDO
 C-    Southern boundary
           j = OB_Js(i,bi,bj)
-          IF ( j.NE.OB_indexNone .AND. maskInC(i,j,bi,bj).NE.0. ) THEN
+          IF ( j.NE.OB_indexNone ) THEN
+           IF ( maskInC(i,j,bi,bj).NE.0. ) THEN
             IF ( errCount.EQ.0 ) CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(2(A,I3),2(A,I5))')
      &        ' from OB_Js (bi,bj=', bi, ',', bj,
      &        ') expects Mask=0 @ i,j=', i, ',', j
             CALL PRINT_ERROR( msgBuf, myThid )
             errCount = errCount + 1
+           ENDIF
           ENDIF
           DO j=1,sNy+1
            IF ( maskInC(i,j-1,bi,bj).LT.maskInC(i,j,bi,bj)
