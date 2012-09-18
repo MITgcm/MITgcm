@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.7 2011/10/19 01:28:45 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.8 2012/09/18 23:02:10 gforget Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAYERS
@@ -24,30 +24,39 @@ C      layers_HV    :: Layer thickness at the V point (m)
 
 #ifdef LAYERS_UFLUX
       _RL layers_UFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-#ifdef LAYERS_THICKNESS
+# ifdef LAYERS_THICKNESS
       _RL layers_HU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-#endif /* LAYERS_THICKNESS */
-      COMMON /LAYERS_U/ layers_UFlux
-#ifdef LAYERS_THICKNESS
-     &  , layers_HU
-#endif /* LAYERS_THICKNESS */
-#endif /* LAYERS_UFLUX */
+# else
+      _RL layers_HU
+# endif /* LAYERS_THICKNESS */
+#else
+      _RL layers_UFlux
+      _RL layers_HU
+#endif
+
+      COMMON /LAYERS_U/ layers_UFlux, layers_HU
 
 #ifdef LAYERS_VFLUX
       _RL layers_VFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-#ifdef LAYERS_THICKNESS
+# ifdef LAYERS_THICKNESS
       _RL layers_HV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-#endif /* LAYERS_THICKNESS */
-      COMMON /LAYERS_V/ layers_VFlux
-#ifdef LAYERS_THICKNESS
-     &  , layers_HV
-#endif /* LAYERS_THICKNESS */
+# else
+      _RL layers_HV
+# endif /* LAYERS_THICKNESS */
+#else
+      _RL layers_VFlux
+      _RL layers_HV
 #endif /* LAYERS_VFLUX */
+
+      COMMON /LAYERS_V/ layers_VFlux, layers_HV
 
 #ifdef LAYERS_PRHO_REF
       _RL prho(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      COMMON /LAYERS_PRHO/ prho
+#else
+      _RL prho
 #endif
+
+      COMMON /LAYERS_PRHO/ prho
 
 #ifdef ALLOW_TIMEAVE
 C-- The same variables, time-averaged
