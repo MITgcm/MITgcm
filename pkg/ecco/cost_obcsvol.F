@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsvol.F,v 1.10 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsvol.F,v 1.11 2012/09/18 20:16:34 jmc Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -29,9 +29,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-CML#include "DYNVARS.h"
 #ifdef ALLOW_OBCS
-c# include "OBCS_PARAMS.h"
 # include "OBCS_GRID.h"
 #endif
 
@@ -206,6 +204,7 @@ c--         Determine the weights to be used.
               do k = 1, Nr
                 do i = imin,imax
                   j = OB_Jn(I,bi,bj)
+                  IF ( j.EQ.OB_indexNone ) j = 1
 cgg    Barotropic velocity is stored in level 1.
                   tmpx = tmpfldxz(i,1,bi,bj)
                   if (maskS(i,j,k,bi,bj) .ne. 0.) then
@@ -247,6 +246,7 @@ c--         Determine the weights to be used.
               do k = 1, Nr
                 do i = imin,imax
                   j = OB_Js(I,bi,bj)
+                  IF ( j.EQ.OB_indexNone ) j = 1
 cgg    Barotropic velocity is stored in level 1.
                   tmpx = tmpfldxz(i,1,bi,bj)
                   if (maskS(i,j+1,k,bi,bj) .ne. 0.) then
@@ -289,6 +289,7 @@ c--         Determine the weights to be used.
               do k = 1, Nr
                 do j = jmin,jmax
                   i = OB_Iw(j,bi,bj)
+                  IF ( i.EQ.OB_indexNone ) i = 1
 cgg    Barotropic velocity is stored in the level 1.
                   tmpy = tmpfldyz(j,1,bi,bj)
                   if (maskW(i+1,j,k,bi,bj) .ne. 0.) then
@@ -331,6 +332,7 @@ c--         Determine the weights to be used.
               do k = 1, Nr
                 do j = jmin,jmax
                   i = OB_Ie(j,bi,bj)
+                  IF ( i.EQ.OB_indexNone ) i = 1
 cgg    Barotropic velocity stored in level 1.
                   tmpy = tmpfldyz(j,1,bi,bj)
                   if (maskW(i,j,k,bi,bj) .ne. 0.) then

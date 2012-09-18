@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcse.F,v 1.14 2012/08/10 19:38:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcse.F,v 1.15 2012/09/18 20:21:23 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -130,6 +130,7 @@ c--   Get the counters, flags, and the interpolation factor.
           if (iobcs .gt. 2) then
            do j = jmin,jmax
             i = OB_Ie(j,bi,bj)
+            IF ( i.EQ.OB_indexNone ) i = 1
 cih    Determine number of open vertical layers.
             nz = 0
             do k = 1,Nr
@@ -198,6 +199,7 @@ cgg   &                                        *   maskyz (j,k,bi,bj)
           if (iobcs .gt. 2) then
            do j = jmin,jmax
             i = OB_Ie(j,bi,bj)
+            IF ( i.EQ.OB_indexNone ) i = 1
 cih    Determine number of open vertical layers.
             nz = 0
             do k = 1,Nr
@@ -249,6 +251,7 @@ c--   Calculate mask for tracer cells (0 => land, 1 => water).
          do k = 1,nr
           do j = 1,sny
            i = OB_Ie(j,bi,bj)
+           IF ( i.EQ.OB_indexNone ) i = 1
            if (iobcs .EQ. 1) then
             OBEt(j,k,bi,bj) = OBEt(j,k,bi,bj)
      &           + obcsefac            *xx_obcse0(j,k,bi,bj,iobcs)

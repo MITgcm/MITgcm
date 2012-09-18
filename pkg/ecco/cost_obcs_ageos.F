@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcs_ageos.F,v 1.7 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcs_ageos.F,v 1.8 2012/09/18 20:16:34 jmc Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -47,9 +47,6 @@ c     == routine arguments ==
       integer mythid
 
 c     == local variables ==
-
-      _RS        one_rs
-      parameter( one_rs = 1. )
 
       integer bi,bj
       integer i,j,k
@@ -217,9 +214,9 @@ cgg     Minor problem : grad T,S needs overlap values.
 cgg    Make a mask for the velocity shear comparison.
             do k = 1,nr-1
               do i = imin, imax
-                j = ob_jn(i,bi,bj)
+                j = OB_Jn(i,bi,bj)
 cgg    All these points need to be wet.
-                if (j .eq. 0) then
+                if ( j.eq.OB_indexNone ) then
                   maskxzageos(i,k,bi,bj) = 0.
                 else
                   maskxzageos(i,k,bi,bj) =
@@ -246,7 +243,8 @@ C-- jmc: both calls below are wrong if more than 1 tile => stop here
 
 cgg   Compute centered difference horizontal gradient on bdy.
               do i = imin, imax
-                j = ob_jn(i,bi,bj)
+                j = OB_Jn(i,bi,bj)
+                if ( j.eq.OB_indexNone ) j = 1
                   xzgrdrho(i,k,bi,bj) =
      &            (rholoc(i-1,j+jp1,bi,bj)-rholoc(i+1,j+jp1,bi,bj))
      &            /(2.*dxc(i,j+jp1,bi,bj))
@@ -258,7 +256,8 @@ cgg         Above level 4 needs not be geostrophic.
 cgg         Please get rid of the "4" ASAP. Ridiculous.
             do k = 4,Nr-1
               do i = imin,imax
-                j = ob_jn(i,bi,bj)
+                j = OB_Jn(i,bi,bj)
+                if ( j.eq.OB_indexNone ) j = 1
                   xzdvel1(i,k,bi,bj) = vbar(i,j+jp1,k  ,bi,bj)
      &                               - vbar(i,j+jp1,k+1,bi,bj)
                  xzdvel2(i,k,bi,bj)=((xzgrdrho(i,k,bi,bj)*delz(k)/2.)+
@@ -284,8 +283,8 @@ c--         End of loop over layers.
 cgg    Make a mask for the velocity shear comparison.
             do k = 1,nr-1
               do i = imin, imax
-                j = ob_js(i,bi,bj)
-                if (j .eq. 0) then
+                j = OB_Js(i,bi,bj)
+                if ( j.eq.OB_indexNone ) then
                   maskxzageos(i,k,bi,bj) = 0.
                 else
 cgg    All these points need to be wet.
@@ -314,7 +313,8 @@ C-- jmc: both calls below are wrong if more than 1 tile => stop here
 
 cgg   Compute centered difference horizontal gradient on bdy.
                do i = imin, imax
-                 j = ob_js(i,bi,bj)
+                 j = OB_Js(i,bi,bj)
+                 if ( j.eq.OB_indexNone ) j = 1
                  xzgrdrho(i,k,bi,bj) =
      &            (rholoc(i-1,j+jp1,bi,bj)-rholoc(i+1,j+jp1,bi,bj))
      &            /(2.*dxc(i,j+jp1,bi,bj))
@@ -324,7 +324,8 @@ cgg   Compute centered difference horizontal gradient on bdy.
 cgg         Compute vertical shear from geostrophy/thermal wind.
              do k = 4,Nr-1
                do i = imin,imax
-                 j = ob_js(i,bi,bj)
+                 j = OB_Js(i,bi,bj)
+                 if ( j.eq.OB_indexNone ) j = 1
 cgg         Retrieve the model vertical shear.
                  xzdvel1(i,k,bi,bj) = vbar(i,j+jp1,k  ,bi,bj)
      &                               - vbar(i,j+jp1,k+1,bi,bj)
@@ -351,9 +352,9 @@ c--         End of loop over layers.
 cgg    Make a mask for the velocity shear comparison.
             do k = 1,nr-1
               do j = jmin, jmax
-                i = ob_iw(j,bi,bj)
+                i = OB_Iw(j,bi,bj)
 cgg    All these points need to be wet.
-                if (i.eq. 0) then
+                if ( i.eq.OB_indexNone ) then
                   maskyzageos(j,k,bi,bj) = 0.
                 else
                   maskyzageos(j,k,bi,bj) =
@@ -379,7 +380,8 @@ cgg    All these points need to be wet.
 
 cgg   Compute centered difference horizontal gradient on bdy.
               do j = jmin, jmax
-                i = ob_iw(j,bi,bj)
+                i = OB_Iw(j,bi,bj)
+                if ( i.eq.OB_indexNone ) i = 1
 cgg             Negative sign due to geostrophy.
                 yzgrdrho(j,k,bi,bj) =
      &            (rholoc(i+ip1,j+1,bi,bj)-rholoc(i+ip1,j-1,bi,bj))
@@ -390,7 +392,8 @@ cgg             Negative sign due to geostrophy.
 cgg         Compute vertical shear from geostrophy/thermal wind.
             do k = 4,Nr-1
               do j = jmin,jmax
-                i = ob_iw(j,bi,bj)
+                i = OB_Iw(j,bi,bj)
+                if ( i.eq.OB_indexNone ) i = 1
 cgg         Retrieve the model vertical shear.
                 yzdvel1(j,k,bi,bj) = ubar(i+ip1,j,k  ,bi,bj)
      &                               - ubar(i+ip1,j,k+1,bi,bj)
@@ -416,8 +419,8 @@ c--         End of loop over layers.
 cgg    Make a mask for the velocity shear comparison.
             do k = 1,nr-1
               do j = jmin, jmax
-                i = ob_ie(j,bi,bj)
-                if (i.eq.0) then
+                i = OB_Ie(j,bi,bj)
+                if ( i.eq.OB_indexNone ) then
                   maskyzageos(j,k,bi,bj) =0.
                 else
 cgg    All these points need to be wet.
@@ -444,7 +447,8 @@ cgg    All these points need to be wet.
 
 cgg   Compute centered difference horizontal gradient on bdy.
               do j = jmin, jmax
-                i = ob_ie(j,bi,bj)
+                i = OB_Ie(j,bi,bj)
+                if ( i.eq.OB_indexNone ) i = 1
 cgg             Negative sign due to geostrophy.
                 yzgrdrho(j,k,bi,bj) =
      &            (rholoc(i+ip1,,j+1,bi,bj)-rholoc(i+ip1,j-1,bi,bj))
@@ -455,7 +459,8 @@ cgg             Negative sign due to geostrophy.
 cgg         Compute vertical shear from geostrophy/thermal wind.
             do k = 4,Nr-1
               do j = jmin,jmax
-                i = ob_ie(j,bi,bj)
+                i = OB_Ie(j,bi,bj)
+                if ( i.eq.OB_indexNone ) i = 1
 cgg         Retrieve the model vertical shear.
                 yzdvel1(j,k,bi,bj) = ubar(i+ip1,j,k  ,bi,bj)
      &                             - ubar(i+ip1,j,k+1,bi,bj)
