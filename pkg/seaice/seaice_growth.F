@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.175 2012/08/28 19:19:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.176 2012/09/18 21:28:03 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1979,12 +1979,19 @@ c 3) balancing adjustments
             empmr(i,j,bi,bj) = empmr(i,j,bi,bj) - tmpscal0
             SIatmFW(i,j,bi,bj) = SIatmFW(i,j,bi,bj) - tmpscal0
 c           adjust SItflux consistently       
-            IF (temp_EvPrRn.NE.UNSET_RL) THEN
+            IF ( (temp_EvPrRn.NE.UNSET_RL).AND.
+     &        useRealFreshWaterFlux.AND.(nonlinFreeSurf.NE.0) ) THEN
             tmpscal1=
      &       ( ZERO + HeatCapacity_Cp * temp_EvPrRn )
-            ELSE
+            ELSEIF ( (temp_EvPrRn.EQ.UNSET_RL).AND.
+     &        useRealFreshWaterFlux.AND.(nonlinFreeSurf.NE.0) ) THEN
             tmpscal1=
      &       ( ZERO + HeatCapacity_Cp * theta(I,J,kSurface,bi,bj) )
+            ELSEIF ( (temp_EvPrRn.NE.UNSET_RL) ) THEN
+            tmpscal1=
+     &       HeatCapacity_Cp*(temp_EvPrRn - theta(I,J,kSurface,bi,bj))
+            ELSE
+            tmpscal1=ZERO
             ENDIF
             SItflux(i,j,bi,bj) = SItflux(i,j,bi,bj) - tmpscal0*tmpscal1
 c           no qnet or tflux adjustement is needed
