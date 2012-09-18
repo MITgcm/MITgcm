@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_diag_balance.F,v 1.2 2012/08/06 16:47:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_diag_balance.F,v 1.3 2012/09/18 00:07:36 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -108,7 +108,7 @@ C--   Integrate the transport through each OB
         IF ( tileHasOBE(bi,bj) ) THEN
          DO j=1,sNy
            iB = OB_Ie(j,bi,bj)
-           IF ( iB.NE.0 ) THEN
+           IF ( iB.NE.OB_indexNone .AND. iB.GT.1 ) THEN
             tmpA = drF(k)*hFacW(iB,j,k,bi,bj)*dyG(iB,j,bi,bj)
      &                   *maskInW(iB,j,bi,bj)
             tileArea(bi,bj) = tileArea(bi,bj) + tmpA
@@ -152,8 +152,9 @@ c    &   'OBCS_balance it,areaE,flowE=', myIter, areaE, flowE
         tileFlow(bi,bj) = 0.
         IF ( tileHasOBW(bi,bj) ) THEN
          DO j=1,sNy
-           iB = 1+OB_Iw(j,bi,bj)
-           IF ( iB.NE.1 ) THEN
+           iB = OB_Iw(j,bi,bj)
+           IF ( iB.NE.OB_indexNone .AND. iB.LT.sNx ) THEN
+            iB = 1+iB
             tmpA = drF(k)*hFacW(iB,j,k,bi,bj)*dyG(iB,j,bi,bj)
      &                   *maskInW(iB,j,bi,bj)
             tileArea(bi,bj) = tileArea(bi,bj) + tmpA
@@ -198,7 +199,7 @@ c    &   'OBCS_balance it,areaW,flowW=', myIter, areaW, flowW
         IF ( tileHasOBN(bi,bj) ) THEN
          DO i=1,sNx
            jB = OB_Jn(i,bi,bj)
-           IF ( jB.NE.0 ) THEN
+           IF ( jB.NE.OB_indexNone .AND. jB.GT.1 ) THEN
             tmpA = drF(k)*hFacS(i,jB,k,bi,bj)*dxG(i,jB,bi,bj)
      &                   *maskInS(i,jB,bi,bj)
             tileArea(bi,bj) = tileArea(bi,bj) + tmpA
@@ -242,12 +243,12 @@ c    &   'OBCS_balance it,areaN,flowN=', myIter, areaN, flowN
         tileFlow(bi,bj) = 0.
         IF ( tileHasOBS(bi,bj) ) THEN
          DO i=1,sNx
-           jB = 1+OB_Js(i,bi,bj)
-           IF ( jB.NE.1 ) THEN
+           jB = OB_Js(i,bi,bj)
+           IF ( jB.NE.OB_indexNone .AND. jB.LT.sNy ) THEN
+            jB = 1+jB
             tmpA = drF(k)*hFacS(i,jB,k,bi,bj)*dxG(i,jB,bi,bj)
      &                   *maskInS(i,jB,bi,bj)
             tileArea(bi,bj) = tileArea(bi,bj) + tmpA
-c           tileFlow(bi,bj) = tileFlow(bi,bj) + tmpA*OBSv(i,k,bi,bj)
             tileFlow(bi,bj) = tileFlow(bi,bj) + vTrans(i,jB,bi,bj)
            ENDIF
          ENDDO
@@ -317,9 +318,9 @@ C--   Add correction:
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          IF ( tileHasOBE(bi,bj) ) THEN
-           DO j=1-Oly,sNy+Oly
-            iB = OB_Ie(j,bi,bj)
-            IF ( iB.NE.0 ) THEN
+           DO j=1-OLy,sNy+OLy
+            IF ( OB_Ie(j,bi,bj).NE.OB_indexNone ) THEN
+             iB = OB_Ie(j,bi,bj)
              uTrans(iB,j,bi,bj) = uTrans(iB,j,bi,bj)
      &                    + flowE*drF(k)*hFacW(iB,j,k,bi,bj)
      &                           *dyG(iB,j,bi,bj)*maskInW(iB,j,bi,bj)
@@ -336,9 +337,9 @@ C--   Add correction:
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          IF ( tileHasOBW(bi,bj) ) THEN
-           DO j=1-Oly,sNy+Oly
-            iB = 1+OB_Iw(j,bi,bj)
-            IF ( iB.NE.1 ) THEN
+           DO j=1-OLy,sNy+OLy
+            IF ( OB_Iw(j,bi,bj).NE.OB_indexNone ) THEN
+             iB = 1+OB_Iw(j,bi,bj)
              uTrans(iB,j,bi,bj) = uTrans(iB,j,bi,bj)
      &                    + flowW*drF(k)*hFacW(iB,j,k,bi,bj)
      &                           *dyG(iB,j,bi,bj)*maskInW(iB,j,bi,bj)
@@ -355,9 +356,9 @@ C--   Add correction:
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          IF ( tileHasOBN(bi,bj) ) THEN
-           DO i=1-Olx,sNx+Olx
-            jB = OB_Jn(i,bi,bj)
-            IF ( jB.NE.0 ) THEN
+           DO i=1-OLx,sNx+OLx
+            IF ( OB_Jn(i,bi,bj).NE.OB_indexNone ) THEN
+             jB = OB_Jn(i,bi,bj)
              vTrans(i,jB,bi,bj) = vTrans(i,jB,bi,bj)
      &                    + flowN*drF(k)*hFacS(i,jB,k,bi,bj)
      &                           *dxG(i,jB,bi,bj)*maskInS(i,jB,bi,bj)
@@ -374,9 +375,9 @@ C--   Add correction:
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          IF ( tileHasOBS(bi,bj) ) THEN
-           DO i=1-Olx,sNx+Olx
-            jB = 1+OB_Js(i,bi,bj)
-            IF ( jB.NE.1 ) THEN
+           DO i=1-OLx,sNx+OLx
+            IF ( OB_Js(i,bi,bj).NE.OB_indexNone ) THEN
+             jB = 1+OB_Js(i,bi,bj)
              vTrans(i,jB,bi,bj) = vTrans(i,jB,bi,bj)
      &                    + flowS*drF(k)*hFacS(i,jB,k,bi,bj)
      &                           *dxG(i,jB,bi,bj)*maskInS(i,jB,bi,bj)
