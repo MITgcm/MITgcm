@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.39 2012/09/17 21:47:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.40 2012/09/18 21:25:57 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -182,7 +182,7 @@ C     retired parameters
 #endif
 
 C--   Default flags and values for OBCS
-      OB_indexNone  = 0
+      OB_indexNone  = -99
       OB_indexUnset = 0
       insideOBmaskFile = ' '
       DO i=1,OBNS_Nx
