@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_OPTIONS.h,v 1.13 2011/12/24 01:07:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_OPTIONS.h,v 1.14 2012/09/18 17:52:28 jmc Exp $
 C $Name:  $
 
 C CPP options file for OBCS package
@@ -37,7 +37,7 @@ C balance barotropic velocity
 C Use older implementation of obcs in seaice-dynamics
 C note: most of the "experimental" options listed below have not yet
 C       been implementated in new version.
-#define OBCS_UVICE_OLD
+#undef OBCS_UVICE_OLD
 
 #ifdef OBCS_UVICE_OLD
 C     The following five CPP options are experimental and aim to deal
