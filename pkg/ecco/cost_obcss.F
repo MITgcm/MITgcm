@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcss.F,v 1.10 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcss.F,v 1.11 2012/09/18 18:07:39 jmc Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -36,11 +36,9 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-c#include "DYNVARS.h"
-#ifdef ALLOW_OBCS
-c# include "OBCS_PARAMS.h"
-# include "OBCS_GRID.h"
-#endif
+c#ifdef ALLOW_OBCS
+c# include "OBCS_GRID.h"
+c#endif
 
 #include "cal.h"
 #include "ecco_cost.h"
@@ -58,18 +56,24 @@ c     == routine arguments ==
       integer startrec
       integer endrec
 
+#ifdef ALLOW_OBCSS_COST_CONTRIBUTION
+
+c     == external functions ==
+      integer  ilnblnk
+      external ilnblnk
+
 C     !LOCAL VARIABLES:
 c     == local variables ==
 
       integer bi,bj
-      integer i,j,k
+      integer i,k
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
       integer irec
       integer iobcs
-      integer jp1
+c     integer j, jp1
       integer nrec
       integer ilfld
       integer igg
@@ -90,12 +94,6 @@ c     == local variables ==
 #ifdef ECCO_VERBOSE
       character*(MAX_LEN_MBUF) msgbuf
 #endif
-
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
-
 c     == end of interface ==
 CEOP
 
@@ -115,9 +113,7 @@ c--   Read tiled data.
 c     Number of records to be used.
       nrec = endrec-startrec+1
 
-#ifdef ALLOW_OBCSS_COST_CONTRIBUTION
-
-      jp1 = 1
+c     jp1 = 1
       fcthread = 0. _d 0
 
 #ifdef ECCO_VERBOSE
@@ -172,7 +168,7 @@ c--         Determine the weights to be used.
 
             do k = 1, Nr
               do i = imin,imax
-                 j = OB_Js(I,bi,bj)
+c                j = OB_Js(I,bi,bj)
 cgg                 if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
                   tmpx = tmpfield(i,k,bi,bj)
 CMM                  fctile = fctile + wobcss2(i,k,bi,bj,iobcs)
@@ -214,7 +210,7 @@ c--     Print cost function for all tiles.
       enddo
 c--   End of loop over records.
 
-#endif
+#endif /* ALLOW_OBCSS_COST_CONTRIBUTION */
 
       return
       end

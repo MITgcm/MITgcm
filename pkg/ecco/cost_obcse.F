@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcse.F,v 1.9 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcse.F,v 1.10 2012/09/18 18:07:39 jmc Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -36,11 +36,9 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-c#include "DYNVARS.h"
-#ifdef ALLOW_OBCS
-c# include "OBCS_PARAMS.h"
-# include "OBCS_GRID.h"
-#endif
+c#ifdef ALLOW_OBCS
+c# include "OBCS_GRID.h"
+c#endif
 
 #include "cal.h"
 #include "ecco_cost.h"
@@ -58,11 +56,17 @@ c     == routine arguments ==
       integer startrec
       integer endrec
 
+#ifdef ALLOW_OBCSE_COST_CONTRIBUTION
+
+c     == external functions ==
+      integer  ilnblnk
+      external ilnblnk
+
 C     !LOCAL VARIABLES:
 c     == local variables ==
 
       integer bi,bj
-      integer i,j,k
+      integer j,k
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
@@ -70,7 +74,7 @@ c     == local variables ==
       integer irec
       integer il
       integer iobcs
-      integer ip1
+c     integer i, ip1
       integer nrec
       integer ilfld
       integer igg
@@ -92,12 +96,6 @@ cgg(
 #ifdef ECCO_VERBOSE
       character*(MAX_LEN_MBUF) msgbuf
 #endif
-
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
-
 c     == end of interface ==
 CEOP
 
@@ -117,9 +115,7 @@ c--   Read tiled data.
 c     Number of records to be used.
       nrec = endrec-startrec+1
 
-#ifdef ALLOW_OBCSE_COST_CONTRIBUTION
-
-      ip1 = 1
+c     ip1 = 1
       fcthread = 0. _d 0
 
 #ifdef ECCO_VERBOSE
@@ -172,7 +168,7 @@ c--         Determine the weights to be used.
 
             do k = 1, Nr
               do j = jmin,jmax
-                i = OB_Iw(j,bi,bj)
+c               i = OB_Iw(j,bi,bj)
 cgg                if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
                   tmpx = tmpfield(j,k,bi,bj)
 CMM                  fctile = fctile + wobcse2(j,k,bi,bj,iobcs)
@@ -213,7 +209,7 @@ c--     Print cost function for all tiles.
       enddo
 c--   End of loop over records.
 
-#endif
+#endif /* ALLOW_OBCSE_COST_CONTRIBUTION */
 
       return
       end
