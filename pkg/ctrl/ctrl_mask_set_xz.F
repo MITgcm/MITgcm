@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_mask_set_xz.F,v 1.8 2012/08/10 19:38:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_mask_set_xz.F,v 1.9 2012/09/18 20:19:47 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_mask_set_xz(
-     &     jp1, OB_J, nwetobcs, ymaskobcs, mythid )
+     &     jp1, jNone, OB_J, nwetobcs, ymaskobcs, mythid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_mask_set_xz
@@ -29,7 +29,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer jp1
+      integer jp1, jNone
       integer OB_J     (1-olx:snx+olx,nsx,nsy)
       integer nwetobcs (nsx,nsy,nr,nobcs)
       character*(80)   ymaskobcs
@@ -96,8 +96,8 @@ c--   mask conventions are adopted from obcs_apply_ts, obcs_apply_uv
           do bi = itlo,ithi
             do k = 1,nr
               do i = imin,imax
-                j = OB_J(I,bi,bj)
-                if ( j .NE. 0 ) then
+                j = OB_J(i,bi,bj)
+                if ( j .NE. jNone ) then
 c--               South mask for T, S, V
                   if (iobcs.eq.1 .or. iobcs .eq.2 .or. iobcs.eq.3) then
                     if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then

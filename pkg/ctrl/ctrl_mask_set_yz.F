@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_mask_set_yz.F,v 1.8 2012/08/10 19:38:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_mask_set_yz.F,v 1.9 2012/09/18 20:19:47 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_mask_set_yz(
-     &     ip1, OB_I, nwetobcs, ymaskobcs, mythid )
+     &     ip1, iNone, OB_I, nwetobcs, ymaskobcs, mythid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_mask_set_yz
@@ -29,7 +29,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer ip1
+      integer ip1, iNone
       integer OB_I     (1-oly:sny+oly,nsx,nsy)
       integer nwetobcs (nsx,nsy,nr,nobcs)
       character*(80)   ymaskobcs
@@ -97,8 +97,8 @@ c--   mask conventions are adopted from obcs_apply_ts, obcs_apply_uv
           do bi = itlo,ithi
             do k = 1,nr
               do j = jmin,jmax
-                i = OB_I(J,bi,bj)
-                if ( i .NE. 0 ) then
+                i = OB_I(j,bi,bj)
+                if ( i .NE. iNone ) then
 c--               West mask for T, S, U on East/West boundaries.
                   if(iobcs .eq.1 .or. iobcs .eq.2 .or. iobcs .eq.3) then
                     if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
