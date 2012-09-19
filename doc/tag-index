@@ -1,16 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1740 2012/09/18 23:21:52 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1741 2012/09/19 19:21:58 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  - remove local commom bloc "OBCS_GLOBAL" in obcs_readparms.F and do all the OB
+    index setting by master-thread. This fix multi-threads Pb in previous modifs.
 o pkg/layers :
- - add diagnostics to pkg/layers
- - move the meat of pkg/layers from layers_calc.F to layers_fluxcalc.F
-   (from R.Tulloch). Layers_calc.F now calls layers_fluxcalc.F accordingly.
+  - add diagnostics to pkg/layers
+  - move the meat of pkg/layers from layers_calc.F to layers_fluxcalc.F
+    (from R.Tulloch). Layers_calc.F now calls layers_fluxcalc.F accordingly.
 o pkg/generic_advdiff/gad_implicit_r.F :
-  - fix ADVr diagnostics in case of implicit vertical advection.
-o pkg/seaice/seaice_growth.F : 
+  - fix ADVr diagnostics in case of both implicit vertical advection and diffusion.
+o pkg/seaice/seaice_growth.F:
   - fix SItflux diagnostics in virtual salt flux + balanceEmpmr case.
 o pkg/obcs:
   - change default setting of OBCS_UVICE_OLD from defined to undef;
