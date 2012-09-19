@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.41 2012/09/19 18:11:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.42 2012/09/19 19:12:15 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -92,8 +92,6 @@ C OB_Jsouth(W2_maxXStackNx) :: global index array of southern open-boundary poin
 C OB_Ieast(W2_maxYStackNy)  :: global index array of eastern  open-boundary point
 C OB_Iwest(W2_maxYStackNy)  :: global index array of western  open-boundary point
 
-      COMMON/OBCS_GLOBAL/ OB_Jnorth, OB_Jsouth, OB_Ieast, OB_Iwest
-     &                  , OB_indexUnset
 #ifdef ALLOW_EXCH2
       INTEGER OB_Jnorth(W2_maxXStackNx)
       INTEGER OB_Jsouth(W2_maxXStackNx)
@@ -403,18 +401,17 @@ c       write(*,*) 'OB Iw =',OB_Iwest
      &                      SQUEEZE_RIGHT, myThid )
       ENDIF
 
-      _END_MASTER(myThid)
-C--   Everyone else must wait for the parameters to be loaded
-      _BARRIER
+C--   Continue master-thread only since global OB indices (+ OB_indexUnset)
+C     are not shared (not in common block).
 
-C--   Calculate the tiled index arrays OB_Jn/Js/Ie/Iw here from the
-C     global arrays OB_Jnorth/Jsouth/Ieast/Iwest.
+C--   Calculate the tiled OB index arrays OB_Jn/Js/Ie/Iw here from the
+C     global indices OB_Jnorth/Jsouth/Ieast/Iwest.
 C     Note: This part of the code has been moved from obcs_init_fixed
 C     to this routine because the OB_Jn/Js/Ie/Iw index arrays are
 C     required by INI_DEPTH (calling OBCS_CHECK_DEPTHS, but only needs
 C     valid interior indices) which is called before OBCS_INIT_FIXED.
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+      DO bj = 1, nSy
+       DO bi = 1, nSx
 
         DO i=1-OLx,sNx+OLx
          OB_Jn(i,bi,bj) = OB_indexNone
@@ -473,10 +470,8 @@ C-    Western  boundaries
          ENDIF
         ENDDO
 
-        _BEGIN_MASTER(myThid)
 C-    OB-index tiled-arrays are set for tile-interior region
          OBCS_indexStatus = 1
-        _END_MASTER(myThid)
 
 #else /* ALLOW_EXCH2 */
 
@@ -529,10 +524,8 @@ C-    Southern boundaries
          ENDIF
         ENDDO
 
-        _BEGIN_MASTER(myThid)
 C-    OB-index tiled-arrays are set for interior and overlap regions
         OBCS_indexStatus = 2
-        _END_MASTER(myThid)
 
 #endif /* ALLOW_EXCH2 */
 
@@ -540,7 +533,9 @@ C     bi,bj-loops
        ENDDO
       ENDDO
 
-C--   Everyone else must wait for OBCS_indexStatus to be set
+      _END_MASTER(myThid)
+C--   Everyone else must wait for the parameters to be loaded
+C     and tiled OB indices to be set.
       _BARRIER
 
 #endif /* ALLOW_OBCS */
