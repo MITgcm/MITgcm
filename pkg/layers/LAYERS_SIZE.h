@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS_SIZE.h,v 1.1 2009/09/16 21:25:47 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS_SIZE.h,v 1.2 2012/09/19 18:48:18 gforget Exp $
 C $Name:  $
 
 C ======================================================================
@@ -13,8 +13,9 @@ C        NLayers      :: the number if isopycnal layers (must match data.layers)
 C        FineGridFact :: how many fine-grid cells per dF cell
 C        FineGridMax  :: the number of points in the finer vertical grid
 C                         used for interpolation
-      INTEGER    Nlayers, FineGridFact, FineGridMax
+      INTEGER    Nlayers, FineGridFact, FineGridMax, layers_maxNum
       PARAMETER( Nlayers = 20 )
       PARAMETER( FineGridFact = 10 )
       PARAMETER( FineGridMax = Nr * FineGridFact )
+      PARAMETER( layers_maxNum = 1 )
 

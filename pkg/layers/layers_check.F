@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_check.F,v 1.6 2011/10/19 01:28:45 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_check.F,v 1.7 2012/09/19 18:48:18 gforget Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -23,6 +23,7 @@ C     myThid   :: my Thread Id number
 C     LOCAL VARIABLES:
 C     msgBuf   :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER iLa
 
 #ifdef ALLOW_LAYERS
 
@@ -39,14 +40,28 @@ C--  Print out some key parameters :
        CALL WRITE_1D_RL( dZZf, NZZ, INDEX_K, 'dZZf =',
      &  ' /* fine vertical grid spacing for isopycnal interp */')
 
-       CALL WRITE_1D_RL(layers_G,Nlayers+1, INDEX_K,'layers_G =',
-     &  ' /* boundaries of isopycnal-averaging bins */')
+      DO iLa=1,layers_maxNum
+      IF ( layers_num(iLa).NE.0 ) THEN
 
-       CALL WRITE_0D_I( layers_kref, INDEX_NONE, 'layers_kref =',
+       CALL WRITE_0D_I( layers_num(iLa), INDEX_NONE, 'layers_num =',
+     &  '/* (1) theta; (2) salt; (3) prho; as averaging field */' )
+
+       CALL WRITE_0D_C( layers_name(iLa),-1,INDEX_NONE,'layers_name =',
+     &  '/* (TH) theta; (SLT) salt; (RHO) prho; as averaging field */' )
+
+      CALL WRITE_0D_L ( layers_bolus(iLa), INDEX_NONE,
+     & 'layers_bolus =', ' /* include potential GM bolus velocity */')
+     
+       IF ( layers_num(iLa).EQ.3)
+     &  CALL WRITE_0D_I( layers_krho(iLa), INDEX_NONE, 'layers_krho =',
      &  ' /* model level to reference potential density to */' )
 
-       CALL WRITE_0D_I( LAYER_nb, INDEX_NONE, 'LAYER_nb =',
-     &  '/* (1) theta; (2) salt; (3) prho; as averaging field */' )
+       CALL WRITE_1D_RL(layers_bounds(1,iLa),
+     &  Nlayers+1, INDEX_K,'layers_bounds =',
+     &  ' /* boundaries of tracer-averaging bins */')
+     
+      ENDIF !IF ( layers_num(iLa).NE.0 ) THEN
+      ENDDO !DO iLa=1,layers_maxNum
 
 C--  Check parameters:
 

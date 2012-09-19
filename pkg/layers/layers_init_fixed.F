@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_fixed.F,v 1.6 2012/09/18 21:30:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_fixed.F,v 1.7 2012/09/19 18:48:18 gforget Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -31,14 +31,19 @@ C     Zf        :: depth at cell centers
 C     ZZf       :: depth at cell boundaries (fine grid)
 C     ZZc       :: depth at cell centers (fine grid)
 C     msgBuf    :: Informational/error message buffer
-      INTEGER k,kk,kkinit
+      INTEGER k,kk,kkinit,iLa
       _RL     Zf(Nr+1)
       _RL     Zc(Nr)
       _RL     ZZf(FineGridMax+1)
       _RL     ZZc(FineGridMax)
 
+      CHARACTER*11   tmpName      
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
+C     Functions ::
+      INTEGER     ILNBLNK
+      EXTERNAL    ILNBLNK
+      
 #ifdef ALLOW_MNC
 #ifdef LAYERS_MNC
       IF (layers_MNC) THEN
@@ -137,8 +142,13 @@ C       See which grid box the point lies in
       ENDIF
 
 C     Output the layer coordinates
-      CALL WRITE_GLVEC_RL( 'layers_G', ' ', layers_G, 1+Nlayers,
+      DO iLa=1,layers_maxNum
+      IF ( layers_num(iLa).NE.0 ) THEN
+      WRITE(tmpName,'(A7,I1,A3)') 'layers',iLa,layers_name(iLa)
+      CALL WRITE_GLVEC_RL( tmpName, ' ', layers_G, 1+Nlayers,
      & -1, myThid )
+      ENDIF
+      ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN

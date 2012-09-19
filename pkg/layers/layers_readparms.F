@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_readparms.F,v 1.5 2011/10/19 01:28:45 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_readparms.F,v 1.6 2012/09/19 18:48:18 gforget Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -23,14 +23,15 @@ C     INPUT PARAMETERS:
 
       NAMELIST /LAYERS_PARM01/
      &       layers_G, layers_taveFreq, layers_diagFreq,
-     &       LAYER_nb, layers_kref, useBOLUS
+     &       LAYER_nb, layers_kref, useBOLUS, layers_bolus,
+     &       layers_name, layers_bounds, layers_krho
 
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
 C     iUnit       - Work variable for IO unit number
 C     k           - index
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit, k
+      INTEGER iUnit, k, iLa
 
       _BEGIN_MASTER(myThid)
 
@@ -40,12 +41,22 @@ C     The MNC stuff is not working yet
       layers_MNC = .FALSE.
       layers_MDSIO = .TRUE.
 
+      DO iLa=1,layers_maxNum
+        layers_name(iLa) = ' '
+        layers_num(iLa) = 0
+        layers_krho(iLa)= 1
+        layers_bolus(iLa) = .TRUE.
+        DO k=1,Nlayers+1
+          layers_bounds(k,iLa) = UNSET_RL
+        ENDDO
+      ENDDO
+      
       DO k=1,Nlayers+1
         layers_G(k) = UNSET_RL
       ENDDO
       layers_taveFreq = taveFreq
       layers_diagFreq = dumpFreq
-      LAYER_nb = 1
+      LAYER_nb = 0
       layers_kref = 1
       useBOLUS = .TRUE.
 
@@ -57,6 +68,7 @@ C     The MNC stuff is not working yet
      O                     iUnit,
      I                     myThid )
 
+
 C     Read parameters from open data file
       READ(UNIT=iUnit,NML=LAYERS_PARM01)
       WRITE(msgBuf,'(A)')
@@ -66,22 +78,70 @@ C     Read parameters from open data file
 C     Close the open data file
       CLOSE(iUnit)
 
-C--   Make sure the layers_G we just read is big enough
+c revert to old approach
+c (unless I simply retore the old ways, I need a 
+c  print statement or two as I override the new way)
+      IF ( LAYER_nb.NE.0 ) THEN
+        layers_num(1) = LAYER_nb
+        layers_krho(1) = layers_kref
+        layers_bolus(iLa) = useBOLUS
+        DO k=1,Nlayers+1
+          layers_bounds(k,1) = layers_G(k)
+        ENDDO
+        DO iLa=2,layers_maxNum
+          layers_num(iLa) = 0
+          layers_name(iLa) = ' '
+          layers_krho(iLa) = 1
+          layers_bolus(iLa) = .TRUE.
+          DO k=1,Nlayers+1
+            layers_bounds(k,iLa) = UNSET_RL
+          ENDDO
+        ENDDO
+      ENDIF
+
+C--   ensure layers_name/layers_num setup consistency
+      DO iLa=1,layers_maxNum
+        IF ( ( layers_name(iLa).EQ.'TH' ).OR.
+     &       ( layers_num(iLa).EQ.1 ) ) THEN
+          layers_name(iLa)='TH'
+          layers_num(iLa)=1
+        ELSEIF ( ( layers_name(iLa).EQ.'SLT' ).OR.
+     &       ( layers_num(iLa).EQ.2 ) ) THEN
+          layers_name(iLa)='SLT'
+          layers_num(iLa)=2
+        ELSEIF ( ( layers_name(iLa).EQ.'RHO' ).OR.
+     &       ( layers_num(iLa).EQ.3 ) ) THEN
+          layers_name(iLa)='RHO'
+          layers_num(iLa)=3
+        ELSE
+          layers_name(iLa)=' '
+          layers_num(iLa)=0
+        ENDIF  
+      ENDDO
+      
+C--   Make sure the layers_bounds we just read is big enough
+      DO iLa=1,layers_maxNum
+      IF ( layers_num(iLa).NE.0 ) THEN
       DO k=1,Nlayers+1
-        IF ( layers_G(k) .EQ. UNSET_RL ) THEN
-          WRITE(msgBuf,'(A,I4)')
-     &        'S/R LAYERS_READPARMS: No value for layers_G at k =', k
+        IF ( layers_bounds(k,iLa) .EQ. UNSET_RL ) THEN
+          WRITE(msgBuf,'(2A,I4)')
+     &        'S/R LAYERS_READPARMS: ',
+     &        'No value for layers_bounds at k =', k
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R LAYERS_READPARMS'
         ELSE IF ( k .EQ. 1 ) THEN
 C         Do nothing
-        ELSE IF ( layers_G(k) .LE. layers_G(k-1) ) THEN
-C         Check to make sure layers_G is increasing
-          WRITE(msgBuf,'(A,I4)')
-     &      'S/R LAYERS_READPARMS: layers_G is not increasing at k =', k
+        ELSE IF ( layers_bounds(k,iLa) .LE. 
+     &            layers_bounds(k-1,iLa) ) THEN
+C         Check to make sure layers_bounds is increasing
+          WRITE(msgBuf,'(2A,I4)')
+     &      'S/R LAYERS_READPARMS: ',
+     &      'layers_bounds is not increasing at k =', k
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R LAYERS_READPARMS'
         ENDIF
+      ENDDO
+      ENDIF
       ENDDO
 
 C--   Make sure that we locally honor the global MNC on/off flag

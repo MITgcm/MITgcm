@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_diagnostics_init.F,v 1.1 2012/09/18 21:30:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_diagnostics_init.F,v 1.2 2012/09/19 18:48:18 gforget Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -29,6 +29,7 @@ C  INPUT/OUTPUT PARAMETERS:
 C     myThid ::  my Thread Id number
       INTEGER myThid
 
+      INTEGER        iLa
       INTEGER        diagNum
       INTEGER        diagMate
       CHARACTER*8    diagName
@@ -41,9 +42,12 @@ C     myThid ::  my Thread Id number
       IF ( useDiagnostics ) THEN
 
       diagNum=ndiagt
-      
+
+      DO iLa=1,layers_maxNum
+      IF ( layers_num(iLa).NE.0 ) THEN      
+
 #ifdef LAYERS_UFLUX
-      diagName  = 'LaUH    '
+      WRITE(diagName,'(A4,I1,A3)') 'LaUH',iLa,layers_name(iLa)
       diagTitle = 'Layer Integrated U (UH in m2/s)'
       diagUnits = 'm2/s             '
       diagCode  = 'UU      MX      '
@@ -54,7 +58,7 @@ C     myThid ::  my Thread Id number
 #endif
 
 #ifdef LAYERS_VFLUX
-      diagName  = 'LaVH    '
+      WRITE(diagName,'(A4,I1,A3)') 'LaVH',iLa,layers_name(iLa)
       diagTitle = 'Layer Integrated V (VH m2/s)'
       diagUnits = 'm2/s             '
       diagCode  = 'VV      MX      '
@@ -66,7 +70,7 @@ C     myThid ::  my Thread Id number
 
 #ifdef LAYERS_THICKNESS
 #ifdef LAYERS_UFLUX
-      diagName  = 'LaHw    '
+      WRITE(diagName,'(A4,I1,A3)') 'LaHw',iLa,layers_name(iLa)
       diagTitle = 'Layer Thickness at U points (m)'
       diagUnits = 'm             '
       diagCode  = 'UU      MX      '
@@ -77,7 +81,7 @@ C     myThid ::  my Thread Id number
 #endif
 
 #ifdef LAYERS_VFLUX
-      diagName  = 'LaHs    '
+      WRITE(diagName,'(A4,I1,A3)') 'LaHs',iLa,layers_name(iLa)
       diagTitle = 'Layer Thickness at V points (m)'
       diagUnits = 'm             '
       diagCode  = 'VV      MX      '
@@ -87,6 +91,9 @@ C     myThid ::  my Thread Id number
       CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
 #endif
 #endif
+
+      ENDIF
+      ENDDO
 
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.7 2012/09/18 21:30:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.8 2012/09/19 18:48:18 gforget Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -45,6 +45,7 @@ C     == Local variables ==
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
       CHARACTER*(MAX_LEN_MBUF) suff
+      INTEGER iLa
 #ifdef ALLOW_TIMEAVE
       INTEGER bi, bj
 #endif
@@ -59,6 +60,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &  CALL LAYERS_DIAGNOSTICS_FILL( myThid )
 #endif
 
+#ifdef ALLOW_LAYERS_OUTPUT
+
+cgf layers_maxNum loop and dimension would be needed for
+cgf the following and tave output to work beyond iLa.EQ.1
+      DO iLa=1,layers_maxNum
+      IF ( layers_num(iLa).EQ.1 ) THEN      
+
 #ifdef ALLOW_MNC
       IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
         pf(1:1) = 'D'
@@ -70,6 +78,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( DIFFERENT_MULTIPLE(layers_diagFreq,myTime,deltaTClock)
      &  .AND. myIter .GT. 0 ) THEN
 
+cgf this needs layers_maxNum loop
         IF ( layers_MDSIO ) THEN
           WRITE(suff,'(I10.10)') myIter
 #ifdef LAYERS_UFLUX
@@ -89,7 +98,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 #ifdef LAYERS_PRHO_REF
-       IF (LAYER_nb .EQ. 3) THEN
+       IF (layers_num(1) .EQ. 3) THEN
             CALL WRITE_FLD_3D_RL( 'layers_prho.', suff, Nr,
      &                             prho, myIter, myThid )
        ENDIF
@@ -158,7 +167,7 @@ C      Normalize by integrated time
 #endif /* LAYERS_VFLUX */
 
 #ifdef LAYERS_PRHO_REF
-       IF (LAYER_nb .EQ. 3) THEN
+       IF (layers_num(1) .EQ. 3) THEN
           CALL TIMEAVE_NORMALIZE( prho_tave, layers_timeave,
      &                            Nr, bi, bj, myThid )
        ENDIF
@@ -187,7 +196,7 @@ C      Normalize by integrated time
 #endif /* LAYERS_VFLUX */
 
 #ifdef LAYERS_PRHO_REF
-      IF (LAYER_nb .EQ. 3) THEN
+      IF (layers_num(1) .EQ. 3) THEN
          CALL WRITE_FLD_3D_RL( 'layers_prho-tave.', suff, Nr,
      &                          prho_tave, myIter, myThid )
       ENDIF
@@ -217,7 +226,7 @@ C      Reset averages to zero
 #endif /* LAYERS_VFLUX */
 
 #ifdef LAYERS_PRHO_REF
-          IF (LAYER_nb .EQ. 3) THEN
+          IF (layers_num(1) .EQ. 3) THEN
           CALL TIMEAVE_RESET(prho_tave,Nr,bi,bj,myThid)
           ENDIF
 #endif /* LAYERS_PRHO_REF */
@@ -231,6 +240,11 @@ C--   end of bloc: if time is a multiple of layers_taveFreq
 
       ENDIF
 #endif /* ALLOW_TIMEAVE */
+
+      ENDIF !IF ( layers_num(iLa).EQ.1 ) THEN      
+      ENDDO !DO iLa=1,layers_maxNum
+
+#endif /* ALLOW_LAYERS_OUTPUT */
 
 #endif /* ALLOW_LAYERS */
 

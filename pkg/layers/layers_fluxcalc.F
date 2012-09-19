@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.1 2012/09/18 23:02:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.2 2012/09/19 18:48:18 gforget Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -10,7 +10,7 @@ CBOP 0
 C !ROUTINE: LAYERS_FLUXCALC
 C !INTERFACE:
       SUBROUTINE LAYERS_FLUXCALC(
-     I                  uVel,vVel,tracer,tracer_G,
+     I                  uVel,vVel,tracer,iLa,
      O                  UH,VH,Hw,Hs,
      I                  myThid )
 
@@ -42,7 +42,7 @@ C      UH   :: U integrated over layer (m^2/s)
 C      VH   :: V integrated over layer (m^2/s)
 C      Hw   :: Layer thickness at the U point (m)
 C      Hs   :: Layer thickness at the V point (m)
-C      tracer_G :: boundaries of tracer layers
+C      iLa  :: layer coordinate index
       INTEGER myThid
       _RL uVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL vVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -51,7 +51,7 @@ C      tracer_G :: boundaries of tracer layers
       _RL VH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL Hw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL Hs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL tracer_G(nLayers+1)
+      INTEGER iLa
 CEOP
 
 #ifdef ALLOW_LAYERS
@@ -61,10 +61,10 @@ C     bi, bj   :: tile indices
 C     i,j      :: horizontal indices
 C     k        :: vertical index for model grid
 C     kci      :: index from CellIndex
-C     kg       :: index for looping though tracer_G
+C     kg       :: index for looping though layers_bounds
 C     kk       :: vertical index for ZZ (fine) grid
 C     kgu,kgv  :: vertical index for isopycnal grid
-C     prho     :: potential density referenced to layers_kref pressure
+C     prho     :: potential density referenced to layers_krho pressure
 C     TatV     :: temperature at U point
 C     TatV     :: temperature at V point
 
@@ -132,32 +132,32 @@ C ------ Find theta at the U point (west) on the fine Z grid
 
 C ------ Now that we know T everywhere, determine the binning.
 
-         IF (TatU .GE. tracer_G(Nlayers)) THEN
+         IF (TatU .GE. layers_bounds(Nlayers,iLa)) THEN
 C        the point is in the hottest bin or hotter
           kgu(i,j) = Nlayers
-         ELSE IF (TatU .LT. tracer_G(2)) THEN
+         ELSE IF (TatU .LT. layers_bounds(2,iLa)) THEN
 C        the point is in the coldest bin or colder
           kgu(i,j) = 1
-         ELSE IF ( (TatU .GE. tracer_G(kgu(i,j)))
-     &    .AND. (TatU .LT. tracer_G(kgu(i,j)+1)) ) THEN
+         ELSE IF ( (TatU .GE. layers_bounds(kgu(i,j),iLa))
+     &    .AND. (TatU .LT. layers_bounds(kgu(i,j)+1,iLa)) ) THEN
 C        already on the right bin -- do nothing
-         ELSE IF (TatU .GE. tracer_G(kgu(i,j))) THEN
+         ELSE IF (TatU .GE. layers_bounds(kgu(i,j),iLa)) THEN
 C        have to hunt for the right bin by getting hotter
-          DO WHILE (TatU .GE. tracer_G(kgu(i,j)+1))
+          DO WHILE (TatU .GE. layers_bounds(kgu(i,j)+1,iLa))
            kgu(i,j) = kgu(i,j) + 1
           ENDDO
-C         now tracer_G(kgu(i,j)+1) < TatU <= tracer_G(kgu(i,j)+1)
-         ELSE IF (TatU .LT. tracer_G(kgu(i,j)+1)) THEN
+C         now layers_bounds(kgu(i,j)+1,iLa) < TatU <= layers_bounds(kgu(i,j)+1,iLa)
+         ELSE IF (TatU .LT. layers_bounds(kgu(i,j)+1,iLa)) THEN
 C        have to hunt for the right bin by getting colder
-          DO WHILE (TatU .LT. tracer_G(kgu(i,j)))
+          DO WHILE (TatU .LT. layers_bounds(kgu(i,j),iLa))
            kgu(i,j) = kgu(i,j) - 1
           ENDDO
-C         now tracer_G(kgu(i,j)+1) <= TatU < tracer_G(kgu(i,j)+1)
+C         now layers_bounds(kgu(i,j)+1,iLa) <= TatU < layers_bounds(kgu(i,j)+1,iLa)
          ELSE
 C        that should have covered all the options
-          WRITE(msgBuf,'(A,1E14.6)')
-     &     'S/R LAYERS_CALC: Couldnt find a bin in tracer_G for TatU=',
-     &     TatU
+          WRITE(msgBuf,'(2A,1E14.6)')
+     &     'S/R LAYERS_CALC: Couldnt find a bin in ',
+     &     'layers_bounds for TatU=',TatU
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R LAYERS_INIT_FIXED'
          ENDIF
@@ -168,7 +168,7 @@ C ------ Augment the bin values
      &    dZZf(kk) * uVel(i,j,kci,bi,bj) * hFacW(i,j,kci,bi,bj)
 
 #ifdef ALLOW_GMREDI
-         IF ( GM_AdvForm .AND. useBOLUS ) THEN
+         IF ( GM_AdvForm .AND. layers_bolus(iLa) ) THEN
            kcip1 = MIN(kci+1,Nr)
            maskp1 = 1.
            IF (kci.GE.Nr) maskp1 = 0.
@@ -178,7 +178,7 @@ C ------ Augment the bin values
      &      UH(i,j,kgu(i,j),bi,bj)
      &      + delPsi*recip_drF(kci)*_recip_hFacW(i,j,kci,bi,bj)
      &      * dZZf(kk)*hFacW(i,j,kci,bi,bj)
-         ELSEIF ( useBOLUS .AND. .NOT. GM_AdvForm ) THEN
+         ELSEIF ( layers_bolus(iLa) .AND. .NOT. GM_AdvForm ) THEN
            kcip1 = MIN(kci+1,Nr)
            maskp1 = 1.
            IF (kci.GE.Nr) maskp1 = 0.
@@ -206,54 +206,34 @@ C ------ Find theta at the V point (south) on the fine Z grid
      &    0.5 _d 0 * (tracer(i,j-1,k,bi,bj)+tracer(i,j,k,bi,bj)) +
      &    (1-MapFact(kk)) *
      &    0.5 _d 0 * (tracer(i,j-1,kp1,bi,bj)+tracer(i,j,kp1,bi,bj))
-C          IF (LAYER_nb .EQ. 1) THEN
-C C        Use theta to determine layers.
-C          TatV = MapFact(kk) *
-C      &    0.5 _d 0 * (theta(i,j-1,k,bi,bj)+theta(i,j,k,bi,bj)) +
-C      &    (1-MapFact(kk)) *
-C      &    0.5 _d 0 * (theta(i,j-1,kp1,bi,bj)+theta(i,j,kp1,bi,bj))
-C          ELSEIF (LAYER_nb .EQ. 2) THEN
-C C        Use salinity to determine layers.
-C          TatV = MapFact(kk) *
-C      &    0.5 _d 0 * (salt(i,j-1,k,bi,bj)+salt(i,j,k,bi,bj)) +
-C      &    (1-MapFact(kk)) *
-C      &    0.5 _d 0 * (salt(i,j-1,kp1,bi,bj)+salt(i,j,kp1,bi,bj))
-C #ifdef LAYERS_PRHO_REF
-C          ELSEIF (LAYER_nb .EQ. 3)THEN
-C C        Use potential density to determine layers.
-C          TatV = MapFact(kk) *
-C      &    0.5 _d 0 * (prho(i,j-1,k,bi,bj)+prho(i,j,k,bi,bj)) +
-C      &    (1-MapFact(kk)) *
-C      &    0.5 _d 0 * (prho(i,j-1,kp1,bi,bj)+prho(i,j,kp1,bi,bj))
-C #endif
-C         ENDIF
 
 C ------ Now that we know T everywhere, determine the binning
-         IF (TatV .GE. tracer_G(Nlayers)) THEN
+         IF (TatV .GE. layers_bounds(Nlayers,iLa)) THEN
 C         the point is in the hottest bin or hotter
           kgv(i,j) = Nlayers
-         ELSE IF (TatV .LT. tracer_G(2)) THEN
+         ELSE IF (TatV .LT. layers_bounds(2,iLa)) THEN
 C         the point is in the coldest bin or colder
           kgv(i,j) = 1
-         ELSE IF ( (TatV .GE. tracer_G(kgv(i,j)))
-     &    .AND. (TatV .LT. tracer_G(kgv(i,j)+1)) ) THEN
+         ELSE IF ( (TatV .GE. layers_bounds(kgv(i,j),iLa))
+     &    .AND. (TatV .LT. layers_bounds(kgv(i,j)+1,iLa)) ) THEN
 C         already on the right bin -- do nothing
-         ELSE IF (TatV .GE. tracer_G(kgv(i,j))) THEN
+         ELSE IF (TatV .GE. layers_bounds(kgv(i,j),iLa)) THEN
 C         have to hunt for the right bin by getting hotter
-          DO WHILE (TatV .GE. tracer_G(kgv(i,j)+1))
+          DO WHILE (TatV .GE. layers_bounds(kgv(i,j)+1,iLa))
            kgv(i,j) = kgv(i,j) + 1
           ENDDO
-C         now tracer_G(kgv(i,j)+1) < TatV <= tracer_G(kgv(i,j)+1)
-         ELSE IF (TatV .LT. tracer_G(kgv(i,j)+1)) THEN
+C         now layers_bounds(kgv(i,j)+1,iLa) < TatV <= layers_bounds(kgv(i,j)+1,iLa)
+         ELSE IF (TatV .LT. layers_bounds(kgv(i,j)+1,iLa)) THEN
 C         have to hunt for the right bin by getting colder
-          DO WHILE (TatV .LT. tracer_G(kgv(i,j)))
+          DO WHILE (TatV .LT. layers_bounds(kgv(i,j),iLa))
            kgv(i,j) = kgv(i,j) - 1
           ENDDO
-C         now tracer_G(kgv(i,j)+1) <= TatV < tracer_G(kgv(i,j)+1)
+C         now layers_bounds(kgv(i,j)+1,iLa) <= TatV < layers_bounds(kgv(i,j)+1,iLa)
          ELSE
 C         that should have covered all the options
-          WRITE(msgBuf,'(A,1E14.6)')
-     &     'S/R LAYERS_CALC: Couldnt find a bin in tracer_G for TatV=',
+          WRITE(msgBuf,'(2A,1E14.6)')
+     &     'S/R LAYERS_CALC: Couldnt find a bin in ',
+     &     'layers_bounds for TatV=',
      &     TatV
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R LAYERS_INIT_FIXED'
@@ -265,7 +245,7 @@ C ------ Augment the bin values
      &    + dZZf(kk) * vVel(i,j,kci,bi,bj) * hFacS(i,j,kci,bi,bj)
 
 #ifdef ALLOW_GMREDI
-         IF ( GM_AdvForm .AND. useBOLUS ) THEN
+         IF ( GM_AdvForm .AND. layers_bolus(iLa) ) THEN
            kcip1 = MIN(kci+1,Nr)
            maskp1 = 1.
            IF (kci.GE.Nr) maskp1 = 0.
@@ -275,7 +255,7 @@ C ------ Augment the bin values
      &      VH(i,j,kgv(i,j),bi,bj)
      &      + delPsi*recip_drF(kci)*_recip_hFacS(i,j,kci,bi,bj)
      &      * dZZf(kk)*hFacS(i,j,kci,bi,bj)
-         ELSEIF ( useBOLUS .AND. .NOT. GM_AdvForm ) THEN
+         ELSEIF ( layers_bolus(iLa) .AND. .NOT. GM_AdvForm ) THEN
            kcip1 = MIN(kci+1,Nr)
            maskp1 = 1.
            IF (kci.GE.Nr) maskp1 = 0.

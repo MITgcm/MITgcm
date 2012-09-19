@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_varia.F,v 1.2 2009/12/28 02:39:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_varia.F,v 1.3 2012/09/19 18:48:18 gforget Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -25,8 +25,10 @@ C     myThid ::  my Thread Id number
 #ifdef ALLOW_LAYERS
 
 C     === Local variables ===
-      INTEGER i,j,kg,bi,bj
+      INTEGER i,j,kg,bi,bj,iLa
 
+      DO iLa=1,layers_maxNum
+      
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
@@ -36,16 +38,16 @@ C     Loop through 3D variables:
           DO i=1-Olx,sNx+Olx
 
 #ifdef LAYERS_UFLUX
-           layers_UFlux(i,j,kg,bi,bj) = 0. _d 0
+           layers_UFlux(i,j,kg,bi,bj,iLa) = 0. _d 0
 #ifdef LAYERS_THICKNESS
-           layers_HU(i,j,kg,bi,bj) = 0. _d 0
+           layers_HU(i,j,kg,bi,bj,iLa) = 0. _d 0
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_UFLUX */
 
 #ifdef LAYERS_VFLUX
-           layers_VFlux(i,j,kg,bi,bj) = 0. _d 0
+           layers_VFlux(i,j,kg,bi,bj,iLa) = 0. _d 0
 #ifdef LAYERS_THICKNESS
-           layers_HV(i,j,kg,bi,bj) = 0. _d 0
+           layers_HV(i,j,kg,bi,bj,iLa) = 0. _d 0
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 
@@ -53,7 +55,11 @@ C     Loop through 3D variables:
          ENDDO
         ENDDO
 
+#ifdef ALLOW_LAYERS_OUTPUT
 #ifdef ALLOW_TIMEAVE
+cgf layers_maxNum loop and dimension would be needed for
+cgf the following and tave output to work beyond iLa.EQ.1
+      IF ( iLa.EQ.1 ) THEN
 C     Initialize averages to zero
         layers_TimeAve(bi,bj) = 0. _d 0
 
@@ -70,12 +76,14 @@ C     Initialize averages to zero
         CALL TIMEAVE_RESET(layers_HV_T,Nlayers,bi,bj,myThid)
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
-
+      ENDIF !IF ( iLa.EQ.1 ) THEN
 #endif /* ALLOW_TIMEAVE */
+#endif /* ALLOW_LAYERS_OUTPUT */
 
 C- end bi,bj loops
        ENDDO
       ENDDO
+      ENDDO !DO iLa=1,layers_maxNum
 
 #endif /* ALLOW_LAYERS */
 
