@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.240 2012/09/08 20:16:23 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.241 2012/09/19 20:46:03 utke Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -2712,8 +2712,6 @@ fi
 cat >>$MAKEFILE <<EOF
 # Unix ln (link)
 LN = ${LN}
-# C preprocessor
-CPP = cat \$< | ${S64} | ${CPP}
 # Dependency generator
 MAKEDEPEND = ${MAKEDEPEND}
 # Special preprocessor (KAP on DECs, FPP on Crays)
@@ -2896,16 +2894,19 @@ cat >>$MAKEFILE <<EOF
 ## This nullifies any default implicit rules concerning these two file types:
 ## %.o : %.F
 
+# C preprocessing and replacing the _d in constants: 
+CPPCMD = cat \$< | ${CPP} \$(DEFINES) \$(INCLUDES) | ${S64}
+
 .F.$FS:
-	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
+	\$(CPPCMD)  > \$@
 .$FS.o:
 	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
 .F.o:
 	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
 .F90.$FS90:
-	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
+	\$(CPPCMD)  > \$@
 .FF90.f$FS90:
-	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
+	\$(CPPCMD)  > \$@
 .$FS90.o:
 	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$<
 .f$FS90.o:
@@ -2914,11 +2915,11 @@ cat >>$MAKEFILE <<EOF
 .c.o:
 	\$(CC) \$(CFLAGS) \$(DEFINES) \$(INCLUDES) -c \$<
 .flow.flowdir:
-	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
+	\$(CPPCMD) > \$@
 
 # Special exceptions that use the ( .F - .p - .$FS - .o ) rule-chain
 .F.p:
-	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
+	\$(CPPCMD) > \$@
 .p.$FS:
 	\$(KPP) \$(KFLAGS1)\$@ \$(KFLAGS2) \$<
 

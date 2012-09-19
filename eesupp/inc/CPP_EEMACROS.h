@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.23 2010/08/12 21:38:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.24 2012/09/19 20:46:03 utke Exp $
 C $Name:  $
 
 CBOP
@@ -204,11 +204,9 @@ C     Sun compilers do not use 8-byte precision for literals
 C     unless .Dnn is specified. CRAY vector machines use 16-byte
 C     precision when they see .Dnn which runs very slowly!
 #ifdef REAL_D0_IS_16BYTES
-#define _d E
 #define _F64( a ) a
 #endif
 #ifndef REAL_D0_IS_16BYTES
-#define _d D
 #define _F64( a ) DFLOAT( a )
 #endif
 
