@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_diagnostics_init.F,v 1.2 2012/09/19 18:48:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_diagnostics_init.F,v 1.3 2012/09/19 22:46:56 gforget Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -51,7 +51,11 @@ C     myThid ::  my Thread Id number
       diagTitle = 'Layer Integrated U (UH in m2/s)'
       diagUnits = 'm2/s             '
       diagCode  = 'UU      MX      '
+#ifdef LAYERS_VFLUX
       diagMate  = diagNum + 2
+#else
+      diagMate  = 0
+#endif
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
       CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
@@ -62,7 +66,11 @@ C     myThid ::  my Thread Id number
       diagTitle = 'Layer Integrated V (VH m2/s)'
       diagUnits = 'm2/s             '
       diagCode  = 'VV      MX      '
+#ifdef LAYERS_UFLUX
       diagMate  = diagNum
+#else
+      diagMate  = 0
+#endif
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
       CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
@@ -74,7 +82,11 @@ C     myThid ::  my Thread Id number
       diagTitle = 'Layer Thickness at U points (m)'
       diagUnits = 'm             '
       diagCode  = 'UU      MX      '
+#ifdef LAYERS_VFLUX
       diagMate  = diagNum + 2
+#else
+      diagMate  = 0
+#endif
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
       CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
@@ -85,7 +97,11 @@ C     myThid ::  my Thread Id number
       diagTitle = 'Layer Thickness at V points (m)'
       diagUnits = 'm             '
       diagCode  = 'VV      MX      '
+#ifdef LAYERS_UFLUX
       diagMate  = diagNum
+#else
+      diagMate  = 0
+#endif
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
       CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/Attic/layers_diagnostics_fill.F,v 1.2 2012/09/19 18:48:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/Attic/layers_diagnostics_fill.F,v 1.3 2012/09/19 22:46:56 gforget Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -45,7 +45,7 @@ C     myThid ::  my Thread Id number
 # endif
 #endif
 
-#ifdef LAYERS_UFLUX
+#ifdef LAYERS_VFLUX
          WRITE(diagName,'(A4,I1,A3)') 'LaVH',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_VFlux(1-OLx,1-OLy,1,1,1,iLa),
      &                          diagName,0,Nlayers, 0, 1, 1, myThid )
