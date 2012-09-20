@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_seaice.F,v 1.11 2012/09/18 20:09:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_seaice.F,v 1.12 2012/09/20 19:04:46 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -287,6 +287,13 @@ C     Western Boundary
 
        ENDDO
       ENDDO
+
+#ifdef ALLOW_OBCS_SEAICE_SPONGE
+      IF ( useSeaiceSponge ) THEN
+       CALL OBCS_SEAICE_SPONGE_A( myThid )
+       CALL OBCS_SEAICE_SPONGE_H( myThid )
+      ENDIF
+#endif /* ALLOW_OBCS_SEAICE_SPONGE */
 
 #endif /* defined (ALLOW_OBCS) && defined (ALLOW_SEAICE) */
 

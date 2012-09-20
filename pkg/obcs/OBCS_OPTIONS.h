@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_OPTIONS.h,v 1.14 2012/09/18 17:52:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_OPTIONS.h,v 1.15 2012/09/20 19:04:46 dimitri Exp $
 C $Name:  $
 
 C CPP options file for OBCS package
@@ -30,6 +30,9 @@ C Enable OB conditions following Stevens (1990)
 
 C This includes hooks to sponge layer treatment of uvel, vvel
 #undef ALLOW_OBCS_SPONGE
+
+C Include hooks to sponge layer treatment of pkg/seaice variables
+#undef ALLOW_OBCS_SEAICE_SPONGE
 
 C balance barotropic velocity
 #define ALLOW_OBCS_BALANCE

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.42 2012/09/19 19:12:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.43 2012/09/20 19:04:46 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -142,7 +142,8 @@ C     retired parameters
      &          OBCS_u1_adv_Tr,
      &          OBNptrFile,OBSptrFile,OBEptrFile,OBWptrFile,
 #endif
-     &          useOBCSsponge, useOBCSbalance, useOBCSprescribe,
+     &          useOBCSsponge, useSeaiceSponge,
+     &          useOBCSbalance, useOBCSprescribe,
      &          OBCS_balanceFacN, OBCS_balanceFacS,
      &          OBCS_balanceFacE, OBCS_balanceFacW,
      &          useOBCSYearlyFields, OBCSfixTopo,
@@ -165,6 +166,12 @@ C     retired parameters
      &          TrelaxStevens,SrelaxStevens,
      &          useStevensPhaseVel,useStevensAdvection
 #endif /* ALLOW_OBCS_STEVENS */
+#ifdef ALLOW_OBCS_SEAICE_SPONGE
+      NAMELIST /OBCS_PARM05/
+     &          Arelaxobcsinner,Arelaxobcsbound,
+     &          Hrelaxobcsinner,Hrelaxobcsbound,
+     &          seaiceSpongeThickness
+#endif 
 
       _BEGIN_MASTER(myThid)
 
@@ -204,6 +211,7 @@ C--   Default flags and values for OBCS
       useStevensPhaseVel =.TRUE.
       useStevensAdvection=.TRUE.
       useOBCSsponge      =.FALSE.
+      useSeaiceSponge    =.FALSE.
       useOBCSbalance     =.FALSE.
       OBCS_balanceFacN   = 1. _d 0
       OBCS_balanceFacS   = 1. _d 0
@@ -340,6 +348,17 @@ CML      Vrelaxobcsbound = 1. _d 0
       IF (      useStevensNorth .OR. useStevensSouth
      &     .OR. useStevensEast  .OR. useStevensWest  )
      & READ(UNIT=iUnit,NML=OBCS_PARM04)
+#endif
+#ifdef ALLOW_OBCS_SEAICE_SPONGE
+C     Default seaice sponge layer parameters:
+C     seaice sponge layer is turned off by default
+      seaiceSpongeThickness = 0
+      Arelaxobcsinner = 0. _d 0
+      Arelaxobcsbound = 0. _d 0
+      Hrelaxobcsinner = 0. _d 0
+      Hrelaxobcsbound = 0. _d 0
+      IF (useSeaiceSponge)
+     & READ(UNIT=iUnit,NML=OBCS_PARM05)
 #endif
 
       WRITE(msgBuf,'(A)') ' OBCS_READPARMS: finished reading data.obcs'

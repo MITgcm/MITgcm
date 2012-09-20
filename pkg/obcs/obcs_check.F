@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.29 2012/09/18 19:54:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.30 2012/09/20 19:04:46 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -23,6 +23,7 @@ C     === Global variables ===
 #include "GRID.h"
 #include "OBCS_PARAMS.h"
 #include "OBCS_GRID.h"
+#include "OBCS_SEAICE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -337,6 +338,18 @@ CML       ENDIF
         errCount = errCount + 1
       ENDIF
 #endif /* ALLOW_OBCS_SPONGE */
+
+#ifndef ALLOW_OBCS_SEAICE_SPONGE
+      IF (useSeaiceSponge) THEN
+        WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+     &       'Cannot set useSeaiceSponge=.TRUE. (data.obcs)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'OBCS_CHECK: ',
+     &       'with #undef ALLOW_OBCS_SEAICE_SPONGE (OBCS_OPTIONS.h)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* ALLOW_OBCS_SEAICE_SPONGE */
 
 #ifndef ALLOW_OBCS_BALANCE
       IF ( useOBCSbalance ) THEN
