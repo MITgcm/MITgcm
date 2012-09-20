@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.242 2012/09/20 23:12:47 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/OAD_support/Attic/genmake2,v 1.1 2012/09/20 23:12:48 heimbach Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -1927,6 +1927,7 @@ fi
 
 if test "x${TOOLSDIR}" = x ; then
     TOOLSDIR="$ROOTDIR/tools"
+    OADTOOLS"$TOOLSDIR/OAD_support"
 fi
 if test ! -d ${TOOLSDIR} ; then
     echo "Error: the specified TOOLSDIR (\"$TOOLSDIR\") does not exist!"
@@ -2482,11 +2483,6 @@ if test "x$OPENAD" != x ; then
     OAD_DONT_TRANSFORM="/dev/null"
     OAD_KEEP_ORIGINAL="/dev/null"
     OAD_CB2M_FILES="/dev/null"
-    OADTOOLS="$TOOLSDIR/OAD_support"
-    test -f "oadtempflile"  &&  \rm -f "oadtempflile"
-cat >> "oadtempflile" <<EOF
-$OADTOOLS
-EOF
     echo "  looking for dontCompile file:  "
     for i in "." $MODS ; do
 	if test -r $i"/dontCompile" ; then
@@ -2707,6 +2703,10 @@ DISABLED_PACKAGES = ${DISABLED_PACKAGES}
 
 # These files are created by Makefile
 SPECIAL_FILES = ${PACKAGES_DOT_H} AD_CONFIG.h FC_NAMEMANGLE.h BUILD_INFO.h
+EOF
+
+cat >> "oadtempflile" <<EOF
+$OADTOOLS
 EOF
 
 if test "x$EMBED_SRC" = xt ; then
@@ -3191,16 +3191,16 @@ AD_OBJ_FILES_S2=\$(AD_OBJ_FILES_S1) \$(NON_AD_F77_SRC_FILES:.F=_cb2m.o) \$(C_SRC
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(AD_OBJ_FILES_S2) \$(LIBS)
 
 # create sources files modules from header files containing common blocks
-%_mod.FF90 : %.h \${OADTOOLS}/cb2mGetModules.csh \${OADTOOLS}/cb2mGetModules.awk
-	\${OADTOOLS}/cb2mGetModules.csh $< \${OADTOOLS}/cb2mGetModules.awk
+%_mod.FF90 : %.h \${TOOLSDIR}/OAD_support/cb2mGetModules.csh \${TOOLSDIR}/OAD_support/cb2mGetModules.awk
+	\${TOOLSDIR}/OAD_support/cb2mGetModules.csh $< \${TOOLSDIR}/OAD_support/cb2mGetModules.awk
 
 # create new header files with USE statements for the new modules made above
-%_mod.h : %.h \${OADTOOLS}/cb2mGetHeaders.csh \${OADTOOLS}/cb2mGetHeaders.awk
-	\${OADTOOLS}/cb2mGetHeaders.csh $< \${OADTOOLS}/cb2mGetHeaders.awk \$(CB2M_F90_SRC_NAMES)
+%_mod.h : %.h \${TOOLSDIR}/OAD_support/cb2mGetHeaders.csh \${TOOLSDIR}/OAD_support/cb2mGetHeaders.awk
+	\${TOOLSDIR}/OAD_support/cb2mGetHeaders.csh $< \${TOOLSDIR}/OAD_support/cb2mGetHeaders.awk \$(CB2M_F90_SRC_NAMES)
 
 # change the include directives of everybody to refer to  the new header files with the USE statements
-%_cb2m.FF90 : %.F \${OADTOOLS}/cb2mUseModules.bash
-	\${OADTOOLS}/cb2mUseModules.bash $< ${MPI}
+%_cb2m.FF90 : %.F \${TOOLSDIR}/OAD_support/cb2mUseModules.bash
+	\${TOOLSDIR}/OAD_support/cb2mUseModules.bash $< ${MPI}
 
 # makefile debug rule
 small_f: \$(CB2M_F90_PP_SRC_FILES)
@@ -3222,7 +3222,7 @@ ad_input_code_sf.pre.f90 : \$(CB2M_AD_FILES)
 
 # replace stop statements (to avoid the implied unstructured control flow)  with print statements
 ad_input_code_sf.pre.s2p.f90 : ad_input_code_sf.pre.f90
-	cat \$< | sed -f \${OADTOOLS}/stop2print.sed > ad_input_code_sf.pre.s2p.f90
+	cat \$< | sed -f \${TOOLSDIR}/OAD_support/stop2print.sed > ad_input_code_sf.pre.s2p.f90
 
 # F -> WHIRL
 ad_input_code_sf.pre.s2p.B: ad_input_code_sf.pre.s2p.f90
@@ -3245,13 +3245,13 @@ ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.B
 	\${OPEN64ROOT}/whirl2f/whirl2f -FLIST:ftn_file=\$@ -openad \$<
 
 # insert template directives
-ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90 \${OADTOOLS}/insertTemplateDir.bash
-	\${OADTOOLS}/insertTemplateDir.bash \$< \$@
+ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90 \${TOOLSDIR}/OAD_support/insertTemplateDir.bash
+	\${TOOLSDIR}/OAD_support/insertTemplateDir.bash \$< \$@
 
-PPEXTRAS=\$(wildcard \${OADTOOLS}/ad_template.*.F) \${OADTOOLS}/ad_inline.F
+PPEXTRAS=\$(wildcard \${TOOLSDIR}/OAD_support/ad_template.*.F) \${TOOLSDIR}/OAD_support/ad_inline.F
 # postprocess F'
 postProcess.tag: ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90 \$(PPEXTRAS:.F=.f) | w2f__types.f90
-	\${OPENADFORTTK_BASE}/tools/SourceProcessing/postProcess.py --progress --timing --infoUnitFile w2f__types.f90 --outputFormat=fixed --separateOutput --pathSuffix "" --filenameSuffix "_oad" -m r -i \${OADTOOLS}/ad_inline.f \$<
+	\${OPENADFORTTK_BASE}/tools/SourceProcessing/postProcess.py --progress --timing --infoUnitFile w2f__types.f90 --outputFormat=fixed --separateOutput --pathSuffix "" --filenameSuffix "_oad" -m r -i \${TOOLSDIR}/OAD_support/ad_inline.f \$<
 	# the target is a placeholder to trigger a single execution of the rule
 	touch \$@
 # put this so make knows about the postprocessing output
@@ -3263,9 +3263,9 @@ OAD_intrinsics_oad.f \$(CB2M_AD_FILES:.f$FS90=_oad.f): postProcess.tag
 
 # link the support files:
 \$(OPENAD_SUPPORT_F90_SRC_FILES) \$(OPENAD_SUPPORT_C_SRC_FILES):
-	\$(LN) \${OADTOOLS}/\$@ .
+	\$(LN) \${TOOLSDIR}/OAD_support/\$@ .
 
-AD_CLEAN += *_mod.h *_mod.F90 *.FF90 *.mod-whirl temp.sed oad_cp.* postProcess.tag oadtempflile \$(PPEXTRAS:.F=.f)
+AD_CLEAN += *_mod.h *_mod.F90 *.FF90 *.mod-whirl temp.sed oad_cp.* postProcess.tag \$(PPEXTRAS:.F=.f)
 
 # ============ end OpenAD specific section ==============
 
