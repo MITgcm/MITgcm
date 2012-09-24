@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.176 2012/09/18 21:28:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.177 2012/09/24 15:05:29 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -123,6 +123,8 @@ C     local value (=1/HO or 1/HO_south)
       _RL recip_HO
 C     local value (=1/ice thickness)
       _RL recip_HH
+C     facilitate multi-category snow implementation
+      _RL pFacSnow
 
 C     temporary variables available for the various computations
       _RL tmpscal0, tmpscal1, tmpscal2, tmpscal3, tmpscal4
@@ -165,6 +167,7 @@ C     temporary variables available for the various computations
       _RL ticeInMult          (1:sNx,1:sNy,MULTDIM)
       _RL ticeOutMult         (1:sNx,1:sNy,MULTDIM)
       _RL heffActualMult      (1:sNx,1:sNy,MULTDIM)
+      _RL hsnowActualMult     (1:sNx,1:sNy,MULTDIM)
       _RL a_QbyATMmult_cover  (1:sNx,1:sNy,MULTDIM)
       _RL a_QSWbyATMmult_cover(1:sNx,1:sNy,MULTDIM)
       _RL a_FWbySublimMult    (1:sNx,1:sNy,MULTDIM)
@@ -757,9 +760,12 @@ C--   Start loop over multi-categories
         DO itc=1,SEAICE_multDim
 C        homogeneous distribution between 0 and 2 x heffActual
          pFac = (2.0 _d 0*itc - 1.0 _d 0)*recip_multDim
+         pFacSnow = 1. _d 0
+         IF ( SEAICE_useMultDimSnow ) pFacSnow=pFac
          DO J=1,sNy
           DO I=1,sNx
            heffActualMult(I,J,itc)= heffActual(I,J)*pFac
+           hsnowActualMult(I,J,itc)=hsnowActual(I,J)*pFacSnow
 #ifdef SEAICE_CAP_SUBLIM
            latentHeatFluxMaxMult(I,J,itc) = latentHeatFluxMax(I,J)*pFac
 #endif
@@ -773,6 +779,7 @@ C        homogeneous distribution between 0 and 2 x heffActual
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heffActualMult = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE hsnowActualMult= comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE ticeInMult     = comlev1_bibj, key = iicekey, byte = isbyte
 # ifdef SEAICE_CAP_SUBLIM
 CADJ STORE latentHeatFluxMaxMult
@@ -788,7 +795,7 @@ CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
 
         DO itc=1,SEAICE_multDim
          CALL SEAICE_SOLVE4TEMP(
-     I        UG, heffActualMult(1,1,itc), hsnowActual,
+     I        UG, heffActualMult(1,1,itc), hsnowActualMult(1,1,itc),
 #ifdef SEAICE_CAP_SUBLIM
      I        latentHeatFluxMaxMult(1,1,itc),
 #endif
@@ -801,6 +808,7 @@ CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heffActualMult = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE hsnowActualMult= comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE ticeOutMult    = comlev1_bibj, key = iicekey, byte = isbyte
 # ifdef SEAICE_CAP_SUBLIM
 CADJ STORE latentHeatFluxMaxMult

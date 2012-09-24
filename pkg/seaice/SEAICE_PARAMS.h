@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.94 2012/08/08 22:20:51 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.95 2012/09/24 15:05:29 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -45,6 +45,7 @@ C     useMaykutSatVapPoly :: use Maykut Polynomial for saturation vapor pressure
 C                         instead of extended temp-range exponential law; def=F.
 C     SEAICE_mcPheeStepFunc    :: use step function (not linear tapering) in
 C                           ocean-ice turbulent flux
+C     SEAICE_useMultDimSnow :: use same fixed pdf for snow as for MULITCATEGORY ICE
 C     SEAICE_doOpenWaterGrowth :: use open water heat flux directly to grow ice
 C                           (when false cool ocean, and grow later if needed)
 C     SEAICE_doOpenWaterMelt   :: use open water heat flux directly to melt ice
@@ -73,7 +74,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEadvSnow, SEAICEadvSalt,
      &     SEAICEuseFluxForm, useHB87stressCoupling,
      &     usePW79thermodynamics, useMaykutSatVapPoly,
-     &     SEAICE_mcPheeStepFunc,
+     &     SEAICE_mcPheeStepFunc, SEAICE_useMultDimSnow,
      &     SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
      &     SEAICE_salinityTracer, SEAICE_ageTracer,
      &     SEAICErestoreUnderIce,
@@ -90,7 +91,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEadvSnow, SEAICEadvSalt,
      &     SEAICEuseFluxForm, useHB87stressCoupling,
      &     usePW79thermodynamics, useMaykutSatVapPoly,
-     &     SEAICE_mcPheeStepFunc,
+     &     SEAICE_mcPheeStepFunc, SEAICE_useMultDimSnow,
      &     SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
      &     SEAICE_salinityTracer, SEAICE_ageTracer,
      &     SEAICErestoreUnderIce,
