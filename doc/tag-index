@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1742 2012/09/20 19:04:46 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1743 2012/09/24 15:07:38 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - add "multicategory" parameterization for snow in analogy to ice,
+    default is off for now.
 o pkg/obcs:
   - added obcs_seaice_sponge.F for obcs relaxation of seaice variables;
     see verification/seaice_obcs/input.seaiceSponge for example application.
