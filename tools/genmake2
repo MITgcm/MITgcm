@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.242 2012/09/20 23:12:47 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.243 2012/09/25 21:16:29 utke Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -3265,7 +3265,7 @@ OAD_intrinsics_oad.f \$(CB2M_AD_FILES:.f$FS90=_oad.f): postProcess.tag
 \$(OPENAD_SUPPORT_F90_SRC_FILES) \$(OPENAD_SUPPORT_C_SRC_FILES):
 	\$(LN) \${OADTOOLS}/\$@ .
 
-AD_CLEAN += *_mod.h *_mod.F90 *.FF90 *.mod-whirl temp.sed oad_cp.* postProcess.tag oadtempflile \$(PPEXTRAS:.F=.f)
+AD_CLEAN += *_mod.h *_mod.F90 *.FF90 *.mod-whirl temp.sed oad_cp.* postProcess.tag \$(PPEXTRAS:.F=.f)
 
 # ============ end OpenAD specific section ==============
 
