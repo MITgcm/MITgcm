@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.43 2012/09/20 19:04:46 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.44 2012/09/25 16:39:20 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -168,8 +168,10 @@ C     retired parameters
 #endif /* ALLOW_OBCS_STEVENS */
 #ifdef ALLOW_OBCS_SEAICE_SPONGE
       NAMELIST /OBCS_PARM05/
-     &          Arelaxobcsinner,Arelaxobcsbound,
-     &          Hrelaxobcsinner,Hrelaxobcsbound,
+     &           Arelaxobcsinner, Arelaxobcsbound,
+     &           Hrelaxobcsinner, Hrelaxobcsbound,
+     &          SLrelaxobcsinner,SLrelaxobcsbound,
+     &          SNrelaxobcsinner,SNrelaxobcsbound,
      &          seaiceSpongeThickness
 #endif 
 
@@ -353,12 +355,15 @@ CML      Vrelaxobcsbound = 1. _d 0
 C     Default seaice sponge layer parameters:
 C     seaice sponge layer is turned off by default
       seaiceSpongeThickness = 0
-      Arelaxobcsinner = 0. _d 0
-      Arelaxobcsbound = 0. _d 0
-      Hrelaxobcsinner = 0. _d 0
-      Hrelaxobcsbound = 0. _d 0
-      IF (useSeaiceSponge)
-     & READ(UNIT=iUnit,NML=OBCS_PARM05)
+      Arelaxobcsinner  = 0. _d 0
+      Arelaxobcsbound  = 0. _d 0
+      Hrelaxobcsinner  = 0. _d 0
+      Hrelaxobcsbound  = 0. _d 0
+      SLrelaxobcsinner = 0. _d 0
+      SLrelaxobcsbound = 0. _d 0
+      SNrelaxobcsinner = 0. _d 0
+      SNrelaxobcsbound = 0. _d 0
+      IF (useSeaiceSponge) READ(UNIT=iUnit,NML=OBCS_PARM05)
 #endif
 
       WRITE(msgBuf,'(A)') ' OBCS_READPARMS: finished reading data.obcs'

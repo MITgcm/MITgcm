@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_SEAICE.h,v 1.2 2012/09/20 19:04:46 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_SEAICE.h,v 1.3 2012/09/25 16:39:20 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -26,15 +26,19 @@ C useSeaiceSponge :: turns on seaice sponge layer along boundary (def=false)
      & useSeaiceSponge
       LOGICAL useSeaiceSponge
 
-C A/Hrelaxobcsinner/bound :: relaxation time scale (in seconds) on the boundary
-C                            (bound) and at the innermost grid point of the sponge
-C                            layer (inner); relaxation time scales in-between
+C [A,H,SL,SN]relaxobcs[inner,bound] :: relaxation time scale (in seconds) on the
+C                            boundary (bound) and at the innermost grid point of the
+C                            sponge layer (inner); relaxation time scales in-between
 C                            are linearly interpolated from these values
       COMMON /OBC_SEAICE_PARM_R/
-     &    Arelaxobcsinner, Arelaxobcsbound,
-     &    Hrelaxobcsinner, Hrelaxobcsbound
-      _RS Arelaxobcsinner, Arelaxobcsbound
-      _RS Hrelaxobcsinner, Hrelaxobcsbound
+     &     Arelaxobcsinner,  Arelaxobcsbound,
+     &     Hrelaxobcsinner,  Hrelaxobcsbound,
+     &    SLrelaxobcsinner, SLrelaxobcsbound,
+     &    SNrelaxobcsinner, SNrelaxobcsbound
+      _RS  Arelaxobcsinner,  Arelaxobcsbound
+      _RS  Hrelaxobcsinner,  Hrelaxobcsbound
+      _RS SLrelaxobcsinner, SLrelaxobcsbound
+      _RS SNrelaxobcsinner, SNrelaxobcsbound
 
 C OB[N,S,E,W][u,v,t,s,a,h,sn,sl,uice,vice]File :: Files with boundary conditions,
 C                                                 the letter combinations mean:

@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1743 2012/09/24 15:07:38 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1744 2012/09/25 16:39:20 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  - fixed some indexing bugs in obcs_seaice_sponge.F
+  - added obcs relaxation subroutines for HSALT and HSNOW
+  - changes verification/seaice_obcs/results/obcs_seaice_sponge.F
 o pkg/seaice:
   - add "multicategory" parameterization for snow in analogy to ice,
     default is off for now.

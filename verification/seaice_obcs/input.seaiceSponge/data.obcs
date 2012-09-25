@@ -55,8 +55,12 @@
  &
  &OBCS_PARM05
  seaiceSpongeThickness = 3
- Arelaxobcsinner = 432000.
- Arelaxobcsbound = 43200.
- Hrelaxobcsinner = 432000.
- Hrelaxobcsbound = 43200.
+ Arelaxobcsinner  = 432000.
+ Arelaxobcsbound  = 43200.
+ Hrelaxobcsinner  = 432000.
+ Hrelaxobcsbound  = 43200.
+ SLrelaxobcsinner = 432000.
+ SLrelaxobcsbound = 43200.
+ SNrelaxobcsinner = 432000.
+ SNrelaxobcsbound = 43200.
  &
