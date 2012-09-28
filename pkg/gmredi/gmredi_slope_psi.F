@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.12 2009/12/08 21:42:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.13 2012/09/28 21:12:25 gforget Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -84,8 +84,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       kkey = (igmkey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifndef GMREDI_WITH_STABLE_ADJOINT
-c common case:
 
       IF (GM_taper_scheme.EQ.'orig' .OR.
      &    GM_taper_scheme.EQ.'clipping') THEN
@@ -210,6 +208,7 @@ CADJ STORE dsigmadrW(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE slopex(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
+        IF (GM_taper_scheme.NE.'stableGmAdjTap') THEN
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
           IF ( ABS(SlopeX(i,j)) .GE. slopeCutoff ) THEN
@@ -218,6 +217,7 @@ CADJ STORE slopex(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
           ENDIF
          ENDDO
         ENDDO
+        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE slopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -242,6 +242,7 @@ CADJ STORE dsigmadrS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE slopey(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
+        IF (GM_taper_scheme.NE.'stableGmAdjTap') THEN
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx,sNx+Olx
           IF ( ABS(SlopeY(i,j)) .GE. slopeCutoff ) THEN
@@ -250,7 +251,8 @@ CADJ STORE slopey(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
           ENDIF
          ENDDO
         ENDDO
-
+        ENDIF
+        
 C- Compute the tapering function for the GM+Redi tensor :
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -359,60 +361,17 @@ C-      Large, Danabasoglu and Doney, JPO 1997
          ENDDO
         ENDDO
 
-       ELSEIF (GM_taper_scheme.NE.' ') THEN
-        STOP 'GMREDI_SLOPE_PSI: Bad GM_taper_scheme'
-       ENDIF
+       ELSEIF (GM_taper_scheme.EQ.'stableGmAdjTap') THEN
 
-#endif /* GM_EXCLUDE_TAPERING */
+#ifndef GMREDI_WITH_STABLE_ADJOINT
 
-      ENDIF
-
+        STOP 'Need to compile wth "#define GMREDI_WITH_STABLE_ADJOINT"'
 
 #else  /* GMREDI_WITH_STABLE_ADJOINT */
+
+
 c special choice for adjoint/optimization of parameters
 c (~ strong clipping, reducing non linearity of psi=f(K))
-
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE slopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE dSigmaDrW(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
-#endif
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
-          IF (dSigmaDrW(i,j).GE.-GM_Small_Number)
-     &        dSigmaDrW(i,j) = -GM_Small_Number
-         ENDDO
-        ENDDO
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE dsigmadrW(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
-#endif
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
-          SlopeX(i,j) = -SlopeX(i,j)/dSigmaDrW(i,j)
-          taperX(i,j) = 1. _d 0
-         ENDDO
-        ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE slopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE dSigmaDrS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
-#endif
-
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          IF (dSigmaDrS(i,j).GE.-GM_Small_Number)
-     &        dSigmaDrS(i,j) = -GM_Small_Number
-         ENDDO
-        ENDDO
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE dsigmadrS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
-#endif
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          SlopeY(i,j) = -SlopeY(i,j)/dSigmaDrS(i,j)
-          taperY(i,j) = 1. _d 0
-         ENDDO
-        ENDDO
 
         slopeMaxSpec=1. _d -4
 
@@ -441,8 +400,15 @@ CADJ STORE slopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
        taperY(i,j)=1.
          ENDDO
         ENDDO
-
 #endif /* GMREDI_WITH_STABLE_ADJOINT */
+
+       ELSEIF (GM_taper_scheme.NE.' ') THEN
+        STOP 'GMREDI_SLOPE_PSI: Bad GM_taper_scheme'
+       ENDIF
+
+#endif /* GM_EXCLUDE_TAPERING */
+
+      ENDIF
 
 #endif /* BOLUS_ADVEC */
 #endif /* ALLOW_GMREDI */

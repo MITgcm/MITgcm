@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.33 2009/11/27 14:04:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.34 2012/09/28 21:12:25 gforget Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -145,73 +145,6 @@ CADJ PASSIVE depthz
        ENDDO
       ENDDO
 
-
-#ifdef GMREDI_WITH_STABLE_ADJOINT
-c special choice for adjoint/optimization of parameters
-c (~ strong clipping, reducing non linearity of kw=f(K))
-
-
-#ifdef ALLOW_AUTODIFF_TAMC
-cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
-#endif
-
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-          IF ( dSigmaDr(i,j) .NE. 0. ) THEN
-           IF (dSigmaDr(i,j).GE.(-GM_Small_Number))
-     &         dSigmaDr(i,j) = -GM_Small_Number
-          ENDIF
-         ENDDO
-        ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
-cnostore CADJ STORE dSigmaDx(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
-cnostore CADJ STORE dSigmaDy(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
-cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
-#endif
-
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-          IF ( dSigmaDr(i,j) .EQ. 0. ) THEN
-           IF ( dSigmaDx(i,j) .NE. 0. ) THEN
-            SlopeX(i,j) = SIGN( GM_bigSlope, dSigmaDx(i,j) )
-           ELSE
-            SlopeX(i,j) = 0. _d 0
-           ENDIF
-           IF ( dSigmaDy(i,j) .NE. 0. ) THEN
-            SlopeY(i,j) = SIGN( GM_bigSlope, dSigmaDy(i,j) )
-           ELSE
-            SlopeY(i,j) = 0. _d 0
-           ENDIF
-          ELSE
-           dRdSigmaLtd(i,j) = 1. _d 0 / dSigmaDr(i,j)
-           SlopeX(i,j)=-dSigmaDx(i,j)*dRdSigmaLtd(i,j)
-           SlopeY(i,j)=-dSigmaDy(i,j)*dRdSigmaLtd(i,j)
-          ENDIF
-         ENDDO
-        ENDDO
-
-        slopeMaxSpec=2. _d -3
-
-CADJ STORE SlopeX(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE SlopeY(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
-
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
-        slopeTmpSpec=sqrt( SlopeX(i,j)*SlopeX(i,j)
-     &              +SlopeY(i,j)*SlopeY(i,j) )
-       IF ( slopeTmpSpec .GT. slopeMaxSpec ) then
-        SlopeX(i,j)=SlopeX(i,j)*slopeMaxSpec/slopeTmpSpec
-        SlopeY(i,j)=SlopeY(i,j)*slopeMaxSpec/slopeTmpSpec
-       ENDIF
-          SlopeSqr(i,j) = SlopeX(i,j)*SlopeX(i,j)
-     &                   +SlopeY(i,j)*SlopeY(i,j)
-          taperFct(i,j) = 1. _d 0
-         ENDDO
-        ENDDO
-
-#else  /* GMREDI_WITH_STABLE_ADJOINT */
-c common case:
 
       IF (GM_taper_scheme.EQ.'orig' .OR.
      &    GM_taper_scheme.EQ.'clipping') THEN
@@ -644,6 +577,39 @@ C-      Large, Danabasoglu and Doney, JPO 1997
          ENDDO
         ENDDO
 
+
+       ELSEIF (GM_taper_scheme.EQ.'stableGmAdjTap') THEN
+
+#ifndef GMREDI_WITH_STABLE_ADJOINT
+
+        STOP 'Need to compile wth "#define GMREDI_WITH_STABLE_ADJOINT"'
+
+#else  /* GMREDI_WITH_STABLE_ADJOINT */
+
+c special choice for adjoint/optimization of parameters
+c (~ strong clipping, reducing non linearity of kw=f(K))
+
+        slopeMaxSpec=2. _d -3
+
+CADJ STORE SlopeX(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE SlopeY(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
+
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+        slopeTmpSpec=sqrt( SlopeX(i,j)*SlopeX(i,j)
+     &              +SlopeY(i,j)*SlopeY(i,j) )
+       IF ( slopeTmpSpec .GT. slopeMaxSpec ) then
+        SlopeX(i,j)=SlopeX(i,j)*slopeMaxSpec/slopeTmpSpec
+        SlopeY(i,j)=SlopeY(i,j)*slopeMaxSpec/slopeTmpSpec
+       ENDIF
+          SlopeSqr(i,j) = SlopeX(i,j)*SlopeX(i,j)
+     &                   +SlopeY(i,j)*SlopeY(i,j)
+          taperFct(i,j) = 1. _d 0
+         ENDDO
+        ENDDO
+
+#endif /* GMREDI_WITH_STABLE_ADJOINT */
+
        ELSEIF (GM_taper_scheme.NE.' ') THEN
         STOP 'GMREDI_SLOPE_LIMIT: Bad GM_taper_scheme'
        ENDIF
@@ -651,10 +617,6 @@ C-      Large, Danabasoglu and Doney, JPO 1997
 #endif /* GM_EXCLUDE_TAPERING */
 
       ENDIF
-
-
-#endif /* GMREDI_WITH_STABLE_ADJOINT */
-
 
 #endif /* ALLOW_GMREDI */
 
