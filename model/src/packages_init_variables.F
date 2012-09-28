@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.89 2012/08/22 22:55:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.90 2012/09/28 14:19:35 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -243,12 +243,12 @@ C--   Initialize SEAICE model.
 #endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_STREAMICE
-      IF (useStreamIce) THEN
+cph      IF (useStreamIce) THEN
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('STREAMICE_INIT_VARIA',myThid)
 # endif
        CALL STREAMICE_INIT_VARIA( myThid )
-      ENDIF
+cph      ENDIF
 #endif /* ALLOW_STREAMICE */
 
 #ifdef ALLOW_PTRACERS
