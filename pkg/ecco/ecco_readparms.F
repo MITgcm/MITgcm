@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.58 2012/08/10 19:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.59 2012/09/30 20:33:55 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -48,6 +48,9 @@ c--   Read the namelist input.
      &                   tauxbarfile, tauybarfile,
      &                   hfluxmeanbarfile, sfluxmeanbarfile,
      &                   costTranspDataFile,  topexmeanfile,
+     &                   using_cost_altim, 
+     &                   using_cost_bp, using_cost_scat, 
+     &                   using_cost_sst,
      &                   using_topex, using_ers, using_gfo,
      &                   topexstartdate1, topexstartdate2,
      &                   topexperiod, topexfile, tpTimeMaskFile,
@@ -148,6 +151,31 @@ c--   Read the namelist input.
       _BEGIN_MASTER( myThid )
 
 c--     Set default values.
+
+c run time switches for main cost terms
+#ifdef ALLOW_SSH_COST_CONTRIBUTION
+      using_cost_altim=.TRUE.
+#else
+      using_cost_altim=.FALSE.
+#endif
+#ifdef ALLOW_BP_COST_CONTRIBUTION
+      using_cost_bp=.TRUE.
+#else
+      using_cost_bp=.FALSE.
+#endif
+#ifdef ALLOW_SST_COST_CONTRIBUTION
+      using_cost_sst=.TRUE.
+#else
+      using_cost_sst=.FALSE.
+#endif
+#if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
+     defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
+      using_cost_scat=.TRUE.
+#else
+      using_cost_scat=.FALSE.
+#endif
+
+c other run time parameters
         data_errfile          =    ' '
         tbarfile              =    'tbar'
         sbarfile              =    'sbar'
@@ -163,7 +191,11 @@ c--     Set default values.
         hfluxmeanbarfile      =    'hfluxmeanbar'
         sfluxmeanbarfile      =    'sfluxmeanbar'
         costTranspDataFile    =    ' '
+#ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
+        using_topex           = .true.
+#else
         using_topex           = .false.
+#endif
         topexstartdate1       =      0
         topexstartdate2       =      0
         topexperiod           =      0. _d 0
@@ -171,14 +203,22 @@ c--     Set default values.
         topexslope            =      0. _d 0
         topexfile             =    ' '
         topexmeanfile         =    ' '
+#ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
+        using_ers             = .true.
+#else
         using_ers             = .false.
+#endif
         ersstartdate1         =      0
         ersstartdate2         =      0
         ersperiod             =      0. _d 0
         ersintercept          =      0. _d 0
         ersslope              =      0. _d 0
         ersfile               =    ' '
+#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
+        using_gfo             = .true.
+#else
         using_gfo             = .false.
+#endif
         gfostartdate1         =      0
         gfostartdate2         =      0
         gfoperiod             =      0. _d 0

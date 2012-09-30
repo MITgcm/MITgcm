@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.50 2012/08/28 19:19:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.51 2012/09/30 20:33:55 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -75,6 +75,8 @@ c     == local variables ==
       logical lwsalt2InUse
       logical lwthetaLevInUse
       logical lwsaltLevInUse
+
+      logical  exst
 
 c     == external ==
 
@@ -264,6 +266,9 @@ c--   Read error information and set up weight matrices.
       _BEGIN_MASTER(myThid)
         ilo = ifnblnk(data_errfile)
         ihi = ilnblnk(data_errfile)
+
+        inquire( file=data_errfile, exist=exst )
+        if (exst) then
         CALL OPEN_COPY_DATA_FILE(
      I                          data_errfile(ilo:ihi),
      I                          'ECCO_COST_WEIGHTS',
@@ -281,6 +286,7 @@ c--   Read error information and set up weight matrices.
 #endif
         end do
         close(gwunit)
+        endif
 
       _END_MASTER(myThid)
 
@@ -530,7 +536,7 @@ c--           Test for missing values.
 #endif
 
 #if (defined (ALLOW_SST_COST_CONTRIBUTION) || defined (ALLOW_SST_CONTROL))
-      if ( ssterrfile .NE. ' ' )
+      if ( ( using_cost_sst ).AND.( ssterrfile .NE. ' ' ) )
      &   call mdsreadfield( ssterrfile, 32, 'RL', 1, wsst, 1,
      &                      mythid)
 #endif
@@ -548,7 +554,7 @@ c--           Test for missing values.
 #if (defined (ALLOW_SST_COST_CONTRIBUTION) || \
      defined (ALLOW_DAILYSST_COST_CONTRIBUTION) || \
      defined (ALLOW_SST_CONTROL))
-
+              IF ( using_cost_sst ) THEN
               if ( ssterrfile .NE. ' ' ) then
 cgf use specific weights for sst
                 if (wsst(i,j,bi,bj).ne.0)
@@ -565,6 +571,7 @@ cgf use general hydrography weights
      &               wtheta(k,bi,bj)*frame(i,j)*maskC(i,j,k,bi,bj)
                 endif
               endif
+              ENDIF ! IF ( using_cost_sst ) THEN
 #endif
 
 #if (defined (ALLOW_SSS_COST_CONTRIBUTION) || defined (ALLOW_SSS_CONTROL))
@@ -593,11 +600,14 @@ cgf use general hydrography weights
 #if (defined (ALLOW_SST_COST_CONTRIBUTION) || \
      defined (ALLOW_DAILYSST_COST_CONTRIBUTION) || \
      defined (ALLOW_SST_CONTROL))
-      call active_write_xy_loc( 'wsst', wsst, 1, 0, mythid, dummy)
+      IF (using_cost_sst)
+     &    call active_write_xy_loc( 'wsst', wsst, 1, 0, mythid, dummy)
 #endif
 #if (defined (ALLOW_SSS_COST_CONTRIBUTION) || defined (ALLOW_SSS_CONTROL))
       call active_write_xy_loc( 'wsss', wsss, 1, 0, mythid, dummy)
 #endif
+
+      IF (using_cost_altim) THEN
 
 #if (defined (ALLOW_SSH_MEAN_COST_CONTRIBUTION) || \
      defined (ALLOW_SSH_COST_CONTRIBUTION) )
@@ -794,8 +804,10 @@ c--   convert to units of meters
       enddo
 
 #endif
+      ENDIF !IF (using_cost_altim) THEN
 
 #ifdef ALLOW_BP_COST_CONTRIBUTION
+      IF (using_cost_bp) THEN
       if ( bperrfile .NE. ' ' )
      &   call mdsreadfield( bperrfile, 32, 'RL', 1, wbp, 1,
      &                      mythid)
@@ -813,6 +825,7 @@ c--   convert to units of meters
       enddo
 
       call active_write_xy_loc( 'wbp', wbp, 1, 0, mythid, dummy)
+      ENDIF ! IF (using_cost_bp) THEN
 #endif
 
 #ifdef ALLOW_IESTAU_COST_CONTRIBUTION
@@ -838,6 +851,7 @@ c--   convert to units of meters
 c--   Read zonal wind stress variance.
 #if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
      defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
+      IF (using_cost_scat) THEN
 
       nnz   =   1
       irec  =   1
@@ -871,6 +885,7 @@ c--           Test for missing values.
         enddo
       enddo
 
+      ENDIF ! IF (using_cost_scat) THEN
 #endif
 
 c--   Read zonal wind stress variance.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.28 2012/08/10 19:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.29 2012/09/30 20:33:55 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -221,7 +221,7 @@ c-- set weight to zero for missing values
       endif
 #endif /* ALLOW_TRANSPORT_COST_CONTRIBUTION */
 
-#ifdef ALLOW_SSH_COST_CONTRIBUTION
+#ifdef ALLOW_NEW_SSH_COST
 
 c--   Read flags for picking SSH time averages
       do irec = 1, ndaysrec
@@ -295,7 +295,7 @@ c
 c
       _END_MASTER(myThid)
       _BARRIER
-#endif
+#endif /* ALLOW_NEW_SSH_COST */
 
 c--   Summarize the cost function setup.
       _BEGIN_MASTER( mythid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.6 2012/08/10 19:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.7 2012/09/30 20:33:55 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -22,6 +22,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#include "ecco_cost.h"
 
 c     == routine arguments ==
       integer mythid
@@ -35,9 +36,6 @@ c     == routine arguments ==
 #  ifdef ALLOW_PROFILES
 #   include "profiles.h"
 #  endif
-# endif
-# ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
-#  include "ecco_cost.h"
 # endif
 #endif
 
@@ -69,6 +67,7 @@ cph)
 
 c--   Compute cost function contribution of SSH.
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
+      IF (using_cost_altim) THEN
 # ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('cost_ssh',myThid)
 # endif
@@ -85,6 +84,7 @@ c--   Compute cost function contribution of SSH.
       call cost_ssh( myiter, mytime, mythid )
       call timer_stop ('cost_ssh           [ECCO SPIN-DOWN]', mythid)
 # endif
+      ENDIF !IF (using_cost_altim) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
 #  ifdef ALLOW_PROFILES
 CADJ STORE prof_etan_mean = tapelev_init, key=1
@@ -94,9 +94,11 @@ CADJ STORE prof_etan_mean = tapelev_init, key=1
 
 #ifdef ALLOW_BP_COST_CONTRIBUTION
 c--   Compute bottom pressure cost
+      IF (using_cost_bp) THEN
       call timer_start('cost_bp    [ECCO SPIN-DOWN]', mythid)
       call cost_bp( myiter, mytime, mythid )
       call timer_stop ('cost_bp    [ECCO SPIN-DOWN]', mythid)
+      ENDIF
 #endif
 
 c--   Compute cost function contribution of Temperature and Salinity.
@@ -154,9 +156,11 @@ c--   Compute cost function contribution of wind stress observations.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('cost_scat',myThid)
 #endif
+      IF (using_cost_scat) THEN
       call timer_start('cost_scat            [ECCO SPIN-DOWN]', mythid)
       call cost_scat( myiter, mytime, mythid )
       call timer_stop ('cost_scat            [ECCO SPIN-DOWN]', mythid)
+      ENDIF
 #endif
 
 c--   Compute cost function contribution of drift between the first
