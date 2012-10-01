@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.67 2012/03/19 14:39:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.68 2012/10/01 15:46:33 heimbach Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -460,7 +460,7 @@ C-    No-slip BCs impose a drag at bottom
       ENDIF
 #ifdef ALLOW_SHELFICE
       IF (useShelfIce.AND.momViscosity.AND.bottomDragTerms) THEN
-         CALL SHELFICE_V_DRAG(bi,bj,k,vFld,KE,KappaRU,vF,myThid)
+         CALL SHELFICE_V_DRAG(bi,bj,k,vFld,KE,KappaRV,vF,myThid)
          DO j=jMin,jMax
           DO i=iMin,iMax
            gvDiss(i,j) = gvDiss(i,j) + vF(i,j)

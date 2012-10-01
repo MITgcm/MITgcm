@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1744 2012/09/25 16:39:20 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1745 2012/10/01 15:48:56 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice
+  in mom_fluxform.F, mom_vecinv.F:
+  CALL SHELFICE_V_DRAG(bi,bj,k,vFld,KE,KappaRU,vF,myThid)
+  Bug fix KappaRU -> KappaRV
+  does not change verification/isomip but may change other setups
+  (presumably constant KappaRU=KappaRV)
 o pkg/obcs:
   - fixed some indexing bugs in obcs_seaice_sponge.F
   - added obcs relaxation subroutines for HSALT and HSNOW

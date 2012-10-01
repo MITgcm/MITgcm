@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.44 2012/03/18 22:21:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.45 2012/10/01 15:46:33 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -780,7 +780,7 @@ C-    No-slip BCs impose a drag at bottom
 
 #ifdef ALLOW_SHELFICE
         IF (useShelfIce) THEN
-         CALL SHELFICE_V_DRAG(bi,bj,k,vFld,KE,KappaRU,vF,myThid)
+         CALL SHELFICE_V_DRAG(bi,bj,k,vFld,KE,KappaRV,vF,myThid)
          DO j=jMin,jMax
           DO i=iMin,iMax
            gvDiss(i,j) = gvDiss(i,j) + vF(i,j)
