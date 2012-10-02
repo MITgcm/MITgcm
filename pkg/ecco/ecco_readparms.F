@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.60 2012/10/02 01:40:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.61 2012/10/02 17:01:34 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -36,6 +36,14 @@ C     msgBuf      - Informational/error meesage buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER k, iUnit, num_file, num_var
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+      INTEGER IL
+#endif
+
+c     == external functions ==
+
+      integer  ilnblnk
+      external ilnblnk
 
 c     == end of interface ==
 
@@ -480,12 +488,12 @@ cgf     &        'genbar', k
      &     SQUEEZE_RIGHT , 1)
 
       do k=1,NGENCOST
-         if ( (gencost_name(k).EQ.'sshv4-mdt').AND.
-     &        (gencost_name(k).EQ.'sshv4-tp').AND.
-     &        (gencost_name(k).EQ.'sshv4-ers').AND.
-     &        (gencost_name(k).EQ.'sshv4-gfo').AND.
-     &        (gencost_name(k).EQ.'sshv4-lsc').AND.
-     &        (gencost_name(k).EQ.'sstv4-amsre').AND.
+         if ( (gencost_name(k).EQ.'sshv4-mdt').OR.
+     &        (gencost_name(k).EQ.'sshv4-tp').OR.
+     &        (gencost_name(k).EQ.'sshv4-ers').OR.
+     &        (gencost_name(k).EQ.'sshv4-gfo').OR.
+     &        (gencost_name(k).EQ.'sshv4-lsc').OR.
+     &        (gencost_name(k).EQ.'sstv4-amsre').OR.
      &        (gencost_name(k).EQ.'sstv4-amsre-lsc') ) then
 c pre-specified generic cost terms
            gencost_flag(k)=-1
@@ -511,17 +519,36 @@ C--   Check parameters:
      &        gencost_avgperiod(k) .NE. 'MONTH' .AND.
      &        gencost_avgperiod(k) .NE. 'year ' .AND.
      &        gencost_avgperiod(k) .NE. 'YEAR ' ) then
+
+            il=ilnblnk(gencost_name(k))
+            WRITE(msgBuf,'(A,I2,2A)')
+     &          'ERROR in ECCO_READPARMS: for gencost',k,
+     &          '  ',gencost_name(k)(1:il)
+            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &          SQUEEZE_RIGHT , 1)
             STOP
      &           'ECCO_READPARMS: gencost_avgperiod not properly set'
           end if
 
           if ( gencost_spmin(k) .EQ. 0. _d 0 .AND.
      &        gencost_spmax(k) .EQ. 0. _d 0 ) then
+            il=ilnblnk(gencost_name(k))
+            WRITE(msgBuf,'(A,I2,2A)')
+     &          'ERROR in ECCO_READPARMS: for gencost',k,
+     &          '  ',gencost_name(k)(1:il)
+            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &          SQUEEZE_RIGHT , 1)
             STOP
      &       'ECCO_READPARMS: gencost_spmin, gencost_spmax not set'
           endif
 
           if ( gencost_spzero(k) .EQ. 9876. _d 0 ) then
+            il=ilnblnk(gencost_name(k))
+            WRITE(msgBuf,'(A,I2,2A)')
+     &          'ERROR in ECCO_READPARMS: for gencost',k,
+     &          '  ',gencost_name(k)(1:il)
+            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &          SQUEEZE_RIGHT , 1)
             STOP
      &       'ECCO_READPARMS: gencost_spzero not set'
           endif

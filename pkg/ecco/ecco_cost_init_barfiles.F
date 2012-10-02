@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.27 2012/08/10 19:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.28 2012/10/02 17:01:34 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -131,6 +131,7 @@ c     == end of interface ==
       enddo
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
+      IF (using_cost_altim) THEN
 c--   Save psbar on file.
       ilps=ilnblnk( psbarfile )
       write(fnamepsbar,'(2a,i10.10)')
@@ -144,9 +145,11 @@ c--   Save psbar on file.
      &                         optimcycle,mythid, xx_psbar_mean_dummy )
 #endif
       enddo
+      ENDIF
 #endif /* ALLOW_SSH_COST_CONTRIBUTION */
 
 #ifdef ALLOW_BP_COST_CONTRIBUTION
+      IF (using_cost_bp) THEN
 c--   Save bpbar on file.
       ilps=ilnblnk( bpbarfile )
       write(fnamebpbar,'(2a,i10.10)')
@@ -160,6 +163,7 @@ c--   Save bpbar on file.
      &                         optimcycle,mythid, xx_bpbar_mean_dummy )
 #endif
       enddo
+      ENDIF !      IF (using_cost_bp) THEN
 #endif
 
 #if (defined (ALLOW_THETA_COST_CONTRIBUTION) || \
@@ -199,6 +203,7 @@ c--   Save tbar on file.
 #endif
 
 #ifdef ALLOW_DAILYSST_COST_CONTRIBUTION
+      IF (using_cost_sst) THEN
 cph#ifdef ALLOW_SEAICE_COST_AREASST
 c--   Save tbar on file.
       ilt=ilnblnk( sstbarfile )
@@ -211,7 +216,8 @@ c--   Save tbar on file.
          call active_write_xy( adfnamesstbar, tmpfld2d, irec,
      &                        optimcycle, mythid, xx_sstbar_mean_dummy )
 #endif
-       enddo
+      enddo
+      ENDIF !      IF (using_cost_sst) THEN
 #endif
 
 #if (defined (ALLOW_SALT_COST_CONTRIBUTION) || \
@@ -294,6 +300,7 @@ c--   Save wbar
       enddo
 #endif
 
+      IF (using_cost_scat) THEN
 #if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
      defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
 c--   Save tauxbar, tauybar on file.
@@ -321,6 +328,7 @@ c--   Save tauxbar, tauybar on file.
 #endif
       enddo
 #endif
+      ENDIF !      IF (using_cost_scat) THEN
 
 #ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
 c--   Save hfluxmeanbar on file.
@@ -396,7 +404,7 @@ c initialize smr sss bar
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 c--   Save gencost_barfile on file.
       do k=1,NGENCOST
-      if ( gencost_barfile(k) .ne. ' ' ) then
+      if ( (using_gencost(k)).AND.(gencost_barfile(k).ne.' ') ) then
       ilt=ilnblnk( gencost_barfile(k) )
       write(fname_gencostbar,'(2a,i10.10)')
      &     gencost_barfile(k)(1:ilt), '.', optimcycle

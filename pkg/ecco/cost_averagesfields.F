@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.39 2012/08/10 19:45:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.40 2012/10/02 17:01:34 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -72,7 +72,6 @@ c     == local variables ==
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-      integer num_var
 
       logical first
       logical startofday
@@ -164,6 +163,7 @@ c--   Get the time flags and record numbers for the time averaging.
 #endif
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
+      IF (using_cost_altim) THEN
 #ifdef ALLOW_DEBUG
       IF ( debugMode )
      &    CALL DEBUG_CALL('cost_averagesgeneric psbar',myThid)
@@ -187,6 +187,7 @@ c--   Get the time flags and record numbers for the time averaging.
      &     psbar, etanLeads, xx_psbar_mean_dummy,
      &     first, last, startofday, endofday, inday,
      &     sum1day, dayrec, 1, mythid )
+      ENDIF
 #endif
 
 #if (defined (ALLOW_THETA_COST_CONTRIBUTION) || \
@@ -215,6 +216,7 @@ c--   Get the time flags and record numbers for the time averaging.
 #endif
 
 #ifdef ALLOW_DAILYSST_COST_CONTRIBUTION
+      IF (using_cost_sst) THEN
 cph#ifdef ALLOW_SEAICE_COST_AREASST
 #ifdef ALLOW_DEBUG
       IF ( debugMode )
@@ -225,6 +227,7 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
      &     sstbar, theta(1-Olx,1-Oly,1,1,1), xx_sstbar_mean_dummy,
      &     first, last, startofday, endofday, inday,
      &     sum1day, dayrec, 1, mythid )
+      ENDIF !      IF (using_cost_sst) THEN  
 #endif
 
 #if (defined (ALLOW_SALT_COST_CONTRIBUTION) || \
@@ -338,6 +341,7 @@ c--     Accumulate ubar and vbar.
 
 #endif
 
+      IF (using_cost_scat) THEN
 #ifdef ALLOW_SCAT_COST_CONTRIBUTION
 c--   Next, do the averages for velocitty.
       if (first.or. startofmonth) then
@@ -417,6 +421,7 @@ c--     Accumulate ubar and vbar.
      &     sum1day, dayrec, 1, mythid )
 #endif
 #endif
+      ENDIF !      IF (using_cost_scat) THEN
 
 #ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
 cph: this is one mean over whole integration:
@@ -464,7 +469,7 @@ cph: these are annual means
 #endif
 
 #ifdef ALLOW_BP_COST_CONTRIBUTION
-      call cost_averagesgeneric(
+      IF (using_cost_bp) call cost_averagesgeneric(
      &     bpbarfile,
      &     bpbar, phiHydLow, xx_bpbar_mean_dummy,
      &     first, last, startofmonth, endofmonth, inmonth,
@@ -611,16 +616,16 @@ cmm   accumulate average
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 cph currently all assumed to be surface fields, i.e. 2-d
-      do num_var = 1, NGENCOST
-      if ( gencost_barfile(num_var) .ne. ' ' ) then
+      do k = 1, NGENCOST
+      if ( (using_gencost(k)).AND.(gencost_barfile(k).ne.' ') ) then
       call cost_averagesgeneric(
-     &     gencost_barfile(num_var),
-     &     gencost_barfld(1-Olx,1-Oly,1,1,num_var),
-     &     gencost_modfld(1-Olx,1-Oly,1,1,num_var),
-     &     xx_genbar_dummy(num_var),
+     &     gencost_barfile(k),
+     &     gencost_barfld(1-Olx,1-Oly,1,1,k),
+     &     gencost_modfld(1-Olx,1-Oly,1,1,k),
+     &     xx_genbar_dummy(k),
      &     first, last,
-     &     startofgen(num_var), endofgen(num_var), ingen(num_var),
-     &     sum1gen(num_var), genrec(num_var), 1, mythid )
+     &     startofgen(k), endofgen(k), ingen(k),
+     &     sum1gen(k), genrec(k), 1, mythid )
       endif
       end do
 #endif /* ALLOW_GENCOST_CONTRIBUTION */

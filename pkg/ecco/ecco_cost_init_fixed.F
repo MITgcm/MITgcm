@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.30 2012/10/02 01:40:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.31 2012/10/02 17:01:34 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -135,7 +135,7 @@ c--     ... ARGO data.
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       do k = 1, NGENCOST
-       if ( using_gencost(k) ) then
+       if ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 ) ) then
          if ( gencost_avgperiod(k) .EQ. 'day' .OR.
      &        gencost_avgperiod(k) .EQ. 'DAY' ) then
             gencost_nrec(k)   = ndaysrec
@@ -280,7 +280,7 @@ c
            WRITE(msgBuf,'(2A,I10)')
      &        'ecco_cost_init_fixed: (SSH)TimeMask not 0. or 1. ',
      &        'for irec (=day) ', irec
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &          SQUEEZE_RIGHT , myThid )
            CALL PRINT_ERROR( msgBuf , myThid )
            STOP 'ABNORMAL END: S/R ECCO_COST_INIT_FIXED'

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.11 2012/10/02 01:40:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.12 2012/10/02 17:01:34 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -163,7 +163,7 @@ C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER irec, mody, modm, yday, locy, il
-      LOGICAL exst, singleFileTest
+      LOGICAL exst, singleFileTest, yearlyFileTest
       character*(128) fname
 
 c     == external functions ==
@@ -196,6 +196,7 @@ c switch off cost function term
            IF ( exst ) singleFileTest=.TRUE.
       ENDIF
 
+      yearlyFileTest = .FALSE.
       IF ( (using_cost_local).AND.(.NOT.singleFileTest) ) THEN 
         DO irec = 1, nmonsrec
            mody   = modelstartdate(1)/10000
@@ -218,8 +219,23 @@ c warn user as we override using_cost_local
      &                    SQUEEZE_RIGHT , myThid)
 c switch off cost function term
              using_cost_local = .FALSE.
+           ELSEIF ( (exst).AND.(yday.GE.locy) ) THEN
+             yearlyFileTest = .TRUE.
            ENDIF
         ENDDO
+      ENDIF
+
+      IF (using_cost_local) THEN
+      IF ( (.NOT.yearlyFileTest).AND.(.NOT.singleFileTest) ) THEN
+c warn user as we override using_cost_local
+             WRITE(msgBuf,'(4A)')
+     &       '** WARNING ** ECCO_CHECK_FILES: no data ',
+     &       ' so ',localname,' gets switched off'
+             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+c switch off cost function term
+             using_cost_local = .FALSE.
+      ENDIF
       ENDIF
       
       _END_MASTER(myThid)

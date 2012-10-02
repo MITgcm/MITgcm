@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_assignperiod.F,v 1.8 2012/10/02 01:40:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_assignperiod.F,v 1.9 2012/10/02 17:01:34 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -47,33 +47,33 @@ c     == routine arguments ==
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 c     == local variables ==
 
-      integer num_var
+      integer k
 
 c     == end of interface ==
 
-      do num_var = 1, NGENCOST
-       if ( using_gencost(num_var) ) then
-         if ( gencost_avgperiod(num_var) .EQ. 'day' .OR.
-     &        gencost_avgperiod(num_var) .EQ. 'DAY' ) then
-            startofgen(num_var) = startofday
-            endofgen(num_var)   = endofday
-            ingen(num_var)      = inday
-            sum1gen(num_var)    = sum1day
-            genrec(num_var)     = dayrec
-         else if ( gencost_avgperiod(num_var) .EQ. 'month' .OR.
-     &        gencost_avgperiod(num_var) .EQ. 'MONTH' ) then
-            startofgen(num_var) = startofmonth
-            endofgen(num_var)   = endofmonth
-            ingen(num_var)      = inmonth
-            sum1gen(num_var)    = sum1mon
-            genrec(num_var)     = monrec
-         else if ( gencost_avgperiod(num_var) .EQ. 'year' .OR.
-     &        gencost_avgperiod(num_var) .EQ. 'YEAR' ) then
-            startofgen(num_var) = startofyear
-            endofgen(num_var)   = endofyear
-            ingen(num_var)      = inyear
-            sum1gen(num_var)    = sum1year
-            genrec(num_var)     = yearrec
+      do k = 1, NGENCOST
+       if ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 ) ) then
+         if ( gencost_avgperiod(k) .EQ. 'day' .OR.
+     &        gencost_avgperiod(k) .EQ. 'DAY' ) then
+            startofgen(k) = startofday
+            endofgen(k)   = endofday
+            ingen(k)      = inday
+            sum1gen(k)    = sum1day
+            genrec(k)     = dayrec
+         else if ( gencost_avgperiod(k) .EQ. 'month' .OR.
+     &        gencost_avgperiod(k) .EQ. 'MONTH' ) then
+            startofgen(k) = startofmonth
+            endofgen(k)   = endofmonth
+            ingen(k)      = inmonth
+            sum1gen(k)    = sum1mon
+            genrec(k)     = monrec
+         else if ( gencost_avgperiod(k) .EQ. 'year' .OR.
+     &        gencost_avgperiod(k) .EQ. 'YEAR' ) then
+            startofgen(k) = startofyear
+            endofgen(k)   = endofyear
+            ingen(k)      = inyear
+            sum1gen(k)    = sum1year
+            genrec(k)     = yearrec
          else
             STOP 'gencost_avgperiod wrongly specified'
          end if
