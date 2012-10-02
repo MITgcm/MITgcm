@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.11 2012/06/22 22:07:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.12 2012/10/02 01:39:02 gforget Exp $
 C $Name:  $
 
 C============================================================
@@ -102,7 +102,7 @@ C===========================================================
       COMMON /profiles_cost_c/
      &        profilesDir, profilesfiles
       character*(MAX_LEN_FNAM) profilesDir
-      character*(MAX_LEN_FNAM) profilesfiles(50)
+      character*(MAX_LEN_FNAM) profilesfiles(NFILESPROFMAX)
 
       COMMON /profiles_ctrl_dummy/
      &                profiles_dummy

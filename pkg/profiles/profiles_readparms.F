@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.9 2012/06/22 22:07:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.10 2012/10/02 01:39:02 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -36,7 +36,13 @@ c     == local variables ==
 C     msgBuf      - Informational/error meesage buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit, num_file, num_var
+      INTEGER iUnit, num_file, num_var, IL
+      LOGICAL exst
+      character*(128) fname
+
+C     !FUNCTIONS
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 c     == end of interface ==
 
@@ -113,6 +119,24 @@ c--     Next, read the cost data file.
      &                  SQUEEZE_RIGHT , 1)
 
         CLOSE( iUnit )
+
+        do num_file=1,NFILESPROFMAX
+          if ( profilesfiles(num_file) .NE. ' ' ) then
+            IL  = ILNBLNK( profilesfiles(num_file) )
+            fname = profilesfiles(num_file)(1:IL)//'.nc'
+            inquire( file=fname, exist=exst )
+            if (.NOT.exst) then
+c warn user as we override profilesfiles
+             WRITE(msgBuf,'(3A)')
+     &       '** WARNING ** PROFILES_READ_PARMS: missing file',
+     &       profilesfiles(num_file)(1:IL),' gets switched off'
+             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+c switch off this file (and potential cost function term)
+              profilesfiles(num_file) = ' '
+            endif
+          endif
+        enddo
 
       _END_MASTER( mythid )
 
