@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.9 2012/09/04 15:04:51 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.10 2012/10/02 01:40:03 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -62,7 +62,6 @@ c     == routine arguments ==
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-#ifdef ALLOW_GENCOST_FREEFORM
 c     == local variables ==
 
       integer bi,bj
@@ -1061,7 +1060,6 @@ c--             The array gfoobs contains SSH anomalies.
       enddo
 
 
-#endif /* ifdef ALLOW_GENCOST_FREEFORM */
 #endif /* ifdef ALLOW_GENCOST_CONTRIBUTION */
 #endif /* ifdef ALLOW_SSH_COST_CONTRIBUTION */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.59 2012/09/30 20:33:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.60 2012/10/02 01:40:03 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -135,6 +135,7 @@ c--   Read the namelist input.
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       namelist /ecco_gencost_nml/
+     &         using_gencost, 
      &         gencost_barfile,
      &         gencost_datafile,
      &         gencost_name,
@@ -454,6 +455,8 @@ C--   Check parameters:
 
 c--   Set default values.
       do k=1,NGENCOST
+         using_gencost(k)      = .FALSE.
+         gencost_flag(k)       = 0
          gencost_avgperiod(k)  = '     '
          gencost_datafile(k)   = ' '
          gencost_name(k)       = 'gencost'
@@ -476,11 +479,28 @@ cgf     &        'genbar', k
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
 
+      do k=1,NGENCOST
+         if ( (gencost_name(k).EQ.'sshv4-mdt').AND.
+     &        (gencost_name(k).EQ.'sshv4-tp').AND.
+     &        (gencost_name(k).EQ.'sshv4-ers').AND.
+     &        (gencost_name(k).EQ.'sshv4-gfo').AND.
+     &        (gencost_name(k).EQ.'sshv4-lsc').AND.
+     &        (gencost_name(k).EQ.'sstv4-amsre').AND.
+     &        (gencost_name(k).EQ.'sstv4-amsre-lsc') ) then
+c pre-specified generic cost terms
+           gencost_flag(k)=-1
+           using_gencost(k)=.TRUE.
+         elseif ( gencost_datafile(k) .NE. ' ' ) then
+c fully interactive generic cost terms
+           gencost_flag(k)=1
+           using_gencost(k)=.TRUE.
+         endif
+      enddo
+
 C--   Check parameters:
-#ifndef ALLOW_GENCOST_FREEFORM
       do k=1,NGENCOST
 
-        if ( gencost_datafile(k) .ne. ' ' ) then
+        if ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 ) ) then
 
           if ( gencost_name(k) .EQ. 'gencost' )
      &        gencost_name(k) = gencost_datafile(k)
@@ -509,7 +529,6 @@ C--   Check parameters:
         endif
 
       end do
-#endif
 
       _END_MASTER( myThid )
 

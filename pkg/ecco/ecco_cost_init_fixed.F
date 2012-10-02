@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.29 2012/09/30 20:33:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.30 2012/10/02 01:40:03 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -135,9 +135,7 @@ c--     ... ARGO data.
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       do k = 1, NGENCOST
-#ifndef ALLOW_GENCOST_FREEFORM
-       if ( gencost_datafile(k) .ne. ' ' ) then
-#endif
+       if ( using_gencost(k) ) then
          if ( gencost_avgperiod(k) .EQ. 'day' .OR.
      &        gencost_avgperiod(k) .EQ. 'DAY' ) then
             gencost_nrec(k)   = ndaysrec
@@ -150,15 +148,11 @@ c--     ... ARGO data.
      &        gencost_avgperiod(k) .EQ. 'YEAR' ) then
            STOP
      &      'ecco_cost_init_fixed: yearly data not yet implemented'
-#ifndef ALLOW_GENCOST_FREEFORM
          else
            STOP
      &      'ecco_cost_init_fixed: gencost_avgperiod wrongly specified'
-#endif
          endif
-#ifndef ALLOW_GENCOST_FREEFORM
        endif
-#endif
       enddo
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.7 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.8 2012/10/02 01:40:03 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -49,7 +49,6 @@ c     == routine arguments ==
 #ifdef ALLOW_DAILYSST_COST_CONTRIBUTION
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-#ifdef ALLOW_GENCOST_FREEFORM
 c     == local variables ==
 
       integer bi,bj
@@ -424,7 +423,6 @@ c compute cost:
 
       enddo
 
-#endif /* ifdef ALLOW_GENCOST_FREEFORM */
 #endif /* ifdef ALLOW_GENCOST_CONTRIBUTION */
 #endif /* ifdef ALLOW_SMOOTH */
 #endif /* ifdef ALLOW_DAILYSST_COST_CONTRIBUTION */

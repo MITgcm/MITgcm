@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.10 2012/09/30 20:33:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.11 2012/10/02 01:40:03 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -53,13 +53,7 @@ c     == end of interface ==
 
       do k = 1, NGENCOST
 
-         if ( (gencost_name(k).NE.'sshv4-mdt').AND.
-     &        (gencost_name(k).NE.'sshv4-tp').AND.
-     &        (gencost_name(k).NE.'sshv4-ers').AND.
-     &        (gencost_name(k).NE.'sshv4-gfo').AND.
-     &        (gencost_name(k).NE.'sshv4-lsc').AND.
-     &        (gencost_name(k).NE.'sstv4-amsre').AND.
-     &        (gencost_name(k).NE.'sstv4-amsre-lsc') ) then
+         if ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 ) ) then
 
          write(msgbuf,'(a,x,i2.2)') 'ph-cost gencost #', k
          call print_message( msgbuf, standardmessageunit,

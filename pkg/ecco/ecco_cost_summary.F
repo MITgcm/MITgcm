@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.5 2012/08/10 19:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.6 2012/10/02 01:40:03 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -225,7 +225,7 @@ c     == end of interface ==
      &                    SQUEEZE_RIGHT , mythid)
 
 #ifdef ALLOW_SSH_MEAN_COST_CONTRIBUTION
-      if (using_topex) then
+      if (using_cost_altim) then
         il = ilnblnk(topexmeanfile)
         write(msgbuf,'(a,a)')
      &  '  T/P mean is read from:          ',topexmeanfile(1:il)

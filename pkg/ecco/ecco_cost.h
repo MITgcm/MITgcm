@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.58 2012/09/30 20:33:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.59 2012/10/02 01:40:03 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -81,8 +81,13 @@ c     objf_gencost - gencost user defined contribution
       _RL     gencost_period(NGENCOST)
 
       common /ecco_gencost_i_1/
-     &       gencost_nrec
+     &       gencost_nrec, gencost_flag
       integer gencost_nrec(NGENCOST)
+      integer gencost_flag(NGENCOST)
+
+      common /ecco_gencost_l_1/
+     &       using_gencost
+      LOGICAL using_gencost(NGENCOST)
 
       common /ecco_gencost_c/
      &       gencost_name,

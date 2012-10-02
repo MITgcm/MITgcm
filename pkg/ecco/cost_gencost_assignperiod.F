@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_assignperiod.F,v 1.7 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_assignperiod.F,v 1.8 2012/10/02 01:40:03 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -52,9 +52,7 @@ c     == local variables ==
 c     == end of interface ==
 
       do num_var = 1, NGENCOST
-#ifndef ALLOW_GENCOST_FREEFORM
-       if ( gencost_datafile(num_var) .ne. ' ' ) then
-#endif
+       if ( using_gencost(num_var) ) then
          if ( gencost_avgperiod(num_var) .EQ. 'day' .OR.
      &        gencost_avgperiod(num_var) .EQ. 'DAY' ) then
             startofgen(num_var) = startofday
@@ -76,14 +74,10 @@ c     == end of interface ==
             ingen(num_var)      = inyear
             sum1gen(num_var)    = sum1year
             genrec(num_var)     = yearrec
-#ifndef ALLOW_GENCOST_FREEFORM
          else
             STOP 'gencost_avgperiod wrongly specified'
-#endif
          end if
-#ifndef ALLOW_GENCOST_FREEFORM
        end if
-#endif
       end do
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */

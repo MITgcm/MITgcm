@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.10 2012/09/30 20:33:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.11 2012/10/02 01:40:03 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -23,6 +23,7 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "ecco_cost.h"
 #include "ctrl.h"
+#include "cal.h"
 #include "optim.h"
 #ifdef ALLOW_PROFILES
 #include "profiles.h"
@@ -35,6 +36,9 @@ C     myThid -  Number of this instances
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+      INTEGER k
+#endif
 
       _BEGIN_MASTER(myThid)
 
@@ -88,11 +92,11 @@ c check for missing data files
 #endif
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
       IF ( using_topex ) CALL ECCO_CHECK_FILES( using_topex,
-     & 'atlim', topexfile, topexstartdate(1), myThid )
+     & 'altim', topexfile, topexstartdate(1), myThid )
       IF ( using_ers ) CALL ECCO_CHECK_FILES( using_ers,
-     & 'atlim', ersfile, ersstartdate(1), myThid )
+     & 'altim', ersfile, ersstartdate(1), myThid )
       IF ( using_gfo ) CALL ECCO_CHECK_FILES( using_gfo,
-     & 'atlim', gfofile, gfostartdate(1), myThid )
+     & 'altim', gfofile, gfostartdate(1), myThid )
 c
       IF ( (.NOT.using_topex ).AND.(.NOT.using_ers)
      &     .AND.(.NOT.using_gfo) ) THEN
@@ -106,8 +110,21 @@ c switch off cost function term
              using_cost_altim = .FALSE.
       ENDIF
 #endif
+#ifdef ALLOW_SSH_MEAN_COST_CONTRIBUTION
+      CALL ECCO_CHECK_FILES( using_cost_altim,
+     & 'mdt', topexmeanfile, modelstartdate(1), myThid ) 
+#endif
 
 c left for later : slightly different treatment would apply to profiles and gencost
+
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+      do k=1,NGENCOST
+         if ( gencost_datafile(k) .ne. ' ' ) then
+           CALL ECCO_CHECK_FILES( using_gencost(k), 'gencost',
+     &       gencost_datafile(k), modelstartdate(1), myThid )
+         endif
+      enddo
+#endif
 
       RETURN
       END
@@ -145,7 +162,7 @@ C     myThid -  Number of this instances
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER irec, mody, modm, yday, il
+      INTEGER irec, mody, modm, yday, locy, il
       LOGICAL exst, singleFileTest
       character*(128) fname
 
@@ -185,12 +202,14 @@ c switch off cost function term
            modm   = modelstartdate(1)/100 - mody*100
            yday   = mody + INT((modm-1+irec-1)/12)
 
+           locy   = localstartdate1/10000
+
            il=ilnblnk(localobsfile)
            write(fname(1:128),'(2a,i4)')
      &       localobsfile(1:il), '_', yday
            inquire( file=fname, exist=exst )
 
-           IF ( .NOT. exst ) THEN
+           IF ( (.NOT.exst).AND.(yday.GE.locy) ) THEN
 c warn user as we override using_cost_local
              WRITE(msgBuf,'(5A)')
      &       '** WARNING ** ECCO_CHECK_FILES: missing',fname,
