@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.138 2012/09/20 02:02:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.139 2012/10/03 02:35:25 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -458,7 +458,7 @@ c--
 CADJ INIT comlev1_stream_nl = COMMON,nchklev_1*streamice_max_nl
 CADJ INIT comlev1_stream_front = COMMON,nchklev_1*4
 CADJ INIT comlev1_stream_ij
-CADJ &     = COMMON,nchklev_1*4*snx*nsx*sny*nsy
+CADJ &     = COMMON,nchklev_1*4*(snx+2)*nsx*(sny+2)*nsy
 CADJ INIT comlev1_stream_hybrid
 CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nr*nthreads_chkpt
 #   endif
