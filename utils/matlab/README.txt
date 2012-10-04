@@ -1,4 +1,4 @@
-% $Header: /u/gcmpack/MITgcm/utils/matlab/README.txt,v 1.2 2007/11/05 17:05:13 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/README.txt,v 1.3 2012/10/04 14:02:42 jmc Exp $
 % $Name:  $
 
 The following utilities are available in this directory:
@@ -16,6 +16,7 @@ The following utilities are available in this directory:
   inpaint_nans.m            :: used by interpickups.m (for topography mask)
   interpickups.m            :: interpolate mnc pickup files
   ioLb2num.m                :: convert from ptracer io-label to ptracer number
+  load_grid.m               :: load MITgcm output grid-files into one structure array
   longitude.m               :: new (from Aug 2001) script for plotting cube stuff.
   mnc_assembly.m            :: assemble MNC tiles into single NetCDF files
   nc_add.m                  :: script to help use cube and netcdf
