@@ -1,7 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.29 2010/12/17 04:00:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.30 2012/10/04 02:37:08 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_EXF
+#  include "EXF_OPTIONS.h"
+# endif
+#endif
 
 CBOP
 C     !ROUTINE: THSICE_SOLVE4TEMP
@@ -50,6 +55,12 @@ C     == Global variables ===
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
+# ifdef ALLOW_EXF
+#  include "EXF_FIELDS.h"
+#  ifdef ALLOW_BULKFORMULAE
+#   include "EXF_CONSTANTS.h"
+#  endif
+# endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -129,7 +140,9 @@ C     Tsf          :: surface (ice or snow) temperature   (local copy of tSrf)
 C     flx0exSW     :: net surface heat flux over melting snow/ice, except short-wave.
 C     flxTexSW     :: net surface heat flux, except short-wave (W/m2)
 C     dFlxdT       :: deriv of flxNet wrt Tsf (W m-2 deg-1)
-C     evap0        :: evaporation over melting snow/ice [kg/m2/s] (>0 if evaporate)
+C     evap00       :: evaporation over melting snow/ice [kg/m2/s] (>0 if evaporate)
+C                     rename evap0 to evap00 because TAF 
+C                     confuses symbol with EXF evap0
 C     evapT        :: evaporation over snow/ice [kg/m2/s] (>0 if evaporate)
 C     dEvdT        :: derivative of evap. with respect to Tsf [kg/m2/s/K]
 C     flxNet       :: net surf heat flux (+=down), from Atmos. to sea-ice (W m-2)
@@ -154,7 +167,7 @@ C     dt           :: timestep
       _RL  flx0exSW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  flxTexSW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  dFlxdT  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL  evap0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  evap00   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  evapT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  dEvdT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  flxNet
@@ -355,7 +368,7 @@ CADJ STORE tsf(:,:)      = comlev1_bibj,key=ticekey,byte=isbyte
            CALL THSICE_GET_EXF(   bi, bj,
      I                            iMin, iMax, jMin, jMax,
      I                            iceFlag, hSnow, Tsf,
-     O                            flx0exSW, dFlxdT, evap0, dEvdT,
+     O                            flx0exSW, dFlxdT, evap00, dEvdT,
      I                            myTime, myIter, myThid )
 C-    could add this "ifdef" to hide THSICE_GET_BULKF from TAF
 #ifdef ALLOW_BULK_FORCE
@@ -363,7 +376,7 @@ C-    could add this "ifdef" to hide THSICE_GET_BULKF from TAF
            CALL THSICE_GET_BULKF( bi, bj,
      I                            iMin, iMax, jMin, jMax,
      I                            iceFlag, hSnow, Tsf,
-     O                            flx0exSW, dFlxdT, evap0, dEvdT,
+     O                            flx0exSW, dFlxdT, evap00, dEvdT,
      I                            myTime, myIter, myThid )
 #endif /* ALLOW_BULK_FORCE */
         ENDIF
@@ -468,7 +481,7 @@ C      note: b1 = b10 - k12*Tf0
            Tsf(i,j) = 0. _d 0
            IF ( useBlkFlx ) THEN
             flxTexSW(i,j) = flx0exSW(i,j)
-            evapT(i,j) = evap0(i,j)
+            evapT(i,j) = evap00(i,j)
             dTsrf(i,j) = 0. _d 0
            ELSE
             flxTexSW(i,j) = flxExSW(i,j,0)
