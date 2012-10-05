@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.8 2012/03/02 15:05:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.9 2012/10/05 15:18:30 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -122,7 +122,7 @@ c--   use weight as mask
        diagName  = 'SHIUDrag'
        diagTitle = 'U momentum tendency from ice shelf drag'
        diagUnits = 'm/s^2           '
-       diagCode  = 'UU      L1      '
+       diagCode  = 'UU      MR      '
        diagMate  = diagNum + 2
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
@@ -130,7 +130,7 @@ c--   use weight as mask
        diagName  = 'SHIVDrag'
        diagTitle = 'V momentum tendency from ice shelf drag'
        diagUnits = 'm/s^2           '
-       diagCode  = 'VV      L1      '
+       diagCode  = 'VV      MR      '
        diagMate  = diagNum
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )

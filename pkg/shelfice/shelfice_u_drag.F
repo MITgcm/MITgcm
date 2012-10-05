@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_u_drag.F,v 1.8 2012/07/19 11:26:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_u_drag.F,v 1.9 2012/10/05 15:18:30 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE.h"
@@ -90,7 +90,7 @@ CML        IF (k.EQ.kTop) maskUp=0.
 
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
-        CALL DIAGNOSTICS_FILL(uDragTerms,'USHIDrag',k,1,2,bi,bj,
+        CALL DIAGNOSTICS_FILL(uDragTerms,'SHIUDrag',k,1,2,bi,bj,
      &      myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
