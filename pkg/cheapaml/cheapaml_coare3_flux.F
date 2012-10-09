@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_coare3_flux.F,v 1.8 2012/10/09 20:12:20 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_coare3_flux.F,v 1.9 2012/10/09 20:15:43 wienders Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -103,7 +103,7 @@ c
       Cd10=(xkar/dlog(10. _d 0/zo10))**2
       Ch10=0.00115 _d 0
       Ct10=Ch10/sqrt(Cd10)
-      zot10=10 ._d 0/dexp(xkar/Ct10)
+      zot10=10. _d 0/dexp(xkar/Ct10)
       Cd=(xkar/dlog(zu/zo10))**2
 
 c standard coare3 boundary layer height
