@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.243 2012/09/25 21:16:29 utke Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.244 2012/10/10 22:24:59 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -1092,6 +1092,45 @@ EOF
     echo " --> set HAVE_LAPACK='$HAVE_LAPACK'" >> $LOGFILE
 }
 
+check_HAVE_FLUSH()  {
+    if test ! "x$SKIP_CHECK_FLUSH" = x ; then
+	return
+    fi
+    echo >> $LOGFILE
+    echo "running: check_HAVE_FLUSH()" >> $LOGFILE
+    cat <<EOF > genmake_tflsh.$FS
+      program fgenflsh
+      integer iounit
+      character*9 fname
+      iounit = 26
+      fname = 'tmp.tflsh'
+      open(iounit,FILE=fname,STATUS='unknown')
+      write(iounit,*) 'genmake_tflsh: hello'
+      call flush(iounit)
+      close(iounit)
+      end
+EOF
+    echo "===  genmake_tflsh.$FS  >>>" > genmake_tflsh.log
+    cat genmake_tflsh.$FS >> genmake_tflsh.log
+    echo "<<<  genmake_tflsh.$FS  ===" >> genmake_tflsh.log
+
+    echo "$FC $FFLAGS $FOPTIM -c genmake_tflsh.$FS  \ " >> genmake_tflsh.log
+    echo "  &&  $LINK $FFLAGS $FOPTIM -o genmake_tflsh.o $LIBS" >> genmake_tflsh.log
+    $FC $FFLAGS $FOPTIM -c genmake_tflsh.$FS >> genmake_tflsh.log 2>&1  \
+	&&  $LINK $FFLAGS $FOPTIM -o genmake_tflsh genmake_tflsh.o $LIBS >> genmake_tflsh.log 2>&1
+    RET_COMPILE=$?
+
+    if test "x$RET_COMPILE" = x0 ; then
+	HAVE_FLUSH=t
+	#cat genmake_tflsh.log >> $LOGFILE
+	echo "  check_HAVE_FLUSH: successful" >> $LOGFILE
+    else
+	HAVE_FLUSH=f
+	cat genmake_tflsh.log >> $LOGFILE
+    fi
+    rm -f genmake_tflsh*
+    echo " --> set HAVE_FLUSH='$HAVE_FLUSH'" >> $LOGFILE
+}
 
 ###############################################################################
 #   Sequential part of script starts here
@@ -1160,6 +1199,7 @@ HAVE_NETCDF=
 HAVE_ETIME=
 IGNORE_TIME=
 HAVE_LAPACK=
+HAVE_FLUSH=
 
 MODS=
 TOOLSDIR=
@@ -1213,9 +1253,9 @@ gm_s3="FEXTRAFLAGS IEEE DEVEL GSL TS PAPIS PCLS PAPI PCL HPMT DUMPSTATE"
 #  The following state is not directly set by command-line switches
 gm_s4="LN S64 LINK PACKAGES INCLUDES FFLAGS FOPTIM"
 gm_s5="CFLAGS LIBS KPP KFLAGS1 KFLAGS2 KPPFILES NOOPTFILES NOOPTFLAGS"
-gm_s6="TOOLSDIR SOURCEDIRS INCLUDEDIRS EXEDIR EXECUTABLE EXEHOOK"
-gm_s7="PWD THISHOST THISUSER THISDATE THISVER MACHINE"
-gm_s8="FC_NAMEMANGLE HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME HAVE_LAPACK"
+gm_s6="PWD TOOLSDIR SOURCEDIRS INCLUDEDIRS EXEDIR EXECUTABLE EXEHOOK"
+gm_s7="THISHOST THISUSER THISDATE THISVER MACHINE FC_NAMEMANGLE"
+gm_s8="HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME HAVE_LAPACK HAVE_FLUSH"
 
 #  The following are all related to adjoint/tangent-linear stuff
 gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
@@ -1883,8 +1923,17 @@ if test "x$HAVE_LAPACK" != x ; then
 else
     echo "no"
 fi
-DEFINES="$DEFINES $IGNORE_TIME"
 
+printf "  Can we call FLUSH intrinsic subroutine...  "
+check_HAVE_FLUSH
+if test "x$HAVE_FLUSH" = xt ; then
+    DEFINES="$DEFINES -DHAVE_FLUSH"
+    echo "yes"
+else
+    echo "no"
+fi
+
+DEFINES="$DEFINES $IGNORE_TIME"
 if test "x$EMBED_SRC" = xt ; then
     build_embed_encode
 fi
@@ -2900,7 +2949,7 @@ cat >>$MAKEFILE <<EOF
 ## This nullifies any default implicit rules concerning these two file types:
 ## %.o : %.F
 
-# C preprocessing and replacing the _d in constants: 
+# C preprocessing and replacing the _d in constants:
 CPPCMD = cat \$< | ${CPP} \$(DEFINES) \$(INCLUDES) | ${S64}
 
 .F.$FS:
