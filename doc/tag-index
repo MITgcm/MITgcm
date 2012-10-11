@@ -1,8 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1747 2012/10/09 19:49:46 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1748 2012/10/11 19:21:39 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o eesupp/src:
+  - check in genmake2 that intrinsic S/R flush is available.
+  - add S/R to flush IO unit (if intrinsic S/R flush is available)
+  - flush standard & error msg unit before MPI termination
+  - if debugMode, flush IO unit after printing msg
+o pkg/ctrl:
+  - ctrl_unpack.F, ALLOW_GENARR3D_CONTROL code: fix missing argument in call
+    to ctrl_set_unpack_xyz.
 
 checkpoint64 (2012/10/09)
 o pkg/shelfice
