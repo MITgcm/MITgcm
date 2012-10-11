@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.12 2012/09/01 22:43:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.13 2012/10/11 19:15:18 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -73,6 +73,12 @@ C--   end if/else eebootError
 #ifdef USE_LIBHPM
       CALL F_HPMTERMINATE(myProcId)
 #endif
+
+C--   Flush IO-unit before MPI termination
+      CALL MDS_FLUSH( errorMessageUnit, 1 )
+c#ifdef ALLOW_USE_MPI
+      CALL MDS_FLUSH( standardMessageUnit, 1 )
+c#endif /* ALLOW_USE_MPI */
 
 #ifdef ALLOW_USE_MPI
 C- Note: since MPI_INIT is always called, better to also always terminate MPI

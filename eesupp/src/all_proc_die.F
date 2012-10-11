@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/all_proc_die.F,v 1.7 2012/09/01 22:43:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/all_proc_die.F,v 1.8 2012/10/11 19:15:18 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -58,6 +58,13 @@ C--   Print message
 C--   Finishes
       eeEndError = .TRUE.
       fatalError = .TRUE.
+
+C-    Flush IO-unit before MPI termination
+      CALL MDS_FLUSH( errorMessageUnit, myThid )
+c#ifdef ALLOW_USE_MPI
+      CALL MDS_FLUSH( standardMessageUnit, myThid )
+c#endif /* ALLOW_USE_MPI */
+
 #ifdef ALLOW_USE_MPI
 C- Note: since MPI_INIT is always called, better to also always terminate MPI
 C        (even if usingMPI=F) --> comment out test on usingMPI
@@ -83,17 +90,13 @@ c     ENDIF
 
 C-    Some systems do not always flush the IO buffer to disk.
 C     To fix this, can either close these files (implies not to write
-C     anything after) or flush the io-unit.
-C     Note: function "flush" is not standard fortran and might not
-C     be available (genmake2 should check for this)
+C     anything after) or flush the io-unit (done above).
 c       CLOSE( errorMessageUnit )
-c       CALL FLUSH( errorMessageUnit )
 #ifdef ALLOW_USE_MPI
 C- Note: comment out if usingMPI ... since we always open standardMessageUnit
 C        when ALLOW_USE_MPI is defined, better to flush/close also if usingMPI=F
 cc    IF ( usingMPI ) THEN
 c       CLOSE( standardMessageUnit )
-c       CALL FLUSH( standardMessageUnit )
 cc    ENDIF
 #endif /* ALLOW_USE_MPI */
 

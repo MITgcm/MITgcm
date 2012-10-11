@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.33 2012/03/28 20:30:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.34 2012/10/11 19:15:18 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -100,7 +100,7 @@ C--    Write single process format
       ELSEIF ( pidIO .EQ. myProcId ) THEN
 C--    Write multi-process format
 C      PRINT can be called by several threads simultaneously.
-C      The write statement may need to ne marked as a critical section.
+C      The write statement may need to be marked as a critical section.
 #ifndef FMTFTN_IO_THREAD_SAFE
 # ifdef USE_OMP_THREADING
 C$OMP CRITICAL
@@ -115,6 +115,9 @@ C$OMP CRITICAL
        ELSE
         WRITE(unit,'(A,A,A,A,A,A,A)',ERR=999)
      &   '(',PROCESS_HEADER,' ',idString,')',' ',message(iStart:iEnd)
+       ENDIF
+       IF ( debugMode ) THEN
+        CALL MDS_FLUSH( unit, myThid )
        ENDIF
        GOTO 1000
   999  CONTINUE
@@ -238,6 +241,9 @@ C--    Write multi-process format
      &        message(1:iEnd)
 c    &    message(iStart:iEnd)
          ENDIF
+       ENDIF
+       IF ( debugMode ) THEN
+        CALL MDS_FLUSH( errorMessageUnit, myThid )
        ENDIF
        GOTO 1000
   999  CONTINUE
