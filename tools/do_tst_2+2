@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.15 2012/08/18 18:59:14 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.16 2012/10/11 16:30:56 jmc Exp $
 # $Name:  $
 
 usage()
@@ -78,11 +78,23 @@ do
   fi
 done
 
-#------------------------
-if test $CLEAN = 1 ; then
- echo "clean output from script '$SCRIPT' for experiment in:"
+if test -x $SCRIPT ; then
+ if test $CLEAN = 1 ; then
+   echo "clean output from script '$SCRIPT' for experiment in:"
+ else
+   echo "run script '$SCRIPT' for experiment in:"
+ fi
  echo " $LIST"
  echo ""
+ yy=`echo $SCRIPT | grep -c '^\/'`
+ if test $yy = 0 ; then SCRIPT="../../$SCRIPT" ; fi
+else
+ echo "ERROR: script '$SCRIPT' not found or not executable"
+ exit
+fi
+#------------------------
+
+if test $CLEAN = 1 ; then
  for xx in $LIST
  do
   listD='run '`(cd $xx/results ; ls output.*.txt 2> /dev/null | sed 's/^output\./tr_run./g' | sed 's/\.txt$//g' )`
@@ -100,17 +112,6 @@ if test $CLEAN = 1 ; then
  done
  exit
 fi
-if test -x $SCRIPT ; then
- echo "run script '$SCRIPT' for experiment in:"
- echo " $LIST"
- echo ""
- yy=`echo $SCRIPT | grep -c '^\/'`
- if test $yy = 0 ; then SCRIPT="../../$SCRIPT" ; fi
-else
- echo "ERROR: script '$SCRIPT' not found or not executable"
- exit
-fi
-
 #------------------------
 #  Create a uniquely named directory to store results
 CMDLINE=$0
