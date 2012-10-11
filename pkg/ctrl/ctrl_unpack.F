@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.43 2012/09/12 22:20:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.44 2012/10/11 15:36:52 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -804,7 +804,7 @@ c----------------------------------------------------------------------
           write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
      &         fname_local(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
+     &         weighttype, wunit, nwetcglobal, mythid)
        enddo
 #endif
 
