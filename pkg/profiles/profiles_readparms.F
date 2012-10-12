@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.10 2012/10/02 01:39:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.11 2012/10/12 12:52:35 heimbach Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -128,7 +128,7 @@ c--     Next, read the cost data file.
             if (.NOT.exst) then
 c warn user as we override profilesfiles
              WRITE(msgBuf,'(3A)')
-     &       '** WARNING ** PROFILES_READ_PARMS: missing file',
+     &       '** WARNING ** PROFILES_READ_PARMS: missing file: ',
      &       profilesfiles(num_file)(1:IL),' gets switched off'
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
