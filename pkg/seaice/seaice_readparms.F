@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.125 2012/09/24 15:05:29 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.126 2012/10/16 06:39:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -96,6 +96,8 @@ C--   SEAICE parameters
      & SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      & SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
      & SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
+     & SEAICEuseJFNK, SEAICEnewtonIterMax, SEAICEkrylovIterMax,
+     & JFNKgamma_nonlin,JFNKres_t,JFNKgamma_lin_min,JFNKgamma_lin_max,
      & SEAICEpresH0, SEAICEpresPow0, SEAICEpresPow1,
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      & SEAICE_initialHEFF, SEAICEturbFluxFormula,
@@ -207,6 +209,14 @@ c     SEAICEuseFluxForm  = .FALSE.
       SEAICE_deltaTtherm = dTtracerLev(1)
       SEAICE_deltaTdyn   = dTtracerLev(1)
       SEAICE_deltaTevp   = UNSET_RL
+C     JFNK stuff
+      SEAICEuseJFNK       = .FALSE.
+      SEAICEnewtonIterMax = 10
+      SEAICEkrylovIterMax = 10
+      JFNKgamma_nonlin    = 1. _d -05
+      JFNKgamma_lin_min   = 0.10 _d 0
+      JFNKgamma_lin_max   = 0.99 _d 0
+      JFNKres_t           = UNSET_RL
 C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICE_evpDampC    = -1. _d 0
       SEAICE_zetaMin     = 0. _d 0
@@ -331,7 +341,7 @@ c     SEAICE_dTempFrz_dS = 0. _d 0
       vIceFile   = ' '
       IMAX_TICE  = 10
       postSolvTempIter = 2
-      SOLV_MAX_ITERS = 1500
+      SOLV_MAX_ITERS = UNSET_I
       SOLV_NCHECK= 2
 C     two pseudo time steps correspond to the original modified
 C     Euler time stepping scheme of Zhang+Hibler (1997)
@@ -548,6 +558,16 @@ C
 C     Make sure that we have least two pseudo time steps
       NPSEUDOTIMESTEPS = MAX(NPSEUDOTIMESTEPS,2)
 
+#ifdef SEAICE_ALLOW_JFNK
+C     limit preconditioner steps
+      IF ( SOLV_MAX_ITERS .EQ. UNSET_I ) THEN
+C     maximum number of LSOR steps in default Picard solver
+       SOLV_MAX_ITERS = 1500
+C     maximum number of LSOR steps as preconditioner in JFNK solver
+       IF ( SEAICEuseJFNK ) SOLV_MAX_ITERS = 10
+      ENDIF
+#endif /* SEAICE_ALLOW_JFNK */
+
 C-    The old ways of specifying mcPheeTaper, mcPheePiston & frazilFrac:
 C     a) prevent multiple specification of the same coeff;
 C     b) if specified, then try to recover old way of setting & default.
@@ -628,7 +648,7 @@ C     to set SEAICE_mcPheePiston once drF is known)
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
-
+      
       IF ( useThSice ) THEN
 C     If the thsice package with the Winton thermodynamics is used
 C     is does not make sense to have the following parameters defined,
