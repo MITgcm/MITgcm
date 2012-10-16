@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.1 2012/10/16 06:59:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.2 2012/10/16 09:07:16 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -767,7 +767,7 @@ C--   Calculate final residual of the linearised system
      O                  residUend, residVend, uTmp, vTmp,
      I                  printResidual, myIter, myThid )
         _BEGIN_MASTER( myThid )
-        WRITE(standardMessageUnit,'(A,1X,I6,1P3E16.8)')
+        WRITE(standardMessageUnit,'(A,1X,1P3E16.8)')
      &       ' SEAICE_PRECONDITIONER: Residual Initial Uice,Vice=',
      &       residUini, residVini
         WRITE(standardMessageUnit,'(A,I4,A,I4,A,I6,1P2E16.8)')
