@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.71 2012/07/04 20:24:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.72 2012/10/16 06:20:40 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1088,9 +1088,9 @@ C--   Calculate final residual of the linearised system
      O                  residUend, residVend, uTmp, vTmp,
      I                  printResidual, myIter, myThid )
         _BEGIN_MASTER( myThid )
-        WRITE(standardMessageUnit,'(A,1P3E16.8)')
-     &    ' SEAICE_LSR: Residual Initial Uice,Vice=',
-     &        residUini, residVini
+        WRITE(standardMessageUnit,'(A,I10,1P3E16.8)')
+     &    ' SEAICE_LSR: Residual Initial ipass,Uice,Vice=',
+     &        ilcall, residUini, residVini
 #ifdef SEAICE_ALLOW_FREEDRIFT
         IF ( LSR_mixIniGuess.GE.0 )
      &  WRITE(standardMessageUnit,'(A,1P3E16.8)')
