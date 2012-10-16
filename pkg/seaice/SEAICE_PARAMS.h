@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.95 2012/09/24 15:05:29 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.96 2012/10/16 06:37:58 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -18,6 +18,8 @@ C     SEAICEuseEVP      :: If false, use Zhangs LSR solver for VP equations
 C                          if true use elastic viscous plastic solver
 C     SEAICEuseFREEDRIFT :: If True use free drift velocity instead of EVP
 C                           or LSR
+C     SEAICEuseJFNK      :: If true, use Jacobi-free Newton-Krylov solver
+C                           instead of LSR (default: false)
 C     SEAICEuseTILT      :: If true then include surface tilt term in dynamics
 C     SEAICEheatConsFix  :: If true then fix ocn<->seaice advective heat flux.
 C     SEAICEuseEVPpickup :: Set to false in order to start EVP solver with
@@ -67,6 +69,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
      &     SEAICEuseFREEDRIFT, SEAICEuseTILT, SEAICEuseTEM,
+     &     SEAICEuseJFNK,
      &     SEAICEheatConsFix,
      &     SEAICEuseMetricTerms,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding,
@@ -84,6 +87,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
       COMMON /SEAICE_PARM_L/
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
      &     SEAICEuseFREEDRIFT, SEAICEuseTILT, SEAICEuseTEM,
+     &     SEAICEuseJFNK,
      &     SEAICEheatConsFix,
      &     SEAICEuseMetricTerms,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding,
@@ -107,6 +111,10 @@ C                         1 = use linearized approx (consistent with tsurf findi
 C     SOLV_MAX_ITERS    :: maximum number of allowed LSR-solver iterations
 C     SOLV_NCHECK       :: iteration interval for solver convergence test
 C     NPSEUDOTIMESTEPS  :: number of extra pseudo time steps (>= 2)
+C     SEAICEnewtonIterMax :: maximum number of allowed Newton iterations 
+C                          in JFNK-solver
+C     SEAICEkrylovIterMax :: maximum number of allowed Krylov iterations
+C                          in JFNK-solver
 C     LSR_mixIniGuess   :: control mixing of free-drift sol. into LSR initial guess
 C                       :: =0 : no mix ; =2,4 : mix with (1/err)^2,4 factor
 C     SEAICEpresPow0    :: HEFF exponent for ice strength below SEAICEpresH0
@@ -133,6 +141,7 @@ C
       INTEGER SOLV_MAX_ITERS, SOLV_NCHECK
       INTEGER NPSEUDOTIMESTEPS
       INTEGER LSR_mixIniGuess
+      INTEGER SEAICEnewtonIterMax, SEAICEkrylovIterMax
       INTEGER SEAICEadvScheme
       INTEGER SEAICEadvSchArea
       INTEGER SEAICEadvSchHeff
@@ -150,6 +159,7 @@ C
      &     SOLV_MAX_ITERS, SOLV_NCHECK,
      &     NPSEUDOTIMESTEPS,
      &     LSR_mixIniGuess,
+     &     SEAICEnewtonIterMax, SEAICEkrylovIterMax,
      &     SEAICEpresPow0, SEAICEpresPow1,
      &     SEAICEadvScheme,
      &     SEAICEadvSchArea,
@@ -193,6 +203,9 @@ C     SEAICE_elasticParm :: parameter that sets relaxation timescale
 C                           tau = SEAICE_elasticParm * SEAICE_deltaTdyn
 C     SEAICE_evpTauRelax :: relaxation timescale tau                    (s)
 C     SEAICE_evpDampC    :: evp damping constant (Hunke,JCP,2001)       (kg/m^2)
+C     JFNKgamma_nonlin   :: non-linear tolerance parameter for JFNK solver
+C     JFNKgamma_lin_min/max :: tolerance parameters for linear JFNK solver
+C     JFNKres_t          :: tolerance parameter for FGMRES residual
 C     SEAICE_zetaMaxFac  :: factor determining the maximum viscosity    (s)
 C                          (default = 5.e+12/2.e4 = 2.5e8)
 C     SEAICE_zetaMin     :: lower bound for viscosity (default = 0)    (N s/m^2)
@@ -310,6 +323,8 @@ C
       _RL facOpenGrow, facOpenMelt
       _RL SEAICE_tempFrz0, SEAICE_dTempFrz_dS
       _RL OCEAN_drag, LSR_ERROR, DIFF1
+      _RL JFNKgamma_nonlin, JFNKres_t
+      _RL JFNKgamma_lin_min, JFNKgamma_lin_max
       _RL SEAICE_area_reg, SEAICE_hice_reg
       _RL SEAICE_area_floor, SEAICE_area_max
       _RL SEAICE_airTurnAngle, SEAICE_waterTurnAngle
@@ -347,6 +362,8 @@ C
      &    facOpenGrow, facOpenMelt,
      &    SEAICE_tempFrz0, SEAICE_dTempFrz_dS,
      &    OCEAN_drag, LSR_ERROR, DIFF1,
+     &    JFNKgamma_nonlin, JFNKres_t, 
+     &    JFNKgamma_lin_min, JFNKgamma_lin_max,
      &    SEAICE_area_reg, SEAICE_hice_reg,
      &    SEAICE_area_floor, SEAICE_area_max,
      &    SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow,
