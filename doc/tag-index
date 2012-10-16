@@ -1,9 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1748 2012/10/11 19:21:39 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1749 2012/10/16 07:08:56 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: add Jacobian-free Newton Krylov solver for ice dynamics
+  (Lemieux et al. 2010, 2012). Turn on with the usual SEAICE_ALLOW_JFNK
+  and SEAICEuseJFNK=.true. A few things to note:
+  - involves a FGMRES, that is parallel but very inefficient,
+    because of many scalar products (global sums) in the Gram-Schmidt
+    orthogonalization method. Needs to be replaced. Original code
+    from J.-F. Lemieux
+  - preconditioner for FGMRES is a stripped down version of LSOR
+  - SOLV_MAX_ITERS is now used for LSOR as a solver and as a 
+    preconditioner. For the preconditioner, the default is set to 10.
+  - Jacobian times vector is computed with finite differences
+  - marginally related to JFNK-solver: add a smooth regularization for
+    zeta with tanh that will improve convergence (Lemieux and Tremblay,
+    2009) for any implicit solver (not implemented for EVP because EVP
+    does not need this regularization in the first place). Define
+    SEAICE_ZETA_SMOOTHREG in SEAICE_OPTIONS.h to use.
 o eesupp/src:
   - check in genmake2 that intrinsic S/R flush is available.
   - add S/R to flush IO unit (if intrinsic S/R flush is available)
