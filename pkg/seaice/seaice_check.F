@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.69 2012/08/28 19:19:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.70 2012/10/16 06:38:26 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -748,6 +748,34 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif /* SEAICE_VARIABLE_SALINITY */
+
+#ifdef SEAICE_ALLOW_JFNK
+      IF ( SEAICEuseJFNK ) THEN
+       IF ( JFNKres_t .EQ. UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: need to specify ',
+     &       'JFNKres_t for SEAICEuseJFNK=.TRUE.'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+       ENDIF
+      ENDIF
+      IF ( SEAICEuseJFNK .AND. SEAICEuseEVP ) THEN
+       WRITE(msgBuf,'(2A)') 
+     &      'S/R SEAICE_CHECK: cannot have both SEAICEuseJFNK=.TRUE.',
+     &      'and SEAICEuseEVP=.TRUE. (i.e. SEAICE_deltaTevp > 0)'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#else
+      IF ( SEAICEuseJFNK ) THEN
+        WRITE(msgBuf,'(A)')
+     &      'SEAICE_CHECK: SEAICEuseJFNK = .TRUE. but cpp-flag'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: '//
+     &   'SEAICE_ALLOW_JFNK is undef in SEAICE_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif /* SEAICE_ALLOW_JFNK */
 
       _END_MASTER(myThid)
 
