@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.51 2012/08/14 17:58:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.52 2012/10/16 06:43:05 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -300,12 +300,21 @@ CADJ STORE vicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
        ENDIF
 #endif /* SEAICE_ALLOW_EVP */
 
-#if defined(SEAICE_ALLOW_EVP) || defined(SEAICE_ALLOW_FREEDRIFT)
-       IF ( .NOT.SEAICEuseFREEDRIFT .AND. .NOT.SEAICEuseEVP ) THEN
+#if (!defined ALLOW_AUTODIFF_TAMC && defined SEAICE_ALLOW_JFNK)
+       IF ( SEAICEuseJFNK ) THEN
+        CALL SEAICE_JFNK( myTime, myIter, myThid )
+       ENDIF
+#endif /* SEAICE_ALLOW_JFNK */
+
+#if defined(SEAICE_ALLOW_EVP) || defined(SEAICE_ALLOW_EVP) \
+                              || defined(SEAICE_ALLOW_FREEDRIFT)
+       IF ( .NOT.SEAICEuseFREEDRIFT .AND. .NOT.SEAICEuseEVP
+     &      .AND. .NOT.SEAICEuseJFNK ) THEN
 #endif /* SEAICE_ALLOW_EVP or SEAICE_ALLOW_FREEDRIFT */
 C     LSR SCHEME (ZHANG-J/HIBLER 1997), PORTED ON A C-GRID
           CALL SEAICE_LSR( myTime, myIter, myThid )
-#if defined(SEAICE_ALLOW_EVP) || defined(SEAICE_ALLOW_FREEDRIFT)
+#if defined(SEAICE_ALLOW_EVP) || defined(SEAICE_ALLOW_EVP) \
+                              || defined(SEAICE_ALLOW_FREEDRIFT)
        ENDIF
 #endif /* SEAICE_ALLOW_EVP or SEAICE_ALLOW_FREEDRIFT */
 
