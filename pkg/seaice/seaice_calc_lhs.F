@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.1 2012/10/16 07:00:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.2 2012/10/16 14:39:56 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -145,9 +145,6 @@ C
          ENDDO
         ENDDO
 C     compute lhs side of momentum equations
-C     TO DO: proper boundary conditions for drag and coriolis terms
-C     but they may not be necesssary (and are done in the same way for
-C     the other solvers)
         DO J=1,sNy
          DO I=1,sNx
 C     mass*(uIce)/deltaT - dsigma/dx 
