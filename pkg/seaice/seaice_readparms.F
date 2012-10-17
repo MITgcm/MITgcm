@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.126 2012/10/16 06:39:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.127 2012/10/17 20:38:51 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -460,10 +460,10 @@ c
 C     Open and read the data.seaice file
       WRITE(msgBuf,'(A)')
      &' '
-      CALL PRINT_MESSAGE( msgBuf, standardmessageunit,
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
       WRITE(msgBuf,'(A)') ' SEAICE_READPARMS: opening data.seaice'
-      CALL PRINT_MESSAGE( msgBuf, standardmessageunit,
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
 
       CALL OPEN_COPY_DATA_FILE(
@@ -543,7 +543,7 @@ C     yet been tried nor thought through.
      &      SEAICE_evpTauRelax = SEAICE_deltaTdyn*SEAICE_elasticParm
       ENDIF
 #endif /* SEAICE_ALLOW_EVP */
-C
+
 #ifdef SEAICE_ALLOW_FREEDRIFT
       IF ( SEAICEuseFREEDRIFT ) SEAICEuseEVP = .FALSE.
       IF ( SEAICEuseFREEDRIFT ) THEN
@@ -558,15 +558,13 @@ C
 C     Make sure that we have least two pseudo time steps
       NPSEUDOTIMESTEPS = MAX(NPSEUDOTIMESTEPS,2)
 
-#ifdef SEAICE_ALLOW_JFNK
-C     limit preconditioner steps
+C-    limit preconditioner steps
       IF ( SOLV_MAX_ITERS .EQ. UNSET_I ) THEN
 C     maximum number of LSOR steps in default Picard solver
        SOLV_MAX_ITERS = 1500
 C     maximum number of LSOR steps as preconditioner in JFNK solver
        IF ( SEAICEuseJFNK ) SOLV_MAX_ITERS = 10
       ENDIF
-#endif /* SEAICE_ALLOW_JFNK */
 
 C-    The old ways of specifying mcPheeTaper, mcPheePiston & frazilFrac:
 C     a) prevent multiple specification of the same coeff;
@@ -648,7 +646,7 @@ C     to set SEAICE_mcPheePiston once drF is known)
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
-      
+
       IF ( useThSice ) THEN
 C     If the thsice package with the Winton thermodynamics is used
 C     is does not make sense to have the following parameters defined,
