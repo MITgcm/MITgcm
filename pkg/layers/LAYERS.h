@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.9 2012/09/19 18:48:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.10 2012/10/17 17:45:35 rpa Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAYERS
@@ -27,48 +27,80 @@ C --  Parms
 C     3D Layers fields. The vertical dimension in these fields is nLayers,
 C     i.e. the isopycnal coordinate.
 C
-C      layers_UFlux :: U integrated over layer (m^2/s)
-C      layers_VFlux :: V integrated over layer (m^2/s)
-C      layers_HU    :: Layer thickness at the U point (m)
-C      layers_HV    :: Layer thickness at the V point (m)
+C      layers_UH :: U integrated over layer (m^2/s)
+C      layers_VH :: V integrated over layer (m^2/s)
+C      layers_Hw    :: Layer thickness at the U point (m)
+C      layers_Hs    :: Layer thickness at the V point (m)
+C      layers_PIw   :: 1 if layer exists, 0 otherwise
+C      layers_PIs   :: 1 if layer exists, 0 otherwise
+C      layers_U     :: mean zonal velocity in layer (only if layer exists) (m/s)
+C      layers_V     :: mean meridional velocity in layer (only if layer exists) (m/s)
 
 #ifdef LAYERS_UFLUX
-      _RL layers_UFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
+      _RL layers_UH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
      &                   nSx,nSy,layers_maxNum)
 # ifdef LAYERS_THICKNESS
-      _RL layers_HU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
+      _RL layers_Hw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
+     &                   nSx,nSy,layers_maxNum)
+      _RL layers_PIw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
+     &                   nSx,nSy,layers_maxNum)
+      _RL layers_U(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
      &                   nSx,nSy,layers_maxNum)
 # else
-      _RL layers_HU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
+      _RL layers_Hw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
+     &                   nSx,nSy,layers_maxNum)
+      _RL layers_PIw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
+     &                   nSx,nSy,layers_maxNum)
+      _RL layers_U(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
      &                   nSx,nSy,layers_maxNum)
 # endif /* LAYERS_THICKNESS */
 #else
-      _RL layers_UFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
+      _RL layers_UH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
      &                   nSx,nSy,layers_maxNum)
-      _RL layers_HU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
+      _RL layers_Hw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
+     &                   nSx,nSy,layers_maxNum)
+      _RL layers_PIw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
+     &                   nSx,nSy,layers_maxNum)
+      _RL layers_U(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
      &                   nSx,nSy,layers_maxNum)
 #endif
 
-      COMMON /LAYERS_U/ layers_UFlux, layers_HU
-
+      COMMON /LAYERS_U/ layers_UH, layers_Hw,
+     &    layers_PIw, layers_U
+     
 #ifdef LAYERS_VFLUX
-      _RL layers_VFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
+      _RL layers_VH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
      &                   nSx,nSy,layers_maxNum)
 # ifdef LAYERS_THICKNESS
-      _RL layers_HV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
+      _RL layers_Hs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
+     &                   nSx,nSy,layers_maxNum)
+      _RL layers_PIs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
+     &                   nSx,nSy,layers_maxNum)
+      _RL layers_V(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
      &                   nSx,nSy,layers_maxNum)
 # else
-      _RL layers_HV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
+      _RL layers_Hs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
      &                   nSx,nSy,layers_maxNum)
+      _RL layers_PIs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
+     &                   nSx,nSy,layers_maxNum)
+      _RL layers_V(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
+     &                   nSx,nSy,layers_maxNum)     
 # endif /* LAYERS_THICKNESS */
 #else
-      _RL layers_VFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
+      _RL layers_VH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
      &                   nSx,nSy,layers_maxNum)
-      _RL layers_HV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
+      _RL layers_Hs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
+     &                   nSx,nSy,layers_maxNum)
+      _RL layers_PIs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
+     &                   nSx,nSy,layers_maxNum)
+      _RL layers_V(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,
      &                   nSx,nSy,layers_maxNum)
 #endif /* LAYERS_VFLUX */
 
-      COMMON /LAYERS_V/ layers_VFlux, layers_HV
+      COMMON /LAYERS_V/ layers_VH, layers_Hs,
+     &    layers_PIs, layers_V
+
+
 
 #ifdef LAYERS_PRHO_REF
       _RL prho(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,
@@ -89,28 +121,36 @@ C     Keep track of time
       COMMON /LAYERS_TAVE/ layers_TimeAve
 
 #ifdef LAYERS_UFLUX
-      _RL layers_UFlux_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
+      _RL layers_UH_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
      &                   nSx,nSy)
 #ifdef LAYERS_THICKNESS
-      _RL layers_HU_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
+      _RL layers_Hw_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
+     &                   nSx,nSy)
+      _RL layers_PIw_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
+     &                   nSx,nSy)
+      _RL layers_U_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
      &                   nSx,nSy)
 #endif /* LAYERS_THICKNESS */
-      COMMON /LAYERS_U_TAVE/ layers_UFlux_T
+      COMMON /LAYERS_U_TAVE/ layers_UH_T
 #ifdef LAYERS_THICKNESS
-     &  , layers_HU_T
+     &  , layers_Hw_T, layers_PIw_T, layers_U_T
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_UFLUX */
 
 #ifdef LAYERS_VFLUX
-      _RL layers_VFlux_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
+      _RL layers_VH_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
      &                   nSx,nSy)
 #ifdef LAYERS_THICKNESS
-      _RL layers_HV_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
+      _RL layers_Hs_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
+     &                   nSx,nSy)
+      _RL layers_PIs_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
+     &                   nSx,nSy)
+      _RL layers_V_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
      &                   nSx,nSy)
 #endif /* LAYERS_THICKNESS */
-      COMMON /LAYERS_V_TAVE/ layers_VFlux_T
+      COMMON /LAYERS_V_TAVE/ layers_VH_T
 #ifdef LAYERS_THICKNESS
-     &  , layers_HV_T
+     &  , layers_Hs_T, layers_PIs_T, layers_V_T
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 
