@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_varia.F,v 1.3 2012/09/19 18:48:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_varia.F,v 1.4 2012/10/17 18:49:15 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -38,16 +38,20 @@ C     Loop through 3D variables:
           DO i=1-Olx,sNx+Olx
 
 #ifdef LAYERS_UFLUX
-           layers_UFlux(i,j,kg,bi,bj,iLa) = 0. _d 0
+           layers_UH(i,j,kg,bi,bj,iLa) = 0. _d 0
 #ifdef LAYERS_THICKNESS
-           layers_HU(i,j,kg,bi,bj,iLa) = 0. _d 0
+           layers_Hw(i,j,kg,bi,bj,iLa) = 0. _d 0
+           layers_PIw(i,j,kg,bi,bj,iLa) = 0. _d 0
+           layers_U(i,j,kg,bi,bj,iLa) = 0. _d 0
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_UFLUX */
 
 #ifdef LAYERS_VFLUX
-           layers_VFlux(i,j,kg,bi,bj,iLa) = 0. _d 0
+           layers_VH(i,j,kg,bi,bj,iLa) = 0. _d 0
 #ifdef LAYERS_THICKNESS
-           layers_HV(i,j,kg,bi,bj,iLa) = 0. _d 0
+           layers_Hs(i,j,kg,bi,bj,iLa) = 0. _d 0
+           layers_PIs(i,j,kg,bi,bj,iLa) = 0. _d 0
+           layers_V(i,j,kg,bi,bj,iLa) = 0. _d 0
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 
@@ -64,16 +68,16 @@ C     Initialize averages to zero
         layers_TimeAve(bi,bj) = 0. _d 0
 
 #ifdef LAYERS_UFLUX
-        CALL TIMEAVE_RESET(layers_UFlux_T,Nlayers,bi,bj,myThid)
+        CALL TIMEAVE_RESET(layers_UH_T,Nlayers,bi,bj,myThid)
 #ifdef LAYERS_THICKNESS
-        CALL TIMEAVE_RESET(layers_HU_T,Nlayers,bi,bj,myThid)
+        CALL TIMEAVE_RESET(layers_Hw_T,Nlayers,bi,bj,myThid)
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_UFLUX */
 
 #ifdef LAYERS_VFLUX
-        CALL TIMEAVE_RESET(layers_VFlux_T,Nlayers,bi,bj,myThid)
+        CALL TIMEAVE_RESET(layers_VH_T,Nlayers,bi,bj,myThid)
 #ifdef LAYERS_THICKNESS
-        CALL TIMEAVE_RESET(layers_HV_T,Nlayers,bi,bj,myThid)
+        CALL TIMEAVE_RESET(layers_Hs_T,Nlayers,bi,bj,myThid)
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
       ENDIF !IF ( iLa.EQ.1 ) THEN

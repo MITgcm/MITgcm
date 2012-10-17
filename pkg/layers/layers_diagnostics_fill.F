@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/Attic/layers_diagnostics_fill.F,v 1.3 2012/09/19 22:46:56 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/Attic/layers_diagnostics_fill.F,v 1.4 2012/10/17 18:49:15 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -17,8 +17,8 @@ C ===================================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_LAYERS
-# include "LAYERS_SIZE.h"
-# include "LAYERS.h"
+#include "LAYERS_SIZE.h"
+#include "LAYERS.h"
 #endif
 
 C  INPUT/OUTPUT PARAMETERS:
@@ -36,24 +36,36 @@ C     myThid ::  my Thread Id number
 
 #ifdef LAYERS_UFLUX
          WRITE(diagName,'(A4,I1,A3)') 'LaUH',iLa,layers_name(iLa)
-         CALL DIAGNOSTICS_FILL( layers_UFlux(1-OLx,1-OLy,1,1,1,iLa),
+         CALL DIAGNOSTICS_FILL( layers_UH(1-OLx,1-OLy,1,1,1,iLa),
      &                          diagName,0,Nlayers, 0, 1, 1, myThid )
-# ifdef LAYERS_THICKNESS
+#ifdef LAYERS_THICKNESS
          WRITE(diagName,'(A4,I1,A3)') 'LaHw',iLa,layers_name(iLa)
-         CALL DIAGNOSTICS_FILL( layers_HU(1-OLx,1-OLy,1,1,1,iLa),
+         CALL DIAGNOSTICS_FILL( layers_Hw(1-OLx,1-OLy,1,1,1,iLa),
      &                          diagName,0,Nlayers, 0, 1, 1, myThid )
-# endif
+         WRITE(diagName,'(A4,I1,A3)') 'LaPw',iLa,layers_name(iLa)
+         CALL DIAGNOSTICS_FILL( layers_PIw(1-OLx,1-OLy,1,1,1,iLa),
+     &                          diagName,0,Nlayers, 0, 1, 1, myThid )
+         WRITE(diagName,'(A4,I1,A3)') 'LaUa',iLa,layers_name(iLa)
+         CALL DIAGNOSTICS_FILL( layers_U(1-OLx,1-OLy,1,1,1,iLa),
+     &                          diagName,0,Nlayers, 0, 1, 1, myThid )
+#endif
 #endif
 
 #ifdef LAYERS_VFLUX
          WRITE(diagName,'(A4,I1,A3)') 'LaVH',iLa,layers_name(iLa)
-         CALL DIAGNOSTICS_FILL( layers_VFlux(1-OLx,1-OLy,1,1,1,iLa),
+         CALL DIAGNOSTICS_FILL( layers_VH(1-OLx,1-OLy,1,1,1,iLa),
      &                          diagName,0,Nlayers, 0, 1, 1, myThid )
-# ifdef LAYERS_THICKNESS
+#ifdef LAYERS_THICKNESS
          WRITE(diagName,'(A4,I1,A3)') 'LaHs',iLa,layers_name(iLa)
-         CALL DIAGNOSTICS_FILL( layers_HV(1-OLx,1-OLy,1,1,1,iLa),
+         CALL DIAGNOSTICS_FILL( layers_Hs(1-OLx,1-OLy,1,1,1,iLa),
      &                          diagName,0,Nlayers, 0, 1, 1, myThid )
-# endif
+         WRITE(diagName,'(A4,I1,A3)') 'LaPs',iLa,layers_name(iLa)
+         CALL DIAGNOSTICS_FILL( layers_PIs(1-OLx,1-OLy,1,1,1,iLa),
+     &                          diagName,0,Nlayers, 0, 1, 1, myThid )
+         WRITE(diagName,'(A4,I1,A3)') 'LaVa',iLa,layers_name(iLa)
+         CALL DIAGNOSTICS_FILL( layers_V(1-OLx,1-OLy,1,1,1,iLa),
+     &                          diagName,0,Nlayers, 0, 1, 1, myThid )
+#endif
 #endif
 
       ENDIF

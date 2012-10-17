@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.14 2012/09/19 18:48:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.15 2012/10/17 18:49:15 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -61,17 +61,25 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       
       IF (layers_num(iLa) .EQ. 1) THEN
        CALL LAYERS_FLUXCALC( uVel,vVel,theta,iLa,
-     &  layers_UFlux(1-OLx,1-OLy,1,1,1,iLa),
-     &  layers_VFlux(1-OLx,1-OLy,1,1,1,iLa),
-     &  layers_HU(1-OLx,1-OLy,1,1,1,iLa),
-     &  layers_HV(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_UH(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_VH(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_Hw(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_Hs(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_PIw(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_PIs(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_U(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_V(1-OLx,1-OLy,1,1,1,iLa),
      &  myThid)
       ELSEIF (layers_num(iLa) .EQ. 2) THEN
        CALL LAYERS_FLUXCALC( uVel,vVel,salt,iLa,
-     &  layers_UFlux(1-OLx,1-OLy,1,1,1,iLa),
-     &  layers_VFlux(1-OLx,1-OLy,1,1,1,iLa),
-     &  layers_HU(1-OLx,1-OLy,1,1,1,iLa),
-     &  layers_HV(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_UH(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_VH(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_Hw(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_Hs(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_PIw(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_PIs(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_U(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_V(1-OLx,1-OLy,1,1,1,iLa),
      &  myThid)
       ELSEIF (layers_num(iLa) .EQ. 3) THEN
 #ifdef LAYERS_PRHO_REF
@@ -96,10 +104,14 @@ C     the model level given by layers_krho.
        ENDDO
        CALL LAYERS_FLUXCALC( uVel,vVel,
      &  prho(1-OLx,1-OLy,1,1,1,iLa),iLa,
-     &  layers_UFlux(1-OLx,1-OLy,1,1,1,iLa),
-     &  layers_VFlux(1-OLx,1-OLy,1,1,1,iLa),
-     &  layers_HU(1-OLx,1-OLy,1,1,1,iLa),
-     &  layers_HV(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_UH(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_VH(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_Hw(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_Hs(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_PIw(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_PIs(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_U(1-OLx,1-OLy,1,1,1,iLa),
+     &  layers_V(1-OLx,1-OLy,1,1,1,iLa),     
      &  myThid)
 #endif
       ENDIF
@@ -117,18 +129,26 @@ C --- The tile loops
       DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef LAYERS_UFLUX
-         CALL TIMEAVE_CUMULATE( layers_UFlux_T, layers_UFlux, Nlayers,
+         CALL TIMEAVE_CUMULATE( layers_UH_T, layers_UFlux, Nlayers,
      &                          deltaTclock, bi, bj, myThid )
 #ifdef LAYERS_THICKNESS
-         CALL TIMEAVE_CUMULATE( layers_HU_T, layers_HU, Nlayers,
+         CALL TIMEAVE_CUMULATE( layers_Hw_T, layers_HU, Nlayers,
+     &                          deltaTclock, bi, bj, myThid )
+         CALL TIMEAVE_CUMULATE( layers_PIw_T, layers_PIw, Nlayers,
+     &                          deltaTclock, bi, bj, myThid )
+         CALL TIMEAVE_CUMULATE( layers_U_T, layers_U, Nlayers,
      &                          deltaTclock, bi, bj, myThid )
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_UFLUX */
 #ifdef LAYERS_VFLUX
-         CALL TIMEAVE_CUMULATE( layers_VFlux_T, layers_VFlux, Nlayers,
+         CALL TIMEAVE_CUMULATE( layers_VH_T, layers_VFlux, Nlayers,
      &                          deltaTclock, bi, bj, myThid )
 #ifdef LAYERS_THICKNESS
-         CALL TIMEAVE_CUMULATE( layers_HV_T, layers_HV, Nlayers,
+         CALL TIMEAVE_CUMULATE( layers_Hs_T, layers_HV, Nlayers,
+     &                          deltaTclock, bi, bj, myThid )
+         CALL TIMEAVE_CUMULATE( layers_PIs_T, layers_PIs, Nlayers,
+     &                          deltaTclock, bi, bj, myThid )
+         CALL TIMEAVE_CUMULATE( layers_V_T, layers_V, Nlayers,
      &                          deltaTclock, bi, bj, myThid )
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */

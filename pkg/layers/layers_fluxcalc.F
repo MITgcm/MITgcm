@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.2 2012/09/19 18:48:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.3 2012/10/17 18:49:15 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -11,7 +11,7 @@ C !ROUTINE: LAYERS_FLUXCALC
 C !INTERFACE:
       SUBROUTINE LAYERS_FLUXCALC(
      I                  uVel,vVel,tracer,iLa,
-     O                  UH,VH,Hw,Hs,
+     O                  UH,VH,Hw,Hs,PIw,PIs,U,V,
      I                  myThid )
 
 C !DESCRIPTION:
@@ -42,6 +42,10 @@ C      UH   :: U integrated over layer (m^2/s)
 C      VH   :: V integrated over layer (m^2/s)
 C      Hw   :: Layer thickness at the U point (m)
 C      Hs   :: Layer thickness at the V point (m)
+C      PIw  :: 1 if layer exists, 0 otherwise (at U point)
+C      PIs  :: 1 if layer exists, 0 otherwise (at V point)
+C      U    :: average U over layer (m/s)
+C      V    :: average V over layer (m/s)
 C      iLa  :: layer coordinate index
       INTEGER myThid
       _RL uVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -51,6 +55,10 @@ C      iLa  :: layer coordinate index
       _RL VH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL Hw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL Hs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL PIw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL PIs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL U(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL V(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       INTEGER iLa
 CEOP
 
@@ -278,6 +286,31 @@ C ------ Augment the bin values
         ENDDO
        ENDDO
       ENDDO
+      
+C--   Now that we know the thicknesses, compute the heaviside function
+C--   (Needs another loop through Ng)
+#ifdef LAYERS_THICKNESS
+      DO kg=1,Nlayers
+       DO j = 1,sNy+1
+        DO i = 1,sNx+1
+#ifdef LAYERS_UFLUX
+         IF (Hw(i,j,kg,bi,bj) .GT. 0.) THEN
+          PIw(i,j,kg,bi,bj) = 1. _d 0
+          U(i,j,kg,bi,bj) =
+     &        UH(i,j,kg,bi,bj) / Hw(i,j,kg,bi,bj)
+         ENDIF
+#endif /* LAYERS_UFLUX */
+#ifdef LAYERS_VFLUX
+         IF (Hs(i,j,kg,bi,bj) .GT. 0.) THEN
+          PIs(i,j,kg,bi,bj) = 1. _d 0
+          V(i,j,kg,bi,bj) =
+     &        VH(i,j,kg,bi,bj) / Hs(i,j,kg,bi,bj)
+         ENDIF
+#endif /* LAYERS_VFLUX */
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* LAYERS_THICKNESS */
 
 C --- End bi,bj loop
       ENDDO
