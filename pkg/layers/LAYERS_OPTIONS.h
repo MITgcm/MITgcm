@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS_OPTIONS.h,v 1.4 2012/09/19 18:48:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS_OPTIONS.h,v 1.5 2012/10/18 12:55:39 jmc Exp $
 C $Name:  $
 
 C CPP options file for LAYERS package
@@ -21,11 +21,6 @@ C Keep track of layer thicknesses?
 
 C The MNC stuff is too complicated
 #undef LAYERS_MNC
-
-C To allow use for snapshots and time average without 
-C pkg/diagnostics, using pkg/layers own codes and timeave
-C the old-fasioned way, only for the first set of layers.
-#undef ALLOW_LAYERS_OUTPUT
 
 C Allow use of potential density as a layering field.
 #define LAYERS_PRHO_REF
