@@ -37,4 +37,5 @@ seaice_evp.f
 seaice_lsr.f
 seaice_freedrift.f
 seaice_ocean_stress.f
+seaice_oceandrag_coeffs.f
 seaice_map_thsice.f
