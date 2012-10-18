@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.16 2012/10/18 12:59:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.17 2012/10/18 13:55:30 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -53,6 +53,23 @@ C     k        :: vertical index for model grid
       INTEGER bi, bj, iLa
 #ifdef LAYERS_PRHO_REF
       INTEGER i, j, k
+#endif
+
+#ifndef LAYERS_UFLUX
+      _RL layers_UH (1-OLx:1-OLx,1-OLy:1-OLy,1,1,1,layers_maxNum)
+#endif
+#ifndef LAYERS_VFLUX
+      _RL layers_VH (1-OLx:1-OLx,1-OLy:1-OLy,1,1,1,layers_maxNum)
+#endif
+#if !(defined LAYERS_THICKNESS) || !(defined LAYERS_UFLUX)
+      _RL layers_Hw (1-OLx:1-OLx,1-OLy:1-OLy,1,1,1,layers_maxNum)
+      _RL layers_PIw(1-OLx:1-OLx,1-OLy:1-OLy,1,1,1,layers_maxNum)
+      _RL layers_U  (1-OLx:1-OLx,1-OLy:1-OLy,1,1,1,layers_maxNum)
+#endif
+#if !(defined LAYERS_THICKNESS) || !(defined LAYERS_VFLUX)
+      _RL layers_Hs (1-OLx:1-OLx,1-OLy:1-OLy,1,1,1,layers_maxNum)
+      _RL layers_PIs(1-OLx:1-OLx,1-OLy:1-OLy,1,1,1,layers_maxNum)
+      _RL layers_V  (1-OLx:1-OLx,1-OLy:1-OLy,1,1,1,layers_maxNum)
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
