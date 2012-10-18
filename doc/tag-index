@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1749 2012/10/16 07:08:56 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1750 2012/10/18 10:07:06 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: 
+  - simplify (?) ocean-drag coefficent computations by using
+    the same routine in all three solvers (saves some code lines)
+  - remove global fields DRAGA and DRAGS from C-grid code and
+    declare them locally in lsr.F (the only place where they are
+    still used)
 o pkg/seaice: add Jacobian-free Newton Krylov solver for ice dynamics
   (Lemieux et al. 2010, 2012). Turn on with the usual SEAICE_ALLOW_JFNK
   and SEAICEuseJFNK=.true. A few things to note:
