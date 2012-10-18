@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.74 2012/10/18 10:06:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.75 2012/10/18 14:26:05 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -512,8 +512,8 @@ C     and the symmetric drag term; must be done after normalizing
           BU(I,J,bi,bj)    = BU(I,J,bi,bj)    * recip_rAw(I,J,bi,bj)
      &         + seaiceMaskU(I,J,bi,bj) *
      &         ( seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
-     &         + 0.5 _d 0 * ( DWATN(I,J,bi,bj) + DWATN(I-1,J,bi,bj) ) )
-     &         * COSWAT
+     &         + 0.5 _d 0 * ( DWATN(I,J,bi,bj) + DWATN(I-1,J,bi,bj) ) 
+     &         * COSWAT )
           uRt1(I,J,bi,bj) = uRt1(I,J,bi,bj) * recip_rAw(I,J,bi,bj)
           uRt2(I,J,bi,bj) = uRt2(I,J,bi,bj) * recip_rAw(I,J,bi,bj)
          ENDDO
@@ -644,8 +644,8 @@ C     and the symmetric drag term; must be done after normalizing
           BV(I,J,bi,bj)    = BV(I,J,bi,bj)    * recip_rAs(I,J,bi,bj)
      &         + seaiceMaskV(I,J,bi,bj) *
      &         ( seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
-     &         + 0.5 _d 0 * ( DWATN(I,J,bi,bj) + DWATN(I,J-1,bi,bj) ) )
-     &         * COSWAT
+     &         + 0.5 _d 0 * ( DWATN(I,J,bi,bj) + DWATN(I,J-1,bi,bj) )
+     &         * COSWAT )
           vRt1(I,J,bi,bj) = vRt1(I,J,bi,bj) * recip_rAs(I,J,bi,bj)
           vRt2(I,J,bi,bj) = vRt2(I,J,bi,bj) * recip_rAs(I,J,bi,bj)
          ENDDO
@@ -655,7 +655,7 @@ C     now set up right-hand-side
 C     contribution of sigma22 to rhs
         DO J=0,sNy
          DO I=1,sNx
-          sig22(I,J) =  zetaMinusEta(I,J,bi,bj)
+          sig22(I,J) = zetaMinusEta(I,J,bi,bj)
      &         * ( uIceC(I+1,J,bi,bj) - uIceC(I,J,bi,bj) )
      &         * _recip_dxF(I,J,bi,bj)
      &         + etaPlusZeta(I,J,bi,bj) * k1AtC(I,J,bi,bj)

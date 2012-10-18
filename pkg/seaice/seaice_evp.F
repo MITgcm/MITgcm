@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.41 2012/10/18 10:06:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.42 2012/10/18 14:26:05 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -514,8 +514,8 @@ C
      &           + stressDivergenceX(I,J,bi,bj) )
      &           /( 1. _d 0 - seaiceMaskU(I,J,bi,bj)
      &           + seaiceMassU(I,J,bi,bj)/SEAICE_deltaTevp
-     &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I-1,J,bi,bj) ) )
-     &           * COSWAT
+     &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I-1,J,bi,bj) )
+     &           * COSWAT )
             vIceC(I,J,bi,bj) = seaiceMaskV(I,J,bi,bj) *
      &           ( seaiceMassV(I,J,bi,bj)/SEAICE_deltaTevp
      &           * vIceC(I,J,bi,bj)
@@ -523,8 +523,8 @@ C
      &           + stressDivergenceY(I,J,bi,bj) )
      &           /( 1. _d 0 - seaiceMaskV(I,J,bi,bj)
      &           + seaiceMassV(I,J,bi,bj)/SEAICE_deltaTevp
-     &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I,J-1,bi,bj) ) )
-     &           * COSWAT
+     &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I,J-1,bi,bj) )
+     &           * COSWAT )
 C--   to change results  of lab_sea.hb87 test exp. (only preserve 2 digits for cg2d)
 c           uIceC(i,j,bi,bj) = uIce(i,j,bi,bj)
 c    &                       +( uIceC(i,j,bi,bj) - uIce(i,j,bi,bj) )
