@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.41 2012/03/06 16:45:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.42 2012/10/18 10:06:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -242,7 +242,7 @@ CADJ STORE uice = comlev1, key=ikey_dynamics
 CADJ STORE vice = comlev1, key=ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-crg what about DRAGS,DRAGA,ETA,ZETA
+crg what about ETA,ZETA
 
 crg later c$taf loop = iteration uice,vice
 

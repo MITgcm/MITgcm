@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.73 2012/10/18 09:29:55 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.74 2012/10/18 10:06:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -293,53 +293,12 @@ CADJ &     key = itmpkey
      O     eta, zeta, press,
      I     ilcall, myTime, myIter, myThid )
 
+      CALL SEAICE_OCEANDRAG_COEFFS(
+     I     uIceC, vIceC,
+     O     DWATN,
+     I     ilcall, myTime, myIter, myThid )
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=0,sNy+1
-         DO i=0,sNx+1
-C     set up non-linear water drag
-#ifdef OBCS_UVICE_OLD
-          TEMPVAR = QUART*(
-     &            ( ( uIceC( i ,j,bi,bj)-uVel(i  ,j,kSrf,bi,bj) )
-     &             +( uIceC(i+1,j,bi,bj)-uVel(i+1,j,kSrf,bi,bj) )
-     &            )**2
-     &          + ( ( vIceC(i, j ,bi,bj)-vVel(i, j ,kSrf,bi,bj) )
-     &             +( vIceC(i,j+1,bi,bj)-vVel(i,j+1,kSrf,bi,bj) )
-     &            )**2 )
-#else /* OBCS_UVICE_OLD */
-          TEMPVAR = QUART*(
-     &            ( ( uIceC( i ,j,bi,bj)-uVel(i  ,j,kSrf,bi,bj) )
-     &             *maskInW( i ,j,bi,bj)
-     &             +( uIceC(i+1,J,bi,bj)-uVel(i+1,j,kSrf,bi,bj) )
-     &             *maskInW(i+1,j,bi,bj) )**2
-     &          + ( ( vIceC(i, j ,bi,bj)-vVel(i, j ,kSrf,bi,bj) )
-     &             *maskInS(i, j ,bi,bj)
-     &             +( vIceC(i,j+1,bi,bj)-vVel(i,j+1,kSrf,bi,bj) )
-     &             *maskInS(i,j+1,bi,bj) )**2 )
-#endif /* OBCS_UVICE_OLD */
-          IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
-           IF ( SEAICE_waterDrag_south.LE.0. ) THEN
-            DWATN(I,J,bi,bj)=0.
-           ELSEIF ( TEMPVAR.LE.(QUART/SEAICE_waterDrag_south)**2 ) THEN
-            DWATN(I,J,bi,bj)=QUART
-           ELSE
-            DWATN(I,J,bi,bj)=SEAICE_waterDrag_south*SQRT(TEMPVAR)
-           ENDIF
-          ELSE
-           IF ( SEAICE_waterDrag.LE.0. ) THEN
-            DWATN(I,J,bi,bj)=0.
-           ELSEIF ( TEMPVAR.LE.(QUART/SEAICE_waterDrag)**2 ) THEN
-            DWATN(I,J,bi,bj)=QUART
-           ELSE
-            DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
-           ENDIF
-          ENDIF
-          DWATN(I,J,bi,bj) = DWATN(I,J,bi,bj) * HEFFM(I,J,bi,bj)
-C     set up symmetric drag
-          DRAGS(I,J,bi,bj) = DWATN(I,J,bi,bj)*COSWAT
-         ENDDO
-        ENDDO
-C
         DO J=1,sNy
          DO I=1,sNx
 C     set up anti symmetric drag force and add in current force
@@ -403,12 +362,12 @@ C      this is the rhs contribution of the time derivative
           uIce_fd(i,j,bi,bj) = FORCEX(i,j,bi,bj)
      &       / ( 1. _d 0 - seaiceMaskU(i,j,bi,bj)
      &         + seaiceMassU(i,j,bi,bj)/SEAICE_deltaTdyn
-     &         + HALF*( DRAGS(i,j,bi,bj) + DRAGS(i-1,j,bi,bj) )
+     &         + HALF*( DWATN(i,j,bi,bj) + DWATN(i-1,j,bi,bj) ) * COSWAT
      &         )
           vIce_fd(i,j,bi,bj) = FORCEY(i,j,bi,bj)
      &       / ( 1. _d 0 - seaiceMaskV(i,j,bi,bj)
      &         + seaiceMassV(i,j,bi,bj)/SEAICE_deltaTdyn
-     &         + HALF*( DRAGS(i,j,bi,bj) + DRAGS(i,j-1,bi,bj) )
+     &         + HALF*( DWATN(i,j,bi,bj) + DWATN(i,j-1,bi,bj) ) * COSWAT
      &         )
           ENDDO
          ENDDO
@@ -553,7 +512,8 @@ C     and the symmetric drag term; must be done after normalizing
           BU(I,J,bi,bj)    = BU(I,J,bi,bj)    * recip_rAw(I,J,bi,bj)
      &         + seaiceMaskU(I,J,bi,bj) *
      &         ( seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
-     &         + 0.5 _d 0*( DRAGS(I,J,bi,bj) + DRAGS(I-1,J,bi,bj) ) )
+     &         + 0.5 _d 0 * ( DWATN(I,J,bi,bj) + DWATN(I-1,J,bi,bj) ) )
+     &         * COSWAT
           uRt1(I,J,bi,bj) = uRt1(I,J,bi,bj) * recip_rAw(I,J,bi,bj)
           uRt2(I,J,bi,bj) = uRt2(I,J,bi,bj) * recip_rAw(I,J,bi,bj)
          ENDDO
@@ -684,7 +644,8 @@ C     and the symmetric drag term; must be done after normalizing
           BV(I,J,bi,bj)    = BV(I,J,bi,bj)    * recip_rAs(I,J,bi,bj)
      &         + seaiceMaskV(I,J,bi,bj) *
      &         ( seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
-     &         + 0.5 _d 0 * ( DRAGS(I,J,bi,bj) + DRAGS(I,J-1,bi,bj) ) )
+     &         + 0.5 _d 0 * ( DWATN(I,J,bi,bj) + DWATN(I,J-1,bi,bj) ) )
+     &         * COSWAT
           vRt1(I,J,bi,bj) = vRt1(I,J,bi,bj) * recip_rAs(I,J,bi,bj)
           vRt2(I,J,bi,bj) = vRt2(I,J,bi,bj) * recip_rAs(I,J,bi,bj)
          ENDDO

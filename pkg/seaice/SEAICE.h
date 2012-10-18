@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.63 2012/03/14 22:55:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.64 2012/10/18 10:06:42 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -80,7 +80,7 @@ C     uIceC :: average of UICE between last two time steps
 C     vIceC :: average of VICE between last two time steps
       COMMON/SEAICE_DYNVARS_3/
      &     ETA,ZETA,PRESS, e11, e22, e12,
-     &     DRAGS,DRAGA,FORCEX,FORCEY,
+     &     FORCEX,FORCEY,
      &     uIceC, vIceC, uIceNm1, vIceNm1
       _RL ETA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ZETA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -91,8 +91,6 @@ C     strain rate tensor
       _RL e22        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL e12        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C
-      _RL DRAGS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL DRAGA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL FORCEX     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL FORCEY     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL uIceC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.40 2012/01/20 15:16:27 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.41 2012/10/18 10:06:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -454,49 +454,13 @@ Cgf zero out adjoint fields to stabilize pkg/seaice dyna. adjoint
 C
 C     set up rhs for stepping the velocity field
 C
+        CALL SEAICE_OCEANDRAG_COEFFS(
+     I       uIceC, vIceC,
+     O       DWATN,
+     I       iEVPstep, myTime, myIter, myThid )
+
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=0,sNy
-           DO I=0,sNx
-C     set up non-linear water drag, forcex, forcey
-#ifdef OBCS_UVICE_OLD
-            TEMPVAR = QUART*(
-     &            ( ( uIceC( i ,j,bi,bj)-uVel(i  ,j,kSrf,bi,bj) )
-     &             +( uIceC(i+1,j,bi,bj)-uVel(i+1,j,kSrf,bi,bj) )
-     &            )**2
-     &          + ( ( vIceC(i, j ,bi,bj)-vVel(i, j ,kSrf,bi,bj) )
-     &             +( vIceC(i,j+1,bi,bj)-vVel(i,j+1,kSrf,bi,bj) )
-     &            )**2 )
-#else /* OBCS_UVICE_OLD */
-            TEMPVAR = QUART*(
-     &            ( ( uIceC( i ,j,bi,bj)-uVel(i  ,j,kSrf,bi,bj) )
-     &             *maskInW( i ,j,bi,bj)
-     &             +( uIceC(i+1,j,bi,bj)-uVel(i+1,j,kSrf,bi,bj) )
-     &             *maskInW(i+1,j,bi,bj) )**2
-     &          + ( ( vIceC(i, j ,bi,bj)-vVel(i, j ,kSrf,bi,bj) )
-     &             *maskInS(i, j ,bi,bj)
-     &             +( vIceC(i,j+1,bi,bj)-vVel(i,j+1,kSrf,bi,bj) )
-     &             *maskInS(i,j+1,bi,bj) )**2 )
-#endif /* OBCS_UVICE_OLD */
-            IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
-             IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag_south)**2 ) THEN
-              DWATN(I,J,bi,bj)=QUART
-             ELSE
-              DWATN(I,J,bi,bj)=SEAICE_waterDrag_south*SQRT(TEMPVAR)
-             ENDIF
-            ELSE
-             IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag)**2 ) THEN
-              DWATN(I,J,bi,bj)=QUART
-             ELSE
-              DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
-             ENDIF
-            ENDIF
-            DWATN(I,J,bi,bj) = DWATN(I,J,bi,bj) * HEFFM(I,J,bi,bj)
-C     set up symmetric drag
-            DRAGS(I,J,bi,bj) = DWATN(I,J,bi,bj)*COSWAT
-           ENDDO
-          ENDDO
-
           DO j=1,sNy
            DO i=1,sNx
 C     set up anti symmetric drag force and add in ice ocean stress
@@ -550,7 +514,8 @@ C
      &           + stressDivergenceX(I,J,bi,bj) )
      &           /( 1. _d 0 - seaiceMaskU(I,J,bi,bj)
      &           + seaiceMassU(I,J,bi,bj)/SEAICE_deltaTevp
-     &           + 0.5 _d 0*( DRAGS(I,J,bi,bj) + DRAGS(I-1,J,bi,bj) ) )
+     &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I-1,J,bi,bj) ) )
+     &           * COSWAT
             vIceC(I,J,bi,bj) = seaiceMaskV(I,J,bi,bj) *
      &           ( seaiceMassV(I,J,bi,bj)/SEAICE_deltaTevp
      &           * vIceC(I,J,bi,bj)
@@ -558,7 +523,8 @@ C
      &           + stressDivergenceY(I,J,bi,bj) )
      &           /( 1. _d 0 - seaiceMaskV(I,J,bi,bj)
      &           + seaiceMassV(I,J,bi,bj)/SEAICE_deltaTevp
-     &           + 0.5 _d 0*( DRAGS(I,J,bi,bj) + DRAGS(I,J-1,bi,bj) ) )
+     &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I,J-1,bi,bj) ) )
+     &           * COSWAT
 C--   to change results  of lab_sea.hb87 test exp. (only preserve 2 digits for cg2d)
 c           uIceC(i,j,bi,bj) = uIce(i,j,bi,bj)
 c    &                       +( uIceC(i,j,bi,bj) - uIce(i,j,bi,bj) )
