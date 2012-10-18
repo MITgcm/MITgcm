@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_varia.F,v 1.5 2012/10/18 12:55:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_varia.F,v 1.6 2012/10/18 19:51:14 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -25,9 +25,8 @@ C     myThid ::  my Thread Id number
 #ifdef ALLOW_LAYERS
 
 C     === Local variables ===
-      INTEGER i,j,kg,bi,bj,iLa
-
-      DO iLa=1,layers_maxNum
+      INTEGER i,j,kg,bi,bj
+c     INTEGER iLa
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -38,54 +37,39 @@ C     Loop through 3D variables:
           DO i=1-OLx,sNx+OLx
 
 #ifdef LAYERS_UFLUX
-           layers_UH(i,j,kg,bi,bj,iLa) = 0. _d 0
+           layers_UH (i,j,kg,bi,bj) = 0. _d 0
 #ifdef LAYERS_THICKNESS
-           layers_Hw(i,j,kg,bi,bj,iLa) = 0. _d 0
-           layers_PIw(i,j,kg,bi,bj,iLa) = 0. _d 0
-           layers_U(i,j,kg,bi,bj,iLa) = 0. _d 0
+           layers_Hw (i,j,kg,bi,bj) = 0. _d 0
+           layers_PIw(i,j,kg,bi,bj) = 0. _d 0
+           layers_U  (i,j,kg,bi,bj) = 0. _d 0
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_UFLUX */
 
 #ifdef LAYERS_VFLUX
-           layers_VH(i,j,kg,bi,bj,iLa) = 0. _d 0
+           layers_VH (i,j,kg,bi,bj) = 0. _d 0
 #ifdef LAYERS_THICKNESS
-           layers_Hs(i,j,kg,bi,bj,iLa) = 0. _d 0
-           layers_PIs(i,j,kg,bi,bj,iLa) = 0. _d 0
-           layers_V(i,j,kg,bi,bj,iLa) = 0. _d 0
+           layers_Hs (i,j,kg,bi,bj) = 0. _d 0
+           layers_PIs(i,j,kg,bi,bj) = 0. _d 0
+           layers_V  (i,j,kg,bi,bj) = 0. _d 0
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 
           ENDDO
          ENDDO
         ENDDO
-
-#ifdef ALLOW_TIMEAVE
-cgf layers_maxNum loop and dimension would be needed for
-cgf the following and tave output to work beyond iLa.EQ.1
-      IF ( iLa.EQ.1 ) THEN
-C     Initialize averages to zero
-        layers_TimeAve(bi,bj) = 0. _d 0
-
-#ifdef LAYERS_UFLUX
-        CALL TIMEAVE_RESET(layers_UH_T,Nlayers,bi,bj,myThid)
-#ifdef LAYERS_THICKNESS
-        CALL TIMEAVE_RESET(layers_Hw_T,Nlayers,bi,bj,myThid)
-#endif /* LAYERS_THICKNESS */
-#endif /* LAYERS_UFLUX */
-
-#ifdef LAYERS_VFLUX
-        CALL TIMEAVE_RESET(layers_VH_T,Nlayers,bi,bj,myThid)
-#ifdef LAYERS_THICKNESS
-        CALL TIMEAVE_RESET(layers_Hs_T,Nlayers,bi,bj,myThid)
-#endif /* LAYERS_THICKNESS */
-#endif /* LAYERS_VFLUX */
-      ENDIF !IF ( iLa.EQ.1 ) THEN
-#endif /* ALLOW_TIMEAVE */
+#ifdef LAYERS_PRHO_REF
+        DO kg=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           prho(i,j,kg,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+#endif /* LAYERS_PRHO_REF */
 
 C- end bi,bj loops
        ENDDO
       ENDDO
-      ENDDO !DO iLa=1,layers_maxNum
 
 #endif /* ALLOW_LAYERS */
 

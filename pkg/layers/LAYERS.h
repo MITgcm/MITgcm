@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.11 2012/10/18 12:58:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.12 2012/10/18 19:51:14 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAYERS
@@ -56,40 +56,32 @@ C      layers_V     :: mean meridional velocity in layer (only if layer exists) 
 
 #ifdef LAYERS_UFLUX
       COMMON /LAYERS_VAR_UFLUX/ layers_UH
-      _RL layers_UH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy,layers_maxNum)
+      _RL layers_UH (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
 # ifdef LAYERS_THICKNESS
       COMMON /LAYERS_VAR_UTHICKNESS/
      &    layers_Hw, layers_PIw, layers_U
-      _RL layers_Hw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy,layers_maxNum)
-      _RL layers_PIw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy,layers_maxNum)
-      _RL layers_U(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy,layers_maxNum)
+      _RL layers_Hw (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL layers_PIw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL layers_U  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
 # endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_UFLUX */
 
 #ifdef LAYERS_VFLUX
       COMMON /LAYERS_VAR_VFLUX/ layers_VH
-      _RL layers_VH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy,layers_maxNum)
+      _RL layers_VH (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+     &
 # ifdef LAYERS_THICKNESS
       COMMON /LAYERS_VAR_VTHICKNESS/
      &    layers_Hs, layers_PIs, layers_V
-      _RL layers_Hs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy,layers_maxNum)
-      _RL layers_PIs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy,layers_maxNum)
-      _RL layers_V(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy,layers_maxNum)
+      _RL layers_Hs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL layers_PIs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL layers_V  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
 # endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 
 #ifdef LAYERS_PRHO_REF
       COMMON /LAYERS_PRHO/ prho
-      _RL prho(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,
-     &                   nSx,nSy,layers_maxNum)
+      _RL prho(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
 #ifdef ALLOW_TIMEAVE
