@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.52 2012/10/16 06:43:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.53 2012/10/18 09:36:16 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -296,24 +296,30 @@ CADJ STORE uicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
        IF ( SEAICEuseEVP ) THEN
+C     Elastic-Viscous-Plastic solver, following Hunke (2001)
         CALL SEAICE_EVP( myTime, myIter, myThid )
        ENDIF
 #endif /* SEAICE_ALLOW_EVP */
 
-#if (!defined ALLOW_AUTODIFF_TAMC && defined SEAICE_ALLOW_JFNK)
+#ifdef SEAICE_ALLOW_JFNK
        IF ( SEAICEuseJFNK ) THEN
+# ifdef ALLOW_AUTODIFF_TAMC
+        STOP 'Adjoint does not work with JFNK solver.
+# else
+C     Jacobian-free Newton Krylov solver (Lemieux et al. 2010, 2012)
         CALL SEAICE_JFNK( myTime, myIter, myThid )
+# endif /*  ALLOW_AUTODIFF_TAMC */
        ENDIF
 #endif /* SEAICE_ALLOW_JFNK */
 
-#if defined(SEAICE_ALLOW_EVP) || defined(SEAICE_ALLOW_EVP) \
+#if defined(SEAICE_ALLOW_EVP) || defined(SEAICE_ALLOW_JFNK) \
                               || defined(SEAICE_ALLOW_FREEDRIFT)
        IF ( .NOT.SEAICEuseFREEDRIFT .AND. .NOT.SEAICEuseEVP
      &      .AND. .NOT.SEAICEuseJFNK ) THEN
 #endif /* SEAICE_ALLOW_EVP or SEAICE_ALLOW_FREEDRIFT */
-C     LSR SCHEME (ZHANG-J/HIBLER 1997), PORTED ON A C-GRID
+C     LSR scheme (Zhang-J/Hibler 1997), ported to a C-grid
           CALL SEAICE_LSR( myTime, myIter, myThid )
-#if defined(SEAICE_ALLOW_EVP) || defined(SEAICE_ALLOW_EVP) \
+#if defined(SEAICE_ALLOW_EVP) || defined(SEAICE_ALLOW_JFNK) \
                               || defined(SEAICE_ALLOW_FREEDRIFT)
        ENDIF
 #endif /* SEAICE_ALLOW_EVP or SEAICE_ALLOW_FREEDRIFT */
