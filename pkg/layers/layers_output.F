@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.11 2012/10/18 19:51:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.12 2012/10/19 18:01:45 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -65,8 +65,6 @@ c set arrays to zero if first timestep
           CALL TIMEAVE_RESET(layers_UH_T,  Nlayers,bi,bj,myThid)
 #ifdef LAYERS_THICKNESS
           CALL TIMEAVE_RESET(layers_Hw_T, Nlayers,bi,bj,myThid)
-          CALL TIMEAVE_RESET(layers_PIw_T,Nlayers,bi,bj,myThid)
-          CALL TIMEAVE_RESET(layers_U_T,  Nlayers,bi,bj,myThid)
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_UFLUX */
 
@@ -74,8 +72,6 @@ c set arrays to zero if first timestep
           CALL TIMEAVE_RESET(layers_VH_T, Nlayers,bi,bj,myThid)
 #ifdef LAYERS_THICKNESS
           CALL TIMEAVE_RESET(layers_Hs_T, Nlayers,bi,bj,myThid)
-          CALL TIMEAVE_RESET(layers_PIs_T,Nlayers,bi,bj,myThid)
-          CALL TIMEAVE_RESET(layers_V_T,  Nlayers,bi,bj,myThid)
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 
@@ -160,8 +156,6 @@ C      Reset averages to zero
           CALL TIMEAVE_RESET(layers_UH_T,  Nlayers,bi,bj,myThid)
 #ifdef LAYERS_THICKNESS
           CALL TIMEAVE_RESET(layers_Hw_T, Nlayers,bi,bj,myThid)
-          CALL TIMEAVE_RESET(layers_PIw_T,Nlayers,bi,bj,myThid)
-          CALL TIMEAVE_RESET(layers_U_T,  Nlayers,bi,bj,myThid)
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_UFLUX */
 
@@ -169,8 +163,6 @@ C      Reset averages to zero
           CALL TIMEAVE_RESET(layers_VH_T, Nlayers,bi,bj,myThid)
 #ifdef LAYERS_THICKNESS
           CALL TIMEAVE_RESET(layers_Hs_T, Nlayers,bi,bj,myThid)
-          CALL TIMEAVE_RESET(layers_PIs_T,Nlayers,bi,bj,myThid)
-          CALL TIMEAVE_RESET(layers_V_T,  Nlayers,bi,bj,myThid)
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.12 2012/10/18 19:51:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.13 2012/10/19 18:01:44 rpa Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAYERS
@@ -97,12 +97,8 @@ C     Keep track of time
 #ifdef LAYERS_THICKNESS
       _RL layers_Hw_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
      &                   nSx,nSy)
-      _RL layers_PIw_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy)
-      _RL layers_U_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy)
       COMMON /LAYERS_U_TAVE/ layers_UH_T,
-     &    layers_Hw_T, layers_PIw_T, layers_U_T
+     &    layers_Hw_T
 #else  /* LAYERS_THICKNESS */
       COMMON /LAYERS_U_TAVE/ layers_UH_T
 #endif /* LAYERS_THICKNESS */
@@ -114,12 +110,8 @@ C     Keep track of time
 #ifdef LAYERS_THICKNESS
       _RL layers_Hs_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
      &                   nSx,nSy)
-      _RL layers_PIs_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy)
-      _RL layers_V_T(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,
-     &                   nSx,nSy)
       COMMON /LAYERS_V_TAVE/ layers_VH_T,
-     &    layers_Hs_T, layers_PIs_T, layers_V_T
+     &    layers_Hs_T
 #else  /* LAYERS_THICKNESS */
       COMMON /LAYERS_V_TAVE/ layers_VH_T
 #endif /* LAYERS_THICKNESS */

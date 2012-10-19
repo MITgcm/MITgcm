@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.18 2012/10/18 19:51:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.19 2012/10/19 18:01:45 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -231,10 +231,6 @@ C --- The tile loops
 #ifdef LAYERS_THICKNESS
           CALL TIMEAVE_CUMULATE( layers_Hw_T, layers_Hw, Nlayers,
      &                           deltaTclock, bi, bj, myThid )
-          CALL TIMEAVE_CUMULATE( layers_PIw_T, layers_PIw, Nlayers,
-     &                           deltaTclock, bi, bj, myThid )
-          CALL TIMEAVE_CUMULATE( layers_U_T, layers_U, Nlayers,
-     &                           deltaTclock, bi, bj, myThid )
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_UFLUX */
 #ifdef LAYERS_VFLUX
@@ -242,10 +238,6 @@ C --- The tile loops
      &                           deltaTclock, bi, bj, myThid )
 #ifdef LAYERS_THICKNESS
           CALL TIMEAVE_CUMULATE( layers_Hs_T, layers_Hs, Nlayers,
-     &                           deltaTclock, bi, bj, myThid )
-          CALL TIMEAVE_CUMULATE( layers_PIs_T, layers_PIs, Nlayers,
-     &                           deltaTclock, bi, bj, myThid )
-          CALL TIMEAVE_CUMULATE( layers_V_T, layers_V, Nlayers,
      &                           deltaTclock, bi, bj, myThid )
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
