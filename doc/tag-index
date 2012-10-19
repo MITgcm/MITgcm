@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1751 2012/10/18 14:13:46 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1752 2012/10/19 15:43:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/layers (adjust changes from Sept 19):
+  - do snap-shot output and fill diagnostics from inside iLa loop (layers_calc.F)
+    this allows to remove "layers_maxNum" dimension from all layers arrays.
 o pkg/layers (adjust changes from Sept 19):
   - remove ALLOW_LAYERS_OUTPUT ; fix snap-shot and time-ave output ;
   - snap-shot extended to all type of layers (not just the 1rst type);
