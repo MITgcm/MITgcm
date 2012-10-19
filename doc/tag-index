@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1752 2012/10/19 15:43:07 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1753 2012/10/19 18:52:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -20,6 +20,7 @@ o pkg/seaice:
   - remove global fields DRAGA and DRAGS from C-grid code and
     declare them locally in lsr.F (the only place where they are
     still used)
+  - update AD output of lab_sea.evp (very sensitive anyway).
 o pkg/seaice: add Jacobian-free Newton Krylov solver for ice dynamics
   (Lemieux et al. 2010, 2012). Turn on with the usual SEAICE_ALLOW_JFNK
   and SEAICEuseJFNK=.true. A few things to note:
