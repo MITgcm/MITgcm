@@ -1,10 +1,16 @@
-# $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/README,v 1.6 2009/05/25 20:20:44 dimitri Exp $
+# $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/README,v 1.7 2012/10/20 17:43:41 jmc Exp $
 # $Name:  $
+
+---- Oct 13, 2010 (after checkpoint62l)
+ matlab-topology-generator is no longer supported and does not work anymore
+ since latest additions to pkg/exch2 (for OBCS) have not been incorporated into
+ the matlab scripts.
+ example of "data.exch2" file to use are provided in MITgcm/utils/exch2/input/
 
 ---- May 12, 2009 (after checkpoint61n)
  fortran code to set-up topology is now part of pkg/exch2, with new parameter
  file "data.exch2". For now, keep a compatile version of matlab-topology-generator
- (writing files "W2_EXCH2_SIZE.h" and "w2_e2setup.F") as back-up solution 
+ (writing files "W2_EXCH2_SIZE.h" and "w2_e2setup.F") as back-up solution
  until new code is extensively tested.
 ------------------
 
@@ -12,16 +18,16 @@ Matlab code to generate topology description for MITgcm cs6 conventions.
 
 o To run start matlab and execute script driver.m
 o To set sizes edit lines in driver.m
-  - Settings nr, ng, nb are index space sizes for cube grid. 
+  - Settings nr, ng, nb are index space sizes for cube grid.
     They are (nr,ng) the two dimensions (in x and y) or the 1rst face
     followed by (nb) the 1rst dimension (in x) of the 2nd face.
     Note - nr, ng and nb do not have to equal, however the
     current physical grid generation software assumes they
     are equal.
-  - Settings tnx and tny are the tile sizes ( these correspond to 
+  - Settings tnx and tny are the tile sizes ( these correspond to
     snx and sny in SIZE.h ). tnx and tny must subdivide nr, ng and nb
     exactly.
-    The product nsx*npx from SIZE.h needs to equal the number of 
+    The product nsx*npx from SIZE.h needs to equal the number of
     tiles created by driver.m
   - Setting mapIO select option for global-IO mapping.
     3 options are implemented:
@@ -36,14 +42,14 @@ The key output from this code is a Fortran header file W2_EXCH2_TOPOLOGY.h
 and one or more Fotran files called e2setup*.F. These are written
 by exch2_setup_cs6_print.m. The header file contains the declarations
 of the arrays used to describe the index space topology of the cube domain.
-The e2setp*.F files contain the code to initialize these arrays. 
-Two output options ( variable outmode ) are available in 
-exch2_setup_cs6_print.m. One produces a single file e2setup.F with a driver 
-routine that calls a setup routine for each tile. For large numbers of tiles 
-this file can be huge and can cause some Fortran compilers (g77 certainly) to 
-allocate ridiculous amounts of memory to parse this file. An alternate output 
-mode produces one file for each tile initialization routine and one file 
-"e2setup.F" for the driver.  This mode is kinder to the compiler but creates a 
+The e2setp*.F files contain the code to initialize these arrays.
+Two output options ( variable outmode ) are available in
+exch2_setup_cs6_print.m. One produces a single file e2setup.F with a driver
+routine that calls a setup routine for each tile. For large numbers of tiles
+this file can be huge and can cause some Fortran compilers (g77 certainly) to
+allocate ridiculous amounts of memory to parse this file. An alternate output
+mode produces one file for each tile initialization routine and one file
+"e2setup.F" for the driver.  This mode is kinder to the compiler but creates a
 visually annoying large number of source files (one for each tile).
 
 
@@ -60,7 +66,7 @@ exch2_setup_cs6_get_internal_neighbor_tiles.m           :: Figures out neighbors
 exch2_setup_cs6_get_neighbor_domains.m                  :: Defines connectivity between domains.
 exch2_setup_cs6_plot.m                                  :: Plots the tiles using the conventional cube
                                                         :: domain layout.
-exch2_setup_cs6_print.m                                 :: Writes the Fortran code that defines the topology 
+exch2_setup_cs6_print.m                                 :: Writes the Fortran code that defines the topology
                                                         :: and that is linked with the model run.
 exch2_setup_cs6_tiles.m                                 :: Builds lists of each tile and its location within
                                                         :: a domain and within the global index space.

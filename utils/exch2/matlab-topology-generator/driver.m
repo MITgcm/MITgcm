@@ -1,8 +1,14 @@
-% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/driver.m,v 1.4 2009/05/02 02:41:05 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/driver.m,v 1.5 2012/10/20 17:43:41 jmc Exp $
 % $Name:  $
 
 % Create exch2 communication map and schedule for a cube sphere grid with
 % constant tile size tnx x tny.
+
+fprintf('Since Oct 13, 2010 (after checkpoint62l), matlab-topology-generator\n');
+fprintf(' is no longer supported and does not work anymore (due to additions to\n')
+fprintf(' pkg/exch2 which have not been incorporated into the matlab scripts).\n')
+fprintf('examples of "data.exch2" file are provided in MITgcm/utils/exch2/input/\n')
+return
 
 % Use red-green-blue shorthand for cube index space specification
 % In this notation cube faces are laid out as shown below
