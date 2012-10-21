@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.29 2012/08/28 19:17:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.30 2012/10/21 01:06:40 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -66,22 +66,22 @@ C     == end of interface ==
 
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'// ======================================================='
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'// External forcing (EXF) configuration >>> START <<<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'// ======================================================='
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 
 C--   Print general parameters:
       WRITE(msgBuf,'(A)') ' EXF general parameters:'
@@ -223,48 +223,48 @@ C--   Print settings of some CPP flags.
       write(msgbuf,'(a)')
      &'// ALLOW_ATM_TEMP:                     defined'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #else
       write(msgbuf,'(a)')
      &'// ALLOW_ATM_TEMP:                 NOT defined'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #endif
 
       IF ( useAtmWind ) THEN
       write(msgbuf,'(a)')
      &'// ALLOW_ATM_WIND (useAtmWind):        defined'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       ELSE
       write(msgbuf,'(a)')
      &'// ALLOW_ATM_WIND (useAtmWind):    NOT defined'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       ENDIF
 
 #ifdef ALLOW_DOWNWARD_RADIATION
       write(msgbuf,'(a)')
      &'// ALLOW_DOWNWARD_RADIATION:           defined'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #else
       write(msgbuf,'(a)')
      &'// ALLOW_DOWNWARD_RADIATION:       NOT defined'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #endif
 
 #ifdef ALLOW_BULKFORMULAE
       write(msgbuf,'(a)')
      &'// ALLOW_BULKFORMULAE:                 defined'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #else
       write(msgbuf,'(a)')
      &'// ALLOW_BULKFORMULAE:             NOT defined'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -272,30 +272,30 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   For each data set used the summary prints the calendar data
 C     and the corresponding file from which the data will be read.
 
-      IF ( useAtmWind ) THEN
+      IF ( .NOT.useAtmWind ) THEN
 C--   Zonal wind stress.
       il = ilnblnk(ustressfile)
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Zonal wind stress forcing starts at         ',
      &    ustressstartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Zonal wind stress forcing period is         ',
      &    ustressperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Zonal wind stress forcing is read from file:'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',ustressfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'ustress',
      & ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
@@ -306,25 +306,25 @@ C--   Meridional wind stress.
       il = ilnblnk(vstressfile)
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Meridional wind stress forcing starts at    ',
      &    vstressstartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Meridional wind stress forcing period is    ',
      &    vstressperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Meridional wind stress forcing is read from file:'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',vstressfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'vstress',
      & vstress_lon0, vstress_lon_inc, vstress_lat0, vstress_lat_inc,
@@ -341,25 +341,25 @@ C--   Heat flux.
       il = ilnblnk(hfluxfile)
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Heat flux forcing starts at                ',
      &    hfluxstartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Heat flux forcing period is                 ',
      &    hfluxperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Heat flux forcing is read from file:        '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',hfluxfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'hflux',
      & hflux_lon0, hflux_lon_inc, hflux_lat0, hflux_lat_inc,
@@ -370,25 +370,25 @@ C--   Salt flux.
       il = ilnblnk(sfluxfile)
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Salt flux forcing starts at                 ',
      &    sfluxstartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Salt flux forcing period is                 ',
      &    sfluxperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Salt flux forcing is read from file:        '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',sfluxfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'sflux',
      & sflux_lon0, sflux_lon_inc, sflux_lat0, sflux_lat_inc,
@@ -401,25 +401,25 @@ C--   Net shortwave.
       il = ilnblnk(swfluxfile)
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Net shortwave flux forcing starts at      ',
      &    swfluxstartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Net shortwave flux forcing period is      ',
      &    swfluxperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Net shortwave flux forcing is read from file:'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',swfluxfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'swflux',
      & swflux_lon0, swflux_lon_inc, swflux_lat0, swflux_lat_inc,
@@ -432,25 +432,25 @@ C--   Zonal wind.
       il = ilnblnk(uwindfile)
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Zonal wind forcing starts at                ',
      &    uwindstartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Zonal wind forcing period is                ',
      &    uwindperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Zonal wind forcing is read from file:'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',uwindfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'uwind',
      & uwind_lon0, uwind_lon_inc, uwind_lat0, uwind_lat_inc,
@@ -461,25 +461,25 @@ C--   Meridional wind.
       il = ilnblnk(vwindfile)
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Meridional wind forcing starts at           ',
      &    vwindstartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Meridional wind forcing period is           ',
      &    vwindperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Meridional wind forcing is read from file:'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',vwindfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'vwind',
      & vwind_lon0, vwind_lon_inc, vwind_lat0, vwind_lat_inc,
@@ -496,25 +496,25 @@ C--   Atmospheric temperature.
       il = ilnblnk(atempfile)
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Atmospheric temperature starts at           ',
      &    atempstartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Atmospheric temperature period is           ',
      &    atempperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Atmospheric temperature is read from file:'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',atempfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'atemp',
      & atemp_lon0, atemp_lon_inc, atemp_lat0, atemp_lat_inc,
@@ -525,25 +525,25 @@ C--   Atmospheric specific humidity.
       il = ilnblnk(aqhfile)
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Atmospheric specific humidity starts at     ',
      &    aqhstartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Atmospheric specific humidity period is     ',
      &    aqhperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Atmospheric specific humidity is read from file:'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',aqhfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'aqh',
      & aqh_lon0, aqh_lon_inc, aqh_lat0, aqh_lat_inc,
@@ -554,25 +554,25 @@ C--   Net longwave.
       il = ilnblnk(lwfluxfile)
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Net longwave flux forcing starts at       ',
      &    lwfluxstartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Net longwave flux forcing period is       ',
      &    lwfluxperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Net longwave flux forcing is read from file:'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',lwfluxfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'lwflux',
      & lwflux_lon0, lwflux_lon_inc, lwflux_lat0, lwflux_lat_inc,
@@ -583,25 +583,25 @@ C--   Precipitation.
       il = ilnblnk(precipfile)
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Precipitation data set starts at            ',
      &    precipstartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Precipitation data period is                ',
      &    precipperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Precipitation data is read from file:       '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',precipfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'precip',
      & precip_lon0, precip_lon_inc, precip_lat0, precip_lat_inc,
@@ -612,31 +612,31 @@ C--   Precipitation.
 C--   Evaporation.
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef EXF_READ_EVAP
       write(msgbuf,'(a)')
      &'// EXF_READ_EVAP:                      defined'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       il = ilnblnk(evapfile)
       write(msgbuf,'(a,f12.0)')
      &'   Evaporation starts at     ',
      &    evapstartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Evaporation period is     ',
      &    evapperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Evaporation is read from file:'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',evapfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'evap',
      & evap_lon0, evap_lon_inc, evap_lat0, evap_lat_inc,
@@ -646,37 +646,37 @@ C--   Evaporation.
       write(msgbuf,'(a)')
      &'// EXF_READ_EVAP:                  NOT defined'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #endif /* EXF_READ_EVAP */
 
 C--   Runoff.
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef ALLOW_RUNOFF
       write(msgbuf,'(a)')
      &'// ALLOW_RUNOFF:                       defined'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       il = ilnblnk(runofffile)
       write(msgbuf,'(a,f12.0)')
      &'   Runoff starts at     ',
      &    runoffstartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Runoff period is     ',
      &    runoffperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Runoff is read from file:'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',runofffile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'runoff',
      & runoff_lon0, runoff_lon_inc, runoff_lat0, runoff_lat_inc,
@@ -686,7 +686,7 @@ C--   Runoff.
       write(msgbuf,'(a)')
      &'// ALLOW_RUNOFF:                   NOT defined'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #endif /* ALLOW_RUNOFF */
 
 #ifdef ALLOW_DOWNWARD_RADIATION
@@ -694,25 +694,25 @@ C--   Downward shortwave.
       il = ilnblnk(swdownfile)
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Downward shortwave flux forcing starts at      ',
      &    swdownstartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Downward shortwave flux forcing period is      ',
      &    swdownperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Downward shortwave flux forcing is read from file:'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',swdownfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'swdown',
      & swdown_lon0, swdown_lon_inc, swdown_lat0, swdown_lat_inc,
@@ -723,25 +723,25 @@ C--   Downward longwave.
       il = ilnblnk(lwdownfile)
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Downward longwave flux forcing starts at       ',
      &    lwdownstartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Downward longwave flux forcing period is       ',
      &    lwdownperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Downward longwave flux forcing is read from file:'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',lwdownfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'lwdown',
      & lwdown_lon0, lwdown_lon_inc, lwdown_lat0, lwdown_lat_inc,
@@ -754,25 +754,25 @@ C--   Atmospheric pressure.
       il = ilnblnk(apressurefile)
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Atmospheric pressure forcing starts at      ',
      &    apressurestartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Atmospheric pressure forcing period is      ',
      &    apressureperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Atmospheric pressureforcing is read from file:'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',apressurefile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'apressure', apressure_lon0,
      & apressure_lon_inc, apressure_lat0, apressure_lat_inc,
@@ -785,25 +785,25 @@ C--   fractional ice-covered area MASK.
       il = ilnblnk(areamaskfile)
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   fractional ice-covered area MASK starts at      ',
      &    areamaskstartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   fractional ice-covered area MASK period is      ',
      &    areamaskperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   fractional ice-covered area MASK is read from file:'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',areamaskfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'areamask', areamask_lon0,
      & areamask_lon_inc, areamask_lat0, areamask_lat_inc,
@@ -815,22 +815,22 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'// ======================================================='
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'// External forcing (EXF) climatology configuration :'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'// ======================================================='
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 
 C     For each data set used the summary prints the calendar data
 C     and the corresponding file from which the data will be read.
@@ -839,24 +839,24 @@ C     and the corresponding file from which the data will be read.
       write(msgbuf,'(a)')
      &'// ALLOW_CLIMSST_RELAXATION:           defined'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #else
       write(msgbuf,'(a)')
      &'// ALLOW_CLIMSST_RELAXATION:       NOT defined'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #endif
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
       write(msgbuf,'(a)')
      &'// ALLOW_CLIMSSS_RELAXATION:           defined'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #else
       write(msgbuf,'(a)')
      &'// ALLOW_CLIMSSS_RELAXATION:       NOT defined'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #endif
 
 C     The climatological data sets are assumed to contain monthly
@@ -869,25 +869,25 @@ C     Relaxation to SST climatology.
       write(msgbuf,'(a)')
      &' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Climatological SST starts at         ',
      &    climsststartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Climatological SST period is         ',
      &    climsstperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Climatological SST is read from file:'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',climsstfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'climsst',
      & climsst_lon0, climsst_lon_inc, climsst_lat0, climsst_lat_inc,
@@ -901,25 +901,25 @@ C     Relaxation to SSS climatology.
       write(msgbuf,'(a)')
      &' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Climatological SSS starts at         ',
      &    climsssstartdate
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,f12.0)')
      &'   Climatological SSS period is         ',
      &    climsssperiod
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'   Climatological SSS is read from file:'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,a)')
      &'   >>  ',climsssfile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'climsss',
      & climsss_lon0, climsss_lon_inc, climsss_lat0, climsss_lat_inc,
@@ -929,22 +929,22 @@ C     Relaxation to SSS climatology.
 
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'// ======================================================='
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'// External forcing (EXF) configuration  >>> END <<<'
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
      &'// ======================================================='
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 
       _END_MASTER( myThid )
 
