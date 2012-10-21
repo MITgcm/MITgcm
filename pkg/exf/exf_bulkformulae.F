@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.26 2012/08/28 19:17:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.27 2012/10/21 04:03:50 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -407,6 +407,7 @@ C-   Shift wind speed using old coefficient
 #ifdef ALLOW_BULK_LARGEYEAGER04
 C--   Large&Yeager04:
              dzTmp = (zwln-psimh)/karman
+CADJ STORE rdn   (i,j)       = comlev1_exf_2, key = ikey_2
              usn   = wspeed(i,j,bi,bj)/(exf_one + rdn(i,j)*dzTmp )
 #else
 C--   Large&Pond1981:
