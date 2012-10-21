@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.53 2012/10/18 09:36:16 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.54 2012/10/21 04:34:07 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -304,7 +304,7 @@ C     Elastic-Viscous-Plastic solver, following Hunke (2001)
 #ifdef SEAICE_ALLOW_JFNK
        IF ( SEAICEuseJFNK ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
-        STOP 'Adjoint does not work with JFNK solver.
+        STOP 'Adjoint does not work with JFNK solver.'
 # else
 C     Jacobian-free Newton Krylov solver (Lemieux et al. 2010, 2012)
         CALL SEAICE_JFNK( myTime, myIter, myThid )
