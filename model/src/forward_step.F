@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.210 2012/09/13 19:36:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.211 2012/10/21 04:28:08 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -455,6 +455,16 @@ CADJ &     kind = isbyte
 #ifdef ALLOW_OFFLINE
       ENDIF
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+cph-test(
+CADJ STORE surfaceForcingU = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE surfaceForcingV = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE qsw = comlev1, key = ikey_dynamics, kind = isbyte
+# ifdef ATMOSPHERIC_LOADING
+CADJ STORE phi0surf = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
+cph-test)
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_DEPTH_CONTROL
@@ -788,12 +798,15 @@ CADJ &     = comlev1, key = ikey_dynamics
       ENDIF
 #endif
 #endif /* ndfef ALLOW_OFFLINE */
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uvel,vvel = comlev1, key = ikey_dynamics
+#endif
 
       IF ( calc_wVelocity ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
 CADJ STORE uvel, vvel    = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE detahdt, etan = comlev1, key = ikey_dynamics, kind = isbyte
+cphCADJ STORE detahdt, etan = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif
 C--     Integrate continuity vertically for vertical velocity
@@ -802,13 +815,20 @@ C       (+ update "etaN" & "etaH", exact volume conservation):
         CALL INTEGR_CONTINUITY( uVel, vVel, myTime, myIter, myThid)
         CALL TIMER_STOP ('INTEGR_CONTINUITY   [FORWARD_STEP]',myThid)
       ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef NONLIN_FRSURF
+CADJ STORE wVel = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
+#endif
 
 #ifdef NONLIN_FRSURF
       IF ( select_rStar.NE.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
 #  ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE rstarfacc,rstarfacs,rstarfacw =
-CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE etaH
+CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE rstarfacc,rstarfacs,rstarfacw
+CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 #  endif
 C--   r* : compute the future level thickness according to etaH(n+1)
         CALL TIMER_START('CALC_R_STAR         [FORWARD_STEP]',myThid)
@@ -826,6 +846,8 @@ CADJ &     kind = isbyte
         CALL TIMER_STOP ('CALC_SURF_DR      [FORWARD_STEP]',myThid)
       ENDIF
 # ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE rStarExpC
+CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE hFac_surfC       = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE salt,theta,vvel  = comlev1, key = ikey_dynamics,
