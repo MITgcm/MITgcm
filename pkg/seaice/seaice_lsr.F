@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.75 2012/10/18 14:26:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.76 2012/10/22 23:59:48 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -134,7 +134,6 @@ C     auxillary fields
 #endif
       _RL COSWAT
       _RS SINWAT
-      _RL TEMPVAR
       _RL UERR
 #ifdef SEAICE_ALLOW_CHECK_LSR_CONVERGENCE
       _RL resnorm, EKnorm, counter
@@ -512,7 +511,7 @@ C     and the symmetric drag term; must be done after normalizing
           BU(I,J,bi,bj)    = BU(I,J,bi,bj)    * recip_rAw(I,J,bi,bj)
      &         + seaiceMaskU(I,J,bi,bj) *
      &         ( seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
-     &         + 0.5 _d 0 * ( DWATN(I,J,bi,bj) + DWATN(I-1,J,bi,bj) ) 
+     &         + 0.5 _d 0 * ( DWATN(I,J,bi,bj) + DWATN(I-1,J,bi,bj) )
      &         * COSWAT )
           uRt1(I,J,bi,bj) = uRt1(I,J,bi,bj) * recip_rAw(I,J,bi,bj)
           uRt2(I,J,bi,bj) = uRt2(I,J,bi,bj) * recip_rAw(I,J,bi,bj)

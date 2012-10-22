@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.42 2012/10/18 14:26:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.43 2012/10/22 23:59:48 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -84,7 +84,7 @@ C     sig11, sig22   :: sum and difference of diagonal terms of stress tensor
 
       _RL COSWAT
       _RS SINWAT
-      _RL TEMPVAR, ecc2, recip_ecc2, recip_evp_tau
+      _RL ecc2, recip_ecc2, recip_evp_tau
 
       _RL seaice_div    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL seaice_tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -137,8 +137,8 @@ C     inverse relaxation/damping time scale
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
 C     use u/vIceC as work arrays: copy previous time step to u/vIceC
           uIceC(I,J,bi,bj)   = uIce(I,J,bi,bj)
           vIceC(I,J,bi,bj)   = vIce(I,J,bi,bj)
@@ -157,8 +157,8 @@ C     damping constraint (Hunke, J.Comp.Phys.,2001)
      &      /SEAICE_deltaTevp**2
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            zMax (I,J,bi,bj)   = _rA(I,J,bi,bj) * fac
           ENDDO
          ENDDO
@@ -201,8 +201,8 @@ CADJ STORE e22  = comlev1_evp,key = ikeyloc, byte = isbyte
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             seaice_div    (I,J) = 0. _d 0
             seaice_tension(I,J) = 0. _d 0
             seaice_shear  (I,J) = 0. _d 0
@@ -213,8 +213,8 @@ CADJ STORE e22  = comlev1_evp,key = ikeyloc, byte = isbyte
             deltaC        (I,J) = 0. _d 0
            ENDDO
           ENDDO
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             ep(i,j) = e11(i,j,bi,bj) + e22(i,j,bi,bj)
             em(i,j) = e11(i,j,bi,bj) - e22(i,j,bi,bj)
            ENDDO
@@ -382,13 +382,13 @@ C     sigma1 and sigma2 are computed on C points
      &         *hEffM(I,J,bi,bj)
 #ifdef SEAICE_EVP_ELIMINATE_UNDERFLOWS
 C     Code to avoid very small numbers that can degrade performance.
-C     Many compilers can handle this more efficiently with the help of 
+C     Many compilers can handle this more efficiently with the help of
 C     a flag (copied from CICE after correspondence with Elizabeth Hunke)
             seaice_sigma1(I,J,bi,bj) = SIGN(MAX(
-     &           ABS( seaice_sigma1(I,J,bi,bj) ), SEAICE_EPS ), 
+     &           ABS( seaice_sigma1(I,J,bi,bj) ), SEAICE_EPS ),
      &           seaice_sigma1(I,J,bi,bj) )
             seaice_sigma2(I,J,bi,bj) = SIGN(MAX(
-     &           ABS( seaice_sigma2(I,J,bi,bj) ), SEAICE_EPS ), 
+     &           ABS( seaice_sigma2(I,J,bi,bj) ), SEAICE_EPS ),
      &           seaice_sigma2(I,J,bi,bj) )
 #endif /* SEAICE_EVP_ELIMINATE_UNDERFLOWS */
 C     recover sigma11 and sigma22
@@ -408,7 +408,7 @@ C     sigma12 is computed on Z points
      &           ) * denom2
 #ifdef SEAICE_EVP_ELIMINATE_UNDERFLOWS
             seaice_sigma12(I,J,bi,bj) = SIGN(MAX(
-     &           ABS( seaice_sigma12(I,J,bi,bj) ), SEAICE_EPS ), 
+     &           ABS( seaice_sigma12(I,J,bi,bj) ), SEAICE_EPS ),
      &           seaice_sigma12(I,J,bi,bj) )
 #endif /* SEAICE_EVP_ELIMINATE_UNDERFLOWS */
            ENDDO
@@ -561,8 +561,8 @@ C     end of the main time loop
 C     Copy work arrays and apply masks
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
           uIce(I,J,bi,bj)=uIceC(I,J,bi,bj)* _maskW(I,J,kSrf,bi,bj)
           vIce(I,J,bi,bj)=vIceC(I,J,bi,bj)* _maskS(I,J,kSrf,bi,bj)
          ENDDO
