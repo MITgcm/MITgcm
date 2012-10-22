@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1753 2012/10/19 18:52:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1754 2012/10/22 01:33:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - fix some STOP conditions in exf_check.F (from Aug 28, modifs did not allow
+    to specify neither just 1 comp of wind or wind-stress, nor no surface momentum
+    forcing): just replace CPP option ALLOW_ATM_WIND with run-time param useAtmWind.
 o pkg/layers (adjust changes from Sept 19):
   - do snap-shot output and fill diagnostics from inside iLa loop (layers_calc.F)
     this allows to remove "layers_maxNum" dimension from all layers arrays.
