@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.53 2012/09/24 15:05:29 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.54 2012/10/22 20:12:56 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -389,11 +389,17 @@ c
       CALL WRITE_0D_L ( SEAICEheatConsFix,  INDEX_NONE,
      & 'SEAICEheatConsFix  =',
      & ' /* accound for ocn<->seaice advect. heat flux */')
+CToM<<<
+#ifdef SEAICE_ITD
+      CALL WRITE_0D_I (SEAICE_multDim,INDEX_NONE,'nITD              ='
+     & , ' /* number of ice thickness categories */')
+#else
+CToM>>>      
       CALL WRITE_0D_I (SEAICE_multDim,INDEX_NONE,'SEAICE_multDim    ='
      & , ' /* number of ice categories (1 or 7) */')
-      CALL WRITE_0D_L ( SEAICE_useMultDimSnow, INDEX_NONE,
-     & 'SEAICE_useMultDimSnow =', 
-     & ' /* use same fixed pdf for snow as for MULITCATEGORY ICE */')
+CToM<<<
+#endif
+CToM>>>
       CALL WRITE_0D_I ( IMAX_TICE,         INDEX_NONE,
      & 'IMAX_TICE         =', ' /* iterations for ice surface temp */')
       CALL WRITE_0D_I ( postSolvTempIter,  INDEX_NONE,
