@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.127 2012/10/17 20:38:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.128 2012/10/22 21:14:07 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -135,6 +135,13 @@ C--   SEAICE parameters
      & SEAICE_EPS, SEAICE_EPS_SQ,
      & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc,
      & SEAICE_debugPointI, SEAICE_debugPointJ
+#ifdef SEAICE_ITD
+CToM<<<
+C     & SEAICE_debugPointI, SEAICE_debugPointJ
+     & SEAICE_debugPointI, SEAICE_debugPointJ,
+     & Hlimit_c1, Hlimit_c2, Hlimit_c3
+C>>>ToM
+#endif
 
 #ifdef ALLOW_COST
       NAMELIST /SEAICE_PARM02/
@@ -239,6 +246,20 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICE_mon_mnc  = .FALSE.
 #endif
       SEAICE_initialHEFF = ZERO
+#ifdef SEAICE_ITD
+CToM<<<
+C     Coefficients used to calculate sea ice thickness category limits
+C     after Lipscomb et al. (2001, JGR), Equ. 22
+C     choose between 
+C      - original parameters of Lipscomb et al. (2001):
+C        c1=3.0/N, c2=15*c1, c3=3.0
+C      - and a higher resolution of thin end of ITD:
+C        c1=1.5/N, c2=42*c1, c3=3.3
+      Hlimit_c1          = 3.0 
+      Hlimit_c2          = 15.
+      Hlimit_c3          = 3.0 
+C>>>ToM
+#endif
       SEAICE_rhoIce      = 0.91   _d +03
       SEAICE_rhoSnow     = 330.   _d 0
       ICE2WATR           = UNSET_RL
@@ -299,7 +320,12 @@ C     old default value of 0.97001763668430343479
       SEAICE_shortwave   = 0.30   _d 0
       SEAICE_salt0       = 0.0    _d 0
       SEAICE_saltFrac    = 0.0    _d 0
-#ifdef SEAICE_MULTICATEGORY
+CToM<<<
+C#ifdef SEAICE_MULTICATEGORY
+#if defined(SEAICE_MULTICATEGORY) || defined(SEAICE_ITD)
+C in case defined(SEAICE_ITD) MULTDIM = nITD (see SEAICE_SIZE.h)
+C because SEAICE_ITD uses code related to SEAICE_MULTICATEGORY
+C>>>ToM
       SEAICE_multDim     = MULTDIM
 #else
       SEAICE_multDim     = 1
@@ -647,6 +673,15 @@ C     to set SEAICE_mcPheePiston once drF is known)
         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
 
+#ifdef SEAICE_ITD
+CToM<<<
+C     The ice thickness distribution module can only be used with 
+C      package seaice calling 
+C      SEAICE_ADVDIFF and
+C      SEAICE_GROWTH, i.e. needs usePW79thermodynamics = .TRUE.
+      useTHSice = .FALSE.
+C>>>ToM
+#endif
       IF ( useThSice ) THEN
 C     If the thsice package with the Winton thermodynamics is used
 C     is does not make sense to have the following parameters defined,

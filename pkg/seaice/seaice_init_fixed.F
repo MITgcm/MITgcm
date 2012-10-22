@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.19 2012/03/11 13:41:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.20 2012/10/22 21:14:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -29,6 +29,15 @@ C     myThid - Thread no. that called this routine.
 CEndOfInterface
 
 C     === Local variables ===
+CToM<<<
+#ifdef SEAICE_ITD
+C     msgBuf      :: Informational/error message buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*15 HlimitMsgFormat
+C     k - loop counter for ITD categories
+      INTEGER k
+#endif
+C>>>ToM
 C     i,j,k,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
@@ -164,6 +173,45 @@ C--   Initialize grid info
        ENDDO
       ENDDO
 
+CToM<<<
+#ifdef SEAICE_ITD
+C     use Equ. 22 of Lipscomb et al. (2001, JGR) to generate ice
+C     thickness category limits:
+C     - dependends on given number of categories nITD
+C     - choose between original parameters of Lipscomb et al. (2001):
+C       Lipscomb: c1=3.0/N, c2=15*c1, c3=3.0
+C       or emphasize thin end of ITD in order to enhance ice growth:
+C       ToM:      c1=1.5/N, c2=42*c1, c3=3.3
+C       (parameters c1 to c3 are set in seaice_readparms.F)
+C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      Hlimit(0) = 0.0
+      Hlimit_c1=Hlimit_c1/float(nITD)
+      Hlimit_c2=Hlimit_c2*Hlimit_c1
+      IF (nITD .gt. 1) THEN
+       DO k=1,nITD-1
+        Hlimit(k) = Hlimit(k-1)
+     &            + Hlimit_c1
+     &            + Hlimit_c2
+     &  *( 1.+tanh( Hlimit_c3 *(float(k-1)/float(nITD) -1. ) ) )
+       ENDDO
+      ENDIF
+C     thickest category is unlimited
+      Hlimit(nITD) = 999.9
+
+      WRITE(msgBuf,'(A,I2,A)')
+     &     ' SEAICE_INIT_FIXED: ', nITD, 
+     &     ' sea ice thickness categories'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+      WRITE(HlimitMsgFormat,'(A,I2,A)') '(A,',nITD,'F6.2,F6.1)'
+      WRITE(msgBuf,HlimitMsgFormat)
+     &     ' SEAICE_INIT_FIXED: Hlimit = ',
+     &     Hlimit(0:nITD-1),Hlimit(nITD)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+
+#endif
+C>>>ToM
 C     coefficients for metric terms
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

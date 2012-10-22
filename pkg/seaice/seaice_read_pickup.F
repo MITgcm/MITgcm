@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.16 2012/03/05 15:21:44 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.17 2012/10/22 21:14:07 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -154,6 +154,11 @@ c       CALL READ_REC_3D_RL( fn, fp, 1, YNEG     , nj, nIter0, myThid )
         nj = nj + 3
         CALL READ_REC_3D_RL( fn, fp, 1, AREA    , nj, nIter0, myThid )
         nj = nj + 3
+#ifdef SEAICE_ITD
+C--     no ITD information available with old pickup files
+C       use log-normal distribution based on mean thickness instead
+        CALL SEAICE_ITD_PICKUP( nIter0, myThid )
+#endif
 #if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
         IF ( SEAICEuseEVP .AND. SEAICEuseEVPpickup ) THEN
          CALL READ_REC_3D_RL(fn,fp,1,seaice_sigma1,nj, nIter0, myThid )
@@ -204,12 +209,38 @@ C        map to TICES(1)
          ENDIF
        ENDIF
 C--    continue with 2-D fields:
+#ifdef SEAICE_ITD
+         CALL READ_MFLDS_3D_RL( 'siAREAn ', AREAITD,
+     &                                   nj, fp, nITD, nIter0, myThid )
+	 IF ( nj.EQ.0 ) THEN
+C	 no multi-category fields available
+C        -> read average fields ...
+#endif
          CALL READ_MFLDS_3D_RL( 'siAREA  ', AREA,
      &                                      nj, fp, 1, nIter0, myThid )
          CALL READ_MFLDS_3D_RL( 'siHEFF  ', HEFF,
      &                                      nj, fp, 1, nIter0, myThid )
          CALL READ_MFLDS_3D_RL( 'siHSNOW ', HSNOW,
      &                                      nj, fp, 1, nIter0, myThid )
+#ifdef SEAICE_ITD
+C        ... and redistribute over categories
+C            assuming a log-normal distribtuion
+          CALL SEAICE_ITD_PICKUP( nIter0, myThid )
+C
+	 ELSE
+C	 multi-category fields available, continue reading
+          CALL READ_MFLDS_3D_RL( 'siHEFFn ', HEFFITD,
+     &                                   nj, fp, nITD, nIter0, myThid )
+          CALL READ_MFLDS_3D_RL( 'siHSNOWn ', HSNOWITD,
+     &                                   nj, fp, nITD, nIter0, myThid )
+C        update total ice area as well as mean ice and snow thickness
+          DO bj=myByLo(myThid),myByHi(myThid)
+           DO bi=myBxLo(myThid),myBxHi(myThid)
+	    CALL SEAICE_ITD_SUM( bi, bj, 1.0, nIter0, myThid )
+           ENDDO
+          ENDDO
+	 ENDIF
+#endif
 #ifdef SEAICE_VARIABLE_SALINITY
          CALL READ_MFLDS_3D_RL( 'siHSALT ', HSALT,
      &                                      nj, fp, 1, nIter0, myThid )

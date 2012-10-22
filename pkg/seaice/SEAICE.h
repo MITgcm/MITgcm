@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.64 2012/10/18 10:06:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.65 2012/10/22 21:14:06 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -63,12 +63,26 @@ C                    for metric terms in U/V ice equations.
 #endif /* SEAICE_CGRID */
 
 C--   Dynamical variables
+CToM<<<
+#ifdef SEAICE_ITD
+      COMMON/SEAICE_DYNVARS_1/AREA,HEFF,HSNOW,UICE,VICE,
+     &                        AREAITD,HEFFITD,HSNOWITD
+#else
       COMMON/SEAICE_DYNVARS_1/AREA,HEFF,HSNOW,UICE,VICE
+#endif
+C>>>ToM
       _RL AREA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL HEFF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL HSNOW      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL UICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL VICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+CToM<<<
+#ifdef SEAICE_ITD
+      _RL AREAITD    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
+      _RL HEFFITD    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
+      _RL HSNOWITD   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
+#endif
+C>>>ToM
 
 #ifdef SEAICE_GROWTH_LEGACY
       COMMON/SEAICE_DYNVARS_2/ areaNm1, hEffNm1

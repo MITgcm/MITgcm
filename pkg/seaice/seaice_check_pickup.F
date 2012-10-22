@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.8 2012/03/27 22:28:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.9 2012/10/22 21:14:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -57,6 +57,12 @@ C     bi,bj       :: tile indices
       INTEGER tIceFlag, warnCnts
       LOGICAL stopFlag
 c     LOGICAL oldIceAge
+#ifdef SEAICE_ITD
+C     Flag indicating absence of ITD fields such as AREAITD
+C      in this case try to use average fields such as AREA
+C      (program will stop if fields liek AREA are missing)
+      LOGICAL useAvgFldsForITD
+#endif
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(8) fldName
       INTEGER i,j,k,bi,bj
@@ -78,6 +84,9 @@ c       oldIceAge = .TRUE.
 c        IF ( missFldList(nj).EQ.'siAGE   ' ) oldIceAge = .FALSE.
         ENDDO
         stopFlag = .FALSE.
+#ifdef SEAICE_ITD
+        useAvgFldsForITD = .FALSE.
+#endif
         warnCnts = nMissing
 
         DO nj=1,nMissing
@@ -135,6 +144,22 @@ C        if SEAICEuseEVPpickup then stop / else warning / endif
      &       'cannot restart without field "',fldName,'"'
            CALL PRINT_ERROR( msgBuf, myThid )
            _END_MASTER( myThid )
+#ifdef SEAICE_ITD
+         ELSEIF ( fldName.EQ.'siAREAn ' .OR.
+     &            fldName.EQ.'siHEFFn ' .OR.
+     &            fldName.EQ.'siHSNOWn' ) THEN 
+          IF ( .NOT.pickupStrictlyMatch ) THEN
+C          generate ITD from mean ice thickness
+           useAvgFldsForITD = .TRUE.
+	  ELSE
+C          if strict match is requested 
+C          run will bestopped in case of missing ITD fields
+           stopFlag = .TRUE.
+           WRITE(msgBuf,'(4A)') 'SEAICE_CHECK_PICKUP: ',
+     &       'cannot restart without ITD field "',fldName,'"'
+           CALL PRINT_ERROR( msgBuf, myThid )
+	  ENDIF
+#endif
 #ifdef ALLOW_SITRACER
          ELSEIF ( fldName(1:6).EQ.'siTrac' ) THEN
            IF ( .NOT.pickupStrictlyMatch ) THEN
@@ -176,6 +201,15 @@ C-    end nj loop
          STOP 'ABNORMAL END: S/R SEAICE_CHECK_PICKUP'
         ELSEIF ( warnCnts .GT. 0 ) THEN
          _BEGIN_MASTER( myThid )
+#ifdef SEAICE_ITD
+	 IF ( useAvgFldsForITD ) THEN
+          WRITE(msgBuf,'(3A)') '** WARNING ** SEAICE_CHECK_PICKUP:',
+     &     ' no ITD fields available, restart from single category',
+     &     ' fields, i.e. AREA -> AREAITD, HEFF -> HEFFITD, etc.'
+          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+	  CALL SEAICE_ITD_PICKUP( myIter, myThid )
+	 ENDIF
+#endif
          WRITE(msgBuf,'(4A)') '** WARNING ** SEAICE_CHECK_PICKUP: ',
      &     'Will get only an approximated Restart'
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )

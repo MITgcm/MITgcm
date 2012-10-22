@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.74 2012/10/18 10:06:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.75 2012/10/22 21:14:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -66,6 +66,14 @@ C--   Initialise all variables in common blocks:
          DO i=1-OLx,sNx+OLx
           HEFF(i,j,bi,bj)=0. _d 0
           AREA(i,j,bi,bj)=0. _d 0
+CToM<<<
+#ifdef SEAICE_ITD
+          DO k=1,nITD
+           AREAITD(i,j,k,bi,bj) =0. _d 0
+           HEFFITD(i,j,k,bi,bj) =0. _d 0
+          ENDDO
+#endif
+C>>>ToM
           UICE(i,j,bi,bj)=0. _d 0
           VICE(i,j,bi,bj)=0. _d 0
 #ifdef SEAICE_ALLOW_FREEDRIFT
@@ -111,6 +119,13 @@ C
           ZMAX(i,j,bi,bj)   = 0. _d 0
           ZMIN(i,j,bi,bj)   = 0. _d 0
           HSNOW(i,j,bi,bj)  = 0. _d 0
+CToM<<<
+#ifdef SEAICE_ITD
+          DO k=1,nITD
+           HSNOWITD(i,j,k,bi,bj)=0. _d 0
+          ENDDO
+#endif
+C>>>ToM
 #ifdef SEAICE_VARIABLE_SALINITY
           HSALT(i,j,bi,bj)  = 0. _d 0
 #endif
@@ -362,6 +377,26 @@ C--   Read initial snow thickness from file if available.
          ENDDO
         ENDDO
        ENDIF
+
+#ifdef SEAICE_ITD
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           AREAITD(I,J,1,bi,bj) =AREA(I,J,bi,bj)
+           HEFFITD(I,J,1,bi,bj) =HEFF(I,J,bi,bj)
+           HSNOWITD(I,J,1,bi,bj)=HSNOW(I,J,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+C       DO bj=myByLo(myThid),myByHi(myThid)
+C        DO bi=myBxLo(myThid),myBxHi(myThid)
+C         CALL SEAICE_ITD_REDIST(bi, bj, myTime, myIter, myThid)
+C        ENDDO
+C       ENDDO
+C      it is sufficient to have first call of SEAICE_ITD_REDIST before SEAICE_GROWTH
+#endif
 
 #ifdef SEAICE_VARIABLE_SALINITY
        DO bj=myByLo(myThid),myByHi(myThid)

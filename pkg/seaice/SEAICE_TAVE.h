@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_TAVE.h,v 1.1 2010/01/03 00:27:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_TAVE.h,v 1.2 2012/10/22 21:14:06 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -33,6 +33,13 @@ C     SEAICE_timeAve :: cumulated time [s]
       _RL VICEtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL HEFFtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL AREAtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+#ifdef SEAICE_ITD
+      COMMON /SEAICE_TAVE_VARS_ITD/
+     &        HEFFITDtave, AREAITDtave
+      _RL HEFFITDtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
+      _RL AREAITDtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
+#endif
 
 #endif /* ALLOW_TIMEAVE */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.12 2012/06/07 17:09:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.13 2012/10/22 21:14:07 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -57,6 +57,9 @@ C     == Local variables ==
 #endif
 #ifdef ALLOW_TIMEAVE
       INTEGER i, j, bi, bj
+#ifdef SEAICE_ITD
+      INTEGER k
+#endif
       LOGICAL dumpFiles
 #endif /* ALLOW_TIMEAVE */
 #ifdef ALLOW_MNC
@@ -98,6 +101,10 @@ CEOP
             CALL MNC_CW_RL_W(pf,'sice',0,0,'si_VICE',vIce,myThid)
             CALL MNC_CW_RL_W(pf,'sice',0,0,'si_HEFF',hEff,myThid)
             CALL MNC_CW_RL_W(pf,'sice',0,0,'si_AREA',area,myThid)
+#ifdef SEAICE_ITD
+            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_HEFFITD',HEFFITD,myThid)
+            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_AREAITD',AREAITD,myThid)
+#endif
             CALL MNC_CW_RL_W(pf,'sice',0,0,'si_UWIND',uwind,myThid)
             CALL MNC_CW_RL_W(pf,'sice',0,0,'si_VWIND',vwind,myThid)
             CALL MNC_CW_RS_W(pf,'sice',0,0,'fu',fu,myThid)
@@ -123,6 +130,11 @@ CEOP
             CALL WRITE_FLD_XY_RL( 'HEFF.',suff,hEff,myIter,myThid)
             CALL WRITE_FLD_XY_RL( 'AREA.',suff,area,myIter,myThid)
             CALL WRITE_FLD_XY_RL( 'HSNOW.',suff,HSNOW,myIter,myThid)
+#ifdef SEAICE_ITD
+            CALL WRITE_FLD_XY_RL( 'HEFFITD.',suff,HEFFITD,myIter,myThid)
+            CALL WRITE_FLD_XY_RL( 'AREAITD.',suff,AREAITD,myIter,myThid)
+           CALL WRITE_FLD_XY_RL('HSNOWITD.',suff,HSNOWITD,myIter,myThid)
+#endif
 #ifdef SEAICE_VARIABLE_SALINITY
             CALL WRITE_FLD_XY_RL( 'HSALT.',suff,HSALT,myIter,myThid)
 #endif
@@ -184,6 +196,18 @@ C- note(jmc): surf.Fluxes have not yet been computed when called @ nIter0
      &         AREAtave(i,j,bi,bj) +AREA(i,j,bi,bj)*deltaTclock
           ENDDO
          ENDDO
+#ifdef SEAICE_ITD
+	 DO k=1,nITD
+          DO j=1,sNy
+           DO i=1,sNx
+            HEFFITDtave(i,j,k,bi,bj) =
+     &        HEFFITDtave(i,j,k,bi,bj) +HEFFITD(i,j,k,bi,bj)*deltaTclock
+            AREAITDtave(i,j,k,bi,bj) =
+     &        AREAITDtave(i,j,k,bi,bj) +AREAITD(i,j,k,bi,bj)*deltaTclock
+           ENDDO
+          ENDDO
+         ENDDO
+#endif
          SEAICE_timeAve(bi,bj) = SEAICE_timeAve(bi,bj)+deltaTclock
         ENDDO
        ENDDO
@@ -224,6 +248,12 @@ C      Normalize by integrated time
      &                            SEAICE_timeAve, 1, bi, bj, myThid )
           CALL TIMEAVE_NORMALIZE( AREAtave,
      &                            SEAICE_timeAve, 1, bi, bj, myThid )
+#ifdef SEAICE_ITD
+          CALL TIMEAVE_NORMALIZE( HEFFITDtave,
+     &                            SEAICE_timeAve, nITD, bi, bj, myThid )
+          CALL TIMEAVE_NORMALIZE( AREAITDtave,
+     &                            SEAICE_timeAve, nITD, bi, bj, myThid )
+#endif
          ENDDO
         ENDDO
 c       IF (myIter.EQ.10) WRITE(0,*) myThid, dumpFiles

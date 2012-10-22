@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.33 2012/02/16 01:22:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.34 2012/10/22 21:14:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -44,7 +44,8 @@ C     diagNum   :: diagnostics number in the (long) list of available diag.
 C     diagMate  :: diag. mate number in the (long) list of available diag.
 C     diagName  :: local short name (8c) of a diagnostics
 C     diagCode  :: local parser field with characteristics of the diagnostics
-C              cf head of S/R DIAGNOSTICS_INIT_EARLY or DIAGNOSTICS_MAIN_INIT
+C                   see head of S/R DIAGNOSTICS_INIT_EARLY or DIAGNOSTICS_MAIN_INIT
+C                   for a list of options
 C     diagUnits :: local string (16c): physical units of a diagnostic field
 C     diagTitle :: local string (80c): description of field in diagnostic
       INTEGER       diagNum
@@ -695,6 +696,26 @@ C=============== dynamics ============
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+#ifdef SEAICE_ITD
+C=============== ice thickness categories ============
+
+      diagName  = 'SIheffN '
+      diagTitle = 'SEAICE effective ice thickness per category'
+      diagUnits = 'm               '
+      diagCode  = 'SM      MX      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      CALL DIAGNOSTICS_SETKLEV( diagName, nITD, myThid )
+
+      diagName  = 'SIareaN '
+      diagTitle = 
+     I 'SEAICE fractional ice-covered area per category [0 to 1]'
+      diagUnits = 'm^2/m^2         '
+      diagCode  = 'SM      MX      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      CALL DIAGNOSTICS_SETKLEV( diagName, nITD, myThid )
+#endif
 
 #endif /* ALLOW_DIAGNOSTICS */
 
@@ -718,6 +739,7 @@ C     *==========================================================*
 C     !USES:
       IMPLICIT NONE
 #include "EEPARAMS.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 
 C     !INPUT PARAMETERS:
