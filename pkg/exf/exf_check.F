@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.19 2012/10/21 20:06:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.20 2012/10/22 01:29:51 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -49,19 +49,21 @@ c     check for consistency
        stop 'ABNORMAL END: S/R EXF_CHECK'
       endif
 
-#if ( defined (ALLOW_BULKFORMULAE) && defined (ALLOW_ATM_WIND) )
+#ifdef ALLOW_BULKFORMULAE
+      IF ( useAtmWind ) THEN
       IF ( ustressfile .NE. ' ' .OR. ustressfile .NE. ' ' ) THEN
         STOP
      & 'S/R EXF_CHECK: use u,v_wind components but not wind-stress'
       ENDIF
+      ENDIF
 #endif
 
-#ifndef ALLOW_ATM_WIND
+      IF ( .NOT.useAtmWind ) THEN
       IF ( uwindfile .NE. ' ' .OR. vwindfile .NE. ' ' ) THEN
         STOP
      & 'S/R EXF_CHECK: read-in wind-stress but not u,v_wind components'
       ENDIF
-#endif
+      ENDIF
 
 #ifndef ALLOW_ZENITHANGLE
       IF ( useExfZenAlbedo .OR. useExfZenIncoming .OR.
