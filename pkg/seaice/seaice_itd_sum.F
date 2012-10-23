@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_itd_sum.F,v 1.1 2012/10/22 21:14:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_itd_sum.F,v 1.2 2012/10/23 13:20:49 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -99,5 +99,4 @@ c      ENDDO
 C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* SEAICE_ITD */
       RETURN
-      END SUBROUTINE SEAICE_ITD_SUM
-
+      END

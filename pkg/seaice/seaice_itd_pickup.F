@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_itd_pickup.F,v 1.2 2012/10/23 13:20:49 jmc Exp $
+C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -21,7 +23,7 @@ C     |      into the correct category by SEAICE_ITD_REDIST
 C     |      -> simpleSchemeFlag = .TRUE.
 C     |
 C     |   b) a scheme that assumes a log-normal distribution based
-C     |      on the mean ice thickness and a standard decviation 
+C     |      on the mean ice thickness and a standard decviation
 C     |      of LND_sigma=0.25
 C     |      -> simpleSchemeFlag = .FALSE.
 C     |
@@ -75,7 +77,7 @@ C
 #endif /* ALLOW_AUTODIFF_TAMC */
       _RL dummyTime
 
-C     local variables for picking up ITD from single category pickup file 
+C     local variables for picking up ITD from single category pickup file
       INTEGER LND_i, LND_iend
 C     parameters for log-normal distribution (LND)
       _RL LND_sigma, LND_mu
@@ -119,42 +121,42 @@ C--      Assume log-normal ITD:
             DO i=1-OLx,sNx+OLx
 C
 C            initialize log-normal distribution
-       	     LND_mu = log(HEFF(i,j,bi,bj)/AREA(i,j,bi,bj)) 
+             LND_mu = log(HEFF(i,j,bi,bj)/AREA(i,j,bi,bj))
      &                - 0.5*LND_sigma*LND_sigma
-	     LND_x(1) = 0.+LND_dx/2.
+             LND_x(1) = 0.+LND_dx/2.
 C            make thickness bins
-	     DO LND_i=2,LND_iend
-	      LND_x(LND_i)=LND_x(LND_i-1)+LND_dx
-	     ENDDO
+             DO LND_i=2,LND_iend
+              LND_x(LND_i)=LND_x(LND_i-1)+LND_dx
+             ENDDO
 C            log-normal distribution:
-	     DO LND_i=2,LND_iend
-	      LND_tmp = log(LND_x(LND_i))-LND_mu
-	      LND_pdf(LND_i)= 1.
-     &             / (LND_x(LND_i)*LND_sigma*sqrt(2*3.1416)) 
+             DO LND_i=2,LND_iend
+              LND_tmp = log(LND_x(LND_i))-LND_mu
+              LND_pdf(LND_i)= 1.
+     &             / (LND_x(LND_i)*LND_sigma*sqrt(2*3.1416))
      &             * exp( -(LND_tmp*LND_tmp)
      &             /       (2*LND_sigma*LND_sigma) )
      &             * AREA(i,j,bi,bj)
-	     ENDDO
+             ENDDO
 C            assign bins to ice thickness categories
              k=1
-	     DO LND_i=1,LND_iend
-	      IF ( LND_x(LND_i).GT.Hlimit(k) ) k=k+1
+             DO LND_i=1,LND_iend
+              IF ( LND_x(LND_i).GT.Hlimit(k) ) k=k+1
               AREAITD(i,j,k,bi,bj) = AREAITD(i,j,k,bi,bj)
      &                             + LND_pdf(LND_i)*LND_dx
               HEFFITD(i,j,k,bi,bj) = HEFFITD(i,j,k,bi,bj)
      &                             + LND_pdf(LND_i)*LND_x(LND_i)*LND_dx
-	     ENDDO
+             ENDDO
 C
             ENDDO
-	   ENDDO
+           ENDDO
           ENDDO
-	 ENDDO
+         ENDDO
 
       ENDIF
 
 C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C     finally sort into correct ice thickness category 
-C      and compute bulk variables 
+C     finally sort into correct ice thickness category
+C      and compute bulk variables
 C      (needed for dynamic solver at beginning of seaice_model.F)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -166,5 +168,4 @@ C      (needed for dynamic solver at beginning of seaice_model.F)
 C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* SEAICE_ITD */
       RETURN
-      END SUBROUTINE SEAICE_ITD_PICKUP
-
+      END

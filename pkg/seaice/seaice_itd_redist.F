@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_itd_redist.F,v 1.1 2012/10/22 21:14:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_itd_redist.F,v 1.2 2012/10/23 13:20:49 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -12,9 +12,9 @@ C !INTERFACE: ==========================================================
 C !DESCRIPTION: \bv
 C     *===========================================================*
 C     | SUBROUTINE SEAICE_ITD_REDIST
-C     | o checks if absolute ice thickness in any category 
+C     | o checks if absolute ice thickness in any category
 C     |   exceeds its category limits
-C     | o redistributes sea ice area and volume 
+C     | o redistributes sea ice area and volume
 C     |   and associated ice properties in thickness space
 C     |
 C     | Torge Martin, Feb. 2012, torge@mit.edu
@@ -97,7 +97,7 @@ C       calculate area of open water
         ENDDO
 
 C     ----------------------------------------------------
-C     | redistribute/"advect" sea ice in thickness space |  
+C     | redistribute/"advect" sea ice in thickness space |
 C     | as described in Bitz et al. (2001)               |
 C     ----------------------------------------------------
 
@@ -125,7 +125,7 @@ C         check if more thicker ice needs to be rafted to accomodate area excess
 C       --- pass concentration deficit up to next thicker category
 C       --- since all quantities are extensive, we add instead of average
             AREAITD (i,j,k+1,bi,bj) = AREAITD (i,j,k+1,bi,bj)
-     &                              + AREAITD (i,j,k,bi,bj) 
+     &                              + AREAITD (i,j,k,bi,bj)
             AREAITD (i,j,k  ,bi,bj) = ZERO
             HEFFITD (i,j,k+1,bi,bj) = HEFFITD (i,j,k+1,bi,bj)
      &                              + HEFFITD (i,j,k,bi,bj)
@@ -138,7 +138,7 @@ C            t2(k+1) = t2(k+1)+t2(k); t2(k) = ZERO
 C            age(k+1)=age(k+1)+age(k);age(k)= ZERO
 C this is for ridged sea ice volume fraction
 C            IF (PRESENT(rdg)) THEN
-C             rdg(k+1)=rdg(k+1)+rdg(k); rdg(k)= ZERO 
+C             rdg(k+1)=rdg(k+1)+rdg(k); rdg(k)= ZERO
 C            ENDIF
            ENDIF
           ENDDO
@@ -155,18 +155,18 @@ C         now check that ice thickness stays within category limits
 C       --- the upper thickness limit is exceeded: move ice up to next thicker category
             AREAITD (i,j,k+1,bi,bj) = AREAITD (i,j,k+1,bi,bj)
      &                              + AREAITD (i,j,k,bi,bj)
-	    AREAITD (i,j,k  ,bi,bj) = ZERO
+            AREAITD (i,j,k  ,bi,bj) = ZERO
             HEFFITD (i,j,k+1,bi,bj) = HEFFITD (i,j,k+1,bi,bj)
      &                              + HEFFITD (i,j,k,bi,bj)
-	    HEFFITD (i,j,k  ,bi,bj) = ZERO
+            HEFFITD (i,j,k  ,bi,bj) = ZERO
             HSNOWITD(i,j,k+1,bi,bj) = HSNOWITD(i,j,k+1,bi,bj)
      &                              + HSNOWITD(i,j,k,bi,bj)
-	    HSNOWITD(i,j,k  ,bi,bj) = ZERO
+            HSNOWITD(i,j,k  ,bi,bj) = ZERO
 C            t1(k+1) = t1(k+1)+t1(k); t1(k) = ZERO
 C            t2(k+1) = t2(k+1)+t2(k); t2(k) = ZERO
 C            age(k+1)=age(k+1)+age(k);age(k)= ZERO
 C            IF (PRESENT(rdg)) THEN
-C             rdg(k+1)=rdg(k+1)+rdg(k);rdg(k)= ZERO 
+C             rdg(k+1)=rdg(k+1)+rdg(k);rdg(k)= ZERO
 C            ENDIF
            ENDIF
           ENDDO
@@ -193,7 +193,7 @@ C            t1(k-1) = t1(k-1)+t1(k); t1(k) = ZERO
 C            t2(k-1) = t2(k-1)+t2(k); t2(k) = ZERO
 C            age(k-1)=age(k-1)+age(k);age(k)= ZERO
 C            IF (PRESENT(rdg)) THEN
-C            rdg(k-1)=rdg(k-1)+rdg(k);rdg(k)= ZERO 
+C            rdg(k-1)=rdg(k-1)+rdg(k);rdg(k)= ZERO
 C            ENDIF
            ENDIF
           ENDDO
@@ -210,5 +210,4 @@ c      ENDDO
 C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* SEAICE_ITD */
       RETURN
-      END SUBROUTINE SEAICE_ITD_REDIST
-
+      END
