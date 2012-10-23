@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev1_dir.h,v 1.10 2011/12/16 14:58:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev1_dir.h,v 1.11 2012/10/23 20:15:31 heimbach Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -122,6 +122,10 @@ CADJ STORE OBWptr1 = comlev1, key = ikey_dynamics
 CADJ STORE OBNh  = comlev1, key = ikey_dynamics
 CADJ STORE OBNa  = comlev1, key = ikey_dynamics
 CADJ STORE OBNsn = comlev1, key = ikey_dynamics
+# ifdef SEAICE_VARIABLE_SALINITY
+CADJ STORE OBNsl = comlev1, key = ikey_dynamics
+CADJ STORE OBNsl0,OBNsl1  = comlev1, key = ikey_dynamics
+# endif
 # ifdef ALLOW_OBCS_PRESCRIBE
 CADJ STORE OBNh0,OBNh1  = comlev1, key = ikey_dynamics
 CADJ STORE OBNa0,OBNa1  = comlev1, key = ikey_dynamics
@@ -132,6 +136,10 @@ CADJ STORE OBNsn0,OBNsn1  = comlev1, key = ikey_dynamics
 CADJ STORE OBSh  = comlev1, key = ikey_dynamics
 CADJ STORE OBSa  = comlev1, key = ikey_dynamics
 CADJ STORE OBSsn = comlev1, key = ikey_dynamics
+# ifdef SEAICE_VARIABLE_SALINITY
+CADJ STORE OBSsl = comlev1, key = ikey_dynamics
+CADJ STORE OBSsl0,OBSsl1  = comlev1, key = ikey_dynamics
+# endif
 # ifdef ALLOW_OBCS_PRESCRIBE
 CADJ STORE OBSh0,OBSh1  = comlev1, key = ikey_dynamics
 CADJ STORE OBSa0,OBSa1  = comlev1, key = ikey_dynamics
@@ -142,6 +150,10 @@ CADJ STORE OBSsn0,OBSsn1  = comlev1, key = ikey_dynamics
 CADJ STORE OBEh  = comlev1, key = ikey_dynamics
 CADJ STORE OBEa  = comlev1, key = ikey_dynamics
 CADJ STORE OBEsn = comlev1, key = ikey_dynamics
+# ifdef SEAICE_VARIABLE_SALINITY
+CADJ STORE OBEsl = comlev1, key = ikey_dynamics
+CADJ STORE OBEsl0,OBEsl1  = comlev1, key = ikey_dynamics
+# endif
 # ifdef ALLOW_OBCS_PRESCRIBE
 CADJ STORE OBEh0,OBEh1  = comlev1, key = ikey_dynamics
 CADJ STORE OBEa0,OBEa1  = comlev1, key = ikey_dynamics
@@ -152,6 +164,10 @@ CADJ STORE OBEsn0,OBEsn1  = comlev1, key = ikey_dynamics
 CADJ STORE OBWh  = comlev1, key = ikey_dynamics
 CADJ STORE OBWa  = comlev1, key = ikey_dynamics
 CADJ STORE OBWsn = comlev1, key = ikey_dynamics
+# ifdef SEAICE_VARIABLE_SALINITY
+CADJ STORE OBWsl = comlev1, key = ikey_dynamics
+CADJ STORE OBWsl0,OBWsl1  = comlev1, key = ikey_dynamics
+# endif
 # ifdef ALLOW_OBCS_PRESCRIBE
 CADJ STORE OBWh0,OBWh1  = comlev1, key = ikey_dynamics
 CADJ STORE OBWa0,OBWa1  = comlev1, key = ikey_dynamics

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev3_dir.h,v 1.8 2011/12/16 14:58:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev3_dir.h,v 1.9 2012/10/23 20:15:32 heimbach Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -78,6 +78,11 @@ CADJ STORE OBWptr1 = tapelev3, key = ilev_3
 CADJ STORE OBNh   = tapelev3, key = ilev_3
 CADJ STORE OBNa   = tapelev3, key = ilev_3
 CADJ STORE OBNsn  = tapelev3, key = ilev_3
+#ifdef SEAICE_VARIABLE_SALINITY
+CADJ STORE OBNsl = tapelev3, key = ilev_3
+CADJ STORE OBNsl0 = tapelev3, key = ilev_3
+CADJ STORE OBNsl1 = tapelev3, key = ilev_3
+#endif
 #ifdef ALLOW_OBCS_PRESCRIBE
 CADJ STORE OBNh0  = tapelev3, key = ilev_3
 CADJ STORE OBNh1  = tapelev3, key = ilev_3
@@ -94,6 +99,11 @@ CADJ STORE obneta0,obneta1 = tapelev3, key = ilev_3
 CADJ STORE OBSh   = tapelev3, key = ilev_3
 CADJ STORE OBSa   = tapelev3, key = ilev_3
 CADJ STORE OBSsn  = tapelev3, key = ilev_3
+#ifdef SEAICE_VARIABLE_SALINITY
+CADJ STORE OBSsl = tapelev3, key = ilev_3
+CADJ STORE OBSsl0 = tapelev3, key = ilev_3
+CADJ STORE OBSsl1 = tapelev3, key = ilev_3
+#endif
 #ifdef ALLOW_OBCS_PRESCRIBE
 CADJ STORE OBSh0  = tapelev3, key = ilev_3
 CADJ STORE OBSh1  = tapelev3, key = ilev_3
@@ -110,6 +120,11 @@ CADJ STORE obseta0,obseta1 = tapelev3, key = ilev_3
 CADJ STORE OBEh   = tapelev3, key = ilev_3
 CADJ STORE OBEa   = tapelev3, key = ilev_3
 CADJ STORE OBEsn  = tapelev3, key = ilev_3
+#ifdef SEAICE_VARIABLE_SALINITY
+CADJ STORE OBEsl = tapelev3, key = ilev_3
+CADJ STORE OBEsl0 = tapelev3, key = ilev_3
+CADJ STORE OBEsl1 = tapelev3, key = ilev_3
+#endif
 #ifdef ALLOW_OBCS_PRESCRIBE
 CADJ STORE OBEh0  = tapelev3, key = ilev_3
 CADJ STORE OBEh1  = tapelev3, key = ilev_3
@@ -126,6 +141,11 @@ CADJ STORE obeeta0,obeeta1 = tapelev3, key = ilev_3
 CADJ STORE OBWh   = tapelev3, key = ilev_3
 CADJ STORE OBWa   = tapelev3, key = ilev_3
 CADJ STORE OBWsn  = tapelev3, key = ilev_3
+#ifdef SEAICE_VARIABLE_SALINITY
+CADJ STORE OBWsl = tapelev3, key = ilev_3
+CADJ STORE OBWsl0 = tapelev3, key = ilev_3
+CADJ STORE OBWsl1 = tapelev3, key = ilev_3
+#endif
 #ifdef ALLOW_OBCS_PRESCRIBE
 CADJ STORE OBWh0  = tapelev3, key = ilev_3
 CADJ STORE OBWh1  = tapelev3, key = ilev_3
