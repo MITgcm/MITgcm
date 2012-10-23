@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/SEAICE_OPTIONS.h,v 1.15 2012/10/23 00:11:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/SEAICE_OPTIONS.h,v 1.16 2012/10/23 02:03:39 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -70,7 +70,7 @@ C--   To try avoid 'spontaneous generation' of tracer maxima by advdiff.
 C--   By default the seaice model is discretized on a B-Grid (for
 C     historical reasons). Define the following flag to use a new
 C     (not thoroughly) test version on a C-grid
-#define SEAICE_CGRID
+#undef SEAICE_CGRID
 
 C--   Only for the C-grid version it is possible to
 #ifdef SEAICE_CGRID
