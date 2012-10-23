@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.61 2012/10/22 21:14:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.62 2012/10/23 21:28:08 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -194,6 +194,10 @@ CADJ STORE heffm(:,:,bi,bj)  = comlev1_bibj,
 CADJ &     key = itmpkey, kind=isbyte
 CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,
 CADJ &     key = itmpkey, kind=isbyte
+# ifdef SEAICE_VARIABLE_SALINITY
+CADJ STORE hsalt(:,:,bi,bj)  = comlev1_bibj,
+CADJ &     key = itmpkey, kind=isbyte
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         DO j=1-OLy,sNy+OLy
