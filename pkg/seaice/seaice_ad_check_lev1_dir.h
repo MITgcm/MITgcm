@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev1_dir.h,v 1.30 2012/03/05 15:21:44 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev1_dir.h,v 1.31 2012/10/25 19:43:44 heimbach Exp $
 C $Name:  $
 
 CADJ STORE hsnow   = comlev1, key=ikey_dynamics, kind=isbyte
@@ -58,6 +58,7 @@ CADJ STORE objf_ice    = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef ALLOW_SEAICE_COST_EXPORT
 CADJ STORE uHeffExportCell = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vHeffExportCell = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE icevolMeanCell = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 
 #ifdef ALLOW_OBCS

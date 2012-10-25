@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev2_dir.h,v 1.19 2012/04/19 16:06:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev2_dir.h,v 1.20 2012/10/25 19:43:44 heimbach Exp $
 C $Name:  $
 
 CADJ STORE StoreSEAICE    = tapelev2, key = ilev_2
@@ -17,6 +17,7 @@ CADJ STORE objf_ice = tapelev2, key = ilev_2
 #ifdef ALLOW_SEAICE_COST_EXPORT
 CADJ STORE uHeffExportCell = tapelev2, key = ilev_2
 CADJ STORE vHeffExportCell = tapelev2, key = ilev_2
+CADJ STORE icevolMeanCell = tapelev2, key = ilev_2
 #endif
 #if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
 CADJ STORE AREAforAtmFW = tapelev2, key = ilev_2

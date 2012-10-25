@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.75 2012/10/22 21:14:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.76 2012/10/25 19:43:44 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -152,6 +152,7 @@ c "ice concentration" tracer that should remain .EQ.1.
 #ifdef ALLOW_SEAICE_COST_EXPORT
           uHeffExportCell(i,j,bi,bj) = 0. _d 0
           vHeffExportCell(i,j,bi,bj) = 0. _d 0
+          icevolMeanCell(i,j,bi,bj) = 0. _d 0
 #endif
           saltWtrIce(i,j,bi,bj) = 0. _d 0
           frWtrIce(i,j,bi,bj)   = 0. _d 0

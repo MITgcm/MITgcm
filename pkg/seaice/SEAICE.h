@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.65 2012/10/22 21:14:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.66 2012/10/25 19:43:44 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -214,8 +214,10 @@ C--   KGEO    Level used as a proxy for geostrophic velocity.
 #ifdef ALLOW_SEAICE_COST_EXPORT
       _RL uHeffExportCell(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vHeffExportCell(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL icevolMeanCell(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       COMMON /SEAICE_COST_EXPORT_R/
-     &       uHeffExportCell, vHeffExportCell
+     &       uHeffExportCell, vHeffExportCell,
+     &       icevolMeanCell
 #endif
 
 C     SWFracB :: fraction of surface Short-Wave radiation reaching
