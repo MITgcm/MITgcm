@@ -21,15 +21,15 @@
 # diag_mnc     = .FALSE.,
 # dumpAtLast   = .TRUE.,
 #--
-  fields(1,1) = 'RHOAnoma    ',
+  fields(1,1) = 'RHOAnoma',
   fileName(1) = 'Rho',
   frequency(1) = 86400.,
 
-  fields(1,2) = 'PHIHYD    ',
+  fields(1,2) = 'PHIHYD  ',
   frequency(2) = 86400.,
   fileName(2) = 'P0',
 
-  fields(1,3) = 'DRHODR    ',
+  fields(1,3) = 'DRHODR  ',
   fileName(3) = 'N2',
   frequency(3) = 86400.,
  &
