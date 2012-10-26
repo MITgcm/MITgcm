@@ -213,6 +213,14 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
     If itrs is NaN, it will read all iterations for which files are found.
     If itrs is Inf, it will read the highest iteration found.
 
+    fname may contain shell wildcards, which is useful for tile files organized
+    into directories, e.g.,
+
+      T = rdmds('prefix*/T', 2880)
+
+    will read prefix0000/T.0000002880.*, prefix0001/T.0000002880.*, ...
+    (and any others that match the wildcard, so be careful how you name things!)
+
     Returns:
 
         a    :: numpy array of the data read
@@ -223,12 +231,13 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
 
         machineformat :: endianness ('b' or 'l', default 'b')
         rec           :: list of records to read (default all)
+                         useful for pickups and multi-field diagnostics files
         fill_value    :: fill value for missing (blank) tiles (default 0)
         astype        :: data type to return (default: double precision)
                          None: keep data type/precision of file
         region        :: (x0,x1,y0,y1) read only this region (default (0,nx,0,ny))
         lev           :: list of levels to read, or, for multiple dimensions
-                         (excluding x,y), tuple(!) of lists
+                         (excluding x,y), tuple(!) of lists (see examples below)
         usememmap     :: if True, use a memory map for reading data (default False)
                          recommended when using lev, or region with global files
                          to save memory and, possibly, time
@@ -239,13 +248,15 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
         XC = rdmds('res_*/XC')
         T = rdmds('T.0000002880')
         T = rdmds('T',2880)
-        T = rdmds('T',[2880,5760])
+        T2 = rdmds('T',[2880,5760])
         T,its = rdmds('T',numpy.Inf)
         VVEL = rdmds('pickup',2880,rec=range(50,100))
-        a = rdmds('diags',2880,rec=0,lev=[5])
+        a5 = rdmds('diags',2880,rec=0,lev=[5])
         a = rdmds('diags',2880,rec=0,lev=([0],[0,1,5,6,7]))
         from numpy import r_
-        a = rdmds('diags',2880,rec=0,lev=([0],r_[:2,5:8]))
+        a = rdmds('diags',2880,rec=0,lev=([0],r_[:2,5:8]))  # same as previous
+        a = rdmds('diags',2880,rec=0)[0, [0,1,5,6,7], ...]  # same, but less efficient
+        a = rdmds('diags',2880)[0, 0, [0,1,5,6,7], ...]     # even less efficient
     """
     usememmap = usememmap or mm
     if usememmap:
