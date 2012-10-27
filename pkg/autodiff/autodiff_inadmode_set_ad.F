@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_inadmode_set_ad.F,v 1.7 2012/09/04 14:31:29 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_inadmode_set_ad.F,v 1.8 2012/10/27 00:38:21 heimbach Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -15,6 +15,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "AUTODIFF_PARAMS.h"
 #ifdef ALLOW_SEAICE
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #endif
 
@@ -56,7 +57,16 @@ C     myThid :: my Thread Id number
       ENDIF
 
 #ifdef ALLOW_SEAICE
-      IF ( turnFreeDriftInAdMode ) THEN
+      SEAICEuseDYNAMICS = SEAICEuseDYNAMICSinAdMode
+      IF ( debugLevel.GE.debLevC ) THEN
+        WRITE(msgBuf,'(2A,L5)') 'S/R ADAUTODIFF_INADMODE_SET: ',
+     &       'SEAICEuseDYNAMICS =', SEAICEuseDYNAMICS
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+
+      IF ( SEAICEuseDYNAMICSinAdMode .AND.
+     &     turnFreeDriftInAdMode ) THEN
         SEAICEuseFREEDRIFT = .TRUE.
         IF ( debugLevel.GE.debLevC ) THEN
           WRITE(msgBuf,'(2A,L5)') 'S/R ADAUTODIFF_INADMODE_SET: ',

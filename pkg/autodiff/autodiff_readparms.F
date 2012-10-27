@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.6 2012/09/04 14:31:29 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.7 2012/10/27 00:38:21 heimbach Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -19,6 +19,10 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "AUTODIFF_PARAMS.h"
+#ifdef ALLOW_SEAICE
+#include "SEAICE_SIZE.h"
+#include "SEAICE_PARAMS.h"
+#endif
 
 C     !INPUT PARAMETERS:
       INTEGER myThid
@@ -37,8 +41,9 @@ C     iUnit      :: Work variable for IO unit number
      &       dumpAdByRec, 
      &       useKPPinAdMode, useGGL90inAdMode,
      &       useGMRediInAdMode, useSALT_PLUMEinAdMode,
-     &       useSEAICEinAdMode, turnFreeDriftInAdMode,
-     &       inAdExact
+     &       useSEAICEinAdMode, 
+     &       inAdExact,
+     &       turnFreeDriftInAdMode, SEAICEuseDYNAMICSinAdMode
 
       _BEGIN_MASTER(myThid)
 
@@ -56,7 +61,10 @@ C--   default : write one file per record
       useGGL90inAdMode   = .TRUE.
       useSALT_PLUMEinAdMode = .TRUE.
       inAdExact          = .TRUE.
-      turnFreeDriftInAdMode = .FALSE.
+C--
+C-- pkg/seaice related switches
+      SEAICEuseDYNAMICSinAdMode = .TRUE.
+      turnFreeDriftInAdMode     = .FALSE.
 
       WRITE(msgBuf,'(A)') 'AUTODIFF_READPARMS: opening data.autodiff'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -124,6 +132,10 @@ C--   Print out some kee parameters :
      &   'useSALT_PLUMEinAdMode =',
      &   ' /* use SALT_PLUME in adjoint mode */')
 #ifdef ALLOW_SEAICE
+       SEAICEuseDYNAMICSinFwdMode = SEAICEuseDYNAMICS
+       CALL WRITE_0D_L( SEAICEuseDYNAMICSinAdMode, INDEX_NONE,
+     &  'SEAICEuseDYNAMICSinAdMode =', 
+     &  ' /* use SEAICE dynamics in adjoint mode */')
        CALL WRITE_0D_L( turnFreeDriftInAdMode, INDEX_NONE,
      &  'turnFreeDriftInAdMode=',
      &             ' /* turn On/Off Free-Drift in adj/fwd mode */')
