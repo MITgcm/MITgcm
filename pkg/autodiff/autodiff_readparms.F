@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.7 2012/10/27 00:38:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.8 2012/10/27 19:08:17 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -38,10 +38,10 @@ C     iUnit      :: Work variable for IO unit number
 
       NAMELIST /AUTODIFF_PARM01/
      &       dumpAdVarExch, mon_AdVarExch,
-     &       dumpAdByRec, 
+     &       dumpAdByRec,
      &       useKPPinAdMode, useGGL90inAdMode,
      &       useGMRediInAdMode, useSALT_PLUMEinAdMode,
-     &       useSEAICEinAdMode, 
+     &       useSEAICEinAdMode,
      &       inAdExact,
      &       turnFreeDriftInAdMode, SEAICEuseDYNAMICSinAdMode
 
@@ -53,7 +53,7 @@ C--   Default values for AUTODIFF
 C-    to recover old ad-monitor & ad-dump behaviour:
 c     dumpAdVarExch      = 1
 c     mon_AdVarExch      = 0
-C--   default : write one file per record 
+C--   default : write one file per record
       dumpAdByRec        = .FALSE.
       useKPPinAdMode     = .TRUE.
       useGMRediInAdMode  = .TRUE.
@@ -100,6 +100,12 @@ C     store value of usePKG as it will be reset in S/R ADAUTODIFF_INADMODE_UNSET
       useSEAICEinFwdMode = useSEAICE
       useGGL90inFwdMode   = useGGL90
       useSALT_PLUMEinFwdMode = useSALT_PLUME
+#ifdef ALLOW_SEAICE
+C- Note: should re-visit how to turn on/off pkg internal-params in adjoint mode
+C  This will not work for PKGs which load their params AFTER this S/R is called
+C     (currently, it is OK for SEAICE but not for all PKGs !)
+      SEAICEuseDYNAMICSinFwdMode = SEAICEuseDYNAMICS
+#endif
 
 C     store value of usePKG as it will be set in S/R ADAUTODIFF_INADMODE_SET
       useKPPinAdMode    = useKPPinAdMode    .AND. useKPP
@@ -107,6 +113,10 @@ C     store value of usePKG as it will be set in S/R ADAUTODIFF_INADMODE_SET
       useSEAICEinAdMode = useSEAICEinAdMode .AND. useSEAICE
       useGGL90inAdMode    = useGGL90inAdMode    .AND. useGGL90
       useSALT_PLUMEinAdMode = useSALT_PLUMEinAdMode .AND. useSALT_PLUME
+#ifdef ALLOW_SEAICE
+      SEAICEuseDYNAMICSinAdMode = SEAICEuseDYNAMICSinAdMode
+     &                             .AND. SEAICEuseDYNAMICS
+#endif
 
 C--   Print out some kee parameters :
       WRITE(msgBuf,'(A)') '// ==================================='
@@ -132,9 +142,8 @@ C--   Print out some kee parameters :
      &   'useSALT_PLUMEinAdMode =',
      &   ' /* use SALT_PLUME in adjoint mode */')
 #ifdef ALLOW_SEAICE
-       SEAICEuseDYNAMICSinFwdMode = SEAICEuseDYNAMICS
        CALL WRITE_0D_L( SEAICEuseDYNAMICSinAdMode, INDEX_NONE,
-     &  'SEAICEuseDYNAMICSinAdMode =', 
+     &  'SEAICEuseDYNAMICSinAdMode =',
      &  ' /* use SEAICE dynamics in adjoint mode */')
        CALL WRITE_0D_L( turnFreeDriftInAdMode, INDEX_NONE,
      &  'turnFreeDriftInAdMode=',
