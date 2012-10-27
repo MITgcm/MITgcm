@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.20 2012/08/26 18:03:10 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.21 2012/10/27 23:29:58 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu
 #  Linux machines.
@@ -99,6 +99,9 @@ do
     new_dir="MITgcm_$typ"
     if test -d $new_dir/CVS -a $checkOut = '0' ; then
       pushd $new_dir
+      if test $tt != $typ ; then
+        ( cd verification ; ../tools/do_tst_2+2 -clean )
+      fi
       echo -n "Update the MITgcm code using: $cmdCVS ..."
       $cmdCVS update -P -d
       echo "  done"
