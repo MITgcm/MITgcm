@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.30 2012/10/26 19:27:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.31 2012/10/27 14:18:11 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -119,6 +119,7 @@ C  myTile        :: variables used to determine which cube face
 C  nCFace        :: owns a tile for cube grid runs using
 C                :: multi-dim advection.
 C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
+C     msgBuf     :: Informational/error message buffer
       _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin,iMax,jMin,jMax
@@ -131,12 +132,9 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       INTEGER nipass,ipass
       INTEGER nCFace
       LOGICAL N_edge, S_edge, E_edge, W_edge
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_EXCH2
       INTEGER myTile
-#endif
-#ifdef ALLOW_AUTODIFF_TAMC
-C     msgBuf     :: Informational/error message buffer
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
@@ -339,8 +337,8 @@ C   and b) the overlap of myTile are not cube-face Edges
         IF ( .NOT.overlapOnly .OR. N_edge .OR. S_edge ) THEN
 
 C-     Advective flux in X
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            af(i,j) = 0.
           ENDDO
          ENDDO
