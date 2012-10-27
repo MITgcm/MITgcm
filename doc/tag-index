@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1756 2012/10/23 01:45:24 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1757 2012/10/27 00:40:40 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff
+  - Add inAdMode switch for SEAICEuseDYNAMICS:
+    SEAICEuseDYNAMICSinAdMode 
+    (extend logic in ADAUTODIFF_INADMODE_SET)
 o pkg/seaice
   - Step 1 of merging ice-thickness distribution (ITD) code from
     MITgcm_contrib/torge/itd/ (author: Torge Martin)
@@ -11,6 +15,7 @@ o pkg/seaice
     code is enabled via CPP flag SEAICE_ITD
     nITD (in SEAICE_SIZE.h) defines number of ice thickness categories;
     code is not complete yet!!
+  - SEAICE_SIZE.h now included in almost all seaice routines
 o verification (using seaice):
   - switch back seaice-dynamics (+ lower SOLV_MAX_ITERS) in ADM exp.
     global_ocean.cs32x15.seaice ; update results.
