@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.66 2012/10/22 21:14:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.67 2012/10/28 10:25:40 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -82,12 +82,11 @@ C     enable EVP code by defining the following flag
 C--   When set use SEAICE_zetaMin and SEAICE_evpDampC to limit viscosities
 C     from below and above in seaice_evp: not necessary, and not recommended
 #  undef SEAICE_ALLOW_CLIPZETA
-# else /* not EVP */
+# endif /* SEAICE_ALLOW_EVP */
 C     regularize zeta to zmax with a smooth tanh-function instead 
 C     of a min(zeta,zmax). This improves convergence of iterative
 C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
-#  undef SEAICE_ZETA_SMOOTHREG
-# endif /* SEAICE_ALLOW_EVP */
+# undef SEAICE_ZETA_SMOOTHREG
 C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
 # undef SEAICE_ALLOW_TEM
 #else /* not SEAICE_CGRID, but old B-grid */
