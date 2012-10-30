@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_residual.F,v 1.1 2012/10/16 07:00:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_residual.F,v 1.2 2012/10/30 13:28:48 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -27,11 +27,7 @@ C     !USES:
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "DYNVARS.h"
-#include "GRID.h"
 #include "SEAICE_SIZE.h"
-#include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
