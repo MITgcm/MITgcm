@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.14 2012/10/31 08:28:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.15 2012/10/31 09:50:04 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -66,6 +66,9 @@ C     ecm2          - inverse of square of eccentricity of yield curve
 #ifdef SEAICE_ALLOW_TEM
       _RL etaMax, etaDen
 #endif /* SEAICE_ALLOW_TEM */
+#ifdef SEAICE_ZETA_SMOOTHREG
+      _RL argTmp
+#endif /* SEAICE_ZETA_SMOOTHREG */
 
 C--   FIRST SET UP BASIC CONSTANTS
       ecm2=0. _d 0
@@ -100,10 +103,13 @@ C     put min and max viscosities in
 C     regularize zeta to zmax with a smooth tanh-function instead 
 C     of a min(zeta,zmax). This improves convergence of iterative
 C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
-          zeta (I,J,bi,bj) = -2.*zeta(I,J,bi,bj)/ZMAX(I,J,bi,bj)
-          zeta (I,J,bi,bj) = ZMAX(I,J,bi,bj)
-     &         *(1. _d 0 - exp(zeta(I,J,bi,bj)))
-     &         /(1. _d 0 + exp(zeta(I,J,bi,bj)))
+          IF ( ZMAX(I,J,bi,bj) .GT. 0. _d 0 ) THEN
+           argTmp = exp(-2.*zeta(I,J,bi,bj)/ZMAX(I,J,bi,bj))
+           zeta (I,J,bi,bj) = ZMAX(I,J,bi,bj)
+     &         *(1. _d 0 - argTmp)/(1. _d 0 + argTmp)
+          ELSE
+           zeta (I,J,bi,bj) = ZMAX(I,J,bi,bj)
+          ENDIF
 #else
           zeta (I,J,bi,bj) = MIN(ZMAX(I,J,bi,bj),zeta(I,J,bi,bj))
 #endif /*  SEAICE_ZETA_SMOOTHREG */
