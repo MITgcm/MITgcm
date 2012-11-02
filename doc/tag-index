@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1757 2012/10/27 00:40:40 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1758 2012/11/02 07:53:56 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: simplify seaice_evp by avoiding use of extra fields u/vIceC
 o pkg/autodiff
   - Add inAdMode switch for SEAICEuseDYNAMICS:
     SEAICEuseDYNAMICSinAdMode 
