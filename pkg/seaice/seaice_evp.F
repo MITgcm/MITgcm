@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.43 2012/10/22 23:59:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.44 2012/11/02 07:53:41 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -139,9 +139,9 @@ C     inverse relaxation/damping time scale
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-C     use u/vIceC as work arrays: copy previous time step to u/vIceC
-          uIceC(I,J,bi,bj)   = uIce(I,J,bi,bj)
-          vIceC(I,J,bi,bj)   = vIce(I,J,bi,bj)
+C     use u/vIce as work arrays: copy previous time step to u/vIceNm1
+          uIceNm1(I,J,bi,bj) = uIce(I,J,bi,bj)
+          vIceNm1(I,J,bi,bj) = vIce(I,J,bi,bj)
 C     initialise strain rates
           e11  (I,J,bi,bj)   = 0. _d 0
           e22  (I,J,bi,bj)   = 0. _d 0
@@ -174,9 +174,9 @@ C
 #ifdef ALLOW_AUTODIFF_TAMC
         ikeyloc = iEVPstep +
      &      (ikey_dynamics-1)*nEVPstepMax
-CADJ STORE uicec  = comlev1_evp,
+CADJ STORE uice  = comlev1_evp,
 CADJ &     key = ikeyloc, byte = isbyte
-CADJ STORE vicec  = comlev1_evp,
+CADJ STORE vice  = comlev1_evp,
 CADJ &     key = ikeyloc, byte = isbyte
 CADJ STORE seaice_sigma1  = comlev1_evp,
 CADJ &     key = ikeyloc, byte = isbyte
@@ -189,7 +189,7 @@ C
 C     first calculate strain rates and bulk moduli/viscosities
 C
         CALL SEAICE_CALC_STRAINRATES(
-     I       uIceC, vIceC,
+     I       uIce, vIce,
      O       e11, e22, e12,
      I       iEVPstep, myTime, myIter, myThid )
 
@@ -294,7 +294,7 @@ C     recompute pressure
           ENDDO
 #ifdef ALLOW_DIAGNOSTICS
           IF ( useDiagnostics ) THEN
-C     save etc, zeta, and pressure for diagnostics
+C     save eta, zeta, and pressure for diagnostics
            DO j=1,sNy
             DO i=1,sNx
              press(I,J,bi,bj) = pressC(I,J)
@@ -455,7 +455,7 @@ C
 C     set up rhs for stepping the velocity field
 C
         CALL SEAICE_OCEANDRAG_COEFFS(
-     I       uIceC, vIceC,
+     I       uIce, vIce,
      O       DWATN,
      I       iEVPstep, myTime, myIter, myThid )
 
@@ -470,35 +470,35 @@ C     ( remember to average to correct velocity points )
      &           COSWAT * uVel(I,J,kSrf,bi,bj)
      &           - SIGN(SINWAT, _fCori(I,J,bi,bj))* 0.5 _d 0 *
      &           ( DWATN(I  ,J,bi,bj) * 0.5 _d 0 *
-     &            (vVel(I  ,J  ,kSrf,bi,bj)-vIceC(I  ,J  ,bi,bj)
-     &            +vVel(I  ,J+1,kSrf,bi,bj)-vIceC(I  ,J+1,bi,bj))
+     &            (vVel(I  ,J  ,kSrf,bi,bj)-vIce(I  ,J  ,bi,bj)
+     &            +vVel(I  ,J+1,kSrf,bi,bj)-vIce(I  ,J+1,bi,bj))
      &           + DWATN(I-1,J,bi,bj) * 0.5 _d 0 *
-     &            (vVel(I-1,J  ,kSrf,bi,bj)-vIceC(I-1,J  ,bi,bj)
-     &            +vVel(I-1,J+1,kSrf,bi,bj)-vIceC(I-1,J+1,bi,bj))
+     &            (vVel(I-1,J  ,kSrf,bi,bj)-vIce(I-1,J  ,bi,bj)
+     &            +vVel(I-1,J+1,kSrf,bi,bj)-vIce(I-1,J+1,bi,bj))
      &           )
             FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+
      &           0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
      &           COSWAT * vVel(I,J,kSrf,bi,bj)
      &           + SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 *
      &           ( DWATN(I,J  ,bi,bj) * 0.5 _d 0 *
-     &            (uVel(I  ,J  ,kSrf,bi,bj)-uIceC(I  ,J  ,bi,bj)
-     &            +uVel(I+1,J  ,kSrf,bi,bj)-uIceC(I+1,J  ,bi,bj))
+     &            (uVel(I  ,J  ,kSrf,bi,bj)-uIce(I  ,J  ,bi,bj)
+     &            +uVel(I+1,J  ,kSrf,bi,bj)-uIce(I+1,J  ,bi,bj))
      &           + DWATN(I,J-1,bi,bj) * 0.5 _d 0 *
-     &            (uVel(I  ,J-1,kSrf,bi,bj)-uIceC(I  ,J-1,bi,bj)
-     &            +uVel(I+1,J-1,kSrf,bi,bj)-uIceC(I+1,J-1,bi,bj))
+     &            (uVel(I  ,J-1,kSrf,bi,bj)-uIce(I  ,J-1,bi,bj)
+     &            +uVel(I+1,J-1,kSrf,bi,bj)-uIce(I+1,J-1,bi,bj))
      &           )
 C     coriols terms
             FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj) + 0.5 _d 0*(
      &             seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
-     &           * 0.5 _d 0*( vIceC(I  ,J,bi,bj)+vIceC(I  ,J+1,bi,bj) )
+     &           * 0.5 _d 0*( vIce(I  ,J,bi,bj)+vIce(I  ,J+1,bi,bj) )
      &           + seaiceMassC(I-1,J,bi,bj) * _fCori(I-1,J,bi,bj)
-     &           * 0.5 _d 0*( vIceC(I-1,J,bi,bj)+vIceC(I-1,J+1,bi,bj) )
+     &           * 0.5 _d 0*( vIce(I-1,J,bi,bj)+vIce(I-1,J+1,bi,bj) )
      &           )
             FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj) - 0.5 _d 0*(
      &             seaiceMassC(I,J  ,bi,bj) * _fCori(I,J  ,bi,bj)
-     &           * 0.5 _d 0*( uIceC(I,J  ,bi,bj)+uIceC(I+1,  J,bi,bj) )
+     &           * 0.5 _d 0*( uIce(I,J  ,bi,bj)+uIce(I+1,  J,bi,bj) )
      &           + seaiceMassC(I,J-1,bi,bj) * _fCori(I,J-1,bi,bj)
-     &           * 0.5 _d 0*( uIceC(I,J-1,bi,bj)+uIceC(I+1,J-1,bi,bj) )
+     &           * 0.5 _d 0*( uIce(I,J-1,bi,bj)+uIce(I+1,J-1,bi,bj) )
      &           )
            ENDDO
           ENDDO
@@ -507,18 +507,18 @@ C     step momentum equations with ice-ocean stress term treated implicitly
 C
           DO J=1,sNy
            DO I=1,sNx
-            uIceC(I,J,bi,bj) = seaiceMaskU(I,J,bi,bj) *
+            uIce(I,J,bi,bj) = seaiceMaskU(I,J,bi,bj) *
      &           (  seaiceMassU(I,J,bi,bj)/SEAICE_deltaTevp
-     &           * uIceC(I,J,bi,bj)
+     &           * uIce(I,J,bi,bj)
      &           + FORCEX(I,J,bi,bj)
      &           + stressDivergenceX(I,J,bi,bj) )
      &           /( 1. _d 0 - seaiceMaskU(I,J,bi,bj)
      &           + seaiceMassU(I,J,bi,bj)/SEAICE_deltaTevp
      &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I-1,J,bi,bj) )
      &           * COSWAT )
-            vIceC(I,J,bi,bj) = seaiceMaskV(I,J,bi,bj) *
+            vIce(I,J,bi,bj) = seaiceMaskV(I,J,bi,bj) *
      &           ( seaiceMassV(I,J,bi,bj)/SEAICE_deltaTevp
-     &           * vIceC(I,J,bi,bj)
+     &           * vIce(I,J,bi,bj)
      &           + FORCEY(I,J,bi,bj)
      &           + stressDivergenceY(I,J,bi,bj) )
      &           /( 1. _d 0 - seaiceMaskV(I,J,bi,bj)
@@ -526,10 +526,10 @@ C
      &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I,J-1,bi,bj) )
      &           * COSWAT )
 C--   to change results  of lab_sea.hb87 test exp. (only preserve 2 digits for cg2d)
-c           uIceC(i,j,bi,bj) = uIce(i,j,bi,bj)
-c    &                       +( uIceC(i,j,bi,bj) - uIce(i,j,bi,bj) )
-c           vIceC(i,j,bi,bj) = vIce(i,j,bi,bj)
-c    &                       +( vIceC(i,j,bi,bj) - vIce(i,j,bi,bj) )
+c           uIce(i,j,bi,bj) = uIceNm1(i,j,bi,bj)
+c    &                       +( uIce(i,j,bi,bj) - uIceNm1(i,j,bi,bj) )
+c           vIce(i,j,bi,bj) = vIceNm1(i,j,bi,bj)
+c    &                       +( vIce(i,j,bi,bj) - vIceNm1(i,j,bi,bj) )
            ENDDO
           ENDDO
 #ifndef OBCS_UVICE_OLD
@@ -537,10 +537,10 @@ c    &                       +( vIceC(i,j,bi,bj) - vIce(i,j,bi,bj) )
            DO i=1,sNx
             locMaskU = maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj)
             locMaskV = maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj)
-            uIceC(i,j,bi,bj) = uIceC(i,j,bi,bj)*locMaskU
-     &                       + uIce(i,j,bi,bj)*(ONE-locMaskU)
-            vIceC(i,j,bi,bj) = vIceC(i,j,bi,bj)*locMaskV
-     &                       + vIce(i,j,bi,bj)*(ONE-locMaskV)
+            uIce(i,j,bi,bj) = uIce(i,j,bi,bj)*locMaskU
+     &                       + uIceNm1(i,j,bi,bj)*(ONE-locMaskU)
+            vIce(i,j,bi,bj) = vIce(i,j,bi,bj)*locMaskV
+     &                       + vIceNm1(i,j,bi,bj)*(ONE-locMaskV)
            ENDDO
           ENDDO
 #endif /* OBCS_UVICE_OLD */
@@ -548,26 +548,14 @@ c    &                       +( vIceC(i,j,bi,bj) - vIce(i,j,bi,bj) )
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uIceC = comlev1_evp, key = ikeyloc, byte = isbyte
-CADJ STORE vIceC = comlev1_evp, key = ikeyloc, byte = isbyte
+CADJ STORE uIce = comlev1_evp, key = ikeyloc, byte = isbyte
+CADJ STORE vIce = comlev1_evp, key = ikeyloc, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-        CALL EXCH_UV_XY_RL(uIceC,vIceC,.TRUE.,myThid)
+        CALL EXCH_UV_XY_RL(uIce,vIce,.TRUE.,myThid)
 
        ENDIF
 C     end of the main time loop
-      ENDDO
-
-C     Copy work arrays and apply masks
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1-OLy,sNy+OLy
-         DO I=1-OLx,sNx+OLx
-          uIce(I,J,bi,bj)=uIceC(I,J,bi,bj)* _maskW(I,J,kSrf,bi,bj)
-          vIce(I,J,bi,bj)=vIceC(I,J,bi,bj)* _maskS(I,J,kSrf,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
       ENDDO
 
 #endif /* SEAICE_ALLOW_DYNAMICS and SEAICE_CGRID and SEAICE_ALLOW_EVP */
