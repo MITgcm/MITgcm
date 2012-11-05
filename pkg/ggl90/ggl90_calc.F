@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.24 2012/11/05 08:11:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.25 2012/11/05 13:11:11 mlosch Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -360,7 +360,6 @@ C     ... across x-faces
 #ifdef ISOTROPIC_COS_SCALING
      &      *CosFacU(j,bi,bj)
 #endif /* ISOTROPIC_COS_SCALING */
-     &         *maskW(i,j,k,bi,bj) ! paranoia setting
          ENDDO
         ENDDO
 C     ... across y-faces
@@ -375,7 +374,6 @@ C     ... across y-faces
 #ifdef ISOTROPIC_COS_SCALING
      &      *CosFacV(j,bi,bj)
 #endif /* ISOTROPIC_COS_SCALING */
-     &         *maskS(i,j,k,bi,bj) ! paranoia setting
          ENDDO
         ENDDO
 C     Compute divergence of fluxes
@@ -388,7 +386,6 @@ C     Compute divergence of fluxes
      &      gTKE(i,j) = -recip_drC(k)*recip_rA(i,j,bi,bj)/hFac
      &         *((dfx(i+1,j)-dfx(i,j))
      &          +(dfy(i,j+1)-dfy(i,j)) )
-     &         *maskC(i,j,k,bi,bj) ! paranoia setting
          ENDDO
         ENDDO
 C      end if GGL90diffTKEh .eq. 0.
