@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1758 2012/11/02 07:53:56 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1759 2012/11/05 08:12:09 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90: fix computation of control volumes for the case of 
+  ALLOW_GGL90_HORIZDIFF (probably not used very often): move control volumes
+  up half a grid cell from C-centered to W-centered (pointed out by C. Eden)
 o pkg/seaice: simplify seaice_evp by avoiding use of extra fields u/vIceC
 o pkg/autodiff
   - Add inAdMode switch for SEAICEuseDYNAMICS:
