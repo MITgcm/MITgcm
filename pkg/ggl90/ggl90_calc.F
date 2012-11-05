@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.23 2012/08/08 22:22:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.24 2012/11/05 08:11:45 mlosch Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -103,9 +103,11 @@ C-    tri-diagonal matrix
       _RL     c3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER errCode
 #ifdef ALLOW_GGL90_HORIZDIFF
+C     hFac     :: fractional thickness of W-cell
 C     xA, yA   :: area of lateral faces
 C     dfx, dfy :: diffusive flux across lateral faces
 C     gTKE     :: right hand side of diffusion equation
+      _RL     hFac
       _RL     xA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     yA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     dfx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -333,16 +335,18 @@ c     ENDDO
        km1 = k-1
 
 #ifdef ALLOW_GGL90_HORIZDIFF
-       IF ( GGL90diffTKEh .GT. 0. _d 0 ) THEN
+      IF ( GGL90diffTKEh .GT. 0. _d 0 ) THEN
 C     horizontal diffusion of TKE (requires an exchange in
 C      do_fields_blocking_exchanges)
 C     common factors
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          xA(i,j) = _dyG(i,j,bi,bj)
-     &         *drF(k)*_hFacW(i,j,k,bi,bj)
-          yA(i,j) = _dxG(i,j,bi,bj)
-     &         *drF(k)*_hFacS(i,j,k,bi,bj)
+          xA(i,j) = _dyG(i,j,bi,bj)*drC(k)*
+     &                 (min(.5 _d 0,_hFacW(i,j,k-1,bi,bj) ) +
+     &                  min(.5 _d 0,_hFacW(i,j,k  ,bi,bj) ) )
+          yA(i,j) = _dxG(i,j,bi,bj)*drC(k)*
+     &                 (min(.5 _d 0,_hFacS(i,j,k-1,bi,bj) ) +
+     &                  min(.5 _d 0,_hFacS(i,j,k  ,bi,bj) ) )
          ENDDO
         ENDDO
 C     Compute diffusive fluxes
@@ -353,7 +357,10 @@ C     ... across x-faces
           dfx(i,j) = -GGL90diffTKEh*xA(i,j)
      &      *_recip_dxC(i,j,bi,bj)
      &      *(GGL90TKE(i,j,k,bi,bj)-GGL90TKE(i-1,j,k,bi,bj))
+#ifdef ISOTROPIC_COS_SCALING
      &      *CosFacU(j,bi,bj)
+#endif /* ISOTROPIC_COS_SCALING */
+     &         *maskW(i,j,k,bi,bj) ! paranoia setting
          ENDDO
         ENDDO
 C     ... across y-faces
@@ -368,16 +375,20 @@ C     ... across y-faces
 #ifdef ISOTROPIC_COS_SCALING
      &      *CosFacV(j,bi,bj)
 #endif /* ISOTROPIC_COS_SCALING */
+     &         *maskS(i,j,k,bi,bj) ! paranoia setting
          ENDDO
         ENDDO
 C     Compute divergence of fluxes
         DO j=1-OLy,sNy+OLy-1
          DO i=1-OLx,sNx+OLx-1
-          gTKE(i,j) =
-     &    -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)*recip_rA(i,j,bi,bj)
-     &         *( (dfx(i+1,j)-dfx(i,j))
-     &           +(dfy(i,j+1)-dfy(i,j))
-     &          )
+          hFac = min(.5 _d 0,_hFacC(i,j,k-1,bi,bj) ) +
+     &          min(.5 _d 0,_hFacC(i,j,k  ,bi,bj) )
+          gTKE(i,j) = 0.0
+          if ( hFac .ne. 0.0 )
+     &      gTKE(i,j) = -recip_drC(k)*recip_rA(i,j,bi,bj)/hFac
+     &         *((dfx(i+1,j)-dfx(i,j))
+     &          +(dfy(i,j+1)-dfy(i,j)) )
+     &         *maskC(i,j,k,bi,bj) ! paranoia setting
          ENDDO
         ENDDO
 C      end if GGL90diffTKEh .eq. 0.
