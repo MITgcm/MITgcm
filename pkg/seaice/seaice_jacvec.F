@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jacvec.F,v 1.2 2012/11/06 13:09:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jacvec.F,v 1.3 2012/11/06 13:10:14 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -83,7 +83,6 @@ CML      _RL g_dvIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CML      _RL g_uIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CML      _RL g_vIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CML
-CML      IF (.false.) then
 CMLC     Initialise
 CML      DO bj=myByLo(myThid),myByHi(myThid)
 CML       DO bi=myBxLo(myThid),myBxHi(myThid)
