@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.5 2012/11/06 13:04:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.6 2012/11/06 13:18:14 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -108,11 +108,13 @@ C     not sure if this works properly
 
       _BEGIN_MASTER ( myThid )
       IF ( iCode .EQ. 0 ) THEN
-C     first guess is zero because it is a correction
+C     The first guess is zero because it is a correction, but this
+C     is implemented by setting du/vIce=0 outside of this routine;
+C     this make it possible to restart FGMRES with a nonzero sol
+       CALL SEAICE_MAP2VEC(n,duIce,dvIce,sol,.TRUE.,myThid)
 C     wk2 needs to be reset for iCode = 0, because it may contain
 C     remains of the previous Krylov iteration
        DO k=1,n
-        sol(k) = 0. _d 0
         wk2(k) = 0. _d 0
        ENDDO
       ELSEIF ( iCode .EQ. 3 ) THEN

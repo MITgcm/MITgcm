@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.3 2012/11/06 12:53:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.4 2012/11/06 13:18:14 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -262,6 +262,9 @@ C     Update linear solution vector and return to Newton iteration
            DO I=1-Olx,sNx+Olx
             uIce(I,J,bi,bj) = uIce(I,J,bi,bj)+duIce(I,J,bi,bj)
             vIce(I,J,bi,bj) = vIce(I,J,bi,bj)+dvIce(I,J,bi,bj)
+C     reset du/vIce here instead of setting sol = 0 in seaice_fgmres_driver
+            duIce(I,J,bi,bj)= 0. _d 0
+            dvIce(I,J,bi,bj)= 0. _d 0
            ENDDO
           ENDDO
          ENDDO
