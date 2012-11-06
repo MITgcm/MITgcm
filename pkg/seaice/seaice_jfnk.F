@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.2 2012/10/17 14:53:51 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.3 2012/11/06 12:53:14 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -132,6 +132,7 @@ C     variables DWATN, zeta, and eta)
      I      uIce, vIce, 
      O      uIceRes, vIceRes, 
      I      newtonIter, 0, myTime, myIter, myThid )
+       CALL EXCH_UV_XY_RL( uIceRes, vIceRes,.TRUE.,myThid)
 C     local copies of precomputed coefficients that are to stay
 C     constant for the preconditioner
        DO bj=myByLo(myThid),myByHi(myThid)
@@ -196,7 +197,7 @@ C     in that routine
         WRITE(msgBuf,'(2A,2(1XI6),2E12.5)') 
      &       ' S/R SEAICE_JFNK: newtonIter,',
      &       ' total newtonIter, JFNKgamma_lin, initial norm = ',
-     &       newtonIter, SEAICEnewtonIterMax*myIter+newtonIter, 
+     &       newtonIter,SEAICEnewtonIterMax*(myIter-nIter0)+newtonIter, 
      &       JFNKgamma_lin, JFNKresidual
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &       SQUEEZE_RIGHT, myThid )
@@ -217,8 +218,6 @@ C     solution vector sol = du/vIce
 C     residual vector (rhs) Fu = u/vIceRes
 C     output work vectors wk1, -> input work vector wk2 
 C     
-         CALL EXCH_UV_XY_RL( uIceRes, vIceRes,.TRUE.,myThid)
-         CALL EXCH_UV_XY_RL( duIce, dvIce,.TRUE.,myThid)
          CALL SEAICE_FGMRES_DRIVER(
      I        uIceRes, vIceRes, 
      U        duIce, dvIce, iCode,
@@ -248,7 +247,7 @@ C     some output diagnostics
         IF ( debugLevel.GE.debLevA ) THEN
          WRITE(msgBuf,'(3(A,I6))')
      &        ' S/R SEAICE_JFNK: Newton iterate / total = ', newtonIter, 
-     &        ' / ', SEAICEnewtonIterMax*myIter+newtonIter, 
+     &        ' / ', SEAICEnewtonIterMax*(myIter-nIter0)+newtonIter, 
      &        ', Nb. of FGMRES iterations = ', krylovIter
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &        SQUEEZE_RIGHT, myThid )
