@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.4 2012/11/01 15:05:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.5 2012/11/06 13:04:48 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -38,6 +38,7 @@ C     !USES:
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "SEAICE_PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -66,6 +67,10 @@ C     u/vIceRes :: residual F(u)
 #if ( defined (SEAICE_CGRID) && \
       defined (SEAICE_ALLOW_JFNK) && \
       defined (SEAICE_ALLOW_DYNAMICS) )
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
 C     Local variables:
 C     k :: loop indices
       INTEGER k
@@ -89,8 +94,11 @@ C     they are not forgotten between Krylov iterations
       COMMON /FGMRES_RL/ sol, rhs, vv, w
 CEOP
 
-C     iout=1 give a little bit of output
-      iout=1
+      iout=0
+C     iout=1 gives a little bit of output
+      IF ( debugLevel.GE.debLevA .AND.
+     &     DIFFERENT_MULTIPLE( SEAICE_monFreq, myTime, deltaTClock ) )
+     &     iout=1
 
 C     For now, let only the master thread do all the work
 C     - copy from 2D arrays to 1D-vector
@@ -510,7 +518,6 @@ C         call daxpy(n, t, w(1,j), 1, sol,1) !jfl modification
 C
 C     test for return
 C
-      print *, 'ml-fgmres: its, maxits: ', its, maxits, ro, '<', eps1
       if (ro .le. eps1 .or. its .ge. maxits) goto 999
 C
 C     else compute residual vector and continue..
