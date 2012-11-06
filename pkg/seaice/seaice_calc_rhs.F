@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_rhs.F,v 1.4 2012/10/16 07:00:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_rhs.F,v 1.5 2012/11/06 12:29:57 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -89,9 +89,9 @@ C     ( remember to average to correct velocity points )
      &         + DWATN(I,J-1,bi,bj) * 0.5 _d 0 *
      &          ( uVel(I,J-1,kSrf,bi,bj)+uVel(I+1,J-1,kSrf,bi,bj))
      &         ) )
-C     apply masks
-          uIceRHS(I,J,bi,bj) = uIceRHS(I,J,bi,bj)*maskW(I,J,kSrf,bi,bj)
-          vIceRHS(I,J,bi,bj) = vIceRHS(I,J,bi,bj)*maskS(I,J,kSrf,bi,bj)
+C     apply masks for interior (important when we have open boundaries)
+          uIceRHS(I,J,bi,bj) = uIceRHS(I,J,bi,bj)*maskinW(I,J,bi,bj)
+          vIceRHS(I,J,bi,bj) = vIceRHS(I,J,bi,bj)*maskinS(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO

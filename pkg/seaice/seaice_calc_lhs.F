@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.2 2012/10/16 14:39:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.3 2012/11/06 12:29:57 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -187,9 +187,9 @@ C                           + Cdrag*(vIce*cosWat + uIce*sinWat)
      &         +  DWATN(I,J-1,bi,bj) * 0.5 _d 0 *
      &         (uIceLoc(I,J-1,bi,bj)+uIceLoc(I+1,J-1,bi,bj))
      &         )
-C     apply masks
-          uIceLHS(I,J,bi,bj) = uIceLHS(I,J,bi,bj)*maskW(I,J,1,bi,bj)
-          vIceLHS(I,J,bi,bj) = vIceLHS(I,J,bi,bj)*maskS(I,J,1,bi,bj)
+C     apply masks for interior (important when we have open boundaries)
+          uIceLHS(I,J,bi,bj) = uIceLHS(I,J,bi,bj)*maskinW(I,J,bi,bj)
+          vIceLHS(I,J,bi,bj) = vIceLHS(I,J,bi,bj)*maskinS(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO
