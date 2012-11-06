@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jacvec.F,v 1.1 2012/10/16 07:00:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jacvec.F,v 1.2 2012/11/06 13:09:30 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -70,7 +70,51 @@ C     i,j,bi,bj :: loop indices
       INTEGER i,j,bi,bj
       _RL epsilon, reps
 CEOP
- 
+C     Instructions for using TAF or TAMC to generate exact Jacobian times
+C     vector operations:
+C
+C     1. make small_f
+C     2. cat seaice_calc_residual.f seaice_oceandrag_coeffs.f seaice_calc_strainrates.f seaice_calc_viscosities.f seaice_calc_rhs.f seaice_calc_lhs.f > taf_input.f
+C     3. staf -v1 -forward -toplevel seaice_calc_residual -input uIceLoc,viceLoc -output uIceRes,vIceRes taf_input.f
+C     4. insert content of taf_input_ftl.f at the end of this file
+C     5. add the following code and comment out the finite difference code
+CML      _RL g_duIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+CML      _RL g_dvIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+CML      _RL g_uIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+CML      _RL g_vIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+CML
+CML      IF (.false.) then
+CMLC     Initialise
+CML      DO bj=myByLo(myThid),myByHi(myThid)
+CML       DO bi=myBxLo(myThid),myBxHi(myThid)
+CML        DO J=1-Oly,sNy+Oly
+CML         DO I=1-Olx,sNx+Olx
+CML          g_duIce(I,J,bi,bj) = duice(I,J,bi,bj)
+CML          g_dvIce(I,J,bi,bj) = dvice(I,J,bi,bj)
+CML          g_uIceRes(I,J,bi,bj) = 0. _d 0
+CML          g_vIceRes(I,J,bi,bj) = 0. _d 0
+CML          uIceResP(I,J,bi,bj) = 0. _d 0
+CML          vIceResP(I,J,bi,bj) = 0. _d 0
+CML         ENDDO
+CML        ENDDO
+CML       ENDDO
+CML      ENDDO
+CML
+CML      CALL G_SEAICE_CALC_RESIDUAL( uIce, g_duice, vIce, 
+CML     $g_dvice, uiceresp, g_uiceres, viceresp, g_viceres, newtoniter, 
+CML     $kryloviter, mytime, myiter, mythid )
+CML
+CML      DO bj=myByLo(myThid),myByHi(myThid)
+CML       DO bi=myBxLo(myThid),myBxHi(myThid)
+CML        DO J=1-Oly,sNy+Oly
+CML         DO I=1-Olx,sNx+Olx
+CML          duice(I,J,bi,bj)=g_uiceres(I,J,bi,bj)
+CML          dvice(I,J,bi,bj)=g_viceres(I,J,bi,bj)
+CML         ENDDO
+CML        ENDDO
+CML       ENDDO
+CML      ENDDO
+
 C     Initialise
       epsilon = 1. _d -06
       reps    = 1. _d 0/epsilon
