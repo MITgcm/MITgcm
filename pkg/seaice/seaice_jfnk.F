@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.4 2012/11/06 13:18:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.5 2012/11/07 09:56:23 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -51,14 +51,19 @@ C     myThid :: my Thread Id. number
 #if ( (defined SEAICE_CGRID) && \
       (defined SEAICE_ALLOW_JFNK) && \
       (defined SEAICE_ALLOW_DYNAMICS) )
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
 C     i,j,bi,bj :: loop indices
       INTEGER i,j,bi,bj
 C     loop indices
-      INTEGER newtonIter, newtonIterFail
-      INTEGER krylovIter, krylovIterFail
-      INTEGER totalKrylovIter
-C     FGMRES flag that indicates what to do next
+      INTEGER newtonIter
+      INTEGER krylovIter, krylovFails
+      INTEGER totalKrylovItersLoc
+C     FGMRES flag that determines amount of output messages of fgmres
+      INTEGER iOutFGMRES
+C     FGMRES flag that indicates what fgmres wants us to do next
       INTEGER iCode
       _RL     JFNKresidual, JFNKresidualTile(nSx,nSy)
       _RL     JFNKresidualKm1
@@ -86,16 +91,22 @@ C     zeta, eta, and DWATN, press
 CEOP
 
 C     Initialise
-      newtonIter      = 0
-      newtonIterFail  = 0
-      krylovIterFail  = 0
-      totalKrylovIter = 0
-      JFNKconverged   = .FALSE.
-      JFNKtol         = 0. _d 0
-      JFNKresidual    = 0. _d 0
-      JFNKresidualKm1 = 0. _d 0
-      FGMRESeps       = 0. _d 0
-      recip_deltaT    = 1. _d 0 / SEAICE_deltaTdyn
+      newtonIter          = 0
+      krylovFails         = 0
+      totalKrylovItersLoc = 0
+      JFNKconverged       = .FALSE.
+      JFNKtol             = 0. _d 0
+      JFNKresidual        = 0. _d 0
+      JFNKresidualKm1     = 0. _d 0
+      FGMRESeps           = 0. _d 0
+      recip_deltaT        = 1. _d 0 / SEAICE_deltaTdyn
+
+      iOutFGMRES=0
+C     iOutFgmres=1 gives a little bit of output
+      IF ( debugLevel.GE.debLevA .AND.
+     &     DIFFERENT_MULTIPLE( SEAICE_monFreq, myTime, deltaTClock ) )
+     &     iOutFGMRES=1
+
 C     
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -194,6 +205,7 @@ C     in that routine
        krylovIter    = 0
        iCode         = 0
        IF ( debugLevel.GE.debLevA ) THEN  
+        _BEGIN_MASTER( myThid )
         WRITE(msgBuf,'(2A,2(1XI6),2E12.5)') 
      &       ' S/R SEAICE_JFNK: newtonIter,',
      &       ' total newtonIter, JFNKgamma_lin, initial norm = ',
@@ -201,6 +213,7 @@ C     in that routine
      &       JFNKgamma_lin, JFNKresidual
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &       SQUEEZE_RIGHT, myThid )
+        _END_MASTER( myThid )
        ENDIF
 C
        JFNKconverged = JFNKresidual.LT.JFNKtol
@@ -221,7 +234,7 @@ C
          CALL SEAICE_FGMRES_DRIVER(
      I        uIceRes, vIceRes, 
      U        duIce, dvIce, iCode,
-     I        FGMRESeps,  
+     I        FGMRESeps, iOutFGMRES,
      I        newtonIter, krylovIter, myTime, myIter, myThid )
 C     FGMRES returns iCode either asking for an new preconditioned vector
 C     or product of matrix (Jacobian) times vector. For iCode = 0, terminate
@@ -242,18 +255,20 @@ C     Compute Jacobian times vector
          krylovConverged = iCode.EQ.0
 C     End of Krylov iterate
         ENDDO
-        totalKrylovIter = totalKrylovIter + krylovIter
+        totalKrylovItersLoc = totalKrylovItersLoc + krylovIter
 C     some output diagnostics
         IF ( debugLevel.GE.debLevA ) THEN
+         _BEGIN_MASTER( myThid )
          WRITE(msgBuf,'(3(A,I6))')
      &        ' S/R SEAICE_JFNK: Newton iterate / total = ', newtonIter, 
      &        ' / ', SEAICEnewtonIterMax*(myIter-nIter0)+newtonIter, 
      &        ', Nb. of FGMRES iterations = ', krylovIter
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &        SQUEEZE_RIGHT, myThid )
+         _END_MASTER( myThid )
         ENDIF
         IF ( krylovIter.EQ.SEAICEkrylovIterMax ) THEN
-         krylovIterFail = krylovIterFail + 1
+         krylovFails = krylovFails + 1
         ENDIF
 C     Update linear solution vector and return to Newton iteration
         DO bj=myByLo(myThid),myByHi(myThid)
@@ -274,30 +289,104 @@ C     Set the stopping criterion for the Newton iteration
        ENDIF
 C     end of Newton iterate
       ENDDO
-C     some output diagnostics
-      IF ( debugLevel.GE.debLevA ) THEN
+C
+C--   Output diagnostics
+C
+C     Count iterations
+      totalJFNKtimeSteps = totalJFNKtimeSteps + 1
+      totalNewtonIters   = totalNewtonIters + newtonIter
+      totalKrylovIters   = totalKrylovIters + totalKrylovItersLoc
 C     Record failure
+      totalKrylovFails   = totalKrylovFails + krylovFails
+      IF ( newtonIter .EQ. SEAICEnewtonIterMax ) THEN
+       totalNewtonFails = totalNewtonFails + 1 
+      ENDIF
+C     Decide whether it is time to dump and reset the counter
+      IF ( DIFFERENT_MULTIPLE(SEAICE_monFreq,myTime+deltaTClock,
+     &     deltaTClock) ) THEN
+       _BEGIN_MASTER( myThid )
+       WRITE(msgBuf,'(A)') 
+     &' // ======================================================='
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A)') ' // Begin JFNK statistics'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A)') 
+     &' // ======================================================='
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,I10)') 
+     &      ' %JFNK_MON: time step              = ', myIter+1
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,I10)') 
+     &      ' %JFNK_MON: Nb. of time steps      = ', totalJFNKtimeSteps
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,I10)') 
+     &      ' %JFNK_MON: Nb. of Newton steps    = ', totalNewtonIters
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,I10)') 
+     &      ' %JFNK_MON: Nb. of Krylov steps    = ', totalKrylovIters
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,I10)') 
+     &      ' %JFNK_MON: Nb. of Newton failures = ', totalNewtonFails
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,I10)') 
+     &      ' %JFNK_MON: Nb. of Krylov failures = ', totalKrylovFails
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A)') 
+     &' // ======================================================='
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A)') ' // Begin JFNK statistics'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A)') 
+     &' // ======================================================='
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+       _END_MASTER( myThid )
+C     reset and start again
+       totalJFNKtimeSteps = 0
+       totalNewtonIters   = 0
+       totalKrylovIters   = 0
+       totalKrylovFails   = 0
+       totalNewtonFails   = 0
+      ENDIF
+
+C     Print more debugging information
+      IF ( debugLevel.GE.debLevA ) THEN
        IF ( newtonIter .EQ. SEAICEnewtonIterMax ) THEN
-        newtonIterFail = newtonIterFail + 1 
+        _BEGIN_MASTER( myThid )
         WRITE(msgBuf,'(A,I10)') 
      &       ' S/R SEAICE_JFNK: JFNK did not converge in timestep ',
-     &       myIter
+     &       myIter+1
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &       SQUEEZE_RIGHT, myThid )
+        _END_MASTER( myThid )
        ENDIF
-       IF ( krylovIterFail .GT. 0 ) THEN
+       IF ( krylovFails .GT. 0 ) THEN
+        _BEGIN_MASTER( myThid )
         WRITE(msgBuf,'(A,I4,A,I10)') 
      &       ' S/R SEAICE_JFNK: FGMRES did not converge ',
-     &       krylovIterFail, ' times in timestep ', myIter
+     &       krylovFails, ' times in timestep ', myIter+1
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &       SQUEEZE_RIGHT, myThid )
+        _END_MASTER( myThid )
        ENDIF
-       WRITE(msgBuf,'(A,I6)') 
+       _BEGIN_MASTER( myThid )
+       WRITE(msgBuf,'(A,I6,A,I10)') 
      &      ' S/R SEAICE_JFNK: Total number FGMRES iterations = ',
-     &      totalKrylovIter
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT, myThid )
-       
+     &      totalKrylovItersLoc, ' in timestep ', myIter+1
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+       _END_MASTER( myThid )
       ENDIF
 
 #endif /* SEAICE_ALLOW_DYNAMICS and SEAICE_CGRID and SEAICE_ALLOW_JFNK */
