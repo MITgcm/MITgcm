@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.4 2012/10/18 10:06:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.5 2012/11/07 12:41:55 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -77,7 +77,7 @@ C     i,j,bi,bj  :: Loop counters
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       _RL WFAU, WFAV
-      _RL AA3, S1, S2
+      _RL AA3
       _RL hFacM, hFacP
 
 C     coefficients of ice velocities in coefficient matrix
@@ -154,9 +154,6 @@ C--   introduce turning angles
 C SET SOME VALUES
       WFAU=0.95 _d 0
       WFAV=0.95 _d 0
-
-      S1 = 0.
-      S2 = 0.
 
 C
 C     Initialise
@@ -473,10 +470,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_DEBUG */
 
 C--   Calculate initial residual of the linearised system
-      IF ( printResidual .OR. LSR_mixIniGuess.GE.1 ) THEN
+      IF ( printResidual ) THEN
         CALL SEAICE_RESIDUAL(
      I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
-     I                  AU, BU, CU, AV, BV, CV, uIce, vIce,
+     I                  AU, BU, CU, AV, BV, CV, duIce, dvIce,
      U                  massU, massV,
      O                  residUini, residVini, uTmp, vTmp,
      I                  printResidual, myIter, myThid )
@@ -677,15 +674,13 @@ C--   Calculate final residual of the linearised system
      O                  residUend, residVend, uTmp, vTmp,
      I                  printResidual, myIter, myThid )
         _BEGIN_MASTER( myThid )
-        WRITE(standardMessageUnit,'(A,1X,1P3E16.8)')
-     &       ' SEAICE_PRECONDITIONER: Residual Initial Uice,Vice=',
-     &       residUini, residVini
+        WRITE(standardMessageUnit,'(A,A,1X,1P2E16.8)')
+     &       ' SEAICE_PRECONDITIONER: Residual Initial Uice,Vice     =',
+     &       '     ', residUini, residVini
         WRITE(standardMessageUnit,'(A,I4,A,I4,A,I6,1P2E16.8)')
      &       ' SEAICE_PRECONDITIONER (iter=',newtonIter,',',
-     &       krylovIter, ') iters,dU,Resid=', iCount1, S1, residUend
-        WRITE(standardMessageUnit,'(A,I4,A,I4,A,I6,1P2E16.8)')
-     &       ' SEAICE_PRECONDITIONER (iter=',newtonIter,',',
-     &       krylovIter, ') iters,dU,Resid=', iCount2, S2, residVend
+     &       krylovIter, ') iters, U/VResid=', 
+     &       iCount1, residUend, residVend
         _END_MASTER( myThid )
       ENDIF
 #ifdef ALLOW_DEBUG
@@ -760,7 +755,7 @@ C     contribution of sigma11 to rhs
      &       * _recip_dyF(I,J,bi,bj)
      &       + etaPlusZeta(I,J,bi,bj) * k2AtC(I,J,bi,bj)
      &       * 0.5 _d 0 * (vIceLoc(I,J+1,bi,bj)+vIceLoc(I,J,bi,bj))
-     &       - 0.5 _d 0 * PRESS(I,J,bi,bj)
+     &       - 0.5 _d 0 * pressLoc(I,J,bi,bj)
        ENDDO
       ENDDO
 C     contribution of sigma12 to rhs of u-equation
@@ -795,7 +790,7 @@ C     contribution to the rhs art of grad(sigma)_x
      &       + _dxV(I  ,J+1,bi,bj)*sig12(I  ,J+1)
      &       - _dxV(I  ,J  ,bi,bj)*sig12(I  ,J  ) )
 C     external forcing and water drag
-        rhsU(I,J,bi,bj) = rhsU(I,J,bi,bj) + FORCEX0(I,J,bi,bj)+
+        rhsU(I,J,bi,bj) = rhsU(I,J,bi,bj) + FORCEX0(I,J,bi,bj) +
      &       0.5 _d 0 * ( dwatPre(I,J,bi,bj)+dwatPre(I-1,J,bi,bj) ) *
      &       COSWAT * uVel(I,J,k,bi,bj)
        ENDDO
@@ -871,7 +866,7 @@ C     contribution of sigma22 to rhs
      &       * _recip_dxF(I,J,bi,bj)
      &       + etaPlusZeta(I,J,bi,bj) * k1AtC(I,J,bi,bj)
      &       * 0.5 _d 0 * (uIceLoc(I+1,J,bi,bj)+uIceLoc(I,J,bi,bj))
-     &       - 0.5 _d 0 * PRESS(I,J,bi,bj)
+     &       - 0.5 _d 0 * pressLoc(I,J,bi,bj)
        ENDDO
       ENDDO
 C     contribution of sigma12 to rhs of v-equation
