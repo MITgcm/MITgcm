@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.20 2012/10/22 21:14:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.21 2012/11/07 09:46:18 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -369,6 +369,15 @@ C--   Choose a proxy level for geostrophic velocity,
        ENDDO
       ENDDO
 #endif /* SEAICE_CGRID */
+
+#ifdef SEAICE_ALLOW_JFNK
+C     initialise some diagnostic counters for the JFNK solver
+      totalNewtonIters   = 0
+      totalNewtonFails   = 0
+      totalKrylovIters   = 0
+      totalKrylovFails   = 0
+      totalJFNKtimeSteps = 0
+#endif /* SEAICE_ALLOW_JFNK */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
