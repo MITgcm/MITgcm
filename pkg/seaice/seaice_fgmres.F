@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.6 2012/11/06 13:18:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.7 2012/11/07 09:48:56 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -18,7 +18,7 @@ C     !INTERFACE:
      I     uIceRes, vIceRes,
      U     duIce, dvIce,
      U     iCode,
-     I     FGMRESeps,
+     I     FGMRESeps, iOutFGMRES,
      I     newtonIter, krylovIter, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
@@ -38,7 +38,6 @@ C     !USES:
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
 #include "SEAICE_PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -48,12 +47,14 @@ C     myIter :: Simulation timestep number
 C     myThid :: my Thread Id. number
 C     newtonIter :: current iterate of Newton iteration
 C     krylovIter :: current iterate of Newton iteration
-C     iCode  :: FGMRES parameter to determine next step
+C     iCode      :: FGMRES parameter to determine next step
+C     iOutFGMRES :: control output of fgmres
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
       INTEGER newtonIter
       INTEGER krylovIter
+      INTEGER iOutFGMRES
       INTEGER iCode
 C     FGMRESeps :: tolerance for FGMRES
       _RL FGMRESeps
@@ -67,10 +68,6 @@ C     u/vIceRes :: residual F(u)
 #if ( defined (SEAICE_CGRID) && \
       defined (SEAICE_ALLOW_JFNK) && \
       defined (SEAICE_ALLOW_DYNAMICS) )
-C     !FUNCTIONS:
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-
 C     Local variables:
 C     k :: loop indices
       INTEGER k
@@ -78,12 +75,11 @@ C     FGMRES parameters
 C     n  :: size of the input vector(s)
 C     im :: size of Krylov space
 C     ifgmres :: interation counter
-C     iout :: control output of fgmres
       INTEGER n
       PARAMETER ( n  = 2*sNx*sNy*nSx*nSy )
       INTEGER im
       PARAMETER ( im = 50 )
-      INTEGER ifgmres, iout
+      INTEGER ifgmres
 C     work arrays
       _RL rhs(n), sol(n)
       _RL vv(n,im+1), w(n,im)
@@ -93,12 +89,6 @@ C     they are not forgotten between Krylov iterations
       COMMON /FGMRES_I/ ifgmres
       COMMON /FGMRES_RL/ sol, rhs, vv, w
 CEOP
-
-      iout=0
-C     iout=1 gives a little bit of output
-      IF ( debugLevel.GE.debLevA .AND.
-     &     DIFFERENT_MULTIPLE( SEAICE_monFreq, myTime, deltaTClock ) )
-     &     iout=1
 
 C     For now, let only the master thread do all the work
 C     - copy from 2D arrays to 1D-vector
@@ -134,7 +124,7 @@ C     stored in du/vIce to wk2
 C
       CALL SEAICE_FGMRES (n,im,rhs,sol,ifgmres,vv,w,wk1,wk2,
      &     FGMRESeps,SEAICEkrylovIterMax,
-     &     iout,icode,krylovIter,myThid)
+     &     iOutFGMRES,iCode,krylovIter,myThid)
 C
       IF ( iCode .EQ. 0 ) THEN
 C     map sol(ution) vector to du/vIce
