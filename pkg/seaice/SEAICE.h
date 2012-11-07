@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.66 2012/10/25 19:43:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.67 2012/11/07 09:45:58 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -225,6 +225,19 @@ C                the bottom of ocean surface level
       _RL SWFracB
       COMMON /SEAICE_SW_R/
      &       SWFracB
+
+#ifdef SEAICE_ALLOW_JFNK
+C     diagnostics for the JFNK solver
+      INTEGER totalNewtonIters
+      INTEGER totalNewtonFails
+      INTEGER totalKrylovIters
+      INTEGER totalKrylovFails
+      INTEGER totalJFNKtimeSteps
+      COMMON /SEAICE_JFNK_I/
+     &     totalNewtonIters, totalNewtonFails,
+     &     totalKrylovIters, totalKrylovFails,
+     &     totalJFNKtimeSteps
+#endif /* SEAICE_ALLOW_JFNK */
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
