@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.5 2012/11/07 09:56:23 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.6 2012/11/07 10:08:25 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -292,14 +292,16 @@ C     end of Newton iterate
 C
 C--   Output diagnostics
 C
+      IF ( SEAICE_monFreq .GT. 0. _d 0 ) THEN
 C     Count iterations
-      totalJFNKtimeSteps = totalJFNKtimeSteps + 1
-      totalNewtonIters   = totalNewtonIters + newtonIter
-      totalKrylovIters   = totalKrylovIters + totalKrylovItersLoc
+       totalJFNKtimeSteps = totalJFNKtimeSteps + 1
+       totalNewtonIters   = totalNewtonIters + newtonIter
+       totalKrylovIters   = totalKrylovIters + totalKrylovItersLoc
 C     Record failure
-      totalKrylovFails   = totalKrylovFails + krylovFails
-      IF ( newtonIter .EQ. SEAICEnewtonIterMax ) THEN
-       totalNewtonFails = totalNewtonFails + 1 
+       totalKrylovFails   = totalKrylovFails + krylovFails
+       IF ( newtonIter .EQ. SEAICEnewtonIterMax ) THEN
+        totalNewtonFails = totalNewtonFails + 1 
+       ENDIF
       ENDIF
 C     Decide whether it is time to dump and reset the counter
       IF ( DIFFERENT_MULTIPLE(SEAICE_monFreq,myTime+deltaTClock,
