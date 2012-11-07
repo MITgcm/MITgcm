@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.75 2012/09/19 23:08:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.76 2012/11/07 21:37:33 jahn Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -914,6 +914,11 @@ C--   Overwrite tauThetaClimRelax but stop if already set.
 C- Note: need this, even if EXF option ALLOW_CLIMSST_RELAXATION is undef;
 C        this prevents to apply relaxation towards potentially wrong SST since,
 C        with EXF, we skip the update of loaded SST in EXTERNAL_FIELDS_LOAD.
+C- Note2: let's see whether we can put this back under ifdef
+C        ALLOW_CLIMSST_RELAXATION, but always call EXTERNAL_FIELDS_LOAD.
+C        If ALLOW_CLIMSST_RELAXATION is undef, clim.relaxation could still
+C        be done outside of exf.
+#ifdef ALLOW_CLIMSST_RELAXATION
       IF ( tauThetaClimRelax.NE.0. _d 0 ) THEN
         WRITE(msgBuf,'(2A)') 'EXF_READPARMS: ',
      &   'with EXF, cannot use "tauThetaClimRelax" in "data"'
@@ -924,7 +929,9 @@ C        with EXF, we skip the update of loaded SST in EXTERNAL_FIELDS_LOAD.
         STOP 'ABNORMAL END: S/R EXF_READPARMS'
       ENDIF
       tauThetaClimRelax = climsstTauRelax
+#endif
 
+#ifdef ALLOW_CLIMSSS_RELAXATION
 C--   Overwrite tauSaltClimRelax but stop if already set.
       IF ( tauSaltClimRelax.NE.0. _d 0 ) THEN
         WRITE(msgBuf,'(2A)') 'EXF_READPARMS: ',
@@ -936,6 +943,7 @@ C--   Overwrite tauSaltClimRelax but stop if already set.
         STOP 'ABNORMAL END: S/R EXF_READPARMS'
       ENDIF
       tauSaltClimRelax = climsssTauRelax
+#endif
 
 C     Complete the start date specifications for the forcing
 C     fields to get a complete calendar date array.

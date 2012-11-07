@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.12 2012/07/31 16:09:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.13 2012/11/07 21:37:33 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -108,7 +108,7 @@ C--   Call external CheapAML forcing package
       ENDIF
 #endif /*ALLOW_CHEAPAML */
 
-      IF ( .NOT.(useEXF.OR.useCheapAML) ) THEN
+      IF ( .NOT.useCheapAML ) THEN
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('EXTERNAL_FIELDS_LOAD',myThid)
 #endif
