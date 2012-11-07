@@ -1,10 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1761 2012/11/06 13:19:41 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1762 2012/11/07 09:59:57 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/seaice:
+  - improve I/O of diagnostics of JFNK in seaice_jfnk.F:
+    + add (SEAICE.h) and rename some counters (initiliased in 
+      seaice_init_fixed.F)
+    + add _BEGIN/END_MASTER (myThid)  around print statements
+    + print total number of iterations and failures over SEAICE_monFreq
+      interval to STDOUT
+  - move control over output-messages by fgmres to seaice_jfnk to save
+    some operations
   - move resetting initial guess for fgmres outside of seaice_fgmres_driver
     in order to make restarts with sol .ne. zero (fgmres with restarts)
     (seaice_jfnk.F, seaice_fgmres.F)
