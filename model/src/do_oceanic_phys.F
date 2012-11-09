@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.119 2012/08/06 14:22:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.120 2012/11/09 22:42:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -155,27 +155,10 @@ CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('OBCS_CALC',myThid)
 # endif
-       CALL OBCS_CALC( myTime+deltaTclock, myIter+1,
+       CALL OBCS_CALC( myTime+deltaTClock, myIter+1,
      I                 uVel, vVel, wVel, theta, salt, myThid )
       ENDIF
 #endif  /* ALLOW_OBCS */
-
-#ifdef ALLOW_ADDFLUID
-c     IF ( fluidIsWater ) THEN
-      IF ( useICEFRONT ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO k=1,Nr
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             addMass(i,j,k,bi,bj) =  0. _d 0
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-      ENDIF
-#endif /* ALLOW_ADDFLUID */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_SALT_PLUME
@@ -786,7 +769,7 @@ C--     Compute GGL90 mixing coefficients
         ENDIF
         IF (taveFreq.GT.0. .AND. ivdc_kappa.NE.0.) THEN
           CALL TIMEAVE_CUMULATE(ConvectCountTave, IVDConvCount,
-     I                           Nr, deltaTclock, bi, bj, myThid)
+     I                           Nr, deltaTClock, bi, bj, myThid)
         ENDIF
 #endif /* ALLOW_TIMEAVE */
 
