@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.6 2012/11/09 14:11:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.7 2012/11/09 15:20:27 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -483,7 +483,7 @@ C     set up right-hand side for u-equation
           ENDDO
          ENDDO
          CALL PRECOND_RHSU (
-     I        zetaMinusEta, etaPlusZeta, etaZpre, dvIce, press,
+     I        zetaMinusEta, etaPlusZeta, etaZpre, dvIce, pressPre,
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      U        rhsU,
      I        bi,bj,myThid ) 
@@ -570,7 +570,7 @@ C     set up right-hand-side for v-equation
           ENDDO
          ENDDO
          CALL PRECOND_RHSV (
-     I        zetaMinusEta, etaPlusZeta, etaZpre, duIce, press,
+     I        zetaMinusEta, etaPlusZeta, etaZpre, duIce, pressPre,
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      U        rhsV,
      I        bi,bj,myThid ) 
@@ -691,7 +691,7 @@ C     APPLY MASKS
       END
 
       SUBROUTINE PRECOND_RHSU (
-     I     zetaMinusEta, etaPlusZeta, etaZpre, vIceLoc, pressLoc,
+     I     zetaMinusEta, etaPlusZeta, etaZpre, vIceLoc, pressPre,
      I     dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      U     rhsU,
      I     bi,bj,myThid ) 
@@ -711,7 +711,7 @@ C     APPLY MASKS
       _RL SINWAT
       _RL rhsU        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dwatPre     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pressLoc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL pressPre    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceLoc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -734,7 +734,7 @@ C     contribution of sigma11 to rhs
      &       * _recip_dyF(I,J,bi,bj)
      &       + etaPlusZeta(I,J,bi,bj) * k2AtC(I,J,bi,bj)
      &       * 0.5 _d 0 * (vIceLoc(I,J+1,bi,bj)+vIceLoc(I,J,bi,bj))
-     &       - 0.5 _d 0 * pressLoc(I,J,bi,bj)
+     &       - 0.5 _d 0 * pressPre(I,J,bi,bj)
        ENDDO
       ENDDO
 C     contribution of sigma12 to rhs of u-equation
@@ -802,7 +802,7 @@ C-    add Coriolis term
       END
 
       SUBROUTINE PRECOND_RHSV (
-     I     zetaMinusEta, etaPlusZeta, etaZpre, uIceLoc, pressLoc,
+     I     zetaMinusEta, etaPlusZeta, etaZpre, uIceLoc, pressPre,
      I     dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      U     rhsV,
      I     bi,bj,myThid ) 
@@ -822,7 +822,7 @@ C-    add Coriolis term
       _RL SINWAT
       _RL rhsV        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dwatPre     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pressLoc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL pressPre    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL uIceLoc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -845,7 +845,7 @@ C     contribution of sigma22 to rhs
      &       * _recip_dxF(I,J,bi,bj)
      &       + etaPlusZeta(I,J,bi,bj) * k1AtC(I,J,bi,bj)
      &       * 0.5 _d 0 * (uIceLoc(I+1,J,bi,bj)+uIceLoc(I,J,bi,bj))
-     &       - 0.5 _d 0 * pressLoc(I,J,bi,bj)
+     &       - 0.5 _d 0 * pressPre(I,J,bi,bj)
        ENDDO
       ENDDO
 C     contribution of sigma12 to rhs of v-equation
