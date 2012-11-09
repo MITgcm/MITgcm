@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.18 2012/02/07 13:58:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.19 2012/11/09 22:15:18 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -25,6 +25,7 @@ C     === Global variables ===
 #ifndef SEAICE_EXTERNAL_FLUXES
 # include "PARAMS.h"
 # include "GRID.h"
+# include "SEAICE_SIZE.h"
 # include "SEAICE_PARAMS.h"
 # ifdef ALLOW_EXF
 #  include "EXF_OPTIONS.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_mnc_init.F,v 1.6 2007/12/06 07:42:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_mnc_init.F,v 1.7 2012/11/09 22:15:18 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -19,6 +19,7 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef SEAICE_ALLOW_EVP
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #endif /* SEAICE_ALLOW_EVP */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_sst.F,v 1.7 2012/08/02 01:26:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_sst.F,v 1.8 2012/11/09 22:15:18 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -31,6 +31,7 @@ c     == global variables ==
 # endif
 # ifdef ALLOW_SEAICE
 #  include "SEAICE_COST.h"
+#  include "SEAICE_SIZE.h"
 #  include "SEAICE_PARAMS.h"
 # endif
 #endif
