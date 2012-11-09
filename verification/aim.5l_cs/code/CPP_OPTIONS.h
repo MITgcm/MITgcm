@@ -1,8 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/CPP_OPTIONS.h,v 1.6 2008/08/24 21:52:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/CPP_OPTIONS.h,v 1.7 2012/11/09 22:51:05 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
 #define CPP_OPTIONS_H
+
+CBOP
+C !ROUTINE: CPP_OPTIONS.h
+C !INTERFACE:
+C #include "CPP_OPTIONS.h"
+
+C !DESCRIPTION:
+C *==================================================================*
+C | main CPP options file for the model:
+C | Control which optional features to compile in model/src code.
+C *==================================================================*
+CEOP
 
 C CPP flags controlling particular source code features
 
@@ -19,6 +31,9 @@ C o Include/exclude call to S/R CONVECT
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
 
+C o Allow full 3D specification of vertical diffusivity
+#undef ALLOW_3D_DIFFKR
+
 C o Allow latitudinally varying BryanLewis79 vertical diffusivity
 #undef ALLOW_BL79_LAT_VARY
 
@@ -31,6 +46,13 @@ C o Include/exclude AdamsBashforth-3rd-Order code
 C o Include/exclude nonHydrostatic code
 #undef ALLOW_NONHYDROSTATIC
 
+C o Allow to account for heating due to friction (and momentum dissipation)
+#define ALLOW_FRICTION_HEATING
+
+C o Allow mass source or sink of Fluid in the interior
+C   (3-D generalisation of oceanic real-fresh water flux)
+#define ALLOW_ADDFLUID
+
 C o Include pressure loading code
 #define ATMOSPHERIC_LOADING
 
@@ -38,6 +60,12 @@ C o exclude/allow external forcing-fields load
 C   this allows to read & do simple linear time interpolation of oceanic
 C   forcing fields, if no specific pkg (e.g., EXF) is used to compute them.
 #undef EXCLUDE_FFIELDS_LOAD
+
+C o Include/exclude balancing surface forcing fluxes code
+#undef ALLOW_BALANCE_FLUXES
+
+C o Include/exclude balancing surface forcing relaxation code
+#undef ALLOW_BALANCE_RELAX
 
 C o Include/exclude GM-like eddy stress in momentum code
 #undef ALLOW_EDDYPSI
@@ -50,9 +78,14 @@ C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that surface thickness (hFactors) vary with time
 #define NONLIN_FRSURF
 
-C o Allow mass source or sink of Fluid in the interior
-C   (3-D generalisation of oceanic real-fresh water flux)
-#define ALLOW_ADDFLUID
+C o Include/exclude code for single reduction Conjugate-Gradient solver
+#define ALLOW_SRCG
+
+C o Choices for implicit solver routines solve_*diagonal.F
+C   The following has low memory footprint, but not suitable for AD
+#undef SOLVE_DIAGONAL_LOWMEMORY
+C   The following one suitable for AD but does not vectorize
+#undef SOLVE_DIAGONAL_KINNER
 
 C o ALLOW isotropic scaling of harmonic and bi-harmonic terms when
 C   using an locally isotropic spherical grid with (dlambda) x (dphi*cos(phi))
@@ -90,25 +123,14 @@ C   is still useful with, e.g., single-domain curvilinear configurations.
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
 
-C o Include/exclude code specific to the ECCO/SEALION version.
-C   AUTODIFF or EXF package.
-C   Currently controled by a single header file
-C   For this to work, PACKAGES_CONFIG.h needs to be included!
-cph#if (defined (ALLOW_AUTODIFF) || \
-cph     defined (ALLOW_ECCO) || \
-cph     defined (ALLOW_EXF))
-cph# include "ECCO_CPPOPTIONS.h"
-cph#endif
-
-C o Allow full 3D specification of vertical diffusivity
-#ifdef ALLOW_DIFFKR_CONTROL
-C - Need to be defined if using DIFFKR_CONTROL
-C   (alternatively, could have put this in ECCO_CPPOPTIONS)
-#define ALLOW_3D_DIFFKR
-#else
-C - otherwise, can be turned on or off hereafter:
-#undef  ALLOW_3D_DIFFKR
-#endif /* ALLOW_DIFFKR_CONTROL */
+C o Include/exclude single header file containing multiple packages options
+C   (AUTODIFF, COST, CTRL, ECCO, EXF ...) instead of the standard way where
+C   each of the above pkg get its own options from its specific option file.
+C   Although this method, inherited from ECCO setup, has been traditionally
+C   used for all adjoint built, work is in progress to allow to use the
+C   standard method also for adjoint built.
+c#ifdef PACKAGES_CONFIG_H
+c# include "ECCO_CPPOPTIONS.h"
+c#endif
 
 #endif /* CPP_OPTIONS_H */
-
