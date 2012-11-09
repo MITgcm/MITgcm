@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.6 2009/12/11 13:53:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.7 2012/11/09 22:37:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,10 +29,13 @@ C     !USES:
 # include "GAD.h"
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
-#include "NH_VARS.h"
+# include "NH_VARS.h"
+#endif
+#ifdef ALLOW_ADDFLUID
+# include "FFIELDS.h"
 #endif
 #ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
+# include "MNC_PARAMS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -187,27 +190,27 @@ C---   Old way to read model fields:
           IF ( startFromPickupAB2 ) j = 2
           nj = 0
           CALL READ_REC_3D_RL( fn, fp, Nr, uVel, nj+1, myIter,myThid )
-          CALL READ_REC_3D_RL( fn, fp, Nr, guNm(1-Olx,1-Oly,1,1,1,1),
+          CALL READ_REC_3D_RL( fn, fp, Nr, guNm(1-OLx,1-OLy,1,1,1,1),
      &                                           nj+2, myIter,myThid )
-          CALL READ_REC_3D_RL( fn, fp, Nr, guNm(1-Olx,1-Oly,1,1,1,2),
+          CALL READ_REC_3D_RL( fn, fp, Nr, guNm(1-OLx,1-OLy,1,1,1,2),
      &                                           nj+j, myIter,myThid )
           nj = j
           CALL READ_REC_3D_RL( fn, fp, Nr, vVel, nj+1, myIter,myThid )
-          CALL READ_REC_3D_RL( fn, fp, Nr, gvNm(1-Olx,1-Oly,1,1,1,1),
+          CALL READ_REC_3D_RL( fn, fp, Nr, gvNm(1-OLx,1-OLy,1,1,1,1),
      &                                           nj+2, myIter,myThid )
-          CALL READ_REC_3D_RL( fn, fp, Nr, gvNm(1-Olx,1-Oly,1,1,1,2),
+          CALL READ_REC_3D_RL( fn, fp, Nr, gvNm(1-OLx,1-OLy,1,1,1,2),
      &                                           nj+j, myIter,myThid )
           nj = 2*j
           CALL READ_REC_3D_RL( fn, fp, Nr, theta,nj+1, myIter,myThid )
-          CALL READ_REC_3D_RL( fn, fp, Nr, gtNm(1-Olx,1-Oly,1,1,1,1),
+          CALL READ_REC_3D_RL( fn, fp, Nr, gtNm(1-OLx,1-OLy,1,1,1,1),
      &                                           nj+2, myIter,myThid )
-          CALL READ_REC_3D_RL( fn, fp, Nr, gtNm(1-Olx,1-Oly,1,1,1,2),
+          CALL READ_REC_3D_RL( fn, fp, Nr, gtNm(1-OLx,1-OLy,1,1,1,2),
      &                                           nj+j, myIter,myThid )
           nj = 3*j
           CALL READ_REC_3D_RL( fn, fp, Nr, salt, nj+1, myIter,myThid )
-          CALL READ_REC_3D_RL( fn, fp, Nr, gsNm(1-Olx,1-Oly,1,1,1,1),
+          CALL READ_REC_3D_RL( fn, fp, Nr, gsNm(1-OLx,1-OLy,1,1,1,1),
      &                                           nj+2, myIter,myThid )
-          CALL READ_REC_3D_RL( fn, fp, Nr, gsNm(1-Olx,1-Oly,1,1,1,2),
+          CALL READ_REC_3D_RL( fn, fp, Nr, gsNm(1-OLx,1-OLy,1,1,1,2),
      &                                           nj+j, myIter,myThid )
           nj = 4*j
 #else /*  ALLOW_ADAMSBASHFORTH_3 */
@@ -241,9 +244,9 @@ C---   Old way to read model fields:
           WRITE(fn,'(A,A10)') 'pickup_nh.',suff
           CALL READ_REC_3D_RL( fn, fp, Nr, phi_nh,  1, myIter,myThid )
 #ifdef ALLOW_ADAMSBASHFORTH_3
-          CALL READ_REC_3D_RL( fn, fp, Nr, gwNm(1-Olx,1-Oly,1,1,1,1),
+          CALL READ_REC_3D_RL( fn, fp, Nr, gwNm(1-OLx,1-OLy,1,1,1,1),
      &                                              2, myIter,myThid )
-          CALL READ_REC_3D_RL( fn, fp, Nr, gwNm(1-Olx,1-Oly,1,1,1,2),
+          CALL READ_REC_3D_RL( fn, fp, Nr, gwNm(1-OLx,1-OLy,1,1,1,2),
      &                                              2, myIter,myThid )
 #else /*  ALLOW_ADAMSBASHFORTH_3 */
           CALL READ_REC_3D_RL( fn, fp, Nr, gwNm1,   2, myIter,myThid )
@@ -269,60 +272,60 @@ C---    read 3-D fields for AB-restart
         IF ( momStepping ) THEN
 C--     U velocity:
          IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
-          CALL READ_MFLDS_3D_RL( 'GuNm1   ',guNm(1-Olx,1-Oly,1,1,1,m1),
+          CALL READ_MFLDS_3D_RL( 'GuNm1   ',guNm(1-OLx,1-OLy,1,1,1,m1),
      &                                     nj, fp, Nr, myIter, myThid )
          ENDIF
          IF ( beta_AB.NE.0. ) THEN
-          CALL READ_MFLDS_3D_RL( 'GuNm2   ',guNm(1-Olx,1-Oly,1,1,1,m2),
+          CALL READ_MFLDS_3D_RL( 'GuNm2   ',guNm(1-OLx,1-OLy,1,1,1,m2),
      &                                     nj, fp, Nr, myIter, myThid )
          ENDIF
 C--     V velocity:
          IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
-          CALL READ_MFLDS_3D_RL( 'GvNm1   ',gvNm(1-Olx,1-Oly,1,1,1,m1),
+          CALL READ_MFLDS_3D_RL( 'GvNm1   ',gvNm(1-OLx,1-OLy,1,1,1,m1),
      &                                     nj, fp, Nr, myIter, myThid )
          ENDIF
          IF ( beta_AB.NE.0. ) THEN
-          CALL READ_MFLDS_3D_RL( 'GvNm2   ',gvNm(1-Olx,1-Oly,1,1,1,m2),
+          CALL READ_MFLDS_3D_RL( 'GvNm2   ',gvNm(1-OLx,1-OLy,1,1,1,m2),
      &                                     nj, fp, Nr, myIter, myThid )
          ENDIF
         ENDIF
 C--     Temperature:
         IF ( AdamsBashforthGt ) THEN
          IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
-          CALL READ_MFLDS_3D_RL( 'GtNm1   ',gtNm(1-Olx,1-Oly,1,1,1,m1),
+          CALL READ_MFLDS_3D_RL( 'GtNm1   ',gtNm(1-OLx,1-OLy,1,1,1,m1),
      &                                     nj, fp, Nr, myIter, myThid )
          ENDIF
          IF ( beta_AB.NE.0. ) THEN
-          CALL READ_MFLDS_3D_RL( 'GtNm2   ',gtNm(1-Olx,1-Oly,1,1,1,m2),
+          CALL READ_MFLDS_3D_RL( 'GtNm2   ',gtNm(1-OLx,1-OLy,1,1,1,m2),
      &                                     nj, fp, Nr, myIter, myThid )
          ENDIF
         ELSEIF ( AdamsBashforth_T ) THEN
          IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
-          CALL READ_MFLDS_3D_RL( 'TempNm1 ',gtNm(1-Olx,1-Oly,1,1,1,m1),
+          CALL READ_MFLDS_3D_RL( 'TempNm1 ',gtNm(1-OLx,1-OLy,1,1,1,m1),
      &                                     nj, fp, Nr, myIter, myThid )
          ENDIF
          IF ( beta_AB.NE.0. ) THEN
-          CALL READ_MFLDS_3D_RL( 'TempNm2 ',gtNm(1-Olx,1-Oly,1,1,1,m2),
+          CALL READ_MFLDS_3D_RL( 'TempNm2 ',gtNm(1-OLx,1-OLy,1,1,1,m2),
      &                                     nj, fp, Nr, myIter, myThid )
          ENDIF
         ENDIF
 C--     Salinity:
         IF ( AdamsBashforthGs ) THEN
          IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
-          CALL READ_MFLDS_3D_RL( 'GsNm1   ',gsNm(1-Olx,1-Oly,1,1,1,m1),
+          CALL READ_MFLDS_3D_RL( 'GsNm1   ',gsNm(1-OLx,1-OLy,1,1,1,m1),
      &                                     nj, fp, Nr, myIter, myThid )
          ENDIF
          IF ( beta_AB.NE.0. ) THEN
-          CALL READ_MFLDS_3D_RL( 'GsNm2   ',gsNm(1-Olx,1-Oly,1,1,1,m2),
+          CALL READ_MFLDS_3D_RL( 'GsNm2   ',gsNm(1-OLx,1-OLy,1,1,1,m2),
      &                                     nj, fp, Nr, myIter, myThid )
          ENDIF
         ELSEIF ( AdamsBashforth_S ) THEN
          IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
-          CALL READ_MFLDS_3D_RL( 'SaltNm1 ',gsNm(1-Olx,1-Oly,1,1,1,m1),
+          CALL READ_MFLDS_3D_RL( 'SaltNm1 ',gsNm(1-OLx,1-OLy,1,1,1,m1),
      &                                     nj, fp, Nr, myIter, myThid )
          ENDIF
          IF ( beta_AB.NE.0. ) THEN
-          CALL READ_MFLDS_3D_RL( 'SaltNm2 ',gsNm(1-Olx,1-Oly,1,1,1,m2),
+          CALL READ_MFLDS_3D_RL( 'SaltNm2 ',gsNm(1-OLx,1-OLy,1,1,1,m2),
      &                                     nj, fp, Nr, myIter, myThid )
          ENDIF
         ENDIF
@@ -330,11 +333,11 @@ C--     Salinity:
         IF ( nonHydrostatic ) THEN
 C--     W velocity:
          IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
-          CALL READ_MFLDS_3D_RL( 'GwNm1   ',gwNm(1-Olx,1-Oly,1,1,1,m1),
+          CALL READ_MFLDS_3D_RL( 'GwNm1   ',gwNm(1-OLx,1-OLy,1,1,1,m1),
      &                                     nj, fp, Nr, myIter, myThid )
          ENDIF
          IF ( beta_AB.NE.0. ) THEN
-          CALL READ_MFLDS_3D_RL( 'GwNm2   ',gwNm(1-Olx,1-Oly,1,1,1,m2),
+          CALL READ_MFLDS_3D_RL( 'GwNm2   ',gwNm(1-OLx,1-OLy,1,1,1,m2),
      &                                     nj, fp, Nr, myIter, myThid )
          ENDIF
         ENDIF
@@ -479,14 +482,14 @@ C     Fill in edge regions
       CALL EXCH_3D_RL( theta, Nr, myThid )
       CALL EXCH_3D_RL( salt,  Nr, myThid )
 #ifdef ALLOW_ADAMSBASHFORTH_3
-      CALL EXCH_UV_3D_RL( guNm(1-Olx,1-Oly,1,1,1,1),
-     &                    gvNm(1-Olx,1-Oly,1,1,1,1),.TRUE.,Nr,myThid )
-      CALL EXCH_UV_3D_RL( guNm(1-Olx,1-Oly,1,1,1,2),
-     &                    gvNm(1-Olx,1-Oly,1,1,1,2),.TRUE.,Nr,myThid )
-      CALL EXCH_3D_RL( gtNm(1-Olx,1-Oly,1,1,1,1), Nr, myThid )
-      CALL EXCH_3D_RL( gtNm(1-Olx,1-Oly,1,1,1,2), Nr, myThid )
-      CALL EXCH_3D_RL( gsNm(1-Olx,1-Oly,1,1,1,1), Nr, myThid )
-      CALL EXCH_3D_RL( gsNm(1-Olx,1-Oly,1,1,1,2), Nr, myThid )
+      CALL EXCH_UV_3D_RL( guNm(1-OLx,1-OLy,1,1,1,1),
+     &                    gvNm(1-OLx,1-OLy,1,1,1,1),.TRUE.,Nr,myThid )
+      CALL EXCH_UV_3D_RL( guNm(1-OLx,1-OLy,1,1,1,2),
+     &                    gvNm(1-OLx,1-OLy,1,1,1,2),.TRUE.,Nr,myThid )
+      CALL EXCH_3D_RL( gtNm(1-OLx,1-OLy,1,1,1,1), Nr, myThid )
+      CALL EXCH_3D_RL( gtNm(1-OLx,1-OLy,1,1,1,2), Nr, myThid )
+      CALL EXCH_3D_RL( gsNm(1-OLx,1-OLy,1,1,1,1), Nr, myThid )
+      CALL EXCH_3D_RL( gsNm(1-OLx,1-OLy,1,1,1,2), Nr, myThid )
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       CALL EXCH_UV_3D_RL( guNm1, gvNm1, .TRUE., Nr, myThid )
       CALL EXCH_3D_RL( gtNm1, Nr, myThid )
@@ -507,8 +510,8 @@ C     Fill in edge regions
       ENDIF
       IF ( nonHydrostatic ) THEN
 #ifdef ALLOW_ADAMSBASHFORTH_3
-        CALL EXCH_3D_RL( gwNm(1-Olx,1-Oly,1,1,1,1), Nr, myThid )
-        CALL EXCH_3D_RL( gwNm(1-Olx,1-Oly,1,1,1,2), Nr, myThid )
+        CALL EXCH_3D_RL( gwNm(1-OLx,1-OLy,1,1,1,1), Nr, myThid )
+        CALL EXCH_3D_RL( gwNm(1-OLx,1-OLy,1,1,1,2), Nr, myThid )
 #else /* ALLOW_ADAMSBASHFORTH_3 */
         CALL EXCH_3D_RL( gwNm1,  Nr, myThid )
 #endif /* ALLOW_ADAMSBASHFORTH_3 */

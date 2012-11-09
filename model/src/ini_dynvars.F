@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.23 2010/02/17 23:39:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.24 2012/11/09 22:37:05 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -34,9 +34,9 @@ C     myThid  :: my Thread Id. number
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     bi,bj   :: tile indices
-C     I,J,K   :: loop index
+C     i,j,k   :: loop index
       INTEGER bi, bj
-      INTEGER I, J, K
+      INTEGER i, j, k
 CEOP
 
 C--   Over all tiles
@@ -44,52 +44,49 @@ C--   Over all tiles
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 C-      3D arrays
-        DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
 
-           uVel(I,J,K,bi,bj)=0. _d 0
-           vVel(I,J,K,bi,bj)=0. _d 0
-           wVel(I,J,K,bi,bj)=0. _d 0
-           theta(I,J,K,bi,bj)=0. _d 0
-           salt(I,J,K,bi,bj)=0. _d 0
+           uVel (i,j,k,bi,bj) = 0. _d 0
+           vVel (i,j,k,bi,bj) = 0. _d 0
+           wVel (i,j,k,bi,bj) = 0. _d 0
+           theta(i,j,k,bi,bj) = 0. _d 0
+           salt (i,j,k,bi,bj) = 0. _d 0
 
-           gU(I,J,K,bi,bj)=0. _d 0
-           gV(I,J,K,bi,bj)=0. _d 0
-           gT(I,J,K,bi,bj)=0. _d 0
-           gS(I,J,K,bi,bj)=0. _d 0
+           gU(i,j,k,bi,bj) = 0. _d 0
+           gV(i,j,k,bi,bj) = 0. _d 0
+           gT(i,j,k,bi,bj) = 0. _d 0
+           gS(i,j,k,bi,bj) = 0. _d 0
 #ifdef ALLOW_ADAMSBASHFORTH_3
-           guNm(I,J,K,bi,bj,1)=0. _d 0
-           gvNm(I,J,K,bi,bj,1)=0. _d 0
-           gtNm(I,J,K,bi,bj,1)=0. _d 0
-           gsNm(I,J,K,bi,bj,1)=0. _d 0
-           guNm(I,J,K,bi,bj,2)=0. _d 0
-           gvNm(I,J,K,bi,bj,2)=0. _d 0
-           gtNm(I,J,K,bi,bj,2)=0. _d 0
-           gsNm(I,J,K,bi,bj,2)=0. _d 0
+           guNm(i,j,k,bi,bj,1) = 0. _d 0
+           gvNm(i,j,k,bi,bj,1) = 0. _d 0
+           gtNm(i,j,k,bi,bj,1) = 0. _d 0
+           gsNm(i,j,k,bi,bj,1) = 0. _d 0
+           guNm(i,j,k,bi,bj,2) = 0. _d 0
+           gvNm(i,j,k,bi,bj,2) = 0. _d 0
+           gtNm(i,j,k,bi,bj,2) = 0. _d 0
+           gsNm(i,j,k,bi,bj,2) = 0. _d 0
 #else
-           guNm1(I,J,K,bi,bj) =0. _d 0
-           gvNm1(I,J,K,bi,bj) =0. _d 0
-           gtNm1(I,J,K,bi,bj) =0. _d 0
-           gsNm1(I,J,K,bi,bj) =0. _d 0
+           guNm1(i,j,k,bi,bj) = 0. _d 0
+           gvNm1(i,j,k,bi,bj) = 0. _d 0
+           gtNm1(i,j,k,bi,bj) = 0. _d 0
+           gsNm1(i,j,k,bi,bj) = 0. _d 0
 #endif
-           totPhiHyd(I,J,K,bi,bj)=0. _d 0
-           rhoInSitu(I,J,K,bi,bj)=0. _d 0
+           totPhiHyd (i,j,k,bi,bj) = 0. _d 0
+           rhoInSitu (i,j,k,bi,bj) = 0. _d 0
            IVDConvCount(i,j,k,bi,bj) = 0. _d 0
-#ifdef ALLOW_ADDFLUID
-           addMass(I,J,K,bi,bj) = 0. _d 0
-#endif
           ENDDO
          ENDDO
         ENDDO
 
 C-      2D arrays
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-          etaN(I,J,bi,bj)=0. _d 0
-          etaH(I,J,bi,bj)=0. _d 0
-          phiHydLow(I,J,bi,bj)=0. _d 0
-          hMixLayer(I,J,bi,bj)=0. _d 0
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
+          etaN(i,j,bi,bj) = 0. _d 0
+          etaH(i,j,bi,bj) = 0. _d 0
+          phiHydLow(i,j,bi,bj) = 0. _d 0
+          hMixLayer(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
 

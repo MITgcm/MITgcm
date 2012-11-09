@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.11 2011/08/25 22:20:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.12 2012/11/09 22:37:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -31,10 +31,13 @@ C     !USES:
 # include "GAD.h"
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
-#include "NH_VARS.h"
+# include "NH_VARS.h"
+#endif
+#ifdef ALLOW_ADDFLUID
+# include "FFIELDS.h"
 #endif
 #ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
+# include "MNC_PARAMS.h"
 #endif
 
 C     !INPUT PARAMETERS:
@@ -130,26 +133,26 @@ C---  write 3-D fields for AB-restart
 C--   U velocity:
        IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, guNm(1-Olx,1-Oly,1,1,1,m1),
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, guNm(1-OLx,1-OLy,1,1,1,m1),
      &                                            -j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'GuNm1   '
        ENDIF
        IF ( beta_AB.NE.0. ) THEN
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, guNm(1-Olx,1-Oly,1,1,1,m2),
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, guNm(1-OLx,1-OLy,1,1,1,m2),
      &                                            -j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'GuNm2   '
        ENDIF
 C--   V velocity:
        IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gvNm(1-Olx,1-Oly,1,1,1,m1),
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gvNm(1-OLx,1-OLy,1,1,1,m1),
      &                                            -j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'GvNm1   '
        ENDIF
        IF ( beta_AB.NE.0. ) THEN
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gvNm(1-Olx,1-Oly,1,1,1,m2),
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gvNm(1-OLx,1-OLy,1,1,1,m2),
      &                                            -j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'GvNm2   '
        ENDIF
@@ -158,7 +161,7 @@ C--   Temperature:
       IF ( AdamsBashforthGt.OR.AdamsBashforth_T ) THEN
        IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gtNm(1-Olx,1-Oly,1,1,1,m1),
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gtNm(1-OLx,1-OLy,1,1,1,m1),
      &                                            -j, myIter, myThid )
         IF (j.LE.listDim) THEN
          IF ( AdamsBashforthGt ) wrFldList(j) = 'GtNm1   '
@@ -167,7 +170,7 @@ C--   Temperature:
        ENDIF
        IF ( beta_AB.NE.0. ) THEN
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gtNm(1-Olx,1-Oly,1,1,1,m2),
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gtNm(1-OLx,1-OLy,1,1,1,m2),
      &                                            -j, myIter, myThid )
         IF (j.LE.listDim) THEN
          IF ( AdamsBashforthGt ) wrFldList(j) = 'GtNm2   '
@@ -179,7 +182,7 @@ C--   Salinity:
       IF ( AdamsBashforthGs.OR.AdamsBashforth_S ) THEN
        IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gsNm(1-Olx,1-Oly,1,1,1,m1),
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gsNm(1-OLx,1-OLy,1,1,1,m1),
      &                                            -j, myIter, myThid )
         IF (j.LE.listDim) THEN
          IF ( AdamsBashforthGs ) wrFldList(j) = 'GsNm1   '
@@ -188,7 +191,7 @@ C--   Salinity:
        ENDIF
        IF ( beta_AB.NE.0. ) THEN
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gsNm(1-Olx,1-Oly,1,1,1,m2),
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gsNm(1-OLx,1-OLy,1,1,1,m2),
      &                                            -j, myIter, myThid )
         IF (j.LE.listDim) THEN
          IF ( AdamsBashforthGs ) wrFldList(j) = 'GsNm2   '
@@ -201,13 +204,13 @@ C--   W velocity:
       IF ( nonHydrostatic ) THEN
        IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gwNm(1-Olx,1-Oly,1,1,1,m1),
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gwNm(1-OLx,1-OLy,1,1,1,m1),
      &                                            -j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'GwNm1   '
        ENDIF
        IF ( beta_AB.NE.0. ) THEN
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gwNm(1-Olx,1-Oly,1,1,1,m2),
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gwNm(1-OLx,1-OLy,1,1,1,m2),
      &                                            -j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'GwNm2   '
        ENDIF

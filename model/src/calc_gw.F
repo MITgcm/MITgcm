@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.49 2012/08/06 16:54:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.50 2012/11/09 22:37:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,6 +35,9 @@ C     == Global variables ==
 #include "SURFACE.h"
 #include "DYNVARS.h"
 #include "NH_VARS.h"
+#ifdef ALLOW_ADDFLUID
+# include "FFIELDS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
