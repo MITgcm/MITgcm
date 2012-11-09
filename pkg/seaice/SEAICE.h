@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.67 2012/11/07 09:45:58 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.68 2012/11/09 14:01:49 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -93,10 +93,11 @@ C>>>ToM
 C     uIceC :: average of UICE between last two time steps
 C     vIceC :: average of VICE between last two time steps
       COMMON/SEAICE_DYNVARS_3/
-     &     ETA,ZETA,PRESS, e11, e22, e12,
+     &     ETA,etaZ,ZETA,PRESS, e11, e22, e12,
      &     FORCEX,FORCEY,
      &     uIceC, vIceC, uIceNm1, vIceNm1
       _RL ETA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL etaZ       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ZETA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     ice strength/pressure term
       _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
