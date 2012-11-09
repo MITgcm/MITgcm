@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.51 2011/04/14 21:11:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.52 2012/11/09 22:43:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,6 +37,9 @@ C     bi,bj  :: Tile indices
 C     i, j   :: Loop counters
       INTEGER bi, bj
       INTEGER  i, j
+#if (defined ALLOW_ADDFLUID) || (defined ALLOW_FRICTION_HEATING)
+      INTEGER k
+#endif
 CEOP
 
 C-    Initialise all arrays in common blocks
@@ -88,13 +91,35 @@ C-    Initialise all arrays in common blocks
 #ifndef EXCLUDE_FFIELDS_LOAD
         loadedRec(bi,bj) = 0
 #endif /* EXCLUDE_FFIELDS_LOAD */
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+         ENDDO
+        ENDDO
+#ifdef ALLOW_ADDFLUID
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           addMass(i,j,k,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+#endif /* ALLOW_ADDFLUID */
+#ifdef ALLOW_FRICTION_HEATING
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           frictionHeating(i,j,k,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+#endif /* ALLOW_FRICTION_HEATING */
        ENDDO
       ENDDO
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           IF ( doThetaClimRelax .AND.
      &         ABS(yC(i,j,bi,bj)).LE.latBandClimRelax ) THEN
            lambdaThetaClimRelax(i,j,bi,bj) = 1. _d 0/tauThetaClimRelax
@@ -133,8 +158,8 @@ c      IF ( convertEmP2rUnit.EQ.mass2rUnit ) THEN
 C-     EmPmR is now (after c59h) expressed in kg/m2/s (fresh water mass flux)
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)*rhoConstFresh
            ENDDO
           ENDDO
@@ -181,6 +206,12 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
        CALL READ_FLD_XY_RS( pLoadFile, ' ', pLoad, 0, myThid )
       ENDIF
 #endif
+#ifdef ALLOW_ADDFLUID
+      IF ( addMassFile .NE. ' ' ) THEN
+       CALL READ_FLD_XYZ_RL( addMassFile, ' ', addMass, 0, myThid )
+       CALL EXCH_XYZ_RL( addMass, myThid )
+      ENDIF
+#endif /* ALLOW_ADDFLUID */
 
       CALL EXCH_UV_XY_RS( fu,fv, .TRUE., myThid )
       CALL EXCH_XY_RS( Qnet , myThid )
