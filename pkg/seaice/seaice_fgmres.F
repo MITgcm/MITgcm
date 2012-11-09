@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.7 2012/11/07 09:48:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.8 2012/11/09 22:19:29 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -38,6 +38,7 @@ C     !USES:
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:

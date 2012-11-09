@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.9 2012/08/29 13:11:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.10 2012/11/09 22:19:29 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -30,6 +30,7 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.16 2012/11/09 14:02:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.17 2012/11/09 22:19:29 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -24,6 +24,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
