@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.76 2012/10/22 23:59:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.77 2012/11/09 14:03:10 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -117,7 +117,6 @@ C     coefficients for lateral points, v(i+/-1)
 C     abbreviations
       _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL etaMeanZ    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     contribution of sigma on righ hand side
       _RL sig11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig22(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -289,7 +288,7 @@ CADJ &     key = itmpkey
 
       CALL SEAICE_CALC_VISCOSITIES(
      I     e11, e22, e12, zMin, zMax, hEffM, press0,
-     O     eta, zeta, press,
+     O     eta, etaZ, zeta, press,
      I     ilcall, myTime, myIter, myThid )
 
       CALL SEAICE_OCEANDRAG_COEFFS(
@@ -385,27 +384,28 @@ C
           zetaMinusEta(I,J,bi,bj) = ZETA(I,J,bi,bj)-ETA (I,J,bi,bj)
          ENDDO
         ENDDO
-        DO J=1,sNy+1
-         DO I=1,sNx+1
-          etaMeanZ (I,J,bi,bj) =
-     &         (           ETA (I,J  ,bi,bj)  + ETA (I-1,J  ,bi,bj)
-     &         +           ETA (I,J-1,bi,bj)  + ETA (I-1,J-1,bi,bj) )
-     &         / MAX(1.D0,maskC(I,J,  k,bi,bj)+maskC(I-1,J,  k,bi,bj)
-     &         +          maskC(I,J-1,k,bi,bj)+maskC(I-1,J-1,k,bi,bj) )
-         ENDDO
-        ENDDO
-C     free-slip means no lateral stress, which is best achieved masking
-C     eta on vorticity(=Z)-points; from now on we only need to worry
-C     about the no-slip boundary conditions
-        IF (.NOT.SEAICE_no_slip) THEN
-         DO J=1,sNy+1
-          DO I=1,sNx+1
-           etaMeanZ (I,J,bi,bj) = etaMeanZ(I,J,bi,bj)
-     &          *maskC(I,J,  k,bi,bj)*maskC(I-1,J,  k,bi,bj)
-     &          *maskC(I,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
-          ENDDO
-         ENDDO
-        ENDIF
+C--   this is now done in seaice_calc_viscosities
+CML        DO J=1,sNy+1
+CML         DO I=1,sNx+1
+CML          etaZ (I,J,bi,bj) =
+CML     &         (           ETA (I,J  ,bi,bj)  + ETA (I-1,J  ,bi,bj)
+CML     &         +           ETA (I,J-1,bi,bj)  + ETA (I-1,J-1,bi,bj) )
+CML     &         / MAX(1.D0,maskC(I,J,  k,bi,bj)+maskC(I-1,J,  k,bi,bj)
+CML     &         +          maskC(I,J-1,k,bi,bj)+maskC(I-1,J-1,k,bi,bj) )
+CML         ENDDO
+CML        ENDDO
+CMLC     free-slip means no lateral stress, which is best achieved masking
+CMLC     eta on vorticity(=Z)-points; from now on we only need to worry
+CMLC     about the no-slip boundary conditions
+CML        IF (.NOT.SEAICE_no_slip) THEN
+CML         DO J=1,sNy+1
+CML          DO I=1,sNx+1
+CML           etaZ (I,J,bi,bj) = etaZ(I,J,bi,bj)
+CML     &          *maskC(I,J,  k,bi,bj)*maskC(I-1,J,  k,bi,bj)
+CML     &          *maskC(I,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
+CML          ENDDO
+CML         ENDDO
+CML        ENDIF
 C     coefficients of uIce(I,J) and vIce(I,J) belonging to ...
         DO J=1,sNy
          DO I=0,sNx
@@ -420,20 +420,20 @@ C     ... d/dx (zeta-eta) k1 u
         DO J=1,sNy+1
          DO I=1,sNx
 C     ... d/dy eta d/dy u
-          UYY(I,J,bi,bj) = _dxV(I,J,bi,bj) * etaMeanZ(I,J,bi,bj)
+          UYY(I,J,bi,bj) = _dxV(I,J,bi,bj) * etaZ(I,J,bi,bj)
      &         * _recip_dyU(I,J,bi,bj)
 C     ... d/dy eta k2 u
-          UYM(I,J,bi,bj) = _dxV(I,J,bi,bj) * etaMeanZ(I,J,bi,bj)
+          UYM(I,J,bi,bj) = _dxV(I,J,bi,bj) * etaZ(I,J,bi,bj)
      &         * k2AtZ(I,J,bi,bj) * 0.5 _d 0
          ENDDO
         ENDDO
         DO J=1,sNy
          DO I=1,sNx+1
 C     ... d/dx eta dv/dx
-          VXX(I,J,bi,bj) = _dyU(I,J,bi,bj) * etaMeanZ(I,J,bi,bj)
+          VXX(I,J,bi,bj) = _dyU(I,J,bi,bj) * etaZ(I,J,bi,bj)
      &         * _recip_dxV(I,J,bi,bj)
 C     ... d/dx eta k1 v
-          VXM(I,J,bi,bj) = _dyU(I,J,bi,bj) * etaMeanZ(I,J,bi,bj)
+          VXM(I,J,bi,bj) = _dyU(I,J,bi,bj) * etaZ(I,J,bi,bj)
      &         * k1AtZ(I,J,bi,bj) * 0.5 _d 0
          ENDDO
         ENDDO
@@ -534,7 +534,7 @@ C     contribution of sigma12 to rhs of u-equation
         DO J=1,sNy+1
          DO I=1,sNx
           hFacM = seaiceMaskV(I,J,bi,bj) - seaiceMaskV(I-1,J,bi,bj)
-          sig12(I,J) = etaMeanZ(I,J,bi,bj) * (
+          sig12(I,J) = etaZ(I,J,bi,bj) * (
      &         ( vIceC(I,J,bi,bj) - vIceC(I-1,J,bi,bj) )
      &         * _recip_dxV(I,J,bi,bj)
      &         - k1AtZ(I,J,bi,bj)
@@ -546,7 +546,7 @@ C     free slip conditions (sig12=0) are taken care of by masking sig12
 C     no slip boundary conditions (v(i-1)=-v(i))
 C     v(i)+v(i-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with v(i)-v(i-1)
-     &         + etaMeanZ(I,J,bi,bj) * _recip_dxV(I,J,bi,bj)
+     &         + etaZ(I,J,bi,bj) * _recip_dxV(I,J,bi,bj)
      &         * ( vIceC(I,J,bi,bj) + vIceC(I-1,J,bi,bj) )
      &         * hFacM * 2. _d 0
          ENDDO
@@ -666,7 +666,7 @@ C     contribution of sigma12 to rhs of v-equation
         DO J=1,sNy
          DO I=1,sNx+1
           hFacM = seaiceMaskU(i,j,bi,bj) - seaiceMaskU(i,j-1,bi,bj)
-          sig12(I,J) = etaMeanZ(I,J,bi,bj) * (
+          sig12(I,J) = etaZ(I,J,bi,bj) * (
      &         ( uIceC(I,J,bi,bj) - uIceC(I,J-1,bi,bj) )
      &         * _recip_dyU(I,J,bi,bj)
      &         - k2AtZ(I,J,bi,bj)
@@ -678,7 +678,7 @@ C     free slip conditions (sig12=0) are taken care of by masking sig12,
 C     no slip boundary conditions (u(j-1)=-u(j))
 C     u(j)+u(j-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with u(j)-u(j-1)
-     &         + etaMeanZ(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
+     &         + etaZ(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
      &         * ( uIceC(I,J,bi,bj) + uIceC(I,J-1,bi,bj) )
      &         * hFacM * 2. _d 0
          ENDDO
@@ -1177,7 +1177,7 @@ C     compute internal stresses with updated ice velocities
 
          DO j=1,sNy+1
           DO i=1,sNx+1
-           sig12(I,J) = 2. _d 0 * e12(I,J,bi,bj) * etaMeanZ(I,J,bi,bj)
+           sig12(I,J) = 2. _d 0 * e12(I,J,bi,bj) * etaZ(I,J,bi,bj)
           ENDDO
          ENDDO
 C     evaluate divergence of stress and apply to forcing

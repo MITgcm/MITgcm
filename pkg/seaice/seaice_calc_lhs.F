@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.3 2012/11/06 12:29:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.4 2012/11/09 14:03:10 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -78,8 +78,6 @@ C     components of symmetric stress tensor
       _RL sig11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig22(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-C     auxilliary fields
-      _RL etaMeanZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
       k=1
@@ -90,16 +88,6 @@ C--   introduce turning angles
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-C     abbreviation
-        DO J=1,sNy+1
-         DO I=1,sNx+1
-          etaMeanZ (I,J) =
-     &         (           eta (I,J  ,bi,bj)  + eta (I-1,J  ,bi,bj)
-     &         +           eta (I,J-1,bi,bj)  + eta (I-1,J-1,bi,bj) )
-     &         / MAX(1.D0,maskC(I,J,  k,bi,bj)+maskC(I-1,J,  k,bi,bj)
-     &         +          maskC(I,J-1,k,bi,bj)+maskC(I-1,J-1,k,bi,bj) )
-         ENDDO
-        ENDDO
 C     compute components of stress tensor from current velocity field
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -122,7 +110,7 @@ C     compute components of stress tensor from current velocity field
         
         DO j=1,sNy+1
          DO i=1,sNx+1
-          sig12(I,J) = 2. _d 0 * e12(I,J,bi,bj) * etaMeanZ(I,J)
+          sig12(I,J) = 2. _d 0 * e12(I,J,bi,bj) * etaZ(I,J,bi,bj)
          ENDDO
         ENDDO
 C

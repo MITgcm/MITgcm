@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_residual.F,v 1.2 2012/10/30 13:28:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_residual.F,v 1.3 2012/11/09 14:03:10 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -88,7 +88,7 @@ C     viscosities are required
      I     krylovIter, myTime, myIter, myThid )
       CALL SEAICE_CALC_VISCOSITIES(
      I     e11, e22, e12, zMin, zMax, hEffM, press0,
-     O     eta, zeta, press,
+     O     eta, etaZ, zeta, press,
      I     krylovIter, myTime, myIter, myThid )
 
 C     The scheme is backward Euler in time, i.e. the rhs-vector contains 
