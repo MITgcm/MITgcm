@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.178 2012/11/09 22:23:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.179 2012/11/09 22:27:15 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -58,13 +58,11 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-#ifdef SEAICE_DEBUG
 c ToM<<< debug seaice_growth
 C     msgBuf      :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*12 msgBufForm
 c ToM>>>
-#endif
 C
 C unit/sign convention:
 C    Within the thermodynamic computation all stocks, except HSNOW,
