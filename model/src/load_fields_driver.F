@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.13 2012/11/07 21:37:33 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.14 2012/11/09 22:40:36 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -42,6 +42,7 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "FFIELDS.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -49,7 +50,6 @@ C     == Global variables ==
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 # include "cost.h"
-# include "FFIELDS.h"
 # include "EOS.h"
 # ifdef ALLOW_EXF
 #  include "EXF_FIELDS.h"
@@ -68,11 +68,47 @@ C     myThid :: thread number for this instance of the routine.
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
+#if (defined ALLOW_ADDFLUID) || (defined ALLOW_FRICTION_HEATING)
+      INTEGER i,j,k,bi,bj
+#endif
 CEOP
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER( 'LOAD_FIELDS_DRIVER', myThid )
 #endif
+
+C--   Initialise forcing arrays that may receive multiple contributions
+#ifdef ALLOW_ADDFLUID
+      IF ( addMassFile .EQ. ' ' ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             addMass(i,j,k,bi,bj) =  0. _d 0
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
+#endif /* ALLOW_ADDFLUID */
+
+#ifdef ALLOW_FRICTION_HEATING
+      IF ( addFrictionHeating ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             frictionHeating(i,j,k,bi,bj) = 0. _d 0
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
+#endif /* ALLOW_FRICTION_HEATING */
 
 #ifdef ALLOW_BULK_FORCE
       IF ( useBulkForce ) THEN
