@@ -1,10 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1763 2012/11/07 12:43:03 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1764 2012/11/09 14:12:43 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/seaice:
+  - move computation of eta at Z-points into calc_viscosities
+    + introduce global field etaZ
+    + add different methods for computing etaZ, for now the old
+      method (simple averages of eta to Z-points) is hardwired
+    + replace etaMeanZ by etaZ in seaice_lsr, seaice_calc_residual, 
+      seaice_preconditioner
+  - simplify computations for SEAICE_ZETA_SMOOTHREG
   - seaice_preconditioner: 
     + replace one remaining press by pressLoc (mistake)
     + adjust printing of residuals
