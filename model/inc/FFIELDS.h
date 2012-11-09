@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.42 2012/06/30 01:23:05 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.43 2012/11/09 22:35:56 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h
@@ -74,9 +74,14 @@ C     pLoad :: for the ocean:      atmospheric pressure at z=eta
 C                Units are           Pa=N/m^2
 C              for the atmosphere: geopotential of the orography
 C                Units are           meters (converted)
-C  sIceLoad :: sea-ice loading, expressed in Mass of ice+snow / area unit
+C     sIceLoad :: sea-ice loading, expressed in Mass of ice+snow / area unit
 C                Units are           kg/m^2
 C              Note: only used with Sea-Ice & RealFreshWater formulation
+C     addMass  :: source (<0: sink) of fluid in the domain interior
+C                 (generalisation of oceanic real fresh-water flux)
+C                Units are           kg/s  (mass per unit of time)
+C     frictionHeating :: heating caused by friction and momentum dissipation
+C                Units are           in Watts [W] (extensive variable)
 C     eddyPsiX -Zonal Eddy Streamfunction in m^2/s used in taueddy_external_forcing.F
 C     eddyPsiY -Meridional Streamfunction in m^2/s used in taueddy_external_forcing.F
 C     EfluxY - y-component of Eliassen-Palm flux vector
@@ -96,17 +101,6 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       COMMON /FFIELDS_pLoad/ pLoad
       COMMON /FFIELDS_sIceLoad/ sIceLoad
 
-#ifdef ALLOW_BALANCE_RELAX
-      COMMON/RMMEANRLX/ SSSrlx,SSSrlxTile,SSSrlxGlob,
-     &                  SSTrlx,SSTrlxTile,SSTrlxGlob
-      _RL SSTrlx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SSTrlxTile(nSx,nSy)
-      _RL SSTrlxGlob
-      _RL SSSrlx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SSSrlxTile(nSx,nSy)
-      _RL SSSrlxGlob
-#endif
-
       _RS  fu       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  fv       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  Qnet     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -121,16 +115,37 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       _RS  pLoad    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  sIceLoad (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#ifdef ALLOW_EP_FLUX
-      COMMON /efluxFFIELDS/ EfluxY,EfluxP
-      _RL  EfluxY (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  EfluxP (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#ifdef ALLOW_FRICTION_HEATING
+      COMMON /FFIELDS_frictionHeat/ frictionHeating
+      _RS frictionHeating(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
+#ifdef ALLOW_ADDFLUID
+      COMMON /FFIELDS_ADD_FLUID/ addMass
+      _RL addMass(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+
+C- jmc: commented out until corresponding (ghost-like) code apparition
+c#ifdef ALLOW_EP_FLUX
+c     COMMON /efluxFFIELDS/ EfluxY,EfluxP
+c     _RL  EfluxY (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+c     _RL  EfluxP (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+c#endif
 
 #ifdef ALLOW_EDDYPSI
       COMMON /eddypsiFFIELDS/ eddyPsiX,eddyPsiY
       _RS  eddyPsiX (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  eddyPsiY (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+
+#ifdef ALLOW_BALANCE_RELAX
+      COMMON/RMMEANRLX/ SSSrlx,SSSrlxTile,SSSrlxGlob,
+     &                  SSTrlx,SSTrlxTile,SSTrlxGlob
+      _RL SSTrlx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SSTrlxTile(nSx,nSy)
+      _RL SSTrlxGlob
+      _RL SSSrlx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SSSrlxTile(nSx,nSy)
+      _RL SSSrlxGlob
 #endif
 
 #ifndef EXCLUDE_FFIELDS_LOAD

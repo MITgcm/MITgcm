@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.42 2012/08/12 20:31:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.43 2012/11/09 22:35:56 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -103,14 +103,6 @@ C     BL79LatArray :: is used for latitudinal dependence of
 C                     BryanLewis79 vertical diffusivity
       COMMON /DYNVARS_BL79LatArray/ BL79LatArray
       _RL BL79LatArray (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-
-#ifdef ALLOW_ADDFLUID
-C     addMass   :: source (<0: sink) of fluid in the domain interior
-C                  in mass per unit of time [kg/s]
-C                  (generalisation of oceanic real fresh-water flux)
-      COMMON /DYNVARS_ADD_FLUID/ addMass
-      _RL addMass(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
 C     Diagnostic Variables:
