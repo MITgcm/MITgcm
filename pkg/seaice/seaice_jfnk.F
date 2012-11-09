@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.7 2012/11/09 12:56:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.8 2012/11/09 14:11:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -86,6 +86,7 @@ C     precomputed (= constant per Newton iteration) versions of
 C     zeta, eta, and DWATN, press
       _RL zetaPre (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaPre  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL etaZPre (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dwatPre (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL pressPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CEOP
@@ -152,6 +153,7 @@ C     constant for the preconditioner
           DO i=1-Olx,sNx+Olx
             zetaPre(I,J,bi,bj) =  zeta(I,J,bi,bj)
              etaPre(I,J,bi,bj) =   eta(I,J,bi,bj)
+            etaZPre(I,J,bi,bj) =  etaZ(I,J,bi,bj)
             dwatPre(I,J,bi,bj) = DWATN(I,J,bi,bj)
            pressPre(I,J,bi,bj) = press(I,J,bi,bj)
           ENDDO
@@ -244,7 +246,7 @@ C     Call preconditioner
           IF ( SOLV_MAX_ITERS .GT. 0 )
      &         CALL SEAICE_PRECONDITIONER( 
      U         duIce, dvIce, 
-     I         zetaPre, etaPre, dwatPre, pressPre,
+     I         zetaPre, etaPre, etaZpre, dwatPre, pressPre,
      I         newtonIter, krylovIter, myTime, myIter, myThid )
          ELSEIF (iCode.GE.2) THEN
 C     Compute Jacobian times vector
