@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.250 2012/07/04 20:19:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.251 2012/11/09 22:31:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -190,7 +190,7 @@ C--   Continuous equation parameters
      & momViscosity,  momAdvection, momForcing, useCoriolis,
      & useConstantF, useBetaPlaneF, useSphereF, use3dCoriolis,
      & momPressureForcing, metricTerms, vectorInvariantMomentum,
-     & tempDiffusion, tempAdvection, tempForcing,
+     & tempDiffusion, tempAdvection, tempForcing, addFrictionHeating,
      & saltDiffusion, saltAdvection, saltForcing,
      & implicSurfPress, implicDiv2Dflow, implicitNHPress,
      & implicitFreeSurface, rigidLid, freeSurfFac,
@@ -237,8 +237,8 @@ C--   Time stepping parammeters
       NAMELIST /PARM03/
      & nIter0, nTimeSteps, nEndIter,
      & baseTime, startTime, endTime,
-     & deltaT, deltaTClock, deltaTmom,
-     & deltaTtracer, dTtracerLev, deltaTfreesurf,
+     & deltaT, deltaTClock, deltaTMom,
+     & deltaTtracer, dTtracerLev, deltaTFreeSurf,
      & forcing_In_AB, momForcingOutAB, tracForcingOutAB,
      & momDissip_In_AB, doAB_onGtGs,
      & abEps, alph_AB, beta_AB, startFromPickupAB2,
@@ -276,7 +276,7 @@ C--   Input files
      & surfQfile, surfQnetFile, surfQswFile, EmPmRfile, saltFluxFile,
      & lambdaThetaFile, lambdaSaltFile,
      & uVelInitFile, vVelInitFile, pSurfInitFile,
-     & dQdTFile, ploadFile,tCylIn,tCylOut,
+     & dQdTFile, ploadFile, addMassFile, tCylIn, tCylOut,
      & eddyPsiXFile, eddyPsiYFile,
      & mdsioLocalDir, adTapeDir,
      & the_run_name
@@ -840,8 +840,8 @@ C     o Time step size
       ENDIF
       IF ( deltaT       .EQ. 0. ) deltaT       = deltaTClock
       IF ( deltaT       .EQ. 0. ) deltaT       = deltaTtracer
-      IF ( deltaT       .EQ. 0. ) deltaT       = deltaTmom
-      IF ( deltaT       .EQ. 0. ) deltaT       = deltaTfreesurf
+      IF ( deltaT       .EQ. 0. ) deltaT       = deltaTMom
+      IF ( deltaT       .EQ. 0. ) deltaT       = deltaTFreeSurf
       IF ( deltaT       .EQ. 0. ) THEN
         WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: ',
      &   'need to specify in file "data", namelist "PARM03"'
@@ -852,7 +852,7 @@ C     o Time step size
         errCount = errCount + 1
         deltaT = 1.
       ENDIF
-      IF ( deltaTmom    .EQ. 0. ) deltaTmom    = deltaT
+      IF ( deltaTMom    .EQ. 0. ) deltaTMom    = deltaT
       IF ( deltaTtracer .EQ. 0. ) deltaTtracer = deltaT
       IF ( deltaTClock  .EQ. 0. ) deltaTClock  = deltaT
       DO k=1,Nr
@@ -863,7 +863,7 @@ C but this would change a lot of existing set-ups so we are
 C obliged to set the default inappropriately.
 C Be advised that when using asynchronous time stepping
 C it is better to set deltaTreesurf=deltaTtracer
-      IF ( deltaTfreesurf .EQ. 0. ) deltaTfreesurf  = deltaTmom
+      IF ( deltaTFreeSurf .EQ. 0. ) deltaTFreeSurf  = deltaTMom
       IF ( periodicExternalForcing ) THEN
        IF ( externForcingCycle*externForcingPeriod .EQ. 0. ) THEN
         WRITE(msgBuf,'(A)')
@@ -882,9 +882,9 @@ C it is better to set deltaTreesurf=deltaTtracer
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-       IF ( externForcingPeriod.LT.deltaTclock ) THEN
+       IF ( externForcingPeriod.LT.deltaTClock ) THEN
         WRITE(msgBuf,'(A)')
-     &   'S/R INI_PARMS: externForcingPeriod < deltaTclock'
+     &   'S/R INI_PARMS: externForcingPeriod < deltaTClock'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
@@ -911,7 +911,7 @@ C     o Convection frequency
       ENDIF
       IF (useCDscheme) THEN
 C     o CD coupling (CD scheme):
-        IF ( tauCD .EQ. 0. _d 0 ) tauCD = deltaTmom
+        IF ( tauCD .EQ. 0. _d 0 ) tauCD = deltaTMom
         IF ( rCD .LT. 0. ) rCD = 1. _d 0 - deltaTMom/tauCD
         IF ( epsAB_CD .EQ. UNSET_RL ) epsAB_CD = abEps
       ENDIF
@@ -936,13 +936,13 @@ C     o nTimeSteps 1
      &     nTimeSteps = nEndIter-nIter0
 C     o nTimeSteps 2
       IF ( nTimeSteps .EQ. 0 .AND. endTime .NE. 0. )
-     &     nTimeSteps = NINT((endTime-startTime)/deltaTclock)
+     &     nTimeSteps = NINT((endTime-startTime)/deltaTClock)
 C     o nEndIter 1
       IF ( nEndIter .EQ. 0 .AND. nTimeSteps .NE. 0 )
      &     nEndIter = nIter0+nTimeSteps
 C     o nEndIter 2
       IF ( nEndIter .EQ. 0 .AND. endTime .NE. 0. )
-     &     nEndIter = NINT((endTime-baseTime)/deltaTclock)
+     &     nEndIter = NINT((endTime-baseTime)/deltaTClock)
 C     o End Time 1
       IF ( endTime .EQ. 0. .AND. nTimeSteps .NE. 0 )
      &     endTime = startTime + deltaTClock*float(nTimeSteps)
@@ -992,7 +992,7 @@ C     o Monitor (should also add CPP flag for monitor?)
      &         monitorFreq=chkPtFreq
        IF (pChkPtFreq.NE.0..AND.pChkPtFreq.LT.monitorFreq)
      &         monitorFreq=pChkPtFreq
-       IF (monitorFreq.EQ.0.) monitorFreq=deltaTclock
+       IF (monitorFreq.EQ.0.) monitorFreq=deltaTClock
       ENDIF
       IF ( monitorSelect.EQ.UNSET_I ) THEN
         monitorSelect = 2

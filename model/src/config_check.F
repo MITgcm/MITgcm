@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.69 2012/07/13 23:24:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.70 2012/11/09 22:31:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -63,8 +63,8 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &  'CONFIG_CHECK: diffKrFile is set but never used.'
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &  'Re-compile with:  #define ALLOW_3D_DIFFKR'
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &  'Re-compile with: "#define ALLOW_3D_DIFFKR"'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
@@ -231,7 +231,7 @@ C       code is being compiled
 #ifndef ALLOW_ADDFLUID
       IF ( selectAddFluid.NE.0 ) THEN
         WRITE(msgBuf,'(A)')
-     &   'CONFIG_CHECK: #undef ALLOW_ADDFLUID and'
+     &   'CONFIG_CHECK: #undef ALLOW_ADDFLUID (CPP_OPTIONS.h) and'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A,I4,A)') 'CONFIG_CHECK: selectAddFluid=',
      &                           selectAddFluid, ' is not zero'
@@ -248,10 +248,10 @@ C       code is being compiled
      &  'CONFIG_CHECK: pLoadFile is set but you have not'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
-     &  'compiled the model with the pressure loading code.'
+     &  ' compiled the model with the pressure loading code.'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
-     &  'Re-compile with:  #define ATMOSPHERIC_LOADING'
+     &  ' Re-compile with: "#define ATMOSPHERIC_LOADING"'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
@@ -260,10 +260,22 @@ C       code is being compiled
      &  'CONFIG_CHECK: sIceLoad is computed but'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
-     &  'pressure loading code is not compiled.'
+     &  ' pressure loading code is not compiled.'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
-     &  'Re-compile with:  #define ATMOSPHERIC_LOADING'
+     &  ' Re-compile with: "#define ATMOSPHERIC_LOADING"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif
+
+#ifndef ALLOW_FRICTION_HEATING
+      IF ( addFrictionHeating ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: addFrictionHeating=T',
+     &  ' but FRICTIONAL_HEATING code is not compiled.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: Re-compile with:',
+     &   ' "#define ALLOW_FRICTION_HEATING" (CPP_OPTIONS.h)'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
@@ -275,8 +287,8 @@ C       code is being compiled
      &  'CONFIG_CHECK: balanceEmPmR/Qnet is set but balance code ',
      &  'is not compiled.'
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &  'Re-compile with  ALLOW_BALANCE_FLUXES defined'
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &  'Re-compile with:  ALLOW_BALANCE_FLUXES defined'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
@@ -288,7 +300,7 @@ C       code is being compiled
      &  'CONFIG_CHECK: balanceTheta/SaltClimRelax is set ',
      &  'but balance code is not compiled.'
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
      &  'Re-compile with  ALLOW_BALANCE_RELAX defined'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
@@ -492,7 +504,7 @@ c       STOP 'ABNORMAL END: S/R CONFIG_CHECK'
 c     ENDIF
 
       IF ( nonlinFreeSurf.NE.0 .AND.
-     &     deltaTfreesurf.NE.dTtracerLev(1) ) THEN
+     &     deltaTFreeSurf.NE.dTtracerLev(1) ) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** CONFIG_CHECK: ',
      &                       'nonlinFreeSurf might cause problems'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
@@ -579,6 +591,13 @@ c     ENDIF
      &   '1 time-step mismatch in AddFluid effects on T & S'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+
+      IF ( addFrictionHeating .AND. .NOT.staggerTimeStep ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: addFrictionHeating',
+     &  ' not yet coded for synchronous time-stepping.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
       ENDIF
 
 C--   Non-hydrostatic and 3-D solver related limitations:
