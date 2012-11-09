@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.6 2012/11/07 10:08:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.7 2012/11/09 12:56:00 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -240,8 +240,9 @@ C     FGMRES returns iCode either asking for an new preconditioned vector
 C     or product of matrix (Jacobian) times vector. For iCode = 0, terminate
 C     iteration
          IF (iCode.EQ.1) THEN
-C     Call preconditioner
-          CALL SEAICE_PRECONDITIONER( 
+C     Call preconditioner 
+          IF ( SOLV_MAX_ITERS .GT. 0 )
+     &         CALL SEAICE_PRECONDITIONER( 
      U         duIce, dvIce, 
      I         zetaPre, etaPre, dwatPre, pressPre,
      I         newtonIter, krylovIter, myTime, myIter, myThid )
