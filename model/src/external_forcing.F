@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.60 2012/03/02 01:45:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.61 2012/11/09 22:49:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -272,6 +272,9 @@ C     kSurface  :: index of surface layer
       INTEGER i, j
       INTEGER kSurface
 CEOP
+#ifdef ALLOW_FRICTION_HEATING
+      _RL tmpFac
+#endif
 #ifdef SHORTWAVE_HEATING
       integer two
       _RL minusone
@@ -330,6 +333,28 @@ C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
       ENDIF
 #endif /* ALLOW_ADDFLUID */
 
+#ifdef ALLOW_FRICTION_HEATING
+      IF ( addFrictionHeating ) THEN
+        IF ( fluidIsAir ) THEN
+C         conversion from in-situ Temp to Pot.Temp
+          tmpFac = (atm_Po/rC(kLev))**atm_kappa
+C         conversion from W/m^2/r_unit to K/s
+          tmpFac = (tmpFac/atm_Cp) * mass2rUnit
+        ELSE
+C         conversion from W/m^2/r_unit to K/s
+          tmpFac = recip_Cp * mass2rUnit
+        ENDIF
+        DO j=1,sNy
+          DO i=1,sNx
+            gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
+     &         + frictionHeating(i,j,kLev,bi,bj)
+     &          *tmpFac*recip_rA(i,j,bi,bj)
+     &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+          ENDDO
+        ENDDO
+      ENDIF
+#endif /* ALLOW_FRICTION_HEATING */
+
 C     Add heat in top-layer
       IF ( kLev .EQ. kSurface ) THEN
        DO j=1,sNy
@@ -344,7 +369,7 @@ C     Add heat in top-layer
       IF (linFSConserveTr) THEN
        DO j=1,sNy
         DO i=1,sNx
-          IF (kLev .EQ. ksurfC(i,j,bi,bj)) THEN
+          IF (kLev .EQ. kSurfC(i,j,bi,bj)) THEN
             gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
      &        +TsurfCor*recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
           ENDIF
@@ -541,7 +566,7 @@ C     Add fresh-water in top-layer
       IF (linFSConserveTr) THEN
        DO j=1,sNy
         DO i=1,sNx
-          IF (kLev .EQ. ksurfC(i,j,bi,bj)) THEN
+          IF (kLev .EQ. kSurfC(i,j,bi,bj)) THEN
             gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
      &        +SsurfCor*recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
           ENDIF
