@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.265 2012/07/13 20:34:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.266 2012/11/09 22:29:32 jmc Exp $
 C $Name:  $
 C
 
@@ -78,6 +78,7 @@ C                 m/s when using external_fields_load.F.  It is converted
 C                 to kg/m2/s by multiplying by rhoConstFresh.
 C     saltFluxFile    :: File containing surface salt flux
 C     pLoadFile       :: File containing pressure loading
+C     addMassFile     :: File containing source/sink of fluid in the interior
 C     eddyPsiXFile    :: File containing zonal Eddy streamfunction data
 C     eddyPsiYFile    :: File containing meridional Eddy streamfunction data
 C     the_run_name    :: string identifying the name of the model "run"
@@ -97,7 +98,7 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                surfQfile, surfQnetFile, surfQswFile,
      &                lambdaThetaFile, lambdaSaltFile,
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
-     &                dQdTfile, ploadFile,
+     &                dQdTfile, pLoadFile, addMassFile,
      &                eddyPsiXFile, eddyPsiYFile,
      &                the_run_name
       CHARACTER*(MAX_LEN_FNAM) buoyancyRelation
@@ -134,7 +135,8 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) vVelInitFile
       CHARACTER*(MAX_LEN_FNAM) pSurfInitFile
       CHARACTER*(MAX_LEN_FNAM) dQdTfile
-      CHARACTER*(MAX_LEN_FNAM) ploadFile
+      CHARACTER*(MAX_LEN_FNAM) pLoadFile
+      CHARACTER*(MAX_LEN_FNAM) addMassFile
       CHARACTER*(MAX_LEN_FNAM) eddyPsiXFile
       CHARACTER*(MAX_LEN_FNAM) eddyPsiYFile
       CHARACTER*(MAX_LEN_FNAM) lambdaThetaFile
@@ -285,18 +287,17 @@ C     upwindShear        :: use 1rst order upwind interp. (V.I., vertical advect
 C     momStepping    :: Turns momentum equation time-stepping off
 C     calc_wVelocity :: Turns of vertical velocity calculation off
 C- Temp. & Salt params:
-C     tempStepping   :: Turns temperature equation time-stepping off
-C     saltStepping   :: Turns salinity equation time-stepping off
+C     tempStepping   :: Turns temperature equation time-stepping on/off
+C     saltStepping   :: Turns salinity equation time-stepping on/off
+C     addFrictionHeating :: account for frictional heating
 C     tempAdvection  :: Flag which turns advection of temperature on and off.
 C     tempVertDiff4  :: use vertical bi-harmonic diffusion for temperature
 C     tempIsActiveTr :: Pot.Temp. is a dynamically active tracer
-C     tempForcing    :: Flag which turns external forcing of temperature on
-C                       and off.
+C     tempForcing    :: Flag which turns external forcing of temperature on/off
 C     saltAdvection  :: Flag which turns advection of salinity on and off.
 C     saltVertDiff4  :: use vertical bi-harmonic diffusion for salinity
 C     saltIsActiveTr :: Salinity  is a dynamically active tracer
-C     saltForcing    :: Flag which turns external forcing of salinity on
-C                       and off.
+C     saltForcing    :: Flag which turns external forcing of salinity on/off
 C     maskIniTemp    :: apply mask to initial Pot.Temp.
 C     maskIniSalt    :: apply mask to initial salinity
 C     checkIniTemp   :: check for points with identically zero initial Pot.Temp.
@@ -383,6 +384,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
      & upwindVorticity, highOrderVorticity,
      & useAbsVorticity, upwindShear,
      & momStepping, calc_wVelocity, tempStepping, saltStepping,
+     & addFrictionHeating,
      & tempAdvection, tempVertDiff4, tempIsActiveTr, tempForcing,
      & saltAdvection, saltVertDiff4, saltIsActiveTr, saltForcing,
      & maskIniTemp, maskIniSalt, checkIniTemp, checkIniSalt,
@@ -421,7 +423,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL deepAtmosphere
       LOGICAL setInterFDr
       LOGICAL setCenterDr
-      LOGICAL useNHMTerms
+
       LOGICAL no_slip_sides
       LOGICAL no_slip_bottom
       LOGICAL useFullLeith
@@ -431,8 +433,25 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL momAdvection
       LOGICAL momForcing
       LOGICAL momPressureForcing
+      LOGICAL metricTerms
+      LOGICAL useNHMTerms
+
       LOGICAL useCoriolis
+      LOGICAL use3dCoriolis
+      LOGICAL useCDscheme
       LOGICAL vectorInvariantMomentum
+      LOGICAL useEnergyConservingCoriolis
+      LOGICAL useJamartWetPoints
+      LOGICAL useJamartMomAdv
+      LOGICAL upwindVorticity
+      LOGICAL highOrderVorticity
+      LOGICAL useAbsVorticity
+      LOGICAL upwindShear
+      LOGICAL momStepping
+      LOGICAL calc_wVelocity
+      LOGICAL tempStepping
+      LOGICAL saltStepping
+      LOGICAL addFrictionHeating
       LOGICAL tempAdvection
       LOGICAL tempVertDiff4
       LOGICAL tempIsActiveTr
@@ -459,20 +478,6 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL implicitIntGravWave
       LOGICAL staggerTimeStep
       LOGICAL doResetHFactors
-      LOGICAL momStepping
-      LOGICAL calc_wVelocity
-      LOGICAL tempStepping
-      LOGICAL saltStepping
-      LOGICAL metricTerms
-      LOGICAL use3dCoriolis
-      LOGICAL useCDscheme
-      LOGICAL useEnergyConservingCoriolis
-      LOGICAL useJamartWetPoints
-      LOGICAL useJamartMomAdv
-      LOGICAL upwindVorticity
-      LOGICAL highOrderVorticity
-      LOGICAL useAbsVorticity
-      LOGICAL upwindShear
       LOGICAL implicitDiffusion
       LOGICAL implicitViscosity
       LOGICAL tempImplVertAdv
@@ -649,7 +654,7 @@ C                    Frequency of checkpointing and dumping of the model state
 C                    are referenced to this clock. ( s )
 C     deltaTMom    :: Timestep for momemtum equations ( s )
 C     dTtracerLev  :: Timestep for tracer equations ( s ), function of level k
-C     deltaTfreesurf :: Timestep for free-surface equation ( s )
+C     deltaTFreeSurf :: Timestep for free-surface equation ( s )
 C     freeSurfFac  :: Parameter to turn implicit free surface term on or off
 C                     freeSurFac = 1. uses implicit free surface
 C                     freeSurFac = 0. uses rigid lid
@@ -728,13 +733,15 @@ C                           is to be replace by a smoother function
 C                           (affects myabs, mymin, mymax)
 C     nh_Am2        :: scales the non-hydrostatic terms and changes internal scales
 C                      (i.e. allows convection at different Rayleigh numbers)
+C     tCylIn        :: Temperature of the cylinder inner boundary
+C     tCylOut       :: Temperature of the cylinder outer boundary
 C     phiEuler      :: Euler angle, rotation about original z-axis
 C     thetaEuler    :: Euler angle, rotation about new x-axis
 C     psiEuler      :: Euler angle, rotation about new z-axis
       COMMON /PARM_R/ cg2dTargetResidual, cg2dTargetResWunit,
      & cg2dpcOffDFac, cg3dTargetResidual,
      & delR, delRc, xgOrigin, ygOrigin,
-     & deltaT, deltaTmom, dTtracerLev, deltaTfreesurf, deltaTClock,
+     & deltaT, deltaTMom, dTtracerLev, deltaTFreeSurf, deltaTClock,
      & abEps, alph_AB, beta_AB,
      & rSphere, recip_rSphere, radius_fromHorizGrid,
      & f0, beta, fPrime, omega, rotationPeriod,
@@ -786,9 +793,9 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL ygOrigin
       _RL deltaT
       _RL deltaTClock
-      _RL deltaTmom
+      _RL deltaTMom
       _RL dTtracerLev(Nr)
-      _RL deltaTfreesurf
+      _RL deltaTFreeSurf
       _RL abEps, alph_AB, beta_AB
       _RL rSphere
       _RL recip_rSphere
@@ -904,8 +911,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL bottomDragQuadratic
       _RL smoothAbsFuncRange
       _RL nh_Am2
-      _RL tCylIn
-      _RL tCylOut
+      _RL tCylIn, tCylOut
       _RL phiEuler, thetaEuler, psiEuler
 
 C--   COMMON /PARM_A/ Thermodynamics constants ?
