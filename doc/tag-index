@@ -1,10 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1764 2012/11/09 14:12:43 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1765 2012/11/09 22:51:48 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/seaice:
+  - complete merge of ITD code into seaice_growth.F
+    from MITgcm_contrib/torge/itd/code/
+    no verification so far, but Torge Martin tested
+    "1-D test case and Beaufort set up;
+    deliver okay results after 1 model year."
+  - complete merge of SEAICE_SIZE.h into all relevant routines
   - move computation of eta at Z-points into calc_viscosities
     + introduce global field etaZ
     + add different methods for computing etaZ, for now the old
