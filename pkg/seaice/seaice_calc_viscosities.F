@@ -1,12 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.15 2012/10/31 09:50:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.16 2012/11/09 14:02:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
+CBOP
 CStartOfInterface
       SUBROUTINE SEAICE_CALC_VISCOSITIES(
      I     e11, e22, e12, zMin, zMax, hEffM, press0,
-     O     eta, zeta, press,
+     O     eta, etaZ, zeta, press,
      I     iStep, myTime, myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE  SEAICE_CALC_VISCOSITIES                      |
@@ -51,6 +52,7 @@ C
       _RL press (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 C     bulk viscosity
       _RL  eta  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL  etaZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     shear viscosity
       _RL zeta  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 CEndOfInterface
@@ -61,16 +63,27 @@ C     i,j,bi,bj - Loop counters
 C     e11, e12, e22 - components of strain rate tensor
 C     ecm2          - inverse of square of eccentricity of yield curve
       INTEGER i, j, bi, bj
-      _RL ECM2, deltaC, deltaCreg
-      _RL e12C  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL ECM2, deltaC, deltaCreg, tmp
+      _RL e12Csqr(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL e11Zsqr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL e22Zsqr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL e11e22Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL pressZ (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 #ifdef SEAICE_ALLOW_TEM
       _RL etaMax, etaDen
 #endif /* SEAICE_ALLOW_TEM */
+      INTEGER k
+      _RL zetaZ, deltaZ, deltaZreg, sumNorm
 #ifdef SEAICE_ZETA_SMOOTHREG
       _RL argTmp
 #endif /* SEAICE_ZETA_SMOOTHREG */
+      INTEGER etaZmethod
+CEOP      
 
+C     this will become a runtime parameter
+      etaZmethod = 0
 C--   FIRST SET UP BASIC CONSTANTS
+      k=1
       ecm2=0. _d 0
       IF ( SEAICE_eccen .NE. 0. _d 0 ) ecm2=ONE/(SEAICE_eccen**2)
 C
@@ -78,16 +91,28 @@ C
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C     need to do this beforehand for easier vectorization after
 C     TAFization
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-          e12C(i,j) = 0.25 * ( e12(I,J  ,bi,bj) + e12(I+1,J  ,bi,bj) 
-     &                       + e12(I,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
+        IF ( etaZmethod .LT. 2 ) THEN
+         DO j=1-Oly+1,sNy+Oly-1
+          DO i=1-Olx+1,sNx+Olx-1
+           tmp = 0.25 *
+     &          ( e12(I,J  ,bi,bj) + e12(I+1,J  ,bi,bj) 
+     &          + e12(I,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
+           e12Csqr(i,j) = tmp*tmp
+          ENDDO
          ENDDO
-        ENDDO
+        ELSEIF ( etaZmethod .EQ. 2 ) THEN
+         DO j=1-Oly+1,sNy+Oly-1
+          DO i=1-Olx+1,sNx+Olx-1
+           e12Csqr(i,j) = 0.25 * 
+     &          ( e12(I,J  ,bi,bj)**2 + e12(I+1,J  ,bi,bj)**2 
+     &          + e12(I,J+1,bi,bj)**2 + e12(I+1,J+1,bi,bj)**2 )
+          ENDDO
+         ENDDO
+        ENDIF
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
           deltaC = (e11(i,j,bi,bj)**2+e22(i,j,bi,bj)**2)*(ONE+ecm2)
-     &         + 4. _d 0*ecm2*e12C(i,j)**2
+     &         + 4. _d 0*ecm2*e12Csqr(i,j)
      &         + 2. _d 0*e11(i,j,bi,bj)*e22(i,j,bi,bj)*(ONE-ecm2)
 #ifdef ALLOW_AUTODIFF_TAMC
 C     avoid sqrt of 0
@@ -103,13 +128,9 @@ C     put min and max viscosities in
 C     regularize zeta to zmax with a smooth tanh-function instead 
 C     of a min(zeta,zmax). This improves convergence of iterative
 C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
-          IF ( ZMAX(I,J,bi,bj) .GT. 0. _d 0 ) THEN
-           argTmp = exp(-2.*zeta(I,J,bi,bj)/ZMAX(I,J,bi,bj))
-           zeta (I,J,bi,bj) = ZMAX(I,J,bi,bj)
+          argTmp = exp(-1. _d 0/(deltaCreg*SEAICE_zetaMaxFac))
+          zeta (I,J,bi,bj) = ZMAX(I,J,bi,bj)
      &         *(1. _d 0 - argTmp)/(1. _d 0 + argTmp)
-          ELSE
-           zeta (I,J,bi,bj) = ZMAX(I,J,bi,bj)
-          ENDIF
 #else
           zeta (I,J,bi,bj) = MIN(ZMAX(I,J,bi,bj),zeta(I,J,bi,bj))
 #endif /*  SEAICE_ZETA_SMOOTHREG */
@@ -125,7 +146,7 @@ C     set viscosities to zero at hEffM flow pts
          DO j=1-Oly+1,sNy+Oly-1
           DO i=1-Olx+1,sNx+Olx-1
            etaDen = (e11(I,J,bi,bj)-e22(I,J,bi,bj))**2 
-     &          + 4. _d 0*e12C(i,j)**2
+     &          + 4. _d 0*e12Csqr(i,j)
            etaDen = SQRT(MAX(SEAICE_EPS_SQ,etaDen))
            etaMax = ( 0.5 _d 0*press(I,J,bi,bj)-zeta(I,J,bi,bj)
      &          *( e11(I,J,bi,bj)+e22(I,J,bi,bj) ) 
@@ -135,6 +156,122 @@ C     set viscosities to zero at hEffM flow pts
          ENDDO
         ENDIF
 #endif /* SEAICE_ALLOW_TEM */
+C     compute eta at Z-points
+        IF ( etaZmethod .eq. 0 ) THEN
+C     This is the old and stupid way
+         DO j=1-Oly+1,sNy+Oly-1
+          DO i=1-Olx+1,sNx+Olx-1
+           etaZ(I,J,bi,bj) = 
+     &         ( eta (I,J  ,bi,bj)  + eta (I-1,J  ,bi,bj)
+     &         + eta (I,J-1,bi,bj)  + eta (I-1,J-1,bi,bj) )
+     &         / MAX(1.D0,maskC(I,J,  k,bi,bj)+maskC(I-1,J,  k,bi,bj)
+     &         +          maskC(I,J-1,k,bi,bj)+maskC(I-1,J-1,k,bi,bj) )
+          ENDDO
+         ENDDO
+        ELSE
+         IF ( etaZmethod .eq. 1 ) THEN
+          DO j=1-Oly+1,sNy+Oly-1
+           DO i=1-Olx+1,sNx+Olx-1
+            sumNorm  = maskC(I,J,  k,bi,bj)+maskC(I-1,J,  k,bi,bj)
+     &               + maskC(I,J-1,k,bi,bj)+maskC(I-1,J-1,k,bi,bj)
+            IF ( sumNorm.GT.0. _d 0 ) sumNorm = 1. _d 0 / sumNorm
+            pressZ(i,j)  = sumNorm * 
+     &           ( press0(i,j,  bi,bj) + press0(i-1,j,  bi,bj)
+     &           + press0(i,j-1,bi,bj) + press0(i-1,j-1,bi,bj) )
+            e11Zsqr(i,j) = sumNorm * 
+     &           ( e11(i,j,  bi,bj)**2 + e11(i-1,j,  bi,bj)**2 
+     &           + e11(i,j-1,bi,bj)**2 + e11(i-1,j-1,bi,bj)**2 )
+            e22Zsqr(i,j) = sumNorm *
+     &           ( e22(i,j,  bi,bj)**2 + e22(i-1,j,  bi,bj)**2 
+     &           + e22(i,j-1,bi,bj)**2 + e22(i-1,j-1,bi,bj)**2 )
+            e11e22Z(i,j)  = sumNorm *
+     &           ( e11(i,  j,  bi,bj)*e22(i,  j,  bi,bj)
+     &           + e11(i-1,j,  bi,bj)*e22(i-1,j,  bi,bj)
+     &           + e11(i,  j-1,bi,bj)*e22(i  ,j-1,bi,bj)
+     &           + e11(i-1,j-1,bi,bj)*e22(i-1,j-1,bi,bj) )
+           ENDDO
+          ENDDO
+         ELSEIF ( etaZmethod .eq. 2 ) THEN
+          DO j=1-Oly+1,sNy+Oly-1
+           DO i=1-Olx+1,sNx+Olx-1
+            sumNorm  = maskC(I,J,  k,bi,bj)+maskC(I-1,J,  k,bi,bj)
+     &               + maskC(I,J-1,k,bi,bj)+maskC(I-1,J-1,k,bi,bj)
+            IF ( sumNorm.GT.0. _d 0 ) sumNorm = 1. _d 0 / sumNorm
+            pressZ(i,j)  = sumNorm * 
+     &           ( press0(i,j,  bi,bj) + press0(i-1,j,  bi,bj)
+     &           + press0(i,j-1,bi,bj) + press0(i-1,j-1,bi,bj) )
+            e11Zsqr(i,j) =  ( sumNorm * 
+     &           ( e11(i,j,  bi,bj) + e11(i-1,j,  bi,bj) 
+     &           + e11(i,j-1,bi,bj) + e11(i-1,j-1,bi,bj) ) )**2
+            e22Zsqr(i,j) = ( sumNorm *
+     &           ( e22(i,j,  bi,bj) + e22(i-1,j,  bi,bj) 
+     &           + e22(i,j-1,bi,bj) + e22(i-1,j-1,bi,bj) ) )**2
+            e11e22Z(i,j)  = sumNorm * sumNorm *
+     &           ( e11(i,  j,  bi,bj) + e11(i-1,j,  bi,bj)
+     &           + e11(i,  j-1,bi,bj) + e11(i-1,j-1,bi,bj) ) *
+     &           ( e22(i,  j,  bi,bj) + e22(i-1,j,  bi,bj)
+     &           + e22(i  ,j-1,bi,bj) * e22(i-1,j-1,bi,bj) )
+           ENDDO
+          ENDDO
+         ENDIF
+         DO j=1-Oly+1,sNy+Oly-1
+          DO i=1-Olx+1,sNx+Olx-1
+          deltaZ  = (e11Zsqr(i,j)+e22Zsqr(i,j))*(ONE+ecm2)
+     &         + 4. _d 0*ecm2*e12(i,j,bi,bj)**2
+     &         + 2. _d 0*e11e22Z(i,j)*(ONE-ecm2)
+#ifdef ALLOW_AUTODIFF_TAMC
+C     avoid sqrt of 0
+          IF ( deltaZ .GT. 0. _d 0 ) deltaZ = SQRT(deltaZ)
+#else
+          deltaZ    = SQRT(deltaZ)
+#endif /* ALLOW_AUTODIFF_TAMC */
+          deltaZreg = MAX(deltaZ,SEAICE_EPS)
+C     "replacement pressure"
+          zetaZ     = HALF*pressZ(i,j)/deltaZreg
+C     put min and max viscosities in
+#ifdef SEAICE_ZETA_SMOOTHREG
+C     regularize zeta to zmax with a smooth tanh-function instead 
+C     of a min(zeta,zmax). This improves convergence of iterative
+C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
+          argTmp = exp(-1. _d 0/(deltaZreg*SEAICE_zetaMaxFac))
+          zetaZ  = ZMAX(I,J,bi,bj)*(1. _d 0-argTmp)/(1. _d 0+argTmp)
+#else
+          zetaZ  = MIN(ZMAX(I,J,bi,bj),zetaZ)
+#endif /*  SEAICE_ZETA_SMOOTHREG */
+          zetaZ  = MAX(ZMIN(I,J,bi,bj),zetaZ)
+          etaZ(I,J,bi,bj) = ECM2*zetaZ
+          ENDDO
+         ENDDO
+#ifdef SEAICE_ALLOW_TEM
+        IF ( SEAICEuseTEM ) THEN
+         STOP 'OOPS'
+CML         DO j=1-Oly+1,sNy+Oly-1
+CML          DO i=1-Olx+1,sNx+Olx-1
+CML           etaDen = (e11Zsqr(i,j)+e22Zsqr(i,j)-2.*e11e22Z(i,j)) 
+CML     &          + 4. _d 0*e12(I,J,bi,bj)**2
+CML           etaDen = SQRT(MAX(SEAICE_EPS_SQ,etaDen))
+CML           etaMax = ( 0.5 _d 0*press(I,J,bi,bj)-zeta(I,J,bi,bj)
+CML     &          *( e11(I,J,bi,bj)+e22(I,J,bi,bj) ) 
+CML     &          )/etaDen
+CML           etaZ(I,J,bi,bj) = MIN(etaZ(I,J,bi,bj),etaMax)
+CML          ENDDO
+CML         ENDDO
+        ENDIF
+#endif /* SEAICE_ALLOW_TEM */
+C     etaZmethod
+       ENDIF
+C     free-slip means no lateral stress, which is best achieved masking
+C     eta on vorticity(=Z)-points; from now on we only need to worry
+C     about the no-slip boundary conditions
+        IF (.NOT.SEAICE_no_slip) THEN
+         DO J=1,sNy+1
+          DO I=1,sNx+1
+           etaZ(I,J,bi,bj) = etaZ(I,J,bi,bj)
+     &          *maskC(I,J,  k,bi,bj)*maskC(I-1,J,  k,bi,bj)
+     &          *maskC(I,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
        ENDDO
       ENDDO
 
