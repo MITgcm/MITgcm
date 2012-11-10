@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.180 2012/11/09 22:45:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.181 2012/11/10 13:21:45 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -58,11 +58,6 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-c ToM<<< debug seaice_growth
-C     msgBuf      :: Informational/error message buffer
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*12 msgBufForm
-c ToM>>>
 C
 C unit/sign convention:
 C    Within the thermodynamic computation all stocks, except HSNOW,
@@ -98,8 +93,11 @@ C     number of surface interface layer
       INTEGER kSurface
 C     IT :: ice thickness category index (MULTICATEGORIES and ITD code)
       INTEGER IT
-      _RL pFac
+C     msgBuf      :: Informational/error message buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*12 msgBufForm
 C     constants
+      _RL pFac
       _RL tempFrz, ICE2SNOW, SNOW2ICE
       _RL QI, QS, recip_QI
       _RL lhSublim
@@ -297,7 +295,6 @@ C     Helper variables for diagnostics
       _RL HFsiGlob
       _RL FWF2HFsiTile(nSx,nSy)
       _RL FWF2HFsiGlob
-      CHARACTER*(max_len_mbuf) msgbuf
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
