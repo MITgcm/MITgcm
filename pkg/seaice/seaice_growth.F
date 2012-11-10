@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.181 2012/11/10 13:21:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.182 2012/11/10 22:19:38 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -313,7 +313,7 @@ C     avoid unnecessary divisions in loops
 c#ifdef SEAICE_ITD
 CToM this is now set by MULTDIM = nITD in SEAICE_SIZE.h
 C    (see SEAICE_SIZE.h and seaice_readparms.F)
-c     SEAICE_multDim = nITD 
+c     SEAICE_multDim = nITD
 c#endif
       recip_multDim        = SEAICE_multDim
       recip_multDim        = ONE / recip_multDim
@@ -510,7 +510,7 @@ C           d_HEFFbyRLX(i,j) = 1. _d 1 * siEps * d_AREAbyRLX(i,j)
             d_HEFFbyRLX(i,j) = 1. _d 1 * siEps
            ENDIF
 #ifdef SEAICE_ITD
-            AREAITD(I,J,1,bi,bj) = AREAITD(I,J,1,bi,bj) 
+            AREAITD(I,J,1,bi,bj) = AREAITD(I,J,1,bi,bj)
      &                           +  d_AREAbyRLX(i,j)
             HEFFITD(I,J,1,bi,bj) = HEFFITD(I,J,1,bi,bj)
      &                           +  d_HEFFbyRLX(i,j)
@@ -535,14 +535,14 @@ CADJ STORE area(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
         DO J=1,sNy
          DO I=1,sNx
 #ifdef SEAICE_ITD
-	  tmpscal2=0. _d 0
-	  tmpscal3=0. _d 0
+          tmpscal2=0. _d 0
+          tmpscal3=0. _d 0
           tmpscal2=MAX(-HEFFITD(I,J,IT,bi,bj),0. _d 0)
           HEFFITD(I,J,IT,bi,bj)=HEFFITD(I,J,IT,bi,bj)+tmpscal2
-	  d_HEFFbyNEG(I,J)=d_HEFFbyNEG(I,J)+tmpscal2
+          d_HEFFbyNEG(I,J)=d_HEFFbyNEG(I,J)+tmpscal2
           tmpscal3=MAX(-HSNOWITD(I,J,IT,bi,bj),0. _d 0)
           HSNOWITD(I,J,IT,bi,bj)=HSNOWITD(I,J,IT,bi,bj)+tmpscal3
-	  d_HSNWbyNEG(I,J)=d_HSNWbyNEG(I,J)+tmpscal3
+          d_HSNWbyNEG(I,J)=d_HSNWbyNEG(I,J)+tmpscal3
           AREAITD(I,J,IT,bi,bj)=MAX(AREAITD(I,J,IT,bi,bj),0. _d 0)
 CToM      AREA, HEFF, and HSNOW will be updated at end of PART 1
 C         by calling SEAICE_ITD_SUM
@@ -556,7 +556,7 @@ C         by calling SEAICE_ITD_SUM
          ENDDO
         ENDDO
 #ifdef SEAICE_ITD
-	ENDDO
+        ENDDO
 #endif
 
 C 1.25) treat the case of very thin ice:
@@ -565,12 +565,12 @@ C 1.25) treat the case of very thin ice:
 CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef SEAICE_ITD
-	DO IT=1,nITD
+        DO IT=1,nITD
 #endif
         DO J=1,sNy
          DO I=1,sNx
-	  tmpscal2=0. _d 0
-	  tmpscal3=0. _d 0
+          tmpscal2=0. _d 0
+          tmpscal3=0. _d 0
 #ifdef SEAICE_ITD
           IF (HEFFITD(I,J,IT,bi,bj).LE.siEps) THEN
            tmpscal2=-HEFFITD(I,J,IT,bi,bj)
@@ -613,7 +613,7 @@ CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
          DO I=1,sNx
 #ifdef SEAICE_ITD
           IF ((HEFFITD(I,J,IT,bi,bj).EQ.0. _d 0).AND.
-     &        (HSNOWITD(I,J,IT,bi,bj).EQ.0. _d 0)) 
+     &        (HSNOWITD(I,J,IT,bi,bj).EQ.0. _d 0))
      &     AREAITD(I,J,IT,bi,bj)=0. _d 0
 #else
           IF ((HEFF(i,j,bi,bj).EQ.0. _d 0).AND.
@@ -622,7 +622,7 @@ CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
          ENDDO
         ENDDO
 #ifdef SEAICE_ITD
-	ENDDO
+        ENDDO
 #endif
 
 C 2) treat the case of very small area:
@@ -632,7 +632,7 @@ C 2) treat the case of very small area:
 CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef SEAICE_ITD
-	DO IT=1,nITD
+        DO IT=1,nITD
 #endif
         DO J=1,sNy
          DO I=1,sNx
@@ -640,7 +640,7 @@ CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
           IF ((HEFFITD(I,J,IT,bi,bj).GT.0).OR.
      &        (HSNOWITD(I,J,IT,bi,bj).GT.0)) THEN
 CToM       SEAICE_area_floor*nITD cannot be allowed to exceed 1
-C          hence use SEAICE_area_floor devided by nITD 
+C          hence use SEAICE_area_floor devided by nITD
 C          (or install a warning in e.g. seaice_readparms.F)
            AREAITD(I,J,IT,bi,bj)=
      &        MAX(AREAITD(I,J,IT,bi,bj),SEAICE_area_floor/float(nITD))
@@ -653,7 +653,7 @@ C          (or install a warning in e.g. seaice_readparms.F)
          ENDDO
         ENDDO
 #ifdef SEAICE_ITD
-	ENDDO
+        ENDDO
 #endif
 #endif /* DISABLE_AREA_FLOOR */
 
@@ -680,24 +680,24 @@ CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 
 #ifdef SEAICE_ITD
 CToM catch up with items 1.25 and 2.5 involving category sums AREA and HEFF
-	DO IT=1,nITD
+        DO IT=1,nITD
          DO J=1,sNy
           DO I=1,sNx
 C    TICES was changed above (item 1.25), now update TICE as ice volume
 C     weighted average of TICES
 C    also compute total of AREAITD (needed for finishing item 2.5, see below)
-	   IF (IT .eq. 1) THEN
-	    tmpscal1itd(i,j) = 0. _d 0
-	    tmpscal2itd(i,j) = 0. _d 0
-	    tmpscal3itd(i,j) = 0. _d 0
+           IF (IT .eq. 1) THEN
+            tmpscal1itd(i,j) = 0. _d 0
+            tmpscal2itd(i,j) = 0. _d 0
+            tmpscal3itd(i,j) = 0. _d 0
            ENDIF
-	   tmpscal1itd(i,j)=tmpscal1itd(i,j) + TICES(I,J,IT,bi,bj)
+           tmpscal1itd(i,j)=tmpscal1itd(i,j) + TICES(I,J,IT,bi,bj)
      &                                       * HEFFITD(I,J,IT,bi,bj)
-	   tmpscal2itd(i,j)=tmpscal2itd(i,j) + HEFFITD(I,J,IT,bi,bj)
-	   tmpscal3itd(i,j)=tmpscal3itd(i,j) + AREAITD(I,J,IT,bi,bj)
-	   IF (IT .eq. nITD) THEN
+           tmpscal2itd(i,j)=tmpscal2itd(i,j) + HEFFITD(I,J,IT,bi,bj)
+           tmpscal3itd(i,j)=tmpscal3itd(i,j) + AREAITD(I,J,IT,bi,bj)
+           IF (IT .eq. nITD) THEN
             TICE(I,J,bi,bj)=tmpscal1itd(i,j)/tmpscal2itd(i,j)
-C    lines of item 2.5 that were omitted: 
+C    lines of item 2.5 that were omitted:
 C    in 2.5 these lines are executed before "ridging" is applied to AREA
 C    hence we execute them here before SEAICE_ITD_REDIST is called
 C    although this means that AREA has not been completely regularized
@@ -707,7 +707,7 @@ C    although this means that AREA has not been completely regularized
 #ifdef ALLOW_SITRACER
             SItrAREA(I,J,bi,bj,1)=tmpscal3itd(i,j)
 #endif
-	   ENDIF
+           ENDIF
           ENDDO
          ENDDO
         ENDDO
@@ -771,21 +771,21 @@ C 3) store regularized values of heff, hsnow, area at the onset of thermo.
         DO IT=1,nITD
          DO J=1,sNy
           DO I=1,sNx
-	   HEFFITDpreTH(I,J,IT)=HEFFITD(I,J,IT,bi,bj)
+           HEFFITDpreTH(I,J,IT)=HEFFITD(I,J,IT,bi,bj)
            HSNWITDpreTH(I,J,IT)=HSNOWITD(I,J,IT,bi,bj)
            AREAITDpreTH(I,J,IT)=AREAITD(I,J,IT,bi,bj)
 
 C memorize areal and volume fraction of each ITD category
-	   IF (AREA(I,J,bi,bj) .GT. ZERO) THEN
-	    areaFracFactor(I,J,IT)=AREAITD(I,J,IT,bi,bj)/AREA(I,J,bi,bj)
-	   ELSE
-C           if there's no ice, potential growth starts in 1st category
-	    IF (IT .EQ. 1) THEN
-	     areaFracFactor(I,J,IT)=ONE
-	    ELSE
-	     areaFracFactor(I,J,IT)=ZERO
-	    ENDIF
-	   ENDIF
+           IF (AREA(I,J,bi,bj) .GT. ZERO) THEN
+            areaFracFactor(I,J,IT)=AREAITD(I,J,IT,bi,bj)/AREA(I,J,bi,bj)
+           ELSE
+C           if there is no ice, potential growth starts in 1st category
+            IF (IT .EQ. 1) THEN
+             areaFracFactor(I,J,IT)=ONE
+            ELSE
+             areaFracFactor(I,J,IT)=ZERO
+            ENDIF
+           ENDIF
           ENDDO
          ENDDO
         ENDDO
@@ -906,19 +906,19 @@ CADJ STORE HSNWpreTH = comlev1_bibj, key = iicekey, byte = isbyte
             heffActualMult(I,J,IT)  = MAX(tmpscal2,SEAICE_hice_reg)
 #else /* SEAICE_GROWTH_LEGACY */
 cif        regularize AREA with SEAICE_area_reg
-           tmpscal1 = SQRT(AREAITDpreTH(I,J,IT) * AREAITDpreTH(I,J,IT) 
+           tmpscal1 = SQRT(AREAITDpreTH(I,J,IT) * AREAITDpreTH(I,J,IT)
      &                     + area_reg_sq)
 cif        heffActual calculated with the regularized AREA
            tmpscal2 = HEFFITDpreTH(I,J,IT) / tmpscal1
 cif        regularize heffActual with SEAICE_hice_reg (add lower bound)
-           heffActualMult(I,J,IT) = SQRT(tmpscal2 * tmpscal2 
+           heffActualMult(I,J,IT) = SQRT(tmpscal2 * tmpscal2
      &                                  + hice_reg_sq)
 cif        hsnowActual calculated with the regularized AREA
            hsnowActualMult(I,J,IT) = HSNWITDpreTH(I,J,IT) / tmpscal1
 #endif /* SEAICE_GROWTH_LEGACY */
 cif        regularize the inverse of heffActual by hice_reg
            recip_heffActualMult(I,J,IT)  = AREAITDpreTH(I,J,IT) /
-     &                 sqrt(HEFFITDpreTH(I,J,IT) * HEFFITDpreTH(I,J,IT) 
+     &                 sqrt(HEFFITDpreTH(I,J,IT) * HEFFITDpreTH(I,J,IT)
      &                      + hice_reg_sq)
 cif       Do not regularize when HEFFpreTH = 0
           ELSE
@@ -1073,7 +1073,7 @@ C--   Start loop over multi-categories
         DO IT=1,nITD
          DO J=1,sNy
           DO I=1,sNx
-CToM for SEAICE_ITD heffActualMult and latentHeatFluxMaxMult are calculated above 
+CToM for SEAICE_ITD heffActualMult and latentHeatFluxMaxMult are calculated above
 C    (instead of heffActual and latentHeatFluxMax)
            ticeInMult(I,J,IT)=TICES(I,J,IT,bi,bj)
            ticeOutMult(I,J,IT)=TICES(I,J,IT,bi,bj)
@@ -1155,10 +1155,10 @@ CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
 C     update TICE & TICES
 #ifdef SEAICE_ITD
 C     calculate area weighted mean
-C     (although the ice's temperature relates to its energy content 
-C      and hence should be averaged weighted by ice volume, 
-C      the temperature here is a result of the fluxes through the ice surface 
-C      computed individually for each single category in SEAICE_SOLVE4TEMP 
+C     (although the ice temperature relates to its energy content
+C      and hence should be averaged weighted by ice volume,
+C      the temperature here is a result of the fluxes through the ice surface
+C      computed individually for each single category in SEAICE_SOLVE4TEMP
 C      and hence is averaged area weighted [areaFracFactor])
            TICE(I,J,bi,bj) = TICE(I,J,bi,bj)
      &          +  ticeOutMult(I,J,IT)*areaFracFactor(I,J,IT)
@@ -1218,7 +1218,7 @@ CADJ STORE a_FWbySublim    = comlev1_bibj, key = iicekey, byte = isbyte
 
 C switch heat fluxes from W/m2 to 'effective' ice meters
 #ifdef SEAICE_ITD
-	DO IT=1,nITD
+        DO IT=1,nITD
          DO J=1,sNy
           DO I=1,sNx
            a_QbyATMmult_cover(I,J,IT)   = a_QbyATMmult_cover(I,J,IT)
@@ -1235,7 +1235,7 @@ C     Negative sublimation is resublimation and will be added as snow.
            a_FWbySublimMult(I,J,IT) = SEAICE_deltaTtherm*recip_rhoIce
      &            * a_FWbySublimMult(I,J,IT)*AREAITDpreTH(I,J,IT)
            r_FWbySublimMult(I,J,IT)=a_FWbySublimMult(I,J,IT)
-	  ENDDO
+          ENDDO
          ENDDO
         ENDDO
         DO J=1,sNy
@@ -1291,7 +1291,7 @@ CADJ STORE r_FWbySublim    = comlev1_bibj, key = iicekey, byte = isbyte
 Cgf no additional dependency through ice cover
         IF ( SEAICEadjMODE.GE.3 ) THEN
 #ifdef SEAICE_ITD
-	 DO IT=1,nITD
+         DO IT=1,nITD
           DO J=1,sNy
            DO I=1,sNx
             a_QbyATMmult_cover(I,J,IT)   = 0. _d 0
@@ -1299,7 +1299,7 @@ Cgf no additional dependency through ice cover
             a_QSWbyATMmult_cover(I,J,IT) = 0. _d 0
            ENDDO
           ENDDO
-	 ENDDO
+         ENDDO
 #else
          DO J=1,sNy
           DO I=1,sNx
@@ -1434,7 +1434,7 @@ C     remove the fusion part for the residual (that happens to be precisely r_FW
         ENDDO
 #ifdef SEAICE_ITD
 C       end IT loop
-	ENDDO
+        ENDDO
 #endif
 #ifdef SEAICE_DEBUG
 c ToM<<< debug seaice_growth
@@ -1471,10 +1471,10 @@ CADJ STORE r_QbyOCN = comlev1_bibj,key=iicekey,byte=isbyte
         DO IT=1,nITD
          DO J=1,sNy
           DO I=1,sNx
-C          ice growth/melt due to ocean heat r_QbyOCN (W/m^2) is 
-C          equally distributed under the ice and hence weighted by 
+C          ice growth/melt due to ocean heat r_QbyOCN (W/m^2) is
+C          equally distributed under the ice and hence weighted by
 C          fractional area of each thickness category
-	   tmpscal1=MAX(r_QbyOCN(i,j)*areaFracFactor(I,J,IT),
+           tmpscal1=MAX(r_QbyOCN(i,j)*areaFracFactor(I,J,IT),
      &                               -HEFFITD(I,J,IT,bi,bj))
            d_HEFFbyOCNonICE_ITD(I,J,IT)=tmpscal1
            d_HEFFbyOCNonICE(I,J) = d_HEFFbyOCNonICE(I,J) + tmpscal1
@@ -1485,8 +1485,8 @@ C          fractional area of each thickness category
         DO J=1,sNy
          DO I=1,sNx
           SItrHEFF(I,J,bi,bj,2) = HEFFpreTH(I,J)
-     &	                        + d_HEFFbySublim(I,J)
-     &	                        + d_HEFFbyOCNonICE(I,J)
+     &                          + d_HEFFbySublim(I,J)
+     &                          + d_HEFFbyOCNonICE(I,J)
          ENDDO
         ENDDO
 #endif
@@ -1530,7 +1530,7 @@ CADJ STORE r_QbyATM_cover = comlev1_bibj,key=iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef SEAICE_ITD
-	DO IT=1,nITD
+        DO IT=1,nITD
          DO J=1,sNy
           DO I=1,sNx
 C     Convert to standard units (meters of ice) rather than to meters
@@ -1545,11 +1545,11 @@ Cgf no additional dependency through snow
            d_HSNWbyATMonSNW_ITD(I,J,IT) = tmpscal2*ICE2SNOW
            d_HSNWbyATMonSNW(I,J) = d_HSNWbyATMonSNW(I,J)
      &                           + tmpscal2*ICE2SNOW
-           r_QbyATMmult_cover(I,J,IT)=r_QbyATMmult_cover(I,J,IT) 
+           r_QbyATMmult_cover(I,J,IT)=r_QbyATMmult_cover(I,J,IT)
      &                           - tmpscal2
-	  ENDDO
-	 ENDDO
-	ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
 #else /* SEAICE_ITD */
         DO J=1,sNy
          DO I=1,sNx
@@ -1595,10 +1595,10 @@ Cgf the v1.81=>v1.82 revision would change results in
 Cgf warming conditions, the lab_sea results were not changed.
 
 #ifdef SEAICE_ITD
-	DO IT=1,nITD
+        DO IT=1,nITD
          DO J=1,sNy
           DO I=1,sNx
-	   tmpscal1 = HEFFITDpreTH(I,J,IT)
+           tmpscal1 = HEFFITDpreTH(I,J,IT)
      &              + d_HEFFbySublim_ITD(I,J,IT)
      &              + d_HEFFbyOCNonICE_ITD(I,J,IT)
 #ifdef SEAICE_GROWTH_LEGACY
@@ -1613,22 +1613,22 @@ c         Limit ice growth by potential melt by ocean
            d_HEFFbyATMonOCN_cover_ITD(I,J,IT) = tmpscal2
            d_HEFFbyATMonOCN_cover(I,J) = d_HEFFbyATMonOCN_cover(I,J)
      &                                 + tmpscal2
-           d_HEFFbyATMonOCN_ITD(I,J,IT) = d_HEFFbyATMonOCN_ITD(I,J,IT) 
+           d_HEFFbyATMonOCN_ITD(I,J,IT) = d_HEFFbyATMonOCN_ITD(I,J,IT)
      &                                 + tmpscal2
            d_HEFFbyATMonOCN(I,J)       = d_HEFFbyATMonOCN(I,J)
      &                                 + tmpscal2
            r_QbyATMmult_cover(I,J,IT)  = r_QbyATMmult_cover(I,J,IT)
      &                                 - tmpscal2
-	  ENDDO
-	 ENDDO
-	ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
 #ifdef ALLOW_SITRACER
         DO J=1,sNy
          DO I=1,sNx
           SItrHEFF(I,J,bi,bj,3) = SItrHEFF(I,J,bi,bj,2)
-     & 	                        + d_HEFFbyATMonOCN_cover(I,J)
-	 ENDDO
-	ENDDO
+     &                          + d_HEFFbyATMonOCN_cover(I,J)
+         ENDDO
+        ENDDO
 #endif
 #else /* SEAICE_ITD */
         DO J=1,sNy
@@ -1718,14 +1718,14 @@ C           add precip to the fresh water bucket
          ENDDO
         ENDDO
 #ifdef SEAICE_ITD
-	DO IT=1,nITD
+        DO IT=1,nITD
          DO J=1,sNy
           DO I=1,sNx
-           d_HSNWbyRAIN_ITD(I,J,IT) 
+           d_HSNWbyRAIN_ITD(I,J,IT)
      &     = d_HSNWbyRAIN(I,J)*areaFracFactor(I,J,IT)
           ENDDO
          ENDDO
-	ENDDO
+        ENDDO
 #else
         DO J=1,sNy
          DO I=1,sNx
@@ -1768,11 +1768,11 @@ CADJ STORE r_QbyOCN = comlev1_bibj,key=iicekey,byte=isbyte
         DO IT=1,nITD
          DO J=1,sNy
           DO I=1,sNx
-	   tmpscal4 = HSNWITDpreTH(I,J,IT) 
+           tmpscal4 = HSNWITDpreTH(I,J,IT)
      &              + d_HSNWbySublim_ITD(I,J,IT)
      &              + d_HSNWbyATMonSNW_ITD(I,J,IT)
      &              + d_HSNWbyRAIN_ITD(I,J,IT)
-           tmpscal1=MAX(r_QbyOCN(i,j)*ICE2SNOW*areaFracFactor(I,J,IT), 
+           tmpscal1=MAX(r_QbyOCN(i,j)*ICE2SNOW*areaFracFactor(I,J,IT),
      &                  -tmpscal4)
            tmpscal2=MIN(tmpscal1,0. _d 0)
 #ifdef SEAICE_MODIFY_GROWTH_ADJ
@@ -1832,13 +1832,13 @@ CADJ STORE a_QSWbyATM_open = comlev1_bibj,key=iicekey,byte=isbyte
 #ifdef SEAICE_ITD
 C         HEFF will be updated at the end of PART 3,
 C         hence sum of tendencies so far is needed
-	  tmpscal4 = HEFFpreTH(I,J)
+          tmpscal4 = HEFFpreTH(I,J)
      &             + d_HEFFbySublim(I,J)
      &             + d_HEFFbyOCNonICE(I,J)
      &             + d_HEFFbyATMonOCN(I,J)
 #else
 C         HEFF is updated step by step throughout seaice_growth
-	  tmpscal4 = HEFF(I,J,bi,bj)
+          tmpscal4 = HEFF(I,J,bi,bj)
 #endif
 C           Initial ice growth is triggered by open water
 C           heat flux overcoming potential melt by ocean
@@ -1911,14 +1911,14 @@ CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         IF ( SEAICEuseFlooding ) THEN
 #ifdef SEAICE_ITD
-	 DO IT=1,nITD
+         DO IT=1,nITD
           DO J=1,sNy
            DO I=1,sNx
-	    tmpscal3 = HEFFITDpreTH(I,J,IT)
+            tmpscal3 = HEFFITDpreTH(I,J,IT)
      &               + d_HEFFbySublim_ITD(I,J,IT)
      &               + d_HEFFbyOCNonICE_ITD(I,J,IT)
      &               + d_HEFFbyATMonOCN_ITD(I,J,IT)
-	    tmpscal4 = HSNWITDpreTH(I,J,IT) 
+            tmpscal4 = HSNWITDpreTH(I,J,IT)
      &               + d_HSNWbySublim_ITD(I,J,IT)
      &               + d_HSNWbyATMonSNW_ITD(I,J,IT)
      &               + d_HSNWbyRAIN_ITD(I,J,IT)
@@ -1928,9 +1928,9 @@ CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
             tmpscal1 = MAX( 0. _d 0, tmpscal0 - tmpscal3)
             d_HEFFbyFLOODING_ITD(I,J,IT) = tmpscal1
             d_HEFFbyFLOODING(I,J) = d_HEFFbyFLOODING(I,J)  + tmpscal1
-	   ENDDO
-	  ENDDO
-	 ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
 #else
          DO J=1,sNy
           DO I=1,sNx
@@ -1962,24 +1962,24 @@ c ToM>>>
 #ifdef SEAICE_ITD
 C apply ice and snow thickness changes
 C =================================================================
-	 DO IT=1,nITD
+         DO IT=1,nITD
           DO J=1,sNy
            DO I=1,sNx
-	    HEFFITD(I,J,IT,bi,bj) = HEFFITD(I,J,IT,bi,bj)
+            HEFFITD(I,J,IT,bi,bj) = HEFFITD(I,J,IT,bi,bj)
      &                            + d_HEFFbySublim_ITD(I,J,IT)
      &                            + d_HEFFbyOCNonICE_ITD(I,J,IT)
      &                            + d_HEFFbyATMonOCN_ITD(I,J,IT)
      &                            + d_HEFFbyFLOODING_ITD(I,J,IT)
-	    HSNOWITD(I,J,IT,bi,bj) = HSNOWITD(I,J,IT,bi,bj)
+            HSNOWITD(I,J,IT,bi,bj) = HSNOWITD(I,J,IT,bi,bj)
      &                            + d_HSNWbySublim_ITD(I,J,IT)
      &                            + d_HSNWbyATMonSNW_ITD(I,J,IT)
      &                            + d_HSNWbyRAIN_ITD(I,J,IT)
      &                            + d_HSNWbyOCNonSNW_ITD(I,J,IT)
      &                            - d_HEFFbyFLOODING_ITD(I,J,IT)
      &                            * ICE2SNOW
-	   ENDDO
-	  ENDDO
-	 ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
 #endif
 
 C ===================================================================
@@ -2008,7 +2008,7 @@ CADJ STORE AREA(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 
 #ifdef SEAICE_ITD
 C--     account for lateral ice growth and melt only in thinnest category
-C--     use HEFF, ARE, HSNOW, etc. temporarily for 1st category 
+C--     use HEFF, ARE, HSNOW, etc. temporarily for 1st category
 C       (this way we can use same code for ITD and non-ITD case)
         DO J=1,sNy
          DO I=1,sNx
@@ -2018,21 +2018,21 @@ C       (this way we can use same code for ITD and non-ITD case)
           HEFFpreTH(I,J)=HEFFITDpreTH(I,J,1)
           AREApreTH(I,J)=AREAITDpreTH(I,J,1)
           recip_heffActual(I,J)=recip_heffActualMult(I,J,1)
-	 ENDDO
-	ENDDO
-C       all other categories only experience basal growth or melt, 
+         ENDDO
+        ENDDO
+C       all other categories only experience basal growth or melt,
 C       i.e. change sin AREA only occur when all ice in a category is melted
         IF (nITD .gt. 1) THEN
          DO IT=2,nITD
           DO J=1,sNy
            DO I=1,sNx
-	    IF (HEFFITD(I,J,IT,bi,bj).LE.ZERO) THEN
-	     AREAITD(I,J,IT,bi,bj)=ZERO
-	    ENDIF
-	   ENDDO
-	  ENDDO
-	 ENDDO
-	ENDIF
+            IF (HEFFITD(I,J,IT,bi,bj).LE.ZERO) THEN
+             AREAITD(I,J,IT,bi,bj)=ZERO
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
 #endif
         DO J=1,sNy
          DO I=1,sNx
@@ -2118,7 +2118,7 @@ C       transfer 1st category values back into ITD variables
 Cgf 'bulk' linearization of area=f(HEFF)
         IF ( SEAICEadjMODE.GE.1 ) THEN
 #ifdef SEAICE_ITD
-	 DO IT=1,nITD
+         DO IT=1,nITD
           DO J=1,sNy
            DO I=1,sNx
             AREAITD(I,J,IT,bi,bj) = AREAITDpreTH(I,J,IT) + 0.1 _d 0 *
@@ -2370,22 +2370,22 @@ C compute total of "mult" fluxes for ocean forcing
          DO J=1,sNy
           DO I=1,sNx
 cToM if fluxes in W/m^2 then
-c           a_QbyATM_cover(I,J)=a_QbyATM_cover(I,J) 
+c           a_QbyATM_cover(I,J)=a_QbyATM_cover(I,J)
 c     &      + a_QbyATMmult_cover(I,J,IT) * areaFracFactor(I,J,IT)
-c           r_QbyATM_cover(I,J)=r_QbyATM_cover(I,J) 
+c           r_QbyATM_cover(I,J)=r_QbyATM_cover(I,J)
 c     &      + r_QbyATMmult_cover(I,J,IT) * areaFracFactor(I,J,IT)
-c           a_QSWbyATM_cover(I,J)=a_QSWbyATM_cover(I,J) 
+c           a_QSWbyATM_cover(I,J)=a_QSWbyATM_cover(I,J)
 c     &      + a_QSWbyATMmult_cover(I,J,IT) * areaFracFactor(I,J,IT)
-c           r_FWbySublim(I,J)=r_FWbySublim(I,J) 
+c           r_FWbySublim(I,J)=r_FWbySublim(I,J)
 c     &      + r_FWbySublimMult(I,J,IT) * areaFracFactor(I,J,IT)
 cToM if fluxes in effective ice meters, i.e. ice volume per area, then
-           a_QbyATM_cover(I,J)=a_QbyATM_cover(I,J) 
+           a_QbyATM_cover(I,J)=a_QbyATM_cover(I,J)
      &      + a_QbyATMmult_cover(I,J,IT)
-           r_QbyATM_cover(I,J)=r_QbyATM_cover(I,J) 
+           r_QbyATM_cover(I,J)=r_QbyATM_cover(I,J)
      &      + r_QbyATMmult_cover(I,J,IT)
-           a_QSWbyATM_cover(I,J)=a_QSWbyATM_cover(I,J) 
+           a_QSWbyATM_cover(I,J)=a_QSWbyATM_cover(I,J)
      &      + a_QSWbyATMmult_cover(I,J,IT)
-           r_FWbySublim(I,J)=r_FWbySublim(I,J) 
+           r_FWbySublim(I,J)=r_FWbySublim(I,J)
      &      + r_FWbySublimMult(I,J,IT)
           ENDDO
          ENDDO
@@ -2448,13 +2448,13 @@ CADJ &                       key = iicekey, byte = isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
 cgf Unlike for evap and precip, the temperature of gained/lost
 C ocean liquid water due to melt/freeze of solid water cannot be chosen
-C arbitrarily to be e.g. the ocean SST. Indeed the present seaice model 
-C implies a constant ice temperature of 0degC. If melt/freeze water is exchanged 
-C at a different temperature, it leads to a loss of conservation in the 
-C ocean+ice system. While this is mostly a serious issue in the 
+C arbitrarily to be e.g. the ocean SST. Indeed the present seaice model
+C implies a constant ice temperature of 0degC. If melt/freeze water is exchanged
+C at a different temperature, it leads to a loss of conservation in the
+C ocean+ice system. While this is mostly a serious issue in the
 C real fresh water + non linear free surface framework, a mismatch
 C between ice and ocean boundary condition can result in all cases.
-C Below we therefore anticipate on external_forcing_surf.F 
+C Below we therefore anticipate on external_forcing_surf.F
 C to diagnoze and/or apply the correction to QNET.
         DO J=1,sNy
          DO I=1,sNx
@@ -2508,13 +2508,13 @@ CML according to wave-length) fluxes but not for "latent heat flux",
 CML since it does not contribute to heating the air.
 CML So this diagnostic is only good for heat budget calculations within
 CML the ice-ocean system.
-           SIatmQnt(I,J,bi,bj) = 
+           SIatmQnt(I,J,bi,bj) =
      &            maskC(I,J,kSurface,bi,bj)*convertHI2Q*(
 #ifndef SEAICE_GROWTH_LEGACY
      &            a_QSWbyATM_cover(I,J) +
 #endif /* SEAICE_GROWTH_LEGACY */
      &            a_QbyATM_cover(I,J) + a_QbyATM_open(I,J) )
-cgf 2) SItflux (analogous to tflux; includes advection by water 
+cgf 2) SItflux (analogous to tflux; includes advection by water
 C             exchanged between atmosphere and ocean+ice)
 C solid water going to atm, in precip units
            tmpscal1 = rhoConstFresh*maskC(I,J,kSurface,bi,bj)
@@ -2549,7 +2549,7 @@ C linFS, rain/evap get a special treatment (see external_forcing_surf.F).
            tmpscal2= ZERO
       ENDIF
            SItflux(I,J,bi,bj)=
-     &            SIatmQnt(I,J,bi,bj)-tmpscal1-tmpscal2     
+     &            SIatmQnt(I,J,bi,bj)-tmpscal1-tmpscal2
           ENDDO
          ENDDO
 
@@ -2591,7 +2591,7 @@ c and the flux leaving/entering the ocean+ice
      &     + a_FWbySublim(I,J) * SEAICE_rhoIce * recip_deltaTtherm
 
          ENDDO
-        ENDDO        
+        ENDDO
 
 #ifdef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
 C--
@@ -2669,14 +2669,14 @@ C ==============================================================
        IF ( balanceEmPmR ) THEN
         DO j=1,sNy
          DO i=1,sNx
-          FWFsiTile(bi,bj) = 
+          FWFsiTile(bi,bj) =
      &      FWFsiTile(bi,bj) + SIatmFW(i,j,bi,bj)
      &      * rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDIF
 c to translate global mean FWF adjustements (see below) we may need :
-       FWF2HFsiTile(bi,bj) = 0. _d 0       
+       FWF2HFsiTile(bi,bj) = 0. _d 0
        IF ( balanceEmPmR.AND.(temp_EvPrRn.EQ.UNSET_RL) ) THEN
         DO j=1,sNy
          DO i=1,sNx
@@ -2690,7 +2690,7 @@ c to translate global mean FWF adjustements (see below) we may need :
        IF ( balanceQnet ) THEN
         DO j=1,sNy
          DO i=1,sNx
-          HFsiTile(bi,bj) = 
+          HFsiTile(bi,bj) =
      &      HFsiTile(bi,bj) + SItflux(i,j,bi,bj)
      &      * rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
          ENDDO
@@ -2802,7 +2802,7 @@ CADJ STORE FWF2HFsiTile = comlev1, key=ikey_dynamics, kind=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
       FWFsiGlob=0. _d 0
       IF ( balanceEmPmR )
-     &   CALL GLOBAL_SUM_TILE_RL( FWFsiTile, FWFsiGlob, myThid )        
+     &   CALL GLOBAL_SUM_TILE_RL( FWFsiTile, FWFsiGlob, myThid )
       FWF2HFsiGlob=0. _d 0
       IF ( balanceEmPmR.AND.(temp_EvPrRn.EQ.UNSET_RL) ) THEN
          CALL GLOBAL_SUM_TILE_RL(FWF2HFsiTile, FWF2HFsiGlob, myThid)
@@ -2832,7 +2832,7 @@ c 3) balancing adjustments
          DO i=1-OLx,sNx+OLx
             empmr(i,j,bi,bj) = empmr(i,j,bi,bj) - tmpscal0
             SIatmFW(i,j,bi,bj) = SIatmFW(i,j,bi,bj) - tmpscal0
-c           adjust SItflux consistently       
+c           adjust SItflux consistently
             IF ( (temp_EvPrRn.NE.UNSET_RL).AND.
      &        useRealFreshWaterFlux.AND.(nonlinFreeSurf.NE.0) ) THEN
             tmpscal1=
