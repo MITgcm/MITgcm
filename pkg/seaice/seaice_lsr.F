@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.77 2012/11/09 14:03:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.78 2012/11/10 21:03:00 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -164,6 +164,7 @@ cph break artificial dependencies
           press(i,j,bi,bj)=0. _d 0
           zeta(i,j,bi,bj)=0. _d 0
           eta(i,j,bi,bj)=0. _d 0
+          etaZ(i,j,bi,bj)=0. _d 0
          ENDDO
         ENDDO
        ENDDO
