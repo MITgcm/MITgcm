@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.13 2012/10/22 21:14:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.14 2012/11/10 22:19:03 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -197,7 +197,7 @@ C- note(jmc): surf.Fluxes have not yet been computed when called @ nIter0
           ENDDO
          ENDDO
 #ifdef SEAICE_ITD
-	 DO k=1,nITD
+         DO k=1,nITD
           DO j=1,sNy
            DO i=1,sNx
             HEFFITDtave(i,j,k,bi,bj) =

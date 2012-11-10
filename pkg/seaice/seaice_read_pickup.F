@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.17 2012/10/22 21:14:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.18 2012/11/10 22:19:03 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -212,8 +212,8 @@ C--    continue with 2-D fields:
 #ifdef SEAICE_ITD
          CALL READ_MFLDS_3D_RL( 'siAREAn ', AREAITD,
      &                                   nj, fp, nITD, nIter0, myThid )
-	 IF ( nj.EQ.0 ) THEN
-C	 no multi-category fields available
+         IF ( nj.EQ.0 ) THEN
+C        no multi-category fields available
 C        -> read average fields ...
 #endif
          CALL READ_MFLDS_3D_RL( 'siAREA  ', AREA,
@@ -227,8 +227,8 @@ C        ... and redistribute over categories
 C            assuming a log-normal distribtuion
           CALL SEAICE_ITD_PICKUP( nIter0, myThid )
 C
-	 ELSE
-C	 multi-category fields available, continue reading
+         ELSE
+C        multi-category fields available, continue reading
           CALL READ_MFLDS_3D_RL( 'siHEFFn ', HEFFITD,
      &                                   nj, fp, nITD, nIter0, myThid )
           CALL READ_MFLDS_3D_RL( 'siHSNOWn ', HSNOWITD,
@@ -236,10 +236,10 @@ C	 multi-category fields available, continue reading
 C        update total ice area as well as mean ice and snow thickness
           DO bj=myByLo(myThid),myByHi(myThid)
            DO bi=myBxLo(myThid),myBxHi(myThid)
-	    CALL SEAICE_ITD_SUM( bi, bj, 1.0, nIter0, myThid )
+            CALL SEAICE_ITD_SUM( bi, bj, 1.0, nIter0, myThid )
            ENDDO
           ENDDO
-	 ENDIF
+         ENDIF
 #endif
 #ifdef SEAICE_VARIABLE_SALINITY
          CALL READ_MFLDS_3D_RL( 'siHSALT ', HSALT,
