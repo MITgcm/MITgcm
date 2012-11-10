@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1765 2012/11/09 22:51:48 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1766 2012/11/10 00:16:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - move AddMass common block from DYNVARS.h to FFIELDS.h; allow to read-in
+    time-constant addMass field from file (addMassFile);
+  - support for heating due to friction (and Kinetic Energy dissipation):
+    add option, run-time switch and 3-D field array + support code ; each pkg
+    or S/R can add heating contribution (if there is a sink of KE); the sum is
+    accounted for as a Temperature tendency term (EXTERNAL_FORCING_T).
 o pkg/seaice:
   - complete merge of ITD code into seaice_growth.F
     from MITgcm_contrib/torge/itd/code/
@@ -15,14 +22,14 @@ o pkg/seaice:
     + introduce global field etaZ
     + add different methods for computing etaZ, for now the old
       method (simple averages of eta to Z-points) is hardwired
-    + replace etaMeanZ by etaZ in seaice_lsr, seaice_calc_residual, 
+    + replace etaMeanZ by etaZ in seaice_lsr, seaice_calc_residual,
       seaice_preconditioner
   - simplify computations for SEAICE_ZETA_SMOOTHREG
-  - seaice_preconditioner: 
+  - seaice_preconditioner:
     + replace one remaining press by pressLoc (mistake)
     + adjust printing of residuals
   - improve I/O of diagnostics of JFNK in seaice_jfnk.F:
-    + add (SEAICE.h) and rename some counters (initiliased in 
+    + add (SEAICE.h) and rename some counters (initiliased in
       seaice_init_fixed.F)
     + add _BEGIN/END_MASTER (myThid)  around print statements
     + print total number of iterations and failures over SEAICE_monFreq
@@ -34,13 +41,13 @@ o pkg/seaice:
     (seaice_jfnk.F, seaice_fgmres.F)
   - seaice_calc_l/rhs.F: replace maskW/S by maskInW/S; this fixes
     a serious convergence problem when open boundaries are involved
-o pkg/ggl90: fix computation of control volumes for the case of 
+o pkg/ggl90: fix computation of control volumes for the case of
   ALLOW_GGL90_HORIZDIFF (probably not used very often): move control volumes
   up half a grid cell from C-centered to W-centered (pointed out by C. Eden)
 o pkg/seaice: simplify seaice_evp by avoiding use of extra fields u/vIceC
 o pkg/autodiff
   - Add inAdMode switch for SEAICEuseDYNAMICS:
-    SEAICEuseDYNAMICSinAdMode 
+    SEAICEuseDYNAMICSinAdMode
     (extend logic in ADAUTODIFF_INADMODE_SET)
 o pkg/seaice
   - Step 1 of merging ice-thickness distribution (ITD) code from
