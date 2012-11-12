@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.8 2012/11/09 14:11:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.9 2012/11/12 09:46:38 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -74,6 +74,7 @@ C     parameters to compute convergence criterion
 C     
       _RL     recip_deltaT
       LOGICAL JFNKconverged, krylovConverged
+      LOGICAL writeNow
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 C
 C     u/vIceRes :: residual of sea-ice momentum equations
@@ -307,8 +308,17 @@ C     Record failure
        ENDIF
       ENDIF
 C     Decide whether it is time to dump and reset the counter
-      IF ( DIFFERENT_MULTIPLE(SEAICE_monFreq,myTime+deltaTClock,
-     &     deltaTClock) ) THEN
+      writeNow = DIFFERENT_MULTIPLE(SEAICE_monFreq,
+     &     myTime+deltaTClock, deltaTClock) 
+#ifdef ALLOW_CAL
+      IF ( useCAL ) THEN
+       CALL CAL_TIME2DUMP( 
+     I      zeroRL, SEAICE_monFreq,  deltaTClock,
+     U      writeNow,
+     I      myTime+deltaTclock, myIter+1, myThid )
+      ENDIF
+#endif
+      IF ( writeNow ) THEN
        _BEGIN_MASTER( myThid )
        WRITE(msgBuf,'(A)') 
      &' // ======================================================='
