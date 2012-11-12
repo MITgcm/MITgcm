@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1766 2012/11/10 00:16:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1767 2012/11/12 15:48:35 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/aim_v23:
+  - implement heating from friction (bottom friction and stratospheric drag).
+o pkg/shap_filt:
+  - fix diagnostic "SHAP_dKE" (was 2 time smaller); implement heating from
+    dissipation but only for Shap_funct=2, active when addFrictionHeating=T.
 o model/src:
   - move AddMass common block from DYNVARS.h to FFIELDS.h; allow to read-in
     time-constant addMass field from file (addMassFile);
