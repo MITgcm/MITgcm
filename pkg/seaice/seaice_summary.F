@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.54 2012/10/22 20:12:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.55 2012/11/14 16:41:39 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -180,6 +180,10 @@ C--  Seaice-Dynamics parameters
      & ' /* mix free-drift sol. into LSR initial Guess */')
        CALL WRITE_0D_I ( SOLV_MAX_ITERS,    INDEX_NONE,
      & 'SOLV_MAX_ITERS    =', ' /* max. number of LSR solver steps */')
+       CALL WRITE_0D_RL( SEAICE_LSRrelaxU  ,INDEX_NONE,
+     & 'SEAICE_LSRrelaxU  =', ' /* LSR solver: relaxation parameter */')
+       CALL WRITE_0D_RL( SEAICE_LSRrelaxV  ,INDEX_NONE,
+     & 'SEAICE_LSRrelaxV  =', ' /* LSR solver: relaxation parameter */')
        CALL WRITE_0D_RL( LSR_ERROR         ,INDEX_NONE,
      & 'LSR_ERROR         =', ' /* sets accuracy of LSR solver */')
        CALL WRITE_0D_I ( SOLV_NCHECK,       INDEX_NONE,

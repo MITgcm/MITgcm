@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.78 2012/11/10 21:03:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.79 2012/11/14 16:41:39 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -79,7 +79,7 @@ C     i,j,bi,bj  :: Loop counters
       LOGICAL doIterate4u, doIterate4v
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      _RL WFAU, WFAV, WFAU1, WFAV1, WFAU2, WFAV2
+      _RL WFAU, WFAV, WFAU2, WFAV2
       _RL AA3, S1, S2, S1A, S2A
       _RL hFacM, hFacP
       _RL eplus, eminus
@@ -208,18 +208,14 @@ C--   introduce turning angles
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
 
 C SET SOME VALUES
-      WFAU1=0.95 _d 0
-      WFAV1=0.95 _d 0
+      WFAU=SEAICE_LSRrelaxU
+      WFAV=SEAICE_LSRrelaxV
       WFAU2=ZERO
       WFAV2=ZERO
-
-      S1A=0.80 _d 0
-      S2A=0.80 _d 0
-      WFAU=WFAU1
-      WFAV=WFAV1
-
       S1 = 0.
       S2 = 0.
+      S1A=0.80 _d 0
+      S2A=0.80 _d 0
 
       k = 1
 

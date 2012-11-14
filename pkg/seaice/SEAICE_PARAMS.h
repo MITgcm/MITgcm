@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.97 2012/10/22 21:14:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.98 2012/11/14 16:41:39 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -198,6 +198,7 @@ C
 C--   COMMON /SEAICE_PARM_RL/ Real valued parameters of sea ice model.
 C     SEAICE_deltaTtherm :: Seaice timestep for thermodynamic equations (s)
 C     SEAICE_deltaTdyn   :: Seaice timestep for dynamic solver          (s)
+C     SEAICE_LSRrelaxU/V :: relaxation parameter for LSR-solver: U/V-component
 C     SEAICE_deltaTevp   :: Seaice timestep for EVP solver              (s)
 C     SEAICE_elasticParm :: parameter that sets relaxation timescale
 C                           tau = SEAICE_elasticParm * SEAICE_deltaTdyn
@@ -300,6 +301,7 @@ C     SEAICE_tauAreaObsRelax :: Timescale of relaxation to observed
 C                               sea ice concentration (s), default=unset
 C
       _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn, SEAICE_deltaTevp
+      _RL SEAICE_LSRrelaxU, SEAICE_LSRrelaxV
       _RL SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq
       _RL SEAICE_initialHEFF
       _RL SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR
@@ -337,6 +339,7 @@ C
 
       COMMON /SEAICE_PARM_RL/
      &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
+     &    SEAICE_LSRrelaxU, SEAICE_LSRrelaxV,
      &    SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
      &    SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
      &    SEAICEpresH0,

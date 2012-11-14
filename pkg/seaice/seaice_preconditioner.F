@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.7 2012/11/09 15:20:27 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.8 2012/11/14 16:41:39 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -72,9 +72,8 @@ C     === Local variables ===
 C     i,j,bi,bj  :: Loop counters
 
       INTEGER i, j, m, bi, bj, j1, j2, im, jm
-      INTEGER ICOUNT1, ICOUNT2
+      INTEGER iCount
       INTEGER k
-      INTEGER SOLV_MAX_TMP
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       _RL WFAU, WFAV
@@ -151,10 +150,9 @@ C--   introduce turning angles
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
 
-C SET SOME VALUES
-      WFAU=0.95 _d 0
-      WFAV=0.95 _d 0
-
+C     copy relaxation parameters
+      WFAU=SEAICE_LSRrelaxU
+      WFAV=SEAICE_LSRrelaxV
 C
 C     Initialise
 C
@@ -464,12 +462,9 @@ C NOW DO ITERATION
 
 C ITERATION START -----------------------------------------------------
 
-      SOLV_MAX_TMP = SOLV_MAX_ITERS
+      iCount = SOLV_MAX_ITERS
 
-      ICOUNT1 = SOLV_MAX_TMP
-      ICOUNT2 = SOLV_MAX_TMP
-
-      DO m = 1, SOLV_MAX_TMP
+      DO m = 1, SOLV_MAX_ITERS
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -659,7 +654,7 @@ C--   Calculate final residual of the linearised system
         WRITE(standardMessageUnit,'(A,I4,A,I4,A,I6,1P2E16.8)')
      &       ' SEAICE_PRECONDITIONER (iter=',newtonIter,',',
      &       krylovIter, ') iters, U/VResid=', 
-     &       iCount1, residUend, residVend
+     &       iCount, residUend, residVend
         _END_MASTER( myThid )
       ENDIF
 #ifdef ALLOW_DEBUG
