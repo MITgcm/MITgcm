@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1767 2012/11/12 15:48:35 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1768 2012/11/14 16:43:38 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - turn the LSR-relaxation parameters WFAU/V into runtime parameters 
+    SEAICE_LSRrelaxU/V
 o pkg/aim_v23:
   - implement heating from friction (bottom friction and stratospheric drag).
 o pkg/shap_filt:
