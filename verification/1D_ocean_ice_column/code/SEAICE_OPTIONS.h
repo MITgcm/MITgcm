@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.15 2012/10/23 00:10:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.16 2012/11/15 20:12:02 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -43,6 +43,15 @@ C     Note: be aware of pickup_seaice.* compatibility issues when restarting
 C     a simulation with a different number of categories.
 #undef SEAICE_MULTICATEGORY
 
+C--   run with sea Ice Thickness Distribution (ITD);
+C     set number of categories (nITD) in SEAICE_SIZE.h
+#undef SEAICE_ITD
+
+C--   SEAICE_ITD replaces SEAICE_MULTICATEGORY
+#ifdef SEAICE_ITD
+#undef SEAICE_MULTICATEGORY
+#endif
+
 C--   Use the Old version of seaice_growth (close to cvs version 1.70)
 C     otherwise, use the merged version (with some of Ian Fenty s code)
 #undef SEAICE_GROWTH_LEGACY
@@ -83,12 +92,11 @@ C     enable EVP code by defining the following flag
 C--   When set use SEAICE_zetaMin and SEAICE_evpDampC to limit viscosities
 C     from below and above in seaice_evp: not necessary, and not recommended
 #  undef SEAICE_ALLOW_CLIPZETA
-# else /* not EVP */
+# endif /* SEAICE_ALLOW_EVP */
 C     regularize zeta to zmax with a smooth tanh-function instead
 C     of a min(zeta,zmax). This improves convergence of iterative
 C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
-#  undef SEAICE_ZETA_SMOOTHREG
-# endif /* SEAICE_ALLOW_EVP */
+# undef SEAICE_ZETA_SMOOTHREG
 C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
 # undef SEAICE_ALLOW_TEM
 #else /* not SEAICE_CGRID, but old B-grid */
@@ -124,15 +132,6 @@ C     SEAICE_CAP_SUBLIM is not needed as of now, but kept just in case.
 
 C--   Enable free drift code
 #undef SEAICE_ALLOW_FREEDRIFT
-
-C--   run with sea ice thickness distribution;
-C     set number of categories (nITD) in SEAICE_SIZE.h
-#undef SEAICE_ITD
-C
-C--   SEAICE_ITD replaces SEAICE_MULTICATEGORY
-#ifdef SEAICE_ITD
-#undef SEAICE_MULTICATEGORY
-#endif
 
 #endif /* ALLOW_SEAICE */
 #endif /* SEAICE_OPTIONS_H */
