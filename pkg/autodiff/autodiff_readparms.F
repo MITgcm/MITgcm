@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.8 2012/10/27 19:08:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.9 2012/11/15 18:11:03 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -19,10 +19,6 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "AUTODIFF_PARAMS.h"
-#ifdef ALLOW_SEAICE
-#include "SEAICE_SIZE.h"
-#include "SEAICE_PARAMS.h"
-#endif
 
 C     !INPUT PARAMETERS:
       INTEGER myThid
@@ -35,6 +31,7 @@ C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
+      INTEGER errCount
 
       NAMELIST /AUTODIFF_PARM01/
      &       dumpAdVarExch, mon_AdVarExch,
@@ -43,9 +40,10 @@ C     iUnit      :: Work variable for IO unit number
      &       useGMRediInAdMode, useSALT_PLUMEinAdMode,
      &       useSEAICEinAdMode,
      &       inAdExact,
-     &       turnFreeDriftInAdMode, SEAICEuseDYNAMICSinAdMode
+     &       SEAICEuseFREEDRIFTswitchInAd, SEAICEuseDYNAMICSswitchInAd
 
       _BEGIN_MASTER(myThid)
+      errCount = 0
 
 C--   Default values for AUTODIFF
       dumpAdVarExch      = 2
@@ -61,10 +59,10 @@ C--   default : write one file per record
       useGGL90inAdMode   = .TRUE.
       useSALT_PLUMEinAdMode = .TRUE.
       inAdExact          = .TRUE.
-C--
+
 C-- pkg/seaice related switches
-      SEAICEuseDYNAMICSinAdMode = .TRUE.
-      turnFreeDriftInAdMode     = .FALSE.
+      SEAICEuseFREEDRIFTswitchInAd = .FALSE.
+      SEAICEuseDYNAMICSswitchInAd  = .FALSE.
 
       WRITE(msgBuf,'(A)') 'AUTODIFF_READPARMS: opening data.autodiff'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -98,25 +96,15 @@ C     store value of usePKG as it will be reset in S/R ADAUTODIFF_INADMODE_UNSET
       useKPPinFwdMode    = useKPP
       useGMRediInFwdMode = useGMRedi
       useSEAICEinFwdMode = useSEAICE
-      useGGL90inFwdMode   = useGGL90
+      useGGL90inFwdMode  = useGGL90
       useSALT_PLUMEinFwdMode = useSALT_PLUME
-#ifdef ALLOW_SEAICE
-C- Note: should re-visit how to turn on/off pkg internal-params in adjoint mode
-C  This will not work for PKGs which load their params AFTER this S/R is called
-C     (currently, it is OK for SEAICE but not for all PKGs !)
-      SEAICEuseDYNAMICSinFwdMode = SEAICEuseDYNAMICS
-#endif
 
 C     store value of usePKG as it will be set in S/R ADAUTODIFF_INADMODE_SET
       useKPPinAdMode    = useKPPinAdMode    .AND. useKPP
       useGMRediInAdMode = useGMRediInAdMode .AND. useGMRedi
       useSEAICEinAdMode = useSEAICEinAdMode .AND. useSEAICE
-      useGGL90inAdMode    = useGGL90inAdMode    .AND. useGGL90
+      useGGL90inAdMode  = useGGL90inAdMode  .AND. useGGL90
       useSALT_PLUMEinAdMode = useSALT_PLUMEinAdMode .AND. useSALT_PLUME
-#ifdef ALLOW_SEAICE
-      SEAICEuseDYNAMICSinAdMode = SEAICEuseDYNAMICSinAdMode
-     &                             .AND. SEAICEuseDYNAMICS
-#endif
 
 C--   Print out some kee parameters :
       WRITE(msgBuf,'(A)') '// ==================================='
@@ -142,12 +130,12 @@ C--   Print out some kee parameters :
      &   'useSALT_PLUMEinAdMode =',
      &   ' /* use SALT_PLUME in adjoint mode */')
 #ifdef ALLOW_SEAICE
-       CALL WRITE_0D_L( SEAICEuseDYNAMICSinAdMode, INDEX_NONE,
-     &  'SEAICEuseDYNAMICSinAdMode =',
-     &  ' /* use SEAICE dynamics in adjoint mode */')
-       CALL WRITE_0D_L( turnFreeDriftInAdMode, INDEX_NONE,
-     &  'turnFreeDriftInAdMode=',
-     &             ' /* turn On/Off Free-Drift in adj/fwd mode */')
+       CALL WRITE_0D_L( SEAICEuseDYNAMICSswitchInAd, INDEX_NONE,
+     &  'SEAICEuseDYNAMICSswitchInAd =',
+     &            ' /* switch On/Off SEAICE Dyn in AD mode */')
+       CALL WRITE_0D_L( SEAICEuseFREEDRIFTswitchInAd, INDEX_NONE,
+     &  'SEAICEuseFREEDRIFTswitchInAd=',
+     &            ' /* switch On/Off Free-Drift in AD mode */')
 #endif /* ALLOW_SEAICE */
        CALL WRITE_0D_I( dumpAdVarExch, INDEX_NONE,
      &  'dumpAdVarExch =', ' /* control adexch before dumpinp */')
@@ -158,9 +146,31 @@ C--   Print out some kee parameters :
      &                    SQUEEZE_RIGHT, myThid )
 
 C--   Check parameters :
+#ifdef ALLOW_SEAICE
+      IF ( SEAICEuseFREEDRIFTswitchInAd .AND. .NOT.useSEAICE ) THEN
+        WRITE(msgBuf,'(2A)') 'AUTODIFF_READPARMS: ',
+     &  'SEAICEuseFREEDRIFTswitchInAd not usable without useSEAICE'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( SEAICEuseDYNAMICSswitchInAd .AND. .NOT.useSEAICE ) THEN
+        WRITE(msgBuf,'(2A)') 'AUTODIFF_READPARMS: ',
+     &  'SEAICEuseDYNAMICSswitchInAd not usable without useSEAICE'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#else /* ALLOW_SEAICE */
+      SEAICEuseFREEDRIFTswitchInAd = .FALSE.
+      SEAICEuseDYNAMICSswitchInAd  = .FALSE.
+#endif /* ALLOW_SEAICE */
 
-C- Note: would be safer to add a stop if both turnFreeDriftInAdMode and
-C     SEAICEuseFREEDRIFT are set to true ; but better in seaice_check than here
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &   'AUTODIFF_READPARMS: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R AUTODIFF_READPARMS'
+      ENDIF
 
       _END_MASTER(myThid)
 
