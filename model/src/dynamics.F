@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.162 2012/03/18 22:19:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.163 2012/11/15 15:55:42 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -96,6 +96,7 @@ C     == Global variables ===
 #  include "PTRACERS_FIELDS.h"
 # endif
 # ifdef ALLOW_OBCS
+#include "OBCS_PARAMS.h"
 #  include "OBCS_FIELDS.h"
 #  ifdef ALLOW_PTRACERS
 #   include "OBCS_PTRACERS.h"

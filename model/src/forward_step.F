@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.211 2012/10/21 04:28:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.212 2012/11/15 15:55:42 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -125,6 +125,7 @@ C     == Global variables ==
 #  include "GAD_SOM_VARS.h"
 # endif
 # ifdef ALLOW_OBCS
+#  include "OBCS_PARAMS.h"
 #  include "OBCS_FIELDS.h"
 #  include "OBCS_SEAICE.h"
 #  ifdef ALLOW_PTRACERS

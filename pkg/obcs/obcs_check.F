@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.30 2012/09/20 19:04:46 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.31 2012/11/15 15:55:42 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -90,6 +90,10 @@ C--   Print OBCS set-up summary:
      &   'OBCS_monitorFreq =', ' /* monitor output frequency [s] */')
       CALL WRITE_0D_I( OBCS_monSelect, INDEX_NONE, 'OBCS_monSelect =',
      &                  ' /* select group of variables to monitor */')
+      CALL WRITE_0D_L( useOBCStides, INDEX_NONE,
+     &   'useOBCStides =', ' /* apply tidal forcing through OB */')
+      CALL WRITE_1D_RL( tidalPeriod, tidalComponents, INDEX_I,
+     &   'tidalPeriod = ', ' /* (s) */')
       ln = ILNBLNK(insideOBmaskFile)
       IF ( ln.GT.0 ) THEN
         CALL WRITE_0D_C( insideOBmaskFile, ln, INDEX_NONE,
@@ -362,6 +366,18 @@ CML       ENDIF
         errCount = errCount + 1
       ENDIF
 #endif /* ALLOW_OBCS_BALANCE */
+
+#ifndef ALLOW_OBCS_TIDES
+      IF ( useOBCStides ) THEN
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: useOBCStides requires to define'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: ALLOW_OBCS_TIDES in "OBCS_OPTIONS.h"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* ALLOW_OBCS_TIDES */
 
       IF ( .NOT.nonHydrostatic .AND.
      &         ( OBNwFile.NE.' ' .OR. OBSwFile.NE.' ' .OR.

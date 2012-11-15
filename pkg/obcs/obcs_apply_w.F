@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_w.F,v 1.9 2012/09/18 20:09:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_w.F,v 1.10 2012/11/15 15:55:42 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -24,6 +24,7 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "OBCS_PARAMS.h"
 #include "OBCS_GRID.h"
 #include "OBCS_FIELDS.h"
 

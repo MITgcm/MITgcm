@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/code/OBCS_OPTIONS.h,v 1.7 2012/09/20 19:04:47 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/code/OBCS_OPTIONS.h,v 1.8 2012/11/15 15:55:42 dimitri Exp $
 C $Name:  $
 
 C CPP options file for OBCS package
@@ -36,6 +36,9 @@ C Include hooks to sponge layer treatment of pkg/seaice variables
 
 C balance barotropic velocity
 #undef ALLOW_OBCS_BALANCE
+
+C add tidal contributions to normal OB flow
+#define ALLOW_OBCS_TIDES
 
 C Use older implementation of obcs in seaice-dynamics
 C note: most of the "experimental" options listed below have not yet

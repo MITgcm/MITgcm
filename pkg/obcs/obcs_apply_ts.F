@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_ts.F,v 1.10 2012/09/18 20:09:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_ts.F,v 1.11 2012/11/15 15:55:42 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -23,9 +23,7 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_OBCS_STEVENS
 #include "OBCS_PARAMS.h"
-#endif /* ALLOW_OBCS_STEVENS */
 #include "OBCS_GRID.h"
 #include "OBCS_FIELDS.h"
 

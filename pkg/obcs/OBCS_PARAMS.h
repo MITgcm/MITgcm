@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_PARAMS.h,v 1.3 2012/03/09 20:13:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_PARAMS.h,v 1.4 2012/11/15 15:55:42 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -18,6 +18,10 @@ C     |   statement that depends on OBCS options ; therefore
 C     |   can be safely included without OBCS_OPTIONS.h
 C     *==========================================================*
 CEOP
+
+C tidalComponents  :: number of tidal components to be applied
+      INTEGER tidalComponents
+      PARAMETER ( tidalComponents = 10 )
 
 C--   COMMON /OBC_PARM_I/ OBCS integer-type parameter
 C OBCS_u1_adv_T    :: >0: use 1rst O. upwind adv-scheme @ OB (=1: only if outflow)
@@ -47,6 +51,7 @@ C                     computations following Stevens (1990), default = true
 C useOBCSsponge    :: turns on sponge layer along boundary (def=false)
 C useOBCSbalance   :: balance the volume flux through boundary
 C                     at every time step
+C useOBCStides     :: modify OB normal flow to add tidal forcing
 C useOBCSprescribe :: read boundary conditions from a file
 C                      (overrides Orlanski and other boundary values)
 C OBCSprintDiags   :: print boundary values to STDOUT (def=true)
@@ -59,7 +64,7 @@ C                     across boundaries (def=true)
      & useStevensNorth,useStevensSouth,
      & useStevensEast,useStevensWest,
      & useStevensPhaseVel, useStevensAdvection,
-     & useOBCSsponge, useOBCSbalance, useOBCSprescribe,
+     & useOBCSsponge, useOBCSbalance, useOBCStides, useOBCSprescribe,
      & OBCSprintDiags,
      & OBCSfixTopo
       LOGICAL useOrlanskiNorth
@@ -74,6 +79,7 @@ C                     across boundaries (def=true)
       LOGICAL useStevensAdvection
       LOGICAL useOBCSsponge
       LOGICAL useOBCSbalance
+      LOGICAL useOBCStides
       LOGICAL useOBCSprescribe
       LOGICAL OBCSprintDiags
       LOGICAL OBCSfixTopo
@@ -89,11 +95,13 @@ C                            layer (inner); relaxation time scales in-between
 C                            are linearly interpolated from these values
 C T/SrelaxStevens         :: relaxation time scale (in seconds) for T/S-points
 C                            for Stevens boundary conditions
+C tidalPeriod             :: tidal period (s)
       COMMON /OBC_PARM_R/
      &     OBCS_balanceFacN, OBCS_balanceFacS,
      &     OBCS_balanceFacE, OBCS_balanceFacW,
      &     OBCS_uvApplyFac,
      &     OBCS_monitorFreq,
+     &     tidalPeriod,
      & Urelaxobcsinner,Urelaxobcsbound,
      & Vrelaxobcsinner,Vrelaxobcsbound,
      & TrelaxStevens, SrelaxStevens
@@ -101,6 +109,7 @@ C                            for Stevens boundary conditions
       _RL OBCS_balanceFacE, OBCS_balanceFacW
       _RL OBCS_uvApplyFac
       _RL OBCS_monitorFreq
+      _RL tidalPeriod(tidalComponents)
       _RS Urelaxobcsinner
       _RS Urelaxobcsbound
       _RS Vrelaxobcsinner
@@ -110,13 +119,12 @@ C                            for Stevens boundary conditions
 
 C--   COMMON /OBC_FILES/ OBCS character-type parameter
 C insideOBmaskFile   :: File to specify Inside OB region mask (zero beyond OB).
-C OB[N,S,E,W][u,v,t,s,a,h,sn,sl,uice,vice]File :: Files with boundary conditions,
-C                                                 the letter combinations mean:
+C OB[N,S,E,W][u,v,w,t,s,eta,am,ph]File :: Files with boundary conditions,
+C                                         the letter combinations mean:
 C                     N/S/E/W   :: northern/southern/eastern/western boundary
-C                     u/v/t/s   :: ocean u/v velocities, temperature/salinity
-C                     a/h       :: sea ice concentration/effective thickness
-C                     sn/sl     :: effective snow thickness/sea ice salinity
-C                     uice/vice :: sea ice u/v drift velocities
+C                     u/v/w/t/s :: ocean u/v/w velocities, temperature/salinity
+C                     eta       :: sea surface height
+C                     am/ph     :: tidal amplitude (m/s) / phase (s)
       COMMON /OBC_FILES/
      &      OBNuFile,  OBSuFile,  OBEuFile,  OBWuFile,
      &      OBNvFile,  OBSvFile,  OBEvFile,  OBWvFile,
@@ -124,6 +132,8 @@ C                     uice/vice :: sea ice u/v drift velocities
      &      OBNtFile,  OBStFile,  OBEtFile,  OBWtFile,
      &      OBNsFile,  OBSsFile,  OBEsFile,  OBWsFile,
      &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
+     &      OBNamFile, OBSamFile, OBEamFile, OBWamFile,
+     &      OBNphFile, OBSphFile, OBEphFile, OBWphFile,
      &      insideOBmaskFile
       CHARACTER*(MAX_LEN_FNAM)
      &      OBNuFile,  OBSuFile,  OBEuFile,  OBWuFile,
@@ -132,6 +142,8 @@ C                     uice/vice :: sea ice u/v drift velocities
      &      OBNtFile,  OBStFile,  OBEtFile,  OBWtFile,
      &      OBNsFile,  OBSsFile,  OBEsFile,  OBWsFile,
      &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
+     &      OBNamFile, OBSamFile, OBEamFile, OBWamFile,
+     &      OBNphFile, OBSphFile, OBEphFile, OBWphFile,
      &      insideOBmaskFile
 
 #endif /* ALLOW_OBCS */

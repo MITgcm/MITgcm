@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.139 2012/10/03 02:35:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.140 2012/11/15 15:55:42 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -100,6 +100,7 @@ c They provide the fields to be stored.
 #  include "DIC_COST.h"
 # endif
 #  ifdef ALLOW_OBCS
+#   include "OBCS_PARAMS.h"
 #   include "OBCS_FIELDS.h"
 #   include "OBCS_SEAICE.h"
 #   ifdef ALLOW_PTRACERS

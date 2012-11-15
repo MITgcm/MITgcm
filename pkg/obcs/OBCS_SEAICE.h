@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_SEAICE.h,v 1.3 2012/09/25 16:39:20 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_SEAICE.h,v 1.4 2012/11/15 15:55:42 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -40,10 +40,9 @@ C                            are linearly interpolated from these values
       _RS SLrelaxobcsinner, SLrelaxobcsbound
       _RS SNrelaxobcsinner, SNrelaxobcsbound
 
-C OB[N,S,E,W][u,v,t,s,a,h,sn,sl,uice,vice]File :: Files with boundary conditions,
-C                                                 the letter combinations mean:
+C OB[N,S,E,W][a,h,sn,sl,uice,vice]File :: Files with boundary conditions,
+C                                         the letter combinations mean:
 C                     N/S/E/W   :: northern/southern/eastern/western boundary
-C                     u/v/t/s   :: ocean u/v velocities, temperature/salinity
 C                     a/h       :: sea ice concentration/effective thickness
 C                     sn/sl     :: effective snow thickness/sea ice salinity
 C                     uice/vice :: sea ice u/v drift velocities
