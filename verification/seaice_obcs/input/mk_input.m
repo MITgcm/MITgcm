@@ -2,6 +2,9 @@
 % the pkg/seaice + pkg/obcs verification experiment
 % by carving them out of ../lab_sea/input.salt_plume
 
+% readbin.m, writebin.m, and myint2str.m
+% are in MITgcm/utils/matlab/cs_grid/read_cs
+
 % preamble
 nx=20; ny=16; nz=23; nt=12; ix=8:17; iy=4:11;
 pn='../../lab_sea/tr_run.salt_plume/';
