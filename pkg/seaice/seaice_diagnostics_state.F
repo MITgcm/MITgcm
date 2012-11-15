@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.25 2012/03/05 15:21:44 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.26 2012/11/15 00:05:14 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -22,15 +22,10 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "FFIELDS.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 #include "SEAICE_TRACER.h"
-#ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
-# include "EXF_FIELDS.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
@@ -101,11 +96,11 @@ C     division by zero is not possible
        WRITE(diagName,'(A4,I2.2,A2)') 'SItr',iTracer,'  '
        if (SItrMate(iTracer).EQ.'HEFF') then
         CALL DIAGNOSTICS_FRACT_FILL(
-     I       SItracer(1-OLx,1-OLy,1,1,iTracer), HEFF, 
+     I       SItracer(1-OLx,1-OLy,1,1,iTracer), HEFF,
      I       ONE, 1, diagName, 0, 1, 0, 1, 1, myThid )
        else
         CALL DIAGNOSTICS_FRACT_FILL(
-     I       SItracer(1-OLx,1-OLy,1,1,iTracer), AREA, 
+     I       SItracer(1-OLx,1-OLy,1,1,iTracer), AREA,
      I       ONE, 1, diagName, 0, 1, 0, 1, 1, myThid )
        endif
       ENDDO
