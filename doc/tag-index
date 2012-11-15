@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1769 2012/11/15 15:37:25 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1770 2012/11/15 16:04:34 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  - adding tidal velocity forcing capability to obcs
+    for usage example, see verification/seaice_obcs/input.tides
 o pkg/seaice:
   - turn the LSR-relaxation parameters WFAU/V into runtime parameters 
     SEAICE_LSRrelaxU/V
