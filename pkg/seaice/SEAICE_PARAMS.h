@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.98 2012/11/14 16:41:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.99 2012/11/15 15:36:13 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -133,6 +133,11 @@ C                        :: 3=from predicted melt by ATM
 C     SEAICE_areaGainFormula :: selects formula for ice cover gain from open water growth
 C                        :: 1=from growth by ATM
 C                        :: 2=from predicted growth by ATM
+C     SEAICEetaZmethod   :: determines how shear-viscosity eta is computed at
+C                           Z-points
+C                           0=simple averaging from C-points (default and old)
+C                           1=linear averaging of strain rates to Z-points
+C                           2=averaging of squares of strain rates
 C     SEAICE_multDim     :: number of ice categories
 C     SEAICE_debugPointI :: I,J index for seaice-specific debuggin
 C     SEAICE_debugPointJ
@@ -150,6 +155,7 @@ C
       INTEGER SEAICEadjMODE
       INTEGER SEAICE_areaLossFormula
       INTEGER SEAICE_areaGainFormula
+      INTEGER SEAICEetaZmethod
       INTEGER SEAICE_multDim
       INTEGER SEAICE_debugPointI
       INTEGER SEAICE_debugPointJ
@@ -170,6 +176,7 @@ C
      &     SEAICE_areaLossFormula,
      &     SEAICE_areaGainFormula,
      &     SEAICE_multDim,
+     &     SEAICEetaZmethod,
      &     SEAICE_debugPointI,
      &     SEAICE_debugPointJ
 

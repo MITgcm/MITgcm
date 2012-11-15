@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.17 2012/11/09 22:19:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.18 2012/11/15 15:36:39 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -78,11 +78,8 @@ C     ecm2          - inverse of square of eccentricity of yield curve
 #ifdef SEAICE_ZETA_SMOOTHREG
       _RL argTmp
 #endif /* SEAICE_ZETA_SMOOTHREG */
-      INTEGER etaZmethod
 CEOP      
 
-C     this will become a runtime parameter
-      etaZmethod = 0
 C--   FIRST SET UP BASIC CONSTANTS
       k=1
       ecm2=0. _d 0
@@ -92,7 +89,7 @@ C
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C     need to do this beforehand for easier vectorization after
 C     TAFization
-        IF ( etaZmethod .LT. 2 ) THEN
+        IF ( SEAICEetaZmethod .LT. 2 ) THEN
          DO j=1-Oly+1,sNy+Oly-1
           DO i=1-Olx+1,sNx+Olx-1
            tmp = 0.25 *
@@ -101,7 +98,7 @@ C     TAFization
            e12Csqr(i,j) = tmp*tmp
           ENDDO
          ENDDO
-        ELSEIF ( etaZmethod .EQ. 2 ) THEN
+        ELSEIF ( SEAICEetaZmethod .EQ. 2 ) THEN
          DO j=1-Oly+1,sNy+Oly-1
           DO i=1-Olx+1,sNx+Olx-1
            e12Csqr(i,j) = 0.25 * 
@@ -158,7 +155,7 @@ C     set viscosities to zero at hEffM flow pts
         ENDIF
 #endif /* SEAICE_ALLOW_TEM */
 C     compute eta at Z-points
-        IF ( etaZmethod .eq. 0 ) THEN
+        IF ( SEAICEetaZmethod .eq. 0 ) THEN
 C     This is the old and stupid way
          DO j=1-Oly+1,sNy+Oly-1
           DO i=1-Olx+1,sNx+Olx-1
@@ -170,7 +167,7 @@ C     This is the old and stupid way
           ENDDO
          ENDDO
         ELSE
-         IF ( etaZmethod .eq. 1 ) THEN
+         IF ( SEAICEetaZmethod .eq. 1 ) THEN
           DO j=1-Oly+1,sNy+Oly-1
            DO i=1-Olx+1,sNx+Olx-1
             sumNorm  = maskC(I,J,  k,bi,bj)+maskC(I-1,J,  k,bi,bj)
@@ -192,7 +189,7 @@ C     This is the old and stupid way
      &           + e11(i-1,j-1,bi,bj)*e22(i-1,j-1,bi,bj) )
            ENDDO
           ENDDO
-         ELSEIF ( etaZmethod .eq. 2 ) THEN
+         ELSEIF ( SEAICEetaZmethod .eq. 2 ) THEN
           DO j=1-Oly+1,sNy+Oly-1
            DO i=1-Olx+1,sNx+Olx-1
             sumNorm  = maskC(I,J,  k,bi,bj)+maskC(I-1,J,  k,bi,bj)
@@ -259,7 +256,7 @@ CML          ENDDO
 CML         ENDDO
         ENDIF
 #endif /* SEAICE_ALLOW_TEM */
-C     etaZmethod
+C     SEAICEetaZmethod
        ENDIF
 C     free-slip means no lateral stress, which is best achieved masking
 C     eta on vorticity(=Z)-points; from now on we only need to worry

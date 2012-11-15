@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.129 2012/11/14 16:41:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.130 2012/11/15 15:36:21 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -205,6 +205,7 @@ c     SEAICEuseFluxForm  = .FALSE.
       SEAICE_no_slip     = .FALSE.
       SEAICE_clipVelocities = .FALSE.
       SEAICE_maskRHS     = .FALSE.
+      SEAICEetaZmethod   = 0
       SEAICEadvScheme    = 2
       SEAICEadvSchArea   = UNSET_I
       SEAICEadvSchHeff   = UNSET_I

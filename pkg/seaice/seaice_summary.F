@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.55 2012/11/14 16:41:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.56 2012/11/15 15:36:28 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -154,6 +154,8 @@ C--  Seaice-Dynamics parameters
      & 'SEAICEpresPow0 =', ' /* exponent for Heff<SEAICEpresH0 */')
        CALL WRITE_0D_I ( SEAICEpresPow1,    INDEX_NONE,
      & 'SEAICEpresPow1 =', ' /* exponent for Heff>SEAICEpresH0 */')
+       CALL WRITE_0D_I ( SEAICEetaZmethod,  INDEX_NONE,
+     & 'SEAICEetaZmethod =', ' /* method computing eta at Z-point */')
       CALL WRITE_0D_RL( SEAICE_zetaMin  ,INDEX_NONE,
      & 'SEAICE_zetaMin    =', ' /* lower bound for viscosity */')
       CALL WRITE_0D_RL( SEAICE_eccen,INDEX_NONE,'SEAICE_eccen    =',
