@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.182 2012/11/10 22:19:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.183 2012/11/15 00:03:40 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -94,8 +94,12 @@ C     number of surface interface layer
 C     IT :: ice thickness category index (MULTICATEGORIES and ITD code)
       INTEGER IT
 C     msgBuf      :: Informational/error message buffer
+#ifdef ALLOW_BALANCE_FLUXES
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#elif (defined (SEAICE_DEBUG))
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*12 msgBufForm
+#endif
 C     constants
       _RL pFac
       _RL tempFrz, ICE2SNOW, SNOW2ICE
@@ -743,7 +747,7 @@ C    and update AREA, HEFF, and HSNOW
 #endif
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , myThid)
-#endif
+#endif /* SEAICE_DEBUG */
 
 #if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_MODIFY_GROWTH_ADJ)
 C        end SEAICEadjMODE.EQ.0 statement:
@@ -1457,7 +1461,7 @@ c ToM<<< debug seaice_growth
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , myThid)
 c ToM>>>
-#endif
+#endif /* SEAICE_DEBUG */
 
 C compute ice thickness tendency due to ice-ocean interaction
 C ===========================================================
@@ -1519,7 +1523,7 @@ c ToM<<< debug seaice_growth
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , myThid)
 c ToM>>>
-#endif
+#endif /* SEAICE_DEBUG */
 
 C compute snow melt tendency due to snow-atmosphere interaction
 C ==================================================================
@@ -1579,7 +1583,7 @@ c ToM<<< debug seaice_growth
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , myThid)
 c ToM>>>
-#endif
+#endif /* SEAICE_DEBUG */
 
 C compute ice thickness tendency due to the atmosphere
 C ====================================================
@@ -1674,7 +1678,7 @@ c ToM<<< debug seaice_growth
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , myThid)
 c ToM>>>
-#endif
+#endif /* SEAICE_DEBUG */
 
 C add snow precipitation to HSNOW.
 C =================================================
@@ -1751,7 +1755,7 @@ c ToM<<< debug seaice_growth
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , myThid)
 c ToM>>>
-#endif
+#endif /* SEAICE_DEBUG */
 
 C compute snow melt due to heat available from ocean.
 C =================================================================
@@ -1815,7 +1819,7 @@ c ToM<<< debug seaice_growth
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , myThid)
 c ToM>>>
-#endif
+#endif /* SEAICE_DEBUG */
 
 C gain of new ice over open water
 C ===============================
@@ -1898,7 +1902,7 @@ c ToM<<< debug seaice_growth
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , myThid)
 c ToM>>>
-#endif
+#endif /* SEAICE_DEBUG */
 
 C convert snow to ice if submerged.
 C =================================
@@ -1958,7 +1962,7 @@ c ToM<<< debug seaice_growth
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , myThid)
 c ToM>>>
-#endif
+#endif /* SEAICE_DEBUG */
 #ifdef SEAICE_ITD
 C apply ice and snow thickness changes
 C =================================================================
@@ -2855,7 +2859,7 @@ c           no qnet or tflux adjustement is needed
       ENDDO
       IF ( balancePrintMean ) THEN
        _BEGIN_MASTER( myThid )
-       WRITE(msgbuf,'(a,a,e24.17)') 'rm Global mean of ',
+       WRITE(msgBuf,'(a,a,e24.17)') 'rm Global mean of ',
      &      'SIatmFW = ', tmpscal0
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT , myThid)
@@ -2876,14 +2880,14 @@ c           no qnet or tflux adjustement is needed
       ENDDO
       IF ( balancePrintMean ) THEN
        _BEGIN_MASTER( myThid )
-       WRITE(msgbuf,'(a,a,e24.17)') 'rm Global mean of ',
+       WRITE(msgBuf,'(a,a,e24.17)') 'rm Global mean of ',
      &      'SItflux = ', tmpscal2
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT , myThid)
        _END_MASTER( myThid )
       ENDIF
       ENDIF
-#endif /* */
+#endif /* ALLOW_BALANCE_FLUXES */
 
 #ifdef ALLOW_DIAGNOSTICS
 c these diags need to be done outside of the bi,bj loop so that
