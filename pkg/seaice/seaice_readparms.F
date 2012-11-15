@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.130 2012/11/15 15:36:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.131 2012/11/15 15:48:28 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -87,7 +87,7 @@ C--   SEAICE parameters
      & SEAICEadvHeff, SEAICEadvArea, SEAICEadvSnow,
      & SEAICEadvSalt, SEAICEadvAge,
      & SEAICE_clipVelocities, SEAICE_maskRHS, SEAICE_no_slip,
-     & LAD, IMAX_TICE, postSolvTempIter,
+     & SEAICEetaZmethod, LAD, IMAX_TICE, postSolvTempIter,
      & SEAICEadvScheme, SEAICEadvSchArea,
      & SEAICEadvSchHeff, SEAICEadvSchSnow,
      & SEAICEadvSchSalt, SEAICEadvSchAge,
