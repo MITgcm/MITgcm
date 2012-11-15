@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.67 2012/10/28 10:25:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.68 2012/11/15 20:10:03 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -43,6 +43,15 @@ C     Note: be aware of pickup_seaice.* compatibility issues when restarting
 C     a simulation with a different number of categories.
 c#define SEAICE_MULTICATEGORY
 
+C--   run with sea Ice Thickness Distribution (ITD);
+C     set number of categories (nITD) in SEAICE_SIZE.h
+#undef SEAICE_ITD
+
+C--   SEAICE_ITD replaces SEAICE_MULTICATEGORY
+#ifdef SEAICE_ITD
+#undef SEAICE_MULTICATEGORY
+#endif
+
 C--   Use the Old version of seaice_growth (close to cvs version 1.70)
 C     otherwise, use the merged version (with some of Ian Fenty s code)
 #undef SEAICE_GROWTH_LEGACY
@@ -83,7 +92,7 @@ C--   When set use SEAICE_zetaMin and SEAICE_evpDampC to limit viscosities
 C     from below and above in seaice_evp: not necessary, and not recommended
 #  undef SEAICE_ALLOW_CLIPZETA
 # endif /* SEAICE_ALLOW_EVP */
-C     regularize zeta to zmax with a smooth tanh-function instead 
+C     regularize zeta to zmax with a smooth tanh-function instead
 C     of a min(zeta,zmax). This improves convergence of iterative
 C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
 # undef SEAICE_ZETA_SMOOTHREG
@@ -122,17 +131,6 @@ C     SEAICE_CAP_SUBLIM is not needed as of now, but kept just in case.
 
 C--   Enable free drift code
 #undef SEAICE_ALLOW_FREEDRIFT
-
-CToM<<<
-C--   run with sea ice thickness distribution;
-C     set number of categories (nITD) in SIZE.h
-#undef SEAICE_ITD
-C
-C--   SEAICE_ITD replaces SEAICE_MULTICATEGORY
-#ifdef SEAICE_ITD
-#undef SEAICE_MULTICATEGORY
-#endif
-C>>>ToM
 
 #endif /* ALLOW_SEAICE */
 #endif /* SEAICE_OPTIONS_H */
