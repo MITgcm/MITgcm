@@ -39,28 +39,28 @@ for ob={'N','S','E','W'}
             end
         end
 
-        % specify (0.2 m/s, 4 hr) for South boundary tidal component 2
+        % specify (0.1 m/s, 4 hr) for South boundary tidal component 2
         if strcmp(ob,'S')
             if strcmp(fld,'am')
-                tmp(:,2) = tmp(:,2) + 0.2;
+                tmp(:,2) = tmp(:,2) + 0.1;
             else
                 tmp(:,2) = tmp(:,2) + 4 * 3600;
             end
         end
 
-        % specify (0.3 m/s, 6 hr) for East boundary tidal component 3
+        % specify (0.1 m/s, 6 hr) for East boundary tidal component 3
         if strcmp(ob,'E')
             if strcmp(fld,'am')
-                tmp(:,3) = tmp(:,3) + 0.3;
+                tmp(:,3) = tmp(:,3) + 0.1;
             else
                 tmp(:,3) = tmp(:,3) + 6 * 3600;
             end
         end
 
-        % specify (0.4 m/s, 8 hr) for West boundary tidal component 4
+        % specify (0.1 m/s, 8 hr) for West boundary tidal component 4
         if strcmp(ob,'W')
             if strcmp(fld,'am')
-                tmp(:,4) = tmp(:,4) + 0.4;
+                tmp(:,4) = tmp(:,4) + 0.1;
             else
                 tmp(:,4) = tmp(:,4) + 8 * 3600;
             end

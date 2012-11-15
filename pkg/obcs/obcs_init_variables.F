@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.43 2012/11/15 15:55:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.44 2012/11/15 20:46:52 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -155,55 +155,6 @@ C     == Local variables ==
 #endif /* ALLOW_OBCS_WEST */
          ENDDO
         ENDDO
-
-#ifdef ALLOW_OBCS_TIDES
-        DO k=1,tidalComponents
-         DO i=1-Olx,sNx+Olx
-# ifdef ALLOW_OBCS_NORTH
-          OBNam (i,k,bi,bj)=0. _d 0
-          OBNph (i,k,bi,bj)=0. _d 0
-# endif
-# ifdef ALLOW_OBCS_SOUTH
-          OBSam (i,k,bi,bj)=0. _d 0
-          OBSph (i,k,bi,bj)=0. _d 0
-# endif
-         ENDDO
-         DO j=1-Oly,sNy+Oly
-# ifdef ALLOW_OBCS_EAST
-          OBEam (i,k,bi,bj)=0. _d 0
-          OBEph (i,k,bi,bj)=0. _d 0
-# endif
-# ifdef ALLOW_OBCS_WEST
-          OBWam (i,k,bi,bj)=0. _d 0
-          OBWph (i,k,bi,bj)=0. _d 0
-# endif
-         ENDDO
-        ENDDO
-# ifdef ALLOW_OBCS_NORTH
-        IF ( OBNamFile .NE. ' '  ) CALL READ_REC_XZ_RL
-     &       (OBNamFile,fp,tidalComponents,OBNam,1,nIter0,myThid )
-        IF ( OBNphFile .NE. ' '  ) CALL READ_REC_XZ_RL
-     &       (OBNphFile,fp,tidalComponents,OBNph,1,nIter0,myThid )
-# endif
-# ifdef ALLOW_OBCS_SOUTH
-        IF ( OBSamFile .NE. ' '  ) CALL READ_REC_XZ_RL
-     &       (OBSamFile,fp,tidalComponents,OBSam,1,nIter0,myThid )
-        IF ( OBSphFile .NE. ' '  ) CALL READ_REC_XZ_RL
-     &       (OBSphFile,fp,tidalComponents,OBSph,1,nIter0,myThid )
-# endif
-# ifdef ALLOW_OBCS_EAST
-        IF ( OBEamFile .NE. ' '  ) CALL READ_REC_YZ_RL
-     &       (OBEamFile,fp,tidalComponents,OBEam,1,nIter0,myThid )
-        IF ( OBEphFile .NE. ' '  ) CALL READ_REC_YZ_RL
-     &       (OBEphFile,fp,tidalComponents,OBEph,1,nIter0,myThid )
-# endif
-# ifdef ALLOW_OBCS_WEST
-        IF ( OBWamFile .NE. ' '  ) CALL READ_REC_YZ_RL
-     &       (OBWamFile,fp,tidalComponents,OBWam,1,nIter0,myThid )
-        IF ( OBWphFile .NE. ' '  ) CALL READ_REC_YZ_RL
-     &       (OBWphFile,fp,tidalComponents,OBWph,1,nIter0,myThid )
-# endif
-#endif /* ALLOW_OBCS_TIDES */
 
 #ifdef ALLOW_NONHYDROSTATIC
         DO k=1,Nr
@@ -404,6 +355,61 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
        ENDDO
       ENDDO
+
+#ifdef ALLOW_OBCS_TIDES
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k=1,tidalComponents
+         DO i=1-Olx,sNx+Olx
+# ifdef ALLOW_OBCS_NORTH
+          OBNam (i,k,bi,bj)=0. _d 0
+          OBNph (i,k,bi,bj)=0. _d 0
+# endif
+# ifdef ALLOW_OBCS_SOUTH
+          OBSam (i,k,bi,bj)=0. _d 0
+          OBSph (i,k,bi,bj)=0. _d 0
+# endif
+         ENDDO
+         DO j=1-Oly,sNy+Oly
+# ifdef ALLOW_OBCS_EAST
+          OBEam (j,k,bi,bj)=0. _d 0
+          OBEph (j,k,bi,bj)=0. _d 0
+# endif
+# ifdef ALLOW_OBCS_WEST
+          OBWam (j,k,bi,bj)=0. _d 0
+          OBWph (j,k,bi,bj)=0. _d 0
+# endif
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      _BARRIER
+# ifdef ALLOW_OBCS_NORTH
+      IF ( OBNamFile .NE. ' '  ) CALL READ_REC_XZ_RL
+     &     (OBNamFile,fp,tidalComponents,OBNam,1,nIter0,myThid )
+      IF ( OBNphFile .NE. ' '  ) CALL READ_REC_XZ_RL
+     &     (OBNphFile,fp,tidalComponents,OBNph,1,nIter0,myThid )
+# endif
+# ifdef ALLOW_OBCS_SOUTH
+      IF ( OBSamFile .NE. ' '  ) CALL READ_REC_XZ_RL
+     &     (OBSamFile,fp,tidalComponents,OBSam,1,nIter0,myThid )
+      IF ( OBSphFile .NE. ' '  ) CALL READ_REC_XZ_RL
+     &     (OBSphFile,fp,tidalComponents,OBSph,1,nIter0,myThid )
+# endif
+# ifdef ALLOW_OBCS_EAST
+      IF ( OBEamFile .NE. ' '  ) CALL READ_REC_YZ_RL
+     &     (OBEamFile,fp,tidalComponents,OBEam,1,nIter0,myThid )
+      IF ( OBEphFile .NE. ' '  ) CALL READ_REC_YZ_RL
+     &     (OBEphFile,fp,tidalComponents,OBEph,1,nIter0,myThid )
+# endif
+# ifdef ALLOW_OBCS_WEST
+      IF ( OBWamFile .NE. ' '  ) CALL READ_REC_YZ_RL
+     &     (OBWamFile,fp,tidalComponents,OBWam,1,nIter0,myThid )
+      IF ( OBWphFile .NE. ' '  ) CALL READ_REC_YZ_RL
+     &     (OBWphFile,fp,tidalComponents,OBWph,1,nIter0,myThid )
+# endif
+      _BARRIER
+#endif /* ALLOW_OBCS_TIDES */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Only needed for Orlanski:

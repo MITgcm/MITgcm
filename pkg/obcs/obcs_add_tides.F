@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_add_tides.F,v 1.1 2012/11/15 15:55:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_add_tides.F,v 1.2 2012/11/15 20:46:52 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -35,7 +35,7 @@ C     !INPUT/OUTPUT PARAMETERS:
 CEOP
 
 #ifdef ALLOW_OBCS
-#ifdef ALLOW_OBCS_TIDES_TEST
+#ifdef ALLOW_OBCS_TIDES
 
 C     !FUNCTIONS:
 
@@ -116,8 +116,9 @@ C--   Add tidal currents:
           DO i=1-OLx,sNx+OLx
            jB = OB_Js(i,bi,bj)
            IF ( jB.NE.OB_indexNone ) THEN
-            OBSv(i,k,bi,bj) = OBSv(i,k,bi,bj) +
-     &             maskS(i,1+jB,k,bi,bj)* OBSam(i,td,bi,bj) *
+            DO td=1,tidalComponents
+             OBSv(i,k,bi,bj) = OBSv(i,k,bi,bj) +
+     &              maskS(i,1+jB,k,bi,bj)* OBSam(i,td,bi,bj) *
      &              COS( 2.D0 * PI * (myTime-OBSph(i,td,bi,bj)) /
      &                   tidalPeriod(td) )
             ENDDO
