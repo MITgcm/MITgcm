@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.131 2012/11/15 15:48:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.132 2012/11/15 18:13:07 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -35,6 +35,9 @@ C     === Global variables ===
 #ifdef ALLOW_EXF
 # include "EXF_CONSTANTS.h"
 #endif /* ALLOW_EXF */
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_PARAMS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -252,14 +255,14 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
 CToM<<<
 C     Coefficients used to calculate sea ice thickness category limits
 C     after Lipscomb et al. (2001, JGR), Equ. 22
-C     choose between 
+C     choose between
 C      - original parameters of Lipscomb et al. (2001):
 C        c1=3.0/N, c2=15*c1, c3=3.0
 C      - and a higher resolution of thin end of ITD:
 C        c1=1.5/N, c2=42*c1, c3=3.3
-      Hlimit_c1          = 3.0 
+      Hlimit_c1          = 3.0
       Hlimit_c2          = 15.
-      Hlimit_c3          = 3.0 
+      Hlimit_c3          = 3.0
 C>>>ToM
 #endif
       SEAICE_rhoIce      = 0.91   _d +03
@@ -680,8 +683,8 @@ C     to set SEAICE_mcPheePiston once drF is known)
 
 #ifdef SEAICE_ITD
 CToM<<<
-C     The ice thickness distribution module can only be used with 
-C      package seaice calling 
+C     The ice thickness distribution module can only be used with
+C      package seaice calling
 C      SEAICE_ADVDIFF and
 C      SEAICE_GROWTH, i.e. needs usePW79thermodynamics = .TRUE.
       useTHSice = .FALSE.
@@ -965,6 +968,12 @@ C-    Set Output type flags :
      &       .AND. SEAICE_mon_mnc  ) SEAICE_mon_stdio  = .FALSE.
       ENDIF
 #endif
+
+C-    store value of logical flag which might be changed in AD mode
+#ifdef ALLOW_AUTODIFF
+      SEAICEuseFREEDRIFTinFwdMode = SEAICEuseFREEDRIFT
+      SEAICEuseDYNAMICSinFwdMode  = SEAICEuseDYNAMICS
+#endif /* ALLOW_AUTODIFF */
 
 C     Check the consitency of a few parameters
       IF ( SEAICE_emissivity .LT. 1. _d -04 ) THEN
