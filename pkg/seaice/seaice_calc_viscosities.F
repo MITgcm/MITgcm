@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.18 2012/11/15 15:36:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.19 2012/11/15 16:12:18 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -176,28 +176,6 @@ C     This is the old and stupid way
             pressZ(i,j)  = sumNorm * 
      &           ( press0(i,j,  bi,bj) + press0(i-1,j,  bi,bj)
      &           + press0(i,j-1,bi,bj) + press0(i-1,j-1,bi,bj) )
-            e11Zsqr(i,j) = sumNorm * 
-     &           ( e11(i,j,  bi,bj)**2 + e11(i-1,j,  bi,bj)**2 
-     &           + e11(i,j-1,bi,bj)**2 + e11(i-1,j-1,bi,bj)**2 )
-            e22Zsqr(i,j) = sumNorm *
-     &           ( e22(i,j,  bi,bj)**2 + e22(i-1,j,  bi,bj)**2 
-     &           + e22(i,j-1,bi,bj)**2 + e22(i-1,j-1,bi,bj)**2 )
-            e11e22Z(i,j)  = sumNorm *
-     &           ( e11(i,  j,  bi,bj)*e22(i,  j,  bi,bj)
-     &           + e11(i-1,j,  bi,bj)*e22(i-1,j,  bi,bj)
-     &           + e11(i,  j-1,bi,bj)*e22(i  ,j-1,bi,bj)
-     &           + e11(i-1,j-1,bi,bj)*e22(i-1,j-1,bi,bj) )
-           ENDDO
-          ENDDO
-         ELSEIF ( SEAICEetaZmethod .eq. 2 ) THEN
-          DO j=1-Oly+1,sNy+Oly-1
-           DO i=1-Olx+1,sNx+Olx-1
-            sumNorm  = maskC(I,J,  k,bi,bj)+maskC(I-1,J,  k,bi,bj)
-     &               + maskC(I,J-1,k,bi,bj)+maskC(I-1,J-1,k,bi,bj)
-            IF ( sumNorm.GT.0. _d 0 ) sumNorm = 1. _d 0 / sumNorm
-            pressZ(i,j)  = sumNorm * 
-     &           ( press0(i,j,  bi,bj) + press0(i-1,j,  bi,bj)
-     &           + press0(i,j-1,bi,bj) + press0(i-1,j-1,bi,bj) )
             e11Zsqr(i,j) =  ( sumNorm * 
      &           ( e11(i,j,  bi,bj) + e11(i-1,j,  bi,bj) 
      &           + e11(i,j-1,bi,bj) + e11(i-1,j-1,bi,bj) ) )**2
@@ -209,6 +187,28 @@ C     This is the old and stupid way
      &           + e11(i,  j-1,bi,bj) + e11(i-1,j-1,bi,bj) ) *
      &           ( e22(i,  j,  bi,bj) + e22(i-1,j,  bi,bj)
      &           + e22(i  ,j-1,bi,bj) * e22(i-1,j-1,bi,bj) )
+           ENDDO
+          ENDDO
+         ELSEIF ( SEAICEetaZmethod .eq. 2 ) THEN
+          DO j=1-Oly+1,sNy+Oly-1
+           DO i=1-Olx+1,sNx+Olx-1
+            sumNorm  = maskC(I,J,  k,bi,bj)+maskC(I-1,J,  k,bi,bj)
+     &               + maskC(I,J-1,k,bi,bj)+maskC(I-1,J-1,k,bi,bj)
+            IF ( sumNorm.GT.0. _d 0 ) sumNorm = 1. _d 0 / sumNorm
+            pressZ(i,j)  = sumNorm * 
+     &           ( press0(i,j,  bi,bj) + press0(i-1,j,  bi,bj)
+     &           + press0(i,j-1,bi,bj) + press0(i-1,j-1,bi,bj) )
+            e11Zsqr(i,j) = sumNorm * 
+     &           ( e11(i,j,  bi,bj)**2 + e11(i-1,j,  bi,bj)**2 
+     &           + e11(i,j-1,bi,bj)**2 + e11(i-1,j-1,bi,bj)**2 )
+            e22Zsqr(i,j) = sumNorm *
+     &           ( e22(i,j,  bi,bj)**2 + e22(i-1,j,  bi,bj)**2 
+     &           + e22(i,j-1,bi,bj)**2 + e22(i-1,j-1,bi,bj)**2 )
+            e11e22Z(i,j)  = sumNorm *
+     &           ( e11(i,  j,  bi,bj)*e22(i,  j,  bi,bj)
+     &           + e11(i-1,j,  bi,bj)*e22(i-1,j,  bi,bj)
+     &           + e11(i,  j-1,bi,bj)*e22(i  ,j-1,bi,bj)
+     &           + e11(i-1,j-1,bi,bj)*e22(i-1,j-1,bi,bj) )
            ENDDO
           ENDDO
          ENDIF
