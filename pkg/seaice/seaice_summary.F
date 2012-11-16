@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.56 2012/11/15 15:36:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.57 2012/11/16 22:52:56 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -18,6 +18,7 @@ C     !USES:
 C     == global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #ifdef ALLOW_SITRACER
@@ -50,40 +51,31 @@ C     == end of interface ==
       ioUnit = standardMessageUnit
 
       WRITE(msgBuf,'(A)')
-     &' '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
-      WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'// Seaice configuration (SEAICE_PARM01) >>> START <<<'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
-      WRITE(msgBuf,'(A)')
-     &' '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
 
 C--  Time-stepping related param.
 
-      WRITE(msgBuf,'(A)')
-     &' '
+      WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'   Seaice time stepping configuration   > START <  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'   ----------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
 
       CALL WRITE_0D_RL( SEAICE_deltaTtherm,INDEX_NONE,
      & 'SEAICE_deltaTtherm=', ' /* thermodynamic timestep */')
@@ -96,18 +88,17 @@ C--  Time-stepping related param.
       CALL WRITE_0D_L ( SEAICErestoreUnderIce, INDEX_NONE,
      & 'SEAICErestoreUnderIce  =', ' /* restore T and S under ice */')
 
-      WRITE(msgBuf,'(A)')
-     &' '
+      WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'   Seaice dynamics configuration   > START <  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'   ------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
 
 C--  Seaice-Dynamics parameters
       CALL WRITE_0D_L ( SEAICEuseDYNAMICS, INDEX_NONE,
@@ -116,7 +107,7 @@ C--  Seaice-Dynamics parameters
       IF (.NOT.SEAICEuseDYNAMICS) THEN
       WRITE(msgBuf,'(A)') '   pkg/seaice dynamics is OFF  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       ELSE
 
 #ifdef SEAICE_CGRID
@@ -208,19 +199,81 @@ C--  Seaice-Dynamics parameters
 C     end if SEAICEuseDYNAMICS bloc
       ENDIF
 
-C--  Thermodynamics parameters
-      WRITE(msgBuf,'(A)')
-     &' '
+      WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
-     &'   Seaice thermodynamics configuration   > START <  '
+     &'   Seaice advection diffusion config,   > START <  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'   -----------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
+      IF ( useThSIce ) THEN
+      WRITE(msgBuf,'(A)')
+     &'   ==> advection diffusion done in pkg ThSIce'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      ELSE
+
+      CALL WRITE_0D_L ( SEAICEadvHeff, INDEX_NONE,
+     & 'SEAICEadvHeff =', ' /* advect effective ice thickness */')
+      CALL WRITE_0D_L ( SEAICEadvArea, INDEX_NONE,
+     & 'SEAICEadvArea =', ' /* advect fractional ice area */')
+      CALL WRITE_0D_L ( SEAICEadvSnow, INDEX_NONE,
+     & 'SEAICEadvSnow =', ' /* advect snow layer together with ice */')
+#ifdef SEAICE_VARIABLE_SALINITY
+      CALL WRITE_0D_L ( SEAICEadvSalt, INDEX_NONE,
+     & 'SEAICEadvSalt =', ' /* advect salinity together with ice */')
+#endif
+      CALL WRITE_0D_I ( SEAICEadvScheme,   INDEX_NONE,
+     & 'SEAICEadvScheme   =', ' /* advection scheme for ice */')
+      IF ( SEAICEadvScheme .EQ. 2 )
+     & CALL WRITE_0D_L ( SEAICEuseFluxForm,   INDEX_NONE,
+     & 'SEAICEuseFluxForm =', ' /* advection in FV flux form */')
+      IF ( SEAICEadvArea )
+     &CALL WRITE_0D_I ( SEAICEadvSchArea,   INDEX_NONE,
+     & 'SEAICEadvSchArea   =', ' /* advection scheme for area */')
+      IF ( SEAICEadvHeff )
+     &CALL WRITE_0D_I ( SEAICEadvSchHeff,   INDEX_NONE,
+     & 'SEAICEadvSchHeff   =', ' /* advection scheme for thickness */')
+      IF ( SEAICEadvSnow )
+     &CALL WRITE_0D_I ( SEAICEadvSchSnow,   INDEX_NONE,
+     & 'SEAICEadvSchSnow   =', ' /* advection scheme for snow */')
+#ifdef SEAICE_VARIABLE_SALINITY
+      IF ( SEAICEadvSalt )
+     &CALL WRITE_0D_I ( SEAICEadvSchSalt,   INDEX_NONE,
+     & 'SEAICEadvSchSalt   =', ' /* advection scheme for salt */')
+#endif
+      CALL WRITE_0D_RL( SEAICEdiffKhArea,   INDEX_NONE,
+     & 'SEAICEdiffKhArea   =', ' /* diffusivity (m^2/s) for area */')
+      CALL WRITE_0D_RL( SEAICEdiffKhHeff,   INDEX_NONE,
+     & 'SEAICEdiffKhHeff   =', ' /* diffusivity (m^2/s) for heff */')
+      CALL WRITE_0D_RL( SEAICEdiffKhSnow,   INDEX_NONE,
+     & 'SEAICEdiffKhSnow   =', ' /* diffusivity (m^2/s) for snow */')
+      IF ( SEAICEadvSalt )
+     &CALL WRITE_0D_RL( SEAICEdiffKhSalt,   INDEX_NONE,
+     & 'SEAICEdiffKhSalt   =', ' /* diffusivity (m^2/s) for salt */')
+      CALL WRITE_0D_RL( DIFF1, INDEX_NONE, 'DIFF1             =',
+     &                  ' /* parameter used in advect.F [m/s] */')
+
+C     end if useThSIce bloc
+      ENDIF
+
+
+C--  Thermodynamics parameters
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &'   Seaice thermodynamics configuration   > START <  '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &'   -----------------------------------------------'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 C- note: air and seaice (+ snow ?) density are used in both dynamics & thermo
       CALL WRITE_0D_RL( SEAICE_rhoIce     ,INDEX_NONE,
      & 'SEAICE_rhoIce     =', ' /* density of sea ice (kg/m3) */')
@@ -234,7 +287,7 @@ C- note: air and seaice (+ snow ?) density are used in both dynamics & thermo
       IF (.NOT.usePW79thermodynamics) THEN
       WRITE(msgBuf,'(A)') '   pkg/seaice thermodynamics is OFF  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       ELSE
 
       CALL WRITE_0D_RL( SEAICE_lhEvap     ,INDEX_NONE,
@@ -304,7 +357,7 @@ c
       WRITE(msgBuf,'(A)')
      &'   Sea ice has a variable salinity such that '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_RL( SEAICE_saltFrac, INDEX_NONE,
      & 'SEAICE_saltFrac =',
      & ' /* fraction of ocn salinity in new ice */')
@@ -320,92 +373,33 @@ c
       WRITE(msgBuf,'(A,A)')
      &     'MAX_HEFF has no effect because SEAICE_CAP_HEFF is undefined'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
 #endif /* SEAICE_CAP_HEFF */
       CALL WRITE_0D_RL( MAX_HEFF          ,INDEX_NONE,
      & 'MAX_HEFF          =', ' /* maximum ice thickness */')
 
-      WRITE(msgBuf,'(A)')
-     &' '
+      WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
-      WRITE(msgBuf,'(A)')
-     &'   Seaice advection diffusion config,   > START <  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
-      WRITE(msgBuf,'(A)')
-     &'   -----------------------------------------------'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
-
-      CALL WRITE_0D_L ( SEAICEadvHeff, INDEX_NONE,
-     & 'SEAICEadvHeff =', ' /* advect effective ice thickness */')
-      CALL WRITE_0D_L ( SEAICEadvArea, INDEX_NONE,
-     & 'SEAICEadvArea =', ' /* advect fractional ice area */')
-      CALL WRITE_0D_L ( SEAICEadvSnow, INDEX_NONE,
-     & 'SEAICEadvSnow =', ' /* advect snow layer together with ice */')
-#ifdef SEAICE_VARIABLE_SALINITY
-      CALL WRITE_0D_L ( SEAICEadvSalt, INDEX_NONE,
-     & 'SEAICEadvSalt =', ' /* advect salinity together with ice */')
-#endif
-      CALL WRITE_0D_I ( SEAICEadvScheme,   INDEX_NONE,
-     & 'SEAICEadvScheme   =', ' /* advection scheme for ice */')
-      IF ( SEAICEadvScheme .EQ. 2 )
-     & CALL WRITE_0D_L ( SEAICEuseFluxForm,   INDEX_NONE,
-     & 'SEAICEuseFluxForm =', ' /* advection in FV flux form */')
-      IF ( SEAICEadvArea )
-     &CALL WRITE_0D_I ( SEAICEadvSchArea,   INDEX_NONE,
-     & 'SEAICEadvSchArea   =', ' /* advection scheme for area */')
-      IF ( SEAICEadvHeff )
-     &CALL WRITE_0D_I ( SEAICEadvSchHeff,   INDEX_NONE,
-     & 'SEAICEadvSchHeff   =', ' /* advection scheme for thickness */')
-      IF ( SEAICEadvSnow )
-     &CALL WRITE_0D_I ( SEAICEadvSchSnow,   INDEX_NONE,
-     & 'SEAICEadvSchSnow   =', ' /* advection scheme for snow */')
-#ifdef SEAICE_VARIABLE_SALINITY
-      IF ( SEAICEadvSalt )
-     &CALL WRITE_0D_I ( SEAICEadvSchSalt,   INDEX_NONE,
-     & 'SEAICEadvSchSalt   =', ' /* advection scheme for salt */')
-#endif
-      CALL WRITE_0D_RL( SEAICEdiffKhArea,   INDEX_NONE,
-     & 'SEAICEdiffKhArea   =', ' /* diffusivity (m^2/s) for area */')
-      CALL WRITE_0D_RL( SEAICEdiffKhHeff,   INDEX_NONE,
-     & 'SEAICEdiffKhHeff   =', ' /* diffusivity (m^2/s) for heff */')
-      CALL WRITE_0D_RL( SEAICEdiffKhSnow,   INDEX_NONE,
-     & 'SEAICEdiffKhSnow   =', ' /* diffusivity (m^2/s) for snow */')
-      IF ( SEAICEadvSalt )
-     &CALL WRITE_0D_RL( SEAICEdiffKhSalt,   INDEX_NONE,
-     & 'SEAICEdiffKhSalt   =', ' /* diffusivity (m^2/s) for salt */')
-      CALL WRITE_0D_RL( DIFF1, INDEX_NONE, 'DIFF1             =',
-     &                  ' /* parameter used in advect.F [m/s] */')
-
-      WRITE(msgBuf,'(A)')
-     &' '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'   Seaice air-sea fluxes configuration,   > START <  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'   -----------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
 
       CALL WRITE_0D_L ( SEAICEheatConsFix,  INDEX_NONE,
      & 'SEAICEheatConsFix  =',
      & ' /* accound for ocn<->seaice advect. heat flux */')
-CToM<<<
 #ifdef SEAICE_ITD
       CALL WRITE_0D_I (SEAICE_multDim,INDEX_NONE,'nITD              ='
      & , ' /* number of ice thickness categories */')
 #else
-CToM>>>      
       CALL WRITE_0D_I (SEAICE_multDim,INDEX_NONE,'SEAICE_multDim    ='
      & , ' /* number of ice categories (1 or 7) */')
-CToM<<<
 #endif
-CToM>>>
       CALL WRITE_0D_I ( IMAX_TICE,         INDEX_NONE,
      & 'IMAX_TICE         =', ' /* iterations for ice surface temp */')
       CALL WRITE_0D_I ( postSolvTempIter,  INDEX_NONE,
@@ -466,18 +460,17 @@ CToM>>>
 C     end if usePW79thermodynamics bloc
       ENDIF
 
-      WRITE(msgBuf,'(A)')
-     &' '
+      WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'   Seaice initialization and IO config.,   > START <  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'   -------------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
 
 C--  Initial Condition/Input related param.
       CALL WRITE_0D_RL( SEAICE_initialHEFF,INDEX_NONE,
@@ -530,7 +523,7 @@ C--  Output related param.
       WRITE(msgBuf,'(A,I3,A)') '== SItracer no. ',iTracer,
      &' is in use and defined as'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
        CALL WRITE_0D_C ( SItrMate(iTracer), -1, INDEX_NONE,
      & '  -- SItrMate =',' /* tracer of HEFF or AREA */')
        CALL WRITE_0D_C ( SItrName(iTracer), -1, INDEX_NONE,
@@ -556,18 +549,17 @@ C--  Output related param.
       ENDDO
 #endif /* ALLOW_SITRACER */
 
-      WRITE(msgBuf,'(A)')
-     &' '
+      WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'   Seaice regularization numbers,   > START <  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'   -----------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
 
       CALL WRITE_0D_RL( SEAICE_EPS        ,INDEX_NONE,
      & 'SEAICE_EPS        =', ' /* reduce derivative singularities */')
@@ -580,19 +572,24 @@ C--  Output related param.
       CALL WRITE_0D_RL( SEAICE_area_floor        ,INDEX_NONE,
      & 'SEAICE_area_floor =', ' /* reduce derivative singularities */')
 
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'// Seaice configuration (SEAICE_PARM01) >>> END <<<'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
-      WRITE(msgBuf,'(A)')
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
       _END_MASTER(myThid)
 
