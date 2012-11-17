@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.244 2012/10/10 22:24:59 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.245 2012/11/17 20:04:10 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -907,9 +907,9 @@ check_netcdf_libs()  {
       program fgennc
 #include "netcdf.inc"
 EOF
-    if test ! "x$MPI" = x ; then
-	echo '#include "mpif.h"' >> genmake_tnc.F
-    fi
+   #if test ! "x$MPI" = x ; then
+   #	echo '#include "mpif.h"' >> genmake_tnc.F
+   #fi
     cat <<EOF >> genmake_tnc.F
       integer iret, ncid, xid
       iret = nf_create('genmake_tnc.nc', NF_CLOBBER, ncid)
