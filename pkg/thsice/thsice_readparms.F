@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.18 2012/08/01 18:20:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.19 2012/11/21 01:53:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -62,7 +62,7 @@ C--   Th-Sea-ICE parameter
 
       NAMELIST /THSICE_PARM01/
      &     startIceModel, stepFwd_oceMxL, thSIce_calc_albNIR,
-     &     thSIce_deltaT, thSIce_dtTemp,
+     &     thSIce_skipThermo, thSIce_deltaT, thSIce_dtTemp,
      &     ocean_deltaT, tauRelax_MxL, tauRelax_MxL_salt,
      &     hMxL_default, sMxL_default, vMxL_default,
      &     thSIce_diffK, thSIceAdvScheme, stressReduction,
@@ -129,10 +129,11 @@ C--   Default values (constants)
 
 C--   Default values (parameters)
       stepFwd_oceMxL  = .FALSE.
-      thSIce_calc_albNIR  = .FALSE.
+      thSIce_skipThermo  = .FALSE.
+      thSIce_calc_albNIR = .FALSE.
       startIceModel   = 0
       thSIce_deltaT   = dTtracerLev(1)
-      thSIce_dtTemp  = UNSET_RL
+      thSIce_dtTemp   = UNSET_RL
       ocean_deltaT    = dTtracerLev(1)
       tauRelax_MxL    = 0. _d 0
       tauRelax_MxL_salt = UNSET_RL
@@ -296,6 +297,7 @@ c     OPEN(iUnit,file='thsice_check_params',status='unknown')
       WRITE(iUnit,fmtR) 'ThSI:', 'hThickIce   =', hThickIce
       WRITE(iUnit,fmtR) 'ThSI:', 'hNewIceMax  =', hNewIceMax
       WRITE(iUnit,fmtR) 'ThSI:','stressReduction   =',stressReduction
+      WRITE(iUnit,fmtL) 'ThSI:','thSIce_skipThermo =',thSIce_skipThermo
       WRITE(iUnit,fmtI) 'ThSI:','thSIceAdvScheme   =',thSIceAdvScheme
       WRITE(iUnit,fmtI) 'ThSI:','thSIceBalanceAtmFW=',thSIceBalanceAtmFW
       WRITE(iUnit,fmtR) 'ThSI:','thSIce_diffK      =',thSIce_diffK

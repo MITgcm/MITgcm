@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.16 2012/08/01 18:20:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.17 2012/11/21 01:53:34 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -138,6 +138,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   COMMON / THSICE_PAR_L / ice model (logical) parameters
 C     stepFwd_oceMxL        :: step forward mixed-layer T & S (slab-ocean)
+C     thSIce_skipThermo     :: by-pass seaice thermodynamics
 C     thSIce_calc_albNIR    :: calculate Near Infra-Red Albedo
 C     thSIce_tave_mdsio     :: write TimeAverage output using MDSIO
 C     thSIce_snapshot_mdsio :: write snap-shot output   using MDSIO
@@ -149,7 +150,7 @@ C     thSIce_pickup_read_mnc    :: pickup read w/ MNC
 C     thSIce_pickup_write_mnc   :: pickup write w/ MNC
 C     thSIce_pickup_write_mdsio :: pickup write w/ MDSIO
       COMMON / THSICE_PAR_L /
-     &     stepFwd_oceMxL,
+     &     stepFwd_oceMxL, thSIce_skipThermo,
      &     thSIce_calc_albNIR,
      &     thSIce_tave_mdsio, thSIce_snapshot_mdsio, thSIce_mon_stdio,
      &     thSIce_tave_mnc,   thSIce_snapshot_mnc,   thSIce_mon_mnc,
@@ -158,6 +159,7 @@ C     thSIce_pickup_write_mdsio :: pickup write w/ MDSIO
      &     thSIce_pickup_write_mnc
 
       LOGICAL stepFwd_oceMxL
+      LOGICAL thSIce_skipThermo
       LOGICAL thSIce_calc_albNIR
       LOGICAL thSIce_tave_mdsio, thSIce_snapshot_mdsio, thSIce_mon_stdio
       LOGICAL thSIce_tave_mnc,   thSIce_snapshot_mnc,   thSIce_mon_mnc
