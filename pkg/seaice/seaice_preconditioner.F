@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.8 2012/11/14 16:41:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.9 2012/11/23 15:53:48 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -124,7 +124,6 @@ C     auxillary fields
       _RL vTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL COSWAT
       _RL SINWAT
-      _RL massFac
       _RL coriFac
       _RL fricFac
       LOGICAL printResidual
@@ -139,8 +138,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       massU = -1. _d 0
       massV = -1. _d 0
 
-C     massFac should generally be zero
-      massFac = 0. _d 0
 C     convergence is affected with coriFac = fricFac = 1
       coriFac = 0. _d 0
       fricFac = coriFac
@@ -294,22 +291,6 @@ C     and the symmetric drag term; must be done after normalizing
          ENDDO
         ENDDO
 
-        IF ( printResidual ) THEN
-C     set up right-hand side now (will be redone in each iteration)
-         DO j=1,sNy
-          DO i=1,sNx
-           rhsU(I,J,bi,bj) = rhsU0(I,J,bi,bj)
-     &          +seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
-     &          *duIce(i,j,bi,bj)*massFac
-          ENDDO
-         ENDDO
-         CALL PRECOND_RHSU (
-     I        zetaMinusEta, etaPlusZeta, etaZpre, dvIce, pressPre,
-     I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
-     O        rhsU,
-     I        bi,bj,myThid ) 
-        ENDIF
-
 #ifndef OBCS_UVICE_OLD
 C--     prevent tri-diagonal solver to modify OB values:
         DO J=1,sNy
@@ -320,7 +301,6 @@ C--     prevent tri-diagonal solver to modify OB values:
             CU(I,J,bi,bj) = ZERO
             uRt1(I,J,bi,bj) = ZERO
             uRt2(I,J,bi,bj) = ZERO
-            rhsU(I,J,bi,bj) = duIce(I,J,bi,bj)
           ENDIF
          ENDDO
         ENDDO
@@ -396,33 +376,16 @@ C     and the symmetric drag term; must be done after normalizing
          ENDDO
         ENDDO
 
-        IF ( printResidual ) THEN
-C     set up right-hand side now (will be redone in each iteration)
-         DO j=1,sNy
-          DO i=1,sNx
-           rhsV(I,J,bi,bj) = rhsV0(I,J,bi,bj)
-     &          +seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
-     &          *dvIce(i,j,bi,bj)*massFac
-          ENDDO
-         ENDDO
-         CALL PRECOND_RHSV (
-     I        zetaMinusEta, etaPlusZeta, etaZpre, duIce, pressPre,
-     I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
-     O        rhsV,
-     I        bi,bj,myThid ) 
-        ENDIF
-
 #ifndef OBCS_UVICE_OLD
 C--     prevent tri-diagonal solver to modify OB values:
         DO J=1,sNy
          DO I=1,sNx
           IF ( maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj) .EQ. 0. ) THEN
-            AV(I,J,bi,bj) = ZERO
-            BV(I,J,bi,bj) = ONE
-            CV(I,J,bi,bj) = ZERO
-            vRt1(I,J,bi,bj) = ZERO
-            vRt2(I,J,bi,bj) = ZERO
-            rhsV(I,J,bi,bj) = dvIce(I,J,bi,bj)
+           AV(I,J,bi,bj) = ZERO
+           BV(I,J,bi,bj) = ONE
+           CV(I,J,bi,bj) = ZERO
+           vRt1(I,J,bi,bj) = ZERO
+           vRt2(I,J,bi,bj) = ZERO
           ENDIF
          ENDDO
         ENDDO
@@ -448,7 +411,40 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Calculate initial residual of the linearised system
       IF ( printResidual ) THEN
-        CALL SEAICE_RESIDUAL(
+C     set up right-hand side now (will be redone in each iteration)
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           rhsU(I,J,bi,bj) = rhsU0(I,J,bi,bj)
+           rhsV(I,J,bi,bj) = rhsV0(I,J,bi,bj)
+          ENDDO
+         ENDDO
+         CALL PRECOND_RHSU (
+     I        zetaMinusEta, etaPlusZeta, etaZpre, dvIce, pressPre,
+     I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
+     O        rhsU,
+     I        bi,bj,myThid ) 
+         CALL PRECOND_RHSV (
+     I        zetaMinusEta, etaPlusZeta, etaZpre, duIce, pressPre,
+     I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
+     O        rhsV,
+     I        bi,bj,myThid ) 
+#ifndef OBCS_UVICE_OLD
+         DO J=1,sNy
+          DO I=1,sNx
+           IF ( maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj) .EQ. 0. ) THEN
+            rhsV(I,J,bi,bj) = dvIce(I,J,bi,bj)
+           ENDIF
+           IF ( maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj) .EQ. 0. ) THEN
+            rhsU(I,J,bi,bj) = duIce(I,J,bi,bj)
+           ENDIF
+          ENDDO
+         ENDDO
+#endif /* OBCS_UVICE_OLD */
+        ENDDO
+       ENDDO
+       CALL SEAICE_RESIDUAL(
      I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
      I                  AU, BU, CU, AV, BV, CV, duIce, dvIce,
      U                  massU, massV,
@@ -469,12 +465,13 @@ C ITERATION START -----------------------------------------------------
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          
-C     set up right-hand side for u-equation
+C     set up right-hand sides for u- and v-equations
          DO j=1,sNy
           DO i=1,sNx
            rhsU(I,J,bi,bj) = rhsU0(I,J,bi,bj)
-     &         +seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
-     &         *duIce(i,j,bi,bj)*massFac
+#ifdef SEAICE_LSR_SYMMETRIC_SWEEP
+           rhsV(I,J,bi,bj) = rhsV0(I,J,bi,bj)
+#endif /* SEAICE_LSR_SYMMETRIC_SWEEP */
           ENDDO
          ENDDO
          CALL PRECOND_RHSU (
@@ -482,7 +479,13 @@ C     set up right-hand side for u-equation
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      U        rhsU,
      I        bi,bj,myThid ) 
-CML        print *,'ml-rhsu: ',rhsU0(5,5,1,1),rhsu(5,5,1,1),dvice(5,5,1,1)
+#ifdef SEAICE_LSR_SYMMETRIC_SWEEP
+         CALL PRECOND_RHSV (
+     I        zetaMinusEta, etaPlusZeta, etaZpre, duIce, pressPre,
+     I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
+     U        rhsV,
+     I        bi,bj,myThid ) 
+#endif /* SEAICE_LSR_SYMMETRIC_SWEEP */
 #ifndef OBCS_UVICE_OLD
 C--     prevent tri-diagonal solver to modify OB values:
          DO J=1,sNy
@@ -490,6 +493,11 @@ C--     prevent tri-diagonal solver to modify OB values:
            IF ( maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj) .EQ. 0. ) THEN
             rhsU(I,J,bi,bj) = duIce(I,J,bi,bj)
            ENDIF
+#ifdef SEAICE_LSR_SYMMETRIC_SWEEP
+           IF ( maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj) .EQ. 0. ) THEN
+            rhsV(I,J,bi,bj) = dvIce(I,J,bi,bj)
+           ENDIF
+#endif /* SEAICE_LSR_SYMMETRIC_SWEEP */
           ENDDO
          ENDDO
 #endif /* OBCS_UVICE_OLD */
@@ -556,12 +564,18 @@ C     go back to original order
           ENDDO
          ENDDO
       
+#ifndef SEAICE_LSR_SYMMETRIC_SWEEP
+        ENDDO
+       ENDDO
+C     ideally one would like to get rid off this exchange
+       CALL EXCH_UV_XY_RL( duIce, dvIce, .TRUE., myThid )
+
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
 C     set up right-hand-side for v-equation
          DO j=1,sNy
           DO i=1,sNx
            rhsV(I,J,bi,bj) = rhsV0(I,J,bi,bj)
-     &         +seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
-     &         *dvIce(i,j,bi,bj)*massFac
           ENDDO
          ENDDO
          CALL PRECOND_RHSV (
@@ -579,6 +593,7 @@ C--     prevent tri-diagonal solver to modify OB values:
           ENDDO
          ENDDO
 #endif /* OBCS_UVICE_OLD */
+#endif /* SEAICE_LSR_SYMMETRIC_SWEEP */
 
 C     save dvIce prior to iteration, NOW SET V(3)=V(1)
          DO j=1-OLy,sNy+OLy
@@ -729,7 +744,6 @@ C     contribution of sigma11 to rhs
      &       * _recip_dyF(I,J,bi,bj)
      &       + etaPlusZeta(I,J,bi,bj) * k2AtC(I,J,bi,bj)
      &       * 0.5 _d 0 * (vIceLoc(I,J+1,bi,bj)+vIceLoc(I,J,bi,bj))
-     &       - 0.5 _d 0 * pressPre(I,J,bi,bj)
        ENDDO
       ENDDO
 C     contribution of sigma12 to rhs of u-equation
@@ -756,17 +770,13 @@ C     only need to deal with v(i)-v(i-1)
 
       DO J=1,sNy
        DO I=1,sNx
-C     contribution to the rhs art of grad(sigma)_x
+C     contribution to the rhs part of grad(sigma)_x
         rhsU(I,J,bi,bj) = rhsU(I,J,bi,bj)
      &       + recip_rAw(I,J,bi,bj) * seaiceMaskU(I,J,bi,bj) *
      &       ( _dyF(I  ,J  ,bi,bj)*sig11(I  ,J  )
      &       - _dyF(I-1,J  ,bi,bj)*sig11(I-1,J  )
      &       + _dxV(I  ,J+1,bi,bj)*sig12(I  ,J+1)
      &       - _dxV(I  ,J  ,bi,bj)*sig12(I  ,J  ) )
-C     external forcing and water drag
-        rhsU(I,J,bi,bj) = rhsU(I,J,bi,bj) + FORCEX0(I,J,bi,bj) +
-     &       0.5 _d 0 * ( dwatPre(I,J,bi,bj)+dwatPre(I-1,J,bi,bj) ) *
-     &       COSWAT * uVel(I,J,k,bi,bj)
        ENDDO
       ENDDO
       IF ( fricFac+coriFac .NE. 0. _d 0 ) THEN
@@ -840,7 +850,6 @@ C     contribution of sigma22 to rhs
      &       * _recip_dxF(I,J,bi,bj)
      &       + etaPlusZeta(I,J,bi,bj) * k1AtC(I,J,bi,bj)
      &       * 0.5 _d 0 * (uIceLoc(I+1,J,bi,bj)+uIceLoc(I,J,bi,bj))
-     &       - 0.5 _d 0 * pressPre(I,J,bi,bj)
        ENDDO
       ENDDO
 C     contribution of sigma12 to rhs of v-equation
@@ -874,10 +883,6 @@ C     contribution to the rhs part of grad(sigma)_y
      &       - _dyU(I  ,J  ,bi,bj) * sig12(I  ,J  )
      &       + _dxF(I  ,J  ,bi,bj) * sig22(I  ,J  )
      &       - _dxF(I  ,J-1,bi,bj) * sig22(I  ,J-1) )
-C     external forcing and water drag
-        rhsV(I,J,bi,bj) = rhsV(I,J,bi,bj) + FORCEY0(I,J,bi,bj) +
-     &       0.5 _d 0 * ( dwatPre(I,J,bi,bj)+dwatPre(I,J-1,bi,bj) ) *
-     &       COSWAT * vVel(I,J,k,bi,bj)
        ENDDO
       ENDDO
 C     neglected for preconditioning step
