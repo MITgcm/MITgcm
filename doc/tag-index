@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1773 2012/11/17 20:12:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1774 2012/11/23 15:54:18 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_preconditioner.F: fix preconditioner once again
+   - remove wrong parts of the rhs and the lhs (were in there
+     because I did not understand the concept of this preconditioner)
+   - add an exchange between u- and v-sweep. This increases communication
+     by a factor of two but improves the convergence of jfnk. Ideally,
+     one would like the u- and v-sweep to be independent. So far within
+     undocumented ifdefs
+   - reorganize the extra computations for printing the residuals
 o tools/genmake2:
   - comment out the "mpif.h" include in NetCDF test programm (for MPI built)
     since it's not necessary (and was preventing to use MNC in some cases).
