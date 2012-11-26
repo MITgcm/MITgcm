@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.9 2012/11/12 09:46:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.10 2012/11/26 08:04:50 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -89,7 +89,6 @@ C     zeta, eta, and DWATN, press
       _RL etaPre  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaZPre (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dwatPre (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pressPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CEOP
 
 C     Initialise
@@ -152,11 +151,10 @@ C     constant for the preconditioner
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-            zetaPre(I,J,bi,bj) =  zeta(I,J,bi,bj)
-             etaPre(I,J,bi,bj) =   eta(I,J,bi,bj)
-            etaZPre(I,J,bi,bj) =  etaZ(I,J,bi,bj)
-            dwatPre(I,J,bi,bj) = DWATN(I,J,bi,bj)
-           pressPre(I,J,bi,bj) = press(I,J,bi,bj)
+           zetaPre(I,J,bi,bj) =  zeta(I,J,bi,bj)
+            etaPre(I,J,bi,bj) =   eta(I,J,bi,bj)
+           etaZPre(I,J,bi,bj) =  etaZ(I,J,bi,bj)
+           dwatPre(I,J,bi,bj) = DWATN(I,J,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -247,7 +245,7 @@ C     Call preconditioner
           IF ( SOLV_MAX_ITERS .GT. 0 )
      &         CALL SEAICE_PRECONDITIONER( 
      U         duIce, dvIce, 
-     I         zetaPre, etaPre, etaZpre, dwatPre, pressPre,
+     I         zetaPre, etaPre, etaZpre, dwatPre, 
      I         newtonIter, krylovIter, myTime, myIter, myThid )
          ELSEIF (iCode.GE.2) THEN
 C     Compute Jacobian times vector
