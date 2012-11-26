@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1775 2012/11/26 00:18:32 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1776 2012/11/26 08:05:09 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: 
+  - remove unused field pressPre from jfnk solver
+  - rename two subroutines in seaice_preconditioner.F
 o eesupp/src:
    - S/R MDSFINDUNIT avoids reserved unit numbers (scrUnit1, eeDataUnit ...)
 o pkg/seaice/seaice_preconditioner.F: fix preconditioner once again
