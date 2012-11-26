@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/mdsfindunit.F,v 1.2 2006/08/22 18:57:53 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/mdsfindunit.F,v 1.3 2012/11/26 00:13:05 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 
-      subroutine MDSFINDUNIT( iounit, mythid )
+      SUBROUTINE MDSFINDUNIT( ioUnit, myThid )
 C OUT:
-C     iounit   integer - unit number
+C     ioUnit  (integer) :: unit number
 C
 C MDSFINDUNIT returns a valid, unused unit number for f77 I/O
 C The routine stops the program is an error occurs in the process
@@ -13,49 +13,55 @@ C of searching the I/O channels.
 C
 C Created: 03/20/99 adcroft@mit.edu
 
-      implicit none
+      IMPLICIT NONE
 
 #include "EEPARAMS.h"
 
 C Arguments
-      integer iounit
-      integer mythid
+      INTEGER ioUnit
+      INTEGER myThid
 C Local
-      integer ii
-      logical op
-      integer ios
-      character*(max_len_mbuf) msgbuf
-C     ------------------------------------------------------------------
+      INTEGER ii
+      LOGICAL op
+      INTEGER ios
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C Sweep through a valid range of unit numbers
-      iounit=-1
-      do ii=9,999
-        if (iounit.eq.-1) then
-          inquire(unit=ii,iostat=ios,opened=op)
-          if (ios.ne.0) then
-            write(msgbuf,'(a,i2.2)')
-     &        ' MDSFINDUNIT: inquiring unit number = ',ii
-            call print_message( msgbuf, standardmessageunit,
-     &                          SQUEEZE_RIGHT , mythid)
-            write(msgbuf,'(a)')
+      ioUnit=-1
+      DO ii=9,999
+       IF ( ioUnit.EQ.-1 ) THEN
+C- skip reserved unit numbers
+        IF (       ii.NE.errorMessageUnit
+     &       .AND. ii.NE.standardMessageUnit
+     &       .AND. ii.NE.scrUnit1   .AND. ii.NE.scrUnit2
+     &       .AND. ii.NE.eeDataUnit .AND. ii.NE.modelDataUnit
+     &     ) THEN
+          INQUIRE(unit=ii,iostat=ios,opened=op)
+          IF ( ios.NE.0 ) THEN
+            WRITE(msgBuf,'(A,I4)')
+     &        ' MDSFINDUNIT: inquiring unit number =', ii
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
+            WRITE(msgBuf,'(A)')
      &        ' MDSFINDUNIT: inquire statement failed!'
-            call print_error( msgbuf, mythid )
-            stop 'ABNORMAL END: S/R MDSFINDUNIT'
-          endif
-          if (.NOT. op) then
-            iounit=ii
-          endif
-        endif
-      enddo
+            CALL PRINT_ERROR( msgBuf, myThid )
+            STOP 'ABNORMAL END: S/R MDSFINDUNIT'
+          ENDIF
+          IF ( .NOT.op ) THEN
+            ioUnit=ii
+          ENDIF
+        ENDIF
+       ENDIF
+      ENDDO
 
 C Was there an available unit number
-      if (iounit.eq.-1) then
-        write(msgbuf,'(a)')
+      IF ( ioUnit.EQ.-1 ) THEN
+        WRITE(msgBuf,'(A)')
      &    ' MDSFINDUNIT: could not find an available unit number!'
-        call print_error( msgbuf, mythid )
-        stop 'ABNORMAL END: S/R MDSFINDUNIT'
-      endif
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R MDSFINDUNIT'
+      ENDIF
 
-C     ------------------------------------------------------------------
-      return
-      end
+      RETURN
+      END
