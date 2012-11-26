@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.9 2012/11/23 15:53:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.10 2012/11/26 08:04:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -11,7 +11,7 @@ C     !ROUTINE: SEAICE_PRECONDITIONER
 C     !INTERFACE:
       SUBROUTINE SEAICE_PRECONDITIONER( 
      U     duIce, dvIce, 
-     I     zetaPre, etaPre, etaZpre, dwatPre, pressPre,
+     I     zetaPre, etaPre, etaZpre, dwatPre,
      I     newtonIter, krylovIter, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
@@ -58,7 +58,6 @@ C     *Pre are precomputed and held fixed during the Krylov iteration
       _RL   etaPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  etaZPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  dwatPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pressPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #if ( defined (SEAICE_CGRID) && \
       defined (SEAICE_ALLOW_JFNK) && \
@@ -420,24 +419,24 @@ C     set up right-hand side now (will be redone in each iteration)
            rhsV(I,J,bi,bj) = rhsV0(I,J,bi,bj)
           ENDDO
          ENDDO
-         CALL PRECOND_RHSU (
-     I        zetaMinusEta, etaPlusZeta, etaZpre, dvIce, pressPre,
+         CALL SEAICE_PRECOND_RSHU (
+     I        zetaMinusEta, etaPlusZeta, etaZpre, dvIce, 
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      O        rhsU,
      I        bi,bj,myThid ) 
-         CALL PRECOND_RHSV (
-     I        zetaMinusEta, etaPlusZeta, etaZpre, duIce, pressPre,
+         CALL SEAICE_PRECOND_RSHV (
+     I        zetaMinusEta, etaPlusZeta, etaZpre, duIce, 
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      O        rhsV,
      I        bi,bj,myThid ) 
 #ifndef OBCS_UVICE_OLD
          DO J=1,sNy
           DO I=1,sNx
-           IF ( maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj) .EQ. 0. ) THEN
-            rhsV(I,J,bi,bj) = dvIce(I,J,bi,bj)
-           ENDIF
            IF ( maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj) .EQ. 0. ) THEN
             rhsU(I,J,bi,bj) = duIce(I,J,bi,bj)
+           ENDIF
+           IF ( maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj) .EQ. 0. ) THEN
+            rhsV(I,J,bi,bj) = dvIce(I,J,bi,bj)
            ENDIF
           ENDDO
          ENDDO
@@ -465,6 +464,14 @@ C ITERATION START -----------------------------------------------------
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          
+C     save du/vIce prior to iteration
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uTmp(I,J,bi,bj)=duIce(I,J,bi,bj)
+           vTmp(I,J,bi,bj)=dvIce(I,J,bi,bj)
+          ENDDO
+         ENDDO
+
 C     set up right-hand sides for u- and v-equations
          DO j=1,sNy
           DO i=1,sNx
@@ -474,14 +481,14 @@ C     set up right-hand sides for u- and v-equations
 #endif /* SEAICE_LSR_SYMMETRIC_SWEEP */
           ENDDO
          ENDDO
-         CALL PRECOND_RHSU (
-     I        zetaMinusEta, etaPlusZeta, etaZpre, dvIce, pressPre,
+         CALL SEAICE_PRECOND_RSHU (
+     I        zetaMinusEta, etaPlusZeta, etaZpre, dvIce,
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      U        rhsU,
      I        bi,bj,myThid ) 
 #ifdef SEAICE_LSR_SYMMETRIC_SWEEP
-         CALL PRECOND_RHSV (
-     I        zetaMinusEta, etaPlusZeta, etaZpre, duIce, pressPre,
+         CALL SEAICE_PRECOND_RSHV (
+     I        zetaMinusEta, etaPlusZeta, etaZpre, duIce,
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      U        rhsV,
      I        bi,bj,myThid ) 
@@ -501,14 +508,6 @@ C--     prevent tri-diagonal solver to modify OB values:
           ENDDO
          ENDDO
 #endif /* OBCS_UVICE_OLD */
-
-C-jmc: get less TAF warnings when always (no if doIterate) saving duIce,dvIce:
-C     save duIce prior to iteration, NOW SET U(3)=U(1)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           uTmp(I,J,bi,bj)=duIce(I,J,bi,bj)
-          ENDDO
-         ENDDO
 
 C Solve for uIce :
          DO J=1,sNy
@@ -578,8 +577,8 @@ C     set up right-hand-side for v-equation
            rhsV(I,J,bi,bj) = rhsV0(I,J,bi,bj)
           ENDDO
          ENDDO
-         CALL PRECOND_RHSV (
-     I        zetaMinusEta, etaPlusZeta, etaZpre, duIce, pressPre,
+         CALL SEAICE_PRECOND_RSHV (
+     I        zetaMinusEta, etaPlusZeta, etaZpre, duIce,
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      U        rhsV,
      I        bi,bj,myThid ) 
@@ -594,13 +593,6 @@ C--     prevent tri-diagonal solver to modify OB values:
          ENDDO
 #endif /* OBCS_UVICE_OLD */
 #endif /* SEAICE_LSR_SYMMETRIC_SWEEP */
-
-C     save dvIce prior to iteration, NOW SET V(3)=V(1)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           vTmp(I,J,bi,bj)=dvIce(I,J,bi,bj)
-          ENDDO
-         ENDDO
 
 C Solve for dvIce
          DO I=1,sNx
@@ -700,11 +692,20 @@ C     APPLY MASKS
       RETURN 
       END
 
-      SUBROUTINE PRECOND_RHSU (
-     I     zetaMinusEta, etaPlusZeta, etaZpre, vIceLoc, pressPre,
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE SEAICE_PRECOND_RSHU (
+     I     zetaMinusEta, etaPlusZeta, etaZpre, vIceLoc,
      I     dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      U     rhsU,
      I     bi,bj,myThid ) 
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE SEAICE_PRECOND_RSHV
+C     | o Calculate the right-hand-side of the v-momentum equation
+C     *==========================================================*
+C     \ev
 
       IMPLICIT NONE
 #include "SIZE.h"
@@ -721,7 +722,6 @@ C     APPLY MASKS
       _RL SINWAT
       _RL rhsU        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dwatPre     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pressPre    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceLoc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -806,11 +806,20 @@ C-    add Coriolis term
       RETURN 
       END
 
-      SUBROUTINE PRECOND_RHSV (
-     I     zetaMinusEta, etaPlusZeta, etaZpre, uIceLoc, pressPre,
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE SEAICE_PRECOND_RSHV (
+     I     zetaMinusEta, etaPlusZeta, etaZpre, uIceLoc,
      I     dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      U     rhsV,
      I     bi,bj,myThid ) 
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE SEAICE_PRECOND_RSHV
+C     | o Calculate the right-hand-side of the v-momentum equation
+C     *==========================================================*
+C     \ev
 
       IMPLICIT NONE
 #include "SIZE.h"
@@ -827,7 +836,6 @@ C-    add Coriolis term
       _RL SINWAT
       _RL rhsV        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dwatPre     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pressPre    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL uIceLoc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
