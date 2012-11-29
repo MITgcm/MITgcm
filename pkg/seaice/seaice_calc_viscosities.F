@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.19 2012/11/15 16:12:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.20 2012/11/29 09:13:08 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -74,7 +74,7 @@ C     ecm2          - inverse of square of eccentricity of yield curve
       _RL etaMax, etaDen
 #endif /* SEAICE_ALLOW_TEM */
       INTEGER k
-      _RL zetaZ, deltaZ, deltaZreg, sumNorm
+      _RL zetaZ, deltaZ, deltaZreg, sumNorm, zetaZmax
 #ifdef SEAICE_ZETA_SMOOTHREG
       _RL argTmp
 #endif /* SEAICE_ZETA_SMOOTHREG */
@@ -186,7 +186,7 @@ C     This is the old and stupid way
      &           ( e11(i,  j,  bi,bj) + e11(i-1,j,  bi,bj)
      &           + e11(i,  j-1,bi,bj) + e11(i-1,j-1,bi,bj) ) *
      &           ( e22(i,  j,  bi,bj) + e22(i-1,j,  bi,bj)
-     &           + e22(i  ,j-1,bi,bj) * e22(i-1,j-1,bi,bj) )
+     &           + e22(i  ,j-1,bi,bj) + e22(i-1,j-1,bi,bj) )
            ENDDO
           ENDDO
          ELSEIF ( SEAICEetaZmethod .eq. 2 ) THEN
@@ -227,14 +227,15 @@ C     avoid sqrt of 0
 C     "replacement pressure"
           zetaZ     = HALF*pressZ(i,j)/deltaZreg
 C     put min and max viscosities in
+          zetaZmax  = SEAICE_zetaMaxFac*pressZ(i,j)
 #ifdef SEAICE_ZETA_SMOOTHREG
 C     regularize zeta to zmax with a smooth tanh-function instead 
 C     of a min(zeta,zmax). This improves convergence of iterative
 C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
           argTmp = exp(-1. _d 0/(deltaZreg*SEAICE_zetaMaxFac))
-          zetaZ  = ZMAX(I,J,bi,bj)*(1. _d 0-argTmp)/(1. _d 0+argTmp)
+          zetaZ  = zetaZmax*(1. _d 0-argTmp)/(1. _d 0+argTmp)
 #else
-          zetaZ  = MIN(ZMAX(I,J,bi,bj),zetaZ)
+          zetaZ  = MIN(zetaZmax,zetaZ)
 #endif /*  SEAICE_ZETA_SMOOTHREG */
           zetaZ  = MAX(ZMIN(I,J,bi,bj),zetaZ)
           etaZ(I,J,bi,bj) = ECM2*zetaZ
