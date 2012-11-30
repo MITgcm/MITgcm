@@ -1,10 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1776 2012/11/26 08:05:09 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1777 2012/11/30 22:31:27 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: 
+o pkg/aim_v23 & pkg/shap_filt:
+  - fix dissipation heating (erroneous gravity multiplication factor).
+o pkg/seaice:
   - remove unused field pressPre from jfnk solver
   - rename two subroutines in seaice_preconditioner.F
 o eesupp/src:
