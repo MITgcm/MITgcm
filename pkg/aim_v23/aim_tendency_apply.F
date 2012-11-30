@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.10 2012/11/12 15:47:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.11 2012/11/30 22:28:56 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -92,11 +92,7 @@ C        is not supposed to be applied in stratosphere
 #if ( defined ALLOW_FRICTION_HEATING ) || ( defined ALLOW_DIAGNOSTICS )
           aim_dKE(i,j) =
      &     -maskW(i,j,k,bi,bj)*uVel(i,j,k,bi,bj)/aim_dragStrato
-     &        *uVel(i,j,k,bi,bj)*hFacW(i,j,k,bi,bj)*drF(k)
-#endif
-#ifdef ALLOW_DIAGNOSTICS
-          aim_KEuStr(i,j,bi,bj) = aim_KEuStr(i,j,bi,bj)
-     &                          + aim_dKE(i,j)*recip_gravity
+     &        *uVel(i,j,k,bi,bj)*hFacW(i,j,k,bi,bj)*drF(k)*rUnit2mass
 #endif
         ENDDO
        ENDDO
@@ -113,11 +109,8 @@ C        is not supposed to be applied in stratosphere
 #if ( defined ALLOW_AIM_TAVE ) || ( defined ALLOW_DIAGNOSTICS )
           aim_uStress(i,j,bi,bj) = uStr_tmp
 #endif
-#ifdef ALLOW_DIAGNOSTICS
-          aim_KEuStr(i,j,bi,bj)  = uStr_tmp * uVel(i,j,k,bi,bj)
-#endif
-#ifdef ALLOW_FRICTION_HEATING
-          aim_dKE(i,j) = gravity * uStr_tmp * uVel(i,j,k,bi,bj)
+#if ( defined ALLOW_FRICTION_HEATING ) || ( defined ALLOW_DIAGNOSTICS )
+          aim_dKE(i,j) = uStr_tmp * uVel(i,j,k,bi,bj)
          ELSE
           aim_dKE(i,j) = 0.
 #endif
@@ -139,11 +132,8 @@ C        is not supposed to be applied in stratosphere
 #if ( defined ALLOW_AIM_TAVE ) || ( defined ALLOW_DIAGNOSTICS )
           aim_uStress(i,j,bi,bj) = uStr_tmp
 #endif
-#ifdef ALLOW_DIAGNOSTICS
-          aim_KEuStr(i,j,bi,bj)  = uStr_tmp * uVel(i,j,k,bi,bj)
-#endif
-#ifdef ALLOW_FRICTION_HEATING
-          aim_dKE(i,j) = gravity * uStr_tmp * uVel(i,j,k,bi,bj)
+#if ( defined ALLOW_FRICTION_HEATING ) || ( defined ALLOW_DIAGNOSTICS )
+          aim_dKE(i,j) = uStr_tmp * uVel(i,j,k,bi,bj)
          ELSE
           aim_dKE(i,j) = 0.
 #endif
@@ -170,13 +160,29 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDIF
 #endif
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( usediagnostics .AND. k.EQ.Nr ) THEN
+      IF ( usediagnostics ) THEN
+       IF ( k.EQ.1 ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          aim_KEuStr(i,j,bi,bj) = aim_dKE(i,j)
+         ENDDO
+        ENDDO
+       ELSE
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          aim_KEuStr(i,j,bi,bj) = aim_KEuStr(i,j,bi,bj)
+     &                          + aim_dKE(i,j)
+         ENDDO
+        ENDDO
+       ENDIF
+       IF ( k.EQ.Nr ) THEN
         CALL DIAGNOSTICS_FILL( aim_uStress, 'UFLUX   ',
      &                         0,1,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL( aim_KEuStr,  'dKE_Ustr',
      &                         0,1,1,bi,bj,myThid)
+       ENDIF
       ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_AIM */
 
@@ -265,11 +271,7 @@ C        is not supposed to be applied in the stratosphere
 #if ( defined ALLOW_FRICTION_HEATING ) || ( defined ALLOW_DIAGNOSTICS )
           aim_dKE(i,j) =
      &     -maskS(i,j,k,bi,bj)*vVel(i,j,k,bi,bj)/aim_dragStrato
-     &        *vVel(i,j,k,bi,bj)*hFacS(i,j,k,bi,bj)*drF(k)
-#endif
-#ifdef ALLOW_DIAGNOSTICS
-          aim_KEvStr(i,j,bi,bj) = aim_KEvStr(i,j,bi,bj)
-     &                          + aim_dKE(i,j)*recip_gravity
+     &        *vVel(i,j,k,bi,bj)*hFacS(i,j,k,bi,bj)*drF(k)*rUnit2mass
 #endif
         ENDDO
        ENDDO
@@ -286,11 +288,8 @@ C        is not supposed to be applied in the stratosphere
 #if ( defined ALLOW_AIM_TAVE ) || ( defined ALLOW_DIAGNOSTICS )
           aim_vStress(i,j,bi,bj) = vStr_tmp
 #endif
-#ifdef ALLOW_DIAGNOSTICS
-          aim_KEvStr(i,j,bi,bj)  = vStr_tmp * vVel(i,j,k,bi,bj)
-#endif
-#ifdef ALLOW_FRICTION_HEATING
-          aim_dKE(i,j) = gravity * vStr_tmp * vVel(i,j,k,bi,bj)
+#if ( defined ALLOW_FRICTION_HEATING ) || ( defined ALLOW_DIAGNOSTICS )
+          aim_dKE(i,j) = vStr_tmp * vVel(i,j,k,bi,bj)
          ELSE
           aim_dKE(i,j) = 0.
 #endif
@@ -312,11 +311,8 @@ C        is not supposed to be applied in the stratosphere
 #if ( defined ALLOW_AIM_TAVE ) || ( defined ALLOW_DIAGNOSTICS )
           aim_vStress(i,j,bi,bj) = vStr_tmp
 #endif
-#ifdef ALLOW_DIAGNOSTICS
-          aim_KEvStr(i,j,bi,bj)  = vStr_tmp * vVel(i,j,k,bi,bj)
-#endif
-#ifdef ALLOW_FRICTION_HEATING
-          aim_dKE(i,j) = gravity * vStr_tmp * vVel(i,j,k,bi,bj)
+#if ( defined ALLOW_FRICTION_HEATING ) || ( defined ALLOW_DIAGNOSTICS )
+          aim_dKE(i,j) = vStr_tmp * vVel(i,j,k,bi,bj)
          ELSE
           aim_dKE(i,j) = 0.
 #endif
@@ -343,13 +339,29 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDIF
 #endif
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( usediagnostics .AND. k.EQ.Nr ) THEN
+      IF ( usediagnostics ) THEN
+       IF ( k.EQ.1 ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          aim_KEvStr(i,j,bi,bj) = aim_dKE(i,j)
+         ENDDO
+        ENDDO
+       ELSE
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          aim_KEvStr(i,j,bi,bj) = aim_KEvStr(i,j,bi,bj)
+     &                          + aim_dKE(i,j)
+         ENDDO
+        ENDDO
+       ENDIF
+       IF ( k.EQ.Nr ) THEN
         CALL DIAGNOSTICS_FILL( aim_vStress, 'VFLUX   ',
      &                         0,1,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL( aim_KEvStr,  'dKE_Vstr',
      &                         0,1,1,bi,bj,myThid)
+       ENDIF
       ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_AIM */
 

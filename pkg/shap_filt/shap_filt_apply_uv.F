@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_uv.F,v 1.11 2012/11/12 15:47:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_uv.F,v 1.12 2012/11/30 22:30:06 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -164,7 +164,8 @@ C             are directly proportional to Delta-U,V due to the Filter
                DO j=1,sNy
                 DO i=1,sNx
                    frictionHeating(i,j,k,bi,bj) =
-     &             frictionHeating(i,j,k,bi,bj) - dKE_shap(i,j)*drF(k)
+     &                             frictionHeating(i,j,k,bi,bj)
+     &                           - dKE_shap(i,j)*drF(k)*rUnit2mass
                 ENDDO
                ENDDO
               ENDIF
