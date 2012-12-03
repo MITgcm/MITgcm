@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.10 2012/11/26 08:04:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.11 2012/12/03 15:49:17 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -357,7 +357,7 @@ C     Decide whether it is time to dump and reset the counter
      &' // ======================================================='
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)') ' // Begin JFNK statistics'
+       WRITE(msgBuf,'(A)') ' // End JFNK statistics'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A)') 
