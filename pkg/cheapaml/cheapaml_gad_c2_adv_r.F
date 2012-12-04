@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_gad_c2_adv_r.F,v 1.3 2012/08/27 19:13:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_gad_c2_adv_r.F,v 1.4 2012/12/04 17:26:10 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -48,9 +48,10 @@ C  i,j                  :: loop indices
       INTEGER i,j
 CEOP
 
-
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
+c      DO j=1-OLy,sNy+OLy
+c       DO i=1-OLx,sNx+OLx
+       DO j=1,sNy
+        DO i=1,sNx
          wT(i,j) = rTrans(i,j)*
      &        (Tracer(i,j)+Tracer(i,j))*0.5 _d 0
         ENDDO

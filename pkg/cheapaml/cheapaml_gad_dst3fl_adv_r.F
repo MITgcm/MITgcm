@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_gad_dst3fl_adv_r.F,v 1.2 2011/02/24 16:11:41 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_gad_dst3fl_adv_r.F,v 1.3 2012/12/04 17:26:10 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -9,7 +9,7 @@ C !ROUTINE: GAD_DST3FL_ADV_R
 C !INTERFACE: ==========================================================
       SUBROUTINE cheapaml_GAD_DST3FL_ADV_R(
      I           bi,bj,dTarg,
-     I           rTrans, 
+     I           rTrans,
      I           tracer,
      O           wT,
      I           myThid )
@@ -61,8 +61,10 @@ C  wCFL              :: Courant-Friedrich-Levy number
       Rj =  0. _d 0
       Rjm = 0. _d 0
 
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+c     DO j=1-OLy,sNy+OLy
+c      DO i=1-OLx,sNx+OLx
+      DO j=1,sNy
+       DO i=1,sNx
 
         wLoc = rTrans(i,j)
         wCFL = ABS(wLoc*dTarg*recip_drC(1))
