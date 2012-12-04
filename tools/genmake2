@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.245 2012/11/17 20:04:10 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.246 2012/12/04 20:20:29 jahn Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -1187,6 +1187,9 @@ HPMT=
 GSL=
 DEVEL=
 HAVE_TEST_L=
+
+# comment this line out to enable lapack test
+SKIP_LAPACK_CHECK=t
 
 # DEFINES checked by test compilation or command-line
 HAVE_SYSTEM=
