@@ -1,0 +1,16 @@
+# Package CheapAML parameters
+#--------------------
+ &CHEAPAML_CONST
+  cheapaml_ntim = 5,
+  cheapaml_mask_width=5,
+  cheapaml_h = 1000.,
+ &
+
+ &CHEAPAML_PARM01
+ &
+
+ &CHEAPAML_PARM02
+  useFreshWaterFlux=.TRUE.,
+  useFluxLimit=.TRUE.,
+  FluxFormula='COARE3'
+ &

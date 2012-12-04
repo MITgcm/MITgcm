@@ -1,0 +1,44 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=20.,
+ sRef=35.,
+ viscAh=500.,
+ diffKhT=200.,
+ diffKhS=200.,
+ tempAdvScheme=33,
+ staggerTimeStep=.TRUE.,
+ eosType='LINEAR',
+ readBinaryPrec=64,
+#debugLevel=5,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0  = 0,
+ deltaT  = 1200.,
+ endTime = 28800.,
+ dumpFreq= 14400.,
+ monitorFreq=3600.,
+ &
+
+# Grid parameters
+ &PARM04
+ usingSphericalPolarGrid=.TRUE.,
+ ygOrigin=30.,
+ dxSpacing=0.25,
+ dySpacing=0.25,
+ delR=1000.,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile='topog.box',
+ &
