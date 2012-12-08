@@ -32,8 +32,8 @@
  convertFW2Salt=-1,
  readBinaryPrec=64,
  writeBinaryPrec=64,
- globalFiles=.TRUE.,
-#useSingleCpuIO=.TRUE.,
+#globalFiles=.TRUE.,
+ useSingleCpuIO=.TRUE.,
 #debugLevel=4,
  &
 
