@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.28 2012/10/21 04:45:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.29 2012/12/08 15:24:13 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -283,7 +283,7 @@ C-   Pot. Temp and saturated specific humidity
           IF ( atemp(i,j,bi,bj) .NE. 0. _d 0 ) THEN
 C-   Surface Temp.
            Tsf = theta(i,j,ksrf,bi,bj) + cen2kel
-           IF ( sstExtrapol.GT.0. _d 0 ) THEN
+           IF ( Nr.GE.2 .AND. sstExtrapol.GT.0. _d 0 ) THEN
             SSTtmp = sstExtrapol
      &              *( theta(i,j,ksrf,bi,bj)-theta(i,j,ksrfp1,bi,bj) )
      &              *  maskC(i,j,ksrfp1,bi,bj)

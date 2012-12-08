@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_radiation.F,v 1.9 2012/08/21 13:47:06 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_radiation.F,v 1.10 2012/12/08 15:24:13 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -30,7 +30,7 @@ C     == global variables ==
 #include "EXF_CONSTANTS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-#endif 
+#endif
 
 C     == routine arguments ==
 
@@ -44,7 +44,7 @@ C     == local variables ==
       INTEGER bi,bj
       INTEGER i,j
 #ifdef ALLOW_ATM_TEMP
-      INTEGER k
+      INTEGER ks, kl
       _RL Tsf, SSTtmp, TsfSq
 #endif
 
@@ -58,20 +58,21 @@ C     lwflux = Stefan-Boltzmann constant * emissivity * SST - lwdown
 C     swflux = - ( 1 - albedo ) * swdown
 
 #ifdef ALLOW_ATM_TEMP
-      k = 1
+      ks = 1
+      kl = 2
 
       IF ( lwfluxfile .EQ. ' ' .AND. lwdownfile .NE. ' ' ) THEN
 C     Loop over tiles.
        DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)
 
-         IF ( sstExtrapol.GT.0. _d 0 ) THEN
+         IF ( Nr.GE.2 .AND. sstExtrapol.GT.0. _d 0 ) THEN
           DO j = 1,sNy
            DO i = 1,sNx
-            Tsf = theta(i,j,1,bi,bj) + cen2kel
+            Tsf = theta(i,j,ks,bi,bj) + cen2kel
             SSTtmp = sstExtrapol
-     &             *( theta(i,j,1,bi,bj)-theta(i,j,2,bi,bj) )
-     &             *  maskC(i,j,2,bi,bj)
+     &             *( theta(i,j,ks,bi,bj)-theta(i,j,kl,bi,bj) )
+     &             *  maskC(i,j,kl,bi,bj)
             Tsf = Tsf + MAX( SSTtmp, 0. _d 0 )
             TsfSq = Tsf*Tsf
             lwflux(i,j,bi,bj) =
@@ -93,7 +94,7 @@ C     does not penetrate the ocean surface)
            DO i = 1,sNx
             lwflux(i,j,bi,bj) =
      &          ocean_emissivity*stefanBoltzmann*
-     &          ((theta(i,j,k,bi,bj)+cen2kel)**4)
+     &          ((theta(i,j,ks,bi,bj)+cen2kel)**4)
      &          - lwdown(i,j,bi,bj)
 #ifdef EXF_LWDOWN_WITH_EMISSIVITY
      &           *ocean_emissivity
@@ -122,7 +123,7 @@ c        DO j = 1,sNy
 c         DO i = 1,sNx
 c          lwdown(i,j,bi,bj) =
 c    &          ocean_emissivity*stefanBoltzmann*
-c    &          ((theta(i,j,k,bi,bj)+cen2kel)**4)
+c    &          ((theta(i,j,ks,bi,bj)+cen2kel)**4)
 c    &          - lwflux(i,j,bi,bj)
 c         ENDDO
 c        ENDDO
@@ -157,7 +158,7 @@ c     ENDIF
          DO j = 1,sNy
           DO i = 1,sNx
 #ifdef ALLOW_ZENITHANGLE
-      IF ( useExfZenAlbedo ) THEN       
+      IF ( useExfZenAlbedo ) THEN
            swflux(i,j,bi,bj) = - swdown(i,j,bi,bj) *
      &                         (1.0-zen_albedo(i,j,bi,bj))
       ELSE
