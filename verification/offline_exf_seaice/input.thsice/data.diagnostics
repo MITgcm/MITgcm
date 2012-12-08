@@ -39,16 +39,9 @@
 #                  'SIsnwPrc','SIalbedo','SIsnwAge',
                    'SIflx2oc','SIfrw2oc','SIsaltFx',
                    'SIflxAtm','SIfrwAtm',
-                   'SIuice  ','SIvice  ',
-#                  'EXFqnet ','EXFempmr',
+                   'EXFqnet ','EXFempmr',
    fileName(2) = 'iceDiag',
   frequency(2) =  86400.,
-  fields(1:11,3) = 'SIuice  ','SIvice  ','SIheff  '
-                   'SI_Fract','SI_Thick','SI_Tsrf ',
-                   'THETA   ',
-   fileName(3) = 'snapshot',
-  frequency(3) = -86400.,
-  timePhase(3) =  0.,
  &
 
 #--------------------
@@ -75,11 +68,11 @@
 #                      'SIempmr ','SIqnet  ','SIqsw   ',
 #                      'oceQsw  ',
   stat_fName(1) = 'iceStDiag',
-   stat_freq(1) = 7200.,
-  stat_phase(1) = 1800.,
- stat_fields(1:14,1) = 'SI_Fract','SI_Thick','THETA   ',
+   stat_freq(1) = 43200.,
+  stat_phase(1) = 3600.,
+ stat_fields(1:12,1) = 'SI_Fract','SI_Thick','THETA   ',
                        'SI_Tsrf ','SI_Tice1','SI_Tice2',
                        'SIflx2oc','SIfrw2oc','SIsaltFx',
                        'SIflxAtm','SIfrwAtm','SI_SnowH',
-                       'SIuice  ','SIvice  ',
  &
+
