@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/SIZE.h,v 1.3 2009/05/17 22:27:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/SIZE.h,v 1.4 2012/12/08 00:34:29 jmc Exp $
 C $Name:  $
 
 C
@@ -44,8 +44,8 @@ C     Nr  :: No. points in Z for full process domain.
       INTEGER Ny
       INTEGER Nr
       PARAMETER (
-     &           sNx =  10,
-     &           sNy =   8,
+     &           sNx =  40,
+     &           sNy =  21,
      &           OLx =   3,
      &           OLy =   3,
      &           nSx =   2,
@@ -54,7 +54,7 @@ C     Nr  :: No. points in Z for full process domain.
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
-     &           Nr  =  3 )
+     &           Nr  =  1 )
 
 C     MAX_OLX :: Set to the maximum overlap region size of any array
 C     MAX_OLY    that will be exchanged. Controls the sizing of exch
@@ -64,6 +64,6 @@ C                routine buffers.
       PARAMETER ( MAX_OLX = OLx,
      &            MAX_OLY = OLy )
 
-      integer     nobcs
-      parameter ( nobcs = 4 )
+      INTEGER     nobcs
+      PARAMETER ( nobcs = 4 )
 

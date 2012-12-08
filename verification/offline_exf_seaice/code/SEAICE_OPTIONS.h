@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/SEAICE_OPTIONS.h,v 1.17 2012/11/15 20:12:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/SEAICE_OPTIONS.h,v 1.18 2012/12/08 00:34:29 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -41,7 +41,7 @@ C     it is just used to set default number of categories, i.e., =1 if undef,
 C     or =MULTDIM if defined (MULTDIM=7 in default SEAICE_SIZE.h).
 C     Note: be aware of pickup_seaice.* compatibility issues when restarting
 C     a simulation with a different number of categories.
-#undef SEAICE_MULTICATEGORY
+c#define SEAICE_MULTICATEGORY
 
 C--   run with sea Ice Thickness Distribution (ITD);
 C     set number of categories (nITD) in SEAICE_SIZE.h
@@ -54,14 +54,14 @@ C--   SEAICE_ITD replaces SEAICE_MULTICATEGORY
 
 C--   Use the Old version of seaice_growth (close to cvs version 1.70)
 C     otherwise, use the merged version (with some of Ian Fenty s code)
-#define SEAICE_GROWTH_LEGACY
+#undef SEAICE_GROWTH_LEGACY
 
 C--   Since the missing sublimation term is now included
 C     this flag is needed for backward compatibility
-#define SEAICE_DISABLE_SUBLIM
+#undef SEAICE_DISABLE_SUBLIM
 
 C--   Suspected missing term in coupled ocn-ice heat budget (to be confirmed)
-#define SEAICE_DISABLE_HEATCONSFIX
+#undef SEAICE_DISABLE_HEATCONSFIX
 
 C--   Default is constant seaice salinity (SEAICE_salt0); Define the following
 C     flag to consider (space & time) variable salinity: advected and forming
@@ -79,7 +79,7 @@ C--   To try avoid 'spontaneous generation' of tracer maxima by advdiff.
 C--   By default the seaice model is discretized on a B-Grid (for
 C     historical reasons). Define the following flag to use a new
 C     (not thoroughly) test version on a C-grid
-#undef SEAICE_CGRID
+#define SEAICE_CGRID
 
 C--   Only for the C-grid version it is possible to
 #ifdef SEAICE_CGRID
@@ -130,7 +130,7 @@ C     SEAICE_CAP_SUBLIM is not needed as of now, but kept just in case.
 #undef SEAICE_CAP_SUBLIM
 
 C--   Enable free drift code
-#undef SEAICE_ALLOW_FREEDRIFT
+#define SEAICE_ALLOW_FREEDRIFT
 
 #endif /* ALLOW_SEAICE */
 #endif /* SEAICE_OPTIONS_H */
