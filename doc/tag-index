@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1778 2012/12/04 19:50:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1779 2012/12/09 21:01:16 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification:
+  - change (for now, only fwd test) offline_exf_seaice experiment:
+    use a re-entrant channel with idealized costline (trapezoidal shape)
+    at southern boundary to explore seaice dynamics and thermodynamics
+    with simple forcing. Main set-up has dynamics+thermo and SST relaxation;
+    secondary test (input.thsice) use thermodynamics only with SST relaxation.
+  - add seaice-dynamics only secondary test using LSR and pkg/thsice advection.
+o pkg/exf:
+  - disable "sstExtrapol" when Nr=1
 o verification:
   - add new experiment "cheapAML_box" (simple 1 layer set-up from Bruno Deremble)
     to test pkg/cheapaml.
