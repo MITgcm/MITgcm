@@ -64,6 +64,7 @@
  usingCartesianGrid=.TRUE.,
  delX=80*5.E3,
  delY=42*5.E3,
+ ygOrigin=-110.E3,
 #delR= 20., 30., 50.,
  delR= 10.,
  &
