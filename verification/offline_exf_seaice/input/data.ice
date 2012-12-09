@@ -1,12 +1,4 @@
  &THSICE_CONST
-#Tf0kel  = 273.15,
-#- with LANL albedo:
-#albWarmSnow= 0.75,
-#- for full ice-fraction :
-#iceMaskMin = 1.,
-#hThinIce   = 0.01,
-#fracEnMelt = 0.,
-#hThickIce  = 100.,
 #- with fractional ice:
  iceMaskMin = 0.001,
  hiMax      = 10.,
@@ -32,7 +24,6 @@
  thSIceAdvScheme=77,
 #thSIce_diffK   =800.,
  stressReduction=0.,
-#thSIce_doThermo=.FALSE.,
  thSIceFract_InitFile='const100.bin',
  thSIceThick_InitFile='const+20.bin',
 #thSIce_diagFreq=2592000.,
