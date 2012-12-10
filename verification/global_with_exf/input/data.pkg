@@ -2,7 +2,7 @@
  &PACKAGES
   useEXF         = .TRUE.,
   useGMRedi      = .TRUE.,
-  usediagnostics = .TRUE.,
-  usePROFILES    = .TRUE.,
+  useDiagnostics = .TRUE.,
+# usePROFILES    = .TRUE.,
  &
   
