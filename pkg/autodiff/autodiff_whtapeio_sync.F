@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_whtapeio_sync.F,v 1.7 2012/12/10 00:01:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_whtapeio_sync.F,v 1.8 2012/12/10 21:12:50 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -97,8 +97,11 @@ C Only do I/O if I am the master thread (and mpi process 0 IF tapeSingleCpuIO):
       IF ( iAmDoingIO.AND.(myStep.EQ.0).AND.
      &    (myLev.GT.0).AND.(tapeFileUnit.EQ.0) ) THEN
         inquire( file=fName, exist=exst )
-c       CALL MDSFINDUNIT( tapeFileUnit, myThid )
+#ifndef ALLOW_PROFILES
+        CALL MDSFINDUNIT( tapeFileUnit, myThid )
+#else
         tapeFileUnit=1000+myLev
+#endif
         OPEN( tapeFileUnit, file=fName, status='unknown',
      &         access='direct', recl=length_of_rec )
         tapeFileUnitS(myLev)=tapeFileUnit
