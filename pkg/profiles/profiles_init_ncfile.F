@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_ncfile.F,v 1.9 2012/06/22 22:07:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_ncfile.F,v 1.10 2012/12/10 00:01:30 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -69,7 +69,7 @@ c1) creation :
 
       else
 
-       call MDSFINDUNIT( fid2 , mythid )
+c      call MDSFINDUNIT( fid2 , mythid )
        open( fid2, file=file2, form ='unformatted', status='unknown',
      &      access='direct', recl=  (Zlength + 1)*WORDLENGTH*2 )
 

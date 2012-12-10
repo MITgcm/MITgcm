@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.24 2012/09/04 14:32:29 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.25 2012/12/10 00:01:30 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -35,6 +35,9 @@ C ==================== Routine Variables ==========================
       integer fid, dimid, varid1, varid1a, varid1b
       integer varid2,varid3
       _RL tmpyymmdd(1000),tmphhmmss(1000),diffsecs
+      _RL yymmddMin,yymmddMax
+      _RL hhmmssMin,hhmmssMax
+
       integer tmpdate(4),tmpdiff(4),profIsInRunTime
       _RL  tmp_lon, tmp_lon2(1000), tmp_lat2(1000)
       integer vec_start(2), vec_count(2), profno_div1000, kk
@@ -153,6 +156,10 @@ c--   == end of interface ==
       DO bi=1,nSx
 
         profiles_curfile_buff(bi,bj)=0
+        yymmddMin=modelstartdate(1)
+        yymmddMax=modelenddate(1)
+        hhmmssMin=modelstartdate(2)
+        hhmmssMax=modelenddate(2)
 
         do m=1,NLEVELMAX
          do l=1,1000
@@ -374,8 +381,10 @@ c5.2) loop through this chunk
 
       profIsInRunTime=1
 
-      if (( tmpyymmdd(k).GT.modelstartdate(1)+1. _d 0 ).AND.
-     &    ( tmpyymmdd(k).LT.modelenddate(1)-1. _d 0 )) then
+      if (( ( tmpyymmdd(k).GT.yymmddMin ).OR.(( tmpyymmdd(k).EQ.
+     &        yymmddMin ).AND.( tmphhmmss(k).GT.hhmmssMin ))).AND.
+     &    ( ( tmpyymmdd(k).LT.yymmddMax ).OR.(( tmpyymmdd(k).EQ.
+     &        yymmddMax ).AND.( tmphhmmss(k).LT.hhmmssMax ))) ) then
         profIsInRunTime=1
         call cal_FullDate( int(tmpyymmdd(k)),int(tmphhmmss(k)),
      &   tmpdate,mythid )
@@ -653,26 +662,30 @@ C===========================================================
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
 
       inquire( file=fnameequinc, exist=exst )
+         fidforward(num_file,bi,bj)=
+     &     2000+(num_file-1)*nSx*nSx+(bi-1)*nSy+bj
       if (.NOT.exst) then
         call profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
      &   fnameequinc,fidforward(num_file,bi,bj),
      &   ProfNo(num_file,bi,bj),ProfDepthNo(num_file,bi,bj),
      &   bi,bj,myThid)
       else
-         call MDSFINDUNIT( fidforward(num_file,bi,bj) , mythid )
+c        call MDSFINDUNIT( fidforward(num_file,bi,bj) , mythid )
          open( fidforward(num_file,bi,bj),file=fnameequinc,
      &   form ='unformatted',status='unknown', access='direct',
      &   recl=  (ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
       endif
 #ifdef ALLOW_ADJOINT_RUN
       inquire( file=adfnameequinc, exist=exst )
+         fidadjoint(num_file,bi,bj)=
+     &     4000+(num_file-1)*nSx*nSx+(bi-1)*nSy+bj
       if (.NOT.exst) then
         call profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
      &   adfnameequinc, fidadjoint(num_file,bi,bj),
      &   ProfNo(num_file,bi,bj),ProfDepthNo(num_file,bi,bj),
      &   bi,bj, myThid)
       else
-         call MDSFINDUNIT( fidadjoint(num_file,bi,bj) , mythid )
+c        call MDSFINDUNIT( fidadjoint(num_file,bi,bj) , mythid )
          open( fidadjoint(num_file,bi,bj),file=adfnameequinc,
      &   form ='unformatted',status='unknown', access='direct',
      &   recl=  (ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
