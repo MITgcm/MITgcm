@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.132 2012/11/15 18:13:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.133 2012/12/10 22:34:22 torge Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -138,13 +138,11 @@ C--   SEAICE parameters
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
      & SEAICE_EPS, SEAICE_EPS_SQ,
      & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc,
-     & SEAICE_debugPointI, SEAICE_debugPointJ
 #ifdef SEAICE_ITD
-CToM<<<
-C     & SEAICE_debugPointI, SEAICE_debugPointJ
      & SEAICE_debugPointI, SEAICE_debugPointJ,
      & Hlimit_c1, Hlimit_c2, Hlimit_c3
-C>>>ToM
+#else
+     & SEAICE_debugPointI, SEAICE_debugPointJ
 #endif
 
 #ifdef ALLOW_COST
@@ -682,13 +680,11 @@ C     to set SEAICE_mcPheePiston once drF is known)
       ENDIF
 
 #ifdef SEAICE_ITD
-CToM<<<
-C     The ice thickness distribution module can only be used with
-C      package seaice calling
+C     The ice thickness distribution (ITD) module can only be used with
+C      package seaice thermodynamics (seaice_growth)
 C      SEAICE_ADVDIFF and
 C      SEAICE_GROWTH, i.e. needs usePW79thermodynamics = .TRUE.
       useTHSice = .FALSE.
-C>>>ToM
 #endif
       IF ( useThSice ) THEN
 C     If the thsice package with the Winton thermodynamics is used
