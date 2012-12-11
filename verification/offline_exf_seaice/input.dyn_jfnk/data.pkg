@@ -1,0 +1,6 @@
+# Packages
+ &PACKAGES
+  useEXF    = .TRUE.,
+  useSEAICE = .TRUE.,
+  useDiagnostics=.TRUE.,
+ &
