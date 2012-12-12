@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.8 2012/11/09 22:19:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.9 2012/12/12 22:38:07 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -71,33 +71,26 @@ C     u/vIceRes :: residual F(u)
       defined (SEAICE_ALLOW_DYNAMICS) )
 C     Local variables:
 C     k :: loop indices
-      INTEGER k
+      INTEGER k, bi, bj
 C     FGMRES parameters
 C     n  :: size of the input vector(s)
 C     im :: size of Krylov space
 C     ifgmres :: interation counter
       INTEGER n
-      PARAMETER ( n  = 2*sNx*sNy*nSx*nSy )
+      PARAMETER ( n  = 2*sNx*sNy )
       INTEGER im
       PARAMETER ( im = 50 )
       INTEGER ifgmres
 C     work arrays
-      _RL rhs(n), sol(n)
-      _RL vv(n,im+1), w(n,im)
-      _RL wk1(n), wk2(n)
+      _RL rhs(n,nSx,nSy), sol(n,nSx,nSy)
+      _RL vv(n,im+1,nSx,nSy), w(n,im,nSx,nSy)
+      _RL wk1(n,nSx,nSy), wk2(n,nSx,nSy)
 C     need to store some of the fgmres parameters and fields so that
 C     they are not forgotten between Krylov iterations
       COMMON /FGMRES_I/ ifgmres
       COMMON /FGMRES_RL/ sol, rhs, vv, w
 CEOP
 
-C     For now, let only the master thread do all the work
-C     - copy from 2D arrays to 1D-vector
-C     - perform fgmres step (including global sums)
-C     - copy from 1D-vector to 2D arrays
-C     not sure if this works properly
-
-      _BEGIN_MASTER ( myThid )
       IF ( iCode .EQ. 0 ) THEN
 C     The first guess is zero because it is a correction, but this
 C     is implemented by setting du/vIce=0 outside of this routine;
@@ -105,17 +98,25 @@ C     this make it possible to restart FGMRES with a nonzero sol
        CALL SEAICE_MAP2VEC(n,duIce,dvIce,sol,.TRUE.,myThid)
 C     wk2 needs to be reset for iCode = 0, because it may contain
 C     remains of the previous Krylov iteration
-       DO k=1,n
-        wk2(k) = 0. _d 0
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO k=1,n
+          wk2(k,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
        ENDDO
       ELSEIF ( iCode .EQ. 3 ) THEN
        CALL SEAICE_MAP2VEC(n,uIceRes,vIceRes,rhs,.TRUE.,myThid)
 C     change sign of rhs because we are solving J*u = -F
 C     wk2 needs to be initialised for iCode = 3, because it may contain
 C     garbage
-       DO k=1,n
-        rhs(k) = -rhs(k)
-        wk2(k) = 0. _d 0
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO k=1,n
+          rhs(k,bi,bj) = -rhs(k,bi,bj)
+          wk2(k,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
        ENDDO
       ELSE
 C     map preconditioner results or Jacobian times vector,
@@ -135,7 +136,6 @@ C     map work vector to du/vIce to either compute a preconditioner
 C     solution (wk1=rhs) or a Jacobian times wk1
        CALL SEAICE_MAP2VEC(n,duIce,dvIce,wk1,.FALSE.,myThid)
       ENDIF
-      _END_MASTER ( myThid )
 
 C     Fill overlaps in updated fields
       CALL EXCH_UV_XY_RL( duIce, dvIce,.TRUE.,myThid)
@@ -175,44 +175,37 @@ C     === Routine arguments ===
       INTEGER myThid
       _RL xfld2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL yfld2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL vector (n)
+      _RL vector (n,nSx,nSy)
 C     === local variables ===
       INTEGER I, J, bi, bj
-      INTEGER ii, jj, ib, jb, m
+      INTEGER ii, jj, m
 CEOP
 
       m = n/2
-      IF ( map2vec ) THEN
-       DO bj=myByLo(myThid),myByHi(myThid)
-        jb = nSx*sNy*sNx*(bj-1)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         ib = jb + sNy*sNx*(bi-1)
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        IF ( map2vec ) THEN
          DO J=1,sNy
-          jj = ib + sNx*(J-1)
+          jj = sNx*(J-1)
           DO I=1,sNx
            ii = jj + I
-           vector(ii)   = xfld2d(I,J,bi,bj)
-           vector(ii+m) = yfld2d(I,J,bi,bj)
+           vector(ii,  bi,bj) = xfld2d(I,J,bi,bj)
+           vector(ii+m,bi,bj) = yfld2d(I,J,bi,bj)
           ENDDO
          ENDDO
-        ENDDO
-       ENDDO
-      ELSE
-       DO bj=myByLo(myThid),myByHi(myThid)
-        jb = nSx*sNy*sNx*(bj-1)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         ib = jb + sNy*sNx*(bi-1)
+        ELSE
          DO J=1,sNy
-          jj = ib + sNx*(J-1)
+          jj = sNx*(J-1)
           DO I=1,sNx
            ii = jj + I
-           xfld2d(I,J,bi,bj) = vector(ii)
-           yfld2d(I,J,bi,bj) = vector(ii+m)
+           xfld2d(I,J,bi,bj) = vector(ii,  bi,bj)
+           yfld2d(I,J,bi,bj) = vector(ii+m,bi,bj)
           ENDDO
          ENDDO
-        ENDDO
+        ENDIF
+C     bi,bj-loops
        ENDDO
-      ENDIF
+      ENDDO
 
       RETURN
       END
@@ -251,11 +244,14 @@ C modified 12/3/93, array(1) declarations changed to array(*)
 C-----------------------------------------------------------------------
 
       implicit none
+#include "SIZE.h"
+#include "EEPARAMS.h"
 CML   implicit double precision (a-h,o-z) !jfl modification
       integer myThid
       integer n, im, maxits, iout, icode
-      _RL rhs(*), sol(*), vv(n,im+1), w(n,im)
-      _RL wk1(n), wk2(n), eps
+      _RL rhs(n,nSx,nSy), sol(n,nSx,nSy)
+      _RL vv(n,im+1,nSx,nSy), w(n,im,nSx,nSy)
+      _RL wk1(n,nSx,nSy), wk2(n,nSx,nSy), eps
 C-----------------------------------------------------------------------
 C flexible GMRES routine. This is a version of GMRES which allows a
 C a variable preconditioner. Implemented with a reverse communication
@@ -351,7 +347,9 @@ C-------------------------------------------------------------
 C     arnoldi size should not exceed 50 in this version..
 C-------------------------------------------------------------
       integer i, its, i1, ii, j, jj, k, k1!, n1
+      integer bi, bj
       _RL r0, gam, epsmac, eps1
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 CEOP
       save
@@ -369,27 +367,46 @@ C     **  outer loop starts here..
 C--------------compute initial residual vector --------------
 C 10   continue
 CML      call dcopy (n, sol, 1, wk1, 1) !jfl modification
-      do k=1,n
-       wk1(k)=sol(k)
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
+        do k=1,n
+         wk1(k,bi,bj)=sol(k,bi,bj)
+        enddo
+       enddo
       enddo
       icode = 3
       RETURN
  11   continue
-      do j=1,n
-         vv(j,1) = rhs(j) - wk2(j)
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
+        do j=1,n
+         vv(j,1,bi,bj) = rhs(j,bi,bj) - wk2(j,bi,bj)
+        enddo
+       enddo
       enddo
 CML 20   ro = ddot(n, vv, 1, vv,1) !jfl modification
- 20   call scalprod(n, vv, vv, ro, myThid)
+ 20   call scalprod(n, im, 1, 1, vv, vv, ro, myThid)
       ro = sqrt(ro)
       if (ro .eq. 0.0d0) goto 999
       t = 1.0d0/ ro
-      do j=1, n
-         vv(j,1) = vv(j,1)*t
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
+        do j=1, n
+         vv(j,1,bi,bj) = vv(j,1,bi,bj)*t
+        enddo
+       enddo
       enddo
       if (its .eq. 0) eps1=eps
+C     not sure what this is, r0 is never used again
       if (its .eq. 0) r0 = ro
-      if (iout .gt. 0) write(*, 199) its, ro!&
+      if (iout .gt. 0) then
+       _BEGIN_MASTER( myThid )      
+       write(msgBuf, 199) its, ro
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
 C           print *,'chau',its, ro !write(iout, 199) its, ro
+       _END_MASTER( myThid )
+      endif
 C
 C     initialize 1-st term  of rhs of hessenberg system..
 C
@@ -398,8 +415,12 @@ C
  4    i=i+1
       its = its + 1
       i1 = i + 1
-      do k=1, n
-         wk1(k) = vv(k,i)
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
+        do k=1, n
+         wk1(k,bi,bj) = vv(k,i,bi,bj)
+        enddo
+       enddo
       enddo
 C
 C     return
@@ -408,16 +429,24 @@ C
 
       RETURN
  200  continue
-      do k=1, n
-         w(k,i) = wk2(k)
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
+        do k=1, n
+         w(k,i,bi,bj) = wk2(k,bi,bj)
+        enddo
+       enddo
       enddo
 C
 C     call matvec operation
 C
       icode = 2
 CML      call dcopy(n, wk2, 1, wk1, 1) !jfl modification
-      do k=1,n
-       wk1(k)=wk2(k)
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
+        do k=1,n
+         wk1(k,bi,bj)=wk2(k,bi,bj)
+        enddo
+       enddo
       enddo
 C
 C     return
@@ -429,60 +458,84 @@ C     first call to ope corresponds to intialization goto back to 11.
 C
 C      if (icode .eq. 3) goto 11
 CML      call  dcopy (n, wk2, 1, vv(1,i1), 1) !jfl modification
-      do k=1,n
-       vv(k,i1)=wk2(k)
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
+        do k=1,n
+         vv(k,i1,bi,bj)=wk2(k,bi,bj)
+        enddo
+       enddo
       enddo
 C
 C     modified gram - schmidt...
 C
       do j=1, i
 CML         t = ddot(n, vv(1,j), 1, vv(1,i1), 1) !jfl modification
-         call scalprod(n, vv(1,j), vv(1,i1), t, myThid)
-         hh(j,i) = t
+       call scalprod(n, im, j, i1, vv, vv, t, myThid)
+       hh(j,i) = t
 CML         call daxpy(n, -t, vv(1,j), 1, vv(1,i1), 1) !jfl modification
 CML      enddo
 CML      do j=1, i
 CML         t = hh(j,i)
+       do bj=myByLo(myThid),myByHi(myThid)
+        do bi=myBxLo(myThid),myBxHi(myThid)
          do k=1,n
-          vv(k,i1) = vv(k,i1) - t*vv(k,j)
+          vv(k,i1,bi,bj) = vv(k,i1,bi,bj) - t*vv(k,j,bi,bj)
          enddo
+        enddo
+       enddo
       enddo
 CML      t = sqrt(ddot(n, vv(1,i1), 1, vv(1,i1), 1)) !jfl modification
-      call scalprod(n, vv(1,i1), vv(1,i1), t, myThid)
+      call scalprod(n, im, i1, i1, vv, vv, t, myThid)
       t = sqrt(t)
       hh(i1,i) = t
-      if (t .eq. 0.0d0) goto 58
-      t = 1.0d0 / t
-      do k=1,n
-         vv(k,i1) = vv(k,i1)*t
-      enddo
+      if (t .ne. 0.0d0) then
+       t = 1.0d0 / t
+       do bj=myByLo(myThid),myByHi(myThid)
+        do bi=myBxLo(myThid),myBxHi(myThid)
+         do k=1,n
+          vv(k,i1,bi,bj) = vv(k,i1,bi,bj)*t
+         enddo
+        enddo
+       enddo
+      endif
 C
 C     done with modified gram schimd and arnoldi step.
 C     now  update factorization of hh
 C
- 58   if (i .eq. 1) goto 121
+      if (i .ne. 1) then
 C
 C     perfrom previous transformations  on i-th column of h
 C
-      do k=2,i
-         k1 = k-1
-         t = hh(k1,i)
-         hh(k1,i) = c(k1)*t + s(k1)*hh(k,i)
-         hh(k,i) = -s(k1)*t + c(k1)*hh(k,i)
-      enddo
- 121  gam = sqrt(hh(i,i)**2 + hh(i1,i)**2)
+       do k=2,i
+        k1 = k-1
+        t = hh(k1,i)
+        hh(k1,i) = c(k1)*t + s(k1)*hh(k,i)
+        hh(k,i) = -s(k1)*t + c(k1)*hh(k,i)
+       enddo
+      endif
+      gam = sqrt(hh(i,i)**2 + hh(i1,i)**2)
+CML      if (gam .ne. 0.0d0) gam = 1./gam
+CMLC-----------#determine next plane rotation  #-------------------
+CML      c(i)   = hh(i,i)*gam
+CML      s(i)   = hh(i1,i)*gam
       if (gam .eq. 0.0d0) gam = epsmac
 C-----------#determine next plane rotation  #-------------------
-      c(i) = hh(i,i)/gam
-      s(i) = hh(i1,i)/gam
+      c(i)   = hh(i,i)/gam
+      s(i)   = hh(i1,i)/gam
       rs(i1) = -s(i)*rs(i)
-      rs(i) =  c(i)*rs(i)
+      rs(i)  =  c(i)*rs(i)
 C
 C     determine res. norm. and test for convergence-
 C
       hh(i,i) = c(i)*hh(i,i) + s(i)*hh(i1,i)
       ro = abs(rs(i1))
-      if (iout .gt. 0) write(*, 199) its, ro
+      if (iout .gt. 0) then
+       _BEGIN_MASTER( myThid )      
+       write(msgBuf, 199) its, ro
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+       _END_MASTER( myThid )
+      endif
       if (i .lt. im .and. (ro .gt. eps1))  goto 4
 C
 C     now compute solution. first solve upper triangular system.
@@ -504,8 +557,12 @@ C
       do j=1, i
        t = rs(j)
 C         call daxpy(n, t, w(1,j), 1, sol,1) !jfl modification
-       do k=1,n
-        sol(k) = sol(k) + t*w(k,j)
+       do bj=myByLo(myThid),myByHi(myThid)
+        do bi=myBxLo(myThid),myBxHi(myThid)
+         do k=1,n
+          sol(k,bi,bj) = sol(k,bi,bj) + t*w(k,j,bi,bj)
+         enddo
+        enddo
        enddo
       enddo
 C
@@ -526,8 +583,12 @@ C       goto 10
         t = rs(j)
         if (j .eq. 1)  t = t-1.0d0
 CML        call daxpy (n, t, vv(1,j), 1,  vv, 1)
-        do k=1,n
-         vv(k,1) = vv(k,1) + t*vv(k,j)
+        do bj=myByLo(myThid),myByHi(myThid)
+         do bi=myBxLo(myThid),myBxHi(myThid)
+          do k=1,n
+           vv(k,1,bi,bj) = vv(k,1,bi,bj) + t*vv(k,j,bi,bj)
+          enddo
+         enddo
         enddo
       enddo
 C
@@ -548,53 +609,58 @@ CBOP
 C     !ROUTINE: SCALPROD
 C     !INTERFACE:
 
-      subroutine scalprod(n,dx,dy,t,myThid)
+      subroutine scalprod(n,im,i1,i2,dx,dy,t,myThid)
 
 C     forms the dot product of two vectors.
 C     uses unrolled loops for increments equal to one.
 C     jack dongarra, linpack, 3/11/78.
-C     ML: code stolen from BLAS and adapted for parallel applications
+C     ML: code stolen from BLAS-ddot and adapted for parallel applications
 
       implicit none
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
-      integer n
-      _RL dx(n),dy(n)
-      real*8 t
+      integer n, im, i1, i2
+      _RL dx(n,im+1,nSx,nSy),dy(n,im+1,nSx,nSy)
+      _RL t
       integer myThid
-
-      real*8 dtemp
-      integer i,m,mp1
-#ifdef ALLOW_USE_MPI
-      INTEGER mpiRC
-#endif   /* ALLOW_USE_MPI */
+C     local arrays
+      _RL dtemp(nSx,nSy)
+      integer i,m,mp1,bi,bj
 CEOP
 C
       m = mod(n,5)
-      dtemp = 0. _d 0
       t     = 0. _d 0
       if( m .eq. 0 ) go to 40
-      do i = 1,m
-       dtemp = dtemp + dx(i)*dy(i)
+CML      if( m .ne. 0 ) then
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
+        dtemp(bi,bj) = 0. _d 0
+        do i = 1,m
+         dtemp(bi,bj) = dtemp(bi,bj) + dx(i,i1,bi,bj)*dy(i,i2,bi,bj)
+        enddo
+       enddo
       enddo
+CML      endif
+CML      if( n .ge. 5 ) then
       if( n .lt. 5 ) go to 60
-   40 mp1 = m + 1
-      do i = mp1,n,5
-       dtemp = dtemp + dx(i)*dy(i) + dx(i + 1)*dy(i + 1) +
-     &      dx(i + 2)*dy(i + 2) + dx(i + 3)*dy(i + 3) +
-     &      dx(i + 4)*dy(i + 4)
+ 40   mp1 = m + 1
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
+        dtemp(bi,bj) = 0. _d 0
+        do i = mp1,n,5
+         dtemp(bi,bj) = dtemp(bi,bj)          + 
+     &        dx(i,    i1,bi,bj)*dy(i,    i2,bi,bj) +
+     &        dx(i + 1,i1,bi,bj)*dy(i + 1,i2,bi,bj) +
+     &        dx(i + 2,i1,bi,bj)*dy(i + 2,i2,bi,bj) + 
+     &        dx(i + 3,i1,bi,bj)*dy(i + 3,i2,bi,bj) +
+     &        dx(i + 4,i1,bi,bj)*dy(i + 4,i2,bi,bj)
+        enddo
+       enddo
       enddo
-   60 continue
-C     sum over all processors
-#ifdef ALLOW_USE_MPI
-      t = dtemp
-      IF ( usingMPI ) THEN
-       CALL MPI_Allreduce(t,dtemp,1,MPI_DOUBLE_PRECISION,MPI_SUM,
-     &                   MPI_COMM_MODEL,mpiRC)
-      ENDIF
-#endif /* ALLOW_USE_MPI */
-      t = dtemp
+ 60   continue
+CML      endif
+      CALL GLOBAL_SUM_TILE_RL( dtemp,t,myThid )
 
 CML      return
 CML      end
