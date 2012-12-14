@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/code/SIZE.h,v 1.2 2011/09/02 14:22:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/code/SIZE.h,v 1.3 2012/12/14 19:19:44 dimitri Exp $
 C $Name:  $
 
 C
@@ -8,15 +8,15 @@ C    !INTERFACE:
 C    include SIZE.h
 C    !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SIZE.h Declare size of underlying computational grid.
+C     | SIZE.h Declare size of underlying computational grid.     
 C     *==========================================================*
-C     | The design here support a three-dimensional model grid
-C     | with indices I,J and K. The three-dimensional domain
-C     | is comprised of nPx*nSx blocks of size sNx along one axis
-C     | nPy*nSy blocks of size sNy along another axis and one
-C     | block of size Nz along the final axis.
-C     | Blocks have overlap regions of size OLx and OLy along the
-C     | dimensions that are subdivided.
+C     | The design here support a three-dimensional model grid    
+C     | with indices I,J and K. The three-dimensional domain      
+C     | is comprised of nPx*nSx blocks of size sNx along one axis 
+C     | nPy*nSy blocks of size sNy along another axis and one     
+C     | block of size Nz along the final axis.                    
+C     | Blocks have overlap regions of size OLx and OLy along the 
+C     | dimensions that are subdivided.                           
 C     *==========================================================*
 C     \ev
 CEOP
@@ -56,9 +56,9 @@ C     Nr  :: No. points in Z for full process domain.
      &           Ny  = sNy*nSy*nPy,
      &           Nr  =  23)
 
-C     MAX_OLX  - Set to the maximum overlap region size of any array
+C     MAX_OLX :: Set to the maximum overlap region size of any array
 C     MAX_OLY    that will be exchanged. Controls the sizing of exch
-C                routine buufers.
+C                routine buffers.
       INTEGER MAX_OLX
       INTEGER MAX_OLY
       PARAMETER ( MAX_OLX = OLx,
