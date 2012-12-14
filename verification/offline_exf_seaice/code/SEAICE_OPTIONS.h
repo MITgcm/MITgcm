@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/SEAICE_OPTIONS.h,v 1.18 2012/12/08 00:34:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/SEAICE_OPTIONS.h,v 1.19 2012/12/14 23:23:31 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -95,7 +95,7 @@ C     from below and above in seaice_evp: not necessary, and not recommended
 C     regularize zeta to zmax with a smooth tanh-function instead
 C     of a min(zeta,zmax). This improves convergence of iterative
 C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
-# undef SEAICE_ZETA_SMOOTHREG
+# define SEAICE_ZETA_SMOOTHREG
 C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
 # undef SEAICE_ALLOW_TEM
 #else /* not SEAICE_CGRID, but old B-grid */
