@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.70 2012/10/16 06:38:26 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.71 2012/12/16 16:22:22 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -407,7 +407,7 @@ C     Avoid using both type of diffusion scheme (DIFF1 & SEAICEdiffKh)
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
-      
+
 C--
 #ifdef ALLOW_AUTODIFF_TAMC
       IF ( NPSEUDOTIMESTEPS .GT. MPSEUDOTIMESTEPS ) THEN
@@ -656,6 +656,18 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
      &        '   SEAICE_dTempFrz_dS = 0.'
         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
+#ifndef SEAICE_GLOBAL_3DIAG_SOLVER
+      IF ( SEAICEuseMultiTileSolver ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'SEAICE_CHECK: SEAICEuseMultiTileSolver = .TRUE.'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(2A)') ' but CPP-flag ',
+     &   'SEAICE_GLOBAL_3DIAG_SOLVER is #undef in SEAICE_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif /* SEAICE_GLOBAL_3DIAG_SOLVER */
+
 #ifndef SEAICE_ALLOW_CLIPVELS
       IF ( SEAICE_clipVelocities ) THEN
         WRITE(msgBuf,'(A)')
@@ -759,7 +771,7 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
        ENDIF
       ENDIF
       IF ( SEAICEuseJFNK .AND. SEAICEuseEVP ) THEN
-       WRITE(msgBuf,'(2A)') 
+       WRITE(msgBuf,'(2A)')
      &      'S/R SEAICE_CHECK: cannot have both SEAICEuseJFNK=.TRUE.',
      &      'and SEAICEuseEVP=.TRUE. (i.e. SEAICE_deltaTevp > 0)'
         CALL PRINT_ERROR( msgBuf , myThid)

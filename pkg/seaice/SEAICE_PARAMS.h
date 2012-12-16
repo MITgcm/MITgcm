@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.99 2012/11/15 15:36:13 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.100 2012/12/16 16:22:22 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -7,29 +7,33 @@ C     | o Basic parameter header for sea ice model.
 C     *==========================================================*
 
 C--   COMMON /SEAICE_PARM_L/ Logical parameters of sea ice model.
-C
-C     SEAICEwriteState  :: If true, write sea ice state to file;
-C                          default is false.
+C - dynamics:
 C     SEAICEuseDYNAMICS :: If false, do not use dynamics;
 C                          default is to use dynamics.
-C     SEAICEuseTEM      :: to use truncated ellipse method (see Geiger et al.
-C                          1998) set this parameter to true, default is false
-C     SEAICEuseEVP      :: If false, use Zhangs LSR solver for VP equations
-C                          if true use elastic viscous plastic solver
 C     SEAICEuseFREEDRIFT :: If True use free drift velocity instead of EVP
 C                           or LSR
-C     SEAICEuseJFNK      :: If true, use Jacobi-free Newton-Krylov solver
-C                           instead of LSR (default: false)
-C     SEAICEuseTILT      :: If true then include surface tilt term in dynamics
-C     SEAICEheatConsFix  :: If true then fix ocn<->seaice advective heat flux.
+C     SEAICEuseEVP      :: If false, use Zhangs LSR solver for VP equations
+C                          if true use elastic viscous plastic solver
 C     SEAICEuseEVPpickup :: Set to false in order to start EVP solver with
 C                          non-EVP pickup files.  Default is true.
 C                          Applied only if SEAICEuseEVP=.TRUE.
-C     SEAICEuseFluxForm :: use flux form for advection and diffusion
-C                          of seaice
+C     SEAICEuseMultiTileSolver :: in LSR, use full domain tri-diagonal solver
+C     SEAICEuseJFNK      :: If true, use Jacobi-free Newton-Krylov solver
+C                           instead of LSR (default: false)
+C     SEAICEuseTEM      :: to use truncated ellipse method (see Geiger et al.
+C                          1998) set this parameter to true, default is false
+C     SEAICEuseTilt      :: If true then include surface tilt term in dynamics
 C     SEAICEuseMetricTerms :: use metric terms for dynamics solver
 C                          (default = .true. )
-C     SEAICEuseFlooding :: turn on scheme to convert submerged snow into ice
+C     SEAICE_no_slip    :: apply no slip boundary conditions to seaice velocity
+C     SEAICE_maskRHS    :: mask the RHS of the solver where there is no ice
+C     SEAICE_clipVelocities :: clip velocities to +/- 40cm/s
+C     useHB87stressCoupling :: use an intergral over ice and ocean surface
+C                          layer to define surface stresses on ocean
+C                          following Hibler and Bryan (1987, JPO)
+C - advection:
+C     SEAICEuseFluxForm :: use flux form for advection and diffusion
+C                          of seaice
 C     SEAICEadvHeff     :: turn on advection of effective thickness
 C                          (default = .true.)
 C     SEAICEadvArea     :: turn on advection of fraction area
@@ -38,28 +42,28 @@ C     SEAICEadvSnow     :: turn on advection of snow (does not work with
 C                          non-default Leap-frog scheme for advection)
 C     SEAICEadvSalt     :: turn on advection of salt (does not work with
 C                          non-default Leap-frog scheme for advection)
-C     useHB87stressCoupling :: use an intergral over ice and ocean surface
-C                          layer to define surface stresses on ocean
-C                          following Hibler and Bryan (1987, JPO)
+C - thermodynamics:
 C     usePW79thermodynamics :: use "0-layer" thermodynamics as described in
 C                           Parkinson and Washington (1979) and Hibler (1979)
+C     SEAICE_useMultDimSnow :: use same fixed pdf for snow as for MULITCATEGORY ice
+C     SEAICEuseFlooding  :: turn on scheme to convert submerged snow into ice
+C     SEAICEheatConsFix  :: If true then fix ocn<->seaice advective heat flux.
 C     useMaykutSatVapPoly :: use Maykut Polynomial for saturation vapor pressure
 C                         instead of extended temp-range exponential law; def=F.
-C     SEAICE_mcPheeStepFunc    :: use step function (not linear tapering) in
+C     SEAICE_mcPheeStepFunc :: use step function (not linear tapering) in
 C                           ocean-ice turbulent flux
-C     SEAICE_useMultDimSnow :: use same fixed pdf for snow as for MULITCATEGORY ICE
 C     SEAICE_doOpenWaterGrowth :: use open water heat flux directly to grow ice
 C                           (when false cool ocean, and grow later if needed)
 C     SEAICE_doOpenWaterMelt   :: use open water heat flux directly to melt ice
 C                           (when false warm ocean, and melt later if needed)
 C     SEAICE_salinityTracer    :: use SItracer to exchange and trace ocean
 C                           salt in ice
-C     SEAICE_age Tracer        :: use SItracer to trace the age of ice
+C     SEAICE_ageTracer         :: use SItracer to trace the age of ice
 C     SEAICErestoreUnderIce :: restore surface T/S also underneath ice
 C                          ( default is false )
-C     SEAICE_no_slip    :: apply no slip boundary conditions to seaice velocity
-C     SEAICE_clipVelocities :: clip velocities to +/- 40cm/s
-C     SEAICE_maskRHS    :: mask the RHS of the solver where there is no ice
+C - other (I/O, ...):
+C     SEAICEwriteState  :: If true, write sea ice state to file;
+C                          default is false.
 C     SEAICE_tave_mdsio :: write TimeAverage output using MDSIO
 C     SEAICE_dump_mdsio :: write snap-shot output   using MDSIO
 C     SEAICE_mon_stdio  :: write monitor to std-outp
@@ -67,39 +71,41 @@ C     SEAICE_tave_mnc   :: write TimeAverage output using MNC
 C     SEAICE_dump_mnc   :: write snap-shot output   using MNC
 C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
-     &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
-     &     SEAICEuseFREEDRIFT, SEAICEuseTILT, SEAICEuseTEM,
+     &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT,
+     &     SEAICEuseEVP, SEAICEuseEVPpickup,
+     &     SEAICEuseMultiTileSolver,
      &     SEAICEuseJFNK,
-     &     SEAICEheatConsFix,
-     &     SEAICEuseMetricTerms,
-     &     SEAICEuseEVPpickup, SEAICEuseFlooding,
-     &     SEAICEadvHeff, SEAICEadvArea,
+     &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
+     &     SEAICE_no_slip, SEAICE_maskRHS,
+     &     SEAICE_clipVelocities, useHB87stressCoupling,
+     &     SEAICEuseFluxForm, SEAICEadvHeff, SEAICEadvArea,
      &     SEAICEadvSnow, SEAICEadvSalt,
-     &     SEAICEuseFluxForm, useHB87stressCoupling,
-     &     usePW79thermodynamics, useMaykutSatVapPoly,
-     &     SEAICE_mcPheeStepFunc, SEAICE_useMultDimSnow,
+     &     usePW79thermodynamics,
+     &     SEAICE_useMultDimSnow, SEAICEuseFlooding, SEAICEheatConsFix,
+     &     useMaykutSatVapPoly, SEAICE_mcPheeStepFunc,
      &     SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
      &     SEAICE_salinityTracer, SEAICE_ageTracer,
      &     SEAICErestoreUnderIce,
-     &     SEAICE_no_slip, SEAICE_clipVelocities, SEAICE_maskRHS,
+     &     SEAICEwriteState,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
-     &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
-     &     SEAICEuseFREEDRIFT, SEAICEuseTILT, SEAICEuseTEM,
+     &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT,
+     &     SEAICEuseEVP, SEAICEuseEVPpickup,
+     &     SEAICEuseMultiTileSolver,
      &     SEAICEuseJFNK,
-     &     SEAICEheatConsFix,
-     &     SEAICEuseMetricTerms,
-     &     SEAICEuseEVPpickup, SEAICEuseFlooding,
-     &     SEAICEadvHeff, SEAICEadvArea,
+     &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
+     &     SEAICE_no_slip, SEAICE_maskRHS,
+     &     SEAICE_clipVelocities, useHB87stressCoupling,
+     &     SEAICEuseFluxForm, SEAICEadvHeff, SEAICEadvArea,
      &     SEAICEadvSnow, SEAICEadvSalt,
-     &     SEAICEuseFluxForm, useHB87stressCoupling,
-     &     usePW79thermodynamics, useMaykutSatVapPoly,
-     &     SEAICE_mcPheeStepFunc, SEAICE_useMultDimSnow,
+     &     usePW79thermodynamics,
+     &     SEAICE_useMultDimSnow, SEAICEuseFlooding, SEAICEheatConsFix,
+     &     useMaykutSatVapPoly, SEAICE_mcPheeStepFunc,
      &     SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
      &     SEAICE_salinityTracer, SEAICE_ageTracer,
      &     SEAICErestoreUnderIce,
-     &     SEAICE_no_slip, SEAICE_clipVelocities, SEAICE_maskRHS,
+     &     SEAICEwriteState,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
 
@@ -111,7 +117,7 @@ C                         1 = use linearized approx (consistent with tsurf findi
 C     SOLV_MAX_ITERS    :: maximum number of allowed LSR-solver iterations
 C     SOLV_NCHECK       :: iteration interval for solver convergence test
 C     NPSEUDOTIMESTEPS  :: number of extra pseudo time steps (>= 2)
-C     SEAICEnewtonIterMax :: maximum number of allowed Newton iterations 
+C     SEAICEnewtonIterMax :: maximum number of allowed Newton iterations
 C                          in JFNK-solver
 C     SEAICEkrylovIterMax :: maximum number of allowed Krylov iterations
 C                          in JFNK-solver
@@ -304,7 +310,7 @@ C     SEAICEdiffKhSnow   :: sets the diffusivity for snow on sea-ice (m^2/s)
 C     SEAICEdiffKhSalt   :: sets the diffusivity for sea ice salinity (m^2/s)
 C     SEAICE_airTurnAngle   :: turning angles of air-ice interfacial stress
 C     SEAICE_waterTurnAngle :: and ice-water interfacial stress (in degrees)
-C     SEAICE_tauAreaObsRelax :: Timescale of relaxation to observed 
+C     SEAICE_tauAreaObsRelax :: Timescale of relaxation to observed
 C                               sea ice concentration (s), default=unset
 C
       _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn, SEAICE_deltaTevp
@@ -372,7 +378,7 @@ C
      &    facOpenGrow, facOpenMelt,
      &    SEAICE_tempFrz0, SEAICE_dTempFrz_dS,
      &    OCEAN_drag, LSR_ERROR, DIFF1,
-     &    JFNKgamma_nonlin, JFNKres_t, 
+     &    JFNKgamma_nonlin, JFNKres_t,
      &    JFNKgamma_lin_min, JFNKgamma_lin_max,
      &    SEAICE_area_reg, SEAICE_hice_reg,
      &    SEAICE_area_floor, SEAICE_area_max,

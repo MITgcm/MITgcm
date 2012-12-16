@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.133 2012/12/10 22:34:22 torge Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.134 2012/12/16 16:22:22 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -80,9 +80,8 @@ C     SEAICE_freeze     :: FREEZING TEMP. OF SEA WATER
 
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
-     & SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseTEM,
-     & SEAICEuseEVPpickup, SEAICEuseFluxForm,
-     & SEAICEuseMetricTerms,
+     & SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT,
+     & SEAICEuseTEM, SEAICEuseMetricTerms, SEAICEuseTilt,
      & useHB87stressCoupling, SEAICEuseFlooding,
      & usePW79thermodynamics, useMaykutSatVapPoly,
      & SEAICErestoreUnderIce,
@@ -91,19 +90,20 @@ C--   SEAICE parameters
      & SEAICEadvSalt, SEAICEadvAge,
      & SEAICE_clipVelocities, SEAICE_maskRHS, SEAICE_no_slip,
      & SEAICEetaZmethod, LAD, IMAX_TICE, postSolvTempIter,
-     & SEAICEadvScheme, SEAICEadvSchArea,
+     & SEAICEuseFluxForm, SEAICEadvScheme, SEAICEadvSchArea,
      & SEAICEadvSchHeff, SEAICEadvSchSnow,
      & SEAICEadvSchSalt, SEAICEadvSchAge,
      & SEAICEdiffKhHeff, SEAICEdiffKhSnow, SEAICEdiffKhArea,
-     & SEAICEdiffKhSalt, SEAICEdiffKhAge,
+     & SEAICEdiffKhSalt, SEAICEdiffKhAge, DIFF1,
      & SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      & SEAICE_LSRrelaxU, SEAICE_LSRrelaxV,
+     & SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS,
+     & LSR_ERROR, LSR_mixIniGuess, SEAICEuseMultiTileSolver,
      & SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
      & SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
      & SEAICEuseJFNK, SEAICEnewtonIterMax, SEAICEkrylovIterMax,
      & JFNKgamma_nonlin,JFNKres_t,JFNKgamma_lin_min,JFNKgamma_lin_max,
      & SEAICEpresH0, SEAICEpresPow0, SEAICEpresPow1,
-     & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      & SEAICE_initialHEFF, SEAICEturbFluxFormula,
      & SEAICE_areaGainFormula, SEAICE_areaLossFormula,
      & SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
@@ -129,21 +129,19 @@ C--   SEAICE parameters
      & SEAICE_mcPheeStepFunc, SEAICE_gamma_t, SEAICE_gamma_t_frz,
      & SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
      & AreaFile, HeffFile, uIceFile, vIceFile, HsnowFile, HsaltFile,
-     & SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS, LSR_mixIniGuess,
-     & LSR_ERROR, DIFF1, SEAICEuseFREEDRIFT, SEAICEuseTILT,
      & SEAICEheatConsFix, SEAICE_multDim, SEAICE_useMultDimSnow,
      & SEAICE_area_reg, SEAICE_hice_reg,
      & SEAICE_area_floor, SEAICE_area_max, SEAICE_tauAreaObsRelax,
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
      & SEAICE_EPS, SEAICE_EPS_SQ,
+     & SEAICEwriteState, SEAICEuseEVPpickup,
+     & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc,
 #ifdef SEAICE_ITD
-     & SEAICE_debugPointI, SEAICE_debugPointJ,
      & Hlimit_c1, Hlimit_c2, Hlimit_c3
-#else
-     & SEAICE_debugPointI, SEAICE_debugPointJ
 #endif
+     & SEAICE_debugPointI, SEAICE_debugPointJ
 
 #ifdef ALLOW_COST
       NAMELIST /SEAICE_PARM02/
@@ -172,7 +170,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       _BEGIN_MASTER(myThid)
 
 C--   set default sea ice parameters
-      SEAICEwriteState   = .FALSE.
 #ifdef SEAICE_ALLOW_DYNAMICS
       SEAICEuseDYNAMICS  = .TRUE.
 #else
@@ -180,20 +177,18 @@ C--   set default sea ice parameters
 #endif
       SEAICEadjMODE      = 0
       SEAICEuseFREEDRIFT = .FALSE.
-      SEAICEuseTILT      = .TRUE.
+      SEAICEuseTilt      = .TRUE.
       SEAICEheatConsFix  = .FALSE.
       SEAICEuseTEM       = .FALSE.
       SEAICEuseMetricTerms = .TRUE.
       SEAICEuseEVPpickup = .TRUE.
-      SEAICEuseFluxForm  = .TRUE.
-C--   old default:
-c     SEAICEuseFluxForm  = .FALSE.
       SEAICErestoreUnderIce = .FALSE.
       SEAICE_salinityTracer = .FALSE.
       SEAICE_ageTracer      = .FALSE.
       useHB87stressCoupling = .FALSE.
       usePW79thermodynamics = .TRUE.
       useMaykutSatVapPoly = .FALSE.
+      SEAICEuseFluxForm  = .TRUE.
       SEAICEadvHeff      = .TRUE.
       SEAICEadvArea      = .TRUE.
       SEAICEadvSnow      = .TRUE.
@@ -216,6 +211,9 @@ c     SEAICEuseFluxForm  = .FALSE.
       SEAICEdiffKhHeff   = UNSET_RL
       SEAICEdiffKhSnow   = UNSET_RL
       SEAICEdiffKhSalt   = UNSET_RL
+      DIFF1      = UNSET_RL
+C--   old DIFF1 default:
+c     DIFF1      = .004 _d 0
       SEAICE_deltaTtherm = dTtracerLev(1)
       SEAICE_deltaTdyn   = dTtracerLev(1)
       SEAICE_deltaTevp   = UNSET_RL
@@ -234,20 +232,8 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICEpresH0       = 1. _d 0
       SEAICEpresPow0     = 1
       SEAICEpresPow1     = 1
-      SEAICE_monFreq     = monitorFreq
-      SEAICE_dumpFreq    = dumpFreq
-      SEAICE_taveFreq    = taveFreq
-      SEAICE_elasticParm = 0.33333333333333333333333333 _d 0
       SEAICE_evpTauRelax = -1. _d 0
-#ifdef ALLOW_MNC
-      SEAICE_tave_mnc = timeave_mnc
-      SEAICE_dump_mnc = snapshot_mnc
-      SEAICE_mon_mnc  = monitor_mnc
-#else
-      SEAICE_tave_mnc = .FALSE.
-      SEAICE_dump_mnc = .FALSE.
-      SEAICE_mon_mnc  = .FALSE.
-#endif
+      SEAICE_elasticParm = 0.33333333333333333333333333 _d 0
       SEAICE_initialHEFF = ZERO
 #ifdef SEAICE_ITD
 CToM<<<
@@ -384,9 +370,7 @@ C     Euler time stepping scheme of Zhang+Hibler (1997)
       LSR_mixIniGuess = -1
 #endif
       LSR_ERROR  = 0.0001    _d 0
-      DIFF1      = UNSET_RL
-C--   old DIFF1 default:
-c     DIFF1      = .004 _d 0
+      SEAICEuseMultiTileSolver = .FALSE.
 
 #ifdef SEAICE_GROWTH_LEGACY
       SEAICE_area_reg   = 0.15 _d 0
@@ -396,7 +380,7 @@ c     DIFF1      = .004 _d 0
       SEAICE_area_reg   = siEPS
 #endif
       SEAICE_hice_reg   = 0.05 _d 0
-      SEAICE_area_max    = 1.00 _d 0
+      SEAICE_area_max   = 1.00 _d 0
 
       SEAICE_airTurnAngle   = 0.0 _d 0
       SEAICE_waterTurnAngle = 0.0 _d 0
@@ -406,6 +390,23 @@ c     DIFF1      = .004 _d 0
       MIN_TICE          = -50.    _d 0
       SEAICE_EPS        = 1.      _d -10
       SEAICE_EPS_SQ     = -99999.
+
+      SEAICEwriteState  = .FALSE.
+      SEAICE_monFreq    = monitorFreq
+      SEAICE_dumpFreq   = dumpFreq
+      SEAICE_taveFreq   = taveFreq
+#ifdef ALLOW_MNC
+      SEAICE_tave_mnc = timeave_mnc
+      SEAICE_dump_mnc = snapshot_mnc
+      SEAICE_mon_mnc  = monitor_mnc
+#else
+      SEAICE_tave_mnc = .FALSE.
+      SEAICE_dump_mnc = .FALSE.
+      SEAICE_mon_mnc  = .FALSE.
+#endif
+      SEAICE_debugPointI = UNSET_I
+      SEAICE_debugPointJ = UNSET_I
+
 C-    Retired parameters:
 c     LAD        = 2
       LAD        = UNSET_I
@@ -439,8 +440,6 @@ c     MAX_TICE           = 30.     _d 0
       SEAICEturbFluxFormula =UNSET_I
       SEAICE_freeze      = UNSET_RL
 C-    end retired parameters
-      SEAICE_debugPointI = UNSET_I
-      SEAICE_debugPointJ = UNSET_I
 
 #ifdef ALLOW_COST
       locDate(1) = 0

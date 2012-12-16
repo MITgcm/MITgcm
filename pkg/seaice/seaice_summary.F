@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.57 2012/11/16 22:52:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.58 2012/12/16 16:22:22 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -133,8 +133,8 @@ C--  Seaice-Dynamics parameters
      & 'SEAICE_waterDrag  =', ' /* water-ice drag * density */')
       CALL WRITE_0D_RL( SEAICE_waterDrag_south  ,INDEX_NONE,
      & 'SEAICE_waterDrag_south =', ' /* Southern Ocean waterDrag */')
-      CALL WRITE_0D_L ( SEAICEuseTILT, INDEX_NONE,
-     & 'SEAICEuseTILT     =', ' /* include surface tilt in dyna. */')
+      CALL WRITE_0D_L ( SEAICEuseTilt, INDEX_NONE,
+     & 'SEAICEuseTilt     =', ' /* include surface tilt in dyna. */')
       CALL WRITE_0D_L ( SEAICEuseTEM, INDEX_NONE,
      & 'SEAICEuseTEM      =', ' /* use truncated ellipse rheology */')
       CALL WRITE_0D_RL( SEAICE_strength   ,INDEX_NONE,
@@ -183,6 +183,9 @@ C--  Seaice-Dynamics parameters
      & 'SOLV_NCHECK       =', ' /* test interval for LSR solver */')
        CALL WRITE_0D_I ( NPSEUDOTIMESTEPS,  INDEX_NONE,
      & 'NPSEUDOTIMESTEPS  =', ' /* num. of extra pseudo time steps */')
+      CALL WRITE_0D_L ( SEAICEuseMultiTileSolver, INDEX_NONE,
+     & 'SEAICEuseMultiTileSolver =',
+     & ' /* use full domain tri-diag solver */')
 #ifdef SEAICE_ALLOW_EVP
       ELSE
        CALL WRITE_0D_RL( SEAICE_elasticParm  ,INDEX_NONE,
