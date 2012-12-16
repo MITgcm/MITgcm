@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.79 2012/11/14 16:41:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.80 2012/12/16 19:12:56 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -72,7 +72,7 @@ C     === Local variables ===
 C     i,j,bi,bj  :: Loop counters
 
       INTEGER ilcall
-      INTEGER i, j, k, m, bi, bj, j1, j2, im, jm
+      INTEGER i, j, m, bi, bj, j1, j2, im, jm
       INTEGER ICOUNT1, ICOUNT2
       INTEGER kSrf
       INTEGER SOLV_MAX_TMP
@@ -105,9 +105,16 @@ C     diagonals of coefficient matrices
       _RL AV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL CV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C     RHS
+C     RHS of TriDiag Linear system (both directions => 5 coef A,B,C & Rt1,2)
       _RL rhsU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL rhsV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef SEAICE_GLOBAL_3DIAG_SOLVER
+C     RHS of TriDiag Linear system (1 direction only => 3 coef A,B,C)
+      _RL rhsUx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL rhsVy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER iSubIter
+      LOGICAL errCode
+#endif
 C     coefficients for lateral points, u(j+/-1)
       _RL uRt1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL uRt2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -216,8 +223,6 @@ C SET SOME VALUES
       S2 = 0.
       S1A=0.80 _d 0
       S2A=0.80 _d 0
-
-      k = 1
 
       IF ( ilcall .EQ. 1 ) THEN
 C NOW DO PREDICTOR TIME STEP
@@ -381,28 +386,6 @@ C
           zetaMinusEta(I,J,bi,bj) = ZETA(I,J,bi,bj)-ETA (I,J,bi,bj)
          ENDDO
         ENDDO
-C--   this is now done in seaice_calc_viscosities
-CML        DO J=1,sNy+1
-CML         DO I=1,sNx+1
-CML          etaZ (I,J,bi,bj) =
-CML     &         (           ETA (I,J  ,bi,bj)  + ETA (I-1,J  ,bi,bj)
-CML     &         +           ETA (I,J-1,bi,bj)  + ETA (I-1,J-1,bi,bj) )
-CML     &         / MAX(1.D0,maskC(I,J,  k,bi,bj)+maskC(I-1,J,  k,bi,bj)
-CML     &         +          maskC(I,J-1,k,bi,bj)+maskC(I-1,J-1,k,bi,bj) )
-CML         ENDDO
-CML        ENDDO
-CMLC     free-slip means no lateral stress, which is best achieved masking
-CMLC     eta on vorticity(=Z)-points; from now on we only need to worry
-CMLC     about the no-slip boundary conditions
-CML        IF (.NOT.SEAICE_no_slip) THEN
-CML         DO J=1,sNy+1
-CML          DO I=1,sNx+1
-CML           etaZ (I,J,bi,bj) = etaZ(I,J,bi,bj)
-CML     &          *maskC(I,J,  k,bi,bj)*maskC(I-1,J,  k,bi,bj)
-CML     &          *maskC(I,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
-CML          ENDDO
-CML         ENDDO
-CML        ENDIF
 C     coefficients of uIce(I,J) and vIce(I,J) belonging to ...
         DO J=1,sNy
          DO I=0,sNx
@@ -538,8 +521,8 @@ C     contribution of sigma12 to rhs of u-equation
      &         * 0.5 _d 0 * ( vIceC(I,J,bi,bj) + vIceC(I-1,J,bi,bj) )
      &         )
 C     free slip conditions (sig12=0) are taken care of by masking sig12
-     &         *maskC(I  ,J  ,k,bi,bj)*maskC(I-1,J  ,k,bi,bj)
-     &         *maskC(I  ,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
+     &         *maskC(I  ,J  ,kSrf,bi,bj)*maskC(I-1,J  ,kSrf,bi,bj)
+     &         *maskC(I  ,J-1,kSrf,bi,bj)*maskC(I-1,J-1,kSrf,bi,bj)
 C     no slip boundary conditions (v(i-1)=-v(i))
 C     v(i)+v(i-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with v(i)-v(i-1)
@@ -670,8 +653,8 @@ C     contribution of sigma12 to rhs of v-equation
      &         * 0.5 _d 0 * ( uIceC(I,J,bi,bj) + uIceC(I,J-1,bi,bj) )
      &         )
 C     free slip conditions (sig12=0) are taken care of by masking sig12,
-     &         *maskC(I  ,J  ,k,bi,bj)*maskC(I-1,J  ,k,bi,bj)
-     &         *maskC(I  ,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
+     &         *maskC(I  ,J  ,kSrf,bi,bj)*maskC(I-1,J  ,kSrf,bi,bj)
+     &         *maskC(I  ,J-1,kSrf,bi,bj)*maskC(I-1,J-1,kSrf,bi,bj)
 C     no slip boundary conditions (u(j-1)=-u(j))
 C     u(j)+u(j-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with u(j)-u(j-1)
@@ -857,6 +840,70 @@ CADJ &     key = itmpkey
 #  endif
 # endif /* ALLOW_AUTODIFF_TAMC */
 
+#ifdef SEAICE_GLOBAL_3DIAG_SOLVER
+        IF ( SEAICEuseMultiTileSolver ) THEN
+
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           IF ( doIterate4u ) THEN
+            DO j=1,sNy
+             DO i=1,sNx
+              uTmp(i,j,bi,bj)  = uIce(i,j,bi,bj)
+              rhsUx(i,j,bi,bj) = ( rhsU(i,j,bi,bj)
+     &             + uRt1(i,j,bi,bj)*uIce(i,j-1,bi,bj)
+     &             + uRt2(i,j,bi,bj)*uIce(i,j+1,bi,bj)
+     &                           )*seaiceMaskU(i,j,bi,bj)
+             ENDDO
+            ENDDO
+           ENDIF
+           IF ( doIterate4v ) THEN
+            DO j=1,sNy
+             DO i=1,sNx
+              vTmp(i,j,bi,bj)  = vIce(i,j,bi,bj)
+              rhsVy(i,j,bi,bj) = ( rhsV(i,j,bi,bj)
+     &             + vRt1(i,j,bi,bj)*vIce(i-1,J,bi,bj)
+     &             + vRt2(i,j,bi,bj)*vIce(i+1,J,bi,bj)
+     &                           )*seaiceMaskU(i,j,bi,bj)
+             ENDDO
+            ENDDO
+           ENDIF
+C     end bi,bj-loops
+          ENDDO
+         ENDDO
+
+         iSubIter = SOLV_MAX_TMP*(ilcall-1) + m
+         CALL SOLVE_UV_TRIDIAGO(
+     I                 1, OLx, doIterate4u, doIterate4v,
+     I                 AU, BU, CU, rhsUx,
+     I                 AV, BV, CV, rhsVy,
+     O                 uIce, vIce, errCode,
+     I                 iSubIter, myIter, myThid )
+
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           IF ( doIterate4u ) THEN
+            DO j=1,sNy
+             DO i=1,sNx
+              uIce(i,j,bi,bj) = uTmp(i,j,bi,bj)
+     &            + WFAU*( uIce(i,j,bi,bj)-uTmp(i,j,bi,bj) )
+             ENDDO
+            ENDDO
+           ENDIF
+           IF ( doIterate4v ) THEN
+            DO j=1,sNy
+             DO i=1,sNx
+              vIce(i,j,bi,bj) = vTmp(i,j,bi,bj)
+     &            + WFAV*( vIce(i,j,bi,bj)-vTmp(i,j,bi,bj) )
+             ENDDO
+            ENDDO
+           ENDIF
+C     end bi,bj-loops
+          ENDDO
+         ENDDO
+
+        ELSE
+#endif /* SEAICE_GLOBAL_3DIAG_SOLVER */
+
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
 
@@ -978,6 +1025,10 @@ C--   end doIterate4v
 C     end bi,bj-loops
          ENDDO
         ENDDO
+
+#ifdef SEAICE_GLOBAL_3DIAG_SOLVER
+        ENDIF
+#endif /* SEAICE_GLOBAL_3DIAG_SOLVER */
 
         IF ( doIterate4u.AND.MOD(m,SOLV_NCHECK).EQ.0) THEN
          S1=ZERO
