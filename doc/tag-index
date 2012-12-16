@@ -1,12 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1780 2012/12/12 22:45:01 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1781 2012/12/16 19:16:12 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src + pkg/seaice:
+  - add global (multi-tile) linear solver for pair of tri-diagonal system
+    along X and Y lines, respectively for U and V component.
+    Note: 1) MPI and cube-exchange not yet coded.
+        2) probably not accurate for poorly conditioned / large size problem.
+  - add option for SEAICE_LSR to use global (multi-tile) tri-diagonal solver;
+    default: not compiled and not used.
 o pkg/seaice:
   - first attempt at a multi-threaded fgmres solver for the JFNK solver:
-    introduce bi/bj loops and use global_sum_tile_rl instead of 
+    introduce bi/bj loops and use global_sum_tile_rl instead of
     mpi_allreduce in seaice_fgmres.F
   - improve diagnostics output for fgmres solver (seaice_fgmres.F)
   - replace a few unnecessary goto statements by if-blocks  (seaice_fgmres.F)
