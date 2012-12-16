@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.80 2012/12/16 19:12:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.81 2012/12/16 21:40:39 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -113,7 +113,7 @@ C     RHS of TriDiag Linear system (1 direction only => 3 coef A,B,C)
       _RL rhsUx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL rhsVy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iSubIter
-      LOGICAL errCode
+      INTEGER errCode
 #endif
 C     coefficients for lateral points, u(j+/-1)
       _RL uRt1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
