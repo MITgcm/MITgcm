@@ -8,7 +8,7 @@ function [UVtot,UVtrans,U2tot,U2trans,V2tot,V2trans,errFlag]=calc2ndmom(u,v,usq,
 % uv      = time averaged product of u-wind and v-wind on cubed sphere grid at mass points
 %
 % Written by molod@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/calc2ndmom.m,v 1.3 2006/06/15 19:33:32 molod Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/calc2ndmom.m,v 1.4 2012/12/17 16:19:04 dfer Exp $
 % $Name:  $
 
 fprintf('Entering calc2ndmom: \n');
@@ -24,12 +24,12 @@ nz=size(u,3);
 NN = size(u);
 if NN(1) == 6*nc+1,
  fprintf('Need to remove a column \n');
- utmp = u(1:6*nc,:);
- u2tmp = usq(1:6*nc,:);
+ U = u(1:6*nc,:);
+ U2 = usq(1:6*nc,:);
 elseif NN(1) == 6*nc,
  fprintf('No U reshaping needed \n');
- utmp = u;
- u2tmp = usq;
+ U = u;
+ U2 = usq;
 else
  fprintf('Error in U-point CS-dim: %i %i %i \n',NN);
  return
@@ -38,12 +38,12 @@ end
 NN = size(v);
 if NN(2) == nc+1,
  fprintf('Need to remove a row ');
- vtmp = v(:,1:nc);
- v2tmp = vsq(:,1:nc);
+ V = v(:,1:nc);
+ V2 = vsq(:,1:nc);
 elseif NN(2) == nc,
  fprintf('No V reshaping needed \n');
- vtmp = v;
- v2tmp = vsq;
+ V = v;
+ V2 = vsq;
 else
  fprintf('Error in V-point CS-dim: %i %i %i \n',NN);
  return
@@ -51,10 +51,10 @@ end
 %
 %Get ready to do the exchange
 %
-U=reshape(utmp,[nc 6 nc nz]);
-U2=reshape(u2tmp,[nc 6 nc nz]);
-V=reshape(vtmp,[nc 6 nc nz]);
-V2=reshape(v2tmp,[nc 6 nc nz]);
+U=reshape(U,[nc 6 nc nz]);
+U2=reshape(U2,[nc 6 nc nz]);
+V=reshape(V,[nc 6 nc nz]);
+V2=reshape(V2,[nc 6 nc nz]);
 %
 uu=zeros(nc+1,6,nc,nz);
 uu2=zeros(nc+1,6,nc,nz);
@@ -116,11 +116,6 @@ for k=1:nz;
               + ( UV(:,k) - ui(:,k).*vj(:,k) ) .* (cosalpha.*cosalpha - sinalpha.*sinalpha);
  UVtot(:,k)=UVtrans(:,k) + ( ui(:,k).*ui(:,k) - vj(:,k).*vj(:,k) ) .* cosalpha .* sinalpha ...
                     + ui(:,k).*vj(:,k).*(cosalpha.*cosalpha - sinalpha.*sinalpha);
-% UVtot(:,k) = (u2i(:,k)-v2j(:,k)).* sinalpha.*cosalpha + ...
-%              UV(:,k).*(cosalpha.*cosalpha - sinalpha.*sinalpha);
-% UVtrans(:,k) = UVtot(:,k) - ...
-%              ( (ui(:,k).*ui(:,k)-vj(:,k).*vj(:,k)).* sinalpha.*cosalpha + ...
-%              ui(:,k).*vj(:,k).*(cosalpha.*cosalpha - sinalpha.*sinalpha) );
  U2tot(:,k) = u2i(:,k) .* cosalpha.*cosalpha + v2j(:,k).*sinalpha.*sinalpha ...
               - 2.* UV(:,k) .*cosalpha .* sinalpha;
  U2trans(:,k) = U2tot(:,k) - ...
