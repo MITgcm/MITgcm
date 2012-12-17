@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.68 2012/11/09 14:01:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.69 2012/12/17 15:06:03 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -238,6 +238,10 @@ C     diagnostics for the JFNK solver
      &     totalNewtonIters, totalNewtonFails,
      &     totalKrylovIters, totalKrylovFails,
      &     totalJFNKtimeSteps
+      INTEGER nVec
+      PARAMETER ( nVec=2*sNx*sNy )
+      _RL scalarProductMetric( nVec, 1, nSx, nSy )
+      COMMON /SEAICE_JFNK_RL/ scalarProductMetric
 #endif /* SEAICE_ALLOW_JFNK */
 
 CEH3 ;;; Local Variables: ***

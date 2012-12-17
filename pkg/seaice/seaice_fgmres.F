@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.11 2012/12/17 10:29:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.12 2012/12/17 15:06:02 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -75,18 +75,18 @@ C     Local variables:
 C     k :: loop indices
       INTEGER k, bi, bj
 C     FGMRES parameters
-C     n  :: size of the input vector(s)
-C     im :: size of Krylov space
+C     nVec    :: size of the input vector(s)
+C     im      :: size of Krylov space
 C     ifgmres :: interation counter
-      INTEGER n
-      PARAMETER ( n  = 2*sNx*sNy )
+      INTEGER nVec
+      PARAMETER ( nVec  = 2*sNx*sNy )
       INTEGER im
       PARAMETER ( im = 50 )
       INTEGER ifgmres
 C     work arrays
-      _RL rhs(n,nSx,nSy), sol(n,nSx,nSy)
-      _RL vv(n,im+1,nSx,nSy), w(n,im,nSx,nSy)
-      _RL wk1(n,nSx,nSy), wk2(n,nSx,nSy)
+      _RL rhs(nVec,nSx,nSy), sol(nVec,nSx,nSy)
+      _RL vv(nVec,im+1,nSx,nSy), w(nVec,im,nSx,nSy)
+      _RL wk1(nVec,nSx,nSy), wk2(nVec,nSx,nSy)
 C     need to store some of the fgmres parameters and fields so that
 C     they are not forgotten between Krylov iterations
       COMMON /FGMRES_I/ ifgmres
@@ -97,24 +97,24 @@ CEOP
 C     The first guess is zero because it is a correction, but this
 C     is implemented by setting du/vIce=0 outside of this routine;
 C     this make it possible to restart FGMRES with a nonzero sol
-       CALL SEAICE_MAP2VEC(n,duIce,dvIce,sol,.TRUE.,myThid)
+       CALL SEAICE_MAP2VEC(nVec,duIce,dvIce,sol,.TRUE.,myThid)
 C     wk2 needs to be reset for iCode = 0, because it may contain
 C     remains of the previous Krylov iteration
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO k=1,n
+         DO k=1,nVec
           wk2(k,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
       ELSEIF ( iCode .EQ. 3 ) THEN
-       CALL SEAICE_MAP2VEC(n,uIceRes,vIceRes,rhs,.TRUE.,myThid)
+       CALL SEAICE_MAP2VEC(nVec,uIceRes,vIceRes,rhs,.TRUE.,myThid)
 C     change sign of rhs because we are solving J*u = -F
 C     wk2 needs to be initialised for iCode = 3, because it may contain
 C     garbage
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO k=1,n
+         DO k=1,nVec
           rhs(k,bi,bj) = -rhs(k,bi,bj)
           wk2(k,bi,bj) = 0. _d 0
          ENDDO
@@ -123,10 +123,10 @@ C     garbage
       ELSE
 C     map preconditioner results or Jacobian times vector,
 C     stored in du/vIce to wk2
-       CALL SEAICE_MAP2VEC(n,duIce,dvIce,wk2,.TRUE.,myThid)
+       CALL SEAICE_MAP2VEC(nVec,duIce,dvIce,wk2,.TRUE.,myThid)
       ENDIF
 C
-      CALL SEAICE_FGMRES (n,im,rhs,sol,ifgmres,krylovIter,
+      CALL SEAICE_FGMRES (nVec,im,rhs,sol,ifgmres,krylovIter,
      U     vv,w,wk1,wk2,
      I     FGMRESeps,SEAICEkrylovIterMax,iOutFGMRES,
      U     iCode,
@@ -134,11 +134,11 @@ C
 C
       IF ( iCode .EQ. 0 ) THEN
 C     map sol(ution) vector to du/vIce
-       CALL SEAICE_MAP2VEC(n,duIce,dvIce,sol,.FALSE.,myThid)
+       CALL SEAICE_MAP2VEC(nVec,duIce,dvIce,sol,.FALSE.,myThid)
       ELSE
 C     map work vector to du/vIce to either compute a preconditioner
 C     solution (wk1=rhs) or a Jacobian times wk1
-       CALL SEAICE_MAP2VEC(n,duIce,dvIce,wk1,.FALSE.,myThid)
+       CALL SEAICE_MAP2VEC(nVec,duIce,dvIce,wk1,.FALSE.,myThid)
       ENDIF
 
 C     Fill overlaps in updated fields
@@ -400,8 +400,8 @@ CML      call dcopy (n, sol, 1, wk1, 1) !jfl modification
 CML 20   ro = ddot(n, vv, 1, vv,1) !jfl modification
  20   call SEAICE_SCALPROD(n, im+1, 1, 1, vv, vv, ro, myThid)
       ro = sqrt(ro)
-      if (ro .eq. 0.0d0) goto 999
-      t = 1.0d0/ ro
+      if (ro .eq. 0.0 _d 0) goto 999
+      t = 1.0 _d 0/ ro
       do bj=myByLo(myThid),myByHi(myThid)
        do bi=myBxLo(myThid),myBxHi(myThid)
         do j=1, n
@@ -501,8 +501,8 @@ CML      t = sqrt(ddot(n, vv(1,i1), 1, vv(1,i1), 1)) !jfl modification
       call SEAICE_SCALPROD(n, im+1, i1, i1, vv, vv, t, myThid)
       t = sqrt(t)
       hh(i1,i) = t
-      if (t .ne. 0.0d0) then
-       t = 1.0d0 / t
+      if (t .ne. 0.0 _d 0) then
+       t = 1.0 _d 0 / t
        do bj=myByLo(myThid),myByHi(myThid)
         do bi=myBxLo(myThid),myBxHi(myThid)
          do k=1,n
@@ -527,14 +527,25 @@ C
        enddo
       endif
       gam = sqrt(hh(i,i)**2 + hh(i1,i)**2)
-CML      if (gam .ne. 0.0d0) gam = 1./gam
-CMLC-----------#determine next plane rotation  #-------------------
-CML      c(i)   = hh(i,i)*gam
-CML      s(i)   = hh(i1,i)*gam
-      if (gam .eq. 0.0d0) gam = epsmac
+      if (gam .eq. 0.0 _d 0) gam = epsmac
 C-----------#determine next plane rotation  #-------------------
       c(i)   = hh(i,i)/gam
       s(i)   = hh(i1,i)/gam
+C     numerically more stable Givens rotation, but the results
+C     are not better
+CML      c(i)=1.
+CML      s(i)=0.
+CML      if ( abs(hh(i1,i)) .gt. 0.0 _d 0) then
+CML       if ( abs(hh(i1,i)) .gt. abs(hh(i,i)) ) then
+CML        gam = hh(i,i)/hh(i1,i)
+CML        s(i) = 1./sqrt(1.+gam*gam)
+CML        c(i) = s(i)*gam
+CML       else
+CML        gam = hh(i1,i)/hh(i,i)
+CML        c(i) = 1./sqrt(1.+gam*gam)
+CML        s(i) = c(i)*gam
+CML       endif
+CML      endif
       rs(i1) = -s(i)*rs(i)
       rs(i)  =  c(i)*rs(i)
 C
@@ -594,7 +605,7 @@ C       goto 10
       enddo
       do j=1,i1
         t = rs(j)
-        if (j .eq. 1)  t = t-1.0d0
+        if (j .eq. 1)  t = t-1.0 _d 0
 CML        call daxpy (n, t, vv(1,j), 1,  vv, 1)
         do bj=myByLo(myThid),myByHi(myThid)
          do bi=myBxLo(myThid),myBxHi(myThid)
@@ -633,6 +644,8 @@ C     ML: code stolen from BLAS-ddot and adapted for parallel applications
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
+#include "SEAICE_SIZE.h"
+#include "SEAICE.h"
       integer n, im, i1, i2
       _RL dx(n,im,nSx,nSy),dy(n,im,nSx,nSy)
       _RL t
@@ -658,12 +671,17 @@ c     if( m .eq. 0 ) go to 40
 c     if( n .lt. 5 ) go to 60
 c40   mp1 = m + 1
          do i = mp1,n,5
-          dtemp(bi,bj) = dtemp(bi,bj)          +
-     &        dx(i,    i1,bi,bj)*dy(i,    i2,bi,bj) +
-     &        dx(i + 1,i1,bi,bj)*dy(i + 1,i2,bi,bj) +
-     &        dx(i + 2,i1,bi,bj)*dy(i + 2,i2,bi,bj) +
-     &        dx(i + 3,i1,bi,bj)*dy(i + 3,i2,bi,bj) +
+          dtemp(bi,bj) = dtemp(bi,bj)               +
+     &        dx(i,    i1,bi,bj)*dy(i,    i2,bi,bj)
+     &        * scalarProductMetric(i,    1, bi,bj) +
+     &        dx(i + 1,i1,bi,bj)*dy(i + 1,i2,bi,bj)
+     &        * scalarProductMetric(i + 1,1, bi,bj) +
+     &        dx(i + 2,i1,bi,bj)*dy(i + 2,i2,bi,bj)
+     &        * scalarProductMetric(i + 2,1, bi,bj) +
+     &        dx(i + 3,i1,bi,bj)*dy(i + 3,i2,bi,bj)
+     &        * scalarProductMetric(i + 3,1, bi,bj) +
      &        dx(i + 4,i1,bi,bj)*dy(i + 4,i2,bi,bj)
+     &        * scalarProductMetric(i + 4,1, bi,bj)
          enddo
 c60   continue
         endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.21 2012/11/07 09:46:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.22 2012/12/17 15:06:02 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -377,6 +377,18 @@ C     initialise some diagnostic counters for the JFNK solver
       totalKrylovIters   = 0
       totalKrylovFails   = 0
       totalJFNKtimeSteps = 0
+C     this cannot be done here, because globalArea is only defined
+C     after S/R PACKAGES_INIT_FIXED, so we move it to S/R SEAICE_INIT_VARIA
+CML      CALL SEAICE_MAP2VEC( nVec, rAw, rAs, 
+CML     &     scalarProductMetric, .TRUE., myThid )
+CML      DO bj=myByLo(myThid),myByHi(myThid)
+CML       DO bi=myBxLo(myThid),myBxHi(myThid)
+CML        DO i=1,nVec
+CML         scalarProductMetric(i,1,bi,bj) = 
+CML     &        scalarProductMetric(i,1,bi,bj)/globalArea
+CML        ENDDO
+CML       ENDDO
+CML      ENDDO
 #endif /* SEAICE_ALLOW_JFNK */
 
 #ifdef ALLOW_DIAGNOSTICS

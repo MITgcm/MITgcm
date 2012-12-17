@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.12 2012/12/17 10:08:16 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.13 2012/12/17 15:06:02 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -60,12 +60,12 @@ C     i,j,bi,bj :: loop indices
 C     loop indices
       INTEGER newtonIter
       INTEGER krylovIter, krylovFails
-      INTEGER totalKrylovItersLoc
+      INTEGER totalKrylovItersLoc, totalNewtonItersLoc
 C     FGMRES flag that determines amount of output messages of fgmres
       INTEGER iOutFGMRES
 C     FGMRES flag that indicates what fgmres wants us to do next
       INTEGER iCode
-      _RL     JFNKresidual, JFNKresidualTile(nSx,nSy)
+      _RL     JFNKresidual
       _RL     JFNKresidualKm1
 C     parameters to compute convergence criterion
       _RL     phi_e, alp_e, JFNKgamma_lin
@@ -90,6 +90,8 @@ C     zeta, eta, and DWATN, press
       _RL etaZPre (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dwatPre (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CEOP
+      INTEGER n
+      _RL resTmp (nVec,1,nSx,nSy)
 
 C     Initialise
       newtonIter          = 0
@@ -160,30 +162,11 @@ C     constant for the preconditioner
          ENDDO
         ENDDO
        ENDDO
-C     
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         JFNKresidualTile(bi,bj) = 0. _d 0
-         DO J=1,sNy
-          DO I=1,sNx
-#ifdef CG2D_SINGLECPU_SUM
-           JFNKlocalBuf(I,J,bi,bj) = 
-#else
-           JFNKresidualTile(bi,bj) = JFNKresidualTile(bi,bj) + 
-#endif
-     &          uIceRes(I,J,bi,bj)*uIceRes(I,J,bi,bj) +
-     &          vIceRes(I,J,bi,bj)*vIceRes(I,J,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-       JFNKresidual = 0. _d 0
-#ifdef CG2D_SINGLECPU_SUM
-       CALL GLOBAL_SUM_SINGLECPU_RL(
-     &         JFNKlocalBuf,JFNKresidual, 0, 0, myThid)
-#else
-       CALL GLOBAL_SUM_TILE_RL( JFNKresidualTile,JFNKresidual,myThid )
-#endif
+C     Important: Compute the norm of the residual using the same scalar
+C     product that SEAICE_FGMRES does
+       CALL SEAICE_MAP2VEC(nVec,uIceRes,vIceRes,resTmp,.TRUE.,myThid)
+       CALL SEAICE_SCALPROD(
+     &      nVec,1,1,1,resTmp,resTmp,JFNKresidual,myThid)
        JFNKresidual = SQRT(JFNKresidual)
 C     compute convergence criterion for linear preconditioned FGMRES
        JFNKgamma_lin = JFNKgamma_lin_max
@@ -206,17 +189,6 @@ C     krylovIter is mapped into "its" in seaice_fgmres and is incremented
 C     in that routine
        krylovIter    = 0
        iCode         = 0
-       IF ( debugLevel.GE.debLevA ) THEN  
-        _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(2A,2(1XI6),2E12.5)') 
-     &       ' S/R SEAICE_JFNK: newtonIter,',
-     &       ' total newtonIter, JFNKgamma_lin, initial norm = ',
-     &       newtonIter,SEAICEnewtonIterMax*(myIter-nIter0)+newtonIter, 
-     &       JFNKgamma_lin, JFNKresidual
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT, myThid )
-        _END_MASTER( myThid )
-       ENDIF
 C
        JFNKconverged = JFNKresidual.LT.JFNKtol
 C
@@ -262,9 +234,18 @@ C     End of Krylov iterate
 C     some output diagnostics
         IF ( debugLevel.GE.debLevA ) THEN
          _BEGIN_MASTER( myThid )
+         totalNewtonItersLoc = 
+     &        SEAICEnewtonIterMax*(myIter-nIter0)+newtonIter
+         WRITE(msgBuf,'(2A,2(1XI6),2E12.5)') 
+     &        ' S/R SEAICE_JFNK: Newton iterate / total, ',
+     &        'JFNKgamma_lin, initial norm = ',
+     &        newtonIter, totalNewtonItersLoc,
+     &        JFNKgamma_lin,JFNKresidual
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT, myThid )
          WRITE(msgBuf,'(3(A,I6))')
-     &        ' S/R SEAICE_JFNK: Newton iterate / total = ', newtonIter, 
-     &        ' / ', SEAICEnewtonIterMax*(myIter-nIter0)+newtonIter, 
+     &        ' S/R SEAICE_JFNK: Newton iterate / total = ',newtonIter, 
+     &        ' / ', totalNewtonItersLoc,
      &        ', Nb. of FGMRES iterations = ', krylovIter
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &        SQUEEZE_RIGHT, myThid )
