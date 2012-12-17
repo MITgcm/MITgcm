@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.10 2012/12/17 01:50:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.11 2012/12/17 10:29:47 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -8,7 +8,7 @@ C--   Contents
 C--   o SEAICE_FGMRES_DRIVER
 C--   o SEAICE_MAP2VEC
 C--   o SEAICE_FGMRES
-C--   o SCALPROD
+C--   o SEAICE_SCALPROD
 
 CBOP
 C     !ROUTINE: SEAICE_FGMRES_DRIVER
@@ -19,7 +19,9 @@ C     !INTERFACE:
      U     duIce, dvIce,
      U     iCode,
      I     FGMRESeps, iOutFGMRES,
-     I     newtonIter, krylovIter, myTime, myIter, myThid )
+     I     newtonIter, 
+     U     krylovIter,
+     I     myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -46,8 +48,8 @@ C     === Routine arguments ===
 C     myTime :: Simulation time
 C     myIter :: Simulation timestep number
 C     myThid :: my Thread Id. number
-C     newtonIter :: current iterate of Newton iteration
-C     krylovIter :: current iterate of Newton iteration
+C     newtonIter :: current iterate of Newton iteration (for diagnostics)
+C     krylovIter :: current iterate of Newton iteration (updated)
 C     iCode      :: FGMRES parameter to determine next step
 C     iOutFGMRES :: control output of fgmres
       _RL     myTime
@@ -124,9 +126,11 @@ C     stored in du/vIce to wk2
        CALL SEAICE_MAP2VEC(n,duIce,dvIce,wk2,.TRUE.,myThid)
       ENDIF
 C
-      CALL SEAICE_FGMRES (n,im,rhs,sol,ifgmres,vv,w,wk1,wk2,
-     &     FGMRESeps,SEAICEkrylovIterMax,
-     &     iOutFGMRES,iCode,krylovIter,myThid)
+      CALL SEAICE_FGMRES (n,im,rhs,sol,ifgmres,krylovIter,
+     U     vv,w,wk1,wk2,
+     I     FGMRESeps,SEAICEkrylovIterMax,iOutFGMRES,
+     U     iCode,
+     I     myThid)
 C
       IF ( iCode .EQ. 0 ) THEN
 C     map sol(ution) vector to du/vIce
@@ -214,15 +218,19 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: SEAICE_FGMRES
 C     !INTERFACE:
-
-      SUBROUTINE SEAICE_FGMRES (n,im,rhs,sol,i,vv,w,wk1, wk2,
-     &     eps,maxits,iout,icode,its,myThid)
+      SUBROUTINE SEAICE_FGMRES (
+     I     n,im,rhs,
+     U     sol,i,its,vv,w,wk1,wk2,
+     I     eps,maxits,iout,
+     U     icode,
+     I     myThid )
 
 C-----------------------------------------------------------------------
 C mlosch Oct 2012: modified the routine further to be compliant with
 C MITgcm standards:
 C f90 -> F
 C !-comment -> C-comment
+C add its to list of arguments
 C double precision -> _RL
 C implicit none
 C
@@ -244,11 +252,12 @@ C modified 12/3/93, array(1) declarations changed to array(*)
 C-----------------------------------------------------------------------
 
       implicit none
+C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 CML   implicit double precision (a-h,o-z) !jfl modification
       integer myThid
-      integer n, im, maxits, iout, icode
+      integer n, im, its, maxits, iout, icode
       _RL rhs(n,nSx,nSy), sol(n,nSx,nSy)
       _RL vv(n,im+1,nSx,nSy), w(n,im,nSx,nSy)
       _RL wk1(n,nSx,nSy), wk2(n,nSx,nSy), eps
@@ -277,7 +286,8 @@ C Here is a typical way of running fgmres:
 C
 C      icode = 0
 C 1    continue
-C      call fgmres (n,im,rhs,sol,i,vv,w,wk1, wk2,eps,maxits,iout,icode)
+C      call fgmres (n,im,rhs,sol,i,vv,w,wk1,wk2,eps,maxits,iout,
+C     &             icode,its,mythid)
 C
 C      if (icode .eq. 1) then
 C         call  precon(n, wk1, wk2)    <--- user variable preconditioning
@@ -311,6 +321,9 @@ C          as soon as ( ||.|| is the euclidean norm):
 C          || current residual||/||initial residual|| <= eps
 C
 C maxits== maximum number of iterations allowed
+C
+C i     == internal iteration counter, updated in this routine
+C its   == current (Krylov) iteration counter, updated in this routine
 C
 C iout  == output unit number number for printing intermediate results
 C          if (iout .le. 0) no statistics are printed.
@@ -346,7 +359,7 @@ C     local variables -- !jfl modif
 C-------------------------------------------------------------
 C     arnoldi size should not exceed 50 in this version..
 C-------------------------------------------------------------
-      integer i, its, i1, ii, j, jj, k, k1!, n1
+      integer i, i1, ii, j, jj, k, k1!, n1
       integer bi, bj
       _RL r0, gam, epsmac, eps1
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -385,7 +398,7 @@ CML      call dcopy (n, sol, 1, wk1, 1) !jfl modification
        enddo
       enddo
 CML 20   ro = ddot(n, vv, 1, vv,1) !jfl modification
- 20   call scalprod(n, im, 1, 1, vv, vv, ro, myThid)
+ 20   call SEAICE_SCALPROD(n, im+1, 1, 1, vv, vv, ro, myThid)
       ro = sqrt(ro)
       if (ro .eq. 0.0d0) goto 999
       t = 1.0d0/ ro
@@ -470,7 +483,7 @@ C     modified gram - schmidt...
 C
       do j=1, i
 CML         t = ddot(n, vv(1,j), 1, vv(1,i1), 1) !jfl modification
-       call scalprod(n, im, j, i1, vv, vv, t, myThid)
+       call SEAICE_SCALPROD(n, im+1, j, i1, vv, vv, t, myThid)
        hh(j,i) = t
 CML         call daxpy(n, -t, vv(1,j), 1, vv(1,i1), 1) !jfl modification
 CML      enddo
@@ -485,7 +498,7 @@ CML         t = hh(j,i)
        enddo
       enddo
 CML      t = sqrt(ddot(n, vv(1,i1), 1, vv(1,i1), 1)) !jfl modification
-      call scalprod(n, im, i1, i1, vv, vv, t, myThid)
+      call SEAICE_SCALPROD(n, im+1, i1, i1, vv, vv, t, myThid)
       t = sqrt(t)
       hh(i1,i) = t
       if (t .ne. 0.0d0) then
@@ -597,7 +610,7 @@ C
       goto 20
  999  icode = 0
 
- 199  format('   -- fgmres its =', i4, ' res. norm =', d26.16)
+ 199  format(' SEAICE_FGMRES: its =', i4, ' res. norm =', d26.16)
 C
       RETURN
 C-----end-of-fgmres-----------------------------------------------------
@@ -606,10 +619,10 @@ C-----------------------------------------------------------------------
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: SCALPROD
+C     !ROUTINE: SEAICE_SCALPROD
 C     !INTERFACE:
 
-      subroutine scalprod(n,im,i1,i2,dx,dy,t,myThid)
+      subroutine SEAICE_SCALPROD(n,im,i1,i2,dx,dy,t,myThid)
 
 C     forms the dot product of two vectors.
 C     uses unrolled loops for increments equal to one.
@@ -621,7 +634,7 @@ C     ML: code stolen from BLAS-ddot and adapted for parallel applications
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
       integer n, im, i1, i2
-      _RL dx(n,im+1,nSx,nSy),dy(n,im+1,nSx,nSy)
+      _RL dx(n,im,nSx,nSy),dy(n,im,nSx,nSy)
       _RL t
       integer myThid
 C     local arrays
@@ -657,105 +670,6 @@ c60   continue
        enddo
       enddo
       CALL GLOBAL_SUM_TILE_RL( dtemp,t,myThid )
-
-CML      return
-CML      end
-CML
-CML      subroutine daxpy(n,da,dx,incx,dy,incy)
-CMLC
-CMLC     constant times a vector plus a vector.
-CMLC     uses unrolled loops for increments equal to one.
-CMLC     jack dongarra, linpack, 3/11/78.
-CMLC
-CML      _RL dx(n),dy(n),da
-CML      integer i,incx,incy,ix,iy,m,mp1,n
-CMLC
-CML      if(n.le.0)return
-CML      if (da .eq. 0.0d0) return
-CML      if(incx.eq.1.and.incy.eq.1)go to 20
-CMLC
-CMLC        code for unequal increments or equal increments
-CMLC          not equal to 1
-CMLC
-CML      ix = 1
-CML      iy = 1
-CML      if(incx.lt.0)ix = (-n+1)*incx + 1
-CML      if(incy.lt.0)iy = (-n+1)*incy + 1
-CML      do 10 i = 1,n
-CML        dy(iy) = dy(iy) + da*dx(ix)
-CML        ix = ix + incx
-CML        iy = iy + incy
-CML   10 continue
-CML      return
-CMLC
-CMLC        code for both increments equal to 1
-CMLC
-CMLC
-CMLC        clean-up loop
-CMLC
-CML   20 m = mod(n,4)
-CML      if( m .eq. 0 ) go to 40
-CML      do 30 i = 1,m
-CML        dy(i) = dy(i) + da*dx(i)
-CML   30 continue
-CML      if( n .lt. 4 ) return
-CML   40 mp1 = m + 1
-CML      do 50 i = mp1,n,4
-CML        dy(i) = dy(i) + da*dx(i)
-CML        dy(i + 1) = dy(i + 1) + da*dx(i + 1)
-CML        dy(i + 2) = dy(i + 2) + da*dx(i + 2)
-CML        dy(i + 3) = dy(i + 3) + da*dx(i + 3)
-CML   50 continue
-CML      return
-CML      end
-CML
-CML      subroutine  dcopy(n,dx,incx,dy,incy)
-CMLC
-CMLC     copies a vector, x, to a vector, y.
-CMLC     uses unrolled loops for increments equal to one.
-CMLC     jack dongarra, linpack, 3/11/78.
-CMLC
-CML      _RL dx(n),dy(n)
-CML      integer i,incx,incy,ix,iy,m,mp1,n
-CMLC
-CML      if(n.le.0)return
-CML      if(incx.eq.1.and.incy.eq.1)go to 20
-CMLC
-CMLC        code for unequal increments or equal increments
-CMLC          not equal to 1
-CMLC
-CML      ix = 1
-CML      iy = 1
-CML      if(incx.lt.0)ix = (-n+1)*incx + 1
-CML      if(incy.lt.0)iy = (-n+1)*incy + 1
-CML      do 10 i = 1,n
-CML        dy(iy) = dx(ix)
-CML        ix = ix + incx
-CML        iy = iy + incy
-CML   10 continue
-CML      return
-CMLC
-CMLC        code for both increments equal to 1
-CMLC
-CMLC
-CMLC        clean-up loop
-CMLC
-CML   20 m = mod(n,7)
-CML      if( m .eq. 0 ) go to 40
-CML      do 30 i = 1,m
-CML        dy(i) = dx(i)
-CML   30 continue
-CML      if( n .lt. 7 ) return
-CML   40 mp1 = m + 1
-CML      do 50 i = mp1,n,7
-CML        dy(i) = dx(i)
-CML        dy(i + 1) = dx(i + 1)
-CML        dy(i + 2) = dx(i + 2)
-CML        dy(i + 3) = dx(i + 3)
-CML        dy(i + 4) = dx(i + 4)
-CML        dy(i + 5) = dx(i + 5)
-CML        dy(i + 6) = dx(i + 6)
-CML   50 continue
 
 #endif /* SEAICE_ALLOW_DYNAMICS and SEAICE_CGRID and SEAICE_ALLOW_JFNK */
 
