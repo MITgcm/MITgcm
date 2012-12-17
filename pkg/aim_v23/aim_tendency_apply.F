@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.11 2012/11/30 22:28:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.12 2012/12/17 04:49:29 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -91,8 +91,8 @@ C        is not supposed to be applied in stratosphere
      &     -maskW(i,j,k,bi,bj)*uVel(i,j,k,bi,bj)/aim_dragStrato
 #if ( defined ALLOW_FRICTION_HEATING ) || ( defined ALLOW_DIAGNOSTICS )
           aim_dKE(i,j) =
-     &     -maskW(i,j,k,bi,bj)*uVel(i,j,k,bi,bj)/aim_dragStrato
-     &        *uVel(i,j,k,bi,bj)*hFacW(i,j,k,bi,bj)*drF(k)*rUnit2mass
+     &     -uVel(i,j,k,bi,bj)*uVel(i,j,k,bi,bj)/aim_dragStrato
+     &                       *hFacW(i,j,k,bi,bj)*drF(k)*rUnit2mass
 #endif
         ENDDO
        ENDDO
@@ -148,7 +148,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         DO j=1,sNy
          DO i=1,sNx
            frictionHeating(i,j,k,bi,bj) = frictionHeating(i,j,k,bi,bj)
-     &                 -0.5 _d 0 * ( aim_dKE(i,j) + aim_dKE(i+1,j) )
+     &        -0.5 _d 0 * ( aim_dKE( i, j)*rAw( i, j,bi,bj)
+     &                    + aim_dKE(i+1,j)*rAw(i+1,j,bi,bj) )
          ENDDO
         ENDDO
       ENDIF
@@ -270,8 +271,8 @@ C        is not supposed to be applied in the stratosphere
      &     -maskS(i,j,k,bi,bj)*vVel(i,j,k,bi,bj)/aim_dragStrato
 #if ( defined ALLOW_FRICTION_HEATING ) || ( defined ALLOW_DIAGNOSTICS )
           aim_dKE(i,j) =
-     &     -maskS(i,j,k,bi,bj)*vVel(i,j,k,bi,bj)/aim_dragStrato
-     &        *vVel(i,j,k,bi,bj)*hFacS(i,j,k,bi,bj)*drF(k)*rUnit2mass
+     &     -vVel(i,j,k,bi,bj)*vVel(i,j,k,bi,bj)/aim_dragStrato
+     &                       *hFacS(i,j,k,bi,bj)*drF(k)*rUnit2mass
 #endif
         ENDDO
        ENDDO
@@ -327,7 +328,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         DO j=1,sNy
          DO i=1,sNx
            frictionHeating(i,j,k,bi,bj) = frictionHeating(i,j,k,bi,bj)
-     &                 -0.5 _d 0 * ( aim_dKE(i,j) + aim_dKE(i,j+1) )
+     &        -0.5 _d 0 * ( aim_dKE(i, j )*rAs(i, j, bi,bj)
+     &                    + aim_dKE(i,j+1)*rAs(i,j+1,bi,bj) )
          ENDDO
         ENDDO
       ENDIF
