@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.10 2012/11/26 08:04:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.11 2012/12/17 10:06:08 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -132,7 +132,7 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      printResidual = debugLevel.GE.debLevA
+      printResidual = debugLevel.GE.debLevC
      &  .AND. DIFFERENT_MULTIPLE( SEAICE_monFreq, myTime, deltaTClock )
       massU = -1. _d 0
       massV = -1. _d 0
