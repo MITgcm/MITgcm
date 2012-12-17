@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1781 2012/12/16 19:16:12 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1782 2012/12/17 04:51:10 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/aim_v23:
+  - fix an other bug in dissipation heating (grid-cell area was missing).
 o model/src + pkg/seaice:
   - add global (multi-tile) linear solver for pair of tri-diagonal system
     along X and Y lines, respectively for U and V component.
