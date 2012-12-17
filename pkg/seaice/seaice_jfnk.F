@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.11 2012/12/03 15:49:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.12 2012/12/17 10:08:16 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -103,8 +103,8 @@ C     Initialise
       recip_deltaT        = 1. _d 0 / SEAICE_deltaTdyn
 
       iOutFGMRES=0
-C     iOutFgmres=1 gives a little bit of output
-      IF ( debugLevel.GE.debLevA .AND.
+C     with iOutFgmres=1, seaice_fgmres prints the residual at each iteration
+      IF ( debugLevel.GE.debLevC .AND.
      &     DIFFERENT_MULTIPLE( SEAICE_monFreq, myTime, deltaTClock ) )
      &     iOutFGMRES=1
 
@@ -144,6 +144,7 @@ C     variables DWATN, zeta, and eta)
      I      uIce, vIce, 
      O      uIceRes, vIceRes, 
      I      newtonIter, 0, myTime, myIter, myThid )
+C     probably not necessary, will be removed later:
        CALL EXCH_UV_XY_RL( uIceRes, vIceRes,.TRUE.,myThid)
 C     local copies of precomputed coefficients that are to stay
 C     constant for the preconditioner
