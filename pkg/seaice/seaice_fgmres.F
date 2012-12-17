@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.9 2012/12/12 22:38:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.10 2012/12/17 01:50:10 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -400,7 +400,7 @@ CML 20   ro = ddot(n, vv, 1, vv,1) !jfl modification
 C     not sure what this is, r0 is never used again
       if (its .eq. 0) r0 = ro
       if (iout .gt. 0) then
-       _BEGIN_MASTER( myThid )      
+       _BEGIN_MASTER( myThid )
        write(msgBuf, 199) its, ro
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
@@ -530,7 +530,7 @@ C
       hh(i,i) = c(i)*hh(i,i) + s(i)*hh(i1,i)
       ro = abs(rs(i1))
       if (iout .gt. 0) then
-       _BEGIN_MASTER( myThid )      
+       _BEGIN_MASTER( myThid )
        write(msgBuf, 199) its, ro
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
@@ -628,38 +628,34 @@ C     local arrays
       _RL dtemp(nSx,nSy)
       integer i,m,mp1,bi,bj
 CEOP
-C
+
       m = mod(n,5)
+      mp1 = m + 1
       t     = 0. _d 0
-      if( m .eq. 0 ) go to 40
-CML      if( m .ne. 0 ) then
+c     if( m .eq. 0 ) go to 40
       do bj=myByLo(myThid),myByHi(myThid)
        do bi=myBxLo(myThid),myBxHi(myThid)
         dtemp(bi,bj) = 0. _d 0
-        do i = 1,m
-         dtemp(bi,bj) = dtemp(bi,bj) + dx(i,i1,bi,bj)*dy(i,i2,bi,bj)
-        enddo
-       enddo
-      enddo
-CML      endif
-CML      if( n .ge. 5 ) then
-      if( n .lt. 5 ) go to 60
- 40   mp1 = m + 1
-      do bj=myByLo(myThid),myByHi(myThid)
-       do bi=myBxLo(myThid),myBxHi(myThid)
-        dtemp(bi,bj) = 0. _d 0
-        do i = mp1,n,5
-         dtemp(bi,bj) = dtemp(bi,bj)          + 
+        if ( m .ne. 0 ) then
+         do i = 1,m
+          dtemp(bi,bj) = dtemp(bi,bj) + dx(i,i1,bi,bj)*dy(i,i2,bi,bj)
+         enddo
+        endif
+        if ( n .ge. 5 ) then
+c     if( n .lt. 5 ) go to 60
+c40   mp1 = m + 1
+         do i = mp1,n,5
+          dtemp(bi,bj) = dtemp(bi,bj)          +
      &        dx(i,    i1,bi,bj)*dy(i,    i2,bi,bj) +
      &        dx(i + 1,i1,bi,bj)*dy(i + 1,i2,bi,bj) +
-     &        dx(i + 2,i1,bi,bj)*dy(i + 2,i2,bi,bj) + 
+     &        dx(i + 2,i1,bi,bj)*dy(i + 2,i2,bi,bj) +
      &        dx(i + 3,i1,bi,bj)*dy(i + 3,i2,bi,bj) +
      &        dx(i + 4,i1,bi,bj)*dy(i + 4,i2,bi,bj)
-        enddo
+         enddo
+c60   continue
+        endif
        enddo
       enddo
- 60   continue
-CML      endif
       CALL GLOBAL_SUM_TILE_RL( dtemp,t,myThid )
 
 CML      return
