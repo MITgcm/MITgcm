@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1782 2012/12/17 04:51:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1783 2012/12/17 15:38:59 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - improve description of parameters in seaice_fgmres.F and start
+    cleaning up the code
+  - change name of SCALPROD to SEAICE_SCALPROD and modify meaning of 
+    second argument
+  - add a metric based on grid cell area to SEAICE_SCALPROD; update
+    results of offline_exf_seaice.dyn_jfnk
+  - compute initial residual norm in seaice_jfnk based on SEAICE_SCALPROD
 o pkg/aim_v23:
   - fix an other bug in dissipation heating (grid-cell area was missing).
 o model/src + pkg/seaice:
