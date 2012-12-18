@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.41 2012/04/11 04:02:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.42 2012/12/18 01:16:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -78,12 +78,10 @@ c     _RL phiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j
-      _RL zero, one, half
       _RL alphaRho(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dRlocM,dRlocP, ddRloc, locAlpha
       _RL ddPIm, ddPIp, rec_dRm, rec_dRp
       _RL surfPhiFac
-      PARAMETER ( zero= 0. _d 0 , one= 1. _d 0 , half= .5 _d 0 )
       LOGICAL useDiagPhiRlow, addSurfPhiAnom
 CEOP
       useDiagPhiRlow = .TRUE.
@@ -184,7 +182,7 @@ C    but might be slower (--> keep original masking if not using down_slope pkg)
 #endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_MOM_COMMON
-C Quasi-hydrostatic terms are added in as if they modify the buoyancy
+C--     Quasi-hydrostatic terms are added in as if they modify the buoyancy
         IF (quasiHydrostatic) THEN
          CALL MOM_QUASIHYDROSTATIC(bi,bj,k,uVel,vVel,alphaRho,myThid)
         ENDIF
@@ -215,7 +213,7 @@ C           conserve KE+PE exactly even though it is more natural
          DO j=jMin,jMax
           DO i=iMin,iMax
             phiHydC(i,j) = phiHydF(i,j)
-     &            + half*drF(k)*gravity*alphaRho(i,j)*recip_rhoConst
+     &          + halfRL*drF(k)*gravity*alphaRho(i,j)*recip_rhoConst
             phiHydF(i,j) = phiHydF(i,j)
      &                 + drF(k)*gravity*alphaRho(i,j)*recip_rhoConst
           ENDDO
@@ -231,10 +229,10 @@ C           conserve KE+PE exactly even though it is more natural
             phiHydC(i,j) = ddRloc*gravity*alphaRho(i,j)*recip_rhoConst
            ELSE
             phiHydC(i,j) = phiHydF(i,j)
-     &              + half*drF(k)*gravity*alphaRho(i,j)*recip_rhoConst
+     &            + halfRL*drF(k)*gravity*alphaRho(i,j)*recip_rhoConst
            ENDIF
             phiHydF(i,j) = phiHydC(i,j)
-     &              + half*drF(k)*gravity*alphaRho(i,j)*recip_rhoConst
+     &            + halfRL*drF(k)*gravity*alphaRho(i,j)*recip_rhoConst
           ENDDO
          ENDDO
         ENDIF
@@ -245,12 +243,12 @@ C  --  Finite Difference Form
 C---------- This discretization is the "energy conserving" form
 C           which has been used since at least Adcroft et al., MWR 1997
 
-        dRlocM=half*drC(k)
+        dRlocM = halfRL*drC(k)
         IF (k.EQ.1) dRlocM=rF(k)-rC(k)
         IF (k.EQ.Nr) THEN
           dRlocP=rC(k)-rF(k+1)
         ELSE
-          dRlocP=half*drC(k+1)
+          dRlocP=halfRL*drC(k+1)
         ENDIF
         IF ( uniformFreeSurfLev ) THEN
          DO j=jMin,jMax
@@ -262,8 +260,8 @@ C           which has been used since at least Adcroft et al., MWR 1997
           ENDDO
          ENDDO
         ELSE
-         rec_dRm = one/(rF(k)-rC(k))
-         rec_dRp = one/(rC(k)-rF(k+1))
+         rec_dRm = oneRL/(rF(k)-rC(k))
+         rec_dRp = oneRL/(rC(k)-rF(k+1))
          DO j=jMin,jMax
           DO i=iMin,iMax
            IF (k.EQ.kSurfC(i,j,bi,bj)) THEN
@@ -271,9 +269,9 @@ C           which has been used since at least Adcroft et al., MWR 1997
 #ifdef NONLIN_FRSURF
             ddRloc = ddRloc + surfPhiFac*etaH(i,j,bi,bj)
 #endif
-            phiHydC(i,j) =( MAX(zero,ddRloc)*rec_dRm*dRlocM
-     &                      +MIN(zero,ddRloc)*rec_dRp*dRlocP
-     &                     )*gravity*alphaRho(i,j)*recip_rhoConst
+            phiHydC(i,j) =( MAX(zeroRL,ddRloc)*rec_dRm*dRlocM
+     &                     +MIN(zeroRL,ddRloc)*rec_dRp*dRlocP
+     &                    )*gravity*alphaRho(i,j)*recip_rhoConst
            ELSE
             phiHydC(i,j) = phiHydF(i,j)
      &        +dRlocM*gravity*alphaRho(i,j)*recip_rhoConst
@@ -328,9 +326,16 @@ C--     Calculate specific volume anomaly : alpha_prime = 1/rho - alpha_Cst
           DO i=iMin,iMax
             locAlpha=alphaRho(i,j)+rhoConst
             alphaRho(i,j)=maskC(i,j,k,bi,bj)*
-     &              (one/locAlpha - recip_rhoConst)
+     &              (oneRL/locAlpha - recip_rhoConst)
           ENDDO
         ENDDO
+
+#ifdef ALLOW_MOM_COMMON
+C--     Quasi-hydrostatic terms are added as if they modify the specific-volume
+        IF (quasiHydrostatic) THEN
+         CALL MOM_QUASIHYDROSTATIC(bi,bj,k,uVel,vVel,alphaRho,myThid)
+        ENDIF
+#endif /* ALLOW_MOM_COMMON */
 
 C----  Hydrostatic pressure at cell centers
 
@@ -352,15 +357,15 @@ C           conserve KE+PE exactly even though it is more natural
              phiHydC(i,j) = ddRloc*alphaRho(i,j)
 c--to reproduce results of c48d_post: uncomment those 4+1 lines
 c            phiHydC(i,j)=phiHydF(i,j)
-c    &          +(hFacC(i,j,k,bi,bj)-half)*drF(k)*alphaRho(i,j)
+c    &          +(hFacC(i,j,k,bi,bj)-halfRL)*drF(k)*alphaRho(i,j)
 c            phiHydF(i,j)=phiHydF(i,j)
 c    &          + hFacC(i,j,k,bi,bj)*drF(k)*alphaRho(i,j)
            ELSE
-             phiHydC(i,j) = phiHydF(i,j) + half*drF(k)*alphaRho(i,j)
-c            phiHydF(i,j) = phiHydF(i,j) +      drF(k)*alphaRho(i,j)
+             phiHydC(i,j) = phiHydF(i,j) + halfRL*drF(k)*alphaRho(i,j)
+c            phiHydF(i,j) = phiHydF(i,j) +        drF(k)*alphaRho(i,j)
            ENDIF
 c-- and comment this last one:
-             phiHydF(i,j) = phiHydC(i,j) + half*drF(k)*alphaRho(i,j)
+             phiHydF(i,j) = phiHydC(i,j) + halfRL*drF(k)*alphaRho(i,j)
 c-----
           ENDDO
          ENDDO
@@ -368,15 +373,15 @@ c-----
        ELSE
 C  --  Finite Difference Form, with Part-Cell Bathy
 
-         dRlocM=half*drC(k)
+         dRlocM = halfRL*drC(k)
          IF (k.EQ.1) dRlocM=rF(k)-rC(k)
          IF (k.EQ.Nr) THEN
            dRlocP=rC(k)-rF(k+1)
          ELSE
-           dRlocP=half*drC(k+1)
+           dRlocP=halfRL*drC(k+1)
          ENDIF
-         rec_dRm = one/(rF(k)-rC(k))
-         rec_dRp = one/(rC(k)-rF(k+1))
+         rec_dRm = oneRL/(rF(k)-rC(k))
+         rec_dRp = oneRL/(rC(k)-rF(k+1))
 
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -388,8 +393,8 @@ C---------- This discretization is the "energy conserving" form
 #ifdef NONLIN_FRSURF
              ddRloc = ddRloc + surfPhiFac*etaH(i,j,bi,bj)
 #endif
-             phiHydC(i,j) =( MAX(zero,ddRloc)*rec_dRm*dRlocM
-     &                      +MIN(zero,ddRloc)*rec_dRp*dRlocP
+             phiHydC(i,j) =( MAX(zeroRL,ddRloc)*rec_dRm*dRlocM
+     &                      +MIN(zeroRL,ddRloc)*rec_dRp*dRlocP
      &                     )*alphaRho(i,j)
            ELSE
              phiHydC(i,j) = phiHydF(i,j) + dRlocM*alphaRho(i,j)
@@ -410,11 +415,18 @@ C       the specific volume, analogous to the oceanic case.
 C--     virtual potential temperature anomaly (including water vapour effect)
         DO j=jMin,jMax
          DO i=iMin,iMax
-          alphaRho(i,j)=maskC(i,j,k,bi,bj)
-     &             *( tFld(i,j,k,bi,bj)*(sFld(i,j,k,bi,bj)*atm_Rq+one)
-     &               -tRef(k) )
+          alphaRho(i,j) = ( tFld(i,j,k,bi,bj)
+     &                      *( sFld(i,j,k,bi,bj)*atm_Rq + oneRL )
+     &                    - tRef(k) )*maskC(i,j,k,bi,bj)
          ENDDO
         ENDDO
+
+#ifdef ALLOW_MOM_COMMON
+C--     Quasi-hydrostatic terms are added in as if they modify the Pot.Temp
+        IF (quasiHydrostatic) THEN
+         CALL MOM_QUASIHYDROSTATIC(bi,bj,k,uVel,vVel,alphaRho,myThid)
+        ENDIF
+#endif /* ALLOW_MOM_COMMON */
 
 C---    Integrate d Phi / d pi
 
@@ -431,14 +443,14 @@ C-----------------------------------------------------------------------
      &                   -((rC( k )/atm_Po)**atm_kappa) )
          ELSE
            ddPIm=atm_Cp*( ((rC(k-1)/atm_Po)**atm_kappa)
-     &                   -((rC( k )/atm_Po)**atm_kappa) )*half
+     &                   -((rC( k )/atm_Po)**atm_kappa) )*halfRL
          ENDIF
          IF (k.EQ.Nr) THEN
            ddPIp=atm_Cp*( ((rC( k )/atm_Po)**atm_kappa)
      &                   -((rF(k+1)/atm_Po)**atm_kappa) )
          ELSE
            ddPIp=atm_Cp*( ((rC( k )/atm_Po)**atm_kappa)
-     &                   -((rC(k+1)/atm_Po)**atm_kappa) )*half
+     &                   -((rC(k+1)/atm_Po)**atm_kappa) )*halfRL
          ENDIF
 C-------- This discretization is the energy conserving form
          DO j=jMin,jMax
@@ -497,17 +509,17 @@ C---------
      &                   -((rC( k )/atm_Po)**atm_kappa) )
          ELSE
            ddPIm=atm_Cp*( ((rC(k-1)/atm_Po)**atm_kappa)
-     &                   -((rC( k )/atm_Po)**atm_kappa) )*half
+     &                   -((rC( k )/atm_Po)**atm_kappa) )*halfRL
          ENDIF
          IF (k.EQ.Nr) THEN
            ddPIp=atm_Cp*( ((rC( k )/atm_Po)**atm_kappa)
      &                   -((rF(k+1)/atm_Po)**atm_kappa) )
          ELSE
            ddPIp=atm_Cp*( ((rC( k )/atm_Po)**atm_kappa)
-     &                   -((rC(k+1)/atm_Po)**atm_kappa) )*half
+     &                   -((rC(k+1)/atm_Po)**atm_kappa) )*halfRL
          ENDIF
-         rec_dRm = one/(rF(k)-rC(k))
-         rec_dRp = one/(rC(k)-rF(k+1))
+         rec_dRm = oneRL/(rF(k)-rC(k))
+         rec_dRp = oneRL/(rC(k)-rF(k+1))
          DO j=jMin,jMax
           DO i=iMin,iMax
            IF (k.EQ.kSurfC(i,j,bi,bj)) THEN
@@ -515,9 +527,9 @@ C---------
 #ifdef NONLIN_FRSURF
              ddRloc = ddRloc + surfPhiFac*etaH(i,j,bi,bj)
 #endif
-             phiHydC(i,j) =( MAX(zero,ddRloc)*rec_dRm*ddPIm
-     &                      +MIN(zero,ddRloc)*rec_dRp*ddPIp )
-     &                    *alphaRho(i,j)
+             phiHydC(i,j) =( MAX(zeroRL,ddRloc)*rec_dRm*ddPIm
+     &                      +MIN(zeroRL,ddRloc)*rec_dRp*ddPIp
+     &                     )*alphaRho(i,j)
            ELSE
              phiHydC(i,j) = phiHydF(i,j) +ddPIm*alphaRho(i,j)
            ENDIF
