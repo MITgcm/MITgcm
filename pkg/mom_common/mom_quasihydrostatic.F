@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_quasihydrostatic.F,v 1.4 2007/02/05 03:16:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_quasihydrostatic.F,v 1.5 2012/12/18 01:18:01 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -41,8 +41,8 @@ C  myThid        :: my Thread Id number
       INTEGER myThid
 
 C !OUTPUT/MODIFIED VARIABLES: ==========================================
-C  effectiveBuoy :: Density anomaly
-      _RL effectiveBuoy(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+C  effectiveBuoy :: Density (z-coord) / specific volume (p-coord) anomaly
+      _RL effectiveBuoy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j           :: loop indices
@@ -54,9 +54,29 @@ C  scalingFactor :: scaling factor (from acceleration to density)
       _RL scalingFactor
 CEOP
 
-      scalingFactor=rhoConst*gravitySign*recip_gravity
+      IF ( usingZCoords ) THEN
+C--   Z-coordinate case: Input is density anomaly
+
+        scalingFactor=rhoConst*gravitySign*recip_gravity
 C-    to reproduce old (wrong) results:
-c     scalingFactor=gravitySign*recip_gravity
+c       scalingFactor=gravitySign*recip_gravity
+
+      ELSEIF ( fluidIsWater ) THEN
+C--   P-coordinate, oceanic case: Input is specific-volume anomaly
+
+        scalingFactor = recip_rhoConst*recip_gravity
+c       scalingFactor = rVel2wUnit(k) <-- @ interface = wrong location
+C-    should use expression below (consistent with omega <-> w-velocity
+C      conversion) but rhoRef(k) = rho(tRef,sRef,p) is computed
+C     in S/R SET_REF_STATE but is not stored:
+c       scalingFactor = ( oneRL / rhoRef(k) )*recip_gravity
+
+      ELSE
+C--   P-coord., Ideal-Gas case: Input is virtual potential temp. anomaly
+C     (see White & Bromley, QJRMS 1995)
+        scalingFactor = tRef(k)*recip_gravity
+
+      ENDIF
 
       IF ( use3dCoriolis ) THEN
        DO j=jMin,jMax
