@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.16 2012/11/15 20:12:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.17 2012/12/18 20:04:28 dimitri Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -46,11 +46,6 @@ C     a simulation with a different number of categories.
 C--   run with sea Ice Thickness Distribution (ITD);
 C     set number of categories (nITD) in SEAICE_SIZE.h
 #undef SEAICE_ITD
-
-C--   SEAICE_ITD replaces SEAICE_MULTICATEGORY
-#ifdef SEAICE_ITD
-#undef SEAICE_MULTICATEGORY
-#endif
 
 C--   Use the Old version of seaice_growth (close to cvs version 1.70)
 C     otherwise, use the merged version (with some of Ian Fenty s code)

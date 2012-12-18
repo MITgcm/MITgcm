@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.134 2012/12/16 16:22:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.135 2012/12/18 20:04:28 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -310,10 +310,8 @@ C     old default value of 0.97001763668430343479
       SEAICE_salt0       = 0.0    _d 0
       SEAICE_saltFrac    = 0.0    _d 0
 CToM<<<
-C#ifdef SEAICE_MULTICATEGORY
-#if defined(SEAICE_MULTICATEGORY) || defined(SEAICE_ITD)
+#ifdef SEAICE_ITD
 C in case defined(SEAICE_ITD) MULTDIM = nITD (see SEAICE_SIZE.h)
-C because SEAICE_ITD uses code related to SEAICE_MULTICATEGORY
 C>>>ToM
       SEAICE_multDim     = MULTDIM
 #else
