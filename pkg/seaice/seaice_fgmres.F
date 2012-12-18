@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.12 2012/12/17 15:06:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.13 2012/12/18 08:23:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -373,13 +373,13 @@ C
       if ( im .gt. imax ) stop 'size of krylov space > 50'
       goto (100,200,300,11) icode +1
  100  continue
-CML      n1 = n + 1
+CML   n1 = n + 1
       its = 0
 C-------------------------------------------------------------
 C     **  outer loop starts here..
 C--------------compute initial residual vector --------------
 C 10   continue
-CML      call dcopy (n, sol, 1, wk1, 1) !jfl modification
+CML   call dcopy (n, sol, 1, wk1, 1) !jfl modification
       do bj=myByLo(myThid),myByHi(myThid)
        do bi=myBxLo(myThid),myBxHi(myThid)
         do k=1,n
@@ -397,8 +397,9 @@ CML      call dcopy (n, sol, 1, wk1, 1) !jfl modification
         enddo
        enddo
       enddo
-CML 20   ro = ddot(n, vv, 1, vv,1) !jfl modification
- 20   call SEAICE_SCALPROD(n, im+1, 1, 1, vv, vv, ro, myThid)
+ 20   continue
+CML   ro = ddot(n, vv, 1, vv,1) !jfl modification
+      call SEAICE_SCALPROD(n, im+1, 1, 1, vv, vv, ro, myThid)
       ro = sqrt(ro)
       if (ro .eq. 0.0 _d 0) goto 999
       t = 1.0 _d 0/ ro
@@ -425,7 +426,8 @@ C     initialize 1-st term  of rhs of hessenberg system..
 C
       rs(1) = ro
       i = 0
- 4    i=i+1
+ 4    continue
+      i=i+1
       its = its + 1
       i1 = i + 1
       do bj=myByLo(myThid),myByHi(myThid)
@@ -439,7 +441,6 @@ C
 C     return
 C
       icode = 1
-
       RETURN
  200  continue
       do bj=myByLo(myThid),myByHi(myThid)
@@ -452,8 +453,7 @@ C
 C
 C     call matvec operation
 C
-      icode = 2
-CML      call dcopy(n, wk2, 1, wk1, 1) !jfl modification
+CML   call dcopy(n, wk2, 1, wk1, 1) !jfl modification
       do bj=myByLo(myThid),myByHi(myThid)
        do bi=myBxLo(myThid),myBxHi(myThid)
         do k=1,n
@@ -464,13 +464,14 @@ CML      call dcopy(n, wk2, 1, wk1, 1) !jfl modification
 C
 C     return
 C
+      icode = 2
       RETURN
  300  continue
 C
 C     first call to ope corresponds to intialization goto back to 11.
 C
 C      if (icode .eq. 3) goto 11
-CML      call  dcopy (n, wk2, 1, vv(1,i1), 1) !jfl modification
+CML   call  dcopy (n, wk2, 1, vv(1,i1), 1) !jfl modification
       do bj=myByLo(myThid),myByHi(myThid)
        do bi=myBxLo(myThid),myBxHi(myThid)
         do k=1,n
@@ -482,13 +483,13 @@ C
 C     modified gram - schmidt...
 C
       do j=1, i
-CML         t = ddot(n, vv(1,j), 1, vv(1,i1), 1) !jfl modification
+CML    t = ddot(n, vv(1,j), 1, vv(1,i1), 1) !jfl modification
        call SEAICE_SCALPROD(n, im+1, j, i1, vv, vv, t, myThid)
        hh(j,i) = t
-CML         call daxpy(n, -t, vv(1,j), 1, vv(1,i1), 1) !jfl modification
-CML      enddo
-CML      do j=1, i
-CML         t = hh(j,i)
+CML    call daxpy(n, -t, vv(1,j), 1, vv(1,i1), 1) !jfl modification
+CML   enddo
+CML   do j=1, i
+CML    t = hh(j,i)
        do bj=myByLo(myThid),myByHi(myThid)
         do bi=myBxLo(myThid),myBxHi(myThid)
          do k=1,n
@@ -497,7 +498,7 @@ CML         t = hh(j,i)
         enddo
        enddo
       enddo
-CML      t = sqrt(ddot(n, vv(1,i1), 1, vv(1,i1), 1)) !jfl modification
+CML   t = sqrt(ddot(n, vv(1,i1), 1, vv(1,i1), 1)) !jfl modification
       call SEAICE_SCALPROD(n, im+1, i1, i1, vv, vv, t, myThid)
       t = sqrt(t)
       hh(i1,i) = t
@@ -533,8 +534,8 @@ C-----------#determine next plane rotation  #-------------------
       s(i)   = hh(i1,i)/gam
 C     numerically more stable Givens rotation, but the results
 C     are not better
-CML      c(i)=1.
-CML      s(i)=0.
+CML      c(i)=1. _d 0 
+CML      s(i)=0. _d 0
 CML      if ( abs(hh(i1,i)) .gt. 0.0 _d 0) then
 CML       if ( abs(hh(i1,i)) .gt. abs(hh(i,i)) ) then
 CML        gam = hh(i,i)/hh(i1,i)
@@ -549,7 +550,7 @@ CML      endif
       rs(i1) = -s(i)*rs(i)
       rs(i)  =  c(i)*rs(i)
 C
-C     determine res. norm. and test for convergence-
+C     determine res. norm. and test for convergence
 C
       hh(i,i) = c(i)*hh(i,i) + s(i)*hh(i1,i)
       ro = abs(rs(i1))
@@ -566,13 +567,13 @@ C     now compute solution. first solve upper triangular system.
 C
       rs(i) = rs(i)/hh(i,i)
       do ii=2,i
-         k=i-ii+1
-         k1 = k+1
-         t=rs(k)
-         do j=k1,i
-            t = t-hh(k,j)*rs(j)
-         enddo
-         rs(k) = t/hh(k,k)
+       k=i-ii+1
+       k1 = k+1
+       t=rs(k)
+       do j=k1,i
+        t = t-hh(k,j)*rs(j)
+       enddo
+       rs(k) = t/hh(k,k)
       enddo
 C
 C     done with back substitution..
@@ -580,7 +581,7 @@ C     now form linear combination to get solution
 C
       do j=1, i
        t = rs(j)
-C         call daxpy(n, t, w(1,j), 1, sol,1) !jfl modification
+CML    call daxpy(n, t, w(1,j), 1, sol,1) !jfl modification
        do bj=myByLo(myThid),myByHi(myThid)
         do bi=myBxLo(myThid),myBxHi(myThid)
          do k=1,n
@@ -599,21 +600,21 @@ C
 C       goto 10
 
       do j=1,i
-        jj = i1-j+1
-        rs(jj-1) = -s(jj-1)*rs(jj)
-        rs(jj) = c(jj-1)*rs(jj)
+       jj = i1-j+1
+       rs(jj-1) = -s(jj-1)*rs(jj)
+       rs(jj) = c(jj-1)*rs(jj)
       enddo
       do j=1,i1
-        t = rs(j)
-        if (j .eq. 1)  t = t-1.0 _d 0
-CML        call daxpy (n, t, vv(1,j), 1,  vv, 1)
-        do bj=myByLo(myThid),myByHi(myThid)
-         do bi=myBxLo(myThid),myBxHi(myThid)
-          do k=1,n
-           vv(k,1,bi,bj) = vv(k,1,bi,bj) + t*vv(k,j,bi,bj)
-          enddo
+       t = rs(j)
+       if (j .eq. 1)  t = t-1.0 _d 0
+CML    call daxpy (n, t, vv(1,j), 1,  vv, 1)
+       do bj=myByLo(myThid),myByHi(myThid)
+        do bi=myBxLo(myThid),myBxHi(myThid)
+         do k=1,n
+          vv(k,1,bi,bj) = vv(k,1,bi,bj) + t*vv(k,j,bi,bj)
          enddo
         enddo
+       enddo
       enddo
 C
 C     restart outer loop.
