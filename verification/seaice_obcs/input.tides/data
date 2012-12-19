@@ -93,7 +93,7 @@
 #
  &PARM03
  startTime=3600.0,
- endTime=36000.,
+ endTime=21600.,
  deltaTmom=3600.0,
  deltaTtracer=3600.0,
  deltaTClock =3600.0,
