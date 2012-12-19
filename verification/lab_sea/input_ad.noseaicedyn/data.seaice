@@ -14,6 +14,7 @@
       LSR_ERROR          = 1.E-6,
 ###      SEAICE_deltaTevp   = 60,
       SEAICE_EPS         = 1.E-8,
+      SEAICE_multDim     = 7,
 #- to reproduce old results with former #defined SEAICE_SOLVE4TEMP_LEGACY code
   useMaykutSatVapPoly = .TRUE.,
   postSolvTempIter  =  0,
