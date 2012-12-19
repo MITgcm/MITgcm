@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/code/SEAICE_OPTIONS.h,v 1.13 2012/12/18 20:04:28 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/code/SEAICE_OPTIONS.h,v 1.14 2012/12/19 02:44:19 dimitri Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -49,14 +49,14 @@ C     set number of categories (nITD) in SEAICE_SIZE.h
 
 C--   Use the Old version of seaice_growth (close to cvs version 1.70)
 C     otherwise, use the merged version (with some of Ian Fenty s code)
-#define SEAICE_GROWTH_LEGACY
+#undef SEAICE_GROWTH_LEGACY
 
 C--   Since the missing sublimation term is now included
 C     this flag is needed for backward compatibility
-#define SEAICE_DISABLE_SUBLIM
+#undef SEAICE_DISABLE_SUBLIM
 
 C--   Suspected missing term in coupled ocn-ice heat budget (to be confirmed)
-#define SEAICE_DISABLE_HEATCONSFIX
+#undef SEAICE_DISABLE_HEATCONSFIX
 
 C--   Default is constant seaice salinity (SEAICE_salt0); Define the following
 C     flag to consider (space & time) variable salinity: advected and forming
@@ -79,7 +79,9 @@ C     (not thoroughly) test version on a C-grid
 C--   Only for the C-grid version it is possible to
 #ifdef SEAICE_CGRID
 C     enable JFNK code by defining the following flag
-# define SEAICE_ALLOW_JFNK
+# undef SEAICE_ALLOW_JFNK
+C     enable LSR to use global (multi-tile) tri-diagonal solver
+# undef SEAICE_GLOBAL_3DIAG_SOLVER
 C     enable EVP code by defining the following flag
 # define SEAICE_ALLOW_EVP
 # ifdef SEAICE_ALLOW_EVP
@@ -125,7 +127,7 @@ C     SEAICE_CAP_SUBLIM is not needed as of now, but kept just in case.
 #undef SEAICE_CAP_SUBLIM
 
 C--   Enable free drift code
-#undef SEAICE_ALLOW_FREEDRIFT
+#define SEAICE_ALLOW_FREEDRIFT
 
 #endif /* ALLOW_SEAICE */
 #endif /* SEAICE_OPTIONS_H */

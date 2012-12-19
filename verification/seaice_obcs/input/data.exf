@@ -83,18 +83,20 @@
  sfluxfile         = ' ',
  ustressfile       = ' ',
  vstressfile       = ' ',
- atempfile         = 'tair.seaice_obcs',
- aqhfile           = 'qa.seaice_obcs',
- uwindfile         = 'u10m.seaice_obcs',
- vwindfile         = 'v10m.seaice_obcs',
- precipfile        = 'prate.seaice_obcs',
+ atempfile         = 'tair.labsea1979',
+ aqhfile           = 'qa.labsea1979',
+ uwindfile         = 'u10m.labsea1979',
+ vwindfile         = 'v10m.labsea1979',
+#evapfile          = 'evap.labsea1979',
+ precipfile        = 'prate.labsea1979',
  lwfluxfile        = ' ',
  swfluxfile        = ' ',
- lwdownfile        = 'flo.seaice_obcs',
- swdownfile        = 'fsh.seaice_obcs',
+ lwdownfile        = 'flo.labsea1979',
+ swdownfile        = 'fsh.labsea1979',
  runoffFile        = ' '
  climsstfile       = ' ',
- climsssfile       = 'SSS_monthly.seaice_obcs',
+ climsssfile       = 'SSS_monthly.labsea1979',
+#
  &
 
 # *********************

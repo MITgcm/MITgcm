@@ -2,7 +2,8 @@
 % results to ../lab_sea/input.salt_plume
 
 % preamble
-nx=20; ny=16; nz=18; nt=6; ix=8:17; iy=4:11;
+%cd MITgcm/verification/seaice_obcs/input
+nx=20; ny=16; nz=18; nt=10; ix=8:17; iy=4:11;
 p1='../../lab_sea/tr_run.salt_plume/';
 p2='../run/';
 
@@ -20,7 +21,7 @@ for f={'T','S','U','V'}
         title(['seaice obcs ' f{1} ', level ' int2str(k)]);
         tmp3=tmp2(:,:,k)-tmp1(:,:,k);
         subplot(313), mypcolor(tmp3'); thincolorbar
-        title('difference'), pause(.1)
+        title('difference'), pause(.2)
         J=J+sum(sum(tmp3(2:(end-1),2:(end-1)).^2));
     end
     disp([f{1} ': ' num2str(J)])
@@ -40,7 +41,7 @@ for f={'UICE','VICE','AREA','HSNOW','HSALT','HEFF'}
     title(['seaice obcs ' f{1} ', time step ' int2str(t)]);
     tmp3=tmp2-tmp1;
     subplot(313), mypcolor(tmp3'); thincolorbar
-    title('difference'), pause(.1)
+    title('difference'), pause(.2)
     J=J+sum(sum(tmp3(2:(end-1),2:(end-1)).^2));
   end
   disp([f{1} ': ' num2str(J)])

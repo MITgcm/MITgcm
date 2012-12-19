@@ -38,12 +38,17 @@
  diffKzT=1.46e-5,
  diffKhS=0.0,
  diffKzS=1.46e-5,
+#- put small value (<< stab.limit ~ 2.e15) only to test biharmonic-diffusivity:
+ diffK4T=1.E11,
+ diffK4S=1.E11,
+#-
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  eosType='JMD95Z',
  saltStepping=.TRUE.,
  tempStepping=.TRUE.,
  momStepping=.TRUE.,
+ useEnergyConservingCoriolis=.TRUE.,
  implicitDiffusion=.TRUE.,
  implicitViscosity=.TRUE.,
  staggerTimeStep=.TRUE.,
