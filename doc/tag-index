@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1785 2012/12/19 02:48:52 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1786 2012/12/20 16:39:34 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_lsr.F
+  - modify the computation of the residual so that the mass of sea-ice
+    is not used twice; this simplyfies the calculations, but since
+    the residual is never used except when LSR_mixIniGuess.ge.4---and this is
+    not tested in testreport---this does not affect the testreport results.
 o verification/seaice_obcs:
   - disable SEAICE_GROWTH_LEGACY; reset input files to match those of
     verification/lab_sea/input.salt_plume; changes results/output.txt*
