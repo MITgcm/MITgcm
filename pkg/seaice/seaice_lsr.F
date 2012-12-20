@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.81 2012/12/16 21:40:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.82 2012/12/20 16:37:33 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -145,7 +145,6 @@ C     auxillary fields
       _RL resnorm, EKnorm, counter
 #endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
       LOGICAL printResidual
-      _RL massU, massV
       _RL residUini, residVini, residUend, residVend
 #ifdef SEAICE_ALLOW_FREEDRIFT
       _RL uRes (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -159,8 +158,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       printResidual = debugLevel.GE.debLevA
      &  .AND. DIFFERENT_MULTIPLE( SEAICE_monFreq, myTime, deltaTClock )
-      massU = -1. _d 0
-      massV = -1. _d 0
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph break artificial dependencies
@@ -717,14 +714,12 @@ C--   Calculate initial residual of the linearised system
      &  CALL SEAICE_RESIDUAL(
      I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
      I                  AU, BU, CU, AV, BV, CV, uIce_fd, vIce_fd,
-     U                  massU, massV,
      O                  residU_fd, residV_fd, uRes, vRes,
      I                  printResidual, myIter, myThid )
 #endif /* SEAICE_ALLOW_FREEDRIFT */
         CALL SEAICE_RESIDUAL(
      I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
      I                  AU, BU, CU, AV, BV, CV, uIce, vIce,
-     U                  massU, massV,
      O                  residUini, residVini, uTmp, vTmp,
      I                  printResidual, myIter, myThid )
       ENDIF
@@ -775,7 +770,6 @@ CADJ &     key = itmpkey
         CALL SEAICE_RESIDUAL(
      I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
      I                  AU, BU, CU, AV, BV, CV, uIce, vIce,
-     U                  massU, massV,
      O                  residUmix, residVmix, uTmp, vTmp,
      I                  printResidual, myIter, myThid )
        ENDIF
@@ -1092,7 +1086,6 @@ C--   Calculate final residual of the linearised system
         CALL SEAICE_RESIDUAL(
      I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
      I                  AU, BU, CU, AV, BV, CV, uIce, vIce,
-     U                  massU, massV,
      O                  residUend, residVend, uTmp, vTmp,
      I                  printResidual, myIter, myThid )
         _BEGIN_MASTER( myThid )
@@ -1263,7 +1256,6 @@ C     !INTERFACE:
       SUBROUTINE SEAICE_RESIDUAL(
      I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
      I                  AU, BU, CU, AV, BV, CV, uFld, vFld,
-     U                  massU, massV,
      O                  residU, residV, uRes, vRes,
      I                  calcMeanResid, myIter, myThid )
 
@@ -1308,8 +1300,6 @@ C-    diagonals of coefficient matrices
 C--   seaice velocity
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C-    Integrated seaice mass (input-output)
-      _RL massU, massV
 C-    residual (output)
       _RL residU, residV
       _RL uRes (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -1331,17 +1321,6 @@ C     i,j,bi,bj  :: Loop counters
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Calculate residual of the linearised system
-#ifdef ALLOW_AUTODIFF_TAMC
-      sumMass = calcMeanResid
-      massU = 0.
-      massV = 0.
-#else /* ALLOW_AUTODIFF_TAMC */
-      sumMass = calcMeanResid .AND. ( massU.LT.0. .OR. massV.LT.0. )
-      IF ( sumMass ) THEN
-       massU = 0.
-       massV = 0.
-      ENDIF
-#endif /* ALLOW_AUTODIFF_TAMC */
       residU = 0.
       residV = 0.
 
@@ -1365,41 +1344,24 @@ C--   Calculate residual of the linearised system
      &              )
           ENDDO
          ENDDO
-        IF ( sumMass ) THEN
-         DO j=1,sNy
-          DO i=1,sNx
-            massU  = massU  + seaiceMassU(i,j,bi,bj)
-     &                       *rAw(i,j,bi,bj)*maskInW(i,j,bi,bj)
-            massV  = massV  + seaiceMassV(i,j,bi,bj)
-     &                       *rAs(i,j,bi,bj)*maskInS(i,j,bi,bj)
-          ENDDO
-         ENDDO
-        ENDIF
-        IF ( calcMeanResid ) THEN
-         DO j=1,sNy
-          DO i=1,sNx
+         IF ( calcMeanResid ) THEN
+          DO j=1,sNy
+           DO i=1,sNx
             residU = residU + uRes(i,j,bi,bj)*uRes(i,j,bi,bj)
-     &                       *seaiceMassU(i,j,bi,bj)
      &                       *rAw(i,j,bi,bj)*maskInW(i,j,bi,bj)
             residV = residV + vRes(i,j,bi,bj)*vRes(i,j,bi,bj)
-     &                       *seaiceMassV(i,j,bi,bj)
      &                       *rAs(i,j,bi,bj)*maskInS(i,j,bi,bj)
+           ENDDO
           ENDDO
-         ENDDO
-        ENDIF
+         ENDIF
        ENDDO
       ENDDO
-      IF ( sumMass ) THEN
-        _GLOBAL_SUM_RL( massU, myThid )
-        _GLOBAL_SUM_RL( massV, myThid )
-      ENDIF
       IF ( calcMeanResid ) THEN
-        _GLOBAL_SUM_RL( residU, myThid )
-        _GLOBAL_SUM_RL( residV, myThid )
-        IF ( massU.GT.0. ) residU = residU / massU
-        IF ( massV.GT.0. ) residV = residV / massV
-        IF ( residU.GT.0. ) residU = SQRT(residU)
-        IF ( residV.GT.0. ) residV = SQRT(residV)
+       _GLOBAL_SUM_RL( residU, myThid )
+       _GLOBAL_SUM_RL( residV, myThid )
+C     scale residuals by globalArea so that they do not get ridiculously large
+       IF ( residU.GT.0. ) residU = SQRT(residU/globalArea)
+       IF ( residV.GT.0. ) residV = SQRT(residV/globalArea)
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
