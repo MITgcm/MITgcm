@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.11 2009/07/01 14:49:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.12 2012/12/21 01:00:08 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -42,6 +42,8 @@ C     otherwise decide to stop the code.
 c     mon_overrideStop=.FALSE.
       monSolutionMaxRange = 1. _d +4
       IF ( fluidIsWater ) monSolutionMaxRange = 1. _d +3
+      mon_output_AM = fluidIsAir .AND. useCoriolis
+     &                           .AND. selectCoriMap.GE.2
       _END_MASTER(myThid)
 
       _BARRIER

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.21 2011/05/02 15:00:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.22 2012/12/21 01:00:09 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -12,7 +12,8 @@ C     !INTERFACE:
      I     myIter, myThid )
 
 C     !DESCRIPTION:
-C     Calculates stats for Kinetic Energy
+C     Calculates stats for Kinetic Energy, (barotropic) Potential Energy
+C                      and total Angular Momentum
 
 C     !USES:
       IMPLICIT NONE
@@ -29,13 +30,19 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      INTEGER bi,bj,i,j,k,kp1
+      INTEGER bi, bj
+      INTEGER i,j,k
+      INTEGER ks, kp1
       _RL numPnts,theVol,tmpVal, mskp1, msk_1
       _RL theMax,theMean,theVolMean,potEnMean
+      _RL uBarC, vBarC, totAMu, totAMs
       _RL tileMean(nSx,nSy)
       _RL tileVlAv(nSx,nSy)
       _RL tilePEav(nSx,nSy)
       _RL tileVol (nSx,nSy)
+      _RL tileAMu (nSx,nSy)
+      _RL tileAMs (nSx,nSy)
+      _RL radDist(1:sNx,1:sNy)
 #ifdef ALLOW_NONHYDROSTATIC
       _RL tmpWke
 #endif
@@ -62,7 +69,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C- Note: Present NH implementation does not account for D.w/dt at k=1.
 C        Consequently, wVel(k=1) does not contribute to NH KE (msk_1=0).
          msk_1 = 1.
-         IF ( k.EQ. 1 ) msk_1 = 0.
+         IF ( k.EQ.1 .AND. selectNHfreeSurf.LE.0 ) msk_1 = 0.
          DO j=1,sNy
           DO i=1,sNx
            tileVol(bi,bj) = tileVol(bi,bj)
@@ -151,6 +158,68 @@ C- end bi,bj loops
       IF (theVol.NE.0.) THEN
         theVolMean=theVolMean/theVol
         potEnMean = potEnMean/theVol
+      ENDIF
+
+C--   Compute total angular momentum
+      IF ( mon_output_AM ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+C-    calculate radial distance
+         DO j=1,sNy
+          DO i=1,sNx
+            radDist(i,j) = rSphere*COS( deg2rad*yC(i,j,bi,bj) )
+     &                            *maskInC(i,j,bi,bj)
+          ENDDO
+         ENDDO
+C-    calculate contribution from zonal velocity
+         tileAMu(bi,bj) = 0. _d 0
+         tileAMs(bi,bj) = 0. _d 0
+         DO k=1,Nr
+          DO j=1,sNy
+           DO i=1,sNx
+            uBarC = (uVel(i,j,k,bi,bj)+uVel(i+1,j,k,bi,bj))*0.5 _d 0
+            vBarC = (vVel(i,j,k,bi,bj)+vVel(i,j+1,k,bi,bj))*0.5 _d 0
+            tmpVal = ( angleCosC(i,j,bi,bj)*uBarC
+     &                -angleSinC(i,j,bi,bj)*vBarC
+     &               )*radDist(i,j)*deepFacC(k)
+            tileAMu(bi,bj) = tileAMu(bi,bj)
+     &             + tmpVal*rA(i,j,bi,bj)*deepFac2C(k)
+     &                     *rhoFacC(k)*drF(k)*_hFacC(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+C-    add contribution from mass distribution anomaly (i.e., free-surface)
+c        IF ( nonlinFreeSurf.GT.0 ) THEN
+          DO j=1,sNy
+           DO i=1,sNx
+            ks = kSurfC(i,j,bi,bj)
+            tmpVal = omega*etaN(i,j,bi,bj)
+     &             * radDist(i,j)*radDist(i,j)*deepFac2F(ks)
+            tileAMs(bi,bj) = tileAMs(bi,bj)
+     &             + tmpVal*rA(i,j,bi,bj)*deepFac2F(ks)*rhoFacF(ks)
+           ENDDO
+          ENDDO
+c        ENDIF
+C- end bi,bj loops
+        ENDDO
+       ENDDO
+       CALL GLOBAL_SUM_TILE_RL( tileAMu , totAMu, myThid )
+       CALL GLOBAL_SUM_TILE_RL( tileAMs , totAMs, myThid )
+
+C--   Print stats for total Angular Momentum:
+       CALL MON_SET_PREF('am',myThid)
+       totAMu = totAMu*rUnit2mass
+       totAMs = totAMs*rUnit2mass
+       IF ( globalArea.GT.0. ) totAMu = totAMu/globalArea
+       IF ( globalArea.GT.0. ) totAMs = totAMs/globalArea
+       CALL MON_OUT_RL( mon_string_none, totAMs,
+     &         '_eta_mean', myThid )
+       CALL MON_OUT_RL( mon_string_none, totAMu,
+     &         '_uZo_mean', myThid )
+       totAMu = totAMu + totAMs
+       CALL MON_OUT_RL( mon_string_none, totAMu,
+     &         '_tot_mean', myThid )
+
       ENDIF
 
 C--   Print stats for (barotropic) Potential Energy:

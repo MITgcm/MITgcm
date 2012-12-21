@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/MONITOR.h,v 1.9 2009/07/01 14:49:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/MONITOR.h,v 1.10 2012/12/21 01:00:08 jmc Exp $
 C $Name:  $
 C
 
@@ -55,7 +55,7 @@ C     mon_pref   :: Prefix used for monitor output
       COMMON /MON_C/ mon_pref
       CHARACTER*(MAX_LEN_MBUF) mon_pref
 
-C--   COMMON /MON_C/ Monitor real variables
+C--   COMMON /MON_R/ Monitor real variables
 C     monSolutionMaxRange :: Maximum allowed Range for solution
       COMMON /MON_R/ monSolutionMaxRange
       _RL  monSolutionMaxRange
@@ -63,11 +63,14 @@ C     monSolutionMaxRange :: Maximum allowed Range for solution
 C--   COMMON /MON_L/ Monitor logical variables
 C     mon_overrideStop :: Allow code to continue even if model state is
 C                         heading out of bounds
+C     mon_output_AM    :: output Angular momentum
 C     mon_write_stdout :: hold True when writing monitor to standard output
 C     mon_write_mnc    :: hold True when writing monitor to MNC file
       COMMON /MON_L/
+     &               mon_output_AM,
      &               mon_write_stdout, mon_write_mnc
 c     LOGICAL mon_overrideStop
+      LOGICAL mon_output_AM
       LOGICAL mon_write_stdout, mon_write_mnc
 
 C     File names and time steps
