@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.12 2012/12/20 16:37:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.13 2012/12/21 13:22:26 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -79,20 +79,6 @@ C     i,j,bi,bj  :: Loop counters
       _RL AA3
       _RL hFacM, hFacP
 
-C     coefficients of ice velocities in coefficient matrix
-C     for both U and V-equation
-C     XX: double derivative in X
-C     YY: double derivative in Y
-C     XM: metric term with derivative in X
-C     YM: metric term with derivative in Y
-      _RL UXX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL UYY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL UXM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL UYM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL VXX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL VYY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL VXM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL VYM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     diagonals of coefficient matrices
       _RL AU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -175,220 +161,42 @@ C
           zetaMinusEta(I,J,bi,bj)=zetaPre(I,J,bi,bj)- etaPre(I,J,bi,bj)
          ENDDO
         ENDDO
-C     coefficients of uIce(I,J) and vIce(I,J) belonging to ...
-        DO J=1,sNy
-         DO I=0,sNx
-C     ... d/dx (eta+zeta) d/dx u
-          UXX(I,J,bi,bj) = _dyF(I,J,bi,bj) * etaPlusZeta(I,J,bi,bj)
-     &         * _recip_dxF(I,J,bi,bj)
-C     ... d/dx (zeta-eta) k1 u
-          UXM(I,J,bi,bj) = _dyF(I,J,bi,bj) * zetaMinusEta(I,J,bi,bj)
-     &         * k1AtC(I,J,bi,bj) * 0.5 _d 0
-         ENDDO
-        ENDDO
-        DO J=1,sNy+1
-         DO I=1,sNx
-C     ... d/dy eta d/dy u
-          UYY(I,J,bi,bj) = _dxV(I,J,bi,bj) * etaZpre(I,J,bi,bj)
-     &         * _recip_dyU(I,J,bi,bj)
-C     ... d/dy eta k2 u
-          UYM(I,J,bi,bj) = _dxV(I,J,bi,bj) * etaZpre(I,J,bi,bj)
-     &         * k2AtZ(I,J,bi,bj) * 0.5 _d 0
-         ENDDO
-        ENDDO
-        DO J=1,sNy
-         DO I=1,sNx+1
-C     ... d/dx eta dv/dx
-          VXX(I,J,bi,bj) = _dyU(I,J,bi,bj) * etaZpre(I,J,bi,bj)
-     &         * _recip_dxV(I,J,bi,bj)
-C     ... d/dx eta k1 v
-          VXM(I,J,bi,bj) = _dyU(I,J,bi,bj) * etaZpre(I,J,bi,bj)
-     &         * k1AtZ(I,J,bi,bj) * 0.5 _d 0
-         ENDDO
-        ENDDO
-        DO J=0,sNy
-         DO I=1,sNx
-C     ... d/dy eta+zeta dv/dy
-          VYY(I,J,bi,bj) = _dxF(I,J,bi,bj) * etaPlusZeta(I,J,bi,bj)
-     &         * _recip_dyF(I,J,bi,bj)
-C     ... d/dy (zeta-eta) k2 v
-          VYM(I,J,bi,bj) = _dxF(I,J,bi,bj) * zetaMinusEta(I,J,bi,bj)
-     &         * k2AtC(I,J,bi,bj) * 0.5 _d 0
-         ENDDO
-        ENDDO
        ENDDO
       ENDDO
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C--   Prepare for Solving uIce :
-
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-C     assemble coefficient matrix, beware of sign convention: because this
-C     is the left hand side we calculate -grad(sigma), but the coefficients
-C     of U(I,J+/-1) are counted on the right hand side
-        DO J=1,sNy
-         DO I=1,sNx
-C     coefficients for UICE(I-1,J)
-          AU(I,J,bi,bj)= ( - UXX(I-1,J,bi,bj) + UXM(I-1,J,bi,bj) )
-     &         * seaiceMaskU(I,J,bi,bj)
-C     coefficients for UICE(I+1,J)
-          CU(I,J,bi,bj)= ( - UXX(I  ,J,bi,bj) - UXM(I  ,J,bi,bj) )
-     &         * seaiceMaskU(I,J,bi,bj)
-C     coefficients for UICE(I,J)
-          BU(I,J,bi,bj)=(ONE - seaiceMaskU(I,J,bi,bj)) +
-     &         ( UXX(I-1,J  ,bi,bj) + UXX(I,J,bi,bj)
-     &         + UYY(I  ,J+1,bi,bj) + UYY(I,J,bi,bj)
-     &         + UXM(I-1,J  ,bi,bj) - UXM(I,J,bi,bj)
-     &         + UYM(I  ,J+1,bi,bj) - UYM(I,J,bi,bj)
-     &         ) * seaiceMaskU(I,J,bi,bj)
-C     coefficients of uIce(I,J-1)
-          uRt1(I,J,bi,bj)= UYY(I,J  ,bi,bj) + UYM(I,J  ,bi,bj)
-C     coefficients of uIce(I,J+1)
-          uRt2(I,J,bi,bj)= UYY(I,J+1,bi,bj) - UYM(I,J+1,bi,bj)
-         ENDDO
-        ENDDO
-
-C     apply boundary conditions according to slip factor
-C     for no slip, set u on boundary to zero: u(j+/-1)=-u(j)
-C     for the free slip case sigma_12 = 0
-        DO J=1,sNy
-         DO I=1,sNx
-          hFacM = seaiceMaskU(I,J-1,bi,bj)
-          hFacP = seaiceMaskU(I,J+1,bi,bj)
-C     copy contributions to coefficient of U(I,J)
-C     beware of sign convection: uRt1/2 have the opposite sign convention
-C     than BU, hence the minus sign
-          BU(I,J,bi,bj)=BU(I,J,bi,bj) + seaiceMaskU(I,J,bi,bj) *
-     &         ( ( 1. _d 0 - hFacM )
-     &         * ( UYY(I  ,J  ,bi,bj) + UYM(I  ,J  ,bi,bj) )
-     &         + ( 1. _d 0 - hFacP )
-     &         * ( UYY(I  ,J+1,bi,bj) - UYM(I  ,J+1,bi,bj) ) )
-C     reset coefficients of U(I,J-1) and U(I,J+1)
-          uRt1(I,J,bi,bj) = uRt1(I,J,bi,bj) * hFacM
-          uRt2(I,J,bi,bj) = uRt2(I,J,bi,bj) * hFacP
-         ENDDO
-        ENDDO
-
-C     now we need to normalize everything by the grid cell area
-        DO J=1,sNy
-         DO I=1,sNx
-          AU(I,J,bi,bj)    = AU(I,J,bi,bj)    * recip_rAw(I,J,bi,bj)
-          CU(I,J,bi,bj)    = CU(I,J,bi,bj)    * recip_rAw(I,J,bi,bj)
-C     here we need ad in the contribution from the time derivative
-C     and the symmetric drag term; must be done after normalizing
-          BU(I,J,bi,bj)    = BU(I,J,bi,bj)    * recip_rAw(I,J,bi,bj)
-     &         + seaiceMaskU(I,J,bi,bj) *
-     &         ( seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
-     &         + 0.5 _d 0 * ( dwatPre(I  ,J,bi,bj) 
-     &                      + dwatPre(I-1,J,bi,bj) ) ) * COSWAT
-          uRt1(I,J,bi,bj) = uRt1(I,J,bi,bj) * recip_rAw(I,J,bi,bj)
-          uRt2(I,J,bi,bj) = uRt2(I,J,bi,bj) * recip_rAw(I,J,bi,bj)
-         ENDDO
-        ENDDO
+C
+C     calculate coefficients of tridiagonal matrices for both u- and
+C     v-equations
+C
+      CALL SEAICE_CALC_LSR_COEFFS( 
+     I     etaPlusZeta, zetaMinusEta, etaZpre, dwatPre,
+     O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
+     I     myTime, myIter, myThid )
 
 #ifndef OBCS_UVICE_OLD
-C--     prevent tri-diagonal solver to modify OB values:
+C--     prevent tri-diagonal solver from modifying OB values:
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1,sNy
          DO I=1,sNx
           IF ( maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj) .EQ. 0. ) THEN
-            AU(I,J,bi,bj) = ZERO
-            BU(I,J,bi,bj) = ONE
-            CU(I,J,bi,bj) = ZERO
-            uRt1(I,J,bi,bj) = ZERO
-            uRt2(I,J,bi,bj) = ZERO
+           AU(I,J,bi,bj)   = ZERO
+           BU(I,J,bi,bj)   = ONE
+           CU(I,J,bi,bj)   = ZERO
+           uRt1(I,J,bi,bj) = ZERO
+           uRt2(I,J,bi,bj) = ZERO
           ENDIF
-         ENDDO
-        ENDDO
-#endif /* OBCS_UVICE_OLD */
-
-       ENDDO
-      ENDDO
-
-C--   Prepare for Solving dvIce :
-
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-C     assemble coefficient matrix, beware of sign convention: because this
-C     is the left hand side we calculate -grad(sigma), but the coefficients
-C     of U(I,J+/-1) are counted on the right hand side
-        DO J=1,sNy
-         DO I=1,sNx
-C     coefficients for VICE(I,J-1)
-          AV(I,J,bi,bj)=( - VYY(I,J-1,bi,bj) + VYM(I,J-1,bi,bj)
-     &         ) * seaiceMaskV(I,J,bi,bj)
-C     coefficients for VICE(I,J+1)
-          CV(I,J,bi,bj)=( - VYY(I,J  ,bi,bj) - VYM(I,J  ,bi,bj)
-     &         ) * seaiceMaskV(I,J,bi,bj)
-C     coefficients for VICE(I,J)
-          BV(I,J,bi,bj)= (ONE - seaiceMaskV(I,J,bi,bj)) +
-     &         ( VXX(I,J,bi,bj) + VXX(I+1,J  ,bi,bj)
-     &         + VYY(I,J,bi,bj) + VYY(I  ,J-1,bi,bj)
-     &         - VXM(I,J,bi,bj) + VXM(I+1,J  ,bi,bj)
-     &         - VYM(I,J,bi,bj) + VYM(I  ,J-1,bi,bj)
-     &         ) * seaiceMaskV(I,J,bi,bj)
-C     coefficients for V(I-1,J)
-          vRt1(I,J,bi,bj) = VXX(I  ,J,bi,bj) + VXM(I  ,J,bi,bj)
-C     coefficients for V(I+1,J)
-          vRt2(I,J,bi,bj) = VXX(I+1,J,bi,bj) - VXM(I+1,J,bi,bj)
-         ENDDO
-        ENDDO
-
-C     apply boundary conditions according to slip factor
-C     for no slip, set u on boundary to zero: v(i+/-1)=-v(i)
-C     for the free slip case sigma_12 = 0
-        DO J=1,sNy
-         DO I=1,sNx
-          hFacM = seaiceMaskV(i-1,j,bi,bj)
-          hFacP = seaiceMaskV(i+1,j,bi,bj)
-C     copy contributions to coefficient of V(I,J)
-C     beware of sign convection: vRt1/2 have the opposite sign convention
-C     than BV, hence the minus sign
-          BV(I,J,bi,bj)=BV(I,J,bi,bj) + seaiceMaskV(I,J,bi,bj) *
-     &         ( ( 1. _d 0 - hFacM )
-     &         * ( VXX(I  ,J,bi,bj) + VXM(I  ,J,bi,bj) )
-     &         + ( 1. _d 0 - hFacP )
-     &         * ( VXX(I+1,J,bi,bj) - VXM(I+1,J,bi,bj) ) )
-C     reset coefficients of V(I-1,J) and V(I+1,J)
-          vRt1(I,J,bi,bj) = vRt1(I,J,bi,bj) * hFacM
-          vRt2(I,J,bi,bj) = vRt2(I,J,bi,bj) * hFacP
-         ENDDO
-        ENDDO
-
-C     now we need to normalize everything by the grid cell area
-        DO J=1,sNy
-         DO I=1,sNx
-          AV(I,J,bi,bj)    = AV(I,J,bi,bj)    * recip_rAs(I,J,bi,bj)
-          CV(I,J,bi,bj)    = CV(I,J,bi,bj)    * recip_rAs(I,J,bi,bj)
-C     here we need ad in the contribution from the time derivative
-C     and the symmetric drag term; must be done after normalizing
-          BV(I,J,bi,bj)    = BV(I,J,bi,bj)    * recip_rAs(I,J,bi,bj)
-     &         + seaiceMaskV(I,J,bi,bj) *
-     &         ( seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
-     &         + 0.5 _d 0 * ( dwatPre(I,J  ,bi,bj) 
-     &                      + dwatPre(I,J-1,bi,bj) ) ) * COSWAT
-          vRt1(I,J,bi,bj) = vRt1(I,J,bi,bj) * recip_rAs(I,J,bi,bj)
-          vRt2(I,J,bi,bj) = vRt2(I,J,bi,bj) * recip_rAs(I,J,bi,bj)
-         ENDDO
-        ENDDO
-
-#ifndef OBCS_UVICE_OLD
-C--     prevent tri-diagonal solver to modify OB values:
-        DO J=1,sNy
-         DO I=1,sNx
           IF ( maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj) .EQ. 0. ) THEN
-           AV(I,J,bi,bj) = ZERO
-           BV(I,J,bi,bj) = ONE
-           CV(I,J,bi,bj) = ZERO
+           AV(I,J,bi,bj)   = ZERO
+           BV(I,J,bi,bj)   = ONE
+           CV(I,J,bi,bj)   = ZERO
            vRt1(I,J,bi,bj) = ZERO
            vRt2(I,J,bi,bj) = ZERO
           ENDIF
          ENDDO
         ENDDO
-#endif /* OBCS_UVICE_OLD */
-
        ENDDO
       ENDDO
+#endif /* OBCS_UVICE_OLD */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
