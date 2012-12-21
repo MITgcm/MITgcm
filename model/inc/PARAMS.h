@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.266 2012/11/09 22:29:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.267 2012/12/21 22:58:23 jmc Exp $
 C $Name:  $
 C
 
@@ -150,6 +150,8 @@ C     cg2dChkResFreq      :: Frequency with which to check residual
 C                            in con. grad solver.
 C     cg2dPreCondFreq     :: Frequency for updating cg2d preconditioner
 C                            (non-linear free-surf.)
+C     cg2dUseMinResSol    :: =0 : use last-iteration/converged solution
+C                            =1 : use solver minimum-residual solution
 C     cg3dMaxIters        :: Maximum number of iterations in the
 C                            three-dimensional con. grad solver.
 C     cg3dChkResFreq      :: Frequency with which to check residual
@@ -191,7 +193,8 @@ C-    debugLevel          :: controls printing of algorithm intermediate results
 C                            and statistics ; higher -> more writing
 
       COMMON /PARM_I/
-     &        cg2dMaxIters, cg2dChkResFreq, cg2dPreCondFreq,
+     &        cg2dMaxIters, cg2dChkResFreq,
+     &        cg2dPreCondFreq, cg2dUseMinResSol,
      &        cg3dMaxIters, cg3dChkResFreq,
      &        printResidualFreq,
      &        nIter0, nTimeSteps, nEndIter,
@@ -210,6 +213,7 @@ C                            and statistics ; higher -> more writing
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
       INTEGER cg2dPreCondFreq
+      INTEGER cg2dUseMinResSol
       INTEGER cg3dMaxIters
       INTEGER cg3dChkResFreq
       INTEGER printResidualFreq
