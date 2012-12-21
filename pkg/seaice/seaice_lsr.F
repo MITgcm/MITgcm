@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.82 2012/12/20 16:37:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.83 2012/12/21 08:55:16 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1349,8 +1349,14 @@ C--   Calculate residual of the linearised system
            DO i=1,sNx
             residU = residU + uRes(i,j,bi,bj)*uRes(i,j,bi,bj)
      &                       *rAw(i,j,bi,bj)*maskInW(i,j,bi,bj)
+#ifndef OBCS_UVICE_OLD
+     &                       *maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj)
+#endif
             residV = residV + vRes(i,j,bi,bj)*vRes(i,j,bi,bj)
      &                       *rAs(i,j,bi,bj)*maskInS(i,j,bi,bj)
+#ifndef OBCS_UVICE_OLD
+     &                       *maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj)
+#endif
            ENDDO
           ENDDO
          ENDIF
