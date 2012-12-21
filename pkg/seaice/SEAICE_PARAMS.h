@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.101 2012/12/21 01:11:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.102 2012/12/21 08:52:33 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -45,7 +45,8 @@ C                          non-default Leap-frog scheme for advection)
 C - thermodynamics:
 C     usePW79thermodynamics :: use "0-layer" thermodynamics as described in
 C                           Parkinson and Washington (1979) and Hibler (1979)
-C     SEAICE_useMultDimSnow :: use same fixed pdf for snow as for MULITCATEGORY ice
+C     SEAICE_useMultDimSnow :: use same fixed pdf for snow as for 
+C                              MULITCATEGORY ice
 C     SEAICEuseFlooding  :: turn on scheme to convert submerged snow into ice
 C     SEAICEheatConsFix  :: If true then fix ocn<->seaice advective heat flux.
 C     useMaykutSatVapPoly :: use Maykut Polynomial for saturation vapor pressure
@@ -110,10 +111,14 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
 
 C--   COMMON /SEAICE_PARM_I/ Integer valued parameters of sea ice model.
-C     IMAX_TICE         :: number of iterations for ice surface temp (default=10)
-C     postSolvTempIter :: select flux calculation after surf. temp solver iteration
-C                         0 = none, i.e., from last iter ; 2 = full non-lin form
-C                         1 = use linearized approx (consistent with tsurf finding)
+C     IMAX_TICE         :: number of iterations for ice surface temp 
+C                          (default=10)
+C     postSolvTempIter :: select flux calculation after surf. temp solver 
+C                         iteration
+C                         0 = none, i.e., from last iter
+C                         1 = use linearized approx (consistent with tsurf 
+C                             finding)
+C                         2 = full non-lin form
 C     SOLV_MAX_ITERS    :: maximum number of allowed LSR-solver iterations
 C     SOLV_NCHECK       :: iteration interval for solver convergence test
 C     NPSEUDOTIMESTEPS  :: number of extra pseudo time steps (>= 2)
@@ -121,8 +126,10 @@ C     SEAICEnewtonIterMax :: maximum number of allowed Newton iterations
 C                          in JFNK-solver
 C     SEAICEkrylovIterMax :: maximum number of allowed Krylov iterations
 C                          in JFNK-solver
-C     LSR_mixIniGuess   :: control mixing of free-drift sol. into LSR initial guess
-C                       :: =0 : nothing; =1 : no mix, but print free-drift resid.;
+C     LSR_mixIniGuess   :: control mixing of free-drift sol. into LSR initial 
+C                          guess
+C                       :: =0 : nothing; =1 : no mix, but print free-drift 
+C                          resid.;
 C                       :: =2,4 : mix with (1/local-residual)^2,4 factor
 C     SEAICEpresPow0    :: HEFF exponent for ice strength below SEAICEpresH0
 C     SEAICEpresPow1    :: HEFF exponent for ice strength above SEAICEpresH0
@@ -137,7 +144,8 @@ C     SEAICE_areaLossFormula :: selects formula for ice cover loss from melt
 C                        :: 1=from all but only melt conributions by ATM and OCN
 C                        :: 2=from net melt-growth>0 by ATM and OCN
 C                        :: 3=from predicted melt by ATM
-C     SEAICE_areaGainFormula :: selects formula for ice cover gain from open water growth
+C     SEAICE_areaGainFormula :: selects formula for ice cover gain from open 
+C                               water growth
 C                        :: 1=from growth by ATM
 C                        :: 2=from predicted growth by ATM
 C     SEAICEetaZmethod   :: determines how shear-viscosity eta is computed at
@@ -403,8 +411,10 @@ C
 
 #ifdef SEAICE_ITD
 CToM<<<
-C     Hlimit            :: ice thickness category limits (m), array of size nITD+1
-C     Hlimit_c1,_c2,_c3 :: coefficients set in seaice_readparams.F to calculate Hlimit in seaice_init_fixed.F
+C     Hlimit            :: ice thickness category limits (m), array of 
+C                          size nITD+1
+C     Hlimit_c1,_c2,_c3 :: coefficients set in seaice_readparams.F to 
+C                          calculate Hlimit in seaice_init_fixed.F
       _RL Hlimit(0:nITD)
       _RL Hlimit_c1, Hlimit_c2, Hlimit_c3
       COMMON /SEAICE_BOUND_ITD_RL/
