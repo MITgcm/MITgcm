@@ -15,6 +15,12 @@
 #- to reproduce old results with former #defined SEAICE_SOLVE4TEMP_LEGACY code
   useMaykutSatVapPoly = .TRUE.,
   postSolvTempIter  =  0,
+#- paramaters from SEAICE_GROWTH_LEGACY branch
+      SEAICE_doOpenWaterGrowth=.FALSE.,
+      SEAICE_doOpenWaterMelt=.FALSE.,
+      SEAICE_areaGainFormula=2,
+      SEAICE_areaLossFormula=3,
+#
       SEAICE_saltFrac    = 0.3,
       SEAICE_tempFrz0    = -1.96,
       SEAICE_dTempFrz_dS = 0.,
