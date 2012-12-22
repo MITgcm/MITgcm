@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.30 2012/04/10 16:32:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.31 2012/12/22 00:52:05 dimitri Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -34,14 +34,16 @@ C     in a separate external package, for example, pkg/exf, and then
 C     modified for sea-ice effects by pkg/seaice.
 #define SEAICE_EXTERNAL_FLUXES
 
-C--   The actual number of ice categories used to solve for seaice flux is
-C     now a run-time parameter (SEAICE_multDim).
-C     This CPP-flag will be completely removed soon (no longer in main code);
-C     it is just used to set default number of categories, i.e., =1 if undef,
-C     or =MULTDIM if defined (MULTDIM=7 in default SEAICE_SIZE.h).
-C     Note: be aware of pickup_seaice.* compatibility issues when restarting
-C     a simulation with a different number of categories.
+C--   This CPP flag has been retired.  The number of ice categories
+C     used to solve for seaice flux is now specified by run-time
+C     parameter SEAICE_multDim.
+C     Note: be aware of pickup_seaice.* compatibility issues when
+C     restarting a simulation with a different number of categories.
 c#define SEAICE_MULTICATEGORY
+
+C--   run with sea Ice Thickness Distribution (ITD);
+C     set number of categories (nITD) in SEAICE_SIZE.h
+#undef SEAICE_ITD
 
 C--   Use the Old version of seaice_growth (close to cvs version 1.70)
 C     otherwise, use the merged version (with some of Ian Fenty s code)
@@ -74,6 +76,10 @@ C     (not thoroughly) test version on a C-grid
 
 C--   Only for the C-grid version it is possible to
 #ifdef SEAICE_CGRID
+C     enable JFNK code by defining the following flag
+# undef SEAICE_ALLOW_JFNK
+C     enable LSR to use global (multi-tile) tri-diagonal solver
+# undef SEAICE_GLOBAL_3DIAG_SOLVER
 C     enable EVP code by defining the following flag
 # define SEAICE_ALLOW_EVP
 # ifdef SEAICE_ALLOW_EVP
@@ -81,6 +87,10 @@ C--   When set use SEAICE_zetaMin and SEAICE_evpDampC to limit viscosities
 C     from below and above in seaice_evp: not necessary, and not recommended
 #  undef SEAICE_ALLOW_CLIPZETA
 # endif /* SEAICE_ALLOW_EVP */
+C     regularize zeta to zmax with a smooth tanh-function instead
+C     of a min(zeta,zmax). This improves convergence of iterative
+C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
+# undef SEAICE_ZETA_SMOOTHREG
 C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
 # undef SEAICE_ALLOW_TEM
 #else /* not SEAICE_CGRID, but old B-grid */

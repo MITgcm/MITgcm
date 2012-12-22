@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.17 2012/12/18 20:04:28 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.18 2012/12/22 00:52:05 dimitri Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -34,14 +34,12 @@ C     in a separate external package, for example, pkg/exf, and then
 C     modified for sea-ice effects by pkg/seaice.
 #define SEAICE_EXTERNAL_FLUXES
 
-C--   The actual number of ice categories used to solve for seaice flux is
-C     now a run-time parameter (SEAICE_multDim).
-C     This CPP-flag will be completely removed soon (no longer in main code);
-C     it is just used to set default number of categories, i.e., =1 if undef,
-C     or =MULTDIM if defined (MULTDIM=7 in default SEAICE_SIZE.h).
-C     Note: be aware of pickup_seaice.* compatibility issues when restarting
-C     a simulation with a different number of categories.
-#undef SEAICE_MULTICATEGORY
+C--   This CPP flag has been retired.  The number of ice categories
+C     used to solve for seaice flux is now specified by run-time
+C     parameter SEAICE_multDim.
+C     Note: be aware of pickup_seaice.* compatibility issues when
+C     restarting a simulation with a different number of categories.
+c#define SEAICE_MULTICATEGORY
 
 C--   run with sea Ice Thickness Distribution (ITD);
 C     set number of categories (nITD) in SEAICE_SIZE.h
@@ -81,6 +79,8 @@ C--   Only for the C-grid version it is possible to
 #ifdef SEAICE_CGRID
 C     enable JFNK code by defining the following flag
 # define SEAICE_ALLOW_JFNK
+C     enable LSR to use global (multi-tile) tri-diagonal solver
+# undef SEAICE_GLOBAL_3DIAG_SOLVER
 C     enable EVP code by defining the following flag
 # define SEAICE_ALLOW_EVP
 # ifdef SEAICE_ALLOW_EVP
