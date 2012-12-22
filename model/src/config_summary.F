@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.139 2012/11/09 22:31:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.140 2012/12/22 00:38:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -543,6 +543,9 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      &'   /* Upper limit on 2d con. grad iterations  */')
       CALL WRITE_0D_I( cg2dChkResFreq, INDEX_NONE,'cg2dChkResFreq =',
      &'   /* 2d con. grad convergence test frequency */')
+      CALL WRITE_0D_I( cg2dUseMinResSol, INDEX_NONE,
+     &  'cg2dUseMinResSol=',
+     &  ' /* use cg2d last-iter(=0) / min-resid.(=1) solution */')
       CALL WRITE_0D_RL( cg2dTargetResidual, INDEX_NONE,
      & 'cg2dTargetResidual =',
      &'   /* 2d con. grad target residual  */')

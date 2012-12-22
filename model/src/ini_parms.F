@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.251 2012/11/09 22:31:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.252 2012/12/22 00:38:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -228,8 +228,9 @@ C--   Continuous equation parameters
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
-     & cg2dMaxIters, cg2dChkResFreq, cg2dTargetResidual,
-     & cg2dTargetResWunit, cg2dpcOffDFac, cg2dPreCondFreq,
+     & cg2dMaxIters, cg2dChkResFreq, cg2dUseMinResSol,
+     & cg2dTargetResidual, cg2dTargetResWunit,
+     & cg2dpcOffDFac, cg2dPreCondFreq,
      & cg3dMaxIters, cg3dChkResFreq, cg3dTargetResidual,
      & useSRCGSolver, printResidualFreq
 
@@ -1334,9 +1335,18 @@ C     rUnit2mass: from r-coordinate to mass per unit area [kg/m2] (z:=rho;p:=1/g
       ENDIF
 
 C--   For backward compatibility, set temp_addMass and salt_addMass
-C     to temp_EvPrRn and salt_EvPrRn in they are not set in data file
+C     to temp_EvPrRn and salt_EvPrRn if not set in parameter file "data"
       IF (temp_addMass .EQ. UNSET_RL) temp_addMass = temp_EvPrRn
       IF (salt_addMass .EQ. UNSET_RL) salt_addMass = salt_EvPrRn
+
+C--   Make a choice (if unset) regarding using CG2D solver min.-residual sol.
+C      for simple set-up (cartesian grid + flat bottom), default is to
+C      use the solver minimum residual solution (cg2dUseMinResSol=1).
+      IF ( cg2dUseMinResSol.EQ.UNSET_I ) THEN
+        cg2dUseMinResSol = 0
+        IF ( topoFile.EQ.' ' .AND. bathyFile.EQ.' '
+     &       .AND. usingCartesianGrid ) cg2dUseMinResSol = 1
+      ENDIF
 
 C--   Close the open data file
       CLOSE(iUnit)

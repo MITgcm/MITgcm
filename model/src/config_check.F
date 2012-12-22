@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.70 2012/11/09 22:31:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.71 2012/12/22 00:38:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -405,6 +405,14 @@ C--   Deep-Atmosphere & Anelastic limitations:
       ENDIF
 
 C--   Free-surface related limitations:
+      IF ( cg2dUseMinResSol.LT.0 .OR. cg2dUseMinResSol.GT.1 ) THEN
+        WRITE(msgBuf,'(A,I10,A)')
+     &   'CONFIG_CHECK: cg2dUseMinResSol set to unvalid value(=',
+     &                  cg2dUseMinResSol, ')'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+
       IF ( rigidLid .AND. implicitFreeSurface ) THEN
         WRITE(msgBuf,'(A,A)')
      &  'CONFIG_CHECK: Cannot select both implicitFreeSurface',
@@ -593,13 +601,6 @@ c     ENDIF
      &                      SQUEEZE_RIGHT, myThid )
       ENDIF
 
-      IF ( addFrictionHeating .AND. .NOT.staggerTimeStep ) THEN
-        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: addFrictionHeating',
-     &  ' not yet coded for synchronous time-stepping.'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-      ENDIF
-
 C--   Non-hydrostatic and 3-D solver related limitations:
       IF (nonlinFreeSurf.NE.0 .AND. use3Dsolver) THEN
         WRITE(msgBuf,'(A)')
@@ -740,6 +741,12 @@ C--   Time-stepping limitations
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: tracForcingOutAB ',
      &                       'should be =1 (Out of AB) or =0 (In AB)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( addFrictionHeating .AND. .NOT.staggerTimeStep ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: addFrictionHeating',
+     &  ' not yet coded for synchronous time-stepping.'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF

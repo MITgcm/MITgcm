@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.80 2012/05/14 13:21:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.81 2012/12/22 00:38:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -157,7 +157,7 @@ C--   Save previous solution & Initialise Vector solution and source term :
         IF ( putPmEinXvector ) THEN
           tmpFac = 0.
           IF (globalArea.GT.0.) tmpFac =
-     &      freeSurfFac*deltaTfreesurf*mass2rUnit*sumEmP/globalArea
+     &      freeSurfFac*deltaTFreeSurf*mass2rUnit*sumEmP/globalArea
           DO j=1,sNy
            DO i=1,sNx
             cg2d_x(i,j,bi,bj) = cg2d_x(i,j,bi,bj)
@@ -187,12 +187,12 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
            IF ( ks.LE.Nr ) THEN
             cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
      &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
-     &         /deltaTMom/deltaTfreesurf
+     &         /deltaTMom/deltaTFreeSurf
      &         *( etaN(i,j,bi,bj)
      &           +phi_nh(i,j,ks,bi,bj)*recip_Bo(i,j,bi,bj) )
             cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
      &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
-     &         /deltaTMom/deltaTfreesurf
+     &         /deltaTMom/deltaTFreeSurf
      &         *( etaN(i,j,bi,bj)
      &           +phi_nh(i,j,ks,bi,bj)*recip_Bo(i,j,bi,bj) )
            ENDIF
@@ -208,7 +208,7 @@ C--   Add source term arising from w=d/dt (p_s)
            ks = kSurfC(i,j,bi,bj)
            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
      &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
-     &         /deltaTMom/deltaTfreesurf
+     &         /deltaTMom/deltaTFreeSurf
      &         * etaH(i,j,bi,bj)
           ENDDO
          ENDDO
@@ -218,7 +218,7 @@ C--   Add source term arising from w=d/dt (p_s)
            ks = kSurfC(i,j,bi,bj)
            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
      &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
-     &         /deltaTMom/deltaTfreesurf
+     &         /deltaTMom/deltaTFreeSurf
      &         * etaN(i,j,bi,bj)
           ENDDO
          ENDDO
@@ -259,13 +259,12 @@ C-    end bi,bj loops
       ENDIF
 
 C--   Find the surface pressure using a two-dimensional conjugate
-C--   gradient solver. See CG2D.h for the interface to this routine.
+C     gradient solver. See CG2D.h for the interface to this routine.
+C     In rare cases of a poor solver convergence, better to select the
+C     solver minimum-residual solution (instead of the last-iter solution)
+C     by setting cg2dUseMinResSol=1 (<-> nIterMin=0 in input)
       numIters      = cg2dMaxIters
-      nIterMin      = -1
-C-    to prevent occasional bad convergence with simple setup (.e.g,
-C      cartesian grid + flat bottom), use solver minimun residual solution:
-      IF ( usingCartesianGrid .AND.
-     &        topoFile.EQ.' ' .AND. bathyFile.EQ.' ' ) nIterMin =  0
+      nIterMin      = cg2dUseMinResSol - 1
 c     CALL TIMER_START('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
 #ifdef DISCONNECTED_TILES
 C--   Call the not-self-adjoint version of cg2d
