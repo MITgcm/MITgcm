@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/SEAICE_OPTIONS.h,v 1.14 2012/12/22 00:52:05 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/SEAICE_OPTIONS.h,v 1.15 2012/12/22 18:06:25 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -47,7 +47,7 @@ C     set number of categories (nITD) in SEAICE_SIZE.h
 
 C--   Use the Old version of seaice_growth (close to cvs version 1.70)
 C     otherwise, use the merged version (with some of Ian Fenty s code)
-#define SEAICE_GROWTH_LEGACY
+#undef SEAICE_GROWTH_LEGACY
 
 C--   Since the missing sublimation term is now included
 C     this flag is needed for backward compatibility
