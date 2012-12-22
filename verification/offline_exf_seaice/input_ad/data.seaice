@@ -19,6 +19,12 @@
       SEAICE_tempFrz0    = -1.96,
       SEAICE_dTempFrz_dS = 0.,
       SEAICEuseFlooding  = .FALSE.,
+#- paramaters from SEAICE_GROWTH_LEGACY branch
+      SEAICE_doOpenWaterGrowth=.FALSE.,
+      SEAICE_doOpenWaterMelt=.FALSE.,
+      SEAICE_areaGainFormula=2,
+      SEAICE_areaLossFormula=3,
+#
       SEAICEwriteState   = .TRUE.,
  &
 

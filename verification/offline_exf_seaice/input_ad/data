@@ -74,7 +74,7 @@
 #
  &PARM03
  nIter0=0,
- nTimeSteps=48,
+ nTimeSteps=4,
  deltaTmom=3600.0,
  deltaTtracer=3600.0,
  deltaTClock =3600.0,
@@ -85,7 +85,7 @@
 # chkptFreq= 0.,
 # dumpFreq = 0.,
  taveFreq = 864000.,
- monitorFreq=864000.,
+ monitorFreq=1.,
 # adjDumpFreq=86400.,
  &
 
