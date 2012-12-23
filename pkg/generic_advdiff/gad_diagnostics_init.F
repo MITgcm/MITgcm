@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diagnostics_init.F,v 1.8 2008/05/09 21:43:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diagnostics_init.F,v 1.9 2012/12/23 02:13:06 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -29,7 +29,7 @@ C     ! FUNCTIONS:
       CHARACTER*4  GAD_DIAG_SUFX
       CHARACTER*16 DIAGS_MK_UNITS
       CHARACTER*80 DIAGS_MK_TITLE
-c     EXTERNAL     GAD_DIAG_SUFX
+      EXTERNAL     GAD_DIAG_SUFX
       EXTERNAL     DIAGS_MK_UNITS
       EXTERNAL     DIAGS_MK_TITLE
 
