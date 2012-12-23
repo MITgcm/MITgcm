@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_write_pickup.F,v 1.8 2011/11/16 20:00:31 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_write_pickup.F,v 1.9 2012/12/23 20:18:01 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -82,47 +82,41 @@ C-    switch to 2-D fields:
         CALL WRITE_REC_3D_RL( fn, fp, 1,
      &                        Tair, nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'Tair    '
-     
-
         j = j + 1
         nj = nj-1
         CALL WRITE_REC_3D_RL( fn, fp, 1,
-     &                        Qnet, nj, myIter, myThid )
-         IF (j.LE.listDim) wrFldList(j) = 'Qnet    '
+     &                        gTairm, nj, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'gTairNm1'
 
-
-        if (useFreshWaterFlux) then
-
+       IF (useFreshWaterFlux) THEN
         j = j + 1
         nj = nj-1
         CALL WRITE_REC_3D_RL( fn, fp, 1,
      &                        qair, nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'Qair    '
-
-
-
         j = j + 1
         nj = nj-1
         CALL WRITE_REC_3D_RL( fn, fp, 1,
-     &                        EmPmR, nj, myIter, myThid )
-         IF (j.LE.listDim) wrFldList(j) = 'EmPmR   '
+     &                        gqairm, nj, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'gQairNm1'
+       ENDIF
 
-        endif 
-
-
-        if (useCheapTracer) then
-
-            j = j + 1
-            nj = nj-1
-            CALL WRITE_REC_3D_RL( fn, fp, 1,
+       IF (useCheapTracer) THEN
+        j = j + 1
+        nj = nj-1
+        CALL WRITE_REC_3D_RL( fn, fp, 1,
      &                        Cheaptracer, nj, myIter, myThid )
-         IF (j.LE.listDim) wrFldList(j) = 'cTracer '
-
-         endif 
+        IF (j.LE.listDim) wrFldList(j) = 'cTracer '
+        j = j + 1
+        nj = nj-1
+        CALL WRITE_REC_3D_RL( fn, fp, 1,
+     &                        gCheaptracerm, nj, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'gTracNm1'
+       ENDIF
 
 C--------------------------
-        nWrFlds = j
-        IF ( nWrFlds.GT.listDim ) THEN
+       nWrFlds = j
+       IF ( nWrFlds.GT.listDim ) THEN
           WRITE(msgBuf,'(2A,I5,A)') 'CHEAPAML_WRITE_PICKUP: ',
      &     'trying to write ',nWrFlds,' fields'
           CALL PRINT_ERROR( msgBuf, myThid )
@@ -130,7 +124,7 @@ C--------------------------
      &     'field-list dimension (listDim=',listDim,') too small'
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R CHEAPAML_WRITE_PICKUP (list-size Pb)'
-        ENDIF
+       ENDIF
 #ifdef ALLOW_MDSIO
 C     uses this specific S/R to write (with more informations) only meta files
         j  = 1

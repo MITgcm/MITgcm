@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_read_pickup.F,v 1.4 2011/11/16 20:00:31 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_read_pickup.F,v 1.5 2012/12/23 20:18:01 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -40,9 +40,10 @@ C     j           :: loop index
 C     nj          :: record number
 C     ioUnit      :: temp for writing msg unit
 C     msgBuf      :: Informational/error message buffer
+      LOGICAL stopFlag
       INTEGER fp
       INTEGER filePrec, nbFields
-      INTEGER missFldDim, nMissing
+      INTEGER missFldDim, nMissing, warnCnts
       INTEGER j, nj, ioUnit
       PARAMETER( missFldDim = 12 )
       CHARACTER*(MAX_LEN_FNAM) fn
@@ -127,14 +128,20 @@ C---   New way to read CHEAPAML pickup:
 C---    read CHEAPAML 2-D fields for restart
         CALL READ_MFLDS_3D_RL( 'Tair    ', Tair,
      &                                 nj, fp, 1 , myIter, myThid )
-        
+        CALL READ_MFLDS_3D_RL( 'gTairNm1', gTairm,
+     &                                 nj, fp, 1 , myIter, myThid )
+
         IF(useFreshWaterFlux)THEN
         CALL READ_MFLDS_3D_RL( 'Qair    ', qair,
-     &                                 nj, fp, 1 , myIter, myThid )        
+     &                                 nj, fp, 1 , myIter, myThid )
+        CALL READ_MFLDS_3D_RL( 'gQairNm1', gqairm,
+     &                                 nj, fp, 1 , myIter, myThid )
         ENDIF
         IF(useCheaptracer)THEN
         CALL READ_MFLDS_3D_RL( 'cTracer ', Cheaptracer,
-     &                                 nj, fp, 1 ,myIter, myThid )        
+     &                                 nj, fp, 1 ,myIter, myThid )
+        CALL READ_MFLDS_3D_RL( 'gTracNm1', Cheaptracer,
+     &                                 nj, fp, 1 ,myIter, myThid )
         ENDIF
 
 C--    end: new way to read pickup file
@@ -153,21 +160,44 @@ C--    Check for missing fields:
          STOP 'ABNORMAL END: S/R CHEAPAML_READ_PICKUP (list-size Pb)'
        ENDIF
        IF ( nMissing.GE.1 ) THEN
+        _BEGIN_MASTER( myThid )
         ioUnit = errorMessageUnit
+        stopFlag = .FALSE.
+        warnCnts = nMissing
         DO j=1,nMissing
-         WRITE(msgBuf,'(4A)') 'CHEAPAML_READ_PICKUP: ',
+         IF     ( missFldList(j).EQ.'gTairNm1' ) THEN
+           cheapTairStartAB = 0
+         ELSEIF ( missFldList(j).EQ.'gQairNm1' ) THEN
+           cheapQairStartAB = 0
+         ELSEIF ( missFldList(j).EQ.'gTracNm1' ) THEN
+           cheapTracStartAB = 0
+         ELSE
+          stopFlag = .TRUE.
+          WRITE(msgBuf,'(4A)') 'CHEAPAML_READ_PICKUP: ',
      &       'cannot restart without field "',missFldList(nj),'"'
-         CALL PRINT_ERROR( msgBuf, myThid )
+          CALL PRINT_ERROR( msgBuf, myThid )
+         ENDIF
         ENDDO
-        STOP 'ABNORMAL END: S/R CHEAPAML_READ_PICKUP'
+        IF ( stopFlag ) THEN
+         STOP 'ABNORMAL END: S/R CHEAPAML_READ_PICKUP'
+        ELSEIF ( pickupStrictlyMatch ) THEN
+         WRITE(msgBuf,'(4A)') 'CHEAPAML_READ_PICKUP: ',
+     &      'try with " pickupStrictlyMatch=.FALSE.,"',
+     &      ' in file: "data", NameList: "PARM03"'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R CHEAPAML_READ_PICKUP'
+        ELSEIF ( warnCnts .GT. 0 ) THEN
+         WRITE(msgBuf,'(4A)') '** WARNING ** CHEAPAML_READ_PICKUP: ',
+     &     'Will get only an approximated Restart'
+         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        ENDIF
+        _END_MASTER( myThid )
        ENDIF
 
 C--    Update overlap regions:
-       CALL EXCH_XY_RL(Tair, myThid )
-       CALL EXCH_XY_RL(qair, myThid )
-       CALL EXCH_XY_RL(Cheaptracer, myThid )
-
-
+       CALL EXCH_XY_RL( Tair, myThid )
+       CALL EXCH_XY_RL( qair, myThid )
+       CALL EXCH_XY_RL( Cheaptracer, myThid )
 
 #endif /* ALLOW_CHEAPAML */
 
