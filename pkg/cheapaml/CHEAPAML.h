@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.8 2012/08/27 17:05:49 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.9 2012/12/23 20:15:29 jmc Exp $
 C $Name:  $
 
 c #ifdef ALLOW_CHEAPAML
@@ -33,7 +33,6 @@ C     gCheaptracerm :: passive tracer tendency
      &       Cheaptracer, CheaptracerR, gCheaptracerm,
      &       Cheapprgrid,xgs,xrelf
 
-
       _RL    Tr     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    qr     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    Tair   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -58,7 +57,6 @@ C     gCheaptracerm :: passive tracer tendency
       _RL    Cheaptracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    CheaptracerR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    gCheaptracerm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
 
       COMMON /CHEAPAML_PARMS_R/
      &       cheapaml_h,
@@ -87,17 +85,19 @@ C     gCheaptracerm :: passive tracer tendency
       _RL    zu, zt, zq
       _RL    cdrag_1, cdrag_2, cdrag_3
       _RL    externForcingPeriod_cheap
-      _RL    externForcingCycle_cheap     
+      _RL    externForcingCycle_cheap
       _RL    cheap_pr1,cheap_pr2
 
       COMMON /CHEAPAML_PARMS_I/
      &       cheapaml_ntim,
-     &       cheapaml_mask_width
+     &       cheapaml_mask_width,
+     &       cheapTairStartAB, cheapQairStartAB, cheapTracStartAB 
       INTEGER cheapaml_ntim
       INTEGER cheapaml_mask_width
+      INTEGER cheapTairStartAB, cheapQairStartAB, cheapTracStartAB 
 
       COMMON /CHEAPAML_PARMS_L/
-     &       useFreshwaterFlux,
+     &       useFreshWaterFlux,
      &       useFluxLimit,
      &       useStressOption,
      &       useRelativeHumidity,
@@ -106,7 +106,7 @@ C     gCheaptracerm :: passive tracer tendency
      &       usetimevarblh,
      &       useclouds,
      &       usedlongwave
-      LOGICAL useFreshwaterFlux
+      LOGICAL useFreshWaterFlux
       LOGICAL useFluxLimit
       LOGICAL useStressOption
       LOGICAL useRelativeHumidity

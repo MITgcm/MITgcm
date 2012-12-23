@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_fixed.F,v 1.5 2011/12/28 16:41:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_fixed.F,v 1.6 2012/12/23 20:15:29 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -20,7 +20,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "GRID.h"
+#include "CHEAPAML.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -28,21 +28,30 @@ C     myThid ::  my Thread Id number
       INTEGER myThid
 CEOP
 
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C-- Note: this should go in a separated S/R: KPP_MNC_INIT
 #ifdef ALLOW_MNC
-      IF (useMNC) THEN
-      ENDIF
+c     IF (useMNC) THEN
+c     ENDIF
 #endif /* ALLOW_MNC */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
         CALL CHEAPAML_DIAGNOSTICS_INIT( myThid )
       ENDIF
 #endif
+
+      _BEGIN_MASTER( myThid )
+
+C-    Initialise AB starting level
+      cheapTairStartAB = nIter0
+      cheapQairStartAB = nIter0
+      cheapTracStartAB = nIter0
+
+      _END_MASTER( myThid )
+
+C-    Everyone else must wait for parameters to be set
+      _BARRIER
 
       RETURN
       END
