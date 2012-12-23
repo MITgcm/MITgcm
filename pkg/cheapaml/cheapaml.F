@@ -1,42 +1,41 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.13 2012/08/27 19:24:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.14 2012/12/23 20:21:55 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
 #undef ALLOW_THSICE
 
-      subroutine cheapaml(
-     I                           myTime, myIter, mythid )
+      SUBROUTINE CHEAPAML(
+     I                           myTime, myIter, myThid )
 
-c     ==================================================================
-c     SUBROUTINE cheapaml
-c     ==================================================================
-c
-c     o Get the surface fluxes used to force ocean model
-c
-c       Output:
-c       ------
-c       ustress, vstress - wind stress
-c       Qnet             - net heat flux
-c       EmPmR            - net freshwater flux
-c       Tair  - mean air temperature (K)  at height ht (m)
-c       Qair - Specific humidity kg/kg
-c       Cheaptracer - passive tracer
-c       ---------
-c
-c       Input:
-c       ------
-c       uwind, vwind  - mean wind speed (m/s)
-c       Tr - Relaxation profile for Tair on boundaries (C)
-c       qr - Relaxation profile for specific humidity (kg/kg)
-c       CheaptracerR - Relaxation profile for passive tracer
-c     ==================================================================
-c     SUBROUTINE cheapaml
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE cheapaml
+C     ==================================================================
+C
+C     o Get the surface fluxes used to force ocean model
+C
+C       Output:
+C       ------
+C       ustress, vstress - wind stress
+C       Qnet             - net heat flux
+C       EmPmR            - net freshwater flux
+C       Tair  - mean air temperature (K)  at height ht (m)
+C       Qair - Specific humidity kg/kg
+C       Cheaptracer - passive tracer
+C       ---------
+C
+C       Input:
+C       ------
+C       uwind, vwind  - mean wind speed (m/s)
+C       Tr - Relaxation profile for Tair on boundaries (C)
+C       qr - Relaxation profile for specific humidity (kg/kg)
+C       CheaptracerR - Relaxation profile for passive tracer
+C     ==================================================================
+C     SUBROUTINE cheapaml
+C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
@@ -49,23 +48,22 @@ c     == global variables ==
 #endif
 #include "CHEAPAML.h"
 
-c     == routine arguments ==
-
-      integer mythid
-      integer myIter
+C     == routine arguments ==
       _RL     myTime
+      INTEGER myIter
+      INTEGER mythid
 
 C     == Local variables ==
       integer bi,bj,iG,jG
-      integer i,j,nt
+      integer i,j, nt, startAB
 
-c tendencies of atmospheric temperature, current and past
-        _RL gTair(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-        _RL gqair(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-        _RL gCheaptracer(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-c zonal and meridional transports
-        _RL uTrans(1-olx:snx+olx,1-oly:sny+oly)
-        _RL vTrans(1-olx:snx+olx,1-oly:sny+oly)
+C tendencies of atmospheric temperature, current and past
+        _RL gTair(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nsx,nsy)
+        _RL gqair(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nsx,nsy)
+        _RL gCheaptracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nsx,nsy)
+C zonal and meridional transports
+        _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C       AML timestep
         _RL deltaTTracer,deltaTm,ts,xalwu
         _RL dm,pt,fsha,flha,evp,xalwd,xolw,xlwnet
@@ -74,8 +72,8 @@ c       _RL Fclouds, ttt2
         _RL q,precip,ssqt,ttt,q100,entrain,cdq
 
 C temp var
-        _RL SH_sauv(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-        _RL LH_sauv(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+        _RL SH_sauv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nsx,nsy)
+        _RL LH_sauv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nsx,nsy)
 
 
 C variables for htflux
@@ -98,8 +96,8 @@ C variables for htflux
         real albedo(snx,sny)
 #endif /*  ALLOW_SEAGER */
 
-c useful values
-c inverse of time step
+C useful values
+C inverse of time step
         deltaTm=1. _d 0/deltaT
 
 C atmospheric timestep
@@ -137,7 +135,7 @@ C                if (i.le.100) lsm(i,j) = 1.0
                 qisw(i,j) = solar(i,j,bi,bj)
                 ppi(i,j) = 0.0 _d 0
                 wspd_htf(i,j) = sqrt(uwind(i,j,bi,bj)**2
-     $             + vwind(i,j,bi,bj)**2)
+     &             + vwind(i,j,bi,bj)**2)
 
                 cice(i,j) = 0.0 _d 0
 C je met la temperature de la glace la dedans
@@ -165,7 +163,7 @@ C                albedo(snx,sny) = 0. _d 0
               ENDDO
             ENDDO
 
-c     close bi, bj loops
+C     close bi, bj loops
           ENDDO
         ENDDO
 
@@ -196,7 +194,7 @@ C     OUTPUT
               ENDDO
             ENDDO
 
-c     close bi, bj loops
+C     close bi, bj loops
           ENDDO
         ENDDO
 
@@ -204,465 +202,435 @@ c     close bi, bj loops
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-c initialize net heat flux and fresh water flux arrays
-          DO j = 1-oly,sny+oly
-           DO i = 1-olx,snx+olx
-              Qnet(i,j,bi,bj)=0. _d 0
-              EmPmR(i,j,bi,bj)=0. _d 0
+C initialize net heat flux and fresh water flux arrays
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+            Qnet(i,j,bi,bj) = 0. _d 0
+            EmPmR(i,j,bi,bj)= 0. _d 0
+          ENDDO
+         ENDDO
+       ENDDO
+      ENDDO
+
+C this is a reprogramming to speed up cheapaml
+C the short atmospheric time step is applied to
+C advection and diffusion only.  diabatic forcing is computed
+C once and used for the entire oceanic time step.
+
+C cycle through atmospheric advective/diffusive
+C surface temperature evolution
+
+      DO nt=1,cheapaml_ntim
+
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+
+C compute advective and diffusive flux divergence
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             gTair(i,j,bi,bj)=0. _d 0
+             uTrans(i,j)=uwind(i,j,bi,bj)
+             vTrans(i,j)=vwind(i,j,bi,bj)
            ENDDO
           ENDDO
-
-c close bi, bj loops
-         ENDDO
-        ENDDO
-
-c this is a reprogramming to speed up cheapaml
-c the short atmospheric time step is applied to
-c advection and diffusion only.  diabatic forcing is computed
-c once and used for the entire oceanic time step.
-
-c cycle through atmospheric advective/diffusive
-c surface temperature evolution
-
-        do nt=1,cheapaml_ntim
-
-           DO bj=myByLo(myThid),myByHi(myThid)
-           DO bi=myBxLo(myThid),myBxHi(myThid)
-
-c compute advective and diffusive flux divergence
-
-         do j=1-oly,sny+oly
-         do i=1-olx,snx+olx
-         gTair(i,j,bi,bj)=0. _d 0
-         uTrans(i,j)=uwind(i,j,bi,bj)
-         vTrans(i,j)=vwind(i,j,bi,bj)
-         enddo
-         enddo
-         call GAD_2d_CALC_RHS(
-     I           bi,bj,1-olx,nsx+olx,1-oly,nsy+oly,
-     I           uTrans,vTrans,
+          CALL GAD_2d_CALC_RHS(
+     I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy,
+     I           uTrans, vTrans,
      I           uwind, vwind,
      O           wwind,
      I           cheapaml_kdiff, Tair, zu,
-     U           gTair,deltaTtracer,useFluxLimit,
+     U           gTair, deltaTtracer, useFluxLimit,
      I           myTime, myIter, myThid )
-
 c       CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
-        call adams2d(
-     I                     bi, bj,
-     U                     gTair, gTairm,
-     I                     nt-1, myIter, myThid )
+         startAB = cheapTairStartAB + nt - 1
+         CALL adams2d(
+     I           bi, bj,
+     U           gTair, gTairm,
+     I           startAB, myIter, myThid )
 c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
 c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
 
-        call timestep_2d_tracer(
-     I                     bi, bj, 1-olx,snx+olx ,1-oly, sny+oly,
-     I                     deltaTtracer,
-     I                     Tair, gTair,
-     I                     myIter, myThid )
+         CALL timestep_2d_tracer(
+     I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
+     I           Tair, gTair,
+     I           myIter, myThid )
 c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
 c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
-
-        call cycle_2d_tracer(
-     I                   bi, bj,
-     U                   Tair, gTair,nt,
-     I                   myTime, myIter, myThid )
+         CALL cycle_2d_tracer(
+     I           bi, bj,
+     U           Tair, gTair,nt,
+     I           myTime, myIter, myThid )
 c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
 c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
-c close bi,bj loops
-        enddo
-        enddo
-c update edges
+C close bi,bj loops
+         ENDDO
+        ENDDO
+C update edges
+        _EXCH_XY_RL(Tair,mythid)
 
-         _EXCH_XY_RL(Tair,mythid)
-
-        if(useFreshwaterFlux)then
-c do water
-           DO bj=myByLo(myThid),myByHi(myThid)
-           DO bi=myBxLo(myThid),myBxHi(myThid)
-          do j=1-oly,sny+oly
-          do i=1-olx,snx+olx
-          gqair(i,j,bi,bj)=0. _d 0
-          uTrans(i,j)=uwind(i,j,bi,bj)
-          vTrans(i,j)=vwind(i,j,bi,bj)
-          enddo
-          enddo
-
-         call GAD_2d_CALC_RHS(
-     I           bi,bj,1-olx,nsx+olx,1-oly,nsy+oly,
-     I           uTrans,vTrans,
+       IF (useFreshWaterFlux) THEN
+C do water
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             gqair(i,j,bi,bj)=0. _d 0
+             uTrans(i,j)=uwind(i,j,bi,bj)
+             vTrans(i,j)=vwind(i,j,bi,bj)
+           ENDDO
+          ENDDO
+          CALL GAD_2d_CALC_RHS(
+     I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy,
+     I           uTrans, vTrans,
      I           uwind, vwind,
      O           wwind,
      I           cheapaml_kdiff, qair, zu,
-     U           gqair,deltaTtracer,useFluxLimit,
+     U           gqair, deltaTtracer, useFluxLimit,
      I           myTime, myIter, myThid )
-         call adams2d(
-     I                     bi, bj,
-     U                     gqair, gqairm,
-     I                     nt-1, myIter, myThid )
-         call timestep_2d_tracer(
-     I                     bi, bj, 1-olx,snx+olx ,1-oly, sny+oly,
-     I                     deltaTtracer,
-     I                     qair, gqair,
-     I                     myIter, myThid )
-         call cycle_2d_tracer(
-     I                     bi, bj,
-     U                     qair, gqair,nt,
-     I                     myTime, myIter, myThid )
-
-c close bi, bj loops
-        enddo
-        enddo
-
-c update edges
+          startAB = cheapTairStartAB + nt - 1
+          CALL adams2d(
+     I           bi, bj,
+     U           gqair, gqairm,
+     I           startAB, myIter, myThid )
+          CALL timestep_2d_tracer(
+     I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
+     I           qair, gqair,
+     I           myIter, myThid )
+          CALL cycle_2d_tracer(
+     I           bi, bj,
+     U           qair, gqair,nt,
+     I           myTime, myIter, myThid )
+C close bi, bj loops
+         ENDDO
+        ENDDO
+C update edges
         _EXCH_XY_RL(qair,mythid)
-        endif         ! if use freshwater
+       ENDIF         ! if use freshwater
 
-
-
-
-        if(useCheapTracer)then
-c     do tracer
-          DO bj=myByLo(myThid),myByHi(myThid)
-            DO bi=myBxLo(myThid),myBxHi(myThid)
-              do j=1-oly,sny+oly
-                do i=1-olx,snx+olx
-                  gCheaptracer(i,j,bi,bj)=0. _d 0
-                  uTrans(i,j)=uwind(i,j,bi,bj)
-                  vTrans(i,j)=vwind(i,j,bi,bj)
-                enddo
-              enddo
-
-              call GAD_2d_CALC_RHS(
-     I           bi,bj,1-olx,nsx+olx,1-oly,nsy+oly,
-     I           uTrans,vTrans,
+       IF (useCheapTracer) THEN
+C     do tracer
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             gCheaptracer(i,j,bi,bj)=0. _d 0
+             uTrans(i,j)=uwind(i,j,bi,bj)
+             vTrans(i,j)=vwind(i,j,bi,bj)
+           ENDDO
+          ENDDO
+          CALL GAD_2d_CALC_RHS(
+     I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy,
+     I           uTrans, vTrans,
      I           uwind, vwind,
      O           wwind,
      I           cheapaml_kdiff, Cheaptracer, zu,
-     U           gCheaptracer,deltaTtracer,useFluxLimit,
+     U           gCheaptracer, deltaTtracer, useFluxLimit,
      I           myTime, myIter, myThid )
-              call adams2d(
+          startAB = cheapTracStartAB + nt - 1
+          CALL adams2d(
      I           bi, bj,
      U           gCheaptracer, gCheaptracerm,
-     I           nt-1, myIter, myThid )
-              call timestep_2d_tracer(
-     I           bi, bj, 1-olx,snx+olx ,1-oly, sny+oly,
-     I           deltaTtracer,
+     I                 startAB, myIter, myThid )
+          CALL timestep_2d_tracer(
+     I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
      I           Cheaptracer, gCheaptracer,
      I           myIter, myThid )
-              call cycle_2d_tracer(
+          CALL cycle_2d_tracer(
      I           bi, bj,
      U           Cheaptracer, gCheaptracer,nt,
      I           myTime, myIter, myThid )
+C     close bi, bj loops
+         ENDDO
+        ENDDO
+C     update edges
+        _EXCH_XY_RL(Cheaptracer,mythid)
+       ENDIF                   ! if use tracer
 
-c     close bi, bj loops
-            enddo
-          enddo
-
-c     update edges
-          _EXCH_XY_RL(Cheaptracer,mythid)
-        endif                   ! if use tracer
-
-
-
-
-c reset boundaries to open boundary profile
-
+C reset boundaries to open boundary profile
         DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-            do j=1-oly,sny+oly
-              jG = myYGlobalLo-1+(bj-1)*sNy+j
-              do i=1-olx,snx+olx
-                iG=myXGlobalLo-1+(bi-1)*sNx+i
-                if(iG.le.1)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-                if(iG.ge.Nx)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-                if(jG.le.1)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-                if(jG.ge.Ny)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-              enddo
-            enddo
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           jG = myYGlobalLo-1+(bj-1)*sNy+j
+           DO i=1-OLx,sNx+OLx
+            iG=myXGlobalLo-1+(bi-1)*sNx+i
+            IF (iG.LE.1) Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
+            IF (iG.GE.Nx)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
+            IF (jG.LE.1) Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
+            IF (jG.GE.Ny)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
+           ENDDO
           ENDDO
+         ENDDO
         ENDDO
 
-        if(useFreshWaterFlux)then
-          DO bj=myByLo(myThid),myByHi(myThid)
-            DO bi=myBxLo(myThid),myBxHi(myThid)
-              do j=1-oly,sny+oly
-                jG = myYGlobalLo-1+(bj-1)*sNy+j
-                do i=1-olx,snx+olx
-                  iG=myXGlobalLo-1+(bi-1)*sNx+i
-                  if(iG.le.1)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-                  if(iG.ge.Nx)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-                  if(jG.le.1)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-                  if(jG.ge.Ny)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-                enddo
-              enddo
-            ENDDO
+       IF (useFreshWaterFlux) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           jG = myYGlobalLo-1+(bj-1)*sNy+j
+           DO i=1-OLx,sNx+OLx
+            iG=myXGlobalLo-1+(bi-1)*sNx+i
+            IF (iG.LE.1) qair(i,j,bi,bj)=qr(i,j,bi,bj)
+            IF (iG.GE.Nx)qair(i,j,bi,bj)=qr(i,j,bi,bj)
+            IF (jG.LE.1) qair(i,j,bi,bj)=qr(i,j,bi,bj)
+            IF (jG.GE.Ny)qair(i,j,bi,bj)=qr(i,j,bi,bj)
+           ENDDO
           ENDDO
-        endif
+         ENDDO
+        ENDDO
+       ENDIF
 
-        if(useCheapTracer)then
-          DO bj=myByLo(myThid),myByHi(myThid)
-            DO bi=myBxLo(myThid),myBxHi(myThid)
-              do j=1-oly,sny+oly
-              jG = myYGlobalLo-1+(bj-1)*sNy+j
-              do i=1-olx,snx+olx
-              iG=myXGlobalLo-1+(bi-1)*sNx+i
-              if(iG.le.1) Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
-              if(iG.ge.Nx)Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
-              if(jG.le.1) Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
-              if(jG.ge.Ny)Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
-              enddo
-              enddo
-            ENDDO
+       IF (useCheapTracer) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           jG = myYGlobalLo-1+(bj-1)*sNy+j
+           DO i=1-OLx,sNx+OLx
+            iG=myXGlobalLo-1+(bi-1)*sNx+i
+            IF (iG.LE.1) Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
+            IF (iG.GE.Nx)Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
+            IF (jG.LE.1) Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
+            IF (jG.GE.Ny)Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
+           ENDDO
           ENDDO
-        endif
+         ENDDO
+        ENDDO
+       ENDIF
 
-
-      enddo
+C--   end loop on nt (short time-step loop)
+      ENDDO
 c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
 c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
 c      CALL PLOT_FIELD_XYRS( qair, 'S/R CHEAPAML qair',1,myThid)
 
-c cycling on short atmospheric time step is now done
+C cycling on short atmospheric time step is now done
 
-c     now continue with diabatic forcing
+C     now continue with diabatic forcing
       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-          do j=1-oly,sny+oly
-            do i=1-olx,snx+olx
-              if(FluxFormula.eq.'LANL')then
-                call cheapaml_LANL_flux(i,j,bi,bj,fsha,flha,evp,
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            IF (FluxFormula.EQ.'LANL') THEN
+              CALL cheapaml_LANL_flux(i,j,bi,bj,fsha,flha,evp,
      &             xolw,ssqt,q100)
-              elseif(FluxFormula.eq.'COARE3')then
-                call cheapaml_COARE3_flux(i,j,bi,bj,fsha,flha,evp,
+            ELSEIF (FluxFormula.EQ.'COARE3') THEN
+              CALL cheapaml_COARE3_flux(i,j,bi,bj,fsha,flha,evp,
      &             xolw,ssqt,q100,cdq)
-              endif
+            ENDIF
 
-c atmospheric upwelled long wave
+C atmospheric upwelled long wave
         ttt=Tair(i,j,bi,bj)-gamma_blk*(cheaphgrid(i,j,bi,bj)-zt)
 C        xalwu=stefan*(ttt+Celsius2K)**4*0.5 _d 0
         xalwu=stefan*(0.5*Tair(i,j,bi,bj)+0.5*ttt+Celsius2K)**4*0.5 _d 0
-c atmospheric downwelled long wave
+C atmospheric downwelled long wave
         xalwd=stefan*(Tair(i,j,bi,bj)+Celsius2K)**4*0.5 _d 0
-c total flux at upper atmospheric layer interface
+C total flux at upper atmospheric layer interface
         xflu=(-solar(i,j,bi,bj)+xalwu+flha)*xef*maskC(i,j,1,bi,bj)
-c lower flux calculation.
+C lower flux calculation.
         xfld=(-solar(i,j,bi,bj)-xalwd+xolw+fsha+flha)
-     .*xef*maskC(i,j,1,bi,bj)
+     &      *xef*maskC(i,j,1,bi,bj)
 
-        if (usedlongwave) THEN
+        IF (usedlongwave) THEN
           xlwnet = xolw-cheapdlongwave(i,j,bi,bj)
         ELSE
 C net long wave (see Josey et al. JGR 1997)
 C coef lambda replaced by 0.5+lat/230
 C convert spec humidity in water vapor pressure (mbar) using coef 1000/0.622=1607.7
           xlwnet = 0.98*stefan*(theta(i,j,1,bi,bj)+273.1)**4.
-     $       *(0.39-0.05*sqrt(qair(i,j,bi,bj)*1607.7))
-     $       *(1-(0.5+abs(yG(i,j,bi,bj))/230)*cheapclouds(i,j,bi,bj)**2)
-     $       + 4*0.98*stefan*(theta(i,j,1,bi,bj)+273.1)**3
-     $       *(theta(i,j,1,bi,bj)-Tair(i,j,bi,bj));
+     &       *(0.39-0.05*sqrt(qair(i,j,bi,bj)*1607.7))
+     &       *(1-(0.5+abs(yG(i,j,bi,bj))/230)*cheapclouds(i,j,bi,bj)**2)
+     &       + 4*0.98*stefan*(theta(i,j,1,bi,bj)+273.1)**3
+     &       *(theta(i,j,1,bi,bj)-Tair(i,j,bi,bj));
 
-C          xlwnet = xolw-stefan*(theta(i,j,1,bi,bj)+273.1)**4.
-C     $       *(0.65+11.22*qair(i,j,bi,bj) + 0.25*cheapclouds(i,j,bi,bj)
-C     $       -8.23*qair(i,j,bi,bj)*cheapclouds(i,j,bi,bj))
-        endif
+c          xlwnet = xolw-stefan*(theta(i,j,1,bi,bj)+273.1)**4.
+c     &       *(0.65+11.22*qair(i,j,bi,bj) + 0.25*cheapclouds(i,j,bi,bj)
+c     &       -8.23*qair(i,j,bi,bj)*cheapclouds(i,j,bi,bj))
+        ENDIF
 C clouds
-C        ttt2=Tair(i,j,bi,bj)-1.5*gamma_blk*cheaphgrid(i,j,bi,bj)
-C        Fclouds = stefan*ttt2**4*(0.4*cheapclouds(i,j,bi,bj)+1-0.4)/2
-C        ttt2=Tair(i,j,bi,bj)-3*gamma_blk*cheaphgrid(i,j,bi,bj)+Celsius2K
-C        Fclouds = 0.3*stefan*ttt2**4 + 0.22*xolw*cheapclouds(i,j,bi,bj)
-c add flux divergences into atmospheric temperature tendency
+c        ttt2=Tair(i,j,bi,bj)-1.5*gamma_blk*cheaphgrid(i,j,bi,bj)
+c        Fclouds = stefan*ttt2**4*(0.4*cheapclouds(i,j,bi,bj)+1-0.4)/2
+c        ttt2=Tair(i,j,bi,bj)-3*gamma_blk*cheaphgrid(i,j,bi,bj)+Celsius2K
+c        Fclouds = 0.3*stefan*ttt2**4 + 0.22*xolw*cheapclouds(i,j,bi,bj)
+C add flux divergences into atmospheric temperature tendency
         gTair(i,j,bi,bj)= (xfld-xflu)/cheaphgrid(i,j,bi,bj)
         Qnet(i,j,bi,bj)=(
-     $     -solar(i,j,bi,bj)
-C     $     -xalwd
-C     $     -Fclouds
-C     $     +xolw
-     $     +xlwnet
-     $     +fsha
-     $     +flha
-     $     )*maskC(i,j,1,bi,bj)
+     &     -solar(i,j,bi,bj)
+C     &     -xalwd
+C     &     -Fclouds
+C     &     +xolw
+     &     +xlwnet
+     &     +fsha
+     &     +flha
+     &     )*maskC(i,j,1,bi,bj)
 
 C save var
         SH_sauv(i,j,bi,bj)= fsha*maskC(i,j,1,bi,bj)
         LH_sauv(i,j,bi,bj)= flha*maskC(i,j,1,bi,bj)
 
+C need to precip?
+        IF (useFreshWaterFlux) THEN
+          q=q100
+C compute saturation specific humidity at atmospheric
+C layer top
+C first, what is the pressure there?
+C ts is surface atmospheric temperature
+          ts=Tair(i,j,bi,bj)+gamma_blk*zt+Celsius2K
+          pt=p0*(1-gamma_blk*cheaphgrid(i,j,bi,bj)/ts)
+     &       **(gravity/gamma_blk/gasR)
 
-c need to precip?
-        if(useFreshwaterFlux)then
-        q=q100
-c compute saturation specific humidity at atmospheric
-c layer top
-c first, what is the pressure there?
-c ts is surface atmospheric temperature
-        ts=Tair(i,j,bi,bj)+gamma_blk*zt+Celsius2K
-        pt=p0*(1-gamma_blk*cheaphgrid(i,j,bi,bj)/ts)
-     $     **(gravity/gamma_blk/gasR)
-
-
-c factor to compute rainfall from specific humidity
-        dm=100*(p0-pt)*recip_gravity
+C factor to compute rainfall from specific humidity
+          dm=100.*(p0-pt)*recip_gravity
 C     Large scale precip
-        precip = 0
-        if(wwind(i,j,bi,bj).GT.0.and.q.gt.ssqt*0.7)then
-          precip = precip + ((q-ssqt*0.7)*dm/(cheap_pr2))
-     $     *(wwind(i,j,bi,bj)/0.75e-5)**2
-        endif
+          precip = 0.
+          IF (wwind(i,j,bi,bj).GT.0.AND.q.GT.ssqt*0.7)then
+            precip = precip + ((q-ssqt*0.7)*dm/(cheap_pr2))
+     &              *(wwind(i,j,bi,bj)/0.75e-5)**2
+          ENDIF
 
 C     Convective precip
-        if (q>0.0214.and.q.gt.ssqt*0.9) then
-          precip = precip + ((q-ssqt*0.9)*dm/cheap_pr1)
-        endif
+          IF (q>0.0214.and.q.gt.ssqt*0.9) then
+            precip = precip + ((q-ssqt*0.9)*dm/cheap_pr1)
+          ENDIF
 
-        entrain = cdq*q*0.25
+          entrain = cdq*q*0.25
 
-C        gqair(i,j,bi,bj)=(evp-precip-entrain)/cheaphgrid(i,j,bi,bj)
-        gqair(i,j,bi,bj)=(evp-entrain)/cheaphgrid(i,j,bi,bj)
-     $     /rhoa*maskC(i,j,1,bi,bj)
-        EmPmR(i,j,bi,bj)=(evp-precip*1200/cheaphgrid(i,j,bi,bj)
-     $     )*maskC(i,j,1,bi,bj)
-        endif
+c        gqair(i,j,bi,bj)=(evp-precip-entrain)/cheaphgrid(i,j,bi,bj)
+          gqair(i,j,bi,bj)=(evp-entrain)/cheaphgrid(i,j,bi,bj)
+     &     /rhoa*maskC(i,j,1,bi,bj)
+          EmPmR(i,j,bi,bj)=(evp-precip*1200/cheaphgrid(i,j,bi,bj)
+     &     )*maskC(i,j,1,bi,bj)
+        ENDIF
 
 c       CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
-        enddo
-        enddo
+          ENDDO
+         ENDDO
 
-c it is not necessary to use the Adams2d subroutine as
-c the forcing is always computed at the current time step.
+C it is not necessary to use the Adams2d subroutine as
+C the forcing is always computed at the current time step.
+         CALL timestep_2d_tracer(
+     I          bi, bj, 1-OLx,sNx+OLx ,1-OLy, sNy+OLy, deltaT,
+     I          Tair, gTair,
+     I          myIter, myThid )
+C full oceanic time step deltaT is used in the above
+         CALL cycle_2d_tracer(
+     I          bi, bj,
+     U          Tair, gTair, nt,
+     I          myTime, myIter, myThid )
+C       do implicit time stepping over land
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            dtemp=tr(i,j,bi,bj)-Tair(i,j,bi,bj)
+            Tair(i,j,bi,bj)=Tair(i,j,bi,bj)+dtemp*xrelf(i,j,bi,bj)
+          ENDDO
+         ENDDO
 
-        call timestep_2d_tracer(
-     I                     bi, bj, 1-olx,snx+olx ,1-oly, sny+oly,
-     I                     deltaT,
-     I                     Tair, gTair,
-     I                     myIter, myThid )
-c full oceanic time step deltaT is used in the above
+C do water
+        IF (useFreshWaterFlux) THEN
+         CALL timestep_2d_tracer(
+     I          bi, bj, 1-OLx,sNx+OLx ,1-OLy, sNy+OLy, deltaT,
+     I          qair, gqair,
+     I          myIter, myThid )
+         CALL cycle_2d_tracer(
+     I          bi, bj,
+     U          qair, gqair, nt,
+     I          myTime,myIter,myThid )
+C     do implicit time stepping over land and or buffer
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            dq=qr(i,j,bi,bj)-qair(i,j,bi,bj)
+            qair(i,j,bi,bj)=qair(i,j,bi,bj)+dq*xrelf(i,j,bi,bj)
+            IF (qair(i,j,bi,bj).LT.0.0) qair(i,j,bi,bj) = 0.0 _d 0
+          ENDDO
+         ENDDO
+        ENDIF
 
-        call cycle_2d_tracer(
-     I                   bi, bj,
-     U                   Tair, gTair,nt,
-     I                   myTime, myIter, myThid )
+C do tracer
+        IF (useCheapTracer) THEN
+C     do implicit time stepping over land and or buffer
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            dtr=CheaptracerR(i,j,bi,bj)-Cheaptracer(i,j,bi,bj)
+            Cheaptracer(i,j,bi,bj) = Cheaptracer(i,j,bi,bj)
+     &                             + dtr*xrelf(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
 
-c       do implicit time stepping over land
-        do j=1-oly,sny+oly
-        do i=1-olx,snx+olx
-        dtemp=tr(i,j,bi,bj)-Tair(i,j,bi,bj)
-        Tair(i,j,bi,bj)=Tair(i,j,bi,bj)+dtemp*xrelf(i,j,bi,bj)
-        enddo
-        enddo
+C close bi,bj loops
+       ENDDO
+      ENDDO
 
-c do water
-        if(useFreshwaterFlux)then
-          call timestep_2d_tracer(
-     I       bi, bj,1-olx,snx+olx ,1-oly, sny+oly,
-     I       deltaT,
-     I       qair,gqair,
-     I       myIter, myThid )
-          call cycle_2d_tracer(
-     I       bi, bj,
-     U       qair,gqair,nt,
-     I       myTime,myIter,myThid )
-c     do implicit time stepping over land and or buffer
-          do j=1-oly,sny+oly
-            do i=1-olx,snx+olx
-              dq=qr(i,j,bi,bj)-qair(i,j,bi,bj)
-              qair(i,j,bi,bj)=qair(i,j,bi,bj)+dq*xrelf(i,j,bi,bj)
-              if (qair(i,j,bi,bj).lt.0.0) qair(i,j,bi,bj) = 0.0 _d 0
-            enddo
-          enddo
-        endif
+C update edges
+       _EXCH_XY_RL(Tair,mythid)
+       _EXCH_XY_RS(Qnet,mythid)
+      IF (useFreshWaterFlux) THEN
+       _EXCH_XY_RL(qair,mythid)
+       _EXCH_XY_RS(EmPmR,mythid)
+      ENDIF
+      IF (useCheapTracer) THEN
+       _EXCH_XY_RL(Cheaptracer,mythid)
+      ENDIF
 
-c do tracer
-        if(useCheapTracer)then
-c     do implicit time stepping over land and or buffer
-          do j=1-oly,sny+oly
-            do i=1-olx,snx+olx
-              dtr=CheaptracerR(i,j,bi,bj)-Cheaptracer(i,j,bi,bj)
-      Cheaptracer(i,j,bi,bj)=Cheaptracer(i,j,bi,bj)+dtr*xrelf(i,j,bi,bj)
-            enddo
-          enddo
-        endif
-
-c close bi,bj loops
-        enddo
-        enddo
-
-c update edges
-
-
-         _EXCH_XY_RL(Tair,mythid)
-         _EXCH_XY_RS(Qnet,mythid)
-      if(useFreshwaterFlux)then
-         _EXCH_XY_RL(qair,mythid)
-         _EXCH_XY_RS(EmPmR,mythid)
-      endif
-
-      if(useCheapTracer)then
-        _EXCH_XY_RL(Cheaptracer,mythid)
-      endif
-
-c reset edges to open boundary profiles
-
+C reset edges to open boundary profiles
       DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          jG = myYGlobalLo-1+(bj-1)*sNy+j
+          DO i=1-OLx,sNx+OLx
+           iG=myXGlobalLo-1+(bi-1)*sNx+i
+           IF (notUsingXPeriodicity) THEN
+            IF (iG.LE.1) Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
+            IF (iG.GE.Nx)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
+           ENDIF
+           IF (notUsingYPeriodicity) THEN
+            IF (jG.LE.1) Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
+            IF (jG.GE.Ny)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
+           ENDIF
+          ENDDO
+         ENDDO
+       ENDDO
+      ENDDO
+
+      IF (useFreshWaterFlux) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-          do j=1-oly,sny+oly
-            jG = myYGlobalLo-1+(bj-1)*sNy+j
-            do i=1-olx,snx+olx
-              iG=myXGlobalLo-1+(bi-1)*sNx+i
-              if(notUsingXPeriodicity)then
-              if(iG.le.1)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-              if(iG.ge.Nx)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-              endif
-              if(notUsingYPeriodicity)then
-              if(jG.le.1)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-              if(jG.ge.Ny)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-              endif
-            enddo
-          enddo
-        enddo
-      enddo
-
-      if(useFreshWaterFlux)then
-        DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-            do j=1-oly,sny+oly
-              jG = myYGlobalLo-1+(bj-1)*sNy+j
-              do i=1-olx,snx+olx
-                iG=myXGlobalLo-1+(bi-1)*sNx+i
-                if(notUsingXPeriodicity)then
-                if(iG.le.1)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-                if(iG.ge.Nx)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-                endif
-                if(notUsingYPeriodicity)then
-                if(jG.le.1)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-                if(jG.ge.Ny)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-                endif
-              enddo
-            enddo
+         DO j=1-OLy,sNy+OLy
+          jG = myYGlobalLo-1+(bj-1)*sNy+j
+          DO i=1-OLx,sNx+OLx
+           iG=myXGlobalLo-1+(bi-1)*sNx+i
+           IF (notUsingXPeriodicity) THEN
+            IF (iG.LE.1) qair(i,j,bi,bj)=qr(i,j,bi,bj)
+            IF (iG.GE.Nx)qair(i,j,bi,bj)=qr(i,j,bi,bj)
+           ENDIF
+           IF (notUsingYPeriodicity) THEN
+            IF (jG.LE.1) qair(i,j,bi,bj)=qr(i,j,bi,bj)
+            IF (jG.GE.Ny)qair(i,j,bi,bj)=qr(i,j,bi,bj)
+           ENDIF
           ENDDO
+         ENDDO
         ENDDO
-      endif
+       ENDDO
+      ENDIF
 
-
-      if(useCheapTracer)then
-        DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-            do j=1-oly,sny+oly
-              jG = myYGlobalLo-1+(bj-1)*sNy+j
-              do i=1-olx,snx+olx
-                iG=myXGlobalLo-1+(bi-1)*sNx+i
-              if(notUsingXPeriodicity)then
-              if(iG.le.1) Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
-              if(iG.ge.Nx)Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
-              endif
-              if(notUsingYPeriodicity)then
-              if(jG.le.1) Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
-              if(jG.ge.Ny)Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
-              endif
-              enddo
-            enddo
+      IF (useCheapTracer) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          jG = myYGlobalLo-1+(bj-1)*sNy+j
+          DO i=1-OLx,sNx+OLx
+           iG=myXGlobalLo-1+(bi-1)*sNx+i
+           IF (notUsingXPeriodicity) THEN
+            IF (iG.LE.1) Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
+            IF (iG.GE.Nx)Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
+           ENDIF
+           IF (notUsingYPeriodicity) THEN
+            IF (jG.LE.1) Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
+            IF (jG.GE.Ny)Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
+           ENDIF
           ENDDO
+         ENDDO
         ENDDO
-      endif
+       ENDDO
+      ENDIF
 
 c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
 c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
@@ -670,27 +638,25 @@ c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-cswd move wind stresses to u and v points
-           DO j = 1-OLy,sNy+OLy
-            DO i = 1-OLx+1,sNx+OLx
-              fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)
+Cswd move wind stresses to u and v points
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx+1,sNx+OLx
+            fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)
      &          *(ustress(i,j,bi,bj)+ustress(i-1,j,bi,bj))*0.5 _d 0
-            ENDDO
-           ENDDO
-           DO j = 1-OLy+1,sNy+OLy
-            DO i = 1-OLx,sNx+OLx
-              fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)
+          ENDDO
+         ENDDO
+         DO j = 1-OLy+1,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+            fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)
      &          *(vstress(i,j,bi,bj)+vstress(i,j-1,bi,bj))*0.5 _d 0
-            ENDDO
-           ENDDO
+          ENDDO
+         ENDDO
 
 C--   end bi,bj loops
        ENDDO
       ENDDO
 
-
 #endif /*  ALLOW_SEAGER */
-
 
 #ifdef ALLOW_DIAGNOSTICS
       CALL DIAGNOSTICS_FILL(uwind,  'CH_Uwind',0,1,0,1,1,myThid)
@@ -699,28 +665,27 @@ C--   end bi,bj loops
       CALL DIAGNOSTICS_FILL(Qnet,   'CH_QNET ',0,1,0,1,1,myThid)
       CALL DIAGNOSTICS_FILL(SH_sauv,'CH_SH   ',0,1,0,1,1,myThid)
       CALL DIAGNOSTICS_FILL(LH_sauv,'CH_LH   ',0,1,0,1,1,myThid)
-      IF(useFreshwaterFlux)THEN
+      IF (useFreshWaterFlux) THEN
         CALL DIAGNOSTICS_FILL(Qair, 'CH_QAIR ',0,1,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(EmPmR,'CH_EmP  ',0,1,0,1,1,myThid)
       ENDIF
-      IF(useCheapTracer)THEN
-          CALL DIAGNOSTICS_FILL(Cheaptracer,'CH_Trace',0,1,0,1,1,myThid)
+      IF (useCheapTracer) THEN
+        CALL DIAGNOSTICS_FILL(Cheaptracer,'CH_Trace',0,1,0,1,1,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-      DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j = 1-OLy,sNy+OLy
-            DO i = 1-OLx+1,sNx+OLx
-C              fu(i,j,bi,bj) = 0.0
-C              fv(i,j,bi,bj) = 0.0
-C              Qnet(i,j,bi,bj) = 0.0
-C              EmPmR(i,j,bi,bj) = 0.0
 
-            ENDDO
-          ENDDO
-        ENDDO
-      ENDDO
-
+c     DO bj=myByLo(myThid),myByHi(myThid)
+c      DO bi=myBxLo(myThid),myBxHi(myThid)
+c        DO j = 1-OLy,sNy+OLy
+c         DO i = 1-OLx+1,sNx+OLx
+c           fu(i,j,bi,bj) = 0.0
+c           fv(i,j,bi,bj) = 0.0
+c           Qnet(i,j,bi,bj) = 0.0
+c           EmPmR(i,j,bi,bj) = 0.0
+c         ENDDO
+c        ENDDO
+c      ENDDO
+c     ENDDO
 
       RETURN
       END
