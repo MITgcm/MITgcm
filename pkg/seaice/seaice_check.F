@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.73 2012/12/22 00:52:05 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.74 2012/12/24 15:50:23 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -70,7 +70,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   ALLOW_SEAICE
       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: #define ALLOW_SEAICE'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , myThid )
+     &     SQUEEZE_RIGHT, myThid )
 
 C--   SEAICE needs forcing_In_AB FALSE
       IF (tracForcingOutAB.NE.1) THEN
@@ -156,7 +156,7 @@ C--   check concistency of turbulent flux term etc. specification
          WRITE(msgBuf,'(2A)')
      &      'SEAICE_mcPheeTaper cannot be specified  ',
      &      'outside of the [0. 1.] range'
-         CALL PRINT_ERROR( msgBuf , myThid)
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
 
@@ -220,7 +220,7 @@ c to be added : if SEAICE_ageTracer we suggest that one tracer does that
          WRITE(msgBuf,'(2A)')
      &      'SItrFromOceanFrac cannot be specified  ',
      &      'outside of the [0. 1.] range'
-         CALL PRINT_ERROR( msgBuf , myThid)
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
 
@@ -229,7 +229,7 @@ c to be added : if SEAICE_ageTracer we suggest that one tracer does that
          WRITE(msgBuf,'(2A)')
      &      'SItrFromFloodFrac cannot be specified  ',
      &      'outside of the [0. 1.] range'
-         CALL PRINT_ERROR( msgBuf , myThid)
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
 
@@ -238,7 +238,7 @@ c     &     (SItrMate(iTracer).NE.'HEFF') ) THEN
 c         WRITE(msgBuf,'(2A)')
 c     &      'SItrName = "salinity" requires  ',
 c     &      'SItrMate = "HEFF" '
-c         CALL PRINT_ERROR( msgBuf , myThid)
+c         CALL PRINT_ERROR( msgBuf, myThid )
 c         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
 c      ENDIF
 
@@ -248,7 +248,7 @@ c      ENDIF
          WRITE(msgBuf,'(2A)')
      &      'SItrFromOceanFrac / SItrFromFloodFrac is only  ',
      &      'available for SItrName = "salinity" (for now)'
-         CALL PRINT_ERROR( msgBuf , myThid)
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
 
@@ -401,10 +401,10 @@ C     Avoid using both type of diffusion scheme (DIFF1 & SEAICEdiffKh)
      &     SEAICEpresPow0  .LT. 0 .OR. SEAICEpresPow1  .LT. 0 ) THEN
         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
      &      'SEAICEpresH0 (real), SEAICEpresPow0 (integer)'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: OR SEAICEpresPow1 ',
      &      '(integer) has been specified as negative (data.seaice)'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 
@@ -448,25 +448,25 @@ C--   SEAICE_ALLOW_DYNAMICS and SEAICEuseDYNAMICS
 
 C--   SEAICE_EXTERNAL_FORCING is obsolete: issue warning but continue.
 #ifdef SEAICE_EXTERNAL_FORCING
-         WRITE(msgBuf,'(A)')
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
      &        'SEAICE_EXTERNAL_FORCING option is obsolete:'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         WRITE(msgBuf,'(A)')
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
      &        'seaice now always uses exf to read input files.'
-         CALL PRINT_ERROR( msgBuf, myThid )
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 #endif
 
 C--   SEAICE_MULTICATEGORY is obsolete: issue warning but continue.
 #ifdef SEAICE_MULTICATEGORY
       WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
      &     'CPP flag SEAICE_MULTICATEGORY has been retired.'
-      CALL PRINT_ERROR( msgBuf , myThid)
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
      &     'Specify SEAICE_multDim=7 in data.seaice to recover'
-      CALL PRINT_ERROR( msgBuf , myThid)
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
      &     'previous default SEAICE_MULTICATEGORY setting.'
-      CALL PRINT_ERROR( msgBuf , myThid)
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 #endif /* SEAICE_MULTICATEGORY */
 
 C--   SEAICE_ALLOW_TD_IF is obsolete: issue warning and stop.
@@ -480,6 +480,7 @@ C--   SEAICE_ALLOW_TD_IF is obsolete: issue warning and stop.
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif /* SEAICE_ALLOW_TD_IF */
 
+      IF ( usePW79thermodynamics ) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
      &        'turbulent ice-ocn heat flux default changed.'
         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -492,6 +493,7 @@ C--   SEAICE_ALLOW_TD_IF is obsolete: issue warning and stop.
         WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
      &        '   thickness divided by SEAICE_deltaTtherm.'
         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      ENDIF
 
 C--   SEAICE_DO_OPEN_WATER_GROWTH is obsolete: issue warning and stop.
 #if defined(SEAICE_DO_OPEN_WATER_GROWTH) || \
@@ -595,10 +597,10 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
          IF ( SEAICE_waterAlbedo .NE. UNSET_RL ) THEN
           WRITE(msgBuf,'(A)')
      &      'SEAICE_waterAlbedo is not used with SEAICE_EXTERNAL_FLUXES'
-          CALL PRINT_ERROR( msgBuf , myThid)
+          CALL PRINT_ERROR( msgBuf, myThid )
           WRITE(msgBuf,'(A)')
      &      'Set exf_albedo in data.exf EXF_NML_01 instead'
-          CALL PRINT_ERROR( msgBuf , myThid)
+          CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
          ENDIF
 #else /* if undef SEAICE_EXTERNAL_FLUXES */
@@ -606,12 +608,12 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
      &     'SEAICE_EXTERNAL_FLUXES is undefined, so we assume you ',
      &     'know what you are doing.'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
+     &        SQUEEZE_RIGHT, myThid )
          CALL PRINT_ERROR( msgBuf, myThid )
          WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
      &     'Use S/R SEAICE_BUDGET_OCEAN to compute fluxes over ocean.'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
+     &        SQUEEZE_RIGHT, myThid )
          CALL PRINT_ERROR( msgBuf, myThid )
 #endif /* SEAICE_EXTERNAL_FLUXES */
 #ifndef SEAICE_CGRID
@@ -628,7 +630,7 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
         WRITE(msgBuf,'(A,A)')
      &  'SEAICE_CHECK: cannot use EVP nor LSR solver with',
      &  ' overlap (OLx,OLy) smaller than 3'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 
@@ -648,14 +650,15 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
 #else
       IF ( SEAICE_deltaTevp .NE. UNSET_RL ) THEN
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_deltaTevp is set'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: but cpp-flag '//
      &       'SEAICE_ALLOW_EVP is not defined in SEAICE_OPTIONS.h'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif
 
+      IF ( usePW79thermodynamics ) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
      &        'variable freezing point is new default.'
         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -668,12 +671,13 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
         WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
      &        '   SEAICE_dTempFrz_dS = 0.'
         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      ENDIF
 
 #ifndef SEAICE_GLOBAL_3DIAG_SOLVER
       IF ( SEAICEuseMultiTileSolver ) THEN
         WRITE(msgBuf,'(A)')
      &   'SEAICE_CHECK: SEAICEuseMultiTileSolver = .TRUE.'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') ' but CPP-flag ',
      &   'SEAICE_GLOBAL_3DIAG_SOLVER is #undef in SEAICE_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -685,10 +689,10 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
       IF ( SEAICE_clipVelocities ) THEN
         WRITE(msgBuf,'(A)')
      &      'SEAICE_CHECK: SEAICE_clipVelocities = .TRUE.'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: but cpp-flag '//
      &       'SEAICE_ALLOW_CLIPVELS is not defined in SEAICE_OPTIONS.h'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif /* SEAICE_ALLOW_CLIPVELS */
@@ -699,10 +703,10 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
         WRITE(msgBuf,'(A)')
      &      'SEAICE_CHECK: SEAICE_evpDampC and/or SEAICE_zetaMin '//
      &      'are set in data.seaice'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: but cpp-flag '//
      &       'SEAICE_ALLOW_CLIPZETA is not defined in SEAICE_OPTIONS.h'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif /* SEAICE_ALLOW_CLIPZETA */
@@ -766,10 +770,10 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
       IF ( SEAICEadvSalt ) THEN
         WRITE(msgBuf,'(A)')
      &      'SEAICE_CHECK: SEAICEadvSalt = .TRUE. but cpp-flag'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: '//
      &   'SEAICE_VARIABLE_SALINITY is undef in SEAICE_OPTIONS.h'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif /* SEAICE_VARIABLE_SALINITY */
@@ -779,7 +783,7 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
        IF ( JFNKres_t .EQ. UNSET_RL ) THEN
         WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: need to specify ',
      &       'JFNKres_t for SEAICEuseJFNK=.TRUE.'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
        ENDIF
       ENDIF
@@ -787,17 +791,17 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
        WRITE(msgBuf,'(2A)')
      &      'S/R SEAICE_CHECK: cannot have both SEAICEuseJFNK=.TRUE.',
      &      'and SEAICEuseEVP=.TRUE. (i.e. SEAICE_deltaTevp > 0)'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #else
       IF ( SEAICEuseJFNK ) THEN
         WRITE(msgBuf,'(A)')
      &      'SEAICE_CHECK: SEAICEuseJFNK = .TRUE. but cpp-flag'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: '//
      &   'SEAICE_ALLOW_JFNK is undef in SEAICE_OPTIONS.h'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif /* SEAICE_ALLOW_JFNK */
