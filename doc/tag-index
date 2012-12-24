@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1790 2012/12/23 20:26:46 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1791 2012/12/24 15:55:10 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint64b (2012/12/24)
 o pkg/cheapaml:
   - remove un-used variables (Qnet,EmPmR) from pickup files.
   - store tendency of advected variables into cheapaml pickup file
@@ -11,8 +12,13 @@ o pkg/cheapaml:
 o verification/offline_exf_seaice and lab_sea adjoint:
   - switch to new code (#undef SEAICE_GROWTH_LEGACY).
   - switch to 4 time steps in offline, consistent with lab_sea.
-  - match paramaters from SEAICE_GROWTH_LEGACY branch in data.seaice.
+  - match parameters from SEAICE_GROWTH_LEGACY branch in data.seaice.
   - update results after change of experiment seaice.
+o pkg/seaice:
+  - remove option SEAICE_MULTICATEGORY; has been replaced with run-time
+    parameter SEAICE_multDim. Issue a warning if SEAICE_MULTICATEGORY is
+    still defined since SEAICE_multDim needs to be set to MULTDIM value (from
+    SEAICE_SIZE.h) to recover previous #define SEAICE_MULTICATEGORY default.
 o model/src:
   - add run-time parameter to select CG2D solver minimum-residual solution
     (in case of a poor convergence).
@@ -22,7 +28,7 @@ o pkg/seaice/seaice_lsr.F
     file; the main purpose of this change is to be able to reuse the code
     in S/R SEAICE_PRECONDITIONER
   - modify the computation of the residual so that the mass of sea-ice
-    is not used twice; this simplyfies the calculations, but since
+    is not used twice; this simplifies the calculations, but since
     the residual is never used except when LSR_mixIniGuess.ge.4---and this is
     not tested in testreport---this does not affect the testreport results.
 o verification/seaice_obcs:
@@ -56,7 +62,7 @@ o pkg/seaice:
   - add a verification experiment for JFNK in offline_exf_seaice
 o verification:
   - change (for now, only fwd test) offline_exf_seaice experiment:
-    use a re-entrant channel with idealized costline (trapezoidal shape)
+    use a re-entrant channel with idealized coastline (trapezoidal shape)
     at southern boundary to explore seaice dynamics and thermodynamics
     with simple forcing. Main set-up has dynamics+thermo and SST relaxation;
     secondary test (input.thsice) use thermodynamics only with SST relaxation.
