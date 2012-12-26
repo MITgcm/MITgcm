@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.14 2012/12/23 20:21:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.15 2012/12/26 16:58:32 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -439,7 +439,7 @@ C convert spec humidity in water vapor pressure (mbar) using coef 1000/0.622=160
      &       *(0.39-0.05*sqrt(qair(i,j,bi,bj)*1607.7))
      &       *(1-(0.5+abs(yG(i,j,bi,bj))/230)*cheapclouds(i,j,bi,bj)**2)
      &       + 4*0.98*stefan*(theta(i,j,1,bi,bj)+273.1)**3
-     &       *(theta(i,j,1,bi,bj)-Tair(i,j,bi,bj));
+     &       *(theta(i,j,1,bi,bj)-Tair(i,j,bi,bj))
 
 c          xlwnet = xolw-stefan*(theta(i,j,1,bi,bj)+273.1)**4.
 c     &       *(0.65+11.22*qair(i,j,bi,bj) + 0.25*cheapclouds(i,j,bi,bj)
@@ -487,7 +487,8 @@ C     Large scale precip
           ENDIF
 
 C     Convective precip
-          IF (q>0.0214.and.q.gt.ssqt*0.9) then
+c         IF (q>0.0214.and.q.gt.ssqt*0.9) then
+          IF (q.GT.0.0214 .AND. q.GT.ssqt*0.9) THEN
             precip = precip + ((q-ssqt*0.9)*dm/cheap_pr1)
           ENDIF
 
