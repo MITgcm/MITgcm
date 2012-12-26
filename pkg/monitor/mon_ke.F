@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.22 2012/12/21 01:00:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.23 2012/12/26 23:57:46 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -34,6 +34,7 @@ C     !LOCAL VARIABLES:
       INTEGER i,j,k
       INTEGER ks, kp1
       _RL numPnts,theVol,tmpVal, mskp1, msk_1
+      _RL weight0, weight1
       _RL theMax,theMean,theVolMean,potEnMean
       _RL uBarC, vBarC, totAMu, totAMs
       _RL tileMean(nSx,nSy)
@@ -188,8 +189,33 @@ C-    calculate contribution from zonal velocity
            ENDDO
           ENDDO
          ENDDO
-C-    add contribution from mass distribution anomaly (i.e., free-surface)
-c        IF ( nonlinFreeSurf.GT.0 ) THEN
+C-    and contribution from mass distribution anomaly (i.e., free-surface)
+c        IF ( .FALSE. ) THEN
+         IF ( exactConserv ) THEN
+C-    To improve balance between zonal-wind (AMu) and mass (AMs) AM, need
+C     a consistent time-stepping of meridional mass transport in Coriolis
+C     (zonal momentum, go through AB) and mass transport divergence;
+C     try to account for AB-2 in AMs the same way it applies to f*v:
+#ifdef ALLOW_ADAMSBASHFORTH_3
+          weight1 = alph_AB
+#else
+          weight1 = 0.5 _d 0 + abEps
+#endif
+          weight0 = 1.0 _d 0 - weight1
+          DO j=1,sNy
+           DO i=1,sNx
+            ks = kSurfC(i,j,bi,bj)
+            tmpVal = weight1*etaH(i,j,bi,bj)
+#ifdef EXACT_CONSERV
+     &             + weight0*etaHnm1(i,j,bi,bj)
+#endif
+            tmpVal = omega*tmpVal
+     &             * radDist(i,j)*radDist(i,j)*deepFac2F(ks)
+            tileAMs(bi,bj) = tileAMs(bi,bj)
+     &             + tmpVal*rA(i,j,bi,bj)*deepFac2F(ks)*rhoFacF(ks)
+           ENDDO
+          ENDDO
+         ELSE
           DO j=1,sNy
            DO i=1,sNx
             ks = kSurfC(i,j,bi,bj)
@@ -199,14 +225,14 @@ c        IF ( nonlinFreeSurf.GT.0 ) THEN
      &             + tmpVal*rA(i,j,bi,bj)*deepFac2F(ks)*rhoFacF(ks)
            ENDDO
           ENDDO
-c        ENDIF
+         ENDIF
 C- end bi,bj loops
         ENDDO
        ENDDO
        CALL GLOBAL_SUM_TILE_RL( tileAMu , totAMu, myThid )
        CALL GLOBAL_SUM_TILE_RL( tileAMs , totAMs, myThid )
 
-C--   Print stats for total Angular Momentum:
+C--   Print stats for total Angular Momentum (per unit area, in kg/s):
        CALL MON_SET_PREF('am',myThid)
        totAMu = totAMu*rUnit2mass
        totAMs = totAMs*rUnit2mass
