@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/cheapAML_box/code/SIZE.h,v 1.2 2012/12/26 02:57:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/cheapAML_box/code/SIZE.h_mpi,v 1.1 2012/12/26 02:57:26 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -47,10 +47,10 @@ C     Nr  :: No. points in Z for full process domain.
      &           sNy =  25,
      &           OLx =   3,
      &           OLy =   3,
-     &           nSx =   2,
-     &           nSy =   4,
-     &           nPx =   1,
-     &           nPy =   1,
+     &           nSx =   1,
+     &           nSy =   1,
+     &           nPx =   2,
+     &           nPy =   4,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
      &           Nr  =   1)
