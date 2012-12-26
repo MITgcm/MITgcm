@@ -1,0 +1,11 @@
+retv=1
+if test "x$OPTFILE" != x ; then
+  basename $OPTFILE | grep gfortran > /dev/null 2>&1 ; retv=$? ;
+fi
+if test $retv = 0 ; then
+  FFLAGS='-fdefault-real-8 -fdefault-double-8'
+  echo "    local gfortran setting: FFLAGS='$FFLAGS'"
+else
+  FFLAGS='-r8'
+  echo "    local default setting: FFLAGS='$FFLAGS'"
+fi
