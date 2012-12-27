@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.62 2012/10/23 21:28:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.63 2012/12/27 23:05:47 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -78,10 +78,8 @@ C>>>ToM
       INTEGER itmpkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef ALLOW_SITRACER
-# ifndef SEAICE_GROWTH_LEGACY
       _RL hEffNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL areaNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-# endif /* ndef SEAICE_GROWTH_LEGACY */
       INTEGER iTr, SEAICEadvSchSItr
       _RL SEAICEdiffKhSItr
       _RL SItrExt   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -202,7 +200,7 @@ CADJ &     key = itmpkey, kind=isbyte
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-#if ( defined (SEAICE_GROWTH_LEGACY) || defined (ALLOW_SITRACER) )
+#ifdef ALLOW_SITRACER
           hEffNm1(i,j,bi,bj) = HEFF(i,j,bi,bj)
           areaNm1(i,j,bi,bj) = AREA(i,j,bi,bj)
 #endif
@@ -536,31 +534,6 @@ C---   end bi,bj loops
 
       ELSE
 C--   if not multiDimAdvection
-
-Cold     This has to be done to comply with the time stepping in advect.F:
-Cold     Making sure that the following routines see the different
-Cold     time levels correctly
-Cold     At the end of the routine ADVECT,
-Cold     timelevel 1 is updated with advection contribution
-Cold                 and diffusion contribution
-Cold                 (which was computed in DIFFUS on timelevel 3)
-Cold     timelevel 2 is the previous timelevel 1
-Cold     timelevel 3 is the total diffusion tendency * deltaT
-Cold                 (empty if no diffusion)
-C--   This is what remains from old 3-level storage of AREA & HEFF: still
-C     needed for SEAICE_GROWTH, Legacy branch. Left old comments here above.
-#ifdef SEAICE_GROWTH_LEGACY
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           hEffNm1(i,j,bi,bj) = HEFF(i,j,bi,bj)
-           areaNm1(i,j,bi,bj) = AREA(i,j,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-#endif
 
        IF ( SEAICEadvHEff ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC

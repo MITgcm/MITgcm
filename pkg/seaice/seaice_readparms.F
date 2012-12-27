@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.135 2012/12/18 20:04:28 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.136 2012/12/27 23:05:47 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -71,7 +71,7 @@ C                          1 = LEAPFROG,  2 = BACKWARD EULER.
 C     SEAICE_freeze     :: FREEZING TEMP. OF SEA WATER
       _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
       _RL SEAICE_salinity, SIsalFRAC, SIsal0
-      _RL SEAICE_lhSublim, SEAICE_freeze
+      _RL SEAICE_lhSublim, SEAICE_freeze, MAX_HEFF
       _RL areaMin, areaMax, A22, hiceMin, MAX_TICE
       LOGICAL SEAICEadvAge
       INTEGER SEAICEadvSchAge, LAD, SEAICEturbFluxFormula
@@ -328,17 +328,10 @@ C     default to be set later (ocean-seaice turbulent flux coeff):
       SEAICE_gamma_t_frz    = UNSET_RL
       SEAICE_availHeatFrac  = UNSET_RL
       SEAICE_availHeatFracFrz = UNSET_RL
-#ifndef SEAICE_GROWTH_LEGACY
       SEAICE_doOpenWaterGrowth=.TRUE.
       SEAICE_doOpenWaterMelt=.FALSE.
       SEAICE_areaLossFormula=1
       SEAICE_areaGainFormula=1
-#else
-      SEAICE_doOpenWaterGrowth=.FALSE.
-      SEAICE_doOpenWaterMelt=.FALSE.
-      SEAICE_areaGainFormula=2
-      SEAICE_areaLossFormula=3
-#endif
       SEAICE_tempFrz0    = 0.0901 _d 0
       SEAICE_dTempFrz_dS = -0.0575 _d 0
 C     old default for constant freezing point
@@ -370,19 +363,13 @@ C     Euler time stepping scheme of Zhang+Hibler (1997)
       LSR_ERROR  = 0.0001    _d 0
       SEAICEuseMultiTileSolver = .FALSE.
 
-#ifdef SEAICE_GROWTH_LEGACY
-      SEAICE_area_reg   = 0.15 _d 0
-      SEAICE_area_floor = 0.15 _d 0
-#else
       SEAICE_area_floor = siEPS
       SEAICE_area_reg   = siEPS
-#endif
       SEAICE_hice_reg   = 0.05 _d 0
       SEAICE_area_max   = 1.00 _d 0
 
       SEAICE_airTurnAngle   = 0.0 _d 0
       SEAICE_waterTurnAngle = 0.0 _d 0
-      MAX_HEFF          = 10.     _d 0
       MIN_ATEMP         = -50.    _d 0
       MIN_LWDOWN        = 60.     _d 0
       MIN_TICE          = -50.    _d 0
@@ -437,6 +424,7 @@ c     MAX_TICE           = 30.     _d 0
       IceAgeTrFile(4)    = ' '
       SEAICEturbFluxFormula =UNSET_I
       SEAICE_freeze      = UNSET_RL
+      MAX_HEFF           = UNSET_RL
 C-    end retired parameters
 
 #ifdef ALLOW_COST
@@ -927,7 +915,13 @@ C-    Retired parameters
      &  ' Set instead "SEAICE_mcPheePiston" and "SEAICE_frazilFrac"'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
-
+      IF ( MAX_HEFF .NE. UNSET_RL ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "MAX_HEFF" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
       IF ( nRetired .GT. 0 ) THEN
        WRITE(msgBuf,'(2A)') 'S/R SEAICE_READPARMS: ',
      &  'Error reading parameter file "data.seaice"'

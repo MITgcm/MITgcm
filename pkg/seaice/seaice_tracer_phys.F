@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_tracer_phys.F,v 1.8 2012/03/05 14:52:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_tracer_phys.F,v 1.9 2012/12/27 23:05:47 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -173,7 +173,6 @@ c salinity tracer: no specific process
 c "ice concentration" tracer: no specific process
       elseif (SItrName(iTr).EQ.'ridge') then
 c simple, made up, ice surface roughness index prototype
-#ifndef SEAICE_GROWTH_LEGACY
        DO J=1,sNy
         DO I=1,sNx
 c ridging increases roughness
@@ -187,7 +186,6 @@ c ice melt reduces ridges/roughness
           SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)*tmpscal1
         ENDDO
        ENDDO
-#endif
       endif
 c 3) ice-ocean tracer exchange/mapping to external variables
 c ==========================================================

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.69 2012/12/17 15:06:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.70 2012/12/27 23:05:47 gforget Exp $
 C $Name:  $
 
 CBOP
@@ -83,12 +83,6 @@ CToM<<<
       _RL HSNOWITD   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
 #endif
 C>>>ToM
-
-#ifdef SEAICE_GROWTH_LEGACY
-      COMMON/SEAICE_DYNVARS_2/ areaNm1, hEffNm1
-      _RL areaNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL hEffNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif /* SEAICE_GROWTH_LEGACY */
 
 C     uIceC :: average of UICE between last two time steps
 C     vIceC :: average of VICE between last two time steps

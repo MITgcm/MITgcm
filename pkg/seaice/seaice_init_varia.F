@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.78 2012/12/17 15:06:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.79 2012/12/27 23:05:47 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -83,10 +83,6 @@ C>>>ToM
 C
           uIceNm1(i,j,bi,bj)=0. _d 0
           vIceNm1(i,j,bi,bj)=0. _d 0
-#ifdef SEAICE_GROWTH_LEGACY
-          areaNm1(i,j,bi,bj)=0. _d 0
-          hEffNm1(i,j,bi,bj)=0. _d 0
-#endif
           ETA (i,j,bi,bj)   = 0. _d 0
           etaZ(i,j,bi,bj)   = 0. _d 0
           ZETA(i,j,bi,bj)   = 0. _d 0

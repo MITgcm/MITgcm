@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.74 2012/12/24 15:50:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.75 2012/12/27 23:05:47 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -95,23 +95,6 @@ C--   check ice cover fraction formula
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
-
-#ifdef SEAICE_GROWTH_LEGACY
-      IF ( (.NOT.useThSIce).AND.( (SEAICE_areaGainFormula.NE.2).OR.
-     &     (SEAICE_areaLossFormula.NE.3).OR.SEAICE_doOpenWaterGrowth
-     &     .OR.SEAICE_doOpenWaterMelt ) ) THEN
-        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
-     &       'to use SEAICE_GROWTH_LEGACY, you need to set'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &   'SEAICE_areaGainFormula.EQ.2, SEAICE_areaLossFormula.EQ.3, '
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &   'unset SEAICE_doOpenWaterGrowth F, SEAICE_areaLossFormula F'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
-#endif /* SEAICE_GROWTH_LEGACY */
 
       IF ( (.NOT.useThSIce).AND.(.NOT.SEAICE_doOpenWaterGrowth)
      &   .AND.( (SEAICE_areaGainFormula.NE.2).OR.
@@ -455,6 +438,20 @@ C--   SEAICE_EXTERNAL_FORCING is obsolete: issue warning but continue.
      &        'seaice now always uses exf to read input files.'
         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 #endif
+
+C--   SEAICE_GROWTH_LEGACY is obsolete: issue warning but continue.
+#ifdef SEAICE_GROWTH_LEGACY
+      WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
+     &     'CPP flag SEAICE_GROWTH_LEGACY has been retired.'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+#endif /* SEAICE_GROWTH_LEGACY */
+
+C--   SEAICE_CAP_HEFF is obsolete: issue warning but continue.
+#ifdef SEAICE_CAP_HEFF
+      WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
+     &     'CPP flag SEAICE_CAP_HEFF has been retired.'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+#endif /* SEAICE_CAP_HEFF */
 
 C--   SEAICE_MULTICATEGORY is obsolete: issue warning but continue.
 #ifdef SEAICE_MULTICATEGORY

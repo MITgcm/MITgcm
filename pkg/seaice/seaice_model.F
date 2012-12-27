@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.103 2012/12/10 22:31:31 torge Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.104 2012/12/27 23:05:47 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -64,8 +64,7 @@ C     msgBuf      :: Informational/error message buffer
 #ifdef SEAICE_ITD
       INTEGER IT
 #endif
-C#if defined(SEAICE_GROWTH_LEGACY) || defined(ALLOW_AUTODIFF_TAMC)
-#if defined(SEAICE_GROWTH_LEGACY) || defined(ALLOW_AUTODIFF_TAMC) || defined(SEAICE_ITD)
+#if defined(ALLOW_AUTODIFF_TAMC) || defined(SEAICE_ITD)
 C>>>ToM
       INTEGER i, j, bi, bj
 #endif
@@ -88,49 +87,11 @@ C--   Map thSice-variables to HEFF and AREA
       ENDIF
 #endif /* ALLOW_THSICE */
 
-#ifdef SEAICE_GROWTH_LEGACY
-      IF ( .NOT.useThSice ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE heffm = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE area  = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE hsnow = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE tice  = comlev1, key=ikey_dynamics, kind=isbyte
-#ifdef SEAICE_VARIABLE_SALINITY
-CADJ STORE hsalt = comlev1, key=ikey_dynamics, kind=isbyte
-#endif
-#endif
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          IF ( (heff(i,j,bi,bj).EQ.0.)
-     &     .OR.(area(i,j,bi,bj).EQ.0.)
-     &     ) THEN
-           HEFF(i,j,bi,bj) = 0. _d 0
-           AREA(i,j,bi,bj) = 0. _d 0
-           HSNOW(i,j,bi,bj) = 0. _d 0
-           TICE(i,j,bi,bj) = celsius2K
-#ifdef SEAICE_VARIABLE_SALINITY
-           HSALT(i,j,bi,bj) = 0. _d 0
-#endif
-          ENDIF
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      ENDIF
-#endif
-
 #ifdef ALLOW_AUTODIFF_TAMC
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-# ifdef SEAICE_GROWTH_LEGACY
-          areaNm1(i,j,bi,bj) = 0. _d 0
-          hEffNm1(i,j,bi,bj) = 0. _d 0
-# endif
           uIceNm1(i,j,bi,bj) = 0. _d 0
           vIceNm1(i,j,bi,bj) = 0. _d 0
 # ifdef ALLOW_SITRACER
@@ -292,19 +253,6 @@ C     to match single category values
        ENDDO
 #endif
 C>>>ToM
-#ifdef SEAICE_GROWTH_LEGACY
-      ELSE
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           areaNm1(i,j,bi,bj) = AREA(i,j,bi,bj)
-           hEffNm1(i,j,bi,bj) = HEFF(i,j,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-#endif /* SEAICE_GROWTH_LEGACY */
       ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heffm  = comlev1, key=ikey_dynamics, kind=isbyte

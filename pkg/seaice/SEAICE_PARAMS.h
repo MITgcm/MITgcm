@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.102 2012/12/21 08:52:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.103 2012/12/27 23:05:47 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -396,17 +396,16 @@ C
      &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values
-C     MAX_HEFF          :: maximum ice thickness     (m)
 C     MIN_ATEMP         :: minimum air temperature   (deg C)
 C     MIN_LWDOWN        :: minimum downward longwave (W/m^2)
 C     MIN_TICE          :: minimum ice temperature   (deg C)
 C     SEAICE_EPS        :: small number used to reduce derivative singularities
 C     SEAICE_EPS_SQ     :: small number square
 C
-      _RL MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MIN_TICE
+      _RL MIN_ATEMP, MIN_LWDOWN, MIN_TICE
       _RL SEAICE_EPS, SEAICE_EPS_SQ
       COMMON /SEAICE_BOUND_RL/
-     &     MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MIN_TICE,
+     &     MIN_ATEMP, MIN_LWDOWN, MIN_TICE,
      &     SEAICE_EPS, SEAICE_EPS_SQ
 
 #ifdef SEAICE_ITD
