@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.15 2012/12/26 16:58:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.16 2012/12/27 18:40:13 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -121,17 +121,16 @@ C     inputs
                 lsm(snx,j) = 1.0
                 lsm(i,1)   = 1.0
                 lsm(i,sny) = 1.0
-C                if (i.le.100) lsm(i,j) = 1.0
-
+c                if (i.le.100) lsm(i,j) = 1.0
 
                 dyd_htf(j) = delY(j)
                 dxd_htf(i,j) = delX(i)
-                sst_htf(i,j) = theta(i,j,1,bi,bj) + Celsius2K
+                sst_htf(i,j) = theta(i,j,1,bi,bj) + celsius2K
                 cldfr_htf(i,j) = 0.0 _d 0
                 u_htf(i,j) = uwind(i,j,bi,bj)
                 v_htf(i,j) = vwind(i,j,bi,bj)
                 q_htf(i,j) = qair(i,j,bi,bj)
-                t_htf(i,j) = Tair(i,j,bi,bj) + Celsius2K
+                t_htf(i,j) = Tair(i,j,bi,bj) + celsius2K
                 qisw(i,j) = solar(i,j,bi,bj)
                 ppi(i,j) = 0.0 _d 0
                 wspd_htf(i,j) = sqrt(uwind(i,j,bi,bj)**2
@@ -139,8 +138,7 @@ C                if (i.le.100) lsm(i,j) = 1.0
 
                 cice(i,j) = 0.0 _d 0
 C je met la temperature de la glace la dedans
-                tsnw(i,j) = 0.0 _d 0 + Celsius2K
-
+                tsnw(i,j) = 0.0 _d 0 + celsius2K
 
 C     outputs
 C                rlh(snx,sny)
@@ -167,14 +165,12 @@ C     close bi, bj loops
           ENDDO
         ENDDO
 
-
 CALL HTFLUX
       call htfluxice(snx,sny,lsm,dxd_htf,dyd_htf,tstep,
      +  sst_htf,cldfr_htf,wspd_htf,u_htf,v_htf,q_htf,t_htf
      $     ,rlh,sh,qlw,qsw_htf,ppo,qa,th,rh,
      +  qisw,ppi,hice,cice,thice,tsnw,qios,brne,rlhi,shi,qlwi,qswi,
      +  iperx,salt_fixed,albedo,slat)
-
 
         DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -183,7 +179,7 @@ CALL HTFLUX
 C     OUTPUT
                 if (lsm(i,j).eq.0) then
                 qair(i,j,bi,bj) = qa(i,j)
-                Tair(i,j,bi,bj) = th(i,j) - Celsius2K
+                Tair(i,j,bi,bj) = th(i,j) - celsius2K
                 SH_sauv(i,j,bi,bj) = sh(i,j)
                 LH_sauv(i,j,bi,bj) = rlh(i,j)
                 else
@@ -241,27 +237,27 @@ C compute advective and diffusive flux divergence
      I           cheapaml_kdiff, Tair, zu,
      U           gTair, deltaTtracer, useFluxLimit,
      I           myTime, myIter, myThid )
-c       CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
+c        CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
          startAB = cheapTairStartAB + nt - 1
          CALL adams2d(
      I           bi, bj,
      U           gTair, gTairm,
      I           startAB, myIter, myThid )
-c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
-c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
+c        CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
+c        CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
 
          CALL timestep_2d_tracer(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
      I           Tair, gTair,
      I           myIter, myThid )
-c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
-c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
+c        CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
+c        CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
          CALL cycle_2d_tracer(
      I           bi, bj,
      U           Tair, gTair,nt,
      I           myTime, myIter, myThid )
-c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
-c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
+c        CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
+c        CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
 C close bi,bj loops
          ENDDO
         ENDDO
@@ -398,9 +394,9 @@ C reset boundaries to open boundary profile
 
 C--   end loop on nt (short time-step loop)
       ENDDO
-c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
-c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
-c      CALL PLOT_FIELD_XYRS( qair, 'S/R CHEAPAML qair',1,myThid)
+c     CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
+c     CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
+c     CALL PLOT_FIELD_XYRS( qair, 'S/R CHEAPAML qair',1,myThid)
 
 C cycling on short atmospheric time step is now done
 
@@ -419,10 +415,10 @@ C     now continue with diabatic forcing
 
 C atmospheric upwelled long wave
         ttt=Tair(i,j,bi,bj)-gamma_blk*(cheaphgrid(i,j,bi,bj)-zt)
-C        xalwu=stefan*(ttt+Celsius2K)**4*0.5 _d 0
-        xalwu=stefan*(0.5*Tair(i,j,bi,bj)+0.5*ttt+Celsius2K)**4*0.5 _d 0
+C        xalwu=stefan*(ttt+celsius2K)**4*0.5 _d 0
+        xalwu=stefan*(0.5*Tair(i,j,bi,bj)+0.5*ttt+celsius2K)**4*0.5 _d 0
 C atmospheric downwelled long wave
-        xalwd=stefan*(Tair(i,j,bi,bj)+Celsius2K)**4*0.5 _d 0
+        xalwd=stefan*(Tair(i,j,bi,bj)+celsius2K)**4*0.5 _d 0
 C total flux at upper atmospheric layer interface
         xflu=(-solar(i,j,bi,bj)+xalwu+flha)*xef*maskC(i,j,1,bi,bj)
 C lower flux calculation.
@@ -435,10 +431,11 @@ C lower flux calculation.
 C net long wave (see Josey et al. JGR 1997)
 C coef lambda replaced by 0.5+lat/230
 C convert spec humidity in water vapor pressure (mbar) using coef 1000/0.622=1607.7
-          xlwnet = 0.98*stefan*(theta(i,j,1,bi,bj)+273.1)**4.
-     &       *(0.39-0.05*sqrt(qair(i,j,bi,bj)*1607.7))
-     &       *(1-(0.5+abs(yG(i,j,bi,bj))/230)*cheapclouds(i,j,bi,bj)**2)
-     &       + 4*0.98*stefan*(theta(i,j,1,bi,bj)+273.1)**3
+          xlwnet = 0.98 _d 0*stefan*(theta(i,j,1,bi,bj)+273.1 _d 0)**4
+     &       *(0.39 _d 0 - 0.05 _d 0*SQRT(qair(i,j,bi,bj)*1607.7 _d 0))
+     &       *( oneRL - (halfRL+ABS(yG(i,j,bi,bj))/230. _d 0)
+     &                 *cheapclouds(i,j,bi,bj)**2 )
+     &       + 4.0*0.98 _d 0*stefan*(theta(i,j,1,bi,bj)+273.1 _d 0)**3
      &       *(theta(i,j,1,bi,bj)-Tair(i,j,bi,bj))
 
 c          xlwnet = xolw-stefan*(theta(i,j,1,bi,bj)+273.1)**4.
@@ -448,7 +445,7 @@ c     &       -8.23*qair(i,j,bi,bj)*cheapclouds(i,j,bi,bj))
 C clouds
 c        ttt2=Tair(i,j,bi,bj)-1.5*gamma_blk*cheaphgrid(i,j,bi,bj)
 c        Fclouds = stefan*ttt2**4*(0.4*cheapclouds(i,j,bi,bj)+1-0.4)/2
-c        ttt2=Tair(i,j,bi,bj)-3*gamma_blk*cheaphgrid(i,j,bi,bj)+Celsius2K
+c        ttt2=Tair(i,j,bi,bj)-3*gamma_blk*cheaphgrid(i,j,bi,bj)+celsius2K
 c        Fclouds = 0.3*stefan*ttt2**4 + 0.22*xolw*cheapclouds(i,j,bi,bj)
 C add flux divergences into atmospheric temperature tendency
         gTair(i,j,bi,bj)= (xfld-xflu)/cheaphgrid(i,j,bi,bj)
@@ -473,7 +470,7 @@ C compute saturation specific humidity at atmospheric
 C layer top
 C first, what is the pressure there?
 C ts is surface atmospheric temperature
-          ts=Tair(i,j,bi,bj)+gamma_blk*zt+Celsius2K
+          ts=Tair(i,j,bi,bj)+gamma_blk*zt+celsius2K
           pt=p0*(1-gamma_blk*cheaphgrid(i,j,bi,bj)/ts)
      &       **(gravity/gamma_blk/gasR)
 
@@ -481,24 +478,23 @@ C factor to compute rainfall from specific humidity
           dm=100.*(p0-pt)*recip_gravity
 C     Large scale precip
           precip = 0.
-          IF (wwind(i,j,bi,bj).GT.0.AND.q.GT.ssqt*0.7)then
-            precip = precip + ((q-ssqt*0.7)*dm/(cheap_pr2))
-     &              *(wwind(i,j,bi,bj)/0.75e-5)**2
+          IF (wwind(i,j,bi,bj).GT.0. .AND. q.GT.ssqt*0.7 _d 0) THEN
+            precip = precip + ( (q-ssqt*0.7 _d 0)*dm/cheap_pr2 )
+     &                       *(wwind(i,j,bi,bj)/0.75 _d -5)**2
           ENDIF
 
 C     Convective precip
-c         IF (q>0.0214.and.q.gt.ssqt*0.9) then
-          IF (q.GT.0.0214 .AND. q.GT.ssqt*0.9) THEN
-            precip = precip + ((q-ssqt*0.9)*dm/cheap_pr1)
+          IF (q.GT.0.0214 _d 0 .AND. q.GT.ssqt*0.9 _d 0) THEN
+            precip = precip + ((q-ssqt*0.9 _d 0)*dm/cheap_pr1)
           ENDIF
 
           entrain = cdq*q*0.25
 
 c        gqair(i,j,bi,bj)=(evp-precip-entrain)/cheaphgrid(i,j,bi,bj)
-          gqair(i,j,bi,bj)=(evp-entrain)/cheaphgrid(i,j,bi,bj)
-     &     /rhoa*maskC(i,j,1,bi,bj)
-          EmPmR(i,j,bi,bj)=(evp-precip*1200/cheaphgrid(i,j,bi,bj)
-     &     )*maskC(i,j,1,bi,bj)
+          gqair(i,j,bi,bj) = (evp-entrain)/cheaphgrid(i,j,bi,bj)
+     &                      /rhoa*maskC(i,j,1,bi,bj)
+          EmPmR(i,j,bi,bj) = (evp-precip*1200/cheaphgrid(i,j,bi,bj)
+     &                       )*maskC(i,j,1,bi,bj)
         ENDIF
 
 c       CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
