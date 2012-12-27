@@ -12,10 +12,10 @@ H0=-100.;
 
 namf='channel.bin';
 depth=H0*ones(nx,ny); depth(:,1)=0.;
-%if kwr > 0,
-% fprintf('write to file: %s\n',namf);
-% fid=fopen(namf,'w','b'); fwrite(fid,depth,'real*8'); fclose(fid);
-%end
+if kwr > 0,
+ fprintf('write to file: %s\n',namf);
+ fid=fopen(namf,'w','b'); fwrite(fid,depth,'real*8'); fclose(fid);
+end
 
 namf='bathy_3c.bin';
 msk=abs(xc)'*ones(1,ny)+ones(nx,1)*yc;
@@ -73,6 +73,35 @@ end
 % fid=fopen(namf,'w','b'); fwrite(fid,var,'real*8'); fclose(fid);
 %end
 %------------------------------------------------------
+
+namf='edge100.bin'; w0=1.;
+var=w0*ones(nx,ny);
+var(:,2)=0*var(:,end);
+var(:,3)=0.01*var(:,end-1);
+var(:,4)=0.1*var(:,end-2);
+var(:,end)=0*var(:,end);
+var(:,end-1)=0.01*var(:,end-1);
+var(:,end-2)=0.1*var(:,end-2);
+if kwr >0,
+ fprintf('write to file: %s\n',namf);
+ fid=fopen(namf,'w','b'); fwrite(fid,var,'real*8'); fclose(fid);
+end
+
+namf='edge+20.bin'; w0=0.2;
+var=w0*ones(nx,ny);
+var(:,2)=0*var(:,end);
+var(:,3)=0.01*var(:,end-1);
+var(:,4)=0.1*var(:,end-2);
+var(:,end)=0*var(:,end);
+var(:,end-1)=0.01*var(:,end-1);
+var(:,end-2)=0.1*var(:,end-2);
+if kwr >0,
+ fprintf('write to file: %s\n',namf);
+ fid=fopen(namf,'w','b'); fwrite(fid,var,'real*8'); fclose(fid);
+end
+
+%------------------------------------------------------
+
 
 dsw0=100;
 namf=['dsw_',int2str(dsw0),'.bin'];
