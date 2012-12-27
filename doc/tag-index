@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1793 2012/12/27 17:20:52 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1794 2012/12/27 20:09:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cheapaml:
+  - use standard routine (S/R GET_PERIODIC_INTERVAL) to decide when it is time
+    to load new forcing fields.
+  - add missing "_d 0" where it's needed; + some editing (improve indentation).
+  - remove switch to "-r8" compiler option (no longer needed) in verification
+    cheapAML_box, keep same output (small trucation error differences).
 o verification/offline_exf_seaice:
   - add thermodynamics only test.
 o verification/cheapAML_box:
