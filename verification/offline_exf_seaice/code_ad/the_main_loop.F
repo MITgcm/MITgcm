@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/Attic/the_main_loop.F,v 1.9 2012/08/07 12:10:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/Attic/the_main_loop.F,v 1.10 2012/12/27 20:33:29 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -419,6 +419,12 @@ c**************************************
 #include "checkpoint_lev1_template.h"
 c**************************************
 #endif
+
+cph-test(
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uvel, vvel = comlev1, key = ikey_dynamics
+#endif
+cph-test)
 
 C--   Switch on/off diagnostics for snap-shot output:
 #ifdef ALLOW_DIAGNOSTICS
