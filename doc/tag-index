@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1791 2012/12/24 15:55:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1792 2012/12/27 14:16:49 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o verification/offline_exf_seaice :
+  - add thermodynamics only test.
 
 checkpoint64b (2012/12/24)
 o pkg/cheapaml:
