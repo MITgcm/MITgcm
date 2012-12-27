@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.140 2012/11/15 15:55:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.141 2012/12/27 23:08:45 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -164,7 +164,9 @@ c They provide the fields to be stored.
 # endif
 
 # ifdef ALLOW_ECCO_EVOLUTION
-#  include "ecco_cost.h"
+#  ifdef ALLOW_ECCO
+#   include "ecco_cost.h"
+#  endif
 # endif
 
 # endif /* undef ALLOW_AUTODIFF_OPENAD */
@@ -286,9 +288,11 @@ C--   Set initial conditions (variable arrays)
       CALL INITIALISE_VARIA( mythid )
       CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
 #ifdef ALLOW_ECCO_EVOLUTION
+#ifdef ALLOW_ECCO
 cph: avoid renewed call of initialise_varia in recomputation loop
 cph: in some circumstances
 CADJ STORE sbar_gen,tbar_gen  = onetape
+#endif
 #endif
 
 #ifdef ALLOW_SHOWFLOPS
@@ -535,6 +539,7 @@ c--     >>> Loop body start <<<
         ikey_dynamics = ilev_1
 #endif
 
+#ifdef ALLOW_ECCO
 #ifdef ALLOW_ECCO_EVOLUTION
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('cost_averagesfields',myThid)
@@ -549,6 +554,7 @@ C--   Reset the model iteration counter and the model time.
       CALL COST_AVERAGESFIELDS( mytime, mythid )
       CALL TIMER_STOP ('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',mythid)
 #endif /* ALLOW_ECCO_EVOLUTION */
+#endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_PROFILES
       IF (usePROFILES) THEN
@@ -621,12 +627,14 @@ c--     >>> Loop body end <<<
       enddo
 #endif /* ALLOW_AUTODIFF */
 
+#ifdef ALLOW_ECCO
 #ifdef ALLOW_ECCO_EVOLUTION
 c--     Accumulate time averages of temperature, salinity
       CALL TIMER_START('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',mythid)
       CALL COST_AVERAGESFIELDS( endtime, mythid )
       CALL TIMER_STOP ('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',mythid)
 #endif /* ALLOW_ECCO_EVOLUTION */
+#endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_PROFILES
       IF (usePROFILES) THEN
@@ -637,12 +645,14 @@ c--   Accumulate in-situ time averages of temperature, salinity, SSH.
       ENDIF
 #endif
 
+#ifdef ALLOW_ECCO
 #ifdef ALLOW_ECCO_EVOLUTION
 c--   Compute all ecco cost function contributions.
       CALL TIMER_START('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', mythid)
       CALL ECCO_COST_DRIVER ( endTime, myIter, mythid )
       CALL TIMER_STOP ('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', mythid)
 #endif /* ALLOW_ECCO_EVOLUTION */
+#endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_COST
 c--   Sum all cost function contributions.
