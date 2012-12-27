@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.18 2012/12/22 00:52:05 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/SEAICE_OPTIONS.h,v 1.19 2012/12/27 23:00:51 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -45,9 +45,6 @@ C--   run with sea Ice Thickness Distribution (ITD);
 C     set number of categories (nITD) in SEAICE_SIZE.h
 #undef SEAICE_ITD
 
-C--   Use the Old version of seaice_growth (close to cvs version 1.70)
-C     otherwise, use the merged version (with some of Ian Fenty s code)
-#undef SEAICE_GROWTH_LEGACY
 #undef SEAICE_MODIFY_GROWTH_ADJ
 
 C--   Since the missing sublimation term is now included
@@ -110,9 +107,6 @@ C     It is here for completeness, but its usefulness is unclear.
 # undef SEAICE_LSRBNEW
 #endif /* SEAICE_CGRID */
 
-C--   When set use MAX_HEFF to cap seaice thickness in seaice_growth;
-C     currently only relevant for SEAICE_GROWTH_LEGACY
-#undef SEAICE_CAP_HEFF
 C--   When set limit the Ice-Loading to mass of 1/5 of Surface ocean grid-box
 #undef SEAICE_CAP_ICELOAD
 C--   When set use SEAICE_clipVelocties = .true., to clip U/VICE at 40cm/s,

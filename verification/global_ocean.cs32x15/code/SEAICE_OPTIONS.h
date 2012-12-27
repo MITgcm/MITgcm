@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/SEAICE_OPTIONS.h,v 1.17 2012/04/10 16:35:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/SEAICE_OPTIONS.h,v 1.18 2012/12/27 23:00:54 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -42,10 +42,6 @@ C     or =MULTDIM if defined (MULTDIM=7 in default SEAICE_SIZE.h).
 C     Note: be aware of pickup_seaice.* compatibility issues when restarting
 C     a simulation with a different number of categories.
 c#define SEAICE_MULTICATEGORY
-
-C--   Use the Old version of seaice_growth (close to cvs version 1.70)
-C     otherwise, use the merged version (with some of Ian Fenty s code)
-#undef SEAICE_GROWTH_LEGACY
 
 C--   Since the missing sublimation term is now included
 C     this flag is needed for backward compatibility
@@ -99,9 +95,6 @@ C     It is here for completeness, but its usefulness is unclear.
 # undef SEAICE_LSRBNEW
 #endif /* SEAICE_CGRID */
 
-C--   When set use MAX_HEFF to cap seaice thickness in seaice_growth;
-C     currently only relevant for SEAICE_GROWTH_LEGACY
-#undef SEAICE_CAP_HEFF
 C--   When set limit the Ice-Loading to mass of 1/5 of Surface ocean grid-box
 #undef SEAICE_CAP_ICELOAD
 C--   When set use SEAICE_clipVelocties = .true., to clip U/VICE at 40cm/s,

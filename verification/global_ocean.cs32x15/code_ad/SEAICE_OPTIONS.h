@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/SEAICE_OPTIONS.h,v 1.14 2012/03/08 01:19:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/SEAICE_OPTIONS.h,v 1.15 2012/12/27 23:00:53 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -43,10 +43,6 @@ C     Therefore it is not possible to switch between the two
 C     in the middle of an integration.
 #undef SEAICE_MULTICATEGORY
 
-C--   Use the Old version of seaice_growth (close to cvs version 1.70)
-C     otherwise, use the merged version (with some of Ian Fenty s code)
-#undef SEAICE_GROWTH_LEGACY
-
 C--   Since the missing sublimation term is now included
 C     this flag is needed for backward compatibility
 #undef SEAICE_DISABLE_SUBLIM
@@ -54,13 +50,10 @@ C     this flag is needed for backward compatibility
 C--   Suspected missing term in coupled ocn-ice heat budget (to be further tested)
 #undef SEAICE_DISABLE_HEATCONSFIX
 
-C--   options only available in the merged version
-#ifndef SEAICE_GROWTH_LEGACY
 C-    to ensure heat conservation in the coupled ocean-seaice system
-# undef SEAICE_HEAT_CONSERV_FIX
+#undef SEAICE_HEAT_CONSERV_FIX
 C-    to preclude infinitesimal ice concentrations:
-# undef ALLOW_PRECLUDE_INFINITESIMAL_AREA
-#endif
+#undef ALLOW_PRECLUDE_INFINITESIMAL_AREA
 
 C--   By default sea ice is fresh.  Set following flag for salty ice.
 #undef SEAICE_VARIABLE_SALINITY
@@ -106,8 +99,6 @@ C     unclear.
 # undef SEAICE_LSRBNEW
 #endif /* SEAICE_CGRID */
 
-C--   When set use MAX_HEFF to cap sea ice thickness in seaice_growth
-#undef SEAICE_CAP_HEFF
 C--   When set limit the Ice-Loading to mass of 1/5 of Surface ocean grid-box
 #undef SEAICE_CAP_ICELOAD
 C--   When set use SEAICE_clipVelocties = .true., to clip U/VICE at 40cm/s,
