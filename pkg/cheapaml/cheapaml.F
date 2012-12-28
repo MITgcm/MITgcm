@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.16 2012/12/27 18:40:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.17 2012/12/28 22:32:51 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -54,13 +54,13 @@ C     == routine arguments ==
       INTEGER mythid
 
 C     == Local variables ==
-      integer bi,bj,iG,jG
-      integer i,j, nt, startAB
+      INTEGER bi,bj,iG,jG
+      INTEGER i,j, nt, startAB
 
 C tendencies of atmospheric temperature, current and past
-        _RL gTair(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nsx,nsy)
-        _RL gqair(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nsx,nsy)
-        _RL gCheaptracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nsx,nsy)
+        _RL gTair(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+        _RL gqair(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+        _RL gCheaptracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C zonal and meridional transports
         _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -72,9 +72,8 @@ c       _RL Fclouds, ttt2
         _RL q,precip,ssqt,ttt,q100,entrain,cdq
 
 C temp var
-        _RL SH_sauv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nsx,nsy)
-        _RL LH_sauv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nsx,nsy)
-
+        _RL SH_sauv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+        _RL LH_sauv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C variables for htflux
 #ifdef ALLOW_SEAGER
@@ -425,20 +424,20 @@ C lower flux calculation.
         xfld=(-solar(i,j,bi,bj)-xalwd+xolw+fsha+flha)
      &      *xef*maskC(i,j,1,bi,bj)
 
-        IF (usedlongwave) THEN
+        IF (useDLongWave) THEN
           xlwnet = xolw-cheapdlongwave(i,j,bi,bj)
         ELSE
 C net long wave (see Josey et al. JGR 1997)
 C coef lambda replaced by 0.5+lat/230
 C convert spec humidity in water vapor pressure (mbar) using coef 1000/0.622=1607.7
-          xlwnet = 0.98 _d 0*stefan*(theta(i,j,1,bi,bj)+273.1 _d 0)**4
+          xlwnet = 0.98 _d 0*stefan*(theta(i,j,1,bi,bj)+celsius2K)**4
      &       *(0.39 _d 0 - 0.05 _d 0*SQRT(qair(i,j,bi,bj)*1607.7 _d 0))
      &       *( oneRL - (halfRL+ABS(yG(i,j,bi,bj))/230. _d 0)
      &                 *cheapclouds(i,j,bi,bj)**2 )
-     &       + 4.0*0.98 _d 0*stefan*(theta(i,j,1,bi,bj)+273.1 _d 0)**3
+     &       + 4.0*0.98 _d 0*stefan*(theta(i,j,1,bi,bj)+celsius2K)**3
      &       *(theta(i,j,1,bi,bj)-Tair(i,j,bi,bj))
 
-c          xlwnet = xolw-stefan*(theta(i,j,1,bi,bj)+273.1)**4.
+c          xlwnet = xolw-stefan*(theta(i,j,1,bi,bj)+celsius2K)**4.
 c     &       *(0.65+11.22*qair(i,j,bi,bj) + 0.25*cheapclouds(i,j,bi,bj)
 c     &       -8.23*qair(i,j,bi,bj)*cheapclouds(i,j,bi,bj))
         ENDIF
