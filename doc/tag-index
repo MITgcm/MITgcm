@@ -1,16 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1795 2012/12/27 23:16:48 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1796 2012/12/28 22:41:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cheapaml:
+  - replace "273.1 _d 0" by celsius2K in pkg/cheapaml/cheapaml.F and
+    update output of experiment cheapAML_box.
 o model/src/the_main_loop.F:
   - fix revision 129 : need both ALLOW_ECCO and ALLOW_ECCO_EVOLUTION.
 o pkg/seaice:
   - remove legacy branch code.
   - retire SEAICE_GROWTH_LEGACY and SEAICE_CAP_HEFF accordingly.
 o verification/*/code*/SEAICE_OPTIONS.h:
-  - remove documentation for retired CPP flags (SEAICE_GROWTH_LEGACY, SEAICE_CAP_HEFF).
+  - remove documentation for retired CPP flags (SEAICE_GROWTH_LEGACY, 
+    SEAICE_CAP_HEFF).
 o pkg/cheapaml:
   - use standard routine (S/R GET_PERIODIC_INTERVAL) to decide when it is time
     to load new forcing fields.
