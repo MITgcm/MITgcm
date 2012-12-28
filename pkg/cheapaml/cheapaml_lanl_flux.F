@@ -1,115 +1,103 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_lanl_flux.F,v 1.5 2011/11/16 20:00:31 wienders Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_lanl_flux.F,v 1.6 2012/12/28 23:25:50 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
 #undef ALLOW_THSICE
 
-      subroutine cheapaml_LANL_flux
-     I(i,j,bi,bj,fsha,flha,evp,xolw,ssqt,q100)
+CBOP
+C     !ROUTINE: CHEAPAML_LANL_FLUX
+C     !INTERFACE:
+      SUBROUTINE CHEAPAML_LANL_FLUX(
+     I                    i,j,bi,bj,
+     O                    fsha, flha, evp, xolw, ssqt, q100 )
 
-c     ==================================================================
-c     SUBROUTINE cheapaml_LANL_flux
-c     ==================================================================
-c
-c     o compute surface fluxes using LANL algorithms
-c       Output:
-c       ------
-c       ustress, vstress - wind stress
-c       fsha - sensible heat flux
-c       flha - latent heat flux
-c       xolw - oceanic upwelled long wave radiation
-c       ssqt - sat. specific humidity at atm layer top
-c       ---------
-c
-c       Input:
-c       ------
-c       uwind, vwind  - mean wind speed (m/s)
-c       Tair  - mean air temperature (K)  at height ht (m)
-c       theta(k=1) - sea surface temperature (C)
-c       Qair - Specific humidity kg/kg
-c       Solar - short wave net solar flux at surface (W/m^2)
-c       Tr - relaxation profile for temperature on boundaries (C)
-c       qr - relaxation profile for specific humidity (kg/kg)
-c       i,j,bi,bj - indices of data
-c     ==================================================================
-c     SUBROUTINE cheapaml_LANL_flux
-c     ==================================================================
+C     !DESCRIPTION:
+C     ==================================================================
+C     SUBROUTINE cheapaml_LANL_flux
+C     ==================================================================
+C     o compute surface fluxes using LANL algorithms
 
-      implicit none
-
-c     == global variables ==
-
-#include "EEPARAMS.h"
+C     !USES:
+      IMPLICIT NONE
+C     === Global variables ===
 #include "SIZE.h"
+#include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#include "FFIELDS.h"
-#ifdef ALLOW_THSICE
-#include "THSICE_VARS.h"
-#endif
+c#include "FFIELDS.h"
+c#ifdef ALLOW_THSICE
+c#include "THSICE_VARS.h"
+c#endif
 #include "CHEAPAML.h"
 
-      integer bi,bj
-      integer i,j
+C     !INPUT PARAMETERS:
+      INTEGER i,j,bi,bj
+C     !OUTPUT PARAMETERS:
+      _RL fsha, flha, evp, xolw, ssqt, q100
+CEOP
 
-c variables to include seaice effect
-#ifdef ALLOW_THSICE
-      _RL     tmp
-      _RL     albedo
-#endif      
-      integer iceornot
+C       Output:
+C       ustress, vstress - wind stress
+C       fsha - sensible heat flux
+C       flha - latent heat flux
+C       xolw - oceanic upwelled long wave radiation
+C       ssqt - sat. specific humidity at atm layer top
 
-C     == Local variables ==
-c local variables
-c zonal and meridional transports
-        _RL deltaTm
-        _RL uss,usm,uw,vw
-        _RL cheapaml_BulkCdn
-        _RL to
-        _RL t
-        _RL xolw
-        _RL t0,QaR
-        _RL ssq,ssq0,ssq1,ssq2,q,ssqt
-        _RL deltap,delq,pt,q100,psx100,z100ol
-        _RL rdn,ren,rhn,zice,zref
-        _RL rd,re,rh,tta,ttas,toa,ttt
-        _RL ustar,tstar,qstar,ht,hu,hq
-        _RL aln,cdalton,czol,psim_fac
-        _RL huol,stable,xsq,x,psimh,psixh
-        _RL clha,csha,flha,fsha,evp
-        integer niter_bulk,iter
+C       Input:
+C       uwind, vwind  - mean wind speed (m/s)
+C       Tair  - mean air temperature (K)  at height ht (m)
+C       theta(k=1) - sea surface temperature (C)
+C       Qair - Specific humidity kg/kg
+C       Solar - short wave net solar flux at surface (W/m^2)
+C       Tr - relaxation profile for temperature on boundaries (C)
+C       qr - relaxation profile for specific humidity (kg/kg)
+C       i,j,bi,bj - indices of data
 
-c coefficients used to compute saturation specific humidity
-      DATA   ssq0,           ssq1,           ssq2
-     &     / 3.797915 _d 0 , 7.93252 _d -6 , 2.166847 _d -3 /
+C     !LOCAL VARIABLES:
+C     iceornot :: variables to include seaice effect
+      INTEGER iceornot
+      _RL deltaTm
+      _RL uss,usm,uw,vw
+      _RL cheapaml_BulkCdn
+      _RL to
+      _RL t
+      _RL t0,QaR
+      _RL ssq, q
+      _RL deltap, delq, pt, psx100, z100ol
+      _RL rdn,ren,rhn,zice,zref
+      _RL rd,re,rh,tta,ttas,toa,ttt
+      _RL ustar,tstar,qstar,ht,hu,hq
+      _RL aln,cdalton,czol,psim_fac
+      _RL huol,stable,xsq,x,psimh,psixh
+      _RL clha, csha
+      INTEGER niter_bulk,iter
 
-c useful values
-c hardwire atmospheric relative humidity at 80%
+C useful values
+C hardwire atmospheric relative humidity at 80%
         QaR=0.8 _d 0
-c factor to compute rainfall from specific humidity
-c inverse of time step
+C factor to compute rainfall from specific humidity
+C inverse of time step
         deltaTm=1. _d 0/deltaT
-c reference values to compute turbulent flux
+C reference values to compute turbulent flux
               ht=zt
               hq=zq
               hu=zu
               zref = zt
               zice=.0005 _d 0
               aln = log(ht/zref)
-c for iterating on turbulence
+C for iterating on turbulence
               niter_bulk = 5
               cdalton = 0.0346000 _d 0
               czol = zref*xkar*gravity
               psim_fac=5. _d 0
 
-c     determine wind stress
+C     determine wind stress
         IF(.NOT.useStressOption)THEN
 
              if (maskC(i,j,1,bi,bj).ne.0. _d 0) then
 #ifdef ALLOW_THSICE
                if (ICEMASK(i,j,bi,bj).gt.0. _d 0) then
-                 tmp=Tsrf(i,j,bi,bj)
                 if (snowheight(i,j,bi,bj).gt.3. _d -1) then
                    iceornot=2
                  else
@@ -133,9 +121,9 @@ c     determine wind stress
                ustress(i,j,bi,bj) = 0. _d 0
                vstress(i,j,bi,bj) = 0. _d 0
                 endif
-c wind stress computed
+C wind stress computed
                 ENDIF
-c diabatic and freshwater flux forcing
+C diabatic and freshwater flux forcing
         to=theta(i,j,1,bi,bj)
         t=Tair(i,j,bi,bj)
         toa=to+Celsius2K
@@ -143,36 +131,36 @@ c diabatic and freshwater flux forcing
         ttas=tta+gamma_blk*zref
         ttt=tta-( cheaphgrid(i,j,bi,bj)- zref)*gamma_blk
         pt=p0*(1-gamma_blk*cheaphgrid(i,j,bi,bj)/ttas)
-     $     **(gravity/gamma_blk/gasR)
+     &     **(gravity/gamma_blk/gasR)
 
-c specific humidities
+C specific humidities
               ssq= ssq0*exp( lath*(ssq1-ssq2/toa) ) / p0
               ssqt = ssq0*exp( lath*(ssq1-ssq2/ttt) ) / pt
-C     sturation no more at the top:
-              ssqt = 0.7*ssq
+C     saturation no more at the top:
+              ssqt = 0.7 _d 0*ssq
 
-            if (useFreshwaterFlux) then
+            if (useFreshWaterFlux) then
             q=qair(i,j,bi,bj)
             else
             q=QaR * ssq
             endif
-c
-c adjust temperature from reference height to formula height
+
+C adjust temperature from reference height to formula height
             deltap = t  - to + gamma_blk*(zref-ht)
             delq   = q - ssq
             ttas   = tta+gamma_blk*(zref-ht)
             t0     = ttas*(1. _d 0 + humid_fac*q)
 
-c initialize estimate exchange coefficients
+C initialize estimate exchange coefficients
               rdn=xkar/(log(zref/zice))
               rhn=rdn
               ren=rdn
-c calculate turbulent scales
+C calculate turbulent scales
               ustar=rdn*usm
               tstar=rhn*deltap
               qstar=ren*delq
-c
-c iteration with psi-functions to find transfer coefficients
+
+C iteration with psi-functions to find transfer coefficients
               do iter=1,niter_bulk
                  huol   = czol/ustar**2 *(tstar/t0 +
      &                    qstar/(1. _d 0/humid_fac+q))
@@ -187,35 +175,35 @@ c iteration with psi-functions to find transfer coefficients
                  psixh  = -5. _d 0*huol*stable + (1. _d 0-stable)*
      &                     (2. _d 0*log(5. _d -1*(1. _d 0+xsq)))
 
-c Update the transfer coefficients
+C Update the transfer coefficients
 
                  rd = rdn/(1. _d 0 + rdn*(aln-psimh)/xkar)
                  rh = rhn/(1. _d 0 + rhn*(aln-psixh)/xkar)
                  re = rh
-c  Update ustar, tstar, qstar using updated, shifted coefficients.
+C  Update ustar, tstar, qstar using updated, shifted coefficients.
                  ustar = rd*usm
                  qstar = re*delq
                  tstar = rh*deltap
               enddo
-c
+
                         usm=max(uss,0.5 _d 0)
                 csha   = rhoa*cpair*usm*rh*rd
                 clha   = rhoa*lath*usm*re*rd
-c
+
                 fsha  = csha*deltap
                 flha  = clha*delq
                 evp   = -flha/lath
 
-c the sensible and latent heat fluxes, fsha and flha,
-c are computed so that positive values are downward.
-c the convention for cheapaml is upward fluxes are positive,
-c so they must be multiplied by -1
+C the sensible and latent heat fluxes, fsha and flha,
+C are computed so that positive values are downward.
+C the convention for cheapaml is upward fluxes are positive,
+C so they must be multiplied by -1
         fsha=-fsha
         flha=-flha
 
-c oceanic upwelled long wave
+C oceanic upwelled long wave
         xolw=stefan*(toa)**4
-c compute specific humidity at 100m
+C compute specific humidity at 100m
                  huol   = czol/ustar**2 *(tstar/t0 +
      &                    qstar/(1. _d 0/humid_fac+q))
                  huol   = sign( min(abs(huol),10. _d 0), huol)
@@ -225,7 +213,7 @@ c compute specific humidity at 100m
                  xsq = max(sqrt(abs(1. _d 0 - 16. _d 0*z100ol)),1. _d 0)
                  x      = sqrt(xsq)
                  psx100  = -5. _d 0*z100ol*stable + (1. _d 0-stable)*
-     &                     (2. _d 0*log(5. _d -1*(1. _d 0+xsq)))  
+     &                     (2. _d 0*log(5. _d -1*(1. _d 0+xsq)))
                  q100=ssq+qstar*(dlog(100. _d 0/zice)-psx100)
 
       RETURN

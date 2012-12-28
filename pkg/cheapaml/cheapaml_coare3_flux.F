@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_coare3_flux.F,v 1.10 2012/12/27 18:40:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_coare3_flux.F,v 1.11 2012/12/28 23:25:50 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -48,10 +48,6 @@ C various constants
       _RL Du,Wg,Dt,Dq,u10,zo10,Cd10,Ch10
       _RL xBeta,visa,Ribcu,QaR
       _RL Ct,zetu,L10,Tas,ta,charn
-
-      _RL ssq0,           ssq1,           ssq2
-      DATA   ssq0,           ssq1,           ssq2
-     &     / 3.797915 _d 0 , 7.93252 _d -6 , 2.166847 _d -3 /
 
 C Constants and coefficients (Stull 1988 p640).
       xBeta = 1.2 _d 0    !Given as 1.25 in Fairall et al.(1996)
