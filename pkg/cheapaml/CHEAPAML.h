@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.9 2012/12/23 20:15:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.10 2012/12/28 23:23:27 jmc Exp $
 C $Name:  $
 
 c #ifdef ALLOW_CHEAPAML
@@ -58,6 +58,19 @@ C     gCheaptracerm :: passive tracer tendency
       _RL    CheaptracerR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    gCheaptracerm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+C     lath      :: latent heat (J/kg)
+C     xkar      :: von Karman constant
+C     gasR      :: gas constant
+C     dsolms    :: Solar variation at Southern boundary
+C     dsolmn    :: Solar variation at Northern boundary
+C     xphaseinit :: user input initial phase of year relative to mid winter.
+C                   e.g. xphaseinit = pi implies time zero is mid summer.
+C     gamma_blk :: atmospheric adiabatic lapse rate
+C     humid_fac :: humidity factor for computing virtual potential temperature
+C     p0        :: surface pressure in mb
+C     ssq[0:2]  :: coeff. used to compute saturation specific humidity
+C     cheap_pr1 :: precipitation time constant
+C     cheap_pr2 :: precipitation time constant
       COMMON /CHEAPAML_PARMS_R/
      &       cheapaml_h,
      &       cheapaml_kdiff,
@@ -67,12 +80,13 @@ C     gCheaptracerm :: passive tracer tendency
      &       lath, xkar, gasR,
      &       dsolms, dsolmn,
      &       xphaseinit, gamma_blk, humid_fac, p0,
+     &       ssq0, ssq1, ssq2,
      &       xef, hm,
      &       zu, zt, zq,
      &       cdrag_1, cdrag_2, cdrag_3,
      &       externForcingPeriod_cheap,
      &       externForcingCycle_cheap,
-     &       cheap_pr1,cheap_pr2
+     &       cheap_pr1, cheap_pr2
       _RL    cheapaml_h
       _RL    cheapaml_kdiff
       _RL    cheapaml_taurelax
@@ -81,6 +95,7 @@ C     gCheaptracerm :: passive tracer tendency
       _RL    lath, xkar, gasR
       _RL    dsolms, dsolmn
       _RL    xphaseinit, gamma_blk, humid_fac, p0
+      _RL    ssq0, ssq1, ssq2
       _RL    xef, hm
       _RL    zu, zt, zq
       _RL    cdrag_1, cdrag_2, cdrag_3
@@ -88,14 +103,23 @@ C     gCheaptracerm :: passive tracer tendency
       _RL    externForcingCycle_cheap
       _RL    cheap_pr1,cheap_pr2
 
+C    cheap[]StartAB :: Adams-Bashforth restart status for prognostic variable []
       COMMON /CHEAPAML_PARMS_I/
      &       cheapaml_ntim,
      &       cheapaml_mask_width,
-     &       cheapTairStartAB, cheapQairStartAB, cheapTracStartAB 
+     &       cheapTairStartAB, cheapQairStartAB, cheapTracStartAB
       INTEGER cheapaml_ntim
       INTEGER cheapaml_mask_width
-      INTEGER cheapTairStartAB, cheapQairStartAB, cheapTracStartAB 
+      INTEGER cheapTairStartAB, cheapQairStartAB, cheapTracStartAB
 
+C--   COMMON /CHEAPAML_PARMS_L/
+C     useFreshWaterFlux :: option to include evap+precip  (on  by default)
+C     useFluxLimit      :: use flux limiting advection    (off by default)
+C     useStressOption   :: use stress option              (off by default)
+C     useCheapTracer    :: use passive tracer option      (off by default)
+C     useTimeVarBLH     :: use time varying BL height option (off by default)
+C     useClouds         :: use clouds option              (off by default)
+C     useDLongWave      :: use imported downward longwave (off by default)
       COMMON /CHEAPAML_PARMS_L/
      &       useFreshWaterFlux,
      &       useFluxLimit,
@@ -103,26 +127,26 @@ C     gCheaptracerm :: passive tracer tendency
      &       useRelativeHumidity,
      &       periodicExternalForcing_cheap,
      &       useCheapTracer,
-     &       usetimevarblh,
-     &       useclouds,
-     &       usedlongwave
+     &       useTimeVarBLH,
+     &       useClouds,
+     &       useDLongWave
       LOGICAL useFreshWaterFlux
       LOGICAL useFluxLimit
       LOGICAL useStressOption
       LOGICAL useRelativeHumidity
       LOGICAL periodicExternalForcing_cheap
       LOGICAL useCheapTracer
-      LOGICAL usetimevarblh
-      LOGICAL useclouds
-      LOGICAL usedlongwave
+      LOGICAL useTimeVarBLH
+      LOGICAL useClouds
+      LOGICAL useDLongWave
 
       COMMON /CHEAPAML_PARMS_C/
      &       AirTempFile, AirQFile, SolarFile,
      &       UWindFile, VWindFile, UStressFile, VStressFile,
      &       TrFile, QrFile,
      &       WaveHFile, WavePFile, FluxFormula, WaveModel,
-     &       TracerFile, TracerRFile, CheapMaskFile, Cheap_hFile,
-     &       Cheap_prfile, cheap_clfile,cheap_dlwFile
+     &       TracerFile, TracerRFile, cheapMaskFile, cheap_hFile,
+     &       cheap_prFile, cheap_clFile, cheap_dlwFile
 
       CHARACTER*(MAX_LEN_FNAM) AirTempFile
       CHARACTER*(MAX_LEN_FNAM) AirQFile
@@ -139,10 +163,10 @@ C     gCheaptracerm :: passive tracer tendency
       CHARACTER*(MAX_LEN_FNAM) WaveModel
       CHARACTER*(MAX_LEN_FNAM) TracerFile
       CHARACTER*(MAX_LEN_FNAM) TracerRFile
-      CHARACTER*(MAX_LEN_FNAM) CheapMaskFile
-      CHARACTER*(MAX_LEN_FNAM) Cheap_hFile
-      CHARACTER*(MAX_LEN_FNAM) Cheap_prFile
-      CHARACTER*(MAX_LEN_FNAM) Cheap_clFile
+      CHARACTER*(MAX_LEN_FNAM) cheapMaskFile
+      CHARACTER*(MAX_LEN_FNAM) cheap_hFile
+      CHARACTER*(MAX_LEN_FNAM) cheap_prFile
+      CHARACTER*(MAX_LEN_FNAM) cheap_clFile
       CHARACTER*(MAX_LEN_FNAM) cheap_dlwFile
 
 c #endif /* ALLOW_CHEAPAML */
