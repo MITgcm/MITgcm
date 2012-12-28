@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1796 2012/12/28 22:41:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1797 2012/12/28 23:45:21 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -7,13 +7,18 @@ $Name:  $
 o pkg/cheapaml:
   - replace "273.1 _d 0" by celsius2K in pkg/cheapaml/cheapaml.F and
     update output of experiment cheapAML_box.
+  - store in CHEAPAML.h coeffs ssq[0:2] for saturation specific humidity,
+    and set them only in one place (cheapaml_readparms.F).
+  - replace "273.16 _d 0" by celsius2K & replace "3.14159 _d 0" by constant "PI"
+  - remove re-setting of main-model parameter "celsius2K" (in cheapaml_readparms)
+    and re-setting of cheapAML params "lath" & "p0" (in cheapaml_init_varia).
 o model/src/the_main_loop.F:
   - fix revision 129 : need both ALLOW_ECCO and ALLOW_ECCO_EVOLUTION.
 o pkg/seaice:
   - remove legacy branch code.
   - retire SEAICE_GROWTH_LEGACY and SEAICE_CAP_HEFF accordingly.
 o verification/*/code*/SEAICE_OPTIONS.h:
-  - remove documentation for retired CPP flags (SEAICE_GROWTH_LEGACY, 
+  - remove documentation for retired CPP flags (SEAICE_GROWTH_LEGACY,
     SEAICE_CAP_HEFF).
 o pkg/cheapaml:
   - use standard routine (S/R GET_PERIODIC_INTERVAL) to decide when it is time
