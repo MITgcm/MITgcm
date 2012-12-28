@@ -1,16 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.11 2012/12/23 20:14:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.12 2012/12/28 23:28:48 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: CHEAPAML_INIT_VARIA
+C     !INTERFACE:
       SUBROUTINE CHEAPAML_INIT_VARIA( myThid )
+
+C     !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE CHEAPAML_INIT_VARIA
 C     | o Set cheapaml initial temp field
 C     *==========================================================*
-      IMPLICIT NONE
 
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -19,30 +24,26 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "CHEAPAML.h"
 
-C     == Routine arguments ==
+C     !INPUT PARAMETERS:
 C     myThid :: my Thread Id number
       INTEGER myThid
-CEndOfInterface
+CEOP
 
-C     == Local variables ==
-C     bi,bj  :: Loop counters
-C     i,j
+C     !LOCAL VARIABLES:
+C     bi,bj  :: tile indices
+C     i,j    :: grid-point indices
       INTEGER bi, bj
       INTEGER i, j
       INTEGER iG,jG
       INTEGER xmw
       _RL local,localt,xmf
-      _RL ssq0,ssq1,ssq2,ssqa
+      _RL ssqa
+      _RL recipNym1, recipMW
 C     INTEGER prec
 C     CHARACTER*(MAX_LEN_FNAM) fn
 
-C coefficients used to compute saturation specific humidity
-      DATA   ssq0,           ssq1,           ssq2
-     &     / 3.797915 _d 0 , 7.93252 _d -6 , 2.166847 _d -3 /
-C latent heat (J/kg)
-      lath=2.5d6
-C sea level pressure
-      p0=1000.d0
+      recipNym1 = Ny - 1
+      IF ( Ny.GT.1 ) recipNym1 = 1. _d 0 / recipNym1
 
 C--   Initialise CheapAML variables in common block:
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -91,9 +92,10 @@ C--   Initialise CheapAML variables in common block:
            DO j=1,sNy
             DO i=1,sNx
              jG = myYGlobalLo-1+(bj-1)*sNy+j
-             iG=myXGlobalLo-1+(bi-1)*sNx+i
-             localt=25.d0-float((jg-1))/float((ny-1))*10.d0
-             localt=20+10.d0*exp(float(-((jg-30)**2+(ig-30)**2))/100.d0)
+             iG = myXGlobalLo-1+(bi-1)*sNx+i
+             localt = 25. _d 0 - (jG-1)*recipNym1*10. _d 0
+             localt = 20. _d 0
+     &         + 10. _d 0*EXP( -( (jG-30)**2+(iG-30)**2 )/100. _d 0 )
              Tair(i,j,bi,bj) = localt
             ENDDO
            ENDDO
@@ -113,8 +115,8 @@ C     default to 80% relative humidity
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1,sNy
             DO i=1,sNx
-             local= Tair(i,j,bi,bj)+273.16 _d 0
-             ssqa = ssq0*exp( lath*(ssq1-ssq2/local) ) / p0
+             local= Tair(i,j,bi,bj)+celsius2K
+             ssqa = ssq0*EXP( lath*(ssq1-ssq2/local) ) / p0
              qair(i,j,bi,bj)=0.8 _d 0*ssqa
             ENDDO
            ENDDO
@@ -149,49 +151,42 @@ C End start-from-iter-zero if/else block
       ENDIF
 
 C Do  mask
-      IF ( CheapMaskFile .NE. ' ') THEN
-         write(*,*)'CheapMask initialized from  ->',CheapMaskFile
-         CALL READ_FLD_XY_RL( CheapMaskFile,' ',Cheapmask,0,myThid )
+      IF ( cheapMaskFile .NE. ' ') THEN
+         write(*,*)'CheapMask initialized from  ->',cheapMaskFile
+         CALL READ_FLD_XY_RL( cheapMaskFile,' ',Cheapmask,0,myThid )
       ELSE
          write(*,*)' Generate Cheapaml mask'
-         xmw=Cheapaml_mask_width
+         xmw = Cheapaml_mask_width
+         recipMW = ( xmw - 1 )
+         IF ( xmw.NE.1 ) recipMW = 1. _d 0 / recipMW
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1,sNy
             DO i=1,sNx
-             Cheapmask(i,j,bi,bj)=0. _d 0
+             xmf = 0. _d 0
              iG=myXGlobalLo-1+(bi-1)*sNx+i
              jG = myYGlobalLo-1+(bj-1)*sNy+j
              IF (jG.GT.xmw) THEN
                IF (jG.LT.Ny-xmw+1) THEN
-                 IF (iG.LE.xmw)
-     &             Cheapmask(i,j,bi,bj)=1. _d 0 - (iG-1 )/(xmw-1. _d 0)
-                 IF (iG.GE.Nx-xmw+1)
-     &             Cheapmask(i,j,bi,bj)=1. _d 0 - (Nx-iG)/(xmw-1. _d 0)
+                 IF (iG.LE.xmw)      xmf = 1. _d 0 - (iG-1 )*recipMW
+                 IF (iG.GE.Nx-xmw+1) xmf = 1. _d 0 - (Nx-iG)*recipMW
                ELSE
-                 xmf=1. _d 0-(Ny-jG)/(xmw-1 _d 0)
+                 xmf = 1. _d 0 - (Ny-jG)*recipMW
                  IF (iG.LE.xmw) THEN
-                   xmf=(1. _d 0 - (iG-1)/(xmw - 1. _d 0)
-     &                  *(Ny-jG)/(xmw-1. _d 0) )
+                   xmf =  1. _d 0 - (iG-1 )*recipMW *(Ny-jG)*recipMW
                  ELSEIF (iG.GE.Nx-xmw+1) THEN
-                   xmf= 1. _d 0-(Nx - iG)/(xmw - 1. _d 0)
-     &                  *(Ny-jG)/(xmw-1. _d 0)
+                   xmf =  1. _d 0 - (Nx-iG)*recipMW *(Ny-jG)*recipMW
                  ENDIF
-                 Cheapmask(i,j,bi,bj)=xmf
                ENDIF
              ELSE
-               xmf=1. _d 0 - (jG-1)/(xmw-1. _d 0)
+               xmf = 1. _d 0 - (jG-1)*recipMW
                IF (iG.LE.xmw) THEN
-                 xmf=(1. _d 0 - (iG-1)/(xmw-1. _d 0)
-     &                  *(jG-1)/(xmw-1. _d 0) )
+                 xmf = 1. _d 0 - (iG-1 )*recipMW*(jG-1)*recipMW
                ELSEIF (iG.GE.Nx-xmw+1) THEN
-                 xmf=(1. _d 0-(Nx - iG)/(xmw - 1. _d 0)
-     &                  *(jG-1)/(xmw-1. _d 0) )
+                 xmf = 1. _d 0 - (Nx-iG)*recipMW*(jG-1)*recipMW
                ENDIF
-               Cheapmask(i,j,bi,bj)=xmf
              ENDIF
-
-             Cheapmask(i,j,bi,bj)=Cheapmask(i,j,bi,bj)*cheapaml_taurelax
+             Cheapmask(i,j,bi,bj) = xmf*cheapaml_taurelax
             ENDDO
            ENDDO
           ENDDO
@@ -220,7 +215,7 @@ C relaxation time scales from input
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           IF (Cheapmask(i,j,bi,bj).NE.0) THEN
+           IF (Cheapmask(i,j,bi,bj).NE.0.) THEN
             xgs(i,j,bi,bj)=1. _d 0/Cheapmask(i,j,bi,bj)/8.64 _d 4
            ELSE
             xgs(i,j,bi,bj)=0. _d 0
@@ -241,18 +236,18 @@ C     construct cheaplayer thickness
         CALL READ_FLD_XY_RL( cheap_hFile,' ',cheaphgrid,0,myThid )
        ELSE
          DO bj = myByLo(myThid), myByHi(myThid)
-           DO bi = myBxLo(myThid), myBxHi(myThid)
-             DO j=1-OLy,sNy+OLy
-               DO i=1-OLx,sNx+OLx
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
                cheaphgrid(i,j,bi,bj) = cheapaml_h
-               ENDDO
              ENDDO
-           ENDDO
+            ENDDO
+          ENDDO
          ENDDO
        ENDIF
        _EXCH_XY_RL(Cheaphgrid, myThid)
 
-c!BD       IF ( cheap_prfile .NE. ' ') THEN
+c!BD       IF ( cheap_prFile .NE. ' ') THEN
 c!BD        write(*,*)'Conv precip taken from  ->',cheap_prFile
 c!BD        CALL READ_FLD_XY_RL( cheap_prFile,' ',cheapprgrid,0,myThid )
 c!BD       ELSE
