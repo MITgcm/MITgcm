@@ -12,6 +12,7 @@
  tempAdvScheme=33,
  staggerTimeStep=.TRUE.,
  eosType='LINEAR',
+ celsius2K=273.16,
  readBinaryPrec=64,
 #debugLevel=5,
  &
