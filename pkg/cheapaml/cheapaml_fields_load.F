@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.18 2012/12/27 18:41:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.19 2012/12/28 23:31:22 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -81,37 +81,26 @@ C     CheaptracerR[01] :: Relaxation profile for passive tracer
       _RL  CheaptracerR1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C     === Local arrays ===
-C     dsolms - Solar variation at Southern boundary
-C     dsolmn - Solar variation at Northern boundary
-C     xphaseinit - user input initial phase of year relative to mid winter.
-C                  e.g. xphaseinit = pi implies time zero is mid summer.
 C     cheaph[01]  ::
 C     cheapcl[01] ::
 C     cheaplw[01] ::
 C     aWght,bWght :: Interpolation weights
+C     xsolph :: phase of year, assuming time zero is mid winter
+C     xinxx  :: cos ( xsolph )
 
-c     _RL     dsolms,dsolmn
-c     _RL     xphaseinit
       _RL  cheaph0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cheaph1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cheapcl0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cheapcl1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cheaplw0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cheaplw1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL aWght, bWght
+      _RL xsolph, xinxx
 
       INTEGER bi, bj
       INTEGER i, j, iG, jG
       INTEGER intimeP, intime0, intime1
-      _RL     aWght, bWght
-
-      _RL recipNym1, local, u
-      _RL ssq0,ssq1,ssq2,ssqa
-C xsolph - phase of year, assuming time zero is mid winter
-C xinxx - cos ( xsolph )
-      _RL xsolph,xinxx
-C coefficients used to compute saturation specific humidity
-      DATA   ssq0,           ssq1,           ssq2
-     &     / 3.797915 _d 0 , 7.93252 _d -6 , 2.166847 _d -3 /
+      _RL recipNym1, local, u, ssqa
 
       recipNym1 = Ny - 1
       IF ( Ny.GT.1 ) recipNym1 = 1. _d 0 / recipNym1
@@ -136,8 +125,8 @@ C!BD bug a corriger:
          WRITE(*,*)
      &  'S/R  Assuming Standard Annually Varying Solar Forcing'
         ENDIF
-         xsolph=myTime*2. _d 0*3.14159 _d 0/365. _d 0/86400. _d 0
-         xinxx=COS(xsolph+xphaseinit+3.14159 _d 0)
+         xsolph = myTime*2. _d 0*PI/365. _d 0/86400. _d 0
+         xinxx = COS( xsolph+xphaseinit+PI )
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1,sNy
@@ -170,7 +159,7 @@ C default specific humidity profile to 80% relative humidity
            DO j=1,sNy
             DO i=1,sNx
               local = Tr(i,j,bi,bj)+celsius2K
-              ssqa = ssq0*exp( lath*(ssq1-ssq2/local)) / p0
+              ssqa = ssq0*EXP( lath*(ssq1-ssq2/local)) / p0
               qr(i,j,bi,bj) = 0.8 _d 0*ssqa
             ENDDO
            ENDDO
@@ -300,22 +289,22 @@ C      data for the period ahead and the period behind myTime.
           CALL READ_REC_XY_RL( VWindFile,vwind1,intime1,
      &                         myIter, myThid )
          ENDIF
-         IF ( usetimevarblh .AND. cheap_hfile .NE. ' ' ) THEN
-          CALL READ_REC_XY_RL( cheap_hfile,cheaph0,intime0,
+         IF ( useTimeVarBLH .AND. cheap_hFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RL( cheap_hFile,cheaph0,intime0,
      &                         myIter, myThid )
-          CALL READ_REC_XY_RL( cheap_hfile,cheaph1,intime1,
-     &                         myIter, myThid )
-         ENDIF
-         IF ( useclouds .AND. cheap_clfile .NE. ' ' ) THEN
-          CALL READ_REC_XY_RL( cheap_clfile,cheapcl0,intime0,
-     &                         myIter, myThid )
-          CALL READ_REC_XY_RL( cheap_clfile,cheapcl1,intime1,
+          CALL READ_REC_XY_RL( cheap_hFile,cheaph1,intime1,
      &                         myIter, myThid )
          ENDIF
-         IF ( usedlongwave .AND. cheap_dlwfile .NE. ' ' ) THEN
-          CALL READ_REC_XY_RL( cheap_dlwfile,cheaplw0,intime0,
+         IF ( useClouds .AND. cheap_clFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RL( cheap_clFile,cheapcl0,intime0,
      &                         myIter, myThid )
-          CALL READ_REC_XY_RL( cheap_dlwfile,cheaplw1,intime1,
+          CALL READ_REC_XY_RL( cheap_clFile,cheapcl1,intime1,
+     &                         myIter, myThid )
+         ENDIF
+         IF ( useDLongWave .AND. cheap_dlwFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RL( cheap_dlwFile,cheaplw0,intime0,
+     &                         myIter, myThid )
+          CALL READ_REC_XY_RL( cheap_dlwFile,cheaplw1,intime1,
      &                         myIter, myThid )
          ENDIF
          IF ( useStressOption .AND. UStressFile .NE. ' ' ) THEN
@@ -358,15 +347,15 @@ C      data for the period ahead and the period behind myTime.
          _EXCH_XY_RL( solar1 , myThid )
          _EXCH_XY_RL( uwind1 , myThid )
          _EXCH_XY_RL( vwind1 , myThid )
-         IF ( usetimevarblh ) THEN
+         IF ( useTimeVarBLH ) THEN
          _EXCH_XY_RL( cheaph0, myThid )
          _EXCH_XY_RL( cheaph1 , myThid )
          ENDIF
-         IF ( useclouds ) THEN
+         IF ( useClouds ) THEN
          _EXCH_XY_RL( cheapcl0, myThid )
          _EXCH_XY_RL( cheapcl1 , myThid )
          ENDIF
-         IF ( usedlongwave ) THEN
+         IF ( useDLongWave ) THEN
          _EXCH_XY_RL( cheaplw0, myThid )
          _EXCH_XY_RL( cheaplw1 , myThid )
          ENDIF
@@ -411,15 +400,15 @@ C--   Interpolate TR, QR, SOLAR
              vstress(i,j,bi,bj)     = bWght*vstress0(i,j,bi,bj)
      &                              + aWght*vstress1(i,j,bi,bj)
             ENDIF
-            IF ( usetimevarblh ) THEN
+            IF ( useTimeVarBLH ) THEN
              cheaphgrid(i,j,bi,bj)  = bWght*cheaph0(i,j,bi,bj)
      &                              + aWght*cheaph1(i,j,bi,bj)
             ENDIF
-            IF ( useclouds ) THEN
+            IF ( useClouds ) THEN
              cheapclouds(i,j,bi,bj) = bWght*cheapcl0(i,j,bi,bj)
      &                              + aWght*cheapcl1(i,j,bi,bj)
             ENDIF
-            IF ( usedlongwave ) THEN
+            IF ( useDLongWave ) THEN
              cheapdlongwave(i,j,bi,bj) = bWght*cheaplw0(i,j,bi,bj)
      &                                 + aWght*cheaplw1(i,j,bi,bj)
             ENDIF
@@ -479,7 +468,7 @@ C end of periodic forcing options, on to steady option
            DO j=1,sNy
             DO i=1,sNx
               local = solar(i,j,bi,bj)
-              local = (2. _d 0*local/stefan)**(0.25 _d 0)-273.16 _d 0
+              local = (2. _d 0*local/stefan)**(0.25 _d 0) - celsius2K
               TR(i,j,bi,bj) = local
             ENDDO
            ENDDO
@@ -497,7 +486,7 @@ C default specific humidity profile to 80% relative humidity
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1,sNy
             DO i=1,sNx
-              local = Tr(i,j,bi,bj)+273.16 _d 0
+              local = Tr(i,j,bi,bj) + celsius2K
               ssqa = ssq0*EXP( lath*(ssq1-ssq2/local)) / p0
               qr(i,j,bi,bj) = 0.8 _d 0*ssqa
             ENDDO
@@ -604,9 +593,9 @@ C--    endif myIter = nIter0
 
 C     BL height is done in cheapaml_ini_varia
 
-       IF ( useclouds ) THEN
-         IF ( cheap_clfile .NE. ' ' ) THEN
-          CALL READ_FLD_XY_RL( cheap_clfile,' ',Cheapclouds,0,myThid )
+       IF ( useClouds ) THEN
+         IF ( cheap_clFile .NE. ' ' ) THEN
+          CALL READ_FLD_XY_RL( cheap_clFile,' ',Cheapclouds,0,myThid )
          ELSE
           DO bj = myByLo(myThid), myByHi(myThid)
            DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -621,11 +610,11 @@ C     BL height is done in cheapaml_ini_varia
          _EXCH_XY_RL( Cheapclouds, myThid )
        ENDIF
 
-       IF ( usedlongwave ) THEN
-         IF ( cheap_dlwfile .NE. ' ' ) THEN
-          CALL READ_FLD_XY_RL(cheap_dlwfile,' ',Cheapdlongwave,0,myThid)
+       IF ( useDLongWave ) THEN
+         IF ( cheap_dlwFile .NE. ' ' ) THEN
+          CALL READ_FLD_XY_RL(cheap_dlwFile,' ',Cheapdlongwave,0,myThid)
          ELSE
-          WRITE(*,*) 'with usedlongwave = true,  you must provide',
+          WRITE(*,*) 'with useDLongWave = true,  you must provide',
      $               ' a downward longwave file'
           STOP
          ENDIF
@@ -662,10 +651,10 @@ C fill in outer edges
               wavesp(i,j,bi,bj)=wavesp(1,j,bi,bj)
               wavesh(i,j,bi,bj)=wavesh(1,j,bi,bj)
             ENDIF
-            IF ( useclouds ) THEN
+            IF ( useClouds ) THEN
               Cheapclouds(i,j,bi,bj)=Cheapclouds(1,j,bi,bj)
             ENDIF
-            IF ( usedlongwave ) THEN
+            IF ( useDLongWave ) THEN
               Cheapdlongwave(i,j,bi,bj)=Cheapdlongwave(1,j,bi,bj)
             ENDIF
 
@@ -687,10 +676,10 @@ C fill in outer edges
               wavesp(i,j,bi,bj)=wavesp(sNx,j,bi,bj)
               wavesh(i,j,bi,bj)=wavesh(sNx,j,bi,bj)
             ENDIF
-            IF ( useclouds ) THEN
+            IF ( useClouds ) THEN
               Cheapclouds(i,j,bi,bj)=Cheapclouds(sNx,j,bi,bj)
             ENDIF
-            IF ( usedlongwave ) THEN
+            IF ( useDLongWave ) THEN
               Cheapdlongwave(i,j,bi,bj)=Cheapdlongwave(sNx,j,bi,bj)
             ENDIF
 
@@ -708,10 +697,10 @@ C fill in outer edges
             IF ( useCheapTracer ) THEN
               CheaptracerR(i,j,bi,bj)=CheaptracerR(i,1,bi,bj)
             ENDIF
-            IF ( useclouds ) THEN
+            IF ( useClouds ) THEN
               Cheapclouds(i,j,bi,bj)=Cheapclouds(i,1,bi,bj)
             ENDIF
-            IF ( usedlongwave ) THEN
+            IF ( useDLongWave ) THEN
               Cheapdlongwave(i,j,bi,bj)=Cheapdlongwave(i,1,bi,bj)
             ENDIF
             IF ( FluxFormula.EQ.'COARE3' ) THEN
@@ -737,10 +726,10 @@ C fill in outer edges
               wavesp(i,j,bi,bj)=wavesp(i,sNy,bi,bj)
               wavesh(i,j,bi,bj)=wavesh(i,sNy,bi,bj)
             ENDIF
-            IF ( useclouds ) THEN
+            IF ( useClouds ) THEN
               Cheapclouds(i,j,bi,bj)=Cheapclouds(i,sNy,bi,bj)
             ENDIF
-            IF ( usedlongwave ) THEN
+            IF ( useDLongWave ) THEN
               Cheapdlongwave(i,j,bi,bj)=Cheapdlongwave(i,sNy,bi,bj)
             ENDIF
 
