@@ -33,7 +33,7 @@
  hFacInf=0.2,
  hFacSup=2.0,
  nonlinFreeSurf=3,
- select_rStar=2,
+ select_rStar=1,
 #
  staggerTimeStep=.TRUE.,
  tempAdvScheme=80,
