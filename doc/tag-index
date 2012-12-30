@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1797 2012/12/28 23:45:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1798 2012/12/30 19:47:28 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - add a warning if using select_rStar=2 with nonlinFreeSurf <> 4;
+    change (in input_ad*/data) select_rStar from 2 to 1 for AD verification
+    experiments global_ocean.cs32x15 & tutorial_tracer_adjsens (+ update output)
 o pkg/cheapaml:
   - replace "273.1 _d 0" by celsius2K in pkg/cheapaml/cheapaml.F and
     update output of experiment cheapAML_box.
