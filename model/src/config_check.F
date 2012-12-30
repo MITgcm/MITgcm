@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.71 2012/12/22 00:38:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.72 2012/12/30 18:32:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -479,6 +479,15 @@ C--   Free-surface related limitations:
      &   ' with Linear FreeSurf (nonlinFreeSurf=', nonlinFreeSurf,' )'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
+      ENDIF
+      IF ( select_rStar.EQ.2 .AND. nonlinFreeSurf.NE.4 ) THEN
+C-    not consistent to account for the slope of the coordinate when
+C     ignoring the variations of level-thickness in PhiHyd calculation;
+C     for now, issue a warning (but might change the code later on):
+        WRITE(msgBuf,'(2A,I3)') '** WARNING ** CONFIG_CHECK: ',
+     &   'select_rStar=2 not right with nonlinFreeSurf=', nonlinFreeSurf
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
       ENDIF
 
       IF ( selectSigmaCoord.NE.0 ) THEN
