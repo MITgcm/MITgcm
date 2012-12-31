@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.9 2011/07/19 23:49:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.10 2012/12/31 22:06:40 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -59,9 +59,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j :: Loop counters
       INTEGER i,j
-      _RL zero, one, half
       _RL ddRloc, ratioRm, ratioRp
-      PARAMETER ( zero= 0. _d 0 , one= 1. _d 0 , half= .5 _d 0 )
 #ifdef NONLIN_FRSURF
       _RL facP, dPhiRef
 #endif /* NONLIN_FRSURF */
@@ -75,8 +73,8 @@ C      with Del_h = distance from the bottom up to tracer point
 
 C--    Initialise to zero (otherwise phi0surf accumulate over land)
        IF ( k.EQ.1 ) THEN
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             phiHydLow(i,j,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
@@ -98,18 +96,18 @@ C  --  Finite Volume Form
        ELSE
 C  --  Finite Difference Form
 
-         ratioRm = one
-         ratioRp = one
-         IF (k.GT.1 ) ratioRm = half*drC(k)/(rF(k)-rC(k))
-         IF (k.LT.Nr) ratioRp = half*drC(k+1)/(rC(k)-rF(k+1))
+         ratioRm = oneRL
+         ratioRp = oneRL
+         IF (k.GT.1 ) ratioRm = halfRL*drC(k)/(rF(k)-rC(k))
+         IF (k.LT.Nr) ratioRp = halfRL*drC(k+1)/(rC(k)-rF(k+1))
 
          DO j=jMin,jMax
           DO i=iMin,iMax
            IF ( k .EQ. kLowC(i,j,bi,bj) ) THEN
              ddRloc = rC(k)-R_low(i,j,bi,bj)
              phiHydLow(i,j,bi,bj) = phiHydC(i,j)
-     &                  +( MIN(zero,ddRloc)*ratioRm
-     &                    +MAX(zero,ddRloc)*ratioRp
+     &                  +( MIN(zeroRL,ddRloc)*ratioRm
+     &                    +MAX(zeroRL,ddRloc)*ratioRp
      &                   )*gravity*alphRho(i,j)*recip_rhoConst
            ENDIF
           ENDDO
@@ -147,7 +145,7 @@ C-     Consistent with Phi'= Integr[ theta'.dPi ] :
      &                             - phi0surf(i,j,bi,bj)
            phiHydLow(i,j,bi,bj) =
      &              phiHydLow(i,j,bi,bj)*facP
-     &            + MAX( dPhiRef, zero )*( facP - 1. _d 0 )
+     &            + MAX( dPhiRef, zeroRL )*( facP - 1. _d 0 )
      &            + phi0surf(i,j,bi,bj)
           ENDDO
          ENDDO
