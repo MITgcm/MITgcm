@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.14 2011/12/14 01:12:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.15 2012/12/31 20:47:22 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -115,7 +115,7 @@ C-     Consistent with Phi'= Integr[ theta'.dPi ] :
           IF (Ro_surf(i,j,bi,bj).EQ.rC(k)) THEN
            WRITE(msgBuf,'(3A)') 'CALC_GRAD_PHI_HYD: ',
      &      'Problem when Ro_surf=rC',
-     &      ' with select_rStar,integr_GeoPot=1,4'
+     &      ' with select_rStar,nonlinFreeSurf=1,4'
            CALL PRINT_ERROR( msgBuf , myThid)
            STOP 'CALC_GRAD_PHI_HYD: Pb in r* options implementation'
           ELSE
