@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.13 2012/12/18 08:23:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.14 2013/01/03 20:49:55 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -7,6 +7,7 @@ C--   File seaice_fgmres.F: seaice fgmres dynamical (linear) solver S/R:
 C--   Contents
 C--   o SEAICE_FGMRES_DRIVER
 C--   o SEAICE_MAP2VEC
+C--   o SEAICE_MAP_RS2VEC
 C--   o SEAICE_FGMRES
 C--   o SEAICE_SCALPROD
 
@@ -19,7 +20,7 @@ C     !INTERFACE:
      U     duIce, dvIce,
      U     iCode,
      I     FGMRESeps, iOutFGMRES,
-     I     newtonIter, 
+     I     newtonIter,
      U     krylovIter,
      I     myTime, myIter, myThid )
 
@@ -179,6 +180,73 @@ C     === Routine arguments ===
       INTEGER myThid
       _RL xfld2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL yfld2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vector (n,nSx,nSy)
+C     === local variables ===
+      INTEGER I, J, bi, bj
+      INTEGER ii, jj, m
+CEOP
+
+      m = n/2
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        IF ( map2vec ) THEN
+         DO J=1,sNy
+          jj = sNx*(J-1)
+          DO I=1,sNx
+           ii = jj + I
+           vector(ii,  bi,bj) = xfld2d(I,J,bi,bj)
+           vector(ii+m,bi,bj) = yfld2d(I,J,bi,bj)
+          ENDDO
+         ENDDO
+        ELSE
+         DO J=1,sNy
+          jj = sNx*(J-1)
+          DO I=1,sNx
+           ii = jj + I
+           xfld2d(I,J,bi,bj) = vector(ii,  bi,bj)
+           yfld2d(I,J,bi,bj) = vector(ii+m,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+C     bi,bj-loops
+       ENDDO
+      ENDDO
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: SEAICE_MAP_RS2VEC
+C     !INTERFACE:
+
+      SUBROUTINE SEAICE_MAP_RS2VEC(
+     I     n,
+     O     xfld2d, yfld2d,
+     U     vector,
+     I     map2vec, myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE SEAICE_MAP_RS2VEC
+C     | o maps 2 2D-RS-fields to vector and back
+C     *==========================================================*
+C     | written by Martin Losch, Oct 2012
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+C     === Routine arguments ===
+      INTEGER n
+      LOGICAL map2vec
+      INTEGER myThid
+      _RS xfld2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS yfld2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vector (n,nSx,nSy)
 C     === local variables ===
       INTEGER I, J, bi, bj
@@ -534,7 +602,7 @@ C-----------#determine next plane rotation  #-------------------
       s(i)   = hh(i1,i)/gam
 C     numerically more stable Givens rotation, but the results
 C     are not better
-CML      c(i)=1. _d 0 
+CML      c(i)=1. _d 0
 CML      s(i)=0. _d 0
 CML      if ( abs(hh(i1,i)) .gt. 0.0 _d 0) then
 CML       if ( abs(hh(i1,i)) .gt. abs(hh(i,i)) ) then
