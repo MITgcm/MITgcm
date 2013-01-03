@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.19 2012/12/28 23:31:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.20 2013/01/03 20:47:29 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -443,8 +443,9 @@ C end of periodic forcing options, on to steady option
       ELSE
 
        IF ( myIter .EQ. nIter0 ) THEN
+
         IF ( SolarFile .NE. ' ' ) THEN
-         CALL READ_FLD_XY_RS( SolarFile,' ',solar,0,myThid )
+         CALL READ_FLD_XY_RL( SolarFile,' ',solar,0,myThid )
         ELSE
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -588,12 +589,9 @@ c             local =  0. _d 0*COS( 2. _d 0*PI*(jG-1)*recipNym1 )
          _EXCH_XY_RL( wavesh, myThid )
         ENDIF
 
-C--    endif myIter = nIter0
-       ENDIF
-
 C     BL height is done in cheapaml_ini_varia
 
-       IF ( useClouds ) THEN
+        IF ( useClouds ) THEN
          IF ( cheap_clFile .NE. ' ' ) THEN
           CALL READ_FLD_XY_RL( cheap_clFile,' ',Cheapclouds,0,myThid )
          ELSE
@@ -608,9 +606,9 @@ C     BL height is done in cheapaml_ini_varia
           ENDDO
          ENDIF
          _EXCH_XY_RL( Cheapclouds, myThid )
-       ENDIF
+        ENDIF
 
-       IF ( useDLongWave ) THEN
+        IF ( useDLongWave ) THEN
          IF ( cheap_dlwFile .NE. ' ' ) THEN
           CALL READ_FLD_XY_RL(cheap_dlwFile,' ',Cheapdlongwave,0,myThid)
          ELSE
@@ -619,6 +617,9 @@ C     BL height is done in cheapaml_ini_varia
           STOP
          ENDIF
          _EXCH_XY_RL( Cheapdlongwave, myThid )
+        ENDIF
+
+C--    endif myIter = nIter0
        ENDIF
 
 C endif for Steady Option
