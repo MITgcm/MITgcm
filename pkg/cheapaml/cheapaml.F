@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.17 2012/12/28 22:32:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.18 2013/01/03 20:41:32 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -658,12 +658,12 @@ C--   end bi,bj loops
       CALL DIAGNOSTICS_FILL(uwind,  'CH_Uwind',0,1,0,1,1,myThid)
       CALL DIAGNOSTICS_FILL(vwind,  'CH_Vwind',0,1,0,1,1,myThid)
       CALL DIAGNOSTICS_FILL(tair,   'CH_TAIR ',0,1,0,1,1,myThid)
-      CALL DIAGNOSTICS_FILL(Qnet,   'CH_QNET ',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL_RS(Qnet,'CH_QNET ',0,1,0,1,1,myThid)
       CALL DIAGNOSTICS_FILL(SH_sauv,'CH_SH   ',0,1,0,1,1,myThid)
       CALL DIAGNOSTICS_FILL(LH_sauv,'CH_LH   ',0,1,0,1,1,myThid)
       IF (useFreshWaterFlux) THEN
         CALL DIAGNOSTICS_FILL(Qair, 'CH_QAIR ',0,1,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(EmPmR,'CH_EmP  ',0,1,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL_RS(EmPmR,'CH_EmP  ',0,1,0,1,1,myThid)
       ENDIF
       IF (useCheapTracer) THEN
         CALL DIAGNOSTICS_FILL(Cheaptracer,'CH_Trace',0,1,0,1,1,myThid)
