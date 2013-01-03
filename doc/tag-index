@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1798 2012/12/30 19:47:28 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1799 2013/01/03 21:01:30 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cheapaml:
+  - fix few incorrect type (_RL/_RS) in subroutine calls.
+o pkg/seaice:
+  - new S/R SEAICE_MAP_RS2VEC (similar to SEAICE_MAP2VEC) to map _RS arrays
+    to _RL vector; this fixes JFNK code when compiling with "-use_r4" option.
 o model/src:
   - add a warning if using select_rStar=2 with nonlinFreeSurf <> 4;
     change (in input_ad*/data) select_rStar from 2 to 1 for AD verification
