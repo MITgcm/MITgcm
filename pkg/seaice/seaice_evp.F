@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.46 2013/01/04 14:25:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.47 2013/01/04 14:33:56 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -62,8 +62,12 @@ C     kSrf           :: vertical index of surface layer
 C     nEVPstep       :: number of timesteps within the EVP solver
 C     iEVPstep       :: Loop counter
 C     SIN/COSWAT     :: sine/cosine of turning angle
-C     recip_evp_tau  :: inverse of EVP relaxation/damping timescale
-C     ecc2           :: eccentricity squared
+C     (recip_)ecc2   :: (one over) eccentricity squared
+C     recip_evpAlpha :: 1/SEAICE_evpAlpha
+C     recip_deltaT   :: 1/SEAICE_deltaTdyn
+C     evpStarFac     :: 1 if SEAICEuseEVPstar = .true., 0 otherwise
+C     betaFac        :: SEAICE_evpBeta/SEAICE_deltaTdyn=1/SEAICE_deltaTevp
+C     betaFacP1      :: betaFac + evpStarFac/SEAICE_deltaTdyn
 C     e11,e12,e22    :: components of strain rate tensor
 C     seaice_div     :: divergence strain rates at C-points times P
 C                       /divided by Delta minus 1
@@ -84,9 +88,8 @@ C     sig11, sig22   :: sum and difference of diagonal terms of stress tensor
 
       _RL COSWAT
       _RS SINWAT
-      _RL ecc2, recip_ecc2, recip_evp_tau
-      _RL recip_evpAlpha
-      _RL betaFacP1, betaFac, recip_deltaT, evpStarFac
+      _RL ecc2, recip_ecc2, recip_evpAlpha, recip_deltaT
+      _RL betaFacP1, betaFac, evpStarFac
 
       _RL seaice_div    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL seaice_tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -126,14 +129,8 @@ C     abbreviation eccentricity squared
 C     determine number of internal time steps
       nEVPstep = INT(SEAICE_deltaTdyn/SEAICE_deltaTevp)
       IF ( SEAICEnEVPstarSteps.NE.UNSET_I ) nEVPstep=SEAICEnEVPstarSteps
-C     inverse relaxation/damping time scale
-      recip_evp_tau = 0. _d 0
-      IF ( SEAICE_evpTauRelax .GT. 0. _d 0 )
-     &     recip_evp_tau=1. _d 0/SEAICE_evpTauRelax
-      denom1 = 1. _d 0
-     &     / (1. _d 0 + 0.5 _d 0 *SEAICE_deltaTevp*recip_evp_tau)
 C     SEAICE_evpAlpha = 2. * SEAICE_evpTauRelax/SEAICE_deltaTevp
-CML      denom1 = SEAICE_evpAlpha / ( SEAICE_evpAlpha + 1. _d 0 )
+      denom1 = SEAICE_evpAlpha / ( SEAICE_evpAlpha + 1. _d 0 )
       denom2 = SEAICE_evpAlpha / ( SEAICE_evpAlpha + ecc2 )
 
       recip_deltaT = 1. _d 0 / SEAICE_deltaTdyn
