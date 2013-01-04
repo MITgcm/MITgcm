@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.45 2013/01/04 14:10:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.46 2013/01/04 14:25:02 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -132,8 +132,9 @@ C     inverse relaxation/damping time scale
      &     recip_evp_tau=1. _d 0/SEAICE_evpTauRelax
       denom1 = 1. _d 0
      &     / (1. _d 0 + 0.5 _d 0 *SEAICE_deltaTevp*recip_evp_tau)
-      denom2 = 1. _d 0
-     &     / (1. _d 0 + 0.5 _d 0 *SEAICE_deltaTevp*recip_evp_tau*ecc2)
+C     SEAICE_evpAlpha = 2. * SEAICE_evpTauRelax/SEAICE_deltaTevp
+CML      denom1 = SEAICE_evpAlpha / ( SEAICE_evpAlpha + 1. _d 0 )
+      denom2 = SEAICE_evpAlpha / ( SEAICE_evpAlpha + ecc2 )
 
       recip_deltaT = 1. _d 0 / SEAICE_deltaTdyn
       recip_evpAlpha = 0. _d 0
@@ -386,13 +387,11 @@ C
            DO i=0,sNx
 C     sigma1 and sigma2 are computed on C points
             seaice_sigma1 (I,J,bi,bj) = ( seaice_sigma1 (I,J,bi,bj)
-     &           + SEAICE_deltaTevp *  0.5 _d 0 * recip_evp_tau
-     &           * seaice_div(I,J)
+     &           + recip_evpAlpha * seaice_div(I,J)
      &           ) * denom1
      &           *hEffM(I,J,bi,bj)
             seaice_sigma2 (I,J,bi,bj) = ( seaice_sigma2 (I,J,bi,bj)
-     &           + SEAICE_deltaTevp * 0.5 _d 0 * recip_evp_tau
-     &           * seaice_tension(I,J)
+     &           + recip_evpAlpha * seaice_tension(I,J)
      &           ) * denom2
      &         *hEffM(I,J,bi,bj)
 #ifdef SEAICE_EVP_ELIMINATE_UNDERFLOWS
@@ -418,8 +417,7 @@ C     sigma12 is computed on Z points
           DO j=1,sNy+1
            DO i=1,sNx+1
             seaice_sigma12(I,J,bi,bj) = ( seaice_sigma12(I,J,bi,bj)
-     &           + SEAICE_deltaTevp * 0.25 _d 0 * recip_evp_tau *
-     &           seaice_shear(I,J)
+     &           + 0.5 _d 0 * recip_evpAlpha * seaice_shear(I,J)
      &           ) * denom2
 #ifdef SEAICE_EVP_ELIMINATE_UNDERFLOWS
             seaice_sigma12(I,J,bi,bj) = SIGN(MAX(
