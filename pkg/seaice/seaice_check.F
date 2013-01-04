@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.76 2013/01/04 14:10:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.77 2013/01/04 15:25:36 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -647,10 +647,10 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
      &     SEAICEnEVPstarSteps.GT.nEVPstepMax ) THEN
        WRITE(msgBuf,'(A)')
      &      'SEAICE_CHECK: need to set nEVPstepMax to >= '//
-     &      'SEAICEnEVPstarStep'
+     &      'SEAICEnEVPstarSteps'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A,I4)')
-     &      'SEAICE_CHECK: SEAICEnEVPstarStep = ', SEAICEnEVPstarStep
+     &      'SEAICE_CHECK: SEAICEnEVPstarSteps = ', SEAICEnEVPstarSteps
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
