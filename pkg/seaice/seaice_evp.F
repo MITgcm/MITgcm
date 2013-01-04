@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.44 2012/11/02 07:53:41 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.45 2013/01/04 14:10:09 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -85,6 +85,8 @@ C     sig11, sig22   :: sum and difference of diagonal terms of stress tensor
       _RL COSWAT
       _RS SINWAT
       _RL ecc2, recip_ecc2, recip_evp_tau
+      _RL recip_evpAlpha
+      _RL betaFacP1, betaFac, recip_deltaT, evpStarFac
 
       _RL seaice_div    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL seaice_tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -123,6 +125,7 @@ C     abbreviation eccentricity squared
       IF ( ecc2 .NE. 0. _d 0 ) recip_ecc2=ONE/ecc2
 C     determine number of internal time steps
       nEVPstep = INT(SEAICE_deltaTdyn/SEAICE_deltaTevp)
+      IF ( SEAICEnEVPstarSteps.NE.UNSET_I ) nEVPstep=SEAICEnEVPstarSteps
 C     inverse relaxation/damping time scale
       recip_evp_tau = 0. _d 0
       IF ( SEAICE_evpTauRelax .GT. 0. _d 0 )
@@ -131,6 +134,16 @@ C     inverse relaxation/damping time scale
      &     / (1. _d 0 + 0.5 _d 0 *SEAICE_deltaTevp*recip_evp_tau)
       denom2 = 1. _d 0
      &     / (1. _d 0 + 0.5 _d 0 *SEAICE_deltaTevp*recip_evp_tau*ecc2)
+
+      recip_deltaT = 1. _d 0 / SEAICE_deltaTdyn
+      recip_evpAlpha = 0. _d 0
+      IF ( SEAICE_evpAlpha .GT. 0. _d 0 ) 
+     &     recip_evpAlpha = 1. _d 0 / SEAICE_evpAlpha
+      evpStarFac = 0. _d 0
+      IF ( SEAICEuseEVPstar ) evpStarFac = 1. _d 0
+
+      betaFac   = SEAICE_evpBeta*recip_deltaT
+      betaFacP1 = betaFac + evpStarFac*recip_deltaT
 #ifndef ALLOW_AUTODIFF_TAMC
       nEVPstepMax = nEVPstep
 #endif
@@ -153,8 +166,10 @@ C     initialise strain rates
 #ifdef SEAICE_ALLOW_CLIPZETA
 C     damping constraint (Hunke, J.Comp.Phys.,2001)
       IF ( SEAICE_evpDampC .GT. 0. _d 0 ) THEN
-       fac = HALF * SEAICE_evpDampC * SEAICE_evpTauRelax
-     &      /SEAICE_deltaTevp**2
+CML       fac = HALF * SEAICE_evpDampC * SEAICE_evpTauRelax
+CML     &      /SEAICE_deltaTevp**2
+       fac = 0.25 _d 0 * SEAICE_evpDampC * SEAICE_evpAlpha
+     &      /SEAICE_deltaTevp
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
@@ -508,21 +523,25 @@ C
           DO J=1,sNy
            DO I=1,sNx
             uIce(I,J,bi,bj) = seaiceMaskU(I,J,bi,bj) *
-     &           (  seaiceMassU(I,J,bi,bj)/SEAICE_deltaTevp
+     &           ( seaiceMassU(I,J,bi,bj)*betaFac
      &           * uIce(I,J,bi,bj)
+     &           + seaiceMassU(I,J,bi,bj)*recip_deltaT*evpStarFac
+     &           * uIceNm1(I,J,bi,bj)
      &           + FORCEX(I,J,bi,bj)
      &           + stressDivergenceX(I,J,bi,bj) )
      &           /( 1. _d 0 - seaiceMaskU(I,J,bi,bj)
-     &           + seaiceMassU(I,J,bi,bj)/SEAICE_deltaTevp
+     &           + seaiceMassU(I,J,bi,bj)*betaFacP1
      &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I-1,J,bi,bj) )
      &           * COSWAT )
             vIce(I,J,bi,bj) = seaiceMaskV(I,J,bi,bj) *
-     &           ( seaiceMassV(I,J,bi,bj)/SEAICE_deltaTevp
+     &           ( seaiceMassV(I,J,bi,bj)*betaFac
      &           * vIce(I,J,bi,bj)
+     &           + seaiceMassV(I,J,bi,bj)*recip_deltaT*evpStarFac
+     &           * vIceNm1(I,J,bi,bj)
      &           + FORCEY(I,J,bi,bj)
      &           + stressDivergenceY(I,J,bi,bj) )
      &           /( 1. _d 0 - seaiceMaskV(I,J,bi,bj)
-     &           + seaiceMassV(I,J,bi,bj)/SEAICE_deltaTevp
+     &           + seaiceMassV(I,J,bi,bj)*betaFacP1
      &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I,J-1,bi,bj) )
      &           * COSWAT )
 C--   to change results  of lab_sea.hb87 test exp. (only preserve 2 digits for cg2d)

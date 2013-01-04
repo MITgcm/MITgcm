@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.75 2012/12/27 23:05:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.76 2013/01/04 14:10:09 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -634,16 +634,41 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
 #ifdef SEAICE_ALLOW_EVP
 # ifdef ALLOW_AUTODIFF_TAMC
       IF ( INT(SEAICE_deltaTdyn/SEAICE_deltaTevp).GT.nEVPstepMax ) THEN
-         WRITE(msgBuf,'(A)')
-     &        'SEAICE_ALLOW_EVP: need to set nEVPstepMax to >= nEVPstep'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         WRITE(msgBuf,'(A,I4)')
-     &        'nEVPstep = INT(SEAICE_deltaTdyn/SEAICE_deltaTevp) = ',
-     &        INT(SEAICE_deltaTdyn/SEAICE_deltaTevp)
-         CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+       WRITE(msgBuf,'(A)')
+     &      'SEAICE_ALLOW_EVP: need to set nEVPstepMax to >= nEVPstep'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,I4)')
+     &      'nEVPstep = INT(SEAICE_deltaTdyn/SEAICE_deltaTevp) = ',
+     &      INT(SEAICE_deltaTdyn/SEAICE_deltaTevp)
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+      IF ( SEAICEnEVPstarSteps.NE.UNSET_I .AND. 
+     &     SEAICEnEVPstarSteps.GT.nEVPstepMax ) THEN
+       WRITE(msgBuf,'(A)')
+     &      'SEAICE_CHECK: need to set nEVPstepMax to >= '//
+     &      'SEAICEnEVPstarStep'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,I4)')
+     &      'SEAICE_CHECK: SEAICEnEVPstarStep = ', SEAICEnEVPstarStep
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 # endif
+      IF ( .NOT.SEAICEuseEVPstar 
+     &     .AND. SEAICEnEVPstarSteps.NE.UNSET_I ) THEN
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEnEVPstarSteps is '//
+     &      'set, but SEAICEuseEVPstar = .FALSE.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'       
+      ENDIF
+      IF ( SEAICE_deltaTevp .EQ. UNSET_RL .AND. 
+     &     SEAICEnEVPstarSteps.NE.UNSET_I ) THEN
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEnEVPstarSteps is '//
+     &      'set, but SEAICE_deltaTevp is unset (EVP is not turned on)'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'       
+      ENDIF
 #else
       IF ( SEAICE_deltaTevp .NE. UNSET_RL ) THEN
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_deltaTevp is set'

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.103 2012/12/27 23:05:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.104 2013/01/04 14:10:09 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -12,8 +12,9 @@ C     SEAICEuseDYNAMICS :: If false, do not use dynamics;
 C                          default is to use dynamics.
 C     SEAICEuseFREEDRIFT :: If True use free drift velocity instead of EVP
 C                           or LSR
-C     SEAICEuseEVP      :: If false, use Zhangs LSR solver for VP equations
-C                          if true use elastic viscous plastic solver
+C     SEAICEuseEVP      :: If true use elastic viscous plastic solver
+C     SEAICEuseEVPstar  :: If true use modified elastic viscous plastic 
+C                          solver (EVP*) by Lemieux et al (2012)
 C     SEAICEuseEVPpickup :: Set to false in order to start EVP solver with
 C                          non-EVP pickup files.  Default is true.
 C                          Applied only if SEAICEuseEVP=.TRUE.
@@ -73,7 +74,7 @@ C     SEAICE_dump_mnc   :: write snap-shot output   using MNC
 C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
      &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT,
-     &     SEAICEuseEVP, SEAICEuseEVPpickup,
+     &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,
      &     SEAICEuseJFNK,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
@@ -92,7 +93,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
      &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT,
-     &     SEAICEuseEVP, SEAICEuseEVPpickup,
+     &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,
      &     SEAICEuseJFNK,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
@@ -122,6 +123,7 @@ C                         2 = full non-lin form
 C     SOLV_MAX_ITERS    :: maximum number of allowed LSR-solver iterations
 C     SOLV_NCHECK       :: iteration interval for solver convergence test
 C     NPSEUDOTIMESTEPS  :: number of extra pseudo time steps (>= 2)
+C     SEAICEnEVPstarSteps :: number of evp*-steps
 C     SEAICEnewtonIterMax :: maximum number of allowed Newton iterations
 C                          in JFNK-solver
 C     SEAICEkrylovIterMax :: maximum number of allowed Krylov iterations
@@ -161,6 +163,7 @@ C
       INTEGER SOLV_MAX_ITERS, SOLV_NCHECK
       INTEGER NPSEUDOTIMESTEPS
       INTEGER LSR_mixIniGuess
+      INTEGER SEAICEnEVPstarSteps
       INTEGER SEAICEnewtonIterMax, SEAICEkrylovIterMax
       INTEGER SEAICEadvScheme
       INTEGER SEAICEadvSchArea
@@ -180,6 +183,7 @@ C
      &     SOLV_MAX_ITERS, SOLV_NCHECK,
      &     NPSEUDOTIMESTEPS,
      &     LSR_mixIniGuess,
+     &     SEAICEnEVPstarSteps,
      &     SEAICEnewtonIterMax, SEAICEkrylovIterMax,
      &     SEAICEpresPow0, SEAICEpresPow1,
      &     SEAICEadvScheme,
@@ -226,6 +230,8 @@ C     SEAICE_elasticParm :: parameter that sets relaxation timescale
 C                           tau = SEAICE_elasticParm * SEAICE_deltaTdyn
 C     SEAICE_evpTauRelax :: relaxation timescale tau                    (s)
 C     SEAICE_evpDampC    :: evp damping constant (Hunke,JCP,2001)       (kg/m^2)
+C     SEAICE_evpAlpha    :: dimensionless parameter 2*evpTauRelax/deltaTevp
+C     SEAICE_evpBeta     :: dimensionless parameter deltaTdyn/deltaTevp
 C     JFNKgamma_nonlin   :: non-linear tolerance parameter for JFNK solver
 C     JFNKgamma_lin_min/max :: tolerance parameters for linear JFNK solver
 C     JFNKres_t          :: tolerance parameter for FGMRES residual
@@ -353,6 +359,7 @@ C
       _RL SEAICE_area_floor, SEAICE_area_max
       _RL SEAICE_airTurnAngle, SEAICE_waterTurnAngle
       _RL SEAICE_elasticParm, SEAICE_evpTauRelax
+      _RL SEAICE_evpAlpha, SEAICE_evpBeta
       _RL SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac
       _RL SEAICEpresH0
       _RL SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow
@@ -363,6 +370,7 @@ C
      &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      &    SEAICE_LSRrelaxU, SEAICE_LSRrelaxV,
      &    SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
+     &    SEAICE_evpAlpha, SEAICE_evpBeta,
      &    SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
      &    SEAICEpresH0,
      &    SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,

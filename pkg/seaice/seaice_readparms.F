@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.136 2012/12/27 23:05:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.137 2013/01/04 14:10:09 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -100,7 +100,8 @@ C--   SEAICE parameters
      & SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS,
      & LSR_ERROR, LSR_mixIniGuess, SEAICEuseMultiTileSolver,
      & SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
-     & SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
+     & SEAICE_evpDampC, SEAICEnEVPstarSteps,
+     & SEAICE_zetaMin, SEAICE_zetaMaxFac,
      & SEAICEuseJFNK, SEAICEnewtonIterMax, SEAICEkrylovIterMax,
      & JFNKgamma_nonlin,JFNKres_t,JFNKgamma_lin_min,JFNKgamma_lin_max,
      & SEAICEpresH0, SEAICEpresPow0, SEAICEpresPow1,
@@ -135,7 +136,7 @@ C--   SEAICE parameters
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
      & SEAICE_EPS, SEAICE_EPS_SQ,
-     & SEAICEwriteState, SEAICEuseEVPpickup,
+     & SEAICEwriteState, SEAICEuseEVPpickup, SEAICEuseEVPstar,
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc,
 #ifdef SEAICE_ITD
@@ -182,6 +183,7 @@ C--   set default sea ice parameters
       SEAICEuseTEM       = .FALSE.
       SEAICEuseMetricTerms = .TRUE.
       SEAICEuseEVPpickup = .TRUE.
+      SEAICEuseEVPstar   = .FALSE.
       SEAICErestoreUnderIce = .FALSE.
       SEAICE_salinityTracer = .FALSE.
       SEAICE_ageTracer      = .FALSE.
@@ -234,6 +236,9 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICEpresPow1     = 1
       SEAICE_evpTauRelax = -1. _d 0
       SEAICE_elasticParm = 0.33333333333333333333333333 _d 0
+      SEAICE_evpAlpha    = UNSET_RL
+      SEAICE_evpBeta     = UNSET_RL
+      SEAICEnEVPstarSteps = UNSET_I
       SEAICE_initialHEFF = ZERO
 #ifdef SEAICE_ITD
 CToM<<<
@@ -544,7 +549,8 @@ C     yet been tried nor thought through.
       IF ( SEAICE_deltaTevp .NE. UNSET_RL ) SEAICEuseEVP = .TRUE.
       IF ( SEAICEuseEVP ) THEN
        IF (    (SEAICE_deltaTdyn/SEAICE_deltaTevp) .NE.
-     &      INT(SEAICE_deltaTdyn/SEAICE_deltaTevp) ) THEN
+     &      INT(SEAICE_deltaTdyn/SEAICE_deltaTevp) .AND.
+     &      .NOT. SEAICEuseEVPstar ) THEN
         WRITE(msgBuf,'(A)')
      &       'SEAICE_deltaTevp must be a factor of SEAICE_deltaTdyn.'
         CALL PRINT_ERROR( msgBuf , myThid)
@@ -558,6 +564,17 @@ C     yet been tried nor thought through.
        ENDIF
        IF ( SEAICE_evpTauRelax .LE. 0. _d 0 )
      &      SEAICE_evpTauRelax = SEAICE_deltaTdyn*SEAICE_elasticParm
+       IF ( SEAICE_evpBeta .EQ. UNSET_RL ) THEN
+        SEAICE_evpBeta   = SEAICE_deltaTdyn/SEAICE_deltaTevp
+       ELSE
+        SEAICE_deltaTevp = SEAICE_deltaTdyn/SEAICE_evpBeta
+       ENDIF
+       IF ( SEAICE_evpAlpha .EQ. UNSET_RL ) THEN
+        SEAICE_evpAlpha = 2. _d 0 * SEAICE_evpTauRelax/SEAICE_deltaTevp
+       ELSE
+        SEAICE_evpTauRelax = 0.5 _d 0 *SEAICE_evpAlpha*SEAICE_deltaTevp
+       ENDIF
+C     Check if all parameters are set.
       ENDIF
 #endif /* SEAICE_ALLOW_EVP */
 
