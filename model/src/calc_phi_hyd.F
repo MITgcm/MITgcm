@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.42 2012/12/18 01:16:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.43 2013/01/04 21:07:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -65,7 +65,6 @@ C     myThid     :: thread number for this instance of the routine.
       INTEGER bi,bj,iMin,iMax,jMin,jMax,k
       _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-c     _RL phiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL phiHydF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiHydC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dPhiHydX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -77,15 +76,28 @@ c     _RL phiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     phiHydU    :: hydrostatic potential anomaly at interface k+1 (Upper k)
+C     pKappaF    :: (p/Po)^kappa at interface k
+C     pKappaU    :: (p/Po)^kappa at interface k+1 (Upper k)
+C     pKappaC    :: (p/Po)^kappa at cell center k
       INTEGER i,j
       _RL alphaRho(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifndef DISABLE_SIGMA_CODE
+      _RL phiHydU (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL pKappaF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL pKappaU (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL pKappaC, locDepth, fullDepth
+#endif /* DISABLE_SIGMA_CODE */
       _RL dRlocM,dRlocP, ddRloc, locAlpha
       _RL ddPIm, ddPIp, rec_dRm, rec_dRp
       _RL surfPhiFac
       LOGICAL useDiagPhiRlow, addSurfPhiAnom
+      LOGICAL useFVgradPhi
 CEOP
       useDiagPhiRlow = .TRUE.
       addSurfPhiAnom = select_rStar.EQ.0 .AND. nonlinFreeSurf.GE.4
+      useFVgradPhi   = selectSigmaCoord.NE.0
+
       surfPhiFac = 0.
       IF (addSurfPhiAnom) surfPhiFac = 1.
 
@@ -430,7 +442,41 @@ C--     Quasi-hydrostatic terms are added in as if they modify the Pot.Temp
 
 C---    Integrate d Phi / d pi
 
+#ifndef DISABLE_SIGMA_CODE
+C  --  Finite Volume Form, integrated to r-level (cell center & upper interface)
+       IF ( useFVgradPhi ) THEN
+
+         fullDepth = rF(1)-rF(Nr+1)
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           locDepth = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
+#ifdef NONLIN_FRSURF
+           locDepth = locDepth + surfPhiFac*etaH(i,j,bi,bj)
+#endif
+           pKappaF(i,j) = (
+     &           ( R_low(i,j,bi,bj) + aHybSigmF( k )*fullDepth
+     &                              + bHybSigmF( k )*locDepth
+     &           )/atm_Po )**atm_kappa
+           pKappaC      = (
+     &           ( R_low(i,j,bi,bj) + aHybSigmC( k )*fullDepth
+     &                              + bHybSigmC( k )*locDepth
+     &           )/atm_Po )**atm_kappa
+           pKappaU(i,j) = (
+     &           ( R_low(i,j,bi,bj)+ aHybSigmF(k+1)*fullDepth
+     &                             + bHybSigmF(k+1)*locDepth
+     &           )/atm_Po )**atm_kappa
+           phiHydC(i,j) = phiHydF(i,j)
+     &        + atm_Cp*( pKappaF(i,j) - pKappaC      )*alphaRho(i,j)
+           phiHydU(i,j) = phiHydF(i,j)
+     &        + atm_Cp*( pKappaF(i,j) - pKappaU(i,j) )*alphaRho(i,j)
+          ENDDO
+         ENDDO
+C end: Finite Volume Form, integrated to r-level.
+
+       ELSEIF (integr_GeoPot.EQ.0) THEN
+#else /* DISABLE_SIGMA_CODE */
        IF (integr_GeoPot.EQ.0) THEN
+#endif /* DISABLE_SIGMA_CODE */
 C  --  Energy Conserving Form, accurate with Full cell topo  --
 C------------ The integration for the first level phi(k=1) is the same
 C             for both the "finite volume" and energy conserving methods.
@@ -548,6 +594,41 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         STOP 'CALC_PHI_HYD: Bad value of buoyancyRelation !'
       ENDIF
 
+      IF ( .NOT. useFVgradPhi ) THEN
+C--   r-coordinate and r*-coordinate cases:
+
+       IF ( momPressureForcing ) THEN
+        CALL CALC_GRAD_PHI_HYD(
+     I                         k, bi, bj, iMin,iMax, jMin,jMax,
+     I                         phiHydC, alphaRho, tFld, sFld,
+     O                         dPhiHydX, dPhiHydY,
+     I                         myTime, myIter, myThid)
+       ENDIF
+
+#ifndef DISABLE_SIGMA_CODE
+      ELSE
+C--   else (SigmaCoords part)
+
+       IF ( fluidIsWater ) THEN
+        STOP 'CALC_PHI_HYD: missing code for SigmaCoord'
+       ENDIF
+       IF ( momPressureForcing ) THEN
+        CALL CALC_GRAD_PHI_FV(
+     I                         k, bi, bj, iMin,iMax, jMin,jMax,
+     I                         phiHydF, phiHydU, pKappaF, pKappaU,
+     O                         dPhiHydX, dPhiHydY,
+     I                         myTime, myIter, myThid)
+       ENDIF
+       DO j=jMin,jMax
+         DO i=iMin,iMax
+           phiHydF(i,j) = phiHydU(i,j)
+         ENDDO
+       ENDDO
+
+#endif /* DISABLE_SIGMA_CODE */
+C--   end if-not/else useFVgradPhi
+      ENDIF
+
 C---   Diagnose Phi at boundary r=R_low :
 C       = Ocean bottom pressure (Ocean, Z-coord.)
 C       = Sea-surface height    (Ocean, P-coord.)
@@ -564,14 +645,6 @@ C---   Diagnose Full Hydrostatic Potential at cell center level
      I                      k, bi, bj, iMin,iMax, jMin,jMax,
      I                      phiHydC,
      I                      myTime, myIter, myThid)
-
-      IF (momPressureForcing) THEN
-        CALL CALC_GRAD_PHI_HYD(
-     I                         k, bi, bj, iMin,iMax, jMin,jMax,
-     I                         phiHydC, alphaRho, tFld, sFld,
-     O                         dPhiHydX, dPhiHydY,
-     I                         myTime, myIter, myThid)
-      ENDIF
 
 #endif /* INCLUDE_PHIHYD_CALCULATION_CODE */
 

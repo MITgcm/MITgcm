@@ -5,6 +5,7 @@ calc_3d_diffusivity.f
 calc_common_factors.f
 calc_diffusivity.f
 calc_div_ghat.f	
+calc_grad_phi_fv.f
 calc_grad_phi_hyd.f
 calc_grad_phi_surf.f
 calc_gs.f	
