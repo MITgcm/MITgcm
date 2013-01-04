@@ -1,23 +1,26 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1800 2013/01/04 15:36:26 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1801 2013/01/04 21:10:50 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: implement EVP* by Lemieux et al. (2012). In order to be 
-  compatible with the default EVP code, this requires changing the EVP 
-  code around a little; and because any small change immediately breaks
-  the lab_sea.hb87 verification experiment, the reference output is 
-  updated two times (each time the remaining aggrement was only 2 digits):
-  - after replacing 1/dt by 1*recip_dt with a precomputed recip_dt
-  - after replacing 1/(1+0.5*dt/tau) by a/(a+1), with a=2*tau/dt
-  The adjoint test lab_sea.evp also needed to be updated.
-  Turn on EVP* by setting SEAICE_deltaTevp as before, and setting
-  SEAICEuseEVPstar=.true.; for EVP* SEAICE_deltaTevp does not need to be
-  a factor of SEAICE_deltaTdyn, and you can set the number of EVP steps
-  explicitly with SEAICEnEVPstarSteps (thereby overriding the default of
-  INT(SEAICE_deltaTdyn/SEAICE_deltaTevp)). Controlling EVP* is deliberately
-  kept obscure, because I need to test it a little more.
+o model/src:
+  - implement Finite-Volume method for (hydrostatic) presure gradient
+    from S.-J. Lin (QJRMS 1997), for atmosphere using sigma-coordinate.
+o pkg/seaice: implement EVP* by Lemieux et al. (2012).
+  - In order to be compatible with the default EVP code, this requires changing
+    the EVP code around a little; and because any small change immediately
+    breaks the lab_sea.hb87 verification experiment, the reference output is
+    updated two times (each time the remaining aggrement was only 2 digits):
+    - after replacing 1/dt by 1*recip_dt with a precomputed recip_dt
+    - after replacing 1/(1+0.5*dt/tau) by a/(a+1), with a=2*tau/dt
+    The adjoint test lab_sea.evp also needed to be updated.
+  - Turn on EVP* by setting SEAICE_deltaTevp as before, and setting
+    SEAICEuseEVPstar=.true.; for EVP* SEAICE_deltaTevp does not need to be
+    a factor of SEAICE_deltaTdyn, and you can set the number of EVP steps
+    explicitly with SEAICEnEVPstarSteps (thereby overriding the default of
+    INT(SEAICE_deltaTdyn/SEAICE_deltaTevp)). Controlling EVP* is deliberately
+    kept obscure, because I need to test it a little more.
 o pkg/cheapaml:
   - fix few incorrect type (_RL/_RS) in subroutine calls.
 o pkg/seaice:
