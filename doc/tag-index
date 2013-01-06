@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1801 2013/01/04 21:10:50 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1802 2013/01/06 20:36:27 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/offline_exf_seaice:
+  - dyn_lsr  : use pkg/seaice S/R (instead of pkg/thsice) to advect sea-ice;
+  - dyn_jfnk : use pkg/thsice S/R (instead of pkg/seaice) to advect sea-ice.
 o model/src:
   - implement Finite-Volume method for (hydrostatic) presure gradient
     from S.-J. Lin (QJRMS 1997), for atmosphere using sigma-coordinate.
