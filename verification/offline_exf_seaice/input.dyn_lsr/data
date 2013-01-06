@@ -22,7 +22,6 @@
  tempStepping=.FALSE.,
 #tempAdvection=.FALSE.,
  momStepping=.FALSE.,
-#f0=1.e-4,
  f0=0.e-4,
  beta=0.,
  useJamartWetPoints=.TRUE.,

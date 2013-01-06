@@ -28,14 +28,14 @@
 #  fileName(1) = 'exfDiag',
   frequency(1) = 86400.,
 
-  fields(1:5,2)  = 'SIuice  ','SIvice  ','SIheff  '
-                   'SI_Fract','SI_Thick',
+  fields(1:4,2)  = 'SIuice  ','SIvice  ','SIheff  '
+                   'SIarea  ',
 #  fileName(2) = 'iceDiag',
   frequency(2) =  86400.,
   missing_value(2) = -999.,
 
-  fields(1:5,3)  = 'SIuice  ','SIvice  ','SIheff  '
-                   'SI_Fract','SI_Thick',
+  fields(1:4,3)  = 'SIuice  ','SIvice  ','SIheff  '
+                   'SIarea  ',
    fileName(3) = 'snapshot',
   frequency(3) = -86400.,
   timePhase(3) =  3600.,
@@ -60,18 +60,9 @@
 #                (see "available_diagnostics.log" file for the full list of diags)
 #--------------------
  &DIAG_STATIS_PARMS
-#stat_fields(1:5,1)  = 'SI_Fract','SI_Thick','SI_SnowH',
-#stat_fields(1:5,1)  = 'SIarea  ','SIheff  ','SIhsnow ',
- stat_fields(1:6,1)  = 'SI_Fract','SI_Thick',
-                       'SIarea  ','SIheff  ',
+ stat_fields(1:5,1)  = 'SIarea  ','SIheff  ','SIhsnow ',
                        'SIuice  ','SIvice  ',
   stat_fName(1) = 'iceStDiag',
    stat_freq(1) = 7200.,
   stat_phase(1) = 1800.,
-#stat_fields(1:16,1) = 'SI_Fract','SI_Thick','SI_SnowH',
-#                      'SI_Tsrf ','SI_Tice1','SI_Tice2',
-#                      'SI_Qice1','SI_Qice2',
-#                      'SIsnwPrc','SIalbedo','SIsnwAge',
-#                      'SIflx2oc','SIfrw2oc','SIsaltFx',
-#                      'SIflxAtm','SIfrwAtm',
  &
