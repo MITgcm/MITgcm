@@ -5,7 +5,6 @@
  OCEAN_drag         = 8.1541e-04,
  SEAICE_waterDrag   = 5.3508,
  SEAICE_no_Slip     = .FALSE.,
- SEAICEadvScheme    = 77,
 # JFNK solver parameters
  SEAICEuseJFNK       = .TRUE.,
  SOLV_MAX_ITERS      = 10,
@@ -14,9 +13,11 @@
  JFNKgamma_nonlin    = 1.e-09,
  JFNKres_t           = 0.02,
 # end of JFNK solver parameters
- AreaFile  = 'const100.bin',
- HeffFile  = 'const+20.bin',
- HsnowFile = 'const_00.bin',
+#- to use seaice-advection from pkg/seaice, uncomment following 4 lines:
+#SEAICEadvScheme    = 77,
+#AreaFile  = 'const100.bin',
+#HeffFile  = 'const+20.bin',
+#HsnowFile = 'const_00.bin',
  SEAICEwriteState   = .TRUE.,
  SEAICE_monFreq = 1800.,
  &

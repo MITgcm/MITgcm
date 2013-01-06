@@ -20,6 +20,7 @@
  staggerTimeStep=.TRUE.,
  saltStepping=.FALSE.,
  tempStepping=.FALSE.,
+#tempAdvection=.FALSE.,
  momStepping=.FALSE.,
  f0=0.e-4,
  beta=0.,

@@ -29,13 +29,13 @@
   frequency(1) = 86400.,
 
   fields(1:5,2)  = 'SIuice  ','SIvice  ','SIheff  '
-                   'SIheff  ','SIarea  ',
+                   'SI_Fract','SI_Thick',
 #  fileName(2) = 'iceDiag',
   frequency(2) =  86400.,
   missing_value(2) = -999.,
 
   fields(1:5,3)  = 'SIuice  ','SIvice  ','SIheff  '
-                   'SIheff  ','SIarea  ',
+                   'SI_Fract','SI_Thick',
    fileName(3) = 'snapshot',
   frequency(3) = -86400.,
   timePhase(3) =  3600.,
@@ -60,7 +60,10 @@
 #                (see "available_diagnostics.log" file for the full list of diags)
 #--------------------
  &DIAG_STATIS_PARMS
- stat_fields(1:5,1)  = 'SIarea  ','SIheff  ','SIhsnow ',
+#stat_fields(1:5,1)  = 'SI_Fract','SI_Thick','SI_SnowH',
+#stat_fields(1:5,1)  = 'SIarea  ','SIheff  ','SIhsnow ',
+ stat_fields(1:6,1)  = 'SI_Fract','SI_Thick',
+                       'SIarea  ','SIheff  ',
                        'SIuice  ','SIvice  ',
   stat_fName(1) = 'iceStDiag',
    stat_freq(1) = 7200.,
