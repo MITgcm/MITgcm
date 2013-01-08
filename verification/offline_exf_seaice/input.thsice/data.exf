@@ -5,23 +5,29 @@
  &EXF_NML_01
 #
  useExfCheckRange  = .TRUE.,
- repeatPeriod      = 2635200.0,
- exf_iprec         = 64,
- exf_monFreq       = 86400000.,
-#useRelativeWind = .TRUE.,
+ repeatPeriod      = 31622400.0,
+ exf_iprec         = 32,
 #
  &
 
 # *********************
  &EXF_NML_02
 #
-#ustressstartdate1 = 19781216,
-#ustressstartdate2 = 180000,
-#ustressperiod     = 2635200.0,
+ hfluxstartdate1   = 19781216,
+ hfluxstartdate2   = 180000,
+ hfluxperiod       = 2635200.0,
 #
-#vstressstartdate1 = 19781216,
-#vstressstartdate2 = 180000,
-#vstressperiod     = 2635200.0,
+ sfluxstartdate1   = 19781216,
+ sfluxstartdate2   = 180000,
+ sfluxperiod       = 2635200.0,
+#
+ ustressstartdate1 = 19781216,
+ ustressstartdate2 = 180000,
+ ustressperiod     = 2635200.0,
+#
+ vstressstartdate1 = 19781216,
+ vstressstartdate2 = 180000,
+ vstressperiod     = 2635200.0,
 #
  atempstartdate1   = 19781216,
  atempstartdate2   = 180000,
@@ -30,6 +36,10 @@
  aqhstartdate1     = 19781216,
  aqhstartdate2     = 180000,
  aqhperiod         = 2635200.0,
+#
+#evapstartdate1    = 19781216,
+#evapstartdate2    = 180000,
+#evapperiod        = 2635200.0,
 #
  precipstartdate1  = 19781216,
  precipstartdate2  = 180000,
@@ -43,6 +53,14 @@
  vwindstartdate2   = 180000,
  vwindperiod       = 2635200.0,
 #
+ swfluxstartdate1  = 19781216,
+ swfluxstartdate2  = 180000,
+ swfluxperiod      = 2635200.0,
+#
+ lwfluxstartdate1  = 19781216,
+ lwfluxstartdate2  = 180000,
+ lwfluxperiod      = 2635200.0,
+#
  swdownstartdate1  = 19781216,
  swdownstartdate2  = 180000,
  swdownperiod      = 2635200.0,
@@ -54,38 +72,37 @@
  climsststartdate1  = 19781216,
  climsststartdate2  = 180000,
  climsstperiod      = 2635200.0,
- climsstTauRelax    = 2592000.,
+ climsstTauRelax    = 0.0,
 #
  climsssstartdate1  = 19781216,
  climsssstartdate2  = 180000,
  climsssperiod      = 2635200.0,
-#climsssTauRelax    = 2592000.,
+### climsssTauRelax    = 4142330.0,
 #
+ hfluxfile         = ' ',
+ sfluxfile         = ' ',
  ustressfile       = ' ',
  vstressfile       = ' ',
- atempfile         = 'tair_4x.bin',
- aqhfile           = 'qa70_4x.bin',
- uwindfile         = 'windx.bin',
-#vwindfile         = 'windy.bin',
- precipfile        = 'const_00.bin',
- lwdownfile        = 'dlw_250.bin',
- swdownfile        = 'dsw_100.bin',
+ atempfile         = 'tair.labsea1979',
+ aqhfile           = 'qa.labsea1979',
+ uwindfile         = 'u10m.labsea1979',
+ vwindfile         = 'v10m.labsea1979',
+#evapfile          = 'evap.labsea1979',
+ precipfile        = 'prate.labsea1979',
+ lwfluxfile        = ' ',
+ swfluxfile        = ' ',
+ lwdownfile        = 'flo.labsea1979',
+ swdownfile        = 'fsh.labsea1979',
  runoffFile        = ' '
- climsstfile       = 'tocn.bin',
-#climsssfile       = 'socn.bin',
+ climsstfile       = 'SST_monthly.labsea1979',
+### climsssfile       = 'SSS_monthly.labsea1979',
+#
  &
 
 # *********************
  &EXF_NML_03
-#exf_offset_atemp=5;
  &
 
 # *********************
-# old open64 compiler (4.2.1) cannot skip this namelist to read in the next one;
-# comment out this namelist (not read).
-#&EXF_NML_04
-#&
-
-# *********************
- &EXF_NML_OBCS
+ &EXF_NML_04
  &
