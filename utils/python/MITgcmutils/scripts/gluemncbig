@@ -1163,7 +1163,7 @@ if __name__ == '__main__':
         globpatt = fnames[0]
         fnames = glob.glob(globpatt)
         if len(fnames) == 0:
-            raise IOError('No files matching {}', globpatt)
+            raise IOError('No files matching {0}', globpatt)
 
     fnames.sort()
 
@@ -1333,7 +1333,7 @@ if __name__ == '__main__':
                         ncs[fname] = nc = netcdf_file(fname, 'r', **readopts)
 
                 nrec = nc.numrecs
-                if progress and not verbose: sys.stderr.write('Writing {} records: '.format(nrec))
+                if progress and not verbose: sys.stderr.write('Writing {0} records: '.format(nrec))
                 for irecin in range(nrec):
                     if progress and not verbose: sys.stderr.write('.')
                     for name,pos,isrec in ncout.begins:
