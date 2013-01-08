@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.3 2012/10/17 18:49:15 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.4 2013/01/08 23:59:50 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -37,7 +37,7 @@ C !INPUT PARAMETERS:
 C     myThid    :: my Thread Id number
 C     uVel  :: zonal velocity (m/s, i=1 held at western face)
 C     vVel  :: meridional velocity (m/s, j=1 held at southern face)
-C     tracer :: potential temperature, salt or potential density prho 
+C     tracer :: potential temperature, salt or potential density prho
 C      UH   :: U integrated over layer (m^2/s)
 C      VH   :: V integrated over layer (m^2/s)
 C      Hw   :: Layer thickness at the U point (m)
@@ -81,7 +81,7 @@ C     TatV     :: temperature at V point
       INTEGER kgu(sNx+1,sNy+1), kgv(sNx+1,sNy+1)
       _RL TatU, TatV
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-#if (defined ALLOW_GMREDI) && (defined GM_BOLUS_ADVEC)
+#ifdef ALLOW_GMREDI
       INTEGER kcip1
       _RL delPsi, maskp1
 #endif
@@ -126,6 +126,11 @@ C     Reset the arrays
       DO kk=1,NZZ
        k = MapIndex(kk)
        kci = CellIndex(kk)
+#ifdef ALLOW_GMREDI
+       kcip1 = MIN(kci+1,Nr)
+       maskp1 = 1.
+       IF (kci.GE.Nr) maskp1 = 0.
+#endif /* ALLOW_GMREDI */
        DO j = 1,sNy+1
         DO i = 1,sNx+1
 
@@ -176,28 +181,21 @@ C ------ Augment the bin values
      &    dZZf(kk) * uVel(i,j,kci,bi,bj) * hFacW(i,j,kci,bi,bj)
 
 #ifdef ALLOW_GMREDI
-         IF ( GM_AdvForm .AND. layers_bolus(iLa) ) THEN
-           kcip1 = MIN(kci+1,Nr)
-           maskp1 = 1.
-           IF (kci.GE.Nr) maskp1 = 0.
-           delPsi = GM_PsiX(i,j,kcip1,bi,bj)*maskp1
-     &            - GM_PsiX(i,j, kci, bi,bj)
-           UH(i,j,kgu(i,j),bi,bj) =
-     &      UH(i,j,kgu(i,j),bi,bj)
-     &      + delPsi*recip_drF(kci)*_recip_hFacW(i,j,kci,bi,bj)
-     &      * dZZf(kk)*hFacW(i,j,kci,bi,bj)
-         ELSEIF ( layers_bolus(iLa) .AND. .NOT. GM_AdvForm ) THEN
-           kcip1 = MIN(kci+1,Nr)
-           maskp1 = 1.
-           IF (kci.GE.Nr) maskp1 = 0.
-           delPsi = 0.5*Kwx(i,j,kcip1,bi,bj)*maskp1
-     &            - 0.5*Kwx(i,j, kci, bi,bj)
-           UH(i,j,kgu(i,j),bi,bj) =
-     &      UH(i,j,kgu(i,j),bi,bj)
+         IF ( layers_bolus(iLa)  ) THEN
+           IF ( .NOT.GM_AdvForm ) THEN
+             delPsi = 0.5*Kwx(i,j,kcip1,bi,bj)*maskp1
+     &              - 0.5*Kwx(i,j, kci, bi,bj)
+#ifdef GM_BOLUS_ADVEC
+           ELSE
+             delPsi = GM_PsiX(i,j,kcip1,bi,bj)*maskp1
+     &              - GM_PsiX(i,j, kci, bi,bj)
+#endif
+           ENDIF
+           UH(i,j,kgu(i,j),bi,bj) = UH(i,j,kgu(i,j),bi,bj)
      &      + delPsi*recip_drF(kci)*_recip_hFacW(i,j,kci,bi,bj)
      &      * dZZf(kk)*hFacW(i,j,kci,bi,bj)
          ENDIF
-#endif
+#endif /* ALLOW_GMREDI */
 
 #ifdef LAYERS_THICKNESS
          Hw(i,j,kgu(i,j),bi,bj) = Hw(i,j,kgu(i,j),bi,bj)
@@ -253,28 +251,21 @@ C ------ Augment the bin values
      &    + dZZf(kk) * vVel(i,j,kci,bi,bj) * hFacS(i,j,kci,bi,bj)
 
 #ifdef ALLOW_GMREDI
-         IF ( GM_AdvForm .AND. layers_bolus(iLa) ) THEN
-           kcip1 = MIN(kci+1,Nr)
-           maskp1 = 1.
-           IF (kci.GE.Nr) maskp1 = 0.
-           delPsi = GM_PsiY(i,j,kcip1,bi,bj)*maskp1
-     &            - GM_PsiY(i,j, kci, bi,bj)
-           VH(i,j,kgv(i,j),bi,bj) =
-     &      VH(i,j,kgv(i,j),bi,bj)
-     &      + delPsi*recip_drF(kci)*_recip_hFacS(i,j,kci,bi,bj)
-     &      * dZZf(kk)*hFacS(i,j,kci,bi,bj)
-         ELSEIF ( layers_bolus(iLa) .AND. .NOT. GM_AdvForm ) THEN
-           kcip1 = MIN(kci+1,Nr)
-           maskp1 = 1.
-           IF (kci.GE.Nr) maskp1 = 0.
-           delPsi = 0.5*Kwy(i,j,kcip1,bi,bj)*maskp1
-     &            - 0.5*Kwy(i,j, kci, bi,bj)
-           VH(i,j,kgv(i,j),bi,bj) =
-     &      VH(i,j,kgv(i,j),bi,bj)
+         IF ( layers_bolus(iLa) ) THEN
+           IF ( .NOT.GM_AdvForm ) THEN
+             delPsi = 0.5*Kwy(i,j,kcip1,bi,bj)*maskp1
+     &              - 0.5*Kwy(i,j, kci, bi,bj)
+#ifdef GM_BOLUS_ADVEC
+           ELSE
+             delPsi = GM_PsiY(i,j,kcip1,bi,bj)*maskp1
+     &              - GM_PsiY(i,j, kci, bi,bj)
+#endif
+           ENDIF
+           VH(i,j,kgv(i,j),bi,bj) = VH(i,j,kgv(i,j),bi,bj)
      &      + delPsi*recip_drF(kci)*_recip_hFacS(i,j,kci,bi,bj)
      &      * dZZf(kk)*hFacS(i,j,kci,bi,bj)
          ENDIF
-#endif
+#endif /* ALLOW_GMREDI */
 
 #ifdef LAYERS_THICKNESS
          Hs(i,j,kgv(i,j),bi,bj) = Hs(i,j,kgv(i,j),bi,bj)
@@ -286,7 +277,7 @@ C ------ Augment the bin values
         ENDDO
        ENDDO
       ENDDO
-      
+
 C--   Now that we know the thicknesses, compute the heaviside function
 C--   (Needs another loop through Ng)
 #ifdef LAYERS_THICKNESS
