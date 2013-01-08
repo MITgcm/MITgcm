@@ -39,8 +39,8 @@
    fileName(2) = 'MLfields',
   frequency(2) = -00.06,
 
-  fields(1:17,3) = 'UVELSQ  ','VVELSQ  ','THETASQ ','WVELSQ  ','PHIHYDSQ','SALTSQ   ',
-                   'UV_VEL_C','WU_VEL  ','WV_VEL  ','VVELTH  ','WVELTH  ','VVELSLT  ',
+  fields(1:17,3) = 'UVELSQ  ','VVELSQ  ','THETASQ ','WVELSQ  ','PHIHYDSQ','SALTSQ  ',
+                   'UV_VEL_C','WU_VEL  ','WV_VEL  ','VVELTH  ','WVELTH  ','VVELSLT ',
                    'WVELSLT ','UVELSLT ','UVELTH  ','UVELPHI ','VVELPHI ',
     fileFlags(3) = ' P      ',
   levels(1:17,3) = 1000.E+2, 925.E+2, 850.E+2, 700.E+2, 600.E+2, 500.E+2,
@@ -50,7 +50,7 @@
   frequency(3) = -00.06,
 
 # need to add RSURF output with same freq as other interpolated diagnostics
-   fields(1,5) = 'RSURF ',
+  fields(1,5)    = 'RSURF   ',
    fileName(5) = 'snapshot_ps',
   frequency(5) = -00.06,
 # fields(1:9,4)  = 'RADSW   ','RADLW   ','TURBT   ','MOISTT  ','TURBQ   ','MOISTQ  ',
