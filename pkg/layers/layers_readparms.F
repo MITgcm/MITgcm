@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_readparms.F,v 1.7 2013/01/07 02:07:55 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_readparms.F,v 1.8 2013/01/09 00:03:08 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -27,7 +27,7 @@ C     INPUT PARAMETERS:
      &       layers_name, layers_bounds, layers_krho
 
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf      - Informational/error message buffer
 C     iUnit       - Work variable for IO unit number
 C     k           - index
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -45,12 +45,12 @@ C     The MNC stuff is not working yet
         layers_name(iLa) = ' '
         layers_num(iLa) = 0
         layers_krho(iLa)= 1
-        layers_bolus(iLa) = .TRUE.
+        layers_bolus(iLa) = useGMRedi
         DO k=1,Nlayers+1
           layers_bounds(k,iLa) = UNSET_RL
         ENDDO
       ENDDO
-      
+
       DO k=1,Nlayers+1
         layers_G(k) = UNSET_RL
       ENDDO
@@ -58,7 +58,7 @@ C     The MNC stuff is not working yet
       layers_diagFreq = dumpFreq
       LAYER_nb = 0
       layers_kref = 1
-      useBOLUS = .TRUE.
+      useBOLUS = useGMRedi
 
       WRITE(msgBuf,'(A)') 'LAYERS_READPARMS: opening data.layers'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -79,7 +79,7 @@ C     Close the open data file
       CLOSE(iUnit)
 
 c revert to old approach
-c (unless I simply retore the old ways, I need a 
+c (unless I simply retore the old ways, I need a
 c  print statement or two as I override the new way)
       IF ( LAYER_nb.NE.0 ) THEN
         layers_num(1) = LAYER_nb
@@ -92,7 +92,7 @@ c  print statement or two as I override the new way)
           layers_num(iLa) = 0
           layers_name(iLa) = ' '
           layers_krho(iLa) = 1
-          layers_bolus(iLa) = .TRUE.
+          layers_bolus(iLa) = useGMRedi
           DO k=1,Nlayers+1
             layers_bounds(k,iLa) = UNSET_RL
           ENDDO
@@ -116,22 +116,24 @@ C--   ensure layers_name/layers_num setup consistency
         ELSE
           layers_name(iLa)=' '
           layers_num(iLa)=0
-        ENDIF  
+        ENDIF
+C--   bolus contribution only available if using GMRedi
+        layers_bolus(iLa) = layers_bolus(iLa) .AND. useGMRedi
       ENDDO
-      
+
 C--   Make sure the layers_bounds we just read is big enough
       DO iLa=1,layers_maxNum
-      IF ( layers_num(iLa).NE.0 ) THEN
-      DO k=1,Nlayers+1
-        IF ( layers_bounds(k,iLa) .EQ. UNSET_RL ) THEN
+       IF ( layers_num(iLa).NE.0 ) THEN
+        DO k=1,Nlayers+1
+         IF ( layers_bounds(k,iLa) .EQ. UNSET_RL ) THEN
           WRITE(msgBuf,'(2A,I4)')
      &        'S/R LAYERS_READPARMS: ',
      &        'No value for layers_bounds at k =', k
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R LAYERS_READPARMS'
-        ELSE IF ( k .EQ. 1 ) THEN
+         ELSEIF ( k .EQ. 1 ) THEN
 C         Do nothing
-        ELSE IF ( layers_bounds(k,iLa) .LE. 
+         ELSEIF ( layers_bounds(k,iLa) .LE.
      &            layers_bounds(k-1,iLa) ) THEN
 C         Check to make sure layers_bounds is increasing
           WRITE(msgBuf,'(2A,I4)')
@@ -139,9 +141,9 @@ C         Check to make sure layers_bounds is increasing
      &      'layers_bounds is not increasing at k =', k
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R LAYERS_READPARMS'
-        ENDIF
-      ENDDO
-      ENDIF
+         ENDIF
+        ENDDO
+       ENDIF
       ENDDO
 
 C--   Make sure that we locally honor the global MNC on/off flag
