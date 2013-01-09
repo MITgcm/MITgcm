@@ -1,5 +1,6 @@
 # SEAICE parameters
  &SEAICE_PARM01
+ SEAICErestoreUnderIce=.TRUE.,
  usePW79thermodynamics=.FALSE.,
  SEAICE_strength    = 2.6780e+04,
  OCEAN_drag         = 8.1541e-04,
