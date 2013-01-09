@@ -1,11 +1,13 @@
 # SEAICE parameters
  &SEAICE_PARM01
+ SEAICErestoreUnderIce=.TRUE.,
 #same freezing point as pkg/thsice
  SEAICE_tempFrz0    = 0.0,
  SEAICE_dTempFrz_dS = -5.4e-02,
 #seaice growth parameters
- SEAICE_gamma_t_frz = 3600.,
- SEAICE_gamma_t     = 259200.,
+ SEAICE_frazilFrac  = 1.,
+#- same mcPheePiston value as in thsice with surf-current=0.2 m/s
+ SEAICE_mcPheePiston= 8.7854425e-5,
  SEAICEuseFlooding  = .TRUE.,
  SEAICE_salt0       = 4.,
 #SEAICE_saltFrac    = 0.3,
@@ -30,8 +32,8 @@
 #
  HsnowFile          = 'const_00.bin',
  HsaltFile          = 'const_00.bin',
- AreaFile           = 'edge100.bin',
- HeffFile           = 'edge+20.bin',
+ AreaFile           = 'ice0_area.bin',
+ HeffFile           = 'ice0_heff.bin',
 #SEAICE_initialHEFF = 0.2,
 #uIceFile           = 'const_00.bin',
  SEAICEwriteState   = .TRUE.,
