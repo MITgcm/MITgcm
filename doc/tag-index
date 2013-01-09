@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1802 2013/01/06 20:36:27 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1803 2013/01/09 01:22:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/cfc_example:
+  - update file "data" with more standard choice (default rotationPeriod,
+    exactConserv=T, reduce ivdc_kappa to 10, remove multiDimAdvection=F,
+    set deltaTFreeSurf to deltaTtracer) and update the output.
+o pkg/layers:
+  - fix bolus part so that it compiles with #undef GM_BOLUS_ADVEC;
+  - ensure that "layers_bolus" is switched to False when useGMRedi=False.
+o verification/offline_exf_seaice:
+  - set all {field}period to zero for constant-in-time forcing (not tested
+    anywhere else).
 o verification/offline_exf_seaice:
   - dyn_lsr  : use pkg/seaice S/R (instead of pkg/thsice) to advect sea-ice;
   - dyn_jfnk : use pkg/thsice S/R (instead of pkg/seaice) to advect sea-ice.
