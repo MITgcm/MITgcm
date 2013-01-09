@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_fixed.F,v 1.9 2012/10/17 18:49:15 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_fixed.F,v 1.10 2013/01/09 14:39:11 dfer Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -145,7 +145,7 @@ C     Output the layer coordinates
       DO iLa=1,layers_maxNum
       IF ( layers_num(iLa).NE.0 ) THEN
       WRITE(tmpName,'(A7,I1,A3)') 'layers',iLa,layers_name(iLa)
-      CALL WRITE_GLVEC_RL( tmpName, ' ', layers_G, 1+Nlayers,
+      CALL WRITE_GLVEC_RL( tmpName, ' ',layers_bounds(1,iLa),1+Nlayers,
      & -1, myThid )
       ENDIF
       ENDDO
