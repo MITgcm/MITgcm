@@ -22,7 +22,6 @@
 #tempStepping=.FALSE.,
  tempAdvection=.FALSE.,
  momStepping=.FALSE.,
-#f0=1.e-4,
  f0=0.e-4,
  beta=0.,
  useJamartWetPoints=.TRUE.,
@@ -71,14 +70,14 @@
 
 # Input datasets
  &PARM05
- bathyFile       = 'bathy_3c.bin',
- uVelInitFile    = 'uVel_3c0.bin',
- vVelInitFile    = 'vVel_3c0.bin',
+#bathyFile       = 'bathy_3c.bin',
+#uVelInitFile    = 'uVel_3c0.bin',
+#vVelInitFile    = 'vVel_3c0.bin',
 #pSurfInitFile   = 'eta_3c0.bin',
 #uVelInitFile    = 'uVel_3c1.bin',
 #vVelInitFile    = 'vVel_3c1.bin',
 #pSurfInitFile   = 'eta_3c1.bin',
-#bathyFile       = 'channel.bin',
-#uVelInitFile    = 'const+40.bin',
-#vVelInitFile    = 'const-10.bin',
+ bathyFile       = 'channel.bin',
+ uVelInitFile    = 'const+20.bin',
+ vVelInitFile    = 'const_00.bin',
  &

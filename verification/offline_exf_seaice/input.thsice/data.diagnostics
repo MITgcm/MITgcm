@@ -28,18 +28,21 @@
 #  fileName(1) = 'exfDiag',
   frequency(1) = 86400.,
 
-# fields(1:12,2) = 'SIarea  ','SIheff  ','SIhsnow ',
-#                  'SIuice  ','SIvice  ',
-#                  'oceFWflx','oceSflux','oceQnet ',
-#                  'SItices ','SIatmFW ','SIatmQnt',
-#                  'SIempmr ','SIqnet  ','SIqsw   ',
+#- with pkg/thsice:
   fields(1:11,2) = 'SI_Fract','SI_Thick','THETA   ','SI_Tsrf ',
 #                  'SI_Tsrf ','SI_Tice1','SI_Tice2',
 #                  'SI_Qice1','SI_Qice2',
 #                  'SIsnwPrc','SIalbedo','SIsnwAge',
+#                  'oceQnet ','oceQsw  ','oceFWflx','oceSflux',
                    'SIflx2oc','SIfrw2oc','SIsaltFx',
                    'SIflxAtm','SIfrwAtm',
                    'EXFqnet ','EXFempmr',
+#- with pkg/seaice:
+# fields(1:10,2) = 'SIarea  ','SIheff  ','THETA   ','SItices ',
+##                 'SIuice  ','SIvice  ','SIhsnow ',
+##                 'oceQnet ','oceQsw  ','oceFWflx','oceSflux',
+#                  'SIqnet  ','SIqsw   ','SIempmr ','oceSflux',
+#                  'SIatmQnt','SIatmFW ',
    fileName(2) = 'iceDiag',
   frequency(2) =  86400.,
   missing_value(2) = -999.,
@@ -63,16 +66,20 @@
 #                (see "available_diagnostics.log" file for the full list of diags)
 #--------------------
  &DIAG_STATIS_PARMS
-#stat_fields(1:12,1) = 'SIarea  ','SIheff  ','SIhsnow ',
-#                      'oceFWflx','oceSflux','oceQnet ',
-#                      'SItices ','SIatmFW ','SIatmQnt',
-#                      'SIempmr ','SIqnet  ','SIqsw   ',
-#                      'oceQsw  ',
+#- with pkg/thsice:
+#stat_fields(1:12,1) = 'SI_Fract','SI_Thick','SI_SnowH','THETA   ',
+ stat_fields(1:11,1) = 'SI_Fract','SI_Thick','THETA   ',
+                       'SI_Tsrf ','SI_Tice1','SI_Tice2',
+#                      'oceQnet ','oceQsw  ','oceFWflx','oceSflux',
+                       'SIflx2oc','SIfrw2oc','SIsaltFx',
+                       'SIflxAtm','SIfrwAtm',
+#- with pkg/seaice:
+#stat_fields(1:11,1) = 'SIarea  ','SIheff  ','SIhsnow ',
+#stat_fields(1:10,1) = 'SIarea  ','SIheff  ',
+#                      'THETA   ','SItices ',
+#                      'SIqnet  ','SIqsw   ','SIempmr ','oceSflux',
+#                      'SIatmQnt','SIatmFW ',
   stat_fName(1) = 'iceStDiag',
    stat_freq(1) = 43200.,
   stat_phase(1) = 3600.,
- stat_fields(1:12,1) = 'SI_Fract','SI_Thick','THETA   ',
-                       'SI_Tsrf ','SI_Tice1','SI_Tice2',
-                       'SIflx2oc','SIfrw2oc','SIsaltFx',
-                       'SIflxAtm','SIfrwAtm','SI_SnowH',
  &

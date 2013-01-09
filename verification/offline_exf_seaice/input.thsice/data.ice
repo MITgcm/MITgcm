@@ -24,7 +24,7 @@
 #thSIceAdvScheme=77,
 #thSIce_diffK   =800.,
  stressReduction=0.,
- thSIceFract_InitFile='const100.bin',
+ thSIceFract_InitFile='ice0_area.bin',
  thSIceThick_InitFile='const+20.bin',
 #thSIce_diagFreq=2592000.,
 #thSIce_monFreq =43200.,
