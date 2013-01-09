@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.4 2013/01/08 23:59:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.5 2013/01/09 14:42:40 dfer Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -183,8 +183,14 @@ C ------ Augment the bin values
 #ifdef ALLOW_GMREDI
          IF ( layers_bolus(iLa)  ) THEN
            IF ( .NOT.GM_AdvForm ) THEN
-             delPsi = 0.5*Kwx(i,j,kcip1,bi,bj)*maskp1
-     &              - 0.5*Kwx(i,j, kci, bi,bj)
+             delPsi= 0.5 _d 0 *(
+     &   0.5 _d 0 * (rA(i-1,j,bi,bj)*Kwx(i-1,j,kcip1,bi,bj)
+     &              +rA( i ,j,bi,bj)*Kwx( i ,j,kcip1,bi,bj))
+     &            * maskW(i,j,kcip1,bi,bj) * maskp1
+     &  -0.5 _d 0 * (rA(i-1,j,bi,bj)*Kwx(i-1,j, kci ,bi,bj)
+     &              +rA( i ,j,bi,bj)*Kwx( i ,j, kci ,bi,bj))
+     &            * maskW(i,j, kci ,bi,bj)
+     &                         ) / rAw(i,j,bi,bj)
 #ifdef GM_BOLUS_ADVEC
            ELSE
              delPsi = GM_PsiX(i,j,kcip1,bi,bj)*maskp1
@@ -253,8 +259,14 @@ C ------ Augment the bin values
 #ifdef ALLOW_GMREDI
          IF ( layers_bolus(iLa) ) THEN
            IF ( .NOT.GM_AdvForm ) THEN
-             delPsi = 0.5*Kwy(i,j,kcip1,bi,bj)*maskp1
-     &              - 0.5*Kwy(i,j, kci, bi,bj)
+             delPsi= 0.5 _d 0 *(
+     &   0.5 _d 0 * (rA(i,j-1,bi,bj)*Kwy(i,j-1,kcip1,bi,bj)
+     &              +rA(i, j ,bi,bj)*Kwy(i, j ,kcip1,bi,bj))
+     &            * maskS(i,j,kcip1,bi,bj) * maskp1
+     &  -0.5 _d 0 * (rA(i,j-1,bi,bj)*Kwy(i,j-1, kci ,bi,bj)
+     &              +rA(i, j ,bi,bj)*Kwy(i, j , kci ,bi,bj))
+     &            * maskS(i,j, kci ,bi,bj)
+     &                         ) / rAs(i,j,bi,bj)
 #ifdef GM_BOLUS_ADVEC
            ELSE
              delPsi = GM_PsiY(i,j,kcip1,bi,bj)*maskp1
