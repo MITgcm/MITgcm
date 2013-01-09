@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1803 2013/01/09 01:22:32 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1804 2013/01/09 23:10:58 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/offline_exf_seaice:
+  in input: add SEAICErestoreUnderIce=.TRUE., and reduce size of forcing
+    files to only one time-record.
+  in input.thermo: narrow the 2 bands of low initial ice-concentration near
+    N & S edges; switch on SEAICErestoreUnderIce=T; use pkg/diagnostics for
+    snapshot output; same mcPheePiston value as in thsice with surf-current=0.2m/s.
+  in input.thsice: similar set-up as in input.thermo (channel with same seaice
+    initial conditions).
 o verification/cfc_example:
   - update file "data" with more standard choice (default rotationPeriod,
     exactConserv=T, reduce ivdc_kappa to 10, remove multiDimAdvection=F,
