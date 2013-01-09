@@ -1,6 +1,6 @@
 
 kwr=1;
-nx=80; ny=42; nr=3; nt=2;
+nx=80; ny=42; nr=3; nt=1;
 
 xc=[1:nx]; xc=xc-mean(xc);
 yc=[1:ny]-.5;
@@ -74,34 +74,25 @@ end
 %end
 %------------------------------------------------------
 
-namf='edge100.bin'; w0=1.;
-var=w0*ones(nx,ny);
-var(:,2)=0*var(:,end);
-var(:,3)=0.01*var(:,end-1);
-var(:,4)=0.1*var(:,end-2);
-var(:,end)=0*var(:,end);
-var(:,end-1)=0.01*var(:,end-1);
-var(:,end-2)=0.1*var(:,end-2);
-if kwr >0,
+namf='ice0_area.bin'; iceC0=1.;
+iceConc=iceC0*ones(nx,ny); iceConc(:,1)=0;
+iceConc(:,2)=0.00*iceC0;
+iceConc(:,3)=0.10*iceC0;
+iceConc(:,end)  =0.00*iceC0;
+iceConc(:,end-1)=0.01*iceC0;
+if kwr > 0,
  fprintf('write to file: %s\n',namf);
- fid=fopen(namf,'w','b'); fwrite(fid,var,'real*8'); fclose(fid);
+ fid=fopen(namf,'w','b'); fwrite(fid,iceConc,'real*8'); fclose(fid);
 end
 
-namf='edge+20.bin'; w0=0.2;
-var=w0*ones(nx,ny);
-var(:,2)=0*var(:,end);
-var(:,3)=0.01*var(:,end-1);
-var(:,4)=0.1*var(:,end-2);
-var(:,end)=0*var(:,end);
-var(:,end-1)=0.01*var(:,end-1);
-var(:,end-2)=0.1*var(:,end-2);
-if kwr >0,
+namf='ice0_heff.bin'; iceH0=0.2;
+iceVol=iceConc*iceH0;
+if kwr > 0,
  fprintf('write to file: %s\n',namf);
- fid=fopen(namf,'w','b'); fwrite(fid,var,'real*8'); fclose(fid);
+ fid=fopen(namf,'w','b'); fwrite(fid,iceVol,'real*8'); fclose(fid);
 end
 
 %------------------------------------------------------
-
 
 dsw0=100;
 namf=['dsw_',int2str(dsw0),'.bin'];
@@ -111,7 +102,7 @@ if kwr > 0,
  fid=fopen(namf,'w','b'); fwrite(fid,fld,'real*8'); fclose(fid);
 end
 
-dlw0=250; 
+dlw0=250;
 namf=['dlw_',int2str(dlw0),'.bin'];
 fld=dlw0*ones(nx,ny,nt);
 if kwr > 0,
@@ -151,10 +142,13 @@ namf='socn.bin';
 %end;
 
 muTf = 5.4e-2;
-tfreeze=-muTf*sCst; 
+tfreeze=-muTf*sCst;
 fprintf('T-freeze = %10.6f\n',tfreeze);
-to_y=(yc-2)/ny;
+%- parabolic profile in Y, max @ j=4, min @ j=ny, amplitude=1.K
+to_y=(yc-3.5)/(ny-4);
 to_y=tfreeze+0.5-to_y.*to_y;
+  mnV=min(to_y); MxV=max(to_y); Avr=mean(to_y(2:end));
+  fprintf(' SST* av,mn,Mx: %9.6f , %9.6f , %9.6f , %9.6f\n',Avr,mnV,MxV,MxV-mnV);
 to=repmat(to_y,[nx 1 nt]);
 namf='tocn.bin';
 if kwr > 0,
@@ -203,8 +197,8 @@ dewPt=-cvapor_exp./log(dewPt);
 figure(2);clf;
 subplot(211)
 plot(xc,ta_x-cel2K,'r-'); hold on;
-plot(xc,dewPt-cel2K,'b-'); 
-plot(xc,tfreeze*ones(nx,1),'k-'); 
+plot(xc,dewPt-cel2K,'b-');
+plot(xc,tfreeze*ones(nx,1),'k-');
 hold off;
 AA=axis; axis([-nx/2 nx/2 AA(3:4)]);
 legend('ta','dew');
@@ -212,8 +206,40 @@ grid
 title(['del-Temp-X= ',int2str(dtx),' ; RH= ',int2str(rh),' ; Air Temp (^oC)']);
 subplot(212)
 plot(yc,to_y,'b-'); hold on;
-plot(yc,tfreeze*ones(ny,1),'k-'); 
+plot(yc,tfreeze*ones(ny,1),'k-');
 hold off;
 AA=axis; axis([0 ny AA(3:4)]);
 grid
 title('Ocean Temp ^oC');
+
+%--
+
+figure(3);clf;
+subplot(311)
+var=iceConc; ccB=[-1 12]/10;
+imagesc(xc,yc,var'); set(gca,'YDir','normal');
+caxis(ccB);
+%change_colmap(-1);
+colorbar;
+title('Ice Concentration in Channel');
+
+subplot(312)
+var=iceVol; ccB=[-1 12]/50;
+imagesc(xc,yc,var'); set(gca,'YDir','normal');
+caxis(ccB);
+%change_colmap(-1);
+colorbar;
+title('Effective ice thickness in Channel');
+
+subplot(313)
+var=iceConc(1,:);
+%plot(yc,var,'b-x'); hold on;
+semilogy(yc,var,'b-x'); hold on;
+var=iceVol(1,:);
+%plot(yc,var,'r-x'); hold off;
+semilogy(yc,var,'r-x'); hold on;
+AA=axis; axis([0 ny [0 2]*iceC0]);
+grid
+legend('iceC','hEff','Location','South');
+title('Initial ice in Channel : y-section');
+%--
