@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_oceanic_surf_flux.F,v 1.10 2009/09/03 20:55:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_oceanic_surf_flux.F,v 1.11 2013/01/10 23:06:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -39,11 +39,13 @@ C     myThid :: Thread number for this instance of the routine.
 CEOP
 
 #ifdef ALLOW_DIAGNOSTICS
+C     !FUNCTIONS:
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+
 C     !LOCAL VARIABLES:
 C     i,j,bi,bj :: loop indices
 C     ks        :: surface level index
-      LOGICAL  DIAGNOSTICS_IS_ON
-      EXTERNAL DIAGNOSTICS_IS_ON
       INTEGER i,j,bi,bj
       INTEGER ks
       _RL tmp1k(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -85,12 +87,10 @@ C-    Qnet (= net heat flux into the ocean, +=down, [W/m2])
        CALL DIAGNOSTICS_SCALE_FILL_RS( Qnet,tmpFac,1,
      &                             'oceQnet ',0, 1,0,1,1,myThid )
 
-#ifdef SHORTWAVE_HEATING
 C-    Qsw (= net short-wave into the ocean, +=down, [W/m2])
        tmpFac = -1. _d 0
        CALL DIAGNOSTICS_SCALE_FILL_RS( Qsw,tmpFac,1,
      &                             'oceQsw  ',0, 1,0,1,1,myThid )
-#endif
 
 C-    oceFreez (= heating from freezing of sea-water, if allowFreezing=T)
        tmpFac = HeatCapacity_Cp*rUnit2mass
