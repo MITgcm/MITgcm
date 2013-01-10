@@ -3,8 +3,8 @@
  useGMRedi      =.TRUE.,
  usePTRACERS    =.TRUE.,
  useGCHEM       =.TRUE.,
-#useDiagnostics =.TRUE.,
-#useLayers      =.TRUE.,
+ useDiagnostics =.TRUE.,
+ useLayers      =.TRUE.,
 #useMNC         =.TRUE.,
  &
   
