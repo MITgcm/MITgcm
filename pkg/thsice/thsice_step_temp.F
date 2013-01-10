@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.13 2011/06/07 22:26:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.14 2013/01/10 23:03:29 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -43,9 +43,9 @@ C- input:
 C     bi,bj   :: tile indices
 C   iMin,iMax :: computation domain: 1rst index range
 C   jMin,jMax :: computation domain: 2nd  index range
-C     myTime  :: time counter for this thread
-C     myIter  :: iteration counter for this thread
-C     myThid  :: thread number for this instance of the routine.
+C     myTime  :: Current time in simulation
+C     myIter  :: Current iteration number
+C     myThid  :: my Thread Id number
 C-- Modify fluxes hold in commom blocks
 C- input:
 C     icFlxSW :: (Inp) short-wave heat flux (+=down): downward comp. only
@@ -73,9 +73,7 @@ C Note: dTsrf & tmpFlx are not used here; just allocate enough space for dTsrf.
       _RL tFrzOce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dTsrf  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmpFlx(1:2)
-#ifdef SHORTWAVE_HEATING
       _RL opFrac, icFrac
-#endif
       LOGICAL dBugFlag
 
 C-    define grid-point location where to print debugging values
@@ -176,7 +174,6 @@ CADJ STORE sheating(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
      O          icFlxAtm(siLo,sjLo,bi,bj), icFrwAtm(siLo,sjLo,bi,bj),
      I          myTime, myIter, myThid )
 
-#ifdef SHORTWAVE_HEATING
        DO j = jMin, jMax
         DO i = iMin, iMax
          IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN
@@ -188,7 +185,6 @@ C--    Update Fluxes :
          ENDIF
         ENDDO
        ENDDO
-#endif /* SHORTWAVE_HEATING */
 c     ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
