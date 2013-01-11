@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.33 2012/10/18 10:06:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.34 2013/01/11 20:18:57 jmc Exp $
 C $Name:  $
 
 #ifndef SEAICE_LSRBNEW
@@ -56,7 +56,7 @@ C     i,j,bi,bj - Loop counters
       _RL e11loc, e22loc, e12loc
 
       _RL COSWAT
-      _RL SINWAT
+      _RS SINWAT
       _RL ECM2, DELT1, DELT2
       _RL TEMPVAR
 

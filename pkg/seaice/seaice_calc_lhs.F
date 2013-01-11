@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.4 2012/11/09 14:03:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.5 2013/01/11 20:18:57 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -15,12 +15,12 @@ C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE SEAICE_CALC_LHS
 C     | o Left-hand side of momentum equations, i.e. all terms
-C     |   that depend on the ice velocities of the current 
+C     |   that depend on the ice velocities of the current
 C     |   iterate of the Newton-Krylov iteration
 C     |
-C     | o The scheme is backward Euler in time, i.e. the 
+C     | o The scheme is backward Euler in time, i.e. the
 C     |   rhs-vector contains only terms that are independent
-C     |   of u/vIce, except for the time derivative part 
+C     |   of u/vIce, except for the time derivative part
 C     |   mass*(u/vIce-u/vIceNm1)/deltaT
 C     | o Left-hand side contributions
 C     |   + mass*(u/vIce)/deltaT
@@ -73,7 +73,8 @@ C     u/vIceLHS :: LHS of momentum equations
 C     i,j,bi,bj,k :: loop indices
       INTEGER i,j,bi,bj
       INTEGER k
-      _RL     SINWAT, COSWAT, recip_deltaT, eplus, eminus
+      _RS     SINWAT
+      _RL     COSWAT, recip_deltaT, eplus, eminus
 C     components of symmetric stress tensor
       _RL sig11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig22(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -107,7 +108,7 @@ C     compute components of stress tensor from current velocity field
      &         - 0.5 _d 0 * PRESS(I,J,bi,bj)
          ENDDO
         ENDDO
-        
+
         DO j=1,sNy+1
          DO i=1,sNx+1
           sig12(I,J) = 2. _d 0 * e12(I,J,bi,bj) * etaZ(I,J,bi,bj)
@@ -135,7 +136,7 @@ C
 C     compute lhs side of momentum equations
         DO J=1,sNy
          DO I=1,sNx
-C     mass*(uIce)/deltaT - dsigma/dx 
+C     mass*(uIce)/deltaT - dsigma/dx
           uIceLHS(I,J,bi,bj) = seaiceMassU(I,J,bi,bj)*recip_deltaT
      &         *uIceLoc(I,J,bi,bj) - stressDivergenceX(I,J,bi,bj)
 C     mass*(vIce)/deltaT - dsigma/dy

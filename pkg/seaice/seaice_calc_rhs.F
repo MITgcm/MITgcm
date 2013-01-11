@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_rhs.F,v 1.5 2012/11/06 12:29:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_rhs.F,v 1.6 2013/01/11 20:18:57 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -14,7 +14,7 @@ C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE SEAICE_CALC_RHS
 C     | o Right-hand side of momentum equations, i.e. all terms
-C     |   that do not depend on the ice velocities of the current 
+C     |   that do not depend on the ice velocities of the current
 C     |   iterate of the Newton-Krylov iteration
 C     *==========================================================*
 C     | written by Martin Losch, Oct 2012
@@ -56,7 +56,8 @@ C     u/vIceRHS :: RHS of momentum equations
 C     i,j,bi,bj,kSrf :: loop indices
       INTEGER i,j,bi,bj
       INTEGER kSrf
-      _RL     SINWAT, COSWAT
+      _RS     SINWAT
+      _RL     COSWAT
 CEOP
 
       kSrf=1

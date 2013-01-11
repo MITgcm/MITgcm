@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.14 2013/01/04 15:45:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.15 2013/01/11 20:18:57 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -6,11 +6,19 @@ C $Name:  $
 # include "OBCS_OPTIONS.h"
 #endif
 
+C--   File seaice_preconditioner.F:
+C--   Contents
+C--   o SEAICE_PRECONDITIONER
+C--   o SEAICE_PRECOND_RSHU
+C--   o SEAICE_PRECOND_RSHV
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 CBOP
 C     !ROUTINE: SEAICE_PRECONDITIONER
 C     !INTERFACE:
-      SUBROUTINE SEAICE_PRECONDITIONER( 
-     U     duIce, dvIce, 
+      SUBROUTINE SEAICE_PRECONDITIONER(
+     U     duIce, dvIce,
      I     zetaPre, etaPre, etaZpre, dwatPre,
      I     newtonIter, krylovIter, myTime, myIter, myThid )
 
@@ -38,26 +46,29 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 
-C     !INPUT/OUTPUT PARAMETERS:
+C     !INPUT PARAMETERS:
 C     === Routine arguments ===
 C     myTime :: Simulation time
 C     myIter :: Simulation timestep number
 C     myThid :: my Thread Id. number
 C     newtonIter :: current iterate of Newton iteration
 C     krylovIter :: current iterate of Krylov iteration
-      _RL     myTime
-      INTEGER myIter
-      INTEGER myThid
-      INTEGER newtonIter
-      INTEGER krylovIter
-C     du/vIce :: solution vector
-      _RL duIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL dvIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     *Pre are precomputed and held fixed during the Krylov iteration
       _RL  zetaPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL   etaPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  etaZPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  dwatPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER newtonIter
+      INTEGER krylovIter
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
+
+C     !OUTPUT PARAMETERS:
+C     du/vIce :: solution vector
+      _RL duIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL dvIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+CEOP
 
 #if ( defined (SEAICE_CGRID) && \
       defined (SEAICE_ALLOW_JFNK) && \
@@ -106,8 +117,8 @@ C     auxillary fields
       _RL CVV  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS SINWAT
       _RL COSWAT
-      _RL SINWAT
       _RL coriFac
       _RL fricFac
       LOGICAL printResidual
@@ -166,7 +177,7 @@ C
 C     calculate coefficients of tridiagonal matrices for both u- and
 C     v-equations
 C
-      CALL SEAICE_CALC_LSR_COEFFS( 
+      CALL SEAICE_CALC_LSR_COEFFS(
      I     etaPlusZeta, zetaMinusEta, etaZpre, dwatPre,
      O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
      I     myTime, myIter, myThid )
@@ -202,11 +213,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevD ) THEN
         WRITE(msgBuf,'(A,I3,A,I3,A)')
-     &        'Uice pre iter (SEAICE_PRECONDITIONER', 
+     &        'Uice pre iter (SEAICE_PRECONDITIONER',
      &      newtonIter, ',', krylovIter, ')'
         CALL DEBUG_STATS_RL( 1, UICE, msgBuf, myThid )
         WRITE(msgBuf,'(A,I3,A,I3,A)')
-     &        'Vice pre iter (SEAICE_PRECONDITIONER', 
+     &        'Vice pre iter (SEAICE_PRECONDITIONER',
      &      newtonIter, ',', krylovIter, ')'
         CALL DEBUG_STATS_RL( 1, VICE, msgBuf, myThid )
       ENDIF
@@ -224,15 +235,15 @@ C     set up right-hand side now (will be redone in each iteration)
           ENDDO
          ENDDO
          CALL SEAICE_PRECOND_RSHU (
-     I        zetaMinusEta, etaPlusZeta, etaZpre, dvIce, 
+     I        zetaMinusEta, etaPlusZeta, etaZpre, dvIce,
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      O        rhsU,
-     I        bi,bj,myThid ) 
+     I        bi,bj,myThid )
          CALL SEAICE_PRECOND_RSHV (
-     I        zetaMinusEta, etaPlusZeta, etaZpre, duIce, 
+     I        zetaMinusEta, etaPlusZeta, etaZpre, duIce,
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      O        rhsV,
-     I        bi,bj,myThid ) 
+     I        bi,bj,myThid )
 #ifndef OBCS_UVICE_OLD
          DO J=1,sNy
           DO I=1,sNx
@@ -266,7 +277,7 @@ C ITERATION START -----------------------------------------------------
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         
+
 C     save du/vIce prior to iteration
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -288,13 +299,13 @@ C     set up right-hand sides for u- and v-equations
      I        zetaMinusEta, etaPlusZeta, etaZpre, dvIce,
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      U        rhsU,
-     I        bi,bj,myThid ) 
+     I        bi,bj,myThid )
 #ifdef SEAICE_LSR_SYMMETRIC_SWEEP
          CALL SEAICE_PRECOND_RSHV (
      I        zetaMinusEta, etaPlusZeta, etaZpre, duIce,
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      U        rhsV,
-     I        bi,bj,myThid ) 
+     I        bi,bj,myThid )
 #endif /* SEAICE_LSR_SYMMETRIC_SWEEP */
 #ifndef OBCS_UVICE_OLD
 C--     prevent tri-diagonal solver to modify OB values:
@@ -318,7 +329,7 @@ C Solve for uIce :
            AA3 = ZERO
            IF (I.EQ.1)   AA3 = AA3 - AU(I,J,bi,bj)*duIce(I-1,J,bi,bj)
            IF (I.EQ.sNx) AA3 = AA3 - CU(I,J,bi,bj)*duIce(I+1,J,bi,bj)
-           
+
            URT(I,J)=rhsU(I,J,bi,bj)
      &          + AA3
 #ifdef SEAICE_VECTORIZE_LSR
@@ -365,7 +376,7 @@ C     go back to original order
      &          +WFAU*(URT(I,J)-uTmp(I,J,bi,bj))
           ENDDO
          ENDDO
-      
+
 #ifndef SEAICE_LSR_SYMMETRIC_SWEEP
         ENDDO
        ENDDO
@@ -384,7 +395,7 @@ C     set up right-hand-side for v-equation
      I        zetaMinusEta, etaPlusZeta, etaZpre, duIce,
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      U        rhsV,
-     I        bi,bj,myThid ) 
+     I        bi,bj,myThid )
 #ifndef OBCS_UVICE_OLD
 C--     prevent tri-diagonal solver to modify OB values:
          DO J=1,sNy
@@ -403,7 +414,7 @@ C Solve for dvIce
            AA3 = ZERO
            IF (J.EQ.1)   AA3 = AA3 - AV(I,J,bi,bj)*dvIce(I,J-1,bi,bj)
            IF (J.EQ.sNy) AA3 = AA3 - CV(I,J,bi,bj)*dvIce(I,J+1,bi,bj)
-           
+
            VRT(I,J)=rhsV(I,J,bi,bj)
      &          + AA3
 #ifdef SEAICE_VECTORIZE_LSR
@@ -441,7 +452,7 @@ C Solve for dvIce
 C     end bi,bj-loops
         ENDDO
        ENDDO
-        
+
        CALL EXCH_UV_XY_RL( duIce, dvIce, .TRUE., myThid )
 
       ENDDO
@@ -462,18 +473,18 @@ C--   Calculate final residual of the linearised system
      &       '     ', residUini, residVini
         WRITE(standardMessageUnit,'(A,I4,A,I4,A,I6,1P2E16.8)')
      &       ' SEAICE_PRECONDITIONER (iter=',newtonIter,',',
-     &       krylovIter, ') iters, U/VResid=', 
+     &       krylovIter, ') iters, U/VResid=',
      &       iCount, residUend, residVend
         _END_MASTER( myThid )
       ENDIF
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevD ) THEN
         WRITE(msgBuf,'(A,I3,A,I3,A)')
-     &        'Uice post iter (SEAICE_PRECONDITIONER', 
+     &        'Uice post iter (SEAICE_PRECONDITIONER',
      &      newtonIter, ',', krylovIter, ')'
         CALL DEBUG_STATS_RL( 1, UICE, msgBuf, myThid )
         WRITE(msgBuf,'(A,I3,A,I3,A)')
-     &        'Vice post iter (SEAICE_PRECONDITIONER', 
+     &        'Vice post iter (SEAICE_PRECONDITIONER',
      &      newtonIter, ',', krylovIter, ')'
         CALL DEBUG_STATS_RL( 1, VICE, msgBuf, myThid )
       ENDIF
@@ -491,25 +502,30 @@ C     APPLY MASKS
        ENDDO
       ENDDO
 
-      RETURN 
+      RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+CBOP
+C     !ROUTINE: SEAICE_PRECOND_RSHU
+C     !INTERFACE:
       SUBROUTINE SEAICE_PRECOND_RSHU (
      I     zetaMinusEta, etaPlusZeta, etaZpre, vIceLoc,
      I     dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      U     rhsU,
-     I     bi,bj,myThid ) 
+     I     bi,bj,myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE SEAICE_PRECOND_RSHV
-C     | o Calculate the right-hand-side of the v-momentum equation
+C     | SUBROUTINE SEAICE_PRECOND_RSHU
+C     | o Calculate the right-hand-side of the u-momentum equation
 C     *==========================================================*
 C     \ev
 
+C     !USES:
       IMPLICIT NONE
+
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -518,23 +534,26 @@ C     \ev
 #include "SEAICE_SIZE.h"
 #include "SEAICE.h"
 
-      INTEGER bi, bj, myThid
-      _RL coriFac, fricFac 
-      _RL COSWAT
-      _RL SINWAT
-      _RL rhsU        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL dwatPre     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL vIceLoc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     !INPUT/OUTPUT PARAMETERS:
       _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaZpre     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vIceLoc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL dwatPre     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL coriFac, fricFac
+      _RS SINWAT
+      _RL COSWAT
+      _RL rhsU        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER bi, bj, myThid
+CEOP
 
+C     !LOCAL VARIABLES:
       INTEGER I,J,K
 C     contribution of sigma on righ hand side
       _RL sig11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hFacM
-      
+
 C     surface level
       k = 1
 
@@ -599,22 +618,25 @@ C-    add Coriolis term
      &        ( seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
      &        *0.5 _d 0*(vIceLoc( i ,j,bi,bj)+vIceLoc( i ,j+1,bi,bj))
      &        + seaiceMassC(I-1,J,bi,bj) * _fCori(I-1,J,bi,bj)
-     &        *0.5 _d 0*(vIceLoc(i-1,j,bi,bj)+vIceLoc(i-1,j+1,bi,bj)) 
+     &        *0.5 _d 0*(vIceLoc(i-1,j,bi,bj)+vIceLoc(i-1,j+1,bi,bj))
      &        ) * coriFac
         ENDDO
        ENDDO
       ENDIF
-     
-      RETURN 
+
+      RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+CBOP
+C     !ROUTINE: SEAICE_PRECOND_RSHV
+C     !INTERFACE:
       SUBROUTINE SEAICE_PRECOND_RSHV (
      I     zetaMinusEta, etaPlusZeta, etaZpre, uIceLoc,
      I     dwatPre, coriFac, fricFac, SINWAT, COSWAT,
      U     rhsV,
-     I     bi,bj,myThid ) 
+     I     bi,bj,myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -623,7 +645,9 @@ C     | o Calculate the right-hand-side of the v-momentum equation
 C     *==========================================================*
 C     \ev
 
+C     !USES:
       IMPLICIT NONE
+
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -632,23 +656,26 @@ C     \ev
 #include "SEAICE_SIZE.h"
 #include "SEAICE.h"
 
-      INTEGER bi, bj, myThid
-      _RL coriFac, fricFac
-      _RL COSWAT
-      _RL SINWAT
-      _RL rhsV        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL dwatPre     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL uIceLoc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     !INPUT/OUTPUT PARAMETERS:
       _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaZpre     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL uIceLoc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL dwatPre     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL coriFac, fricFac
+      _RS SINWAT
+      _RL COSWAT
+      _RL rhsV        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER bi, bj, myThid
+CEOP
 
+C     !LOCAL VARIABLES:
       INTEGER I,J,K
 C     contribution of sigma on righ hand side
       _RL sig22(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hFacM
-      
+
 C     surface level
       k = 1
 
@@ -699,7 +726,7 @@ C     neglected for preconditioning step
       IF ( fricFac+coriFac .NE. 0. _d 0 ) THEN
        DO J=1,sNy
         DO I=1,sNx
-         rhsV(I,J,bi,bj) = rhsV(I,J,bi,bj) 
+         rhsV(I,J,bi,bj) = rhsV(I,J,bi,bj)
      &        + SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 *
      &        ( dwatPre(I,J  ,bi,bj) * 0.5 _d 0 *
      &        (uVel(I  ,J  ,k,bi,bj)-uIceLoc(I  ,J  ,bi,bj)
