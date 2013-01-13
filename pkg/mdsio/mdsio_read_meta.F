@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_meta.F,v 1.6 2012/07/16 19:14:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_meta.F,v 1.7 2013/01/13 22:48:49 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -13,7 +13,7 @@ C     !INTERFACE:
      O               filePrec,
      U               nDims,   nFlds,   nTimRec,
      O               dimList, fldList, timList,
-     O               nRecords, fileIter,
+     O               misVal, nRecords, fileIter,
      I               useCurrentDir,
      I               myThid )
 
@@ -52,6 +52,7 @@ C     nFlds     (integer) :: number of fields in "fldList"
 C     fldList   (string)  :: list of fields (names) stored in file
 C     nTimRec   (integer) :: number of time-specification in "timList"
 C     timList   (real)    :: array of time-specifications (recorded in file)
+C     misVal    (real)    :: missing value
 C     nRecords  (integer) :: number of records
 C     fileIter  (integer) :: time-step number (recorded in file)
 C
@@ -66,6 +67,7 @@ c     INTEGER map2gl(2)
       CHARACTER*(8) fldList(*)
       INTEGER nTimRec
       _RL     timList(*)
+      _RL     misVal
       INTEGER nRecords
       INTEGER fileIter
       LOGICAL useCurrentDir
@@ -114,6 +116,7 @@ c     map2gl(2) = 1
       DO i=1,nTimRec
        timList(i) = 0.
       ENDDO
+      misVal = oneRL
 C--   Initialise Temp Var.
       fileExist  = .FALSE.
       globalFile = .FALSE.
@@ -311,13 +314,12 @@ C-    Read recorded iteration number
           iL = 0
          ENDIF
 
-C-    Read list of Time records
+C-    Read list of Time Intervals
          IF ( nTimFil.EQ.0 .AND.
-     &        iL.GE.42 .AND. lineBuf(1:16).EQ.' /* modelTime = ' ) THEN
+     &        iL.GE.38 .AND. lineBuf(1:16).EQ.' timeInterval = ' ) THEN
 C note: format might change once we have a better idea of what will
 C       be the time-information to write.
-C     for now, comment out this line for rdmds (i.e.: between /* */)
-          nTimFil = INT((iL-17-5)/20)
+          nTimFil = INT((iL-17-3)/20)
           IF ( nTimRec.GE.1 ) THEN
             IF ( nTimFil.GT.nTimRec ) THEN
              WRITE(msgBuf,'(2(A,I6),A)') ' MDS_READ_META: nTimRec=',
@@ -325,11 +327,13 @@ C     for now, comment out this line for rdmds (i.e.: between /* */)
              CALL PRINT_ERROR( msgBuf, myThid )
              STOP 'ABNORMAL END: S/R MDS_READ_META'
             ENDIF
-            READ(lineBuf(18:iL-5),'(1P20E20.12)',ERR=1003)
+            READ(lineBuf(18:iL-3),'(1P20E20.12)',ERR=1003)
      &                            (timList(i),i=1,nTimFil)
           ENDIF
           iL = 0
-         ELSEIF ( iL.GE.8 .AND. lineBuf(1:4).EQ.' /* ' ) THEN
+         ENDIF
+
+         IF ( iL.GE.8 .AND. lineBuf(1:4).EQ.' /* ' ) THEN
           IF ( lineBuf(iL-2:iL).EQ.' */' ) THEN
 C-    Read title or comments (ignored by rdmds)
            ii = LEN(titleLine)
@@ -338,6 +342,13 @@ c          IF ( ii.LT.iL-7 )  print 'warning: truncate titleLine'
            titleLine = lineBuf(5:ii)
            iL = 0
           ENDIF
+         ENDIF
+
+C-    Read missing value
+         IF ( misVal.EQ.oneRL .AND. iL.GE.40 .AND.
+     &        lineBuf(1:16).EQ.' missingValue = ' ) THEN
+          READ(lineBuf(19:iL),'(1PE21.14)') misVal
+          iL = 0
          ENDIF
 
 C-    Read number of Fields
@@ -374,7 +385,7 @@ C--   End of reading file line per line
         STOP 'ABNORMAL END: S/R MDS_READ_META'
  1003   CONTINUE
         WRITE(msgBuf,'(2(A,I4),A)')
-     &    ' MDS_READ_META: error reading Model-Time: nTimRec=',
+     &    ' MDS_READ_META: error reading Time-Interval: nTimRec=',
      &     nTimFil, ' , iL=', iL
         CALL PRINT_ERROR( msgBuf, myThid )
         CALL PRINT_ERROR(lineBuf, myThid )
