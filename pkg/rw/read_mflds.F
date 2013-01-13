@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/read_mflds.F,v 1.8 2012/04/03 00:11:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/read_mflds.F,v 1.9 2013/01/13 22:49:48 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -109,6 +109,7 @@ C-    output of MDS_READ_META :
       INTEGER nDims, nTimRec
       INTEGER dimList(3,nSizD)
       _RL     timList(nSizT)
+      _RL     misVal
       INTEGER nRecords, fileIter
 C-    for debug print:
       INTEGER i, j, ioUnit
@@ -156,7 +157,7 @@ C-    Initialise variables in common block:
      O               filePrec,
      U               nDims,   nFlds,   nTimRec,
      O               dimList, fldList, timList,
-     O               nRecords, fileIter,
+     O               misVal, nRecords, fileIter,
      I               useCurrentDir, myThid )
 #endif /* ALLOW_MDSIO */
 
@@ -214,7 +215,12 @@ C-    write to Standard Output
      &     (' >', fldList(i), '<', i=j,MIN(j+19,nFlds) )
          CALL PRINT_MESSAGE(msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         ENDDO
-        WRITE(msgBuf,'(A,I4,A)') '  nTimRec =',nTimRec,' , timeList:'
+c       IF ( misVal.NE.oneRL ) THEN
+         WRITE(msgBuf,'(A,1PE22.14,A,I4,A)') 'missingVal=', misVal,
+     &                           ' ; nTimRec =',nTimRec,' , timeList:'
+c       ELSE
+c        WRITE(msgBuf,'(A,I4,A)') '  nTimRec =',nTimRec,' , timeList:'
+c       ENDIF
         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         IF ( nTimRec.GE.1 ) THEN
          WRITE(msgBuf,'(1P20E20.12)') (timList(i),i=1,nTimRec)
