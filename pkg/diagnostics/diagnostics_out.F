@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.59 2011/07/26 20:05:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.60 2013/01/13 22:46:38 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -446,7 +446,8 @@ C     meta files but with more informations in it.
             nRec = averageCycle(listId)*nfields(listId)
             CALL MDS_WR_METAFILES(fn, prec, glf, .FALSE.,
      &              0, 0, nLevOutp, ' ',
-     &              nfields(listId), flds(1,listId), nTimRec, timeRec,
+     &              nfields(listId), flds(1,listId),
+     &              nTimRec, timeRec, undefRL,
      &              nRec, myIter, myThid)
       ENDIF
 #endif /*  ALLOW_MDSIO  */

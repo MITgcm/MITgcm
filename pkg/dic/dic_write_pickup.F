@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_write_pickup.F,v 1.7 2011/08/25 22:19:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_write_pickup.F,v 1.8 2013/01/13 22:46:38 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -115,7 +115,7 @@ C     files
         CALL MDS_WR_METAFILES( fn, prec, glf, .FALSE.,
      &                         0, 0, j, ' ',
      &                         nWrFlds, wrFldList,
-     &                         1, timList,
+     &                         1, timList, oneRL,
      &                         nj, myIter, myThid )
 #endif /* ALLOW_MDSIO */
 C--------------------------

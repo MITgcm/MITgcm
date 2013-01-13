@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_write_pickup.F,v 1.9 2012/12/23 20:18:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_write_pickup.F,v 1.10 2013/01/13 22:46:38 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -54,6 +54,7 @@ C     wrFldList   :: list of written fields
 C     msgBuf      :: Informational/error message buffer
       INTEGER j, nj, fp, lChar
       LOGICAL glf
+      _RL     timList(1)
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER listDim, nWrFlds
       PARAMETER( listDim = 12 )
@@ -134,10 +135,11 @@ C     uses this specific S/R to write (with more informations) only meta files
           nj = nWrFlds
         ENDIF
         glf  = globalFiles
+        timList(1) = myTime
         CALL MDS_WR_METAFILES( fn, fp, glf, .FALSE.,
      &                         0, 0, j, ' ',
      &                         nWrFlds, wrFldList,
-     &                         1, myTime,
+     &                         1, timList, oneRL,
      &                         nj, myIter, myThid )
 #endif /* ALLOW_MDSIO */
 C--------------------------

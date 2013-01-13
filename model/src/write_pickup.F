@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.12 2012/11/09 22:37:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.13 2013/01/13 22:44:43 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -317,7 +317,7 @@ C     meta files but with more informations in it.
         CALL MDS_WR_METAFILES( fn, fp, glf, .FALSE.,
      &                         0, 0, 1, ' ',
      &                         nWrFlds, wrFldList,
-     &                         1, timList,
+     &                         1, timList, oneRL,
      &                         nj, myIter, myThid )
 #endif /* ALLOW_MDSIO */
 C--------------------------

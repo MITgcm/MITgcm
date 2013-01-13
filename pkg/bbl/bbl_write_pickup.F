@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_write_pickup.F,v 1.2 2011/08/25 22:19:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_write_pickup.F,v 1.3 2013/01/13 22:46:37 jmc Exp $
 C $Name:  $
 
 #include "BBL_OPTIONS.h"
@@ -105,7 +105,7 @@ C     uses this specific S/R to write meta file
         CALL MDS_WR_METAFILES( fn, fp, glf, .FALSE.,
      &                         0, 0, 1, ' ',
      &                         nWrFlds, wrFldList,
-     &                         1, timList,
+     &                         1, timList, oneRL,
      &                         j, myIter, myThid )
 #endif /* ALLOW_MDSIO */
 C--------------------------

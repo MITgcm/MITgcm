@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_write_pickup.F,v 1.4 2012/04/03 00:20:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_write_pickup.F,v 1.5 2013/01/13 22:46:38 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -137,7 +137,7 @@ C     uses this specific S/R to write (with more informations) only meta files
         CALL MDS_WR_METAFILES( fn, fp, glf, .FALSE.,
      &                         0, 0, j, ' ',
      &                         nWrFlds, wrFldList,
-     &                         1, timList,
+     &                         1, timList, oneRL,
      &                         nj, myIter, myThid )
 #endif /* ALLOW_MDSIO */
 C--------------------------

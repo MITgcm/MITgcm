@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.15 2012/10/22 21:14:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.16 2013/01/13 22:46:38 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -138,7 +138,7 @@ C---  continue to write 2-D fields:
           j = j + 1
           nj = nj-1
           CALL WRITE_REC_3D_RL( fn, fp,  1,
-     &         SItracer(1-Olx,1-Oly,1,1,iTrac),
+     &         SItracer(1-OLx,1-OLy,1,1,iTrac),
      &         nj, myIter, myThid )
           IF (j.LE.listDim) wrFldList(j) = fldName
          ENDDO
@@ -197,7 +197,7 @@ C     uses this specific S/R to write (with more informations) only meta files
        CALL MDS_WR_METAFILES( fn, fp, glf, .FALSE.,
      &                         0, 0, 1, ' ',
      &                         nWrFlds, wrFldList,
-     &                         1, timList,
+     &                         1, timList, oneRL,
      &                         nj, myIter, myThid )
 C
 #endif /* ALLOW_MDSIO */

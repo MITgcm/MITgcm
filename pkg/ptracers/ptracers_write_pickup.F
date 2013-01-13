@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.14 2012/04/02 00:06:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.15 2013/01/13 22:46:38 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -171,7 +171,7 @@ C     uses this specific S/R to write (with more informations) only meta files
         CALL MDS_WR_METAFILES( fn, prec, glf, .FALSE.,
      &                         0, 0, Nr, ' ',
      &                         nWrFlds, wrFldList,
-     &                         1, timList,
+     &                         1, timList, oneRL,
      &                         j, myIter, myThid )
 #endif /* ALLOW_MDSIO */
 C--------------------------
