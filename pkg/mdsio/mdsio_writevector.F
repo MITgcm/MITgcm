@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.14 2009/09/01 19:00:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.15 2013/01/13 22:43:53 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -226,7 +226,7 @@ C Close data-file and create meta-file
          CALL MDS_WRITE_META(
      I              metaFName, dataFName, the_run_name, ' ',
      I              filePrec, nDims, dimList, map2gl, 0, blank8c,
-     I              0, dummyRL, irecord, myIter, myThid )
+     I              0, dummyRL, oneRL, irecord, myIter, myThid )
         ENDIF
        _END_MASTER( myThid )
 C To be safe, make other processes wait for I/O completion
@@ -326,7 +326,7 @@ C Create meta-file for each tile file
          CALL MDS_WRITE_META(
      I              metaFName, dataFName, the_run_name, ' ',
      I              filePrec, nDims, dimList, map2gl, 0, blank8c,
-     I              0, dummyRL, irecord, myIter, myThid )
+     I              0, dummyRL, oneRL, irecord, myIter, myThid )
         ENDIF
 C End of bi,bj loops
 c      ENDDO
@@ -354,10 +354,10 @@ C Create meta-file for global file
        CALL MDS_WRITE_META(
      I              metaFName, dataFName, the_run_name, ' ',
      I              filePrec, nDims, dimList, map2gl, 0, blank8c,
-     I              0, dummyRL, irecord, myIter, myThid )
+     I              0, dummyRL, oneRL, irecord, myIter, myThid )
 c    I              metaFName, dataFName, the_run_name, titleLine,
 c    I              filePrec, nDims, dimList, map2gl, nFlds, fldList,
-c    I              nTimRec, timList, irecord, myIter, myThid )
+c    I              nTimRec, timList, misVal, irecord, myIter, myThid )
       ENDIF
 
       _END_MASTER( myThid )

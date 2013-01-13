@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writevec_loc.F,v 1.8 2011/06/07 22:30:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writevec_loc.F,v 1.9 2013/01/13 22:43:53 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -243,7 +243,7 @@ C--   we are writing a tiled array (bi>0,bj>0):
           CALL MDS_WRITE_META(
      I              metaFName, dataFName, the_run_name, ' ',
      I              filePrec, nDims, dimList, map2gl, 0, blank8c,
-     I              0, dummyRL, iRec, myIter, myThid )
+     I              0, dummyRL, oneRL, irecord, myIter, myThid )
         ENDIF
 
         _END_MASTER( myThid )

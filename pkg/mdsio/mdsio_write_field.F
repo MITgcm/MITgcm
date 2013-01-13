@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.18 2012/03/05 23:48:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.19 2013/01/13 22:43:53 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -532,7 +532,7 @@ c          dimList(3,3) = kHi
            CALL MDS_WRITE_META(
      I              metaFName, dataFName, the_run_name, ' ',
      I              filePrec, nDims, dimList, map2gl, 0, blank8c,
-     I              0, dummyRL, irecord, myIter, myThid )
+     I              0, dummyRL, oneRL, irecord, myIter, myThid )
           ENDIF
 
 C End of bi,bj loops
@@ -578,10 +578,10 @@ c        dimList(3,3) = kHi
          CALL MDS_WRITE_META(
      I              metaFName, dataFName, the_run_name, ' ',
      I              filePrec, nDims, dimList, map2gl, 0, blank8c,
-     I              0, dummyRL, irecord, myIter, myThid )
+     I              0, dummyRL, oneRL, irecord, myIter, myThid )
 c    I              metaFName, dataFName, the_run_name, titleLine,
 c    I              filePrec, nDims, dimList, map2gl, nFlds,  fldList,
-c    I              nTimRec, timList, irecord, myIter, myThid )
+c    I              nTimRec, timList, misVal, irecord, myIter, myThid )
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.21 2012/03/30 18:26:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.22 2013/01/13 22:43:53 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
 
 CBOP
-C !ROUTINE: MDS_WRITE_FIELD
+C !ROUTINE: MDS_WRITELOCAL
 C !INTERFACE:
       SUBROUTINE MDS_WRITELOCAL(
      I   fName,
@@ -402,7 +402,7 @@ C Create meta-file for each tile if we are tiling
            CALL MDS_WRITE_META(
      I              metaFName, dataFName, the_run_name, ' ',
      I              filePrec, nDims, dimList, map2gl, 0, blank8c,
-     I              0, dummyRL, irecord, myIter, myThid )
+     I              0, dummyRL, oneRL, irecord, myIter, myThid )
           ENDIF
 
 C End of ith loop
@@ -433,7 +433,7 @@ C Create meta-file for the global-file
          CALL MDS_WRITE_META(
      I              metaFName, dataFName, the_run_name, ' ',
      I              filePrec, nDims, dimList, map2gl, 0, blank8c,
-     I              0, dummyRL, irecord, myIter, myThid )
+     I              0, dummyRL, oneRL, irecord, myIter, myThid )
         ENDIF
 
 C-    end if iAmDoingIO
