@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_meta.F,v 1.5 2010/01/07 23:41:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_meta.F,v 1.6 2013/01/13 22:42:26 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -14,7 +14,7 @@ C     !INTERFACE:
      I    filePrec,
      I    nDims,   dimList, map2gl,
      I    nFlds,   fldList,
-     I    nTimRec, timList,
+     I    nTimRec, timList, misVal,
      I    nrecords, myIter, myThid )
 
 C     !DESCRIPTION: \bv
@@ -44,6 +44,7 @@ C     nFlds     (integer) :: number of fields in "fldList"
 C     fldList   (string)  :: array of field names to write
 C     nTimRec   (integer) :: number of time-specification in "timList"
 C     timList   (real)    :: array of time-specifications to write
+C     misVal    (real)    :: missing value (ignored if = 1.)
 C     nrecords  (integer) :: record number
 C     myIter    (integer) :: time-step number
 C     myThid    (integer) :: my Thread Id number
@@ -62,6 +63,7 @@ C
       CHARACTER*(8) fldList(*)
       INTEGER nTimRec
       _RL     timList(*)
+      _RL     misVal
       INTEGER nrecords
       INTEGER myIter
       INTEGER myThid
@@ -170,12 +172,16 @@ C     that the information is superfluous and do not write it.
 C-    Write list of Time records
 C note: format might change once we have a better idea of what will
 C       be the time-information to write.
-C     for now, comment out this line for rdmds (i.e.: between /* */)
       IF ( nTimRec.GT.0 ) THEN
        ii = MIN(nTimRec,20)
        WRITE(msgBuf,'(1P20E20.12)') (timList(i),i=1,ii)
-c      WRITE(mUnit,'(3A)')' /* modelTime = [', msgBuf(1:20*ii),' ];*/'
        WRITE(mUnit,'(1X,3A)') 'timeInterval = [', msgBuf(1:20*ii),' ];'
+      ENDIF
+
+C-    Write missing value
+      IF ( misVal.NE.oneRL ) THEN
+       WRITE(mUnit,'(1X,A,1PE21.14,A)')
+     &                        'missingValue = [ ',misVal,' ];'
       ENDIF
 
 C-    Write list of Fields
