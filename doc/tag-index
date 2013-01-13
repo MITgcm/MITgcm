@@ -1,12 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1805 2013/01/11 00:13:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1806 2013/01/13 22:55:56 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mdsio:
+  - write missing value (corresponding to undefined array value) to meta files;
+    skip this if missing value is one (UNSET_RL would be a better value for the 
+    case of undefined missing value but it's current the default missing-value);
+    Also update mdsio_read_meta.F (reading timeInterval & missing-value).
 o pkg/exf & thsice:
   - for diagnostics purpose, fill-up and update Qsw array (+ fill the diagnostics)
-    even when SHORTWAVE_HEATING is #undef; 
+    even when SHORTWAVE_HEATING is #undef;
 o verification/cfc_example:
   - turn on pkg/layers with pkg/diagnostics (to test pkg/layers and to illustrate
     how to use it).
