@@ -1,4 +1,4 @@
-% $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/input/grph_diag.m,v 1.1 2013/01/10 20:23:52 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/input/grph_diag.m,v 1.2 2013/01/14 16:55:13 jmc Exp $
 % $Name:  $
 
 if size(who('kpr'),1) > 0,
@@ -17,7 +17,6 @@ gDir=rDir1;
 
 namF='iceDiag';
 %namF='snapshot'; iter=iter-1; ite2=iter;
-misVal=-999.;
 
 ii=strfind(rDir1,'/'); if length(ii) > 1, ii=1+ii(end-1); else ii=1; end
 titexp1=rDir1(ii:end-1); titexp1=strrep(titexp1,'_','\_');
@@ -32,6 +31,7 @@ msk1=squeeze(G.hFacC); msk1=ceil(msk1); msk1=min(msk1,1);
 
 Nit=length(iter);
 if kpr > 0,
+ clear missingValue ;
  [v4d1,its,M]=rdmds([rDir1,namF],iter); %v4d1=squeeze(v4d1);
  eval(M); namV=char(fldList) ; nV=size(namV,1);
  if Nexp > 1, [v4d2,its,M]=rdmds([rDir2,namF],ite2); end
@@ -39,6 +39,13 @@ if kpr > 0,
        [J]=find(strcmp(fldList,'SIarea  ')); if length(J) == 1 & jA == 0, jA=J; end
  jH=0; [J]=find(strcmp(fldList,'SI_Thick')); if length(J) == 1 & jH == 0, jH=J; end
  jE=0; [J]=find(strcmp(fldList,'SIheff  ')); if length(J) == 1 & jE == 0, jE=J; end
+ if size(who('missingValue'),1) > 0,
+   fprintf('take missingValue from meta file:');
+   if strcmp(dataprec,'float32'), misVal=single(missingValue); else misVal=missingValue; end
+ else
+   fprintf('no missingValue defined ; set'); misVal=-999.;
+ end
+ fprintf(' misVal= %f\n',misVal);
 end
 
 % add/replace Effective thickness
