@@ -1,7 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.14 2013/01/04 15:48:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.15 2013/01/16 21:20:28 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
+
+C--  File seaice_jfnk.F: seaice jfnk dynamical solver S/R:
+C--   Contents
+C--   o SEAICE_JFNK
+C--   o SEAICE_JFNK_UPDATE
 
 CBOP
 C     !ROUTINE: SEAICE_JFNK
@@ -10,7 +15,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE SEAICE_JFKF
+C     | SUBROUTINE SEAICE_JFNK
 C     | o Ice dynamics using a Jacobian-free Newton-Krylov solver
 C     |   following J.-F. Lemieux et al. Improving the numerical
 C     |   convergence of viscous-plastic sea ice models with the
@@ -142,12 +147,37 @@ C     Start nonlinear Newton iteration: outer loop iteration
        newtonIter = newtonIter + 1
 C     Compute initial residual F(u), (includes computation of global
 C     variables DWATN, zeta, and eta)
-       CALL SEAICE_CALC_RESIDUAL( 
-     I      uIce, vIce, 
-     O      uIceRes, vIceRes, 
-     I      newtonIter, 0, myTime, myIter, myThid )
-C     probably not necessary, will be removed later:
-       CALL EXCH_UV_XY_RL( uIceRes, vIceRes,.TRUE.,myThid)
+C     Update linear solution vector and return to Newton iteration
+C     Do the linesearch
+       CALL SEAICE_JFNK_UPDATE( 
+     I      duIce, dvIce, 
+     U      uIce, vIce, JFNKresidual,
+     O      uIceRes, vIceRes,
+     I      newtonIter, myTime, myIter, myThid )
+C     reset du/vIce here instead of setting sol = 0 in seaice_fgmres_driver
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO J=1-Oly,sNy+Oly
+          DO I=1-Olx,sNx+Olx
+           duIce(I,J,bi,bj)= 0. _d 0
+           dvIce(I,J,bi,bj)= 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+CMLC     Do it again, Sam
+CML       CALL SEAICE_CALC_RESIDUAL( 
+CML     I      uIce, vIce, 
+CML     O      uIceRes, vIceRes, 
+CML     I      newtonIter, 0, myTime, myIter, myThid )
+CMLC     probably not necessary, will be removed later:
+CML       CALL EXCH_UV_XY_RL( uIceRes, vIceRes,.TRUE.,myThid)
+CMLC     Important: Compute the norm of the residual using the same scalar
+CMLC     product that SEAICE_FGMRES does
+CML       CALL SEAICE_MAP2VEC(nVec,uIceRes,vIceRes,resTmp,.TRUE.,myThid)
+CML       CALL SEAICE_SCALPROD(
+CML     &      nVec,1,1,1,resTmp,resTmp,JFNKresidual,myThid)
+CML       JFNKresidual = SQRT(JFNKresidual)
 C     local copies of precomputed coefficients that are to stay
 C     constant for the preconditioner
        DO bj=myByLo(myThid),myByHi(myThid)
@@ -162,12 +192,6 @@ C     constant for the preconditioner
          ENDDO
         ENDDO
        ENDDO
-C     Important: Compute the norm of the residual using the same scalar
-C     product that SEAICE_FGMRES does
-       CALL SEAICE_MAP2VEC(nVec,uIceRes,vIceRes,resTmp,.TRUE.,myThid)
-       CALL SEAICE_SCALPROD(
-     &      nVec,1,1,1,resTmp,resTmp,JFNKresidual,myThid)
-       JFNKresidual = SQRT(JFNKresidual)
 C     compute convergence criterion for linear preconditioned FGMRES
        JFNKgamma_lin = JFNKgamma_lin_max
        IF ( newtonIter.GT.1.AND.newtonIter.LE.100
@@ -254,22 +278,30 @@ C     some output diagnostics
         IF ( krylovIter.EQ.SEAICEkrylovIterMax ) THEN
          krylovFails = krylovFails + 1
         ENDIF
+C     Set the stopping criterion for the Newton iteration
+        IF ( newtonIter .EQ. 1 ) JFNKtol=JFNKgamma_nonlin*JFNKresidual
 C     Update linear solution vector and return to Newton iteration
+C     Do a linesearch if necessary, and compute a new residual.
+C     Note that it should be possible to do the following operations
+C     at the beginning of the Newton iteration, thereby saving us from
+C     the extra call of seaice_jfnk_update, but unfortunately that
+C     changes the results, so we leave the stuff here for now.
+        CALL SEAICE_JFNK_UPDATE( 
+     I       duIce, dvIce, 
+     U       uIce, vIce, JFNKresidual,
+     O       uIceRes, vIceRes,
+     I       newtonIter, myTime, myIter, myThid )
+C     reset du/vIce here instead of setting sol = 0 in seaice_fgmres_driver
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO J=1-Oly,sNy+Oly
            DO I=1-Olx,sNx+Olx
-            uIce(I,J,bi,bj) = uIce(I,J,bi,bj)+duIce(I,J,bi,bj)
-            vIce(I,J,bi,bj) = vIce(I,J,bi,bj)+dvIce(I,J,bi,bj)
-C     reset du/vIce here instead of setting sol = 0 in seaice_fgmres_driver
             duIce(I,J,bi,bj)= 0. _d 0
             dvIce(I,J,bi,bj)= 0. _d 0
            ENDDO
           ENDDO
          ENDDO
         ENDDO
-C     Set the stopping criterion for the Newton iteration
-        IF ( newtonIter .EQ. 1 ) JFNKtol=JFNKgamma_nonlin*JFNKresidual
        ENDIF
 C     end of Newton iterate
       ENDDO
@@ -383,6 +415,138 @@ C     Print more debugging information
      &      SQUEEZE_RIGHT, myThid )
        _END_MASTER( myThid )
       ENDIF
+
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: SEAICE_JFNK_UPDATE
+C     !INTERFACE:
+
+      SUBROUTINE SEAICE_JFNK_UPDATE( 
+     I     duIce, dvIce, 
+     U     uIce, vIce, JFNKresidual,
+     O     uIceRes, vIceRes,
+     I     newtonIter, myTime, myIter, myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE SEAICE_JFNK_UPDATE
+C     | o Update velocities with incremental solutions of FGMRES
+C     | o compute residual of updated solutions and do
+C     | o linesearch:
+C     |   reduce update until residual is smaller than previous
+C     |   one (input)
+C     *==========================================================*
+C     | written by Martin Losch, Jan 2013
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "SEAICE_SIZE.h"
+#include "SEAICE_PARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     === Routine arguments ===
+C     myTime :: Simulation time
+C     myIter :: Simulation timestep number
+C     myThid :: my Thread Id. number
+C     newtonIter :: current iterate of Newton iteration
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
+      INTEGER newtonIter
+C     JFNKresidual :: Residual at the beginning of the FGMRES iteration,
+C                     changes with newtonIter (updated)
+      _RL     JFNKresidual
+C     du/vIce   :: ice velocity increment to be added to u/vIce (input)
+      _RL duIce  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL dvIce  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     u/vIce    :: ice velocity increment to be added to u/vIce (updated)
+      _RL uIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     u/vIceRes :: residual of sea-ice momentum equations (output)
+      _RL uIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+C     Local variables:
+C     i,j,bi,bj :: loop indices
+      INTEGER i,j,bi,bj
+      INTEGER l
+      _RL     resLoc, facLS
+      LOGICAL doLineSearch
+C     nVec    :: size of the input vector(s)
+C     vector version of the residuals
+      INTEGER nVec
+      PARAMETER ( nVec  = 2*sNx*sNy )
+      _RL resTmp (nVec,1,nSx,nSy)
+C
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+CEOP
+
+C     Initialise some local variables
+      l = 0
+      resLoc = JFNKresidual
+      facLS = 1. _d 0
+      doLineSearch = .TRUE.
+      DO WHILE ( doLineSearch )
+C     Determine, if we need more iterations
+       doLineSearch = resLoc .GE. JFNKresidual 
+       doLineSearch = doLineSearch .AND. l .LE. 4 
+C     For the first iteration du/vIce = 0 and there will be no
+C     improvement of the residual possible, so we do only the first
+C     iteration
+       IF ( newtonIter .EQ. 1 ) doLineSearch = .FALSE.
+C     Only start a linesearch after some Newton iterations
+       IF ( newtonIter .LE. SEAICE_JFNK_lsIter ) doLineSearch = .FALSE.
+C     Increment counter
+       l = l + 1
+C     Create update
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO J=1-Oly,sNy+Oly
+          DO I=1-Olx,sNx+Olx
+           uIce(I,J,bi,bj) = uIce(I,J,bi,bj)+facLS*duIce(I,J,bi,bj)
+           vIce(I,J,bi,bj) = vIce(I,J,bi,bj)+facLS*dvIce(I,J,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+C     Compute current residual F(u), (includes re-computation of global
+C     variables DWATN, zeta, and eta, i.e. they are different after this)
+       CALL SEAICE_CALC_RESIDUAL( 
+     I      uIce, vIce, 
+     O      uIceRes, vIceRes, 
+     I      newtonIter, 0, myTime, myIter, myThid )
+C     Important: Compute the norm of the residual using the same scalar
+C     product that SEAICE_FGMRES does
+       CALL SEAICE_MAP2VEC(nVec,uIceRes,vIceRes,resTmp,.TRUE.,myThid)
+       CALL SEAICE_SCALPROD(nVec,1,1,1,resTmp,resTmp,resLoc,myThid)
+       resLoc = SQRT(resLoc)
+C     some output diagnostics
+       IF ( debugLevel.GE.debLevA .AND. doLineSearch ) THEN
+        _BEGIN_MASTER( myThid )
+        WRITE(msgBuf,'(2A,2(1XI6),3E12.5)') 
+     &       ' S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, ',
+     &       'facLS, JFNKresidual, resLoc = ',
+     &        newtonIter, l, facLS, JFNKresidual, resLoc
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
+        _END_MASTER( myThid )
+       ENDIF
+C     Get ready for the next iteration: after adding du/vIce in the first
+C     iteration, we substract 0.5*du/vIce from u/vIce in the next
+C     iterations, 0.25*du/vIce in the second, etc.
+       facLS = - 0.5 _d 0 * ABS(facLS)
+      ENDDO
+C     This is the new residual
+      JFNKresidual = resLoc
 
 #endif /* SEAICE_ALLOW_DYNAMICS and SEAICE_CGRID and SEAICE_ALLOW_JFNK */
 

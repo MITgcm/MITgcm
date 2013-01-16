@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.60 2013/01/04 14:10:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.61 2013/01/16 21:20:28 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -183,9 +183,23 @@ C--  Seaice-Dynamics parameters
      & 'SOLV_NCHECK       =', ' /* test interval for LSR solver */')
        CALL WRITE_0D_I ( NPSEUDOTIMESTEPS,  INDEX_NONE,
      & 'NPSEUDOTIMESTEPS  =', ' /* num. of extra pseudo time steps */')
-      CALL WRITE_0D_L ( SEAICEuseMultiTileSolver, INDEX_NONE,
+       CALL WRITE_0D_L ( SEAICEuseMultiTileSolver, INDEX_NONE,
      & 'SEAICEuseMultiTileSolver =',
      & ' /* use full domain tri-diag solver */')
+#ifdef SEAICE_ALLOW_JFNK
+       IF ( SEAICEuseJFNK ) THEN
+        CALL WRITE_0D_I ( SEAICEnewtonIterMax,  INDEX_NONE,
+     & 'SEAICEnewtonIterMax =', ' /* num. of JFNK Newton steps */')
+        CALL WRITE_0D_I ( SEAICEkrylovIterMax,  INDEX_NONE,
+     & 'SEAICEkrylovIterMax =', ' /* num. of JFNK Krylov steps */')
+        CALL WRITE_0D_I ( SEAICE_JFNK_lsIter,  INDEX_NONE,
+     & 'SEAICE_JFNK_lsIter =', ' /* start of line search */')
+        CALL WRITE_0D_RL( JFNKgamma_nonlin  ,INDEX_NONE,
+     & 'JFNKgamma_nonlin=', ' /* JFNK tolerance */')
+        CALL WRITE_0D_RL( JFNKres_t  ,INDEX_NONE,
+     & 'JFNKres_t=', ' /* JFNK parameter */')       
+       ENDIF
+#endif /* SEAICE_ALLOW_JFNK */
 #ifdef SEAICE_ALLOW_EVP
       ELSE
        CALL WRITE_0D_RL( SEAICE_elasticParm  ,INDEX_NONE,

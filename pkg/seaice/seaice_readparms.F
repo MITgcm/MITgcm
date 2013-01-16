@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.137 2013/01/04 14:10:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.138 2013/01/16 21:20:28 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -103,6 +103,7 @@ C--   SEAICE parameters
      & SEAICE_evpDampC, SEAICEnEVPstarSteps,
      & SEAICE_zetaMin, SEAICE_zetaMaxFac,
      & SEAICEuseJFNK, SEAICEnewtonIterMax, SEAICEkrylovIterMax,
+     & SEAICE_JFNK_lsIter,
      & JFNKgamma_nonlin,JFNKres_t,JFNKgamma_lin_min,JFNKgamma_lin_max,
      & SEAICEpresH0, SEAICEpresPow0, SEAICEpresPow1,
      & SEAICE_initialHEFF, SEAICEturbFluxFormula,
@@ -223,6 +224,7 @@ C     JFNK stuff
       SEAICEuseJFNK       = .FALSE.
       SEAICEnewtonIterMax = 10
       SEAICEkrylovIterMax = 10
+      SEAICE_JFNK_lsIter  = UNSET_I
       JFNKgamma_nonlin    = 1. _d -05
       JFNKgamma_lin_min   = 0.10 _d 0
       JFNKgamma_lin_max   = 0.99 _d 0
@@ -599,6 +601,10 @@ C     maximum number of LSOR steps in default Picard solver
 C     maximum number of LSOR steps as preconditioner in JFNK solver
        IF ( SEAICEuseJFNK ) SOLV_MAX_ITERS = 10
       ENDIF
+C     Turn line search with JFNK solver off by default by making this
+C     number much larger than the maximum allowed Newton iterations
+      IF ( SEAICE_JFNK_lsIter .EQ. UNSET_I ) 
+     &     SEAICE_JFNK_lsIter  = 2*SEAICEnewtonIterMax
 
 C-    The old ways of specifying mcPheeTaper, mcPheePiston & frazilFrac:
 C     a) prevent multiple specification of the same coeff;

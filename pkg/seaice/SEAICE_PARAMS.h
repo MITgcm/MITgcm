@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.104 2013/01/04 14:10:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.105 2013/01/16 21:20:28 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -128,6 +128,8 @@ C     SEAICEnewtonIterMax :: maximum number of allowed Newton iterations
 C                          in JFNK-solver
 C     SEAICEkrylovIterMax :: maximum number of allowed Krylov iterations
 C                          in JFNK-solver
+C     SEAICE_JFNK_lsIter  :: number of Newton iterations after which the
+C                            line search is started
 C     LSR_mixIniGuess   :: control mixing of free-drift sol. into LSR initial 
 C                          guess
 C                       :: =0 : nothing; =1 : no mix, but print free-drift 
@@ -165,6 +167,7 @@ C
       INTEGER LSR_mixIniGuess
       INTEGER SEAICEnEVPstarSteps
       INTEGER SEAICEnewtonIterMax, SEAICEkrylovIterMax
+      INTEGER SEAICE_JFNK_lsIter
       INTEGER SEAICEadvScheme
       INTEGER SEAICEadvSchArea
       INTEGER SEAICEadvSchHeff
@@ -185,6 +188,7 @@ C
      &     LSR_mixIniGuess,
      &     SEAICEnEVPstarSteps,
      &     SEAICEnewtonIterMax, SEAICEkrylovIterMax,
+     &     SEAICE_JFNK_lsIter,
      &     SEAICEpresPow0, SEAICEpresPow1,
      &     SEAICEadvScheme,
      &     SEAICEadvSchArea,
