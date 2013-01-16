@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Usage: gluemncbig [-q] [--verbose] [-v <vars>] -o <outfile> <files>
+"""Usage: gluemncbig [-q] [--verbose] [--many] [-v <vars>] -o <outfile> <files>
 
  -v <vars>  comma-separated list of variable names or glob patterns
+ --many     many tiles: assemble only along x in memory; less efficient
+            on some filesystems, but opens fewer files simultaneously and
+            uses less memory
  -q         suppress progress messages
  --verbose  report variables
 
 All files must have the same variables.
 Each variable (or 1 record of it) must fit in memory.
+With --many, only a row of tiles along x must fit in memory.
 
 Examples:
 
@@ -501,31 +505,65 @@ class netcdf_file(object):
     def begins(self):
         return [(name,pos,self.variables[name].isrec) for name,pos in self._begins.items()]
 
-    def write_var(self, name, val):
+    def write_var(self, name, val, j0=None, iY=-2):
         if not self.delay:
             raise NetCDFError('netcdf_file: delay is False, need to assign to variables')
         if not self._mapped:
             raise NetCDFError('netcdf_file: need to call write_metadata first')
-        var = self.variables[name]
         pos = self._begins[name]
-        self.fp.seek(pos)
-        np.asanyarray(val, var.data.dtype.newbyteorder('>')).tofile(self.fp)
-        # pad
+        var = self.variables[name]
         count = var.data.size * var.data.itemsize
-        self.fp.write(asbytes('0') * (var._vsize - count))
+        if j0 is not None:
+            if iY == 0:
+                idxs = [()]
+            else:
+                idxs = np.ndindex(*var.data.shape[:iY])
+            for idx in idxs:
+                ii = idx + (j0,) + len(var.data.shape[iY+1:])*(0,)
+                offset = np.ravel_multi_index(ii, var.data.shape)*var.data.itemsize
+                end = offset + val[idx].size*var.data.itemsize
+                if end > count:
+                    raise NetCDFError('array too large: {} > {}'.format(end, count))
+                self.fp.seek(pos+offset)
+                np.asanyarray(val[idx], var.data.dtype.newbyteorder('>')).tofile(self.fp)
+        else:
+            end = val.size*var.data.itemsize
+            if end != count:
+                raise NetCDFError('array too large: {} > {}'.format(end, count))
+            self.fp.seek(pos)
+            np.asanyarray(val, var.data.dtype.newbyteorder('>')).tofile(self.fp)
+            # pad
+            self.fp.write(asbytes('0') * (var._vsize - count))
 
-    def write_recvar(self, name, rec, val):
+    def write_recvar(self, name, rec, val, j0=None, iY=-2):
         if not self.delay:
             raise NetCDFError('netcdf_file: delay is False, need to assign to variables')
         if not self._mapped:
             raise NetCDFError('netcdf_file: need to call write_metadata first')
-        var = self.variables[name]
         pos = self._begins[name] + rec*self._recsize
-        self.fp.seek(pos)
-        np.asanyarray(val, var.data.dtype.newbyteorder('>')).tofile(self.fp)
-        # pad
+        var = self.variables[name]
         count = reduce(mul, var.data.shape[1:], 1) * var.data.itemsize
-        self.fp.write(asbytes('0') * (var._vsize - count))
+        if j0 is not None:
+            if iY == 0:
+                idxs = [()]
+            else:
+                idxs = np.ndindex(*var.data.shape[1:iY])
+            for idx in idxs:
+                ii = idx + (j0,) + len(var.data.shape[iY+1:])*(0,)
+                offset = np.ravel_multi_index(ii, var.data.shape[1:])*var.data.itemsize
+                end = offset + val[idx].size*var.data.itemsize
+                if end > count:
+                    raise NetCDFError('array too large: {} > {}'.format(end, count))
+                self.fp.seek(pos+offset)
+                np.asanyarray(val[idx], var.data.dtype.newbyteorder('>')).tofile(self.fp)
+        else:
+            end = val.size*var.data.itemsize
+            if end != count:
+                raise ValueError('netcdf_file.write_recvar: array too large')
+            self.fp.seek(pos)
+            np.asanyarray(val, var.data.dtype.newbyteorder('>')).tofile(self.fp)
+            # pad
+            self.fp.write(asbytes('0') * (var._vsize - count))
         if rec >= self._recs:
             self.__dict__['_recs'] = rec + 1
 
@@ -1124,6 +1162,7 @@ NetCDFVariable = netcdf_variable
 if __name__ == '__main__':
     import sys
     import os
+    import errno
     import re
     import glob
     import fnmatch
@@ -1134,12 +1173,12 @@ if __name__ == '__main__':
         OrderedDict = dict
     import numpy as np
 
-    tilepatt = re.compile(r'(\.t[0-9]{3}\.nc)$')
+    tilepatt = re.compile(r'\.t([0-9]{3}[0-9]*)\.nc$')
     iterpatt = re.compile(r'(\.[0-9]{10})$')
 
     # parse command-line arguments
     try:
-        optlist,args = getopt(sys.argv[1:], 'qo:v:', ['verbose'])
+        optlist,args = getopt(sys.argv[1:], 'qo:v:', ['many', 'verbose'])
         opts = dict(optlist)
         assert '-o' in opts
         fnames = args
@@ -1150,6 +1189,7 @@ if __name__ == '__main__':
     outname = opts.get('-o')
     progress = '-q' not in opts
     verbose = '--verbose' in opts
+    manytiles = '--many' in opts
     tname = 'T'
 
     # turn into list of compiled regular expressions
@@ -1169,11 +1209,15 @@ if __name__ == '__main__':
 
     # Get list of iterations
     itfiles = {}
+    # files without iteration number
+    files0 = []
     for fname in fnames:
         base = tilepatt.sub('', fname)
         m = iterpatt.search(base)
         if m:
             itfiles.setdefault(m.group(1), []).append((fname))
+        else:
+            files0.append(fname)
 
     its = itfiles.keys()
     its.sort()
@@ -1181,10 +1225,12 @@ if __name__ == '__main__':
         itfiles[it].sort()
 
     filess = [ itfiles[it] for it in its ]
-    try:
+    if len(files0) and len(filess):
+        sys.exit('Both files with and without iteration number present.  Aborting.')
+    elif len(filess):
         files0 = filess[0]
-    except IndexError:
-        files0 = fnames
+    else:
+        filess = [files0]
 
     if verbose:
         print 'Files to be read:'
@@ -1293,74 +1339,204 @@ if __name__ == '__main__':
 
         ncout.write_metadata()
 
-        ncs = {files0[0]: nc}
-        for fname in files0:
-            if fname not in ncs:
-                ncs[fname] = nc = netcdf_file(fname, 'r', **readopts)
+        if manytiles:
+            # open only files along x-slice of tiles simultaneously
+            # will have to jump around output file a bit...
 
-        # assemble non-record variable data
-        if progress and not verbose: sys.stderr.write('Writing non-record variables\n')
-        indstrings = {}
-        for name,pos,isrec in ncout.begins:
-            if not isrec:
-                if verbose: print name
-                prop = varprops[name]
-                vardims = prop['dimensions']
-                var = vars[name]
-                indx = len(vardims)*[slice(None)]
-                iX = prop['iX']
-                iY = prop['iY']
-                data = np.empty(var.shape, var.data.dtype.newbyteorder('>'))
-                for fname,nc in ncs.items():
-                    tn = nc.tile_number - 1
-                    if iX is not None: indx[iX] = Xslice[tn]
-                    if iY is not None: indx[iY] = Yslice[tn]
-                    data[tuple(indx)] = nc.read_var(name)
+            # easier this way; have to reopen many files anyway
+            nc.close()
 
-                ncout.write_var(name, data)
-                del data
-            else:  # isrec
-                if not havetime:
-                    raise ValueError('record variables, but no time')
+            nyslice = sNy
 
-        # assemble record variable data
-        if havetime:
-            irec = 0
+            # sort tiles into x-slices
+            iterslices = []
             for fnames in filess:
-                if irec:
+                myslicefiles = [[] for _ in range(nty)]
+                for fname in fnames:
+                    m = tilepatt.search(fname)
+                    if m is None:
+                        sys.exit('Could not extract tile number from file name: {0}'.format(fname))
+                    tn = int(m.group(1)) - 1
+                    bj,bi = divmod(tn, ntx)
+                    myslicefiles[bj].append(fname)
+                iterslices.append(myslicefiles)
+
+            irec = 0
+            for tileslices in iterslices:
+                for bj in range(nty):
+                    if len(tileslices[bj]) != ntx:
+                        raise ValueError('found %d tiles for bj = %d, need %d' % (
+                                         len(tileslices[bj]), bj+1, ntx))
+                    # open files
                     ncs = {}
-                    for fname in fnames:
-                        ncs[fname] = nc = netcdf_file(fname, 'r', **readopts)
+                    for fname in tileslices[bj]:
+                        try:
+                            nc = netcdf_file(fname, 'r', **readopts)
+                        except IOError as e:
+                            if e.errno == errno.EMFILE:
+                                sys.exit('ERROR: Too many open files.  Ask developer to improve script ;)')
+                            raise
+                        ncs[fname] = nc
 
-                nrec = nc.numrecs
-                if progress and not verbose: sys.stderr.write('Writing {0} records: '.format(nrec))
-                for irecin in range(nrec):
-                    if progress and not verbose: sys.stderr.write('.')
-                    for name,pos,isrec in ncout.begins:
-                        if isrec:
-                            if verbose: print irec+irecin, name
-                            prop = varprops[name]
-                            vardims = prop['dimensions'][1:]
-                            var = vars[name]
-                            indx = len(vardims)*[slice(None)]
-                            iX = prop['iX']
-                            iY = prop['iY']
-                            data = np.empty(var.data.shape[1:], var.data.dtype.newbyteorder('>'))
-                            for fname,nc in ncs.items():
-                                tn = nc.tile_number - 1
-                                if iX is not None: indx[iX-1] = Xslice[tn]
-                                if iY is not None: indx[iY-1] = Yslice[tn]
-                                data[tuple(indx)] = nc.read_recvar(name, irecin)
+                    if irec == 0:
+                        # assemble non-record variable data
+                        if bj == 0 and progress and not verbose:
+                            sys.stderr.write('Writing non-record variables\n')
+                        indstrings = {}
+                        for name,pos,isrec in ncout.begins:
+                            if not isrec:
+                                if verbose: print name
+                                prop = varprops[name]
+                                vardims = prop['dimensions']
+                                var = vars[name]
+                                indx = len(vardims)*[slice(None)]
+                                iX = prop['iX']
+                                iY = prop['iY']
+                                shape = list(var.shape)
+                                if iY is not None:
+                                    # this is needed for V and vorticity point fields that have Ny+1
+                                    shape[iY] = shape[iY] - Ny + nyslice
+                                    j0 = bj*nyslice
+                                else:
+                                    j0 = None
+                                data = np.empty(shape, var.data.dtype.newbyteorder('>'))
+                                for fname,nc in ncs.items():
+                                    tn = nc.tile_number - 1
+                                    if iX is not None: indx[iX] = Xslice[tn]
+                                    data[tuple(indx)] = nc.read_var(name)
 
-                            ncout.write_recvar(name, irec+irecin, data)
-                            del data
+                                ncout.write_var(name, data, j0, iY)
+                                del data
+                            else:  # isrec
+                                if not havetime:
+                                    raise ValueError('record variables, but no time')
 
-                irec += nrec
+                    # assemble record variable data
+                    if havetime:
+                        # any of the ncs
+                        nrec = nc.numrecs
+                        if bj == 0 and progress and not verbose:
+                            sys.stderr.write('Writing {0} records: '.format(nrec))
+                        for irecin in range(nrec):
+                            if bj == 0 and progress and not verbose:
+                                sys.stderr.write('.')
+                            for name,pos,isrec in ncout.begins:
+                                if isrec:
+                                    if verbose: print irec+irecin, name
+                                    prop = varprops[name]
+                                    vardims = prop['dimensions'][1:]
+                                    var = vars[name]
+                                    indx = len(vardims)*[slice(None)]
+                                    iX = prop['iX']
+                                    iY = prop['iY']
+                                    shape = list(var.data.shape)
+                                    if iY is not None:
+                                        shape[iY] = shape[iY] - Ny + nyslice
+                                        j0 = bj*nyslice
+                                    else:
+                                        j0 = None
+                                    data = np.empty(shape[1:], var.data.dtype.newbyteorder('>'))
+                                    for fname,nc in ncs.items():
+                                        tn = nc.tile_number - 1
+                                        if iX is not None: indx[iX-1] = Xslice[tn]
+                                        data[tuple(indx)] = nc.read_recvar(name, irecin)
 
-                for nc in ncs.values():
-                    nc.close()
+                                    ncout.write_recvar(name, irec+irecin, data, j0, iY)
+                                    del data
 
-                if progress and not verbose: sys.stderr.write('\n')
+                        if bj == 0 and progress and not verbose:
+                            sys.stderr.write('\n')
+
+                    for nc in ncs.values():
+                        nc.close()
+
+                    if progress and not verbose:
+                        if bj == 0 and nty > 1:
+                            sys.stderr.write('Writing {0} more slices: '.format(nty-1))
+                        else:
+                            sys.stderr.write('.')
+
+                if nty > 1 and progress and not verbose:
+                    sys.stderr.write('\n')
+
+                if havetime:
+                    irec += nrec
+
+        else:
+            ncs = {files0[0]: nc}
+            for fname in files0:
+                if fname not in ncs:
+                    try:
+                        nc = netcdf_file(fname, 'r', **readopts)
+                    except IOError as e:
+                        if e.errno == errno.EMFILE:
+                            sys.exit('ERROR: Too many open files.  Try again with --many or increase the limit on open files.')
+                        raise
+                    ncs[fname] = nc
+
+            # assemble non-record variable data
+            if progress and not verbose: sys.stderr.write('Writing non-record variables\n')
+            indstrings = {}
+            for name,pos,isrec in ncout.begins:
+                if not isrec:
+                    if verbose: print name
+                    prop = varprops[name]
+                    vardims = prop['dimensions']
+                    var = vars[name]
+                    indx = len(vardims)*[slice(None)]
+                    iX = prop['iX']
+                    iY = prop['iY']
+                    data = np.empty(var.shape, var.data.dtype.newbyteorder('>'))
+                    for fname,nc in ncs.items():
+                        tn = nc.tile_number - 1
+                        if iX is not None: indx[iX] = Xslice[tn]
+                        if iY is not None: indx[iY] = Yslice[tn]
+                        data[tuple(indx)] = nc.read_var(name)
+
+                    ncout.write_var(name, data)
+                    del data
+                else:  # isrec
+                    if not havetime:
+                        raise ValueError('record variables, but no time')
+
+            # assemble record variable data
+            if havetime:
+                irec = 0
+                for fnames in filess:
+                    if irec:
+                        ncs = {}
+                        for fname in fnames:
+                            ncs[fname] = nc = netcdf_file(fname, 'r', **readopts)
+
+                    nrec = nc.numrecs
+                    if progress and not verbose: sys.stderr.write('Writing {0} records: '.format(nrec))
+                    for irecin in range(nrec):
+                        if progress and not verbose: sys.stderr.write('.')
+                        for name,pos,isrec in ncout.begins:
+                            if isrec:
+                                if verbose: print irec+irecin, name
+                                prop = varprops[name]
+                                vardims = prop['dimensions'][1:]
+                                var = vars[name]
+                                indx = len(vardims)*[slice(None)]
+                                iX = prop['iX']
+                                iY = prop['iY']
+                                data = np.empty(var.data.shape[1:], var.data.dtype.newbyteorder('>'))
+                                for fname,nc in ncs.items():
+                                    tn = nc.tile_number - 1
+                                    if iX is not None: indx[iX-1] = Xslice[tn]
+                                    if iY is not None: indx[iY-1] = Yslice[tn]
+                                    data[tuple(indx)] = nc.read_recvar(name, irecin)
+
+                                ncout.write_recvar(name, irec+irecin, data)
+                                del data
+
+                    irec += nrec
+
+                    for nc in ncs.values():
+                        nc.close()
+
+                    if progress and not verbose: sys.stderr.write('\n')
 
     finally:
         ncout.close()
