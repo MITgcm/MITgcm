@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.19 2012/06/22 20:46:06 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.20 2013/01/16 13:40:04 jmc Exp $
 # $Name:  $
 
 #- default:
@@ -9,8 +9,8 @@
 MTH=
 MTHo=
 MTHa=
-#GMKopt='-devel'
-GMKopt='-ieee'
+GMKopt='-devel'
+#GMKopt='-ieee'
 #GMKopt=
 rnkO=1 ; rnkA=`expr $rnkO + $NpOc`
 
@@ -20,13 +20,15 @@ if [ $# -ge 1 ] ; then if test $1 = '-mth' ; then
   if test -f input_ocn/eedata.mth ; then MTHo=$MTH ; fi
   if test -f input_atm/eedata.mth ; then MTHa=$MTH ; fi
 fi ; fi
-if [ $# -ne 1 ]
-then
-  echo 'Usage:'`basename $0`' [opt] step'
+#- allows more argument for building step (step=1)
+chkArg=$# ; if [ $# -gt 1 ]; then chkArg=$1 ; fi
+if [ $chkArg -ne 1 ]; then
+  echo 'Usage:'`basename $0`' [opt] step [bld-arg]'
   echo ' => test coupled set-up on linux box (1.cpu)'
   echo 'opt = -mth : compile and run (if eedata.mth) 2-threads for ocn & atm'
   echo ' step = 0 : clean all directories'
-  echo ' step = 1 : compile the 3 executables (cpl,ocn,atm)'
+  echo ' step = 1 : compile the 3 executables (cpl,ocn,atm); optional arg:'
+  echo '       -of Optfile_Name : using option-file "Optfile_Name"'
   echo ' step = 2 : copy input files and dir(s)'
   echo " step = 3 : run with $Npr mpi processes"
   echo ' step = 4 : check the results'
@@ -61,22 +63,25 @@ fi
 if test $kpr = 1
 then
 
-#- choice of the optfile: take a local one in dir verification with sufix '+mpi'
+#- choice of the optfile:
+#  default: take a local one in dir verification with sufix '+mpi'
  nbOpF=`ls ../linux_* | grep '+mpi' 2> /dev/null | wc -l`
+#  or take the one given as argument:
+ if [ $# -ge 3 ]; then
+   if test $2 = '-of' -a -f $3 ; then nbOpF=-1 ; OPTFILE=$3 ; fi
+ fi
  if test $nbOpF = 1 ; then
    OPTFILE=`ls ../linux_* | grep '+mpi'`
-   zz=`grep '^FC=' $OPTFILE`
-   echo " Using optfile: $OPTFILE  (compiler=$zz) $MTH"
  elif [ $nbOpF -ge 2 ] ; then
    echo "pick the 1rst of these ( $nbOpF ) optfiles:"
    ls ../linux_* | grep '+mpi'
    OPTFILE=`ls ../linux_* | grep '+mpi' | head -1`
-   zz=`grep '^FC=' $OPTFILE`
-   echo " Using optfile: $OPTFILE  (compiler=$zz) $MTH"
- else
+ elif [ $nbOpF -ne -1 ] ; then
    echo "Pb in finding optfile: found $nbOpF :"
    ls ../linux_* | grep '+mpi' ; exit
  fi
+ zz=`grep '^ *FC=' $OPTFILE | tail -1`
+ echo " Using optfile: $OPTFILE  (compiler: $zz) $MTH"
  zz=`echo $OPTFILE | grep -c '^\/'`
  if test $zz = 0 ; then OPTFILE="../$OPTFILE" ; fi
 #---
