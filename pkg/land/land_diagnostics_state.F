@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_diagnostics_state.F,v 1.1 2007/06/21 00:31:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_diagnostics_state.F,v 1.2 2013/01/17 23:09:49 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -6,8 +6,8 @@ C $Name:  $
 CBOP
 C     !ROUTINE: LAND_DIAGNOSTICS_STATE
 C     !INTERFACE:
-      SUBROUTINE LAND_DIAGNOSTICS_STATE( 
-     I                 myTime, myIter, bi,bj, myThid )
+      SUBROUTINE LAND_DIAGNOSTICS_STATE(
+     I                            myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -15,7 +15,7 @@ C     | S/R LAND_DIAGNOSTICS_STATE
 C     | o fill-in diagnostics array for LAND state variables
 C     *==========================================================*
 C     \ev
- 
+
 C     !USES:
       IMPLICIT NONE
 
@@ -32,16 +32,17 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myTime   :: Current time of simulation ( s )
 C     myIter   :: Current iteration number in simulation
-C     bi,bj    :: Tile indices
 C     myThid   :: my Thread number Id
       _RL     myTime
-      INTEGER myIter, bi, bj, myThid
+      INTEGER myIter, myThid
 CEOP
 
 #ifdef ALLOW_DIAGNOSTICS
 C     == Local variables ==
-c     _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C     bi,bj    :: Tile indices
+c     INTEGER bi, bj
 c     INTEGER i,j
+c     _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 c     LOGICAL  DIAGNOSTICS_IS_ON
 c     EXTERNAL DIAGNOSTICS_IS_ON
 
@@ -49,16 +50,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( useDiagnostics ) THEN
 
-        CALL DIAGNOSTICS_FILL(land_skinT,'GrdSurfT',0,1,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(land_skinT,'GrdSurfT',0,1,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(land_groundT,'GrdTemp ',0,land_nLev,
-     &                                                  1,bi,bj,myThid)
+     &                                                  0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(land_enthalp,'GrdEnth ',0,land_nLev,
-     &                                                  1,bi,bj,myThid)
+     &                                                  0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(land_groundW,'GrdWater',0,land_nLev,
-     &                                                  1,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(land_hSnow,'LdSnowH ',0,1,1,bi,bj,myThid)
+     &                                                  0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(land_hSnow,'LdSnowH ',0,1,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(land_snowAge,'LdSnwAge',0,1,
-     &                                                  1,bi,bj,myThid)
+     &                                                  0,1,1,myThid)
 
       ENDIF
 
