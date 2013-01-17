@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.61 2013/01/16 21:20:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.62 2013/01/17 10:42:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -198,6 +198,8 @@ C--  Seaice-Dynamics parameters
      & 'JFNKgamma_nonlin=', ' /* JFNK tolerance */')
         CALL WRITE_0D_RL( JFNKres_t  ,INDEX_NONE,
      & 'JFNKres_t=', ' /* JFNK parameter */')       
+        CALL WRITE_0D_RL( JFNKres_tFac  ,INDEX_NONE,
+     & 'JFNKres_tFac=', ' /* JFNK parameter */')       
        ENDIF
 #endif /* SEAICE_ALLOW_JFNK */
 #ifdef SEAICE_ALLOW_EVP

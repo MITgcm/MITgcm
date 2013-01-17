@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.16 2013/01/17 08:51:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.17 2013/01/17 10:42:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -254,8 +254,13 @@ C     some output diagnostics
         IF ( krylovIter.EQ.SEAICEkrylovIterMax ) THEN
          krylovFails = krylovFails + 1
         ENDIF
-C     Set the stopping criterion for the Newton iteration
-        IF ( newtonIter .EQ. 1 ) JFNKtol=JFNKgamma_nonlin*JFNKresidual
+C     Set the stopping criterion for the Newton iteration and the
+C     criterion for the transition from accurate to approximate FGMRES
+        IF ( newtonIter .EQ. 1 ) THEN
+         JFNKtol=JFNKgamma_nonlin*JFNKresidual
+         IF ( JFNKres_tFac .NE. UNSET_RL )
+     &        JFNKres_t = JFNKresidual * JFNKres_tFac
+        ENDIF
 C     Update linear solution vector and return to Newton iteration
 C     Do a linesearch if necessary, and compute a new residual.
 C     Note that it should be possible to do the following operations

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.138 2013/01/16 21:20:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.139 2013/01/17 10:42:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -103,8 +103,8 @@ C--   SEAICE parameters
      & SEAICE_evpDampC, SEAICEnEVPstarSteps,
      & SEAICE_zetaMin, SEAICE_zetaMaxFac,
      & SEAICEuseJFNK, SEAICEnewtonIterMax, SEAICEkrylovIterMax,
-     & SEAICE_JFNK_lsIter,
-     & JFNKgamma_nonlin,JFNKres_t,JFNKgamma_lin_min,JFNKgamma_lin_max,
+     & SEAICE_JFNK_lsIter,JFNKres_t,JFNKres_tFac,
+     & JFNKgamma_nonlin,JFNKgamma_lin_min,JFNKgamma_lin_max,
      & SEAICEpresH0, SEAICEpresPow0, SEAICEpresPow1,
      & SEAICE_initialHEFF, SEAICEturbFluxFormula,
      & SEAICE_areaGainFormula, SEAICE_areaLossFormula,
@@ -229,6 +229,7 @@ C     JFNK stuff
       JFNKgamma_lin_min   = 0.10 _d 0
       JFNKgamma_lin_max   = 0.99 _d 0
       JFNKres_t           = UNSET_RL
+      JFNKres_tFac        = UNSET_RL
 C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICE_evpDampC    = -1. _d 0
       SEAICE_zetaMin     = 0. _d 0

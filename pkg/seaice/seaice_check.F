@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.77 2013/01/04 15:25:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.78 2013/01/17 10:42:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -802,9 +802,22 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
 
 #ifdef SEAICE_ALLOW_JFNK
       IF ( SEAICEuseJFNK ) THEN
-       IF ( JFNKres_t .EQ. UNSET_RL ) THEN
+       IF ( JFNKres_t.NE.UNSET_RL .AND. JFNKres_tFac.NE.UNSET_RL) THEN
+        WRITE(msgBuf,'(3A)') 'S/R SEAICE_CHECK: JFNKres_t and ',
+     &       'JFNKres_tFac are both set, so that JFNKres_t will be'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(3A)') 'S/R SEAICE_CHECK: ',
+     &       'overwritten by JFNKres_tFac*JFNKresidual ',
+     &       'in each initial Newton iteration.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 
+     &       'S/R SEAICE_CHECK: For safety we stop here. ',
+     &       'Please unset one of the two parameters.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+       ELSEIF (JFNKres_t.EQ.UNSET_RL.AND.JFNKres_tFac.EQ.UNSET_RL) THEN
         WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: need to specify ',
-     &       'JFNKres_t for SEAICEuseJFNK=.TRUE.'
+     &       'JFNKres_t or JFNKres_tFac for SEAICEuseJFNK=.TRUE.'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
        ENDIF
