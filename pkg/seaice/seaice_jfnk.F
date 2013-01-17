@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.15 2013/01/16 21:20:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.16 2013/01/17 08:51:15 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -60,6 +60,8 @@ C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 
+C     !LOCAL VARIABLES:
+C     === Local variables ===
 C     i,j,bi,bj :: loop indices
       INTEGER i,j,bi,bj
 C     loop indices
@@ -147,37 +149,11 @@ C     Start nonlinear Newton iteration: outer loop iteration
        newtonIter = newtonIter + 1
 C     Compute initial residual F(u), (includes computation of global
 C     variables DWATN, zeta, and eta)
-C     Update linear solution vector and return to Newton iteration
-C     Do the linesearch
-       CALL SEAICE_JFNK_UPDATE( 
+       IF ( newtonIter .EQ. 1 ) CALL SEAICE_JFNK_UPDATE( 
      I      duIce, dvIce, 
      U      uIce, vIce, JFNKresidual,
      O      uIceRes, vIceRes,
      I      newtonIter, myTime, myIter, myThid )
-C     reset du/vIce here instead of setting sol = 0 in seaice_fgmres_driver
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
-           duIce(I,J,bi,bj)= 0. _d 0
-           dvIce(I,J,bi,bj)= 0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-CMLC     Do it again, Sam
-CML       CALL SEAICE_CALC_RESIDUAL( 
-CML     I      uIce, vIce, 
-CML     O      uIceRes, vIceRes, 
-CML     I      newtonIter, 0, myTime, myIter, myThid )
-CMLC     probably not necessary, will be removed later:
-CML       CALL EXCH_UV_XY_RL( uIceRes, vIceRes,.TRUE.,myThid)
-CMLC     Important: Compute the norm of the residual using the same scalar
-CMLC     product that SEAICE_FGMRES does
-CML       CALL SEAICE_MAP2VEC(nVec,uIceRes,vIceRes,resTmp,.TRUE.,myThid)
-CML       CALL SEAICE_SCALPROD(
-CML     &      nVec,1,1,1,resTmp,resTmp,JFNKresidual,myThid)
-CML       JFNKresidual = SQRT(JFNKresidual)
 C     local copies of precomputed coefficients that are to stay
 C     constant for the preconditioner
        DO bj=myByLo(myThid),myByHi(myThid)
@@ -419,6 +395,7 @@ C     Print more debugging information
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: SEAICE_JFNK_UPDATE
 C     !INTERFACE:
@@ -475,7 +452,8 @@ C     u/vIceRes :: residual of sea-ice momentum equations (output)
       _RL uIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-C     Local variables:
+C     !LOCAL VARIABLES:
+C     === Local variables ===
 C     i,j,bi,bj :: loop indices
       INTEGER i,j,bi,bj
       INTEGER l
@@ -498,6 +476,7 @@ C     Initialise some local variables
       DO WHILE ( doLineSearch )
 C     Determine, if we need more iterations
        doLineSearch = resLoc .GE. JFNKresidual 
+C     Limit the maximum number of iterations arbitrarily to four
        doLineSearch = doLineSearch .AND. l .LE. 4 
 C     For the first iteration du/vIce = 0 and there will be no
 C     improvement of the residual possible, so we do only the first
