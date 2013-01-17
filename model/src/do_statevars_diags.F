@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.20 2012/07/20 12:32:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.21 2013/01/17 23:12:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -51,11 +51,7 @@ C            = 1 :: fill-in diagnostics for tracer   variables only
 C            = 2 :: fill-in diagnostics for momentum variables only
 C            = 3 :: fill-in diagnostics for momentum & tracer variables
 C            = 4 :: fill-in state variable tendency diagnostics the second time
-C     bi,bj      :: tile indices
       INTEGER selectVars
-#if defined(ALLOW_THSICE) || defined(ALLOW_LAND)
-      INTEGER bi, bj
-#endif
 
 C--   Fill-in Diagnostics pkg storage array (for state-variables)
       IF ( usediagnostics ) THEN
@@ -100,33 +96,25 @@ C                    and stagger/synchronous TimeStep
 
 #ifdef ALLOW_SEAICE
        IF ( seqFlag.EQ.0 .AND. useSEAICE ) THEN
-        CALL SEAICE_DIAGNOSTICS_STATE( myTime, myIter, myThid )
+         CALL SEAICE_DIAGNOSTICS_STATE( myTime, myIter, myThid )
        ENDIF
 #endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_THSICE
        IF ( seqFlag.EQ.0 .AND. useThSIce ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          CALL THSICE_DIAGNOSTICS_STATE( myTime,myIter,bi,bj,myThid )
-         ENDDO
-        ENDDO
+         CALL THSICE_DIAGNOSTICS_STATE( myTime, myIter, myThid )
        ENDIF
 #endif /* ALLOW_THSICE */
 
 #ifdef ALLOW_STREAMICE
        IF ( seqFlag.EQ.2 .AND. useStreamIce ) THEN
-        CALL STREAMICE_DIAGNOSTICS_STATE( myTime, myIter, myThid )
+         CALL STREAMICE_DIAGNOSTICS_STATE( myTime, myIter, myThid )
        ENDIF
 #endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_LAND
        IF ( seqFlag.EQ.0 .AND. useLand ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          CALL LAND_DIAGNOSTICS_STATE( myTime,myIter, bi,bj, myThid )
-         ENDDO
-        ENDDO
+         CALL LAND_DIAGNOSTICS_STATE( myTime, myIter, myThid )
        ENDIF
 #endif /* ALLOW_LAND */
 
