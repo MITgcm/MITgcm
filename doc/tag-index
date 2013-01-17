@@ -1,10 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1808 2013/01/17 09:00:32 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1809 2013/01/17 10:43:01 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: add a line search option to the JFNK solver
+o pkg/seaice: 
+  - add a parameter JFNKres_tFac that can replace JFNKres_t 
+    (= JFNKres_tFac*JFNKresidual before JFNK solver)
+  - add a line search option to the JFNK solver
   - move update of u/vIce and computation of initial residual into a separate 
     routine (same file); makes the code a little easier to read (?)
   - the line search requires computation of the residual and for some reason
@@ -17,17 +20,18 @@ o pkg/mdsio:
     case of undefined missing value but it's current the default missing-value);
     Also update mdsio_read_meta.F (reading timeInterval & missing-value).
 o pkg/exf & thsice:
-  - for diagnostics purpose, fill-up and update Qsw array (+ fill the diagnostics)
-    even when SHORTWAVE_HEATING is #undef;
+  - for diagnostics purpose, fill-up and update Qsw array (+ fill the 
+    diagnostics) even when SHORTWAVE_HEATING is #undef;
 o verification/cfc_example:
-  - turn on pkg/layers with pkg/diagnostics (to test pkg/layers and to illustrate
-    how to use it).
+  - turn on pkg/layers with pkg/diagnostics (to test pkg/layers and to 
+    illustrate how to use it).
 o verification/offline_exf_seaice:
   in input: add SEAICErestoreUnderIce=.TRUE., and reduce size of forcing
     files to only one time-record.
   in input.thermo: narrow the 2 bands of low initial ice-concentration near
     N & S edges; switch on SEAICErestoreUnderIce=T; use pkg/diagnostics for
-    snapshot output; same mcPheePiston value as in thsice with surf-current=0.2m/s.
+    snapshot output; same mcPheePiston value as in thsice with 
+    surf-current=0.2m/s.
   in input.thsice: similar set-up as in input.thermo (channel with same seaice
     initial conditions).
 o verification/cfc_example:
