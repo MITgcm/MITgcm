@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_rd_rec_rl.F,v 1.4 2011/08/31 21:28:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_rd_rec_rl.F,v 1.5 2013/01/19 23:47:01 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -63,9 +63,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           arr(k) = r4Buf(k)
         ENDDO
       ELSEIF ( fPrec.EQ.precFloat64 ) THEN
-#ifdef REPRODUCE_BOTTOM_CTRL_OLDRESULTS
-        READ( dUnit, rec=iRec ) arr
-#else /* REPRODUCE_BOTTOM_CTRL_OLDRESULTS */
         READ( dUnit, rec=iRec ) r8Buf
 #ifdef _BYTESWAPIO
         CALL MDS_BYTESWAPR8( nArr, r8Buf )
@@ -73,7 +70,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         DO k=1,nArr
           arr(k) = r8Buf(k)
         ENDDO
-#endif /* REPRODUCE_BOTTOM_CTRL_OLDRESULTS */
       ELSE
         WRITE(msgBuf,'(A,I9)')
      &        ' MDS_RD_REC_RL: illegal value for fPrec=',fPrec
