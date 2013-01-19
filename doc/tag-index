@@ -1,36 +1,37 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1809 2013/01/17 10:43:01 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1810 2013/01/19 00:37:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: 
-  - add a parameter JFNKres_tFac that can replace JFNKres_t 
+checkpoint64c (2013/01/18)
+o pkg/seaice:
+  - add a parameter JFNKres_tFac that can replace JFNKres_t
     (= JFNKres_tFac*JFNKresidual before JFNK solver)
   - add a line search option to the JFNK solver
-  - move update of u/vIce and computation of initial residual into a separate 
+  - move update of u/vIce and computation of initial residual into a separate
     routine (same file); makes the code a little easier to read (?)
   - the line search requires computation of the residual and for some reason
-    I cannot do the update of u/vIce at the beginning of the Newton loop 
+    I cannot do the update of u/vIce at the beginning of the Newton loop
     without changing the results, so we move computation of the new residual
     also to the end of the Newton loop, even without the line search
 o pkg/mdsio:
   - write missing value (corresponding to undefined array value) to meta files;
-    skip this if missing value is one (UNSET_RL would be a better value for the 
+    skip this if missing value is one (UNSET_RL would be a better value for the
     case of undefined missing value but it's current the default missing-value);
     Also update mdsio_read_meta.F (reading timeInterval & missing-value).
 o pkg/exf & thsice:
-  - for diagnostics purpose, fill-up and update Qsw array (+ fill the 
+  - for diagnostics purpose, fill-up and update Qsw array (+ fill the
     diagnostics) even when SHORTWAVE_HEATING is #undef;
 o verification/cfc_example:
-  - turn on pkg/layers with pkg/diagnostics (to test pkg/layers and to 
+  - turn on pkg/layers with pkg/diagnostics (to test pkg/layers and to
     illustrate how to use it).
 o verification/offline_exf_seaice:
   in input: add SEAICErestoreUnderIce=.TRUE., and reduce size of forcing
     files to only one time-record.
   in input.thermo: narrow the 2 bands of low initial ice-concentration near
     N & S edges; switch on SEAICErestoreUnderIce=T; use pkg/diagnostics for
-    snapshot output; same mcPheePiston value as in thsice with 
+    snapshot output; same mcPheePiston value as in thsice with
     surf-current=0.2m/s.
   in input.thsice: similar set-up as in input.thermo (channel with same seaice
     initial conditions).
