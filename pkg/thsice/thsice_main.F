@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.26 2012/11/21 01:53:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.27 2013/01/20 15:09:54 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -278,7 +278,8 @@ C--   Exchange fields that are advected by seaice dynamics
         _EXCH_XY_RL( iceMask, myThid )
       ENDIF
 #ifdef ATMOSPHERIC_LOADING
-      IF ( useRealFreshWaterFlux .AND. (useEXF.OR.useSEAICE ) )
+      IF ( useRealFreshWaterFlux .AND.
+     &    ( useEXF .OR. useSEAICE .OR. thSIceAdvScheme.GT.0 ) )
      &  _EXCH_XY_RS( sIceLoad, myThid )
 #endif
 
