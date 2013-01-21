@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.37 2012/02/09 21:47:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.38 2013/01/21 23:00:39 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -393,18 +393,31 @@ C--    Net fluxes : (only non-zero contribution where frzmltMxL > 0 )
 CADJ STORE snowHeight(:,:,bi,bj) =
 CADJ &     comlev1_bibj,key=ticekey,byte=isbyte
 # endif
-      DO j = jMin, jMax
-       DO i = iMin, iMax
-C--     Compute Sea-Ice Loading (= mass of sea-ice + snow / area unit)
-        sIceLoad(i,j,bi,bj) = ( snowHeight(i,j,bi,bj)*rhos
-     &                         + iceHeight(i,j,bi,bj)*rhoi
-     &                        )*iceMask(i,j,bi,bj)
+#ifdef OLD_THSICE_CALL_SEQUENCE
+      IF ( .TRUE. ) THEN
+#else /* OLD_THSICE_CALL_SEQUENCE */
+      IF ( thSIceAdvScheme.LE.0 ) THEN
+C- note: 1) regarding sIceLoad in ocean-dynamics, in case thSIceAdvScheme > 0,
+C          compute sIceLoad in THSICE_DO_ADVECT after seaice advection is done.
+C        2) regarding sIceLoad in seaice-dynamics, probably better not to update
+C          sIceLoad here, to keep the balance between sIceLoad and adjusted Eta.
+C        3) not sure in the case of no advection (thSIceAdvScheme=0) but using
+C          seaice dynamics (unlikely senario anyway).
+#endif /* OLD_THSICE_CALL_SEQUENCE */
+C--   Compute Sea-Ice Loading (= mass of sea-ice + snow / area unit)
+       DO j = jMin, jMax
+        DO i = iMin, iMax
+          sIceLoad(i,j,bi,bj) = ( snowHeight(i,j,bi,bj)*rhos
+     &                           + iceHeight(i,j,bi,bj)*rhoi
+     &                          )*iceMask(i,j,bi,bj)
 #ifdef ALLOW_ATM2D
-        pass_sIceLoad(i,j)=sIceLoad(i,j,bi,bj)
+          pass_sIceLoad(i,j)=sIceLoad(i,j,bi,bj)
 #endif
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 
+#ifdef OLD_THSICE_CALL_SEQUENCE
       IF ( thSIceAdvScheme.GT.0 ) THEN
 C--   note: those fluxes should to be added directly to Qnet, EmPmR & saltFlux
        DO j = jMin, jMax
@@ -417,6 +430,7 @@ C--   note: those fluxes should to be added directly to Qnet, EmPmR & saltFlux
         ENDDO
        ENDDO
       ENDIF
+#endif /* OLD_THSICE_CALL_SEQUENCE */
 
 #ifdef ALLOW_BULK_FORCE
       IF ( useBulkForce ) THEN

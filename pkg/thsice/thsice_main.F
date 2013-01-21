@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.27 2013/01/20 15:09:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.28 2013/01/21 23:00:39 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -186,11 +186,13 @@ CADJ STORE sOceMxL(:,:,bi,bj) = comlev1_bibj, key = ticekey
 CADJ STORE v2ocMxL(:,:,bi,bj) = comlev1_bibj, key = ticekey
 #endif
 
+#ifdef OLD_THSICE_CALL_SEQUENCE
 C-      do sea-ice advection before getting surface fluxes
 C Note: will inline this S/R once thSIce in Atmos. set-up is settled
         IF ( thSIceAdvScheme.GT.0 )
      &   CALL THSICE_DO_ADVECT(
      I                   bi,bj, myTime, myIter, myThid )
+#endif /* OLD_THSICE_CALL_SEQUENCE */
 
 #ifdef ALLOW_BULK_FORCE
         IF ( useBulkforce ) THEN
@@ -267,21 +269,31 @@ C--   Balance net Fresh-Water flux from Atm+Land
 C     add a small piece of code to check AddFluid implementation:
 c#include "thsice_test_addfluid.h"
 
-      IF ( useSEAICE .OR. thSIceAdvScheme.GT.0 ) THEN
 C--   Exchange fields that are advected by seaice dynamics
-        _EXCH_XY_RL( iceMask, myThid )
-        _EXCH_XY_RL( iceHeight, myThid )
-        _EXCH_XY_RL( snowHeight, myThid )
-        _EXCH_XY_RL( Qice1, myThid )
-        _EXCH_XY_RL( Qice2, myThid )
-      ELSEIF ( useEXF .AND. stressReduction.GT. 0. _d 0 ) THEN
-        _EXCH_XY_RL( iceMask, myThid )
+      IF ( useSEAICE .OR. thSIceAdvScheme.GT.0
+     &       .OR. ( useEXF .AND. stressReduction.GT.zeroRL ) ) THEN
+        CALL THSICE_DO_EXCH( myThid )
       ENDIF
+#ifdef OLD_THSICE_CALL_SEQUENCE
 #ifdef ATMOSPHERIC_LOADING
       IF ( useRealFreshWaterFlux .AND.
      &    ( useEXF .OR. useSEAICE .OR. thSIceAdvScheme.GT.0 ) )
      &  _EXCH_XY_RS( sIceLoad, myThid )
 #endif
+#else /* OLD_THSICE_CALL_SEQUENCE */
+#ifdef ATMOSPHERIC_LOADING
+      IF ( useRealFreshWaterFlux .AND. (useEXF.OR.useSEAICE )
+     &                           .AND. thSIceAdvScheme.LE.0 )
+     &  _EXCH_XY_RS( sIceLoad, myThid )
+#endif
+
+C-    when useSEAICE=.true., this S/R is called from SEAICE_MODEL;
+C     otherwise, call it from here, after thsice-thermodynamics is done
+      IF ( thSIceAdvScheme.GT.0 .AND. .NOT.useSEAICE ) THEN
+         CALL THSICE_DO_ADVECT(
+     I                          0, 0, myTime, myIter, myThid )
+      ENDIF
+#endif /* OLD_THSICE_CALL_SEQUENCE */
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
