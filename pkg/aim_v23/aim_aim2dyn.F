@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2dyn.F,v 1.7 2010/01/21 00:11:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2dyn.F,v 1.8 2013/01/21 21:55:32 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -89,6 +89,17 @@ C-    Planetary boundary layer drag coeff.
          aim_drag(i,j,bi,bj) = DRAG(I2,0,myThid)
         ENDDO
       ENDDO
+#ifdef COMPONENT_MODULE
+      IF ( useCoupler ) THEN
+C-    Near surface wind speed
+       DO j=1,sNy
+        DO i=1,sNx
+         I2 = i+(j-1)*sNx
+         aim_surfWind(i,j,bi,bj) = SPEED0(I2,myThid)
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* COMPONENT_MODULE */
 
       DO k=1,Nr
        Katm = _KD2KA( k )
@@ -139,7 +150,7 @@ C-     Account for partial cell filling:
         ELSE
          DO j=1,sNy
          DO i=1,sNx
-          IF ( k.EQ.ksurfC(i,j,bi,bj) ) THEN
+          IF ( k.EQ.kSurfC(i,j,bi,bj) ) THEN
            aim_dTdt(i,j,k,bi,bj) = aim_dTdt(i,j,k,bi,bj)
      &                            /hFac_surfC(i,j,bi,bj)
            aim_dSdt(i,j,k,bi,bj) = aim_dSdt(i,j,k,bi,bj)
