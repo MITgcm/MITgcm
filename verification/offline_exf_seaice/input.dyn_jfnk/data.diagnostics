@@ -28,13 +28,13 @@
 #  fileName(1) = 'exfDiag',
   frequency(1) = 86400.,
 
-  fields(1:5,2)  = 'SIuice  ','SIvice  ','SIheff  '
+  fields(1:5,2)  = 'SIuice  ','SIvice  ','SIheff  ',
                    'SI_Fract','SI_Thick',
 #  fileName(2) = 'iceDiag',
   frequency(2) =  86400.,
   missing_value(2) = -999.,
 
-  fields(1:5,3)  = 'SIuice  ','SIvice  ','SIheff  '
+  fields(1:5,3)  = 'SIuice  ','SIvice  ','SIheff  ',
                    'SI_Fract','SI_Thick',
    fileName(3) = 'snapshot',
   frequency(3) = -86400.,

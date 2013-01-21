@@ -44,7 +44,7 @@
    fileName(2) = 'iceDiag',
   frequency(2) =  86400.,
   missing_value(2) = -999.,
-  fields(1:7,3)  = 'SIuice  ','SIvice  ','SIheff  '
+  fields(1:7,3)  = 'SIuice  ','SIvice  ','SIheff  ',
                    'SI_Fract','SI_Thick','SI_Tsrf ',
                    'THETA   ',
    fileName(3) = 'snapshot',
