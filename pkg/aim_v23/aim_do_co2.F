@@ -1,71 +1,72 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.7 2010/03/15 01:05:51 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.8 2013/01/21 21:50:55 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
 
-CStartOfInterface
-      SUBROUTINE AIM_DO_CO2( myTime, myIter, myThid)
-C     *==========================================================*
-C     | S/R AIM_DO_CO2                                           |
-C     | o CO2 budget of the atmosphere                           |
-C     *==========================================================*
+CBOP
+C     !ROUTINE: AIM_DO_CO2
+C     !INTERFACE:
+      SUBROUTINE AIM_DO_CO2( myTime, myIter, myThid )
 
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R AIM_DO_CO2
+C     | o CO2 budget of the atmosphere
+C     *==========================================================*
+C     \ev
+C     !USES:
       IMPLICIT NONE
 
 C     == Global data ==
-C-- size for MITgcm & Physics package :
-#include "AIM_SIZE.h"
-
+#include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "SURFACE.h"
 
-#include "AIM2DYN.h"
 #include "AIM_CO2.h"
-
 C-- Coupled to the Ocean :
 #ifdef COMPONENT_MODULE
 #include "CPL_PARAMS.h"
 #include "ATMCPL.h"
 #endif
 
-C     == Routine arguments ==
-C     myTime - Current time of simulation ( s )
-C     myIter - Current iteration number in simulation
-C     myThid - Number of this instance of the routine
-      INTEGER myIter, myThid
+C     !INPUT/OUTPUT PARAMETERS:
+C     myTime :: Current time of simulation ( s )
+C     myIter :: Current iteration number in simulation
+C     myThid :: Number of this instance of the routine
       _RL myTime
-CEndOfInterface
+      INTEGER myIter, myThid
+CEOP
 
 #ifdef ALLOW_AIM
 #ifdef ALLOW_AIM_CO2
-      INTEGER  ILNBLNK, IFNBLNK, MDS_RECLEN
-      EXTERNAL ILNBLNK, IFNBLNK, MDS_RECLEN
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK, IFNBLNK
+      EXTERNAL ILNBLNK, IFNBLNK
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
-C     == Local variables ==
+C     !LOCAL VARIABLES:
 C     bi,bj  - Tile index
 C     i,j    - loop counters
       INTEGER bi, bj, i, j
-      INTEGER iUnit, length_of_rec
       _RL total_flux, atpco2_check
-      Real*8 tmpco2(2)
       _RL flxCO2tile(nSx,nSy)
       LOGICAL permCheckPoint
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-      CHARACTER*(MAX_LEN_FNAM) fn, msgBuf
-      INTEGER ilo,ihi
-
+      INTEGER iUnit, iLo, iHi
+      _RS dummyRS(1)
+      _RL tmpco2(2)
+      CHARACTER*(MAX_LEN_FNAM) fn
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 #ifdef COMPONENT_MODULE
-      IF ( useImportFlxCO2 ) THEN
+      IF ( useCoupler .AND. useImportFlxCO2 ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
            aimflxCo2(i,j,bi,bj) = flxCO2ocn(i,j,bi,bj)
-          ENDDO 
+          ENDDO
          ENDDO
         ENDDO
        ENDDO
@@ -104,28 +105,22 @@ C- If  first iteration, use atmpCO2init as initial condition
         ELSEIF ( myTime .EQ. startTime ) THEN
 C- If restart, read moles number from pickup
           WRITE(fn,'(A,I10.10)') 'pickup_aimCo2.',nIter0
-          ilo = IFNBLNK(fn)
-          ihi = ILNBLNK(fn)
-          CALL MDSFINDUNIT( iUnit, myThid )
-          length_of_rec = MDS_RECLEN( precFloat64, 2, myThid )
-          OPEN(UNIT=iUnit,FILE=fn(ilo:ihi),STATUS='old',
-     &         FORM='UNFORMATTED',ACCESS='DIRECT',RECL=length_of_rec)
-          READ(iUnit,rec=1) tmpco2
-          CLOSE(iUnit)
-#ifdef _BYTESWAPIO
-          CALL MDS_BYTESWAPR8( 2, tmpco2 )
-#endif
-
+          iUnit = 0
+          CALL MDS_READVEC_LOC(  fn, precFloat64, iUnit, 'RL', 2,
+     O                           tmpco2, dummyRS,
+     I                           0, 0, 1, myThid )
           Atm_CO2_Moles = tmpco2(1)
           atpco2_check  = tmpco2(2)
           atm_pCO2 = Atm_CO2_Moles / total_atmos_moles
 
           iUnit = standardMessageUnit
+          iLo = IFNBLNK(fn)
+          iHi = ILNBLNK(fn)
           WRITE(msgBuf,'(A)') ' '
           CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
           WRITE(msgBuf,'(A)') '// ==================================='
           CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-          WRITE(msgBuf,'(2A)') '// AIM_DO_CO2: Read pickup ',fn(ilo:ihi)
+          WRITE(msgBuf,'(2A)') '// AIM_DO_CO2: Read pickup ',fn(iLo:iHi)
           CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
 
           CALL WRITE_0D_RL( atpco2_check, INDEX_NONE, 'atpco2_check =',
@@ -144,25 +139,18 @@ C- Calculate new atmos pCO2
         atm_pCO2 = Atm_CO2_Moles / total_atmos_moles
 
 C- Write out if time for a new pickup
-        permCheckPoint = .FALSE.
-        permCheckPoint =
-     &  DIFFERENT_MULTIPLE(pChkptFreq,myTime+deltaTClock,deltaTClock)
-     &  .AND. (myTime .NE. starttime)
+        permCheckPoint = myTime.NE.startTime
+        permCheckPoint = permCheckPoint .AND.
+     &    DIFFERENT_MULTIPLE(pChkptFreq,myTime+deltaTClock,deltaTClock)
         IF (permCheckPoint) THEN
-          DO i = 1,MAX_LEN_FNAM
-            fn(i:i) = ' '
-          ENDDO
           WRITE(fn,'(A,I10.10)') 'pickup_aimCo2.',myIter+1
 C- write values to new pickup
-          CALL MDSFINDUNIT( iUnit, myThid )
-          length_of_rec = MDS_RECLEN( precFloat64, 2, myThid )
-          OPEN(UNIT=iUnit,FILE=fn,STATUS='unknown',
-     &      FORM='UNFORMATTED',ACCESS='DIRECT',RECL=length_of_rec)
           tmpco2(1)= Atm_CO2_Moles
           tmpco2(2)= atm_pCO2
-          WRITE(iUnit,rec=1) tmpco2
-          CLOSE(iUnit)
-
+          iUnit = 0
+          CALL MDS_WRITEVEC_LOC( fn, precFloat64, iUnit, 'RL', 2,
+     I                           tmpco2, dummyRS,
+     I                           0, 0, -1, myIter, myThid )
         ENDIF
         _END_MASTER(myThid)
         _BARRIER
