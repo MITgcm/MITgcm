@@ -1,8 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/CPP_OPTIONS.h,v 1.13 2012/08/06 19:32:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/CPP_OPTIONS.h,v 1.14 2013/01/21 22:22:45 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
 #define CPP_OPTIONS_H
+
+CBOP
+C !ROUTINE: CPP_OPTIONS.h
+C !INTERFACE:
+C #include "CPP_OPTIONS.h"
+
+C !DESCRIPTION:
+C *==================================================================*
+C | main CPP options file for the model:
+C | Control which optional features to compile in model/src code.
+C *==================================================================*
+CEOP
 
 C CPP flags controlling particular source code features
 
@@ -19,6 +31,9 @@ C o Include/exclude call to S/R CONVECT
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
 
+C o Allow full 3D specification of vertical diffusivity
+#undef ALLOW_3D_DIFFKR
+
 C o Allow latitudinally varying BryanLewis79 vertical diffusivity
 #undef ALLOW_BL79_LAT_VARY
 
@@ -28,11 +43,15 @@ C o Include/exclude Implicit vertical advection code
 C o Include/exclude AdamsBashforth-3rd-Order code
 #undef ALLOW_ADAMSBASHFORTH_3
 
-C o Include/exclude code for single reduction Conjugate-Gradient solver
-#define ALLOW_SRCG
-
 C o Include/exclude nonHydrostatic code
 #define ALLOW_NONHYDROSTATIC
+
+C o Allow to account for heating due to friction (and momentum dissipation)
+#undef ALLOW_FRICTION_HEATING
+
+C o Allow mass source or sink of Fluid in the interior
+C   (3-D generalisation of oceanic real-fresh water flux)
+#undef ALLOW_ADDFLUID
 
 C o Include pressure loading code
 #define ATMOSPHERIC_LOADING
@@ -59,9 +78,8 @@ C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that surface thickness (hFactors) vary with time
 #define NONLIN_FRSURF
 
-C o Allow mass source or sink of Fluid in the interior
-C   (3-D generalisation of oceanic real-fresh water flux)
-#undef ALLOW_ADDFLUID
+C o Include/exclude code for single reduction Conjugate-Gradient solver
+#define ALLOW_SRCG
 
 C o Choices for implicit solver routines solve_*diagonal.F
 C   The following has low memory footprint, but not suitable for AD
@@ -102,6 +120,10 @@ C   Default is to use "new" grid files (OLD_GRID_IO undef) but OLD_GRID_IO
 C   is still useful with, e.g., single-domain curvilinear configurations.
 #undef OLD_GRID_IO
 
+C o Use thsice+seaice (old) call sequence: ice-Dyn,ice-Advect,ice-Thermo(thsice)
+C              as opposed to new sequence: ice-Thermo(thsice),ice-Dyn,ice-Advect
+#define OLD_THSICE_CALL_SEQUENCE
+
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
 
@@ -109,19 +131,10 @@ C o Include/exclude single header file containing multiple packages options
 C   (AUTODIFF, COST, CTRL, ECCO, EXF ...) instead of the standard way where
 C   each of the above pkg get its own options from its specific option file.
 C   Although this method, inherited from ECCO setup, has been traditionally
-C   used for all adjoint built, the alternative standard way is currently
-C   going through rehabilitation.
-c#include "ECCO_CPPOPTIONS.h"
-
-C o Allow full 3D specification of vertical diffusivity
-#ifdef ALLOW_DIFFKR_CONTROL
-C - Need to be defined if using DIFFKR_CONTROL
-C   (alternatively, could have put this in ECCO_CPPOPTIONS)
-#define ALLOW_3D_DIFFKR
-#else
-C - otherwise, can be turned on or off hereafter:
-#undef  ALLOW_3D_DIFFKR
-#endif /* ALLOW_DIFFKR_CONTROL */
+C   used for all adjoint built, work is in progress to allow to use the
+C   standard method also for adjoint built.
+c#ifdef PACKAGES_CONFIG_H
+c# include "ECCO_CPPOPTIONS.h"
+c#endif
 
 #endif /* CPP_OPTIONS_H */
-
