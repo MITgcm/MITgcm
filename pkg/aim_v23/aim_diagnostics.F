@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.23 2010/01/21 00:11:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.24 2013/01/21 21:45:39 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -67,9 +67,11 @@ C     == Local variables ==
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--  mean surf. temp. change:
+C note: comment out ice-free ocean contribution (small part anyway)
+C       which is not yet available when this S/R is called
       DO J=1,NGP
          dTsurf(J,1,myThid) = fMask1(J,1,myThid)*dTsurf(J,1,myThid)
-     &                      + fMask1(J,2,myThid)*dTsurf(J,2,myThid)
+c    &                      + fMask1(J,2,myThid)*dTsurf(J,2,myThid)
      &                      + fMask1(J,3,myThid)*dTsurf(J,3,myThid)
          dTsurf(J,1,myThid) = ABS(dTsurf(J,1,myThid))
       ENDDO
@@ -303,7 +305,7 @@ C--   cloud-top pressure: multiplied by cloud fraction before averaging:
 
       IF (aim_taveFreq.GT.0.) THEN
 
-        DDTT = deltaTclock
+        DDTT = deltaTClock
 
         DO J=1,sNy
          DO I=1,sNx
