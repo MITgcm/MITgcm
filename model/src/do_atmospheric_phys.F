@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_atmospheric_phys.F,v 1.9 2010/11/18 00:57:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_atmospheric_phys.F,v 1.10 2013/01/21 23:07:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -51,7 +51,7 @@ C     bi, bj
         CALL UPDATE_CHEMISTRY_EXPORTS ( myTime, myIter, myThid )
         CALL FIZHI_WRAPPER ( myTime, myIter, myThid )
         CALL STEP_FIZHI_FG ( myTime, myIter, myThid, dTtracerLev(1) )
-        CALL FIZHI_UPDATE_TIME ( myIter, myThid, deltaTclock )
+        CALL FIZHI_UPDATE_TIME ( myIter, myThid, deltaTClock )
         CALL TIMER_STOP ('FIZHI          [DO_ATMOSPHERIC_PHYS]',myThid)
       ENDIF
 #endif
@@ -65,8 +65,6 @@ C       AIM - atmospheric intermediate model, physics package code.
         CALL TIMER_START('AIM_DO_PHYSICS [DO_ATMOSPHERIC_PHYS]',myThid)
         CALL AIM_DO_PHYSICS( myTime, myIter, myThid )
         CALL TIMER_STOP( 'AIM_DO_PHYSICS [DO_ATMOSPHERIC_PHYS]',myThid)
-C       do exchanges for AIM related quantities:
-        CALL AIM_AIM2DYN_EXCHANGES( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_AIM */
 
