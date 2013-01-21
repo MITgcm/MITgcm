@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.104 2012/12/27 23:05:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.105 2013/01/21 23:02:56 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -161,7 +161,14 @@ C--   Apply ice velocity open boundary conditions
 #endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_THSICE
-      IF ( .NOT.useThSice ) THEN
+      IF ( useThSice ) THEN
+#ifndef OLD_THSICE_CALL_SEQUENCE
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL( 'THSICE_DO_ADVECT', myThid )
+#endif
+        CALL THSICE_DO_ADVECT( 0, 0, myTime, myIter, myThid )
+#endif /* OLD_THSICE_CALL_SEQUENCE */
+      ELSE
 #endif
 C--   Only call advection of heff, area, snow, and salt and
 C--   growth for the generic 0-layer thermodynamics of seaice

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.120 2012/11/09 22:42:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.121 2013/01/21 23:04:02 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -182,6 +182,21 @@ C--   Freeze water in the ocean interior and let it rise to the surface
       ENDIF
 #endif /* ALLOW_FRAZIL */
 
+#ifndef OLD_THSICE_CALL_SEQUENCE
+#if (defined ALLOW_THSICE) && !(defined ALLOW_ATM2D)
+      IF ( useThSIce .AND. fluidIsWater ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('THSICE_MAIN',myThid)
+# endif
+C--     Step forward Therm.Sea-Ice variables
+C       and modify forcing terms including effects from ice
+        CALL TIMER_START('THSICE_MAIN     [DO_OCEANIC_PHYS]', myThid)
+        CALL THSICE_MAIN( myTime, myIter, myThid )
+        CALL TIMER_STOP( 'THSICE_MAIN     [DO_OCEANIC_PHYS]', myThid)
+      ENDIF
+#endif /* ALLOW_THSICE */
+#endif /* ndef OLD_THSICE_CALL_SEQUENCE */
+
 #ifdef ALLOW_SEAICE
       IF ( useSEAICE ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -264,6 +279,7 @@ CADJ &     kind = isbyte
 # endif
 #endif
 
+#ifdef OLD_THSICE_CALL_SEQUENCE
 #if (defined ALLOW_THSICE) && !(defined ALLOW_ATM2D)
       IF ( useThSIce .AND. fluidIsWater ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -289,6 +305,7 @@ C       and modify forcing terms including effects from ice
         CALL TIMER_STOP( 'THSICE_MAIN     [DO_OCEANIC_PHYS]', myThid)
       ENDIF
 #endif /* ALLOW_THSICE */
+#endif /* OLD_THSICE_CALL_SEQUENCE */
 
 #ifdef ALLOW_SHELFICE
 # ifdef ALLOW_AUTODIFF_TAMC
