@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.12 2011/06/07 22:26:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.13 2013/01/21 22:54:54 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -74,7 +74,7 @@ C     afy       :: horizontal advective flux, y direction
 C     iceFrc    :: (new) sea-ice fraction
 C     iceVol    :: temporary array used in advection S/R
 C     oldVol    :: (old) sea-ice volume
-C     msgBuf    :: Informational/error meesage buffer
+C     msgBuf    :: Informational/error message buffer
       INTEGER i, j
       LOGICAL thSIce_multiDimAdv
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -87,8 +87,8 @@ C     msgBuf    :: Informational/error meesage buffer
       _RL afy       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskOce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL iceFrc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL iceVol    (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL oldVol    (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL iceVol    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL oldVol    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL r_minArea
       _RL meanCellArea, areaEpsil, vol_Epsil
 #ifdef ALLOW_DIAGNOSTICS
@@ -150,6 +150,39 @@ C     but what matter here is just to have the right order of magnitude.
       ENDIF
 #endif /* ALLOW_GENERIC_ADVDIFF */
 
+#ifndef OLD_THSICE_CALL_SEQUENCE
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL(iceMask,'SI_AdvFr',0,1,1,bi,bj,myThid)
+C-     Ice-fraction weighted quantities:
+        tmpFac = 1. _d 0
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I                   iceHeight, iceMask,tmpFac,1,'SI_AdvHi',
+     I                   0,1,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I                   snowHeight,iceMask,tmpFac,1,'SI_AdvHs',
+     I                   0,1,1,bi,bj,myThid)
+C-     Ice-Volume weighted quantities:
+        IF ( DIAGNOSTICS_IS_ON('SI_AdvQ1',myThid) .OR.
+     &       DIAGNOSTICS_IS_ON('SI_AdvQ2',myThid) ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+           iceVol(i,j) = iceMask(i,j,bi,bj)*iceHeight(i,j,bi,bj)
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FRACT_FILL(
+     I                   Qice1(1-OLx,1-OLy,bi,bj),
+     I                   iceVol,tmpFac,1,'SI_AdvQ1',
+     I                   0,1,2,bi,bj,myThid)
+         CALL DIAGNOSTICS_FRACT_FILL(
+     I                   Qice2(1-OLx,1-OLy,bi,bj),
+     I                   iceVol,tmpFac,1,'SI_AdvQ2',
+     I                   0,1,2,bi,bj,myThid)
+        ENDIF
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+#endif /* ndef OLD_THSICE_CALL_SEQUENCE */
+
 C--   Initialisation (+ build oceanic mask)
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
@@ -182,22 +215,22 @@ CADJ &     = comlev1_bibj, key=ticekey, byte=isbyte
       IF ( thSIce_multiDimAdv ) THEN
 
 C-    Calculate ice transports through tracer cell faces.
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
           uTrIce(i,j) = uIce(i,j)*_dyG(i,j,bi,bj)
      &                *maskOce(i-1,j)*maskOce(i,j)
          ENDDO
         ENDDO
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           vTrIce(i,j) = vIce(i,j)*_dxG(i,j,bi,bj)
      &                *maskOce(i,j-1)*maskOce(i,j)
          ENDDO
         ENDDO
 
 C--   Fractional area
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           iceFrc(i,j) = iceMask(i,j,bi,bj)
          ENDDO
         ENDDO
@@ -214,15 +247,15 @@ CADJ STORE vtrice(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
      I       bi, bj, myTime, myIter, myThid )
 
 C--   Snow thickness
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           iceVol(i,j) = iceMask(i,j,bi,bj)*rA(i,j,bi,bj)
          ENDDO
         ENDDO
         CALL THSICE_ADVECTION(
      I       GAD_SI_HSNOW, thSIceAdvScheme, .FALSE.,
      I       uTrans, vTrans, maskOce, thSIce_deltaT, areaEpsil,
-     U       iceVol, snowHeight(1-Olx,1-Oly,bi,bj),
+     U       iceVol, snowHeight(1-OLx,1-OLy,bi,bj),
      O       afx, afy,
      I       bi, bj, myTime, myIter, myThid )
 
@@ -231,8 +264,8 @@ CADJ STORE iceHeight(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 CADJ STORE iceMask(:,:,bi,bj)   = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
 C--   sea-ice Thickness
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           iceVol(i,j) = iceMask(i,j,bi,bj)*rA(i,j,bi,bj)
           oldVol(i,j) = iceVol(i,j)*iceHeight(i,j,bi,bj)
          ENDDO
@@ -240,7 +273,7 @@ C--   sea-ice Thickness
         CALL THSICE_ADVECTION(
      I       GAD_SI_HICE,  thSIceAdvScheme, .FALSE.,
      I       uTrans, vTrans, maskOce, thSIce_deltaT, areaEpsil,
-     U       iceVol, iceHeight(1-Olx,1-Oly,bi,bj),
+     U       iceVol, iceHeight(1-OLx,1-OLy,bi,bj),
      O       uTrIce, vTrIce,
      I       bi, bj, myTime, myIter, myThid )
 
@@ -312,15 +345,15 @@ C--     Diagnosse advective fluxes (ice-fraction, snow & ice thickness):
 #endif
 
 C--   Enthalpy in layer 1
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           iceVol(i,j) = oldVol(i,j)
          ENDDO
         ENDDO
         CALL THSICE_ADVECTION(
      I       GAD_SI_QICE1, thSIceAdvScheme, .FALSE.,
      I       uTrIce, vTrIce, maskOce, thSIce_deltaT, vol_Epsil,
-     U       iceVol, Qice1(1-Olx,1-Oly,bi,bj),
+     U       iceVol, Qice1(1-OLx,1-OLy,bi,bj),
      O       afx, afy,
      I       bi, bj, myTime, myIter, myThid )
 #ifdef ALLOW_DBUG_THSICE
@@ -349,15 +382,15 @@ c           WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: q1Fx=', gFld(i,j)
 #endif
 
 C--   Enthalpy in layer 2
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           iceVol(i,j) = oldVol(i,j)
          ENDDO
         ENDDO
         CALL THSICE_ADVECTION(
      I       GAD_SI_QICE2, thSIceAdvScheme, .FALSE.,
      I       uTrIce, vTrIce, maskOce, thSIce_deltaT, vol_Epsil,
-     U       iceVol, Qice2(1-Olx,1-Oly,bi,bj),
+     U       iceVol, Qice2(1-OLx,1-OLy,bi,bj),
      O       afx, afy,
      I       bi, bj, myTime, myIter, myThid )
 #ifdef ALLOW_DBUG_THSICE
@@ -506,6 +539,7 @@ C---  if not multiDimAdvection
 C---  end if multiDimAdvection
       ENDIF
 
+#ifdef OLD_THSICE_CALL_SEQUENCE
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
         CALL DIAGNOSTICS_FILL(iceMask,'SI_AdvFr',0,1,1,bi,bj,myThid)
@@ -536,6 +570,7 @@ C-     Ice-Volume weighted quantities:
         ENDIF
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
+#endif /* OLD_THSICE_CALL_SEQUENCE */
 
 #endif /* ALLOW_THSICE */
 
