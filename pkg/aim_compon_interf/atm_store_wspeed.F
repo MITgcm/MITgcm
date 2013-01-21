@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_store_wspeed.F,v 1.1 2007/06/18 21:28:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_store_wspeed.F,v 1.2 2013/01/21 21:56:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -34,7 +34,7 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
 #ifdef ALLOW_AIM
-# include "com_physvar.h"
+# include "AIM2DYN.h"
 #endif
 C     == Global variables for coupling interface ==
 #include "ATMCPL.h"
@@ -54,18 +54,17 @@ CEOP
 #ifdef ALLOW_AIM
 C     == Local variables ==
 C     i,j :: Loop counters
-      INTEGER i,j, ij
+      INTEGER i,j
       _RL cplTimeFraction
 
-C     o Accumulate Sea-Ice Mass from thSIce pkg that will be exported
-C       to the coupling layer. seaIceMass is per surface unit, in kg/m2.
+C     o Accumulate atmospheric surface wind speed from Aim pkg that will
+C       be exported to the coupling layer.
        cplTimeFraction = 1. _d 0 / DFLOAT(cplSendFrq_iter)
        sWSpeedTime(bi,bj) = sWSpeedTime(bi,bj) + cplTimeFraction
        DO j=1,sNy
          DO i=1,sNx
-          ij = i + (j-1)*sNx
           sWSpeed(i,j,bi,bj) = sWSpeed(i,j,bi,bj)
-     &                       + SPEED0(ij,myThid)*cplTimeFraction
+     &                       + aim_surfWind(i,j,bi,bj)*cplTimeFraction
          ENDDO
        ENDDO
 
