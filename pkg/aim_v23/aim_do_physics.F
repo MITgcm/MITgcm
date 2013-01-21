@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.18 2010/01/21 00:10:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.19 2013/01/21 23:07:50 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -42,6 +42,7 @@ C-- Physics package
 #include "AIM_GRID.h"
 #include "com_physvar.h"
 #include "com_forcing.h"
+#include "AIM2DYN.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -87,46 +88,48 @@ C--   Start loops on tile indices
 
 C_jmc: Because AIM physics LSC is not applied in the stratosphere (top level),
 C      ==> move water wapor from the stratos to the surface level.
-      DO j = 1-Oly, sNy+Oly
-       DO i = 1-Olx, sNx+Olx
-        k = ksurfC(i,j,bi,bj)
-        IF (k.LE.Nr)
+        DO j = 1-OLy, sNy+OLy
+         DO i = 1-OLx, sNx+OLx
+          k = kSurfC(i,j,bi,bj)
+          IF (k.LE.Nr)
      &    salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj)
      &                      + salt(i,j,Nr,bi,bj)*drF(Nr)*recip_drF(k)
      &                  *hFacC(i,j,Nr,bi,bj)*recip_hFacC(i,j,k,bi,bj)
-        salt(i,j,Nr,bi,bj) = 0.
-       ENDDO
-      ENDDO
+          salt(i,j,Nr,bi,bj) = 0.
+         ENDDO
+        ENDDO
 
+#ifdef OLD_THSICE_CALL_SEQUENCE
 #ifdef ALLOW_THSICE
-      IF ( useThSIce ) THEN
+        IF ( useThSIce ) THEN
 C-    do sea-ice advection before setting any surface BC.
-        CALL THSICE_DO_ADVECT(
-     I                         bi, bj, myTime, myIter, myThid )
-      ENDIF
+          CALL THSICE_DO_ADVECT(
+     I                           bi, bj, myTime, myIter, myThid )
+        ENDIF
 #endif /* ALLOW_THSICE */
+#endif /* OLD_THSICE_CALL_SEQUENCE */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Physics package needs to know time of year as a fraction
-      yearLength = 86400.*360.
-      tYear = MOD(myTime/yearLength, 1. _d 0)
+        yearLength = 86400.*360.
+        tYear = MOD(myTime/yearLength, 1. _d 0)
 
 C--   Set surface Boundary Conditions for atmos. physics package:
 C     (Albedo, Soil moisture, Surf Temp, Land sea mask)
 C     includes some parts of S/R FORDATE from F.Molteni SPEDDY code (ver23)
-      CALL AIM_SURF_BC(
-     U                  tYear,
-     O                  aim_sWght0, aim_sWght1,
-     I                  bi, bj, myTime, myIter, myThid )
+        CALL AIM_SURF_BC(
+     U                    tYear,
+     O                    aim_sWght0, aim_sWght1,
+     I                    bi, bj, myTime, myIter, myThid )
 
 C--   Set surface geopotential: (g * orographic height)
-      DO j=1,sNy
-       DO i=1,sNx
-         I2 = i+(j-1)*sNx
-         PHI0(I2) = gravity*topoZ(i,j,bi,bj)
-       ENDDO
-      ENDDO
+        DO j=1,sNy
+         DO i=1,sNx
+           I2 = i+(j-1)*sNx
+           PHI0(I2) = gravity*topoZ(i,j,bi,bj)
+         ENDDO
+        ENDDO
 
 C--   Set topographic dependent FOROG var (originally in common SFLFIX);
 C      used to compute for wind stress over land
@@ -140,26 +143,26 @@ c_FM  CALL SOL_OZ (SOLC,TYEAR)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Compute atmospheric-physics tendencies (call the main AIM S/R)
-      CALL PHY_DRIVER( tYear, useDiagnostics,
-     I                  bi, bj, myTime, myIter, myThid )
+        CALL PHY_DRIVER( tYear, useDiagnostics,
+     I                    bi, bj, myTime, myIter, myThid )
 
-      CALL AIM_AIM2DYN( bi, bj, myTime, myIter, myThid )
+        CALL AIM_AIM2DYN( bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_LAND
-      IF (useLand) THEN
+        IF (useLand) THEN
 C-    prepare Surface flux over land for land package
-        CALL AIM_AIM2LAND( aim_landFr, bi, bj,
-     I                     myTime, myIter, myThid )
+          CALL AIM_AIM2LAND( aim_landFr, bi, bj,
+     I                       myTime, myIter, myThid )
 
 C-    Step forward land model
-        CALL LAND_STEPFWD( aim_landFr, bi, bj,
-     I                     myTime, myIter, myThid )
+          CALL LAND_STEPFWD( aim_landFr, bi, bj,
+     I                       myTime, myIter, myThid )
 
 C-    Land diagnostics : write snap-shot & cumulate for TimeAve output
-      CALL LAND_DO_DIAGS(  aim_landFr, bi, bj,
-     I                     myTime, myIter, myThid )
+          CALL LAND_DO_DIAGS( aim_landFr, bi, bj,
+     I                        myTime, myIter, myThid )
 
-      ENDIF
+        ENDIF
 #endif /* ALLOW_LAND */
 
 C-    surface fluxes over ocean (ice-free & ice covered)
@@ -169,37 +172,81 @@ C       used for diagnostics, thsice package and coupler
      I                      bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_THSICE
-      IF ( useThSIce ) THEN
-
+        IF ( useThSIce ) THEN
 C-    Step forward sea-ice model
-        CALL THSICE_STEP_FWD( bi, bj, 1, sNx, 1, sNy,
-     I                        prcAtm,
-     I                        myTime, myIter, myThid )
-
-C-    Slab Ocean : step forward ocean mixed-layer temp. & salinity
-        CALL THSICE_SLAB_OCEAN(
-     I                      aim_sWght0, aim_sWght1,
-     O                      dTsurf(1,2,myThid),
-     I                      bi, bj, myTime, myIter, myThid )
-
-        CALL THSICE_AVE(
-     I                   bi, bj, myTime, myIter, myThid )
-
-      ENDIF
+          CALL THSICE_STEP_FWD( bi, bj, 1, sNx, 1, sNy,
+     I                          prcAtm,
+     I                          myTime, myIter, myThid )
+        ENDIF
 #endif /* ALLOW_THSICE */
 
-#ifdef COMPONENT_MODULE
-      IF ( useCoupler ) THEN
-        CALL ATM_STORE_MY_DATA( bi, bj, myTime, myIter, myThid )
-      ENDIF
-#endif /* COMPONENT_MODULE */
-
 C-    AIM diagnostics : write snap-shot & cumulate for TimeAve output
-      CALL AIM_DIAGNOSTICS( bi, bj, myTime, myIter, myThid )
+        CALL AIM_DIAGNOSTICS( bi, bj, myTime, myIter, myThid )
 
 C--   end bi,bj loops.
        ENDDO
       ENDDO
+
+#ifndef OLD_THSICE_CALL_SEQUENCE
+#ifdef ALLOW_THSICE
+      IF ( useThSIce ) THEN
+C--   Exchange fields that are advected by seaice dynamics
+        CALL THSICE_DO_EXCH( myThid )
+C-    do sea-ice advection after sea-ice thermodynamics
+        CALL THSICE_DO_ADVECT(
+     I                         0, 0, myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_THSICE */
+#endif /* ndef OLD_THSICE_CALL_SEQUENCE */
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+
+#ifdef ALLOW_THSICE
+        IF ( useThSIce ) THEN
+C-    Slab Ocean : step forward ocean mixed-layer temp. & salinity
+          CALL THSICE_SLAB_OCEAN(
+     I                        aim_sWght0, aim_sWght1,
+     O                        dTsurf(1,2,myThid),
+     I                        bi, bj, myTime, myIter, myThid )
+          CALL THSICE_AVE(
+     I                     bi, bj, myTime, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_THSICE */
+
+#ifdef COMPONENT_MODULE
+        IF ( useCoupler ) THEN
+          CALL ATM_STORE_MY_DATA( bi, bj, myTime, myIter, myThid )
+        ENDIF
+#endif /* COMPONENT_MODULE */
+
+C--   end bi,bj loops.
+       ENDDO
+      ENDDO
+
+C--   do exchanges for AIM related quantities:
+      _EXCH_XY_RL( aim_drag, myThid )
+
+#ifdef OLD_THSICE_CALL_SEQUENCE
+#ifdef ALLOW_THSICE
+      IF (useThSIce) THEN
+C--   Exchange fields that are advected by seaice dynamics
+        CALL THSICE_DO_EXCH( myThid )
+      ENDIF
+#endif
+#endif /* OLD_THSICE_CALL_SEQUENCE */
+
+#ifdef COMPONENT_MODULE
+      IF ( useCoupler ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+          CALL ATM_STORE_TAUX( bi,bj, myTime, myIter, myThid )
+          CALL ATM_STORE_TAUY( bi,bj, myTime, myIter, myThid )
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* COMPONENT_MODULE */
+
 #endif /* ALLOW_AIM */
 
       RETURN
