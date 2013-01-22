@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_do_advect.F,v 1.3 2013/01/22 06:11:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_do_advect.F,v 1.4 2013/01/22 23:31:09 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -57,14 +57,6 @@ C     uIce/vIce :: ice velocity on C-grid [m/s]
 
       IF ( thSIceAdvScheme.GT.0 .AND. biArg.EQ.0 .AND. bjArg.EQ.0 ) THEN
 #ifndef OLD_THSICE_CALL_SEQUENCE
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceMask,iceHeight = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE snowHeight        = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE Qice1, Qice2      = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-#endif
 c      iMin = 1
 c      iMax = sNx
 c      jMin = 1
@@ -75,12 +67,43 @@ c      jMax = sNy
        jMax = sNy+OLy-1
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          ticekey = (act1 + 1) + act2*max1
+     &                         + act3*max1*max2
+     &                         + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+
          CALL THSICE_GET_VELOCITY(
      O                        uIce, vIce,
      I                        bi,bj, myTime, myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE icemask(:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE qice1(:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE hOceMxL(:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
+#endif
          CALL THSICE_ADVDIFF(
      U                        uIce, vIce,
      I                        bi,bj, myTime, myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hOceMxL(:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE snowHeight(:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE iceHeight(:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE iceMask(:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
+#endif
          DO j = jMin, jMax
           DO i = iMin, iMax
            IF ( hOceMxL(i,j,bi,bj).GT.0. _d 0 ) THEN

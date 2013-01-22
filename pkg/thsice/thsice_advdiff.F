@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.13 2013/01/21 22:54:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.14 2013/01/22 23:31:09 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -89,6 +89,7 @@ C     msgBuf    :: Informational/error message buffer
       _RL iceFrc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL iceVol    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL oldVol    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL iceTmp    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL r_minArea
       _RL meanCellArea, areaEpsil, vol_Epsil
 #ifdef ALLOW_DIAGNOSTICS
@@ -167,16 +168,16 @@ C-     Ice-Volume weighted quantities:
      &       DIAGNOSTICS_IS_ON('SI_AdvQ2',myThid) ) THEN
          DO j=1,sNy
           DO i=1,sNx
-           iceVol(i,j) = iceMask(i,j,bi,bj)*iceHeight(i,j,bi,bj)
+           iceTmp(i,j) = iceMask(i,j,bi,bj)*iceHeight(i,j,bi,bj)
           ENDDO
          ENDDO
          CALL DIAGNOSTICS_FRACT_FILL(
      I                   Qice1(1-OLx,1-OLy,bi,bj),
-     I                   iceVol,tmpFac,1,'SI_AdvQ1',
+     I                   iceTmp,tmpFac,1,'SI_AdvQ1',
      I                   0,1,2,bi,bj,myThid)
          CALL DIAGNOSTICS_FRACT_FILL(
      I                   Qice2(1-OLx,1-OLy,bi,bj),
-     I                   iceVol,tmpFac,1,'SI_AdvQ2',
+     I                   iceTmp,tmpFac,1,'SI_AdvQ2',
      I                   0,1,2,bi,bj,myThid)
         ENDIF
       ENDIF
