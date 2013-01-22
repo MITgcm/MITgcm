@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1812 2013/01/22 06:02:52 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1813 2013/01/22 23:40:30 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ptracers:
+  - from Ryan A.: code to allow to restart a tracer at regular time interval
+    specifying a reset frequency and a reset-phase (for each tracers).
 o pkg/thsice:
   - implement new sequence of calls for thsice+seaice:
       previously:   ice-Dyn,ice-Advect,ice-Thermo(thsice)
