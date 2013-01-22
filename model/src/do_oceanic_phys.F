@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.121 2013/01/21 23:04:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.122 2013/01/22 06:09:02 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -185,6 +185,32 @@ C--   Freeze water in the ocean interior and let it rise to the surface
 #ifndef OLD_THSICE_CALL_SEQUENCE
 #if (defined ALLOW_THSICE) && !(defined ALLOW_ATM2D)
       IF ( useThSIce .AND. fluidIsWater ) THEN
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uice,vice         = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE iceMask,iceHeight = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE snowHeight, Tsrf  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE Qice1, Qice2      = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE sHeating, snowAge = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE salt,theta        = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE uvel,vvel         = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE qnet,qsw, empmr   = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE atemp,aqh,precip  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE swdown,lwdown     = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+#  ifdef NONLIN_FRSURF
+CADJ STORE hFac_surfC       = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+#  endif
+# endif
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('THSICE_MAIN',myThid)
 # endif
