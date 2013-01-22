@@ -1,9 +1,28 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1811 2013/01/20 15:16:08 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1812 2013/01/22 06:02:52 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/thsice:
+  - implement new sequence of calls for thsice+seaice:
+      previously:   ice-Dyn,ice-Advect,ice-Thermo(thsice)
+      new sequence: ice-Thermo(thsice),ice-Dyn,ice-Advect
+  - allows (with temporary CPP option "#define OLD_THSICE_CALL_SEQUENCE"
+    in CPP_OPTIONS.h) to recover old sequence;
+  - update diagnostics for Intermediate State thsice diagnostics: now filled
+    just before advection (instead of just after advection in old sequence);
+  - update output of experiment offline_exf_seaice (standard test);
+  - in global_ocean.cs32x15 exp., postpone output.icedyn.txt update
+    by setting #define OLD_THSICE_CALL_SEQUENCE in CPP_OPTIONS.h
+o pkg/aim_v23:
+  - use tiled array for aim_CO2 and surface wind speed for export to coupler;
+  - use standard pkg/mdsio routines to read & write CO2 pickup file;
+  - in-line S/R AIM_AIM2DYN_EXCHANGES in aim_do_physics.F;
+  - Implement new sequence of calls for seaice advection (with thsice and
+    seaice diffusion): do ice advection after ice-Thermodynamic (previously
+    was done before); change aim_do_physics.F (split the bi,bj loops block);
+  - use same CPP option (OLD_THSICE_CALL_SEQUENCE) to recover old sequence;
 o pkg/thsice:
   - add a missing EXCH of sIceLoad in thsice_main.F (ocean set-up) for the case
     where just seaice diffusion is used without seaice-dynamics.
