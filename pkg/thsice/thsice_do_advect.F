@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_do_advect.F,v 1.2 2013/01/21 22:58:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_do_advect.F,v 1.3 2013/01/22 06:11:23 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -26,6 +26,9 @@ C     === Global variables ===
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -54,6 +57,14 @@ C     uIce/vIce :: ice velocity on C-grid [m/s]
 
       IF ( thSIceAdvScheme.GT.0 .AND. biArg.EQ.0 .AND. bjArg.EQ.0 ) THEN
 #ifndef OLD_THSICE_CALL_SEQUENCE
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE iceMask,iceHeight = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE snowHeight        = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE Qice1, Qice2      = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+#endif
 c      iMin = 1
 c      iMax = sNx
 c      jMin = 1
@@ -97,6 +108,7 @@ C--     Compute Sea-Ice Loading (= mass of sea-ice + snow / area unit)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+#ifdef OLD_THSICE_CALL_SEQUENCE
       ELSEIF ( thSIceAdvScheme.GT.0 ) THEN
          bi = biArg
          bj = bjArg
@@ -106,6 +118,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          CALL THSICE_ADVDIFF(
      U                        uIce, vIce,
      I                        bi,bj, myTime, myIter, myThid )
+#endif /* OLD_THSICE_CALL_SEQUENCE */
       ENDIF
 
       RETURN
