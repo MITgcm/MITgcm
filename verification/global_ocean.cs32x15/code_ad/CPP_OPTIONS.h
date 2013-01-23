@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/CPP_OPTIONS.h,v 1.7 2013/01/21 22:26:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/CPP_OPTIONS.h,v 1.8 2013/01/23 16:53:09 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -116,10 +116,6 @@ C o Use LONG.bin, LATG.bin, etc., initialization for ini_curviliear_grid.F
 C   Default is to use "new" grid files (OLD_GRID_IO undef) but OLD_GRID_IO
 C   is still useful with, e.g., single-domain curvilinear configurations.
 #undef OLD_GRID_IO
-
-C o Use thsice+seaice (old) call sequence: ice-Dyn,ice-Advect,ice-Thermo(thsice)
-C              as opposed to new sequence: ice-Thermo(thsice),ice-Dyn,ice-Advect
-#define OLD_THSICE_CALL_SEQUENCE
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
