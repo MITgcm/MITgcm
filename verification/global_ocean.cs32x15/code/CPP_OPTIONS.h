@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/CPP_OPTIONS.h,v 1.14 2013/01/21 22:22:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/CPP_OPTIONS.h,v 1.15 2013/01/23 17:00:15 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -122,7 +122,7 @@ C   is still useful with, e.g., single-domain curvilinear configurations.
 
 C o Use thsice+seaice (old) call sequence: ice-Dyn,ice-Advect,ice-Thermo(thsice)
 C              as opposed to new sequence: ice-Thermo(thsice),ice-Dyn,ice-Advect
-#define OLD_THSICE_CALL_SEQUENCE
+#undef OLD_THSICE_CALL_SEQUENCE
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
