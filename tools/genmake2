@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.247 2012/12/26 17:20:01 jahn Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.248 2013/01/24 19:07:04 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -1702,6 +1702,8 @@ check_for_broken_Ff
 if test ! "x$MPI" = x ; then
       echo "  Turning on MPI cpp macros"
       DEFINES="$DEFINES -DALLOW_USE_MPI"
+#- To compile code older than checkpoint63s (2012/09/05), un-comment the following line:
+#     DEFINES="$DEFINES -DALWAYS_USE_MPI"
 fi
 if test ! "x$OMP" = x ; then
       echo "  Add OMPFLAG and turn on OpenMP cpp macros"
