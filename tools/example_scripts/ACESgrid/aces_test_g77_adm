@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_g77.stderr
 #PBS -o /home/jmc/test_aces/output/tst_g77.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_g77_adm,v 1.11 2012/08/17 17:15:30 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_g77_adm,v 1.12 2013/01/25 23:26:00 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for Adjoint test using g77 compiler
@@ -56,7 +56,7 @@ if [ $checkOut -eq 1 ] ; then
 #- remove previous output tar files and tar & remove previous output-dir
     /bin/rm -f $gcmDIR/verification/??_${dNam}-${sfx}_????????_?.tar.gz
     ( cd $gcmDIR/verification
-      listD=`ls -1 -d ??_${dNam}-${sfx}_????????_?`
+      listD=`ls -1 -d ??_${dNam}-${sfx}_????????_? 2> /dev/null`
       for dd in $listD
       do
         if test -d $dd ; then

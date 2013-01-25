@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_gnu.stderr
 #PBS -o /home/jmc/test_aces/output/tst_gnu.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_gnu_mpi,v 1.22 2012/08/17 17:14:18 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_gnu_mpi,v 1.23 2013/01/25 23:26:00 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -54,7 +54,7 @@ if [ $checkOut -eq 1 ] ; then
 #- remove previous output tar files and tar & remove previous output-dir
     /bin/rm -f $gcmDIR/verification/??_${dNam}-${sfx}_????????_?.tar.gz
     ( cd $gcmDIR/verification
-      listD=`ls -1 -d ??_${dNam}-${sfx}_????????_?`
+      listD=`ls -1 -d ??_${dNam}-${sfx}_????????_? 2> /dev/null`
       for dd in $listD
       do
         if test -d $dd ; then
