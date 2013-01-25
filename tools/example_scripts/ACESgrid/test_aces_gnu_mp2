@@ -3,10 +3,10 @@
 #PBS -q one
 #PBS -N tst_mp2
 #PBS -l nodes=1:ppn=6
-#PBS -e /mit/jm_c/test_acesgrid/output/tst_mp2.stderr
-#PBS -o /mit/jm_c/test_acesgrid/output/tst_mp2.stdout
+#PBS -e /data/jm_c/test_acesgrid/output/tst_mp2.stderr
+#PBS -o /data/jm_c/test_acesgrid/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.10 2012/05/01 13:20:39 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.11 2013/01/25 03:57:36 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -16,7 +16,7 @@ fi
 # to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI
 
 dNam='acesgrid'
-TST_DIR="$HOME/test_$dNam"
+TST_DIR="/data/jm_c/test_$dNam"
 echo "start from TST_DIR='$TST_DIR' at: "`date`
 
 umask 0022
@@ -61,7 +61,7 @@ if [ $checkOut -eq 1 ] ; then
 #- remove previous output tar files and tar & remove previous output-dir
     /bin/rm -f $gcmDIR/verification/??_${dNam}-${sfx}_????????_?.tar.gz
     ( cd $gcmDIR/verification
-      listD=`ls -1 -d ??_${dNam}-${sfx}_????????_?`
+      listD=`ls -1 -d ??_${dNam}-${sfx}_????????_? 2> /dev/null`
       for dd in $listD
       do
         if test -d $dd ; then

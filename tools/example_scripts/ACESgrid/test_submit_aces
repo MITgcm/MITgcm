@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_submit_aces,v 1.12 2012/03/22 20:05:27 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_submit_aces,v 1.13 2013/01/25 03:57:36 jmc Exp $
 # $Name:  $
 
 #  submit list of jobs or get list of submitted jobs
@@ -193,7 +193,7 @@ case $1 in
  '-getOnly') action=2 ; shift ;;
  '-sub+get') action=3 ; shift ;;
  '-double' ) action=4 ; shift ;;
-          *) action=4 ;;
+          *) action=3 ;;
 esac
 #echo "action= $action , Arg= $# "
 
@@ -208,7 +208,7 @@ fi
 
 QSUB="/usr/local/bin/qsub"
 QSTAT="/usr/local/bin/qstat"
-TST_DIR="/mit/jm_c/test_acesgrid"
+TST_DIR="/data/jm_c/test_acesgrid"
 logPfix='tst_submit'
 outPfix='acesgrid'
 # QSUB=qsub
