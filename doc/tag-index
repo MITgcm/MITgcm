@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1814 2013/01/23 17:12:35 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1815 2013/01/26 14:52:11 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl
+  - 1st step toward generic time-varying control variable (2D) via CPP option
+    ALLOW_GENTIM2D_CONTROL
+  - note new namelist ctrl_nml_genarr in data.ctrl
 o verification/global_ocean.cs32x15:
   - switch off OLD_THSICE_CALL_SEQUENCE (both forward and AD code) to use new
     thsice calling sequence and update "output.icedyn.txt" output file.

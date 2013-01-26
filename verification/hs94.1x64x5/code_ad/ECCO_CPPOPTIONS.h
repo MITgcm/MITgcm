@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.6 2012/08/09 18:15:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.7 2013/01/26 14:47:45 heimbach Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -65,6 +65,7 @@ cph(
 #define ALLOW_BOTTOMDRAG_CONTROL
 #define ALLOW_GENARR2D_CONTROL
 #define ALLOW_GENARR3D_CONTROL
+#define ALLOW_GENTIM2D_CONTROL
 cph)
 
 C ********************************************************************

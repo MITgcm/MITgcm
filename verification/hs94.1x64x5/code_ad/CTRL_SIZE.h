@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/CTRL_SIZE.h,v 1.1 2012/07/31 17:49:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/CTRL_SIZE.h,v 1.2 2013/01/26 14:47:45 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -11,15 +11,14 @@ C
 C     maxCtrlArr2D :: number of 2-dim. generic control variables
 C     maxCtrlArr3D :: number of 3-dim. generic control variables
 
-#ifdef ALLOW_GENARR2D_CONTROL
       integer     maxCtrlArr2D
       parameter ( maxCtrlArr2D = 3 )
-#endif
 
-#ifdef ALLOW_GENARR3D_CONTROL
       integer     maxCtrlArr3D
       parameter ( maxCtrlArr3D = 3 )
-#endif
+
+      integer     maxCtrlTim2D
+      parameter ( maxCtrlTim2D = 1 )
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
