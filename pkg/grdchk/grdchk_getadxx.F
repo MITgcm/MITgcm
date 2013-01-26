@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.33 2012/08/21 19:49:41 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.34 2013/01/26 14:46:14 heimbach Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -459,6 +459,19 @@ c--   == end of interface ==
         endif
        enddo
 #endif /* ALLOW_GENARR3D_CONTROL */
+
+#ifdef ALLOW_GENTIM2D_CONTROL
+      else if ( grdchkvarindex .ge. 301 .and.
+     &          grdchkvarindex .le. 300+maxCtrlTim2D ) then
+       do iarr = 1, maxCtrlTim2D
+        if ( grdchkvarindex .eq. 200+iarr ) then
+         il=ilnblnk( xx_gentim2d_file(iarr) )
+         write(fname(1:80),'(80a)') ' '
+         write(fname(1:80),'(3a,i10.10)')
+     &        yadmark, xx_gentim2d_file(iarr)(1:il),'.',optimcycle
+        endif
+       enddo
+#endif /* ALLOW_GENTIM2D_CONTROL */
 
       else
          STOP 'grdchk_getadxx: grdchkvarindex not implemented'

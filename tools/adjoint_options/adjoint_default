@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.29 2012/07/27 18:25:39 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.30 2013/01/26 14:46:31 heimbach Exp $
 #  $Name:  $
 
 #  This AD option-file contains the default settings for the adjoint and
@@ -64,6 +64,7 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_gen3d_dummy       \
                     xx_genarr2d_dummy    \
                     xx_genarr3d_dummy    \
+                    xx_gentim2d_dummy    \
                     xx_siarea_dummy      \
                     xx_siheff_dummy      \
                     xx_sihsnow_dummy     \

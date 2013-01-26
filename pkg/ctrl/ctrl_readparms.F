@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.42 2012/09/13 19:55:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.43 2013/01/26 14:45:56 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -116,7 +116,6 @@ c--   Read the namelist input.
      &  xx_sststartdate1, xx_sststartdate2, xx_sstperiod,
      &  xx_sssstartdate1, xx_sssstartdate2, xx_sssperiod,
      &  xx_depth_file, xx_gen2d_file, xx_gen3d_file,
-     &  xx_genarr2d_file, xx_genarr3d_file,
      &  xx_efluxy_file, xx_efluxp_file, xx_bottomdrag_file,
      &  xx_edtaux_file, xx_edtauy_file,
      &  xx_uvel_file, xx_vvel_file, xx_etan_file,
@@ -138,6 +137,13 @@ cHFLUXM_CONTROL
       namelist /ctrl_packnames/
      &  yadmark, yctrlid, yctrlposunpack, yctrlpospack,
      &  ctrlname, costname, scalname, maskname, metaname
+
+#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+      namelist /ctrl_nml_genarr/
+     &  xx_genarr2d_file, xx_genarr3d_file, xx_gentim2d_file,
+     &  xx_gentim2d_startdate1, xx_gentim2d_startdate2,
+     &  xx_gentim2d_startdate, xx_gentim2d_period
+#endif
 
       _BEGIN_MASTER( myThid )
 
@@ -178,6 +184,8 @@ c--     Set default values.
 c
         xx_gen2d_file      = 'xx_gen2d'
         xx_gen3d_file      = 'xx_gen3d'
+
+#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
         do iarr = 1, maxCtrlArr2D
          write(xx_genarr2d_file(iarr)(1:14),'(a,i2.2)')
      &        'xx_genarr2d_', iarr
@@ -189,6 +197,16 @@ c
      &        'xx_genarr3d_', iarr
          write(xx_genarr3d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
         enddo
+c
+        do iarr = 1, maxCtrlTim2D
+         write(xx_gentim2d_file(iarr)(1:14),'(a,i2.2)')
+     &        'xx_gentim2d_', iarr
+         write(xx_gentim2d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
+         xx_gentim2d_startdate1(iarr) =   0
+         xx_gentim2d_startdate2(iarr) =   0
+         xx_gentim2d_period(iarr)     =   0. _d 0
+        enddo
+#endif
 c
         xx_hfluxstartdate1 =   0
         xx_hfluxstartdate2 =   0
@@ -404,6 +422,9 @@ c--     Next, read the cost data file.
 
         READ(unit = iUnit, nml = ctrl_nml)
         READ(unit = iUnit, nml = ctrl_packnames)
+#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+        READ(unit = iUnit, nml = ctrl_nml_genarr)
+#endif
 
         WRITE(msgBuf,'(A)')
      &       'CTRL_READPARMS: finished reading data.ctrl'

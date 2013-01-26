@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.44 2012/10/11 15:36:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.45 2013/01/26 14:45:57 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -82,9 +82,9 @@ c     == local variables ==
       integer irec
       integer ivartype
       integer ictrlgrad
-#if (defined ALLOW_GENARR2D_CONTROL) || (defined ALLOW_GENARR3D_CONTROL)
-C-    Providing we set the file-name just before calling ctrl_set_unpack,
-C     the same local file-name variable can be used for different variables.
+#if (defined ALLOW_GENARR2D_CONTROL) || (defined ALLOW_GENARR3D_CONTROL) || (defined ALLOW_GENTIM2D_CONTROL)
+C-    Provided we set the file name just before calling ctrl_set_unpack,
+C     the same local file name variable can be used for different variables.
 C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
       integer iarr
       character*(80) fname_local(3)
@@ -805,6 +805,19 @@ c----------------------------------------------------------------------
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
      &         fname_local(ictrlgrad), "maskCtrlC",
      &         weighttype, wunit, nwetcglobal, mythid)
+       enddo
+#endif
+
+#ifdef ALLOW_GENTIM2D_CONTROL
+       do iarr = 1, maxCtrlTim2D
+          call ctrl_set_fname( xx_gentim2d_file(iarr),
+     O                         fname_local, mythid )
+          ivartype    = 300+iarr
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wunit"
+          call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
+     &         fname_local(ictrlgrad), "maskCtrlC",
+     &         weighttype, nwetcglobal, mythid)
        enddo
 #endif
 

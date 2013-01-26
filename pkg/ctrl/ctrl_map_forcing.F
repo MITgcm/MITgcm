@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_forcing.F,v 1.16 2012/08/10 19:38:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_forcing.F,v 1.17 2013/01/26 14:45:56 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: ctrl_map_ini
+C     !ROUTINE: CTRL_MAP_FORCING
 C     !INTERFACE:
       SUBROUTINE CTRL_MAP_FORCING(myThid)
 

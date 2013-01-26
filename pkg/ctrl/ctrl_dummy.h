@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.31 2012/07/31 17:47:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.32 2013/01/26 14:45:56 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -185,8 +185,10 @@ cHFLUXM_CONTROL
       common /ctrl_dummy_arr/
      &    xx_genarr2d_dummy
      &  , xx_genarr3d_dummy
+     &  , xx_gentim2d_dummy
       _RL xx_genarr2d_dummy(maxCtrlArr2D)
       _RL xx_genarr3d_dummy(maxCtrlArr3D)
+      _RL xx_gentim2d_dummy(maxCtrlTim2D)
 
 c     ==================================================================
 c     END OF HEADER CONTROL DUMMIES

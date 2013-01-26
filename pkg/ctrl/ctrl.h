@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.63 2012/09/04 14:57:06 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.64 2013/01/26 14:45:56 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -21,8 +21,8 @@ c     ==================================================================
       parameter ( maxcvars = 30 )
 #elif (defined (CTRL_SET_OLD_MAXCVARS_40))
       parameter ( maxcvars = 40 )
-#elif (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL))
-      parameter ( maxcvars = 300 )
+#elif (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+      parameter ( maxcvars = 400 )
 #else
       parameter ( maxcvars = 60 )
 #endif

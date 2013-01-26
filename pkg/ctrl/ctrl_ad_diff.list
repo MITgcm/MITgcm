@@ -7,6 +7,7 @@ ctrl_map_ini_ecco.f
 ctrl_map_ini_gen.f
 ctrl_map_ini_genarr.f
 ctrl_map_forcing.f
+ctrl_map_gentim2d.f
 ctrl_smooth.f
 ctrl_getobcse.f
 ctrl_getobcsn.f
