@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.49 2013/01/26 14:45:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.50 2013/02/01 19:25:32 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -272,7 +272,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "whflux"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_hflux(ictrlgrad), "maskCtrlC",
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_hflux(ictrlgrad), "maskCtrlC",
      &         weighttype, lxxadxx, mythid)
 #endif
 
@@ -281,7 +282,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wsflux"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_sflux(ictrlgrad), "maskCtrlC",
+     &         cunit, ivartype,  forcingPrecond,
+     &         fname_sflux(ictrlgrad), "maskCtrlC",
      &         weighttype, lxxadxx, mythid)
 #endif
 
@@ -294,9 +296,11 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(a)') "wtauu"
           call ctrl_set_pack_xy(
 #ifndef ALLOW_ROTATE_UV_CONTROLS
-     &         cunit, ivartype, fname_tauu(ictrlgrad), "maskCtrlW",
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_tauu(ictrlgrad), "maskCtrlW",
 #else
-     &         cunit, ivartype, fname_tauu(ictrlgrad), "maskCtrlC",
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_tauu(ictrlgrad), "maskCtrlC",
 #endif
      &         weighttype, lxxadxx, mythid)
 #ifdef ALLOW_EXF
@@ -313,9 +317,11 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(a)') "wtauv"
           call ctrl_set_pack_xy(
 #ifndef ALLOW_ROTATE_UV_CONTROLS
-     &         cunit, ivartype, fname_tauv(ictrlgrad), "maskCtrlS",
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_tauv(ictrlgrad), "maskCtrlS",
 #else
-     &         cunit, ivartype, fname_tauv(ictrlgrad), "maskCtrlC",
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_tauv(ictrlgrad), "maskCtrlC",
 #endif
      &         weighttype, lxxadxx, mythid)
 #ifdef ALLOW_EXF
@@ -328,7 +334,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "watemp"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_atemp(ictrlgrad), "maskCtrlC",
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_atemp(ictrlgrad), "maskCtrlC",
      &         weighttype, lxxadxx, mythid)
 #endif
 
@@ -337,7 +344,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "waqh"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_aqh(ictrlgrad), "maskCtrlC",
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_aqh(ictrlgrad), "maskCtrlC",
      &         weighttype, lxxadxx, mythid)
 #endif
 
@@ -349,7 +357,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wuwind"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_uwind(ictrlgrad), "maskCtrlC",
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_uwind(ictrlgrad), "maskCtrlC",
      &         weighttype, lxxadxx, mythid)
 #ifdef ALLOW_EXF
       ENDIF
@@ -364,7 +373,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wvwind"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_vwind(ictrlgrad), "maskCtrlC",
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_vwind(ictrlgrad), "maskCtrlC",
      &         weighttype, lxxadxx, mythid)
 #ifdef ALLOW_EXF
       ENDIF
@@ -439,7 +449,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wsst"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_sst(ictrlgrad), "maskCtrlC",
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_sst(ictrlgrad), "maskCtrlC",
      &         weighttype, lxxadxx, mythid)
 #endif
 
@@ -448,7 +459,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wsss"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_sss(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_sss(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif
 
@@ -457,7 +469,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wdepth"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_depth(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_depth(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif /* ALLOW_DEPTH_CONTROL */
 
@@ -484,8 +497,9 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wbottomdrag"
           call ctrl_set_pack_xy(
-     &      cunit, ivartype, fname_bottomdrag(ictrlgrad), "maskCtrlC",
-     &      weighttype, lxxadxx, mythid)
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_bottomdrag(ictrlgrad), "maskCtrlC",
+     &         weighttype, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_HFLUXM_CONTROL
@@ -493,7 +507,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "whfluxm"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_hfluxm(ictrlgrad), "maskCtrlC",
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_hfluxm(ictrlgrad), "maskCtrlC",
      &         weighttype, lxxadxx, mythid)
 #endif
 
@@ -536,7 +551,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wetan"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_etan(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_etan(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif
 
@@ -545,7 +561,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wrelaxsst"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_relaxsst(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_relaxsst(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif
 
@@ -554,7 +571,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wrelaxsss"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_relaxsss(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_relaxsss(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif
 
@@ -563,7 +581,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wprecip"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_precip(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_precip(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif
 
@@ -572,7 +591,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wswflux"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_swflux(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_swflux(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif
 
@@ -581,7 +601,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wswdown"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_swdown(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_swdown(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif
 
@@ -590,7 +611,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wlwflux"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_lwflux(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_lwflux(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif
 
@@ -599,7 +621,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wlwdown"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_lwdown(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_lwdown(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif
 
@@ -608,7 +631,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wevap"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_evap(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_evap(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif
 
@@ -617,7 +641,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wsnowprecip"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_snowprecip(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_snowprecip(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif
 
@@ -626,7 +651,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wapressure"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_apressure(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_apressure(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif
 
@@ -635,7 +661,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wrunoff"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_runoff(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_runoff(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif
 
@@ -644,7 +671,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_siarea(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_siarea(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif
 
@@ -653,7 +681,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_siheff(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_siheff(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif
 
@@ -662,7 +691,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_sihsnow(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_sihsnow(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif
 
@@ -680,7 +710,8 @@ c          write(cunit) nWetiGlobal(1)
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wshifwflx"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_shifwflx(ictrlgrad),
+     &         cunit, ivartype, forcingPrecond,
+     &         fname_shifwflx(ictrlgrad),
      &         "maskCtrlI", weighttype, lxxadxx, mythid)
 #endif
 
@@ -689,11 +720,13 @@ c          write(cunit) nWetiGlobal(1)
           call ctrl_set_fname( xx_genarr2d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 100+iarr
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wunit"
+cc          write(weighttype(1:80),'(80a)') ' '
+cc          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_local(ictrlgrad),
-     &         "maskCtrlC", weighttype, lxxadxx, mythid)
+     &         cunit, ivartype, genarr2dPrecond(iarr),
+     &         fname_local(ictrlgrad), "maskCtrlC", 
+     &         xx_genarr2d_weight(iarr), 
+     &         lxxadxx, mythid)
        enddo
 #endif
 
@@ -702,11 +735,12 @@ c          write(cunit) nWetiGlobal(1)
           call ctrl_set_fname( xx_genarr3d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 200+iarr
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wunit"
+cc          write(weighttype(1:80),'(80a)') ' '
+cc          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_pack_xyz(
-     &         cunit, ivartype, fname_local(ictrlgrad),
-     &         "maskCtrlC", weighttype, wunit, lxxadxx, mythid)
+     &         cunit, ivartype, fname_local(ictrlgrad), "maskCtrlC",
+     &         xx_genarr3d_weight(iarr), 
+     &         wunit, lxxadxx, mythid)
        enddo
 #endif
 
@@ -715,11 +749,13 @@ c          write(cunit) nWetiGlobal(1)
           call ctrl_set_fname( xx_gentim2d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 300+iarr
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wunit"
+cc          write(weighttype(1:80),'(80a)') ' '
+cc          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, fname_local(ictrlgrad),
-     &         "maskCtrlC", weighttype, lxxadxx, mythid)
+     &         cunit, ivartype, gentim2dPrecond(iarr),
+     &         fname_local(ictrlgrad), "maskCtrlC",
+     &         xx_gentim2d_weight(iarr), 
+     &         lxxadxx, mythid)
        enddo
 #endif
 

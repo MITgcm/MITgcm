@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.4 2013/01/26 14:45:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.5 2013/02/01 19:25:32 heimbach Exp $
 C $Name:  $
 
 C     ==================================================================
@@ -9,13 +9,23 @@ C     ==================================================================
 
       COMMON /CONTROLFILES_CARR/
      &     xx_genarr2d_file,
-     &     xx_genarr3d_file
+     &     xx_genarr3d_file,
+     &     xx_genarr2d_weight,
+     &     xx_genarr3d_weight
       CHARACTER*(MAX_LEN_FNAM) xx_genarr2d_file(maxCtrlArr2D)
       CHARACTER*(MAX_LEN_FNAM) xx_genarr3d_file(maxCtrlArr3D)
+      CHARACTER*(MAX_LEN_FNAM) xx_genarr2d_weight(maxCtrlArr2D)
+      CHARACTER*(MAX_LEN_FNAM) xx_genarr3d_weight(maxCtrlArr3D)
+
+      COMMON /CONTROLFILES_RARR/
+     &     genarr2dPrecond
+      _RL genarr2dPrecond(maxCtrlArr2D)
 
       COMMON /CONTROLFILES_CTIM/
-     &     xx_gentim2d_file
+     &     xx_gentim2d_file,
+     &     xx_gentim2d_weight
       CHARACTER*(MAX_LEN_FNAM) xx_gentim2d_file(maxCtrlTim2D)
+      CHARACTER*(MAX_LEN_FNAM) xx_gentim2d_weight(maxCtrlTim2D)
 
       COMMON /CONTROLFILES_ITIM/
      &     xx_gentim2d_startdate1,
@@ -27,7 +37,9 @@ C     ==================================================================
 
       COMMON /CONTROLFILES_RTIM/
      &     xx_gentim2d_period
+     &   , gentim2dPrecond
       _RL xx_gentim2d_period(maxCtrlTim2D)
+      _RL gentim2dPrecond(maxCtrlTim2D)
 
 #endif
 

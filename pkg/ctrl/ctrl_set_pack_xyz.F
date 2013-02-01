@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xyz.F,v 1.24 2012/09/04 14:58:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xyz.F,v 1.25 2013/02/01 19:25:32 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -101,22 +101,22 @@ c     == end of interface ==
 
 c     Initialise temporary file
       do k = 1,nr
-         do jp = 1,nPy
-            do bj = jtlo,jthi
-               do j = jmin,jmax
-                  do ip = 1,nPx
-                     do bi = itlo,ithi
-                        do i = imin,imax
-                           globfld3d  (i,bi,ip,j,bj,jp,k) = 0. _d 0
-                           globmsk    (i,bi,ip,j,bj,jp,k) = 0. _d 0
-                           globfldtmp2(i,bi,ip,j,bj,jp)   = 0.
-                           globfldtmp3(i,bi,ip,j,bj,jp)   = 0.
-                        enddo
-                     enddo
-                  enddo
-               enddo
+       do jp = 1,nPy
+        do bj = jtlo,jthi
+         do j = jmin,jmax
+          do ip = 1,nPx
+           do bi = itlo,ithi
+            do i = imin,imax
+             globfld3d  (i,bi,ip,j,bj,jp,k) = 0. _d 0
+             globmsk    (i,bi,ip,j,bj,jp,k) = 0. _d 0
+             globfldtmp2(i,bi,ip,j,bj,jp)   = 0. _d 0
+             globfldtmp3(i,bi,ip,j,bj,jp)   = 0. _d 0
             enddo
+           enddo
+          enddo
          enddo
+        enddo
+       enddo
       enddo
 
 c--   Only the master thread will do I/O.
@@ -126,17 +126,17 @@ c--   Only the master thread will do I/O.
          write(cfile2(1:80),'(80a)') ' '
          write(cfile3(1:80),'(80a)') ' '
          if ( lxxadxx ) then
-            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile2(1:80),'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_nonout_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile3(1:80),'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_dimout_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
          else
-            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile2(1:80),'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_nonout_grad_',
      &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile3(1:80),'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_dimout_grad_',
      &           ivartype, '_', optimcycle, '.bin'
          endif
@@ -151,13 +151,30 @@ c--   Only the master thread will do I/O.
       endif
 
 #ifdef CTRL_PACK_PRECISE
-      il=ilnblnk( weighttype)
-      write(weightname(1:80),'(80a)') ' '
-      write(weightname(1:80),'(a)') weighttype(1:il)
-
-      call MDSREADFIELD_3D_GL(
+      if (weighttype.NE.' ') then
+       il=ilnblnk( weighttype)
+       write(weightname(1:80),'(80a)') ' '
+       write(weightname(1:80),'(a)') weighttype(1:il)
+       call MDSREADFIELD_3D_GL(
      &     weightname, ctrlprec, 'RL',
      &     Nr, weightfld3d, 1, mythid)
+      else
+       do k = 1,nr
+        do jp = 1,nPy
+         do bj = jtlo,jthi
+          do j = jmin,jmax
+           do ip = 1,nPx
+            do bi = itlo,ithi
+             do i = imin,imax
+              weightfld3d(i,bi,ip,j,bj,jp,k) = 1. _d 0
+             enddo
+            enddo
+           enddo
+          enddo
+         enddo
+        enddo
+       enddo
+      endif
 #endif
 
       call MDSREADFIELD_3D_GL(

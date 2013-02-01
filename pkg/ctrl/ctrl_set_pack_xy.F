@@ -1,10 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xy.F,v 1.23 2012/09/04 14:58:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xy.F,v 1.24 2013/02/01 19:25:32 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_pack_xy(
-     &     cunit, ivartype, fname, masktype, weighttype,
+     &     cunit, ivartype, precondScalar,
+     &     fname, masktype, weighttype,
      &     lxxadxx, mythid)
 
 c     ==================================================================
@@ -13,11 +14,6 @@ c     ==================================================================
 c
 c     o Compress the control vector such that only ocean points are
 c       written to file.
-c
-c     changed: heimbach@mit.edu 17-Jun-2003
-c              merged changes from Armin to replace write of
-c              nr * globfld2d by 1 * globfld3d
-c              (ad hoc fix to speed up global I/O)
 c
 c     ==================================================================
 
@@ -37,6 +33,7 @@ c     == routine arguments ==
 
       integer cunit
       integer ivartype
+      _RL precondScalar
       character*( 80) fname, fnameGlobal
       character*(  9) masktype
       character*( 80) weighttype
@@ -62,7 +59,9 @@ c     == local variables ==
 
       _RL     globmsk  ( snx,nsx,npx,sny,nsy,npy,nr )
       _RL     globfld3d( snx,nsx,npx,sny,nsy,npy,nr )
-      _RL     globfld2d( snx,nsx,npx,sny,nsy,npy )
+#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
+      _RL     weightfld2d( snx,nsx,npx,sny,nsy,npy )
+#endif
       real*4 cbuff      ( snx*nsx*npx*sny*nsy*npy )
 
       character*( 80) weightname
@@ -93,22 +92,22 @@ c     == end of interface ==
 
 c     Initialise temporary file
       do k = 1,nr
-         do jp = 1,nPy
-            do bj = jtlo,jthi
-               do j = jmin,jmax
-                  do ip = 1,nPx
-                     do bi = itlo,ithi
-                        do i = imin,imax
-                           globfld3d  (i,bi,ip,j,bj,jp,k) = 0. _d 0
-                           globmsk    (i,bi,ip,j,bj,jp,k) = 0. _d 0
-                           globfldtmp2(i,bi,ip,j,bj,jp)   = 0.
-                           globfldtmp3(i,bi,ip,j,bj,jp)   = 0.
-                        enddo
-                     enddo
-                  enddo
-               enddo
+       do jp = 1,nPy
+        do bj = jtlo,jthi
+         do j = jmin,jmax
+          do ip = 1,nPx
+           do bi = itlo,ithi
+            do i = imin,imax
+             globfld3d  (i,bi,ip,j,bj,jp,k) = 0. _d 0
+             globmsk    (i,bi,ip,j,bj,jp,k) = 0. _d 0
+             globfldtmp2(i,bi,ip,j,bj,jp)   = 0. _d 0
+             globfldtmp3(i,bi,ip,j,bj,jp)   = 0. _d 0
             enddo
+           enddo
+          enddo
          enddo
+        enddo
+       enddo
       enddo
 
 c--   Only the master thread will do I/O.
@@ -118,17 +117,17 @@ c--   Only the master thread will do I/O.
          write(cfile2(1:80),'(80a)') ' '
          write(cfile3(1:80),'(80a)') ' '
          if ( lxxadxx ) then
-            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile2(1:80),'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_nonout_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile3(1:80),'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_dimout_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
          else
-            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile2(1:80),'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_nonout_grad_',
      &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile3(1:80),'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_dimout_grad_',
      &           ivartype, '_', optimcycle, '.bin'
          endif
@@ -143,12 +142,30 @@ c--   Only the master thread will do I/O.
       endif
 
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-      il=ilnblnk( weighttype)
-      write(weightname(1:80),'(80a)') ' '
-      write(weightname(1:80),'(a)') weighttype(1:il)
-      call MDSREADFIELD_2D_GL(
+      if (weighttype.NE.' ') then
+       il=ilnblnk( weighttype)
+       write(weightname(1:80),'(80a)') ' '
+       write(weightname(1:80),'(a)') weighttype(1:il)
+       call MDSREADFIELD_2D_GL(
      &     weightname, ctrlprec, 'RL',
-     &     1, globfld2d, 1, mythid)
+     &     1, weightfld2d, 1, mythid)
+      else
+       do k = 1,nr
+        do jp = 1,nPy
+         do bj = jtlo,jthi
+          do j = jmin,jmax
+           do ip = 1,nPx
+            do bi = itlo,ithi
+             do i = imin,imax
+              weightfld2d(i,bi,ip,j,bj,jp,k) = 1. _d 0
+             enddo
+            enddo
+           enddo
+          enddo
+         enddo
+        enddo
+       enddo
+      endif
 #endif
 
       call MDSREADFIELD_3D_GL(
@@ -185,26 +202,34 @@ cph)
                      if (lxxadxx) then
                         cbuff(cbuffindex) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k) *
-     &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
-     &                       / forcingPrecond
+     &                       sqrt(weightfld2d(i,bi,ip,j,bj,jp))
+     &                       / PrecondScalar
                      else
                         cbuff(cbuffindex) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k) /
-     &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
-     &                       * forcingPrecond
+     &                       sqrt(weightfld2d(i,bi,ip,j,bj,jp))
+     &                       * PrecondScalar
                      endif
 #else
-                     cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
+                     if (lxxadxx) then
+                        cbuff(cbuffindex) = 
+     &                       globfld3d(i,bi,ip,j,bj,jp,k)
+     &                       / PrecondScalar
+                     else
+                        cbuff(cbuffindex) = 
+     &                       globfld3d(i,bi,ip,j,bj,jp,k)
+     &                       * PrecondScalar
+                     endif
 #endif
                      ELSE ! IF ( .NOT.ctrlSmoothCorrel2D ) THEN
                      if (lxxadxx) then
                         cbuff(cbuffindex) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k)
-     &                       / forcingPrecond
+     &                       / PrecondScalar
                      else
                         cbuff(cbuffindex) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k)
-     &                       * forcingPrecond
+     &                       * PrecondScalar
                      endif
                      ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
 cph(
@@ -271,26 +296,34 @@ cph)
                      if (lxxadxx) then
                         cbuff(cbuffindex) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k) *
-     &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
-     &                       / forcingPrecond
+     &                       sqrt(weightfld2d(i,bi,ip,j,bj,jp))
+     &                       / PrecondScalar
                      else
                         cbuff(cbuffindex) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k) /
-     &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
-     &                       * forcingPrecond
+     &                       sqrt(weightfld2d(i,bi,ip,j,bj,jp))
+     &                       * PrecondScalar
                      endif
 #else
-                     cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
+                     if (lxxadxx) then
+                        cbuff(cbuffindex) = 
+     &                       globfld3d(i,bi,ip,j,bj,jp,k)
+     &                       / PrecondScalar
+                     else
+                        cbuff(cbuffindex) = 
+     &                       globfld3d(i,bi,ip,j,bj,jp,k)
+     &                       * PrecondScalar
+                     endif
 #endif
                      ELSE !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
                      if (lxxadxx) then
                         cbuff(cbuffindex) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k)
-     &                       / forcingPrecond
+     &                       / PrecondScalar
                      else
                         cbuff(cbuffindex) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k)
-     &                       * forcingPrecond
+     &                       * PrecondScalar
                      endif
                      ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
 cph(
@@ -417,23 +450,29 @@ c-- 2.2: normalize field if needed
            IF ( ctrlSmoothCorrel2D ) THEN
             if (lxxadxx) then
                fld2dNodim(i,j,bi,bj) =
-     &              fld2dDim(i,j,bi,bj) / forcingPrecond
+     &              fld2dDim(i,j,bi,bj) / PrecondScalar
             else
                fld2dNodim(i,j,bi,bj) =
-     &              fld2dDim(i,j,bi,bj) * forcingPrecond
+     &              fld2dDim(i,j,bi,bj) * PrecondScalar
             endif
            ELSE !IF ( ctrlSmoothCorrel2D ) THEN
 # ifndef ALLOW_NONDIMENSIONAL_CONTROL_IO
-            fld2dNodim(i,j,bi,bj) = fld2dDim(i,j,bi,bj)
+            if (lxxadxx) then
+               fld2dNodim(i,j,bi,bj) = fld2dDim(i,j,bi,bj)
+     &              / PrecondScalar
+            else
+               fld2dNodim(i,j,bi,bj) = fld2dDim(i,j,bi,bj)
+     &              * PrecondScalar
+            endif
 # else
             if (lxxadxx) then
                fld2dNodim(i,j,bi,bj) =
      &              fld2dDim(i,j,bi,bj) * sqrt(wei2d(i,j,bi,bj))
-     &                       / forcingPrecond
+     &                       / PrecondScalar
             else
                fld2dNodim(i,j,bi,bj) =
      &              fld2dDim(i,j,bi,bj) / sqrt(wei2d(i,j,bi,bj))
-     &                       * forcingPrecond
+     &                       * PrecondScalar
             endif
 # endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
            ENDIF !IF ( ctrlSmoothCorrel2D ) THEN

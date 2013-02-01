@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.43 2013/01/26 14:45:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.44 2013/02/01 19:25:32 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -141,8 +141,10 @@ cHFLUXM_CONTROL
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
       namelist /ctrl_nml_genarr/
      &  xx_genarr2d_file, xx_genarr3d_file, xx_gentim2d_file,
+     &  xx_genarr2d_weight, xx_genarr3d_weight, xx_gentim2d_weight,
      &  xx_gentim2d_startdate1, xx_gentim2d_startdate2,
-     &  xx_gentim2d_startdate, xx_gentim2d_period
+     &  xx_gentim2d_startdate, xx_gentim2d_period,
+     &  genarr2dPrecond, gentim2dPrecond
 #endif
 
       _BEGIN_MASTER( myThid )
@@ -190,21 +192,26 @@ c
          write(xx_genarr2d_file(iarr)(1:14),'(a,i2.2)')
      &        'xx_genarr2d_', iarr
          write(xx_genarr2d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
+         write(xx_genarr2d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
+         genarr2dPrecond(iarr) = 1. _d 0
         enddo
 c
         do iarr = 1, maxCtrlArr3D
          write(xx_genarr3d_file(iarr)(1:14),'(a,i2.2)')
      &        'xx_genarr3d_', iarr
          write(xx_genarr3d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
+         write(xx_genarr3d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
         enddo
 c
         do iarr = 1, maxCtrlTim2D
          write(xx_gentim2d_file(iarr)(1:14),'(a,i2.2)')
      &        'xx_gentim2d_', iarr
          write(xx_gentim2d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
-         xx_gentim2d_startdate1(iarr) =   0
-         xx_gentim2d_startdate2(iarr) =   0
-         xx_gentim2d_period(iarr)     =   0. _d 0
+         write(xx_gentim2d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
+         xx_gentim2d_startdate1(iarr) = 0
+         xx_gentim2d_startdate2(iarr) = 0
+         xx_gentim2d_period(iarr)     = 0. _d 0
+         gentim2dPrecond(iarr)        = 1. _d 0
         enddo
 #endif
 c
