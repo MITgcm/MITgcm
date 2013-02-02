@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xy.F,v 1.30 2013/02/02 15:19:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xy.F,v 1.31 2013/02/02 23:22:44 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_unpack_xy(
-     &     lxxadxx, cunit, PrecondScalar,
-     &     ivartype, fname, masktype, weighttype,
+     &     lxxadxx, cunit, ivartype, PrecondScalar,
+     &     fname, masktype, weighttype,
      &     nwetglobal, mythid)
 
 c     ==================================================================
@@ -35,8 +35,8 @@ c     == routine arguments ==
       integer cunit
       integer ivartype
       _RL precondScalar
-      character*( 80)   fname, fnameGlobal
-      character*(  9)   masktype
+      character*( 80) fname
+      character*(  9) masktype
       character*( 80) weighttype
       integer nwetglobal(nr)
       integer mythid
@@ -65,7 +65,6 @@ c     == local variables ==
 #endif
       real*4  cbuff    ( snx*nsx*npx*sny*nsy*npy )
 
-      character*(128) cfile
       character*( 80) weightname
 
       integer reclen,irectrue
