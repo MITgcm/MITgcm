@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xy.F,v 1.29 2013/02/01 19:25:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xy.F,v 1.30 2013/02/02 15:19:26 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -152,21 +152,19 @@ c--   Only the master thread will do I/O.
      &     weightname, ctrlprec, 'RL',
      &     1, weightfld2d, 1, mythid)
       else
-       do k = 1,nr
         do jp = 1,nPy
          do bj = jtlo,jthi
           do j = jmin,jmax
            do ip = 1,nPx
             do bi = itlo,ithi
              do i = imin,imax
-              weightfld2d(i,bi,ip,j,bj,jp,k) = 1. _d 0
+              weightfld2d(i,bi,ip,j,bj,jp) = 1. _d 0
              enddo
             enddo
            enddo
           enddo
          enddo
         enddo
-       enddo
       endif
 #endif
 
