@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.61 2012/11/09 22:49:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.62 2013/02/03 03:30:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,7 +45,7 @@ C     myThid    :: Thread Id number
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j       :: Loop counters
-C     kSurface  :: index of surface layer
+C     kSurface  :: index of surface level
       INTEGER i, j
       INTEGER kSurface
 CEOP
@@ -71,7 +71,7 @@ C--   Forcing term
      &                      myTime, myThid )
 #endif /* ALLOW_FIZHI */
 
-C     Add windstress momentum impulse into the top-layer
+C     Ocean: Add momentum surface forcing (e.g., wind-stress) in surface level
       IF ( kLev .EQ. kSurface ) THEN
 c      DO j=1,sNy
 C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy+1]
@@ -156,7 +156,7 @@ C     myThid    :: Thread Id number
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j       :: Loop counters
-C     kSurface  :: index of surface layer
+C     kSurface  :: index of surface level
       INTEGER i, j
       INTEGER kSurface
 CEOP
@@ -182,7 +182,7 @@ C--   Forcing term
      &                      myTime, myThid )
 #endif /* ALLOW_FIZHI */
 
-C     Add windstress momentum impulse into the top-layer
+C     Ocean: Add momentum surface forcing (e.g., wind-stress) in surface level
       IF ( kLev .EQ. kSurface ) THEN
        DO j=1,sNy+1
 c       DO i=1,sNx
@@ -268,18 +268,20 @@ C     myThid    :: Thread Id number
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j       :: Loop counters
-C     kSurface  :: index of surface layer
+C     kSurface  :: index of surface level
       INTEGER i, j
       INTEGER kSurface
+      INTEGER km, kc, kp
+      _RL tmpVar(1:sNx,1:sNy)
+      _RL tmpFac, delPI
 CEOP
-#ifdef ALLOW_FRICTION_HEATING
-      _RL tmpFac
-#endif
+c#ifdef ALLOW_FRICTION_HEATING
+c     _RL tmpFac
+c#endif
 #ifdef SHORTWAVE_HEATING
-      integer two
       _RL minusone
-      parameter (two=2,minusone=-1.)
-      _RL swfracb(two)
+      PARAMETER (minusOne=-1.)
+      _RL swfracb(2)
       INTEGER kp1
 #endif
 
@@ -355,7 +357,70 @@ C         conversion from W/m^2/r_unit to K/s
       ENDIF
 #endif /* ALLOW_FRICTION_HEATING */
 
-C     Add heat in top-layer
+      IF ( fluidIsAir .AND. atm_Rq.NE.zeroRL .AND. Nr.NE.1 ) THEN
+C--   Compressible fluid: account for difference between moist and dry air
+C     specific volume in Enthalpy equation (+ V.dP term), since only the
+C     dry air part is accounted for in the (dry) Pot.Temp formulation.
+C     Used centered averaging from interface to center (consistent with
+C     conversion term in KE eq) and same discretisation ( [T*Q]_bar_k )
+C     as for Theta_v in CALC_PHI_HYD
+
+C     conversion from in-situ Temp to Pot.Temp
+        tmpFac = (atm_Po/rC(kLev))**atm_kappa
+C     conversion from W/kg to K/s
+        tmpFac = tmpFac/atm_Cp
+        km = kLev-1
+        kc = kLev
+        kp = kLev+1
+        IF ( kLev.EQ.1 ) THEN
+          DO j=1,sNy
+           DO i=1,sNx
+            tmpVar(i,j) = 0.
+           ENDDO
+          ENDDO
+        ELSE
+          delPI = atm_Cp*( (rC(km)/atm_Po)**atm_kappa
+     &                   - (rC(kc)/atm_Po)**atm_kappa )
+          DO j=1,sNy
+           DO i=1,sNx
+            tmpVar(i,j) = wVel(i,j,kc,bi,bj)*delPI*atm_Rq
+     &                  *( theta(i,j,km,bi,bj)*salt(i,j,km,bi,bj)
+     &                   + theta(i,j,kc,bi,bj)*salt(i,j,kc,bi,bj)
+     &                   )*maskC(i,j,km,bi,bj)*0.25 _d 0
+           ENDDO
+          ENDDO
+        ENDIF
+        IF ( kLev.LT.Nr ) THEN
+          delPI = atm_Cp*( (rC(kc)/atm_Po)**atm_kappa
+     &                   - (rC(kp)/atm_Po)**atm_kappa )
+          DO j=1,sNy
+           DO i=1,sNx
+            tmpVar(i,j) = tmpVar(i,j)
+     &                  + wVel(i,j,kp,bi,bj)*delPI*atm_Rq
+     &                  *( theta(i,j,kc,bi,bj)*salt(i,j,kc,bi,bj)
+     &                   + theta(i,j,kp,bi,bj)*salt(i,j,kp,bi,bj)
+     &                   )*maskC(i,j,kp,bi,bj)*0.25 _d 0
+           ENDDO
+          ENDDO
+        ENDIF
+        DO j=1,sNy
+          DO i=1,sNx
+            gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
+     &         + tmpVar(i,j)*tmpFac
+     &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+          ENDDO
+        ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+C     conversion to W/m^2
+          tmpFac = rUnit2mass
+          CALL DIAGNOSTICS_SCALE_FILL( tmpVar, tmpFac, 1,
+     &                     'MoistCor', kc, 1, 3, bi,bj,myThid )
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+      ENDIF
+
+C     Ocean: Add temperature surface forcing (e.g., heat-flux) in surface level
       IF ( kLev .EQ. kSurface ) THEN
        DO j=1,sNy
         DO i=1,sNx
@@ -403,7 +468,7 @@ c     IF ( usePenetratingSW ) THEN
        swfracb(1)=abs(rF(klev))
        swfracb(2)=abs(rF(klev+1))
        CALL SWFRAC(
-     I             two, minusone,
+     I             2, minusOne,
      U             swfracb,
      I             myTime, 1, myThid )
        kp1 = klev+1
@@ -497,7 +562,7 @@ C     myThid    :: Thread Id number
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j       :: Loop counters
-C     kSurface  :: index of surface layer
+C     kSurface  :: index of surface level
       INTEGER i, j
       INTEGER kSurface
 CEOP
@@ -552,7 +617,7 @@ C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
       ENDIF
 #endif /* ALLOW_ADDFLUID */
 
-C     Add fresh-water in top-layer
+C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
       IF ( kLev .EQ. kSurface ) THEN
        DO j=1,sNy
         DO i=1,sNx
