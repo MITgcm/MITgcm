@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort11,v 1.9 2012/08/05 16:35:54 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort11,v 1.10 2013/02/03 22:47:41 jmc Exp $
 # $Name:  $
 
 #  Build options for version 11 and newer of intel compiler on Linux AMD64 platform
@@ -38,7 +38,7 @@ else
   CC=icc
   FC=ifort
   F90C=ifort
-  LINK=ifort
+  LINK="$F90C -shared-intel"
 fi
 
 DEFINES='-DWORDLENGTH=4'
