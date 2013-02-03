@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1816 2013/02/03 04:59:59 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1817 2013/02/03 23:40:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -8,6 +8,8 @@ o model/src:
   - account for moist thermodynamics in (dry) potential temperature equation;
     update results of experiments: aim.5l_cs (x2), fizhi-cs (std + aqualev)
     and cpl_aim+ocn.
+  - also switch to standard compiler (gfortran, was using ifort previously)
+    for fizhi-cs experiments reference output.
 o pkg/ctrl:
   - 1st step toward generic time-varying control variable (2D) via CPP option
     ALLOW_GENTIM2D_CONTROL
