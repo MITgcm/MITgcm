@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl2dw.F,v 1.6 2011/05/20 03:43:50 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl2dw.F,v 1.7 2013/02/05 21:45:32 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       subroutine smooth_correl2Dw (
      U     fld_in,mask_in,xx_gen_file,mythid)
@@ -21,6 +24,8 @@ C     *==========================================================*
 #include "SMOOTH.h"
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
+# include "CTRL_SIZE.h"
+# include "CTRL_GENARR.h"
 #endif
 #ifdef ALLOW_ECCO
 # include "ecco_cost.h"
@@ -37,6 +42,10 @@ C     *==========================================================*
       integer itlo,ithi
       integer jtlo,jthi
       _RL tmpW
+      LOGICAL weightWasFound
+#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+      INTEGER iarr
+#endif
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -48,6 +57,21 @@ C     *==========================================================*
        DO bi = itlo,ithi
         DO j = 1,sNy
          DO i = 1,sNx 
+
+      weightWasFound=.FALSE.
+
+#ifdef ALLOW_CTRL
+#ifdef ALLOW_GENTIM2D_CONTROL
+      do iarr = 1, maxCtrlTim2D
+        if ( xx_gen_file .EQ. xx_gentim2d_file(iarr) ) then
+          tmpW=wgentim2d(i,j,bi,bj,iarr)
+          weightWasFound=.TRUE.
+        endif
+      enddo
+#endif
+#endif
+
+      if (.NOT.weightWasFound) then
         if ( xx_gen_file .EQ. xx_hflux_file ) then
         tmpW=whflux(i,j,bi,bj)
         elseif ( xx_gen_file .EQ. xx_sflux_file ) then
@@ -85,11 +109,12 @@ C     *==========================================================*
         tmpW=wvwind(i,j,bi,bj)
 
         else
-        tmpW=0.
-      WRITE(errorMessageUnit,'(2A)' )
-     & 'no weights implemented here for ',xx_gen_file
+          tmpW=0.
+          WRITE(errorMessageUnit,'(2A)' )
+     &       'no weights implemented here for ',xx_gen_file
              STOP 'ABNORMAL END: S/R smooth_correl2Dw'
         endif
+      endif
 
       if ((mask_in(i,j,1,bi,bj).NE.0.).AND.(tmpW.NE.0.)) then
       fld_in(i,j,bi,bj)=fld_in(i,j,bi,bj)/sqrt(tmpW)
