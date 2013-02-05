@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.28 2012/09/04 14:58:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.29 2013/02/05 14:32:19 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -57,8 +57,6 @@ c     == routine arguments ==
       integer mythid
 
 c     == local variables ==
-
-#ifdef ALLOW_EXF
 
       integer bi,bj
       integer i,j,k
@@ -148,7 +146,7 @@ c--   Get the counters, flags, and the interpolation factor.
       endif
 
       if (( genfirst ) .or. ( genchanged )) then
-        call exf_SwapFFields( xx_gen0, xx_gen1, mythid )
+        call CTRL_SWAPFFIELDS( xx_gen0, xx_gen1, mythid )
 
         call active_read_xy( fnamegen, xx_gen1 , gencount1,
      &                       doglobalread, ladinit, optimcycle,
@@ -253,8 +251,6 @@ CMLCML)
 cph(
       endif
 cph)
-
-#endif /* ALLOW_EXF */
 
       RETURN
       END

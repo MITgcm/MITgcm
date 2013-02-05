@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.57 2012/10/21 04:27:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.58 2013/02/05 14:33:06 gforget Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
@@ -128,6 +128,10 @@ CADJ &     tapelev2, key = ilev_2
 #ifdef ALLOW_EXF
 # include "exf_ad_check_lev2_dir.h"
 #endif /* ALLOW_EXF */
+
+#ifdef ALLOW_CTRL
+# include "ctrl_ad_check_lev2_dir.h"
+#endif 
 
 #ifdef ALLOW_PTRACERS
 # include "ptracers_ad_check_lev2_dir.h"
