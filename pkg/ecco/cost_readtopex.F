@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopex.F,v 1.13 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopex.F,v 1.14 2013/02/05 14:51:09 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -182,9 +182,11 @@ c read data:
                  tpmask(i,j,bi,bj) = 0. _d 0
               endif
 
+#ifndef ALLOW_SHALLOW_ALTIMETRY
               if ( R_low(i,j,bi,bj) .GT. -200. ) then
                 tpmask(i,j,bi,bj) = 0. _d 0
               endif
+#endif
 
               tpmask(i,j,bi,bj) = tpmask(i,j,bi,bj)*frame(i,j)
               tpobs(i,j,bi,bj)  = tpmask(i,j,bi,bj)*factor*

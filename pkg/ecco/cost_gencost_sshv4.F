@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.10 2012/10/02 01:40:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.11 2013/02/05 14:51:09 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -284,7 +284,9 @@ c      tpmean_y1=1999
             do i = imin,imax
                if ( ( mean_slaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ).AND.
+#ifndef ALLOW_HIGHLAT_ALTIMETRY
      &              ( abs(YC(i,j,bi,bj)) .LE. 66. ).AND.
+#endif
      &              ( tpmeanmask(i,j,bi,bj) .NE. 0. ) ) then
                   mean_slaobs(i,j,bi,bj) = mean_slaobs(i,j,bi,bj) /
      &                 mean_slaobs_NUM(i,j,bi,bj)
@@ -453,8 +455,11 @@ c--   END loop over records for the first time.
             do j = jmin,jmax
               do i = imin,imax
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-               if ( ( mean_psMtpobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
-     &              ( abs(YC(i,j,bi,bj)) .LE. 66. ) ) then
+               if ( ( mean_psMtpobs_NUM(i,j,bi,bj) .NE. 0. )
+#ifndef ALLOW_HIGHLAT_ALTIMETRY
+     &              .AND.( abs(YC(i,j,bi,bj)) .LE. 66. ) 
+#endif
+     &              ) then
                   mean_psMssh_all(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) +
      &                 mean_psMtpobs(i,j,bi,bj)
@@ -468,8 +473,11 @@ c--   END loop over records for the first time.
                endif
 #endif
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-               if ( ( mean_psMersobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
-     &              ( abs(YC(i,j,bi,bj)) .LE. 66. ) ) then
+               if ( ( mean_psMersobs_NUM(i,j,bi,bj) .NE. 0. )
+#ifndef ALLOW_HIGHLAT_ALTIMETRY     
+     &              .AND.( abs(YC(i,j,bi,bj)) .LE. 66. )
+#endif
+     &              ) then
                   mean_psMssh_all(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) +
      &                 mean_psMersobs(i,j,bi,bj)
@@ -483,8 +491,11 @@ c--   END loop over records for the first time.
                endif
 #endif
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-               if ( ( mean_psMgfoobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
-     &              ( abs(YC(i,j,bi,bj)) .LE. 66. ) ) then
+               if ( ( mean_psMgfoobs_NUM(i,j,bi,bj) .NE. 0. )
+#ifndef ALLOW_HIGHLAT_ALTIMETRY     
+     &              .AND.( abs(YC(i,j,bi,bj)) .LE. 66. )
+#endif
+     &              ) then
                   mean_psMssh_all(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) +
      &                 mean_psMgfoobs(i,j,bi,bj)
@@ -499,7 +510,9 @@ c--   END loop over records for the first time.
 #endif
                if ( ( mean_psMssh_all_NUM(i,j,bi,bj) .NE. 0. ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
+#ifndef ALLOW_HIGHLAT_ALTIMETRY     
      &              ( abs(YC(i,j,bi,bj)) .LE. 66. ).AND.
+#endif
      &              ( tpmeanmask(i,j,bi,bj) .NE. 0. ).AND.
      &              ( doReference ) ) then
                   mean_slaobs2(i,j,bi,bj) =
@@ -565,14 +578,20 @@ c--   subtract offset from mean_psMssh_all and psmean
             do i = imin,imax
 
                if ( (mean_psMssh_all_MSK(i,j,bi,bj) .NE. 0.) .AND.
-     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
-     &              ( abs(YC(i,j,bi,bj)) .LE. 66. ) ) then
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) 
+#ifndef ALLOW_HIGHLAT_ALTIMETRY     
+     &              .AND.( abs(YC(i,j,bi,bj)) .LE. 66. ) 
+#endif
+     &            ) then
 c use the re-referencing approach
                   mean_psMssh_all(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) - offset
                elseif ( ( tpmeanmask(i,j,bi,bj) .NE. 0. ) .AND.
-     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
-     &              ( abs(YC(i,j,bi,bj)) .GT. 66. ) ) then
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) 
+#ifndef ALLOW_HIGHLAT_ALTIMETRY     
+     &              .AND.( abs(YC(i,j,bi,bj)) .LE. 66. ) 
+#endif
+     &            ) then
 c use the simpler approach
                   mean_psMssh_all(i,j,bi,bj) =
      &             psmean(i,j,bi,bj) -tpmean(i,j,bi,bj) - offset
@@ -830,8 +849,11 @@ c ------------------------------------------------------
                endif
 #endif
                if ( ( anom_psMslaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
-     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
-     &              ( abs(YC(i,j,bi,bj)) .LE. 66. ) ) then
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) 
+#ifndef ALLOW_HIGHLAT_ALTIMETRY     
+     &              .AND.( abs(YC(i,j,bi,bj)) .LE. 66. ) 
+#endif
+     &            ) then
                   anom_psMslaobs(i,j,bi,bj) =
      &                 anom_psMslaobs(i,j,bi,bj) /
      &                 anom_psMslaobs_NUM(i,j,bi,bj)

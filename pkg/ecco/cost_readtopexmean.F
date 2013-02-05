@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopexmean.F,v 1.6 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopexmean.F,v 1.7 2013/02/05 14:51:09 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -87,9 +87,11 @@ c--   Convert mean ssh from cm to m
                  tpmeanmask(i,j,bi,bj) = 0. _d 0
               endif
 
+#ifndef ALLOW_SHALLOW_ALTIMETRY
               if ( R_low(i,j,bi,bj) .GT. -200. ) then
                 tpmeanmask(i,j,bi,bj) = 0. _d 0
               endif
+#endif
 
               tpmeanmask(i,j,bi,bj) = tpmeanmask(i,j,bi,bj)*frame(i,j)
               tpmean(i,j,bi,bj) = tpmean(i,j,bi,bj)*

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readgfo.F,v 1.10 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readgfo.F,v 1.11 2013/02/05 14:51:09 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -155,9 +155,11 @@ c read data:
                  gfomask(i,j,bi,bj) = 0. _d 0
               endif
 
+#ifndef ALLOW_SHALLOW_ALTIMETRY
               if ( R_low(i,j,bi,bj) .GT. -200. ) then
                 gfomask(i,j,bi,bj) = 0. _d 0
               endif
+#endif
 
               gfomask(i,j,bi,bj) = gfomask(i,j,bi,bj)*frame(i,j)
               gfoobs(i,j,bi,bj)  = gfomask(i,j,bi,bj)*factor*
