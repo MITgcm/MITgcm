@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1817 2013/02/03 23:40:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1818 2013/02/05 15:02:34 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco : 
+  - add compile switches ALLOW_SHALLOW_ALTIMETRY and ALLOW_HIGHLAT_ALTIMETRY.
+o model/src, pkg/autodiff, pkg/ctrl, pkg/grdchk : 
+  - modifications for ALLOW_GENTIM2D_CONTROL
+  -- forward_step.F, the_main_loop.F : pass options and arrays for adjoint tapes.
+  -- load_fields_driver.F : add call to CTRL_MAP_GENTIM2D( myTime, myIter, myThid )
+  -- add xx_gentim2d0/1 in ctrl_ad_check_lev1_dir.h checkpoint_lev1_directives.h etc
+  -- use ctrl_swapffields.F (new) instead of exf_SwapFFields.F in ctrl_get_gen.F
 o model/src:
   - account for moist thermodynamics in (dry) potential temperature equation;
     update results of experiments: aim.5l_cs (x2), fizhi-cs (std + aqualev)
