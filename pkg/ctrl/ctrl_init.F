@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.53 2013/02/05 21:44:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.54 2013/02/05 22:45:56 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -801,7 +801,8 @@ c--
 #ifdef ALLOW_GENTIM2D_CONTROL
        do iarr = 1, maxCtrlTim2D
 
-         call mdsreadfield( xx_gentim2d_weight, ctrlprec, 'RL',
+        if (xx_gentim2d_weight(iarr).NE.' ')
+     &   call mdsreadfield( xx_gentim2d_weight, ctrlprec, 'RL',
      &      1, wgentim2d(1-Olx,1-Oly,1,1,iarr), 1, mythid )
 
         call ctrl_init_rec ( xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
