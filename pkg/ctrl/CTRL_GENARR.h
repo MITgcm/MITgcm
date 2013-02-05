@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.5 2013/02/01 19:25:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.6 2013/02/05 21:44:54 gforget Exp $
 C $Name:  $
 
 C     ==================================================================
@@ -46,12 +46,25 @@ C     ==================================================================
 #ifdef ALLOW_GENTIM2D_CONTROL
       common /controlaux_gentim2d_r/
      &                      xx_gentim2d0,
-     &                      xx_gentim2d1
+     &                      xx_gentim2d1,
+     &                      wgentim2d
       _RL 
      & xx_gentim2d0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,maxCtrlTim2D)
       _RL 
      & xx_gentim2d1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,maxCtrlTim2D)
+      _RL
+     & wgentim2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,maxCtrlTim2D)
 #endif
+
+      common /controlaux_gencost_r/
+     &     objf_gentim2d,  objf_gentim2dm,  objf_gentim2dsmoo,
+     &     num_gentim2d,   num_gentim2dm,   mult_gentim2d
+      _RL  objf_gentim2d(nsx,nsy,maxCtrlTim2D)
+      _RL  objf_gentim2dm(nsx,nsy,maxCtrlTim2D)
+      _RL  objf_gentim2dsmoo(nsx,nsy,maxCtrlTim2D)
+      _RL  num_gentim2d(nsx,nsy,maxCtrlTim2D)
+      _RL  num_gentim2dm(nsx,nsy,maxCtrlTim2D)
+      _RL  mult_gentim2d(maxCtrlTim2D)
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
