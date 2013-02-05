@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.59 2012/08/14 17:59:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.60 2013/02/05 21:48:07 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
-
 
       subroutine ecco_cost_final( mythid )
 
@@ -31,6 +30,8 @@ c     == global variables ==
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
 # include "optim.h"
+# include "CTRL_SIZE.h"
+# include "CTRL_GENARR.h"
 #endif
 #ifdef ALLOW_PROFILES
 # include "profiles.h"
@@ -100,6 +101,9 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL f_usercost(NUSERCOST)
       _RL f_sshv4cost(NSSHV4COST)
       _RL f_transp, f_ies
+#ifdef ALLOW_CTRL
+      _RL f_gentim2d(maxCtrlTim2D)
+#endif
 
       _RL no_temp0, no_salt0,  no_temp, no_salt
       _RL no_etan0, no_uvel0, no_vvel0
@@ -128,6 +132,9 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL no_usercost(NUSERCOST)
       _RL no_sshv4cost(NSSHV4COST)
       _RL no_transp, no_ies
+#ifdef ALLOW_CTRL
+      _RL no_gentim2d(maxCtrlTim2D)
+#endif
 
       character*20 cfname
 #ifdef ECCO_VERBOSE
@@ -254,6 +261,11 @@ c     == end of interface ==
         f_sshv4cost(num_var)= 0. _d 0
        enddo
 #endif
+#ifdef ALLOW_CTRL
+       do num_var=1,maxCtrlTim2D
+        f_gentim2d(maxCtrlTim2D)= 0. _d 0
+       enddo
+#endif
 
       no_temp = 0. _d 0
       no_salt = 0. _d 0
@@ -344,6 +356,11 @@ c     == end of interface ==
 #ifdef ALLOW_SSHV4_COST
        do num_var=1,NSSHV4COST
         no_sshv4cost(num_var)= 0. _d 0
+       enddo
+#endif
+#ifdef ALLOW_CTRL
+       do num_var=1,maxCtrlTim2D      
+        no_gentim2d(maxCtrlTim2D)= 0. _d 0
        enddo
 #endif
 
@@ -452,6 +469,13 @@ c--   Sum up all contributions.
      &            *objf_sshv4cost(num_var,bi,bj)
        enddo
 #endif
+#ifdef ALLOW_CTRL
+       do num_var=1,maxCtrlTim2D      
+          fc = fc
+     &            + mult_gentim2d(num_var)
+     &            *objf_gentim2d(bi,bj,num_var)
+       enddo
+#endif
           f_temp = f_temp + objf_temp(bi,bj)
           f_salt = f_salt + objf_salt(bi,bj)
           f_temp0 = f_temp0 + objf_temp0(bi,bj)
@@ -558,6 +582,12 @@ c--   Sum up all contributions.
      &            +objf_sshv4cost(num_var,bi,bj)
        enddo
 #endif
+#ifdef ALLOW_CTRL
+       do num_var=1,maxCtrlTim2D
+          f_gentim2d(num_var) = f_gentim2d(num_var)
+     &            +objf_gentim2d(bi,bj,num_var)
+       enddo
+#endif
           no_temp = no_temp + num_temp(bi,bj)
           no_salt = no_salt + num_salt(bi,bj)
           no_temp0 = no_temp0 + num_temp0(bi,bj)
@@ -648,6 +678,12 @@ c--   Sum up all contributions.
        do num_var=1,NSSHV4COST
           no_sshv4cost(num_var)=no_sshv4cost(num_var)
      &            +num_sshv4cost(num_var,bi,bj)
+       enddo
+#endif
+#ifdef ALLOW_CTRL
+       do num_var=1,maxCtrlTim2D
+          no_gentim2d(num_var) = no_gentim2d(num_var)
+     &            +num_gentim2d(bi,bj,num_var)
        enddo
 #endif
 
@@ -768,6 +804,11 @@ c--   Do global summation for each part of the cost function
         _GLOBAL_SUM_RL(f_sshv4cost(num_var), myThid )
        enddo
 #endif
+#ifdef ALLOW_CTRL
+       do num_var=1,maxCtrlTim2D
+        _GLOBAL_SUM_RL(f_gentim2d(num_var), myThid )
+       enddo
+#endif
       _GLOBAL_SUM_RL( no_temp , myThid )
       _GLOBAL_SUM_RL( no_salt , myThid )
       _GLOBAL_SUM_RL( no_temp0, myThid )
@@ -856,6 +897,11 @@ c--   Do global summation for each part of the cost function
         _GLOBAL_SUM_RL(no_sshv4cost(num_var), myThid )
        enddo
 #endif
+#ifdef ALLOW_CTRL
+       do num_var=1,maxCtrlTim2D
+        _GLOBAL_SUM_RL(no_gentim2d(num_var), myThid )
+       enddo
+#endif      
 
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_temp    =',f_temp
@@ -1051,6 +1097,15 @@ c--   Do global summation for each part of the cost function
         endif
        enddo
 #endif
+#ifdef ALLOW_CTRL
+       do num_var=1,maxCtrlTim2D
+        if (no_gentim2d(num_var).GT.0) then
+         write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
+     &     ' --> f_gentim2d =',f_gentim2d(num_var),
+     &      num_var
+        endif
+       enddo
+#endif      
 
 c--   Each process has calculated the global part for itself.
 
@@ -1319,6 +1374,20 @@ C     only master thread of master CPU open and write to file
          endif
        enddo
 #endif
+
+#ifdef ALLOW_CTRL
+       do num_var=1,maxCtrlTim2D
+        if (no_gentim2d(num_var).GT.0) then
+         IL  = ILNBLNK( xx_gentim2d_file(num_var) )
+         IL  = max (IL,15)
+         write(ifc,'(2A,i2.0,A,2D22.15)')
+     &    xx_gentim2d_file(num_var)(1:IL),
+     &    ' (gentim2d ', num_var, ') = ',
+     &    f_gentim2d(num_var),
+     &    no_gentim2d(num_var)
+         endif
+       enddo
+#endif      
 
         close(ifc)
 

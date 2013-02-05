@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.7 2012/09/30 20:33:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.8 2013/02/05 21:48:07 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -207,6 +207,11 @@ c--   Compute user defined cost function contributions (basic)
       call timer_start('cost_usercost_all    [ECCO SPIN-DOWN]', mythid)
       call cost_usercost_all( myiter, mytime, mythid )
       call timer_stop ('cost_usercost_all    [ECCO SPIN-DOWN]', mythid)
+
+c--   Compute user defined cost function contributions (controls)
+      call timer_start('cost_genctrl       [ECCO SPIN-DOWN]', mythid)
+      call cost_genctrl( myiter, mytime, mythid )
+      call timer_stop ('cost_genctrl       [ECCO SPIN-DOWN]', mythid)
 
 #endif /* ALLOW_ECCO_EVOLUTION */
 
