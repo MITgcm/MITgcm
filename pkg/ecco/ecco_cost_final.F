@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.60 2013/02/05 21:48:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.61 2013/02/05 22:46:26 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -1376,6 +1376,7 @@ C     only master thread of master CPU open and write to file
 #endif
 
 #ifdef ALLOW_CTRL
+#ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
         if (no_gentim2d(num_var).GT.0) then
          IL  = ILNBLNK( xx_gentim2d_file(num_var) )
@@ -1387,7 +1388,8 @@ C     only master thread of master CPU open and write to file
      &    no_gentim2d(num_var)
          endif
        enddo
-#endif      
+#endif
+#endif
 
         close(ifc)
 
