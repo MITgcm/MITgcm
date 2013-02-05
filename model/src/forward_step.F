@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.212 2012/11/15 15:55:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.213 2013/02/05 14:37:49 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -27,6 +27,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
 #endif
 
 CBOP
@@ -87,6 +90,7 @@ C     == Global variables ==
 #  include "CTRL_SIZE.h"
 #  include "ctrl.h"
 #  include "ctrl_dummy.h"
+#  include "CTRL_GENARR.h"
 # endif
 # ifdef ALLOW_COST
 #  include "cost.h"

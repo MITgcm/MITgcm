@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.14 2012/11/09 22:40:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.15 2013/02/05 14:37:49 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -133,6 +133,11 @@ C--   Call external forcing package
         CALL TIMER_STOP ('EXF_GETFORCING     [LOAD_FLDS_DRIVER]',myThid)
       ENDIF
 #endif /* ALLOW_EXF */
+
+C--   Add generic controls (if specified by user)
+#ifdef ALLOW_CTRL
+      CALL CTRL_MAP_GENTIM2D( myTime, myIter, myThid )
+#endif
 
 C--   Call external CheapAML forcing package
 #ifdef ALLOW_CHEAPAML

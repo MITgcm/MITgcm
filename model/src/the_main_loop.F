@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.141 2012/12/27 23:08:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.142 2013/02/05 14:37:49 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -23,6 +23,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
 #endif
 
 CBOP
@@ -175,6 +178,7 @@ c They provide the fields to be stored.
 # include "CTRL_SIZE.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"
+# include "CTRL_GENARR.h"
 # endif
 # ifdef ALLOW_COST
 #  include "cost.h"
