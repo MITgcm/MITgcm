@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.6 2013/01/10 16:24:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.7 2013/02/06 10:19:17 mlosch Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -73,13 +73,13 @@ C     kg       :: index for looping though layers_bounds
 C     kk       :: vertical index for ZZ (fine) grid
 C     kgu,kgv  :: vertical index for isopycnal grid
 C     prho     :: potential density referenced to layers_krho pressure
-C     TatV     :: temperature at U point
+C     TatU     :: temperature at U point
 C     TatV     :: temperature at V point
 
       INTEGER bi, bj
       INTEGER i,j,k,kk,kg,kci,kp1
       INTEGER kgu(sNx+1,sNy+1), kgv(sNx+1,sNy+1)
-      _RL TatU, TatV
+      _RL TatU(sNx+1,sNy+1), TatV(sNx+1,sNy+1)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_GMREDI
       INTEGER kcip1
@@ -105,8 +105,8 @@ C       So initialize the search with the warmest value.
 
 C     Reset the arrays
       DO kg=1,Nlayers
-       DO j = 1,sNy+1
-        DO i = 1,sNx+1
+       DO j = 1-Oly,sNy+Oly
+        DO i = 1-Olx,sNx+Olx
 #ifdef LAYERS_UFLUX
          UH(i,j,kg,bi,bj) = 0. _d 0
 #ifdef LAYERS_THICKNESS
@@ -131,49 +131,59 @@ C     Reset the arrays
        maskp1 = 1.
        IF (kci.GE.Nr) maskp1 = 0.
 #endif /* ALLOW_GMREDI */
+#ifdef LAYERS_UFLUX
        DO j = 1,sNy+1
         DO i = 1,sNx+1
 
-#ifdef LAYERS_UFLUX
 C ------ Find theta at the U point (west) on the fine Z grid
          kp1=k+1
          IF (hFacW(i,j,kp1,bi,bj) .EQ. 0.) kp1=k
-         TatU = MapFact(kk) *
+         TatU(i,j) = MapFact(kk) *
      &    0.5 _d 0 * (tracer(i-1,j,k,bi,bj)+tracer(i,j,k,bi,bj)) +
      &    (1-MapFact(kk)) *
      &    0.5 _d 0 * (tracer(i-1,j,kp1,bi,bj)+tracer(i,j,kp1,bi,bj))
 
+        ENDDO
+       ENDDO
+       DO j = 1,sNy+1
+        DO i = 1,sNx+1
+
 C ------ Now that we know T everywhere, determine the binning.
 
-         IF (TatU .GE. layers_bounds(Nlayers,iLa)) THEN
+         IF (TatU(i,j) .GE. layers_bounds(Nlayers,iLa)) THEN
 C        the point is in the hottest bin or hotter
           kgu(i,j) = Nlayers
-         ELSE IF (TatU .LT. layers_bounds(2,iLa)) THEN
+         ELSE IF (TatU(i,j) .LT. layers_bounds(2,iLa)) THEN
 C        the point is in the coldest bin or colder
           kgu(i,j) = 1
-         ELSE IF ( (TatU .GE. layers_bounds(kgu(i,j),iLa))
-     &    .AND. (TatU .LT. layers_bounds(kgu(i,j)+1,iLa)) ) THEN
+         ELSE IF ( (TatU(i,j) .GE. layers_bounds(kgu(i,j),iLa))
+     &    .AND. (TatU(i,j) .LT. layers_bounds(kgu(i,j)+1,iLa)) ) THEN
 C        already on the right bin -- do nothing
-         ELSE IF (TatU .GE. layers_bounds(kgu(i,j),iLa)) THEN
+         ELSE IF (TatU(i,j) .GE. layers_bounds(kgu(i,j),iLa)) THEN
 C        have to hunt for the right bin by getting hotter
-          DO WHILE (TatU .GE. layers_bounds(kgu(i,j)+1,iLa))
+          DO WHILE (TatU(i,j) .GE. layers_bounds(kgu(i,j)+1,iLa))
            kgu(i,j) = kgu(i,j) + 1
           ENDDO
-C         now layers_bounds(kgu(i,j)+1,iLa) < TatU <= layers_bounds(kgu(i,j)+1,iLa)
-         ELSE IF (TatU .LT. layers_bounds(kgu(i,j)+1,iLa)) THEN
+C        now layers_bounds(kgu+1,iLa) < TatU <= layers_bounds(kgu+1,iLa)
+         ELSE IF (TatU(i,j) .LT. layers_bounds(kgu(i,j)+1,iLa)) THEN
 C        have to hunt for the right bin by getting colder
-          DO WHILE (TatU .LT. layers_bounds(kgu(i,j),iLa))
+          DO WHILE (TatU(i,j) .LT. layers_bounds(kgu(i,j),iLa))
            kgu(i,j) = kgu(i,j) - 1
           ENDDO
-C         now layers_bounds(kgu(i,j)+1,iLa) <= TatU < layers_bounds(kgu(i,j)+1,iLa)
+C         now layers_bounds(kgu+1,iLa) <= TatU < layers_bounds(kgu+1,iLa)
          ELSE
 C        that should have covered all the options
-          WRITE(msgBuf,'(2A,1E14.6)')
-     &     'S/R LAYERS_CALC: Couldnt find a bin in ',
-     &     'layers_bounds for TatU=',TatU
+          WRITE(msgBuf,'(2A,1E14.6,A,I3,A,I3,A)')
+     &     'S/R LAYERS_CALC: Could not find a bin in ',
+     &     'layers_bounds for TatU(i,j)=',TatU(i,j),'(',i,',',j,')'
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R LAYERS_INIT_FIXED'
          ENDIF
+
+        ENDDO
+       ENDDO
+       DO j = 1,sNy+1
+        DO i = 1,sNx+1
 
 C ------ Augment the bin values
          UH(i,j,kgu(i,j),bi,bj) =
@@ -208,48 +218,61 @@ C ------ Augment the bin values
      &    + dZZf(kk) * hFacW(i,j,kci,bi,bj)
 #endif /* LAYERS_THICKNESS */
 
+        ENDDO
+       ENDDO
 #endif /* LAYERS_UFLUX */
 
 #ifdef LAYERS_VFLUX
+       DO j = 1,sNy+1
+        DO i = 1,sNx+1
 C ------ Find theta at the V point (south) on the fine Z grid
          kp1=k+1
          IF (hFacS(i,j,kp1,bi,bj) .EQ. 0.) kp1=k
-         TatV = MapFact(kk) *
+         TatV(i,j) = MapFact(kk) *
      &    0.5 _d 0 * (tracer(i,j-1,k,bi,bj)+tracer(i,j,k,bi,bj)) +
      &    (1-MapFact(kk)) *
      &    0.5 _d 0 * (tracer(i,j-1,kp1,bi,bj)+tracer(i,j,kp1,bi,bj))
 
+        ENDDO
+       ENDDO
+       DO j = 1,sNy+1
+        DO i = 1,sNx+1
+
 C ------ Now that we know T everywhere, determine the binning
-         IF (TatV .GE. layers_bounds(Nlayers,iLa)) THEN
+         IF (TatV(i,j) .GE. layers_bounds(Nlayers,iLa)) THEN
 C         the point is in the hottest bin or hotter
           kgv(i,j) = Nlayers
-         ELSE IF (TatV .LT. layers_bounds(2,iLa)) THEN
+         ELSE IF (TatV(i,j) .LT. layers_bounds(2,iLa)) THEN
 C         the point is in the coldest bin or colder
           kgv(i,j) = 1
-         ELSE IF ( (TatV .GE. layers_bounds(kgv(i,j),iLa))
-     &    .AND. (TatV .LT. layers_bounds(kgv(i,j)+1,iLa)) ) THEN
+         ELSE IF ( (TatV(i,j) .GE. layers_bounds(kgv(i,j),iLa))
+     &    .AND. (TatV(i,j) .LT. layers_bounds(kgv(i,j)+1,iLa)) ) THEN
 C         already on the right bin -- do nothing
-         ELSE IF (TatV .GE. layers_bounds(kgv(i,j),iLa)) THEN
+         ELSE IF ( TatV(i,j) .GE. layers_bounds(kgv(i,j),iLa) ) THEN
 C         have to hunt for the right bin by getting hotter
-          DO WHILE (TatV .GE. layers_bounds(kgv(i,j)+1,iLa))
+          DO WHILE (TatV(i,j) .GE. layers_bounds(kgv(i,j)+1,iLa))
            kgv(i,j) = kgv(i,j) + 1
           ENDDO
-C         now layers_bounds(kgv(i,j)+1,iLa) < TatV <= layers_bounds(kgv(i,j)+1,iLa)
-         ELSE IF (TatV .LT. layers_bounds(kgv(i,j)+1,iLa)) THEN
+C         now layers_bounds(kgv+1,iLa) < TatV <= layers_bounds(kgv+1,iLa)
+         ELSE IF ( TatV(i,j) .LT. layers_bounds(kgv(i,j)+1,iLa) ) THEN
 C         have to hunt for the right bin by getting colder
-          DO WHILE (TatV .LT. layers_bounds(kgv(i,j),iLa))
+          DO WHILE (TatV(i,j) .LT. layers_bounds(kgv(i,j),iLa))
            kgv(i,j) = kgv(i,j) - 1
           ENDDO
-C         now layers_bounds(kgv(i,j)+1,iLa) <= TatV < layers_bounds(kgv(i,j)+1,iLa)
+C         now layers_bounds(kgv+1,iLa) <= TatV < layers_bounds(kgv+1,iLa)
          ELSE
 C         that should have covered all the options
-          WRITE(msgBuf,'(2A,1E14.6)')
-     &     'S/R LAYERS_CALC: Couldnt find a bin in ',
-     &     'layers_bounds for TatV=',
-     &     TatV
+          WRITE(msgBuf,'(2A,1E14.6,A,I3,A,I3,A)')
+     &     'S/R LAYERS_CALC: Could not find a bin in ',
+     &     'layers_bounds for TatV(i,j)=',TatV(i,j),'(',i,',',j,')'
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R LAYERS_INIT_FIXED'
          ENDIF
+
+        ENDDO
+       ENDDO
+       DO j = 1,sNy+1
+        DO i = 1,sNx+1
 
 C ------ Augment the bin values
          VH(i,j,kgv(i,j),bi,bj) =
@@ -284,10 +307,9 @@ C ------ Augment the bin values
      &    + dZZf(kk) * hFacS(i,j,kci,bi,bj)
 #endif /* LAYERS_THICKNESS */
 
-#endif /* LAYERS_VFLUX */
-
         ENDDO
        ENDDO
+#endif /* LAYERS_VFLUX */
       ENDDO
 
 C--   Now that we know the thicknesses, compute the heaviside function
