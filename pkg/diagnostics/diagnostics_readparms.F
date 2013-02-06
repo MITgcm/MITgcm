@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.32 2011/08/01 20:38:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.33 2013/02/06 21:25:26 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -27,6 +27,14 @@ C     !INPUT PARAMETERS:
       INTEGER myThid
 CEOP
 
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+#ifdef ALLOW_FIZHI
+      _RL      getcon
+      EXTERNAL getcon
+#endif
+
 C     !LOCAL VARIABLES:
 C     ldimLoc :: Max Number of Lists  (in data.diagnostics)
 C     kdimLoc :: Max Number of Levels (in data.diagnostics)
@@ -37,7 +45,7 @@ C     averagingFreq  :: frequency (in s) for periodic averaging interval
 C     averagingPhase :: phase     (in s) for periodic averaging interval
 C     repeatCycle    :: number of averaging intervals in 1 cycle
 C     missing_value  :: missing value for real-type fields in output file
-C     missing_value_int :: missing value for integers in output
+C     missing_value_int :: missing value for integers in output (not used)
 C     levels    :: List Output Levels
 C     fields    :: List Output Fields
 C     fileName  :: List Output Filename
@@ -76,8 +84,6 @@ C     stat_fName  :: List of statistics output Filename
       INTEGER ku, stdUnit
       INTEGER j,k,l,n,m,nf
       INTEGER iLen, regionCount
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
 
 C--   full level output:
       NAMELIST / DIAGNOSTICS_LIST /
@@ -113,7 +119,11 @@ C     Initialize and Read Diagnostics Namelist
         averagingPhase(l)= 0.
         repeatCycle(l)   = 0
         fileName(l)   = blkFilName
-        missing_value(l)     = UNSET_RL
+C-    Cannot use model standard Unset value since this was used previously
+C     as defaut missing value that one might want to recover;
+C     Use instead the unlikely missing value of One for the Undef-missing-Val
+c       missing_value(l)     = UNSET_RL
+        missing_value(l)     = oneRL
         missing_value_int(l) = UNSET_I
         fileFlags(l)  = blk8c
         DO k = 1,kdimLoc
@@ -202,8 +212,12 @@ C     Initialise DIAG_SELECT common block (except pointers)
         nlevels(n) = 0
         nfields(n) = 0
         fnames(n) = blkFilName
-        misvalFlt(n) = UNSET_RL
-        misvalInt(n) = UNSET_I
+c       misValFlt(n) = UNSET_RL
+c       misValInt(n) = UNSET_I
+        misValFlt(n) = -999. _d 0
+#ifdef ALLOW_FIZHI
+        IF ( useFIZHI ) misValFlt(n) = getcon('UNDEF')
+#endif
         DO k = 1,numLevels
           levs(k,n) = 0
         ENDDO
@@ -263,10 +277,12 @@ C-     Only lists with non-empty file name (iLen>0) are considered
            averageFreq(n)  = frequency(l)
            averagePhase(n) = phase(n)
          ENDIF
-         IF ( missing_value(l) .NE. UNSET_RL )
-     &        misvalFlt(n) = missing_value(l)
-         IF ( missing_value_int(l) .NE. UNSET_I )
-     &        misvalInt(n) = missing_value_int(l)
+c        IF ( missing_value(l) .NE. UNSET_RL )
+c    &        misValFlt(n) = missing_value(l)
+c        IF ( missing_value_int(l) .NE. UNSET_I )
+c    &        misValInt(n) = missing_value_int(l)
+         IF ( missing_value(l) .NE. oneRL )
+     &        misValFlt(n) = missing_value(l)
          fnames(n)  = fileName (l)
          fflags(n)  = fileFlags(l)
          nlevels(n) = 0
@@ -500,13 +516,18 @@ C     Echo History List Data Structure
      &    ' , Phase: ', averagePhase(n), ' , Cycle:', averageCycle(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
         IF ( fflags(n).EQ.blk8c ) THEN
-          WRITE(msgBuf,'(A,1PE20.12,A,I12,3A)')
-     &       ' missing value:',  misvalFlt(n),
-     &       ' ; for integers:', misvalInt(n)
+c         WRITE(msgBuf,'(A,1PE20.12,A,I12,3A)')
+c    &       ' missing value:',  misValFlt(n),
+c    &       ' ; for integers:', misValInt(n)
+          WRITE(msgBuf,'(A,1PE20.12,3A)')
+     &       ' missing value:', misValFlt(n)
         ELSE
-          WRITE(msgBuf,'(A,1PE20.12,A,I12,3A)')
-     &       ' missing value:',  misvalFlt(n),
-     &       ' ; for integers:', misvalInt(n),
+c         WRITE(msgBuf,'(A,1PE20.12,A,I12,3A)')
+c    &       ' missing value:',  misValFlt(n),
+c    &       ' ; for integers:', misValInt(n),
+c    &       ' ; F-Flags="', fflags(n),'"'
+          WRITE(msgBuf,'(A,1PE20.12,3A)')
+     &       ' missing value:', misValFlt(n),
      &       ' ; F-Flags="', fflags(n),'"'
         ENDIF
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)

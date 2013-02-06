@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.60 2013/01/13 22:46:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.61 2013/02/06 21:25:26 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -41,10 +41,6 @@ CEOP
 C     !FUNCTIONS:
       INTEGER ILNBLNK
       EXTERNAL ILNBLNK
-#ifdef ALLOW_FIZHI
-      _RL   getcon
-      EXTERNAL getcon
-#endif
 
 C     !LOCAL VARIABLES:
 C     i,j,k :: loop indices
@@ -97,11 +93,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C---  set file properties
       ioUnit= standardMessageUnit
-      undefRL = UNSET_RL
-#ifdef ALLOW_FIZHI
-      IF ( useFIZHI ) undefRL = getcon('UNDEF')
-#endif
-      IF ( misvalFlt(listId).NE.UNSET_RL ) undefRL = misvalFlt(listId)
+      undefRL = misValFlt(listId)
 
       WRITE(suff,'(I10.10)') myIter
       iLen = ILNBLNK(fnames(listId))
