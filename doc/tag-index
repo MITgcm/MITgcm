@@ -1,15 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1819 2013/02/06 10:19:34 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1820 2013/02/06 22:11:33 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics:
+  - change default missing_value from UNSET_RL to -999.
 o pkg/layers: improve vectorization of layers_fluxcalc.F, step 1
   - split loops, make TatU/V 2D arrays. This along reduces the cpu time spent
     in this routine by more than a factor of 3 on an NEC-SX8
-o pkg/ecco : 
+o pkg/ecco:
   - add compile switches ALLOW_SHALLOW_ALTIMETRY and ALLOW_HIGHLAT_ALTIMETRY.
-o model/src, pkg/autodiff, pkg/ctrl, pkg/grdchk : 
+o model/src, pkg/autodiff, pkg/ctrl, pkg/grdchk :
   - modifications for ALLOW_GENTIM2D_CONTROL
   -- forward_step.F, the_main_loop.F : pass options and arrays for adjoint tapes.
   -- load_fields_driver.F : add call to CTRL_MAP_GENTIM2D( myTime, myIter, myThid )
