@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.44 2013/02/03 03:28:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.45 2013/02/06 23:53:20 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -76,7 +76,8 @@ C     sTitle     :: "salt" title
       CHARACTER*16   diagUnits
       CHARACTER*(80) diagTitle
       CHARACTER*2    rUnit2c
-      CHARACTER*4    tUnit4c, sUnit4c
+      CHARACTER*4    tUnit4c
+      CHARACTER*5    sUnit5c
       CHARACTER*(10) rTitle, eTitle, fTitle
       CHARACTER*(20) pTitle, sTitle
 
@@ -102,14 +103,18 @@ C----------------------------------------------------------------------
       ENDIF
       IF ( fluidIsAir ) THEN
         tUnit4c= 'K   '
-        sUnit4c= 'g/kg'
+        sUnit5c= 'kg/kg'
         sTitle = ' Specific Humidity  '
-#ifdef ALLOW_FIZHI
-        IF (useFIZHI) sUnit4c= 'kg/kg'
-#endif /* ALLOW_FIZHI */
+        IF (useAIM) sUnit5c= 'g/kg '
+      ELSEIF ( eosType.EQ.'TEOS10' ) THEN
+        tUnit4c= 'degC'
+        sUnit5c= 'g/kg '
+c       tTitle = 'Conservative Temp.   '
+        sTitle = ' Absolute Salinity  '
       ELSE
         tUnit4c= 'degC'
-        sUnit4c= 'psu '
+        sUnit5c= 'psu  '
+c       tTitle = 'Potential Temperature'
         sTitle = ' Salinity           '
       ENDIF
 C-    free-surface (eTitle) and fixed-boundary (fTitle) position:
@@ -169,7 +174,7 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SALT    '
       diagTitle = DIAGS_MK_TITLE( sTitle,  myThid )
-      diagUnits = DIAGS_MK_UNITS( sUnit4c, myThid )
+      diagUnits = DIAGS_MK_UNITS( sUnit5c, myThid )
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -183,7 +188,7 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 c     diagName  = 'SSS     '
 c     diagTitle = 'Sea Surface Salinity '
-c     diagUnits = DIAGS_MK_UNITS( sUnit4c, myThid )
+c     diagUnits = DIAGS_MK_UNITS( sUnit5c, myThid )
 c     diagCode  = 'SM      M1      '
 c     CALL DIAGNOSTICS_ADDTOLIST( diagNum,
 c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -191,7 +196,7 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       IF ( fluidIsWater ) THEN
       diagName  = 'SALTanom'
       diagTitle = 'Salt anomaly (=SALT-35; g/kg)'
-      diagUnits = DIAGS_MK_UNITS( sUnit4c, myThid )
+      diagUnits = DIAGS_MK_UNITS( sUnit5c, myThid )
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -229,7 +234,7 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SALTSQ  '
       diagTitle = DIAGS_MK_TITLE( 'Square of '//sTitle, myThid )
-      diagUnits = DIAGS_MK_UNITS( '('//sUnit4c//')^2', myThid )
+      diagUnits = DIAGS_MK_UNITS( '('//sUnit5c//')^2', myThid )
       diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -237,7 +242,7 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       IF ( fluidIsWater ) THEN
       diagName  = 'SALTSQan'
       diagTitle = 'Square of Salt anomaly (=(SALT-35)^2 (g^2/kg^2)'
-      diagUnits = DIAGS_MK_UNITS( '('//sUnit4c//')^2', myThid )
+      diagUnits = DIAGS_MK_UNITS( '('//sUnit5c//')^2', myThid )
       diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -378,7 +383,7 @@ C-    use 'PhiVEL' as mate.
       diagName  = 'USLTMASS'
       diagTitle = DIAGS_MK_TITLE( 'Zonal Mass-Weight Transp of '
      I                           //sTitle, myThid )
-      diagUnits = DIAGS_MK_UNITS(sUnit4c//'.m/s', myThid )
+      diagUnits = DIAGS_MK_UNITS(sUnit5c//'.m/s', myThid )
       diagCode  = 'UUr     MR      '
       diagMate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -387,7 +392,7 @@ C-    use 'PhiVEL' as mate.
       diagName  = 'VSLTMASS'
       diagTitle = DIAGS_MK_TITLE( 'Meridional Mass-Weight Transp of '
      I                           //sTitle, myThid )
-      diagUnits = DIAGS_MK_UNITS(sUnit4c//'.m/s', myThid )
+      diagUnits = DIAGS_MK_UNITS(sUnit5c//'.m/s', myThid )
       diagCode  = 'VVr     MR      '
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -396,7 +401,7 @@ C-    use 'PhiVEL' as mate.
       diagName  = 'WSLTMASS'
       diagTitle = DIAGS_MK_TITLE( 'Vertical Mass-Weight Transp of '
      I                           //sTitle, myThid )
-      diagUnits = DIAGS_MK_UNITS(sUnit4c//'.'//rUnit2c//'/s', myThid )
+      diagUnits = DIAGS_MK_UNITS(sUnit5c//'.'//rUnit2c//'/s', myThid )
       diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -427,7 +432,7 @@ C-    use 'PhiVEL' as mate.
       diagName  = 'UVELSLT '
       diagTitle = DIAGS_MK_TITLE( 'Zonal Transport of '
      I                          //sTitle, myThid )
-      diagUnits = DIAGS_MK_UNITS( sUnit4c//'.m/s', myThid )
+      diagUnits = DIAGS_MK_UNITS( sUnit5c//'.m/s', myThid )
       diagCode  = 'UUR     MR      '
       diagMate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -436,7 +441,7 @@ C-    use 'PhiVEL' as mate.
       diagName  = 'VVELSLT '
       diagTitle = DIAGS_MK_TITLE( 'Meridional Transport of '
      I                          //sTitle, myThid )
-      diagUnits = DIAGS_MK_UNITS( sUnit4c//'.m/s', myThid )
+      diagUnits = DIAGS_MK_UNITS( sUnit5c//'.m/s', myThid )
       diagCode  = 'VVR     MR      '
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -445,7 +450,7 @@ C-    use 'PhiVEL' as mate.
       diagName  = 'WVELSLT '
       diagTitle = DIAGS_MK_TITLE( 'Vertical Transport of '
      I                          //sTitle, myThid )
-      diagUnits = DIAGS_MK_UNITS(sUnit4c//'.'//rUnit2c//'/s', myThid )
+      diagUnits = DIAGS_MK_UNITS(sUnit5c//'.'//rUnit2c//'/s', myThid )
       diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -755,7 +760,7 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
 
       diagName  = 'TOTSTEND'
       diagTitle = DIAGS_MK_TITLE('Tendency of '//sTitle, myThid )
-      diagUnits = DIAGS_MK_UNITS( sUnit4c//'/day', myThid )
+      diagUnits = DIAGS_MK_UNITS( sUnit5c//'/day', myThid )
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -803,7 +808,7 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
       diagName  = 'AB_gS   '
       diagTitle = DIAGS_MK_TITLE(
      &            sTitle//'tendency from Adams-Bashforth', myThid )
-      diagUnits = DIAGS_MK_UNITS( sUnit4c//'/s', myThid )
+      diagUnits = DIAGS_MK_UNITS( sUnit5c//'/s', myThid )
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -818,7 +823,7 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
       diagName  = 'gSinAB  '
       diagTitle = DIAGS_MK_TITLE(
      &            sTitle//'tendency going in Adams-Bashforth', myThid )
-      diagUnits = DIAGS_MK_UNITS( sUnit4c//'/s', myThid )
+      diagUnits = DIAGS_MK_UNITS( sUnit5c//'/s', myThid )
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
