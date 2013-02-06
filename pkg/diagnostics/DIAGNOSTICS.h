@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.18 2011/07/01 18:28:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.19 2013/02/06 21:25:49 jmc Exp $
 C $Name:  $
 
 C ======================================================================
@@ -56,7 +56,7 @@ C       qSdiag :: storage array for (per level) statistics
 C       ndiag  :: holds number of times a diagnostic is filled (for time-mean diag)
 C       pdiag  :: index of current averaging interval within the averaging-cycle
 
-      _RL qdiag(1-OLx:sNx+Olx,1-Oly:sNy+Oly,numDiags,nSx,nSy)
+      _RL qdiag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,numDiags,nSx,nSy)
       _RL qSdiag(0:nStats,0:nRegions,diagSt_size,nSx,nSy)
       INTEGER  ndiag(numDiags,nSx,nSy)
       INTEGER  pdiag(numLists,nSx,nSy)
@@ -70,8 +70,8 @@ C     phase(n)    :: phase     (in s) to write output stream # n
 C     averageFreq :: frequency (in s) for periodic averaging interval
 C     averagePhase:: phase     (in s) for periodic averaging interval
 C     averageCycle:: number of averaging intervals in 1 cycle
-C     misvalFlt(n):: missing value for floats   to use in output stream #n
-C     misvalInt(n):: missing value for integers to use in output stream #n
+C     misValFlt(n):: missing value for floats   to use in output stream #n
+Cc    misValInt(n):: missing value for integers to use in output stream #n
 C     levs(:,n)   :: list of selected levels to write for output stream # n
 C     nlevels(n)  :: number of levels to write for output stream # n
 C     nfields(n)  :: number of active diagnostics for output stream # n
@@ -88,10 +88,10 @@ C useMissingValue :: put MissingValue where mask = 0 (NetCDF output only)
 
       _RL freq(numLists), phase(numLists)
       _RL averageFreq(numLists), averagePhase(numLists)
-      _RL misvalFlt(numLists)
+      _RL misValFlt(numLists)
       _RL levs (numLevels,numLists)
       INTEGER averageCycle(numLists)
-      INTEGER misvalInt(numLists)
+c     INTEGER misValInt(numLists)
       INTEGER nlevels(numLists)
       INTEGER nfields(numLists)
       INTEGER nActive(numLists)
@@ -106,11 +106,12 @@ C useMissingValue :: put MissingValue where mask = 0 (NetCDF output only)
 
       COMMON / DIAG_SELECT_R /
      &     freq, phase, averageFreq, averagePhase,
-     &     misvalFlt, levs
+     &     misValFlt, levs
       COMMON / DIAG_SELECT_I /
-     &     averageCycle, misvalInt,
+     &     averageCycle,
      &     nlevels, nfields, nActive,
      &     nlists, idiag, mdiag, jdiag
+c    &   , misValInt
       COMMON / DIAG_SELECT_C /
      &     flds, fnames, fflags
       COMMON / DIAG_SELECT_L /
