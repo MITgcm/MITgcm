@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_diagnostics_init.F,v 1.3 2010/01/12 21:26:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_diagnostics_init.F,v 1.4 2013/02/06 23:52:19 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -19,7 +19,9 @@ C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
+#include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -28,6 +30,10 @@ C     myThid ::  my thread Id number
 CEOP
 
 #ifdef ALLOW_DIAGNOSTICS
+C     ! FUNCTIONS:
+      CHARACTER*16 DIAGS_MK_UNITS
+      EXTERNAL     DIAGS_MK_UNITS
+
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     diagNum   :: diagnostics number in the (long) list of available diag.
@@ -43,6 +49,7 @@ C     diagTitle :: local string (80c): description of field in diagnostic
       CHARACTER*16  diagCode
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
+      CHARACTER*10  trUnits
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -57,9 +64,11 @@ C-    Shapiro Filter tendency:
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+        trUnits = 'kg/kg'
+        IF ( fluidIsWater .OR. useAIM ) trUnits = 'g/kg'
         diagName  = 'SHAP_dS '
         diagTitle = 'Specific Humidity Tendency due to Shapiro Filter'
-        diagUnits = 'g/kg/s          '
+        diagUnits =  DIAGS_MK_UNITS( trUnits//'/s', myThid )
         diagCode  = 'SMR     MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
