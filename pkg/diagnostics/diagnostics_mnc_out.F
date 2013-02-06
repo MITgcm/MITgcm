@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_mnc_out.F,v 1.4 2011/06/27 22:27:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_mnc_out.F,v 1.5 2013/02/06 16:24:29 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -74,7 +74,6 @@ c     CHARACTER*(NLEN) dn_blnk
       CHARACTER*(5) ctmp
       _RS ztmp(NrMax)
 #endif
-      INTEGER misvalIntLoc
       REAL*8  misval_r8(2)
       REAL*4  misval_r4(2)
       INTEGER misval_int(2)
@@ -84,7 +83,6 @@ c     IF (useMNC .AND. diag_mnc) THEN
 
 C     Handle missing value attribute (land points)
 C     Defaults to UNSET_I
-        misvalIntLoc = misvalInt(listId)
         DO ii=1,2
           misval_r4(ii)  = misValLoc
           misval_r8(ii)  = misValLoc
