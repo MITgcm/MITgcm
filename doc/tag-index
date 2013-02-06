@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1818 2013/02/05 15:02:34 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1819 2013/02/06 10:19:34 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/layers: improve vectorization of layers_fluxcalc.F, step 1
+  - split loops, make TatU/V 2D arrays. This along reduces the cpu time spent
+    in this routine by more than a factor of 3 on an NEC-SX8
 o pkg/ecco : 
   - add compile switches ALLOW_SHALLOW_ALTIMETRY and ALLOW_HIGHLAT_ALTIMETRY.
 o model/src, pkg/autodiff, pkg/ctrl, pkg/grdchk : 
