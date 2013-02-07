@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_coare3_flux.F,v 1.11 2012/12/28 23:25:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_coare3_flux.F,v 1.12 2013/02/07 19:11:35 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -188,14 +188,17 @@ C *** zoq and zot fitted to results from several ETL cruises ************
       ENDDO
 
 C compute surface fluxes and other parameters
-      tau=rhoa*usr*usr*u/Du          !stress N/m2
+c     tau=rhoa*usr*usr*u/Du          !stress N/m2
+      tau=rhoa*usr*usr               !stress N/m2
       hf=-cpair*rhoa*usr*tsr           !sensible W/m2
       ef=-lath*rhoa*usr*qsr           !latent W/m2
       evap=-rhoa*usr*qsr
       cdq = evap/Dq
       IF (.NOT.useStressOption) THEN
-       ustress(i,j,bi,bj)=tau*(uwind(i,j,bi,bj)-uVel(i,j,1,bi,bj))/u
-       vstress(i,j,bi,bj)=tau*(vwind(i,j,bi,bj)-vVel(i,j,1,bi,bj))/u
+c      ustress(i,j,bi,bj)=tau*(uwind(i,j,bi,bj)-uVel(i,j,1,bi,bj))/u
+c      vstress(i,j,bi,bj)=tau*(vwind(i,j,bi,bj)-vVel(i,j,1,bi,bj))/u
+       ustress(i,j,bi,bj)=tau*(uwind(i,j,bi,bj)-uVel(i,j,1,bi,bj))/Du
+       vstress(i,j,bi,bj)=tau*(vwind(i,j,bi,bj)-vVel(i,j,1,bi,bj))/Du
       ENDIF
       q100=qs+qsr*(LOG(100. _d 0/zoq)-psit(100. _d 0/L))
 
