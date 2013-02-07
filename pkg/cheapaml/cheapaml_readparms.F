@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.10 2012/12/28 23:24:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.11 2013/02/07 20:40:20 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -196,8 +196,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       WRITE(iUnit,*) 'Caml: mask_w   =',cheapaml_mask_width
       WRITE(iUnit,*) 'Caml: h        =',cheapaml_h
       WRITE(iUnit,*) 'Caml: kdiff    =',cheapaml_kdiff
-      WRITE(iUnit,*) 'Caml: tau      =',cheapaml_taurelax
-      WRITE(iUnit,*) 'Caml: tau2     =',cheapaml_taurelaxocean
+      WRITE(iUnit,*) 'Caml: taurelax =',cheapaml_taurelax, ' (days)'
+      WRITE(iUnit,*) 'Caml: trelaxoce=',cheapaml_taurelaxocean,' (days)'
       WRITE(iUnit,*) 'Caml: rhoa     =',rhoa
       WRITE(iUnit,*) 'Caml: cpair    =',cpair
       WRITE(iUnit,*) 'Caml: stefan   =',stefan
