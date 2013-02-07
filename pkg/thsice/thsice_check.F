@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check.F,v 1.4 2012/08/01 18:20:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check.F,v 1.5 2013/02/07 17:32:48 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -75,6 +75,18 @@ C--   Check parameter consistency:
         CALL PRINT_ERROR( msgBuf , myThid )
         STOP 'ABNORMAL END: S/R THSICE_CHECK'
       ENDIF
+#endif
+
+#ifdef OLD_THSICE_CALL_SEQUENCE
+        WRITE(msgBuf,'(2A)') '** WARNING ** THSICE_CHECK: ',
+     &   'OLD_THSICE_CALL_SEQUENCE code no longer maintained'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** THSICE_CHECK: ',
+     &   'option and related code will be removed after chkpt-64e'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+
 #endif
 
       _END_MASTER(myThid)
