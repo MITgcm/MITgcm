@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.18 2013/01/03 20:41:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.19 2013/02/07 20:15:02 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -56,6 +56,8 @@ C     == routine arguments ==
 C     == Local variables ==
       INTEGER bi,bj,iG,jG
       INTEGER i,j, nt, startAB
+      LOGICAL writeDbug
+      CHARACTER*10 sufx
 
 C tendencies of atmospheric temperature, current and past
         _RL gTair(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -101,6 +103,10 @@ C inverse of time step
 
 C atmospheric timestep
         deltaTtracer = deltaT/FLOAT(cheapaml_ntim)
+
+c       writeDbug = debugLevel.GE.debLevC .AND.
+c     &             DIFFERENT_MULTIPLE(diagFreq, myTime, deltaTClock)
+        writeDbug = debugLevel.GE.debLevC .AND. diagFreq.GT.0.
 
 #ifdef ALLOW_SEAGER
 
@@ -393,9 +399,12 @@ C reset boundaries to open boundary profile
 
 C--   end loop on nt (short time-step loop)
       ENDDO
-c     CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
-c     CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
-c     CALL PLOT_FIELD_XYRS( qair, 'S/R CHEAPAML qair',1,myThid)
+      IF ( writeDbug ) THEN
+       WRITE(sufx,'(I10.10)') myIter
+       CALL WRITE_FLD_XY_RL('tAir_afAdv.', sufx, Tair, myIter, myThid )
+       IF (useFreshWaterFlux)
+     & CALL WRITE_FLD_XY_RL('qAir_afAdv.', sufx, qair, myIter, myThid )
+      ENDIF
 
 C cycling on short atmospheric time step is now done
 
