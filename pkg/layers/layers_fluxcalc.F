@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.7 2013/02/06 10:19:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.8 2013/02/08 07:56:14 mlosch Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -6,27 +6,34 @@ C $Name:  $
 #include "GMREDI_OPTIONS.h"
 #endif
 
+C--  File layers_fluxcalc.F: 
+C--   Contents
+C--   o LAYERS_FLUXCALC
+C--   o LAYERS_LOCATE
+
 CBOP 0
-C !ROUTINE: LAYERS_FLUXCALC
-C !INTERFACE:
+C     !ROUTINE: LAYERS_FLUXCALC
+C     !INTERFACE:
       SUBROUTINE LAYERS_FLUXCALC(
      I                  uVel,vVel,tracer,iLa,
      O                  UH,VH,Hw,Hs,PIw,PIs,U,V,
      I                  myThid )
 
-C !DESCRIPTION:
-C ===================================================================
-C     Calculate the transport in isotracer layers, for a chosen
-C     tracer. This is the meat of the LAYERS package.
-C ===================================================================
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE LAYERS_FLUXCALC
+C     | Calculate the transport in isotracer layers, for a chosen
+C     | tracer. This is the meat of the LAYERS package.
+C     *==========================================================*
+C     \ev
 
 C !USES:
       IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-C #include "DYNVARS.h"
 #include "LAYERS_SIZE.h"
 #include "LAYERS.h"
 #ifdef ALLOW_GMREDI
@@ -48,17 +55,17 @@ C      U    :: average U over layer (m/s)
 C      V    :: average V over layer (m/s)
 C      iLa  :: layer coordinate index
       INTEGER myThid
-      _RL uVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL vVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL UH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL VH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL Hw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL Hs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL PIw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL PIs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL U(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL V(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL uVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,     nSx,nSy)
+      _RL vVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,     nSx,nSy)
+      _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,     nSx,nSy)
+      _RL UH     (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nlayers,nSx,nSy)
+      _RL VH     (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nlayers,nSx,nSy)
+      _RL Hw     (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nlayers,nSx,nSy)
+      _RL Hs     (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nlayers,nSx,nSy)
+      _RL PIw    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nlayers,nSx,nSy)
+      _RL PIs    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nlayers,nSx,nSy)
+      _RL U      (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nlayers,nSx,nSy)
+      _RL V      (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nlayers,nSx,nSy)
       INTEGER iLa
 CEOP
 
@@ -72,21 +79,29 @@ C     kci      :: index from CellIndex
 C     kg       :: index for looping though layers_bounds
 C     kk       :: vertical index for ZZ (fine) grid
 C     kgu,kgv  :: vertical index for isopycnal grid
+C     kloc     :: local copy of kgu/v to reduce accesses to index arrays
+C     mSteps   :: maximum number of steps for bisection method
 C     prho     :: potential density referenced to layers_krho pressure
 C     TatU     :: temperature at U point
 C     TatV     :: temperature at V point
 
       INTEGER bi, bj
-      INTEGER i,j,k,kk,kg,kci,kp1
+      INTEGER i,j,k,kk,kg,kci,kp1,kloc
+      INTEGER mSteps
       INTEGER kgu(sNx+1,sNy+1), kgv(sNx+1,sNy+1)
       _RL TatU(sNx+1,sNy+1), TatV(sNx+1,sNy+1)
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_GMREDI
       INTEGER kcip1
       _RL delPsi, maskp1
 #endif
+      LOGICAL errorFlag
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C     compute maximum number of steps for bisection method (approx. 
+C     log2(Nlayers)) as log2(Nlayers) + 1 for safety
+      mSteps = int(log10(dble(Nlayers))/log10(2. _d 0))+1
 
 C --- The tile loops
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -145,49 +160,38 @@ C ------ Find theta at the U point (west) on the fine Z grid
 
         ENDDO
        ENDDO
-       DO j = 1,sNy+1
-        DO i = 1,sNx+1
-
 C ------ Now that we know T everywhere, determine the binning.
-
-         IF (TatU(i,j) .GE. layers_bounds(Nlayers,iLa)) THEN
-C        the point is in the hottest bin or hotter
-          kgu(i,j) = Nlayers
-         ELSE IF (TatU(i,j) .LT. layers_bounds(2,iLa)) THEN
-C        the point is in the coldest bin or colder
-          kgu(i,j) = 1
-         ELSE IF ( (TatU(i,j) .GE. layers_bounds(kgu(i,j),iLa))
-     &    .AND. (TatU(i,j) .LT. layers_bounds(kgu(i,j)+1,iLa)) ) THEN
-C        already on the right bin -- do nothing
-         ELSE IF (TatU(i,j) .GE. layers_bounds(kgu(i,j),iLa)) THEN
-C        have to hunt for the right bin by getting hotter
-          DO WHILE (TatU(i,j) .GE. layers_bounds(kgu(i,j)+1,iLa))
-           kgu(i,j) = kgu(i,j) + 1
-          ENDDO
-C        now layers_bounds(kgu+1,iLa) < TatU <= layers_bounds(kgu+1,iLa)
-         ELSE IF (TatU(i,j) .LT. layers_bounds(kgu(i,j)+1,iLa)) THEN
-C        have to hunt for the right bin by getting colder
-          DO WHILE (TatU(i,j) .LT. layers_bounds(kgu(i,j),iLa))
-           kgu(i,j) = kgu(i,j) - 1
-          ENDDO
-C         now layers_bounds(kgu+1,iLa) <= TatU < layers_bounds(kgu+1,iLa)
-         ELSE
-C        that should have covered all the options
-          WRITE(msgBuf,'(2A,1E14.6,A,I3,A,I3,A)')
-     &     'S/R LAYERS_CALC: Could not find a bin in ',
-     &     'layers_bounds for TatU(i,j)=',TatU(i,j),'(',i,',',j,')'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R LAYERS_INIT_FIXED'
-         ENDIF
-
+C        find the layer indices kgu
+       CALL LAYERS_LOCATE(
+     I      layers_bounds(1:Nlayers+1,iLa),Nlayers,mSteps,sNx,sNy,TatU,
+     O      kgu,
+     I      myThid )
+#ifndef TARGET_NEC_SX 
+C     check for failures
+       IF ( debugLevel .GE. debLevC ) THEN
+        errorFlag = .FALSE.
+        DO j = 1,sNy+1
+         DO i = 1,sNx+1
+          IF ( kgu(i,j) .LE. 0 ) THEN
+           WRITE(msgBuf,'(2A,I3,A,I3,A,1E14.6)')
+     &          'S/R LAYERS_LOCATE: Could not find a bin in ',
+     &          'layers_bounds for TatU(',i,',',j,',)=',TatU(i,j)
+           CALL PRINT_ERROR( msgBuf, myThid )
+           errorFlag = .TRUE.
+          ENDIF
+         ENDDO
         ENDDO
-       ENDDO
+        IF ( errorFlag ) STOP 'ABNORMAL END: S/R LAYERS_FLUXCALC'
+       ENDIF
+#endif /* ndef TARGET_NEC_SX */
+C     
        DO j = 1,sNy+1
         DO i = 1,sNx+1
 
+         kloc = kgu(i,j)
 C ------ Augment the bin values
-         UH(i,j,kgu(i,j),bi,bj) =
-     &    UH(i,j,kgu(i,j),bi,bj) +
+         UH(i,j,kloc,bi,bj) =
+     &    UH(i,j,kloc,bi,bj) +
      &    dZZf(kk) * uVel(i,j,kci,bi,bj) * hFacW(i,j,kci,bi,bj)
 
 #ifdef ALLOW_GMREDI
@@ -207,14 +211,14 @@ C ------ Augment the bin values
      &              - GM_PsiX(i,j, kci, bi,bj)
 #endif
            ENDIF
-           UH(i,j,kgu(i,j),bi,bj) = UH(i,j,kgu(i,j),bi,bj)
+           UH(i,j,kloc,bi,bj) = UH(i,j,kloc,bi,bj)
      &      + delPsi*recip_drF(kci)*_recip_hFacW(i,j,kci,bi,bj)
      &      * dZZf(kk)*hFacW(i,j,kci,bi,bj)
          ENDIF
 #endif /* ALLOW_GMREDI */
 
 #ifdef LAYERS_THICKNESS
-         Hw(i,j,kgu(i,j),bi,bj) = Hw(i,j,kgu(i,j),bi,bj)
+         Hw(i,j,kloc,bi,bj) = Hw(i,j,kloc,bi,bj)
      &    + dZZf(kk) * hFacW(i,j,kci,bi,bj)
 #endif /* LAYERS_THICKNESS */
 
@@ -235,48 +239,38 @@ C ------ Find theta at the V point (south) on the fine Z grid
 
         ENDDO
        ENDDO
-       DO j = 1,sNy+1
-        DO i = 1,sNx+1
-
-C ------ Now that we know T everywhere, determine the binning
-         IF (TatV(i,j) .GE. layers_bounds(Nlayers,iLa)) THEN
-C         the point is in the hottest bin or hotter
-          kgv(i,j) = Nlayers
-         ELSE IF (TatV(i,j) .LT. layers_bounds(2,iLa)) THEN
-C         the point is in the coldest bin or colder
-          kgv(i,j) = 1
-         ELSE IF ( (TatV(i,j) .GE. layers_bounds(kgv(i,j),iLa))
-     &    .AND. (TatV(i,j) .LT. layers_bounds(kgv(i,j)+1,iLa)) ) THEN
-C         already on the right bin -- do nothing
-         ELSE IF ( TatV(i,j) .GE. layers_bounds(kgv(i,j),iLa) ) THEN
-C         have to hunt for the right bin by getting hotter
-          DO WHILE (TatV(i,j) .GE. layers_bounds(kgv(i,j)+1,iLa))
-           kgv(i,j) = kgv(i,j) + 1
-          ENDDO
-C         now layers_bounds(kgv+1,iLa) < TatV <= layers_bounds(kgv+1,iLa)
-         ELSE IF ( TatV(i,j) .LT. layers_bounds(kgv(i,j)+1,iLa) ) THEN
-C         have to hunt for the right bin by getting colder
-          DO WHILE (TatV(i,j) .LT. layers_bounds(kgv(i,j),iLa))
-           kgv(i,j) = kgv(i,j) - 1
-          ENDDO
-C         now layers_bounds(kgv+1,iLa) <= TatV < layers_bounds(kgv+1,iLa)
-         ELSE
-C         that should have covered all the options
-          WRITE(msgBuf,'(2A,1E14.6,A,I3,A,I3,A)')
-     &     'S/R LAYERS_CALC: Could not find a bin in ',
-     &     'layers_bounds for TatV(i,j)=',TatV(i,j),'(',i,',',j,')'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R LAYERS_INIT_FIXED'
-         ENDIF
-
+C ------ Now that we know T everywhere, determine the binning.
+C        find the layer indices kgv
+       CALL LAYERS_LOCATE(
+     I      layers_bounds(1:Nlayers+1,iLa),Nlayers,mSteps,sNx,sNy,TatV,
+     O      kgv,
+     I      myThid )
+#ifndef TARGET_NEC_SX
+       IF ( debugLevel .GE. debLevC ) THEN
+C     check for failures
+        errorFlag = .FALSE.
+        DO j = 1,sNy+1
+         DO i = 1,sNx+1
+          IF ( kgv(i,j) .LE. 0 ) THEN
+           WRITE(msgBuf,'(2A,I3,A,I3,A,1E14.6)')
+     &          'S/R LAYERS_LOCATE: Could not find a bin in ',
+     &          'layers_bounds for TatV(',i,',',j,',)=',TatV(i,j)
+           CALL PRINT_ERROR( msgBuf, myThid )
+           errorFlag = .TRUE.
+          ENDIF
+         ENDDO
         ENDDO
-       ENDDO
+        IF ( errorFlag ) STOP 'ABNORMAL END: S/R LAYERS_FLUXCALC'
+       ENDIF
+#endif /* ndef TARGET_NEC_SX */
+C
        DO j = 1,sNy+1
         DO i = 1,sNx+1
 
+         kloc = kgv(i,j)
 C ------ Augment the bin values
-         VH(i,j,kgv(i,j),bi,bj) =
-     &    VH(i,j,kgv(i,j),bi,bj)
+         VH(i,j,kloc,bi,bj) =
+     &    VH(i,j,kloc,bi,bj)
      &    + dZZf(kk) * vVel(i,j,kci,bi,bj) * hFacS(i,j,kci,bi,bj)
 
 #ifdef ALLOW_GMREDI
@@ -296,14 +290,14 @@ C ------ Augment the bin values
      &              - GM_PsiY(i,j, kci, bi,bj)
 #endif
            ENDIF
-           VH(i,j,kgv(i,j),bi,bj) = VH(i,j,kgv(i,j),bi,bj)
+           VH(i,j,kloc,bi,bj) = VH(i,j,kloc,bi,bj)
      &      + delPsi*recip_drF(kci)*_recip_hFacS(i,j,kci,bi,bj)
      &      * dZZf(kk)*hFacS(i,j,kci,bi,bj)
          ENDIF
 #endif /* ALLOW_GMREDI */
 
 #ifdef LAYERS_THICKNESS
-         Hs(i,j,kgv(i,j),bi,bj) = Hs(i,j,kgv(i,j),bi,bj)
+         Hs(i,j,kloc,bi,bj) = Hs(i,j,kloc,bi,bj)
      &    + dZZf(kk) * hFacS(i,j,kci,bi,bj)
 #endif /* LAYERS_THICKNESS */
 
@@ -340,6 +334,115 @@ C--   (Needs another loop through Ng)
 C --- End bi,bj loop
       ENDDO
       ENDDO
+
+      RETURN
+      END
+C---------------------------------------------------------------------------- 
+
+CBOP
+      SUBROUTINE LAYERS_LOCATE(xx,n,m,snx,sny,x,k,myThid)
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | Find the index(-array) k such that x is between xx(k) 
+C     | and xx(k+1) by bisection, following Press et al., 
+C     | Numerical Recipes in Fortran. xx must be monotonic.
+C     *==========================================================*
+C     \ev
+
+C !USES:
+      IMPLICIT NONE
+C !INPUT PARAMETERS:
+C     myThid    :: my Thread Id number
+C     n         :: length of xx
+C     m         :: int(log2(n)) + 1 = length of bisection loop
+C     snx,sny   :: size of index array and input x
+C     xx        :: array of bin-boundaries (layers_boundaries)
+C     x         :: input array of values
+C     k         :: index array (output)
+      INTEGER myThid
+      INTEGER n,m,snx,sny
+      INTEGER k(snx+1,sny+1)
+      _RL     x(snx+1,sny+1)
+      _RL     xx(1:n+1)
+
+C !LOCAL VARIABLES:
+C     kl,km,km :: work arrays and variables
+C     i,j      :: horizontal indices
+C     l        :: bisection loop index
+      INTEGER kl(snx+1,sny+1),km,ku(snx+1,sny+1)
+      INTEGER i,j,l
+CEOP
+
+#ifdef TARGET_NEC_SX
+C     bisection, following Press et al., Numerical Recipes in Fortran,
+C     mostly, because it can be vectorized
+      DO j = 1,sNy+1
+       DO i = 1,sNx+1
+        kl(i,j)=1
+        ku(i,j)=n+1
+       END DO
+      END DO
+      DO l = 1,m
+       DO j = 1,sNy+1
+        DO i = 1,sNx+1
+         IF (ku(i,j)-kl(i,j).GT.1) THEN
+          km=(ku(i,j)+kl(i,j))/2
+CML       IF ((xx(n).GE.xx(1)).EQV.(x(i,j).GE.xx(km))) THEN
+          IF ( ((xx(n).GE.xx(1)).AND.(x(i,j).GE.xx(km))).OR.
+     &         ((xx(n).GE.xx(1)).AND.(x(i,j).GE.xx(km))) ) THEN
+           kl(i,j)=km
+          ELSE
+           ku(i,j)=km
+          END IF
+         END IF
+        END DO
+       END DO
+      END DO
+      DO j = 1,sNy+1
+       DO i = 1,sNx+1
+        IF ( x(i,j).LT.xx(2) ) THEN
+         k(i,j)=1
+        ELSE IF ( x(i,j).GE.xx(n) ) THEN
+         k(i,j)=n
+        ELSE
+         k(i,j)=kl(i,j)
+        END IF
+       END DO
+      END DO
+#else
+C     the old way
+      DO j = 1,sNy+1
+       DO i = 1,sNx+1
+        IF (x(i,j) .GE. xx(n)) THEN
+C     the point is in the hottest bin or hotter
+         k(i,j) = n
+        ELSE IF (x(i,j) .LT. xx(2)) THEN
+C        the point is in the coldest bin or colder
+         k(i,j) = 1
+        ELSE IF ( (x(i,j) .GE. xx(k(i,j)))
+     &    .AND.   (x(i,j) .LT. xx(k(i,j)+1)) ) THEN
+C     already on the right bin -- do nothing
+        ELSE IF (x(i,j) .GE. xx(k(i,j))) THEN
+C     have to hunt for the right bin by getting hotter
+         DO WHILE (x(i,j) .GE. xx(k(i,j)+1))
+          k(i,j) = k(i,j) + 1
+         ENDDO
+C     now xx(k) < x <= xx(k+1)
+        ELSE IF (x(i,j) .LT. xx(k(i,j)+1)) THEN
+C     have to hunt for the right bin by getting colder
+         DO WHILE (x(i,j) .LT. xx(k(i,j)))
+          k(i,j) = k(i,j) - 1
+         ENDDO
+C     now xx(k) <= x < xx(k+1)
+        ELSE
+C     that should have covered all the options
+         k(i,j) = -1
+        ENDIF
+        
+       ENDDO
+      ENDDO
+#endif /* TARGET_NEC_SX */
 
 #endif /* ALLOW_LAYERS */
 
