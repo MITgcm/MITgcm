@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.8 2013/02/08 07:56:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.9 2013/02/09 14:52:29 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 #include "GMREDI_OPTIONS.h"
 #endif
 
-C--  File layers_fluxcalc.F: 
+C--  File layers_fluxcalc.F:
 C--   Contents
 C--   o LAYERS_FLUXCALC
 C--   o LAYERS_LOCATE
@@ -55,17 +55,17 @@ C      U    :: average U over layer (m/s)
 C      V    :: average V over layer (m/s)
 C      iLa  :: layer coordinate index
       INTEGER myThid
-      _RL uVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,     nSx,nSy)
-      _RL vVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,     nSx,nSy)
-      _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,     nSx,nSy)
-      _RL UH     (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nlayers,nSx,nSy)
-      _RL VH     (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nlayers,nSx,nSy)
-      _RL Hw     (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nlayers,nSx,nSy)
-      _RL Hs     (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nlayers,nSx,nSy)
-      _RL PIw    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nlayers,nSx,nSy)
-      _RL PIs    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nlayers,nSx,nSy)
-      _RL U      (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nlayers,nSx,nSy)
-      _RL V      (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nlayers,nSx,nSy)
+      _RL uVel   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,     nSx,nSy)
+      _RL vVel   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,     nSx,nSy)
+      _RL tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,     nSx,nSy)
+      _RL UH     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL VH     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL Hw     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL Hs     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL PIw    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL PIs    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL U      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL V      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       INTEGER iLa
 CEOP
 
@@ -99,7 +99,7 @@ C     TatV     :: temperature at V point
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C     compute maximum number of steps for bisection method (approx. 
+C     compute maximum number of steps for bisection method (approx.
 C     log2(Nlayers)) as log2(Nlayers) + 1 for safety
       mSteps = int(log10(dble(Nlayers))/log10(2. _d 0))+1
 
@@ -120,8 +120,8 @@ C       So initialize the search with the warmest value.
 
 C     Reset the arrays
       DO kg=1,Nlayers
-       DO j = 1-Oly,sNy+Oly
-        DO i = 1-Olx,sNx+Olx
+       DO j = 1-OLy,sNy+OLy
+        DO i = 1-OLx,sNx+OLx
 #ifdef LAYERS_UFLUX
          UH(i,j,kg,bi,bj) = 0. _d 0
 #ifdef LAYERS_THICKNESS
@@ -163,10 +163,10 @@ C ------ Find theta at the U point (west) on the fine Z grid
 C ------ Now that we know T everywhere, determine the binning.
 C        find the layer indices kgu
        CALL LAYERS_LOCATE(
-     I      layers_bounds(1:Nlayers+1,iLa),Nlayers,mSteps,sNx,sNy,TatU,
+     I      layers_bounds(1,iLa),Nlayers,mSteps,sNx,sNy,TatU,
      O      kgu,
      I      myThid )
-#ifndef TARGET_NEC_SX 
+#ifndef TARGET_NEC_SX
 C     check for failures
        IF ( debugLevel .GE. debLevC ) THEN
         errorFlag = .FALSE.
@@ -184,7 +184,7 @@ C     check for failures
         IF ( errorFlag ) STOP 'ABNORMAL END: S/R LAYERS_FLUXCALC'
        ENDIF
 #endif /* ndef TARGET_NEC_SX */
-C     
+C
        DO j = 1,sNy+1
         DO i = 1,sNx+1
 
@@ -242,7 +242,7 @@ C ------ Find theta at the V point (south) on the fine Z grid
 C ------ Now that we know T everywhere, determine the binning.
 C        find the layer indices kgv
        CALL LAYERS_LOCATE(
-     I      layers_bounds(1:Nlayers+1,iLa),Nlayers,mSteps,sNx,sNy,TatV,
+     I      layers_bounds(1,iLa),Nlayers,mSteps,sNx,sNy,TatV,
      O      kgv,
      I      myThid )
 #ifndef TARGET_NEC_SX
@@ -337,15 +337,19 @@ C --- End bi,bj loop
 
       RETURN
       END
-C---------------------------------------------------------------------------- 
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
-      SUBROUTINE LAYERS_LOCATE(xx,n,m,snx,sny,x,k,myThid)
+      SUBROUTINE LAYERS_LOCATE(
+     I                          xx,n,m,sNx,sNy,x,
+     O                          k,
+     I                          myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | Find the index(-array) k such that x is between xx(k) 
-C     | and xx(k+1) by bisection, following Press et al., 
+C     | Find the index(-array) k such that x is between xx(k)
+C     | and xx(k+1) by bisection, following Press et al.,
 C     | Numerical Recipes in Fortran. xx must be monotonic.
 C     *==========================================================*
 C     \ev
@@ -353,28 +357,29 @@ C     \ev
 C !USES:
       IMPLICIT NONE
 C !INPUT PARAMETERS:
-C     myThid    :: my Thread Id number
+C     xx        :: array of bin-boundaries (layers_boundaries)
 C     n         :: length of xx
 C     m         :: int(log2(n)) + 1 = length of bisection loop
-C     snx,sny   :: size of index array and input x
-C     xx        :: array of bin-boundaries (layers_boundaries)
+C     sNx,sNy   :: size of index array and input x
 C     x         :: input array of values
 C     k         :: index array (output)
-      INTEGER myThid
-      INTEGER n,m,snx,sny
-      INTEGER k(snx+1,sny+1)
-      _RL     x(snx+1,sny+1)
+C     myThid    :: my Thread Id number
+      INTEGER n,m,sNx,sNy
       _RL     xx(1:n+1)
+      _RL     x(snx+1,sny+1)
+      INTEGER k(snx+1,sny+1)
+      INTEGER myThid
 
 C !LOCAL VARIABLES:
-C     kl,km,km :: work arrays and variables
 C     i,j      :: horizontal indices
 C     l        :: bisection loop index
-      INTEGER kl(snx+1,sny+1),km,ku(snx+1,sny+1)
-      INTEGER i,j,l
+C     kl,ku,km :: work arrays and variables
+      INTEGER i,j
 CEOP
-
 #ifdef TARGET_NEC_SX
+      INTEGER l, km
+      INTEGER kl(sNx+1,sNy+1), ku(sNx+1,sNy+1)
+
 C     bisection, following Press et al., Numerical Recipes in Fortran,
 C     mostly, because it can be vectorized
       DO j = 1,sNy+1
@@ -439,7 +444,7 @@ C     now xx(k) <= x < xx(k+1)
 C     that should have covered all the options
          k(i,j) = -1
         ENDIF
-        
+
        ENDDO
       ENDDO
 #endif /* TARGET_NEC_SX */
