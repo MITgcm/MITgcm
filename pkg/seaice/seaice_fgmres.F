@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.14 2013/01/03 20:49:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.15 2013/02/12 07:50:10 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -734,6 +734,7 @@ c     if( m .eq. 0 ) go to 40
         if ( m .ne. 0 ) then
          do i = 1,m
           dtemp(bi,bj) = dtemp(bi,bj) + dx(i,i1,bi,bj)*dy(i,i2,bi,bj)
+     &         * scalarProductMetric(i,1,bi,bj)
          enddo
         endif
         if ( n .ge. 5 ) then
