@@ -18,7 +18,7 @@ function [S] = rdmnc(varargin)
 %
 % Description:
 %   This function is a rudimentary wrapper for joining and reading netcdf
-%   files produced by MITgcm.  It does not give the same flexibility as 
+%   files produced by MITgcm.  It does not give the same flexibility as
 %   opening the netcdf files directly using netcdf(), but is useful for
 %   quick loading of entire model fields which are distributed in multiple
 %   netcdf files.
@@ -30,7 +30,7 @@ function [S] = rdmnc(varargin)
 %  Author:  Alistair Adcroft
 %  Modifications:  Daniel Enderton
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.26 2011/06/28 09:36:42 mlosch Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.27 2013/02/12 21:54:01 jmc Exp $
 % $Name:  $
 
 % Initializations
@@ -69,7 +69,7 @@ if isempty(file)
     else
        fprintf(['No file in argument list:\n ==> ',char(varlist(1))]);
        for i=2:size(varlist,2), fprintf([' , ',char(varlist(i))]); end
-       fprintf(' <==\n'); 
+       fprintf(' <==\n');
     end
     error(' check argument list !!!');
 end
@@ -160,6 +160,7 @@ function [i0,j0,fn] = findTileOffset(S);
         i0=snx*gbi; j0=sny*gbj;
         if isfield(S.attributes.global,'exch2_myFace')
             fn=G.exch2_myFace;
+            i0=G.exch2_txGlobalo -1; j0=G.exch2_tyGlobalo -1;
         end
     else
         i0=0;j0=0;
@@ -175,20 +176,20 @@ function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
   [fii,dii] = ismember(fiter,iters);  fii = find(fii); % File iteration index
   dii = dii(find(dii ~= 0));                           % Data interation index
   if dBug > 0,
-    fprintf(' ; fii='); fprintf(' %i',fii); 
-    fprintf(' ; dii='); fprintf(' %i',dii); fprintf(' \n'); 
+    fprintf(' ; fii='); fprintf(' %i',fii);
+    fprintf(' ; dii='); fprintf(' %i',dii); fprintf(' \n');
   end
-    
+
   % No variables specified? Default to all
   if isempty(varlist), varlist=ncnames(var(nc)); end
-  
+
   % Attributes for structure
   if iters>0; S.iters_from_file=iters; end
   S.attributes.global=read_att(nc);
   [pstr,netcdf_fname,ext] = fileparts(name(nc));
   if strcmp(netcdf_fname(end-3:end),'glob')
     % assume it is a global file produced by gluemnc and change some
-    % attributes 
+    % attributes
     S.attributes.global.sNx = S.attributes.global.Nx;
     S.attributes.global.sNy = S.attributes.global.Ny;
     S.attributes.global.nPx = 1;
@@ -198,10 +199,10 @@ function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
     S.attributes.global.tile_number = 1;
     S.attributes.global.nco_openmp_thread_number = 1;
   end
-    
+
   % Read variable data
   for ivar=1:size(varlist,2)
-    
+
     cvar=char(varlist{ivar});
     if isempty(nc{cvar})
       disp(['No such variable ''',cvar,''' in MNC file ',name(nc)]);
@@ -209,7 +210,7 @@ function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
     end
     % code by Bruno Deremble: if you do not want to read all tiles these
     % modifications make the output field smaller, let us see, if it is
-    % robust 
+    % robust
     if (isfield(S,cvar) == 0); firstiter = 1; else firstiter = 0; end
     % end code by Bruno Deremble
 
@@ -227,10 +228,10 @@ function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
       % leading unity dimensions get lost; add them back:
       tmpdata=reshape(tmpdata,sizVar);
     end
-    
+
     if dBug > 1,
       fprintf(['  var:',cvar,': nDims=%i ('],nDims);fprintf(' %i',size(nc{cvar}));
-      fprintf('):%i,nD=%i,it=%i ;',length(size(tmpdata)),length(dims),it); 
+      fprintf('):%i,nD=%i,it=%i ;',length(size(tmpdata)),length(dims),it);
     end
     if length(dims) > 1,
       tmpdata=permute(tmpdata,[nDims:-1:1]);
@@ -239,7 +240,7 @@ function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
 %         fprintf('(tmpdata:');fprintf(' %i',size(tmpdata)); fprintf(')');
     end
     [ni nj nk nm nn no np]=size(tmpdata);
-      
+
     [i0,j0,fn]=findTileOffset(S);
     cdim=dims{end}; if cdim(1)~='X'; i0=0; end
     cdim=dims{end}; if cdim(1)=='Y'; i0=j0; j0=0; end
@@ -253,15 +254,15 @@ function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
     end
     % code by Bruno Deremble: if you do not want to read all tiles these
     % modifications make the output field smaller, let us see, if it is
-    % robust 
+    % robust
     if (firstiter)
       S.attributes.i_first.(cvar) = i0;
       S.attributes.j_first.(cvar) = j0;
-    end 
+    end
     i0 = i0 - S.attributes.i_first.(cvar);
     j0 = j0 - S.attributes.j_first.(cvar);
     % end code by Bruno Deremble
-    
+
     Sstr = '';
     for istr = 1:max(nDims,length(dims)),
       if     istr == it,  Sstr = [Sstr,'dii,'];
@@ -278,7 +279,7 @@ function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
     eval(['S.(cvar)(',Sstr(1:end-1),')=tmpdata;'])
     %S.(cvar)(i0+(1:ni),j0+(1:nj),(1:nk),(1:nm),(1:nn),(1:no),(1:np))=tmpdata;
     if dBug > 1, fprintf(' %i',size(S.(cvar))); fprintf('\n'); end
-    
+
     S.attributes.(cvar)=read_att(nc{cvar});
     % replace missing or FillValues with NaN
     if isfield(S.attributes.(cvar),'missing_value');
@@ -289,13 +290,13 @@ function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
       misval = S.attributes.(cvar).FillValue_;
       S.(cvar)(S.(cvar) == misval) = NaN;
     end
-    
+
   end % for ivar
-    
+
   if isempty(S)
     error('Something didn''t work!!!');
   end
-  
+
   return
 
 function [S] = rdmnc_local_matlabAPI(fname,varlist,iters,S,dBug)
@@ -307,8 +308,8 @@ function [S] = rdmnc_local_matlabAPI(fname,varlist,iters,S,dBug)
   [fii,dii] = ismember(fiter,iters);  fii = find(fii); % File iteration index
   dii = dii(find(dii ~= 0));                           % Data interation index
   if dBug > 0,
-    fprintf(' ; fii='); fprintf(' %i',fii); 
-    fprintf(' ; dii='); fprintf(' %i',dii); fprintf(' \n'); 
+    fprintf(' ; fii='); fprintf(' %i',fii);
+    fprintf(' ; dii='); fprintf(' %i',dii); fprintf(' \n');
   end
 
   % now open the file for reading
@@ -317,19 +318,19 @@ function [S] = rdmnc_local_matlabAPI(fname,varlist,iters,S,dBug)
   [ndims nvars natts recdim] = netcdf.inq(nc);
 
   % No variables specified? Default to all
-  if isempty(varlist), 
+  if isempty(varlist),
     for k=0:nvars-1
       varlist{k+1} = netcdf.inqVar(nc,k);
     end
   end
-  
+
   % Attributes for structure
   if iters>0; S.iters_from_file=iters; end
   S.attributes.global=ncgetatt(nc,'global');
   [pstr,netcdf_fname,ext] = fileparts(fname);
   if strcmp(netcdf_fname(end-3:end),'glob')
     % assume it is a global file produced by gluemnc and change some
-    % attributes 
+    % attributes
     S.attributes.global.sNx = S.attributes.global.Nx;
     S.attributes.global.sNy = S.attributes.global.Ny;
     S.attributes.global.nPx = 1;
@@ -339,10 +340,10 @@ function [S] = rdmnc_local_matlabAPI(fname,varlist,iters,S,dBug)
     S.attributes.global.tile_number = 1;
     S.attributes.global.nco_openmp_thread_number = 1;
   end
-    
+
   % Read variable data
   for ivar=1:size(varlist,2)
-    
+
     cvar=char(varlist{ivar});
     varid=ncfindvarid(nc,cvar);
     if isempty(varid)
@@ -351,14 +352,14 @@ function [S] = rdmnc_local_matlabAPI(fname,varlist,iters,S,dBug)
     end
     % code by Bruno Deremble: if you do not want to read all tiles these
     % modifications make the output field smaller, let us see, if it is
-    % robust 
+    % robust
     if (isfield(S,cvar) == 0); firstiter = 1; else firstiter = 0; end
     % end code by Bruno Deremble
-    
+
     [varname,xtype,dimids,natts] = netcdf.inqVar(nc,varid);
     % does this variable contain a record (unlimited) dimension?
     [isrecvar,recpos] = ismember(recdim,dimids);
-    
+
     % Dimensions
     clear sizVar dims
     for k=1:length(dimids)
@@ -390,8 +391,8 @@ function [S] = rdmnc_local_matlabAPI(fname,varlist,iters,S,dBug)
         end
         istart = zeros(1,it); % indexing starts a 0
         icount = sizVar;
-        % we always want to get only on time slice at a time 
-        icount(recpos) = 1; 
+        % we always want to get only on time slice at a time
+        icount(recpos) = 1;
         % make your life simpler by putting the time dimension first
         tmpdata = zeros([length(fii) sizVar(1:end-1)]);
         for k=1:length(fii)
@@ -411,7 +412,7 @@ function [S] = rdmnc_local_matlabAPI(fname,varlist,iters,S,dBug)
     %
     if dBug > 1,
       fprintf(['  var:',cvar,': nDims=%i ('],nDims);fprintf(' %i',sizVar);
-      fprintf('):%i,nD=%i,it=%i ;',length(size(tmpdata)),length(dims),it); 
+      fprintf('):%i,nD=%i,it=%i ;',length(size(tmpdata)),length(dims),it);
     end
     [ni nj nk nm nn no np]=size(tmpdata);
     %
@@ -428,11 +429,11 @@ function [S] = rdmnc_local_matlabAPI(fname,varlist,iters,S,dBug)
     end
     % code by Bruno Deremble: if you do not want to read all tiles these
     % modifications make the output field smaller, let us see, if it is
-    % robust 
+    % robust
     if (firstiter)
       S.attributes.i_first.(cvar) = i0;
       S.attributes.j_first.(cvar) = j0;
-    end 
+    end
     i0 = i0 - S.attributes.i_first.(cvar);
     j0 = j0 - S.attributes.j_first.(cvar);
     % end code by Bruno Deremble
@@ -464,21 +465,21 @@ function [S] = rdmnc_local_matlabAPI(fname,varlist,iters,S,dBug)
       misval = S.attributes.(cvar).FillValue_;
       S.(cvar)(S.(cvar) == misval) = NaN;
     end
-    
+
   end % for ivar
 
   % close the file
   netcdf.close(nc);
-  
+
   if isempty(S)
     error('Something didn''t work!!!');
   end
-  
+
   return
 
 function vf = ncgetvar(fname,varname)
 % read a netcdf variable
-  
+
   nc=netcdf.open(fname,'NC_NOWRITE');
   % find out basics about the files
   [ndims nvars natts dimm] = netcdf.inq(nc);
@@ -489,7 +490,7 @@ function vf = ncgetvar(fname,varname)
       varid = netcdf.inqVarID(nc,varname);
     end
   end
-  if ~isempty(varid); 
+  if ~isempty(varid);
     [varn,xtype,dimids,natts] = netcdf.inqVar(nc,varid);
     % get data
     vf = double(netcdf.getVar(nc,varid));
@@ -497,7 +498,7 @@ function vf = ncgetvar(fname,varname)
     % do nothing
   end
   netcdf.close(nc);
-  
+
   return
 
 function misval = ncgetmisval(nc,varid)
@@ -510,10 +511,10 @@ function misval = ncgetmisval(nc,varid)
       misval = double(netcdf.getAtt(nc,varid,attname));
     end
   end
-  
+
 function A = ncgetatt(nc,varname)
 % get all attributes and put them into a struct
-  
+
 % 1. get global properties of file
   [ndims nvars natts dimm] = netcdf.inq(nc);
 
@@ -551,10 +552,10 @@ function A = ncgetatt(nc,varname)
   else
       A = 'none';
   end
-  
+
   return
 
-  
+
 function varid = ncfindvarid(nc,varname)
 
   [ndims nvars natts dimm] = netcdf.inq(nc);
