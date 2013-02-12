@@ -13,7 +13,7 @@ function G = load_grid(varargin);
 %      option >= 20 : only read in Verti.Grid spacing (without hFac)
 %      nxAxis = number of spacing in 1.D x-axis xAxC (default: nxAxis = grid-Nx)
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/load_grid.m,v 1.1 2012/10/04 14:02:42 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/load_grid.m,v 1.2 2013/02/12 16:06:32 jmc Exp $
 % $Name:  $
 
 if nargin == 0
@@ -92,14 +92,14 @@ else
  yC=S.YC;
  xG=S.XG(1:end-1,1:end-1);
  yG=S.YG(1:end-1,1:end-1);
- rC=S.RC;
- rF=S.RF;
+ rC=S.RC';
+ rF=S.RF';
  dXc=S.dxC(1:end-1,:);
  dYc=S.dyC(:,1:end-1);
  dXg=S.dxG(:,1:end-1);
  dYg=S.dyG(1:end-1,:);
- dRc=S.drC;
- dRf=S.drF;
+ dRc=S.drC';
+ dRf=S.drF';
  rAc=S.rA;
  rAw=S.rAw(1:end-1,:);
  rAs=S.rAs(:,1:end-1);
