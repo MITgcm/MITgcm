@@ -1,21 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1822 2013/02/12 07:51:02 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1823 2013/02/12 22:26:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o utils/matlab:
+  - fix tile-offset in rdmnc.m when output was produced using EXCH2.
+  - update cs_grid/bk_line scripts to use load_grid.m (in utils/matlab)
+    instead of local script "load_cs.m".
 o pkg/seaice:
   - fix a serious bug in seaice_fgmres.F, s/r seaice_scalprod, connected
     to the scalarProductMetric and the unrolling. By chance this does not
-    change the verification experiment, because of the particular domain 
+    change the verification experiment, because of the particular domain
     decomposition
 o pkg/diagnostics:
   - change default missing_value from UNSET_RL to -999.
 o pkg/layers: improve vectorization of layers_fluxcalc.F
-  - step 1: split loops, make TatU/V 2D arrays. This alone reduces the cpu 
+  - step 1: split loops, make TatU/V 2D arrays. This alone reduces the cpu
     time spent in this routine by more than a factor of 3 on an NEC-SX8
   - step 2: replace search algorithm by a bisection algorithm found in
-    Press et al. Numerical Recipes in Fortran. This algorithm can be 
+    Press et al. Numerical Recipes in Fortran. This algorithm can be
     vectorized and finds the correct bin in approx. log2(Nlayers) steps.
     For now, use this algorithm only for TARGET_NEC_SX defined.
   - moved the search algorithm into a separate subroutine, that is kept
