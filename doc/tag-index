@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1821 2013/02/08 07:56:45 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1822 2013/02/12 07:51:02 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - fix a serious bug in seaice_fgmres.F, s/r seaice_scalprod, connected
+    to the scalarProductMetric and the unrolling. By chance this does not
+    change the verification experiment, because of the particular domain 
+    decomposition
 o pkg/diagnostics:
   - change default missing_value from UNSET_RL to -999.
 o pkg/layers: improve vectorization of layers_fluxcalc.F
