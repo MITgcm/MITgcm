@@ -4,10 +4,10 @@
 %  positive when the flow goes from right to left of arc A -> B.
 % (e.g.: if lat_A = lat_B and long_A < long_B, northward flow -> transport > 0 )
 %-----------------------
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grt_circ_bkl.m,v 1.2 2007/02/06 19:29:36 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grt_circ_bkl.m,v 1.3 2013/02/12 17:59:02 jmc Exp $
 % $Name:  $
 
- 
+
 %- kwr=1 : => write broken-line to file: filnam(.mat)
 %- kplot : to check different steps of making bk-line:
 %  < 0 : no plot ; 0 : just plot cos(longitude) after rotation
@@ -18,10 +18,13 @@
 
 kwr=0; kplot=4;
 
-rac='grid_files/';
-% [xc0,yc0,xg0,yg0,arc]=load_cs(rac);
-load_cs; xc0=xcs; yc0=ycs; xg0=xcg; yg0=ycg; clear xcg xcs ycg ycs
-nc=size(xc0,2) ; ncp=nc+1 ;
+%- set ncdf=1 to load MNC (NetCDF) grid-files ;
+%   or ncdf=0 to load MDS (binary) grid-files :
+ ncdf=0;
+ rac='grid_files/';
+ G=load_grid(rac,10+ncdf);
+ xc0=G.xC; yc0=G.yC; xg0=G.xG; yg0=G.yG; arc=G.rAc;
+ nc=G.dims(2); ; ncp=nc+1 ;
 nXY=6*nc*nc;
 nXYz=nXY+2;
 
@@ -53,7 +56,7 @@ drMn=min(dr(:)); [I J]=find(dr==drMn);
 if length(I) > 1,
  fprintf(' find more than 1 point next to A\n')
 else
- if length(I) ==0, 
+ if length(I) ==0,
    fprintf(' did not find any point next to A\n')
    return
  end
@@ -68,7 +71,7 @@ drMn=min(dr(:)); [I J]=find(dr==drMn);
 if length(I) > 1,
  fprintf(' find more than 1 point next to B\n')
 else
- if length(I) ==0, 
+ if length(I) ==0,
    fprintf(' did not find any point next to B\n')
    return
  end
@@ -107,7 +110,7 @@ for n=1:6,
  if length(I) > 0,
   var=reshape(xx1(:,:,n),[ncp*ncp 1]);
   xx=var(I)*rad; xM=mean(cos(xx)); yM=mean(sin(xx));
-  xMid(n)=atan2(yM,xM)/rad; 
+  xMid(n)=atan2(yM,xM)/rad;
   fprintf(', xMid= %8.3f\n',xMid(n));
  end
 end
@@ -127,7 +130,7 @@ XYout=1000;
 %nMx6t=zeros(6,1);
 %savI=zeros(nc*6,6); savJ=zeros(nc*6,6); savF=zeros(nc*6,6);
 %isav=zeros(nc*6,6); jsav=zeros(nc*6,6); xsav=zeros(nc*6,6);
-%find_bk_line 
+%find_bk_line
 [savI,savJ,savF,isav,jsav,xsav,nMx6t] = ...
 find_bk_line( nf1,nf2,nc,ydim,yl,dylat,XYout,xMid,xx1,xx2,yy2,xcs,ycs );
 
@@ -237,7 +240,7 @@ if kplot == 3,
   ict(np+1)=I;
   xloc(I+1:sNp+1)=xloc(I:sNp);
   yloc(I+1:sNp+1)=yloc(I:sNp);
-  sNp=sNp+1; np=np+1; 
+  sNp=sNp+1; np=np+1;
   dec=xloc(I+2)-180;
   xloc(I+1)=dec+rem(xloc(I+1)-dec+360,360);
   for j=1:np-1, if ict(j) > I, ict(j)=ict(j)+1; end; end

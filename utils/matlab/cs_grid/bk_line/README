@@ -1,10 +1,16 @@
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/README,v 1.1 2005/09/15 16:46:28 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/README,v 1.2 2013/02/12 17:59:02 jmc Exp $
 % $Name:  $
 
-needs grid files (XC,YC,XG,YG & RAC) in dir "./grid_files/" 
+%- Feb 12 2013:
+needs MDS (binary) grid files (XC,YC,XG,YG & RAC) in dir "./grid_files/"
+ (read-in using matlab script: MITgcm/utils/matlab/load_grid.m)
+allows to use MNC (NetCDF) grid files by changing "ncdf=0;" to "ncdf=1;"
+in all the matlab scripts listed here after.
 
-%- define broken-line on the C.S. grid 
+%------------------------------------------------------
+
+%- define broken-line on the C.S. grid
 %  as close as possible to given yLat latitude :
 %- Sep 15  2002
 
@@ -14,8 +20,8 @@ gener_bk_line.m
 ( run 1rst time to try ; then set krd=0 and run 2nd time to calculate
   all the broken line and write to file)
 
-%- generate array (= bkl_Zon) that give 
-%  the latidude zone (= between 2 broken-line) of each grid mesh (tracer pt), 
+%- generate array (= bkl_Zon) that give
+%  the latidude zone (= between 2 broken-line) of each grid mesh (tracer pt),
 %- Jul 24 2003
 
 gen_bk_Zon.m
@@ -24,7 +30,7 @@ gen_bk_Zon.m
 (contains all the arrays that were in isoLat_cube32_59.mat)
 
 %--------------------------------------------------
-%- define lines to compute the barotropic stream-Function 
+%- define lines to compute the barotropic stream-Function
 %   of the depth-integrated horizontal transport
 %  starting from the N.Pole and going southward
 %- Jul 21 2003

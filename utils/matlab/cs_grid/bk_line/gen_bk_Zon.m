@@ -2,21 +2,30 @@ krd=1; kpr=1; kgr=0; kwr=1;
 % krd=0; kpr=0; kgr=1; kwr=0; % <- execute a 2nd time & draw some plot
 ijprt=65;
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/gen_bk_Zon.m,v 1.2 2007/08/28 16:25:45 molod Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/gen_bk_Zon.m,v 1.3 2013/02/12 17:59:02 jmc Exp $
 % $Name:  $
 
 if krd == 1,
 
+%- set ncdf=1 to load MNC (NetCDF) grid-files ;
+%   or ncdf=0 to load MDS (binary) grid-files :
+ ncdf=0;
+
 %rac='/home/jmc/grid_cs32/';
- rac='grid_files/' ;
+ rac='grid_files/';
  bk_lineF=[rac,'isoLat_cube32_59'];
 
 %- load broken lines :
 % bkl_Ylat,bkl_Npts,bkl_Flg,bkl_Iuv,bkl_Juv,bkl_Xsg,bkl_Ysg
  load(bk_lineF);
 
- load_cs;
- ncx=size(xcs,1); nc=size(xcs,2);
+%- load grid-files :
+ G=load_grid(rac,10+ncdf);
+ xcs=G.xC; ycs=G.yC; xcg=G.xG; ycg=G.yG; arc=G.rAc;
+ ncx=G.dims(1); nc=G.dims(2);
+
+%load_cs;
+%ncx=size(xcs,1); nc=size(xcs,2);
 
 %xc6=split_C_cub(xcs,1);
 %yc6=split_C_cub(ycs,1);
@@ -46,22 +55,22 @@ if kpr == 1,
  bkl_Zon=-ones(ncx*nc,1);
  for ij=1:ncx*nc,
   xx=xc1(ij); yy=yc1(ij);
-  [J2]=find(Yg1 >= yy); 
+  [J2]=find(Yg1 >= yy);
   if length(J2)==0, jl2=ydim+1; else jl2=min(J2); end
-  [J1]=find(Yg2 <= yy); 
+  [J1]=find(Yg2 <= yy);
   if length(J1)==0, jl1=0; else jl1=max(J1); end
   fprintf('ij,xx,yy= %4i %6.1f %6.1f ; jl1,jl2= %2i %2i',ij, xx, yy, jl1,jl2);
   %- solve for intersection bkl_X,Y with x=xx :
   jL1=-1; jL2=-1; yXX=zeros(1,1+jl2-jl1);
   for jl=jl1:jl2
    if ij==ijprt, fprintf('\n  jl= %i ',jl);end
-   l=1+jl-jl1; 
+   l=1+jl-jl1;
    if jl == 0, yXX(l)=-90 ;
-   elseif jl == ydim+1, yXX(l)=90; 
+   elseif jl == ydim+1, yXX(l)=90;
    else
     ie=bkl_Npts(jl)+1;
     xloc=bkl_Xsg(1:ie,jl); yloc=bkl_Ysg(1:ie,jl); yloc(ie+1)=yloc(1);
-    xloc2=xloc; xloc2(1:ie-1)=xloc(2:ie); xloc2(ie)=xloc(1)+360; 
+    xloc2=xloc; xloc2(1:ie-1)=xloc(2:ie); xloc2(ie)=xloc(1)+360;
     if ij==ijprt, fprintf('; xloc(1)= %6.1f ',xloc(1)); end
     [I]=find( xloc <= xx & xx < xloc2 );
     if length(I) ~= 1, fprintf(' Stop A \n');return; end
@@ -78,11 +87,11 @@ if kpr == 1,
    if yXX(l) <= yy, jL1=jl; end
    if yXX(l) > yy & jL2==-1, jL2=jl; end
   end
-  if jL2 == jL1+1, bkl_Zon(ij)=jL1; 
+  if jL2 == jL1+1, bkl_Zon(ij)=jL1;
    fprintf('; jL1= %2i\n',jL1);
   else fprintf(' Stop C : %i %i %6.1f %6.1f\n',jL1,jL2,xx,yy);
    fprintf(' yXX :');fprintf(' %9.5f',yXX(1:1+jl2-jl1)); fprintf('\n');
-   return; 
+   return;
   end
  end % <- ij loop
 

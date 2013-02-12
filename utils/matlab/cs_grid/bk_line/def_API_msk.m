@@ -1,5 +1,5 @@
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/def_API_msk.m,v 1.3 2008/11/11 23:05:14 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/def_API_msk.m,v 1.4 2013/02/12 17:59:02 jmc Exp $
 % $Name:  $
 
 krd=1; kpr=2; kgr=0; kwr=1;
@@ -8,13 +8,16 @@ krd=1; kpr=2; kgr=0; kwr=1;
 %krd=1; kpr=3; kgr=3; kwr=1; % <- generate Continent Mask
 
 if krd == 1,
+%- set ncdf=1 to load MNC (NetCDF) grid-files ;
+%   or ncdf=0 to load MDS (binary) grid-files :
+ ncdf=0;
+%rac='/home/jmc/grid_cs32/';
  rac='grid_files/';
- load_cs;
- mskC=rdmds([rac,'hFacC']);
+ G=load_grid(rac,ncdf);
+ xcs=G.xC; ycs=G.yC; xcg=G.xG; ycg=G.yG; arc=G.rAc;
+ mskC=G.hFacC; mskW=G.hFacW; mskS=G.hFacS;
  mskC=min(1,mskC); mskC=ceil(mskC);
- mskW=rdmds([rac,'hFacW']);
  mskW=min(1,mskW); mskW=ceil(mskW);
- mskS=rdmds([rac,'hFacS']);
  mskS=min(1,mskS); mskS=ceil(mskS);
  ncx=size(mskC,1); nc=size(mskC,2); ncp=nc+1;
  xc1=reshape(xcs,1,ncx*nc);

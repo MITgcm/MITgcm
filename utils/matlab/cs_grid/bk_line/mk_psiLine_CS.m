@@ -1,15 +1,19 @@
 kgr=3; nRgr=3; kwr=1;
 dbug=1;
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/mk_psiLine_CS.m,v 1.1 2005/09/15 16:46:28 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/mk_psiLine_CS.m,v 1.2 2013/02/12 17:59:02 jmc Exp $
 % $Name:  $
 
+%- set ncdf=1 to load MNC (NetCDF) grid-files ;
+%   or ncdf=0 to load MDS (binary) grid-files :
+ ncdf=0;
 %rac='/home/jmc/grid_cs32/';
-rac='grid_files/';
-load_cs;
-nc=size(xcs,2); nPt=6*nc*nc ; ncx=6*nc; nPt2=nPt+2; ncp=nc+1;
+ rac='grid_files/';
+ G=load_grid(rac,10+ncdf);
+ xcs=G.xC; ycs=G.yC; xcg=G.xG; ycg=G.yG; arc=G.rAc;
+nc=G.dims(2); nPt=6*nc*nc ; ncx=6*nc; nPt2=nPt+2; ncp=nc+1;
 
-xx2=split_Z_cub(xcg); 
+xx2=split_Z_cub(xcg);
 yy2=split_Z_cub(ycg);
 xx3=reshape(xx2,ncp*ncp*6,1); yy3=reshape(yy2,ncp*ncp*6,1);
 
@@ -26,10 +30,10 @@ fprintf(' add 1rst corner: %i %8.3f %8.3f\n',nPt+1,xx1(nPt+1,1),yy1(nPt+1,1));
 fprintf(' add  2nd corner: %i %8.3f %8.3f\n',nPt+2,xx1(nPt+2,1),yy1(nPt+2,1));
 
 %-- start from the N.Pole:
-list_C=zeros(ncx,ncx); list_P=zeros(ncx,ncx); 
+list_C=zeros(ncx,ncx); list_P=zeros(ncx,ncx);
 listUV=zeros(ncx,ncx); list_T=zeros(ncx,ncx);
 list_N=zeros(1,ncx); tagC=zeros(nPt2,1);
-[IJ]=find(yy1==max(yy1)); 
+[IJ]=find(yy1==max(yy1));
 nRd=1; list_C(1,nRd)=IJ(1); tagC(IJ(1),1)=nRd;
 nbp=length(IJ); list_N(1,nRd)=nbp;
 
@@ -44,7 +48,7 @@ while doRd > 0,
 %- for all point of the previous list, find the neighbour point not yet tagged:
  for n=1:nbp,
 %- find the 4 neighbours:
-   ij=list_C(n,nRd); 
+   ij=list_C(n,nRd);
   %i=1+rem(ij-1,nc); j=fix((ij-1)/nc); k=1+fix(j/nc); j=1+rem(j,nc);
    i=rem(ij-1,ncx); j=1+fix((ij-1)/ncx); k=1+fix(i/nc); i=1+rem(i,nc);
    if j == ncp | i*j==1,
@@ -56,7 +60,7 @@ while doRd > 0,
      for l=1:length(I),
        i2=I(l);
        j2=fix((i2-1)/ncp); k2=1+fix(j2/ncp); j2=1+rem(j2,ncp);
-       i2=1+rem(i2-1,ncp); 
+       i2=1+rem(i2-1,ncp);
        if dbug>0, fprintf(';  l=%i: %2i %2i %i ',l,i2,j2,k2); end
        if ij==nPt+2,
 %-      3 times (ncp,1) :
@@ -96,9 +100,9 @@ while doRd > 0,
       for l=1:length(I),
         i2=I(l);
         j2=fix((i2-1)/ncp); k2=1+fix(j2/ncp); j2=1+rem(j2,ncp);
-        i2=1+rem(i2-1,ncp); 
+        i2=1+rem(i2-1,ncp);
         if dbug>1, fprintf('; l= %i : i,j,k_2= %2i %2i %i ',l,i2,j2,k2); end
-        if k2 ~= k & i2==ncp, 
+        if k2 ~= k & i2==ncp,
          lc(2)=nc+(k2-1)*nc+(j2-1)*ncx; luv(2)=lc(2); typ(2)=-2;
         elseif k2 ~= k & j2==ncp,
          lc(2)=i2+(k2-1)*nc+(nc-1)*ncx; luv(2)=lc(2); typ(2)=1;
@@ -125,9 +129,9 @@ while doRd > 0,
       for l=1:length(I),
         i2=I(l);
         j2=fix((i2-1)/ncp); k2=1+fix(j2/ncp); j2=1+rem(j2,ncp);
-        i2=1+rem(i2-1,ncp); 
+        i2=1+rem(i2-1,ncp);
         if dbug>1, fprintf('; l= %i : i,j,k_2= %2i %2i %i ',l,i2,j2,k2); end
-        if k2 ~= k & j2==ncp, 
+        if k2 ~= k & j2==ncp,
          lc(4)=i2+(k2-1)*nc+(nc-1)*ncx; luv(4)=lc(4); typ(4)=1;
         elseif k2 ~= k & i2==ncp,
          lc(4)=nc+(k2-1)*nc+(j2-1)*ncx; luv(4)=lc(4); typ(4)=-2;
@@ -139,9 +143,9 @@ while doRd > 0,
     end
    end
 %- keep the untagged points in a temp list:
-   for l=1:nbv, if tagC(lc(l))==0, 
-    n2p=n2p+1; 
-    list_p(n2p)=ij;  list_c(n2p)=lc(l); 
+   for l=1:nbv, if tagC(lc(l))==0,
+    n2p=n2p+1;
+    list_p(n2p)=ij;  list_c(n2p)=lc(l);
     listuv(n2p)=luv(l); list_t(n2p)=typ(l);
    end; end;
  end
@@ -158,7 +162,7 @@ while doRd > 0,
   plot(xloc,yloc,'ro'); hold on ;
   xloc=xx1(list_p(1:n2p)); yloc=yy1(list_p(1:n2p));
   plot(xloc,yloc,'bo');
-  hold off ; grid ; 
+  hold off ; grid ;
  end
  if n2p == 0, doRd=0; else nRd=nRd+1 ; end
 %- deal with non-single points:
@@ -175,7 +179,7 @@ while doRd > 0,
    tagC(ij,1)=nRd;
   elseif dbl==1,
 %- choose between 2 origin points: select the smaller Delta-X
-   xx=xx1(ij); 
+   xx=xx1(ij);
    dx1=xx1(list_P(I,nRd)); dx1=rem(dx1-xx+540,360)-180;
    dx2=xx1(list_p(n));     dx2=rem(dx2-xx+540,360)-180;
    if abs(dx2) < abs(dx1),
@@ -192,7 +196,7 @@ while doRd > 0,
    fprintf('Pb D: stop\n'); return;
   end
  end
- if n2p > 0, 
+ if n2p > 0,
   list_N(1,nRd)=nbp;
   fprintf('nRd= %i ; nbp= %i \n',nRd,nbp);
  end
@@ -209,9 +213,9 @@ end
     if i==1 & n==2, hold on ; end
    end
   end
-  hold off ; AA=axis; 
-  AA(1)=max(-180,AA(1)); AA(2)=min(183,AA(2)); 
-  AA(3)=max(-90,AA(3)); AA(4)=min(90,AA(4)); 
+  hold off ; AA=axis;
+  AA(1)=max(-180,AA(1)); AA(2)=min(183,AA(2));
+  AA(3)=max(-90,AA(3)); AA(4)=min(90,AA(4));
   axis(AA); grid
  elseif kgr == 4,
   for n=1:nRd,
@@ -223,13 +227,13 @@ end
   end
   xloc=xx1(list_P(1:nbp,nRd)); yloc=yy1(list_P(1:nbp,nRd));
   plot(xloc,yloc,'bx');
-  hold off ; grid ; 
+  hold off ; grid ;
  end
 
 if kwr==1,
 %-- copy to the right sixe arrays:
  psiNx=max(list_N);
- psiNy=nRd; 
+ psiNy=nRd;
  psi_N=zeros(1,psiNy);
  psi_C=zeros(psiNx,psiNy); psi_P=zeros(psiNx,psiNy);
  psiUV=zeros(psiNx,psiNy); psi_T=zeros(psiNx,psiNy);

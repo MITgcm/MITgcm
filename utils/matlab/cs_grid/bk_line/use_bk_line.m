@@ -1,5 +1,5 @@
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/use_bk_line.m,v 1.2 2007/02/05 05:24:33 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/use_bk_line.m,v 1.3 2013/02/12 17:59:02 jmc Exp $
 % $Name:  $
 
 % input: krd, kfac, jprt
@@ -40,8 +40,11 @@ if krd > 1,
  ufac=rem(bkl_Flg,2) ; vfac=fix(bkl_Flg/2) ;
 
 %- load the grid dx,dy :
- dxg=rdmds([Rac,'DXG']);
- dyg=rdmds([Rac,'DYG']);
+%- set ncdf=1 to load MNC (NetCDF) grid-files ;
+%   or ncdf=0 to load MDS (binary) grid-files :
+ ncdf=0;
+ G=load_grid(Rac,10+ncdf);
+ dxg=G.dXg; dyg=G.dYg;
  fprintf([' load bk_line description from file=',bk_lineF, ...
           '  AND dxg,dyg files \n']);
  dxg=reshape(dxg,nPg,1); dyg=reshape(dyg,nPg,1);

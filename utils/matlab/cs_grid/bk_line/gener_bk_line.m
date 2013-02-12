@@ -1,7 +1,7 @@
 % main script to generate broken lines that folows the cubic grid
 % and stay close as possible to a given latitude
 %-----------------------
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/gener_bk_line.m,v 1.4 2008/07/07 13:13:50 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/gener_bk_line.m,v 1.5 2013/02/12 17:59:02 jmc Exp $
 % $Name:  $
 
 %- load definition of the grid (needs to be done at the 1rst call):
@@ -10,14 +10,18 @@ if size(who('krd'),1) > 0,
  fprintf('krd is defined and = %i \n',krd);
 else
  fprintf('krd undefined ; set to 1 \n'); krd=1 ;
-end   
-if krd==1, 
+end
+if krd==1,
  more off ;
+%- set ncdf=1 to load MNC (NetCDF) grid-files ;
+%   or ncdf=0 to load MDS (binary) grid-files :
+ ncdf=0;
 %rac='/home/jmc/grid_cs32/';
  rac='grid_files/';
- load_cs ;
+ G=load_grid(rac,10+ncdf);
+ xcs=G.xC; ycs=G.yC; xcg=G.xG; ycg=G.yG; arc=G.rAc;
 %- 1rst try:
- ydim=1; jl=1; yl=35; kwr=0; 
+ ydim=1; jl=1; yl=35; kwr=0;
 else
 %- do the real calculation and write to file:
  ydim=2; kwr=1;
@@ -41,10 +45,10 @@ nf1=1; nf2=6; %- allow to treat only few faces (debug) : n=nf1:nf2,
 
 %------------------------------
 %- face 3 & 6 : long cover ]-180;180]
-%- face 4 : long in 2 part ]-180;-135] + ]135;180]; 
+%- face 4 : long in 2 part ]-180;-135] + ]135;180];
 % => put together (in xx2) with xMid=180
-xMid=zeros(6,1); 
-xMid(4)=180; 
+xMid=zeros(6,1);
+xMid(4)=180;
 
 %-- define large value for X,Y position :
 XYout=1000;
@@ -59,10 +63,10 @@ xg2(nPxy+2)=xg2(1+3*nc); yg2(nPxy+2)=yg2(1);
 %------------------------------
 yy2=split_Z_cub(yg2);
 %-- define dylat = width of Lat. band that contains the broken line:
-ddy=zeros(ncp,ncp,6); 
+ddy=zeros(ncp,ncp,6);
 ddy(1:nc,:,:)=yy2(1:nc,:,:)-yy2(2:ncp,:,:); ddy=abs(ddy);
 dyImx=max(max(max(ddy))) ;
-ddy=zeros(ncp,ncp,6); 
+ddy=zeros(ncp,ncp,6);
 ddy(:,1:nc,:)=yy2(:,1:nc,:)-yy2(:,2:ncp,:); ddy=abs(ddy);
 dyJmx=max(max(max(ddy)));
 dylat=sqrt(2)*max(dyImx,dyJmx);
@@ -110,7 +114,7 @@ if max(kplot) > 0,
  ccB=[-25 40]; shift=-1; cbV=2; AxBx=[-180 180 -90 90]; kEnv=0;
  if ydim == 1, AxBx(3:4)=[-15 15]+yl ; end
  grph_CS(zeros(6*nc,nc),xcs,ycs,xg2,yg2,ccB(1),ccB(2),shift,cbV,AxBx,kEnv);
- AA=axis; 
+ AA=axis;
  if ydim == 1,
   h(1)=line(AA(1:2),[yl yl]);
   h(2)=line(AA(1:2),[yl-dylat/2 yl-dylat/2]);
@@ -121,7 +125,7 @@ if max(kplot) > 0,
 end
 %------------------------------
 
-%-- Start loop on jl : 
+%-- Start loop on jl :
 for jl=1:ydim,
  if ydim > 1, yl=ylat(jl) ; end
  fprintf(' Define broken line closest to yl= %8.3f \n',yl);
@@ -148,19 +152,19 @@ clean_bk_line( nf1,nf2,nc,ydim,yl,dylat,xMid,xx1,xx2,yy2, ...
                savI,savJ,savF,isav,jsav,xsav,nMx6t );
 
 %-- plot the results:
-if kplot(jl) == 2 | ( max(kplot) > 0 & misfit > 0 ) , 
+if kplot(jl) == 2 | ( max(kplot) > 0 & misfit > 0 ),
  for n=nf1:nf2, if ncut(n) > 0,
   yloc=zeros(6*nc,1);
   for i=1:nMx6t(n), yloc(i)=yy2(isav(i,n),jsav(i,n),n); end;
-  clear P ; np=0; 
-  for in=1:ncut(n), if icut(in,6,n) >= 0, 
+  clear P ; np=0;
+  for in=1:ncut(n), if icut(in,6,n) >= 0,
 %  is=3; ie=4;
-%  if icut(in,is,n)*icut(in,ie,n)==0 | icut(in,is,n) >= icut(in,ie,n), 
+%  if icut(in,is,n)*icut(in,ie,n)==0 | icut(in,is,n) >= icut(in,ie,n),
 %    is=1; ie=2; end
    is=3; if icut(in,is,n) <= 0, is=1 ; end
    ie=4; if icut(in,ie,n) <= 0, ie=2 ; end
    if icut(in,is,n) > icut(in,ie,n), is=1 ; ie=2 ; end
-   if icut(in,is,n) > 0 & icut(in,ie,n) > 0 & icut(in,is,n) < icut(in,ie,n), 
+   if icut(in,is,n) > 0 & icut(in,ie,n) > 0 & icut(in,is,n) < icut(in,ie,n),
      np=np+1;
      P(np)=plot(xsav(icut(in,is,n):icut(in,ie,n),n), ...
                 yloc(icut(in,is,n):icut(in,ie,n)),'*');
@@ -171,19 +175,19 @@ if kplot(jl) == 2 | ( max(kplot) > 0 & misfit > 0 ) ,
   end ; end; end
   if np > 0,
    set(P,'Color',face_color(n,:),'LineWidth',lineThick(n),'LineStyle','-'); end
- end; end ; 
+ end; end
 end
 
-if misfit > 0, 
+if misfit > 0,
  fprintf('misfit= %i , xyfit= %i ; ==> must do something ! \n', ...
-    misfit,xyfit); 
+    misfit,xyfit);
  return
 end
 
 %--------------------------------------
 %- output : put together the pieces of bk-lines from the 6 faces :
 
-%save_bk_line 
+%save_bk_line
 [svNpts,svFlg,svIuv,svJuv,svXsg,svYsg,svXx1,svYy1]= ...
 save_bk_line( nf1,nf2,nc,ydim,yl,dylat,XYout,xMid,xx1,yy2,yy2, ...
               savI,savJ,savF,isav,jsav,xsav,ncut,icut,xcut,ycut );
@@ -234,7 +238,7 @@ if kplot(jl) == 1 | ( max(kplot) > 0 &  misfit > 0 ),
    set(Pu,'Color',face_color(7,:),'LineWidth',lineThick(7),'LineStyle','-');
 end ; end
 
-if misfit > 0, 
+if misfit > 0,
  fprintf('misfit= %i , Pb in connecting segment jl,yLat= %i %8.3f \n', ...
           misfit,jl,yl);
  return
@@ -250,14 +254,14 @@ if max(kplot) > 0, hold off ; end
 if ydim > 1 & kwr == 1,
 
 %- write smaller arrays : reduce size from nc*6 to Max(savNpts) :
-  
+
   mxNpt=1+max(savNpts);
   bkl_Flg=zeros(mxNpt,ydim);
   bkl_Iuv=zeros(mxNpt,ydim); bkl_Juv=zeros(mxNpt,ydim);
   bkl_Xsg=zeros(mxNpt,ydim); bkl_Ysg=zeros(mxNpt,ydim);
 
   bkl_Ylat=ylat ;
-  bkl_Npts=savNpts ; 
+  bkl_Npts=savNpts ;
   bkl_Flg=savFlg(1:mxNpt,:);
   bkl_Iuv=savIuv(1:mxNpt,:); bkl_Juv=savJuv(1:mxNpt,:);
   bkl_Xsg=savXsg(1:mxNpt,:); bkl_Ysg=savYsg(1:mxNpt,:);

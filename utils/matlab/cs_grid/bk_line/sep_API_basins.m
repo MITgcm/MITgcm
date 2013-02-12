@@ -2,28 +2,33 @@
 krd=1; kpr=1; kgr=0; kwr=1;
 %krd=0; kpr=0; kgr=1; kwr=0; % <- execute a 2nd time & draw some plot
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/sep_API_basins.m,v 1.2 2007/08/28 16:25:46 molod Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/sep_API_basins.m,v 1.3 2013/02/12 17:59:02 jmc Exp $
 % $Name:  $
 
 if krd == 1,
-%rac='/home/jmc/grid_cs32/' ;
- rac='grid_files/' ;
+%- set ncdf=1 to load MNC (NetCDF) grid-files ;
+%   or ncdf=0 to load MDS (binary) grid-files :
+ ncdf=0;
+%rac='/home/jmc/grid_cs32/';
+ rac='grid_files/';
+
 %- load: bkl_Ylat, bkl_Npts, bkl_Flg, bkl_IJuv, bkl_Xsg, bkl_Ysg, bkl_Zon
  bk_lineF=[rac,'isoLat_cs32_59'];
  load(bk_lineF);
  ydim=length(bkl_Ylat); ydimC=ydim+1;
  fprintf([' load bk_line description from: ',bk_lineF,'.mat \n']);
- 
+
 %- load 'Nu','Nv','Iu','Iv':
  namf=[rac,'open_basins_section'];
  load(namf);
- fprintf(['       and API separation from: ',namf,'.mat : O.K.\n']); 
+ fprintf(['       and API separation from: ',namf,'.mat : O.K.\n']);
 
  namf='maskC_bas.bin';
  fid=fopen([rac,namf],'r','b'); mskBasC=fread(fid,'real*4'); fclose(fid);
 
- load_cs;
- ncx=size(xcs,1); nc=size(xcs,2); ncp=nc+1;
+ G=load_grid(rac,10+ncdf);
+ xcs=G.xC; ycs=G.yC; xcg=G.xG; ycg=G.yG; arc=G.rAc;
+ ncx=G.dims(1); nc=G.dims(2); ncp=nc+1;
 %mskBasC=rdda([rac,namf],[ncx nc 3],1,'real*4','b');
  mskBasC=reshape(mskBasC,[ncx nc 3]);
 
@@ -36,11 +41,9 @@ if krd == 1,
  xc6=split_C_cub(xcs,1);
  yc6=split_C_cub(ycs,1);
 
- hFacC=rdmds([rac,'hFacC']);
+ hFacC=G.hFacC; hFacW=G.hFacW; hFacS=G.hFacS;
  mskC=min(1,hFacC(:,:,1)); mskC=ceil(mskC);
- hFacW=rdmds([rac,'hFacW']);
  mskW=min(1,hFacW(:,:,1)); mskW=ceil(mskW);
- hFacS=rdmds([rac,'hFacS']);
  mskS=min(1,hFacS(:,:,1)); mskS=ceil(mskS);
  mskW=reshape(mskW,1,ncx*nc);
  mskS=reshape(mskS,1,ncx*nc);
@@ -49,13 +52,13 @@ end
 
 if kwr ==1,
  [xdum,xPA,yPA,xAI,yAI,xIP,yIP]=line_sep(0);
- 
-%- define Bas-Sep point (as U,V point) for each Lat-band 
-%  the list of U,V point 
+
+%- define Bas-Sep point (as U,V point) for each Lat-band
+%  the list of U,V point
  MxSiz=ceil(nc*nc/2/ydimC);
  nbpSep=zeros(3,ydimC);
  ijSep=zeros(3,ydimC,MxSiz); typSep=zeros(3,ydimC,MxSiz);
- n2s=zeros(3,1); jl2s=zeros(3,MxSiz); 
+ n2s=zeros(3,1); jl2s=zeros(3,MxSiz);
  xc2s=zeros(3,MxSiz,2); yc2s=zeros(3,MxSiz,2);
  for b=1:3,
   fprintf(' b= %i ; Nu,Nv= %3i %3i \n',b,Nu(b),Nv(b));
@@ -126,7 +129,7 @@ if kwr ==1,
 
 end
 
-if kpr ==1, 
+if kpr ==1,
  %- reduce size :
  mxSiz=max(NbpSep);
  ij_Sep=ijSep(:,:,1:mxSiz); tp_Sep=typSep(:,:,1:mxSiz); np_Sep=nbpSep;
@@ -136,12 +139,12 @@ if kpr ==1,
  fprintf(['write Basin Separation on file:',namf,'.mat : O.K. \n']);
 end
 
-if kgr ==1, 
- figure(1); clf; 
+if kgr ==1,
+ figure(1); clf;
  shift=-1; cbV=2; ccB=[0 0]; AxBx=[-180 180 -90 90];
  for bp=1:3, subplot(310+b);
 %AxBx=[60 180 -75 15];
- var=mskBasC(:,:,1)+2*mskBasC(:,:,2)+3*mskBasC(:,:,3); 
+ var=mskBasC(:,:,1)+2*mskBasC(:,:,2)+3*mskBasC(:,:,3);
  ccB=[-1 5]; var(find(mskC==0))=NaN;
  grph_CS(var,xcs,ycs,xcg,ycg,ccB(1),ccB(2),shift,cbV,AxBx);
  hold on ;

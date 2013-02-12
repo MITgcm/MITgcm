@@ -1,6 +1,6 @@
 krd=2; kgr=1; kfac=0;
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/use_psiLine.m,v 1.2 2007/08/28 16:25:46 molod Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/use_psiLine.m,v 1.3 2013/02/12 17:59:02 jmc Exp $
 % $Name:  $
 
 if krd > 0,
@@ -24,9 +24,14 @@ if krd > 1,
 
 %- load : 'psi_N','psi_C','psi_P','psiUV','psi_T' :
  load(psiLineF);
+%- set ncdf=1 to load MNC (NetCDF) grid-files ;
+%   or ncdf=0 to load MDS (binary) grid-files :
+ ncdf=0;
+ G=load_grid(Rac,10+ncdf);
+ xcs=G.xC; ycs=G.yC; xcg=G.xG; ycg=G.yG;
 %- load the grid dx,dy , convert to 10^6 m :
- dxg=rdmds([Rac,'DXG']); dxg=dxg*1.e-6;
- dyg=rdmds([Rac,'DYG']); dyg=dyg*1.e-6;
+ dxg=G.dXg; dxg=dxg*1.e-6;
+ dyg=G.dYg; dyg=dyg*1.e-6;
 
  fprintf([' load psiLine from file=',psiLineF, ...
           '  AND dxg,dyg files \n']);
@@ -51,8 +56,7 @@ for j=2:psiNy,
 end
 
 if kgr > 0,
-rac=Rac;
-load_cs;
+%-
 shift=-1; ccB=[0 0]; cbV=0; AxBx=[-180 180 -90 90] ;
  ccB=[-140 140];
 %AxBx=[-210 210 30 90];
