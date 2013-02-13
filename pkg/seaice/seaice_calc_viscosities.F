@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.20 2012/11/29 09:13:08 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.21 2013/02/13 08:27:36 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -263,8 +263,8 @@ C     free-slip means no lateral stress, which is best achieved masking
 C     eta on vorticity(=Z)-points; from now on we only need to worry
 C     about the no-slip boundary conditions
         IF (.NOT.SEAICE_no_slip) THEN
-         DO J=1,sNy+1
-          DO I=1,sNx+1
+         DO J=1-Oly+1,sNy+Oly-1
+          DO I=1-Olx+1,sNx+Olx-1
            etaZ(I,J,bi,bj) = etaZ(I,J,bi,bj)
      &          *maskC(I,J,  k,bi,bj)*maskC(I-1,J,  k,bi,bj)
      &          *maskC(I,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
