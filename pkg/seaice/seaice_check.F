@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.78 2013/01/17 10:42:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.79 2013/02/13 08:43:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -818,6 +818,18 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
        ELSEIF (JFNKres_t.EQ.UNSET_RL.AND.JFNKres_tFac.EQ.UNSET_RL) THEN
         WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: need to specify ',
      &       'JFNKres_t or JFNKres_tFac for SEAICEuseJFNK=.TRUE.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+       ENDIF
+C     
+       IF ( SEAICE_OLx .GT. OLx-2 .OR. SEAICE_OLy .GT. OLy-2 .OR.
+     &      SEAICE_OLx .LT. 0     .OR. SEAICE_OLy .GT. 0 ) THEN
+        WRITE(msgBuf,'(A,I2,A,I2)') 'S/R SEAICE_CHECK: SEAICE_OLx/y = ', 
+     &       SEAICE_OLx, '/', SEAICE_Oly
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A,I2,A,I2)') 
+     &       'S/R SEAICE_CHECK: SEAICE_OLx/y cannot be smaller than 0',
+     &       'or larger than OLx/y-2 = ', OLx-2, '/', OLy-2
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
        ENDIF

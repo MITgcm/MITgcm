@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.139 2013/01/17 10:42:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.140 2013/02/13 08:43:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -105,6 +105,7 @@ C--   SEAICE parameters
      & SEAICEuseJFNK, SEAICEnewtonIterMax, SEAICEkrylovIterMax,
      & SEAICE_JFNK_lsIter,JFNKres_t,JFNKres_tFac,
      & JFNKgamma_nonlin,JFNKgamma_lin_min,JFNKgamma_lin_max,
+     & SEAICE_OLx, SEAICE_OLy,
      & SEAICEpresH0, SEAICEpresPow0, SEAICEpresPow1,
      & SEAICE_initialHEFF, SEAICEturbFluxFormula,
      & SEAICE_areaGainFormula, SEAICE_areaLossFormula,
@@ -225,6 +226,8 @@ C     JFNK stuff
       SEAICEnewtonIterMax = 10
       SEAICEkrylovIterMax = 10
       SEAICE_JFNK_lsIter  = UNSET_I
+      SEAICE_OLx          = OLx-2
+      SEAICE_OLy          = OLy-2
       JFNKgamma_nonlin    = 1. _d -05
       JFNKgamma_lin_min   = 0.10 _d 0
       JFNKgamma_lin_max   = 0.99 _d 0

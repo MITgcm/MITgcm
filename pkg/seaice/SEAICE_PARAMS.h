@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.106 2013/01/17 10:42:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.107 2013/02/13 08:43:41 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -130,6 +130,10 @@ C     SEAICEkrylovIterMax :: maximum number of allowed Krylov iterations
 C                          in JFNK-solver
 C     SEAICE_JFNK_lsIter  :: number of Newton iterations after which the
 C                            line search is started
+C     SEAICE_OLx/y      :: overlaps for LSR-preconditioner in JFNK solver;
+C                          for 0 < SEAICE_OLx/y 0 <= OLx/y-2 
+C                          the preconditioner is a restricted additive
+C                           Schwarz method (default = OLx/y-2).
 C     LSR_mixIniGuess   :: control mixing of free-drift sol. into LSR initial 
 C                          guess
 C                       :: =0 : nothing; =1 : no mix, but print free-drift 
@@ -168,6 +172,7 @@ C
       INTEGER SEAICEnEVPstarSteps
       INTEGER SEAICEnewtonIterMax, SEAICEkrylovIterMax
       INTEGER SEAICE_JFNK_lsIter
+      INTEGER SEAICE_OLx, SEAICE_OLy
       INTEGER SEAICEadvScheme
       INTEGER SEAICEadvSchArea
       INTEGER SEAICEadvSchHeff
@@ -188,7 +193,7 @@ C
      &     LSR_mixIniGuess,
      &     SEAICEnEVPstarSteps,
      &     SEAICEnewtonIterMax, SEAICEkrylovIterMax,
-     &     SEAICE_JFNK_lsIter,
+     &     SEAICE_JFNK_lsIter, SEAICE_OLx, SEAICE_OLy,
      &     SEAICEpresPow0, SEAICEpresPow1,
      &     SEAICEadvScheme,
      &     SEAICEadvSchArea,
