@@ -12,6 +12,9 @@
  SEAICEkrylovIterMax = 50,
  JFNKgamma_nonlin    = 1.e-09,
  JFNKres_t           = 0.02,
+# setting these to zero recovers old behavior
+ SEAICE_OLx          = 0,
+ SEAICE_OLy          = 0,
 # end of JFNK solver parameters
 #- to use seaice-advection from pkg/seaice, uncomment following 4 lines:
 #SEAICEadvScheme    = 77,
