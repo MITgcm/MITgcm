@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.16 2013/02/13 09:03:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.17 2013/02/13 13:26:50 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -214,6 +214,18 @@ C--     prevent tri-diagonal solver from modifying OB values:
        ENDDO
       ENDDO
 #endif /* OBCS_UVICE_OLD */
+C     this is a hack to avoid divisions by zero
+C     I do not know why I need BU/BV are zero in some places
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          IF ( BU(I,J,bi,bj) .EQ. 0. _d 0 ) BU(I,J,bi,bj) = 1. _d 0
+          IF ( BV(I,J,bi,bj) .EQ. 0. _d 0 ) BV(I,J,bi,bj) = 1. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
