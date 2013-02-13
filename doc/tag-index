@@ -1,9 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1823 2013/02/12 22:26:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1824 2013/02/13 09:16:43 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: introduce a restricted additive Schwarz (RAS) method in
+    preconditioner for JFNK (run LSR into the overlaps as far as possible,
+    i.e OLx/y-2, but overwrite the solution in the overlaps)
+  - extend loop range in seaice_calc_viscosity
+  - add new parameters SEAICE_OLx/y (default = OLx/y-2)
+  - add flexible loop ranges to seaice_preconditioner, seaice_calc_lsr_coeffs
+  - slightly modify loops in tridiagonal solver lsr-preconditioner
+  - by default remove the extra exchange in seaice_preconditioner with a
+    replacement of an undocumented CPP flag by SEAICE_PRECOND_EXTRA_EXCHANGE
+  - modify offline_exf_seaice so that old results without RAS are reproduced
+    for output.dyn_jfnk.txt
+  in seaice_fgmres.F (unrelated to RAS)
+  - add a cpp-flag option for a re-ordered mapping (potentially more
+    efficient), but because this changes the results, turn it off by
+    default
+  - replace the save statement by local common blocks
 o utils/matlab:
   - fix tile-offset in rdmnc.m when output was produced using EXCH2.
   - update cs_grid/bk_line scripts to use load_grid.m (in utils/matlab)
