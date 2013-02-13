@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.79 2013/02/13 08:43:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.80 2013/02/13 09:30:01 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -828,7 +828,7 @@ C
      &       SEAICE_OLx, '/', SEAICE_Oly
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A,I2,A,I2)') 
-     &       'S/R SEAICE_CHECK: SEAICE_OLx/y cannot be smaller than 0',
+     &       'S/R SEAICE_CHECK: SEAICE_OLx/y cannot be smaller than 0 ',
      &       'or larger than OLx/y-2 = ', OLx-2, '/', OLy-2
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
