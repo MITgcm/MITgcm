@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.15 2013/02/12 07:50:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.16 2013/02/13 09:14:58 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -189,6 +189,28 @@ CEOP
       m = n/2
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+#ifdef SEAICE_JFNK_MAP_REORDER
+        ii = 0
+        IF ( map2vec ) THEN
+         DO J=1,sNy
+          jj = 2*sNx*(J-1)
+          DO I=1,sNx
+           ii = jj + 2*I
+           vector(ii-1,bi,bj) = xfld2d(I,J,bi,bj)
+           vector(ii,  bi,bj) = yfld2d(I,J,bi,bj)
+          ENDDO
+         ENDDO
+        ELSE
+         DO J=1,sNy
+          jj = 2*sNx*(J-1)
+          DO I=1,sNx
+           ii = jj + 2*I
+           xfld2d(I,J,bi,bj) = vector(ii-1,bi,bj)
+           yfld2d(I,J,bi,bj) = vector(ii,  bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+#else
         IF ( map2vec ) THEN
          DO J=1,sNy
           jj = sNx*(J-1)
@@ -208,6 +230,7 @@ CEOP
           ENDDO
          ENDDO
         ENDIF
+#endif /* SEAICE_JFNK_MAP_REORDER */
 C     bi,bj-loops
        ENDDO
       ENDDO
@@ -256,6 +279,28 @@ CEOP
       m = n/2
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+#ifdef SEAICE_JFNK_MAP_REORDER
+        ii = 0
+        IF ( map2vec ) THEN
+         DO J=1,sNy
+          jj = 2*sNx*(J-1)
+          DO I=1,sNx
+           ii = jj + 2*I
+           vector(ii-1,bi,bj) = xfld2d(I,J,bi,bj)
+           vector(ii,  bi,bj) = yfld2d(I,J,bi,bj)
+          ENDDO
+         ENDDO
+        ELSE
+         DO J=1,sNy
+          jj = 2*sNx*(J-1)
+          DO I=1,sNx
+           ii = jj + 2*I
+           xfld2d(I,J,bi,bj) = vector(ii-1,bi,bj)
+           yfld2d(I,J,bi,bj) = vector(ii,  bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+#else
         IF ( map2vec ) THEN
          DO J=1,sNy
           jj = sNx*(J-1)
@@ -275,6 +320,7 @@ CEOP
           ENDDO
          ENDDO
         ENDIF
+#endif /* SEAICE_JFNK_MAP_REORDER */
 C     bi,bj-loops
        ENDDO
       ENDDO
@@ -433,7 +479,11 @@ C-------------------------------------------------------------
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 CEOP
-      save
+CML      save
+C     local common block to replace the save statement
+      COMMON /SEAICE_FMRES_LOC_I/ i1
+      COMMON /SEAICE_FMRES_LOC_RL/ 
+     &     hh, c, s, rs, t, ro, r0, gam, epsmac, eps1
       data epsmac/1.d-16/
 C
 C     computed goto
@@ -450,8 +500,8 @@ C 10   continue
 CML   call dcopy (n, sol, 1, wk1, 1) !jfl modification
       do bj=myByLo(myThid),myByHi(myThid)
        do bi=myBxLo(myThid),myBxHi(myThid)
-        do k=1,n
-         wk1(k,bi,bj)=sol(k,bi,bj)
+        do j=1,n
+         wk1(j,bi,bj)=sol(j,bi,bj)
         enddo
        enddo
       enddo
