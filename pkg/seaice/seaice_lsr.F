@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.84 2012/12/21 13:21:27 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.85 2013/02/13 08:58:17 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -380,7 +380,7 @@ C
       CALL SEAICE_CALC_LSR_COEFFS( 
      I     etaPlusZeta, zetaMinusEta, etaZ, dwatn,
      O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
-     I     myTime, myIter, myThid )
+     I     1, sNx, 1, sNy, myTime, myIter, myThid )
 C
 C     Set up right hand sides of momentum equations
 C
@@ -1202,7 +1202,7 @@ C     !INTERFACE:
       SUBROUTINE SEAICE_CALC_LSR_COEFFS( 
      I     etaPlusZeta, zetaMinusEta, etaZloc, dwatnLoc,
      O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
-     I     myTime, myIter, myThid )
+     I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -1231,6 +1231,7 @@ C     myThid     :: my Thread Id. number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
+      INTEGER iMin, iMax, jMin, jMax
 C     combinations of bulk and shear viscosity at C points
 C     abbreviations
       _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -1290,8 +1291,8 @@ C--   turning angles
 C
 C     coefficients of uIce(I,J) and vIce(I,J) belonging to ...
 C
-        DO J=1,sNy
-         DO I=0,sNx
+        DO J=jMin,jMax
+         DO I=iMin-1,iMax
 C     ... d/dx (eta+zeta) d/dx u
           UXX(I,J,bi,bj) = _dyF(I,J,bi,bj) * etaPlusZeta(I,J,bi,bj)
      &         * _recip_dxF(I,J,bi,bj)
@@ -1300,8 +1301,8 @@ C     ... d/dx (zeta-eta) k1 u
      &         * k1AtC(I,J,bi,bj) * 0.5 _d 0
          ENDDO
         ENDDO
-        DO J=1,sNy+1
-         DO I=1,sNx
+        DO J=jMin,jMax+1
+         DO I=iMin,iMax
 C     ... d/dy eta d/dy u
           UYY(I,J,bi,bj) = _dxV(I,J,bi,bj) * etaZloc(I,J,bi,bj)
      &         * _recip_dyU(I,J,bi,bj)
@@ -1310,8 +1311,8 @@ C     ... d/dy eta k2 u
      &         * k2AtZ(I,J,bi,bj) * 0.5 _d 0
          ENDDO
         ENDDO
-        DO J=1,sNy
-         DO I=1,sNx+1
+        DO J=jMin,jMax
+         DO I=iMin,iMax+1
 C     ... d/dx eta dv/dx
           VXX(I,J,bi,bj) = _dyU(I,J,bi,bj) * etaZloc(I,J,bi,bj)
      &         * _recip_dxV(I,J,bi,bj)
@@ -1320,8 +1321,8 @@ C     ... d/dx eta k1 v
      &         * k1AtZ(I,J,bi,bj) * 0.5 _d 0
          ENDDO
         ENDDO
-        DO J=0,sNy
-         DO I=1,sNx
+        DO J=jMin-1,jMax
+         DO I=iMin,iMax
 C     ... d/dy eta+zeta dv/dy
           VYY(I,J,bi,bj) = _dxF(I,J,bi,bj) * etaPlusZeta(I,J,bi,bj)
      &         * _recip_dyF(I,J,bi,bj)
@@ -1336,8 +1337,8 @@ C--   Coefficients for solving uIce :
 C     assemble coefficient matrix, beware of sign convention: because this
 C     is the left hand side we calculate -grad(sigma), but the coefficients
 C     of U(I,J+/-1) are counted on the right hand side
-        DO J=1,sNy
-         DO I=1,sNx
+        DO J=jMin,jMax
+         DO I=iMin,iMax
 C     coefficients for UICE(I-1,J)
           AU(I,J,bi,bj)= ( - UXX(I-1,J,bi,bj) + UXM(I-1,J,bi,bj) )
      &         * seaiceMaskU(I,J,bi,bj)
@@ -1361,8 +1362,8 @@ C     coefficients of uIce(I,J+1)
 C     apply boundary conditions according to slip factor
 C     for no slip, set u on boundary to zero: u(j+/-1)=-u(j)
 C     for the free slip case sigma_12 = 0
-        DO J=1,sNy
-         DO I=1,sNx
+        DO J=jMin,jMax
+         DO I=iMin,iMax
           hFacM = seaiceMaskU(I,J-1,bi,bj)
           hFacP = seaiceMaskU(I,J+1,bi,bj)
 C     copy contributions to coefficient of U(I,J)
@@ -1380,8 +1381,8 @@ C     reset coefficients of U(I,J-1) and U(I,J+1)
         ENDDO
 
 C     now we need to normalize everything by the grid cell area
-        DO J=1,sNy
-         DO I=1,sNx
+        DO J=jMin,jMax
+         DO I=iMin,iMax
           AU(I,J,bi,bj)    = AU(I,J,bi,bj)    * recip_rAw(I,J,bi,bj)
           CU(I,J,bi,bj)    = CU(I,J,bi,bj)    * recip_rAw(I,J,bi,bj)
 C     here we need ad in the contribution from the time derivative
@@ -1402,8 +1403,8 @@ C--   Coefficients for solving uIce :
 C     assemble coefficient matrix, beware of sign convention: because this
 C     is the left hand side we calculate -grad(sigma), but the coefficients
 C     of V(I+/-1,J) are counted on the right hand side
-        DO J=1,sNy
-         DO I=1,sNx
+        DO J=jMin,jMax
+         DO I=iMin,iMax
 C     coefficients for VICE(I,J-1)
           AV(I,J,bi,bj)=( - VYY(I,J-1,bi,bj) + VYM(I,J-1,bi,bj)
      &         ) * seaiceMaskV(I,J,bi,bj)
@@ -1427,8 +1428,8 @@ C     coefficients for V(I+1,J)
 C     apply boundary conditions according to slip factor
 C     for no slip, set u on boundary to zero: v(i+/-1)=-v(i)
 C     for the free slip case sigma_12 = 0
-        DO J=1,sNy
-         DO I=1,sNx
+        DO J=jMin,jMax
+         DO I=iMin,iMax
           hFacM = seaiceMaskV(i-1,j,bi,bj)
           hFacP = seaiceMaskV(i+1,j,bi,bj)
 C     copy contributions to coefficient of V(I,J)
@@ -1446,8 +1447,8 @@ C     reset coefficients of V(I-1,J) and V(I+1,J)
         ENDDO
 
 C     now we need to normalize everything by the grid cell area
-        DO J=1,sNy
-         DO I=1,sNx
+        DO J=jMin,jMax
+         DO I=iMin,iMax
           AV(I,J,bi,bj)    = AV(I,J,bi,bj)    * recip_rAs(I,J,bi,bj)
           CV(I,J,bi,bj)    = CV(I,J,bi,bj)    * recip_rAs(I,J,bi,bj)
 C     here we need ad in the contribution from the time derivative
