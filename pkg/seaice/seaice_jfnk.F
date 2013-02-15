@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.17 2013/01/17 10:42:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.18 2013/02/15 15:19:17 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -170,7 +170,7 @@ C     constant for the preconditioner
        ENDDO
 C     compute convergence criterion for linear preconditioned FGMRES
        JFNKgamma_lin = JFNKgamma_lin_max
-       IF ( newtonIter.GT.1.AND.newtonIter.LE.100
+       IF ( newtonIter.GT.1.AND.newtonIter.LE.SEAICE_JFNK_tolIter
      &      .AND.JFNKresidual.LT.JFNKres_t ) THEN
 C     Eisenstat, 1996, equ.(2.6)      
         phi_e = 1. _d 0

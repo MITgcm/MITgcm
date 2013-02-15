@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.63 2013/02/13 08:43:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.64 2013/02/15 15:19:17 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -194,6 +194,8 @@ C--  Seaice-Dynamics parameters
      & 'SEAICEkrylovIterMax =', ' /* num. of JFNK Krylov steps */')
         CALL WRITE_0D_I ( SEAICE_JFNK_lsIter,  INDEX_NONE,
      & 'SEAICE_JFNK_lsIter =', ' /* start of line search */')
+        CALL WRITE_0D_I ( SEAICE_JFNK_tolIter,  INDEX_NONE,
+     & 'SEAICE_JFNK_tolIter =', ' /* tol. is relaxed after this */')
         CALL WRITE_0D_I ( SEAICE_OLx,  INDEX_NONE,
      &  'SEAICE_OLx =', ' /* overlap for preconditioner */')
         CALL WRITE_0D_I ( SEAICE_OLy,  INDEX_NONE,

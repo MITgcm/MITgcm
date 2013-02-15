@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.107 2013/02/13 08:43:41 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.108 2013/02/15 15:19:17 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -130,6 +130,8 @@ C     SEAICEkrylovIterMax :: maximum number of allowed Krylov iterations
 C                          in JFNK-solver
 C     SEAICE_JFNK_lsIter  :: number of Newton iterations after which the
 C                            line search is started
+C     SEAICE_JFNK_tolIter :: number of Newton iterations after which the
+C                            the tolerance is relaxed again (default = 100)
 C     SEAICE_OLx/y      :: overlaps for LSR-preconditioner in JFNK solver;
 C                          for 0 < SEAICE_OLx/y 0 <= OLx/y-2 
 C                          the preconditioner is a restricted additive
@@ -171,7 +173,7 @@ C
       INTEGER LSR_mixIniGuess
       INTEGER SEAICEnEVPstarSteps
       INTEGER SEAICEnewtonIterMax, SEAICEkrylovIterMax
-      INTEGER SEAICE_JFNK_lsIter
+      INTEGER SEAICE_JFNK_lsIter, SEAICE_JFNK_tolIter
       INTEGER SEAICE_OLx, SEAICE_OLy
       INTEGER SEAICEadvScheme
       INTEGER SEAICEadvSchArea
@@ -194,6 +196,7 @@ C
      &     SEAICEnEVPstarSteps,
      &     SEAICEnewtonIterMax, SEAICEkrylovIterMax,
      &     SEAICE_JFNK_lsIter, SEAICE_OLx, SEAICE_OLy,
+     &     SEAICE_JFNK_tolIter,
      &     SEAICEpresPow0, SEAICEpresPow1,
      &     SEAICEadvScheme,
      &     SEAICEadvSchArea,
