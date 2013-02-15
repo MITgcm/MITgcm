@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1824 2013/02/13 09:16:43 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1825 2013/02/15 15:20:03 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: replace a hard coded parameter by a runtime parameter
+   SEAICE_JFNK_tolIter
 o pkg/seaice: introduce a restricted additive Schwarz (RAS) method in
     preconditioner for JFNK (run LSR into the overlaps as far as possible,
     i.e OLx/y-2, but overwrite the solution in the overlaps)
