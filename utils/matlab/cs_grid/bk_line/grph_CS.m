@@ -14,7 +14,7 @@ function [fac]=grph_CS(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx,kEnv)
 %-----------------------
 
 % Written by jmc@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CS.m,v 1.6 2008/05/17 21:27:53 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CS.m,v 1.7 2013/02/16 19:51:18 jmc Exp $
 % $Name:  $
 
 %- small number (relative to lon,lat in degree)
@@ -32,15 +32,10 @@ nc=size(var,2) ; ncp=nc+1 ; nPg=nc*nc*6;
   MxV=min(min(var));
   mnV=max(max(var));
  if shift == 1 | shift == -1,
-  for j=1:nc, for i=1:6*nc,
-   if ~isnan(var(i,j)) & xcs(i,j) > AxBx(1) & xcs(i,j) < AxBx(2) ...
-                       & ycs(i,j) > AxBx(3) & ycs(i,j) < AxBx(4) ,
-      mnV=min(var(i,j),mnV); MxV=max(var(i,j),MxV) ; end
-  end ; end ;
- else
-  for j=1:nc, for i=1:6*nc,
-   if ~isnan(var(i,j)) ; mnV=min(var(i,j),mnV); MxV=max(var(i,j),MxV) ; end
-  end ; end ;
+  xxt=reshape(xcs,[nPg 1]); yyt=reshape(ycs,[nPg 1]);
+  tmp=(xxt-AxBx(1)).*(AxBx(2)-xxt); [I]=find(tmp > 0 );
+  tmp=(yyt(I)-AxBx(3)).*(AxBx(4)-yyt(I)); [J]=find(tmp > 0 );
+  IJ=I(J); tmp=var(IJ); mnV=min(tmp); MxV=max(tmp);
  end
 %------------
 if c1 >= c2
@@ -153,9 +148,9 @@ else
 end
 
 %--
- if cbV < 2, scalHV_colbar([10-cbV/4 10 7-5*cbV 7+2*cbV]/10,cbV); end
+ if cbV < 2, bV=fix(cbV); moveHV_colbar([10+bV*2.2 10 7-5*bV 7+2*bV]/10,cbV); end
 if mnV < MxV & kEnv < 2,
- ytxt=min(1,cbV);
+ ytxt=min(1,fix(cbV));
  if shift == 1 | shift == -1,
   xtxt=mean(AxBx(1:2)) ; ytxt=AxBx(3)-(AxBx(4)-AxBx(3))*(12+2*ytxt)/100;
  else
