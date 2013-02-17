@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.51 2011/12/25 22:24:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.52 2013/02/17 02:28:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,40 +64,7 @@ C     == Local variables ==
 CEOP
 
 C--   Set everything to zero everywhere
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          xC(i,j,bi,bj)=0.
-          yC(i,j,bi,bj)=0.
-          xG(i,j,bi,bj)=0.
-          yG(i,j,bi,bj)=0.
-          dxC(i,j,bi,bj)=0.
-          dyC(i,j,bi,bj)=0.
-          dxG(i,j,bi,bj)=0.
-          dyG(i,j,bi,bj)=0.
-          dxF(i,j,bi,bj)=0.
-          dyF(i,j,bi,bj)=0.
-          dxV(i,j,bi,bj)=0.
-          dyU(i,j,bi,bj)=0.
-          rA(i,j,bi,bj)=0.
-          rAz(i,j,bi,bj)=0.
-          rAw(i,j,bi,bj)=0.
-          rAs(i,j,bi,bj)=0.
-          tanPhiAtU(i,j,bi,bj)=0.
-          tanPhiAtV(i,j,bi,bj)=0.
-          angleCosC(i,j,bi,bj)=1.
-          angleSinC(i,j,bi,bj)=0.
-          cosFacU(j,bi,bj)=1.
-          cosFacV(j,bi,bj)=1.
-          sqCosFacU(j,bi,bj)=1.
-          sqCosFacV(j,bi,bj)=1.
-         ENDDO
-        ENDDO
-
-       ENDDO
-      ENDDO
+C     Note: this is now done earlier in main S/R INI_GRID
 
 C     Here we make no assumptions about grid symmetry and simply
 C     read the raw grid data from files
@@ -433,27 +400,11 @@ C     a different planet radius (radius_fromHorizGrid <> rSphere)
       ENDIF
 
 C--   Calculate (sines and cosines of) angles of grid north with
-C--   geographical north when they have not been read from a file
-      IF ( .NOT.anglesAreSet ) THEN
-       CALL CALC_GRID_ANGLES( myThid )
-       _BARRIER
-       _BEGIN_MASTER(myThid)
-       anglesAreSet = .TRUE.
-       _END_MASTER(myThid)
-      ENDIF
+C     geographical north when they have not been read from a file
+      CALL CALC_GRID_ANGLES( anglesAreSet, myThid )
+
 C--   Exchange Angle (either loaded from file or computed)
       CALL EXCH_UV_AGRID_3D_RS(angleSinC,angleCosC,.TRUE., 1, myThid)
-
-C--   Stop if Angle have not been loaded but are needed :
-      _BEGIN_MASTER(myThid)
-      IF ( .NOT.anglesAreSet .AND. use3dCoriolis ) THEN
-        WRITE(msgBuf,'(2A)')
-     &   'INI_CURVILINEAR_GRID: Angle of CurvilinearGrid not set',
-     &   ' but needed for 3-D Coriolis'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R INI_CURVILINEAR_GRID'
-      ENDIF
-      _END_MASTER(myThid)
 
 c     CALL WRITE_FULLARRAY_RL('dxV',dxV,1,0,0,1,0,myThid)
 c     CALL WRITE_FULLARRAY_RL('dyU',dyU,1,0,0,1,0,myThid)
