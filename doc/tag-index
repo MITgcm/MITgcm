@@ -1,11 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1825 2013/02/15 15:20:03 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1826 2013/02/17 04:38:29 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/monitor (angular momentum):
+  - do not add Eta contribution to the total AM if using rigid-lid;
+  - correct for Adams-Bashforth in zonal-wind part (instead of in AM_eta).
+  - horizontal discretisation: compute Zonal wind contribution separately for
+    each component (instead of from cell centered averaged) and use the 4
+    grid-cell corner averaged value of Omega*(R*cos_Phi)^2 in AM_eta part.
+  - Check that AM is conserved with linear dynamics (momAdvection=F and linear
+    FreeSurf) if using vectorInvariant momentum.
+o model/src (horizontal grid):
+  - move initialisation of all horizontal grid arrays to null value
+    from specific horizontal grid S/R to main S/R INI_GRID;
+  - add 2 new arrays to project model C-grid velocity on to zonal direction
+    (similar to AngleCosC & -AngleSinC but at U and V point location) and
+    compute them in S/R CALC_GRID_ANGLES.
 o pkg/seaice: replace a hard coded parameter by a runtime parameter
-   SEAICE_JFNK_tolIter
+    SEAICE_JFNK_tolIter
 o pkg/seaice: introduce a restricted additive Schwarz (RAS) method in
     preconditioner for JFNK (run LSR into the overlaps as far as possible,
     i.e OLx/y-2, but overwrite the solution in the overlaps)
