@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.24 2011/12/22 00:11:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.25 2013/02/17 02:18:16 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -105,18 +105,8 @@ C--     Calculate [dxG,dyG], lengths along cell boundaries
         ENDDO
 
 C--     The following arrays are not defined in some parts of the halo
-C       region. We set them to zero here for safety. If they are ever
-C       referred to, especially in the denominator then it is a mistake!
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          dxC(i,j,bi,bj) = 0.
-          dyC(i,j,bi,bj) = 0.
-          dxV(i,j,bi,bj) = 0.
-          dyU(i,j,bi,bj) = 0.
-          rAw(i,j,bi,bj) = 0.
-          rAs(i,j,bi,bj) = 0.
-         ENDDO
-        ENDDO
+C       region. We set them to zero here for safety.
+C       Note: this is now done earlier in main S/R INI_GRID
 
 C--     Calculate [dxC], zonal length between cell centers
         DO j=1-OLy,sNy+OLy
@@ -152,19 +142,12 @@ C--     Calculate vertical face area
           rAs(i,j,bi,bj) = dxG(i,j,bi,bj)*dyC(i,j,bi,bj)
           rAz(i,j,bi,bj) = dxV(i,j,bi,bj)*dyU(i,j,bi,bj)
 C--     Set trigonometric terms & grid orientation:
-          tanPhiAtU(i,j,bi,bj) = 0.
-          tanPhiAtV(i,j,bi,bj) = 0.
-          angleCosC(i,j,bi,bj) = 1.
-          angleSinC(i,j,bi,bj) = 0.
+C       Note: this is now done earlier in main S/R INI_GRID
+c         tanPhiAtU(i,j,bi,bj) = 0.
+c         tanPhiAtV(i,j,bi,bj) = 0.
+c         angleCosC(i,j,bi,bj) = 1.
+c         angleSinC(i,j,bi,bj) = 0.
          ENDDO
-        ENDDO
-
-C--     Cosine(lat) scaling
-        DO j=1-OLy,sNy+OLy
-         cosFacU(j,bi,bj) = 1.
-         cosFacV(j,bi,bj) = 1.
-         sqcosFacU(j,bi,bj)=1.
-         sqcosFacV(j,bi,bj)=1.
         ENDDO
 
 C--   end bi,bj loops

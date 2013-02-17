@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.34 2012/06/17 02:20:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.35 2013/02/17 02:18:16 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -56,11 +56,62 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C     Load grid spacing (vector) from files
+C--   Load grid spacing (vector) from files
       CALL LOAD_GRID_SPACING( myThid )
 
-C     Set up vertical grid and coordinate system
+C--   Set up vertical grid and coordinate system
       CALL INI_VERTICAL_GRID( myThid )
+
+C--   Initialise (everywhere) all horizontal grid array to null value
+C     Note: some arrays are not defined in some parts of the halo
+C     region. We set them to zero here for safety. If they are ever
+C     referred to, especially in the denominator then it is a mistake!
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          xC(i,j,bi,bj)  = 0.
+          yC(i,j,bi,bj)  = 0.
+          xG(i,j,bi,bj)  = 0.
+          yG(i,j,bi,bj)  = 0.
+          dxC(i,j,bi,bj) = 0.
+          dyC(i,j,bi,bj) = 0.
+          dxG(i,j,bi,bj) = 0.
+          dyG(i,j,bi,bj) = 0.
+          dxF(i,j,bi,bj) = 0.
+          dyF(i,j,bi,bj) = 0.
+          dxV(i,j,bi,bj) = 0.
+          dyU(i,j,bi,bj) = 0.
+          rA(i,j,bi,bj)  = 0.
+          rAz(i,j,bi,bj) = 0.
+          rAw(i,j,bi,bj) = 0.
+          rAs(i,j,bi,bj) = 0.
+          recip_dxG(i,j,bi,bj) = 0.
+          recip_dyG(i,j,bi,bj) = 0.
+          recip_dxC(i,j,bi,bj) = 0.
+          recip_dyC(i,j,bi,bj) = 0.
+          recip_dxF(i,j,bi,bj) = 0.
+          recip_dyF(i,j,bi,bj) = 0.
+          recip_dxV(i,j,bi,bj) = 0.
+          recip_dyU(i,j,bi,bj) = 0.
+          recip_rA (i,j,bi,bj) = 0.
+          recip_rAs(i,j,bi,bj) = 0.
+          recip_rAw(i,j,bi,bj) = 0.
+          recip_rAz(i,j,bi,bj) = 0.
+          tanPhiAtU(i,j,bi,bj) = 0.
+          tanPhiAtV(i,j,bi,bj) = 0.
+          angleCosC(i,j,bi,bj) = 1.
+          angleSinC(i,j,bi,bj) = 0.
+          u2zonDir(i,j,bi,bj)  = 1.
+          v2zonDir(i,j,bi,bj)  = 0.
+         ENDDO
+         cosFacU(j,bi,bj)   = 1.
+         cosFacV(j,bi,bj)   = 1.
+         sqCosFacU(j,bi,bj) = 1.
+         sqCosFacV(j,bi,bj) = 1.
+        ENDDO
+       ENDDO
+      ENDDO
 
 C     Two examples are shown in this code. One illustrates the
 C     initialization of a cartesian grid. The other shows the
@@ -78,7 +129,7 @@ C        Both of the above also require modifying the support
 C        routines that map computational blocks to simulation
 C        domain blocks.
 
-C     Set up horizontal grid and coordinate system
+C--   Set up horizontal grid and coordinate system
       IF ( usingCartesianGrid ) THEN
         CALL INI_CARTESIAN_GRID( myThid )
       ELSEIF ( usingSphericalPolarGrid ) THEN
@@ -97,7 +148,7 @@ C     Set up horizontal grid and coordinate system
         _END_MASTER(myThid)
       ENDIF
 
-C---  Calculate reciprocals grid lengths (formerly part of INI_MASKS_ETC)
+C--   Calculate reciprocals grid lengths (formerly part of INI_MASKS_ETC)
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
