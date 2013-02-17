@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.41 2010/09/11 21:23:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.42 2013/02/17 02:08:13 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -353,7 +353,6 @@ C              "lopped" a cell is (dimensionless scale factor).
 C              Note: The code needs terms like MIN(hFac,hFac(I+1))
 C                    On some platforms it may be better to precompute
 C                    hFacW, hFacE, ... here than do MIN on the fly.
-cC    maskH   :: cell Center full-column mask (= 2D mask)
 C     maskInC :: Cell Center 2-D Interior mask (i.e., zero beyond OB)
 C     maskInW :: West  face 2-D Interior mask (i.e., zero on and beyond OB)
 C     maskInS :: South face 2-D Interior mask (i.e., zero on and beyond OB)
@@ -403,8 +402,10 @@ C     tanPhiAtV :: tan of the latitude at V point. Used for spherical polar
 C                  metric term in V equation.
 C     angleCosC :: cosine of grid orientation angle relative to Geographic direction
 C               at cell center: alpha=(Eastward_dir,grid_uVel_dir)=(North_d,vVel_d)
-C     angleSinC :: sinus  of grid orientation angle relative to Geographic direction
+C     angleSinC :: sine   of grid orientation angle relative to Geographic direction
 C               at cell center: alpha=(Eastward_dir,grid_uVel_dir)=(North_d,vVel_d)
+C     u2zonDir  :: cosine of grid orientation angle at U point location
+C     v2zonDir  :: minus sine of  orientation angle at V point location
 C     fCori     :: Coriolis parameter at grid Center point
 C     fCoriG    :: Coriolis parameter at grid Corner point
 C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
@@ -425,9 +426,9 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
      &  drC, drF, recip_drC, recip_drF, rC, rF,
      &  aHybSigmF, bHybSigmF, aHybSigmC, bHybSigmC,
      &  dAHybSigF, dBHybSigF, dBHybSigC, dAHybSigC,
-     &  tanPhiAtU, tanPhiAtV, angleCosC, angleSinC,
+     &  tanPhiAtU, tanPhiAtV,
+     &  angleCosC, angleSinC, u2zonDir, v2zonDir,
      &  fCori, fCoriG, fCoriCos
-c    & , maskH
       _RS dxC            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dxF            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dxG            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -469,7 +470,6 @@ c    & , maskH
       _RS recip_rAw      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_rAs      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_rAz      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-c     _RS maskH          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS maskInC        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS maskInW        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS maskInS        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -494,6 +494,8 @@ c     _RS maskH          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS tanPhiAtV      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS angleCosC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS angleSinC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS u2zonDir       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS v2zonDir       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fCori          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fCoriG         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fCoriCos       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
