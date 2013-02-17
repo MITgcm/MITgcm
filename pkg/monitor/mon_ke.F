@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.23 2012/12/26 23:57:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.24 2013/02/17 04:07:30 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -34,18 +34,22 @@ C     !LOCAL VARIABLES:
       INTEGER i,j,k
       INTEGER ks, kp1
       _RL numPnts,theVol,tmpVal, mskp1, msk_1
-      _RL weight0, weight1
+      _RL abFac1, abFac2, R_drK, cosLat
       _RL theMax,theMean,theVolMean,potEnMean
-      _RL uBarC, vBarC, totAMu, totAMs
+      _RL totAMu, totAMs
       _RL tileMean(nSx,nSy)
       _RL tileVlAv(nSx,nSy)
       _RL tilePEav(nSx,nSy)
       _RL tileVol (nSx,nSy)
       _RL tileAMu (nSx,nSy)
       _RL tileAMs (nSx,nSy)
-      _RL radDist(1:sNx,1:sNy)
+      _RL tmpFld(1:sNx,1:sNy)
+      _RS cos2LatG(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_NONHYDROSTATIC
       _RL tmpWke
+#endif
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      INTEGER m1, m2
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -165,67 +169,143 @@ C--   Compute total angular momentum
       IF ( mon_output_AM ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-C-    calculate radial distance
+C-    Calculate contribution from zonal velocity
+         abFac1 = 0. _d 0
+         abFac2 = 0. _d 0
+#ifdef ALLOW_ADAMSBASHFORTH_3
+          m1 = 1 + mod(myIter+1,2)
+          m2 = 1 + mod( myIter ,2)
+          IF ( myIter.GE.2 ) abFac2 = beta_AB
+          IF ( myIter.GE.1 ) abFac1 = -( alph_AB + abFac2 )
+#else
+          IF ( myIter.GE.1 ) abFac1 = -( 0.5 _d 0 + abEps )
+#endif
+C-    contribution from uVel component: 1rst integrate vertically
          DO j=1,sNy
           DO i=1,sNx
-            radDist(i,j) = rSphere*COS( deg2rad*yC(i,j,bi,bj) )
-     &                            *maskInC(i,j,bi,bj)
+            tmpFld(i,j) = 0. _d 0
           ENDDO
          ENDDO
-C-    calculate contribution from zonal velocity
-         tileAMu(bi,bj) = 0. _d 0
-         tileAMs(bi,bj) = 0. _d 0
          DO k=1,Nr
+          R_drK = rSphere*deepFacC(k)*deepFac2C(k)
+     &                   *rhoFacC(k)*drF(k)
           DO j=1,sNy
            DO i=1,sNx
-            uBarC = (uVel(i,j,k,bi,bj)+uVel(i+1,j,k,bi,bj))*0.5 _d 0
-            vBarC = (vVel(i,j,k,bi,bj)+vVel(i,j+1,k,bi,bj))*0.5 _d 0
-            tmpVal = ( angleCosC(i,j,bi,bj)*uBarC
-     &                -angleSinC(i,j,bi,bj)*vBarC
-     &               )*radDist(i,j)*deepFacC(k)
-            tileAMu(bi,bj) = tileAMu(bi,bj)
-     &             + tmpVal*rA(i,j,bi,bj)*deepFac2C(k)
-     &                     *rhoFacC(k)*drF(k)*_hFacC(i,j,k,bi,bj)
+#ifdef ALLOW_ADAMSBASHFORTH_3
+            tmpVal = abFac1*guNm(i,j,k,bi,bj,m1)
+     &             + abFac2*guNm(i,j,k,bi,bj,m2)
+#else
+            tmpVal = abFac1*guNm1(i,j,k,bi,bj)
+#endif
+            tmpVal = tmpVal*deltaTMom + uVel(i,j,k,bi,bj)
+            tmpFld(i,j) = tmpFld(i,j)
+     &             + R_drK*tmpVal*_hFacW(i,j,k,bi,bj)
            ENDDO
           ENDDO
          ENDDO
-C-    and contribution from mass distribution anomaly (i.e., free-surface)
-c        IF ( .FALSE. ) THEN
-         IF ( exactConserv ) THEN
-C-    To improve balance between zonal-wind (AMu) and mass (AMs) AM, need
-C     a consistent time-stepping of meridional mass transport in Coriolis
-C     (zonal momentum, go through AB) and mass transport divergence;
-C     try to account for AB-2 in AMs the same way it applies to f*v:
-#ifdef ALLOW_ADAMSBASHFORTH_3
-          weight1 = alph_AB
-#else
-          weight1 = 0.5 _d 0 + abEps
-#endif
-          weight0 = 1.0 _d 0 - weight1
+C-    and then integrate horizontally over this tile
+         DO j=1,sNy
+          DO i=1,sNx
+            cosLat = COS( deg2rad*
+     &             ( yG(i,j,bi,bj) + yG(i,j+1,bi,bj) )*halfRL )
+            tmpFld(i,j) = tmpFld(i,j)*u2zonDir(i,j,bi,bj)
+     &                   *cosLat*rAw(i,j,bi,bj)
+     &                   *maskInW(i,j,bi,bj)
+          ENDDO
+         ENDDO
+         tileAMu(bi,bj) = 0. _d 0
+         DO j=1,sNy
+          DO i=1,sNx
+            tileAMu(bi,bj) = tileAMu(bi,bj) + tmpFld(i,j)
+          ENDDO
+         ENDDO
+C-    contribution from vVel component: 1rst integrate vertically
+         DO j=1,sNy
+          DO i=1,sNx
+            tmpFld(i,j) = 0. _d 0
+          ENDDO
+         ENDDO
+         DO k=1,Nr
+          R_drK = rSphere*deepFacC(k)*deepFac2C(k)
+     &                   *rhoFacC(k)*drF(k)
           DO j=1,sNy
            DO i=1,sNx
-            ks = kSurfC(i,j,bi,bj)
-            tmpVal = weight1*etaH(i,j,bi,bj)
-#ifdef EXACT_CONSERV
-     &             + weight0*etaHnm1(i,j,bi,bj)
+#ifdef ALLOW_ADAMSBASHFORTH_3
+            tmpVal = abFac1*gvNm(i,j,k,bi,bj,m1)
+     &             + abFac2*gvNm(i,j,k,bi,bj,m2)
+#else
+            tmpVal = abFac1*gvNm1(i,j,k,bi,bj)
 #endif
-            tmpVal = omega*tmpVal
-     &             * radDist(i,j)*radDist(i,j)*deepFac2F(ks)
-            tileAMs(bi,bj) = tileAMs(bi,bj)
-     &             + tmpVal*rA(i,j,bi,bj)*deepFac2F(ks)*rhoFacF(ks)
+            tmpVal = tmpVal*deltaTMom + vVel(i,j,k,bi,bj)
+            tmpFld(i,j) = tmpFld(i,j)
+     &             + R_drK*tmpVal*_hFacS(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+C-    and then integrate horizontally over this tile
+         DO j=1,sNy
+          DO i=1,sNx
+            cosLat = COS( deg2rad*
+     &             ( yG(i,j,bi,bj) + yG(i+1,j,bi,bj) )*halfRL )
+            tmpFld(i,j) = tmpFld(i,j)*v2zonDir(i,j,bi,bj)
+     &                   *cosLat*rAs(i,j,bi,bj)
+     &                   *maskInS(i,j,bi,bj)
+          ENDDO
+         ENDDO
+         DO j=1,sNy
+          DO i=1,sNx
+            tileAMu(bi,bj) = tileAMu(bi,bj) + tmpFld(i,j)
+          ENDDO
+         ENDDO
+C-    Calculate contribution from mass distribution anomaly (i.e., free-surface)
+         IF ( exactConserv ) THEN
+          DO j=1,sNy
+           DO i=1,sNx
+#ifdef EXACT_CONSERV
+            tmpFld(i,j) = etaHnm1(i,j,bi,bj)
+#else
+            tmpFld(i,j) = 0.
+#endif
            ENDDO
           ENDDO
          ELSE
           DO j=1,sNy
            DO i=1,sNx
-            ks = kSurfC(i,j,bi,bj)
-            tmpVal = omega*etaN(i,j,bi,bj)
-     &             * radDist(i,j)*radDist(i,j)*deepFac2F(ks)
-            tileAMs(bi,bj) = tileAMs(bi,bj)
-     &             + tmpVal*rA(i,j,bi,bj)*deepFac2F(ks)*rhoFacF(ks)
+            tmpFld(i,j) = etaN(i,j,bi,bj)
            ENDDO
           ENDDO
          ENDIF
+C-    calculate angular momentum from mass-distribution anomaly
+C     using square of radial distance (averaged @ center point)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            cosLat = COS( deg2rad*yG(i,j,bi,bj) )
+            cos2LatG(i,j) = cosLat*cosLat
+          ENDDO
+         ENDDO
+         DO j=1,sNy
+          DO i=1,sNx
+            tmpFld(i,j) = tmpFld(i,j)
+     &        *omega*rSphere*rSphere
+     &        *( ( cos2LatG(i,j) + cos2LatG(i+1,j+1) )
+     &         + ( cos2LatG(i+1,j) + cos2LatG(i,j+1) )
+     &         )*0.25 _d 0
+          ENDDO
+         ENDDO
+         DO j=1,sNy
+          DO i=1,sNx
+            ks = kSurfC(i,j,bi,bj)
+            tmpFld(i,j) = tmpFld(i,j)
+     &             *maskInC(i,j,bi,bj)*deepFac2F(ks)
+     &             *rA(i,j,bi,bj)*deepFac2F(ks)*rhoFacF(ks)
+          ENDDO
+         ENDDO
+         tileAMs(bi,bj) = 0. _d 0
+         DO j=1,sNy
+          DO i=1,sNx
+            tileAMs(bi,bj) = tileAMs(bi,bj) + tmpFld(i,j)
+          ENDDO
+         ENDDO
 C- end bi,bj loops
         ENDDO
        ENDDO
@@ -242,7 +322,7 @@ C--   Print stats for total Angular Momentum (per unit area, in kg/s):
      &         '_eta_mean', myThid )
        CALL MON_OUT_RL( mon_string_none, totAMu,
      &         '_uZo_mean', myThid )
-       totAMu = totAMu + totAMs
+       totAMu = totAMu + freeSurfFac*totAMs
        CALL MON_OUT_RL( mon_string_none, totAMu,
      &         '_tot_mean', myThid )
 
