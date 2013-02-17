@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.36 2012/07/06 21:44:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.37 2013/02/17 02:24:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -93,6 +93,8 @@ C     Write horizontal grid arrays
         IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
           CALL WRITE_FLD_XY_RS( 'AngleCS',' ',angleCosC,-1,myThid)
           CALL WRITE_FLD_XY_RS( 'AngleSN',' ',angleSinC,-1,myThid)
+          CALL WRITE_FLD_XY_RS( 'U2zonDir',' ',u2zonDir,-1,myThid)
+          CALL WRITE_FLD_XY_RS( 'V2zonDir',' ',v2zonDir,-1,myThid)
         ENDIF
 C     Write 3D geometry arrays
         CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpfld,-1,myThid)
