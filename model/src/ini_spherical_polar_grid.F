@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.30 2011/12/25 22:24:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.31 2013/02/17 02:27:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -49,6 +49,7 @@ C     delXloc :: mesh spacing in X direction
 C     delYloc :: mesh spacing in Y direction
 C     xGloc   :: mesh corner-point location (local "Long" real array type)
 C     yGloc   :: mesh corner-point location (local "Long" real array type)
+      LOGICAL skipCalcAngleC
       INTEGER bi, bj
       INTEGER i,  j
       INTEGER gridNx, gridNy
@@ -126,16 +127,17 @@ C         by formula
 C--     The following arrays are not defined in some parts of the halo
 C       region. We set them to zero here for safety. If they are ever
 C       referred to, especially in the denominator then it is a mistake!
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          dxC(i,j,bi,bj) = 0.
-          dyC(i,j,bi,bj) = 0.
-          dxV(i,j,bi,bj) = 0.
-          dyU(i,j,bi,bj) = 0.
-          rAw(i,j,bi,bj) = 0.
-          rAs(i,j,bi,bj) = 0.
-         ENDDO
-        ENDDO
+C       Note: this is now done earlier in main S/R INI_GRID
+c       DO j=1-OLy,sNy+OLy
+c        DO i=1-OLx,sNx+OLx
+c         dxC(i,j,bi,bj) = 0.
+c         dyC(i,j,bi,bj) = 0.
+c         dxV(i,j,bi,bj) = 0.
+c         dyU(i,j,bi,bj) = 0.
+c         rAw(i,j,bi,bj) = 0.
+c         rAs(i,j,bi,bj) = 0.
+c        ENDDO
+c       ENDDO
 
 C--     Calculate [dxC], zonal length between cell centers
         DO j=1-OLy,sNy+OLy
@@ -246,8 +248,9 @@ C--     Calculate trigonometric terms & grid orientation:
           tanPhiAtU(i,j,bi,bj)=TAN(lat*deg2rad)
           lat=0.5 _d 0*(yGloc(i,j)+yGloc(i+1,j))
           tanPhiAtV(i,j,bi,bj)=TAN(lat*deg2rad)
-          angleCosC(i,j,bi,bj) = 1.
-          angleSinC(i,j,bi,bj) = 0.
+C       Note: this is now done earlier in main S/R INI_GRID
+c         angleCosC(i,j,bi,bj) = 1.
+c         angleSinC(i,j,bi,bj) = 0.
          ENDDO
         ENDDO
 
@@ -276,7 +279,8 @@ C--   end bi,bj loops
       IF ( rotateGrid ) THEN
        CALL ROTATE_SPHERICAL_POLAR_GRID( xC, yC, myThid )
        CALL ROTATE_SPHERICAL_POLAR_GRID( xG, yG, myThid )
-       CALL CALC_GRID_ANGLES( myThid )
+       skipCalcAngleC = .FALSE.
+       CALL CALC_GRID_ANGLES( skipCalcAngleC, myThid )
       ENDIF
 
       RETURN
