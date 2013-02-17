@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1826 2013/02/17 04:38:29 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1827 2013/02/17 23:10:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint64d (2013/02/17)
 o pkg/monitor (angular momentum):
   - do not add Eta contribution to the total AM if using rigid-lid;
   - correct for Adams-Bashforth in zonal-wind part (instead of in AM_eta).
