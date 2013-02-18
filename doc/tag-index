@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1827 2013/02/17 23:10:07 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1828 2013/02/18 22:19:51 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/cheapaml:
+  - add new parameter (default=F, same as before) to disable full domain
+    (including land) periodicity in X & Y dir.
+  - new S/R CHEAPAML_COPY_EDGES to copy relaxation field into edges of
+    prognostics field ; merge the 2 S/R cycle_2d_tracer and timestep_2d_tracer
+    into single S/R CHEAPAML_TIMESTEP.
 
 checkpoint64d (2013/02/17)
 o pkg/monitor (angular momentum):
