@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.10 2012/12/28 23:23:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.11 2013/02/18 21:16:15 jmc Exp $
 C $Name:  $
 
 c #ifdef ALLOW_CHEAPAML
@@ -113,6 +113,8 @@ C    cheap[]StartAB :: Adams-Bashforth restart status for prognostic variable []
       INTEGER cheapTairStartAB, cheapQairStartAB, cheapTracStartAB
 
 C--   COMMON /CHEAPAML_PARMS_L/
+C     cheapamlXperiodic :: domain (including land) is periodic in X dir
+C     cheapamlYperiodic :: domain (including land) is periodic in Y dir
 C     useFreshWaterFlux :: option to include evap+precip  (on  by default)
 C     useFluxLimit      :: use flux limiting advection    (off by default)
 C     useStressOption   :: use stress option              (off by default)
@@ -121,6 +123,8 @@ C     useTimeVarBLH     :: use time varying BL height option (off by default)
 C     useClouds         :: use clouds option              (off by default)
 C     useDLongWave      :: use imported downward longwave (off by default)
       COMMON /CHEAPAML_PARMS_L/
+     &       cheapamlXperiodic,
+     &       cheapamlYperiodic,
      &       useFreshWaterFlux,
      &       useFluxLimit,
      &       useStressOption,
@@ -130,6 +134,8 @@ C     useDLongWave      :: use imported downward longwave (off by default)
      &       useTimeVarBLH,
      &       useClouds,
      &       useDLongWave
+      LOGICAL cheapamlXperiodic
+      LOGICAL cheapamlYperiodic
       LOGICAL useFreshWaterFlux
       LOGICAL useFluxLimit
       LOGICAL useStressOption

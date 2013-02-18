@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.11 2013/02/07 20:40:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.12 2013/02/18 21:16:15 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -54,6 +54,8 @@ C--   Bulk Formula parameter
      &         cheap_clFile,cheap_dlwFile,
      &         cheap_prFile
       NAMELIST /CHEAPAML_PARM02/
+     &         cheapamlXperiodic,
+     &         cheapamlYperiodic,
      &         useFreshWaterFlux,
      &         useFluxLimit,
      &         FluxFormula,WaveModel,
@@ -143,6 +145,14 @@ C-    Input data files names :
       FluxFormula='COARE3'
       WaveModel='Smith'
 
+C-    Assumes domain (with land) is periodic in both direction
+C      (consitent with default EXCH setting)
+c     cheapamlXperiodic = .TRUE.
+c     cheapamlYperiodic = .TRUE.
+C note: for backward compatibility, switch to non periodic domain:
+      cheapamlXperiodic = .FALSE.
+      cheapamlYperiodic = .FALSE.
+
 C-    e-p option turned off by default
       useFreshWaterFlux=.TRUE.
 
@@ -201,6 +211,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       WRITE(iUnit,*) 'Caml: rhoa     =',rhoa
       WRITE(iUnit,*) 'Caml: cpair    =',cpair
       WRITE(iUnit,*) 'Caml: stefan   =',stefan
+      WRITE(iUnit,*) 'Caml: cheapamlXperiodic  =',cheapamlXperiodic
+      WRITE(iUnit,*) 'Caml: cheapamlYperiodic  =',cheapamlYperiodic
       WRITE(iUnit,*) 'Caml: useFreshWaterFlux  =',useFreshWaterFlux
       WRITE(iUnit,*) 'Caml: useFluxLimit       =',useFluxLimit
       WRITE(iUnit,*) 'Caml: useStressOption    =',useStressOption

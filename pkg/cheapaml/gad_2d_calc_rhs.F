@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_2d_calc_rhs.F,v 1.8 2013/01/03 20:39:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_2d_calc_rhs.F,v 1.9 2013/02/18 21:16:15 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -11,9 +11,11 @@ C !INTERFACE: ==========================================================
      I           bi,bj,iMin,iMax,jMin,jMax,
      I           uTrans,vTrans,
      I           uVel, vVel,
-     O           wvel,
-     I           diffKh, Tracer, zu,
-     U           gTracer,deltaTtracer,useFluxLimit,
+     I           diffKh, Tracer,
+     I           deltaTtracer, zu,
+     I           useFluxLimit, cheapamlXperiodic, cheapamlYperiodic,
+     O           wVel,
+     U           gTracer,
      I           myTime, myIter, myThid )
 
 C !DESCRIPTION:
@@ -55,6 +57,10 @@ C uVel,vVel,       :: 2 components of the velcity field (2-D array)
 C diffKh           :: horizontal diffusion coefficient
 C Tracer           :: tracer field
 C deltaTtracer     :: atmospheric tracer time step
+C zu               ::
+C useFluxLimit     ::
+C cheapamlXperiodic :: cheapaml domain is periodic in X dir
+C cheapamlYperiodic :: cheapaml domain is periodic in Y dir
 C myTime           :: current time
 C myIter           :: iteration number
 C myThid           :: thread number
@@ -63,15 +69,18 @@ C myThid           :: thread number
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL diffKh,deltaTtracer,zu
+      _RL diffKh
       _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL deltaTtracer, zu
       LOGICAL useFluxLimit
+      LOGICAL cheapamlXperiodic, cheapamlYperiodic
       _RL     myTime
       INTEGER myIter, myThid
 
 C !OUTPUT PARAMETERS: ==================================================
+C wVel             ::
 C gTracer          :: tendency array
+      _RL wVel   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C !LOCAL VARIABLES: ====================================================
@@ -130,8 +139,9 @@ C--   Initialize net flux in X direction
       ENDDO
 
 C     prepare boundary tracer values
-      DO j=1,sNy
-       DO i=1,sNx
+      IF(.NOT.cheapamlXperiodic)THEN
+       DO j=1,sNy
+        DO i=1,sNx
          iG=myXGlobalLo-1+(bi-1)*sNx+i
          IF (iG.EQ.2) THEN
            IF (uVel(i,j,bi,bj).LT.0. _d 0) THEN
@@ -146,9 +156,9 @@ C     prepare boundary tracer values
              ENDDO
            ENDIF
          ENDIF
+        ENDDO
        ENDDO
-      ENDDO
-
+      ENDIF
 C     -    Advective flux in X
       IF (useFluxLimit) THEN
 C     make local copy of west land mask
@@ -193,8 +203,9 @@ C     -    Diffusive flux in X
       ENDDO
 
 C     repair boundary tracer values
-      DO j=1,sNy
-       DO i=1,sNx
+      IF(.NOT.cheapamlXperiodic)THEN
+       DO j=1,sNy
+        DO i=1,sNx
          iG=myXGlobalLo-1+(bi-1)*sNx+i
          IF (iG.EQ.2) THEN
            IF (uVel(i,j,bi,bj).LT.0. _d 0) THEN
@@ -209,8 +220,9 @@ C     repair boundary tracer values
              ENDDO
            ENDIF
          ENDIF
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 
 C--   Initialize net flux in Y direction
       DO j=1-OLy,sNy+OLy
@@ -224,9 +236,10 @@ C--   Initialize net flux in Y direction
 C     -    Advective flux in Y
 
 C     prepare boundary tracer values
-      DO j=1,sNy
-       jG = myYGlobalLo-1+(bj-1)*sNy+j
-       DO i=1,sNx
+      IF(.NOT.cheapamlYperiodic)THEN
+       DO j=1,sNy
+        jG = myYGlobalLo-1+(bj-1)*sNy+j
+        DO i=1,sNx
          IF (jG.EQ.2) THEN
            IF (vVel(i,j,bi,bj).LT.0. _d 0) THEN
              DO jj=1-OLy,1
@@ -240,8 +253,9 @@ C     prepare boundary tracer values
              ENDDO
            ENDIF
          ENDIF
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 
       IF (useFluxLimit) THEN
 C     make local copy of south land mask
