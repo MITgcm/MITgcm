@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.19 2013/02/07 20:15:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.20 2013/02/18 21:17:50 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -54,10 +54,11 @@ C     == routine arguments ==
       INTEGER mythid
 
 C     == Local variables ==
-      INTEGER bi,bj,iG,jG
+      INTEGER bi,bj
       INTEGER i,j, nt, startAB
       LOGICAL writeDbug
       CHARACTER*10 sufx
+      LOGICAL xIsPeriodic, yIsPeriodic
 
 C tendencies of atmospheric temperature, current and past
         _RL gTair(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -238,9 +239,11 @@ C compute advective and diffusive flux divergence
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy,
      I           uTrans, vTrans,
      I           uwind, vwind,
+     I           cheapaml_kdiff, Tair,
+     I           deltaTtracer, zu, useFluxLimit,
+     I           cheapamlXperiodic, cheapamlYperiodic,
      O           wwind,
-     I           cheapaml_kdiff, Tair, zu,
-     U           gTair, deltaTtracer, useFluxLimit,
+     U           gTair,
      I           myTime, myIter, myThid )
 c        CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
          startAB = cheapTairStartAB + nt - 1
@@ -250,17 +253,11 @@ c        CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
      I           startAB, myIter, myThid )
 c        CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
 c        CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
-
-         CALL timestep_2d_tracer(
+         CALL CHEAPAML_TIMESTEP(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
-     I           Tair, gTair,
-     I           myIter, myThid )
-c        CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
-c        CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
-         CALL cycle_2d_tracer(
-     I           bi, bj,
-     U           Tair, gTair,nt,
-     I           myTime, myIter, myThid )
+     I           gTair,
+     U           Tair,
+     I           nt, myIter, myThid )
 c        CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
 c        CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
 C close bi,bj loops
@@ -284,23 +281,22 @@ C do water
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy,
      I           uTrans, vTrans,
      I           uwind, vwind,
+     I           cheapaml_kdiff, qair,
+     I           deltaTtracer, zu, useFluxLimit,
+     I           cheapamlXperiodic, cheapamlYperiodic,
      O           wwind,
-     I           cheapaml_kdiff, qair, zu,
-     U           gqair, deltaTtracer, useFluxLimit,
+     U           gqair,
      I           myTime, myIter, myThid )
           startAB = cheapTairStartAB + nt - 1
           CALL adams2d(
      I           bi, bj,
      U           gqair, gqairm,
      I           startAB, myIter, myThid )
-          CALL timestep_2d_tracer(
+          CALL CHEAPAML_TIMESTEP(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
-     I           qair, gqair,
-     I           myIter, myThid )
-          CALL cycle_2d_tracer(
-     I           bi, bj,
-     U           qair, gqair,nt,
-     I           myTime, myIter, myThid )
+     I           gqair,
+     U           qair,
+     I           nt, myIter, myThid )
 C close bi, bj loops
          ENDDO
         ENDDO
@@ -323,23 +319,22 @@ C     do tracer
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy,
      I           uTrans, vTrans,
      I           uwind, vwind,
+     I           cheapaml_kdiff, Cheaptracer,
+     I           deltaTtracer, zu, useFluxLimit,
+     I           cheapamlXperiodic, cheapamlYperiodic,
      O           wwind,
-     I           cheapaml_kdiff, Cheaptracer, zu,
-     U           gCheaptracer, deltaTtracer, useFluxLimit,
+     U           gCheaptracer,
      I           myTime, myIter, myThid )
           startAB = cheapTracStartAB + nt - 1
           CALL adams2d(
      I           bi, bj,
      U           gCheaptracer, gCheaptracerm,
      I                 startAB, myIter, myThid )
-          CALL timestep_2d_tracer(
+          CALL CHEAPAML_TIMESTEP(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
-     I           Cheaptracer, gCheaptracer,
-     I           myIter, myThid )
-          CALL cycle_2d_tracer(
-     I           bi, bj,
-     U           Cheaptracer, gCheaptracer,nt,
-     I           myTime, myIter, myThid )
+     I           gCheaptracer,
+     U           Cheaptracer,
+     I           nt, myIter, myThid )
 C     close bi, bj loops
          ENDDO
         ENDDO
@@ -348,51 +343,28 @@ C     update edges
        ENDIF                   ! if use tracer
 
 C reset boundaries to open boundary profile
+       IF ( .NOT.(cheapamlXperiodic.AND.cheapamlXperiodic) ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           jG = myYGlobalLo-1+(bj-1)*sNy+j
-           DO i=1-OLx,sNx+OLx
-            iG=myXGlobalLo-1+(bi-1)*sNx+i
-            IF (iG.LE.1) Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-            IF (iG.GE.Nx)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-            IF (jG.LE.1) Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-            IF (jG.GE.Ny)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-
-       IF (useFreshWaterFlux) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           jG = myYGlobalLo-1+(bj-1)*sNy+j
-           DO i=1-OLx,sNx+OLx
-            iG=myXGlobalLo-1+(bi-1)*sNx+i
-            IF (iG.LE.1) qair(i,j,bi,bj)=qr(i,j,bi,bj)
-            IF (iG.GE.Nx)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-            IF (jG.LE.1) qair(i,j,bi,bj)=qr(i,j,bi,bj)
-            IF (jG.GE.Ny)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDIF
-
-       IF (useCheapTracer) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           jG = myYGlobalLo-1+(bj-1)*sNy+j
-           DO i=1-OLx,sNx+OLx
-            iG=myXGlobalLo-1+(bi-1)*sNx+i
-            IF (iG.LE.1) Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
-            IF (iG.GE.Nx)Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
-            IF (jG.LE.1) Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
-            IF (jG.GE.Ny)Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
-           ENDDO
-          ENDDO
+           CALL CHEAPAML_COPY_EDGES(
+     I                   cheapamlXperiodic, cheapamlYperiodic,
+     I                   Tr(1-OLx,1-OLy,bi,bj),
+     U                   Tair(1-OLx,1-OLy,bi,bj),
+     I                   bi, bj, myIter, myThid )
+          IF (useFreshWaterFlux) THEN
+           CALL CHEAPAML_COPY_EDGES(
+     I                   cheapamlXperiodic, cheapamlYperiodic,
+     I                   qr(1-OLx,1-OLy,bi,bj),
+     U                   qair(1-OLx,1-OLy,bi,bj),
+     I                   bi, bj, myIter, myThid )
+          ENDIF
+          IF (useCheapTracer) THEN
+           CALL CHEAPAML_COPY_EDGES(
+     I                   cheapamlXperiodic, cheapamlYperiodic,
+     I                   CheaptracerR(1-OLx,1-OLy,bi,bj),
+     U                   Cheaptracer(1-OLx,1-OLy,bi,bj),
+     I                   bi, bj, myIter, myThid )
+          ENDIF
          ENDDO
         ENDDO
        ENDIF
@@ -511,15 +483,12 @@ c       CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
 
 C it is not necessary to use the Adams2d subroutine as
 C the forcing is always computed at the current time step.
-         CALL timestep_2d_tracer(
-     I          bi, bj, 1-OLx,sNx+OLx ,1-OLy, sNy+OLy, deltaT,
-     I          Tair, gTair,
-     I          myIter, myThid )
-C full oceanic time step deltaT is used in the above
-         CALL cycle_2d_tracer(
-     I          bi, bj,
-     U          Tair, gTair, nt,
-     I          myTime, myIter, myThid )
+C note: full oceanic time step deltaT is used below
+         CALL CHEAPAML_TIMESTEP(
+     I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaT,
+     I           gTair,
+     U           Tair,
+     I           0, myIter, myThid )
 C       do implicit time stepping over land
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -530,14 +499,11 @@ C       do implicit time stepping over land
 
 C do water
         IF (useFreshWaterFlux) THEN
-         CALL timestep_2d_tracer(
-     I          bi, bj, 1-OLx,sNx+OLx ,1-OLy, sNy+OLy, deltaT,
-     I          qair, gqair,
-     I          myIter, myThid )
-         CALL cycle_2d_tracer(
-     I          bi, bj,
-     U          qair, gqair, nt,
-     I          myTime,myIter,myThid )
+         CALL CHEAPAML_TIMESTEP(
+     I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaT,
+     I           gqair,
+     U           qair,
+     I           0, myIter, myThid )
 C     do implicit time stepping over land and or buffer
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -576,65 +542,36 @@ C update edges
       ENDIF
 
 C reset edges to open boundary profiles
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          jG = myYGlobalLo-1+(bj-1)*sNy+j
-          DO i=1-OLx,sNx+OLx
-           iG=myXGlobalLo-1+(bi-1)*sNx+i
-           IF (notUsingXPeriodicity) THEN
-            IF (iG.LE.1) Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-            IF (iG.GE.Nx)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-           ENDIF
-           IF (notUsingYPeriodicity) THEN
-            IF (jG.LE.1) Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-            IF (jG.GE.Ny)Tair(i,j,bi,bj)=Tr(i,j,bi,bj)
-           ENDIF
-          ENDDO
-         ENDDO
-       ENDDO
-      ENDDO
-
-      IF (useFreshWaterFlux) THEN
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          jG = myYGlobalLo-1+(bj-1)*sNy+j
-          DO i=1-OLx,sNx+OLx
-           iG=myXGlobalLo-1+(bi-1)*sNx+i
-           IF (notUsingXPeriodicity) THEN
-            IF (iG.LE.1) qair(i,j,bi,bj)=qr(i,j,bi,bj)
-            IF (iG.GE.Nx)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-           ENDIF
-           IF (notUsingYPeriodicity) THEN
-            IF (jG.LE.1) qair(i,j,bi,bj)=qr(i,j,bi,bj)
-            IF (jG.GE.Ny)qair(i,j,bi,bj)=qr(i,j,bi,bj)
-           ENDIF
-          ENDDO
+c     IF ( .NOT.(cheapamlXperiodic.AND.cheapamlXperiodic) ) THEN
+      IF ( notUsingXPeriodicity.OR.notUsingYPeriodicity ) THEN
+        xIsPeriodic = .NOT.notUsingXPeriodicity
+        yIsPeriodic = .NOT.notUsingYPeriodicity
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+           CALL CHEAPAML_COPY_EDGES(
+c    I                   cheapamlXperiodic, cheapamlYperiodic,
+     I                   xIsPeriodic, yIsPeriodic,
+     I                   Tr(1-OLx,1-OLy,bi,bj),
+     U                   Tair(1-OLx,1-OLy,bi,bj),
+     I                   bi, bj, myIter, myThid )
+          IF (useFreshWaterFlux) THEN
+           CALL CHEAPAML_COPY_EDGES(
+c    I                   cheapamlXperiodic, cheapamlYperiodic,
+     I                   xIsPeriodic, yIsPeriodic,
+     I                   qr(1-OLx,1-OLy,bi,bj),
+     U                   qair(1-OLx,1-OLy,bi,bj),
+     I                   bi, bj, myIter, myThid )
+          ENDIF
+          IF (useCheapTracer) THEN
+           CALL CHEAPAML_COPY_EDGES(
+c    I                   cheapamlXperiodic, cheapamlYperiodic,
+     I                   xIsPeriodic, yIsPeriodic,
+     I                   CheaptracerR(1-OLx,1-OLy,bi,bj),
+     U                   Cheaptracer(1-OLx,1-OLy,bi,bj),
+     I                   bi, bj, myIter, myThid )
+          ENDIF
          ENDDO
         ENDDO
-       ENDDO
-      ENDIF
-
-      IF (useCheapTracer) THEN
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          jG = myYGlobalLo-1+(bj-1)*sNy+j
-          DO i=1-OLx,sNx+OLx
-           iG=myXGlobalLo-1+(bi-1)*sNx+i
-           IF (notUsingXPeriodicity) THEN
-            IF (iG.LE.1) Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
-            IF (iG.GE.Nx)Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
-           ENDIF
-           IF (notUsingYPeriodicity) THEN
-            IF (jG.LE.1) Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
-            IF (jG.GE.Ny)Cheaptracer(i,j,bi,bj)=CheaptracerR(i,j,bi,bj)
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
       ENDIF
 
 c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
