@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_coare3_flux.F,v 1.12 2013/02/07 19:11:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_coare3_flux.F,v 1.13 2013/02/18 22:15:40 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -16,7 +16,8 @@ C     !ROUTINE: CHEAPAML_COARE3_FLUX
 C     !INTERFACE:
       SUBROUTINE CHEAPAML_COARE3_FLUX(
      I                    i,j,bi,bj,
-     O                    hf, ef, evap, Rnl, ssqt, q100, cdq )
+     O                    hf, ef, evap, Rnl, ssqt, q100, cdq,
+     I                    myIter, myThid )
 
 C     !DESCRIPTION:
 
@@ -30,7 +31,10 @@ C     === Global variables ===
 #include "DYNVARS.h"
 
 C     !INPUT PARAMETERS:
+C     myIter  :: Current iteration number in simulation
+C     myThid  :: My Thread Id number
       INTEGER i,j,bi,bj
+      INTEGER myIter, myThid
 C     !OUTPUT PARAMETERS:
       _RL hf, ef, evap, Rnl, ssqt, q100, cdq
 CEOP
@@ -167,6 +171,23 @@ C **** Iterate across u*(t*,q*),zo(zot,zoq) and z/L including cool skin ****
 
 C *** zoq and zot fitted to results from several ETL cruises ************
 
+       IF ( rr.LE.0. ) THEN
+         WRITE(errorMessageUnit,'(A,I8,I4,A,5I4)')
+     &    'CHEAPAML_COARE3_FLUX: myIter,iter=', myIter, iter,
+     &    ' , in: i,j,bi,bj,thid=', i, j, bi, bj, myThid
+         WRITE(errorMessageUnit,'(A,1P4E17.9)')
+     &    ' rr,zo,usr,visa=', rr, zo, usr, visa
+         WRITE(errorMessageUnit,'(A,1P4E17.9)')
+     &    ' L,zu,zL,zt    =', L, zu, zL, zt
+         WRITE(errorMessageUnit,'(A,1P4E16.8)')
+     &    ' ln(zu/zo),psu,diff,zL*=', LOG(zu/zo), psu, LOG(zu/zo)-psu,
+     &          ( tsr*(1.+0.61 _d 0*q)+0.61 _d 0*ta*qsr )
+     &         /( ta*usr*usr*(1. _d 0+0.61 _d 0*q) )
+         WRITE(errorMessageUnit,'(A,1P4E17.9)')
+     &    ' tsr,ta,q,qsr  =', tsr, ta, q, qsr
+         CALL MDS_FLUSH( errorMessageUnit, myThid )
+         CALL MDS_FLUSH( standardMessageUnit, myThid )
+       ENDIF
        zoq = MIN( 1.15 _d -4, 5.5 _d -5/rr**0.6 _d 0 )
        zot = zoq
 

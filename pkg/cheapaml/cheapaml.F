@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.20 2013/02/18 21:17:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.21 2013/02/18 22:15:40 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -390,7 +390,7 @@ C     now continue with diabatic forcing
      &             xolw,ssqt,q100)
             ELSEIF (FluxFormula.EQ.'COARE3') THEN
               CALL cheapaml_COARE3_flux(i,j,bi,bj,fsha,flha,evp,
-     &             xolw,ssqt,q100,cdq)
+     &             xolw,ssqt,q100,cdq, myIter, myThid )
             ENDIF
 
 C atmospheric upwelled long wave
