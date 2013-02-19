@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.26 2012/08/09 20:27:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.27 2013/02/19 20:57:27 dimitri Exp $
 C $Name:  $
 
 CBOP
@@ -158,7 +158,7 @@ C   Zenith Angle/Albedo related flags.
 # undef ALLOW_ZENITHANGLE
 #endif
 
-C   Use ocean_emissivity*lwdwon in lwFlux. This flag should be define
+C   Use ocean_emissivity*lwdown in lwFlux. This flag should be defined
 C   unless to reproduce old results (obtained with inconsistent old code)
 #ifdef ALLOW_DOWNWARD_RADIATION
 # define EXF_LWDOWN_WITH_EMISSIVITY
