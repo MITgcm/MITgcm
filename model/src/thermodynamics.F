@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.142 2012/07/09 19:22:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.143 2013/02/19 13:42:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -317,12 +317,12 @@ C-      Apply AB on T,S :
         m2 = 1 + MOD( iterNb ,2)
 C       compute T^n+1/2 (stored in gtNm) extrapolating T forward in time
         IF ( AdamsBashforth_T ) CALL ADAMS_BASHFORTH3(
-     I                                  bi, bj, 0,
+     I                                  bi, bj, 0, Nr,
      U                                  theta, gtNm, tmpFld,
      I                                  tempStartAB, iterNb, myThid )
 C       compute S^n+1/2 (stored in gsNm) extrapolating S forward in time
         IF ( AdamsBashforth_S ) CALL ADAMS_BASHFORTH3(
-     I                                  bi, bj, 0,
+     I                                  bi, bj, 0, Nr,
      U                                  salt, gsNm, tmpFld,
      I                                  saltStartAB, iterNb, myThid )
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
@@ -759,7 +759,7 @@ C--     Compute new reciprocal hFac for implicit calculation
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              recip_hFacNew(i,j,k) = recip_hFacC(i,j,k,bi,bj)
-     &        /( 1. _d 0 + dEtaHdt(i,j,bi,bj)*deltaTfreesurf
+     &        /( 1. _d 0 + dEtaHdt(i,j,bi,bj)*deltaTFreeSurf
      &                    *dBHybSigF(k)*recip_drF(k)
      &                    *recip_hFacC(i,j,k,bi,bj)
      &         )
@@ -899,10 +899,10 @@ CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
         IF (taveFreq.GT.0. .AND. useVariableK ) THEN
          IF (implicitDiffusion) THEN
            CALL TIMEAVE_CUMUL_DIF_1T(TdiffRtave, gT, kappaRk,
-     I                        Nr, 3, deltaTclock, bi, bj, myThid)
+     I                        Nr, 3, deltaTClock, bi, bj, myThid)
 c        ELSE
 c          CALL TIMEAVE_CUMUL_DIF_1T(TdiffRtave, theta, kappaRT,
-c    I                        Nr, 3, deltaTclock, bi, bj, myThid)
+c    I                        Nr, 3, deltaTClock, bi, bj, myThid)
          ENDIF
         ENDIF
 #endif /* ALLOW_TIMEAVE */

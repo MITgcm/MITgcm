@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/adams_bashforth2.F,v 1.8 2011/11/07 20:20:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/adams_bashforth2.F,v 1.9 2013/02/19 13:42:19 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: ADAMS_BASHFORTH2
 C     !INTERFACE:
       SUBROUTINE ADAMS_BASHFORTH2(
-     I                     bi, bj, k,
+     I                     bi, bj, k, kSize,
      U                     gTracer, gTrNm1,
      O                     AB_gTr,
      I                     startAB, myIter, myThid )
@@ -29,6 +29,7 @@ C     == Global variables ===
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
 C     bi,bj,k :: Tile and level indices
+C     kSize   :: 3rd dimension of tracer and tendency arrays
 C     gTracer ::  in: Tendency at current time  ( generally units of quantity/sec )
 C             :: out: Extrapolated Tendency at current time ( same units )
 C     gTrNm1  ::  in: Tendency at previous time             ( same units )
@@ -37,9 +38,9 @@ C     AB_gTr  :: Adams-Bashforth tendency increment
 C     startAB :: number of previous time level available to start/restart AB
 C     myIter  :: Current time step number
 C     myThid  :: my Thread Id. number
-      INTEGER bi,bj,k
-      _RL  gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  gTrNm1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      INTEGER bi, bj, k, kSize
+      _RL  gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
+      _RL  gTrNm1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
       _RL  AB_gTr (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER startAB
       INTEGER myIter, myThid
@@ -62,8 +63,8 @@ C     Adams-Bashforth extrapolation factor
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Compute effective G-term with Adams-Bashforth weights:
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         AB_gTr(i,j) = abFac
      &              *( gTracer(i,j,k,bi,bj)- gTrNm1(i,j,k,bi,bj) )
         gTrNm1(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.53 2011/11/07 20:21:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.54 2013/02/19 13:42:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,8 +45,8 @@ C     gvDissip :: dissipation tendency (all explicit terms), v component
 
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER k
-      _RL     dPhiHydX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL     dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL     dPhiHydX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     dPhiHydY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     guDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -100,8 +100,8 @@ C--  factors for gradient (X & Y directions) of Hydrostatic Potential
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Initialize local arrays (not really necessary but safer)
-      DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
           gUtmp(i,j) = 0. _d 0
           gVtmp(i,j) = 0. _d 0
 #ifdef ALLOW_CD_CODE
@@ -183,20 +183,20 @@ C-    Compute effective gU,gV_[n+1/2] terms (including Adams-Bashforth weights)
 C     and save gU,gV_[n] into guNm1,gvNm1 for the next time step.
 #ifdef ALLOW_ADAMSBASHFORTH_3
       CALL ADAMS_BASHFORTH3(
-     I                        bi, bj, k,
+     I                        bi, bj, k, Nr,
      U                        gU, guNm, gu_AB,
      I                        mom_StartAB, myIter, myThid )
       CALL ADAMS_BASHFORTH3(
-     I                        bi, bj, k,
+     I                        bi, bj, k, Nr,
      U                        gV, gvNm, gv_AB,
      I                        mom_StartAB, myIter, myThid )
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       CALL ADAMS_BASHFORTH2(
-     I                        bi, bj, k,
+     I                        bi, bj, k, Nr,
      U                        gU, guNm1, gu_AB,
      I                        mom_StartAB, myIter, myThid )
       CALL ADAMS_BASHFORTH2(
-     I                        bi, bj, k,
+     I                        bi, bj, k, Nr,
      U                        gV, gvNm1, gv_AB,
      I                        mom_StartAB, myIter, myThid )
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
@@ -315,12 +315,12 @@ C      and return coriolis terms on C-grid (guCor,gvCor)
         DO j=jMin,jMax
          DO i=iMin,iMax
            gUtmp(i,j) = gUtmp(i,j)
-     &        /( 1. _d 0 + dEtaWdt(i,j,bi,bj)*deltaTfreesurf
+     &        /( 1. _d 0 + dEtaWdt(i,j,bi,bj)*deltaTFreeSurf
      &                    *dBHybSigF(k)*recip_drF(k)
      &                    *recip_hFacW(i,j,k,bi,bj)
      &         )
            gVtmp(i,j) = gVtmp(i,j)
-     &        /( 1. _d 0 + dEtaSdt(i,j,bi,bj)*deltaTfreesurf
+     &        /( 1. _d 0 + dEtaSdt(i,j,bi,bj)*deltaTFreeSurf
      &                    *dBHybSigF(k)*recip_drF(k)
      &                    *recip_hFacS(i,j,k,bi,bj)
      &         )
@@ -395,7 +395,7 @@ C     Step forward zonal velocity (store in Gu)
       DO j=jMin,jMax
         DO i=iMin,iMax
           gU(i,j,k,bi,bj) = uVel(i,j,k,bi,bj)
-     &     +deltaTmom*(
+     &     +deltaTMom*(
      &         gUtmp(i,j)
      &       - psFac*phiSurfX(i,j)
      &       - phxFac*dPhiHydX(i,j)
@@ -407,7 +407,7 @@ C     Step forward meridional velocity (store in Gv)
       DO j=jMin,jMax
         DO i=iMin,iMax
           gV(i,j,k,bi,bj) = vVel(i,j,k,bi,bj)
-     &     +deltaTmom*(
+     &     +deltaTMom*(
      &         gVtmp(i,j)
      &       - psFac*phiSurfY(i,j)
      &       - phyFac*dPhiHydY(i,j)

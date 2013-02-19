@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.59 2012/06/15 13:29:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.60 2013/02/19 13:42:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -164,7 +164,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I           xA, yA, maskUp, uFld, vFld, wFld,
      I           uTrans, vTrans, rTrans, rTransKp1,
      I           diffKhT, diffK4T, KappaRT, diffKr4T,
-     I           gtNm(1-Olx,1-Oly,1,1,1,m2), theta, dTtracerLev,
+     I           gtNm(1-OLx,1-OLy,1,1,1,m2), theta, dTtracerLev,
      I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
      I           calcAdvection, tempImplVertAdv, AdamsBashforth_T,
      I           tempVertDiff4, useGMRedi, useKPP,
@@ -193,12 +193,12 @@ C--   External thermal forcing term(s) inside Adams-Bashforth:
       IF ( AdamsBashforthGt ) THEN
 #ifdef ALLOW_ADAMSBASHFORTH_3
         CALL ADAMS_BASHFORTH3(
-     I                        bi, bj, k,
+     I                        bi, bj, k, Nr,
      U                        gT, gtNm, gt_AB,
      I                        tempStartAB, iterNb, myThid )
 #else
         CALL ADAMS_BASHFORTH2(
-     I                        bi, bj, k,
+     I                        bi, bj, k, Nr,
      U                        gT, gtNm1, gt_AB,
      I                        tempStartAB, iterNb, myThid )
 #endif
@@ -233,11 +233,11 @@ CADJ &     kind = isbyte
 # endif
         CALL FREESURF_RESCALE_G(
      I                          bi, bj, k,
-     U                          gtNm(1-Olx,1-Oly,1,1,1,1),
+     U                          gtNm(1-OLx,1-OLy,1,1,1,1),
      I                          myThid )
         CALL FREESURF_RESCALE_G(
      I                          bi, bj, k,
-     U                          gtNm(1-Olx,1-Oly,1,1,1,2),
+     U                          gtNm(1-OLx,1-OLy,1,1,1,2),
      I                          myThid )
 #else
         CALL FREESURF_RESCALE_G(

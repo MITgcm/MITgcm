@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.46 2012/06/15 13:30:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.47 2013/02/19 13:43:35 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -197,7 +197,7 @@ C       compute iter at beginning of ptracer time step
         IF (staggerTimeStep) iterNb = myIter - 1
 #endif
         CALL ADAMS_BASHFORTH2(
-     I                      bi,bj,k,
+     I                      bi, bj, k, Nr,
      U                      gPtr(1-OLx,1-OLy,1,1,1,iTracer),
      U                      gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),
      U                      gTr_AB,

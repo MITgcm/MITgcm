@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/adams_bashforth3.F,v 1.4 2011/11/07 20:20:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/adams_bashforth3.F,v 1.5 2013/02/19 13:42:19 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: ADAMS_BASHFORTH3
 C     !INTERFACE:
       SUBROUTINE ADAMS_BASHFORTH3(
-     I                     bi, bj, kArg,
+     I                     bi, bj, kArg, kSize,
      U                     gTracer, gTrNm,
      O                     AB_gTr,
      I                     startAB, myIter, myThid )
@@ -52,6 +52,7 @@ C     == Routine Arguments ==
 C     bi,bj   :: Tile indices
 C     kArg    :: if >0: apply AB on tendency at level k=kArg
 C             :: if =0: apply AB on state variable and process all levels
+C     kSize   :: 3rd dimension of tracer and tendency arrays
 C     gTracer ::  in: Tendency/State at current time
 C             :: out: Extrapolated Tendency/State at current time
 C     gTrNm   ::  in: Tendencies/State at previous times
@@ -60,9 +61,9 @@ C     AB_gTr  :: Adams-Bashforth tendency increment
 C     startAB :: number of previous time level available to start/restart AB
 C     myIter  :: Current time step number
 C     myThid  :: my Thread Id. number
-      INTEGER bi,bj,kArg
-      _RL  gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  gTrNm  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
+      INTEGER bi, bj, kArg, kSize
+      _RL  gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
+      _RL  gTrNm  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy,2)
       _RL  AB_gTr (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER startAB
       INTEGER myIter, myThid
@@ -101,9 +102,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( kArg.EQ.0 ) THEN
 C-    Extrapolate forward in time the state variable, with AB weights:
-        DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+        DO k=1,kSize
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            AB_gTr(i,j) = ab0*gTracer(i,j,k,bi,bj)
      &                 + ab1*gTrNm(i,j,k,bi,bj,m1)
      &                 + ab2*gTrNm(i,j,k,bi,bj,m2)
@@ -115,8 +116,8 @@ C-    Extrapolate forward in time the state variable, with AB weights:
       ELSE
 C-    Extrapolate forward in time the tendency, with AB weights:
         k = kArg
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
            AB_gTr(i,j) = ab0*gTracer(i,j,k,bi,bj)
      &                 + ab1*gTrNm(i,j,k,bi,bj,m1)
      &                 + ab2*gTrNm(i,j,k,bi,bj,m2)

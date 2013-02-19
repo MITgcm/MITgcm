@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.55 2012/06/15 13:29:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.56 2013/02/19 13:42:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -165,7 +165,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I           xA, yA, maskUp, uFld, vFld, wFld,
      I           uTrans, vTrans, rTrans, rTransKp1,
      I           diffKhS, diffK4S, KappaRS, diffKr4S,
-     I           gsNm(1-Olx,1-Oly,1,1,1,m2), salt, dTtracerLev,
+     I           gsNm(1-OLx,1-OLy,1,1,1,m2), salt, dTtracerLev,
      I           GAD_SALINITY, saltAdvScheme, saltVertAdvScheme,
      I           calcAdvection, saltImplVertAdv, AdamsBashforth_S,
      I           saltVertDiff4, useGMRedi, useKPP,
@@ -194,12 +194,12 @@ C--   External salinity forcing term(s) inside Adams-Bashforth:
       IF ( AdamsBashforthGs ) THEN
 #ifdef ALLOW_ADAMSBASHFORTH_3
         CALL ADAMS_BASHFORTH3(
-     I                        bi, bj, k,
+     I                        bi, bj, k, Nr,
      U                        gS, gsNm, gs_AB,
      I                        saltStartAB, iterNb, myThid )
 #else
         CALL ADAMS_BASHFORTH2(
-     I                        bi, bj, k,
+     I                        bi, bj, k, Nr,
      U                        gS, gsNm1, gs_AB,
      I                        saltStartAB, iterNb, myThid )
 #endif
