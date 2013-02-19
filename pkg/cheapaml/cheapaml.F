@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.21 2013/02/18 22:15:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.22 2013/02/19 14:04:33 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -77,6 +77,7 @@ c       _RL Fclouds, ttt2
 C temp var
         _RL SH_sauv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
         _RL LH_sauv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+        _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C variables for htflux
 #ifdef ALLOW_SEAGER
@@ -247,9 +248,9 @@ C compute advective and diffusive flux divergence
      I           myTime, myIter, myThid )
 c        CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
          startAB = cheapTairStartAB + nt - 1
-         CALL adams2d(
-     I           bi, bj,
-     U           gTair, gTairm,
+         CALL ADAMS_BASHFORTH2(
+     I           bi, bj, 1, 1,
+     U           gTair, gTairm, tmpFld,
      I           startAB, myIter, myThid )
 c        CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
 c        CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
@@ -288,9 +289,9 @@ C do water
      U           gqair,
      I           myTime, myIter, myThid )
           startAB = cheapTairStartAB + nt - 1
-          CALL adams2d(
-     I           bi, bj,
-     U           gqair, gqairm,
+          CALL ADAMS_BASHFORTH2(
+     I           bi, bj, 1, 1,
+     U           gqair, gqairm, tmpFld,
      I           startAB, myIter, myThid )
           CALL CHEAPAML_TIMESTEP(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
@@ -326,10 +327,10 @@ C     do tracer
      U           gCheaptracer,
      I           myTime, myIter, myThid )
           startAB = cheapTracStartAB + nt - 1
-          CALL adams2d(
-     I           bi, bj,
-     U           gCheaptracer, gCheaptracerm,
-     I                 startAB, myIter, myThid )
+          CALL ADAMS_BASHFORTH2(
+     I           bi, bj, 1, 1,
+     U           gCheaptracer, gCheaptracerm, tmpFld,
+     I           startAB, myIter, myThid )
           CALL CHEAPAML_TIMESTEP(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
      I           gCheaptracer,
