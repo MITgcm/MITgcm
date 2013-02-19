@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.22 2013/02/19 14:04:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.23 2013/02/19 16:35:00 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -344,7 +344,7 @@ C     update edges
        ENDIF                   ! if use tracer
 
 C reset boundaries to open boundary profile
-       IF ( .NOT.(cheapamlXperiodic.AND.cheapamlXperiodic) ) THEN
+       IF ( .NOT.(cheapamlXperiodic.AND.cheapamlYperiodic) ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
            CALL CHEAPAML_COPY_EDGES(
@@ -543,7 +543,7 @@ C update edges
       ENDIF
 
 C reset edges to open boundary profiles
-c     IF ( .NOT.(cheapamlXperiodic.AND.cheapamlXperiodic) ) THEN
+c     IF ( .NOT.(cheapamlXperiodic.AND.cheapamlYperiodic) ) THEN
       IF ( notUsingXPeriodicity.OR.notUsingYPeriodicity ) THEN
         xIsPeriodic = .NOT.notUsingXPeriodicity
         yIsPeriodic = .NOT.notUsingYPeriodicity
