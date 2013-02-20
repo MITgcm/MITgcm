@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.145 2013/02/20 15:47:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.146 2013/02/20 18:21:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -206,18 +206,6 @@ C     == Functions ==
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      integer iloop
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifdef ALLOW_AUTODIFF_OPENAD
-      integer  uCheckLev1, uCheckLev2, uCheckLev3,uCheckLev4
-      integer ilev_4
-      integer theCurrentStep
-# endif
-#ifdef STORE_LOADEDREC_TEST
-      integer bi,bj
-#endif /* STORE_LOADEDREC_TEST */
-#endif
-
 CEOP
 
 #ifdef ALLOW_DEBUG
