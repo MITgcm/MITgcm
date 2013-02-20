@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.144 2013/02/20 15:36:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.145 2013/02/20 15:47:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -302,7 +302,7 @@ CADJ STORE sbar_gen,tbar_gen  = onetape
 #ifdef ALLOW_SHOWFLOPS
       CALL TIMER_START('SHOWFLOPS_INIT      [THE_MAIN_LOOP]', mythid)
       CALL SHOWFLOPS_INIT( myThid )
-      CALL TIMER_STOP('SHOWFLOPS_INIT       [THE_MAIN_LOOP]', mythid)
+      CALL TIMER_STOP ('SHOWFLOPS_INIT      [THE_MAIN_LOOP]', mythid)
 #endif
 
 c--   Do the model integration.
@@ -313,7 +313,7 @@ c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
       CALL TIMER_START('MAIN_DO_LOOP        [THE_MAIN_LOOP]', mythid)
       CALL MAIN_DO_LOOP( myTime, myIter, myThid )
-      CALL TIMER_STOP('MAIN_DO_LOOP         [THE_MAIN_LOOP]', mythid)
+      CALL TIMER_STOP ('MAIN_DO_LOOP        [THE_MAIN_LOOP]', mythid)
 
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STOPS   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
