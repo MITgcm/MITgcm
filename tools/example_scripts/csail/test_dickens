@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.22 2012/12/14 02:43:04 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.23 2013/02/20 19:05:16 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu
 #  Linux machines.
@@ -159,7 +159,7 @@ do
     export LM_LICENSE_FILE=$PGI/license.dat
   fi
 
-  if test $sepDir = 0 -a $checkOut = '1' -a  $tt = $firstTst ; then
+  if test $sepDir = 0 -a $checkOut = '0' -a  $tt = $firstTst ; then
 #-- cleaning:
     echo "======================"
     echo "Cleaning test directories:"	| tee -a $tdir/output_$tt
