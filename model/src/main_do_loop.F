@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.1 2013/02/20 00:50:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.2 2013/02/20 15:36:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -31,7 +31,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: MAIN_DO_LOOP
 C     !INTERFACE:
-      SUBROUTINE MAIN_DO_LOOP( myThid )
+      SUBROUTINE MAIN_DO_LOOP( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *================================================================*
@@ -468,7 +468,7 @@ c--   Accumulate time averages of temperature, salinity
 #ifdef ALLOW_AUTODIFF
 C--   Reset the model iteration counter and the model time.
       myIter = nIter0 + (iloop-1)
-      myTime = startTime + float(iloop-1)*deltaTclock
+      myTime = startTime + float(iloop-1)*deltaTClock
 #endif
       CALL TIMER_START('COST_AVERAGESFIELDS [MAIN_DO_LOOP]',mythid)
       CALL COST_AVERAGESFIELDS( mytime, mythid )
@@ -485,7 +485,7 @@ c--     Accumulate in-situ time averages of theta, salt, and SSH.
 #ifdef ALLOW_AUTODIFF
 C--   Reset the model iteration counter and the model time.
         myIter = nIter0 + (iloop-1)
-        myTime = startTime + float(iloop-1)*deltaTclock
+        myTime = startTime + float(iloop-1)*deltaTClock
 #endif
         CALL TIMER_START('PROFILES_INLOOP    [MAIN_DO_LOOP]', mythid)
         CALL PROFILES_INLOOP( mytime, mythid )

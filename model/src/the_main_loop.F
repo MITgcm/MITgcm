@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.143 2013/02/20 00:50:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.144 2013/02/20 15:36:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -312,7 +312,7 @@ c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
       CALL TIMER_START('MAIN_DO_LOOP        [THE_MAIN_LOOP]', mythid)
-      CALL MAIN_DO_LOOP( myThid )
+      CALL MAIN_DO_LOOP( myTime, myIter, myThid )
       CALL TIMER_STOP('MAIN_DO_LOOP         [THE_MAIN_LOOP]', mythid)
 
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
