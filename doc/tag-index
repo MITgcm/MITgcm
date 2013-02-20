@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1829 2013/02/19 14:12:42 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1830 2013/02/20 00:52:55 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o OpenAD support
+  Reorganize S/R call for overall time-stepping loop to facilitate
+  OpenAD revolve loop replacement
+  (new S/R main_do_loop.F)
 o model/src:
   - add 3-D array 3rd dimension to argument list of S/R ADAMS_BASHFORTH2/3;
   - pkg/cheapaml: remove local S/R ADAMS2d and use instead standard S/R
