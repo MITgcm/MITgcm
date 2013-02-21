@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.18 2013/02/14 17:03:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.19 2013/02/21 15:16:29 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -184,7 +184,7 @@ C
 C     calculate coefficients of tridiagonal matrices for both u- and
 C     v-equations
 C
-      CALL SEAICE_CALC_LSR_COEFFS(
+      CALL SEAICE_LSR_CALC_COEFFS(
      I     etaPlusZeta, zetaMinusEta, etaZpre, dwatPre,
      O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
      I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
