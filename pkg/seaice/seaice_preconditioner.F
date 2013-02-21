@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.19 2013/02/21 15:16:29 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.20 2013/02/21 15:25:10 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -81,14 +81,13 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j,bi,bj  :: Loop counters
 
-      INTEGER i, j, m, bi, bj, im, jm
+      INTEGER i, j, m, bi, bj
       INTEGER iCount
       INTEGER k
       INTEGER iMin, iMax, jMin, jMax
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       _RL WFAU, WFAV
-      _RL AA3
 
 C     diagonals of coefficient matrices
       _RL AU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -112,10 +111,6 @@ C     abbreviations
       _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     auxillary fields
-      _RL URT  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL CUU  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL VRT  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL CVV  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS SINWAT
@@ -331,57 +326,10 @@ C--     prevent tri-diagonal solver to modify OB values:
 #endif /* OBCS_UVICE_OLD */
 
 C Solve for uIce :
-         DO J=jMin,jMax
-          DO I=iMin,iMax
-           AA3 = ZERO
-           IF (I.EQ.iMin) AA3 = AA3 - AU(I,J,bi,bj)*duIce(I-1,J,bi,bj)
-           IF (I.EQ.iMax) AA3 = AA3 - CU(I,J,bi,bj)*duIce(I+1,J,bi,bj)
-
-           URT(I,J)=rhsU(I,J,bi,bj)
-     &          + AA3
-#ifdef SEAICE_VECTORIZE_LSR
-     &          + uRt1(I,J,bi,bj)*uTmp(I,J-1,bi,bj)
-     &          + uRt2(I,J,bi,bj)*uTmp(I,J+1,bi,bj)
-#else
-     &          + uRt1(I,J,bi,bj)*duIce(I,J-1,bi,bj)
-     &          + uRt2(I,J,bi,bj)*duIce(I,J+1,bi,bj)
-#endif /* SEAICE_VECTORIZE_LSR */
-           URT(I,J)=URT(I,J)* seaiceMaskU(I,J,bi,bj)
-          ENDDO
-
-          DO I=iMin,iMax
-           CUU(I,J)=CU(I,J,bi,bj)
-          ENDDO
-          CUU(iMin,J)=CUU(iMin,J)/BU(iMin,J,bi,bj)
-          URT(iMin,J)=URT(iMin,J)/BU(iMin,J,bi,bj)
-#ifdef SEAICE_VECTORIZE_LSR
-         ENDDO
-C     start a new loop with reversed order to support automatic vectorization
-         DO I=iMin+1,iMax
-          IM=I-1
-          DO J=jMin,jMax
-#else /* do not SEAICE_VECTORIZE_LSR */
-          DO I=iMin+1,iMax
-           IM=I-1
-#endif /* SEAICE_VECTORIZE_LSR */
-           CUU(I,J)=CUU(I,J)/(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
-           URT(I,J)=(URT(I,J)-AU(I,J,bi,bj)*URT(IM,J))
-     &           /(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
-          ENDDO
-#ifdef SEAICE_VECTORIZE_LSR
-         ENDDO
-C     go back to original order
-         DO J=jMin,jMax
-#endif /* SEAICE_VECTORIZE_LSR */
-C     backward substitution
-          DO I=iMax-1,iMin,-1
-           URT(I,J)=URT(I,J)-CUU(I,J)*URT(I+1,J)
-          ENDDO
-          DO I=iMin,iMax
-           duIce(I,J,bi,bj)=uTmp(I,J,bi,bj)
-     &          +WFAU*(URT(I,J)-uTmp(I,J,bi,bj))
-          ENDDO
-         ENDDO
+         CALL SEAICE_LSR_TRIDIAGU(
+     I        AU, BU, CU, uRt1, uRt2, rhsU, uTmp, seaiceMaskU, WFAU,
+     U        duIce,
+     I        imin, imax, jmin, jmax, bi, bj, myTime, myIter, myThid )
 
 #ifdef SEAICE_PRECOND_EXTRA_EXCHANGE
         ENDDO
@@ -415,44 +363,10 @@ C--     prevent tri-diagonal solver to modify OB values:
 #endif /* SEAICE_PRECOND_EXTRA_EXCHANGE */
 
 C Solve for dvIce
-         DO I=iMin,iMax
-          DO J=jMin,jMax
-           AA3 = ZERO
-           IF (J.EQ.jMin) AA3 = AA3 - AV(I,J,bi,bj)*dvIce(I,J-1,bi,bj)
-           IF (J.EQ.jMax) AA3 = AA3 - CV(I,J,bi,bj)*dvIce(I,J+1,bi,bj)
-
-           VRT(I,J)=rhsV(I,J,bi,bj)
-     &          + AA3
-#ifdef SEAICE_VECTORIZE_LSR
-     &          + vRt1(I,J,bi,bj)*vTmp(I-1,J,bi,bj)
-     &          + vRt2(I,J,bi,bj)*vTmp(I+1,J,bi,bj)
-#else
-     &          + vRt1(I,J,bi,bj)*dvIce(I-1,J,bi,bj)
-     &          + vRt2(I,J,bi,bj)*dvIce(I+1,J,bi,bj)
-#endif /* SEAICE_VECTORIZE_LSR */
-           VRT(I,J)=VRT(I,J)* seaiceMaskV(I,J,bi,bj)
-          ENDDO
-
-          DO J=jMin,jMax
-           CVV(I,J)=CV(I,J,bi,bj)
-          ENDDO
-          CVV(I,jMin)=CVV(I,jMin)/BV(I,jMin,bi,bj)
-          VRT(I,jMin)=VRT(I,jMin)/BV(I,jMin,bi,bj)
-          DO J=jMin+1,jMax
-           JM=J-1
-           CVV(I,J)=CVV(I,J)/(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
-           VRT(I,J)=(VRT(I,J)-AV(I,J,bi,bj)*VRT(I,JM))
-     &          /(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
-          ENDDO
-C     backward substitution
-          DO J=jMax-1,jMin,-1
-           VRT(I,J)=VRT(I,J)-CVV(I,J)*VRT(I,J+1)
-          ENDDO
-          DO J=jMin,jMax
-           dvIce(I,J,bi,bj)=vTmp(I,J,bi,bj)
-     &          +WFAV*(VRT(I,J)-vTmp(I,J,bi,bj))
-          ENDDO
-         ENDDO
+         CALL SEAICE_LSR_TRIDIAGV(
+     I        AV, BV, CV, vRt1, vRt2, rhsV, vTmp, seaiceMaskV, WFAV, 
+     U        dvIce,
+     I        imin, imax, jmin, jmax, bi, bj, myTime, myIter, myThid )
 
 C     end bi,bj-loops
         ENDDO
