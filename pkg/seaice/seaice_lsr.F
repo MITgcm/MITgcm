@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.85 2013/02/13 08:58:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.86 2013/02/21 15:13:13 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -12,7 +12,9 @@ C--  File seaice_lsr.F: seaice LSR dynamical solver S/R:
 C--   Contents
 C--   o SEAICE_LSR
 C--   o SEAICE_RESIDUAL
-C--   o SEAICE_CALC_LSR_COEFFS
+C--   o SEAICE_LSR_CALC_COEFFS
+C--   o SEAICE_LSR_TRIDIAGU
+C--   o SEAICE_LSR_TRIDIAGV
 
 CBOP
 C     !ROUTINE: SEAICE_LSR
@@ -73,7 +75,8 @@ C     === Local variables ===
 C     i,j,bi,bj  :: Loop counters
 
       INTEGER ilcall
-      INTEGER i, j, m, bi, bj, j1, j2, im, jm
+      INTEGER i, j, m, bi, bj
+      INTEGER iMin, iMax, jMin, jMax
       INTEGER ICOUNT1, ICOUNT2
       INTEGER kSrf
       INTEGER SOLV_MAX_TMP
@@ -81,7 +84,7 @@ C     i,j,bi,bj  :: Loop counters
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       _RL WFAU, WFAV, WFAU2, WFAV2
-      _RL AA3, S1, S2, S1A, S2A
+      _RL S1, S2, S1A, S2A
       _RL hFacM
       _RL eplus, eminus
 
@@ -116,10 +119,6 @@ C     contribution of sigma on righ hand side
       _RL sig22(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     auxillary fields
-      _RL URT  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL CUU  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL VRT  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL CVV  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -145,6 +144,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       printResidual = debugLevel.GE.debLevA
      &  .AND. DIFFERENT_MULTIPLE( SEAICE_monFreq, myTime, deltaTClock )
+
+CMLC     extra overlap for (restricted) additive Schwarz method
+CML      jMin = 1   - SEAICE_OLy
+CML      jMax = sNy + SEAICE_OLy
+CML      iMin = 1   - SEAICE_OLx
+CML      iMax = sNx + SEAICE_OLx
+      jMin = 1
+      jMax = sNy
+      iMin = 1
+      iMax = sNx
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph break artificial dependencies
@@ -283,8 +292,8 @@ CADJ &     key = itmpkey
      I     ilcall, myTime, myIter, myThid )
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
+        DO J=jMin,jMax
+         DO I=iMin,iMax
 C     set up anti symmetric drag force and add in current force
 C     ( remember to average to correct velocity points )
           FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+
@@ -311,8 +320,8 @@ C     ( remember to average to correct velocity points )
      &         )
          ENDDO
         ENDDO
-        DO j=1,sNy
-         DO i=1,sNx
+        DO j=jMin,jMax
+         DO i=iMin,iMax
 C-    add Coriolis term
           FORCEX(I,J,bi,bj) = FORCEX(I,J,bi,bj) + HALF*
      &         ( seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
@@ -327,8 +336,8 @@ C-    add Coriolis term
          ENDDO
         ENDDO
 C      this is the rhs contribution of the time derivative
-        DO j=1,sNy
-         DO i=1,sNx
+        DO j=jMin,jMax
+         DO i=iMin,iMax
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
      &         +seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
      &         *uIceNm1(i,j,bi,bj)
@@ -341,8 +350,8 @@ C      this is the rhs contribution of the time derivative
         ENDDO
 #ifdef SEAICE_ALLOW_FREEDRIFT
         IF ( LSR_mixIniGuess.GE.1 ) THEN
-         DO j=1,sNy
-          DO i=1,sNx
+         DO j=jMin,jMax
+          DO i=iMin,iMax
           uIce_fd(i,j,bi,bj) = FORCEX(i,j,bi,bj)
      &       / ( 1. _d 0 - seaiceMaskU(i,j,bi,bj)
      &         + seaiceMassU(i,j,bi,bj)/SEAICE_deltaTdyn
@@ -364,8 +373,8 @@ C     some abbreviations
 C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=0,sNy
-         DO I=0,sNx
+        DO J=jMin-1,jMax
+         DO I=iMin-1,iMax
           etaPlusZeta (I,J,bi,bj) = ETA (I,J,bi,bj)+ZETA(I,J,bi,bj)
           zetaMinusEta(I,J,bi,bj) = ZETA(I,J,bi,bj)-ETA (I,J,bi,bj)
          ENDDO
@@ -377,10 +386,10 @@ C
 C     calculate coefficients of tridiagonal matrices for both u- and
 C     v-equations
 C
-      CALL SEAICE_CALC_LSR_COEFFS( 
+      CALL SEAICE_LSR_CALC_COEFFS( 
      I     etaPlusZeta, zetaMinusEta, etaZ, dwatn,
      O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
-     I     1, sNx, 1, sNy, myTime, myIter, myThid )
+     I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
 C
 C     Set up right hand sides of momentum equations
 C
@@ -390,8 +399,8 @@ C
 C     u-equation
 C
 C     contribution of sigma11 to rhs
-        DO J=1,sNy
-         DO I=0,sNx
+        DO J=jMin,jMax
+         DO I=iMin-1,iMax
           sig11(I,J) = zetaMinusEta(I,J,bi,bj)
      &         * ( vIceC(I,J+1,bi,bj) - vIceC(I,J,bi,bj) )
      &         * _recip_dyF(I,J,bi,bj)
@@ -401,8 +410,8 @@ C     contribution of sigma11 to rhs
          ENDDO
         ENDDO
 C     contribution of sigma12 to rhs of u-equation
-        DO J=1,sNy+1
-         DO I=1,sNx
+        DO J=jMin,jMax+1
+         DO I=iMin,iMax
           hFacM = seaiceMaskV(I,J,bi,bj) - seaiceMaskV(I-1,J,bi,bj)
           sig12(I,J) = etaZ(I,J,bi,bj) * (
      &         ( vIceC(I,J,bi,bj) - vIceC(I-1,J,bi,bj) )
@@ -422,8 +431,8 @@ C     only need to deal with v(i)-v(i-1)
          ENDDO
         ENDDO
 
-        DO J=1,sNy
-         DO I=1,sNx
+        DO J=jMin,jMax
+         DO I=iMin,iMax
 C     contribution to the rhs part of grad(sigma)_x
           rhsU(I,J,bi,bj) = FORCEX(I,J,bi,bj)
      &         + recip_rAw(I,J,bi,bj) * seaiceMaskU(I,J,bi,bj) *
@@ -437,8 +446,8 @@ C
 C     v-equation
 C
 C     contribution of sigma22 to rhs
-        DO J=0,sNy
-         DO I=1,sNx
+        DO J=jMin-1,jMax
+         DO I=iMin,iMax
           sig22(I,J) = zetaMinusEta(I,J,bi,bj)
      &         * ( uIceC(I+1,J,bi,bj) - uIceC(I,J,bi,bj) )
      &         * _recip_dxF(I,J,bi,bj)
@@ -448,8 +457,8 @@ C     contribution of sigma22 to rhs
          ENDDO
         ENDDO
 C     contribution of sigma12 to rhs of v-equation
-        DO J=1,sNy
-         DO I=1,sNx+1
+        DO J=jMin,jMax
+         DO I=iMin,iMax+1
           hFacM = seaiceMaskU(i,j,bi,bj) - seaiceMaskU(i,j-1,bi,bj)
           sig12(I,J) = etaZ(I,J,bi,bj) * (
      &         ( uIceC(I,J,bi,bj) - uIceC(I,J-1,bi,bj) )
@@ -469,8 +478,8 @@ C     only need to deal with u(j)-u(j-1)
          ENDDO
         ENDDO
 
-        DO J=1,sNy
-         DO I=1,sNx
+        DO J=jMin,jMax
+         DO I=iMin,iMax
 C     contribution to the rhs part of grad(sigma)_y
           rhsV(I,J,bi,bj) = FORCEY(I,J,bi,bj)
      &         + recip_rAs(I,J,bi,bj) * seaiceMaskV(I,J,bi,bj) *
@@ -487,8 +496,8 @@ C     contribution to the rhs part of grad(sigma)_y
 C--     prevent tri-diagonal solver from modifying OB values:
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
+        DO J=jMin,jMax
+         DO I=iMin,iMax
           IF ( maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj) .EQ. 0. ) THEN
            AU(I,J,bi,bj)   = ZERO
            BU(I,J,bi,bj)   = ONE
@@ -552,8 +561,8 @@ CADJ &     key = itmpkey
 # endif /* ALLOW_AUTODIFF_TAMC */
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
+          DO j=jMin,jMax
+           DO i=iMin,iMax
              errIni = uTmp(i,j,bi,bj)*uTmp(i,j,bi,bj)
              errFD  = uRes(i,j,bi,bj)*uRes(i,j,bi,bj)
              IF ( LSR_mixIniGuess.GE.4 ) THEN
@@ -659,8 +668,8 @@ CADJ &     key = itmpkey
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            IF ( doIterate4u ) THEN
-            DO j=1,sNy
-             DO i=1,sNx
+            DO j=jMin,jMax
+             DO i=iMin,iMax
               uTmp(i,j,bi,bj)  = uIce(i,j,bi,bj)
               rhsUx(i,j,bi,bj) = ( rhsU(i,j,bi,bj)
      &             + uRt1(i,j,bi,bj)*uIce(i,j-1,bi,bj)
@@ -670,8 +679,8 @@ CADJ &     key = itmpkey
             ENDDO
            ENDIF
            IF ( doIterate4v ) THEN
-            DO j=1,sNy
-             DO i=1,sNx
+            DO j=jMin,jMax
+             DO i=iMin,iMax
               vTmp(i,j,bi,bj)  = vIce(i,j,bi,bj)
               rhsVy(i,j,bi,bj) = ( rhsV(i,j,bi,bj)
      &             + vRt1(i,j,bi,bj)*vIce(i-1,J,bi,bj)
@@ -695,16 +704,16 @@ C     end bi,bj-loops
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            IF ( doIterate4u ) THEN
-            DO j=1,sNy
-             DO i=1,sNx
+            DO j=jMin,jMax
+             DO i=iMin,iMax
               uIce(i,j,bi,bj) = uTmp(i,j,bi,bj)
      &            + WFAU*( uIce(i,j,bi,bj)-uTmp(i,j,bi,bj) )
              ENDDO
             ENDDO
            ENDIF
            IF ( doIterate4v ) THEN
-            DO j=1,sNy
-             DO i=1,sNx
+            DO j=jMin,jMax
+             DO i=iMin,iMax
               vIce(i,j,bi,bj) = vTmp(i,j,bi,bj)
      &            + WFAV*( vIce(i,j,bi,bj)-vTmp(i,j,bi,bj) )
              ENDDO
@@ -736,103 +745,18 @@ C     save vIce prior to iteration, NOW SET V(3)=V(1)
 
           IF ( doIterate4u ) THEN
 C Solve for uIce :
-           DO J=1,sNy
-            DO I=1,sNx
-             AA3 = ZERO
-             IF (I.EQ.1)   AA3 = AA3 - AU(I,J,bi,bj)*uIce(I-1,J,bi,bj)
-             IF (I.EQ.sNx) AA3 = AA3 - CU(I,J,bi,bj)*uIce(I+1,J,bi,bj)
-
-             URT(I,J)=rhsU(I,J,bi,bj)
-     &            + AA3
-#ifdef SEAICE_VECTORIZE_LSR
-     &            + uRt1(I,J,bi,bj)*uTmp(I,J-1,bi,bj)
-     &            + uRt2(I,J,bi,bj)*uTmp(I,J+1,bi,bj)
-#else
-     &            + uRt1(I,J,bi,bj)*uIce(I,J-1,bi,bj)
-     &            + uRt2(I,J,bi,bj)*uIce(I,J+1,bi,bj)
-#endif /* SEAICE_VECTORIZE_LSR */
-             URT(I,J)=URT(I,J)* seaiceMaskU(I,J,bi,bj)
-            ENDDO
-
-            DO I=1,sNx
-             CUU(I,J)=CU(I,J,bi,bj)
-            ENDDO
-            CUU(1,J)=CUU(1,J)/BU(1,J,bi,bj)
-            URT(1,J)=URT(1,J)/BU(1,J,bi,bj)
-#ifdef SEAICE_VECTORIZE_LSR
-           ENDDO
-C     start a new loop with reversed order to support automatic vectorization
-           DO I=2,sNx
-            IM=I-1
-            DO J=1,sNy
-#else /* do not SEAICE_VECTORIZE_LSR */
-            DO I=2,sNx
-             IM=I-1
-#endif /* SEAICE_VECTORIZE_LSR */
-             CUU(I,J)=CUU(I,J)/(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
-             URT(I,J)=(URT(I,J)-AU(I,J,bi,bj)*URT(IM,J))
-     &           /(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
-            ENDDO
-#ifdef SEAICE_VECTORIZE_LSR
-           ENDDO
-C     go back to original order
-           DO J=1,sNy
-#endif /* SEAICE_VECTORIZE_LSR */
-            DO I=1,sNx-1
-             J1=sNx-I
-             J2=J1+1
-             URT(J1,J)=URT(J1,J)-CUU(J1,J)*URT(J2,J)
-            ENDDO
-            DO I=1,sNx
-             uIce(I,J,bi,bj)=uTmp(I,J,bi,bj)
-     &           +WFAU*(URT(I,J)-uTmp(I,J,bi,bj))
-            ENDDO
-           ENDDO
-C--   end doIterate4u
+           CALL SEAICE_LSR_TRIDIAGU(
+     I          AU, BU, CU, uRt1, uRt2, rhsU, uTmp, seaiceMaskU, WFAU,
+     U          uIce,
+     I          imin, imax, jmin, jmax, bi, bj, myTime, myIter, myThid )
           ENDIF
 
           IF ( doIterate4v ) THEN
 C Solve for vIce
-           DO I=1,sNx
-            DO J=1,sNy
-             AA3 = ZERO
-             IF (J.EQ.1)   AA3 = AA3 - AV(I,J,bi,bj)*vIce(I,J-1,bi,bj)
-             IF (J.EQ.sNy) AA3 = AA3 - CV(I,J,bi,bj)*vIce(I,J+1,bi,bj)
-
-             VRT(I,J)=rhsV(I,J,bi,bj)
-     &            + AA3
-#ifdef SEAICE_VECTORIZE_LSR
-     &            + vRt1(I,J,bi,bj)*vTmp(I-1,J,bi,bj)
-     &            + vRt2(I,J,bi,bj)*vTmp(I+1,J,bi,bj)
-#else
-     &            + vRt1(I,J,bi,bj)*vIce(I-1,J,bi,bj)
-     &            + vRt2(I,J,bi,bj)*vIce(I+1,J,bi,bj)
-#endif /* SEAICE_VECTORIZE_LSR */
-             VRT(I,J)=VRT(I,J)* seaiceMaskV(I,J,bi,bj)
-            ENDDO
-
-            DO J=1,sNy
-             CVV(I,J)=CV(I,J,bi,bj)
-            ENDDO
-            CVV(I,1)=CVV(I,1)/BV(I,1,bi,bj)
-            VRT(I,1)=VRT(I,1)/BV(I,1,bi,bj)
-            DO J=2,sNy
-             JM=J-1
-             CVV(I,J)=CVV(I,J)/(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
-             VRT(I,J)=(VRT(I,J)-AV(I,J,bi,bj)*VRT(I,JM))
-     &            /(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
-            ENDDO
-            DO J=1,sNy-1
-             J1=sNy-J
-             J2=J1+1
-             VRT(I,J1)=VRT(I,J1)-CVV(I,J1)*VRT(I,J2)
-            ENDDO
-            DO J=1,sNy
-             vIce(I,J,bi,bj)=vTmp(I,J,bi,bj)
-     &           +WFAV*(VRT(I,J)-vTmp(I,J,bi,bj))
-            ENDDO
-           ENDDO
-C--   end doIterate4v
+           CALL SEAICE_LSR_TRIDIAGV(
+     I          AV, BV, CV, vRt1, vRt2, rhsV, vTmp, seaiceMaskV, WFAV, 
+     U          vIce,
+     I          imin, imax, jmin, jmax, bi, bj, myTime, myIter, myThid )
           ENDIF
 
 C     end bi,bj-loops
@@ -1197,16 +1121,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       END
 
 CBOP
-C     !ROUTINE: SEAICE_CALC_LSR_COEFFS
+C     !ROUTINE: SEAICE_LSR_CALC_COEFFS
 C     !INTERFACE:
-      SUBROUTINE SEAICE_CALC_LSR_COEFFS( 
+      SUBROUTINE SEAICE_LSR_CALC_COEFFS( 
      I     etaPlusZeta, zetaMinusEta, etaZloc, dwatnLoc,
      O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
      I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R SEAICE_CALC_LSR_COEFFS
+C     | S/R SEAICE_LSR_CALC_COEFFS
 C     | o Calculate coefficient matrix for LSR solver
 C     *==========================================================*
 C     \ev
@@ -1465,6 +1389,223 @@ C     and the symmetric drag term; must be done after normalizing
         ENDDO
 
 C     bi/bj-loops
+       ENDDO
+      ENDDO
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C     !ROUTINE: SEAICE_LSR_TRIDIAGU
+C     !INTERFACE:
+      SUBROUTINE SEAICE_LSR_TRIDIAGU(
+     I     AU, BU, CU, uRt1, uRt2, rhsU, uTmp, seaiceMaskU, WFAU,
+     U     uIce,
+     I     imin, imax, jmin, jmax, bi, bj, myTime, myIter, myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R SEAICE_LSR_TRIDIAGV
+C     | o Solve tridiagonal problem in uIce for LSR solver
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+#include "SIZE.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     === Routine arguments ===
+C     myTime     :: Simulation time
+C     myIter     :: Simulation timestep number
+C     myThid     :: my Thread Id. number
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
+      INTEGER iMin, iMax, jMin, jMax, bi, bj
+C     diagonals of coefficient matrices
+      _RL AU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL BU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL CU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     coefficients for lateral points, v(j+/-1)
+      _RL uRt1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL uRt2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     right hand side
+      _RL rhsU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     velocity of previous iteration step
+      _RL uTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     on entry: first guess and on exit: solution
+      _RL uIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     mask
+      _RL seaiceMaskU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     relaxation factor
+      _RL WFAU
+CEOP
+
+C     !LOCAL VARIABLES:
+C     === Local variables ===
+C     i,j  :: Loop counters
+      INTEGER I,J,IM
+      _RL AA3
+      _RL URT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL CUU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      
+      DO J=jMin,jMax
+       DO I=iMin,iMax
+        AA3 = 0. _d 0
+        IF (I.EQ.iMin) AA3 = AA3 - AU(I,J,bi,bj)*uIce(I-1,J,bi,bj)
+        IF (I.EQ.iMax) AA3 = AA3 - CU(I,J,bi,bj)*uIce(I+1,J,bi,bj)
+        
+        URT(I,J)=rhsU(I,J,bi,bj)
+     &       + AA3
+#ifdef SEAICE_VECTORIZE_LSR
+     &       + uRt1(I,J,bi,bj)*uTmp(I,J-1,bi,bj)
+     &       + uRt2(I,J,bi,bj)*uTmp(I,J+1,bi,bj)
+#else
+     &       + uRt1(I,J,bi,bj)*uIce(I,J-1,bi,bj)
+     &       + uRt2(I,J,bi,bj)*uIce(I,J+1,bi,bj)
+#endif /* SEAICE_VECTORIZE_LSR */
+        URT(I,J)=URT(I,J)* seaiceMaskU(I,J,bi,bj)
+       ENDDO
+
+       DO I=iMin,iMax
+        CUU(I,J)=CU(I,J,bi,bj)
+       ENDDO
+       CUU(iMin,J)=CUU(iMin,J)/BU(iMin,J,bi,bj)
+       URT(iMin,J)=URT(iMin,J)/BU(iMin,J,bi,bj)
+#ifdef SEAICE_VECTORIZE_LSR
+      ENDDO
+C     start a new loop with reversed order to support automatic vectorization
+      DO I=iMin+1,iMax
+       IM=I-1
+       DO J=jMin,jMax
+#else /* do not SEAICE_VECTORIZE_LSR */
+       DO I=iMin+1,iMax
+        IM=I-1
+#endif /* SEAICE_VECTORIZE_LSR */
+        CUU(I,J)=CUU(I,J)/(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
+        URT(I,J)=(URT(I,J)-AU(I,J,bi,bj)*URT(IM,J))
+     &       /(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
+       ENDDO
+#ifdef SEAICE_VECTORIZE_LSR
+      ENDDO
+C     go back to original order
+      DO J=jMin,jMax
+#endif /* SEAICE_VECTORIZE_LSR */
+CML            DO I=iMin,iMax-1
+CML             J1=sNx-I
+CML             J2=J1+1
+CML             URT(J1,J)=URT(J1,J)-CUU(J1,J)*URT(J2,J)
+       DO I=iMax-1,iMin,-1
+        URT(I,J)=URT(I,J)-CUU(I,J)*URT(I+1,J)
+       ENDDO
+       DO I=iMin,iMax
+        uIce(I,J,bi,bj)=uTmp(I,J,bi,bj)
+     &       +WFAU*(URT(I,J)-uTmp(I,J,bi,bj))
+       ENDDO
+      ENDDO
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C     !ROUTINE: SEAICE_LSR_TRIDIAGV
+C     !INTERFACE:
+      SUBROUTINE SEAICE_LSR_TRIDIAGV(
+     I     AV, BV, CV, vRt1, vRt2, rhsV, vTmp, seaiceMaskV, WFAV, 
+     U     vIce,
+     I     imin, imax, jmin, jmax, bi, bj, myTime, myIter, myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R SEAICE_LSR_TRIDIAGV
+C     | o Solve tridiagonal problem in vIce for LSR solver
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+#include "SIZE.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     === Routine arguments ===
+C     myTime     :: Simulation time
+C     myIter     :: Simulation timestep number
+C     myThid     :: my Thread Id. number
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
+      INTEGER iMin, iMax, jMin, jMax, bi, bj
+C     diagonals of coefficient matrices
+      _RL AV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL BV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL CV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     coefficients for lateral points, v(j+/-1)
+      _RL vRt1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vRt2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     right hand side
+      _RL rhsV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     velocity of previous iteration step
+      _RL vTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     on entry: first guess and on exit: solution
+      _RL vIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     mask
+      _RL seaiceMaskV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     relaxation factor
+      _RL WFAV
+CEOP
+
+C     !LOCAL VARIABLES:
+C     === Local variables ===
+C     i,j  :: Loop counters
+      INTEGER I,J,JM
+      _RL AA3
+      _RL VRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL CVV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+      DO I=iMin,iMax
+       DO J=jMin,jMax
+        AA3 = 0. _d 0
+        IF (J.EQ.jMin) AA3 = AA3 - AV(I,J,bi,bj)*vIce(I,J-1,bi,bj)
+        IF (J.EQ.jMax) AA3 = AA3 - CV(I,J,bi,bj)*vIce(I,J+1,bi,bj)
+
+        VRT(I,J)=rhsV(I,J,bi,bj)
+     &       + AA3
+#ifdef SEAICE_VECTORIZE_LSR
+     &       + vRt1(I,J,bi,bj)*vTmp(I-1,J,bi,bj)
+     &       + vRt2(I,J,bi,bj)*vTmp(I+1,J,bi,bj)
+#else
+     &       + vRt1(I,J,bi,bj)*vIce(I-1,J,bi,bj)
+     &       + vRt2(I,J,bi,bj)*vIce(I+1,J,bi,bj)
+#endif /* SEAICE_VECTORIZE_LSR */
+        VRT(I,J)=VRT(I,J)* seaiceMaskV(I,J,bi,bj)
+       ENDDO
+
+       DO J=jMin,jMax
+        CVV(I,J)=CV(I,J,bi,bj)
+       ENDDO
+       CVV(I,jMin)=CVV(I,jMin)/BV(I,jMin,bi,bj)
+       VRT(I,jMin)=VRT(I,jMin)/BV(I,jMin,bi,bj)
+       DO J=jMin+1,jMax
+        JM=J-1
+        CVV(I,J)=CVV(I,J)/(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
+        VRT(I,J)=(VRT(I,J)-AV(I,J,bi,bj)*VRT(I,JM))
+     &       /(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
+       ENDDO
+CML            DO J=jMin,jMax-1
+CML             J1=sNy-J
+CML             J2=J1+1
+CML             VRT(I,J1)=VRT(I,J1)-CVV(I,J1)*VRT(I,J2)
+       DO J=jMax-1,jMin,-1
+        VRT(I,J)=VRT(I,J)-CVV(I,J)*VRT(I,J+1)
+       ENDDO
+       DO J=jMin,jMax
+        vIce(I,J,bi,bj)=vTmp(I,J,bi,bj)
+     &       +WFAV*(VRT(I,J)-vTmp(I,J,bi,bj))
        ENDDO
       ENDDO
 
