@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.86 2013/02/21 15:13:13 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.87 2013/02/21 17:32:52 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1494,12 +1494,9 @@ C     start a new loop with reversed order to support automatic vectorization
 C     go back to original order
       DO J=jMin,jMax
 #endif /* SEAICE_VECTORIZE_LSR */
-CML            DO I=iMin,iMax-1
-CML             J1=sNx-I
-CML             J2=J1+1
-CML             URT(J1,J)=URT(J1,J)-CUU(J1,J)*URT(J2,J)
-       DO I=iMax-1,iMin,-1
-        URT(I,J)=URT(I,J)-CUU(I,J)*URT(I+1,J)
+       DO I=iMin,iMax-1
+        IM=sNx-I
+        URT(IM,J)=URT(IM,J)-CUU(IM,J)*URT(IM+1,J)
        ENDDO
        DO I=iMin,iMax
         uIce(I,J,bi,bj)=uTmp(I,J,bi,bj)
@@ -1596,12 +1593,9 @@ C     i,j  :: Loop counters
         VRT(I,J)=(VRT(I,J)-AV(I,J,bi,bj)*VRT(I,JM))
      &       /(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
        ENDDO
-CML            DO J=jMin,jMax-1
-CML             J1=sNy-J
-CML             J2=J1+1
-CML             VRT(I,J1)=VRT(I,J1)-CVV(I,J1)*VRT(I,J2)
-       DO J=jMax-1,jMin,-1
-        VRT(I,J)=VRT(I,J)-CVV(I,J)*VRT(I,J+1)
+       DO J=jMin,jMax-1
+        JM=sNy-J
+        VRT(I,JM)=VRT(I,JM)-CVV(I,JM)*VRT(I,JM+1)
        ENDDO
        DO J=jMin,jMax
         vIce(I,J,bi,bj)=vTmp(I,J,bi,bj)
