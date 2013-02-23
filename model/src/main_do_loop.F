@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.4 2013/02/23 15:42:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.5 2013/02/23 15:57:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -515,7 +515,7 @@ c--     >>> Loop body end <<<
 #   else /* ndef ALLOW_TAMC_CHECKPOINTING */
       ENDDO
 #   endif /* ALLOW_TAMC_CHECKPOINTING */
-# else # else /* ALLOW_AUTODIFF_OPENAD */
+# else /* ndef ALLOW_AUTODIFF_OPENAD */
       ENDDO
 # endif /* ALLOW_AUTODIFF_OPENAD */
 #else /* ALLOW_AUTODIFF */
