@@ -4,7 +4,7 @@ module OAD_cp
 
   private :: cp_file_number, cp_open
 
-  public :: cp_io_unit,  cp_init, cp_write_open, cp_read_open, cp_close
+  public :: cp_io_unit, cp_init, cp_write_open, cp_read_open, cp_close, cp_fNumber
 
   integer :: cp_file_number, cp_io_unit
 
@@ -18,10 +18,12 @@ module OAD_cp
 
   interface cp_write_open
      module procedure write_open_i
+     module procedure write_openX_i
   end interface
 
   interface cp_read_open
      module procedure read_open_i
+     module procedure read_openX_i
   end interface
 
   interface cp_close
@@ -31,7 +33,7 @@ module OAD_cp
   interface cp_findunit
      module procedure findunit_i
   end interface
-
+  
 contains
 
   subroutine init_i
@@ -42,12 +44,30 @@ contains
   subroutine write_open_i()
     implicit none
     call cp_open()
+!    print *, 'writing ', cp_file_number
     cp_file_number=cp_file_number+1
+  end subroutine 
+
+  subroutine write_openX_i(X)
+    implicit none
+    integer X
+    cp_file_number=X
+!    print *, 'writing ', cp_file_number
+    call cp_open()
   end subroutine 
 
   subroutine read_open_i()
     implicit none
     cp_file_number=cp_file_number-1
+!    print *, 'reading ', cp_file_number
+    call cp_open()
+  end subroutine 
+
+  subroutine read_openX_i(X)
+    implicit none
+    integer X
+    cp_file_number=X
+!    print *, 'reading ', cp_file_number
     call cp_open()
   end subroutine 
 
@@ -109,5 +129,10 @@ include "mpif.h"
        stop 'ABNORMAL END: S/R OAD_cp:findunit_i'
     endif
   end subroutine
+
+  function cp_fNumber()
+    integer cp_fNumber
+    cp_fNumber=cp_file_number
+  end function 
 
 end module 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.2 2013/02/20 15:36:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.3 2013/02/23 04:24:41 utke Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -208,11 +208,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       integer iloop
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifdef ALLOW_AUTODIFF_OPENAD
-      integer  uCheckLev1, uCheckLev2, uCheckLev3,uCheckLev4
       integer ilev_4
-      integer theCurrentStep
-# endif
 #ifdef STORE_LOADEDREC_TEST
       integer bi,bj
 #endif /* STORE_LOADEDREC_TEST */
@@ -432,16 +428,7 @@ c--         choice of the 3-tupel ( nchklev_1, nchklev_2, nchklev_3 ).
 #endif /* undef ALLOW_AUTODIFF_OPENAD */
 
 #ifdef ALLOW_AUTODIFF_OPENAD
-      call openad_checkpointinit(uCheckLev1,
-     +        uCheckLev2,
-     +        uCheckLev3,
-     +        uCheckLev4 )
-
-      theCurrentStep=0
-
-      if (uCheckLev4 .gt. 0 ) then
-       do ilev_4 = 1, uCheckLev4
-
+      DO iloop = 1, nTimeSteps
 #endif
 
 #ifndef ALLOW_AUTODIFF
@@ -456,7 +443,9 @@ c--     >>> Loop body start <<<
 
 #ifdef ALLOW_AUTODIFF_TAMC
         nIter0 = NINT( (startTime-baseTime)/deltaTClock )
+# ifndef ALLOW_AUTODIFF_OPENAD
         ikey_dynamics = ilev_1
+# endif
 #endif
 
 #ifdef ALLOW_ECCO
@@ -503,14 +492,7 @@ C--   Reset the model iteration counter and the model time.
         CALL TIMER_STOP ('FORWARD_STEP_ATM2D  [MAIN_DO_LOOP]',mythid)
 #else
         CALL TIMER_START('FORWARD_STEP        [MAIN_DO_LOOP]',mythid)
-# ifdef ALLOW_AUTODIFF_OPENAD
-            CALL THE_FOURTH_LEVEL_LOOP( ilev_4,
-     +uCheckLev1, uCheckLev2, uCheckLev3,uCheckLev4,
-     +theCurrentStep,
-     +myTime, myIter, myThid )
-# else
         CALL FORWARD_STEP( iloop, mytime, myiter, mythid )
-# endif
         CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',mythid)
 #endif
 
@@ -534,14 +516,8 @@ c--     >>> Loop body end <<<
 #   else /* ndef ALLOW_TAMC_CHECKPOINTING */
       enddo
 #   endif /* ALLOW_TAMC_CHECKPOINTING */
-# else /* ALLOW_AUTODIFF_OPENAD */
-         end do
-      else
-         CALL THE_FOURTH_LEVEL_PLAIN(
-     +uCheckLev1, uCheckLev2, uCheckLev3,uCheckLev4,
-     +theCurrentStep,
-     +myTime, myIter, myThid )
-      end if
+# else # else /* ALLOW_AUTODIFF_OPENAD */
+      enddo
 # endif /* ALLOW_AUTODIFF_OPENAD */
 #else /* ALLOW_AUTODIFF */
       enddo

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.248 2013/01/24 19:07:04 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.249 2013/02/23 04:24:42 utke Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -3224,7 +3224,8 @@ w2f__types.F90 \
 OAD_active.F90 \
 OAD_cp.F90 \
 OAD_rev.F90 \
-OAD_tape.F90
+OAD_tape.F90 \
+revolve.F90
 
 OPENAD_SUPPORT_C_SRC_FILES = \
 iaddr.c \

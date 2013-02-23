@@ -7,19 +7,8 @@ do
   srName=${i%%\(*}
   echo "/^ *SUBROUTINE $srName(/i\\" >> temp.sed
   case "$srName" in 
-    "OpenAD_the_second_level_loop" | \
-    "OpenAD_the_third_level_loop" |  \
-    "OpenAD_the_fourth_level_loop" )
-      echo "c\$openad XXX Template $OADTOOLS/ad_template.checkpoint.f" >> temp.sed
-      ;;
-    "OpenAD_the_first_level_loop" )
-      echo "c\$openad XXX Template $OADTOOLS/ad_template.checkpoint_to_split.f" >> temp.sed
-      ;;
-    "OpenAD_the_first_level_plain" | \
-    "OpenAD_the_second_level_plain" | \
-    "OpenAD_the_third_level_plain" | \
-    "OpenAD_the_fourth_level_plain" ) 
-      echo "c\$openad XXX Template $OADTOOLS/ad_template.plain.f" >> temp.sed
+    "OpenAD_main_do_loop" )
+      echo "c\$openad XXX Template $OADTOOLS/ad_template.revolve.f" >> temp.sed
       ;;
     "OpenAD_cg2d" ) 
       echo "c\$openad XXX Template $OADTOOLS/ad_template.sa_cg2d.f" >> temp.sed
