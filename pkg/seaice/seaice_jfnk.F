@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.18 2013/02/15 15:19:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.19 2013/02/25 10:44:10 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -479,18 +479,6 @@ C     Initialise some local variables
       facLS = 1. _d 0
       doLineSearch = .TRUE.
       DO WHILE ( doLineSearch )
-C     Determine, if we need more iterations
-       doLineSearch = resLoc .GE. JFNKresidual 
-C     Limit the maximum number of iterations arbitrarily to four
-       doLineSearch = doLineSearch .AND. l .LE. 4 
-C     For the first iteration du/vIce = 0 and there will be no
-C     improvement of the residual possible, so we do only the first
-C     iteration
-       IF ( newtonIter .EQ. 1 ) doLineSearch = .FALSE.
-C     Only start a linesearch after some Newton iterations
-       IF ( newtonIter .LE. SEAICE_JFNK_lsIter ) doLineSearch = .FALSE.
-C     Increment counter
-       l = l + 1
 C     Create update
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -513,6 +501,18 @@ C     product that SEAICE_FGMRES does
        CALL SEAICE_MAP2VEC(nVec,uIceRes,vIceRes,resTmp,.TRUE.,myThid)
        CALL SEAICE_SCALPROD(nVec,1,1,1,resTmp,resTmp,resLoc,myThid)
        resLoc = SQRT(resLoc)
+C     Determine, if we need more iterations
+       doLineSearch = resLoc .GE. JFNKresidual 
+C     Limit the maximum number of iterations arbitrarily to four
+       doLineSearch = doLineSearch .AND. l .LT. 4 
+C     For the first iteration du/vIce = 0 and there will be no
+C     improvement of the residual possible, so we do only the first
+C     iteration
+       IF ( newtonIter .EQ. 1 ) doLineSearch = .FALSE.
+C     Only start a linesearch after some Newton iterations
+       IF ( newtonIter .LE. SEAICE_JFNK_lsIter ) doLineSearch = .FALSE.
+C     Increment counter
+       l = l + 1
 C     some output diagnostics
        IF ( debugLevel.GE.debLevA .AND. doLineSearch ) THEN
         _BEGIN_MASTER( myThid )
