@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.43 2012/11/09 22:35:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.44 2013/02/26 19:38:18 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -26,10 +26,11 @@ C     salt  :: salinity (ppt, held at pressure/tracer point)
 C     gX, gxNm1 :: Time tendencies at current and previous time levels.
 C     etaH  :: surface r-anomaly, advanced in time consistently
 C              with 2.D flow divergence (Exact-Conservation):
-C                etaH^n+1 = etaH^n - delta_t*Div.(H^n U^n)
-C  note: a) used with "exactConserv" but strictly necessary for NonLinFreeSurf
+C                etaH^n+1 = etaH^n - delta_t*Div.(H^n U^n+1)
+C  note: a) used with "exactConserv", necessary for Non-Lin free-surf and mixed
+C           forward/backward free-surf time stepping (e.g., Crank-Nickelson)
 C        b) same as etaN but not necessarily at the same time, e.g.:
-C           implicDiv2DFlow=0 => etaH=etaN ; =1 => etaH=etaNm1 ;
+C           implicDiv2DFlow=1 => etaH=etaN ; =0 => etaH=etaN^(n-1);
 
 #ifdef ALLOW_ADAMSBASHFORTH_3
       COMMON /DYNVARS_R/
