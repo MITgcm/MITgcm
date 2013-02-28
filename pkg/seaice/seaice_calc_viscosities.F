@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.21 2013/02/13 08:27:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.22 2013/02/28 16:26:31 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -98,10 +98,10 @@ C     TAFization
            e12Csqr(i,j) = tmp*tmp
           ENDDO
          ENDDO
-        ELSEIF ( SEAICEetaZmethod .EQ. 2 ) THEN
+        ELSEIF ( SEAICEetaZmethod .GE. 2 ) THEN
          DO j=1-Oly+1,sNy+Oly-1
           DO i=1-Olx+1,sNx+Olx-1
-           e12Csqr(i,j) = 0.25 * 
+           e12Csqr(i,j) = 0.25 _d 0 *
      &          ( e12(I,J  ,bi,bj)**2 + e12(I+1,J  ,bi,bj)**2 
      &          + e12(I,J+1,bi,bj)**2 + e12(I+1,J+1,bi,bj)**2 )
           ENDDO
@@ -164,6 +164,17 @@ C     This is the old and stupid way
      &         + eta (I,J-1,bi,bj)  + eta (I-1,J-1,bi,bj) )
      &         / MAX(1.D0,maskC(I,J,  k,bi,bj)+maskC(I-1,J,  k,bi,bj)
      &         +          maskC(I,J-1,k,bi,bj)+maskC(I-1,J-1,k,bi,bj) )
+          ENDDO
+         ENDDO
+        ELSEIF ( SEAICEetaZmethod .GT. 2 ) THEN
+         DO j=1-Oly+1,sNy+Oly-1
+          DO i=1-Olx+1,sNx+Olx-1
+           sumNorm  = maskC(I,J,  k,bi,bj)+maskC(I-1,J,  k,bi,bj)
+     &              + maskC(I,J-1,k,bi,bj)+maskC(I-1,J-1,k,bi,bj)
+           IF ( sumNorm.GT.0. _d 0 ) sumNorm = 1. _d 0 / sumNorm
+           etaZ(I,J,bi,bj) = sumNorm *
+     &          ( eta (I,J  ,bi,bj)  + eta (I-1,J  ,bi,bj)
+     &          + eta (I,J-1,bi,bj)  + eta (I-1,J-1,bi,bj) )
           ENDDO
          ENDDO
         ELSE
