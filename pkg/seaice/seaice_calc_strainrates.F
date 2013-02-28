@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.19 2012/03/06 16:45:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.20 2013/02/28 17:25:41 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -84,6 +84,9 @@ C     vectorizes even after TAFization
       k = 1
       noSlipFac = 0. _d 0
       IF ( SEAICE_no_slip ) noSlipFac = 1. _d 0
+C     in order repoduce results before fixing a bug in r1.20 comment out
+C     the following line
+CML      IF ( SEAICE_no_slip ) noSlipFac = 2. _d 0
 C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -148,7 +151,7 @@ C     evaluate strain rates at Z-points
      &         )
      &         *maskC(i  ,j  ,k,bi,bj)*maskC(i-1,j  ,k,bi,bj)
      &         *maskC(i  ,j-1,k,bi,bj)*maskC(i-1,j-1,k,bi,bj)
-     &         + 2.0 _d 0 * noSlipFac * (
+     &         + noSlipFac * (
      &           2.0 _d 0 * uave(i,j) * _recip_dyU(i,j,bi,bj) * hFacU
      &         + 2.0 _d 0 * vave(i,j) * _recip_dxV(i,j,bi,bj) * hFacV
      &         )
