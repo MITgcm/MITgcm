@@ -1,10 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1832 2013/02/25 10:45:15 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1833 2013/02/28 17:17:29 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: fix line search in seaice_jfnk.F (s/r seaice_jfnk_update)
+o pkg/seaice: 
+  - add another averaging method for etaZ (etaZmethod=3), a mix of 2 and 0
+  - add runtime parameter SEAICE_JFNKepsilon for that finite difference 
+    gradient in the Jacobian times vector operation (s/r seaice_jacvec)
+  - fix line search in seaice_jfnk.F (s/r seaice_jfnk_update)
 o pkg/seaice: reorganize seaice_lsr.F to be able to reuse more code:
   - new subroutines seaice_lsr_tridiagu/v
   - introduce loop bounds i/jmin/max to be able to use a restricted
