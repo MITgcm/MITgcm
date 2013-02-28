@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.108 2013/02/15 15:19:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.109 2013/02/28 16:21:40 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -248,6 +248,7 @@ C     JFNKgamma_nonlin   :: non-linear tolerance parameter for JFNK solver
 C     JFNKgamma_lin_min/max :: tolerance parameters for linear JFNK solver
 C     JFNKres_t          :: tolerance parameter for FGMRES residual
 C     JFNKres_tFac       :: if set, JFNKres_t=JFNKres_tFac*(initial residual)
+C     SEAICE_JFNKepsilon :: step size for the FD-gradient in s/r seaice_jacvec
 C     SEAICE_zetaMaxFac  :: factor determining the maximum viscosity    (s)
 C                          (default = 5.e+12/2.e4 = 2.5e8)
 C     SEAICE_zetaMin     :: lower bound for viscosity (default = 0)    (N s/m^2)
@@ -367,7 +368,7 @@ C
       _RL SEAICE_tempFrz0, SEAICE_dTempFrz_dS
       _RL OCEAN_drag, LSR_ERROR, DIFF1
       _RL JFNKgamma_nonlin, JFNKres_t, JFNKres_tFac
-      _RL JFNKgamma_lin_min, JFNKgamma_lin_max
+      _RL JFNKgamma_lin_min, JFNKgamma_lin_max, SEAICE_JFNKepsilon
       _RL SEAICE_area_reg, SEAICE_hice_reg
       _RL SEAICE_area_floor, SEAICE_area_max
       _RL SEAICE_airTurnAngle, SEAICE_waterTurnAngle
@@ -409,7 +410,7 @@ C
      &    SEAICE_tempFrz0, SEAICE_dTempFrz_dS,
      &    OCEAN_drag, LSR_ERROR, DIFF1,
      &    JFNKgamma_nonlin, JFNKres_t, JFNKres_tFac,
-     &    JFNKgamma_lin_min, JFNKgamma_lin_max,
+     &    JFNKgamma_lin_min, JFNKgamma_lin_max, SEAICE_JFNKepsilon,
      &    SEAICE_area_reg, SEAICE_hice_reg,
      &    SEAICE_area_floor, SEAICE_area_max,
      &    SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow,

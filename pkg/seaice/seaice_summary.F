@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.65 2013/02/21 15:25:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.66 2013/02/28 16:21:40 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -206,6 +206,8 @@ C--  Seaice-Dynamics parameters
      & 'JFNKres_t=', ' /* JFNK parameter */')       
         CALL WRITE_0D_RL( JFNKres_tFac  ,INDEX_NONE,
      & 'JFNKres_tFac=', ' /* JFNK parameter */')       
+        CALL WRITE_0D_RL( SEAICE_JFNKepsilon, INDEX_NONE,
+     & 'SEAICE_JFNKepsilon=', ' /* JFNK: FD-gradient step size */')       
        ENDIF
 #endif /* SEAICE_ALLOW_JFNK */
 #ifdef SEAICE_ALLOW_EVP
