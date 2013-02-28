@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jacvec.F,v 1.3 2012/11/06 13:10:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jacvec.F,v 1.4 2013/02/28 17:12:48 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -78,6 +78,19 @@ C     2. cat seaice_calc_residual.f seaice_oceandrag_coeffs.f seaice_calc_strain
 C     3. staf -v1 -forward -toplevel seaice_calc_residual -input uIceLoc,viceLoc -output uIceRes,vIceRes taf_input.f
 C     4. insert content of taf_input_ftl.f at the end of this file
 C     5. add the following code and comment out the finite difference code
+C
+C     Instruction for using TAF 2.4 and higher (or staf with default -v2
+C     starting with version 2.0):
+C
+C     1. make small_f
+C     2. staf -forward -toplevel seaice_calc_residual -input uIceLoc,viceLoc -output uIceRes,vIceRes seaice_calc_residual.f seaice_oceandrag_coeffs.f seaice_calc_strainrates.f seaice_calc_viscosities.f seaice_calc_rhs.f seaice_calc_lhs.f
+C     3. copy files seaice_*_tl.f to the corresponding seaice_*.f files, 
+C        e.g. with this bash script:
+C     for file in `ls seaice_*_tl.f`; do 
+C       nfile=`echo $file | awk -F_ '{printf "%s_%s_%s.f", $1,$2,$3}'`; 
+C       \cp -f $file $nfile
+C     done
+C     4. add the following code, change "call g_seaice_calc_residual" to "call seaice_calc_residual_tl", and comment out the finite difference code
 CML      _RL g_duIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CML      _RL g_dvIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CML      _RL g_uIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -102,6 +115,10 @@ CML
 CML      CALL G_SEAICE_CALC_RESIDUAL( uIce, g_duice, vIce, 
 CML     $g_dvice, uiceresp, g_uiceres, viceresp, g_viceres, newtoniter, 
 CML     $kryloviter, mytime, myiter, mythid )
+CMLCML      For staf -v2 replace the above with the below call 
+CMLCML      CALL SEAICE_CALC_RESIDUAL_TL( uIce, g_duice, vIce, 
+CMLCML     $g_dvice, uiceresp, g_uiceres, viceresp, g_viceres, newtoniter, 
+CMLCML     $kryloviter, mytime, myiter, mythid )
 CML
 CML      DO bj=myByLo(myThid),myByHi(myThid)
 CML       DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -115,7 +132,7 @@ CML       ENDDO
 CML      ENDDO
 
 C     Initialise
-      epsilon = 1. _d -06
+      epsilon = SEAICE_JFNKepsilon
       reps    = 1. _d 0/epsilon
 
       DO bj=myByLo(myThid),myByHi(myThid)
