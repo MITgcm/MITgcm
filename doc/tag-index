@@ -1,10 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1833 2013/02/28 17:17:29 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1834 2013/02/28 17:32:28 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/seaice: 
+  - fix bug in the no-slip implementation in seaice_calc_strainrates.F, this
+    bug affects two verification experiments (lab_sea and lab_sea.hb87), 
+    recover old (wrong) results by setting noSlipFac = 2. in 
+    seaice_calc_strainrates.F;
   - add another averaging method for etaZ (etaZmethod=3), a mix of 2 and 0
   - add runtime parameter SEAICE_JFNKepsilon for that finite difference 
     gradient in the Jacobian times vector operation (s/r seaice_jacvec)
