@@ -25,8 +25,7 @@
  readBinaryPrec= 64,
  writeBinaryPrec= 64,
 #useSingleCpuIO=.TRUE.,
-#debugLevel=-1,
- debugMode=.FALSE.,
+#debugLevel=1,
  &
 
 # Elliptic solver parameters
