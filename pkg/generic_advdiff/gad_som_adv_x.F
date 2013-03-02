@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_x.F,v 1.6 2012/03/05 17:59:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_x.F,v 1.7 2013/03/02 00:29:20 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -36,6 +36,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
+#include "EEPARAMS.h"
 #include "GAD.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -83,8 +84,7 @@ C  uLoc          :: volume transported (per time step)
 C [iMin,iMax]Upd :: loop range to update tracer field
 C [jMin,jMax]Upd :: loop range to update tracer field
 C  nbStrips      :: number of strips (if region to update is splitted)
-      _RL two, three
-      PARAMETER( two   = 2. _d 0 )
+      _RL three
       PARAMETER( three = 3. _d 0 )
       INTEGER i,j
       INTEGER ns, nbStrips
@@ -121,7 +121,7 @@ C  nbStrips      :: number of strips (if region to update is splitted)
 CEOP
 
       recip_dT = 0.
-      IF ( deltaTloc.GT.0. _d 0 ) recip_dT = 1.0 _d 0 / deltaTloc
+      IF ( deltaTloc.GT.zeroRL ) recip_dT = 1.0 _d 0 / deltaTloc
 
 C-    Set loop ranges for updating tracer field (splitted in 2 strips)
       nbStrips   = 1
@@ -157,7 +157,7 @@ C--   start 1rst loop on strip number "ns"
 C     If flux-limiting transport is to be applied, place limits on
 C     appropriate moments before transport.
          slpmax = 0.
-         IF ( sm_o(i,j).GT.0. ) slpmax = sm_o(i,j)
+         IF ( sm_o(i,j).GT.zeroRL ) slpmax = sm_o(i,j)
          s1max = slpmax*1.5 _d 0
          s1new = MIN(  s1max, MAX(-s1max,sm_x(i,j)) )
          s2new = MIN( (slpmax+slpmax-ABS(s1new)/three),
@@ -176,7 +176,7 @@ C---  part.1 : calculate flux for all moments
        DO i=iMinUpd(1),iMaxUpd(1)+1
         uLoc = uTrans(i,j)*deltaTloc
 C--    Flux from (i-1) to (i) when U>0 (i.e., take right side of box i-1)
-        fp_v (i,j) = MAX( 0. _d 0,  uLoc )
+        fp_v (i,j) = MAX( zeroRL,  uLoc )
         alp  (i,j) = fp_v(i,j)/sm_v(i-1,j)
         alpq       = alp(i,j)*alp(i,j)
         alp1       = 1. _d 0 - alp(i,j)
@@ -195,7 +195,7 @@ C       use same indexing as velocity, "p" for positive U
         fp_zz(i,j) = alp(i,j)*sm_zz(i-1,j)
         fp_yz(i,j) = alp(i,j)*sm_yz(i-1,j)
 C--    Flux from (i) to (i-1) when U<0 (i.e., take left side of box i)
-        fn_v (i,j) = MAX( 0. _d 0, -uLoc )
+        fn_v (i,j) = MAX( zeroRL, -uLoc )
         aln  (i,j) = fn_v(i,j)/sm_v( i ,j)
         alnq       = aln(i,j)*aln(i,j)
         aln1       = 1. _d 0 - aln(i,j)
@@ -230,7 +230,7 @@ C      take off from grid box (i): negative U(i) and positive U(i+1)
       DO j=jMinUpd(ns),jMaxUpd(ns)
        DO i=iMinUpd(1),iMaxUpd(1)
 #ifdef ALLOW_OBCS
-        IF ( maskIn(i,j).NE.0. ) THEN
+        IF ( maskIn(i,j).NE.zeroRS ) THEN
 #endif /* ALLOW_OBCS */
         alf1  = 1. _d 0 - aln(i,j) - alp(i+1,j)
         alf1q = alf1*alf1
@@ -258,7 +258,7 @@ C      add into grid box (i): positive U(i) and negative U(i+1)
       DO j=jMinUpd(ns),jMaxUpd(ns)
        DO i=iMinUpd(1),iMaxUpd(1)
 #ifdef ALLOW_OBCS
-        IF ( maskIn(i,j).NE.0. ) THEN
+        IF ( maskIn(i,j).NE.zeroRS ) THEN
 #endif /* ALLOW_OBCS */
         sm_v (i,j) = sm_v (i,j) + fp_v (i,j) + fn_v (i+1,j)
         alfp = fp_v( i ,j)/sm_v(i,j)
@@ -273,8 +273,8 @@ C      add into grid box (i): positive U(i) and negative U(i+1)
      &                                    + alfn*alfn*fn_xx(i+1,j)
      &   - 5. _d 0*(-alpmn*alf1*sm_x(i,j) + alfp*alp1*fp_x(i,j)
      &                                    - alfn*aln1*fn_x(i+1,j)
-     &             + two*alfp*alfn*sm_o(i,j) + (alp1-alfp)*locTp
-     &                                       + (aln1-alfn)*locTn
+     &             + twoRL*alfp*alfn*sm_o(i,j) + (alp1-alfp)*locTp
+     &                                         + (aln1-alfn)*locTn
      &             )
         sm_xy(i,j) = alf1*sm_xy(i,j) + alfp*fp_xy(i,j)
      &                               + alfn*fn_xy(i+1,j)

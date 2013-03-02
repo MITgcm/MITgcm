@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_y.F,v 1.6 2012/03/05 17:59:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_y.F,v 1.7 2013/03/02 00:29:20 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -36,6 +36,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
+#include "EEPARAMS.h"
 #include "GAD.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -83,8 +84,7 @@ C  vLoc          :: volume transported (per time step)
 C [iMin,iMax]Upd :: loop range to update tracer field
 C [jMin,jMax]Upd :: loop range to update tracer field
 C  nbStrips      :: number of strips (if region to update is splitted)
-      _RL two, three
-      PARAMETER( two   = 2. _d 0 )
+      _RL three
       PARAMETER( three = 3. _d 0 )
       INTEGER i,j
       INTEGER ns, nbStrips
@@ -121,7 +121,7 @@ C  nbStrips      :: number of strips (if region to update is splitted)
 CEOP
 
       recip_dT = 0.
-      IF ( deltaTloc.GT.0. _d 0 ) recip_dT = 1.0 _d 0 / deltaTloc
+      IF ( deltaTloc.GT.zeroRL ) recip_dT = 1.0 _d 0 / deltaTloc
 
 C-    Set loop ranges for updating tracer field (splitted in 2 strips)
       nbStrips   = 1
@@ -176,7 +176,7 @@ C---  part.1 : calculate flux for all moments
        DO i=iMinUpd(ns),iMaxUpd(ns)
         vLoc = vTrans(i,j)*deltaTloc
 C--    Flux from (j-1) to (j) when V>0 (i.e., take right side of box j-1)
-        fp_v (i,j) = MAX( 0. _d 0,  vLoc )
+        fp_v (i,j) = MAX( zeroRL,  vLoc )
         alp  (i,j) = fp_v(i,j)/sm_v(i,j-1)
         alpq       = alp(i,j)*alp(i,j)
         alp1       = 1. _d 0 - alp(i,j)
@@ -196,7 +196,7 @@ C       use same indexing as velocity, "p" for positive V
         fp_zz(i,j) = alp(i,j)*sm_zz(i,j-1)
         fp_xz(i,j) = alp(i,j)*sm_xz(i,j-1)
 C--    Flux from (j) to (j-1) when V<0 (i.e., take left side of box j)
-        fn_v (i,j) = MAX( 0. _d 0, -vLoc )
+        fn_v (i,j) = MAX( zeroRL, -vLoc )
         aln  (i,j) = fn_v(i,j)/sm_v(i, j )
         alnq       = aln(i,j)*aln(i,j)
         aln1       = 1. _d 0 - aln(i,j)
@@ -231,7 +231,7 @@ C      take off from grid box (j): negative V(j) and positive V(j+1)
       DO j=jMinUpd(1),jMaxUpd(1)
        DO i=iMinUpd(ns),iMaxUpd(ns)
 #ifdef ALLOW_OBCS
-        IF ( maskIn(i,j).NE.0. ) THEN
+        IF ( maskIn(i,j).NE.zeroRS ) THEN
 #endif /* ALLOW_OBCS */
         alf1  = 1. _d 0 - aln(i,j) - alp(i,j+1)
         alf1q = alf1*alf1
@@ -259,7 +259,7 @@ C      add into grid box (j): positive V(j) and negative V(j+1)
       DO j=jMinUpd(1),jMaxUpd(1)
        DO i=iMinUpd(ns),iMaxUpd(ns)
 #ifdef ALLOW_OBCS
-        IF ( maskIn(i,j).NE.0. ) THEN
+        IF ( maskIn(i,j).NE.zeroRS ) THEN
 #endif /* ALLOW_OBCS */
         sm_v (i,j) = sm_v (i,j) + fp_v (i,j) + fn_v (i,j+1)
         alfp = fp_v(i, j )/sm_v(i,j)
@@ -274,8 +274,8 @@ C      add into grid box (j): positive V(j) and negative V(j+1)
      &                                    + alfn*alfn*fn_yy(i,j+1)
      &   - 5. _d 0*(-alpmn*alf1*sm_y(i,j) + alfp*alp1*fp_y(i,j)
      &                                    - alfn*aln1*fn_y(i,j+1)
-     &             + two*alfp*alfn*sm_o(i,j) + (alp1-alfp)*locTp
-     &                                       + (aln1-alfn)*locTn
+     &             + twoRL*alfp*alfn*sm_o(i,j) + (alp1-alfp)*locTp
+     &                                         + (aln1-alfn)*locTn
      &             )
         sm_xy(i,j) = alf1*sm_xy(i,j) + alfp*fp_xy(i,j)
      &                               + alfn*fn_xy(i,j+1)
