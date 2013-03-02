@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.19 2013/02/25 10:44:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.20 2013/03/02 04:35:05 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -78,21 +78,19 @@ C     parameters to compute convergence criterion
       _RL     phi_e, alp_e, JFNKgamma_lin
       _RL     FGMRESeps
       _RL     JFNKtol
-C     
+
       _RL     recip_deltaT
       LOGICAL JFNKconverged, krylovConverged
       LOGICAL writeNow
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-C
+
 C     u/vIceRes :: residual of sea-ice momentum equations
       _RL uIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C     vector version of the residuals
-      _RL resTmp (nVec,1,nSx,nSy)
 C     du/vIce   :: ice velocity increment to be added to u/vIce
       _RL duIce  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dvIce  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C     precomputed (= constant per Newton iteration) versions of 
+C     precomputed (= constant per Newton iteration) versions of
 C     zeta, eta, and DWATN, press
       _RL zetaPre (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaPre  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -117,11 +115,10 @@ C     with iOutFgmres=1, seaice_fgmres prints the residual at each iteration
      &     DIFFERENT_MULTIPLE( SEAICE_monFreq, myTime, deltaTClock ) )
      &     iOutFGMRES=1
 
-C     
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
           uIceRes(I,J,bi,bj) = 0. _d 0
           vIceRes(I,J,bi,bj) = 0. _d 0
           duIce  (I,J,bi,bj) = 0. _d 0
@@ -131,14 +128,14 @@ C
          ENDDO
         ENDDO
 C     Compute things that do no change during the Newton iteration:
-C     sea-surface tilt and wind stress: 
+C     sea-surface tilt and wind stress:
 C     FORCEX/Y0 - mass*(u/vIceNm1)/deltaT
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
           FORCEX(I,J,bi,bj) = FORCEX0(I,J,bi,bj)
-     &         + seaiceMassU(I,J,bi,bj)*uIceNm1(I,J,bi,bj)*recip_deltaT    
+     &         + seaiceMassU(I,J,bi,bj)*uIceNm1(I,J,bi,bj)*recip_deltaT
           FORCEY(I,J,bi,bj) = FORCEY0(I,J,bi,bj)
-     &         + seaiceMassV(I,J,bi,bj)*vIceNm1(I,J,bi,bj)*recip_deltaT    
+     &         + seaiceMassV(I,J,bi,bj)*vIceNm1(I,J,bi,bj)*recip_deltaT
          ENDDO
         ENDDO
        ENDDO
@@ -149,8 +146,8 @@ C     Start nonlinear Newton iteration: outer loop iteration
        newtonIter = newtonIter + 1
 C     Compute initial residual F(u), (includes computation of global
 C     variables DWATN, zeta, and eta)
-       IF ( newtonIter .EQ. 1 ) CALL SEAICE_JFNK_UPDATE( 
-     I      duIce, dvIce, 
+       IF ( newtonIter .EQ. 1 ) CALL SEAICE_JFNK_UPDATE(
+     I      duIce, dvIce,
      U      uIce, vIce, JFNKresidual,
      O      uIceRes, vIceRes,
      I      newtonIter, myTime, myIter, myThid )
@@ -158,8 +155,8 @@ C     local copies of precomputed coefficients that are to stay
 C     constant for the preconditioner
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            zetaPre(I,J,bi,bj) =  zeta(I,J,bi,bj)
             etaPre(I,J,bi,bj) =   eta(I,J,bi,bj)
            etaZPre(I,J,bi,bj) =  etaZ(I,J,bi,bj)
@@ -172,7 +169,7 @@ C     compute convergence criterion for linear preconditioned FGMRES
        JFNKgamma_lin = JFNKgamma_lin_max
        IF ( newtonIter.GT.1.AND.newtonIter.LE.SEAICE_JFNK_tolIter
      &      .AND.JFNKresidual.LT.JFNKres_t ) THEN
-C     Eisenstat, 1996, equ.(2.6)      
+C     Eisenstat, 1996, equ.(2.6)
         phi_e = 1. _d 0
         alp_e = 1. _d 0
         JFNKgamma_lin = phi_e*( JFNKresidual/JFNKresidualKm1 )**alp_e
@@ -181,7 +178,7 @@ C     Eisenstat, 1996, equ.(2.6)
        ENDIF
 C     save the residual for the next iteration
        JFNKresidualKm1 = JFNKresidual
-C
+
 C     The Krylov iteration using FGMRES, the preconditioner is LSOR
 C     for now. The code is adapted from SEAICE_LSR, but heavily stripped
 C     down.
@@ -189,24 +186,24 @@ C     krylovIter is mapped into "its" in seaice_fgmres and is incremented
 C     in that routine
        krylovIter    = 0
        iCode         = 0
-C
+
        JFNKconverged = JFNKresidual.LT.JFNKtol
-C
+
 C     do Krylov loop only if convergence is not reached
-C
+
        IF ( .NOT.JFNKconverged ) THEN
-C
+
 C     start Krylov iteration (FGMRES)
-C
+
         krylovConverged = .FALSE.
         FGMRESeps = JFNKgamma_lin * JFNKresidual
-        DO WHILE ( .NOT.krylovConverged ) 
+        DO WHILE ( .NOT.krylovConverged )
 C     solution vector sol = du/vIce
 C     residual vector (rhs) Fu = u/vIceRes
-C     output work vectors wk1, -> input work vector wk2 
-C     
+C     output work vectors wk1, -> input work vector wk2
+
          CALL SEAICE_FGMRES_DRIVER(
-     I        uIceRes, vIceRes, 
+     I        uIceRes, vIceRes,
      U        duIce, dvIce, iCode,
      I        FGMRESeps, iOutFGMRES,
      I        newtonIter, krylovIter, myTime, myIter, myThid )
@@ -214,17 +211,17 @@ C     FGMRES returns iCode either asking for an new preconditioned vector
 C     or product of matrix (Jacobian) times vector. For iCode = 0, terminate
 C     iteration
          IF (iCode.EQ.1) THEN
-C     Call preconditioner 
+C     Call preconditioner
           IF ( SOLV_MAX_ITERS .GT. 0 )
-     &         CALL SEAICE_PRECONDITIONER( 
-     U         duIce, dvIce, 
-     I         zetaPre, etaPre, etaZpre, dwatPre, 
+     &         CALL SEAICE_PRECONDITIONER(
+     U         duIce, dvIce,
+     I         zetaPre, etaPre, etaZpre, dwatPre,
      I         newtonIter, krylovIter, myTime, myIter, myThid )
          ELSEIF (iCode.GE.2) THEN
 C     Compute Jacobian times vector
           CALL SEAICE_JACVEC(
      I         uIce, vIce, uIceRes, vIceRes,
-     U         duIce, dvIce,  
+     U         duIce, dvIce,
      I         newtonIter, krylovIter, myTime, myIter, myThid )
          ENDIF
          krylovConverged = iCode.EQ.0
@@ -234,9 +231,9 @@ C     End of Krylov iterate
 C     some output diagnostics
         IF ( debugLevel.GE.debLevA ) THEN
          _BEGIN_MASTER( myThid )
-         totalNewtonItersLoc = 
+         totalNewtonItersLoc =
      &        SEAICEnewtonIterMax*(myIter-nIter0)+newtonIter
-         WRITE(msgBuf,'(2A,2(1XI6),2E12.5)') 
+         WRITE(msgBuf,'(2A,2(1XI6),2E12.5)')
      &        ' S/R SEAICE_JFNK: Newton iterate / total, ',
      &        'JFNKgamma_lin, initial norm = ',
      &        newtonIter, totalNewtonItersLoc,
@@ -244,7 +241,7 @@ C     some output diagnostics
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &        SQUEEZE_RIGHT, myThid )
          WRITE(msgBuf,'(3(A,I6))')
-     &        ' S/R SEAICE_JFNK: Newton iterate / total = ',newtonIter, 
+     &        ' S/R SEAICE_JFNK: Newton iterate / total = ',newtonIter,
      &        ' / ', totalNewtonItersLoc,
      &        ', Nb. of FGMRES iterations = ', krylovIter
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -267,16 +264,16 @@ C     Note that it should be possible to do the following operations
 C     at the beginning of the Newton iteration, thereby saving us from
 C     the extra call of seaice_jfnk_update, but unfortunately that
 C     changes the results, so we leave the stuff here for now.
-        CALL SEAICE_JFNK_UPDATE( 
-     I       duIce, dvIce, 
+        CALL SEAICE_JFNK_UPDATE(
+     I       duIce, dvIce,
      U       uIce, vIce, JFNKresidual,
      O       uIceRes, vIceRes,
      I       newtonIter, myTime, myIter, myThid )
 C     reset du/vIce here instead of setting sol = 0 in seaice_fgmres_driver
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-Oly,sNy+Oly
-           DO I=1-Olx,sNx+Olx
+          DO J=1-OLy,sNy+OLy
+           DO I=1-OLx,sNx+OLx
             duIce(I,J,bi,bj)= 0. _d 0
             dvIce(I,J,bi,bj)= 0. _d 0
            ENDDO
@@ -286,9 +283,9 @@ C     reset du/vIce here instead of setting sol = 0 in seaice_fgmres_driver
        ENDIF
 C     end of Newton iterate
       ENDDO
-C
+
 C--   Output diagnostics
-C
+
       IF ( SEAICE_monFreq .GT. 0. _d 0 ) THEN
 C     Count iterations
        totalJFNKtimeSteps = totalJFNKtimeSteps + 1
@@ -297,15 +294,15 @@ C     Count iterations
 C     Record failure
        totalKrylovFails   = totalKrylovFails + krylovFails
        IF ( newtonIter .EQ. SEAICEnewtonIterMax ) THEN
-        totalNewtonFails = totalNewtonFails + 1 
+        totalNewtonFails = totalNewtonFails + 1
        ENDIF
       ENDIF
 C     Decide whether it is time to dump and reset the counter
       writeNow = DIFFERENT_MULTIPLE(SEAICE_monFreq,
-     &     myTime+deltaTClock, deltaTClock) 
+     &     myTime+deltaTClock, deltaTClock)
 #ifdef ALLOW_CAL
       IF ( useCAL ) THEN
-       CALL CAL_TIME2DUMP( 
+       CALL CAL_TIME2DUMP(
      I      zeroRL, SEAICE_monFreq,  deltaTClock,
      U      writeNow,
      I      myTime+deltaTclock, myIter+1, myThid )
@@ -313,49 +310,49 @@ C     Decide whether it is time to dump and reset the counter
 #endif
       IF ( writeNow ) THEN
        _BEGIN_MASTER( myThid )
-       WRITE(msgBuf,'(A)') 
+       WRITE(msgBuf,'(A)')
      &' // ======================================================='
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A)') ' // Begin JFNK statistics'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)') 
+       WRITE(msgBuf,'(A)')
      &' // ======================================================='
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,I10)') 
+       WRITE(msgBuf,'(A,I10)')
      &      ' %JFNK_MON: time step              = ', myIter+1
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,I10)') 
+       WRITE(msgBuf,'(A,I10)')
      &      ' %JFNK_MON: Nb. of time steps      = ', totalJFNKtimeSteps
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,I10)') 
+       WRITE(msgBuf,'(A,I10)')
      &      ' %JFNK_MON: Nb. of Newton steps    = ', totalNewtonIters
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,I10)') 
+       WRITE(msgBuf,'(A,I10)')
      &      ' %JFNK_MON: Nb. of Krylov steps    = ', totalKrylovIters
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,I10)') 
+       WRITE(msgBuf,'(A,I10)')
      &      ' %JFNK_MON: Nb. of Newton failures = ', totalNewtonFails
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,I10)') 
+       WRITE(msgBuf,'(A,I10)')
      &      ' %JFNK_MON: Nb. of Krylov failures = ', totalKrylovFails
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)') 
+       WRITE(msgBuf,'(A)')
      &' // ======================================================='
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A)') ' // End JFNK statistics'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)') 
+       WRITE(msgBuf,'(A)')
      &' // ======================================================='
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
@@ -372,7 +369,7 @@ C     Print more debugging information
       IF ( debugLevel.GE.debLevA ) THEN
        IF ( newtonIter .EQ. SEAICEnewtonIterMax ) THEN
         _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(A,I10)') 
+        WRITE(msgBuf,'(A,I10)')
      &       ' S/R SEAICE_JFNK: JFNK did not converge in timestep ',
      &       myIter+1
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -381,7 +378,7 @@ C     Print more debugging information
        ENDIF
        IF ( krylovFails .GT. 0 ) THEN
         _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(A,I4,A,I10)') 
+        WRITE(msgBuf,'(A,I4,A,I10)')
      &       ' S/R SEAICE_JFNK: FGMRES did not converge ',
      &       krylovFails, ' times in timestep ', myIter+1
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -389,7 +386,7 @@ C     Print more debugging information
         _END_MASTER( myThid )
        ENDIF
        _BEGIN_MASTER( myThid )
-       WRITE(msgBuf,'(A,I6,A,I10)') 
+       WRITE(msgBuf,'(A,I6,A,I10)')
      &      ' S/R SEAICE_JFNK: Total number FGMRES iterations = ',
      &      totalKrylovItersLoc, ' in timestep ', myIter+1
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -405,8 +402,8 @@ CBOP
 C     !ROUTINE: SEAICE_JFNK_UPDATE
 C     !INTERFACE:
 
-      SUBROUTINE SEAICE_JFNK_UPDATE( 
-     I     duIce, dvIce, 
+      SUBROUTINE SEAICE_JFNK_UPDATE(
+     I     duIce, dvIce,
      U     uIce, vIce, JFNKresidual,
      O     uIceRes, vIceRes,
      I     newtonIter, myTime, myIter, myThid )
@@ -465,11 +462,11 @@ C     i,j,bi,bj :: loop indices
       _RL     resLoc, facLS
       LOGICAL doLineSearch
 C     nVec    :: size of the input vector(s)
-C     vector version of the residuals
+C     resTmp  :: vector version of the residuals
       INTEGER nVec
       PARAMETER ( nVec  = 2*sNx*sNy )
       _RL resTmp (nVec,1,nSx,nSy)
-C
+
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -482,8 +479,8 @@ C     Initialise some local variables
 C     Create update
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
            uIce(I,J,bi,bj) = uIce(I,J,bi,bj)+facLS*duIce(I,J,bi,bj)
            vIce(I,J,bi,bj) = vIce(I,J,bi,bj)+facLS*dvIce(I,J,bi,bj)
           ENDDO
@@ -492,9 +489,9 @@ C     Create update
        ENDDO
 C     Compute current residual F(u), (includes re-computation of global
 C     variables DWATN, zeta, and eta, i.e. they are different after this)
-       CALL SEAICE_CALC_RESIDUAL( 
-     I      uIce, vIce, 
-     O      uIceRes, vIceRes, 
+       CALL SEAICE_CALC_RESIDUAL(
+     I      uIce, vIce,
+     O      uIceRes, vIceRes,
      I      newtonIter, 0, myTime, myIter, myThid )
 C     Important: Compute the norm of the residual using the same scalar
 C     product that SEAICE_FGMRES does
@@ -502,9 +499,9 @@ C     product that SEAICE_FGMRES does
        CALL SEAICE_SCALPROD(nVec,1,1,1,resTmp,resTmp,resLoc,myThid)
        resLoc = SQRT(resLoc)
 C     Determine, if we need more iterations
-       doLineSearch = resLoc .GE. JFNKresidual 
+       doLineSearch = resLoc .GE. JFNKresidual
 C     Limit the maximum number of iterations arbitrarily to four
-       doLineSearch = doLineSearch .AND. l .LT. 4 
+       doLineSearch = doLineSearch .AND. l .LT. 4
 C     For the first iteration du/vIce = 0 and there will be no
 C     improvement of the residual possible, so we do only the first
 C     iteration
@@ -516,7 +513,7 @@ C     Increment counter
 C     some output diagnostics
        IF ( debugLevel.GE.debLevA .AND. doLineSearch ) THEN
         _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(2A,2(1XI6),3E12.5)') 
+        WRITE(msgBuf,'(2A,2(1XI6),3E12.5)')
      &       ' S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, ',
      &       'facLS, JFNKresidual, resLoc = ',
      &        newtonIter, l, facLS, JFNKresidual, resLoc
