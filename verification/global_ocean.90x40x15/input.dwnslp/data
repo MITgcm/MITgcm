@@ -31,7 +31,6 @@
  doResetHFactors=.TRUE.,
 # set precision of data files
  readBinaryPrec=32,
-#debugMode=.TRUE.,
  &
 
 # Elliptic solver parameters

@@ -37,7 +37,6 @@
 # set precision of data files
  readBinaryPrec=32,
 #writeBinaryPrec=64,
-#debugMode=.TRUE.,
  &
 
 # Elliptic solver parameters
