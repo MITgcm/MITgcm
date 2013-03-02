@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.10 2012/03/05 17:59:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.11 2013/03/02 00:32:30 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -91,7 +91,7 @@ C  myTile        :: variables used to determine which cube face
 C  nCFace        :: owns a tile for cube grid runs using
 C                :: multi-dim advection.
 C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
-C  msgBuf        :: Informational/error meesage buffer
+C  msgBuf        :: Informational/error message buffer
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER i,j,k,km1,kUp,kDown
       _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -139,6 +139,7 @@ c     _RL  localTr
       INTEGER npass, ipass
       INTEGER nCFace, n
       LOGICAL N_edge, S_edge, E_edge, W_edge
+      LOGICAL noFlowAcrossSurf
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_EXCH2
       INTEGER myTile
@@ -443,6 +444,9 @@ C--   End of K loop for horizontal fluxes
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+      noFlowAcrossSurf = rigidLid .OR. nonlinFreeSurf.GE.1
+     &                            .OR. select_rStar.NE.0
+
       IF ( .NOT.implicitAdvection ) THEN
 C--   Apply limiter (if any):
        CALL GAD_SOM_LIM_R( bi,bj, limiter,
@@ -506,7 +510,7 @@ c    &              ) THEN
 #else
 c       IF ( k.EQ.1 ) THEN
 #endif
-        IF ( (rigidLid.OR.nonlinFreeSurf.GE.1) .AND. k.EQ.1 ) THEN
+        IF ( noFlowAcrossSurf .AND. k.EQ.1 ) THEN
 C- Surface interface :
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -516,7 +520,7 @@ C- Surface interface :
           ENDDO
          ENDDO
 
-        ELSEIF ( rigidLid.OR.nonlinFreeSurf.GE.1 ) THEN
+        ELSEIF ( noFlowAcrossSurf ) THEN
 C- Interior interface :
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -585,7 +589,12 @@ C--  without rescaling of tendencies:
 c         localTr = smTr0(i,j,k)/smVol(i,j,k)
 c         gTracer(i,j,k,bi,bj) = ( localTr - tracer(i,j,k,bi,bj) )
 c    &                         / deltaTLev(k)
-C--  consistent with rescaling of tendencies (in FREESURF_RESCALE_G):
+C--  Non-Lin Free-Surf: consistent with rescaling of tendencies
+C     (in FREESURF_RESCALE_G) and RealFreshFlux/addMass.
+C    Also valid for linear Free-Surf (r & r* coords) except that surf tracer
+C    loss/gain is computed (in GAD_SOM_ADV_R) from partially updated tracer
+C     (instead of from Tr^n as fresh-water dilution effect) resulting in
+C    inaccurate linFSConserveTr and "surfExpan_" monitor.
           gTracer(i,j,k,bi,bj) =
      &          ( smTr0(i,j,k) - tracer(i,j,k,bi,bj)*smVol(i,j,k) )
      &            *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
