@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1836 2013/03/04 19:08:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1837 2013/03/04 19:58:10 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco and several verification experiments:
+  Remove special versions of the_model_main.F, the_main_loop.F, forward_step.F
+  from ecco package, and revert to unified routine in model/src/
+  adjust verification experiments accordingly, especially gloal_oce_llc90
+  Should conclude long-standing work by Gael to reconsile the_main_loop with ECCO
+  and will enable OpenAD's revolve loop in ECCO setup
 o pkg/generic_advdiff:
   - implement compressible flow method for multi-dim advection (similar to
     gad_som_advect.F); add new option "GAD_MULTIDIM_COMPRESSIBLE" (since
