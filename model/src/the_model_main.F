@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.112 2012/07/06 21:44:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.113 2013/03/04 19:29:52 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -368,11 +368,7 @@ c--
       IF (debugMode) CALL DEBUG_CALL('ADTHE_MAIN_LOOP',myThid)
 #   endif
       CALL TIMER_START('ADTHE_MAIN_LOOP          [ADJOINT RUN]', myThid)
-#   ifdef ALLOW_ECCO
-      CALL ADTHE_MAIN_LOOP ( myTime, myThid )
-#   else
       CALL ADTHE_MAIN_LOOP ( myThid )
-#   endif
       CALL TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', myThid)
 #  endif /* ALLOW_DIVIDED_ADJOINT */
 c
