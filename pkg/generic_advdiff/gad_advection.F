@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.71 2012/03/09 20:13:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.72 2013/03/04 18:20:46 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -83,6 +83,14 @@ C !OUTPUT PARAMETERS: ==================================================
 C  gTracer           :: tendency array
       _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
+C !FUNCTIONS: ==========================================================
+#ifdef ALLOW_DIAGNOSTICS
+      CHARACTER*4 GAD_DIAG_SUFX
+      EXTERNAL    GAD_DIAG_SUFX
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif
+
 C !LOCAL VARIABLES: ====================================================
 C  maskUp        :: 2-D array for mask at W points
 C  maskLocW      :: 2-D array for mask at West points
@@ -98,13 +106,13 @@ C  uFld,vFld     :: 2-D local copy of horizontal velocity, U,V components
 C  wFld          :: 2-D local copy of vertical velocity
 C  uTrans,vTrans :: 2-D arrays of volume transports at U,V points
 C  rTrans        :: 2-D arrays of volume transports at W points
-C  rTransKp1     :: vertical volume transport at interface k+1
+C  rTransKp      :: vertical volume transport at interface k+1
 C  af            :: 2-D array for horizontal advective flux
 C  afx           :: 2-D array for horizontal advective flux, x direction
 C  afy           :: 2-D array for horizontal advective flux, y direction
 C  fVerT         :: 2 1/2D arrays for vertical advective flux
-C  localTij      :: 2-D array, temporary local copy of tracer fld
-C  localTijk     :: 3-D array, temporary local copy of tracer fld
+C  localTij      :: 2-D array, temporary local copy of tracer field
+C  localT3d      :: 3-D array, temporary local copy of tracer field
 C  kp1Msk        :: flag (0,1) for over-riding mask for W levels
 C  calc_fluxes_X :: logical to indicate to calculate fluxes in X dir
 C  calc_fluxes_Y :: logical to indicate to calculate fluxes in Y dir
@@ -129,13 +137,18 @@ c     _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rTransKp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rTransKp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL af      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afx     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afy     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL localTij(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL localTijk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL localT3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#ifdef GAD_MULTIDIM_COMPRESSIBLE
+      _RL tmpTrac
+      _RL localVol(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL locVol3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#endif
       _RL kp1Msk
       LOGICAL calc_fluxes_X, calc_fluxes_Y, withSigns
       LOGICAL interiorOnly, overlapOnly
@@ -153,12 +166,7 @@ C     msgBuf     :: Informational/error message buffer
       CHARACTER*8 diagName
       CHARACTER*4 diagSufx
       LOGICAL     doDiagAdvX, doDiagAdvY, doDiagAdvR
-C-    Functions:
-      CHARACTER*4 GAD_DIAG_SUFX
-      EXTERNAL    GAD_DIAG_SUFX
-      LOGICAL  DIAGNOSTICS_IS_ON
-      EXTERNAL DIAGNOSTICS_IS_ON
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -199,7 +207,7 @@ C--   Set diagnostics flags and suffix for the current tracer
         diagName = 'ADVr'//diagSufx
         doDiagAdvR = DIAGNOSTICS_IS_ON( diagName, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
 
 C--   Set up work arrays with valid (i.e. not NaN) values
 C     These inital values do not alter the numerical results. They
@@ -215,11 +223,14 @@ C     uninitialised but inert locations.
         rTrans(i,j)  = 0. _d 0
         fVerT(i,j,1) = 0. _d 0
         fVerT(i,j,2) = 0. _d 0
-        rTransKp1(i,j)= 0. _d 0
+        rTransKp(i,j)= 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
+# ifdef GAD_MULTIDIM_COMPRESSIBLE
+        localVol(i,j) = 0. _d 0
+# endif
         localTij(i,j) = 0. _d 0
-        wfld(i,j)    = 0. _d 0
-#endif
+        wFld(i,j)    = 0. _d 0
+#endif /* ALLOW_AUTODIFF_TAMC */
        ENDDO
       ENDDO
 
@@ -278,6 +289,11 @@ C--   Make local copy of tracer array and mask West & South
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
          localTij(i,j) = tracer(i,j,k,bi,bj)
+#ifdef GAD_MULTIDIM_COMPRESSIBLE
+         localVol(i,j) = rA(i,j,bi,bj)*deepFac2C(k)
+     &                  *rhoFacC(k)*drF(k)*hFacC(i,j,k,bi,bj)
+     &                 + ( oneRS - maskC(i,j,k,bi,bj) )
+#endif
 #ifdef ALLOW_OBCS
          maskLocW(i,j) = _maskW(i,j,k,bi,bj)*maskInW(i,j,bi,bj)
          maskLocS(i,j) = _maskS(i,j,k,bi,bj)*maskInS(i,j,bi,bj)
@@ -288,13 +304,11 @@ C--   Make local copy of tracer array and mask West & South
        ENDDO
       ENDDO
 
-cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
       IF (useCubedSphereExchange) THEN
         withSigns = .FALSE.
         CALL FILL_CS_CORNER_UV_RS(
      &            withSigns, maskLocW,maskLocS, bi,bj, myThid )
       ENDIF
-cph-exch2#endif
 
 C--   Multiple passes for different directions on different tiles
 C--   For cube need one pass for each of red, green and blue axes.
@@ -335,14 +349,14 @@ C-    not CubedSphere
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   X direction
-C-     Advective flux in X
+
+#ifdef ALLOW_AUTODIFF_TAMC
+C-     Always reset advective flux in X
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           af(i,j) = 0.
          ENDDO
         ENDDO
-C
-#ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
@@ -350,7 +364,7 @@ CADJ STORE af(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-C
+
       IF (calc_fluxes_X) THEN
 
 C-     Do not compute fluxes if
@@ -364,7 +378,14 @@ C-     Internal exchange for calculations in X
      &                              localTij, bi,bj, myThid )
         ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
+C-     Advective flux in X
+#ifndef ALLOW_AUTODIFF_TAMC
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          af(i,j) = 0.
+         ENDDO
+        ENDDO
+#else /* ALLOW_AUTODIFF_TAMC */
 # ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
@@ -418,6 +439,14 @@ C-     Advective flux in X : done
 
 C-     Update the local tracer field where needed:
 C      use "maksInC" to prevent updating tracer field in OB regions
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef GAD_MULTIDIM_COMPRESSIBLE
+CADJ STORE localVol(:,:)  =
+CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
+CADJ STORE localTij(:,:)  =
+CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C      update in overlap-Only
        IF ( overlapOnly ) THEN
@@ -431,6 +460,15 @@ C         in corner region) but safer to keep them.
         IF ( S_edge ) THEN
          DO j=1-OLy,0
           DO i=iMinUpd,iMaxUpd
+#ifdef GAD_MULTIDIM_COMPRESSIBLE
+           tmpTrac = localTij(i,j)*localVol(i,j)
+     &      -deltaTLev(k)*( af(i+1,j) - af(i,j) )
+     &                   *maskInC(i,j,bi,bj)
+           localVol(i,j) = localVol(i,j)
+     &      -deltaTLev(k)*( uTrans(i+1,j) - uTrans(i,j) )
+     &                   *maskInC(i,j,bi,bj)
+           localTij(i,j) = tmpTrac/localVol(i,j)
+#else /* GAD_MULTIDIM_COMPRESSIBLE */
            localTij(i,j) = localTij(i,j)
      &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
@@ -438,12 +476,22 @@ C         in corner region) but safer to keep them.
      &       *( af(i+1,j)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(uTrans(i+1,j)-uTrans(i,j))
      &        )*maskInC(i,j,bi,bj)
+#endif /* GAD_MULTIDIM_COMPRESSIBLE */
           ENDDO
          ENDDO
         ENDIF
         IF ( N_edge ) THEN
          DO j=sNy+1,sNy+OLy
           DO i=iMinUpd,iMaxUpd
+#ifdef GAD_MULTIDIM_COMPRESSIBLE
+           tmpTrac = localTij(i,j)*localVol(i,j)
+     &      -deltaTLev(k)*( af(i+1,j) - af(i,j) )
+     &                   *maskInC(i,j,bi,bj)
+           localVol(i,j) = localVol(i,j)
+     &      -deltaTLev(k)*( uTrans(i+1,j) - uTrans(i,j) )
+     &                   *maskInC(i,j,bi,bj)
+           localTij(i,j) = tmpTrac/localVol(i,j)
+#else /* GAD_MULTIDIM_COMPRESSIBLE */
            localTij(i,j) = localTij(i,j)
      &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
@@ -451,6 +499,7 @@ C         in corner region) but safer to keep them.
      &       *( af(i+1,j)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(uTrans(i+1,j)-uTrans(i,j))
      &        )*maskInC(i,j,bi,bj)
+#endif /* GAD_MULTIDIM_COMPRESSIBLE */
           ENDDO
          ENDDO
         ENDIF
@@ -463,6 +512,15 @@ C      do not only update the overlap
         IF ( interiorOnly .AND. N_edge ) jMaxUpd = sNy
         DO j=jMinUpd,jMaxUpd
          DO i=1-OLx+1,sNx+OLx-1
+#ifdef GAD_MULTIDIM_COMPRESSIBLE
+           tmpTrac = localTij(i,j)*localVol(i,j)
+     &      -deltaTLev(k)*( af(i+1,j) - af(i,j) )
+     &                   *maskInC(i,j,bi,bj)
+           localVol(i,j) = localVol(i,j)
+     &      -deltaTLev(k)*( uTrans(i+1,j) - uTrans(i,j) )
+     &                   *maskInC(i,j,bi,bj)
+           localTij(i,j) = tmpTrac/localVol(i,j)
+#else /* GAD_MULTIDIM_COMPRESSIBLE */
            localTij(i,j) = localTij(i,j)
      &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
@@ -470,6 +528,7 @@ C      do not only update the overlap
      &       *( af(i+1,j)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(uTrans(i+1,j)-uTrans(i,j))
      &        )*maskInC(i,j,bi,bj)
+#endif /* GAD_MULTIDIM_COMPRESSIBLE */
          ENDDO
         ENDDO
 C-      keep advective flux (for diagnostics)
@@ -487,15 +546,14 @@ C--   End of X direction
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Y direction
-cph-test
-C-     Advective flux in Y
+
+#ifdef ALLOW_AUTODIFF_TAMC
+C-     Always reset advective flux in Y
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           af(i,j) = 0.
          ENDDO
         ENDDO
-C
-#ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
@@ -503,7 +561,7 @@ CADJ STORE af(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-C
+
       IF (calc_fluxes_Y) THEN
 
 C-     Do not compute fluxes if
@@ -518,13 +576,13 @@ C-     Internal exchange for calculations in Y
         ENDIF
 
 C-     Advective flux in Y
+#ifndef ALLOW_AUTODIFF_TAMC
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           af(i,j) = 0.
          ENDDO
         ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
+#else /* ALLOW_AUTODIFF_TAMC */
 #ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
@@ -578,6 +636,14 @@ C-     Advective flux in Y : done
 
 C-     Update the local tracer field where needed:
 C      use "maksInC" to prevent updating tracer field in OB regions
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef GAD_MULTIDIM_COMPRESSIBLE
+CADJ STORE localVol(:,:)  =
+CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
+CADJ STORE localTij(:,:)  =
+CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C      update in overlap-Only
        IF ( overlapOnly ) THEN
@@ -591,6 +657,15 @@ C         in corner region) but safer to keep them.
         IF ( W_edge ) THEN
          DO j=jMinUpd,jMaxUpd
           DO i=1-OLx,0
+#ifdef GAD_MULTIDIM_COMPRESSIBLE
+           tmpTrac = localTij(i,j)*localVol(i,j)
+     &      -deltaTLev(k)*( af(i,j+1) - af(i,j) )
+     &                   *maskInC(i,j,bi,bj)
+           localVol(i,j) = localVol(i,j)
+     &      -deltaTLev(k)*( vTrans(i,j+1) - vTrans(i,j) )
+     &                   *maskInC(i,j,bi,bj)
+           localTij(i,j) = tmpTrac/localVol(i,j)
+#else /* GAD_MULTIDIM_COMPRESSIBLE */
            localTij(i,j) = localTij(i,j)
      &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
@@ -598,12 +673,22 @@ C         in corner region) but safer to keep them.
      &       *( af(i,j+1)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(vTrans(i,j+1)-vTrans(i,j))
      &        )*maskInC(i,j,bi,bj)
+#endif /* GAD_MULTIDIM_COMPRESSIBLE */
           ENDDO
          ENDDO
         ENDIF
         IF ( E_edge ) THEN
          DO j=jMinUpd,jMaxUpd
           DO i=sNx+1,sNx+OLx
+#ifdef GAD_MULTIDIM_COMPRESSIBLE
+           tmpTrac = localTij(i,j)*localVol(i,j)
+     &      -deltaTLev(k)*( af(i,j+1) - af(i,j) )
+     &                   *maskInC(i,j,bi,bj)
+           localVol(i,j) = localVol(i,j)
+     &      -deltaTLev(k)*( vTrans(i,j+1) - vTrans(i,j) )
+     &                   *maskInC(i,j,bi,bj)
+           localTij(i,j) = tmpTrac/localVol(i,j)
+#else /* GAD_MULTIDIM_COMPRESSIBLE */
            localTij(i,j) = localTij(i,j)
      &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
@@ -611,6 +696,7 @@ C         in corner region) but safer to keep them.
      &       *( af(i,j+1)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(vTrans(i,j+1)-vTrans(i,j))
      &        )*maskInC(i,j,bi,bj)
+#endif /* GAD_MULTIDIM_COMPRESSIBLE */
           ENDDO
          ENDDO
         ENDIF
@@ -623,6 +709,15 @@ C      do not only update the overlap
         IF ( interiorOnly .AND. E_edge ) iMaxUpd = sNx
         DO j=1-OLy+1,sNy+OLy-1
          DO i=iMinUpd,iMaxUpd
+#ifdef GAD_MULTIDIM_COMPRESSIBLE
+           tmpTrac = localTij(i,j)*localVol(i,j)
+     &      -deltaTLev(k)*( af(i,j+1) - af(i,j) )
+     &                   *maskInC(i,j,bi,bj)
+           localVol(i,j) = localVol(i,j)
+     &      -deltaTLev(k)*( vTrans(i,j+1) - vTrans(i,j) )
+     &                   *maskInC(i,j,bi,bj)
+           localTij(i,j) = tmpTrac/localVol(i,j)
+#else /* GAD_MULTIDIM_COMPRESSIBLE */
            localTij(i,j) = localTij(i,j)
      &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
@@ -630,6 +725,7 @@ C      do not only update the overlap
      &       *( af(i,j+1)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(vTrans(i,j+1)-vTrans(i,j))
      &        )*maskInC(i,j,bi,bj)
+#endif /* GAD_MULTIDIM_COMPRESSIBLE */
          ENDDO
         ENDDO
 C-      keep advective flux (for diagnostics)
@@ -650,6 +746,9 @@ C--   End of ipass loop
 
       IF ( implicitAdvection ) THEN
 C-    explicit advection is done ; store tendency in gTracer:
+#ifdef GAD_MULTIDIM_COMPRESSIBLE
+        STOP 'GAD_ADVECTION: missing code for implicitAdvection'
+#endif /* GAD_MULTIDIM_COMPRESSIBLE */
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           gTracer(i,j,k,bi,bj)=
@@ -660,7 +759,10 @@ C-    explicit advection is done ; store tendency in gTracer:
 C-    horizontal advection done; store intermediate result in 3D array:
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          localTijk(i,j,k) = localTij(i,j)
+#ifdef GAD_MULTIDIM_COMPRESSIBLE
+          locVol3d(i,j,k) = localVol(i,j)
+#endif /* GAD_MULTIDIM_COMPRESSIBLE */
+          localT3d(i,j,k) = localTij(i,j)
          ENDDO
         ENDDO
       ENDIF
@@ -674,7 +776,7 @@ C-    horizontal advection done; store intermediate result in 3D array:
           diagName = 'ADVy'//diagSufx
           CALL DIAGNOSTICS_FILL( afy, diagName, k,1, 2,bi,bj, myThid )
         ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevC
@@ -709,7 +811,7 @@ c       kp1=min(Nr,k+1)
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE rtrans(:,:)  =
 CADJ &     comlev1_bibj_k_gad, key=kkey, kind=isbyte
-cphCADJ STORE wfld(:,:)  =
+cphCADJ STORE wFld(:,:)  =
 cphCADJ &     comlev1_bibj_k_gad, key=kkey, kind=isbyte
 #endif
 
@@ -724,14 +826,14 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-cphmultiCADJ STORE wfld(:,:)  =
+cphmultiCADJ STORE wFld(:,:)  =
 cphmultiCADJ &     comlev1_bibj_k_gad, key=kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C- Surface interface :
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           rTransKp1(i,j) = kp1Msk*rTrans(i,j)
+           rTransKp(i,j) = kp1Msk*rTrans(i,j)
            wFld(i,j)   = 0.
            rTrans(i,j) = 0.
            fVerT(i,j,kUp) = 0.
@@ -741,14 +843,14 @@ C- Surface interface :
         ELSE
 
 #ifdef ALLOW_AUTODIFF_TAMC
-cphmultiCADJ STORE wfld(:,:)  =
+cphmultiCADJ STORE wFld(:,:)  =
 cphmultiCADJ &     comlev1_bibj_k_gad, key=kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C- Interior interface :
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           rTransKp1(i,j) = kp1Msk*rTrans(i,j)
+           rTransKp(i,j) = kp1Msk*rTrans(i,j)
            wFld(i,j)   = wVel(i,j,k,bi,bj)
            rTrans(i,j) = wVel(i,j,k,bi,bj)*rA(i,j,bi,bj)
      &                 *deepFac2F(k)*rhoFacF(k)
@@ -766,7 +868,7 @@ C--   Residual transp = Bolus transp + Eulerian transp
 #endif /* ALLOW_GMREDI */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-cphmultiCADJ STORE localTijk(:,:,k)
+cphmultiCADJ STORE localT3d(:,:,k)
 cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, kind=isbyte
 cphmultiCADJ STORE rTrans(:,:)
 cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, kind=isbyte
@@ -776,24 +878,24 @@ C-    Compute vertical advective flux in the interior:
          IF ( vertAdvecScheme.EQ.ENUM_UPWIND_1RST
      &      .OR. vertAdvecScheme.EQ.ENUM_DST2 ) THEN
            CALL GAD_DST2U1_ADV_R(    bi,bj,k, advectionScheme,
-     I                          deltaTLev(k),rTrans,wFld,localTijk,
+     I                          deltaTLev(k),rTrans,wFld,localT3d,
      O                               fVerT(1-OLx,1-OLy,kUp), myThid )
          ELSEIF( vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
            CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k, deltaTLev(k),
-     I                               rTrans, wFld, localTijk,
+     I                               rTrans, wFld, localT3d,
      O                               fVerT(1-OLx,1-OLy,kUp), myThid )
          ELSEIF( vertAdvecScheme.EQ.ENUM_DST3 ) THEN
            CALL GAD_DST3_ADV_R(      bi,bj,k, deltaTLev(k),
-     I                               rTrans, wFld, localTijk,
+     I                               rTrans, wFld, localT3d,
      O                               fVerT(1-OLx,1-OLy,kUp), myThid )
          ELSEIF( vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
            CALL GAD_DST3FL_ADV_R(    bi,bj,k, deltaTLev(k),
-     I                               rTrans, wFld, localTijk,
+     I                               rTrans, wFld, localT3d,
      O                               fVerT(1-OLx,1-OLy,kUp), myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
          ELSEIF (vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_R(     bi,bj,k, deltaTLev(k),
-     I                               rTrans, wFld, localTijk,
+     I                               rTrans, wFld, localT3d,
      O                               fVerT(1-OLx,1-OLy,kUp), myThid )
 #endif
          ELSE
@@ -806,7 +908,7 @@ C- end Surface/Interior if bloc
 #ifdef ALLOW_AUTODIFF_TAMC
 cphmultiCADJ STORE rTrans(:,:)
 cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, kind=isbyte
-cphmultiCADJ STORE rTranskp1(:,:)
+cphmultiCADJ STORE rTranskp(:,:)
 cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, kind=isbyte
 cph --- following storing of fVerT is critical for correct
 cph --- gradient with multiDimAdvection
@@ -817,19 +919,47 @@ CADJ &     = comlev1_bibj_k_gad, key=kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Divergence of vertical fluxes
+#ifdef GAD_MULTIDIM_COMPRESSIBLE
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          localTij(i,j) = localTijk(i,j,k)
+          tmpTrac = localT3d(i,j,k)*locVol3d(i,j,k)
+     &      -deltaTLev(k)*( fVerT(i,j,kDown)-fVerT(i,j,kUp) )
+     &                   *rkSign*maskInC(i,j,bi,bj)
+          localVol(i,j) = locVol3d(i,j,k)
+     &      -deltaTLev(k)*( rTransKp(i,j) - rTrans(i,j) )
+     &                   *rkSign*maskInC(i,j,bi,bj)
+C- localTij only needed for Variance Bugget: can be move there
+          localTij(i,j) = tmpTrac/localVol(i,j)
+C--  without rescaling of tendencies:
+c         gTracer(i,j,k,bi,bj)=
+c    &     (localTij(i,j)-tracer(i,j,k,bi,bj))/deltaTLev(k)
+C--  Non-Lin Free-Surf: consistent with rescaling of tendencies
+C     (in FREESURF_RESCALE_G) and RealFreshFlux/addMass.
+C    Also valid for linear Free-Surf (r & r* coords) w/wout RealFreshFlux
+C     and consistent with linFSConserveTr and "surfExpan_" monitor.
+          gTracer(i,j,k,bi,bj) =
+     &          ( tmpTrac - tracer(i,j,k,bi,bj)*localVol(i,j) )
+     &            *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
+     &            *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+     &            *recip_rhoFacC(k)
+     &            /deltaTLev(k)
+         ENDDO
+        ENDDO
+#else /* GAD_MULTIDIM_COMPRESSIBLE */
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          localTij(i,j) = localT3d(i,j,k)
      &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( fVerT(i,j,kDown)-fVerT(i,j,kUp)
-     &         -tracer(i,j,k,bi,bj)*(rTransKp1(i,j)-rTrans(i,j))
+     &         -tracer(i,j,k,bi,bj)*(rTransKp(i,j)-rTrans(i,j))
      &        )*rkSign*maskInC(i,j,bi,bj)
           gTracer(i,j,k,bi,bj)=
      &     (localTij(i,j)-tracer(i,j,k,bi,bj))/deltaTLev(k)
          ENDDO
         ENDDO
+#endif /* GAD_MULTIDIM_COMPRESSIBLE */
 
 #ifdef ALLOW_DIAGNOSTICS
         IF ( doDiagAdvR ) THEN
@@ -837,7 +967,7 @@ C--   Divergence of vertical fluxes
           CALL DIAGNOSTICS_FILL( fVerT(1-OLx,1-OLy,kUp),
      &                           diagName, k,1, 2,bi,bj, myThid )
         ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
 
 C--   End of K loop for vertical flux
        ENDDO
