@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_xz/code/GAD_OPTIONS.h,v 1.3 2011/12/24 01:17:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/advect_xz/code/GAD_OPTIONS.h,v 1.4 2013/03/04 18:41:16 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -12,7 +12,6 @@ C Contains CPP macros/flags for controlling optional features of package.
 CEOP
 
 C CPP options file for GAD (Generic Advection Diffusion) package
-C
 C Use this file for selecting options within the GAD package
 
 #ifndef GAD_OPTIONS_H
@@ -42,10 +41,39 @@ C introduces excessive recomputation/storage for the adjoint.
 C We can disable it here using CPP because run-time flags are insufficient.
 #undef DISABLE_MULTIDIM_ADVECTION
 
+C Use compressible flow method for multi-dim advection instead of old, less
+C accurate jmc method. Note: option has no effect on SOM advection which
+C always use compressible flow method.
+#undef GAD_MULTIDIM_COMPRESSIBLE
+
 C This enable the use of 2nd-Order Moment advection scheme (Prather, 1986) for
 C Temperature and Salinity ; due to large memory space (10 times more / tracer)
 C requirement, by default, this part of the code is not compiled.
 #define GAD_ALLOW_TS_SOM_ADV
+
+C Hack to get rid of negatives caused by Redi.  Works by restricting the
+C outgoing flux (only contributions computed in gad_calc_rhs) for each cell
+C to be no more than the amount of tracer in the cell (see Smolarkiewicz
+C MWR 1989 and Bott MWR 1989).
+C The flux contributions computed in gad_calc_rhs which are affected by
+C this hack are:
+C - explicit diffusion, Redi and the non-local part of KPP
+C - advection is affected only if multiDimAdvection=.FALSE.
+C - vertical diffusion (including the diagonal contribution from GMRedi)
+C   only if implicitDiffusion=.FALSE.
+C - GM is affected only if GMREDI_AdvForm=.FALSE.
+C
+C The parameter SmolarkiewiczMaxFrac (defined in gad_init_fixed.F)
+C specifies the maximal fraction of tracer that can leave a cell.
+C By default it is 1.  This will prevent the tracer from going negative
+C due to contributions from gad_calc_rhs alone.  In the presence of other
+C contributions (or roundoff errors), it may be necessary to reduce this
+C value to achieve strict positivity.
+C
+C This hack applies to all tracers except temperature and salinity!
+C Do not use with Adams-Bashforth (for ptracers)!
+C Do not use with OBCS!
+#undef  GAD_SMOLARKIEWICZ_HACK
 
 #else
 
