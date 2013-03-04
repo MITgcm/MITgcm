@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.34 2012/10/11 19:15:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.35 2013/03/04 17:49:45 utke Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -1017,13 +1017,13 @@ C      Data
            iDx = accBase-1+(bi-1)*accStep+I
            iBuf = iBuf + 1
            IF ( 10*((iBuf-6)/10) .EQ. iBuf-6 ) THEN
-            IF ( iDx. LT. 10 ) THEN
+            IF ( iDx .LT. 10 ) THEN
              WRITE(plotBuf(iBuf:),'(A,I1)') accLab,iDx
-            ELSEIF ( iDx. LT. 100 ) THEN
+            ELSEIF ( iDx .LT. 100 ) THEN
              WRITE(plotBuf(iBuf:),'(A,I2)') accLab,iDx
-            ELSEIF ( iDx. LT. 1000 ) THEN
+            ELSEIF ( iDx .LT. 1000 ) THEN
              WRITE(plotBuf(iBuf:),'(A,I3)') accLab,iDx
-            ELSEIF ( iDx. LT. 10000 ) THEN
+            ELSEIF ( iDx .LT. 10000 ) THEN
              WRITE(plotBuf(iBuf:),'(A,I4)') accLab,iDx
             ENDIF
            ENDIF
@@ -1451,13 +1451,13 @@ C      Data
            iDx = accBase-1+(bi-1)*accStep+I
            iBuf = iBuf + 1
            IF ( 10*((iBuf-6)/10) .EQ. iBuf-6 ) THEN
-            IF ( iDx. LT. 10 ) THEN
+            IF ( iDx .LT. 10 ) THEN
              WRITE(plotBuf(iBuf:),'(A,I1)') accLab,iDx
-            ELSEIF ( iDx. LT. 100 ) THEN
+            ELSEIF ( iDx .LT. 100 ) THEN
              WRITE(plotBuf(iBuf:),'(A,I2)') accLab,iDx
-            ELSEIF ( iDx. LT. 1000 ) THEN
+            ELSEIF ( iDx .LT. 1000 ) THEN
              WRITE(plotBuf(iBuf:),'(A,I3)') accLab,iDx
-            ELSEIF ( iDx. LT. 10000 ) THEN
+            ELSEIF ( iDx .LT. 10000 ) THEN
              WRITE(plotBuf(iBuf:),'(A,I4)') accLab,iDx
             ENDIF
            ENDIF
