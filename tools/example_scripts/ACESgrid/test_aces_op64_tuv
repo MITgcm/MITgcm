@@ -6,7 +6,7 @@
 #PBS -e /data/jm_c/test_acesgrid/output/tst_tuv.stderr
 #PBS -o /data/jm_c/test_acesgrid/output/tst_tuv.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_op64_tuv,v 1.9 2013/01/25 03:57:36 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_op64_tuv,v 1.10 2013/03/05 16:47:21 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -49,9 +49,11 @@ checkOut=1
 
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
-#- check for disk space:
-dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
-if [ $dsp -gt 99 ] ; then
+#- check for disk space: relative space (99%) or absolute (10.G):
+#dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
+#if [ $dsp -gt 99 ] ; then
+dsp=`df -P . | tail -1 | awk '{print $4}'`
+if [ $dsp -le 10000000 ] ; then
   echo 'Not enough space on this disk => do not run testreport.'
   df .
   exit

@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_tlm.stderr
 #PBS -o /home/jmc/test_aces/output/tst_tlm.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tlm,v 1.2 2013/01/25 23:26:00 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tlm,v 1.3 2013/03/05 16:47:21 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: test using open64 + "Trap Un-initialised Var." option
@@ -45,7 +45,7 @@ checkOut=1 ; options="$options -do"
 
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
-#- check for disk space:
+#- check for disk space: relative space (99%) or absolute (1.G):
 #dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
 #if [ $dsp -gt 99 ] ; then
 dsp=`df -P . | tail -1 | awk '{print $4}'`
