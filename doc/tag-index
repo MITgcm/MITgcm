@@ -1,15 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1837 2013/03/04 19:58:10 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1838 2013/03/05 16:23:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint64e (2013/03/05)
 o pkg/ecco and several verification experiments:
-  Remove special versions of the_model_main.F, the_main_loop.F, forward_step.F
-  from ecco package, and revert to unified routine in model/src/
-  adjust verification experiments accordingly, especially gloal_oce_llc90
-  Should conclude long-standing work by Gael to reconsile the_main_loop with ECCO
-  and will enable OpenAD's revolve loop in ECCO setup
+   Remove special versions of the_model_main.F, the_main_loop.F, forward_step.F
+   from ecco package, and revert to unified routine in model/src/
+   Adjust verification experiments accordingly, especially gloal_oce_llc90
+   Should conclude long-standing work by Gael to reconsile the_main_loop with
+   ECCO and will enable OpenAD's revolve loop in ECCO setup.
 o pkg/generic_advdiff:
   - implement compressible flow method for multi-dim advection (similar to
     gad_som_advect.F); add new option "GAD_MULTIDIM_COMPRESSIBLE" (since
@@ -36,9 +37,9 @@ o pkg/seaice: reorganize seaice_lsr.F to be able to reuse more code:
   - rename SEAICE_CALC_LSR_COEFFS into SEAICE_LSR_CALC_COEFFS
   - use new subroutines seaice_lsr_tridiagu/v in s/r seaice_preconditioner
 o OpenAD support
-  Reorganize S/R call for overall time-stepping loop to facilitate
-  OpenAD revolve loop replacement
-  (new S/R main_do_loop.F)
+   Reorganize S/R call for overall time-stepping loop to facilitate
+   OpenAD revolve loop replacement
+   (new S/R main_do_loop.F)
 o model/src:
   - add 3-D array 3rd dimension to argument list of S/R ADAMS_BASHFORTH2/3;
   - pkg/cheapaml: remove local S/R ADAMS2d and use instead standard S/R
