@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_f95,v 1.11 2012/07/27 18:25:39 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_f95,v 1.12 2013/03/06 23:01:19 heimbach Exp $
 #  $Name:  $
 #
 
@@ -64,6 +64,7 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_gen3d_dummy        \
                     xx_genarr2d_dummy    \
                     xx_genarr3d_dummy    \
+                    xx_gentim2d_dummy    \
                     xx_siarea_dummy        \
                     xx_siheff_dummy        \
                     xx_sihsnow_dummy        \
