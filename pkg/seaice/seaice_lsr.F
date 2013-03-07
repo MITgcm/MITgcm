@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.87 2013/02/21 17:32:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.88 2013/03/07 08:32:03 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -748,7 +748,7 @@ C Solve for uIce :
            CALL SEAICE_LSR_TRIDIAGU(
      I          AU, BU, CU, uRt1, uRt2, rhsU, uTmp, seaiceMaskU, WFAU,
      U          uIce,
-     I          imin, imax, jmin, jmax, bi, bj, myTime, myIter, myThid )
+     I          iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
           ENDIF
 
           IF ( doIterate4v ) THEN
@@ -756,7 +756,7 @@ C Solve for vIce
            CALL SEAICE_LSR_TRIDIAGV(
      I          AV, BV, CV, vRt1, vRt2, rhsV, vTmp, seaiceMaskV, WFAV, 
      U          vIce,
-     I          imin, imax, jmin, jmax, bi, bj, myTime, myIter, myThid )
+     I          iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
           ENDIF
 
 C     end bi,bj-loops
@@ -1403,11 +1403,11 @@ C     !INTERFACE:
       SUBROUTINE SEAICE_LSR_TRIDIAGU(
      I     AU, BU, CU, uRt1, uRt2, rhsU, uTmp, seaiceMaskU, WFAU,
      U     uIce,
-     I     imin, imax, jmin, jmax, bi, bj, myTime, myIter, myThid )
+     I     iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R SEAICE_LSR_TRIDIAGV
+C     | S/R SEAICE_LSR_TRIDIAGU
 C     | o Solve tridiagonal problem in uIce for LSR solver
 C     *==========================================================*
 C     \ev
@@ -1448,11 +1448,19 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j  :: Loop counters
       INTEGER I,J,IM
+#ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+      INTEGER K
+#endif
       _RL AA3
       _RL URT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL CUU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       
+#ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+      DO K=0,1
+      DO J=jMin+K,jMax,2
+#else
       DO J=jMin,jMax
+#endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
        DO I=iMin,iMax
         AA3 = 0. _d 0
         IF (I.EQ.iMin) AA3 = AA3 - AU(I,J,bi,bj)*uIce(I-1,J,bi,bj)
@@ -1460,13 +1468,8 @@ C     i,j  :: Loop counters
         
         URT(I,J)=rhsU(I,J,bi,bj)
      &       + AA3
-#ifdef SEAICE_VECTORIZE_LSR
-     &       + uRt1(I,J,bi,bj)*uTmp(I,J-1,bi,bj)
-     &       + uRt2(I,J,bi,bj)*uTmp(I,J+1,bi,bj)
-#else
      &       + uRt1(I,J,bi,bj)*uIce(I,J-1,bi,bj)
      &       + uRt2(I,J,bi,bj)*uIce(I,J+1,bi,bj)
-#endif /* SEAICE_VECTORIZE_LSR */
         URT(I,J)=URT(I,J)* seaiceMaskU(I,J,bi,bj)
        ENDDO
 
@@ -1480,7 +1483,11 @@ C     i,j  :: Loop counters
 C     start a new loop with reversed order to support automatic vectorization
       DO I=iMin+1,iMax
        IM=I-1
+# ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+       DO J=jMin+K,jMax,2
+# else
        DO J=jMin,jMax
+# endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
 #else /* do not SEAICE_VECTORIZE_LSR */
        DO I=iMin+1,iMax
         IM=I-1
@@ -1492,7 +1499,11 @@ C     start a new loop with reversed order to support automatic vectorization
 #ifdef SEAICE_VECTORIZE_LSR
       ENDDO
 C     go back to original order
+#ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+      DO J=jMin+K,jMax,2
+#else
       DO J=jMin,jMax
+#endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
 #endif /* SEAICE_VECTORIZE_LSR */
        DO I=iMin,iMax-1
         IM=sNx-I
@@ -1503,6 +1514,9 @@ C     go back to original order
      &       +WFAU*(URT(I,J)-uTmp(I,J,bi,bj))
        ENDDO
       ENDDO
+#ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+      ENDDO
+#endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
 
       RETURN
       END
@@ -1515,7 +1529,7 @@ C     !INTERFACE:
       SUBROUTINE SEAICE_LSR_TRIDIAGV(
      I     AV, BV, CV, vRt1, vRt2, rhsV, vTmp, seaiceMaskV, WFAV, 
      U     vIce,
-     I     imin, imax, jmin, jmax, bi, bj, myTime, myIter, myThid )
+     I     iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -1560,39 +1574,72 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j  :: Loop counters
       INTEGER I,J,JM
+#ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+      INTEGER K
+#endif
       _RL AA3
       _RL VRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL CVV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
+# ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+      DO K=0,1
+# endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
+#ifdef SEAICE_VECTORIZE_LSR
+      DO J=jMin,jMax
+# ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+       DO I=iMin+K,iMax,2
+# else
+       DO I=iMin,iMax
+# endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
+#else
       DO I=iMin,iMax
        DO J=jMin,jMax
+#endif /* SEAICE_VECTORIZE_LSR */
         AA3 = 0. _d 0
         IF (J.EQ.jMin) AA3 = AA3 - AV(I,J,bi,bj)*vIce(I,J-1,bi,bj)
         IF (J.EQ.jMax) AA3 = AA3 - CV(I,J,bi,bj)*vIce(I,J+1,bi,bj)
 
         VRT(I,J)=rhsV(I,J,bi,bj)
      &       + AA3
-#ifdef SEAICE_VECTORIZE_LSR
-     &       + vRt1(I,J,bi,bj)*vTmp(I-1,J,bi,bj)
-     &       + vRt2(I,J,bi,bj)*vTmp(I+1,J,bi,bj)
-#else
      &       + vRt1(I,J,bi,bj)*vIce(I-1,J,bi,bj)
      &       + vRt2(I,J,bi,bj)*vIce(I+1,J,bi,bj)
-#endif /* SEAICE_VECTORIZE_LSR */
         VRT(I,J)=VRT(I,J)* seaiceMaskV(I,J,bi,bj)
-       ENDDO
 
-       DO J=jMin,jMax
         CVV(I,J)=CV(I,J,bi,bj)
        ENDDO
+#ifdef SEAICE_VECTORIZE_LSR
+      ENDDO
+      DO I=iMin,iMax
+#endif /* SEAICE_VECTORIZE_LSR */
        CVV(I,jMin)=CVV(I,jMin)/BV(I,jMin,bi,bj)
        VRT(I,jMin)=VRT(I,jMin)/BV(I,jMin,bi,bj)
+#ifdef SEAICE_VECTORIZE_LSR
+      ENDDO
+C     start a new loop with reversed order to support automatic vectorization
+      DO J=jMin+1,jMax
+       JM=J-1
+# ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+       DO I=iMin+K,iMax,2
+# else
+       DO I=iMin,iMax
+# endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
+#else /* do not SEAICE_VECTORIZE_LSR */
        DO J=jMin+1,jMax
         JM=J-1
+#endif /* SEAICE_VECTORIZE_LSR */
         CVV(I,J)=CVV(I,J)/(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
         VRT(I,J)=(VRT(I,J)-AV(I,J,bi,bj)*VRT(I,JM))
      &       /(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
        ENDDO
+#ifdef SEAICE_VECTORIZE_LSR
+      ENDDO
+C     go back to original order
+# ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+      DO I=iMin+K,iMax,2
+# else
+      DO I=iMin,iMax
+# endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
+#endif /* SEAICE_VECTORIZE_LSR */
        DO J=jMin,jMax-1
         JM=sNy-J
         VRT(I,JM)=VRT(I,JM)-CVV(I,JM)*VRT(I,JM+1)
@@ -1602,6 +1649,9 @@ C     i,j  :: Loop counters
      &       +WFAV*(VRT(I,J)-vTmp(I,J,bi,bj))
        ENDDO
       ENDDO
+#ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+      ENDDO
+#endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
 
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
