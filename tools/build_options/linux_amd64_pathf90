@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.8 2011/08/19 22:54:04 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.9 2013/03/08 00:17:45 jmc Exp $
 #  $Name:  $
 #
 # Build options for PathScale (EKOPATH) Compiler on Linux x86-64
@@ -54,8 +54,11 @@ FFLAGS="$FFLAGS -m64 -fPIC -convert big_endian"
 if test "x$IEEE" = x ; then     #- with optimisation:
    #- full optimisation, trips over MITgcm code because of compiler problems:
    #FOPTIM='-Ofast -LNO:fusion=2 -funsafe-math-optimizations'
-   #- high optimisation (-O3), might find Pb with few S/R; fully safe: switch to -O2:
-    FOPTIM='-O3 -LNO:fusion=2 -funsafe-math-optimizations'
+   #- high optimisation (-O3 & (loop)fusion=2), might find Pb with few S/R:
+   #FOPTIM='-O3 -LNO:fusion=2 -funsafe-math-optimizations'
+   #- fully safe: switch to -O2 without (loop)fusion=2:
+    FOPTIM='-O3 -funsafe-math-optimizations'
+   #- multi-threaded: mon_set_iounit.F needs lower optimisation (lower than -02)
     NOOPTFILES="$NOOPTFILES mon_set_iounit.F"
 else
   if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
