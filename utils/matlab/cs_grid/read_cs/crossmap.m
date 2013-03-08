@@ -25,10 +25,13 @@ subplot('position',[.05 .35 .9 .3])
 h1=pcolor(tmp');shading flat
 set(gca,'xtick',[],'ytick',[])
 pos=get(gca,'position');
+box off
 
 ax3=axes('position',[pos(1)+pos(3)/4*2 pos(2)+pos(4) pos(3)/4 pos(4)]);
 h31=pcolor(rot90(a3',2));shading flat
 set(gca,'xtick',[],'ytick',[])
+box off
+
 ax6=axes('position',[pos(1)+pos(3)/4*2 pos(2)-pos(4) pos(3)/4 pos(4)]);
 h61=pcolor(rot90(a6'));shading flat
 set(gca,'xtick',[],'ytick',[])
