@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint64a
-(PID.TID 0000.0001) // Build user:        gforget
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint64e
+(PID.TID 0000.0001) // Build user:        jmc
 (PID.TID 0000.0001) // Build host:        baudelaire
-(PID.TID 0000.0001) // Build date:        Sat Dec 22 09:03:26 EST 2012
+(PID.TID 0000.0001) // Build date:        Sat Mar  9 02:44:05 EST 2013
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -254,11 +254,35 @@
 (PID.TID 0000.0001) >  useEXF    = .TRUE.,
 (PID.TID 0000.0001) >  useSEAICE = .TRUE.,
 (PID.TID 0000.0001) >  useGrdchk = .TRUE.,
-(PID.TID 0000.0001) ># useMNC    = .TRUE.,
+(PID.TID 0000.0001) >  useMNC    = .TRUE.,
 (PID.TID 0000.0001) >  useDiagnostics = .TRUE.,
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  PACKAGES_BOOT: finished reading data.pkg
+(PID.TID 0000.0001)  MNC_READPARMS: opening file 'data.mnc'
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.mnc
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.mnc"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) ># Example "data.mnc" file
+(PID.TID 0000.0001) ># Lines beginning "#" are comments
+(PID.TID 0000.0001) > &MNC_01
+(PID.TID 0000.0001) ># mnc_echo_gvtypes=.FALSE.,
+(PID.TID 0000.0001) ># mnc_use_indir=.FALSE.,
+(PID.TID 0000.0001) > mnc_use_outdir=.TRUE.,
+(PID.TID 0000.0001) > mnc_outdir_str='mnc_test_',
+(PID.TID 0000.0001) >#mnc_outdir_date=.TRUE.,
+(PID.TID 0000.0001) > monitor_mnc=.FALSE.,
+(PID.TID 0000.0001) >#snapshot_mnc=.FALSE.,
+(PID.TID 0000.0001) >#timeave_mnc=.FALSE.,
+(PID.TID 0000.0001) > pickup_write_mnc=.FALSE.,
+(PID.TID 0000.0001) > pickup_read_mnc=.FALSE.,
+(PID.TID 0000.0001) > /
+(PID.TID 0000.0001) ># Note: Some systems use & as the
+(PID.TID 0000.0001) ># namelist terminator. Other systems
+(PID.TID 0000.0001) ># use a / character (as shown here).
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MNC_READPARMS: finished reading data.mnc
 (PID.TID 0000.0001) CAL_READPARMS: opening data.cal
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.cal
 (PID.TID 0000.0001) // =======================================================
@@ -745,16 +769,11 @@
 (PID.TID 0000.0001) > &DIAGNOSTICS_LIST
 (PID.TID 0000.0001) >   dumpAtLast  = .TRUE.,
 (PID.TID 0000.0001) >#--
-(PID.TID 0000.0001) >  fields(1:15,2) = 'SIarea  ','SIheff  ','SIhsnow ',
-(PID.TID 0000.0001) >                   'SIuice  ','SIvice  ',
-(PID.TID 0000.0001) >                   'oceFWflx','oceSflux','oceQnet ',
-(PID.TID 0000.0001) >                   'SItices ','SIatmFW ','SIatmQnt',
-(PID.TID 0000.0001) >                   'SIempmr ','SIqnet  ','SIqsw   ',
-(PID.TID 0000.0001) >                   'THETA   ',
-(PID.TID 0000.0001) >   fileName(2) = 'iceDiag',
-(PID.TID 0000.0001) >  frequency(2) =  -3600.,
-(PID.TID 0000.0001) >   timePhase(2)= 0.,
-(PID.TID 0000.0001) >  missing_value(2) = -999.,
+(PID.TID 0000.0001) >  fields(1:11,1) = 'EXFtaux ','EXFtauy ','EXFqnet ','EXFempmr',
+(PID.TID 0000.0001) >                   'EXFhl   ','EXFhs   ','EXFswnet','EXFlwnet',
+(PID.TID 0000.0001) >                   'EXFuwind','EXFvwind','EXFatemp',
+(PID.TID 0000.0001) >   fileName(1) = 'diagsEXF',
+(PID.TID 0000.0001) >  frequency(1) = -36000.,
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) >#--------------------
@@ -791,7 +810,7 @@
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001)  diag_mnc =   /* write NetCDF output files */
-(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001)  useMissingValue = /* put MissingValue where mask = 0 */
 (PID.TID 0000.0001)                   F
@@ -805,13 +824,13 @@
 (PID.TID 0000.0001) -----------------------------------------------------
 (PID.TID 0000.0001)  DIAGNOSTICS_READPARMS: active diagnostics summary:
 (PID.TID 0000.0001) -----------------------------------------------------
-(PID.TID 0000.0001) Creating Output Stream: iceDiag
-(PID.TID 0000.0001) Output Frequency:      -3600.000000 ; Phase:           0.000000
+(PID.TID 0000.0001) Creating Output Stream: diagsEXF
+(PID.TID 0000.0001) Output Frequency:     -36000.000000 ; Phase:       18000.000000
 (PID.TID 0000.0001)  Averaging Freq.:          0.000000 , Phase:           0.000000 , Cycle:   1
-(PID.TID 0000.0001)  missing value: -9.990000000000E+02 ; for integers:   123456789
+(PID.TID 0000.0001)  missing value: -9.990000000000E+02
 (PID.TID 0000.0001)  Levels:    will be set later
-(PID.TID 0000.0001)  Fields:    SIarea   SIheff   SIhsnow  SIuice   SIvice   oceFWflx oceSflux oceQnet  SItices  SIatmFW
-(PID.TID 0000.0001)  Fields:    SIatmQnt SIempmr  SIqnet   SIqsw    THETA
+(PID.TID 0000.0001)  Fields:    EXFtaux  EXFtauy  EXFqnet  EXFempmr EXFhl    EXFhs    EXFswnet EXFlwnet EXFuwind EXFvwind
+(PID.TID 0000.0001)  Fields:    EXFatemp
 (PID.TID 0000.0001) -----------------------------------------------------
 (PID.TID 0000.0001)  DIAGNOSTICS_READPARMS: statistics diags. summary:
 (PID.TID 0000.0001) -----------------------------------------------------
@@ -1507,10 +1526,6 @@
 (PID.TID 0000.0001) SEAICEuseFlooding = /* turn submerged snow into ice */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) MAX_HEFF has no effect because SEAICE_CAP_HEFF is undefined
-(PID.TID 0000.0001) MAX_HEFF          = /* maximum ice thickness */
-(PID.TID 0000.0001)                 1.000000000000000E+01
-(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)    Seaice air-sea fluxes configuration,   > START <
 (PID.TID 0000.0001)    -----------------------------------------------
@@ -1626,19 +1641,19 @@
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICE_dump_mdsio = /* write snap-shot   using MDSIO */
-(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICE_tave_mdsio = /* write TimeAverage using MDSIO */
-(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICE_mon_mnc    = /* write monitor to netcdf file */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICE_dump_mnc   = /* write snap-shot   using MNC */
-(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICE_tave_mnc   = /* write TimeAverage using MNC */
-(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)    Seaice regularization numbers,   > START <
@@ -1665,28 +1680,21 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) ------------------------------------------------------------
 (PID.TID 0000.0001) DIAGNOSTICS_SET_LEVELS: done
-(PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   205
+(PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   206
 (PID.TID 0000.0001)  write list of available Diagnostics to file: available_diagnostics.log
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   140 SIarea
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   143 SIheff
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   145 SIhsnow
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   149 SIuice
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   150 SIvice
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #    82 oceFWflx
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #    83 oceSflux
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #    84 oceQnet
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   148 SItices
-(PID.TID 0000.0001) - NOTE - SETDIAG: Counter-mate #   140 SIarea   is already set
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   163 SIatmFW
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   157 SIatmQnt
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   162 SIempmr
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   155 SIqnet
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   156 SIqsw
-(PID.TID 0000.0001) SETDIAG: Allocate  3 x  1 Levels for Diagnostic #    26 THETA
-(PID.TID 0000.0001)   space allocated for all diagnostics:      17 levels
-(PID.TID 0000.0001)   set mate pointer for diag #   149  SIuice   , Parms: UZ      M1 , mate:   150
-(PID.TID 0000.0001)   set mate pointer for diag #   150  SIvice   , Parms: VZ      M1 , mate:   149
-(PID.TID 0000.0001) DIAGNOSTICS_SET_POINTERS: Set levels for Outp.Stream: iceDiag
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   128 EXFtaux
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   129 EXFtauy
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   127 EXFqnet
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   138 EXFempmr
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   122 EXFhl
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   121 EXFhs
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   124 EXFswnet
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   123 EXFlwnet
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   130 EXFuwind
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   131 EXFvwind
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   133 EXFatemp
+(PID.TID 0000.0001)   space allocated for all diagnostics:      11 levels
+(PID.TID 0000.0001) DIAGNOSTICS_SET_POINTERS: Set levels for Outp.Stream: diagsEXF
 (PID.TID 0000.0001)  Levels:       1.
 (PID.TID 0000.0001) DIAGNOSTICS_SET_POINTERS: done
 (PID.TID 0000.0001) ------------------------------------------------------------
@@ -2231,10 +2239,10 @@
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) snapshot_mdsio =   /* Model IO flag. */
-(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) snapshot_mnc =   /* Model IO flag. */
-(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) monitorFreq =   /* Monitor output interval ( s ). */
 (PID.TID 0000.0001)                 1.000000000000000E+00
@@ -3631,26 +3639,6 @@
  ph-ice C            3   17404086048.937119     
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient-check starts (grdchk_main)
 (PID.TID 0000.0001) // =======================================================
@@ -3903,9 +3891,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.48559984398320E+11
 grad-res -------------------------------
  grad-res     0    1    6    8    1    1    1    1   1.48559984395E+11  1.48559984392E+11  1.48559984398E+11
- grad-res     0    1    1   10    0    1    1    1  -3.13170947748E+04 -3.13171386719E+04 -1.40169536023E-06
+ grad-res     0    1    1   10    0    1    1    1  -3.13170947748E+04 -3.13171386719E+04 -1.40169672069E-06
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  1.48559984395189E+11
-(PID.TID 0000.0001)  ADM  adjoint_gradient       = -3.13170947748486E+04
+(PID.TID 0000.0001)  ADM  adjoint_gradient       = -3.13170947748060E+04
 (PID.TID 0000.0001)  ADM  finite-diff_grad       = -3.13171386718750E+04
 (PID.TID 0000.0001) ====== End of gradient-check number   1 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   2 (=ichknum) =======
@@ -4151,9 +4139,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.48559984398247E+11
 grad-res -------------------------------
  grad-res     0    2    7    8    1    1    1    1   1.48559984395E+11  1.48559984392E+11  1.48559984398E+11
- grad-res     0    2    2   11    0    1    1    1  -3.05791465661E+04 -3.05792236328E+04 -2.52023620240E-06
+ grad-res     0    2    2   11    0    1    1    1  -3.05791465661E+04 -3.05792236328E+04 -2.52023661607E-06
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  1.48559984395189E+11
-(PID.TID 0000.0001)  ADM  adjoint_gradient       = -3.05791465661403E+04
+(PID.TID 0000.0001)  ADM  adjoint_gradient       = -3.05791465661276E+04
 (PID.TID 0000.0001)  ADM  finite-diff_grad       = -3.05792236328125E+04
 (PID.TID 0000.0001) ====== End of gradient-check number   2 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   3 (=ichknum) =======
@@ -4399,9 +4387,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.48559984398518E+11
 grad-res -------------------------------
  grad-res     0    3    8    8    1    1    1    1   1.48559984395E+11  1.48559984392E+11  1.48559984399E+11
- grad-res     0    3    3   12    0    1    1    1  -3.32944177739E+04 -3.32943725586E+04  1.35804416568E-06
+ grad-res     0    3    3   12    0    1    1    1  -3.32944177739E+04 -3.32943725586E+04  1.35804363333E-06
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  1.48559984395189E+11
-(PID.TID 0000.0001)  ADM  adjoint_gradient       = -3.32944177738836E+04
+(PID.TID 0000.0001)  ADM  adjoint_gradient       = -3.32944177738658E+04
 (PID.TID 0000.0001)  ADM  finite-diff_grad       = -3.32943725585938E+04
 (PID.TID 0000.0001) ====== End of gradient-check number   3 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   4 (=ichknum) =======
@@ -4647,9 +4635,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.48559984398908E+11
 grad-res -------------------------------
  grad-res     0    4    9    8    1    1    1    1   1.48559984395E+11  1.48559984391E+11  1.48559984399E+11
- grad-res     0    4    4   13    0    1    1    1  -3.71884091998E+04 -3.71884155273E+04 -1.70148183765E-07
+ grad-res     0    4    4   13    0    1    1    1  -3.71884091998E+04 -3.71884155273E+04 -1.70147013145E-07
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  1.48559984395189E+11
-(PID.TID 0000.0001)  ADM  adjoint_gradient       = -3.71884091998035E+04
+(PID.TID 0000.0001)  ADM  adjoint_gradient       = -3.71884091998470E+04
 (PID.TID 0000.0001)  ADM  finite-diff_grad       = -3.71884155273438E+04
 (PID.TID 0000.0001) ====== End of gradient-check number   4 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   5 (=ichknum) =======
@@ -4895,9 +4883,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.48559984399052E+11
 grad-res -------------------------------
  grad-res     0    5   10    8    1    1    1    1   1.48559984395E+11  1.48559984391E+11  1.48559984399E+11
- grad-res     0    5    5   14    0    1    1    1  -3.86299158445E+04 -3.86297607422E+04  4.01508233028E-06
+ grad-res     0    5    5   14    0    1    1    1  -3.86299158444E+04 -3.86297607422E+04  4.01508120729E-06
 (PID.TID 0000.0001)  ADM  ref_cost_function      =  1.48559984395189E+11
-(PID.TID 0000.0001)  ADM  adjoint_gradient       = -3.86299158444800E+04
+(PID.TID 0000.0001)  ADM  adjoint_gradient       = -3.86299158444366E+04
 (PID.TID 0000.0001)  ADM  finite-diff_grad       = -3.86297607421875E+04
 (PID.TID 0000.0001) ====== End of gradient-check number   5 (ierr=  0) =======
 (PID.TID 0000.0001) 
@@ -4913,130 +4901,130 @@ grad-res -------------------------------
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   1     6     8     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   1  1.4855998439519E+11  1.4855998439206E+11  1.4855998439832E+11
-(PID.TID 0000.0001) grdchk output (g):   1    -3.1317138671875E+04 -3.1317094774849E+04 -1.4016953602258E-06
+(PID.TID 0000.0001) grdchk output (g):   1    -3.1317138671875E+04 -3.1317094774806E+04 -1.4016967206931E-06
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   2     7     8     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   2  1.4855998439519E+11  1.4855998439213E+11  1.4855998439825E+11
-(PID.TID 0000.0001) grdchk output (g):   2    -3.0579223632813E+04 -3.0579146566140E+04 -2.5202362023968E-06
+(PID.TID 0000.0001) grdchk output (g):   2    -3.0579223632813E+04 -3.0579146566128E+04 -2.5202366160659E-06
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   3     8     8     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   3  1.4855998439519E+11  1.4855998439186E+11  1.4855998439852E+11
-(PID.TID 0000.0001) grdchk output (g):   3    -3.3294372558594E+04 -3.3294417773884E+04  1.3580441656780E-06
+(PID.TID 0000.0001) grdchk output (g):   3    -3.3294372558594E+04 -3.3294417773866E+04  1.3580436333260E-06
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   4     9     8     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   4  1.4855998439519E+11  1.4855998439147E+11  1.4855998439891E+11
-(PID.TID 0000.0001) grdchk output (g):   4    -3.7188415527344E+04 -3.7188409199803E+04 -1.7014818376460E-07
+(PID.TID 0000.0001) grdchk output (g):   4    -3.7188415527344E+04 -3.7188409199847E+04 -1.7014701314544E-07
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   5    10     8     1    1    1   0.000000000E+00 -1.000000000E-04
 (PID.TID 0000.0001) grdchk output (c):   5  1.4855998439519E+11  1.4855998439133E+11  1.4855998439905E+11
-(PID.TID 0000.0001) grdchk output (g):   5    -3.8629760742188E+04 -3.8629915844480E+04  4.0150823302776E-06
+(PID.TID 0000.0001) grdchk output (g):   5    -3.8629760742188E+04 -3.8629915844437E+04  4.0150812072870E-06
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk  summary  :  RMS of    5 ratios =  2.2939250588469E-06
+(PID.TID 0000.0001) grdchk  summary  :  RMS of    5 ratios =  2.2939248424903E-06
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient check results  >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.32000000000000001
-(PID.TID 0000.0001)         System time:  2.99999999999999989E-002
-(PID.TID 0000.0001)     Wall clock time:  0.35994791984558105
+(PID.TID 0000.0001)           User time:   1.0500000000000000
+(PID.TID 0000.0001)         System time:  8.99999999999999967E-002
+(PID.TID 0000.0001)     Wall clock time:   14.282480001449585
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  4.00000000000000008E-002
-(PID.TID 0000.0001)         System time:  1.00000000000000002E-002
-(PID.TID 0000.0001)     Wall clock time:  4.63619232177734375E-002
+(PID.TID 0000.0001)           User time:  0.34000000000000002
+(PID.TID 0000.0001)         System time:  4.00000000000000008E-002
+(PID.TID 0000.0001)     Wall clock time:   5.3323030471801758
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:  0.10000000000000001
-(PID.TID 0000.0001)         System time:  1.00000000000000002E-002
-(PID.TID 0000.0001)     Wall clock time:  0.12590789794921875
+(PID.TID 0000.0001)           User time:  0.36999999999999994
+(PID.TID 0000.0001)         System time:  4.00000000000000008E-002
+(PID.TID 0000.0001)     Wall clock time:   8.5993950366973877
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  5.00000000000000444E-002
-(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
-(PID.TID 0000.0001)     Wall clock time:  7.15212821960449219E-002
+(PID.TID 0000.0001)           User time:  6.99999999999998401E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.11984086036682129
 (PID.TID 0000.0001)          No. starts:          48
 (PID.TID 0000.0001)           No. stops:          48
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.18424606323242188E-004
+(PID.TID 0000.0001)     Wall clock time:  4.34160232543945313E-004
 (PID.TID 0000.0001)          No. starts:          48
 (PID.TID 0000.0001)           No. stops:          48
 (PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL    [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  5.00000000000000444E-002
+(PID.TID 0000.0001)           User time:  0.15000000000000013
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  5.99195957183837891E-002
+(PID.TID 0000.0001)     Wall clock time:  0.13984751701354980
 (PID.TID 0000.0001)          No. starts:          44
 (PID.TID 0000.0001)           No. stops:          44
 (PID.TID 0000.0001)   Seconds in section "DYNSOLVER          [SEAICE_MODEL]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)           User time:  2.00000000000000178E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.05443000793457031E-002
+(PID.TID 0000.0001)     Wall clock time:  2.18627452850341797E-002
 (PID.TID 0000.0001)          No. starts:          48
 (PID.TID 0000.0001)           No. stops:          48
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.17999999999999999
-(PID.TID 0000.0001)         System time:  9.99999999999999847E-003
-(PID.TID 0000.0001)     Wall clock time:  0.18763613700866699
+(PID.TID 0000.0001)           User time:  0.34000000000000008
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.34811210632324219
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  2.99999999999999711E-002
+(PID.TID 0000.0001)           User time:  4.00000000000000355E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.09064483642578125E-002
+(PID.TID 0000.0001)     Wall clock time:  4.17401790618896484E-002
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.15000000000000013
-(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
-(PID.TID 0000.0001)     Wall clock time:  0.15729641914367676
+(PID.TID 0000.0001)           User time:  0.29000000000000026
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.29609322547912598
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  5.00000000000000444E-002
-(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
-(PID.TID 0000.0001)     Wall clock time:  5.58216571807861328E-002
+(PID.TID 0000.0001)           User time:  6.99999999999998401E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  8.70275497436523438E-002
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  6.00000000000000533E-002
+(PID.TID 0000.0001)           User time:  0.17000000000000015
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  7.34927654266357422E-002
+(PID.TID 0000.0001)     Wall clock time:  0.15671515464782715
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.51905822753906250E-004
+(PID.TID 0000.0001)     Wall clock time:  3.74794006347656250E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.54528427124023438E-004
+(PID.TID 0000.0001)     Wall clock time:  3.72648239135742188E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.75270843505859375E-004
+(PID.TID 0000.0001)     Wall clock time:  3.81231307983398438E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.00000000000000089E-002
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.65393066406250000E-004
+(PID.TID 0000.0001)     Wall clock time:  4.97579574584960938E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  1.00000000000000089E-002
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  6.09159469604492188E-003
+(PID.TID 0000.0001)     Wall clock time:  6.47401809692382813E-003
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001) // ======================================================
@@ -5087,9 +5075,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =           6990
+(PID.TID 0000.0001) //            No. barriers =           6820
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =           6990
+(PID.TID 0000.0001) //     Total barrier spins =           6820
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
 PROGRAM MAIN: Execution ended Normally
