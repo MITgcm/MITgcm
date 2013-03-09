@@ -1,17 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1839 2013/03/07 08:34:26 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1840 2013/03/09 22:09:26 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification, AD & TLM output:
+  - new TAF version 2.3.10 (previously 2.3.8) add more parenthesis in multiple
+    additions and multiplications which affect results at machine truncation
+    level. Update few AD output (1D_ocean_ice_column, bottom_ctrl_5x5,
+    lab_sea.noseaicedyn & offline_exf_seaice) and TLM output
+    (1D_ocean_ice_column & tutorial_tracer_adjsens.som81) which had only 12
+    digits of matching.
 o pkg/seaice:
-  modify lsr-algorithm so that it vectorizes AND converges by using a
-  "zebra" method: split vector loop into two with step size 2; this
-  solves a general convergence problem for the JFNK solver on a vector
-  computer. It has the potential to even improve convergence for
-  non-vector machines, but it does change the results so it is turned
-  off by default. To turn on define CPP-flags SEAICE_VECTORIZE_LSR and
-  SEAICE_VECTORIZE_LSR_ZEBRA in SEAICE_OPTIONS.h
+   modify lsr-algorithm so that it vectorizes AND converges by using a
+   "zebra" method: split vector loop into two with step size 2; this
+   solves a general convergence problem for the JFNK solver on a vector
+   computer. It has the potential to even improve convergence for
+   non-vector machines, but it does change the results so it is turned
+   off by default. To turn on define CPP-flags SEAICE_VECTORIZE_LSR and
+   SEAICE_VECTORIZE_LSR_ZEBRA in SEAICE_OPTIONS.h
 
 checkpoint64e (2013/03/05)
 o pkg/ecco and several verification experiments:
