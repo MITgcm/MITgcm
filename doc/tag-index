@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1840 2013/03/09 22:09:26 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1841 2013/03/13 09:57:46 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_evp.F: mask the asymmetric contribution of the ice-ocean
+  stress (when the turningAngle is non-zero) over open water to avoid
+  stripes in the EVP-solutions after many EVP-substeps. This does not change
+  the verification experiment (because turningAngle=0 in that experiment), but
+  will affect other EVP solutions with turningAngle.ne.0
 o verification, AD & TLM output:
   - new TAF version 2.3.10 (previously 2.3.8) add more parenthesis in multiple
     additions and multiplications which affect results at machine truncation
