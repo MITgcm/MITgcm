@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.47 2013/01/04 14:33:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.48 2013/03/13 09:57:20 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -112,9 +112,7 @@ C     auxilliary variables
       _RL zMaxZ, zMinZ, fac
 #endif /* SEAICE_ALLOW_CLIPZETA */
       _RL denom1, denom2, facZ
-#ifndef OBCS_UVICE_OLD
       _RL locMaskU, locMaskV
-#endif
 
 C     surface level
       kSrf = 1
@@ -471,8 +469,23 @@ C
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
+          DO J=1,sNy
+           DO I=1,sNx
+C     over open water, all terms that contain sea ice mass drop out and
+C     the balance is determined by the atmosphere-ice and ice-ocean stress;
+C     the staggering of uIce and vIce can cause stripes in the open ocean 
+C     solution when the turning angle is non-zero (SINWAT.NE.0); 
+C     we mask this term here in order to avoid the stripes and because
+C     over open ocean, u/vIce do not advect anything, so that the associated
+C     error is small and most likely only confinded to the ice edge but may
+C     propagate into the ice covered regions.
+            locMaskU = seaiceMassU(I,J,bi,bj)
+            locMaskV = seaiceMassV(I,J,bi,bj)
+            IF ( locMaskU .NE. 0. _d 0 ) locMaskU = 1. _d 0
+            IF ( locMaskV .NE. 0. _d 0 ) locMaskV = 1. _d 0
+C     to recover old results replace the above lines with the line below
+C           locMaskU = 1. _d 0
+C           locMaskV = 1. _d 0
 C     set up anti symmetric drag force and add in ice ocean stress
 C     ( remember to average to correct velocity points )
             FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+
@@ -485,7 +498,7 @@ C     ( remember to average to correct velocity points )
      &           + DWATN(I-1,J,bi,bj) * 0.5 _d 0 *
      &            (vVel(I-1,J  ,kSrf,bi,bj)-vIce(I-1,J  ,bi,bj)
      &            +vVel(I-1,J+1,kSrf,bi,bj)-vIce(I-1,J+1,bi,bj))
-     &           )
+     &           )*locMaskU
             FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+
      &           0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
      &           COSWAT * vVel(I,J,kSrf,bi,bj)
@@ -496,7 +509,7 @@ C     ( remember to average to correct velocity points )
      &           + DWATN(I,J-1,bi,bj) * 0.5 _d 0 *
      &            (uVel(I  ,J-1,kSrf,bi,bj)-uIce(I  ,J-1,bi,bj)
      &            +uVel(I+1,J-1,kSrf,bi,bj)-uIce(I+1,J-1,bi,bj))
-     &           )
+     &           )*locMaskV
 C     coriols terms
             FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj) + 0.5 _d 0*(
      &             seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
