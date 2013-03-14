@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.37 2012/08/10 19:38:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.38 2013/03/14 15:00:58 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -183,8 +183,14 @@ c--   Temperature field.
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
+#ifdef ALLOW_AUTODIFF_OPENAD
+                ptracer(i,j,k,bi,bj,1) = ptracer(i,j,k,bi,bj,1) +
+     &                               fac*xx_tr1(i,j,k,bi,bj) +
+     &                               fac*tmpfld3d(i,j,k,bi,bj)
+#else
                 ptracer(i,j,k,bi,bj,1) = ptracer(i,j,k,bi,bj,1) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
+#endif
               enddo
             enddo
           enddo

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.64 2013/01/26 14:45:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.65 2013/03/14 14:58:12 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -306,6 +306,9 @@ c     TAMC sees xx_..._dummy
 # ifdef ALLOW_KAPGM_CONTROL
      &      , xx_kapgm
 # endif
+# ifdef ALLOW_TR10_CONTROL
+     &      , xx_tr1
+# endif
       _RL xx_theta(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL xx_salt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL xx_uvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -316,6 +319,9 @@ c     TAMC sees xx_..._dummy
 # endif
 # ifdef ALLOW_KAPGM_CONTROL
       _RL xx_kapgm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+# endif
+# ifdef ALLOW_TR10_CONTROL
+      _RL xx_tr1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 # endif
 #endif
 
