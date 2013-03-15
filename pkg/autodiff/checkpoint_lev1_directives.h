@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.58 2013/02/05 14:33:06 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.59 2013/03/15 13:35:48 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -83,8 +83,8 @@ CADJ &     kind = isbyte
 CADJ STORE rstarexpc,rstarexps,rstarexpw
 CADJ &     = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-ccCADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
-ccCADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
+CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif /* NONLIN_FRSURF */
 
