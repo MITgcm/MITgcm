@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.5 2012/08/09 18:15:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.6 2013/03/15 14:36:06 heimbach Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -65,7 +65,8 @@ C ********************************************************************
 C       >>> Initial values.
 #define ALLOW_THETA0_CONTROL
 #define ALLOW_SALT0_CONTROL
-#define ALLOW_TR10_CONTROL
+cph#define ALLOW_TR10_CONTROL
+#define ALLOW_GENARR3D_CONTROL
 #define ALLOW_TAUU0_CONTROL
 #define ALLOW_TAUV0_CONTROL
 #define ALLOW_SFLUX0_CONTROL

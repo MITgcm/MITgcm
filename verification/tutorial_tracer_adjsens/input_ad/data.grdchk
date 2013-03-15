@@ -13,5 +13,7 @@
  nstep            = 1,
  nend             = 4,
 # to test xx_tr1 set 17
- grdchkvarindex   = 17,
+### grdchkvarindex   = 17,
+# to test xx_genarr3d set 201
+ grdchkvarindex   = 201,
  &
