@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/ctrl_map_ini_genarr.F,v 1.1 2013/03/15 14:36:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/ctrl_map_ini_genarr.F,v 1.2 2013/03/16 14:24:05 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -118,8 +118,8 @@ cc
 cc A CONSISTENCY CHECK: FOR THIS CUSTOMIZATION
 cc WE ASSUME maxCtrlArr3D <= PTRACERS_num
 cc
-      IF ( maxCtrlArr3D > PTRACERS_num ) THEN
-        WRITE(msgBuf,'(A)') 
+      IF ( maxCtrlArr3D .GT. PTRACERS_num ) THEN
+        WRITE(msgBuf,'(A)')
      &   'CTRL_MAP_INI_GENARR: need maxCtrlArr3D <= PTRACERS_num'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R CTRL_MAP_INI_GENARR'
