@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.66 2013/03/15 14:51:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.67 2013/03/19 05:04:06 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -332,7 +332,7 @@ C
       _RL xx_tr1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 # endif
 # ifdef ALLOW_GENARR2D_CONTROL
-      _RL xx_genarr2d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy,maxCtrlArr2D)
+      _RL xx_genarr2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,maxCtrlArr2D)
 # endif
 # ifdef ALLOW_GENARR3D_CONTROL
       _RL xx_genarr3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy,maxCtrlArr3D)
