@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_output.F,v 1.4 2013/01/22 23:39:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_output.F,v 1.5 2013/03/19 22:02:22 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -46,8 +46,6 @@ C     Write time average output
 C     Compute and print monitor statistics
       CALL PTRACERS_MONITOR( myIter, myTime, myThid )
 #endif /* ALLOW_MONITOR */
-C     Reset the ptracers (but after the io is done)
-      CALL PTRACERS_RESET( myTime, myIter, myThid )
 
 #endif /* ALLOW_PTRACERS */
 

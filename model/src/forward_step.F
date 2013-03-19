@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.213 2013/02/05 14:37:49 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.214 2013/03/19 22:02:22 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1055,6 +1055,15 @@ C--   Do IO if needed.
       CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
       CALL DO_THE_MODEL_IO( modelEnd, myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
+
+#ifdef ALLOW_PTRACERS
+C     Reset the ptracers (but after the io is done)
+      IF ( usePTRACERS ) THEN
+        CALL TIMER_START('PTRACERS_RESET      [FORWARD_STEP]',myThid)
+        CALL PTRACERS_RESET( myTime, myIter, myThid )
+        CALL TIMER_STOP ('PTRACERS_RESET      [FORWARD_STEP]',myThid)
+      ENDIF
+#endif /* ALLOW_PTRACERS */
 
 C--   Save state for restarts
       CALL TIMER_START('DO_WRITE_PICKUP     [FORWARD_STEP]',myThid)
