@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_model_main.F,v 1.3 2011/04/28 20:11:13 utke Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_model_main.F,v 1.4 2013/03/21 18:10:37 jahn Exp $
 
 CBOI
 C
@@ -477,6 +477,13 @@ C     == Global variables ===
 # include "optim.h"
 #endif
 
+#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_PTRACERS
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
+#endif
+#endif
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
@@ -498,6 +505,7 @@ C     myCurrentIter - Iteration counter for this thread
       _RL foo(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL fooEtan(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       CHARACTER*(10) suff
+      CHARACTER*(MAX_LEN_FNAM) fname
 C     Temprarily change precision to agree with ctrlprec
       INTEGER tmpprec
 #ifdef OAD_DEBUG
@@ -658,6 +666,11 @@ C     Temporarily change setting of writeBinaryPrec
       call write_fld_xyz_rl('adxx_salt.',suff,foo,myCurrentIter,1)
       fooEtan=etan%d
       call write_fld_xy_rl('adxx_etan.',suff,fooEtan,myCurrentIter,1)
+      do i1 = 1, PTRACERS_num
+        foo=xx_genarr3d(:,:,:,:,:,i1)%d
+        write(fname,'(3A)') 'adxx_genarr3d_',PTRACERS_ioLabel(i1),'.'
+        call write_fld_xyz_rl(fname,suff,foo,myCurrentIter,1)
+      enddo
 C     Change back to original writeBinaryPrec
       writeBinaryPrec = tmpprec
       our_rev_mode%plain=.TRUE.
