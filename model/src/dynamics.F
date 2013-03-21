@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.163 2012/11/15 15:55:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.164 2013/03/21 18:15:44 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -339,9 +339,11 @@ cph)
           phiHydLow(i,j,bi,bj) = 0. _d 0
 # if (defined NONLIN_FRSURF) && (defined ALLOW_MOM_FLUXFORM)
 #  ifndef DISABLE_RSTAR_CODE
+#   ifndef ALLOW_AUTODIFF_OPENAD
           dWtransC(i,j,bi,bj) = 0. _d 0
           dWtransU(i,j,bi,bj) = 0. _d 0
           dWtransV(i,j,bi,bj) = 0. _d 0
+#   endif
 #  endif
 # endif
 #endif

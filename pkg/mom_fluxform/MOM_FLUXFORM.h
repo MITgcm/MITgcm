@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/MOM_FLUXFORM.h,v 1.2 2006/12/03 04:58:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/MOM_FLUXFORM.h,v 1.3 2013/03/21 18:15:44 jahn Exp $
 C $Name:  $
 
 #ifdef NONLIN_FRSURF
@@ -19,8 +19,10 @@ C     == Local variables in common block ==
 C     dWtransC :: vertical transp. difference between r & r* coordinates
 C     dWtransU :: same but above u.point location (West  face)
 C     dWtransV :: same but above v.point location (South face)
+#  ifndef ALLOW_AUTODIFF_OPENAD
       COMMON /LOCAL_MOM_CALC_RTRANS/
      &       dWtransC, dWtransU, dWtransV
+#  endif
       _RL dWtransC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dWtransU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dWtransV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
