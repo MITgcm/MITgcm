@@ -96,6 +96,7 @@ update_etah.f
 update_etaws.f	
 update_masks_etc.f
 update_r_star.f
+update_sigma.f
 update_surf_dr.f
 swfrac.f
 
