@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_varia.F,v 1.10 2012/03/08 17:06:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_varia.F,v 1.11 2013/03/21 18:07:59 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -39,6 +39,7 @@ C     i,j,k,bi,bj,iTracer  :: loop indices
 #ifdef PTRACERS_ALLOW_DYN_STATE
       INTEGER n
 #endif
+      CHARACTER*(MAX_LEN_FNAM) tmpInitialFile
 CEOP
 
 C     Initialise internal parameter in common block:
@@ -98,8 +99,9 @@ C     end of Tracer loop
 C     Now read initial conditions and always exchange
       IF (nIter0.EQ.PTRACERS_Iter0) THEN
        DO iTracer = 1, PTRACERS_numInUse
-        IF ( PTRACERS_initialFile(iTracer) .NE. ' ' ) THEN
-         CALL READ_FLD_XYZ_RL(PTRACERS_initialFile(iTracer),' ',
+        tmpInitialFile = PTRACERS_initialFile(iTracer)
+        IF ( tmpInitialFile .NE. ' ' ) THEN
+         CALL READ_FLD_XYZ_RL(tmpInitialFile,' ',
      &        pTracer(1-OLx,1-OLy,1,1,1,iTracer),0,myThid)
          _EXCH_XYZ_RL(pTracer(1-OLx,1-OLy,1,1,1,iTracer),myThid)
         ENDIF
