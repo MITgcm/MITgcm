@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.5 2013/02/23 15:57:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.6 2013/03/21 18:11:58 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -171,6 +171,14 @@ c They provide the fields to be stored.
 #   include "ecco_cost.h"
 #  endif
 # endif
+
+# else /* undef ALLOW_AUTODIFF_OPENAD */
+
+#  ifdef ALLOW_PTRACERS
+#   include "PTRACERS_SIZE.h"
+#   include "PTRACERS_FIELDS.h"
+#   include "PTRACERS_START.h"
+#  endif
 
 # endif /* undef ALLOW_AUTODIFF_OPENAD */
 
