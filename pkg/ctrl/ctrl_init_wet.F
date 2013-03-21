@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.14 2012/09/18 20:19:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.15 2013/03/21 18:12:34 jahn Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -113,7 +113,7 @@ c--   Count wet points on each tile.
             do j = jmin,jmax
               do i = imin,imax
 c--             Center mask.
-                if (hFacC(i,j,k,bi,bj) .ne. 0.) then
+                if (maskC(i,j,k,bi,bj) .ne. 0.) then
                   nwetctile(bi,bj,k) = nwetctile(bi,bj,k) + 1
                 endif
 c--             South mask.
