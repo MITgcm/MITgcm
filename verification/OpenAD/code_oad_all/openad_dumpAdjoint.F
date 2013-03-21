@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/openad_dumpAdjoint.F,v 1.2 2011/05/24 20:59:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/openad_dumpAdjoint.F,v 1.3 2013/03/21 18:06:18 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -40,7 +40,7 @@ c They provide the fields to be stored.
 # endif
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
-#  include "PTRACERS.h"
+#  include "PTRACERS_FIELDS.h"
 # endif
 # ifdef EXACT_CONSERV
 #  include "SURFACE.h"
