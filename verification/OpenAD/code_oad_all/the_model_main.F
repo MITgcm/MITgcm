@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_model_main.F,v 1.4 2013/03/21 18:10:37 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_model_main.F,v 1.5 2013/03/22 13:04:34 jahn Exp $
 
 CBOI
 C
@@ -477,13 +477,6 @@ C     == Global variables ===
 # include "optim.h"
 #endif
 
-#ifdef ALLOW_AUTODIFF
-#ifdef ALLOW_PTRACERS
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS_PARAMS.h"
-#endif
-#endif
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
@@ -666,11 +659,13 @@ C     Temporarily change setting of writeBinaryPrec
       call write_fld_xyz_rl('adxx_salt.',suff,foo,myCurrentIter,1)
       fooEtan=etan%d
       call write_fld_xy_rl('adxx_etan.',suff,fooEtan,myCurrentIter,1)
-      do i1 = 1, PTRACERS_num
+#ifdef ALLOW_GENARR3D_CONTROL
+      do i1 = 1, maxCtrlArr3D
         foo=xx_genarr3d(:,:,:,:,:,i1)%d
-        write(fname,'(3A)') 'adxx_genarr3d_',PTRACERS_ioLabel(i1),'.'
+        write(fname,'(A,I2.2,A)') 'adxx_genarr3d_',i1,'.'
         call write_fld_xyz_rl(fname,suff,foo,myCurrentIter,1)
       enddo
+#endif
 C     Change back to original writeBinaryPrec
       writeBinaryPrec = tmpprec
       our_rev_mode%plain=.TRUE.
