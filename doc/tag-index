@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1841 2013/03/13 09:57:46 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1842 2013/03/25 16:30:52 jahn Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/tutorial_tracer_adjsens, pkg/ptracers and OpenAD:
+  - add OpenAD setup to this exp and make ptracers package work with OpenAD
 o pkg/seaice/seaice_evp.F: mask the asymmetric contribution of the ice-ocean
   stress (when the turningAngle is non-zero) over open water to avoid
   stripes in the EVP-solutions after many EVP-substeps. This does not change
