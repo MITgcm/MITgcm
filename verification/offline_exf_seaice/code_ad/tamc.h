@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/tamc.h,v 1.4 2013/03/25 02:39:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/tamc.h,v 1.5 2013/03/25 18:02:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -61,7 +61,7 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
       integer    nchklev_1
-      parameter( nchklev_1      =  100 )
+      parameter( nchklev_1      =   20 )
       integer    nchklev_2
       parameter( nchklev_2      =  100 )
       integer    nchklev_3
