@@ -15,13 +15,10 @@ dic_cost.f
 dic_fields_load.f
 dic_ini_forcing.f
 dic_init_varia.f
-dic_mnc_init.f
-dic_readparms.f
 dic_set_control.f
 dic_store_fluxco2.f
 dic_surfforcing.f
 dic_surfforcing_init.f
-dic_write_pickup.f
 fe_chem.f
 insol.f
 o2_surfforcing.f
