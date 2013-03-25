@@ -1,0 +1,8 @@
+ &ctrl_nml
+  doMainUnpack=.FALSE.,
+  doMainPack=.FALSE.,
+ /
+#
+ &ctrl_packnames
+ /
+

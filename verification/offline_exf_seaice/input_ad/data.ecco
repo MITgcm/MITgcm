@@ -1,0 +1,11 @@
+ &ECCO_COST_NML
+ watemp0              = 1.0,
+ wswdown0             = 15.0,
+ mult_temp0  = 1.,
+ mult_atemp  = 1.,
+ mult_swdown = 1.,
+ /
+#
+ &ECCO_GENCOST_NML
+ /
+#

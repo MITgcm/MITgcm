@@ -1,0 +1,14 @@
+ &GRDCHK_NML
+ grdchk_eps       = 1.d-2,
+ iglopos         = 10,
+ jglopos         = 10,
+ iGloTile         = 2,
+ jGloTile         = 2,
+ nbeg             = 1,
+ nstep            = 1,
+ nend             = 4,
+#(grdchkvarindex   = 1 fails at freezing point)
+#grdchkvarindex   = 1,
+ grdchkvarindex   = 7,
+#grdchkvarindex   = 34,
+ &
