@@ -1,14 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/ECCO_CPPOPTIONS.h,v 1.6 2013/03/25 02:39:33 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/ECCO_CPPOPTIONS.h,v 1.7 2013/03/26 20:25:41 jmc Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
 #define ECCO_CPPOPTIONS_H
-#include "AD_CONFIG.h"
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+c#include "AD_CONFIG.h"
+c#include "PACKAGES_CONFIG.h"
+c#include "CPP_OPTIONS.h"
 
-C CPP flags controlling which code is included in the files that
-C will be compiled.
+C-- Collect here, in a single option-file, options to control which optional
+C   features to compile in packages AUTODIFF, COST, CTRL, ECCO, CAL and EXF.
+C   If used, this option-file needs to be directly included in CPP_OPTIONS.h
+C   Although this method, inherited from ECCO setup, has been traditionally
+C   used for all adjoint built, work is in progess to allow to use the
+C   standard metod (each of the above pkg get its own options from its
+C   specific option-file) also for adjoint built.
 C
 C ********************************************************************
 C ***                         ECCO Package                         ***
@@ -24,14 +29,16 @@ C ***                  Adjoint Support Package                     ***
 C ********************************************************************
 
 #define ALLOW_AUTODIFF_TAMC
-C
+
 C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
+
+C       >>> DO 2-level checkpointing instead of 3-level
 #define AUTODIFF_2_LEVEL_CHECKPOINT
-C
+
 C       >>> Extract adjoint state
 #define ALLOW_AUTODIFF_MONITOR
-C
+
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
 #undef ALLOW_DIVIDED_ADJOINT_MPI
@@ -74,5 +81,48 @@ C       >>> Atmospheric state and radiation.
 #define  ALLOW_ATEMP_CONTROL
 #define  ALLOW_SWDOWN_CONTROL
 
-#endif /* ECCO_CPPOPTIONS_H */
+C ********************************************************************
+C ***             External forcing Package                         ***
+C ********************************************************************
 
+C   Bulk formulae related flags.
+#define  ALLOW_ATM_TEMP
+#define  ALLOW_ATM_WIND
+#define  ALLOW_DOWNWARD_RADIATION
+#define  ALLOW_RUNOFF
+#if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
+# define ALLOW_BULKFORMULAE
+# undef  ALLOW_BULK_LARGEYEAGER04
+#endif
+
+C   Zenith Angle/Albedo related flags.
+#ifdef ALLOW_DOWNWARD_RADIATION
+# undef ALLOW_ZENITHANGLE
+#endif
+
+C   Use ocean_emissivity*lwdwon in lwFlux. This flag should be define
+C   unless to reproduce old results (obtained with inconsistent old code)
+#ifdef ALLOW_DOWNWARD_RADIATION
+# define EXF_LWDOWN_WITH_EMISSIVITY
+#endif
+
+C   Relaxation to monthly climatologies.
+#define ALLOW_CLIMSST_RELAXATION
+#define ALLOW_CLIMSSS_RELAXATION
+
+C   Use spatial interpolation to interpolate
+C   forcing files from input grid to model grid.
+#undef USE_EXF_INTERPOLATION
+C   for interpolated vector fields, rotate towards model-grid axis
+C   using old rotation formulae (instead of grid-angles)
+#undef EXF_USE_OLD_VEC_ROTATION
+C   for interpolation around N & S pole, use the old formulation
+C   (no pole symmetry, single vector-comp interp, reset to 0 zonal-comp @ N.pole)
+#undef EXF_USE_OLD_INTERP_POLE
+
+#define EXF_INTERP_USE_DYNALLOC
+#if ( defined (EXF_INTERP_USE_DYNALLOC) && defined (USING_THREADS) )
+# define EXF_IREAD_USE_GLOBAL_POINTER
+#endif
+
+#endif /* ECCO_CPPOPTIONS_H */

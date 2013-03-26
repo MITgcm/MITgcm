@@ -1,11 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/CPP_OPTIONS.h,v 1.5 2013/03/25 02:39:33 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/CPP_OPTIONS.h,v 1.6 2013/03/26 20:25:41 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
 #define CPP_OPTIONS_H
-
-#include "PACKAGES_CONFIG.h"
-#include "AD_CONFIG.h"
 
 CBOP
 C !ROUTINE: CPP_OPTIONS.h
@@ -132,9 +129,7 @@ C   each of the above pkg get its own options from its specific option file.
 C   Although this method, inherited from ECCO setup, has been traditionally
 C   used for all adjoint built, work is in progress to allow to use the
 C   standard method also for adjoint built.
-#if (defined (ALLOW_AUTODIFF) || \
-     defined (ALLOW_ECCO) || \
-     defined (ALLOW_EXF))
+#ifdef PACKAGES_CONFIG_H
 # include "ECCO_CPPOPTIONS.h"
 #endif
 
