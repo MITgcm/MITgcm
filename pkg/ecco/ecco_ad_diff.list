@@ -71,3 +71,4 @@ cost_curmtr.f
 ecco_cost_driver.f
 ecco_cost_final.f
 ecco_cost_init_varia.f
+ecco_phys.f

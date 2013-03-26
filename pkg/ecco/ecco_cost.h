@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.59 2012/10/02 01:40:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.60 2013/03/26 22:09:52 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -159,7 +159,13 @@ c             intantaneous field.
      &                    Tfmean,
      &                    sbar_gen,
      &                    tbar_gen,
+     &                    VOLsumGlob_0,
+     &                    VOLsumGlob,
+     &                    RHOsumGlob_0,
+     &                    RHOsumGlob,
      &                    wfmean
+
+      _RL VOLsumGlob_0, VOLsumGlob, RHOsumGlob_0, RHOsumGlob
 
 #if (defined (ALLOW_THETA_COST_CONTRIBUTION) || \
      defined (ALLOW_CTDT_COST_CONTRIBUTION) || \

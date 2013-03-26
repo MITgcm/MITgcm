@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.40 2012/10/02 17:01:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.41 2013/03/26 22:09:52 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -107,6 +107,11 @@ c     == local variables ==
 
       _RL  etanLeads (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+#ifdef ALLOW_PSBAR_STERIC
+      Real*8 sterGloH
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
+
 #ifdef ALLOW_IESTAU_COST_CONTRIBUTION
       _RL iestau(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL c0mm,prmm,salmm,vtmm,tmpmm,vsmm,vpmm,vstpmm
@@ -168,6 +173,17 @@ c--   Get the time flags and record numbers for the time averaging.
       IF ( debugMode )
      &    CALL DEBUG_CALL('cost_averagesgeneric psbar',myThid)
 #endif
+
+#ifdef ALLOW_PSBAR_STERIC
+      sterGloH=VOLsumGlob_0/globalArea
+     &        *(1. _d 0 - RHOsumGlob/RHOsumGlob_0)
+
+         WRITE(msgBuf,'(A,I6,A,1PE21.14)')
+     &    ' iter=', myiter, ' ; sterGloH= ', sterGloH
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+#endif
+
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do k = 1,nr
@@ -176,6 +192,9 @@ c--   Get the time flags and record numbers for the time averaging.
                 etanLeads(i,j,bi,bj)=etan(i,j,bi,bj)
 #ifdef ALLOW_SEAICE
      &                +sIceLoad(i,j,bi,bj)*recip_rhoConst
+#endif
+#ifdef ALLOW_PSBAR_STERIC
+     &                +sterGloH
 #endif
               enddo
             enddo
