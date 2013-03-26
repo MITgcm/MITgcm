@@ -1,4 +1,4 @@
-function mycrossmap(TS,cx,label)
+function mycrossmap(fld,cx,label,mask,col)
 
 % Function crossmap(fld,cx)
 % plot a cube sphere field as a cross
@@ -9,21 +9,38 @@ function mycrossmap(TS,cx,label)
 % fld   input cube sphere field (n,6,n) where n is the face dimension
 % cx    two element vector [cmin cmax] sets scaling for caxis
 % label colorbar label
+% mask  landmask: 0 is land, 1 is ocean
 
 if nargin<2
-cx=[min(TS(:)) max(TS(:))];
+  cx=[min(fld(:)) max(fld(:))];
 end
 
 if nargin<3
-label='';
+  label='';
 end
 
-a1=squeeze(TS(:,1,:));
-a2=squeeze(TS(:,2,:));
-a3=squeeze(TS(:,3,:));
-a4=squeeze(TS(:,4,:));
-a5=squeeze(TS(:,5,:));
-a6=squeeze(TS(:,6,:));
+if nargin>3
+  clf reset
+  if nargin<5
+    col=[1 1 1]*.5;
+  end
+  fld(find(fld<cx(1)))=cx(1);
+  fld(find(fld>cx(2)))=cx(2);
+  cm=colormap;
+  cm=[col; cm; col];
+  colormap(cm)
+  fld(find(mask==0))=nan;
+end
+
+c1=cx(1)-2*(cx(2)-cx(1))/length(cm);
+c2=cx(2)+2*(cx(2)-cx(1))/length(cm);  
+
+for f=1:6
+  eval(['a' int2str(f) '=squeeze(fld(:,' int2str(f) ',:));']);
+  eval(['in=find(isnan(a' int2str(f) '));']);
+  eval(['a' int2str(f) '(in(1))=c1;']);
+  eval(['a' int2str(f) '(in(2:end))=c2;']);
+end
 
 tmp=cat(1,a2,rot90(a4,-1),rot90(a5,-1),a1);
 
@@ -41,7 +58,7 @@ h61=mypcolor(rot90(a6'));
 set(gca,'visible','off')
 
 axx=findobj(gcf,'type','axes');
-set(axx,'clim',cx)
+set(axx,'clim',[c1 c2])
 
 %old versions
 %ax=colorbar('position',[pos(1)+pos(3)/4/2/2 pos(2)+pos(4)*1.5 pos(3)/4*1.5 pos(4)/5]);
@@ -51,3 +68,4 @@ set(axx,'clim',cx)
 ax=colorbar('location','southoutside');
 set(ax,'position',[pos(1)+pos(3)/4/2/2 pos(2)+pos(4)*1.5 pos(3)/4*1.5 pos(4)/5]);
 set(get(ax,'xlabel'),'string',label)
+set(ax,'XLim',cx)
