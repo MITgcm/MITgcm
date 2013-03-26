@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.122 2013/01/22 06:09:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.123 2013/03/26 22:07:25 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -924,6 +924,10 @@ C---  if fluid Is Water: end
         CALL DIAGNOSTICS_FILL( IVDConvCount, 'CONVADJ ',
      &                               0, Nr, 0, 1, 1, myThid )
       ENDIF
+#endif
+
+#ifdef ALLOW_ECCO
+      CALL ECCO_PHYS(mythid)
 #endif
 
 #ifdef ALLOW_DEBUG
