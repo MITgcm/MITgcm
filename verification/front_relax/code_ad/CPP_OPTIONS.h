@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/CPP_OPTIONS.h,v 1.9 2008/08/21 16:03:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/CPP_OPTIONS.h,v 1.10 2013/03/26 20:19:41 jmc Exp $
 C $Name:  $
 
 C CPP flags controlling which code in included in the files that
@@ -24,6 +24,9 @@ C o Include/exclude call to S/R CONVECT
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
 
+C o Allow full 3D specification of vertical diffusivity
+#define ALLOW_3D_DIFFKR
+
 C o Allow nonHydrostatic code
 #undef  ALLOW_NONHYDROSTATIC
 
@@ -41,18 +44,14 @@ C o Execution environment support options
 C o Add passive tracer advection routines
 #define ALLOW_PASSIVE_TRACER
 
-#ifdef ALLOW_AUTODIFF
+C o Include/exclude single header file containing multiple packages options
+C   (AUTODIFF, COST, CTRL, ECCO, EXF ...) instead of the standard way where
+C   each of the above pkg get its own options from its specific option file.
+C   Although this method, inherited from ECCO setup, has been traditionally
+C   used for all adjoint built, work is in progress to allow to use the
+C   standard method also for adjoint built.
+#ifdef PACKAGES_CONFIG_H
 # include "ECCO_CPPOPTIONS.h"
 #endif
-
-C o Allow full 3D specification of vertical diffusivity
-#ifdef ALLOW_DIFFKR_CONTROL
-C - Need to be defined if using DIFFKR_CONTROL
-C   (alternatively, could have put this in ECCO_CPPOPTIONS)
-#define ALLOW_3D_DIFFKR
-#else
-C - otherwise, can be turned on or off hereafter:
-#undef  ALLOW_3D_DIFFKR
-#endif /* ALLOW_DIFFKR_CONTROL */
 
 #endif /* CPP_OPTIONS_H */

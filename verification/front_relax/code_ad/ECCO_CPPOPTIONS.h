@@ -1,12 +1,16 @@
-C
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/ECCO_CPPOPTIONS.h,v 1.4 2003/11/25 19:04:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/ECCO_CPPOPTIONS.h,v 1.5 2013/03/26 20:19:41 jmc Exp $
 C $Name:  $
 
-#include "AD_CONFIG.h"
+#ifndef ECCO_CPPOPTIONS_H
+#define ECCO_CPPOPTIONS_H
 
-C 
-C CPP flags controlling which code is included in the files that
-C will be compiled.
+C-- Collect here, in a single option-file, options to control which optional
+C   features to compile in packages AUTODIFF, COST, CTRL, ECCO, CAL and EXF.
+C   If used, this option-file needs to be directly included in CPP_OPTIONS.h
+C   Although this method, inherited from ECCO setup, has been traditionally
+C   used for all adjoint built, work is in progess to allow to use the
+C   standard metod (each of the above pkg get its own options from its
+C   specific option-file) also for adjoint built.
 
 C ********************************************************************
 C ***                  Adjoint Support Package                     ***
@@ -15,7 +19,7 @@ C ********************************************************************
 C o Include/exclude code in order to be able to automatically
 C   differentiate the MITgcmUV by using the Tangent Linear and
 C   Adjoint Model Compiler (TAMC).
-C
+
 #define ALLOW_AUTODIFF_TAMC
 C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
@@ -63,3 +67,5 @@ C       >>> Initial values.
 #define ALLOW_DIFFKR_CONTROL
 #undef ALLOW_KAPGM_CONTROL
 
+C ********************************************************************
+#endif /* ECCO_CPPOPTIONS_H */
