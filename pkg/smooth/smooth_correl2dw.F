@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl2dw.F,v 1.7 2013/02/05 21:45:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl2dw.F,v 1.8 2013/03/27 15:40:35 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -58,20 +58,8 @@ C     *==========================================================*
         DO j = 1,sNy
          DO i = 1,sNx 
 
-      weightWasFound=.FALSE.
+        weightWasFound=.TRUE.
 
-#ifdef ALLOW_CTRL
-#ifdef ALLOW_GENTIM2D_CONTROL
-      do iarr = 1, maxCtrlTim2D
-        if ( xx_gen_file .EQ. xx_gentim2d_file(iarr) ) then
-          tmpW=wgentim2d(i,j,bi,bj,iarr)
-          weightWasFound=.TRUE.
-        endif
-      enddo
-#endif
-#endif
-
-      if (.NOT.weightWasFound) then
         if ( xx_gen_file .EQ. xx_hflux_file ) then
         tmpW=whflux(i,j,bi,bj)
         elseif ( xx_gen_file .EQ. xx_sflux_file ) then
@@ -110,11 +98,19 @@ C     *==========================================================*
 
         else
           tmpW=0.
-          WRITE(errorMessageUnit,'(2A)' )
-     &       'no weights implemented here for ',xx_gen_file
-             STOP 'ABNORMAL END: S/R smooth_correl2Dw'
+          weightWasFound=.FALSE.
         endif
-      endif
+
+#ifdef ALLOW_CTRL
+#ifdef ALLOW_GENTIM2D_CONTROL
+      do iarr = 1, maxCtrlTim2D
+        if ( xx_gen_file .EQ. xx_gentim2d_file(iarr) ) then
+          tmpW=wgentim2d(i,j,bi,bj,iarr)
+          weightWasFound=.TRUE.
+        endif
+      enddo
+#endif
+#endif
 
       if ((mask_in(i,j,1,bi,bj).NE.0.).AND.(tmpW.NE.0.)) then
       fld_in(i,j,bi,bj)=fld_in(i,j,bi,bj)/sqrt(tmpW)
@@ -128,6 +124,9 @@ C     *==========================================================*
       ENDDO
 
       _EXCH_XY_RL ( fld_in , myThid )
+
+      if (.NOT.weightWasFound) WRITE(errorMessageUnit,'(2A)' )
+     &       'WARNING: no weights found for ',xx_gen_file
 
 #endif /* ALLOW_ECCO or ALLOW_CTRL */
        
