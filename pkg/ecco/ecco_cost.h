@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.60 2013/03/26 22:09:52 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.61 2013/03/27 15:43:24 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -1446,7 +1446,8 @@ c     using_ers - flag that indicates the use of ERS data
      &                         using_cost_altim,
      &                         using_cost_bp,
      &                         using_cost_sst,
-     &                         using_cost_scat
+     &                         using_cost_scat,
+     &                         using_cost_seaice
       logical using_topex
       logical using_ers
       logical using_gfo
@@ -1454,6 +1455,7 @@ c     using_ers - flag that indicates the use of ERS data
       logical using_cost_bp
       logical using_cost_sst
       logical using_cost_scat
+      logical using_cost_seaice
 
 c     Calendar information for the observations:
 c     ==========================================

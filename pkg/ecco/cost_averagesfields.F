@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.41 2013/03/26 22:09:52 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.42 2013/03/27 15:43:24 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -7,6 +7,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
 #endif
 
       subroutine cost_averagesfields( mytime, mythid )
@@ -48,6 +51,7 @@ c     == global variables ==
 #include "CTRL_SIZE.h"
 #include "ctrl.h"
 #include "ctrl_dummy.h"
+#include "CTRL_GENARR.h"
 #ifdef ALLOW_EXF
 # include "EXF_FIELDS.h"
 #endif
@@ -91,6 +95,12 @@ c     == local variables ==
       logical ingen(NGENCOST)
       logical sum1gen(NGENCOST)
       logical genrec(NGENCOST)
+#endif
+#if (defined (ALLOW_CTRL) && \
+     defined (ALLOW_GENTIM2D_CONTROL) && \
+     defined (ALLOW_PSBAR_GENPRECIP))
+      _RL genprecipGloH
+      INTEGER iarr
 #endif
 
       integer ilps, ils,ilt
@@ -186,9 +196,19 @@ c--   Get the time flags and record numbers for the time averaging.
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do k = 1,nr
             do j = jmin,jmax
               do i =  imin,imax
+#if (defined (ALLOW_CTRL) && \
+     defined (ALLOW_GENTIM2D_CONTROL) && \
+     defined (ALLOW_PSBAR_GENPRECIP))
+                genprecipGloH=0. _d 0
+                do iarr = 1, maxCtrlTim2D
+                if (xx_gentim2d_file(iarr).EQ.'xx_genprecip') 
+     &          genprecipGloH=xx_gentim2d(i,j,bi,bj,iarr)
+     &          *rhoConstFresh*recip_rhoConst*deltaTClock
+                enddo
+#endif
+
                 etanLeads(i,j,bi,bj)=etan(i,j,bi,bj)
 #ifdef ALLOW_SEAICE
      &                +sIceLoad(i,j,bi,bj)*recip_rhoConst
@@ -196,9 +216,13 @@ c--   Get the time flags and record numbers for the time averaging.
 #ifdef ALLOW_PSBAR_STERIC
      &                +sterGloH
 #endif
+#if (defined (ALLOW_CTRL) && \
+     defined (ALLOW_GENTIM2D_CONTROL) && \
+     defined (ALLOW_PSBAR_GENPRECIP))
+     &                +genprecipGloH
+#endif
               enddo
             enddo
-          enddo
         enddo
       enddo
       call cost_averagesgeneric(

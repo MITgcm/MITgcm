@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.61 2012/10/02 17:01:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.62 2013/03/27 15:43:24 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -166,6 +166,11 @@ c run time switches for main cost terms
       using_cost_altim=.TRUE.
 #else
       using_cost_altim=.FALSE.
+#endif
+#ifdef ALLOW_SEAICE_COST_CONTRIBUTION
+      using_cost_seaice=.TRUE.
+#else
+      using_cost_seaice=.FALSE.
 #endif
 #ifdef ALLOW_BP_COST_CONTRIBUTION
       using_cost_bp=.TRUE.
@@ -493,6 +498,9 @@ cgf     &        'genbar', k
      &        (gencost_name(k).EQ.'sshv4-ers').OR.
      &        (gencost_name(k).EQ.'sshv4-gfo').OR.
      &        (gencost_name(k).EQ.'sshv4-lsc').OR.
+     &        (gencost_name(k).EQ.'siv4-conc').OR.
+     &        (gencost_name(k).EQ.'siv4-sst').OR.
+     &        (gencost_name(k).EQ.'siv4-vol').OR.
      &        (gencost_name(k).EQ.'sstv4-amsre').OR.
      &        (gencost_name(k).EQ.'sstv4-amsre-lsc') ) then
 c pre-specified generic cost terms

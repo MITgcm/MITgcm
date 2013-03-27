@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta.F,v 1.12 2012/08/10 19:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta.F,v 1.13 2013/03/27 15:43:24 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -116,6 +116,17 @@ c--   Read tiled data.
 c--   Loop over month
       do irec = 1,min(nmonsrec,12)
          nyears=int((nmonsrec-irec)/12)+1
+            do bj = jtlo,jthi
+               do bi = itlo,ithi
+                  do k = 1,nr
+                     do j = jmin,jmax
+                        do i = imin,imax
+                              tbar_gen(i,j,k,bi,bj) = 0. _d 0
+                        enddo
+                     enddo
+                  enddo
+               enddo
+            enddo
             do iyear=1,nyears
             mrec=irec+(iyear-1)*12
             irectmp=mrec
@@ -129,15 +140,8 @@ c--     Read time averages and the monthly mean data.
                   do k = 1,nr
                      do j = jmin,jmax
                         do i = imin,imax
-                           if(iyear.eq.1) then
-                              tbar_gen(i,j,k,bi,bj) =tbar(i,j,k,bi,bj)
-                           elseif(iyear.eq.nyears) then
-                              tbar(i,j,k,bi,bj) =(tbar_gen(i,j,k,bi,bj)
-     $                             +tbar(i,j,k,bi,bj))/float(nyears)
-                           else
                            tbar_gen(i,j,k,bi,bj) =tbar_gen(i,j,k,bi,bj)
-     $                             +tbar(i,j,k,bi,bj)
-                           endif
+     $                             +tbar(i,j,k,bi,bj)/float(nyears)
                         enddo
                      enddo
                   enddo
