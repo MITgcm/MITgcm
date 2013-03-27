@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.7 2013/03/26 18:25:52 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.8 2013/03/27 00:10:26 gforget Exp $
 C $Name:  $
 
 C     ==================================================================
@@ -40,6 +40,11 @@ C     ==================================================================
      &   , gentim2dPrecond
       _RL xx_gentim2d_period(maxCtrlTim2D)
       _RL gentim2dPrecond(maxCtrlTim2D)
+
+      COMMON /CONTROLFILES_LTIM/
+     &     xx_gentim2d_cumsum, xx_gentim2d_glosum
+      LOGICAL xx_gentim2d_cumsum(maxCtrlTim2D)
+      LOGICAL xx_gentim2d_glosum(maxCtrlTim2D)
 
 #endif
 

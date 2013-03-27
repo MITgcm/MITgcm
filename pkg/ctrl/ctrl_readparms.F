@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.45 2013/02/05 22:45:56 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.46 2013/03/27 00:10:26 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -144,6 +144,7 @@ cHFLUXM_CONTROL
      &  xx_genarr2d_weight, xx_genarr3d_weight, xx_gentim2d_weight,
      &  xx_gentim2d_startdate1, xx_gentim2d_startdate2,
      &  xx_gentim2d_startdate, xx_gentim2d_period,
+     &  xx_gentim2d_cumsum,xx_gentim2d_glosum,
      &  genarr2dPrecond, gentim2dPrecond,mult_gentim2d
 #endif
 
@@ -211,6 +212,8 @@ c
          xx_gentim2d_startdate1(iarr) = 0
          xx_gentim2d_startdate2(iarr) = 0
          xx_gentim2d_period(iarr)     = 0. _d 0
+         xx_gentim2d_cumsum(iarr)     = .FALSE.
+         xx_gentim2d_glosum(iarr)     = .FALSE.
          gentim2dPrecond(iarr)        = 1. _d 0
          mult_gentim2d(iarr)          = 0. _d 0
         enddo

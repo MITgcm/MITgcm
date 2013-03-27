@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/ctrl_map_gentim2d.F,v 1.1 2013/02/05 14:40:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/ctrl_map_gentim2d.F,v 1.2 2013/03/27 00:11:02 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -59,6 +59,8 @@ C     == Local variables ==
 
       _RL fac
       _RL xx_gentim2d_loc(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RL LOCsumTile(nSx,nSy), LOCsumGlob
 
 c     == external ==
       integer  ilnblnk
@@ -99,6 +101,56 @@ C
      I      zeroRL, zeroRL,
      I      mytime, myiter, mythid )
 C
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+            do j = 1,sNy
+              do i =  1,sNx
+              if (xx_gentim2d_cumsum(iarr)) then
+                xx_gentim2d(i,j,bi,bj,iarr)=xx_gentim2d(i,j,bi,bj,iarr)
+     &            +xx_gentim2d_loc(i,j,bi,bj)
+              else
+                xx_gentim2d(i,j,bi,bj,iarr)=xx_gentim2d_loc(i,j,bi,bj)
+              endif
+              enddo
+            enddo
+        enddo
+      enddo
+C
+      if (xx_gentim2d_glosum(iarr)) then
+
+      LOCsumGlob=0. _d 0
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+          LOCsumTile(bi,bj)=0. _d 0
+            do j = 1,sNy
+              do i =  1,sNx
+                LOCsumTile(bi,bj)=LOCsumTile(bi,bj)+
+     &            maskC(i,j,1,bi,bj)*rA(i,j,bi,bj)
+     &            *xx_gentim2d(i,j,bi,bj,iarr)
+              enddo
+            enddo
+        enddo
+      enddo
+
+      CALL GLOBAL_SUM_TILE_RL( LOCsumTile, LOCsumGlob, myThid )
+
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO J = 1-Oly,sNy+Oly
+          DO I = 1-Olx,sNx+Olx
+             xx_gentim2d(I,J,bi,bj,iarr) =
+     &            LOCsumGlob/globalArea*maskC(i,j,1,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+         WRITE(msgBuf,'(A,I6,A,I6,A,1PE21.14)') ' xx_gentim2d ',
+     &    iarr,' : iter=', myiter, ' ; global sum = ', LOCsumGlob
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+
+       endif
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -106,7 +158,7 @@ C
           DO I = 1-Olx,sNx+Olx
            if (iarr.EQ.1) then
              theta(I,J,1,bi,bj) = theta(I,J,1,bi,bj)
-     &                          + xx_gentim2d_loc(I,J,bi,bj)
+     &                          + xx_gentim2d(I,J,bi,bj,iarr)
            endif
           ENDDO
          ENDDO
