@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.1 2013/03/28 00:25:56 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.2 2013/03/28 13:40:09 jmc Exp $
 C $Name:  $
 
-#include "SEAICE_OPTIONS.h"
+#include "ECCO_OPTIONS.h"
 
       subroutine cost_gencost_seaicev4(mythid)
 
@@ -148,7 +148,7 @@ c--   Initialise local variables.
           objf_gencost(bi,bj,igen_sst) = 0. _d 0
           num_gencost(bi,bj,igen_conc) = 0. _d 0
           num_gencost(bi,bj,igen_vol) = 0. _d 0
-          num_gencost(bi,bj,igen_sst) = 0. _d 0          
+          num_gencost(bi,bj,igen_sst) = 0. _d 0
           do k = 1,nnzobs
             do j = jmin,jmax
               do i = imin,imax
@@ -277,7 +277,7 @@ c to use the data in a repreated cycle, comment next line?
                 do j = jmin,jmax
                   do i = imin,imax
                      localobs(i,j,k,bi,bj) = spval
-c not sure why this is not spzeroloc 
+c not sure why this is not spzeroloc
                   enddo
                 enddo
               enddo
@@ -312,26 +312,26 @@ c area term
                 localwww  = localweight(i,j,k,bi,bj)*cmask(i,j,k)
                 junk      = ( areabbbar(i,j,k,bi,bj) -
      &                        localobs(i,j,k,bi,bj) )
-                objf_gencost(bi,bj,igen_conc) = 
+                objf_gencost(bi,bj,igen_conc) =
      &            objf_gencost(bi,bj,igen_conc) + junk*junk*localwww
 
                 if ( localwww .ne. 0. )
-     &               num_gencost(bi,bj,igen_conc) = 
+     &               num_gencost(bi,bj,igen_conc) =
      &                 num_gencost(bi,bj,igen_conc) + 1. _d 0
 
 c heff term
                 if ( (localobs(i,j,k,bi,bj) .EQ. 0.).AND.
      &               (heffbbbar(i,j,k,bi,bj) .GT. 0.) ) then
                    junk=10. _d 0 *cmask(i,j,k)*heffbbbar(i,j,k,bi,bj)
-                     num_gencost(bi,bj,igen_vol) = 
+                     num_gencost(bi,bj,igen_vol) =
      &                 num_gencost(bi,bj,igen_vol) + 1. _d 0
                 else
                    junk = 0. _d 0
-                     num_gencost(bi,bj,igen_vol) = 
+                     num_gencost(bi,bj,igen_vol) =
      &                 num_gencost(bi,bj,igen_vol) + 0. _d 0
                 endif
 
-                objf_gencost(bi,bj,igen_vol) = 
+                objf_gencost(bi,bj,igen_vol) =
      &            objf_gencost(bi,bj,igen_vol) + junk
 
 c sst term
@@ -339,11 +339,11 @@ c sst term
      &               (localobs(i,j,1,bi,bj) .GT. 0.) ) then
                  junk=1. _d 0 *cmask(i,j,k)*
      &               ( 3. _d 0 + sstbbbar(i,j,k,bi,bj) )
-                     num_gencost(bi,bj,igen_sst) = 
+                     num_gencost(bi,bj,igen_sst) =
      &                 num_gencost(bi,bj,igen_sst) + 1. _d 0
                 else
                  junk = 0. _d 0
-                     num_gencost(bi,bj,igen_sst) = 
+                     num_gencost(bi,bj,igen_sst) =
      &                 num_gencost(bi,bj,igen_sst) + 0. _d 0
                 endif
 
