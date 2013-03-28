@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/CPP_OPTIONS.h,v 1.6 2013/03/26 20:25:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/CPP_OPTIONS.h,v 1.7 2013/03/28 22:11:22 gforget Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -20,7 +20,7 @@ C CPP flags controlling particular source code features
 
 C o Shortwave heating as extra term in external_forcing.F
 C Note: this should be a run-time option
-#define SHORTWAVE_HEATING
+# undef SHORTWAVE_HEATING
 
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
