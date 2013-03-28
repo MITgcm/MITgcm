@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_ad/Attic/DIC_OPTIONS.h,v 1.4 2011/12/24 01:17:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_ad/Attic/DIC_OPTIONS.h,v 1.5 2013/03/28 18:08:03 jahn Exp $
 C $Name:  $
 
 #ifndef DIC_OPTIONS_H
@@ -10,7 +10,7 @@ C $Name:  $
 C     Package-specific Options & Macros go here
 
 #define DIC_BIOTIC
-#define ALLOW_FE
+#undef ALLOW_FE
 #define ALLOW_O2
 #undef READ_PAR
 #undef MINFE
