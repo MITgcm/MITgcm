@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.123 2013/03/26 22:07:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.124 2013/03/28 17:22:12 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -79,6 +79,7 @@ C     == Global variables ===
 # ifdef ALLOW_SEAICE
 #  include "SEAICE_SIZE.h"
 #  include "SEAICE.h"
+#  include "SEAICE_PARAMS.h"
 # endif
 # ifdef ALLOW_THSICE
 #  include "THSICE_VARS.h"
@@ -222,6 +223,34 @@ C       and modify forcing terms including effects from ice
       ENDIF
 #endif /* ALLOW_THSICE */
 #endif /* ndef OLD_THSICE_CALL_SEQUENCE */
+
+#ifdef ALLOW_SEAICE
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE fu,fv  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE qnet   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE qsw    = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE theta  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE salt   = comlev1, key=ikey_dynamics, kind=isbyte
+#if (defined ALLOW_EXF) && (defined ALLOW_ATM_TEMP)
+CADJ STORE evap   = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
+      IF ( .NOT.useSEAICE ) THEN
+      IF ( SEAICEadjMODE .EQ. -1 ) THEN
+        CALL SEAICE_FAKE( myTime, myIter, myThid )
+      ENDIF
+      ENDIF
+CADJ STORE area   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE fu,fv  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE qnet   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE qsw    = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE theta  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE salt   = comlev1, key=ikey_dynamics, kind=isbyte
+#if (defined ALLOW_EXF) && (defined ALLOW_ATM_TEMP)
+CADJ STORE evap   = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
+# endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_SEAICE
       IF ( useSEAICE ) THEN
