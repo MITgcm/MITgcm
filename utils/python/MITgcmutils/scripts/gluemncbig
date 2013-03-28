@@ -1210,19 +1210,23 @@ if __name__ == '__main__':
     # Get list of iterations
     itfiles = {}
     # files without iteration number
-    files0 = []
+    files0 = {}
     for fname in fnames:
+        tn = tilepatt.search(fname).group(1)
         base = tilepatt.sub('', fname)
         m = iterpatt.search(base)
         if m:
-            itfiles.setdefault(m.group(1), []).append((fname))
+            it = m.group(1)
+            itfiles.setdefault(it, {})[tn] = fname
         else:
-            files0.append(fname)
+            files0[tn] = fname
+
+    files0 = [v for k,v in sorted(files0.items())]
 
     its = itfiles.keys()
     its.sort()
     for it in its:
-        itfiles[it].sort()
+        itfiles[it] = [v for k,v in sorted(itfiles[it].items())]
 
     filess = [ itfiles[it] for it in its ]
     if len(files0) and len(filess):
@@ -1368,7 +1372,7 @@ if __name__ == '__main__':
                         raise ValueError('found %d tiles for bj = %d, need %d' % (
                                          len(tileslices[bj]), bj+1, ntx))
                     # open files
-                    ncs = {}
+                    ncs = []
                     for fname in tileslices[bj]:
                         try:
                             nc = netcdf_file(fname, 'r', **readopts)
@@ -1376,7 +1380,7 @@ if __name__ == '__main__':
                             if e.errno == errno.EMFILE:
                                 sys.exit('ERROR: Too many open files.  Ask developer to improve script ;)')
                             raise
-                        ncs[fname] = nc
+                        ncs.append(nc)
 
                     if irec == 0:
                         # assemble non-record variable data
@@ -1400,7 +1404,7 @@ if __name__ == '__main__':
                                 else:
                                     j0 = None
                                 data = np.empty(shape, var.data.dtype.newbyteorder('>'))
-                                for fname,nc in ncs.items():
+                                for nc in ncs:
                                     tn = nc.tile_number - 1
                                     if iX is not None: indx[iX] = Xslice[tn]
                                     data[tuple(indx)] = nc.read_var(name)
@@ -1436,7 +1440,7 @@ if __name__ == '__main__':
                                     else:
                                         j0 = None
                                     data = np.empty(shape[1:], var.data.dtype.newbyteorder('>'))
-                                    for fname,nc in ncs.items():
+                                    for nc in ncs:
                                         tn = nc.tile_number - 1
                                         if iX is not None: indx[iX-1] = Xslice[tn]
                                         data[tuple(indx)] = nc.read_recvar(name, irecin)
@@ -1447,7 +1451,7 @@ if __name__ == '__main__':
                         if bj == 0 and progress and not verbose:
                             sys.stderr.write('\n')
 
-                    for nc in ncs.values():
+                    for nc in ncs:
                         nc.close()
 
                     if progress and not verbose:
@@ -1463,16 +1467,15 @@ if __name__ == '__main__':
                     irec += nrec
 
         else:
-            ncs = {files0[0]: nc}
-            for fname in files0:
-                if fname not in ncs:
-                    try:
-                        nc = netcdf_file(fname, 'r', **readopts)
-                    except IOError as e:
-                        if e.errno == errno.EMFILE:
-                            sys.exit('ERROR: Too many open files.  Try again with --many or increase the limit on open files.')
-                        raise
-                    ncs[fname] = nc
+            ncs = [nc]
+            for fname in files0[1:]:
+                try:
+                    nc = netcdf_file(fname, 'r', **readopts)
+                except IOError as e:
+                    if e.errno == errno.EMFILE:
+                        sys.exit('ERROR: Too many open files.  Try again with --many or increase the limit on open files.')
+                    raise
+                ncs.append(nc)
 
             # assemble non-record variable data
             if progress and not verbose: sys.stderr.write('Writing non-record variables\n')
@@ -1487,7 +1490,7 @@ if __name__ == '__main__':
                     iX = prop['iX']
                     iY = prop['iY']
                     data = np.empty(var.shape, var.data.dtype.newbyteorder('>'))
-                    for fname,nc in ncs.items():
+                    for nc in ncs:
                         tn = nc.tile_number - 1
                         if iX is not None: indx[iX] = Xslice[tn]
                         if iY is not None: indx[iY] = Yslice[tn]
@@ -1504,9 +1507,10 @@ if __name__ == '__main__':
                 irec = 0
                 for fnames in filess:
                     if irec:
-                        ncs = {}
+                        ncs = []
                         for fname in fnames:
-                            ncs[fname] = nc = netcdf_file(fname, 'r', **readopts)
+                            nc = netcdf_file(fname, 'r', **readopts)
+                            ncs.append(nc)
 
                     nrec = nc.numrecs
                     if progress and not verbose: sys.stderr.write('Writing {0} records: '.format(nrec))
@@ -1522,7 +1526,7 @@ if __name__ == '__main__':
                                 iX = prop['iX']
                                 iY = prop['iY']
                                 data = np.empty(var.data.shape[1:], var.data.dtype.newbyteorder('>'))
-                                for fname,nc in ncs.items():
+                                for nc in ncs:
                                     tn = nc.tile_number - 1
                                     if iX is not None: indx[iX-1] = Xslice[tn]
                                     if iY is not None: indx[iY-1] = Yslice[tn]
@@ -1533,7 +1537,7 @@ if __name__ == '__main__':
 
                     irec += nrec
 
-                    for nc in ncs.values():
+                    for nc in ncs:
                         nc.close()
 
                     if progress and not verbose: sys.stderr.write('\n')
