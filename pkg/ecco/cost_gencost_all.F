@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.11 2012/10/02 01:40:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.12 2013/03/28 00:25:56 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -85,6 +85,11 @@ c     == end of interface ==
       IF (using_cost_sst)
      &    call cost_gencost_sstv4( myiter, mytime, mythid )
 # endif /* ALLOW_GENCOST_SSTV4 */
+
+#ifdef ALLOW_GENCOST_SEAICEV4
+      IF (using_cost_seaice)
+     &    call cost_gencost_seaicev4( mythid )
+# endif /* ALLOW_GENCOST_SEAICEV4 */
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
