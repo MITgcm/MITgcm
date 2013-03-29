@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.142 2013/02/28 16:21:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.143 2013/03/29 21:54:56 torge Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -142,7 +142,7 @@ C--   SEAICE parameters
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc,
 #ifdef SEAICE_ITD
-     & Hlimit_c1, Hlimit_c2, Hlimit_c3
+     & Hlimit_c1, Hlimit_c2, Hlimit_c3,
 #endif
      & SEAICE_debugPointI, SEAICE_debugPointJ
 
@@ -249,7 +249,6 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICEnEVPstarSteps = UNSET_I
       SEAICE_initialHEFF = ZERO
 #ifdef SEAICE_ITD
-CToM<<<
 C     Coefficients used to calculate sea ice thickness category limits
 C     after Lipscomb et al. (2001, JGR), Equ. 22
 C     choose between
@@ -260,7 +259,6 @@ C        c1=1.5/N, c2=42*c1, c3=3.3
       Hlimit_c1          = 3.0
       Hlimit_c2          = 15.
       Hlimit_c3          = 3.0
-C>>>ToM
 #endif
       SEAICE_rhoIce      = 0.91   _d +03
       SEAICE_rhoSnow     = 330.   _d 0
@@ -322,11 +320,14 @@ C     old default value of 0.97001763668430343479
       SEAICE_shortwave   = 0.30   _d 0
       SEAICE_salt0       = 0.0    _d 0
       SEAICE_saltFrac    = 0.0    _d 0
-CToM<<<
 #ifdef SEAICE_ITD
 C in case defined(SEAICE_ITD) MULTDIM = nITD (see SEAICE_SIZE.h)
-C>>>ToM
-      SEAICE_multDim     = MULTDIM
+c      SEAICE_multDim     = MULTDIM
+C the switch MULTICATEGORY (and with it parameter MULTDIM) has been retired 
+C  and SEAICE_multDim is now a runtime parameter;
+C  in case SEAICE_multDim is given in data.seaice it needs to be overwritten
+C  after PARM01 was read (see below)
+      SEAICE_multDim     = nITD
 #else
       SEAICE_multDim     = 1
 #endif
@@ -513,6 +514,13 @@ C--   Read settings from model parameter file "data.seaice".
 #endif /* ALLOW_SITRACER */
 
       CLOSE(iUnit)
+
+#ifdef SEAICE_ITD
+C SEAICE_multDim has become a runtime parameter but if SEAICE_ITD is defined
+C  it needs to equal nITD because of shared code (mostly in seaice_growth.F).
+C nITD is set in SEAICE_SIZE.h
+      SEAICE_multDim     = nITD
+#endif
 
       WRITE(msgBuf,'(A)')
      &     ' SEAICE_READPARMS: finished reading data.seaice'
