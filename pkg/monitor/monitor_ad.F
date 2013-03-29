@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.F,v 1.12 2012/07/28 20:04:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.F,v 1.13 2013/03/29 23:08:55 heimbach Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -26,11 +26,9 @@ C     !USES:
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
 #endif
-#ifdef ALLOW_AUTODIFF
+#if (defined (ALLOW_AUTODIFF) && defined (ALLOW_AUTODIFF_MONITOR))
 # include "AUTODIFF_PARAMS.h"
-# ifdef ALLOW_AUTODIFF_MONITOR
-#  include "adcommon.h"
-# endif
+# include "adcommon.h"
 #endif
 
 C     !INPUT PARAMETERS:

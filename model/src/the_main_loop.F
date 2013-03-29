@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.148 2013/03/15 14:51:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.149 2013/03/29 23:08:55 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -73,6 +73,8 @@ c They provide the fields to be stored.
 #  include "FFIELDS.h"
 #  include "EOS.h"
 #  include "AUTODIFF.h"
+
+# endif /* ALLOW_AUTODIFF_OPENAD */
 
 #  ifdef ALLOW_GENERIC_ADVDIFF
 #   include "GAD.h"
@@ -172,7 +174,7 @@ c They provide the fields to be stored.
 #  endif
 # endif
 
-# endif /* undef ALLOW_AUTODIFF_OPENAD */
+cph# endif /* undef ALLOW_AUTODIFF_OPENAD */
 
 # ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
