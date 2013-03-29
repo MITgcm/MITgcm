@@ -1,0 +1,11 @@
+# ===================================
+# | Parameters for SHELFICE package |
+# ===================================
+ &SHELFICE_PARM01
+ SHELFICEboundaryLayer = .TRUE.,
+ SHELFICEtopoFile='icetopo.exp1',
+ SHELFICEloadAnomalyFile = 'phi0surf.exp1.jmd95z',
+ useISOMIPTD = .TRUE.,
+ no_slip_shelfice = .false.,
+ SHELFICEwriteState = .TRUE.,
+ &
