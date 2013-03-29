@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# $Header: /u/gcmpack/MITgcm/verification/obcs_ctrl/build/Attic/genmake_local,v 1.1 2013/03/29 17:08:34 jmc Exp $
+
+#  This is the local options file for the "new" version of genmake
+
+MAKEDEPEND=tools_xmakedepend
+
