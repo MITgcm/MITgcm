@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1843 2013/03/25 21:41:47 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1844 2013/03/29 23:21:39 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/isomip, pkg/shelfic and OpenAD:
+  - add OpenAD setup to this exp and make shelfice package work with OpenAD
 o verification/offline_exf_seaice: replace adjoint experiment.
 o verification/tutorial_tracer_adjsens, pkg/ptracers and OpenAD:
   - add OpenAD setup to this exp and make ptracers package work with OpenAD
