@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.2 2013/03/28 13:40:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.3 2013/03/29 14:53:09 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -172,15 +172,16 @@ c--   Assign mask
         enddo
       enddo
 
+      nrecloc=nmonsrec
+      localperiod=0.
+
       areabbbarfile=gencost_barfile(igen_conc)
       heffbbbarfile=gencost_barfile(igen_vol)
       sstbbbarfile=gencost_barfile(igen_sst)
-      localobsfile=gencost_name(igen_conc)
+      localobsfile=gencost_datafile(igen_conc)
       xx_areabbbar_mean_dummy=xx_genbar_dummy(igen_conc)
       xx_heffbbbar_mean_dummy=xx_genbar_dummy(igen_vol)
       xx_sstbbbar_mean_dummy=xx_genbar_dummy(igen_sst)
-      localperiod=gencost_period(igen_conc)
-      nrecloc=gencost_nrec(igen_conc)
       localstartdate(1)=modelstartdate(1)
       localstartdate(2)=modelstartdate(2)
       localstartdate(3)=modelstartdate(3)
