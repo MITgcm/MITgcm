@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.26 2013/03/26 22:07:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.27 2013/03/30 11:52:05 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -103,7 +103,6 @@ c     == end of interface ==
 #ifdef ALLOW_PSBAR_STERIC
       RHOsumGlob_0=RHOsumGlob
       VOLsumGlob_0=VOLsumGlob
-      RHOsumGlob_0=RHOsumGlob_0/VOLsumGlob_0
 #endif
 
 c--   only do interior, and exchange at the end
