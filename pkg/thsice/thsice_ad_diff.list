@@ -13,6 +13,7 @@ thsice_do_advect.f
 thsice_do_exch.f
 thsice_extend.f
 thsice_get_exf.f
+thsice_get_ocean.f
 thsice_get_precip.f
 thsice_get_velocity.f
 thsice_ini_vars.f

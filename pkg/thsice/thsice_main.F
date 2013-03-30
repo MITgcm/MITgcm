@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.28 2013/01/21 23:00:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.29 2013/03/30 18:38:50 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -23,14 +23,12 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
-#include "SURFACE.h"
-#include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_VARS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
+# include "DYNVARS.h"
 # include "tamc.h"
 # include "tamc_keys.h"
 #endif
@@ -113,62 +111,19 @@ CADJ STORE ocesflx(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 CADJ STORE qsw(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 # endif
 #endif
-
-C--     Mixed layer thickness: take the 1rst layer
-#ifdef NONLIN_FRSURF
-        IF ( staggerTimeStep .AND. nonlinFreeSurf.GT.0 ) THEN
-         IF ( select_rStar.GT.0 ) THEN
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-             hOceMxL(i,j,bi,bj) = drF(1)*h0FacC(i,j,1,bi,bj)
-     &                                  *rStarFacC(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ELSE
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            IF ( kSurfC(i,j,bi,bj).EQ.1 ) THEN
-             hOceMxL(i,j,bi,bj) = drF(1)*hFac_surfC(i,j,bi,bj)
-            ELSE
-             hOceMxL(i,j,bi,bj) = drF(1)*hFacC(i,j,1,bi,bj)
-            ENDIF
-           ENDDO
-          ENDDO
-         ENDIF
-        ELSE
-#else /* ndef NONLIN_FRSURF */
-        IF (.TRUE.) THEN
-#endif /* NONLIN_FRSURF */
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-             hOceMxL(i,j,bi,bj) = drF(1)*hFacC(i,j,1,bi,bj)
-           ENDDO
-          ENDDO
-        ENDIF
-
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
 
-        DO j = jMin, jMax
-         DO i = iMin, iMax
-          tOceMxL(i,j,bi,bj) = theta(i,j,1,bi,bj)
-          sOceMxL(i,j,bi,bj) = salt (i,j,1,bi,bj)
-          v2ocMxL(i,j,bi,bj) =
-     &              ( uvel(i,j,1,bi,bj)*uvel(i,j,1,bi,bj)
-     &              + uvel(i+1,j,1,bi,bj)*uvel(i+1,j,1,bi,bj)
-     &              + vvel(i,j+1,1,bi,bj)*vvel(i,j+1,1,bi,bj)
-     &              + vvel(i,j,1,bi,bj)*vvel(i,j,1,bi,bj)
-     &              )*0.5 _d 0
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           prcAtm  (i,j,bi,bj) = 0. _d 0
-          icFrwAtm(i,j,bi,bj) = 0. _d 0
-          icFlxAtm(i,j,bi,bj) = 0. _d 0
-          icFlxSW (i,j,bi,bj) = 0. _d 0
-          snowPrc (i,j,bi,bj) = 0. _d 0
-          siceAlb (i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
+
+        CALL THSICE_GET_OCEAN(
+     I                         bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj, key = ticekey
@@ -237,6 +192,9 @@ CADJ STORE Qice1(:,:,bi,bj)   = comlev1_bibj, key = ticekey
 CADJ STORE Qice2(:,:,bi,bj)   = comlev1_bibj, key = ticekey
 CADJ STORE snowAge(:,:,bi,bj) = comlev1_bibj, key = ticekey
 CADJ STORE sHeating(:,:,bi,bj) = comlev1_bibj, key = ticekey
+#else
+        ENDIF
+        IF ( .NOT.thSIce_skipThermo ) THEN
 #endif
           CALL THSICE_STEP_FWD(
      I                     bi, bj, iMin, iMax, jMin, jMax,
