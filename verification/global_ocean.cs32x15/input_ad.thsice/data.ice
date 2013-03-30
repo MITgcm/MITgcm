@@ -25,3 +25,7 @@
  thSIce_monFreq=1.,
  &
 
+ &THSICE_COST
+#Parameter related to thsice-specific cost functions
+ &
+
