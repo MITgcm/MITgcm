@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.31 2012/10/02 17:01:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.32 2013/03/30 11:57:47 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -135,7 +135,7 @@ c--     ... ARGO data.
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       do k = 1, NGENCOST
-       if ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 ) ) then
+       if ( (using_gencost(k)).AND.( gencost_flag(k).GE.1 ) ) then
          if ( gencost_avgperiod(k) .EQ. 'day' .OR.
      &        gencost_avgperiod(k) .EQ. 'DAY' ) then
             gencost_nrec(k)   = ndaysrec

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.63 2013/03/28 00:25:56 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.64 2013/03/30 11:57:47 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -498,14 +498,20 @@ cgf     &        'genbar', k
      &        (gencost_name(k).EQ.'sshv4-ers').OR.
      &        (gencost_name(k).EQ.'sshv4-gfo').OR.
      &        (gencost_name(k).EQ.'sshv4-lsc').OR.
-     &        (gencost_name(k).EQ.'siv4-conc').OR.
-     &        (gencost_name(k).EQ.'siv4-sst').OR.
-     &        (gencost_name(k).EQ.'siv4-vol').OR.
      &        (gencost_name(k).EQ.'sstv4-amsre').OR.
      &        (gencost_name(k).EQ.'sstv4-amsre-lsc') ) then
-c pre-specified generic cost terms
+c pre-specified generic cost terms using otherwise created barfiles
            gencost_flag(k)=-1
            using_gencost(k)=.TRUE.
+#ifdef ALLOW_GENCOST_SEAICEV4
+         elseif ( 
+     &        (gencost_name(k).EQ.'siv4-conc').OR.
+     &        (gencost_name(k).EQ.'siv4-sst').OR.
+     &        (gencost_name(k).EQ.'siv4-vol') ) then
+c pre-specified generic cost terms that create their own barfile
+           gencost_flag(k)=2
+           using_gencost(k)=.TRUE.
+#endif
          elseif ( gencost_datafile(k) .NE. ' ' ) then
 c fully interactive generic cost terms
            gencost_flag(k)=1
@@ -516,7 +522,7 @@ c fully interactive generic cost terms
 C--   Check parameters:
       do k=1,NGENCOST
 
-        if ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 ) ) then
+        if ( (using_gencost(k)).AND.( gencost_flag(k).GE.1 ) ) then
 
           if ( gencost_name(k) .EQ. 'gencost' )
      &        gencost_name(k) = gencost_datafile(k)
