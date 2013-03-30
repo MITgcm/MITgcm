@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.7 2013/03/29 23:08:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.8 2013/03/30 13:25:46 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -74,8 +74,6 @@ c They provide the fields to be stored.
 #  include "EOS.h"
 #  include "AUTODIFF.h"
 
-# endif /* ALLOW_AUTODIFF_OPENAD */
-
 #  ifdef ALLOW_GENERIC_ADVDIFF
 #   include "GAD.h"
 #   include "GAD_SOM_VARS.h"
@@ -86,24 +84,6 @@ c They provide the fields to be stored.
 #  ifdef ALLOW_CD_CODE
 #   include "CD_CODE_VARS.h"
 #  endif
-#  ifdef ALLOW_PTRACERS
-#   include "PTRACERS_SIZE.h"
-#   include "PTRACERS_FIELDS.h"
-#   include "PTRACERS_START.h"
-#  endif
-# ifdef ALLOW_GCHEM
-#  include "GCHEM_FIELDS.h"
-# endif
-# ifdef ALLOW_CFC
-#  include "CFC.h"
-# endif
-# ifdef ALLOW_DIC
-#  include "DIC_VARS.h"
-#  include "DIC_LOAD.h"
-#  include "DIC_ATMOS.h"
-#  include "DIC_CTRL.h"
-#  include "DIC_COST.h"
-# endif
 #  ifdef ALLOW_OBCS
 #   include "OBCS_PARAMS.h"
 #   include "OBCS_FIELDS.h"
@@ -131,16 +111,6 @@ c They provide the fields to be stored.
 #  ifdef ALLOW_THSICE
 #   include "THSICE_SIZE.h"
 #   include "THSICE_VARS.h"
-#  endif
-#  ifdef ALLOW_SHELFICE
-#   include "SHELFICE.h"
-#   include "SHELFICE_COST.h"
-#  endif
-#  ifdef ALLOW_STREAMICE
-#   include "STREAMICE.h"
-#   include "STREAMICE_ADV.h"
-#   include "STREAMICE_BDRY.h"
-#   include "STREAMICE_CG.h"
 #  endif
 #  ifdef ALLOW_EBM
 #   include "EBM.h"
@@ -174,7 +144,7 @@ c They provide the fields to be stored.
 #  endif
 # endif
 
-cph# endif /* undef ALLOW_AUTODIFF_OPENAD */
+# endif /* undef ALLOW_AUTODIFF_OPENAD */
 
 # ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
@@ -185,6 +155,35 @@ cph# endif /* undef ALLOW_AUTODIFF_OPENAD */
 # ifdef ALLOW_COST
 #  include "cost.h"
 # endif
+
+#  ifdef ALLOW_PTRACERS
+#   include "PTRACERS_SIZE.h"
+#   include "PTRACERS_FIELDS.h"
+#   include "PTRACERS_START.h"
+#  endif
+# ifdef ALLOW_GCHEM
+#  include "GCHEM_FIELDS.h"
+# endif
+# ifdef ALLOW_CFC
+#  include "CFC.h"
+# endif
+# ifdef ALLOW_DIC
+#  include "DIC_VARS.h"
+#  include "DIC_LOAD.h"
+#  include "DIC_ATMOS.h"
+#  include "DIC_CTRL.h"
+#  include "DIC_COST.h"
+# endif
+#  ifdef ALLOW_SHELFICE
+#   include "SHELFICE.h"
+#   include "SHELFICE_COST.h"
+#  endif
+#  ifdef ALLOW_STREAMICE
+#   include "STREAMICE.h"
+#   include "STREAMICE_ADV.h"
+#   include "STREAMICE_BDRY.h"
+#   include "STREAMICE_CG.h"
+#  endif
 
 #endif /* ALLOW_AUTODIFF */
 c**************************************
