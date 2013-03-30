@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.20 2013/03/30 01:23:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.21 2013/03/30 15:39:30 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -193,7 +193,7 @@ C--   Read parameters from open data file
 
 #ifdef ALLOW_COST
       READ(UNIT=iUnit,NML=THSICE_COST)
-      WRITE(msgBuf,'(A)') ' THSICE_READPARMS: read THSICE_PARM02'
+      WRITE(msgBuf,'(A)') ' THSICE_READPARMS: read THSICE_COST'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 #endif
