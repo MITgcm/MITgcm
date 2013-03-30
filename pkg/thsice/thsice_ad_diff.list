@@ -4,6 +4,10 @@ thsice_albedo.f
 thsice_ave.f
 thsice_balance_frw.f
 thsice_calc_thickn.f
+thsice_cost_driver.f
+thsice_cost_final.f
+thsice_cost_init_varia.f
+thsice_cost_test.f
 thsice_diffusion.f
 thsice_do_advect.f
 thsice_do_exch.f

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.30 2012/08/10 22:57:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.31 2013/03/30 01:25:44 heimbach Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
@@ -54,12 +54,20 @@ c     == end of interface ==
       ithi = mybxhi(mythid)
 
 #ifdef ALLOW_SEAICE
-      CALL SEAICE_COST_FINAL (myThid)
+      if (useSEAICE) CALL SEAICE_COST_FINAL (myThid)
 #endif
 
 #ifdef ALLOW_SHELFICE
       CALL SHELFICE_COST_FINAL (myThid)
 #endif
+
+      print *, 'ph-1 in thsice_cost_final'
+
+#ifdef ALLOW_THSICE
+      if (useTHSICE) CALL THSICE_COST_FINAL (myThid)
+#endif
+
+      print *, 'ph-3 in thsice_cost_final'
 
 #ifdef ALLOW_ECCO
       CALL ECCO_COST_FINAL (myThid)

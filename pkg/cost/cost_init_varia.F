@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.13 2012/08/10 22:57:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.14 2013/03/30 01:25:44 heimbach Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
@@ -101,6 +101,10 @@ cph because we need it in ADM*TLM
 
 #ifdef ALLOW_SEAICE
       call seaice_cost_init_varia( mythid )
+#endif
+
+#ifdef ALLOW_THSICE
+      call thsice_cost_init_varia( mythid )
 #endif
 
 #ifdef ALLOW_ECCO

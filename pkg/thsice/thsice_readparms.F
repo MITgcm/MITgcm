@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.19 2012/11/21 01:53:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.20 2013/03/30 01:23:58 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -29,7 +29,9 @@ C     === Global variables ===
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
-
+#ifdef ALLOW_COST
+#include "THSICE_COST.h"
+#endif
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myThid    :: My Thread Id. number
@@ -73,6 +75,11 @@ C--   Th-Sea-ICE parameter
      &     thSIceFract_InitFile, thSIceThick_InitFile,
      &     thSIceSnowH_InitFile, thSIceSnowA_InitFile,
      &     thSIceEnthp_InitFile, thSIceTsurf_InitFile
+
+#ifdef ALLOW_COST
+      NAMELIST /THSICE_COST/
+     &     mult_thsice, thsice_cost_ice_flag
+#endif
 
       _BEGIN_MASTER(myThid)
 
@@ -168,6 +175,10 @@ C--   Default values (parameters)
       thSIceEnthp_InitFile = ' '
       thSIceTsurf_InitFile = ' '
 
+#ifdef ALLOW_COST
+      thsice_cost_ice_flag = 1
+      mult_thsice = 0. _d 0
+#endif
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=THSICE_CONST)
@@ -179,6 +190,13 @@ C--   Read parameters from open data file
       WRITE(msgBuf,'(A)') ' THSICE_READPARMS: read THSICE_PARM01'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
+
+#ifdef ALLOW_COST
+      READ(UNIT=iUnit,NML=THSICE_COST)
+      WRITE(msgBuf,'(A)') ' THSICE_READPARMS: read THSICE_PARM02'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+#endif
 
 C--   Close the open data file
       CLOSE(iUnit)
