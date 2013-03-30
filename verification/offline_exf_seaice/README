@@ -1,110 +1,94 @@
-Seaice-only estimation in the Labrador Sea
-------------------------------------------
+Seaice-only verification experiment in idealized periodic channel
+-----------------------------------------------------------------
 
-Notes:
+1) main forward experiment (code, input)
 
-- The offline code is enabled during compilation with:
-  ALLOW_BULK_OFFLINE in EXF_OPTIONS.h
+  Re-entrant zonally periodic channel (80x42 grid points) with just level (Nr=1)
+   uniform resolution (5.km, 10m), solid Southern boundary with triangular shape
+   coastline ("bathy_3c.bin")
 
-- At runtime turn off time-stepping in data PARM01 using:
-  saltStepping = .FALSE.,
-  tempStepping = .FALSE.,
-  momStepping  = .FALSE.,
+  Use seaice (dynamics & thermodynamics from pkg/thsice) with EXF (see data.pkg)
+   with initial ice thickness of 0.2 m (but no snow)
+   (thSIceThick_InitFile='const+20.bin', in "input/data.ice")
+  Initial seaice concentration is 100 % everywhere
+   (thSIceFract_InitFile='const100.bin', in "input/data.ice")
+  and seaice is initially at rest.
 
-- specify SST in data.exf using:
-  climsstfile
-  climsststartdate1
-  climsststartdate2
-  climsstperiod
+  At runtime turn off time-stepping in 'data', PARM01, using:
+    momStepping  = .FALSE.,
+    saltStepping = .FALSE.,
+    tempAdvection=.FALSE.,
+  And just keep surface temp relaxation (tauRelax = 1 month) toward fixed SST:
+   in data.exf :
+  > climsstperiod      = 0.0,
+  > climsstTauRelax    = 2592000.,
+  >  climsstfile       = 'tocn.bin',
 
-- and turn off surface relaxation to avoid biasing output diagnostics:
-  climsstTauRelax = 0.0, 
+ Forcing:
+  None of the forcing vary with time; Most of the input files have been
+   generated using matlab script "input/gendata.m".
+  SST relaxation field is uniform in X, parabolic function of Y with
+   maximum close to Southern boundary.
 
-==============
+  Atmospheric air temp is uniform in Y, and only vary with X (~sin(2.pi.x/Lx))
+   with an amplitude of 4.K ('tair_4x.bin');
+  Uses constant Relative Humidity (70%, file 'qa70_4x.bin')
+  constant and uniform downward shortwave (100.W/m2, 'dsw_100.bin'),
+                       downward longwave (250.W/m^2, 'dlw_250.bin'),
+                       zonal wind (10.m/s, 'windx.bin'),
+  no meridional wind, no precip.
 
-09-Sep-2005
-heimbach@mit.edu, ifenty@mit.edu, menemenlis@jpl.nasa.gov
+  Ocean surface currents comes from a 3 levels ocean-only run (without seaice)
+   using the same wind forcing (uVel_3c0.bin, vVel_3c0.bin) (matlab script:
+  "input/getdata.m")
 
-This is a 2x2 degree configuration of a seaice-only model
-in the Labrador Sea (Nx*Ny*Nz = 20*16*23).
-The seaice model is forced by monthly-mean atmospheric state.
-The lower boundary condition is SST, also provided as monthly-mean
-fields (rather than being computed by an ocean component).
-In its current form the seaice model is thermodynamic-only, i.e.
-#undef SEAICE_ALLOW_DYNAMICS
-The estimation problem consists of a least-squares fit of
-daily-mean modeled vs. observed seaice fractional area.
-Observations are from satellite-borne sounding microwave radiometers.
+  Two matlab scripts ("input/grph_res.m" and "input/grph_diag.m")
+   are provided to make some basic plots (snap-shot and time-averaged
+   diagnostics).
 
-The setup consists of 2 parts:
-1. the forward/adjoint model component which computes the gradient of
-   the model vs. data mistif costfunction w.r.t. to the time-varying
-   atmospheric state.
-2. the optimization/linesearch routine that uses the gradient information
-   to provide an improved guess of the control vector.
+2) other (secondary) experiments (using the same executable)
 
-Instructions to configure:
+ a) seaice-dynamics only with LSR solver (input.dyn_lsr/)
+  use same forcing as main forward experiment,
+  ( link input files from "input.dyn_lsr/" dir 1rst, then from "input/" dir )
+  but does not use at all pkg/thsice (advect pkg/seaice properties using
+   pkg/seaice advection S/R.); turn off seaice thermodynamics
+  (usePW79thermodynamics=.FALSE., in input.dyn_lsr/data.seaice).
 
-0. Preparation
---------------
-# from model base dir., e.g. MITgcm/
-set basedir = `pwd`
-cd ${basedir}/verification/lab_sea/
-mkdir exe
-mkdir exe/optim
+ b) seaice-dynamics only with JNFK solver (input.dyn_jfnk/)
+  use same forcing as main forward experiment,
+  ( link input files from "input.dyn_jfnk/" dir 1rst, then from "input/" dir )
+  turn off seaice thermodynamics (thSIce_skipThermo=.TRUE., in file
+   "input.dyn_jfnk/data.ice") and advect pkg/thsice properties using
+   pkg/thsice advection S/R.
 
-1. forward/adjoint model component
-----------------------------------
-cd ${basedir}/verification/lab_sea/build/
-../../../tools/genmake2 -mods ../code_ad_seaice_only
-make depend
-make adall
+ c) seaice-thermodynamics only from pkg/seaice (input.thermo/)
+  use same forcing as main forward experiment,
+  ( link input files from "input.thermo/" dir 1rst, then from "input/" dir )
+  Except a different bathymetry (no triangular shape coast line in the South,
+   just a simple channel of constant width, with constant and uniform
+   zonal current of 0.2 m/s):
+   in "input.thermo/data":
+    bathyFile = 'channel.bin',
+    uVelInitFile    = 'const+20.bin',
+    vVelInitFile    = 'const_00.bin',
+  And use different initial seaice concentration from the main forward experiment:
+   (in "input.thermo/data.seaice", AreaFile = 'ice0_area.bin',
+                               and HeffFile = 'ice0_heff.bin',)
+   100 % everywhere except in the 1rst and last 2 rows: 0., 10.% in the South
+   and 1.%, 0. in the North:
+  Turn off seaice dynamics (SEAICEuseDYNAMICS =.FALSE., in
+   "input.thermo/data.seaice") which implies no advection (zero ice velocity).
 
-2. optimization/linesearch routines
------------------------------------
-# This part needs more attention:
-# Compiler options in the Makefile are hard-coded,
-# make sure you choose the right ones for your platform
-#
-# Assume you are in model base dir., e.g. MITgcm/
-#
-# A: lsopt
-# --------
-cd ${basedir}/lsopt/
-# edit Makefile to choose right compiler
-make
-#
-# B: optim
-# --------
-cd ${basedir}/optim/
-# Makefile in ${basedir}/optim/ needs 4 adjustments:
-# 1: -DMAX_INDEPEND=1000000
-#    make sure this number is >= number of control elements
-# 2: Make sure you've chosen the right compiler for your platform
-# 3: Make sure you've chosen the right INCLUDEDIRS for the header files,
-#    in this case it is 
-#    -I../verification/lab_sea/build/
-# 4: Make sure you've got the right set of BLAS libraries
-#    some are provided in lsopt/
-#    See the README file in lsopt/ on how to get platform-optimized
-#    BLAS libraries, and how to best install them.
-# If you're done with all these, just type
-make
-#
-# C: move executable and parameter files to executable directory
-# -------
-cp optim.x ../verification/lab_sea/exe/optim/.
-cp ../lsopt/data.ecco ../lsopt/data.ctrl ../verification/lab_sea/exe/optim/.
+ d) seaice-thermodynamics only from pkg/thsice (input.thsice/)
+  use same forcing as main forward experiment,
+  ( link input files from "input.thsice/" dir 1rst, then from "input/" dir )
+  Except for bathymetry and initial seaice concentration which are identical
+   to the one used in input.thermo/ :
+   (thSIceFract_InitFile='ice0_area.bin', in "input.thsice/data.ice")
+  No seaice dynamics and no seaice advection, so that none of pkg/seaice S/R
+   are used (useSEAICE = .TRUE., commented out in "input.thsice/data.pkg"),
 
-3. Run state estimation
------------------------
-cd ${basedir}/verification/lab_sea/exe/optim
-ln -s ../data.optim .
-cd ${basedir}/verification/lab_sea/exe
-ln -s ../build/mitgcmuv_ad .
-ln -s ../input_ad_seaice_only/* .
-ln -s ../input/*.labsea1979 .
-#
-./run_estim.csh &
-
-
+3) main adjoint experiment (code_ad, input_ad)
+  Use similar forward set-up as "input.thermo/".
+   (to be completed ...)
