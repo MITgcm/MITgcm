@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_open64,v 1.6 2012/04/13 14:57:33 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_open64,v 1.7 2013/03/30 19:10:55 jahn Exp $
 #  $Name:  $
 #
 # Build options for Open64 Compiler on Linux x86-64
@@ -30,16 +30,19 @@
 if test "x$MPI" = xtrue ; then
   CC=mpicc
   FC=mpif90
+  F90C=mpif90
   LINK=mpif90
 else
   CC=opencc
   FC=openf90
+  F90C=openf90
   LINK=openf90
 fi
 
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp -traditional -P'
 EXTENDED_SRC_FLAG='-extend-source'
+F90FIXEDFORMAT='-fixedform -x f95'
 GET_FC_VERSION="--version"
 OMPFLAG='-openmp'
 #OMPFLAG='-openmp -OPT:early_mp=ON'
