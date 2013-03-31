@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.42 2013/03/27 15:43:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.43 2013/03/31 19:41:48 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -203,7 +203,7 @@ c--   Get the time flags and record numbers for the time averaging.
      defined (ALLOW_PSBAR_GENPRECIP))
                 genprecipGloH=0. _d 0
                 do iarr = 1, maxCtrlTim2D
-                if (xx_gentim2d_file(iarr).EQ.'xx_genprecip') 
+                if (xx_gentim2d_file(iarr).EQ.'xx_gen_precip')
      &          genprecipGloH=xx_gentim2d(i,j,bi,bj,iarr)
      &          *rhoConstFresh*recip_rhoConst*deltaTClock
                 enddo
