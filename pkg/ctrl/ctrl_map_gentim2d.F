@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_gentim2d.F,v 1.3 2013/03/27 00:10:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_gentim2d.F,v 1.4 2013/03/31 19:43:18 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -60,7 +60,7 @@ C     == Local variables ==
       _RL fac
       _RL xx_gentim2d_loc(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL LOCsumTile(nSx,nSy), LOCsumGlob
+      _RL LOCsumTile(nSx,nSy), LOCsumGlob, genprecipGloH
 
 c     == external ==
       integer  ilnblnk
@@ -145,8 +145,11 @@ C
         ENDDO
        ENDDO
 
-         WRITE(msgBuf,'(A,I6,A,I6,A,1PE21.14)') ' xx_gentim2d ',
-     &    iarr,' : iter=', myiter, ' ; global sum = ', LOCsumGlob
+       genprecipGloH=LOCsumGlob/globalArea
+     &          *rhoConstFresh*recip_rhoConst*deltaTClock
+
+         WRITE(msgBuf,'(A,I6,A,1PE21.14)')
+     &    ' iter=', myiter, ' ; genprecipGloH= ', genprecipGloH
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
 
