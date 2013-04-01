@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_ocean.F,v 1.1 2013/03/30 18:38:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_ocean.F,v 1.2 2013/04/01 18:18:15 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+#endif /* ALLOW_SEAICE */
 
 CBOP
 C     !ROUTINE: THSICE_GET_OCEAN
@@ -29,6 +32,10 @@ C     === Global variables ===
 c#include "THSICE_PARAMS.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_VARS.h"
+#ifdef ALLOW_SEAICE
+# include "SEAICE_SIZE.h"
+# include "SEAICE.h"
+#endif /* ALLOW_SEAICE */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -47,6 +54,9 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
       INTEGER i,j
       INTEGER ks
+#ifdef ALLOW_SEAICE
+      _RL uRel1, uRel2, vRel1, vRel2
+#endif /* ALLOW_SEAICE */
 
 C--     Mixed layer thickness: take the 1rst layer
         ks = 1
@@ -93,9 +103,10 @@ C--     Mixed layer thickness: take the 1rst layer
           siceAlb (i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
-        DO j=1-OLy,sNy+OLy-1
-         DO i=1-OLx,sNx+OLx-1
-          v2ocMxL(i,j,bi,bj) =
+        IF ( .NOT.useSEAICE ) THEN
+         DO j=1-OLy,sNy+OLy-1
+          DO i=1-OLx,sNx+OLx-1
+           v2ocMxL(i,j,bi,bj) =
      &              ( uVel(i,j,ks,bi,bj) * uVel(i,j,ks,bi,bj)
      &              + uVel(i+1,j,ks,bi,bj)*uVel(i+1,j,ks,bi,bj)
      &              + vVel(i,j+1,ks,bi,bj)*vVel(i,j+1,ks,bi,bj)
@@ -103,6 +114,22 @@ C--     Mixed layer thickness: take the 1rst layer
      &              )*0.5 _d 0
          ENDDO
         ENDDO
+#ifdef ALLOW_SEAICE
+        ELSE
+         DO j=1-OLy,sNy+OLy-1
+          DO i=1-OLx,sNx+OLx-1
+           uRel1 = uVel( i, j,ks,bi,bj)-uIce( i, j,bi,bj)
+           uRel2 = uVel(i+1,j,ks,bi,bj)-uIce(i+1,j,bi,bj)
+           vRel1 = vVel(i, j, ks,bi,bj)-vIce(i, j, bi,bj)
+           vRel2 = vVel(i,j+1,ks,bi,bj)-vIce(i,j+1,bi,bj)
+           v2ocMxL(i,j,bi,bj) =
+     &              ( ( uRel1*uRel1 + uRel2*uRel2 )
+     &              + ( vRel1*vRel1 + vRel2*vRel2 )
+     &              )*0.5 _d 0
+          ENDDO
+         ENDDO
+#endif /* ALLOW_SEAICE */
+        ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif  /*ALLOW_THSICE*/
