@@ -1,0 +1,13 @@
+ nDims = [   2 ];
+ dimList = [
+     1,    1,    1,
+     1,    1,    1
+ ];
+ dataprec = [ 'float64' ];
+ nrecords = [    25 ];
+ timeStepNumber = [      91248 ];
+ timeInterval = [  3.284928000000E+08 ];
+ nFlds = [    9 ];
+ fldList = {
+ 'siTICES ' 'siAREAn ' 'siHEFFn ' 'siHSNOWn' 'siTrac01' 'siTrac02' 'siTrac03' 'siUICE  ' 'siVICE  '
+ };

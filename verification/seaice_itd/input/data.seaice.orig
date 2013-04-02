@@ -1,0 +1,45 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+      SEAICEwriteState   = .TRUE.,
+#      SEAICE_initialHEFF = 0.5,
+      SEAICE_initialHEFF = 0.0,
+      HsnowFile          = 'snow_0m_1x1',
+      SEAICE_deltaTtherm = 3600.,
+      SEAICE_deltaTdyn   = 3600.,
+      SEAICEuseDYNAMICS  = .FALSE.,
+      SEAICEadvSalt      = .FALSE.,
+# turn-off Advection flags (get identical results, but faster)
+      SEAICEadvArea      = .FALSE.,
+      SEAICEadvHeff      = .FALSE.,
+      SEAICEadvSnow      = .FALSE.,
+      LSR_ERROR          = 1.E-6,
+      SEAICE_EPS         = 1.E-8,
+      SEAICE_mcPheePiston= 0.0008749999999999999,
+      SEAICE_mcPheeTaper = 0.92,
+      SEAICE_frazilFrac  = 0.,
+      SEAICE_saltFrac    = 0.30,
+      SEAICE_tempFrz0    = -1.96,
+      SEAICE_dTempFrz_dS = 0.,
+      SEAICEuseFlooding  = .TRUE.,
+      SEAICE_area_reg    = 0.15,
+      SEAICE_area_floor  = 1.E-5,
+      SEAICE_hice_reg    = 0.10,
+#      SEAICE_debugPointI = 3,
+#      SEAICE_debugPointJ = 3,
+      IMAX_TICE = 6,
+#- to reproduce old results with former #undef SEAICE_SOLVE4TEMP_LEGACY code
+  SEAICE_wetAlbTemp = 0.,
+  SEAICE_snowThick  = 0.,
+ &
+
+ &SEAICE_PARM02
+  mult_ice   = 1.,
+# choose which seaice cost term you want
+  cost_ice_flag = 2,
+# the following timings are obsolete;
+# replaced by lastinterval
+ costIceStart1        = 20000101,
+ costIceStart2        = 00000,
+ costIceEnd1        = 20000201,
+ costIceEnd2        = 00000,
+ &
