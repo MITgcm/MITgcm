@@ -136,7 +136,7 @@
 # monitorFreq=86400.,
 # adjDumpFreq=86400.,
 # adjMonitorFreq = 86400.,
- monitorFreq=0.,
+ monitorFreq=1.,
  adjDumpFreq=0.,
  adjMonitorFreq = 0.,
 
