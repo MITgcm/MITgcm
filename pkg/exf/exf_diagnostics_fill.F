@@ -1,40 +1,36 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_fill.F,v 1.13 2012/08/28 19:17:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_fill.F,v 1.14 2013/04/02 13:05:55 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
-      subroutine exf_diagnostics_fill(
-     &           mycurrenttime, mycurrentiter, mythid )
+      SUBROUTINE EXF_DIAGNOSTICS_FILL(
+     I                                 myTime, myIter, myThid )
 
-c     ==================================================================
-c     SUBROUTINE exf_diagnostics_fill
-c     ==================================================================
-c
-      implicit none
+C     ==================================================================
+C     SUBROUTINE EXF_DIAGNOSTICS_FILL
+C     ==================================================================
 
-c     == global variables ==
+      IMPLICIT NONE
 
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
 #include "GRID.h"
-
 #include "EXF_PARAM.h"
 #include "EXF_FIELDS.h"
 #include "EXF_CONSTANTS.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
-      integer mythid
-      integer mycurrentiter
-      _RL     mycurrenttime
-
-c     == local variables ==
+C     == local variables ==
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-c
+
          CALL DIAGNOSTICS_FILL(ustress,    'EXFtaux ',0,1,0,1,1,myThid)
          CALL DIAGNOSTICS_FILL(vstress,    'EXFtauy ',0,1,0,1,1,myThid)
          CALL DIAGNOSTICS_FILL(wspeed,     'EXFwspee',0,1,0,1,1,myThid)
@@ -67,8 +63,9 @@ c
 #ifdef ALLOW_RUNOFF
          CALL DIAGNOSTICS_FILL(runoff,     'EXFroff ',0,1,0,1,1,myThid)
 #endif
-c
+
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
-      end
+      RETURN
+      END
