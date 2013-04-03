@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1846 2013/04/01 19:26:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1847 2013/04/03 21:46:29 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/global_ocean.90x40x15 and OpenAD:
+  New experiment for OpenAD is identical to the one in input_ad except that
+    multiDimAdvection=.FALSE.,
+  There is still an issue with this.
 o pkg/thsice:
   - account for ice velocity (ocean relative velocity) in turbulent heat flux
     at the base of the ice; update output of global_ocean.cs32x15 (icedyn)
