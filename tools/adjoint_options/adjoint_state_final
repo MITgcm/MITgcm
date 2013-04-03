@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_state_final,v 1.14 2012/07/27 18:25:39 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_state_final,v 1.15 2013/04/03 23:10:55 heimbach Exp $
 #  $Name:  $
 #
 
@@ -19,11 +19,11 @@ TAMC=tamc
 LIBS="${LIBS} -larpack"
 
 AD_TAMC_FLAGS='-reverse -admark ad -i4 -r4 -l tamc_ad.log'
-AD_TAF_FLAGS='-v1 -reverse -admark ad -i4 -r4 -l taf_ad.log'
+AD_TAF_FLAGS='-version 2.3.8 -v1 -reverse -admark ad -i4 -r4 -l taf_ad.log'
 FTL_TAMC_FLAGS='-forward -ftlmark g_ -i4 -r4 -l tamc_ftl.log'
-FTL_TAF_FLAGS='-v1 -forward -ftlmark g_ -i4 -r4 -l taf_ftl.log'
+FTL_TAF_FLAGS='-version 2.3.8 -v1 -forward -ftlmark g_ -i4 -r4 -l taf_ftl.log'
 SVD_TAMC_FLAGS='-reverse -forward -pure -i4 -r4 -l tamc_svd.log'
-SVD_TAF_FLAGS='-v1 -reverse -forward -pure -i4 -r4 -l taf_svd.log'
+SVD_TAF_FLAGS='-version 2.3.8 -v1 -reverse -forward -pure -i4 -r4 -l taf_svd.log'
 
 DIFF_FLAGS="-toplevel 'the_main_loop'    \
             -input 'xx_theta_dummy       \
