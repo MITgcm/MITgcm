@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.38 2013/01/21 23:00:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.39 2013/04/04 16:44:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -11,7 +11,7 @@ C     !ROUTINE: THSICE_STEP_FWD
 C     !INTERFACE:
       SUBROUTINE THSICE_STEP_FWD(
      I             bi, bj, iMin, iMax, jMin, jMax,
-     I             prcAtm,
+     I             prcAtm, qPrcRnO,
      I             myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -52,6 +52,7 @@ C     bi,bj   :: tile indices
 C   iMin,iMax :: computation domain: 1rst index range
 C   jMin,jMax :: computation domain: 2nd  index range
 C     prcAtm  :: total precip from the atmosphere [kg/m2/s]
+C     qPrcRnO :: Energy content of Precip+RunOff (+=down) [W/m2]
 C     myTime  :: current Time of simulation [s]
 C     myIter  :: current Iteration number in simulation
 C     myThid  :: my Thread Id number
@@ -66,7 +67,8 @@ C     icFrwAtm  :: net fresh-water flux (E-P) from the atmosphere [kg/m2/s] (+=u
       INTEGER bi,bj
       INTEGER iMin, iMax
       INTEGER jMin, jMax
-      _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL prcAtm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL qPrcRnO(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  myTime
       INTEGER myIter
       INTEGER myThid
@@ -168,6 +170,7 @@ C note: Any flux of mass (here fresh water) that enter or leave the system
 C       with a non zero energy HAS TO be counted: add snow precip.
           icFlxAtm(i,j,bi,bj) = icFlxAtm(i,j,bi,bj)
      &                        - Lfresh*snowPrc(i,j,bi,bj)
+     &                        + qPrcRnO(i,j)
 C--
         ENDIF
        ENDDO
@@ -204,7 +207,7 @@ C-------
         frzmltMxL(i,j) = ( tFrzOce(i,j)-tOceMxL(i,j,bi,bj) )
      &                 * cphm/ocean_deltaT
         iceFrac(i,j) = iceMask(i,j,bi,bj)
-        flx2oc(i,j)  = icFlxSW(i,j,bi,bj)
+        flx2oc(i,j)  = icFlxSW(i,j,bi,bj) + qPrcRnO(i,j)
 C-------
 #ifdef ALLOW_DBUG_THSICE
         IF ( dBug(i,j,bi,bj) ) THEN

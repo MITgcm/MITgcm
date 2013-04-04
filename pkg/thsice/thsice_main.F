@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.30 2013/04/04 00:42:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.31 2013/04/04 16:44:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -46,11 +46,13 @@ CEOP
 #ifdef ALLOW_THSICE
 C     !LOCAL VARIABLES:
 C     === Local variables ===
+C     qPrcRn    :: Energy content of Precip+RunOff (+=down) [W/m2]
       INTEGER i,j
       INTEGER bi,bj
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL qPrcRn(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 c     _RL evpAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 c     _RL flxAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 c     _RL flxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -119,6 +121,7 @@ CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           prcAtm  (i,j,bi,bj) = 0. _d 0
+          qPrcRn  (i,j) = 0. _d 0
          ENDDO
         ENDDO
 
@@ -162,9 +165,9 @@ C Note: will inline this S/R once thSIce in Atmos. set-up is settled
 #ifdef ALLOW_EXF
         IF ( useEXF ) THEN
          CALL THSICE_MAP_EXF(
-     I                  iceMask,
+     I                  iceMask, tOceMxL,
      O                  prcAtm(1-OLx,1-OLy,bi,bj),
-     O                  snowPrc(1-OLx,1-OLy,bi,bj),
+     O                  snowPrc(1-OLx,1-OLy,bi,bj), qPrcRn,
      O                  icFlxSW(1-OLx,1-OLy,bi,bj),
      I                  iMin,iMax,jMin,jMax, bi,bj, myThid )
         ENDIF
@@ -198,7 +201,7 @@ CADJ STORE sHeating(:,:,bi,bj) = comlev1_bibj, key = ticekey
 #endif
           CALL THSICE_STEP_FWD(
      I                     bi, bj, iMin, iMax, jMin, jMax,
-     I                     prcAtm(1-OLx,1-OLy,bi,bj),
+     I                     prcAtm(1-OLx,1-OLy,bi,bj), qPrcRn,
      I                     myTime, myIter, myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
         ENDIF
