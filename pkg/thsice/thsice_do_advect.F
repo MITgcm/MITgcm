@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_do_advect.F,v 1.4 2013/01/22 23:31:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_do_advect.F,v 1.5 2013/04/04 00:42:07 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -84,24 +84,24 @@ c      jMax = sNy
      O                        uIce, vIce,
      I                        bi,bj, myTime, myIter, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE icemask(:,:,bi,bj) = 
+CADJ STORE icemask(:,:,bi,bj) =
 CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE qice1(:,:,bi,bj) = 
+CADJ STORE qice1(:,:,bi,bj) =
 CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE hOceMxL(:,:,bi,bj) = 
+CADJ STORE hOceMxL(:,:,bi,bj) =
 CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
 #endif
          CALL THSICE_ADVDIFF(
      U                        uIce, vIce,
      I                        bi,bj, myTime, myIter, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hOceMxL(:,:,bi,bj) = 
+CADJ STORE hOceMxL(:,:,bi,bj) =
 CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE snowHeight(:,:,bi,bj) = 
+CADJ STORE snowHeight(:,:,bi,bj) =
 CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE iceHeight(:,:,bi,bj) = 
+CADJ STORE iceHeight(:,:,bi,bj) =
 CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE iceMask(:,:,bi,bj) = 
+CADJ STORE iceMask(:,:,bi,bj) =
 CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
 #endif
          DO j = jMin, jMax
@@ -117,6 +117,10 @@ C--     Compute Sea-Ice Loading (= mass of sea-ice + snow / area unit)
      &                           )*iceMask(i,j,bi,bj)
           ENDDO
          ENDDO
+
+C--     cumulate time-averaged fields and also fill-up flux diagnostics
+         CALL THSICE_AVE(
+     I                     bi,bj, myTime, myIter, myThid )
 
         ENDDO
        ENDDO

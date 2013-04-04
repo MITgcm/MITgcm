@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.29 2013/03/30 18:38:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.30 2013/04/04 00:42:06 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -217,13 +217,6 @@ C--   Balance net Fresh-Water flux from Atm+Land
       ENDIF
 #endif
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        CALL THSICE_AVE(
-     I                     bi,bj, myTime, myIter, myThid )
-       ENDDO
-      ENDDO
-
 C     add a small piece of code to check AddFluid implementation:
 c#include "thsice_test_addfluid.h"
 
@@ -255,6 +248,16 @@ C     otherwise, call it from here, after thsice-thermodynamics is done
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+C--   Cumulate time-averaged fields and also fill-up flux diagnostics
+C     (if not done in THSICE_DO_ADVECT call)
+#ifdef OLD_THSICE_CALL_SEQUENCE
+        IF ( .TRUE. ) THEN
+#else /* OLD_THSICE_CALL_SEQUENCE */
+        IF ( thSIceAdvScheme.LE.0 ) THEN
+#endif /* OLD_THSICE_CALL_SEQUENCE */
+         CALL THSICE_AVE(
+     I                     bi,bj, myTime, myIter, myThid )
+        ENDIF
 C--   note: If useSEAICE=.true., the stress is computed in seaice_model,
 C--   and stressReduction is always set to zero
 #ifdef ALLOW_AUTODIFF_TAMC
