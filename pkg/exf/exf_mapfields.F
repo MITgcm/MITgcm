@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.26 2013/01/10 22:59:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.27 2013/04/04 16:30:50 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -56,6 +56,7 @@ C     == global variables ==
 #include "PARAMS.h"
 #include "FFIELDS.h"
 #include "GRID.h"
+#include "DYNVARS.h"
 
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
@@ -133,6 +134,73 @@ C     Salt flux.
             ENDDO
            ENDDO
           ENDIF
+
+#ifdef ALLOW_ATM_TEMP
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+          IF ( temp_EvPrRn .NE. UNSET_RL ) THEN
+C--   Account for energy content of Precip + RunOff & Evap. Assumes:
+C     1) Rain has same temp as Air
+C     2) Snow has no heat capacity (consistent with seaice & thsice pkgs)
+C     3) No distinction between sea-water Cp and fresh-water Cp
+C     4) Run-Off comes at the temp of surface water (with same Cp)
+C     5) Evap is released to the Atmos @ surf-temp (=SST); should be using
+C        the water-vapor heat capacity here and consistently in Bulk-Formulae;
+C        Could also be put directly into Latent Heat flux.
+           IF ( snowPrecipFile .NE. ' ' ) THEN
+C--   Melt snow (if provided) into the ocean and account for rain-temp
+            DO j = 1, sNy
+             DO i = 1, sNx
+              Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)
+     &              + flami*snowPrecip(i,j,bi,bj)*rhoConstFresh
+     &              - HeatCapacity_Cp
+     &               *( atemp(i,j,bi,bj) - cen2kel - temp_EvPrRn )
+     &               *( precip(i,j,bi,bj)- snowPrecip(i,j,bi,bj) )
+     &               *rhoConstFresh
+             ENDDO
+            ENDDO
+           ELSE
+C--   Make snow (according to Air Temp) and melt it in the ocean
+C     note: here we just use the same criteria as over seaice but would be
+C           better to consider a higher altitude air temp, e.g., 850.mb
+            DO j = 1, sNy
+             DO i = 1, sNx
+              IF ( atemp(i,j,bi,bj).LT.cen2kel ) THEN
+               Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)
+     &              + flami*precip(i,j,bi,bj)*rhoConstFresh
+              ELSE
+C--   Account for rain-temp
+               Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)
+     &              - HeatCapacity_Cp
+     &               *( atemp(i,j,bi,bj) - cen2kel - temp_EvPrRn )
+     &               *precip(i,j,bi,bj)*rhoConstFresh
+              ENDIF
+             ENDDO
+            ENDDO
+           ENDIF
+#ifdef ALLOW_RUNOFF
+C--   Account for energy content of RunOff:
+           DO j = 1, sNy
+            DO i = 1, sNx
+              Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)
+     &              - HeatCapacity_Cp
+     &               *( theta(i,j,ks,bi,bj) - temp_EvPrRn )
+     &               *runoff(i,j,bi,bj)*rhoConstFresh
+            ENDDO
+           ENDDO
+#endif
+C--   Account for energy content of Evap:
+           DO j = 1, sNy
+            DO i = 1, sNx
+              Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)
+     &              + HeatCapacity_Cp
+     &               *( theta(i,j,ks,bi,bj) - temp_EvPrRn )
+     &               *evap(i,j,bi,bj)*rhoConstFresh
+              Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)*maskC(i,j,ks,bi,bj)
+            ENDDO
+           ENDDO
+          ENDIF
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* ALLOW_ATM_TEMP */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE ustress(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
