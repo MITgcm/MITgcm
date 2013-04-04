@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1847 2013/04/03 21:46:29 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1848 2013/04/04 07:48:59 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: simplify the use of CPP flags in JFNK-related files
+    (compile when SEAICE_ALLOW_JFNK is defined)
 o verification/global_ocean.90x40x15 and OpenAD:
   New experiment for OpenAD is identical to the one in input_ad except that
     multiDimAdvection=.FALSE.,
