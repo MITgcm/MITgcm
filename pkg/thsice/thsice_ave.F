@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.13 2009/12/29 23:07:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.14 2013/04/04 01:59:57 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: THSICE_AVE
 C     !INTERFACE:
       SUBROUTINE THSICE_AVE(
-     I                      bi, bj, myTime, myIter, myThid )
+     I                       bi, bj, myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R  THSICE_AVE
@@ -31,8 +31,8 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
 C     frwAtm  :: net fresh-water flux (E-P) to the atmosphere [kg/m2/s]
 C     flxAtm  :: net heat flux from the atmosphere (+=down) [W/m2]
-C     myTime  :: time counter for this thread
 C     bi,bj   :: tile indices
+C     myTime  :: time counter for this thread
 C     myIter  :: iteration counter for this thread
 C     myThid  :: thread number for this instance of the routine.
 c     _RL frwAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -45,8 +45,8 @@ CEOP
 
 #ifdef ALLOW_THSICE
 C     == Local variables ==
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+c     LOGICAL  DIFFERENT_MULTIPLE
+c     EXTERNAL DIFFERENT_MULTIPLE
 c     INTEGER wrtIter
 
 #ifdef ALLOW_TIMEAVE
@@ -54,8 +54,8 @@ c     INTEGER wrtIter
       IF ( thSIce_taveFreq .GT. 0. _d 0 ) THEN
 
 C--    Time-average
-       CALL TIMEAVE_CUMULATE(ice_fract_Ave, iceMask,
-     &                       1, thSIce_deltaT, bi, bj, myThid )
+       CALL TIMEAVE_CUMULATE( ice_fract_Ave, iceMask,
+     &                        1, thSIce_deltaT, bi, bj, myThid )
 C-- area weighted average (with ice-fraction)
        CALL TIMEAVE_CUMUL_2V( ice_iceH_Ave,  iceHeight, iceMask,
      &                    1, 0, thSIce_deltaT, bi, bj, myThid )
@@ -70,50 +70,42 @@ C-- area weighted average (with ice-fraction)
        CALL TIMEAVE_CUMUL_2V( ice_snowPr_Ave,snowPrc, iceMask,
      &                    1, 0, thSIce_deltaT, bi, bj, myThid )
 C--    notes: siceAlb is already multiplied by iceFraction
-       CALL TIMEAVE_CUMULATE(ice_albedo_Ave, siceAlb,
-     &                       1, thSIce_deltaT, bi, bj, myThid )
+       CALL TIMEAVE_CUMULATE( ice_albedo_Ave, siceAlb,
+     &                        1, thSIce_deltaT, bi, bj, myThid )
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- simple average (without ice-fraction)
-c      CALL TIMEAVE_CUMULATE(ice_iceH_Ave,iceHeight,
-c    &                       1, thSIce_deltaT, bi, bj, myThid )
-c      CALL TIMEAVE_CUMULATE(ice_snowH_Ave,snowHeight,
-c    &                       1, thSIce_deltaT, bi, bj, myThid )
-c      CALL TIMEAVE_CUMULATE(ice_Tsrf_Ave, Tsrf,
-c    &                       1, thSIce_deltaT, bi, bj, myThid )
-c      CALL TIMEAVE_CUMULATE(ice_Tice1_Ave,Tice1,
-c    &                       1, thSIce_deltaT, bi, bj, myThid )
-c      CALL TIMEAVE_CUMULATE(ice_Tice2_Ave,Tice2,
-c    &                       1, thSIce_deltaT, bi, bj, myThid )
-c      CALL TIMEAVE_CUMULATE(ice_snowPr_Ave, snowPrc,
-c    &                       1, thSIce_deltaT, bi, bj, myThid )
+c      CALL TIMEAVE_CUMULATE( ice_iceH_Ave,iceHeight,
+c    &                        1, thSIce_deltaT, bi, bj, myThid )
+c      CALL TIMEAVE_CUMULATE( ice_snowH_Ave,snowHeight,
+c    &                        1, thSIce_deltaT, bi, bj, myThid )
+c      CALL TIMEAVE_CUMULATE( ice_Tsrf_Ave, Tsrf,
+c    &                        1, thSIce_deltaT, bi, bj, myThid )
+c      CALL TIMEAVE_CUMULATE( ice_Tice1_Ave,Tice1,
+c    &                        1, thSIce_deltaT, bi, bj, myThid )
+c      CALL TIMEAVE_CUMULATE( ice_Tice2_Ave,Tice2,
+c    &                        1, thSIce_deltaT, bi, bj, myThid )
+c      CALL TIMEAVE_CUMULATE( ice_snowPr_Ave, snowPrc,
+c    &                        1, thSIce_deltaT, bi, bj, myThid )
 
 C-- average of atmospheric fluxes :
       IF ( fluidIsWater ) THEN
-       CALL TIMEAVE_CUMULATE(ice_flxAtm_Ave, icFlxAtm,
-     &                       1, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMULATE(ice_frwAtm_Ave, icFrwAtm,
-     &                       1, thSIce_deltaT, bi, bj, myThid )
+       CALL TIMEAVE_CUMULATE( ice_flxAtm_Ave, icFlxAtm,
+     &                        1, thSIce_deltaT, bi, bj, myThid )
+       CALL TIMEAVE_CUMULATE( ice_frwAtm_Ave, icFrwAtm,
+     &                        1, thSIce_deltaT, bi, bj, myThid )
       ENDIF
 
 C-- average of oceanic fluxes :
 #ifndef CHECK_ENERGY_CONSERV
-#ifdef REAL4_IS_SLOW
-       CALL TIMEAVE_CUMULATE(ice_flx2oc_Ave, Qnet,
-     &                       1, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMULATE(ice_frw2oc_Ave, EmPmR,
-     &                       1, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMULATE(ice_salFx_Ave, saltFlux,
-     &                       1, thSIce_deltaT, bi, bj, myThid )
+#ifdef RS_IS_REAL8
+       CALL TIMEAVE_CUMULATE( ice_flx2oc_Ave, Qnet,
+     &                        1, thSIce_deltaT, bi, bj, myThid )
+       CALL TIMEAVE_CUMULATE( ice_frw2oc_Ave, EmPmR,
+     &                        1, thSIce_deltaT, bi, bj, myThid )
+       CALL TIMEAVE_CUMULATE( ice_salFx_Ave, saltFlux,
+     &                        1, thSIce_deltaT, bi, bj, myThid )
 #endif
 #endif /* CHECK_ENERGY_CONSERV */
-
-C-- average of Ocean Mixed-Layer temp. & salinity
-      IF ( stepFwd_oceMxL ) THEN
-       CALL TIMEAVE_CUMULATE(ice_tMxL_Ave, tOceMxL,
-     &                       1, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMULATE(ice_sMxL_Ave, sOceMxL,
-     &                       1, thSIce_deltaT, bi, bj, myThid )
-      ENDIF
 
        ice_timeAve(bi,bj) = ice_timeAve(bi,bj)+thSIce_deltaT
 
@@ -143,9 +135,9 @@ C-- Atmospheric fluxes :
 
 C-- Oceanic fluxes :
 c #ifndef CHECK_ENERGY_CONSERV
-        CALL DIAGNOSTICS_FILL_RS(Qnet,    'SIflx2oc',0,1,1,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL_RS(EmPmR,   'SIfrw2oc',0,1,1,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL_RS(saltFlux,'SIsaltFx',0,1,1,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL_RS(Qnet,    'SIflx2oc',0,1,1,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL_RS(EmPmR,   'SIfrw2oc',0,1,1,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL_RS(saltFlux,'SIsaltFx',0,1,1,bi,bj,myThid)
 c #endif /* CHECK_ENERGY_CONSERV */
 
       ENDIF
