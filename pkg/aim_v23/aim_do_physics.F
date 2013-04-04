@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.20 2013/04/04 02:00:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.21 2013/04/04 16:49:55 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -75,6 +75,9 @@ C     prcAtm     :: total precip from the atmosphere [kg/m2/s]
       _RL     tYear, yearLength
       _RL     aim_sWght0, aim_sWght1
       _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_THSICE
+      _RL qPrcRn(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -174,8 +177,13 @@ C       used for diagnostics, thsice package and coupler
 #ifdef ALLOW_THSICE
         IF ( useThSIce ) THEN
 C-    Step forward sea-ice model
+          DO j = 1-OLy, sNy+OLy
+           DO i = 1-OLx, sNx+OLx
+            qPrcRn(i,j) = 0.
+           ENDDO
+          ENDDO
           CALL THSICE_STEP_FWD( bi, bj, 1, sNx, 1, sNy,
-     I                          prcAtm,
+     I                          prcAtm, qPrcRn,
      I                          myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_THSICE */
