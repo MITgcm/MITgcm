@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1848 2013/04/04 07:48:59 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1849 2013/04/04 14:56:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -6,6 +6,10 @@ $Name:  $
 
 o pkg/seaice: simplify the use of CPP flags in JFNK-related files
     (compile when SEAICE_ALLOW_JFNK is defined)
+o pkg/thsice:
+  - fix oceanic flux diagnostics & timeave (left from new sequence of calls
+    implementation): move THSICE_AVE call after the advection (called directly
+    from thsice_do_advect.F).
 o verification/global_ocean.90x40x15 and OpenAD:
   New experiment for OpenAD is identical to the one in input_ad except that
     multiDimAdvection=.FALSE.,
