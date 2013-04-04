@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.20 2013/03/02 04:35:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.21 2013/04/04 07:02:51 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -53,9 +53,7 @@ C     myThid :: my Thread Id. number
       INTEGER myIter
       INTEGER myThid
 
-#if ( (defined SEAICE_CGRID) && \
-      (defined SEAICE_ALLOW_JFNK) && \
-      (defined SEAICE_ALLOW_DYNAMICS) )
+#ifdef SEAICE_ALLOW_JFNK
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -529,7 +527,7 @@ C     iterations, 0.25*du/vIce in the second, etc.
 C     This is the new residual
       JFNKresidual = resLoc
 
-#endif /* SEAICE_ALLOW_DYNAMICS and SEAICE_CGRID and SEAICE_ALLOW_JFNK */
+#endif /* SEAICE_ALLOW_JFNK */
 
       RETURN
       END

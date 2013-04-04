@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.5 2013/01/11 20:18:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.6 2013/04/04 07:02:51 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -67,9 +67,7 @@ C     u/vIceLHS :: LHS of momentum equations
       _RL uIceLHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceLHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#if ( defined (SEAICE_CGRID) && \
-      defined (SEAICE_ALLOW_JFNK) && \
-      defined (SEAICE_ALLOW_DYNAMICS) )
+#ifdef SEAICE_ALLOW_JFNK
 C     i,j,bi,bj,k :: loop indices
       INTEGER i,j,bi,bj
       INTEGER k
@@ -184,7 +182,7 @@ C     apply masks for interior (important when we have open boundaries)
        ENDDO
       ENDDO
 
-#endif /* SEAICE_ALLOW_DYNAMICS and SEAICE_CGRID and SEAICE_ALLOW_JFNK */
+#endif /* SEAICE_ALLOW_JFNK */
 
       RETURN
       END

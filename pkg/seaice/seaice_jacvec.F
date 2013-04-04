@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jacvec.F,v 1.4 2013/02/28 17:12:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jacvec.F,v 1.5 2013/04/04 07:02:51 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -56,9 +56,7 @@ C     du/vIce   :: correction of ice velocities
       _RL duIce  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dvIce  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#if ( defined (SEAICE_CGRID) && \
-      defined (SEAICE_ALLOW_JFNK) && \
-      defined (SEAICE_ALLOW_DYNAMICS) )
+#ifdef SEAICE_ALLOW_JFNK
 C     Local variables:
       _RL utp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vtp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -167,7 +165,7 @@ C     and store in du/vIce
        ENDDO
       ENDDO
 
-#endif /* SEAICE_ALLOW_DYNAMICS and SEAICE_CGRID and SEAICE_ALLOW_JFNK */
+#endif /* SEAICE_ALLOW_JFNK */
 
       RETURN
       END

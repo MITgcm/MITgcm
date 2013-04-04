@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_residual.F,v 1.3 2012/11/09 14:03:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_residual.F,v 1.4 2013/04/04 07:02:51 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -49,9 +49,7 @@ C     u/vIceRes :: residual of sea-ice momentum equations
       _RL uIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#if ( (defined SEAICE_CGRID) && \
-      (defined SEAICE_ALLOW_JFNK) && \
-      (defined SEAICE_ALLOW_DYNAMICS) )
+#ifdef SEAICE_ALLOW_JFNK
 C     u/vIceLHS :: left hand side of momentum equations 
       _RL uIceLHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceLHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -130,7 +128,7 @@ C     Calculate the residual
         ENDDO
        ENDDO
 
-#endif /* SEAICE_ALLOW_DYNAMICS and SEAICE_CGRID and SEAICE_ALLOW_JFNK */
+#endif /* SEAICE_ALLOW_JFNK */
 
       RETURN
       END
