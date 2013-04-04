@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.19 2013/01/21 23:07:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.20 2013/04/04 02:00:25 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -209,8 +209,6 @@ C-    Slab Ocean : step forward ocean mixed-layer temp. & salinity
      I                        aim_sWght0, aim_sWght1,
      O                        dTsurf(1,2,myThid),
      I                        bi, bj, myTime, myIter, myThid )
-          CALL THSICE_AVE(
-     I                     bi, bj, myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_THSICE */
 
