@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.25 2012/08/21 17:12:21 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.26 2013/04/04 17:06:37 jmc Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -24,7 +24,7 @@ C     \==========================================================/
 #  include "ATM2D_VARS.h"
 #endif
 
-#ifdef NCEPWIND 
+#ifdef NCEPWIND
       COMMON  /SEED/JSEED,IFRST,NEXTN
       INTEGER JSEED,IFRST,NEXTN
 #endif
@@ -61,16 +61,17 @@ C      212*24,243*24,273*24,304*24,334*24,365*24
 #endif
 #if (defined CPL_TEM) || (defined CPL_OCEANCO2)
       REAL*8 nepan
-      REAL*8 ocuptp      
+      REAL*8 ocuptp
 #endif
 #ifdef OCEAN_3D
-      INTEGER iloop_ocn
-#  ifdef NCEPWIND 
+      INTEGER iloop_ocn, i
+      _RL qPrcRn(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#  ifdef NCEPWIND
       REAL*8  RAND
       CHARACTER *4 ncep_yr
 #  endif
 #endif
-#ifdef DATA4TEM 
+#ifdef DATA4TEM
       CHARACTER *40 f4tem,f4clm,f24tem,f34tem
       CHARACTER *4  cfile
       CHARACTER *8  f14tem,f14clm
@@ -97,18 +98,18 @@ C    &             idyear,iyr,inyr,monid,inday,dayid
 
       IF (inyr.EQ.dtcouple) THEN !do this block at start of new year
         PRINT *,'*** Starting a new year'
-#ifdef NCEPWIND 
+#ifdef NCEPWIND
         WRITE(ncep_yr,'(I4)') (NINT(RAND()*60.0+0.5) + 1947)
         PRINT *,'Using NCEP wind variations from year: ',ncep_yr
-         OPEN(6007, 
+         OPEN(6007,
      &     FILE='ncep_taux_variations_'//ncep_yr//'.bin',STATUS='old',
      &     ACCESS='direct', RECL=4*sNx*sNy,
      &     FORM='unformatted')
-         OPEN(6008, 
+         OPEN(6008,
      &     FILE='ncep_tauy_variations_'//ncep_yr//'.bin',STATUS='old',
      &     ACCESS='direct', RECL=4*sNx*sNy,
      &     FORM='unformatted')
-         OPEN(6009, 
+         OPEN(6009,
      &     FILE='ncep_speed_variations_'//ncep_yr//'.bin',STATUS='old',
      &     ACCESS='direct', RECL=4*sNx*sNy,
      &     FORM='unformatted')
@@ -203,7 +204,12 @@ C      PRINT *,'*** Read in next NCEP record'
       IF ( (iloop.NE.1).OR. (iloop.EQ.1.AND.
      &      (startTime.NE.baseTime .OR. nIter0.NE.0)) ) THEN
 C       don't run the ice growth/melt on step 1 if "cold" start
-        CALL THSICE_STEP_FWD(1,1,1,sNx,1,sNy, pass_prcAtm,
+        DO j = 1-OLy, sNy+OLy
+         DO i = 1-OLx, sNx+OLx
+          qPrcRn(i,j) = 0.
+         ENDDO
+        ENDDO
+        CALL THSICE_STEP_FWD(1,1,1,sNx,1,sNy, pass_prcAtm, qPrcRn,
      &                        myTime, myIter, myThid)
         CALL THSICE_AVE( 1,1, myTime, myIter, myThid )
       ENDIF
@@ -290,13 +296,13 @@ c        PRINT *,'From driver before call tem',' idyear=',idyear
 #    endif
         DO j=1,jm0
           temnep(monid,j)=temco2(j)
-        ENDDO 
+        ENDDO
         DO j=1,jm0
           antemnep(j)=antemnep(j)+temnep(monid,j)
           nepan=nepan+temnep(monid,j)
           ch4ann=ch4ann+temch4(j)
           n2oann=n2oann+temn2o(j)
-        ENDDO 
+        ENDDO
 
 #  endif
 #endif
@@ -417,7 +423,7 @@ C        For ocean both TEM OCM
 
 #ifdef CPL_OCEANCO2
         DO j=1,jm0
-#  ifdef OCEAN_3D 
+#  ifdef OCEAN_3D
           co24ocnan(j)=co24ocnan(j)*dtatm/24.0/365.0
 #  else
           co24ocnan(j)=co24ocnan(j)/365.0
@@ -440,11 +446,11 @@ C        For ocean both TEM OCM
       REAL*8 FUNCTION RAND()
 C
 C  This function returns a pseudo-random number for each invocation.
-C  It is a FORTRAN 77 adaptation of the "Integer Version 2" minimal 
+C  It is a FORTRAN 77 adaptation of the "Integer Version 2" minimal
 C  standard number generator whose Pascal code appears in the article:
 C
-C     Park, Steven K. and Miller, Keith W., "Random Number Generators: 
-C     Good Ones are Hard to Find", Communications of the ACM, 
+C     Park, Steven K. and Miller, Keith W., "Random Number Generators:
+C     Good Ones are Hard to Find", Communications of the ACM,
 C     October, 1988.
 C
       PARAMETER (MPLIER=16807,MODLUS=2147483647,MOBYMP=127773,
