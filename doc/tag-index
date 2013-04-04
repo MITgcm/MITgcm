@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1849 2013/04/04 14:56:07 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1850 2013/04/04 17:59:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf & pkg/thsice:
+  - In case Energy-Reference-Level (ERL) is used (temp_EvPrRn=0), account
+    for energy content of Precip + RunOff & Evap. Assumes: 
+   1) Rain has same temp as Air.
+   2) Snow has no heat capacity (consistent with seaice & thsice pkgs)
+   3) Run-Off comes at the temp of surface water (with same Cp)
+   4) Evap over ocean is released to the Atmos @ surf-temp (=SST); should be
+    put directly into Latent Heat flux & should use water-vapor heat capacity.
+   5) Evap over snow/seaice (pkg/thsice) assumes constant Lf+Lv (consistent
+    with snow having no Cp) => water vapor is released to Atmos @ 0^oC (=ERL).
 o pkg/seaice: simplify the use of CPP flags in JFNK-related files
     (compile when SEAICE_ALLOW_JFNK is defined)
 o pkg/thsice:
