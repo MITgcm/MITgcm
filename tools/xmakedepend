@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 #
-# $Header: /u/gcmpack/MITgcm/tools/xmakedepend,v 1.9 2013/04/04 21:50:09 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/xmakedepend,v 1.10 2013/04/05 13:47:19 jmc Exp $
 # $Name:  $
 #
 # $TOG: mdepend.cpp /main/13 1997/06/20 21:12:18 kaleb $
@@ -29,7 +29,7 @@
 #
 
 CPPARGS="-Dlinux -D__i386__ -D_POSIX_C_SOURCE=199309L -D_POSIX_SOURCE -D_XOPEN_SOURCE -D_BSD_SOURCE -D_SVID_SOURCE  -D_GNU_SOURCE  "
-CPPARGS="-traditional -P $CPPARGS"
+CPPARGS="-traditional $CPPARGS"
 
 CC="cpp $CPPARGS"
 if test -x /lib/cpp ; then
