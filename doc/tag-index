@@ -1,12 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1850 2013/04/04 17:59:17 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1851 2013/04/05 21:29:21 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/genmake2:
+  - change default makedepend from the system default to tools/xmakedepend:
+    When no makedepend is specified, select tools/xmakedepend it the test pass,
+    otherwise select the system default (if exist and pass the test) or
+    try to build cyrus-makedepend ; stop if none of the 3 works.
 o pkg/exf & pkg/thsice:
   - In case Energy-Reference-Level (ERL) is used (temp_EvPrRn=0), account
-    for energy content of Precip + RunOff & Evap. Assumes: 
+    for energy content of Precip + RunOff & Evap. Assumes:
    1) Rain has same temp as Air.
    2) Snow has no heat capacity (consistent with seaice & thsice pkgs)
    3) Run-Off comes at the temp of surface water (with same Cp)
