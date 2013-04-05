@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.249 2013/02/23 04:24:42 utke Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.250 2013/04/05 21:10:55 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -324,15 +324,14 @@ look_for_makedepend()  {
     #
     #    1) a makedepend implementation shipped with the cyrus-imapd
     #       package:  ftp://ftp.andrew.cmu.edu/pub/cyrus-mail/
-    #
-    #    2) a known-buggy xmakedpend shell script
+    #    2) a local tools/xmakedepend shell script
     #
     #  So the choices are, in order:
-    #
     #    1) use the user-specified program
-    #    2) use a system-wide default
-    #    3) locally build and use the cyrus implementation
-    #    4) fall back to the buggy local xmakedpend script
+    #    2) use the local xmakedepend script (get all dependencies, but slower)
+    #    3) use a system-wide default
+    #    4) locally build and use the cyrus makedepend
+    #             (faster, but can miss some dependencies)
     #
     echo >> $LOGFILE
     echo "running: look_for_makedepend()" >> $LOGFILE
@@ -343,7 +342,7 @@ look_for_makedepend()  {
 	    build_cyrus_makedepend
 	    RETVAL=$?
 	    if test "x$RETVAL" != x0 ; then
-		echo "WARNING: unable to build cyrus-makedepend. Try 'makedepend'"
+		echo "WARNING: unable to build cyrus-makedepend. Try other 'makedepend'"
 		MAKEDEPEND=
 	    fi
 	else
@@ -356,8 +355,6 @@ look_for_makedepend()  {
 	fi
     fi
     if test "x${MAKEDEPEND}" = x ; then
-	which makedepend > /dev/null 2>&1
-	RV0=$?
 	test -f $MAKEFILE  &&  mv -f $MAKEFILE $MAKEFILE".tst"
 	#  echo 'MAKEFILE="'$MAKEFILE'"'
 	cat <<EOF >> $MAKEFILE
@@ -373,22 +370,39 @@ EOF
       stop
       end
 EOF
-	makedepend -f $MAKEFILE genmake_tc.f > /dev/null 2>&1
+	$ROOTDIR/tools/xmakedepend -f $MAKEFILE genmake_tc.f > /dev/null 2>&1
 	RV1=$?
+	which makedepend > /dev/null 2>&1
+	RV2=$?
+	if test "x${RV2}" = x0 ; then
+	    makedepend -f $MAKEFILE genmake_tc.f > /dev/null 2>&1
+	    RV3=$? ; loc_msg='not working.'
+	else RV3=$RV2 ; loc_msg='not found.'
+	fi
 	test -f $MAKEFILE  &&  rm -f $MAKEFILE
 	test -f $MAKEFILE".tst"  &&  mv -f $MAKEFILE".tst" $MAKEFILE
-	if test "x${RV0}${RV1}" = x00 ; then
+	echo "  check makedepend (local: $RV1, system: $RV2, $RV3)"
+	if test "x${RV1}" = x0 ; then
+	    MAKEDEPEND='$(TOOLSDIR)/xmakedepend'
+	    echo " --> set MAKEDEPEND=${MAKEDEPEND}" >> $LOGFILE
+	elif test "x${RV3}" = x0 ; then
+	    echo "    local tools/xmakedepend not working. Use system-default makedepend"
 	    MAKEDEPEND=makedepend
 	    echo " --> set MAKEDEPEND=${MAKEDEPEND}" >> $LOGFILE
 	else
-	    echo "    system-default makedepend not found. Try to build cyrus-makedepend"
+	    echo "    local tools/xmakedepend not working; system-default makedepend $loc_msg"
+	    echo -n "    Try to build cyrus-makedepend ..."
 	    #  Try to build the cyrus implementation
 	    build_cyrus_makedepend
 	    RETVAL=$?
-	    if test "x$RETVAL" != x0 ; then
-		echo "WARNING: unable to build cyrus-makedepend. Use local xmakedepend"
-		MAKEDEPEND='$(TOOLSDIR)/xmakedepend'
-		echo " --> set MAKEDEPEND=${MAKEDEPEND}" >> $LOGFILE
+	    if test "x$RETVAL" = x0 ; then
+		echo "  Works"
+	    else
+		echo "  Fails" ; echo "" >> $LOGFILE
+		echo "ERROR: no working makedepend found ; look_for_makedepend FAILED" | tee -a $LOGFILE
+		echo ""
+		exit -1
+		return
 	    fi
 	fi
     fi
