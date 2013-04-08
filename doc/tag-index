@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1851 2013/04/05 21:29:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1852 2013/04/08 23:46:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cd_code:
+  - swtich off Adams-Bashforth on the 1rst iteration. Update output of
+    experiment lab_sea.hb87
 o tools/genmake2:
   - change default makedepend from the system default to tools/xmakedepend:
     When no makedepend is specified, select tools/xmakedepend it the test pass,
