@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_scheme.F,v 1.5 2012/02/10 00:27:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_scheme.F,v 1.6 2013/04/08 21:31:29 jmc Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -69,8 +69,13 @@ C     Define ranges
 CEOP
 
 C     Adams-Bashforth weighting factors
-      ab15   =  1.5 _d 0 + epsAB_CD
-      ab05   = -0.5 _d 0 - epsAB_CD
+      IF ( myIter.EQ.0 ) THEN
+        ab15   =  1. _d 0
+        ab05   = -0. _d 0
+      ELSE
+        ab15   =  1.5 _d 0 + epsAB_CD
+        ab05   = -0.5 _d 0 - epsAB_CD
+      ENDIF
 
 C-- stagger time stepping: grad Phi_Hyp is not in gU,gV and needs to be added:
       IF (staggerTimeStep) THEN
