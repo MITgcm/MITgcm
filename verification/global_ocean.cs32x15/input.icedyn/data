@@ -29,6 +29,8 @@
  hFacInf=0.2,
  hFacSup=2.0,
  useRealFreshWaterFlux=.TRUE.,
+#- set Energy Reference Level to liq. water @ 0 degC:
+ temp_EvPrRn=0.,
  hFacMin=.1,
  hFacMinDr=20.,
 #tempAdvScheme=77,
