@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.27 2012/02/16 01:22:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.28 2013/04/09 21:01:52 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -114,16 +114,18 @@ C       Print some statistics about input forcing fields
         CALL MON_WRITESTATS_RL( 1, VICE, '_vice',
      &                   UVM, UVM, rAz, drF, dummyRL, myThid )
 #endif
-        CALL MON_WRITESTATS_RL( 1, AREA, '_area',
+        IF ( .NOT.useThSIce ) THEN
+         CALL MON_WRITESTATS_RL( 1, AREA, '_area',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
-        CALL MON_WRITESTATS_RL( 1, HEFF, '_heff',
+         CALL MON_WRITESTATS_RL( 1, HEFF, '_heff',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
-        CALL MON_WRITESTATS_RL( 1, HSNOW,'_hsnow',
+         CALL MON_WRITESTATS_RL( 1, HSNOW,'_hsnow',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #ifdef SEAICE_VARIABLE_SALINITY
-        CALL MON_WRITESTATS_RL( 1, HSALT,'_hsalt',
+         CALL MON_WRITESTATS_RL( 1, HSALT,'_hsalt',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif /* SEAICE_VARIABLE_SALINITY */
+        ENDIF
 #ifdef ALLOW_SITRACER
         DO iTracer = 1, SItrNumInUse
          WRITE(suff,'(A9,I2.2)') '_sitracer', iTracer
