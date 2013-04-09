@@ -55,7 +55,7 @@
  monitorFreq=86400.,
  monitorSelect=2,
  nTimeSteps=12,
- monitorFreq=1.,
+ monitorFreq=21600.,
  &
 
 # Gridding parameters

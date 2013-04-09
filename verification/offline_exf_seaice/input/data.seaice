@@ -11,6 +11,7 @@
  SEAICE_no_Slip     = .FALSE.,
  SEAICEwriteState   = .TRUE.,
  SEAICE_monFreq = 21600.,
+ SEAICE_monFreq = 1800.,
  &
 
  &SEAICE_PARM03
