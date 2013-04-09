@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.181 2013/04/04 14:32:31 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.182 2013/04/09 20:51:50 jmc Exp $
 #  $Name:  $
 #
 
@@ -322,9 +322,11 @@ testoutput_run()
 	'AthSiG') testoutput_var $1 "thSI_Ice_Area_G" "thSIc Area Global" $2 $refoutp ; yy=$? ;;
 	'AthSiS') testoutput_var $1 "thSI_Ice_Area_S" "thSIc Area South"  $2 $refoutp ; yy=$? ;;
 	'AthSiN') testoutput_var $1 "thSI_Ice_Area_N" "thSIc Area North"  $2 $refoutp ; yy=$? ;;
-	'HthSiG') testoutput_var $1 "thSI_IceH_ave_G" "thSIc H Global"	  $2 $refoutp ; yy=$? ;;
-	'HthSiS') testoutput_var $1 "thSI_IceH_ave_S" "thSIc H South"	  $2 $refoutp ; yy=$? ;;
-	'HthSiN') testoutput_var $1 "thSI_IceH_ave_N" "thSIc H North"	  $2 $refoutp ; yy=$? ;;
+	'HthSiG') testoutput_var $1 "thSI_IceH_ave_G" "thSIc H Glob-ave"  $2 $refoutp ; yy=$? ;;
+	'HthSiS') testoutput_var $1 "thSI_IceH_ave_S" "thSIc H South-av"  $2 $refoutp ; yy=$? ;;
+	'HthSiN') testoutput_var $1 "thSI_IceH_ave_N" "thSIc H North-av"  $2 $refoutp ; yy=$? ;;
+	'HthMxS') testoutput_var $1 "thSI_IceH_max_S" "thSIc H South-max" $2 $refoutp ; yy=$? ;;
+	'HthMxN') testoutput_var $1 "thSI_IceH_max_N" "thSIc H North-max" $2 $refoutp ; yy=$? ;;
 	      *) yy=99; echo "WARNING: asking for var=$xx : not recognized !" 1>&2 ;;
 	  esac
 	  if test $xx = $sVar
