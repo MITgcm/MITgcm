@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.185 2012/12/27 23:05:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.186 2013/04/09 00:24:37 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1423,6 +1423,8 @@ CADJ STORE heff(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE r_QbyOCN = comlev1_bibj,key=iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+       IF (.NOT.SEAICE_growMeltByConv) THEN
+       
 #ifdef SEAICE_ITD
         DO IT=1,nITD
          DO J=1,sNy
@@ -1476,6 +1478,8 @@ c ToM<<< debug seaice_growth
      &    SQUEEZE_RIGHT , myThid)
 c ToM>>>
 #endif /* SEAICE_DEBUG */
+
+      endif !SEAICE_growMeltByConv
 
 C compute snow melt tendency due to snow-atmosphere interaction
 C ==================================================================
@@ -1711,6 +1715,8 @@ CADJ STORE HSNOW(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE r_QbyOCN = comlev1_bibj,key=iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+      IF (.NOT.SEAICE_growMeltByConv) THEN
+
 #ifdef SEAICE_ITD
         DO IT=1,nITD
          DO J=1,sNy
@@ -1748,6 +1754,9 @@ Cgf no additional dependency through snow
          ENDDO
         ENDDO
 #endif /* SEAICE_ITD */
+
+      endif !SEAICE_growMeltByConv
+
 #endif /* SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING */
 Cph)
 #ifdef SEAICE_DEBUG

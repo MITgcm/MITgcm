@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.109 2013/02/28 16:21:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.110 2013/04/09 00:24:37 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -58,6 +58,8 @@ C     SEAICE_doOpenWaterGrowth :: use open water heat flux directly to grow ice
 C                           (when false cool ocean, and grow later if needed)
 C     SEAICE_doOpenWaterMelt   :: use open water heat flux directly to melt ice
 C                           (when false warm ocean, and melt later if needed)
+C     SEAICE_growMeltByConv :: grow/melt according to convergence of turbulence 
+C                              and conduction, rather than in two steps (default)
 C     SEAICE_salinityTracer    :: use SItracer to exchange and trace ocean
 C                           salt in ice
 C     SEAICE_ageTracer         :: use SItracer to trace the age of ice
@@ -87,7 +89,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     useMaykutSatVapPoly, SEAICE_mcPheeStepFunc,
      &     SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
      &     SEAICE_salinityTracer, SEAICE_ageTracer,
-     &     SEAICErestoreUnderIce,
+     &     SEAICErestoreUnderIce, SEAICE_growMeltByConv,
      &     SEAICEwriteState,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
@@ -106,7 +108,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     useMaykutSatVapPoly, SEAICE_mcPheeStepFunc,
      &     SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
      &     SEAICE_salinityTracer, SEAICE_ageTracer,
-     &     SEAICErestoreUnderIce,
+     &     SEAICErestoreUnderIce, SEAICE_growMeltByConv,
      &     SEAICEwriteState,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
