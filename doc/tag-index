@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1854 2013/04/11 15:43:30 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1855 2013/04/11 20:53:23 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice:
+  - allow to specify the Ice-Shelf mass per unit area (instead of
+    shelficeLoadAnomaly) and do the conversion from one to the other
+  - move loading from file of shelficeLoadAnomaly from SHELFICE_INIT_VARIA
+    to SHELFICE_INIT_FIXED: (a) avoid some TAF recompution issues and
+    (b) will be loaded in time (before calling INI_PRESSURE) in case it is
+    needed in phi0surf for initial pressure calculation when useDynP_inEos_Zc
+  - update isomip experiment forward output (get machine truncation error
+    from conversion shelficeLoadAnomaly -> shelficeMass -> shelficeLoadAnomaly)
 o verification/offline_exf_seaice:
   revise data.seaice in input.thermo and input_ad and update results accordingly
     HO = 0.2, SEAICE_areaLossFormula = 2,
