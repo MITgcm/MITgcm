@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1852 2013/04/08 23:46:37 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1853 2013/04/11 14:52:12 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/offline_exf_seaice : revise data.seaice and 
+  update results accordingly in input.thermo and input_ad.
+    HO = 0.2, SEAICE_areaLossFormula = 2,
+    SEAICE_growMeltByConv = .TRUE., 
+    SEAICE_doOpenWaterMelt = .TRUE.,
+  Improve consistency with input.thsice and 
+  fixes the spurious 500m ice corners. 
 o pkg/cd_code:
   - swtich off Adams-Bashforth on the 1rst iteration. Update output of
     experiment lab_sea.hb87
