@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.16 2012/08/06 20:14:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.17 2013/04/11 18:50:20 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -55,7 +55,8 @@ CEOP
      &     SHELFICE_taveFreq,
      &     SHELFICE_tave_mnc,
      &     SHELFICE_dump_mnc,
-     &     SHELFICEtopoFile, SHELFICEloadAnomalyFile,
+     &     SHELFICEtopoFile,
+     &     SHELFICEmassFile, SHELFICEloadAnomalyFile,
      &     SHELFICEadvDiffHeatFlux,
      &     SHELFICEuseGammaFrict,
      &     shiCdrag, shiZetaN, shiRc,
@@ -75,8 +76,9 @@ C Set defaults values for parameters in SHELFICE.h
       useISOMIPTD              = .FALSE.
       SHELFICEconserve         = .FALSE.
       SHELFICEboundaryLayer    = .FALSE.
-      SHELFICEloadAnomalyFile  = ' '
       SHELFICEtopoFile         = ' '
+      SHELFICEmassFile         = ' '
+      SHELFICEloadAnomalyFile  = ' '
       SHELFICElatentHeat       =  334.0 _d 3
       SHELFICEHeatCapacity_Cp  = 2000.0 _d 0
       recip_SHELFICElatentHeat =    0.0 _d 0
@@ -146,7 +148,6 @@ C Set quadratic bottom drag depending on choices:
         SHELFICEDragQuadratic = bottomDragQuadratic
        ENDIF
       ENDIF
-
 
 C-    Set Output type flags :
       SHELFICE_tave_mdsio = .TRUE.

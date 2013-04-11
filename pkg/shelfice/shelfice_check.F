@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_check.F,v 1.7 2012/04/11 15:51:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_check.F,v 1.8 2013/04/11 18:50:20 jmc Exp $
 C $Name:  $
 #include "SHELFICE_OPTIONS.h"
 
@@ -25,19 +25,30 @@ C     myThid   :  Number of this instance of SHELFICE_CHECK
 C     === Local variables ===
 C     msgBuf   :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER errCount
 
       _BEGIN_MASTER(myThid)
+      errCount = 0
 
       WRITE(msgBuf,'(A)') 'SHELFICE_CHECK: #define ALLOW_SHELFICE'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT, myThid )
+
+C     Consistent choice of parameter:
+      IF ( SHELFICEmassFile.NE.' ' .AND. SHELFICEloadAnomalyFile.NE.' '
+     &   ) THEN
+         WRITE(msgBuf,'(2A)') 'SHELFICE_CHECK: cannot specify both',
+     &      ' SHELFICEmassFile and SHELFICEloadAnomalyFile'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         errCount = errCount + 1
+      ENDIF
 
 C     So far, SHELFICE works only with oceanic z-coordinates
       IF ( buoyancyRelation .NE. 'OCEANIC' ) THEN
          WRITE(msgBuf,'(A)')
      &      'SHELFICE works only with buoyancyRelation = ''OCEANIC'''
          CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
+         errCount = errCount + 1
       ENDIF
 
       IF ( selectNHfreeSurf.NE.0 ) THEN
@@ -53,7 +64,7 @@ C        d.Eta/dt below Ice-Shelf.
          CALL PRINT_ERROR( msgBuf, myThid )
          WRITE(msgBuf,'(A)') ' not compatible with SHELFICE code'
          CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
+         errCount = errCount + 1
       ENDIF
 
 C     SHELFICE may not work with many other packages,
@@ -66,7 +77,7 @@ CML      IF ( useKPP ) THEN
 CML         WRITE(msgBuf,'(A)')
 CML     &      'SHELFICE and KPP cannot be turned on at the same time'
 CML         CALL PRINT_ERROR( msgBuf , 1)
-CML         STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
+CML         errCount = errCount + 1
 CML      ENDIF
 CML#endif ALLOW_KPP
 
@@ -78,7 +89,7 @@ CML#endif ALLOW_KPP
        WRITE(msgBuf,'(A,A,A)')
      &      'when CPP flag ALLOW_ISOMIP_TD was unset'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
+       errCount = errCount + 1
       ENDIF
 #else
       IF ( useISOMIPTD ) THEN
@@ -89,7 +100,7 @@ CML#endif ALLOW_KPP
         WRITE(msgBuf,'(A,A,A)')
      &       'when useISOMIPTD=.TRUE.; this does not work!'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
+        errCount = errCount + 1
        ENDIF
       ENDIF
 #endif /* ALLOW_ISOMIP_TD */
@@ -102,9 +113,17 @@ CML#endif ALLOW_KPP
        WRITE(msgBuf,'(A,A,A)')
      &      'when CPP flag SHI_ALLOW_GAMMAFRICT was unset'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
+       errCount = errCount + 1
       ENDIF
 #endif /* SHI_ALLOW_GAMMAFRICT */
+
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &       'SHELFICE_CHECK: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
+      ENDIF
 
       _END_MASTER(myThid)
 
