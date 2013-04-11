@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.9 2012/10/05 15:18:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.10 2013/04/11 18:59:12 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -24,13 +24,13 @@ C     === Global variables ===
 #endif /* ALLOW_COST */
 
 C     === Routine arguments ===
-C     myThid -  Number of this instance of SHELFICE_INIT_FIXED
+C     myThid ::  Number of this instance of SHELFICE_INIT_FIXED
       INTEGER myThid
 
 #ifdef ALLOW_SHELFICE
 C     === Local variables ===
-C     I,J,K,bi,bj - Loop counters
-      INTEGER I, J, K, bi, bj
+C     i, j, bi, bj :: Loop counters
+      INTEGER i, j, bi, bj
 #ifdef ALLOW_DIAGNOSTICS
       INTEGER       diagNum
       INTEGER       diagMate
@@ -60,13 +60,15 @@ C-----------------------------------------------------------------------
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J = 1-OLy, sNy+OLy
-         DO I = 1-OLx, sNx+OLx
-          kTopC(i,j,bi,bj) = 0
-          DO K = Nr, 1, -1
-           IF ( maskC(I,J,K,bi,bj) .NE. 0. _d 0 )
-     &          kTopC(I,J,bi,bj) = K
-          ENDDO
+        DO j = 1-OLy, sNy+OLy
+         DO i = 1-OLx, sNx+OLx
+          IF ( kSurfC(i,j,bi,bj).LE.Nr ) THEN
+            kTopC(i,j,bi,bj) = kSurfC(i,j,bi,bj)
+          ELSE
+            kTopC(i,j,bi,bj) = 0
+          ENDIF
+          shelficeMass       (i,j,bi,bj) = 0. _d 0
+          shelficeLoadAnomaly(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
@@ -80,8 +82,8 @@ C-----------------------------------------------------------------------
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J = 1-OLy, sNy+OLy
-         DO I = 1-OLx, sNx+OLx
+        DO j = 1-OLy, sNy+OLy
+         DO i = 1-OLx, sNx+OLx
 c--   Test for missing values.
           IF (wshifwflx(i,j,bi,bj) .LT. -9900.) THEN
            wshifwflx(i,j,bi,bj) = 0. _d 0
@@ -89,7 +91,7 @@ c--   Test for missing values.
 c--   use weight as mask
           wshifwflx(i,j,bi,bj) =
      &         max(wshifwflx(i,j,bi,bj),wshifwflx0)
-     &         *maskSHI(I,J,1,bi,bj)
+     &         *maskSHI(i,j,1,bi,bj)
           IF (wshifwflx(i,j,bi,bj) .NE. 0.) THEN
            wshifwflx(i,j,bi,bj) =
      &          1./wshifwflx(i,j,bi,bj)/wshifwflx(i,j,bi,bj)
@@ -99,9 +101,52 @@ c--   use weight as mask
        ENDDO
       ENDDO
       CALL ACTIVE_WRITE_XY_LOC( 'wshifwflx', wshifwflx,
-     &    1, 0, mythid, dummy)
+     &                          1, 0, myThid, dummy )
 #endif /* ALLOW_SHIFWFLX_COST_CONTRIBUTION or ALLOW_SHIFWFLX_CONTROL */
 #endif /* ALLOW_COST */
+
+      IF ( SHELFICEloadAnomalyFile .NE. ' ' ) THEN
+       CALL READ_FLD_XY_RS( SHELFICEloadAnomalyFile, ' ',
+     &                      shelficeLoadAnomaly, 0, myThid )
+      ENDIF
+      IF ( SHELFICEmassFile.NE.' ' ) THEN
+       CALL READ_FLD_XY_RS( SHELFICEmassFile, ' ',
+     &                      shelficeMass, 0, myThid )
+      ELSE
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j = 1, sNy
+          DO i = 1, sNx
+           shelficeMass(i,j,bi,bj) =
+     &         shelficeLoadAnomaly(i,j,bi,bj)*recip_gravity
+     &       - rhoConst*Ro_surf(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+      _EXCH_XY_RS( shelficeMass, myThid )
+
+c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
+C-   In case we need shelficeLoadAnomaly in phi0surf for initial pressure
+C    calculation when useDynP_inEos_Zc
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+           shelficeLoadAnomaly(i,j,bi,bj) = gravity
+     &      *( shelficeMass(i,j,bi,bj) + rhoConst*Ro_surf(i,j,bi,bj) )
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+c     ELSE
+c      _EXCH_XY_RS( shelficeLoadAnomaly, myThid )
+c     ENDIF
+      IF ( debugLevel.GE.debLevC ) THEN
+       CALL WRITE_FLD_XY_RS( 'SHICE_pLoadAnom', ' ',
+     I                       shelficeLoadAnomaly, -1, myThid )
+      ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN

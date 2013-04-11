@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.9 2012/03/12 16:57:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.10 2013/04/11 18:59:12 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -39,7 +39,7 @@ CEOP
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j = 1-OLy, sNy+OLy
          DO i = 1-OLx, sNx+OLx
-          shelficeLoadAnomaly   (i,j,bi,bj) = 0. _d 0
+c         shelficeLoadAnomaly   (i,j,bi,bj) = 0. _d 0
           shelficeForcingT      (i,j,bi,bj) = 0. _d 0
           shelficeForcingS      (i,j,bi,bj) = 0. _d 0
           shelficeHeatFlux      (i,j,bi,bj) = 0. _d 0
@@ -85,14 +85,14 @@ c--
       ENDDO
 #endif /* ALLOW_COST */
 
-      IF ( SHELFICEloadAnomalyFile .NE. ' ' ) THEN
-C-    must wait for initialisation to be finished before master loads from file
-       _BARRIER
-       CALL READ_FLD_XY_RS( SHELFICEloadAnomalyFile, ' ',
-     &      shelficeLoadAnomaly, 0, myThid )
-C-    EXCH call implicitly contains Barrier: no need for another one.
-       _EXCH_XY_RS( shelficeLoadAnomaly, myThid )
-      ENDIF
+C    Might be a problem here in case we need shelficeLoadAnomaly in phi0surf
+C    for initial pressure calculation when useDynP_inEos_Zc,
+C    since ini_pressure is called before this S/R.
+c     IF ( SHELFICEloadAnomalyFile .NE. ' ' ) THEN
+c      CALL READ_FLD_XY_RS( SHELFICEloadAnomalyFile, ' ',
+c    &                      shelficeLoadAnomaly, 0, myThid )
+c      _EXCH_XY_RS( shelficeLoadAnomaly, myThid )
+c     ENDIF
 
 #endif /* ALLOW_SHELFICE */
 
