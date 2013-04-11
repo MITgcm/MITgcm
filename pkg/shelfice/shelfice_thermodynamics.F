@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.32 2013/03/29 23:09:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.33 2013/04/11 19:01:05 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -60,14 +60,14 @@ C     tLoc, sLoc, pLoc :: local in-situ temperature, salinity, pressure
 C     theta/saltFreeze :: temperature and salinity of water at the
 C                         ice-ocean interface (at the freezing point)
 C     freshWaterFlux   :: local variable for fresh water melt flux due
-C                         to melting in kg/m^2/s 
+C                         to melting in kg/m^2/s
 C                         (negative density x melt rate)
 C     convertFW2SaltLoc:: local copy of convertFW2Salt
 C     cFac             :: 1 for conservative form, 0, otherwise
-C     rFac             :: realFreshWaterFlux factor 
+C     rFac             :: realFreshWaterFlux factor
 C     dFac             :: 0 for diffusive heat flux (Holland and Jenkins, 1999, eq21)
 C                         1 for advective and diffusive heat flux (eq22, 26, 31)
-C     fwflxFac         :: only effective for dFac=1, 1 if we expect a melting fresh 
+C     fwflxFac         :: only effective for dFac=1, 1 if we expect a melting fresh
 C                         water flux, 0 otherwise
 C     auxiliary variables and abbreviations:
 C     a0, a1, a2, b, c0
@@ -112,14 +112,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     re-initialize here again, curtesy to TAF
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J = 1-Oly,sNy+Oly
-         DO I = 1-Olx,sNx+Olx
+        DO J = 1-OLy,sNy+OLy
+         DO I = 1-OLx,sNx+OLx
           shiTransCoeffT(i,j,bi,bj) = SHELFICEheatTransCoeff
           shiTransCoeffS(i,j,bi,bj) = SHELFICEsaltTransCoeff
          ENDDO
         ENDDO
-        ENDDO
        ENDDO
+      ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
       IF ( SHELFICEuseGammaFrict ) THEN
 C     Implement friction velocity-dependent transfer coefficient
@@ -134,13 +134,13 @@ cph      shiSc = (viscArNr(1)/diffKrNrS(1))**shiTwoThirds
        gammaTmoleS = 12.5 _d 0 * shiSc - 6. _d 0
 C     instead of etastar = sqrt(1+zetaN*ustar./(f*Lo*Rc))
        etastar = 1. _d 0
-       gammaTurbConst  = 1. _d 0 / (2. _d 0 * shiZetaN*etastar) 
+       gammaTurbConst  = 1. _d 0 / (2. _d 0 * shiZetaN*etastar)
      &      - recip_shiKarman
 #ifdef ALLOW_AUTODIFF_TAMC
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO J = 1-Oly,sNy+Oly
-          DO I = 1-Olx,sNx+Olx
+         DO J = 1-OLy,sNy+OLy
+          DO I = 1-OLx,sNx+OLx
            shiTransCoeffT(i,j,bi,bj) = 0. _d 0
            shiTransCoeffS(i,j,bi,bj) = 0. _d 0
           ENDDO
@@ -154,11 +154,11 @@ C     instead of etastar = sqrt(1+zetaN*ustar./(f*Lo*Rc))
 C     are we doing the conservative form of Jenkins et al. (2001)?
       cFac = 0. _d 0
       IF ( SHELFICEconserve ) cFac = 1. _d 0
-C     with "real fresh water flux" (affecting ETAN), 
+C     with "real fresh water flux" (affecting ETAN),
 C     there is more to modify
       rFac = 1. _d 0
       IF ( SHELFICEconserve .AND. useRealFreshWaterFlux ) rFac = 0. _d 0
-C     heat flux into the ice shelf, default is diffusive flux 
+C     heat flux into the ice shelf, default is diffusive flux
 C     (Holland and Jenkins, 1999, eq.21)
       dFac = 0. _d 0
       IF ( SHELFICEadvDiffHeatFlux ) dFac = 1. _d 0
@@ -186,8 +186,8 @@ C     where this value is part of the protocol
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J = 1-Oly,sNy+Oly
-         DO I = 1-Olx,sNx+Olx
+        DO J = 1-OLy,sNy+OLy
+         DO I = 1-OLx,sNx+OLx
           shelfIceHeatFlux      (I,J,bi,bj) = 0. _d 0
           shelfIceFreshWaterFlux(I,J,bi,bj) = 0. _d 0
           shelficeForcingT      (I,J,bi,bj) = 0. _d 0
@@ -199,8 +199,8 @@ C     where this value is part of the protocol
 #ifdef ALLOW_SHIFWFLX_CONTROL
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J = 1-Oly,sNy+Oly
-         DO I = 1-Olx,sNx+Olx
+        DO J = 1-OLy,sNy+OLy
+         DO I = 1-OLx,sNx+OLx
           xx_shifwflx_loc(I,J,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
@@ -211,7 +211,7 @@ C     where this value is part of the protocol
      &     maskSHI, xx_shifwflx_loc, xx_shifwflx0, xx_shifwflx1,
      &     xx_shifwflx_dummy,
      &     xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope,
-     &     mytime, myiter, mythid )
+     &     myTime, myIter, myThid )
 #endif /* ALLOW_SHIFWFLX_CONTROL */
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -231,12 +231,13 @@ C     where this value is part of the protocol
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J = 1, sNy
          DO I = 1, sNx
-C--   make local copies of temperature, salinity and depth (pressure)
+C--   make local copies of temperature, salinity and depth (pressure in deci-bar)
 C--   underneath the ice
           K         = MAX(1,kTopC(I,J,bi,bj))
           pLoc(I,J) = ABS(R_shelfIce(I,J,bi,bj))
+c         pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*1. _d -4
           tLoc(I,J) = theta(I,J,K,bi,bj)
-          sLoc(I,J) = MAX(salt(I,J,K,bi,bj), 0. _d 0)
+          sLoc(I,J) = MAX(salt(I,J,K,bi,bj), zeroRL)
           uLoc(I,J) = recip_hFacC(I,J,K,bi,bj) *
      &         ( uVel(I,  J,K,bi,bj) * _hFacW(I,  J,K,bi,bj)
      &         + uVel(I+1,J,K,bi,bj) * _hFacW(I+1,J,K,bi,bj) )
@@ -262,7 +263,7 @@ C--   lower cell may not be as thick as required
      &           + theta(I,J,Kp1,bi,bj) *drKp1 )
      &           * recip_drLoc
             sLoc(I,J) = ( sLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
-     &           + MAX(salt(I,J,Kp1,bi,bj), 0. _d 0) * drKp1 )
+     &           + MAX(salt(I,J,Kp1,bi,bj), zeroRL) * drKp1 )
      &           * recip_drLoc
             uLoc(I,J) = ( uLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
      &           + drKp1 * recip_hFacC(I,J,Kp1,bi,bj) *
@@ -284,9 +285,9 @@ C--   to the surface
         DO J = 1, sNy
          DO I = 1, sNx
 #ifndef ALLOW_AUTODIFF_OPENAD
-          tLoc(I,J) = SW_TEMP(sLoc(I,J),tLoc(I,J),pLoc(I,J),0.D0)
+          tLoc(I,J) = SW_TEMP(sLoc(I,J),tLoc(I,J),pLoc(I,J),zeroRL)
 #else
-          CALL SW_TEMP(sLoc(I,J),tLoc(I,J),pLoc(I,J),0.D0,tLoc(I,J))
+          CALL SW_TEMP(sLoc(I,J),tLoc(I,J),pLoc(I,J),zeroRL,tLoc(I,J))
 #endif
          ENDDO
         ENDDO
@@ -297,27 +298,27 @@ C--   to the surface
           DO I = 1, sNx
            K = kTopC(I,J,bi,bj)
            IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
-            ustarSq = shiCdrag * MAX( 1.D-06,
+            ustarSq = shiCdrag * MAX( 1.D-6,
      &           0.25 _d 0 *(uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)) )
             ustar   = SQRT(ustarSq)
 C     instead of etastar = sqrt(1+zetaN*ustar./(f*Lo*Rc))
 C           etastar = 1. _d 0
-C           gammaTurbConst  = 1. _d 0 / (2. _d 0 * shiZetaN*etastar) 
+C           gammaTurbConst  = 1. _d 0 / (2. _d 0 * shiZetaN*etastar)
 C    &           - recip_shiKarman
             IF ( fCori(I,J,bi,bj) .NE. 0. _d 0 ) THEN
              gammaTurb = LOG( ustarSq * shiZetaN * etastar**2
      &            / ABS(fCori(I,J,bi,bj) * 5.0 _d 0 * shiKinVisc))
-     &            * recip_shiKarman 
+     &            * recip_shiKarman
      &            + gammaTurbConst
-C     Do we need to catch the unlikely case of very small ustar 
+C     Do we need to catch the unlikely case of very small ustar
 C     that can lead to negative gammaTurb?
 C            gammaTurb = MAX(0.D0, gammaTurb)
             ELSE
              gammaTurb = gammaTurbConst
             ENDIF
-            shiTransCoeffT(i,j,bi,bj) = MAX( 0.D-10, 
+            shiTransCoeffT(i,j,bi,bj) = MAX( zeroRL,
      &           ustar/(gammaTurb + gammaTmoleT) )
-            shiTransCoeffS(i,j,bi,bj) = MAX( 0.D-10, 
+            shiTransCoeffS(i,j,bi,bj) = MAX( zeroRL,
      &           ustar/(gammaTurb + gammaTmoleS) )
            ENDIF
           ENDDO
@@ -389,7 +390,7 @@ C     (in German).
           DO I = 1, sNx
            K    = kTopC(I,J,bi,bj)
            IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
-C     heat flux into the ice shelf, default is diffusive flux 
+C     heat flux into the ice shelf, default is diffusive flux
 C     (Holland and Jenkins, 1999, eq.21)
             thetaFreeze = a0*sLoc(I,J)+c0+b*pLoc(I,J)
             fwflxFac    = 0. _d 0
@@ -407,7 +408,7 @@ C     note: this part of the code is not very intuitive as it involves
 C     many arbitrary abbreviations that were introduced to derive the
 C     correct form of the quadratic equation for salinity. The abbreviations
 C     only make sense in connection with my notes on this (M.Losch)
-C     
+C
 C     eps3a was introduced as a constant variant of eps3 to avoid AD of
 C     code of typ (pLoc-const)/pLoc
             eps3a = rhoShelfIce*SHELFICEheatCapacity_Cp
@@ -480,7 +481,7 @@ C--   Calculate the upward heat and fresh water fluxes;
 C--   MITgcm sign conventions: downward (negative) fresh water flux
 C--   implies melting and due to upward (positive) heat flux
             shelfIceHeatFlux(I,J,bi,bj) =
-     &           ( eps3 
+     &           ( eps3
      &           - freshWaterFlux*SHELFICEheatCapacity_Cp*fwflxFac )
      &           * ( thetaFreeze - SHELFICEthetaSurface )
      &           -  cFac*freshWaterFlux*( SHELFICElatentHeat
@@ -507,6 +508,22 @@ C--   compute surface tendencies
 C     endif (not) useISOMIPTD
        ENDDO
       ENDDO
+
+C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
+#ifndef ALLOW_AUTODIFF
+c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+           shelficeLoadAnomaly(i,j,bi,bj) = gravity
+     &      *( shelficeMass(i,j,bi,bj) + rhoConst*Ro_surf(i,j,bi,bj) )
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+c     ENDIF
+#endif /* ndef ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
