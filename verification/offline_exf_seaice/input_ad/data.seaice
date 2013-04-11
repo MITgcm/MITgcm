@@ -6,6 +6,10 @@
  SEAICE_dTempFrz_dS = -5.4e-02,
 #seaice growth parameters
  SEAICE_frazilFrac  = 1.,
+ HO = 0.2,
+ SEAICE_areaLossFormula = 2,
+ SEAICE_growMeltByConv = .TRUE.,
+ SEAICE_doOpenWaterMelt = .TRUE.,
 #- same mcPheePiston value as in thsice with surf-current=0.2 m/s
  SEAICE_mcPheePiston= 8.7854425e-5,
  SEAICEuseFlooding  = .TRUE.,
