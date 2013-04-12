@@ -41,7 +41,7 @@
 #SEAICE_initialHEFF = 0.2,
 #uIceFile           = 'const_00.bin',
  SEAICEwriteState   = .TRUE.,
- SEAICE_monFreq = 1800.,
+ SEAICE_monFreq = 36000.,
  &
 
  &SEAICE_PARM03
