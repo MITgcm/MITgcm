@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ad_check_lev2_dir.h,v 1.5 2010/10/16 12:29:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ad_check_lev2_dir.h,v 1.6 2013/04/13 20:51:32 heimbach Exp $
 C $Name:  $
 
 CADJ STORE iceMask   = tapelev2, key = ilev_2
@@ -21,3 +21,7 @@ CADJ STORE siceload = tapelev2, key = ilev_2
 
 CADJ STORE sheating = tapelev2, key = ilev_2
 CADJ STORE tice1,tice2 = tapelev2, key = ilev_2
+
+#ifdef ALLOW_THSICE_COST_TEST
+CADJ STORE objf_thsice = tapelev2, key = ilev_2
+#endif

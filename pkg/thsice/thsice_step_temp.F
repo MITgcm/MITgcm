@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.14 2013/01/10 23:03:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.15 2013/04/13 20:51:32 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -84,16 +84,25 @@ C-    define grid-point location where to print debugging values
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          ticekey = (act1 + 1) + act2*max1
-     &                         + act3*max1*max2
-     &                         + act4*max1*max2*max3
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act3 = myThid - 1
+      max3 = nTx*nTy
+      act4 = ikey_dynamics - 1
+      ticekey = (act1 + 1) + act2*max1
+     &                     + act3*max1*max2
+     &                     + act4*max1*max2*max3
+C
+C Initialize certain arrays
+      tmpFlx(1) = 0. _d 0
+      tmpFlx(2) = 0. _d 0
+      DO j = 1-OLy, sNy+OLy
+       DO i = 1-OLx, sNx+OLx
+          dTsrf(i,j) = 0. _d 0
+       ENDDO
+      ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       dBugFlag = debugLevel.GE.debLevC

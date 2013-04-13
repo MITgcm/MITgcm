@@ -1,7 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.31 2013/04/04 16:44:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.32 2013/04/13 20:51:32 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_EXF
+#  include "EXF_OPTIONS.h"
+# endif
+#endif
 
 CBOP
 C     !ROUTINE: THSICE_MAIN
@@ -27,10 +32,17 @@ C     === Global variables ===
 #include "THSICE_PARAMS.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_VARS.h"
+#include "THSICE_TAVE.h"
+#include "THSICE_COST.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "DYNVARS.h"
 # include "tamc.h"
 # include "tamc_keys.h"
+# ifdef ALLOW_EXF
+#  include "EXF_FIELDS.h"
+#  include "EXF_PARAM.h"
+#  include "EXF_CONSTANTS.h"
+# endif /* ALLOW_EXF */
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:

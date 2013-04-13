@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_bulkf.F,v 1.7 2010/10/16 19:22:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_bulkf.F,v 1.8 2013/04/13 20:51:32 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -12,7 +12,7 @@ C     !INTERFACE:
       SUBROUTINE THSICE_GET_BULKF(
      I                  bi, bj,
      I                  iMin,iMax, jMin,jMax,
-     I                  iceFlag, hSnow, Tsf,
+     I                  icFlag, hSnow, Tsf,
      O                  flxExcSw, dFlxdT, evap, dEvdT,
      I                  myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
@@ -39,8 +39,8 @@ C     === Routine arguments ===
 C     bi,bj       :: tile indices
 C     iMin,iMax   :: computation domain: 1rst index range
 C     jMin,jMax   :: computation domain: 2nd  index range
-C     iceFlag     :: sea-ice fractional mask [0-1]
-C     iceFlag     :: True= get fluxes at this location ; False= do nothing
+C     icFlag     :: sea-ice fractional mask [0-1]
+C     icFlag     :: True= get fluxes at this location ; False= do nothing
 C     hSnow       :: snow height [m]
 C     Tsf         :: surface (ice or snow) temperature (oC)
 C     flxExcSw    :: net (downward) surface heat flux, except short-wave [W/m2]
@@ -51,7 +51,7 @@ C     myThid      :: Thread no. that called this routine.
       INTEGER bi, bj
       INTEGER iMin, iMax
       INTEGER jMin, jMax
-      LOGICAL iceFlag (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     icFlag  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     hSnow   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     Tsf     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     flxExcSw(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -83,7 +83,7 @@ C     iceornot    :: 0=open water, 1=ice cover, 2=ice+snow
 
       DO j=jMin,jMax
        DO i=iMin,iMax
-        IF ( iceFlag(i,j) ) THEN
+        IF ( icFlag(i,j).GT.0. _d 0 ) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
          IF ( hSnow(i,j).GT.3. _d -1 ) THEN

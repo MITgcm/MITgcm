@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_albedo.F,v 1.7 2010/10/12 15:55:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_albedo.F,v 1.8 2013/04/13 20:51:32 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -168,6 +168,8 @@ C     for vectorization
         ENDIF
        ENDDO
       ENDDO
+C
+#ifndef ALLOW_AUTODIFF
 C     catch potential errors
       IF (icount .gt. 0) THEN
 c       print*,'QQ - albedo problem', albedo, age, hs, albsno
@@ -180,6 +182,7 @@ c       print*,'QQ - albedo problem', albedo, age, hs, albsno
        CALL PRINT_ERROR( msgBuf , myThid)
        STOP 'THSICE_ALBEDO: albedo out of range'
       ENDIF
+#endif
 
 #endif  /* ALLOW_THSICE */
 

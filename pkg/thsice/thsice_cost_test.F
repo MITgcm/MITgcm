@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_cost_test.F,v 1.1 2013/03/30 01:23:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_cost_test.F,v 1.2 2013/04/13 20:51:32 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -78,6 +78,10 @@ c     == external functions ==
 
 c     == end of interface ==
 
+cph(
+      print *, 'ph-test 0: objf_thsice ', myiter
+cph)
+
       if ( myTime .GT. (endTime - lastinterval) ) then
          tempVar = 1. _d 0/
      &             ( ( 1. _d 0 + min(endTime-startTime,lastinterval) )
@@ -108,6 +112,10 @@ c     sea-ice area
      &                       tempVar*rA(i,j,bi,bj)*iceMask(i,j,bi,bj)
                      enddo
                   enddo
+cph(
+                  print *, 'ph-test 1: objf_thsice ', 
+     &                 myiter, objf_thsice(bi,bj)
+cph)
                enddo
             enddo
 

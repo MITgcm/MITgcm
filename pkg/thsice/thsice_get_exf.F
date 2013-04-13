@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.20 2011/12/24 19:31:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.21 2013/04/13 20:51:32 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -12,7 +12,7 @@ C     !INTERFACE:
       SUBROUTINE THSICE_GET_EXF(
      I                  bi, bj,
      I                  iMin,iMax, jMin,jMax,
-     I                  iceFlag, hSnow, tsfCel,
+     I                  icFlag, hSnow1, tsfCel,
      O                  flxExcSw, dFlxdT, evapLoc, dEvdT,
      I                  myTime, myIter, myThid )
 
@@ -46,8 +46,8 @@ C     === Routine arguments ===
 C     bi,bj       :: tile indices
 C     iMin,iMax   :: computation domain: 1rst index range
 C     jMin,jMax   :: computation domain: 2nd  index range
-C     iceFlag     :: True= get fluxes at this location ; False= do nothing
-C     hSnow       :: snow height [m]
+C     icFlag     :: True= get fluxes at this location ; False= do nothing
+C     hSnow1       :: snow height [m]
 C     tsfCel      :: surface (ice or snow) temperature (oC)
 C     flxExcSw    :: net (downward) surface heat flux, except short-wave [W/m2]
 C     dFlxdT      :: deriv of flx with respect to Tsf    [W/m/K]
@@ -59,8 +59,8 @@ C     myThid      :: my Thread Id number
       INTEGER bi, bj
       INTEGER iMin, iMax
       INTEGER jMin, jMax
-      LOGICAL iceFlag (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     hSnow   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     icFlag  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     hSnow1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     tsfCel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     flxExcSw(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     dFlxdT  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -143,8 +143,8 @@ C     latent heat of evaporation or sublimation [J/kg]
       _RL qsat_fac
       _RL qsat_exp
 #ifdef ALLOW_AUTODIFF_TAMC
-c     INTEGER ikey_1
-c     INTEGER ikey_2
+      INTEGER ikey_1, ikey_2
+      INTEGER locicekey
 #endif
 #ifdef ALLOW_DBUG_THSICE
       LOGICAL dBugFlag
@@ -168,22 +168,6 @@ C-    Define grid-point location where to print debugging values
 #ifdef ALLOW_DBUG_THSICE
       dBugFlag = debugLevel.GE.debLevC
       stdUnit = standardMessageUnit
-#endif
-
-#ifdef ALLOW_AUTODIFF_TAMC
-c         act1 = bi - myBxLo(myThid)
-c         max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-c         act2 = bj - myByLo(myThid)
-c         max2 = myByHi(myThid) - myByLo(myThid) + 1
-c         act3 = myThid - 1
-c         max3 = nTx*nTy
-c         act4 = ikey_dynamics - 1
-c         ikey_1 = i
-c    &         + sNx*(j-1)
-c    &         + sNx*sNy*act1
-c    &         + sNx*sNy*max1*act2
-c    &         + sNx*sNy*max1*max2*act3
-c    &         + sNx*sNy*max1*max2*max3*act4
 #endif
 
 C--   Set surface parameters :
@@ -216,14 +200,32 @@ C
        DO i=iMin,iMax
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_DBUG_THSICE
-        IF ( dBug(i,j,bi,bj) .AND. iceFlag(i,j) ) WRITE(stdUnit,
-     &    '(A,2I4,2I2,2F12.6)') 'ThSI_GET_EXF: i,j,atemp,lwd=',
+        IF ( dBug(i,j,bi,bj) .AND. (icFlag(i,j).GT.0. _d 0) ) 
+     &    WRITE(stdUnit,'(A,2I4,2I2,2F12.6)')
+     &    'ThSI_GET_EXF: i,j,atemp,lwd=',
      &           i,j,bi,bj, atemp(i,j,bi,bj),lwdown(i,j,bi,bj)
 #endif
 
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          ikey_1 = i
+     &         + sNx*(j-1)
+     &         + sNx*sNy*act1
+     &         + sNx*sNy*max1*act2
+     &         + sNx*sNy*max1*max2*act3
+     &         + sNx*sNy*max1*max2*max3*act4
+#endif
+
 C--   Use atmospheric state to compute surface fluxes.
-        IF ( iceFlag(i,j) .AND. atemp(i,j,bi,bj).NE.0. _d 0 ) THEN
-         IF ( hSnow(i,j).GT.3. _d -1 ) THEN
+        IF ( (icFlag(i,j).GT.0. _d 0) .AND. 
+     &       (atemp(i,j,bi,bj).NE.0. _d 0) ) THEN
+         IF ( hSnow1(i,j).GT.3. _d -1 ) THEN
           emiss = snow_emissivity
          ELSE
           emiss = ice_emissivity
@@ -233,7 +235,7 @@ C     copy a few variables to names used in bulkf_formula_lay
          Ts2         = Tsf*Tsf
 C     wind speed
 #ifdef ALLOW_AUTODIFF_TAMC
-cCADJ STORE sh(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
+CADJ STORE sh(i,j,bi,bj) = comlev1_exf_1, key = ikey_1
 #endif
          wsm         = sh(i,j,bi,bj)
 C--   air - surface difference of temperature & humidity
@@ -266,7 +268,25 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( useStabilityFct_overIce ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( iceFlag(i,j) .AND. atemp(i,j,bi,bj).NE.0. _d 0 ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          ikey_1 = i
+     &         + sNx*(j-1)
+     &         + sNx*sNy*act1
+     &         + sNx*sNy*max1*act2
+     &         + sNx*sNy*max1*max2*act3
+     &         + sNx*sNy*max1*max2*max3*act4
+C--
+CADJ STORE sh(i,j,bi,bj) = comlev1_exf_1, key = ikey_1
+#endif
+         IF ( (icFlag(i,j).GT.0. _d 0) .AND. 
+     &        (atemp(i,j,bi,bj).NE.0. _d 0) ) THEN
 C--   Compute the turbulent surface fluxes (function of stability).
 
 
@@ -294,25 +314,27 @@ C--  calculate turbulent scales
          ENDIF
         ENDDO
        ENDDO
+
 C     start iteration
        DO iter = 1,niter_bulk
         DO j=jMin,jMax
          DO i=iMin,iMax
-          IF ( iceFlag(i,j) .AND. atemp(i,j,bi,bj).NE.0. _d 0 ) THEN
+          IF ( (icFlag(i,j).GT.0. _d 0) .AND. 
+     &         (atemp(i,j,bi,bj).NE.0. _d 0) ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
-c                  ikey_2 = iter
-c    &                  + niter_bulk*(i-1)
-c    &                  + niter_bulk*sNx*(j-1)
-c    &                  + niter_bulk*sNx*sNy*act1
-c    &                  + niter_bulk*sNx*sNy*max1*act2
-c    &                  + niter_bulk*sNx*sNy*max1*max2*act3
-c    &                  + niter_bulk*sNx*sNy*max1*max2*max3*act4
-cCADJ STORE rdn    = comlev1_exf_2, key = ikey_2
-cCADJ STORE ustar  = comlev1_exf_2, key = ikey_2
-cCADJ STORE qstar  = comlev1_exf_2, key = ikey_2
-cCADJ STORE tstar  = comlev1_exf_2, key = ikey_2
-cCADJ STORE sh(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
+                  ikey_2 = iter
+     &                  + niter_bulk*(i-1)
+     &                  + niter_bulk*sNx*(j-1)
+     &                  + niter_bulk*sNx*sNy*act1
+     &                  + niter_bulk*sNx*sNy*max1*act2
+     &                  + niter_bulk*sNx*sNy*max1*max2*act3
+     &                  + niter_bulk*sNx*sNy*max1*max2*max3*act4
+CADJ STORE rdn    = comlev1_exf_2, key = ikey_2
+CADJ STORE ustar  = comlev1_exf_2, key = ikey_2
+CADJ STORE qstar  = comlev1_exf_2, key = ikey_2
+CADJ STORE tstar  = comlev1_exf_2, key = ikey_2
+CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
 #endif
 
            t0     = atemp(i,j,bi,bj)*
@@ -395,7 +417,8 @@ C     end iteration loop
        ENDDO
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( iceFlag(i,j) .AND. atemp(i,j,bi,bj).NE.0. _d 0 ) THEN
+         IF ( (icFlag(i,j).GT.0. _d 0) .AND. 
+     &        (atemp(i,j,bi,bj).NE.0. _d 0) ) THEN
           tau     = atmrho*rd(i,j)*wspeed(i,j,bi,bj)
           evapLoc(i,j)  = -tau*qstar(i,j)
           hlLocal       = -lath*evapLoc(i,j)
@@ -422,7 +445,8 @@ C--   Compute the turbulent surface fluxes using fixed transfert Coeffs
 C     with no stability dependence ( useStabilityFct_overIce = false )
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( iceFlag(i,j) .AND. atemp(i,j,bi,bj).NE.0. _d 0 ) THEN
+         IF ( (icFlag(i,j).GT.0. _d 0) .AND. 
+     &        (atemp(i,j,bi,bj).NE.0. _d 0) ) THEN
           wsm           = sh(i,j,bi,bj)
           tau           = atmrho*exf_iceCe*wsm
           evapLoc(i,j)  = -tau*delq(i,j)
@@ -455,7 +479,8 @@ C     endif useStabilityFct_overIce
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       DO j=jMin,jMax
        DO i=iMin,iMax
-        IF ( iceFlag(i,j) .AND. atemp(i,j,bi,bj).LE.0. _d 0 ) THEN
+        IF ( (icFlag(i,j).GT.0. _d 0) .AND. 
+     &       (atemp(i,j,bi,bj).LE.0. _d 0) ) THEN
 C--   in case atemp is zero:
          flxExcSw(i,j) = 0. _d 0
          dFlxdT  (i,j) = 0. _d 0

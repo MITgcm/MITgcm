@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ad_check_lev1_dir.h,v 1.5 2010/10/16 12:29:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ad_check_lev1_dir.h,v 1.6 2013/04/13 20:51:32 heimbach Exp $
 C $Name:  $
 
 CADJ STORE iceMask = comlev1, key = ikey_dynamics
@@ -33,4 +33,8 @@ CADJ STORE totphihyd = comlev1, key = ikey_dynamics
 
 #ifdef ATMOSPHERIC_LOADING
 CADJ STORE siceload = comlev1, key = ikey_dynamics
+#endif
+
+#ifdef ALLOW_THSICE_COST_TEST
+CADJ STORE objf_thsice = comlev1, key = ikey_dynamics
 #endif
