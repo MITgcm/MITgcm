@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.17 2013/03/30 01:25:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.18 2013/04/13 20:47:49 heimbach Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
@@ -127,7 +127,7 @@ CADJ &     kind = isbyte
          CALL SHELFICE_COST_ACCUMULATE (myThid)
 #endif
 
-#ifdef ALLOW_COST_THSICE
+#ifdef ALLOW_THSICE_COST_TEST
          if (useTHSICE) CALL THSICE_COST_DRIVER (myThid)
 #endif
 
