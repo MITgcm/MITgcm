@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.18 2013/04/13 20:47:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.19 2013/04/13 23:14:43 heimbach Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
@@ -128,7 +128,8 @@ CADJ &     kind = isbyte
 #endif
 
 #ifdef ALLOW_THSICE_COST_TEST
-         if (useTHSICE) CALL THSICE_COST_DRIVER (myThid)
+         IF (useTHSICE) 
+     &    CALL THSICE_COST_DRIVER (myTime, myIter, myThid)
 #endif
 
       ENDIF

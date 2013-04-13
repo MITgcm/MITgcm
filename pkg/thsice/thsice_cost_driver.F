@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_cost_driver.F,v 1.1 2013/03/30 01:23:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_cost_driver.F,v 1.2 2013/04/13 23:14:43 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
 
-      subroutine thsice_cost_driver( myiter, mytime, mythid )
+      subroutine thsice_cost_driver( mytime, myiter, mythid )
 
 c     ==================================================================
 c     SUBROUTINE thsice_cost_driver
@@ -39,7 +39,7 @@ c     == routine arguments ==
 c     == end of interface ==
 
 #ifdef ALLOW_THSICE_COST_TEST
-       CALL THSICE_COST_TEST( myiter, mytime, mythid )
+       CALL THSICE_COST_TEST( mytime, myiter, mythid )
 #endif
 
       end
