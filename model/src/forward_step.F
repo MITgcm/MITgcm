@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.214 2013/03/19 22:02:22 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.215 2013/04/13 20:47:18 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -12,6 +12,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
+#endif
+#ifdef ALLOW_THSICE
+# include "THSICE_OPTIONS.h"
 #endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
@@ -104,6 +107,7 @@ C     == Global variables ==
 # endif
 # ifdef ALLOW_EXF
 #  include "EXF_FIELDS.h"
+#  include "EXF_PARAM.h"
 #  ifdef ALLOW_BULKFORMULAE
 #   include "EXF_CONSTANTS.h"
 #  endif
@@ -140,7 +144,10 @@ C     == Global variables ==
 #  include "CD_CODE_VARS.h"
 # endif
 # ifdef ALLOW_THSICE
+#  include "THSICE_PARAMS.h"
+#  include "THSICE_SIZE.h"
 #  include "THSICE_VARS.h"
+#  include "THSICE_COST.h"
 # endif
 # ifdef ALLOW_SEAICE
 #  include "SEAICE_SIZE.h"

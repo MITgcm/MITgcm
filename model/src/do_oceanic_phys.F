@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.125 2013/03/30 01:25:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.126 2013/04/13 20:47:18 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -199,6 +199,8 @@ CADJ STORE sHeating, snowAge = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE hocemxl = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
+CADJ STORE icflxsw, snowprc  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 CADJ STORE salt,theta        = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE uvel,vvel         = comlev1, key = ikey_dynamics,
@@ -213,7 +215,7 @@ CADJ &     kind = isbyte
 CADJ STORE hFac_surfC       = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #  endif
-# endif
+# endif /* ALLOW_AUTODIFF_TAMC */
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('THSICE_MAIN',myThid)
 # endif
@@ -312,7 +314,11 @@ CADJ &     kind = isbyte
 CADJ STORE balance_itcount     = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #  endif /* ANNUAL_BALANCE */
-# endif
+#  ifdef ALLOW_THSICE
+CADJ STORE fu, fv              = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+#  endif
+# endif /* ALLOW_AUTODIFF_TAMC */
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('SEAICE_MODEL',myThid)
 # endif
