@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.20 2012/08/21 14:06:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.21 2013/04/18 20:41:17 heimbach Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -169,7 +169,7 @@ c    determine number of 2d fields
       length2d=(sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy
       n2d=int(length/length2d)
 c
-      if (n2d*length2d.EQ.length) then
+cc      if (n2d*length2d.EQ.length) then
         do i2d=1,n2d
           if (tapeFileUnit.EQ.0) THEN
             jrec=irec
@@ -182,7 +182,7 @@ c
           call mds_read_whalos(fname,lenLoc,sizetmp,tapeFileUnit,
      &      1,var(j2d),jrec,tapeSingleCpuIO,tapeBufferIO,mythid)
         enddo
-      else
+cc      else
 c   The other case actually does not (and should not) occur within the main loop,
 c   where we only store global arrays (i.e. with i,j,bi,bj indices) to disk.
 c     At init and final time it is always be possible to recompute or store in
@@ -199,11 +199,11 @@ c   tapelev_ini_bibj_k is likely unsafe with mdsreadvector/mdsreadvector)
 c
 c   The issue could be revisited if needed.
 c   But for now we stop if any otehr instance is met.
-         WRITE(msgBuf,'(3A)')
-     &        'ADWRITE: ',name,'was not saved to tape.'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R ADWRITE'
-      endif
+cc         WRITE(msgBuf,'(3A)')
+cc     &        'ADWRITE: ',name,'was not saved to tape.'
+cc         CALL PRINT_ERROR( msgBuf, myThid )
+cc         STOP 'ABNORMAL END: S/R ADWRITE'
+cc      endif
 
 #else
 
@@ -355,7 +355,7 @@ c    determine number of 2d fields
       length2d=(sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy
       n2d=int(length/length2d)
 c
-      if (n2d*length2d.EQ.length) then
+cc      if (n2d*length2d.EQ.length) then
         do i2d=1,n2d
           if (tapeFileUnit.EQ.0) THEN
             jrec=irec
@@ -378,12 +378,12 @@ c
           call mds_write_whalos(fname,lenLoc,sizetmp,tapeFileUnit,
      &      1,var(j2d),jrec,tapeSingleCpuIO,tapeBufferIO,mythid)
         enddo
-      else
-       write(msgBuf,'(3A)')
-     &      'ADWRITE: ',fname(1:lenLoc),'was not read from tape.'
-       call print_message( msgBuf, errorMessageUnit,
-     &                     SQUEEZE_RIGHT , myThid)
-      endif
+cc      else
+cc       write(msgBuf,'(3A)')
+cc     &      'ADWRITE: ',fname(1:lenLoc),'was not read from tape.'
+cc       call print_message( msgBuf, errorMessageUnit,
+cc     &                     SQUEEZE_RIGHT , myThid)
+cc      endif
 
 #else
 
