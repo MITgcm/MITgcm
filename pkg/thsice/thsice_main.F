@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.32 2013/04/13 20:51:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.33 2013/04/20 23:59:07 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -32,9 +32,9 @@ C     === Global variables ===
 #include "THSICE_PARAMS.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_VARS.h"
-#include "THSICE_TAVE.h"
-#include "THSICE_COST.h"
 #ifdef ALLOW_AUTODIFF_TAMC
+# include "THSICE_TAVE.h"
+# include "THSICE_COST.h"
 # include "DYNVARS.h"
 # include "tamc.h"
 # include "tamc_keys.h"
@@ -137,6 +137,10 @@ CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
          ENDDO
         ENDDO
 
+#ifdef ALLOW_CHEAPAML
+        IF ( .NOT.useCheapAML ) THEN
+#endif
+
         CALL THSICE_GET_OCEAN(
      I                         bi, bj, myTime, myIter, myThid )
 
@@ -196,6 +200,9 @@ CADJ STORE tice2(:,:,bi,bj) = comlev1_bibj, key = ticekey
      I                     bi, bj, iMin, iMax, jMin, jMax,
      I                     myTime, myIter, myThid )
 
+#ifdef ALLOW_CHEAPAML
+        ENDIF
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE empmr(:,:,bi,bj) = comlev1_bibj, key = ticekey
 CADJ STORE qnet(:,:,bi,bj) = comlev1_bibj, key = ticekey
