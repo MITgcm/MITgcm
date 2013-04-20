@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.31 2013/04/13 20:51:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.32 2013/04/20 23:55:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -59,9 +59,7 @@ C     == Global variables ===
 # ifdef ALLOW_EXF
 #  include "EXF_FIELDS.h"
 #  include "EXF_PARAM.h"
-#  ifdef ALLOW_BULKFORMULAE
-#   include "EXF_CONSTANTS.h"
-#  endif
+#  include "EXF_CONSTANTS.h"
 # endif
 #endif
 
@@ -74,22 +72,22 @@ C     dBugFlag    :: allow to print debugging stuff (e.g. on 1 grid point).
 C     useBulkForce:: use surf. fluxes from bulk-forcing external S/R
 C     useEXF      :: use surf. fluxes from exf          external S/R
 C---  Input:
-C     icMask     :: sea-ice fractional mask [0-1]
+C     icMask      :: sea-ice fractional mask [0-1]
 C     hIce        :: ice height [m]
-C     hSnow1       :: snow height [m]
+C     hSnow1      :: snow height [m]
 C     tFrz        :: sea-water freezing temperature [oC] (function of S)
 C     flxExSW     :: surf. heat flux (+=down) except SW, function of surf. temp Ts:
 C                    0: Flx(Ts=0) ; 1: Flx(Ts=Ts^n) ; 2: d.Flx/dTs(Ts=Ts^n)
 C---  Modified (input&output):
 C     flxSW       :: net Short-Wave flux (+=down) [W/m2]: input= at surface
 C                 ::                 output= below sea-ice, into the ocean
-C     tSrf1        :: surface (ice or snow) temperature
+C     tSrf1       :: surface (ice or snow) temperature
 C     qIc1        :: ice enthalpy (J/kg), 1rst level
 C     qIc2        :: ice enthalpy (J/kg), 2nd level
 C---  Output
 C     tIc1        :: temperature of ice layer 1 [oC]
 C     tIc2        :: temperature of ice layer 2 [oC]
-C     dTsrf1       :: surf. temp adjusment: Ts^n+1 - Ts^n
+C     dTsrf1      :: surf. temp adjusment: Ts^n+1 - Ts^n
 C     sHeat       :: surf heating flux left to melt snow or ice (= Atmos-conduction)
 C     flxCnB      :: heat flux conducted through the ice to bottom surface
 C     flxAtm      :: net flux of energy from the atmosphere [W/m2] (+=down)
@@ -107,10 +105,10 @@ C     myThid      :: my Thread Id number
       LOGICAL useEXF
       _RL icMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL hSnow1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL hSnow1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tFrz   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL flxSW  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tSrf1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tSrf1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL qIc1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL qIc2   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tIc1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -121,8 +119,10 @@ C     myThid      :: my Thread Id number
       _RL evpAtm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifndef ALLOW_AUTODIFF
       _RL flxExSW(iMin:iMax,jMin:jMax,0:2)
-      _RL dTsrf1  (iMin:iMax,jMin:jMax)
+      _RL dTsrf1 (iMin:iMax,jMin:jMax)
 #else
+C- note: nothing wrong with above declaration; and below is certainly wrong
+C        when this routine is called from THSICE_IMPL_TEMP
       _RL flxExSW(1:2)
       _RL dTsrf1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
@@ -148,7 +148,7 @@ C     flx0exSW     :: net surface heat flux over melting snow/ice, except short-
 C     flxTexSW     :: net surface heat flux, except short-wave (W/m2)
 C     dFlxdT       :: deriv of flxNet wrt Tsf (W m-2 deg-1)
 C     evap00       :: evaporation over melting snow/ice [kg/m2/s] (>0 if evaporate)
-C                     rename evap0 to evap00 because TAF 
+C                     rename evap0 to evap00 because TAF
 C                     confuses symbol with EXF evap0
 C     evapT        :: evaporation over snow/ice [kg/m2/s] (>0 if evaporate)
 C     dEvdT        :: derivative of evap. with respect to Tsf [kg/m2/s/K]
@@ -380,17 +380,15 @@ C--   Get surface fluxes over melting surface
      I                            iceFlag, hSnow1, Tsf,
      O                            flx0exSW, dFlxdT, evap00, dEvdT,
      I                            myTime, myIter, myThid )
+#ifndef ALLOW_AUTODIFF
 C-    could add this "ifdef" to hide THSICE_GET_BULKF from TAF
-#ifdef ALLOW_BULK_FORCE
         ELSEIF ( useBulkForce ) THEN
            CALL THSICE_GET_BULKF( bi, bj,
      I                            iMin, iMax, jMin, jMax,
      I                            iceFlag, hSnow1, Tsf,
      O                            flx0exSW, dFlxdT, evap00, dEvdT,
      I                            myTime, myIter, myThid )
-#endif /* ALLOW_BULK_FORCE */
 C--- end if: IF ( useEXF ) THEN
-#ifndef ALLOW_AUTODIFF
         ENDIF
 C--- end if: IF ( useBlkFlx .AND. iterate4Tsf  ) THEN
       ENDIF
@@ -432,8 +430,6 @@ CADJ STORE hSnow1 = comlev1_thsice_s4t, key=kkey, byte=isbyte
 CADJ STORE tsf = comlev1_thsice_s4t, key=kkey, byte=isbyte
 CADJ STORE dFlxdT, evapT, dEvdT
 CADJ &     = comlev1_thsice_s4t, key=kkey, byte=isbyte
-#endif
-
 #endif /* ALLOW_AUTODIFF */
 
 C--   Compute top surface flux.
@@ -446,15 +442,13 @@ C--   Compute top surface flux.
      O                            flxTexSW, dFlxdT, evapT, dEvdT,
      I                            myTime, myIter, myThid )
 C-    could add this "ifdef" to hide THSICE_GET_BULKF from TAF
-#ifdef ALLOW_BULK_FORCE
+#ifndef ALLOW_AUTODIFF
          ELSEIF ( useBulkForce ) THEN
            CALL THSICE_GET_BULKF( bi, bj,
      I                            iMin, iMax, jMin, jMax,
      I                            iceFlag, hSnow1, Tsf,
      O                            flxTexSW, dFlxdT, evapT, dEvdT,
      I                            myTime, myIter, myThid )
-#endif /* ALLOW_BULK_FORCE */
-#ifndef ALLOW_AUTODIFF
 C--- end if: IF ( useEXF ) THEN
          ENDIF
        ELSE
@@ -530,7 +524,7 @@ C--   Check for convergence.  If no convergence, then repeat.
            iceFlag(i,j) = 1. _d 0
           ELSE
            iceFlag(i,j) = 0. _d 0
-          ENDIF           
+          ENDIF
           iterate4Tsf = iterate4Tsf .OR. (iceFlag(i,j).GT.0. _d 0)
 
 C     Convergence test: Make sure Tsfc has converged, within prescribed error.
@@ -539,10 +533,9 @@ C      if Tsfc has not converged.)
 C     If no convergence, then repeat.
 
 #ifdef ALLOW_DBUG_THSICE
-# ifndef ALLOW_AUTODIFF
           IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,1010)
      &    'ThSI_SOLVE4T: k,ts,t1,dTs=', k,Tsf(i,j),tIc1(i,j),dTsrf1(i,j)
-          IF ( useBlkFlx .AND. k.EQ.nitMaxTsf .AND. 
+          IF ( useBlkFlx .AND. k.EQ.nitMaxTsf .AND.
      &     (iceFlag(i,j).GT.0. _d 0) ) THEN
            WRITE(stdUnit,'(A,4I4,I12,F15.9)')
      &       ' BB: not converge: i,j,it,hi=',i,j,bi,bj,myIter,hIce(i,j)
@@ -558,8 +551,7 @@ C     If no convergence, then repeat.
              STOP 'ABNORMAL END: S/R THSICE_SOLVE4TEMP'
            ENDIF
           ENDIF
-# endif /* ALLOW_AUTODIFF */
-#endif
+#endif /* ALLOW_DBUG_THSICE */
 
          ENDIF
         ENDDO
