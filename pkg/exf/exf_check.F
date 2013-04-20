@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.20 2012/10/22 01:29:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.21 2013/04/20 21:37:28 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -107,10 +107,14 @@ c     check for consistency
 #endif
 
 #ifdef USE_EXF_INTERPOLATION
-      if ( climsst_nlat .GT. MAX_LAT_INC )
-     & stop 'stopped in exf_readparms: climsst_nlat > MAX_LAT_INC'
-      if ( climsss_nlat .GT. MAX_LAT_INC )
-     & stop 'stopped in exf_readparms: climsss_nlat > MAX_LAT_INC'
+      IF ( climsstfile .NE. ' ' ) THEN
+       IF ( climsst_nlat .GT. MAX_LAT_INC )
+     &  STOP 'stopped in exf_readparms: climsst_nlat > MAX_LAT_INC'
+      ENDIF
+      IF ( climsssfile .NE. ' ' ) THEN
+       IF ( climsss_nlat .GT. MAX_LAT_INC )
+     &  STOP 'stopped in exf_readparms: climsss_nlat > MAX_LAT_INC'
+      ENDIF
       if ( usingCartesianGrid ) then
        print*,'USE_EXF_INTERPOLATION assumes latitude/longitude'
        print*,'input and output coordinates.  Trivial to extend to'
