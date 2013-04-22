@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.33 2013/04/20 23:59:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.34 2013/04/22 19:35:51 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -73,33 +73,12 @@ c     _RL flxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF ( useEXF .OR. useSEAICE ) THEN
-C-    EXF does not provide valid fields in overlap
-       iMin = 1
-       iMax = sNx
-       jMin = 1
-       jMax = sNy
-      ELSEIF ( stressReduction.GT. 0. _d 0 ) THEN
-C-     needs new Ice Fraction in halo region to apply wind-stress reduction
-       iMin = 1-OLx
-       iMax = sNx+OLx-1
-       jMin = 1-OLy
-       jMax = sNy+OLy-1
-#ifdef ATMOSPHERIC_LOADING
-      ELSEIF ( useRealFreshWaterFlux ) THEN
-C-     needs sea-ice loading in part of the halo regions for grad.Phi0surf
-C      to be valid at the boundaries ( d/dx 1:sNx+1 ; d/dy 1:sNy+1 )
-       iMin = 0
-       iMax = sNx+1
-       jMin = 0
-       jMax = sNy+1
-#endif /* ATMOSPHERIC_LOADING */
-      ELSE
-       iMin = 1
-       iMax = sNx
-       jMin = 1
-       jMax = sNy
-      ENDIF
+C-    Only compute/update seaice fields over the interior
+C     (excluding overlap) and apply exchanges when needed
+      iMin = 1
+      iMax = sNx
+      jMin = 1
+      jMax = sNy
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -244,19 +223,17 @@ c#include "thsice_test_addfluid.h"
 
 C--   Exchange fields that are advected by seaice dynamics
       IF ( useSEAICE .OR. thSIceAdvScheme.GT.0
-     &       .OR. ( useEXF .AND. stressReduction.GT.zeroRL ) ) THEN
+     &               .OR. stressReduction.GT.zeroRL ) THEN
         CALL THSICE_DO_EXCH( myThid )
       ENDIF
 #ifdef OLD_THSICE_CALL_SEQUENCE
 #ifdef ATMOSPHERIC_LOADING
-      IF ( useRealFreshWaterFlux .AND.
-     &    ( useEXF .OR. useSEAICE .OR. thSIceAdvScheme.GT.0 ) )
+      IF ( useRealFreshWaterFlux )
      &  _EXCH_XY_RS( sIceLoad, myThid )
 #endif
 #else /* OLD_THSICE_CALL_SEQUENCE */
 #ifdef ATMOSPHERIC_LOADING
-      IF ( useRealFreshWaterFlux .AND. (useEXF.OR.useSEAICE )
-     &                           .AND. thSIceAdvScheme.LE.0 )
+      IF ( useRealFreshWaterFlux .AND. thSIceAdvScheme.LE.0 )
      &  _EXCH_XY_RS( sIceLoad, myThid )
 #endif
 
@@ -287,15 +264,15 @@ CADJ STORE fu(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 CADJ STORE fv(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
         IF ( stressReduction.GT. 0. _d 0 ) THEN
-          DO j = jMin, jMax
-           DO i = iMin+1,iMax
+          DO j = 1-OLy,sNy+OLy-1
+           DO i = 2-OLx,sNx+OLx-1
             tauFac = stressReduction
      &             *(iceMask(i-1,j,bi,bj)+iceMask(i,j,bi,bj))*0.5 _d 0
             fu(i,j,bi,bj) = (1. _d 0 - tauFac)*fu(i,j,bi,bj)
            ENDDO
           ENDDO
-          DO j = jMin+1, jMax
-           DO i = iMin, iMax
+          DO j = 2-OLy,sNy+OLy-1
+           DO i = 1-OLx,sNx+OLx-1
             tauFac = stressReduction
      &             *(iceMask(i,j-1,bi,bj)+iceMask(i,j,bi,bj))*0.5 _d 0
             fv(i,j,bi,bj) = (1. _d 0 - tauFac)*fv(i,j,bi,bj)
