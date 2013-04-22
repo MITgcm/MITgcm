@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.20 2013/01/03 20:47:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.21 2013/04/22 19:23:50 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -166,7 +166,7 @@ C default specific humidity profile to 80% relative humidity
           ENDDO
          ENDDO
          _EXCH_XY_RL( qr, myThid )
-C u wind field
+C u wind and v wind field
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1,sNy
@@ -176,12 +176,6 @@ C u wind field
               uwind(i,j,bi,bj) = local
             ENDDO
            ENDDO
-          ENDDO
-         ENDDO
-         _EXCH_XY_RL( uwind, myThid )
-C v wind field
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1,sNy
             DO i=1,sNx
               vwind(i,j,bi,bj) = 0. _d 0
@@ -189,7 +183,7 @@ C v wind field
            ENDDO
           ENDDO
          ENDDO
-         _EXCH_XY_RL( vwind, myThid )
+         CALL EXCH_UV_AGRID_3D_RL( uwind, vwind, .TRUE., 1, myThid )
 C Tracer field
          IF ( useCheapTracer ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
@@ -338,15 +332,13 @@ C      data for the period ahead and the period behind myTime.
      &                         myIter, myThid )
          ENDIF
          _EXCH_XY_RL( trair0 , myThid )
-         _EXCH_XY_RL( qrair0 , myThid )
-         _EXCH_XY_RL( solar0 , myThid )
-         _EXCH_XY_RL( uwind0 , myThid )
-         _EXCH_XY_RL( vwind0 , myThid )
          _EXCH_XY_RL( trair1 , myThid )
+         _EXCH_XY_RL( qrair0 , myThid )
          _EXCH_XY_RL( qrair1 , myThid )
+         _EXCH_XY_RL( solar0 , myThid )
          _EXCH_XY_RL( solar1 , myThid )
-         _EXCH_XY_RL( uwind1 , myThid )
-         _EXCH_XY_RL( vwind1 , myThid )
+         CALL EXCH_UV_AGRID_3D_RL( uwind0, vwind0, .TRUE., 1, myThid )
+         CALL EXCH_UV_AGRID_3D_RL( uwind1, vwind1, .TRUE., 1, myThid )
          IF ( useTimeVarBLH ) THEN
          _EXCH_XY_RL( cheaph0, myThid )
          _EXCH_XY_RL( cheaph1 , myThid )
@@ -360,17 +352,15 @@ C      data for the period ahead and the period behind myTime.
          _EXCH_XY_RL( cheaplw1 , myThid )
          ENDIF
          IF ( useStressOption ) THEN
-         _EXCH_XY_RL( uwind0 , myThid )
-         _EXCH_XY_RL( vwind0 , myThid )
-         _EXCH_XY_RL( uwind1 , myThid )
-         _EXCH_XY_RL( vwind1 , myThid )
-          ENDIF
-          IF ( FluxFormula.EQ.'COARE3' ) THEN
+         CALL EXCH_UV_AGRID_3D_RL(ustress0,vstress0, .TRUE.,1,myThid )
+         CALL EXCH_UV_AGRID_3D_RL(ustress1,vstress1, .TRUE.,1,myThid )
+         ENDIF
+         IF ( FluxFormula.EQ.'COARE3' ) THEN
          _EXCH_XY_RL( wavesp0 , myThid )
          _EXCH_XY_RL( wavesp1 , myThid )
          _EXCH_XY_RL( wavesh0 , myThid )
          _EXCH_XY_RL( wavesh1 , myThid )
-          ENDIF
+         ENDIF
          IF ( useCheapTracer ) THEN
          _EXCH_XY_RL( CheaptracerR0 , myThid )
          _EXCH_XY_RL( CheaptracerR1, myThid )
@@ -516,7 +506,6 @@ c             local =  0. _d 0*COS( 2. _d 0*PI*(jG-1)*recipNym1 )
           ENDDO
          ENDDO
         ENDIF
-         _EXCH_XY_RL( uwind, myThid )
 
         IF ( VWindFile .NE. ' '  ) THEN
          CALL READ_FLD_XY_RL( VWindFile,' ',vwind,0,myThid )
@@ -531,7 +520,7 @@ c             local =  0. _d 0*COS( 2. _d 0*PI*(jG-1)*recipNym1 )
           ENDDO
          ENDDO
         ENDIF
-         _EXCH_XY_RL( vwind, myThid )
+        CALL EXCH_UV_AGRID_3D_RL( uwind, vwind, .TRUE., 1, myThid )
 
         IF ( useStressOption ) THEN
          IF ( UStressFile .NE. ' '  ) THEN
@@ -546,8 +535,7 @@ c             local =  0. _d 0*COS( 2. _d 0*PI*(jG-1)*recipNym1 )
           WRITE(*,*)' V Stress File absent with stress option'
           STOP
          ENDIF
-         _EXCH_XY_RL( ustress, myThid )
-         _EXCH_XY_RL( vstress, myThid )
+         CALL EXCH_UV_AGRID_3D_RL( ustress,vstress, .TRUE.,1,myThid )
         ENDIF
         IF ( useCheapTracer ) THEN
          IF ( TracerRFile .NE. ' ' ) THEN
