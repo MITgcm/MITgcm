@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.267 2012/12/21 22:58:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.268 2013/04/22 02:32:47 jmc Exp $
 C $Name:  $
 C
 
@@ -71,7 +71,6 @@ C     surfQfile       :: File containing surface heat flux, excluding SW
 C                        (old version, kept for backward compatibility)
 C     surfQnetFile    :: File containing surface net heat flux
 C     surfQswFile     :: File containing surface shortwave radiation
-C     dQdTfile        :: File containing thermal relaxation coefficient
 C     EmPmRfile       :: File containing surface fresh water flux
 C           NOTE: for backward compatibility EmPmRfile is specified in
 C                 m/s when using external_fields_load.F.  It is converted
@@ -98,7 +97,7 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                surfQfile, surfQnetFile, surfQswFile,
      &                lambdaThetaFile, lambdaSaltFile,
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
-     &                dQdTfile, pLoadFile, addMassFile,
+     &                pLoadFile, addMassFile,
      &                eddyPsiXFile, eddyPsiYFile,
      &                the_run_name
       CHARACTER*(MAX_LEN_FNAM) buoyancyRelation
@@ -134,7 +133,6 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) uVelInitFile
       CHARACTER*(MAX_LEN_FNAM) vVelInitFile
       CHARACTER*(MAX_LEN_FNAM) pSurfInitFile
-      CHARACTER*(MAX_LEN_FNAM) dQdTfile
       CHARACTER*(MAX_LEN_FNAM) pLoadFile
       CHARACTER*(MAX_LEN_FNAM) addMassFile
       CHARACTER*(MAX_LEN_FNAM) eddyPsiXFile

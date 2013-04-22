@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.10 2012/04/07 16:24:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.11 2013/04/22 02:34:27 jmc Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -399,10 +399,6 @@ C     Define variables from FFIELDS.h
       CALL MNC_CW_ADD_VATTR_TEXT('Qsw','units','W/m^2', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('Qsw','description',
      &     'Net upward shortwave radiation', myThid)
-
-      CALL MNC_CW_ADD_VNAME('dQdt', 'Cen_xy_Hn__-__t', 3,4, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('dQdt','units',
-     &     'W/m^2/degrees', myThid)
 
       CALL MNC_CW_ADD_VNAME('EmPmR', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('EmPmR','units','kg/m^2/s', myThid)

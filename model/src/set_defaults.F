@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.165 2012/12/22 00:38:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.166 2013/04/22 02:34:27 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -358,7 +358,6 @@ C--   Input files
       uVelInitFile    = ' '
       vVelInitFile    = ' '
       pSurfInitFile   = ' '
-      dQdTFile        = ' '
       pLoadFile       = ' '
       addMassFile     = ' '
       eddyPsiXFile    = ' '

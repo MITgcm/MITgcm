@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.43 2012/11/09 22:35:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.44 2013/04/22 02:32:47 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h
@@ -57,9 +57,6 @@ C              > 0 for decrease in theta (ocean cooling)
 C              Typical range: -350 < Qsw < 0
 C              Southwest C-grid tracer point
 C
-C     dQdT  :: Thermal relaxation coefficient in W/m^2/degrees
-C              Southwest C-grid tracer point
-C
 C     SST   :: Sea surface temperature in degrees C for relaxation
 C              Southwest C-grid tracer point
 C
@@ -91,7 +88,6 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       COMMON /FFIELDS_fv/ fv
       COMMON /FFIELDS_Qnet/ Qnet
       COMMON /FFIELDS_Qsw/ Qsw
-      COMMON /FFIELDS_dQdT/ dQdT
       COMMON /FFIELDS_EmPmR/ EmPmR
       COMMON /FFIELDS_saltFlux/ saltFlux
       COMMON /FFIELDS_SST/ SST
@@ -105,7 +101,6 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       _RS  fv       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  Qnet     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  Qsw      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  dQdT     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  EmPmR    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  saltFlux (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SST      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -125,6 +120,10 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
 #endif
 
 C- jmc: commented out until corresponding (ghost-like) code apparition
+C     dQdT  :: Thermal relaxation coefficient in W/m^2/degrees
+C              Southwest C-grid tracer point
+c     COMMON /FFIELDS_dQdT/ dQdT
+c     _RS  dQdT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 c#ifdef ALLOW_EP_FLUX
 c     COMMON /efluxFFIELDS/ EfluxY,EfluxP
 c     _RL  EfluxY (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
