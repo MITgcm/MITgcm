@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.45 2012/09/04 22:16:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.46 2013/04/22 02:35:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -165,8 +165,6 @@ C     Set globalFiles flag for READ_WRITE_SEC package
       ELSE
         CALL SET_WRITE_GLOBAL_SEC( globalFiles )
       ENDIF
-C     Set globalFiles flag for READ_WRITE_PICKUP
-      CALL SET_WRITE_GLOBAL_PICKUP( globalFiles )
 
       _END_MASTER( myThid )
 C-    Everyone else must wait for the IO-parameters to be set
@@ -186,7 +184,6 @@ C-    MNC model-io initialisation
 
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
-
 C-    Initialize look-up tables for MNC
         CALL MNC_INIT( myThid )
         CALL MNC_CW_INIT( sNx,sNy,OLx,OLy,nSx,nSy,nPx,nPy,
@@ -194,11 +191,9 @@ C-    Initialize look-up tables for MNC
 CEH3       IF ( mnc_echo_gvtypes ) THEN
 CEH3       CALL MNC_CW_DUMP( myThid )
 CEH3       ENDIF
-
 C       Write units/set precision/etc for I/O of variables/arrays
 C       belonging to the core dynamical model
         CALL INI_MNC_VARS( myThid )
-
       ENDIF
 #endif /* ALLOW_MNC */
 
