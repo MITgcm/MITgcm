@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.32 2012/08/28 19:18:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.33 2013/04/22 02:39:46 jmc Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -69,7 +69,6 @@ C--   heimbach@mit.edu 11-Jan-2001
       COMMON /adffields_fv/ adfv
       COMMON /adffields_Qnet/ adQnet
       COMMON /adffields_Qsw/ adQsw
-      COMMON /adffields_dQdT/ addQdT
       COMMON /adffields_EmPmR/ adEmPmR
       COMMON /adffields_saltFlux/ adsaltFlux
       COMMON /adffields_SST/ adSST
@@ -85,7 +84,6 @@ C--   heimbach@mit.edu 11-Jan-2001
       _RS  adfv       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  adQnet     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  adQsw      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  addQdT     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  adEmPmR    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  adsaltFlux (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  adSST      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

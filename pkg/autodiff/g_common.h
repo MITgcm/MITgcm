@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.23 2012/08/28 19:18:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.24 2013/04/22 02:39:46 jmc Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -57,7 +57,7 @@ C--   heimbach@mit.edu 11-Jan-2001
       _RL g_etah(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
 #ifdef ALLOW_AUTODIFF_MONITOR_DIAG
-      common /g_dynvars_diag/ 
+      common /g_dynvars_diag/
      &                     g_totphihyd, g_rhoinsitu
       _RL g_rhoinsitu(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_totphihyd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -86,7 +86,6 @@ cph larger common block, so be careful
       COMMON /g_ffields_fv/ g_fv
       COMMON /g_ffields_Qnet/ g_Qnet
       COMMON /g_ffields_Qsw/ g_Qsw
-      COMMON /g_ffields_dQdT/ g_dQdT
       COMMON /g_ffields_EmPmR/ g_EmPmR
       COMMON /g_ffields_saltFlux/ g_saltFlux
       COMMON /g_ffields_SST/ g_SST
@@ -102,7 +101,6 @@ cph larger common block, so be careful
       _RS  g_fv       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  g_Qnet     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  g_Qsw      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  g_dQdT     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  g_EmPmR    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  g_saltFlux (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  g_SST      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -130,7 +128,7 @@ cph larger common block, so be careful
       COMMON /G_DYNVARS_KAPREDI/
      &                       g_kapredi
       _RL  g_kapredi (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif 
+#endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
       COMMON /G_DYNVARS_BOTTOMDRAG/
      &                       g_bottomdragfld
@@ -177,7 +175,7 @@ cph larger common block, so be careful
       _RL g_hsnow (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_uice  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_vice  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      common /g_seaice_dynvars_1/ 
+      common /g_seaice_dynvars_1/
      &     g_area, g_heff, g_hsnow, g_uice, g_vice
 #endif
 
