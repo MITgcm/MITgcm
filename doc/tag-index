@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1855 2013/04/11 20:53:23 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1856 2013/04/22 02:41:27 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - remove unused (since Aug 2006) S/R SET_WRITE_GLOBAL_PICKUP and its call.
+  - remove unused forcing field "dQdT" and associated parameter "dQdTFile".
+  - move forcing adjustment (balancing surface forcing) in specific S/R
+    where might also be applied exchanges (if needed) to forcing arrays.
 o pkg/shelfice:
   - allow to specify the Ice-Shelf mass per unit area (instead of
     shelficeLoadAnomaly) and do the conversion from one to the other
