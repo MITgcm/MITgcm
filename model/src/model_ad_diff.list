@@ -33,6 +33,7 @@ do_stagger_fields_exchanges.f
 dynamics.f	
 external_fields_load.f
 external_forcing.f
+external_forcing_adjust.f
 external_forcing_surf.f
 find_alpha.f	
 find_rho.f	
