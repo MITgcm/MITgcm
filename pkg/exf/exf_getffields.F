@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.49 2012/08/28 19:17:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.50 2013/04/23 19:04:33 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -363,6 +363,20 @@ c     Runoff
 #endif
      &     mytime, myiter, mythid )
 #endif /* ALLOW_RUNOFF */
+
+#ifdef ALLOW_RUNOFTEMP
+c     Runoff temperature
+      call exf_set_gen  (
+     &     runoftempfile, runoffstartdate, runoffperiod,
+     &     exf_inscal_runoftemp,
+     &     runoftemp_exfremo_intercept, runoftemp_exfremo_slope,
+     &     runoftemp, runoftemp0, runoftemp1, runoffmask,
+#ifdef USE_EXF_INTERPOLATION
+     &     runoff_lon0, runoff_lon_inc, runoff_lat0, runoff_lat_inc,
+     &     runoff_nlon, runoff_nlat, xC, yC, runoff_interpMethod,
+#endif
+     &     mytime, myiter, mythid )
+#endif /* ALLOW_RUNOFTEMP */
 
 c-- Control variables for atmos. state
 

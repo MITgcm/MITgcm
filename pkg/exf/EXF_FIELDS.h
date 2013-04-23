@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.14 2012/04/19 16:06:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.15 2013/04/23 19:04:33 dimitri Exp $
 C $Name:  $
 c
 c
@@ -101,6 +101,8 @@ C     runoff    :: River and glacier runoff in m/s
 C                  > 0 for decrease in salt (ocean salinity)
 C                  Typical range: 0 < runoff < ????
 C                  Input or input/output field
+c
+C     runoftemp :: Temperature of runoff in deg C
 c
 C     swdown    :: Downward shortwave radiation in W/m^2
 C                  > 0 for increase in theta (ocean warming)
@@ -267,6 +269,13 @@ C     zen_fsol_daily     :: incoming solar radiation (daily mean)
       _RL runoff    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL runoff0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL runoff1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+
+#ifdef ALLOW_RUNOFTEMP
+      COMMON /exfl_runoftemp_r/ runoftemp, runoftemp0, runoftemp1
+      _RL runoftemp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL runoftemp0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL runoftemp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 #ifdef EXF_ALLOW_SEAICE_RELAX

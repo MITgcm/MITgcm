@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.30 2012/08/28 19:17:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.31 2013/04/23 19:04:33 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -216,7 +216,18 @@ c     Runoff.
      &          'in the data.exf input file.'
            exferr = 1
           endif
-#endif
+# ifdef ALLOW_RUNOFTEMP
+c     Runoff temperature.
+          if ( (runoftemp(i,j,bi,bj) .LT. -2. .OR.
+     &         runoff(i,j,bi,bj) .GT. 36 ) .AND.
+     &         maskC(i,j,1,bi,bj) .NE. 0. ) then
+           write(standardmessageunit,'(A,5(1X,I6),2X,D22.15)')
+     &          'EXF WARNING: runoftemp out of range at bi,bj,i,j,it= ',
+     &          bi, bj, i, j, myiter, runoff(i,j,bi,bj)
+           exferr = 1
+          endif
+# endif /* ALLOW_RUNOFTEMP */
+#endif /* ALLOW_RUNOFF */
          enddo
         enddo
 c     

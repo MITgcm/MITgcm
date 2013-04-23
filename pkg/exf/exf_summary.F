@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.30 2012/10/21 01:06:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.31 2013/04/23 19:04:34 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -677,11 +677,31 @@ C--   Runoff.
      &'   >>  ',runofffile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT, myThid )
-#ifdef USE_EXF_INTERPOLATION
+# ifdef ALLOW_RUNOFTEMP
+      write(msgbuf,'(a)')
+     &'// ALLOW_RUNOFFTEMP:                   defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT, myThid )
+      il = ilnblnk(runoftempfile)
+      write(msgbuf,'(a)')
+     &'   Runoff temp. is read from file:'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT, myThid )
+      write(msgbuf,'(a,a,a)')
+     &'   >>  ',runofffile(1:il),'  <<'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT, myThid )
+# else /* ALLOW_RUNOFTEMP */
+      write(msgbuf,'(a)')
+     &'// ALLOW_RUNOFTEMP:                NOT defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT, myThid )
+# endif /* ALLOW_RUNOFTEMP */
+# ifdef USE_EXF_INTERPOLATION
       CALL EXF_PRINT_INTERP( 'runoff',
      & runoff_lon0, runoff_lon_inc, runoff_lat0, runoff_lat_inc,
      & runoff_nlon, runoff_nlat, runoff_interpMethod, myThid )
-#endif
+# endif /* USE_EXF_INTERPOLATION */
 #else /* ALLOW_RUNOFF */
       write(msgbuf,'(a)')
      &'// ALLOW_RUNOFF:                   NOT defined'

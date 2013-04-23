@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.77 2012/11/10 21:57:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.78 2013/04/23 19:04:33 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -95,6 +95,7 @@ C     Surface flux data.
       NAMELIST /EXF_NML_02/
      &          hfluxfile,          atempfile,       aqhfile,
      &          sfluxfile,         precipfile,    runofffile,
+     &                                         runoftempfile,
      &        ustressfile,        vstressfile,      evapfile,
      &     snowprecipfile,          uwindfile,     vwindfile,
      &         wspeedfile,         swfluxfile,    lwfluxfile,
@@ -135,6 +136,7 @@ C     Surface flux data.
      &     exf_inscal_sst,  exf_inscal_sss,
      &  exf_inscal_swflux,  exf_inscal_lwflux,   exf_inscal_precip,
      &  exf_inscal_runoff,  exf_inscal_apressure, exf_inscal_snowprecip,
+     &  exf_inscal_runoftemp,
      &  exf_inscal_swdown,  exf_inscal_lwdown,
      & exf_inscal_climsst, exf_inscal_climsss,
      & exf_inscal_climustr, exf_inscal_climvstr,
@@ -144,6 +146,7 @@ C     Surface flux data.
      & exf_inscal_areamask, exf_outscal_areamask,
      &  hfluxconst, atempconst, aqhconst, sfluxconst, evapconst,
      &  precipconst, snowprecipconst, runoffconst, ustressconst,
+     &  runoftempconst,
      &  vstressconst, uwindconst, vwindconst, wspeedconst, swfluxconst,
      &  lwfluxconst, swdownconst, lwdownconst, apressureconst,
      &  areamaskconst, climsstconst,   climsssconst,
@@ -156,6 +159,7 @@ C     Surface flux data.
      &     precip_exfremo_intercept, precip_exfremo_slope,
      &     snowprecip_exfremo_intercept, snowprecip_exfremo_slope,
      &     runoff_exfremo_intercept, runoff_exfremo_slope,
+     &     runoftemp_exfremo_intercept, runoftemp_exfremo_slope,
      &     ustress_exfremo_intercept, ustress_exfremo_slope,
      &     vstress_exfremo_intercept, vstress_exfremo_slope,
      &     uwind_exfremo_intercept, uwind_exfremo_slope,
@@ -375,6 +379,10 @@ C     Calendar data.
       runoff_exfremo_intercept = 0.0 _d 0
       runoff_exfremo_slope = 0.0 _d 0
 
+      runoftempconst              = 0.0 _d 0
+      runoftemp_exfremo_intercept = 0.0 _d 0
+      runoftemp_exfremo_slope     = 0.0 _d 0
+
       ustressstartdate1  = 0
       ustressstartdate2  = 0
       ustressperiod      = 0.0 _d 0
@@ -538,6 +546,7 @@ C     Data files.
       snowprecipfile     = ' '
       sfluxfile          = ' '
       runofffile         = ' '
+      runoftempfile      = ' '
       ustressfile        = ' '
       vstressfile        = ' '
       uwindfile          = ' '
@@ -614,6 +623,7 @@ C     Input scaling factors.
       exf_inscal_evap      =  1. _d 0
       exf_inscal_apressure =  1. _d 0
       exf_inscal_runoff    =  1. _d 0
+      exf_inscal_runoftemp =  1. _d 0
       exf_inscal_swdown    =  1. _d 0
       exf_inscal_lwdown    =  1. _d 0
       exf_inscal_climsst   =  1. _d 0

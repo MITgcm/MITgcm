@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_init.F,v 1.7 2010/01/12 21:31:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_init.F,v 1.8 2013/04/23 19:04:33 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -190,6 +190,13 @@ C--   surface fluxes:
       diagName  = 'EXFroff '
       diagTitle = 'river runoff, > 0 decreases salinity'
       diagUnits = 'm/s             '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'EXFroft '
+      diagTitle = 'river runoff temperature'
+      diagUnits = 'deg C           '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )

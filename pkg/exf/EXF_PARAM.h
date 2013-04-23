@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.29 2013/04/20 21:37:28 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.30 2013/04/23 19:04:33 dimitri Exp $
 C $Name:  $
 c
 c
@@ -126,6 +126,10 @@ c           fieldperiod=-12 means input file contains 12 monthly means
       _RL     runoff_exfremo_intercept
       _RL     runoff_exfremo_slope
       character*1 runoffmask
+
+      _RL     runoftempconst
+      _RL     runoftemp_exfremo_intercept
+      _RL     runoftemp_exfremo_slope
 
       integer ustressstartdate1
       integer ustressstartdate2
@@ -333,6 +337,7 @@ c     File names.
       character*(128) snowprecipfile
       character*(128) sfluxfile
       character*(128) runofffile
+      character*(128) runoftempfile
       character*(128) ustressfile
       character*(128) vstressfile
       character*(128) uwindfile
@@ -471,6 +476,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
      &       precipconst,
      &       snowprecipconst,
      &       runoffconst,
+     &       runoftempconst,
      &       sgrunoffconst,
      &       ustressconst,
      &       vstressconst,
@@ -494,6 +500,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
      &       precip_exfremo_intercept,
      &       snowprecip_exfremo_intercept,
      &       runoff_exfremo_intercept,
+     &       runoftemp_exfremo_intercept,
      &       sgrunoff_exfremo_intercept,
      &       ustress_exfremo_intercept,
      &       vstress_exfremo_intercept,
@@ -514,6 +521,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
      &       precip_exfremo_slope,
      &       snowprecip_exfremo_slope,
      &       runoff_exfremo_slope,
+     &       runoftemp_exfremo_slope,
      &       sgrunoff_exfremo_slope,
      &       ustress_exfremo_slope,
      &       vstress_exfremo_slope,
@@ -536,6 +544,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
      &       precipfile,    precipmask,
      &       snowprecipfile,snowprecipmask,
      &       runofffile,    runoffmask,
+     &       runoftempfile,
      &       ustressfile,   ustressmask,
      &       vstressfile,   vstressmask,
      &       uwindfile,     uwindmask,
@@ -611,6 +620,7 @@ c     exf_outscale_*    output scaling factors
       _RL     exf_inscal_evap
       _RL     exf_inscal_apressure
       _RL     exf_inscal_runoff
+      _RL     exf_inscal_runoftemp
       _RL     exf_inscal_swdown
       _RL     exf_inscal_lwdown
       _RL     exf_inscal_climsst
@@ -649,6 +659,7 @@ c     exf_outscale_*    output scaling factors
      &                    , exf_inscal_evap
      &                    , exf_inscal_apressure
      &                    , exf_inscal_runoff
+     &                    , exf_inscal_runoftemp
      &                    , exf_inscal_sgrunoff
      &                    , exf_inscal_swdown
      &                    , exf_inscal_lwdown
