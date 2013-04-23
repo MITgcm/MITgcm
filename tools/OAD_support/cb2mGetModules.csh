@@ -5,6 +5,9 @@ echo '      MODULE '${fileName}_mod   > ${fileName}_temp
 echo '#include "CPP_OPTIONS.h"'      >> ${fileName}_temp
 echo '#include "CPP_EEOPTIONS.h"'    >> ${fileName}_temp
 echo '#include "GMREDI_OPTIONS.h"'   >> ${fileName}_temp
+if ( ${fileName} == 'DIC_LOAD' ) then
+  echo '#include "DIC_OPTIONS.h"'    >> ${fileName}_temp
+endif
 if ( ${fileName} != 'SIZE' &&  ${fileName} != 'MNC_COMMON' &&  ${fileName} != 'EEPARAMS' ) then
   echo '      use SIZE_mod'          >> ${fileName}_temp
 endif
@@ -17,8 +20,10 @@ endif
 if ( ${fileName} == 'ctrl' || ${fileName} == 'ctrl_dummy' || ${fileName} == 'CTRL_GENARR' ) then
   echo '      use CTRL_SIZE_mod'     >> ${fileName}_temp
 endif
-if ( ${fileName} == 'PTRACERS_FIELDS' || ${fileName} == 'PTRACERS_PARAMS' || ${fileName} == 'PTRACERS_START' || ${fileName} == 'PTRACERS_TAVE' || ${fileName} == 'ptracers_ad_check_lev1_dir' || ${fileName} == 'ptracers_ad_check_lev2_dir' || ${fileName} == 'ptracers_ad_check_lev3_dir' || ${fileName} == 'ptracers_ad_check_lev4_dir' || ${fileName} == 'ptracers_adcommon' ) then
-  echo '      use PTRACERS_SIZE_mod'     >> ${fileName}_temp
+if ( ${fileName} == 'PTRACERS_FIELDS' || ${fileName} == 'PTRACERS_PARAMS' || \
+     ${fileName} == 'PTRACERS_START' || ${fileName} == 'PTRACERS_TAVE' || \
+     ${fileName} == 'GCHEM_FIELDS' ) then
+  echo '      use PTRACERS_SIZE_mod' >> ${fileName}_temp
 endif
 #echo awk -f ${awkScript} ${fileName}.h   
 awk -f ${awkScript} ${fileName}.h | grep -v mpif.h   >> ${fileName}_temp
