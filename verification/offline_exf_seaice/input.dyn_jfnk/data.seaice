@@ -6,15 +6,15 @@
  SEAICE_waterDrag   = 5.3508,
  SEAICE_no_Slip     = .FALSE.,
 # JFNK solver parameters
+ SEAICEetaZmethod    = 3,
  SEAICEuseJFNK       = .TRUE.,
  SOLV_MAX_ITERS      = 10,
  SEAICEnewtonIterMax = 200,
  SEAICEkrylovIterMax = 50,
  JFNKgamma_nonlin    = 1.e-09,
- JFNKres_t           = 0.02,
-# setting these to zero recovers old behavior
- SEAICE_OLx          = 0,
- SEAICE_OLy          = 0,
+ SEAICE_JFNK_lsIter  = 0,
+ JFNKres_tFac        = 0.5,
+ SEAICE_JFNKalpha    = 1.5,
 # end of JFNK solver parameters
 #- to use seaice-advection from pkg/seaice, uncomment following 4 lines:
 #SEAICEadvScheme    = 77,
