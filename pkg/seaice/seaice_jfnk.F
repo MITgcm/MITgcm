@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.21 2013/04/04 07:02:51 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.22 2013/04/23 08:40:06 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -73,7 +73,7 @@ C     FGMRES flag that indicates what fgmres wants us to do next
       _RL     JFNKresidual
       _RL     JFNKresidualKm1
 C     parameters to compute convergence criterion
-      _RL     phi_e, alp_e, JFNKgamma_lin
+      _RL     JFNKgamma_lin
       _RL     FGMRESeps
       _RL     JFNKtol
 
@@ -167,10 +167,9 @@ C     compute convergence criterion for linear preconditioned FGMRES
        JFNKgamma_lin = JFNKgamma_lin_max
        IF ( newtonIter.GT.1.AND.newtonIter.LE.SEAICE_JFNK_tolIter
      &      .AND.JFNKresidual.LT.JFNKres_t ) THEN
-C     Eisenstat, 1996, equ.(2.6)
-        phi_e = 1. _d 0
-        alp_e = 1. _d 0
-        JFNKgamma_lin = phi_e*( JFNKresidual/JFNKresidualKm1 )**alp_e
+C     Eisenstat and Walker (1996), eq.(2.6)
+        JFNKgamma_lin = SEAICE_JFNKphi
+     &       *( JFNKresidual/JFNKresidualKm1 )**SEAICE_JFNKalpha
         JFNKgamma_lin = min(JFNKgamma_lin_max, JFNKgamma_lin)
         JFNKgamma_lin = max(JFNKgamma_lin_min, JFNKgamma_lin)
        ENDIF

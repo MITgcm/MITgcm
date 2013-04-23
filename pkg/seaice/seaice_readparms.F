@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.144 2013/04/09 00:24:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.145 2013/04/23 08:40:06 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -106,6 +106,7 @@ C--   SEAICE parameters
      & SEAICE_JFNK_lsIter, SEAICE_JFNK_tolIter, JFNKres_t,JFNKres_tFac,
      & JFNKgamma_nonlin,JFNKgamma_lin_min,JFNKgamma_lin_max,
      & SEAICE_JFNKepsilon, SEAICE_OLx, SEAICE_OLy,
+     & SEAICE_JFNKphi, SEAICE_JFNKalpha,
      & SEAICEpresH0, SEAICEpresPow0, SEAICEpresPow1,
      & SEAICE_initialHEFF, SEAICEturbFluxFormula,
      & SEAICE_areaGainFormula, SEAICE_areaLossFormula,
@@ -236,6 +237,10 @@ C     JFNK stuff
       JFNKres_t           = UNSET_RL
       JFNKres_tFac        = UNSET_RL
       SEAICE_JFNKepsilon  = 1. _d -06
+C     factor for inexact Newton forcing, .gt. 0 and .le. 1
+      SEAICE_JFNKphi      = 1. _d 0
+C     exponent for inexact Newton forcing .gt. 1 and .le. 2 
+      SEAICE_JFNKalpha    = 1. _d 0
 C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICE_evpDampC    = -1. _d 0
       SEAICE_zetaMin     = 0. _d 0
