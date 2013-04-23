@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1858 2013/04/23 16:41:58 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1859 2013/04/23 19:05:16 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf ALLOW_RUNOFTEMP
+  - if defined,  river and glacier runoff temperature can be read-in from
+    runoftempfile; runoftempfile needs to have same format as runofffile
 o pkg/thsice (& pkg/bulk_force):
   - In case Energy-Reference-Level (ERL) is used (temp_EvPrRn=0), account
     for energy content of Precip + RunOff & Evap (like with pkg/exf).
