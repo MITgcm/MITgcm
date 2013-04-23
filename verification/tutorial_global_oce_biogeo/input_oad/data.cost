@@ -1,0 +1,11 @@
+#
+#
+# ******************
+# ECCO cost function
+# ******************
+ &COST_NML
+#
+ mult_tracer  = 1.,
+ mult_test    = 1.,
+ mult_atl     = 1.,
+ &

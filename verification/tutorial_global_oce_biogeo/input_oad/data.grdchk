@@ -1,0 +1,15 @@
+
+# *******************
+# ECCO gradient check
+# *******************
+ &GRDCHK_NML
+ grdchk_eps       = 1.d-5,
+ nbeg             = 1,
+ nstep            = 1,
+ nend             = 4,
+# to test xx_tr1 set 17
+ grdchkvarindex   = 1,
+ iGloPos  =10,
+ jGloPos  =10,
+ kGloPos  =1,
+ &
