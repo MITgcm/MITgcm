@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_forcing.F,v 1.13 2009/04/28 18:08:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_forcing.F,v 1.14 2013/04/23 16:31:50 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -78,8 +78,8 @@ C-    Compute surface fluxes over ice-free ocean only:
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-         DO j = 1-Oly,sNy+Oly
-          DO i = 1-Olx,sNx+Olx
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
            IF ( maskC(i,j,ks,bi,bj).NE.0. _d 0 ) THEN
 
 #ifdef ALLOW_FORMULA_AIM
@@ -156,14 +156,14 @@ C- using down solar, need to have water albedo -- .1
 
          IF ( calcWindStress ) THEN
 C-  move wind stresses to u and v points
-           DO j = 1-Oly,sNy+Oly
-            DO i = 1-Olx+1,sNx+Olx
+           DO j = 1-OLy,sNy+OLy
+            DO i = 1-OLx+1,sNx+OLx
               fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)
      &          *(ustress(i,j,bi,bj)+ustress(i-1,j,bi,bj))*0.5 _d 0
             ENDDO
            ENDDO
-           DO j = 1-Oly+1,sNy+Oly
-            DO i = 1-Olx,sNx+Olx
+           DO j = 1-OLy+1,sNy+OLy
+            DO i = 1-OLx,sNx+OLx
               fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)
      &          *(vstress(i,j,bi,bj)+vstress(i,j-1,bi,bj))*0.5 _d 0
             ENDDO
@@ -171,8 +171,8 @@ C-  move wind stresses to u and v points
          ENDIF
 
 C-    Add all contributions.
-         DO j = 1-Oly,sNy+Oly
-          DO i = 1-Olx,sNx+Olx
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
             IF ( maskC(i,j,ks,bi,bj).NE.0. _d 0 ) THEN
 C-       Net downward surface heat flux :
               hfl = 0. _d 0
@@ -204,8 +204,65 @@ C----
           ENDDO
          ENDDO
 
+         IF ( temp_EvPrRn .NE. UNSET_RL ) THEN
+C--   Account for energy content of Precip + RunOff & Evap. Assumes:
+C     1) Rain has same temp as Air
+C     2) Snow has no heat capacity (consistent with seaice & thsice pkgs)
+C     3) No distinction between sea-water Cp and fresh-water Cp
+C     4) Run-Off comes at the temp of surface water (with same Cp)
+C     5) Evap is released to the Atmos @ surf-temp (=SST); should be using
+C        the water-vapor heat capacity here and consistently in Bulk-Formulae;
+C        Could also be put directly into Latent Heat flux.
+c         IF ( SnowFile .NE. ' ' ) THEN
+C--   Melt snow (if provided) into the ocean and account for rain-temp
+c          DO j = 1-OLy,sNy+OLy
+c           DO i = 1-OLx,sNx+OLx
+c             Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)
+c    &              + Lfresh*snowPrecip(i,j,bi,bj)*rhoConstFresh
+c    &              - HeatCapacity_Cp
+c    &               *( Tair(i,j,bi,bj) - Tf0kel - temp_EvPrRn )
+c    &               *( rain(i,j,bi,bj)- snowPrecip(i,j,bi,bj) )
+c    &               *rhoConstFresh
+c           ENDDO
+c          ENDDO
+c         ELSE
+C--   Make snow (according to Air Temp) and melt it in the ocean
+C     note: here we just use the same criteria as over seaice but would be
+C           better to consider a higher altitude air temp, e.g., 850.mb
+           DO j = 1-OLy,sNy+OLy
+            DO i = 1-OLx,sNx+OLx
+             IF ( Tair(i,j,bi,bj).LE.Tf0kel ) THEN
+               Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)
+     &              + Lfresh*rain(i,j,bi,bj)*rhoConstFresh
+              ELSE
+C--   Account for rain-temp
+               Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)
+     &              - HeatCapacity_Cp
+     &               *( Tair(i,j,bi,bj) - Tf0kel - temp_EvPrRn )
+     &               *rain(i,j,bi,bj)*rhoConstFresh
+              ENDIF
+            ENDDO
+           ENDDO
+c         ENDIF
+C--   Account for energy content of Evap and RunOff:
+          DO j = 1-OLy,sNy+OLy
+            DO i = 1-OLx,sNx+OLx
+c             Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)
+c    &              + ( theta(i,j,ks,bi,bj) - temp_EvPrRn )
+c    &               *( evap(i,j,bi,bj)*cpwv
+c    &                - runoff(i,j,bi,bj)*HeatCapacity_Cp
+c    &                )*rhoConstFresh
+              Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)
+     &              + ( theta(i,j,ks,bi,bj) - temp_EvPrRn )
+     &               *( evap(i,j,bi,bj) - runoff(i,j,bi,bj) )
+     &               *HeatCapacity_Cp*rhoConstFresh
+              Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)*maskC(i,j,ks,bi,bj)
+            ENDDO
+          ENDDO
+         ENDIF
+
          IF ( blk_taveFreq.GT.0. _d 0 )
-     &    CALL BULKF_AVE(bi,bj,myThid)
+     &     CALL BULKF_AVE( bi, bj, myThid )
 
 C--   end bi,bj loops
        ENDDO
