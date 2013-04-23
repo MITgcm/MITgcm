@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.34 2013/04/22 19:35:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.35 2013/04/23 16:34:24 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -150,9 +150,9 @@ C Note: will inline this S/R once thSIce in Atmos. set-up is settled
 #ifdef ALLOW_BULK_FORCE
         IF ( useBulkforce ) THEN
          CALL THSICE_GET_PRECIP(
-     I                  iceMask,
+     I                  iceMask, tOceMxL,
      O                  prcAtm(1-OLx,1-OLy,bi,bj),
-     O                  snowPrc(1-OLx,1-OLy,bi,bj),
+     O                  snowPrc(1-OLx,1-OLy,bi,bj), qPrcRn,
      O                  icFlxSW(1-OLx,1-OLy,bi,bj),
      I                  iMin,iMax,jMin,jMax, bi,bj, myThid )
         ENDIF
