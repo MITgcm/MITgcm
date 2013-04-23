@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.32 2013/04/20 23:55:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.33 2013/04/23 21:21:51 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -117,16 +117,9 @@ C     myThid      :: my Thread Id number
       _RL flxCnB (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL flxAtm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL evpAtm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#ifndef ALLOW_AUTODIFF
       _RL flxExSW(iMin:iMax,jMin:jMax,0:2)
       _RL dTsrf1 (iMin:iMax,jMin:jMax)
-#else
-C- note: nothing wrong with above declaration; and below is certainly wrong
-C        when this routine is called from THSICE_IMPL_TEMP
-      _RL flxExSW(1:2)
-      _RL dTsrf1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif
-      _RL  myTime
+      _RL myTime
       INTEGER myIter
       INTEGER myThid
 CEOP
@@ -375,7 +368,8 @@ C--   Get surface fluxes over melting surface
 #ifndef ALLOW_AUTODIFF
         IF ( useEXF ) THEN
 #endif
-           CALL THSICE_GET_EXF(   bi, bj,
+           k = 1
+           CALL THSICE_GET_EXF(   bi, bj, k,
      I                            iMin, iMax, jMin, jMax,
      I                            iceFlag, hSnow1, Tsf,
      O                            flx0exSW, dFlxdT, evap00, dEvdT,
@@ -436,7 +430,7 @@ C--   Compute top surface flux.
 #ifndef ALLOW_AUTODIFF
          IF ( useEXF ) THEN
 #endif
-           CALL THSICE_GET_EXF(   bi, bj,
+           CALL THSICE_GET_EXF(   bi, bj, k,
      I                            iMin, iMax, jMin, jMax,
      I                            iceFlag, hSnow1, Tsf,
      O                            flxTexSW, dFlxdT, evapT, dEvdT,
