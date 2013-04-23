@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.81 2013/02/13 09:34:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.82 2013/04/23 09:53:44 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -852,6 +852,16 @@ C
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif /* SEAICE_ALLOW_JFNK */
+
+      IF ( .NOT.(SEAICEetaZmethod.EQ.0.OR.SEAICEetaZmethod.EQ.3) ) THEN
+       WRITE(msgBuf,'(A,I2)')
+     &      'SEAICE_CHECK: SEAICEetaZmethod = ', SEAICEetaZmethod
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: '//
+     &       'is no longer allowed; allowed values are 0 and 3' 
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
 
       _END_MASTER(myThid)
 
