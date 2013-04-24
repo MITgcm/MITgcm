@@ -811,7 +811,7 @@ C $OpenAD$ INLINE DECLS
         implicit none
         logical, dimension(:,:) :: b
 C $OpenAD$ END DECLS
-u#ifdef OAD_DEBUG_CP
+#ifdef OAD_DEBUG_CP
         write(standardmessageunit,*)'OAD: cp write b ', b(1,1)
 #endif
 	write(unit=cp_io_unit) b
