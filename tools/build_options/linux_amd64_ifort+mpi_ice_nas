@@ -1,10 +1,11 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.10 2013/04/22 21:20:13 dimitri Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.11 2013/04/24 15:38:55 dfer Exp $
 # $Name:  $
 
-# tested on pleiades using Sandy Bridge nodes, which need mpt 2.06 or later
+# Used to run the testreport on pleiades with:
 # module load comp-intel/2011.2 mpi-sgi/mpt.2.06a67 netcdf/4.0
+# note: comp-intel/2011.7.256 is recommanded for Sandy Bridge nodes
 
 FC=ifort
 CC=icc
@@ -16,10 +17,10 @@ OMPFLAG='-openmp'
 CFLAGS='-fPIC'
 LDADD='-shared-intel'
 
-LIBS='-L/nasa/sgi/mpt/2.04.10789/lib -lmpi -L/nasa/netcdf/4.0/lib -lnetcdf'
-INCLUDES='-I/nasa/sgi/mpt/2.04.10789/include -I/nasa/netcdf/4.0/include'
-INCLUDEDIRS='/nasa/sgi/mpt/2.04.10789/include'
-MPIINCLUDEDIR='/nasa/sgi/mpt/2.04.10789/include'
+LIBS='-L/nasa/sgi/mpt/2.06a67/lib -lmpi -L/nasa/netcdf/4.0/lib -lnetcdf'
+INCLUDES='-I/nasa/sgi/mpt/2.06a67/include -I/nasa/netcdf/4.0/include'
+INCLUDEDIRS='/nasa/sgi/mpt/2.06a67/include'
+MPIINCLUDEDIR='/nasa/sgi/mpt/2.06a67/include'
 MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
 MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h ./mpi_headers/mpif_parameters.h'
 
