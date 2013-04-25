@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.33 2013/04/23 21:21:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.34 2013/04/25 04:38:01 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -368,8 +368,7 @@ C--   Get surface fluxes over melting surface
 #ifndef ALLOW_AUTODIFF
         IF ( useEXF ) THEN
 #endif
-           k = 1
-           CALL THSICE_GET_EXF(   bi, bj, k,
+           CALL THSICE_GET_EXF(   bi, bj,
      I                            iMin, iMax, jMin, jMax,
      I                            iceFlag, hSnow1, Tsf,
      O                            flx0exSW, dFlxdT, evap00, dEvdT,
@@ -430,7 +429,7 @@ C--   Compute top surface flux.
 #ifndef ALLOW_AUTODIFF
          IF ( useEXF ) THEN
 #endif
-           CALL THSICE_GET_EXF(   bi, bj, k,
+           CALL THSICE_GET_EXF(   bi, bj,
      I                            iMin, iMax, jMin, jMax,
      I                            iceFlag, hSnow1, Tsf,
      O                            flxTexSW, dFlxdT, evapT, dEvdT,
