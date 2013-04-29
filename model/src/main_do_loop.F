@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.9 2013/04/13 20:47:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.10 2013/04/29 18:16:05 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -84,14 +84,6 @@ c They provide the fields to be stored.
 #  ifdef ALLOW_CD_CODE
 #   include "CD_CODE_VARS.h"
 #  endif
-#  ifdef ALLOW_OBCS
-#   include "OBCS_PARAMS.h"
-#   include "OBCS_FIELDS.h"
-#   include "OBCS_SEAICE.h"
-#   ifdef ALLOW_PTRACERS
-#    include "OBCS_PTRACERS.h"
-#   endif
-#  endif
 #  ifdef ALLOW_EXF
 #   include "EXF_FIELDS.h"
 #   ifdef ALLOW_BULKFORMULAE
@@ -175,16 +167,24 @@ c They provide the fields to be stored.
 #  include "DIC_CTRL.h"
 #  include "DIC_COST.h"
 # endif
-#  ifdef ALLOW_SHELFICE
-#   include "SHELFICE.h"
-#   include "SHELFICE_COST.h"
+# ifdef ALLOW_OBCS
+#  include "OBCS_PARAMS.h"
+#  include "OBCS_FIELDS.h"
+#  include "OBCS_SEAICE.h"
+#  ifdef ALLOW_PTRACERS
+#   include "OBCS_PTRACERS.h"
 #  endif
-#  ifdef ALLOW_STREAMICE
-#   include "STREAMICE.h"
-#   include "STREAMICE_ADV.h"
-#   include "STREAMICE_BDRY.h"
-#   include "STREAMICE_CG.h"
-#  endif
+# endif
+# ifdef ALLOW_SHELFICE
+#  include "SHELFICE.h"
+#  include "SHELFICE_COST.h"
+# endif
+# ifdef ALLOW_STREAMICE
+#  include "STREAMICE.h"
+#  include "STREAMICE_ADV.h"
+#  include "STREAMICE_BDRY.h"
+#  include "STREAMICE_CG.h"
+# endif
 
 #endif /* ALLOW_AUTODIFF */
 c**************************************
