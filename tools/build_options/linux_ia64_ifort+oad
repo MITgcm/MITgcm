@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia64_ifort+oad,v 1.3 2010/03/21 18:01:13 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia64_ifort+oad,v 1.4 2013/04/30 16:45:00 utke Exp $
 # $Name:  $
 
 #  Build options for the intel compiler with OpenAD
@@ -16,10 +16,10 @@ LIBS=''
 
 if test "x$IEEE" = x ; then
     FOPTIM='-O2 -align'
-    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl -m64 -fPIC'
+    FFLAGS='-132 -r8 -i4 -W0 -WB -convert big_endian -assume byterecl -m64 -fPIC'
 else
-    FOPTIM='-O0 -g -noalign -mp'
-    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl -m64 -fPIC'
+    FOPTIM='-O0 -g -noalign -fp-model source'
+    FFLAGS='-132 -r8 -i4 -W0 -WB -convert big_endian -assume byterecl -m64 -fPIC'
 fi
 
 F90OPTIM=$FOPTIM
