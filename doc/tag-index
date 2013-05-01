@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1859 2013/04/23 19:05:16 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1860 2013/05/01 09:20:10 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -14,6 +14,16 @@ o pkg/thsice (& pkg/bulk_force):
   - fix bug (wrong overlap) when using EXF and stressReduction > 0.
 o verification/tutorial_global_oce_biogeo:
   - add preliminary OpenAD setup (still has problems)
+o pkg/seaice: 
+  - turn some parameters for choosing the convergence criterion of
+    the inexact Newton method (JFNK) into runtime parameters for convenience
+  - clean up seaice_calc_viscosities.F: remove/retire two options for 
+    SEAICetaZmethod (1,2), introduce area weighting for method 3; this changes
+    the results of lab_sea/input because a division has been replaced by
+    a multiplication with the reciprocal (sumNorm)
+  - modify offline_exf_seaice/input.dyn_jfnk/data.seaice to improve
+    convergence of solver (changes results, of course), and to test some 
+    new features
 o model/src:
   - remove unused (since Aug 2006) S/R SET_WRITE_GLOBAL_PICKUP and its call.
   - remove unused forcing field "dQdT" and associated parameter "dQdTFile".
