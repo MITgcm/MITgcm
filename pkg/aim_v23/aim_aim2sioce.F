@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2sioce.F,v 1.8 2007/10/01 13:34:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2sioce.F,v 1.9 2013/05/02 20:10:14 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -11,7 +11,7 @@ C     !ROUTINE: AIM_AIM2SIOCE
 C     !INTERFACE:
       SUBROUTINE AIM_AIM2SIOCE(
      I               land_frc, siceFrac,
-     O               prcAtm,
+     O               prcAtm, snowPrc,
      I               bi, bj, myTime, myIter, myThid)
 
 C     !DESCRIPTION: \bv
@@ -55,7 +55,6 @@ C             and the Ice-Covered contribution will be added in S/R THSICE_STEP_
 C      EmPmR(out) :: Net fresh water flux out off the ocean (ice-free ocean only)
 C             and the Ice-Covered contribution will be added in S/R THSICE_STEP_FWD
 C      sHeating(in/out) :: air - seaice surface heat flux left to melt the ice
-C      snowPrc(out):: snow precip over sea-ice
 C      icFrwAtm   :: Evaporation over sea-ice [kg/m2/s] (>0 if evaporate)
 C      icFlxSW    :: net SW heat flux through the ice to the ocean [W/m2] (+=dw)
 C  if not using thSIce:
@@ -68,13 +67,15 @@ C     == Routine arguments ==
 C     land_frc :: land fraction [0-1]
 C     siceFrac :: sea-ice fraction (relative to full grid-cell) [0-1]
 C     prcAtm   :: total precip from the atmosphere [kg/m2/s]
+C     snowPrc  :: snow precip over sea-ice [kg/m2/s]
 C     bi,bj    :: Tile indices
 C     myTime   :: Current time of simulation ( s )
 C     myIter   :: Current iteration number in simulation
 C     myThid   :: My Thread Id number
       _RS land_frc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL siceFrac(sNx,sNy)
-      _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL prcAtm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL snowPrc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi, bj, myIter, myThid
       _RL myTime
 CEOP
@@ -82,7 +83,7 @@ CEOP
 #ifdef ALLOW_AIM
 C     == Local variables ==
 C     i,j,I2      :: loop counters
-C     convPrcEvp  :: units conversion factor for Precip & Evap: 
+C     convPrcEvp  :: units conversion factor for Precip & Evap:
 C                 :: from AIM units (g/m2/s) to model EmPmR units ( kg/m2/s )
       _RL convPrcEvp
       _RL icFrac, opFrac
@@ -165,13 +166,13 @@ C--   Add energy flux related to Precip. (snow, T_rain) over sea-ice
 C-    positive => add to surface heating
               sHeating(i,j,bi,bj) = sHeating(i,j,bi,bj)
      &                            + EnPrec(I2,myThid)*prcAtm(i,j)
-              snowPrc(i,j,bi,bj) = 0. _d 0
+              snowPrc(i,j) = 0. _d 0
             ELSE
 C-    negative => make snow
-              snowPrc(i,j,bi,bj) = prcAtm(i,j)*convPrcEvp
+              snowPrc(i,j) = prcAtm(i,j)*convPrcEvp
             ENDIF
            ELSE
-              snowPrc(i,j,bi,bj) = 0. _d 0
+              snowPrc(i,j) = 0. _d 0
            ENDIF
           ENDDO
          ENDDO

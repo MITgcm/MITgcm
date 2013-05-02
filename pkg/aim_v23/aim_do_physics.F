@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.21 2013/04/04 16:49:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.22 2013/05/02 20:10:14 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -70,11 +70,13 @@ C     tYear      :: Fraction into year
 C     aim_sWght0 :: weight for time interpolation of surface BC
 C     aim_sWght1 :: 0/1 = time period before/after the current time
 C     prcAtm     :: total precip from the atmosphere [kg/m2/s]
+C     snowPr     :: snow precipitation               [kg/m2/s]
       INTEGER bi,bj
       INTEGER i,j,k,I2
       _RL     tYear, yearLength
       _RL     aim_sWght0, aim_sWght1
       _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL snowPr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_THSICE
       _RL qPrcRn(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
@@ -171,7 +173,7 @@ C-    Land diagnostics : write snap-shot & cumulate for TimeAve output
 C-    surface fluxes over ocean (ice-free & ice covered)
 C       used for diagnostics, thsice package and coupler
         CALL AIM_AIM2SIOCE( aim_landFr, fmask1(1,3,myThid),
-     O                      prcAtm,
+     O                      prcAtm, snowPr,
      I                      bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_THSICE
@@ -183,7 +185,7 @@ C-    Step forward sea-ice model
            ENDDO
           ENDDO
           CALL THSICE_STEP_FWD( bi, bj, 1, sNx, 1, sNy,
-     I                          prcAtm, qPrcRn,
+     I                          prcAtm, snowPr, qPrcRn,
      I                          myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_THSICE */
