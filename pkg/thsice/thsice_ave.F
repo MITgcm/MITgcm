@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.14 2013/04/04 01:59:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.15 2013/05/02 20:01:21 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -67,8 +67,8 @@ C-- area weighted average (with ice-fraction)
      &                    1, 0, thSIce_deltaT, bi, bj, myThid )
        CALL TIMEAVE_CUMUL_2V( ice_Tice2_Ave, Tice2, iceMask,
      &                    1, 0, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMUL_2V( ice_snowPr_Ave,snowPrc, iceMask,
-     &                    1, 0, thSIce_deltaT, bi, bj, myThid )
+c      CALL TIMEAVE_CUMUL_2V( ice_snowPr_Ave,snowPrc, iceMask,
+c    &                    1, 0, thSIce_deltaT, bi, bj, myThid )
 C--    notes: siceAlb is already multiplied by iceFraction
        CALL TIMEAVE_CUMULATE( ice_albedo_Ave, siceAlb,
      &                        1, thSIce_deltaT, bi, bj, myThid )
@@ -83,8 +83,6 @@ c    &                        1, thSIce_deltaT, bi, bj, myThid )
 c      CALL TIMEAVE_CUMULATE( ice_Tice1_Ave,Tice1,
 c    &                        1, thSIce_deltaT, bi, bj, myThid )
 c      CALL TIMEAVE_CUMULATE( ice_Tice2_Ave,Tice2,
-c    &                        1, thSIce_deltaT, bi, bj, myThid )
-c      CALL TIMEAVE_CUMULATE( ice_snowPr_Ave, snowPrc,
 c    &                        1, thSIce_deltaT, bi, bj, myThid )
 
 C-- average of atmospheric fluxes :

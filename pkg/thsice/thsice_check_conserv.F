@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check_conserv.F,v 1.4 2006/05/25 18:03:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check_conserv.F,v 1.5 2013/05/02 20:01:21 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -101,7 +101,8 @@ C--
          IF (dBugLoc) WRITE(6,1010) 'ThSI_CHK: resid.H,W,S=',
      &    dEnerg/thSIce_deltaT,dWater/thSIce_deltaT,dSalt/thSIce_deltaT
          IF (dBugLoc) WRITE(6,1010) 'ThSI_CHK: hIc,hSn,snow*dt=',
-     &    hIce, hSnow, snowPrc(i,j,bi,bj)*thSIce_deltaT/rhos
+     &    hIce, hSnow
+c    &    hIce, hSnow, snowPrc(i,j,bi,bj)*thSIce_deltaT/rhos
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

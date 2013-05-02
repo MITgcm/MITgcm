@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.13 2010/01/03 21:09:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.14 2013/05/02 20:01:21 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -69,7 +69,7 @@ c set arrays to zero if first timestep
          CALL TIMEAVE_RESET(ice_Tsrf_Ave,   1, bi, bj, myThid)
          CALL TIMEAVE_RESET(ice_Tice1_Ave,  1, bi, bj, myThid)
          CALL TIMEAVE_RESET(ice_Tice2_Ave,  1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(ice_snowPr_Ave, 1, bi, bj, myThid)
+c        CALL TIMEAVE_RESET(ice_snowPr_Ave, 1, bi, bj, myThid)
          CALL TIMEAVE_RESET(ice_flx2oc_Ave, 1, bi, bj, myThid)
          CALL TIMEAVE_RESET(ice_frw2oc_Ave, 1, bi, bj, myThid)
          CALL TIMEAVE_RESET(ice_salFx_Ave,  1, bi, bj, myThid)
@@ -101,8 +101,8 @@ C-     area weighted average (with ice-fraction)
      &                          ice_fract_Ave, 1, bi, bj, myThid )
          CALL TIMEAVE_NORMA_2V( ice_Tice2_Ave,
      &                          ice_fract_Ave, 1, bi, bj, myThid )
-         CALL TIMEAVE_NORMA_2V( ice_snowPr_Ave,
-     &                          ice_fract_Ave, 1, bi, bj, myThid )
+c        CALL TIMEAVE_NORMA_2V( ice_snowPr_Ave,
+c    &                          ice_fract_Ave, 1, bi, bj, myThid )
          CALL TIMEAVE_NORMA_2V( ice_albedo_Ave,
      &                          ice_fract_Ave, 1, bi, bj, myThid )
 
@@ -144,44 +144,6 @@ c    &                 bi,bj,myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C--    Write 1 file per time-average variable:
-c      WRITE(suff,'(I10.10)') myIter
-c      CALL WRITE_FLD_XY_RL('ICE_fract-T.',  suff,
-c    &                       ice_fract_Ave,  myIter,myThid)
-c      CALL WRITE_FLD_XY_RL('ICE_iceH-T.',   suff,
-c    &                       ice_iceH_Ave,   myIter,myThid)
-c      CALL WRITE_FLD_XY_RL('ICE_snowH-T.',  suff,
-c    &                       ice_snowH_Ave,  myIter,myThid)
-c      CALL WRITE_FLD_XY_RL('ICE_Tsrf-T.',   suff,
-c    &                       ice_Tsrf_Ave,   myIter,myThid)
-c      CALL WRITE_FLD_XY_RL('ICE_Tice1-T.',  suff,
-c    &                       ice_Tice1_Ave,  myIter,myThid)
-c      CALL WRITE_FLD_XY_RL('ICE_Tice2-T.',  suff,
-c    &                       ice_Tice2_Ave,  myIter,myThid)
-c      CALL WRITE_FLD_XY_RL('ICE_snowPr-T.', suff,
-c    &                       ice_snowPr_Ave, myIter,myThid)
-c      CALL WRITE_FLD_XY_RL('ICE_albedo-T.', suff,
-c    &                       ice_albedo_Ave, myIter,myThid)
-c      CALL WRITE_FLD_XY_RL('ICE_flx2oc-T.', suff,
-c    &                       ice_flx2oc_Ave, myIter,myThid)
-c      CALL WRITE_FLD_XY_RL('ICE_frw2oc-T.', suff,
-c    &                       ice_frw2oc_Ave, myIter,myThid)
-c      CALL WRITE_FLD_XY_RL('ICE_salFx-T.',  suff,
-c    &                       ice_salFx_Ave,  myIter,myThid)
-c      IF ( fluidIsWater ) THEN
-c       CALL WRITE_FLD_XY_RL('ICE_flxAtm-T.', suff,
-c    &                       ice_flxAtm_Ave, myIter,myThid)
-c       CALL WRITE_FLD_XY_RL('ICE_frwAtm-T.', suff,
-c    &                       ice_frwAtm_Ave, myIter,myThid)
-c      ENDIF
-c      IF ( stepFwd_oceMxL ) THEN
-c       CALL WRITE_FLD_XY_RL('ICE_tMxL-T.', suff,
-c    &                       ice_tMxL_Ave, myIter,myThid)
-c       CALL WRITE_FLD_XY_RL('ICE_sMxL-T.', suff,
-c    &                       ice_sMxL_Ave, myIter,myThid)
-c      ENDIF
-
-
 C--    Write all time-average variables in 1 file :
 
        IF ( thSIce_tave_mdsio ) THEN
@@ -194,11 +156,11 @@ C--    Write all time-average variables in 1 file :
          CALL WRITE_REC_XY_RL( fn, ice_Tsrf_Ave,   4, myIter, myThid )
          CALL WRITE_REC_XY_RL( fn, ice_Tice1_Ave,  5, myIter, myThid )
          CALL WRITE_REC_XY_RL( fn, ice_Tice2_Ave,  6, myIter, myThid )
-         CALL WRITE_REC_XY_RL( fn, ice_snowPr_Ave, 7, myIter, myThid )
-         CALL WRITE_REC_XY_RL( fn, ice_albedo_Ave, 8, myIter, myThid )
-         CALL WRITE_REC_XY_RL( fn, ice_flx2oc_Ave, 9, myIter, myThid )
-         CALL WRITE_REC_XY_RL( fn, ice_frw2oc_Ave,10, myIter, myThid )
-         kl = 11
+c        CALL WRITE_REC_XY_RL( fn, ice_snowPr_Ave, 7, myIter, myThid )
+         CALL WRITE_REC_XY_RL( fn, ice_albedo_Ave, 7, myIter, myThid )
+         CALL WRITE_REC_XY_RL( fn, ice_flx2oc_Ave, 8, myIter, myThid )
+         CALL WRITE_REC_XY_RL( fn, ice_frw2oc_Ave, 9, myIter, myThid )
+         kl = 10
          CALL WRITE_REC_XY_RL( fn, ice_salFx_Ave, kl, myIter, myThid )
          IF ( fluidIsWater ) THEN
           kl = kl+1
@@ -244,8 +206,8 @@ C        C             123456789 1
      &                    'Tice1_ave', ice_Tice1_Ave, myThid)
          CALL MNC_CW_RL_W(pf,mncf,0,0,
      &                    'Tice2_ave', ice_Tice2_Ave, myThid)
-         CALL MNC_CW_RL_W(pf,mncf,0,0,
-     &                    'snowPr_ave',ice_snowPr_Ave,myThid)
+c        CALL MNC_CW_RL_W(pf,mncf,0,0,
+c    &                    'snowPr_ave',ice_snowPr_Ave,myThid)
          CALL MNC_CW_RL_W(pf,mncf,0,0,
      &                    'albedo_ave',ice_albedo_Ave,myThid)
          CALL MNC_CW_RL_W(pf,mncf,0,0,
@@ -276,7 +238,7 @@ C--    Reset averages to zero
          CALL TIMEAVE_RESET(ice_Tsrf_Ave,   1, bi,bj, myThid)
          CALL TIMEAVE_RESET(ice_Tice1_Ave,  1, bi,bj, myThid)
          CALL TIMEAVE_RESET(ice_Tice2_Ave,  1, bi,bj, myThid)
-         CALL TIMEAVE_RESET(ice_snowPr_Ave, 1, bi,bj, myThid)
+c        CALL TIMEAVE_RESET(ice_snowPr_Ave, 1, bi,bj, myThid)
          CALL TIMEAVE_RESET(ice_flx2oc_Ave, 1, bi,bj, myThid)
          CALL TIMEAVE_RESET(ice_frw2oc_Ave, 1, bi,bj, myThid)
          CALL TIMEAVE_RESET(ice_salFx_Ave,  1, bi,bj, myThid)
@@ -323,8 +285,6 @@ C     Dump a snap-shot of main state variables:
           CALL WRITE_FLD_XY_RL('ice_snowAge.',suff,snowAge,
      &         myIter,myThid)
           IF ( myTime.NE.startTime ) THEN
-            CALL WRITE_FLD_XY_RL('ice_snowPrc.',suff,snowPrc,
-     &           myIter,myThid)
             CALL WRITE_FLD_XY_RL('ice_flxAtm.',suff,icFlxAtm,
      &           myIter,myThid)
             CALL WRITE_FLD_XY_RL('ice_frwAtm.',suff,icFrwAtm,
