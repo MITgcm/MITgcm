@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.127 2013/04/22 02:38:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.128 2013/05/02 14:54:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -194,7 +194,7 @@ CADJ STORE sHeating, snowAge = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE hocemxl = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-CADJ STORE icflxsw, snowprc  = comlev1, key = ikey_dynamics,
+CADJ STORE icflxsw = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE salt,theta        = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
