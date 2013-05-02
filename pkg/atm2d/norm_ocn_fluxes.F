@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/norm_ocn_fluxes.F,v 1.6 2011/06/09 18:37:32 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/norm_ocn_fluxes.F,v 1.7 2013/05/02 20:58:47 jmc Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -16,7 +16,7 @@ C     *==========================================================*
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
-#include "FFIELDS.h"  
+#include "FFIELDS.h"
 
 C     === Global SeaIce Variables ===
 #include "THSICE_VARS.h"
@@ -60,7 +60,7 @@ C     LOCAL VARIABLES:
 C            pass_sIceLoad(i,j)=sIceLoad(i,j,1,1) !do this in thsice_step_fwd
 
 C  Load the following directly into the seaice common block
-            snowPrc(i,j,1,1)= sum_snowPrc(i,j)/nper
+            snowPrc(i,j)= sum_snowPrc(i,j)/nper
 
 C  Double check that wspeed>0 (unlikely, but possible given anomaly coupling)
             IF ( pass_wspeed(i,j) .LT. 0. _d 0)
