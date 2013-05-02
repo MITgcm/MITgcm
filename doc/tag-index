@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1861 2013/05/01 18:09:44 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1862 2013/05/02 21:01:27 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/thsice:
+  - remove snowPrc from common block THSICE_FLUX, in THSICE_VARS.h and
+    declared it locally (without bi,bj) in thsice_main.F & aim_do_physics.F;
+    changed accordingly pkg/atm2d.
 
 checkpoint64g (2013/05/01)
 o pkg/exf ALLOW_RUNOFTEMP
