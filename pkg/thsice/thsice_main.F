@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.36 2013/05/02 20:03:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.37 2013/05/02 20:11:06 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -58,6 +58,8 @@ CEOP
 #ifdef ALLOW_THSICE
 C     !LOCAL VARIABLES:
 C     === Local variables ===
+C     prcAtm    :: total precip from the atmosphere [kg/m2/s]
+C     snowPr    :: snow precipitation               [kg/m2/s]
 C     qPrcRn    :: Energy content of Precip+RunOff (+=down) [W/m2]
       INTEGER i,j
       INTEGER bi,bj
@@ -69,7 +71,6 @@ C     qPrcRn    :: Energy content of Precip+RunOff (+=down) [W/m2]
 c     _RL evpAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 c     _RL flxAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 c     _RL flxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-
       _RL tauFac
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
