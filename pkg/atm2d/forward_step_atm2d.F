@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.26 2013/04/04 17:06:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.27 2013/05/02 20:37:52 jmc Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -209,8 +209,9 @@ C       don't run the ice growth/melt on step 1 if "cold" start
           qPrcRn(i,j) = 0.
          ENDDO
         ENDDO
-        CALL THSICE_STEP_FWD(1,1,1,sNx,1,sNy, pass_prcAtm, qPrcRn,
-     &                        myTime, myIter, myThid)
+        CALL THSICE_STEP_FWD( 1, 1, 1, sNx, 1, sNy,
+     I                        pass_prcAtm, snowPrc, qPrcRn,
+     &                        myTime, myIter, myThid )
         CALL THSICE_AVE( 1,1, myTime, myIter, myThid )
       ENDIF
       CALL CALC_ZONAL_MEANS(.TRUE.,myThid)

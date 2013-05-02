@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/init_atm2d.F,v 1.7 2009/09/03 19:29:03 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/init_atm2d.F,v 1.8 2013/05/02 20:37:52 jmc Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -137,7 +137,7 @@ C     compute tauv interpolation points
      &        ( yG(1,j,1,1) .LT. atm_yC(jj+1))) j_atm=jj
         ENDDO
         tauv_jpt(j)= j_atm
-        tauv_jwght(j)= 1. _d 0 - (yG(1,j,1,1) - atm_yC(j_atm)) / 
+        tauv_jwght(j)= 1. _d 0 - (yG(1,j,1,1) - atm_yC(j_atm)) /
      &                 (atm_yC(j_atm+1) - atm_yC(j_atm))
       ENDDO
 
@@ -349,7 +349,8 @@ C     Initialize following for safety and/or cold start
           pass_slp(i,j)= 0. _d 0
           pass_siceLoad(i,j)= 0. _d 0
           pass_pCO2(i,j)= 0. _d 0
-          pass_prcAtm(i,j)= 0. _d 0
+          pass_prcAtm(i,j) = 0. _d 0
+          snowPrc    (i,j) = 0. _d 0
           sFluxFromIce(i,j)= 0. _d 0
         ENDDO
       ENDDO
@@ -363,4 +364,3 @@ C     Initialize following (if ocn carbon not passed)
 
       RETURN
       END
-

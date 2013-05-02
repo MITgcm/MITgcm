@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/ATM2D_VARS.h,v 1.15 2011/06/24 01:42:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/ATM2D_VARS.h,v 1.16 2013/05/02 20:37:52 jmc Exp $
 C $Name:  $
 
       INTEGER nForcingPer
@@ -210,7 +210,7 @@ C     These are the fluxes actually passed to the ocean model (w/some unit/sign 
        _RL sFluxFromIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! upward salt flux->ocean (psu.kg/m^2/s)
 
 
-      COMMON/ICE_FLUXES_PASS/ netSW, sFlx, dTsurf, pass_prcAtm
+      COMMON/ICE_FLUXES_PASS/ netSW, sFlx, dTsurf, pass_prcAtm, snowPrc
        _RL netSW(sNx,sNy)    ! net shortwave flux to ice (W/m2) (+= down)
        _RL sFlx(sNx,sNy,0:2) ! input variables to seaice temp solver:
 C                            ! 0: sFlx(:,1) - Tsurf * dF/dT (W/m2)
@@ -218,7 +218,7 @@ C                            ! 1: surface heat flux to ice, no SW (Ts=Ts^n) (W/m
 C                            ! 2: dF/dT (over ice), (- def, as for +=down HF)
        _RL dTsurf(sNx,sNy)   ! surf temp adjustment Ts^n+1 - Ts^n
        _RL pass_prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)  ! total precip -> seaice top (kg/m2/s, +=precip to ice)
-
+       _RL snowPrc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)  ! snow precip (kg/m2/s)
 
 C     Variables used to sum and compute atm2d diagnostic outputs
       COMMON/DIAGS_1DTO2D/ qnet_atm, evap_atm, precip_atm, runoff_atm,
