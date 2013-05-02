@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_ocean.F,v 1.2 2013/04/01 18:18:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_ocean.F,v 1.3 2013/05/02 20:03:12 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -99,7 +99,6 @@ C--     Mixed layer thickness: take the 1rst layer
           icFrwAtm(i,j,bi,bj) = 0. _d 0
           icFlxAtm(i,j,bi,bj) = 0. _d 0
           icFlxSW (i,j,bi,bj) = 0. _d 0
-          snowPrc (i,j,bi,bj) = 0. _d 0
           siceAlb (i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.21 2012/08/01 18:22:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.22 2013/05/02 20:03:12 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -71,7 +71,6 @@ C-        fluxes :
            DO i=1-OLx,sNx+OLx
             sHeating(i,j,bi,bj) = 0. _d 0
             flxCndBt(i,j,bi,bj) = 0. _d 0
-            snowPrc(i,j,bi,bj)  = 0. _d 0
             siceAlb(i,j,bi,bj)  = 0. _d 0
             icFlxSW (i,j,bi,bj) = 0. _d 0
             icFlxAtm(i,j,bi,bj) = 0. _d 0

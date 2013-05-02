@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.39 2013/04/04 16:44:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.40 2013/05/02 20:03:12 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -11,7 +11,7 @@ C     !ROUTINE: THSICE_STEP_FWD
 C     !INTERFACE:
       SUBROUTINE THSICE_STEP_FWD(
      I             bi, bj, iMin, iMax, jMin, jMax,
-     I             prcAtm, qPrcRnO,
+     I             prcAtm, snowPrc, qPrcRnO,
      I             myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -52,6 +52,7 @@ C     bi,bj   :: tile indices
 C   iMin,iMax :: computation domain: 1rst index range
 C   jMin,jMax :: computation domain: 2nd  index range
 C     prcAtm  :: total precip from the atmosphere [kg/m2/s]
+C     snowPrc :: snow precipitation               [kg/m2/s]
 C     qPrcRnO :: Energy content of Precip+RunOff (+=down) [W/m2]
 C     myTime  :: current Time of simulation [s]
 C     myIter  :: current Iteration number in simulation
@@ -68,6 +69,7 @@ C     icFrwAtm  :: net fresh-water flux (E-P) from the atmosphere [kg/m2/s] (+=u
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       _RL prcAtm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL snowPrc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL qPrcRnO(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  myTime
       INTEGER myIter
@@ -162,14 +164,14 @@ CADJ STORE snowheight(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
 C--  Snow aging :
           snowAge(i,j,bi,bj) = thSIce_deltaT
      &                       + snowAge(i,j,bi,bj)*ageFac
-          IF ( snowPrc(i,j,bi,bj).GT.0. _d 0 )
+          IF ( snowPrc(i,j).GT.0. _d 0 )
      &      snowAge(i,j,bi,bj) = snowAge(i,j,bi,bj)
-     &          * EXP( - snowFac*snowPrc(i,j,bi,bj) )
+     &          * EXP( - snowFac*snowPrc(i,j) )
 C-------
 C note: Any flux of mass (here fresh water) that enter or leave the system
 C       with a non zero energy HAS TO be counted: add snow precip.
           icFlxAtm(i,j,bi,bj) = icFlxAtm(i,j,bi,bj)
-     &                        - Lfresh*snowPrc(i,j,bi,bj)
+     &                        - Lfresh*snowPrc(i,j)
      &                        + qPrcRnO(i,j)
 C--
         ENDIF
@@ -182,7 +184,7 @@ C--
         CALL DIAGNOSTICS_FILL(iceMask,'SI_FrcFx',0,1,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FRACT_FILL(
      I                   snowPrc,   iceMask,tmpFac,1,'SIsnwPrc',
-     I                   0,1,1,bi,bj,myThid)
+     I                   0,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FRACT_FILL(
      I                   siceAlb,   iceMask,tmpFac,1,'SIalbedo',
      I                   0,1,1,bi,bj,myThid)
@@ -223,7 +225,7 @@ C-------
          IF (iceFrac(i,j).GT.0.)
      &    WRITE(6,1010) 'ThSI_FWD: icFrac,flxAtm,evpAtm,flxSnw=',
      &      iceFrac(i,j), icFlxAtm(i,j,bi,bj),
-     &      icFrwAtm(i,j,bi,bj),-Lfresh*snowPrc(i,j,bi,bj)
+     &      icFrwAtm(i,j,bi,bj),-Lfresh*snowPrc(i,j)
         ENDIF
 #endif
        ENDDO
@@ -238,7 +240,7 @@ CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
      I          iMin,iMax, jMin,jMax, dBugFlag,
      I          iceMask(siLo,sjLo,bi,bj), tFrzOce,
      I          tOceMxL(siLo,sjLo,bi,bj), v2ocMxL(siLo,sjLo,bi,bj),
-     I          snowPrc(siLo,sjLo,bi,bj), prcAtm,
+     I          snowPrc(siLo,sjLo), prcAtm,
      I          sHeating(siLo,sjLo,bi,bj), flxCndBt(siLo,sjLo,bi,bj),
      U          iceFrac, iceHeight(siLo,sjLo,bi,bj),
      U          snowHeight(siLo,sjLo,bi,bj), Tsrf(siLo,sjLo,bi,bj),

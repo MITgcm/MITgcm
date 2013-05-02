@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_VARS.h,v 1.12 2012/08/01 18:22:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_VARS.h,v 1.13 2013/05/02 20:03:12 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -37,7 +37,6 @@ C   snowAge   :: snow age                   [s]
 C-- COMMON /THSICE_FLUX/ hold fluxes needed for thsice model
 C   sHeating :: surf heating left to melt snow or ice (= Atmos-Conduction)
 C   flxCndBt :: heat flux conducted through the ice to bottom surface
-C   snowPrc  :: snow precipitation                        [kg/m2/s]
 C   siceAlb  :: area weighted sea-ice albedo           [0-1]
 C   icAlbNIR :: seaice(+snow) surface Near Infra-Red Albedo
 C atmospheric fluxes (change along the time-stepping):
@@ -55,7 +54,7 @@ C   adjustFrW :: global adjustment to surface fresh-water flux [kg/m2/s]
       COMMON / THSICE_FLUX /
 c    &       oceQsw, oceQnet, oceFWfx, oceSflx,
      &       sHeating, flxCndBt,
-     &       snowPrc, siceAlb, icAlbNIR,
+     &       siceAlb, icAlbNIR,
      &       icFlxSW, icFlxAtm, icFrwAtm,
      &       adjustFrW
 
@@ -65,7 +64,6 @@ c     _RL oceFWfx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 c     _RL oceSflx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL sHeating(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL flxCndBt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL snowPrc (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL siceAlb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL icAlbNIR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL icFlxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
