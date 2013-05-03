@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.63 2012/12/27 23:05:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.64 2013/05/03 19:32:43 torge Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -53,11 +53,9 @@ CEndOfInterface
 C !LOCAL VARIABLES: ====================================================
 C     === Local variables ===
 C     i,j,bi,bj :: Loop counters
-CToM<<<
 #ifdef SEAICE_ITD
-C     k         :: Loop counter for ice thickness categories
+C     it        :: Loop counter for ice thickness categories
 #endif
-C>>>ToM
 C     ks        :: surface level index
 C     uc/vc     :: current ice velocity on C-grid
 C     uTrans    :: volume transport, x direction
@@ -67,11 +65,9 @@ C     afy       :: horizontal advective flux, y direction
 C     gFld      :: tendency of seaice field
 C     xA,yA     :: "areas" of X and Y face of tracer cells
       INTEGER i, j, bi, bj
-CToM<<<
 #ifdef SEAICE_ITD
-      INTEGER k
+      INTEGER it
 #endif
-C>>>ToM
       INTEGER ks
       LOGICAL SEAICEmultiDimAdvection
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -218,16 +214,14 @@ C-    Calculate "volume transports" through tracer cell faces.
 
 C--   Effective Thickness (Volume)
         IF ( SEAICEadvHeff ) THEN
-CToM<<<
 #ifdef SEAICE_ITD
-        DO k=1,nITD
+        DO it=1,nITD
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           HEFF(i,j,bi,bj)=HEFFITD(i,j,k,bi,bj)
+           HEFF(i,j,bi,bj)=HEFFITD(i,j,it,bi,bj)
           ENDDO
          ENDDO
 #endif
-C>>>ToM
           CALL SEAICE_ADVECTION(
      I         GAD_HEFF, SEAICEadvSchHeff,
      I         uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
@@ -251,30 +245,26 @@ C     now do the "explicit" time step
      &          )
           ENDDO
          ENDDO
-CToM<<<
 #ifdef SEAICE_ITD
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           HEFFITD(i,j,k,bi,bj)=HEFF(i,j,bi,bj)
+           HEFFITD(i,j,it,bi,bj)=HEFF(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
 #endif
-C>>>ToM
         ENDIF
 
 C--   Fractional area
         IF ( SEAICEadvArea ) THEN
-CToM<<<
 #ifdef SEAICE_ITD
-        DO k=1,nITD
+        DO it=1,nITD
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           AREA(i,j,bi,bj)=AREAITD(i,j,k,bi,bj)
+           AREA(i,j,bi,bj)=AREAITD(i,j,it,bi,bj)
           ENDDO
          ENDDO
 #endif
-C>>>ToM
           CALL SEAICE_ADVECTION(
      I         GAD_AREA, SEAICEadvSchArea,
      I         uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
@@ -298,30 +288,26 @@ C     now do the "explicit" time step
      &          )
           ENDDO
          ENDDO
-CToM<<<
 #ifdef SEAICE_ITD
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           AREAITD(i,j,k,bi,bj)=AREA(i,j,bi,bj)
+           AREAITD(i,j,it,bi,bj)=AREA(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
 #endif
-C>>>ToM
         ENDIF
 
 C--   Effective Snow Thickness (Volume)
         IF ( SEAICEadvSnow ) THEN
-CToM<<<
 #ifdef SEAICE_ITD
-        DO k=1,nITD
+        DO it=1,nITD
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           HSNOW(i,j,bi,bj)=HSNOWITD(i,j,k,bi,bj)
+           HSNOW(i,j,bi,bj)=HSNOWITD(i,j,it,bi,bj)
           ENDDO
          ENDDO
 #endif
-C>>>ToM
           CALL SEAICE_ADVECTION(
      I         GAD_SNOW, SEAICEadvSchSnow,
      I         uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
@@ -345,16 +331,14 @@ C     now do the "explicit" time step
      &          )
           ENDDO
          ENDDO
-CToM<<<
 #ifdef SEAICE_ITD
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           HSNOWITD(i,j,k,bi,bj)=HSNOW(i,j,bi,bj)
+           HSNOWITD(i,j,it,bi,bj)=HSNOW(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
 #endif
-C>>>ToM
         ENDIF
 
 #ifdef SEAICE_VARIABLE_SALINITY
@@ -539,20 +523,18 @@ C--   if not multiDimAdvection
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heff = comlev1, key = ikey_dynamics, kind=isbyte
 #endif
-CToM<<<
 #ifdef SEAICE_ITD
-        DO k=1,nITD
+        DO it=1,nITD
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             HEFF(i,j,bi,bj)=HEFFITD(i,j,k,bi,bj)
+             HEFF(i,j,bi,bj)=HEFFITD(i,j,it,bi,bj)
             ENDDO
            ENDDO
           ENDDO
          ENDDO
 #endif
-C>>>ToM        
         CALL ADVECT( uc, vc, hEff, fldNm1, HEFFM, myThid )
         IF ( SEAICEdiffKhHeff .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
@@ -567,39 +549,35 @@ C-    Add tendency due to diffusion
           ENDDO
          ENDDO
         ENDIF
-CToM<<<       
 #ifdef SEAICE_ITD
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             HEFFITD(i,j,k,bi,bj)=HEFF(i,j,bi,bj)
+             HEFFITD(i,j,it,bi,bj)=HEFF(i,j,bi,bj)
             ENDDO
            ENDDO
           ENDDO
          ENDDO
         ENDDO
 #endif
-C>>>ToM
        ENDIF
        IF ( SEAICEadvArea ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area = comlev1, key = ikey_dynamics, kind=isbyte
 #endif
-CToM<<<
 #ifdef SEAICE_ITD
-        DO k=1,nITD
+        DO it=1,nITD
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             AREA(i,j,bi,bj)=AREAITD(i,j,k,bi,bj)
+             AREA(i,j,bi,bj)=AREAITD(i,j,it,bi,bj)
             ENDDO
            ENDDO
           ENDDO
          ENDDO
 #endif
-C>>>ToM        
         CALL ADVECT( uc, vc, area, fldNm1, HEFFM, myThid )
         IF ( SEAICEdiffKhArea .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
@@ -614,39 +592,35 @@ C-    Add tendency due to diffusion
           ENDDO
          ENDDO
         ENDIF
-CToM<<<       
 #ifdef SEAICE_ITD
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             AREAITD(i,j,k,bi,bj)=AREA(i,j,bi,bj)
+             AREAITD(i,j,it,bi,bj)=AREA(i,j,bi,bj)
             ENDDO
            ENDDO
           ENDDO
          ENDDO
         ENDDO
 #endif
-C>>>ToM
        ENDIF
        IF ( SEAICEadvSnow ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hsnow = comlev1, key = ikey_dynamics, kind=isbyte
 #endif
-CToM<<<
 #ifdef SEAICE_ITD
-        DO k=1,nITD
+        DO it=1,nITD
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             HSNOW(i,j,bi,bj)=HSNOWITD(i,j,k,bi,bj)
+             HSNOW(i,j,bi,bj)=HSNOWITD(i,j,it,bi,bj)
             ENDDO
            ENDDO
           ENDDO
          ENDDO
 #endif
-C>>>ToM        
         CALL ADVECT( uc, vc, HSNOW, fldNm1, HEFFM, myThid )
         IF ( SEAICEdiffKhSnow .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
@@ -661,20 +635,18 @@ C-    Add tendency due to diffusion
           ENDDO
          ENDDO
         ENDIF
-CToM<<<       
 #ifdef SEAICE_ITD
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             HSNOWITD(i,j,k,bi,bj)=HSNOW(i,j,bi,bj)
+             HSNOWITD(i,j,it,bi,bj)=HSNOW(i,j,bi,bj)
             ENDDO
            ENDDO
           ENDDO
          ENDDO
         ENDDO
 #endif
-C>>>ToM
        ENDIF
 
 #ifdef SEAICE_VARIABLE_SALINITY
