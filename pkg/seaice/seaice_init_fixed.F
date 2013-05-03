@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.22 2012/12/17 15:06:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.23 2013/05/03 19:43:09 torge Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -29,7 +29,6 @@ C     myThid - Thread no. that called this routine.
 CEndOfInterface
 
 C     === Local variables ===
-CToM<<<
 #ifdef SEAICE_ITD
 C     msgBuf      :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -37,7 +36,6 @@ C     msgBuf      :: Informational/error message buffer
 C     k - loop counter for ITD categories
       INTEGER k
 #endif
-C>>>ToM
 C     i,j,k,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
@@ -173,17 +171,16 @@ C--   Initialize grid info
        ENDDO
       ENDDO
 
-CToM<<<
 #ifdef SEAICE_ITD
 C     use Equ. 22 of Lipscomb et al. (2001, JGR) to generate ice
 C     thickness category limits:
 C     - dependends on given number of categories nITD
 C     - choose between original parameters of Lipscomb et al. (2001):
-C       Lipscomb: c1=3.0/N, c2=15*c1, c3=3.0
-C       or emphasize thin end of ITD in order to enhance ice growth:
-C       ToM:      c1=1.5/N, c2=42*c1, c3=3.3
-C       (parameters c1 to c3 are set in seaice_readparms.F)
-C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C       c1=3.0/N, c2=15*c1, c3=3.0
+C       or emphasize thin end of ITD (in order to enhance ice growth):
+C       c1=1.5/N, c2=42*c1, c3=3.3
+C       -> HINT: set parameters c1, c2 and c3 in seaice_readparms.F
+C
       Hlimit(0) = 0.0
       Hlimit_c1=Hlimit_c1/float(nITD)
       Hlimit_c2=Hlimit_c2*Hlimit_c1
@@ -211,7 +208,6 @@ C     thickest category is unlimited
      &                    SQUEEZE_RIGHT , myThid)
 
 #endif
-C>>>ToM
 C     coefficients for metric terms
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
