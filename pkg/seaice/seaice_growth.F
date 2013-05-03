@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.186 2013/04/09 00:24:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.187 2013/05/03 20:22:08 torge Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -170,7 +170,6 @@ C     AREA_PRE :: hold sea-ice fraction field before any seaice-thermo update
       _RL HEFFITDpreTH        (1:sNx,1:sNy,1:nITD)
       _RL HSNWITDpreTH        (1:sNx,1:sNy,1:nITD)
       _RL areaFracFactor      (1:sNx,1:sNy,1:nITD)
-      _RL leadIceThickMin
 #endif
 
 C     wind speed
@@ -195,6 +194,13 @@ C     temporary variables available for the various computations
 #ifdef SEAICE_ITD
       _RL r_QbyATMmult_cover  (1:sNx,1:sNy,MULTDIM)
       _RL r_FWbySublimMult    (1:sNx,1:sNy,MULTDIM)
+c for lateral melt parameterization:
+      _RL latMeltFrac         (1:sNx,1:sNy,MULTDIM)
+      _RL latMeltRate         (1:sNx,1:sNy,MULTDIM)
+      _RL floeAlpha
+      _RL floeDiameter
+      _RL floeDiameterMin
+      _RL floeDiameterMax
 #endif
 
 C     a_QbyATM_cover :: available heat (in W/m^2) due to the interaction of
@@ -314,11 +320,6 @@ C ===================================================================
       ENDIF
 
 C     avoid unnecessary divisions in loops
-c#ifdef SEAICE_ITD
-CToM this is now set by MULTDIM = nITD in SEAICE_SIZE.h
-C    (see SEAICE_SIZE.h and seaice_readparms.F)
-c     SEAICE_multDim = nITD
-c#endif
       recip_multDim        = SEAICE_multDim
       recip_multDim        = ONE / recip_multDim
 C     above/below: double/single precision calculation of recip_multDim
@@ -352,6 +353,18 @@ C conversion factors to go from Q (W/m2) to HEFF (ice meters)
 C conversion factors to go from precip (m/s) unit to HEFF (ice meters)
       convertPRECIP2HI=SEAICE_deltaTtherm*rhoConstFresh/SEAICE_rhoIce
       convertHI2PRECIP = ONE/convertPRECIP2HI
+#ifdef SEAICE_ITD
+c constants for lateral melt parameterization:
+c following Steele (1992), Equ. 2
+      floeAlpha                  = 0.66 _d 0
+c typical mean diameter used in CICE 4.1:
+c (this is currently computed as a function of ice concentration
+c  following a suggestion by Luepkes at al. (2012))
+c      floeDiameter               = 300. _d 0
+c parameters needed for variable floe diameter following Luepkes et al. (2012):
+      floeDiameterMin            = 8. _d 0
+      floeDiameterMax            = 300. _d 0
+#endif
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -440,8 +453,11 @@ C =====================
             d_HSNWbyRAIN_ITD(I,J,IT)           = 0.0 _d 0
             d_HSNWbyOCNonSNW_ITD(I,J,IT)       = 0.0 _d 0
             d_HEFFbyFLOODING_ITD(I,J,IT)       = 0.0 _d 0
-            r_QbyATMmult_cover(I,J,IT) = 0.0 _d 0
-            r_FWbySublimMult(I,J,IT)   = 0.0 _d 0
+            r_QbyATMmult_cover(I,J,IT)         = 0.0 _d 0
+            r_FWbySublimMult(I,J,IT)           = 0.0 _d 0
+c for lateral melt parameterization:
+            latMeltFrac(I,J,IT)                = 0.0 _d 0
+            latMeltRate(I,J,IT)                = 0.0 _d 0
 #endif
           ENDDO
          ENDDO
@@ -517,7 +533,7 @@ CADJ STORE area(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
           HSNOWITD(I,J,IT,bi,bj)=HSNOWITD(I,J,IT,bi,bj)+tmpscal3
           d_HSNWbyNEG(I,J)=d_HSNWbyNEG(I,J)+tmpscal3
           AREAITD(I,J,IT,bi,bj)=MAX(AREAITD(I,J,IT,bi,bj),0. _d 0)
-CToM      AREA, HEFF, and HSNOW will be updated at end of PART 1
+C         AREA, HEFF, and HSNOW will be updated at end of PART 1
 C         by calling SEAICE_ITD_SUM
 #else
           d_HEFFbyNEG(I,J)=MAX(-HEFF(I,J,bi,bj),0. _d 0)
@@ -549,7 +565,7 @@ CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
            tmpscal2=-HEFFITD(I,J,IT,bi,bj)
            tmpscal3=-HSNOWITD(I,J,IT,bi,bj)
            TICES(I,J,IT,bi,bj)=celsius2K
-CToM       TICE will be updated at end of Part 1 together with AREA and HEFF
+C          TICE will be updated at end of Part 1 together with AREA and HEFF
           ENDIF
           HEFFITD(I,J,IT,bi,bj) =HEFFITD(I,J,IT,bi,bj) +tmpscal2
           HSNOWITD(I,J,IT,bi,bj)=HSNOWITD(I,J,IT,bi,bj)+tmpscal3
@@ -612,7 +628,7 @@ CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 #ifdef SEAICE_ITD
           IF ((HEFFITD(I,J,IT,bi,bj).GT.0).OR.
      &        (HSNOWITD(I,J,IT,bi,bj).GT.0)) THEN
-CToM       SEAICE_area_floor*nITD cannot be allowed to exceed 1
+C          SEAICE_area_floor*nITD cannot be allowed to exceed 1
 C          hence use SEAICE_area_floor devided by nITD
 C          (or install a warning in e.g. seaice_readparms.F)
            AREAITD(I,J,IT,bi,bj)=
@@ -632,7 +648,7 @@ C          (or install a warning in e.g. seaice_readparms.F)
 
 C 2.5) treat case of excessive ice cover, e.g., due to ridging:
 
-CToM   for SEAICE_ITD this case is treated in SEAICE_ITD_REDIST,
+C      for SEAICE_ITD this case is treated in SEAICE_ITD_REDIST,
 C      which is called at end of PART 1 below
 #ifndef SEAICE_ITD
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -652,7 +668,7 @@ CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 #endif /* notSEAICE_ITD */
 
 #ifdef SEAICE_ITD
-CToM catch up with items 1.25 and 2.5 involving category sums AREA and HEFF
+C    catch up with items 1.25 and 2.5 involving category sums AREA and HEFF
         DO IT=1,nITD
          DO J=1,sNy
           DO I=1,sNx
@@ -685,38 +701,12 @@ C    although this means that AREA has not been completely regularized
          ENDDO
         ENDDO
 
-CToM finally make sure that all categories meet their thickness limits
+C    finally make sure that all categories meet their thickness limits
 C    which includes ridging as in item 2.5
 C    and update AREA, HEFF, and HSNOW
         CALL SEAICE_ITD_REDIST(bi, bj, myTime, myIter, myThid)
         CALL SEAICE_ITD_SUM(bi, bj, myTime, myIter, myThid)
 #endif /* SEAICE_ITD */
-
-#ifdef SEAICE_DEBUG
-#ifdef SEAICE_ITD
-        WRITE(msgBufForm,'(A,I2,A)') '(A,',nITD,'F14.10)'
-#else
-        WRITE(msgBufForm,'(A,A)') '(A,  F14.10)'
-#endif
-        WRITE(msgBuf,msgBufForm)
-     &    ' SEAICE_GROWTH: Heff increments 0, HEFF = ',
-#ifdef SEAICE_ITD
-     &     HEFFITD(1,1,:,bi,bj)
-#else
-     &     HEFF(1,1,bi,bj)
-#endif
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , myThid)
-        WRITE(msgBuf,msgBufForm)
-     &    ' SEAICE_GROWTH: Area increments 0, AREA = ',
-#ifdef SEAICE_ITD
-     &     AREAITD(1,1,:,bi,bj)
-#else
-     &     AREA(1,1,bi,bj)
-#endif
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , myThid)
-#endif /* SEAICE_DEBUG */
 
 #if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_MODIFY_GROWTH_ADJ)
 C        end SEAICEadjMODE.EQ.0 statement:
@@ -1029,7 +1019,7 @@ C--   Start loop over multi-categories
         DO IT=1,nITD
          DO J=1,sNy
           DO I=1,sNx
-CToM for SEAICE_ITD heffActualMult and latentHeatFluxMaxMult are calculated above
+C    for SEAICE_ITD heffActualMult and latentHeatFluxMaxMult are calculated above
 C    (instead of heffActual and latentHeatFluxMax)
            ticeInMult(I,J,IT)=TICES(I,J,IT,bi,bj)
            ticeOutMult(I,J,IT)=TICES(I,J,IT,bi,bj)
@@ -1312,6 +1302,47 @@ C available turbulent flux
          ENDDO
         ENDDO
 
+#ifdef SEAICE_ITD
+C determine lateral melt rate at floe edges based on an
+C average floe diameter or a floe size distribution 
+C following Steele (1992, Tab. 2)
+C ======================================================
+        DO J=1,sNy
+         DO I=1,sNx
+	  tmpscal1=(theta(I,J,kSurface,bi,bj)-tempFrz)
+          tmpscal2=sqrt(0.87 + 0.067*UG(i,j)) * UG(i,j)
+c
+c variable floe diameter following Luepkes et al. (2012, JGR, Equ. 26) with beta=1
+          tmpscal3=ONE/(ONE-(floeDiameterMin/floeDiameterMax))
+          floeDiameter = floeDiameterMin
+     &                 * (tmpscal3 / (tmpscal3-AREApreTH(I,J)))
+	  DO IT=1,nITD
+C following the idea of SEAICE_areaLossFormula == 1:
+           IF (a_QbyATMmult_cover(i,j,it).LT.ZERO .OR.
+     &         a_QbyATM_open(i,j) .LT.ZERO .OR.
+     &         a_QbyOCN(i,j)      .LT.ZERO) THEN
+c lateral melt rate as suggested by Perovich, 1983 (PhD thesis)
+            latMeltRate(i,j,it) = 1.6 _d -6 * tmpscal1**1.36
+c lateral melt rate as suggested by Maykut and Perovich, 1987 (JGR 92(C7)), Equ. 24
+c            latMeltRate(i,j,it) = 13.5 _d -6 * tmpscal2 * tmpscal1**1.3
+c further suggestion by Maykut and Perovich to avoid latMeltRate -> 0 for UG -> 0
+c            latMeltRate(i,j,it) = (1.6 _d -6 + 13.5 _d -6 * tmpscal2)
+c     &                          * tmpscal1**1.3
+c factor determining fraction of area and ice volume reduction
+c due to lateral melt
+            latMeltFrac(i,j,it) = 
+     &       latMeltRate(i,j,it)*SEAICE_deltaTtherm*PI /
+     &       (floeAlpha * floeDiameter) 
+            latMeltFrac(i,j,it)=max(ZERO, min(latMeltFrac(i,j,it),ONE))
+	   ELSE
+            latMeltRate(i,j,it)=0.0 _d 0
+            latMeltFrac(i,j,it)=0.0 _d 0
+	   ENDIF
+	  ENDDO
+	 ENDDO
+        ENDDO
+#endif
+
 #if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_MODIFY_GROWTH_ADJ)
         CALL ZERO_ADJ_1D( sNx*sNy, r_QbyOCN, myThid)
 #endif
@@ -1392,28 +1423,6 @@ C     remove the fusion part for the residual (that happens to be precisely r_FW
 C       end IT loop
         ENDDO
 #endif
-#ifdef SEAICE_DEBUG
-c ToM<<< debug seaice_growth
-        WRITE(msgBuf,msgBufForm)
-     &    ' SEAICE_GROWTH: Hsnow increments 1, d_HSNWySublim = ',
-#ifdef SEAICE_ITD
-     &     d_HSNWbySublim_ITD(1,1,:)
-#else
-     &     d_HSNWbySublim(1,1)
-#endif
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , myThid)
-        WRITE(msgBuf,msgBufForm)
-     &    ' SEAICE_GROWTH: Heff increments 1, d_HEFFbySublim = ',
-#ifdef SEAICE_ITD
-     &     d_HEFFbySublim_ITD(1,1,:)
-#else
-     &     d_HEFFbySublim(1,1)
-#endif
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , myThid)
-c ToM>>>
-#endif /* SEAICE_DEBUG */
 
 C compute ice thickness tendency due to ice-ocean interaction
 C ===========================================================
@@ -1465,19 +1474,6 @@ C          fractional area of each thickness category
          ENDDO
         ENDDO
 #endif /* SEAICE_ITD */
-#ifdef SEAICE_DEBUG
-c ToM<<< debug seaice_growth
-        WRITE(msgBuf,msgBufForm)
-     &    ' SEAICE_GROWTH: Heff increments 2, d_HEFFbyOCNonICE = ',
-#ifdef SEAICE_ITD
-     &     d_HEFFbyOCNonICE_ITD(1,1,:)
-#else
-     &     d_HEFFbyOCNonICE(1,1)
-#endif
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , myThid)
-c ToM>>>
-#endif /* SEAICE_DEBUG */
 
       endif !SEAICE_growMeltByConv
 
@@ -1527,19 +1523,6 @@ Cgf no additional dependency through snow
          ENDDO
         ENDDO
 #endif /* SEAICE_ITD */
-#ifdef SEAICE_DEBUG
-c ToM<<< debug seaice_growth
-        WRITE(msgBuf,msgBufForm)
-     &    ' SEAICE_GROWTH: Hsnow increments 3, d_HSNWbyATMonSNW = ',
-#ifdef SEAICE_ITD
-     &    d_HSNWbyATMonSNW_ITD(1,1,:)
-#else
-     &    d_HSNWbyATMonSNW(1,1)
-#endif
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , myThid)
-c ToM>>>
-#endif /* SEAICE_DEBUG */
 
 C compute ice thickness tendency due to the atmosphere
 C ====================================================
@@ -1604,28 +1587,6 @@ C         Limit ice growth by potential melt by ocean
          ENDDO
         ENDDO
 #endif /* SEAICE_ITD */
-#ifdef SEAICE_DEBUG
-c ToM<<< debug seaice_growth
-        WRITE(msgBuf,msgBufForm)
-     &   ' SEAICE_GROWTH: Heff increments 4, d_HEFFbyATMonOCN_cover = ',
-#ifdef SEAICE_ITD
-     &     d_HEFFbyATMonOCN_cover_ITD(1,1,:)
-#else
-     &     d_HEFFbyATMonOCN_cover(1,1)
-#endif
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , myThid)
-        WRITE(msgBuf,msgBufForm)
-     &    ' SEAICE_GROWTH: Heff increments 4, d_HEFFbyATMonOCN = ',
-#ifdef SEAICE_ITD
-     &     d_HEFFbyATMonOCN_ITD(1,1,:)
-#else
-     &     d_HEFFbyATMonOCN(1,1)
-#endif
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , myThid)
-c ToM>>>
-#endif /* SEAICE_DEBUG */
 
 C add snow precipitation to HSNOW.
 C =================================================
@@ -1690,19 +1651,6 @@ Cgf rain to snow is not a surface process.
 C end of IF statement snowPrecipFile:
         ENDIF
 #endif /* ALLOW_ATM_TEMP */
-#ifdef SEAICE_DEBUG
-c ToM<<< debug seaice_growth
-        WRITE(msgBuf,msgBufForm)
-     &    ' SEAICE_GROWTH: Hsnow increments 5, d_HSNWbyRAIN = ',
-#ifdef SEAICE_ITD
-     &     d_HSNWbyRAIN_ITD(1,1,:)
-#else
-     &     d_HSNWbyRAIN(1,1)
-#endif
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , myThid)
-c ToM>>>
-#endif /* SEAICE_DEBUG */
 
 C compute snow melt due to heat available from ocean.
 C =================================================================
@@ -1759,19 +1707,6 @@ Cgf no additional dependency through snow
 
 #endif /* SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING */
 Cph)
-#ifdef SEAICE_DEBUG
-c ToM<<< debug seaice_growth
-        WRITE(msgBuf,msgBufForm)
-     &    ' SEAICE_GROWTH: Hsnow increments 6, d_HSNWbyOCNonSNW = ',
-#ifdef SEAICE_ITD
-     &     d_HSNWbyOCNonSNW_ITD(1,1,:)
-#else
-     &     d_HSNWbyOCNonSNW(1,1)
-#endif
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , myThid)
-c ToM>>>
-#endif /* SEAICE_DEBUG */
 
 C gain of new ice over open water
 C ===============================
@@ -1833,28 +1768,6 @@ C needs to be here to allow use also with LEGACY branch
          ENDDO
         ENDDO
 #endif /* ALLOW_SITRACER */
-#ifdef SEAICE_DEBUG
-c ToM<<< debug seaice_growth
-        WRITE(msgBuf,msgBufForm)
-     &    ' SEAICE_GROWTH: Heff increments 7, d_HEFFbyATMonOCN_open = ',
-#ifdef SEAICE_ITD
-     &     d_HEFFbyATMonOCN_open_ITD(1,1,:)
-#else
-     &     d_HEFFbyATMonOCN_open(1,1)
-#endif
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , myThid)
-        WRITE(msgBuf,msgBufForm)
-     &    ' SEAICE_GROWTH: Heff increments 7, d_HEFFbyATMonOCN = ',
-#ifdef SEAICE_ITD
-     &     d_HEFFbyATMonOCN_ITD(1,1,:)
-#else
-     &     d_HEFFbyATMonOCN(1,1)
-#endif
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , myThid)
-c ToM>>>
-#endif /* SEAICE_DEBUG */
 
 C convert snow to ice if submerged.
 C =================================
@@ -1901,19 +1814,6 @@ CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 #endif
         ENDIF
 
-#ifdef SEAICE_DEBUG
-c ToM<<< debug seaice_growth
-        WRITE(msgBuf,msgBufForm)
-     &    ' SEAICE_GROWTH: Heff increments 8, d_HEFFbyFLOODING = ',
-#ifdef SEAICE_ITD
-     &     d_HEFFbyFLOODING_ITD(1,1,:)
-#else
-     &     d_HEFFbyFLOODING(1,1)
-#endif
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , myThid)
-c ToM>>>
-#endif /* SEAICE_DEBUG */
 #ifdef SEAICE_ITD
 C apply ice and snow thickness changes
 C =================================================================
@@ -1936,28 +1836,6 @@ C =================================================================
           ENDDO
          ENDDO
 #endif
-#ifdef SEAICE_DEBUG
-c ToM<<< debug seaice_growth
-        WRITE(msgBuf,msgBufForm)
-     &    ' SEAICE_GROWTH: Heff increments 9, HEFF = ',
-#ifdef SEAICE_ITD
-     &     HEFFITD(1,1,:,bi,bj)
-#else
-     &     HEFF(1,1,bi,bj)
-#endif
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , myThid)
-        WRITE(msgBuf,msgBufForm)
-     &    ' SEAICE_GROWTH: Area increments 9, AREA = ',
-#ifdef SEAICE_ITD
-     &     AREAITD(1,1,:,bi,bj)
-#else
-     &     AREA(1,1,bi,bj)
-#endif
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , myThid)
-c ToM>>>
-#endif /* SEAICE_DEBUG */
 
 C ===================================================================
 C ==========PART 4: determine ice cover fraction increments=========-
@@ -2005,6 +1883,18 @@ C       i.e. change sin AREA only occur when all ice in a category is melted
            DO I=1,sNx
             IF (HEFFITD(I,J,IT,bi,bj).LE.ZERO) THEN
              AREAITD(I,J,IT,bi,bj)=ZERO
+	    ELSE
+c            actual ice thickness from previous time step
+c            (actual ice thickness not to increase because of lateral melt!)
+             tmpscal1=HEFFITDpreTH(I,J,IT)/AREAITDpreTH(I,J,IT)
+c            melt ice laterally based on an average floe sice
+c            following Steele (1992)
+             AREAITD(I,J,IT,bi,bj) = AREAITD(I,J,IT,bi,bj) 
+     &                             * (ONE - latMeltFrac(I,J,IT))
+             AREAITD(I,J,IT,bi,bj) = max(ZERO,AREAITD(I,J,IT,bi,bj)) 
+c            limit area reduction so that actual ice thickness does not increase
+             AREAITD(I,J,IT,bi,bj) = max(AREAITD(I,J,IT,bi,bj),
+     &                                   HEFFITD(I,J,IT,bi,bj)/tmpscal1)
             ENDIF
            ENDDO
           ENDDO
@@ -2235,7 +2125,7 @@ C compute total of "mult" fluxes for ocean forcing
         DO IT=1,nITD
          DO J=1,sNy
           DO I=1,sNx
-cToM if fluxes in W/m^2 then
+C if fluxes in W/m^2 then use:
 c           a_QbyATM_cover(I,J)=a_QbyATM_cover(I,J)
 c     &      + a_QbyATMmult_cover(I,J,IT) * areaFracFactor(I,J,IT)
 c           r_QbyATM_cover(I,J)=r_QbyATM_cover(I,J)
@@ -2244,7 +2134,7 @@ c           a_QSWbyATM_cover(I,J)=a_QSWbyATM_cover(I,J)
 c     &      + a_QSWbyATMmult_cover(I,J,IT) * areaFracFactor(I,J,IT)
 c           r_FWbySublim(I,J)=r_FWbySublim(I,J)
 c     &      + r_FWbySublimMult(I,J,IT) * areaFracFactor(I,J,IT)
-cToM if fluxes in effective ice meters, i.e. ice volume per area, then
+C if fluxes in effective ice meters, i.e. ice volume per area, then use:
            a_QbyATM_cover(I,J)=a_QbyATM_cover(I,J)
      &      + a_QbyATMmult_cover(I,J,IT)
            r_QbyATM_cover(I,J)=r_QbyATM_cover(I,J)
