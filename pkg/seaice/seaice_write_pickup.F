@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.16 2013/01/13 22:46:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.17 2013/05/03 19:29:24 torge Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -79,50 +79,49 @@ C     record number < 0 : a hack not to write meta files now:
 
 C--   write Sea-Ice Thermodynamics State variables, starting with 3-D fields:
        IF ( .NOT.useThSIce ) THEN
+        j = j + 1
+        nj = nj-1
         IF (SEAICE_multDim.GT.1) THEN
-         j = j + 1
-         nj = nj-1
          CALL WRITE_REC_3D_RL(fn,fp,MULTDIM,TICES, nj, myIter, myThid )
          IF (j.LE.listDim) wrFldList(j) = 'siTICES '
 C-    switch to 2-D fields:
-         nj = nj*MULTDIM
+c         nj = nj*MULTDIM
+         nj = nj-MULTDIM+1
         ELSE
-         j = j + 1
-         nj = nj-1
          CALL WRITE_REC_3D_RL( fn, fp,  1, TICE  , nj, myIter, myThid )
          IF (j.LE.listDim) wrFldList(j) = 'siTICE  '
         ENDIF
 
 C---  continue to write 2-D fields:
         j = j + 1
+        nj = nj-1
 #ifdef SEAICE_ITD
-        nj = nj-nITD
         CALL WRITE_REC_3D_RL(fn, fp, nITD, AREAITD , nj, myIter, myThid)
         IF (j.LE.listDim) wrFldList(j) = 'siAREAn '
+        nj = nj-nITD+1
 #else
-        nj = nj-1
         CALL WRITE_REC_3D_RL( fn, fp,  1, AREA , nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'siAREA  '
 #endif
 
         j = j + 1
+        nj = nj-1
 #ifdef SEAICE_ITD
-        nj = nj-nITD
         CALL WRITE_REC_3D_RL(fn, fp, nITD, HEFFITD , nj, myIter, myThid)
         IF (j.LE.listDim) wrFldList(j) = 'siHEFFn '
+        nj = nj-nITD+1
 #else
-        nj = nj-1
         CALL WRITE_REC_3D_RL( fn, fp,  1, HEFF , nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'siHEFF  '
 #endif
 
         j = j + 1
+        nj = nj-1
 #ifdef SEAICE_ITD
-        nj = nj-nITD
         CALL WRITE_REC_3D_RL(fn, fp, nITD, HSNOWITD, nj, myIter, myThid)
         IF (j.LE.listDim) wrFldList(j) = 'siHSNOWn'
+        nj = nj-nITD+1
 #else
-        nj = nj-1
         CALL WRITE_REC_3D_RL( fn, fp,  1, HSNOW , nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'siHSNOW '
 #endif
