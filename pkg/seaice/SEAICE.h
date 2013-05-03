@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.70 2012/12/27 23:05:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.71 2013/05/03 19:36:29 torge Exp $
 C $Name:  $
 
 CBOP
@@ -63,26 +63,22 @@ C                    for metric terms in U/V ice equations.
 #endif /* SEAICE_CGRID */
 
 C--   Dynamical variables
-CToM<<<
 #ifdef SEAICE_ITD
       COMMON/SEAICE_DYNVARS_1/AREA,HEFF,HSNOW,UICE,VICE,
      &                        AREAITD,HEFFITD,HSNOWITD
 #else
       COMMON/SEAICE_DYNVARS_1/AREA,HEFF,HSNOW,UICE,VICE
 #endif
-C>>>ToM
       _RL AREA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL HEFF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL HSNOW      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL UICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL VICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-CToM<<<
 #ifdef SEAICE_ITD
       _RL AREAITD    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
       _RL HEFFITD    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
       _RL HSNOWITD   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
 #endif
-C>>>ToM
 
 C     uIceC :: average of UICE between last two time steps
 C     vIceC :: average of VICE between last two time steps

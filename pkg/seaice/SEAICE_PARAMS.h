@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.111 2013/04/23 08:40:06 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.112 2013/05/03 19:36:30 torge Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -437,7 +437,6 @@ C
      &     SEAICE_EPS, SEAICE_EPS_SQ
 
 #ifdef SEAICE_ITD
-CToM<<<
 C     Hlimit            :: ice thickness category limits (m), array of 
 C                          size nITD+1
 C     Hlimit_c1,_c2,_c3 :: coefficients set in seaice_readparams.F to 
@@ -447,7 +446,6 @@ C                          calculate Hlimit in seaice_init_fixed.F
       COMMON /SEAICE_BOUND_ITD_RL/
      &     Hlimit,
      &     Hlimit_c1,Hlimit_c2,Hlimit_c3
-C>>>ToM
 #endif /* SEAICE_ITD */
 
 C--   Constants used by sea-ice model
