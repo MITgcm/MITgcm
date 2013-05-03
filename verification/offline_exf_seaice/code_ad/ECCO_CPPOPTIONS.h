@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/ECCO_CPPOPTIONS.h,v 1.7 2013/03/26 20:25:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/ECCO_CPPOPTIONS.h,v 1.8 2013/05/03 13:36:59 jmc Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -34,7 +34,7 @@ C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
 
 C       >>> DO 2-level checkpointing instead of 3-level
-#define AUTODIFF_2_LEVEL_CHECKPOINT
+#undef AUTODIFF_2_LEVEL_CHECKPOINT
 
 C       >>> Extract adjoint state
 #define ALLOW_AUTODIFF_MONITOR
@@ -53,7 +53,7 @@ c#define ALLOW_INIT_WHTAPEIO
 C ********************************************************************
 C ***                Cost function Package                         ***
 c ********************************************************************
-C 
+C
 
 C       >>> Cost function contributions
 #define ALLOW_ECCO_OLD_FC_PRINT
@@ -70,7 +70,7 @@ C       >>> Atmospheric state and radiation.
 C ********************************************************************
 C ***               Control vector Package                         ***
 C ********************************************************************
-C 
+C
 #define  CTRL_SET_PREC_32
 #define  ALLOW_NONDIMENSIONAL_CONTROL_IO
 
