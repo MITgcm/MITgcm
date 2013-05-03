@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.105 2013/01/21 23:02:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.106 2013/05/03 19:50:11 torge Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -55,17 +55,10 @@ CEndOfInterface
 
 C !LOCAL VARIABLES: ====================================================
 C     i,j,bi,bj :: Loop counters
-#ifdef SEAICE_DEBUG
-CToM<<<
-C     msgBuf      :: Informational/error message buffer
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*10 HlimitMsgFormat
-#endif
 #ifdef SEAICE_ITD
       INTEGER IT
 #endif
 #if defined(ALLOW_AUTODIFF_TAMC) || defined(SEAICE_ITD)
-C>>>ToM
       INTEGER i, j, bi, bj
 #endif
 #ifdef ALLOW_SITRACER
@@ -178,66 +171,11 @@ C--   (called from DO_OCEANIC_PHYSICS) take care of this
 C NOW DO ADVECTION and DIFFUSION
       IF ( SEAICEadvHeff .OR. SEAICEadvArea .OR. SEAICEadvSnow
      &        .OR. SEAICEadvSalt ) THEN
-CToM<<<
-#ifdef SEAICE_ITD
-#ifdef SEAICE_DEBUG
-C     ToM: generate some test output
-       WRITE(HlimitMsgFormat,'(A,I2,A)') '(A,',nITD,'F8.4)'
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-           WRITE(msgBuf,'(A,F8.4,x,F8.4)')
-     &       ' SEAICE_MODEL: AREA and HEFF before advection: ',
-     &       AREA(1,1,bi,bj), HEFF(1,1,bi,bj)
-c     &       ' SEAICE_MODEL: AREA and HEFF/AREA before advection: ',
-c     &       AREA(1,1,bi,bj), HEFF(1,1,bi,bj)/AREA(1,1,bi,bj)
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)
-           WRITE(msgBuf,HlimitMsgFormat)
-     &       ' SEAICE_MODEL: HEFFITD       before advection: ',
-     &       HEFFITD(1,1,:,bi,bj)
-c     &       ' SEAICE_MODEL: HEFFITD/AREAITD before advection: ',
-c     &       HEFFITD(1,1,:,bi,bj) / AREAITD(1,1,:,bi,bj)
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)
-           WRITE(msgBuf,HlimitMsgFormat)
-     &       ' SEAICE_MODEL: AREAITD       before advection: ',
-     &       AREAITD(1,1,:,bi,bj)
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)
-        ENDDO
-       ENDDO
-#endif
-#endif
-C>>>ToM
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL( 'SEAICE_ADVDIFF', myThid )
 #endif
        CALL SEAICE_ADVDIFF( myTime, myIter, myThid )
-CToM<<<
 #ifdef SEAICE_ITD
-#ifdef SEAICE_DEBUG
-C     ToM: generate some test output
-       WRITE(HlimitMsgFormat,'(A,I2,A)') '(A,',nITD,'F8.4)'
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-           WRITE(msgBuf,HlimitMsgFormat)
-     &       ' SEAICE_MODEL: HEFFITD        after advection: ',
-     &       HEFFITD(1,1,:,bi,bj)
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)
-           WRITE(msgBuf,HlimitMsgFormat)
-     &       ' SEAICE_MODEL: AREAITD        after advection: ',
-     &       AREAITD(1,1,:,bi,bj)
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)
-            WRITE(msgBuf,'(A)')
-     &        ' --------------------------------------------- '
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid)
-        ENDDO
-       ENDDO
-#endif
-C
 C     check that all ice thickness categories meet their limits
 C     (includes Hibler-type ridging)
 #ifdef ALLOW_DEBUG
@@ -259,37 +197,10 @@ C     to match single category values
         ENDDO
        ENDDO
 #endif
-C>>>ToM
       ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heffm  = comlev1, key=ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-#ifdef SEAICE_ITD
-#ifdef SEAICE_DEBUG
-C     ToM: generate some test output
-       WRITE(HlimitMsgFormat,'(A,I2,A)') '(A,',nITD,'F8.4)'
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-           WRITE(msgBuf,HlimitMsgFormat)
-     &       ' SEAICE_MODEL: HEFFITD          before growth: ',
-     &       HEFFITD(1,1,:,bi,bj)
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)
-           WRITE(msgBuf,HlimitMsgFormat)
-     &       ' SEAICE_MODEL: AREAITD          before growth: ',
-     &       AREAITD(1,1,:,bi,bj)
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)
-           WRITE(msgBuf,HlimitMsgFormat)
-     &       ' SEAICE_MODEL: HSNOWITD         before growth: ',
-     &       HSNOWITD(1,1,:,bi,bj)
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)
-        ENDDO
-       ENDDO
-#endif
-#endif
 
 #ifndef DISABLE_SEAICE_GROWTH
 C     thermodynamics growth
@@ -300,36 +211,7 @@ C     because of ugly time level business
         IF (debugMode) CALL DEBUG_CALL( 'SEAICE_GROWTH', myThid )
 #endif
         CALL SEAICE_GROWTH( myTime, myIter, myThid )
-CToM<<<
 #ifdef SEAICE_ITD
-#ifdef SEAICE_DEBUG
-C     ToM: generate some test output
-        WRITE(HlimitMsgFormat,'(A,I2,A)') '(A,',nITD,'F8.4)'
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-            WRITE(msgBuf,HlimitMsgFormat)
-     &        ' SEAICE_MODEL: HEFFITD           after growth: ',
-     &        HEFFITD(1,1,:,bi,bj)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid)
-            WRITE(msgBuf,HlimitMsgFormat)
-     &        ' SEAICE_MODEL: AREAITD           after growth: ',
-     &        AREAITD(1,1,:,bi,bj)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid)
-            WRITE(msgBuf,HlimitMsgFormat)
-     &        ' SEAICE_MODEL: HSNOWITD          after growth: ',
-     &        HSNOWITD(1,1,:,bi,bj)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid)
-            WRITE(msgBuf,'(A)')
-     &        ' --------------------------------------------- '
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid)
-         ENDDO
-        ENDDO
-#endif
-C
 C     redistribute sea ice into proper sea ice category after growth/melt
 C     in case model runs with ice thickness distribution
 C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|
@@ -347,37 +229,8 @@ C     store the mean ice thickness in HEFF (for dynamic solver and diagnostics)
          CALL SEAICE_ITD_SUM(bi, bj, myTime, myIter, myThid)
         ENDDO
        ENDDO
-
-#ifdef SEAICE_DEBUG
-C     ToM: generate some test output
-        WRITE(HlimitMsgFormat,'(A,I2,A)') '(A,',nITD,'F8.4)'
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-            WRITE(msgBuf,HlimitMsgFormat)
-     &        ' SEAICE_MODEL: HEFFITD    after final sorting: ',
-     &        HEFFITD(1,1,:,bi,bj)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid)
-            WRITE(msgBuf,HlimitMsgFormat)
-     &        ' SEAICE_MODEL: AREAITD    after final sorting: ',
-     &        AREAITD(1,1,:,bi,bj)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid)
-            WRITE(msgBuf,HlimitMsgFormat)
-     &        ' SEAICE_MODEL: HSNOWITD   after final sorting: ',
-     &        HSNOWITD(1,1,:,bi,bj)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid)
-            WRITE(msgBuf,'(A)')
-     &        ' ============================================= '
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid)
-         ENDDO
-        ENDDO
-#endif
 #endif
 C
-C>>>ToM
        ENDIF
 #endif /* DISABLE_SEAICE_GROWTH */
 
