@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/tamc.h,v 1.5 2013/03/25 18:02:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/tamc.h,v 1.6 2013/05/03 13:38:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -61,11 +61,11 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
       integer    nchklev_1
-      parameter( nchklev_1      =   20 )
+      parameter( nchklev_1      =    5 )
       integer    nchklev_2
       parameter( nchklev_2      =  100 )
       integer    nchklev_3
-      parameter( nchklev_3      =    8 )
+      parameter( nchklev_3      =   32 )
 
 c--   Note always check for the correct sizes of the common blocks!
 
@@ -114,7 +114,7 @@ c     and writing data.
 
       INTEGER act0, act1, act2, act3, act4
       INTEGER max0, max1, max2, max3
-      INTEGER iikey, kkey, passkey, igadkey, 
+      INTEGER iikey, kkey, passkey, igadkey,
      &        itdkey, idynkey, igmkey, iptrkey
 
 c     ================================================================
