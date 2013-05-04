@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_itd_pickup.F,v 1.2 2012/10/23 13:20:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_itd_pickup.F,v 1.3 2013/05/04 17:31:44 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -85,10 +85,12 @@ C     parameters for log-normal distribution (LND)
       _RL LND_dx
       _RL LND_tmp
 C     bin width of distribution
-      PARAMETER(LND_dx=0.1)
-      PARAMETER(LND_iend=INT(100./LND_dx))
-      _RL LND_x  (INT(LND_iend))
-      _RL LND_pdf(INT(LND_iend))
+      PARAMETER( LND_iend = 1000 )
+      PARAMETER( LND_dx = 100.D0 / LND_iend )
+c     PARAMETER(LND_dx=0.1)
+c     PARAMETER(LND_iend=INT(100./LND_dx))
+      _RL LND_x  (LND_iend)
+      _RL LND_pdf(LND_iend)
 C     flag for pickup scheme
       LOGICAL simpleSchemeFlag
 
