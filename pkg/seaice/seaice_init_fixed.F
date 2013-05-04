@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.23 2013/05/03 19:43:09 torge Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.24 2013/05/04 17:32:04 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -196,14 +196,13 @@ C     thickest category is unlimited
       Hlimit(nITD) = 999.9
 
       WRITE(msgBuf,'(A,I2,A)')
-     &     ' SEAICE_INIT_FIXED: ', nITD, 
+     &     ' SEAICE_INIT_FIXED: ', nITD,
      &     ' sea ice thickness categories'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
       WRITE(HlimitMsgFormat,'(A,I2,A)') '(A,',nITD,'F6.2,F6.1)'
       WRITE(msgBuf,HlimitMsgFormat)
-     &     ' SEAICE_INIT_FIXED: Hlimit = ',
-     &     Hlimit(0:nITD-1),Hlimit(nITD)
+     &     ' SEAICE_INIT_FIXED: Hlimit = ', (Hlimit(k),k=0,nITD)
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
 
@@ -375,12 +374,12 @@ C     initialise some diagnostic counters for the JFNK solver
       totalJFNKtimeSteps = 0
 C     this cannot be done here, because globalArea is only defined
 C     after S/R PACKAGES_INIT_FIXED, so we move it to S/R SEAICE_INIT_VARIA
-CML      CALL SEAICE_MAP2VEC( nVec, rAw, rAs, 
+CML      CALL SEAICE_MAP2VEC( nVec, rAw, rAs,
 CML     &     scalarProductMetric, .TRUE., myThid )
 CML      DO bj=myByLo(myThid),myByHi(myThid)
 CML       DO bi=myBxLo(myThid),myBxHi(myThid)
 CML        DO i=1,nVec
-CML         scalarProductMetric(i,1,bi,bj) = 
+CML         scalarProductMetric(i,1,bi,bj) =
 CML     &        scalarProductMetric(i,1,bi,bj)/globalArea
 CML        ENDDO
 CML       ENDDO
