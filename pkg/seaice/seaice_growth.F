@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.187 2013/05/03 20:22:08 torge Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.188 2013/05/04 17:33:03 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -101,7 +101,6 @@ C     msgBuf      :: Informational/error message buffer
       CHARACTER*12 msgBufForm
 #endif
 C     constants
-      _RL pFac
       _RL tempFrz, ICE2SNOW, SNOW2ICE
       _RL QI, QS, recip_QI
       _RL lhSublim
@@ -130,8 +129,10 @@ C     local value (=1/HO or 1/HO_south)
       _RL recip_HO
 C     local value (=1/ice thickness)
       _RL recip_HH
+#ifndef SEAICE_ITD
 C     facilitate multi-category snow implementation
-      _RL pFacSnow
+      _RL pFac, pFacSnow
+#endif
 
 C     temporary variables available for the various computations
       _RL tmpscal0, tmpscal1, tmpscal2, tmpscal3, tmpscal4
@@ -154,10 +155,12 @@ C==   local arrays ==
 C--   TmixLoc        :: ocean surface/mixed-layer temperature (in K)
       _RL TmixLoc       (1:sNx,1:sNy)
 
+#ifndef SEAICE_ITD
 C     actual ice thickness (with upper and lower limit)
       _RL heffActual          (1:sNx,1:sNy)
 C     actual snow thickness
       _RL hsnowActual         (1:sNx,1:sNy)
+#endif
 C     actual ice thickness (with lower limit only) Reciprocal
       _RL recip_heffActual    (1:sNx,1:sNy)
 
@@ -685,7 +688,11 @@ C    also compute total of AREAITD (needed for finishing item 2.5, see below)
            tmpscal2itd(i,j)=tmpscal2itd(i,j) + HEFFITD(I,J,IT,bi,bj)
            tmpscal3itd(i,j)=tmpscal3itd(i,j) + AREAITD(I,J,IT,bi,bj)
            IF (IT .eq. nITD) THEN
-            TICE(I,J,bi,bj)=tmpscal1itd(i,j)/tmpscal2itd(i,j)
+            IF ( tmpscal2itd(i,j).GT.zeroRL ) THEN
+              TICE(I,J,bi,bj)=tmpscal1itd(i,j)/tmpscal2itd(i,j)
+            ELSE
+              TICE(I,J,bi,bj)=celsius2K
+            ENDIF
 C    lines of item 2.5 that were omitted:
 C    in 2.5 these lines are executed before "ridging" is applied to AREA
 C    hence we execute them here before SEAICE_ITD_REDIST is called
@@ -1304,19 +1311,19 @@ C available turbulent flux
 
 #ifdef SEAICE_ITD
 C determine lateral melt rate at floe edges based on an
-C average floe diameter or a floe size distribution 
+C average floe diameter or a floe size distribution
 C following Steele (1992, Tab. 2)
 C ======================================================
         DO J=1,sNy
          DO I=1,sNx
-	  tmpscal1=(theta(I,J,kSurface,bi,bj)-tempFrz)
+          tmpscal1=(theta(I,J,kSurface,bi,bj)-tempFrz)
           tmpscal2=sqrt(0.87 + 0.067*UG(i,j)) * UG(i,j)
 c
 c variable floe diameter following Luepkes et al. (2012, JGR, Equ. 26) with beta=1
           tmpscal3=ONE/(ONE-(floeDiameterMin/floeDiameterMax))
           floeDiameter = floeDiameterMin
      &                 * (tmpscal3 / (tmpscal3-AREApreTH(I,J)))
-	  DO IT=1,nITD
+          DO IT=1,nITD
 C following the idea of SEAICE_areaLossFormula == 1:
            IF (a_QbyATMmult_cover(i,j,it).LT.ZERO .OR.
      &         a_QbyATM_open(i,j) .LT.ZERO .OR.
@@ -1330,16 +1337,16 @@ c            latMeltRate(i,j,it) = (1.6 _d -6 + 13.5 _d -6 * tmpscal2)
 c     &                          * tmpscal1**1.3
 c factor determining fraction of area and ice volume reduction
 c due to lateral melt
-            latMeltFrac(i,j,it) = 
+            latMeltFrac(i,j,it) =
      &       latMeltRate(i,j,it)*SEAICE_deltaTtherm*PI /
-     &       (floeAlpha * floeDiameter) 
+     &       (floeAlpha * floeDiameter)
             latMeltFrac(i,j,it)=max(ZERO, min(latMeltFrac(i,j,it),ONE))
-	   ELSE
+           ELSE
             latMeltRate(i,j,it)=0.0 _d 0
             latMeltFrac(i,j,it)=0.0 _d 0
-	   ENDIF
-	  ENDDO
-	 ENDDO
+           ENDIF
+          ENDDO
+         ENDDO
         ENDDO
 #endif
 
@@ -1433,7 +1440,7 @@ CADJ STORE r_QbyOCN = comlev1_bibj,key=iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
        IF (.NOT.SEAICE_growMeltByConv) THEN
-       
+
 #ifdef SEAICE_ITD
         DO IT=1,nITD
          DO J=1,sNy
@@ -1883,15 +1890,15 @@ C       i.e. change sin AREA only occur when all ice in a category is melted
            DO I=1,sNx
             IF (HEFFITD(I,J,IT,bi,bj).LE.ZERO) THEN
              AREAITD(I,J,IT,bi,bj)=ZERO
-	    ELSE
+            ELSE
 c            actual ice thickness from previous time step
 c            (actual ice thickness not to increase because of lateral melt!)
              tmpscal1=HEFFITDpreTH(I,J,IT)/AREAITDpreTH(I,J,IT)
 c            melt ice laterally based on an average floe sice
 c            following Steele (1992)
-             AREAITD(I,J,IT,bi,bj) = AREAITD(I,J,IT,bi,bj) 
+             AREAITD(I,J,IT,bi,bj) = AREAITD(I,J,IT,bi,bj)
      &                             * (ONE - latMeltFrac(I,J,IT))
-             AREAITD(I,J,IT,bi,bj) = max(ZERO,AREAITD(I,J,IT,bi,bj)) 
+             AREAITD(I,J,IT,bi,bj) = max(ZERO,AREAITD(I,J,IT,bi,bj))
 c            limit area reduction so that actual ice thickness does not increase
              AREAITD(I,J,IT,bi,bj) = max(AREAITD(I,J,IT,bi,bj),
      &                                   HEFFITD(I,J,IT,bi,bj)/tmpscal1)
