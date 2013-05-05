@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.18 2012/11/10 22:19:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.19 2013/05/05 22:38:56 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -236,7 +236,7 @@ C        multi-category fields available, continue reading
 C        update total ice area as well as mean ice and snow thickness
           DO bj=myByLo(myThid),myByHi(myThid)
            DO bi=myBxLo(myThid),myBxHi(myThid)
-            CALL SEAICE_ITD_SUM( bi, bj, 1.0, nIter0, myThid )
+            CALL SEAICE_ITD_SUM( bi, bj, startTime, nIter0, myThid )
            ENDDO
           ENDDO
          ENDIF
