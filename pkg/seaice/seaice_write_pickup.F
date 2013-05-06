@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.17 2013/05/03 19:29:24 torge Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.18 2013/05/06 17:53:39 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -79,6 +79,26 @@ C     record number < 0 : a hack not to write meta files now:
 
 C--   write Sea-Ice Thermodynamics State variables, starting with 3-D fields:
        IF ( .NOT.useThSIce ) THEN
+
+#ifdef SEAICE_ITD
+
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn,fp, nITD, TICES,   -j, myIter,myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'siTICES '
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn,fp, nITD, AREAITD, -j, myIter,myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'siAREAn '
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn,fp, nITD, HEFFITD, -j, myIter,myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'siHEFFn '
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn,fp, nITD, HSNOWITD,-j, myIter,myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'siHSNOWn'
+C-    switch to 2-D fields:
+        nj = -j*nITD
+
+#else /* SEAICE_ITD */
+
         j = j + 1
         nj = nj-1
         IF (SEAICE_multDim.GT.1) THEN
@@ -95,36 +115,19 @@ c         nj = nj*MULTDIM
 C---  continue to write 2-D fields:
         j = j + 1
         nj = nj-1
-#ifdef SEAICE_ITD
-        CALL WRITE_REC_3D_RL(fn, fp, nITD, AREAITD , nj, myIter, myThid)
-        IF (j.LE.listDim) wrFldList(j) = 'siAREAn '
-        nj = nj-nITD+1
-#else
         CALL WRITE_REC_3D_RL( fn, fp,  1, AREA , nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'siAREA  '
-#endif
-
         j = j + 1
         nj = nj-1
-#ifdef SEAICE_ITD
-        CALL WRITE_REC_3D_RL(fn, fp, nITD, HEFFITD , nj, myIter, myThid)
-        IF (j.LE.listDim) wrFldList(j) = 'siHEFFn '
-        nj = nj-nITD+1
-#else
         CALL WRITE_REC_3D_RL( fn, fp,  1, HEFF , nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'siHEFF  '
-#endif
-
         j = j + 1
         nj = nj-1
-#ifdef SEAICE_ITD
-        CALL WRITE_REC_3D_RL(fn, fp, nITD, HSNOWITD, nj, myIter, myThid)
-        IF (j.LE.listDim) wrFldList(j) = 'siHSNOWn'
-        nj = nj-nITD+1
-#else
         CALL WRITE_REC_3D_RL( fn, fp,  1, HSNOW , nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'siHSNOW '
-#endif
+
+#endif /* SEAICE_ITD */
+
 #ifdef SEAICE_VARIABLE_SALINITY
         j = j + 1
         nj = nj-1
