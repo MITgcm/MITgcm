@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.63 2012/09/04 14:24:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.64 2013/05/08 00:06:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -80,9 +80,10 @@ C     data.pkg namelists
      &          useStreamIce,
      &          useICEFRONT,
      &          useThSIce,
+     &          useLand,
      &          useATM2D,
      &          useAIM,
-     &          useLand,
+     &          useAtm_Phys,
      &          useFizhi,
      &          useGridAlt,
      &          useDiagnostics,
@@ -141,9 +142,10 @@ c     useGAD          =.FALSE.
       useStreamIce    =.FALSE.
       useICEFRONT     =.FALSE.
       useThSIce       =.FALSE.
+      useLand         =.FALSE.
       useATM2D        =.FALSE.
       useAIM          =.FALSE.
-      useLand         =.FALSE.
+      useAtm_Phys     =.FALSE.
       useFizhi        =.FALSE.
       useGridAlt      =.FALSE.
       useDiagnostics  =.FALSE.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.61 2012/06/22 02:03:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.62 2013/05/08 00:06:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -126,16 +126,26 @@ C     If taveFreq is finite, make sure the pkg/timeave is being compiled
 
 C---  Continue with standard packages (with standard usePKG flag)
 
-#ifdef ALLOW_RUNCLOCK
-      IF (useRunClock) CALL RUNCLOCK_CHECK( myThid )
+#ifdef ALLOW_OBCS
+      IF (useOBCS) CALL OBCS_CHECK( myThid )
 #else
-      IF (useRunClock) CALL PACKAGES_ERROR_MSG('RunClock',' ',myThid)
+      IF (useOBCS) CALL PACKAGES_ERROR_MSG('OBCS',' ',myThid)
 #endif
 
-#ifdef ALLOW_KPP
-      IF (useKPP) CALL KPP_CHECK( myThid )
+#ifndef ALLOW_SHAP_FILT
+      IF (useSHAP_FILT)
+     &   CALL PACKAGES_ERROR_MSG( 'SHAP_FILT', ' ', myThid )
+#endif
+
+#ifndef ALLOW_ZONAL_FILT
+      IF (useZONAL_FILT)
+     &   CALL PACKAGES_ERROR_MSG( 'ZONAL_FILT', ' ', myThid )
+#endif
+
+#ifdef ALLOW_OPPS
+      IF (useOPPS) CALL OPPS_CHECK( myThid )
 #else
-      IF (useKPP) CALL PACKAGES_ERROR_MSG('KPP',' ',myThid)
+      IF (useOPPS) CALL PACKAGES_ERROR_MSG('OPPS',' ',myThid)
 #endif
 
 #ifdef ALLOW_PP81
@@ -156,10 +166,10 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useGGL90) CALL PACKAGES_ERROR_MSG('GGL90',' ',myThid)
 #endif
 
-#ifdef ALLOW_OPPS
-      IF (useOPPS) CALL OPPS_CHECK( myThid )
+#ifdef ALLOW_KPP
+      IF (useKPP) CALL KPP_CHECK( myThid )
 #else
-      IF (useOPPS) CALL PACKAGES_ERROR_MSG('OPPS',' ',myThid)
+      IF (useKPP) CALL PACKAGES_ERROR_MSG('KPP',' ',myThid)
 #endif
 
 #ifdef ALLOW_GMREDI
@@ -168,21 +178,15 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useGMRedi) CALL PACKAGES_ERROR_MSG('GMRedi',' ',myThid)
 #endif
 
-#ifndef ALLOW_DOWN_SLOPE
-      IF (useDOWN_SLOPE)
-     &            CALL PACKAGES_ERROR_MSG('DOWN_SLOPE',' ',myThid)
-#endif
-
 #ifdef ALLOW_BBL
       IF (useBBL) CALL BBL_CHECK( myThid )
 #else
       IF (useBBL) CALL PACKAGES_ERROR_MSG('BBL',' ',myThid)
 #endif
 
-#ifdef ALLOW_OBCS
-      IF (useOBCS) CALL OBCS_CHECK( myThid )
-#else
-      IF (useOBCS) CALL PACKAGES_ERROR_MSG('OBCS',' ',myThid)
+#ifndef ALLOW_DOWN_SLOPE
+      IF (useDOWN_SLOPE)
+     &            CALL PACKAGES_ERROR_MSG('DOWN_SLOPE',' ',myThid)
 #endif
 
 #ifndef ALLOW_CAL
@@ -208,34 +212,8 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useCheapAML) CALL PACKAGES_ERROR_MSG('CheapAML',' ',myThid)
 #endif
 
-#ifndef ALLOW_FRAZIL
-      IF (useFRAZIL) CALL PACKAGES_ERROR_MSG('FRAZIL',' ',myThid)
-#endif
-
-#ifdef ALLOW_THSICE
-      IF (useThSIce) CALL THSICE_CHECK( myThid )
-#else
-      IF (useThSIce) CALL PACKAGES_ERROR_MSG('ThSIce',' ',myThid)
-#endif
-
-#ifndef ALLOW_ATM2D
-      IF (useATM2D) CALL PACKAGES_ERROR_MSG('ATM2D',' ',myThid)
-#endif
-
-#ifndef ALLOW_AIM
-      IF (useAIM) CALL PACKAGES_ERROR_MSG('AIM',' ',myThid)
-#endif
-
-#ifndef ALLOW_LAND
-      IF (useLand) CALL PACKAGES_ERROR_MSG('Land',' ',myThid)
-#endif
-
-#ifndef ALLOW_FIZHI
-      IF (useFizhi) CALL PACKAGES_ERROR_MSG('Fizhi',' ',myThid)
-#endif
-
-#ifndef ALLOW_GRIDALT
-      IF (useGridAlt) CALL PACKAGES_ERROR_MSG('GridAlt',' ',myThid)
+#ifndef ALLOW_FLT
+      IF (useFLT) CALL PACKAGES_ERROR_MSG('FLT',' ',myThid)
 #endif
 
 #ifdef ALLOW_PTRACERS
@@ -262,24 +240,8 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useMATRIX) CALL PACKAGES_ERROR_MSG('MATRIX',' ',myThid)
 #endif
 
-#ifndef ALLOW_SHAP_FILT
-      IF (useSHAP_FILT)
-     &   CALL PACKAGES_ERROR_MSG( 'SHAP_FILT', ' ', myThid )
-#endif
-
-#ifndef ALLOW_ZONAL_FILT
-      IF (useZONAL_FILT)
-     &   CALL PACKAGES_ERROR_MSG( 'ZONAL_FILT', ' ', myThid )
-#endif
-
-#ifndef ALLOW_FLT
-      IF (useFLT) CALL PACKAGES_ERROR_MSG('FLT',' ',myThid)
-#endif
-
-#ifdef ALLOW_SBO
-      IF (useSBO) CALL SBO_CHECK( myThid )
-#else
-      IF (useSBO) CALL PACKAGES_ERROR_MSG('SBO',' ',myThid)
+#ifndef ALLOW_FRAZIL
+      IF (useFRAZIL) CALL PACKAGES_ERROR_MSG('FRAZIL',' ',myThid)
 #endif
 
 #ifdef ALLOW_SEAICE
@@ -312,6 +274,36 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useICEFRONT) CALL PACKAGES_ERROR_MSG('ICEFRONT',' ',myThid)
 #endif
 
+#ifdef ALLOW_THSICE
+      IF (useThSIce) CALL THSICE_CHECK( myThid )
+#else
+      IF (useThSIce) CALL PACKAGES_ERROR_MSG('ThSIce',' ',myThid)
+#endif
+
+#ifndef ALLOW_LAND
+      IF (useLand) CALL PACKAGES_ERROR_MSG('Land',' ',myThid)
+#endif
+
+#ifndef ALLOW_ATM2D
+      IF (useATM2D) CALL PACKAGES_ERROR_MSG('ATM2D',' ',myThid)
+#endif
+
+#ifndef ALLOW_AIM
+      IF (useAIM) CALL PACKAGES_ERROR_MSG('AIM',' ',myThid)
+#endif
+
+#ifndef ALLOW_ATM_PHYS
+      IF (useAtm_Phys) CALL PACKAGES_ERROR_MSG('Atm_Phys',' ',myThid)
+#endif
+
+#ifndef ALLOW_FIZHI
+      IF (useFizhi) CALL PACKAGES_ERROR_MSG('Fizhi',' ',myThid)
+#endif
+
+#ifndef ALLOW_GRIDALT
+      IF (useGridAlt) CALL PACKAGES_ERROR_MSG('GridAlt',' ',myThid)
+#endif
+
 #ifdef ALLOW_AUTODIFF
       CALL AUTODIFF_CHECK( myThid )
 #endif
@@ -334,6 +326,16 @@ C---  Continue with standard packages (with standard usePKG flag)
 
 #ifndef ALLOW_PROFILES
       IF (usePROFILES) CALL PACKAGES_ERROR_MSG('PROFILES',' ',myThid)
+#endif
+
+#ifdef ALLOW_SBO
+      IF (useSBO) CALL SBO_CHECK( myThid )
+#else
+      IF (useSBO) CALL PACKAGES_ERROR_MSG('SBO',' ',myThid)
+#endif
+
+#ifdef ALLOW_ECCO
+      CALL ECCO_CHECK( myThid )
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -375,8 +377,10 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useOASIS) CALL PACKAGES_ERROR_MSG('OASIS',' ',myThid)
 #endif
 
-#ifdef ALLOW_ECCO
-      CALL ECCO_CHECK( myThid )
+#ifdef ALLOW_RUNCLOCK
+      IF (useRunClock) CALL RUNCLOCK_CHECK( myThid )
+#else
+      IF (useRunClock) CALL PACKAGES_ERROR_MSG('RunClock',' ',myThid)
 #endif
 
 #ifndef ALLOW_EMBED_FILES

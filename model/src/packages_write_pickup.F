@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.39 2011/08/07 07:08:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.40 2013/05/08 00:06:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -77,12 +77,51 @@ C     Write restart file for 2nd-Order moment (active) Tracers
       ENDIF
 #endif  /* ALLOW_OBCS */
 
+#ifdef  ALLOW_GGL90
+      IF ( useGGL90 ) THEN
+        CALL GGL90_WRITE_PICKUP( permPickup,
+     I                      suffix, myTime, myIter, myThid )
+      ENDIF
+#endif  /* ALLOW_GGL90 */
+
 #ifdef ALLOW_BBL
       IF (useBBL) THEN
         CALL BBL_WRITE_PICKUP( permPickup,
      I                      suffix, myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
+
+#ifdef ALLOW_CHEAPAML
+C     Write restart file for CHEAPAML pkg
+      IF ( useCheapAML ) THEN
+         CALL CHEAPAML_WRITE_PICKUP( permPickup,
+     I                      suffix, myTime, myIter, myThid)
+       ENDIF
+#endif /* ALLOW_CHEAPAML */
+
+#ifdef ALLOW_FLT
+C     Write restart file for floats
+      IF (useFLT) THEN
+        CALL FLT_WRITE_PICKUP(
+     &                  suffix, myTime, myIter, myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_PTRACERS
+C     Write restart file for passive tracers
+      IF (usePTRACERS) THEN
+        CALL PTRACERS_WRITE_PICKUP( permPickup,
+     I                      suffix, myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_PTRACERS */
+
+#ifdef ALLOW_GCHEM
+C     Write restart file for GCHEM pkg & GCHEM sub-packages
+      IF ( useGCHEM ) THEN
+        CALL GCHEM_WRITE_PICKUP( permPickup,
+     I                      suffix, myTime, myIter, myThid )
+      ENDIF
+#endif
 
 #ifdef  ALLOW_SEAICE
       IF ( useSEAICE ) THEN
@@ -98,21 +137,6 @@ C     Write restart file for 2nd-Order moment (active) Tracers
       ENDIF
 #endif /* ALLOW_THSICE */
 
-#ifdef  COMPONENT_MODULE
-      IF (useCoupler) THEN
-        CALL CPL_WRITE_PICKUP(
-     &                 suffix, myTime, myIter, myThid )
-      ENDIF
-#endif  /* COMPONENT_MODULE */
-
-#ifdef ALLOW_FLT
-C     Write restart file for floats
-      IF (useFLT) THEN
-        CALL FLT_WRITE_PICKUP(
-     &                  suffix, myTime, myIter, myThid )
-      ENDIF
-#endif
-
 #ifdef ALLOW_LAND
 C     Write pickup file for Land package:
       IF (useLand) THEN
@@ -120,6 +144,13 @@ C     Write pickup file for Land package:
      &                  suffix, myTime, myIter, myThid )
       ENDIF
 #endif
+
+#ifdef ALLOW_ATM_PHYS
+      IF ( useAtm_Phys ) THEN
+        CALL ATM_PHYS_WRITE_PICKUP( permPickup,
+     I                      suffix, myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_FIZHI
 C     Write pickup file for fizhi package
@@ -138,36 +169,12 @@ C     Write pickup file for diagnostics package
       ENDIF
 #endif
 
-#ifdef  ALLOW_GGL90
-      IF ( useGGL90 ) THEN
-        CALL GGL90_WRITE_PICKUP( permPickup,
-     I                      suffix, myTime, myIter, myThid )
+#ifdef  COMPONENT_MODULE
+      IF (useCoupler) THEN
+        CALL CPL_WRITE_PICKUP(
+     &                 suffix, myTime, myIter, myThid )
       ENDIF
-#endif  /* ALLOW_GGL90 */
-
-#ifdef ALLOW_PTRACERS
-C     Write restart file for passive tracers
-      IF (usePTRACERS) THEN
-        CALL PTRACERS_WRITE_PICKUP( permPickup,
-     I                      suffix, myTime, myIter, myThid )
-      ENDIF
-#endif /* ALLOW_PTRACERS */
-
-#ifdef ALLOW_GCHEM
-C     Write restart file for GCHEM pkg & GCHEM sub-packages
-      IF ( useGCHEM ) THEN
-        CALL GCHEM_WRITE_PICKUP( permPickup,
-     I                      suffix, myTime, myIter, myThid )
-      ENDIF
-#endif
-
-#ifdef ALLOW_CHEAPAML
-C     Write restart file for CHEAPAML pkg
-      IF ( useCheapAML ) THEN
-         CALL CHEAPAML_WRITE_PICKUP( permPickup,
-     I                      suffix, myTime, myIter, myThid)
-       ENDIF
-#endif /* ALLOW_CHEAPAML */
+#endif  /* COMPONENT_MODULE */
 
 #ifdef ALLOW_MYPACKAGE
       IF (useMYPACKAGE) THEN

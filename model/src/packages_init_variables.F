@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.90 2012/09/28 14:19:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.91 2013/05/08 00:06:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -21,7 +21,7 @@ C     PACKAGES_INIT_VARIABLES
 C       |
 C       |-- DIAGNOSTICS_INIT_VARIA
 C       |
-C       |-- GAD_GAD_INIT_VARIA
+C       |-- GAD_INIT_VARIA
 C       |
 C       |-- CD_CODE_INI_VARS
 C       |
@@ -51,9 +51,15 @@ C       |-- STREAMICE_INIT_VARIA
 C       |
 C       |-- PTRACERS_INIT_VARIA
 C       |
+C       |-- LONGSTEP_INIT_VARIA
+C       |
+C       |-- OFFLINE_INIT_VARIA
+C       |
 C       |-- GCHEM_INIT_VARI
 C       |
 C       |-- LAND_INI_VARS
+C       |
+C       |-- SMOOTH_INIT_VARIA
 C       |
 C       |-- CTRL_INIT_VARIABLES
 C       |-- CTRL_MAP_INI_ECCO
@@ -77,6 +83,8 @@ C       |
 C       |-- CPL_INI_VARS
 C       |
 C       |-- ATM2D_INIT_VARS
+C       |
+C       |-- ATM_PHYS_INIT_VARIA
 C       |
 C       |-- FIZHI_INI_VARS
 C       |
@@ -405,6 +413,15 @@ C--   Initialize NEST in PARENT configuration
       ENDIF
 #endif /* ALLOW_ATM2D */
 
+#ifdef ALLOW_ATM_PHYS
+      IF (useAtm_Phys) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('ATM_PHYS_INIT_VARIA',myThid)
+# endif
+        CALL ATM_PHYS_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_ATM_PHYS */
+
 #ifdef ALLOW_FIZHI
 C Initialize FIZHI state variables
       IF (useFIZHI) THEN
@@ -437,7 +454,9 @@ C Initialize FIZHI state variables
 #endif /* ALLOW_REGRID */
 
 #ifdef ALLOW_LAYERS
-      IF ( useLayers ) CALL LAYERS_INIT_VARIA( myThid )
+      IF ( useLayers ) THEN
+        CALL LAYERS_INIT_VARIA( myThid )
+      ENDIF
 #endif /* ALLOW_LAYERS */
 
 #ifdef ALLOW_SALT_PLUME
