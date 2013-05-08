@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_diagnostics_init.F,v 1.3 2012/03/04 23:11:20 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_diagnostics_init.F,v 1.4 2013/05/08 18:01:40 jmc Exp $
 C $Name:  $
 
 #include "FRAZIL_OPTIONS.h"
@@ -32,7 +32,7 @@ C              cf head of S/R DIAGNOSTICS_INIT_EARLY or DIAGNOSTICS_MAIN_INIT
 C     diagUnits :: local string (16c): physical units of a diagnostic field
 C     diagTitle :: local string (80c): description of field in diagnostic
       INTEGER       diagNum
-      INTEGER       diagMate
+c     INTEGER       diagMate
       CHARACTER*8   diagName
       CHARACTER*16  diagCode
       CHARACTER*16  diagUnits
