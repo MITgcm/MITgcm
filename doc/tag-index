@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1864 2013/05/06 18:04:38 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1865 2013/05/08 00:08:31 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o new pkg: atm_phys
+  - add entry point for new pkg "atm_phys" (atmospheric physics pkg
+    from P. O'Gorman and T. Schneider, JCl, 2008).
+  - re-order sequence of calls within packages_readparms.F,
+     packages_init_fixed.F and packages_write_pickup.F
+    (but skip packages_init_variables.F because of TAF issues).
 o pkg/seaice (ITD code):
   - simplify and fix the writing of pickup-files for ITD case
 o pkg/seaice (ITD code):
