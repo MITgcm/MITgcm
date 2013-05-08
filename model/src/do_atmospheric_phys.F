@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_atmospheric_phys.F,v 1.10 2013/01/21 23:07:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_atmospheric_phys.F,v 1.11 2013/05/08 00:07:44 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -54,7 +54,16 @@ C     bi, bj
         CALL FIZHI_UPDATE_TIME ( myIter, myThid, deltaTClock )
         CALL TIMER_STOP ('FIZHI          [DO_ATMOSPHERIC_PHYS]',myThid)
       ENDIF
-#endif
+#endif /* ALLOW_FIZHI */
+
+#ifdef ALLOW_ATM_PHYS
+C     Atmospheric Physics package - Atm_Phys - main driver
+      IF ( useAtm_Phys ) THEN
+        CALL TIMER_START('ATM_PHYS_DRIVER [DO_ATMOSPHERIC_PHYS]',myThid)
+        CALL ATM_PHYS_DRIVER( myTime, myIter, myThid )
+        CALL TIMER_STOP( 'ATM_PHYS_DRIVER [DO_ATMOSPHERIC_PHYS]',myThid)
+      ENDIF
+#endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_AIM
       IF ( useAIM ) THEN

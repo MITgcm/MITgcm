@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.62 2013/02/03 03:30:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.63 2013/05/08 00:07:44 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,6 +64,12 @@ C--   Forcing term
      &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
      &                      myTime, myThid )
 #endif /* ALLOW_AIM */
+
+#ifdef ALLOW_ATM_PHYS
+      IF ( useAtm_Phys ) CALL ATM_PHYS_TENDENCY_APPLY_U(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myTime, myThid )
+#endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_U(
@@ -175,6 +181,12 @@ C--   Forcing term
      &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
      &                      myTime, myThid )
 #endif /* ALLOW_AIM */
+
+#ifdef ALLOW_ATM_PHYS
+      IF ( useAtm_Phys ) CALL ATM_PHYS_TENDENCY_APPLY_V(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myTime, myThid )
+#endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_V(
@@ -299,6 +311,12 @@ C--   Forcing term
      &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
      &                      myTime, myThid )
 #endif /* ALLOW_AIM */
+
+#ifdef ALLOW_ATM_PHYS
+      IF ( useAtm_Phys ) CALL ATM_PHYS_TENDENCY_APPLY_T(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myTime, myThid )
+#endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_T(
@@ -581,6 +599,12 @@ C--   Forcing term
      &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
      &                      myTime, myThid )
 #endif /* ALLOW_AIM */
+
+#ifdef ALLOW_ATM_PHYS
+      IF ( useAtm_Phys ) CALL ATM_PHYS_TENDENCY_APPLY_S(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myTime, myThid )
+#endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_S(
