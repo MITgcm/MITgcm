@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1866 2013/05/09 19:08:41 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1867 2013/05/10 20:19:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/offline:
+  - call OFFLINE_FIELDS_LOAD from pkg/offline/offline_init_varia.F
+    (previously called from pkg/dic_surfforcing_init.F)
+o model/src:
+  - re-order sequence of calls within packages_init_variables.F, using
+    standard order, except for:
+     DIAGNOSTICS_INIT_VARIA and OFFLINE_INIT_VARIA (called @ the top),
+     CTRL_MAP_INI and OBCS_INIT_VARIABLES (called @ the bottom)
 o new pkg: atm_phys
   - add entry point and source code (previously in contrib
       verification_other/atm_gray/code_gray/) for new pkg "atm_phys"
