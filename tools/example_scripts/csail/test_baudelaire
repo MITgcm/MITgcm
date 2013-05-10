@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.17 2013/04/06 21:38:17 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.18 2013/05/10 20:24:07 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu
 #  Linux machines.
@@ -32,9 +32,9 @@ checkOut=1
 sepDir=1
 option=
 tst_list='g7a adm mpa g77 gfo+rs mth mp2+rs mpi ifc'
-if test "x$dInWeek" = xSun ; then tst_list="$tst_list tlm" ; fi
+if test "x$dInWeek" = xSun ; then tst_list="$tst_list tlm oad" ; fi
 #tst_list='g77 adm gfo ifc mth pgi+rs'
-#tst_list='adm gfo+rs mth'
+#tst_list='g77 gfo+rs mth'
 
 #option="-nc" ; checkOut=0
 #option="-q"  ; checkOut=0
@@ -119,6 +119,8 @@ do
   comm="./testreport"
   if test $typ = 'g7a' -o  $typ = 'adm' -o  $typ = 'mpa' ; then
     comm="$comm -adm"
+  elif test $typ = 'oad' ; then
+    comm="$comm -oad"
   elif test $typ = 'tlm' ; then
     comm="$comm -tlm"
   elif test $typ = 'mth' -o  $typ = 'mp2' ; then
@@ -133,7 +135,7 @@ do
   MPI=0
   case $typ in
    'g77'|'g7a')		OPTFILE='../tools/build_options/linux_amd64_g77' ;;
-   'gfo'|'adm'|'tlm'|'mth') comm="$comm -match $MC -devel"
+   'gfo'|'adm'|'oad'|'tlm'|'mth') comm="$comm -match $MC -devel"
 			OPTFILE='../tools/build_options/linux_amd64_gfortran' ;;
    'ifc')		OPTFILE='../tools/build_options/linux_amd64_ifort11' ;;
    'pgi')		OPTFILE='../tools/build_options/linux_amd64_pgf77' ;;
@@ -152,6 +154,9 @@ do
   fi
 
 #-- set specific Env Vars:
+  if test $typ = 'oad' ; then
+    source ~jmc/mitgcm/bin/setenv_OpenAD.sh
+  fi
   if test $typ = 'ifc' ; then
     source /srv/software/intel/intel-11.1.073/bin/ifortvars.sh intel64
   fi
