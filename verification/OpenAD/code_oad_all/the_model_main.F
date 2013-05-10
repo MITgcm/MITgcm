@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_model_main.F,v 1.5 2013/03/22 13:04:34 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_model_main.F,v 1.6 2013/05/10 21:10:56 jahn Exp $
 
 CBOI
 C
@@ -623,7 +623,9 @@ C--   Call time stepping loop of full model
       our_rev_mode%plain=.FALSE.
       our_rev_mode%tape=.FALSE.
       our_rev_mode%adjoint=.TRUE.
-      fc%d=1.0
+      IF (myProcID .EQ. 0) THEN
+        fc%d=1.0
+      ENDIF
       call timeratio()
       CALL OpenAD_THE_MAIN_LOOP( myCurrentTime, myCurrentIter, myThid )
       call timeratio()
