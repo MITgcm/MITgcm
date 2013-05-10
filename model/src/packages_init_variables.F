@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.91 2013/05/08 00:06:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.92 2013/05/10 00:19:33 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -25,62 +25,61 @@ C       |-- GAD_INIT_VARIA
 C       |
 C       |-- CD_CODE_INI_VARS
 C       |
-C       |-- GMREDI_INIT_VARIA
-C       |
-C       |-- DWNSLP_INIT_VARIA
-C       |
-C       |-- BBL_INIT_VARIA
-C       |
-C       |-- KPP_INIT_VARIA
-C       |
 C       |-- PP81_INIT_VARIA
 C       |
 C       |-- MY82_INIT_VARIA
 C       |
 C       |-- GGL90_INIT_VARIA
 C       |
-C       |-- FRAZIL_INIT_VARIA
+C       |-- KPP_INIT_VARIA
 C       |
-C       |-- SEAICE_INIT_VARIA
+C       |-- GMREDI_INIT_VARIA
 C       |
-C       |-- SHELFICE_INIT_VARIA
+C       |-- BBL_INIT_VARIA
 C       |
-C       |-- ICEFRONT_INIT_VARIA
-C       |
-C       |-- STREAMICE_INIT_VARIA
-C       |
-C       |-- PTRACERS_INIT_VARIA
-C       |
-C       |-- LONGSTEP_INIT_VARIA
-C       |
-C       |-- OFFLINE_INIT_VARIA
-C       |
-C       |-- GCHEM_INIT_VARI
-C       |
-C       |-- LAND_INI_VARS
-C       |
-C       |-- SMOOTH_INIT_VARIA
-C       |
-C       |-- CTRL_INIT_VARIABLES
-C       |-- CTRL_MAP_INI_ECCO
-C       |-- CTRL_MAP_INI
+C       |-- DWNSLP_INIT_VARIA
 C       |
 C       |-- EXF_INIT
 C       |
+C       |-- BULKF_INIT_VARIA
+C       |
 C       |-- EBM_INI_VARS
+C       |
+C       |-- CHEAPAML_INIT_VARIA
+C       |
+C       |-- SMOOTH_INIT_VARIA
 C       |
 C       |-- PROFILES_INIT_VARIA
 C       |
 C       |-- FLT_INIT_VARIA
 C       |
-C       |-- BULKF_INIT_VARIA
+C       |-- OFFLINE_INIT_VARIA
+C       |
+C       |-- PTRACERS_INIT_VARIA
+C       |
+C       |-- LONGSTEP_INIT_VARIA
+C       |
+C       |-- GCHEM_INIT_VARI
+C       |
+C       |-- RBCS_INIT_VARIA
+C       |
+C       |-- MATRIX_INIT_VARIA
+C       |
+C       |-- FRAZIL_INIT_VARIA
+C       |
+C       |-- SEAICE_INIT_VARIA
+C       |
+C       |-- SALT_PLUME_INIT_VARIA
+C       |
+C       |-- SHELFICE_INIT_VARIA
+C       |
+C       |-- STREAMICE_INIT_VARIA
+C       |
+C       |-- ICEFRONT_INIT_VARIA
 C       |
 C       |-- THSICE_INI_VARS
 C       |
-C       |-- NEST_CHILD_INIT_VARIA
-C       |-- NEST_PARENT_INIT_VARIA
-C       |
-C       |-- CPL_INI_VARS
+C       |-- LAND_INI_VARS
 C       |
 C       |-- ATM2D_INIT_VARS
 C       |
@@ -88,19 +87,20 @@ C       |-- ATM_PHYS_INIT_VARIA
 C       |
 C       |-- FIZHI_INI_VARS
 C       |
-C       |-- MATRIX_INIT_VARIA
-C       |
-C       |-- RBCS_INIT_VARIA
-C       |
 C       |-- REGRID_INIT_VARIA
 C       |
 C       |-- LAYERS_INIT_VARIA
 C       |
-C       |-- SALT_PLUME_INIT_VARIA
+C       |-- NEST_CHILD_INIT_VARIA
+C       |-- NEST_PARENT_INIT_VARIA
 C       |
-C       |-- CHEAPAML_INIT_VARIA
+C       |-- CPL_INI_VARS
 C       |
 C       |-- MYPACKAGE_INIT_VARIA
+C       |
+C       |-- CTRL_INIT_VARIABLES
+C       |-- CTRL_MAP_INI_ECCO
+C       |-- CTRL_MAP_INI
 C       |
 C       |-- OBCS_INIT_VARIABLES
 
@@ -154,38 +154,6 @@ C             therefore call CD-ini-vars before others pkg.
       ENDIF
 #endif /* ALLOW_CD_CODE */
 
-#ifdef ALLOW_GMREDI
-C--   Initialize GM/Redi parameterization
-      IF (useGMRedi) THEN
-# ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('GMREDI_INIT_VARIA',myThid)
-# endif
-        CALL GMREDI_INIT_VARIA( myThid )
-      ENDIF
-#endif /* ALLOW_GMREDI */
-
-#ifdef ALLOW_DOWN_SLOPE
-      IF ( useDOWN_SLOPE ) THEN
-        CALL DWNSLP_INIT_VARIA( myThid )
-      ENDIF
-#endif /* ALLOW_DOWN_SLOPE */
-
-#ifdef ALLOW_BBL
-      IF ( useBBL ) THEN
-        CALL BBL_INIT_VARIA( myThid )
-      ENDIF
-#endif /* ALLOW_BBL */
-
-#ifdef ALLOW_KPP
-C--   Initialize KPP vertical mixing scheme.
-      IF (useKPP) THEN
-# ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('KPP_INIT_VARIA',myThid)
-# endif
-       CALL KPP_INIT_VARIA( myThid )
-      ENDIF
-#endif /* ALLOW_KPP */
-
 #ifdef ALLOW_PP81
 C--   Initialize PP81 vertical mixing scheme.
       IF (usePP81) THEN
@@ -213,51 +181,97 @@ C--   Initialize GGL90 vertical mixing scheme.
       ENDIF
 #endif /* ALLOW_GGL90 */
 
-#ifdef ALLOW_FRAZIL
-      IF (useFRAZIL) THEN
+#ifdef ALLOW_KPP
+C--   Initialize KPP vertical mixing scheme.
+      IF (useKPP) THEN
 # ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('FRAZIL_INIT_VARIA',myThid)
+       IF (debugMode) CALL DEBUG_CALL('KPP_INIT_VARIA',myThid)
 # endif
-        CALL FRAZIL_INIT_VARIA( myThid)
+       CALL KPP_INIT_VARIA( myThid )
       ENDIF
-#endif /* ALLOW_FRAZIL */
+#endif /* ALLOW_KPP */
 
-#ifdef ALLOW_SEAICE
-C--   Initialize SEAICE model.
-      IF (useSEAICE) THEN
+#ifdef ALLOW_GMREDI
+C--   Initialize GM/Redi parameterization
+      IF (useGMRedi) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('SEAICE_INIT_VARIA',myThid)
+        IF (debugMode) CALL DEBUG_CALL('GMREDI_INIT_VARIA',myThid)
 # endif
-       CALL SEAICE_INIT_VARIA( myThid )
+        CALL GMREDI_INIT_VARIA( myThid )
       ENDIF
-#endif /* ALLOW_SEAICE */
+#endif /* ALLOW_GMREDI */
 
-#ifdef ALLOW_SHELFICE
-      IF (useShelfIce) THEN
-# ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('SHELFICE_INIT_VARIA',myThid)
-# endif
-       CALL SHELFICE_INIT_VARIA( myThid )
+#ifdef ALLOW_BBL
+      IF ( useBBL ) THEN
+        CALL BBL_INIT_VARIA( myThid )
       ENDIF
-#endif /* ALLOW_SHELFICE */
+#endif /* ALLOW_BBL */
 
-#ifdef ALLOW_ICEFRONT
-      IF (useICEFRONT) THEN
-# ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('ICEFRONT_INIT_VARIA',myThid)
-# endif
-       CALL ICEFRONT_INIT_VARIA( myThid )
+#ifdef ALLOW_DOWN_SLOPE
+      IF ( useDOWN_SLOPE ) THEN
+        CALL DWNSLP_INIT_VARIA( myThid )
       ENDIF
-#endif /* ALLOW_ICEFRONT */
+#endif /* ALLOW_DOWN_SLOPE */
 
-#ifdef ALLOW_STREAMICE
-cph      IF (useStreamIce) THEN
+#ifdef ALLOW_EXF
+      IF (useEXF) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('STREAMICE_INIT_VARIA',myThid)
+       IF (debugMode) CALL DEBUG_CALL('EXF_INIT',myThid)
 # endif
-       CALL STREAMICE_INIT_VARIA( myThid )
-cph      ENDIF
-#endif /* ALLOW_STREAMICE */
+       CALL EXF_INIT( myThid )
+      ENDIF
+#endif /* ALLOW_EXF */
+
+#ifdef ALLOW_BULK_FORCE
+      IF (useBulkForce) THEN
+        CALL BULKF_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_BULK_FORCE */
+
+#ifdef ALLOW_EBM
+# ifdef ALLOW_AUTODIFF
+CADJ STORE theta = tapelev_init, key = 1
+# endif
+      IF (useEBM) THEN
+        CALL EBM_INI_VARS( myThid )
+      ENDIF
+#endif /* ALLOW_EBM */
+
+#ifdef ALLOW_CHEAPAML
+      IF (useCheapAML) THEN
+        CALL CHEAPAML_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_CHEAPAML */
+
+#ifdef ALLOW_SMOOTH
+      CALL SMOOTH_INIT_VARIA(myThid)
+#endif /* ALLOW_SMOOTH */
+
+#ifdef ALLOW_PROFILES
+C--   Initialise Profiles cost function.
+      IF (usePROFILES) THEN
+        CALL PROFILES_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_PROFILES */
+
+#ifdef ALLOW_FLT
+C--   Initialise float position
+      IF ( useFLT ) THEN
+        CALL FLT_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_FLT */
+
+#ifdef ALLOW_OFFLINE
+C--   better to call OFFLINE_INIT_VARIA before GCHEM_INIT_VARI
+C      (which calls --> DIC_SURFFORCING_INIT --> OFFLINE_FIELDS_LOAD )
+# ifndef ALLOW_AUTODIFF_TAMC
+      IF ( useOFFLINE ) THEN
+# endif
+        CALL OFFLINE_INIT_VARIA( myThid )
+# ifndef ALLOW_AUTODIFF_TAMC
+      ENDIF
+# endif
+#endif /* ALLOW_OFFLINE */
 
 #ifdef ALLOW_PTRACERS
 # ifndef ALLOW_AUTODIFF_TAMC
@@ -278,91 +292,78 @@ cph      ENDIF
 # endif
 #endif /* ALLOW_PTRACERS */
 
-#ifdef ALLOW_OFFLINE
-# ifndef ALLOW_AUTODIFF_TAMC
-      IF ( useOFFLINE ) THEN
-# endif
-        CALL OFFLINE_INIT_VARIA( myThid )
-# ifndef ALLOW_AUTODIFF_TAMC
-      ENDIF
-# endif
-#endif /* ALLOW_OFFLINE */
-
 #ifdef ALLOW_GCHEM
       IF (useGCHEM) THEN
         CALL GCHEM_INIT_VARI( myThid )
       ENDIF
 #endif /* ALLOW_GCHEM */
 
-#ifdef ALLOW_LAND
-      IF ( useLAND ) THEN
+#ifdef ALLOW_RBCS
+      IF ( useRBCS ) THEN
+        CALL RBCS_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_RBCS */
+
+#ifdef ALLOW_MATRIX
+      IF ( useMATRIX ) THEN
 # ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('LAND_INI_VARS',myThid)
+        IF (debugMode) CALL DEBUG_CALL('MATRIX_INIT',myThid)
 # endif
-        CALL LAND_INI_VARS( myThid )
+        CALL MATRIX_INIT_VARIA( myThid )
       ENDIF
-#endif /* ALLOW_LAND */
+#endif /* ALLOW_MATRIX */
 
-#ifdef ALLOW_SMOOTH
-      CALL SMOOTH_INIT_VARIA(myThid)
-#endif /* ALLOW_SMOOTH */
-
-#ifdef ALLOW_AUTODIFF
-CADJ STORE theta  = tapelev_init, key = 1
-CADJ STORE salt   = tapelev_init, key = 1
-# ifdef ALLOW_DIFFKR_CONTROL
-CADJ STORE diffkr = tapelev_init, key = 1
-# endif
-C--   Initialise auxiliary xx_ fields
-      IF (debugMode) CALL DEBUG_CALL('CTRL_INIT_VARIABLES',myThid)
-      CALL CTRL_INIT_VARIABLES ( myThid )
-C--   Map the control variables onto the model state.
-# ifdef ALLOW_ECCO
-      IF (debugMode) CALL DEBUG_CALL('CTRL_MAP_INI_ECCO',myThid)
-      CALL CTRL_MAP_INI_ECCO( myThid )
-# else
-      IF (debugMode) CALL DEBUG_CALL('CTRL_MAP_INI',myThid)
-      CALL CTRL_MAP_INI( myThid )
-# endif
-#endif /* ALLOW_AUTODIFF */
-
-#ifdef ALLOW_EXF
-      IF (useEXF) THEN
+#ifdef ALLOW_FRAZIL
+      IF (useFRAZIL) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('EXF_INIT',myThid)
+        IF (debugMode) CALL DEBUG_CALL('FRAZIL_INIT_VARIA',myThid)
 # endif
-       CALL EXF_INIT( myThid )
+        CALL FRAZIL_INIT_VARIA( myThid)
       ENDIF
-#endif /* ALLOW_EXF */
+#endif /* ALLOW_FRAZIL */
 
-#ifdef ALLOW_EBM
-# ifdef ALLOW_AUTODIFF
-CADJ STORE theta = tapelev_init, key = 1
+#ifdef ALLOW_SEAICE
+C--   Initialize SEAICE model.
+      IF (useSEAICE) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('SEAICE_INIT_VARIA',myThid)
 # endif
-      IF (useEBM) THEN
-        CALL EBM_INI_VARS( myThid )
+       CALL SEAICE_INIT_VARIA( myThid )
       ENDIF
-#endif /* ALLOW_EBM */
+#endif /* ALLOW_SEAICE */
 
-#ifdef ALLOW_PROFILES
-C--   Initialise Profiles cost function.
-      IF (usePROFILES) THEN
-        CALL PROFILES_INIT_VARIA( myThid )
+#ifdef ALLOW_SALT_PLUME
+      IF ( useSALT_PLUME ) THEN
+        CALL SALT_PLUME_INIT_VARIA( myThid )
       ENDIF
-#endif /* ALLOW_PROFILES */
+#endif /* ALLOW_SALT_PLUME */
 
-#ifdef ALLOW_FLT
-C--   Initialise float position
-      IF ( useFLT ) THEN
-        CALL FLT_INIT_VARIA( myThid )
+#ifdef ALLOW_SHELFICE
+      IF (useShelfIce) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('SHELFICE_INIT_VARIA',myThid)
+# endif
+       CALL SHELFICE_INIT_VARIA( myThid )
       ENDIF
-#endif /* ALLOW_FLT */
+#endif /* ALLOW_SHELFICE */
 
-#ifdef ALLOW_BULK_FORCE
-      IF (useBulkForce) THEN
-        CALL BULKF_INIT_VARIA( myThid )
+#ifdef ALLOW_STREAMICE
+cph      IF (useStreamIce) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('STREAMICE_INIT_VARIA',myThid)
+# endif
+       CALL STREAMICE_INIT_VARIA( myThid )
+cph      ENDIF
+#endif /* ALLOW_STREAMICE */
+
+#ifdef ALLOW_ICEFRONT
+      IF (useICEFRONT) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('ICEFRONT_INIT_VARIA',myThid)
+# endif
+       CALL ICEFRONT_INIT_VARIA( myThid )
       ENDIF
-#endif /* ALLOW_BULK_FORCE */
+#endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_THSICE
       IF (useThSIce) THEN
@@ -373,36 +374,14 @@ C--   Initialise float position
       ENDIF
 #endif /* ALLOW_THSICE */
 
-#ifdef ALLOW_NEST_CHILD
-C--   Initialize NEST in CHILD configuration
-      IF (useNEST_CHILD) THEN
-#ifdef ALLOW_DEBUG
-       IF (debugMode)
-     &       CALL DEBUG_CALL('NEST_CHILD_INIT_VARIA',myThid)
-#endif
-       CALL NEST_CHILD_INIT_VARIA( myThid )
-      ENDIF
-#endif /* ALLOW_NEST_CHILD */
-C
-#ifdef ALLOW_NEST_PARENT
-C--   Initialize NEST in PARENT configuration
-      IF (useNEST_PARENT) THEN
-#ifdef ALLOW_DEBUG
-       IF (debugMode)
-     &       CALL DEBUG_CALL('NEST_PARENT_INIT',myThid)
-#endif
-       CALL NEST_PARENT_INIT_VARIA( myThid )
-      ENDIF
-#endif /* ALLOW_NEST_PARENT */
-
-#ifdef COMPONENT_MODULE
-      IF (useCoupler) THEN
+#ifdef ALLOW_LAND
+      IF ( useLAND ) THEN
 # ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('CPL_INI_VARS',myThid)
+        IF (debugMode) CALL DEBUG_CALL('LAND_INI_VARS',myThid)
 # endif
-        CALL CPL_INI_VARS( myThid )
+        CALL LAND_INI_VARS( myThid )
       ENDIF
-#endif /* COMPONENT_MODULE */
+#endif /* ALLOW_LAND */
 
 #ifdef ALLOW_ATM2D
       IF (useAtm2d) THEN
@@ -432,21 +411,6 @@ C Initialize FIZHI state variables
       ENDIF
 #endif /* ALLOW_FIZHI */
 
-#ifdef ALLOW_MATRIX
-      IF ( useMATRIX ) THEN
-# ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('MATRIX_INIT',myThid)
-# endif
-        CALL MATRIX_INIT_VARIA( myThid )
-      ENDIF
-#endif /* ALLOW_MATRIX */
-
-#ifdef ALLOW_RBCS
-      IF ( useRBCS ) THEN
-        CALL RBCS_INIT_VARIA( myThid )
-      ENDIF
-#endif /* ALLOW_RBCS */
-
 #ifdef ALLOW_REGRID
       IF ( useREGRID ) THEN
         CALL REGRID_INIT_VARIA( myThid )
@@ -459,23 +423,62 @@ C Initialize FIZHI state variables
       ENDIF
 #endif /* ALLOW_LAYERS */
 
-#ifdef ALLOW_SALT_PLUME
-      IF ( useSALT_PLUME ) THEN
-        CALL SALT_PLUME_INIT_VARIA( myThid )
+#ifdef ALLOW_NEST_CHILD
+C--   Initialize NEST in CHILD configuration
+      IF (useNEST_CHILD) THEN
+#ifdef ALLOW_DEBUG
+       IF (debugMode)
+     &       CALL DEBUG_CALL('NEST_CHILD_INIT_VARIA',myThid)
+#endif
+       CALL NEST_CHILD_INIT_VARIA( myThid )
       ENDIF
-#endif /* ALLOW_SALT_PLUME */
+#endif /* ALLOW_NEST_CHILD */
 
-#ifdef ALLOW_CHEAPAML
-      IF (useCheapAML) THEN
-        CALL CHEAPAML_INIT_VARIA( myThid )
+#ifdef ALLOW_NEST_PARENT
+C--   Initialize NEST in PARENT configuration
+      IF (useNEST_PARENT) THEN
+#ifdef ALLOW_DEBUG
+       IF (debugMode)
+     &       CALL DEBUG_CALL('NEST_PARENT_INIT',myThid)
+#endif
+       CALL NEST_PARENT_INIT_VARIA( myThid )
       ENDIF
-#endif /* ALLOW_CHEAPAML */
+#endif /* ALLOW_NEST_PARENT */
+
+#ifdef COMPONENT_MODULE
+      IF (useCoupler) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('CPL_INI_VARS',myThid)
+# endif
+        CALL CPL_INI_VARS( myThid )
+      ENDIF
+#endif /* COMPONENT_MODULE */
 
 #ifdef ALLOW_MYPACKAGE
       IF ( useMYPACKAGE ) THEN
         CALL MYPACKAGE_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
+
+#ifdef ALLOW_AUTODIFF
+CADJ STORE theta  = tapelev_init, key = 1
+CADJ STORE salt   = tapelev_init, key = 1
+# ifdef ALLOW_DIFFKR_CONTROL
+CADJ STORE diffkr = tapelev_init, key = 1
+# endif
+C--   Initialise auxiliary xx_ fields
+      IF (debugMode) CALL DEBUG_CALL('CTRL_INIT_VARIABLES',myThid)
+      CALL CTRL_INIT_VARIABLES ( myThid )
+C--   Map the control variables onto the model state.
+C-    Needs to be called after few {PKG}_init_varia (e.g., PTRACERS_INIT_VARIA)
+# ifdef ALLOW_ECCO
+      IF (debugMode) CALL DEBUG_CALL('CTRL_MAP_INI_ECCO',myThid)
+      CALL CTRL_MAP_INI_ECCO( myThid )
+# else
+      IF (debugMode) CALL DEBUG_CALL('CTRL_MAP_INI',myThid)
+      CALL CTRL_MAP_INI( myThid )
+# endif
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_OBCS
 C--   put this call in last position (needs to come after few {PKG}_init_varia)
