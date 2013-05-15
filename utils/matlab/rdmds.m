@@ -63,7 +63,7 @@ function [AA,itrs,MM] = rdmds(fnamearg,varargin)
 %     'n' 'l' 'b' 'd' 'g' 'c' 'a' 's'  - see FOPEN for more details
 %
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.26 2010/01/10 01:51:03 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.27 2013/05/15 23:10:49 jmc Exp $
 % $Name:  $
 
 AA=[];
@@ -118,6 +118,8 @@ for ind=1:size(varargin,2);
     error(sprintf('Argument %i > 9999999999',arg))
    end
    itrs=arg;
+  elseif length(arg) == 1 & arg == -1
+   itrs=arg;
   else
    error(sprintf('Argument %i must be a positive integer',arg))
   end
@@ -146,15 +148,17 @@ for iter=1:size(itrs,2);
  end
 
 % Match name of all meta-files
- allfiles=dir( sprintf('%s*.meta',fname) );
+  %fprintf(' search for file "%s".*meta\n',fname);
+ allfiles=dir( sprintf('%s.*meta',fname) );
 
  if size(allfiles,1)==0
-  disp(sprintf('No files match the search: %s*.meta',fname));
+  disp(sprintf('No files match the search: %s.*meta',fname));
  %allow partial reads%  error('No files found.')
  end
 
 % Loop through allfiles
  for j=1:size(allfiles,1);
+  %fprintf(' file # %3i : %s\n',j,allfiles(j).name);
 
 % Read meta- and data-file
   [A,N,M,mG] = localrdmds([Dir allfiles(j).name],ieee,recnum);
@@ -168,18 +172,18 @@ for iter=1:size(itrs,2);
    if isempty(ii), jj1=0; jj2=0;
    else jj1=ii; jj2=ii+min(findstr(M(1+ii:end),'];')); end
    if iter==1 & j==1,
-    MM=M; ind1=0; ind2=0; is1=ii1; js1=jj1; M3=''; 
-    if ii1*jj1 > 0, 
+    MM=M; ind1=0; ind2=0; is1=ii1; js1=jj1; M3='';
+    if ii1*jj1 > 0,
      %ind1=min(ii1,jj1); ind2=max(ii2,jj2);
      %if ii1 < jj1, ii3=ii2+1; jj3=jj1-1;
      %else  ii3=jj2+1; jj3=ii1-1; end
       order=sort([ii1 ii2 jj1 jj2]);
       ind1=order(1); ii3=order(2)+1; jj3=order(3)-1; ind2=order(4);
       M2=M(ii1:ii2); M4=M(jj1:jj2); M3=M(ii3:jj3);
-    elseif ii1 > 0, 
+    elseif ii1 > 0,
       ind1=ii1; ind2=ii2;
       M2=M(ii1:ii2); M4='';
-    elseif jj1 > 0, 
+    elseif jj1 > 0,
       ind1=jj1; ind2=jj2;
       M4=M(jj1:jj2); M2='';
     end
@@ -192,7 +196,7 @@ for iter=1:size(itrs,2);
     %fprintf(' M4=%s<\n',M4);
     %fprintf(' M5=%s<\n',M5);
    else
-    if ii1*jj1 > 0, 
+    if ii1*jj1 > 0,
          order=sort([ii1 ii2 jj1 jj2]);
          ind=order(1); ii3=order(2)+1; jj3=order(3)-1; ind2=order(4);
     else ind=max(ii1,jj1); ind2=ii2+jj2; end
@@ -220,9 +224,9 @@ for iter=1:size(itrs,2);
     end
    end
 %  save modifications:
-   if ind1>0 & j==size(allfiles,1) & iter==size(itrs,2), 
-     if ii1 < jj1, MM=[MM(1:ind1-1),M2,M3,M4,M5]; 
-     else          MM=[MM(1:ind1-1),M4,M3,M2,M5]; end 
+   if ind1>0 & j==size(allfiles,1) & iter==size(itrs,2),
+     if ii1 < jj1, MM=[MM(1:ind1-1),M2,M3,M4,M5];
+     else          MM=[MM(1:ind1-1),M4,M3,M2,M5]; end
    end
   end
 
