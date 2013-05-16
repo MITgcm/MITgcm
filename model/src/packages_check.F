@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.62 2013/05/08 00:06:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.63 2013/05/16 19:57:44 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -292,7 +292,9 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useAIM) CALL PACKAGES_ERROR_MSG('AIM',' ',myThid)
 #endif
 
-#ifndef ALLOW_ATM_PHYS
+#ifdef ALLOW_ATM_PHYS
+      IF (useAtm_Phys) CALL ATM_PHYS_CHECK( myThid )
+#else
       IF (useAtm_Phys) CALL PACKAGES_ERROR_MSG('Atm_Phys',' ',myThid)
 #endif
 
