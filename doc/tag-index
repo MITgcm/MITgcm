@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1867 2013/05/10 20:19:37 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1868 2013/05/16 21:56:26 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/aim_compon_interf renamed to pkg/atm_compon_interf
+  - change pkg name (to be used with other atmospheric physics pkg)
+    but by-pass CVS when making the new pkg so that we keep the CVS history.
 o pkg/offline:
   - call OFFLINE_FIELDS_LOAD from pkg/offline/offline_init_varia.F
     (previously called from pkg/dic_surfforcing_init.F)
