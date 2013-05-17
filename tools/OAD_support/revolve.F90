@@ -17,17 +17,17 @@
 MODULE revolve
   IMPLICIT NONE
 
-  PUBLIC :: rvInit, rvVerbose, rvNextAction, rvGuess, rvFactor, & 
+  PUBLIC :: rvInit, rvVerbose, rvNextAction, rvGuess, rvFactor, &
 rvStore, rvRestore, rvForward, rvFirstUTurn, rvUTurn, rvDone, rvError
 
-  PRIVATE :: & 
+  PRIVATE :: &
 ourSteps, ourACP, ourCStart, ourCEnd, ourVerbosity, &
-ourNumFwd , ourNumInv, ourNumStore, ourRWCP, ourPrevCEnd, ourFirstUTurned, &  
+ourNumFwd , ourNumInv, ourNumStore, ourRWCP, ourPrevCEnd, ourFirstUTurned, &
 chkRange, forwdCount
 
   !> store a checkpoint now
   !! equivalent to TAKESHOT in Alg. 799
-  INTEGER, PARAMETER :: rvStore      =1 
+  INTEGER, PARAMETER :: rvStore      =1
 
   !> restore a checkpoint now
   !! equivalent to RESTORE in Alg. 799
@@ -93,7 +93,7 @@ chkRange, forwdCount
      !> if an error has occurred `actionFlag` will be set to `rvError` and this will contain an error message
      CHARACTER(80) :: errorMsg
   END TYPE rvAction
-  
+
   !> the number of iteration steps; set by calling \ref rvInit; not supposed to be set/used directly by the user;
   !! note that the iterations are expected to range in [0, ourSteps-1];
   !!
@@ -183,7 +183,7 @@ CONTAINS
     CHARACTER(*), INTENT(OUT) :: errorMsg
     type(rvAction), optional :: anActionInstance
     INTEGER, INTENT(IN), optional :: bundle
-    INTEGER :: predFwdCnt ! predicted forward count 
+    INTEGER :: predFwdCnt ! predicted forward count
     rvInit = .TRUE.
     errorMsg ='none'
     IF (present(anActionInstance)) THEN
@@ -204,7 +204,7 @@ CONTAINS
     ELSEIF (checkpoints<0) THEN
        rvInit=.FALSE.
        errorMsg = 'revolve::rvInit: negative checkpoints'
-    ELSE 
+    ELSE
        ourCStart       = 0
        ourSteps        = steps
        IF (ourBundle .gt. 1) THEN
@@ -218,11 +218,11 @@ CONTAINS
        END IF
        ourCEnd         = ourSteps
        ourACP          = checkpoints
-       ourNumFwd       = 0 
-       ourNumInv       = 0 
-       ourNumStore     = 0 
-       ourRWCP         = -1 
-       ourPrevCEnd     = 0 
+       ourNumFwd       = 0
+       ourNumInv       = 0
+       ourNumStore     = 0
+       ourRWCP         = -1
+       ourPrevCEnd     = 0
        ourFirstUTurned = .FALSE.
 
        IF (ALLOCATED(ourStepOf)) THEN
@@ -252,7 +252,7 @@ CONTAINS
   !> method to set the verbosity to a level in [0-3] as described for `ourVerbosity`
   SUBROUTINE rvVerbose(level)
     IMPLICIT NONE
-    INTEGER, INTENT(IN) :: level 
+    INTEGER, INTENT(IN) :: level
     ourVerbosity=level
   END SUBROUTINE rvVerbose
 
@@ -273,7 +273,8 @@ CONTAINS
 
     INTEGER :: range
     INTEGER :: reps
-    INTEGER :: i 
+    INTEGER :: i
+    INTEGER :: ourRWCPinBd
     type(rvAction) :: rvNextAction
     IF (ourNumInv==0) THEN
        ! first invocation
@@ -284,6 +285,8 @@ CONTAINS
     END IF
     prevCStart = ourCStart
     ourNumInv = ourNumInv + 1
+    ! make sure ourRWCPinBd stay within bounds of array ourStepOf:
+    ourRWCPinBd = MIN( MAX( ourRWCP, 0 ), ourACP )
     IF ((ourCEnd-ourCStart)==0) THEN
        ! nothing in current subrange
        IF ((ourRWCP==(-1)) .OR. (ourCStart==ourStepOf(0))) THEN
@@ -302,7 +305,7 @@ CONTAINS
         ELSE
            ourCStart = ourStepOf(ourRWCP)
            ourPrevCEnd = ourCEnd
-           rvNextAction%actionFlag = rvRestore 
+           rvNextAction%actionFlag = rvRestore
         END IF
      ELSE IF ((ourCEnd-ourCStart)==1) THEN
         ourCEnd = ourCEnd - 1
@@ -314,7 +317,7 @@ CONTAINS
         ELSE
            rvNextAction%actionFlag = rvUTurn
         END IF
-     ELSE IF ((ourRWCP==(-1)) .OR. (ourStepOf(ourRWCP)/=ourCStart)) THEN
+     ELSE IF ((ourRWCP==(-1)) .OR. (ourStepOf(ourRWCPinBd)/=ourCStart)) THEN
         ourRWCP = ourRWCP + 1
         IF (ourRWCP+1>ourACP) THEN
            rvNextAction%actionFlag = rvError
@@ -400,7 +403,7 @@ CONTAINS
             CASE (rvFirstUTurn)
                WRITE (*,FMT='(A,I8,A,I8,A)') ' 1st uturn for iterations  [',&
                rvNextAction%startIteration, ',', rvNextAction%iteration-1,']'
-            CASE(rvUTurn)      
+            CASE(rvUTurn)
                WRITE (*,FMT='(A,I8,A,I8,A)') ' uturn for iterations      [',&
                rvNextAction%startIteration, ',', rvNextAction%iteration-1,']'
             END SELECT
