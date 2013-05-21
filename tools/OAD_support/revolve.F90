@@ -17,17 +17,20 @@
 MODULE revolve
   IMPLICIT NONE
 
-  PUBLIC :: rvInit, rvVerbose, rvNextAction, rvGuess, rvFactor, &
-rvStore, rvRestore, rvForward, rvFirstUTurn, rvUTurn, rvDone, rvError
+  PUBLIC :: rvInit, rvVerbose, rvNextAction, &
+rvGuess, rvFactor, & 
+rvStore, rvRestore, &
+rvForward, rvFirstUTurn, rvUTurn, rvDone, &
+rvError, rvAdjust
 
-  PRIVATE :: &
+  PRIVATE :: & 
 ourSteps, ourACP, ourCStart, ourCEnd, ourVerbosity, &
-ourNumFwd , ourNumInv, ourNumStore, ourRWCP, ourPrevCEnd, ourFirstUTurned, &
-chkRange, forwdCount
+ourNumFwd , ourNumInv, ourNumStore, ourRWCP, ourPrevCEnd, &
+ourFirstUTurned, chkRange, forwdCount
 
   !> store a checkpoint now
   !! equivalent to TAKESHOT in Alg. 799
-  INTEGER, PARAMETER :: rvStore      =1
+  INTEGER, PARAMETER :: rvStore      =1 
 
   !> restore a checkpoint now
   !! equivalent to RESTORE in Alg. 799
@@ -93,7 +96,7 @@ chkRange, forwdCount
      !> if an error has occurred `actionFlag` will be set to `rvError` and this will contain an error message
      CHARACTER(80) :: errorMsg
   END TYPE rvAction
-
+  
   !> the number of iteration steps; set by calling \ref rvInit; not supposed to be set/used directly by the user;
   !! note that the iterations are expected to range in [0, ourSteps-1];
   !!
@@ -183,7 +186,7 @@ CONTAINS
     CHARACTER(*), INTENT(OUT) :: errorMsg
     type(rvAction), optional :: anActionInstance
     INTEGER, INTENT(IN), optional :: bundle
-    INTEGER :: predFwdCnt ! predicted forward count
+    INTEGER :: predFwdCnt ! predicted forward count 
     rvInit = .TRUE.
     errorMsg ='none'
     IF (present(anActionInstance)) THEN
@@ -204,7 +207,7 @@ CONTAINS
     ELSEIF (checkpoints<0) THEN
        rvInit=.FALSE.
        errorMsg = 'revolve::rvInit: negative checkpoints'
-    ELSE
+    ELSE 
        ourCStart       = 0
        ourSteps        = steps
        IF (ourBundle .gt. 1) THEN
@@ -218,11 +221,11 @@ CONTAINS
        END IF
        ourCEnd         = ourSteps
        ourACP          = checkpoints
-       ourNumFwd       = 0
-       ourNumInv       = 0
-       ourNumStore     = 0
-       ourRWCP         = -1
-       ourPrevCEnd     = 0
+       ourNumFwd       = 0 
+       ourNumInv       = 0 
+       ourNumStore     = 0 
+       ourRWCP         = -1 
+       ourPrevCEnd     = 0 
        ourFirstUTurned = .FALSE.
 
        IF (ALLOCATED(ourStepOf)) THEN
@@ -249,10 +252,25 @@ CONTAINS
 
 !--------------------------------------------------------------------*
 
+  !> method to change the internal state for the total number of steps/checkpoints; must be called after \ref rvInit
+  !! @param steps  the total number of steps in the iteration; equivalent to `steps` in Alg. 799
+  !! @param errorMsg set when an error condition occurs; else set to `"none"`
+  !! @return `.true.` if successfull, else `.false.` ansd `errorMsg` will be set
+  FUNCTION rvAdjust(steps,checkpoints,errorMsg)
+    IMPLICIT NONE
+    LOGICAL :: rvAdjust
+    INTEGER, INTENT(IN) :: steps
+    INTEGER, INTENT(IN) :: checkpoints
+    CHARACTER(*), INTENT(OUT) :: errorMsg
+    rvAdjust=.false.
+  END FUNCTION
+
+!--------------------------------------------------------------------*
+
   !> method to set the verbosity to a level in [0-3] as described for `ourVerbosity`
   SUBROUTINE rvVerbose(level)
     IMPLICIT NONE
-    INTEGER, INTENT(IN) :: level
+    INTEGER, INTENT(IN) :: level 
     ourVerbosity=level
   END SUBROUTINE rvVerbose
 
@@ -273,8 +291,8 @@ CONTAINS
 
     INTEGER :: range
     INTEGER :: reps
-    INTEGER :: i
-    INTEGER :: ourRWCPinBd
+    INTEGER :: i 
+    LOGICAL :: rwcpTest
     type(rvAction) :: rvNextAction
     IF (ourNumInv==0) THEN
        ! first invocation
@@ -285,8 +303,10 @@ CONTAINS
     END IF
     prevCStart = ourCStart
     ourNumInv = ourNumInv + 1
-    ! make sure ourRWCPinBd stay within bounds of array ourStepOf:
-    ourRWCPinBd = MIN( MAX( ourRWCP, 0 ), ourACP )
+    rwcpTest=(ourRWCP==(-1))
+    IF (.not. rwcpTest) THEN 
+       rwcpTest=(ourStepOf(ourRWCP)/=ourCStart)
+    END IF
     IF ((ourCEnd-ourCStart)==0) THEN
        ! nothing in current subrange
        IF ((ourRWCP==(-1)) .OR. (ourCStart==ourStepOf(0))) THEN
@@ -305,7 +325,7 @@ CONTAINS
         ELSE
            ourCStart = ourStepOf(ourRWCP)
            ourPrevCEnd = ourCEnd
-           rvNextAction%actionFlag = rvRestore
+           rvNextAction%actionFlag = rvRestore 
         END IF
      ELSE IF ((ourCEnd-ourCStart)==1) THEN
         ourCEnd = ourCEnd - 1
@@ -317,7 +337,7 @@ CONTAINS
         ELSE
            rvNextAction%actionFlag = rvUTurn
         END IF
-     ELSE IF ((ourRWCP==(-1)) .OR. (ourStepOf(ourRWCPinBd)/=ourCStart)) THEN
+     ELSE IF (rwcpTest) THEN
         ourRWCP = ourRWCP + 1
         IF (ourRWCP+1>ourACP) THEN
            rvNextAction%actionFlag = rvError
@@ -366,11 +386,11 @@ CONTAINS
             bino5 = 1
           END IF
           IF (ourCEnd-ourCStart<=bino1+bino3) THEN
-            ourCStart = ourCStart + bino4
+            ourCStart = int(ourCStart + bino4)
           ELSE IF (ourCEnd-ourCStart>=range-bino5) THEN
-            ourCStart = ourCStart + bino1
+            ourCStart = int(ourCStart + bino1)
           ELSE
-            ourCStart = ourCEnd - bino2 - bino3
+            ourCStart = int(ourCEnd - bino2 - bino3)
           END IF
           IF (ourCStart==prevCStart) THEN
             ourCStart = prevCStart + 1
@@ -403,7 +423,7 @@ CONTAINS
             CASE (rvFirstUTurn)
                WRITE (*,FMT='(A,I8,A,I8,A)') ' 1st uturn for iterations  [',&
                rvNextAction%startIteration, ',', rvNextAction%iteration-1,']'
-            CASE(rvUTurn)
+            CASE(rvUTurn)      
                WRITE (*,FMT='(A,I8,A,I8,A)') ' uturn for iterations      [',&
                rvNextAction%startIteration, ',', rvNextAction%iteration-1,']'
             END SELECT
@@ -524,12 +544,12 @@ CONTAINS
         DO i = 1, tt
           res = res*(ss+i)
           res = res/i
-          IF (res>=2.0D0**31) EXIT
+          IF (res>huge(chkrange)) EXIT
         END DO
-        IF (res<2.0D0**31-2) THEN
-          chkRange = res
+        IF (res<huge(chkrange)) THEN
+          chkRange = int(res)
         ELSE
-          chkRange = 2.0D0**31 - 3
+          chkRange = huge(chkrange)
           WRITE (*,fmt=*) 'revolve::chkRange: warning: returning maximal integer ',&
           chkRange
         END IF
