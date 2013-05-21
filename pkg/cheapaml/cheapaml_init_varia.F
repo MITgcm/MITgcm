@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.12 2012/12/28 23:28:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.13 2013/05/21 22:52:42 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -270,24 +270,24 @@ C fill in outer edges
            jG = myYGlobalLo-1+(bj-1)*sNy+j
            DO i=1-OLx,sNx+OLx
              iG=myXGlobalLo-1+(bi-1)*sNx+i
-             IF (iG.LT.1) THEN
+             IF ( .NOT.cheapamlXperiodic .AND. iG.LT.1 ) THEN
                  Tair(i,j,bi,bj)=Tair(1,j,bi,bj)
                  qair(i,j,bi,bj)=qair(1,j,bi,bj)
                  Cheaptracer(i,j,bi,bj)=Cheaptracer(1,j,bi,bj)
                  Cheapmask(i,j,bi,bj)=Cheapmask(1,j,bi,bj)
                  Cheaphgrid(i,j,bi,bj)=Cheaphgrid(1,j,bi,bj)
-             ELSEIF (iG.GT.Nx) THEN
+             ELSEIF ( .NOT.cheapamlXperiodic .AND. iG.GT.Nx ) THEN
                  Tair(i,j,bi,bj)=Tair(sNx,j,bi,bj)
                  qair(i,j,bi,bj)=qair(sNx,j,bi,bj)
                  Cheaptracer(i,j,bi,bj)=Cheaptracer(sNx,j,bi,bj)
                  Cheapmask(i,j,bi,bj)=Cheapmask(sNx,j,bi,bj)
                  Cheaphgrid(i,j,bi,bj)=Cheaphgrid(sNx,j,bi,bj)
-             ELSEIF (jG.LT.1) THEN
+             ELSEIF ( .NOT.cheapamlYperiodic .AND.  jG.LT.1 ) THEN
                  Tair(i,j,bi,bj)=Tair(i,1,bi,bj)
                  qair(i,j,bi,bj)=qair(i,1,bi,bj)
                  Cheaptracer(i,j,bi,bj)=Cheaptracer(i,1,bi,bj)
                  Cheaphgrid(i,j,bi,bj)=Cheaphgrid(i,1,bi,bj)
-             ELSEIF (jG.GT.Ny) THEN
+             ELSEIF ( .NOT.cheapamlYperiodic .AND.  jG.GT.Ny ) THEN
                  Tair(i,j,bi,bj)=Tair(i,sNy,bi,bj)
                  qair(i,j,bi,bj)=qair(i,sNy,bi,bj)
                  Cheaptracer(i,j,bi,bj)=Cheaptracer(i,sNy,bi,bj)
@@ -297,6 +297,15 @@ C fill in outer edges
           ENDDO
         ENDDO
        ENDDO
+
+      IF ( debugLevel.GE.debLevB .AND. nIter0.EQ.0 ) THEN
+        CALL WRITE_FLD_XY_RL('CheapMask',  ' ', CheapMask,  0, myThid )
+        CALL WRITE_FLD_XY_RL('CheapHgrid', ' ', CheapHgrid, 0, myThid )
+      ENDIF
+      IF ( debugLevel.GE.debLevC .AND. nIter0.EQ.0 ) THEN
+        CALL WRITE_FLD_XY_RL('Cheap_xgs',   ' ', xgs,   0, myThid )
+        CALL WRITE_FLD_XY_RL('Cheap_xrelf', ' ', xrelf, 0, myThid )
+      ENDIF
 
       RETURN
       END
