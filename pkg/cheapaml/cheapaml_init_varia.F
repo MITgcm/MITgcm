@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.13 2013/05/21 22:52:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.14 2013/05/22 18:34:31 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -29,9 +29,14 @@ C     myThid :: my Thread Id number
       INTEGER myThid
 CEOP
 
+C     !FUNCTIONS
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
 C     bi,bj  :: tile indices
 C     i,j    :: grid-point indices
+C     msgBuf :: Informational/error message buffer
       INTEGER bi, bj
       INTEGER i, j
       INTEGER iG,jG
@@ -39,9 +44,12 @@ C     i,j    :: grid-point indices
       _RL local,localt,xmf
       _RL ssqa
       _RL recipNym1, recipMW
+      INTEGER iL, ioUnit
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 C     INTEGER prec
 C     CHARACTER*(MAX_LEN_FNAM) fn
 
+      ioUnit = standardMessageUnit
       recipNym1 = Ny - 1
       IF ( Ny.GT.1 ) recipNym1 = 1. _d 0 / recipNym1
 
@@ -83,10 +91,15 @@ C--   Initialise CheapAML variables in common block:
      &                           .AND. pickupSuff.EQ.' ' ) THEN
 
        IF ( AirTempFile .NE. ' ' ) THEN
-         write(*,*)'Tair initialized from  ->',AirTempFile
+         iL = ILNBLNK(AirTempFile)
+         WRITE(msgBuf,'(4A)') 'CHEAPAML_INIT_VARIA: ',
+     &      'Tair initialized from ->', AirTempFile(1:iL), '<-'
+         CALL PRINT_MESSAGE(msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
          CALL READ_FLD_XY_RL( AirTempFile,' ',Tair,0,myThid )
        ELSE
-         write(*,*)'Tair initialized using standard profile'
+         WRITE(msgBuf,'(4A)') 'CHEAPAML_INIT_VARIA: ',
+     &      'Tair initialized using standard profile'
+         CALL PRINT_MESSAGE(msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1,sNy
@@ -106,11 +119,16 @@ C--   Initialise CheapAML variables in common block:
 
 C do specific humidity
        IF ( AirQFile .NE. ' ') THEN
-         write(*,*)'Qair initialized from  ->',AirQFile
+         iL = ILNBLNK(AirQFile)
+         WRITE(msgBuf,'(4A)') 'CHEAPAML_INIT_VARIA: ',
+     &      'Qair initialized from ->', AirQFile(1:iL), '<-'
+         CALL PRINT_MESSAGE(msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
          CALL READ_FLD_XY_RL( AirQFile,' ',qair,0,myThid )
        ELSE
 C     default to 80% relative humidity
-         write(*,*)'Qair initialized using standard profile'
+         WRITE(msgBuf,'(4A)') 'CHEAPAML_INIT_VARIA: ',
+     &      'Qair initialized using standard profile'
+         CALL PRINT_MESSAGE(msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1,sNy
@@ -127,20 +145,25 @@ C     default to 80% relative humidity
 
 C do passive tracer
        IF ( TracerFile .NE. ' ') THEN
-        write(*,*)'Tracer initialized from  ->',TracerFile
-        CALL READ_FLD_XY_RL( TracerFile,' ',Cheaptracer,0,myThid )
+         iL = ILNBLNK(TracerFile)
+         WRITE(msgBuf,'(4A)') 'CHEAPAML_INIT_VARIA: ',
+     &      'Tracer initialized from ->', TracerFile(1:iL), '<-'
+         CALL PRINT_MESSAGE(msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+         CALL READ_FLD_XY_RL( TracerFile,' ',Cheaptracer,0,myThid )
        ELSE
 C default value at 290 (!)
-        write(*,*)'Tracer initialized using standard profile'
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
+         WRITE(msgBuf,'(4A)') 'CHEAPAML_INIT_VARIA: ',
+     &      'Tracer initialized using standard profile'
+         CALL PRINT_MESSAGE(msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
              Cheaptracer(i,j,bi,bj)=290.0 _d 0
+            ENDDO
            ENDDO
           ENDDO
          ENDDO
-        ENDDO
        ENDIF
        _EXCH_XY_RL(Cheaptracer, myThid)
 
@@ -152,10 +175,15 @@ C End start-from-iter-zero if/else block
 
 C Do  mask
       IF ( cheapMaskFile .NE. ' ') THEN
-         write(*,*)'CheapMask initialized from  ->',cheapMaskFile
+         iL = ILNBLNK(cheapMaskFile)
+         WRITE(msgBuf,'(4A)') 'CHEAPAML_INIT_VARIA: ',
+     &      'CheapMask initialized from ->', cheapMaskFile(1:iL), '<-'
+         CALL PRINT_MESSAGE(msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
          CALL READ_FLD_XY_RL( cheapMaskFile,' ',Cheapmask,0,myThid )
       ELSE
-         write(*,*)' Generate Cheapaml mask'
+         WRITE(msgBuf,'(4A)') 'CHEAPAML_INIT_VARIA: ',
+     &      'Generate Cheapaml mask'
+         CALL PRINT_MESSAGE(msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
          xmw = Cheapaml_mask_width
          recipMW = ( xmw - 1 )
          IF ( xmw.NE.1 ) recipMW = 1. _d 0 / recipMW
@@ -232,8 +260,11 @@ C relaxation time scales from input
 
 C     construct cheaplayer thickness
        IF ( cheap_hFile .NE. ' ') THEN
-        write(*,*)'BL thickness taken from  ->',cheap_hFile
-        CALL READ_FLD_XY_RL( cheap_hFile,' ',cheaphgrid,0,myThid )
+         iL = ILNBLNK(cheap_hFile)
+         WRITE(msgBuf,'(4A)') 'CHEAPAML_INIT_VARIA: ',
+     &      'BL thickness taken from ->', cheap_hFile(1:iL), '<-'
+         CALL PRINT_MESSAGE(msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+         CALL READ_FLD_XY_RL( cheap_hFile,' ',cheaphgrid,0,myThid )
        ELSE
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
