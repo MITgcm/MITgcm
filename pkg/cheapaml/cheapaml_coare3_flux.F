@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_coare3_flux.F,v 1.13 2013/02/18 22:15:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_coare3_flux.F,v 1.14 2013/05/24 12:20:18 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -41,7 +41,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER iter,nits
-      _RL tau,L,psu,pst,Bf
+      _RL tau,L,psu,pst,Bf,cdu
       _RL CD,usr,tsr,qsr,ttas,essqt
       _RL zo,zot,zoq,RR,zL,pt,ttt,tta,ttt2
       _RL es,twoPI,cwave,lwave
@@ -105,8 +105,9 @@ C Initial guesses
 C Air-sea differences - includes warm layer in Dt and Dq
       u = (uwind(i,j,bi,bj)-uVel(i,j,1,bi,bj))**2
      &  + (vwind(i,j,bi,bj)-vVel(i,j,1,bi,bj))**2
+      Du= SQRT(u + Wg**2 )  !include gustiness in wind spd. difference
       u = SQRT(u)
-      Du= (u**2 + Wg**2 )**.5  !include gustiness in wind spd. difference
+c     Du= (u**2 + Wg**2 )**.5  !include gustiness in wind spd. difference
       Dt=tsw-Tas-gamma_blk*zt  !potential temperature difference.
       Dq=qs-q
 
@@ -215,11 +216,12 @@ c     tau=rhoa*usr*usr*u/Du          !stress N/m2
       ef=-lath*rhoa*usr*qsr           !latent W/m2
       evap=-rhoa*usr*qsr
       cdq = evap/Dq
+      cdu = tau/Du
       IF (.NOT.useStressOption) THEN
 c      ustress(i,j,bi,bj)=tau*(uwind(i,j,bi,bj)-uVel(i,j,1,bi,bj))/u
 c      vstress(i,j,bi,bj)=tau*(vwind(i,j,bi,bj)-vVel(i,j,1,bi,bj))/u
-       ustress(i,j,bi,bj)=tau*(uwind(i,j,bi,bj)-uVel(i,j,1,bi,bj))/Du
-       vstress(i,j,bi,bj)=tau*(vwind(i,j,bi,bj)-vVel(i,j,1,bi,bj))/Du
+       ustress(i,j,bi,bj)=cdu*(uwind(i,j,bi,bj)-uVel(i,j,1,bi,bj))
+       vstress(i,j,bi,bj)=cdu*(vwind(i,j,bi,bj)-vVel(i,j,1,bi,bj))
       ENDIF
       q100=qs+qsr*(LOG(100. _d 0/zoq)-psit(100. _d 0/L))
 
