@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.14 2013/05/22 18:34:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.15 2013/05/25 18:05:45 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -64,9 +64,9 @@ C--   Initialise CheapAML variables in common block:
           gTairm        (i,j,bi,bj) = 0. _d 0
           qair          (i,j,bi,bj) = 0. _d 0
           gqairm        (i,j,bi,bj) = 0. _d 0
-          uwind         (i,j,bi,bj) = 0. _d 0
-          vwind         (i,j,bi,bj) = 0. _d 0
-          wwind         (i,j,bi,bj) = 0. _d 0
+          uWind         (i,j,bi,bj) = 0. _d 0
+          vWind         (i,j,bi,bj) = 0. _d 0
+          wWind         (i,j,bi,bj) = 0. _d 0
           solar         (i,j,bi,bj) = 0. _d 0
           ustress       (i,j,bi,bj) = 0. _d 0
           vstress       (i,j,bi,bj) = 0. _d 0
@@ -75,8 +75,9 @@ C--   Initialise CheapAML variables in common block:
           Cheapmask     (i,j,bi,bj) = 0. _d 0
           xgs           (i,j,bi,bj) = 0. _d 0
           xrelf         (i,j,bi,bj) = 0. _d 0
+          cheapPrecip   (i,j,bi,bj) = 0. _d 0
           CheapHgrid    (i,j,bi,bj) = 0. _d 0
-          Cheapprgrid   (i,j,bi,bj) = 0. _d 0
+c         Cheapprgrid   (i,j,bi,bj) = 0. _d 0
           Cheapclouds   (i,j,bi,bj) = 0. _d 0
           Cheapdlongwave(i,j,bi,bj) = 0. _d 0
           Cheaptracer   (i,j,bi,bj) = 0. _d 0
@@ -264,19 +265,19 @@ C     construct cheaplayer thickness
          WRITE(msgBuf,'(4A)') 'CHEAPAML_INIT_VARIA: ',
      &      'BL thickness taken from ->', cheap_hFile(1:iL), '<-'
          CALL PRINT_MESSAGE(msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-         CALL READ_FLD_XY_RL( cheap_hFile,' ',cheaphgrid,0,myThid )
+         CALL READ_FLD_XY_RL( cheap_hFile,' ',cheapHgrid,0,myThid )
        ELSE
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
             DO j=1-OLy,sNy+OLy
              DO i=1-OLx,sNx+OLx
-               cheaphgrid(i,j,bi,bj) = cheapaml_h
+               cheapHgrid(i,j,bi,bj) = cheapaml_h
              ENDDO
             ENDDO
           ENDDO
          ENDDO
        ENDIF
-       _EXCH_XY_RL(Cheaphgrid, myThid)
+       _EXCH_XY_RL(CheapHgrid, myThid)
 
 c!BD       IF ( cheap_prFile .NE. ' ') THEN
 c!BD        write(*,*)'Conv precip taken from  ->',cheap_prFile
@@ -306,23 +307,23 @@ C fill in outer edges
                  qair(i,j,bi,bj)=qair(1,j,bi,bj)
                  Cheaptracer(i,j,bi,bj)=Cheaptracer(1,j,bi,bj)
                  Cheapmask(i,j,bi,bj)=Cheapmask(1,j,bi,bj)
-                 Cheaphgrid(i,j,bi,bj)=Cheaphgrid(1,j,bi,bj)
+                 CheapHgrid(i,j,bi,bj)=CheapHgrid(1,j,bi,bj)
              ELSEIF ( .NOT.cheapamlXperiodic .AND. iG.GT.Nx ) THEN
                  Tair(i,j,bi,bj)=Tair(sNx,j,bi,bj)
                  qair(i,j,bi,bj)=qair(sNx,j,bi,bj)
                  Cheaptracer(i,j,bi,bj)=Cheaptracer(sNx,j,bi,bj)
                  Cheapmask(i,j,bi,bj)=Cheapmask(sNx,j,bi,bj)
-                 Cheaphgrid(i,j,bi,bj)=Cheaphgrid(sNx,j,bi,bj)
+                 CheapHgrid(i,j,bi,bj)=CheapHgrid(sNx,j,bi,bj)
              ELSEIF ( .NOT.cheapamlYperiodic .AND.  jG.LT.1 ) THEN
                  Tair(i,j,bi,bj)=Tair(i,1,bi,bj)
                  qair(i,j,bi,bj)=qair(i,1,bi,bj)
                  Cheaptracer(i,j,bi,bj)=Cheaptracer(i,1,bi,bj)
-                 Cheaphgrid(i,j,bi,bj)=Cheaphgrid(i,1,bi,bj)
+                 CheapHgrid(i,j,bi,bj)=CheapHgrid(i,1,bi,bj)
              ELSEIF ( .NOT.cheapamlYperiodic .AND.  jG.GT.Ny ) THEN
                  Tair(i,j,bi,bj)=Tair(i,sNy,bi,bj)
                  qair(i,j,bi,bj)=qair(i,sNy,bi,bj)
                  Cheaptracer(i,j,bi,bj)=Cheaptracer(i,sNy,bi,bj)
-                 Cheaphgrid(i,j,bi,bj)=Cheaphgrid(i,sNy,bi,bj)
+                 CheapHgrid(i,j,bi,bj)=CheapHgrid(i,sNy,bi,bj)
              ENDIF
            ENDDO
           ENDDO

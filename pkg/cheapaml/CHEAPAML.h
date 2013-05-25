@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.11 2013/02/18 21:16:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.12 2013/05/25 18:05:45 jmc Exp $
 C $Name:  $
 
 c #ifdef ALLOW_CHEAPAML
@@ -7,31 +7,35 @@ C -------------------------------
 C   CHEAPAML.h
 C   Parameters for cheap atmos mixed layer model
 C -------------------------------
-C     Tr :: Relaxation temperature profile for lateral boundary region
+C     Tr :: Relaxation temperature profile for lateral boundary region [^oC]
 C     qr :: Relaxation specific humidity profile for lateral boundary region
-C     Tair :: atmosphere boundary layer temperature
+C     Tair :: atmosphere boundary layer temperature [^oC]
 C     gTairm :: atmosphere temperature tendency
-C     qair :: atmosphere specific humidity
+C     qair :: atmosphere specific humidity  [-]
 C     gqairm :: atmosphere moisture tendency
-C     uwind :: zonal wind
-C     vwind :: meridional wind
-C     solar :: short wave insolation
+C     uWind :: zonal wind component at grid-cell Western  edge (uVel location)
+C     vWind :: meridional wind comp at grid-cell Southern edge (vVel location)
+C     solar :: short wave insolation (+=dw) [W/m2]
+C     ustress :: zonal wind stress component at grid-cell center (A-grid) [N/m2]
+C     vstress :: meridional wind stress comp at grid-cell center (A-grid) [N/m2]
 C     Cheapmask :: open boundary condition relaxation mask
 C     Cheaptracer :: passive tracer
 C     CheaptracerR :: Relaxation profile for passive tracer
 C     gCheaptracerm :: passive tracer tendency
+C     cheapPrecip   :: precipitation (+=dw) [kg/m2/s]
 
       COMMON /CHEAPAML_VARS/
      &       Tr, qr,
      &       Tair, gTairm,
      &       qair, gqairm,
-     &       uwind, vwind, solar,
-     &       wwind,
+     &       uWind, vWind, solar,
+     &       wWind,
      &       ustress, vstress,
      &       wavesh, wavesp, Cheapmask, CheapHgrid,
-     &       Cheapclouds,Cheapdlongwave,
+     &       Cheapclouds, Cheapdlongwave,
      &       Cheaptracer, CheaptracerR, gCheaptracerm,
-     &       Cheapprgrid,xgs,xrelf
+c    &       Cheapprgrid,
+     &       xgs, xrelf, cheapPrecip
 
       _RL    Tr     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    qr     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -39,19 +43,20 @@ C     gCheaptracerm :: passive tracer tendency
       _RL    gTairm (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    qair   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    gqairm (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL    uwind  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL    vwind  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL    wwind  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL    uWind  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL    vWind  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL    wWind  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    Solar  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    ustress(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    vstress(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    wavesh (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    wavesp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    Cheapmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL    xgs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL    xrelf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL    CheapHgrid(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL    Cheapprgrid(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL    xgs     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL    xrelf   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL    cheapPrecip(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL    CheapHgrid (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     _RL    Cheapprgrid(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    Cheapclouds(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    Cheapdlongwave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    Cheaptracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
