@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.21 2013/04/22 19:23:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.22 2013/05/25 18:08:09 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -35,10 +35,10 @@ C     === in common block ===
 C     trair[01]   :: Relaxation temp. profile for air temperature
 C     qrair[01]   :: Relaxation specific humidity profile for air
 C     solar[01]   :: short wave flux
-C     uwind[01]   :: zonal wind
-C     vwind[01]   :: meridional wind
-C     ustress[01] ::
-C     vstress[01] ::
+C     uWind[01]   :: wind speed [m/s], u-component (on C-grid)
+C     vWind[01]   :: wind speed [m/s], v-component (on C-grid)
+C     ustress[01] :: wind stress [N/m2], u-component (on A-grid)
+C     vstress[01] :: wind stress [N/m2], v-component (on A-grid)
 C     wavesh[01]  ::
 C     wavesp[01]  ::
 C     rair[01]    ::
@@ -48,13 +48,13 @@ C     CheaptracerR[01] :: Relaxation profile for passive tracer
      &         trair0,   trair1,
      &         qrair0,   qrair1,
      &         Solar0,   Solar1,
-     &         uwind0,   uwind1,
-     &         vwind0,   vwind1,
+     &         uWind0,   uWind1,
+     &         vWind0,   vWind1,
      &         ustress0, ustress1,
      &         vstress0, vstress1,
      &         wavesh0,  wavesh1,
      &         wavesp0,  wavesp1,
-     &         rair0,    rair1,
+c    &         rair0,    rair1,
      &         CheaptracerR0, CheaptracerR1
 
       _RL  trair0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -63,10 +63,10 @@ C     CheaptracerR[01] :: Relaxation profile for passive tracer
       _RL  qrair1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Solar0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Solar1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  uwind0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  uwind1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  vwind0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  vwind1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  uWind0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  uWind1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  vWind0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  vWind1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ustress0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ustress1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  vstress0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -75,8 +75,8 @@ C     CheaptracerR[01] :: Relaxation profile for passive tracer
       _RL  wavesh1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  wavesp0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  wavesp1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  rair0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  rair1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     _RL  rair0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     _RL  rair1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  CheaptracerR0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  CheaptracerR1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
@@ -173,17 +173,17 @@ C u wind and v wind field
             DO i=1,sNx
               jG = myYGlobalLo-1+(bj-1)*sNy+j
               local = -5. _d 0*COS( 2. _d 0*PI*(jG-1)*recipNym1 )
-              uwind(i,j,bi,bj) = local
+              uWind(i,j,bi,bj) = local
             ENDDO
            ENDDO
            DO j=1,sNy
             DO i=1,sNx
-              vwind(i,j,bi,bj) = 0. _d 0
+              vWind(i,j,bi,bj) = 0. _d 0
             ENDDO
            ENDDO
           ENDDO
          ENDDO
-         CALL EXCH_UV_AGRID_3D_RL( uwind, vwind, .TRUE., 1, myThid )
+         CALL EXCH_UV_XY_RL( uWind, vWind, .TRUE., myThid )
 C Tracer field
          IF ( useCheapTracer ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
@@ -214,10 +214,10 @@ C First call requires that we initialize everything to zero for safety
              qrair1  (i,j,bi,bj) = 0.
              solar0  (i,j,bi,bj) = 0.
              solar1  (i,j,bi,bj) = 0.
-             uwind0  (i,j,bi,bj) = 0.
-             uwind1  (i,j,bi,bj) = 0.
-             vwind0  (i,j,bi,bj) = 0.
-             vwind1  (i,j,bi,bj) = 0.
+             uWind0  (i,j,bi,bj) = 0.
+             uWind1  (i,j,bi,bj) = 0.
+             vWind0  (i,j,bi,bj) = 0.
+             vWind1  (i,j,bi,bj) = 0.
              cheaph0 (i,j,bi,bj) = 0.
              cheaph1 (i,j,bi,bj) = 0.
              cheapcl0(i,j,bi,bj) = 0.5
@@ -232,8 +232,8 @@ C First call requires that we initialize everything to zero for safety
              wavesh1 (i,j,bi,bj) = 0.
              wavesp0 (i,j,bi,bj) = 0.
              wavesp1 (i,j,bi,bj) = 0.
-             rair0   (i,j,bi,bj) = 0.
-             rair1   (i,j,bi,bj) = 0.
+c            rair0   (i,j,bi,bj) = 0.
+c            rair1   (i,j,bi,bj) = 0.
              CheaptracerR0 (i,j,bi,bj) = 0.
              CheaptracerR1 (i,j,bi,bj) = 0.
             ENDDO
@@ -272,15 +272,15 @@ C      data for the period ahead and the period behind myTime.
      &                         myIter, myThid )
          ENDIF
          IF ( UWindFile .NE. ' ' ) THEN
-          CALL READ_REC_XY_RL( UWindFile,uwind0,intime0,
+          CALL READ_REC_XY_RL( UWindFile,uWind0,intime0,
      &                         myIter, myThid )
-          CALL READ_REC_XY_RL( UWindFile,uwind1,intime1,
+          CALL READ_REC_XY_RL( UWindFile,uWind1,intime1,
      &                         myIter, myThid )
          ENDIF
          IF ( VWindFile .NE. ' ' ) THEN
-          CALL READ_REC_XY_RL( VWindFile,vwind0,intime0,
+          CALL READ_REC_XY_RL( VWindFile,vWind0,intime0,
      &                         myIter, myThid )
-          CALL READ_REC_XY_RL( VWindFile,vwind1,intime1,
+          CALL READ_REC_XY_RL( VWindFile,vWind1,intime1,
      &                         myIter, myThid )
          ENDIF
          IF ( useTimeVarBLH .AND. cheap_hFile .NE. ' ' ) THEN
@@ -337,8 +337,8 @@ C      data for the period ahead and the period behind myTime.
          _EXCH_XY_RL( qrair1 , myThid )
          _EXCH_XY_RL( solar0 , myThid )
          _EXCH_XY_RL( solar1 , myThid )
-         CALL EXCH_UV_AGRID_3D_RL( uwind0, vwind0, .TRUE., 1, myThid )
-         CALL EXCH_UV_AGRID_3D_RL( uwind1, vwind1, .TRUE., 1, myThid )
+         CALL EXCH_UV_XY_RL( uWind0, vWind0, .TRUE., myThid )
+         CALL EXCH_UV_XY_RL( uWind1, vWind1, .TRUE., myThid )
          IF ( useTimeVarBLH ) THEN
          _EXCH_XY_RL( cheaph0, myThid )
          _EXCH_XY_RL( cheaph1 , myThid )
@@ -378,10 +378,10 @@ C--   Interpolate TR, QR, SOLAR
      &                              + aWght*trair1(i,j,bi,bj)   !+273.15
             qr(i,j,bi,bj)           = bWght*qrair0(i,j,bi,bj)
      &                              + aWght*qrair1(i,j,bi,bj)
-            uwind(i,j,bi,bj)        = bWght*uwind0(i,j,bi,bj)
-     &                              + aWght*uwind1(i,j,bi,bj)
-            vwind(i,j,bi,bj)        = bWght*vwind0(i,j,bi,bj)
-     &                              + aWght*vwind1(i,j,bi,bj)
+            uWind(i,j,bi,bj)        = bWght*uWind0(i,j,bi,bj)
+     &                              + aWght*uWind1(i,j,bi,bj)
+            vWind(i,j,bi,bj)        = bWght*vWind0(i,j,bi,bj)
+     &                              + aWght*vWind1(i,j,bi,bj)
             solar(i,j,bi,bj)        = bWght*solar0(i,j,bi,bj)
      &                              + aWght*solar1(i,j,bi,bj)
             IF ( useStressOption ) THEN
@@ -391,7 +391,7 @@ C--   Interpolate TR, QR, SOLAR
      &                              + aWght*vstress1(i,j,bi,bj)
             ENDIF
             IF ( useTimeVarBLH ) THEN
-             cheaphgrid(i,j,bi,bj)  = bWght*cheaph0(i,j,bi,bj)
+             CheapHgrid(i,j,bi,bj)  = bWght*cheaph0(i,j,bi,bj)
      &                              + aWght*cheaph1(i,j,bi,bj)
             ENDIF
             IF ( useClouds ) THEN
@@ -416,7 +416,7 @@ C--   Interpolate TR, QR, SOLAR
      &                              + aWght*wavesp1(i,j,bi,bj)
              ENDIF
             ELSE
-             u = uwind(i,j,bi,bj)**2 + vwind(i,j,bi,bj)**2
+             u = uWind(i,j,bi,bj)**2 + vWind(i,j,bi,bj)**2
              u = SQRT(u)
              wavesp(i,j,bi,bj) = 0.729 _d 0 * u
              wavesh(i,j,bi,bj) = 0.018 _d 0 * u*u*(1. + .015 _d 0 *u)
@@ -488,7 +488,7 @@ C default specific humidity profile to 80% relative humidity
         _EXCH_XY_RL( qr, myThid )
 
         IF ( UWindFile .NE. ' '  ) THEN
-         CALL READ_FLD_XY_RL( UWindFile,' ',uwind,0,myThid )
+         CALL READ_FLD_XY_RL( UWindFile,' ',uWind,0,myThid )
         ELSE
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -500,7 +500,7 @@ C to return  to original code, uncomment following line
 C comment out 2nd line
               local = -5. _d 0*COS( 2. _d 0*PI*(jG-1)*recipNym1 )
 c             local =  0. _d 0*COS( 2. _d 0*PI*(jG-1)*recipNym1 )
-              uwind(i,j,bi,bj) = local
+              uWind(i,j,bi,bj) = local
             ENDDO
            ENDDO
           ENDDO
@@ -508,19 +508,19 @@ c             local =  0. _d 0*COS( 2. _d 0*PI*(jG-1)*recipNym1 )
         ENDIF
 
         IF ( VWindFile .NE. ' '  ) THEN
-         CALL READ_FLD_XY_RL( VWindFile,' ',vwind,0,myThid )
+         CALL READ_FLD_XY_RL( VWindFile,' ',vWind,0,myThid )
         ELSE
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1,sNy
             DO i=1,sNx
-              vwind(i,j,bi,bj) = 0. _d 0
+              vWind(i,j,bi,bj) = 0. _d 0
             ENDDO
            ENDDO
           ENDDO
          ENDDO
         ENDIF
-        CALL EXCH_UV_AGRID_3D_RL( uwind, vwind, .TRUE., 1, myThid )
+        CALL EXCH_UV_XY_RL( uWind, vWind, .TRUE., myThid )
 
         IF ( useStressOption ) THEN
          IF ( UStressFile .NE. ' '  ) THEN
@@ -564,7 +564,7 @@ c             local =  0. _d 0*COS( 2. _d 0*PI*(jG-1)*recipNym1 )
            DO bi = myBxLo(myThid), myBxHi(myThid)
             DO j=1,sNy
              DO i=1,sNx
-              u = uwind(i,j,bi,bj)**2 + vwind(i,j,bi,bj)**2
+              u = uWind(i,j,bi,bj)**2 + vWind(i,j,bi,bj)**2
               u = SQRT(u)
               wavesp(i,j,bi,bj)=0.729 _d 0 * u
               wavesh(i,j,bi,bj)=0.018 _d 0 * u*u*(1. + .015 _d 0 *u)
@@ -622,12 +622,12 @@ C fill in outer edges
           DO i=1-OLx,sNx+OLx
            iG=myXGlobalLo-1+(bi-1)*sNx+i
 
-           IF (iG.LT.1) THEN
+           IF ( .NOT.cheapamlXperiodic .AND. iG.LT.1 ) THEN
 
             Tr(i,j,bi,bj)=Tr(1,j,bi,bj)
             qr(i,j,bi,bj)=qr(1,j,bi,bj)
-            uwind(i,j,bi,bj)=uwind(1,j,bi,bj)
-            vwind(i,j,bi,bj)=vwind(1,j,bi,bj)
+            uWind(i,j,bi,bj)=uWind(2,j,bi,bj)
+            vWind(i,j,bi,bj)=vWind(1,j,bi,bj)
             Solar(i,j,bi,bj)=Solar(1,j,bi,bj)
             IF ( useStressOption ) THEN
               ustress(i,j,bi,bj)=ustress(1,j,bi,bj)
@@ -647,12 +647,16 @@ C fill in outer edges
               Cheapdlongwave(i,j,bi,bj)=Cheapdlongwave(1,j,bi,bj)
             ENDIF
 
-           ELSEIF (iG.GT.Nx) THEN
+           ELSEIF ( .NOT.cheapamlXperiodic .AND. iG.EQ.1 ) THEN
+
+            uWind(i,j,bi,bj)=uWind(2,j,bi,bj)
+
+           ELSEIF ( .NOT.cheapamlXperiodic .AND. iG.GT.Nx ) THEN
 
             Tr(i,j,bi,bj)=Tr(sNx,j,bi,bj)
             qr(i,j,bi,bj)=qr(sNx,j,bi,bj)
-            uwind(i,j,bi,bj)=uwind(sNx,j,bi,bj)
-            vwind(i,j,bi,bj)=vwind(sNx,j,bi,bj)
+            uWind(i,j,bi,bj)=uWind(sNx,j,bi,bj)
+            vWind(i,j,bi,bj)=vWind(sNx,j,bi,bj)
             Solar(i,j,bi,bj)=Solar(sNx,j,bi,bj)
             IF ( useStressOption ) THEN
               ustress(i,j,bi,bj)=ustress(sNx,j,bi,bj)
@@ -672,12 +676,12 @@ C fill in outer edges
               Cheapdlongwave(i,j,bi,bj)=Cheapdlongwave(sNx,j,bi,bj)
             ENDIF
 
-           ELSEIF (jG.LT.1) THEN
+           ELSEIF ( .NOT.cheapamlYperiodic .AND. jG.LT.1 ) THEN
 
             Tr(i,j,bi,bj)=Tr(i,1,bi,bj)
             qr(i,j,bi,bj)=qr(i,1,bi,bj)
-            uwind(i,j,bi,bj)=uwind(i,1,bi,bj)
-            vwind(i,j,bi,bj)=vwind(i,1,bi,bj)
+            uWind(i,j,bi,bj)=uWind(i,1,bi,bj)
+            vWind(i,j,bi,bj)=vWind(i,2,bi,bj)
             Solar(i,j,bi,bj)=Solar(i,1,bi,bj)
             IF ( useStressOption ) THEN
               ustress(i,j,bi,bj)=ustress(i,1,bi,bj)
@@ -697,12 +701,16 @@ C fill in outer edges
               wavesh(i,j,bi,bj)=wavesh(i,1,bi,bj)
             ENDIF
 
-           ELSEIF (jG.GT.Ny) THEN
+           ELSEIF ( .NOT.cheapamlYperiodic .AND. jG.EQ.1 ) THEN
+
+            vWind(i,j,bi,bj)=vWind(i,2,bi,bj)
+
+           ELSEIF ( .NOT.cheapamlYperiodic .AND. jG.GT.Ny ) THEN
 
             Tr(i,j,bi,bj)=Tr(i,sNy,bi,bj)
             qr(i,j,bi,bj)=qr(i,sNy,bi,bj)
-            uwind(i,j,bi,bj)=uwind(i,sNy,bi,bj)
-            vwind(i,j,bi,bj)=vwind(i,sNy,bi,bj)
+            uWind(i,j,bi,bj)=uWind(i,sNy,bi,bj)
+            vWind(i,j,bi,bj)=vWind(i,sNy,bi,bj)
             Solar(i,j,bi,bj)=Solar(i,sNy,bi,bj)
             IF ( useStressOption ) THEN
               ustress(i,j,bi,bj)=ustress(i,sNy,bi,bj)
