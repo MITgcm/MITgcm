@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_diagnostics_init.F,v 1.5 2011/12/28 16:41:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_diagnostics_init.F,v 1.6 2013/05/25 18:06:22 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -108,8 +108,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'CH_SH   '
-      diagTitle = 'cheapAML sensible heat     '
+      diagTitle = 'cheapAML sensible heat   '
       diagUnits = 'W/m2            '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'CH_Prec '
+      diagTitle = 'cheapAML precipitation   '
+      diagUnits = 'kg/m2/s         '
       diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
