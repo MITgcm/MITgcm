@@ -1,9 +1,26 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1869 2013/05/17 21:04:32 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1870 2013/05/25 18:36:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cheapaml:
+  - replace one ()**.5 with SQRT + use temp var "cdu = tau/Du" (coare3_flux);
+    affect machine truncation (but exp cheapAML_box still pass with 13 digits).
+  - consistent treatment of uWind,vWind location: assume everywhere in
+    pkg/cheapaml that they are on C-grid (@ uVel,vVel location)
+    (Note: was already the case for Tair,Qair advection);
+    add option (INCONSISTENT_WIND_LOCATION) to recover old results.
+  - compute diabatic forcing only in the interior (excluding overlap regions)
+  - fill in array "Qsw" (for short-wave heating);
+  - add diagnostic for precip ; fill-in diagnostics for cheapAML state vars
+    before any update (consistent with MITgcm state var diagnostics);
+  - cheapaml_fields_load.F & cheapaml_init_varia.F : only fill outer edges if
+    non periodic ; + adjusted for uWind,vWind (C-grid).
+o pkg/seaice:
+  - remove dependence of pkg/seaice versus pkg/exf (file: pkg/pkg_depend) and
+    add explicitly pkg/exf in experiments that currently use pkg/seaice.
+  - allows to compile pkg/seaice without pkg/exf.
 o tools/OAD_support:
   - use a local copy (ourRWCPinBd) to ensure index ourRWCP stays within bounds
     of array "ourStepOf" in function rvNextAction (revolve.F90).
