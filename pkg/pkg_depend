@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.29 2010/05/26 22:02:19 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.30 2013/05/25 16:13:37 jmc Exp $
 # $Name:  $
 
 #  This file contains a terse list of package dependencies that
@@ -38,7 +38,6 @@ aim		+atm_common
 aim_v23		+atm_common
 exf		+cal
 profiles	+cal
-seaice		+exf
 flt		+mdsio
 autodiff	+mdsio
 ctrl		+mdsio
