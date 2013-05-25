@@ -1,10 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.14 2012/11/09 22:15:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.15 2013/05/25 17:44:44 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 CBOP
-C     !ROUTINE: SEAICE_SOLVE4TEMP
+C     !ROUTINE: SEAICE_GET_DYNFORCING
 C     !INTERFACE:
       SUBROUTINE SEAICE_GET_DYNFORCING(
      I     uIce, vIce,
@@ -27,11 +30,10 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "DYNVARS.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
+# include "DYNVARS.h"
 # include "EXF_FIELDS.h"
 # include "EXF_PARAM.h"
 #endif
@@ -79,19 +81,18 @@ C--   introduce turning angle (default is zero)
 
 C--   NOW SET UP FORCING FIELDS
 
-#ifdef SEAICE_EXTERNAL_FLUXES
-      IF (useAtmWind) THEN
-#endif
-C--   Wind stress is computed on center of C-grid cell
-C     and interpolated to U and V points later
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+
+#ifdef ALLOW_EXF
+C--   Wind stress is computed on center of C-grid cell
+C     and interpolated to U and V points later
 
 #ifndef SEAICE_EXTERNAL_FLUXES
 C--   First compute wind-stress over open ocean: this will results in
 C     over-writing fu and fv that were computed or read-in by pkg/exf.
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           U1=UWIND(i,j,bi,bj)
           V1=VWIND(i,j,bi,bj)
           AAA=U1**2+V1**2
@@ -110,8 +111,8 @@ C     over-writing fu and fv that were computed or read-in by pkg/exf.
         ENDDO
 C--   Interpolate wind stress over open ocean (N/m^2)
 C     from A-grid to U and V points of C-grid
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
           fu(i,j,bi,bj) = 0.5 _d 0*( oceTauX(i,j) + oceTauX(i-1,j) )
      &                            *_maskW(i,j,ks,bi,bj)
           fv(i,j,bi,bj) = 0.5 _d 0*( oceTauY(i,j) + oceTauY(i,j-1) )
@@ -120,10 +121,15 @@ C     from A-grid to U and V points of C-grid
         ENDDO
 #endif /* ndef SEAICE_EXTERNAL_FLUXES */
 
+# ifdef SEAICE_EXTERNAL_FLUXES
+        IF (useAtmWind) THEN
+# else  /* SEAICE_EXTERNAL_FLUXES */
+        IF (.TRUE.) THEN
+# endif /* SEAICE_EXTERNAL_FLUXES */
 C--   Now compute ice surface stress
         IF (useRelativeWind) THEN
-         DO j=1-Oly,sNy+Oly-1
-          DO i=1-Olx,sNx+Olx-1
+         DO j=1-OLy,sNy+OLy-1
+          DO i=1-OLx,sNx+OLx-1
            U1=UWIND(i,j,bi,bj)
      &          + 0.5 _d 0 * (uVel(i,j,ks,bi,bj)+uVel(i+1,j,ks,bi,bj))
      &          - 0.5 _d 0 * (uIce(i,j,bi,bj)+uIce(i+1,j,bi,bj))
@@ -144,8 +150,8 @@ C--   Now compute ice surface stress
           ENDDO
          ENDDO
         ELSE
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            U1=UWIND(i,j,bi,bj)
            V1=VWIND(i,j,bi,bj)
            AAA=U1**2+V1**2
@@ -163,8 +169,8 @@ C--   Now compute ice surface stress
          ENDDO
         ENDIF
         IF (useRelativeWind) THEN
-         DO j=1-Oly+1,sNy+Oly-1
-          DO i=1-Olx+1,sNx+Olx-1
+         DO j=1-OLy+1,sNy+OLy-1
+          DO i=1-OLx+1,sNx+OLx-1
 C     interpolate to U points
            taux(i,j,bi,bj)= 0.5 _d 0 *
      &         ( CDAIR(i,j)*(COSWIN*
@@ -206,8 +212,8 @@ C     interpolate to V points
           ENDDO
          ENDDO
         ELSE
-         DO j=1-Oly+1,sNy+Oly
-          DO i=1-Olx+1,sNx+Olx
+         DO j=1-OLy+1,sNy+OLy
+          DO i=1-OLx+1,sNx+OLx
 C     interpolate to U points
            taux(i,j,bi,bj)=0.5 _d 0 *
      &         (  CDAIR(i  ,j)*(
@@ -230,16 +236,11 @@ C     interpolate to V points
          ENDDO
         ENDIF
 
-       ENDDO
-      ENDDO
-
-#ifdef SEAICE_EXTERNAL_FLUXES
-      ELSE
+        ELSE
 C--   Wind stress is available on U and V points, copy it to seaice variables.
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
 C now ice surface stress
           IF ( yC(i,j,bi,bj) .LT. ZERO ) THEN
            CDAIR(i,j) = SEAICE_drag_south/OCEAN_drag
@@ -252,10 +253,14 @@ C now ice surface stress
      &                    *_maskS(i,j,ks,bi,bj)
          ENDDO
         ENDDO
+
+        ENDIF
+#endif /* ALLOW_EXF */
+
+C--   end bi,bj loops
        ENDDO
       ENDDO
-      ENDIF
-#endif /* SEAICE_EXTERNAL_FLUXES */
+
 #endif /* SEAICE_CGRID */
 
       RETURN
