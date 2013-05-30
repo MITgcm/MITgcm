@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.18 2013/05/06 17:53:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.19 2013/05/30 14:07:19 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -158,6 +158,17 @@ C--    write Sea-Ice Dynamics variables (all 2-D fields):
        CALL WRITE_REC_3D_RL( fn, fp,  1, VICE , nj, myIter, myThid )
        IF (j.LE.listDim)  wrFldList(j) = 'siVICE  '
 
+       IF ( SEAICEuseAB2 ) THEN
+        j = j + 1
+        nj = nj-1
+        CALL WRITE_REC_3D_RL( fn, fp,  1, uIceNm1 , nj, myIter, myThid )
+        IF (j.LE.listDim)  wrFldList(j) = 'siUicNm1'
+
+        j = j + 1
+        nj = nj-1
+        CALL WRITE_REC_3D_RL( fn, fp,  1, vIceNm1 , nj, myIter, myThid )
+        IF (j.LE.listDim)  wrFldList(j) = 'siVicNm1'
+       ENDIF
 #if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
        IF ( SEAICEuseEVP ) THEN
         j = j + 1

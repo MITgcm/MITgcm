@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.24 2013/05/04 17:32:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.25 2013/05/30 14:07:19 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -66,6 +66,10 @@ C     Initialize MNC variable information for SEAICE
      &   ) THEN
         CALL SEAICE_MNC_INIT( myThid )
       ENDIF
+
+C     restart parameter
+      SEAICEmomStartAB = 0
+      IF ( SEAICEuseAB2 ) SEAICEmomStartAB = nIter0
 
       _BEGIN_MASTER(myThid)
 #ifdef SHORTWAVE_HEATING

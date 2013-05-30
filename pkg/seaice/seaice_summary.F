@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.68 2013/04/23 08:40:06 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.69 2013/05/30 14:07:19 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -85,6 +85,10 @@ C--  Time-stepping related param.
       CALL WRITE_0D_RL( SEAICE_deltaTevp  ,INDEX_NONE,
      & 'SEAICE_deltaTevp  =', ' /* EVP timestep */')
 #endif
+      CALL WRITE_0D_L ( SEAICEuseAB2, INDEX_NONE,
+     & 'SEAICEuseAB2  =', ' /* use Adams-Bashforth for mom. eq. */')
+      IF ( SEAICEuseAB2 ) CALL WRITE_0D_RL( SEAICE_abEps  ,INDEX_NONE,
+     & 'SEAICE_abEps      =', ' /* AB2 stabilization parameter */')
       CALL WRITE_0D_L ( SEAICErestoreUnderIce, INDEX_NONE,
      & 'SEAICErestoreUnderIce  =', ' /* restore T and S under ice */')
 
@@ -192,6 +196,8 @@ C--  Seaice-Dynamics parameters
      & 'SEAICE_OLy =', ' /* overlap for LSR/preconditioner */')
 #ifdef SEAICE_ALLOW_JFNK
        IF ( SEAICEuseJFNK ) THEN
+        CALL WRITE_0D_L ( SEAICEuseIMEX, INDEX_NONE,
+     &   'SEAICEuseIMEX  =', ' /* IMEX scheme with JFNK-solver */')
         CALL WRITE_0D_I ( SEAICEnewtonIterMax,  INDEX_NONE,
      & 'SEAICEnewtonIterMax =', ' /* num. of JFNK Newton steps */')
         CALL WRITE_0D_I ( SEAICEkrylovIterMax,  INDEX_NONE,

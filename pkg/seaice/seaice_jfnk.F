@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.22 2013/04/23 08:40:06 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.23 2013/05/30 14:07:19 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -76,7 +76,9 @@ C     parameters to compute convergence criterion
       _RL     JFNKgamma_lin
       _RL     FGMRESeps
       _RL     JFNKtol
-
+C     Adams-Bashforth extrapolation factors
+      _RL abFac, abAlpha
+C
       _RL     recip_deltaT
       LOGICAL JFNKconverged, krylovConverged
       LOGICAL writeNow
@@ -85,6 +87,9 @@ C     parameters to compute convergence criterion
 C     u/vIceRes :: residual of sea-ice momentum equations
       _RL uIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     extra time level required for Adams-Bashforth-2 time stepping
+      _RL duIcNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL dvIcNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     du/vIce   :: ice velocity increment to be added to u/vIce
       _RL duIce  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dvIce  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -113,6 +118,17 @@ C     with iOutFgmres=1, seaice_fgmres prints the residual at each iteration
      &     DIFFERENT_MULTIPLE( SEAICE_monFreq, myTime, deltaTClock ) )
      &     iOutFGMRES=1
 
+C     Adams-Bashforth extrapolation factors
+      abFac = 0. _d 0
+      IF ( SEAICEuseAB2 ) THEN
+       IF ( myIter.EQ.nIter0 .AND. SEAICEmomStartAB.EQ.0 ) THEN
+        abFac = 0. _d 0
+       ELSE
+        abFac = 0.5 _d 0 + SEAICE_abEps
+       ENDIF
+      ENDIF
+      abAlpha = 1. _d 0 + abFac 
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1-OLy,sNy+OLy
@@ -121,21 +137,32 @@ C     with iOutFgmres=1, seaice_fgmres prints the residual at each iteration
           vIceRes(I,J,bi,bj) = 0. _d 0
           duIce  (I,J,bi,bj) = 0. _d 0
           dvIce  (I,J,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
+C     cycle ice velocities
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
+          duIcNm1(I,J,bi,bj) = uIce(I,J,bi,bj) * abAlpha 
+     &         + ( uIce(I,J,bi,bj) - uIceNm1(I,J,bi,bj) ) * abFac
+          dvIcNm1(I,J,bi,bj) = vIce(I,J,bi,bj) * abAlpha 
+     &         + ( vIce(I,J,bi,bj) - vIceNm1(I,J,bi,bj) ) * abFac
           uIceNm1(I,J,bi,bj) = uIce(I,J,bi,bj)
           vIceNm1(I,J,bi,bj) = vIce(I,J,bi,bj)
          ENDDO
         ENDDO
+        IF ( .NOT.SEAICEuseIMEX ) THEN
 C     Compute things that do no change during the Newton iteration:
 C     sea-surface tilt and wind stress:
-C     FORCEX/Y0 - mass*(u/vIceNm1)/deltaT
+C     FORCEX/Y0 - mass*(abA*u/vIceNm1+abB*(u/vIceNm1-u/vIceNm2))/deltaT
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
           FORCEX(I,J,bi,bj) = FORCEX0(I,J,bi,bj)
-     &         + seaiceMassU(I,J,bi,bj)*uIceNm1(I,J,bi,bj)*recip_deltaT
+     &         + seaiceMassU(I,J,bi,bj)*duIcNm1(I,J,bi,bj)*recip_deltaT
           FORCEY(I,J,bi,bj) = FORCEY0(I,J,bi,bj)
-     &         + seaiceMassV(I,J,bi,bj)*vIceNm1(I,J,bi,bj)*recip_deltaT
+     &         + seaiceMassV(I,J,bi,bj)*dvIcNm1(I,J,bi,bj)*recip_deltaT
          ENDDO
         ENDDO
+        ENDIF
        ENDDO
       ENDDO
 C     Start nonlinear Newton iteration: outer loop iteration

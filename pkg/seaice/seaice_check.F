@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.82 2013/04/23 09:53:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.83 2013/05/30 14:07:19 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -853,14 +853,29 @@ C
       ENDIF
 #endif /* SEAICE_ALLOW_JFNK */
 
+      IF ( .NOT.SEAICEuseJFNK ) THEN
+       IF ( SEAICEuseAB2 ) THEN
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseAB2 = .TRUE. '//
+     &       'only allowed with SEAICEuseJFNK = .TRUE.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+       ENDIF
+       IF ( SEAICEuseIMEX ) THEN
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseIMEX = .TRUE. '//
+     &       'only allowed with SEAICEuseJFNK = .TRUE.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+       ENDIF
+      ENDIF
+
       IF ( .NOT.(SEAICEetaZmethod.EQ.0.OR.SEAICEetaZmethod.EQ.3) ) THEN
        WRITE(msgBuf,'(A,I2)')
      &      'SEAICE_CHECK: SEAICEetaZmethod = ', SEAICEetaZmethod
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: '//
-     &       'is no longer allowed; allowed values are 0 and 3' 
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: '//
+     &      'is no longer allowed; allowed values are 0 and 3' 
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 
       _END_MASTER(myThid)
