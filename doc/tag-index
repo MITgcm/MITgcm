@@ -1,8 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1871 2013/05/26 17:35:04 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1872 2013/05/30 14:08:52 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice: add Adams-Bashforth2 time discretization for ice dynamics;
+              so far only for JFNK-solver, turn on with SEAICEuseAB2 = .TRUE.
+  - requires an additional time level that is stored in the pickup
+  - you can start with AB2 from a pickup without this time level with
+    pickupStrictlyMatch = .false.
 
 checkpoint64h (2013/05/26)
 o pkg/cheapaml:
