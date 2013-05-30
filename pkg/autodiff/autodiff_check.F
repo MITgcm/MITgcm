@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.15 2012/08/21 14:06:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.16 2013/05/30 21:07:43 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -112,7 +112,6 @@ c--   to nTimeSteps: (nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps)
        ENDIF
 #endif
 
-
 #ifndef ALLOW_AUTODIFF_WHTAPEIO
        IF ( useSingleCpuIO ) THEN
         WRITE(msgBuf,'(3A)') '** WARNING ** AUTODIFF_CHECK: ',
@@ -123,6 +122,16 @@ c--   to nTimeSteps: (nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps)
        ENDIF
 #endif
 
+#endif
+
+#ifdef ALLOW_AUTODIFF_OPENAD
+# if (defined (ALLOW_ECCO) || defined (ALLOW_PROFILES))
+       WRITE(msgBuf,'(2A)') 
+     &  'AUTODIFF_CHECK: pkg ECCO or PROFILES not yet implemented ',
+     &  ' for ALLOW_AUTODIFF_OPENAD'
+       CALL PRINT_ERROR( msgBuf , myThid )
+       STOP 'ABNORMAL END: S/R AUTODIFF_CHECK'
+# endif
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
