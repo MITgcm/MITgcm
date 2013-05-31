@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.11 2013/05/30 21:07:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.12 2013/05/31 14:08:32 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -216,6 +216,14 @@ C     == Local variables ==
 #endif
 
 CEOP
+
+#ifdef STORE_LOADEDREC_TEST
+          DO bj = myByLo(myThid), myByHi(myThid)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+            loadedRec(bi,bj) = 0
+           ENDDO
+          ENDDO
+#endif /* STORE_LOADEDREC_TEST */
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('MAIN_DO_LOOP',myThid)
