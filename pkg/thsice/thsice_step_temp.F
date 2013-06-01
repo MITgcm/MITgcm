@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.15 2013/04/13 20:51:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.16 2013/06/01 14:49:50 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -169,6 +169,7 @@ CADJ STORE qice2(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 CADJ STORE tice1(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 CADJ STORE tice2(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 CADJ STORE sheating(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE tsrf(:,:,bi,bj)  = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
        CALL THSICE_SOLVE4TEMP(
      I          bi, bj,

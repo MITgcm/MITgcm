@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.21 2013/04/13 20:51:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.22 2013/06/01 14:49:50 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -10,7 +10,7 @@ CBOP
 C     !ROUTINE: THSICE_GET_EXF
 C     !INTERFACE:
       SUBROUTINE THSICE_GET_EXF(
-     I                  bi, bj,
+     I                  bi, bj, it2,
      I                  iMin,iMax, jMin,jMax,
      I                  icFlag, hSnow1, tsfCel,
      O                  flxExcSw, dFlxdT, evapLoc, dEvdT,
@@ -39,11 +39,13 @@ C     == Global data ==
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
+# include "THSICE_SIZE.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     bi,bj       :: tile indices
+C     it          :: solv4temp iteration
 C     iMin,iMax   :: computation domain: 1rst index range
 C     jMin,jMax   :: computation domain: 2nd  index range
 C     icFlag     :: True= get fluxes at this location ; False= do nothing
@@ -57,6 +59,7 @@ C     myTime      :: current Time of simulation [s]
 C     myIter      :: current Iteration number in simulation
 C     myThid      :: my Thread Id number
       INTEGER bi, bj
+      INTEGER it2
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       _RL     icFlag  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -142,10 +145,6 @@ C     latent heat of evaporation or sublimation [J/kg]
       _RL lath
       _RL qsat_fac
       _RL qsat_exp
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikey_1, ikey_2
-      INTEGER locicekey
-#endif
 #ifdef ALLOW_DBUG_THSICE
       LOGICAL dBugFlag
       INTEGER stdUnit
@@ -216,10 +215,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           act4 = ikey_dynamics - 1
           ikey_1 = i
      &         + sNx*(j-1)
-     &         + sNx*sNy*act1
-     &         + sNx*sNy*max1*act2
-     &         + sNx*sNy*max1*max2*act3
-     &         + sNx*sNy*max1*max2*max3*act4
+     &         + sNx*sNy*(it2-1)
+     &         + sNx*sNy*MaxTsf*act1
+     &         + sNx*sNy*MaxTsf*max1*act2
+     &         + sNx*sNy*MaxTsf*max1*max2*act3
+     &         + sNx*sNy*MaxTsf*max1*max2*max3*act4
 #endif
 
 C--   Use atmospheric state to compute surface fluxes.
@@ -235,7 +235,7 @@ C     copy a few variables to names used in bulkf_formula_lay
          Ts2         = Tsf*Tsf
 C     wind speed
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE sh(i,j,bi,bj) = comlev1_exf_1, key = ikey_1
+CADJ STORE sh(i,j,bi,bj) = comlev1_thsice_3, key = ikey_1
 #endif
          wsm         = sh(i,j,bi,bj)
 C--   air - surface difference of temperature & humidity
@@ -278,12 +278,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           act4 = ikey_dynamics - 1
           ikey_1 = i
      &         + sNx*(j-1)
-     &         + sNx*sNy*act1
-     &         + sNx*sNy*max1*act2
-     &         + sNx*sNy*max1*max2*act3
-     &         + sNx*sNy*max1*max2*max3*act4
+     &         + sNx*sNy*(it2-1)
+     &         + sNx*sNy*MaxTsf*act1
+     &         + sNx*sNy*MaxTsf*max1*act2
+     &         + sNx*sNy*MaxTsf*max1*max2*act3
+     &         + sNx*sNy*MaxTsf*max1*max2*max3*act4
 C--
-CADJ STORE sh(i,j,bi,bj) = comlev1_exf_1, key = ikey_1
+CADJ STORE sh(i,j,bi,bj) = comlev1_thsice_3, key = ikey_1
 #endif
          IF ( (icFlag(i,j).GT.0. _d 0) .AND. 
      &        (atemp(i,j,bi,bj).NE.0. _d 0) ) THEN
@@ -326,15 +327,16 @@ C     start iteration
                   ikey_2 = iter
      &                  + niter_bulk*(i-1)
      &                  + niter_bulk*sNx*(j-1)
-     &                  + niter_bulk*sNx*sNy*act1
-     &                  + niter_bulk*sNx*sNy*max1*act2
-     &                  + niter_bulk*sNx*sNy*max1*max2*act3
-     &                  + niter_bulk*sNx*sNy*max1*max2*max3*act4
-CADJ STORE rdn    = comlev1_exf_2, key = ikey_2
-CADJ STORE ustar  = comlev1_exf_2, key = ikey_2
-CADJ STORE qstar  = comlev1_exf_2, key = ikey_2
-CADJ STORE tstar  = comlev1_exf_2, key = ikey_2
-CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
+     &                  + niter_bulk*sNx*sNy*(it2-1)
+     &                  + niter_bulk*sNx*sNy*MaxTsf*act1
+     &                  + niter_bulk*sNx*sNy*MaxTsf*max1*act2
+     &                  + niter_bulk*sNx*sNy*MaxTsf*max1*max2*act3
+     &                  + niter_bulk*sNx*sNy*MaxTsf*max1*max2*max3*act4
+CADJ STORE rdn    = comlev1_thsice_5, key = ikey_2
+CADJ STORE ustar  = comlev1_thsice_5, key = ikey_2
+CADJ STORE qstar  = comlev1_thsice_5, key = ikey_2
+CADJ STORE tstar  = comlev1_thsice_5, key = ikey_2
+CADJ STORE sh(i,j,bi,bj)     = comlev1_thsice_5, key = ikey_2
 #endif
 
            t0     = atemp(i,j,bi,bj)*
