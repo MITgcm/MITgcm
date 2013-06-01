@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.152 2013/05/31 14:08:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.153 2013/06/01 14:40:20 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -452,16 +452,18 @@ CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*maxpass*maxpass
 # endif /* ALLOW_SEAICE */
 c--
 #   ifdef ALLOW_THSICE
-CADJ INIT comlev1_thsice_1
-CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
-CADJ INIT comlev1_thsice_2
-CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nlyr*nthreads_chkpt
-CADJ INIT comlev1_thsice_3
-CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*MaxTsf*nthreads_chkpt
-CADJ INIT comlev1_thsice_4
-CADJ &     = COMMON,nchklev_1*nsx*nsy*maxpass*nthreads_chkpt
-CADJ INIT comlev1_thsice_s4t
-CADJ &     = COMMON,nchklev_1*nsx*nsy*maxtsf*nthreads_chkpt
+CADJ INIT comlev1_thsice_1 = COMMON,
+CADJ &    nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
+CADJ INIT comlev1_thsice_2 = COMMON,
+CADJ &    nchklev_1*snx*nsx*sny*nsy*nlyr*nthreads_chkpt
+CADJ INIT comlev1_thsice_3 = COMMON,
+CADJ &    nchklev_1*snx*nsx*sny*nsy*MaxTsf*nthreads_chkpt
+CADJ INIT comlev1_thsice_4 = COMMON,
+CADJ &    nchklev_1*nsx*nsy*maxpass*nthreads_chkpt
+CADJ INIT comlev1_thsice_5 = COMMON,
+CADJ &    nchklev_1*snx*nsx*sny*nsy*MaxTsf*(niter_bulk+1)*nthreads_chkpt
+CADJ INIT comlev1_thsice_s4t = COMMON,
+CADJ &    nchklev_1*nsx*nsy*maxtsf*nthreads_chkpt
 #   endif /* ALLOW_THSICE */
 c--
 #   ifdef ALLOW_STREAMICE
