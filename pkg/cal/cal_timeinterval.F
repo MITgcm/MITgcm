@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_timeinterval.F,v 1.6 2013/06/03 22:07:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_timeinterval.F,v 1.7 2013/06/03 22:27:03 heimbach Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -76,7 +76,7 @@ C     == end of interface ==
       else if (timeunit .eq. 'model') then
 
         IF ( cal_setStatus .LT. 2 ) THEN
-          WRITE( msgBuf,'(2A,F15.2,2A))')  'CAL_TIMEINTERVAL: ',
+          WRITE( msgBuf,'(2A,F15.2,2A)')  'CAL_TIMEINTERVAL: ',
      &          'timeint=',timeint,' , timeunit=',timeunit
           CALL PRINT_ERROR( msgBuf, myThid )
           WRITE( msgBuf,'(2A,I2,A)') 'CAL_TIMEINTERVAL: ',
