@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1872 2013/05/30 14:08:52 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1873 2013/06/03 23:28:44 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - allow to use seaice dynamics without pkg/exf (e.g., using pkg/cheapaml)
 o pkg/seaice: add Adams-Bashforth2 time discretization for ice dynamics;
               so far only for JFNK-solver, turn on with SEAICEuseAB2 = .TRUE.
   - requires an additional time level that is stored in the pickup
