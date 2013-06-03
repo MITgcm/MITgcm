@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.153 2013/06/01 14:40:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.154 2013/06/03 21:36:11 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -244,6 +244,9 @@ CADJ  INIT tapelev3 = USER
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
 CADJ STORE hFacC = tapelev_init, key = 1
+# endif
+# ifdef ALLOW_SEAICE
+CADJ STORE heffm = tapelev_init, key = 1
 # endif
 #endif
 
