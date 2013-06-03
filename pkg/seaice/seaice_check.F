@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.83 2013/05/30 14:07:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.84 2013/06/03 23:09:12 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -560,6 +560,7 @@ C--   SEAICE_OLD_AND_BAD_DISCRETIZATION is obsolete: issue warning and stop.
 #endif /* SEAICE_OLD_AND_BAD_DISCRETIZATION */
 
 C--   pkg/seaice requires pkg/exf with following CPP options/
+      IF ( usePW79thermodynamics .OR. .NOT.useCheapAML ) THEN
 #ifndef ALLOW_EXF
          WRITE(msgBuf,'(A)')
      &        'need to define ALLOW_EXF'
@@ -622,6 +623,7 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
          ENDIF
 #endif
 #endif /* ALLOW_EXF */
+      ENDIF
 
       IF ( OLx.LT.3 .OR. OLy.LT.3 ) THEN
         WRITE(msgBuf,'(A,A)')
@@ -643,7 +645,7 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
-      IF ( SEAICEnEVPstarSteps.NE.UNSET_I .AND. 
+      IF ( SEAICEnEVPstarSteps.NE.UNSET_I .AND.
      &     SEAICEnEVPstarSteps.GT.nEVPstepMax ) THEN
        WRITE(msgBuf,'(A)')
      &      'SEAICE_CHECK: need to set nEVPstepMax to >= '//
@@ -655,19 +657,19 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 # endif
-      IF ( .NOT.SEAICEuseEVPstar 
+      IF ( .NOT.SEAICEuseEVPstar
      &     .AND. SEAICEnEVPstarSteps.NE.UNSET_I ) THEN
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEnEVPstarSteps is '//
      &      'set, but SEAICEuseEVPstar = .FALSE.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R SEAICE_CHECK'       
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
-      IF ( SEAICE_deltaTevp .EQ. UNSET_RL .AND. 
+      IF ( SEAICE_deltaTevp .EQ. UNSET_RL .AND.
      &     SEAICEnEVPstarSteps.NE.UNSET_I ) THEN
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEnEVPstarSteps is '//
      &      'set, but SEAICE_deltaTevp is unset (EVP is not turned on)'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R SEAICE_CHECK'       
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #else
       IF ( SEAICE_deltaTevp .NE. UNSET_RL ) THEN
@@ -810,7 +812,7 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
      &       'overwritten by JFNKres_tFac*JFNKresidual ',
      &       'in each initial Newton iteration.'
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)') 
+        WRITE(msgBuf,'(2A)')
      &       'S/R SEAICE_CHECK: For safety we stop here. ',
      &       'Please unset one of the two parameters.'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -821,13 +823,13 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
        ENDIF
-C     
+C
        IF ( SEAICE_OLx .GT. OLx-2 .OR. SEAICE_OLy .GT. OLy-2 .OR.
      &      SEAICE_OLx .LT. 0     .OR. SEAICE_OLy .LT. 0 ) THEN
-        WRITE(msgBuf,'(A,I2,A,I2)') 'S/R SEAICE_CHECK: SEAICE_OLx/y = ', 
+        WRITE(msgBuf,'(A,I2,A,I2)') 'S/R SEAICE_CHECK: SEAICE_OLx/y = ',
      &       SEAICE_OLx, '/', SEAICE_OLy
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A,I2,A,I2)') 
+        WRITE(msgBuf,'(2A,I2,A,I2)')
      &       'S/R SEAICE_CHECK: SEAICE_OLx/y cannot be smaller than 0 ',
      &       'or larger than OLx/y-2 = ', OLx-2, '/', OLy-2
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -873,7 +875,7 @@ C
      &      'SEAICE_CHECK: SEAICEetaZmethod = ', SEAICEetaZmethod
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: '//
-     &      'is no longer allowed; allowed values are 0 and 3' 
+     &      'is no longer allowed; allowed values are 0 and 3'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
