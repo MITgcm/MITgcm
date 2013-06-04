@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.35 2013/06/01 14:49:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.36 2013/06/04 22:52:58 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -141,8 +141,7 @@ C     flx0exSW     :: net surface heat flux over melting snow/ice, except short-
 C     flxTexSW     :: net surface heat flux, except short-wave (W/m2)
 C     dFlxdT       :: deriv of flxNet wrt Tsf (W m-2 deg-1)
 C     evap00       :: evaporation over melting snow/ice [kg/m2/s] (>0 if evaporate)
-C                     rename evap0 to evap00 because TAF
-C                     confuses symbol with EXF evap0
+C                     renamed to evap00 because TAF confuses symbol with EXF evap0
 C     evapT        :: evaporation over snow/ice [kg/m2/s] (>0 if evaporate)
 C     dEvdT        :: derivative of evap. with respect to Tsf [kg/m2/s/K]
 C     flxNet       :: net surf heat flux (+=down), from Atmos. to sea-ice (W m-2)
@@ -167,7 +166,7 @@ C     dt           :: timestep
       _RL  flx0exSW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  flxTexSW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  dFlxdT  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL  evap00   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  evap00  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  evapT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  dEvdT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  flxNet
@@ -211,6 +210,16 @@ CADJ STORE flxsw(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
        DO i = 1-OLx, sNx+OLx
         tIc1(i,j) = 0. _d 0
         tIc2(i,j) = 0. _d 0
+C-   set these arrays everywhere: overlap are not set and not used,
+C     but some arrays are stored and storage includes overlap.
+        flx0exSW(i,j) = 0. _d 0
+        flxTexSW(i,j) = 0. _d 0
+        dFlxdT  (i,j) = 0. _d 0
+        evap00  (i,j) = 0. _d 0
+        evapT   (i,j) = 0. _d 0
+        dEvdT   (i,j) = 0. _d 0
+        iceFlag (i,j) = 0. _d 0
+        Tsf     (i,j) = 0. _d 0
        ENDDO
       ENDDO
 #endif
@@ -238,12 +247,9 @@ CADJ STORE flxsw(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
      &         + sNx*sNy*max1*max2*max3*act4
 C--
 CADJ STORE  hSnow1(i,j)        = comlev1_thsice_1, key=ikey_1
-cCADJ STORE  devdt(i,j)        = comlev1_thsice_1, key=ikey_1
-cCADJ STORE  dFlxdT(i,j)        = comlev1_thsice_1, key=ikey_1
 cCADJ STORE  flxsw(i,j)   = comlev1_thsice_1, key=ikey_1
 cCADJ STORE  qic1(i,j)    = comlev1_thsice_1, key=ikey_1
 cCADJ STORE  qic2(i,j)    = comlev1_thsice_1, key=ikey_1
-cCADJ STORE  tsrf(i,j)    = comlev1_thsice_1, key=ikey_1
 #endif
         IF ( icMask(i,j).GT.0. _d 0) THEN
           iterate4Tsf  = .TRUE.
@@ -408,10 +414,8 @@ CADJ STORE devdt(:,:)    = comlev1_bibj,key=ticekey,byte=isbyte
 CADJ STORE dflxdt(:,:)   = comlev1_bibj,key=ticekey,byte=isbyte
 CADJ STORE flx0exsw(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
 CADJ STORE flxtexsw(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE dflxdt(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE evap00(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE evapt(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE flxtexsw(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE evap00(:,:)   = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE evapt(:,:)    = comlev1_bibj,key=ticekey,byte=isbyte
 #endif
 
 C ----- begin iteration  -----
