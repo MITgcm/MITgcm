@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.182 2013/04/09 20:51:50 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.183 2013/06/05 17:44:31 jmc Exp $
 #  $Name:  $
 #
 
@@ -1515,14 +1515,13 @@ for dir in $TESTDIRS ; do
     #  Check whether there are "extra runs" for this testdir
     extra_runs=
     if test "x$NORUN" = xf ; then
-	ex_run_dirs=`( cd $dir ; echo $inputdir.* )`
+	ex_run_dirs=`( cd $dir ; ls -d $inputdir.* 2> /dev/null )`
     fi
     #echo "ex_run_dirs='$ex_run_dirs'"
     for exd in $ex_run_dirs ; do
 	name=`echo $exd | sed -e "s/$inputdir\.//"`
 	refExOut=`echo $ref_outp | sed "s/\./.${name}./"`
 	outf="$dir/results/$refExOut"
-	#if test -f $outf -a -r $outf ; then
 	if test -r $outf -o -r ${outf}.gz ; then
 	  if test "x$MULTI_THREAD" = "xt" ; then
 	    if test -r $dir"/"$exd"/eedata.mth" ; then
