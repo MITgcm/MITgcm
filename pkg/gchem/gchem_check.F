@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_check.F,v 1.4 2009/06/30 16:43:00 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_check.F,v 1.5 2013/06/05 19:23:51 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
 
       SUBROUTINE GCHEM_CHECK( myThid )
-C     /==========================================================\
-C     | SUBROUTINE GCHEM_CHECK                                   |
-C     | o Validate basic package setup and inter-package         |
-C     | dependencies.                                            |
-C     \==========================================================/
+C     *==========================================================*
+C     | SUBROUTINE GCHEM_CHECK
+C     | o Validate basic package setup and inter-package
+C     | dependencies.
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -18,13 +18,13 @@ C     === Global variables ===
 #include "GCHEM.h"
 
 C     === Routine arguments ===
-C     myThid -  Number of this instance
+C     myThid   ::  Number of this instance
       INTEGER myThid
 
 #ifdef ALLOW_GCHEM
 
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf   :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       _BEGIN_MASTER(myThid)
@@ -32,6 +32,14 @@ C     msgBuf      - Informational/error meesage buffer
       WRITE(msgBuf,'(A)') 'GCHEM_CHECK: #define ALLOW_GCHEM'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , myThid )
+
+#ifdef GCHEM_SEPARATE_FORCING
+      IF ( useCFC ) THEN
+         WRITE(msgBuf,'(A)') 'GCHEM_SEPARATE_FORCING not coded for CFC'
+         CALL PRINT_ERROR( msgBuf , myThid )
+         STOP 'ABNORMAL END: S/R GCHEM_CHECK'
+      ENDIF
+#endif
 
 C     GCHEM needs passive tracer package
       IF ( .NOT.usePTRACERS) THEN
