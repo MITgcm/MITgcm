@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint64b
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint64h
 (PID.TID 0000.0001) // Build user:        jmc
 (PID.TID 0000.0001) // Build host:        baudelaire
-(PID.TID 0000.0001) // Build date:        Tue Jan  8 19:27:41 EST 2013
+(PID.TID 0000.0001) // Build date:        Thu Jun  6 11:55:38 EDT 2013
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -211,8 +211,8 @@
 (PID.TID 0000.0001) > useGMRedi      =.TRUE.,
 (PID.TID 0000.0001) > usePTRACERS    =.TRUE.,
 (PID.TID 0000.0001) > useGCHEM       =.TRUE.,
-(PID.TID 0000.0001) >#useDiagnostics =.TRUE.,
-(PID.TID 0000.0001) >#useLayers      =.TRUE.,
+(PID.TID 0000.0001) > useDiagnostics =.TRUE.,
+(PID.TID 0000.0001) > useLayers      =.TRUE.,
 (PID.TID 0000.0001) >#useMNC         =.TRUE.,
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
@@ -304,6 +304,130 @@
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  CFC_READPARMS: finished reading data.cfc
+(PID.TID 0000.0001)  DIAGNOSTICS_READPARMS: opening data.diagnostics
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.diagnostics
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.diagnostics"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) ># Diagnostic Package Choices
+(PID.TID 0000.0001) >#--------------------
+(PID.TID 0000.0001) >#  dumpAtLast (logical): always write output at the end of simulation (default=F)
+(PID.TID 0000.0001) >#  diag_mnc   (logical): write to NetCDF files (default=useMNC)
+(PID.TID 0000.0001) >#--for each output-stream:
+(PID.TID 0000.0001) >#  fileName(n) : prefix of the output file name (max 80c long) for outp.stream n
+(PID.TID 0000.0001) >#  frequency(n):< 0 : write snap-shot output every |frequency| seconds
+(PID.TID 0000.0001) >#               > 0 : write time-average output every frequency seconds
+(PID.TID 0000.0001) >#  timePhase(n)     : write at time = timePhase + multiple of |frequency|
+(PID.TID 0000.0001) >#    averagingFreq  : frequency (in s) for periodic averaging interval
+(PID.TID 0000.0001) >#    averagingPhase : phase     (in s) for periodic averaging interval
+(PID.TID 0000.0001) >#    repeatCycle    : number of averaging intervals in 1 cycle
+(PID.TID 0000.0001) >#  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
+(PID.TID 0000.0001) >#                when this entry is missing, select all common levels of this list
+(PID.TID 0000.0001) >#  fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+(PID.TID 0000.0001) >#                (see "available_diagnostics.log" file for the full list of diags)
+(PID.TID 0000.0001) >#  missing_value(n) : missing value for real-type fields in output file "n"
+(PID.TID 0000.0001) >#  fileFlags(n)     : specific code (8c string) for output file "n"
+(PID.TID 0000.0001) >#--------------------
+(PID.TID 0000.0001) > &DIAGNOSTICS_LIST
+(PID.TID 0000.0001) >  dumpAtLast   = .TRUE.,
+(PID.TID 0000.0001) ># diag_mnc     = .FALSE.,
+(PID.TID 0000.0001) >#--
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) >  fields(1:4,1)  = 'LaUH1TH ','LaVH1TH ','LaUH2RHO','LaVH2RHO',
+(PID.TID 0000.0001) >   filename(1) = 'DiagOcnLAYERS',
+(PID.TID 0000.0001) >  frequency(1) = 31104000.,
+(PID.TID 0000.0001) > /
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) >#--------------------
+(PID.TID 0000.0001) ># Parameter for Diagnostics of per level statistics:
+(PID.TID 0000.0001) >#--------------------
+(PID.TID 0000.0001) >#  diagSt_mnc (logical): write stat-diags to NetCDF files (default=diag_mnc)
+(PID.TID 0000.0001) >#  diagSt_regMaskFile : file containing the region-mask to read-in
+(PID.TID 0000.0001) >#  nSetRegMskFile   : number of region-mask sets within the region-mask file
+(PID.TID 0000.0001) >#  set_regMask(i)   : region-mask set-index that identifies the region "i"
+(PID.TID 0000.0001) >#  val_regMask(i)   : region "i" identifier value in the region mask
+(PID.TID 0000.0001) >#--for each output-stream:
+(PID.TID 0000.0001) >#  stat_fName(n) : prefix of the output file name (max 80c long) for outp.stream n
+(PID.TID 0000.0001) >#  stat_freq(n):< 0 : write snap-shot output every |stat_freq| seconds
+(PID.TID 0000.0001) >#               > 0 : write time-average output every stat_freq seconds
+(PID.TID 0000.0001) >#  stat_phase(n)    : write at time = stat_phase + multiple of |stat_freq|
+(PID.TID 0000.0001) >#  stat_region(:,n) : list of "regions" (default: 1 region only=global)
+(PID.TID 0000.0001) >#  stat_fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+(PID.TID 0000.0001) >#                (see "available_diagnostics.log" file for the full list of diags)
+(PID.TID 0000.0001) >#--------------------
+(PID.TID 0000.0001) > &DIAG_STATIS_PARMS
+(PID.TID 0000.0001) > stat_fields(1:5,1)  = 'ETAN    ','DETADT2 ','momKE   ',
+(PID.TID 0000.0001) >                       'TRAC01  ','TRAC02  ',
+(PID.TID 0000.0001) >  stat_fName(1) = 'dynStDiag',
+(PID.TID 0000.0001) >   stat_freq(1) = 31104000.,
+(PID.TID 0000.0001) ># stat_phase(1) = 0.,
+(PID.TID 0000.0001) > /
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) S/R DIAGNOSTICS_READPARMS, read namelist "diagnostics_list": start
+(PID.TID 0000.0001) S/R DIAGNOSTICS_READPARMS, read namelist "diagnostics_list": OK
+(PID.TID 0000.0001) S/R DIAGNOSTICS_READPARMS, read namelist "DIAG_STATIS_PARMS": start
+(PID.TID 0000.0001) S/R DIAGNOSTICS_READPARMS, read namelist "DIAG_STATIS_PARMS": OK
+(PID.TID 0000.0001)  DIAGNOSTICS_READPARMS: global parameter summary:
+(PID.TID 0000.0001)  dumpAtLast = /* always write time-ave diags at the end */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  diag_mnc =   /* write NetCDF output files */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  useMissingValue = /* put MissingValue where mask = 0 */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  diagCG_maxIters = /* max number of iters in diag_cg2d */
+(PID.TID 0000.0001)                    1000
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  diagCG_resTarget = /* residual target for diag_cg2d */
+(PID.TID 0000.0001)                 1.000000000000000E-13
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) -----------------------------------------------------
+(PID.TID 0000.0001)  DIAGNOSTICS_READPARMS: active diagnostics summary:
+(PID.TID 0000.0001) -----------------------------------------------------
+(PID.TID 0000.0001) Creating Output Stream: DiagOcnLAYERS
+(PID.TID 0000.0001) Output Frequency:   31104000.000000 ; Phase:           0.000000
+(PID.TID 0000.0001)  Averaging Freq.:   31104000.000000 , Phase:           0.000000 , Cycle:   1
+(PID.TID 0000.0001)  missing value: -9.990000000000E+02
+(PID.TID 0000.0001)  Levels:    will be set later
+(PID.TID 0000.0001)  Fields:    LaUH1TH  LaVH1TH  LaUH2RHO LaVH2RHO
+(PID.TID 0000.0001) -----------------------------------------------------
+(PID.TID 0000.0001)  DIAGNOSTICS_READPARMS: statistics diags. summary:
+(PID.TID 0000.0001) Creating Stats. Output Stream: dynStDiag
+(PID.TID 0000.0001) Output Frequency:   31104000.000000 ; Phase:           0.000000
+(PID.TID 0000.0001)  Regions:   0
+(PID.TID 0000.0001)  Fields:    ETAN     DETADT2  momKE    TRAC01   TRAC02
+(PID.TID 0000.0001) -----------------------------------------------------
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) LAYERS_READPARMS: opening data.layers
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.layers
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.layers"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) > &LAYERS_PARM01
+(PID.TID 0000.0001) > layers_taveFreq=0.,
+(PID.TID 0000.0001) > layers_diagFreq=0.,
+(PID.TID 0000.0001) > layers_name(1) ='TH',
+(PID.TID 0000.0001) > layers_bolus(1)=.FALSE.,
+(PID.TID 0000.0001) > layers_bounds(1:41,1)= -5.,
+(PID.TID 0000.0001) >                     -4., -3., -2., -1.,  0.,  1.,  2.,  3.,  4.,  5.,
+(PID.TID 0000.0001) >                      6.,  7.,  8.,  9., 10., 11., 12., 13., 14., 15.,
+(PID.TID 0000.0001) >                     16., 17., 18., 19., 20., 21., 22., 23., 24., 25.,
+(PID.TID 0000.0001) >                     26., 27., 28., 29., 30., 31., 32., 33., 34., 35.,
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) > layers_name(2) = 'RHO',
+(PID.TID 0000.0001) > layers_bolus(2)=.TRUE.,
+(PID.TID 0000.0001) > layers_bounds(1:41,2) =
+(PID.TID 0000.0001) >       1017.0, 1017.2, 1017.5, 1017.8, 1018.0, 1018.2, 1018.5, 1018.8, 1019.0,
+(PID.TID 0000.0001) >       1019.2, 1019.5, 1019.8, 1020.0, 1020.2, 1020.5, 1020.8, 1021.0, 1021.2,
+(PID.TID 0000.0001) >       1021.5, 1021.8, 1022.0, 1022.2, 1022.5, 1022.8, 1023.0, 1023.2, 1023.5,
+(PID.TID 0000.0001) >       1023.8, 1024.0, 1024.2, 1024.5, 1024.8, 1025.0, 1025.2, 1025.5, 1025.8,
+(PID.TID 0000.0001) >       1026.0, 1026.2, 1026.5, 1026.8, 1027.0,
+(PID.TID 0000.0001) > /
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) LAYERS_READPARMS: finished reading data.layers
 (PID.TID 0000.0001) SET_PARMS: done
 (PID.TID 0000.0001) Enter INI_VERTICAL_GRID: setInterFDr=    T ; setCenterDr=    F
 (PID.TID 0000.0001) %MON XC_max                       =   3.5859375000000E+02
@@ -650,6 +774,186 @@
 (PID.TID 0000.0001) year,acfc11_n,acfc12_n,acfc11_s,acfc12_s =  265.25  534.81  261.08  523.50
 (PID.TID 0000.0001) year,acfc11_n,acfc12_n,acfc11_s,acfc12_s =  263.84  537.67  260.16  528.18
 (PID.TID 0000.0001) year,acfc11_n,acfc12_n,acfc11_s,acfc12_s =  263.84  537.67  260.16  528.18
+(PID.TID 0000.0001) LAYERS_INIT_FIXED Debugging:
+(PID.TID 0000.0001) // ZZc=   2.5, MapIndex(  1)=  1, MapFact(  1)=1.0000, CellIndex(  1)=  1
+(PID.TID 0000.0001) // ZZc=   7.5, MapIndex(  2)=  1, MapFact(  2)=1.0000, CellIndex(  2)=  1
+(PID.TID 0000.0001) // ZZc=  12.5, MapIndex(  3)=  1, MapFact(  3)=1.0000, CellIndex(  3)=  1
+(PID.TID 0000.0001) // ZZc=  17.5, MapIndex(  4)=  1, MapFact(  4)=1.0000, CellIndex(  4)=  1
+(PID.TID 0000.0001) // ZZc=  22.5, MapIndex(  5)=  1, MapFact(  5)=1.0000, CellIndex(  5)=  1
+(PID.TID 0000.0001) // ZZc=  27.5, MapIndex(  6)=  1, MapFact(  6)=0.9583, CellIndex(  6)=  1
+(PID.TID 0000.0001) // ZZc=  32.5, MapIndex(  7)=  1, MapFact(  7)=0.8750, CellIndex(  7)=  1
+(PID.TID 0000.0001) // ZZc=  37.5, MapIndex(  8)=  1, MapFact(  8)=0.7917, CellIndex(  8)=  1
+(PID.TID 0000.0001) // ZZc=  42.5, MapIndex(  9)=  1, MapFact(  9)=0.7083, CellIndex(  9)=  1
+(PID.TID 0000.0001) // ZZc=  47.5, MapIndex( 10)=  1, MapFact( 10)=0.6250, CellIndex( 10)=  1
+(PID.TID 0000.0001) // ZZc=  53.5, MapIndex( 11)=  1, MapFact( 11)=0.5250, CellIndex( 11)=  2
+(PID.TID 0000.0001) // ZZc=  60.5, MapIndex( 12)=  1, MapFact( 12)=0.4083, CellIndex( 12)=  2
+(PID.TID 0000.0001) // ZZc=  67.5, MapIndex( 13)=  1, MapFact( 13)=0.2917, CellIndex( 13)=  2
+(PID.TID 0000.0001) // ZZc=  74.5, MapIndex( 14)=  1, MapFact( 14)=0.1750, CellIndex( 14)=  2
+(PID.TID 0000.0001) // ZZc=  81.5, MapIndex( 15)=  1, MapFact( 15)=0.0583, CellIndex( 15)=  2
+(PID.TID 0000.0001) // ZZc=  88.5, MapIndex( 16)=  2, MapFact( 16)=0.9588, CellIndex( 16)=  2
+(PID.TID 0000.0001) // ZZc=  95.5, MapIndex( 17)=  2, MapFact( 17)=0.8765, CellIndex( 17)=  2
+(PID.TID 0000.0001) // ZZc= 102.5, MapIndex( 18)=  2, MapFact( 18)=0.7941, CellIndex( 18)=  2
+(PID.TID 0000.0001) // ZZc= 109.5, MapIndex( 19)=  2, MapFact( 19)=0.7118, CellIndex( 19)=  2
+(PID.TID 0000.0001) // ZZc= 116.5, MapIndex( 20)=  2, MapFact( 20)=0.6294, CellIndex( 20)=  2
+(PID.TID 0000.0001) // ZZc= 125.0, MapIndex( 21)=  2, MapFact( 21)=0.5294, CellIndex( 21)=  3
+(PID.TID 0000.0001) // ZZc= 135.0, MapIndex( 22)=  2, MapFact( 22)=0.4118, CellIndex( 22)=  3
+(PID.TID 0000.0001) // ZZc= 145.0, MapIndex( 23)=  2, MapFact( 23)=0.2941, CellIndex( 23)=  3
+(PID.TID 0000.0001) // ZZc= 155.0, MapIndex( 24)=  2, MapFact( 24)=0.1765, CellIndex( 24)=  3
+(PID.TID 0000.0001) // ZZc= 165.0, MapIndex( 25)=  2, MapFact( 25)=0.0588, CellIndex( 25)=  3
+(PID.TID 0000.0001) // ZZc= 175.0, MapIndex( 26)=  3, MapFact( 26)=0.9583, CellIndex( 26)=  3
+(PID.TID 0000.0001) // ZZc= 185.0, MapIndex( 27)=  3, MapFact( 27)=0.8750, CellIndex( 27)=  3
+(PID.TID 0000.0001) // ZZc= 195.0, MapIndex( 28)=  3, MapFact( 28)=0.7917, CellIndex( 28)=  3
+(PID.TID 0000.0001) // ZZc= 205.0, MapIndex( 29)=  3, MapFact( 29)=0.7083, CellIndex( 29)=  3
+(PID.TID 0000.0001) // ZZc= 215.0, MapIndex( 30)=  3, MapFact( 30)=0.6250, CellIndex( 30)=  3
+(PID.TID 0000.0001) // ZZc= 227.0, MapIndex( 31)=  3, MapFact( 31)=0.5250, CellIndex( 31)=  4
+(PID.TID 0000.0001) // ZZc= 241.0, MapIndex( 32)=  3, MapFact( 32)=0.4083, CellIndex( 32)=  4
+(PID.TID 0000.0001) // ZZc= 255.0, MapIndex( 33)=  3, MapFact( 33)=0.2917, CellIndex( 33)=  4
+(PID.TID 0000.0001) // ZZc= 269.0, MapIndex( 34)=  3, MapFact( 34)=0.1750, CellIndex( 34)=  4
+(PID.TID 0000.0001) // ZZc= 283.0, MapIndex( 35)=  3, MapFact( 35)=0.0583, CellIndex( 35)=  4
+(PID.TID 0000.0001) // ZZc= 297.0, MapIndex( 36)=  4, MapFact( 36)=0.9576, CellIndex( 36)=  4
+(PID.TID 0000.0001) // ZZc= 311.0, MapIndex( 37)=  4, MapFact( 37)=0.8727, CellIndex( 37)=  4
+(PID.TID 0000.0001) // ZZc= 325.0, MapIndex( 38)=  4, MapFact( 38)=0.7879, CellIndex( 38)=  4
+(PID.TID 0000.0001) // ZZc= 339.0, MapIndex( 39)=  4, MapFact( 39)=0.7030, CellIndex( 39)=  4
+(PID.TID 0000.0001) // ZZc= 353.0, MapIndex( 40)=  4, MapFact( 40)=0.6182, CellIndex( 40)=  4
+(PID.TID 0000.0001) // ZZc= 369.5, MapIndex( 41)=  4, MapFact( 41)=0.5182, CellIndex( 41)=  5
+(PID.TID 0000.0001) // ZZc= 388.5, MapIndex( 42)=  4, MapFact( 42)=0.4030, CellIndex( 42)=  5
+(PID.TID 0000.0001) // ZZc= 407.5, MapIndex( 43)=  4, MapFact( 43)=0.2879, CellIndex( 43)=  5
+(PID.TID 0000.0001) // ZZc= 426.5, MapIndex( 44)=  4, MapFact( 44)=0.1727, CellIndex( 44)=  5
+(PID.TID 0000.0001) // ZZc= 445.5, MapIndex( 45)=  4, MapFact( 45)=0.0576, CellIndex( 45)=  5
+(PID.TID 0000.0001) // ZZc= 464.5, MapIndex( 46)=  5, MapFact( 46)=0.9558, CellIndex( 46)=  5
+(PID.TID 0000.0001) // ZZc= 483.5, MapIndex( 47)=  5, MapFact( 47)=0.8674, CellIndex( 47)=  5
+(PID.TID 0000.0001) // ZZc= 502.5, MapIndex( 48)=  5, MapFact( 48)=0.7791, CellIndex( 48)=  5
+(PID.TID 0000.0001) // ZZc= 521.5, MapIndex( 49)=  5, MapFact( 49)=0.6907, CellIndex( 49)=  5
+(PID.TID 0000.0001) // ZZc= 540.5, MapIndex( 50)=  5, MapFact( 50)=0.6023, CellIndex( 50)=  5
+(PID.TID 0000.0001) // ZZc= 562.0, MapIndex( 51)=  5, MapFact( 51)=0.5023, CellIndex( 51)=  6
+(PID.TID 0000.0001) // ZZc= 586.0, MapIndex( 52)=  5, MapFact( 52)=0.3907, CellIndex( 52)=  6
+(PID.TID 0000.0001) // ZZc= 610.0, MapIndex( 53)=  5, MapFact( 53)=0.2791, CellIndex( 53)=  6
+(PID.TID 0000.0001) // ZZc= 634.0, MapIndex( 54)=  5, MapFact( 54)=0.1674, CellIndex( 54)=  6
+(PID.TID 0000.0001) // ZZc= 658.0, MapIndex( 55)=  5, MapFact( 55)=0.0558, CellIndex( 55)=  6
+(PID.TID 0000.0001) // ZZc= 682.0, MapIndex( 56)=  6, MapFact( 56)=0.9547, CellIndex( 56)=  6
+(PID.TID 0000.0001) // ZZc= 706.0, MapIndex( 57)=  6, MapFact( 57)=0.8642, CellIndex( 57)=  6
+(PID.TID 0000.0001) // ZZc= 730.0, MapIndex( 58)=  6, MapFact( 58)=0.7736, CellIndex( 58)=  6
+(PID.TID 0000.0001) // ZZc= 754.0, MapIndex( 59)=  6, MapFact( 59)=0.6830, CellIndex( 59)=  6
+(PID.TID 0000.0001) // ZZc= 778.0, MapIndex( 60)=  6, MapFact( 60)=0.5925, CellIndex( 60)=  6
+(PID.TID 0000.0001) // ZZc= 804.5, MapIndex( 61)=  6, MapFact( 61)=0.4925, CellIndex( 61)=  7
+(PID.TID 0000.0001) // ZZc= 833.5, MapIndex( 62)=  6, MapFact( 62)=0.3830, CellIndex( 62)=  7
+(PID.TID 0000.0001) // ZZc= 862.5, MapIndex( 63)=  6, MapFact( 63)=0.2736, CellIndex( 63)=  7
+(PID.TID 0000.0001) // ZZc= 891.5, MapIndex( 64)=  6, MapFact( 64)=0.1642, CellIndex( 64)=  7
+(PID.TID 0000.0001) // ZZc= 920.5, MapIndex( 65)=  6, MapFact( 65)=0.0547, CellIndex( 65)=  7
+(PID.TID 0000.0001) // ZZc= 949.5, MapIndex( 66)=  7, MapFact( 66)=0.9540, CellIndex( 66)=  7
+(PID.TID 0000.0001) // ZZc= 978.5, MapIndex( 67)=  7, MapFact( 67)=0.8619, CellIndex( 67)=  7
+(PID.TID 0000.0001) // ZZc=1007.5, MapIndex( 68)=  7, MapFact( 68)=0.7698, CellIndex( 68)=  7
+(PID.TID 0000.0001) // ZZc=1036.5, MapIndex( 69)=  7, MapFact( 69)=0.6778, CellIndex( 69)=  7
+(PID.TID 0000.0001) // ZZc=1065.5, MapIndex( 70)=  7, MapFact( 70)=0.5857, CellIndex( 70)=  7
+(PID.TID 0000.0001) // ZZc=1097.0, MapIndex( 71)=  7, MapFact( 71)=0.4857, CellIndex( 71)=  8
+(PID.TID 0000.0001) // ZZc=1131.0, MapIndex( 72)=  7, MapFact( 72)=0.3778, CellIndex( 72)=  8
+(PID.TID 0000.0001) // ZZc=1165.0, MapIndex( 73)=  7, MapFact( 73)=0.2698, CellIndex( 73)=  8
+(PID.TID 0000.0001) // ZZc=1199.0, MapIndex( 74)=  7, MapFact( 74)=0.1619, CellIndex( 74)=  8
+(PID.TID 0000.0001) // ZZc=1233.0, MapIndex( 75)=  7, MapFact( 75)=0.0540, CellIndex( 75)=  8
+(PID.TID 0000.0001) // ZZc=1267.0, MapIndex( 76)=  8, MapFact( 76)=0.9534, CellIndex( 76)=  8
+(PID.TID 0000.0001) // ZZc=1301.0, MapIndex( 77)=  8, MapFact( 77)=0.8603, CellIndex( 77)=  8
+(PID.TID 0000.0001) // ZZc=1335.0, MapIndex( 78)=  8, MapFact( 78)=0.7671, CellIndex( 78)=  8
+(PID.TID 0000.0001) // ZZc=1369.0, MapIndex( 79)=  8, MapFact( 79)=0.6740, CellIndex( 79)=  8
+(PID.TID 0000.0001) // ZZc=1403.0, MapIndex( 80)=  8, MapFact( 80)=0.5808, CellIndex( 80)=  8
+(PID.TID 0000.0001) // ZZc=1439.5, MapIndex( 81)=  8, MapFact( 81)=0.4808, CellIndex( 81)=  9
+(PID.TID 0000.0001) // ZZc=1478.5, MapIndex( 82)=  8, MapFact( 82)=0.3740, CellIndex( 82)=  9
+(PID.TID 0000.0001) // ZZc=1517.5, MapIndex( 83)=  8, MapFact( 83)=0.2671, CellIndex( 83)=  9
+(PID.TID 0000.0001) // ZZc=1556.5, MapIndex( 84)=  8, MapFact( 84)=0.1603, CellIndex( 84)=  9
+(PID.TID 0000.0001) // ZZc=1595.5, MapIndex( 85)=  8, MapFact( 85)=0.0534, CellIndex( 85)=  9
+(PID.TID 0000.0001) // ZZc=1634.5, MapIndex( 86)=  9, MapFact( 86)=0.9530, CellIndex( 86)=  9
+(PID.TID 0000.0001) // ZZc=1673.5, MapIndex( 87)=  9, MapFact( 87)=0.8590, CellIndex( 87)=  9
+(PID.TID 0000.0001) // ZZc=1712.5, MapIndex( 88)=  9, MapFact( 88)=0.7651, CellIndex( 88)=  9
+(PID.TID 0000.0001) // ZZc=1751.5, MapIndex( 89)=  9, MapFact( 89)=0.6711, CellIndex( 89)=  9
+(PID.TID 0000.0001) // ZZc=1790.5, MapIndex( 90)=  9, MapFact( 90)=0.5771, CellIndex( 90)=  9
+(PID.TID 0000.0001) // ZZc=1832.0, MapIndex( 91)=  9, MapFact( 91)=0.4771, CellIndex( 91)= 10
+(PID.TID 0000.0001) // ZZc=1876.0, MapIndex( 92)=  9, MapFact( 92)=0.3711, CellIndex( 92)= 10
+(PID.TID 0000.0001) // ZZc=1920.0, MapIndex( 93)=  9, MapFact( 93)=0.2651, CellIndex( 93)= 10
+(PID.TID 0000.0001) // ZZc=1964.0, MapIndex( 94)=  9, MapFact( 94)=0.1590, CellIndex( 94)= 10
+(PID.TID 0000.0001) // ZZc=2008.0, MapIndex( 95)=  9, MapFact( 95)=0.0530, CellIndex( 95)= 10
+(PID.TID 0000.0001) // ZZc=2052.0, MapIndex( 96)= 10, MapFact( 96)=0.9527, CellIndex( 96)= 10
+(PID.TID 0000.0001) // ZZc=2096.0, MapIndex( 97)= 10, MapFact( 97)=0.8581, CellIndex( 97)= 10
+(PID.TID 0000.0001) // ZZc=2140.0, MapIndex( 98)= 10, MapFact( 98)=0.7634, CellIndex( 98)= 10
+(PID.TID 0000.0001) // ZZc=2184.0, MapIndex( 99)= 10, MapFact( 99)=0.6688, CellIndex( 99)= 10
+(PID.TID 0000.0001) // ZZc=2228.0, MapIndex(100)= 10, MapFact(100)=0.5742, CellIndex(100)= 10
+(PID.TID 0000.0001) // ZZc=2274.5, MapIndex(101)= 10, MapFact(101)=0.4742, CellIndex(101)= 11
+(PID.TID 0000.0001) // ZZc=2323.5, MapIndex(102)= 10, MapFact(102)=0.3688, CellIndex(102)= 11
+(PID.TID 0000.0001) // ZZc=2372.5, MapIndex(103)= 10, MapFact(103)=0.2634, CellIndex(103)= 11
+(PID.TID 0000.0001) // ZZc=2421.5, MapIndex(104)= 10, MapFact(104)=0.1581, CellIndex(104)= 11
+(PID.TID 0000.0001) // ZZc=2470.5, MapIndex(105)= 10, MapFact(105)=0.0527, CellIndex(105)= 11
+(PID.TID 0000.0001) // ZZc=2519.5, MapIndex(106)= 11, MapFact(106)=0.9524, CellIndex(106)= 11
+(PID.TID 0000.0001) // ZZc=2568.5, MapIndex(107)= 11, MapFact(107)=0.8573, CellIndex(107)= 11
+(PID.TID 0000.0001) // ZZc=2617.5, MapIndex(108)= 11, MapFact(108)=0.7621, CellIndex(108)= 11
+(PID.TID 0000.0001) // ZZc=2666.5, MapIndex(109)= 11, MapFact(109)=0.6670, CellIndex(109)= 11
+(PID.TID 0000.0001) // ZZc=2715.5, MapIndex(110)= 11, MapFact(110)=0.5718, CellIndex(110)= 11
+(PID.TID 0000.0001) // ZZc=2767.0, MapIndex(111)= 11, MapFact(111)=0.4718, CellIndex(111)= 12
+(PID.TID 0000.0001) // ZZc=2821.0, MapIndex(112)= 11, MapFact(112)=0.3670, CellIndex(112)= 12
+(PID.TID 0000.0001) // ZZc=2875.0, MapIndex(113)= 11, MapFact(113)=0.2621, CellIndex(113)= 12
+(PID.TID 0000.0001) // ZZc=2929.0, MapIndex(114)= 11, MapFact(114)=0.1573, CellIndex(114)= 12
+(PID.TID 0000.0001) // ZZc=2983.0, MapIndex(115)= 11, MapFact(115)=0.0524, CellIndex(115)= 12
+(PID.TID 0000.0001) // ZZc=3037.0, MapIndex(116)= 12, MapFact(116)=0.9522, CellIndex(116)= 12
+(PID.TID 0000.0001) // ZZc=3091.0, MapIndex(117)= 12, MapFact(117)=0.8566, CellIndex(117)= 12
+(PID.TID 0000.0001) // ZZc=3145.0, MapIndex(118)= 12, MapFact(118)=0.7611, CellIndex(118)= 12
+(PID.TID 0000.0001) // ZZc=3199.0, MapIndex(119)= 12, MapFact(119)=0.6655, CellIndex(119)= 12
+(PID.TID 0000.0001) // ZZc=3253.0, MapIndex(120)= 12, MapFact(120)=0.5699, CellIndex(120)= 12
+(PID.TID 0000.0001) // ZZc=3309.5, MapIndex(121)= 12, MapFact(121)=0.4699, CellIndex(121)= 13
+(PID.TID 0000.0001) // ZZc=3368.5, MapIndex(122)= 12, MapFact(122)=0.3655, CellIndex(122)= 13
+(PID.TID 0000.0001) // ZZc=3427.5, MapIndex(123)= 12, MapFact(123)=0.2611, CellIndex(123)= 13
+(PID.TID 0000.0001) // ZZc=3486.5, MapIndex(124)= 12, MapFact(124)=0.1566, CellIndex(124)= 13
+(PID.TID 0000.0001) // ZZc=3545.5, MapIndex(125)= 12, MapFact(125)=0.0522, CellIndex(125)= 13
+(PID.TID 0000.0001) // ZZc=3604.5, MapIndex(126)= 13, MapFact(126)=0.9520, CellIndex(126)= 13
+(PID.TID 0000.0001) // ZZc=3663.5, MapIndex(127)= 13, MapFact(127)=0.8561, CellIndex(127)= 13
+(PID.TID 0000.0001) // ZZc=3722.5, MapIndex(128)= 13, MapFact(128)=0.7602, CellIndex(128)= 13
+(PID.TID 0000.0001) // ZZc=3781.5, MapIndex(129)= 13, MapFact(129)=0.6642, CellIndex(129)= 13
+(PID.TID 0000.0001) // ZZc=3840.5, MapIndex(130)= 13, MapFact(130)=0.5683, CellIndex(130)= 13
+(PID.TID 0000.0001) // ZZc=3902.0, MapIndex(131)= 13, MapFact(131)=0.4683, CellIndex(131)= 14
+(PID.TID 0000.0001) // ZZc=3966.0, MapIndex(132)= 13, MapFact(132)=0.3642, CellIndex(132)= 14
+(PID.TID 0000.0001) // ZZc=4030.0, MapIndex(133)= 13, MapFact(133)=0.2602, CellIndex(133)= 14
+(PID.TID 0000.0001) // ZZc=4094.0, MapIndex(134)= 13, MapFact(134)=0.1561, CellIndex(134)= 14
+(PID.TID 0000.0001) // ZZc=4158.0, MapIndex(135)= 13, MapFact(135)=0.0520, CellIndex(135)= 14
+(PID.TID 0000.0001) // ZZc=4222.0, MapIndex(136)= 14, MapFact(136)=0.9519, CellIndex(136)= 14
+(PID.TID 0000.0001) // ZZc=4286.0, MapIndex(137)= 14, MapFact(137)=0.8556, CellIndex(137)= 14
+(PID.TID 0000.0001) // ZZc=4350.0, MapIndex(138)= 14, MapFact(138)=0.7594, CellIndex(138)= 14
+(PID.TID 0000.0001) // ZZc=4414.0, MapIndex(139)= 14, MapFact(139)=0.6632, CellIndex(139)= 14
+(PID.TID 0000.0001) // ZZc=4478.0, MapIndex(140)= 14, MapFact(140)=0.5669, CellIndex(140)= 14
+(PID.TID 0000.0001) // ZZc=4544.5, MapIndex(141)= 14, MapFact(141)=0.4669, CellIndex(141)= 15
+(PID.TID 0000.0001) // ZZc=4613.5, MapIndex(142)= 14, MapFact(142)=0.3632, CellIndex(142)= 15
+(PID.TID 0000.0001) // ZZc=4682.5, MapIndex(143)= 14, MapFact(143)=0.2594, CellIndex(143)= 15
+(PID.TID 0000.0001) // ZZc=4751.5, MapIndex(144)= 14, MapFact(144)=0.1556, CellIndex(144)= 15
+(PID.TID 0000.0001) // ZZc=4820.5, MapIndex(145)= 14, MapFact(145)=0.0519, CellIndex(145)= 15
+(PID.TID 0000.0001) // ZZc=4889.5, MapIndex(146)= 14, MapFact(146)=0.0000, CellIndex(146)= 15
+(PID.TID 0000.0001) // ZZc=4958.5, MapIndex(147)= 14, MapFact(147)=0.0000, CellIndex(147)= 15
+(PID.TID 0000.0001) // ZZc=5027.5, MapIndex(148)= 14, MapFact(148)=0.0000, CellIndex(148)= 15
+(PID.TID 0000.0001) // ZZc=5096.5, MapIndex(149)= 14, MapFact(149)=0.0000, CellIndex(149)= 15
+(PID.TID 0000.0001) // ZZc=5165.5, MapIndex(150)= 14, MapFact(150)=0.0000, CellIndex(150)= 15
+(PID.TID 0000.0001) ------------------------------------------------------------
+(PID.TID 0000.0001) DIAGNOSTICS_SET_LEVELS: done
+(PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   245
+(PID.TID 0000.0001)  write list of available Diagnostics to file: available_diagnostics.log
+(PID.TID 0000.0001) SETDIAG: Allocate 40 x  1 Levels for Diagnostic #   230 LaUH1TH
+(PID.TID 0000.0001) SETDIAG: Allocate 40 x  1 Levels for Diagnostic #   231 LaVH1TH
+(PID.TID 0000.0001) SETDIAG: Allocate 40 x  1 Levels for Diagnostic #   238 LaUH2RHO
+(PID.TID 0000.0001) SETDIAG: Allocate 40 x  1 Levels for Diagnostic #   239 LaVH2RHO
+(PID.TID 0000.0001)   space allocated for all diagnostics:     160 levels
+(PID.TID 0000.0001)   set mate pointer for diag #   230  LaUH1TH  , Parms: UU      MX , mate:   231
+(PID.TID 0000.0001)   set mate pointer for diag #   231  LaVH1TH  , Parms: VV      MX , mate:   230
+(PID.TID 0000.0001)   set mate pointer for diag #   238  LaUH2RHO , Parms: UU      MX , mate:   239
+(PID.TID 0000.0001)   set mate pointer for diag #   239  LaVH2RHO , Parms: VV      MX , mate:   238
+(PID.TID 0000.0001) DIAGNOSTICS_SET_POINTERS: Set levels for Outp.Stream: DiagOcnLAYERS
+(PID.TID 0000.0001)  Levels:       1.   2.   3.   4.   5.   6.   7.   8.   9.  10.  11.  12.  13.  14.  15.  16.  17.  18.  19.  20.
+(PID.TID 0000.0001)  Levels:      21.  22.  23.  24.  25.  26.  27.  28.  29.  30.  31.  32.  33.  34.  35.  36.  37.  38.  39.  40.
+(PID.TID 0000.0001) DIAGNOSTICS_SET_POINTERS: done
+(PID.TID 0000.0001) ------------------------------------------------------------
+(PID.TID 0000.0001) DIAGSTATS_SET_REGIONS: define no region
+(PID.TID 0000.0001) ------------------------------------------------------------
+(PID.TID 0000.0001) SETDIAG: Allocate  1 Levels for Stats-Diag #    23 ETAN
+(PID.TID 0000.0001) SETDIAG: Allocate  1 Levels for Stats-Diag #    25 DETADT2
+(PID.TID 0000.0001) SETDIAG: Allocate 15 Levels for Stats-Diag #   147 momKE
+(PID.TID 0000.0001) SETDIAG: Allocate 15 Levels for Stats-Diag #   205 TRAC01
+(PID.TID 0000.0001) SETDIAG: Allocate 15 Levels for Stats-Diag #   217 TRAC02
+(PID.TID 0000.0001)   space allocated for all stats-diags:      47 levels
+(PID.TID 0000.0001) DIAGSTATS_SET_POINTERS: done
+(PID.TID 0000.0001) ------------------------------------------------------------
+(PID.TID 0000.0001) DIAGSTATS_INI_IO: open file: dynStDiag.0004269600.txt , unit=     9
 (PID.TID 0000.0001) %MON fCori_max                    =   1.4579854531444E-04
 (PID.TID 0000.0001) %MON fCori_min                    =  -1.4579854531444E-04
 (PID.TID 0000.0001) %MON fCori_mean                   =   2.3039296165317E-19
@@ -2207,6 +2511,134 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001)  -----------------------------------
 (PID.TID 0000.0001) GCHEM_CHECK: #define ALLOW_GCHEM
+(PID.TID 0000.0001) LAYERS_CHECK: #define LAYERS
+(PID.TID 0000.0001) NZZ = /* number of levels in the fine vertical grid */
+(PID.TID 0000.0001)                     150
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dZZf = /* fine vertical grid spacing for isopycnal interp */
+(PID.TID 0000.0001)    10 @  5.000000000000000E+00,             /* K =  1: 10 */
+(PID.TID 0000.0001)    10 @  7.000000000000000E+00,             /* K = 11: 20 */
+(PID.TID 0000.0001)    10 @  1.000000000000000E+01,             /* K = 21: 30 */
+(PID.TID 0000.0001)    10 @  1.400000000000000E+01,             /* K = 31: 40 */
+(PID.TID 0000.0001)    10 @  1.900000000000000E+01,             /* K = 41: 50 */
+(PID.TID 0000.0001)    10 @  2.400000000000000E+01,             /* K = 51: 60 */
+(PID.TID 0000.0001)    10 @  2.900000000000000E+01,             /* K = 61: 70 */
+(PID.TID 0000.0001)    10 @  3.400000000000000E+01,             /* K = 71: 80 */
+(PID.TID 0000.0001)    10 @  3.900000000000000E+01,             /* K = 81: 90 */
+(PID.TID 0000.0001)    10 @  4.400000000000000E+01,             /* K = 91:100 */
+(PID.TID 0000.0001)    10 @  4.900000000000000E+01,             /* K =101:110 */
+(PID.TID 0000.0001)    10 @  5.400000000000000E+01,             /* K =111:120 */
+(PID.TID 0000.0001)    10 @  5.900000000000000E+01,             /* K =121:130 */
+(PID.TID 0000.0001)    10 @  6.400000000000000E+01,             /* K =131:140 */
+(PID.TID 0000.0001)    10 @  6.900000000000000E+01              /* K =141:150 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) layers_num =/* (1) theta; (2) salt; (3) prho; as averaging field */
+(PID.TID 0000.0001)                       1
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) layers_name =/* (TH) theta; (SLT) salt; (RHO) prho; as averaging field */
+(PID.TID 0000.0001)               'TH'
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) layers_bolus = /* include potential GM bolus velocity */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) layers_bounds = /* boundaries of tracer-averaging bins */
+(PID.TID 0000.0001)                -5.000000000000000E+00,      /* K =  1 */
+(PID.TID 0000.0001)                -4.000000000000000E+00,      /* K =  2 */
+(PID.TID 0000.0001)                -3.000000000000000E+00,      /* K =  3 */
+(PID.TID 0000.0001)                -2.000000000000000E+00,      /* K =  4 */
+(PID.TID 0000.0001)                -1.000000000000000E+00,      /* K =  5 */
+(PID.TID 0000.0001)                 0.000000000000000E+00,      /* K =  6 */
+(PID.TID 0000.0001)                 1.000000000000000E+00,      /* K =  7 */
+(PID.TID 0000.0001)                 2.000000000000000E+00,      /* K =  8 */
+(PID.TID 0000.0001)                 3.000000000000000E+00,      /* K =  9 */
+(PID.TID 0000.0001)                 4.000000000000000E+00,      /* K = 10 */
+(PID.TID 0000.0001)                 5.000000000000000E+00,      /* K = 11 */
+(PID.TID 0000.0001)                 6.000000000000000E+00,      /* K = 12 */
+(PID.TID 0000.0001)                 7.000000000000000E+00,      /* K = 13 */
+(PID.TID 0000.0001)                 8.000000000000000E+00,      /* K = 14 */
+(PID.TID 0000.0001)                 9.000000000000000E+00,      /* K = 15 */
+(PID.TID 0000.0001)                 1.000000000000000E+01,      /* K = 16 */
+(PID.TID 0000.0001)                 1.100000000000000E+01,      /* K = 17 */
+(PID.TID 0000.0001)                 1.200000000000000E+01,      /* K = 18 */
+(PID.TID 0000.0001)                 1.300000000000000E+01,      /* K = 19 */
+(PID.TID 0000.0001)                 1.400000000000000E+01,      /* K = 20 */
+(PID.TID 0000.0001)                 1.500000000000000E+01,      /* K = 21 */
+(PID.TID 0000.0001)                 1.600000000000000E+01,      /* K = 22 */
+(PID.TID 0000.0001)                 1.700000000000000E+01,      /* K = 23 */
+(PID.TID 0000.0001)                 1.800000000000000E+01,      /* K = 24 */
+(PID.TID 0000.0001)                 1.900000000000000E+01,      /* K = 25 */
+(PID.TID 0000.0001)                 2.000000000000000E+01,      /* K = 26 */
+(PID.TID 0000.0001)                 2.100000000000000E+01,      /* K = 27 */
+(PID.TID 0000.0001)                 2.200000000000000E+01,      /* K = 28 */
+(PID.TID 0000.0001)                 2.300000000000000E+01,      /* K = 29 */
+(PID.TID 0000.0001)                 2.400000000000000E+01,      /* K = 30 */
+(PID.TID 0000.0001)                 2.500000000000000E+01,      /* K = 31 */
+(PID.TID 0000.0001)                 2.600000000000000E+01,      /* K = 32 */
+(PID.TID 0000.0001)                 2.700000000000000E+01,      /* K = 33 */
+(PID.TID 0000.0001)                 2.800000000000000E+01,      /* K = 34 */
+(PID.TID 0000.0001)                 2.900000000000000E+01,      /* K = 35 */
+(PID.TID 0000.0001)                 3.000000000000000E+01,      /* K = 36 */
+(PID.TID 0000.0001)                 3.100000000000000E+01,      /* K = 37 */
+(PID.TID 0000.0001)                 3.200000000000000E+01,      /* K = 38 */
+(PID.TID 0000.0001)                 3.300000000000000E+01,      /* K = 39 */
+(PID.TID 0000.0001)                 3.400000000000000E+01,      /* K = 40 */
+(PID.TID 0000.0001)                 3.500000000000000E+01       /* K = 41 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) layers_num =/* (1) theta; (2) salt; (3) prho; as averaging field */
+(PID.TID 0000.0001)                       3
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) layers_name =/* (TH) theta; (SLT) salt; (RHO) prho; as averaging field */
+(PID.TID 0000.0001)               'RHO'
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) layers_bolus = /* include potential GM bolus velocity */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) layers_krho = /* model level to reference potential density to */
+(PID.TID 0000.0001)                       1
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) layers_bounds = /* boundaries of tracer-averaging bins */
+(PID.TID 0000.0001)                 1.017000000000000E+03,      /* K =  1 */
+(PID.TID 0000.0001)                 1.017200000000000E+03,      /* K =  2 */
+(PID.TID 0000.0001)                 1.017500000000000E+03,      /* K =  3 */
+(PID.TID 0000.0001)                 1.017800000000000E+03,      /* K =  4 */
+(PID.TID 0000.0001)                 1.018000000000000E+03,      /* K =  5 */
+(PID.TID 0000.0001)                 1.018200000000000E+03,      /* K =  6 */
+(PID.TID 0000.0001)                 1.018500000000000E+03,      /* K =  7 */
+(PID.TID 0000.0001)                 1.018800000000000E+03,      /* K =  8 */
+(PID.TID 0000.0001)                 1.019000000000000E+03,      /* K =  9 */
+(PID.TID 0000.0001)                 1.019200000000000E+03,      /* K = 10 */
+(PID.TID 0000.0001)                 1.019500000000000E+03,      /* K = 11 */
+(PID.TID 0000.0001)                 1.019800000000000E+03,      /* K = 12 */
+(PID.TID 0000.0001)                 1.020000000000000E+03,      /* K = 13 */
+(PID.TID 0000.0001)                 1.020200000000000E+03,      /* K = 14 */
+(PID.TID 0000.0001)                 1.020500000000000E+03,      /* K = 15 */
+(PID.TID 0000.0001)                 1.020800000000000E+03,      /* K = 16 */
+(PID.TID 0000.0001)                 1.021000000000000E+03,      /* K = 17 */
+(PID.TID 0000.0001)                 1.021200000000000E+03,      /* K = 18 */
+(PID.TID 0000.0001)                 1.021500000000000E+03,      /* K = 19 */
+(PID.TID 0000.0001)                 1.021800000000000E+03,      /* K = 20 */
+(PID.TID 0000.0001)                 1.022000000000000E+03,      /* K = 21 */
+(PID.TID 0000.0001)                 1.022200000000000E+03,      /* K = 22 */
+(PID.TID 0000.0001)                 1.022500000000000E+03,      /* K = 23 */
+(PID.TID 0000.0001)                 1.022800000000000E+03,      /* K = 24 */
+(PID.TID 0000.0001)                 1.023000000000000E+03,      /* K = 25 */
+(PID.TID 0000.0001)                 1.023200000000000E+03,      /* K = 26 */
+(PID.TID 0000.0001)                 1.023500000000000E+03,      /* K = 27 */
+(PID.TID 0000.0001)                 1.023800000000000E+03,      /* K = 28 */
+(PID.TID 0000.0001)                 1.024000000000000E+03,      /* K = 29 */
+(PID.TID 0000.0001)                 1.024200000000000E+03,      /* K = 30 */
+(PID.TID 0000.0001)                 1.024500000000000E+03,      /* K = 31 */
+(PID.TID 0000.0001)                 1.024800000000000E+03,      /* K = 32 */
+(PID.TID 0000.0001)                 1.025000000000000E+03,      /* K = 33 */
+(PID.TID 0000.0001)                 1.025200000000000E+03,      /* K = 34 */
+(PID.TID 0000.0001)                 1.025500000000000E+03,      /* K = 35 */
+(PID.TID 0000.0001)                 1.025800000000000E+03,      /* K = 36 */
+(PID.TID 0000.0001)                 1.026000000000000E+03,      /* K = 37 */
+(PID.TID 0000.0001)                 1.026200000000000E+03,      /* K = 38 */
+(PID.TID 0000.0001)                 1.026500000000000E+03,      /* K = 39 */
+(PID.TID 0000.0001)                 1.026800000000000E+03,      /* K = 40 */
+(PID.TID 0000.0001)                 1.027000000000000E+03       /* K = 41 */
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) GAD_CHECK: #define ALLOW_GENERIC_ADVDIFF
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Check Model config. (CONFIG_CHECK):
@@ -2221,7 +2653,7 @@
 (PID.TID 0000.0001)    2:  64   1  64
 (PID.TID 0000.0001)     nFlds =  11 , nFl3D =   8 , fields:
 (PID.TID 0000.0001)  >Uvel    < >GuNm1   < >Vvel    < >GvNm1   < >Theta   < >GtNm1   < >Salt    < >GsNm1   < >EtaN    < >dEtaHdt < >EtaH    <
-(PID.TID 0000.0001)   nTimRec =   0 , timeList:
+(PID.TID 0000.0001) missingVal=  1.00000000000000E+00 ; nTimRec =   0 , timeList:
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Uvel    ", #   1 in fldList, rec=   1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup.0004269600
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "Vvel    ", #   3 in fldList, rec=   3
@@ -2249,6 +2681,35 @@
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: shi_empmr_year.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_temp.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: lev_monthly_salt.bin
+(PID.TID 0000.0001)  write diagnostics summary to file ioUnit:      6
+Iter.Nb:   4269600 ; Time(s):  1.8444672000000E+11
+------------------------------------------------------------------------
+2D/3D diagnostics: Number of lists:     1
+------------------------------------------------------------------------
+listId=    1 ; file name: DiagOcnLAYERS
+ nFlds, nActive,       freq     &     phase        , nLev               
+    4  |    4  |  31104000.000000         0.000000 |  40
+ levels:   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21  22  23  24  25
+ levels:  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40
+ diag# | name   |   ipt  |  iMate | kLev|   count |   mate.C|           
+   230 |LaUH1TH |      1 |     41 |  40 |       0 |       0 |
+   231 |LaVH1TH |     41 |      1 |  40 |       0 |       0 |
+   238 |LaUH2RHO|     81 |    121 |  40 |       0 |       0 |
+   239 |LaVH2RHO|    121 |     81 |  40 |       0 |       0 |
+------------------------------------------------------------------------
+Global & Regional Statistics diagnostics: Number of lists:     1
+------------------------------------------------------------------------
+listId=   1 ; file name: dynStDiag
+ nFlds, nActive,       freq     &     phase        |                    
+    5  |    5  |  31104000.000000         0.000000 |
+ Regions:   0
+ diag# | name   |   ipt  |  iMate |    Volume   |   mate-Vol. |         
+    23 |ETAN    |      1 |      0 | 0.00000E+00 |
+    25 |DETADT2 |      2 |      0 | 0.00000E+00 |
+   147 |momKE   |      3 |      0 | 0.00000E+00 |
+   205 |TRAC01  |     18 |      0 | 0.00000E+00 |
+   217 |TRAC02  |     33 |      0 | 0.00000E+00 |
+------------------------------------------------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0004269600
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0004269600
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_cd.0004269600
@@ -2263,7 +2724,7 @@
 (PID.TID 0000.0001)    3:  15   1  15
 (PID.TID 0000.0001)     nFlds =   4 , nFl3D =   0 , fields:
 (PID.TID 0000.0001)  >pTr01   < >gPtr01m1< >pTr02   < >gPtr02m1<
-(PID.TID 0000.0001)   nTimRec =   0 , timeList:
+(PID.TID 0000.0001) missingVal=  1.00000000000000E+00 ; nTimRec =   0 , timeList:
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr01   ", #   1 in fldList, rec=   1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_ptracers.0004269600
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr02   ", #   3 in fldList, rec=   3
@@ -2584,11 +3045,11 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.6248175900005E-10
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.6248510612989E-10
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =  -3.6088780745890E-12
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   1.0794911390969E-11
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   3.0827945264881E-11
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   4.6623534168267E-14
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   1.0794929600398E-11
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   3.0828029562261E-11
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   4.6623662628255E-14
 (PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   3.0050307394615E-10
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =  -2.3539471813776E-12
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   1.1017202111742E-11
@@ -2689,11 +3150,11 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.6468319430839E-10
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.6469309737292E-10
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =  -3.6093993269988E-12
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   1.0806909404726E-11
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   3.0879392983023E-11
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   4.6752013828175E-14
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   1.0806963324184E-11
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   3.0879643876484E-11
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   4.6752440572941E-14
 (PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   3.0069778354172E-10
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =  -2.3541449199220E-12
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   1.1018752847200E-11
@@ -2794,11 +3255,11 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.6681615883992E-10
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.6683569567892E-10
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =  -3.6099202852626E-12
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   1.0818505451272E-11
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   3.0929226444510E-11
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   4.6868386505536E-14
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   1.0818611919702E-11
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   3.0929724238500E-11
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   4.6869297788042E-14
 (PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   3.0089703973852E-10
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =  -2.3543464419945E-12
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   1.1020305098320E-11
@@ -2807,143 +3268,175 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
+ Computing Diagnostic #    230  LaUH1TH      Counter:       4   Parms: UU      MX      
+           Vector  Mate for  LaUH1TH      Diagnostic #    231  LaVH1TH  exists 
+ Computing Diagnostic #    231  LaVH1TH      Counter:       4   Parms: VV      MX      
+           Vector  Mate for  LaVH1TH      Diagnostic #    230  LaUH1TH  exists 
+ Computing Diagnostic #    238  LaUH2RHO     Counter:       4   Parms: UU      MX      
+           Vector  Mate for  LaUH2RHO     Diagnostic #    239  LaVH2RHO exists 
+ Computing Diagnostic #    239  LaVH2RHO     Counter:       4   Parms: VV      MX      
+           Vector  Mate for  LaVH2RHO     Diagnostic #    238  LaUH2RHO exists 
+ Compute Stats, Diag. #     23  ETAN      vol(   0 ): 1.322E+15  Parms: SM      M1      
+ Compute Stats, Diag. #     25  DETADT2   vol(   0 ): 1.322E+15  Parms: SM      M1      
+ Compute Stats, Diag. #    147  momKE     vol(   0 ): 4.696E+18  Parms: SMR     MR      
+ Compute Stats, Diag. #    205  TRAC01    vol(   0 ): 4.696E+18  Parms: SMR     MR      
+ Compute Stats, Diag. #    217  TRAC02    vol(   0 ): 4.696E+18  Parms: SMR     MR      
+(PID.TID 0000.0001) DIAGSTATS_CLOSE_IO: close file: dynStDiag.0004269600.txt , unit=     9
 (PID.TID 0000.0001) %CHECKPOINT   4269604 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   13.350000000000000
-(PID.TID 0000.0001)         System time:  7.00000000000000067E-002
-(PID.TID 0000.0001)     Wall clock time:   13.460747003555298
+(PID.TID 0000.0001)           User time:   20.670000000000002
+(PID.TID 0000.0001)         System time:  0.17999999999999999
+(PID.TID 0000.0001)     Wall clock time:   21.140247821807861
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.23999999999999999
+(PID.TID 0000.0001)           User time:  0.26000000000000001
 (PID.TID 0000.0001)         System time:  1.00000000000000002E-002
-(PID.TID 0000.0001)     Wall clock time:  0.25681614875793457
+(PID.TID 0000.0001)     Wall clock time:  0.29403305053710938
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   13.109999999999999
-(PID.TID 0000.0001)         System time:  6.00000000000000047E-002
-(PID.TID 0000.0001)     Wall clock time:   13.203888177871704
+(PID.TID 0000.0001)           User time:   20.410000000000000
+(PID.TID 0000.0001)         System time:  0.16999999999999998
+(PID.TID 0000.0001)     Wall clock time:   20.846172094345093
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.70000000000000007
-(PID.TID 0000.0001)         System time:  4.00000000000000008E-002
-(PID.TID 0000.0001)     Wall clock time:  0.74431109428405762
+(PID.TID 0000.0001)           User time:  0.86000000000000010
+(PID.TID 0000.0001)         System time:  0.12000000000000001
+(PID.TID 0000.0001)     Wall clock time:   1.1537950038909912
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   12.410000000000000
-(PID.TID 0000.0001)         System time:  2.00000000000000039E-002
-(PID.TID 0000.0001)     Wall clock time:   12.459546089172363
+(PID.TID 0000.0001)           User time:   19.550000000000001
+(PID.TID 0000.0001)         System time:  4.99999999999999889E-002
+(PID.TID 0000.0001)     Wall clock time:   19.692346096038818
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
-(PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   12.410000000000000
-(PID.TID 0000.0001)         System time:  2.00000000000000039E-002
-(PID.TID 0000.0001)     Wall clock time:   12.459496974945068
+(PID.TID 0000.0001)   Seconds in section "MAIN_DO_LOOP        [THE_MAIN_LOOP]":
+(PID.TID 0000.0001)           User time:   19.550000000000001
+(PID.TID 0000.0001)         System time:  4.99999999999999889E-002
+(PID.TID 0000.0001)     Wall clock time:   19.692298412322998
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
-(PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  4.99999999999989342E-002
+(PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [MAIN_DO_LOOP]":
+(PID.TID 0000.0001)           User time:   19.550000000000001
+(PID.TID 0000.0001)         System time:  4.99999999999999889E-002
+(PID.TID 0000.0001)     Wall clock time:   19.692222356796265
+(PID.TID 0000.0001)          No. starts:           4
+(PID.TID 0000.0001)           No. stops:           4
+(PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  2.99999999999975842E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.70271110534667969E-002
+(PID.TID 0000.0001)     Wall clock time:  2.97889709472656250E-002
+(PID.TID 0000.0001)          No. starts:           8
+(PID.TID 0000.0001)           No. stops:           8
+(PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  3.99999999999991473E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  9.16562080383300781E-002
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  9.99999999999978684E-003
+(PID.TID 0000.0001)           User time:  3.00000000000011369E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.74067020416259766E-002
+(PID.TID 0000.0001)     Wall clock time:  5.22320270538330078E-002
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.81469726562500000E-005
+(PID.TID 0000.0001)     Wall clock time:  4.69684600830078125E-005
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.53999999999999915
+(PID.TID 0000.0001)           User time:  0.56000000000000050
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.53914999961853027
+(PID.TID 0000.0001)     Wall clock time:  0.55291342735290527
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001)   Seconds in section "GCHEM_CALC_TENDENCY [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  3.99999999999991473E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.82609367370605469E-002
+(PID.TID 0000.0001)     Wall clock time:  3.99498939514160156E-002
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   5.0000000000000018
-(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
-(PID.TID 0000.0001)     Wall clock time:   5.0178878307342529
+(PID.TID 0000.0001)           User time:   5.0700000000000003
+(PID.TID 0000.0001)         System time:  1.99999999999999900E-002
+(PID.TID 0000.0001)     Wall clock time:   5.1170186996459961
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   3.3700000000000028
+(PID.TID 0000.0001)           User time:   3.4999999999999964
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   3.3850131034851074
+(PID.TID 0000.0001)     Wall clock time:   3.5016257762908936
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.5399999999999991
+(PID.TID 0000.0001)           User time:   1.5700000000000003
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.5401623249053955
+(PID.TID 0000.0001)     Wall clock time:   1.5659406185150146
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  5.99999999999987210E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  6.01437091827392578E-002
+(PID.TID 0000.0001)     Wall clock time:  6.58001899719238281E-002
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001)   Seconds in section "INTEGR_CONTINUITY   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.16999999999999993
+(PID.TID 0000.0001)           User time:  0.16000000000000014
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.16618418693542480
+(PID.TID 0000.0001)     Wall clock time:  0.16615962982177734
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  5.99999999999987210E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  6.21311664581298828E-002
+(PID.TID 0000.0001)     Wall clock time:  6.26761913299560547E-002
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001)   Seconds in section "GCHEM_FORCING_SEP  [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.88622283935546875E-005
+(PID.TID 0000.0001)     Wall clock time:  4.00543212890625000E-005
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  9.00000000000016342E-002
+(PID.TID 0000.0001)           User time:  8.99999999999998579E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  8.45742225646972656E-002
+(PID.TID 0000.0001)     Wall clock time:  8.47787857055664063E-002
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.48000000000000043
+(PID.TID 0000.0001)           User time:  0.49999999999999645
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.48592591285705566
+(PID.TID 0000.0001)     Wall clock time:  0.50880098342895508
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.70000000000000107
+(PID.TID 0000.0001)           User time:  0.71999999999999886
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.70599555969238281
+(PID.TID 0000.0001)     Wall clock time:  0.71890711784362793
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.20000000000000107
+(PID.TID 0000.0001)           User time:   7.0200000000000031
+(PID.TID 0000.0001)         System time:  2.00000000000000178E-002
+(PID.TID 0000.0001)     Wall clock time:   7.0551340579986572
+(PID.TID 0000.0001)          No. starts:           4
+(PID.TID 0000.0001)           No. stops:           4
+(PID.TID 0000.0001)   Seconds in section "PTRACERS_RESET      [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.20345449447631836
+(PID.TID 0000.0001)     Wall clock time:  5.98430633544921875E-005
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.10999999999999943
-(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
-(PID.TID 0000.0001)     Wall clock time:  0.12280106544494629
+(PID.TID 0000.0001)           User time:  0.12000000000000099
+(PID.TID 0000.0001)         System time:  9.99999999999998113E-003
+(PID.TID 0000.0001)     Wall clock time:  0.13002800941467285
 (PID.TID 0000.0001)          No. starts:           4
 (PID.TID 0000.0001)           No. stops:           4
 (PID.TID 0000.0001) // ======================================================
@@ -2994,9 +3487,9 @@
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =           4244
+(PID.TID 0000.0001) //            No. barriers =           4722
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =           4244
+(PID.TID 0000.0001) //     Total barrier spins =           4722
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
 PROGRAM MAIN: Execution ended Normally
