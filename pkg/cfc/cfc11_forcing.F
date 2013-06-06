@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc11_forcing.F,v 1.10 2010/03/16 00:14:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc11_forcing.F,v 1.11 2013/06/06 15:48:42 jmc Exp $
 C $Name:  $
 
 C modified for external_forcing_DIC.F  August 1999
@@ -47,7 +47,8 @@ C     == Local variables ==
       _RL  SURCFC11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  xintp(1-OLy:sNy+OLy)
        INTEGER I,J
-       INTEGER myYear, lastYear, thisYear
+       _RL myYear
+       INTEGER lastYear, thisYear
        _RL dtinc, aWght, bWght
        _RL ACFC11north, ACFC11south
        INTEGER maxYear
@@ -55,7 +56,6 @@ C     == Local variables ==
        _RL a1, a2
 #endif
        _RL yNorth, ySouth
-
 
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -70,11 +70,11 @@ C find atmospheric CFC
        thisYear=lastYear+1
        maxYear=cfc_yearend-cfc_yearbeg
        if (thisYear.lt.maxYear) then
-         dtinc=myYear-float(lastYear-1)
+         dtinc=myYear-(lastYear-1.d0)
          aWght=0.5d0+dtinc
          bWght=1.d0-aWght
 c        IF (bi*bj.eq.1)
-c       &write(0,*) 'myYear = ',myYear,lastYear,dtinc,aWght
+c    &      write(0,*) 'myYear = ',myYear,lastYear,dtinc,aWght
          ACFC11north = ACFC11(lastYear,1)*bWght
      &                + ACFC11(thisYear,1)*aWght
          ACFC11south = ACFC11(lastYear,2)*bWght
@@ -83,30 +83,30 @@ c       &write(0,*) 'myYear = ',myYear,lastYear,dtinc,aWght
          ACFC11north = ACFC11(maxYear,1)
          ACFC11south = ACFC11(maxYear,2)
        endif
-c      print*,'ACFC11north,ACFC11south', ACFC11north,ACFC11south,
-c    &                                   lastYear,thisYear
+c      print*,'YEAR,ACFC11north,ACFC11south',  myYear,
+c    &        ACFC11north,ACFC11south
 C provide gradient between N and S values
 
 C STEPH S INITIAL VERSION
 #ifdef STEPH_GRAD
        DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           if ((j.gt.int(sNy/2)+3.and.j.le.sNy).or.j.lt.1) then
+        DO i=1-OLx,sNx+OLx
+          if ((j.gt.int(sNy/2)+3.and.j.le.sNy).or.j.lt.1) then
              ATMOSCFC11(i,j,bi,bj)=ACFC11north
-           endif
-           if (j.ge.int(sNy/2)-3.and.j.le.int(sNy/2)+3) then
+          endif
+          if (j.ge.int(sNy/2)-3.and.j.le.int(sNy/2)+3) then
              a1=(float(j-int(sNy/2)+3)+.5)/7
              a2=1.d0-a1
              ATMOSCFC11(i,j,bi,bj)=a1*ACFC11south +
      &                             a2*ACFC11north
-           endif
-           if ((j.lt.int(sNy/2)-3.and.j.gt.0).or.j.gt.sNy) then
+          endif
+          if ((j.lt.int(sNy/2)-3.and.j.gt.0).or.j.gt.sNy) then
              ATMOSCFC11(i,j,bi,bj)=ACFC11south
-           endif
-          ENDDO
+          endif
+        ENDDO
        ENDDO
 #endif
-c OCMIP VERSION
+C OCMIP VERSION
 #ifdef OCMIP_GRAD
        yNorth =  10.0
        ySouth = -10.0
