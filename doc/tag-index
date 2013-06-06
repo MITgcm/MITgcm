@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1873 2013/06/03 23:28:44 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1874 2013/06/06 16:06:23 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cfc:
+  - change time interpolation for atmospheric CFC-11 (now same as for CFC-12);
+    update output (CFC-11) of experiment cfc_example and tutorial_cfc_offline.
 o pkg/seaice:
   - allow to use seaice dynamics without pkg/exf (e.g., using pkg/cheapaml)
 o pkg/seaice: add Adams-Bashforth2 time discretization for ice dynamics;
