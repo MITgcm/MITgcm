@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.19 2012/03/06 15:37:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.20 2013/06/06 15:44:20 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -36,7 +36,7 @@ C     == Local variables ==
       INTEGER intimeP, intime0, intime1
        INTEGER bi, bj, i, j
       _RL aWght, bWght
-      _RL wind
+      _RL locWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       IF ( CFC_forcingCycle .GT. 0. _d 0 ) THEN
 
@@ -141,90 +141,94 @@ C-    save newly loaded time-record
 C--   end if-block for loading new time-records
        ENDIF
 
+C endif for periodicForcing
+      ENDIF
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+
 #ifdef ALLOW_EXF
-       IF ( useEXF ) THEN
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
+        IF ( useEXF ) THEN
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
 C     sh = max(wspeed,umin), with default umin=0.5m/s
-C           pisvel(i,j,bi,bj)=(0.31 _d 0*wspeed(i,j,bi,bj)**2)/3.6 _d 5
-           pisvel(i,j,bi,bj)=(0.31 _d 0*sh(i,j,bi,bj)**2)/3.6 _d 5
+c            locWind(i,j) = wspeed(i,j,bi,bj)
+             locWind(i,j) = sh(i,j,bi,bj)
+           ENDDO
           ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-       ELSE
+        ELSEIF ( CFC_forcingCycle.GT.zeroRL
+     &           .AND. CFC_windFile.NE.' ' ) THEN
 #else
-       IF (.TRUE.) THEN
+        IF     ( CFC_forcingCycle.GT.zeroRL
+     &           .AND. CFC_windFile.NE.' ' ) THEN
 #endif /* ALLOW_EXF */
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           IF ( CFC_windFile .NE. ' '  ) THEN
-             wind = bWght*wind0(i,j,bi,bj)
-     &                           +aWght*wind1(i,j,bi,bj)
-           ELSE
-             wind = 5. _d 0*maskC(i,j,1,bi,bj)
-           ENDIF
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             locWind(i,j) = bWght*wind0(i,j,bi,bj)
+     &                    + aWght*wind1(i,j,bi,bj)
+           ENDDO
+          ENDDO
+        ELSE
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             locWind(i,j) = 5. _d 0*maskC(i,j,1,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
 c calculate piston velocity
 c QQ: note - we should have wind speed variance in here
 c following Wannikof (1992)
-           pisvel(i,j,bi,bj)=(0.31 _d 0*wind**2)/3.6 _d 5
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-       ENDIF
-C
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
+        DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           IF ( CFC_atmospFile .NE. ' '  ) THEN
-             ATMOSP(i,j,bi,bj) = bWght*atmosp0(i,j,bi,bj)
-     &                          +aWght*atmosp1(i,j,bi,bj)
-           ELSE
-             ATMOSP(i,j,bi,bj) = maskC(i,j,1,bi,bj)
-           ENDIF
+            pisvel(i,j,bi,bj)=(0.31 _d 0*locWind(i,j)**2)/3.6 _d 5
           ENDDO
-         ENDDO
         ENDDO
-       ENDDO
-#ifdef ALLOW_SEAICE
-       IF (useSEAICE) THEN
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           FIce(I,J,bi,bj) = AREA(I,J,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-       ELSE
-#else
-       IF (.TRUE.) THEN
-#endif /* ALLOW_SEAICE */
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           IF ( CFC_iceFile .NE. ' '  ) THEN
-            FIce(i,j,bi,bj)    = bWght*ice0(i,j,bi,bj)
-     &                          +aWght*ice1(i,j,bi,bj)
-           ELSE
-            FIce(i,j,bi,bj) =0. _d 0
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-       ENDIF
 
-C endif for periodicForcing
-      ENDIF
+        IF ( CFC_forcingCycle.GT.zeroRL
+     &       .AND. CFC_atmospFile.NE.' ' ) THEN
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             ATMOSP(i,j,bi,bj) = bWght*atmosp0(i,j,bi,bj)
+     &                         + aWght*atmosp1(i,j,bi,bj)
+           ENDDO
+          ENDDO
+        ELSE
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             ATMOSP(i,j,bi,bj) = maskC(i,j,1,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+
+#ifdef ALLOW_SEAICE
+        IF ( useSEAICE ) THEN
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             FIce(I,J,bi,bj) = AREA(I,J,bi,bj)
+           ENDDO
+          ENDDO
+        ELSEIF ( CFC_forcingCycle.GT.zeroRL
+     &           .AND. CFC_iceFile.NE.' ' ) THEN
+#else
+        IF ( CFC_forcingCycle.GT.zeroRL .AND. CFC_iceFile.NE.' ' ) THEN
+#endif /* ALLOW_SEAICE */
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+             FIce(i,j,bi,bj) = bWght*ice0(i,j,bi,bj)
+     &                       + aWght*ice1(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ELSE
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+             FIce(i,j,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDIF
+
+C--   end bi.bj loops
+       ENDDO
+      ENDDO
 
       RETURN
       END
