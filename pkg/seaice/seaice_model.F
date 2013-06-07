@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.108 2013/05/25 16:19:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.109 2013/06/07 13:08:11 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -176,7 +176,7 @@ C NOW DO ADVECTION and DIFFUSION
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL( 'SEAICE_ADVDIFF', myThid )
 #endif
-       CALL SEAICE_ADVDIFF( myTime, myIter, myThid )
+       CALL SEAICE_ADVDIFF( uIce, vIce, myTime, myIter, myThid )
 #ifdef SEAICE_ITD
 C     check that all ice thickness categories meet their limits
 C     (includes Hibler-type ridging)
