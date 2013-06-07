@@ -1,27 +1,28 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc11_forcing.F,v 1.11 2013/06/06 15:48:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc11_forcing.F,v 1.12 2013/06/07 15:43:31 jmc Exp $
 C $Name:  $
 
 C modified for external_forcing_DIC.F  August 1999
-c
-c modified swd Oct 01 and Feb 02, for use as package for c40_patch1
-c modified to use with c44 and ptracers: swd May 2002
-c modified to have carbonate and biological influences: swd June 2002
-c modified for cfc: swd Sep 2003
 C
+C modified swd Oct 01 and Feb 02, for use as package for c40_patch1
+C modified to use with c44 and ptracers: swd May 2002
+C modified to have carbonate and biological influences: swd June 2002
+C modified for cfc: swd Sep 2003
 
 #include "GCHEM_OPTIONS.h"
 #define OCMIP_GRAD
 #undef STEPH_GRAD
 
 CStartOfInterFace
-      SUBROUTINE CFC11_FORCING( PTR_CFC11, GCFC11,
-     &                            bi,bj,imin,imax,jmin,jmax,
-     &                             myIter,myTime,myThid)
+      SUBROUTINE CFC11_FORCING( 
+     I                          pTr_CFC11, 
+     U                          gCFC11,
+     I                          bi, bj, imin, imax, jmin, jmax,
+     I                          myIter, myTime, myThid )
 
-C     /==========================================================\
-C     | SUBROUTINE CFC11_FORCING                                   |
-C     | o Calculate the changes to CFC11 through air-sea  fluxes   |
-C     |==========================================================|
+C     *==========================================================*
+C     | SUBROUTINE CFC11_FORCING
+C     | o Calculate the changes to CFC11 through air-sea  fluxes
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -37,16 +38,15 @@ C     == Routine arguments ==
       INTEGER myIter
       _RL myTime
       INTEGER myThid
-      _RL  PTR_CFC11(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL  GCFC11(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  pTr_CFC11(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  gCFC11(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER bi, bj, imin, imax, jmin, jmax
 
 #ifdef ALLOW_PTRACERS
 #ifdef ALLOW_CFC
 C     == Local variables ==
-      _RL  SURCFC11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL  xintp(1-OLy:sNy+OLy)
-       INTEGER I,J
+      _RL  gSurfCFC11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+       INTEGER i,j
        _RL myYear
        INTEGER lastYear, thisYear
        _RL dtinc, aWght, bWght
@@ -56,12 +56,13 @@ C     == Local variables ==
        _RL a1, a2
 #endif
        _RL yNorth, ySouth
+       _RL recip_dLat, weight
 
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           SURCFC11(i,j)=0.d0
-          ENDDO
-         ENDDO
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          gSurfCFC11(i,j) = 0. _d 0
+        ENDDO
+       ENDDO
 
 C find atmospheric CFC
        myYear=float(myIter-PTRACERS_Iter0)*deltaTclock
@@ -76,9 +77,9 @@ C find atmospheric CFC
 c        IF (bi*bj.eq.1)
 c    &      write(0,*) 'myYear = ',myYear,lastYear,dtinc,aWght
          ACFC11north = ACFC11(lastYear,1)*bWght
-     &                + ACFC11(thisYear,1)*aWght
+     &               + ACFC11(thisYear,1)*aWght
          ACFC11south = ACFC11(lastYear,2)*bWght
-     &                + ACFC11(thisYear,2)*aWght
+     &               + ACFC11(thisYear,2)*aWght
        else
          ACFC11north = ACFC11(maxYear,1)
          ACFC11south = ACFC11(maxYear,2)
@@ -110,37 +111,31 @@ C OCMIP VERSION
 #ifdef OCMIP_GRAD
        yNorth =  10.0
        ySouth = -10.0
+       recip_dLat = 1. _d 0 / ( yNorth - ySouth )
        DO j=1-OLy,sNy+OLy
-          i=1
-          IF(yC(i,j,bi,bj) .GE. yNorth) THEN
-             xintp(j) = 1.0
-          ELSE IF(yC(i,j,bi,bj) .LE. ySouth) THEN
-             xintp(j) = 0.0
-          ELSE
-             xintp(j) = (yC(i,j,bi,bj) - ySouth)/
-     &                           (yNorth - ySouth)
-          ENDIF
-          DO i=1-OLx,sNx+OLx
-           ATMOSCFC11(i,j,bi,bj)= xintp(j) * ACFC11north
-     &               + (1.0 - xintp(j))*ACFC11south
+        DO i=1-OLx,sNx+OLx
+          weight = ( yC(i,j,bi,bj) - ySouth )*recip_dLat
+          weight = MAX( zeroRL, MIN( oneRL, weight ) )
+          ATMOSCFC11(i,j,bi,bj)= weight * ACFC11north
+     &               + ( oneRL - weight )*ACFC11south
 
-          ENDDO
+        ENDDO
 c         print*,'QQ cfc11', j, ATMOSCFC11(1,j,bi,bj)
        ENDDO
 #endif
 C cfc11 air-sea interaction
-       CALL CFC11_SURFFORCING( PTR_CFC11, SURCFC11,
+       CALL CFC11_SURFFORCING( pTr_CFC11, gSurfCFC11,
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
 
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           GCFC11(i,j,1)=GCFC11(i,j,1)+SURCFC11(i,j)
-          ENDDO
-         ENDDO
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          gCFC11(i,j,1) = gCFC11(i,j,1) + gSurfCFC11(i,j)
+        ENDDO
+       ENDDO
 
-#endif
-#endif
+#endif /* ALLOW_CFC */
+#endif /* ALLOW_PTRACERS */
 
        RETURN
        END
