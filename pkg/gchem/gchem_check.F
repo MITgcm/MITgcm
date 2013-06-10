@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_check.F,v 1.5 2013/06/05 19:23:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_check.F,v 1.6 2013/06/10 02:59:01 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -7,7 +7,7 @@ C $Name:  $
 C     *==========================================================*
 C     | SUBROUTINE GCHEM_CHECK
 C     | o Validate basic package setup and inter-package
-C     | dependencies.
+C     |   dependencies.
 C     *==========================================================*
       IMPLICIT NONE
 
@@ -68,6 +68,13 @@ C     GCHEM cannot run darwin and cfc together
         CALL PRINT_ERROR( msgBuf , myThid )
         STOP 'ABNORMAL END: S/R GCHEM_CHECK'
       ENDIF
+
+#ifdef ALLOW_CFC
+C     run checks specific to CFC
+      IF ( useCFC ) THEN
+        CALL CFC_CHECK( myThid )
+      ENDIF
+#endif
 
 #ifdef ALLOW_DARWIN
 C     run checks specific to darwin
