@@ -1,12 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1874 2013/06/06 16:06:23 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1875 2013/06/10 03:08:50 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/cfc:
+  - move in separated header file (CFC_ATMOS.h) time-serie arrays of Atmos CFC
+  - remove atmos CFC 2-D arrays from common bloc (now local variables)
+  - change some hard-coded constant to run time parameter for reading and
+    and interpolating atmospheric CFC ; keep same default as previously.
+  - more flexible reading of Atmos CFC (number of records no longer hard-coded)
+  - put arguments in standard order: myTime, myIter, myThid
+  - use standard S/R GET_PERIODIC_INTERVAL for time interpolation of
+    atmospheric CFC ; fix for the case myIter < PTRACERS_iter0.
+  - fix calculation of surf tendencys for partial-cell and/or Non-Lin Free-Surf
+  - new routine to print summary of CFC params and check for consistency.
+o pkg/cfc:
   - change time interpolation for atmospheric CFC-11 (now same as for CFC-12);
     update output (CFC-11) of experiment cfc_example and tutorial_cfc_offline.
+  - fix interpolation of atmphspheric CFC between Sorthern and Northern
+    hemisphere value.
 o pkg/seaice:
   - allow to use seaice dynamics without pkg/exf (e.g., using pkg/cheapaml)
 o pkg/seaice: add Adams-Bashforth2 time discretization for ice dynamics;
