@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_calc_tendency.F,v 1.4 2011/12/22 19:05:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_calc_tendency.F,v 1.5 2013/06/10 02:52:57 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -79,34 +79,34 @@ C     define horizontal loop ranges
         iMax = sNx
         jMin = 1
         jMax = sNy
-C        DO iTracer = 1, PTRACER_numInUse
-C         DO k = 1, Nr
-C          DO j = 1-OLy, sNy+OLy
-C           DO i = 1-OLx, sNx+OLx
-C            gchemTendency(i,j,k,bi,bj,iTracer) = your specific model
-C           ENDDO
-C          ENDDO
-C         ENDDO
-C        ENDDO
+c       DO iTracer = 1, PTRACER_numInUse
+c        DO k = 1, Nr
+c         DO j = 1-OLy, sNy+OLy
+c          DO i = 1-OLx, sNx+OLx
+c           gchemTendency(i,j,k,bi,bj,iTracer) = your specific model
+c          ENDDO
+c         ENDDO
+c        ENDDO
+c       ENDDO
 
+C------------------------
+C chemical forcing      |
+C------------------------
 #ifdef ALLOW_CFC
-ccccccccccccccccccccccccc
-c chemical forcing      c
-ccccccccccccccccccccccccc
-ccccccccccccccccccccccccccc CFC cccccccccccccccccccccccccccccccc
-c
-        k = 1
-        CALL CFC11_FORCING( pTracer     (1-OLx,1-OLy,1,bi,bj,1),
-     &                      gchemTendency(1-OLx,1-OLy,1,bi,bj,1),
-     &                      bi, bj, iMin, iMax, jMin, jMax,
-     &                      myIter, myTime, myThid )
-        CALL CFC12_FORCING( pTracer     (1-OLx,1-OLy,1,bi,bj,2),
-     &                      gchemTendency(1-OLx,1-OLy,1,bi,bj,2),
-     &                      bi, bj, iMin, iMax, jMin, jMax,
-     &                      myIter, myTime, myThid )
-
-cccccccccccccccccccccccccc END CFC cccccccccccccccccccccccccccccccccc
+        IF ( useCFC ) THEN
+         CALL CFC11_FORCING(
+     I                       pTracer     (1-OLx,1-OLy,1,bi,bj,1),
+     U                       gchemTendency(1-OLx,1-OLy,1,bi,bj,1),
+     I                       bi, bj, iMin, iMax, jMin, jMax,
+     I                       myTime, myIter, myThid )
+         CALL CFC12_FORCING(
+     I                       pTracer     (1-OLx,1-OLy,1,bi,bj,2),
+     U                       gchemTendency(1-OLx,1-OLy,1,bi,bj,2),
+     I                       bi, bj, iMin, iMax, jMin, jMax,
+     I                       myTime, myIter, myThid )
+        ENDIF
 #endif /* ALLOW_CFC */
+
 C     end of tile-loops
        ENDDO
       ENDDO
