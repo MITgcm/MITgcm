@@ -1,16 +1,26 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.20 2013/06/06 15:44:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.21 2013/06/10 02:58:12 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+#endif /* ALLOW_SEAICE */
+#ifdef ALLOW_THSICE
+# include "THSICE_OPTIONS.h"
+#endif /* ALLOW_THSICE */
 
-CStartOfInterFace
+CBOP
+C     !ROUTINE: CFC12_FORCING
+C     !INTERFACE:
       SUBROUTINE CFC_FIELDS_LOAD (
-     I           myIter,myTime,myThid)
+     I           myTime, myIter, myThid )
 
+C     !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE CFC_FIELDS_LOAD
 C     *==========================================================*
 
+C     !USES:
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -26,17 +36,24 @@ C     == GLobal variables ==
 # include "SEAICE_SIZE.h"
 # include "SEAICE.h"
 #endif
+#ifdef ALLOW_THSICE
+# include "THSICE_VARS.h"
+#endif /* ALLOW_THSICE */
 
-C     == Routine arguments ==
-      INTEGER myIter
+C     !INPUT/OUTPUT PARAMETERS:
+C     myTime     :: current time in simulation
+C     myIter     :: current iteration number
+C     myThid     :: my Thread Id number
       _RL myTime
+      INTEGER myIter
       INTEGER myThid
 
-C     == Local variables ==
+C     !LOCAL VARIABLES:
       INTEGER intimeP, intime0, intime1
        INTEGER bi, bj, i, j
       _RL aWght, bWght
       _RL locWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+CEOP
 
       IF ( CFC_forcingCycle .GT. 0. _d 0 ) THEN
 
@@ -113,20 +130,21 @@ C     data for the period ahead and the period behind myTime.
          CALL READ_REC_XY_RS( CFC_atmospFile,atmosp1,intime1,
      &        myIter,myThid )
         ENDIF
-        IF ( CFC_iceFile .NE. ' '  .AND. .NOT.useSEAICE ) THEN
+        IF ( CFC_iceFile .NE. ' ' .AND.
+     &       .NOT.useSEAICE .AND. .NOT.useThSIce ) THEN
          CALL READ_REC_XY_RS( CFC_iceFile,ice0,intime0,
      &       myIter,myThid )
          CALL READ_REC_XY_RS( CFC_iceFile,ice1,intime1,
      &       myIter,myThid )
         ENDIF
 
-        IF (.NOT.useEXF) THEN
+        IF ( .NOT.useEXF ) THEN
          _EXCH_XY_RS(wind0, myThid )
          _EXCH_XY_RS(wind1, myThid )
         ENDIF
          _EXCH_XY_RS(atmosp0, myThid )
          _EXCH_XY_RS(atmosp1, myThid )
-        IF (.NOT.useSEAICE) THEN
+        IF ( .NOT.useSEAICE .AND. .NOT.useThSIce ) THEN
          _EXCH_XY_RS(ice0, myThid )
          _EXCH_XY_RS(ice1, myThid )
         ENDIF
@@ -180,7 +198,7 @@ c QQ: note - we should have wind speed variance in here
 c following Wannikof (1992)
         DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            pisvel(i,j,bi,bj)=(0.31 _d 0*locWind(i,j)**2)/3.6 _d 5
+            pisVel(i,j,bi,bj)=(0.31 _d 0*locWind(i,j)**2)/3.6 _d 5
           ENDDO
         ENDDO
 
@@ -200,18 +218,24 @@ c following Wannikof (1992)
           ENDDO
         ENDIF
 
+        IF ( useThSIce ) THEN
+#ifdef ALLOW_THSICE
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             FIce(I,J,bi,bj) = iceMask(i,j,bi,bj)
+           ENDDO
+          ENDDO
+#endif /* ALLOW_THSICE */
+        ELSEIF ( useSEAICE ) THEN
 #ifdef ALLOW_SEAICE
-        IF ( useSEAICE ) THEN
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
              FIce(I,J,bi,bj) = AREA(I,J,bi,bj)
            ENDDO
           ENDDO
+#endif /* ALLOW_SEAICE */
         ELSEIF ( CFC_forcingCycle.GT.zeroRL
      &           .AND. CFC_iceFile.NE.' ' ) THEN
-#else
-        IF ( CFC_forcingCycle.GT.zeroRL .AND. CFC_iceFile.NE.' ' ) THEN
-#endif /* ALLOW_SEAICE */
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
              FIce(i,j,bi,bj) = bWght*ice0(i,j,bi,bj)

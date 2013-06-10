@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_fields_load.F,v 1.8 2009/06/30 16:43:00 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_fields_load.F,v 1.9 2013/06/10 02:58:12 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -34,20 +34,22 @@ cccccccccccccccccccccccccc
 c load external data     c
 cccccccccccccccccccccccccc
 #ifdef ALLOW_DIC
+      IF ( useDIC ) THEN
        CALL DIC_FIELDS_LOAD (myIter,myTime,myThid)
+      ENDIF
 #endif
 
-
 #ifdef ALLOW_CFC
-       CALL CFC_FIELDS_LOAD(myIter,myTime,myThid)
+      IF ( useCFC ) THEN
+       CALL CFC_FIELDS_LOAD( myTime, myIter, myThid )
+      ENDIF
 #endif
 
 #ifdef ALLOW_DARWIN
       IF ( useDARWIN ) THEN
-       call DARWIN_FIELDS_LOAD(myIter,myTime,myThid)
+       CALl DARWIN_FIELDS_LOAD(myIter,myTime,myThid)
       ENDIF
 #endif
-
 
 #endif /* ALLOW_GCHEM */
 
