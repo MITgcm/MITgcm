@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.41 2013/06/04 22:52:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.42 2013/06/10 20:05:15 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -101,9 +101,6 @@ C     snowFac   :: snowing refreshing-age factor [units of 1/snowPr]
       _RL snowFac
       _RL cphm
       _RL opFrac, icFrac
-#ifdef ALLOW_DIAGNOSTICS
-      _RL tmpFac
-#endif
       INTEGER i,j
       LOGICAL dBugFlag
 
@@ -184,14 +181,12 @@ C--
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-        tmpFac = 1. _d 0
         CALL DIAGNOSTICS_FILL(iceMask,'SI_FrcFx',0,1,1,bi,bj,myThid)
-        CALL DIAGNOSTICS_FRACT_FILL(
-     I                   snowPrc,   iceMask,tmpFac,1,'SIsnwPrc',
-     I                   0,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FRACT_FILL(
-     I                   siceAlb,   iceMask,tmpFac,1,'SIalbedo',
-     I                   0,1,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FRACT_FILL( snowPrc,
+     I                       iceMask(1-OLx,1-OLy,bi,bj), oneRL, 1,
+     I                              'SIsnwPrc', 0,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FRACT_FILL( siceAlb, iceMask, oneRL, 1,
+     I                              'SIalbedo', 0,1,1,bi,bj,myThid )
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
       DO j = jMin, jMax
