@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_diagnostics_init.F,v 1.6 2013/05/25 18:06:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_diagnostics_init.F,v 1.7 2013/06/11 01:42:50 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -64,15 +64,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'CH_QAIR '
-      diagTitle = 'cheapAML Surface heating '
-      diagUnits = 'Kg/Kg           '
+      diagTitle = 'cheapAML Specific Humidity'
+      diagUnits = 'kg/kg           '
       diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'CH_EmP  '
       diagTitle = 'cheapAML Evap-Precip     '
-      diagUnits = 'Kg/m2/s         '
+      diagUnits = 'kg/m2/s         '
       diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -117,6 +117,20 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'CH_Prec '
       diagTitle = 'cheapAML precipitation   '
       diagUnits = 'kg/m2/s         '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'CH_q100 '
+      diagTitle = 'cheapAML upper Specific Humidity'
+      diagUnits = 'kg/kg           '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'CH_ssqt '
+      diagTitle = 'cheapAML surf sat Specific Humid.'
+      diagUnits = 'kg/kg           '
       diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
