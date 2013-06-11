@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_list_check.F,v 1.4 2011/06/12 16:08:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_list_check.F,v 1.5 2013/06/11 01:34:13 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -35,8 +35,8 @@ C     nbFlds(n):: number of diagnostics for output stream # n
 C     fldsList :: list of field names to check
 C     myThid   :: my Thread Id. number
       INTEGER ld, md, nbLists
-      INTEGER nbFlds(numlists)
-      CHARACTER*8 fldsList(numperlist,numlists)
+      INTEGER nbFlds(numLists)
+      CHARACTER*8 fldsList(numperList,numLists)
       INTEGER myThid
 C     !OUTPUT PARAMETERS:
 C     ndCount  :: number of disable diagnostics in list "fldsList"
@@ -189,7 +189,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
            CALL PRINT_ERROR( msgBuf , myThid )
            ndCount = ndCount + 1
          ENDIF
-         
+         IF ( diagName.EQ.'SI_FrcFx' ) THEN
+           WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_LIST_CHECK: diagnostic "',
+     &             diagName, '" was retired (identical to "SI_Fract")'
+           CALL PRINT_ERROR( msgBuf , myThid )
+           WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_LIST_CHECK: ',
+     &              '=> need to change "data.diagnostics" accordingly'
+           CALL PRINT_ERROR( msgBuf , myThid )
+           ndCount = ndCount + 1
+         ENDIF
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         ENDIF
         IF ( ndCount.EQ.0 ) RETURN

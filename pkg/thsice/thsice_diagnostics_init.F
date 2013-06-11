@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diagnostics_init.F,v 1.9 2013/01/21 22:54:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diagnostics_init.F,v 1.10 2013/06/11 01:34:47 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -65,6 +65,7 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
         numFract  = diagNum
+        numFrcFx  = diagNum
 
         diagName  = 'SI_Thick'
         diagTitle = 'Sea-Ice thickness (area weighted average)'
@@ -123,6 +124,7 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+#ifdef OLD_THSICE_CALL_SEQUENCE
         diagName  = 'SI_FrcFx'
         diagTitle = 'Sea-Ice fraction [0-1], synchro. with fluxes'
         diagUnits = '0-1             '
@@ -130,6 +132,7 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
         numFrcFx  = diagNum
+#endif /* OLD_THSICE_CALL_SEQUENCE */
 
         diagName  = 'SIalbedo'
         diagTitle = 'Sea-Ice Albedo [0-1] (area weighted average)'
