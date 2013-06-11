@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1875 2013/06/10 03:08:50 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1876 2013/06/11 02:52:42 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/thsice:
+  - fix filling of snow-precip diagnostic (SIsnwPrc) (left from the removing
+    of snowPrc from common bloc, on May 2nd, thsice_step_fwd.F revision 1.40);
+  - remove diagnostics 'SI_FrcFx' ( now identical to 'SI_Fract' with new
+     call sequence: ice-Thermo(thsice),ice-Dyn,ice-Advect );
+  - allow precip from pkg/cheapaml to make snow over seaice.
 o pkg/cfc:
   - move in separated header file (CFC_ATMOS.h) time-serie arrays of Atmos CFC
   - remove atmos CFC 2-D arrays from common bloc (now local variables)
