@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.37 2013/05/02 20:11:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.38 2013/06/11 01:48:22 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -102,11 +102,7 @@ C     (excluding overlap) and apply exchanges when needed
 CADJ STORE ocefwfx(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 CADJ STORE oceqnet(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 CADJ STORE ocesflx(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-# ifdef ALLOW_EXF
-CADJ STORE qsw(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-# endif
-#endif
-#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE qsw(:,:,bi,bj)     = comlev1_bibj, key=ticekey, byte=isbyte
 CADJ STORE uvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
@@ -119,12 +115,11 @@ CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
          ENDDO
         ENDDO
 
-#ifdef ALLOW_CHEAPAML
+#ifndef ALLOW_AUTODIFF_TAMC
         IF ( .NOT.useCheapAML ) THEN
 #endif
-
-        CALL THSICE_GET_OCEAN(
-     I                         bi, bj, myTime, myIter, myThid )
+         CALL THSICE_GET_OCEAN(
+     I                          bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj, key = ticekey
@@ -139,6 +134,9 @@ CADJ STORE hOceMxL(:,:,bi,bj) = comlev1_bibj, key = ticekey
 CADJ STORE tOceMxL(:,:,bi,bj) = comlev1_bibj, key = ticekey
 CADJ STORE sOceMxL(:,:,bi,bj) = comlev1_bibj, key = ticekey
 CADJ STORE v2ocMxL(:,:,bi,bj) = comlev1_bibj, key = ticekey
+#else
+C-   end if not useCheapAML
+        ENDIF
 #endif
 
 #ifdef OLD_THSICE_CALL_SEQUENCE
@@ -149,8 +147,8 @@ C Note: will inline this S/R once thSIce in Atmos. set-up is settled
      I                   bi,bj, myTime, myIter, myThid )
 #endif /* OLD_THSICE_CALL_SEQUENCE */
 
-#ifdef ALLOW_BULK_FORCE
-        IF ( useBulkforce ) THEN
+#ifndef ALLOW_AUTODIFF_TAMC
+        IF ( useBulkforce .OR. useCheapAML ) THEN
          CALL THSICE_GET_PRECIP(
      I                  iceMask, tOceMxL,
      O                  prcAtm(1-OLx,1-OLy,bi,bj),
@@ -159,7 +157,6 @@ C Note: will inline this S/R once thSIce in Atmos. set-up is settled
      I                  iMin,iMax,jMin,jMax, bi,bj, myThid )
         ENDIF
 #endif
-#ifdef ALLOW_EXF
         IF ( useEXF ) THEN
          CALL THSICE_MAP_EXF(
      I                  iceMask, tOceMxL,
@@ -168,22 +165,18 @@ C Note: will inline this S/R once thSIce in Atmos. set-up is settled
      O                  icFlxSW(1-OLx,1-OLy,bi,bj),
      I                  iMin,iMax,jMin,jMax, bi,bj, myThid )
         ENDIF
-#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE sHeating(:,:,bi,bj) = comlev1_bibj, key = ticekey
 CADJ STORE tice1(:,:,bi,bj) = comlev1_bibj, key = ticekey
 CADJ STORE tice2(:,:,bi,bj) = comlev1_bibj, key = ticekey
 #else
-        IF ( .NOT.thSIce_skipThermo ) THEN
+        IF ( .NOT.( useCheapAML .OR. thSIce_skipThermo ) ) THEN
 #endif
-          CALL THSICE_STEP_TEMP(
+         CALL THSICE_STEP_TEMP(
      I                     bi, bj, iMin, iMax, jMin, jMax,
      I                     myTime, myIter, myThid )
 
-#ifdef ALLOW_CHEAPAML
-        ENDIF
-#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE empmr(:,:,bi,bj) = comlev1_bibj, key = ticekey
 CADJ STORE qnet(:,:,bi,bj) = comlev1_bibj, key = ticekey
@@ -196,10 +189,11 @@ CADJ STORE Qice2(:,:,bi,bj)   = comlev1_bibj, key = ticekey
 CADJ STORE snowAge(:,:,bi,bj) = comlev1_bibj, key = ticekey
 CADJ STORE sHeating(:,:,bi,bj) = comlev1_bibj, key = ticekey
 #else
+C-   end if not skipThermo / useCheapAML
         ENDIF
         IF ( .NOT.thSIce_skipThermo ) THEN
 #endif
-          CALL THSICE_STEP_FWD(
+         CALL THSICE_STEP_FWD(
      I                     bi, bj, iMin, iMax, jMin, jMax,
      I                     prcAtm(1-OLx,1-OLy,bi,bj),
      I                     snowPr, qPrcRn,
