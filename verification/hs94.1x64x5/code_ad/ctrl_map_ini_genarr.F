@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/ctrl_map_ini_genarr.F,v 1.4 2012/08/12 19:59:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/ctrl_map_ini_genarr.F,v 1.5 2013/06/11 15:16:23 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -95,7 +95,7 @@ C--   generic - user-defined control vars
                 bottomdragfld(i,j,bi,bj) = bottomdragfld(i,j,bi,bj)
      &                                   + tmpfld2d(i,j,bi,bj)
 #endif
-              elseif ( iarr. eq. 2 ) then
+              elseif ( iarr .eq. 2 ) then
                 theta(i,j,1,bi,bj) = theta(i,j,1,bi,bj)
      &                             + tmpfld2d(i,j,bi,bj)
               elseif ( iarr .eq. 3 ) then
