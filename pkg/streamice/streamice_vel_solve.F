@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.1 2013/06/12 21:30:22 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.2 2013/06/12 22:19:07 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -417,7 +417,7 @@ C       but after convergence loop does nothing
        ENDDO
 
        CALL GLOBAL_MAX_R8 (err_max_fp, myThid)
-       WRITE(msgBuf,'(A,E15.7)') '||x_i-x_{i-1}||_inf',
+       WRITE(msgBuf,'(A,1PE23.14)') 'STREAMICE_FP_ERROR',
      &                       err_max_fp
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
