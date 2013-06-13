@@ -6,7 +6,7 @@
 #PBS -e /data/jm_c/test_acesgrid/output/tst_mp2.stderr
 #PBS -o /data/jm_c/test_acesgrid/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.12 2013/03/05 16:47:21 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.13 2013/06/13 22:01:34 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -47,6 +47,8 @@ checkOut=1
 #options="$options -nc" ; checkOut=0
 #options="$options -q"  ; checkOut=0
 
+addExp=2
+cvsArg="-d :pserver:cvsanon@mitgcm.org:/u/gcmpack"
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
 #- check for disk space: relative space (99%) or absolute (10.G):
@@ -77,7 +79,7 @@ if [ $checkOut -eq 1 ] ; then
       done )
     ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
-    ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d ) 2>&1
+    ( cd $gcmDIR ; cvs -q $cvsArg update -P -d ) 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
        echo "cvs update on '"`hostname`"' fail (return val=$RETVAL) => exit"
@@ -93,7 +95,19 @@ if [ $checkOut -eq 2 ] ; then
      rm -rf $gcmDIR
   fi
 # cvs co MITgcm
-  cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P -d $gcmDIR MITgcm > /dev/null 2>&1
+  cvs $cvsArg co -P -d $gcmDIR MITgcm > /dev/null 2>&1
+  if [ $addExp -ge 1 ]; then
+   echo " add dir: offline_cheapaml (from Contrib:verification_other)"
+   ( cd $gcmDIR/verification ; cvs $cvsArg co -P -d offline_cheapaml \
+                  MITgcm_contrib/verification_other/offline_cheapaml > /dev/null 2>&1 )
+  fi
+  if [ $addExp -ge 2 ]; then
+   echo " add dir: atm_gray (from Contrib:verification_other)"
+   ( cd $gcmDIR/verification ; cvs $cvsArg co -P -d atm_gray \
+                  MITgcm_contrib/verification_other/atm_gray > /dev/null 2>&1 )
+   ( cd $gcmDIR/verification/atm_gray ; ln -s code_cs code ; ln -s inp_cs input
+     cd results ; ln -s output.cs.txt output.txt )
+  fi
   /usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
   /usr/bin/find $gcmDIR -type f | xargs chmod g+r
 fi
