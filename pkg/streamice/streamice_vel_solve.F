@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.2 2013/06/12 22:19:07 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.3 2013/06/13 19:08:43 jmc Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -8,7 +8,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
       SUBROUTINE STREAMICE_VEL_SOLVE( myThid )
 C     /============================================================\
-C     | SUBROUTINE                                                 |   
+C     | SUBROUTINE                                                 |
 C     | o                                                          |
 C     |============================================================|
 C     |                                                            |
@@ -35,7 +35,7 @@ C     !INPUT/OUTPUT ARGUMENTS
 #ifdef ALLOW_STREAMICE
 
 C     LOCAL VARIABLES
-      
+
 !   real, dimension(:,:), pointer :: TAUDX, TAUDY, u_prev_iterate, v_prev_iterate, &
 !                         u_bdry_cont, v_bdry_cont, Au, Av, err_u, err_v, &
 !                         geolonq, geolatq, u_last, v_last, float_cond, H_node
@@ -44,7 +44,7 @@ C     LOCAL VARIABLES
 !                         isdq, iedq, jsdq, jedq, isd, ied, jsd, jed, isumstart, jsumstart, nodefloat, nsub
 !   real                     :: err_max, err_tempu, err_tempv, err_init, area, max_vel, tempu, tempv, rhoi, rhow
 
-      INTEGER conv_flag, i, j, k, l, iter, cg_iters, bi, bj 
+      INTEGER conv_flag, i, j, k, l, iter, cg_iters, bi, bj
       INTEGER iter_numconv
       INTEGER ikey_nl
       _RL err_max, err_tempu, err_tempv, err_init, area, err_max_fp
@@ -53,8 +53,8 @@ C     LOCAL VARIABLES
 #ifdef ALLOW_PETSC
       PetscErrorCode ierr
 #endif
-!       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+Oly,nSx,nSy)
-!       _RL taudy (1-OLx:sNx+OLx,1-OLy:sNy+Oly,nSx,nSy)
+!       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+!       _RL taudy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       IF (STREAMICE_ppm_driving_stress) THEN
        CALL STREAMICE_DRIVING_STRESS_PPM (myThid)
@@ -119,10 +119,10 @@ C     LOCAL VARIABLES
       ENDDO
 
 
-      CALL STREAMICE_CG_BOUND_VALS( myThid,     
-     O    ubd_SI, 
+      CALL STREAMICE_CG_BOUND_VALS( myThid,
+     O    ubd_SI,
      O    vbd_SI)
-      
+
 
 !      CALL WRITE_FLD_XY_RL("u_bound_cont","",ubd_SI,0,myThid)
 !      CALL WRITE_FLD_XY_RL("v_bound_cont","",vbd_SI,0,myThid)
@@ -134,11 +134,11 @@ C     LOCAL VARIABLES
 !$TAF STORE V_streamice = comlev1, key=ikey_dynamics
 #endif
 
-      CALL STREAMICE_CG_ACTION( myThid, 
-     O    Au_SI, 
-     O    Av_SI, 
-     I    U_streamice, 
-     I    V_streamice, 
+      CALL STREAMICE_CG_ACTION( myThid,
+     O    Au_SI,
+     O    Av_SI,
+     I    U_streamice,
+     I    V_streamice,
      I    0, sNx+1, 0, sNy+1 )
 
 
@@ -155,14 +155,14 @@ C     LOCAL VARIABLES
           err_tempu = 0. _d 0
           err_tempv = 0. _d 0
           IF (STREAMICE_umask(i,j,bi,bj).eq.1) THEN
-           err_tempu = 
-     &      ABS (Au_SI(i,j,bi,bj)+0*ubd_SI(i,j,bi,bj) - 
+           err_tempu =
+     &      ABS (Au_SI(i,j,bi,bj)+0*ubd_SI(i,j,bi,bj) -
      &           taudx_SI(i,j,bi,bj))
 !            print *, "err_temp_u", err_tempu
           ENDIF
           IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
-           err_tempv = MAX( err_tempu, 
-     &      ABS (Av_SI(i,j,bi,bj)+0*vbd_SI(i,j,bi,bj) - 
+           err_tempv = MAX( err_tempu,
+     &      ABS (Av_SI(i,j,bi,bj)+0*vbd_SI(i,j,bi,bj) -
      &           taudy_SI(i,j,bi,bj)))
           ENDIF
           IF (err_tempv .ge. err_init) THEN
@@ -197,7 +197,7 @@ C-------------------------------------------------------------------
 
       DO iter=1,streamice_max_nl_iter
 
-C     To avoid using "exit", loop goes through all iterations 
+C     To avoid using "exit", loop goes through all iterations
 C       but after convergence loop does nothing
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -264,12 +264,12 @@ C       but after convergence loop does nothing
 !       ENDDO
 #endif
 
-       CALL STREAMICE_CG_WRAPPER( 
+       CALL STREAMICE_CG_WRAPPER(
      &       U_streamice,
      &       V_streamice,
      &       taudx_SI,
-     &       taudy_SI, 
-     &       cgtol, 
+     &       taudy_SI,
+     &       cgtol,
      &       cg_iters,
      &       myThid )
 
@@ -307,7 +307,7 @@ C       but after convergence loop does nothing
        CALL STREAMICE_VISC_BETA ( myThid )
 #endif
 
- 
+
 #ifdef ALLOW_AUTODIFF_TAMC
 !$TAF STORE U_streamice = comlev1_stream_nl, key=ikey_nl
 !$TAF STORE V_streamice = comlev1_stream_nl, key=ikey_nl
@@ -329,8 +329,8 @@ C       but after convergence loop does nothing
         ENDDO
        ENDDO
 
-       CALL STREAMICE_CG_BOUND_VALS( myThid,     
-     O    ubd_SI, 
+       CALL STREAMICE_CG_BOUND_VALS( myThid,
+     O    ubd_SI,
      O    vbd_SI)
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -338,11 +338,11 @@ C       but after convergence loop does nothing
 !$TAF STORE V_streamice = comlev1_stream_nl, key=ikey_nl
 #endif
 
-       CALL STREAMICE_CG_ACTION( myThid, 
-     O    Au_SI, 
-     O    Av_SI, 
-     I    U_streamice, 
-     I    V_streamice, 
+       CALL STREAMICE_CG_ACTION( myThid,
+     O    Au_SI,
+     O    Av_SI,
+     I    U_streamice,
+     I    V_streamice,
      I    0, sNx+1, 0, sNy+1 )
 
       if (iter .eq. streamice_max_nl_iter) then
@@ -373,13 +373,13 @@ C       but after convergence loop does nothing
            err_tempu = 0. _d 0
            err_tempv = 0. _d 0
            IF (STREAMICE_umask(i,j,bi,bj).eq.1) THEN
-            err_tempu = 
-     &       ABS (Au_SI(i,j,bi,bj)+0*ubd_SI(i,j,bi,bj) - 
+            err_tempu =
+     &       ABS (Au_SI(i,j,bi,bj)+0*ubd_SI(i,j,bi,bj) -
      &            taudx_SI(i,j,bi,bj))
            ENDIF
            IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
-            err_tempv = MAX( err_tempu, 
-     &       ABS (Av_SI(i,j,bi,bj)+0*vbd_SI(i,j,bi,bj) - 
+            err_tempv = MAX( err_tempu,
+     &       ABS (Av_SI(i,j,bi,bj)+0*vbd_SI(i,j,bi,bj) -
      &            taudy_SI(i,j,bi,bj)))
            ENDIF
 !           if (err_tempu.ge.1.e2.or.err_tempv.ge.1.e2) THEN
@@ -403,11 +403,11 @@ C       but after convergence loop does nothing
            err_tempu = 0. _d 0
            err_tempv = 0. _d 0
            IF (STREAMICE_umask(i,j,bi,bj).eq.1) THEN
-            err_tempu = 
+            err_tempu =
      &       ABS (U_streamice(i,j,bi,bj)-u_old_SI(i,j,bi,bj))
            ENDIF
            IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
-            err_tempv = MAX( err_tempu, 
+            err_tempv = MAX( err_tempu,
      &       ABS (V_streamice(i,j,bi,bj)-v_old_SI(i,j,bi,bj)))
            ENDIF
            IF (err_tempv .ge. err_max_fp) err_max_fp = err_tempv
@@ -417,7 +417,7 @@ C       but after convergence loop does nothing
        ENDDO
 
        CALL GLOBAL_MAX_R8 (err_max_fp, myThid)
-       WRITE(msgBuf,'(A,1PE23.14)') 'STREAMICE_FP_ERROR',
+       WRITE(msgBuf,'(A,1PE22.14)') 'STREAMICE_FP_ERROR =',
      &                       err_max_fp
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
