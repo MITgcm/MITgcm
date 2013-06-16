@@ -1,22 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.23 2010/11/23 18:55:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.24 2013/06/16 21:58:58 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
-      subroutine exf_GetFFieldRec(
+      SUBROUTINE EXF_GetFFieldRec(
      I                             fldstartdate, fldperiod,
      I                             usefldyearlyfields,
      O                             fac,
      O                             first, changed,
      O                             count0, count1, year0, year1,
-     I                             mytime, myiter, mythid )
+     I                             myTime, myIter, myThid )
 
 c     ==================================================================
 c     o Get flags, counters, and the linear interpolation factor for a
 c       given field.
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 
@@ -31,27 +31,27 @@ c                           beginning of the model integration or, if
 c                           usefldyearlyfields, from the beginning of year
 c     fldperiod          :: period between forcing field records
 c     usefldyearlyfields :: when set, use yearly forcing files
-c     mytime             :: current time in simulation
-c     myiter             :: current iteration number in simulation
-c     mythid             :: my thread identification number
+c     myTime             :: current time in simulation
+c     myIter             :: current iteration number in simulation
+c     myThid             :: my thread identification number
 
       _RL     fldstartdate, fldperiod
       logical usefldyearlyfields
-      _RL     mytime
-      integer myiter, mythid
+      _RL     myTime
+      INTEGER myIter, myThid
 
 c     == output arguments ==
 c     fac     :: weight of record count0 for linear interpolation purposes
 c     first   :: model initialization flag: read two forcing records
 c     changed :: flag indicating that a new forcing record must be read
-c     count0  :: record number for forcing field preceding mytime
-c     count1  :: record number for forcing field following mytime
-c     year0   :: year of forcing file for record preceding mytime
-c     year1   :: year of forcing file for record following mytime
+c     count0  :: record number for forcing field preceding myTime
+c     count1  :: record number for forcing field following myTime
+c     year0   :: year of forcing file for record preceding myTime
+c     year1   :: year of forcing file for record following myTime
 
       _RL     fac
-      logical first, changed
-      integer count0, count1, year0, year1
+      LOGICAL first, changed
+      INTEGER count0, count1, year0, year1
 
 c     == local variables ==
 c     mydate        :: model date of current time step
@@ -64,31 +64,31 @@ c     fldsecs1      :: time from end of current forcing period to mydate
 c     secondsInYear :: seconds in the flux year just before mydate
 c     myDateSeconds :: seconds from beginning of year to mydate
 
-      integer mydate(4)
-      integer yearStartDate(4)
-      integer difftime(4)
+      INTEGER mydate(4)
+      INTEGER yearStartDate(4)
+      INTEGER difftime(4)
       _RL fldsectot, fldsecs, fldsecs0, fldsecs1
       _RL secondsInYear, myDateSeconds
 
-      character*(max_len_mbuf) msgbuf
+      CHARACTER*(max_len_mbuf) msgBuf
 
 c     == external ==
 
-      integer  cal_IsLeap
-      external cal_IsLeap
+      INTEGER  cal_IsLeap
+      EXTERNAL cal_IsLeap
 
 c     == end of interface ==
 
 c     Set some default values.
-      first = ((mytime - modelstart) .lt. 0.5*modelstep)
-      changed = .false.
+      first = ((myTime - modelstart) .lt. 0.5*modelstep)
+      changed = .FALSE.
 
       if ( fldperiod .eq. 0. _d 0 ) then
 c     Read field only once in the beginning. Hack: count1=count0 causes
 c     the model to read the first record twice, but since this this is
 c     done only the first time around it is not too much of an overhead.
-       first   = ((mytime - modelstart) .lt. 0.5*modelstep)
-       changed = .false.
+       first   = ((myTime - modelstart) .lt. 0.5*modelstep)
+       changed = .FALSE.
        fac     = 1. _d 0
        count0  = 1
        count1  = count0
@@ -102,14 +102,16 @@ c     fldperiod .ne. 0
 
 c     Determine offset in seconds from beginning of input data
 c     to current date.
-       fldsectot = mytime - fldstartdate
+       fldsectot = myTime - fldstartdate
 
 c     Determine the flux records just before and after mycurrentdate.
        if ( repeatPeriod .eq. 0. _d 0 ) then
 
         if ( fldsectot .lt. 0. _d 0 ) then
-         print *, 'flux data not available for this date'
-         stop 'ABNORMAL END: S/R EXF_GETFFIELDREC'
+         WRITE(msgBuf,'(2A)') 'EXF_GetFFieldRec: ',
+     &        'myTime earlier than 1rst reccord (field-startdate)'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R EXF_GetFFieldRec'
         endif
         count0       = int((fldsectot+0.5)/fldperiod) + 1
         count1       = count0 + 1
@@ -135,7 +137,7 @@ c     Weight belonging to count0 for linear interpolation purposes.
 c     if (usefldyearlyfields)
 
 c     Determine seconds from beginning of year to model current time.
-       call cal_GetDate( myiter, mytime, mydate, mythid )
+       call cal_GetDate( myIter, myTime, mydate, myThid )
        year0            = int(mydate(1)/10000.)
        yearStartDate(1) = year0 * 10000 + 101
        yearStartDate(2) = 0
@@ -149,7 +151,7 @@ c     Determine the flux year just before mycurrentdate.
 
 c     Determine seconds in the flux year just before mycurrentdate.
         secondsInYear = ndaysnoleap * secondsperday
-        if ( cal_IsLeap(year0,mythid) .eq. 2)
+        if ( cal_IsLeap(year0,myThid) .eq. 2)
      &       secondsInYear = ndaysleap * secondsperday
 
 c     Determine the record just before mycurrentdate.
@@ -176,32 +178,32 @@ c     Weight belonging to count0 for linear interpolation purposes.
 c     if (usefldyearlyfields)
 
 c     Set switch for reading new record.
-      if ( fldsecs - modelstep .lt. 0. _d 0 ) changed = .true.
+      if ( fldsecs - modelstep .lt. 0. _d 0 ) changed = .TRUE.
 
       endif
 c     if (fldperiod .eq. 0.)
 
 c     Do some printing for the protocol.
       IF ( exf_verbose ) THEN
-        _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' exf_GetFFieldsRec:'
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,2x,l2,2x,l2,2x,D15.8)')
-     &    ' exf_GetFFieldsRec: first, changed, fac:',
-     &                         first, changed, fac
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,3(1x,i6))')
-     &    ' exf_GetFFieldsRec: myiter, count0, count1:',
-     &                         myiter, count0, count1
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' exf_GetFFieldsRec:'
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        _END_MASTER( mythid )
+        _BEGIN_MASTER( myThid )
+        WRITE(msgBuf,'(a)') ' EXF_GetFFieldRec:'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(a,2x,l2,2x,l2,2x,D15.8)')
+     &    ' EXF_GetFFieldRec: first, changed, fac:',
+     &                        first, changed, fac
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(a,3(1x,i6))')
+     &    ' EXF_GetFFieldRec: myIter, count0, count1:',
+     &                        myIter, count0, count1
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(a)') ' EXF_GetFFieldRec:'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        _END_MASTER( myThid )
       ENDIF
 
-      return
-      end
+      RETURN
+      END
