@@ -171,6 +171,10 @@ def pcol( x, y, data, **kwargs):
         m = cm.ScalarMappable(cmap=colmap)
         m.set_array(data)
         plt.colorbar(m)
+    elif mapit == 0:
+        ax = fig.axes[-1]
+        ax.axis('image')
+        plt.grid('on')
 
     return ph
 
