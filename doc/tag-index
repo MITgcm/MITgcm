@@ -1,18 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1878 2013/06/17 08:03:23 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1879 2013/06/17 14:05:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o utils/python: add subpackage for cubed sphere function, first example is 
-   simple cs.pcol to plot 2D fields on a map
+o pkg/cheapaml:
+  - take src files from MITgcm_contrib/verification_other/offline_cheapaml/code
+    that enable the use of seaice (pkg/thsice thermo & pkg/seaice dynamics)
+    with pkg/cheapaml.
+o utils/python: add subpackage for cubed sphere function, first example is
+    simple cs.pcol to plot 2D fields on a map
 o pkg/streamice:
   - This is a new package in MITgcm, which solves dynamic equations for ice
      sheets and ice streams
-  - At the moment it is independent of atmosphere/ocean dynamics, or any 
+  - At the moment it is independent of atmosphere/ocean dynamics, or any
     other physical packages in MITgcm, even ShelfIce (although it is anticipat-
     ed that this will change)
-  - There is a new verification exercise that tests it, halfpipe_streamice, 
+  - There is a new verification exercise that tests it, halfpipe_streamice,
     evolves a 40x80 km ice stream/ice shelf (at coarse resolution) in a
     rectangular embayment
   - halfpipe_streamice is forward-only for now, will have TAF test soon
