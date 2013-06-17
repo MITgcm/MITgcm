@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1877 2013/06/12 22:07:23 dgoldberg Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1878 2013/06/17 08:03:23 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o utils/python: add subpackage for cubed sphere function, first example is 
+   simple cs.pcol to plot 2D fields on a map
 o pkg/streamice:
   - This is a new package in MITgcm, which solves dynamic equations for ice
      sheets and ice streams
