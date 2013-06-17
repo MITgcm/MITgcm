@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_coare3_flux.F,v 1.15 2013/05/25 18:09:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_coare3_flux.F,v 1.16 2013/06/17 13:45:14 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -15,8 +15,10 @@ CBOP
 C     !ROUTINE: CHEAPAML_COARE3_FLUX
 C     !INTERFACE:
       SUBROUTINE CHEAPAML_COARE3_FLUX(
-     I                    i,j,bi,bj, windSq,
+     I                    i,j,bi,bj, iceOrNot,
+     I                    tSurf, windSq,
      O                    hf, ef, evap, Rnl, ssqt, q100, cdq, cdu,
+     O                    dSensdTs, dEvapdTs, dLWdTs, dQAdTs,
      I                    myIter, myThid )
 
 C     !DESCRIPTION:
@@ -28,18 +30,26 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CHEAPAML.h"
-#include "DYNVARS.h"
 
 C     !INPUT PARAMETERS:
-C     windSq  :: relative wind (vs surface motion) speed square
-C     myIter  :: Current iteration number in simulation
-C     myThid  :: My Thread Id number
-      _RL windSq
+C     i, j     :: local indices of current grid-point
+C     bi, bj   :: current tile indices
+C     iceOrNot :: 0=open water, 1=ice cover, 2=ice+snow
+C     tSurf    :: surface temperature
+C     windSq   :: relative wind (vs surface motion) speed square
+C     myIter   :: Current iteration number in simulation
+C     myThid   :: My Thread Id number
       INTEGER i,j,bi,bj
+      INTEGER iceOrNot
+      _RL tSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL windSq(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myIter, myThid
 C     !OUTPUT PARAMETERS:
 C     cdu :: surface drag coeff (for wind stress)
-      _RL hf, ef, evap, Rnl, ssqt, q100, cdq, cdu
+      _RL hf, ef, evap, Rnl, ssqt, q100, cdq
+      _RL cdu
+C     derivative vs surf. temp of Sensible, Evap, LW, q100
+      _RL dSensdTs, dEvapdTs, dLWdTs, dQAdTs
 CEOP
 
 C     !LOCAL VARIABLES:
@@ -65,8 +75,9 @@ C default relative humidity
       QaR = 0.8 _d 0
 
 C sea surface temperature without skin correction
-      tsw=theta(i,j,1,bi,bj)
-      Tas=Tair(i,j,bi,bj)
+c     tsw=theta(i,j,1,bi,bj)
+      tsw = tSurf(i,j)
+      Tas = Tair(i,j,bi,bj)
 
 C net upward long wave
       Rnl = 0.96 _d 0*(stefan*(tsw+celsius2K)**4) !Net longwave (up = +).
@@ -77,6 +88,7 @@ C Teten''s return s air svp es in mb
       es = es*0.98 _d 0             !reduced for salinity Kraus 1972 p. 46
 C-    convert from mb to spec. humidity  kg/kg
       qs = 0.62197 _d 0*es/(p0 -0.378 _d 0*es)
+
       tta = Tas+celsius2K
 c     ttas=tta+gamma_blk*zt
 c     ttt=tta-(CheapHgrid(i,j,bi,bj) - zt)*gamma_blk
@@ -106,12 +118,11 @@ C Initial guesses
       Wg = 0.5 _d 0                 !Gustiness factor initial guess
 
 C Air-sea differences - includes warm layer in Dt and Dq
-c     u = (uWind(i,j,bi,bj)-uVel(i,j,1,bi,bj))**2
-c    &  + (vWind(i,j,bi,bj)-vVel(i,j,1,bi,bj))**2
-      u = windSq
+c     u = (uwind(i,j,bi,bj)-uVel(i,j,1,bi,bj))**2
+c    &  + (vwind(i,j,bi,bj)-vVel(i,j,1,bi,bj))**2
+      u = windSq(i,j)
       Du= SQRT(u + Wg**2 )  !include gustiness in wind spd. difference
       u = SQRT(u)
-c     Du= (u**2 + Wg**2 )**.5  !include gustiness in wind spd. difference
       Dt=tsw-Tas-gamma_blk*zt  !potential temperature difference.
       Dq=qs-q
 
@@ -213,18 +224,42 @@ C *** zoq and zot fitted to results from several ETL cruises ************
       ENDDO
 
 C compute surface fluxes and other parameters
-c     tau=rhoa*usr*usr*u/Du          !stress N/m2
       tau=rhoa*usr*usr               !stress N/m2
       hf=-cpair*rhoa*usr*tsr         !sensible W/m2
       ef=-lath*rhoa*usr*qsr          !latent W/m2
       evap=-rhoa*usr*qsr
       cdq = evap/Dq
       cdu = tau/Du
-c     IF (.NOT.useStressOption) THEN
-c      ustress(i,j,bi,bj)=tau*(uWind(i,j,bi,bj)-uVel(i,j,1,bi,bj))/u
-c      vstress(i,j,bi,bj)=tau*(vWind(i,j,bi,bj)-vVel(i,j,1,bi,bj))/u
-c     ENDIF
+
       q100=qs+qsr*(LOG(100. _d 0/zoq)-psit(100. _d 0/L))
+
+C--   compute derivative of surface fluxes relatice to Tsurf
+C-    dSensdTs = -cpair*rhoa*usr*(tsr/Dt)
+      dSensdTs = cpair*rhoa*usr
+     &                *xkar/(LOG(zt/zot10)-psit(zt/L10))
+C-    dEvapdTs  = -rhoa*usr* d/dTs(qsr)
+C     d/dTs(qsr)= (-xkar/(LOG(zq/zoq)-psit(zq/L)) )* d/dTs(qs)
+C     d/dTs(qs) = 0.62197 _d 0*p0/(p0 -0.378 _d 0*es)**2 * d/dTs(es)
+C     d/dTs(es) = (0.98)* es * 17.502 _d 0 * 240.97 _d 0 / (240.97 _d 0+tsw)**2
+C-    this simplifies (using qs) to:
+      dEvapdTs = rhoa*usr*( xkar/(LOG(zq/zoq)-psit(zq/L)) )
+     &         * qs*p0/(p0 -0.378 _d 0*es)
+c    &         *0.98 _d 0
+     &         * 17.502 _d 0 * 240.97 _d 0 / (240.97 _d 0+tsw)**2
+
+      if (iceornot.EQ.0) THEN
+c       dLWdTs = 4. _d 0*ocean_emissivity*stefan*tsr*tsr*tsr
+        dLWdTs = 4. _d 0 * 0.96 _d 0 *stefan*tsr*tsr*tsr
+      ELSEIF (iceornot.EQ.2) THEN
+c       dLWdTs = 4. _d 0*snow_emissivity*stefan*tsr*tsr*tsr
+        dLWdTs = 4. _d 0 * 0.96 _d 0 *stefan*tsr*tsr*tsr
+      ELSEIF (iceornot.EQ.1) THEN
+c       dLWdTs = 4. _d 0*ice_emissivity*stefan*tsr*tsr*tsr
+        dLWdTs = 4. _d 0 * 0.96 _d 0 *stefan*tsr*tsr*tsr
+      ENDIF
+
+C--   for now, ignores derivative of q100 relative to Tsurf:
+      dQAdTs = 0.
 
       RETURN
       END

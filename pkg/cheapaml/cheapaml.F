@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.24 2013/05/25 18:09:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.25 2013/06/17 13:45:14 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -65,21 +65,30 @@ C tendencies of atmospheric temperature, current and past
 C zonal and meridional transports
         _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
         _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-C     surfDrag   :: surface drag coeff (for wind stress)
-        _RL surfDrag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-        _RL uRelWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-        _RL vRelWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-        _RL windSq
 C       AML timestep
         _RL deltaTTracer,deltaTm,ts,xalwu
-        _RL dm,pt,fsha,flha,evp,xalwd,xolw,xlwnet
+        _RL dm,pt,xalwd,xlwnet
         _RL dtemp,xflu,xfld,dq,dtr
 c       _RL Fclouds, ttt2
-        _RL q,precip,ssqt,ttt,q100,entrain,cdq
-
+        _RL q,precip,ttt,entrain
+        _RL uRelWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL vRelWind(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL windSq  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL fsha(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL flha(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL evp (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL xolw(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL ssqt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL q100(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL cdq (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C     surfDrag   :: surface drag coeff (for wind stress)
+        _RL surfDrag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+        _RL dumArg(6)
+        _RL fsha0, flha0, evp_0, xolw0, ssqt0, q100_0, cdq_0
+        _RL Tsurf  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL iceFrac(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+        _RL icFrac, opFrac
 C temp var
-        _RL SH_sauv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-        _RL LH_sauv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
         _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C variables for htflux
@@ -100,6 +109,8 @@ C variables for htflux
         real thice(snx,sny),tsnw(snx,sny),qios(snx,sny),brne(snx,sny)
         real rlhi(snx,sny),shi(snx,sny),qlwi(snx,sny),qswi(snx,sny)
         real albedo(snx,sny)
+        _RL SH_sauv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+        _RL LH_sauv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /*  ALLOW_SEAGER */
 
 C useful values
@@ -404,56 +415,115 @@ C     now continue with diabatic forcing
             vRelWind(i,j) = vWind(i,j,bi,bj)-vVel(i,j,1,bi,bj)
           ENDDO
          ENDDO
+         DO j = jMin,jMax
+          DO i = iMin,iMax
+            windSq(i,j) = ( uRelWind( i ,j)*uRelWind( i ,j)
+     &                    + uRelWind(i+1,j)*uRelWind(i+1,j)
+     &                    + vRelWind(i, j )*vRelWind(i, j )
+     &                    + vRelWind(i,j+1)*vRelWind(i,j+1)
+     &                    )*0.5 _d 0
+#ifdef INCONSISTENT_WIND_LOCATION
+            windSq(i,j) = uRelWind(i,j)*uRelWind(i,j)
+     &                  + vRelWind(i,j)*vRelWind(i,j)
+#endif
+          ENDDO
+         ENDDO
+
+         IF ( useThSIce ) THEN
+           CALL CHEAPAML_SEAICE(
+     I                    solar(1-OLx,1-OLy,bi,bj),
+     I                    cheapdlongwave(1-OLx,1-OLy,bi,bj),
+     I                    uWind(1-OLx,1-OLy,bi,bj),
+     I                    vWind(1-OLx,1-OLy,bi,bj), lath,
+     O                    fsha, flha, evp, xolw, ssqt, q100, cdq,
+     O                    Tsurf, iceFrac, Qsw(1-OLx,1-OLy,bi,bj),
+     I                    bi, bj, myTime, myIter, myThid )
+           DO j = jMin,jMax
+            DO i = iMin,iMax
+              CALL CHEAPAML_COARE3_FLUX(
+     I                      i, j, bi, bj, 0,
+     I                      theta(1-OLx,1-OLy,1,bi,bj), windSq,
+     O                      fsha0, flha0, evp_0, xolw0,
+     O                      ssqt0, q100_0, cdq_0,
+     O                      surfDrag(i,j,bi,bj),
+     O                      dumArg(1), dumArg(2), dumArg(3), dumArg(4),
+     I                      myIter, myThid )
+              Qnet(i,j,bi,bj) = (
+     &                           -solar(i,j,bi,bj)
+     &                           +xolw0 - cheapdlongwave(i,j,bi,bj)
+     &                           +fsha0
+     &                           +flha0
+     &                          )*maskC(i,j,1,bi,bj)
+              EmPmR(i,j,bi,bj) = evp_0
+              icFrac  = iceFrac(i,j)
+              opFrac = 1. _d 0 - icFrac
+C-     Qsw (from FFIELDS.h) has opposite (and annoying) sign convention:
+              Qsw(i,j,bi,bj) = - ( icFrac*Qsw(i,j,bi,bj)
+     &                           + opFrac*solar(i,j,bi,bj) )
+              fsha(i,j) = icFrac*fsha(i,j) + opFrac*fsha0
+              flha(i,j) = icFrac*flha(i,j) + opFrac*flha0
+              evp(i,j)  = icFrac*evp(i,j)  + opFrac*evp_0
+              xolw(i,j) = icFrac*xolw(i,j) + opFrac*xolw0
+              ssqt(i,j) = icFrac*ssqt(i,j) + opFrac*ssqt0
+              q100(i,j) = icFrac*q100(i,j) + opFrac*q100_0
+              cdq(i,j)  = icFrac*cdq(i,j)  + opFrac*cdq_0
+            ENDDO
+           ENDDO
+         ELSE
+           DO j = jMin,jMax
+            DO i = iMin,iMax
+             IF (FluxFormula.EQ.'LANL') THEN
+              CALL cheapaml_LANL_flux(
+     I                      i, j, bi, bj,
+     O                      fsha(i,j), flha(i,j), evp(i,j),
+     O                      xolw(i,j), ssqt(i,j), q100(i,j) )
+             ELSEIF (FluxFormula.EQ.'COARE3') THEN
+              CALL CHEAPAML_COARE3_FLUX(
+     I                      i, j, bi, bj, 0,
+     I                      theta(1-OLx,1-OLy,1,bi,bj), windSq,
+     O                      fsha(i,j), flha(i,j), evp(i,j), xolw(i,j),
+     O                      ssqt(i,j), q100(i,j), cdq(i,j),
+     O                      surfDrag(i,j,bi,bj),
+     O                      dumArg(1), dumArg(2), dumArg(3), dumArg(4),
+     I                      myIter, myThid )
+             ENDIF
+             IF (useFreshWaterFlux) THEN
+              EmPmR(i,j,bi,bj) = evp(i,j)
+             ENDIF
+            ENDDO
+           ENDDO
+         ENDIF
 
          DO j = jMin,jMax
           DO i = iMin,iMax
-           IF (FluxFormula.EQ.'LANL') THEN
-             CALL cheapaml_LANL_flux(
-     I                     i, j, bi, bj,
-     O                     fsha, flha, evp,
-     O                     xolw, ssqt, q100 )
-           ELSEIF (FluxFormula.EQ.'COARE3') THEN
-             windSq = ( uRelWind( i ,j)*uRelWind( i ,j)
-     &                + uRelWind(i+1,j)*uRelWind(i+1,j)
-     &                + vRelWind(i, j )*vRelWind(i, j )
-     &                + vRelWind(i,j+1)*vRelWind(i,j+1)
-     &                )*0.5 _d 0
-#ifdef INCONSISTENT_WIND_LOCATION
-             windSq = uRelWind(i,j)*uRelWind(i,j)
-     &               + vRelWind(i,j)*vRelWind(i,j)
-#endif
-             CALL CHEAPAML_COARE3_FLUX(
-     I                     i, j, bi, bj, windSq,
-     O                     fsha, flha, evp, xolw,
-     O                     ssqt, q100, cdq, surfDrag(i,j,bi,bj),
-     I                     myIter, myThid )
-           ENDIF
 
 C atmospheric upwelled long wave
-           ttt=Tair(i,j,bi,bj)-gamma_blk*(CheapHgrid(i,j,bi,bj)-zt)
-c          xalwu=stefan*(ttt+celsius2K)**4*0.5 _d 0
-           xalwu=stefan*(0.5*Tair(i,j,bi,bj)+0.5*ttt+celsius2K)**4
-     &                 *0.5 _d 0
+           ttt = Tair(i,j,bi,bj)-gamma_blk*(CheapHgrid(i,j,bi,bj)-zt)
+c          xalwu = stefan*(ttt+celsius2K)**4*0.5 _d 0
+           xalwu = stefan*(0.5*Tair(i,j,bi,bj)+0.5*ttt+celsius2K)**4
+     &                   *0.5 _d 0
 C atmospheric downwelled long wave
-           xalwd=stefan*(Tair(i,j,bi,bj)+celsius2K)**4*0.5 _d 0
+           xalwd = stefan*(Tair(i,j,bi,bj)+celsius2K)**4*0.5 _d 0
 C total flux at upper atmospheric layer interface
-           xflu=(-solar(i,j,bi,bj)+xalwu+flha)*xef*maskC(i,j,1,bi,bj)
+           xflu = ( -solar(i,j,bi,bj) + xalwu + flha(i,j)
+     &            )*xef*maskC(i,j,1,bi,bj)
 C lower flux calculation.
-           xfld=(-solar(i,j,bi,bj)-xalwd+xolw+fsha+flha)
-     &         *xef*maskC(i,j,1,bi,bj)
+           xfld = ( -solar(i,j,bi,bj) - xalwd + xolw(i,j)
+     &              + fsha(i,j) + flha(i,j)
+     &            )*xef*maskC(i,j,1,bi,bj)
 
            IF (useDLongWave) THEN
-             xlwnet = xolw-cheapdlongwave(i,j,bi,bj)
+             xlwnet = xolw(i,j)-cheapdlongwave(i,j,bi,bj)
            ELSE
 C net long wave (see Josey et al. JGR 1997)
 C coef lambda replaced by 0.5+lat/230
 C convert spec humidity in water vapor pressure (mbar) using coef 1000/0.622=1607.7
              xlwnet = 0.98 _d 0*stefan*(theta(i,j,1,bi,bj)+celsius2K)**4
-     &       *(0.39 _d 0 - 0.05 _d 0*SQRT(qair(i,j,bi,bj)*1607.7 _d 0))
-     &       *( oneRL - (halfRL+ABS(yG(i,j,bi,bj))/230. _d 0)
-     &                 *cheapclouds(i,j,bi,bj)**2 )
-     &       + 4.0*0.98 _d 0*stefan*(theta(i,j,1,bi,bj)+celsius2K)**3
-     &       *(theta(i,j,1,bi,bj)-Tair(i,j,bi,bj))
+     &        *(0.39 _d 0 - 0.05 _d 0*SQRT(qair(i,j,bi,bj)*1607.7 _d 0))
+     &        *( oneRL - (halfRL+ABS(yG(i,j,bi,bj))/230. _d 0)
+     &                   *cheapclouds(i,j,bi,bj)**2 )
+     &        + 4.0*0.98 _d 0*stefan*(theta(i,j,1,bi,bj)+celsius2K)**3
+     &          *(theta(i,j,1,bi,bj)-Tair(i,j,bi,bj))
 
 c            xlwnet = xolw-stefan*(theta(i,j,1,bi,bj)+celsius2K)**4.
 c     &       *(0.65+11.22*qair(i,j,bi,bj) + 0.25*cheapclouds(i,j,bi,bj)
@@ -466,24 +536,22 @@ c          ttt2=Tair(i,j,bi,bj)-3*gamma_blk*CheapHgrid(i,j,bi,bj)+celsius2K
 c          Fclouds = 0.3*stefan*ttt2**4 + 0.22*xolw*cheapclouds(i,j,bi,bj)
 C add flux divergences into atmospheric temperature tendency
            gTair(i,j,bi,bj)= (xfld-xflu)/CheapHgrid(i,j,bi,bj)
-           Qnet(i,j,bi,bj) = (
+           IF ( .NOT.useThSIce ) THEN
+            Qnet(i,j,bi,bj) = (
      &                         -solar(i,j,bi,bj)
 c    &                         -xalwd
 c    &                         -Fclouds
 c    &                         +xolw
      &                         +xlwnet
-     &                         +fsha
-     &                         +flha
+     &                         +fsha(i,j)
+     &                         +flha(i,j)
      &                        )*maskC(i,j,1,bi,bj)
-           Qsw(i,j,bi,bj) = -solar(i,j,bi,bj)
-
-C save var
-           SH_sauv(i,j,bi,bj)= fsha*maskC(i,j,1,bi,bj)
-           LH_sauv(i,j,bi,bj)= flha*maskC(i,j,1,bi,bj)
+             Qsw(i,j,bi,bj) = -solar(i,j,bi,bj)
+           ENDIF
 
 C need to precip?
            IF (useFreshWaterFlux) THEN
-            q=q100
+            q=q100(i,j)
 C compute saturation specific humidity at atmospheric
 C layer top
 C first, what is the pressure there?
@@ -496,23 +564,26 @@ C factor to compute rainfall from specific humidity
             dm=100.*(p0-pt)*recip_gravity
 C     Large scale precip
             precip = 0.
-            IF (wWind(i,j,bi,bj).GT.0. .AND. q.GT.ssqt*0.7 _d 0) THEN
-              precip = precip + ( (q-ssqt*0.7 _d 0)*dm/cheap_pr2 )
-     &                         *(wWind(i,j,bi,bj)/0.75 _d -5)**2
+            IF ( wWind(i,j,bi,bj).GT.0. .AND.
+     &           q.GT.ssqt(i,j)*0.7 _d 0 ) THEN
+              precip = precip
+     &               + ( (q-ssqt(i,j)*0.7 _d 0)*dm/cheap_pr2 )
+     &                 *(wWind(i,j,bi,bj)/0.75 _d -5)**2
             ENDIF
 
 C     Convective precip
-            IF (q.GT.0.0214 _d 0 .AND. q.GT.ssqt*0.9 _d 0) THEN
-              precip = precip + ((q-ssqt*0.9 _d 0)*dm/cheap_pr1)
+            IF (q.GT.0.0214 _d 0 .AND. q.GT.ssqt(i,j)*0.9 _d 0) THEN
+              precip = precip + ((q-ssqt(i,j)*0.9 _d 0)*dm/cheap_pr1)
             ENDIF
 
             cheapPrecip(i,j,bi,bj) = precip*1200/CheapHgrid(i,j,bi,bj)
-            entrain = cdq*q*0.25
+            entrain = cdq(i,j)*q*0.25
 
 c           gqair(i,j,bi,bj)=(evp-precip-entrain)/CheapHgrid(i,j,bi,bj)
-            gqair(i,j,bi,bj) = (evp-entrain)/CheapHgrid(i,j,bi,bj)
-     &                      /rhoa*maskC(i,j,1,bi,bj)
-            EmPmR(i,j,bi,bj) = ( evp - cheapPrecip(i,j,bi,bj)
+            gqair(i,j,bi,bj) = (evp(i,j)-entrain)/CheapHgrid(i,j,bi,bj)
+     &                        /rhoa*maskC(i,j,1,bi,bj)
+            EmPmR(i,j,bi,bj) = ( EmPmR(i,j,bi,bj)
+     &                          -cheapPrecip(i,j,bi,bj)
      &                         )*maskC(i,j,1,bi,bj)
            ENDIF
 
@@ -563,6 +634,15 @@ C     do implicit time stepping over land and or buffer
           ENDDO
          ENDDO
         ENDIF
+
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+         CALL DIAGNOSTICS_FILL( fsha,'CH_SH   ',0,1,2,bi,bj,myThid )
+         CALL DIAGNOSTICS_FILL( flha,'CH_LH   ',0,1,2,bi,bj,myThid )
+         CALL DIAGNOSTICS_FILL( q100,'CH_q100 ',0,1,2,bi,bj,myThid )
+         CALL DIAGNOSTICS_FILL( ssqt,'CH_ssqt ',0,1,2,bi,bj,myThid )
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C close bi,bj loops
        ENDDO
@@ -619,9 +699,9 @@ c    I                   cheapamlXperiodic, cheapamlYperiodic,
         ENDDO
       ENDIF
 
-c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
-c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
-c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
+c     CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML gTair',1,myThid)
+c     CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
+c     CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -684,8 +764,6 @@ C--   end bi,bj loops
        CALL DIAGNOSTICS_FILL(uWind,  'CH_Uwind',0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(vWind,  'CH_Vwind',0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL_RS(Qnet,'CH_QNET ',0,1,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(SH_sauv,'CH_SH   ',0,1,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(LH_sauv,'CH_LH   ',0,1,0,1,1,myThid)
        IF (useFreshWaterFlux) THEN
         CALL DIAGNOSTICS_FILL_RS( EmPmR, 'CH_EmP  ', 0,1,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(cheapPrecip,'CH_Prec ',0,1,0,1,1,myThid)
