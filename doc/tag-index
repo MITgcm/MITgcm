@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1879 2013/06/17 14:05:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1880 2013/06/18 13:33:34 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint64i (2013/06/18)
 o pkg/cheapaml:
   - take src files from MITgcm_contrib/verification_other/offline_cheapaml/code
     that enable the use of seaice (pkg/thsice thermo & pkg/seaice dynamics)
