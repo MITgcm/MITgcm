@@ -73,10 +73,13 @@ def pcol( x, y, data, **kwargs):
 
     if mapit == -1:
         # set up 3D plot
-        oldax = fig.axes[-1]
-        geom=oldax.get_geometry()
-        oldax.set_axis_off()
-        del oldax
+        if len(fig.axes)>0: 
+            # if present, remove and replace the last axis of fig
+            geom=fig.axes[-1].get_geometry()
+            plt.delaxes(fig.axes[-1])
+        else:
+            # otherwise use full figure
+            geom = ((1,1,1))
         ax = fig.add_subplot(geom[0],geom[1],geom[2],projection = '3d',
                              axisbg='None')
         # define color range
