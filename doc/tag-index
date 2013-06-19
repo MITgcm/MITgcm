@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1881 2013/06/18 21:30:33 m_bates Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1882 2013/06/19 12:51:51 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -40,6 +40,9 @@ o pkg/cfc:
     atmospheric CFC ; fix for the case myIter < PTRACERS_iter0.
   - fix calculation of surf tendencys for partial-cell and/or Non-Lin Free-Surf
   - new routine to print summary of CFC params and check for consistency.
+o pkg/seaice: add uice/vice to the parameter list of s/r seaice_advdiff,
+  similar to thsice_advdiff.
+  Note that for the B-grid case the routine parameters uc/vc are overwritten.
 o pkg/cfc:
   - change time interpolation for atmospheric CFC-11 (now same as for CFC-12);
     update output (CFC-11) of experiment cfc_example and tutorial_cfc_offline.
