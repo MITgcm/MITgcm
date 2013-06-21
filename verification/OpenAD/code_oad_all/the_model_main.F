@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_model_main.F,v 1.6 2013/05/10 21:10:56 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_model_main.F,v 1.7 2013/06/21 16:21:41 heimbach Exp $
 
 CBOI
 C
@@ -635,6 +635,7 @@ C--   Call time stepping loop of full model
       our_rev_mode%tape=.FALSE.
       our_rev_mode%adjoint=.FALSE.
 #ifdef OAD_DEBUG
+# if (defined (ALLOW_THETA0_CONTROL) && defined (ALLOW_SALT0_CONTROL))
       do i1=1-olx,snx+olx
 	do i2=1-oly,sny+oly
 	  do i3=1,nr
@@ -650,15 +651,20 @@ C--   Call time stepping loop of full model
           end do 
         end do
       end do
+# endif
 #endif
 C     Temporarily change setting of writeBinaryPrec
       tmpprec = writeBinaryPrec
       writeBinaryPrec = ctrlprec
       WRITE(suff,'(I10.10)') 0
+#ifdef ALLOW_THETA0_CONTROL
       foo=xx_theta%d
       call write_fld_xyz_rl('adxx_theta.',suff,foo,myCurrentIter,1)
+#endif
+#ifdef ALLOW_SALT0_CONTROL
       foo=xx_salt%d
       call write_fld_xyz_rl('adxx_salt.',suff,foo,myCurrentIter,1)
+#endif
       fooEtan=etan%d
       call write_fld_xy_rl('adxx_etan.',suff,fooEtan,myCurrentIter,1)
 #ifdef ALLOW_GENARR3D_CONTROL
