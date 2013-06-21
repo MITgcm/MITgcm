@@ -1,3 +1,5 @@
+#include "PACKAGES_CONFIG.h"
+
       subroutine template()
       use OAD_cp
       use OAD_tape
@@ -10,7 +12,9 @@ c we may need these for the checkpointing
       use PARAMS_mod
       use BAR2_mod
       use BARRIER_mod
+#ifdef ALLOW_CD_CODE
       use CD_CODE_VARS_mod
+#endif
       use CG2D_mod
       use CG3D_mod
       use DYNVARS_mod
@@ -22,10 +26,16 @@ c we may need these for the checkpointing
       use GAD_mod
       use GLOBAL_MAX_mod
       use GLOBAL_SUM_mod
+#ifdef ALLOW_GMREDI
       use GMREDI_mod
       use GMREDI_TAVE_mod
+#endif
       use GRID_mod
+      use MOM_VISC_mod
       use MPI_INFO_mod
+#ifdef ALLOW_SHAP_FILT
+      use SHAP_FILT_mod
+#endif
       use SOLVE_FOR_PRESSURE3D_mod
       use SOLVE_FOR_PRESSURE_mod
       use SURFACE_mod

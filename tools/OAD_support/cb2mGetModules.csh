@@ -4,9 +4,20 @@ set awkScript=${2}
 echo '      MODULE '${fileName}_mod   > ${fileName}_temp
 echo '#include "CPP_OPTIONS.h"'      >> ${fileName}_temp
 echo '#include "CPP_EEOPTIONS.h"'    >> ${fileName}_temp
-echo '#include "GMREDI_OPTIONS.h"'   >> ${fileName}_temp
 if ( ${fileName} == 'DIC_LOAD' ) then
   echo '#include "DIC_OPTIONS.h"'    >> ${fileName}_temp
+endif
+if ( ${fileName} == 'GAD' ) then
+  echo '#include "GAD_OPTIONS.h"'    >> ${fileName}_temp
+endif
+if ( ${fileName} == 'GMREDI' ) then
+  echo '#include "GMREDI_OPTIONS.h"'    >> ${fileName}_temp
+endif
+if ( ${fileName} == 'MOM_VISC' ) then
+  echo '#include "MOM_COMMON_OPTIONS.h"'    >> ${fileName}_temp
+endif
+if ( ${fileName} == 'SHAP_FILT' ) then
+  echo '#include "SHAP_FILT_OPTIONS.h"'    >> ${fileName}_temp
 endif
 if ( ${fileName} != 'SIZE' &&  ${fileName} != 'MNC_COMMON' &&  ${fileName} != 'EEPARAMS' ) then
   echo '      use SIZE_mod'          >> ${fileName}_temp
