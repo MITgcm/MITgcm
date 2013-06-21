@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/ctrl_map_gentim2d.F,v 1.2 2013/03/27 00:11:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/ctrl_map_gentim2d.F,v 1.3 2013/06/21 16:24:39 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -55,6 +55,7 @@ C     == Local variables ==
       logical equal
       logical doglobalread
       logical ladinit
+      character*(MAX_LEN_FNAM) fnamebase
       character*( 80)   fnamegeneric
 
       _RL fac
@@ -89,8 +90,9 @@ C--   generic - user-defined control vars
         ENDDO
        ENDDO
 C
+       fnamebase = xx_gentim2d_file(iarr)
        CALL CTRL_GET_GEN (
-     I      xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
+     I      fnamebase(1:MAX_LEN_FNAM),
      I      xx_gentim2d_startdate(1,iarr),
      I      xx_gentim2d_period(iarr),
      I      maskC,

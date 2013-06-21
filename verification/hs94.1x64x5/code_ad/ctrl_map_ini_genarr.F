@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/ctrl_map_ini_genarr.F,v 1.5 2013/06/11 15:16:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/ctrl_map_ini_genarr.F,v 1.6 2013/06/21 16:24:39 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -57,7 +57,9 @@ C     == local variables ==
 
       logical doglobalread
       logical ladinit
+      character*(MAX_LEN_FNAM) fnamebase
       character*( 80)   fnamegeneric
+      character*(MAX_LEN_MBUF) msgBuf
       _RL     fac
 CEOP
 
@@ -80,9 +82,10 @@ cc--->>>
 C--   generic - user-defined control vars
       DO iarr = 1, maxCtrlArr2D
 
-       il=ILNBLNK( xx_genarr2d_file(iarr) )
+       fnamebase = xx_genarr2d_file(iarr)
+       il=ILNBLNK( fnamebase )
        write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_genarr2d_file(iarr)(1:il),'.',optimcycle
+     &     fnamebase(1:il),'.',optimcycle
        CALL ACTIVE_READ_XY ( fnamegeneric, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      myThid, xx_genarr2d_dummy(iarr) )
@@ -90,11 +93,12 @@ C--   generic - user-defined control vars
         DO bi=myBxLo(myThid), myBxHi(myThid)
           do j = jmin,jmax
             do i = imin,imax
+#ifndef ALLOW_AUTODIFF_OPENAD
               if ( iarr .eq. 1 ) then
-#ifdef ALLOW_BOTTOMDRAG_CONTROL
+# ifdef ALLOW_BOTTOMDRAG_CONTROL
                 bottomdragfld(i,j,bi,bj) = bottomdragfld(i,j,bi,bj)
      &                                   + tmpfld2d(i,j,bi,bj)
-#endif
+# endif
               elseif ( iarr .eq. 2 ) then
                 theta(i,j,1,bi,bj) = theta(i,j,1,bi,bj)
      &                             + tmpfld2d(i,j,bi,bj)
@@ -102,6 +106,23 @@ C--   generic - user-defined control vars
                 salt(i,j,1,bi,bj) = salt(i,j,1,bi,bj)
      &                            + tmpfld2d(i,j,bi,bj)
               endif
+#else
+              if ( iarr .eq. 1 ) then
+# ifdef ALLOW_BOTTOMDRAG_CONTROL
+                bottomdragfld(i,j,bi,bj) = bottomdragfld(i,j,bi,bj)
+     &           + xx_genarr2d(i,j,bi,bj,iarr)
+     &           + tmpfld2d(i,j,bi,bj)
+# endif
+              elseif ( iarr .eq. 2 ) then
+                theta(i,j,1,bi,bj) = theta(i,j,1,bi,bj)
+     &           + xx_genarr2d(i,j,bi,bj,iarr)
+     &           + tmpfld2d(i,j,bi,bj)
+              elseif ( iarr .eq. 3 ) then
+                salt(i,j,1,bi,bj) = salt(i,j,1,bi,bj)
+     &           + xx_genarr2d(i,j,bi,bj,iarr)
+     &           + tmpfld2d(i,j,bi,bj)
+              endif
+#endif /* ALLOW_AUTODIFF_OPENAD */
             enddo
           enddo
         ENDDO
@@ -126,9 +147,10 @@ cc--->>>
 C--   generic - user-defined control vars
       DO iarr = 1, maxCtrlArr3D
 
-       il=ILNBLNK( xx_genarr3d_file(iarr) )
+       fnamebase = xx_genarr3d_file(iarr)
+       il=ILNBLNK( fnamebase )
        write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_genarr3d_file(iarr)(1:il),'.',optimcycle
+     &     fnamebase(1:il),'.',optimcycle
        CALL ACTIVE_READ_XYZ( fnamegeneric, tmpfld3d, 1,
      &                       doglobalread, ladinit, optimcycle,
      &                       myThid, xx_genarr3d_dummy(iarr) )
@@ -137,6 +159,7 @@ C--   generic - user-defined control vars
           do k = 1,Nr
            do j = jmin,jmax
             do i = imin,imax
+#ifndef ALLOW_AUTODIFF_OPENAD
               if ( iarr .eq. 1 ) then
                 theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj)
      &                             + fac*tmpfld3d(i,j,k,bi,bj)
@@ -144,6 +167,17 @@ C--   generic - user-defined control vars
                 salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj)
      &                            + fac*tmpfld3d(i,j,k,bi,bj)
               endif
+#else
+              if ( iarr .eq. 1 ) then
+                theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj)
+     &           + fac*xx_genarr3d(i,j,k,bi,bj,iarr)
+     &           + fac*tmpfld3d(i,j,k,bi,bj)
+              elseif ( iarr .eq. 2 ) then
+                salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj)
+     &           + fac*xx_genarr3d(i,j,k,bi,bj,iarr)
+     &           + fac*tmpfld3d(i,j,k,bi,bj)
+              endif
+#endif /* ALLOW_AUTODIFF_OPENAD */
             enddo
            enddo
           enddo
