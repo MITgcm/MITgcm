@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/eta_gl_streamice.F,v 1.2 2013/06/21 18:38:45 dgoldberg Exp $
+C $Name:  $
+
 #include "CPP_OPTIONS.h"
 
       _RL FUNCTION ETA_GL_STREAMICE (X, M1, M2, Y0, W)
@@ -15,16 +18,16 @@
        _RL X, M1, M2, Y0, W
        _RL TMP1, PI
 
-       IF (X<-1.0*W/2.0) THEN
+       IF (X.le.-0.5*W) THEN
          ETA_GL_STREAMICE = Y0 + M1 * X
-       ELSEIF(X>W/2.0) THEN
+       ELSEIF(X.gt.0.5*W) THEN
          ETA_GL_STREAMICE = Y0 + M2 * X
        ELSE
          PI = 3.14159265358979323844D0
          TMP1 = W/PI * COS(PI*X/W)
          ETA_GL_STREAMICE = Y0 + 
-     &     M1/2 * (X-W/2+TMP1) + 
-     &     M2/2 * (X+W/2-TMP1)
+     &     M1/2 * (X-0.5*W+TMP1) + 
+     &     M2/2 * (X+0.5*W-TMP1)
        ENDIF
 
        RETURN

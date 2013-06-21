@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/eta_gl_streamice_prime.F,v 1.2 2013/06/21 18:38:45 dgoldberg Exp $
+C $Name:  $
+
 #include "CPP_OPTIONS.h"
 
       _RL FUNCTION ETA_GL_STREAMICE_PRIME (X, M1, M2, Y0, W)
@@ -16,16 +19,16 @@
        _RL TMP1, PI
 
 
-       IF (X<-1.0*W/2.0) THEN
+       IF (X.le.-0.5*W) THEN
          ETA_GL_STREAMICE_PRIME = M1
-       ELSEIF(X>W/2.0) THEN
+       ELSEIF(X.gt.0.5*W) THEN
          ETA_GL_STREAMICE_PRIME = M2
        ELSE
          PI = 3.14159265358979323844D0
          TMP1 = SIN (PI*X/W)
          ETA_GL_STREAMICE_PRIME = 
-     &     M1/2 * (1-TMP1) + 
-     &     M2/2 * (1+TMP1)
+     &     0.5*M1 * (1-TMP1) + 
+     &     0.5*M2 * (1+TMP1)
        ENDIF
 
        RETURN
