@@ -1,0 +1,67 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef= 281.089, 289.321, 307.191, 331.377, 432.413,
+ sRef=5*0.,
+ viscAr=0.,
+ viscAh=0.,
+ viscA4=0.,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ bottomDragQuadratic=2.E-3,
+ diffKrT=0.,
+ diffKhT=0.,
+ diffK4T=0.,
+ diffKrS=0.,
+ diffKhS=0.,
+ diffK4S=0.,
+ buoyancyRelation='ATMOSPHERIC',
+ eosType='IDEALG',
+ exactConserv=.TRUE.,
+ gravity=9.81,
+ rhoConst=1.0,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ staggerTimestep=.TRUE.,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+# globalFiles=.TRUE.,
+ debugLevel=2,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=600,
+ cg2dTargetResidual=1.E-13,
+ &
+
+# Time stepping parameters
+ &PARM03
+ niter0=0,
+ nTimeSteps=10,
+ abEps=0.1,
+ deltaT=1200.0,
+ cAdjFreq=0.,
+ pChkptFreq=0.0,
+ chkptFreq=0.0,
+ dumpFreq=2592000.0,
+ monitorFreq=0.,
+ adjmonitorFreq=0.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingSphericalPolarGrid=.TRUE.,
+ delX=1*2.8125,
+ delY=64*2.8125,
+ delR=100.E2, 250.E2, 300.E2, 200.E2, 150.E2,
+ Ro_SeaLevel=1.E5,
+ ygOrigin=-90.,
+ &
+
+# Input datasets
+ &PARM05
+ &
