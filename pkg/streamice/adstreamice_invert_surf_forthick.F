@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/adstreamice_invert_surf_forthick.F,v 1.3 2013/06/21 20:49:50 jmc Exp $
+C $Name:  $
+
 #include "CPP_OPTIONS.h"
 #include "STREAMICE_OPTIONS.h"
 
@@ -16,7 +19,7 @@
       INTEGER myThid
 
 #ifdef ALLOW_STREAMICE
-       
+
       _RL resid, f, fp, hf, htmp
       _RL rhoi, rhow, r, i_r, delta
       INTEGER ITER, i, j, bi, bj
@@ -28,7 +31,7 @@
       _RL H(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 !      _RL Rtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL adr_low_si(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      common /adstreamice_rlow/ adr_low_si 
+      common /adstreamice_rlow/ adr_low_si
       _RL adh_streamice(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /adstreamice_fields_rl/ adh_streamice
 
@@ -42,8 +45,8 @@
 
 
 !      CALL ACTIVE_READ_XY ( 'H_adjust.data', H, 1,
-!     &     doglobalread, ladinit, optimcycle, 
-!     &     myThid, 
+!     &     doglobalread, ladinit, optimcycle,
+!     &     myThid,
 
 !      CALL READ_FLD_XY_RL( 'R_low_adjust.data', ' ', Rtmp,
 !     &     0, myThid )
@@ -65,7 +68,7 @@
         DO bi=myBxLo(myThid), myBxHi(myThid)
           do j = 1,sNy
             do i = 1,sNx
-              
+
               hf = -1.0 * i_r * R_low_si (i,j,bi,bj)
 
               fp = ETA_GL_STREAMICE_PRIME (
@@ -75,8 +78,8 @@
      &             delta*hf,
      &             streamice_smooth_gl_width)
 
-              adr_low_si (i,j,bi,bj) = 
-     &          adr_low_si (i,j,bi,bj) - 
+              adr_low_si (i,j,bi,bj) =
+     &          adr_low_si (i,j,bi,bj) -
      &          i_r * (fp-delta)/fp *
      &          adh_streamice(i,j,bi,bj)
 
@@ -85,7 +88,7 @@
         enddo
       enddo
 
-        
+
 #endif
       RETURN
       END

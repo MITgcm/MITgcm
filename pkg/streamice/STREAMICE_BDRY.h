@@ -1,10 +1,13 @@
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE_BDRY.h,v 1.2 2013/06/21 20:49:50 jmc Exp $
+C $Name:  $
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_STREAMICE
 
 C     params to construct boundary conditions for ice flow
-C     on each boundary of rect domain, ranges for different boundary 
-C      conditions are specified; it is up to the user to ensure that 
+C     on each boundary of rect domain, ranges for different boundary
+C      conditions are specified; it is up to the user to ensure that
 C      the ranges do not overlap
 C     along with a flux boundary range, a flux value is given
 C     if a dirichlet boundary is specified, velocities must be given
@@ -12,7 +15,7 @@ C      in a file
 C     also must be aware of units (m for cartesian, deg for curvilinear, m/deg for CYLINDRICAL POLAR)
 
 C     real params
-      COMMON /STREAMICE_BDRY_PARMS/ 
+      COMMON /STREAMICE_BDRY_PARMS/
      & min_x_noflow_NORTH, max_x_noflow_NORTH,
      & min_x_noflow_SOUTH, max_x_noflow_SOUTH,
      & min_y_noflow_WEST, max_y_noflow_WEST,

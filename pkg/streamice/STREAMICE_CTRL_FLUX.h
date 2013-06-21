@@ -1,10 +1,13 @@
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE_CTRL_FLUX.h,v 1.2 2013/06/21 20:49:50 jmc Exp $
+C $Name:  $
+
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_STREAMICE_FLUX_CONTROL
 
       INTEGER n_fluxes_max
       INTEGER n_epochs_max
-      
+
       COMMON /STREAMICE_CTRL_FLUX_INT_PARAM/
      & n_fluxes, n_epochs
       INTEGER n_fluxes
@@ -24,11 +27,11 @@ C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      & u_bdry_values_SI_base,
      & v_bdry_values_SI_base
       _RL streamice_ctrl_flux_scaleVel (n_fluxes_max, n_epochs_max)
-      _RL u_bdry_values_SI_base 
+      _RL u_bdry_values_SI_base
      & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL v_bdry_values_SI_base 
+      _RL v_bdry_values_SI_base
      & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      
+
 
 
 #endif

@@ -1,10 +1,13 @@
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_tridiag_solve.F,v 1.2 2013/06/21 20:49:51 jmc Exp $
+C $Name:  $
+
 #include "STREAMICE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
 
-      SUBROUTINE STREAMICE_TRIDIAG_SOLVE( 
+      SUBROUTINE STREAMICE_TRIDIAG_SOLVE(
      U                               cg_Uin,     ! x-velocities
      U                               cg_Vin,     ! x-velocities
      U                               cg_Bu,      ! force in x dir
@@ -12,7 +15,7 @@ CBOP
      I                               umask,
      I                               myThid )
 C     /============================================================\
-C     | SUBROUTINE                                                 |   
+C     | SUBROUTINE                                                 |
 C     | o                                                          |
 C     |============================================================|
 C     |                                                            |
@@ -40,7 +43,7 @@ C     \============================================================/
       _RL bet(1:Nx)
       _RL tmpvar
       INTEGER errCode
- 
+
 
 !      CALL WRITE_FLD_XY_RL ("taud_tri","",cg_Bu,0,mythid)
 !      CALL WRITE_FLD_XY_RL ("A_m1m1","",A_uu(:,:,:,:,-1,-1),0,mythid)
@@ -54,7 +57,7 @@ C     \============================================================/
 !      CALL WRITE_FLD_XY_RL ("A_p1p1","",A_uu(:,:,:,:,1,1),0,mythid)
 
 
-      
+
       IF (nPx.gt.1 .or. nSx.gt.1) THEN
        STOP 'must be serial for tridiag solve'
       ENDIF
@@ -83,19 +86,19 @@ C     \============================================================/
         exit
        endif
       enddo
-      
+
       IF(imax.eq.0) THEN
        imax=Nx
       ENDIF
- 
 
-      IF ( bMat(imin).NE.0. _d 0 ) THEN 
+
+      IF ( bMat(imin).NE.0. _d 0 ) THEN
        bet(imin) = 1. _d 0 / bMat(imin)
       ELSE
        bet(imin) = 0. _d 0
        errCode = 1
       ENDIF
-       
+
       DO i=imin+1,imax
        tmpvar = bmat(i) - amat(i)*cmat(i-1)*bet(i-1)
        IF ( tmpvar .NE. 0. _d 0 ) THEN
@@ -110,9 +113,9 @@ C     \============================================================/
       ymat(imin) = ymat(imin)*bet(imin)
 
       DO i=imin+1,imax
-       ymat(i) = ( ymat(i) 
+       ymat(i) = ( ymat(i)
      &            - amat(i)*ymat(i-1)
-     &            )*bet(i) 
+     &            )*bet(i)
       ENDDO
 
 

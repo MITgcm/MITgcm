@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_invert_surf_forthick.F,v 1.3 2013/06/21 20:49:50 jmc Exp $
+C $Name:  $
+
 #include "CPP_OPTIONS.h"
 #include "STREAMICE_OPTIONS.h"
 
@@ -44,17 +47,17 @@
               htmp = S(i,j,bi,bj)-R(i,j,bi,bj)
              ELSE
               htmp = S(i,j,bi,bj)/delta
-             ENDIF 
-   
+             ENDIF
+
              IF (streamice_smooth_gl_width.gt.0.) THEN
 
               RESID=1. _d 0
 
               DO ITER=1,20
                IF ((RESID .gt. .005) .and.
-     &           ( STREAMICE_hmask(i,j,bi,bj).eq.1.0)) THEN       
-         
-                hf = (-1. _d 0) * R(i,j,bi,bj) / 
+     &           ( STREAMICE_hmask(i,j,bi,bj).eq.1.0)) THEN
+
+                hf = (-1. _d 0) * R(i,j,bi,bj) /
      &           (1. _d 0 - delta)
 
                 IF (S(i,j,bi,bj) .gt. delta*HF) THEN
@@ -62,7 +65,7 @@
                 ELSE
                  htmp = S(i,j,bi,bj)/delta
                 ENDIF
-        
+
                 RESID = ETA_GL_STREAMICE (
      &             htmp-HF,
      &             delta,
@@ -80,14 +83,14 @@
                ENDIF
               ENDDO
              ENDIF
-             H(i,j,bi,bj) = Htmp 
+             H(i,j,bi,bj) = Htmp
             ENDIF
            ENDDO
           ENDDO
          ENDDO
-        ENDDO 
+        ENDDO
 
-        
+
 #endif
       RETURN
-      END 
+      END

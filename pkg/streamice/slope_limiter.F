@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/slope_limiter.F,v 1.2 2013/06/21 20:49:50 jmc Exp $
+C $Name:  $
+
 #include "CPP_OPTIONS.h"
 
 !      _RL FUNCTION SLOPE_LIMITER (num, denom)
@@ -26,4 +29,4 @@
 
 
        RETURN
-       END 
+       END
