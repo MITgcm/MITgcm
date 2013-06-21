@@ -19,6 +19,9 @@ endif
 if ( ${fileName} == 'SHAP_FILT' ) then
   echo '#include "SHAP_FILT_OPTIONS.h"'    >> ${fileName}_temp
 endif
+if ( ${fileName} == 'STREAMICE' ) then
+  echo '#include "STREAMICE_OPTIONS.h"'    >> ${fileName}_temp
+endif
 if ( ${fileName} != 'SIZE' &&  ${fileName} != 'MNC_COMMON' &&  ${fileName} != 'EEPARAMS' ) then
   echo '      use SIZE_mod'          >> ${fileName}_temp
 endif

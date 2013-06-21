@@ -36,6 +36,12 @@ c we may need these for the checkpointing
 #ifdef ALLOW_SHAP_FILT
       use SHAP_FILT_mod
 #endif
+#ifdef ALLOW_STREAMICE
+      use STREAMICE_mod
+      use STREAMICE_ADV_mod
+      use STREAMICE_BDRY_mod
+      use STREAMICE_CG_mod
+#endif
       use SOLVE_FOR_PRESSURE3D_mod
       use SOLVE_FOR_PRESSURE_mod
       use SURFACE_mod
