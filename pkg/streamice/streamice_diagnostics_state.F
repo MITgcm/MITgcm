@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_diagnostics_state.F,v 1.2 2013/06/21 20:49:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_diagnostics_state.F,v 1.3 2013/06/21 22:00:03 jmc Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -22,7 +22,7 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "STREAMICE.h"
 
-      _RL mytime
+      _RL myTime
       INTEGER myIter, myThid
 
 #ifdef ALLOW_STREAMICE
@@ -49,7 +49,7 @@ C     === Global variables ===
      &      0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(float_frac_streamice,'SI_float',
      &      0,1,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(STREAMICE_hmask,'SI_hmask',
+       CALL DIAGNOSTICS_FILL_RS(STREAMICE_hmask,'SI_hmask',
      &      0,1,0,1,1,myThid)
 #ifdef STREAMICE_HYBRID_STRESS
        CALL DIAGNOSTICS_FILL(streamice_u_surf,'SI_usurf',

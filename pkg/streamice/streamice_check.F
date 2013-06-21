@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_check.F,v 1.1 2013/06/12 21:30:21 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_check.F,v 1.2 2013/06/21 22:00:03 jmc Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -31,7 +31,7 @@ CEOP
 C     !LOCAL VARIABLES:
 C     msgBuf   :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*(10) fname  
+      CHARACTER*(10) fname
       INTEGER m,n,k
 
       _BEGIN_MASTER(myThid)
@@ -42,13 +42,13 @@ C     msgBuf   :: Informational/error message buffer
 
 C-   write out integer parameters
 
-       CALL WRITE_0D_I( streamice_max_cg_iter, INDEX_NONE, 
+       CALL WRITE_0D_I( streamice_max_cg_iter, INDEX_NONE,
      &  ' max cg interations =',
      &  ' /* user defined parameter */')
-       CALL WRITE_0D_I( streamice_max_nl_iter, INDEX_NONE, 
+       CALL WRITE_0D_I( streamice_max_nl_iter, INDEX_NONE,
      &  ' max nonlin interations =',
      &  ' /* user defined parameter */')
-       CALL WRITE_0D_I( streamice_nstep_velocity, INDEX_NONE, 
+       CALL WRITE_0D_I( streamice_nstep_velocity, INDEX_NONE,
      &  ' # of timesteps per velocity solve  =',
      &  ' /* user defined parameter */')
 
@@ -57,206 +57,206 @@ C-   write out real parameters
 
        CALL WRITE_0D_RL( streamice_density, INDEX_NONE,
      & ' streamice_density =', ' /* user defined parameter */')
-       CALL WRITE_0D_RL( streamice_density_ocean_avg, INDEX_NONE, 
-     & ' streamice_density_ocean_avg =', 
+       CALL WRITE_0D_RL( streamice_density_ocean_avg, INDEX_NONE,
+     & ' streamice_density_ocean_avg =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( B_glen_isothermal, INDEX_NONE, 
-     & ' glens law stifness =', 
+       CALL WRITE_0D_RL( B_glen_isothermal, INDEX_NONE,
+     & ' glens law stifness =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( n_glen, INDEX_NONE, 
-     & ' glens law exponent =', 
+       CALL WRITE_0D_RL( n_glen, INDEX_NONE,
+     & ' glens law exponent =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( C_basal_fric_const, INDEX_NONE, 
-     & ' basal trac coeff =', 
+       CALL WRITE_0D_RL( C_basal_fric_const, INDEX_NONE,
+     & ' basal trac coeff =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( n_basal_friction, INDEX_NONE, 
-     & ' basal exponent =', 
+       CALL WRITE_0D_RL( n_basal_friction, INDEX_NONE,
+     & ' basal exponent =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( streamice_input_flux_unif, INDEX_NONE, 
-     & ' uniform input flux (m^2/a) =', 
+       CALL WRITE_0D_RL( streamice_input_flux_unif, INDEX_NONE,
+     & ' uniform input flux (m^2/a) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( streamice_vel_update, INDEX_NONE, 
-     & ' time for ice vel update (sec) =', 
+       CALL WRITE_0D_RL( streamice_vel_update, INDEX_NONE,
+     & ' time for ice vel update (sec) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( streamice_cg_tol, INDEX_NONE, 
-     & ' conj grad tolerance =', 
+       CALL WRITE_0D_RL( streamice_cg_tol, INDEX_NONE,
+     & ' conj grad tolerance =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( streamice_nonlin_tol, INDEX_NONE, 
-     & ' ice velocity nonlinear iter tol =', 
+       CALL WRITE_0D_RL( streamice_nonlin_tol, INDEX_NONE,
+     & ' ice velocity nonlinear iter tol =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( shelf_max_draft, INDEX_NONE, 
-     & ' max shelf draft for analytic init (m) =', 
+       CALL WRITE_0D_RL( shelf_max_draft, INDEX_NONE,
+     & ' max shelf draft for analytic init (m) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( shelf_min_draft, INDEX_NONE, 
-     & ' min shelf draft for analytic init (m) =', 
+       CALL WRITE_0D_RL( shelf_min_draft, INDEX_NONE,
+     & ' min shelf draft for analytic init (m) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( shelf_edge_pos, INDEX_NONE, 
-     & ' shelf extent for analytic init (km) =', 
+       CALL WRITE_0D_RL( shelf_edge_pos, INDEX_NONE,
+     & ' shelf extent for analytic init (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( shelf_slope_scale, INDEX_NONE, 
-     & ' slope scale for analytic init (km) =', 
+       CALL WRITE_0D_RL( shelf_slope_scale, INDEX_NONE,
+     & ' slope scale for analytic init (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( shelf_flat_width, INDEX_NONE, 
-     & ' flat shelf width for analytic init (km) =', 
+       CALL WRITE_0D_RL( shelf_flat_width, INDEX_NONE,
+     & ' flat shelf width for analytic init (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( flow_dir, INDEX_NONE, 
-     & ' flow direction for analytic init =', 
-     & ' /* user defined parameter */')
-
-       CALL WRITE_0D_RL( min_x_noflow_NORTH, INDEX_NONE, 
-     & ' min range on no bd for no-slip (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_x_noflow_NORTH, INDEX_NONE, 
-     & ' max range on no bd for no-slip (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( min_x_noflow_SOUTH, INDEX_NONE, 
-     & ' min range on so bd for no-slip (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_x_noflow_SOUTH, INDEX_NONE, 
-     & ' max range on so bd for no-slip (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( min_y_noflow_EAST, INDEX_NONE, 
-     & ' min range on east bd for no-slip (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_y_noflow_EAST, INDEX_NONE, 
-     & ' max range on east bd for no-slip (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( min_y_noflow_WEST, INDEX_NONE, 
-     & ' min range on west bd for no-slip (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_y_noflow_WEST, INDEX_NONE, 
-     & ' max range on west bd for no-slip (km) =', 
+       CALL WRITE_0D_RL( flow_dir, INDEX_NONE,
+     & ' flow direction for analytic init =',
      & ' /* user defined parameter */')
 
-       CALL WRITE_0D_RL( min_x_noStress_NORTH, INDEX_NONE, 
-     & ' min range on no bd for no-stress (km) =', 
+       CALL WRITE_0D_RL( min_x_noflow_NORTH, INDEX_NONE,
+     & ' min range on no bd for no-slip (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_x_noStress_NORTH, INDEX_NONE, 
-     & ' max range on no bd for no-stress (km) =', 
+       CALL WRITE_0D_RL( max_x_noflow_NORTH, INDEX_NONE,
+     & ' max range on no bd for no-slip (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( min_x_noStress_SOUTH, INDEX_NONE, 
-     & ' min range on so bd for no-stress (km) =', 
+       CALL WRITE_0D_RL( min_x_noflow_SOUTH, INDEX_NONE,
+     & ' min range on so bd for no-slip (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_x_noStress_SOUTH, INDEX_NONE, 
-     & ' max range on so bd for no-stress (km) =', 
+       CALL WRITE_0D_RL( max_x_noflow_SOUTH, INDEX_NONE,
+     & ' max range on so bd for no-slip (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( min_y_noStress_EAST, INDEX_NONE, 
-     & ' min range on east bd for no-stress (km) =', 
+       CALL WRITE_0D_RL( min_y_noflow_EAST, INDEX_NONE,
+     & ' min range on east bd for no-slip (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_y_noStress_EAST, INDEX_NONE, 
-     & ' max range on east bd for no-stress (km) =', 
+       CALL WRITE_0D_RL( max_y_noflow_EAST, INDEX_NONE,
+     & ' max range on east bd for no-slip (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( min_y_noStress_WEST, INDEX_NONE, 
-     & ' min range on west bd for no-stress (km) =', 
+       CALL WRITE_0D_RL( min_y_noflow_WEST, INDEX_NONE,
+     & ' min range on west bd for no-slip (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_y_noStress_WEST, INDEX_NONE, 
-     & ' max range on west bd for no-stress (km) =', 
-     & ' /* user defined parameter */')
-
-       CALL WRITE_0D_RL( min_x_FluxBdry_NORTH, INDEX_NONE, 
-     & ' min range on no bd for FluxBdry (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_x_FluxBdry_NORTH, INDEX_NONE, 
-     & ' max range on no bd for FluxBdry (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( min_x_FluxBdry_SOUTH, INDEX_NONE, 
-     & ' min range on so bd for FluxBdry (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_x_FluxBdry_SOUTH, INDEX_NONE, 
-     & ' max range on so bd for FluxBdry (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( min_y_FluxBdry_EAST, INDEX_NONE, 
-     & ' min range on east bd for FluxBdry (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_y_FluxBdry_EAST, INDEX_NONE, 
-     & ' max range on east bd for FluxBdry (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( min_y_FluxBdry_WEST, INDEX_NONE, 
-     & ' min range on west bd for FluxBdry (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_y_FluxBdry_WEST, INDEX_NONE, 
-     & ' max range on west bd for FluxBdry (km) =', 
+       CALL WRITE_0D_RL( max_y_noflow_WEST, INDEX_NONE,
+     & ' max range on west bd for no-slip (km) =',
      & ' /* user defined parameter */')
 
-       CALL WRITE_0D_RL( min_x_Dirich_NORTH, INDEX_NONE, 
-     & ' min range on no bd for Dirich (km) =', 
+       CALL WRITE_0D_RL( min_x_noStress_NORTH, INDEX_NONE,
+     & ' min range on no bd for no-stress (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_x_Dirich_NORTH, INDEX_NONE, 
-     & ' max range on no bd for Dirich (km) =', 
+       CALL WRITE_0D_RL( max_x_noStress_NORTH, INDEX_NONE,
+     & ' max range on no bd for no-stress (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( min_x_Dirich_SOUTH, INDEX_NONE, 
-     & ' min range on so bd for Dirich (km) =', 
+       CALL WRITE_0D_RL( min_x_noStress_SOUTH, INDEX_NONE,
+     & ' min range on so bd for no-stress (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_x_Dirich_SOUTH, INDEX_NONE, 
-     & ' max range on so bd for Dirich (km) =', 
+       CALL WRITE_0D_RL( max_x_noStress_SOUTH, INDEX_NONE,
+     & ' max range on so bd for no-stress (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( min_y_Dirich_EAST, INDEX_NONE, 
-     & ' min range on east bd for Dirich (km) =', 
+       CALL WRITE_0D_RL( min_y_noStress_EAST, INDEX_NONE,
+     & ' min range on east bd for no-stress (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_y_Dirich_EAST, INDEX_NONE, 
-     & ' max range on east bd for Dirich (km) =', 
+       CALL WRITE_0D_RL( max_y_noStress_EAST, INDEX_NONE,
+     & ' max range on east bd for no-stress (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( min_y_Dirich_WEST, INDEX_NONE, 
-     & ' min range on west bd for Dirich (km) =', 
+       CALL WRITE_0D_RL( min_y_noStress_WEST, INDEX_NONE,
+     & ' min range on west bd for no-stress (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_y_Dirich_WEST, INDEX_NONE, 
-     & ' max range on west bd for Dirich (km) =', 
-     & ' /* user defined parameter */')
-
-       CALL WRITE_0D_RL( min_x_CFBC_NORTH, INDEX_NONE, 
-     & ' min range on no bd for CFBC (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_x_CFBC_NORTH, INDEX_NONE, 
-     & ' max range on no bd for CFBC (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( min_x_CFBC_SOUTH, INDEX_NONE, 
-     & ' min range on so bd for CFBC (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_x_CFBC_SOUTH, INDEX_NONE, 
-     & ' max range on so bd for CFBC (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( min_y_CFBC_EAST, INDEX_NONE, 
-     & ' min range on east bd for CFBC (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_y_CFBC_EAST, INDEX_NONE, 
-     & ' max range on east bd for CFBC (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( min_y_CFBC_WEST, INDEX_NONE, 
-     & ' min range on west bd for CFBC (km) =', 
-     & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( max_y_CFBC_WEST, INDEX_NONE, 
-     & ' max range on west bd for CFBC (km) =', 
+       CALL WRITE_0D_RL( max_y_noStress_WEST, INDEX_NONE,
+     & ' max range on west bd for no-stress (km) =',
      & ' /* user defined parameter */')
 
-       CALL WRITE_0D_RL( flux_bdry_val_NORTH, INDEX_NONE, 
-     & ' val (m^2/a) for north flux bdry =', 
+       CALL WRITE_0D_RL( min_x_FluxBdry_NORTH, INDEX_NONE,
+     & ' min range on no bd for FluxBdry (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( flux_bdry_val_SOUTH, INDEX_NONE, 
-     & ' val (m^2/a) for south flux bdry =', 
+       CALL WRITE_0D_RL( max_x_FluxBdry_NORTH, INDEX_NONE,
+     & ' max range on no bd for FluxBdry (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( flux_bdry_val_EAST, INDEX_NONE, 
-     & ' val (m^2/a) for east flux bdry =', 
+       CALL WRITE_0D_RL( min_x_FluxBdry_SOUTH, INDEX_NONE,
+     & ' min range on so bd for FluxBdry (km) =',
      & ' /* user defined parameter */')
-       CALL WRITE_0D_RL( flux_bdry_val_WEST, INDEX_NONE, 
-     & ' val (m^2/a) for west flux bdry =', 
+       CALL WRITE_0D_RL( max_x_FluxBdry_SOUTH, INDEX_NONE,
+     & ' max range on so bd for FluxBdry (km) =',
      & ' /* user defined parameter */')
-       
+       CALL WRITE_0D_RL( min_y_FluxBdry_EAST, INDEX_NONE,
+     & ' min range on east bd for FluxBdry (km) =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( max_y_FluxBdry_EAST, INDEX_NONE,
+     & ' max range on east bd for FluxBdry (km) =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( min_y_FluxBdry_WEST, INDEX_NONE,
+     & ' min range on west bd for FluxBdry (km) =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( max_y_FluxBdry_WEST, INDEX_NONE,
+     & ' max range on west bd for FluxBdry (km) =',
+     & ' /* user defined parameter */')
+
+       CALL WRITE_0D_RL( min_x_Dirich_NORTH, INDEX_NONE,
+     & ' min range on no bd for Dirich (km) =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( max_x_Dirich_NORTH, INDEX_NONE,
+     & ' max range on no bd for Dirich (km) =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( min_x_Dirich_SOUTH, INDEX_NONE,
+     & ' min range on so bd for Dirich (km) =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( max_x_Dirich_SOUTH, INDEX_NONE,
+     & ' max range on so bd for Dirich (km) =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( min_y_Dirich_EAST, INDEX_NONE,
+     & ' min range on east bd for Dirich (km) =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( max_y_Dirich_EAST, INDEX_NONE,
+     & ' max range on east bd for Dirich (km) =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( min_y_Dirich_WEST, INDEX_NONE,
+     & ' min range on west bd for Dirich (km) =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( max_y_Dirich_WEST, INDEX_NONE,
+     & ' max range on west bd for Dirich (km) =',
+     & ' /* user defined parameter */')
+
+       CALL WRITE_0D_RL( min_x_CFBC_NORTH, INDEX_NONE,
+     & ' min range on no bd for CFBC (km) =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( max_x_CFBC_NORTH, INDEX_NONE,
+     & ' max range on no bd for CFBC (km) =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( min_x_CFBC_SOUTH, INDEX_NONE,
+     & ' min range on so bd for CFBC (km) =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( max_x_CFBC_SOUTH, INDEX_NONE,
+     & ' max range on so bd for CFBC (km) =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( min_y_CFBC_EAST, INDEX_NONE,
+     & ' min range on east bd for CFBC (km) =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( max_y_CFBC_EAST, INDEX_NONE,
+     & ' max range on east bd for CFBC (km) =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( min_y_CFBC_WEST, INDEX_NONE,
+     & ' min range on west bd for CFBC (km) =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( max_y_CFBC_WEST, INDEX_NONE,
+     & ' max range on west bd for CFBC (km) =',
+     & ' /* user defined parameter */')
+
+       CALL WRITE_0D_RL( flux_bdry_val_NORTH, INDEX_NONE,
+     & ' val (m^2/a) for north flux bdry =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( flux_bdry_val_SOUTH, INDEX_NONE,
+     & ' val (m^2/a) for south flux bdry =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( flux_bdry_val_EAST, INDEX_NONE,
+     & ' val (m^2/a) for east flux bdry =',
+     & ' /* user defined parameter */')
+       CALL WRITE_0D_RL( flux_bdry_val_WEST, INDEX_NONE,
+     & ' val (m^2/a) for west flux bdry =',
+     & ' /* user defined parameter */')
+
 
 C-   write out logical parameters
 
-       CALL WRITE_0D_L( STREAMICE_dump_mdsio, INDEX_NONE, 
+       CALL WRITE_0D_L( STREAMICE_dump_mdsio, INDEX_NONE,
      & ' streamice_dump_mdsio =', ' /* user defined parameter */')
-       CALL WRITE_0D_L( STREAMICE_dump_mdsio, INDEX_NONE, 
+       CALL WRITE_0D_L( STREAMICE_dump_mdsio, INDEX_NONE,
      & ' streamice_dump_mdsio =', ' /* user defined parameter */')
-       CALL WRITE_0D_L( STREAMICE_dump_mnc, INDEX_NONE, 
+       CALL WRITE_0D_L( STREAMICE_dump_mnc, INDEX_NONE,
      & ' streamice_dump_mnc =', ' /* user defined parameter */')
-       CALL WRITE_0D_L( STREAMICE_tave_mnc, INDEX_NONE, 
+       CALL WRITE_0D_L( STREAMICE_tave_mnc, INDEX_NONE,
      & ' streamice_tave_mnc =', ' /* user defined parameter */')
-       CALL WRITE_0D_L( STREAMICE_GL_regularize, INDEX_NONE, 
+       CALL WRITE_0D_L( STREAMICE_GL_regularize, INDEX_NONE,
      & ' streamice_GL_regularize =', ' /* user defined parameter */')
-       CALL WRITE_0D_L( STREAMICE_move_front, INDEX_NONE, 
+       CALL WRITE_0D_L( STREAMICE_move_front, INDEX_NONE,
      & ' streamice_move_front =', ' /* user defined parameter */')
-       CALL WRITE_0D_L( STREAMICE_calve_to_mask, INDEX_NONE, 
+       CALL WRITE_0D_L( STREAMICE_calve_to_mask, INDEX_NONE,
      & ' streamice_calve_to_mask =', ' /* user defined parameter */')
 
 C-   write out string parameters
@@ -278,21 +278,21 @@ C-     For example, require this package to use tempStepping
 
 C    write init_thickness array to a binary file
 
-!        CALL WRITE_FLD_XY_RL ( "H_streamIce", "init", 
+!        CALL WRITE_FLD_XY_RL ( "H_streamIce", "init",
 !      & H_streamIce, 0, myThid )
-!        CALL WRITE_FLD_XY_RL ( "area_shelf_streamice", "init", 
+!        CALL WRITE_FLD_XY_RL ( "area_shelf_streamice", "init",
 !      & area_shelf_streamice, 0, myThid )
-!        CALL WRITE_FLD_XY_RL ( "STREAMICE_hmask", "init", 
+!        CALL WRITE_FLD_XY_RL ( "STREAMICE_hmask", "init",
 !      & STREAMICE_hmask, 0, myThid )
-!        CALL WRITE_FLD_XY_RL ( "base_el_streamice", "init", 
+!        CALL WRITE_FLD_XY_RL ( "base_el_streamice", "init",
 !      & base_el_streamice, 0, myThid )
-!        CALL WRITE_FLD_XY_RL ( "ssurf_el_streamice", "init", 
+!        CALL WRITE_FLD_XY_RL ( "ssurf_el_streamice", "init",
 !      & surf_el_streamice, 0, myThid )
-       
+
        DO m=1,4
         DO n=1,4
          DO k=1,2
-          WRITE(fname,'(A,I1,A,I1,A,I1)') 
+          WRITE(fname,'(A,I1,A,I1,A,I1)')
      &     "Dphi_", m, "_", n, "_", k
           CALL WRITE_FLD_XY_RL (fname, "",
      &     Dphi(:,:,:,:,m,n,k),0,myThid)
@@ -300,21 +300,21 @@ C    write init_thickness array to a binary file
         ENDDO
        ENDDO
 
-       CALL WRITE_FLD_XY_RL ( "k1AtC_str", "out", 
+       CALL WRITE_FLD_XY_RL ( "k1AtC_str", "out",
      & k1AtC_str, 0, myThid )
-       CALL WRITE_FLD_XY_RL ( "k2AtC_str", "out", 
+       CALL WRITE_FLD_XY_RL ( "k2AtC_str", "out",
      & k2AtC_str, 0, myThid )
-       CALL WRITE_FLD_XY_RL ( "STREAMICE_ufacemask_bdry", "out", 
+       CALL WRITE_FLD_XY_RS ( "STREAMICE_ufacemask_bdry", "out",
      & STREAMICE_ufacemask_bdry, 0, myThid )
-       CALL WRITE_FLD_XY_RL ( "STREAMICE_vfacemask_bdry", "out", 
+       CALL WRITE_FLD_XY_RS ( "STREAMICE_vfacemask_bdry", "out",
      & STREAMICE_vfacemask_bdry, 0, myThid )
-       CALL WRITE_FLD_XY_RL ( "u_bdry_values_SI", "out", 
+       CALL WRITE_FLD_XY_RL ( "u_bdry_values_SI", "out",
      & u_bdry_values_SI, 0, myThid )
-       CALL WRITE_FLD_XY_RL ( "v_bdry_values_SI", "out", 
+       CALL WRITE_FLD_XY_RL ( "v_bdry_values_SI", "out",
      & v_bdry_values_SI, 0, myThid )
-       CALL WRITE_FLD_XY_RL ( "u_flux_bdry_SI", "out", 
+       CALL WRITE_FLD_XY_RL ( "u_flux_bdry_SI", "out",
      & u_flux_bdry_SI, 0, myThid )
-       CALL WRITE_FLD_XY_RL ( "v_flux_bdry_SI", "out", 
+       CALL WRITE_FLD_XY_RL ( "v_flux_bdry_SI", "out",
      & v_flux_bdry_SI, 0, myThid )
 
 #endif /* ALLOW_STREAMICE */

@@ -1,5 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.3 2013/06/21 21:15:36 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.4 2013/06/21 22:00:03 jmc Exp $
 C $Name:  $
+
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
@@ -48,8 +49,8 @@ C     ZERO OUT FLOATING POINT ARRAYS
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           H_streamIce(i,j,bi,bj) = 0. _d 0
           U_streamice(i,j,bi,bj) = 0. _d 0
           V_streamice(i,j,bi,bj) = 0. _d 0
@@ -86,7 +87,7 @@ C     ZERO OUT FLOATING POINT ARRAYS
           do k=1,Nr
            visc_streamice_full(i,j,k,bi,bj) =
      &     eps_glen_min**((1-n_glen)/n_glen)
-          enddo      
+          enddo
           streamice_taubx (i,j,bi,bj) = 0. _d 0
           streamice_tauby (i,j,bi,bj) = 0. _d 0
 #endif
@@ -123,8 +124,8 @@ C     INIT. INTEGER ARRAYS
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           STREAMICE_hmask(i,j,bi,bj) = -1.0
           STREAMICE_umask(i,j,bi,bj) = 0.0
           STREAMICE_vmask(i,j,bi,bj) = 0.0
@@ -142,9 +143,9 @@ C     INIT. INTEGER ARRAYS
       IF ( STREAMICEtopogFile .NE. ' ' ) THEN
         _BARRIER
 C The 0 is the "iteration" argument. The ' ' is an empty suffix
-       CALL READ_FLD_XY_RS( STREAMICEtopogFile, '', 
+       CALL READ_FLD_XY_RL( STREAMICEtopogFile, '',
      &      R_low_si, 0, myThid )
-       
+
       ELSE
         WRITE(msgBuf,'(A)') 'STREAMICE TOPOG - FILENAME MISSING'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -155,7 +156,7 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
 ! initialize thickness
 
 #ifndef STREAMICE_GEOM_FILE_SETUP
-    
+
       IF ( STREAMICEthickInit.EQ.'PARAM' ) THEN
 
       WRITE(msgBuf,'(A)') 'initializing analytic thickness'
@@ -163,7 +164,7 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
      &                    SQUEEZE_RIGHT , 1)
 
        slope_pos = shelf_edge_pos - shelf_flat_width
-       c1 = 0.0 
+       c1 = 0.0
        IF (shelf_slope_scale .GT. 0.0) THEN
         c1 = 1.0 / shelf_slope_scale
        ENDIF
@@ -174,9 +175,9 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
           DO i=1,sNx
            Gi = (myXGlobalLo-1)+(bi-1)*sNx+i
            Gj = (myYGlobalLo-1)+(bj-1)*sNy+j
-           
+
            IF ((Gi.lt.Nx).and.(Gj.lt.Ny)) THEN
-            
+
 C             IF (flow_dir .EQ. 2.0) THEN
             IF (.TRUE.) THEN
              IF (xC(i-1,j,bi,bj).GE.shelf_edge_pos) THEN
@@ -187,8 +188,8 @@ C             IF (flow_dir .EQ. 2.0) THEN
               IF (xC(i,j,bi,bj).GT.slope_pos) THEN
                H_streamice (i,j,bi,bj) = shelf_min_draft
               ELSE
-               H_streamice (i,j,bi,bj) = (shelf_min_draft + 
-     &          (shelf_max_draft - shelf_min_draft) * 
+               H_streamice (i,j,bi,bj) = (shelf_min_draft +
+     &          (shelf_max_draft - shelf_min_draft) *
      &          min (oneRL, (c1*(slope_pos-xC(i,j,bi,bj)))**2))
               ENDIF
 
@@ -203,14 +204,14 @@ C             IF (flow_dir .EQ. 2.0) THEN
                 H_streamice(i,j,bi,bj) = 0.0
                ENDIF
               ELSE
-               area_shelf_streamice(i,j,bi,bj) = rA(i,j,bi,bj) 
+               area_shelf_streamice(i,j,bi,bj) = rA(i,j,bi,bj)
                STREAMICE_hmask(i,j,bi,bj) = 1.0
               ENDIF
 
 
              ENDIF
             ENDIF
-           ENDIF  
+           ENDIF
           ENDDO
          ENDDO
         ENDDO
@@ -251,7 +252,7 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
        ENDIF
-      
+
       ELSE
 
        WRITE(msgBuf,'(A)') 'INIT THICKNESS - NOT IMPLENTED'
@@ -282,7 +283,7 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
        CALL PRINT_ERROR( msgBuf, myThid)
       ENDIF
 
-#endif 
+#endif
 ! STREAMICE_GEOM_FILE_SETUP
 
 
@@ -295,7 +296,7 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
        IF ( STREAMICEGlenConstFile .NE. ' ' ) THEN
         _BARRIER
 
-        CALL READ_FLD_XY_RL( STREAMICEGlenConstFile, ' ', 
+        CALL READ_FLD_XY_RL( STREAMICEGlenConstFile, ' ',
      &      B_glen, 0, myThid )
 
        ELSE
@@ -303,7 +304,7 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
        ENDIF
-      
+
       ELSE IF (STREAMICEGlenConstConfig.EQ.'UNIFORM' ) THEN
 
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -332,7 +333,7 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
        IF ( STREAMICEbasalTracFile .NE. ' ' ) THEN
         _BARRIER
 
-        CALL READ_FLD_XY_RL( STREAMICEbasalTracFile, ' ', 
+        CALL READ_FLD_XY_RL( STREAMICEbasalTracFile, ' ',
      &      C_basal_friction, 0, myThid )
 
        ELSE
@@ -340,7 +341,7 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
        ENDIF
-      
+
       ELSE IF (STREAMICEbasalTracConfig.EQ.'UNIFORM' ) THEN
 
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -354,7 +355,7 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
         ENDDO
 
       ELSE IF (STREAMICEbasalTracConfig.EQ.'2DPERIODIC' ) THEN
-            
+
        lenx = sNx*nSx*nPx*delX(1)
        leny = sNy*nSy*nPy*delY(1)
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -363,7 +364,7 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
           DO i=1,sNx
            x = xC(i,j,bi,bj)
            y = yC(i,j,bi,bj)
-           C_basal_friction(i,j,bi,bj) = 
+           C_basal_friction(i,j,bi,bj) =
      &      sqrt(C_basal_fric_const**2*
      &        (1+sin(2*streamice_kx_b_init*PI*x/lenx)*
      &           sin(2*streamice_ky_b_init*PI*y/leny)))
@@ -373,7 +374,7 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
        ENDDO
 
       ELSE IF (STREAMICEbasalTracConfig.EQ.'1DPERIODIC' ) THEN
-            
+
        lenx = sNx*nSx*nPx*delX(1)
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -381,7 +382,7 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
           DO i=1,sNx
            x = xC(i,j,bi,bj)
            y = yC(i,j,bi,bj)
-           C_basal_friction(i,j,bi,bj) = 
+           C_basal_friction(i,j,bi,bj) =
      &      sqrt(C_basal_fric_const**2*(1+
      &        sin(2*streamice_kx_b_init*PI*x/lenx)))
           ENDDO
@@ -396,7 +397,7 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
        STOP 'ABNORMAL END: S/R STREAMICE_INIT_VAR'
       ENDIF
 
-! finish initialize basal trac 
+! finish initialize basal trac
 
 #ifdef ALLOW_STREAMICE_2DTRACER
 
@@ -455,46 +456,44 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
 #endif
 
 !#endif
-      
-      CALL WRITE_FLD_XY_RL ( "C_basal_fric", "", 
+
+      CALL WRITE_FLD_XY_RL ( "C_basal_fric", "",
      & C_basal_friction, 0, myThid )
       CALL WRITE_FLD_XY_RL ( "B_glen_sqrt", "",
      & B_glen, 0, myThid )
-      CALL WRITE_FLD_XY_RL ( "H_streamice", "init", 
+      CALL WRITE_FLD_XY_RL ( "H_streamice", "init",
      & H_streamIce, 0, myThid )
 #ifdef ALLOW_STREAMICE_2DTRACER
       CALL WRITE_FLD_XY_RL ( "2DTracer", "init",
      & trac2d, 0, myThid )
 #endif
-      CALL WRITE_FLD_XY_RL ( "area_shelf_streamice", "init", 
+      CALL WRITE_FLD_XY_RL ( "area_shelf_streamice", "init",
      & area_shelf_streamice, 0, myThid )
-      CALL WRITE_FLD_XY_RL ( "STREAMICE_hmask", "init", 
+      CALL WRITE_FLD_XY_RS ( "STREAMICE_hmask", "init",
      & STREAMICE_hmask, 0, myThid )
 #ifdef ALLOW_CTRL
       CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlst', STREAMICE_ctrl_mask,
-     &  'XY', Nr, 1, .FALSE., 0, mythid, dummyRS )
+     &  'XY', Nr, 1, .FALSE., 0, myThid, dummyRS )
 #endif
 !      call active_write_xyz( 'maskCtrlS', STREAMICE_ctrl_mask, 1, 0,
-!     & mythid, dummy)
+!     & myThid, dummy)
 !       CALL STREAMICE_VELMASK_UPD (myThid)
 !       CALL STREAMICE_UPD_FFRAC_UNCOUPLED ( myThid )
 !       CALL STREAMICE_VEL_SOLVE( myThid )
 
-      CALL WRITE_FLD_XY_RL ( "U_init", "", 
+      CALL WRITE_FLD_XY_RL ( "U_init", "",
      &   C_basal_friction, 0, myThid )
-      CALL WRITE_FLD_XY_RL ( "V_init", "", 
+      CALL WRITE_FLD_XY_RL ( "V_init", "",
      &   V_streamice, 0, myThid )
 #ifdef USE_ALT_RLOW
-      CALL WRITE_FLD_XY_RL ( "R_low_si", "init", 
+      CALL WRITE_FLD_XY_RL ( "R_low_si", "init",
      & R_low_si, 0, myThid )
 #endif
 
 !       CALL WRITE_FULLARRAY_RL ("H",H_streamice,1,0,0,1,0,myThid)
-!       CALL WRITE_FULLARRAY_RL ("hmask",STREAMICE_hmask,1,0,0,1,0,myThid)
+!       CALL WRITE_FULLARRAY_RS ("hmask",STREAMICE_hmask,1,0,0,1,0,myThid)
 !       CALL WRITE_FULLARRAY_RL ("umask",STREAMICE_umask,1,0,0,1,0,myThid)
 
-
-      
 #endif /* ALLOW_STREAMICE */
 
       RETURN
