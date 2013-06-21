@@ -1,9 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1882 2013/06/19 12:51:51 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1883 2013/06/21 17:23:31 m_bates Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gmredi:
+  - New parameterisation for the calculation of K and (GM_PsiX,GM_PsiY) added.
+  - It uses mixing length theory and suppression by steering level effects to
+    calculate a diffusivity used in the Redi tensor (see Bates et al., submitted
+    to JPO, for more details).
+  - It also uses the diffusivity to calculate an eddy induced streamfunction
+    based on a PV closure (rather than a buoyancy closure as in GM).
+  - New files added to pkg/gmredi: 
+    gmredi_k3d.F calculates the diffusivity for the Redi tensor and the eddy
+      induced overturning streamfunction (called from gmredi_calc_tensor)
+    gmredi_calc_eigs.F calculates the eigenvalues and eigenvectors required
+      for use in gmredi_k3d
+    gmredi_calc_urms.F calculates the the rms eddy velocity used to calculate
+      the eddy diffusivity
 
 checkpoint64i (2013/06/18)
 o pkg/cheapaml:

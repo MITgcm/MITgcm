@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.25 2011/07/13 22:59:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.26 2013/06/21 17:23:31 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -152,6 +152,28 @@ C     Make sure we are not trying to use some arrays that are unavailable
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R GMREDI_CHECK'
       ENDIF
+#endif
+
+#ifdef GM_K3D
+C     Make sure that we use K3D with the advective form only.
+C     The skew form is not presently supported.
+      IF ( GM_useK3D .AND. .NOT. GM_AdvForm) THEN
+        WRITE(msgBuf,'(A)')
+     &       ' GMREDI_CHECK: GM_useK3D=.TRUE. but GM_AdvForm=.FALSE.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &       ' GMREDI_CHECK: To use GM_useK3D set GM_AdvForm=.TRUE.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &       ' ABNORMAL END: S/R GMREDI_CHECK'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+
+# ifndef use_lapack
+      WRITE(msgBuf, '(A)')
+     &     'Must use CPP option use_lapack when using GM_K3D'
+      CALL PRINT_ERROR( msgBuf, myThid )
+# endif
 #endif
 
 #ifndef GM_EXTRA_DIAGONAL

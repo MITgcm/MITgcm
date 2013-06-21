@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.40 2011/07/13 22:59:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.41 2013/06/21 17:23:31 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -264,6 +264,22 @@ C--   Initialise Mixed Layer related array:
        ENDDO
       ENDIF
 
+#ifdef GM_K3D
+      IF (GM_useK3D) THEN
+C     Calculate the 3D diffusivity as per Bates et al. (2013)
+        CALL TIMER_START('GMREDI_K3D      [GMREDI_CALC_TENSOR]', 
+     &                    myThid)
+      
+        CALL GMREDI_K3D(
+     I       iMin, iMax, jMin, jMax,
+     I       sigmaX, sigmaY, sigmaR,
+     I       bi, bj, myThid)
+        
+        CALL TIMER_STOP('GMREDI_K3D      [GMREDI_CALC_TENSOR]', 
+     &                  myThid)
+      ENDIF
+#endif
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- 1rst loop on k : compute Tensor Coeff. at W points.
 
@@ -522,6 +538,10 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef GM_VISBECK_VARIABLE_K
      &           + VisbeckK(i,j,bi,bj)*(1. _d 0 + GM_skewflx)
 #endif
+#if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
+     &           + op5*(K3D(i,j,k,bi,bj)+K3D(i,j,km1,bi,bj))
+     &             *(1. _d 0 + GM_skewflx)
+#endif
          Kwx(i,j,k,bi,bj)= Kgm_tmp*Kwx(i,j,k,bi,bj)
          Kwy(i,j,k,bi,bj)= Kgm_tmp*Kwy(i,j,k,bi,bj)
 #ifdef ALLOW_KAPREDI_CONTROL
@@ -531,6 +551,9 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &                     + VisbeckK(i,j,bi,bj)
+#endif
+#if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
+     &                     + op5*(K3D(i,j,k,bi,bj)+K3D(i,j,km1,bi,bj))
 #endif
      &                     )*Kwz(i,j,k,bi,bj)
         ENDDO
@@ -558,11 +581,18 @@ C--   Calculate Stream-Functions used in Advective Form:
      I             myThid )
        ELSE
 #endif
-        CALL GMREDI_CALC_PSI_B(
+#ifndef GM_K3D_PASSIVE
+         IF (.NOT. GM_useK3D) THEN
+#endif
+C          If using GM_K3D PsiX and PsiY are calculated in gmredi_k3d
+           CALL GMREDI_CALC_PSI_B(
      I              bi, bj, iMin, iMax, jMin, jMax,
      I              sigmaX, sigmaY, sigmaR,
      I              ldd97_LrhoW, ldd97_LrhoS,
      I              myThid )
+#ifndef GM_K3D_PASSIVE
+         ENDIF
+#endif
 #ifdef GM_BOLUS_BVP
        ENDIF
 #endif
@@ -676,6 +706,9 @@ c      IF ( GM_nonUnitDiag ) THEN
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))
 #endif
+#if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
+     &     +op5*(K3D(i,j,k,bi,bj)+K3D(i-1,j,k,bi,bj))
+#endif
      &     )*taperFct(i,j)
          ENDDO
         ENDDO
@@ -717,6 +750,9 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))*GM_advect
 #endif
+#if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
+     &     +op5*(K3D(i,j,k,bi,bj)+K3D(i-1,j,k,bi,bj))*GM_advect
+#endif
      &     )*SlopeX(i,j)*taperFct(i,j)
          ENDDO
         ENDDO
@@ -737,6 +773,9 @@ C         store in tmp1k Kuz_Redi
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     +(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))*0.5 _d 0
+#endif
+#if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
+     &     +op5*(K3D(i,j,k,bi,bj)+K3D(i-1,j,k,bi,bj))
 #endif
      &                 )*SlopeX(i,j)*taperFct(i,j)
          ENDDO
@@ -868,6 +907,9 @@ c      IF ( GM_nonUnitDiag ) THEN
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
 #endif
+#if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
+     &     +op5*(K3D(i,j,k,bi,bj)+K3D(i,j-1,k,bi,bj))
+#endif
      &     )*taperFct(i,j)
          ENDDO
         ENDDO
@@ -909,6 +951,9 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))*GM_advect
 #endif
+#if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
+     &     +op5*(K3D(i,j,k,bi,bj)+K3D(i,j-1,k,bi,bj))*GM_advect
+#endif
      &     )*SlopeY(i,j)*taperFct(i,j)
          ENDDO
         ENDDO
@@ -929,6 +974,9 @@ C         store in tmp1k Kvz_Redi
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     +(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))*0.5 _d 0
+#endif
+#if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
+     &     +op5*(K3D(i,j,k,bi,bj)+K3D(i,j-1,k,bi,bj))
 #endif
      &                 )*SlopeY(i,j)*taperFct(i,j)
          ENDDO

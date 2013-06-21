@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_fill.F,v 1.3 2008/05/30 02:50:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_fill.F,v 1.4 2013/06/21 17:23:31 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -100,6 +100,11 @@ c
      &   0,Nr,1,bi,bj,myThid)
        ENDIF
 #endif /* ALLOW_EDDYPSI */
+#ifdef GM_K3D
+       IF (GM_useK3D) THEN
+         CALL DIAGNOSTICS_FILL(K3D, 'GM_K3D  ',0,Nr,0,1,1,myThid)
+       ENDIF
+#endif
 
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */

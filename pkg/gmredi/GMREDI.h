@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.19 2011/07/13 22:59:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.20 2013/06/21 17:23:30 m_bates Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -20,6 +20,9 @@ C     GM_ExtraDiag     :: select extra diagnostics
 C     GM_InMomAsStress :: apply GM as a stress in momentum Eq.
 C     GM_MNC           ::
 C     GM_MDSIO         ::
+C     GM_useK3D        :: use the 3 dimensional calculation for K
+C     GM_smoothXi      :: Associated with GM_useK3D.  use an expansion to smooth Xi.
+C     GM_K3D_constK    :: Associated with GM_useK3D.  use a constant K.
       LOGICAL GM_AdvForm
       LOGICAL GM_AdvSeparate
       LOGICAL GM_useBVP
@@ -28,17 +31,24 @@ C     GM_MDSIO         ::
       LOGICAL GM_InMomAsStress
       LOGICAL GM_MNC
       LOGICAL GM_MDSIO
+      LOGICAL GM_useK3D
+      LOGICAL GM_smoothXi
+      LOGICAL GM_K3D_constK
       COMMON /GM_PARAMS_L/
      &                   GM_AdvForm, GM_AdvSeparate,
      &                   GM_useBVP,  GM_useSubMeso,
      &                   GM_ExtraDiag, GM_MNC, GM_MDSIO,
-     &                   GM_InMomAsStress
+     &                   GM_InMomAsStress,
+     &                   GM_useK3D, GM_smoothXi, GM_K3D_constK
 
 C--   GM/Redi Integer-type parameters
 C     GM_BVP_modeNumber :: vertical mode number used for speed "c" in BVP transport
+C     GM_K3D_NModes :: number of vertical modes used for calculating Xi in K3D
       INTEGER GM_BVP_modeNumber
+      INTEGER GM_K3D_NModes
       COMMON /GM_PARAMS_I/
-     &                   GM_BVP_modeNumber
+     &                   GM_BVP_modeNumber,
+     &                   GM_K3D_NModes
 
 C--   COMMON /GM_PARAMS_C/ GM/Redi Character-type parameters
 C     GM_taper_scheme :: select which tapering/clipping scheme to use
@@ -74,6 +84,15 @@ C     subMeso_Ceff   :: efficiency coefficient of Mixed-Layer Eddies [-]
 C     subMeso_invTau :: inverse of mixing time-scale in sub-meso parameteriz. [s^-1]
 C     subMeso_LfMin  :: minimum value for length-scale "Lf" [m]
 C     subMeso_Lmax   :: maximum horizontal grid-scale length [m]
+C     Variable K with PV diffusion parameters:
+C     GM_K3D_gamma   :: mixing efficiency for 3D eddy diffusivity [-]
+C     GM_K3D_EadyMinDepth :: upper depth for Eady calculation
+C     GM_K3D_EadyMaxDepth :: lower depth for Eady calculation
+C     GM_maxK3D      :: Upper bound on the diffusivity
+C     GM_K3D_maxLurms:: Upper bound on th length scale used for calculating urms
+C     GM_K3D_minCori :: minimum value for f (to stop things blowing up near the equator)
+C     GM_K3D_minN2   :: minimum value for the square of the buoyancy frequency
+C     GM_K3D_surfMinDepth :: minimum value for the depth of the surface layer
 
       _RL GM_isopycK
       _RL GM_background_K
@@ -88,6 +107,18 @@ C     subMeso_Lmax   :: maximum horizontal grid-scale length [m]
       _RL GM_Visbeck_maxSlope
       _RL GM_Visbeck_minVal_K
       _RL GM_Visbeck_maxVal_K
+      _RL GM_K3D_gamma
+      _RL GM_K3D_EadyMinDepth
+      _RL GM_K3D_EadyMaxDepth
+      _RL GM_K3D_Lambda
+      _RL GM_K3D_smallK
+      _RL GM_K3D_maxSlope
+      _RL GM_K3D_maxC
+      _RL GM_maxK3D
+      _RL GM_K3D_maxLurms
+      _RL GM_K3D_minCori
+      _RL GM_K3D_minN2
+      _RL GM_K3D_surfMinDepth
       _RL GM_facTrL2dz
       _RL GM_facTrL2ML
       _RL GM_maxTransLay
@@ -107,6 +138,11 @@ C     subMeso_Lmax   :: maximum horizontal grid-scale length [m]
      &                   GM_Visbeck_depth,
      &                   GM_Visbeck_minDepth, GM_Visbeck_maxSlope,
      &                   GM_Visbeck_minVal_K, GM_Visbeck_maxVal_K,
+     &                   GM_K3D_gamma, GM_K3D_EadyMinDepth, 
+     &                   GM_K3D_EadyMaxDepth, GM_K3D_Lambda,
+     &                   GM_K3D_smallK, GM_K3D_maxSlope, GM_K3D_maxC,
+     &                   GM_maxK3D, GM_K3D_minCori, GM_K3D_minN2, 
+     &                   GM_K3D_surfMinDepth, GM_K3D_maxLurms,
      &                   GM_facTrL2dz, GM_facTrL2ML, GM_maxTransLay,
      &                   GM_Scrit, GM_Sd, GM_BVP_cMin,
      &                   subMeso_Ceff, subMeso_invTau, subMeso_LfMin
@@ -190,6 +226,12 @@ C     for Visbeck et al. parameterization)
       COMMON /GM_Visbeck/ VisbeckK
 #endif
 
+#ifdef GM_K3D
+C     K3D          :: The three dimensional eddy mixing coeffixint [m**2/s]
+      _RL K3D(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr,nSx,nSy)
+
+      COMMON /GM_K3D/ K3D
+#endif
 #endif /* ALLOW_GMREDI */
 
 CEH3 ;;; Local Variables: ***

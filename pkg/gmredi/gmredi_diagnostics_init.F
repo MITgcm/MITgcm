@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.10 2012/03/20 23:36:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.11 2013/06/21 17:23:31 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -252,6 +252,281 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+#endif
+
+#ifdef GM_K3D
+        diagName  = 'GM_K3D'
+        diagTitle = '3D diffusivity'
+        diagUnits = 'm**2/s          '
+        diagCode  = 'SM P    MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_A3D'
+        diagTitle = '3D lower diagona'
+        diagUnits = '1/m**2          '
+        diagCode  = 'SM      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_B3D'
+        diagTitle = '3D lower diagona'
+        diagUnits = '1/m**2          '
+        diagCode  = 'SM      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_C3D'
+        diagTitle = '3D lower diagona'
+        diagUnits = '1/m**2          '
+        diagCode  = 'SM      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_VAL'
+        diagTitle = 'Eigen value     '
+        diagUnits = '1/m**2          '
+        diagCode  = 'SM P    MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_VEC'
+        diagTitle = 'Eigen vector for the first barcolinic mode'
+        diagUnits = 'dimensionless   '
+        diagCode  = 'SM      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_URMS'
+        diagTitle = 'rms Eddy Velocity'
+        diagUnits = 'm/s             '
+        diagCode  = 'SM P    MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_UMC  '
+        diagTitle = 'ubar-c'
+        diagUnits = 'm/s             '
+        diagCode  = 'SM      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_SFLYR'
+        diagTitle = 'mixed layer depth'
+        diagUnits = 'm               '
+        diagCode  = 'SM P    MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_SIGR '
+        diagTitle = 'drho/dr'
+        diagUnits = 'kg/m**4          '
+        diagCode  = 'SM      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_N2  '
+        diagTitle = 'Square of buoyancy frequency'
+        diagUnits = '1/s**2          '
+        diagCode  = 'SM      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_SIGX '
+        diagTitle = 'd(rho)/dx'
+        diagUnits = 'kg/m**4          '
+        diagCode  = 'UU      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_SIGY '
+        diagTitle = 'd(rho)/dy'
+        diagUnits = 'kg/m**4         '
+        diagCode  = 'VV      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_USTAR'
+        diagTitle = 'u^*'
+        diagUnits = 'm/s         '
+        diagCode  = 'UU      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_VSTAR'
+        diagTitle = 'v^*'
+        diagUnits = 'm/s         '
+        diagCode  = 'VV      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_RDEF'
+        diagTitle = 'Deformation Radius'
+        diagUnits = 'm               '
+        diagCode  = 'SM P    M1      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_LRHNS'
+        diagTitle = 'Rhines Radius'
+        diagUnits = 'm               '
+        diagCode  = 'SM P    M1      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_RMIX'
+        diagTitle = 'Unmodulated Mixing Length'
+        diagUnits = 'm               '
+        diagCode  = 'SM P    M1      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_SUPP'
+        diagTitle = 'Suppression Factor for K3D'
+        diagUnits = 'none            '
+        diagCode  = 'SM P    MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_dqdx '
+        diagTitle = 'dq/dx'
+        diagUnits = '1/(m*s)         '
+        diagCode  = 'UU      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_dqdy '
+        diagTitle = 'dq/dy'
+        diagUnits = '1/(m*s)         '
+        diagCode  = 'VV      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_Xix  '
+        diagTitle = '-k dq/dx expansion'
+        diagUnits = '1/(m*s)         '
+        diagCode  = 'UU      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_Xiy  '
+        diagTitle = '-k dq/dy expansion'
+        diagUnits = '1/(m*s)         '
+        diagCode  = 'VV      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_PSI  '
+        diagTitle = 'Eddy induced meridional streamfunction'
+        diagUnits = 'm**3/s          '
+        diagCode  = 'VV      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_Sx   '
+        diagTitle = 'Zonal isopycnal slope'
+        diagUnits = 'none            '
+        diagCode  = 'UU      LR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_Sy   '
+        diagTitle = 'Meridional isopycnal slope'
+        diagUnits = 'none            '
+        diagCode  = 'VV      LR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_TFLXX'
+        diagTitle = 'Zonal thickness flux'
+        diagUnits = '1/(m*s)           '
+        diagCode  = 'UU      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_TFLXY'
+        diagTitle = 'meridional thickness flux'
+        diagUnits = '1/(m*s)         '
+        diagCode  = 'VV      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_C'
+        diagTitle = 'Doppler shifted long Rossby wave speed'
+        diagUnits = 'm/s             '
+        diagCode  = 'SM      M1      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_UBARO'
+        diagTitle = 'Barotropic velocity'
+        diagUnits = 'm/s             '
+        diagCode  = 'SM      M1      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_EADY '
+        diagTitle = 'Eady Growth rate'
+        diagUnits = '1/s             '
+        diagCode  = 'SM      M1      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_UBAR '
+        diagTitle = 'Mean zonal velocity'
+        diagUnits = 'm/s             '
+        diagCode  = 'SM      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_KDEF '
+        diagTitle = 'Rossby wavenumber'
+        diagUnits = '1/m             '
+        diagCode  = 'SM      M1      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_BVINT'
+        diagTitle = 'vertical integral of the buoyancy frequency'
+        diagUnits = 'm/s             '
+        diagCode  = 'SM      M1      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
 #endif
 
 c     ENDIF

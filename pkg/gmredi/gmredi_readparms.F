@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.22 2011/07/13 22:59:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.23 2013/06/21 17:23:31 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -63,7 +63,13 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_MNC,
      &          GM_UseBVP, GM_BVP_cMin, GM_BVP_ModeNumber,
      &          GM_useSubMeso, subMeso_Ceff, subMeso_invTau,
-     &          subMeso_LfMin, subMeso_Lmax
+     &          subMeso_LfMin, subMeso_Lmax,
+     &          GM_K3D_gamma, GM_useK3D, GM_K3D_NModes,
+     &          GM_K3D_EadyMinDepth, GM_K3D_EadyMaxDepth,
+     &          GM_K3D_Lambda, GM_K3D_smallK, GM_K3D_maxSlope,
+     &          GM_K3D_maxC, GM_K3D_minCori, GM_K3D_minN2,
+     &          GM_K3D_surfMinDepth, GM_maxK3D, GM_K3D_maxLurms,
+     &          GM_smoothXi, GM_K3D_constK
 
       _BEGIN_MASTER(myThid)
 
@@ -114,6 +120,24 @@ C--   Default values Sub-Meso (corresponding tau = 5.8 days):
       subMeso_Ceff   =  7.0 _d -2
       subMeso_Lmax   = 110. _d +3
 
+C--   Default values for K3D
+      GM_useK3D    = .FALSE.
+      GM_smoothXi  = .TRUE.
+      GM_K3D_constK= .FALSE.
+      GM_K3D_gamma = 1.00
+      GM_K3D_EadyMinDepth = 50.0
+      GM_K3D_EadyMaxDepth = 1000.0
+      GM_K3D_Lambda = 1.0
+      GM_K3D_smallK = 100.0
+      GM_K3D_maxSlope = UNSET_RL
+      GM_K3D_maxC    = 0.15
+      GM_maxK3D      = 20e3
+      GM_K3D_maxLurms= 75e3
+      GM_K3D_NModes  = 3
+      GM_K3D_minCori = zeroRL
+      GM_K3D_minN2   = 1.0e-8
+      GM_K3D_surfMinDepth = 100.0
+      
       WRITE(msgBuf,'(A)') ' GM_READPARMS: opening data.gmredi'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
@@ -136,6 +160,10 @@ C     Default value for GM_isopycK is equal to GM_background_K :
 C     Default value for GM_Visbeck_maxSlope is equal to GM_maxSlope :
       IF ( GM_Visbeck_maxSlope .EQ. UNSET_RL )
      &     GM_Visbeck_maxSlope = GM_maxSlope
+
+C     Default value for GM_K3D_maxSlope is equal to GM_maxSlope :
+      IF ( GM_K3D_maxSlope .EQ. UNSET_RL )
+     &     GM_K3D_maxSlope = GM_maxSlope
 
 C     Some constants
       GM_rMaxSlope = 0.

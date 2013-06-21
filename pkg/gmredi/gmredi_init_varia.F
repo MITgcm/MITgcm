@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_init_varia.F,v 1.2 2011/01/11 00:54:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_init_varia.F,v 1.3 2013/06/21 17:23:31 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -62,6 +62,9 @@ C     Initialize arrays in common blocks :
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
           VisbeckK(i,j,bi,bj) = 0. _d 0
+#endif
+#ifdef GM_K3D
+          K3D(i,j,k,bi,bj) = 0. _d 0
 #endif
           ENDDO
          ENDDO
