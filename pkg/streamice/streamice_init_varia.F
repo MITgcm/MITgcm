@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.1 2013/06/12 21:30:22 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.2 2013/06/21 17:53:25 dgoldberg Exp $
 C $Name:  $
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
@@ -189,7 +189,7 @@ C             IF (flow_dir .EQ. 2.0) THEN
               ELSE
                H_streamice (i,j,bi,bj) = (shelf_min_draft + 
      &          (shelf_max_draft - shelf_min_draft) * 
-     &          min (1.0, (c1*(slope_pos-xC(i,j,bi,bj)))**2))
+     &          min (oneRL, (c1*(slope_pos-xC(i,j,bi,bj)))**2))
               ENDIF
 
               IF (xC(i,j,bi,bj).GT.shelf_edge_pos) THEN

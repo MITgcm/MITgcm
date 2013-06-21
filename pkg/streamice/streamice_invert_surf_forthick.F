@@ -30,7 +30,7 @@
       _RL ETA_GL_STREAMICE
       EXTERNAL ETA_GL_STREAMICE
       _RL ETA_GL_STREAMICE_PRIME
-      EXTERNAL PHI_GL_STREAMICE_PRIME
+!      EXTERNAL PHI_GL_STREAMICE_PRIME
 
         DO bj=myByLo(myThid), myByHi(myThid)
          DO bi=myBxLo(myThid), myBxHi(myThid)
