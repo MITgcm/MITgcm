@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.1 2013/06/12 21:30:22 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.2 2013/06/21 21:15:36 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -263,7 +263,7 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
 !!!!!!!!!!!!!!!!!!!!!!!!!
 
 C- fill in the overlap (+ BARRIER):
-      _EXCH_XY_RL(STREAMICE_calve_mask, myThid )
+      _EXCH_XY_RS(STREAMICE_calve_mask, myThid )
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -510,8 +510,8 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
 
       _EXCH_XY_RL(k1AtC_str, myThid )
       _EXCH_XY_RL(k2AtC_str, myThid )
-      _EXCH_XY_RL(STREAMICE_ufacemask_bdry, myThid )
-      _EXCH_XY_RL(STREAMICE_vfacemask_bdry, myThid )
+      _EXCH_XY_RS(STREAMICE_ufacemask_bdry, myThid )
+      _EXCH_XY_RS(STREAMICE_vfacemask_bdry, myThid )
       _EXCH_XY_RL(u_bdry_values_SI, myThid )
       _EXCH_XY_RL(v_bdry_values_SI, myThid )
       _EXCH_XY_RL(u_flux_bdry_SI, myThid )

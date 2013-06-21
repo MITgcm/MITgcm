@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_velmask_upd.F,v 1.1 2013/06/12 21:30:22 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_velmask_upd.F,v 1.2 2013/06/21 21:15:36 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -45,7 +45,7 @@ C     === Global variables ===
 
       _EXCH_XY_RL( H_streamice, myThid )
       _EXCH_XY_RL( area_shelf_streamice, myThid )
-      _EXCH_XY_RL( STREAMICE_hmask, myThid )
+      _EXCH_XY_RS( STREAMICE_hmask, myThid )
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -173,10 +173,10 @@ C     === Global variables ===
        ENDDO
       ENDDO
 
-      _EXCH_XY_RL( STREAMICE_ufacemask, myThid )
-      _EXCH_XY_RL( STREAMICE_vfacemask, myThid )
-      _EXCH_XY_RL( STREAMICE_umask, myThid )
-      _EXCH_XY_RL( STREAMICE_vmask, myThid )
+      _EXCH_XY_RS( STREAMICE_ufacemask, myThid )
+      _EXCH_XY_RS( STREAMICE_vfacemask, myThid )
+      _EXCH_XY_RS( STREAMICE_umask, myThid )
+      _EXCH_XY_RS( STREAMICE_vmask, myThid )
 
 !       CALL WRITE_FULLARRAY_RL ("umask",STREAMICE_umask,
 !      c   1,0,0,1,0,myThid)

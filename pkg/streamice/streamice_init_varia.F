@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.2 2013/06/21 17:53:25 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.3 2013/06/21 21:15:36 dgoldberg Exp $
 C $Name:  $
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
@@ -430,7 +430,7 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
       CALL STREAMICE_UPD_FFRAC_UNCOUPLED ( myThid )
 
       _EXCH_XY_RL(H_streamice, myThid )
-      _EXCH_XY_RL(STREAMICE_hmask, myThid )
+      _EXCH_XY_RS(STREAMICE_hmask, myThid )
       _EXCH_XY_RL(area_shelf_streamice, myThid )
       _EXCH_XY_RL(C_basal_friction, myThid )
       _EXCH_XY_RL(B_glen, myThid )
