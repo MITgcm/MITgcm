@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/phi_gl_streamice.F,v 1.2 2013/06/21 19:35:44 dgoldberg Exp $
+C $Name:  $
+
 #include "CPP_OPTIONS.h"
 
       _RL FUNCTION PHI_GL_STREAMICE (X, W)
@@ -8,9 +11,9 @@
        _RL X, W 
        _RL TMP1, PI
 
-       IF (X<0.0) THEN
+       IF (X.le.0.0) THEN
          PHI_GL_STREAMICE = 0.0
-       ELSEIF(X>W/2.0) THEN
+       ELSEIF(X.gt.0.5*W) THEN
          PHI_GL_STREAMICE = 1.0
        ELSE
          PI = 3.14159265358979323844D0
