@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_visc_beta_hybrid.F,v 1.1 2013/06/12 21:30:22 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_visc_beta_hybrid.F,v 1.2 2013/06/21 19:59:36 heimbach Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -42,9 +42,9 @@ C     LOCAL VARIABLES
       _RL ub, vb, fb, mean_u_shear, mean_v_shear, umid, vmid
       _RL omega_temp (Nr+1), u_shear(Nr+1), v_shear(Nr+1)
 
-      _RL STREAMICE_BSTRESS_EXPONENT
+      _RL STREAMICE_BSTRESS_EXP
 !       _RL total_vol_out
-      external STREAMICE_BSTRESS_EXPONENT
+      external STREAMICE_BSTRESS_EXP
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -190,7 +190,7 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
            unorm = sqrt(ub**2+vb**2+eps_u_min**2)
 
            fb = C_basal_friction(i,j,bi,bj)**2 * 
-     &      STREAMICE_BSTRESS_EXPONENT (unorm,n_basal_friction) *
+     &      STREAMICE_BSTRESS_EXP (unorm,n_basal_friction) *
      &      streamice_basal_geom(i,j,bi,bj) *
      &      float_frac_streamice(i,j,bi,bj)
 

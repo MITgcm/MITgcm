@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cost_surf_accum.F,v 1.1 2013/06/12 21:30:22 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cost_surf_accum.F,v 1.2 2013/06/21 19:59:36 heimbach Exp $
 C $Name:  $
 
 #ifdef ALLOW_COST
@@ -49,6 +49,7 @@ C     == Local variables
       integer ig, jg
       integer itlo,ithi
       integer jtlo,jthi
+      integer il
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
       CHARACTER*(MAX_LEN_FNAM) suff
@@ -60,10 +61,9 @@ C     == Local variables
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
  
-      WRITE(suff,'(I10.10)') myIter
-      suff = suff(1:ILNBLNK(suff))//'.bin'
+      WRITE(suff,'(a,I10.10,a)') 'land_ice_surf.',myIter, '.bin'
 
-      CALL READ_FLD_XY_RS( 'land_ice_surf.'//suff, ' ',
+      CALL READ_FLD_XY_RS( suff,
      &      S_obs, 0, myThid )
       
 C--   Calculate mask for tracer cells  (0 => land, 1 => water)

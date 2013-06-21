@@ -6,7 +6,7 @@ C     -------------------------- REAL PARAMS -----------------------------------
 
       COMMON /STREAMICE_PARMS_R/ 
      & streamice_density, streamice_density_ocean_avg, 
-!     & A_glen_isothermal, n_glen, eps_glen_min, eps_u_min,
+C     & A_glen_isothermal, n_glen, eps_glen_min, eps_u_min,
      & B_glen_isothermal, n_glen, eps_glen_min, eps_u_min,
      & C_basal_fric_const, n_basal_friction, streamice_input_flux_unif,
      & streamice_vel_update, streamice_cg_tol, streamice_nonlin_tol,
@@ -20,8 +20,9 @@ C     -------------------------- REAL PARAMS -----------------------------------
      & streamice_addl_backstress,
      & streamice_smooth_gl_width,
      & streamice_adot_uniform
+
       _RL streamice_density, streamice_density_ocean_avg
-!      _RL A_glen_isothermal, n_glen, eps_glen_min, eps_u_min
+C      _RL A_glen_isothermal, n_glen, eps_glen_min, eps_u_min
       _RL B_glen_isothermal, n_glen, eps_glen_min, eps_u_min
       _RL C_basal_fric_const
       _RL n_basal_friction 
@@ -285,7 +286,7 @@ C    REAL ARRAYS
      &     v_bdry_values_SI,
      &     STREAMICE_dummy_array,
      &     C_basal_friction,
-!     &     A_glen,
+C     &     A_glen,
      &     B_glen,
      &     BDOT_streamice, ADOT_streamice,  ! mass balances in meters per year
      &     streamice_sigma_coord, streamice_delsigma,
@@ -333,7 +334,7 @@ C    REAL ARRAYS
       _RL u_bdry_values_SI    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_bdry_values_SI    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL C_basal_friction    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-!      _RL A_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL A_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL B_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL streamice_sigma_coord (Nr)
       _RL streamice_delsigma (Nr)      
