@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.15 2012/03/08 17:05:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.16 2013/06/21 22:06:26 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -57,6 +57,8 @@ C     msgBuf      :: Informational/error message buffer
       CHARACTER*(8) fldName, missFldList(missFldDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef PTRACERS_ALLOW_DYN_STATE
+      CHARACTER*(MAX_LEN_FNAM) filNam
+      LOGICAL useCurrentDir, fileExist
       INTEGER n
 #endif
 CEOP
@@ -97,9 +99,9 @@ C       Read variables from the pickup file
       ENDIF
 #endif /*  ALLOW_MNC  */
 
-      IF ( PTRACERS_pickup_read_mdsio ) THEN
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( PTRACERS_pickup_read_mdsio ) THEN
 
        IF ( pickupSuff.EQ.' ' ) THEN
         WRITE(fn,'(A,I10.10)') 'pickup_ptracers.',myIter
@@ -256,8 +258,16 @@ C--    Check for missing fields:
      I                     nMissing, nbFields,
      I                     myIter, myThid )
 
+C--   end: pickup_read_mdsio
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 #ifdef PTRACERS_ALLOW_DYN_STATE
+c     IF ( PTRACERS_pickup_read_mdsio ) THEN
+
 C--   Read pickup file with 2nd.Order moment fields
+       prec = precFloat64
        DO iTracer = 1, PTRACERS_numInUse
         IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
 
@@ -268,29 +278,53 @@ C--   Read pickup file with 2nd.Order moment fields
            WRITE(fn,'(3A,A10)') 'pickup_somTRAC',
      &                     PTRACERS_ioLabel(iTracer),'.', pickupSuff
          ENDIF
+         ioUnit = standardMessageUnit
          WRITE(msgBuf,'(A,I3,A)')'PTRACERS_READ_PICKUP: iTracer = ',
-     &                      iTracer,
-     &                      ' : reading 2nd-order moments from file '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid)
-         CALL PRINT_MESSAGE( fn, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid)
-         prec = precFloat64
-C        Read 2nd Order moments as consecutive records
-         DO n=1,nSOM
+     &            iTracer, ' : reading 2nd-order moments from file:'
+         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+         CALL PRINT_MESSAGE( fn,     ioUnit, SQUEEZE_RIGHT, myThid )
+
+C-      First check if pickup file exist
+#ifdef ALLOW_MDSIO
+         useCurrentDir = .FALSE.
+         CALL MDS_CHECK4FILE(
+     I                       fn, '.data', 'PTRACERS_READ_PICKUP',
+     O                       filNam, fileExist,
+     I                       useCurrentDir, myThid )
+#else
+         STOP 'ABNORMAL END: S/R PTRACERS_READ_PICKUP: Needs MDSIO pkg'
+#endif
+
+         IF ( fileExist ) THEN
+C-       Read 2nd Order moments as consecutive records
+          DO n=1,nSOM
            iRec = n
            CALL READ_REC_3D_RL( fn, prec, Nr,
      O               _Ptracers_som(:,:,:,:,:,n,iTracer),
      I               iRec, myIter, myThid )
-         ENDDO
-         CALL GAD_EXCH_SOM( _Ptracers_som(:,:,:,:,:,:,iTracer),
-     &                      Nr, myThid )
+          ENDDO
+          CALL GAD_EXCH_SOM( _Ptracers_som(:,:,:,:,:,:,iTracer),
+     &                       Nr, myThid )
+         ELSE
+          ioUnit = errorMessageUnit
+          IF ( pickupStrictlyMatch ) THEN
+            WRITE(msgBuf,'(4A)') 'PTRACERS_READ_PICKUP: ',
+     &        'try with " pickupStrictlyMatch=.FALSE.,"',
+     &        ' in file: "data", NameList: "PARM03"'
+            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+            STOP 'ABNORMAL END: S/R PTRACERS_READ_PICKUP'
+          ELSE
+            WRITE(msgBuf,'(2A)') 'WARNING >> PTRACERS_READ_PICKUP: ',
+     &        'approximated restart: reset Ptr_SOM to zero'
+            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ENDIF
+         ENDIF
         ENDIF
        ENDDO
-#endif /* PTRACERS_ALLOW_DYN_STATE */
 
-C--   end: pickup_read_mdsio
-      ENDIF
+C--   end: pickup_read_mdsio, SOM pickups
+c     ENDIF
+#endif /* PTRACERS_ALLOW_DYN_STATE */
 
 #endif /* ALLOW_PTRACERS */
 
