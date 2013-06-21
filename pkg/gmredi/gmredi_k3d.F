@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.1 2013/06/21 17:23:31 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.2 2013/06/21 21:56:18 m_bates Exp $
 C $Name:  $
 #include "GMREDI_OPTIONS.h"
 
@@ -612,14 +612,28 @@ C          Meridional thickness flux at the southern cell face
       ENDDO
 
 C     Calculate gradq
-      DO k=1,Nr
-       DO j=1-Oly+1,sNy+Oly
-        DO i=1-Olx+1,sNx+Olx
-         gradqx(i,j,k) = maskW(i,j,k,bi,bj)*( dfdx(i,j)+tfluxX(i,j,k) )
-         gradqy(i,j,k) = maskS(i,j,k,bi,bj)*( dfdy(i,j)+tfluxY(i,j,k) )
+      IF (GM_K3D_likeGM) THEN
+C       To make it similar to GM, we ignore beta
+        DO k=1,Nr
+         DO j=1-Oly+1,sNy+Oly
+          DO i=1-Olx+1,sNx+Olx
+           gradqx(i,j,k) = maskW(i,j,k,bi,bj)*tfluxX(i,j,k)
+           gradqy(i,j,k) = maskS(i,j,k,bi,bj)*tfluxY(i,j,k)
+          ENDDO
+         ENDDO
         ENDDO
-       ENDDO
-      ENDDO
+        
+      ELSE
+C       Do not ignore beta
+        DO k=1,Nr
+         DO j=1-Oly+1,sNy+Oly
+          DO i=1-Olx+1,sNx+Olx
+           gradqx(i,j,k) = maskW(i,j,k,bi,bj)*(dfdx(i,j)+tfluxX(i,j,k))
+           gradqy(i,j,k) = maskS(i,j,k,bi,bj)*(dfdy(i,j)+tfluxY(i,j,k))
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
 
 C     ======================================
 C     Find Xi and the eddy induced velocities
@@ -649,7 +663,54 @@ C     It does not affect the end result since it's in the overlap region.
        ENDDO
       ENDDO
 
-      IF(GM_smoothXi) THEN
+      IF(GM_K3D_likeGM) THEN
+C       To make it similar to GM, we do not do any smoothing
+        m=1
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          XimX(1,i,j) = zeroRL
+          XimY(1,i,j) = zeroRL
+         ENDDO
+        ENDDO
+        DO k=1,Nr
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           IF (GM_K3D_likeGM) THEN
+             Xix(i,j,k)=-GM_K3D_constK*gradqx(i,j,k)
+             Xiy(i,j,k)=-GM_K3D_constK*gradqy(i,j,k)
+           ELSE
+             Xix(i,j,k)=-K3D(i,j,k,bi,bj)*gradqx(i,j,k)
+             Xiy(i,j,k)=-K3D(i,j,k,bi,bj)*gradqy(i,j,k)
+           ENDIF
+           XimX(1,i,j) = XimX(m,i,j) 
+     &          + Xix(i,j,k)*drF(k)*hfacW(i,j,k,bi,bj)
+           XimY(1,i,j) = XimY(m,i,j) 
+     &          + Xiy(i,j,k)*drF(k)*hfacS(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+C         minus comes from rlow being negative.
+          IF(rLowW(i,j,bi,bj).LT.0.0)
+     &         XimX(1,i,j) = -XimX(1,i,j)/rLowW(i,j,bi,bj)
+          IF(rLowS(i,j,bi,bj).LT.0.0)
+     &         XimY(1,i,j) = -XimY(1,i,j)/rLowS(i,j,bi,bj)
+         ENDDO
+        ENDDO
+
+        DO k=1,Nr
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           Xix(i,j,k) = Xix(i,j,k) - maskW(i,j,k,bi,bj)*XimX(1,i,j)
+           Xiy(i,j,k) = Xiy(i,j,k) - maskS(i,j,k,bi,bj)*XimY(1,i,j)
+          ENDDO
+         ENDDO
+        ENDDO
+
+      ELSE
+C       Expand K grad(q) in terms of baroclinic modes
+
 C       Start with the X direction
 C       ------------------------------
 C       Calculate the eigenvectors at the West face of a cell
@@ -672,10 +733,10 @@ C       Calculate Xi_m at the west face of a cell
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
            DO m=1,GM_K3D_NModes
-            IF (GM_K3D_constK) THEN
+            IF (GM_K3D_likeGM) THEN
               XimX(m,i,j) = XimX(m,i,j) 
      &             - maskW(i,j,k,bi,bj)*drF(k)*hfacW(i,j,k,bi,bj)
-     &             *1000*gradqx(i,j,k)*vec(m,i,j,k)
+     &             *GM_K3D_constK*gradqx(i,j,k)*vec(m,i,j,k)
             ELSE
               XimX(m,i,j) = XimX(m,i,j) 
      &             - maskW(i,j,k,bi,bj)*drF(k)*hfacW(i,j,k,bi,bj)
@@ -725,10 +786,10 @@ C     Calculate the eigenvectors at the West face of a cell
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
            DO m=1,GM_K3D_NModes
-            IF (GM_K3D_constK) THEN
+            IF (GM_K3D_likeGM) THEN
               XimY(m,i,j) = XimY(m,i,j)
      &             - maskS(i,j,k,bi,bj)*drF(k)*hfacS(i,j,k,bi,bj)
-     &             *1000*gradqy(i,j,k)*vec(m,i,j,k)
+     &             *GM_K3D_constK*gradqy(i,j,k)*vec(m,i,j,k)
             ELSE
               XimY(m,i,j) = XimY(m,i,j)
      &             - drF(k)*hfacS(i,j,k,bi,bj)
@@ -754,51 +815,6 @@ C     Calculate Xi for Y direction at the south face
             Xiy(i,j,k) = Xiy(i,j,k) 
      &           + maskS(i,j,k,bi,bj)*vec(m,i,j,k)*XimY(m,i,j)
            ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-
-C     from IF(smoothXi) THEN
-      ELSE
-        m=1
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          XimX(1,i,j) = zeroRL
-          XimY(1,i,j) = zeroRL
-         ENDDO
-        ENDDO
-        DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           IF (GM_K3D_constK) THEN
-             Xix(i,j,k)=-1000*gradqx(i,j,k)
-             Xiy(i,j,k)=-1000*gradqy(i,j,k)
-           ELSE
-             Xix(i,j,k)=-K3D(i,j,k,bi,bj)*gradqx(i,j,k)
-             Xiy(i,j,k)=-K3D(i,j,k,bi,bj)*gradqy(i,j,k)
-           ENDIF
-           XimX(1,i,j) = XimX(m,i,j) 
-     &          + Xix(i,j,k)*drF(k)*hfacW(i,j,k,bi,bj)
-           XimY(1,i,j) = XimY(m,i,j) 
-     &          + Xiy(i,j,k)*drF(k)*hfacS(i,j,k,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-C         minus comes from rlow being negative.
-          IF(rLowW(i,j,bi,bj).LT.0.0)
-     &         XimX(1,i,j) = -XimX(1,i,j)/rLowW(i,j,bi,bj)
-          IF(rLowS(i,j,bi,bj).LT.0.0)
-     &         XimY(1,i,j) = -XimY(1,i,j)/rLowS(i,j,bi,bj)
-         ENDDO
-        ENDDO
-
-        DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           Xix(i,j,k) = Xix(i,j,k) - maskW(i,j,k,bi,bj)*XimX(1,i,j)
-           Xiy(i,j,k) = Xiy(i,j,k) - maskS(i,j,k,bi,bj)*XimY(1,i,j)
           ENDDO
          ENDDO
         ENDDO
@@ -879,25 +895,6 @@ C     ======================================
 C     Diagnostics
       IF ( useDiagnostics ) THEN
         CALL DIAGNOSTICS_FILL(K3D,    'GM_K3D  ',0,Nr,0,1,1,myThid)
-
-
-
-
-C     TESTING STUFF, don't forget to remove!!!!!!
-        IF (GM_K3D_constK) THEN
-          DO k=1,Nr
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
-             K3D(i,j,k,bi,bj) = 1000
-            ENDDO
-           ENDDO
-          ENDDO
-        ENDIF
-        
-
-
-
-
         CALL DIAGNOSTICS_FILL(urms,   'GM_URMS ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(Rdef,   'GM_RDEF ',0, 1,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(RRhines,'GM_LRHNS',0, 1,0,1,1,myThid)
@@ -928,6 +925,19 @@ C     TESTING STUFF, don't forget to remove!!!!!!
         CALL DIAGNOSTICS_FILL(Kdef,   'GM_KDEF ',0, 1,0,1,1,myThid)
       ENDIF
 #endif
+      
+C     Even when using a constant K, we diagnose the K that we would
+C     use.  So, after the diagnostics are written, we change the
+C     array K3D to be equal to GM_K3D_constK for use in the Redi tensor.
+      IF (GM_K3D_likeGM) THEN
+        DO k=1,Nr
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           K3D(i,j,k,bi,bj) = GM_K3D_constK
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
 
 #endif /* GM_K3D */
       RETURN
