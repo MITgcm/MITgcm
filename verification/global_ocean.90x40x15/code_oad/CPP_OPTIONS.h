@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_oad/CPP_OPTIONS.h,v 1.1 2013/04/03 21:18:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_oad/CPP_OPTIONS.h,v 1.2 2013/06/22 10:14:24 heimbach Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -17,6 +17,8 @@ C *==================================================================*
 CEOP
 
 C CPP flags controlling particular source code features
+
+#include "PACKAGES_CONFIG.h"
 
 C o Shortwave heating as extra term in external_forcing.F
 C Note: this should be a run-time option
