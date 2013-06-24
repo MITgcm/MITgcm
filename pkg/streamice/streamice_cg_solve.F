@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve.F,v 1.1 2013/06/12 21:30:21 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve.F,v 1.2 2013/06/24 20:54:01 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -373,6 +373,12 @@ C     LOCAL VARIABLES
         ENDDO
        ENDDO
       ENDDO
+
+      call KSPDestroy (ksp, ierr)
+      call VecDestroy (rhs, ierr)
+      call VecDestroy (solution, ierr)
+      call MatDestroy (matrix, ierr)
+         
 
 
 
