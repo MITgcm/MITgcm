@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1884 2013/06/21 22:17:00 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1885 2013/06/24 21:38:09 dgoldberg Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/halfpipe_streamice:
+  - found a bug in s/r pkg/streamice/streamice_advect_thickness which caused
+    flux input boundary conditions to be ignored; a fix for this bug changed
+    verification results for forward test
 o pkg/ptracers:
   - allow to restart without SOM pickup (resetting SOM to zero).
 o pkg/gmredi:
