@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.3 2013/06/21 20:49:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.4 2013/06/24 20:53:06 dgoldberg Exp $
 C $Name:  $
 
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -91,8 +91,10 @@ C     -------------------------- CHAR PARAMS -----------------------------------
       CHARACTER*(MAX_LEN_FNAM) STREAMICEdelsigFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEbasalTracConfig
       CHARACTER*(MAX_LEN_FNAM) STREAMICEGlenConstConfig
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEBdotConfig
       CHARACTER*(MAX_LEN_FNAM) STREAMICEbasalTracFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEGlenConstFile
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEBdotFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEvelOptimFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEtopogFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEcostMaskFile
@@ -129,6 +131,7 @@ C     -------------------------- CHAR PARAMS -----------------------------------
      &     STREAMICEsigcoordFile,
      &     STREAMICEdelsigFile,
      &     STREAMICEbasalTracConfig,
+     &     STREAMICEBdotConfig,
      &     STREAMICEbasalTracFile,
      &     STREAMICEvelOptimFile,
      &     STREAMICEtopogFile,
@@ -140,6 +143,7 @@ C     -------------------------- CHAR PARAMS -----------------------------------
      &     STREAMICEuDirichValsFile,
      &     STREAMICEvDirichValsFile,
      &     STREAMICEGlenConstFile,
+     &     STREAMICEBdotFile,
      &     STREAMICEGlenConstConfig,
      &     STREAMICEcostMaskFile,
      &     STREAMICE_ADV_SCHEME

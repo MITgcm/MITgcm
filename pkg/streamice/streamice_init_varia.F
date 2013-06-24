@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.4 2013/06/21 22:00:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.5 2013/06/24 20:53:06 dgoldberg Exp $
 C $Name:  $
 
 #ifdef ALLOW_COST
@@ -325,6 +325,26 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
       ENDIF
 
 ! finish initialize glen constant
+
+! initialize melt rates
+
+      IF ( STREAMICEBdotConfig.EQ.'FILE' ) THEN
+
+       IF ( STREAMICEBdotFile .NE. ' ' ) THEN
+        _BARRIER
+
+        CALL READ_FLD_XY_RL( STREAMICEBdotFile, ' ',
+     &      BDOT_streamice, 0, myThid )
+
+       ELSE
+        WRITE(msgBuf,'(A)') 'INIT BDOT - FILENAME MISSING'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+       ENDIF
+
+      ENDIF
+
+! finish initialize melt rates
 
 ! initialize basal traction
 
