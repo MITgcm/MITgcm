@@ -1,0 +1,8 @@
+ &CTRL_NML
+ doPackDiag = .FALSE.,
+ /
+ &CTRL_PACKNAMES
+ /
+ &CTRL_NML_GENARR
+# genarr2dPrecond = 5 200
+ /
