@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.1 2013/06/12 21:30:21 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.2 2013/06/24 20:53:35 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -79,10 +79,17 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
            utrans(i,j,bi,bj) = .5 * (
      &      u_streamice(i,j,bi,bj)+u_streamice(i,j+1,bi,bj))
           ELSEIF (STREAMICE_ufacemask(i,j,bi,bj).eq.4.0) THEN
-           uflux = u_flux_bdry_SI(i,j,bi,bj)
-           BCMASKX(i,j,bi,bj) = 0.0
-           BCVALX(i,j,bi,bj) = uflux
-           utrans(i,j,bi,bj) = 1.0
+           IF (STREAMICE_hmask(i,j,bi,bj).eq.1.0) THEN
+            uflux = u_flux_bdry_SI(i,j,bi,bj)
+            BCMASKX(i,j,bi,bj) = 3.0
+            BCVALX(i,j,bi,bj) = uflux
+            utrans(i,j,bi,bj) = 1.0
+           ELSEIF (STREAMICE_hmask(i+1,j,bi,bj).eq.1.0) THEN
+            uflux = u_flux_bdry_SI(i,j,bi,bj)
+            BCMASKX(i,j,bi,bj) = 3.0
+            BCVALX(i,j,bi,bj) = uflux
+            utrans(i,j,bi,bj) = -1.0
+           ENDIF
           ELSEIF (.not.(
      &     STREAMICE_hmask(i,j,bi,bj).eq.1.0.OR.
      &     STREAMICE_hmask(i-1,j,bi,bj).eq.1.0)) THEN
@@ -102,9 +109,20 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
            vtrans(i,j,bi,bj) = .5 * (
      &      v_streamice(i,j,bi,bj)+v_streamice(i+1,j,bi,bj))
           ELSEIF (STREAMICE_vfacemask(i,j,bi,bj).eq.4.0) THEN
-           vflux = v_flux_bdry_SI(i,j,bi,bj)
-           BCMASKy(i,j,bi,bj) = 0.0
-           BCVALy(i,j,bi,bj) = vflux
+           IF (STREAMICE_hmask(i,j,bi,bj).eq.1.0) THEN
+            vflux = v_flux_bdry_SI(i,j,bi,bj)
+            BCMASKY(i,j,bi,bj) = 3.0
+            BCVALY(i,j,bi,bj) = vflux
+            vtrans(i,j,bi,bj) = 1.0
+           ELSEIF (STREAMICE_hmask(i,j+1,bi,bj).eq.1.0) THEN
+            vflux = v_flux_bdry_SI(i,j,bi,bj)
+            BCMASKY(i,j,bi,bj) = 3.0
+            BCVALY(i,j,bi,bj) = vflux
+            vtrans(i,j,bi,bj) = -1.0
+           ENDIF
+
+
+
            vtrans(i,j,bi,bj) = 1.0
           ELSEIF (.not.(
      &     STREAMICE_hmask(i,j,bi,bj).eq.1.0.OR.
