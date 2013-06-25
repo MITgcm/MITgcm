@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/adstreamice_cg_solve.F,v 1.1 2013/06/12 21:30:21 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/adstreamice_cg_solve.F,v 1.2 2013/06/25 20:15:15 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -149,8 +149,8 @@ C     LOCAL VARIABLES
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1,sNy
+         DO i=1,sNx
           DO colx=-1,1
            DO coly=-1,1
 
