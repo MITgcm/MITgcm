@@ -19,7 +19,7 @@
  writeBinaryPrec=64,
  hFacMin=.05,
  hFacMindz=50.,
- debugLevel=4,
+#debugLevel=4,
 # hFacMindr=50.,
 #ph(
  globalFiles=.FALSE.,
@@ -41,7 +41,8 @@
 # pChkptFreq=2592000.0,
 # chkptFreq=120000.0,
 # dumpFreq=2592000.0,
-#  monitorFreq=1.,
+  monitorFreq=63072000.,
+  monitorSelect=1,
  &
 # Gridding parameters
  &PARM04
