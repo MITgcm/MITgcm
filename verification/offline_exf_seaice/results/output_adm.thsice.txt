@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint64h
-(PID.TID 0000.0001) // Build user:        heimbach
-(PID.TID 0000.0001) // Build host:        Patrick-Heimbachs-MacBook-ProRetina-15.local
-(PID.TID 0000.0001) // Build date:        Fri May 31 11:29:41 EDT 2013
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint64i
+(PID.TID 0000.0001) // Build user:        jmc
+(PID.TID 0000.0001) // Build host:        baudelaire
+(PID.TID 0000.0001) // Build date:        Thu Jun 20 18:14:29 EDT 2013
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -159,7 +159,7 @@
 (PID.TID 0000.0001) > monitorFreq=432000.,
 (PID.TID 0000.0001) > monitorSelect=2,
 (PID.TID 0000.0001) >#dumpFreq = 86400.,
-(PID.TID 0000.0001) > nTimeSteps=120,
+(PID.TID 0000.0001) > nTimeSteps=60,
 (PID.TID 0000.0001) >#monitorFreq=1.,
 (PID.TID 0000.0001) >#dumpFreq = 1.,
 (PID.TID 0000.0001) > /
@@ -207,7 +207,7 @@
 (PID.TID 0000.0001) ># Packages
 (PID.TID 0000.0001) > &PACKAGES
 (PID.TID 0000.0001) >  useEXF    = .TRUE.,
-(PID.TID 0000.0001) >#  useSEAICE = .TRUE.,
+(PID.TID 0000.0001) >  useSEAICE = .FALSE.,
 (PID.TID 0000.0001) >  useThSIce = .TRUE.,
 (PID.TID 0000.0001) ># useDiagnostics=.TRUE.,
 (PID.TID 0000.0001) >  useGrdchk = .TRUE.,
@@ -639,7 +639,7 @@
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) modelend  = /* End time of the model integration [s] */
-(PID.TID 0000.0001)                 4.320000000000000E+05
+(PID.TID 0000.0001)                 2.160000000000000E+05
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) modelstep = /* Time interval for a model forward step [s] */
 (PID.TID 0000.0001)                 3.600000000000000E+03
@@ -660,10 +660,10 @@
 (PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) modelenddate   YYYYMMDD = /* Model end date YYYY-MM-DD */
-(PID.TID 0000.0001)                19790106
+(PID.TID 0000.0001)                19790103
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001)   modelenddate   HHMMSS = /* Model end date HH-MM-SS  */
-(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)                  120000
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) intyears = /* Number of calendar years affected by the integration */
 (PID.TID 0000.0001)                       1
@@ -672,16 +672,16 @@
 (PID.TID 0000.0001)                       1
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) intdays = /* Number of calendar days affected by the integration */
-(PID.TID 0000.0001)                       5
+(PID.TID 0000.0001)                       3
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) modeliter0 = /* Base timestep number  */
 (PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) modeliterend = /* Final timestep number  */
-(PID.TID 0000.0001)                     120
+(PID.TID 0000.0001)                      60
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) modelintsteps= /* Number of model timesteps  */
-(PID.TID 0000.0001)                     120
+(PID.TID 0000.0001)                      60
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
@@ -1553,10 +1553,10 @@
 (PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) nTimeSteps = /* Number of timesteps */
-(PID.TID 0000.0001)                     120
+(PID.TID 0000.0001)                      60
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) nEndIter =   /* Run ending timestep number */
-(PID.TID 0000.0001)                     120
+(PID.TID 0000.0001)                      60
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) baseTime =   /* Model base time ( s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
@@ -1565,7 +1565,7 @@
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) endTime  =   /* Integration ending time ( s ) */
-(PID.TID 0000.0001)                 4.320000000000000E+05
+(PID.TID 0000.0001)                 2.160000000000000E+05
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) pChkPtFreq = /* Permanent restart/pickup file interval ( s ) */
 (PID.TID 0000.0001)                 3.600000000000000E+06
@@ -2058,16 +2058,6 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR EXF statistics
 (PID.TID 0000.0001) // =======================================================
- ph-test 0: objf_thsice            1
- ph-test 0: objf_thsice            2
- ph-test 0: objf_thsice            3
- ph-test 0: objf_thsice            4
- ph-test 0: objf_thsice            5
- ph-test 0: objf_thsice            6
- ph-test 0: objf_thsice            7
- ph-test 0: objf_thsice            8
- ph-test 0: objf_thsice            9
- ph-test 0: objf_thsice           10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2110,16 +2100,6 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
- ph-test 0: objf_thsice           11
- ph-test 0: objf_thsice           12
- ph-test 0: objf_thsice           13
- ph-test 0: objf_thsice           14
- ph-test 0: objf_thsice           15
- ph-test 0: objf_thsice           16
- ph-test 0: objf_thsice           17
- ph-test 0: objf_thsice           18
- ph-test 0: objf_thsice           19
- ph-test 0: objf_thsice           20
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2162,16 +2142,6 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
- ph-test 0: objf_thsice           21
- ph-test 0: objf_thsice           22
- ph-test 0: objf_thsice           23
- ph-test 0: objf_thsice           24
- ph-test 0: objf_thsice           25
- ph-test 0: objf_thsice           26
- ph-test 0: objf_thsice           27
- ph-test 0: objf_thsice           28
- ph-test 0: objf_thsice           29
- ph-test 0: objf_thsice           30
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2214,16 +2184,6 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
- ph-test 0: objf_thsice           31
- ph-test 0: objf_thsice           32
- ph-test 0: objf_thsice           33
- ph-test 0: objf_thsice           34
- ph-test 0: objf_thsice           35
- ph-test 0: objf_thsice           36
- ph-test 0: objf_thsice           37
- ph-test 0: objf_thsice           38
- ph-test 0: objf_thsice           39
- ph-test 0: objf_thsice           40
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2266,16 +2226,6 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
- ph-test 0: objf_thsice           41
- ph-test 0: objf_thsice           42
- ph-test 0: objf_thsice           43
- ph-test 0: objf_thsice           44
- ph-test 0: objf_thsice           45
- ph-test 0: objf_thsice           46
- ph-test 0: objf_thsice           47
- ph-test 0: objf_thsice           48
- ph-test 0: objf_thsice           49
- ph-test 0: objf_thsice           50
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2318,16 +2268,6 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
- ph-test 0: objf_thsice           51
- ph-test 0: objf_thsice           52
- ph-test 0: objf_thsice           53
- ph-test 0: objf_thsice           54
- ph-test 0: objf_thsice           55
- ph-test 0: objf_thsice           56
- ph-test 0: objf_thsice           57
- ph-test 0: objf_thsice           58
- ph-test 0: objf_thsice           59
- ph-test 0: objf_thsice           60
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2370,376 +2310,10 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
- ph-test 0: objf_thsice           61
- ph-test 0: objf_thsice           62
- ph-test 0: objf_thsice           63
- ph-test 0: objf_thsice           64
- ph-test 0: objf_thsice           65
- ph-test 0: objf_thsice           66
- ph-test 0: objf_thsice           67
- ph-test 0: objf_thsice           68
- ph-test 0: objf_thsice           69
- ph-test 0: objf_thsice           70
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Begin MONITOR Therm.SeaIce statistics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON thSI_time_sec                =   2.5200000000000E+05
-(PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   7.2134220600874E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   3.6903593281150E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.5230627319724E+10
-(PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0302027087506E-01
-(PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0219174803075E-01
-(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0388813705846E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   2.5551814931287E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.6399692306769E-01
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_max_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_G              =  -2.3984127654552E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_S              =  -2.4022795406193E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_N              =  -2.3943623721236E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =  -4.8873854893890E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -4.9044376965211E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -2.1959500372165E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =  -2.1944917920374E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -2.1974648197804E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_S              =  -3.9802563419268E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -3.9874632325152E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_max_S              =  -4.1888201950080E-01
-(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -4.1888201950080E-01
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -1.8116049566133E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =  -1.8112197498396E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -1.8120050981756E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_min_S              =  -2.3998282303285E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -2.4012660680951E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_S              =  -1.2200724206161E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.2200724206161E+00
-(PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -4.3612103101051E+18
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
-(PID.TID 0000.0001) // =======================================================
- ph-test 0: objf_thsice           71
- ph-test 0: objf_thsice           72
- ph-test 0: objf_thsice           73
- ph-test 0: objf_thsice           74
- ph-test 0: objf_thsice           75
- ph-test 0: objf_thsice           76
- ph-test 0: objf_thsice           77
- ph-test 0: objf_thsice           78
- ph-test 0: objf_thsice           79
- ph-test 0: objf_thsice           80
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Begin MONITOR Therm.SeaIce statistics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON thSI_time_sec                =   2.8800000000000E+05
-(PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   7.1655497106346E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   3.6611522284945E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.5043974821401E+10
-(PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0338037245824E-01
-(PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0238083094562E-01
-(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0442462433180E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   2.6255939108778E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.7181991776732E-01
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_max_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_G              =  -2.4136398436859E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_S              =  -2.4187800920026E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_N              =  -2.4082696675927E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =  -4.9019762844861E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -4.9197168112726E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -2.2092214341639E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =  -2.2078320803170E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -2.2106584232234E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_S              =  -3.9867536732024E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -3.9938733009861E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_max_S              =  -4.0559006297975E-01
-(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -4.0559006297975E-01
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -1.8159994094933E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =  -1.8156424785855E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -1.8163685780896E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_min_S              =  -2.4020642274491E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -2.4034809173532E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_S              =  -1.2155369191678E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.2155369191678E+00
-(PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -4.3394794063065E+18
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
-(PID.TID 0000.0001) // =======================================================
- ph-test 0: objf_thsice           81
- ph-test 0: objf_thsice           82
- ph-test 0: objf_thsice           83
- ph-test 0: objf_thsice           84
- ph-test 0: objf_thsice           85
- ph-test 0: objf_thsice           86
- ph-test 0: objf_thsice           87
- ph-test 0: objf_thsice           88
- ph-test 0: objf_thsice           89
- ph-test 0: objf_thsice           90
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Begin MONITOR Therm.SeaIce statistics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON thSI_time_sec                =   3.2400000000000E+05
-(PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   7.1154895649571E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   3.6307000210828E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.4847895438743E+10
-(PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0373685509983E-01
-(PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0256242309826E-01
-(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0496046135759E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   2.6933652723265E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.7934000861171E-01
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_max_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_G              =  -2.4297622565491E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_S              =  -2.4363049498767E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_N              =  -2.4229456162604E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =  -4.9153630853129E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -4.9336618619501E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -2.2237301726397E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =  -2.2225042547487E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -2.2249924767298E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_S              =  -3.9924310239480E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -3.9993777232576E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_max_S              =  -3.9524572568825E-01
-(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -3.9524572568825E-01
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -1.8208132081438E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =  -1.8205152506665E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -1.8211200092314E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_min_S              =  -2.4040266886278E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -2.4053943135867E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_S              =  -1.2120147780336E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.2120147780336E+00
-(PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -4.3166572276038E+18
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
-(PID.TID 0000.0001) // =======================================================
- ph-test 0: objf_thsice           91
- ph-test 0: objf_thsice           92
- ph-test 0: objf_thsice           93
- ph-test 0: objf_thsice           94
- ph-test 0: objf_thsice           95
- ph-test 0: objf_thsice           96
- ph-test 0: objf_thsice           97
- ph-test 0: objf_thsice           98
- ph-test 0: objf_thsice           99
- ph-test 0: objf_thsice          100
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Begin MONITOR Therm.SeaIce statistics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON thSI_time_sec                =   3.6000000000000E+05
-(PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   7.0635169518289E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   3.5991769992938E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.4643399525351E+10
-(PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0409388326966E-01
-(PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0274160781775E-01
-(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0549879120881E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   2.7587093250844E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.8658263893614E-01
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_max_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_G              =  -2.4466782403560E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_S              =  -2.4547478357742E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_N              =  -2.4382945647870E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =  -4.9276988858900E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -4.9464510319442E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -2.2392182047491E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =  -2.2382548632483E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -2.2402056126255E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_S              =  -3.9973996799513E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -4.0041062105105E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_max_S              =  -3.8703712122805E-01
-(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -3.8703712122805E-01
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -1.8259574684626E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =  -1.8257509516356E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -1.8261691445312E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_min_S              =  -2.4057524327454E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -2.4070490425229E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_S              =  -1.2092243089663E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.2092243089663E+00
-(PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -4.2929040563452E+18
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
-(PID.TID 0000.0001) // =======================================================
- ph-test 0: objf_thsice          101
- ph-test 0: objf_thsice          102
- ph-test 0: objf_thsice          103
- ph-test 0: objf_thsice          104
- ph-test 0: objf_thsice          105
- ph-test 0: objf_thsice          106
- ph-test 0: objf_thsice          107
- ph-test 0: objf_thsice          108
- ph-test 0: objf_thsice          109
- ph-test 0: objf_thsice          110
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Begin MONITOR Therm.SeaIce statistics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON thSI_time_sec                =   3.9600000000000E+05
-(PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   7.0098324090368E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   3.5667116181074E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.4431207909294E+10
-(PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0445447214868E-01
-(PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0292199864249E-01
-(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0604195379423E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   2.8218131990578E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.9356996032897E-01
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_max_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_G              =  -2.4643708106001E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_S              =  -2.4740888940003E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_N              =  -2.4543038965781E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =  -4.9391109462265E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -4.9582311340716E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -2.2555248332964E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =  -2.2549270670979E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -2.2561346798348E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_S              =  -4.0017518390158E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -4.0081651904344E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_max_S              =  -3.8042676156473E-01
-(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -3.8042676156473E-01
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -1.8313769645636E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =  -1.8312958055656E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -1.8314597637151E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_min_S              =  -2.4072719797657E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -2.4084802333564E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_S              =  -1.2069798988228E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.2069798988228E+00
-(PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -4.2683347953800E+18
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
-(PID.TID 0000.0001) // =======================================================
- ph-test 0: objf_thsice          111
- ph-test 0: objf_thsice          112
- ph-test 0: objf_thsice          113
- ph-test 0: objf_thsice          114
- ph-test 0: objf_thsice          115
- ph-test 0: objf_thsice          116
- ph-test 0: objf_thsice          117
- ph-test 0: objf_thsice          118
- ph-test 0: objf_thsice          119
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON time_tsnumber                =                   120
-(PID.TID 0000.0001) %MON time_secondsf                =   4.3200000000000E+05
-(PID.TID 0000.0001) %MON dynstat_eta_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_eta_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_eta_sd               =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_eta_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_uvel_max             =   2.0000000000000E-01
-(PID.TID 0000.0001) %MON dynstat_uvel_min             =   2.0000000000000E-01
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   2.0000000000000E-01
-(PID.TID 0000.0001) %MON dynstat_uvel_sd              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_vvel_max             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_vvel_min             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_max             =  -0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_theta_max            =  -8.3885487491435E-01
-(PID.TID 0000.0001) %MON dynstat_theta_min            =  -1.6243050674091E+00
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =  -1.5578950639265E+00
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   1.0823572206981E-01
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   1.6807391067970E-03
-(PID.TID 0000.0001) %MON dynstat_salt_max             =   3.0000000000000E+01
-(PID.TID 0000.0001) %MON dynstat_salt_min             =   3.0000000000000E+01
-(PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.0000000000000E+01
-(PID.TID 0000.0001) %MON dynstat_salt_sd              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_salt_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON advcfl_uvel_max              =   1.4400000000000E-01
-(PID.TID 0000.0001) %MON advcfl_vvel_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON advcfl_wvel_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON pe_b_mean                    =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON ke_max                       =   2.0000000000000E-02
-(PID.TID 0000.0001) %MON ke_mean                      =   2.0000000000000E-02
-(PID.TID 0000.0001) %MON ke_vol                       =   8.2000000000000E+11
-(PID.TID 0000.0001) %MON vort_r_min                   =  -4.0000000000000E-05
-(PID.TID 0000.0001) %MON vort_r_max                   =   4.0000000000000E-05
-(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.7287156094397E-06
-(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_p_sd                    =   1.7777777777778E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR dynamic field statistics
-(PID.TID 0000.0001) // =======================================================
- ph-test 0: objf_thsice          120
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Begin MONITOR Therm.SeaIce statistics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON thSI_time_sec                =   4.3200000000000E+05
-(PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   6.9545680406519E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   3.5333918126161E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.4211762280358E+10
-(PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0482092936923E-01
-(PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0310629234160E-01
-(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0659180699471E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   2.8828418175721E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   3.0032139917357E-01
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_max_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_G              =  -2.4828139663194E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_S              =  -2.4943007981030E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_N              =  -2.4709503630814E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =  -4.9497061057866E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -4.9691243638326E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -2.2725561490236E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =  -2.2724303341333E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -2.2726838983680E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_S              =  -4.0055645997243E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -4.0116428674729E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_max_S              =  -3.7504315729913E-01
-(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -3.7504315729913E-01
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -1.8370395167032E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =  -1.8371188685418E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -1.8369589447985E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_min_S              =  -2.4086108704918E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -2.4097170244904E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_S              =  -1.2051537318328E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.2051537318328E+00
-(PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -4.2430284250729E+18
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %CHECKPOINT       120 ckptA
+(PID.TID 0000.0001) %CHECKPOINT        60 ckptA
  ph-1 in thsice_cost_final
  ph-2 in thsice_cost_final
- --> f_thsice     =  0.161558333600844D+11
+ --> f_thsice     =  0.160336971132022D+11
  ph-3 in thsice_cost_final
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
@@ -2753,258 +2327,18 @@
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.161558333600844D+11
- global fc =  0.161558333600844D+11
- ph-test 0: objf_thsice            1
- ph-test 0: objf_thsice            2
- ph-test 0: objf_thsice            3
- ph-test 0: objf_thsice            4
- ph-test 0: objf_thsice            5
- ph-test 0: objf_thsice            6
- ph-test 0: objf_thsice            7
- ph-test 0: objf_thsice            8
- ph-test 0: objf_thsice            9
- ph-test 0: objf_thsice           10
- ph-test 0: objf_thsice           11
- ph-test 0: objf_thsice           12
- ph-test 0: objf_thsice           13
- ph-test 0: objf_thsice           14
- ph-test 0: objf_thsice           15
- ph-test 0: objf_thsice           16
- ph-test 0: objf_thsice           17
- ph-test 0: objf_thsice           18
- ph-test 0: objf_thsice           19
- ph-test 0: objf_thsice           20
- ph-test 0: objf_thsice           21
- ph-test 0: objf_thsice           22
- ph-test 0: objf_thsice           23
- ph-test 0: objf_thsice           24
- ph-test 0: objf_thsice           25
- ph-test 0: objf_thsice           26
- ph-test 0: objf_thsice           27
- ph-test 0: objf_thsice           28
- ph-test 0: objf_thsice           29
- ph-test 0: objf_thsice           30
- ph-test 0: objf_thsice           31
- ph-test 0: objf_thsice           32
- ph-test 0: objf_thsice           33
- ph-test 0: objf_thsice           34
- ph-test 0: objf_thsice           35
- ph-test 0: objf_thsice           36
- ph-test 0: objf_thsice           37
- ph-test 0: objf_thsice           38
- ph-test 0: objf_thsice           39
- ph-test 0: objf_thsice           40
- ph-test 0: objf_thsice           41
- ph-test 0: objf_thsice           42
- ph-test 0: objf_thsice           43
- ph-test 0: objf_thsice           44
- ph-test 0: objf_thsice           45
- ph-test 0: objf_thsice           46
- ph-test 0: objf_thsice           47
- ph-test 0: objf_thsice           48
- ph-test 0: objf_thsice           49
- ph-test 0: objf_thsice           50
- ph-test 0: objf_thsice           51
- ph-test 0: objf_thsice           52
- ph-test 0: objf_thsice           53
- ph-test 0: objf_thsice           54
- ph-test 0: objf_thsice           55
- ph-test 0: objf_thsice           56
- ph-test 0: objf_thsice           57
- ph-test 0: objf_thsice           58
- ph-test 0: objf_thsice           59
- ph-test 0: objf_thsice           60
- ph-test 0: objf_thsice           61
- ph-test 0: objf_thsice           62
- ph-test 0: objf_thsice           63
- ph-test 0: objf_thsice           64
- ph-test 0: objf_thsice           65
- ph-test 0: objf_thsice           66
- ph-test 0: objf_thsice           67
- ph-test 0: objf_thsice           68
- ph-test 0: objf_thsice           69
- ph-test 0: objf_thsice           70
- ph-test 0: objf_thsice           71
- ph-test 0: objf_thsice           72
- ph-test 0: objf_thsice           73
- ph-test 0: objf_thsice           74
- ph-test 0: objf_thsice           75
- ph-test 0: objf_thsice           76
- ph-test 0: objf_thsice           77
- ph-test 0: objf_thsice           78
- ph-test 0: objf_thsice           79
- ph-test 0: objf_thsice           80
- ph-test 0: objf_thsice           81
- ph-test 0: objf_thsice           82
- ph-test 0: objf_thsice           83
- ph-test 0: objf_thsice           84
- ph-test 0: objf_thsice           85
- ph-test 0: objf_thsice           86
- ph-test 0: objf_thsice           87
- ph-test 0: objf_thsice           88
- ph-test 0: objf_thsice           89
- ph-test 0: objf_thsice           90
- ph-test 0: objf_thsice           91
- ph-test 0: objf_thsice           92
- ph-test 0: objf_thsice           93
- ph-test 0: objf_thsice           94
- ph-test 0: objf_thsice           95
- ph-test 0: objf_thsice           96
- ph-test 0: objf_thsice           97
- ph-test 0: objf_thsice           98
- ph-test 0: objf_thsice           99
- ph-test 0: objf_thsice          100
- ph-test 0: objf_thsice          101
- ph-test 0: objf_thsice          102
- ph-test 0: objf_thsice          103
- ph-test 0: objf_thsice          104
- ph-test 0: objf_thsice          105
- ph-test 0: objf_thsice          106
- ph-test 0: objf_thsice          107
- ph-test 0: objf_thsice          108
- ph-test 0: objf_thsice          109
- ph-test 0: objf_thsice          110
- ph-test 0: objf_thsice          111
- ph-test 0: objf_thsice          112
- ph-test 0: objf_thsice          113
- ph-test 0: objf_thsice          114
- ph-test 0: objf_thsice          115
- ph-test 0: objf_thsice          116
- ph-test 0: objf_thsice          117
- ph-test 0: objf_thsice          118
- ph-test 0: objf_thsice          119
- ph-test 0: objf_thsice          120
-(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
- ph-test 0: objf_thsice          116
- ph-test 0: objf_thsice          117
- ph-test 0: objf_thsice          118
- ph-test 0: objf_thsice          119
- ph-test 0: objf_thsice          120
+  local fc =  0.160336971132022D+11
+ global fc =  0.160336971132022D+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
- ph-test 0: objf_thsice          111
- ph-test 0: objf_thsice          112
- ph-test 0: objf_thsice          113
- ph-test 0: objf_thsice          114
- ph-test 0: objf_thsice          115
- ph-test 0: objf_thsice          106
- ph-test 0: objf_thsice          107
- ph-test 0: objf_thsice          108
- ph-test 0: objf_thsice          109
- ph-test 0: objf_thsice          110
- ph-test 0: objf_thsice          101
- ph-test 0: objf_thsice          102
- ph-test 0: objf_thsice          103
- ph-test 0: objf_thsice          104
- ph-test 0: objf_thsice          105
- ph-test 0: objf_thsice           96
- ph-test 0: objf_thsice           97
- ph-test 0: objf_thsice           98
- ph-test 0: objf_thsice           99
- ph-test 0: objf_thsice          100
- ph-test 0: objf_thsice           91
- ph-test 0: objf_thsice           92
- ph-test 0: objf_thsice           93
- ph-test 0: objf_thsice           94
- ph-test 0: objf_thsice           95
- ph-test 0: objf_thsice           86
- ph-test 0: objf_thsice           87
- ph-test 0: objf_thsice           88
- ph-test 0: objf_thsice           89
- ph-test 0: objf_thsice           90
- ph-test 0: objf_thsice           81
- ph-test 0: objf_thsice           82
- ph-test 0: objf_thsice           83
- ph-test 0: objf_thsice           84
- ph-test 0: objf_thsice           85
- ph-test 0: objf_thsice           76
- ph-test 0: objf_thsice           77
- ph-test 0: objf_thsice           78
- ph-test 0: objf_thsice           79
- ph-test 0: objf_thsice           80
- ph-test 0: objf_thsice           71
- ph-test 0: objf_thsice           72
- ph-test 0: objf_thsice           73
- ph-test 0: objf_thsice           74
- ph-test 0: objf_thsice           75
- ph-test 0: objf_thsice           66
- ph-test 0: objf_thsice           67
- ph-test 0: objf_thsice           68
- ph-test 0: objf_thsice           69
- ph-test 0: objf_thsice           70
- ph-test 0: objf_thsice           61
- ph-test 0: objf_thsice           62
- ph-test 0: objf_thsice           63
- ph-test 0: objf_thsice           64
- ph-test 0: objf_thsice           65
- ph-test 0: objf_thsice           56
- ph-test 0: objf_thsice           57
- ph-test 0: objf_thsice           58
- ph-test 0: objf_thsice           59
- ph-test 0: objf_thsice           60
- ph-test 0: objf_thsice           51
- ph-test 0: objf_thsice           52
- ph-test 0: objf_thsice           53
- ph-test 0: objf_thsice           54
- ph-test 0: objf_thsice           55
- ph-test 0: objf_thsice           46
- ph-test 0: objf_thsice           47
- ph-test 0: objf_thsice           48
- ph-test 0: objf_thsice           49
- ph-test 0: objf_thsice           50
- ph-test 0: objf_thsice           41
- ph-test 0: objf_thsice           42
- ph-test 0: objf_thsice           43
- ph-test 0: objf_thsice           44
- ph-test 0: objf_thsice           45
- ph-test 0: objf_thsice           36
- ph-test 0: objf_thsice           37
- ph-test 0: objf_thsice           38
- ph-test 0: objf_thsice           39
- ph-test 0: objf_thsice           40
- ph-test 0: objf_thsice           31
- ph-test 0: objf_thsice           32
- ph-test 0: objf_thsice           33
- ph-test 0: objf_thsice           34
- ph-test 0: objf_thsice           35
- ph-test 0: objf_thsice           26
- ph-test 0: objf_thsice           27
- ph-test 0: objf_thsice           28
- ph-test 0: objf_thsice           29
- ph-test 0: objf_thsice           30
- ph-test 0: objf_thsice           21
- ph-test 0: objf_thsice           22
- ph-test 0: objf_thsice           23
- ph-test 0: objf_thsice           24
- ph-test 0: objf_thsice           25
- ph-test 0: objf_thsice           16
- ph-test 0: objf_thsice           17
- ph-test 0: objf_thsice           18
- ph-test 0: objf_thsice           19
- ph-test 0: objf_thsice           20
- ph-test 0: objf_thsice           11
- ph-test 0: objf_thsice           12
- ph-test 0: objf_thsice           13
- ph-test 0: objf_thsice           14
- ph-test 0: objf_thsice           15
- ph-test 0: objf_thsice            6
- ph-test 0: objf_thsice            7
- ph-test 0: objf_thsice            8
- ph-test 0: objf_thsice            9
- ph-test 0: objf_thsice           10
- ph-test 0: objf_thsice            1
- ph-test 0: objf_thsice            2
- ph-test 0: objf_thsice            3
- ph-test 0: objf_thsice            4
- ph-test 0: objf_thsice            5
+(PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient-check starts (grdchk_main)
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) grdchk reference fc: fcref       =  1.61558333600844E+10
+(PID.TID 0000.0001) grdchk reference fc: fcref       =  1.60336971132022E+10
 grad-res -------------------------------
  grad-res  proc    #    i    j    k   bi   bj iobc       fc ref            fc + eps           fc - eps
  grad-res  proc    #    i    j    k   bi   bj iobc      adj grad            fd grad          1 - fd/adj
@@ -3020,130 +2354,10 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- ph-test 0: objf_thsice            1
- ph-test 0: objf_thsice            2
- ph-test 0: objf_thsice            3
- ph-test 0: objf_thsice            4
- ph-test 0: objf_thsice            5
- ph-test 0: objf_thsice            6
- ph-test 0: objf_thsice            7
- ph-test 0: objf_thsice            8
- ph-test 0: objf_thsice            9
- ph-test 0: objf_thsice           10
- ph-test 0: objf_thsice           11
- ph-test 0: objf_thsice           12
- ph-test 0: objf_thsice           13
- ph-test 0: objf_thsice           14
- ph-test 0: objf_thsice           15
- ph-test 0: objf_thsice           16
- ph-test 0: objf_thsice           17
- ph-test 0: objf_thsice           18
- ph-test 0: objf_thsice           19
- ph-test 0: objf_thsice           20
- ph-test 0: objf_thsice           21
- ph-test 0: objf_thsice           22
- ph-test 0: objf_thsice           23
- ph-test 0: objf_thsice           24
- ph-test 0: objf_thsice           25
- ph-test 0: objf_thsice           26
- ph-test 0: objf_thsice           27
- ph-test 0: objf_thsice           28
- ph-test 0: objf_thsice           29
- ph-test 0: objf_thsice           30
- ph-test 0: objf_thsice           31
- ph-test 0: objf_thsice           32
- ph-test 0: objf_thsice           33
- ph-test 0: objf_thsice           34
- ph-test 0: objf_thsice           35
- ph-test 0: objf_thsice           36
- ph-test 0: objf_thsice           37
- ph-test 0: objf_thsice           38
- ph-test 0: objf_thsice           39
- ph-test 0: objf_thsice           40
- ph-test 0: objf_thsice           41
- ph-test 0: objf_thsice           42
- ph-test 0: objf_thsice           43
- ph-test 0: objf_thsice           44
- ph-test 0: objf_thsice           45
- ph-test 0: objf_thsice           46
- ph-test 0: objf_thsice           47
- ph-test 0: objf_thsice           48
- ph-test 0: objf_thsice           49
- ph-test 0: objf_thsice           50
- ph-test 0: objf_thsice           51
- ph-test 0: objf_thsice           52
- ph-test 0: objf_thsice           53
- ph-test 0: objf_thsice           54
- ph-test 0: objf_thsice           55
- ph-test 0: objf_thsice           56
- ph-test 0: objf_thsice           57
- ph-test 0: objf_thsice           58
- ph-test 0: objf_thsice           59
- ph-test 0: objf_thsice           60
- ph-test 0: objf_thsice           61
- ph-test 0: objf_thsice           62
- ph-test 0: objf_thsice           63
- ph-test 0: objf_thsice           64
- ph-test 0: objf_thsice           65
- ph-test 0: objf_thsice           66
- ph-test 0: objf_thsice           67
- ph-test 0: objf_thsice           68
- ph-test 0: objf_thsice           69
- ph-test 0: objf_thsice           70
- ph-test 0: objf_thsice           71
- ph-test 0: objf_thsice           72
- ph-test 0: objf_thsice           73
- ph-test 0: objf_thsice           74
- ph-test 0: objf_thsice           75
- ph-test 0: objf_thsice           76
- ph-test 0: objf_thsice           77
- ph-test 0: objf_thsice           78
- ph-test 0: objf_thsice           79
- ph-test 0: objf_thsice           80
- ph-test 0: objf_thsice           81
- ph-test 0: objf_thsice           82
- ph-test 0: objf_thsice           83
- ph-test 0: objf_thsice           84
- ph-test 0: objf_thsice           85
- ph-test 0: objf_thsice           86
- ph-test 0: objf_thsice           87
- ph-test 0: objf_thsice           88
- ph-test 0: objf_thsice           89
- ph-test 0: objf_thsice           90
- ph-test 0: objf_thsice           91
- ph-test 0: objf_thsice           92
- ph-test 0: objf_thsice           93
- ph-test 0: objf_thsice           94
- ph-test 0: objf_thsice           95
- ph-test 0: objf_thsice           96
- ph-test 0: objf_thsice           97
- ph-test 0: objf_thsice           98
- ph-test 0: objf_thsice           99
- ph-test 0: objf_thsice          100
- ph-test 0: objf_thsice          101
- ph-test 0: objf_thsice          102
- ph-test 0: objf_thsice          103
- ph-test 0: objf_thsice          104
- ph-test 0: objf_thsice          105
- ph-test 0: objf_thsice          106
- ph-test 0: objf_thsice          107
- ph-test 0: objf_thsice          108
- ph-test 0: objf_thsice          109
- ph-test 0: objf_thsice          110
- ph-test 0: objf_thsice          111
- ph-test 0: objf_thsice          112
- ph-test 0: objf_thsice          113
- ph-test 0: objf_thsice          114
- ph-test 0: objf_thsice          115
- ph-test 0: objf_thsice          116
- ph-test 0: objf_thsice          117
- ph-test 0: objf_thsice          118
- ph-test 0: objf_thsice          119
- ph-test 0: objf_thsice          120
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  ph-1 in thsice_cost_final
  ph-2 in thsice_cost_final
- --> f_thsice     =  0.161558330290648D+11
+ --> f_thsice     =  0.160336968734131D+11
  ph-3 in thsice_cost_final
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
@@ -3157,9 +2371,9 @@ grad-res -------------------------------
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.161558330290648D+11
- global fc =  0.161558330290648D+11
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  1.61558330290648E+10
+  local fc =  0.160336968734131D+11
+ global fc =  0.160336968734131D+11
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  1.60336968734131E+10
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -3167,130 +2381,10 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- ph-test 0: objf_thsice            1
- ph-test 0: objf_thsice            2
- ph-test 0: objf_thsice            3
- ph-test 0: objf_thsice            4
- ph-test 0: objf_thsice            5
- ph-test 0: objf_thsice            6
- ph-test 0: objf_thsice            7
- ph-test 0: objf_thsice            8
- ph-test 0: objf_thsice            9
- ph-test 0: objf_thsice           10
- ph-test 0: objf_thsice           11
- ph-test 0: objf_thsice           12
- ph-test 0: objf_thsice           13
- ph-test 0: objf_thsice           14
- ph-test 0: objf_thsice           15
- ph-test 0: objf_thsice           16
- ph-test 0: objf_thsice           17
- ph-test 0: objf_thsice           18
- ph-test 0: objf_thsice           19
- ph-test 0: objf_thsice           20
- ph-test 0: objf_thsice           21
- ph-test 0: objf_thsice           22
- ph-test 0: objf_thsice           23
- ph-test 0: objf_thsice           24
- ph-test 0: objf_thsice           25
- ph-test 0: objf_thsice           26
- ph-test 0: objf_thsice           27
- ph-test 0: objf_thsice           28
- ph-test 0: objf_thsice           29
- ph-test 0: objf_thsice           30
- ph-test 0: objf_thsice           31
- ph-test 0: objf_thsice           32
- ph-test 0: objf_thsice           33
- ph-test 0: objf_thsice           34
- ph-test 0: objf_thsice           35
- ph-test 0: objf_thsice           36
- ph-test 0: objf_thsice           37
- ph-test 0: objf_thsice           38
- ph-test 0: objf_thsice           39
- ph-test 0: objf_thsice           40
- ph-test 0: objf_thsice           41
- ph-test 0: objf_thsice           42
- ph-test 0: objf_thsice           43
- ph-test 0: objf_thsice           44
- ph-test 0: objf_thsice           45
- ph-test 0: objf_thsice           46
- ph-test 0: objf_thsice           47
- ph-test 0: objf_thsice           48
- ph-test 0: objf_thsice           49
- ph-test 0: objf_thsice           50
- ph-test 0: objf_thsice           51
- ph-test 0: objf_thsice           52
- ph-test 0: objf_thsice           53
- ph-test 0: objf_thsice           54
- ph-test 0: objf_thsice           55
- ph-test 0: objf_thsice           56
- ph-test 0: objf_thsice           57
- ph-test 0: objf_thsice           58
- ph-test 0: objf_thsice           59
- ph-test 0: objf_thsice           60
- ph-test 0: objf_thsice           61
- ph-test 0: objf_thsice           62
- ph-test 0: objf_thsice           63
- ph-test 0: objf_thsice           64
- ph-test 0: objf_thsice           65
- ph-test 0: objf_thsice           66
- ph-test 0: objf_thsice           67
- ph-test 0: objf_thsice           68
- ph-test 0: objf_thsice           69
- ph-test 0: objf_thsice           70
- ph-test 0: objf_thsice           71
- ph-test 0: objf_thsice           72
- ph-test 0: objf_thsice           73
- ph-test 0: objf_thsice           74
- ph-test 0: objf_thsice           75
- ph-test 0: objf_thsice           76
- ph-test 0: objf_thsice           77
- ph-test 0: objf_thsice           78
- ph-test 0: objf_thsice           79
- ph-test 0: objf_thsice           80
- ph-test 0: objf_thsice           81
- ph-test 0: objf_thsice           82
- ph-test 0: objf_thsice           83
- ph-test 0: objf_thsice           84
- ph-test 0: objf_thsice           85
- ph-test 0: objf_thsice           86
- ph-test 0: objf_thsice           87
- ph-test 0: objf_thsice           88
- ph-test 0: objf_thsice           89
- ph-test 0: objf_thsice           90
- ph-test 0: objf_thsice           91
- ph-test 0: objf_thsice           92
- ph-test 0: objf_thsice           93
- ph-test 0: objf_thsice           94
- ph-test 0: objf_thsice           95
- ph-test 0: objf_thsice           96
- ph-test 0: objf_thsice           97
- ph-test 0: objf_thsice           98
- ph-test 0: objf_thsice           99
- ph-test 0: objf_thsice          100
- ph-test 0: objf_thsice          101
- ph-test 0: objf_thsice          102
- ph-test 0: objf_thsice          103
- ph-test 0: objf_thsice          104
- ph-test 0: objf_thsice          105
- ph-test 0: objf_thsice          106
- ph-test 0: objf_thsice          107
- ph-test 0: objf_thsice          108
- ph-test 0: objf_thsice          109
- ph-test 0: objf_thsice          110
- ph-test 0: objf_thsice          111
- ph-test 0: objf_thsice          112
- ph-test 0: objf_thsice          113
- ph-test 0: objf_thsice          114
- ph-test 0: objf_thsice          115
- ph-test 0: objf_thsice          116
- ph-test 0: objf_thsice          117
- ph-test 0: objf_thsice          118
- ph-test 0: objf_thsice          119
- ph-test 0: objf_thsice          120
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  ph-1 in thsice_cost_final
  ph-2 in thsice_cost_final
- --> f_thsice     =  0.161558336911744D+11
+ --> f_thsice     =  0.160336973530640D+11
  ph-3 in thsice_cost_final
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
@@ -3304,15 +2398,15 @@ grad-res -------------------------------
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.161558336911744D+11
- global fc =  0.161558336911744D+11
-(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.61558336911744E+10
+  local fc =  0.160336973530640D+11
+ global fc =  0.160336973530640D+11
+(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.60336973530640E+10
 grad-res -------------------------------
- grad-res     0    1    1    1    1    2    2    1   1.61558333601E+10  1.61558330291E+10  1.61558336912E+10
- grad-res     0    1    1    1    0    2    2    1  -2.82097968750E+04 -3.31054786682E+04 -1.73545446460E-01
-(PID.TID 0000.0001)  ADM  ref_cost_function      =  1.61558333600844E+10
-(PID.TID 0000.0001)  ADM  adjoint_gradient       = -2.82097968750000E+04
-(PID.TID 0000.0001)  ADM  finite-diff_grad       = -3.31054786682129E+04
+ grad-res     0    1    1    1    1    2    2    1   1.60336971132E+10  1.60336968734E+10  1.60336973531E+10
+ grad-res     0    1    1    1    0    2    2    1  -2.40843886719E+04 -2.39825435638E+04  4.22867731541E-03
+(PID.TID 0000.0001)  ADM  ref_cost_function      =  1.60336971132022E+10
+(PID.TID 0000.0001)  ADM  adjoint_gradient       = -2.40843886718750E+04
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -2.39825435638428E+04
 (PID.TID 0000.0001) ====== End of gradient-check number   1 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   2 (=ichknum) =======
  ph-test icomp, ncvarcomp, ichknum            2        3280           2
@@ -3326,130 +2420,10 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- ph-test 0: objf_thsice            1
- ph-test 0: objf_thsice            2
- ph-test 0: objf_thsice            3
- ph-test 0: objf_thsice            4
- ph-test 0: objf_thsice            5
- ph-test 0: objf_thsice            6
- ph-test 0: objf_thsice            7
- ph-test 0: objf_thsice            8
- ph-test 0: objf_thsice            9
- ph-test 0: objf_thsice           10
- ph-test 0: objf_thsice           11
- ph-test 0: objf_thsice           12
- ph-test 0: objf_thsice           13
- ph-test 0: objf_thsice           14
- ph-test 0: objf_thsice           15
- ph-test 0: objf_thsice           16
- ph-test 0: objf_thsice           17
- ph-test 0: objf_thsice           18
- ph-test 0: objf_thsice           19
- ph-test 0: objf_thsice           20
- ph-test 0: objf_thsice           21
- ph-test 0: objf_thsice           22
- ph-test 0: objf_thsice           23
- ph-test 0: objf_thsice           24
- ph-test 0: objf_thsice           25
- ph-test 0: objf_thsice           26
- ph-test 0: objf_thsice           27
- ph-test 0: objf_thsice           28
- ph-test 0: objf_thsice           29
- ph-test 0: objf_thsice           30
- ph-test 0: objf_thsice           31
- ph-test 0: objf_thsice           32
- ph-test 0: objf_thsice           33
- ph-test 0: objf_thsice           34
- ph-test 0: objf_thsice           35
- ph-test 0: objf_thsice           36
- ph-test 0: objf_thsice           37
- ph-test 0: objf_thsice           38
- ph-test 0: objf_thsice           39
- ph-test 0: objf_thsice           40
- ph-test 0: objf_thsice           41
- ph-test 0: objf_thsice           42
- ph-test 0: objf_thsice           43
- ph-test 0: objf_thsice           44
- ph-test 0: objf_thsice           45
- ph-test 0: objf_thsice           46
- ph-test 0: objf_thsice           47
- ph-test 0: objf_thsice           48
- ph-test 0: objf_thsice           49
- ph-test 0: objf_thsice           50
- ph-test 0: objf_thsice           51
- ph-test 0: objf_thsice           52
- ph-test 0: objf_thsice           53
- ph-test 0: objf_thsice           54
- ph-test 0: objf_thsice           55
- ph-test 0: objf_thsice           56
- ph-test 0: objf_thsice           57
- ph-test 0: objf_thsice           58
- ph-test 0: objf_thsice           59
- ph-test 0: objf_thsice           60
- ph-test 0: objf_thsice           61
- ph-test 0: objf_thsice           62
- ph-test 0: objf_thsice           63
- ph-test 0: objf_thsice           64
- ph-test 0: objf_thsice           65
- ph-test 0: objf_thsice           66
- ph-test 0: objf_thsice           67
- ph-test 0: objf_thsice           68
- ph-test 0: objf_thsice           69
- ph-test 0: objf_thsice           70
- ph-test 0: objf_thsice           71
- ph-test 0: objf_thsice           72
- ph-test 0: objf_thsice           73
- ph-test 0: objf_thsice           74
- ph-test 0: objf_thsice           75
- ph-test 0: objf_thsice           76
- ph-test 0: objf_thsice           77
- ph-test 0: objf_thsice           78
- ph-test 0: objf_thsice           79
- ph-test 0: objf_thsice           80
- ph-test 0: objf_thsice           81
- ph-test 0: objf_thsice           82
- ph-test 0: objf_thsice           83
- ph-test 0: objf_thsice           84
- ph-test 0: objf_thsice           85
- ph-test 0: objf_thsice           86
- ph-test 0: objf_thsice           87
- ph-test 0: objf_thsice           88
- ph-test 0: objf_thsice           89
- ph-test 0: objf_thsice           90
- ph-test 0: objf_thsice           91
- ph-test 0: objf_thsice           92
- ph-test 0: objf_thsice           93
- ph-test 0: objf_thsice           94
- ph-test 0: objf_thsice           95
- ph-test 0: objf_thsice           96
- ph-test 0: objf_thsice           97
- ph-test 0: objf_thsice           98
- ph-test 0: objf_thsice           99
- ph-test 0: objf_thsice          100
- ph-test 0: objf_thsice          101
- ph-test 0: objf_thsice          102
- ph-test 0: objf_thsice          103
- ph-test 0: objf_thsice          104
- ph-test 0: objf_thsice          105
- ph-test 0: objf_thsice          106
- ph-test 0: objf_thsice          107
- ph-test 0: objf_thsice          108
- ph-test 0: objf_thsice          109
- ph-test 0: objf_thsice          110
- ph-test 0: objf_thsice          111
- ph-test 0: objf_thsice          112
- ph-test 0: objf_thsice          113
- ph-test 0: objf_thsice          114
- ph-test 0: objf_thsice          115
- ph-test 0: objf_thsice          116
- ph-test 0: objf_thsice          117
- ph-test 0: objf_thsice          118
- ph-test 0: objf_thsice          119
- ph-test 0: objf_thsice          120
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  ph-1 in thsice_cost_final
  ph-2 in thsice_cost_final
- --> f_thsice     =  0.161558329046132D+11
+ --> f_thsice     =  0.160336967917381D+11
  ph-3 in thsice_cost_final
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
@@ -3463,9 +2437,9 @@ grad-res -------------------------------
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.161558329046132D+11
- global fc =  0.161558329046132D+11
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  1.61558329046132E+10
+  local fc =  0.160336967917381D+11
+ global fc =  0.160336967917381D+11
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  1.60336967917381E+10
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -3473,130 +2447,10 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- ph-test 0: objf_thsice            1
- ph-test 0: objf_thsice            2
- ph-test 0: objf_thsice            3
- ph-test 0: objf_thsice            4
- ph-test 0: objf_thsice            5
- ph-test 0: objf_thsice            6
- ph-test 0: objf_thsice            7
- ph-test 0: objf_thsice            8
- ph-test 0: objf_thsice            9
- ph-test 0: objf_thsice           10
- ph-test 0: objf_thsice           11
- ph-test 0: objf_thsice           12
- ph-test 0: objf_thsice           13
- ph-test 0: objf_thsice           14
- ph-test 0: objf_thsice           15
- ph-test 0: objf_thsice           16
- ph-test 0: objf_thsice           17
- ph-test 0: objf_thsice           18
- ph-test 0: objf_thsice           19
- ph-test 0: objf_thsice           20
- ph-test 0: objf_thsice           21
- ph-test 0: objf_thsice           22
- ph-test 0: objf_thsice           23
- ph-test 0: objf_thsice           24
- ph-test 0: objf_thsice           25
- ph-test 0: objf_thsice           26
- ph-test 0: objf_thsice           27
- ph-test 0: objf_thsice           28
- ph-test 0: objf_thsice           29
- ph-test 0: objf_thsice           30
- ph-test 0: objf_thsice           31
- ph-test 0: objf_thsice           32
- ph-test 0: objf_thsice           33
- ph-test 0: objf_thsice           34
- ph-test 0: objf_thsice           35
- ph-test 0: objf_thsice           36
- ph-test 0: objf_thsice           37
- ph-test 0: objf_thsice           38
- ph-test 0: objf_thsice           39
- ph-test 0: objf_thsice           40
- ph-test 0: objf_thsice           41
- ph-test 0: objf_thsice           42
- ph-test 0: objf_thsice           43
- ph-test 0: objf_thsice           44
- ph-test 0: objf_thsice           45
- ph-test 0: objf_thsice           46
- ph-test 0: objf_thsice           47
- ph-test 0: objf_thsice           48
- ph-test 0: objf_thsice           49
- ph-test 0: objf_thsice           50
- ph-test 0: objf_thsice           51
- ph-test 0: objf_thsice           52
- ph-test 0: objf_thsice           53
- ph-test 0: objf_thsice           54
- ph-test 0: objf_thsice           55
- ph-test 0: objf_thsice           56
- ph-test 0: objf_thsice           57
- ph-test 0: objf_thsice           58
- ph-test 0: objf_thsice           59
- ph-test 0: objf_thsice           60
- ph-test 0: objf_thsice           61
- ph-test 0: objf_thsice           62
- ph-test 0: objf_thsice           63
- ph-test 0: objf_thsice           64
- ph-test 0: objf_thsice           65
- ph-test 0: objf_thsice           66
- ph-test 0: objf_thsice           67
- ph-test 0: objf_thsice           68
- ph-test 0: objf_thsice           69
- ph-test 0: objf_thsice           70
- ph-test 0: objf_thsice           71
- ph-test 0: objf_thsice           72
- ph-test 0: objf_thsice           73
- ph-test 0: objf_thsice           74
- ph-test 0: objf_thsice           75
- ph-test 0: objf_thsice           76
- ph-test 0: objf_thsice           77
- ph-test 0: objf_thsice           78
- ph-test 0: objf_thsice           79
- ph-test 0: objf_thsice           80
- ph-test 0: objf_thsice           81
- ph-test 0: objf_thsice           82
- ph-test 0: objf_thsice           83
- ph-test 0: objf_thsice           84
- ph-test 0: objf_thsice           85
- ph-test 0: objf_thsice           86
- ph-test 0: objf_thsice           87
- ph-test 0: objf_thsice           88
- ph-test 0: objf_thsice           89
- ph-test 0: objf_thsice           90
- ph-test 0: objf_thsice           91
- ph-test 0: objf_thsice           92
- ph-test 0: objf_thsice           93
- ph-test 0: objf_thsice           94
- ph-test 0: objf_thsice           95
- ph-test 0: objf_thsice           96
- ph-test 0: objf_thsice           97
- ph-test 0: objf_thsice           98
- ph-test 0: objf_thsice           99
- ph-test 0: objf_thsice          100
- ph-test 0: objf_thsice          101
- ph-test 0: objf_thsice          102
- ph-test 0: objf_thsice          103
- ph-test 0: objf_thsice          104
- ph-test 0: objf_thsice          105
- ph-test 0: objf_thsice          106
- ph-test 0: objf_thsice          107
- ph-test 0: objf_thsice          108
- ph-test 0: objf_thsice          109
- ph-test 0: objf_thsice          110
- ph-test 0: objf_thsice          111
- ph-test 0: objf_thsice          112
- ph-test 0: objf_thsice          113
- ph-test 0: objf_thsice          114
- ph-test 0: objf_thsice          115
- ph-test 0: objf_thsice          116
- ph-test 0: objf_thsice          117
- ph-test 0: objf_thsice          118
- ph-test 0: objf_thsice          119
- ph-test 0: objf_thsice          120
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  ph-1 in thsice_cost_final
  ph-2 in thsice_cost_final
- --> f_thsice     =  0.161558338182299D+11
+ --> f_thsice     =  0.160336974361304D+11
  ph-3 in thsice_cost_final
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
@@ -3610,15 +2464,15 @@ grad-res -------------------------------
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.161558338182299D+11
- global fc =  0.161558338182299D+11
-(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.61558338182299E+10
+  local fc =  0.160336974361304D+11
+ global fc =  0.160336974361304D+11
+(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.60336974361304E+10
 grad-res -------------------------------
- grad-res     0    2    2    1    1    2    2    1   1.61558333601E+10  1.61558329046E+10  1.61558338182E+10
- grad-res     0    2    2    2    0    2    2    1  -4.77588984375E+04 -4.56808357239E+04  4.35115294031E-02
-(PID.TID 0000.0001)  ADM  ref_cost_function      =  1.61558333600844E+10
-(PID.TID 0000.0001)  ADM  adjoint_gradient       = -4.77588984375000E+04
-(PID.TID 0000.0001)  ADM  finite-diff_grad       = -4.56808357238770E+04
+ grad-res     0    2    2    1    1    2    2    1   1.60336971132E+10  1.60336967917E+10  1.60336974361E+10
+ grad-res     0    2    2    2    0    2    2    1  -3.60025742188E+04 -3.22196142197E+04  1.05074708717E-01
+(PID.TID 0000.0001)  ADM  ref_cost_function      =  1.60336971132022E+10
+(PID.TID 0000.0001)  ADM  adjoint_gradient       = -3.60025742187500E+04
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -3.22196142196655E+04
 (PID.TID 0000.0001) ====== End of gradient-check number   2 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   3 (=ichknum) =======
  ph-test icomp, ncvarcomp, ichknum            3        3280           3
@@ -3632,130 +2486,10 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- ph-test 0: objf_thsice            1
- ph-test 0: objf_thsice            2
- ph-test 0: objf_thsice            3
- ph-test 0: objf_thsice            4
- ph-test 0: objf_thsice            5
- ph-test 0: objf_thsice            6
- ph-test 0: objf_thsice            7
- ph-test 0: objf_thsice            8
- ph-test 0: objf_thsice            9
- ph-test 0: objf_thsice           10
- ph-test 0: objf_thsice           11
- ph-test 0: objf_thsice           12
- ph-test 0: objf_thsice           13
- ph-test 0: objf_thsice           14
- ph-test 0: objf_thsice           15
- ph-test 0: objf_thsice           16
- ph-test 0: objf_thsice           17
- ph-test 0: objf_thsice           18
- ph-test 0: objf_thsice           19
- ph-test 0: objf_thsice           20
- ph-test 0: objf_thsice           21
- ph-test 0: objf_thsice           22
- ph-test 0: objf_thsice           23
- ph-test 0: objf_thsice           24
- ph-test 0: objf_thsice           25
- ph-test 0: objf_thsice           26
- ph-test 0: objf_thsice           27
- ph-test 0: objf_thsice           28
- ph-test 0: objf_thsice           29
- ph-test 0: objf_thsice           30
- ph-test 0: objf_thsice           31
- ph-test 0: objf_thsice           32
- ph-test 0: objf_thsice           33
- ph-test 0: objf_thsice           34
- ph-test 0: objf_thsice           35
- ph-test 0: objf_thsice           36
- ph-test 0: objf_thsice           37
- ph-test 0: objf_thsice           38
- ph-test 0: objf_thsice           39
- ph-test 0: objf_thsice           40
- ph-test 0: objf_thsice           41
- ph-test 0: objf_thsice           42
- ph-test 0: objf_thsice           43
- ph-test 0: objf_thsice           44
- ph-test 0: objf_thsice           45
- ph-test 0: objf_thsice           46
- ph-test 0: objf_thsice           47
- ph-test 0: objf_thsice           48
- ph-test 0: objf_thsice           49
- ph-test 0: objf_thsice           50
- ph-test 0: objf_thsice           51
- ph-test 0: objf_thsice           52
- ph-test 0: objf_thsice           53
- ph-test 0: objf_thsice           54
- ph-test 0: objf_thsice           55
- ph-test 0: objf_thsice           56
- ph-test 0: objf_thsice           57
- ph-test 0: objf_thsice           58
- ph-test 0: objf_thsice           59
- ph-test 0: objf_thsice           60
- ph-test 0: objf_thsice           61
- ph-test 0: objf_thsice           62
- ph-test 0: objf_thsice           63
- ph-test 0: objf_thsice           64
- ph-test 0: objf_thsice           65
- ph-test 0: objf_thsice           66
- ph-test 0: objf_thsice           67
- ph-test 0: objf_thsice           68
- ph-test 0: objf_thsice           69
- ph-test 0: objf_thsice           70
- ph-test 0: objf_thsice           71
- ph-test 0: objf_thsice           72
- ph-test 0: objf_thsice           73
- ph-test 0: objf_thsice           74
- ph-test 0: objf_thsice           75
- ph-test 0: objf_thsice           76
- ph-test 0: objf_thsice           77
- ph-test 0: objf_thsice           78
- ph-test 0: objf_thsice           79
- ph-test 0: objf_thsice           80
- ph-test 0: objf_thsice           81
- ph-test 0: objf_thsice           82
- ph-test 0: objf_thsice           83
- ph-test 0: objf_thsice           84
- ph-test 0: objf_thsice           85
- ph-test 0: objf_thsice           86
- ph-test 0: objf_thsice           87
- ph-test 0: objf_thsice           88
- ph-test 0: objf_thsice           89
- ph-test 0: objf_thsice           90
- ph-test 0: objf_thsice           91
- ph-test 0: objf_thsice           92
- ph-test 0: objf_thsice           93
- ph-test 0: objf_thsice           94
- ph-test 0: objf_thsice           95
- ph-test 0: objf_thsice           96
- ph-test 0: objf_thsice           97
- ph-test 0: objf_thsice           98
- ph-test 0: objf_thsice           99
- ph-test 0: objf_thsice          100
- ph-test 0: objf_thsice          101
- ph-test 0: objf_thsice          102
- ph-test 0: objf_thsice          103
- ph-test 0: objf_thsice          104
- ph-test 0: objf_thsice          105
- ph-test 0: objf_thsice          106
- ph-test 0: objf_thsice          107
- ph-test 0: objf_thsice          108
- ph-test 0: objf_thsice          109
- ph-test 0: objf_thsice          110
- ph-test 0: objf_thsice          111
- ph-test 0: objf_thsice          112
- ph-test 0: objf_thsice          113
- ph-test 0: objf_thsice          114
- ph-test 0: objf_thsice          115
- ph-test 0: objf_thsice          116
- ph-test 0: objf_thsice          117
- ph-test 0: objf_thsice          118
- ph-test 0: objf_thsice          119
- ph-test 0: objf_thsice          120
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  ph-1 in thsice_cost_final
  ph-2 in thsice_cost_final
- --> f_thsice     =  0.161558327377608D+11
+ --> f_thsice     =  0.160336967420046D+11
  ph-3 in thsice_cost_final
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
@@ -3769,9 +2503,9 @@ grad-res -------------------------------
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.161558327377608D+11
- global fc =  0.161558327377608D+11
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  1.61558327377608E+10
+  local fc =  0.160336967420046D+11
+ global fc =  0.160336967420046D+11
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  1.60336967420046E+10
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -3779,130 +2513,10 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- ph-test 0: objf_thsice            1
- ph-test 0: objf_thsice            2
- ph-test 0: objf_thsice            3
- ph-test 0: objf_thsice            4
- ph-test 0: objf_thsice            5
- ph-test 0: objf_thsice            6
- ph-test 0: objf_thsice            7
- ph-test 0: objf_thsice            8
- ph-test 0: objf_thsice            9
- ph-test 0: objf_thsice           10
- ph-test 0: objf_thsice           11
- ph-test 0: objf_thsice           12
- ph-test 0: objf_thsice           13
- ph-test 0: objf_thsice           14
- ph-test 0: objf_thsice           15
- ph-test 0: objf_thsice           16
- ph-test 0: objf_thsice           17
- ph-test 0: objf_thsice           18
- ph-test 0: objf_thsice           19
- ph-test 0: objf_thsice           20
- ph-test 0: objf_thsice           21
- ph-test 0: objf_thsice           22
- ph-test 0: objf_thsice           23
- ph-test 0: objf_thsice           24
- ph-test 0: objf_thsice           25
- ph-test 0: objf_thsice           26
- ph-test 0: objf_thsice           27
- ph-test 0: objf_thsice           28
- ph-test 0: objf_thsice           29
- ph-test 0: objf_thsice           30
- ph-test 0: objf_thsice           31
- ph-test 0: objf_thsice           32
- ph-test 0: objf_thsice           33
- ph-test 0: objf_thsice           34
- ph-test 0: objf_thsice           35
- ph-test 0: objf_thsice           36
- ph-test 0: objf_thsice           37
- ph-test 0: objf_thsice           38
- ph-test 0: objf_thsice           39
- ph-test 0: objf_thsice           40
- ph-test 0: objf_thsice           41
- ph-test 0: objf_thsice           42
- ph-test 0: objf_thsice           43
- ph-test 0: objf_thsice           44
- ph-test 0: objf_thsice           45
- ph-test 0: objf_thsice           46
- ph-test 0: objf_thsice           47
- ph-test 0: objf_thsice           48
- ph-test 0: objf_thsice           49
- ph-test 0: objf_thsice           50
- ph-test 0: objf_thsice           51
- ph-test 0: objf_thsice           52
- ph-test 0: objf_thsice           53
- ph-test 0: objf_thsice           54
- ph-test 0: objf_thsice           55
- ph-test 0: objf_thsice           56
- ph-test 0: objf_thsice           57
- ph-test 0: objf_thsice           58
- ph-test 0: objf_thsice           59
- ph-test 0: objf_thsice           60
- ph-test 0: objf_thsice           61
- ph-test 0: objf_thsice           62
- ph-test 0: objf_thsice           63
- ph-test 0: objf_thsice           64
- ph-test 0: objf_thsice           65
- ph-test 0: objf_thsice           66
- ph-test 0: objf_thsice           67
- ph-test 0: objf_thsice           68
- ph-test 0: objf_thsice           69
- ph-test 0: objf_thsice           70
- ph-test 0: objf_thsice           71
- ph-test 0: objf_thsice           72
- ph-test 0: objf_thsice           73
- ph-test 0: objf_thsice           74
- ph-test 0: objf_thsice           75
- ph-test 0: objf_thsice           76
- ph-test 0: objf_thsice           77
- ph-test 0: objf_thsice           78
- ph-test 0: objf_thsice           79
- ph-test 0: objf_thsice           80
- ph-test 0: objf_thsice           81
- ph-test 0: objf_thsice           82
- ph-test 0: objf_thsice           83
- ph-test 0: objf_thsice           84
- ph-test 0: objf_thsice           85
- ph-test 0: objf_thsice           86
- ph-test 0: objf_thsice           87
- ph-test 0: objf_thsice           88
- ph-test 0: objf_thsice           89
- ph-test 0: objf_thsice           90
- ph-test 0: objf_thsice           91
- ph-test 0: objf_thsice           92
- ph-test 0: objf_thsice           93
- ph-test 0: objf_thsice           94
- ph-test 0: objf_thsice           95
- ph-test 0: objf_thsice           96
- ph-test 0: objf_thsice           97
- ph-test 0: objf_thsice           98
- ph-test 0: objf_thsice           99
- ph-test 0: objf_thsice          100
- ph-test 0: objf_thsice          101
- ph-test 0: objf_thsice          102
- ph-test 0: objf_thsice          103
- ph-test 0: objf_thsice          104
- ph-test 0: objf_thsice          105
- ph-test 0: objf_thsice          106
- ph-test 0: objf_thsice          107
- ph-test 0: objf_thsice          108
- ph-test 0: objf_thsice          109
- ph-test 0: objf_thsice          110
- ph-test 0: objf_thsice          111
- ph-test 0: objf_thsice          112
- ph-test 0: objf_thsice          113
- ph-test 0: objf_thsice          114
- ph-test 0: objf_thsice          115
- ph-test 0: objf_thsice          116
- ph-test 0: objf_thsice          117
- ph-test 0: objf_thsice          118
- ph-test 0: objf_thsice          119
- ph-test 0: objf_thsice          120
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  ph-1 in thsice_cost_final
  ph-2 in thsice_cost_final
- --> f_thsice     =  0.161558339865927D+11
+ --> f_thsice     =  0.160336974844416D+11
  ph-3 in thsice_cost_final
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
@@ -3916,15 +2530,15 @@ grad-res -------------------------------
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.161558339865927D+11
- global fc =  0.161558339865927D+11
-(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.61558339865927E+10
+  local fc =  0.160336974844416D+11
+ global fc =  0.160336974844416D+11
+(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.60336974844416E+10
 grad-res -------------------------------
- grad-res     0    3    3    1    1    2    2    1   1.61558333601E+10  1.61558327378E+10  1.61558339866E+10
- grad-res     0    3    3    3    0    2    2    1  -8.76952656250E+04 -6.24415958405E+04  2.87970731425E-01
-(PID.TID 0000.0001)  ADM  ref_cost_function      =  1.61558333600844E+10
-(PID.TID 0000.0001)  ADM  adjoint_gradient       = -8.76952656250000E+04
-(PID.TID 0000.0001)  ADM  finite-diff_grad       = -6.24415958404541E+04
+ grad-res     0    3    3    1    1    2    2    1   1.60336971132E+10  1.60336967420E+10  1.60336974844E+10
+ grad-res     0    3    3    3    0    2    2    1  -4.59224023438E+04 -3.71218492508E+04  1.91639649578E-01
+(PID.TID 0000.0001)  ADM  ref_cost_function      =  1.60336971132022E+10
+(PID.TID 0000.0001)  ADM  adjoint_gradient       = -4.59224023437500E+04
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -3.71218492507935E+04
 (PID.TID 0000.0001) ====== End of gradient-check number   3 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   4 (=ichknum) =======
  ph-test icomp, ncvarcomp, ichknum            4        3280           4
@@ -3938,130 +2552,10 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- ph-test 0: objf_thsice            1
- ph-test 0: objf_thsice            2
- ph-test 0: objf_thsice            3
- ph-test 0: objf_thsice            4
- ph-test 0: objf_thsice            5
- ph-test 0: objf_thsice            6
- ph-test 0: objf_thsice            7
- ph-test 0: objf_thsice            8
- ph-test 0: objf_thsice            9
- ph-test 0: objf_thsice           10
- ph-test 0: objf_thsice           11
- ph-test 0: objf_thsice           12
- ph-test 0: objf_thsice           13
- ph-test 0: objf_thsice           14
- ph-test 0: objf_thsice           15
- ph-test 0: objf_thsice           16
- ph-test 0: objf_thsice           17
- ph-test 0: objf_thsice           18
- ph-test 0: objf_thsice           19
- ph-test 0: objf_thsice           20
- ph-test 0: objf_thsice           21
- ph-test 0: objf_thsice           22
- ph-test 0: objf_thsice           23
- ph-test 0: objf_thsice           24
- ph-test 0: objf_thsice           25
- ph-test 0: objf_thsice           26
- ph-test 0: objf_thsice           27
- ph-test 0: objf_thsice           28
- ph-test 0: objf_thsice           29
- ph-test 0: objf_thsice           30
- ph-test 0: objf_thsice           31
- ph-test 0: objf_thsice           32
- ph-test 0: objf_thsice           33
- ph-test 0: objf_thsice           34
- ph-test 0: objf_thsice           35
- ph-test 0: objf_thsice           36
- ph-test 0: objf_thsice           37
- ph-test 0: objf_thsice           38
- ph-test 0: objf_thsice           39
- ph-test 0: objf_thsice           40
- ph-test 0: objf_thsice           41
- ph-test 0: objf_thsice           42
- ph-test 0: objf_thsice           43
- ph-test 0: objf_thsice           44
- ph-test 0: objf_thsice           45
- ph-test 0: objf_thsice           46
- ph-test 0: objf_thsice           47
- ph-test 0: objf_thsice           48
- ph-test 0: objf_thsice           49
- ph-test 0: objf_thsice           50
- ph-test 0: objf_thsice           51
- ph-test 0: objf_thsice           52
- ph-test 0: objf_thsice           53
- ph-test 0: objf_thsice           54
- ph-test 0: objf_thsice           55
- ph-test 0: objf_thsice           56
- ph-test 0: objf_thsice           57
- ph-test 0: objf_thsice           58
- ph-test 0: objf_thsice           59
- ph-test 0: objf_thsice           60
- ph-test 0: objf_thsice           61
- ph-test 0: objf_thsice           62
- ph-test 0: objf_thsice           63
- ph-test 0: objf_thsice           64
- ph-test 0: objf_thsice           65
- ph-test 0: objf_thsice           66
- ph-test 0: objf_thsice           67
- ph-test 0: objf_thsice           68
- ph-test 0: objf_thsice           69
- ph-test 0: objf_thsice           70
- ph-test 0: objf_thsice           71
- ph-test 0: objf_thsice           72
- ph-test 0: objf_thsice           73
- ph-test 0: objf_thsice           74
- ph-test 0: objf_thsice           75
- ph-test 0: objf_thsice           76
- ph-test 0: objf_thsice           77
- ph-test 0: objf_thsice           78
- ph-test 0: objf_thsice           79
- ph-test 0: objf_thsice           80
- ph-test 0: objf_thsice           81
- ph-test 0: objf_thsice           82
- ph-test 0: objf_thsice           83
- ph-test 0: objf_thsice           84
- ph-test 0: objf_thsice           85
- ph-test 0: objf_thsice           86
- ph-test 0: objf_thsice           87
- ph-test 0: objf_thsice           88
- ph-test 0: objf_thsice           89
- ph-test 0: objf_thsice           90
- ph-test 0: objf_thsice           91
- ph-test 0: objf_thsice           92
- ph-test 0: objf_thsice           93
- ph-test 0: objf_thsice           94
- ph-test 0: objf_thsice           95
- ph-test 0: objf_thsice           96
- ph-test 0: objf_thsice           97
- ph-test 0: objf_thsice           98
- ph-test 0: objf_thsice           99
- ph-test 0: objf_thsice          100
- ph-test 0: objf_thsice          101
- ph-test 0: objf_thsice          102
- ph-test 0: objf_thsice          103
- ph-test 0: objf_thsice          104
- ph-test 0: objf_thsice          105
- ph-test 0: objf_thsice          106
- ph-test 0: objf_thsice          107
- ph-test 0: objf_thsice          108
- ph-test 0: objf_thsice          109
- ph-test 0: objf_thsice          110
- ph-test 0: objf_thsice          111
- ph-test 0: objf_thsice          112
- ph-test 0: objf_thsice          113
- ph-test 0: objf_thsice          114
- ph-test 0: objf_thsice          115
- ph-test 0: objf_thsice          116
- ph-test 0: objf_thsice          117
- ph-test 0: objf_thsice          118
- ph-test 0: objf_thsice          119
- ph-test 0: objf_thsice          120
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  ph-1 in thsice_cost_final
  ph-2 in thsice_cost_final
- --> f_thsice     =  0.161558325743652D+11
+ --> f_thsice     =  0.160336967400952D+11
  ph-3 in thsice_cost_final
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
@@ -4075,9 +2569,9 @@ grad-res -------------------------------
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.161558325743652D+11
- global fc =  0.161558325743652D+11
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  1.61558325743652E+10
+  local fc =  0.160336967400952D+11
+ global fc =  0.160336967400952D+11
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  1.60336967400952E+10
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -4085,130 +2579,10 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
- ph-test 0: objf_thsice            1
- ph-test 0: objf_thsice            2
- ph-test 0: objf_thsice            3
- ph-test 0: objf_thsice            4
- ph-test 0: objf_thsice            5
- ph-test 0: objf_thsice            6
- ph-test 0: objf_thsice            7
- ph-test 0: objf_thsice            8
- ph-test 0: objf_thsice            9
- ph-test 0: objf_thsice           10
- ph-test 0: objf_thsice           11
- ph-test 0: objf_thsice           12
- ph-test 0: objf_thsice           13
- ph-test 0: objf_thsice           14
- ph-test 0: objf_thsice           15
- ph-test 0: objf_thsice           16
- ph-test 0: objf_thsice           17
- ph-test 0: objf_thsice           18
- ph-test 0: objf_thsice           19
- ph-test 0: objf_thsice           20
- ph-test 0: objf_thsice           21
- ph-test 0: objf_thsice           22
- ph-test 0: objf_thsice           23
- ph-test 0: objf_thsice           24
- ph-test 0: objf_thsice           25
- ph-test 0: objf_thsice           26
- ph-test 0: objf_thsice           27
- ph-test 0: objf_thsice           28
- ph-test 0: objf_thsice           29
- ph-test 0: objf_thsice           30
- ph-test 0: objf_thsice           31
- ph-test 0: objf_thsice           32
- ph-test 0: objf_thsice           33
- ph-test 0: objf_thsice           34
- ph-test 0: objf_thsice           35
- ph-test 0: objf_thsice           36
- ph-test 0: objf_thsice           37
- ph-test 0: objf_thsice           38
- ph-test 0: objf_thsice           39
- ph-test 0: objf_thsice           40
- ph-test 0: objf_thsice           41
- ph-test 0: objf_thsice           42
- ph-test 0: objf_thsice           43
- ph-test 0: objf_thsice           44
- ph-test 0: objf_thsice           45
- ph-test 0: objf_thsice           46
- ph-test 0: objf_thsice           47
- ph-test 0: objf_thsice           48
- ph-test 0: objf_thsice           49
- ph-test 0: objf_thsice           50
- ph-test 0: objf_thsice           51
- ph-test 0: objf_thsice           52
- ph-test 0: objf_thsice           53
- ph-test 0: objf_thsice           54
- ph-test 0: objf_thsice           55
- ph-test 0: objf_thsice           56
- ph-test 0: objf_thsice           57
- ph-test 0: objf_thsice           58
- ph-test 0: objf_thsice           59
- ph-test 0: objf_thsice           60
- ph-test 0: objf_thsice           61
- ph-test 0: objf_thsice           62
- ph-test 0: objf_thsice           63
- ph-test 0: objf_thsice           64
- ph-test 0: objf_thsice           65
- ph-test 0: objf_thsice           66
- ph-test 0: objf_thsice           67
- ph-test 0: objf_thsice           68
- ph-test 0: objf_thsice           69
- ph-test 0: objf_thsice           70
- ph-test 0: objf_thsice           71
- ph-test 0: objf_thsice           72
- ph-test 0: objf_thsice           73
- ph-test 0: objf_thsice           74
- ph-test 0: objf_thsice           75
- ph-test 0: objf_thsice           76
- ph-test 0: objf_thsice           77
- ph-test 0: objf_thsice           78
- ph-test 0: objf_thsice           79
- ph-test 0: objf_thsice           80
- ph-test 0: objf_thsice           81
- ph-test 0: objf_thsice           82
- ph-test 0: objf_thsice           83
- ph-test 0: objf_thsice           84
- ph-test 0: objf_thsice           85
- ph-test 0: objf_thsice           86
- ph-test 0: objf_thsice           87
- ph-test 0: objf_thsice           88
- ph-test 0: objf_thsice           89
- ph-test 0: objf_thsice           90
- ph-test 0: objf_thsice           91
- ph-test 0: objf_thsice           92
- ph-test 0: objf_thsice           93
- ph-test 0: objf_thsice           94
- ph-test 0: objf_thsice           95
- ph-test 0: objf_thsice           96
- ph-test 0: objf_thsice           97
- ph-test 0: objf_thsice           98
- ph-test 0: objf_thsice           99
- ph-test 0: objf_thsice          100
- ph-test 0: objf_thsice          101
- ph-test 0: objf_thsice          102
- ph-test 0: objf_thsice          103
- ph-test 0: objf_thsice          104
- ph-test 0: objf_thsice          105
- ph-test 0: objf_thsice          106
- ph-test 0: objf_thsice          107
- ph-test 0: objf_thsice          108
- ph-test 0: objf_thsice          109
- ph-test 0: objf_thsice          110
- ph-test 0: objf_thsice          111
- ph-test 0: objf_thsice          112
- ph-test 0: objf_thsice          113
- ph-test 0: objf_thsice          114
- ph-test 0: objf_thsice          115
- ph-test 0: objf_thsice          116
- ph-test 0: objf_thsice          117
- ph-test 0: objf_thsice          118
- ph-test 0: objf_thsice          119
- ph-test 0: objf_thsice          120
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  ph-1 in thsice_cost_final
  ph-2 in thsice_cost_final
- --> f_thsice     =  0.161558341457695D+11
+ --> f_thsice     =  0.160336974863433D+11
  ph-3 in thsice_cost_final
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
@@ -4222,15 +2596,15 @@ grad-res -------------------------------
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.161558341457695D+11
- global fc =  0.161558341457695D+11
-(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.61558341457695E+10
+  local fc =  0.160336974863433D+11
+ global fc =  0.160336974863433D+11
+(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  1.60336974863433E+10
 grad-res -------------------------------
- grad-res     0    4    4    1    1    2    2    1   1.61558333601E+10  1.61558325744E+10  1.61558341458E+10
- grad-res     0    4    4    4    0    2    2    1  -1.17404992188E+05 -7.85702168465E+04  3.30776184364E-01
-(PID.TID 0000.0001)  ADM  ref_cost_function      =  1.61558333600844E+10
-(PID.TID 0000.0001)  ADM  adjoint_gradient       = -1.17404992187500E+05
-(PID.TID 0000.0001)  ADM  finite-diff_grad       = -7.85702168464661E+04
+ grad-res     0    4    4    1    1    2    2    1   1.60336971132E+10  1.60336967401E+10  1.60336974863E+10
+ grad-res     0    4    4    4    0    2    2    1  -3.68466367188E+04 -3.73124051094E+04 -1.26407301217E-02
+(PID.TID 0000.0001)  ADM  ref_cost_function      =  1.60336971132022E+10
+(PID.TID 0000.0001)  ADM  adjoint_gradient       = -3.68466367187500E+04
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -3.73124051094055E+04
 (PID.TID 0000.0001) ====== End of gradient-check number   4 (ierr=  0) =======
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
@@ -4244,175 +2618,175 @@ grad-res -------------------------------
 (PID.TID 0000.0001) grdchk output h.g:  Id     FC1-FC2/(2*EPS)      ADJ GRAD(FC)         1-FDGRD/ADGRD
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   1     1     1     1    2    2   0.000000000E+00 -1.000000000E-02
-(PID.TID 0000.0001) grdchk output (c):   1  1.6155833360084E+10  1.6155833029065E+10  1.6155833691174E+10
-(PID.TID 0000.0001) grdchk output (g):   1    -3.3105478668213E+04 -2.8209796875000E+04 -1.7354544645983E-01
+(PID.TID 0000.0001) grdchk output (c):   1  1.6033697113202E+10  1.6033696873413E+10  1.6033697353064E+10
+(PID.TID 0000.0001) grdchk output (g):   1    -2.3982543563843E+04 -2.4084388671875E+04  4.2286773154080E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   2     2     1     1    2    2   0.000000000E+00 -1.000000000E-02
-(PID.TID 0000.0001) grdchk output (c):   2  1.6155833360084E+10  1.6155832904613E+10  1.6155833818230E+10
-(PID.TID 0000.0001) grdchk output (g):   2    -4.5680835723877E+04 -4.7758898437500E+04  4.3511529403102E-02
+(PID.TID 0000.0001) grdchk output (c):   2  1.6033697113202E+10  1.6033696791738E+10  1.6033697436130E+10
+(PID.TID 0000.0001) grdchk output (g):   2    -3.2219614219666E+04 -3.6002574218750E+04  1.0507470871664E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   3     3     1     1    2    2   0.000000000E+00 -1.000000000E-02
-(PID.TID 0000.0001) grdchk output (c):   3  1.6155833360084E+10  1.6155832737761E+10  1.6155833986593E+10
-(PID.TID 0000.0001) grdchk output (g):   3    -6.2441595840454E+04 -8.7695265625000E+04  2.8797073142506E-01
+(PID.TID 0000.0001) grdchk output (c):   3  1.6033697113202E+10  1.6033696742005E+10  1.6033697484442E+10
+(PID.TID 0000.0001) grdchk output (g):   3    -3.7121849250793E+04 -4.5922402343750E+04  1.9163964957844E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   4     4     1     1    2    2   0.000000000E+00 -1.000000000E-02
-(PID.TID 0000.0001) grdchk output (c):   4  1.6155833360084E+10  1.6155832574365E+10  1.6155834145770E+10
-(PID.TID 0000.0001) grdchk output (g):   4    -7.8570216846466E+04 -1.1740499218750E+05  3.3077618436372E-01
+(PID.TID 0000.0001) grdchk output (c):   4  1.6033697113202E+10  1.6033696740095E+10  1.6033697486343E+10
+(PID.TID 0000.0001) grdchk output (g):   4    -3.7312405109406E+04 -3.6846636718750E+04 -1.2640730121740E-02
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk  summary  :  RMS of    4 ratios =  2.3682868358670E-01
+(PID.TID 0000.0001) grdchk  summary  :  RMS of    4 ratios =  1.0948072829531E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient check results  >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   150.53999999999999
-(PID.TID 0000.0001)         System time:  0.41999999999999998
-(PID.TID 0000.0001)     Wall clock time:   151.00305294990540
+(PID.TID 0000.0001)           User time:   259.25000000000000
+(PID.TID 0000.0001)         System time:  0.27000000000000002
+(PID.TID 0000.0001)     Wall clock time:   260.50904393196106
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   2.9999999999999999E-002
-(PID.TID 0000.0001)         System time:   4.0000000000000001E-002
-(PID.TID 0000.0001)     Wall clock time:   6.5768003463745117E-002
+(PID.TID 0000.0001)           User time:  4.00000000000000008E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  4.94389533996582031E-002
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:   138.63000000000000
-(PID.TID 0000.0001)         System time:  0.32000000000000001
-(PID.TID 0000.0001)     Wall clock time:   138.99271106719971
+(PID.TID 0000.0001)           User time:   237.83000000000001
+(PID.TID 0000.0001)         System time:  0.25000000000000000
+(PID.TID 0000.0001)     Wall clock time:   239.00978899002075
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [MAIN_DO_LOOP]":
-(PID.TID 0000.0001)           User time:   13.499999999999915
-(PID.TID 0000.0001)         System time:   5.9999999999999998E-002
-(PID.TID 0000.0001)     Wall clock time:   13.556438684463501
-(PID.TID 0000.0001)          No. starts:        1200
-(PID.TID 0000.0001)           No. stops:        1200
+(PID.TID 0000.0001)           User time:   24.050000000001432
+(PID.TID 0000.0001)         System time:  2.00000000000000178E-002
+(PID.TID 0000.0001)     Wall clock time:   24.142163276672363
+(PID.TID 0000.0001)          No. starts:         600
+(PID.TID 0000.0001)           No. stops:         600
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   3.7799999999999159
-(PID.TID 0000.0001)         System time:   1.0000000000000009E-002
-(PID.TID 0000.0001)     Wall clock time:   3.8654711246490479
-(PID.TID 0000.0001)          No. starts:        1200
-(PID.TID 0000.0001)           No. stops:        1200
+(PID.TID 0000.0001)           User time:   5.5799999999996999
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   5.6613337993621826
+(PID.TID 0000.0001)          No. starts:         600
+(PID.TID 0000.0001)           No. stops:         600
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:   4.1399999999999579
+(PID.TID 0000.0001)           User time:   6.1199999999996635
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   4.2123701572418213
-(PID.TID 0000.0001)          No. starts:        1320
-(PID.TID 0000.0001)           No. stops:        1320
+(PID.TID 0000.0001)     Wall clock time:   6.2070808410644531
+(PID.TID 0000.0001)          No. starts:         660
+(PID.TID 0000.0001)           No. stops:         660
 (PID.TID 0000.0001)   Seconds in section "I/O (WRITE)        [ADJOINT LOOP]":
-(PID.TID 0000.0001)           User time:   2.9999999999972715E-002
+(PID.TID 0000.0001)           User time:  1.99999999999818101E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   3.8858890533447266E-002
-(PID.TID 0000.0001)          No. starts:        4920
-(PID.TID 0000.0001)           No. stops:        4920
+(PID.TID 0000.0001)     Wall clock time:  2.26447582244873047E-002
+(PID.TID 0000.0001)          No. starts:        2460
+(PID.TID 0000.0001)           No. stops:        2460
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
-(PID.TID 0000.0001)         System time:   1.0000000000000009E-002
-(PID.TID 0000.0001)     Wall clock time:   1.0508537292480469E-002
-(PID.TID 0000.0001)          No. starts:        1320
-(PID.TID 0000.0001)           No. stops:        1320
+(PID.TID 0000.0001)           User time:  9.99999999999090505E-003
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  6.01816177368164063E-003
+(PID.TID 0000.0001)          No. starts:         660
+(PID.TID 0000.0001)           No. stops:         660
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   2.0000000000010232E-002
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   9.4323158264160156E-003
-(PID.TID 0000.0001)          No. starts:        1200
-(PID.TID 0000.0001)           No. stops:        1200
+(PID.TID 0000.0001)     Wall clock time:  5.34296035766601563E-003
+(PID.TID 0000.0001)          No. starts:         600
+(PID.TID 0000.0001)           No. stops:         600
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   7.5099999999998772
+(PID.TID 0000.0001)           User time:   14.680000000000405
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   7.5419454574584961
-(PID.TID 0000.0001)          No. starts:        1200
-(PID.TID 0000.0001)           No. stops:        1200
+(PID.TID 0000.0001)     Wall clock time:   14.493967056274414
+(PID.TID 0000.0001)          No. starts:         600
+(PID.TID 0000.0001)           No. stops:         600
 (PID.TID 0000.0001)   Seconds in section "THSICE_MAIN     [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:   6.9399999999999125
+(PID.TID 0000.0001)           User time:   13.600000000000307
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   6.9337992668151855
-(PID.TID 0000.0001)          No. starts:        1200
-(PID.TID 0000.0001)           No. stops:        1200
+(PID.TID 0000.0001)     Wall clock time:   13.321319580078125
+(PID.TID 0000.0001)          No. starts:         600
+(PID.TID 0000.0001)           No. stops:         600
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.42999999999994998
+(PID.TID 0000.0001)           User time:  0.79000000000007731
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.40678453445434570
-(PID.TID 0000.0001)          No. starts:        1200
-(PID.TID 0000.0001)           No. stops:        1200
+(PID.TID 0000.0001)     Wall clock time:  0.81610584259033203
+(PID.TID 0000.0001)          No. starts:         600
+(PID.TID 0000.0001)           No. stops:         600
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.23000000000001819
+(PID.TID 0000.0001)           User time:  0.30999999999994543
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.17828154563903809
+(PID.TID 0000.0001)     Wall clock time:  0.33934807777404785
+(PID.TID 0000.0001)          No. starts:         600
+(PID.TID 0000.0001)           No. stops:         600
+(PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.30999999999994543
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:  0.22484111785888672
 (PID.TID 0000.0001)          No. starts:        1200
 (PID.TID 0000.0001)           No. stops:        1200
-(PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
+(PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:   2.0699999999999363
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   2.3101599216461182
+(PID.TID 0000.0001)          No. starts:         600
+(PID.TID 0000.0001)           No. stops:         600
+(PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.13999999999998636
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.13200521469116211
-(PID.TID 0000.0001)          No. starts:        2400
-(PID.TID 0000.0001)           No. stops:        2400
-(PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.1700000000001012
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.1395261287689209
-(PID.TID 0000.0001)          No. starts:        1200
-(PID.TID 0000.0001)           No. stops:        1200
-(PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   4.1386842727661133E-002
-(PID.TID 0000.0001)          No. starts:        1200
-(PID.TID 0000.0001)           No. stops:        1200
+(PID.TID 0000.0001)     Wall clock time:  7.15708732604980469E-002
+(PID.TID 0000.0001)          No. starts:         600
+(PID.TID 0000.0001)           No. stops:         600
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   3.3135414123535156E-003
-(PID.TID 0000.0001)          No. starts:         120
-(PID.TID 0000.0001)           No. stops:         120
+(PID.TID 0000.0001)     Wall clock time:  5.78880310058593750E-004
+(PID.TID 0000.0001)          No. starts:          60
+(PID.TID 0000.0001)           No. stops:          60
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   6.9999999999993179E-002
+(PID.TID 0000.0001)           User time:  5.99999999999454303E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   4.5538663864135742E-002
-(PID.TID 0000.0001)          No. starts:        1200
-(PID.TID 0000.0001)           No. stops:        1200
+(PID.TID 0000.0001)     Wall clock time:  5.97186088562011719E-002
+(PID.TID 0000.0001)          No. starts:         600
+(PID.TID 0000.0001)           No. stops:         600
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   5.0000000000011369E-002
-(PID.TID 0000.0001)         System time:   2.9999999999999971E-002
-(PID.TID 0000.0001)     Wall clock time:   4.8614025115966797E-002
-(PID.TID 0000.0001)          No. starts:        1200
-(PID.TID 0000.0001)           No. stops:        1200
+(PID.TID 0000.0001)           User time:  3.99999999999636202E-002
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:  7.33323097229003906E-002
+(PID.TID 0000.0001)          No. starts:         600
+(PID.TID 0000.0001)           No. stops:         600
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   9.9999999999909051E-003
-(PID.TID 0000.0001)         System time:   2.0000000000000018E-002
-(PID.TID 0000.0001)     Wall clock time:   1.9917726516723633E-002
-(PID.TID 0000.0001)          No. starts:        1200
-(PID.TID 0000.0001)           No. stops:        1200
+(PID.TID 0000.0001)           User time:  9.99999999999090505E-003
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  1.28076076507568359E-002
+(PID.TID 0000.0001)          No. starts:         600
+(PID.TID 0000.0001)           No. stops:         600
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   11.879999999999995
-(PID.TID 0000.0001)         System time:   5.9999999999999998E-002
-(PID.TID 0000.0001)     Wall clock time:   11.944512844085693
+(PID.TID 0000.0001)           User time:   21.379999999999995
+(PID.TID 0000.0001)         System time:  2.00000000000000178E-002
+(PID.TID 0000.0001)     Wall clock time:   21.449764966964722
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   3.0000000000029559E-002
-(PID.TID 0000.0001)         System time:   1.0000000000000009E-002
-(PID.TID 0000.0001)     Wall clock time:   2.9478311538696289E-002
+(PID.TID 0000.0001)           User time:  9.00000000000318323E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  9.74860191345214844E-002
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   11.839999999999947
-(PID.TID 0000.0001)         System time:   3.9999999999999980E-002
-(PID.TID 0000.0001)     Wall clock time:   11.887729883193970
+(PID.TID 0000.0001)           User time:   21.279999999999973
+(PID.TID 0000.0001)         System time:  2.00000000000000178E-002
+(PID.TID 0000.0001)     Wall clock time:   21.333560943603516
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "MAIN_DO_LOOP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   10.769999999999925
-(PID.TID 0000.0001)         System time:   2.9999999999999971E-002
-(PID.TID 0000.0001)     Wall clock time:   10.780094385147095
-(PID.TID 0000.0001)          No. starts:         960
-(PID.TID 0000.0001)           No. stops:         960
+(PID.TID 0000.0001)           User time:   19.240000000000919
+(PID.TID 0000.0001)         System time:  2.00000000000000178E-002
+(PID.TID 0000.0001)     Wall clock time:   19.270514726638794
+(PID.TID 0000.0001)          No. starts:         480
+(PID.TID 0000.0001)           No. stops:         480
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   3.9219856262207031E-004
+(PID.TID 0000.0001)     Wall clock time:  6.94990158081054688E-004
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001) // ======================================================
@@ -4463,9 +2837,10 @@ grad-res -------------------------------
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =           3200
+(PID.TID 0000.0001) //            No. barriers =           2316
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =           3200
+(PID.TID 0000.0001) //     Total barrier spins =           2316
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
+STOP NORMAL END
 PROGRAM MAIN: Execution ended Normally
