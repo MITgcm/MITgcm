@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.24 2013/06/21 21:56:18 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.25 2013/06/27 14:51:40 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -69,7 +69,7 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_K3D_Lambda, GM_K3D_smallK, GM_K3D_maxSlope,
      &          GM_K3D_maxC, GM_K3D_minCori, GM_K3D_minN2,
      &          GM_K3D_surfMinDepth, GM_maxK3D, GM_K3D_maxLurms,
-     &          GM_K3D_constK, GM_K3D_likeGM
+     &          GM_K3D_constK, GM_K3D_likeGM, GM_K3D_smooth
 
       _BEGIN_MASTER(myThid)
 
@@ -123,6 +123,7 @@ C--   Default values Sub-Meso (corresponding tau = 5.8 days):
 C--   Default values for K3D
       GM_useK3D    = .FALSE.
       GM_K3D_likeGM= .FALSE.
+      GM_K3D_smooth= .TRUE.
       GM_K3D_constK= 1000.0
       GM_K3D_gamma = 1.00
       GM_K3D_EadyMinDepth = 50.0

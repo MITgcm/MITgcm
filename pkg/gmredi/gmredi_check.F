@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.26 2013/06/21 17:23:31 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.27 2013/06/27 14:51:40 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -164,15 +164,28 @@ C     The skew form is not presently supported.
         WRITE(msgBuf,'(A)')
      &       ' GMREDI_CHECK: To use GM_useK3D set GM_AdvForm=.TRUE.'
        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &       ' ABNORMAL END: S/R GMREDI_CHECK'
-       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP ' ABNORMAL END: S/R GMREDI_CHECK'
+      ENDIF
+
+      IF ( GM_useK3D) THEN
+C       Make sure that we use K3D without smoothing only when we specify
+C       a constant K should be used
+        IF ( .NOT. GM_K3D_likeGM .AND. .NOT. GM_K3D_smooth) THEN
+          WRITE(msgBuf,'(A)')
+     &  ' GMREDI_CHECK: GM_K3D_likeGM=.FALSE. and GM_K3D_smooth=.FALSE.'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A)')
+     &      ' GMREDI_CHECK: To have variable K set GM_K3D_smooth=.TRUE.'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP ' ABNORMAL END: S/R GMREDI_CHECK'
+        ENDIF
       ENDIF
 
 # ifndef use_lapack
       WRITE(msgBuf, '(A)')
      &     'Must use CPP option use_lapack when using GM_K3D'
       CALL PRINT_ERROR( msgBuf, myThid )
+      STOP ' ABNORMAL END: S/R GMREDI_CHECK'
 # endif
 #endif
 

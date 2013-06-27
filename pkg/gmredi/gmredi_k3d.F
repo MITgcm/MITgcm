@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.2 2013/06/21 21:56:18 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.3 2013/06/27 14:51:40 m_bates Exp $
 C $Name:  $
 #include "GMREDI_OPTIONS.h"
 
@@ -70,6 +70,7 @@ C      _RL dSigmaLoX,dSigmaLoY
       _RL sigx, sigy, sigz
       _RL hsurf
       _RL small
+      _RL KPV(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL SlopeX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL SlopeY(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL dSigmaDr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
@@ -445,56 +446,28 @@ C            Enforce lower and upper bounds on the diffusivity
 C     ======================================
 C     Find the PV gradient
 C     ======================================
-C     Find the mixed layer depth as per Large et al. (1997)
-C     Start with the surface density
-      CALL FIND_RHO_2D(
-     I                 iMin, iMax, jMin, jMax, 1,
-     I                 theta(1-OLx,1-OLy,1,bi,bj),
-     I                 salt (1-OLx,1-OLy,1,bi,bj),
-     O                 rhosurf,
-     I                 1, bi, bj, myThid )
+C     Calculate the surface layer thickness.
+C     Use hMixLayer (calculated in model/src/calc_oce_mxlayer) 
+C     for the mixed layer depth.
 
-C     Set the minimum surface layer depth to GM_K3D_surfMinDepth
-      DO k=1,Nr
-       IF (rF(k+1).LE.-GM_K3D_surfMinDepth) THEN
-         minsurfk=k
-         EXIT
-       ENDIF
-      ENDDO
+C     Enforce a minimum surface layer depth
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        surfk(i,j) = min( minsurfk, kLow_C(i,j) )
-        surfkz(i,j) = rF(minsurfk+1)
-        Dbz(i,j) = zeroRL
+        surfkz(i,j) = MIN(-GM_K3D_surfMinDepth,-hMixLayer(i,j,bi,bj))
+        surfkz(i,j) = MAX(surfkz(i,j),R_low(i,j,bi,bj))
+        IF(maskC(i,j,1,bi,bj).EQ.0.0) surfkz(i,j)=0.0
+        surfk(i,j) = 0
        ENDDO
       ENDDO
-
-      DO k=2,Nr
-C     Calculate the surface layer depth.
-C     If the mixed layer is deeper than GM_K3D_surfMinDepth then 
-C     set the surface layer depth to the mixed layer depth
-       CALL FIND_RHO_2D(
-     I                  iMin, iMax, jMin, jMax, 1,
-     I                  theta(1-OLx,1-OLy,k,bi,bj),
-     I                  salt (1-OLx,1-OLy,k,bi,bj),
-     O                  rhodeep,
-     I                  k, bi, bj, myThid )
+      DO k=0,Nr
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
-         IF (maskC(i,j,k,bi,bj).NE.zeroRL) THEN
-           newDbz = ( rhosurf(i,j)-rhodeep(i,j) )/rC(k)
-           IF (newDbz.GT.Dbz(i,j)) THEN
-             Dbz(i,j) = newDbz
-             IF (surfk(i,j).LT.k) THEN
-               surfk(i,j) = k
-               surfkz(i,j) = rF(k+1)
-             ENDIF
-           ENDIF
-         ENDIF
+         IF (rF(k).GT.surfkz(i,j) .AND. surfkz(i,j).GE.rF(k+1)) 
+     &        surfk(i,j) = k
         ENDDO
        ENDDO
       ENDDO
-      
+
 C     Calculate the isopycnal slope
       DO j=1-Oly,sNy+Oly-1
        DO i=1-Olx,sNx+Olx-1
@@ -536,6 +509,34 @@ C     &          slope = SIGN(GM_K3D_maxSlope,slope)
        ENDDO
       ENDDO
 
+CC     Try something different
+C      DO k=1,Nr
+CC        Stuff for slope limiting
+C       DO j=1-Oly+1,sNy+Oly
+C        DO i=1-Olx+1,sNx+Olx
+C         slpX(i,j) = sigmaX(i,j,k)
+C         slpY(i,j) = sigmaY(i,j,k)
+C         dSigmaDrW(i,j)=op5*( sigmaR(i-1,j,k)+sigmaR(i,j,k) )
+C     &        *maskW(i,j,k,bi,bj)
+C         dSigmaDrS(i,j)=op5*( sigmaR(i,j-1,k)+sigmaR(i,j,k) )
+C     &        *maskS(i,j,k,bi,bj)
+C         dummy(i,j) = zeroRL
+C        ENDDO
+C       ENDDO
+C       CALL GMREDI_SLOPE_PSI(
+C     O      tprX, tprY,
+C     U      slpX, slpY,
+C     U      dSigmaDrW, dSigmaDrS,
+C     I      dummy, dummy, rF(k), k,
+C     I      bi, bj, myThid)
+C       DO j=1-Oly,sNy+Oly
+C        DO i=1-Olx,sNx+Olx
+C         SlopeX(i,j,k) = slpX(i,j)
+C         SlopeY(i,j,k) = slpY(i,j)
+C        ENDDO
+C       ENDDO
+C      ENDDO
+
 C     Calculate the thickness flux
 C     Enforce a zero slope bottom boundary condition for the bottom most cells (k=Nr)
       k=Nr
@@ -557,7 +558,7 @@ C     We still need to give special treatment for the surface layer however.
       DO k=Nr-1,1,-1
        DO j=1-Oly,sNy+Oly-1
         DO i=1-Olx,sNx+Olx-1
-         IF(k.LE.surfk(i,j)) THEN
+         IF(k.LE.surfk(i,j) .AND. .NOT. GM_K3D_likeGM) THEN
 C          We are in the surface layer, so set the thickness flux
 C          based on the average slope over the surface layer
 C          If we are on the edge of a "cliff" the surface layer at the
@@ -664,52 +665,39 @@ C     It does not affect the end result since it's in the overlap region.
       ENDDO
 
       IF(GM_K3D_likeGM) THEN
-C       To make it similar to GM, we do not do any smoothing
-        m=1
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          XimX(1,i,j) = zeroRL
-          XimY(1,i,j) = zeroRL
-         ENDDO
-        ENDDO
         DO k=1,Nr
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           IF (GM_K3D_likeGM) THEN
-             Xix(i,j,k)=-GM_K3D_constK*gradqx(i,j,k)
-             Xiy(i,j,k)=-GM_K3D_constK*gradqy(i,j,k)
-           ELSE
-             Xix(i,j,k)=-K3D(i,j,k,bi,bj)*gradqx(i,j,k)
-             Xiy(i,j,k)=-K3D(i,j,k,bi,bj)*gradqy(i,j,k)
-           ENDIF
-           XimX(1,i,j) = XimX(m,i,j) 
-     &          + Xix(i,j,k)*drF(k)*hfacW(i,j,k,bi,bj)
-           XimY(1,i,j) = XimY(m,i,j) 
-     &          + Xiy(i,j,k)*drF(k)*hfacS(i,j,k,bi,bj)
+           KPV(i,j,k) = GM_K3D_constK
           ENDDO
          ENDDO
         ENDDO
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-C         minus comes from rlow being negative.
-          IF(rLowW(i,j,bi,bj).LT.0.0)
-     &         XimX(1,i,j) = -XimX(1,i,j)/rLowW(i,j,bi,bj)
-          IF(rLowS(i,j,bi,bj).LT.0.0)
-     &         XimY(1,i,j) = -XimY(1,i,j)/rLowS(i,j,bi,bj)
-         ENDDO
-        ENDDO
-
+      ELSE
         DO k=1,Nr
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           Xix(i,j,k) = Xix(i,j,k) - maskW(i,j,k,bi,bj)*XimX(1,i,j)
-           Xiy(i,j,k) = Xiy(i,j,k) - maskS(i,j,k,bi,bj)*XimY(1,i,j)
+           KPV(i,j,k) = K3D(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
+
+      IF (.NOT. GM_K3D_smooth) THEN
+C       Do not expand K grad(q) => no smoothing
+C       May only be done with a constant K, otherwise the 
+C       integral constraint is violated.
+        DO k=1,Nr
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           Xix(i,j,k) = -maskW(i,j,k,bi,bj)*KPV(i,j,k)*gradqx(i,j,k)
+           Xiy(i,j,k) = -maskS(i,j,k,bi,bj)*KPV(i,j,k)*gradqy(i,j,k)
           ENDDO
          ENDDO
         ENDDO
 
       ELSE
-C       Expand K grad(q) in terms of baroclinic modes
+C       Expand K grad(q) in terms of baroclinic modes to smooth
+C       and satisfy the integral constraint
 
 C       Start with the X direction
 C       ------------------------------
@@ -733,15 +721,9 @@ C       Calculate Xi_m at the west face of a cell
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
            DO m=1,GM_K3D_NModes
-            IF (GM_K3D_likeGM) THEN
               XimX(m,i,j) = XimX(m,i,j) 
      &             - maskW(i,j,k,bi,bj)*drF(k)*hfacW(i,j,k,bi,bj)
-     &             *GM_K3D_constK*gradqx(i,j,k)*vec(m,i,j,k)
-            ELSE
-              XimX(m,i,j) = XimX(m,i,j) 
-     &             - maskW(i,j,k,bi,bj)*drF(k)*hfacW(i,j,k,bi,bj)
-     &             *K3D(i,j,k,bi,bj)*gradqx(i,j,k)*vec(m,i,j,k)
-            ENDIF
+     &             *KPV(i,j,k)*gradqx(i,j,k)*vec(m,i,j,k)
            ENDDO
           ENDDO
          ENDDO
@@ -786,15 +768,9 @@ C     Calculate the eigenvectors at the West face of a cell
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
            DO m=1,GM_K3D_NModes
-            IF (GM_K3D_likeGM) THEN
-              XimY(m,i,j) = XimY(m,i,j)
-     &             - maskS(i,j,k,bi,bj)*drF(k)*hfacS(i,j,k,bi,bj)
-     &             *GM_K3D_constK*gradqy(i,j,k)*vec(m,i,j,k)
-            ELSE
-              XimY(m,i,j) = XimY(m,i,j)
-     &             - drF(k)*hfacS(i,j,k,bi,bj)
-     &             *K3D(i,j,k,bi,bj)*gradqy(i,j,k)*vec(m,i,j,k)
-            ENDIF
+            XimY(m,i,j) = XimY(m,i,j)
+     &           - drF(k)*hfacS(i,j,k,bi,bj)
+     &           *KPV(i,j,k)*gradqy(i,j,k)*vec(m,i,j,k)
            ENDDO
           ENDDO
          ENDDO
@@ -819,6 +795,7 @@ C     Calculate Xi for Y direction at the south face
          ENDDO
         ENDDO
 
+C     ENDIF GM_K3D_likeGM
       ENDIF
 
 
@@ -925,19 +902,6 @@ C     Diagnostics
         CALL DIAGNOSTICS_FILL(Kdef,   'GM_KDEF ',0, 1,0,1,1,myThid)
       ENDIF
 #endif
-      
-C     Even when using a constant K, we diagnose the K that we would
-C     use.  So, after the diagnostics are written, we change the
-C     array K3D to be equal to GM_K3D_constK for use in the Redi tensor.
-      IF (GM_K3D_likeGM) THEN
-        DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           K3D(i,j,k,bi,bj) = GM_K3D_constK
-          ENDDO
-         ENDDO
-        ENDDO
-      ENDIF
 
 #endif /* GM_K3D */
       RETURN
