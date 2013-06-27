@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_velmask_upd.F,v 1.2 2013/06/21 21:15:36 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_velmask_upd.F,v 1.3 2013/06/27 18:40:24 jmc Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -9,7 +9,7 @@ CBOP
       SUBROUTINE STREAMICE_VELMASK_UPD ( myThid )
 
 C     /============================================================\
-C     | SUBROUTINE                                                 |   
+C     | SUBROUTINE                                                 |
 C     | o                                                          |
 C     |============================================================|
 C     |                                                            |
@@ -22,8 +22,10 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "STREAMICE.h"
-#ifdef ALLOW_USE_MPI
-# include "EESUPPORT.h"
+#ifdef ALLOW_PETSC
+# ifdef ALLOW_USE_MPI
+#  include "EESUPPORT.h"
+# endif
 #endif
 ! #include "STREAMICE_ADV.h"
 
@@ -88,13 +90,13 @@ C     === Global variables ===
              ELSE IF (maskFlag.EQ.4) THEN
               DO kj=0,1
                STREAMICE_umask(i+ki,j+kj,bi,bj) = 0.0
-               STREAMICE_vmask(i+ki,j+kj,bi,bj) = 0.0             
+               STREAMICE_vmask(i+ki,j+kj,bi,bj) = 0.0
               ENDDO
               STREAMICE_ufacemask(i+ki,j,bi,bj) = 4.0
              ELSE IF (maskFlag.EQ.0) THEN
               DO kj=0,1
                STREAMICE_umask(i+ki,j+kj,bi,bj) = 0.0
-               STREAMICE_vmask(i+ki,j+kj,bi,bj) = 0.0             
+               STREAMICE_vmask(i+ki,j+kj,bi,bj) = 0.0
               ENDDO
               STREAMICE_ufacemask(i+ki,j,bi,bj) = 0.0
              ELSE IF (maskFlag.EQ.1) THEN
@@ -119,13 +121,13 @@ C     === Global variables ===
            ELSE IF (maskFlag.EQ.4) THEN
               DO ki=0,1
                STREAMICE_umask(i+ki,j+kj,bi,bj) = 0.0
-               STREAMICE_vmask(i+ki,j+kj,bi,bj) = 0.0             
+               STREAMICE_vmask(i+ki,j+kj,bi,bj) = 0.0
               ENDDO
               STREAMICE_vfacemask(i,j+kj,bi,bj) = 4.0
            ELSE IF (maskFlag.EQ.0) THEN
               DO ki=0,1
                STREAMICE_umask(i+ki,j+kj,bi,bj) = 0.0
-               STREAMICE_vmask(i+ki,j+kj,bi,bj) = 0.0             
+               STREAMICE_vmask(i+ki,j+kj,bi,bj) = 0.0
               ENDDO
               STREAMICE_vfacemask(i+ki,j,bi,bj) = 0.0
            ELSE IF (maskFlag.EQ.1) THEN
@@ -234,7 +236,7 @@ C    NOTE THESE NUMBERING ARRAYS ARE USED TO CONSTRUCT PETSC VECTORS AND MATRIX
        ENDDO
       ENDDO
 
-#ifdef ALLOW_USE_MPI 
+#ifdef ALLOW_USE_MPI
 
       DO i=0,nPx*nPy-1
        n_dofs_proc_loc (i) = 0
