@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1886 2013/06/26 23:04:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1887 2013/06/28 21:26:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/atm_phys:
+  - allows to add some damping on uVel,vVel (strength only function of k).
 o verification, ad-tests:
   - reduce length of the simulation for AD test: global_ocean.cs32x15.seaice,
     global_ocean_ebm and offline_exf_seaice.thsice.
