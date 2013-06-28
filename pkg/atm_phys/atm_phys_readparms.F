@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_readparms.F,v 1.1 2013/05/08 22:14:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_readparms.F,v 1.2 2013/06/28 21:25:25 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -31,44 +31,28 @@ C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
+      INTEGER k
 
       NAMELIST /ATM_PHYS_PARM01/
-c    &       myPa_MNC,
-c    &       myPa_StaV_Cgrid, myPa_Tend_Cgrid,
      &       atmPhys_addTendT, atmPhys_addTendS,
      &       atmPhys_addTendU, atmPhys_addTendV,
+     &       atmPhys_tauDampUV, atmPhys_dampUVfac,
      &       atmPhys_stepSST,
-c    &       myPa_index1,     myPa_index2,  myPa_doSwitch2,
-c    &       myPa_param1,     myPa_param2,
-c    &       myPa_string1,    myPa_string2,
-c    &       myPa_Scal1File,  myPa_Scal2File,
-c    &       myPa_VelUFile,   myPa_VelVFile,
      &       atmPhys_SSTFile, atmPhys_QflxFile
 
       _BEGIN_MASTER(myThid)
 
 C--   Default values for ATM_PHYS
-c     myPa_MNC         = useMNC
-c     myPa_StaV_Cgrid  = .TRUE.
-c     myPa_Tend_Cgrid  = .TRUE.
       atmPhys_addTendT  = .TRUE.
       atmPhys_addTendS  = .TRUE.
       atmPhys_addTendU  = .TRUE.
       atmPhys_addTendV  = .TRUE.
+      atmPhys_tauDampUV = 0. _d 0
+      DO k=1,Nr
+        atmPhys_dampUVfac(k) = 1. _d 0
+      ENDDO
 C-    additional parameters:
       atmPhys_stepSST   = .FALSE.
-c     myPa_doSwitch2   = .FALSE.
-c     myPa_index1      = 0
-c     myPa_index2      = 0
-c     myPa_param1      = 0. _d 0
-c     myPa_param2      = 0. _d 0
-c     myPa_string1     = ' '
-c     myPa_string2     = ' '
-C-    file names for initial conditions:
-c     myPa_Scal1File   = ' '
-c     myPa_Scal2File   = ' '
-c     myPa_VelUFile    = ' '
-c     myPa_VelVFile    = ' '
       atmPhys_SSTFile  = ' '
       atmPhys_QflxFile = ' '
 
@@ -88,6 +72,16 @@ C     Read parameters from open data file
      &                    SQUEEZE_RIGHT, myThid )
 C     Close the open data file
       CLOSE(iUnit)
+
+      IF ( atmPhys_tauDampUV.LE.zeroRL ) THEN
+       DO k=1,Nr
+        atmPhys_dampUVfac(k) = 0. _d 0
+       ENDDO
+      ELSE
+       DO k=1,Nr
+        atmPhys_dampUVfac(k) = atmPhys_dampUVfac(k)/atmPhys_tauDampUV
+       ENDDO
+      ENDIF
 
 C     Make sure that we locally honor the global MNC on/off flag
 c     myPa_MNC = myPa_MNC .AND. useMNC

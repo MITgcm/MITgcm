@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_check.F,v 1.1 2013/05/16 19:54:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_check.F,v 1.2 2013/06/28 21:25:25 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -29,6 +29,7 @@ CEOP
 C     !LOCAL VARIABLES:
 C     msgBuf   :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER k
 
       _BEGIN_MASTER(myThid)
 
@@ -51,6 +52,13 @@ C--  Print out some kee parameters :
      &  ' /* apply Atm-Phys tendency to V momentum Eq.*/')
        CALL WRITE_0D_L( atmPhys_stepSST, INDEX_NONE,
      &  'atmPhys_stepSST =', ' /* step forward SST field */')
+       IF ( atmPhys_tauDampUV.LE.zeroRL ) THEN
+        CALL WRITE_0D_RL( atmPhys_tauDampUV, INDEX_NONE,
+     &  'atmPhys_tauDampUV =', ' /* U,V damping time-scale (s) */')
+       ELSE
+        CALL WRITE_1D_RL( atmPhys_dampUVfac, Nr, INDEX_K,
+     &  'atmPhys_dampUVfac =', ' /* U,V danping coefficient (1/s) */')
+       ENDIF
 
        CALL WRITE_0D_C( atmPhys_SSTFile, -1, INDEX_NONE,
      &  'atmPhys_SSTFile =',' /* SST input file */')

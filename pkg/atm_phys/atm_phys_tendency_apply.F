@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_tendency_apply.F,v 1.1 2013/05/08 22:14:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_tendency_apply.F,v 1.2 2013/06/28 21:25:25 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -25,9 +25,11 @@ C     level at a time. Assumes that U and V tendencies are on A-Grid
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
-#include "GRID.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
 #include "DYNVARS.h"
+#include "FFIELDS.h"
 #include "ATM_PHYS_PARAMS.h"
 #include "ATM_PHYS_VARS.h"
 
@@ -38,8 +40,10 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER i, j
+      _RL damp_dKE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       IF ( atmPhys_addTendU ) THEN
+
 C--   Assume Agrid position:
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -49,6 +53,30 @@ C--   Assume Agrid position:
      &                          )*0.5 _d 0
          ENDDO
         ENDDO
+
+       IF ( atmPhys_dampUVfac(k).GT.zeroRL ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)
+     &     - maskW(i,j,k,bi,bj)*uVel(i,j,k,bi,bj)*atmPhys_dampUVfac(k)
+          damp_dKE(i,j) =
+     &     - uVel(i,j,k,bi,bj)*uVel(i,j,k,bi,bj)*atmPhys_dampUVfac(k)
+     &                       *hFacW(i,j,k,bi,bj)*drF(k)*rUnit2mass
+         ENDDO
+        ENDDO
+#ifdef ALLOW_FRICTION_HEATING
+        IF ( addFrictionHeating ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+           frictionHeating(i,j,k,bi,bj) = frictionHeating(i,j,k,bi,bj)
+     &        -0.5 _d 0 * ( damp_dKE( i, j)*rAw( i, j,bi,bj)
+     &                    + damp_dKE(i+1,j)*rAw(i+1,j,bi,bj) )
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_FRICTION_HEATING */
+       ENDIF
+
       ENDIF
 
       RETURN
@@ -70,9 +98,11 @@ C     level at a time. Assumes that U and V tendencies are on A-Grid
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
-#include "GRID.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
 #include "DYNVARS.h"
+#include "FFIELDS.h"
 #include "ATM_PHYS_PARAMS.h"
 #include "ATM_PHYS_VARS.h"
 
@@ -83,8 +113,10 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER i, j
+      _RL damp_dKE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       IF ( atmPhys_addTendV ) THEN
+
 C--   Assume Agrid position:
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -94,6 +126,30 @@ C--   Assume Agrid position:
      &                          )*0.5 _d 0
          ENDDO
         ENDDO
+
+       IF ( atmPhys_dampUVfac(k).GT.zeroRL ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)
+     &     - maskS(i,j,k,bi,bj)*vVel(i,j,k,bi,bj)*atmPhys_dampUVfac(k)
+          damp_dKE(i,j) =
+     &     - vVel(i,j,k,bi,bj)*vVel(i,j,k,bi,bj)*atmPhys_dampUVfac(k)
+     &                        *hFacS(i,j,k,bi,bj)*drF(k)*rUnit2mass
+         ENDDO
+        ENDDO
+#ifdef ALLOW_FRICTION_HEATING
+        IF ( addFrictionHeating ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+           frictionHeating(i,j,k,bi,bj) = frictionHeating(i,j,k,bi,bj)
+     &        -0.5 _d 0 * ( damp_dKE( i, j)*rAs(i, j ,bi,bj)
+     &                    + damp_dKE(i+1,j)*rAs(i,j+1,bi,bj) )
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_FRICTION_HEATING */
+       ENDIF
+
       ENDIF
 
       RETURN
