@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.18 2013/05/10 20:24:07 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.19 2013/06/28 15:38:19 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu
 #  Linux machines.
@@ -25,10 +25,13 @@ ulimit -s unlimited
 cmdCVS='cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack'
 cmdCVS='cvs -d /u/gcmpack'
 
+# checkOut=2 : download new code ;
+#   =1 : update code       (if no existing code -> swith to 2)
+#   =0 : use existing code (if no existing code -> swith to 2)
 dInWeek=`date +%a`
 TESTDIR="/scratch/jmc/test_"`hostname -s`
 MC=13
-checkOut=1
+checkOut=2
 sepDir=1
 option=
 tst_list='g7a adm mpa g77 gfo+rs mth mp2+rs mpi ifc'
@@ -36,15 +39,15 @@ if test "x$dInWeek" = xSun ; then tst_list="$tst_list tlm oad" ; fi
 #tst_list='g77 adm gfo ifc mth pgi+rs'
 #tst_list='g77 gfo+rs mth'
 
-#option="-nc" ; checkOut=0
-#option="-q"  ; checkOut=0
+#option="-nc" ; checkOut=1
+#option="-q"  ; checkOut=1
 
 TODAY=`date +%d`
 tdir=$TESTDIR
-if test $checkOut = '0' ; then
+if test $checkOut != 2 ; then
   if test -e $tdir/MITgcm/CVS ; then
     echo $tdir/MITgcm/CVS 'exist'
-    if test $sepDir = 0 ; then
+    if test $sepDir = 0 -a $checkOut = 1 ; then
       echo -n "Update the MITgcm code using: $cmdCVS ..."
       cd $tdir/MITgcm
       $cmdCVS update -P -d
@@ -52,10 +55,10 @@ if test $checkOut = '0' ; then
     fi
   else
     echo -n $tdir/MITgcm 'missing ; '
-    checkOut=1
+    checkOut=2
   fi
 fi
-if test $checkOut = '1' ; then
+if test $checkOut = 2 ; then
   if test -e $tdir ; then
     echo -n "Removing working copy: $tdir/MITgcm ..."
     test -e $tdir/MITgcm  &&  rm -rf $tdir/MITgcm
@@ -91,19 +94,25 @@ do
     date ; echo "too late to run test $typ"
     continue
   fi
+  if test $sepDir = 0 -a "x$option" != x -a  $tt != $last_Tst ; then
+    echo "using option='$option' prevent multi-tests => skip test $typ"
+    continue
+  fi
   #- clean-up old output files
   rm -f $tdir/output_${typ}*
   touch $tdir/output_$tt
   if test $sepDir = 1 ; then
     new_dir="MITgcm_$typ"
-    if test -d $new_dir/CVS -a $checkOut = '0' ; then
+    if test -d $new_dir/CVS -a $checkOut != 2 ; then
       pushd $new_dir
       if test $tt != $typ ; then
         ( cd verification ; ../tools/do_tst_2+2 -clean )
       fi
-      echo -n "Update the MITgcm code using: $cmdCVS ..."
-      $cmdCVS update -P -d
-      echo "  done"
+      if test $checkOut = 1 ; then
+        echo -n "Update the MITgcm code using: $cmdCVS ..."
+        $cmdCVS update -P -d
+        echo "  done"
+      fi
     else
       test -e $new_dir  &&  rm -rf $new_dir
       mkdir $new_dir
@@ -167,7 +176,7 @@ do
     export LM_LICENSE_FILE=$PGI/license.dat
   fi
 
-  if test $sepDir = 0 -a $checkOut = '0' -a  $tt = $firstTst ; then
+  if test $sepDir = 0 -a "x$option" = x -a $tt = $firstTst -a $checkOut != 2 ; then
 #-- cleaning:
     echo "======================"
     echo "Cleaning test directories:"	| tee -a $tdir/output_$tt
