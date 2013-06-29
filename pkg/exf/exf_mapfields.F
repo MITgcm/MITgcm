@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.28 2013/04/23 19:04:33 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.29 2013/06/29 19:44:18 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -178,6 +178,17 @@ C--   Account for rain-temp
              ENDDO
             ENDDO
            ENDIF
+#ifdef ALLOW_RUNOFF
+C--   Account for energy content of RunOff:
+           DO j = 1, sNy
+            DO i = 1, sNx
+              Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)
+     &              - HeatCapacity_Cp
+     &               *( theta(i,j,ks,bi,bj) - temp_EvPrRn )
+     &               *runoff(i,j,bi,bj)*rhoConstFresh
+            ENDDO
+           ENDDO
+#endif
 C--   Account for energy content of Evap:
            DO j = 1, sNy
             DO i = 1, sNx
@@ -189,32 +200,21 @@ C--   Account for energy content of Evap:
             ENDDO
            ENDDO
           ENDIF
-# ifdef ALLOW_RUNOFF
-C--   Account for energy content of RunOff:
-#  ifdef ALLOW_RUNOFTEMP
-          DO j = 1, sNy
-           DO i = 1, sNx
-              Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)
-     &             - HeatCapacity_Cp
-     &             *( theta(i,j,ks,bi,bj) - runoftemp(i,j,bi,bj) )
-     &             *runoff(i,j,bi,bj)*rhoConstFresh
-           ENDDO
-          ENDDO
-#  else /* ifndef ALLOW_RUNOFTEMP */
-          IF ( temp_EvPrRn .NE. UNSET_RL ) THEN
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* ALLOW_ATM_TEMP */
+#if defined(ALLOW_RUNOFF) && defined(ALLOW_RUNOFTEMP)
+          IF ( runoftempfile .NE. ' ' ) THEN
+C--   Add energy content of RunOff
            DO j = 1, sNy
             DO i = 1, sNx
                Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)
-     &              - HeatCapacity_Cp
-     &              *( theta(i,j,ks,bi,bj) - temp_EvPrRn )
+     &              + HeatCapacity_Cp
+     &              *( theta(i,j,ks,bi,bj) - runoftemp(i,j,bi,bj) )
      &              *runoff(i,j,bi,bj)*rhoConstFresh
             ENDDO
            ENDDO
           ENDIF
-#  endif /* ALLOW_RUNOFTEMP */
-# endif /* ALLOW_RUNOFF */
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#endif /* ALLOW_ATM_TEMP */
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE ustress(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
