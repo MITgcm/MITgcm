@@ -16,8 +16,6 @@
  diffKrS=3.E-5,
  ivdc_kappa=10.,
  implicitDiffusion=.TRUE.,
-#- set wrong celsius2K to reproduce old results:
- celsius2K=273.16,
  gravity=9.81,
  rhoConst=1035.,
  rhoConstFresh=1000.,

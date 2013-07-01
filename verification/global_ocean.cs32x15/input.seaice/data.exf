@@ -90,6 +90,7 @@
  lwdownfile        = 'core_dwnLw_cs32.bin',
  swdownfile        = 'core_dwnSw_cs32.bin',
  runoffFile        = 'core_rnof_1_cs32.bin'
+ runoftempFile     = 'runoff_temperature.bin'
  climsstfile       = 'lev_surfT_cs_12m.bin',
  climsssfile       = 'lev_surfS_cs_12m.bin',
 #
