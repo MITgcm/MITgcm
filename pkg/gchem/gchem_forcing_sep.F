@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.30 2011/12/22 19:05:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.31 2013/07/01 23:15:14 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -25,11 +25,12 @@ C     must not be used.
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
-#include "GRID.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
+#include "DYNVARS.h"
 #include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
 #include "GCHEM.h"
 #ifdef ALLOW_DIC
@@ -55,6 +56,22 @@ C  bi,bj                :: tile indices
 C  k                    :: vertical level
       INTEGER bi,bj,iMin,iMax,jMin,jMax
 c     INTEGER i,j
+#ifdef ALLOW_DIAGNOSTICS
+      INTEGER iTr
+      CHARACTER*8 diagName
+#endif /* ALLOW_DIAGNOSTICS */
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+C--   fill-in tracer diagnostics before any GChem udate
+       DO iTr = 1,PTRACERS_numInUse
+        diagName = '        '
+        WRITE(diagName,'(A5,A2)') 'GC_Tr', PTRACERS_ioLabel(iTr)
+        CALL DIAGNOSTICS_FILL( pTracer(1-OLx,1-OLy,1,1,1,iTr), diagName,
+     &                         0, Nr, 0, 1, 1, myThid )
+       ENDDO
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 ccccccccccccccccccccccccc
 c global calculations   c
@@ -140,7 +157,7 @@ ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
 #endif
 cccccccccccccccccccccccccc END DIC cccccccccccccccccccccccccccccccccc
 #ifdef ALLOW_DARWIN
-        IF ( useDARWIN ) THEN
+         IF ( useDARWIN ) THEN
 #ifdef NUT_SUPPLY
 c articficial supply of nutrients
           CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,1),
@@ -162,7 +179,7 @@ C array because of last (iPtr) index
           CALL DARWIN_FORCING(  pTracer(1-OLx,1-OLy,1,1,1,1),
      &                          bi,bj,imin,imax,jmin,jmax,
      &                          myIter,myTime,myThid)
-        ENDIF
+         ENDIF
 #endif /* ALLOW_DARWIN */
 
         ENDDO

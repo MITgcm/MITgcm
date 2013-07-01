@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_diagnostics_init.F,v 1.5 2011/12/22 19:05:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_diagnostics_init.F,v 1.6 2013/07/01 23:15:14 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -13,32 +13,81 @@ C experiment
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
+#include "PTRACERS_SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "PTRACERS_PARAMS.h"
+#include "GAD.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_GCHEM
 #ifdef ALLOW_DIAGNOSTICS
+#ifdef GCHEM_SEPARATE_FORCING
+
+C     Functions ::
+      INTEGER     ILNBLNK
+      EXTERNAL    ILNBLNK
+      CHARACTER*4 GAD_DIAG_SUFX
+      EXTERNAL    GAD_DIAG_SUFX
 
 C     !LOCAL VARIABLES:
-c     INTEGER       diagNum
-c     CHARACTER*8   diagName
-c     CHARACTER*16  diagCode
-c     CHARACTER*16  diagUnits
-c     CHARACTER*(80) diagTitle
+      INTEGER       diagNum
+      CHARACTER*8   diagName
+      CHARACTER*16  diagCode
+      CHARACTER*16  diagUnits
+      CHARACTER*(80) diagTitle
+
+      INTEGER      iTrc, ilnb, tracerId
+      CHARACTER*7  trcUnits
+      CHARACTER*9  flxUnits, wUnits
+      CHARACTER*30 locName
+      CHARACTER*4  diagSufx
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Define diagnostics Names :
+
+      DO iTrc=1,PTRACERS_num
+C--    Set default name & tracer Units:
+       WRITE(locName,'(A,I4,A)') 'Tracer ',iTrc
+       trcUnits  = '(kg/kg)'
+C-     use name & units from data.ptracers :
+       ilnb = ILNBLNK(PTRACERS_units(iTrc))
+       IF ( ilnb.GE.1 ) THEN
+         ilnb = LEN(trcUnits)
+         trcUnits = PTRACERS_units(iTrc)(1:ilnb)
+       ENDIF
+       ilnb = ILNBLNK(PTRACERS_long_names(iTrc))
+       IF ( ilnb.GE.1 ) THEN
+         ilnb = MIN(LEN(locName),ilnb)
+         WRITE(locName,'(A)') PTRACERS_long_names(iTrc)(1:ilnb)
+       ELSE
+         ilnb = ILNBLNK(PTRACERS_names(iTrc))
+         IF ( ilnb.GE.1 ) THEN
+           ilnb = MIN(LEN(locName),ilnb)
+           WRITE(locName,'(A)') PTRACERS_names(iTrc)(1:ilnb)
+         ENDIF
+       ENDIF
+       ilnb = MAX(ILNBLNK(locName),1)
+
+       WRITE(diagName,'(A5,A2,A1)') 'GC_Tr',PTRACERS_ioLabel(iTrc),' '
+       WRITE(diagTitle,'(2A)') locName(1:ilnb),
+     &                         ' concentration before GCHEM'
+       diagUnits = trcUnits//'         '
+       diagCode  = 'SMR     MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      ENDDO
 
 C     diagnostics should be initialized in each package called by gchem
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+#endif /* GCHEM_SEPARATE_FORCING */
 #endif /* ALLOW_DIAGNOSTICS */
-#endif /* ALLOW_GCHEM */
 
       RETURN
       END
