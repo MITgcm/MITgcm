@@ -1,20 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.2 2013/06/24 20:53:35 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.3 2013/07/02 19:09:42 jmc Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-
 CBOP
       SUBROUTINE STREAMICE_ADVECT_THICKNESS ( myThid,myIter,time_step )
 
-C     /============================================================\
-C     | SUBROUTINE                                                 |   
+C     *============================================================*
+C     | SUBROUTINE                                                 |
 C     | o                                                          |
-C     |============================================================|
+C     *============================================================*
 C     |                                                            |
-C     \============================================================/
+C     *============================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -47,7 +46,7 @@ C     === Global variables ===
       _RL h_after_vflux_SI(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL hflux_x_SI(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL hflux_y_SI(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      
+
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       sec_per_year = 365.*86400.
@@ -66,7 +65,7 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
         DO j=1,sNy+1
          DO i=1,sNx+1
 
-          H_streamice_prev(i,j,bi,bj) = 
+          H_streamice_prev(i,j,bi,bj) =
      &     H_streamice(i,j,bi,bj)
 
           hflux_x_SI (i,j,bi,bj) = 0. _d 0
@@ -183,7 +182,7 @@ CADJ STORE H_streamice  = comlev1, key=ikey_dynamics
 #endif
 
 #ifndef ALLOW_AUTODIFF_TAMC
-      do while (time_step_rem .gt. 1.e-15) 
+      do while (time_step_rem .gt. 1.e-15)
        time_step_loc = min (
      &  streamice_cfl_factor / max_icfl,
      &  time_step_rem )
@@ -214,7 +213,7 @@ CADJ STORE H_streamice  = comlev1, key=ikey_dynamics
           IF (STREAMICE_hmask(i,j,bi,bj).eq.1.0) THEN
            h_after_uflux_SI (i,j,bi,bj) = H_streamice(i,j,bi,bj) -
      &      (hflux_x_SI(i+1,j,bi,bj)*dyG(i+1,j,bi,bj) -
-     &        hflux_x_SI(i,j,bi,bj)*dyG(i,j,bi,bj)) 
+     &        hflux_x_SI(i,j,bi,bj)*dyG(i,j,bi,bj))
      &        * recip_rA (i,j,bi,bj) * time_step_loc
            IF ( h_after_uflux_SI (i,j,bi,bj).le.0.0) THEN
             PRINT *, "h neg after x", i,j,hflux_x_SI(i+1,j,bi,bj),
@@ -279,7 +278,7 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
         DO j=1,sNy
          DO i=1,sNx
           IF (STREAMICE_hmask(i,j,bi,bj).eq.1.0) THEN
-           H_streamice (i,j,bi,bj) = 
+           H_streamice (i,j,bi,bj) =
      &      h_after_vflux_SI (i,j,bi,bj)
           ENDIF
          ENDDO
@@ -289,10 +288,10 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
 
 ! NOTE: AT THIS POINT H IS NOT VALID ON OVERLAP!!!
 
-!      CALL STREAMICE_ADV_FRONT ( 
+!      CALL STREAMICE_ADV_FRONT (
 !     &  myThid, time_step_loc,
 !     &  hflux_x_SI, hflux_y_SI )
- 
+
 
 #ifdef ALLOW_STREAMICE_2DTRACER
       CALL STREAMICE_ADVECT_2DTRACER(
@@ -301,12 +300,12 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
      &  time_step,
      &  uTrans,
      &  vTrans,
-     &  bcMaskx,
-     &  bcMasky )
+     &  BCMASKx,
+     &  BCMASKy )
 #endif
 
 #ifndef ALLOW_AUTODIFF_TAMC
-      time_step_rem = time_step_rem - time_step_loc      
+      time_step_rem = time_step_rem - time_step_loc
       enddo
 #endif
 
@@ -321,32 +320,31 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
          DO i=1,sNx
            IF (STREAMICE_hmask(i,j,bi,bj).eq.1.0 .or.
      &       STREAMICE_hmask(i,j,bi,bj).eq.2.0) THEN
-             MR = (1.-float_frac_streamice(i,j,bi,bj)) * 
+             MR = (1.-float_frac_streamice(i,j,bi,bj)) *
      &             BDOT_STREAMICE(i,j,bi,bj)
              SMB = ADOT_STREAMICE(i,j,bi,bj)
              TMB = SMB - MR
-             IF ((TMB.lt.0.0) .and. 
+             IF ((TMB.lt.0.0) .and.
      &         (MR * time_step_loc .gt.
      &          H_streamice (i,j,bi,bj))) THEN
                 H_streamice (i,j,bi,bj) = 0. _d 0
                 STREAMICE_hmask(i,j,bi,bj) = 0.
              ELSE
-               H_streamice (i,j,bi,bj) = 
+               H_streamice (i,j,bi,bj) =
      &          H_streamice (i,j,bi,bj) + TMB * time_step_loc
              ENDIF
            ENDIF
          ENDDO
         ENDDO
        ENDDO
-      ENDDO    
+      ENDDO
 
-      _EXCH_XY_RL (H_streamice,myThid) 
+      _EXCH_XY_RL (H_streamice,myThid)
 
-      
+
       WRITE(msgBuf,'(A)') 'END STREAMICE_ADVECT_THICKNESS'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , 1)
-      
+
 #endif
       END
-
