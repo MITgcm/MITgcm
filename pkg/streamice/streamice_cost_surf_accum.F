@@ -1,22 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cost_surf_accum.F,v 1.2 2013/06/21 19:59:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cost_surf_accum.F,v 1.3 2013/07/02 20:42:28 jmc Exp $
 C $Name:  $
 
+#include "STREAMICE_OPTIONS.h"
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
-#include "STREAMICE_OPTIONS.h"
-
 
       subroutine streamice_cost_surf_accum ( myThid, myIter )
-C     /==========================================================\
+C     *==========================================================*
 C     | subroutine cost_test                                     |
 C     | o this routine computes the cost function for the tiles  |
 C     |   of this processor                                      |
-C     |==========================================================|
+C     *==========================================================*
 C     |                                                          |
 C     | Notes                                                    |
 C     | =====                                                    |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == Global variables ===
@@ -31,7 +30,7 @@ C     == Global variables ===
 
 #ifdef ALLOW_COST
 # include "cost.h"
-#endif 
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
@@ -39,7 +38,6 @@ C     == Global variables ===
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
       integer myThid, myIter
-
 
 #ifdef ALLOW_COST_TEST
 C     == Local variables
@@ -55,17 +53,17 @@ C     == Local variables
       CHARACTER*(MAX_LEN_FNAM) suff
       CHARACTER*(MAX_LEN_FNAM) STREAMICEsurfOptimFile
       _RL S_obs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
- 
+
+      jtlo = mybylo(myThid)
+      jthi = mybyhi(myThid)
+      itlo = mybxlo(myThid)
+      ithi = mybxhi(myThid)
+
       WRITE(suff,'(a,I10.10,a)') 'land_ice_surf.',myIter, '.bin'
 
-      CALL READ_FLD_XY_RS( suff,
+      CALL READ_FLD_XY_RL( suff, ' ',
      &      S_obs, 0, myThid )
-      
+
 C--   Calculate mask for tracer cells  (0 => land, 1 => water)
 !       k=1
 
@@ -84,17 +82,15 @@ C--   Calculate cost function on tile of this instance
           do j=1,sNy
             do i=1,sNx
 
-
 !             S_obs(i,j,bi,bj) = 0.0
              if (streamice_cost_mask(i,j,bi,bj).eq.1.0) THEN
-              cost_func1_streamice (bi,bj) = 
+              cost_func1_streamice (bi,bj) =
      &        cost_func1_streamice (bi,bj) +
      &        streamice_wgt_surf * (S_obs(i,j,bi,bj)-
-     &               surf_el_streamice(i,j,bi,bj))**2 / Nx / Ny + 
+     &               surf_el_streamice(i,j,bi,bj))**2 / Nx / Ny +
      &        streamice_wgt_drift * (H_streamice(i,j,bi,bj)-
      &               H_streamice_prev(i,j,bi,bj))**2 / Nx / Ny
              endif
-     
 
             end do
           end do
@@ -105,4 +101,3 @@ C--   Calculate cost function on tile of this instance
 
       RETURN
       END
-                                          

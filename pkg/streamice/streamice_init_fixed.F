@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.3 2013/06/21 22:00:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.4 2013/07/02 20:42:28 jmc Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -75,7 +75,6 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
        ENDIF
       ENDIF
 
-
 !  INITIALIZE SIGMA COORD
       IF (STREAMICEsigcoordInit.eq.'FILE') THEN
        WRITE(msgBuf,'(A)') 'SIG FROM FILE - NOT IMPLENTED'
@@ -92,12 +91,11 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
      &                    SQUEEZE_RIGHT , 1)
       ENDIF
 
-
 #ifdef ALLOW_COST
       IF ( STREAMICEcostMaskFile .NE. ' ') THEN
         _BARRIER
 C       The 0 is the "iteration" argument. The ' ' is an empty suffix
-        CALL READ_FLD_XY_RL( STREAMICEcostMaskFile, ' ',
+        CALL READ_FLD_XY_RS( STREAMICEcostMaskFile, ' ',
      &   STREAMICE_cost_mask, 0, myThid )
        ELSE
         WRITE(msgBuf,'(A)') 'COST MASK - NOT IMPLENTED'
@@ -116,7 +114,6 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
 
       ENDIF
 #endif
-
 
 !    READ IN FILES FOR BOUNDARY MASKS AND DIRICH VALUES
 #ifdef STREAMICE_GEOM_FILE_SETUP
@@ -208,7 +205,6 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
 
 #endif
 
-
 ! with this setup hmask is initialized here rather than in init_varia,
 ! because it is needed to set no-flow boundaries, even though the field
 ! could potentially change due to ice shelf front advance and calving
@@ -224,7 +220,6 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
       ENDIF
 
       _EXCH_XY_RS(temp_hmask,myThid)
-
 
 #ifdef ALLOW_CTRL
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -258,7 +253,6 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
 #endif
 
 #endif /* STREAMICE_GEOM_FILE_SETUP */
-
 
 !!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -400,7 +394,6 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
 #else /* ifndef STREAMICE_GEOM_FILE_SETUP */
 ! BOUNDARY MASK CONFIGURED FROM FILES
 
-
           IF (temp_hmask(i,j,bi,bj).eq.1.0 .or.
      &        temp_hmask(i,j,bi,bj).eq.0.0 .or.
      &        temp_hmask(i-1,j,bi,bj).eq.1.0) THEN
@@ -469,7 +462,6 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
           IF (temp_hmask(i,j,bi,bj).eq.1.0 .or.
      &        temp_hmask(i,j,bi,bj).eq.0.0) THEN
 
-
            ! NORTH FACE OF CELL
            maskFlag=INT(temp_vfacemask(i,j+1,bi,bj))
            IF (maskFlag.eq.2) THEN
@@ -507,7 +499,6 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
      & STREAMICE_cost_mask, 0, myThid )
 #endif
 
-
       _EXCH_XY_RL(k1AtC_str, myThid )
       _EXCH_XY_RL(k2AtC_str, myThid )
       _EXCH_XY_RS(STREAMICE_ufacemask_bdry, myThid )
@@ -526,4 +517,3 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
 
       RETURN
       END
-
