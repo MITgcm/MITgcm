@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.128 2013/05/02 14:54:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.129 2013/07/03 16:18:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -411,7 +411,7 @@ C--   Freeze water at the surface
 CADJ STORE theta = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #endif
-        CALL FREEZE_SURFACE(  myTime, myIter, myThid )
+        CALL FREEZE_SURFACE( myTime, myIter, myThid )
       ENDIF
 
 #ifdef ALLOW_OCN_COMPON_INTERF
@@ -426,6 +426,10 @@ C--   Balance and Apply exchanges to surface forcing
       IF ( fluidIsWater ) THEN
         CALL EXTERNAL_FORCING_ADJUST( myTime, myIter, myThid )
       ENDIF
+
+#ifdef ALLOW_OFFLINE
+      IF ( .NOT. useOffLine ) THEN
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   HPF directive to help TAMC
@@ -914,6 +918,10 @@ C---  if fluid Is Water: end
       ENDIF
 #endif
 
+#ifdef ALLOW_OFFLINE
+      ENDIF
+#endif
+
 #ifdef ALLOW_BBL
       IF ( useBBL ) THEN
        CALL BBL_CALC_RHS(
@@ -929,13 +937,13 @@ C---  if fluid Is Water: end
 #endif /* ALLOW_MYPACKAGE */
 
 #ifdef ALLOW_GMREDI
-      IF ( useGMRedi ) THEN
+      IF ( useGMRedi .AND. .NOT.useOffLine ) THEN
         CALL GMREDI_DO_EXCH( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_GMREDI */
 
 #ifdef ALLOW_KPP
-      IF (useKPP) THEN
+      IF ( useKPP .AND. .NOT.useOffLine ) THEN
         CALL KPP_DO_EXCH( myThid )
       ENDIF
 #endif /* ALLOW_KPP */
@@ -954,7 +962,7 @@ C---  if fluid Is Water: end
 #endif
 
 #ifdef ALLOW_ECCO
-      CALL ECCO_PHYS(mythid)
+      CALL ECCO_PHYS( myThid )
 #endif
 
 #ifdef ALLOW_DEBUG

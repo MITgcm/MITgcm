@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.215 2013/04/13 20:47:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.216 2013/07/03 16:18:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -33,6 +33,11 @@ C $Name:  $
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
+#endif
+
+#define ALLOW_MOM_STEPPING
+#if ( defined (ALLOW_AUTODIFF) && defined (ALLOW_OFFLINE) )
+# undef ALLOW_MOM_STEPPING
 #endif
 
 CBOP
@@ -232,7 +237,7 @@ CEOP
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   Reset the model iteration counter and the model time.
       myIter = nIter0 + (iloop-1)
-      myTime = startTime + float(iloop-1)*deltaTclock
+      myTime = startTime + float(iloop-1)*deltaTClock
 #endif
 
 #ifdef ALLOW_LONGSTEP
@@ -349,13 +354,12 @@ C--   Call external chepaml forcing package
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('CHEAPAML',myThid)
 #endif
-        CALL TIMER_START('CHEAPAML      [FORWARD_STEP]',mythid)
+        CALL TIMER_START('CHEAPAML      [FORWARD_STEP]',myThid)
 C-    calculate qnet (and wind stress)
         CALL CHEAPAML( myTime, myIter,myThid )
-        CALL TIMER_STOP ('CHEAPAML      [FORWARD_STEP]',mythid)
+        CALL TIMER_STOP ('CHEAPAML      [FORWARD_STEP]',myThid)
       ENDIF
 #endif /*ALLOW_CHEAPAML */
-
 
 #ifdef ALLOW_AUTODIFF
 c--   Add control vector for forcing and parameter fields
@@ -387,7 +391,6 @@ C      Read in coupling data that I import.
        CALL TIMER_STOP ('OASIS_PUT-GET  [FORWARD_STEP]',myThid)
       ENDIF
 #endif /* ALLOW_OASIS */
-
 
 #ifdef ALLOW_EBM
       IF ( useEBM ) THEN
@@ -439,9 +442,6 @@ CADJ STORE hFacC = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifdef ALLOW_OFFLINE
-      IF ( .NOT. useOffLine ) THEN
-#endif
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('DO_OCEANIC_PHYS',myThid)
 #endif
@@ -449,12 +449,10 @@ CADJ STORE hFacC = comlev1, key = ikey_dynamics, kind = isbyte
        CALL DO_OCEANIC_PHYS( myTime, myIter, myThid )
        CALL TIMER_STOP ('DO_OCEANIC_PHYS     [FORWARD_STEP]',myThid)
 
-
-# ifdef ALLOW_STREAMICE
-       CALL STREAMICE_SOLO_TIMESTEP ( myThid, myiter, 
-     &   iLoop, mytime )        
+#ifdef ALLOW_STREAMICE
+       CALL STREAMICE_SOLO_TIMESTEP ( myThid, myIter,
+     &   iLoop, myTime )
 #endif
-
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE EmPmR    = comlev1, key = ikey_dynamics,
@@ -463,11 +461,6 @@ CADJ &     kind = isbyte
 CADJ STORE pmepr    = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 # endif
-#endif
-#ifdef ALLOW_OFFLINE
-      ENDIF
-#endif
-#ifdef ALLOW_AUTODIFF_TAMC
 cph-test(
 CADJ STORE surfaceForcingU = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE surfaceForcingV = comlev1, key=ikey_dynamics, kind=isbyte
@@ -476,9 +469,7 @@ CADJ STORE qsw = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE phi0surf = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 cph-test)
-#endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_DEPTH_CONTROL
 CADJ STORE hFacC, hFacS, hFacW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
@@ -567,8 +558,7 @@ CADJ STORE rstarexpc = comlev1, key = ikey_dynamics, kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_LONGSTEP
-      IF ( usePTRACERS ) THEN
-       IF ( LS_whenToSample .EQ. 0 ) THEN
+      IF ( usePTRACERS .AND. LS_whenToSample .EQ. 0 ) THEN
 C       Average all variables before advection (but after do_oceanic_phys
 C       where Qsw, KPP and GMRedi stuff is computed).
 C       This is like diagnostics package and will reproduce offline
@@ -589,7 +579,6 @@ C       results.
         CALL LONGSTEP_THERMODYNAMICS( myTime, myIter, myThid )
         CALL TIMER_STOP ('LONGSTEP_THERMODYNAMICS      [FORWARD_STEP]',
      &                    myThid)
-       ENDIF
       ENDIF
 #endif /* ALLOW_LONGSTEP */
 
@@ -608,8 +597,7 @@ C--     if not staggerTimeStep: end
       ENDIF
 
 #ifdef ALLOW_LONGSTEP
-      IF ( usePTRACERS ) THEN
-       IF ( LS_whenToSample .EQ. 1 ) THEN
+      IF ( usePTRACERS .AND. LS_whenToSample .EQ. 1 ) THEN
 C       Average T and S after thermodynamics, but U,V,W before dynamics.
 C       This will reproduce online results with staggerTimeStep=.FALSE.
 C       for LS_nIter=1
@@ -629,7 +617,6 @@ C       for LS_nIter=1
         CALL LONGSTEP_THERMODYNAMICS( myTime, myIter, myThid )
         CALL TIMER_STOP ('LONGSTEP_THERMODYNAMICS      [FORWARD_STEP]',
      &                   myThid)
-       ENDIF
       ENDIF
 #endif /* ALLOW_LONGSTEP */
 
@@ -669,7 +656,7 @@ CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Step forward fields and calculate time tendency terms.
-#ifndef ALLOW_OFFLINE
+#ifdef ALLOW_MOM_STEPPING
 #ifndef ALLOW_AUTODIFF_TAMC
       IF ( momStepping ) THEN
 #endif
@@ -682,7 +669,7 @@ C--   Step forward fields and calculate time tendency terms.
 #ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
 #endif
-#endif /* ndfef ALLOW_OFFLINE */
+#endif /* ALLOW_MOM_STEPPING */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
@@ -793,7 +780,7 @@ CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
       ENDIF
 
 C--   Correct divergence in flow field and cycle time-stepping momentum
-#ifndef ALLOW_OFFLINE
+#ifdef ALLOW_MOM_STEPPING
 #ifndef ALLOW_AUTODIFF_TAMC
       IF ( momStepping ) THEN
 #endif
@@ -809,7 +796,7 @@ CADJ &     = comlev1, key = ikey_dynamics
 #ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
 #endif
-#endif /* ndfef ALLOW_OFFLINE */
+#endif /* ALLOW_MOM_STEPPING */
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uvel,vvel = comlev1, key = ikey_dynamics
 #endif
@@ -1090,9 +1077,9 @@ C--   Save state for restarts
 #endif
 
 #ifdef ALLOW_SHOWFLOPS
-      CALL TIMER_START('SHOWFLOPS_INLOOP   [THE_MAIN_LOOP]', mythid)
-      CALL SHOWFLOPS_INLOOP( iloop, mythid )
-      CALL TIMER_STOP ('SHOWFLOPS_INLOOP   [THE_MAIN_LOOP]', mythid)
+      CALL TIMER_START('SHOWFLOPS_INLOOP   [THE_MAIN_LOOP]', myThid)
+      CALL SHOWFLOPS_INLOOP( iloop, myThid )
+      CALL TIMER_STOP ('SHOWFLOPS_INLOOP   [THE_MAIN_LOOP]', myThid)
 #endif
 
 #ifdef ALLOW_DEBUG
