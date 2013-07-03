@@ -27,12 +27,11 @@
  ivdc_kappa=100.,
  tempAdvScheme       = 2,
  saltAdvScheme       = 2,
- allowFreezing=.TRUE.,
+#allowFreezing=.TRUE.,
 # turn on looped cells
  hFacMin=.1,
  hFacMindz=50.,
  useCDscheme=.FALSE.,
- debugLevel=1,
  &
 
 # Elliptic solver parameters
