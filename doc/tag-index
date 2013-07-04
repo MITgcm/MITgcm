@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1890 2013/07/03 21:32:19 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1891 2013/07/04 13:44:56 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint64j (2013/07/04)
 o pkg/offline:
   - to enable the use of other features with pkg offline (e.g., obcs),
     also call S/R DO_OCEANIC_PHYS in offline run - more modifs to come.
