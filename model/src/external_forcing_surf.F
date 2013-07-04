@@ -1,14 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.56 2012/06/30 01:24:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.57 2013/07/04 23:05:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#undef CHECK_OVERLAP_FORCING
 
 CBOP
 C     !ROUTINE: EXTERNAL_FORCING_SURF
 C     !INTERFACE:
       SUBROUTINE EXTERNAL_FORCING_SURF(
-     I             bi, bj, iMin, iMax, jMin, jMax,
+     I             iMin, iMax, jMin, jMax,
      I             myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -28,11 +29,6 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#ifdef ALLOW_SEAICE
-# include "SEAICE_SIZE.h"
-# include "SEAICE_PARAMS.h"
-# include "SEAICE.h"
-#endif /* ALLOW_SEAICE */
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif /* ALLOW_SHELFICE */
@@ -43,12 +39,10 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     bi,bj  :: tile indices
 C     iMin,iMax, jMin,jMax :: Range of points for calculation
 C     myTime :: Current time in simulation
 C     myIter :: Current iteration number in simulation
 C     myThid :: Thread no. that called this routine.
-      INTEGER bi,bj
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       _RL myTime
@@ -57,18 +51,19 @@ C     myThid :: Thread no. that called this routine.
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
+C     bi,bj  :: tile indices
 C     i,j    :: loop indices
 C     ks     :: index of surface interface layer
+      INTEGER bi,bj
       INTEGER i,j
       INTEGER ks
+#ifdef ALLOW_BALANCE_FLUXES
+      _RS tmpVar(1)
+#endif
+#ifdef CHECK_OVERLAP_FORCING
+      _RS fixVal
+#endif
 CEOP
-#ifdef ALLOW_PTRACERS
-C     relaxForcingS :: Salt forcing due to surface relaxation
-      _RL relaxForcingS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif /* ALLOW_PTRACERS */
-#ifdef ALLOW_DIAGNOSTICS
-      _RL tmpFac
-#endif /* ALLOW_DIAGNOSTICS */
 
       IF ( usingPCoords ) THEN
        ks        = Nr
@@ -76,204 +71,116 @@ C     relaxForcingS :: Salt forcing due to surface relaxation
        ks        = 1
       ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          ikey = (act1 + 1) + act2*max1
-     &                      + act3*max1*max2
-     &                      + act4*max1*max2*max3
-#endif /* ALLOW_AUTODIFF_TAMC */
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#ifdef ALLOW_AUTODIFF_TAMC
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        surfaceForcingS(i,j,bi,bj) = 0. _d 0
-        surfaceForcingT(i,j,bi,bj) = 0. _d 0
+C--   Apply adjustment (balancing forcing) and exchanges
+C     to oceanic surface forcing
+
+#ifdef ALLOW_BALANCE_FLUXES
+C     balance fluxes
+      tmpVar(1) = oneRS
+      IF ( balanceEmPmR .AND. (.NOT.useSeaice .OR. useThSIce) ) THEN
+        CALL REMOVE_MEAN_RS( 1, EmPmR, maskInC, maskInC, rA, tmpVar,
+     &                       'EmPmR', myTime, myThid )
+      ENDIF
+      IF ( balanceQnet  .AND. (.NOT.useSeaice .OR. useThSIce) ) THEN
+        CALL REMOVE_MEAN_RS( 1, Qnet,  maskInC, maskInC, rA, tmpVar,
+     &                       'Qnet ', myTime, myThid )
+      ENDIF
+#endif /* ALLOW_BALANCE_FLUXES */
+
+C-    Apply exchanges (if needed)
+
+#ifdef CHECK_OVERLAP_FORCING
+C     Put large value in overlap of forcing array to check if exch is needed
+c     IF ( .NOT. useKPP ) THEN
+       fixVal = 1.
+       CALL RESET_HALO_RS ( EmPmR, fixVal, 1, myThid )
+       fixVal = 400.
+       CALL RESET_HALO_RS ( Qnet, fixVal, 1, myThid )
+       fixVal = -200.
+       CALL RESET_HALO_RS ( Qsw, fixVal, 1, myThid )
+       fixVal = 40.
+       CALL RESET_HALO_RS ( saltFlux, fixVal, 1, myThid )
+c     ENDIF
+#endif /* CHECK_OVERLAP_FORCING */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef EXACT_CONSERV
+C NB: synchronous time step: PmEpR lag 1 time step behind EmPmR
+C     to stay consitent with volume change (=d/dt etaH).
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE PmEpR = comlev1, key = ikey_dynamics,  kind = isbyte
+# endif
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        IF ( staggerTimeStep ) THEN
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           PmEpR(i,j,bi,bj) = -EmPmR(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
        ENDDO
       ENDDO
-#endif
+#endif /* EXACT_CONSERV */
+
+C--   set surfaceForcingT,S to zero.
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+           surfaceForcingT(i,j,bi,bj) = 0. _d 0
+           surfaceForcingS(i,j,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF ( doThetaClimRelax .OR. doSaltClimRelax ) THEN
 C--   Start with surface restoring term :
-
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE surfaceForcingS(:,:,bi,bj)  = comlev1_bibj,
-CADJ &     key=ikey, kind = isbyte
-# endif
-
-#ifdef ALLOW_SEAICE
-       IF ( useSEAICE .AND. (.NOT. SEAICErestoreUnderIce) ) THEN
-C     Do not restore under sea-ice
-        DO j = jMin, jMax
-         DO i = iMin, iMax
-C     Heat Flux (restoring term) :
-          surfaceForcingT(i,j,bi,bj) =
-     &      -lambdaThetaClimRelax(i,j,bi,bj)*(1.-AREA(i,j,bi,bj))
-     &         *(theta(i,j,ks,bi,bj)-SST(i,j,bi,bj))
-     &         *drF(ks)*_hFacC(i,j,ks,bi,bj)
-C     Salt Flux (restoring term) :
-          surfaceForcingS(i,j,bi,bj) =
-     &      -lambdaSaltClimRelax(i,j,bi,bj) *(1.-AREA(i,j,bi,bj))
-     &         *(salt(i,j,ks,bi,bj)-SSS(i,j,bi,bj))
-     &         *drF(ks)*_hFacC(i,j,ks,bi,bj)
-         ENDDO
-        ENDDO
-       ELSE
-#endif /* ALLOW_SEAICE */
-        DO j = jMin, jMax
-         DO i = iMin, iMax
-C     Heat Flux (restoring term) :
-          surfaceForcingT(i,j,bi,bj) =
-     &      -lambdaThetaClimRelax(i,j,bi,bj)
-     &         *(theta(i,j,ks,bi,bj)-SST(i,j,bi,bj))
-     &         *drF(ks)*_hFacC(i,j,ks,bi,bj)
-C     Salt Flux (restoring term) :
-          surfaceForcingS(i,j,bi,bj) =
-     &      -lambdaSaltClimRelax(i,j,bi,bj)
-     &         *(salt(i,j,ks,bi,bj)-SSS(i,j,bi,bj))
-     &         *drF(ks)*_hFacC(i,j,ks,bi,bj)
-         ENDDO
-        ENDDO
-#ifdef ALLOW_SEAICE
-       ENDIF
-#endif /* ALLOW_SEAICE */
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef NONLIN_FRSURF
-C-    T,S surface forcing will be applied (thermodynamics) after the update
-C     of surf.thickness (hFac): account for change in surf.thickness
-       IF (staggerTimeStep.AND.nonlinFreeSurf.GT.0) THEN
-        IF ( select_rStar.GT.0 ) THEN
-# ifndef DISABLE_RSTAR_CODE
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-            surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
-     &                                  * rStarExpC(i,j,bi,bj)
-            surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
-     &                                  * rStarExpC(i,j,bi,bj)
-          ENDDO
-         ENDDO
-# endif /* DISABLE_RSTAR_CODE */
-        ELSEIF ( selectSigmaCoord.NE.0 ) THEN
-# ifndef DISABLE_SIGMA_CODE
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-            surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
-     &        *( 1. _d 0 + dEtaHdt(i,j,bi,bj)*deltaTfreesurf
-     &                    *dBHybSigF(ks)*recip_drF(ks)
-     &                    *recip_hFacC(i,j,ks,bi,bj)
-     &         )
-            surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
-     &        *( 1. _d 0 + dEtaHdt(i,j,bi,bj)*deltaTfreesurf
-     &                    *dBHybSigF(ks)*recip_drF(ks)
-     &                    *recip_hFacC(i,j,ks,bi,bj)
-     &         )
-          ENDDO
-         ENDDO
-# endif /* DISABLE_SIGMA_CODE */
-        ELSE
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-           IF (ks.EQ.kSurfC(i,j,bi,bj)) THEN
-            surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
-     &             *_recip_hFacC(i,j,ks,bi,bj)*hFac_surfC(i,j,bi,bj)
-            surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
-     &             *_recip_hFacC(i,j,ks,bi,bj)*hFac_surfC(i,j,bi,bj)
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDIF
-       ENDIF
-#endif /* NONLIN_FRSURF */
-
-#ifdef ALLOW_BALANCE_RELAX
-       SSTrlxTile(bi,bj) = 0. _d 0
-       SSSrlxTile(bi,bj) = 0. _d 0
-       DO j=1,sNy
-        DO i=1,sNx
-         SSTrlx(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
-         SSTrlxTile(bi,bj) = 
-     &      SSTrlxTile(bi,bj) + surfaceForcingT(i,j,bi,bj)
-     &      * rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
-c     
-         SSSrlx(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
-         SSSrlxTile(bi,bj) = 
-     &      SSSrlxTile(bi,bj) + surfaceForcingS(i,j,bi,bj)
-     &      * rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
-        ENDDO
-       ENDDO
-#endif /* ALLOW_BALANCE_RELAX */
-
-#ifdef ALLOW_DIAGNOSTICS
-       IF ( useDiagnostics ) THEN
-
-C     tRelax (temperature relaxation [W/m2], positive <-> increasing Theta)
-        IF (.NOT.balanceThetaClimRelax) THEN
-        tmpFac = HeatCapacity_Cp*rUnit2mass
-        CALL DIAGNOSTICS_SCALE_FILL(
-     &           surfaceForcingT(1-OLx,1-OLy,bi,bj),tmpFac,1,
-     &                             'TRELAX  ',0, 1,2,bi,bj,myThid)
-        ENDIF
-
-C     sRelax (salt relaxation [g/m2/s], positive <-> increasing Salt)
-        IF (.NOT.balanceSaltClimRelax) THEN
-        tmpFac = rUnit2mass
-        CALL DIAGNOSTICS_SCALE_FILL(
-     &           surfaceForcingS(1-OLx,1-OLy,bi,bj),tmpFac,1,
-     &                             'SRELAX  ',0, 1,2,bi,bj,myThid)
-        ENDIF
-
-       ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
-
-      ELSE
-C--   No restoring for T & S : set surfaceForcingT,S to zero :
-
-       DO j = jMin, jMax
-        DO i = iMin, iMax
-          surfaceForcingT(i,j,bi,bj) = 0. _d 0
-          surfaceForcingS(i,j,bi,bj) = 0. _d 0
-        ENDDO
-       ENDDO
-
-C--   end restoring / no restoring block.
+      IF ( doThetaClimRelax .OR. doSaltClimRelax ) THEN
+       CALL FORCING_SURF_RELAX(
+     I              iMin, iMax, jMin, jMax,
+     I              myTime, myIter, myThid )
       ENDIF
 
 #ifdef ALLOW_PTRACERS
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE surfaceForcingS(:,:,bi,bj)  = comlev1_bibj,
-CADJ &     key=ikey, kind = isbyte
-# endif
+C--   passive tracer surface forcing:
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE surfaceForcingS = comlev1, key = ikey_dynamics,
+CADJ &    kind = isbyte
+#endif
       IF ( usePTRACERS ) THEN
-C--   save salt forcing due to surface relaxation
-       DO j = jMin, jMax
-        DO i = iMin, iMax
-         relaxForcingS(i,j) = surfaceForcingS(i,j,bi,bj)
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         CALL PTRACERS_FORCING_SURF(
+     I        surfaceForcingS(1-OLx,1-OLy,bi,bj),
+     I        bi, bj, iMin, iMax, jMin, jMax,
+     I        myTime,myIter,myThid )
         ENDDO
        ENDDO
       ENDIF
 #endif /* ALLOW_PTRACERS */
 
+C- Notes: setting of PmEpR and pTracers surface forcing could have been
+C         moved below, inside a unique bi,bj block. However this results
+C         in tricky dependencies for TAF (and recomputations).
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C--   Surface Fluxes :
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
 
-      DO j = jMin, jMax
+C--   Surface Fluxes :
+        DO j = jMin, jMax
          DO i = iMin, iMax
 
 C     Zonal wind stress fu:
-          surfaceForcingU(i,j,bi,bj) =
-     &      fu(i,j,bi,bj)*mass2rUnit
+          surfaceForcingU(i,j,bi,bj) = fu(i,j,bi,bj)*mass2rUnit
 C     Meridional wind stress fv:
-          surfaceForcingV(i,j,bi,bj) =
-     &      fv(i,j,bi,bj)*mass2rUnit
+          surfaceForcingV(i,j,bi,bj) = fv(i,j,bi,bj)*mass2rUnit
 C     Net heat flux Qnet:
           surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
      &       - ( Qnet(i,j,bi,bj)
@@ -286,17 +193,17 @@ C     Net Salt Flux :
      &      -saltFlux(i,j,bi,bj)*mass2rUnit
 
          ENDDO
-      ENDDO
+        ENDDO
 
 #ifdef ALLOW_SALT_PLUME
 C saltPlume is the amount of salt rejected by ice while freezing;
 C it is here subtracted from surfaceForcingS and will be redistributed
 C to multiple vertical levels later on as per Duffy et al. (GRL 1999)
-      IF ( useSALT_PLUME ) THEN
+        IF ( useSALT_PLUME ) THEN
          CALL SALT_PLUME_FORCING_SURF(
      I        bi, bj, iMin, iMax, jMin, jMax,
      I        myTime,myIter,myThid )
-      ENDIF
+        ENDIF
 #endif /* ALLOW_SALT_PLUME */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -304,22 +211,8 @@ C--   Fresh-water flux
 
 C-    Apply mask on Fresh-Water flux (if useRealFreshWaterFlux)
 C     <== removed: maskInC is applied directly in S/R SOLVE_FOR_PRESSURE
-c#ifdef ALLOW_AUTODIFF_TAMC
-cCADJ STORE surfaceForcingS(:,:,bi,bj)  = comlev1_bibj,
-cCADJ &     key=ikey, kind = isbyte
-c#endif
 
 #ifdef EXACT_CONSERV
-C NB: synchronous time step: PmEpR lag 1 time step behind EmPmR
-C     to stay consitent with volume change (=d/dt etaH).
-      IF ( staggerTimeStep ) THEN
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-           PmEpR(i,j,bi,bj) = -EmPmR(i,j,bi,bj)
-         ENDDO
-        ENDDO
-      ENDIF
-
       IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &     .AND. useRealFreshWaterFlux ) THEN
 
@@ -417,15 +310,6 @@ C-    end local-surface-tracer / uniform-value distinction
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#ifdef ALLOW_PTRACERS
-      IF ( usePTRACERS ) THEN
-         CALL PTRACERS_FORCING_SURF(
-     I        relaxForcingS,
-     I        bi, bj, iMin, iMax, jMin, jMax,
-     I        myTime,myIter,myThid )
-      ENDIF
-#endif /* ALLOW_PTRACERS */
-
 #ifdef ATMOSPHERIC_LOADING
 C-- Atmospheric surface Pressure loading : added to phi0surf when using Z-coord;
 C   Not yet implemented for Ocean in P: would need to be applied to the other end
@@ -435,48 +319,52 @@ C   Using P-coord., a hack (now directly applied from S/R INI_FORCING)
 C   is sometime used to read phi0surf from a file (pLoadFile) instead
 C   of computing it from bathymetry & density ref. profile.
 
-      IF ( usingZCoords ) THEN
+        IF ( usingZCoords ) THEN
 C   The true atmospheric P-loading is not yet implemented for P-coord
 C   (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
-       IF ( useRealFreshWaterFlux ) THEN
-        DO j = jMin, jMax
-         DO i = iMin, iMax
-          phi0surf(i,j,bi,bj) = ( pLoad(i,j,bi,bj)
-     &                        +sIceLoad(i,j,bi,bj)*gravity
-     &                          )*recip_rhoConst
-         ENDDO
-        ENDDO
-       ELSE
-        DO j = jMin, jMax
-         DO i = iMin, iMax
-          phi0surf(i,j,bi,bj) = pLoad(i,j,bi,bj)*recip_rhoConst
-         ENDDO
-        ENDDO
-       ENDIF
-c     ELSEIF ( usingPCoords ) THEN
+         IF ( useRealFreshWaterFlux ) THEN
+          DO j = jMin, jMax
+           DO i = iMin, iMax
+            phi0surf(i,j,bi,bj) = ( pLoad(i,j,bi,bj)
+     &                          +sIceLoad(i,j,bi,bj)*gravity
+     &                            )*recip_rhoConst
+           ENDDO
+          ENDDO
+         ELSE
+          DO j = jMin, jMax
+           DO i = iMin, iMax
+            phi0surf(i,j,bi,bj) = pLoad(i,j,bi,bj)*recip_rhoConst
+           ENDDO
+          ENDDO
+         ENDIF
+c       ELSEIF ( usingPCoords ) THEN
 C-- This is a hack used to read phi0surf from a file (pLoadFile)
 C   instead of computing it from bathymetry & density ref. profile.
 C   ==> now done only once, in S/R INI_FORCING
-c       DO j = jMin, jMax
-c        DO i = iMin, iMax
-c         phi0surf(i,j,bi,bj) = pLoad(i,j,bi,bj)
-c        ENDDO
-c       ENDDO
-      ENDIF
+c         DO j = jMin, jMax
+c          DO i = iMin, iMax
+c           phi0surf(i,j,bi,bj) = pLoad(i,j,bi,bj)
+c          ENDDO
+c         ENDDO
+        ENDIF
 #endif /* ATMOSPHERIC_LOADING */
 
 #ifdef ALLOW_SHELFICE
-      IF ( usingZCoords ) THEN
-       IF ( useSHELFICE) THEN
-        DO j = jMin, jMax
-         DO i = iMin, iMax
-          phi0surf(i,j,bi,bj) = phi0surf(i,j,bi,bj)
+        IF ( usingZCoords ) THEN
+         IF ( useSHELFICE) THEN
+          DO j = jMin, jMax
+           DO i = iMin, iMax
+            phi0surf(i,j,bi,bj) = phi0surf(i,j,bi,bj)
      &         + shelficeLoadAnomaly(i,j,bi,bj)*recip_rhoConst
-         ENDDO
-        ENDDO
-       ENDIF
-      ENDIF
+           ENDDO
+          ENDDO
+         ENDIF
+        ENDIF
 #endif /* ALLOW_SHELFICE */
+
+C--   end bi,bj loops.
+       ENDDO
+      ENDDO
 
       RETURN
       END

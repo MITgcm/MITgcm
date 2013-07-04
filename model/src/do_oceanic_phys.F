@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.129 2013/07/03 16:18:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.130 2013/07/04 23:05:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -422,10 +422,27 @@ C jmc: do not know precisely where to put this call (bf or af thSIce ?)
       ENDIF
 #endif /* ALLOW_OCN_COMPON_INTERF */
 
-C--   Balance and Apply exchanges to surface forcing
+      iMin = 1-OLx
+      iMax = sNx+OLx
+      jMin = 1-OLy
+      jMax = sNy+OLy
+
+C---  Determines forcing terms based on external fields
+C     relaxation terms, etc.
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('EXTERNAL_FORCING_SURF',myThid)
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE salt, theta = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+#else  /* ALLOW_AUTODIFF_TAMC */
+C--   if fluid is not water, by-pass surfaceForcing, find_rho, gmredi
+C     and all vertical mixing schemes, but keep OBCS_CALC
       IF ( fluidIsWater ) THEN
-        CALL EXTERNAL_FORCING_ADJUST( myTime, myIter, myThid )
-      ENDIF
+#endif /* ALLOW_AUTODIFF_TAMC */
+        CALL EXTERNAL_FORCING_SURF(
+     I             iMin, iMax, jMin, jMax,
+     I             myTime, myIter, myThid )
 
 #ifdef ALLOW_OFFLINE
       IF ( .NOT. useOffLine ) THEN
@@ -434,10 +451,6 @@ C--   Balance and Apply exchanges to surface forcing
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   HPF directive to help TAMC
 CHPF$ INDEPENDENT
-#else  /* ALLOW_AUTODIFF_TAMC */
-C     if fluid is not water, by-pass find_rho, gmredi, surfaceForcing
-C     and all vertical mixing schemes, but keep OBCS_CALC
-      IF ( fluidIsWater ) THEN
 #endif /* ALLOW_AUTODIFF_TAMC */
       DO bj=myByLo(myThid),myByHi(myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -519,11 +532,6 @@ cph although some of these are re-initialised later.
           ENDDO
          ENDDO
         ENDDO
-
-        iMin = 1-OLx
-        iMax = sNx+OLx
-        jMin = 1-OLy
-        jMax = sNy+OLy
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey,
@@ -719,46 +727,8 @@ C--     Diagnose Mixed Layer Depth:
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
-C--     Determines forcing terms based on external fields
-C       relaxation terms, etc.
-#ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('EXTERNAL_FORCING_SURF',myThid)
-#endif
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE EmPmR(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey,
-CADJ &     kind = isbyte
-# ifdef EXACT_CONSERV
-CADJ STORE PmEpR(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey,
-CADJ &     kind = isbyte
-# endif
-# ifdef NONLIN_FRSURF
-CADJ STORE hFac_surfC(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey,
-CADJ &     kind = isbyte
-CADJ STORE recip_hFacC(:,:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey,
-CADJ &     kind = isbyte
-#  if (defined (ALLOW_PTRACERS))
-CADJ STORE surfaceForcingS(:,:,bi,bj)   = comlev1_bibj, key=itdkey,
-CADJ &     kind = isbyte
-CADJ STORE surfaceForcingT(:,:,bi,bj)   = comlev1_bibj, key=itdkey,
-CADJ &     kind = isbyte
-#  endif /* ALLOW_PTRACERS */
-# endif /* NONLIN_FRSURF */
-#endif
-        CALL EXTERNAL_FORCING_SURF(
-     I             bi, bj, iMin, iMax, jMin, jMax,
-     I             myTime, myIter, myThid )
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifdef EXACT_CONSERV
-cph-test
-cphCADJ STORE PmEpR(:,:,bi,bj)
-cphCADJ &     = comlev1_bibj, key=itdkey,
-cphCADJ &     kind = isbyte
-# endif
-#endif
+C--    This is where EXTERNAL_FORCING_SURF(bi,bj) used to be called;
+C      now called earlier, before bi,bj loop.
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph needed for KPP
@@ -901,24 +871,12 @@ C--   end bi,bj loops.
        ENDDO
       ENDDO
 
-#ifdef ALLOW_BALANCE_RELAX
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE SSSrlx = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE SSSrlxTile = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE SSSrlxGlob = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE SSTrlx = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE SSTrlxTile = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE SSTrlxGlob = comlev1, key=ikey_dynamics, kind=isbyte
-# endif /* ALLOW_AUTODIFF_TAMC */
-       CALL BALANCE_RELAX( myTime, myIter, myThid )
-#endif /* ALLOW_BALANCE_RELAX */
-
-#ifndef ALLOW_AUTODIFF_TAMC
-C---  if fluid Is Water: end
+#ifdef ALLOW_OFFLINE
       ENDIF
 #endif
 
-#ifdef ALLOW_OFFLINE
+#ifndef ALLOW_AUTODIFF_TAMC
+C---  if fluid Is Water: end
       ENDIF
 #endif
 

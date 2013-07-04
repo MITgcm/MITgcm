@@ -1,6 +1,5 @@
 adams_bashforth2.f
 adams_bashforth3.f
-balance_relax.f
 calc_3d_diffusivity.f
 calc_common_factors.f
 calc_diffusivity.f
@@ -33,8 +32,8 @@ do_stagger_fields_exchanges.f
 dynamics.f	
 external_fields_load.f
 external_forcing.f
-external_forcing_adjust.f
 external_forcing_surf.f
+forcing_surf_relax.f
 find_alpha.f	
 find_rho.f	
 forward_step.f

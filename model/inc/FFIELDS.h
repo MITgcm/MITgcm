@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.44 2013/04/22 02:32:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.45 2013/07/04 23:05:09 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h
@@ -134,17 +134,6 @@ c#endif
       COMMON /eddypsiFFIELDS/ eddyPsiX,eddyPsiY
       _RS  eddyPsiX (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  eddyPsiY (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif
-
-#ifdef ALLOW_BALANCE_RELAX
-      COMMON/RMMEANRLX/ SSSrlx,SSSrlxTile,SSSrlxGlob,
-     &                  SSTrlx,SSTrlxTile,SSTrlxGlob
-      _RL SSTrlx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SSTrlxTile(nSx,nSy)
-      _RL SSTrlxGlob
-      _RL SSSrlx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SSSrlxTile(nSx,nSy)
-      _RL SSSrlxGlob
 #endif
 
 #ifndef EXCLUDE_FFIELDS_LOAD
