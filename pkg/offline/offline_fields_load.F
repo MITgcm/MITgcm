@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.21 2011/06/07 22:25:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.22 2013/07/04 22:52:59 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -346,9 +346,11 @@ C--   end if-block for loading new time-records
 C--   Interpolate uvel, vvel, wvel
       DO bj = myByLo(myThid), myByHi(myThid)
       DO bi = myBxLo(myThid), myBxHi(myThid)
+       offline_Wght(1,bi,bj) = bWght
+       offline_Wght(2,bi,bj) = aWght
        DO k=1,Nr
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           uVel(i,j,k,bi,bj)   = bWght*uvel0(i,j,k,bi,bj)
      &                       +aWght*uvel1(i,j,k,bi,bj)
           vVel(i,j,k,bi,bj)    = bWght*vvel0(i,j,k,bi,bj)
@@ -382,8 +384,8 @@ C         the product ghat*diffKzS (and not ghat alone).
          ENDDO
         ENDDO
        ENDDO
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
           surfaceForcingT(i,j,bi,bj) = bWght*hflx0(i,j,bi,bj)
      &                       +aWght*hflx1(i,j,bi,bj)
           surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/OFFLINE.h,v 1.10 2011/04/20 01:45:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/OFFLINE.h,v 1.11 2013/07/04 22:52:59 jmc Exp $
 C $Name:  $
 
 #ifdef  ALLOW_OFFLINE
@@ -11,15 +11,15 @@ c -------------------------------
 c   Forcing files
       COMMON /OFFLINE_COMMON_R/
      &       ConvectCount, ICEM,
+     &       offline_Wght,
      &       deltaToffline,
-     &       offlineForcingPeriod, offlineForcingCycle,
-     &       offlineLoadPrec
+     &       offlineForcingPeriod, offlineForcingCycle
       _RL ICEM(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS ConvectCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RS ConvectCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL offline_Wght(2,nSx,nSy)
       _RL deltaToffline
       _RL offlineForcingPeriod
       _RL offlineForcingCycle
-      INTEGER offlineLoadPrec
 
       COMMON /OFFLINE_COMMON_C/
      &       UvelFile, VvelFile, WvelFile, ThetFile, Saltfile,
@@ -44,9 +44,11 @@ c   Forcing files
 C     offlineLdRec :: time-record currently loaded (in temp arrays *[1])
       COMMON /OFFLINE_COMMON_I/
      &       offlineLdRec,
+     &       offlineLoadPrec,
      &       offlineIter0, offlineOffsetIter
 
       INTEGER offlineLdRec(nSx,nSy)
+      INTEGER offlineLoadPrec
       INTEGER offlineIter0
       INTEGER offlineOffsetIter
 
@@ -94,5 +96,4 @@ C     aWght, bWght :: Interpolation weights
       _RS  kght1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #endif /* ALLOW_OFFLINE*/
-
 
