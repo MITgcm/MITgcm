@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_model_main.F,v 1.7 2013/06/21 16:21:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_model_main.F,v 1.8 2013/07/07 00:31:20 jmc Exp $
 
 CBOI
 C
@@ -501,6 +501,9 @@ C     myCurrentIter - Iteration counter for this thread
       CHARACTER*(MAX_LEN_FNAM) fname
 C     Temprarily change precision to agree with ctrlprec
       INTEGER tmpprec
+#ifdef ALLOW_GENARR3D_CONTROL
+      INTEGER ik
+#endif
 #ifdef OAD_DEBUG
       INTEGER i1, i2, i3, i4, i5
 #endif
@@ -637,10 +640,10 @@ C--   Call time stepping loop of full model
 #ifdef OAD_DEBUG
 # if (defined (ALLOW_THETA0_CONTROL) && defined (ALLOW_SALT0_CONTROL))
       do i1=1-olx,snx+olx
-	do i2=1-oly,sny+oly
-	  do i3=1,nr
-	    do i4=1,nsx
-	      do i5=1,nsy
+        do i2=1-oly,sny+oly
+          do i3=1,nr
+            do i4=1,nsx
+              do i5=1,nsy
                  write (standardmessageunit,
      +'(A,5(I3,A),E25.17E3,A,E25.17E3)') 
      +'OAD: (',
@@ -668,9 +671,9 @@ C     Temporarily change setting of writeBinaryPrec
       fooEtan=etan%d
       call write_fld_xy_rl('adxx_etan.',suff,fooEtan,myCurrentIter,1)
 #ifdef ALLOW_GENARR3D_CONTROL
-      do i1 = 1, maxCtrlArr3D
-        foo=xx_genarr3d(:,:,:,:,:,i1)%d
-        write(fname,'(A,I2.2,A)') 'adxx_genarr3d_',i1,'.'
+      do ik = 1, maxCtrlArr3D
+        foo=xx_genarr3d(:,:,:,:,:,ik)%d
+        write(fname,'(A,I2.2,A)') 'adxx_genarr3d_',ik,'.'
         call write_fld_xyz_rl(fname,suff,foo,myCurrentIter,1)
       enddo
 #endif
