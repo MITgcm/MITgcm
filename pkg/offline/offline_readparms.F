@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_readparms.F,v 1.9 2010/04/04 14:16:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_readparms.F,v 1.10 2013/07/07 22:25:13 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -16,14 +16,12 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_OFFLINE
 #include "OFFLINE.h"
-#endif
+#include "OFFLINE_SWITCH.h"
 
 C     === Routine arguments ===
       INTEGER myThid
 
-#ifdef ALLOW_OFFLINE
 C     === Local variables ===
 C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
@@ -34,10 +32,10 @@ C     Retired main data.offline file parameters
 
 C--   Bulk Formula parameter
       NAMELIST /OFFLINE_PARM01/
-     &         UvelFile, VvelFile, WvelFile, ThetFile,
-     &         SaltFile, ConvFile, GMwxFile, GMwyFile,
-     &         GMwzFile, HfluxFile, SfluxFile,
-     &         KPP_DiffSFile, KPP_ghatKFile, ICEFile,
+     &         UvelFile, VvelFile, WvelFile, ThetFile, SaltFile,
+     &         GMwxFile, GMwyFile, GMwzFile,
+     &         ConvFile, KPP_DiffSFile, KPP_ghatKFile,
+     &         HFluxFile, SFluxFile, IceFile,
      &         KPP_ghatFile
 
       NAMELIST /OFFLINE_PARM02/
@@ -60,21 +58,21 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I                          myThid )
 
 C--   Default values for params in OFFLINE_PARM01 :
-      UvelFile=' '
-      VvelFile=' '
-      WvelFile=' '
-      ThetFile=' '
-      SaltFile='  '
-      ConvFile=' '
-      GMwxFile=' '
-      GMwyFile=' '
-      GMwzFile=' '
-      HFluxFile=' '
-      SFluxFile=' '
-      KPP_DiffSFile=' '
-      KPP_ghatKFile=' '
-      KPP_ghatFile='KPP_ghatFile has been replaced by KPP_ghatKFile'
-      ICEFile=' '
+      UvelFile = ' '
+      VvelFile = ' '
+      WvelFile = ' '
+      ThetFile = ' '
+      SaltFile = '  '
+      GMwxFile = ' '
+      GMwyFile = ' '
+      GMwzFile = ' '
+      ConvFile = ' '
+      KPP_DiffSFile= ' '
+      KPP_ghatKFile= ' '
+      KPP_ghatFile = 'KPP_ghatFile has been replaced by KPP_ghatKFile'
+      HFluxFile= ' '
+      SFluxFile= ' '
+      IceFile  = ' '
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=OFFLINE_PARM01)
@@ -109,12 +107,19 @@ C--   Read parameters from open data file
 
 C--   Close the open data file
       CLOSE(iUnit)
+
+C--   derive other parameters:
+      offlineLoadGMRedi = ( GMwxFile .NE. ' ' )
+     &                .OR.( GMwyFile .NE. ' ' )
+     &                .OR.( GMwzFile .NE. ' ' )
+      offlineLoadKPP    = ( KPP_DiffSFile .NE. ' ' )
+     &                .OR.( KPP_ghatKFile .NE. ' ' )
+      offlineLoadConvec = ( ConvFile .NE. ' ' )
+
       _END_MASTER(myThid)
 
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
-
-#endif /* ALLOW_OFFLINE */
 
       RETURN
       END
