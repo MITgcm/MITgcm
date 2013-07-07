@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1892 2013/07/05 17:18:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1893 2013/07/07 01:49:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o OpenAD:
+  - do not define OAD_DEBUG (in tools/adjoint_options/adjoint_oad) to get
+    smaller standard output) and generate new (smaller) output (on baudelaire
+    using gfortran with -ieee) for exp. tutorial_tracer_adjsens
 o model/src:
   - call EXTERNAL_FORCING_SURF outside bi,bj loops (in do_oceanic_phys.F),
     (where external_forcing_adjust was called) and change list of arguments;
