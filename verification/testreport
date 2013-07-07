@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.184 2013/06/13 19:05:32 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.185 2013/07/07 00:33:19 jmc Exp $
 #  $Name:  $
 #
 
@@ -470,6 +470,7 @@ run_clean()
 	    rm -f $RUNLOG *.txt STD* w2_tile_topology.????.log *diagnostics.log datetime
 	    rm -rf mnc_test_*
 	    rm -f *_MIT_CE_000.opt0000 costfunction*0000
+	    rm -f oad_cp.000.[0-9][0-9][0-9][0-9][0-9]
 	    echo successful
 	    exit 0
 	)
