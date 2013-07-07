@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_ad_check_lev4_dir.h,v 1.2 2009/10/10 21:28:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_ad_check_lev4_dir.h,v 1.3 2013/07/07 22:24:20 jmc Exp $
 C $Name:  $
 
 cph( not sure exactly why these are needed.
@@ -28,7 +28,5 @@ CADJ STORE gmky0 = tapelev4, key = ilev_4
 CADJ STORE gmky1 = tapelev4, key = ilev_4
 CADJ STORE gmkz0 = tapelev4, key = ilev_4
 CADJ STORE gmkz1 = tapelev4, key = ilev_4
-CADJ STORE hflx0 = tapelev4, key = ilev_4
-CADJ STORE hflx1 = tapelev4, key = ilev_4
 CADJ STORE sflx0 = tapelev4, key = ilev_4
 CADJ STORE sflx1 = tapelev4, key = ilev_4

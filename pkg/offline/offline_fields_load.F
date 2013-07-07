@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.22 2013/07/04 22:52:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.23 2013/07/07 22:24:20 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -144,7 +144,9 @@ C     data for the period ahead and the period behind myTime.
 C if reading own files setup reading here
 #else
 
-       IF ( Uvelfile      .NE. ' '  ) THEN
+C--   Read in 3-D fields and apply EXCH
+
+       IF ( Uvelfile .NE. ' '  ) THEN
         I1=IFNBLNK(Uvelfile)
         I2=ILNBLNK(Uvelfile)
         WRITE(fn,'(A,A,I10.10)') Uvelfile(I1:I2),'.',
@@ -156,8 +158,7 @@ c       print*,'OFFLINE READ', fn
 c       print*,'OFFLINE READ', fn
         CALL READ_REC_3D_RS( fn, prec, Nr, uvel1, 1, myIter, myThid )
        ENDIF
-
-       IF ( Vvelfile      .NE. ' '  ) THEN
+       IF ( Vvelfile .NE. ' '  ) THEN
         I1=IFNBLNK(Vvelfile)
         I2=ILNBLNK(Vvelfile)
         WRITE(fn,'(A,A,I10.10)') Vvelfile(I1:I2),'.',
@@ -167,8 +168,12 @@ c       print*,'OFFLINE READ', fn
      &        intime1*Ifprd +offlineIter0
         CALL READ_REC_3D_RS( fn, prec, Nr, vvel1, 1, myIter, myThid )
        ENDIF
+       IF ( Uvelfile .NE. ' ' .OR. Vvelfile .NE. ' '  ) THEN
+        CALL EXCH_UV_XYZ_RS( uvel0, vvel0, .TRUE., myThid )
+        CALL EXCH_UV_XYZ_RS( uvel1, vvel1, .TRUE., myThid )
+       ENDIF
 
-       IF (Wvelfile      .NE. ' '  ) THEN
+       IF ( Wvelfile .NE. ' '  ) THEN
         I1=IFNBLNK(Wvelfile)
         I2=ILNBLNK(Wvelfile)
         WRITE(fn,'(A,A,I10.10)') Wvelfile(I1:I2),'.',
@@ -177,9 +182,11 @@ c       print*,'OFFLINE READ', fn
         WRITE(fn,'(A,A,I10.10)') Wvelfile(I1:I2),'.',
      &        intime1*Ifprd +offlineIter0
         CALL READ_REC_3D_RS( fn, prec, Nr, wvel1, 1, myIter, myThid )
+        _EXCH_XYZ_RS(wvel0, myThid )
+        _EXCH_XYZ_RS(wvel1, myThid )
        ENDIF
 
-       IF (Thetfile      .NE. ' '  ) THEN
+       IF ( Thetfile .NE. ' '  ) THEN
         I1=IFNBLNK(Thetfile)
         I2=ILNBLNK(Thetfile)
         WRITE(fn,'(A,A,I10.10)') Thetfile(I1:I2),'.',
@@ -188,9 +195,11 @@ c       print*,'OFFLINE READ', fn
         WRITE(fn,'(A,A,I10.10)') Thetfile(I1:I2),'.',
      &        intime1*Ifprd +offlineIter0
         CALL READ_REC_3D_RS( fn, prec, Nr, tave1, 1, myIter, myThid )
+        _EXCH_XYZ_RS(tave0 , myThid )
+        _EXCH_XYZ_RS(tave1 , myThid )
        ENDIF
 
-       IF (Saltfile       .NE. ' ' ) THEN
+       IF ( Saltfile .NE. ' ' ) THEN
         I1=IFNBLNK(Saltfile)
         I2=ILNBLNK(Saltfile)
         WRITE(fn,'(A,A,I10.10)') Saltfile(I1:I2),'.',
@@ -199,21 +208,12 @@ c       print*,'OFFLINE READ', fn
         WRITE(fn,'(A,A,I10.10)') Saltfile(I1:I2),'.',
      &        intime1*Ifprd +offlineIter0
         CALL READ_REC_3D_RS( fn, prec, Nr, save1, 1, myIter, myThid )
-       ENDIF
-
-       IF (ConvFile       .NE. ' ' ) THEN
-        I1=IFNBLNK(ConvFile)
-        I2=ILNBLNK(ConvFile)
-        WRITE(fn,'(A,A,I10.10)') ConvFile(I1:I2),'.',
-     &        intime0*Ifprd +offlineIter0
-        CALL READ_REC_3D_RS( fn, prec, Nr, conv0, 1, myIter, myThid )
-        WRITE(fn,'(A,A,I10.10)') ConvFile(I1:I2),'.',
-     &        intime1*Ifprd +offlineIter0
-        CALL READ_REC_3D_RS( fn, prec, Nr, conv1, 1, myIter, myThid )
+        _EXCH_XYZ_RS(save0, myThid )
+        _EXCH_XYZ_RS(save1, myThid )
        ENDIF
 
 #ifdef ALLOW_GMREDI
-       IF (GMwxFile       .NE. ' ' ) THEN
+       IF ( GMwxFile .NE. ' ' ) THEN
         I1=IFNBLNK(GMwxFile)
         I2=ILNBLNK(GMwxFile)
         WRITE(fn,'(A,A,I10.10)') GMwxFile(I1:I2),'.',
@@ -223,8 +223,7 @@ c       print*,'OFFLINE READ', fn
      &        intime1*Ifprd +offlineIter0
         CALL READ_REC_3D_RS( fn, prec, Nr, gmkx1, 1, myIter, myThid )
        ENDIF
-
-       IF (GMwyFile       .NE. ' ') THEN
+       IF ( GMwyFile .NE. ' ' ) THEN
         I1=IFNBLNK(GMwyFile)
         I2=ILNBLNK(GMwyFile)
         WRITE(fn,'(A,A,I10.10)') GMwyFile(I1:I2),'.',
@@ -234,8 +233,12 @@ c       print*,'OFFLINE READ', fn
      &        intime1*Ifprd +offlineIter0
         CALL READ_REC_3D_RS( fn, prec, Nr, gmky1, 1, myIter, myThid )
        ENDIF
+       IF ( GMwxFile .NE. ' ' .OR. GMwyFile .NE. ' ' ) THEN
+        CALL EXCH_UV_AGRID_3D_RS( gmkx0, gmky0, .FALSE., Nr, myThid )
+        CALL EXCH_UV_AGRID_3D_RS( gmkx1, gmky1, .FALSE., Nr, myThid )
+       ENDIF
 
-       IF (GMwzFile       .NE. ' ') THEN
+       IF ( GMwzFile       .NE. ' ') THEN
         I1=IFNBLNK(GMwzFile)
         I2=ILNBLNK(GMwzFile)
         WRITE(fn,'(A,A,I10.10)') GMwzFile(I1:I2),'.',
@@ -244,44 +247,26 @@ c       print*,'OFFLINE READ', fn
         WRITE(fn,'(A,A,I10.10)') GMwzFile(I1:I2),'.',
      &        intime1*Ifprd +offlineIter0
         CALL READ_REC_3D_RS( fn, prec, Nr, gmkz1, 1, myIter, myThid )
+        _EXCH_XYZ_RS(gmkz0, myThid )
+        _EXCH_XYZ_RS(gmkz1, myThid )
        ENDIF
 #endif
 
-       IF (HFluxFile      .NE. ' ') THEN
-        I1=IFNBLNK(HFluxFile)
-        I2=ILNBLNK(HFluxFile)
-        WRITE(fn,'(A,A,I10.10)') HFluxFile(I1:I2),'.',
+       IF ( ConvFile .NE. ' ' ) THEN
+        I1=IFNBLNK(ConvFile)
+        I2=ILNBLNK(ConvFile)
+        WRITE(fn,'(A,A,I10.10)') ConvFile(I1:I2),'.',
      &        intime0*Ifprd +offlineIter0
-        CALL READ_REC_3D_RS( fn, prec,  1, hflx0, 1, myIter, myThid )
-        WRITE(fn,'(A,A,I10.10)') HFluxFile(I1:I2),'.',
+        CALL READ_REC_3D_RS( fn, prec, Nr, conv0, 1, myIter, myThid )
+        WRITE(fn,'(A,A,I10.10)') ConvFile(I1:I2),'.',
      &        intime1*Ifprd +offlineIter0
-        CALL READ_REC_3D_RS( fn, prec,  1, hflx1, 1, myIter, myThid )
-       ENDIF
-
-       IF (SFluxFile      .NE. ' ') THEN
-        I1=IFNBLNK(SFluxFile)
-        I2=ILNBLNK(SFluxFile)
-        WRITE(fn,'(A,A,I10.10)') SFluxFile(I1:I2),'.',
-     &        intime0*Ifprd +offlineIter0
-        CALL READ_REC_3D_RS( fn, prec,  1, sflx0, 1, myIter, myThid )
-        WRITE(fn,'(A,A,I10.10)') SFluxFile(I1:I2),'.',
-     &        intime1*Ifprd +offlineIter0
-        CALL READ_REC_3D_RS( fn, prec,  1, sflx1, 1, myIter, myThid )
-       ENDIF
-
-       IF (IceFile      .NE. ' ') THEN
-        I1=IFNBLNK(IceFile)
-        I2=ILNBLNK(IceFile)
-        WRITE(fn,'(A,A,I10.10)') IceFile(I1:I2),'.',
-     &        intime0*Ifprd +offlineIter0
-        CALL READ_REC_3D_RS( fn, prec,  1, icem0, 1, myIter, myThid )
-        WRITE(fn,'(A,A,I10.10)') IceFile(I1:I2),'.',
-     &        intime1*Ifprd +offlineIter0
-        CALL READ_REC_3D_RS( fn, prec,  1, icem1, 1, myIter, myThid )
+        CALL READ_REC_3D_RS( fn, prec, Nr, conv1, 1, myIter, myThid )
+        _EXCH_XYZ_RS(conv0, myThid )
+        _EXCH_XYZ_RS(conv1, myThid )
        ENDIF
 
 #ifdef ALLOW_KPP
-       IF (KPP_DiffSFile      .NE. ' ') THEN
+       IF ( KPP_DiffSFile .NE. ' ' ) THEN
         I1=IFNBLNK(KPP_DiffSFile)
         I2=ILNBLNK(KPP_DiffSFile)
         WRITE(fn,'(A,A,I10.10)') KPP_DiffSFile(I1:I2),'.',
@@ -290,9 +275,11 @@ c       print*,'OFFLINE READ', fn
         WRITE(fn,'(A,A,I10.10)') KPP_DiffSFile(I1:I2),'.',
      &        intime1*Ifprd +offlineIter0
         CALL READ_REC_3D_RS( fn, prec, Nr, kdfs1, 1, myIter, myThid )
+        _EXCH_XYZ_RS(kdfs0 , myThid )
+        _EXCH_XYZ_RS(kdfs1 , myThid )
        ENDIF
 
-       IF (KPP_ghatKFile     .NE. ' ') THEN
+       IF ( KPP_ghatKFile .NE. ' ' ) THEN
 C-- Note: assume that KPP_ghatKFile contains the product ghat*diffKzS
 C         even if, for convienience, it will be loaded into array KPPghat
         I1=IFNBLNK(KPP_ghatKFile)
@@ -303,35 +290,53 @@ C         even if, for convienience, it will be loaded into array KPPghat
         WRITE(fn,'(A,A,I10.10)') KPP_ghatKFile(I1:I2),'.',
      &        intime1*Ifprd +offlineIter0
         CALL READ_REC_3D_RS( fn, prec, Nr, kght1, 1, myIter, myThid )
+        _EXCH_XYZ_RS(kght0, myThid )
+        _EXCH_XYZ_RS(kght1, myThid )
        ENDIF
 #endif
 
-#endif /* else NOT_MODEL_FILES */
+C--   Read in 2-D fields and apply EXCH
 
-       CALL EXCH_UV_XYZ_RS( uvel0, vvel0, .TRUE., myThid )
-       CALL EXCH_UV_XYZ_RS( uvel1, vvel1, .TRUE., myThid )
-       _EXCH_XYZ_RS(wvel0, myThid )
-       _EXCH_XYZ_RS(wvel1, myThid )
-       _EXCH_XYZ_RS(tave0 , myThid )
-       _EXCH_XYZ_RS(tave1 , myThid )
-       _EXCH_XYZ_RS(save0, myThid )
-       _EXCH_XYZ_RS(save1, myThid )
-       _EXCH_XYZ_RS(conv0, myThid )
-       _EXCH_XYZ_RS(conv1, myThid )
-       CALL EXCH_UV_AGRID_3D_RS( gmkx0, gmky0, .FALSE., Nr, myThid )
-       CALL EXCH_UV_AGRID_3D_RS( gmkx1, gmky1, .FALSE., Nr, myThid )
-       _EXCH_XYZ_RS(gmkz0, myThid )
-       _EXCH_XYZ_RS(gmkz1, myThid )
-       _EXCH_XY_RS(hflx0 , myThid )
-       _EXCH_XY_RS(hflx1 , myThid )
-       _EXCH_XY_RS(sflx0, myThid )
-       _EXCH_XY_RS(sflx1, myThid )
-       _EXCH_XY_RS(icem0, myThid )
-       _EXCH_XY_RS(icem1, myThid )
-       _EXCH_XYZ_RS(kdfs0 , myThid )
-       _EXCH_XYZ_RS(kdfs1 , myThid )
-       _EXCH_XYZ_RS(kght0, myThid )
-       _EXCH_XYZ_RS(kght1, myThid )
+c      IF ( HFluxFile .NE. ' ' ) THEN
+c       I1=IFNBLNK(HFluxFile)
+c       I2=ILNBLNK(HFluxFile)
+c       WRITE(fn,'(A,A,I10.10)') HFluxFile(I1:I2),'.',
+c    &        intime0*Ifprd +offlineIter0
+c       CALL READ_REC_3D_RS( fn, prec,  1, hflx0, 1, myIter, myThid )
+c       WRITE(fn,'(A,A,I10.10)') HFluxFile(I1:I2),'.',
+c    &        intime1*Ifprd +offlineIter0
+c       CALL READ_REC_3D_RS( fn, prec,  1, hflx1, 1, myIter, myThid )
+c       _EXCH_XY_RS(hflx0 , myThid )
+c       _EXCH_XY_RS(hflx1 , myThid )
+c      ENDIF
+
+       IF ( SFluxFile .NE. ' ' ) THEN
+        I1=IFNBLNK(SFluxFile)
+        I2=ILNBLNK(SFluxFile)
+        WRITE(fn,'(A,A,I10.10)') SFluxFile(I1:I2),'.',
+     &        intime0*Ifprd +offlineIter0
+        CALL READ_REC_3D_RS( fn, prec,  1, sflx0, 1, myIter, myThid )
+        WRITE(fn,'(A,A,I10.10)') SFluxFile(I1:I2),'.',
+     &        intime1*Ifprd +offlineIter0
+        CALL READ_REC_3D_RS( fn, prec,  1, sflx1, 1, myIter, myThid )
+        _EXCH_XY_RS(sflx0, myThid )
+        _EXCH_XY_RS(sflx1, myThid )
+       ENDIF
+
+c      IF ( IceFile .NE. ' ' ) THEN
+c       I1=IFNBLNK(IceFile)
+c       I2=ILNBLNK(IceFile)
+c       WRITE(fn,'(A,A,I10.10)') IceFile(I1:I2),'.',
+c    &        intime0*Ifprd +offlineIter0
+c       CALL READ_REC_3D_RS( fn, prec,  1, icem0, 1, myIter, myThid )
+c       WRITE(fn,'(A,A,I10.10)') IceFile(I1:I2),'.',
+c    &        intime1*Ifprd +offlineIter0
+c       CALL READ_REC_3D_RS( fn, prec,  1, icem1, 1, myIter, myThid )
+c       _EXCH_XY_RS(icem0, myThid )
+c       _EXCH_XY_RS(icem1, myThid )
+c      ENDIF
+
+#endif /* else NOT_MODEL_FILES */
 
 C-    save newly loaded time-record
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -345,65 +350,64 @@ C--   end if-block for loading new time-records
 
 C--   Interpolate uvel, vvel, wvel
       DO bj = myByLo(myThid), myByHi(myThid)
-      DO bi = myBxLo(myThid), myBxHi(myThid)
-       offline_Wght(1,bi,bj) = bWght
-       offline_Wght(2,bi,bj) = aWght
-       DO k=1,Nr
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          uVel(i,j,k,bi,bj)   = bWght*uvel0(i,j,k,bi,bj)
-     &                       +aWght*uvel1(i,j,k,bi,bj)
-          vVel(i,j,k,bi,bj)    = bWght*vvel0(i,j,k,bi,bj)
-     &                       +aWght*vvel1(i,j,k,bi,bj)
-          wVel(i,j,k,bi,bj)    =  bWght*wvel0(i,j,k,bi,bj)
-     &                       +aWght*wvel1(i,j,k,bi,bj)
-          theta(i,j,k,bi,bj)    = bWght*tave0(i,j,k,bi,bj)
-     &                       +aWght*tave1(i,j,k,bi,bj)
-          salt(i,j,k,bi,bj)    =  bWght*save0(i,j,k,bi,bj)
-     &                       +aWght*save1(i,j,k,bi,bj)
-          ConvectCount(i,j,k,bi,bj) =  bWght*conv0(i,j,k,bi,bj)
-     &                       +aWght*conv1(i,j,k,bi,bj)
-          IVDConvCount(i,j,k,bi,bj) =  bWght*conv0(i,j,k,bi,bj)
-     &                       +aWght*conv1(i,j,k,bi,bj)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        offline_Wght(1,bi,bj) = bWght
+        offline_Wght(2,bi,bj) = aWght
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uVel(i,j,k,bi,bj) = bWght*uvel0(i,j,k,bi,bj)
+     &                       + aWght*uvel1(i,j,k,bi,bj)
+           vVel(i,j,k,bi,bj) = bWght*vvel0(i,j,k,bi,bj)
+     &                       + aWght*vvel1(i,j,k,bi,bj)
+           wVel(i,j,k,bi,bj) = bWght*wvel0(i,j,k,bi,bj)
+     &                       + aWght*wvel1(i,j,k,bi,bj)
+           theta(i,j,k,bi,bj)= bWght*tave0(i,j,k,bi,bj)
+     &                       + aWght*tave1(i,j,k,bi,bj)
+           salt(i,j,k,bi,bj) = bWght*save0(i,j,k,bi,bj)
+     &                       + aWght*save1(i,j,k,bi,bj)
 #ifdef ALLOW_GMREDI
-          Kwx(i,j,k,bi,bj)    =  bWght*gmkx0(i,j,k,bi,bj)
-     &                       +aWght*gmkx1(i,j,k,bi,bj)
-          Kwy(i,j,k,bi,bj)    =  bWght*gmky0(i,j,k,bi,bj)
-     &                       +aWght*gmky1(i,j,k,bi,bj)
-          Kwz(i,j,k,bi,bj)    =  bWght*gmkz0(i,j,k,bi,bj)
-     &                       +aWght*gmkz1(i,j,k,bi,bj)
+           Kwx(i,j,k,bi,bj)  = bWght*gmkx0(i,j,k,bi,bj)
+     &                       + aWght*gmkx1(i,j,k,bi,bj)
+           Kwy(i,j,k,bi,bj)  = bWght*gmky0(i,j,k,bi,bj)
+     &                       + aWght*gmky1(i,j,k,bi,bj)
+           Kwz(i,j,k,bi,bj)  = bWght*gmkz0(i,j,k,bi,bj)
+     &                       + aWght*gmkz1(i,j,k,bi,bj)
 #endif
+c          ConvectCount(i,j,k,bi,bj) = bWght*conv0(i,j,k,bi,bj)
+c    &                               + aWght*conv1(i,j,k,bi,bj)
+           IVDConvCount(i,j,k,bi,bj) = bWght*conv0(i,j,k,bi,bj)
+     &                               + aWght*conv1(i,j,k,bi,bj)
 #ifdef ALLOW_KPP
-          KPPdiffKzS(i,j,k,bi,bj) = bWght*kdfs0(i,j,k,bi,bj)
-     &                       +aWght*kdfs1(i,j,k,bi,bj)
+           KPPdiffKzS(i,j,k,bi,bj) = bWght*kdfs0(i,j,k,bi,bj)
+     &                             + aWght*kdfs1(i,j,k,bi,bj)
 C-- Note: for convenience, the array KPPghat will contain
 C         the product ghat*diffKzS (and not ghat alone).
-          KPPghat(i,j,k,bi,bj) = bWght*kght0(i,j,k,bi,bj)
-     &                       +aWght*kght1(i,j,k,bi,bj)
+           KPPghat(i,j,k,bi,bj) = bWght*kght0(i,j,k,bi,bj)
+     &                          + aWght*kght1(i,j,k,bi,bj)
 #endif
+          ENDDO
          ENDDO
         ENDDO
-       ENDDO
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-          surfaceForcingT(i,j,bi,bj) = bWght*hflx0(i,j,bi,bj)
-     &                       +aWght*hflx1(i,j,bi,bj)
-          surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
-     &                      *recip_Cp*mass2rUnit
-          surfaceForcingS(i,j,bi,bj) =  bWght*sflx0(i,j,bi,bj)
-     &                       +aWght*sflx1(i,j,bi,bj)
-          surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
-     &                               *mass2rUnit
-
-          ICEM(i,j,bi,bj) =  bWght*icem0(i,j,bi,bj)
-     &                       +aWght*icem1(i,j,bi,bj)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+c          surfaceForcingT(i,j,bi,bj) = bWght*hflx0(i,j,bi,bj)
+c    &                                + aWght*hflx1(i,j,bi,bj)
+c          surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
+c    &                        *recip_Cp*mass2rUnit
+           surfaceForcingS(i,j,bi,bj) = bWght*sflx0(i,j,bi,bj)
+     &                                + aWght*sflx1(i,j,bi,bj)
+           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
+     &                                 *mass2rUnit
+c          ICEM(i,j,bi,bj) = bWght*icem0(i,j,bi,bj)
+c    &                     + aWght*icem1(i,j,bi,bj)
+         ENDDO
         ENDDO
-       ENDDO
 C--   end bi,bj loops
-      ENDDO
+       ENDDO
       ENDDO
 
-CC-- Diagnostics
+C-- Diagnostics
 C      IF (myThid.EQ.1 .AND. myTime.LT.62208000.) THEN
 C        write(*,'(a,1p5e12.4,3i6,2e12.4)')
 C     &   'time,U,V,W,i0,i1,a,b = ',
