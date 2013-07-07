@@ -8,8 +8,7 @@
   ConvFile= 'Convtave',
   SaltFile= 'Stave',
   ThetFile= 'Ttave',
-  SFluxFile='sFluxtave',
-# HFluxFile=' ',
+# SFluxFile='sFluxtave',
  &
 
  &OFFLINE_PARM02
