@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.130 2013/07/04 23:05:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.131 2013/07/07 22:27:30 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -42,7 +42,10 @@ C     == Global variables ===
 #include "GRID.h"
 #include "DYNVARS.h"
 #ifdef ALLOW_TIMEAVE
-#include "TIMEAVE_STATV.h"
+# include "TIMEAVE_STATV.h"
+#endif
+#ifdef ALLOW_OFFLINE
+# include "OFFLINE_SWITCH.h"
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -110,6 +113,7 @@ C     i,j,k         :: loop indices
       INTEGER bi, bj
       INTEGER i, j, k
       INTEGER doDiagsRho
+      LOGICAL calcGMRedi, calcKPP, calcConvect
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
@@ -139,6 +143,17 @@ C--   dummy statement to end declaration part
      &       doDiagsRho = doDiagsRho + 8
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
+
+      calcGMRedi  = useGMRedi
+      calcKPP     = useKPP
+      calcConvect = ivdc_kappa.NE.0.
+#ifdef ALLOW_OFFLINE
+      IF ( useOffLine ) THEN
+        calcGMRedi = useGMRedi .AND. .NOT.offlineLoadGMRedi
+        calcKPP    = useKPP    .AND. .NOT.offlineLoadKPP
+        calcConvect=calcConvect.AND. .NOT.offlineLoadConvec
+      ENDIF
+#endif /* ALLOW_OFFLINE */
 
 #ifdef  ALLOW_OBCS
       IF (useOBCS) THEN
@@ -444,10 +459,6 @@ C     and all vertical mixing schemes, but keep OBCS_CALC
      I             iMin, iMax, jMin, jMax,
      I             myTime, myIter, myThid )
 
-#ifdef ALLOW_OFFLINE
-      IF ( .NOT. useOffLine ) THEN
-#endif
-
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   HPF directive to help TAMC
 CHPF$ INDEPENDENT
@@ -477,6 +488,16 @@ C     These inital values do not alter the numerical results. They
 C     just ensure that all memory references are to valid floating
 C     point numbers. This prevents spurious hardware signals due to
 C     uninitialised but inert locations.
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+C This is currently used by GMRedi, IVDC, MXL-depth  and Diagnostics
+           sigmaX(i,j,k) = 0. _d 0
+           sigmaY(i,j,k) = 0. _d 0
+           sigmaR(i,j,k) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
         DO j=1-OLy,sNy+OLy
@@ -485,21 +506,38 @@ C     uninitialised but inert locations.
           rhoKp1 (i,j)   = 0. _d 0
          ENDDO
         ENDDO
-#endif /* ALLOW_AUTODIFF_TAMC */
-
+cph all the following init. are necessary for TAF
+cph although some of these are re-initialised later.
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-C This is currently used by GMRedi, IVDC, MXL-depth  and Diagnostics
-           sigmaX(i,j,k) = 0. _d 0
-           sigmaY(i,j,k) = 0. _d 0
-           sigmaR(i,j,k) = 0. _d 0
-#ifdef ALLOW_AUTODIFF_TAMC
-cph all the following init. are necessary for TAF
-cph although some of these are re-initialised later.
            rhoInSitu(i,j,k,bi,bj) = 0.
+# ifdef ALLOW_GGL90
+           GGL90viscArU(i,j,k,bi,bj)  = 0. _d 0
+           GGL90viscArV(i,j,k,bi,bj)  = 0. _d 0
+           GGL90diffKr(i,j,k,bi,bj)  = 0. _d 0
+# endif /* ALLOW_GGL90 */
+          ENDDO
+         ENDDO
+        ENDDO
+#ifdef ALLOW_OFFLINE
+       IF ( calcConvect ) THEN
+#endif
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            IVDConvCount(i,j,k,bi,bj) = 0.
+          ENDDO
+         ENDDO
+        ENDDO
+#ifdef ALLOW_OFFLINE
+       ENDIF
+       IF ( calcGMRedi ) THEN
+#endif
 # ifdef ALLOW_GMREDI
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            Kwx(i,j,k,bi,bj)  = 0. _d 0
            Kwy(i,j,k,bi,bj)  = 0. _d 0
            Kwz(i,j,k,bi,bj)  = 0. _d 0
@@ -518,20 +556,28 @@ cph although some of these are re-initialised later.
 #  ifdef GM_VISBECK_VARIABLE_K
            VisbeckK(i,j,bi,bj)   = 0. _d 0
 #  endif
-# endif /* ALLOW_GMREDI */
-# ifdef ALLOW_KPP
-           KPPdiffKzS(i,j,k,bi,bj)  = 0. _d 0
-           KPPdiffKzT(i,j,k,bi,bj)  = 0. _d 0
-# endif /* ALLOW_KPP */
-# ifdef ALLOW_GGL90
-           GGL90viscArU(i,j,k,bi,bj)  = 0. _d 0
-           GGL90viscArV(i,j,k,bi,bj)  = 0. _d 0
-           GGL90diffKr(i,j,k,bi,bj)  = 0. _d 0
-# endif /* ALLOW_GGL90 */
-#endif /* ALLOW_AUTODIFF_TAMC */
           ENDDO
          ENDDO
         ENDDO
+# endif /* ALLOW_GMREDI */
+#ifdef ALLOW_OFFLINE
+       ENDIF
+       IF ( calcKPP ) THEN
+#endif
+# ifdef ALLOW_KPP
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           KPPdiffKzS(i,j,k,bi,bj)  = 0. _d 0
+           KPPdiffKzT(i,j,k,bi,bj)  = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+# endif /* ALLOW_KPP */
+#ifdef ALLOW_OFFLINE
+       ENDIF
+#endif
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey,
@@ -632,7 +678,7 @@ c#endif /* ALLOW_AUTODIFF_TAMC */
 
 C--       Calculate gradients of potential density for isoneutral
 C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
-          IF ( useGMRedi .OR. (k.GT.1 .AND. ivdc_kappa.NE.0.)
+          IF ( calcGMRedi .OR. (k.GT.1 .AND. calcConvect)
      &         .OR. usePP81 .OR. useMY82 .OR. useGGL90
      &         .OR. useSALT_PLUME .OR. doDiagsRho.GE.1 ) THEN
             IF (k.GT.1) THEN
@@ -677,7 +723,7 @@ cgf -> cuts adjoint dependency from slope to state
           ENDIF
 
 C--       Implicit Vertical Diffusion for Convection
-          IF (k.GT.1 .AND. ivdc_kappa.NE.0.) THEN
+          IF (k.GT.1 .AND. calcConvect) THEN
 #ifdef ALLOW_DEBUG
             IF (debugMode) CALL DEBUG_CALL('CALC_IVDC',myThid)
 #endif
@@ -706,7 +752,7 @@ CADJ &     kind = isbyte
 #endif
 
 C--     Diagnose Mixed Layer Depth:
-        IF ( useGMRedi .OR. MOD(doDiagsRho,2).EQ.1 ) THEN
+        IF ( calcGMRedi .OR. MOD(doDiagsRho,2).EQ.1 ) THEN
           CALL CALC_OCE_MXLAYER(
      I              rhoInSitu(1-OLx,1-OLy,1,bi,bj), sigmaR,
      I              bi, bj, myTime, myIter, myThid )
@@ -751,7 +797,7 @@ CADJ &     kind = isbyte
 
 #ifdef  ALLOW_KPP
 C--     Compute KPP mixing coefficients
-        IF (useKPP) THEN
+        IF ( calcKPP ) THEN
 #ifdef ALLOW_DEBUG
           IF (debugMode) CALL DEBUG_CALL('KPP_CALC',myThid)
 #endif
@@ -759,13 +805,12 @@ C--     Compute KPP mixing coefficients
           CALL KPP_CALC(
      I                  bi, bj, myTime, myIter, myThid )
           CALL TIMER_STOP ('KPP_CALC [DO_OCEANIC_PHYS]', myThid)
-#ifdef ALLOW_AUTODIFF_TAMC
+#if (defined ALLOW_AUTODIFF_TAMC) && !(defined ALLOW_OFFLINE)
         ELSE
           CALL KPP_CALC_DUMMY(
      I                  bi, bj, myTime, myIter, myThid )
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF_TAMC and not ALLOW_OFFLINE */
         ENDIF
-
 #endif  /* ALLOW_KPP */
 
 #ifdef  ALLOW_PP81
@@ -811,7 +856,7 @@ C--     Compute GGL90 mixing coefficients
         IF ( taveFreq.GT. 0. _d 0 ) THEN
           CALL TIMEAVE_SURF_FLUX( bi, bj, myTime, myIter, myThid)
         ENDIF
-        IF (taveFreq.GT.0. .AND. ivdc_kappa.NE.0.) THEN
+        IF ( taveFreq.GT.0. .AND. calcConvect ) THEN
           CALL TIMEAVE_CUMULATE(ConvectCountTave, IVDConvCount,
      I                           Nr, deltaTClock, bi, bj, myThid)
         ENDIF
@@ -834,7 +879,7 @@ CADJ &     kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
-        IF (useGMRedi) THEN
+        IF ( calcGMRedi ) THEN
 #ifdef ALLOW_DEBUG
           IF (debugMode) CALL DEBUG_CALL('GMREDI_CALC_TENSOR',myThid)
 #endif
@@ -842,13 +887,13 @@ C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
      I             iMin, iMax, jMin, jMax,
      I             sigmaX, sigmaY, sigmaR,
      I             bi, bj, myTime, myIter, myThid )
-#ifdef ALLOW_AUTODIFF_TAMC
+#if (defined ALLOW_AUTODIFF_TAMC) && !(defined ALLOW_OFFLINE)
         ELSE
           CALL GMREDI_CALC_TENSOR_DUMMY(
      I             iMin, iMax, jMin, jMax,
      I             sigmaX, sigmaY, sigmaR,
      I             bi, bj, myTime, myIter, myThid )
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF_TAMC and not ALLOW_OFFLINE */
         ENDIF
 #endif /* ALLOW_GMREDI */
 
@@ -871,10 +916,6 @@ C--   end bi,bj loops.
        ENDDO
       ENDDO
 
-#ifdef ALLOW_OFFLINE
-      ENDIF
-#endif
-
 #ifndef ALLOW_AUTODIFF_TAMC
 C---  if fluid Is Water: end
       ENDIF
@@ -895,13 +936,13 @@ C---  if fluid Is Water: end
 #endif /* ALLOW_MYPACKAGE */
 
 #ifdef ALLOW_GMREDI
-      IF ( useGMRedi .AND. .NOT.useOffLine ) THEN
+      IF ( calcGMRedi ) THEN
         CALL GMREDI_DO_EXCH( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_GMREDI */
 
 #ifdef ALLOW_KPP
-      IF ( useKPP .AND. .NOT.useOffLine ) THEN
+      IF ( calcKPP ) THEN
         CALL KPP_DO_EXCH( myThid )
       ENDIF
 #endif /* ALLOW_KPP */
@@ -913,7 +954,7 @@ C---  if fluid Is Water: end
      I                    myTime, myIter, myThid )
         CALL DIAGS_OCEANIC_SURF_FLUX( myTime, myIter, myThid )
       ENDIF
-      IF ( ivdc_kappa.NE.0 .AND. useDiagnostics ) THEN
+      IF ( calcConvect .AND. useDiagnostics ) THEN
         CALL DIAGNOSTICS_FILL( IVDConvCount, 'CONVADJ ',
      &                               0, Nr, 0, 1, 1, myThid )
       ENDIF
