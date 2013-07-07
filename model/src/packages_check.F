@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.63 2013/05/16 19:57:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.64 2013/07/07 22:26:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -232,7 +232,9 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useRBCS) CALL PACKAGES_ERROR_MSG('RBCS',' ',myThid)
 #endif
 
-#ifndef ALLOW_OFFLINE
+#ifdef ALLOW_OFFLINE
+      IF (useOffLine) CALL OFFLINE_CHECK( myThid )
+#else
       IF (useOffLine) CALL PACKAGES_ERROR_MSG('OffLine',' ',myThid)
 #endif
 
