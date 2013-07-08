@@ -6,7 +6,7 @@
 #PBS -e /data/jm_c/test_acesgrid/output/tst_mp2.stderr
 #PBS -o /data/jm_c/test_acesgrid/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.13 2013/06/13 22:01:34 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.14 2013/07/08 00:14:07 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -105,8 +105,6 @@ if [ $checkOut -eq 2 ] ; then
    echo " add dir: atm_gray (from Contrib:verification_other)"
    ( cd $gcmDIR/verification ; cvs $cvsArg co -P -d atm_gray \
                   MITgcm_contrib/verification_other/atm_gray > /dev/null 2>&1 )
-   ( cd $gcmDIR/verification/atm_gray ; ln -s code_cs code ; ln -s inp_cs input
-     cd results ; ln -s output.cs.txt output.txt )
   fi
   /usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
   /usr/bin/find $gcmDIR -type f | xargs chmod g+r
