@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.131 2013/07/07 22:27:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.132 2013/07/09 16:01:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -273,17 +273,23 @@ cph-adj-test(
 CADJ STORE area   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE hsnow  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE heff   = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE empmr,qsw,theta   = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
+CADJ STORE tices  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE empmr, qnet  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE qsw,saltflux = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE fu, fv = comlev1, key=ikey_dynamics, kind=isbyte
+cCADJ STORE theta  = comlev1, key=ikey_dynamics, kind=isbyte
+cCADJ STORE salt   = comlev1, key=ikey_dynamics, kind=isbyte
 cph-adj-test)
+c#ifdef ALLOW_EXF
 CADJ STORE atemp,aqh,precip    = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE swdown,lwdown       = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-cph# ifdef EXF_READ_EVAP
 CADJ STORE evap                = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-cph# endif
+CADJ STORE uwind,vwind         = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+c#endif
 CADJ STORE uvel,vvel           = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #  ifdef SEAICE_CGRID
@@ -297,6 +303,8 @@ CADJ STORE uice                = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE vice                = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
+CADJ STORE dwatn               = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #   ifdef SEAICE_ALLOW_EVP
 CADJ STORE seaice_sigma1       = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
@@ -306,10 +314,10 @@ CADJ STORE seaice_sigma12      = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #   endif
 #  endif
-cph#  ifdef SEAICE_SALINITY
-CADJ STORE salt                = comlev1, key = ikey_dynamics,
+#  ifdef SEAICE_VARIABLE_SALINITY
+CADJ STORE hsalt               = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-cph#  endif
+#  endif
 #  ifdef ATMOSPHERIC_LOADING
 CADJ STORE pload               = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
@@ -325,9 +333,14 @@ CADJ STORE balance_itcount     = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #  endif /* ANNUAL_BALANCE */
 #  ifdef ALLOW_THSICE
-CADJ STORE fu, fv              = comlev1, key = ikey_dynamics,
+C-- store thSIce vars before advection (called from SEAICE_MODEL) update them:
+CADJ STORE iceMask,iceHeight = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-#  endif
+CADJ STORE snowHeight, hOceMxL = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE Qice1, Qice2  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+#  endif /* ALLOW_THSICE */
 # endif /* ALLOW_AUTODIFF_TAMC */
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('SEAICE_MODEL',myThid)
