@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.22 2013/06/27 14:51:40 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.23 2013/07/11 14:33:23 m_bates Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -46,9 +46,9 @@ C     GM_BVP_modeNumber :: vertical mode number used for speed "c" in BVP transp
 C     GM_K3D_NModes :: number of vertical modes used for calculating Xi in K3D
       INTEGER GM_BVP_modeNumber
       INTEGER GM_K3D_NModes
+      PARAMETER (GM_K3D_NModes=6)
       COMMON /GM_PARAMS_I/
-     &                   GM_BVP_modeNumber,
-     &                   GM_K3D_NModes
+     &                   GM_BVP_modeNumber
 
 C--   COMMON /GM_PARAMS_C/ GM/Redi Character-type parameters
 C     GM_taper_scheme :: select which tapering/clipping scheme to use
@@ -94,6 +94,7 @@ C     GM_K3D_maxLurms:: Upper bound on th length scale used for calculating urms
 C     GM_K3D_minCori :: minimum value for f (to stop things blowing up near the equator)
 C     GM_K3D_minN2   :: minimum value for the square of the buoyancy frequency
 C     GM_K3D_surfMinDepth :: minimum value for the depth of the surface layer
+C     GM_K3D_vecFreq :: Frequency at which to update the baroclinic modes
 
       _RL GM_isopycK
       _RL GM_background_K
@@ -121,6 +122,7 @@ C     GM_K3D_surfMinDepth :: minimum value for the depth of the surface layer
       _RL GM_K3D_minCori
       _RL GM_K3D_minN2
       _RL GM_K3D_surfMinDepth
+      _RL GM_K3D_vecFreq
       _RL GM_facTrL2dz
       _RL GM_facTrL2ML
       _RL GM_maxTransLay
@@ -145,7 +147,7 @@ C     GM_K3D_surfMinDepth :: minimum value for the depth of the surface layer
      &                   GM_K3D_smallK, GM_K3D_maxSlope, GM_K3D_maxC,
      &                   GM_maxK3D, GM_K3D_minCori, GM_K3D_minN2, 
      &                   GM_K3D_surfMinDepth, GM_K3D_maxLurms,
-     &                   GM_K3D_constK,
+     &                   GM_K3D_constK, GM_K3D_vecFreq,
      &                   GM_facTrL2dz, GM_facTrL2ML, GM_maxTransLay,
      &                   GM_Scrit, GM_Sd, GM_BVP_cMin,
      &                   subMeso_Ceff, subMeso_invTau, subMeso_LfMin
@@ -232,8 +234,15 @@ C     for Visbeck et al. parameterization)
 #ifdef GM_K3D
 C     K3D          :: The three dimensional eddy mixing coeffixint [m**2/s]
       _RL K3D(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr,nSx,nSy)
+      _RL modesC(1,1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr,nSx,nSy)
+      _RL modesW(GM_K3D_NModes,1-Olx:sNx+Olx,
+     &     1-Oly:sNy+Oly,1:Nr,nSx,nSy)
+      _RL modesS(GM_K3D_NModes,1-Olx:sNx+Olx,
+     &     1-Oly:sNy+Oly,1:Nr,nSx,nSy)
+      _RL Rdef(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
-      COMMON /GM_K3D/ K3D
+
+      COMMON /GM_K3D/ K3D, modesC, modesW, modesS, Rdef
 #endif
 #endif /* ALLOW_GMREDI */
 

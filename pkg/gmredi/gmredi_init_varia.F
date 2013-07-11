@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_init_varia.F,v 1.3 2013/06/21 17:23:31 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_init_varia.F,v 1.4 2013/07/11 14:33:23 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -106,5 +106,12 @@ C--   write GM scaling factors to file:
       ENDIF
 #endif /* ALLOW_GMREDI */
 
+
+#ifdef GM_K3D
+      IF (.NOT.( startTime.EQ.baseTime .AND. nIter0.EQ.0
+     &     .AND. pickupSuff.EQ.' ' )) THEN
+        IF (GM_useK3D) CALL GMREDI_READ_PICKUP( niter0, myThid )
+      ENDIF
+#endif
       RETURN
       END

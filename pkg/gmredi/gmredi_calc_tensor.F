@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.41 2013/06/21 17:23:31 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.42 2013/07/11 14:33:23 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -273,7 +273,7 @@ C     Calculate the 3D diffusivity as per Bates et al. (2013)
         CALL GMREDI_K3D(
      I       iMin, iMax, jMin, jMax,
      I       sigmaX, sigmaY, sigmaR,
-     I       bi, bj, myThid)
+     I       bi, bj, myTime, myThid)
         
         CALL TIMER_STOP('GMREDI_K3D      [GMREDI_CALC_TENSOR]', 
      &                  myThid)

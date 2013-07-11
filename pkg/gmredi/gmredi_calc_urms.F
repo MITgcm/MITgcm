@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_urms.F,v 1.1 2013/06/21 17:23:31 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_urms.F,v 1.2 2013/07/11 14:33:23 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -8,7 +8,7 @@ C     !INTERFACE:
       SUBROUTINE GMREDI_CALC_URMS(
      I     iMin, iMax, jMin, jMax,
      I     bi, bj, N2, myThid,
-     O     urms, vec)
+     U     urms)
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -35,11 +35,14 @@ C     bi, bj    :: tile indices
       INTEGER myThid
       _RL N2(  1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL urms(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL vec(GM_K3D_NModes,1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       
+#ifdef GM_K3D
+
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER i,j,k,kk,info
+      INTEGER i,j,k
+C     bbs   :: bottom boundary condition (set to zero for now)
+C     const :: a constant for each water column
       _RL bbc(   1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL const( 1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
@@ -57,7 +60,7 @@ C     We need at least two cells to do this
         k = kLowC(i,j,bi,bj)
         IF (k.GT.2) THEN
           const(i,j) = (urms(i,j,k)-urms(i,j,1))
-     &         /(vec(1,i,j,k)-vec(1,i,j,1))
+     &         /(modesC(1,i,j,k,bi,bj)-modesC(1,i,j,1,bi,bj))
         ELSE
           const(i,j) = zeroRL
         ENDIF
@@ -69,7 +72,7 @@ C     We need at least two cells to do this
         DO i=1-Olx,sNx+Olx
          IF (k.LT.kLowC(i,j,bi,bj)) THEN
            urms(i,j,k) = urms(i,j,1) + 
-     &                   (vec(1,i,j,k)-vec(1,i,j,1))*const(i,j)
+     &          const(i,j)*(modesC(1,i,j,k,bi,bj)-modesC(1,i,j,1,bi,bj))
          ELSE
            urms(i,j,k)=zeroRL
          ENDIF
@@ -85,5 +88,7 @@ C     Land, so, we fill with zeros
       ENDDO
 
       
+#endif /* GM_K3D */
 
+      RETURN
       END

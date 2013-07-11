@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.11 2013/06/21 17:23:31 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.12 2013/07/11 14:33:23 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -263,6 +263,7 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
         
+#ifdef use_lapack
         diagName  = 'GM_A3D'
         diagTitle = '3D lower diagona'
         diagUnits = '1/m**2          '
@@ -286,16 +287,9 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+#endif
         
-        diagName  = 'GM_VAL'
-        diagTitle = 'Eigen value     '
-        diagUnits = '1/m**2          '
-        diagCode  = 'SM P    MR      '
-        diagMate  = diagNum
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
-        diagName  = 'GM_VEC'
+        diagName  = 'GM_MODEC'
         diagTitle = 'Eigen vector for the first barcolinic mode'
         diagUnits = 'dimensionless   '
         diagCode  = 'SM      MR      '
@@ -323,38 +317,6 @@ c     IF ( useDiagnotics ) THEN
         diagTitle = 'mixed layer depth'
         diagUnits = 'm               '
         diagCode  = 'SM P    MR      '
-        diagMate  = diagNum
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
-        diagName  = 'GM_SIGR '
-        diagTitle = 'drho/dr'
-        diagUnits = 'kg/m**4          '
-        diagCode  = 'SM      MR      '
-        diagMate  = diagNum
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
-        diagName  = 'GM_N2  '
-        diagTitle = 'Square of buoyancy frequency'
-        diagUnits = '1/s**2          '
-        diagCode  = 'SM      MR      '
-        diagMate  = diagNum
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
-        diagName  = 'GM_SIGX '
-        diagTitle = 'd(rho)/dx'
-        diagUnits = 'kg/m**4          '
-        diagCode  = 'UU      MR      '
-        diagMate  = diagNum
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
-        diagName  = 'GM_SIGY '
-        diagTitle = 'd(rho)/dy'
-        diagUnits = 'kg/m**4         '
-        diagCode  = 'VV      MR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
@@ -439,14 +401,6 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
         
-        diagName  = 'GM_PSI  '
-        diagTitle = 'Eddy induced meridional streamfunction'
-        diagUnits = 'm**3/s          '
-        diagCode  = 'VV      MR      '
-        diagMate  = diagNum
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
         diagName  = 'GM_Sx   '
         diagTitle = 'Zonal isopycnal slope'
         diagUnits = 'none            '
@@ -514,14 +468,6 @@ c     IF ( useDiagnotics ) THEN
         diagName  = 'GM_KDEF '
         diagTitle = 'Rossby wavenumber'
         diagUnits = '1/m             '
-        diagCode  = 'SM      M1      '
-        diagMate  = diagNum
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
-        diagName  = 'GM_BVINT'
-        diagTitle = 'vertical integral of the buoyancy frequency'
-        diagUnits = 'm/s             '
         diagCode  = 'SM      M1      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,

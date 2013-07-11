@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_eigs.F,v 1.2 2013/06/22 14:44:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_eigs.F,v 1.3 2013/07/11 14:33:23 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -9,8 +9,8 @@ C     !INTERFACE:
      I     iMin, iMax, jMin, jMax,
      I     bi, bj, N2, myThid, kLow,
      I     mask, hfac, recip_hfac,
-     I     writediag,
-     O     Kdef, vec)
+     I     rlow, nmodes, writediag,
+     O     Rmid, vec)
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -36,32 +36,65 @@ C     bi, bj    :: tile indices
       INTEGER iMin,iMax,jMin,jMax
       INTEGER bi, bj
       INTEGER myThid
-      INTEGER kLow(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL hfac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL recip_hfac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL N2(  1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL Kdef(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vec(GM_K3D_NModes,1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      INTEGER nmodes
+      INTEGER kLow(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL mask(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL hfac(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL recip_hfac(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL rlow(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL N2(  1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL Rmid(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL vec(nmodes,1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 
 #ifdef GM_K3D
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER i,j,k,kk,m,info
-      _RL small
-      _RL a3d(   1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL b3d(   1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL c3d(   1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL vecint(GM_K3D_NModes,1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL val(   1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL fCori2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER i,j,k,kk,m
+# ifdef use_lapack
+C     info     :: error code from LAPACK
+C     idx      :: index used for sorting the eigenvalues
+C     a3d      :: lower diagonal of eigenvalue problem
+C     b3d      :: diagonal of eigenvalue problem
+C     c3d      :: upper diagonal of eigenvalue problem
+C     val      :: Eigenvalue (wavenumber) of the first baroclinic mode
+C     eigR     :: Real component of all the eigenvalues in a water column
+C     eigI     :: Imaginary component of all the eigenvalues in a water column
+C     vecs     :: All the eigenvectors of a water column
+C     dummy    :: Redundant variable for calling lapack
+C     work     :: Work array for lapack
+C     array    :: Array containing the matrix with a,b,c
+C     eigval   :: Vector containing the eigenvalues
+      INTEGER info
+      INTEGER idx
+      _RL a3d(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL b3d(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL c3d(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL val(   1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL eigR(Nr),eigI(Nr),vecs(Nr,Nr),dummy(1,Nr),work(Nr*Nr)
       _RL array(Nr,Nr)
-      _RL eigval(0:GM_K3D_NModes)
-      INTEGER idx
-#ifdef ALLOW_DIAGNOSTICS
-      _RL vec_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-#endif
+      _RL eigval(0:nmodes)
+# else
+C     drNr     :: distance from bottom of cell to cell centre at Nr
+C     BuoyFreq :: buoyancy frequency, SQRT(N2)
+C     intN     :: Vertical integral of BuoyFreq to each grid cell centre
+C     intN0    :: Vertical integral of BuoyFreq to z=0
+C     c1       :: intN0/pi
+C     nEigs    :: number of eigenvalues/vectors to calculate
+      _RL drNr
+      _RL BuoyFreq(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr+1)
+      _RL intN(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL intN0(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL c1(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      INTEGER nEigs(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+# endif
+C     small    :: a small number (used to avoid floating point exceptions)
+C     vecint   :: vertical integral of eigenvector and/or square of eigenvector
+C     fCori2   :: square of the Coriolis parameter
+      _RL small
+      _RL vecint(nmodes,1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL fCori2(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+
       small = TINY(zeroRL)
 
 C     Square of the Coriolis parameter
@@ -72,15 +105,16 @@ C     Square of the Coriolis parameter
       ENDDO
 
       DO k=1,Nr
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         DO m=1,GM_K3D_NModes
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         DO m=1,nmodes
           vec(m,i,j,k) = zeroRL
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 
+# ifdef use_lapack
 C     Calculate the tridiagonal operator matrix for
 C     f^2 d/dz 1/N^2 d/dz
 C     a3d is the lower off-diagonal, b3d is the diagonal
@@ -96,11 +130,6 @@ C     and c3d is the upper off-diagonal
              b3d(i,j,k) = -c3d(i,j,k)
 
            ELSEIF (k.LT.kLow(i,j)) THEN
-             IF (k+1.GT.Nr) THEN
-               PRINT '(a4,x,3(a1,i2),a1,3(x,i2))', 'kp1:',
-     &              '(',i,',',j,',',k,')',
-     &              kLow(i,j), k+1, Nr
-             ENDIF
              a3d(i,j,k) = fCori2(i,j)*recip_hFac(i,j,k)
      &                    *recip_drF(k)*recip_drC(k)/N2(i,j,k)
              c3d(i,j,k) = fCori2(i,j)*recip_hFac(i,j,k)
@@ -108,11 +137,6 @@ C     and c3d is the upper off-diagonal
              b3d(i,j,k) = -a3d(i,j,k)-c3d(i,j,k)
 
            ELSEIF (k.EQ.kLow(i,j)) THEN
-             IF (k.GT.Nr) THEN
-               PRINT '(a4,x,3(a1,i2),a1,3(x,i2))', 'k  :',
-     &              '(',i,',',j,',',k,')',
-     &              kLow(i,j), k, Nr
-             ENDIF
              a3d(i,j,k) = fCori2(i,j)*recip_hFac(i,j,k)
      &                    *recip_drF(k)*recip_drC(k)/N2(i,j,k)
              c3d(i,j,k) = zeroRL
@@ -133,10 +157,8 @@ C     and c3d is the upper off-diagonal
        ENDDO
       ENDDO
 
-#ifdef use_lapack
-
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
         IF (kLow(i,j).GT.0) THEN
           DO kk=1,Nr
            DO k=1,Nr
@@ -158,17 +180,30 @@ C     and c3d is the upper off-diagonal
 
           CALL DGEEV('N','V',Nr,array,Nr,eigR,eigI,dummy,1,
      &         vecs,Nr,work,Nr*Nr,info)
-C         Find the second largest eigenvalue (the Rossby radius)
+          IF( info.LT.0 ) THEN
+            WRITE(msgBuf,'(A,x,2(A1,I2),A1,x,A,I4)') 
+     &           'GMREDI_CALC_EIGS problem with arguments for DGEEV at',
+     &           '(',i,',',j,')', 'error code =',info
+            CALL PRINT_ERROR( msgBuf , myThid )
+            
+          ELSEIF(info.GT.0 ) THEN
+            WRITE(msgBuf,'(A,x,2(A1,I2),A1,x,A,I4)') 
+     &           'GMREDI_CALC_EIGS problems with eigensolver DGEEV at',
+     &           '(',i,',',j,')', 'error code =',info
+            CALL PRINT_ERROR( msgBuf , myThid )
+            
+          ENDIF
+
+C         Find the second largest eigenvalue (the Rossby radius) 
 C         and the first M baroclinic modes (eigenvectors)
-          DO m=0,GM_K3D_NModes
+          DO m=0,nmodes
            eigval(m) = -HUGE(zeroRL)
           ENDDO
 
           DO k=1,kLow(i,j)
            eigval(0) = MAX(eigval(0),eigR(k))
           ENDDO
-          DO m=1,MIN(GM_K3D_NModes,klow(i,j))
-C          DO m=1,GM_K3D_NModes
+          DO m=1,MIN(nmodes,klow(i,j))
            DO k=1,kLow(i,j)
             IF (eigR(k).LT.eigval(m-1)) THEN
               eigval(m) = MAX(eigval(m),eigR(k))
@@ -189,7 +224,7 @@ C          DO m=1,GM_K3D_NModes
         ELSE
           val(i,j)=zeroRL
           DO k=1,Nr
-           DO m=1,GM_K3D_NModes
+           DO m=1,nmodes
             vec(m,i,j,k)=zeroRL
            ENDDO
           ENDDO
@@ -198,20 +233,138 @@ C          DO m=1,GM_K3D_NModes
        ENDDO
       ENDDO
 
+      DO k=1,Nr
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         IF (kLow(i,j).GT.2 .AND. val(i,j).NE.zeroRL) THEN
+           Rmid(i,j) = 1.0/(SQRT(ABS(val(i,j)))+small)
+         ELSE
+           Rmid(i,j) = zeroRL
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDDO
+
+# else      
+      DO k=1,Nr
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         BuoyFreq(i,j,k) = mask(i,j,k)*SQRT(N2(i,j,k))
+        ENDDO
+       ENDDO
+      ENDDO
+      k=Nr+1
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+        BuoyFreq(i,j,k) = zeroRL
+       ENDDO
+      ENDDO
+
+C     integrate N using something like Simpson's rule (but not quite)
+C     drC*( (N(k+1)+N(k+2))/2 + (N(k)+N(k+1))/2 )/2
+C     when k=Nr, say that N(k+2)=0 and N(k+1)=0
+      k=Nr
+C     drNr is like drC(Nr+1)/2
+      drNr = rC(Nr)-rF(Nr+1)
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+        intN(i,j,k) = op5*BuoyFreq(i,j,k)*drNr
+       ENDDO
+      ENDDO
+      DO k=Nr-1,1,-1
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         intN(i,j,k) = intN(i,j,k+1) 
+     &        + drC(k)*( op25*BuoyFreq(i,j,k+2) + op5*BuoyFreq(i,j,k) 
+     &                 + op25*BuoyFreq(i,j,k+1) )
+        ENDDO
+       ENDDO
+      ENDDO
+      
+C     intN integrates to z=rC(1).  We want to integrate to z=0.
+C     Assume that N(0)=0 and N(1)=0.
+C     drC(1) is like half a grid cell.
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+        intN0(i,j) = intN(i,j,1) 
+     &       + drC(1)*op5*BuoyFreq(i,j,2)
+       ENDDO
+      ENDDO
+      
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+        c1(i,j) = intN0(i,j)/pi
+        Rmid(i,j) = c1(i,j)/ABS(fCori(i,j,bi,bj))
+       ENDDO
+      ENDDO      
+
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+        nEigs(i,j) = MIN(klow(i,j),nmodes)
+       ENDDO
+      ENDDO
+      DO k=1,Nr
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         IF (mask(i,j,k).NE.0.0) THEN
+           DO m=1,nEigs(i,j)
+            vec(m,i,j,k) = -COS(intN(i,j,k)/(m*c1(i,j)))
+           ENDDO
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDDO
+
+C     The WKB approximation for the baroclinic mode does not always 
+C     integrate to zero so we adjust it.
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+        DO m=1,nEigs(i,j)
+         vecint(m,i,j) = zeroRL
+        ENDDO
+       ENDDO
+      ENDDO
+      DO k=1,Nr
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         DO m=1,nEigs(i,j)
+         vecint(m,i,j) = vecint(m,i,j) + hfac(i,j,k)*vec(m,i,j,k)*drF(k)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+        DO m=1,nEigs(i,j)
+         vecint(m,i,j) = vecint(m,i,j)/(-rlow(i,j)+small)
+        ENDDO
+       ENDDO
+      ENDDO
+      DO k=1,Nr
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         DO m=1,nEigs(i,j)
+          vec(m,i,j,k) = vec(m,i,j,k) - vecint(m,i,j)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+# endif
+
 C     Normalise the eigenvectors
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        DO m=1,GM_K3D_NModes
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+        DO m=1,nmodes
          vecint(m,i,j) = zeroRL
         ENDDO
        ENDDO
       ENDDO
 
       DO k=1,Nr
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         DO m=1,GM_K3D_NModes
-          vecint(m,i,j) = vecint(m,i,j) +
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         DO m=1,nmodes
+          vecint(m,i,j) = vecint(m,i,j) + 
      &         mask(i,j,k)*drF(k)*hfac(i,j,k)
      &         *vec(m,i,j,k)*vec(m,i,j,k)
          ENDDO
@@ -219,59 +372,34 @@ C     Normalise the eigenvectors
        ENDDO
       ENDDO
 
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        DO m=1,GM_K3D_NModes
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+        DO m=1,nmodes
          vecint(m,i,j) = SQRT(vecint(m,i,j))
         ENDDO
        ENDDO
       ENDDO
 
       DO k=1,Nr
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         DO m=1,GM_K3D_NModes
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         DO m=1,nmodes
           vec(m,i,j,k) = vec(m,i,j,k)/(vecint(m,i,j)+small)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 
-#else
-C      CALL EIGENVAL(a3d,b3d,c3d,bi,bj,val)
-C      CALL EIGENVEC(a3d,b3d,c3d,val,1,bi,bj,vec)
-#endif
-
-      DO k=1,Nr
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         IF (kLow(i,j).GT.2 .AND. val(i,j).NE.zeroRL) THEN
-           Kdef(i,j) = SQRT(ABS(val(i,j)))
-         ELSE
-           Kdef(i,j) = zeroRL
-         ENDIF
-        ENDDO
-       ENDDO
-      ENDDO
-
-#ifdef ALLOW_DIAGNOSTICS
+# ifdef ALLOW_DIAGNOSTICS
 C     Diagnostics
       IF ( useDiagnostics.AND.writediag ) THEN
+#  ifdef use_lapack        
         CALL DIAGNOSTICS_FILL(a3d, 'GM_A3D  ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(b3d, 'GM_B3D  ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(c3d, 'GM_C3D  ',0,Nr,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(val, 'GM_VAL  ',0, 1,0,1,1,myThid)
-        DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           vec_diag(i,j,k) = vec(1,i,j,k)
-          ENDDO
-         ENDDO
-        ENDDO
-
-        CALL DIAGNOSTICS_FILL(vec_diag, 'GM_VEC  ',0,Nr,0,1,1,myThid)
+#  endif
       ENDIF
-#endif
+# endif
 
 #endif /* GM_K3D */
 

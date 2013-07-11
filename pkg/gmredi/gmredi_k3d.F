@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.3 2013/06/27 14:51:40 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.4 2013/07/11 14:33:23 m_bates Exp $
 C $Name:  $
 #include "GMREDI_OPTIONS.h"
 
@@ -7,7 +7,7 @@ C     !INTERFACE:
       SUBROUTINE GMREDI_K3D(
      I     iMin, iMax, jMin, jMax,
      I     sigmaX, sigmaY, sigmaR,
-     I     bi, bj, myThid )
+     I     bi, bj, myTime, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -36,81 +36,65 @@ C     myThid    :: My Thread Id. number
       _RL sigmaY(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL sigmaR(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       INTEGER bi, bj
+      _RL myTime
       INTEGER myThid
 
 #ifdef GM_K3D
 
+C     === Functions ====
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     N2mean   :: the unweighted mean of N**2 at two levels (1/s**2)
-C     Req      :: Equatorial Rossby radius (m)
-C     Rmid     :: Mid-latitude Rossby radius (m)
-C     eady     :: Eady growth rate (1/s)
-C     urms     :: the rms velocity calculated using the Visbeck method (m/s)
-C                 project to depth using...
-C     cDopp    :: Doppler shifted long Rossby wave speed (m/s)
-C     supp     :: The suppression factor
-      INTEGER i,j,k,kk,m,minsurfk
+      INTEGER i,j,k,kk,m
+
+C     update_modes :: Whether to update the eigenmodes
+      LOGICAL update_modes
+
+C     surfk  :: index of the depth of the surface layer
+C     kLow_C :: Local version of the index of deepest wet grid cell on tracer grid
+C     kLow_U :: Local version of the index of deepest wet grid cell on U grid
+C     kLow_V :: Local version of the index of deepest wet grid cell on V grid
       INTEGER surfk(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       INTEGER kLow_C(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       INTEGER kLow_U(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       INTEGER kLow_V(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-C      _RL dSigmaUpX,dSigmaUpY
-C      _RL dSigmaLoX,dSigmaLoY
+
+C     N2loc  :: local N**2
+C     slope  :: local slope
+C     Req    :: local equatorial deformation radius (m)
+C     Rurms  :: a local mixing length used in calculation of urms (m)
+C     deltaH :: local thickness of Eady integration (m)
+C     g_reciprho_sq :: (gravity*recip_rhoConst)**2
+C     M4loc  :: local M**4
+C     maxDRhoDz :: maximum value of d(rho)/dz (derived from GM_K3D_minN2)
+C     sigx   :: local d(rho)/dx
+C     sigy   :: local d(rho)/dy
+C     sigz   :: local d(rho)/dz
+C     hsurf  :: local surface layer depth
+C     small  :: a small number (to avoid floating point exceptions)
       _RL N2loc
       _RL slope
-      _RL umean
-      _RL Req, Rmid
-      _RL Ruse
+      _RL Req
+      _RL Rurms
       _RL deltaH
       _RL g_reciprho_sq
       _RL M4loc
-      _RL newDbz
       _RL maxDRhoDz
       _RL sigx, sigy, sigz
       _RL hsurf
       _RL small
-      _RL KPV(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL SlopeX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL SlopeY(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL dSigmaDr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL dSigmaDx(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL dSigmaDy(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL tfluxX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL tfluxY(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL cori(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL coriU(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL coriV(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL fCoriU(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL fCoriV(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL surfkz(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL gradqx(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL gradqy(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL Dbz(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL XimX(GM_K3D_NModes,1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL XimY(GM_K3D_NModes,1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rhosurf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rhodeep(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL umc(  1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
-      _RL eady( 1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL vec(GM_K3D_NModes,1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
-      _RL urms( 1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
-      _RL cDopp(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL supp( 1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
-      _RL ustar(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
-      _RL vstar(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
-      _RL Xix(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL Xiy(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL psistar(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
 
 C     dfdy    :: gradient of the Coriolis paramter, df/dy, 1/(m*s)
 C     dfdx    :: gradient of the Coriolis paramter, df/dx, 1/(m*s)
 C     gradf   :: total gradient of the Coriolis paramter, SQRT(df/dx**2+df/dy**2), 1/(m*s)
-C     Rdef    :: Rossby Radius of Defrmtn (combo of equatorial and mid-lat) (m)
 C     RRhines :: The Rhines scale (m)
 C     Rmix    :: Mixing length
-C     N       :: buoyancy frequency (1/s)
 C     N2      :: Square of the buoyancy frequency (1/s**2)
+C     N2W     :: Square of the buoyancy frequency (1/s**2) averaged to west of grid cell
+C     N2S     :: Square of the buoyancy frequency (1/s**2) averaged to south of grid cell
+C     N       :: Buoyancy frequency, SQRT(N2)
 C     BVint   :: The vertical integral of N (m/s)
 C     ubar    :: Zonal velocity on a tracer point (m/s)
 C     vbar    :: Meridional velocity on a tracer point (m/s)
@@ -118,8 +102,7 @@ C     Ubaro   :: Barotropic velocity (m/s)
       _RL dfdy(   1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dfdx(   1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL gradf(  1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL Rdef(   1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL Kdef(   1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dummy(  1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL RRhines(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL Rmix(   1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL N2(     1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
@@ -131,12 +114,77 @@ C     Ubaro   :: Barotropic velocity (m/s)
       _RL ubar(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL vbar(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 
+C     Rmid     :: Rossby radius (m)
+C     KPV      :: Diffusivity (m**2/s)
+C     SlopeX   :: isopycnal slope in x direction
+C     SlopeY   :: isopycnal slope in y direction
+C     dSigmaDx :: sigmaX averaged onto tracer grid
+C     dSigmaDy :: sigmaY averaged onto tracer grid
+C     tfluxX   :: thickness flux in x direction
+C     tfluxY   :: thickness flux in y direction
+C     fCoriU   :: Coriolis parameter averaged to U points
+C     fCoriV   :: Coriolis parameter averaged to V points
+C     cori     :: Coriolis parameter forced to be finite near the equator
+C     coriU    :: As for cori, but, at U point
+C     coriV    :: As for cori, but, at V point
+C     surfkz   :: Depth of surface layer (in r units)
+      _RL Rmid(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL KPV(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL SlopeX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL SlopeY(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL dSigmaDx(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL dSigmaDy(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL tfluxX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL tfluxY(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL cori(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL coriU(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL coriV(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL fCoriU(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL fCoriV(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL surfkz(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+
+C     gradqx   :: Potential vorticity gradient in x direction
+C     gradqy   :: Potential vorticity gradient in y direction
+C     XimX     :: Vertical integral of phi_m*K*gradqx
+C     XimY     :: Vertical integral of phi_m*K*gradqy
+C     cDopp    :: Quasi-Doppler shifted long Rossby wave speed (m/s)
+C     umc      :: ubar-c (m/s)
+C     eady     :: Eady growth rate (1/s)
+C     urms     :: the rms eddy velocity (m/s)
+C     supp     :: The suppression factor
+C     ustar    :: The eddy induced velocity in the x direction
+C     vstar    :: The eddy induced velocity in the y direction
+C     Xix      :: Xi in the x direction (m/s**2)
+C     Xiy      :: Xi in the y direction (m/s**2)
+      _RL gradqx(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL gradqy(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL XimX(GM_K3D_NModes,1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL XimY(GM_K3D_NModes,1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL cDopp(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL umc(  1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
+      _RL eady( 1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL urms( 1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
+      _RL supp( 1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
+      _RL ustar(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
+      _RL vstar(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
+      _RL Xix(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL Xiy(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+#ifdef GM_K3D_PASSIVE
+C     psistar :: eddy induced streamfunction in the y direction
+      _RL psistar(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
+#endif
+
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     ======================================
 C     Initialise some variables
 C     ======================================
       small = TINY(zeroRL)
+      update_modes=.FALSE.
+      IF ( DIFFERENT_MULTIPLE(GM_K3D_vecFreq,myTime,deltaTClock) )
+     &     update_modes=.TRUE.
+
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
         kLow_C(i,j) = kLowC(i,j,bi,bj)
@@ -291,21 +339,22 @@ C          Assume that N(z=-H)=0
       ENDDO
 
 C     Calculate the eigenvalues and eigenvectors
-      CALL GMREDI_CALC_EIGS(
-     I     iMin,iMax,jMin,jMax,bi,bj,N2,myThid,
-     I     kLow_C, maskC(:,:,:,bi,bj),
-     I     hfacC(:,:,:,bi,bj), recip_hfacC(:,:,:,bi,bj),.TRUE.,
-     O     Kdef,vec)
+      IF (update_modes) THEN
+        CALL GMREDI_CALC_EIGS(
+     I       iMin,iMax,jMin,jMax,bi,bj,N2,myThid,
+     I       kLow_C, maskC(:,:,:,bi,bj),
+     I       hfacC(:,:,:,bi,bj), recip_hfacC(:,:,:,bi,bj),
+     I       R_Low(:,:,bi,bj), 1, .TRUE.,
+     O       Rmid, modesC(:,:,:,:,bi,bj))
 
-C     Calculate the Rossby Radius
-      DO j=1-Oly+1,sNy+Oly
-       DO i=1-Olx+1,sNx+Olx
-c       The +small avoids division by zero
-        Rmid = 1/(Kdef(i,j)+small)
-        Req  = SQRT(BVint(i,j)/(2*pi*gradf(i,j)))
-        Rdef(i,j) = MIN(Rmid,Req)
-       ENDDO
-      ENDDO
+C       Calculate the Rossby Radius
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+          Req  = SQRT(BVint(i,j)/(2*pi*gradf(i,j)))
+          Rdef(i,j,bi,bj) = MIN(Rmid(i,j),Req)
+         ENDDO
+        ENDDO
+      ENDIF
 
 C     Average dsigma/dx and dsigma/dy onto the centre points
       
@@ -314,7 +363,6 @@ C     Average dsigma/dx and dsigma/dy onto the centre points
         DO i=1-Olx,sNx+Olx-1
          dSigmaDx(i,j,k) = op5*(sigmaX(i,j,k)+sigmaX(i+1,j,k))
          dSigmaDy(i,j,k) = op5*(sigmaY(i,j,k)+sigmaY(i,j+1,k))
-         dSigmaDr(i,j,k) = MIN(sigmaR(i,j,k),maxDrhoDz)
         ENDDO
        ENDDO
       ENDDO
@@ -387,8 +435,8 @@ C     ======================================
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx+1,sNx+Olx-1
 C       Calculate the Visbeck velocity
-        Ruse = MIN(Rdef(i,j),GM_K3D_maxLurms)
-        urms(i,j,1) = GM_K3D_Lambda*eady(i,j)*Ruse
+        Rurms = MIN(Rdef(i,j,bi,bj),GM_K3D_maxLurms)
+        urms(i,j,1) = GM_K3D_Lambda*eady(i,j)*Rurms
 C       Set the bottom urms to zero
         k=kLow_C(i,j)
         IF (k.GT.0) urms(i,j,k) = 0.0
@@ -397,12 +445,12 @@ C       Calculate the Rhines scale
         RRhines(i,j) = SQRT(urms(i,j,1)/gradf(i,j))
 
 C       Calculate the estimated length scale
-        Rmix(i,j) = MIN(Rdef(i,j), RRhines(i,j))
+        Rmix(i,j) = MIN(Rdef(i,j,bi,bj), RRhines(i,j))
 
 C       Calculate the Doppler shifted long Rossby wave speed
 C       Ubaro is on the U grid so we must average onto the M grid.
         cDopp(i,j) = op5*( Ubaro(i,j)+Ubaro(i+1,j) )
-     &                - gradf(i,j)*Rdef(i,j)*Rdef(i,j)
+     &                - gradf(i,j)*Rdef(i,j,bi,bj)*Rdef(i,j,bi,bj)
 C       Limit the wave speed to the namelist variable GM_K3D_maxC
         IF (ABS(cDopp(i,j)).GT.GM_K3D_maxC) THEN
           cDopp(i,j) = MAX(GM_K3D_maxC, cDopp(i,j))
@@ -412,8 +460,9 @@ C       Limit the wave speed to the namelist variable GM_K3D_maxC
       ENDDO
 
 C     Project the surface urms to the subsurface using the first baroclinic mode
-      CALL GMREDI_CALC_URMS(iMin,iMax,jMin,jMax,bi,bj,N2,myThid,urms,
-     &     vec)
+      CALL GMREDI_CALC_URMS(
+     I     iMin,iMax,jMin,jMax,bi,bj,N2,myThid,
+     U     urms)
 
 C     Calculate the diffusivity (on the mass grid)
       DO k=1,Nr
@@ -459,7 +508,7 @@ C     Enforce a minimum surface layer depth
         surfk(i,j) = 0
        ENDDO
       ENDDO
-      DO k=0,Nr
+      DO k=1,Nr
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
          IF (rF(k).GT.surfkz(i,j) .AND. surfkz(i,j).GE.rF(k+1)) 
@@ -486,7 +535,7 @@ C          the set the slope to zero to avoid problems.
 
          ELSE
 C          Calculate the zonal slope at the western cell face (U grid)
-           sigz  = MIN( op5*(sigmaR(i,j,k)+sigmaR(i-1,j,k)), maxDrhoDz )
+           sigz  = MIN( op5*(sigmaR(i,j,k)+sigmaR(i-1,j,k)), maxDRhoDz )
            sigx  = op5*( sigmaX(i,j,k)+sigmaX(i,j,k-1) )
            slope = sigx/sigz
 C           IF(ABS(slope).GT.GM_K3D_maxSlope)
@@ -496,7 +545,7 @@ C     &          slope = SIGN(GM_K3D_maxSlope,slope)
            SlopeX(i,j,k)=-maskW(i,j,k-1,bi,bj)*maskW(i,j,k,bi,bj)*slope
            
 C          Calculate the meridional slope at the southern cell face (V grid)
-           sigz  = MIN( op5*(sigmaR(i,j,k)+sigmaR(i,j-1,k)), maxDrhoDz )
+           sigz  = MIN( op5*(sigmaR(i,j,k)+sigmaR(i,j-1,k)), maxDRhoDz )
            sigy  = op5*( sigmaY(i,j,k) + sigmaY(i,j,k-1) )
            slope = sigy/sigz
 C           IF(ABS(slope).GT.GM_K3D_maxSlope)
@@ -508,34 +557,6 @@ C     &          slope = SIGN(GM_K3D_maxSlope,slope)
         ENDDO
        ENDDO
       ENDDO
-
-CC     Try something different
-C      DO k=1,Nr
-CC        Stuff for slope limiting
-C       DO j=1-Oly+1,sNy+Oly
-C        DO i=1-Olx+1,sNx+Olx
-C         slpX(i,j) = sigmaX(i,j,k)
-C         slpY(i,j) = sigmaY(i,j,k)
-C         dSigmaDrW(i,j)=op5*( sigmaR(i-1,j,k)+sigmaR(i,j,k) )
-C     &        *maskW(i,j,k,bi,bj)
-C         dSigmaDrS(i,j)=op5*( sigmaR(i,j-1,k)+sigmaR(i,j,k) )
-C     &        *maskS(i,j,k,bi,bj)
-C         dummy(i,j) = zeroRL
-C        ENDDO
-C       ENDDO
-C       CALL GMREDI_SLOPE_PSI(
-C     O      tprX, tprY,
-C     U      slpX, slpY,
-C     U      dSigmaDrW, dSigmaDrS,
-C     I      dummy, dummy, rF(k), k,
-C     I      bi, bj, myThid)
-C       DO j=1-Oly,sNy+Oly
-C        DO i=1-Olx,sNx+Olx
-C         SlopeX(i,j,k) = slpX(i,j)
-C         SlopeY(i,j,k) = slpY(i,j)
-C        ENDDO
-C       ENDDO
-C      ENDDO
 
 C     Calculate the thickness flux
 C     Enforce a zero slope bottom boundary condition for the bottom most cells (k=Nr)
@@ -572,24 +593,32 @@ C          So, we ensure that we always take a sensible slope.
              hsurf = -surfkz(i,j)
            ENDIF
            IF(kk.GT.0) THEN
-             tfluxX(i,j,k) = -fCoriU(i,j)*maskW(i,j,k,bi,bj)
-     &                    *( SlopeX(i,j,kk)-SlopeX(i,j,kk+1) )/hsurf
+             IF(kk.EQ.Nr) THEN
+               tfluxX(i,j,k) = -fCoriU(i,j)*maskW(i,j,k,bi,bj)
+     &              *SlopeX(i,j,kk)/hsurf
+             ELSE
+               tfluxX(i,j,k) = -fCoriU(i,j)*maskW(i,j,k,bi,bj)
+     &              *( SlopeX(i,j,kk)-SlopeX(i,j,kk+1) )/hsurf
+             ENDIF
            ELSE
              tfluxX(i,j,k) = zeroRL
            ENDIF
 
            IF(kLow_V(i,j).LT.surfk(i,j)) THEN
              kk=kLow_V(i,j)
-C           IF(kLow_V(i,j).LE.surfk(i,j)) THEN
-C             kk=kLow_V(i,j)-1
              hsurf = -rLowS(i,j,bi,bj)
            ELSE
              kk=surfk(i,j)
              hsurf = -surfkz(i,j)
            ENDIF
            IF(kk.GT.0) THEN
-             tfluxY(i,j,k) = -fCoriV(i,j)*maskS(i,j,k,bi,bj)
-     &                    *( SlopeY(i,j,kk)-SlopeY(i,j,kk+1) )/hsurf
+             IF(kk.EQ.Nr) THEN
+               tfluxY(i,j,k) = -fCoriV(i,j)*maskS(i,j,k,bi,bj)
+     &              *SlopeY(i,j,kk)/hsurf
+             ELSE
+               tfluxY(i,j,k) = -fCoriV(i,j)*maskS(i,j,k,bi,bj)
+     &              *( SlopeY(i,j,kk)-SlopeY(i,j,kk+1) )/hsurf
+             ENDIF
            ELSE
              tfluxY(i,j,k) = zeroRL
            ENDIF
@@ -702,12 +731,14 @@ C       and satisfy the integral constraint
 C       Start with the X direction
 C       ------------------------------
 C       Calculate the eigenvectors at the West face of a cell
-        CALL GMREDI_CALC_EIGS(
-     I       iMin,iMax,jMin,jMax,bi,bj,N2W,myThid,
-     I       kLow_U,maskW(:,:,:,bi,bj),
-     I       hfacW(:,:,:,bi,bj),recip_hfacW(:,:,:,bi,bj),.FALSE.,
-     O       Kdef,vec)
-        
+        IF (update_modes) THEN
+          CALL GMREDI_CALC_EIGS(
+     I         iMin,iMax,jMin,jMax,bi,bj,N2W,myThid,
+     I         kLow_U,maskW(:,:,:,bi,bj),
+     I         hfacW(:,:,:,bi,bj),recip_hfacW(:,:,:,bi,bj),
+     I         rLowW(:,:,bi,bj),GM_K3D_NModes,.FALSE.,
+     O         dummy,modesW(:,:,:,:,bi,bj))
+        ENDIF
         
 C       Calculate Xi_m at the west face of a cell
         DO j=1-Oly,sNy+Oly
@@ -723,7 +754,7 @@ C       Calculate Xi_m at the west face of a cell
            DO m=1,GM_K3D_NModes
               XimX(m,i,j) = XimX(m,i,j) 
      &             - maskW(i,j,k,bi,bj)*drF(k)*hfacW(i,j,k,bi,bj)
-     &             *KPV(i,j,k)*gradqx(i,j,k)*vec(m,i,j,k)
+     &             *KPV(i,j,k)*gradqx(i,j,k)*modesW(m,i,j,k,bi,bj)
            ENDDO
           ENDDO
          ENDDO
@@ -742,7 +773,7 @@ C     Calculate Xi in the X direction at the west face
           DO i=1-Olx,sNx+Olx
            DO m=1,GM_K3D_NModes
             Xix(i,j,k) = Xix(i,j,k) 
-     &           + maskW(i,j,k,bi,bj)*vec(m,i,j,k)*XimX(m,i,j)
+     &           + maskW(i,j,k,bi,bj)*XimX(m,i,j)*modesW(m,i,j,k,bi,bj)
            ENDDO
           ENDDO
          ENDDO
@@ -751,12 +782,15 @@ C     Calculate Xi in the X direction at the west face
 C     Now the Y direction
 C     ------------------------------
 C     Calculate the eigenvectors at the West face of a cell
-        CALL GMREDI_CALC_EIGS(
-     I       iMin,iMax,jMin,jMax,bi,bj,N2S,myThid,
-     I       kLow_V,maskS(:,:,:,bi,bj),
-     I       hfacS(:,:,:,bi,bj),recip_hfacS(:,:,:,bi,bj),.FALSE.,
-     O       Kdef,vec)
-        
+        IF (update_modes) THEN
+          CALL GMREDI_CALC_EIGS(
+     I         iMin,iMax,jMin,jMax,bi,bj,N2S,myThid,
+     I         kLow_V,maskS(:,:,:,bi,bj),
+     I         hfacS(:,:,:,bi,bj),recip_hfacS(:,:,:,bi,bj),
+     I         rLowS(:,:,bi,bj), GM_K3D_NModes, .FALSE.,
+     O         dummy,modesS(:,:,:,:,bi,bj))
+        ENDIF
+
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
           DO m=1,GM_K3D_NModes
@@ -770,7 +804,7 @@ C     Calculate the eigenvectors at the West face of a cell
            DO m=1,GM_K3D_NModes
             XimY(m,i,j) = XimY(m,i,j)
      &           - drF(k)*hfacS(i,j,k,bi,bj)
-     &           *KPV(i,j,k)*gradqy(i,j,k)*vec(m,i,j,k)
+     &           *KPV(i,j,k)*gradqy(i,j,k)*modesS(m,i,j,k,bi,bj)
            ENDDO
           ENDDO
          ENDDO
@@ -789,7 +823,7 @@ C     Calculate Xi for Y direction at the south face
           DO i=1-Olx,sNx+Olx
            DO m=1,GM_K3D_NModes
             Xiy(i,j,k) = Xiy(i,j,k) 
-     &           + maskS(i,j,k,bi,bj)*vec(m,i,j,k)*XimY(m,i,j)
+     &           + maskS(i,j,k,bi,bj)*XimY(m,i,j)*modesS(m,i,j,k,bi,bj)
            ENDDO
           ENDDO
          ENDDO
@@ -857,14 +891,6 @@ C     ======================================
          ENDDO
         ENDDO
 
-        DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           psistar(i,j,k) = GM_PsiY(i,j,k,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-
       ENDIF
 #endif
 
@@ -891,15 +917,10 @@ C     Diagnostics
         CALL DIAGNOSTICS_FILL(surfkz, 'GM_SFLYR',0, 1,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(ustar,  'GM_USTAR',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(vstar,  'GM_VSTAR',0,Nr,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(psistar,'GM_PSI  ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(umc,    'GM_UMC  ',0,Nr,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(BVint,  'GM_BVINT',0, 1,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(sigmaR, 'GM_SIGR ',0,Nr,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(sigmaX, 'GM_SIGX ',0,Nr,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(sigmaY, 'GM_SIGY ',0,Nr,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(N2,     'GM_N2   ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(ubar,   'GM_UBAR ',0,Nr,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(Kdef,   'GM_KDEF ',0, 1,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(modesC(1,:,:,:,bi,bj),
+     &                                'GM_MODEC',0,Nr,0,1,1,myThid)
       ENDIF
 #endif
 

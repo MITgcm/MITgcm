@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.27 2013/06/27 14:51:40 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.28 2013/07/11 14:33:23 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -155,6 +155,41 @@ C     Make sure we are not trying to use some arrays that are unavailable
 #endif
 
 #ifdef GM_K3D
+# ifndef use_lapack
+      WRITE(msgBuf, '(A)')
+     &     'Must use CPP option use_lapack when using GM_K3D'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      STOP ' ABNORMAL END: S/R GMREDI_CHECK'
+# endif
+
+      IF ( GM_useK3D) THEN
+        CALL WRITE_0D_L( GM_useK3D, INDEX_NONE,
+     &   'GM_useK3D =', '     /* if TRUE => use K3D for diffusivity */')
+        
+        IF ( GM_K3D_likeGM ) THEN
+          CALL WRITE_0D_L( GM_K3D_likeGM, INDEX_NONE,
+     &         'GM_K3D_likeGM =', 
+     &         '     /* if TRUE => Uses a GM-type closure */')
+        
+          CALL WRITE_0D_L( GM_K3D_smooth, INDEX_NONE,
+     &         'GM_K3D_smooth =', 
+     &         ' /* if TRUE => Expands in terms of baroclinic modes */')
+        
+          IF ( GM_K3D_smooth ) THEN
+            CALL WRITE_0D_I( GM_K3D_NModes, INDEX_NONE,
+     &           'GM_K3D_NModes =',
+     &           ' /* Number of modes for expansion */')
+          ENDIF
+
+        ELSE
+          CALL WRITE_0D_I( GM_K3D_NModes, INDEX_NONE,
+     &         'GM_K3D_NModes =',
+     &         ' /* Number of modes for expansion */')
+
+        ENDIF
+
+      ENDIF
+
 C     Make sure that we use K3D with the advective form only.
 C     The skew form is not presently supported.
       IF ( GM_useK3D .AND. .NOT. GM_AdvForm) THEN
@@ -181,12 +216,6 @@ C       a constant K should be used
         ENDIF
       ENDIF
 
-# ifndef use_lapack
-      WRITE(msgBuf, '(A)')
-     &     'Must use CPP option use_lapack when using GM_K3D'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      STOP ' ABNORMAL END: S/R GMREDI_CHECK'
-# endif
 #endif
 
 #ifndef GM_EXTRA_DIAGONAL
