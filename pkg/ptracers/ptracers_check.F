@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_check.F,v 1.1 2012/04/18 22:05:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_check.F,v 1.2 2013/07/11 19:03:26 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -81,6 +81,9 @@ C--   Print a summary of pTracer parameter values:
       CALL WRITE_1D_RL( PTRACERS_dTLev, Nr, INDEX_K,
      &   'PTRACERS_dTLev =',
      &'   /* Ptracer timestep ( s ) */')
+      CALL WRITE_0D_RL(PTRACERS_monitorFreq, INDEX_NONE,
+     &   'PTRACERS_monitorFreq =',
+     &   ' /* Frequency^-1 for monitor output (s) */')
       CALL WRITE_0D_RL(PTRACERS_dumpFreq, INDEX_NONE,
      &   'PTRACERS_dumpFreq =',
      &   ' /* Frequency^-1 for snapshot output (s) */')
