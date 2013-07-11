@@ -7,9 +7,9 @@ function [del] = griddata_preprocess(x,y,xi,yi,method)
 %   Based on
 %   Clay M. Thompson 8-21-95
 %   Copyright 1984-2001 The MathWorks, Inc. 
-%   $Revision: 1.3 $  $Date: 2009/05/29 14:03:30 $
+%   $Revision: 1.4 $  $Date: 2013/07/11 12:41:06 $
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/griddata_preprocess.m,v 1.3 2009/05/29 14:03:30 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/griddata_preprocess.m,v 1.4 2013/07/11 12:41:06 mlosch Exp $
 % $Name:  $
 
 error(nargchk(4,5,nargin))
@@ -54,15 +54,33 @@ siz = size(xi);
 xi = xi(:); yi = yi(:); % Treat these as columns
 x = x(:); y = y(:); % Treat these as columns
 
-% Triangularize the data
-tri = delaunayn([x y]);
-if isempty(tri),
-  warning('Data cannot be triangulated.');
-  return
-end
+% older version of matlab do not have DelaunayTri, later versions do not
+% have tsearch
+msg=which('DelaunayTri');
+if length(msg) > 0 % version is 2012 or newer
+  % Triangularize the data
+  tri=DelaunayTri(x,y);
+  if isempty(tri),
+    warning('Data cannot be triangulated.');
+    return
+  end
+  
+  % Find the nearest triangle (t)
+  [t, bcs] = pointLocation(tri, xi, yi);
+  
+else % use delaunay and tsearch (and hope it is available)
 
-% Find the nearest triangle (t)
-t = tsearch(x,y,tri,xi,yi);
+  % Triangularize the data
+  tri = delaunayn([x y]);
+  if isempty(tri),
+    warning('Data cannot be triangulated.');
+    return
+  end
+  
+  % Find the nearest triangle (t)
+  t = tsearch(x,y,tri,xi,yi);
+
+end % end of selecting version
 
 % Only keep the relevant triangles.
 out = find(isnan(t));
