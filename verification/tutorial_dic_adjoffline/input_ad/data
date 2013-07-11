@@ -54,11 +54,10 @@
  abEps = 0.1,
 # for longer run
  pChkptFreq = 31104000.,
- chkptFreq  = 31104000.,
+#chkptFreq  = 31104000.,
  dumpFreq   = 2592000.,
  taveFreq   = 2592000.,
-# for verification
- monitorFreq= 1.,
+ monitorFreq= 2592000.,
 #
 # tauThetaClimRelax = 5184000.,
 # tauSaltClimRelax  = 7776000.,

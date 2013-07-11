@@ -1,6 +1,9 @@
  &PTRACERS_PARM01
  PTRACERS_numInUse=6,
  PTRACERS_Iter0= 0,
+# for verification
+ PTRACERS_monitorFreq= 1.,
+#- for each tracers:
 # tracer 1 - dic
  PTRACERS_names(1)='dic',
  PTRACERS_long_names(1)='Dissolved Inorganic Carbon',

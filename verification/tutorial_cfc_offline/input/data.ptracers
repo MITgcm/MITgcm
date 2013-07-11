@@ -1,10 +1,9 @@
  &PTRACERS_PARM01
  PTRACERS_numInUse=2,
  PTRACERS_Iter0= 4248000,
-#
-# The following option is now obsolete:
-#  PTRACERS_write_mnc=.TRUE.,
-#
+# for verification:
+ PTRACERS_monitorFreq=43200.,
+#- for each tracers:
 # tracer 1 - dic
  PTRACERS_names(1)='cfc11',
  PTRACERS_long_names(1)='CFC11',

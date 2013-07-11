@@ -45,17 +45,12 @@
  deltaTClock = 43200.0,
  abEps = 0.1,
 #cAdjFreq = -1,
-#EH3   These following *very* small periods are 
-#EH3   for IO testing purposes only
-#EH3 pChkptFreq=311040000.,
-#EH3 chkptFreq= 311040000.,
-#EH3 dumpFreq=  311040000.,
-#EH3 taveFreq=  311040000.,
  pChkptFreq=3110400000.,
- chkptFreq= 3110400000.,
+#chkptFreq= 3110400000.,
  dumpFreq=  31104000.,
  taveFreq=  31104000.,
- monitorFreq= 1.,
+#monitorFreq= 4853865600.,
+ monitorFreq= 2592000.,
 #tauThetaClimRelax = 5184000.0,
 #tauSaltClimRelax =  7776000.0,
  periodicExternalForcing=.TRUE.,
@@ -66,8 +61,8 @@
 # Gridding parameters
  &PARM04
  usingSphericalPolarGrid=.TRUE.,
- delR=  50.,  70., 100., 140., 190., 
-       240., 290., 340., 390., 440., 
+ delR=  50.,  70., 100., 140., 190.,
+       240., 290., 340., 390., 440.,
        490., 540., 590., 640., 690.,
  ygOrigin=-90.,
  dxSpacing=2.8125,
