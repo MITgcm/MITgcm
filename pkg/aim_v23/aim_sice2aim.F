@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.13 2009/07/08 23:35:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.14 2013/07/18 20:00:10 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -48,14 +48,7 @@ C-- Sea-Ice package
       INTEGER siLo, siHi, sjLo, sjHi
       PARAMETER ( siLo = 1-OLx , siHi = sNx+OLx )
       PARAMETER ( sjLo = 1-OLy , sjHi = sNy+OLy )
-#endif
-
-#ifdef COMPONENT_MODULE
-# include "CPL_PARAMS.h"
-#else
-      LOGICAL cpl_earlyExpImpCall
-      PARAMETER( cpl_earlyExpImpCall = .FALSE. )
-#endif
+#endif /* ALLOW_THSICE */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -137,8 +130,8 @@ C          temp. is fct of salinity) ; but would be better somewhere else.
       IF ( tauRelax_MxL .EQ. -1. _d 0
      &     .OR. ( stepFwd_oceMxL  .AND. StartIceModel.NE.0
      &                            .AND. myIter.EQ.nIter0   )
-     &     .OR. ( myIter.EQ.0 .AND. myTime.EQ.baseTime .AND.
-     &           .NOT.(useCoupler.AND.cpl_earlyExpImpCall) )
+     &     .OR. ( myIter.EQ.0 .AND. myTime.EQ.baseTime
+     &                        .AND. .NOT.useCoupler )
      &   ) THEN
         DO j=1,sNy
          DO i=1,sNx
@@ -151,10 +144,10 @@ C          temp. is fct of salinity) ; but would be better somewhere else.
         IF ( myIter.EQ.nIter0 ) THEN
 C-- Over-write the initial T,S_MxL files with the correct fields
           CALL WRITE_LOCAL_RL( 'ice_tOceMxL', 'I10', 1,
-     &                         tOceMxL(1-Olx,1-Oly,bi,bj),
+     &                         tOceMxL(1-OLx,1-OLy,bi,bj),
      &                         bi, bj, 1, myIter, myThid )
           CALL WRITE_LOCAL_RL( 'ice_sOceMxL', 'I10', 1,
-     &                         sOceMxL(1-Olx,1-Oly,bi,bj),
+     &                         sOceMxL(1-OLx,1-OLy,bi,bj),
      &                         bi, bj, 1, myIter, myThid )
         ENDIF
       ELSE

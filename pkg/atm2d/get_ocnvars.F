@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/get_ocnvars.F,v 1.4 2010/04/30 20:25:59 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/get_ocnvars.F,v 1.5 2013/07/18 19:57:10 jmc Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -76,8 +76,7 @@ C Put in seaice common block
 
 #  ifdef NONLIN_FRSURF
 Cjrs ask J-M about next lines
-      IF ( nonlinFreeSurf.GT.0 .AND.
-     &    (staggerTimeStep .OR. .NOT.cpl_earlyExpImpCall ) ) THEN
+      IF ( nonlinFreeSurf.GT.0 .AND. staggerTimeStep ) THEN
        IF ( select_rStar.GT.0 ) THEN
         DO j=1,sNy
          DO i=1,sNx
