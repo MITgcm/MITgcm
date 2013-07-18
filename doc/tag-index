@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1895 2013/07/11 23:39:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1896 2013/07/18 20:06:01 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg atm_ & ocn_compon_interf:
+  - remove cpl_earlyExpImpCall=F option (was mainly a hack added for the old
+    staggerTimeStep implementation) and disable (retired) corresponding
+    parameter.
 o pkg/offline:
   - comment out unused field-array: ICEM, ConvectCount, hflx[01], icem[01];
   - add S/R OFFLINE_CHECK to print offline parameter summary
