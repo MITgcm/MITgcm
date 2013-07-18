@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.216 2013/07/03 16:18:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.217 2013/07/18 19:53:56 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -372,7 +372,7 @@ c--   Add control vector for forcing and parameter fields
 #endif
 
 #ifdef COMPONENT_MODULE
-      IF ( useCoupler .AND. cpl_earlyExpImpCall ) THEN
+      IF ( useCoupler ) THEN
 C      Post coupling data that I export.
 C      Read in coupling data that I import.
          CALL TIMER_START('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
@@ -627,23 +627,6 @@ c #ifdef ALLOW_NONHYDROSTATIC
         CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
       ENDIF
 c #endif
-
-#ifdef COMPONENT_MODULE
-      IF ( useCoupler .AND. .NOT.cpl_earlyExpImpCall ) THEN
-C      Post coupling data that I export.
-C      Read in coupling data that I import.
-         myItP1 = myIter + 1
-         CALL TIMER_START('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
-         CALL CPL_EXPORT_MY_DATA(       myTime, myItP1, myThid )
-         CALL CPL_IMPORT_EXTERNAL_DATA( myTime, myItP1, myThid )
-         CALL TIMER_STOP ('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
-# ifdef ALLOW_OCN_COMPON_INTERF
-        IF ( useRealFreshWaterFlux ) THEN
-         CALL OCN_APPLY_IMPORT( .FALSE., myTime, myIter, myThid )
-        ENDIF
-# endif /* ALLOW_OCN_COMPON_INTERF */
-      ENDIF
-#endif /* COMPONENT_MODULE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE etaN = comlev1, key = ikey_dynamics, kind = isbyte
