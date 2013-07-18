@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_readparms.F,v 1.7 2009/12/25 19:44:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_readparms.F,v 1.8 2013/07/18 20:03:10 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -22,9 +22,7 @@ C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ===
-
 #include "SIZE.h"
-
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
@@ -47,10 +45,13 @@ C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
 C     k          :: loop counter
 C     iL         :: Work variable for length of file-name
+C     cpl_earlyExpImpCall :: retired; always call coupler early in call sequence
+
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
 c     INTEGER k, iL
       _RL  cpl_atmSendFrq
+      LOGICAL cpl_earlyExpImpCall
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -108,11 +109,22 @@ C--   Close the open data file
       CLOSE(iUnit)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Check for retired parameters:
+      IF ( .NOT.cpl_earlyExpImpCall ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &   'Parameter "cpl_earlyExpImpCall" has been retired;'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &   '=> always call coupler early in sequence of calls'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CPL_READPARMS'
+      ENDIF
+
 C--   Check parameters and model configuration
       IF ( useImportFlxCO2 .AND. .NOT.atmCpl_exchange_DIC ) THEN
         WRITE(msgBuf,'(2A)') 'CPL_READPARMS: useImportFlxCO2',
      &    ' requires atmCpl_exchange_DIC TRUE'
-        CALL PRINT_ERROR( msgBuf, myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R CPL_READPARMS'
       ENDIF
 
@@ -134,9 +146,6 @@ C--   Print out parameter values :
       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
 
 C- namelist CPL_ATM_PARAM:
-       CALL WRITE_0D_L( cpl_earlyExpImpCall, INDEX_NONE,
-     &                 'cpl_earlyExpImpCall=',
-     &   ' /* call coupler early in the time-stepping */')
        CALL WRITE_0D_L( cpl_oldPickup , INDEX_NONE,
      &                 'cpl_oldPickup =',
      &   ' /* restart from old pickup on/off flag */')

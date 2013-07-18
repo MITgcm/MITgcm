@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.12 2009/12/25 19:45:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.13 2013/07/18 20:02:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -23,9 +23,7 @@ C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ===
-
 #include "SIZE.h"
-
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
@@ -51,9 +49,12 @@ C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
 C     k          :: loop counter
 C     iL         :: Work variable for length of file-name
+C     cpl_earlyExpImpCall :: retired; always call coupler early in call sequence
+
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
 c     INTEGER k, iL
+      LOGICAL cpl_earlyExpImpCall
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -124,6 +125,17 @@ C--   Close the open data file
       CLOSE(iUnit)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Check for retired parameters:
+      IF ( .NOT.cpl_earlyExpImpCall ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &   'Parameter "cpl_earlyExpImpCall" has been retired;'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &   '=> always call coupler early in sequence of calls'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CPL_READPARMS'
+      ENDIF
+
 C--   Check parameters and model configuration
 
 C-    If land_taveFreq is positive, then must compile the land-diagnostics code
@@ -159,17 +171,6 @@ C     &              ' Re-compile with:  #define ATMOSPHERIC_LOADING'
 C        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ENDIF
 #endif /* ATMOSPHERIC_LOADING */
-
-      IF ( .NOT.cpl_earlyExpImpCall .AND. staggerTimeStep ) THEN
-        WRITE(msgBuf,'(A,L5,A,L5)')
-     &  'CPL_READPARMS: staggerTimeStep=',staggerTimeStep,
-     &  ' ; cpl_earlyExpImpCall=', cpl_earlyExpImpCall
-        CALL PRINT_ERROR( msgBuf, myThid)
-        WRITE(msgBuf,'(A)')
-     &  'CPL_READPARMS: taggerTimeStep requires cpl_earlyExpImpCall'
-        CALL PRINT_ERROR( msgBuf, myThid)
-        STOP 'ABNORMAL END: S/R CPL_READPARMS'
-      ENDIF
 
       IF ( ( useImportFice.OR.useImportCO2.OR.useImportWSpd ) .AND.
      &    (.NOT.ocnCpl_exchange_DIC) ) THEN
@@ -207,9 +208,6 @@ C--   Print out parameter values :
       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
 
 C- namelist CPL_OCN_PARAM:
-       CALL WRITE_0D_L( cpl_earlyExpImpCall, INDEX_NONE,
-     &                 'cpl_earlyExpImpCall=',
-     &   ' /* call coupler early in the time-stepping */')
        CALL WRITE_0D_L( useImportHFlx, INDEX_NONE,
      &                 'useImportHFlx=',
      &   ' /* use Imported Heat-Flx fr Coupler on/off flag */')

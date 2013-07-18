@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_read_pickup.F,v 1.7 2010/01/03 19:22:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_read_pickup.F,v 1.8 2013/07/18 20:02:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -56,17 +56,17 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        prec = precFloat64
        rec_ind=0
 
-       IF ( .NOT. cpl_earlyExpImpCall ) THEN
-         CALL READ_REC_3D_RL( fn,prec,1,atmSLPr   , 1,myIter,myThid )
-         CALL READ_REC_3D_RL( fn,prec,1,HeatFlux  , 2,myIter,myThid )
-         CALL READ_REC_3D_RL( fn,prec,1,qShortWave, 3,myIter,myThid )
-         CALL READ_REC_3D_RL( fn,prec,1,tauX      , 4,myIter,myThid )
-         CALL READ_REC_3D_RL( fn,prec,1,tauY      , 5,myIter,myThid )
-         CALL READ_REC_3D_RL( fn,prec,1,FWFlux    , 6,myIter,myThid )
-         CALL READ_REC_3D_RL( fn,prec,1,iceSaltFlx, 7,myIter,myThid )
-         CALL READ_REC_3D_RL( fn,prec,1,seaIceMass, 8,myIter,myThid )
-         rec_ind=8
-       ENDIF
+c      IF ( .NOT. cpl_earlyExpImpCall ) THEN
+c        CALL READ_REC_3D_RL( fn,prec,1,atmSLPr   , 1,myIter,myThid )
+c        CALL READ_REC_3D_RL( fn,prec,1,HeatFlux  , 2,myIter,myThid )
+c        CALL READ_REC_3D_RL( fn,prec,1,qShortWave, 3,myIter,myThid )
+c        CALL READ_REC_3D_RL( fn,prec,1,tauX      , 4,myIter,myThid )
+c        CALL READ_REC_3D_RL( fn,prec,1,tauY      , 5,myIter,myThid )
+c        CALL READ_REC_3D_RL( fn,prec,1,FWFlux    , 6,myIter,myThid )
+c        CALL READ_REC_3D_RL( fn,prec,1,iceSaltFlx, 7,myIter,myThid )
+c        CALL READ_REC_3D_RL( fn,prec,1,seaIceMass, 8,myIter,myThid )
+c        rec_ind=8
+c      ENDIF
 
        IF ( ocnCpl_exchange_DIC ) THEN
 c        CALL READ_REC_3D_RL( fn,prec,1,airCO2    , 9,myIter,myThid )
@@ -81,21 +81,16 @@ c        CALL READ_REC_3D_RL( fn,prec,1,fracIce   ,11,myIter,myThid )
 #endif
        ENDIF
 
-c      CALL READ_REC_3D_RL( fn,prec,1,ocMxlD2cpl, 9,myIter,myThid )
-c      CALL READ_REC_3D_RL( fn,prec,1,SSTocn2cpl,10,myIter,myThid )
-c      CALL READ_REC_3D_RL( fn,prec,1,SSSocn2cpl,11,myIter,myThid )
-c      CALL READ_REC_3D_RL( fn,prec,1,vSqocn2cpl,12,myIter,myThid )
-
 C--   Fill in the halo region:
-       IF ( .NOT. cpl_earlyExpImpCall ) THEN
-         _EXCH_XY_RL( atmSLPr   , myThid )
-         _EXCH_XY_RL( HeatFlux  , myThid )
-         _EXCH_XY_RL( qShortWave, myThid )
-         CALL EXCH_UV_XY_RL( tauX, tauY, .TRUE., myThid )
-         _EXCH_XY_RL( FWFlux    , myThid )
-         _EXCH_XY_RL( iceSaltFlx, myThid )
-         _EXCH_XY_RL( seaIceMass, myThid )
-       ENDIF
+c      IF ( .NOT. cpl_earlyExpImpCall ) THEN
+c        _EXCH_XY_RL( atmSLPr   , myThid )
+c        _EXCH_XY_RL( HeatFlux  , myThid )
+c        _EXCH_XY_RL( qShortWave, myThid )
+c        CALL EXCH_UV_XY_RL( tauX, tauY, .TRUE., myThid )
+c        _EXCH_XY_RL( FWFlux    , myThid )
+c        _EXCH_XY_RL( iceSaltFlx, myThid )
+c        _EXCH_XY_RL( seaIceMass, myThid )
+c      ENDIF
        IF ( ocnCpl_exchange_DIC ) THEN
 c        _EXCH_XY_RL( airCO2    , myThid )
 c        _EXCH_XY_RL( surfWSpeed, myThid )

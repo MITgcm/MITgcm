@@ -1,19 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_store_my_data.F,v 1.5 2009/01/05 15:21:36 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_store_my_data.F,v 1.6 2013/07/18 20:02:08 jmc Exp $
 C $Name:  $
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
-CStartOfInterface
+C     !ROUTINE: OCN_STORE_MY_DATA
+C     !INTERFACE:
       SUBROUTINE OCN_STORE_MY_DATA(
      I                     myTime, myIter, bi,bj, myThid )
-C     /==========================================================\
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
 C     | SUBROUTINE OCN_STORE_MY_DATA                             |
 C     | o Routine for controlling storage of coupling data to    |
 C     |   to the coupling layer.                                 |
-C     |==========================================================|
+C     *==========================================================*
 C     | This version talks to the MIT Coupler. It uses the MIT   |
 C     | Coupler "checkpoint1" library calls.                     |
-C     \==========================================================/
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ==
@@ -26,45 +32,38 @@ C     == Global variables ==
 #include "DYNVARS.h"
 #include "OCNIDS.h"
 #include "OCNCPL.h"
-#ifdef ALLOW_DIC
-#  include "DIC_VARS.h"
-#endif
+c#ifdef ALLOW_DIC
+c# include "DIC_VARS.h"
+c#endif
 
-C     == Routine arguments ==
-C     myTime - Current internal time.
-C     myIter - Current timestep number.
-C     bi,bj  - Current tile indices
-C     myThid - Thread number for this instance of the routine
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine Arguments ==
+C     myTime     :: Current time in simulation
+C     myIter     :: Current timestep number
+C     bi,bj      :: Current tile indices
+C     myThid     :: my Thread Id. number
       _RL     myTime
       INTEGER myIter
       INTEGER bi,bj
       INTEGER myThid
+CEOP
 
+C     !FUNCTIONS:
+c     INTEGER ILNBLNK
 
-CEndOfInterface
-
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j :: Loop variables
       INTEGER i,j
 
-      IF ( cpl_earlyExpImpCall ) THEN
        DO j=1,sNy
         DO i=1,sNx
           SSTocn2cpl(i,j,bi,bj) = theta(i,j,1,bi,bj)
           SSSocn2cpl(i,j,bi,bj) = salt (i,j,1,bi,bj)
         ENDDO
        ENDDO
-      ELSE
-       DO j=1,sNy
-        DO i=1,sNx
-          SSTocn2cpl(i,j,bi,bj) = gT(i,j,1,bi,bj)
-          SSSocn2cpl(i,j,bi,bj) = gS(i,j,1,bi,bj)
-        ENDDO
-       ENDDO
-      ENDIF
 #ifdef NONLIN_FRSURF
-      IF ( nonlinFreeSurf.GT.0 .AND.
-     &    (staggerTimeStep .OR. .NOT.cpl_earlyExpImpCall ) ) THEN 
+      IF ( nonlinFreeSurf.GT.0 .AND. staggerTimeStep ) THEN
        IF ( select_rStar.GT.0 ) THEN
         DO j=1,sNy
          DO i=1,sNx
@@ -92,7 +91,7 @@ C     i,j :: Loop variables
 
        DO j=1,sNy
         DO i=1,sNx
-          vSqocn2cpl(i,j,bi,bj) = 
+          vSqocn2cpl(i,j,bi,bj) =
      &              ( uVel(i , j,1,bi,bj)*uVel(i , j,1,bi,bj)
      &              + uVel(i+1,j,1,bi,bj)*uVel(i+1,j,1,bi,bj)
      &              + vVel(i,j+1,1,bi,bj)*vVel(i,j+1,1,bi,bj)

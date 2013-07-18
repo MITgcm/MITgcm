@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_cpl_read_pickup.F,v 1.3 2007/10/01 13:39:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_cpl_read_pickup.F,v 1.4 2013/07/18 20:03:10 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -58,7 +58,6 @@ c     ENDIF
         CALL READ_REC_3D_RL( fn,prec,1, SSTocn    ,  2, myIter,myThid )
         CALL READ_REC_3D_RL( fn,prec,1, SSSocn    ,  3, myIter,myThid )
         CALL READ_REC_3D_RL( fn,prec,1, vSqocn    ,  4, myIter,myThid )
-      IF ( cpl_earlyExpImpCall ) THEN
         CALL READ_REC_3D_RL( fn,prec,1, atmSLPr   ,  5, myIter,myThid )
         CALL READ_REC_3D_RL( fn,prec,1, HeatFlux  ,  6, myIter,myThid )
         CALL READ_REC_3D_RL( fn,prec,1, qShortWave,  7, myIter,myThid )
@@ -69,7 +68,6 @@ c     ENDIF
         CALL READ_REC_3D_RL( fn,prec,1, RunOffEnFx, 12, myIter,myThid )
         CALL READ_REC_3D_RL( fn,prec,1, iceSaltFlx, 13, myIter,myThid )
         CALL READ_REC_3D_RL( fn,prec,1, seaIceMass, 14, myIter,myThid )
-      ENDIF
       IF ( atmCpl_exchange_DIC ) THEN
         CALL READ_REC_3D_RL( fn,prec,1, flxCO2ocn , 15, myIter,myThid )
         CALL READ_REC_3D_RL( fn,prec,1, airCO2    , 16, myIter,myThid )
@@ -77,13 +75,13 @@ c     ENDIF
         CALL READ_REC_3D_RL( fn,prec,1, fracIce   , 18, myIter,myThid )
       ENDIF
 
-      IF ( cpl_oldPickup .AND. cpl_earlyExpImpCall ) THEN
+      IF ( cpl_oldPickup ) THEN
         _BARRIER
 C-    EmP & RunOff were (before checkpoint59h) in m/s , but are now in kg/m2/s:
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             EvMPrFlux (i,j,bi,bj) = EvMPrFlux (i,j,bi,bj)*rhoConstFresh
             RunOffFlux(i,j,bi,bj) = RunOffFlux(i,j,bi,bj)*rhoConstFresh
            ENDDO

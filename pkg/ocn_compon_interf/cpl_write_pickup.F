@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_write_pickup.F,v 1.5 2009/01/05 15:21:36 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_write_pickup.F,v 1.6 2013/07/18 20:02:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -10,7 +10,7 @@ C     !INTERFACE:
      I                             suff, myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE  CPL_WRITE_PICKUP                             |
+C     | SUBROUTINE CPL_WRITE_PICKUP                              |
 C     | o Store coupling state for restart.                      |
 C     | - Oceanic version -                                      |
 C     *==========================================================*
@@ -55,42 +55,33 @@ C     rec_ind     :: index of the record in pickup file
       prec = precFloat64
       rec_ind=0
 
-      IF ( .NOT. cpl_earlyExpImpCall ) THEN
-        CALL WRITE_REC_3D_RL( fn,prec,1, atmSLPr   , 1, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn,prec,1, HeatFlux  , 2, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn,prec,1, qShortWave, 3, myIter, myThid )
-c       CALL WRITE_REC_3D_RL( fn,prec,1, qLatent   , 3, myIter, myThid )
-c       CALL WRITE_REC_3D_RL( fn,prec,1, qSensible , 3, myIter, myThid )
-c       CALL WRITE_REC_3D_RL( fn,prec,1, qLongWave , 3, myIter, myThid )
-c       CALL WRITE_REC_3D_RL( fn,prec,1, uVelGround, 3, myIter, myThid )
-c       CALL WRITE_REC_3D_RL( fn,prec,1, vVelGround, 3, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn,prec,1, tauX      , 4, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn,prec,1, tauY      , 5, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn,prec,1, FWFlux    , 6, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn,prec,1, iceSaltFlx, 7, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn,prec,1, seaIceMass, 8, myIter, myThid )
-        rec_ind=8
-      ENDIF
+c     IF ( .NOT. cpl_earlyExpImpCall ) THEN
+c       CALL WRITE_REC_3D_RL( fn,prec,1, atmSLPr   , 1, myIter, myThid )
+c       CALL WRITE_REC_3D_RL( fn,prec,1, HeatFlux  , 2, myIter, myThid )
+c       CALL WRITE_REC_3D_RL( fn,prec,1, qShortWave, 3, myIter, myThid )
+cc      CALL WRITE_REC_3D_RL( fn,prec,1, qLatent   , 3, myIter, myThid )
+cc      CALL WRITE_REC_3D_RL( fn,prec,1, qSensible , 3, myIter, myThid )
+cc      CALL WRITE_REC_3D_RL( fn,prec,1, qLongWave , 3, myIter, myThid )
+cc      CALL WRITE_REC_3D_RL( fn,prec,1, uVelGround, 3, myIter, myThid )
+cc      CALL WRITE_REC_3D_RL( fn,prec,1, vVelGround, 3, myIter, myThid )
+c       CALL WRITE_REC_3D_RL( fn,prec,1, tauX      , 4, myIter, myThid )
+c       CALL WRITE_REC_3D_RL( fn,prec,1, tauY      , 5, myIter, myThid )
+c       CALL WRITE_REC_3D_RL( fn,prec,1, FWFlux    , 6, myIter, myThid )
+c       CALL WRITE_REC_3D_RL( fn,prec,1, iceSaltFlx, 7, myIter, myThid )
+c       CALL WRITE_REC_3D_RL( fn,prec,1, seaIceMass, 8, myIter, myThid )
+c       rec_ind=8
+c     ENDIF
 
-      IF ( ocnCpl_exchange_DIC ) THEN 
-c       CALL WRITE_REC_3D_RL( fn,prec,1, 
-c    &                     airCO2    ,  9,myIter,myThid)
-c       CALL WRITE_REC_3D_RL( fn,prec,1, 
-c    &                     surfWSpeed, 10,myIter,myThid)
-c       CALL WRITE_REC_3D_RL( fn,prec,1, 
-c    &                     fracIce   , 11,myIter,myThid)
-        CALL WRITE_REC_3D_RL( fn,prec,1, 
-     &                     fluxCO2cpl, rec_ind+1,myIter,myThid)
+      IF ( ocnCpl_exchange_DIC ) THEN
+c       CALL WRITE_REC_3D_RL( fn,prec,1,
+c    &                     airCO2    , rec_ind+1, myIter, myThid )
+c       CALL WRITE_REC_3D_RL( fn,prec,1,
+c    &                     surfWSpeed, rec_ind+2, myIter, myThid )
+c       CALL WRITE_REC_3D_RL( fn,prec,1,
+c    &                     fracIce   , rec_ind+3, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn,prec,1,
+     &                     fluxCO2cpl, rec_ind+1, myIter, myThid )
       ENDIF
-
-c     CALL WRITE_REC_3D_RL( fn,prec,1, ocMxlD2cpl, 
-c    &                    9+caroffset, myIter, myThid )
-c     CALL WRITE_REC_3D_RL( fn,prec,1, SSTocn2cpl,
-c    &                   10+caroffset, myIter, myThid )
-c     CALL WRITE_REC_3D_RL( fn,prec,1, SSSocn2cpl,
-c    &                   11+caroffset, myIter, myThid )
-c     CALL WRITE_REC_3D_RL( fn,prec,1, vSqocn2cpl,
-c    &                   12+caroffset, myIter, myThid )
 
 #endif /* COMPONENT_MODULE */
 
