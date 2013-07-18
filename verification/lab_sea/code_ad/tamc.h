@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/tamc.h,v 1.2 2009/02/13 21:52:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/tamc.h,v 1.3 2013/07/18 20:15:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -62,11 +62,13 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
       integer    nchklev_1
-      parameter( nchklev_1      =   24 )
+      parameter( nchklev_1      =   2 )
       integer    nchklev_2
-      parameter( nchklev_2      =   3330 )
+      parameter( nchklev_2      =   2 )
       integer    nchklev_3
-      parameter( nchklev_3      =   40 )
+      parameter( nchklev_3      =   4 )
+cph      integer    nchklev_4
+cph      parameter( nchklev_4      =   4 )
 
 c--   Note always check for the correct sizes of the common blocks!
 

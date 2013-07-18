@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/ECCO_CPPOPTIONS.h,v 1.14 2013/03/04 19:35:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/ECCO_CPPOPTIONS.h,v 1.15 2013/07/18 20:15:06 heimbach Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -46,7 +46,7 @@ C       >>> Extract adjoint state
 #define ALLOW_AUTODIFF_MONITOR
 
 C o use divided adjoint to split adjoint computations
-#undef ALLOW_DIVIDED_ADJOINT
+#define ALLOW_DIVIDED_ADJOINT
 
 C o TAMC compatible subroutine parameter list
 #undef AUTODIFF_TAMC_COMPATIBILITY
