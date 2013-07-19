@@ -1,1 +1,11 @@
-AD_OPTFILE='../../../tools/adjoint_options/adjoint_diva'
+#!/bin/bash
+
+# $Header: /u/gcmpack/MITgcm/verification/lab_sea/build/genmake_local,v 1.7 2013/07/19 20:44:58 jmc Exp $
+
+#-- This is the local options file for the "new" version of genmake
+
+if test "x$MPI" = x ; then
+  AD_OPTFILE='../../../tools/adjoint_options/adjoint_diva'
+else
+  AD_OPTFILE='../../../tools/adjoint_options/adjoint_diva_mpi'
+fi
