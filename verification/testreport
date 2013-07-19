@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.187 2013/07/18 22:11:58 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.188 2013/07/19 18:49:33 jmc Exp $
 #  $Name:  $
 #
 
@@ -796,13 +796,24 @@ runmodel()
 	    # output do not exist or is older than executable:
 	    rm -f $OUTPUTFILE $RUNLOG ; touch $RUNLOG
 	    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
-	#--a quick and dirty trick to run with Divided Adjoint (DIVA):
-	if test $KIND = 2 -a -x dorun.sh ; then
-	    ./dorun.sh >> $RUNLOG 2>&1
-	else
+	#- Divided Adjoint Run:
+	#  get the number of additional runs (add_DIVA_runs) from file "run_ADM_DIVA"
+	    if test $KIND = 2 -a -f run_ADM_DIVA ; then
+	      adm_diva_nb=`sed -n '/^ *add_DIVA_runs\>.*=/p' run_ADM_DIVA | sed 's/ //g'`
+	      echo " Divided Adjoint Run: $adm_diva_nb" >> $RUNLOG
+	      eval "let $adm_diva_nb"
+	      if [ $add_DIVA_runs -ge 1 ] ; then
+		rm -f costf* divided.ctrl snapshot*
+		echo -n "(add_DIVA_runs=$add_DIVA_runs) ... "
+		for ii in `seq 1 $add_DIVA_runs` ; do
+		  ( eval $COMMAND ) >> $RUNLOG 2>&1
+		  echo " additional DIVA run # $ii : done" >> $RUNLOG
+		  mv -f $OUTPUTFILE ${OUTPUTFILE}.diva_${ii}
+		done
+	      fi
+	    fi
+	#- special DIVA processing ends here
 	    ( eval $COMMAND ) >> $RUNLOG 2>&1
-	fi
-	#----------
 	    RETVAL=$?
 	    ENDVAL=`tail $OUTPUTFILE | grep -c 'PROGRAM MAIN: Execution ended Normally'`
 	    if [ $POSTCLEAN -eq 1 -a $ENDVAL -gt 0 ] ; then
