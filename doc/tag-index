@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1896 2013/07/18 20:06:01 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1897 2013/07/20 00:04:02 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o testreport:
+  - changes for Divided Adjoint Run: when file "run_ADM_DIVA" is present,
+    perform additional runs (number of additional runs is "add_DIVA_runs" taken
+    from file run_ADM_DIVA ; should match "nchklev_3" in file "code_ad/tamc.h").
+o verification/lab_sea (AD test):
+  - change to test Divided Adjoint Run in this set-up (both standard AD test
+    and 2 secondary AD test: noseaice + noseaicedyn); drop the evp AD test.
 o pkg atm_ & ocn_compon_interf:
   - remove cpl_earlyExpImpCall=F option (was mainly a hack added for the old
     staggerTimeStep implementation) and disable (retired) corresponding
