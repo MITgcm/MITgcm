@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.188 2013/07/19 18:49:33 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.189 2013/07/20 20:32:17 jmc Exp $
 #  $Name:  $
 #
 
@@ -547,7 +547,8 @@ makemodel()
 	nwar=`grep -c 'TAF RECOMPUTATION *.* WARNING ' taf_ad.log`
 	if test -f taf_output ; then
 	    n2er=`grep -c 'TAF *.* ERROR ' taf_output`
-	    nerr=`expr $nerr + $n2er`
+	    n3er=`grep -c '\*ERROR\* ' taf_output`
+	    nerr=`expr $nerr + $n2er + $n3er`
 	fi
 	echo " TAF reports $nerr Errors and $nwar Recomputation Warnings" \
 				>> $CDIR"/summary.txt"
