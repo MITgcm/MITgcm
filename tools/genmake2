@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.250 2013/04/05 21:10:55 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.251 2013/07/21 23:21:36 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -600,6 +600,61 @@ Error: No options file was found in:  $ROOTDIR/tools/build_options/
 EOF
 	exit 1
     fi
+}
+
+#  Do a local copy of MPI headers files (in local dir ./mpi_headers/) after
+#  checking for additional included headers (in case of chain of included header)
+mpi_headers_do_local_copy() {
+
+    dBug=0
+    #----- check for additional headers (chain of included headers)
+    listIni=$MPI_HEADER_FILES
+    echo $listIni | grep "\<mpif.h\>" > /dev/null 2>&1
+    outp=$?
+    #- always check mpif.h (the only mpi-header included in standard MITgcm code)
+    if test $outp != 0 ; then listIni="mpif.h $listIni" ; fi
+    if test $dBug = 1 ; then echo "listIni='$listIni'" ; fi
+    doCheck=1 ; list2copy='' ; list2check=$listIni
+    while test $doCheck = 1 ; do
+	newList=''
+	for i in $list2check ; do
+	 if test -f $MPIINCLUDEDIR/$i ; then
+	    newInc=`grep '^ *include ' $MPIINCLUDEDIR/$i | \
+		sed -e 's/^ *include //' -e 's/\!.*$//' -e "s/'//g"  -e 's/\"//g'`
+	   if test $dBug = 1 ; then echo -n "checking $i : newInc='$newInc'" ; fi
+	   for j in $newInc ; do
+	     echo $listIni $list2copy $newList | grep "\<$j\>" > /dev/null 2>&1
+	     outp=$?
+	     if test $outp != 0 ; then
+		if test $dBug = 1 ; then echo -n " ; adding $j" ; fi
+		newList="$newList $j"
+	     fi
+	   done
+	   if test $dBug = 1 ; then echo "" ; fi
+	 fi
+	done
+	if test "x$newList" = x ; then doCheck=0
+	else list2check=$newList ; list2copy="$list2copy $newList"
+	fi
+    done
+    list2copy="$MPI_HEADER_FILES $list2copy"
+    if test $dBug = 1 ; then echo "list2copy='$list2copy'" ; fi
+    #----- make local copy and update LOCAL_MPI_HEADERS (if not already set)
+    mkListInc=0
+    for i in $list2copy ; do
+	if test -f $MPIINCLUDEDIR/$i ; then
+	    cp -p $MPIINCLUDEDIR/$i ./mpi_headers
+	    if test $i = 'mpif.h' ; then
+		perl -i -pe 's/MPI_DISPLACEMENT_CURRENT=-1_8/MPI_DISPLACEMENT_CURRENT=-1/g' mpi_headers/mpif.h
+	    fi
+	    if test $mkListInc = 1 ; then
+		LOCAL_MPI_HEADERS="$LOCAL_MPI_HEADERS ./mpi_headers/$i"
+	    fi
+	    if test "x$LOCAL_MPI_HEADERS" = x ; then
+		LOCAL_MPI_HEADERS="./mpi_headers/$i" ; mkListInc=1
+	    fi
+	fi
+    done
 }
 
 #  Parse the package dependency information
@@ -1262,6 +1317,11 @@ FTL_TAF_FLAGS=
 SVD_TAMC_FLAGS=
 TAMC_EXTRA=
 
+DIVA=
+MPIINCLUDEDIR=
+MPI_HEADER_FILES=
+LOCAL_MPI_HEADERS=
+
 #  The following state can be set directly by command-line switches
 gm_s1="ROOTDIR STANDARDDIRS MODS PKG_DEPEND PKG_GROUPS DISABLE ENABLE"
 gm_s2="PLATFORM OPTFILE MAKE MAKEFILE MAKEDEPEND FC CC MPI OMP USE_R4"
@@ -1277,7 +1337,7 @@ gm_s8="HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME HAVE_LAPACK HAVE_FLUSH"
 #  The following are all related to adjoint/tangent-linear stuff
 gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
 gm_s11="FTL_TAMC_FLAGS FTL_TAF_FLAGS SVD_TAMC_FLAGS SVD_TAF_FLAGS"
-gm_s12="TAF_EXTRA TAMC_EXTRA"
+gm_s12="TAF_EXTRA TAMC_EXTRA DIVA MPIINCLUDEDIR MPI_HEADER_FILES"
 
 gm_state="COMMANDL $gm_s1 $gm_s2 $gm_s3 $gm_s4 $gm_s5 $gm_s6 $gm_s7 $gm_s8"
 gm_state="$gm_state $gm_s10 $gm_s11 $gm_s12"
@@ -2498,29 +2558,23 @@ for i in $INCLUDEDIRS ; do
     fi
 done
 
-if test ! "x$DIVA" = x ; then
-    echo "  Creating the pseudo-MPI include directory"
-    INCLUDES="-I./mpi_headers $INCLUDES"
-    rm -rf ./mpi_headers
-    mkdir -p ./mpi_headers
-
-    if test "x$MPIINCLUDEDIR" = x ; then
-	if test "x$MPIHOME" = x ; then
-	    MPIHOME='/usr'
-	fi
-	MPIINCLUDEDIR='$MPIHOME/include'
-    fi
-
-    if test -r $MPIINCLUDEDIR/mpif.h ; then
-	for i in $MPI_HEADER_FILES; do
-	    cp -p $MPIINCLUDEDIR/$i ./mpi_headers
-	done
-
-	perl -i -pe 's/MPI_DISPLACEMENT_CURRENT=-1_8/MPI_DISPLACEMENT_CURRENT=-1/g' mpi_headers/mpif.h
+if test ! "x$DIVA" = x -a ! "x$MPI" = x ; then
+  if test ! "x$MPIINCLUDEDIR" = x ; then
+    if test -d $MPIINCLUDEDIR ; then
+	echo "  Creating the pseudo-MPI include directory"
+	INCLUDES="-I./mpi_headers $INCLUDES"
+	rm -rf ./mpi_headers
+	mkdir -p ./mpi_headers
+	#  Do a local copy of MPI headers files (in local dir ./mpi_headers/) after
+	#   checking for additional included headers (in case of chain of included
+	#   header); also set LOCAL_MPI_HEADERS (if not already set)
+        mpi_headers_do_local_copy
     else
-	echo " We cannot create a copy of mpif.h!"
+	echo "WARNING: MPIINCLUDEDIR='$MPIINCLUDEDIR' is not a dir"
+	echo "WARNING: ==> cannot create pseudo-MPI include directory"
 #	exit -1
     fi
+  fi
 fi
 
 echo "  Determining the list of source and include files"
@@ -2906,7 +2960,6 @@ Clean:
 	@\$(MAKE) -f \$(MAKEFILE) cleanlinks
 	-rm -f \$(SPECIAL_FILES) f90mkdepend.log $MAKEFILE.old
 	-rm -f taf_command taf_output taf_ad.log taf_ad_flow.log taf_ftl.log
-	-rm -f genmake_warnings genmake_errors make.log
 
 # remove also the executable, files that "genmake2" generates (except Makefile)
 #         and output from a run (plus log files from testreport)
@@ -2915,12 +2968,13 @@ CLEAN:
 	-rm -f \$(EXECUTABLE) \$(EXE_AD) \$(EXE_FTL) *.bak
 	-rm -f $LOGFILE genmake_state genmake_*optfile
 	-rm -f SIZE.h.mpi genmake.tr_log make.tr_log
+	-rm -rf mpi_headers mnc_test_*
 	-find \$(EXEDIR) -name "*.meta" -exec rm {} \;
 	-find \$(EXEDIR) -name "*.data" -exec rm {} \;
 	-find \$(EXEDIR) -name "fort.*" -exec rm {} \;
 	-rm -f *.txt STD* *diagnostics.log datetime
-	-rm -f *_MIT_CE_000.opt0000 costfunction*0000
-	-rm -rf mnc_test_*
+	-rm -f *_MIT_CE_000.opt0000 costfunction*0000 costfinal
+	-rm -f divided.ctrl snapshot* oad_cp.000.[0-9][0-9][0-9][0-9][0-9]
 
 makefile:
 	$THIS_SCRIPT $G2ARGS
@@ -3017,6 +3071,7 @@ TAF            = ${TAF}
 
 TAF_EXTRA      = ${TAF_EXTRA}
 TAMC_EXTRA     = ${TAMC_EXTRA}
+LOCAL_MPI_HEADERS    = ${LOCAL_MPI_HEADERS}
 
 EOF
 
