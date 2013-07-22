@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort,v 1.7 2012/01/11 20:37:01 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort,v 1.8 2013/07/22 18:40:45 jmc Exp $
 # $Name:  $
 
 # Tested on uv100.awi.de (SGI UV 100, details:
@@ -102,8 +102,8 @@ if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
     LIBS="$LIBS -lmpi"
     INCLUDES="$INCLUDES -I$MPI_INC_DIR"
     INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    #- used for parallel (MPI) DIVA
     MPIINCLUDEDIR="$MPI_INC_DIR"
-    MPI_HEADER_FILES='mpif.h mpiof.h'
-    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
+   #MPI_HEADER_FILES='mpif.h mpiof.h'
 fi
 

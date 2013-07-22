@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort9.0+mpt_altix3700_stommel,v 1.4 2010/03/21 22:22:53 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort9.0+mpt_altix3700_stommel,v 1.5 2013/07/22 18:40:45 jmc Exp $
 # $Name:  $
 
 CC=icc
@@ -77,7 +77,6 @@ fi
 
 if test ! "x$MPI" = x ; then
     LIBS="$LIBS -lmpi"
-    MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
-    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h ./mpi_headers/mpif_parameters.h'
+   #MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
     DEFINES="-DALLOW_USE_MPI -DALWAYS_USE_MPI $DEFINES"
 fi

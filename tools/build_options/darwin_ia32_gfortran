@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.15 2012/06/22 17:06:05 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.16 2013/07/22 18:40:45 jmc Exp $
 # $Name:  $
 
 # Tested on MacBook Pro with Snow Leopard
@@ -10,10 +10,10 @@
 # http://prdownloads.sourceforge.net/hpc/gcc-snwleo-intel-bin.tar.gz?download
 # http://prdownloads.sourceforge.net/hpc/gfortran-snwleo-intel-bin.tar.gz?download
 #
-#    gfortran (version 4.6.0) 
+#    gfortran (version 4.6.0)
 #    OpenMPI (version 1.4.3)
 
-#-- Note: default location of NetCDF & MPI setting provided in this optfile 
+#-- Note: default location of NetCDF & MPI setting provided in this optfile
 #         are not standard. For this reason, you might need:
 #    1) to set NETCDF_ROOT to where the NetCDF is installed, e.g.:
 #       export NETCDF_ROOT='/usr/NetCDF'
@@ -90,9 +90,9 @@ fi
 
 if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
     INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    #- used for parallel (MPI) DIVA
     MPIINCLUDEDIR="$MPI_INC_DIR"
-    MPI_HEADER_FILES='mpif.h mpiof.h'
-    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
+   #MPI_HEADER_FILES='mpif.h mpiof.h'
 elif [ "x$MPI" = xtrue ] ; then
     #-- default MPI header location: from former darwin_ia32_gfortran+mpi optfile:
     INCLUDES="$INCLUDES -I/usr/local/include -I/opt/openmpi/include"

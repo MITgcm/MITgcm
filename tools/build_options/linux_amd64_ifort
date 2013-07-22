@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort,v 1.9 2012/01/11 20:18:01 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort,v 1.10 2013/07/22 18:40:45 jmc Exp $
 #  $Name:  $
 #
 # Composed and tested by ce107 on ross/weddell (Opteron system)
@@ -120,7 +120,7 @@ fi
 if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
     INCLUDES="$INCLUDES -I$MPI_INC_DIR"
     INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    #- used for parallel (MPI) DIVA
     MPIINCLUDEDIR="$MPI_INC_DIR"
-    MPI_HEADER_FILES='mpif.h mpiof.h'
-    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
+   #MPI_HEADER_FILES='mpif.h mpiof.h'
 fi

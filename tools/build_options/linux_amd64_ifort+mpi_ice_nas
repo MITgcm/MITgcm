@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.11 2013/04/24 15:38:55 dfer Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.12 2013/07/22 18:40:45 jmc Exp $
 # $Name:  $
 
 # Used to run the testreport on pleiades with:
@@ -20,9 +20,9 @@ LDADD='-shared-intel'
 LIBS='-L/nasa/sgi/mpt/2.06a67/lib -lmpi -L/nasa/netcdf/4.0/lib -lnetcdf'
 INCLUDES='-I/nasa/sgi/mpt/2.06a67/include -I/nasa/netcdf/4.0/include'
 INCLUDEDIRS='/nasa/sgi/mpt/2.06a67/include'
+#- used for parallel (MPI) DIVA
 MPIINCLUDEDIR='/nasa/sgi/mpt/2.06a67/include'
-MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
-MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h ./mpi_headers/mpif_parameters.h'
+#MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
 
 NOOPTFLAGS='-O0 -fPIC'
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/sp5+mpi_nas,v 1.2 2010/03/21 22:22:53 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/sp5+mpi_nas,v 1.3 2013/07/22 18:40:45 jmc Exp $
 # $Name:  $
 
 #  tested on bluevista, ce107 Feb 2006
@@ -31,16 +31,15 @@ else
     FOPTIM='-O3 -qstrict -Q -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1'
     CFLAGS='-O3 -qstrict -Q -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1'
 fi
-#
-# useful for netcdf
+
+#- useful for netcdf
 FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
-#
-# useful for parallel DIVA
-MPI_HEADER_FILES='mpif.h'
-MPI_HEADER_FILES_INC='./mpi_headers/mpif.h'
+
+#- used for parallel (MPI) DIVA
 MPIINCLUDEDIR='/usr/lpp/ppe.poe/include/thread64'
-#
-# usful for timing, but not all libs availale on bv
+#MPI_HEADER_FILES='mpif.h'
+
+#- useful for timing, but not all libs availale on bv
 HPMTINC=' '
 HPMTLIB='-lhpm_r -lpmapi'
 #GSLINC='-I/homebv/evangeli/gsl-1.5/include'

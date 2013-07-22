@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.9 2013/03/08 00:17:45 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.10 2013/07/22 18:40:45 jmc Exp $
 #  $Name:  $
 #
 # Build options for PathScale (EKOPATH) Compiler on Linux x86-64
@@ -116,7 +116,7 @@ fi
 if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
     INCLUDES="$INCLUDES -I$MPI_INC_DIR"
     INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    #- used for parallel (MPI) DIVA
     MPIINCLUDEDIR="$MPI_INC_DIR"
-    MPI_HEADER_FILES='mpif.h mpiof.h'
-    MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
+   #MPI_HEADER_FILES='mpif.h mpiof.h'
 fi

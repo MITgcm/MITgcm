@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.29 2011/09/08 23:13:20 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.30 2013/07/22 18:40:45 jmc Exp $
 #  $Name:  $
 #
 #  tested on  faulks with gcc-g77 v3.4.6 (with FC 6)
@@ -77,7 +77,7 @@ fi
 if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
     INCLUDES="$INCLUDES -I$MPI_INC_DIR"
     INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
-#   MPIINCLUDEDIR="$MPI_INC_DIR"
-#   MPI_HEADER_FILES='mpif.h mpiof.h'
-#   MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
+    #- used for parallel (MPI) DIVA
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+   #MPI_HEADER_FILES='mpif.h mpiof.h'
 fi

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sp4-64bit,v 1.4 2011/09/13 14:45:53 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sp4-64bit,v 1.5 2013/07/22 18:40:45 jmc Exp $
 # $Name:  $
 
 #  tested on bluesky, ce107 Dec 2005
@@ -39,7 +39,7 @@ LIBS='-L/usr/local/apps/mass -lmass -L/usr/local/lib64/r4i4'
 if test "x$MPI" = xtrue ; then
     INCLUDES='-I/usr/local/include'
     INCLUDES="-I/usr/lpp/ppe.poe/include/thread64 $INCLUDES"
-#   MPIINCLUDEDIR='/usr/lpp/ppe.poe/include/thread'
-#   MPI_HEADER_FILES='mpif.h'
-#   MPI_HEADER_FILES_INC='./mpi_headers/mpif.h'
+    #- used for parallel (MPI) DIVA
+#   MPIINCLUDEDIR='/usr/lpp/ppe.poe/include/thread64'
+#  #MPI_HEADER_FILES='mpif.h'
 fi
