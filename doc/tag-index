@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1897 2013/07/20 00:04:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1898 2013/07/22 08:45:42 dgoldberg Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/halfpipe_streamice:
+  -change to driving stress formulation, affects results
 o testreport:
   - changes for Divided Adjoint Run: when file "run_ADM_DIVA" is present,
     perform additional runs (number of additional runs is "add_DIVA_runs" taken
