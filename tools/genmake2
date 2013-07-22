@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.251 2013/07/21 23:21:36 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.252 2013/07/22 19:11:31 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -2605,10 +2605,6 @@ if test "x$OPENAD" != x ; then
     OAD_KEEP_ORIGINAL="/dev/null"
     OAD_CB2M_FILES="/dev/null"
     OADTOOLS="$TOOLSDIR/OAD_support"
-    test -f "oadtempflile"  &&  \rm -f "oadtempflile"
-cat >> "oadtempflile" <<EOF
-$OADTOOLS
-EOF
     echo "  looking for dontCompile file:  "
     for i in "." $MODS ; do
 	if test -r $i"/dontCompile" ; then
@@ -2972,9 +2968,10 @@ CLEAN:
 	-find \$(EXEDIR) -name "*.meta" -exec rm {} \;
 	-find \$(EXEDIR) -name "*.data" -exec rm {} \;
 	-find \$(EXEDIR) -name "fort.*" -exec rm {} \;
-	-rm -f *.txt STD* *diagnostics.log datetime
-	-rm -f *_MIT_CE_000.opt0000 costfunction*0000 costfinal
-	-rm -f divided.ctrl snapshot* oad_cp.000.[0-9][0-9][0-9][0-9][0-9]
+	-rm -f *.txt STDOUT.* STDERR.* *diagnostics.log *.[0-9][0-9][0-9][0-9].log
+	-rm -f datetime costfinal divided.ctrl snapshot* output_adm.txt.diva_*
+	-rm -f *_MIT_CE_000.opt0000 costfunction*0000
+	-rm -f oad_cp.000.[0-9][0-9][0-9][0-9][0-9]
 
 makefile:
 	$THIS_SCRIPT $G2ARGS
