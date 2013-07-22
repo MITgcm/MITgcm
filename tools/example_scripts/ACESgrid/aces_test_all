@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.29 2012/08/17 17:11:14 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.30 2013/07/22 14:19:45 jmc Exp $
 # $Name:  $
 
 #  submit list of jobs or get list of submitted jobs
@@ -283,6 +283,7 @@ else
 fi
 
 #- when it's done, retrieve output and send e-mail
+  sleep 60
   get_outp_back $NB_JOBS2GET
  #echo " info-main:     REJECTED='$REJECTED'" >> $LOG_FIL
 
