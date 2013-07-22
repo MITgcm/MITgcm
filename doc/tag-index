@@ -1,11 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1898 2013/07/22 08:45:42 dgoldberg Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1899 2013/07/22 21:47:40 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/OAD_support:
+  - avoid the need for file "oadtempflile" in insertTemplateDir.bash;
+    and remove it from genmake2
+o tools/build_options:
+  - remove MPI_HEADER_FILES_INC setting (no longer used) and comment out
+    MPI_HEADER_FILES list (let genmake2 find the missing headers)
 o verification/halfpipe_streamice:
-  -change to driving stress formulation, affects results
+  - change to driving stress formulation; update both Fwd & AD output.
+o tools/genmake2 and Divided Adjoint with MPI:
+  - remove default setting of MPIINCLUDEDIR from $MPIHOME (always been broken);
+  - only create local ./mpi_headers dir if using MPI and MPIINCLUDEDIR is set;
+  - add new variable (LOCAL_MPI_HEADERS, replace MPI_HEADER_FILES_INC) in
+    Makefile, which is set by genmake2, and check which mpi-headers are needed.
+    Note: need to update adjoint_options/adjoint_diva_mpi accordingly.
+  - update target "CLEAN" (to also remove ./mpi_headers/ dir).
 o testreport:
   - changes for Divided Adjoint Run: when file "run_ADM_DIVA" is present,
     perform additional runs (number of additional runs is "add_DIVA_runs" taken
