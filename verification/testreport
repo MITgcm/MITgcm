@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.189 2013/07/20 20:32:17 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.190 2013/07/22 19:16:55 jmc Exp $
 #  $Name:  $
 #
 
@@ -458,22 +458,23 @@ run_clean()
     if test "x$NOCLEAN" = xt ; then
 	echo "run_clean skipped!"
     else
-	(
-	    cd $1;
-	    printf 'clean run-dir ... '
-	    # part of what is done after "make clean" when doing "make CLEAN"
-	    find . -name "*.meta" -exec rm {} \;
-	    find . -name "*.data" -exec rm {} \;
-	    find . -name "fort.*" -exec rm {} \;
-	    find . -type l -exec rm {} \;
-	    #- should remove executable only if sym-link (alredy done above)
-	    rm -f $RUNLOG *.txt STD* w2_tile_topology.????.log *diagnostics.log datetime
-	    rm -rf mnc_test_*
-	    rm -f *_MIT_CE_000.opt0000 costfunction*0000
-	    rm -f oad_cp.000.[0-9][0-9][0-9][0-9][0-9]
-	    echo successful
-	    exit 0
-	)
+      (
+	cd $1;
+	printf 'clean run-dir ... '
+	# part of what is done after "make clean" when doing "make CLEAN"
+	find . -name "*.meta" -exec rm {} \;
+	find . -name "*.data" -exec rm {} \;
+	find . -name "fort.*" -exec rm {} \;
+	find . -type l -exec rm {} \;
+	#- should remove executable only if sym-link (already done above)
+	rm -f $RUNLOG *.txt STDOUT.* STDERR.* *diagnostics.log *.[0-9][0-9][0-9][0-9].log
+	rm -f datetime costfinal divided.ctrl snapshot* output_adm.*.diva_*
+	rm -f *_MIT_CE_000.opt0000 costfunction*0000
+	rm -f oad_cp.000.[0-9][0-9][0-9][0-9][0-9]
+	rm -rf mnc_test_*
+	echo successful
+	exit 0
+      )
     fi
 }
 
@@ -1462,6 +1463,7 @@ for dir in $TESTDIRS ; do
 	    rm -f $EXECUTABLE *.bak
 	    rm -f genmake_state genmake_*optfile genmake.log
 	    rm -f SIZE.h.mpi genmake.tr_log make.tr_log
+	    rm -rf mpi_headers
 	)
 	if test -d $dir/$rundir/CVS ; then
 	    echo -n '  --- dir:' $dir/$rundir ': '
