@@ -1,12 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1899 2013/07/22 21:47:40 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1900 2013/07/23 13:52:00 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint64k (2013/07/23)
 o tools/OAD_support:
-  - avoid the need for file "oadtempflile" in insertTemplateDir.bash;
-    and remove it from genmake2
+  - avoid the need for file "oadtempflile" in insertTemplateDir.bash
+    and remove it from genmake2.
 o tools/build_options:
   - remove MPI_HEADER_FILES_INC setting (no longer used) and comment out
     MPI_HEADER_FILES list (let genmake2 find the missing headers)
