@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.12 2013/05/31 14:08:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.13 2013/07/24 20:07:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -118,8 +118,10 @@ c They provide the fields to be stored.
 #  ifdef ALLOW_CG2D_NSA
 #   include "CG2D.h"
 #  endif
-#  ifdef ALLOW_DIVIDED_ADJOINT_MPI
-#   include "mpif.h"
+#  ifdef ALLOW_DIVIDED_ADJOINT
+#   ifdef ALLOW_USE_MPI
+#    include "mpif.h"
+#   endif
 #  endif
 
 #  include "tamc.h"
@@ -191,8 +193,8 @@ c**************************************
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     note: under the multi-threaded model myiter and
-C           mytime are local variables passed around as routine
+C     note: under the multi-threaded model myIter and
+C           myTime are local variables passed around as routine
 C           arguments. Although this is fiddly it saves the need to
 C           impose additional synchronisation points when they are
 C           updated.
@@ -241,13 +243,13 @@ c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 #endif
 
 #ifdef ALLOW_ATM2D
-        CALL TIMER_START('FORWARD_STEP_ATM2D  [MAIN_DO_LOOP]',mythid)
-        CALL FORWARD_STEP_ATM2D( iloop, mytime, myiter, mythid )
-        CALL TIMER_STOP ('FORWARD_STEP_ATM2D  [MAIN_DO_LOOP]',mythid)
+        CALL TIMER_START('FORWARD_STEP_ATM2D  [MAIN_DO_LOOP]',myThid)
+        CALL FORWARD_STEP_ATM2D( iloop, myTime, myIter, myThid )
+        CALL TIMER_STOP ('FORWARD_STEP_ATM2D  [MAIN_DO_LOOP]',myThid)
 #else
-        CALL TIMER_START('FORWARD_STEP        [MAIN_DO_LOOP]',mythid)
-        CALL FORWARD_STEP( iloop, mytime, myiter, mythid )
-        CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',mythid)
+        CALL TIMER_START('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
+        CALL FORWARD_STEP( iloop, myTime, myIter, myThid )
+        CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
 #endif
 
 #ifdef ALLOW_AUTODIFF_OPENAD

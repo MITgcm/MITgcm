@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.155 2013/06/03 22:07:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.156 2013/07/24 20:07:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -154,8 +154,10 @@ c They provide the fields to be stored.
 #  ifdef ALLOW_CG2D_NSA
 #   include "CG2D.h"
 #  endif
-#  ifdef ALLOW_DIVIDED_ADJOINT_MPI
-#   include "mpif.h"
+#  ifdef ALLOW_DIVIDED_ADJOINT
+#   ifdef ALLOW_USE_MPI
+#    include "mpif.h"
+#   endif
 #  endif
 
 #  include "tamc.h"
@@ -190,8 +192,8 @@ c**************************************
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     note: under the multi-threaded model myiter and
-C           mytime are local variables passed around as routine
+C     note: under the multi-threaded model myIter and
+C           myTime are local variables passed around as routine
 C           arguments. Although this is fiddly it saves the need to
 C           impose additional synchronisation points when they are
 C           updated.
@@ -291,9 +293,9 @@ c$openad INDEPENDENT(xx_genarr3d)
       IF (debugMode) CALL DEBUG_CALL('INITIALISE_VARIA',myThid)
 #endif
 C--   Set initial conditions (variable arrays)
-      CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
-      CALL INITIALISE_VARIA( mythid )
-      CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
+      CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', myThid)
+      CALL INITIALISE_VARIA( myThid )
+      CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', myThid)
 #ifdef ALLOW_ECCO_EVOLUTION
 #ifdef ALLOW_ECCO
 cph: avoid renewed call of initialise_varia in recomputation loop
@@ -303,13 +305,13 @@ CADJ STORE sbar_gen,tbar_gen  = onetape
 #endif
 
 #ifdef ALLOW_SHOWFLOPS
-      CALL TIMER_START('SHOWFLOPS_INIT      [THE_MAIN_LOOP]', mythid)
+      CALL TIMER_START('SHOWFLOPS_INIT      [THE_MAIN_LOOP]', myThid)
       CALL SHOWFLOPS_INIT( myThid )
-      CALL TIMER_STOP ('SHOWFLOPS_INIT      [THE_MAIN_LOOP]', mythid)
+      CALL TIMER_STOP ('SHOWFLOPS_INIT      [THE_MAIN_LOOP]', myThid)
 #endif
 
 c--   Do the model integration.
-      CALL TIMER_START('MAIN LOOP           [THE_MAIN_LOOP]', mythid)
+      CALL TIMER_START('MAIN LOOP           [THE_MAIN_LOOP]', myThid)
 
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -335,13 +337,13 @@ c**************************************
          if(ilev_4.le.max_lev4) then
 c**************************************
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
-            CALL AUTODIFF_WHTAPEIO_SYNC( 4 , 0, mythid )
+            CALL AUTODIFF_WHTAPEIO_SYNC( 4 , 0, myThid )
 #endif
             CALL AUTODIFF_STORE( myThid )
 #include "checkpoint_lev4_directives.h"
             CALL AUTODIFF_RESTORE( myThid )
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
-            CALL AUTODIFF_WHTAPEIO_SYNC( 4 , 1, mythid )
+            CALL AUTODIFF_WHTAPEIO_SYNC( 4 , 1, myThid )
 #endif
 c**************************************
 c--     Initialise storage for the middle loop.
@@ -353,13 +355,13 @@ CADJ    INIT tapelev3 = USER
          if(ilev_3.le.max_lev3) then
 c**************************************
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
-            CALL AUTODIFF_WHTAPEIO_SYNC( 3 , 0, mythid )
+            CALL AUTODIFF_WHTAPEIO_SYNC( 3 , 0, myThid )
 #endif
             CALL AUTODIFF_STORE( myThid )
 #include "checkpoint_lev3_directives.h"
             CALL AUTODIFF_RESTORE( myThid )
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
-            CALL AUTODIFF_WHTAPEIO_SYNC( 3 , 1, mythid )
+            CALL AUTODIFF_WHTAPEIO_SYNC( 3 , 1, myThid )
 #endif
 c**************************************
 c--     Initialise storage for the middle loop.
@@ -370,13 +372,13 @@ CADJ    INIT tapelev2 = USER
          if(ilev_2.le.max_lev2) then
 c**************************************
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
-            CALL AUTODIFF_WHTAPEIO_SYNC( 2 , 0, mythid )
+            CALL AUTODIFF_WHTAPEIO_SYNC( 2 , 0, myThid )
 #endif
             CALL AUTODIFF_STORE( myThid )
 #include "checkpoint_lev2_directives.h"
             CALL AUTODIFF_RESTORE( myThid )
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
-            CALL AUTODIFF_WHTAPEIO_SYNC( 2 , 1, mythid )
+            CALL AUTODIFF_WHTAPEIO_SYNC( 2 , 1, myThid )
 #endif
 c**************************************
 
@@ -536,9 +538,9 @@ C--   Reset the model iteration counter and the model time.
       IF (debugMode) CALL DEBUG_CALL('cost_averagesfields',myThid)
 # endif
 c--   Accumulate time averages of temperature, salinity
-      CALL TIMER_START('COST_AVERAGESFIELDS [MAIN_DO_LOOP]',mythid)
-      CALL COST_AVERAGESFIELDS( mytime, mythid )
-      CALL TIMER_STOP ('COST_AVERAGESFIELDS [MAIN_DO_LOOP]',mythid)
+      CALL TIMER_START('COST_AVERAGESFIELDS [MAIN_DO_LOOP]',myThid)
+      CALL COST_AVERAGESFIELDS( myTime, myThid )
+      CALL TIMER_STOP ('COST_AVERAGESFIELDS [MAIN_DO_LOOP]',myThid)
 #endif /* ALLOW_ECCO_EVOLUTION */
 
 #ifdef ALLOW_PROFILES
@@ -552,15 +554,15 @@ C--   Reset the model iteration counter and the model time.
         myIter = nIter0 + (iloop-1)
         myTime = startTime + float(iloop-1)*deltaTClock
 #endif
-        CALL TIMER_START('PROFILES_INLOOP    [MAIN_DO_LOOP]', mythid)
-        CALL PROFILES_INLOOP( mytime, mythid )
-        CALL TIMER_STOP ('PROFILES_INLOOP    [MAIN_DO_LOOP]', mythid)
+        CALL TIMER_START('PROFILES_INLOOP    [MAIN_DO_LOOP]', myThid)
+        CALL PROFILES_INLOOP( myTime, myThid )
+        CALL TIMER_STOP ('PROFILES_INLOOP    [MAIN_DO_LOOP]', myThid)
       ENDIF
 #endif
 
-      CALL TIMER_START('MAIN_DO_LOOP        [THE_MAIN_LOOP]', mythid)
+      CALL TIMER_START('MAIN_DO_LOOP        [THE_MAIN_LOOP]', myThid)
       CALL MAIN_DO_LOOP( iloop, myTime, myIter, myThid )
-      CALL TIMER_STOP ('MAIN_DO_LOOP        [THE_MAIN_LOOP]', mythid)
+      CALL TIMER_STOP ('MAIN_DO_LOOP        [THE_MAIN_LOOP]', myThid)
 
 c--     >>> Loop body end <<<
 #ifndef ALLOW_AUTODIFF_OPENAD
@@ -592,35 +594,35 @@ c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STOPS   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 #ifdef ALLOW_ECCO
 #ifdef ALLOW_ECCO_EVOLUTION
 c--     Accumulate time averages of temperature, salinity
-      CALL TIMER_START('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',mythid)
-      CALL COST_AVERAGESFIELDS( endtime, mythid )
-      CALL TIMER_STOP ('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',mythid)
+      CALL TIMER_START('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',myThid)
+      CALL COST_AVERAGESFIELDS( endtime, myThid )
+      CALL TIMER_STOP ('COST_AVERAGESFIELDS [THE_MAIN_LOOP]',myThid)
 #endif /* ALLOW_ECCO_EVOLUTION */
 #endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_PROFILES
       IF (usePROFILES) THEN
 c--   Accumulate in-situ time averages of temperature, salinity, SSH.
-        CALL TIMER_START('PROFILES_INLOOP    [THE_MAIN_LOOP]', mythid)
-        CALL PROFILES_INLOOP( endtime, mythid )
-        CALL TIMER_STOP ('PROFILES_INLOOP    [THE_MAIN_LOOP]', mythid)
+        CALL TIMER_START('PROFILES_INLOOP    [THE_MAIN_LOOP]', myThid)
+        CALL PROFILES_INLOOP( endtime, myThid )
+        CALL TIMER_STOP ('PROFILES_INLOOP    [THE_MAIN_LOOP]', myThid)
       ENDIF
 #endif
 
 #ifdef ALLOW_ECCO
 #ifdef ALLOW_ECCO_EVOLUTION
 c--   Compute all ecco cost function contributions.
-      CALL TIMER_START('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', mythid)
-      CALL ECCO_COST_DRIVER ( endTime, myIter, mythid )
-      CALL TIMER_STOP ('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', mythid)
+      CALL TIMER_START('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', myThid)
+      CALL ECCO_COST_DRIVER ( endTime, myIter, myThid )
+      CALL TIMER_STOP ('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', myThid)
 #endif /* ALLOW_ECCO_EVOLUTION */
 #endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_COST
 c--   Sum all cost function contributions.
-      CALL TIMER_START('COST_FINAL         [ADJOINT SPIN-DOWN]', mythid)
-      CALL COST_FINAL ( mythid )
-      CALL TIMER_STOP ('COST_FINAL         [ADJOINT SPIN-DOWN]', mythid)
+      CALL TIMER_START('COST_FINAL         [ADJOINT SPIN-DOWN]', myThid)
+      CALL COST_FINAL ( myThid )
+      CALL TIMER_STOP ('COST_FINAL         [ADJOINT SPIN-DOWN]', myThid)
 
 # ifdef ALLOW_AUTODIFF_OPENAD
 c$openad DEPENDENT(fc)
@@ -629,7 +631,7 @@ c$openad DEPENDENT(fc)
 #endif /* ALLOW_COST */
 
       _BARRIER
-      CALL TIMER_STOP ('MAIN LOOP           [THE_MAIN_LOOP]', mythid)
+      CALL TIMER_STOP ('MAIN LOOP           [THE_MAIN_LOOP]', myThid)
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('THE_MAIN_LOOP',myThid)
