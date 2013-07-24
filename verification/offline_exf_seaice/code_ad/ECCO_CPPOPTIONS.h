@@ -1,9 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/ECCO_CPPOPTIONS.h,v 1.9 2013/06/01 14:50:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/ECCO_CPPOPTIONS.h,v 1.10 2013/07/24 20:53:07 jmc Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
 #define ECCO_CPPOPTIONS_H
-c#include "AD_CONFIG.h"
 c#include "PACKAGES_CONFIG.h"
 c#include "CPP_OPTIONS.h"
 
@@ -41,7 +40,6 @@ C       >>> Extract adjoint state
 
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
-#undef ALLOW_DIVIDED_ADJOINT_MPI
 
 c#define ALLOW_AUTODIFF_WHTAPEIO
 c#define ALLOW_PACKUNPACK_METHOD2

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_oad/Attic/ECCO_CPPOPTIONS.h,v 1.2 2013/04/23 16:25:05 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_oad/Attic/ECCO_CPPOPTIONS.h,v 1.3 2013/07/24 20:53:07 jmc Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -32,7 +32,6 @@ C#define AUTODIFF_2_LEVEL_CHECKPOINT
 
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
-#undef ALLOW_DIVIDED_ADJOINT_MPI
 
 C o write separate tape files for each ptracer
 C#define AUTODIFF_PTRACERS_SPLIT_FILES

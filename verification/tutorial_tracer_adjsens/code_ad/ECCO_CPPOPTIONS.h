@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.6 2013/03/15 14:36:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.7 2013/07/24 20:53:07 jmc Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -32,7 +32,6 @@ C       >>> DO 2-level checkpointing instead of 3-level
 
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
-#undef ALLOW_DIVIDED_ADJOINT_MPI
 
 C o write separate tape files for each ptracer
 #define AUTODIFF_PTRACERS_SPLIT_FILES

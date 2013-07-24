@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_oad/Attic/ECCO_CPPOPTIONS.h,v 1.1 2013/04/23 16:29:35 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_oad/Attic/ECCO_CPPOPTIONS.h,v 1.2 2013/07/24 20:53:07 jmc Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -32,7 +32,6 @@ C       >>> DO 2-level checkpointing instead of 3-level
 
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
-#undef ALLOW_DIVIDED_ADJOINT_MPI
 
 #define ALLOW_AUTODIFF_OPENAD
 

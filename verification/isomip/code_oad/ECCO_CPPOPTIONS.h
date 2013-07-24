@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/isomip/code_oad/ECCO_CPPOPTIONS.h,v 1.1 2013/03/29 23:18:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/isomip/code_oad/ECCO_CPPOPTIONS.h,v 1.2 2013/07/24 20:53:07 jmc Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -32,7 +32,6 @@ C       >>> DO 2-level checkpointing instead of 3-level
 
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
-#undef ALLOW_DIVIDED_ADJOINT_MPI
 
 C o Enable some temporary constructs for OpenAD
 #define ALLOW_AUTODIFF_OPENAD
