@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.252 2013/07/22 19:11:31 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.253 2013/07/24 00:33:53 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -607,54 +607,74 @@ EOF
 mpi_headers_do_local_copy() {
 
     dBug=0
-    #----- check for additional headers (chain of included headers)
-    listIni=$MPI_HEADER_FILES
-    echo $listIni | grep "\<mpif.h\>" > /dev/null 2>&1
-    outp=$?
-    #- always check mpif.h (the only mpi-header included in standard MITgcm code)
-    if test $outp != 0 ; then listIni="mpif.h $listIni" ; fi
-    if test $dBug = 1 ; then echo "listIni='$listIni'" ; fi
-    doCheck=1 ; list2copy='' ; list2check=$listIni
-    while test $doCheck = 1 ; do
-	newList=''
-	for i in $list2check ; do
-	 if test -f $MPIINCLUDEDIR/$i ; then
-	    newInc=`grep '^ *include ' $MPIINCLUDEDIR/$i | \
+    rm -rf ./mpi_headers
+    if test -d $MPIINCLUDEDIR ; then
+
+	#----- check for additional headers (chain of included headers)
+	echo -n '  Check MPI headers ... '
+	listIni=$MPI_HEADER_FILES
+	echo $listIni | grep "\<mpif.h\>" > /dev/null 2>&1
+	outp=$?
+	#- always check mpif.h (the only mpi-header included in standard MITgcm code)
+	if test $outp != 0 ; then listIni="mpif.h $listIni" ; fi
+	if test $dBug = 1 ; then echo "listIni='$listIni'" ; fi
+
+	doCheck=1 ; list2copy='' ; list2check=$listIni
+	while test $doCheck = 1 ; do
+	  newList=''
+	  for i in $list2check ; do
+	    if test -f $MPIINCLUDEDIR/$i ; then
+	      newInc=`grep '^ *include ' $MPIINCLUDEDIR/$i | \
 		sed -e 's/^ *include //' -e 's/\!.*$//' -e "s/'//g"  -e 's/\"//g'`
-	   if test $dBug = 1 ; then echo -n "checking $i : newInc='$newInc'" ; fi
-	   for j in $newInc ; do
-	     echo $listIni $list2copy $newList | grep "\<$j\>" > /dev/null 2>&1
-	     outp=$?
-	     if test $outp != 0 ; then
-		if test $dBug = 1 ; then echo -n " ; adding $j" ; fi
-		newList="$newList $j"
-	     fi
-	   done
-	   if test $dBug = 1 ; then echo "" ; fi
-	 fi
+	      if test $dBug = 1 ; then echo -n "checking $i : newInc='$newInc'" ; fi
+	      for j in $newInc ; do
+		echo $listIni $list2copy $newList | grep "\<$j\>" > /dev/null 2>&1
+		outp=$?
+	        if test $outp != 0 ; then
+		  if test $dBug = 1 ; then echo -n " ; adding $j" ; fi
+		  newList="$newList $j"
+		fi
+	      done
+	      if test $dBug = 1 ; then echo "" ; fi
+	    fi
+	  done
+	  if test "x$newList" = x ; then doCheck=0
+	  else list2check=$newList ; list2copy="$list2copy $newList"
+	  fi
 	done
-	if test "x$newList" = x ; then doCheck=0
-	else list2check=$newList ; list2copy="$list2copy $newList"
+	list2copy="$MPI_HEADER_FILES $list2copy"
+	if test $dBug = 1 ; then echo "list2copy='$list2copy'" ; fi
+
+	#----- create local mpi_headers dir if we have files to copy
+	mkListInc=`echo $list2copy | wc -w`
+	if test $mkListInc != 0 ; then
+	  echo 'create local "./mpi_headers" dir'
+	  mkdir -p ./mpi_headers
+	  INCLUDES="-I./mpi_headers $INCLUDES"
+	  mkListInc=1
 	fi
-    done
-    list2copy="$MPI_HEADER_FILES $list2copy"
-    if test $dBug = 1 ; then echo "list2copy='$list2copy'" ; fi
-    #----- make local copy and update LOCAL_MPI_HEADERS (if not already set)
-    mkListInc=0
-    for i in $list2copy ; do
-	if test -f $MPIINCLUDEDIR/$i ; then
+	if test "x$LOCAL_MPI_HEADERS" != x ; then mkListInc=0 ; fi
+
+	#----- make local copy and update LOCAL_MPI_HEADERS (if not already set)
+	for i in $list2copy ; do
+	  if test -f $MPIINCLUDEDIR/$i ; then
 	    cp -p $MPIINCLUDEDIR/$i ./mpi_headers
 	    if test $i = 'mpif.h' ; then
 		perl -i -pe 's/MPI_DISPLACEMENT_CURRENT=-1_8/MPI_DISPLACEMENT_CURRENT=-1/g' mpi_headers/mpif.h
 	    fi
-	    if test $mkListInc = 1 ; then
+	    if test $mkListInc = 2 ; then
 		LOCAL_MPI_HEADERS="$LOCAL_MPI_HEADERS ./mpi_headers/$i"
 	    fi
-	    if test "x$LOCAL_MPI_HEADERS" = x ; then
-		LOCAL_MPI_HEADERS="./mpi_headers/$i" ; mkListInc=1
+	    if test $mkListInc = 1 ; then
+		LOCAL_MPI_HEADERS="./mpi_headers/$i" ; mkListInc=2
 	    fi
-	fi
-    done
+	  fi
+	done
+    else
+	echo "WARNING: MPIINCLUDEDIR='$MPIINCLUDEDIR' is not a directory"
+	echo "WARNING: => skip checking for MPI headers (no ./mpi_headers dir)"
+#	exit -1
+    fi
 }
 
 #  Parse the package dependency information
@@ -2559,22 +2579,12 @@ for i in $INCLUDEDIRS ; do
 done
 
 if test ! "x$DIVA" = x -a ! "x$MPI" = x ; then
-  if test ! "x$MPIINCLUDEDIR" = x ; then
-    if test -d $MPIINCLUDEDIR ; then
-	echo "  Creating the pseudo-MPI include directory"
-	INCLUDES="-I./mpi_headers $INCLUDES"
-	rm -rf ./mpi_headers
-	mkdir -p ./mpi_headers
+    if test ! "x$MPIINCLUDEDIR" = x ; then
 	#  Do a local copy of MPI headers files (in local dir ./mpi_headers/) after
 	#   checking for additional included headers (in case of chain of included
 	#   header); also set LOCAL_MPI_HEADERS (if not already set)
         mpi_headers_do_local_copy
-    else
-	echo "WARNING: MPIINCLUDEDIR='$MPIINCLUDEDIR' is not a dir"
-	echo "WARNING: ==> cannot create pseudo-MPI include directory"
-#	exit -1
     fi
-  fi
 fi
 
 echo "  Determining the list of source and include files"
@@ -2971,7 +2981,7 @@ CLEAN:
 	-rm -f *.txt STDOUT.* STDERR.* *diagnostics.log *.[0-9][0-9][0-9][0-9].log
 	-rm -f datetime costfinal divided.ctrl snapshot* output_adm.txt.diva_*
 	-rm -f *_MIT_CE_000.opt0000 costfunction*0000
-	-rm -f oad_cp.000.[0-9][0-9][0-9][0-9][0-9]
+	-rm -f oad_cp.[0-9][0-9][0-9].?????
 
 makefile:
 	$THIS_SCRIPT $G2ARGS
