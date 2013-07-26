@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1901 2013/07/25 01:12:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1902 2013/07/26 14:25:21 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - extend length of drC & recip_drC from Nr to Nr+1.
 o Divided Adjoint (DIVA) with MPI:
   - genmake2: do not create local ./mpi_headers dir when no file to copy into.
   - remove option ALLOW_DIVIDED_ADJOINT_MPI (replaced by ALLOW_DIVIDED_ADJOINT
