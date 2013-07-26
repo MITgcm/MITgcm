@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_write_grid_info.F,v 1.14 2011/05/23 01:08:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_write_grid_info.F,v 1.15 2013/07/26 14:23:53 jmc Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -16,6 +16,10 @@ C     !DESCRIPTION:
 C     This subroutine writes all the grid information (\textit{eg.}
 C     locations, spacings, areas, \textit{etc.}) to one grid file
 C     (\texttt{grid.xxxxx.nc}) per tile.
+
+C===================================================================
+C  WARNING: This routine is not maintained since it is never called
+C===================================================================
 
 C     !USES:
       implicit none
@@ -38,6 +42,11 @@ C     Functions
 
       nf = IFNBLNK(bfname)
       nl = ILNBLNK(bfname)
+
+C===================================================================
+C  WARNING: This routine is not maintained since it is never called
+C===================================================================
+      STOP 'MNC_CW_WRITE_GRID_INFO is not maintained'
 
 C     Create MNC definitions for GRID.h variables
       CALL MNC_CW_ADD_VNAME('rC', '-_-_--__C__-', 0,0, myThid)
