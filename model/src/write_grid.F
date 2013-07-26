@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.37 2013/02/17 02:24:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.38 2013/07/26 14:22:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -123,7 +123,7 @@ c         CALL WRITE_FULLARRAY_RS('maskInS',maskInS,1,0,0,1,-1,myThid)
 C     Write vertical grid arrays
         CALL WRITE_GLVEC_RS( 'RC', ' ', rC,  Nr, -1, myThid )
         CALL WRITE_GLVEC_RS( 'RF', ' ', rF, 1+Nr,-1, myThid )
-        CALL WRITE_GLVEC_RS( 'DRC',' ', drC, Nr, -1, myThid )
+        CALL WRITE_GLVEC_RS( 'DRC',' ', drC,1+Nr,-1, myThid )
         CALL WRITE_GLVEC_RS( 'DRF',' ', drF, Nr, -1, myThid )
         IF ( selectSigmaCoord.NE.0 ) THEN
          CALL WRITE_GLVEC_RS( 'AHybSigF',' ',aHybSigmF,1+Nr,-1,myThid )
