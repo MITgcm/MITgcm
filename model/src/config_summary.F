@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.140 2012/12/22 00:38:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.141 2013/07/26 23:51:56 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -714,7 +714,7 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
        CALL WRITE_0D_RL( rUnit2mass, INDEX_NONE,'rUnit2mass =',
      & ' /* convert r-units [Pa] to mass per unit area [kg/m2] */')
       ENDIF
-      CALL WRITE_COPY1D_RS( bufRL, drC, Nr, INDEX_K, 'drC = ',
+      CALL WRITE_COPY1D_RS( bufRL, drC,Nr+1,INDEX_K, 'drC = ',
      &'   /* C spacing ( units of r ) */')
       CALL WRITE_COPY1D_RS( bufRL, drF, Nr, INDEX_K, 'drF = ',
      &'   /* W spacing ( units of r ) */')
