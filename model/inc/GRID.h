@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.42 2013/02/17 02:08:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.43 2013/07/26 14:20:01 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -315,10 +315,10 @@ C     globalArea :: Domain Integrated horizontal Area [m2]
      &  deepFacC, deepFac2C, recip_deepFacC, recip_deepFac2C,
      &  deepFacF, deepFac2F, recip_deepFacF, recip_deepFac2F,
      &  gravitySign, rkSign, globalArea
-      _RL cosFacU        (1-Oly:sNy+Oly,nSx,nSy)
-      _RL cosFacV        (1-Oly:sNy+Oly,nSx,nSy)
-      _RL sqCosFacU      (1-Oly:sNy+Oly,nSx,nSy)
-      _RL sqCosFacV      (1-Oly:sNy+Oly,nSx,nSy)
+      _RL cosFacU        (1-OLy:sNy+OLy,nSx,nSy)
+      _RL cosFacV        (1-OLy:sNy+OLy,nSx,nSy)
+      _RL sqCosFacU      (1-OLy:sNy+OLy,nSx,nSy)
+      _RL sqCosFacV      (1-OLy:sNy+OLy,nSx,nSy)
       _RL deepFacC       (Nr)
       _RL deepFac2C      (Nr)
       _RL deepFacF       (Nr+1)
@@ -350,9 +350,9 @@ C     rSurfW  :: surface reference position at Western  edge location [r_unit].
 C     rSurfS  :: surface reference position at Southern edge location [r_unit].
 C     hFac    :: Fraction of cell in vertical which is open i.e how
 C              "lopped" a cell is (dimensionless scale factor).
-C              Note: The code needs terms like MIN(hFac,hFac(I+1))
+C              Note: The code needs terms like MIN(hFac,hFac(I-1))
 C                    On some platforms it may be better to precompute
-C                    hFacW, hFacE, ... here than do MIN on the fly.
+C                    hFacW, hFacS, ... here than do MIN on the fly.
 C     maskInC :: Cell Center 2-D Interior mask (i.e., zero beyond OB)
 C     maskInW :: West  face 2-D Interior mask (i.e., zero on and beyond OB)
 C     maskInS :: South face 2-D Interior mask (i.e., zero on and beyond OB)
@@ -381,8 +381,8 @@ C                  coordinates but degrees for spherical polar.
 C     yC        :: Y-coordinate of center of cell f[X,Y].
 C     yG        :: Y-coordinate of corner of cell ( c-grid vorticity point) f[X,Y].
 C     rA        :: R-face are f[X,Y] ( m^2 ).
-C                  Note: In a cartesian framework zA is simply dx*dy,
-C                      however we use zA to allow for non-globally
+C                  Note: In a cartesian framework rA is simply dx*dy,
+C                      however we use rA to allow for non-globally
 C                      orthogonal coordinate frames (with appropriate
 C                      metric terms).
 C     rC        :: R-coordinate of center of cell f[Z] (units of r).
@@ -476,9 +476,9 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
       _RS maskC          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS maskW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS maskS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RS drC            (Nr)
+      _RS drC            (Nr+1)
       _RS drF            (Nr)
-      _RS recip_drC      (Nr)
+      _RS recip_drC      (Nr+1)
       _RS recip_drF      (Nr)
       _RS rC             (Nr)
       _RS rF             (Nr+1)
@@ -513,7 +513,7 @@ C     kSurfC  :: vertical index of the surface tracer cell
 C     kSurfW  :: vertical index of the surface U point
 C     kSurfS  :: vertical index of the surface V point
 C     kLowC   :: index of the r-lowest "wet cell" (2D)
-C IMPORTANT: ksurfC,W,S = Nr+1 and kLowC = 0 where the fluid column
+C IMPORTANT: kSurfC,W,S = Nr+1 and kLowC = 0 where the fluid column
 C            is empty (continent)
       COMMON /GRID_I/
      &  kSurfC, kSurfW, kSurfS,
