@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.16 2012/07/13 20:44:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.17 2013/07/28 21:08:27 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_COMMON_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -21,6 +24,9 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "EOS.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_VISC.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid :: My Thread Id number
@@ -62,6 +68,57 @@ C--   On/Off flags for each terms of the momentum equation
       implicitViscosity= momViscosity .AND. implicitViscosity
       use3Dsolver      = nonHydrostatic.OR. implicitIntGravWave
       calc_wVelocity   = momStepping .OR. exactConserv
+
+#ifndef ALLOW_3D_VISCAH
+       IF ( viscAhDfile.NE.' ' .OR. viscAhZfile.NE.' ' ) THEN
+        WRITE(msgBuf,'(2A)') 'SET_PARAMS: ',
+     &      'viscAhDfile and viscAhZfile cannot be used with'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'SET_PARAMS: ',
+     &      '"#undef ALLOW_3D_VISCAH" in MOM_COMMON_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SET_PARAMS'
+c       errCount = errCount + 1
+       ENDIF
+#endif
+#ifndef ALLOW_3D_VISCA4
+       IF ( viscA4Dfile.NE.' ' .OR. viscA4Zfile.NE.' ' ) THEN
+        WRITE(msgBuf,'(2A)') 'SET_PARAMS: ',
+     &      'viscA4Dfile and viscA4Zfile cannot be used with'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'SET_PARAMS: ',
+     &      '"#undef ALLOW_3D_VISCA4" in MOM_COMMON_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SET_PARAMS'
+       ENDIF
+#endif
+
+#ifdef ALLOW_MOM_COMMON
+C-    On/Off flags for viscosity coefficients
+      useVariableVisc   =
+     &      viscAhGrid  .NE.zeroRL .OR. viscA4Grid  .NE.zeroRL
+     &  .OR. viscC2smag .NE.zeroRL .OR. viscC4smag  .NE.zeroRL
+     &  .OR. viscC2leith.NE.zeroRL .OR. viscC2leithD.NE.zeroRL
+     &  .OR. viscC4leith.NE.zeroRL .OR. viscC4leithD.NE.zeroRL
+     &  .OR. viscAhDfile.NE.' '    .OR.  viscAhZfile.NE.' '
+     &  .OR. viscA4Dfile.NE.' '    .OR.  viscA4Zfile.NE.' '
+
+      useHarmonicVisc   = viscAh .NE.zeroRL
+     &  .OR. viscAhD    .NE.zeroRL .OR. viscAhZ     .NE.zeroRL
+     &  .OR. viscAhGrid .NE.zeroRL .OR. viscC2smag  .NE.zeroRL
+     &  .OR. viscC2leith.NE.zeroRL .OR. viscC2leithD.NE.zeroRL
+     &  .OR. viscAhDfile.NE. ' '   .OR. viscAhZfile .NE. ' '
+
+      useBiharmonicVisc = viscA4.NE.zeroRL
+     &  .OR. viscA4D    .NE.zeroRL .OR. viscA4Z     .NE.zeroRL
+     &  .OR. viscA4Grid .NE.zeroRL .OR. viscC4smag  .NE.zeroRL
+     &  .OR. viscC4leith.NE.zeroRL .OR. viscC4leithD.NE.zeroRL
+     &  .OR. viscA4Dfile.NE. ' '   .OR. viscA4Zfile .NE. ' '
+
+      useVariableVisc   = momViscosity .AND. useVariableVisc
+      useHarmonicVisc   = momViscosity .AND. useHarmonicVisc
+      useBiharmonicVisc = momViscosity .AND. useBiharmonicVisc
+#endif /* ALLOW_MOM_COMMON */
 
 C--   Free-surface & pressure method
       uniformFreeSurfLev = usingZCoords
