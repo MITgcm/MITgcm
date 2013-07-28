@@ -1,9 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1902 2013/07/26 14:25:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1903 2013/07/28 21:18:54 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom_common: variable horiz. viscosity in NH code
+  - move horiz-viscosity 3-D arrays viscAh_W & viscA4_W (used in calc_gw.F)
+    from model/inc/NH_VARS.h to pkg/mom_common/MOM_VISC.h
+  - store in common block (in MOM_VISC.h) logical parameters: useHarmonicVisc,
+    useBiharmonicVisc & useVariableVisc.
+  - fix old bug (already in 1rst implementation of variable horizontal viscosity
+    in calc_gw.F, version 1.27, 2006/06/20):
+    horizontal bi-harmonic viscosity in gW was missing when wiscA4W=0
+    even if variable bi-harmonic viscosity (e.g., viscA4Grid) was non-zero.
+  - change background horiz viscosity in vertical momentum (gW) to always be
+    viscAhW,viscA4W (instead of switching to viscAhD, viscA4D when using
+    any type of variable viscosity, e.g., viscAh/4Grid)
+  - change default value of viscAhW,viscA4W to viscAhD,viscA4D (instead of
+    viscAh,viscA4) which default to viscAh,viscA4 :  this avoid missing
+    horiz. viscosity in W eq when just setting viscAhD/Z,viscA4D/Z (since
+    default viscAh,viscA4 is zero).
 o model/src:
   - extend length of drC & recip_drC from Nr to Nr+1.
 o Divided Adjoint (DIVA) with MPI:
