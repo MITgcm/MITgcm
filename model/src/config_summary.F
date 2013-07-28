@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.141 2013/07/26 23:51:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.142 2013/07/28 21:11:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -6,6 +6,9 @@ C $Name:  $
 #ifdef ALLOW_EXCH2
 # include "W2_OPTIONS.h"
 #endif /* ALLOW_EXCH2 */
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_COMMON_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -35,6 +38,9 @@ C     !USES:
 #include "EOS.h"
 #include "GRID.h"
 #include "SET_GRID.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_VISC.h"
+#endif
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
@@ -109,32 +115,45 @@ C     i, k   :: Loop counters.
      & '   /* Reference temperature profile ( oC or K ) */')
       CALL WRITE_1D_RL( sRef, Nr, INDEX_K, 'sRef =',
      & '   /* Reference salinity profile ( psu ) */')
-      CALL WRITE_0D_RL( viscAh, INDEX_NONE, 'viscAh  =  ',
-     & ' /* Lateral eddy viscosity ( m^2/s ) */')
-      IF ( viscAhD.NE.viscAh )
-     & CALL WRITE_0D_RL( viscAhD, INDEX_NONE, 'viscAhD =  ',
-     & ' /* Lateral eddy viscosity (Divergence)( m^2/s ) */')
-      IF ( viscAhZ.NE.viscAh )
-     & CALL WRITE_0D_RL( viscAhZ, INDEX_NONE, 'viscAhZ =  ',
-     & ' /* Lateral eddy viscosity (Vorticity) ( m^2/s ) */')
-      CALL WRITE_0D_RL( viscAhMax, INDEX_NONE, 'viscAhMax =',
-     & ' /* Maximum lateral eddy viscosity ( m^2/s ) */')
-      CALL WRITE_0D_RL( viscAhGrid, INDEX_NONE, 'viscAhGrid =',
-     & ' /* Grid dependent lateral eddy viscosity ( non-dim. ) */')
-      CALL WRITE_0D_L( useFullLeith, INDEX_NONE, 'useFullLeith =',
-     & ' /* Use Full Form of Leith Viscosity on/off flag*/')
+C-    Horizontal viscosity parameters:
+#ifdef ALLOW_MOM_COMMON
       CALL WRITE_0D_L( useStrainTensionVisc, INDEX_NONE,
      & 'useStrainTensionVisc=',
-     & ' /* Use StrainTension Form of Viscous Operator flag*/')
-      CALL WRITE_0D_L( useAreaViscLength, INDEX_NONE,
+     & ' /* Use StrainTension Form of Viscous Operator */')
+      CALL WRITE_0D_L( useVariableVisc, INDEX_NONE,
+     & 'useVariableVisc =', ' /* Use variable horizontal viscosity*/')
+      CALL WRITE_0D_L( useHarmonicVisc, INDEX_NONE,
+     & 'useHarmonicVisc =', ' /* Use harmonic horizontal viscosity*/')
+      CALL WRITE_0D_L( useBiharmonicVisc, INDEX_NONE,
+     & 'useBiharmonicVisc=', ' /* Use biharmonic horiz. viscosity*/')
+      CALL WRITE_0D_RL( viscAh, INDEX_NONE, 'viscAh  =  ',
+     & ' /* Lateral harmonic viscosity ( m^2/s ) */')
+      IF ( viscAhD.NE.viscAh )
+     & CALL WRITE_0D_RL( viscAhD, INDEX_NONE, 'viscAhD =  ',
+     & ' /* Lateral harmonic viscosity (Divergence)( m^2/s ) */')
+      IF ( viscAhZ.NE.viscAh )
+     & CALL WRITE_0D_RL( viscAhZ, INDEX_NONE, 'viscAhZ =  ',
+     & ' /* Lateral harmonic viscosity (Vorticity) ( m^2/s ) */')
+      IF ( nonHydrostatic )
+     & CALL WRITE_0D_RL( viscAhW, INDEX_NONE, 'viscAhW =  ',
+     & ' /* Lateral harmonic viscosity in W eq. ( m^2/s ) */')
+      IF ( useVariableVisc ) THEN
+       CALL WRITE_0D_RL( viscAhMax, INDEX_NONE, 'viscAhMax =',
+     & ' /* Maximum lateral harmonic viscosity ( m^2/s ) */')
+       CALL WRITE_0D_RL( viscAhGrid, INDEX_NONE, 'viscAhGrid =',
+     & ' /* Grid dependent lateral harmonic viscosity ( non-dim. ) */')
+       CALL WRITE_0D_L( useFullLeith, INDEX_NONE, 'useFullLeith =',
+     & ' /* Use Full Form of Leith Viscosity on/off flag*/')
+       CALL WRITE_0D_L( useAreaViscLength, INDEX_NONE,
      & 'useAreaViscLength =',
      & ' /* Use area for visc length instead of geom. mean*/')
-      CALL WRITE_0D_RL( viscC2leith, INDEX_NONE, 'viscC2leith =',
+       CALL WRITE_0D_RL( viscC2leith, INDEX_NONE, 'viscC2leith =',
      & ' /* Leith harmonic visc. factor (on grad(vort),non-dim.) */')
-      CALL WRITE_0D_RL( viscC2leithD, INDEX_NONE, 'viscC2leithD =',
+       CALL WRITE_0D_RL( viscC2leithD, INDEX_NONE, 'viscC2leithD =',
      & ' /* Leith harmonic viscosity factor (on grad(div),non-dim.)*/')
-      CALL WRITE_0D_RL( viscC2smag, INDEX_NONE, 'viscC2smag =',
+       CALL WRITE_0D_RL( viscC2smag, INDEX_NONE, 'viscC2smag =',
      & ' /* Smagorinsky harmonic viscosity factor (non-dim.) */')
+      ENDIF
       CALL WRITE_0D_RL( viscA4, INDEX_NONE, 'viscA4  =  ',
      & ' /* Lateral biharmonic viscosity ( m^4/s ) */')
       IF ( viscA4D.NE.viscA4 )
@@ -143,20 +162,26 @@ C     i, k   :: Loop counters.
       IF ( viscA4Z.NE.viscA4 )
      & CALL WRITE_0D_RL( viscA4Z, INDEX_NONE, 'viscA4Z =  ',
      & ' /* Lateral biharmonic viscosity (Vorticity) ( m^4/s ) */')
-      CALL WRITE_0D_RL( viscA4Max, INDEX_NONE, 'viscA4Max =',
+      IF ( nonHydrostatic )
+     & CALL WRITE_0D_RL( viscA4W, INDEX_NONE, 'viscA4W =  ',
+     & ' /* Lateral biharmonic viscosity in W eq. ( m^2/s ) */')
+      IF ( useVariableVisc ) THEN
+       CALL WRITE_0D_RL( viscA4Max, INDEX_NONE, 'viscA4Max =',
      & ' /* Maximum biharmonic viscosity ( m^2/s ) */')
-      CALL WRITE_0D_RL( viscA4Grid, INDEX_NONE, 'viscA4Grid =',
+       CALL WRITE_0D_RL( viscA4Grid, INDEX_NONE, 'viscA4Grid =',
      & ' /* Grid dependent biharmonic viscosity ( non-dim. ) */')
-      CALL WRITE_0D_RL( viscC4leith, INDEX_NONE,'viscC4leith =',
+       CALL WRITE_0D_RL( viscC4leith, INDEX_NONE,'viscC4leith =',
      & ' /* Leith biharm viscosity factor (on grad(vort), non-dim.)*/')
-      CALL WRITE_0D_RL( viscC4leithD, INDEX_NONE,'viscC4leithD =',
+       CALL WRITE_0D_RL( viscC4leithD, INDEX_NONE,'viscC4leithD =',
      & ' /* Leith biharm viscosity factor (on grad(div), non-dim.) */')
-      CALL WRITE_0D_RL( viscC4Smag, INDEX_NONE,'viscC4Smag =',
+       CALL WRITE_0D_RL( viscC4Smag, INDEX_NONE,'viscC4Smag =',
      & ' /* Smagorinsky biharm viscosity factor (non-dim) */')
+      ENDIF
       CALL WRITE_0D_L( no_slip_sides, INDEX_NONE,
      & 'no_slip_sides =', '  /* Viscous BCs: No-slip sides */')
       CALL WRITE_0D_RL( sideDragFactor, INDEX_NONE, 'sideDragFactor =',
      & ' /* side-drag scaling factor (non-dim) */')
+C-    Vertical viscosity parameters:
       CALL WRITE_1D_RL( viscArNr, Nr, INDEX_K, 'viscArNr =',
      &  ' /* vertical profile of vertical viscosity ('
      &  //rUnits//'^2/s )*/')
@@ -168,6 +193,7 @@ C     i, k   :: Loop counters.
       CALL WRITE_0D_RL( bottomDragQuadratic, INDEX_NONE,
      & 'bottomDragQuadratic =',
      & ' /* quadratic bottom-drag coefficient (-) */')
+#endif /* ALLOW_MOM_COMMON */
       CALL WRITE_0D_RL( diffKhT, INDEX_NONE,'diffKhT =',
      &'   /* Laplacian diffusion of heat laterally ( m^2/s ) */')
       CALL WRITE_0D_RL( diffK4T, INDEX_NONE,'diffK4T =',
