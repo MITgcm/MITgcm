@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.51 2013/02/19 13:42:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.52 2013/07/28 21:07:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_COMMON_OPTIONS.h"
+#endif
 #define CALC_GW_NEW_THICK
 
 CBOP
@@ -38,6 +41,9 @@ C     == Global variables ==
 #ifdef ALLOW_ADDFLUID
 # include "FFIELDS.h"
 #endif
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_VISC.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -55,9 +61,11 @@ C     myThid  :: Thread number for this instance of the routine.
       INTEGER myThid
 
 #ifdef ALLOW_NONHYDROSTATIC
+#ifdef ALLOW_MOM_COMMON
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     biharmonicVisc:: use horizontal biharmonic viscosity for vertical momentum
 C     iMin,iMax
 C     jMin,jMax
 C     xA            :: W-Cell face area normal to X
@@ -77,6 +85,7 @@ C     gw_AB         :: tendency increment from Adams-Bashforth
 C     del2w         :: laplacian of wVel
 C     wFld          :: local copy of wVel
 C     i,j,k         :: Loop counters
+      LOGICAL biharmonicVisc
       INTEGER iMin,iMax,jMin,jMax
       _RS    xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS    yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -122,6 +131,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
+      biharmonicVisc = viscA4W.NE.zeroRL
+     &           .OR. ( useVariableVisc .AND. useBiharmonicVisc )
+
 C--   Initialise gW to zero
       DO k=1,Nr
         DO j=1-OLy,sNy+OLy
@@ -152,7 +164,6 @@ C--   Boundaries condition at top (vertical advection of vertical momentum):
 c        flxDisUp(i,j) = 0.
        ENDDO
       ENDDO
-
 
 C---  Sweep down column
       DO k=1,Nr
@@ -274,7 +285,7 @@ C--   local copy of wVel:
         ENDDO
 
 C--   horizontal bi-harmonic dissipation
-        IF ( momViscosity .AND. k.GT.1 .AND. viscA4W.NE.0. ) THEN
+        IF ( momViscosity .AND. k.GT.1 .AND. biharmonicVisc ) THEN
 
 C-    calculate the horizontal Laplacian of vertical flow
 C     Zonal flux d/dx W
@@ -654,6 +665,7 @@ C-    end of the k loop
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
+#endif /* ALLOW_MOM_COMMON */
 #endif /* ALLOW_NONHYDROSTATIC */
 
       RETURN
