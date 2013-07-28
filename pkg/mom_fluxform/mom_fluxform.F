@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.45 2012/10/01 15:46:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.46 2013/07/28 21:04:25 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -26,6 +26,9 @@ C stresses as well as internal viscous stresses.
 CEOI
 
 #include "MOM_FLUXFORM_OPTIONS.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_COMMON_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: MOM_FLUXFORM
@@ -47,12 +50,15 @@ C !USES: ===============================================================
 C     == Global variables ==
       IMPLICIT NONE
 #include "SIZE.h"
-#include "DYNVARS.h"
-#include "FFIELDS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "DYNVARS.h"
+#include "FFIELDS.h"
 #include "SURFACE.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_VISC.h"
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
@@ -159,7 +165,7 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL  mtFacV
       _RL  mtNHFacV
       _RL  sideMaskFac
-      LOGICAL bottomDragTerms,harmonic,biharmonic,useVariableViscosity
+      LOGICAL bottomDragTerms
 CEOP
 #ifdef MOM_BOUNDARY_CONSERVE
       COMMON / MOM_FLUXFORM_LOCAL / uBnd, vBnd
@@ -363,12 +369,10 @@ C---  Calculate vertical transports (at k+1) below U & V points :
 #endif /* MOM_BOUNDARY_CONSERVE */
 
       IF (momViscosity) THEN
-       CALL MOM_CALC_VISC(
-     I        bi,bj,k,
-     O        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
-     O        harmonic,biharmonic,useVariableViscosity,
-     I        hDiv,vort3,tension,strain,KE,hFacZ,
-     I        myThid)
+       CALL MOM_CALC_VISC( bi, bj, k,
+     O        viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
+     I        hDiv, vort3, tension, strain, KE, hFacZ,
+     I        myThid )
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -480,7 +484,7 @@ C-    endif momAdvection.
 C---  Calculate eddy fluxes (dissipation) between cells for zonal flow.
 
 C     Bi-harmonic term del^2 U -> v4F
-        IF (biharmonic)
+        IF ( useBiharmonicVisc )
      &  CALL MOM_U_DEL2U(bi,bj,k,uFld,hFacZ,v4f,myThid)
 
 C     Laplacian and bi-harmonic terms, Zonal  Fluxes -> fZon
@@ -529,13 +533,12 @@ C     anelastic: hor.visc.fluxes are not scaled by rhoFac (by vert.visc.flx is)
 C-- No-slip and drag BCs appear as body forces in cell abutting topography
         IF (no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
-         CALL MOM_U_SIDEDRAG(
-     I        bi,bj,k,
+         CALL MOM_U_SIDEDRAG( bi, bj, k,
      I        uFld, v4f, hFacZ,
-     I        viscAh_Z,viscA4_Z,
-     I        harmonic,biharmonic,useVariableViscosity,
+     I        viscAh_Z, viscA4_Z,
+     I        useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
      O        vF,
-     I        myThid)
+     I        myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
            gUdiss(i,j) = gUdiss(i,j) + vF(i,j)
@@ -706,7 +709,7 @@ C-    endif momAdvection.
       IF (momViscosity) THEN
 C---  Calculate eddy fluxes (dissipation) between cells for meridional flow.
 C     Bi-harmonic term del^2 V -> v4F
-        IF (biharmonic)
+        IF ( useBiharmonicVisc )
      &  CALL MOM_V_DEL2V(bi,bj,k,vFld,hFacZ,v4f,myThid)
 
 C     Laplacian and bi-harmonic terms, Zonal  Fluxes -> fZon
@@ -755,13 +758,12 @@ C     anelastic: hor.visc.fluxes are not scaled by rhoFac (by vert.visc.flx is)
 C-- No-slip and drag BCs appear as body forces in cell abutting topography
         IF (no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
-         CALL MOM_V_SIDEDRAG(
-     I        bi,bj,k,
+         CALL MOM_V_SIDEDRAG( bi, bj, k,
      I        vFld, v4f, hFacZ,
      I        viscAh_Z,viscA4_Z,
-     I        harmonic,biharmonic,useVariableViscosity,
+     I        useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
      O        vF,
-     I        myThid)
+     I        myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
            gvDiss(i,j) = gvDiss(i,j) + vF(i,j)

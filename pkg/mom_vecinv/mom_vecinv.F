@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.68 2012/10/01 15:46:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.69 2013/07/28 21:04:25 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_COMMON_OPTIONS.h"
+#endif
 
       SUBROUTINE MOM_VECINV(
      I        bi,bj,k,iMin,iMax,jMin,jMax,
@@ -29,15 +32,18 @@ C     *==========================================================*
 
 C     == Global variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 #include "GRID.h"
+#include "DYNVARS.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_VISC.h"
+#endif
 #ifdef ALLOW_TIMEAVE
-#include "TIMEAVE_STATV.h"
+# include "TIMEAVE_STATV.h"
+#endif
+#ifdef ALLOW_MNC
+# include "MNC_PARAMS.h"
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -111,7 +117,6 @@ C     xxxFac :: On-off tracer parameters used for switching terms off.
       _RL  sideMaskFac
       LOGICAL bottomDragTerms
       LOGICAL writeDiag
-      LOGICAL harmonic,biharmonic,useVariableViscosity
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER imomkey
 #endif
@@ -268,15 +273,13 @@ C-     account for no-slip / free-slip BC:
        ENDDO
 
 C--    Calculate Viscosities
-       CALL MOM_CALC_VISC(
-     I        bi,bj,k,
-     O        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
-     O        harmonic,biharmonic,useVariableViscosity,
-     I        hDiv,vort3,tension,strain,KE,hfacZ,
-     I        myThid)
+       CALL MOM_CALC_VISC( bi, bj, k,
+     O        viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
+     I        hDiv, vort3, tension, strain, KE, hfacZ,
+     I        myThid )
 
 C      Calculate del^2 u and del^2 v for bi-harmonic term
-       IF (biharmonic) THEN
+       IF (useBiharmonicVisc) THEN
          CALL MOM_VI_DEL2UV(bi,bj,k,hDiv,vort3,hFacZ,
      O                      del2u,del2v,
      &                      myThid)
@@ -323,20 +326,20 @@ C        mask strain as if free-slip since side-drag is computed separately
             IF ( hFacZ(i,j).EQ.0. ) strain(i,j) = 0. _d 0
           ENDDO
          ENDDO
-         CALL MOM_HDISSIP(bi,bj,k,hDiv,vort3,tension,strain,KE,
-     I                    hFacZ,
-     I                    viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
-     I                    harmonic,biharmonic,useVariableViscosity,
-     O                    guDiss,gvDiss,
-     I                    myThid)
+         CALL MOM_HDISSIP( bi, bj, k,
+     I            hDiv, vort3, tension, strain, KE, hFacZ,
+     I            viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
+     I            useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
+     O            guDiss, gvDiss,
+     I            myThid )
        ELSE
 C      in terms of vorticity and divergence
-         CALL MOM_VI_HDISSIP(bi,bj,k,hDiv,vort3,tension,strain,KE,
-     I                       hFacZ,dStar,zStar,
-     I                       viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
-     I                       harmonic,biharmonic,useVariableViscosity,
-     O                       guDiss,gvDiss,
-     &                       myThid)
+         CALL MOM_VI_HDISSIP( bi, bj, k,
+     I            hDiv, vort3, tension, strain, KE, hFacZ,dStar,zStar,
+     I            viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
+     I            useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
+     O            guDiss, gvDiss,
+     &            myThid )
        ENDIF
 C--   if (momViscosity) end of block.
       ENDIF
@@ -373,13 +376,12 @@ C--   Tendency is minus divergence of the fluxes
 C-- No-slip and drag BCs appear as body forces in cell abutting topography
       IF (momViscosity.AND.no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
-       CALL MOM_U_SIDEDRAG(
-     I        bi,bj,k,
-     I        uFld, del2u, hFacZ,
-     I        viscAh_Z,viscA4_Z,
-     I        harmonic,biharmonic,useVariableViscosity,
-     O        vF,
-     I        myThid)
+       CALL MOM_U_SIDEDRAG( bi, bj, k,
+     I          uFld, del2u, hFacZ,
+     I          viscAh_Z, viscA4_Z,
+     I          useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
+     O          vF,
+     I          myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          guDiss(i,j) = guDiss(i,j)+vF(i,j)
@@ -436,13 +438,12 @@ C--   Tendency is minus divergence of the fluxes
 C-- No-slip and drag BCs appear as body forces in cell abutting topography
       IF (momViscosity.AND.no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
-       CALL MOM_V_SIDEDRAG(
-     I        bi,bj,k,
-     I        vFld, del2v, hFacZ,
-     I        viscAh_Z,viscA4_Z,
-     I        harmonic,biharmonic,useVariableViscosity,
-     O        vF,
-     I        myThid)
+       CALL MOM_V_SIDEDRAG( bi, bj, k,
+     I          vFld, del2v, hFacZ,
+     I          viscAh_Z, viscA4_Z,
+     I          useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
+     O          vF,
+     I          myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          gvDiss(i,j) = gvDiss(i,j)+vF(i,j)

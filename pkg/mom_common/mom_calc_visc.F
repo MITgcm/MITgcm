@@ -1,18 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.44 2011/05/03 19:32:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.45 2013/07/28 21:04:25 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MOM_CALC_VISC
 
+C     !INTERFACE:
       SUBROUTINE MOM_CALC_VISC(
      I        bi,bj,k,
      O        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
-     O        harmonic,biharmonic,useVariableViscosity,
      I        hDiv,vort3,tension,strain,KE,hFacZ,
      I        myThid)
 
-      IMPLICIT NONE
-C
+C     !DESCRIPTION:
 C     Calculate horizontal viscosities (L is typical grid width)
 C     harmonic viscosity=
 C       viscAh (or viscAhD on div pts and viscAhZ on zeta pts)
@@ -50,8 +52,6 @@ C     viscAhgridmin and viscA4gridmin are lower limits for viscosity:
 C       harmonic viscosity>0.25*viscAhgridmin*L**2/deltaT
 C       biharmonic viscosity>viscA4gridmin*L**4/32/deltaT (approx)
 
-
-C
 C     RECOMMENDED VALUES
 C     viscC2Leith=1-3
 C     viscC2LeithD=1-3
@@ -69,24 +69,22 @@ C     viscA4grid<1
 C     viscAhgridmin<<1
 C     viscA4gridmin<<1
 
+C     !USES:
+      IMPLICIT NONE
+
 C     == Global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_NONHYDROSTATIC
-#include "NH_VARS.h"
-#endif
+#include "MOM_VISC.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
 #include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
-#include "MOM_VISC.h"
-#if defined (ALLOW_3D_VISCAH) || defined (ALLOW_3D_VISCA4)
-#include "DYNVARS.h"
-#endif
 
-C     == Routine arguments ==
+C     !INPUT/OUTPUT PARAMETERS:
+C     myThid               :: my thread Id number
       INTEGER bi,bj,k
       _RL viscAh_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -99,12 +97,12 @@ C     == Routine arguments ==
       _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
-      LOGICAL harmonic,biharmonic,useVariableViscosity
+CEOP
 
-C     == Local variables ==
+C     !LOCAL VARIABLES:
       INTEGER i,j
 #ifdef ALLOW_NONHYDROSTATIC
-      INTEGER kp1
+      _RL shiftAh, shiftA4
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER lockey_1, lockey_2
@@ -114,7 +112,7 @@ C     == Local variables ==
       _RL leithD2fac, leithD4fac
       _RL viscAhRe_max, viscA4Re_max
       _RL Alin,grdVrt,grdDiv, keZpt
-      _RL L2,L3,L5,L2rdt,L4rdt
+      _RL L2, L3, L5, L2rdt, L4rdt, recip_dt
       _RL Uscl,U4scl
       _RL divDx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL divDy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -157,60 +155,22 @@ C     == Local variables ==
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Set flags which are used in this S/R and elsewhere :
-      useVariableViscosity=
-     &      (viscAhGrid.NE.0.)
-     &  .OR.(viscA4Grid.NE.0.)
-     &  .OR.(viscC2leith.NE.0.)
-     &  .OR.(viscC2leithD.NE.0.)
-     &  .OR.(viscC4leith.NE.0.)
-     &  .OR.(viscC4leithD.NE.0.)
-     &  .OR.(viscC2smag.NE.0.)
-     &  .OR.(viscC4smag.NE.0.)
-#ifdef ALLOW_3D_VISCAH
-     &  .OR.( viscAhDfile .NE. ' ' )
-     &  .OR.( viscAhZfile .NE. ' ' )
-#endif
-#ifdef ALLOW_3D_VISCA4
-     &  .OR.( viscA4Dfile .NE. ' ' )
-     &  .OR.( viscA4Zfile .NE. ' ' )
-#endif
+C     useVariableVisc, useHarmonicVisc and useBiharmonicVisc
+C     are now set early on (in S/R SET_PARAMS)
 
-      harmonic=
-     &      (viscAh.NE.0.)
-     &  .OR.(viscAhD.NE.0.)
-     &  .OR.(viscAhZ.NE.0.)
-     &  .OR.(viscAhGrid.NE.0.)
-     &  .OR.(viscC2leith.NE.0.)
-     &  .OR.(viscC2leithD.NE.0.)
-     &  .OR.(viscC2smag.NE.0.)
-#ifdef ALLOW_3D_VISCAH
-     &  .OR.( viscAhDfile .NE. ' ' )
-     &  .OR.( viscAhZfile .NE. ' ' )
-#endif
-
-      biharmonic=
-     &      (viscA4.NE.0.)
-     &  .OR.(viscA4D.NE.0.)
-     &  .OR.(viscA4Z.NE.0.)
-     &  .OR.(viscA4Grid.NE.0.)
-     &  .OR.(viscC4leith.NE.0.)
-     &  .OR.(viscC4leithD.NE.0.)
-     &  .OR.(viscC4smag.NE.0.)
-#ifdef ALLOW_3D_VISCA4
-     &  .OR.( viscA4Dfile .NE. ' ' )
-     &  .OR.( viscA4Zfile .NE. ' ' )
-#endif
-
-      IF (useVariableViscosity) THEN
+      IF ( useVariableVisc ) THEN
 C---- variable viscosity :
 
-       IF ((harmonic).AND.(viscAhReMax.NE.0.)) THEN
+       recip_dt = 1. _d 0
+       IF ( deltaTmom.NE.0. ) recip_dt = 1. _d 0/deltaTmom
+
+       IF ( useHarmonicVisc .AND. viscAhReMax.NE.0. ) THEN
         viscAhRe_max=SQRT(2. _d 0)/viscAhReMax
        ELSE
         viscAhRe_max=0. _d 0
        ENDIF
 
-       IF ((biharmonic).AND.(viscA4ReMax.NE.0.)) THEN
+       IF ( useBiharmonicVisc .AND. viscA4ReMax.NE.0. ) THEN
         viscA4Re_max=0.125 _d 0*SQRT(2. _d 0)/viscA4ReMax
        ELSE
         viscA4Re_max=0. _d 0
@@ -253,29 +213,24 @@ C---- variable viscosity :
         leithD4fac=0. _d 0
        ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
-cphtest       IF ( calcLeith .OR. calcSmag ) THEN
-cphtest        STOP 'calcLeith or calcSmag not implemented for ADJOINT'
-cphtest       ENDIF
-#endif
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-          viscAh_D(i,j)=viscAhD
-          viscAh_Z(i,j)=viscAhZ
-          viscA4_D(i,j)=viscA4D
-          viscA4_Z(i,j)=viscA4Z
-c
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          viscAh_D(i,j) = viscAhD
+          viscAh_Z(i,j) = viscAhZ
+          viscA4_D(i,j) = viscA4D
+          viscA4_Z(i,j) = viscA4Z
+
           visca4_zsmg(i,j) = 0. _d 0
           viscah_zsmg(i,j) = 0. _d 0
-c
+
           viscAh_Dlth(i,j) = 0. _d 0
           viscA4_Dlth(i,j) = 0. _d 0
           viscAh_DlthD(i,j)= 0. _d 0
           viscA4_DlthD(i,j)= 0. _d 0
-c
+
           viscAh_DSmg(i,j) = 0. _d 0
           viscA4_DSmg(i,j) = 0. _d 0
-c
+
           viscAh_ZLth(i,j) = 0. _d 0
           viscA4_ZLth(i,j) = 0. _d 0
           viscAh_ZLthD(i,j)= 0. _d 0
@@ -284,8 +239,8 @@ c
        ENDDO
 
 C-     Initialise to zero gradient of vorticity & divergence:
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
           divDx(i,j) = 0.
           divDy(i,j) = 0.
           vrtDx(i,j) = 0.
@@ -297,37 +252,33 @@ C-     Initialise to zero gradient of vorticity & divergence:
 C      horizontal gradient of horizontal divergence:
 
 C-       gradient in x direction:
-cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
          IF (useCubedSphereExchange) THEN
 C        to compute d/dx(hDiv), fill corners with appropriate values:
            CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                                hDiv, bi,bj, myThid )
          ENDIF
-cph-exch2#endif
-         DO j=2-Oly,sNy+Oly-1
-          DO i=2-Olx,sNx+Olx-1
+         DO j=2-OLy,sNy+OLy-1
+          DO i=2-OLx,sNx+OLx-1
             divDx(i,j) = (hDiv(i,j)-hDiv(i-1,j))*recip_dxC(i,j,bi,bj)
           ENDDO
          ENDDO
 
 C-       gradient in y direction:
-cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
          IF (useCubedSphereExchange) THEN
 C        to compute d/dy(hDiv), fill corners with appropriate values:
            CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                                hDiv, bi,bj, myThid )
          ENDIF
-cph-exch2#endif
-         DO j=2-Oly,sNy+Oly-1
-          DO i=2-Olx,sNx+Olx-1
+         DO j=2-OLy,sNy+OLy-1
+          DO i=2-OLx,sNx+OLx-1
             divDy(i,j) = (hDiv(i,j)-hDiv(i,j-1))*recip_dyC(i,j,bi,bj)
           ENDDO
          ENDDO
 
 C      horizontal gradient of vertical vorticity:
 C-       gradient in x direction:
-         DO j=2-Oly,sNy+Oly
-          DO i=2-Olx,sNx+Olx-1
+         DO j=2-OLy,sNy+OLy
+          DO i=2-OLx,sNx+OLx-1
             vrtDx(i,j) = (vort3(i+1,j)-vort3(i,j))
      &                  *recip_dxG(i,j,bi,bj)
      &                  *maskS(i,j,k,bi,bj)
@@ -337,8 +288,8 @@ C-       gradient in x direction:
           ENDDO
          ENDDO
 C-       gradient in y direction:
-         DO j=2-Oly,sNy+Oly-1
-          DO i=2-Olx,sNx+Olx
+         DO j=2-OLy,sNy+OLy-1
+          DO i=2-OLx,sNx+OLx
             vrtDy(i,j) = (vort3(i,j+1)-vort3(i,j))
      &                  *recip_dyG(i,j,bi,bj)
      &                  *maskW(i,j,k,bi,bj)
@@ -350,8 +301,8 @@ C-       gradient in y direction:
 
        ENDIF
 
-       DO j=2-Oly,sNy+Oly-1
-        DO i=2-Olx,sNx+Olx-1
+       DO j=2-OLy,sNy+OLy-1
+        DO i=2-OLx,sNx+OLx-1
 CCCCCCCCCCCCCCC Divergence Point CalculationsCCCCCCCCCCCCCCCCCCCC
 
 #ifdef    ALLOW_AUTODIFF_TAMC
@@ -386,7 +337,6 @@ C Velocity Reynolds Scale
          ENDIF
 #endif /* ndef AUTODIFF_DISABLE_REYNOLDS_SCALE */
 
-cph-leith#ifndef ALLOW_AUTODIFF_TAMC
 #ifndef AUTODIFF_DISABLE_LEITH
          IF (useFullLeith.AND.calcLeith) THEN
 C This is the vector magnitude of the vorticity gradient squared
@@ -411,13 +361,12 @@ C Using it in Leith serves to damp instabilities in w.
           viscA4_DLthd(i,j)=
      &     SQRT(leithD4fac*grdDiv)*L5
          ELSEIF (calcLeith) THEN
-C but this approximation will work on cube
-c (and differs by as much as 4X)
+C but this approximation will work on cube (and differs by as much as 4X)
           grdVrt=MAX( ABS(vrtDx(i,j+1)), ABS(vrtDx(i,j)) )
           grdVrt=MAX( grdVrt, ABS(vrtDy(i+1,j)) )
           grdVrt=MAX( grdVrt, ABS(vrtDy(i,j))   )
 
-c This approximation is good to the same order as above...
+C This approximation is good to the same order as above...
           grdDiv=MAX( ABS(divDx(i+1,j)), ABS(divDx(i,j)) )
           grdDiv=MAX( grdDiv, ABS(divDy(i,j+1)) )
           grdDiv=MAX( grdDiv, ABS(divDy(i,j))   )
@@ -467,36 +416,6 @@ C  BiHarmonic on Div.u points
          viscA4_D(i,j)=MAX(viscA4_DMin(i,j),Alin)
          viscA4_DMax(i,j)=MIN(viscA4GridMax*L4rdt,viscA4Max)
          viscA4_D(i,j)=MIN(viscA4_DMax(i,j),viscA4_D(i,j))
-
-#ifdef ALLOW_NONHYDROSTATIC
-C--   Pass Viscosities to calc_gw, if constant, not necessary
-
-         kp1  = MIN(k+1,Nr)
-
-         IF ( k.EQ.1 ) THEN
-C     Prepare for next level (next call)
-          viscAh_W(i,j,kp1,bi,bj)=0.5*viscAh_D(i,j)
-          viscA4_W(i,j,kp1,bi,bj)=0.5*viscA4_D(i,j)
-
-C     These values dont get used
-          viscAh_W(i,j,k,bi,bj)=viscAh_D(i,j)
-          viscA4_W(i,j,k,bi,bj)=viscA4_D(i,j)
-
-         ELSEIF ( k.EQ.Nr ) THEN
-          viscAh_W(i,j,k,bi,bj)=viscAh_W(i,j,k,bi,bj)+0.5*viscAh_D(i,j)
-          viscA4_W(i,j,k,bi,bj)=viscA4_W(i,j,k,bi,bj)+0.5*viscA4_D(i,j)
-
-         ELSE
-C     Prepare for next level (next call)
-          viscAh_W(i,j,kp1,bi,bj)=0.5*viscAh_D(i,j)
-          viscA4_W(i,j,kp1,bi,bj)=0.5*viscA4_D(i,j)
-
-C     Note that previous call of this function has already added half.
-          viscAh_W(i,j,k,bi,bj)=viscAh_W(i,j,k,bi,bj)+0.5*viscAh_D(i,j)
-          viscA4_W(i,j,k,bi,bj)=viscA4_W(i,j,k,bi,bj)+0.5*viscA4_D(i,j)
-
-         ENDIF
-#endif /* ALLOW_NONHYDROSTATIC */
 
 CCCCCCCCCCCCC Vorticity Point CalculationsCCCCCCCCCCCCCCCCCC
 C These are (powers of) length scales
@@ -602,11 +521,50 @@ C  BiHarmonic on Zeta points
         ENDDO
        ENDDO
 
-      ELSE
-C---- use constant viscosity (useVariableViscosity=F):
+#ifdef ALLOW_NONHYDROSTATIC
+       IF ( nonHydrostatic ) THEN
+C--   Pass Viscosities to calc_gw, if constant, not necessary
 
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+        IF ( k.LT.Nr ) THEN
+C     Prepare for next level (next call)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            viscAh_W(i,j,k+1,bi,bj) = halfRL*viscAh_D(i,j)
+            viscA4_W(i,j,k+1,bi,bj) = halfRL*viscA4_D(i,j)
+          ENDDO
+         ENDDO
+        ENDIF
+
+        shiftAh = viscAhW - viscAhD
+        shiftA4 = viscA4W - viscA4D
+        IF ( k.EQ.1 ) THEN
+C     These values dont get used
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            viscAh_W(i,j,k,bi,bj) = shiftAh + viscAh_D(i,j)
+            viscA4_W(i,j,k,bi,bj) = shiftA4 + viscA4_D(i,j)
+          ENDDO
+         ENDDO
+        ELSE
+C     Note that previous call of this function has already added half.
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            viscAh_W(i,j,k,bi,bj) = shiftAh + viscAh_W(i,j,k,bi,bj)
+     &                                      + halfRL*viscAh_D(i,j)
+            viscA4_W(i,j,k,bi,bj) = shiftA4 + viscA4_W(i,j,k,bi,bj)
+     &                                      + halfRL*viscA4_D(i,j)
+          ENDDO
+         ENDDO
+        ENDIF
+
+       ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
+
+      ELSE
+C---- use constant viscosity (useVariableVisc=F):
+
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          viscAh_D(i,j)=viscAhD
          viscAh_Z(i,j)=viscAhZ
          viscA4_D(i,j)=viscA4D
