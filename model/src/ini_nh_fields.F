@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_nh_fields.F,v 1.4 2012/04/11 15:49:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_nh_fields.F,v 1.5 2013/07/28 21:06:00 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -121,20 +121,6 @@ C-     end of if-block: dPhiNH_status
        ENDIF
 
       ENDIF
-
-C--   Set the variable viscosities to default value.
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO k = 1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           viscAh_W(i,j,k,bi,bj) = viscAhW
-           viscA4_W(i,j,k,bi,bj) = viscA4W
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
 
 #endif /* ALLOW_NONHYDROSTATIC */
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/NH_VARS.h,v 1.3 2009/12/11 13:49:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/NH_VARS.h,v 1.4 2013/07/28 21:06:00 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -27,13 +27,11 @@ C     viscA?_W  :: Horizontal variable viscosities
 #ifdef ALLOW_ADAMSBASHFORTH_3
       COMMON /NH_VARS_R/
      &                   phi_nh, dPhiNH,
-     &                   gW, gwNm,
-     &                   viscAh_W, viscA4_W
+     &                   gW, gwNm
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       COMMON /NH_VARS_R/
      &                   phi_nh, dPhiNH,
-     &                   gW, gwNm1,
-     &                   viscAh_W, viscA4_W
+     &                   gW, gwNm1
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
       _RL  phi_nh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  dPhiNH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
@@ -43,7 +41,5 @@ C     viscA?_W  :: Horizontal variable viscosities
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       _RL  gwNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
-      _RL  viscAh_W(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  viscA4_W(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #endif /* ALLOW_NONHYDROSTATIC */
