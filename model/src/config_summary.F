@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.142 2013/07/28 21:11:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.143 2013/07/29 15:39:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,10 +37,11 @@ C     !USES:
 #endif /* ALLOW_EXCH2 */
 #include "EOS.h"
 #include "GRID.h"
-#include "SET_GRID.h"
 #ifdef ALLOW_MOM_COMMON
 # include "MOM_VISC.h"
 #endif
+C- need to put SET_GRID in last position for module conversion with OpenAD
+#include "SET_GRID.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
