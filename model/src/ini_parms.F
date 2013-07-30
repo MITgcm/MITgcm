@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.254 2013/07/28 21:09:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.255 2013/07/30 18:51:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -174,7 +174,7 @@ C--   Continuous equation parameters
      & selectCoriMap, f0, beta, fPrime, omega, rotationPeriod,
      & viscAh, viscAhW, viscAhMax,
      & viscAhGrid, viscAhGridMax, viscAhGridMin,
-     & viscC2leith, viscC4leith,
+     & viscC2leith, viscC4leith, smag3D_coeff, useSmag3D,
      & useFullLeith, useAnisotropicViscAgridMax, useStrainTensionVisc,
      & useAreaViscLength,
      & viscC2leithD, viscC4leithD, viscC2smag, viscC4smag,

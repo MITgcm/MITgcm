@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.72 2012/12/30 18:32:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.73 2013/07/30 18:51:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_COMMON_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CONFIG_CHECK
@@ -24,7 +27,6 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-c #include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -65,6 +67,18 @@ C       code is being compiled
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
      &  'Re-compile with: "#define ALLOW_3D_DIFFKR"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif
+
+#ifndef ALLOW_SMAG_3D
+      IF ( useSmag3D ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &  'Cannot set useSmag3D=TRUE when compiled with'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &  '"#undef ALLOW_SMAG_3D" in MOM_COMMON_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
@@ -697,6 +711,15 @@ C--   Momentum related limitations:
       IF ( selectCoriMap.LT.0 .OR. selectCoriMap.GT.3 ) THEN
         WRITE(msgBuf,'(2A,I4)') 'CONFIG_CHECK: ',
      &       'Invalid option: selectCoriMap=', selectCoriMap
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( useSmag3D .AND.
+     &    ( usingPCoords .OR. deepAtmosphere .OR. selectSigmaCoord.NE.0
+     &                   .OR. rhoRefFile.NE.' ' .OR. hasWetCSCorners )
+     &   ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &       'Smag-3D not yet implemented for this set-up'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF

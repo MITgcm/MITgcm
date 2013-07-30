@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.166 2013/04/22 02:34:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.167 2013/07/30 18:51:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -106,6 +106,7 @@ C-    Earth rotation period is 86400*365.25/366.25 (use to be 1.day)
       rotationPeriod      = 86164. _d 0
 C-    viscosity and diffusivity default value:
       viscAh              = 0. _d 3
+      smag3D_coeff        = 1. _d -2
       viscAhGrid          = 0. _d 0
       viscAhGridMin       = 0. _d 0
       viscAhGridMax       = 1. _d 21
@@ -181,6 +182,7 @@ Cml      sBeta               = 7.4 _d -4
       addFrictionHeating  = .FALSE.
       metricTerms         = .TRUE.
       useNHMTerms         = .FALSE.
+      useSmag3D           = .FALSE.
       useFullLeith        = .FALSE.
       useAreaViscLength   = .FALSE.
       useStrainTensionVisc= .FALSE.

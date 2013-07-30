@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.143 2013/07/29 15:39:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.144 2013/07/30 18:51:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -122,11 +122,16 @@ C-    Horizontal viscosity parameters:
      & 'useStrainTensionVisc=',
      & ' /* Use StrainTension Form of Viscous Operator */')
       CALL WRITE_0D_L( useVariableVisc, INDEX_NONE,
-     & 'useVariableVisc =', ' /* Use variable horizontal viscosity*/')
+     & 'useVariableVisc =', ' /* Use variable horizontal viscosity */')
       CALL WRITE_0D_L( useHarmonicVisc, INDEX_NONE,
-     & 'useHarmonicVisc =', ' /* Use harmonic horizontal viscosity*/')
+     & 'useHarmonicVisc =', ' /* Use harmonic horizontal viscosity */')
       CALL WRITE_0D_L( useBiharmonicVisc, INDEX_NONE,
-     & 'useBiharmonicVisc=', ' /* Use biharmonic horiz. viscosity*/')
+     & 'useBiharmonicVisc=', ' /* Use biharmonic horiz.  viscosity */')
+      CALL WRITE_0D_L( useSmag3D, INDEX_NONE,
+     & 'useSmag3D =', ' /* Use isotropic 3-D Smagorinsky viscosity */')
+      IF ( useSmag3D )
+     & CALL WRITE_0D_RL( smag3D_coeff, INDEX_NONE, 'smag3D_coeff =',
+     & ' /* Smagorinsky 3-D coefficient (Cs^2) (-) */')
       CALL WRITE_0D_RL( viscAh, INDEX_NONE, 'viscAh  =  ',
      & ' /* Lateral harmonic viscosity ( m^2/s ) */')
       IF ( viscAhD.NE.viscAh )
