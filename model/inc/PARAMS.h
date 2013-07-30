@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.269 2013/05/06 23:01:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.270 2013/07/30 18:18:28 jmc Exp $
 C $Name:  $
 C
 
@@ -262,6 +262,7 @@ C     setCenterDr    :: set cell-Center depth (put Interface at the middle)
 C- Momentum params:
 C     no_slip_sides  :: Impose "no-slip" at lateral boundaries.
 C     no_slip_bottom :: Impose "no-slip" at bottom boundary.
+C     useSmag3D      :: Use isotropic 3-D Smagorinsky
 C     useFullLeith   :: Set to true to use full Leith viscosity(may be unstable
 C                       on irregular grids)
 C     useStrainTensionVisc:: Set to true to use Strain-Tension viscous terms
@@ -376,7 +377,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
      & usingCartesianGrid, usingSphericalPolarGrid, rotateGrid,
      & usingCylindricalGrid, usingCurvilinearGrid, hasWetCSCorners,
      & deepAtmosphere, setInterFDr, setCenterDr,
-     & no_slip_sides, no_slip_bottom,
+     & no_slip_sides, no_slip_bottom, useSmag3D,
      & useFullLeith, useStrainTensionVisc, useAreaViscLength,
      & momViscosity, momAdvection, momForcing,
      & momPressureForcing, metricTerms, useNHMTerms,
@@ -428,6 +429,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
 
       LOGICAL no_slip_sides
       LOGICAL no_slip_bottom
+      LOGICAL useSmag3D
       LOGICAL useFullLeith
       LOGICAL useStrainTensionVisc
       LOGICAL useAreaViscLength
@@ -585,13 +587,13 @@ C     viscAh     :: Eddy viscosity coeff. for mixing of
 C                   momentum laterally ( m^2/s )
 C     viscAhW    :: Eddy viscosity coeff. for mixing of vertical
 C                   momentum laterally, no effect for hydrostatic
-C                   model, defaults to viscAh if unset ( m^2/s )
+C                   model, defaults to viscAhD if unset ( m^2/s )
 C                   Not used if variable horiz. viscosity is used.
 C     viscA4     :: Biharmonic viscosity coeff. for mixing of
 C                   momentum laterally ( m^4/s )
 C     viscA4W    :: Biharmonic viscosity coeff. for mixing of vertical
 C                   momentum laterally, no effect for hydrostatic
-C                   model, defaults to viscA4 if unset ( m^2/s )
+C                   model, defaults to viscA4D if unset ( m^2/s )
 C                   Not used if variable horiz. viscosity is used.
 C     viscAhD    :: Eddy viscosity coeff. for mixing of momentum laterally
 C                   (act on Divergence part) ( m^2/s )
@@ -601,6 +603,7 @@ C     viscA4D    :: Biharmonic viscosity coeff. for mixing of momentum laterally
 C                   (act on Divergence part) ( m^4/s )
 C     viscA4Z    :: Biharmonic viscosity coeff. for mixing of momentum laterally
 C                   (act on Vorticity  part) ( m^4/s )
+C     smag3D_coeff :: Isotropic 3-D Smagorinsky coefficient (-)
 C     viscC2leith  :: Leith non-dimensional viscosity factor (grad(vort))
 C     viscC2leithD :: Modified Leith non-dimensional visc. factor (grad(div))
 C     viscC4leith  :: Leith non-dimensional viscosity factor (grad(vort))
@@ -747,8 +750,8 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & abEps, alph_AB, beta_AB,
      & rSphere, recip_rSphere, radius_fromHorizGrid,
      & f0, beta, fPrime, omega, rotationPeriod,
-     & viscFacAdj, viscAh, viscAhW, viscAhMax,
-     & viscAhGrid, viscAhGridMax, viscAhGridMin,
+     & viscFacAdj, viscAh, viscAhW, smag3D_coeff,
+     & viscAhMax, viscAhGrid, viscAhGridMax, viscAhGridMin,
      & viscC2leith, viscC2leithD,
      & viscC2smag, viscC4smag,
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
@@ -823,6 +826,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL viscAhW
       _RL viscAhD
       _RL viscAhZ
+      _RL smag3D_coeff
       _RL viscAhMax
       _RL viscAhReMax
       _RL viscAhGrid, viscAhGridMax, viscAhGridMin
