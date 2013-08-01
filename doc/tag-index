@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1903 2013/07/28 21:18:54 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1904 2013/08/01 20:17:16 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom_common+fluxform+vecinv:
+  - always set horiz. viscosity arrays to background value before calling
+    MOM_CALC_VISC (in MOM_FLUXFORM & MOM_VECINV) and call S/R MOM_CALC_VISC
+    only when using variable horiz. viscosity (useVariableVisc=T);
+  - simplify mom_vecinv.F (only 1 block for momViscosity).
 o pkg/mom_common: variable horiz. viscosity in NH code
   - move horiz-viscosity 3-D arrays viscAh_W & viscA4_W (used in calc_gw.F)
     from model/inc/NH_VARS.h to pkg/mom_common/MOM_VISC.h
