@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.45 2013/07/28 21:04:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.46 2013/08/01 20:13:38 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -158,7 +158,7 @@ C--   Set flags which are used in this S/R and elsewhere :
 C     useVariableVisc, useHarmonicVisc and useBiharmonicVisc
 C     are now set early on (in S/R SET_PARAMS)
 
-      IF ( useVariableVisc ) THEN
+c     IF ( useVariableVisc ) THEN
 C---- variable viscosity :
 
        recip_dt = 1. _d 0
@@ -215,10 +215,11 @@ C---- variable viscosity :
 
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-          viscAh_D(i,j) = viscAhD
-          viscAh_Z(i,j) = viscAhZ
-          viscA4_D(i,j) = viscA4D
-          viscA4_Z(i,j) = viscA4Z
+C-    viscosity arrays have been initialised everywhere before calling this S/R
+c         viscAh_D(i,j) = viscAhD
+c         viscAh_Z(i,j) = viscAhZ
+c         viscA4_D(i,j) = viscA4D
+c         viscA4_Z(i,j) = viscA4Z
 
           visca4_zsmg(i,j) = 0. _d 0
           viscah_zsmg(i,j) = 0. _d 0
@@ -238,7 +239,7 @@ C---- variable viscosity :
         ENDDO
        ENDDO
 
-C-     Initialise to zero gradient of vorticity & divergence:
+C-    Initialise to zero gradient of vorticity & divergence:
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
           divDx(i,j) = 0.
@@ -248,9 +249,8 @@ C-     Initialise to zero gradient of vorticity & divergence:
         ENDDO
        ENDDO
 
-       IF (calcLeith) THEN
-C      horizontal gradient of horizontal divergence:
-
+       IF ( calcLeith ) THEN
+C--   horizontal gradient of horizontal divergence:
 C-       gradient in x direction:
          IF (useCubedSphereExchange) THEN
 C        to compute d/dx(hDiv), fill corners with appropriate values:
@@ -275,7 +275,7 @@ C        to compute d/dy(hDiv), fill corners with appropriate values:
           ENDDO
          ENDDO
 
-C      horizontal gradient of vertical vorticity:
+C--   horizontal gradient of vertical vorticity:
 C-       gradient in x direction:
          DO j=2-OLy,sNy+OLy
           DO i=2-OLx,sNx+OLx-1
@@ -299,6 +299,7 @@ C-       gradient in y direction:
           ENDDO
          ENDDO
 
+C--   end if calcLeith
        ENDIF
 
        DO j=2-OLy,sNy+OLy-1
@@ -523,7 +524,7 @@ C  BiHarmonic on Zeta points
 
 #ifdef ALLOW_NONHYDROSTATIC
        IF ( nonHydrostatic ) THEN
-C--   Pass Viscosities to calc_gw, if constant, not necessary
+C--   Pass Viscosities to calc_gw (if constant, not necessary)
 
         IF ( k.LT.Nr ) THEN
 C     Prepare for next level (next call)
@@ -560,20 +561,18 @@ C     Note that previous call of this function has already added half.
        ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 
-      ELSE
+c     ELSE
 C---- use constant viscosity (useVariableVisc=F):
-
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         viscAh_D(i,j)=viscAhD
-         viscAh_Z(i,j)=viscAhZ
-         viscA4_D(i,j)=viscA4D
-         viscA4_Z(i,j)=viscA4Z
-        ENDDO
-       ENDDO
-
+c      DO j=1-OLy,sNy+OLy
+c       DO i=1-OLx,sNx+OLx
+c        viscAh_D(i,j) = viscAhD
+c        viscAh_Z(i,j) = viscAhZ
+c        viscA4_D(i,j) = viscA4D
+c        viscA4_Z(i,j) = viscA4Z
+c       ENDDO
+c      ENDDO
 C---- variable/constant viscosity : end if/else block
-      ENDIF
+c     ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
@@ -597,14 +596,14 @@ C---- variable/constant viscosity : end if/else block
        CALL DIAGNOSTICS_FILL(viscAh_ZLth,'VAHZLTH ',k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscA4_ZLth,'VA4ZLTH ',k,1,2,bi,bj,myThid)
 
-       CALL DIAGNOSTICS_FILL(viscAh_DLthD,'VAHDLTHD'
-     &   ,k,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(viscA4_DLthD,'VA4DLTHD'
-     &   ,k,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(viscAh_ZLthD,'VAHZLTHD'
-     &   ,k,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(viscA4_ZLthD,'VA4ZLTHD'
-     &   ,k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(viscAh_DLthD,'VAHDLTHD',
+     &                       k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(viscA4_DLthD,'VA4DLTHD',
+     &                       k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(viscAh_ZLthD,'VAHZLTHD',
+     &                       k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(viscA4_ZLthD,'VA4ZLTHD',
+     &                       k,1,2,bi,bj,myThid)
 
        CALL DIAGNOSTICS_FILL(viscAh_DSmg,'VAHDSMAG',k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscA4_DSmg,'VA4DSMAG',k,1,2,bi,bj,myThid)
@@ -615,4 +614,3 @@ C---- variable/constant viscosity : end if/else block
 
       RETURN
       END
-
