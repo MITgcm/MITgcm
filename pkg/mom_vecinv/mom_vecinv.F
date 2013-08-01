@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.69 2013/07/28 21:04:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.70 2013/08/01 20:12:42 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -193,11 +193,10 @@ C--   Initialise intermediate terms
         KE(i,j)    = 0.
 C-    need to initialise hDiv for MOM_VI_DEL2UV(call FILL_CS_CORNER_TR_RL)
         hDiv(i,j)  = 0.
-        viscAh_Z(i,j) = 0.
-        viscAh_D(i,j) = 0.
-        viscA4_Z(i,j) = 0.
-        viscA4_D(i,j) = 0.
-
+c       viscAh_Z(i,j) = 0.
+c       viscAh_D(i,j) = 0.
+c       viscA4_Z(i,j) = 0.
+c       viscA4_D(i,j) = 0.
         strain(i,j)  = 0. _d 0
         tension(i,j) = 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -272,11 +271,21 @@ C-     account for no-slip / free-slip BC:
         ENDDO
        ENDDO
 
-C--    Calculate Viscosities
-       CALL MOM_CALC_VISC( bi, bj, k,
-     O        viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
-     I        hDiv, vort3, tension, strain, KE, hfacZ,
-     I        myThid )
+C--    Calculate Lateral Viscosities
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         viscAh_D(i,j) = viscAhD
+         viscAh_Z(i,j) = viscAhZ
+         viscA4_D(i,j) = viscA4D
+         viscA4_Z(i,j) = viscA4Z
+        ENDDO
+       ENDDO
+       IF ( useVariableVisc ) THEN
+         CALL MOM_CALC_VISC( bi, bj, k,
+     O            viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
+     I            hDiv, vort3, tension, strain, KE, hfacZ,
+     I            myThid )
+       ENDIF
 
 C      Calculate del^2 u and del^2 v for bi-harmonic term
        IF (useBiharmonicVisc) THEN
@@ -341,27 +350,19 @@ C      in terms of vorticity and divergence
      O            guDiss, gvDiss,
      &            myThid )
        ENDIF
-C--   if (momViscosity) end of block.
-      ENDIF
-
-C-    Return to standard hfacZ (min-4) and mask vort3 accordingly:
-c     CALL MOM_VI_MASK_VORT3(bi,bj,k,hFacZ,r_hFacZ,vort3,myThid)
 
 C---  Other dissipation terms in Zonal momentum equation
 
 C--   Vertical flux (fVer is at upper face of "u" cell)
-
 C     Eddy component of vertical flux (interior component only) -> vrF
-      IF (momViscosity.AND..NOT.implicitViscosity) THEN
+      IF ( .NOT.implicitViscosity ) THEN
        CALL MOM_U_RVISCFLUX(bi,bj,k+1,uVel,KappaRU,vrF,myThid)
-
 C     Combine fluxes
        DO j=jMin,jMax
         DO i=iMin,iMax
          fVerUkp(i,j) = ArDudrFac*vrF(i,j)
         ENDDO
        ENDDO
-
 C--   Tendency is minus divergence of the fluxes
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -374,7 +375,7 @@ C--   Tendency is minus divergence of the fluxes
       ENDIF
 
 C-- No-slip and drag BCs appear as body forces in cell abutting topography
-      IF (momViscosity.AND.no_slip_sides) THEN
+      IF ( no_slip_sides ) THEN
 C-     No-slip BCs impose a drag at walls...
        CALL MOM_U_SIDEDRAG( bi, bj, k,
      I          uFld, del2u, hFacZ,
@@ -388,8 +389,9 @@ C-     No-slip BCs impose a drag at walls...
         ENDDO
        ENDDO
       ENDIF
+
 C-    No-slip BCs impose a drag at bottom
-      IF (momViscosity.AND.bottomDragTerms) THEN
+      IF ( bottomDragTerms ) THEN
        CALL MOM_U_BOTTOMDRAG(bi,bj,k,uFld,KE,KappaRU,vF,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -398,7 +400,7 @@ C-    No-slip BCs impose a drag at bottom
        ENDDO
       ENDIF
 #ifdef ALLOW_SHELFICE
-      IF (useShelfIce.AND.momViscosity.AND.bottomDragTerms) THEN
+      IF ( useShelfIce.AND.bottomDragTerms ) THEN
        CALL SHELFICE_U_DRAG(bi,bj,k,uFld,KE,KappaRU,vF,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -408,22 +410,18 @@ C-    No-slip BCs impose a drag at bottom
       ENDIF
 #endif /* ALLOW_SHELFICE */
 
-
 C---  Other dissipation terms in Meridional momentum equation
 
 C--   Vertical flux (fVer is at upper face of "v" cell)
-
 C     Eddy component of vertical flux (interior component only) -> vrF
-      IF (momViscosity.AND..NOT.implicitViscosity) THEN
+      IF ( .NOT.implicitViscosity ) THEN
        CALL MOM_V_RVISCFLUX(bi,bj,k+1,vVel,KappaRV,vrF,myThid)
-
 C     Combine fluxes -> fVerV
        DO j=jMin,jMax
         DO i=iMin,iMax
          fVerVkp(i,j) = ArDvdrFac*vrF(i,j)
         ENDDO
        ENDDO
-
 C--   Tendency is minus divergence of the fluxes
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -436,7 +434,7 @@ C--   Tendency is minus divergence of the fluxes
       ENDIF
 
 C-- No-slip and drag BCs appear as body forces in cell abutting topography
-      IF (momViscosity.AND.no_slip_sides) THEN
+      IF ( no_slip_sides ) THEN
 C-     No-slip BCs impose a drag at walls...
        CALL MOM_V_SIDEDRAG( bi, bj, k,
      I          vFld, del2v, hFacZ,
@@ -450,8 +448,9 @@ C-     No-slip BCs impose a drag at walls...
         ENDDO
        ENDDO
       ENDIF
+
 C-    No-slip BCs impose a drag at bottom
-      IF (momViscosity.AND.bottomDragTerms) THEN
+      IF ( bottomDragTerms ) THEN
        CALL MOM_V_BOTTOMDRAG(bi,bj,k,vFld,KE,KappaRV,vF,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -460,7 +459,7 @@ C-    No-slip BCs impose a drag at bottom
        ENDDO
       ENDIF
 #ifdef ALLOW_SHELFICE
-      IF (useShelfIce.AND.momViscosity.AND.bottomDragTerms) THEN
+      IF  (useShelfIce.AND.bottomDragTerms ) THEN
          CALL SHELFICE_V_DRAG(bi,bj,k,vFld,KE,KappaRV,vF,myThid)
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -470,6 +469,11 @@ C-    No-slip BCs impose a drag at bottom
         ENDIF
 #endif /* ALLOW_SHELFICE */
 
+C--   if (momViscosity) end of block.
+      ENDIF
+
+C-    Return to standard hfacZ (min-4) and mask vort3 accordingly:
+c     CALL MOM_VI_MASK_VORT3(bi,bj,k,hFacZ,r_hFacZ,vort3,myThid)
 
 C-    Vorticity diagnostics:
       IF ( writeDiag ) THEN
