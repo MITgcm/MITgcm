@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1904 2013/08/01 20:17:16 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1905 2013/08/03 02:05:13 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - in dynamics.F, skip the call to CALC_VISCOSITY if momViscosity=F
 o pkg/mom_common+fluxform+vecinv:
   - always set horiz. viscosity arrays to background value before calling
     MOM_CALC_VISC (in MOM_FLUXFORM & MOM_VECINV) and call S/R MOM_CALC_VISC
