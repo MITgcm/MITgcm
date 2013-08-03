@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.13 2013/07/24 20:07:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.14 2013/08/03 17:40:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -211,30 +211,15 @@ C     == Functions ==
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER iloop
-#ifdef ALLOW_AUTODIFF_TAMC
-#ifdef STORE_LOADEDREC_TEST
-      INTEGER bi,bj
-#endif /* STORE_LOADEDREC_TEST */
-#endif
-
 CEOP
-
-#ifdef STORE_LOADEDREC_TEST
-          DO bj = myByLo(myThid), myByHi(myThid)
-           DO bi = myBxLo(myThid), myBxHi(myThid)
-            loadedRec(bi,bj) = 0
-           ENDDO
-          ENDDO
-#endif /* STORE_LOADEDREC_TEST */
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('MAIN_DO_LOOP',myThid)
 #endif
 
-c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
 #ifdef ALLOW_AUTODIFF_OPENAD
+C     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
       DO iloop = 1, nTimeSteps
 #endif
 
@@ -254,6 +239,8 @@ c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #ifdef ALLOW_AUTODIFF_OPENAD
       ENDDO
+C     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STOPS   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 #endif
 
 #ifdef ALLOW_DEBUG

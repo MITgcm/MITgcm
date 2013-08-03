@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.156 2013/07/24 20:07:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.157 2013/08/03 17:40:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -210,6 +210,9 @@ C     == Functions ==
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER iloop
+#ifdef STORE_LOADEDREC_TEST
+      INTEGER bi,bj
+#endif /* STORE_LOADEDREC_TEST */
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -489,6 +492,14 @@ CADJ &     = COMMON,nchklev_1*nthreads_chkpt*numItersMax
 #   endif
 c--
 c**************************************
+
+#ifdef STORE_LOADEDREC_TEST
+          DO bj = myByLo(myThid), myByHi(myThid)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+            loadedRec(bi,bj) = 0
+           ENDDO
+          ENDDO
+#endif /* STORE_LOADEDREC_TEST */
 
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
