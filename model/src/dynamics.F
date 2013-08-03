@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.164 2013/03/21 18:15:44 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.165 2013/08/03 01:38:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -78,11 +78,11 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "DYNVARS.h"
 #ifdef ALLOW_CD_CODE
-#include "CD_CODE_VARS.h"
+# include "CD_CODE_VARS.h"
 #endif
-#include "GRID.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
@@ -96,7 +96,7 @@ C     == Global variables ===
 #  include "PTRACERS_FIELDS.h"
 # endif
 # ifdef ALLOW_OBCS
-#include "OBCS_PARAMS.h"
+#  include "OBCS_PARAMS.h"
 #  include "OBCS_FIELDS.h"
 #  ifdef ALLOW_PTRACERS
 #   include "OBCS_PTRACERS.h"
@@ -167,8 +167,8 @@ C     phiSurfX,  ::  gradient of Surface potential (Pressure/rho, ocean)
 C     phiSurfY             or geopotential (atmos) in X and Y direction
 C     guDissip   :: dissipation tendency (all explicit terms), u component
 C     gvDissip   :: dissipation tendency (all explicit terms), v component
-C     KappaRU    :: vertical viscosity
-C     KappaRV    :: vertical viscosity
+C     KappaRU    :: vertical viscosity for velocity U-component
+C     KappaRV    :: vertical viscosity for velocity V-component
 C     iMin, iMax :: Ranges and sub-block indices on which calculations
 C     jMin, jMax    are applied.
 C     bi, bj     :: tile indices
@@ -199,7 +199,6 @@ C                   are switched with k to be the appropriate index into fVerU,V
       LOGICAL dPhiHydDiagIsOn
       _RL tmpFac
 #endif /* ALLOW_DIAGNOSTICS */
-
 
 C---    The algorithm...
 C
@@ -257,9 +256,8 @@ CEOP
      &               .OR. DIAGNOSTICS_IS_ON( 'Vm_dPHdy', myThid )
 #endif
 
-C-- Call to routine for calculation of
-C   Eliassen-Palm-flux-forced U-tendency,
-C   if desired:
+C-- Call to routine for calculation of Eliassen-Palm-flux-forced
+C    U-tendency, if desired:
 #ifdef INCLUDE_EP_FORCING_CODE
       CALL CALC_EP_FORCING(myThid)
 #endif
@@ -308,8 +306,6 @@ C     uninitialised but inert locations.
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           KappaRU(i,j,k) = 0. _d 0
-           KappaRV(i,j,k) = 0. _d 0
 cph(
 c--   need some re-initialisation here to break dependencies
 cph)
@@ -380,22 +376,30 @@ CADJ &                 = comlev1_bibj, key=idynkey, byte=isbyte
 #endif /* ALLOW_KPP */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifdef  INCLUDE_CALC_DIFFUSIVITY_CALL
+#if (defined INCLUDE_CALC_DIFFUSIVITY_CALL) && !(defined ALLOW_AUTODIFF)
+        IF ( .NOT.momViscosity ) THEN
+#endif /* INCLUDE_CALC_DIFFUSIVITY_CALL and not ALLOW_AUTODIFF */
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             KappaRU(i,j,k) = 0. _d 0
+             KappaRV(i,j,k) = 0. _d 0
+            ENDDO
+           ENDDO
+          ENDDO
+#ifdef INCLUDE_CALC_DIFFUSIVITY_CALL
 C--     Calculate the total vertical viscosity
-        CALL CALC_VISCOSITY(
+#ifdef ALLOW_AUTODIFF
+        IF ( momViscosity ) THEN
+#else
+        ELSE
+#endif
+          CALL CALC_VISCOSITY(
      I            bi,bj, iMin,iMax,jMin,jMax,
      O            KappaRU, KappaRV,
      I            myThid )
-#else
-        DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           KappaRU(i,j,k) = 0. _d 0
-           KappaRV(i,j,k) = 0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-#endif
+        ENDIF
+#endif /* INCLUDE_CALC_DIFFUSIVITY_CALL */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE KappaRU(:,:,:)
@@ -407,12 +411,12 @@ CADJ &     = comlev1_bibj, key=idynkey, byte=isbyte
 #ifdef ALLOW_OBCS
 C--   For Stevens boundary conditions velocities need to be extrapolated
 C     (copied) to a narrow strip outside the domain
-         IF ( useOBCS ) THEN
+        IF ( useOBCS ) THEN
           CALL OBCS_COPY_UV_N(
      U         uVel(1-OLx,1-OLy,1,bi,bj),
      U         vVel(1-OLx,1-OLy,1,bi,bj),
      I         Nr, bi, bj, myThid )
-         ENDIF
+        ENDIF
 #endif /* ALLOW_OBCS */
 
 C--     Start of dynamics loop
@@ -494,8 +498,7 @@ CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C--      Integrate hydrostatic balance for phiHyd with BC of
-C        phiHyd(z=0)=0
+C--      Integrate hydrostatic balance for phiHyd with BC of phiHyd(z=0)=0
          IF ( implicitIntGravWave ) THEN
            CALL CALC_PHI_HYD(
      I        bi,bj,iMin,iMax,jMin,jMax,k,
@@ -561,7 +564,7 @@ CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
      I         myTime, myIter, myThid)
 #endif
            ENDIF
-C
+
            CALL TIMESTEP(
      I         bi,bj,iMin,iMax,jMin,jMax,k,
      I         dPhiHydX,dPhiHydY, phiSurfX, phiSurfY,
