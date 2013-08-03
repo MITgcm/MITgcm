@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.14 2013/08/03 17:40:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.15 2013/08/03 23:15:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,103 +59,88 @@ C     == Global variables ==
 #include "PARAMS.h"
 
 c**************************************
-#ifdef ALLOW_AUTODIFF
-# ifndef ALLOW_AUTODIFF_OPENAD
+#if (defined ALLOW_AUTODIFF) && (defined ALLOW_AUTODIFF_OPENAD)
 
-c These includes are needed for
-c AD-checkpointing.
-c They provide the fields to be stored.
-
-#  include "AUTODIFF_MYFIELDS.h"
-#  include "GRID.h"
-#  include "DYNVARS.h"
-#  include "SURFACE.h"
-#  include "FFIELDS.h"
-#  include "EOS.h"
-#  include "AUTODIFF.h"
-
-#  ifdef ALLOW_GENERIC_ADVDIFF
-#   include "GAD.h"
-#   include "GAD_SOM_VARS.h"
-#  endif
-#  ifdef ALLOW_MOM_FLUXFORM
-#   include "MOM_FLUXFORM.h"
-#  endif
-#  ifdef ALLOW_CD_CODE
-#   include "CD_CODE_VARS.h"
-#  endif
-#  ifdef ALLOW_EXF
-#   include "EXF_FIELDS.h"
-#   ifdef ALLOW_BULKFORMULAE
-#    include "EXF_CONSTANTS.h"
-#   endif
-#  endif /* ALLOW_EXF */
-#  ifdef ALLOW_SEAICE
-#   include "SEAICE_SIZE.h"
-#   include "SEAICE.h"
-#   include "SEAICE_PARAMS.h"
-#   include "SEAICE_COST.h"
-#   include "SEAICE_TRACER.h"
-#  endif
-#  ifdef ALLOW_SALT_PLUME
-#   include "SALT_PLUME.h"
-#  endif
-#  ifdef ALLOW_THSICE
-#   include "THSICE_SIZE.h"
-#   include "THSICE_VARS.h"
-#   include "THSICE_COST.h"
-#  endif
-#  ifdef ALLOW_EBM
-#   include "EBM.h"
-#  endif
-#  ifdef ALLOW_RBCS
-#   include "RBCS_SIZE.h"
-#   include "RBCS_FIELDS.h"
-#  endif
-#  ifdef ALLOW_OFFLINE
-#   include "OFFLINE.h"
-#  endif
-#  ifdef ALLOW_CG2D_NSA
-#   include "CG2D.h"
-#  endif
-#  ifdef ALLOW_DIVIDED_ADJOINT
-#   ifdef ALLOW_USE_MPI
-#    include "mpif.h"
-#   endif
-#  endif
-
-#  include "tamc.h"
-
-# ifdef ALLOW_GGL90
-#  include "GGL90.h"
-# endif
-# ifdef ALLOW_PROFILES
-#  include "profiles.h"
-# endif
-
-# ifdef ALLOW_ECCO_EVOLUTION
-#  ifdef ALLOW_ECCO
-#   include "ecco_cost.h"
-#  endif
-# endif
-
-# endif /* undef ALLOW_AUTODIFF_OPENAD */
+C-- The folowing header files are included in the_main_loop.F for TAF
+C    and might be needed here (where the iloop is done) for OpenAD
+c#  include "AUTODIFF_MYFIELDS.h"
+c#  include "GRID.h"
+c#  include "DYNVARS.h"
+c#  include "SURFACE.h"
+c#  include "FFIELDS.h"
+c#  include "EOS.h"
+c#  include "AUTODIFF.h"
+c#  ifdef ALLOW_GENERIC_ADVDIFF
+c#   include "GAD.h"
+c#   include "GAD_SOM_VARS.h"
+c#  endif
+c#  ifdef ALLOW_MOM_FLUXFORM
+c#   include "MOM_FLUXFORM.h"
+c#  endif
+c#  ifdef ALLOW_CD_CODE
+c#   include "CD_CODE_VARS.h"
+c#  endif
+c#  ifdef ALLOW_EXF
+c#   include "EXF_FIELDS.h"
+c#   ifdef ALLOW_BULKFORMULAE
+c#    include "EXF_CONSTANTS.h"
+c#   endif
+c#  endif /* ALLOW_EXF */
+c#  ifdef ALLOW_SEAICE
+c#   include "SEAICE_SIZE.h"
+c#   include "SEAICE.h"
+c#   include "SEAICE_PARAMS.h"
+c#   include "SEAICE_COST.h"
+c#   include "SEAICE_TRACER.h"
+c#  endif
+c#  ifdef ALLOW_SALT_PLUME
+c#   include "SALT_PLUME.h"
+c#  endif
+c#  ifdef ALLOW_THSICE
+c#   include "THSICE_SIZE.h"
+c#   include "THSICE_VARS.h"
+c#   include "THSICE_COST.h"
+c#  endif
+c#  ifdef ALLOW_EBM
+c#   include "EBM.h"
+c#  endif
+c#  ifdef ALLOW_RBCS
+c#   include "RBCS_SIZE.h"
+c#   include "RBCS_FIELDS.h"
+c#  endif
+c#  ifdef ALLOW_OFFLINE
+c#   include "OFFLINE.h"
+c#  endif
+c#  ifdef ALLOW_CG2D_NSA
+c#   include "CG2D.h"
+c#  endif
+c# ifdef ALLOW_GGL90
+c#  include "GGL90.h"
+c# endif
+c# ifdef ALLOW_PROFILES
+c#  include "profiles.h"
+c# endif
+c# ifdef ALLOW_ECCO_EVOLUTION
+c#  ifdef ALLOW_ECCO
+c#   include "ecco_cost.h"
+c#  endif
+c# endif
 
 # ifdef ALLOW_CTRL
-# include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
-# include "CTRL_GENARR.h"
+#  include "CTRL_SIZE.h"
+#  include "ctrl.h"
+#  include "ctrl_dummy.h"
+#  include "CTRL_GENARR.h"
 # endif
 # ifdef ALLOW_COST
 #  include "cost.h"
 # endif
 
-#  ifdef ALLOW_PTRACERS
-#   include "PTRACERS_SIZE.h"
-#   include "PTRACERS_FIELDS.h"
-#   include "PTRACERS_START.h"
-#  endif
+# ifdef ALLOW_PTRACERS
+#  include "PTRACERS_SIZE.h"
+#  include "PTRACERS_FIELDS.h"
+#  include "PTRACERS_START.h"
+# endif
 # ifdef ALLOW_GCHEM
 #  include "GCHEM_FIELDS.h"
 # endif
@@ -188,7 +173,7 @@ c They provide the fields to be stored.
 #  include "STREAMICE_CG.h"
 # endif
 
-#endif /* ALLOW_AUTODIFF */
+#endif /* ALLOW_AUTODIFF and ALLOW_AUTODIFF_OPENAD */
 c**************************************
 
 C     !INPUT/OUTPUT PARAMETERS:
