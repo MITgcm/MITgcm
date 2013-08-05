@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1906 2013/08/03 23:16:19 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1907 2013/08/05 17:41:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint64l (2013/08/05)
 o model/src:
   - in dynamics.F, skip the call to CALC_VISCOSITY if momViscosity=F
   - main_do_loop.F: no longer includes additional (AUTODIFF) header files
