@@ -1,5 +1,27 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch1_ad.flow,v 1.2 2010/10/16 17:01:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch1_ad.flow,v 1.3 2013/08/06 22:29:40 jmc Exp $
 C $Name:  $
+
+C------------------------------------------
+C directives to specify the adjoint names
+C of routines called in the original code
+C------------------------------------------
+c$taf SUBROUTINE exch_3d_rl      ADNAME = adexch_3d_rl
+c$taf SUBROUTINE exch_3d_rs      ADNAME = adexch_3d_rs
+c$taf SUBROUTINE exch_uv_3d_rl   ADNAME = adexch_uv_3d_rl
+c$taf SUBROUTINE exch_uv_3d_rs   ADNAME = adexch_uv_3d_rs
+c$taf SUBROUTINE exch_uv_xy_rl   ADNAME = adexch_uv_xy_rl
+c$taf SUBROUTINE exch_uv_xy_rs   ADNAME = adexch_uv_xy_rs
+c$taf SUBROUTINE exch_uv_xyz_rl  ADNAME = adexch_uv_xyz_rl
+c$taf SUBROUTINE exch_uv_xyz_rs  ADNAME = adexch_uv_xyz_rs
+c$taf SUBROUTINE exch_xy_rl      ADNAME = adexch_xy_rl
+c$taf SUBROUTINE exch_xy_rs      ADNAME = adexch_xy_rs
+c$taf SUBROUTINE exch_xyz_rl     ADNAME = adexch_xyz_rl
+c$taf SUBROUTINE exch_xyz_rs     ADNAME = adexch_xyz_rs
+c$taf SUBROUTINE exch_uv_agrid_3d_rl ADNAME = adexch_uv_agrid_3d_rl
+c$taf SUBROUTINE exch_uv_bgrid_3d_rl ADNAME = adexch_uv_agrid_3d_rl
+c$taf SUBROUTINE exch_uv_dgrid_3d_rl ADNAME = adexch_uv_dgrid_3d_rl
+c$taf SUBROUTINE exch_sm_3d_rl   ADNAME = adexch_sm_3d_rl
+c$taf SUBROUTINE exch_z_3d_rl    ADNAME = adexch_z_3d_rl
 
 C------------------------------------------
 C TAF flow directives for exch1_RX
