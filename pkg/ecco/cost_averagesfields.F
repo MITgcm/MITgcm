@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.43 2013/03/31 19:41:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.44 2013/08/06 20:58:39 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -93,8 +93,8 @@ c     == local variables ==
       logical startofgen(NGENCOST)
       logical endofgen(NGENCOST)
       logical ingen(NGENCOST)
-      logical sum1gen(NGENCOST)
-      logical genrec(NGENCOST)
+      integer sum1gen(NGENCOST)
+      integer genrec(NGENCOST)
 #endif
 #if (defined (ALLOW_CTRL) && \
      defined (ALLOW_GENTIM2D_CONTROL) && \
