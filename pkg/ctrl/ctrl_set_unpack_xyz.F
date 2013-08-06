@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xyz.F,v 1.28 2013/02/01 19:25:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xyz.F,v 1.29 2013/08/06 20:57:00 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -340,6 +340,7 @@ c     == local variables ==
       character*(80) weightname
       _RL delZnorm
       character*(80) cfile2, cfile3
+      _RL dummy
 
 c     == external ==
 
@@ -352,11 +353,11 @@ c-- part 1: preliminary reads and definitions
 
 #ifdef CTRL_PACK_PRECISE
       call active_read_xyz(weighttype, wei3d, 1,
-     &    .FALSE., .FALSE., 0 , mythid, 1)
+     &    .FALSE., .FALSE., 0 , mythid, dummy)
 #endif
 
       call active_read_xyz(masktype, msk3d, 1,
-     &    .FALSE., .FALSE., 0 , mythid, 1)
+     &    .FALSE., .FALSE., 0 , mythid, dummy)
 
       if ( doPackDiag ) then
          write(cfile2(1:80),'(80a)') ' '

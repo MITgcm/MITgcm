@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xy.F,v 1.25 2013/02/02 15:19:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xy.F,v 1.26 2013/08/06 20:57:00 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -397,6 +397,7 @@ c     == local variables ==
       character*(80) weightname
       _RL delZnorm
       character*(80) cfile2, cfile3
+      _RL dummy
 
 c     == external ==
 
@@ -409,11 +410,11 @@ c-- part 1: preliminary reads and definitions
 
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
       call active_read_xy(weighttype, wei2d, 1,
-     &    .FALSE., .FALSE., 0 , mythid, 1)
+     &    .FALSE., .FALSE., 0 , mythid, dummy)
 #endif
 
       call active_read_xyz(masktype, msk3d, 1,
-     &    .FALSE., .FALSE., 0 , mythid, 1)
+     &    .FALSE., .FALSE., 0 , mythid, dummy)
 
       if ( doPackDiag ) then
          write(cfile2(1:80),'(80a)') ' '
