@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/model_ad.flow,v 1.8 2010/12/20 20:04:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/model_ad.flow,v 1.9 2013/08/07 15:35:29 jmc Exp $
 C $Name:  $
 
 C----------------------------------------
@@ -6,6 +6,7 @@ C subroutine  the_main_loop
 C----------------------------------------
 CADJ SUBROUTINE the_main_loop  ADNAME = adthe_main_loop
 CADJ SUBROUTINE the_main_loop FTLNAME = g_the_main_loop
+CADJ SUBROUTINE the_main_loop MODNAME = mdthe_main_loop
 
 C----------------------------------------
 C subroutine  calc_oce_mxlayer
