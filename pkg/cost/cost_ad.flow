@@ -1,0 +1,12 @@
+C------------------------------------------
+C directives to specify the adjoint names
+C of COMMON blocks used in the original code
+C------------------------------------------
+C$TAF COMMON cost_r FTLNAME = g_cost_r
+C$TAF COMMON cost_r ADNAME = adcost_r
+C$TAF COMMON cost_state_final_r FTLNAME = g_cost_state_final_r
+C$TAF COMMON cost_state_final_r ADNAME = adcost_state_final_r
+C$TAF COMMON cost_vector_r FTLNAME = g_cost_vector_r
+C$TAF COMMON cost_vector_r ADNAME = adcost_vector_r
+C$TAF COMMON cost_dic_cost_ctrl FTLNAME = g_cost_dic_cost_ctrl
+C$TAF COMMON cost_dic_cost_ctrl ADNAME = adcost_dic_cost_ctrl
