@@ -1,0 +1,36 @@
+07-August-2013
+Michael Vossbeck <Michael.Vossbeck@fastopt.com>
+Patrick Heimbach <heimbach@mit.edu>
+
+Background:
+------------------------------
+Building the adjoint/tangent linear codes of the MITgcm has been restricted to TAF version 2.3.8 since 3 April 2013 (checkpoint64g). On August 6th/7th MITgcm has been updated to be compliant with TAF default behavior ("-v2") and up-to-date TAF version (TAF-2.5.4 as of August 7) when generating adjont/tangent linear code).
+
+Users who check out a fresh copy of MITgcm or perform an update from the repository will automatically receive all required changes. For those users wanting to stick to a specific (older) version of MITgcm, but also seek to use a more recent TAF version, a patch file, MITgcm-TAFv2.patch, is provided. Note however, that MIT does not provide further support regarding this patch.
+
+In case, your local copy of MITgcm does not contain any differences in the list of affected files below, there is a fair chance to successfully apply this patch and get your local copy of MITgcm running with the current TAF version. 
+
+To apply the patch, place the patch file into your toplevel directory of MITgcm, switch to that directory, and enter the following command:
+
+patch -Np1 < MITgcm-TAFv2.patch
+
+
+Affected files:
+------------------------------
+eesupp/src/exch1_ad.flow
+pkg/cost/cost_ad.flow
+pkg/autodiff/model_ad.flow
+pkg/autodiff/system.flow
+pkg/autodiff/autodiff_whtapeio_sync.flow
+pkg/autodiff/common.flow
+tools/genmake2
+tools/adjoint_options/adjoint_diva
+tools/adjoint_options/adjoint_diva_mpi
+tools/adjoint_options/adjoint_default
+tools/adjoint_options/adjoint_state_final
+tools/adjoint_options/adjoint_tamc_compatibility
+tools/adjoint_options/adjoint_f95
+tools/adjoint_options/adjoint_default_mpi
+verification/bottom_ctrl_5x5/code_ad/ad_optfile.local
+verification/tutorial_global_oce_optim/code_ad/ad_optfile.local
+verification/tutorial_dic_adjoffline/code_ad/ad_optfile.local
