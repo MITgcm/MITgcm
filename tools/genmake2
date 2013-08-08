@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.254 2013/08/07 16:20:03 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.255 2013/08/08 17:34:27 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -2578,7 +2578,8 @@ for i in $INCLUDEDIRS ; do
     fi
 done
 
-if test ! "x$DIVA" = x -a ! "x$MPI" = x ; then
+#if test ! "x$DIVA" = x -a ! "x$MPI" = x ; then
+if test ! "x$MPI" = x ; then
     if test ! "x$MPIINCLUDEDIR" = x ; then
 	#  Do a local copy of MPI headers files (in local dir ./mpi_headers/) after
 	#   checking for additional included headers (in case of chain of included
