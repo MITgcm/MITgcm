@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.26 2013/07/11 14:33:23 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.27 2013/08/08 22:39:36 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -121,23 +121,24 @@ C--   Default values Sub-Meso (corresponding tau = 5.8 days):
       subMeso_Lmax   = 110. _d +3
 
 C--   Default values for K3D
-      GM_useK3D    = .FALSE.
-      GM_K3D_likeGM= .FALSE.
-      GM_K3D_smooth= .TRUE.
-      GM_K3D_constK= 1000.0
-      GM_K3D_gamma = 1.00
+      GM_useK3D        = .FALSE.
+      GM_K3D_beta_eq_0 = .TRUE.
+      GM_K3D_likeGM    = .FALSE.
+      GM_K3D_smooth    = .TRUE.
+      GM_K3D_constK    = 1000.0
+      GM_K3D_gamma     = 1.00
       GM_K3D_EadyMinDepth = 50.0
       GM_K3D_EadyMaxDepth = 1000.0
-      GM_K3D_Lambda = 1.0
-      GM_K3D_smallK = 100.0
-      GM_K3D_maxSlope = UNSET_RL
-      GM_K3D_maxC    = 0.15
-      GM_maxK3D      = 20e3
-      GM_K3D_maxLurms= 75e3
-      GM_K3D_minCori = zeroRL
-      GM_K3D_minN2   = 1.0e-8
+      GM_K3D_Lambda    = 1.0
+      GM_K3D_smallK    = 100.0
+      GM_K3D_maxSlope  = UNSET_RL
+      GM_K3D_maxC      = 0.15
+      GM_maxK3D        = 20e3
+      GM_K3D_maxLurms  = 75e3
+      GM_K3D_minCori   = zeroRL
+      GM_K3D_minN2     = 1.0e-8
       GM_K3D_surfMinDepth = 100.0
-      GM_K3D_vecFreq = 2592000.0
+      GM_K3D_vecFreq   = 2592000.0
       
       WRITE(msgBuf,'(A)') ' GM_READPARMS: opening data.gmredi'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

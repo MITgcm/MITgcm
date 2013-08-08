@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.23 2013/07/11 14:33:23 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.24 2013/08/08 22:39:36 m_bates Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -21,6 +21,7 @@ C     GM_InMomAsStress :: apply GM as a stress in momentum Eq.
 C     GM_MNC           ::
 C     GM_MDSIO         ::
 C     GM_useK3D        :: use the 3 dimensional calculation for K
+C     GM_K3D_beta_eq_0 :: Ignores the beta term when calculating grad(q)
 C     GM_K3D_likeGM    :: Makes the PV closure similar to the GM closure (for debugging only!)
 C     GM_K3D_smooth    :: Expand PV closure in terms of baroclinic modes (for debugging only!)
       LOGICAL GM_AdvForm
@@ -33,13 +34,15 @@ C     GM_K3D_smooth    :: Expand PV closure in terms of baroclinic modes (for de
       LOGICAL GM_MDSIO
       LOGICAL GM_useK3D
       LOGICAL GM_K3D_likeGM
+      LOGICAL GM_K3D_beta_eq_0
       LOGICAL GM_K3D_smooth
       COMMON /GM_PARAMS_L/
      &                   GM_AdvForm, GM_AdvSeparate,
      &                   GM_useBVP,  GM_useSubMeso,
      &                   GM_ExtraDiag, GM_MNC, GM_MDSIO,
      &                   GM_InMomAsStress,
-     &                   GM_useK3D, GM_K3D_likeGM, GM_K3D_smooth
+     &                   GM_useK3D, GM_K3D_likeGM, GM_K3D_smooth,
+     &                   GM_K3D_beta_eq_0
 
 C--   GM/Redi Integer-type parameters
 C     GM_BVP_modeNumber :: vertical mode number used for speed "c" in BVP transport
