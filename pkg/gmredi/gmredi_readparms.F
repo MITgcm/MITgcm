@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.27 2013/08/08 22:39:36 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.28 2013/08/08 22:51:31 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -69,7 +69,8 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_K3D_Lambda, GM_K3D_smallK, GM_K3D_maxSlope,
      &          GM_K3D_maxC, GM_K3D_minCori, GM_K3D_minN2,
      &          GM_K3D_surfMinDepth, GM_maxK3D, GM_K3D_maxLurms,
-     &          GM_K3D_constK, GM_K3D_likeGM, GM_K3D_smooth
+     &          GM_K3D_constK, GM_K3D_likeGM, GM_K3D_smooth,
+     &          GM_K3D_beta_eq_0
 
       _BEGIN_MASTER(myThid)
 
