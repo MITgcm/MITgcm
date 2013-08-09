@@ -1,0 +1,9 @@
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice.flow,v 1.1 2013/08/09 01:22:32 jmc Exp $
+C $Name:  $
+
+C----------------------------------------
+C FUNCTION  SEAICE_DIAG_SUFX
+C----------------------------------------
+CADJ FUNCTION SEAICE_DIAG_SUFX INPUT  = 1,2
+CADJ FUNCTION SEAICE_DIAG_SUFX OUTPUT =
+
