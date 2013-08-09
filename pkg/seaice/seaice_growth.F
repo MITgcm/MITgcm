@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.189 2013/05/25 16:19:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.190 2013/08/09 22:14:36 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -50,7 +50,7 @@ C     myThid :: Thread no. that called this routine.
       INTEGER myIter, myThid
 CEOP
 
-#ifdef ALLOW_EXF
+#if (defined ALLOW_EXF) && (defined ALLOW_ATM_TEMP)
 C     !FUNCTIONS:
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL  DIAGNOSTICS_IS_ON
@@ -1483,7 +1483,7 @@ C          fractional area of each thickness category
         ENDDO
 #endif /* SEAICE_ITD */
 
-      endif !SEAICE_growMeltByConv
+      ENDIF !SEAICE_growMeltByConv
 
 C compute snow melt tendency due to snow-atmosphere interaction
 C ==================================================================
@@ -1598,12 +1598,11 @@ C         Limit ice growth by potential melt by ocean
 
 C add snow precipitation to HSNOW.
 C =================================================
-#ifdef ALLOW_ATM_TEMP
-# ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE a_QbyATM_cover = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE PRECIP(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE AREApreTH = comlev1_bibj,key=iicekey,byte=isbyte
-# endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF_TAMC */
         IF ( snowPrecipFile .NE. ' ' ) THEN
 C add snowPrecip to HSNOW
          DO J=1,sNy
@@ -1658,7 +1657,6 @@ Cgf since the implied air heat gain to turn
 Cgf rain to snow is not a surface process.
 C end of IF statement snowPrecipFile:
         ENDIF
-#endif /* ALLOW_ATM_TEMP */
 
 C compute snow melt due to heat available from ocean.
 C =================================================================
@@ -1711,7 +1709,7 @@ Cgf no additional dependency through snow
         ENDDO
 #endif /* SEAICE_ITD */
 
-      endif !SEAICE_growMeltByConv
+      ENDIF !SEAICE_growMeltByConv
 
 #endif /* SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING */
 Cph)
@@ -2227,27 +2225,28 @@ C ocean water going to ice/snow, in precip units
      &       * convertHI2PRECIP
      &       - snowPrecip(i,j,bi,bj) * (ONE-AREApreTH(I,J)) )
 C factor in the heat content as done in external_forcing_surf.F
-      IF ( (temp_EvPrRn.NE.UNSET_RL).AND.useRealFreshWaterFlux
-     &     .AND.(nonlinFreeSurf.NE.0) ) THEN
+           IF ( (temp_EvPrRn.NE.UNSET_RL).AND.
+     &         useRealFreshWaterFlux.AND.(nonlinFreeSurf.NE.0) ) THEN
              tmpscal1 = - tmpscal3*
      &         HeatCapacity_Cp * temp_EvPrRn
-      ELSEIF ( (temp_EvPrRn.EQ.UNSET_RL).AND.useRealFreshWaterFlux
-     &         .AND.(nonlinFreeSurf.NE.0) ) THEN
+           ELSEIF ( (temp_EvPrRn.EQ.UNSET_RL).AND.
+     &         useRealFreshWaterFlux.AND.(nonlinFreeSurf.NE.0) ) THEN
              tmpscal1 = - tmpscal3*
      &         HeatCapacity_Cp * theta(I,J,kSurface,bi,bj)
-      ELSEIF ( (temp_EvPrRn.NE.UNSET_RL) ) THEN
-           tmpscal1 = - tmpscal3*HeatCapacity_Cp*
+           ELSEIF ( (temp_EvPrRn.NE.UNSET_RL) ) THEN
+             tmpscal1 = - tmpscal3*HeatCapacity_Cp*
      &       ( temp_EvPrRn - theta(I,J,kSurface,bi,bj) )
-      ELSEIF ( (temp_EvPrRn.EQ.UNSET_RL) ) THEN
-           tmpscal1 = ZERO
-      ENDIF
+           ELSEIF ( (temp_EvPrRn.EQ.UNSET_RL) ) THEN
+             tmpscal1 = ZERO
+           ENDIF
 #ifdef ALLOW_DIAGNOSTICS
 C in all cases, diagnoze the boundary condition mismatch to SIaaflux
            DIAGarrayA(I,J)=tmpscal1
 #endif
 C remove the mismatch when real fresh water is exchanged (at 0degC here)
-      IF ( useRealFreshWaterFlux.AND.(nonlinFreeSurf.GT.0).AND.
-     &   SEAICEheatConsFix ) QNET(I,J,bi,bj)=QNET(I,J,bi,bj)+tmpscal1
+           IF ( useRealFreshWaterFlux.AND.(nonlinFreeSurf.GT.0)
+     &          .AND.SEAICEheatConsFix )
+     &       QNET(I,J,bi,bj)=QNET(I,J,bi,bj)+tmpscal1
          ENDDO
         ENDDO
 #ifdef ALLOW_DIAGNOSTICS
@@ -2258,8 +2257,8 @@ C remove the mismatch when real fresh water is exchanged (at 0degC here)
 
 C compute the net heat flux, incl. adv. by water, entering ocean+ice
 C ===================================================================
-         DO J=1,sNy
-          DO I=1,sNx
+        DO J=1,sNy
+         DO I=1,sNx
 cgf 1) SIatmQnt (analogous to qnet; excl. adv. by water exch.)
 CML If I consider the atmosphere above the ice, the surface flux
 CML which is relevant for the air temperature dT/dt Eq
@@ -2292,30 +2291,28 @@ C energy (referenced to 0 for 0deC liquid water). In virtual salt flux or
 C linFS, rain/evap get a special treatment (see external_forcing_surf.F).
            tmpscal1= - tmpscal1*
      &       ( -SEAICE_lhFusion + HeatCapacity_Cp * ZERO )
-      IF ( (temp_EvPrRn.NE.UNSET_RL).AND.useRealFreshWaterFlux
-     &     .AND.(nonlinFreeSurf.NE.0) ) THEN
-           tmpscal2= - tmpscal2*
-     &       ( ZERO + HeatCapacity_Cp * temp_EvPrRn )
-      ELSEIF ( (temp_EvPrRn.EQ.UNSET_RL).AND.useRealFreshWaterFlux
-     &        .AND.(nonlinFreeSurf.NE.0) ) THEN
-           tmpscal2= - tmpscal2*
-     &       ( ZERO + HeatCapacity_Cp * theta(I,J,kSurface,bi,bj) )
-      ELSEIF ( (temp_EvPrRn.NE.UNSET_RL) ) THEN
-           tmpscal2= - tmpscal2*HeatCapacity_Cp*
-     &       ( temp_EvPrRn - theta(I,J,kSurface,bi,bj) )
-      ELSEIF ( (temp_EvPrRn.EQ.UNSET_RL) ) THEN
-           tmpscal2= ZERO
-      ENDIF
-           SItflux(I,J,bi,bj)=
-     &            SIatmQnt(I,J,bi,bj)-tmpscal1-tmpscal2
-          ENDDO
+           IF ( (temp_EvPrRn.NE.UNSET_RL).AND.
+     &          useRealFreshWaterFlux.AND.(nonlinFreeSurf.NE.0) ) THEN
+             tmpscal2= - tmpscal2*
+     &        ( ZERO + HeatCapacity_Cp * temp_EvPrRn )
+           ELSEIF ( (temp_EvPrRn.EQ.UNSET_RL).AND.
+     &          useRealFreshWaterFlux.AND.(nonlinFreeSurf.NE.0) ) THEN
+             tmpscal2= - tmpscal2*
+     &        ( ZERO + HeatCapacity_Cp * theta(I,J,kSurface,bi,bj) )
+           ELSEIF ( (temp_EvPrRn.NE.UNSET_RL) ) THEN
+             tmpscal2= - tmpscal2*HeatCapacity_Cp*
+     &        ( temp_EvPrRn - theta(I,J,kSurface,bi,bj) )
+           ELSEIF ( (temp_EvPrRn.EQ.UNSET_RL) ) THEN
+             tmpscal2= ZERO
+           ENDIF
+           SItflux(I,J,bi,bj)= SIatmQnt(I,J,bi,bj)-tmpscal1-tmpscal2
          ENDDO
+        ENDDO
 
 C compute net fresh water flux leaving/entering
 C the ocean, accounting for fresh/salt water stocks.
 C ==================================================
 
-#ifdef ALLOW_ATM_TEMP
         DO J=1,sNy
          DO I=1,sNx
           tmpscal1= d_HSNWbyATMonSNW(I,J)*SNOW2ICE
@@ -2353,8 +2350,8 @@ c and the flux leaving/entering the ocean+ice
 
 #ifdef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
 C--
-          DO J=1,sNy
-           DO I=1,sNx
+        DO J=1,sNy
+         DO I=1,sNx
             frWtrAtm(I,J,bi,bj) = maskC(I,J,kSurface,bi,bj)*(
      &           PRECIP(I,J,bi,bj)
      &           - EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
@@ -2365,8 +2362,8 @@ C--
 # ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
      &           - a_FWbySublim(I,J)*AREApreTH(I,J)
 # endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
-           ENDDO
-          ENDDO
+         ENDDO
+        ENDDO
 C--
 #else  /* ndef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION */
 C--
@@ -2387,8 +2384,6 @@ C--
 # endif
 C--
 #endif /* ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION */
-
-#endif /* ALLOW_ATM_TEMP */
 
 #ifdef SEAICE_DEBUG
         CALL PLOT_FIELD_XYRL( QSW,'Current QSW ', myIter, myThid )
@@ -2423,38 +2418,38 @@ CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 #ifdef ALLOW_BALANCE_FLUXES
 C Compute tile integrals of heat/fresh water fluxes to/from atm.
 C ==============================================================
-       FWFsiTile(bi,bj) = 0. _d 0
-       IF ( balanceEmPmR ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-          FWFsiTile(bi,bj) =
-     &      FWFsiTile(bi,bj) + SIatmFW(i,j,bi,bj)
-     &      * rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
+        FWFsiTile(bi,bj) = 0. _d 0
+        IF ( balanceEmPmR ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+           FWFsiTile(bi,bj) =
+     &       FWFsiTile(bi,bj) + SIatmFW(i,j,bi,bj)
+     &       * rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
+          ENDDO
          ENDDO
-        ENDDO
-       ENDIF
+        ENDIF
 c to translate global mean FWF adjustements (see below) we may need :
-       FWF2HFsiTile(bi,bj) = 0. _d 0
-       IF ( balanceEmPmR.AND.(temp_EvPrRn.EQ.UNSET_RL) ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-          FWF2HFsiTile(bi,bj) = FWF2HFsiTile(bi,bj) +
-     &      HeatCapacity_Cp * theta(I,J,kSurface,bi,bj)
-     &      * rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
+        FWF2HFsiTile(bi,bj) = 0. _d 0
+        IF ( balanceEmPmR.AND.(temp_EvPrRn.EQ.UNSET_RL) ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+           FWF2HFsiTile(bi,bj) = FWF2HFsiTile(bi,bj) +
+     &       HeatCapacity_Cp * theta(I,J,kSurface,bi,bj)
+     &       * rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
+          ENDDO
          ENDDO
-        ENDDO
-       ENDIF
-       HFsiTile(bi,bj) = 0. _d 0
-       IF ( balanceQnet ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-          HFsiTile(bi,bj) =
-     &      HFsiTile(bi,bj) + SItflux(i,j,bi,bj)
-     &      * rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
+        ENDIF
+        HFsiTile(bi,bj) = 0. _d 0
+        IF ( balanceQnet ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+           HFsiTile(bi,bj) =
+     &       HFsiTile(bi,bj) + SItflux(i,j,bi,bj)
+     &       * rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
+          ENDDO
          ENDDO
-        ENDDO
-       ENDIF
-#endif
+        ENDIF
+#endif /* ALLOW_BALANCE_FLUXES */
 
 C ===================================================================
 C ======================PART 8: diagnostics==========================
@@ -2503,7 +2498,6 @@ C three that actually need intermediate storage
      &      'SIsnPrcp',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_SCALE_FILL(DIAGarrayB,
      &      tmpscal1,1,'SIdA    ',0,1,3,bi,bj,myThid)
-#ifdef ALLOW_ATM_TEMP
          DO J=1,sNy
           DO I=1,sNx
            DIAGarrayB(I,J) = maskC(I,J,kSurface,bi,bj) *
@@ -2536,7 +2530,6 @@ C the latent heat flux
          CALL DIAGNOSTICS_FILL(DIAGarrayA,'SIacSubl',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(DIAGarrayC,'SIrsSubl',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(DIAGarrayB,'SIhl    ',0,1,3,bi,bj,myThid)
-#endif /* ALLOW_ATM_TEMP */
 
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
@@ -2544,7 +2537,6 @@ C the latent heat flux
 C close bi,bj loops
        ENDDO
       ENDDO
-
 
 C ===================================================================
 C =========PART 9: HF/FWF global integrals and balancing=============
@@ -2584,10 +2576,10 @@ c mean SItflux (after potential adjustement due to SIatmFW)
 
 c 3) balancing adjustments
       IF ( balanceEmPmR ) THEN
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             empmr(i,j,bi,bj) = empmr(i,j,bi,bj) - tmpscal0
             SIatmFW(i,j,bi,bj) = SIatmFW(i,j,bi,bj) - tmpscal0
 c           adjust SItflux consistently
@@ -2607,58 +2599,58 @@ c           adjust SItflux consistently
             ENDIF
             SItflux(i,j,bi,bj) = SItflux(i,j,bi,bj) - tmpscal0*tmpscal1
 c           no qnet or tflux adjustement is needed
+          ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
-      IF ( balancePrintMean ) THEN
-       _BEGIN_MASTER( myThid )
-       WRITE(msgBuf,'(a,a,e24.17)') 'rm Global mean of ',
-     &      'SIatmFW = ', tmpscal0
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &      SQUEEZE_RIGHT , myThid)
-       _END_MASTER( myThid )
-      ENDIF
+       IF ( balancePrintMean ) THEN
+        _BEGIN_MASTER( myThid )
+        WRITE(msgBuf,'(a,a,e24.17)') 'rm Global mean of ',
+     &       'SIatmFW = ', tmpscal0
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        _END_MASTER( myThid )
+       ENDIF
       ENDIF
       IF ( balanceQnet ) THEN
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             SItflux(i,j,bi,bj) = SItflux(i,j,bi,bj) - tmpscal2
             qnet(i,j,bi,bj) = qnet(i,j,bi,bj) - tmpscal2
             SIatmQnt(i,j,bi,bj) = SIatmQnt(i,j,bi,bj) - tmpscal2
+          ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
-      IF ( balancePrintMean ) THEN
-       _BEGIN_MASTER( myThid )
-       WRITE(msgBuf,'(a,a,e24.17)') 'rm Global mean of ',
-     &      'SItflux = ', tmpscal2
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &      SQUEEZE_RIGHT , myThid)
-       _END_MASTER( myThid )
-      ENDIF
+       IF ( balancePrintMean ) THEN
+        _BEGIN_MASTER( myThid )
+        WRITE(msgBuf,'(a,a,e24.17)') 'rm Global mean of ',
+     &       'SItflux = ', tmpscal2
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        _END_MASTER( myThid )
+       ENDIF
       ENDIF
 #endif /* ALLOW_BALANCE_FLUXES */
 
 #ifdef ALLOW_DIAGNOSTICS
 c these diags need to be done outside of the bi,bj loop so that
 c we may do potential global mean adjustement to them consistently.
-         CALL DIAGNOSTICS_FILL(SItflux,
+      CALL DIAGNOSTICS_FILL(SItflux,
      &      'SItflux ',0,1,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(SIatmQnt,
+      CALL DIAGNOSTICS_FILL(SIatmQnt,
      &      'SIatmQnt',0,1,0,1,1,myThid)
 c SIatmFW follows the same convention as empmr -- SIatmFW diag does not
-         tmpscal1= - 1. _d 0
-         CALL DIAGNOSTICS_SCALE_FILL(SIatmFW,
+      tmpscal1= - 1. _d 0
+      CALL DIAGNOSTICS_SCALE_FILL(SIatmFW,
      &      tmpscal1,1,'SIatmFW ',0,1,0,1,1,myThid)
 #endif /* ALLOW_DIAGNOSTICS */
 
-#else  /* ALLOW_EXF */
-      STOP 'SEAICE_GROWTH not compiled without EXF'
-#endif /* ALLOW_EXF */
+#else  /* ALLOW_EXF and ALLOW_ATM_TEMP */
+      STOP 'SEAICE_GROWTH not compiled without EXF and ALLOW_ATM_TEMP'
+#endif /* ALLOW_EXF and ALLOW_ATM_TEMP */
 
       RETURN
       END
