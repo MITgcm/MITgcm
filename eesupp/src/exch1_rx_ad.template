@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch1_rx_ad.template,v 1.1 2010/05/19 01:43:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch1_rx_ad.template,v 1.2 2013/08/09 22:31:01 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -110,7 +110,7 @@ C--   Error checks
      &  STOP ' S/R EXCH1_RX_AD: myOLw .GT. MAX_OLX_EXCH'
       IF ( myOLe      .GT. MAX_OLX_EXCH )
      &  STOP ' S/R EXCH1_RX_AD: myOLe .GT. MAX_OLX_EXCH'
-      IF ( myOLn      .GT. MAX_OLX_EXCH )
+      IF ( myOLn      .GT. MAX_OLY_EXCH )
      &  STOP ' S/R EXCH1_RX_AD: myOLn .GT. MAX_OLY_EXCH'
       IF ( myOLs      .GT. MAX_OLY_EXCH )
      &  STOP ' S/R EXCH1_RX_AD: myOLs .GT. MAX_OLY_EXCH'
