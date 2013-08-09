@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.255 2013/08/08 17:34:27 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.256 2013/08/09 01:02:24 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -2578,8 +2578,7 @@ for i in $INCLUDEDIRS ; do
     fi
 done
 
-#if test ! "x$DIVA" = x -a ! "x$MPI" = x ; then
-if test ! "x$MPI" = x ; then
+if test ! "x$DIVA" = x -a ! "x$MPI" = x ; then
     if test ! "x$MPIINCLUDEDIR" = x ; then
 	#  Do a local copy of MPI headers files (in local dir ./mpi_headers/) after
 	#   checking for additional included headers (in case of chain of included
@@ -2704,7 +2703,14 @@ for d in $alldirs ; do
 		      F)
 			echo    " \\"  >> F77srclist.tmp
 			printf " $sf" >> F77srclist.tmp
-			if test "x$OPENAD" != x ; then
+			if test "x$OPENAD" = x ; then
+			    basename=${sf%%.F}
+			    isAD=`egrep ^$basename.f'[ 	]*' adSrcFiles.tmp`
+			    if test -z "$isAD" ; then
+				echo    " \\"  >> nonADF77srclist.tmp
+				printf " $sf" >> nonADF77srclist.tmp
+			    fi
+			else #- OpenAD case:
 			    basename=${sf%%.F}
 			    isAD=`egrep ^$basename.f'[ 	]*' adSrcFiles.tmp`
 			    if test -z "$isAD" ; then
@@ -3119,13 +3125,13 @@ ad_exe_target:
 	@-rm -f ad_config.template
 	\$(MAKE) -f \$(MAKEFILE) \$(EXE_AD)
 
-ad_input_code.$FS: \$(F77_SRC_FILES) \$(AD_FLOW_FILES)
+ad_input_code.$FS: \$(AD_FILES) \$(AD_FLOW_FILES)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
 	@\$(MAKE) -f \$(MAKEFILE) \$(F77_PP_SRC_FILES)
 	@\$(MAKE) -f \$(MAKEFILE) \$(FLOWFILES)
-	cat \$(FLOWFILES) \$(F77_PP_SRC_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ad_input_code.$FS
+	cat \$(FLOWFILES) \$(AD_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ad_input_code.$FS
 
 ad_taf_output.$FS: ad_input_code.$FS
 	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.$FS
@@ -3137,8 +3143,8 @@ adtafonly:
 	ls -l ad_input_code_ad.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
 
-\$(EXE_AD): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES:.c=.o) \$(H_SRC_FILES) \$(F90_SRC_FILES) ad_taf_output.o \$(EMBEDDED_FILES)
-	\$(LINK) -o \${EXE_AD} \$(FFLAGS) \$(FOPTIM) \$(C_SRC_FILES:.c=.o) ad_taf_output.o \$(LIBS)
+\$(EXE_AD): \$(SPECIAL_FILES) \$(H_SRC_FILES) ad_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
+	\$(LINK) -o \${EXE_AD} \$(FFLAGS) \$(FOPTIM) ad_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) $(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
 ad_tamc_output.$FS: ad_input_code.$FS
 	\$(TAMC) \$(AD_TAMC_FLAGS) \$(TAMC_EXTRA) ad_input_code.$FS
@@ -3167,13 +3173,13 @@ ftl_exe_target:
 	@-rm -f ad_config.template
 	\$(MAKE) -f \$(MAKEFILE) \$(EXE_FTL)
 
-ftl_input_code.$FS: \$(F77_SRC_FILES)
+ftl_input_code.$FS: \$(AD_FILES)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "TangLin version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
 	@\$(MAKE) -f \$(MAKEFILE) \$(F77_PP_SRC_FILES)
 	@\$(MAKE) -f \$(MAKEFILE) \$(AD_FLOW_FILES)
-	cat \$(AD_FLOW_FILES) \$(F77_PP_SRC_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ftl_input_code.$FS
+	cat \$(AD_FLOW_FILES) \$(AD_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ftl_input_code.$FS
 
 ftl_taf_output.$FS: ftl_input_code.$FS
 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) ftl_input_code.$FS
@@ -3185,8 +3191,8 @@ ftltafonly:
 	ls -l ftl_input_code_tl.$FS
 	cat ftl_input_code_tl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
 
-\$(EXE_FTL): ftl_taf_output.o \$(C_SRC_FILES:.c=.o)
-	\$(LINK) -o \${EXE_FTL} \$(FFLAGS) \$(FOPTIM) \$(C_SRC_FILES:.c=.o) ftl_taf_output.o \$(LIBS)
+\$(EXE_FTL): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
+	\$(LINK) -o \${EXE_FTL} \$(FFLAGS) \$(FOPTIM) ftl_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) $(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
 ftl_tamc_output.$FS: ftl_input_code.$FS
 	\$(TAMC) \$(FTL_TAMC_FLAGS) \$(TAMC_EXTRA) ftl_input_code.$FS
