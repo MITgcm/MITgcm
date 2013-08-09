@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_f95,v 1.15 2013/08/08 17:49:55 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_f95,v 1.16 2013/08/09 01:04:50 jmc Exp $
 #  $Name:  $
 #
 
@@ -23,11 +23,12 @@ AD_TAF_FLAGS="-f95 -reverse -i4 -r4 -intrinsic system,flush -l taf_ad.log $AD_TA
 FTL_TAF_FLAGS="-f95 -forward -i4 -r4 -intrinsic system,flush -l taf_ftl.log $FTL_TAF_FLAGS"
 SVD_TAF_FLAGS="-f95 -reverse -forward -pure -i4 -r4 -intrinsic system,flush -l taf_svd.log $SVD_TAF_FLAGS"
 
-if test "x$MPI" != x ; then
-  AD_TAF_FLAGS="$AD_TAF_FLAGS"' -include $(LOCAL_MPI_HEADERS) -I./mpi_headers/'
-  FLT_TAF_FLAGS="$FLT_TAF_FLAGS"' -include $(LOCAL_MPI_HEADERS) -I./mpi_headers/'
-  SVD_TAF_FLAGS="$SVD_TAF_FLAGS"' -include $(LOCAL_MPI_HEADERS) -I./mpi_headers/'
-fi
+#- in case we need to show some MPI code to TAF:
+#if test "x$MPI" != x ; then
+#  AD_TAF_FLAGS="$AD_TAF_FLAGS"' -include $(LOCAL_MPI_HEADERS) -I./mpi_headers/'
+#  FLT_TAF_FLAGS="$FLT_TAF_FLAGS"' -include $(LOCAL_MPI_HEADERS) -I./mpi_headers/'
+#  SVD_TAF_FLAGS="$SVD_TAF_FLAGS"' -include $(LOCAL_MPI_HEADERS) -I./mpi_headers/'
+#fi
 
 DIFF_FLAGS="-toplevel 'the_main_loop'    \
             -input 'xx_theta_dummy       \
