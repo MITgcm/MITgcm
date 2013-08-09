@@ -1,5 +1,5 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fake.F,v 1.1 2013/03/28 17:20:38 gforget Exp $
-C     $Name:  $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fake.F,v 1.2 2013/08/09 22:59:38 jmc Exp $
+C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_EXF
@@ -8,10 +8,9 @@ C     $Name:  $
 
 C     StartOfInterface
       SUBROUTINE SEAICE_FAKE( myTime, myIter, myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE seaice_fake (for adjoint purpose only)        |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -46,7 +45,7 @@ C     i,j,bi,bj - Loop counters
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-c shielding effect          
+c shielding effect
             fac=MIN(1. _d 0, MAX(0. _d 0 , 1. _d 0 - area(i,j,bi,bj)))
             fu(i,j,bi,bj) = fu(i,j,bi,bj) * fac
             fv(i,j,bi,bj) = fv(i,j,bi,bj) * fac
@@ -54,15 +53,18 @@ c shielding effect
             qsw(i,j,bi,bj) = qsw(i,j,bi,bj) * fac
 #if (defined ALLOW_EXF) && (defined ALLOW_ATM_TEMP)
 c the fresh water flux at the top of the ice
-            EmPmR(I,J,bi,bj)  = maskC(I,J,1,bi,bj)*(
-     &         fac * EVAP(I,J,bi,bj)
-     &         - PRECIP(I,J,bi,bj) - RUNOFF(I,J,bi,bj)
+            EmPmR(i,j,bi,bj)  = maskC(i,j,1,bi,bj)*(
+     &         fac * EVAP(i,j,bi,bj)
+     &             - PRECIP(i,j,bi,bj)
+#ifdef ALLOW_RUNOFF
+     &             - RUNOFF(i,j,bi,bj)
+#endif /* ALLOW_RUNOFF */
      &         )*rhoConstFresh
 #endif
 c relaxation to freezing point
             fac=MIN(1. _d 0, MAX(0. _d 0 , area(i,j,bi,bj)))
             tempFrz = SEAICE_tempFrz0 +
-     &                SEAICE_dTempFrz_dS *salt(I,J,1,bi,bj)
+     &                SEAICE_dTempFrz_dS *salt(i,j,1,bi,bj)
             theta(i,j,k,bi,bj)=theta(i,j,k,bi,bj) + fac *
      &        ( tempFrz-theta(i,j,k,bi,bj) ) *
      &        SEAICE_mcPheePiston/drF(1)*SEAICE_deltaTtherm
@@ -78,4 +80,3 @@ c relaxation to freezing point
 
       RETURN
       END
-
