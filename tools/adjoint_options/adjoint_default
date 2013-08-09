@@ -1,10 +1,10 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.35 2013/08/09 12:58:47 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.36 2013/08/09 18:28:36 jmc Exp $
 #  $Name:  $
 
-#  This AD option-file contains the default settings for the adjoint and
-#  tangent-linear compilers.  If you need to change these settings,
+#  This AD option-file contains the default settings for the adjoint
+#  and tangent-linear compilers.  If you need to change these settings,
 #  please make a separate (local) copy of this file.
 
 # TAMC=/data43/ralf/tamc/tamc

@@ -1,11 +1,10 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_f95,v 1.16 2013/08/09 01:04:50 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_f95,v 1.17 2013/08/09 18:28:36 jmc Exp $
 #  $Name:  $
-#
 
-#  This file contains the default settings for the adjoint and
-#  tangent-linear compilers.  If you need to change these settings,
+#  This file contains the default F95 settings for the adjoint
+#  and tangent-linear compilers.  If you need to change these settings,
 #  please make a separate (local) copy of this file.
 
 # TAMC=/data43/ralf/tamc/tamc
@@ -25,9 +24,9 @@ SVD_TAF_FLAGS="-f95 -reverse -forward -pure -i4 -r4 -intrinsic system,flush -l t
 
 #- in case we need to show some MPI code to TAF:
 #if test "x$MPI" != x ; then
-#  AD_TAF_FLAGS="$AD_TAF_FLAGS"' -include $(LOCAL_MPI_HEADERS) -I./mpi_headers/'
-#  FLT_TAF_FLAGS="$FLT_TAF_FLAGS"' -include $(LOCAL_MPI_HEADERS) -I./mpi_headers/'
-#  SVD_TAF_FLAGS="$SVD_TAF_FLAGS"' -include $(LOCAL_MPI_HEADERS) -I./mpi_headers/'
+#  AD_TAF_FLAGS="$AD_TAF_FLAGS"' -mpi -include $(LOCAL_MPI_HEADERS) -I./mpi_headers/'
+#  FLT_TAF_FLAGS="$FLT_TAF_FLAGS"' -mpi -include $(LOCAL_MPI_HEADERS) -I./mpi_headers/'
+#  SVD_TAF_FLAGS="$SVD_TAF_FLAGS"' -mpi -include $(LOCAL_MPI_HEADERS) -I./mpi_headers/'
 #fi
 
 DIFF_FLAGS="-toplevel 'the_main_loop'    \
@@ -57,9 +56,10 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_obcse_dummy       \
                     xx_sst_dummy         \
                     xx_sss_dummy         \
+                    xx_depth_dummy       \
                     xx_diffkr_dummy      \
                     xx_kapgm_dummy       \
-                    xx_kapredi_dummy       \
+                    xx_kapredi_dummy     \
                     xx_bottomdrag_dummy  \
                     xx_efluxy_dummy      \
                     xx_efluxp_dummy      \
@@ -68,14 +68,15 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_uvel_dummy        \
                     xx_vvel_dummy        \
                     xx_etan_dummy        \
-                    xx_gen2d_dummy        \
-                    xx_gen3d_dummy        \
+                    xx_gen2d_dummy       \
+                    xx_gen3d_dummy       \
                     xx_genarr2d_dummy    \
                     xx_genarr3d_dummy    \
                     xx_gentim2d_dummy    \
-                    xx_siarea_dummy        \
-                    xx_siheff_dummy        \
-                    xx_sihsnow_dummy        \
+                    xx_siarea_dummy      \
+                    xx_siheff_dummy      \
+                    xx_sihsnow_dummy     \
+                    xx_shifwflx_dummy    \
                     xx_relaxsst_dummy    \
                     xx_relaxsss_dummy    \
                     xx_atemp_mean_dummy  \
@@ -83,7 +84,7 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_precip_mean_dummy \
                     xx_swdown_mean_dummy \
                     xx_uwind_mean_dummy  \
-                    xx_vwind_mean_dummy'   \
+                    xx_vwind_mean_dummy' \
             -output 'fc'"
 
 AD_TAMC_FLAGS="$AD_TAMC_FLAGS $DIFF_FLAGS"
