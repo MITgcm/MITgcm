@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/port_rand.F,v 1.7 2009/12/08 21:50:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/port_rand.F,v 1.8 2013/08/09 15:00:46 jmc Exp $
 C $Name:  $
 
 #undef _USE_INTEGERS
@@ -162,19 +162,16 @@ C     !LOCAL VARIABLES:
 c     seed=1618033.0d0
 
 C     first generate 2 equally distributed random numbers (-1,1)
-      DO WHILE (1 .EQ. 1)
+      xs = 0.0
+      DO WHILE ( xs.GE.1.0 .OR. xs.EQ.0.0 )
          x1=2.0*port_rand(seed)-1.0
          x2=2.0*port_rand(seed)-1.0
          xs=x1**2+x2**2
-         IF (xs .LT. 1.0 .AND. xs .NE. 0.0) THEN
-            GOTO 100
-         ENDIF
       ENDDO
- 100  CONTINUE
 
       t = SQRT(-2.0*LOG(xs)/xs)
       port_rand_norm = t*x1
-C
+
 C     also t*x2 would be a gaussian random number and could be returned
 
       RETURN
