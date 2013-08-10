@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1908 2013/08/09 14:14:05 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1909 2013/08/10 01:45:09 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - restore (last time on 2011/12/24) ability to compile pkg/seaice with
+    undefined pkg/exf ALLOW_ATM_TEMP or ALLOW_RUNOFF CPP-options.
+  - only call DIAGNOSTICS_FILL when useDiagnostics=T.
 o switch to TAF version-2:
   - add flow directives to "freeze" naming convention for ad-routines that
     are used in I/O routines of adjoint state and associated common blocks
