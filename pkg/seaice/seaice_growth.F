@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.190 2013/08/09 22:14:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.191 2013/08/10 01:34:27 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -198,7 +198,7 @@ C     temporary variables available for the various computations
 #ifdef SEAICE_ITD
       _RL r_QbyATMmult_cover  (1:sNx,1:sNy,MULTDIM)
       _RL r_FWbySublimMult    (1:sNx,1:sNy,MULTDIM)
-c for lateral melt parameterization:
+C for lateral melt parameterization:
       _RL latMeltFrac         (1:sNx,1:sNy,MULTDIM)
       _RL latMeltRate         (1:sNx,1:sNy,MULTDIM)
       _RL floeAlpha
@@ -358,14 +358,14 @@ C conversion factors to go from precip (m/s) unit to HEFF (ice meters)
       convertPRECIP2HI=SEAICE_deltaTtherm*rhoConstFresh/SEAICE_rhoIce
       convertHI2PRECIP = ONE/convertPRECIP2HI
 #ifdef SEAICE_ITD
-c constants for lateral melt parameterization:
-c following Steele (1992), Equ. 2
+C constants for lateral melt parameterization:
+C following Steele (1992), Equ. 2
       floeAlpha                  = 0.66 _d 0
-c typical mean diameter used in CICE 4.1:
-c (this is currently computed as a function of ice concentration
-c  following a suggestion by Luepkes at al. (2012))
-c      floeDiameter               = 300. _d 0
-c parameters needed for variable floe diameter following Luepkes et al. (2012):
+C typical mean diameter used in CICE 4.1:
+C (this is currently computed as a function of ice concentration
+C  following a suggestion by Luepkes at al. (2012))
+C      floeDiameter               = 300. _d 0
+C parameters needed for variable floe diameter following Luepkes et al. (2012):
       floeDiameterMin            = 8. _d 0
       floeDiameterMax            = 300. _d 0
 #endif
@@ -459,7 +459,7 @@ C =====================
             d_HEFFbyFLOODING_ITD(I,J,IT)       = 0.0 _d 0
             r_QbyATMmult_cover(I,J,IT)         = 0.0 _d 0
             r_FWbySublimMult(I,J,IT)           = 0.0 _d 0
-c for lateral melt parameterization:
+C for lateral melt parameterization:
             latMeltFrac(I,J,IT)                = 0.0 _d 0
             latMeltRate(I,J,IT)                = 0.0 _d 0
 #endif
@@ -867,21 +867,21 @@ CADJ STORE HSNWpreTH = comlev1_bibj, key = iicekey, byte = isbyte
 
 #ifdef SEAICE_ITD
           IF (HEFFITDpreTH(I,J,IT) .GT. ZERO) THEN
-cif        regularize AREA with SEAICE_area_reg
+Cif        regularize AREA with SEAICE_area_reg
            tmpscal1 = SQRT(AREAITDpreTH(I,J,IT) * AREAITDpreTH(I,J,IT)
      &                     + area_reg_sq)
-cif        heffActual calculated with the regularized AREA
+Cif        heffActual calculated with the regularized AREA
            tmpscal2 = HEFFITDpreTH(I,J,IT) / tmpscal1
-cif        regularize heffActual with SEAICE_hice_reg (add lower bound)
+Cif        regularize heffActual with SEAICE_hice_reg (add lower bound)
            heffActualMult(I,J,IT) = SQRT(tmpscal2 * tmpscal2
      &                                  + hice_reg_sq)
-cif        hsnowActual calculated with the regularized AREA
+Cif        hsnowActual calculated with the regularized AREA
            hsnowActualMult(I,J,IT) = HSNWITDpreTH(I,J,IT) / tmpscal1
-cif        regularize the inverse of heffActual by hice_reg
+Cif        regularize the inverse of heffActual by hice_reg
            recip_heffActualMult(I,J,IT)  = AREAITDpreTH(I,J,IT) /
      &                 sqrt(HEFFITDpreTH(I,J,IT) * HEFFITDpreTH(I,J,IT)
      &                      + hice_reg_sq)
-cif       Do not regularize when HEFFpreTH = 0
+Cif       Do not regularize when HEFFpreTH = 0
           ELSE
             heffActualMult(I,J,IT) = ZERO
             hsnowActualMult(I,J,IT) = ZERO
@@ -1319,8 +1319,8 @@ C ======================================================
          DO I=1,sNx
           tmpscal1=(theta(I,J,kSurface,bi,bj)-tempFrz)
           tmpscal2=sqrt(0.87 + 0.067*UG(i,j)) * UG(i,j)
-c
-c variable floe diameter following Luepkes et al. (2012, JGR, Equ. 26) with beta=1
+
+C variable floe diameter following Luepkes et al. (2012, JGR, Equ. 26) with beta=1
           tmpscal3=ONE/(ONE-(floeDiameterMin/floeDiameterMax))
           floeDiameter = floeDiameterMin
      &                 * (tmpscal3 / (tmpscal3-AREApreTH(I,J)))
@@ -1329,15 +1329,15 @@ C following the idea of SEAICE_areaLossFormula == 1:
            IF (a_QbyATMmult_cover(i,j,it).LT.ZERO .OR.
      &         a_QbyATM_open(i,j) .LT.ZERO .OR.
      &         a_QbyOCN(i,j)      .LT.ZERO) THEN
-c lateral melt rate as suggested by Perovich, 1983 (PhD thesis)
+C lateral melt rate as suggested by Perovich, 1983 (PhD thesis)
             latMeltRate(i,j,it) = 1.6 _d -6 * tmpscal1**1.36
-c lateral melt rate as suggested by Maykut and Perovich, 1987 (JGR 92(C7)), Equ. 24
+C lateral melt rate as suggested by Maykut and Perovich, 1987 (JGR 92(C7)), Equ. 24
 c            latMeltRate(i,j,it) = 13.5 _d -6 * tmpscal2 * tmpscal1**1.3
-c further suggestion by Maykut and Perovich to avoid latMeltRate -> 0 for UG -> 0
+C further suggestion by Maykut and Perovich to avoid latMeltRate -> 0 for UG -> 0
 c            latMeltRate(i,j,it) = (1.6 _d -6 + 13.5 _d -6 * tmpscal2)
 c     &                          * tmpscal1**1.3
-c factor determining fraction of area and ice volume reduction
-c due to lateral melt
+C factor determining fraction of area and ice volume reduction
+C due to lateral melt
             latMeltFrac(i,j,it) =
      &       latMeltRate(i,j,it)*SEAICE_deltaTtherm*PI /
      &       (floeAlpha * floeDiameter)
@@ -1554,7 +1554,7 @@ Cgf warming conditions, the lab_sea results were not changed.
      &              + d_HEFFbyOCNonICE_ITD(I,J,IT)
            tmpscal2 = MAX(-tmpscal1,
      &                     r_QbyATMmult_cover(I,J,IT)
-c         Limit ice growth by potential melt by ocean
+C         Limit ice growth by potential melt by ocean
      &              + AREAITDpreTH(I,J,IT) * r_QbyOCN(I,J))
            d_HEFFbyATMonOCN_cover_ITD(I,J,IT) = tmpscal2
            d_HEFFbyATMonOCN_cover(I,J) = d_HEFFbyATMonOCN_cover(I,J)
@@ -1890,15 +1890,15 @@ C       i.e. change sin AREA only occur when all ice in a category is melted
             IF (HEFFITD(I,J,IT,bi,bj).LE.ZERO) THEN
              AREAITD(I,J,IT,bi,bj)=ZERO
             ELSE
-c            actual ice thickness from previous time step
-c            (actual ice thickness not to increase because of lateral melt!)
+C            actual ice thickness from previous time step
+C            (actual ice thickness not to increase because of lateral melt!)
              tmpscal1=HEFFITDpreTH(I,J,IT)/AREAITDpreTH(I,J,IT)
-c            melt ice laterally based on an average floe sice
-c            following Steele (1992)
+C            melt ice laterally based on an average floe sice
+C            following Steele (1992)
              AREAITD(I,J,IT,bi,bj) = AREAITD(I,J,IT,bi,bj)
      &                             * (ONE - latMeltFrac(I,J,IT))
              AREAITD(I,J,IT,bi,bj) = max(ZERO,AREAITD(I,J,IT,bi,bj))
-c            limit area reduction so that actual ice thickness does not increase
+C            limit area reduction so that actual ice thickness does not increase
              AREAITD(I,J,IT,bi,bj) = max(AREAITD(I,J,IT,bi,bj),
      &                                   HEFFITD(I,J,IT,bi,bj)/tmpscal1)
             ENDIF
@@ -2204,7 +2204,7 @@ CADJ STORE d_HSNWbyATMonSNW = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE theta(:,:,kSurface,bi,bj) = comlev1_bibj,
 CADJ &                       key = iicekey, byte = isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
-cgf Unlike for evap and precip, the temperature of gained/lost
+Cgf Unlike for evap and precip, the temperature of gained/lost
 C ocean liquid water due to melt/freeze of solid water cannot be chosen
 C arbitrarily to be e.g. the ocean SST. Indeed the present seaice model
 C implies a constant ice temperature of 0degC. If melt/freeze water is exchanged
@@ -2250,8 +2250,10 @@ C remove the mismatch when real fresh water is exchanged (at 0degC here)
          ENDDO
         ENDDO
 #ifdef ALLOW_DIAGNOSTICS
-        CALL DIAGNOSTICS_FILL(DIAGarrayA,
-     &      'SIaaflux',0,1,3,bi,bj,myThid)
+        IF ( useDiagnostics ) THEN
+          CALL DIAGNOSTICS_FILL(DIAGarrayA,
+     &        'SIaaflux',0,1,3,bi,bj,myThid)
+        ENDIF
 #endif
 #endif /* ndef SEAICE_DISABLE_HEATCONSFIX */
 
@@ -2259,7 +2261,7 @@ C compute the net heat flux, incl. adv. by water, entering ocean+ice
 C ===================================================================
         DO J=1,sNy
          DO I=1,sNx
-cgf 1) SIatmQnt (analogous to qnet; excl. adv. by water exch.)
+Cgf 1) SIatmQnt (analogous to qnet; excl. adv. by water exch.)
 CML If I consider the atmosphere above the ice, the surface flux
 CML which is relevant for the air temperature dT/dt Eq
 CML accounts for sensible and radiation (with different treatment
@@ -2271,7 +2273,7 @@ CML the ice-ocean system.
      &            maskC(I,J,kSurface,bi,bj)*convertHI2Q*(
      &            a_QSWbyATM_cover(I,J) +
      &            a_QbyATM_cover(I,J) + a_QbyATM_open(I,J) )
-cgf 2) SItflux (analogous to tflux; includes advection by water
+Cgf 2) SItflux (analogous to tflux; includes advection by water
 C             exchanged between atmosphere and ocean+ice)
 C solid water going to atm, in precip units
            tmpscal1 = rhoConstFresh*maskC(I,J,kSurface,bi,bj)
@@ -2335,7 +2337,7 @@ C     If r_FWbySublim>0, then it is evaporated from ocean.
 #endif /* ALLOW_RUNOFF */
      &         + tmpscal1*convertHI2PRECIP
      &         )*rhoConstFresh
-c and the flux leaving/entering the ocean+ice
+C and the flux leaving/entering the ocean+ice
            SIatmFW(I,J,bi,bj) = maskC(I,J,kSurface,bi,bj)*(
      &          EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
      &          - PRECIP(I,J,bi,bj)
@@ -2428,7 +2430,7 @@ C ==============================================================
           ENDDO
          ENDDO
         ENDIF
-c to translate global mean FWF adjustements (see below) we may need :
+C to translate global mean FWF adjustements (see below) we may need :
         FWF2HFsiTile(bi,bj) = 0. _d 0
         IF ( balanceEmPmR.AND.(temp_EvPrRn.EQ.UNSET_RL) ) THEN
          DO j=1,sNy
@@ -2544,7 +2546,7 @@ C ===================================================================
 
 #ifdef ALLOW_BALANCE_FLUXES
 
-c 1)  global sums
+C 1)  global sums
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE FWFsiTile = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE HFsiTile = comlev1, key=ikey_dynamics, kind=isbyte
@@ -2563,18 +2565,18 @@ CADJ STORE FWF2HFsiTile = comlev1, key=ikey_dynamics, kind=isbyte
       IF ( balanceQnet )
      &   CALL GLOBAL_SUM_TILE_RL( HFsiTile, HFsiGlob, myThid )
 
-c 2) global means
-c mean SIatmFW
+C 2) global means
+C mean SIatmFW
       tmpscal0=FWFsiGlob / globalArea
-c corresponding mean advection by atm to ocean+ice water exchange
-c        (if mean SIatmFW was removed uniformely from ocean)
+C corresponding mean advection by atm to ocean+ice water exchange
+C        (if mean SIatmFW was removed uniformely from ocean)
       tmpscal1=FWFsiGlob / globalArea * FWF2HFsiGlob / globalArea
-c mean SItflux (before potential adjustement due to SIatmFW)
+C mean SItflux (before potential adjustement due to SIatmFW)
       tmpscal2=HFsiGlob / globalArea
-c mean SItflux (after potential adjustement due to SIatmFW)
+C mean SItflux (after potential adjustement due to SIatmFW)
       IF ( balanceEmPmR ) tmpscal2=tmpscal2-tmpscal1
 
-c 3) balancing adjustments
+C 3) balancing adjustments
       IF ( balanceEmPmR ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -2582,7 +2584,7 @@ c 3) balancing adjustments
           DO i=1-OLx,sNx+OLx
             empmr(i,j,bi,bj) = empmr(i,j,bi,bj) - tmpscal0
             SIatmFW(i,j,bi,bj) = SIatmFW(i,j,bi,bj) - tmpscal0
-c           adjust SItflux consistently
+C           adjust SItflux consistently
             IF ( (temp_EvPrRn.NE.UNSET_RL).AND.
      &        useRealFreshWaterFlux.AND.(nonlinFreeSurf.NE.0) ) THEN
             tmpscal1=
@@ -2598,7 +2600,7 @@ c           adjust SItflux consistently
             tmpscal1=ZERO
             ENDIF
             SItflux(i,j,bi,bj) = SItflux(i,j,bi,bj) - tmpscal0*tmpscal1
-c           no qnet or tflux adjustement is needed
+C           no qnet or tflux adjustement is needed
           ENDDO
          ENDDO
         ENDDO
@@ -2636,16 +2638,18 @@ c           no qnet or tflux adjustement is needed
 #endif /* ALLOW_BALANCE_FLUXES */
 
 #ifdef ALLOW_DIAGNOSTICS
-c these diags need to be done outside of the bi,bj loop so that
-c we may do potential global mean adjustement to them consistently.
-      CALL DIAGNOSTICS_FILL(SItflux,
-     &      'SItflux ',0,1,0,1,1,myThid)
-      CALL DIAGNOSTICS_FILL(SIatmQnt,
-     &      'SIatmQnt',0,1,0,1,1,myThid)
-c SIatmFW follows the same convention as empmr -- SIatmFW diag does not
-      tmpscal1= - 1. _d 0
-      CALL DIAGNOSTICS_SCALE_FILL(SIatmFW,
-     &      tmpscal1,1,'SIatmFW ',0,1,0,1,1,myThid)
+      IF ( useDiagnostics ) THEN
+C these diags need to be done outside of the bi,bj loop so that
+C we may do potential global mean adjustement to them consistently.
+        CALL DIAGNOSTICS_FILL(SItflux,
+     &        'SItflux ',0,1,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(SIatmQnt,
+     &        'SIatmQnt',0,1,0,1,1,myThid)
+C SIatmFW follows the same convention as empmr -- SIatmFW diag does not
+        tmpscal1= - 1. _d 0
+        CALL DIAGNOSTICS_SCALE_FILL(SIatmFW,
+     &        tmpscal1,1,'SIatmFW ',0,1,0,1,1,myThid)
+      ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
 #else  /* ALLOW_EXF and ALLOW_ATM_TEMP */
