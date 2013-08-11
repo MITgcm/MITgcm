@@ -1,6 +1,6 @@
 # Packages
  &PACKAGES
  usePTRACERS=.TRUE.,
- useDIAGNOSTICS=.TRUE.,
+ useDiagnostics=.TRUE.,
  useMNC=.TRUE.,
  &

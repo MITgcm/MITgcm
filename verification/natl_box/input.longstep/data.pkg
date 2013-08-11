@@ -3,6 +3,6 @@
   useGMRedi=.TRUE.,
   useKPP=.TRUE.,
   useECCO=.FALSE.,
-  usediagnostics=.TRUE.,
+  useDiagnostics=.TRUE.,
   usePTRACERS=.TRUE.,
  &

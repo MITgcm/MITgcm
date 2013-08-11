@@ -1,7 +1,7 @@
 # Packages
  &PACKAGES
- useFIZHI=.TRUE.,
- useGRIDALT=.TRUE.,
+ useFizhi=.TRUE.,
+ useGridAlt=.TRUE.,
  useSHAP_FILT=.TRUE.,
- useDIAGNOSTICS=.TRUE.,
+ useDiagnostics=.TRUE.,
  &

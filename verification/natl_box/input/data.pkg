@@ -3,5 +3,5 @@
   useGMRedi=.FALSE.,
   useKPP=.TRUE.,
   useECCO=.FALSE.,
-  usediagnostics=.TRUE.,
+  useDiagnostics=.TRUE.,
  &

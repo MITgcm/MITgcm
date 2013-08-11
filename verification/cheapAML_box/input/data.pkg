@@ -1,6 +1,6 @@
 # Packages
  &PACKAGES
   useCheapAML=.TRUE.,
-  useDIAGNOSTICS=.TRUE.,
+  useDiagnostics=.TRUE.,
   useMNC=.TRUE.,
  &

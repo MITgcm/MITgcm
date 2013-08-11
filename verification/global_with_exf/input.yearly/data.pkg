@@ -4,6 +4,6 @@
   useGMRedi      = .TRUE.,
   useFRAZIL      = .TRUE.,
   useBBL         = .TRUE.,
-  usediagnostics = .TRUE.,
+  useDiagnostics = .TRUE.,
  &
-  
+
