@@ -1,65 +1,72 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_radiat.F,v 1.6 2010/10/26 20:59:54 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_radiat.F,v 1.7 2013/08/11 05:03:39 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
 
+C--  File phy_radiat.F:
+C--   Contents
+C--   o SOL_OZ
+C--   o RADSW
+C--   o RADLW
+C--   o RADSET
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: SOL_OZ (SOLC,TYEAR)
+C !INTERFACE:
       SUBROUTINE SOL_OZ (SOLC, TYEAR, SLAT, CLAT,
      O                   FSOL, OZONE, OZUPP, ZENIT, STRATZ,
      I                   bi, bj, myThid)
+C !DESCRIPTION: \bv
+C   Purpose: Compute the flux of incoming solar radiation
+C            and a climatological ozone profile for SW absorption
+C   Input:   SOLC   = solar constant (area averaged)
+C            TYEAR  = time as fraction of year (0-1, 0 = 1jan.h00)
+C            SLAT   = sin(lat)
+C            CLAT   = cos(lat)
+C   Output:  FSOL   = flux of incoming solar radiation
+C            OZONE  = flux absorbed by ozone (lower stratos.)
+C            OZUPP  = flux absorbed by ozone (upper stratos.)
+C            ZENIT  = function of solar zenith angle
+C            STRATZ = ?
+C   Updated common blocks: RADZON
+C *==========================================================*
+C \ev
 
-C--
-C--   SUBROUTINE SOL_OZ (SOLC,TYEAR)
-C--
-C--   Purpose: Compute the flux of incoming solar radiation
-C--            and a climatological ozone profile for SW absorption
-C--   Input:   SOLC   = solar constant (area averaged)
-C--            TYEAR  = time as fraction of year (0-1, 0 = 1jan.h00)
-C              SLAT   = sin(lat)
-C              CLAT   = cos(lat)
-C--   Output:  FSOL   = flux of incoming solar radiation
-C--            OZONE  = flux absorbed by ozone (lower stratos.)
-C--            OZUPP  = flux absorbed by ozone (upper stratos.)
-C--            ZENIT  = function of solar zenith angle
-C--            STRATZ = ?
-C--   Updated common blocks: RADZON
-C--
-
+C !USES:
       IMPLICIT NONE
 
 C     Resolution parameters
-
 C-- size for MITgcm & Physics package :
 #include "AIM_SIZE.h"
 
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "AIM_PARAMS.h"
 
 C     Constants + functions of sigma and latitude
 #include "com_physcon.h"
-
 C     Radiation constants
 #include "com_radcon.h"
 
-C-- Routine arguments:
+C !INPUT/OUTPUT PARAMETERS:
       INTEGER  bi, bj, myThid
       _RL SOLC, TYEAR
       _RL SLAT(NGP), CLAT(NGP)
       _RL FSOL(NGP), OZONE(NGP), OZUPP(NGP), ZENIT(NGP), STRATZ(NGP)
+CEOP
 
 #ifdef ALLOW_AIM
-
-C-- Local variables:
+C !LOCAL VARIABLES:
       INTEGER J, NZEN
-
-C- jmc: declare all local variables:
       _RL ALPHA, CSR1, CSR2, COZ1, COZ2
       _RL AZEN, RZEN, CZEN, SZEN, AST, FS0, FLAT2
 #ifdef ALLOW_INSOLATION
-      _RL TanDelcl, cosH, HourAng, TanLat 
-      _RL PI, LargeTan
-      PI = 3.14159265358979323844 _d 0
-      LargeTan = 1. _d 16
+      _RL TanDelcl, cosH, HourAng, TanLat
+      _RL largeTan
+      largeTan = 1. _d 16
 #endif
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     ALPHA = year phase ( 0 - 2pi, 0 = winter solstice = 22dec.h00 )
@@ -78,9 +85,9 @@ C
       RZEN = ASIN( SZEN )
       CZEN =  COS( RZEN )
       IF ( SZEN .EQ. 1. _d 0 ) THEN
-         TanDelcl = LargeTan
+         TanDelcl = largeTan
       ELSEIF ( SZEN .EQ. -1. _d 0 ) THEN
-         TanDelcl =-LargeTan
+         TanDelcl =-largeTan
       ELSE
          TanDelcl = SZEN / CZEN
       ENDIF
@@ -104,9 +111,9 @@ C       solar radiation at the top
      &     MAX( 0. _d 0, 1. _d 0+CSR1*SLAT(J)+CSR2*FLAT2 )
 #else
         IF ( CLAT(J) .EQ. 0. _d 0 ) THEN
-           TanLat = sign(1. _d 0, SLAT(J) ) * LargeTan
+           TanLat = SIGN(1. _d 0, SLAT(J) ) * largeTan
         ELSE
-           TanLat = SLAT(J)/CLAT(J) 
+           TanLat = SLAT(J)/CLAT(J)
         ENDIF
         cosH     = - TanLat * TanDelcl
         cosH     = MAX(MIN(cosH,1. _d 0), -1. _d 0)
@@ -132,44 +139,46 @@ C       ozone absorption in upper and lower stratosphere
       ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
         CALL DIAGNOSTICS_FILL( FSOL,
      &                        'FSOL    ', 1, 1, 3,bi,bj, myThid )
+      ENDIF
 #endif
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #endif /* ALLOW_AIM */
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+CBOP
+C !ROUTINE: RADSW (PSA,QA,RH,ALB,
+C    &             ICLTOP,CLOUDC,FTOP,FSFC,DFABS)
+C !INTERFACE:
       SUBROUTINE RADSW (PSA,dpFac,QA,RH,ALB,
      I                  FSOL, OZONE, OZUPP, ZENIT, STRATZ,
      O                  TAU2, STRATC,
      O                  ICLTOP,CLOUDC,FTOP,FSFC,UPSWG,DFABS,
      I                  kGrd,bi,bj,myThid)
-C--
-C--   SUBROUTINE RADSW (PSA,QA,RH,ALB,
-C--  &                  ICLTOP,CLOUDC,FTOP,FSFC,DFABS)
-C--
-C--   Purpose: Compute the absorption of shortwave radiation and
-C--            initialize arrays for longwave-radiation routines
-C--   Input:   PSA    = norm. surface pressure [p/p0]           (2-dim)
-C              dpFac  = cell delta_P fraction                   (3-dim)
-C--            QA     = specific humidity [g/kg]                (3-dim)
-C--            RH     = relative humidity                       (3-dim)
-C--            ALB    = surface albedo                          (2-dim)
-C--   Output:  ICLTOP = cloud top level                             (2-dim)
-C--            CLOUDC = total cloud cover                           (2-dim)
-C--            FTOP   = net downw. flux of sw rad. at the atm. top  (2-dim)
-C--            FSFC   = net downw. flux of sw rad. at the surface   (2-dim)
-C--            UPSWG  = upward flux of sw rad. at the surface       (2-dim)
-C--            DFABS  = flux of sw rad. absorbed by each atm. layer (3-dim)
-C    Input:    kGrd   = Ground level index                      (2-dim)
-C              bi,bj  = tile index
-C              myThid = Thread number for this instance of the routine 
-C--
+C !DESCRIPTION: \bv
+C   Purpose: Compute the absorption of shortwave radiation and
+C            initialize arrays for longwave-radiation routines
+C   Input:   PSA    = norm. surface pressure [p/p0]           (2-dim)
+C            dpFac  = cell delta_P fraction                   (3-dim)
+C            QA     = specific humidity [g/kg]                (3-dim)
+C            RH     = relative humidity                       (3-dim)
+C            ALB    = surface albedo                          (2-dim)
+C   Output:  ICLTOP = cloud top level                             (2-dim)
+C            CLOUDC = total cloud cover                           (2-dim)
+C            FTOP   = net downw. flux of sw rad. at the atm. top  (2-dim)
+C            FSFC   = net downw. flux of sw rad. at the surface   (2-dim)
+C            UPSWG  = upward flux of sw rad. at the surface       (2-dim)
+C            DFABS  = flux of sw rad. absorbed by each atm. layer (3-dim)
+C  Input:    kGrd   = Ground level index                      (2-dim)
+C            bi,bj  = tile index
+C            myThid = Thread number for this instance of the routine
 
+C !USES:
       IMPLICIT NONE
 
 C     Resolution parameters
@@ -178,16 +187,14 @@ C-- size for MITgcm & Physics package :
 #include "AIM_SIZE.h"
 
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 
 C     Constants + functions of sigma and latitude
-
 #include "com_physcon.h"
-
 C     Radiation parameters
-
 #include "com_radcon.h"
 
-C-- Routine arguments:
+C !INPUT/OUTPUT PARAMETERS:
       _RL PSA(NGP),dpFac(NGP,NLEV),QA(NGP,NLEV),RH(NGP,NLEV)
       _RL ALB(NGP,0:3)
       INTEGER  ICLTOP(NGP)
@@ -200,31 +207,29 @@ c     _RL FLUX(NGP,4)
 
       INTEGER  kGrd(NGP)
       INTEGER  bi, bj, myThid
+CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AIM
-
-C-- Local variables:
+C !LOCAL VARIABLES:
 c     _RL  QCLOUD(NGP), ACLOUD(NGP), PSAZ(NGP),
       _RL  QCLOUD(NGP), ACLOUD(NGP),
      &     ALBTOP(NGP,NLEV), FREFL(NGP,NLEV), FLUX(NGP,2)
 #ifdef ALLOW_CLOUD_3D
-C_DE           CLDCLW = Local cloud cover                           (3-dim)
+C_DE       CLDCLW = Local cloud cover                           (3-dim)
       _RL CLDCLW(NGP,NLEV), ACLDLW(NGP,NLEV)
 #endif
 
-C-  jmc: define "FLUX" as a local variable & remove Equivalences: 
+C-  jmc: define "FLUX" as a local variable & remove Equivalences:
 c     EQUIVALENCE (ALBTOP(1,1),TAU2(1,1,3))
 c     EQUIVALENCE ( FREFL(1,1),TAU2(1,1,4))
-
       INTEGER NL1(NGP)
       INTEGER K, J
       LOGICAL makeClouds
-
-C- jmc: declare local variables:
       _RL FBAND1, FBAND2, RRCL, RQCL, DQACL, QACL3
       _RL ABS1, DELTAP
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       FBAND2=0.05 _d 0
@@ -482,67 +487,66 @@ c_FM     DELTAP=PSA(J)*DSIG(K)
       ENDDO
 
 #if (defined ALLOW_CLOUD_3D && defined ALLOW_DIAGNOSTICS)
+      IF ( useDiagnostics ) THEN
         CALL DIAGNOSTICS_FILL( CLDCLW,
      &                        'CLDCLW  ',-1, Nr, 3,bi,bj, myThid )
+      ENDIF
 #endif
 
-C
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AIM */
 
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+CBOP
+C !ROUTINE: RADLW (IMODE,TA,TS,ST4S,
+C    &             FTOP,FSFC,DFABS)
+C !INTERFACE:
       SUBROUTINE RADLW (IMODE,TA,TS,ST4S,
      I                  OZUPP, STRATC, TAU2,
      &                  FLUX, ST4A,
      &                  FTOP,FSFC,DFABS,
      I                  kGrd,bi,bj,myThid)
-C--
-C--   SUBROUTINE RADLW (IMODE,TA,TS,ST4S,
-C--  &                  FTOP,FSFC,DFABS)
-C--
-C--   Purpose: Compute the absorption of longwave radiation
-C--   Input:   IMODE  = index for operation mode
-C--                     -1 : downward flux only
-C--                      0 : downward + upward flux
-C--                     +1 : upward flux only
-C--            TA     = absolute temperature (3-dim)
-C--            TS     = surface temperature                  [if IMODE=0,1]
-C--            ST4S   = surface blackbody emission             [if IMODE=1]
-C--            FSFC   = FSFC  output from RADLW(-1,... )       [if IMODE=1]
-C--            DFABS  = DFABS output from RADLW(-1,... )       [if IMODE=1]
-C--   Output:  ST4S   = surface blackbody emission             [if IMODE=0]
-C--            FTOP   = outgoing flux of lw rad. at the top  [if IMODE=0,1]
-C--            FSFC   = downward flux of lw rad. at the sfc. [if IMODE= -1]
-C--                     net upw. flux of lw rad. at the sfc. [if IMODE=0,1]
-C--            DFABS  = flux of lw rad. absorbed by each atm. layer (3-dim)
-C    Input:    kGrd   = Ground level index                      (2-dim)
-C              bi,bj  = tile index
-C              myThid = Thread number for this instance of the routine 
-C--
 
+C !DESCRIPTION: \bv
+C   Purpose: Compute the absorption of longwave radiation
+C   Input:   IMODE  = index for operation mode
+C                     -1 : downward flux only
+C                      0 : downward + upward flux
+C                     +1 : upward flux only
+C            TA     = absolute temperature (3-dim)
+C            TS     = surface temperature                  [if IMODE=0,1]
+C            ST4S   = surface blackbody emission             [if IMODE=1]
+C            FSFC   = FSFC  output from RADLW(-1,... )       [if IMODE=1]
+C            DFABS  = DFABS output from RADLW(-1,... )       [if IMODE=1]
+C   Output:  ST4S   = surface blackbody emission             [if IMODE=0]
+C            FTOP   = outgoing flux of lw rad. at the top  [if IMODE=0,1]
+C            FSFC   = downward flux of lw rad. at the sfc. [if IMODE= -1]
+C                     net upw. flux of lw rad. at the sfc. [if IMODE=0,1]
+C            DFABS  = flux of lw rad. absorbed by each atm. layer (3-dim)
+C  Input:    kGrd   = Ground level index                      (2-dim)
+C            bi,bj  = tile index
+C            myThid = Thread number for this instance of the routine
+
+C !USES:
       IMPLICIT NONE
 
 C     Resolution parameters
-
 C-- size for MITgcm & Physics package :
 #include "AIM_SIZE.h"
-
 #include "EEPARAMS.h"
 
 C     Number of radiation bands with tau < 1
 c     INTEGER NBAND
 c     PARAMETER ( NBAND=4 )
-
 C     Constants + functions of sigma and latitude
 #include "com_physcon.h"
-
 C     Radiation parameters
 #include "com_radcon.h"
 
-C-- Routine arguments:
+C !INPUT/OUTPUT PARAMETERS:
       INTEGER IMODE
       _RL TA(NGP,NLEV), TS(NGP), ST4S(NGP)
       _RL FTOP(NGP), FSFC(NGP), DFABS(NGP,NLEV)
@@ -551,16 +555,15 @@ C-- Routine arguments:
 
       INTEGER kGrd(NGP)
       INTEGER bi,bj,myThid
+CEOP
 
 #ifdef ALLOW_AIM
-
-C-- Local variables:
+C !LOCAL VARIABLES:
       INTEGER K, J, JB
 c     INTEGER J0, Jl, I2
       INTEGER NL1(NGP)
-
-C- jmc: declare all local variables:
       _RL REFSFC, BRAD, EMIS
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       DO J=1,NGP
@@ -724,40 +727,40 @@ C     4.4  Outgoing longwave radiation
         FTOP(J)=FTOP(J)+OZUPP(J)
       ENDDO
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AIM */
 
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+CBOP
+C !ROUTINE: RADSET
+C !INTERFACE:
       SUBROUTINE RADSET( myThid )
 
-C--
-C--   SUBROUTINE RADSET
-C--
-C--   Purpose: compute energy fractions in LW bands
-C--            as a function of temperature
-C--   Initialized common blocks: RADFIX
+C !DESCRIPTION: \bv
+C   Purpose: compute energy fractions in LW bands
+C            as a function of temperature
+C   Initialized common blocks: RADFIX
 
+C !USES:
       IMPLICIT NONE
 
 C     Resolution parameters
-
 C-- size for MITgcm & Physics package :
 #include "AIM_SIZE.h"
- 
 #include "EEPARAMS.h"
 
 C     Radiation constants
 #include "com_radcon.h"
 
-C-- Routine arguments:
+C !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_AIM
-
-C-- Local variables:
+C !LOCAL VARIABLES:
       INTEGER JTEMP, JB
       _RL EPS3
 
@@ -770,7 +773,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         FBAND(JTEMP,2)= 0.148 _d 0 - 3.0 _d -6 *(JTEMP-247)**2
         FBAND(JTEMP,3)=(0.375 _d 0 - 5.5 _d -6 *(JTEMP-282)**2)*EPS3
         FBAND(JTEMP,4)= 0.314 _d 0 + 1.0 _d -5 *(JTEMP-315)**2
-        FBAND(JTEMP,1)= 1. _d 0 -(FBAND(JTEMP,0)+FBAND(JTEMP,2) 
+        FBAND(JTEMP,1)= 1. _d 0 -(FBAND(JTEMP,0)+FBAND(JTEMP,2)
      &                           +FBAND(JTEMP,3)+FBAND(JTEMP,4))
       ENDDO
 
@@ -783,7 +786,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         ENDDO
       ENDDO
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AIM */
 
       RETURN
