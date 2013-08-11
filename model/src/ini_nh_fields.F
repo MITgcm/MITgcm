@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_nh_fields.F,v 1.5 2013/07/28 21:06:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_nh_fields.F,v 1.6 2013/08/11 20:23:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -41,9 +41,12 @@ C     myThid  :: My Thread Id number
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER bi,bj
-      INTEGER i,j,k
+      INTEGER i,j
       INTEGER ks
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef NONLIN_FRSURF
+      INTEGER k
+#endif
 CEOP
 
       IF ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0

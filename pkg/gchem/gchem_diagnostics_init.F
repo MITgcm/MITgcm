@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_diagnostics_init.F,v 1.6 2013/07/01 23:15:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_diagnostics_init.F,v 1.7 2013/08/11 20:28:07 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -30,8 +30,8 @@ CEOP
 C     Functions ::
       INTEGER     ILNBLNK
       EXTERNAL    ILNBLNK
-      CHARACTER*4 GAD_DIAG_SUFX
-      EXTERNAL    GAD_DIAG_SUFX
+c     CHARACTER*4 GAD_DIAG_SUFX
+c     EXTERNAL    GAD_DIAG_SUFX
 
 C     !LOCAL VARIABLES:
       INTEGER       diagNum
@@ -40,17 +40,15 @@ C     !LOCAL VARIABLES:
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
 
-      INTEGER      iTrc, ilnb, tracerId
+      INTEGER      iTrc, ilnb
       CHARACTER*7  trcUnits
-      CHARACTER*9  flxUnits, wUnits
       CHARACTER*30 locName
-      CHARACTER*4  diagSufx
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C     Define diagnostics Names :
 
+C--   Define diagnostics Names :
       DO iTrc=1,PTRACERS_num
-C--    Set default name & tracer Units:
+C-     Set default name & tracer Units:
        WRITE(locName,'(A,I4,A)') 'Tracer ',iTrc
        trcUnits  = '(kg/kg)'
 C-     use name & units from data.ptracers :
@@ -82,7 +80,7 @@ C-     use name & units from data.ptracers :
 
       ENDDO
 
-C     diagnostics should be initialized in each package called by gchem
+C--   Other diagnostics should be initialized in each package called by gchem
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
