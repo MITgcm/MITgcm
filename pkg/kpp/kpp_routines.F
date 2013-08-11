@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.49 2012/07/04 20:23:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.50 2013/08/11 02:38:18 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -511,8 +511,10 @@ c
       end do
 
 #ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
          CALL DIAGNOSTICS_FILL(KPPBFSFC,'KPPbfsfc',0,Nr,2,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(KPPRi   ,'KPPRi   ',0,Nr,2,bi,bj,myThid)
+      ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
 cph(
@@ -887,7 +889,6 @@ C     break data flow dependence on diffus
          enddo
       enddo
 #endif
-
 
       do ki = 1, Nr
          do i = 1, imt
@@ -1675,7 +1676,6 @@ c     compute arrays for K = Nrp1
       RETURN
       END
 
-
 c*************************************************************************
 
       SUBROUTINE KPP_DOUBLEDIFF (
@@ -1723,9 +1723,8 @@ c-------------- Routine arguments -----------------------------------------
 
       _RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
       _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
-      _RL KappaRT( 1-Olx:sNx+Olx, 1-Oly:sNy+Oly, Nr   )
-      _RL KappaRS( 1-Olx:sNx+Olx, 1-Oly:sNy+Oly, Nr   )
-
+      _RL KappaRT( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr   )
+      _RL KappaRS( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr   )
 
 #ifdef ALLOW_KPP
 
@@ -1767,8 +1766,8 @@ CML#endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
 
       DO K = 1, Nr
        Km1 = MAX(K-1,1)
-       DO J = 1-Oly, sNy+Oly
-        DO I = 1-Olx, sNx+Olx
+       DO J = 1-OLy, sNy+OLy
+        DO I = 1-OLx, sNx+OLx
          alphaDT(I,J) = ( theta(I,J,Km1,bi,bj)-theta(I,J,K,bi,bj) )
      &        * 0.5 _d 0 * ABS( TTALPHA(I,J,Km1) + TTALPHA(I,J,K) )
          betaDS(I,J)  = ( salt(I,J,Km1,bi,bj)-salt(I,J,K,bi,bj) )
@@ -1821,8 +1820,8 @@ C     to shear instability will dominate
 C     ENDIF ( K .GT. 1 )
        ENDIF
 C
-       DO J = 1-Oly, sNy+Oly
-        DO I = 1-Olx, sNx+Olx
+       DO J = 1-OLy, sNy+OLy
+        DO I = 1-OLx, sNx+OLx
          kappaRT(I,J,K) = kappaRT(I,J,K) + nuddt(I,J)
          kappaRS(I,J,K) = kappaRS(I,J,K) + nudds(I,J)
         ENDDO
