@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.270 2013/07/30 18:18:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.271 2013/08/11 14:27:37 jmc Exp $
 C $Name:  $
 C
 
@@ -13,9 +13,6 @@ C     model standard input file are stored into the variables held
 C     here. Notes describing the parameters can also be found here.
 
 CEOP
-
-C     Macros for special grid options
-#include "PARAMS_MACROS.h"
 
 C--   Contants
 C     Useful physical values
