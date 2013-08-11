@@ -1,13 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1909 2013/08/10 01:45:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1910 2013/08/11 16:12:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/inc:
+  - move FCORI_MACROS.h from PARAMS(_MACROS).h to GRID_MACROS.h (left from
+    8 yrs ago modif when Coriolis arrays were moved from PARAMS.h to GRID.h)
+o pkg/kpp & aim_v23:
+  - only call DIAGNOSTICS_FILL when useDiagnostics=TRUE.
 o pkg/seaice:
   - restore (last time on 2011/12/24) ability to compile pkg/seaice with
     undefined pkg/exf ALLOW_ATM_TEMP or ALLOW_RUNOFF CPP-options.
-  - only call DIAGNOSTICS_FILL when useDiagnostics=T.
+  - only call DIAGNOSTICS_FILL when useDiagnostics=TRUE.
+o eesupp/src:
+  - fix check for overlap-size argument (myOLn.GT.MAX_OLY_EXCH)
+    in exch1_rx[_ad].template (thanks to Francois Lefeuvre report).
 o switch to TAF version-2:
   - add flow directives to "freeze" naming convention for ad-routines that
     are used in I/O routines of adjoint state and associated common blocks
