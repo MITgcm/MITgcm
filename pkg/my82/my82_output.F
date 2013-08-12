@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_output.F,v 1.2 2010/01/03 19:10:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_output.F,v 1.3 2013/08/12 00:05:44 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -223,7 +223,9 @@ C-    end if MYtaveFreq > 0
 #endif /* ALLOW_TIMEAVE */
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
+C- note: should move this part to S/R MY82_CALC (like we do in pkg/ggl90)
+C     do not fill during call from INITIALISE_VARIA
+      IF ( useDiagnostics .AND. myIter.NE.nIter0 ) THEN
        CALL DIAGNOSTICS_FILL(MYviscAr,'MYVISCAR',0,Nr,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(MYdiffKr,'MYDIFFKR',0,Nr,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(MYhbl   ,'MYHBL   ',0,1 ,0,1,1,myThid)

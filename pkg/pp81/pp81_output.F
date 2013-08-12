@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_output.F,v 1.3 2011/10/26 09:29:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_output.F,v 1.4 2013/08/12 00:05:12 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
@@ -161,7 +161,9 @@ C-    end if PPtaveFreq > 0
 #endif /* ALLOW_TIMEAVE */
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
+C- note: should move this part to S/R MY82_CALC (like we do in pkg/ggl90)
+C     do not fill during call from INITIALISE_VARIA
+      IF ( useDiagnostics .AND. myIter.NE.nIter0 ) THEN
        CALL DIAGNOSTICS_FILL(PPviscAr,'PPviscAr',0,Nr,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(PPdiffKr,'PPdiffKr',0,Nr,0,1,1,myThid)
       ENDIF
