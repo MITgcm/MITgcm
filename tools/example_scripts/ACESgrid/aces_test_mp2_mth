@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_mp2.stderr
 #PBS -o /home/jmc/test_aces/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.18 2013/06/13 22:01:34 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.19 2013/08/12 19:29:12 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for MPI+Multi-Threaded test using ifort (v9) & mpich2
@@ -79,6 +79,8 @@ if [ $checkOut -eq 1 ] ; then
         fi
       done )
 #   ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
+#- clean-up previous TAF output temp dir (generated on old system like here)
+#   ( cd $gcmDIR/verification ; /bin/rm -rf  */build/PaxHeaders.[0-9]* )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q $cvsArg update -P -d ) 2>&1
     RETVAL=$?

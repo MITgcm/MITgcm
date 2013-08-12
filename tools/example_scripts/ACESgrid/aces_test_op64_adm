@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_opa.stderr
 #PBS -o /home/jmc/test_aces/output/tst_opa.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_adm,v 1.7 2013/06/13 22:01:34 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_adm,v 1.8 2013/08/12 19:29:12 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: test using open64 + "Trap Un-initialised Var." option
@@ -74,6 +74,8 @@ if [ $checkOut -eq 1 ] ; then
         fi
       done )
 #   ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
+#- clean-up previous TAF output temp dir (generated on old system like here)
+    ( cd $gcmDIR/verification ; /bin/rm -rf  */build/PaxHeaders.[0-9]* )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q $cvsArg update -P -d ) 2>&1
     RETVAL=$?
