@@ -6,6 +6,6 @@ setup(name='MITgcmutils',
       maintainer='Oliver Jahn',
       maintainer_email='jahn@mit.edu',
       url='http://mitgcm.org/',
-      packages=['MITgcmutils'],
+      packages=['MITgcmutils', 'MITgcmutils.cs'],
       scripts=['scripts/gluemncbig'],
       )
