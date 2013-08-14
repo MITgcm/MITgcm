@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1911 2013/08/13 15:15:38 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1912 2013/08/14 21:16:35 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/diagnostics:
+  - add a parameter to track the status of pkg/diagnostics activation;
+    this replace/extend the use of logical param "settingDiags" (to check
+    when adding diag to the list) to also check any DIAGNOSTICS_[]FILL* call.
+    New S/R to print error message and stop when pkgStatus is not right.
+  - to try: add a warning when "data.diagnostics" exist but useDiagnostics=F.
 
 checkpoint64m (2013/08/13)
 o model/inc:
