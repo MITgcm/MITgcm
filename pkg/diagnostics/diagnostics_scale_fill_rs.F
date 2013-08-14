@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_scale_fill_rs.F,v 1.1 2009/09/03 20:47:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_scale_fill_rs.F,v 1.2 2013/08/14 01:00:12 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -73,6 +73,13 @@ C     ndId      :: diagnostic Id number (in available diagnostics list)
       _RL     dummyRL(1)
       _RS     dummyRS(1)
 C ===============
+
+C--   Check if this S/R is called from the right place ;
+C     needs to be after DIAGNOSTICS_SWITCH_ONOFF and before DIAGNOSTICS_WRITE
+      IF ( diag_pkgStatus.NE.ready2fillDiags ) THEN
+        CALL DIAGNOSTICS_STATUS_ERROR( 'DIAGNOSTICS_SCALE_FILL_RS',
+     &                   ' ', chardiag, ready2fillDiags, myThid )
+      ENDIF
 
       arrType = 2
       IF ( bibjFlg.EQ.0 ) THEN

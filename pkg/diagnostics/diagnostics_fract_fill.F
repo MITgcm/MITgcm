@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fract_fill.F,v 1.7 2011/06/15 13:50:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fract_fill.F,v 1.8 2013/08/14 01:00:11 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -75,6 +75,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     ndId      :: diagnostic Id number (in available diagnostics list)
+C     msgBuf    :: Informational/error message buffer
       INTEGER m, n, j, k, l, bi, bj
       INTEGER ndId, ipt, iSp
       INTEGER region2fill(0:nRegions)
@@ -84,6 +85,13 @@ C     ndId      :: diagnostic Id number (in available diagnostics list)
       INTEGER arrType
       _RS     dummyRS(1)
 C ===============
+
+C--   Check if this S/R is called from the right place ;
+C     needs to be after DIAGNOSTICS_SWITCH_ONOFF and before DIAGNOSTICS_WRITE
+      IF ( diag_pkgStatus.NE.ready2fillDiags ) THEN
+        CALL DIAGNOSTICS_STATUS_ERROR( 'DIAGNOSTICS_FRACT_FILL',
+     &                   ' ', chardiag, ready2fillDiags, myThid )
+      ENDIF
 
       arrType = 0
       IF ( bibjFlg.EQ.0 ) THEN
