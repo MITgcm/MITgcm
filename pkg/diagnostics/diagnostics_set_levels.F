@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.17 2011/06/15 13:14:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.18 2013/08/14 00:57:33 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -65,7 +65,6 @@ C     !LOCAL VARIABLES:
       INTEGER  dUnit, stdUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*84 ccHead, ccLine
-      CHARACTER*8  blk8c
       CHARACTER*10 gcode
       CHARACTER*1  g10code
       INTEGER  ILNBLNK
@@ -76,7 +75,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       _BEGIN_MASTER( myThid )
 
 C--   Diagnostics definition/setting ends (cannot add diags to list anymore)
-      settingDiags = .FALSE.
+c     IF ( diag_pkgStatus.NE.2 ) STOP
+      diag_pkgStatus = 3
 
       nlevs   = MAX(Nr,Nrphys)
       nGroundLev = land_nLev
@@ -239,9 +239,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDIF
 
 C--   Check for multiple definition of the same diagnostic name
-      blk8c  = '        '
       DO n = 2,ndiagt
-       IF ( cdiag(n).NE.blk8c ) THEN
+       IF ( cdiag(n).NE.blkName ) THEN
         DO l = 1,n-1
          IF ( cdiag(l).EQ.cdiag(n) ) THEN
             WRITE(msgBuf,'(4A)') 'DIAGNOSTICS_SET_LEVELS: ',

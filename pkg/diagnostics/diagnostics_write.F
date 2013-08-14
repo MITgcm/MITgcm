@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.37 2012/06/08 15:01:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.38 2013/08/14 00:57:33 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -148,6 +148,11 @@ C-      wait for everyone before setting arrays to zero:
           _BARRIER
         ENDIF
         IF ( modelEnd ) THEN
+C-      Track diagnostics pkg activation status:
+          _BEGIN_MASTER(myThid)
+c         IF ( diag_pkgStatus.NE.ready2fillDiags ) STOP
+          diag_pkgStatus = 99
+          _END_MASTER(myThid)
 C       Close all Stat-diags output files
           CALL DIAGSTATS_CLOSE_IO( myThid )
         ENDIF

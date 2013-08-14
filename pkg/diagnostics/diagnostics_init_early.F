@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.17 2011/06/21 18:01:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.18 2013/08/14 00:57:33 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -82,7 +82,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDDO
 
 C--   Diagnostics definition/setting starts here (can now add diags to list)
-      settingDiags = .TRUE.
+c     IF ( diag_pkgStatus.NE.1 ) STOP
+      diag_pkgStatus = ready2setDiags
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     For each output variable,

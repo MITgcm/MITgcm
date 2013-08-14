@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.33 2013/02/06 21:25:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.34 2013/08/14 00:57:33 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -104,7 +104,17 @@ C--   per level statistics output:
      &     set_regMask, val_regMask,
      &     diagSt_regMaskFile, nSetRegMskFile
 
-C     Initialize and Read Diagnostics Namelist
+C-    PKG diagnostics is not used
+      IF ( .NOT.useDiagnostics ) THEN
+        _BEGIN_MASTER(myThid)
+C-    Track diagnostics pkg activation status:
+         diag_pkgStatus = -1
+C     print a (weak) warning if data.diagnostics is found
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
+
+C-    Initialize and Read Diagnostics Namelist
       _BEGIN_MASTER(myThid)
 
       blk8c  = '        '
@@ -130,11 +140,10 @@ c       missing_value(l)     = UNSET_RL
           levels(k,l) = UNSET_RL
         ENDDO
         DO m = 1,fdimLoc
-          fields(m,l) = blk8c
+          fields(m,l) = blkName
         ENDDO
       ENDDO
       diagLoc_ioUnit = 0
-      settingDiags = .FALSE.
       dumpAtLast   = .FALSE.
       diag_mnc     = useMNC
       useMissingValue = .FALSE.
@@ -164,9 +173,11 @@ c       missing_value(l)     = UNSET_RL
           stat_region(k,l) = UNSET_I
         ENDDO
         DO m = 1,fdimLoc
-          stat_fields(m,l) = blk8c
+          stat_fields(m,l) = blkName
         ENDDO
       ENDDO
+C-    Track diagnostics pkg activation status:
+      diag_pkgStatus = 1
 
       WRITE(msgBuf,'(2A)')
      &     ' DIAGNOSTICS_READPARMS: opening data.diagnostics'
@@ -222,7 +233,7 @@ c       misValInt(n) = UNSET_I
           levs(k,n) = 0
         ENDDO
         DO m = 1,numperList
-          flds(m,n) = blk8c
+          flds(m,n) = blkName
         ENDDO
         fflags(n)   = blk8c
       ENDDO
@@ -311,11 +322,11 @@ C-       will set levels later, once the Nb of levels of each diag is known
          ENDIF
          nfields(n) = 0
          DO m=1,fdimLoc
-           IF ( fields(m,l).NE.blk8c .AND.
+           IF ( fields(m,l).NE.blkName .AND.
      &          nfields(n).LT.numperList ) THEN
              nfields(n) = nfields(n) + 1
              flds(nfields(n),n) = fields(m,l)
-           ELSEIF ( fields(m,l).NE.blk8c ) THEN
+           ELSEIF ( fields(m,l).NE.blkName ) THEN
              WRITE(msgBuf,'(2A,I4)') 'DIAGNOSTICS_READPARMS: ',
      &        'Exceed Max.Num. of Fields/list numperList=', numperList
              CALL PRINT_ERROR( msgBuf , myThid )
@@ -367,7 +378,7 @@ C-    Initialise DIAG_STATIS common block (except pointers)
           diagSt_region(j,n) = 0
         ENDDO
         DO m = 1,numperList
-          diagSt_Flds(m,n) = blk8c
+          diagSt_Flds(m,n) = blkName
         ENDDO
       ENDDO
 
@@ -446,11 +457,11 @@ C-       no region selected => default is Global statistics (region Id: 0)
          ENDIF
          diagSt_nbFlds(n) = 0
          DO m=1,fdimLoc
-           IF ( stat_fields(m,l).NE.blk8c .AND.
+           IF ( stat_fields(m,l).NE.blkName .AND.
      &          diagSt_nbFlds(n).LT.numperList ) THEN
              diagSt_nbFlds(n) = diagSt_nbFlds(n) + 1
              diagSt_Flds(diagSt_nbFlds(n),n) = stat_fields(m,l)
-           ELSEIF ( stat_fields(m,l).NE.blk8c ) THEN
+           ELSEIF ( stat_fields(m,l).NE.blkName ) THEN
              WRITE(msgBuf,'(2A,I4)') 'DIAGNOSTICS_READPARMS: ',
      &        'Exceed Max.Num. of Fields/list numperList=', numperList
              CALL PRINT_ERROR( msgBuf , myThid )

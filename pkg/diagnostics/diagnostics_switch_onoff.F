@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.18 2012/06/07 17:13:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.19 2013/08/14 00:57:33 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -64,6 +64,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       dBugFlag = debugLevel.GE.debLevE .AND. myThid.EQ.1
       dBugUnit = errorMessageUnit
+
+C--   Track diagnostics pkg activation status:
+      IF ( myIter.EQ.nIter0 ) THEN
+        _BEGIN_MASTER(myThid)
+c       IF ( diag_pkgStatus.NE.10 ) STOP
+        diag_pkgStatus = ready2fillDiags
+        _END_MASTER(myThid)
+c     ELSEIF
+c       IF ( diag_pkgStatus.NE.ready2fillDiags ) STOP
+      ENDIF
 
 c     newIter = 1 + myIter
       DO n = 1,nlists
