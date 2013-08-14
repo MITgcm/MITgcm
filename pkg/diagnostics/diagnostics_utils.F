@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.31 2011/06/12 19:08:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.32 2013/08/14 00:54:06 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -238,7 +238,6 @@ C     !OUTPUT PARAMETERS:
 C     ndId     :: diagnostics  Id number (in available diagnostics list)
 C     ip       :: diagnostics  pointer to storage array
 
-
       CHARACTER*8 diagName
       INTEGER listId
       INTEGER ndId, ip
@@ -345,20 +344,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Check if this S/R is called from the right place ;
 C     needs to be after DIAGNOSTICS_INIT_EARLY and before DIAGNOSTICS_INIT_FIXED
-      IF ( .NOT.settingDiags ) THEN
-        WRITE(msgBuf,'(4A,I5)') 'DIAGNOSTICS_SETKLEV: ',
-     &     'diagName="', diagName, '" , nLevDiag=', nLevDiag
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_SETKLEV: ',
-     &     '<== called from the WRONG place, i.e.'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_SETKLEV: ',
-     &     'outside diagnostics setting section = from'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_SETKLEV: ',
-     &     '   Diag_INIT_EARLY down to Diag_INIT_FIXED'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R DIAGNOSTICS_SETKLEV'
+      IF ( diag_pkgStatus.NE.ready2setDiags ) THEN
+        CALL DIAGNOSTICS_STATUS_ERROR( 'DIAGNOSTICS_SETKLEV',
+     &                   ' ', diagName, ready2setDiags, myThid )
       ENDIF
 
 C--   Find this diagnostics in the list of available diag.

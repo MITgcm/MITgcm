@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_addtolist.F,v 1.3 2010/01/15 00:25:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_addtolist.F,v 1.4 2013/08/14 00:54:06 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -60,20 +60,9 @@ C--   Initialise
 
 C--   Check if this S/R is called from the right place ;
 C     needs to be after DIAGNOSTICS_INIT_EARLY and before DIAGNOSTICS_INIT_FIXED
-      IF ( .NOT.settingDiags ) THEN
-        WRITE(msgBuf,'(6A)') 'DIAGNOSTICS_ADDTOLIST: ',
-     &     'diagName="', diagName, '", diagCode="',diagCode(1:10),'"'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_ADDTOLIST: ',
-     &     '<== called from the WRONG place, i.e.'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_ADDTOLIST: ',
-     &     'outside diagnostics setting section = from'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_ADDTOLIST: ',
-     &     '   Diag_INIT_EARLY down to Diag_INIT_FIXED'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R DIAGNOSTICS_ADDTOLIST'
+      IF ( diag_pkgStatus.NE.ready2setDiags ) THEN
+        CALL DIAGNOSTICS_STATUS_ERROR( 'DIAGNOSTICS_ADDTOLIST',
+     &                   ' ', diagName, ready2setDiags, myThid )
       ENDIF
 
 C--   Search for "diagName" in the list of available diagnostics:

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.19 2013/02/06 21:25:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.20 2013/08/14 00:54:05 jmc Exp $
 C $Name:  $
 
 C ======================================================================
@@ -24,6 +24,27 @@ C  - DIAG_PARAMS contains general parameters (used for both 2D/3D & Stats diags)
 C  - DIAG_STATIS contains the user selection of statistics-diags to write
 C ======================================================================
 
+C--   DIAG_STATUS common block:
+C  diag_pkgStatus  :: internal parameter to track status of this pkg settings
+C             = -1 :: pkg is not used ;   = 1 :: user params are loaded
+C             =  2 :: early initialisation is done (enable to add diags to list)
+C             =  3 :: diagnostics setting is done (no more diags to add to list)
+C             = 10 :: storage is initialised (init_varia)
+C             = 20 :: ready for active section (filling diagnostics & output)
+C             = 99 :: active section is over (end of the run)
+C  ready2setDiags  :: pkgStatus level required to add any diagnostics to list
+C  ready2fillDiags :: pkgStatus level required to fill any diagnostics
+C  blkName         :: blank diagnostics name
+
+      INTEGER  ready2setDiags, ready2fillDiags
+      PARAMETER ( ready2setDiags = 2 , ready2fillDiags = 20 )
+      CHARACTER*8 blkName
+      PARAMETER ( blkName = '        ' )
+
+      INTEGER  diag_pkgStatus
+      COMMON / DIAG_STATUS_I /
+     &  diag_pkgStatus
+
 C--   DIAG_DEFINE common block:
 C       ndiagt :: total number of available diagnostics
 C       kdiag  :: number of levels associated with the diagnostic
@@ -32,7 +53,6 @@ C       cdiag  :: list of available diagnostic names
 C       gdiag  :: parser field with characteristics of the diagnostics
 C       tdiag  :: description of field in diagnostic
 C       udiag  :: physical units of the diagnostic field
-C settingDiags :: internal flag: enable adding/changing available diagnostics list
 
       INTEGER        ndiagt
       INTEGER        kdiag(ndiagMax)
@@ -41,14 +61,11 @@ C settingDiags :: internal flag: enable adding/changing available diagnostics li
       CHARACTER*80   tdiag(ndiagMax)
       CHARACTER*16   gdiag(ndiagMax)
       CHARACTER*16   udiag(ndiagMax)
-      LOGICAL settingDiags
 
       COMMON / DIAG_DEFINE_I /
      &  ndiagt, kdiag, hdiag
       COMMON / DIAG_DEFINE_C /
      &  cdiag, gdiag, tdiag, udiag
-      COMMON / DIAG_DEFINE_L /
-     &  settingDiags
 
 C--   DIAG_STORE common block:
 C       qdiag  :: storage array for 2D/3D diagnostic fields
