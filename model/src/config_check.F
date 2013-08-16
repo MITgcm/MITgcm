@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.73 2013/07/30 18:51:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.74 2013/08/16 16:37:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -622,6 +622,22 @@ c     ENDIF
      &   '1 time-step mismatch in AddFluid effects on T & S'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+
+C--   Pressure calculation and pressure gradient:
+#ifndef INCLUDE_PHIHYD_CALCULATION_CODE
+      IF ( momPressureForcing .OR. useDynP_inEos_Zc ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &   'missing code to calculate pressure (totPhiHyd)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* INCLUDE_PHIHYD_CALCULATION_CODE */
+      IF ( useDynP_inEos_Zc .AND. .NOT.momStepping ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &   'useDynP_inEos_Zc = TRUE but pressure is not computed'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
       ENDIF
 
 C--   Non-hydrostatic and 3-D solver related limitations:
