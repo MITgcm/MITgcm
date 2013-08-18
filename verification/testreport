@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.191 2013/07/25 00:42:41 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.192 2013/08/18 19:53:47 jmc Exp $
 #  $Name:  $
 #
 
@@ -11,20 +11,22 @@ usage()
     echo
     echo "where possible OPTIONS are:"
     echo "  (-help|-h)               print usage"
+    echo " ---- type of test : ----"
+    echo "  (-tlm)                   perform a Tangent Linear run"
+    echo "  (-adm|-ad)               perform an adjoint run"
+    echo "  (-oad)                   perform an OpenAD adjoint run"
     echo "  (-mth)                   run multi-threaded (using eedata.mth)"
     echo "  (-mpi)                   use MPI to compile and run on 2 processors"
     echo "  (-MPI)  NUMBER           use MPI to compile and run on max NUMBER procs"
     echo "  (-mfile|-mf) STRING      MPI: file with list of possible machines to run on"
+    echo "  (-command|-c) STRING     command to run (needed for MPI run)"
+    echo " ---- testing options : ----"
+    echo "  (-optfile|-of) STRING    list of optfiles to use"
     echo "  (-fast)                  use optfile default for compiler flags (no '-ieee')"
     echo "                            DEF=off => use IEEE numerics option (if available)"
     echo "  (-devel)                 use optfile developement flags (if available)"
     echo "  (-gsl)                   compile with \"-gsl\" flag"
     echo "  (-use_r4|-ur4)           if allowed, use real*4 type for '_RS' variable"
-    echo "  (-optfile|-of) STRING    list of optfiles to use"
-    echo "  (-addr|-a) STRING        list of email recipients"
-    echo "                             (DEF=\"\" no email is sent)"
-    echo "  (-mpackdir|-mpd) DIR     location of the mpack utility"
-    echo "                             (DEF=\"../tools/mpack-1.6\")"
     echo "  (-tdir|-t) STRING        list of group and/or exp. dirs to test"
     echo "                             (recognized groups: basic, tutorials)"
     echo "                             (DEF=\"\" which test all)"
@@ -32,24 +34,29 @@ usage()
     echo "                              test THIS_EXP + all the following)"
     echo "  (-skipdir|-skd) STRING   list of exp. dirs to skip"
     echo "                             (DEF=\"\" which test all)"
-    echo "  (-bash|-b) STRING        preferred location of a \"bash\" or"
-    echo "                             Bourne-compatible \"sh\" shell"
+    echo "  (-ts)                    provide timing information per timestep"
+    echo "  (-papis)                 provide MFlop/s per timestep using PAPI"
+    echo "  (-pcls)                  provide MFlop/s per timestep using PCL"
+    echo " ---- system options : ----"
+    echo "  (-bash|-b) STRING        preferred location of a \"bash\" or \"sh\" shell"
     echo "                             (DEF=\"\" for \"bash\")"
-    echo "  (-tlm)                   perform a Tangent Linear run"
-    echo "  (-adm|-ad)               perform an adjoint run"
-    echo "  (-oad)                   perform an OpenAD adjoint run"
-    echo "  (-command|-c) STRING     command to run"
+    echo "  (-ef) STRING             used as genmake2 \"-extra_flag\" argument"
     echo "  (-makedepend|-md) STRING command to use for \"makedepend\""
     echo "  (-make|-m) STRING        command to use for \"make\""
     echo "                             (DEF=\"make\")"
-    echo "  (-odir) STRING           used to build output directory name"
-    echo "                             (DEF=\"hostname\")"
-#   echo "  (-ptracers|-ptr) STRING  specify which ptracers to test"
-#   echo "                             (DEF=\"1 2 3 4 5\")"
+    echo "  (-j) JOBS                use \"make -j JOBS\" for parallel builds"
+    echo " ---- output options : ----"
     echo "  (-match) NUMBER          Matching Criteria (number of digits)"
     echo "                             (DEF=\"$MATCH_CRIT\")"
-    echo "  (-j) JOBS                use \"make -j JOBS\" for parallel builds"
-    echo "  (-ef) STRING             used as genmake2 \"-extra_flag\" argument"
+    echo "  (-odir) STRING           used to build output directory name"
+    echo "                             (DEF=\"hostname\")"
+    echo "  (-addr|-a) STRING        list of email recipients"
+    echo "                             (DEF=\"\" no email is sent)"
+    echo "  (-send)       STRING     sending command (instead of using mpack)"
+    echo "  (-savdir|-sd) STRING     location to save output tar file to send (DEF='$SAVDIR')"
+    echo "  (-mpackdir|-mpd) DIR     location of the mpack utility"
+    echo "                             (DEF=\"../tools/mpack-1.6\")"
+    echo " -- do only some parts: --"
     echo "  (-clean)                 *ONLY* run \"make CLEAN\" & clean run-dir"
     echo "  (-norun|-nr)             skip the \"runmodel\" stage (stop after make)"
     echo "  (-obj)                   only produces objects (=norun & no executable)"
@@ -61,9 +68,6 @@ usage()
     echo "  (-postclean|-pc)         after each exp. test, clean build-dir & run-dir"
     echo "  (-deloutp|-do)           delete output files after successful run"
     echo "  (-deldir|-dd)            on success, delete the output directory"
-    echo "  (-ts)                    provide timing information per timestep"
-    echo "  (-papis)                 provide MFlop/s per timestep using PAPI"
-    echo "  (-pcls)                  provide MFlop/s per timestep using PCL"
     echo
     echo "and where STRING can be a whitespace-delimited list"
     echo "such as:"
@@ -125,13 +129,13 @@ testoutput_var()
 	echo testoutput_var: grep "$2" $1/$4/$OUTPUTFILE 1>&2
     fi
     if [ -r $1/$4/$OUTPUTFILE ]; then
-	grep "$2" $1/$4/$OUTPUTFILE | sed 's/.*=//' | cat -n > tmp1.txt
-	lncntA=`wc -l tmp1.txt | awk '{print $1}' `
+	grep "$2" $1/$4/$OUTPUTFILE | sed 's/.*=//' | cat -n > ${TMP}a.txt
+	lncntA=`wc -l ${TMP}a.txt | awk '{print $1}' `
 	if [ $lncntA -lt 2 ]; then
 	    if [ $verbose -gt 0 ]; then
 		echo Not enough lines of output when searching for "$2" 1>&2
 	    fi
-	    rm -f tmp1.txt ; return 99
+	    rm -f ${TMP}a.txt ; return 99
 	fi
     else
 	echo testoutput_var: $OUTPUTFILE from model run was not readable 1>&2
@@ -140,44 +144,43 @@ testoutput_var()
     if [ $debug -gt 0 ]; then
 	echo testoutput_var: grep "$2" $1/$5 1>&2
     fi
-    grep "$2" $1/$5 | sed 's/.*=//' | cat -n > tmp2.txt
-    lncntB=`wc -l tmp2.txt | awk '{print $1}' `
+    grep "$2" $1/$5 | sed 's/.*=//' | cat -n > ${TMP}b.txt
+    lncntB=`wc -l ${TMP}b.txt | awk '{print $1}' `
     if [ $lncntB -lt 2 ]; then
 	if [ $verbose -gt 0 ]; then
 	    echo Not enough lines of output when searching for "$2" 1>&2
 	fi
-	rm -f tmp1.txt tmp2.txt ; return 99
+	rm -f ${TMP}a.txt ${TMP}b.txt ; return 99
     fi
     if [ $lncntA -ne $lncntB ]; then
 	if [ $verbose -gt 0 ]; then
 	    echo Not same Nb of lines when searching for "$2" ":" $lncntA $lncntB 1>&2
 	fi
-	rm -f tmp1.txt tmp2.txt ; return 99
+	rm -f ${TMP}a.txt ${TMP}b.txt ; return 99
     fi
-    has_nan=`cat tmp1.txt | grep -i nan | wc -l`
+    has_nan=`cat ${TMP}a.txt | grep -i nan | wc -l`
     if [ $has_nan -gt 0  ] ; then
 	echo testoutput_var: $OUTPUTFILE contains $has_nan NaN values  1>&2
-	rm -f tmp1.txt tmp2.txt ; return 99
+	rm -f ${TMP}a.txt ${TMP}b.txt ; return 99
     fi
-    has_inf=`cat tmp1.txt | grep -i inf | wc -l`
+    has_inf=`cat ${TMP}a.txt | grep -i inf | wc -l`
     if [ $has_inf -gt 0  ] ; then
 	echo testoutput_var: $OUTPUTFILE contains $has_inf Inf values  1>&2
-	rm -f tmp1.txt tmp2.txt ; return 99
+	rm -f ${TMP}a.txt ${TMP}b.txt ; return 99
     fi
     if [ $debug -gt 0 ]; then
-	echo testoutput_var: join tmp1.txt tmp2.txt 1>&2
+	echo testoutput_var: join ${TMP}a.txt ${TMP}b.txt 1>&2
     fi
-    join tmp1.txt tmp2.txt | awk '{print $1 " " $2 " " $3}' > tmp3.txt
+    # On the SGI O3K (*not* the O2K), "cat -n" inserts a ":" after the line number
+    join ${TMP}a.txt ${TMP}b.txt | awk '{print $1 " " $2 " " $3}' | sed -e 's|:||g' > ${TMP}c.txt
     if [ $debug -gt 0 ]; then
 	echo testoutput_var: compare_lines 1>&2
     fi
     if [ $verbose -gt 1 ]; then
-	cat tmp3.txt 1>&2
+	cat ${TMP}c.txt 1>&2
     fi
-    echo "-1" >> tmp3.txt
-    # On the SGI O3K (*not* the O2K), "cat -n" inserts a ":" after the line number
-    cat tmp3.txt | sed -e 's|:||g' > tmp4.txt
-    digits_of_similarity=`./tr_cmpnum < tmp4.txt`
+    echo "-1" >> ${TMP}c.txt
+    digits_of_similarity=`./tr_cmpnum < ${TMP}c.txt`
     if [ $digits_of_similarity -eq 99 ]; then
 	if [ $verbose -gt 0 ]; then
 	    echo testoutput_var: No comparison was available for \"$3\" 1>&2
@@ -188,7 +191,7 @@ testoutput_var()
 	    echo There were $digits_of_similarity decimal places of similarity for \"$3\" 1>&2
 	fi
     fi
-    rm -f tmp1.txt tmp2.txt tmp3.txt tmp4.txt
+    rm -f ${TMP}a.txt ${TMP}b.txt ${TMP}c.txt
 
     return $digits_of_similarity
 }
@@ -1031,6 +1034,8 @@ SKIPDIRS=
 MPACKDIR="../tools/mpack-1.6"
 HAVE_MPACK=
 MPACK=
+SENDCMD=
+SAVDIR='.'
 COMMAND=
 MKDEPEND=
 if test "x$MAKE" = x ; then
@@ -1085,6 +1090,11 @@ for ac_option ; do
 	-addr=* | --addr=* | -a=* | --a=*) ADDRESSES=$ac_optarg ;;
 	-mpackdir | --mpackdir | -mpd | --mpd) ac_prev=MPACKDIR ;;
 	-mpackdir=* | --mpackdir=* | -mpd=* | --mpd=*) MPACKDIR=$ac_optarg ;;
+
+	-send | --send ) ac_prev=SENDCMD ;;
+	-send=* | --send=* ) SENDCMD=$ac_optarg ;;
+	-savdir | --savdir | -sd | --sd ) ac_prev=SAVDIR ;;
+	-savdir=* | --savdir=* | -sd=* | --sd=* ) SAVDIR=$ac_optarg ;;
 
 	-tdir | --tdir | -t | --t) ac_prev=TESTDIRS ;;
 	-tdir=* | --tdir=* | -t=* | --t=*) TESTDIRS=$ac_optarg ;;
@@ -1293,6 +1303,18 @@ fi
 
 echo "OK (COMMAND= $COMMAND )"
 
+TMP=./tr_$$
+#- try to put temporary files in system-local /tmp dir
+#TMP=/tmp/tr_$$
+#touch $TMP ; retVal=$?
+#if [ $retVal -eq 0 ] ; then
+#  if test ! -r $TMP ; then TMP=./tr_$$ ; fi
+#else
+#  TMP=./tr_$$
+#fi
+#rm -f $TMP
+#if [ $verbose -gt 1 ]; then echo " temp files: $TMP" ; fi
+
 # set the Default List of output variables to be checked:
 #  (use default or load experiment-specific list from file "tr_checklist")
 # content : 1rst = main variable used to decide if it pass or FAIL
@@ -1321,10 +1343,11 @@ else
 fi
 
 #  build the mpack utility (if ADDRESSES = NONE, do it to test the build)
-if test "x$ADDRESSES" = x ; then
+if test "x$ADDRESSES" = x -o "x$SENDCMD" != x ; then
     echo "skipping mpack build"
 else
     build_mpack
+    if test "x$HAVE_MPACK" = xt ; then SENDCMD=$MPACK ; fi
 fi
 
 #  Create a uniquely named directory to store results
@@ -1658,10 +1681,10 @@ for dir in $TESTDIRS ; do
 		sed "/^No \"OPTFILE\" was specified ; genmake2/a\  OPTFILE=${OPTFILE}"\
 			$SUMMARY > tmp.tr_log
 		RETVAL=$?
-		if test "x$RETVAL" = x0 ; then rm -f $SUMMARY
-			cp tmp.tr_log $SUMMARY
-		else rm -f tmp.tr_log
+		if test "x$RETVAL" = x0 ; then
+		    cp -f tmp.tr_log $SUMMARY
 		fi
+		rm -f tmp.tr_log
 	    fi
 	    gmkLog=$dir/$builddir/genmake.log
 	    if test -r $gmkLog ; then
@@ -1705,10 +1728,13 @@ date >> $SUMMARY
 if test "x$ADDRESSES" = xNONE -o "x$ADDRESSES" = x ; then
     echo "No results email was sent."
 else
-    if test "x$HAVE_MPACK" = xt ; then
-	tar -cf $DRESULTS".tar" $DRESULTS > /dev/null 2>&1 \
-	    && gzip $DRESULTS".tar" \
-	    && $MPACK -s MITgcm-test -m 3555000 $DRESULTS".tar.gz" $ADDRESSES
+    if test "x$SENDCMD" != x ; then
+	if [ $verbose -gt 1 ]; then
+	   echo " run: $SENDCMD -s MITgcm-test -m 3555000 ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES"
+	fi
+	tar -cf ${SAVDIR}/${DRESULTS}".tar" $DRESULTS > /dev/null 2>&1 \
+	    && gzip ${SAVDIR}/${DRESULTS}".tar" \
+	    && $SENDCMD -s MITgcm-test -m 3555000 ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
 	    echo
@@ -1721,8 +1747,8 @@ else
 	    echo "An email containing results was sent to the following addresses:"
 	    echo "  \"$ADDRESSES\""
 	    echo
-	    test -f $DRESULTS".tar"  &&  rm -f $DRESULTS".tar"
-	    test -f $DRESULTS".tar.gz"  &&  rm -f $DRESULTS".tar.gz"
+	    test -f ${SAVDIR}/${DRESULTS}".tar" &&  rm -f ${SAVDIR}/${DRESULTS}".tar"
+	    test -f ${SAVDIR}/${DRESULTS}".tar.gz" &&  rm -f ${SAVDIR}/${DRESULTS}".tar.gz"
 	fi
     fi
 fi
