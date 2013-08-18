@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.43 2012/08/28 19:17:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.44 2013/08/18 19:41:38 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -6,126 +6,127 @@ C $Name:  $
 CBOI
 C
 C !TITLE: EXTERNAL FORCING
-C !AUTHORS: mitgcm developers ( support@mitgcm.org )
+C !AUTHORS: mitgcm developers ( mitgcm-support@mitgcm.org )
 C !AFFILIATION: Massachussetts Institute of Technology
 C !DATE:
 C !INTRODUCTION: External forcing package
-c \bv
-c * The external forcing package, in conjunction with the
-c   calendar package (cal), enables the handling of realistic forcing
-c   fields of differing temporal forcing patterns.
-c * It comprises climatological restoring and relaxation
-c * Bulk formulae are implemented to convert atmospheric fields
-c   to surface fluxes.
-c * An interpolation routine provides on-the-fly interpolation of
-c   forcing fields an arbitrary grid onto the model grid.
-c * A list of EXF variables and units is in EXF_FIELDS.h
-c
+C \bv
+C * The external forcing package, in conjunction with the
+C   calendar package (cal), enables the handling of realistic forcing
+C   fields of differing temporal forcing patterns.
+C * It comprises climatological restoring and relaxation
+C * Bulk formulae are implemented to convert atmospheric fields
+C   to surface fluxes.
+C * An interpolation routine provides on-the-fly interpolation of
+C   forcing fields an arbitrary grid onto the model grid.
+C * A list of EXF variables and units is in EXF_FIELDS.h
+C
 C     !CALLING SEQUENCE:
-c ...
-c  exf_getforcing (TOP LEVEL ROUTINE)
-c  |
-c  |-- exf_getclim (get climatological fields used e.g. for relax.)
-c  |   |--- exf_set_climtemp (relax. to 3-D temperature field)
-c  |   |--- exf_set_climsalt (relax. to 3-D salinity field)
-c  |   |--- exf_set_climsst  (relax. to 2-D SST field)
-c  |   |--- exf_set_climsss  (relax. to 2-D SSS field)
-c  |   o
-c  |
-c  |-- exf_getffields <- this one does almost everything
-c  |   |   1. reads in fields, either flux or atmos. state,
-c  |   |      depending on CPP options (for each variable two fields
-c  |   |      consecutive in time are read in and interpolated onto
-c  |   |      current time step).
-c  |   |   2. If forcing is atmos. state and control is atmos. state,
-c  |   |      then the control variable anomalies are read here
-c  |   |          * ctrl_getatemp
-c  |   |          * ctrl_getaqh
-c  |   |          * ctrl_getuwind
-c  |   |          * ctrl_getvwind
-c  |   |      If forcing and control are fluxes, then
-c  |   |      controls are added later.
-c  |   o
-c  |
-c  |-- exf_check_range
-c  |   |   1. Check whether read fields are within assumed range
-c  |   |      (may capture mismatches in units)
-c  |   o
-c  |
-c  |-- exf_bulkformulae
-c  |   |   1. Compute net or downwelling radiative fluxes via
-c  |   |      Stefan-Boltzmann law in case only one is known.
-c  |   |   2. Compute air-sea momentum and buoyancy fluxes from
-c  |   |      atmospheric state following Large and Pond, JPO, 1981/82
-c  |   o
-c  |
-c  |-- < add time-mean river runoff here, if available >
-c  |
-c  |-- < update tile edges here >
-c  |
-c  |-- exf_getsurfacefluxes
-c  |   |   1. If forcing and control are fluxes, then
-c  |   |      controls are added here.
-c  |   o
-c  |
-c  |-- < treatment of hflux w.r.t. swflux >
-c  |
-c  |-- exf_diagnostics_fill
-c  |   |   1. Do EXF-related diagnostics output here.
-c  |   o
-c  |
-c  |-- exf_mapfields
-c  |   |   1. Map the EXF variables onto the core MITgcm
-c  |   |      forcing fields.
-c  |   o
-c  |
-c  |-- exf_bulkformulae
-c  |   If ALLOW_BULKFORMULAE, compute fluxes via bulkformulae
-c  |
-c  |-- exf_getsurfacefluxes
-c  |   If forcing and control is flux, then the
-c  |   control vector anomalies are read here
-c  |      * ctrl_getheatflux
-c  |      * ctrl_getsaltflux
-c  |      * ctrl_getzonstress
-c  |      * call ctrl_getmerstress
-c  |
-c  |-- exf_mapfields
-c  |   Forcing fields from exf package are mapped onto
-c  |   mitgcm forcing arrays.
-c  |   Mapping enables a runtime rescaling of fields
-c
-c \ev
+C ...
+C  exf_getforcing (TOP LEVEL ROUTINE)
+C  |
+C  |-- exf_getclim (get climatological fields used e.g. for relax.)
+C  |   |--- exf_set_climtemp (relax. to 3-D temperature field)
+C  |   |--- exf_set_climsalt (relax. to 3-D salinity field)
+C  |   |--- exf_set_climsst  (relax. to 2-D SST field)
+C  |   |--- exf_set_climsss  (relax. to 2-D SSS field)
+C  |   o
+C  |
+C  |-- exf_getffields <- this one does almost everything
+C  |   |   1. reads in fields, either flux or atmos. state,
+C  |   |      depending on CPP options (for each variable two fields
+C  |   |      consecutive in time are read in and interpolated onto
+C  |   |      current time step).
+C  |   |   2. If forcing is atmos. state and control is atmos. state,
+C  |   |      then the control variable anomalies are read here
+C  |   |          * ctrl_getatemp
+C  |   |          * ctrl_getaqh
+C  |   |          * ctrl_getuwind
+C  |   |          * ctrl_getvwind
+C  |   |      If forcing and control are fluxes, then
+C  |   |      controls are added later.
+C  |   o
+C  |
+C  |-- exf_check_range
+C  |   |   1. Check whether read fields are within assumed range
+C  |   |      (may capture mismatches in units)
+C  |   o
+C  |
+C  |-- exf_bulkformulae
+C  |   |   1. Compute net or downwelling radiative fluxes via
+C  |   |      Stefan-Boltzmann law in case only one is known.
+C  |   |   2. Compute air-sea momentum and buoyancy fluxes from
+C  |   |      atmospheric state following Large and Pond, JPO, 1981/82
+C  |   o
+C  |
+C  |-- < add time-mean river runoff here, if available >
+C  |
+C  |-- < update tile edges here >
+C  |
+C  |-- exf_getsurfacefluxes
+C  |   |   1. If forcing and control are fluxes, then
+C  |   |      controls are added here.
+C  |   o
+C  |
+C  |-- < treatment of hflux w.r.t. swflux >
+C  |
+C  |-- exf_diagnostics_fill
+C  |   |   1. Do EXF-related diagnostics output here.
+C  |   o
+C  |
+C  |-- exf_mapfields
+C  |   |   1. Map the EXF variables onto the core MITgcm
+C  |   |      forcing fields.
+C  |   o
+C  |
+C  |-- exf_bulkformulae
+C  |   If ALLOW_BULKFORMULAE, compute fluxes via bulkformulae
+C  |
+C  |-- exf_getsurfacefluxes
+C  |   If forcing and control is flux, then the
+C  |   control vector anomalies are read here
+C  |      * ctrl_getheatflux
+C  |      * ctrl_getsaltflux
+C  |      * ctrl_getzonstress
+C  |      * CALL ctrl_getmerstress
+C  |
+C  |-- exf_mapfields
+C  |   Forcing fields from exf package are mapped onto
+C  |   mitgcm forcing arrays.
+C  |   Mapping enables a runtime rescaling of fields
+C
+C \ev
 CEOI
 
 CBOP
-C     !ROUTINE: exf_getforcing
+C     !ROUTINE: EXF_GETFORCING
 C     !INTERFACE:
-      subroutine exf_getforcing( mytime, myiter, mythid )
+      SUBROUTINE EXF_GETFORCING( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
-c     *=================================================================
-c     | SUBROUTINE exf_getforcing
-c     *=================================================================
-c     o Get the forcing fields for the current time step. The switches
-c       for the inclusion of the individual forcing components have to
-c       be set in EXF_OPTIONS.h (or ECCO_CPPOPTIONS.h).
-c       A note on surface fluxes:
-c       The MITgcm-UV vertical coordinate z is positive upward.
-c       This implies that a positive flux is out of the ocean
-c       model. However, the wind stress forcing is not treated
-c       this way. A positive zonal wind stress accelerates the
-c       model ocean towards the east.
-c       started: eckert@mit.edu, heimbach@mit.edu, ralf@ocean.mit.edu
-c       mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
-c     *=================================================================
-c     | SUBROUTINE exf_getforcing
-c     *=================================================================
+C     *=================================================================
+C     | SUBROUTINE EXF_GETFORCING
+C     *=================================================================
+C     o Get the forcing fields for the current time step. The switches
+C       for the inclusion of the individual forcing components have to
+C       be set in EXF_OPTIONS.h (or ECCO_CPPOPTIONS.h).
+C       A note on surface fluxes:
+C       The MITgcm-UV vertical coordinate z is positive upward.
+C       This implies that a positive flux is out of the ocean
+C       model. However, the wind stress forcing is not treated
+C       this way. A positive zonal wind stress accelerates the
+C       model ocean towards the east.
+C       started: eckert@mit.edu, heimbach@mit.edu, ralf@ocean.mit.edu
+C       mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
+C     *=================================================================
+C     | SUBROUTINE EXF_GETFORCING
+C     *=================================================================
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -138,25 +139,22 @@ C     !USES:
 # include "tamc.h"
 #endif
 
-c     == global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
-c     == routine arguments ==
-      _RL     mytime
-      integer myiter
-      integer mythid
+C     == routine arguments ==
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 C     !LOCAL VARIABLES:
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-
-c     == end of interface ==
+C     == local variables ==
+      INTEGER bi,bj
+      INTEGER i,j,k
+C     == end of interface ==
 CEOP
 
-c     Get values of climatological fields.
-      call exf_getclim( mytime, myiter, mythid )
+C     Get values of climatological fields.
+      CALL exf_getclim( myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_ATM_TEMP
@@ -166,8 +164,8 @@ CADJ STORE snowprecip0 = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE snowprecip1 = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 #endif
-c     Get the surface forcing fields.
-      call exf_getffields( mytime, myiter, mythid )
+C     Get the surface forcing fields.
+      CALL exf_getffields( myTime, myIter, myThid )
       IF ( .NOT.useAtmWind ) THEN
       IF ( stressIsOnCgrid .AND. ustressfile.NE.' '
      &                     .AND. vstressfile.NE.' ' )
@@ -175,14 +173,14 @@ c     Get the surface forcing fields.
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-# if (defined (ALLOW_AUTODIFF_MONITOR))
+# ifdef ALLOW_AUTODIFF_MONITOR
         CALL EXF_ADJOINT_SNAPSHOTS( 2, myTime, myIter, myThid )
 # endif
 #endif
 
 #ifdef ALLOW_BULKFORMULAE
-c     Set radiative fluxes
-      call exf_radiation( mytime, myiter, mythid )
+C     Set radiative fluxes
+      CALL exf_radiation( myTime, myIter, myThid )
 
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE ustress      = comlev1, key=ikey_dynamics, kind=isbyte
@@ -191,8 +189,8 @@ CADJ STORE uwind        = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vwind        = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE wspeed       = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
-c     Set wind fields
-      call exf_wind( mytime, myiter, mythid )
+C     Set wind fields
+      CALL exf_wind( myTime, myIter, myThid )
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE ustress      = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vstress      = comlev1, key=ikey_dynamics, kind=isbyte
@@ -200,18 +198,18 @@ CADJ STORE uwind        = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vwind        = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE wspeed       = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
-c     Compute turbulent fluxes (and surface stress) from bulk formulae
-      call exf_bulkformulae( mytime, myiter, mythid )
+C     Compute turbulent fluxes (and surface stress) from bulk formulae
+      CALL exf_bulkformulae( myTime, myIter, myThid )
 #endif
 
-c     Apply runoff, masks and exchanges
-      do bj = mybylo(mythid),mybyhi(mythid)
-        do bi = mybxlo(mythid),mybxhi(mythid)
+C     Apply runoff, masks and exchanges
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
           k = 1
-          do j = 1,sny
-            do i = 1,snx
+          DO j = 1,sny
+            DO i = 1,snx
 #ifdef ALLOW_ATM_TEMP
-c             Net surface heat flux.
+C             Net surface heat flux.
               hflux(i,j,bi,bj) =
      &              - hs(i,j,bi,bj)
      &              - hl(i,j,bi,bj)
@@ -219,7 +217,7 @@ c             Net surface heat flux.
 #ifndef SHORTWAVE_HEATING
      &              + swflux(i,j,bi,bj)
 #endif
-c             Salt flux from Precipitation and Evaporation.
+C             fresh-water flux from Precipitation and Evaporation.
               sflux(i,j,bi,bj) = evap(i,j,bi,bj) - precip(i,j,bi,bj)
 #endif /* ALLOW_ATM_TEMP */
 #ifdef ALLOW_RUNOFF
@@ -228,72 +226,74 @@ c             Salt flux from Precipitation and Evaporation.
 
               hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskC(i,j,1,bi,bj)
               sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskC(i,j,1,bi,bj)
-            enddo
-          enddo
-        enddo
-      enddo
+            ENDDO
+          ENDDO
+        ENDDO
+      ENDDO
 
-c     Update the tile edges.
-      _EXCH_XY_RL(hflux,   mythid)
-      _EXCH_XY_RL(sflux,   mythid)
+C     Update the tile edges: needed for some EXF fields involved in horizontal
+C     averaging, e.g., wind-stress; fields used by main model or other pkgs
+C     are exchanged in EXF_MAPFIELDS.
+c     _EXCH_XY_RL(hflux,   myThid)
+c     _EXCH_XY_RL(sflux,   myThid)
       IF ( stressIsOnCgrid ) THEN
         CALL EXCH_UV_XY_RL( ustress, vstress, .TRUE., myThid )
       ELSE
         CALL EXCH_UV_AGRID_3D_RL(ustress, vstress, .TRUE., 1, myThid)
       ENDIF
 #ifdef SHORTWAVE_HEATING
-      _EXCH_XY_RL(swflux, mythid)
+c     _EXCH_XY_RL(swflux, myThid)
 #endif
 #ifdef ATMOSPHERIC_LOADING
-      _EXCH_XY_RL(apressure, mythid)
+c     _EXCH_XY_RL(apressure, myThid)
 #endif
 #ifdef EXF_ALLOW_SEAICE_RELAX
-      _EXCH_XY_RL(areamask, mythid)
+c     _EXCH_XY_RL(areamask, myThid)
 #endif
 
-c     Get values of the surface flux anomalies.
-      call exf_getsurfacefluxes( mytime, myiter, mythid )
+C     Get values of the surface flux anomalies.
+      CALL exf_getsurfacefluxes( myTime, myIter, myThid )
 
-      if ( useExfCheckRange .AND.
-     &     ( myiter.EQ.nIter0 .OR. debugLevel.GE.debLevC ) ) then
-         call exf_check_range( mytime, myiter, mythid )
-      endif
+      IF ( useExfCheckRange .AND.
+     &     ( myIter.EQ.nIter0 .OR. debugLevel.GE.debLevC ) ) THEN
+         CALL exf_check_range( myTime, myIter, myThid )
+      ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-# if (defined (ALLOW_AUTODIFF_MONITOR))
+# ifdef ALLOW_AUTODIFF_MONITOR
         CALL EXF_ADJOINT_SNAPSHOTS( 1, myTime, myIter, myThid )
 # endif
 #endif
 
 #ifdef SHORTWAVE_HEATING
-c     Treatment of qnet
-c     The location of te summation of Qnet in exf_mapfields is unfortunate.
-c     For backward compatibility issues we want it to happen after
-c     applying control variables, but before exf_diagnostics_fill.
-c     Therefore, we do it exactly here:
-      do bj = mybylo(mythid),mybyhi(mythid)
-       do bi = mybxlo(mythid),mybxhi(mythid)
-        do j = 1-oLy,sNy+oLy
-         do i = 1-oLx,sNx+oLx
+C     Treatment of qnet
+C     The location of te summation of Qnet in exf_mapfields is unfortunate.
+C     For backward compatibility issues we want it to happen after
+C     applying control variables, but before exf_diagnostics_fill.
+C     Therefore, we DO it exactly here:
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j = 1-oLy,sNy+oLy
+         DO i = 1-oLx,sNx+oLx
           hflux(i,j,bi,bj) = hflux(i,j,bi,bj) + swflux(i,j,bi,bj)
-         enddo
-        enddo
-       enddo
-      enddo
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 #endif
 
-c     Diagnostics output
-      call exf_diagnostics_fill( mytime, myiter, mythid )
+C     Diagnostics output
+      CALL exf_diagnostics_fill( myTime, myIter, myThid )
 
-c     Monitor output
-      call exf_monitor( mytime, myiter, mythid )
+C     Monitor output
+      CALL exf_monitor( myTime, myIter, myThid )
 
-c     Map the forcing fields onto the corresponding model fields.
-      call exf_mapfields( mytime, myiter, mythid )
+C     Map the forcing fields onto the corresponding model fields.
+      CALL exf_mapfields( myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-# if (defined (ALLOW_AUTODIFF_MONITOR))
-      if ( .NOT. useSEAICE )
+# ifdef ALLOW_AUTODIFF_MONITOR
+      IF ( .NOT. useSEAICE )
      &     CALL EXF_ADJOINT_SNAPSHOTS( 3, myTime, myIter, myThid )
 # endif
 #endif
