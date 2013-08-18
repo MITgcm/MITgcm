@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.16 2012/10/11 16:30:56 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.17 2013/08/18 19:55:20 jmc Exp $
 # $Name:  $
 
 usage()
@@ -20,6 +20,8 @@ usage()
         echo "  -a,-A  STRING : email address to send output to"
         echo "                      (DEF=\"\" no email is sent)"
         echo "                      (-A: + save each log file)"
+        echo "  -send  STRING : sending command (instead of using mpack)"
+        echo "  -sd    STRING : location to save output tar file to send (DEF='$SAVDIR')"
         echo "  -clean        : clean output & reset"
         exit
 }
@@ -37,6 +39,8 @@ OUTDIR=`hostname | sed 's/\..*$//'`
 SAVELOG=0
 ADDRESS=
 MPACK="../tools/mpack-1.6/mpack"
+SENDCMD=
+SAVDIR='.'
 here=`pwd`
 yy=
 for xx
@@ -55,6 +59,8 @@ do
       -mf   ) yy=MPI_MFILE ;;
       -a    ) yy=ADDRESS ;;
       -A    ) yy=ADDRESS ; SAVELOG=1 ;;
+      -send ) yy=SENDCMD ;;
+      -sd   ) yy=SAVDIR ;;
       -o    ) yy=OUTDIR ;;
         *) echo "Error: unrecognized option: "$xx ; usage ; exit ;;
       esac
@@ -256,12 +262,21 @@ done
 printf "End time:    " >> $SUMMARY
 date >> $SUMMARY
 
-#  If address was supplied and mpack exist, then send email using mpack.
+#  If address was supplied, then send email using Send-Command or mpack.
 if test "x$ADDRESS" != xNONE -a "x$ADDRESS" != x ; then
-    if test -x $MPACK ; then
-        tar -cf $DRESULTS".tar" $DRESULTS > /dev/null 2>&1 \
-            && gzip $DRESULTS".tar" \
-            && $MPACK -s MITgcm-test -m 3555000 $DRESULTS".tar.gz" $ADDRESS
+    if test "x$SENDCMD" = x ; then
+      # if Send-Command is empty and mpack exist, then send email using mpack.
+      if test -x $MPACK ; then SENDCMD=$MPACK
+      else
+        echo "Warning: $MPACK is not executable => no email was sent"
+        echo
+      fi
+    fi
+    if test "x$SENDCMD" != x ; then
+        #echo " run: $SENDCMD -s MITgcm-test -m 3555000  ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESS"
+        tar -cf  ${SAVDIR}/${DRESULTS}".tar" $DRESULTS > /dev/null 2>&1 \
+            && gzip  ${SAVDIR}/${DRESULTS}".tar" \
+            && $SENDCMD -s MITgcm-test -m 3555000  ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESS
         out=$?
         if test "x$out" != x0 ; then
             echo
@@ -275,11 +290,8 @@ if test "x$ADDRESS" != xNONE -a "x$ADDRESS" != x ; then
             echo "  \"$ADDRESS\""
             echo
         fi
-        test -f $DRESULTS".tar"  &&  rm -f $DRESULTS".tar"
-        test -f $DRESULTS".tar.gz"  &&  rm -f $DRESULTS".tar.gz"
-    else
-        echo "Warning: $MPACK is not executable => no email was sent"
-        echo
+        test -f ${SAVDIR}/${DRESULTS}".tar" &&  rm -f ${SAVDIR}/${DRESULTS}".tar"
+        test -f ${SAVDIR}/${DRESULTS}".tar.gz" &&  rm -f ${SAVDIR}/${DRESULTS}".tar.gz"
     fi
 fi
 
