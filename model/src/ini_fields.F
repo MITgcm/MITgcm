@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.25 2011/12/08 22:36:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.26 2013/08/20 20:22:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,7 +37,7 @@ C     Set model variables to initial/restart conditions
 #ifdef INCLUDE_EP_FORCING_CODE
         CALL INI_EP( myThid )
 #endif
-      ELSEIF ( .NOT.useOffLine ) THEN
+      ELSEIF ( .NOT.useOffLine .OR. nonlinFreeSurf.GT.0 ) THEN
         CALL READ_PICKUP( nIter0, myThid )
 
 c       IF (pickup_write_immed) THEN
