@@ -1,7 +1,0 @@
-ad_inline.f
-ad_template.exch1_r[ls].f
-ad_template.global_max_r8.f
-ad_template.global_sum_r8.f
-ad_template.revolve.f
-ad_template.sa_cg2d.f
-ad_template.split.f

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.258 2013/08/16 16:36:32 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.259 2013/08/20 17:27:03 jahn Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -3393,10 +3393,10 @@ ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.B
 ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90 \${OADTOOLS}/insertTemplateDir.bash
 	\${OADTOOLS}/insertTemplateDir.bash \$< \$@
 
-PPEXTRAS=\$(wildcard \${OADTOOLS}/ad_template.*.F) \${OADTOOLS}/ad_inline.F
+PPEXTRAS=\$(notdir \$(wildcard \${OADTOOLS}/ad_template.*.F)) ad_inline.F
 # postprocess F'
 postProcess.tag: ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90 \$(PPEXTRAS:.F=.f) | w2f__types.f90
-	\${OPENADFORTTK_BASE}/tools/SourceProcessing/postProcess.py --progress --timing --infoUnitFile w2f__types.f90 --outputFormat=fixed --separateOutput --pathSuffix "" --filenameSuffix "_oad" -m r -i \${OADTOOLS}/ad_inline.f \$<
+	\${OPENADFORTTK_BASE}/tools/SourceProcessing/postProcess.py --progress --timing --infoUnitFile w2f__types.f90 --outputFormat=fixed --separateOutput --pathSuffix "" --filenameSuffix "_oad" -m r -i ad_inline.f \$<
 	# the target is a placeholder to trigger a single execution of the rule
 	touch \$@
 # put this so make knows about the postprocessing output
@@ -3407,10 +3407,10 @@ OAD_intrinsics_oad.f \$(CB2M_AD_FILES:.f$FS90=_oad.f): postProcess.tag
 	\$(LN) \${XAIFSCHEMAROOT}/schema/\$@ .
 
 # link the support files:
-\$(OPENAD_SUPPORT_F90_SRC_FILES) \$(OPENAD_SUPPORT_C_SRC_FILES):
+\$(OPENAD_SUPPORT_F90_SRC_FILES) \$(OPENAD_SUPPORT_C_SRC_FILES) \$(PPEXTRAS):
 	\$(LN) \${OADTOOLS}/\$@ .
 
-AD_CLEAN += *_mod.h *_mod.F90 *.FF90 *.mod-whirl temp.sed oad_cp.* postProcess.tag \$(PPEXTRAS:.F=.f)
+AD_CLEAN += *_mod.h *_mod.F90 *.FF90 *.mod-whirl temp.sed oad_cp.* postProcess.tag
 
 # ============ end OpenAD specific section ==============
 
