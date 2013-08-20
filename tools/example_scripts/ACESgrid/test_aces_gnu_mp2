@@ -6,7 +6,7 @@
 #PBS -e /data/jm_c/test_acesgrid/output/tst_mp2.stderr
 #PBS -o /data/jm_c/test_acesgrid/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.15 2013/08/14 17:58:13 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.16 2013/08/20 18:53:10 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -128,11 +128,19 @@ if test -x $HERE/$check_sh ; then
    ( cd $HERE ; ./$check_sh > ${check_sh}.log 2>&1 ) &
 fi
 
-# avoid hanging in fizhi-cs-32x32x40 (due to I/O problems with g77)
-echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx
-./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx
+SavD="$HOME/test_$dNam/send"
+SEND="ssh login $SavD/mpack"
+
+echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx \
+  -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx \
+  -send "$SEND" -sd $SavD -a jmc@mitgcm.org
 
 echo ''
-echo ../tools/do_tst_2+2 -mpi -exe \"$EXE\" -o ${dNam}-$sfx -a NONE
-../tools/do_tst_2+2 -mpi -exe "$EXE" -o ${dNam}-$sfx -a NONE
+#echo ../tools/do_tst_2+2 -mpi -exe \"$EXE\" -o ${dNam}-$sfx -a NONE
+#../tools/do_tst_2+2 -mpi -exe "$EXE" -o ${dNam}-$sfx -a NONE
+echo ../tools/do_tst_2+2 -mpi -exe \"$EXE\" -o ${dNam}-$sfx \
+  -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+../tools/do_tst_2+2 -mpi -exe "$EXE" -o ${dNam}-$sfx \
+  -send "$SEND" -sd $SavD -a jmc@mitgcm.org
 

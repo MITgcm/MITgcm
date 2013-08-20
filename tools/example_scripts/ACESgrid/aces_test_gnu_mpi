@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_gnu.stderr
 #PBS -o /home/jmc/test_aces/output/tst_gnu.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_gnu_mpi,v 1.26 2013/08/12 19:29:12 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_gnu_mpi,v 1.27 2013/08/20 18:53:11 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -108,9 +108,14 @@ else
   exit
 fi
 
+SavD="$HOME/test_$dNam/send"
+SEND="ssh geo $SavD/mpack"
+
 # avoid hanging in fizhi-cs-32x32x40 (due to I/O problems with g77)
 echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx \
- -skd fizhi-cs-32x32x40
+  -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org -skd fizhi-cs-32x32x40
+# -skd fizhi-cs-32x32x40
 ./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx \
- -skd fizhi-cs-32x32x40
+  -send "$SEND" -sd $SavD -a jmc@mitgcm.org -skd fizhi-cs-32x32x40
+# -skd fizhi-cs-32x32x40
 

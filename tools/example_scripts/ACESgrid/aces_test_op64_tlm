@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_tlm.stderr
 #PBS -o /home/jmc/test_aces/output/tst_tlm.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tlm,v 1.5 2013/08/12 19:29:12 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tlm,v 1.6 2013/08/20 18:53:11 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: test using open64 + "Trap Un-initialised Var." option
@@ -34,7 +34,6 @@ sfx='tlm'
  export GSL_IEEE_MODE=double-precision,mask-underflow,mask-denormalized
 #- need this to get "staf":
  export PATH="$PATH:$HOME/bin"
-
 
 #- keep a copy of MPI_MFILE:
 cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
@@ -113,8 +112,13 @@ else
   exit
 fi
 
-echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx
-./testreport $options -of $OPTFILE -odir ${dNam}-$sfx
+SavD="$HOME/test_$dNam/send"
+SEND="ssh geo $SavD/mpack"
+
+echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
+  -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
+  -send "$SEND" -sd $SavD -a jmc@mitgcm.org
 
 #echo -n 'run ./testreport -clean ...'
 #./testreport -tlm -clean > /dev/null 2>&1

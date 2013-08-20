@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_g77.stderr
 #PBS -o /home/jmc/test_aces/output/tst_g77.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_g77_adm,v 1.15 2013/08/12 19:29:12 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_g77_adm,v 1.16 2013/08/20 18:53:11 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for Adjoint test using g77 compiler
@@ -110,8 +110,13 @@ else
   exit
 fi
 
-echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx
-./testreport $options -of $OPTFILE -odir ${dNam}-$sfx
+SavD="$HOME/test_$dNam/send"
+SEND="ssh geo $SavD/mpack"
+
+echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
+  -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
+  -send "$SEND" -sd $SavD -a jmc@mitgcm.org
 
 #echo -n 'run ./testreport -clean ...'
 #./testreport $options -clean > /dev/null 2>&1

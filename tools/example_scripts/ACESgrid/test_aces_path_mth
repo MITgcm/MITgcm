@@ -6,7 +6,7 @@
 #PBS -e /data/jm_c/test_acesgrid/output/tst_mth.stderr
 #PBS -o /data/jm_c/test_acesgrid/output/tst_mth.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_path_mth,v 1.11 2013/06/13 22:01:34 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_path_mth,v 1.12 2013/08/20 18:53:11 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -111,10 +111,17 @@ else
   exit
 fi
 
-echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx
-./testreport $options -of $OPTFILE -odir ${dNam}-$sfx
+SavD="$HOME/test_$dNam/send"
+SEND="ssh login $SavD/mpack"
+
+echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
+  -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
+  -send "$SEND" -sd $SavD -a jmc@mitgcm.org
 
 echo ''
-echo ../tools/do_tst_2+2 -o ${dNam}-$sfx -a NONE
-../tools/do_tst_2+2 -o ${dNam}-$sfx -a NONE
+#echo ../tools/do_tst_2+2 -o ${dNam}-$sfx -a NONE
+#../tools/do_tst_2+2 -o ${dNam}-$sfx -a NONE
+echo ../tools/do_tst_2+2 -o ${dNam}-$sfx -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+../tools/do_tst_2+2 -o ${dNam}-$sfx -send "$SEND" -sd $SavD -a jmc@mitgcm.org
 
