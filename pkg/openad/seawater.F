@@ -1,4 +1,4 @@
-C$Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/seawater.F,v 1.3 2012/07/05 22:50:54 jmc Exp $
+C$Header: /u/gcmpack/MITgcm/pkg/openad/seawater.F,v 1.1 2013/08/20 17:41:50 jahn Exp $
 C$Name:  $
 
 #include "CPP_OPTIONS.h"

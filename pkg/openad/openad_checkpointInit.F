@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/openad_checkpointInit.F,v 1.2 2009/02/24 21:40:24 utke Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/openad_checkpointInit.F,v 1.1 2013/08/20 17:41:49 jahn Exp $
 
       SUBROUTINE openad_checkpointinit(uCheckLev1, 
      +     uCheckLev2, 

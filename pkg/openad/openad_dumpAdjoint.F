@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/openad_dumpAdjoint.F,v 1.3 2013/03/21 18:06:18 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/openad_dumpAdjoint.F,v 1.1 2013/08/20 17:41:50 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
