@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.23 2013/07/07 22:24:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.24 2013/08/20 20:20:47 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -33,9 +33,10 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "FFIELDS.h"
 c#include "GRID.h"
+#include "SURFACE.h"
 #include "DYNVARS.h"
+#include "FFIELDS.h"
 #ifdef ALLOW_GMREDI
 #include "GMREDI.h"
 #include "GMREDI_TAVE.h"
@@ -389,6 +390,33 @@ C         the product ghat*diffKzS (and not ghat alone).
           ENDDO
          ENDDO
         ENDDO
+#ifdef NONLIN_FRSURF
+        IF ( select_rStar.GT.0 .AND. staggerTimeStep ) THEN
+         DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            uVel(i,j,k,bi,bj) = uVel(i,j,k,bi,bj)
+     &                        / rStarFacW(i,j,bi,bj)
+            vVel(i,j,k,bi,bj) = vVel(i,j,k,bi,bj)
+     &                        / rStarFacS(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ELSEIF ( select_rStar.GT.0 ) THEN
+         DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            uVel(i,j,k,bi,bj) = uVel(i,j,k,bi,bj)
+     &                        / rStarFacNm1W(i,j,bi,bj)
+            vVel(i,j,k,bi,bj) = vVel(i,j,k,bi,bj)
+     &                        / rStarFacNm1S(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ELSEIF ( nonlinFreeSurf.GT.0 ) THEN
+          STOP 'OFFLINE_FIELDS_LOAD: r-Coord NLFS code missing'
+        ENDIF
+#endif /* NONLIN_FRSURF */
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
 c          surfaceForcingT(i,j,bi,bj) = bWght*hflx0(i,j,bi,bj)
