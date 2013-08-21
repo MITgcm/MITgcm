@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1913 2013/08/18 20:24:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1914 2013/08/21 00:25:30 jahn Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o adjoint with OpenAD:
+  - move OpenAD-specific files from verification/OpenAD/code_oad_all to a new
+    package openad.  This package has to be compiled for all runs with OpenAD
+    instead of specifying code_oad_all as a modification directory.
+  - link the fortran templates from tools/OAD_support to the build directory
+    for preprocessing to avoid conflicts between different setups compiled
+    simultaneously and simplify cleanup.
 o pkg/exf:
   - in exf_getforcing.F: comment out most of the EXCH calls (fields used by
     main model or other pkgs are exchanged in EXF_MAPFIELDS).
