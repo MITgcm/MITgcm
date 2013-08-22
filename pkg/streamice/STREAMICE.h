@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.4 2013/06/24 20:53:06 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.5 2013/08/22 22:56:18 jmc Exp $
 C $Name:  $
 
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -228,7 +228,7 @@ C                               specified all ufacemask values except for calvin
 C                               CONSTANT FOR A SIMULATION (ie not changes after streamice_init_fixed)
 C     STREAMICE_vfacemask_bdry  CONSTANT FOR A SIMULATION
 C     STREAMICE_calve_mask      specified allowed extent of ice shelf
-C                                (should be integer, but don't know howvi sre to read ints from file)
+C                                (should be integer, but do not know howvi sre to read ints from file)
 C                               not necessarily used, but CONSTANT FOR A SIMULATION
 C     STREAMICE_float_cond      will only be used if partial floatation is implemented
 
@@ -397,7 +397,7 @@ C       V_streamice,
 C       visc_streamice,
 C       tau_beta_eff_streamice,
 C       area_shelf_streamice
-C       (and don't forget STREAMICE_hmask)
+C       (and do not forget STREAMICE_hmask)
 C
 C       visc & tau are now calculated based on U,V in streamice_vel_solve
 C        but with Hybdrid stress formulation they will become part of

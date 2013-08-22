@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/adstreamice_cg_solve.F,v 1.3 2013/08/18 00:22:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/adstreamice_cg_solve.F,v 1.4 2013/08/22 22:56:18 jmc Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -7,9 +7,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
       SUBROUTINE ADSTREAMICE_CG_SOLVE(
-     U                               U_state,    ! velocities - need to be recalc'ed
+     U                               U_state,    ! velocities - need to be recalc ed
      I                               cg_Bu,      ! adjoint of vel (input)
-     U                               V_state,    ! velocities - need to be recalc'ed
+     U                               V_state,    ! velocities - need to be recalc ed
      I                               cg_Bv,      ! adjoint of vel (input)
      I                               Bu_state,   ! to recalc velocities
      U                               cg_Uin,     ! adjoint of RHS (output)
