@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.5 2013/07/22 07:57:45 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.6 2013/08/22 23:01:11 jmc Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -208,7 +208,7 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
 ! with this setup hmask is initialized here rather than in init_varia,
 ! because it is needed to set no-flow boundaries, even though the field
 ! could potentially change due to ice shelf front advance and calving
-! (POTENTIAL PROBLEMS WITH TAF?????? USE TEMP FIELD HERE AND SET HMASK IN INIT_VARIA??)
+! (POTENTIAL PROBLEMS WITH TAF ? USE TEMP FIELD HERE AND SET HMASK IN INIT_VARIA ?)
 
       IF ( STREAMICEhMaskFile .NE. ' ') THEN
         _BARRIER
@@ -457,7 +457,7 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
             STREAMICE_vfacemask_bdry (i,j,bi,bj) = 0.0
            ELSEIF (temp_hmask(i,j,bi,bj).eq.-1.0) THEN
             STREAMICE_vfacemask_bdry (i,j,bi,bj) = 0.0
-           ELSE   
+           ELSE
             STREAMICE_vfacemask_bdry (i,j,bi,bj) = -1.0
            ENDIF
 
