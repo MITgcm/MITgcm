@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.261 2013/08/22 16:04:18 jahn Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.262 2013/08/22 20:49:59 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -1576,17 +1576,17 @@ for ac_option in "$@" ; do
 
 done
 
-TMP=./genmk_$$
+#TMP=./genmk_$$
 #- try to put temporary files in system-local /tmp dir
-#TMP=/tmp/genmk_$$
-#touch $TMP ; retVal=$?
-#if [ $retVal -eq 0 ] ; then
-#  if test ! -r $TMP ; then TMP=./genmk_$$ ; fi
-#else
-#  TMP=./genmk_$$
-#fi
-#rm -f $TMP
-##echo "  temp files: $TMP.*"
+TMP=/tmp/genmk_$$
+touch $TMP ; retVal=$?
+if [ $retVal -eq 0 ] ; then
+  if test ! -r $TMP ; then TMP=./genmk_$$ ; fi
+else
+  TMP=./genmk_$$
+fi
+rm -f $TMP
+#echo "  temp files: $TMP.*"
 
 printf "  getting local config information:  "
 if test -f $gm_local ; then

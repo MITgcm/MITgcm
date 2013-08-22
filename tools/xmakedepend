@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 #
-# $Header: /u/gcmpack/MITgcm/tools/xmakedepend,v 1.11 2013/08/22 01:12:20 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/xmakedepend,v 1.12 2013/08/22 20:49:59 jmc Exp $
 # $Name:  $
 #
 # $TOG: mdepend.cpp /main/13 1997/06/20 21:12:18 kaleb $
@@ -37,17 +37,17 @@ fi
 
 silent='-'
 
-TMP=./mdep$$
+#TMP=./mdep$$
 #- try to put temporary files in system-local /tmp dir
-#TMP=/tmp/mdep$$
-#touch $TMP ; retVal=$?
-#if [ $retVal -eq 0 ] ; then
-#  if test ! -r $TMP ; then TMP=./mdep$$ ; fi
-#else
-#  TMP=./mdep$$
-#fi
-#rm -f $TMP
-##echo "temp files: $TMP"
+TMP=/tmp/mdep$$
+touch $TMP ; retVal=$?
+if [ $retVal -eq 0 ] ; then
+  if test ! -r $TMP ; then TMP=./mdep$$ ; fi
+else
+  TMP=./mdep$$
+fi
+rm -f $TMP
+#echo "temp files: $TMP"
 
 CPPCMD=${TMP}a
 DEPENDLINES=${TMP}b
