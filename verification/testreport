@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.193 2013/08/20 17:43:43 jahn Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.194 2013/08/22 19:34:15 jmc Exp $
 #  $Name:  $
 #
 
@@ -429,7 +429,7 @@ genmakemodel()
 makeclean()
 {
     # makeclean directory
-    if test "x$NODEPEND" = xf ; then rm -f $1/make.tr_log ; fi
+    if test "x$NOGENMAKE" = xf ; then rm -f $1/make.tr_log ; fi
     if test "x$NOCLEAN" = xt ; then
 	echo "make Clean skipped!"
     else
