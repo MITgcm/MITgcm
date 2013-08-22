@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.260 2013/08/22 01:10:53 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.261 2013/08/22 16:04:18 jahn Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -2374,6 +2374,23 @@ WARNING: the "radtrans" package was enabled but tests failed to
      LAPACK library to link against.
 *********************************************************************
 EOF
+    fi
+fi
+
+#  Make sure the openad package is enabled if using OpenAD
+if test "x$OPENAD" != x ; then
+    echo " $PACKAGES " | grep ' openad ' > /dev/null 2>&1
+    RETVAL=$?
+    if test "x$RETVAL" != x0 ; then
+	cat <<EOF
+
+*********************************************************************
+ERROR: when generating an adjoint with OpenAD, the openad package
+  must be enabled.  Please add it to packages.conf.
+*********************************************************************
+
+EOF
+        exit 1
     fi
 fi
 
