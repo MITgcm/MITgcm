@@ -134,6 +134,10 @@ def parsemeta(metafile):
 ################################################################################
 
 def message(*args):
+    sys.stdout.write(' '.join([str(s) for s in args]) + '\n')
+
+
+def warning(*args):
     sys.stderr.write(' '.join([str(s) for s in args]) + '\n')
 
 
@@ -269,16 +273,16 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
     if itrs is np.nan:
         # all iterations
         itrs = scanforfiles(fnamearg)
-        message('Reading {0} time levels: '.format(len(itrs)), *itrs)
+        warning('Reading {0} time levels: '.format(len(itrs)), *itrs)
         returnits = True
         itrsislist = True
     elif itrs is np.inf:
         # last iteration
         itrs = scanforfiles(fnamearg)
         if len(itrs):
-            message('Found {0} time levels, reading'.format(len(itrs)), itrs[-1])
+            warning('Found {0} time levels, reading'.format(len(itrs)), itrs[-1])
         else:
-            message('Found 0 time levels for {}'.format(fnamearg))
+            warning('Found 0 time levels for {}'.format(fnamearg))
         itrs = itrs[-1:]
         returnits = True
         itrsislist = False
@@ -324,9 +328,9 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
         if len(metafiles) == 0:
             raise IOError('No files found for ' + fname + '.meta')
 
-        message(metafiles[0])
+        warning(metafiles[0])
 
-        if debug: message('Found',len(metafiles),'metafiles for iteration',it)
+        if debug: warning('Found',len(metafiles),'metafiles for iteration',it)
 
         for metafile in metafiles:
             gdims,i0s,ies,timestep,timeinterval,map2gl,meta = readmeta(metafile)
@@ -420,7 +424,7 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
                     arrtile[...] = readdata(datafile, tp, shape=tileshape)[recinds]
                 else:
                     if Ie > I0 and Je > J0:
-                        if debug: print datafile, I0,Ie,J0,Je
+                        if debug: message(datafile, I0,Ie,J0,Je)
                         arrtile[...] = readdata(datafile, tp, shape=tileshape)[recinds + np.s_[...,J0:Je,I0:Ie]]
             else:
                 f = open(datafile)
@@ -431,7 +435,7 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
                         arrtile[irec] = np.fromfile(f, tp, count=count).reshape(recshape)[levinds]
                     else:
                         if Ie > I0 and Je > J0:
-                            if debug: print datafile, I0,Ie,J0,Je
+                            if debug: message(datafile, I0,Ie,J0,Je)
                             tilerec = np.fromfile(f, tp, count=count).reshape(recshape)
                             arrtile[irec] = tilerec[levinds + np.s_[...,J0:Je,I0:Ie]]
                 f.close()
