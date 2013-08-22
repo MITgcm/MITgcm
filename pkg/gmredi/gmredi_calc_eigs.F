@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_eigs.F,v 1.3 2013/07/11 14:33:23 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_eigs.F,v 1.4 2013/08/22 23:01:47 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -260,7 +260,7 @@ C         and the first M baroclinic modes (eigenvectors)
        ENDDO
       ENDDO
 
-C     integrate N using something like Simpson's rule (but not quite)
+C     integrate N using something like Simpson s rule (but not quite)
 C     drC*( (N(k+1)+N(k+2))/2 + (N(k)+N(k+1))/2 )/2
 C     when k=Nr, say that N(k+2)=0 and N(k+1)=0
       k=Nr

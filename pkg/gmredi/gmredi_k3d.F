@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.6 2013/08/22 17:12:18 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.7 2013/08/22 23:01:47 jmc Exp $
 C $Name:  $
 #include "GMREDI_OPTIONS.h"
 
@@ -376,7 +376,7 @@ C      The bottom of the grid cell is shallower than the top
 C      integration level, so, advance the depth.
        IF (-rF(k+1).LE. GM_K3D_EadyMinDepth) CYCLE
 
-C      Don't bother going any deeper since the top of the
+C      Do not bother going any deeper since the top of the
 C      cell is deeper than the bottom integration level
        IF (-rF(k).GE.GM_K3D_EadyMaxDepth) EXIT
 
@@ -679,7 +679,7 @@ C     This is necessary to find the eigenvectors at those points
         ENDDO
        ENDDO
 C     This fudge is necessary to avoid division by zero in gmredi_calc_eigs.
-C     It does not affect the end result since it's in the overlap region.
+C     It does not affect the end result since it is in the overlap region.
        j=1-Oly
        DO i=1-Olx,sNx+Olx
         N2W(i,j,k) = GM_K3D_minN2
