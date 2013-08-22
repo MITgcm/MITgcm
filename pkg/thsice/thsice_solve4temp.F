@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.36 2013/06/04 22:52:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.37 2013/08/22 02:10:48 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -50,12 +50,12 @@ C     !USES:
 C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
-#include "THSICE_VARS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
+#include "THSICE_SIZE.h"
+c#include "THSICE_VARS.h"
 # ifdef ALLOW_EXF
 #  include "EXF_FIELDS.h"
 #  include "EXF_PARAM.h"
