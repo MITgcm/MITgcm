@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.5 2013/08/08 22:39:36 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.6 2013/08/22 17:12:18 m_bates Exp $
 C $Name:  $
 #include "GMREDI_OPTIONS.h"
 
@@ -88,7 +88,7 @@ C     small  :: a small number (to avoid floating point exceptions)
 
 C     dfdy    :: gradient of the Coriolis paramter, df/dy, 1/(m*s)
 C     dfdx    :: gradient of the Coriolis paramter, df/dx, 1/(m*s)
-C     gradf   :: total gradient of the Coriolis paramter, SQRT(df/dx**2+df/dy**2), 1/(m*s)
+C     gradf   :: gradient of the Coriolis paramter at a cell centre, 1/(m*s)
 C     RRhines :: The Rhines scale (m)
 C     Rmix    :: Mixing length
 C     N2      :: Square of the buoyancy frequency (1/s**2)
@@ -250,7 +250,7 @@ C       Not limited
       ENDDO
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        gradf(i,j) = SQRT( dfdx(i,j)**2 + dfdy(i,j)**2 )
+        gradf(i,j) = recip_rSphere*fCoriCos(i,j,bi,bj)
        ENDDO
       ENDDO
 
@@ -413,8 +413,7 @@ C       If the minimum depth for the integration is deeper than ocean
 C       bottom then give the eady growth rate a dummy, non-zero value 
 C       to avoid floating point exceptions.  These points are taken care
 C       of by setting K3D=GM_K3D_smallK later.
-        IF (kLow_C(i,j).NE.0 
-     &       .AND. -r_Low(i,j,bi,bj).LT.GM_K3D_EadyMinDepth) THEN
+        IF (-r_Low(i,j,bi,bj).LE.GM_K3D_EadyMinDepth) THEN
           eady(i,j) = small
 
 C       Otherwise, multiply eady by the various constants to get the 
@@ -469,7 +468,7 @@ C     Calculate the diffusivity (on the mass grid)
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
          IF (k.LE.kLow_C(i,j)) THEN
-           IF (-r_Low(i,j,bi,bj).LT.GM_K3D_EadyMinDepth) THEN
+           IF (-r_Low(i,j,bi,bj).LE.GM_K3D_EadyMinDepth) THEN
              K3D(i,j,k,bi,bj) = GM_K3D_smallK
            ELSE
              IF (urms(i,j,k).EQ.0.0) THEN

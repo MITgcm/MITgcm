@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.12 2013/07/11 14:33:23 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.13 2013/08/22 17:12:18 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -387,7 +387,7 @@ c     IF ( useDiagnotics ) THEN
         
         diagName  = 'GM_Xix  '
         diagTitle = '-k dq/dx expansion'
-        diagUnits = '1/(m*s)         '
+        diagUnits = 'm/s**2          '
         diagCode  = 'UU      MR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -395,7 +395,7 @@ c     IF ( useDiagnotics ) THEN
         
         diagName  = 'GM_Xiy  '
         diagTitle = '-k dq/dy expansion'
-        diagUnits = '1/(m*s)         '
+        diagUnits = 'm/s**2          '
         diagCode  = 'VV      MR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
