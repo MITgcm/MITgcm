@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.259 2013/08/20 17:27:03 jahn Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.260 2013/08/22 01:10:53 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -208,11 +208,11 @@ test_for_string_in_file() {
 expand_pkg_groups() {
     new_packages=
     if test -r $PKG_GROUPS ; then
-	cat $PKG_GROUPS | sed -e 's/#.*$//g' | sed -e 's/:/ : /g' > ./p1.tmp
-	cat ./p1.tmp | $AWK '(NF>2 && $2==":"){ print $0 }' > ./p2.tmp
+	cat $PKG_GROUPS | sed -e 's/#.*$//g' | sed -e 's/:/ : /g' > $TMP.p1
+	cat $TMP.p1 | $AWK '(NF>2 && $2==":"){ print $0 }' > $TMP.p2
 	matched=0
 	for i in $PACKAGES ; do
-	    line=`grep "^ *$i" ./p2.tmp`
+	    line=`grep "^ *$i" $TMP.p2`
 	    RETVAL=$?
 	    if test "x$RETVAL" = x0 ; then
 		matched=1
@@ -224,7 +224,7 @@ expand_pkg_groups() {
 	    fi
 	done
 	PACKAGES=$new_packages
-	rm -f ./p[1,2].tmp
+	rm -f $TMP.p[1,2]
 	return $matched
     else
 	echo "Warning: can't read package groups definition file: $PKG_GROUPS"
@@ -1351,7 +1351,7 @@ gm_s3="FEXTRAFLAGS IEEE DEVEL GSL TS PAPIS PCLS PAPI PCL HPMT DUMPSTATE"
 gm_s4="LN S64 LINK PACKAGES INCLUDES FFLAGS FOPTIM"
 gm_s5="CFLAGS LIBS KPP KFLAGS1 KFLAGS2 KPPFILES NOOPTFILES NOOPTFLAGS"
 gm_s6="PWD TOOLSDIR SOURCEDIRS INCLUDEDIRS EXEDIR EXECUTABLE EXEHOOK"
-gm_s7="THISHOST THISUSER THISDATE THISVER MACHINE FC_NAMEMANGLE"
+gm_s7="TMP THISHOST THISUSER THISDATE THISVER MACHINE FC_NAMEMANGLE"
 gm_s8="HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME HAVE_LAPACK HAVE_FLUSH"
 
 #  The following are all related to adjoint/tangent-linear stuff
@@ -1575,6 +1575,18 @@ for ac_option in "$@" ; do
     esac
 
 done
+
+TMP=./genmk_$$
+#- try to put temporary files in system-local /tmp dir
+#TMP=/tmp/genmk_$$
+#touch $TMP ; retVal=$?
+#if [ $retVal -eq 0 ] ; then
+#  if test ! -r $TMP ; then TMP=./genmk_$$ ; fi
+#else
+#  TMP=./genmk_$$
+#fi
+#rm -f $TMP
+##echo "  temp files: $TMP.*"
 
 printf "  getting local config information:  "
 if test -f $gm_local ; then
@@ -2237,11 +2249,11 @@ if test "x${PKG_GROUPS}" != x ; then
 fi
 
 echo "  applying DISABLE settings"
-echo "" > ./.tmp_pack
+echo "" > $TMP.pack
 for i in $PACKAGES ; do
-    echo $i >> ./.tmp_pack
+    echo $i >> $TMP.pack
 done
-for i in `grep  "-" ./.tmp_pack` ; do
+for i in `grep  "-" $TMP.pack` ; do
     j=`echo $i | sed 's/[-]//'`
     DISABLE="$DISABLE $j"
 done
@@ -2259,7 +2271,7 @@ for p in $PACKAGES ; do
 done
 PACKAGES="$pack"
 echo "  applying ENABLE settings"
-echo "" > ./.tmp_pack
+echo "" > $TMP.pack
 PACKAGES="$PACKAGES $ENABLE"
 # Test if each explicitly referenced package exists
 for i in $PACKAGES ; do
@@ -2268,13 +2280,13 @@ for i in $PACKAGES ; do
 	echo "Error: dir '$ROOTDIR/pkg/$i' missing for package '$i'"
 	exit 1
     fi
-    echo $i >> ./.tmp_pack
+    echo $i >> $TMP.pack
 done
 PACKAGES=
-for i in `grep -v "-" ./.tmp_pack | sort | uniq` ; do
+for i in `grep -v "-" $TMP.pack | sort | uniq` ; do
     PACKAGES="$PACKAGES $i"
 done
-rm -f ./.tmp_pack
+rm -f $TMP.pack
 echo "    packages are: $PACKAGES"
 
 #  Check for package MNC: if NetCDF is available, then build the MNC
@@ -2553,20 +2565,20 @@ fi
 
 #  Here, we build the list of files to be "run through" the adjoint
 #  compiler.
-if test -f ./adSrcFiles.tmp ; then
-    rm -f ./adSrcFiles.tmp
+if test -f $TMP.adSrcFiles ; then
+    rm -f $TMP.adSrcFiles
 fi
 echo "  Creating the list of files for the adjoint compiler."
-touch adSrcFiles.tmp
+touch $TMP.adSrcFiles
 for i in $SOURCEDIRS ; do
     list_files=`( cd $i && ls -1 *.list 2>/dev/null )`
     for j in $list_files ; do
-	cat $i/$j >> adSrcFiles.tmp
+	cat $i/$j >> $TMP.adSrcFiles
     done
 done
 if test ! "x"$FS = "x.f" ; then
-    cat adSrcFiles.tmp | sed -e "s/\.f/.$FS/g" > adSrcFiles.tmp_f
-    mv -f adSrcFiles.tmp_f adSrcFiles.tmp
+    cat $TMP.adSrcFiles | sed -e "s/\.f/.$FS/g" > $TMP.adSrcFiles_f
+    mv -f $TMP.adSrcFiles_f $TMP.adSrcFiles
 fi
 
 echo
@@ -2588,10 +2600,10 @@ if test ! "x$DIVA" = x -a ! "x$MPI" = x ; then
 fi
 
 echo "  Determining the list of source and include files"
-rm -rf .links.tmp
-mkdir .links.tmp
-touch .links.tmp/foo
-if test ! -r ".links.tmp/foo" ; then
+rm -rf $TMP.links
+mkdir $TMP.links
+touch $TMP.links/foo
+if test ! -r "$TMP.links/foo" ; then
     echo
     echo "ERROR : something is wrong with your directory permissions or"
     echo "   your user file-creation mask (\"umask\") since creating a"
@@ -2607,7 +2619,7 @@ if test ! -r ".links.tmp/foo" ; then
     echo
     exit 1
 fi
-rm -f .links.tmp/foo
+rm -f $TMP.links/foo
 
 if test "x$OPENAD" != x ; then
     OAD_DONT_COMPILE="/dev/null"
@@ -2650,14 +2662,14 @@ if test "x$OPENAD" != x ; then
     echo "   OpenAD exceptions:  "
 fi
 
-echo "# This section creates symbolic links" > srclinks.tmp
-echo "" >> srclinks.tmp
-printf 'F77_SRC_FILES = ' > F77srclist.tmp
-printf 'NON_AD_F77_SRC_FILES = ' > nonADF77srclist.tmp
-printf 'C_SRC_FILES = '   > csrclist.tmp
-printf 'F90_SRC_FILES = ' > F90srclist.tmp
-printf 'H_SRC_FILES = '   > hsrclist.tmp
-printf 'AD_FLOW_FILES = ' > ad_flow_files.tmp
+echo "# This section creates symbolic links" > $TMP.srclinks
+echo "" >> $TMP.srclinks
+printf 'F77_SRC_FILES = ' > $TMP.F77srclist
+printf 'NON_AD_F77_SRC_FILES = ' > $TMP.nonADF77srclist
+printf 'C_SRC_FILES = '   > $TMP.csrclist
+printf 'F90_SRC_FILES = ' > $TMP.F90srclist
+printf 'H_SRC_FILES = '   > $TMP.hsrclist
+printf 'AD_FLOW_FILES = ' > $TMP.ad_flow_files
 alldirs="$SOURCEDIRS $INCLUDEDIRS ."
 for d in $alldirs ; do
     deplist=
@@ -2667,7 +2679,7 @@ for d in $alldirs ; do
 	sfiles=`( echo $sfiles | grep -v _cb2m\. )`
     fi
     for sf in $sfiles ; do
-	if test ! -r ".links.tmp/$sf" ; then
+	if test ! -r "$TMP.links/$sf" ; then
 	    if test -f "$d/$sf" ; then
 		ignore_f=f
 		case $d/$sf in
@@ -2692,7 +2704,7 @@ for d in $alldirs ; do
 			if test "x$HAVE_TEST_L" = xt -a "x$d" = x. -a -L $sf ; then
 			    ignore_f=t
 			else
-			    touch .links.tmp/$sf
+			    touch $TMP.links/$sf
 			    deplist="$deplist $sf"
 			fi
 			;;
@@ -2701,23 +2713,23 @@ for d in $alldirs ; do
 		    extn=`echo $sf | $AWK -F. '{print $NF}'`
 		    case $extn in
 		      F)
-			echo    " \\"  >> F77srclist.tmp
-			printf " $sf" >> F77srclist.tmp
+			echo    " \\"  >> $TMP.F77srclist
+			printf " $sf" >> $TMP.F77srclist
 			if test "x$OPENAD" = x ; then
 			    basename=${sf%%.F}
-			    isAD=`egrep ^$basename.f'[ 	]*' adSrcFiles.tmp`
+			    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
 			    if test -z "$isAD" ; then
-				echo    " \\"  >> nonADF77srclist.tmp
-				printf " $sf" >> nonADF77srclist.tmp
+				echo    " \\"  >> $TMP.nonADF77srclist
+				printf " $sf" >> $TMP.nonADF77srclist
 			    fi
 			else #- OpenAD case:
 			    basename=${sf%%.F}
-			    isAD=`egrep ^$basename.f'[ 	]*' adSrcFiles.tmp`
+			    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
 			    if test -z "$isAD" ; then
 				toBeIgnored=`egrep ^$basename'[      ]*' ${OAD_DONT_COMPILE}`
 				if test -z "$toBeIgnored" ; then
-				    echo    " \\"  >> nonADF77srclist.tmp
-				    printf " $sf" >> nonADF77srclist.tmp
+				    echo    " \\"  >> $TMP.nonADF77srclist
+				    printf " $sf" >> $TMP.nonADF77srclist
 				else
 				    echo "    not to be compiled   :  $sf"
 				fi
@@ -2732,27 +2744,27 @@ for d in $alldirs ; do
 				    echo "    original to be kept  :  $sf"
 				fi
 				if test -n "$notToBeTransformed" -o -n "$untransformedVersionToBeKept" ; then
-				    echo    " \\"  >> nonADF77srclist.tmp
-				    printf " $sf" >> nonADF77srclist.tmp
+				    echo    " \\"  >> $TMP.nonADF77srclist
+				    printf " $sf" >> $TMP.nonADF77srclist
 				fi
 			    fi
 			fi
 			;;
 		    F90)
-			echo    " \\"  >> F90srclist.tmp
-			printf " $sf" >> F90srclist.tmp
+			echo    " \\"  >> $TMP.F90srclist
+			printf " $sf" >> $TMP.F90srclist
 			;;
 		    c)
-			echo    " \\"  >> csrclist.tmp
-			printf " $sf" >> csrclist.tmp
+			echo    " \\"  >> $TMP.csrclist
+			printf " $sf" >> $TMP.csrclist
 			;;
 		    h)
-			echo    " \\"  >> hsrclist.tmp
-			printf " $sf" >> hsrclist.tmp
+			echo    " \\"  >> $TMP.hsrclist
+			printf " $sf" >> $TMP.hsrclist
 			;;
 		    flow)
-			echo    " \\"  >> ad_flow_files.tmp
-			printf " $sf" >> ad_flow_files.tmp
+			echo    " \\"  >> $TMP.ad_flow_files
+			printf " $sf" >> $TMP.ad_flow_files
 			;;
 		   esac
 	        fi
@@ -2761,23 +2773,23 @@ for d in $alldirs ; do
     done
     if test "x$deplist" != x ; then
       if test "$d" != "." ; then
-	echo "" >> srclinks.tmp
-	echo "#  These files are linked from $d" >> srclinks.tmp
-	echo "$deplist :" >> srclinks.tmp
+	echo "" >> $TMP.srclinks
+	echo "#  These files are linked from $d" >> $TMP.srclinks
+	echo "$deplist :" >> $TMP.srclinks
 # We need to make sure that the link isn't already there.
 # This may happen when make thinks that a header file has to be "remade"
 # because a module it depends on has changed.  In this case we do nothing.
-	printf "\tif [ ! -L \$@ ]; then \$(LN) %s/\$@ \$@; fi\n" $d >> srclinks.tmp
+	printf "\tif [ ! -L \$@ ]; then \$(LN) %s/\$@ \$@; fi\n" $d >> $TMP.srclinks
       fi
     fi
 done
-rm -rf .links.tmp
-echo "" >> F77srclist.tmp
-echo "" >> nonADF77srclist.tmp
-echo "" >> csrclist.tmp
-echo "" >> F90srclist.tmp
-echo "" >> hsrclist.tmp
-echo "" >> ad_flow_files.tmp
+rm -rf $TMP.links
+echo "" >> $TMP.F77srclist
+echo "" >> $TMP.nonADF77srclist
+echo "" >> $TMP.csrclist
+echo "" >> $TMP.F90srclist
+echo "" >> $TMP.hsrclist
+echo "" >> $TMP.ad_flow_files
 
 CMDLINE=$0
 for xx in "$@" ; do nw=`echo $xx | wc -w`
@@ -2899,14 +2911,14 @@ MAKE = ${MAKE}
 
 EOF
 
-cat F77srclist.tmp      >> $MAKEFILE
-cat nonADF77srclist.tmp >> $MAKEFILE
-cat csrclist.tmp        >> $MAKEFILE
-cat F90srclist.tmp      >> $MAKEFILE
-cat hsrclist.tmp        >> $MAKEFILE
-cat ad_flow_files.tmp   >> $MAKEFILE
+cat $TMP.F77srclist      >> $MAKEFILE
+cat $TMP.nonADF77srclist >> $MAKEFILE
+cat $TMP.csrclist        >> $MAKEFILE
+cat $TMP.F90srclist      >> $MAKEFILE
+cat $TMP.hsrclist        >> $MAKEFILE
+cat $TMP.ad_flow_files   >> $MAKEFILE
 
-rm -f F77srclist.tmp nonADF77srclist.tmp csrclist.tmp F90srclist.tmp hsrclist.tmp ad_flow_files.tmp
+rm -f $TMP.F77srclist $TMP.nonADF77srclist $TMP.csrclist $TMP.F90srclist $TMP.hsrclist $TMP.ad_flow_files
 
 echo >> $MAKEFILE
 
@@ -3103,13 +3115,13 @@ done
 echo "  Add the source list for AD code generation"
 echo >> $MAKEFILE
 printf "AD_FILES = " >> $MAKEFILE
-AD_FILES=`cat adSrcFiles.tmp`
+AD_FILES=`cat $TMP.adSrcFiles`
 for i in $AD_FILES ; do
     echo    " \\" >> $MAKEFILE
     printf " $i" >> $MAKEFILE
 done
 echo >> $MAKEFILE
-rm -f adSrcFiles.tmp
+rm -f $TMP.adSrcFiles
 
 cat >>$MAKEFILE <<EOF
 
@@ -3134,7 +3146,7 @@ ad_input_code.$FS: \$(AD_FILES) \$(AD_FLOW_FILES)
 	cat \$(FLOWFILES) \$(AD_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ad_input_code.$FS
 
 ad_taf_output.$FS: ad_input_code.$FS
-	@-rm -f ad_input_code_ad.$FS
+	@-rm -f ad_input_code_ad.$FS ; echo ''
 	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.$FS
 	ls -l ad_input_code_ad.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
@@ -3183,7 +3195,7 @@ ftl_input_code.$FS: \$(AD_FILES)
 	cat \$(AD_FLOW_FILES) \$(AD_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ftl_input_code.$FS
 
 ftl_taf_output.$FS: ftl_input_code.$FS
-	@-rm -f ftl_input_code_tl.$FS
+	@-rm -f ftl_input_code_tl.$FS ; echo ''
 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) ftl_input_code.$FS
 	ls -l ftl_input_code_tl.$FS
 	cat ftl_input_code_tl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
@@ -3277,7 +3289,7 @@ for i in `cat ${OAD_CB2M_FILES}` ; do
   echo    " \\" >> $MAKEFILE
   printf " ${i}_mod.f$FS90" >> $MAKEFILE
 done
-AD_FILES=`cat adSrcFiles.tmp`
+AD_FILES=`cat $TMP.adSrcFiles`
 for i in $AD_FILES ; do
   basename=${i%%.f}
   toBeIgnored=`egrep ^$basename'[      ]*' ${OAD_DONT_COMPILE} ${OAD_DONT_TRANSFORM}`
@@ -3287,7 +3299,7 @@ for i in $AD_FILES ; do
   fi
 done
 echo >> $MAKEFILE
-rm -f adSrcFiles.tmp
+rm -f $TMP.adSrcFiles
 
 cat >>$MAKEFILE <<EOF
 
@@ -3446,8 +3458,8 @@ for i in $NOOPTFILES ; do
 done
 
 echo "  Add rules for links"
-cat srclinks.tmp >> $MAKEFILE
-rm -f srclinks.tmp
+cat $TMP.srclinks >> $MAKEFILE
+rm -f $TMP.srclinks
 
 echo "  Adding makedepend marker"
 printf "\n\n# DO NOT DELETE\n" >> $MAKEFILE
