@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 #
-# $Header: /u/gcmpack/MITgcm/tools/xmakedepend,v 1.10 2013/04/05 13:47:19 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/xmakedepend,v 1.11 2013/08/22 01:12:20 jmc Exp $
 # $Name:  $
 #
 # $TOG: mdepend.cpp /main/13 1997/06/20 21:12:18 kaleb $
@@ -26,7 +26,6 @@
 #	"-" (at least, that is what the documentation implies).
 #
 # $XFree86: xc/config/util/mdepend.cpp,v 3.2 1997/06/29 07:54:20 dawes Exp $
-#
 
 CPPARGS="-Dlinux -D__i386__ -D_POSIX_C_SOURCE=199309L -D_POSIX_SOURCE -D_XOPEN_SOURCE -D_BSD_SOURCE -D_SVID_SOURCE  -D_GNU_SOURCE  "
 CPPARGS="-traditional $CPPARGS"
@@ -39,6 +38,17 @@ fi
 silent='-'
 
 TMP=./mdep$$
+#- try to put temporary files in system-local /tmp dir
+#TMP=/tmp/mdep$$
+#touch $TMP ; retVal=$?
+#if [ $retVal -eq 0 ] ; then
+#  if test ! -r $TMP ; then TMP=./mdep$$ ; fi
+#else
+#  TMP=./mdep$$
+#fi
+#rm -f $TMP
+##echo "temp files: $TMP"
+
 CPPCMD=${TMP}a
 DEPENDLINES=${TMP}b
 TMPMAKEFILE=${TMP}c
@@ -188,7 +198,6 @@ done   | sed -e 's|/[^/.][^/]*/\.\.||g' -e 's|/\.[^.][^/]*/\.\.||g'     -e 's|"|
 	    }
 	}'   | sort -u   | awk '
 
-
 	    {
 	    newrec = rec " " $2
 	    if ($1 != old1)
@@ -212,7 +221,6 @@ done   | sed -e 's|/[^/.][^/]*/\.\.||g' -e 's|/\.[^.][^/]*/\.\.||g'     -e 's|"|
 		print rec
 	    }'   | egrep -v '^[^:]*:[ 	]*$' >> $DEPENDLINES
 
-
 trap "" 1 2 13 15	# Now we are committed
 case "$makefile" in
     $TMPMAKEFILE)
@@ -224,12 +232,10 @@ case "$makefile" in
 	;;
 esac
 
-#
 # If not -a, append the magic string and a blank line so that
 # /^$magic_string/+1,\$d can be used to delete everything from after
 # the magic string to the end of the file.  Then, append a blank
 # line again and then the dependencies.
-#
 if [ "$append" = "n" ]
 then
     cat >> $makefile << END_OF_APPEND
