@@ -24,6 +24,7 @@
  sBeta =7.4E-4,
  eosType='LINEAR',
  gravity=9.81,
+ vectorInvariantMomentum=.TRUE.,
  implicitDiffusion=.TRUE.,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
