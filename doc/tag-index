@@ -1,15 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1915 2013/08/22 01:20:58 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1916 2013/08/24 19:03:09 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/tutorial_tracer_adjsens:
+  - OpenAD test: switch to vector-invariant momentum since fluxform with
+    rStar causes problems with OpenAD; update output.
 o tools:
-  - genmake2: define a common prefix for all temp-file names ; allow to move
-    them to local /tmp disc (but commented out for now);
-  - xmakedepend: add the same switch for temp-files (but commented out).
+  - genmake2: define a common prefix for all temp-file names ; move them
+    to local /tmp disk (but would be easy to move them back);
+  - xmakedepend: apply the same switch for temp-files.
 o pkg/offline:
-  - changes for usewith rStar (NLFS): assume that we continue to provide
+  - changes for use with rStar (NLFS): assume that we continue to provide
     UVELMASS/hFacW_ini & VVELMASS/hFacS_ini (hFacWi,S_ini as written in grid
     output files) and apply r* scaling at each time-step (function of the time
     varying Eta field); use normal pickup files (needed for restart with NLFS).
