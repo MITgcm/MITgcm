@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_functions.F,v 1.1 2013/06/12 21:30:21 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_functions.F,v 1.2 2013/08/24 20:35:17 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -240,7 +240,8 @@ C     !LOCAL VARIABLES:
 C     == Local variables == 
       INTEGER iq, jq, inodx, inody, i, j, bi, bj, ilqx, ilqy, m_i, n
       INTEGER jlqx, jlqy, jnodx,jnody, m_j, col_y, col_x, cg_halo, k
-      _RL ux, vx, uy, vy, uq, vq, exx, eyy, exy
+      INTEGER colx_rev, coly_rev
+      _RL ux, vx, uy, vy, uq, vq, exx, eyy, exy, tmpval
       _RL phival(2,2)
 
 !       do i=1,3
@@ -314,9 +315,18 @@ cc          ENDDO
 !      &              jnody+mod(inody,2) )
 
                    col_x = mod(inodx,2)+jnodx-2
+                   colx_rev = mod(jnodx,2)+inodx-2
                    col_y = mod(inody,2)+jnody-2
-
+                   coly_rev = mod(jnody,2)+inody-2
 c
+
+
+                   IF ( (inodx.eq.jnodx .and. inody.eq.jnody) .or.
+     &                  (inodx.eq.1 .and. inody.eq.1) .or.
+     &                  (jnody.eq.2 .and. inody.eq.1) .or.
+     &                  (jnody.eq.2 .and. jnodx.eq.2)) THEN
+
+
 
                    ux = DPhi (i,j,bi,bj,m_j,n,1)
                    uy = DPhi (i,j,bi,bj,m_j,n,2)
@@ -330,63 +340,130 @@ c
                    exy = .5*(uy+vx) + 
      &              k1AtC_str(i,j,bi,bj)*uq + k2AtC_str(i,j,bi,bj)*vq
                         
-                   streamice_cg_A1
-     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)=               
-     &             streamice_cg_A1
-     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+
-     &              .25 *
+                    tmpval = .25 *
      &              grid_jacq_streamice(i,j,bi,bj,n) * 
      &              visc_streamice(i,j,bi,bj) * (
      &              DPhi(i,j,bi,bj,m_i,n,1)*(4*exx+2*eyy) + 
      &              DPhi(i,j,bi,bj,m_i,n,2)*(2*exy))
 
-                   streamice_cg_A3
+                   streamice_cg_A1
      &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)=               
-     &             streamice_cg_A3
-     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+
-     &              .25 *
+     &             streamice_cg_A1
+     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+tmpval
+
+                   IF (.not. (inodx.eq.jnodx .and. inody.eq.jnody)) THEN
+                    streamice_cg_A1
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)=               
+     &              streamice_cg_A1
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)+
+     &               tmpval
+                   ENDIF
+
+!!!
+
+                    tmpval = .25 *
      &              grid_jacq_streamice(i,j,bi,bj,n) * 
      &              visc_streamice(i,j,bi,bj) * (
      &              DPhi(i,j,bi,bj,m_i,n,2)*(4*eyy+2*exx) + 
      &              DPhi(i,j,bi,bj,m_i,n,1)*(2*exy))
 
-                   streamice_cg_A1
+                   streamice_cg_A3
      &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)=               
-     &             streamice_cg_A1
-     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+
-     &              .25 *
+     &             streamice_cg_A3
+     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+tmpval
+    
+                   IF (.not. (inodx.eq.jnodx .and. inody.eq.jnody)) THEN 
+                    streamice_cg_A2
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)=               
+     &              streamice_cg_A2
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)+
+     &               tmpval
+                   ENDIF
+
+!!!
+
+                    tmpval = .25 *
      &              grid_jacq_streamice(i,j,bi,bj,n) * 
      &              visc_streamice(i,j,bi,bj) * phival(inodx,inody) *
      &             (4*k2AtC_str(i,j,bi,bj)*eyy+2*k2AtC_str(i,j,bi,bj)*
      &              exx+4*0.5*k1AtC_str(i,j,bi,bj)*exy)    
 
-                   streamice_cg_A3
+                   streamice_cg_A1
      &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)=               
-     &             streamice_cg_A3
-     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+
-     &              .25 * 
+     &             streamice_cg_A1
+     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+tmpval
+     
+                   IF (.not. (inodx.eq.jnodx .and. inody.eq.jnody)) THEN
+                    streamice_cg_A1
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)=               
+     &              streamice_cg_A1
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)+
+     &               tmpval
+                   ENDIF
+
+!!!
+
+                   tmpval = .25 * 
      &              grid_jacq_streamice(i,j,bi,bj,n) * 
      &              visc_streamice(i,j,bi,bj) * phival(inodx,inody) *
      &             (4*k1AtC_str(i,j,bi,bj)*exx+2*k1AtC_str(i,j,bi,bj)*
      &              eyy+4*0.5*k2AtC_str(i,j,bi,bj)*exy)
 
+                   streamice_cg_A3
+     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)=               
+     &             streamice_cg_A3
+     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+tmpval
+
+                   IF (.not. (inodx.eq.jnodx .and. inody.eq.jnody)) THEN
+                    streamice_cg_A2
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)=               
+     &              streamice_cg_A2
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)+
+     &               tmpval
+                   ENDIF
+
+
+!!!
+
+                    tmpval = .25*phival(inodx,inody) * 
+     &              grid_jacq_streamice(i,j,bi,bj,n) * 
+     &              tau_beta_eff_streamice (i,j,bi,bj) * uq
+
                    streamice_cg_A1
      &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)=               
      &             streamice_cg_A1
-     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+
-     &              .25*phival(inodx,inody) * 
+     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+tmpval
+                   
+                   IF (.not. (inodx.eq.jnodx .and. inody.eq.jnody)) THEN
+                    streamice_cg_A1
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)=               
+     &              streamice_cg_A1
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)+
+     &               tmpval
+                   ENDIF
+
+
+!!!
+                    tmpval = .25*phival(inodx,inody) * 
      &              grid_jacq_streamice(i,j,bi,bj,n) * 
-     &              tau_beta_eff_streamice (i,j,bi,bj) * uq
+     &              tau_beta_eff_streamice (i,j,bi,bj) * vq
 
                    streamice_cg_A3
      &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)=               
      &             streamice_cg_A3
-     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+
-     &              .25*phival(inodx,inody) * 
-     &              grid_jacq_streamice(i,j,bi,bj,n) * 
-     &              tau_beta_eff_streamice (i,j,bi,bj) * vq
+     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+tmpval
+                  
+                   IF (.not. (inodx.eq.jnodx .and. inody.eq.jnody)) THEN 
+                    streamice_cg_A2
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)=               
+     &              streamice_cg_A2
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)+
+     &               tmpval
+                   ENDIF
+
+
               
-c
+!!!
 
                    vx = DPhi (i,j,bi,bj,m_j,n,1)
                    vy = DPhi (i,j,bi,bj,m_j,n,2)
@@ -400,62 +477,123 @@ c
                    exy = .5*(uy+vx) + 
      &              k1AtC_str(i,j,bi,bj)*uq + k2AtC_str(i,j,bi,bj)*vq
 
-                   streamice_cg_A2
-     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)=               
-     &             streamice_cg_A2
-     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+
-     &              .25 *
+                    tmpval = .25 *
      &              grid_jacq_streamice(i,j,bi,bj,n) * 
      &              visc_streamice(i,j,bi,bj) * (
      &              DPhi(i,j,bi,bj,m_i,n,1)*(4*exx+2*eyy) + 
      &              DPhi(i,j,bi,bj,m_i,n,2)*(2*exy))
 
-                   streamice_cg_A4
+                   streamice_cg_A2
      &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)=               
-     &             streamice_cg_A4
-     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+
-     &              .25 *
+     &             streamice_cg_A2
+     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+tmpval
+                   
+                   IF (.not. (inodx.eq.jnodx .and. inody.eq.jnody)) THEN
+                    streamice_cg_A3
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)=               
+     &              streamice_cg_A3
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)+
+     &               tmpval
+                   ENDIF
+
+
+                    tmpval = .25 *
      &              grid_jacq_streamice(i,j,bi,bj,n) * 
      &              visc_streamice(i,j,bi,bj) * (
      &              DPhi(i,j,bi,bj,m_i,n,2)*(4*eyy+2*exx) + 
      &              DPhi(i,j,bi,bj,m_i,n,1)*(2*exy))
 
-                   streamice_cg_A2
-     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)=               
-     &             streamice_cg_A2
-     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+
-     &              .25 *
-     &              grid_jacq_streamice(i,j,bi,bj,n) * 
-     &              visc_streamice(i,j,bi,bj) * phival(inodx,inody) *
-     &             (4*k2AtC_str(i,j,bi,bj)*eyy+2*k2AtC_str(i,j,bi,bj)*
-     &              exx+4*0.5*k1AtC_str(i,j,bi,bj)*exy)    
-
                    streamice_cg_A4
      &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)=               
      &             streamice_cg_A4
-     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+
-     &              .25 * 
+     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+tmpval
+                   
+                   IF (.not. (inodx.eq.jnodx .and. inody.eq.jnody)) THEN
+                    streamice_cg_A4
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)=               
+     &              streamice_cg_A4
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)+
+     &               tmpval
+                   ENDIF
+
+
+                   tmpval = .25 *
+     &              grid_jacq_streamice(i,j,bi,bj,n) * 
+     &              visc_streamice(i,j,bi,bj) * phival(inodx,inody) *
+     &             (4*k2AtC_str(i,j,bi,bj)*eyy+2*k2AtC_str(i,j,bi,bj)*
+     &              exx+4*0.5*k1AtC_str(i,j,bi,bj)*exy)   
+
+                   streamice_cg_A2
+     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)=               
+     &             streamice_cg_A2
+     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+tmpval
+                   
+                   IF (.not. (inodx.eq.jnodx .and. inody.eq.jnody)) THEN
+                    streamice_cg_A3
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)=               
+     &              streamice_cg_A3
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)+
+     &               tmpval
+                   ENDIF
+
+
+                   tmpval = .25 * 
      &              grid_jacq_streamice(i,j,bi,bj,n) * 
      &              visc_streamice(i,j,bi,bj) * phival(inodx,inody) *
      &             (4*k1AtC_str(i,j,bi,bj)*exx+2*k1AtC_str(i,j,bi,bj)*
      &              eyy+4*0.5*k2AtC_str(i,j,bi,bj)*exy)
 
+                   streamice_cg_A4
+     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)=               
+     &             streamice_cg_A4
+     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+tmpval
+                   
+                   IF (.not. (inodx.eq.jnodx .and. inody.eq.jnody)) THEN
+                    streamice_cg_A4
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)=               
+     &              streamice_cg_A4
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)+
+     &               tmpval
+                   ENDIF
+
+
+                    tmpval = .25*phival(inodx,inody) * 
+     &              grid_jacq_streamice(i,j,bi,bj,n) * 
+     &              tau_beta_eff_streamice (i,j,bi,bj) * uq
+
                    streamice_cg_A2
      &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)=               
      &             streamice_cg_A2
-     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+
-     &              .25*phival(inodx,inody) * 
+     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+tmpval
+                   
+                   IF (.not. (inodx.eq.jnodx .and. inody.eq.jnody)) THEN
+                    streamice_cg_A3
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)=               
+     &              streamice_cg_A3
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)+
+     &               tmpval
+                   ENDIF
+
+
+                    tmpval = .25*phival(inodx,inody) * 
      &              grid_jacq_streamice(i,j,bi,bj,n) * 
-     &              tau_beta_eff_streamice (i,j,bi,bj) * uq
+     &              tau_beta_eff_streamice (i,j,bi,bj) * vq
 
                    streamice_cg_A4
      &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)=               
      &             streamice_cg_A4
-     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+
-     &              .25*phival(inodx,inody) * 
-     &              grid_jacq_streamice(i,j,bi,bj,n) * 
-     &              tau_beta_eff_streamice (i,j,bi,bj) * vq
-                  
+     &                 (i-1+inodx,j-1+inody,bi,bj,col_x,col_y)+tmpval
+                   
+                   IF (.not. (inodx.eq.jnodx .and. inody.eq.jnody)) THEN
+                    streamice_cg_A4
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)=               
+     &              streamice_cg_A4
+     &               (i-1+jnodx,j-1+jnody,bi,bj,colx_rev,coly_rev)+
+     &               tmpval
+                   ENDIF
+
+
+                   endif
                   endif 
                  enddo
                 enddo
@@ -469,6 +607,8 @@ c
         enddo
        enddo
       enddo
+
+
 
 #endif
 #endif
