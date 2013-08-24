@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_wrapper.F,v 1.1 2013/06/12 21:30:21 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_wrapper.F,v 1.2 2013/08/24 20:34:27 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -130,6 +130,83 @@ C     ccccc
 
       
       CALL STREAMICE_CG_MAKE_A(myThid)
+
+!      call write_fld_xy_rl ("streamicb_cg_A1_m1_m1","",
+!     & streamice_cg_A1(:,:,1,1,-1,-1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A1_m1_0","",
+c     & streamice_cg_A1(:,:,1,1,-1,0),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A1_m1_p1","",
+c     & streamice_cg_A1(:,:,1,1,-1,1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A1_0_m1","",
+c     & streamice_cg_A1(:,:,1,1,0,-1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A1_0_0","",
+c     & streamice_cg_A1(:,:,1,1,0,0),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A1_0_p1","",
+c     & streamice_cg_A1(:,:,1,1,0,1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A1_p1_m1","",
+c     & streamice_cg_A1(:,:,1,1,1,-1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A1_p1_0","",
+c     & streamice_cg_A1(:,:,1,1,1,0),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A1_p1_p1","",
+c     & streamice_cg_A1(:,:,1,1,1,1),0,myThid)
+c
+c      call write_fld_xy_rl ("streamicb_cg_A2_m1_m1","",
+c     & streamice_cg_A2(:,:,1,1,-1,-1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A2_m1_0","",
+c     & streamice_cg_A2(:,:,1,1,-1,0),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A2_m1_p1","",
+c     & streamice_cg_A2(:,:,1,1,-1,1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A2_0_m1","",
+c     & streamice_cg_A2(:,:,1,1,0,-1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A2_0_0","",
+c     & streamice_cg_A2(:,:,1,1,0,0),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A2_0_p1","",
+c     & streamice_cg_A2(:,:,1,1,0,1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A2_p1_m1","",
+c     & streamice_cg_A2(:,:,1,1,1,-1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A2_p1_0","",
+c     & streamice_cg_A2(:,:,1,1,1,0),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A2_p1_p1","",
+c     & streamice_cg_A2(:,:,1,1,1,1),0,myThid)
+c
+c      call write_fld_xy_rl ("streamicb_cg_A3_m1_m1","",
+c     & streamice_cg_A3(:,:,1,1,-1,-1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A3_m1_0","",
+c     & streamice_cg_A3(:,:,1,1,-1,0),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A3_m1_p1","",
+c     & streamice_cg_A3(:,:,1,1,-1,1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A3_0_m1","",
+c     & streamice_cg_A3(:,:,1,1,0,-1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A3_0_0","",
+c     & streamice_cg_A3(:,:,1,1,0,0),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A3_0_p1","",
+c     & streamice_cg_A3(:,:,1,1,0,1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A3_p1_m1","",
+c     & streamice_cg_A3(:,:,1,1,1,-1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A3_p1_0","",
+c     & streamice_cg_A3(:,:,1,1,1,0),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A3_p1_p1","",
+c     & streamice_cg_A3(:,:,1,1,1,1),0,myThid)
+c
+c      call write_fld_xy_rl ("streamicb_cg_A4_m1_m1","",
+c     & streamice_cg_A4(:,:,1,1,-1,-1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A4_m1_0","",
+c     & streamice_cg_A4(:,:,1,1,-1,0),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A4_m1_p1","",
+c     & streamice_cg_A4(:,:,1,1,-1,1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A4_0_m1","",
+c     & streamice_cg_A4(:,:,1,1,0,-1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A4_0_0","",
+c     & streamice_cg_A4(:,:,1,1,0,0),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A4_0_p1","",
+c     & streamice_cg_A4(:,:,1,1,0,1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A4_p1_m1","",
+c     & streamice_cg_A4(:,:,1,1,1,-1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A4_p1_0","",
+c     & streamice_cg_A4(:,:,1,1,1,0),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A4_p1_p1","",
+c     & streamice_cg_A4(:,:,1,1,1,1),0,myThid)
+c
 
 !       print *, "MATRIX 1"
 !       do i=1,sNx

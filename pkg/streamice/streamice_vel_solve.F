@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.3 2013/06/13 19:08:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.4 2013/08/24 20:34:27 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -21,9 +21,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "STREAMICE.h"
 #include "STREAMICE_CG.h"
-#ifdef ALLOW_PETSC
-#include "finclude/petsc.h"
-#endif
+!#ifdef ALLOW_PETSC
+!#include "finclude/petsc.h"
+!#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -46,12 +46,13 @@ C     LOCAL VARIABLES
 
       INTEGER conv_flag, i, j, k, l, iter, cg_iters, bi, bj
       INTEGER iter_numconv
-      INTEGER ikey_nl
+      INTEGER ikey_nl, myThidTemp
       _RL err_max, err_tempu, err_tempv, err_init, area, err_max_fp
       _RL max_vel, tempu, tempv, err_lastchange, cgtol
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_PETSC
-      PetscErrorCode ierr
+!      myThidTemp = myThid
+!      call streamice_initialize_petsc (myThidTemp)
 #endif
 !       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 !       _RL taudy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -191,9 +192,6 @@ C     LOCAL VARIABLES
 
 C START NL ITER. LOOP
 C-------------------------------------------------------------------
-#ifdef ALLOW_PETSC
-      call petscInitialize(PETSC_NULL_CHARACTER,ierr)
-#endif
 
       DO iter=1,streamice_max_nl_iter
 
@@ -453,7 +451,8 @@ C       but after convergence loop does nothing
       ENDDO
 
 #ifdef ALLOW_PETSC
-      call PetscFinalize(ierr)
+!      call streamice_finalize_petsc (myThidTemp)
+!      call streamice_finalize_petsc (myThid)
 #endif
 
 C END NL ITER. LOOP
