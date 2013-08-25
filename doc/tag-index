@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1916 2013/08/24 19:03:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1917 2013/08/25 00:09:46 dgoldberg Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/halfpipe_streamice:
+  - change to matrix construction; update both Fwd & AD output.
 o verification/tutorial_tracer_adjsens:
   - OpenAD test: switch to vector-invariant momentum since fluxform with
     rStar causes problems with OpenAD; update output.
