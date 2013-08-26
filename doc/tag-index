@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1917 2013/08/25 00:09:46 dgoldberg Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1918 2013/08/26 13:03:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint64n (2013/08/26)
 o verification/halfpipe_streamice:
   - change to matrix construction; update both Fwd & AD output.
 o verification/tutorial_tracer_adjsens:
