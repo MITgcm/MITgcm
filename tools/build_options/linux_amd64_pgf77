@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77,v 1.7 2013/07/22 18:40:45 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77,v 1.8 2013/08/27 23:10:08 jmc Exp $
 #  $Name:  $
 #
 # Build options for PGI compiler on Linux AMD64 platform
@@ -21,8 +21,18 @@
 #       module load pgi     (Version 11.7)
 #   and with mpich2:
 #       module load mvapich2
-#   or  with openmpi:
+#   or  with openmpi: (support also OpenMP to run mpi+mth)
 #       module load openmpi
+
+#-------
+# compile (genmake2 -omp) and run with OpenMP: needs to set environment var.
+#    OMP_NUM_THREADS and generally, needs to increase the thread stack-size:
+#   -  sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export OMP_STACKSIZE=400m
+#   - csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv OMP_STACKSIZE 400m
 #-------
 
 if test "x$MPI" = xtrue ; then
@@ -44,6 +54,7 @@ fi
 CPP='cpp -traditional -P'
 EXTENDED_SRC_FLAG='-Mextend'
 GET_FC_VERSION="-V"
+OMPFLAG='-mp'
 
 NOOPTFLAGS='-O0'
 NOOPTFILES=''
