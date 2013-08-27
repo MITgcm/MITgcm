@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_init_varia.F,v 1.2 2012/04/03 00:22:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_init_varia.F,v 1.3 2013/08/27 21:34:21 dimitri Exp $
 C $Name:  $
 
 #include "BBL_OPTIONS.h"
@@ -41,8 +41,7 @@ C     Initialize arrays in common blocks.
           kBot = max(1,kLowC(i,j,bi,bj))
           bbl_theta(i,j,bi,bj)     = theta(i,j,kBot,bi,bj)
           bbl_salt (i,j,bi,bj)     = salt (i,j,kBot,bi,bj)
-          bbl_eta(i,j,bi,bj)       = MIN  (bbl_InitEta,
-     &         drF(kBot)*hFacC(i,j,kBot,bi,bj))
+          bbl_eta(i,j,bi,bj)       = 0. _d 0
           bbl_TendTheta(i,j,bi,bj) = 0. _d 0
           bbl_TendSalt (i,j,bi,bj) = 0. _d 0
          ENDDO

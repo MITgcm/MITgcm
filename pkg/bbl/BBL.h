@@ -1,15 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/BBL.h,v 1.2 2011/08/07 07:08:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/BBL.h,v 1.3 2013/08/27 21:34:21 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_BBL
 
-C     bbl_RelaxH  :: horizontal relaxation coefficient for
-C                    transferring properties downslope (s)
-C     bbl_RelaxR  :: vertical relaxation coefficient for exchanging
-C                    properties with containing grid cell (s)
-C     bbl_InitEta :: default bbl thickness
-      _RL                 bbl_RelaxH, bbl_RelaxR, bbl_InitEta
-      COMMON /BBL_PARM_R/ bbl_RelaxH, bbl_RelaxR, bbl_InitEta
+C     bbl_wvel    :: default vertical entrainment velocity (m/s)
+C     bbl_hvvel   :: default horizontal velocity of BBL (m/s)
+C     bbl_initEta :: default initial thickness of BBL (m)
+      _RL                 bbl_wvel, bbl_hvel, bbl_initEta
+      COMMON /BBL_PARM_R/ bbl_wvel, bbl_hvel, bbl_initEta
 
 C     file names for initial conditions:
       CHARACTER*(MAX_LEN_FNAM) bbl_thetaFile

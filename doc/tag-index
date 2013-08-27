@@ -1,10 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1918 2013/08/26 13:03:07 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1919 2013/08/27 21:34:21 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 checkpoint64n (2013/08/26)
+o pkg/bbl:
+  - update formulation to reduce dispersion of tracer properties in bbl
+  - replaced horizontal and vertical transport parameters with velocities
+  - changes results for verification/global_with_exf.yearly
 o verification/halfpipe_streamice:
   - change to matrix construction; update both Fwd & AD output.
 o verification/tutorial_tracer_adjsens:
