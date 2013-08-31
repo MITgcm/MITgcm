@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.7 2013/08/22 23:01:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.8 2013/08/31 17:33:55 m_bates Exp $
 C $Name:  $
 #include "GMREDI_OPTIONS.h"
 
@@ -64,7 +64,6 @@ C     kLow_V :: Local version of the index of deepest wet grid cell on V grid
 C     N2loc  :: local N**2
 C     slope  :: local slope
 C     Req    :: local equatorial deformation radius (m)
-C     Rurms  :: a local mixing length used in calculation of urms (m)
 C     deltaH :: local thickness of Eady integration (m)
 C     g_reciprho_sq :: (gravity*recip_rhoConst)**2
 C     M4loc  :: local M**4
@@ -77,7 +76,6 @@ C     small  :: a small number (to avoid floating point exceptions)
       _RL N2loc
       _RL slope
       _RL Req
-      _RL Rurms
       _RL deltaH
       _RL g_reciprho_sq
       _RL M4loc
@@ -89,6 +87,7 @@ C     small  :: a small number (to avoid floating point exceptions)
 C     dfdy    :: gradient of the Coriolis paramter, df/dy, 1/(m*s)
 C     dfdx    :: gradient of the Coriolis paramter, df/dx, 1/(m*s)
 C     gradf   :: gradient of the Coriolis paramter at a cell centre, 1/(m*s)
+C     Rurms  :: a local mixing length used in calculation of urms (m)
 C     RRhines :: The Rhines scale (m)
 C     Rmix    :: Mixing length
 C     N2      :: Square of the buoyancy frequency (1/s**2)
@@ -103,6 +102,7 @@ C     Ubaro   :: Barotropic velocity (m/s)
       _RL dfdx(   1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL gradf(  1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dummy(  1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL Rurms(  1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL RRhines(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL Rmix(   1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL N2(     1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
@@ -434,8 +434,8 @@ C     ======================================
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx+1,sNx+Olx-1
 C       Calculate the Visbeck velocity
-        Rurms = MIN(Rdef(i,j,bi,bj),GM_K3D_maxLurms)
-        urms(i,j,1) = GM_K3D_Lambda*eady(i,j)*Rurms
+        Rurms(i,j) = MIN(Rdef(i,j,bi,bj),GM_K3D_maxLurms)
+        urms(i,j,1) = GM_K3D_Lambda*eady(i,j)*Rurms(i,j)
 C       Set the bottom urms to zero
         k=kLow_C(i,j)
         IF (k.GT.0) urms(i,j,k) = 0.0
@@ -899,7 +899,8 @@ C     Diagnostics
         CALL DIAGNOSTICS_FILL(K3D,    'GM_K3D  ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(urms,   'GM_URMS ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(Rdef,   'GM_RDEF ',0, 1,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(RRhines,'GM_LRHNS',0, 1,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(Rurms,  'GM_RURMS',0, 1,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(RRhines,'GM_RRHNS',0, 1,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(Rmix,   'GM_RMIX ',0, 1,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(supp,   'GM_SUPP ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(Xix,    'GM_Xix  ',0,Nr,0,1,1,myThid)

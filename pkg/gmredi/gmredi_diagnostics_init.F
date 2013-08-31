@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.13 2013/08/22 17:12:18 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.14 2013/08/31 17:33:55 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -345,7 +345,15 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
         
-        diagName  = 'GM_LRHNS'
+        diagName  = 'GM_RURMS'
+        diagTitle = 'Mixing length for calculating u_rms'
+        diagUnits = 'm               '
+        diagCode  = 'SM P    M1      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_RRHNS'
         diagTitle = 'Rhines Radius'
         diagUnits = 'm               '
         diagCode  = 'SM P    M1      '
