@@ -19,6 +19,10 @@ llc_pcol.m         :: Do a colormap of something read in by
 llc_vec.m          :: Do a vector plot of something read in
                    :: by rdnctiles
 
+plot_compact_mdsio.m
+                   :: Read global or tiled mdsio lat-lon-cap output and 
+                   :: do simple global plot (Arctic duplicated 4 times)
+
 plot_llc.m         :: Example driver for plotting 72 tile lat-lon cap
                    :: output. This is mostly general except
                    :: for directory locations and the removal of tiles
@@ -32,11 +36,20 @@ plot_llc.m         :: Example driver for plotting 72 tile lat-lon cap
                    :: Example mnc time average files can be found at
                    :: wget http://mitgcm.org/mitgcm_repo/MITgcm_contrib/cnh_cs_plot/plot_llc_datasets/llc_48month/v20070507/'tave.0000000001.t001.nc'
 
+quikpcolor         :: faster replacement for pcolor using image
+                   :: when used with homogeneous grid spacing, it is also more
+                   :: accurate as it plots one facet per grid cell, as opposed
+                   :: to interpolating between cell corners as does pcolor
+
+quikplot           :: quick and dirty llc plotting routine
+                   :: usage example for llc270 domain:
+                   :: fld=quikread_llc('Depth.data',270);
+                   :: quikplot_llc(fld)
+
+quikread           :: quick and dirty llc read routine
+
 vel2latlon.m       :: Rotate vectors according pre-calculated angles
                    :: ( from calcFacetAngles ).
 
 zmean.m            :: Calculate a vertical integral divided by depth
                    :: for a field and depths read in by rdnctiles.
-plot_compact_mdsio.m   ::
-                      Read global or tiled mdsio lat-lon-cap output and 
-                      do simple global plot (Arctic duplicated 4 times)
