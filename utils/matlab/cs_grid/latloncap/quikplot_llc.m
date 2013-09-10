@@ -1,12 +1,12 @@
-function plot_llc(fld);
+function quikplot_llc(fld);
 
-% Function plot_llc(fld)
+% Function quikplot_llc(fld)
 % plot lat-lon-cap field
 %
 % INPUTS
 % fld  input array of dimension nx*nx*13
 
-if nargin < 1, error('please specify field to plo'); end
+if nargin < 1, error('please specify field to plot'); end
 
 [nx ny]=size(fld);
 ny=nx*3;
