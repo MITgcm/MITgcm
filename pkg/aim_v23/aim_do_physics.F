@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.22 2013/05/02 20:10:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.23 2013/09/11 20:19:11 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -197,40 +197,29 @@ C--   end bi,bj loops.
        ENDDO
       ENDDO
 
-#ifndef OLD_THSICE_CALL_SEQUENCE
 #ifdef ALLOW_THSICE
       IF ( useThSIce ) THEN
+
+#ifndef OLD_THSICE_CALL_SEQUENCE
 C--   Exchange fields that are advected by seaice dynamics
         CALL THSICE_DO_EXCH( myThid )
 C-    do sea-ice advection after sea-ice thermodynamics
         CALL THSICE_DO_ADVECT(
      I                         0, 0, myTime, myIter, myThid )
-      ENDIF
-#endif /* ALLOW_THSICE */
 #endif /* ndef OLD_THSICE_CALL_SEQUENCE */
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-
-#ifdef ALLOW_THSICE
-        IF ( useThSIce ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
 C-    Slab Ocean : step forward ocean mixed-layer temp. & salinity
           CALL THSICE_SLAB_OCEAN(
      I                        aim_sWght0, aim_sWght1,
      O                        dTsurf(1,2,myThid),
      I                        bi, bj, myTime, myIter, myThid )
-        ENDIF
+         ENDDO
+        ENDDO
+
+      ENDIF
 #endif /* ALLOW_THSICE */
-
-#ifdef COMPONENT_MODULE
-        IF ( useCoupler ) THEN
-          CALL ATM_STORE_MY_DATA( bi, bj, myTime, myIter, myThid )
-        ENDIF
-#endif /* COMPONENT_MODULE */
-
-C--   end bi,bj loops.
-       ENDDO
-      ENDDO
 
 C--   do exchanges for AIM related quantities:
       _EXCH_XY_RL( aim_drag, myThid )
@@ -246,12 +235,7 @@ C--   Exchange fields that are advected by seaice dynamics
 
 #ifdef COMPONENT_MODULE
       IF ( useCoupler ) THEN
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-          CALL ATM_STORE_TAUX( bi,bj, myTime, myIter, myThid )
-          CALL ATM_STORE_TAUY( bi,bj, myTime, myIter, myThid )
-        ENDDO
-       ENDDO
+       CALL ATM_STORE_MY_DATA( myTime, myIter, myThid )
       ENDIF
 #endif /* COMPONENT_MODULE */
 
