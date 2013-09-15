@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.165 2013/08/03 01:38:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.166 2013/09/15 14:28:31 m_bates Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -115,6 +115,8 @@ C      |
 C      |-- CALC_GRAD_PHI_SURF
 C      |
 C      |-- CALC_VISCOSITY
+C      |
+C      |-- CALC_EDDY_STRESS
 C      |
 C      |-- CALC_PHI_HYD
 C      |
@@ -418,6 +420,10 @@ C     (copied) to a narrow strip outside the domain
      I         Nr, bi, bj, myThid )
         ENDIF
 #endif /* ALLOW_OBCS */
+
+#ifdef ALLOW_EDDYPSI
+        CALL CALC_EDDY_STRESS(bi,bj,myThid)
+#endif
 
 C--     Start of dynamics loop
         DO k=1,Nr

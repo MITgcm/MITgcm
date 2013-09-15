@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.7 2012/11/09 22:37:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.8 2013/09/15 14:28:31 m_bates Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -36,6 +36,9 @@ C     !USES:
 #endif
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
+#endif
+#ifdef ALLOW_EDDYPSI && ALLOW_GMREDI
+# include "GMREDI.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -261,6 +264,14 @@ C---    read State 3-D fields for restart
      &                                     nj, fp, Nr, myIter, myThid )
           CALL READ_MFLDS_3D_RL( 'Vvel    ', vVel,
      &                                     nj, fp, Nr, myIter, myThid )
+#ifdef ALLOW_EDDYPSI && ALLOW_GMREDI
+          IF (GM_InMomAsStress) THEN
+            CALL READ_MFLDS_3D_RL( 'Umean   ', uMean,
+     &                                      nj, fp, Nr, myIter, myThid )
+            CALL READ_MFLDS_3D_RL( 'Vmean   ', vMean,
+     &                                      nj, fp, Nr, myIter, myThid )
+          ENDIF
+#endif
           CALL READ_MFLDS_3D_RL( 'Theta   ', theta,
      &                                     nj, fp, Nr, myIter, myThid )
           CALL READ_MFLDS_3D_RL( 'Salt    ', salt,
@@ -439,6 +450,12 @@ C--   end: pickup_read_mdsio
         CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, -1, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'U',uVel, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'V',vVel, myThid)
+#ifdef ALLOW_EDDYPSI && ALLOW_GMREDI
+        IF (GM_InMomAsStress) THEN
+          CALL MNC_CW_RL_R('D',fn,0,0,'Umean',uMean, myThid)
+          CALL MNC_CW_RL_R('D',fn,0,0,'Vmean',vMean, myThid)
+        ENDIF
+#endif
         CALL MNC_CW_RL_R('D',fn,0,0,'Temp',theta, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'S',salt, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'Eta',etaN, myThid)
@@ -479,6 +496,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     Fill in edge regions
       CALL EXCH_UV_3D_RL( uVel, vVel, .TRUE., Nr, myThid )
+#ifdef ALLOW_EDDYPSI && ALLOW_GMREDI
+      IF (GM_InMomAsStress) THEN
+        CALL EXCH_UV_3D_RL( uMean, vMean, .TRUE., Nr, myThid )
+      ENDIF
+#endif
       CALL EXCH_3D_RL( theta, Nr, myThid )
       CALL EXCH_3D_RL( salt,  Nr, myThid )
 #ifdef ALLOW_ADAMSBASHFORTH_3

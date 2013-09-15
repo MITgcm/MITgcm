@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.24 2012/11/09 22:37:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.25 2013/09/15 14:28:31 m_bates Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -51,6 +51,10 @@ C-      3D arrays
            uVel (i,j,k,bi,bj) = 0. _d 0
            vVel (i,j,k,bi,bj) = 0. _d 0
            wVel (i,j,k,bi,bj) = 0. _d 0
+#ifdef ALLOW_EDDYPSI
+           uMean(i,j,k,bi,bj) = 0. _d 0
+           vMean(i,j,k,bi,bj) = 0. _d 0
+#endif
            theta(i,j,k,bi,bj) = 0. _d 0
            salt (i,j,k,bi,bj) = 0. _d 0
 

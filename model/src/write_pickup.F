@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.13 2013/01/13 22:44:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.14 2013/09/15 14:28:31 m_bates Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -38,6 +38,9 @@ C     !USES:
 #endif
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
+#endif
+#ifdef ALLOW_EDDYPSI && ALLOW_GMREDI
+# include "GMREDI.h"
 #endif
 
 C     !INPUT PARAMETERS:
@@ -118,6 +121,17 @@ C---  write State 3-D fields for restart
         j = j + 1
         CALL WRITE_REC_3D_RL( fn, fp, Nr, vVel,   -j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'Vvel    '
+
+#ifdef ALLOW_EDDYPSI && ALLOW_GMREDI
+        IF (GM_InMomAsStress) THEN
+          j = j + 1
+          CALL WRITE_REC_3D_RL( fn, fp, Nr, uMean,   -j, myIter, myThid)
+          IF (j.LE.listDim) wrFldList(j) = 'Umean   '
+          j = j + 1
+          CALL WRITE_REC_3D_RL( fn, fp, Nr, vMean,   -j, myIter, myThid)
+          IF (j.LE.listDim) wrFldList(j) = 'Vmean   '
+      ENDIF
+#endif
 
         j = j + 1
         CALL WRITE_REC_3D_RL( fn, fp, Nr, theta,  -j, myIter, myThid )
@@ -343,6 +357,12 @@ C       Then set the actual unlimited dimension
         CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'U', uVel, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'V', vVel, myThid)
+#ifdef ALLOW_EDDYPSI && ALLOW_GMREDI 
+        IF (GM_InMomAsStress) THEN
+          CALL MNC_CW_RL_W('D',fn,0,0,'Umean', uMean, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'Vmean', vMean, myThid)
+        ENDIF
+#endif
         CALL MNC_CW_RL_W('D',fn,0,0,'Temp', theta, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'S', salt, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'Eta', etaN, myThid)
