@@ -1,5 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.8 2013/08/31 17:33:55 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.9 2013/09/15 14:31:11 m_bates Exp $
 C $Name:  $
+#include "CPP_OPTIONS.h"
 #include "GMREDI_OPTIONS.h"
 
 C     !ROUTINE: GMREDI_K3D
@@ -266,8 +267,17 @@ C     Zeroing some cumulative fields
 C     Find the zonal velocity at the cell centre
 C     The logicals here are, in order: 1/ go from grid to north/east directions
 C     2/ go from C to A grid and 3/ apply the mask
-      CALL rotate_uv2en_rl(uVel, vVel, ubar, vbar, .TRUE., .TRUE., 
-     &     .TRUE.,Nr,mythid)
+#ifdef ALLOW_EDDYPSI      
+      IF (GM_InMomAsStress) THEN
+        CALL rotate_uv2en_rl(uMean, vMean, ubar, vbar, .TRUE., .TRUE., 
+     &       .TRUE.,Nr,mythid)
+      ELSE
+#endif
+        CALL rotate_uv2en_rl(uVel, vVel, ubar, vbar, .TRUE., .TRUE., 
+     &       .TRUE.,Nr,mythid)
+#ifdef ALLOW_EDDYPSI      
+      ENDIF
+#endif
 
 C     Square of the buoyancy frequency at the top of a grid cell
       DO k=2,Nr
