@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_driving_stress.F,v 1.2 2013/07/22 07:57:45 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_driving_stress.F,v 1.3 2013/09/17 17:52:34 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -89,6 +89,11 @@ C     LOCAL VARIABLES
      &       (surf_el_streamice(i,j,bi,bj)-
      &              geom_fac*surf_el_streamice(i-1,j,bi,bj))
 
+            taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) -
+     &       streamice_density * gravity * 
+     &       streamice_bg_surf_slope_x * .25 * rA(i,j,bi,bj) *
+     &       (H_streamice(i-1,j,bi,bj) + H_streamice(i,j,bi,bj))
+
            ELSE IF (streamice_hmask(i-1,j,bi,bj).eq.1.0) THEN
 
             IF (float_frac_streamice(i-1,j,bi,bj) .eq. 1.0) THEN
@@ -153,6 +158,11 @@ C     LOCAL VARIABLES
      &        H_streamice(i-1,j-1,bi,bj) * geom_fac) *
      &       (surf_el_streamice(i,j-1,bi,bj)-
      &              geom_fac*surf_el_streamice(i-1,j-1,bi,bj))
+
+            taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) -
+     &       streamice_density * gravity *
+     &       streamice_bg_surf_slope_x * .25 * rA(i,j,bi,bj) * 
+     &       (H_streamice(i-1,j-1,bi,bj) + H_streamice(i,j-1,bi,bj))
 
            ELSE IF (streamice_hmask(i-1,j-1,bi,bj).eq.1.0) THEN
 
@@ -222,6 +232,11 @@ C     LOCAL VARIABLES
      &       (surf_el_streamice(i,j,bi,bj)-
      &              geom_fac*surf_el_streamice(i,j-1,bi,bj))
 
+            taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
+     &       streamice_density * gravity *
+     &       streamice_bg_surf_slope_y * .25 * rA(i,j,bi,bj) * 
+     &       (H_streamice(i,j-1,bi,bj) + H_streamice(i,j,bi,bj))
+
            ELSE IF (streamice_hmask(i,j-1,bi,bj).eq.1.0) THEN
 
             IF (float_frac_streamice(i,j-1,bi,bj) .eq. 1.0) THEN
@@ -286,6 +301,12 @@ C     LOCAL VARIABLES
      &        H_streamice(i-1,j-1,bi,bj) * geom_fac) *
      &       (surf_el_streamice(i-1,j,bi,bj)-
      &              geom_fac*surf_el_streamice(i-1,j-1,bi,bj))
+
+            taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
+     &       streamice_density * gravity *
+     &       streamice_bg_surf_slope_y * .25 * rA(i,j,bi,bj) *
+     &       (H_streamice(i-1,j-1,bi,bj) + H_streamice(i-1,j,bi,bj))
+
 
            ELSE IF (streamice_hmask(i-1,j-1,bi,bj).eq.1.0) THEN
 
