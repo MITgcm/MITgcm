@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve.F,v 1.3 2013/08/24 20:34:27 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve.F,v 1.4 2013/09/17 17:45:03 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -510,6 +510,8 @@ c     if iters has reached max_iters there is no convergence
 #endif /* ifndef ALLOW_PETSC */
 
 #else /* STREAMICE_SERIAL_TRISOLVE */
+
+      iters = 0
 
       CALL STREAMICE_TRIDIAG_SOLVE( 
      U                               cg_Uin,     ! x-velocities
