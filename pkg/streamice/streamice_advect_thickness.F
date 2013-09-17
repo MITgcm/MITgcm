@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.3 2013/07/02 19:09:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.4 2013/09/17 17:45:30 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -288,9 +288,9 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
 
 ! NOTE: AT THIS POINT H IS NOT VALID ON OVERLAP!!!
 
-!      CALL STREAMICE_ADV_FRONT (
-!     &  myThid, time_step_loc,
-!     &  hflux_x_SI, hflux_y_SI )
+      CALL STREAMICE_ADV_FRONT (
+     &  myThid, time_step_loc,
+     &  hflux_x_SI, hflux_y_SI )
 
 
 #ifdef ALLOW_STREAMICE_2DTRACER
