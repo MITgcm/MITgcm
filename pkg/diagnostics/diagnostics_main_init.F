@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.45 2013/02/06 23:53:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.46 2013/09/18 01:41:05 m_bates Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -828,6 +828,24 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_GENERIC_ADVDIFF */
+
+#ifdef ALLOW_DIAGNOSTICS
+        diagName  = 'TAUXEDDY'
+        diagTitle = 'Zonal Eddy Stress'
+        diagUnits = 'N/m**2          '
+        diagCode  = 'UU P    MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'TAUYEDDY'
+        diagTitle = 'Meridional Eddy Stress'
+        diagUnits = 'N/m**2          '
+        diagCode  = 'VV P    MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END
