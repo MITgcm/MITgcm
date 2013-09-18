@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.45 2013/09/15 14:29:32 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.46 2013/09/18 01:39:01 m_bates Exp $
 C $Name:  $
 
 CBOP
@@ -49,10 +49,6 @@ C           implicDiv2DFlow=1 => etaH=etaN ; =0 => etaH=etaN^(n-1);
       _RL  uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  wVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#ifdef ALLOW_EDDYPSI
-      _RL  uMean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  vMean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif
       _RL  theta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  salt (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -103,8 +99,15 @@ cph header file containing requires anomaly fields of control vars.
 #endif
 cph)
 #ifdef ALLOW_EDDYPSI
-      COMMON /DYNVARS_EDDYPSI/ tauxEddy,tauyEddy
+C     uMean    :: The mean zonal velocity (residual velocity less the bolus velocity)
+C     vMean    :: The mean meridional velocity (residual velocity less the bolus velocity)
+C     tauxEddy :: The eddy stress used in the momentum equation of a residual model
+C     tauyEddy :: The eddy stress used in the momentum equation of a residual model
 
+      COMMON /DYNVARS_EDDYPSI/ tauxEddy,tauyEddy, uMean, vMean
+
+      _RL uMean(   1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL vMean(   1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL tauxEddy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL tauyEddy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
