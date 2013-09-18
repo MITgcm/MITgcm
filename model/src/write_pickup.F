@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.14 2013/09/15 14:28:31 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.15 2013/09/18 18:08:55 m_bates Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -39,7 +39,7 @@ C     !USES:
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
 #endif
-#ifdef ALLOW_EDDYPSI && ALLOW_GMREDI
+#if defined(ALLOW_EDDYPSI) && defined(ALLOW_GMREDI)
 # include "GMREDI.h"
 #endif
 
@@ -122,7 +122,7 @@ C---  write State 3-D fields for restart
         CALL WRITE_REC_3D_RL( fn, fp, Nr, vVel,   -j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'Vvel    '
 
-#ifdef ALLOW_EDDYPSI && ALLOW_GMREDI
+#if defined(ALLOW_EDDYPSI) && defined(ALLOW_GMREDI)
         IF (GM_InMomAsStress) THEN
           j = j + 1
           CALL WRITE_REC_3D_RL( fn, fp, Nr, uMean,   -j, myIter, myThid)
@@ -357,7 +357,7 @@ C       Then set the actual unlimited dimension
         CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'U', uVel, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'V', vVel, myThid)
-#ifdef ALLOW_EDDYPSI && ALLOW_GMREDI 
+#if defined(ALLOW_EDDYPSI) && defined(ALLOW_GMREDI)
         IF (GM_InMomAsStress) THEN
           CALL MNC_CW_RL_W('D',fn,0,0,'Umean', uMean, myThid)
           CALL MNC_CW_RL_W('D',fn,0,0,'Vmean', vMean, myThid)
