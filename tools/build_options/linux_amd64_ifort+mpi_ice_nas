@@ -1,11 +1,13 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.12 2013/07/22 18:40:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.13 2013/09/19 08:54:42 dimitri Exp $
 # $Name:  $
 
 # Used to run the testreport on pleiades with:
 # module load comp-intel/2011.2 mpi-sgi/mpt.2.06a67 netcdf/4.0
-# note: comp-intel/2011.7.256 is recommanded for Sandy Bridge nodes
+
+# Tested and reccommended for Ivy and Sandy Bridge nodes:
+# module load comp-intel/2011.7.256 mpi-sgi/mpt.2.08r7 netcdf/4.0
 
 FC=ifort
 CC=icc
