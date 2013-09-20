@@ -54,7 +54,7 @@
  deltaTClock =3600.,
  abEps = 0.1,
  pChkptFreq  =2592000.,
- taveFreq    =2592000.,
+#taveFreq    =2592000.,
  dumpFreq    =864000.,
  monitorFreq =86400.,
  monitorFreq =1.,
