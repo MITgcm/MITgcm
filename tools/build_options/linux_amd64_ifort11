@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort11,v 1.11 2013/07/22 18:40:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort11,v 1.12 2013/09/20 00:15:03 jmc Exp $
 # $Name:  $
 
 #  Build options for version 11 and newer of intel compiler on Linux AMD64 platform
@@ -9,7 +9,7 @@
 #  Tested on baudelaire (FC 13) with intel compiler v.11.1.073 (20100806)
 #
 # OpenMP : tested on danton (FC 14) using intel compiler v.11.1.046 (20090630)
-#                                              and also  v.12.0.4   (20110427)
+#                               and also (FC 14,17 & 19) v.12.0.4   (20110427)
 #
 # MPI : Tested  on danton (FC 14), with and without OpenMP, using
 #       intel compiler v.11.1.046 (20090630) and also  v.12.0.4   (20110427)
@@ -42,7 +42,6 @@ else
 fi
 
 DEFINES='-DWORDLENGTH=4'
-CPP='cpp -traditional -P'
 F90FIXEDFORMAT='-fixed -Tf'
 EXTENDED_SRC_FLAG='-132'
 GET_FC_VERSION="--version"
@@ -57,7 +56,14 @@ else
     PROCF=-xHost
 fi
 
-FFLAGS="$FFLAGS -m64 -fPIC -convert big_endian -assume byterecl"
+CFLAGS="-O0 -ip -m64 $PROCF"
+FFLAGS="$FFLAGS -m64 -convert big_endian -assume byterecl"
+#- for big setups, compile & link with "-fPIC" or set memory-model to "medium":
+ CFLAGS="$CFLAGS -fPIC"
+ FFLAGS="$FFLAGS -fPIC"
+#-  with FC 19, need to use this without -fPIC (which cancels -mcmodel option):
+#CFLAGS="$CFLAGS -mcmodel=medium"
+#FFLAGS="$FFLAGS -mcmodel=medium"
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"
 
@@ -79,7 +85,6 @@ fi
 
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS="-O0 -ip -m64 -fPIC $PROCF"
 
 INCLUDEDIRS=''
 INCLUDES=''
