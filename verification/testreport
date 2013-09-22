@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.194 2013/08/22 19:34:15 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.195 2013/09/22 23:35:56 jmc Exp $
 #  $Name:  $
 #
 
@@ -19,7 +19,8 @@ usage()
     echo "  (-mpi)                   use MPI to compile and run on 2 processors"
     echo "  (-MPI)  NUMBER           use MPI to compile and run on max NUMBER procs"
     echo "  (-mfile|-mf) STRING      MPI: file with list of possible machines to run on"
-    echo "  (-command|-c) STRING     command to run (needed for MPI run)"
+    echo "  (-command|-c) STRING     command to run (e.g., if non-standard MPI setting)"
+    echo "                            DEF='mitgcmuv' or ='mpirun -np TR_NPROC mitgcmuv'"
     echo " ---- testing options : ----"
     echo "  (-optfile|-of) STRING    list of optfiles to use"
     echo "  (-fast)                  use optfile default for compiler flags (no '-ieee')"
@@ -1293,15 +1294,15 @@ fi
 
 LOC_MFILE='tr_mpi_mfile'
 RUNLOG="run.tr_log"
-OUTPUTFILE=$ref_outp
-if test "x$COMMAND" = x ; then
-    COMMAND="./$EXECUTABLE > $OUTPUTFILE"
-fi
-if test "x$MPI" != x0 ; then
-    OUTPUTFILE="STDOUT.0000"
+if test "x$MPI" = x0 ; then
+  OUTPUTFILE=$ref_outp
+  if test "x$COMMAND" = x ; then COMMAND="./$EXECUTABLE > $OUTPUTFILE" ; fi
+else
+  OUTPUTFILE="STDOUT.0000"
+  if test "x$COMMAND" = x ; then COMMAND="mpirun -v -np TR_NPROC ./$EXECUTABLE" ; fi
 fi
 
-echo "OK (COMMAND= $COMMAND )"
+echo "OK (COMMAND='$COMMAND')"
 
 TMP=./tr_$$
 #- try to put temporary files in system-local /tmp dir
