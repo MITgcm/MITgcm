@@ -6,7 +6,7 @@
 #PBS -e /data/jm_c/test_acesgrid/output/tst_mp2.stderr
 #PBS -o /data/jm_c/test_acesgrid/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.17 2013/08/27 22:52:52 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.18 2013/09/23 15:44:19 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -28,10 +28,7 @@ sfx='mp2'
  module add gcc
  module add openmpi
  OPTFILE="../tools/build_options/linux_amd64_gfortran"
-#options="-j 2 -MPI 6 -mf $PBS_NODEFILE"
-#EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
  options="-j 2 -MPI 3 -mth"
- EXE="mpirun -v -np TR_NPROC ./mitgcmuv"
 #- note: with mpich1, need to set these 2 vars in .tcshrc
  export OMP_NUM_THREADS=2
  export GOMP_STACKSIZE=400m
@@ -130,16 +127,14 @@ fi
 SavD="$HOME/test_$dNam/send"
 SEND="ssh login $SavD/mpack"
 
-echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx \
+echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
   -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
-./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx \
+./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
   -send "$SEND" -sd $SavD -a jmc@mitgcm.org
 
 echo ''
-#echo ../tools/do_tst_2+2 -mpi -exe \"$EXE\" -o ${dNam}-$sfx -a NONE
-#../tools/do_tst_2+2 -mpi -exe "$EXE" -o ${dNam}-$sfx -a NONE
-echo ../tools/do_tst_2+2 -mpi -exe \"$EXE\" -o ${dNam}-$sfx \
+echo ../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
   -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
-../tools/do_tst_2+2 -mpi -exe "$EXE" -o ${dNam}-$sfx \
+../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
   -send "$SEND" -sd $SavD -a jmc@mitgcm.org
 

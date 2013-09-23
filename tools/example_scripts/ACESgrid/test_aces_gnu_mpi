@@ -6,7 +6,7 @@
 #PBS -e /data/jm_c/test_acesgrid/output/tst_gnu.stderr
 #PBS -o /data/jm_c/test_acesgrid/output/tst_gnu.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mpi,v 1.15 2013/08/27 22:52:52 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mpi,v 1.16 2013/09/23 15:44:19 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -29,10 +29,7 @@ sfx='gnu'
  module add gcc
  module add mvapich2
  OPTFILE="../tools/build_options/linux_amd64_gfortran"
-#options="-j 2 -MPI 6 -mf $PBS_NODEFILE"
-#EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
  options="-j 2 -MPI 6"
- EXE="mpirun -v -np TR_NPROC ./mitgcmuv"
 
 dAlt=`date +%d` ; dAlt=`expr $dAlt % 3`
 if [ $dAlt -eq 1 ] ; then options="$options -fast" ; fi
@@ -115,8 +112,8 @@ fi
 SavD="$HOME/test_$dNam/send"
 SEND="ssh login $SavD/mpack"
 
-echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx \
+echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
   -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
-./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx \
+./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
   -send "$SEND" -sd $SavD -a jmc@mitgcm.org
 

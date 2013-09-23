@@ -6,7 +6,7 @@
 #PBS -e /data/jm_c/test_acesgrid/output/tst_adm.stderr
 #PBS -o /data/jm_c/test_acesgrid/output/tst_adm.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_adm_mpi,v 1.13 2013/08/20 18:53:10 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_adm_mpi,v 1.14 2013/09/23 15:44:19 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -30,10 +30,7 @@ sfx='adm'
  OPTFILE="../tools/build_options/linux_amd64_pgf77"
 #- needed for DIVA with MPI:
  export MPI_INC_DIR="/mit/software/pgi/pgi-11.7/pkg/openmpi/openmpi-1.4.3/include"
-#options="-adm -MPI 6 -mf $PBS_NODEFILE"
-#EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv_ad"
  options="-adm -MPI 6"
- EXE="mpirun -v -np TR_NPROC ./mitgcmuv_ad"
 #- need this to get "staf":
 export PATH="$PATH:$HOME/bin"
 
@@ -118,8 +115,8 @@ fi
 SavD="$HOME/test_$dNam/send"
 SEND="ssh login $SavD/mpack"
 
-echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx \
+echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
   -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
-./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx \
+./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
   -send "$SEND" -sd $SavD -a jmc@mitgcm.org
 
