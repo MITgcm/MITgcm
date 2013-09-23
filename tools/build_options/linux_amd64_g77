@@ -1,20 +1,21 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_g77,v 1.8 2011/05/16 19:03:37 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_g77,v 1.9 2013/09/23 23:36:05 jmc Exp $
 #  $Name:  $
 #
-# Build options for Suse 9 Opteron
-# tested on Linux 2.4.21-102-smp (x86_64), 
-#           Linux 2.6.26.8-57.fc8 (x86_64), Linux 2.6.27.9-159.fc10.x86_64
-#
+# Build options for g77 compiler (compat-gcc-34-g77) on Linux AMD64 platform
+#  Tested on Linux 2.4.21-102-smp (x86_64),
+#         on Fedora Core  8, 10 (e.g.: dickens), 13 (e.g.: baudelaire),
+#                        14, 15 (e.g.: acesgrid), 17, 19
 
-FC=g77
 CC=gcc34
+FC=g77
 DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_EXTENDED_F77'
-CPP='cpp  -traditional -P'
-NOOPTFLAGS='-O0'
 EXTENDED_SRC_FLAG='-ffixed-line-length-132'
 GET_FC_VERSION="--version"
+
+NOOPTFLAGS='-O0'
+CFLAGS='-O0'
 
 #  For IEEE, use the "-ffloat-store" option
 if test "x$IEEE" = x ; then
@@ -25,9 +26,13 @@ else
 #   FFLAGS="$FFLAGS -g -mfpmath=sse -msse -msse2 -fbounds-check"
     FOPTIM='-O0'
 fi
-# for big objects:
-FFLAGS="$FFLAGS -fPIC"
-CFLAGS="-O0 -fPIC"
+
+#- for big setups, compile & link with "-fPIC" or set memory-model to "medium":
+#CFLAGS="$CFLAGS -fPIC"
+#FFLAGS="$FFLAGS -fPIC"
+#-  with FC 19, need to use this without -fPIC (which cancels -mcmodel option):
+ CFLAGS="$CFLAGS -mcmodel=medium"
+ FFLAGS="$FFLAGS -mcmodel=medium"
 
 if test -d /usr/include/netcdf-3 ; then
 #-- some FedoraCore standard location used to be "netcdf-3"
@@ -68,4 +73,3 @@ elif test -d /usr/local/netcdf ; then
     INCLUDES='-I/usr/local/netcdf/include'
     LIBS='-L/usr/local/netcdf/lib'
 fi
-

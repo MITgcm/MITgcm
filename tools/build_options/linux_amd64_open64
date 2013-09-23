@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_open64,v 1.8 2013/07/22 18:40:45 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_open64,v 1.9 2013/09/23 23:36:05 jmc Exp $
 #  $Name:  $
 #
 # Build options for Open64 Compiler on Linux x86-64
@@ -40,7 +40,6 @@ else
 fi
 
 DEFINES='-DWORDLENGTH=4'
-CPP='cpp -traditional -P'
 EXTENDED_SRC_FLAG='-extend-source'
 F90FIXEDFORMAT='-fixedform -x f95'
 GET_FC_VERSION="--version"
@@ -50,7 +49,15 @@ OMPFLAG='-openmp'
 NOOPTFLAGS='-O0 -g'
 NOOPTFILES=''
 
-FFLAGS="$FFLAGS -m64 -fPIC -convert big_endian"
+CFLAGS='-O0 -m64'
+FFLAGS="$FFLAGS -m64 -convert big_endian"
+
+#- for big setups, compile & link with "-fPIC" or set memory-model to "medium":
+#CFLAGS="$CFLAGS -fPIC"
+#FFLAGS="$FFLAGS -fPIC"
+#-  with FC 19, need to use this without -fPIC (which cancels -mcmodel option):
+ CFLAGS="$CFLAGS -mcmodel=medium"
+ FFLAGS="$FFLAGS -mcmodel=medium"
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"
 
@@ -75,7 +82,6 @@ fi
 
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS='-O0 -m64 -fPIC'
 GSLLIB='-lgsl -lgslcblas'
 
 INCLUDEDIRS=''
@@ -124,4 +130,3 @@ if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
     MPIINCLUDEDIR="$MPI_INC_DIR"
    #MPI_HEADER_FILES='mpif.h mpiof.h'
 fi
-
