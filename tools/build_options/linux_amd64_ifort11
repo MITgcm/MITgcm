@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort11,v 1.12 2013/09/20 00:15:03 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort11,v 1.13 2013/09/23 23:32:59 jmc Exp $
 # $Name:  $
 
 #  Build options for version 11 and newer of intel compiler on Linux AMD64 platform
@@ -59,11 +59,11 @@ fi
 CFLAGS="-O0 -ip -m64 $PROCF"
 FFLAGS="$FFLAGS -m64 -convert big_endian -assume byterecl"
 #- for big setups, compile & link with "-fPIC" or set memory-model to "medium":
- CFLAGS="$CFLAGS -fPIC"
- FFLAGS="$FFLAGS -fPIC"
+#CFLAGS="$CFLAGS -fPIC"
+#FFLAGS="$FFLAGS -fPIC"
 #-  with FC 19, need to use this without -fPIC (which cancels -mcmodel option):
-#CFLAGS="$CFLAGS -mcmodel=medium"
-#FFLAGS="$FFLAGS -mcmodel=medium"
+ CFLAGS="$CFLAGS -mcmodel=medium"
+ FFLAGS="$FFLAGS -mcmodel=medium"
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8"
 
