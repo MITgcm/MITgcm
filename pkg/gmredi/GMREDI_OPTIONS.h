@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI_OPTIONS.h,v 1.14 2013/06/21 17:23:30 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI_OPTIONS.h,v 1.15 2013/09/23 17:45:00 m_bates Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -30,6 +30,8 @@ C (which depends on tapering scheme)
 C This allows the Bates et al formulation to calculate the 
 C bolus transport and K for Redi
 #undef GM_K3D
+#undef use_lapack
+#undef GM_K3D_PASSIVE
 
 C This allows the leading diagonal (top two rows) to be non-unity
 C (a feature required when tapering adiabatically).
