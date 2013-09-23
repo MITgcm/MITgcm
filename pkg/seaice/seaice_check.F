@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.84 2013/06/03 23:09:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.85 2013/09/23 15:22:24 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -54,8 +54,10 @@ C     msgBuf     :: Informational/error message buffer
       INTEGER iTracer
 #endif
       _RL SEAICE_mcphee_max
-      INTEGER kSurface
-
+      INTEGER  kSurface
+      INTEGER  i
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
@@ -599,7 +601,29 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
           WRITE(msgBuf,'(A)')
      &      'Set exf_albedo in data.exf EXF_NML_01 instead'
           CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+         ENDIF
+         IF ( lwfluxfile .NE. ' ' .AND. lwdownfile .EQ. ' ' ) THEN
+          i = ILNBLNK(lwfluxfile)
+          WRITE(msgBuf,'(A,A)')
+     &         'lwFlux is read from lwfluxfile = ',lwfluxfile(1:i)
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A)')
+     &         'implying that lwdown = 0. For pkg/seaice to work '//
+     &         'properly lwdown should be read from lwdownfile!'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+         ENDIF
+         IF ( swfluxfile .NE. ' ' .AND. swdownfile .EQ. ' ' ) THEN
+          i = ILNBLNK(swfluxfile)
+          WRITE(msgBuf,'(A,A)')
+     &         'swFlux is read from swfluxfile = ',swfluxfile(1:i)
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A)')
+     &         'implying that swdown = 0. For pkg/seaice to work '//
+     &         'properly swdown should be read from swdownfile!'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
          ENDIF
 #else /* if undef SEAICE_EXTERNAL_FLUXES */
          WRITE(msgBuf,'(3A)') 'S/R SEAICE_CHECK: ',
