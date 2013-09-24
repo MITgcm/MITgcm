@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.1 2013/05/08 22:14:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.2 2013/09/24 19:29:08 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -23,6 +23,7 @@ C !USES: ===============================================================
      &                         gcm_vert_diff_up,
      &                         surf_diff_type
       use mixed_layer_mod, only: mixed_layer
+      use constants_mod, only:  HLv
 
       IMPLICIT NONE
 #include "SIZE.h"
@@ -31,6 +32,7 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "SURFACE.h"
+#include "FFIELDS.h"
 #include "ATM_PHYS_PARAMS.h"
 #include "ATM_PHYS_VARS.h"
 
@@ -125,14 +127,11 @@ C--
 c     INTEGER ioUnit
 c     _RS     dummyRS(1)
 c     CHARACTER*40 namFile
-
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
-C--   fill-up Atm_Phys diagnostics for state variables
-         CALL DIAGNOSTICS_FILL( atmPhys_SST, 'AtPh_SST',
-     &                          0, 1, 0, 1, 1, myThid )
-      ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
+#ifdef COMPONENT_MODULE
+      INTEGER i
+      _RL taux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL tauy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* COMPONENT_MODULE */
 
 C--   Loops on tile indices bi,bj
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -142,6 +141,24 @@ C--   Loops on tile indices bi,bj
       coldT(:,:) = .FALSE.
 
       t_surf(:,:) = atmPhys_SST(1:sNx,1:sNy,bi,bj)
+#ifdef COMPONENT_MODULE
+      IF ( useCoupler ) THEN
+C--   take surface data from the ocean component
+C     to replace MxL fields (if use sea-ice) or directly atm_phys SST
+        CALL ATM_APPLY_IMPORT(
+     I           maskInC,
+     U           t_surf, taux,
+c    U           sst1(1,myThid), oice1,
+     I           myTime, myIter, bi, bj, myThid )
+      ENDIF
+#endif /* COMPONENT_MODULE */
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+C--   fill-up Atm_Phys diagnostics for state variables
+         CALL DIAGNOSTICS_FILL( t_surf, 'AtPh_SST',
+     &                          0, 1, 3, bi, bj, myThid )
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 c     IF ( myIter.EQ.nIter0 ) THEN
 c       ioUnit = 0
 c       CALL MDS_WRITEVEC_LOC(
@@ -151,6 +168,7 @@ c    I                       bi, bj, 1, myIter, myThid )
 c     ENDIF
       ocean_qflux(:,:) = atmPhys_Qflx(1:sNx,1:sNy,bi,bj)
 
+      EmPmR(:,:,bi,bj) = 0.
       rain2d(:,:) = 0.
       snow2d(:,:) = 0.
 #ifdef NONLIN_FRSURF
@@ -241,6 +259,7 @@ C-    store updated state to pass to LSC (addition from POG)
         cond_dt_tg = cond_dt_tg / deltaT
         cond_dt_qg = cond_dt_qg / deltaT
         rain2d = rain2d / deltaT
+        EmPmR(1:sNx,1:sNy,bi,bj) = -rain2d(:,:)
 
         tdt3d = tdt3d + cond_dt_tg
         qdt3d = qdt3d + cond_dt_qg
@@ -266,6 +285,7 @@ C-    store updated state to pass to LSC (addition from POG)
       cond_dt_tg = cond_dt_tg / deltaT
       cond_dt_qg = cond_dt_qg / deltaT
       rain2d = rain2d / deltaT
+      EmPmR(1:sNx,1:sNy,bi,bj) = EmPmR(1:sNx,1:sNy,bi,bj) - rain2d(:,:)
 
       tdt3d = tdt3d + cond_dt_tg
       qdt3d = qdt3d + cond_dt_qg
@@ -406,6 +426,17 @@ C--   Update SST
         atmPhys_SST(1:sNx,1:sNy,bi,bj) = t_surf(:,:)
       ENDIF
 
+      EmPmR(1:sNx,1:sNy,bi,bj) = EmPmR(1:sNx,1:sNy,bi,bj) + flux_q(:,:)
+      Qnet(1:sNx,1:sNy,bi,bj) = flux_t(:,:) + flux_r(:,:)
+     &                        - s_lw_dwn(:,:) - s_sw_dwn(:,:)
+     &                        + flux_q(:,:)*HLv
+      Qsw (1:sNx,1:sNy,bi,bj) = -s_sw_dwn(:,:)
+#ifdef COMPONENT_MODULE
+C-    surface wind-stress (+ = down) at grid cell center (A-grid):
+      taux(1:sNx,1:sNy,bi,bj) = -flux_u
+      tauy(1:sNx,1:sNy,bi,bj) = -flux_v
+#endif /* COMPONENT_MODULE */
+
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
          CALL DIAGNOSTICS_FILL( atmPhys_dT , 'AtPhdTdt',
@@ -453,6 +484,26 @@ C--   end bi,bj loops.
 
       CALL EXCH_UV_AGRID_3D_RL( atmPhys_dU, atmPhys_dV,
      &                          .TRUE., Nr, myThid )
+#ifdef COMPONENT_MODULE
+C-    surface wind-stress at grid cell center (A-grid):
+      IF ( useCoupler ) THEN
+        CALL EXCH_UV_AGRID_3D_RL( taux, tauy,
+     &                           .TRUE., 1, myThid )
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=2-OLy,sNy+OLy
+          DO i=2-OLx,sNx+OLx
+            fu(i,j,bi,bj) = halfRL
+     &                    *( taux(i-1,j,bi,bj) + taux(i,j,bi,bj) )
+            fv(i,j,bi,bj) = halfRL
+     &                    *( tauy(i,j-1,bi,bj) + tauy(i,j,bi,bj) )
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+       CALL ATM_STORE_MY_DATA( myTime, myIter, myThid )
+      ENDIF
+#endif /* COMPONENT_MODULE */
 
       RETURN
       END
