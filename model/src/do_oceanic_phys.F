@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.132 2013/07/09 16:01:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.133 2013/09/24 01:42:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -965,6 +965,8 @@ C---  if fluid Is Water: end
         CALL DIAGS_RHO_G(
      I                    rhoInSitu, uVel, vVel, wVel,
      I                    myTime, myIter, myThid )
+      ENDIF
+      IF ( useDiagnostics ) THEN
         CALL DIAGS_OCEANIC_SURF_FLUX( myTime, myIter, myThid )
       ENDIF
       IF ( calcConvect .AND. useDiagnostics ) THEN

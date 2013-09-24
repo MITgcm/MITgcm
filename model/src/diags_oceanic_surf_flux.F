@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_oceanic_surf_flux.F,v 1.11 2013/01/10 23:06:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_oceanic_surf_flux.F,v 1.12 2013/09/24 01:42:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -58,20 +58,6 @@ C-    Time Averages of surface fluxes
         ks=1
        ENDIF
 
-C-    taux (surface momentum flux [Pa=N/m2], positive <-> increase u)
-       CALL DIAGNOSTICS_SCALE_FILL_RS( fu,foFacMom,1,
-     &                             'oceTAUX ',0, 1,0,1,1,myThid )
-
-C-    tauy (surface momentum flux [Pa=N/m2], positive <-> increase v)
-       CALL DIAGNOSTICS_SCALE_FILL_RS( fv,foFacMom,1,
-     &                             'oceTAUY ',0, 1,0,1,1,myThid )
-
-C-    pLoad (Atmospheric pressure loading [Pa=N/m2])
-       CALL DIAGNOSTICS_FILL_RS( pLoad,   'atmPload',0,1,0,1,1,myThid )
-
-C-    sea-ice loading (expressed in Mass of ice+snow / area unit, [kg/m2])
-       CALL DIAGNOSTICS_FILL_RS( sIceLoad,'sIceLoad',0,1,0,1,1,myThid )
-
 C-    net Fresh Water flux into the ocean (+=down), [kg/m2/s]
        tmpFac = -1. _d 0
        CALL DIAGNOSTICS_SCALE_FILL_RS( EmPmR,tmpFac,1,
@@ -92,6 +78,23 @@ C-    Qsw (= net short-wave into the ocean, +=down, [W/m2])
        CALL DIAGNOSTICS_SCALE_FILL_RS( Qsw,tmpFac,1,
      &                             'oceQsw  ',0, 1,0,1,1,myThid )
 
+      IF ( fluidIsWater .OR. useAtm_Phys ) THEN
+C-    taux (surface momentum flux [Pa=N/m2], +=down = increase u-oce)
+       CALL DIAGNOSTICS_SCALE_FILL_RS( fu,foFacMom,1,
+     &                             'oceTAUX ',0, 1,0,1,1,myThid )
+
+C-    tauy (surface momentum flux [Pa=N/m2], +=down = increase v-oce)
+       CALL DIAGNOSTICS_SCALE_FILL_RS( fv,foFacMom,1,
+     &                             'oceTAUY ',0, 1,0,1,1,myThid )
+      ENDIF
+
+C-    sea-ice loading (expressed in Mass of ice+snow / area unit, [kg/m2])
+       CALL DIAGNOSTICS_FILL_RS( sIceLoad,'sIceLoad',0,1,0,1,1,myThid )
+
+      IF ( fluidIsWater ) THEN
+C-    pLoad (Atmospheric pressure loading [Pa=N/m2])
+       CALL DIAGNOSTICS_FILL_RS( pLoad,   'atmPload',0,1,0,1,1,myThid )
+
 C-    oceFreez (= heating from freezing of sea-water, if allowFreezing=T)
        tmpFac = HeatCapacity_Cp*rUnit2mass
        CALL DIAGNOSTICS_SCALE_FILL( surfaceForcingTice,tmpFac,1,
@@ -106,9 +109,11 @@ C-    surForcS (=model surface forcing for Salinity, [g/m2/s], >0 increases S
        tmpFac = rUnit2mass
        CALL DIAGNOSTICS_SCALE_FILL( surfaceForcingS,tmpFac,1,
      &                             'surForcS',0, 1,0,1,1,myThid )
+      ENDIF
 
 C-    TFLUX (=total heat flux, match heat-content variations, [W/m2])
-      IF ( DIAGNOSTICS_IS_ON('TFLUX   ',myThid) ) THEN
+      IF ( fluidIsWater .AND.
+     &     DIAGNOSTICS_IS_ON('TFLUX   ',myThid) ) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j = 1,sNy
@@ -138,7 +143,8 @@ C-    TFLUX (=total heat flux, match heat-content variations, [W/m2])
       ENDIF
 
 C-    SFLUX (=total salt flux, match salt-content variations [g/m2/s])
-      IF ( DIAGNOSTICS_IS_ON('SFLUX   ',myThid) ) THEN
+      IF ( fluidIsWater .AND.
+     &     DIAGNOSTICS_IS_ON('SFLUX   ',myThid) ) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j = 1,sNy
