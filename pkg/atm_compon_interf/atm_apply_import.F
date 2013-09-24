@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_apply_import.F,v 1.1 2004/05/21 19:59:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_apply_import.F,v 1.2 2013/09/24 19:28:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -7,18 +7,18 @@ C $Name:  $
 CBOP
 C     !ROUTINE: ATM_APPLY_IMPORT
 C     !INTERFACE:
-      SUBROUTINE ATM_APPLY_IMPORT( 
+      SUBROUTINE ATM_APPLY_IMPORT(
      I               land_frc,
-     U               aimTsoce, aimSIfrc,
+     U               atmSST, atmSIfrc,
      I               myTime, myIter, bi, bj, myThid )
 
 C     !DESCRIPTION: \bv
 C     *================================================================*
 C     | S/R ATM_APPLY_IMPORT
-C     | o Apply imported coupling data to AIM surface BC over ocean
+C     | o Apply imported coupling data to ATM surface BC over ocean
 C     *================================================================*
 C     | Note: when using sea-ice, fill in Mixed layer fields instead
-C     |      to be used later as Atmos. + Sea-Ice surface oceanic BC.
+C     |      to be used later as SST by Atmos. + Sea-Ice
 C     *================================================================*
 C     \ev
 
@@ -41,15 +41,15 @@ C-- Coupled to the Ocean :
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     land_frc :: land fraction [0-1]
-C     aimTsoce :: sea surface temp [K], used in AIM
-C     aimSIfrc :: sea-ice fraction [0-1]
+C     atmSST   :: sea surface temp [K], used in ATM component
+C     atmSIfrc :: sea-ice fraction [0-1], used in ATM component
 C     myTime   :: Current time of simulation ( s )
 C     myIter   :: Current iteration number in simulation
 C     bi,bj    :: Tile index
 C     myThid   :: Number of this instance of the routine
       _RS  land_frc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  aimTsoce(sNx,sNy)
-      _RL  aimSIfrc(sNx,sNy)
+      _RL  atmSST  (sNx,sNy)
+      _RL  atmSIfrc(sNx,sNy)
       _RL myTime
       INTEGER myIter, bi, bj, myThid
 CEOP
@@ -66,7 +66,7 @@ C     i,j    :: Loop counters
 C--   Put fields from the ocean component in Mixed-layer arrays:
 
 C-    fill in hOceMxL with Mixed-layer Depth from the ocean component
-      IF ( useImportMxlD ) THEN
+       IF ( useImportMxlD ) THEN
         DO j=1,sNy
          DO i=1,sNx
           IF ( land_frc(i,j,bi,bj) .LT. 1. ) THEN
@@ -77,7 +77,7 @@ C-    fill in hOceMxL with Mixed-layer Depth from the ocean component
        ENDIF
 
 C-    fill in tOceMxL with Sea-Surface Temp. from the ocean component
-      IF ( useImportSST ) THEN
+       IF ( useImportSST ) THEN
         DO j=1,sNy
          DO i=1,sNx
           IF ( land_frc(i,j,bi,bj) .LT. 1. ) THEN
@@ -88,7 +88,7 @@ C-    fill in tOceMxL with Sea-Surface Temp. from the ocean component
        ENDIF
 
 C-    fill in sOceMxL with Sea-Surf Salinity from the ocean component
-      IF ( useImportSSS ) THEN
+       IF ( useImportSSS ) THEN
         DO j=1,sNy
          DO i=1,sNx
           IF ( land_frc(i,j,bi,bj) .LT. 1. ) THEN
@@ -99,7 +99,7 @@ C-    fill in sOceMxL with Sea-Surf Salinity from the ocean component
        ENDIF
 
 C-    fill in v2ocMxL with surf. velocity^2  from the ocean component
-      IF ( useImportVsq ) THEN
+       IF ( useImportVsq ) THEN
         DO j=1,sNy
          DO i=1,sNx
           IF ( land_frc(i,j,bi,bj) .LT. 1. ) THEN
@@ -109,10 +109,22 @@ C-    fill in v2ocMxL with surf. velocity^2  from the ocean component
         ENDDO
        ENDIF
 
-      ELSE
+      ELSEIF ( useAtm_Phys ) THEN
 #else
-      IF (.TRUE.) THEN
+      IF ( useAtm_Phys ) THEN
 #endif /* ALLOW_THSICE */
+C--   supply imported fields to Atm_Phys pkg:
+
+       IF ( useImportSST ) THEN
+        DO j=1,sNy
+         DO i=1,sNx
+            atmSST(i,j) = SSTocn(i,j,bi,bj)+celsius2K
+         ENDDO
+        ENDDO
+       ENDIF
+
+      ELSE
+C--   supply imported fields to AIM (Phys) pkg:
 
        IF ( useImportSST ) THEN
         DO j=1,sNy
@@ -120,13 +132,13 @@ C-    fill in v2ocMxL with surf. velocity^2  from the ocean component
           IF ( land_frc(i,j,bi,bj) .LT. 1. ) THEN
 
 C--   take SST from the ocean compon where Sea-Ice fraction is zero
-           IF ( aimSIfrc(i,j).EQ.0. ) THEN
-            aimTsoce(i,j) = SSTocn(i,j,bi,bj)+celsius2K
+           IF ( atmSIfrc(i,j).EQ.0. ) THEN
+            atmSST(i,j) = SSTocn(i,j,bi,bj)+celsius2K
            ELSEIF ( SSTocn(i,j,bi,bj).GE. -1. _d 0)  THEN
 C--   take SST from the ocean compon if clearly warmer than freezing
 C       then reset sea-ice fraction
-            aimTsoce(i,j) = SSTocn(i,j,bi,bj)+celsius2K
-            aimSIfrc(i,j) = 0.
+            atmSST(i,j) = SSTocn(i,j,bi,bj)+celsius2K
+            atmSIfrc(i,j) = 0.
            ENDIF
 
           ENDIF
