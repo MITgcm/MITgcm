@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_readparms.F,v 1.8 2013/07/18 20:03:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_readparms.F,v 1.9 2013/09/24 23:13:54 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -69,7 +69,8 @@ C     cpl_atmSendFrq :: Frequency^-1 for sending data to coupler (s)
      &    cpl_oldPickup,
      &    useImportMxlD, useImportSST, useImportSSS,
      &    useImportVsq, useImportFlxCO2,
-     &    cpl_atmSendFrq
+     &    cpl_atmSendFrq,
+     &    maxNumberPrint
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -95,6 +96,9 @@ C-    Set default value:
         useImportFlxCO2 = .FALSE.
       ENDIF
       cpl_atmSendFrq= deltaTClock
+      maxNumberPrint= 100
+      countPrtExp   = 0
+      countPrtImp   = 0
 
 C--   Read parameters from open data file:
 
@@ -168,7 +172,9 @@ C- namelist CPL_ATM_PARAM:
      &   ' /* Frequency^o-1 for sending data to Coupler (s) */')
 C     cpl_atmSendFrq  :: Frequency^-1 for sending data to coupler (s)
        CALL WRITE_0D_I( cplSendFrq_iter, INDEX_NONE,'cplSendFrq_iter =',
-     &'   /* send data to coupler every "cplSendFrq" iter */')
+     &  ' /* send data to coupler every "cplSendFrq" iter */')
+       CALL WRITE_0D_I( maxNumberPrint, INDEX_NONE, 'maxNumberPrint =',
+     &  ' /* max number of printed Exp/Imp messages */')
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

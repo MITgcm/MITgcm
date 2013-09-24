@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/Attic/cpl_export_my_data.F,v 1.5 2009/12/25 19:42:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/Attic/cpl_export_my_data.F,v 1.6 2013/09/24 23:13:54 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -43,14 +43,23 @@ CEOP
 #ifdef COMPONENT_MODULE
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     msgBuf  :: Informational/error message buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C     Send data to coupling layer. Note MIT Coupler checkpoint1
 C     does not allow asynchronous posting of data, so ordering
 C     has to be consistent with coupling layer ordering.
       IF ( MOD(myIter,cplSendFrq_iter).EQ.0 ) THEN
        _BEGIN_MASTER( myThid )
-       WRITE(0,'(A,I5,A,I10)') '  Exporting (pid=', myProcId,
-     &            ' ) atmospheric fluxes at iter.', myIter
+       IF ( debugMode .OR. countPrtExp.LT.maxNumberPrint ) THEN
+c       WRITE(0,'(A,I5,A,I10)') '  Exporting (pid=', myProcId,
+c    &            ' ) atmospheric fluxes at iter.', myIter
+        WRITE(msgBuf,'(A,I10)')
+     &   '  Exporting atmospheric fluxes at iter.', myIter
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        countPrtExp = countPrtExp + 1
+       ENDIF
        _END_MASTER( myThid )
 
 C-     export Sea-Level pressure:

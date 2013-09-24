@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/CPL_PARAMS.h,v 1.5 2013/07/18 20:03:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/CPL_PARAMS.h,v 1.6 2013/09/24 23:13:54 jmc Exp $
 C $Name:  $
 
 #ifdef COMPONENT_MODULE
@@ -27,9 +27,16 @@ C     useImportFlxCO2 :: True => use the Imported air-sea CO2 fluxes from couple
 
 C--   COMMON /CPL_ATM_PAR_I/: Integer valued parameters
 C     cplSendFrq_iter :: send data to coupler every "cplSendFrq" iter
+C     maxNumberPrint  :: max number of printed Export/Import messages
+C     countPrtExp     :: counter for printed Export message
+C     countPrtImp     :: counter for printed Import message
       COMMON /CPL_ATM_PAR_I/
-     &  cplSendFrq_iter
+     &  cplSendFrq_iter,
+     &  maxNumberPrint, countPrtExp, countPrtImp
       INTEGER cplSendFrq_iter
+      INTEGER maxNumberPrint
+      INTEGER countPrtExp
+      INTEGER countPrtImp
 
 C--   COMMON /CPL_ATM_PAR_C/: Character valued parameters
 c     CHARACTER*(MAX_LEN_FNAM) cpl_atmFile
