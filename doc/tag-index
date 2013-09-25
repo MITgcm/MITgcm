@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1924 2013/09/24 00:32:03 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1925 2013/09/25 14:04:24 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint64o (2013/09/25)
+o pkg/atm_phys & atm_compon_interf:
+  - allows for coupling of gray-atmosphere (atm_phys) with ocean.
 o tools/build_options:
   - switch from "-fPIC" to "-mcmodel=medium" in optfiles: linux_amd64_gfortran
     & linux_amd64_ifort11 and in linux_amd64_g77 & linux_amd64_open64 also
