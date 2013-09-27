@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.9 2013/09/15 14:31:11 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.10 2013/09/27 22:34:35 m_bates Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 #include "GMREDI_OPTIONS.h"
@@ -74,12 +74,13 @@ C     sigy   :: local d(rho)/dy
 C     sigz   :: local d(rho)/dz
 C     hsurf  :: local surface layer depth
 C     small  :: a small number (to avoid floating point exceptions)
-      _RL N2loc
+      _RL N2loc(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL slope
+      _RL slopeC(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL Req
-      _RL deltaH
+      _RL deltaH(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL g_reciprho_sq
-      _RL M4loc
+      _RL M4loc(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL maxDRhoDz
       _RL sigx, sigy, sigz
       _RL hsurf
@@ -258,9 +259,17 @@ C       Not limited
 C     Zeroing some cumulative fields
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        eady(i,j)  = zeroRL
-        BVint(i,j) = zeroRL
-        Ubaro(i,j) = zeroRL
+        eady(i,j)   = zeroRL
+        BVint(i,j)  = zeroRL
+        Ubaro(i,j)  = zeroRL
+        deltaH(i,j) = zeroRL
+       ENDDO
+      ENDDO
+      DO k=1,Nr
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         slopeC(i,j,k)=zeroRL
+        ENDDO
        ENDDO
       ENDDO
 
@@ -382,9 +391,20 @@ C     Calculate the Eady growth rate
 C     ===============================
       DO k=1,Nr
 
+       DO j=1-Oly,sNy+Oly-1
+        DO i=1-Olx,sNx+Olx-1
+         M4loc(i,j,k) = g_reciprho_sq*( dSigmaDx(i,j,k)**2 
+     &                                 +dSigmaDy(i,j,k)**2 )
+         IF (k.NE.kLow_C(i,j)) THEN
+           N2loc(i,j,k) = op5*(N2(i,j,k)+N2(i,j,k+1))
+         ELSE
+           N2loc(i,j,k) = op5*N2(i,j,k)
+         ENDIF
+        ENDDO
+       ENDDO
 C      The bottom of the grid cell is shallower than the top
 C      integration level, so, advance the depth.
-       IF (-rF(k+1).LE. GM_K3D_EadyMinDepth) CYCLE
+       IF (-rF(k+1) .LE. GM_K3D_EadyMinDepth) CYCLE
 
 C      Do not bother going any deeper since the top of the
 C      cell is deeper than the bottom integration level
@@ -393,25 +413,21 @@ C      cell is deeper than the bottom integration level
 C      We are in the integration depth range
        DO j=1-Oly,sNy+Oly-1
         DO i=1-Olx,sNx+Olx-1
-         IF (kLow_C(i,j).GE.k) THEN
-           IF (k.NE.kLow_C(i,j)) THEN
-             N2loc = op5*(N2(i,j,k)+N2(i,j,k+1))
-           ELSE
-             N2loc = op5*N2(i,j,k)
-           ENDIF
-           M4loc = g_reciprho_sq*( dSigmaDx(i,j,k)**2 
-     &                            +dSigmaDy(i,j,k)**2 )
-           slope = SQRT(SQRT(M4loc)/N2loc)
+         IF ( (kLow_C(i,j).GE.k) .AND. 
+     &        (-hMixLayer(i,j,bi,bj).LE.-rC(k)) ) THEN
 
+           slopeC(i,j,k) = SQRT(SQRT(M4loc(i,j,k))/N2loc(i,j,k))
 C          Limit the slope.  Note, this is not all the Eady calculations.
-           IF (slope.LE.GM_K3D_maxSlope) THEN
+           IF (slopeC(i,j,k).LE.GM_K3D_maxSlope) THEN
              eady(i,j) = eady(i,j) 
-     &            + hfacC(i,j,k,bi,bj)*drF(k)*M4loc/(N2loc)
+     &           + hfacC(i,j,k,bi,bj)*drF(k)*M4loc(i,j,k)/(N2loc(i,j,k))
            ELSE
+             slopeC(i,j,k) = GM_K3D_maxSlope
              eady(i,j) = eady(i,j)
-     &            + hfacC(i,j,k,bi,bj)*drF(k)*SQRT(M4loc)
+     &            + hfacC(i,j,k,bi,bj)*drF(k)*SQRT(M4loc(i,j,k))
      &              *GM_K3D_maxSlope*GM_K3D_maxSlope
            ENDIF
+           deltaH(i,j) = deltaH(i,j) + drF(k)
          ENDIF
         ENDDO
        ENDDO
@@ -419,19 +435,18 @@ C          Limit the slope.  Note, this is not all the Eady calculations.
 
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-C       If the minimum depth for the integration is deeper than ocean 
-C       bottom then give the eady growth rate a dummy, non-zero value 
-C       to avoid floating point exceptions.  These points are taken care
-C       of by setting K3D=GM_K3D_smallK later.
-        IF (-r_Low(i,j,bi,bj).LE.GM_K3D_EadyMinDepth) THEN
+C       If the minimum depth for the integration is deeper than the ocean
+C       bottom OR the mixed layer is deeper than the maximum depth of 
+C       integration, we set the Eady growth rate to something small
+C       to avoid floating point exceptions.
+C       Later, these areas will be given a small diffusivity.
+        IF (deltaH(i,j).EQ.zeroRL) THEN
           eady(i,j) = small
 
-C       Otherwise, multiply eady by the various constants to get the 
-C       growth rate. 
+C       Otherwise, divide over the integration and take the square root
+C       to actually find the Eady growth rate.
         ELSE
-          deltaH = MIN(-r_low(i,j,bi,bj),GM_K3D_EadyMaxDepth)
-          deltaH = deltaH - GM_K3D_EadyMinDepth
-          eady(i,j) = SQRT(eady(i,j)/deltaH)
+          eady(i,j) = SQRT(eady(i,j)/deltaH(i,j))
           
         ENDIF
 
@@ -445,6 +460,7 @@ C     ======================================
        DO i=1-Olx+1,sNx+Olx-1
 C       Calculate the Visbeck velocity
         Rurms(i,j) = MIN(Rdef(i,j,bi,bj),GM_K3D_maxLurms)
+        Rurms(i,j) = MAX(Rurms(i,j),GM_K3D_minLurms)
         urms(i,j,1) = GM_K3D_Lambda*eady(i,j)*Rurms(i,j)
 C       Set the bottom urms to zero
         k=kLow_C(i,j)
@@ -478,14 +494,14 @@ C     Calculate the diffusivity (on the mass grid)
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
          IF (k.LE.kLow_C(i,j)) THEN
-           IF (-r_Low(i,j,bi,bj).LE.GM_K3D_EadyMinDepth) THEN
+           IF (deltaH(i,j).EQ.zeroRL) THEN
              K3D(i,j,k,bi,bj) = GM_K3D_smallK
            ELSE
              IF (urms(i,j,k).EQ.0.0) THEN
                K3D(i,j,k,bi,bj) = GM_K3D_smallK
              ELSE
                umc(i,j,k)  = ubar(i,j,k,bi,bj) - cDopp(i,j)
-               supp(i,j,k) = 1/( 1 + 4*umc(i,j,k)**2/urms(i,j,1)**2 )
+               supp(i,j,k) = 1/( 1 + 10*umc(i,j,k)**2/urms(i,j,1)**2 )
                K3D(i,j,k,bi,bj) = GM_K3D_gamma*urms(i,j,k)
      &                            *Rmix(i,j)*supp(i,j,k)
              ENDIF
@@ -931,6 +947,10 @@ C     Diagnostics
         CALL DIAGNOSTICS_FILL(ubar,   'GM_UBAR ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(modesC(1,:,:,:,bi,bj),
      &                                'GM_MODEC',0,Nr,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(M4loc,  'GM_M4   ',0,Nr,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(N2loc,  'GM_N2   ',0,Nr,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(slopeC, 'GM_SLOPE',0,Nr,0,1,1,myThid)
+
       ENDIF
 #endif
 

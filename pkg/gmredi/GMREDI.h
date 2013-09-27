@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.24 2013/08/08 22:39:36 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.25 2013/09/27 22:34:35 m_bates Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -94,6 +94,7 @@ C     GM_K3D_EadyMaxDepth :: lower depth for Eady calculation
 C     GM_maxK3D      :: Upper bound on the diffusivity
 C     GM_K3D_constK  :: Constant diffusivity to use when GM_useK3D=.TRUE. and GM_K3D_likeGM=.TRUE.
 C     GM_K3D_maxLurms:: Upper bound on th length scale used for calculating urms
+C     GM_K3D_minLurms:: Lower bound on th length scale used for calculating urms
 C     GM_K3D_minCori :: minimum value for f (to stop things blowing up near the equator)
 C     GM_K3D_minN2   :: minimum value for the square of the buoyancy frequency
 C     GM_K3D_surfMinDepth :: minimum value for the depth of the surface layer
@@ -122,6 +123,7 @@ C     GM_K3D_vecFreq :: Frequency at which to update the baroclinic modes
       _RL GM_maxK3D
       _RL GM_K3D_constK
       _RL GM_K3D_maxLurms
+      _RL GM_K3D_minLurms
       _RL GM_K3D_minCori
       _RL GM_K3D_minN2
       _RL GM_K3D_surfMinDepth
@@ -150,7 +152,7 @@ C     GM_K3D_vecFreq :: Frequency at which to update the baroclinic modes
      &                   GM_K3D_smallK, GM_K3D_maxSlope, GM_K3D_maxC,
      &                   GM_maxK3D, GM_K3D_minCori, GM_K3D_minN2, 
      &                   GM_K3D_surfMinDepth, GM_K3D_maxLurms,
-     &                   GM_K3D_constK, GM_K3D_vecFreq,
+     &                   GM_K3D_constK, GM_K3D_vecFreq, GM_K3D_minLurms,
      &                   GM_facTrL2dz, GM_facTrL2ML, GM_maxTransLay,
      &                   GM_Scrit, GM_Sd, GM_BVP_cMin,
      &                   subMeso_Ceff, subMeso_invTau, subMeso_LfMin
