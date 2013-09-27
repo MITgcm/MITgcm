@@ -1,13 +1,11 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.13 2013/09/19 08:54:42 dimitri Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.14 2013/09/27 09:00:57 dfer Exp $
 # $Name:  $
 
 # Used to run the testreport on pleiades with:
-# module load comp-intel/2011.2 mpi-sgi/mpt.2.06a67 netcdf/4.0
-
-# Tested and reccommended for Ivy and Sandy Bridge nodes:
-# module load comp-intel/2011.7.256 mpi-sgi/mpt.2.08r7 netcdf/4.0
+# module load comp-intel/2012.0.032 mpi-sgi/mpt.2.06rp16  netcdf/4.0
+# works on all types of nodes 
 
 FC=ifort
 CC=icc
@@ -19,11 +17,11 @@ OMPFLAG='-openmp'
 CFLAGS='-fPIC'
 LDADD='-shared-intel'
 
-LIBS='-L/nasa/sgi/mpt/2.06a67/lib -lmpi -L/nasa/netcdf/4.0/lib -lnetcdf'
-INCLUDES='-I/nasa/sgi/mpt/2.06a67/include -I/nasa/netcdf/4.0/include'
-INCLUDEDIRS='/nasa/sgi/mpt/2.06a67/include'
+LIBS='-L/nasa/sgi/mpt/2.06rp16/lib -lmpi -L/nasa/netcdf/4.0/lib -lnetcdf'
+INCLUDES='-I/nasa/sgi/mpt/2.06rp16/include -I/nasa/netcdf/4.0/include'
+INCLUDEDIRS='/nasa/sgi/mpt/2.06rp16/include'
 #- used for parallel (MPI) DIVA
-MPIINCLUDEDIR='/nasa/sgi/mpt/2.06a67/include'
+MPIINCLUDEDIR='/nasa/sgi/mpt/2.06rp16/include'
 #MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
 
 NOOPTFLAGS='-O0 -fPIC'
@@ -31,11 +29,11 @@ NOOPTFLAGS='-O0 -fPIC'
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
     FFLAGS="$FFLAGS -fPIC -W0 -WB -convert big_endian -assume byterecl -align"
-    FOPTIM='-O2 -ip -fp-model precise -axSSSE4.2,SSSE3 -traceback -ftz'
+    FOPTIM='-O2 -ip -fp-model precise -axAVX -xSSE4.1 -traceback -ftz'
     NOOPTFILES='seaice_growth.F calc_oce_mxlayer.F fizhi_lsm.F fizhi_clockstuff.F'
 else
     #  Try to follow IEEE-754
-    FFLAGS="$FFLAGS -fPIC -w95 -W0 -WB -convert big_endian -assume byterecl -noalign"
+    FFLAGS="$FFLAGS -fPIC -W0 -WB -convert big_endian -assume byterecl -noalign"
     FOPTIM='-O0'
 fi
 #- might want to use '-r8' for fizhi pkg:
