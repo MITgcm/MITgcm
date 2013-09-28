@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.10 2013/09/27 22:34:35 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.11 2013/09/28 17:59:30 m_bates Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 #include "GMREDI_OPTIONS.h"
@@ -604,7 +604,7 @@ C     We still need to give special treatment for the surface layer however.
       DO k=Nr-1,1,-1
        DO j=1-Oly,sNy+Oly-1
         DO i=1-Olx,sNx+Olx-1
-         IF(k.LE.surfk(i,j) .AND. .NOT. GM_K3D_likeGM) THEN
+         IF(k.LE.surfk(i,j) .AND. GM_K3D_PVsheet) THEN
 C          We are in the surface layer, so set the thickness flux
 C          based on the average slope over the surface layer
 C          If we are on the edge of a "cliff" the surface layer at the
@@ -718,6 +718,11 @@ C     It does not affect the end result since it is in the overlap region.
        ENDDO
       ENDDO
 
+C     If GM_K3D_likeGM=.TRUE., K3D becomes a diagnostic field only
+C     and the diffusivity is set to a constant GM_K3D_constK.
+C     If the diffusivity is constant the method here is the same as GM.
+C     For the Redi diffusivity K3D is set to GM_K3D_constK at the end
+C     of this routine (after the diagnostics are filled).
       IF(GM_K3D_likeGM) THEN
         DO k=1,Nr
          DO j=1-Oly,sNy+Oly
@@ -854,7 +859,7 @@ C     Calculate Xi for Y direction at the south face
          ENDDO
         ENDDO
 
-C     ENDIF GM_K3D_likeGM
+C     ENDIF (.NOT. GM_K3D_smooth)
       ENDIF
 
 
@@ -953,6 +958,18 @@ C     Diagnostics
 
       ENDIF
 #endif
+
+C     For the Redi diffusivity, we set K3D to a constant if 
+C     GM_K3D_likeGM=.TRUE. (see earlier comments)
+      IF (GM_K3D_likeGM) THEN
+        DO k=1,Nr
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           K3D(i,j,k,bi,bj) = GM_K3D_constK
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
 
 #endif /* GM_K3D */
       RETURN
