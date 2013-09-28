@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.34 2012/09/01 17:36:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.35 2013/09/28 19:09:38 dimitri Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -52,9 +52,11 @@ C     record :: Temp. for textual I/O
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_PREC) record
-#if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
       CHARACTER*(MAX_LEN_FNAM) scratchFile1
       CHARACTER*(MAX_LEN_FNAM) scratchFile2
+#ifdef ALLOW_USE_MPI
+C     mpiRC  :: Error code reporting variable used with MPI.
+      INTEGER mpiRC
 #endif
 CEOP
 
@@ -129,15 +131,27 @@ C     We really ought to be using our environment file reading
 C     package - but we have not written it yet.
 
 C     Make scratch copies of input data file with and without comments
-#if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
       WRITE(scratchFile1,'(A,I4.4)') 'scratch1.', myProcId
       WRITE(scratchFile2,'(A,I4.4)') 'scratch2.', myProcId
+#ifdef SINGLE_DISK_IO
+      IF( myProcId .EQ. 0 ) THEN
+         OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
+         OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
+      ENDIF
+#else /* ifndef SINGLE_DISK_IO */
+# if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
       OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
-#else
+# else
       OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
       OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
+# endif
+#endif /* SINGLE_DISK_IO */
+
+#ifdef SINGLE_DISK_IO
+      IF( myProcId .EQ. 0 ) THEN
 #endif
+
       OPEN(UNIT=eeDataUnit,FILE='eedata',STATUS='OLD',
      &     err=1,IOSTAT=errIO)
       IF ( errIO .GE. 0 ) GOTO 2
@@ -197,6 +211,16 @@ C--   Report contents of parameter file
 C--   Read namelist
       iUnit = scrUnit1
       REWIND(iUnit)
+
+#ifdef SINGLE_DISK_IO
+      CLOSE(iUnit)
+      ENDIF
+# ifdef ALLOW_USE_MPI
+      CALL MPI_BARRIER( MPI_COMM_MODEL, mpiRC )
+# endif
+      OPEN(UNIT=iUnit, FILE=scratchFile1, STATUS='OLD')
+#endif /* SINGLE_DISK_IO */
+
       READ(UNIT=iUnit,NML=EEPARMS,IOSTAT=errIO,err=3)
       IF ( errIO .GE. 0 ) GOTO 4
     3 CONTINUE

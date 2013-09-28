@@ -1,10 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1925 2013/09/25 14:04:24 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1926 2013/09/28 19:09:38 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 checkpoint64o (2013/09/25)
+o added SINGLE_DISK_IO option because reading of parameter files on
+  very large number of processors did not work with existing set-up
 o pkg/atm_phys & atm_compon_interf:
   - allows for coupling of gray-atmosphere (atm_phys) with ocean.
 o tools/build_options:

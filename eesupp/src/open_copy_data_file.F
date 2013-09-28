@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/open_copy_data_file.F,v 1.3 2010/12/13 04:24:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/open_copy_data_file.F,v 1.4 2013/09/28 19:09:38 dimitri Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -44,10 +44,8 @@ C     === Local variables ===
 C     msgBuf    :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_PREC) record
-#if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
       CHARACTER*(MAX_LEN_FNAM) scratchFile1
       CHARACTER*(MAX_LEN_FNAM) scratchFile2
-#endif
       INTEGER  errIO,IL
       LOGICAL  exst
 CEOP
@@ -70,15 +68,27 @@ C--   Open the parameter file
        STOP 'ABNORMAL END: S/R OPEN_COPY_DATA_FILE'
       ENDIF
 
-#if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
       WRITE(scratchFile1,'(A,I4.4)') 'scratch1.', myProcId
       WRITE(scratchFile2,'(A,I4.4)') 'scratch2.', myProcId
+#ifdef SINGLE_DISK_IO
+      IF( myProcId .EQ. 0 ) THEN
+         OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
+         OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
+      ENDIF
+#else /* ifndef SINGLE_DISK_IO */
+# if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
       OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
-#else
+# else
       OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
       OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
+# endif
+#endif /* SINGLE_DISK_IO */
+
+#ifdef SINGLE_DISK_IO
+      IF( myProcId .EQ. 0 ) THEN
 #endif
+
       OPEN(UNIT=modelDataUnit,FILE=data_file,STATUS='OLD',
      &     IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
@@ -134,7 +144,18 @@ C--   Return open unit to caller
       iUnit = scrUnit1
       REWIND(iUnit)
 
+#ifdef SINGLE_DISK_IO
+      CLOSE(iUnit)
+      ENDIF
+      OPEN(UNIT=iUnit, FILE=scratchFile1, STATUS='OLD')
+#endif
+
       _END_MASTER(myThid)
+
+#ifdef SINGLE_DISK_IO
+C-- all processes must wait for process 0 to complete writing scratchFile1
+      _BARRIER
+#endif
 
       RETURN
       END
