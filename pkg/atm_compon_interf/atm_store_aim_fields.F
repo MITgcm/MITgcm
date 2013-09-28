@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_store_aim_fields.F,v 1.1 2013/09/11 20:17:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_store_aim_fields.F,v 1.2 2013/09/28 00:15:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -36,6 +36,7 @@ C     == Global variables ==
 
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+c#include "ATMIDS.h"
 #include "CPL_PARAMS.h"
 #ifdef ALLOW_AIM
 # include "AIM2DYN.h"
@@ -74,7 +75,7 @@ C       that will be exported to the coupling layer.
        ENDDO
 
 #ifdef ALLOW_AIM_CO2
-      IF ( atmCpl_exchange_DIC ) THEN
+c     IF ( atmCpl_exchange_DIC ) THEN
 C     o Accumulate atmospheric CO2 from Aim pkg that will be exported
 C       to the coupling layer.
        airCO2Time(bi,bj) = airCO2Time(bi,bj) + cplTimeFraction
@@ -84,7 +85,7 @@ C       to the coupling layer.
      &                      + aim_CO2(i,j,bi,bj)*cplTimeFraction
         ENDDO
        ENDDO
-      ENDIF
+c     ENDIF
 #endif /* ALLOW_AIM_CO2 */
 
 #endif /* ALLOW_AIM */
