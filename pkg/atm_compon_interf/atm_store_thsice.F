@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_store_thsice.F,v 1.1 2013/09/11 20:17:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_store_thsice.F,v 1.2 2013/09/28 00:19:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,7 +29,7 @@ C     == Global variables ==
 
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-c#include "ATMIDS.h"
+#include "ATMIDS.h"
 #include "CPL_PARAMS.h"
 #ifdef ALLOW_THSICE
 # include "THSICE_PARAMS.h"
@@ -72,7 +72,7 @@ c         seaIceMass(i,j,bi,bj) = seaIceMass(i,j,bi,bj) +
         ENDDO
        ENDDO
 
-c     IF ( atmCpl_exchange_DIC ) THEN
+      IF ( atmCpl_exchange_DIC ) THEN
 C     o Accumulate Sea-Ice concentration (no-units) from thSIce pkg
 C       that will be exported to the coupling layer.
        cplTimeFraction = 1. _d 0 / DFLOAT(cplSendFrq_iter)
@@ -83,7 +83,7 @@ C       that will be exported to the coupling layer.
      &                       + iceMask(i,j,bi,bj)*cplTimeFraction
         ENDDO
        ENDDO
-c     ENDIF
+      ENDIF
 
 #endif /* ALLOW_THSICE */
 
