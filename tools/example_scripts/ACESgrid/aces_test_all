@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.30 2013/07/22 14:19:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.31 2013/09/29 15:32:11 jmc Exp $
 # $Name:  $
 
 #  submit list of jobs or get list of submitted jobs
@@ -15,11 +15,11 @@ sub_list_jobs()
    do
      case $i in
        'mth') sfx='ifc_'${i}  ;;
+       'mp2') sfx='ifc_'${i}  ;;
        'tuv') sfx='op64_'${i} ;;
-       'opa') sfx='op64_adm'  ;;
        'tlm') sfx='op64_'${i} ;;
+       'opa') sfx='op64_adm'  ;;
        'g77') sfx=${i}'_adm'  ;;
-       'mp2') sfx=${i}'_mth'  ;;
            *) sfx=${i}'_mpi'  ;;
      esac
      if test -f $SUB_DIR/aces_test_$sfx ; then
@@ -194,7 +194,7 @@ case $1 in
  '-getOnly') action=2 ; shift ;;
  '-sub+get') action=3 ; shift ;;
  '-double' ) action=4 ; shift ;;
-          *) action=4 ;;
+          *) action=1 ;;
 esac
 #echo "action= $action , Arg= $# "
 

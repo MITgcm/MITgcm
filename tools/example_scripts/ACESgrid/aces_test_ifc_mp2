@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_mp2.stderr
 #PBS -o /home/jmc/test_aces/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_mp2_mth,v 1.20 2013/08/20 18:53:11 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mp2,v 1.1 2013/09/29 15:32:11 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for MPI+Multi-Threaded test using ifort (v9) & mpich2
