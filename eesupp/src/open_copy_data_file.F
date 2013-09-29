@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/open_copy_data_file.F,v 1.4 2013/09/28 19:09:38 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/open_copy_data_file.F,v 1.5 2013/09/29 06:19:38 dimitri Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -23,6 +23,7 @@ C     !USES:
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "EESUPPORT.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -48,6 +49,10 @@ C     msgBuf    :: Informational/error message buffer
       CHARACTER*(MAX_LEN_FNAM) scratchFile2
       INTEGER  errIO,IL
       LOGICAL  exst
+#ifdef ALLOW_USE_MPI
+C     mpiRC  :: Error code reporting variable used with MPI.
+      INTEGER mpiRC
+#endif
 CEOP
 
       _BEGIN_MASTER(myThid)
@@ -68,15 +73,18 @@ C--   Open the parameter file
        STOP 'ABNORMAL END: S/R OPEN_COPY_DATA_FILE'
       ENDIF
 
-      WRITE(scratchFile1,'(A,I4.4)') 'scratch1.', myProcId
-      WRITE(scratchFile2,'(A,I4.4)') 'scratch2.', myProcId
+C     Make scratch copies of eedata with and without comments
 #ifdef SINGLE_DISK_IO
+      WRITE(scratchFile1,'(A)') 'scratch1'
+      WRITE(scratchFile2,'(A)') 'scratch2'
       IF( myProcId .EQ. 0 ) THEN
-         OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
-         OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
+       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
+       OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
       ENDIF
 #else /* ifndef SINGLE_DISK_IO */
 # if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
+      WRITE(scratchFile1,'(A,I4.4)') 'scratch1.', myProcId
+      WRITE(scratchFile2,'(A,I4.4)') 'scratch2.', myProcId
       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
       OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
 # else
@@ -140,22 +148,22 @@ C--   Report contents of model parameter file
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
+#ifdef SINGLE_DISK_IO
+      CLOSE(scrUnit1)
+      ENDIF
+# ifdef ALLOW_USE_MPI
+C--   all processes must wait for process 0 to complete
+C     writing scratchFile1 before opening it
+      CALL MPI_BARRIER( MPI_COMM_MODEL, mpiRC )
+# endif
+      OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='OLD')
+#endif /* SINGLE_DISK_IO */
+
 C--   Return open unit to caller
       iUnit = scrUnit1
       REWIND(iUnit)
 
-#ifdef SINGLE_DISK_IO
-      CLOSE(iUnit)
-      ENDIF
-      OPEN(UNIT=iUnit, FILE=scratchFile1, STATUS='OLD')
-#endif
-
       _END_MASTER(myThid)
-
-#ifdef SINGLE_DISK_IO
-C-- all processes must wait for process 0 to complete writing scratchFile1
-      _BARRIER
-#endif
 
       RETURN
       END

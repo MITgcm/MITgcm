@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.35 2013/09/28 19:09:38 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.36 2013/09/29 06:19:38 dimitri Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -131,15 +131,17 @@ C     We really ought to be using our environment file reading
 C     package - but we have not written it yet.
 
 C     Make scratch copies of input data file with and without comments
-      WRITE(scratchFile1,'(A,I4.4)') 'scratch1.', myProcId
-      WRITE(scratchFile2,'(A,I4.4)') 'scratch2.', myProcId
 #ifdef SINGLE_DISK_IO
+      WRITE(scratchFile1,'(A)') 'scratch1'
+      WRITE(scratchFile2,'(A)') 'scratch2'
       IF( myProcId .EQ. 0 ) THEN
          OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
          OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
       ENDIF
 #else /* ifndef SINGLE_DISK_IO */
 # if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
+      WRITE(scratchFile1,'(A,I4.4)') 'scratch1.', myProcId
+      WRITE(scratchFile2,'(A,I4.4)') 'scratch2.', myProcId
       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
       OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
 # else
@@ -208,18 +210,20 @@ C--   Report contents of parameter file
       ENDIF
       CLOSE(iUnit)
 
+#ifdef SINGLE_DISK_IO
+      CLOSE(scrUnit1)
+      ENDIF
+# ifdef ALLOW_USE_MPI
+C--   all processes must wait for process 0 to complete
+C     writing scratchFile1 before opening it
+      CALL MPI_BARRIER( MPI_COMM_MODEL, mpiRC )
+# endif
+      OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='OLD')
+#endif /* SINGLE_DISK_IO */
+
 C--   Read namelist
       iUnit = scrUnit1
       REWIND(iUnit)
-
-#ifdef SINGLE_DISK_IO
-      CLOSE(iUnit)
-      ENDIF
-# ifdef ALLOW_USE_MPI
-      CALL MPI_BARRIER( MPI_COMM_MODEL, mpiRC )
-# endif
-      OPEN(UNIT=iUnit, FILE=scratchFile1, STATUS='OLD')
-#endif /* SINGLE_DISK_IO */
 
       READ(UNIT=iUnit,NML=EEPARMS,IOSTAT=errIO,err=3)
       IF ( errIO .GE. 0 ) GOTO 4
