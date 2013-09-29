@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/open_copy_data_file.F,v 1.6 2013/09/29 15:06:35 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/open_copy_data_file.F,v 1.7 2013/09/29 23:14:40 dimitri Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -23,7 +23,9 @@ C     !USES:
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
+#ifdef SINGLE_DISK_IO
+# include "EESUPPORT.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -49,7 +51,7 @@ C     msgBuf    :: Informational/error message buffer
       CHARACTER*(MAX_LEN_FNAM) scratchFile2
       INTEGER  errIO,IL
       LOGICAL  exst
-#ifdef ALLOW_USE_MPI
+#ifdef SINGLE_DISK_IO
 C     mpiRC  :: Error code reporting variable used with MPI.
       INTEGER mpiRC
 #endif
@@ -149,12 +151,15 @@ C--   Report contents of model parameter file
      &                    SQUEEZE_RIGHT, myThid )
 
 #ifdef SINGLE_DISK_IO
-      CLOSE(scrUnit1)
+      CALL FLUSH(scrUnit1)
+      CLOSE(scrUnit1)      
       ENDIF
+      _END_MASTER(myThid)
+# ifdef ALLOW_USE_MPI
 C--   all processes must wait for process 0 to complete
 C     writing scratchFile1 before opening it
-      _END_MASTER(myThid)
-      _BARRIER
+      CALL MPI_BARRIER( MPI_COMM_MODEL, mpiRC )
+# endif
       CALL SYSTEM('sleep 1')
       _BEGIN_MASTER(myThid)
       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='OLD')

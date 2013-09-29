@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.36 2013/09/29 06:19:38 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.37 2013/09/29 23:14:40 dimitri Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -132,6 +132,9 @@ C     package - but we have not written it yet.
 
 C     Make scratch copies of input data file with and without comments
 #ifdef SINGLE_DISK_IO
+C     Stop if called from eeboot_minimal.F before myProcId is set
+      IF ( .NOT.doReport )
+     &     STOP 'ABNORMAL END: S/R EESET_PARMS: myProcId unset'
       WRITE(scratchFile1,'(A)') 'scratch1'
       WRITE(scratchFile2,'(A)') 'scratch2'
       IF( myProcId .EQ. 0 ) THEN
@@ -211,6 +214,7 @@ C--   Report contents of parameter file
       CLOSE(iUnit)
 
 #ifdef SINGLE_DISK_IO
+      CALL FLUSH(scrUnit1)
       CLOSE(scrUnit1)
       ENDIF
 # ifdef ALLOW_USE_MPI
@@ -218,6 +222,7 @@ C--   all processes must wait for process 0 to complete
 C     writing scratchFile1 before opening it
       CALL MPI_BARRIER( MPI_COMM_MODEL, mpiRC )
 # endif
+      CALL SYSTEM('sleep 1')
       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='OLD')
 #endif /* SINGLE_DISK_IO */
 
