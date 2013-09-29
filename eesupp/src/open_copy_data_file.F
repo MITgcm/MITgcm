@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/open_copy_data_file.F,v 1.5 2013/09/29 06:19:38 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/open_copy_data_file.F,v 1.6 2013/09/29 15:06:35 dimitri Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -75,8 +75,8 @@ C--   Open the parameter file
 
 C     Make scratch copies of eedata with and without comments
 #ifdef SINGLE_DISK_IO
-      WRITE(scratchFile1,'(A)') 'scratch1'
-      WRITE(scratchFile2,'(A)') 'scratch2'
+      WRITE(scratchFile1,'(A,A)') 'scratch1_', data_file
+      WRITE(scratchFile2,'(A,A)') 'scratch2_', data_file
       IF( myProcId .EQ. 0 ) THEN
        OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
        OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
@@ -151,11 +151,12 @@ C--   Report contents of model parameter file
 #ifdef SINGLE_DISK_IO
       CLOSE(scrUnit1)
       ENDIF
-# ifdef ALLOW_USE_MPI
 C--   all processes must wait for process 0 to complete
 C     writing scratchFile1 before opening it
-      CALL MPI_BARRIER( MPI_COMM_MODEL, mpiRC )
-# endif
+      _END_MASTER(myThid)
+      _BARRIER
+      CALL SYSTEM('sleep 1')
+      _BEGIN_MASTER(myThid)
       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='OLD')
 #endif /* SINGLE_DISK_IO */
 
@@ -167,3 +168,4 @@ C--   Return open unit to caller
 
       RETURN
       END
+c
