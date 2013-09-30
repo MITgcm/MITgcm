@@ -1,12 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1926 2013/09/28 19:09:38 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1927 2013/09/30 20:06:42 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o tutorial_deep_convection:
+  - add 1rst version of isotropic 3-D Smagorinsky code (from Louis-Philippe),
+    for now all in this exp. code dir.
+  - add secondary test using Smag-3D viscosity (keep very low backgroud visc for
+    testing) and flux-limter advection scheme for Temp. (no explicit diffusion).
+o eesupp/src:
+  - added SINGLE_DISK_IO option because reading of parameter files on
+    very large number of processors did not work with existing set-up
+
 checkpoint64o (2013/09/25)
-o added SINGLE_DISK_IO option because reading of parameter files on
-  very large number of processors did not work with existing set-up
 o pkg/atm_phys & atm_compon_interf:
   - allows for coupling of gray-atmosphere (atm_phys) with ocean.
 o tools/build_options:
