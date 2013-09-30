@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/open_copy_data_file.F,v 1.7 2013/09/29 23:14:40 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/open_copy_data_file.F,v 1.8 2013/09/30 15:17:51 dimitri Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -154,14 +154,12 @@ C--   Report contents of model parameter file
       CALL FLUSH(scrUnit1)
       CLOSE(scrUnit1)      
       ENDIF
-      _END_MASTER(myThid)
 # ifdef ALLOW_USE_MPI
 C--   all processes must wait for process 0 to complete
 C     writing scratchFile1 before opening it
       CALL MPI_BARRIER( MPI_COMM_MODEL, mpiRC )
 # endif
       CALL SYSTEM('sleep 1')
-      _BEGIN_MASTER(myThid)
       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='OLD')
 #endif /* SINGLE_DISK_IO */
 
