@@ -5,7 +5,7 @@
 #  nTy      :: No. threads per process in Y
 # debugMode :: print debug msg (sequence of S/R calls)
  &EEPARMS
- nTx=1,
+ nTx=2,
  nTy=1,
 #debugMode=.TRUE.,
  &
