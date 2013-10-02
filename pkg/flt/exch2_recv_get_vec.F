@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch2_recv_get_vec.F,v 1.3 2012/09/06 16:17:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch2_recv_get_vec.F,v 1.4 2013/10/02 23:31:28 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -62,7 +62,6 @@ C     theTag        :: Variables used in message building
 C     theType       :: Variables used in message building
 C     theSize       :: Variables used in message building
       INTEGER bi, bj
-      INTEGER spinCount
       INTEGER ioUnit
       INTEGER thisTile, nN, tgT, oNb, dir
       INTEGER theProc, theTag, theType, theSize
