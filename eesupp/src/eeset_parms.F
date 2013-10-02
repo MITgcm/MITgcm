@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.37 2013/09/29 23:14:40 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.38 2013/10/02 21:33:54 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -52,9 +52,11 @@ C     record :: Temp. for textual I/O
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_PREC) record
+#if defined (TARGET_BGL) || defined (TARGET_CRAYXT) || defined (SINGLE_DISK_IO)
       CHARACTER*(MAX_LEN_FNAM) scratchFile1
       CHARACTER*(MAX_LEN_FNAM) scratchFile2
-#ifdef ALLOW_USE_MPI
+#endif
+#ifdef SINGLE_DISK_IO
 C     mpiRC  :: Error code reporting variable used with MPI.
       INTEGER mpiRC
 #endif
@@ -220,7 +222,9 @@ C--   Report contents of parameter file
 # ifdef ALLOW_USE_MPI
 C--   all processes must wait for process 0 to complete
 C     writing scratchFile1 before opening it
-      CALL MPI_BARRIER( MPI_COMM_MODEL, mpiRC )
+      IF ( usingMPI ) THEN
+        CALL MPI_BARRIER( MPI_COMM_MODEL, mpiRC )
+      ENDIF
 # endif
       CALL SYSTEM('sleep 1')
       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='OLD')
@@ -229,7 +233,6 @@ C     writing scratchFile1 before opening it
 C--   Read namelist
       iUnit = scrUnit1
       REWIND(iUnit)
-
       READ(UNIT=iUnit,NML=EEPARMS,IOSTAT=errIO,err=3)
       IF ( errIO .GE. 0 ) GOTO 4
     3 CONTINUE

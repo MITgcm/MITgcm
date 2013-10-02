@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/open_copy_data_file.F,v 1.8 2013/09/30 15:17:51 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/open_copy_data_file.F,v 1.9 2013/10/02 21:33:54 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -47,8 +47,10 @@ C     === Local variables ===
 C     msgBuf    :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_PREC) record
+#if defined (TARGET_BGL) || defined (TARGET_CRAYXT) || defined (SINGLE_DISK_IO)
       CHARACTER*(MAX_LEN_FNAM) scratchFile1
       CHARACTER*(MAX_LEN_FNAM) scratchFile2
+#endif
       INTEGER  errIO,IL
       LOGICAL  exst
 #ifdef SINGLE_DISK_IO
@@ -62,7 +64,7 @@ CEOP
 C--   Open the parameter file
       INQUIRE( FILE=data_file, EXIST=exst )
       IF (exst) THEN
-       WRITE(msgbuf,'(A,A)')
+       WRITE(msgBuf,'(A,A)')
      &   ' OPEN_COPY_DATA_FILE: opening file ',data_file
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
@@ -79,7 +81,7 @@ C     Make scratch copies of eedata with and without comments
 #ifdef SINGLE_DISK_IO
       WRITE(scratchFile1,'(A,A)') 'scratch1_', data_file
       WRITE(scratchFile2,'(A,A)') 'scratch2_', data_file
-      IF( myProcId .EQ. 0 ) THEN
+      IF ( myProcId .EQ. 0 ) THEN
        OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
        OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
       ENDIF
@@ -96,7 +98,7 @@ C     Make scratch copies of eedata with and without comments
 #endif /* SINGLE_DISK_IO */
 
 #ifdef SINGLE_DISK_IO
-      IF( myProcId .EQ. 0 ) THEN
+      IF ( myProcId .EQ. 0 ) THEN
 #endif
 
       OPEN(UNIT=modelDataUnit,FILE=data_file,STATUS='OLD',
@@ -152,12 +154,14 @@ C--   Report contents of model parameter file
 
 #ifdef SINGLE_DISK_IO
       CALL FLUSH(scrUnit1)
-      CLOSE(scrUnit1)      
+      CLOSE(scrUnit1)
       ENDIF
 # ifdef ALLOW_USE_MPI
 C--   all processes must wait for process 0 to complete
 C     writing scratchFile1 before opening it
-      CALL MPI_BARRIER( MPI_COMM_MODEL, mpiRC )
+      IF ( usingMPI ) THEN
+        CALL MPI_BARRIER( MPI_COMM_MODEL, mpiRC )
+      ENDIF
 # endif
       CALL SYSTEM('sleep 1')
       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='OLD')
@@ -171,4 +175,3 @@ C--   Return open unit to caller
 
       RETURN
       END
-c
