@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.32 2013/06/29 19:44:18 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.33 2013/10/05 19:36:13 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -800,7 +800,7 @@ C--   Atmospheric pressure.
 #endif
 #endif /* ATMOSPHERIC_LOADING */
 
-#ifdef EXF_ALLOW_SEAICE_RELAX
+#ifdef EXF_SEAICE_FRACTION
 C--   fractional ice-covered area MASK.
       il = ilnblnk(areamaskfile)
       write(msgbuf,'(a)') ' '
@@ -829,7 +829,7 @@ C--   fractional ice-covered area MASK.
      & areamask_lon_inc, areamask_lat0, areamask_lat_inc,
      & areamask_nlon, areamask_nlat, areamask_interpMethod, myThid )
 #endif
-#endif /* EXF_ALLOW_SEAICE_RELAX */
+#endif /* EXF_SEAICE_FRACTION */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

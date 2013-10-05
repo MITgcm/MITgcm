@@ -1,27 +1,26 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.31 2013/04/23 19:04:33 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.32 2013/10/05 19:36:12 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
+      SUBROUTINE EXF_INIT( myThid )
 
-      subroutine exf_init( mythid )
+C     ==================================================================
+C     SUBROUTINE exf_init
+C     ==================================================================
+C
+C     o This routine initialises the forcing
+C
+C     started: Ralf.Giering@FastOpt.de 25-Mai-20000
+C     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
+C
+C     ==================================================================
+C     SUBROUTINE exf_init
+C     ==================================================================
 
-c     ==================================================================
-c     SUBROUTINE exf_init
-c     ==================================================================
-c
-c     o This routine initialises the forcing
-c
-c     started: Ralf.Giering@FastOpt.de 25-Mai-20000
-c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
-c
-c     ==================================================================
-c     SUBROUTINE exf_init
-c     ==================================================================
+      IMPLICIT NONE
 
-      implicit none
-
-c     == global variables ==
+C     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
@@ -33,21 +32,19 @@ c     == global variables ==
 # include "DYNVARS.h"
 #endif
 
-c     == routine arguments ==
+C     == routine arguments ==
+      INTEGER myThid
 
-      integer mythid
-
-c     == local variables ==
-
+C     == local variables ==
       INTEGER i,j,bi,bj
 
-c     == end of interface ==
+C     == end of interface ==
 
 C--   Initialise to zero intermediate fields (in common block)
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           wStress(i,j,bi,bj) = 0.
           cw(i,j,bi,bj) = 0.
           sw(i,j,bi,bj) = 0.
@@ -66,9 +63,9 @@ C--   Initialise to zero intermediate fields (in common block)
       if ( useCubedSphereExchange
      &     .and. ustressperiod .eq. 0
      &     .and. ustressfile .NE. ' ' ) then
-         stop 'CubedSphereExchange and ustressperiod=0 not supported'
+         STOP 'CubedSphereExchange and ustressperiod=0 not supported'
       endif
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     ustressfile, ustressperiod, exf_inscal_ustress, ustressmask,
      &     ustressconst, ustress, ustress0, ustress1,
 #ifdef USE_EXF_INTERPOLATION
@@ -76,14 +73,14 @@ C--   Initialise to zero intermediate fields (in common block)
      &     ustress_lat0, ustress_lat_inc,
      &     ustress_nlon, ustress_nlat, xC, yC, ustress_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 
       if ( useCubedSphereExchange
      &     .and. vstressperiod .eq. 0
      &     .and. vstressfile .NE. ' ' ) then
-         stop 'CubedSphereExchange and vstressperiod=0 not supported'
+         STOP 'CubedSphereExchange and vstressperiod=0 not supported'
       endif
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     vstressfile, vstressperiod, exf_inscal_vstress, vstressmask,
      &     vstressconst, vstress, vstress0, vstress1,
 #ifdef USE_EXF_INTERPOLATION
@@ -91,13 +88,13 @@ C--   Initialise to zero intermediate fields (in common block)
      &     vstress_lat0, vstress_lat_inc,
      &     vstress_nlon, vstress_nlat, xC, yC, vstress_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 
       ELSE
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           uwind(i,j,bi,bj) = 0.
           vwind(i,j,bi,bj) = 0.
          ENDDO
@@ -111,9 +108,9 @@ C--   Initialise to zero intermediate fields (in common block)
       if ( useCubedSphereExchange
      &     .and. uwindperiod .eq. 0
      &     .and. uwindfile .NE. ' ' ) then
-         stop 'CubedSphereExchange and uwindperiod=0 not supported'
+         STOP 'CubedSphereExchange and uwindperiod=0 not supported'
       endif
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     uwindfile, uwindperiod, exf_inscal_uwind, uwindmask,
      &     uwindconst, uwind, uwind0, uwind1,
 #ifdef USE_EXF_INTERPOLATION
@@ -121,14 +118,14 @@ C--   Initialise to zero intermediate fields (in common block)
      &     uwind_lat0, uwind_lat_inc,
      &     uwind_nlon, uwind_nlat, xC, yC, uwind_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 
       if ( useCubedSphereExchange
      &     .and. vwindperiod .eq. 0
      &     .and. vwindfile .NE. ' ' ) then
-         stop 'CubedSphereExchange and vwindperiod=0 not supported'
+         STOP 'CubedSphereExchange and vwindperiod=0 not supported'
       endif
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     vwindfile, vwindperiod, exf_inscal_vwind, vwindmask,
      &     vwindconst, vwind, vwind0, vwind1,
 #ifdef USE_EXF_INTERPOLATION
@@ -136,13 +133,13 @@ C--   Initialise to zero intermediate fields (in common block)
      &     vwind_lat0, vwind_lat_inc,
      &     vwind_nlon, vwind_nlat, xC, yC, vwind_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 
       ELSE
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           uwind(i,j,bi,bj) = 0.
           vwind(i,j,bi,bj) = 0.
          ENDDO
@@ -151,7 +148,7 @@ C--   Initialise to zero intermediate fields (in common block)
       ENDDO
       ENDIF
 
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     wspeedfile, wspeedperiod, exf_inscal_wspeed, wspeedmask,
      &     wspeedconst, wspeed, wspeed0, wspeed1,
 #ifdef USE_EXF_INTERPOLATION
@@ -159,9 +156,9 @@ C--   Initialise to zero intermediate fields (in common block)
      &     wspeed_lat0, wspeed_lat_inc,
      &     wspeed_nlon, wspeed_nlat, xC, yC, wspeed_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     hfluxfile, hfluxperiod, exf_inscal_hflux, hfluxmask,
      &     hfluxconst, hflux, hflux0, hflux1,
 #ifdef USE_EXF_INTERPOLATION
@@ -169,9 +166,9 @@ C--   Initialise to zero intermediate fields (in common block)
      &     hflux_lat0, hflux_lat_inc,
      &     hflux_nlon, hflux_nlat, xC, yC, hflux_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     sfluxfile, sfluxperiod, exf_inscal_sflux, sfluxmask,
      &     sfluxconst, sflux, sflux0, sflux1,
 #ifdef USE_EXF_INTERPOLATION
@@ -179,11 +176,11 @@ C--   Initialise to zero intermediate fields (in common block)
      &     sflux_lat0, sflux_lat_inc,
      &     sflux_nlon, sflux_nlat, xC, yC, sflux_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 
 #ifdef ALLOW_ATM_TEMP
 
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     atempfile, atempperiod, exf_inscal_atemp, atempmask,
      &     atempconst, atemp, atemp0, atemp1,
 #ifdef USE_EXF_INTERPOLATION
@@ -191,9 +188,9 @@ C--   Initialise to zero intermediate fields (in common block)
      &     atemp_lat0, atemp_lat_inc,
      &     atemp_nlon, atemp_nlat, xC, yC, atemp_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     aqhfile, aqhperiod, exf_inscal_aqh, aqhmask,
      &     aqhconst, aqh, aqh0, aqh1,
 #ifdef USE_EXF_INTERPOLATION
@@ -201,9 +198,9 @@ C--   Initialise to zero intermediate fields (in common block)
      &     aqh_lat0, aqh_lat_inc,
      &     aqh_nlon, aqh_nlat, xC, yC, aqh_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     lwfluxfile, lwfluxperiod, exf_inscal_lwflux, lwfluxmask,
      &     lwfluxconst, lwflux, lwflux0, lwflux1,
 #ifdef USE_EXF_INTERPOLATION
@@ -211,9 +208,9 @@ C--   Initialise to zero intermediate fields (in common block)
      &     lwflux_lat0, lwflux_lat_inc,
      &     lwflux_nlon, lwflux_nlat, xC, yC, lwflux_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     precipfile, precipperiod, exf_inscal_precip, precipmask,
      &     precipconst, precip, precip0, precip1,
 #ifdef USE_EXF_INTERPOLATION
@@ -221,9 +218,9 @@ C--   Initialise to zero intermediate fields (in common block)
      &     precip_lat0, precip_lat_inc,
      &     precip_nlon, precip_nlat, xC, yC, precip_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     snowprecipfile, snowprecipperiod,
      &     exf_inscal_snowprecip, snowprecipmask,
      &     snowprecipconst, snowprecip, snowprecip0, snowprecip1,
@@ -233,12 +230,12 @@ C--   Initialise to zero intermediate fields (in common block)
      &     snowprecip_nlon, snowprecip_nlat, xC, yC,
      &     snowprecip_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 
 #endif /* ALLOW_ATM_TEMP */
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     swfluxfile, swfluxperiod,  exf_inscal_swflux, swfluxmask,
      &     swfluxconst, swflux, swflux0, swflux1,
 #ifdef USE_EXF_INTERPOLATION
@@ -246,11 +243,11 @@ C--   Initialise to zero intermediate fields (in common block)
      &     swflux_lat0, swflux_lat_inc,
      &     swflux_nlon, swflux_nlat, xC, yC, swflux_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 #endif /* defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING) */
 
 #if defined(ALLOW_ATM_TEMP) || defined(EXF_READ_EVAP)
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     evapfile, evapperiod, exf_inscal_evap, evapmask,
      &     evapconst, evap, evap0, evap1,
 #ifdef USE_EXF_INTERPOLATION
@@ -258,12 +255,12 @@ C--   Initialise to zero intermediate fields (in common block)
      &     evap_lat0, evap_lat_inc,
      &     evap_nlon, evap_nlat, xC, yC, evap_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 #endif /* defined(ALLOW_ATM_TEMP) || defined(EXF_READ_EVAP) */
 
 #ifdef ALLOW_DOWNWARD_RADIATION
 
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     swdownfile, swdownperiod, exf_inscal_swdown, swdownmask,
      &     swdownconst, swdown, swdown0, swdown1,
 #ifdef USE_EXF_INTERPOLATION
@@ -271,9 +268,9 @@ C--   Initialise to zero intermediate fields (in common block)
      &     swdown_lat0, swdown_lat_inc,
      &     swdown_nlon, swdown_nlat, xC, yC, swdown_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     lwdownfile, lwdownperiod, exf_inscal_lwdown, lwdownmask,
      &     lwdownconst, lwdown, lwdown0, lwdown1,
 #ifdef USE_EXF_INTERPOLATION
@@ -281,12 +278,12 @@ C--   Initialise to zero intermediate fields (in common block)
      &     lwdown_lat0, lwdown_lat_inc,
      &     lwdown_nlon, lwdown_nlat, xC, yC, lwdown_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 
 #endif /* ALLOW_DOWNWARD_RADIATION */
 
 #ifdef ATMOSPHERIC_LOADING
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     apressurefile, apressureperiod,
      &     exf_inscal_apressure, apressuremask,
      &     apressureconst, apressure, apressure0, apressure1,
@@ -296,11 +293,11 @@ C--   Initialise to zero intermediate fields (in common block)
      &     apressure_nlon, apressure_nlat, xC, yC,
      &     apressure_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 #endif /* ATMOSPHERIC_LOADING */
 
-#ifdef EXF_ALLOW_SEAICE_RELAX
-      call exf_init_gen (
+#ifdef EXF_SEAICE_FRACTION
+      CALL EXF_INIT_GEN (
      &     areamaskfile, areamaskperiod,
      &     exf_inscal_areamask, areamaskmask,
      &     areamaskconst, areamask, areamask0, areamask1,
@@ -309,11 +306,11 @@ C--   Initialise to zero intermediate fields (in common block)
      &     areamask_lat0, areamask_lat_inc,
      &     areamask_nlon, areamask_nlat, xC, yC, areamask_interpMethod,
 #endif
-     &     mythid )
-#endif /* EXF_ALLOW_SEAICE_RELAX */
+     &     myThid )
+#endif /* EXF_SEAICE_FRACTION */
 
 #ifdef ALLOW_RUNOFF
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     runofffile, runoffperiod, exf_inscal_runoff, runoffmask,
      &     runoffconst, runoff, runoff0, runoff1,
 # ifdef USE_EXF_INTERPOLATION
@@ -321,9 +318,9 @@ C--   Initialise to zero intermediate fields (in common block)
      &     runoff_lat0, runoff_lat_inc,
      &     runoff_nlon, runoff_nlat, xC, yC, runoff_interpMethod,
 # endif
-     &     mythid )
+     &     myThid )
 # ifdef ALLOW_RUNOFTEMP
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     runoftempfile, runoffperiod, exf_inscal_runoftemp,runoffmask,
      &     runoftempconst, runoftemp, runoftemp0, runoftemp1,
 #  ifdef USE_EXF_INTERPOLATION
@@ -331,12 +328,12 @@ C--   Initialise to zero intermediate fields (in common block)
      &     runoff_lat0, runoff_lat_inc,
      &     runoff_nlon, runoff_nlat, xC, yC, runoff_interpMethod,
 #  endif
-     &     mythid )
+     &     myThid )
 # endif /* ALLOW_RUNOFTEMP */
 #endif /* ALLOW_RUNOFF */
 
 #ifdef ALLOW_CLIMSST_RELAXATION
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     climsstfile, climsstperiod, exf_inscal_climsst, climsstmask,
      &     climsstconst, climsst, climsst0, climsst1,
 #ifdef USE_EXF_INTERPOLATION
@@ -344,11 +341,11 @@ C--   Initialise to zero intermediate fields (in common block)
      &     climsst_lat0, climsst_lat_inc,
      &     climsst_nlon, climsst_nlat, xC, yC, climsst_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 #endif
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     climsssfile, climsssperiod, exf_inscal_climsss, climsssmask,
      &     climsssconst, climsss, climsss0, climsss1,
 #ifdef USE_EXF_INTERPOLATION
@@ -356,11 +353,11 @@ C--   Initialise to zero intermediate fields (in common block)
      &     climsss_lat0, climsss_lat_inc,
      &     climsss_nlon, climsss_nlat, xC, yC, climsss_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 #endif
 
 #ifdef ALLOW_CLIMSTRESS_RELAXATION
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     climustrfile, climustrperiod, exf_inscal_climustr,
      &     climustrmask, climustrconst, climustr, climustr0, climustr1,
 #ifdef USE_EXF_INTERPOLATION
@@ -368,9 +365,9 @@ C--   Initialise to zero intermediate fields (in common block)
      &     climustr_lat0, climustr_lat_inc,
      &     climustr_nlon, climustr_nlat, xC, yC, climustr_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 
-      call exf_init_gen (
+      CALL EXF_INIT_GEN (
      &     climvstrfile, climvstrperiod, exf_inscal_climvstr,
      &     climvstrmask, climvstrconst, climvstr, climvstr0, climvstr1,
 #ifdef USE_EXF_INTERPOLATION
@@ -378,16 +375,16 @@ C--   Initialise to zero intermediate fields (in common block)
      &     climvstr_lat0, climvstr_lat_inc,
      &     climvstr_nlon, climvstr_nlat, xC, yC, climvstr_interpMethod,
 #endif
-     &     mythid )
+     &     myThid )
 #endif /* CLIMSTRESS_RELAXATION */
 
 #ifdef ALLOW_BULK_OFFLINE
 
 # ifdef ALLOW_CLIMSST_RELAXATION
-      _EXCH_XY_RL(climsst, mythid)
+      _EXCH_XY_RL(climsst, myThid)
 # endif
 # ifdef ALLOW_CLIMSSS_RELAXATION
-      _EXCH_XY_RL(climsss, mythid)
+      _EXCH_XY_RL(climsss, myThid)
 # endif
 # ifdef ALLOW_CLIMSTRESS_RELAXATION
       CALL EXCH_UV_XY_RL( climustr, climvstr, .TRUE., myThid )

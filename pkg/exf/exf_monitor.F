@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.26 2013/04/23 19:04:33 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.27 2013/10/05 19:36:12 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -196,7 +196,7 @@ C       Print some statistics about input forcing fields
         ENDIF
 # endif
 #endif
-#ifdef EXF_ALLOW_SEAICE_RELAX
+#ifdef EXF_SEAICE_FRACTION
         IF ( areamaskfile .NE. ' ' ) THEN
           CALL MON_WRITESTATS_RL( 1, areamask,'_areamask',
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )

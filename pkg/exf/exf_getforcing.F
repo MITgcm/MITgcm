@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.44 2013/08/18 19:41:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.45 2013/10/05 19:36:12 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -139,7 +139,6 @@ C     == global variables ==
 # include "tamc.h"
 #endif
 
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
       _RL     myTime
@@ -206,8 +205,8 @@ C     Apply runoff, masks and exchanges
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
           k = 1
-          DO j = 1,sny
-            DO i = 1,snx
+          DO j = 1,sNy
+            DO i = 1,sNx
 #ifdef ALLOW_ATM_TEMP
 C             Net surface heat flux.
               hflux(i,j,bi,bj) =
@@ -247,7 +246,7 @@ c     _EXCH_XY_RL(swflux, myThid)
 #ifdef ATMOSPHERIC_LOADING
 c     _EXCH_XY_RL(apressure, myThid)
 #endif
-#ifdef EXF_ALLOW_SEAICE_RELAX
+#ifdef EXF_SEAICE_FRACTION
 c     _EXCH_XY_RL(areamask, myThid)
 #endif
 

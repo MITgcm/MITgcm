@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.15 2013/04/23 19:04:33 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.16 2013/10/05 19:36:12 jmc Exp $
 C $Name:  $
 c
 c
@@ -246,7 +246,7 @@ C     zen_albedo_pointer :: location of grid point in zen_albedo_table
 C     zen_albedo         :: overall albedo (direct=f(zen) + diffus=cst)
 C     zen_fsol_diurnal   :: incoming solar radiation (daily variable)
 C     zen_fsol_daily     :: incoming solar radiation (daily mean)
-      COMMON /exf_zenith_angle_r/ 
+      COMMON /exf_zenith_angle_r/
      &     zen_albedo_table, zen_albedo_pointer,
      &     zen_albedo, zen_fsol_diurnal, zen_fsol_daily
       _RL zen_albedo_table (366,181)
@@ -278,14 +278,14 @@ C     zen_fsol_daily     :: incoming solar radiation (daily mean)
       _RL runoftemp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
-#ifdef EXF_ALLOW_SEAICE_RELAX
+#ifdef EXF_SEAICE_FRACTION
       COMMON /exf_ice_areamask_r/ areamask,
      &                        areamask0, areamask1
       _RL areamask       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL areamask0      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL areamask1      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      COMMON /exf_ice_obsSIce_r/ obsSIce
-      _RS obsSIce        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON /exf_iceFraction_r/ exf_iceFraction
+      _RS exf_iceFraction(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 #ifdef ALLOW_CLIMSST_RELAXATION

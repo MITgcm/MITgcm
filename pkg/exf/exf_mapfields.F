@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.29 2013/06/29 19:44:18 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.30 2013/10/05 19:36:12 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -325,13 +325,13 @@ C             Short wave radiative flux.
           ENDDO
 #endif
 
-#ifdef EXF_ALLOW_SEAICE_RELAX
+#ifdef EXF_SEAICE_FRACTION
           DO j = jmin,jmax
             DO i = imin,imax
-              obsSIce(i,j,bi,bj) =
+              exf_iceFraction(i,j,bi,bj) =
      &           exf_outscal_areamask*areamask(i,j,bi,bj)
-              obsSIce(I,J,bi,bj) =
-     &           MIN(MAX(obsSIce(I,J,bi,bj), 0.d0 ), 1.d0)
+              exf_iceFraction(I,J,bi,bj) =
+     &           MIN( MAX(exf_iceFraction(I,J,bi,bj),zeroRS), oneRS )
             ENDDO
           ENDDO
 #endif
@@ -357,8 +357,8 @@ C     Qsw used in SHORTWAVE_HEATING code & for diagnostics (<- EXCH not needed)
 #ifdef ATMOSPHERIC_LOADING
       _EXCH_XY_RS( pLoad, myThid )
 #endif
-#ifdef EXF_ALLOW_SEAICE_RELAX
-      _EXCH_XY_RS( obsSIce, myThid )
+#ifdef EXF_SEAICE_FRACTION
+      _EXCH_XY_RS( exf_iceFraction, myThid )
 #endif
 
       RETURN
