@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.85 2013/09/23 15:22:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.86 2013/10/05 19:38:36 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -646,6 +646,14 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
            STOP 'ABNORMAL END: S/R SEAICE_CHECK'
          ENDIF
 #endif
+#ifndef EXF_SEAICE_FRACTION
+         IF ( SEAICE_tauAreaObsRelax.GT.zeroRL ) THEN
+           WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
+     &        'ice-area relaxation needs #define EXF_SEAICE_FRACTION'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+         ENDIF
+#endif
 #endif /* ALLOW_EXF */
       ENDIF
 
@@ -758,7 +766,6 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif /* SEAICE_ALLOW_CLIPZETA */
-
 
 #if !defined(SEAICE_ALLOW_TEM) || !defined(SEAICE_CGRID)
       IF ( SEAICEuseTEM ) THEN
