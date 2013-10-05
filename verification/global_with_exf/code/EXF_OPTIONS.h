@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/EXF_OPTIONS.h,v 1.7 2012/08/09 20:31:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/EXF_OPTIONS.h,v 1.8 2013/10/05 19:53:17 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -60,13 +60,17 @@ C
 C   >>> ALLOW_RUNOFF <<<
 C       If defined, river and glacier runoff can be read-in from files.
 C
+C   >>> ALLOW_RUNOFTEMP <<<
+C       If defined, river and glacier runoff temperature
+C       can be read-in from files.
+C
 C   >>> ATMOSPHERIC_LOADING <<<
 C       If defined, atmospheric pressure can be read-in from files.
 C   WARNING: this flag is set (define/undef) in CPP_OPTIONS.h
 C            and cannot be changed here (in EXF_OPTIONS)
 C
-C   >>> ICE_AREAMASK <<<
-C       If defined, fractional ice-covered area MASK can be read-in from files.
+C   >>> EXF_SEAICE_FRACTION <<<
+C       If defined, seaice fraction can be read-in from files (areaMaskFile)
 C
 C   >>> ALLOW_CLIMSST_RELAXATION <<<
 C       Allow the relaxation to a monthly climatology of sea surface
@@ -148,6 +152,7 @@ C   Bulk formulae related flags.
 #undef  ALLOW_ATM_WIND
 #undef  ALLOW_DOWNWARD_RADIATION
 #undef  ALLOW_RUNOFF
+#undef  ALLOW_RUNOFTEMP
 #if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
 # define ALLOW_BULKFORMULAE
 # undef  ALLOW_BULK_LARGEYEAGER04
@@ -158,7 +163,7 @@ C   Zenith Angle/Albedo related flags.
 # undef ALLOW_ZENITHANGLE
 #endif
 
-C   Use ocean_emissivity*lwdwon in lwFlux. This flag should be define
+C   Use ocean_emissivity*lwdown in lwFlux. This flag should be defined
 C   unless to reproduce old results (obtained with inconsistent old code)
 #ifdef ALLOW_DOWNWARD_RADIATION
 # define EXF_LWDOWN_WITH_EMISSIVITY
@@ -167,6 +172,9 @@ C   unless to reproduce old results (obtained with inconsistent old code)
 C   Relaxation to monthly climatologies.
 #define ALLOW_CLIMSST_RELAXATION
 #define ALLOW_CLIMSSS_RELAXATION
+
+C   Allows to read-in seaice fraction from files (areaMaskFile)
+#undef EXF_SEAICE_FRACTION
 
 C   Use spatial interpolation to interpolate
 C   forcing files from input grid to model grid.
