@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.191 2013/08/10 01:34:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.192 2013/10/05 19:36:52 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -267,7 +267,7 @@ C     over one time step
       _RL latentHeatFluxMaxMult(1:sNx,1:sNy,MULTDIM)
 #endif
 
-#ifdef EXF_ALLOW_SEAICE_RELAX
+#ifdef EXF_SEAICE_FRACTION
 C     ICE/SNOW stocks tendency associated with relaxation towards observation
       _RL d_AREAbyRLX         (1:sNx,1:sNy)
 C     The change of mean ice thickness due to relaxation
@@ -408,7 +408,7 @@ C =====================
           d_AREAbyOCN(I,J)           = 0.0 _d 0
 #endif
 
-#ifdef EXF_ALLOW_SEAICE_RELAX
+#ifdef EXF_SEAICE_FRACTION
           d_AREAbyRLX(I,J)           = 0.0 _d 0
           d_HEFFbyRLX(I,J)           = 0.0 _d 0
 #endif
@@ -483,21 +483,21 @@ Cgf no dependency through pathological cases treatment
         IF ( SEAICEadjMODE.EQ.0 ) THEN
 #endif
 
-#ifdef EXF_ALLOW_SEAICE_RELAX
+#ifdef EXF_SEAICE_FRACTION
 CADJ STORE heff(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
 CADJ STORE area(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
 C 0) relax sea ice concentration towards observation
-        IF (SEAICE_tauAreaObsRelax .GT. 0.) THEN
+        IF ( SEAICE_tauAreaObsRelax .GT. zeroRL ) THEN
         DO J=1,sNy
          DO I=1,sNx
 C         d_AREAbyRLX(i,j) = 0. _d 0
 C         d_HEFFbyRLX(i,j) = 0. _d 0
-           IF ( obsSIce(I,J,bi,bj).GT.AREA(I,J,bi,bj)) THEN
+           IF ( exf_iceFraction(I,J,bi,bj).GT.AREA(I,J,bi,bj) ) THEN
             d_AREAbyRLX(i,j) =
      &       SEAICE_deltaTtherm/SEAICE_tauAreaObsRelax
-     &       * (obsSIce(I,J,bi,bj) - AREA(I,J,bi,bj))
+     &       * (exf_iceFraction(I,J,bi,bj) - AREA(I,J,bi,bj))
            ENDIF
-           IF ( obsSIce(I,J,bi,bj).GT.0. _d 0 .AND.
+           IF ( exf_iceFraction(I,J,bi,bj).GT.zeroRS .AND.
      &          AREA(I,J,bi,bj).EQ.0. _d 0) THEN
 C           d_HEFFbyRLX(i,j) = 1. _d 1 * siEps * d_AREAbyRLX(i,j)
             d_HEFFbyRLX(i,j) = 1. _d 1 * siEps
@@ -513,7 +513,7 @@ C           d_HEFFbyRLX(i,j) = 1. _d 1 * siEps * d_AREAbyRLX(i,j)
          ENDDO
         ENDDO
         ENDIF
-#endif /* EXF_ALLOW_SEAICE_RELAX */
+#endif /* EXF_SEAICE_FRACTION */
 
 C 1) treat the case of negative values:
 
@@ -2033,7 +2033,7 @@ CADJ &                       key = iicekey, byte = isbyte
           tmpscal1 = d_HEFFbyNEG(I,J) + d_HEFFbyOCNonICE(I,J) +
      &               d_HEFFbyATMonOCN(I,J) + d_HEFFbyFLOODING(I,J)
      &             + d_HEFFbySublim(I,J)
-#ifdef EXF_ALLOW_SEAICE_RELAX
+#ifdef EXF_SEAICE_FRACTION
      &             + d_HEFFbyRLX(I,J)
 #endif
           tmpscal2 = tmpscal1 * SEAICE_salt0 * HEFFM(I,J,bi,bj)
@@ -2166,7 +2166,7 @@ CADJ STORE d_hsnwbyocnonsnw = comlev1_bibj,key=iicekey,byte=isbyte
      &         - ( d_HEFFbyOCNonICE(I,J)
      &           + d_HSNWbyOCNonSNW(I,J)*SNOW2ICE
      &           + d_HEFFbyNEG(I,J)
-#ifdef EXF_ALLOW_SEAICE_RELAX
+#ifdef EXF_SEAICE_FRACTION
      &           + d_HEFFbyRLX(I,J)
 #endif
      &           + d_HSNWbyNEG(I,J)*SNOW2ICE
@@ -2323,7 +2323,7 @@ C ==================================================
      &             +d_HEFFbyOCNonICE(I,J)
      &             +d_HEFFbyATMonOCN(I,J)
      &             +d_HEFFbyNEG(I,J)
-#ifdef EXF_ALLOW_SEAICE_RELAX
+#ifdef EXF_SEAICE_FRACTION
      &             +d_HEFFbyRLX(I,J)
 #endif
      &             +d_HSNWbyNEG(I,J)*SNOW2ICE

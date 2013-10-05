@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.69 2013/05/30 14:07:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.70 2013/10/05 19:36:52 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -209,11 +209,11 @@ C--  Seaice-Dynamics parameters
         CALL WRITE_0D_RL( JFNKgamma_nonlin  ,INDEX_NONE,
      & 'JFNKgamma_nonlin=', ' /* JFNK tolerance */')
         CALL WRITE_0D_RL( JFNKres_t  ,INDEX_NONE,
-     & 'JFNKres_t=', ' /* JFNK parameter */')       
+     & 'JFNKres_t=', ' /* JFNK parameter */')
         CALL WRITE_0D_RL( JFNKres_tFac  ,INDEX_NONE,
-     & 'JFNKres_tFac=', ' /* JFNK parameter */')       
+     & 'JFNKres_tFac=', ' /* JFNK parameter */')
         CALL WRITE_0D_RL( SEAICE_JFNKepsilon, INDEX_NONE,
-     & 'SEAICE_JFNKepsilon=', ' /* JFNK: FD-gradient step size */')       
+     & 'SEAICE_JFNKepsilon=', ' /* JFNK: FD-gradient step size */')
         CALL WRITE_0D_RL( SEAICE_JFNKphi, INDEX_NONE,
      & 'SEAICE_JFNKphi =', ' /* JFNK: inexact Newtow parameter */')
         CALL WRITE_0D_RL( SEAICE_JFNKalpha, INDEX_NONE,
@@ -306,7 +306,6 @@ C     end if SEAICEuseDYNAMICS bloc
 C     end if useThSIce bloc
       ENDIF
 
-
 C--  Thermodynamics parameters
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -391,7 +390,7 @@ c
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
 c
-#ifdef EXF_ALLOW_SEAICE_RELAX
+#ifdef EXF_SEAICE_FRACTION
       CALL WRITE_0D_RL( SEAICE_tauAreaObsRelax,INDEX_NONE,
      & 'SEAICE_tauAreaObsRelax=',
      & ' /* relaxation timescale of sea-ice concentration */')
