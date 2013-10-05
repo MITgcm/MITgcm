@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/ECCO_CPPOPTIONS.h,v 1.15 2013/07/18 20:15:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/ECCO_CPPOPTIONS.h,v 1.16 2013/10/05 19:40:12 jmc Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -213,7 +213,7 @@ C   Relaxation to monthly climatologies.
 #define  ALLOW_CLIMSSS_RELAXATION
 
 C   Seaice area relaxation code
-#define EXF_ALLOW_SEAICE_RELAX
+#define EXF_SEAICE_FRACTION
 
 C ********************************************************************
 #endif /* ECCO_CPPOPTIONS_H */
