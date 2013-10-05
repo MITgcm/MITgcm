@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/EXF_OPTIONS.h,v 1.8 2013/07/01 16:28:23 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/EXF_OPTIONS.h,v 1.9 2013/10/05 19:46:12 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -69,8 +69,8 @@ C       If defined, atmospheric pressure can be read-in from files.
 C   WARNING: this flag is set (define/undef) in CPP_OPTIONS.h
 C            and cannot be changed here (in EXF_OPTIONS)
 C
-C   >>> ICE_AREAMASK <<<
-C       If defined, fractional ice-covered area MASK can be read-in from files.
+C   >>> EXF_SEAICE_FRACTION <<<
+C       If defined, seaice fraction can be read-in from files (areaMaskFile)
 C
 C   >>> ALLOW_CLIMSST_RELAXATION <<<
 C       Allow the relaxation to a monthly climatology of sea surface
@@ -152,7 +152,7 @@ C   Bulk formulae related flags.
 #undef   ALLOW_ATM_WIND
 #define  ALLOW_DOWNWARD_RADIATION
 #define  ALLOW_RUNOFF
-#define   ALLOW_RUNOFTEMP
+#define  ALLOW_RUNOFTEMP
 #if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
 # define ALLOW_BULKFORMULAE
 # define ALLOW_BULK_LARGEYEAGER04
@@ -172,6 +172,9 @@ C   unless to reproduce old results (obtained with inconsistent old code)
 C   Relaxation to monthly climatologies.
 #define ALLOW_CLIMSST_RELAXATION
 #define ALLOW_CLIMSSS_RELAXATION
+
+C   Allows to read-in seaice fraction from files (areaMaskFile)
+#undef EXF_SEAICE_FRACTION
 
 C   Use spatial interpolation to interpolate
 C   forcing files from input grid to model grid.
