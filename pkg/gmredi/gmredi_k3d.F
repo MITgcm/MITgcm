@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.11 2013/09/28 17:59:30 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.12 2013/10/09 19:13:21 m_bates Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 #include "GMREDI_OPTIONS.h"
@@ -416,7 +416,7 @@ C      We are in the integration depth range
          IF ( (kLow_C(i,j).GE.k) .AND. 
      &        (-hMixLayer(i,j,bi,bj).LE.-rC(k)) ) THEN
 
-           slopeC(i,j,k) = SQRT(SQRT(M4loc(i,j,k))/N2loc(i,j,k))
+           slopeC(i,j,k) = SQRT(M4loc(i,j,k))/N2loc(i,j,k)
 C          Limit the slope.  Note, this is not all the Eady calculations.
            IF (slopeC(i,j,k).LE.GM_K3D_maxSlope) THEN
              eady(i,j) = eady(i,j) 
@@ -425,7 +425,7 @@ C          Limit the slope.  Note, this is not all the Eady calculations.
              slopeC(i,j,k) = GM_K3D_maxSlope
              eady(i,j) = eady(i,j)
      &            + hfacC(i,j,k,bi,bj)*drF(k)*SQRT(M4loc(i,j,k))
-     &              *GM_K3D_maxSlope*GM_K3D_maxSlope
+     &              *GM_K3D_maxSlope
            ENDIF
            deltaH(i,j) = deltaH(i,j) + drF(k)
          ENDIF
