@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_submit_aces,v 1.14 2013/08/20 18:53:10 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_submit_aces,v 1.15 2013/10/10 19:36:24 jmc Exp $
 # $Name:  $
 
 #  submit list of jobs or get list of submitted jobs
@@ -14,10 +14,11 @@ sub_list_jobs()
    for i in $JOB_LIST
    do
      case $i in
-       'mth') sfx='path_'${i}  ;;
+       'mth') sfx='path_'${i} ;;
        'tuv') sfx='op64_'${i} ;;
        'mp2') sfx='gnu_'${i}  ;;
        'g77') sfx=${i}'_adm'  ;;
+       'iad') sfx='ifc_adm'   ;;
            *) sfx=${i}'_mpi'  ;;
      esac
      if test -f $SUB_DIR/test_aces_$sfx ; then
@@ -198,10 +199,13 @@ esac
 #echo "action= $action , Arg= $# "
 
 today=`date +%Y%m%d`
+dInWeek=`date +%a`
 
 if test $# = 0
 then
   TEST_LIST='gnu mp2 adm pgi path mth op64 tuv'
+  if test "x$dInWeek" = xSat ; then TEST_LIST="$TEST_LIST iad ifc" ; fi
+  if test "x$dInWeek" = xSun ; then TEST_LIST="$TEST_LIST iad ifc" ; fi
 else
   TEST_LIST=$*
 fi

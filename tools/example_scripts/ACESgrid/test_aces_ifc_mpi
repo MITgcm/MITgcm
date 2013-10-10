@@ -1,0 +1,128 @@
+#!/bin/bash
+#
+#PBS -q one
+#PBS -N tst_ifc
+#PBS -l nodes=1:ppn=6
+#PBS -e /data/jm_c/test_acesgrid/output/tst_ifc.stderr
+#PBS -o /data/jm_c/test_acesgrid/output/tst_ifc.stdout
+
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_ifc_mpi,v 1.1 2013/10/10 19:36:24 jmc Exp $
+# $Name:  $
+
+if test -f /etc/profile.d/modules.sh ; then
+    . /etc/profile.d/modules.sh
+fi
+# Note: added "ulimit -s unlimited" in file "~/.bashrc"
+# to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI
+
+dNam='acesgrid'
+TST_DIR="/data/jm_c/test_$dNam"
+echo "start from TST_DIR='$TST_DIR' at: "`date`
+
+umask 0022
+#- to get case insensitive "ls" (and order of tested experiments)
+export LC_ALL="en_US.UTF-8"
+
+HERE=$TST_DIR/output
+sfx='ifc'
+ export MODULEPATH="/mit/jahn/usr/modulefiles:${MODULEPATH}"
+ module add intel
+#- with mpich2, needs module torque to run
+ module add torque
+ OPTFILE="../tools/build_options/linux_amd64_ifort11"
+ options="-j 2 -MPI 6"
+#- need this to get "staf":
+#export PATH="$PATH:$HOME/bin"
+
+dAlt=`date +%j` ; dAlt=`expr $dAlt % 2`
+if [ $dAlt -eq 1 ] ; then options="$options -fast" ; fi
+
+#- keep a copy of MPI_MFILE:
+cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
+
+checkOut=1
+#options="$options -nc" ; checkOut=0
+#options="$options -q"  ; checkOut=0
+
+addExp=0
+cvsArg="-d :pserver:cvsanon@mitgcm.org:/u/gcmpack"
+gcmDIR="MITgcm_$sfx"
+cd $TST_DIR
+#- check for disk space: relative space (99%) or absolute (10.G):
+#dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
+#if [ $dsp -gt 99 ] ; then
+dsp=`df -P . | tail -1 | awk '{print $4}'`
+if [ $dsp -le 10000000 ] ; then
+  echo 'Not enough space on this disk => do not run testreport.'
+  df .
+  exit
+fi
+if [ $checkOut -eq 1 ] ; then
+  if test -d $gcmDIR/CVS ; then
+#- remove previous output tar files and tar & remove previous output-dir
+    /bin/rm -f $gcmDIR/verification/??_${dNam}-${sfx}_????????_?.tar.gz
+    ( cd $gcmDIR/verification
+      listD=`ls -1 -d ??_${dNam}-${sfx}_????????_? 2> /dev/null`
+      for dd in $listD
+      do
+        if test -d $dd ; then
+          tar -cf ${dd}".tar" $dd > /dev/null 2>&1 && gzip ${dd}".tar" && /bin/rm -rf $dd
+          RETVAL=$?
+          if test "x$RETVAL" != x0 ; then
+             echo "ERROR in tar+gzip prev outp-dir: $dd"
+             echo " on '"`hostname`"' (return val=$RETVAL) but continue"
+          fi
+        fi
+      done )
+    ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
+    echo "cvs update of dir $gcmDIR :"
+    ( cd $gcmDIR ; cvs -q $cvsArg update -P -d ) 2>&1
+    RETVAL=$?
+    if test "x$RETVAL" != x0 ; then
+       echo "cvs update on '"`hostname`"' fail (return val=$RETVAL) => exit"
+       exit
+    fi
+  else
+    echo "no dir: $gcmDIR/CVS => try a fresh check-out"
+    checkOut=2
+  fi
+fi
+if [ $checkOut -eq 2 ] ; then
+  if test -e $gcmDIR ; then
+     rm -rf $gcmDIR
+  fi
+# cvs co MITgcm
+  cvs $cvsArg co -P -d $gcmDIR MITgcm > /dev/null 2>&1
+  if [ $addExp -ge 1 ]; then
+   echo " add dir: offline_cheapaml (from Contrib:verification_other)"
+   ( cd $gcmDIR/verification ; cvs $cvsArg co -P -d offline_cheapaml \
+                  MITgcm_contrib/verification_other/offline_cheapaml > /dev/null 2>&1 )
+  fi
+  /usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
+  /usr/bin/find $gcmDIR -type f | xargs chmod g+r
+fi
+
+#- change dir to $gcmDIR/verification dir:
+if test -e $gcmDIR/verification ; then
+  if [ $checkOut -lt 2 ] ; then
+    echo " dir $gcmDIR/verification exist" ; fi
+  cd $gcmDIR/verification
+else
+  echo "no dir: $gcmDIR/verification => exit"
+  exit
+fi
+
+SavD="$HOME/test_$dNam/send"
+SEND="ssh login $SavD/mpack"
+
+echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
+  -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
+  -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+
+echo ''
+echo ../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
+  -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
+  -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+
