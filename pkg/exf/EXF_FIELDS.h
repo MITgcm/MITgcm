@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.16 2013/10/05 19:36:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.17 2013/10/10 03:09:41 dimitri Exp $
 C $Name:  $
 c
 c
@@ -33,7 +33,7 @@ C                      north for cartesian and spherical polar grids
 C                  Typical range: -0.5 < vstress < 0.5
 C                  Input field
 c
-C     hflux     :: Net upward surface heat flux excluding shortwave in W/m^2
+C     hflux     :: Net upward surface heat flux including shortwave in W/m^2
 C                  hflux = latent + sensible + lwflux + swflux
 C                  > 0 for decrease in theta (ocean cooling)
 C                  Typical range: -250 < hflux < 600
