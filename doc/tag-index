@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1928 2013/10/06 00:48:15 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1929 2013/10/11 00:32:19 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  - adread_adwrite: add a hack for RS arrays (when RS=real*4);
+    with ALLOW_AUTODIFF_WHTAPEIOdefined, since corresponding (real*4) is
+    missing, just add a STOP if array type do not match.
 o pkg/exf:
   - to allow to use seaice-fraction from pkg/exf in other pkgs than pkg/seaice:
      rename CPP option EXF_ALLOW_SEAICE_RELAX to EXF_SEAICE_FRACTION
