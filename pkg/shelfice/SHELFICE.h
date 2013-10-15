@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.12 2013/04/11 18:50:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.13 2013/10/15 20:33:58 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -48,10 +48,10 @@ C
 C--   Fields
 C     ktopC                  :: index of the top "wet cell" (2D)
 C     R_shelfIce             :: shelfice topography [m]
-C     shelficeMass           :: ice-shelf mass (per unit area) [kg/m2]
+C     shelficeMass           :: ice-shelf mass (per unit area) [kg/m^2]
 C     shelficeLoadAnomaly    :: pressure load anomaly of shelfice [Pa]
 C     shelficeHeatFlux       :: upward heat flux [W/m^2]
-C     shelficeFreshWaterFlux :: upward fresh water flux (virt. salt flux) [m/s]
+C     shelficeFreshWaterFlux :: upward fresh water flux (virt. salt flux) [kg/m^2/s]
 C     shelficeForcingT       :: analogue of surfaceForcingT
 C                               units are  r_unit.Kelvin/s (=Kelvin.m/s if r=z)
 C     shelficeForcingS       :: analogue of surfaceForcingS
