@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.23 2013/10/17 01:13:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.24 2013/10/17 23:25:28 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -129,6 +129,7 @@ C     == local variables ==
       INTEGER il, jl, lenLoc
       real*8  dummyR8(1)
       real*4  dummyR4(1)
+      LOGICAL useWHTapeIO
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
       INTEGER n2d,length2d, jrec, i2d, j2d
 #endif
@@ -145,22 +146,27 @@ C     convert bytes to file-prec
        filePrec = precFloat32
       ENDIF
 
+      useWHTapeIO = .FALSE.
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
+C    determine number of 2d fields
+      length2d = (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy
+      n2d = INT(length/length2d)
+      IF ( size.EQ.8 .AND. n2d*length2d.EQ.length ) THEN
+C-    only use "WHTAPEIO" when type and length match
+        useWHTapeIO = .TRUE.
+      ENDIF
+#endif /* ALLOW_AUTODIFF_WHTAPEIO */
+
       il = ILNBLNK( name )
       jl = ILNBLNK( adTapeDir )
-#ifdef ALLOW_AUTODIFF_WHTAPEIO
-      lenLoc = il+jl
-      WRITE(fname,'(2A)') adTapeDir(1:jl),name(1:il)
-      IF ( size.NE.8 ) THEN
-         WRITE(msgBuf,'(A,I9)') 'ADREAD: code missing for size=',size
-         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-         STOP 'ABNORMAL END: S/R ADREAD'
-      ENDIF
-#else
-      lenLoc = il+jl+7
-      WRITE(fname,'(3A,I4.4)')
+      IF ( useWHTapeIO ) THEN
+        lenLoc = il+jl
+        WRITE(fname,'(2A)') adTapeDir(1:jl),name(1:il)
+      ELSE
+        lenLoc = il+jl+7
+        WRITE(fname,'(3A,I4.4)')
      &     adTapeDir(1:jl),name(1:il),'.it',optimcycle
-#endif /* ALLOW_AUTODIFF_WHTAPEIO */
+      ENDIF
 #ifdef ALLOW_DEBUG
       IF ( debugLevel.GE.debLevC ) THEN
         WRITE(msgBuf,'(2A,3I6,I9,2I3,2A)') 'ADREAD: ',
@@ -172,10 +178,7 @@ C     convert bytes to file-prec
 #endif
 
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
-
-C    determine number of 2d fields
-      length2d=(sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy
-      n2d=int(length/length2d)
+      IF ( useWHTapeIO ) THEN
 
 cc      if (n2d*length2d.EQ.length) then
         DO i2d=1,n2d
@@ -213,25 +216,29 @@ cc         CALL PRINT_ERROR( msgBuf, myThid )
 cc         STOP 'ABNORMAL END: S/R ADWRITE'
 cc      endif
 
+      ELSE
 #else
-
-      _BEGIN_MASTER( myThid )
-       IF ( size.EQ.4 ) THEN
-c        CALL MDSREADVECTOR( fname, filePrec, 'RS',
-c    &                       length, var, 1, 1, irec, myThid )
-         CALL MDS_READ_TAPE( fname, filePrec, 'R4',
-     &                       length, dummyR8, var,
-     &                       useSingleCpuIO, irec, myThid )
-       ELSE
-c        CALL MDSREADVECTOR( fname, filePrec, 'RL',
-c    &                       length, var, 1, 1, irec, myThid )
-         CALL MDS_READ_TAPE( fname, filePrec, 'R8',
-     &                       length,  var, dummyR4,
-     &                       useSingleCpuIO, irec, myThid )
-       ENDIF
-      _END_MASTER( myThid )
-
+      IF ( .TRUE. ) THEN
 #endif /* ALLOW_AUTODIFF_WHTAPEIO */
+
+        _BEGIN_MASTER( myThid )
+         IF ( size.EQ.4 ) THEN
+c          CALL MDSREADVECTOR( fname, filePrec, 'RS',
+c    &                         length, var, 1, 1, irec, myThid )
+           CALL MDS_READ_TAPE( fname, filePrec, 'R4',
+     &                         length, dummyR8, var,
+     &                         useSingleCpuIO, irec, myThid )
+         ELSE
+c          CALL MDSREADVECTOR( fname, filePrec, 'RL',
+c    &                         length, var, 1, 1, irec, myThid )
+           CALL MDS_READ_TAPE( fname, filePrec, 'R8',
+     &                         length,  var, dummyR4,
+     &                         useSingleCpuIO, irec, myThid )
+         ENDIF
+        _END_MASTER( myThid )
+
+C     end if useWHTapeIO / else
+      ENDIF
 
 C     Everyone must wait for the read operation to be completed.
 c     _BARRIER
@@ -320,6 +327,7 @@ C     == local variables ==
       INTEGER il,jl,lenLoc
       real*8  dummyR8(1)
       real*4  dummyR4(1)
+      LOGICAL useWHTapeIO
       LOGICAL globalfile
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
       INTEGER n2d,length2d, jrec, i2d, j2d
@@ -337,22 +345,27 @@ C     convert bytes to file-prec
        filePrec = precFloat32
       ENDIF
 
+      useWHTapeIO = .FALSE.
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
+C    determine number of 2d fields
+      length2d = (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy
+      n2d = INT(length/length2d)
+      IF ( size.EQ.8 .AND. n2d*length2d.EQ.length ) THEN
+C-    only use "WHTAPEIO" when type and length match
+        useWHTapeIO = .TRUE.
+      ENDIF
+#endif /* ALLOW_AUTODIFF_WHTAPEIO */
+
       il = ILNBLNK( name )
       jl = ILNBLNK( adTapeDir )
-#ifdef ALLOW_AUTODIFF_WHTAPEIO
-      lenLoc = il+jl
-      WRITE(fname,'(2A)') adTapeDir(1:jl),name(1:il)
-      IF ( size.NE.8 ) THEN
-         WRITE(msgBuf,'(A,I9)') 'ADWRITE: code missing for size=',size
-         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-         STOP 'ABNORMAL END: S/R ADWRITE'
-      ENDIF
-#else
-      lenLoc = il+jl+7
-      WRITE(fname,'(3A,I4.4)')
+      IF ( useWHTapeIO ) THEN
+        lenLoc = il+jl
+        WRITE(fname,'(2A)') adTapeDir(1:jl),name(1:il)
+      ELSE
+        lenLoc = il+jl+7
+        WRITE(fname,'(3A,I4.4)')
      &     adTapeDir(1:jl),name(1:il),'.it',optimcycle
-#endif /* ALLOW_AUTODIFF_WHTAPEIO */
+      ENDIF
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevC ) THEN
         WRITE(msgBuf,'(2A,3I6,I9,2I3,2A)') 'ADWRITE:',
@@ -364,9 +377,7 @@ C     convert bytes to file-prec
 #endif
 
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
-C    determine number of 2d fields
-      length2d=(sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy
-      n2d=int(length/length2d)
+      IF ( useWHTapeIO ) THEN
 
 cc      if (n2d*length2d.EQ.length) then
         DO i2d=1,n2d
@@ -398,28 +409,32 @@ cc       call print_message( msgBuf, errorMessageUnit,
 cc     &                     SQUEEZE_RIGHT , myThid)
 cc      endif
 
+      ELSE
 #else
-
-      globalfile = globalFiles
-c     globalfile = .FALSE.
-
-      _BEGIN_MASTER( myThid )
-       IF ( size.EQ.4 ) THEN
-c        CALL MDSWRITEVECTOR( fname, filePrec, globalfile, 'RS',
-c    &                        length, var, 1, 1, irec, 0, myThid )
-         CALL MDS_WRITE_TAPE( fname, filePrec, globalfile, 'R4',
-     &                        length, dummyR8, var,
-     &                        useSingleCpuIO, irec, 0, myThid )
-       ELSE
-c        CALL MDSWRITEVECTOR( fname, filePrec, globalfile, 'RL',
-c    &                        length, var, 1, 1, irec, 0, myThid )
-         CALL MDS_WRITE_TAPE( fname, filePrec, globalfile, 'R8',
-     &                        length, var, dummyR4,
-     &                        useSingleCpuIO, irec, 0, myThid )
-       ENDIF
-      _END_MASTER( myThid )
-
+      IF ( .TRUE. ) THEN
 #endif /* ALLOW_AUTODIFF_WHTAPEIO */
+
+        globalfile = globalFiles
+c       globalfile = .FALSE.
+
+        _BEGIN_MASTER( myThid )
+        IF ( size.EQ.4 ) THEN
+c         CALL MDSWRITEVECTOR( fname, filePrec, globalfile, 'RS',
+c    &                         length, var, 1, 1, irec, 0, myThid )
+          CALL MDS_WRITE_TAPE( fname, filePrec, globalfile, 'R4',
+     &                         length, dummyR8, var,
+     &                         useSingleCpuIO, irec, 0, myThid )
+        ELSE
+c         CALL MDSWRITEVECTOR( fname, filePrec, globalfile, 'RL',
+c    &                         length, var, 1, 1, irec, 0, myThid )
+          CALL MDS_WRITE_TAPE( fname, filePrec, globalfile, 'R8',
+     &                         length, var, dummyR4,
+     &                         useSingleCpuIO, irec, 0, myThid )
+        ENDIF
+        _END_MASTER( myThid )
+
+C     end if useWHTapeIO / else
+      ENDIF
 
 C     Everyone must wait for the write operation to be completed.
 c     _BARRIER
