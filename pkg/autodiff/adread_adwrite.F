@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.22 2013/10/11 00:21:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.23 2013/10/17 01:13:58 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -97,15 +97,15 @@ C     == global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
-C     name   -  extended tape name.
-C     len    -  number of characters in name.
-C     tid    -  tape identifier.
-C     vid    -  identifies the variable to be stored on tape.
-C     var    -  values to be stored.
-C     size   -  size in bytes of the type of variable var.
-C     length -  dimension of the variable stored on the tape.
-C     myThid -  number of the thread or instance of the program.
-C     irec   -  record number to be written.
+C     name   :: extended tape name.
+C     len    :: number of characters in name.
+C     tid    :: tape identifier.
+C     vid    :: identifies the variable to be stored on tape.
+C     var    :: values to be stored.
+C     size   :: size in bytes of the type of variable var.
+C     length :: dimension of the variable stored on the tape.
+C     myThid :: number of the thread or instance of the program.
+C     irec   :: record number to be written.
 
       INTEGER myThid
       CHARACTER*(*) name
@@ -117,23 +117,21 @@ C     irec   -  record number to be written.
       INTEGER irec
       real*8  var(*)
 
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
 C     == local variables ==
-      CHARACTER*(7) itername
       CHARACTER*(MAX_LEN_FNAM) fname
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER filePrec
       INTEGER il, jl, lenLoc
-      INTEGER bx,by
+      real*8  dummyR8(1)
+      real*4  dummyR4(1)
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
       INTEGER n2d,length2d, jrec, i2d, j2d
 #endif
-
-C     == functions ==
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
-C     == end of interface ==
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -144,15 +142,14 @@ C--   default is to write tape-files of same precision as array:
 C     convert bytes to file-prec
       filePrec = 8*size
       IF ( doSinglePrecTapelev ) THEN
-       filePrec = 32
+       filePrec = precFloat32
       ENDIF
 
       il = ILNBLNK( name )
       jl = ILNBLNK( adTapeDir )
-      write(fname(1:MAX_LEN_FNAM),'(a)') ' '
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
       lenLoc = il+jl
-      write(fname(1:lenLoc),'(a,a)') adTapeDir(1:jl),name(1:il)
+      WRITE(fname,'(2A)') adTapeDir(1:jl),name(1:il)
       IF ( size.NE.8 ) THEN
          WRITE(msgBuf,'(A,I9)') 'ADREAD: code missing for size=',size
          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
@@ -161,10 +158,18 @@ C     convert bytes to file-prec
       ENDIF
 #else
       lenLoc = il+jl+7
-      write(itername,'(a,i4.4)') '.it',optimcycle
-      write(fname(1:lenLoc),'(a,a,a)')
-     &     adTapeDir(1:jl),name(1:il),itername
+      WRITE(fname,'(3A,I4.4)')
+     &     adTapeDir(1:jl),name(1:il),'.it',optimcycle
 #endif /* ALLOW_AUTODIFF_WHTAPEIO */
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel.GE.debLevC ) THEN
+        WRITE(msgBuf,'(2A,3I6,I9,2I3,2A)') 'ADREAD: ',
+     &    ' tid,vid, irec, length, prec(x2)=', tid, vid, irec,
+     &      length, size, filePrec, ' fname=', fname(1:lenLoc)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+#endif
 
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
 
@@ -211,29 +216,25 @@ cc      endif
 #else
 
       _BEGIN_MASTER( myThid )
-       by = myByLo(myThid)
-       bx = myBxLo(myThid)
-#ifdef ALLOW_DEBUG
-       if ( debugLevel.GE.debLevC ) then
-        write(msgBuf,'(A,I12,4I6)')
-     &       'ADREAD: ph', length, bx, by, irec
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-       endif
-#endif
        IF ( size.EQ.4 ) THEN
-         CALL MDSREADVECTOR( fname, filePrec, 'RS',
-     &                       length, var, bx, by, irec, myThid )
+c        CALL MDSREADVECTOR( fname, filePrec, 'RS',
+c    &                       length, var, 1, 1, irec, myThid )
+         CALL MDS_READ_TAPE( fname, filePrec, 'R4',
+     &                       length, dummyR8, var,
+     &                       useSingleCpuIO, irec, myThid )
        ELSE
-         CALL MDSREADVECTOR( fname, filePrec, 'RL',
-     &                       length, var, bx, by, irec, myThid )
+c        CALL MDSREADVECTOR( fname, filePrec, 'RL',
+c    &                       length, var, 1, 1, irec, myThid )
+         CALL MDS_READ_TAPE( fname, filePrec, 'R8',
+     &                       length,  var, dummyR4,
+     &                       useSingleCpuIO, irec, myThid )
        ENDIF
       _END_MASTER( myThid )
 
 #endif /* ALLOW_AUTODIFF_WHTAPEIO */
 
 C     Everyone must wait for the read operation to be completed.
-      _BARRIER
+c     _BARRIER
 
 #ifdef ALLOW_DEBUG
       IF ( debugMode ) CALL DEBUG_LEAVE('ADREAD',myThid)
@@ -287,15 +288,15 @@ C     == global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
-C     name   -  extended tape name.
-C     len    -  number of characters in name.
-C     tid    -  tape identifier.
-C     vid    -  identifies the variable to be stored on tape.
-C     var    -  values to be stored.
-C     size   -  size in bytes of the type of variable var.
-C     length -  dimension of the variable stored on the tape.
-C     myThid -  number of the thread or instance of the program.
-C     irec   -  record number to be written.
+C     name   :: extended tape name.
+C     len    :: number of characters in name.
+C     tid    :: tape identifier.
+C     vid    :: identifies the variable to be stored on tape.
+C     var    :: values to be stored.
+C     size   :: size in bytes of the type of variable var.
+C     length :: dimension of the variable stored on the tape.
+C     myThid :: number of the thread or instance of the program.
+C     irec   :: record number to be written.
 
       INTEGER myThid
       CHARACTER*(*) name
@@ -307,24 +308,22 @@ C     irec   -  record number to be written.
       INTEGER irec
       real*8  var(*)
 
+C     !FUNCTIONS:
+      INTEGER ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
 C     == local variables ==
-      CHARACTER*(7) itername
       CHARACTER*(MAX_LEN_FNAM) fname
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER filePrec
       INTEGER il,jl,lenLoc
-      INTEGER bx,by
-      logical globalfile
+      real*8  dummyR8(1)
+      real*4  dummyR4(1)
+      LOGICAL globalfile
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
       INTEGER n2d,length2d, jrec, i2d, j2d
 #endif
-
-C     == functions ==
-      INTEGER ILNBLNK
-      EXTERNAL ILNBLNK
-
-C     == end of interface ==
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -335,15 +334,14 @@ C--   default is to write tape-files of same precision as array:
 C     convert bytes to file-prec
       filePrec = 8*size
       IF ( doSinglePrecTapelev ) THEN
-       filePrec = 32
+       filePrec = precFloat32
       ENDIF
 
       il = ILNBLNK( name )
       jl = ILNBLNK( adTapeDir )
-      write(fname(1:MAX_LEN_FNAM),'(a)') ' '
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
       lenLoc = il+jl
-      write(fname(1:lenLoc),'(a,a)') adTapeDir(1:jl),name(1:il)
+      WRITE(fname,'(2A)') adTapeDir(1:jl),name(1:il)
       IF ( size.NE.8 ) THEN
          WRITE(msgBuf,'(A,I9)') 'ADWRITE: code missing for size=',size
          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
@@ -352,18 +350,17 @@ C     convert bytes to file-prec
       ENDIF
 #else
       lenLoc = il+jl+7
-      write(itername,'(a,i4.4)') '.it',optimcycle
-      write(fname(1:lenLoc),'(a,a,a)')
-     &     adTapeDir(1:jl),name(1:il),itername
+      WRITE(fname,'(3A,I4.4)')
+     &     adTapeDir(1:jl),name(1:il),'.it',optimcycle
 #endif /* ALLOW_AUTODIFF_WHTAPEIO */
 #ifdef ALLOW_DEBUG
-      if ( debugLevel .GE. debLevC ) then
-       write(msgBuf,'(A,I3,A,A)')
-     &      'ADWRITE: call mdsio routine for size, fname = ',
-     &      filePrec, ', ', fname(1:lenLoc)
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-      endif
+      IF ( debugLevel .GE. debLevC ) THEN
+        WRITE(msgBuf,'(2A,3I6,I9,2I3,2A)') 'ADWRITE:',
+     &    ' tid,vid, irec, length, prec(x2)=', tid, vid, irec,
+     &      length, size, filePrec, ' fname=', fname(1:lenLoc)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
 #endif
 
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
@@ -403,32 +400,29 @@ cc      endif
 
 #else
 
-      globalfile = .false.
+      globalfile = globalFiles
+c     globalfile = .FALSE.
 
       _BEGIN_MASTER( myThid )
-       by = myByLo(myThid)
-       bx = myBxLo(myThid)
-#ifdef ALLOW_DEBUG
-       if ( debugLevel .GE. debLevC ) then
-        write(msgBuf,'(A,I12,4I6)')
-     &       'ADWRITE: ph', length, bx, by, irec
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-       endif
-#endif
        IF ( size.EQ.4 ) THEN
-         CALL MDSWRITEVECTOR( fname, filePrec, globalfile, 'RS',
-     &                        length, var, bx, by, irec, 0, myThid )
+c        CALL MDSWRITEVECTOR( fname, filePrec, globalfile, 'RS',
+c    &                        length, var, 1, 1, irec, 0, myThid )
+         CALL MDS_WRITE_TAPE( fname, filePrec, globalfile, 'R4',
+     &                        length, dummyR8, var,
+     &                        useSingleCpuIO, irec, 0, myThid )
        ELSE
-         CALL MDSWRITEVECTOR( fname, filePrec, globalfile, 'RL',
-     &                        length, var, bx, by, irec, 0, myThid )
+c        CALL MDSWRITEVECTOR( fname, filePrec, globalfile, 'RL',
+c    &                        length, var, 1, 1, irec, 0, myThid )
+         CALL MDS_WRITE_TAPE( fname, filePrec, globalfile, 'R8',
+     &                        length, var, dummyR4,
+     &                        useSingleCpuIO, irec, 0, myThid )
        ENDIF
       _END_MASTER( myThid )
 
 #endif /* ALLOW_AUTODIFF_WHTAPEIO */
 
 C     Everyone must wait for the write operation to be completed.
-      _BARRIER
+c     _BARRIER
 
 #ifdef ALLOW_DEBUG
       IF ( debugMode ) CALL DEBUG_LEAVE('ADWRITE',myThid)
