@@ -32,9 +32,6 @@
 # turn on looped cells
  hFacMin=.05,
  hFacMindr=50.,
-# set precision of data files
- readBinaryPrec=32,
- debugLevel=1,
 #ph(
  vectorInvariantMomentum=.TRUE.,
  hFacInf=0.2,
@@ -49,6 +46,10 @@
  tempImplVertAdv=.TRUE.,
  saltImplVertAdv=.TRUE.,
 #ph)
+# set precision of data files
+ readBinaryPrec=32,
+ useSingleCpuIO=.TRUE.,
+#debugLevel=3,
  &
 
 # Elliptic solver parameters
