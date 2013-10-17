@@ -24,7 +24,6 @@
  exactConserv=.TRUE.,
  hFacMin=0.10,
  nonHydrostatic=.FALSE.,
- readBinaryPrec=64,
  useCDScheme = .TRUE.,
 #ph(
  implicitDiffusion=.TRUE.,
@@ -35,6 +34,8 @@
  hFacInf=0.05,
  hFacSup=2.0,
 #ph)
+ readBinaryPrec=64,
+ useSingleCpuIO=.TRUE.,
  &
 
 # Elliptic solver parameters
