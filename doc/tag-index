@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1929 2013/10/11 00:32:19 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1930 2013/10/17 01:30:04 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mdsio (+ eesupp/src):
+  - rewrite/simplify tape-IO S/R (new S/R MDS_READ/WRITE_TAPE replace
+    previous MDSREAD/WRITEVECTOR) with 2 array argument from each type (R4/R8);
+  - fix globalFile and singleCpuIO options using simpler global mapping.
+  - new pairs of scatter/gather vector S/R (one for each type, generated from
+    template) corresponding to simpler global mapping.
+  - adread_write.F: switch to new S/R (but leave old calls commented) and write
+    to globalFile when parameter globalFiles is set to True.
+  - switch on useSingleCpuIO in AD experiments: global_ocean.90x40x15 & isomip.
 o pkg/autodiff:
   - adread_adwrite: add a hack for RS arrays (when RS=real*4);
     with ALLOW_AUTODIFF_WHTAPEIOdefined, since corresponding (real*4) is
