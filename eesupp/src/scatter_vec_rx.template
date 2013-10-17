@@ -1,0 +1,97 @@
+C $Header: /u/gcmpack/MITgcm/eesupp/src/scatter_vec_rx.template,v 1.1 2013/10/17 00:27:53 jmc Exp $
+C $Name:  $
+
+#include "CPP_EEOPTIONS.h"
+
+CBOP
+C !ROUTINE: SCATTER_VEC_RX
+C !INTERFACE:
+      SUBROUTINE SCATTER_VEC_RX(
+     I                  gloBuff,
+     O                  myField,
+     I                  length,
+     I                  myThid )
+C !DESCRIPTION:
+C     Scatter elements of a global 1-D array from mpi process 0 to all processes.
+C     Note: done by Master-Thread ; might need barrier calls before and after
+C           this S/R call.
+
+C     !USES:
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C gloBuff   ( _RX ) :: full-domain IO-buffer array      (Input)
+C myField   ( _RX ) :: local (i.e. my Proc.) 1D array  (Output)
+C length   (integer):: size of local 1D array
+C myThid   (integer):: my Thread Id number
+
+      INTEGER length
+      _RX     gloBuff(length*nPx*nPy)
+      _RX     myField(length)
+      INTEGER myThid
+CEOP
+
+C !LOCAL VARIABLES:
+      INTEGER j
+#ifdef ALLOW_USE_MPI
+      INTEGER jG, shift
+      INTEGER np, pId
+      _RX     temp(length)
+      INTEGER istatus(MPI_STATUS_SIZE), ierr
+      INTEGER lbuff, isource, itag
+#endif /* ALLOW_USE_MPI */
+
+      _BEGIN_MASTER( myThid )
+
+#ifdef ALLOW_USE_MPI
+      IF ( usingMPI ) THEN
+
+       lbuff = length
+       isource = 0
+       itag  = 0
+
+       IF ( mpiMyId .EQ. 0 ) THEN
+
+C--   Process 0 sends local arrays to all other processes
+        DO np = 2, nPx*nPy
+
+          shift = ( np - 1 )*length
+          DO j=1,length
+            jG = j + shift
+            temp(j) = gloBuff(jG)
+          ENDDO
+          pId = np - 1
+          CALL MPI_SEND ( temp, lbuff, _MPI_TYPE_RX,
+     &                    pId, itag, MPI_COMM_MODEL, ierr )
+
+C-      end loop on np
+        ENDDO
+
+       ELSE
+
+C--   All proceses except 0 receive local array from process 0
+         CALL MPI_RECV ( myField, lbuff, _MPI_TYPE_RX,
+     &        isource, itag, MPI_COMM_MODEL, istatus, ierr )
+
+       ENDIF
+
+      ENDIF
+#endif /* ALLOW_USE_MPI */
+
+      IF ( myProcId .EQ. 0 ) THEN
+C--   Process 0 fills-in its local data
+
+        DO j=1,length
+          myField(j) = gloBuff(j)
+        ENDDO
+
+C-    end if myProcId = 0
+      ENDIF
+
+      _END_MASTER( myThid )
+
+      RETURN
+      END
