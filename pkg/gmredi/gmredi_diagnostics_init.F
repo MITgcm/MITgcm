@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.16 2013/10/09 19:13:21 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.17 2013/10/21 18:46:05 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -393,6 +393,22 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
         
+        diagName  = 'GM_Kdqdx'
+        diagTitle = 'K*dq/dx'
+        diagUnits = 'm/s*2           '
+        diagCode  = 'UU      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_Kdqdy'
+        diagTitle = 'K*dq/dy'
+        diagUnits = 'm/s**2          '
+        diagCode  = 'VV      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
         diagName  = 'GM_Xix  '
         diagTitle = '-k dq/dx expansion'
         diagUnits = 'm/s**2          '
@@ -483,6 +499,14 @@ c     IF ( useDiagnotics ) THEN
         
         diagName  = 'GM_N2   '
         diagTitle = 'N**2'
+        diagUnits = '1/s**2          '
+        diagCode  = 'SM      MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_M4_N2'
+        diagTitle = 'M**4/N**2'
         diagUnits = '1/s**2          '
         diagCode  = 'SM      MR      '
         diagMate  = diagNum

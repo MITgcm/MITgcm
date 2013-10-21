@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.26 2013/09/28 17:59:30 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.27 2013/10/21 18:46:05 m_bates Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -23,7 +23,7 @@ C     GM_MDSIO         ::
 C     GM_useK3D        :: use the 3 dimensional calculation for K
 C     GM_K3D_beta_eq_0 :: Ignores the beta term when calculating grad(q)
 C     GM_K3D_likeGM    :: Makes the PV closure similar to the GM closure (for debugging only!)
-C     GM_K3D_PVsheet   :: Use a PV sheet (should pretty much always be true)
+C     GM_K3D_ThickSheet:: Use a thick PV sheet (should pretty much always be false)
 C     GM_K3D_smooth    :: Expand PV closure in terms of baroclinic modes (for debugging only!)
       LOGICAL GM_AdvForm
       LOGICAL GM_AdvSeparate
@@ -35,7 +35,7 @@ C     GM_K3D_smooth    :: Expand PV closure in terms of baroclinic modes (for de
       LOGICAL GM_MDSIO
       LOGICAL GM_useK3D
       LOGICAL GM_K3D_likeGM
-      LOGICAL GM_K3D_PVsheet
+      LOGICAL GM_K3D_ThickSheet
       LOGICAL GM_K3D_beta_eq_0
       LOGICAL GM_K3D_smooth
       COMMON /GM_PARAMS_L/
@@ -44,7 +44,7 @@ C     GM_K3D_smooth    :: Expand PV closure in terms of baroclinic modes (for de
      &                   GM_ExtraDiag, GM_MNC, GM_MDSIO,
      &                   GM_InMomAsStress,
      &                   GM_useK3D, GM_K3D_likeGM, GM_K3D_smooth,
-     &                   GM_K3D_beta_eq_0, GM_K3D_PVsheet
+     &                   GM_K3D_beta_eq_0, GM_K3D_ThickSheet
 
 C--   GM/Redi Integer-type parameters
 C     GM_BVP_modeNumber :: vertical mode number used for speed "c" in BVP transport
@@ -91,12 +91,13 @@ C     subMeso_LfMin  :: minimum value for length-scale "Lf" [m]
 C     subMeso_Lmax   :: maximum horizontal grid-scale length [m]
 C     Variable K with PV diffusion parameters:
 C     GM_K3D_gamma   :: mixing efficiency for 3D eddy diffusivity [-]
+C     GM_K3D_b1      :: an empirically determined constant of O(1)
 C     GM_K3D_EadyMinDepth :: upper depth for Eady calculation
 C     GM_K3D_EadyMaxDepth :: lower depth for Eady calculation
 C     GM_maxK3D      :: Upper bound on the diffusivity
 C     GM_K3D_constK  :: Constant diffusivity to use when GM_useK3D=.TRUE. and GM_K3D_likeGM=.TRUE.
-C     GM_K3D_maxLurms:: Upper bound on th length scale used for calculating urms
-C     GM_K3D_minLurms:: Lower bound on th length scale used for calculating urms
+C     GM_K3D_Rmax    :: Upper bound on the length scale used for calculating urms
+C     GM_K3D_Rmin    :: Lower bound on the length scale used for calculating the eddy radius
 C     GM_K3D_minCori :: minimum value for f (to stop things blowing up near the equator)
 C     GM_K3D_minN2   :: minimum value for the square of the buoyancy frequency
 C     GM_K3D_surfMinDepth :: minimum value for the depth of the surface layer
@@ -116,16 +117,16 @@ C     GM_K3D_vecFreq :: Frequency at which to update the baroclinic modes
       _RL GM_Visbeck_minVal_K
       _RL GM_Visbeck_maxVal_K
       _RL GM_K3D_gamma
+      _RL GM_K3D_b1
       _RL GM_K3D_EadyMinDepth
       _RL GM_K3D_EadyMaxDepth
       _RL GM_K3D_Lambda
       _RL GM_K3D_smallK
-      _RL GM_K3D_maxSlope
       _RL GM_K3D_maxC
       _RL GM_maxK3D
       _RL GM_K3D_constK
-      _RL GM_K3D_maxLurms
-      _RL GM_K3D_minLurms
+      _RL GM_K3D_Rmax
+      _RL GM_K3D_Rmin
       _RL GM_K3D_minCori
       _RL GM_K3D_minN2
       _RL GM_K3D_surfMinDepth
@@ -149,12 +150,12 @@ C     GM_K3D_vecFreq :: Frequency at which to update the baroclinic modes
      &                   GM_Visbeck_depth,
      &                   GM_Visbeck_minDepth, GM_Visbeck_maxSlope,
      &                   GM_Visbeck_minVal_K, GM_Visbeck_maxVal_K,
-     &                   GM_K3D_gamma, GM_K3D_EadyMinDepth, 
+     &                   GM_K3D_gamma, GM_K3D_b1, GM_K3D_EadyMinDepth, 
      &                   GM_K3D_EadyMaxDepth, GM_K3D_Lambda,
-     &                   GM_K3D_smallK, GM_K3D_maxSlope, GM_K3D_maxC,
+     &                   GM_K3D_smallK, GM_K3D_maxC,
      &                   GM_maxK3D, GM_K3D_minCori, GM_K3D_minN2, 
-     &                   GM_K3D_surfMinDepth, GM_K3D_maxLurms,
-     &                   GM_K3D_constK, GM_K3D_vecFreq, GM_K3D_minLurms,
+     &                   GM_K3D_surfMinDepth, GM_K3D_Rmax, GM_K3D_Rmin,
+     &                   GM_K3D_constK, GM_K3D_vecFreq, 
      &                   GM_facTrL2dz, GM_facTrL2ML, GM_maxTransLay,
      &                   GM_Scrit, GM_Sd, GM_BVP_cMin,
      &                   subMeso_Ceff, subMeso_invTau, subMeso_LfMin

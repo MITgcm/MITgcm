@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.30 2013/09/28 17:59:30 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.31 2013/10/21 18:46:05 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -63,14 +63,14 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_MNC,
      &          GM_UseBVP, GM_BVP_cMin, GM_BVP_ModeNumber,
      &          GM_useSubMeso, subMeso_Ceff, subMeso_invTau,
-     &          subMeso_LfMin, subMeso_Lmax,
+     &          subMeso_LfMin, subMeso_Lmax, GM_K3D_b1,
      &          GM_K3D_gamma, GM_useK3D, GM_K3D_vecFreq,
      &          GM_K3D_EadyMinDepth, GM_K3D_EadyMaxDepth,
-     &          GM_K3D_Lambda, GM_K3D_smallK, GM_K3D_maxSlope,
+     &          GM_K3D_Lambda, GM_K3D_smallK,
      &          GM_K3D_maxC, GM_K3D_minCori, GM_K3D_minN2,
-     &          GM_K3D_surfMinDepth, GM_maxK3D, GM_K3D_maxLurms,
+     &          GM_K3D_surfMinDepth, GM_maxK3D, GM_K3D_Rmax,
      &          GM_K3D_constK, GM_K3D_likeGM, GM_K3D_smooth,
-     &          GM_K3D_beta_eq_0, GM_K3D_minLurms, GM_K3D_PVsheet
+     &          GM_K3D_beta_eq_0, GM_K3D_Rmin, GM_K3D_ThickSheet
 
       _BEGIN_MASTER(myThid)
 
@@ -125,19 +125,19 @@ C--   Default values for K3D
       GM_useK3D        = .FALSE.
       GM_K3D_beta_eq_0 = .TRUE.
       GM_K3D_likeGM    = .FALSE.
-      GM_K3D_PVsheet   = .TRUE.
+      GM_K3D_ThickSheet= .FALSE.
       GM_K3D_smooth    = .TRUE.
       GM_K3D_constK    = 1000.0
-      GM_K3D_gamma     = 1.00
+      GM_K3D_gamma     = 1.0
+      GM_K3D_b1        = 4.0
       GM_K3D_EadyMinDepth = 50.0
       GM_K3D_EadyMaxDepth = 1000.0
       GM_K3D_Lambda    = 1.0
       GM_K3D_smallK    = 100.0
-      GM_K3D_maxSlope  = UNSET_RL
       GM_K3D_maxC      = 0.15
       GM_maxK3D        = 20e3
-      GM_K3D_minLurms  =   0.0
-      GM_K3D_maxLurms  = 75e3
+      GM_K3D_Rmin      = 30e3
+      GM_K3D_Rmax      = 75e3
       GM_K3D_minCori   = zeroRL
       GM_K3D_minN2     = 1.0e-8
       GM_K3D_surfMinDepth = 100.0
@@ -165,10 +165,6 @@ C     Default value for GM_isopycK is equal to GM_background_K :
 C     Default value for GM_Visbeck_maxSlope is equal to GM_maxSlope :
       IF ( GM_Visbeck_maxSlope .EQ. UNSET_RL )
      &     GM_Visbeck_maxSlope = GM_maxSlope
-
-C     Default value for GM_K3D_maxSlope is equal to GM_maxSlope :
-      IF ( GM_K3D_maxSlope .EQ. UNSET_RL )
-     &     GM_K3D_maxSlope = GM_maxSlope
 
 C     Some constants
       GM_rMaxSlope = 0.
