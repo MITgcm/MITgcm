@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1932 2013/10/20 21:39:32 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1933 2013/10/22 21:14:03 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o verification/isomip:
+  - split domain in 8 squared tiles (instead of just 2) for FWD, AD & OAD tests.
+o tools/build_options:
+  - optfile linux_amd64_ifort11, fast (no ieee) case:
+    to get a working restart for all experiments, add "-fp-model source"
+    to FOPTIM (also remove "-opt-streaming-stores auto" <- this is the default).
 
 checkpoint64p (2013/10/20)
 o pkg/autodiff:
