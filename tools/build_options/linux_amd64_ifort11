@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort11,v 1.13 2013/09/23 23:32:59 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort11,v 1.14 2013/10/22 21:13:17 jmc Exp $
 # $Name:  $
 
 #  Build options for version 11 and newer of intel compiler on Linux AMD64 platform
@@ -9,10 +9,12 @@
 #  Tested on baudelaire (FC 13) with intel compiler v.11.1.073 (20100806)
 #
 # OpenMP : tested on danton (FC 14) using intel compiler v.11.1.046 (20090630)
-#                               and also (FC 14,17 & 19) v.12.0.4   (20110427)
+#                                    and (FC 14,17 & 19) v.12.0.4   (20110427)
+#                                    and also (FC 19)    v.14.0.0   (20130728)
 #
-# MPI : Tested  on danton (FC 14), with and without OpenMP, using
-#       intel compiler v.11.1.046 (20090630) and also  v.12.0.4   (20110427)
+# MPI : Tested  on danton, with and without OpenMP,
+#        using intel compiler v.11.1.046 and v.12.0.4 and also v.14.0.0
+#       and  on acesgrid  (FC 15)  with intel compiler v.13.0.0.079 (20120731)
 # ==> DON'T FORGET to set environment variable MPI_INC_DIR to the include
 #     directory of your MPI implementation
 
@@ -68,7 +70,7 @@ FFLAGS="$FFLAGS -m64 -convert big_endian -assume byterecl"
 #FFLAGS="$FFLAGS -r8"
 
 if test "x$IEEE" = x ; then     #- with optimisation:
-    FOPTIM="-O2 -align -ip -opt-streaming-stores auto $PROCF"
+    FOPTIM="-O2 -align -ip -fp-model source $PROCF"
 else
   if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
     FOPTIM="-O0 -fp-model source -noalign $PROCF"
