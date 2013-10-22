@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.14 2013/09/27 09:00:57 dfer Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.15 2013/10/22 13:24:48 dfer Exp $
 # $Name:  $
 
 # Used to run the testreport on pleiades with:
@@ -24,7 +24,7 @@ INCLUDEDIRS='/nasa/sgi/mpt/2.06rp16/include'
 MPIINCLUDEDIR='/nasa/sgi/mpt/2.06rp16/include'
 #MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
 
-NOOPTFLAGS='-O0 -fPIC'
+NOOPTFLAGS='-O1 -fp-model precise'
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
