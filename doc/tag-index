@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1933 2013/10/22 21:14:03 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1934 2013/10/25 18:44:25 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp/src & pkg/mdsio:
+  - remove gather/scatter_vector.F (from eesupp) and mdsio_read/writevector.F
+    (from pkg/mdsio) since they are no longer used for tape IO.
+  - move simple C subroutine "setdir.c" from pkg/compon_communic to eesupp/src
+    (+ keep a copy in pkg/atm_ocn_coupler).
 o verification/isomip:
   - split domain in 8 squared tiles (instead of just 2) for FWD, AD & OAD tests.
 o tools/build_options:
