@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_ad.flow,v 1.10 2012/07/02 20:48:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_ad.flow,v 1.11 2013/10/25 18:28:35 jmc Exp $
 C $Name:  $
 
 C----------------------------------------
@@ -72,18 +72,6 @@ C subroutine mdswritefield
 C----------------------------------------
 CADJ SUBROUTINE mdswritefield  INPUT  = 1,2,3,4,5,6,7,8,9
 CADJ SUBROUTINE mdswritefield  OUTPUT =
-
-C----------------------------------------
-C subroutine mdsreadvector
-C----------------------------------------
-CADJ SUBROUTINE mdsreadvector  INPUT  = 1,2,3,4,  6,7,8,9
-CADJ SUBROUTINE mdsreadvector  OUTPUT =         5
-
-C----------------------------------------
-C subroutine mdswritevector
-C----------------------------------------
-CADJ SUBROUTINE mdswritevector  INPUT  = 1,2,3,4,5,6,7,8,9,10,11
-CADJ SUBROUTINE mdswritevector  OUTPUT =
 
 C----------------------------------------
 C subroutine mdsreadfieldxz
