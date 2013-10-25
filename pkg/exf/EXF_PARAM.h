@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.30 2013/04/23 19:04:33 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.31 2013/10/25 17:31:43 dimitri Exp $
 C $Name:  $
 c
 c
@@ -686,9 +686,10 @@ C  buffer size currently set to 65000 (allows to read-in a 1x1 global data set)
 C  Increase to 140000 to accommodate for ECMWF-INTERIM
       INTEGER    exf_interp_bufferSize
       PARAMETER( exf_interp_bufferSize = 140000 )
-c for lat interpolation, arraysize currently set to 360 max data values
+c for lat interpolation, arraysize currently set to 1279 max data values
+c to accomodate ECMWF operational analysis
       INTEGER MAX_LAT_INC
-      PARAMETER(MAX_LAT_INC = 360)
+      PARAMETER(MAX_LAT_INC = 1279)
 
 C-- Interpolation parameters (for each input field):
 C  {inputField}_lon0    :: longitude of the 1rst point (South-East corner)
