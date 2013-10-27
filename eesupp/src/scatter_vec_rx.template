@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/scatter_vec_rx.template,v 1.1 2013/10/17 00:27:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/scatter_vec_rx.template,v 1.2 2013/10/27 14:29:40 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -37,9 +37,8 @@ CEOP
 C !LOCAL VARIABLES:
       INTEGER j
 #ifdef ALLOW_USE_MPI
-      INTEGER jG, shift
+      INTEGER jG
       INTEGER np, pId
-      _RX     temp(length)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER lbuff, isource, itag
 #endif /* ALLOW_USE_MPI */
@@ -55,16 +54,12 @@ C !LOCAL VARIABLES:
 
        IF ( mpiMyId .EQ. 0 ) THEN
 
-C--   Process 0 sends local arrays to all other processes
+C--   Process 0 sends pieces of global array to all other processes
         DO np = 2, nPx*nPy
 
-          shift = ( np - 1 )*length
-          DO j=1,length
-            jG = j + shift
-            temp(j) = gloBuff(jG)
-          ENDDO
           pId = np - 1
-          CALL MPI_SEND ( temp, lbuff, _MPI_TYPE_RX,
+          jG = 1 + ( np - 1 )*length
+          CALL MPI_SEND ( gloBuff(jG), lbuff, _MPI_TYPE_RX,
      &                    pId, itag, MPI_COMM_MODEL, ierr )
 
 C-      end loop on np
