@@ -44,5 +44,5 @@ f(1:nx,(ny+1):(ny+nx/2))=rot90(f3(1:(nx/2),:),1);
 f((2*nx+1):(3*nx),(ny+1):(ny+nx/2))=rot90(f3((nx/2+1):nx,:),3);
 f((2*nx+1):(3*nx),1:ny)=rot90(f4,3);
 f((3*nx+1):(4*nx),1:ny)=rot90(f5,3);
-mypcolor(f');
+quikpcolor(f');
 set(gca,'xtick',[],'ytick',[])
