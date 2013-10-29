@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint64l
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint64p
 (PID.TID 0000.0001) // Build user:        jmc
 (PID.TID 0000.0001) // Build host:        baudelaire
-(PID.TID 0000.0001) // Build date:        Wed Aug  7 15:12:16 EDT 2013
+(PID.TID 0000.0001) // Build date:        Tue Oct 29 16:30:18 EDT 2013
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -2725,7 +2725,7 @@
 (PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      23
 (PID.TID 0000.0001)      cg2d_last_res =   3.22678361722819E-14
  mean surface dic   1.9723249740641411        34.855624493690975     
- QQ myiter, totcost =      5184001  -149896021875.80466     
+ DIC_COST: iter,totcost =  5184001 -1.498960218758048E+11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2841,7 +2841,7 @@
 (PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      23
 (PID.TID 0000.0001)      cg2d_last_res =   3.15646026989607E-14
  mean surface dic   1.9723041038777025        34.855731590862938     
- QQ myiter, totcost =      5184002  -302787620551.21387     
+ DIC_COST: iter,totcost =  5184002 -3.027876205512130E+11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2957,7 +2957,7 @@
 (PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      23
 (PID.TID 0000.0001)      cg2d_last_res =   3.16339676330542E-14
  mean surface dic   1.9722740564988293        34.855734951310524     
- QQ myiter, totcost =      5184003  -454258131366.61536     
+ DIC_COST: iter,totcost =  5184003 -4.542581313666146E+11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3073,7 +3073,7 @@
 (PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      23
 (PID.TID 0000.0001)      cg2d_last_res =   3.09074311305297E-14
  mean surface dic   1.9722438449622262        34.855719155302666     
- QQ myiter, totcost =      5184004  -605804087721.18628     
+ DIC_COST: iter,totcost =  5184004 -6.058040877211858E+11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3185,8 +3185,7 @@
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %CHECKPOINT   5184004 ckptA
- ph-1 in thsice_cost_final
- ph-3 in thsice_cost_final
+  early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
@@ -3206,20 +3205,20 @@
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723249740641411        34.855624493690975     
- QQ myiter, totcost =      5184001  -149896021875.80466     
+ DIC_COST: iter,totcost =  5184001 -1.498960218758048E+11
  cg2d: Sum(rhs),rhsMax =  -2.93547174123887E-07  8.32580875881018E+00
  mean surface dic   1.9723041038777025        34.855731590862938     
- QQ myiter, totcost =      5184002  -302787620551.21387     
+ DIC_COST: iter,totcost =  5184002 -3.027876205512130E+11
  cg2d: Sum(rhs),rhsMax =  -2.93677626217459E-07  8.32215434141113E+00
  mean surface dic   1.9722740564988293        34.855734951310524     
- QQ myiter, totcost =      5184003  -454258131366.61536     
+ DIC_COST: iter,totcost =  5184003 -4.542581313666146E+11
  cg2d: Sum(rhs),rhsMax =  -2.93793327443836E-07  8.31886491394280E+00
  mean surface dic   1.9722438449622262        34.855719155302666     
- QQ myiter, totcost =      5184004  -605804087721.18628     
+ DIC_COST: iter,totcost =  5184004 -6.058040877211858E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  cg2d: Sum(rhs),rhsMax =  -2.93793327443836E-07  8.31886491394280E+00
  mean surface dic   1.9722438449622262        34.855719155302666     
- QQ myiter, totcost =      5184004  -605804087721.18628     
+ DIC_COST: iter,totcost =  5184004 -6.058040877211858E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
 (PID.TID 0000.0001) // =======================================================
@@ -3314,7 +3313,7 @@
  cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
  cg2d: Sum(rhs),rhsMax =  -2.93677626217459E-07  8.32215434141113E+00
  mean surface dic   1.9722740564988293        34.855734951310524     
- QQ myiter, totcost =      5184003  -454258131366.61536     
+ DIC_COST: iter,totcost =  5184003 -4.542581313666146E+11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3407,7 +3406,7 @@
  cg2d: Sum(rhs),rhsMax =  -8.65973959207622E-15  4.99945916145686E+03
  cg2d: Sum(rhs),rhsMax =  -2.93547174123887E-07  8.32580875881018E+00
  mean surface dic   1.9723041038777025        34.855731590862938     
- QQ myiter, totcost =      5184002  -302787620551.21387     
+ DIC_COST: iter,totcost =  5184002 -3.027876205512130E+11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3503,7 +3502,7 @@
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723249740641411        34.855624493690975     
- QQ myiter, totcost =      5184001  -149896021875.80466     
+ DIC_COST: iter,totcost =  5184001 -1.498960218758048E+11
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    1 )
 (PID.TID 0000.0001) // =======================================================
@@ -3776,19 +3775,18 @@ grad-res -------------------------------
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723249740630113        34.855624493691671     
- QQ myiter, totcost =      5184001  -149896021945.79300     
+ DIC_COST: iter,totcost =  5184001 -1.498960219457931E+11
  cg2d: Sum(rhs),rhsMax =  -2.93547209651024E-07  8.32580875881018E+00
  mean surface dic   1.9723041038757048        34.855731590863229     
- QQ myiter, totcost =      5184002  -302787620637.05316     
+ DIC_COST: iter,totcost =  5184002 -3.027876206370521E+11
  cg2d: Sum(rhs),rhsMax =  -2.93677398843784E-07  8.32215434141113E+00
  mean surface dic   1.9722740564961365        34.855734951310588     
- QQ myiter, totcost =      5184003  -454258131464.04462     
+ DIC_COST: iter,totcost =  5184003 -4.542581314640441E+11
  cg2d: Sum(rhs),rhsMax =  -2.93793583239221E-07  8.31886491394280E+00
  mean surface dic   1.9722438449590007        34.855719155302502     
- QQ myiter, totcost =      5184004  -605804087810.80200     
+ DIC_COST: iter,totcost =  5184004 -6.058040878108018E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
- ph-1 in thsice_cost_final
- ph-3 in thsice_cost_final
+  early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
@@ -3848,19 +3846,18 @@ grad-res -------------------------------
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723249740652711        34.855624493690271     
- QQ myiter, totcost =      5184001  -149896021805.81949     
+ DIC_COST: iter,totcost =  5184001 -1.498960218058196E+11
  cg2d: Sum(rhs),rhsMax =  -2.93547209651024E-07  8.32580875881018E+00
  mean surface dic   1.9723041038797005        34.855731590862639     
- QQ myiter, totcost =      5184002  -302787620465.38019     
+ DIC_COST: iter,totcost =  5184002 -3.027876204653792E+11
  cg2d: Sum(rhs),rhsMax =  -2.93677398843784E-07  8.32215434141113E+00
  mean surface dic   1.9722740565015220        34.855734951310467     
- QQ myiter, totcost =      5184003  -454258131269.19397     
+ DIC_COST: iter,totcost =  5184003 -4.542581312691931E+11
  cg2d: Sum(rhs),rhsMax =  -2.93793146255439E-07  8.31886491394281E+00
  mean surface dic   1.9722438449654518        34.855719155302815     
- QQ myiter, totcost =      5184004  -605804087631.57935     
+ DIC_COST: iter,totcost =  5184004 -6.058040876315795E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
- ph-1 in thsice_cost_final
- ph-3 in thsice_cost_final
+  early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
@@ -3878,10 +3875,10 @@ grad-res -------------------------------
 (PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus = -6.05804087631579E+11
 grad-res -------------------------------
  grad-res     0    1   61    5    1    1    1    1  -6.05804087721E+11 -6.05804087811E+11 -6.05804087632E+11
- grad-res     0    1    1    1    0    1    1    1  -8.96108321769E+06 -8.96113281250E+06 -5.53446634899E-06
+ grad-res     0    1    1    1    0    1    1    1  -8.96108321769E+06 -8.96111450195E+06 -3.49112555731E-06
 (PID.TID 0000.0001)  ADM  ref_cost_function      = -6.05804087721186E+11
 (PID.TID 0000.0001)  ADM  adjoint_gradient       = -8.96108321768648E+06
-(PID.TID 0000.0001)  ADM  finite-diff_grad       = -8.96113281250000E+06
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -8.96111450195313E+06
 (PID.TID 0000.0001) ====== End of gradient-check number   1 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   2 (=ichknum) =======
  ph-test icomp, ncvarcomp, ichknum            2       55673           2
@@ -3932,19 +3929,18 @@ grad-res -------------------------------
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723249740638535        34.855624493691508     
- QQ myiter, totcost =      5184001  -149896021978.58102     
+ DIC_COST: iter,totcost =  5184001 -1.498960219785811E+11
  cg2d: Sum(rhs),rhsMax =  -2.93547149254891E-07  8.32580875881018E+00
  mean surface dic   1.9723041038771196        34.855731590863627     
- QQ myiter, totcost =      5184002  -302787620710.52246     
+ DIC_COST: iter,totcost =  5184002 -3.027876207105214E+11
  cg2d: Sum(rhs),rhsMax =  -2.93677555163185E-07  8.32215434141113E+00
  mean surface dic   1.9722740564979719        34.855734951311341     
- QQ myiter, totcost =      5184003  -454258131592.40674     
+ DIC_COST: iter,totcost =  5184003 -4.542581315924059E+11
  cg2d: Sum(rhs),rhsMax =  -2.93793199546144E-07  8.31886491394281E+00
  mean surface dic   1.9722438449611051        34.855719155303582     
- QQ myiter, totcost =      5184004  -605804088001.07373     
+ DIC_COST: iter,totcost =  5184004 -6.058040880010734E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
- ph-1 in thsice_cost_final
- ph-3 in thsice_cost_final
+  early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
@@ -3958,8 +3954,8 @@ grad-res -------------------------------
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
- global fc = -0.605804088001074D+12
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  = -6.05804088001074E+11
+ global fc = -0.605804088001073D+12
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  = -6.05804088001073E+11
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords = 123 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   2 , dims:
@@ -4004,19 +4000,18 @@ grad-res -------------------------------
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723249740644289        34.855624493690435     
- QQ myiter, totcost =      5184001  -149896021773.02884     
+ DIC_COST: iter,totcost =  5184001 -1.498960217730290E+11
  cg2d: Sum(rhs),rhsMax =  -2.93547170571173E-07  8.32580875881018E+00
  mean surface dic   1.9723041038782856        34.855731590862248     
- QQ myiter, totcost =      5184002  -302787620391.90625     
+ DIC_COST: iter,totcost =  5184002 -3.027876203919054E+11
  cg2d: Sum(rhs),rhsMax =  -2.93677477003484E-07  8.32215434141113E+00
  mean surface dic   1.9722740564996868        34.855734951309707     
- QQ myiter, totcost =      5184003  -454258131140.82507     
+ DIC_COST: iter,totcost =  5184003 -4.542581311408243E+11
  cg2d: Sum(rhs),rhsMax =  -2.93793089412020E-07  8.31886491394280E+00
  mean surface dic   1.9722438449633475        34.855719155301742     
- QQ myiter, totcost =      5184004  -605804087441.30005     
+ DIC_COST: iter,totcost =  5184004 -6.058040874412998E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
- ph-1 in thsice_cost_final
- ph-3 in thsice_cost_final
+  early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
@@ -4034,10 +4029,10 @@ grad-res -------------------------------
 (PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus = -6.05804087441300E+11
 grad-res -------------------------------
  grad-res     0    2   62    5    1    1    1    1  -6.05804087721E+11 -6.05804088001E+11 -6.05804087441E+11
- grad-res     0    2    2    2    0    1    1    1  -2.79885379820E+07 -2.79886840820E+07 -5.21999518410E-06
+ grad-res     0    2    2    2    0    1    1    1  -2.79885379820E+07 -2.79886779785E+07 -5.00192321384E-06
 (PID.TID 0000.0001)  ADM  ref_cost_function      = -6.05804087721186E+11
 (PID.TID 0000.0001)  ADM  adjoint_gradient       = -2.79885379819978E+07
-(PID.TID 0000.0001)  ADM  finite-diff_grad       = -2.79886840820312E+07
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -2.79886779785156E+07
 (PID.TID 0000.0001) ====== End of gradient-check number   2 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   3 (=ichknum) =======
  ph-test icomp, ncvarcomp, ichknum            3       55673           3
@@ -4088,19 +4083,18 @@ grad-res -------------------------------
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723249740639326        34.855624493691657     
- QQ myiter, totcost =      5184001  -149896021978.15500     
+ DIC_COST: iter,totcost =  5184001 -1.498960219781551E+11
  cg2d: Sum(rhs),rhsMax =  -2.93547095964186E-07  8.32580875881018E+00
  mean surface dic   1.9723041038772908        34.855731590863968     
- QQ myiter, totcost =      5184002  -302787620713.46399     
+ DIC_COST: iter,totcost =  5184002 -3.027876207134631E+11
  cg2d: Sum(rhs),rhsMax =  -2.93677405949211E-07  8.32215434141113E+00
  mean surface dic   1.9722740564982251        34.855734951311881     
- QQ myiter, totcost =      5184003  -454258131601.02942     
+ DIC_COST: iter,totcost =  5184003 -4.542581316010289E+11
  cg2d: Sum(rhs),rhsMax =  -2.93793252836849E-07  8.31886491394281E+00
  mean surface dic   1.9722438449614377        34.855719155304314     
- QQ myiter, totcost =      5184004  -605804088018.06519     
+ DIC_COST: iter,totcost =  5184004 -6.058040880180653E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
- ph-1 in thsice_cost_final
- ph-3 in thsice_cost_final
+  early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
@@ -4160,19 +4154,18 @@ grad-res -------------------------------
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723249740643494        34.855624493690300     
- QQ myiter, totcost =      5184001  -149896021773.45462     
+ DIC_COST: iter,totcost =  5184001 -1.498960217734548E+11
  cg2d: Sum(rhs),rhsMax =  -2.93547127938609E-07  8.32580875881017E+00
  mean surface dic   1.9723041038781146        34.855731590861900     
- QQ myiter, totcost =      5184002  -302787620388.96252     
+ DIC_COST: iter,totcost =  5184002 -3.027876203889616E+11
  cg2d: Sum(rhs),rhsMax =  -2.93677278051518E-07  8.32215434141113E+00
  mean surface dic   1.9722740564994332        34.855734951309159     
- QQ myiter, totcost =      5184003  -454258131132.19965     
+ DIC_COST: iter,totcost =  5184003 -4.542581311321989E+11
  cg2d: Sum(rhs),rhsMax =  -2.93793348760119E-07  8.31886491394281E+00
  mean surface dic   1.9722438449630149        34.855719155301003     
- QQ myiter, totcost =      5184004  -605804087424.30664     
+ DIC_COST: iter,totcost =  5184004 -6.058040874243066E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
- ph-1 in thsice_cost_final
- ph-3 in thsice_cost_final
+  early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
@@ -4190,10 +4183,10 @@ grad-res -------------------------------
 (PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus = -6.05804087424307E+11
 grad-res -------------------------------
  grad-res     0    3   63    5    1    1    1    1  -6.05804087721E+11 -6.05804088018E+11 -6.05804087424E+11
- grad-res     0    3    3    3    0    1    1    1  -2.96879360770E+07 -2.96879272461E+07  2.97458815357E-07
+ grad-res     0    3    3    3    0    1    1    1  -2.96879360770E+07 -2.96879333496E+07  9.18697299346E-08
 (PID.TID 0000.0001)  ADM  ref_cost_function      = -6.05804087721186E+11
 (PID.TID 0000.0001)  ADM  adjoint_gradient       = -2.96879360770320E+07
-(PID.TID 0000.0001)  ADM  finite-diff_grad       = -2.96879272460937E+07
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -2.96879333496094E+07
 (PID.TID 0000.0001) ====== End of gradient-check number   3 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   4 (=ichknum) =======
  ph-test icomp, ncvarcomp, ichknum            4       55673           4
@@ -4244,19 +4237,18 @@ grad-res -------------------------------
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465216572031E-07  8.32814987068962E+00
  mean surface dic   1.9723249740641207        34.855624493691536     
- QQ myiter, totcost =      5184001  -149896022004.60281     
+ DIC_COST: iter,totcost =  5184001 -1.498960220046029E+11
  cg2d: Sum(rhs),rhsMax =  -2.93547053331622E-07  8.32580875881018E+00
  mean surface dic   1.9723041038776481        34.855731590863861     
- QQ myiter, totcost =      5184002  -302787620759.43591     
+ DIC_COST: iter,totcost =  5184002 -3.027876207594351E+11
  cg2d: Sum(rhs),rhsMax =  -2.93677306473228E-07  8.32215434141113E+00
  mean surface dic   1.9722740564987415        34.855734951311781     
- QQ myiter, totcost =      5184003  -454258131672.70758     
+ DIC_COST: iter,totcost =  5184003 -4.542581316727068E+11
  cg2d: Sum(rhs),rhsMax =  -2.93792755456934E-07  8.31886491394281E+00
  mean surface dic   1.9722438449621014        34.855719155304236     
- QQ myiter, totcost =      5184004  -605804088115.87073     
+ DIC_COST: iter,totcost =  5184004 -6.058040881158705E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
- ph-1 in thsice_cost_final
- ph-3 in thsice_cost_final
+  early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
@@ -4270,8 +4262,8 @@ grad-res -------------------------------
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
- global fc = -0.605804088115871D+12
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  = -6.05804088115871E+11
+ global fc = -0.605804088115870D+12
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  = -6.05804088115870E+11
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords = 123 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   2 , dims:
@@ -4316,19 +4308,18 @@ grad-res -------------------------------
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.93465159728612E-07  8.32814987068962E+00
  mean surface dic   1.9723249740641613        34.855624493690414     
- QQ myiter, totcost =      5184001  -149896021747.00674     
+ DIC_COST: iter,totcost =  5184001 -1.498960217470069E+11
  cg2d: Sum(rhs),rhsMax =  -2.93547159913032E-07  8.32580875881018E+00
  mean surface dic   1.9723041038777569        34.855731590862014     
- QQ myiter, totcost =      5184002  -302787620342.99243     
+ DIC_COST: iter,totcost =  5184002 -3.027876203429915E+11
  cg2d: Sum(rhs),rhsMax =  -2.93677413054638E-07  8.32215434141113E+00
  mean surface dic   1.9722740564989167        34.855734951309252     
- QQ myiter, totcost =      5184003  -454258131060.52344     
+ DIC_COST: iter,totcost =  5184003 -4.542581310605227E+11
  cg2d: Sum(rhs),rhsMax =  -2.93793323891123E-07  8.31886491394281E+00
  mean surface dic   1.9722438449623507        34.855719155301088     
- QQ myiter, totcost =      5184004  -605804087326.50623     
+ DIC_COST: iter,totcost =  5184004 -6.058040873265059E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
- ph-1 in thsice_cost_final
- ph-3 in thsice_cost_final
+  early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.000000000000000D+00
  --> objf_tracer(bi,bj) =  0.000000000000000D+00
  --> objf_atl(bi,bj)    =  0.000000000000000D+00
@@ -4346,10 +4337,10 @@ grad-res -------------------------------
 (PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus = -6.05804087326506E+11
 grad-res -------------------------------
  grad-res     0    4   64    5    1    1    1    1  -6.05804087721E+11 -6.05804088116E+11 -6.05804087327E+11
- grad-res     0    4    4    4    0    1    1    1  -3.94682799582E+07 -3.94682250977E+07  1.38999070232E-06
+ grad-res     0    4    4    4    0    1    1    1  -3.94682799582E+07 -3.94682312012E+07  1.23534713459E-06
 (PID.TID 0000.0001)  ADM  ref_cost_function      = -6.05804087721186E+11
 (PID.TID 0000.0001)  ADM  adjoint_gradient       = -3.94682799581984E+07
-(PID.TID 0000.0001)  ADM  finite-diff_grad       = -3.94682250976563E+07
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -3.94682312011719E+07
 (PID.TID 0000.0001) ====== End of gradient-check number   4 (ierr=  0) =======
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
@@ -4364,192 +4355,192 @@ grad-res -------------------------------
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   1    61     5     1    1    1   0.000000000E+00 -1.000000000E-05
 (PID.TID 0000.0001) grdchk output (c):   1 -6.0580408772119E+11 -6.0580408781080E+11 -6.0580408763158E+11
-(PID.TID 0000.0001) grdchk output (g):   1    -8.9611328125000E+06 -8.9610832176865E+06 -5.5344663489887E-06
+(PID.TID 0000.0001) grdchk output (g):   1    -8.9611145019531E+06 -8.9610832176865E+06 -3.4911255573089E-06
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   2    62     5     1    1    1   0.000000000E+00 -1.000000000E-05
 (PID.TID 0000.0001) grdchk output (c):   2 -6.0580408772119E+11 -6.0580408800107E+11 -6.0580408744130E+11
-(PID.TID 0000.0001) grdchk output (g):   2    -2.7988684082031E+07 -2.7988537981998E+07 -5.2199951841025E-06
+(PID.TID 0000.0001) grdchk output (g):   2    -2.7988677978516E+07 -2.7988537981998E+07 -5.0019232138432E-06
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   3    63     5     1    1    1   0.000000000E+00 -1.000000000E-05
 (PID.TID 0000.0001) grdchk output (c):   3 -6.0580408772119E+11 -6.0580408801807E+11 -6.0580408742431E+11
-(PID.TID 0000.0001) grdchk output (g):   3    -2.9687927246094E+07 -2.9687936077032E+07  2.9745881535703E-07
+(PID.TID 0000.0001) grdchk output (g):   3    -2.9687933349609E+07 -2.9687936077032E+07  9.1869729934579E-08
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   4    64     5     1    1    1   0.000000000E+00 -1.000000000E-05
 (PID.TID 0000.0001) grdchk output (c):   4 -6.0580408772119E+11 -6.0580408811587E+11 -6.0580408732651E+11
-(PID.TID 0000.0001) grdchk output (g):   4    -3.9468225097656E+07 -3.9468279958198E+07  1.3899907023163E-06
+(PID.TID 0000.0001) grdchk output (g):   4    -3.9468231201172E+07 -3.9468279958198E+07  1.2353471345872E-06
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk  summary  :  RMS of    4 ratios =  3.8697294281868E-06
+(PID.TID 0000.0001) grdchk  summary  :  RMS of    4 ratios =  3.1121421916539E-06
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient check results  >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   97.400000000000006
-(PID.TID 0000.0001)         System time:  0.85999999999999999
-(PID.TID 0000.0001)     Wall clock time:   98.851157903671265
+(PID.TID 0000.0001)           User time:   248.12000000000000
+(PID.TID 0000.0001)         System time:  0.90000000000000002
+(PID.TID 0000.0001)     Wall clock time:   249.77332091331482
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.26000000000000001
+(PID.TID 0000.0001)           User time:  0.41000000000000003
 (PID.TID 0000.0001)         System time:  2.99999999999999989E-002
-(PID.TID 0000.0001)     Wall clock time:  0.31817221641540527
+(PID.TID 0000.0001)     Wall clock time:  0.46986389160156250
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:   43.540000000000006
-(PID.TID 0000.0001)         System time:  0.73999999999999999
-(PID.TID 0000.0001)     Wall clock time:   44.709028959274292
+(PID.TID 0000.0001)           User time:   114.05000000000001
+(PID.TID 0000.0001)         System time:  0.78000000000000003
+(PID.TID 0000.0001)     Wall clock time:   115.25410890579224
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [MAIN_DO_LOOP]":
-(PID.TID 0000.0001)           User time:   62.039999999999978
-(PID.TID 0000.0001)         System time:  4.00000000000000355E-002
-(PID.TID 0000.0001)     Wall clock time:   62.232402086257935
+(PID.TID 0000.0001)           User time:   156.50000000000026
+(PID.TID 0000.0001)         System time:  7.00000000000000622E-002
+(PID.TID 0000.0001)     Wall clock time:   156.90048170089722
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.13000000000002387
+(PID.TID 0000.0001)           User time:  0.25000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.17912936210632324
+(PID.TID 0000.0001)     Wall clock time:  0.26647496223449707
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  0.11000000000002785
+(PID.TID 0000.0001)           User time:  0.19999999999993179
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.12217116355895996
+(PID.TID 0000.0001)     Wall clock time:  0.21338129043579102
 (PID.TID 0000.0001)          No. starts:          48
 (PID.TID 0000.0001)           No. stops:          48
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.55958938598632813E-004
+(PID.TID 0000.0001)     Wall clock time:  3.74555587768554688E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   5.8500000000000085
+(PID.TID 0000.0001)           User time:   11.929999999999978
 (PID.TID 0000.0001)         System time:  1.00000000000000089E-002
-(PID.TID 0000.0001)     Wall clock time:   5.8693311214447021
+(PID.TID 0000.0001)     Wall clock time:   11.923295736312866
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "GCHEM_CALC_TENDENCY [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.59535217285156250E-004
+(PID.TID 0000.0001)     Wall clock time:  3.88383865356445313E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   36.199999999999974
-(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
-(PID.TID 0000.0001)     Wall clock time:   36.290958881378174
+(PID.TID 0000.0001)           User time:   94.170000000000158
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   94.415590763092041
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   13.050000000000011
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   13.056851387023926
+(PID.TID 0000.0001)           User time:   34.000000000000171
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:   34.062039852142334
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.4099999999999824
+(PID.TID 0000.0001)           User time:   3.9399999999999125
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   1.4550561904907227
+(PID.TID 0000.0001)     Wall clock time:   3.9596419334411621
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.22999999999997556
+(PID.TID 0000.0001)           User time:  0.62000000000003297
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.24572157859802246
+(PID.TID 0000.0001)     Wall clock time:  0.61195397377014160
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "INTEGR_CONTINUITY   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.37000000000003297
+(PID.TID 0000.0001)           User time:  0.93000000000000682
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.35437345504760742
+(PID.TID 0000.0001)     Wall clock time:  0.93022346496582031
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.43000000000003524
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.44011974334716797
+(PID.TID 0000.0001)           User time:   1.1000000000000227
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:   1.1053712368011475
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "GCHEM_FORCING_SEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   2.8799999999999244
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   2.8910889625549316
+(PID.TID 0000.0001)           User time:   6.5100000000000193
+(PID.TID 0000.0001)         System time:  2.00000000000000178E-002
+(PID.TID 0000.0001)     Wall clock time:   6.5091376304626465
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.64000000000000057
+(PID.TID 0000.0001)           User time:   1.1999999999999318
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.59629845619201660
+(PID.TID 0000.0001)     Wall clock time:   1.2106158733367920
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.18999999999999773
+(PID.TID 0000.0001)           User time:  0.53000000000000114
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.19486355781555176
+(PID.TID 0000.0001)     Wall clock time:  0.54785633087158203
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.28000000000000114
+(PID.TID 0000.0001)           User time:  0.71999999999999886
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.27816343307495117
+(PID.TID 0000.0001)     Wall clock time:  0.71385765075683594
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.83138656616210938E-004
+(PID.TID 0000.0001)     Wall clock time:  4.09841537475585938E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.21999999999999886
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.22180581092834473
+(PID.TID 0000.0001)           User time:  0.42999999999997840
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:  0.44033789634704590
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "PTRACERS_RESET      [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.82900238037109375E-004
+(PID.TID 0000.0001)     Wall clock time:  4.13417816162109375E-004
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.10000000000000853
-(PID.TID 0000.0001)         System time:  2.00000000000000178E-002
-(PID.TID 0000.0001)     Wall clock time:  0.12415289878845215
+(PID.TID 0000.0001)           User time:  0.14000000000001478
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:  0.15523219108581543
 (PID.TID 0000.0001)          No. starts:          40
 (PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   53.600000000000001
+(PID.TID 0000.0001)           User time:   133.66000000000000
 (PID.TID 0000.0001)         System time:  8.99999999999999689E-002
-(PID.TID 0000.0001)     Wall clock time:   53.823909997940063
+(PID.TID 0000.0001)     Wall clock time:   134.04929494857788
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   2.0200000000000102
-(PID.TID 0000.0001)         System time:  8.99999999999999689E-002
-(PID.TID 0000.0001)     Wall clock time:   2.0893716812133789
+(PID.TID 0000.0001)           User time:   3.5400000000000205
+(PID.TID 0000.0001)         System time:  5.00000000000000444E-002
+(PID.TID 0000.0001)     Wall clock time:   3.6316113471984863
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   51.369999999999976
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   51.480452775955200
+(PID.TID 0000.0001)           User time:   129.82999999999998
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:   130.09274387359619
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "MAIN_DO_LOOP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   48.919999999999973
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   49.012090682983398
+(PID.TID 0000.0001)           User time:   123.57000000000008
+(PID.TID 0000.0001)         System time:  1.00000000000000089E-002
+(PID.TID 0000.0001)     Wall clock time:   123.83345937728882
 (PID.TID 0000.0001)          No. starts:          32
 (PID.TID 0000.0001)           No. stops:          32
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  7.01189041137695313E-004
+(PID.TID 0000.0001)     Wall clock time:  8.24213027954101563E-004
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001) // ======================================================
@@ -4600,9 +4591,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =          11180
+(PID.TID 0000.0001) //            No. barriers =          11198
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =          11180
+(PID.TID 0000.0001) //     Total barrier spins =          11198
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
 PROGRAM MAIN: Execution ended Normally
