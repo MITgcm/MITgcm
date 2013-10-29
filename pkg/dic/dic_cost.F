@@ -1,63 +1,66 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_cost.F,v 1.13 2011/08/17 10:19:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_cost.F,v 1.14 2013/10/29 20:24:40 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
 
-CStartOfInterFace
+CBOP
+C     !ROUTINE: DIC_COST
+C     !INTERFACE:
       SUBROUTINE DIC_COST (
-     I           myTime,myIter,myThid)
+     I                      myTime, myIter, myThid )
 
-C     /==========================================================\
-C     | SUBROUTINE DIC_COST                              |
-C     |==========================================================|
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE DIC_COST
+C     *==========================================================*
+
+C     !USES:
       IMPLICIT NONE
 
 C     == GLobal variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DIC_VARS.h"
 #ifdef DIC_BIOTIC
-#include "DIC_DIAGS.h"
 #include "DIC_COST.h"
 #endif
 
-C     == Routine arguments ==
-      INTEGER myIter
+C     !INPUT/OUTPUT PARAMETERS:
       _RL myTime
+      INTEGER myIter
       INTEGER myThid
 
 #ifdef ALLOW_DIC_COST
+C     !LOCAL VARIABLES:
+      INTEGER i, j, bi, bj
+      _RL loc_cost(nSx,nSy), glb_cost
+CEOP
 
-C     == Local variables ==
-      INTEGER i, j, bi, bj, k, it
-      _RL tmpcost
-c
-c
-c calculate costfunction
-
-      tmpcost = 0. _d 0
+C--   Calculate costfunction
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
+         loc_cost(bi,bj) = 0. _d 0
          DO i=1,sNx
           DO j=1,sNy
-              tmpcost = tmpcost+FluxCO2(i,j,bi,bj)*rA(i,j,bi,bj)*
-     &                        maskC(i,j,1,bi,bj)*dTtracerLev(1)
+            loc_cost(bi,bj) = loc_cost(bi,bj)
+     &                      + FluxCO2(i,j,bi,bj)*rA(i,j,bi,bj)
+     &                       *maskC(i,j,1,bi,bj)*dTtracerLev(1)
           ENDDO
          ENDDO
         ENDDO
        ENDDO
+       CALL GLOBAL_SUM_TILE_RL( loc_cost, glb_cost, myThid )
 
-       _GLOBAL_SUM_RL(tmpcost,myThid)
+      _BEGIN_MASTER( myThid )
+       totcost = totcost + glb_cost
 
-       totcost = totcost + tmpcost
+       WRITE(standardMessageUnit,'(A,I9,1PE23.15)')
+     &  ' DIC_COST: iter,totcost =', myIter, totcost
+      _END_MASTER( myThid )
 
-       print *, 'QQ myiter, totcost = ', myiter, totcost
-
-#endif
+#endif /* ALLOW_DIC_COST */
 
       RETURN
       END
-cswd -- end added subroutine --
