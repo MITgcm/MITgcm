@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1934 2013/10/25 18:44:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1935 2013/11/04 21:47:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o tutorial_deep_convection (smag3d):
+  - add missing scaling in mom_calc_smag_3d.F;
+  - set smag3D_coeff in input.smag3d such that results do not change.
+o pkg/dic:
+  - change dic_cost.F to compute cost on each tile first and then apply
+    GLOBAL_SUM_TILE_RL: this affects forward gradient of AD experiments
+    tutorial_dic_adjoffline & tutorial_global_oce_biogeo; update output.
 o eesupp/src & pkg/mdsio:
   - remove gather/scatter_vector.F (from eesupp) and mdsio_read/writevector.F
     (from pkg/mdsio) since they are no longer used for tape IO.
