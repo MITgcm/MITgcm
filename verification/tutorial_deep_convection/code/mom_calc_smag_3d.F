@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_deep_convection/code/Attic/mom_calc_smag_3d.F,v 1.1 2013/09/30 18:19:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_deep_convection/code/Attic/mom_calc_smag_3d.F,v 1.2 2013/11/04 21:33:35 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -17,6 +17,8 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     Calculate Smagorinsky 3-D (harmonic) viscosities
+C      at current level k (for viscAh3d_00 & viscAh3d_12)
+C      and at level k+1   (for viscAh3d_13 & viscAh3d_23)
 
 C     !USES:
       IMPLICIT NONE
@@ -56,10 +58,10 @@ C     myThid      :: my Thread Id number
       INTEGER myThid
 
 C     !OUTPUT PARAMETERS:
-C     viscAh3d_00 :: strain magnitude @ grid-cell center
-C     viscAh3d_12 :: strain magnitude @ grid-cell corner
-C     viscAh3d_13 :: strain magnitude @ above uVel
-C     viscAh3d_23 :: strain magnitude @ above vVel
+C     viscAh3d_00 :: Smagorinsky viscosity @ grid-cell center
+C     viscAh3d_12 :: Smagorinsky viscosity @ grid-cell corner
+C     viscAh3d_13 :: Smagorinsky viscosity @ above uVel
+C     viscAh3d_23 :: Smagorinsky viscosity @ above vVel
       _RL viscAh3d_00(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL viscAh3d_12(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL viscAh3d_13(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
@@ -76,6 +78,10 @@ C     !LOCAL VARIABLES:
       _RL S12(1-OLx:sNx+OLx,1-OLy:sNy+OLy,3)
       _RL S13(1-OLx:sNx+OLx,1-OLy:sNy+OLy,3)
       _RL S23(1-OLx:sNx+OLx,1-OLy:sNy+OLy,3)
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      twoThird = 2. _d 0 / 3. _d 0
 
       n = 1
       DO kp=k-1,k+1
@@ -122,16 +128,14 @@ C--  ------------------------------------------------------------------
 
 C     Current level k --> n=2
       n = 2
+      tmpFac = smag3D_coeff*twoRL*SQRT(twoRL)*drF(k)**twoThird
 
 C     viscAh3d_00 = sqrt( S11+S22+S33+2*(S12+S13+S23) ) @ grid-cell center
 
-      twoThird = 2. _d 0 / 3. _d 0
-      tmpFac = smag3D_coeff * drF(k)**twoThird * SQRT(twoRL)
       DO j=1-OLy,sNy+OLy-1
        DO i=1-OLx,sNx+OLx-1
-c         viscAh3d_00( i , j , k ) = tmpFac*smag3D_hLsC(i,j,bi,bj)*SQRT(
-c          *sqrt(
-          viscAh3d_00( i , j , k ) = sqrt(
+          viscAh3d_00( i , j , k ) =
+     &    smag3D_hLsC( i , j , bi , bj )*tmpFac*SQRT(
      &            S11( i , j , n )
      &   +        S22( i , j , n )
      &   +        S33( i , j , n )
@@ -141,7 +145,7 @@ c          *sqrt(
      &           +S13( i , j ,n+1)+S13(i+1, j ,n+1) )
      &   +  0.5*( S23( i , j , n )+S23( i ,j+1, n )
      &           +S23( i , j ,n+1)+S23( i ,j+1,n+1) )
-     &                                   )
+     &                                              )
        ENDDO
       ENDDO
 
@@ -149,7 +153,8 @@ C     viscAh3d_12 = sqrt( S11+S22+S33+2*(S12+S13+S23) ) @ grid-cell corner
 
       DO j=2-OLy,sNy+OLy
        DO i=2-OLx,sNx+OLx
-          viscAh3d_12( i , j , k ) = sqrt(
+          viscAh3d_12( i , j , k ) =
+     &    smag3D_hLsZ( i , j , bi , bj )*tmpFac*SQRT(
      &     0.25*( S11(i-1, j , n )+S11( i , j , n )
      &           +S11(i-1,j-1, n )+S11( i ,j-1, n ) )
      &   + 0.25*( S22(i-1, j , n )+S22( i , j , n )
@@ -161,7 +166,7 @@ C     viscAh3d_12 = sqrt( S11+S22+S33+2*(S12+S13+S23) ) @ grid-cell corner
      &           +S13( i ,j-1,n+1)+S13( i , j ,n+1) )
      &   + 0.5 *( S23(i-1, j , n )+S23( i , j , n )
      &           +S23(i-1, j ,n+1)+S23( i , j ,n+1) )
-     &                                   )
+     &                                              )
        ENDDO
       ENDDO
 
@@ -171,12 +176,14 @@ C--  ------------------------------------------------------------------
 
 C     Next level k+1 --> n=3
       n = 3
+      tmpFac = smag3D_coeff*twoRL*SQRT(twoRL)*drC(k+1)**twoThird
 
 C     viscAh3d_13 = sqrt( S11+S22+S33+2*(S12+S13+S23) ) @ above uVel
 
       DO j=1-OLy,sNy+OLy-1
        DO i=2-OLx,sNx+OLx
-          viscAh3d_13( i , j ,k+1) = sqrt(
+          viscAh3d_13( i , j ,k+1) =
+     &    smag3D_hLsW( i , j , bi , bj )*tmpFac*SQRT(
      &     0.25*( S11(i-1, j ,n-1)+S11( i , j ,n-1)
      &           +S11(i-1, j , n )+S11( i , j , n ) )
      &   + 0.25*( S22(i-1, j ,n-1)+S22( i , j ,n-1)
@@ -188,7 +195,7 @@ C     viscAh3d_13 = sqrt( S11+S22+S33+2*(S12+S13+S23) ) @ above uVel
      &   + 2.0 *  S13( i , j , n )
      &   + 0.5 *( S23(i-1,j+1, n )+S23( i ,j+1, n )
      &           +S23(i-1, j , n )+S23( i , j , n ) )
-     &                                   )
+     &                                              )
        ENDDO
       ENDDO
 
@@ -196,7 +203,8 @@ C     viscAh3d_23 = sqrt( S11+S22+S33+2*(S12+S13+S23) ) @ above vVel
 
       DO j=2-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx-1
-         viscAh3d_23( i , j ,k+1) = sqrt(
+         viscAh3d_23( i , j ,k+1) =
+     &    smag3D_hLsS( i , j , bi , bj )*tmpFac*SQRT(
      &     0.25*( S11( i ,j-1,n-1)+S11( i , j ,n-1)
      &           +S11( i ,j-1, n )+S11( i , j , n ) )
      &   + 0.25*( S22( i ,j-1,n-1)+S22( i , j ,n-1)
@@ -208,7 +216,7 @@ C     viscAh3d_23 = sqrt( S11+S22+S33+2*(S12+S13+S23) ) @ above vVel
      &   + 0.5 *( S13( i , j , n )+S13(i+1, j , n )
      &           +S13( i ,j-1, n )+S13(i+1,j-1, n ) )
      &   + 2.0 *  S23( i , j , n )
-     &                                  )
+     &                                              )
        ENDDO
       ENDDO
 
