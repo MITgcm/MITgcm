@@ -16,6 +16,7 @@ dic_fields_load.f
 dic_ini_forcing.f
 dic_init_varia.f
 dic_read_pickup.f
+dic_read_co2_pickup.f
 dic_set_control.f
 dic_store_fluxco2.f
 dic_surfforcing.f
