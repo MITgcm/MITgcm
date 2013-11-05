@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.52 2013/07/28 21:07:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.53 2013/11/05 13:34:31 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -13,6 +13,8 @@ C     !ROUTINE: CALC_GW
 C     !INTERFACE:
       SUBROUTINE CALC_GW(
      I               bi, bj, KappaRU, KappaRV,
+     I               str13, str23, str33,
+     I               viscAh3d_00, viscAh3d_13, viscAh3d_23,
      I               myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -56,6 +58,17 @@ C     myThid  :: Thread number for this instance of the routine.
       INTEGER bi,bj
       _RL KappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#ifdef ALLOW_SMAG_3D
+      _RL str13(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
+      _RL str23(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
+      _RL str33(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL viscAh3d_00(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL viscAh3d_13(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
+      _RL viscAh3d_23(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
+#else /* ALLOW_SMAG_3D */
+      _RL str13(1), str23(1), str33(1)
+      _RL viscAh3d_00(1), viscAh3d_13(1), viscAh3d_23(1)
+#endif /* ALLOW_SMAG_3D */
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -66,8 +79,8 @@ C     myThid  :: Thread number for this instance of the routine.
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     biharmonicVisc:: use horizontal biharmonic viscosity for vertical momentum
-C     iMin,iMax
-C     jMin,jMax
+C     iMin, iMax    :: Ranges and sub-block indices on which calculations
+C     jMin, jMax       are applied.
 C     xA            :: W-Cell face area normal to X
 C     yA            :: W-Cell face area normal to Y
 C     rThickC_W     :: thickness (in r-units) of W-Cell at Western Edge
@@ -457,6 +470,22 @@ C-     No-slip BCs impose a drag at walls...
            ENDDO
           ENDDO
         ENDIF
+
+#ifdef ALLOW_SMAG_3D
+        IF ( useSmag3D .AND. k.GT.1 ) THEN
+             CALL MOM_W_SMAG_3D(
+     I         str13, str23, str33,
+     I         viscAh3d_00, viscAh3d_13, viscAh3d_23,
+     I         rThickC_W, rThickC_S, rThickC_C, recip_rThickC,
+     O         gwAdd,
+     I         iMin,iMax,jMin,jMax, k, bi, bj, myThid )
+          DO j = jMin,jMax
+           DO i = iMin,iMax
+            gwDiss(i,j) = gwDiss(i,j) + gwAdd(i,j)
+           ENDDO
+          ENDDO
+        ENDIF
+#endif /* ALLOW_SMAG_3D */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

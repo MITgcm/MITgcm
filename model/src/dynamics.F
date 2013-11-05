@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.166 2013/09/15 14:28:31 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.167 2013/11/05 13:34:31 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_COMMON_OPTIONS.h"
+#endif
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
@@ -80,6 +83,9 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_VISC.h"
+#endif
 #ifdef ALLOW_CD_CODE
 # include "CD_CODE_VARS.h"
 #endif
@@ -116,6 +122,8 @@ C      |-- CALC_GRAD_PHI_SURF
 C      |
 C      |-- CALC_VISCOSITY
 C      |
+C      |-- MOM_CALC_3D_STRAIN
+C      |
 C      |-- CALC_EDDY_STRESS
 C      |
 C      |-- CALC_PHI_HYD
@@ -123,6 +131,9 @@ C      |
 C      |-- MOM_FLUXFORM
 C      |
 C      |-- MOM_VECINV
+C      |
+C      |-- MOM_CALC_SMAG_3D
+C      |-- MOM_UV_SMAG_3D
 C      |
 C      |-- TIMESTEP
 C      |
@@ -190,12 +201,43 @@ C                   are switched with k to be the appropriate index into fVerU,V
       _RL gvDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KappaRU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL KappaRV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#ifdef ALLOW_SMAG_3D
+C     str11       :: strain component Vxx @ grid-cell center
+C     str22       :: strain component Vyy @ grid-cell center
+C     str33       :: strain component Vzz @ grid-cell center
+C     str12       :: strain component Vxy @ grid-cell corner
+C     str13       :: strain component Vxz @ above uVel
+C     str23       :: strain component Vyz @ above vVel
+C     viscAh3d_00 :: Smagorinsky viscosity @ grid-cell center
+C     viscAh3d_12 :: Smagorinsky viscosity @ grid-cell corner
+C     viscAh3d_13 :: Smagorinsky viscosity @ above uVel
+C     viscAh3d_23 :: Smagorinsky viscosity @ above vVel
+C     addDissU    :: zonal momentum tendency from 3-D Smag. viscosity
+C     addDissV    :: merid momentum tendency from 3-D Smag. viscosity
+      _RL str11(1-OLx:sNx+OLx,1-OLy:sNy+OLy, Nr )
+      _RL str22(1-OLx:sNx+OLx,1-OLy:sNy+OLy, Nr )
+      _RL str33(1-OLx:sNx+OLx,1-OLy:sNy+OLy, Nr )
+      _RL str12(1-OLx:sNx+OLx,1-OLy:sNy+OLy, Nr )
+      _RL str13(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
+      _RL str23(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
+      _RL viscAh3d_00(1-OLx:sNx+OLx,1-OLy:sNy+OLy, Nr )
+      _RL viscAh3d_12(1-OLx:sNx+OLx,1-OLy:sNy+OLy, Nr )
+      _RL viscAh3d_13(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
+      _RL viscAh3d_23(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
+      _RL addDissU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL addDissV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#elif ( defined ALLOW_NONHYDROSTATIC )
+      _RL str13(1), str23(1), str33(1)
+      _RL viscAh3d_00(1), viscAh3d_13(1), viscAh3d_23(1)
+#endif
 
-      INTEGER iMin, iMax
-      INTEGER jMin, jMax
       INTEGER bi, bj
       INTEGER i, j
       INTEGER k, km1, kp1, kUp, kDown
+      INTEGER iMin, iMax
+      INTEGER jMin, jMax
+      PARAMETER( iMin = 0 , iMax = sNx+1 )
+      PARAMETER( jMin = 0 , jMax = sNy+1 )
 
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL dPhiHydDiagIsOn
@@ -349,10 +391,6 @@ cph)
         ENDDO
 
 C--     Start computation of dynamics
-        iMin = 0
-        iMax = sNx+1
-        jMin = 0
-        jMax = sNy+1
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE wVel (:,:,:,bi,bj) =
@@ -402,6 +440,14 @@ C--     Calculate the total vertical viscosity
      I            myThid )
         ENDIF
 #endif /* INCLUDE_CALC_DIFFUSIVITY_CALL */
+
+#ifdef ALLOW_SMAG_3D
+        IF ( useSmag3D ) THEN
+          CALL MOM_CALC_3D_STRAIN(
+     O         str11, str22, str33, str12, str13, str23,
+     I         bi, bj, myThid )
+        ENDIF
+#endif /* ALLOW_SMAG_3D */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE KappaRU(:,:,:)
@@ -571,6 +617,27 @@ CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
            ENDIF
 
+#ifdef ALLOW_SMAG_3D
+           IF ( useSmag3D ) THEN
+             CALL MOM_CALC_SMAG_3D(
+     I         str11, str22, str33, str12, str13, str23,
+     O         viscAh3d_00, viscAh3d_12, viscAh3d_13, viscAh3d_23,
+     I         smag3D_hLsC, smag3D_hLsW, smag3D_hLsS, smag3D_hLsZ,
+     I         k, bi, bj, myThid )
+             CALL MOM_UV_SMAG_3D(
+     I         str11, str22, str12, str13, str23,
+     I         viscAh3d_00, viscAh3d_12, viscAh3d_13, viscAh3d_23,
+     O         addDissU, addDissV,
+     I         iMin,iMax,jMin,jMax, k, bi, bj, myThid )
+             DO j= jMin,jMax
+              DO i= iMin,iMax
+               guDissip(i,j) = guDissip(i,j) + addDissU(i,j)
+               gvDissip(i,j) = gvDissip(i,j) + addDissV(i,j)
+              ENDDO
+             ENDDO
+           ENDIF
+#endif /* ALLOW_SMAG_3D */
+
            CALL TIMESTEP(
      I         bi,bj,iMin,iMax,jMin,jMax,k,
      I         dPhiHydX,dPhiHydY, phiSurfX, phiSurfY,
@@ -659,6 +726,8 @@ C--   Step forward W field in N-H algorithm
          CALL TIMER_START('CALC_GW          [DYNAMICS]',myThid)
          CALL CALC_GW(
      I                 bi,bj, KappaRU, KappaRV,
+     I                 str13, str23, str33,
+     I                 viscAh3d_00, viscAh3d_13, viscAh3d_23,
      I                 myTime, myIter, myThid )
         ENDIF
         IF ( nonHydrostatic.OR.implicitIntGravWave )
