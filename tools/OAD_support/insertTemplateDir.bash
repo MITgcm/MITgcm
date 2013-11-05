@@ -17,7 +17,8 @@ do
     "OpenAD_exch1_rl" |          \
     "OpenAD_exch1_rs" |          \
     "OpenAD_global_max_r8" |     \
-    "OpenAD_global_sum_r8" )
+    "OpenAD_global_sum_r8" |     \
+    "OpenAD_global_sum_tile_rl" )
       tmpName=${srName#OpenAD_}
       echo "c\$openad XXX Template ad_template.${tmpName}.f" >> temp.sed
       ;;

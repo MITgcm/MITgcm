@@ -68,6 +68,23 @@ C dummy self dependence (nontrivial so mfef90 doesn't kill it)
       sumPhi=2*sumPhi
       end subroutine
 C ###########################################################
+      SUBROUTINE GLOBAL_SUM_TILE_RL(
+     U                       phiTile,
+     U                       sumphi,
+     I                       myThid )
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+#include "EXCH.h"
+      _RL phiTile(nSx,nSy)
+      _RL sumPhi
+      INTEGER myThid
+C dummy self dependence (nontrivial so mfef90 doesn't kill it)
+      phiTile=2*phiTile
+      sumPhi=2*sumPhi
+      end subroutine
+C ###########################################################
       SUBROUTINE CG2D(
      I                cg2d_b,
      U                cg2d_x,
