@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.74 2013/08/16 16:37:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.75 2013/11/05 18:30:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -353,6 +353,14 @@ C--   Check parameter consistency :
      &   ) THEN
         WRITE(msgBuf,'(A,A)')
      &  'CONFIG_CHECK: cannot use Leith Visc.(div.part) with',
+     &  ' overlap (OLx,OLy) smaller than 3'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( ( OLx.LT.3 .OR. OLy.LT.3 ) .AND.
+     &     useSmag3D .AND. useCDscheme ) THEN
+        WRITE(msgBuf,'(A,A)')
+     &  'CONFIG_CHECK: cannot use Smag-3D + CD-scheme with',
      &  ' overlap (OLx,OLy) smaller than 3'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
