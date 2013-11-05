@@ -81,8 +81,7 @@ C ###########################################################
       _RL sumPhi
       INTEGER myThid
 C dummy self dependence (nontrivial so mfef90 doesn't kill it)
-      phiTile=2*phiTile
-      sumPhi=2*sumPhi
+      sumPhi=2*phiTile(1,1)
       end subroutine
 C ###########################################################
       SUBROUTINE CG2D(
