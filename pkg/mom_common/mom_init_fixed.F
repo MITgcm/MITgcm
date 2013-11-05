@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_init_fixed.F,v 1.11 2013/07/28 21:02:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_init_fixed.F,v 1.12 2013/11/05 13:31:50 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -32,8 +32,10 @@ C     !LOCAL VARIABLES:
 C     i,j,k,bi,bj  :: loop counter
       INTEGER i,j,k,bi,bj
       _RL recip_dt
+      _RL twoThird
 
       k = 1
+      twoThird = 2. _d 0 / 3. _d 0
       recip_dt = 1. _d 0
       IF ( deltaTmom.NE.0. ) recip_dt = 1. _d 0/deltaTmom
 
@@ -120,6 +122,17 @@ C--   Calculate length-scale factor (used in S/R MOM_CALC_VISC)
      &                       *L2_Z(i,j,bi,bj)**2
           ENDDO
          ENDDO
+
+#ifdef ALLOW_SMAG_3D
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           smag3D_hLsC(i,j,bi,bj) = rA (i,j,bi,bj)**twoThird
+           smag3D_hLsW(i,j,bi,bj) = rAw(i,j,bi,bj)**twoThird
+           smag3D_hLsS(i,j,bi,bj) = rAs(i,j,bi,bj)**twoThird
+           smag3D_hLsZ(i,j,bi,bj) = rAz(i,j,bi,bj)**twoThird
+          ENDDO
+         ENDDO
+#endif /* ALLOW_SMAG_3D */
 
 C-     end bi,bj loops
        ENDDO
