@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_write_pickup.F,v 1.8 2013/01/13 22:46:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_write_pickup.F,v 1.9 2013/11/05 22:19:10 jahn Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -43,7 +43,6 @@ C     == Local variables ==
       INTEGER prec
 #ifndef USE_ATMOSCO2
       INTEGER ioUnit
-      _RL tmpFld(2)
       _RS dummyRS(1)
 #endif
 #ifdef DIC_BIOTIC
@@ -63,13 +62,15 @@ c     IF ( DIC_pickup_write_mdsio ) THEN
         IF ( dic_int1.EQ.3 ) THEN
           WRITE(fn,'(A,A)') 'pickup_dic_co2atm.',suff
           ioUnit = 0
-          tmpFld(1) = total_atmos_carbon
-          tmpFld(2) = atpco2
 #ifdef ALLOW_MDSIO
           CALL MDS_WRITEVEC_LOC(
      I                         fn, prec, ioUnit,
-     I                         'RL', 2, tmpFld, dummyRS,
+     I                         'RL', 1, total_atmos_carbon, dummyRS,
      I                         0, 0, 1, myIter, myThid )
+          CALL MDS_WRITEVEC_LOC(
+     I                         fn, prec, ioUnit,
+     I                         'RL', 1, atpco2, dummyRS,
+     I                         0, 0, 2, myIter, myThid )
 #endif
         ENDIF
 #endif /* ndef USE_ATMOSCO2 */
