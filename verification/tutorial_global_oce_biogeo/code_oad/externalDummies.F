@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_oad/Attic/externalDummies.F,v 1.4 2013/11/06 22:16:17 jmc Exp $
+C $Name:  $
 C ###########################################################
       SUBROUTINE EXCH1_RL(
      U                 array,
