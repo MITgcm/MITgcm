@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_w_smag_3d.F,v 1.1 2013/11/05 13:33:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_w_smag_3d.F,v 1.2 2013/11/06 00:37:11 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -51,6 +51,7 @@ C     !OUTPUT PARAMETERS:
       _RL wDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
+#ifdef ALLOW_SMAG_3D
 C     !LOCAL VARIABLES:
       INTEGER i,j
       INTEGER km1
@@ -100,5 +101,6 @@ c     IF (biharmonic) THEN
 c      STOP 'MOM_UV_SMAG_3D: BIHARMONIC NOT ALLOWED WITH SMAG_3D'
 c     ENDIF
 
+#endif /* ALLOW_SMAG_3D */
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_smag_3d.F,v 1.1 2013/11/05 13:31:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_smag_3d.F,v 1.2 2013/11/06 00:37:11 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -68,6 +68,7 @@ C     viscAh3d_23 :: Smagorinsky viscosity @ above vVel
       _RL viscAh3d_23(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
 CEOP
 
+#ifdef ALLOW_SMAG_3D
 C     !LOCAL VARIABLES:
       INTEGER i, j
       INTEGER kp, n
@@ -235,5 +236,6 @@ c      CALL DIAGNOSTICS_FILL(viscAh_D,'VISCAHD ',k,1,2,bi,bj,myThid)
 c     ENDIF
 #endif
 
+#endif /* ALLOW_SMAG_3D */
       RETURN
       END

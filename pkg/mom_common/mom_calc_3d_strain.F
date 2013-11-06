@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_3d_strain.F,v 1.1 2013/11/05 13:31:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_3d_strain.F,v 1.2 2013/11/06 00:37:11 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -45,6 +45,7 @@ C     str23       :: strain component Vyz @ above vVel
       _RL str13(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
       _RL str23(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
 
+#ifdef ALLOW_SMAG_3D
 C     !LOCAL VARIABLES:
 C      i, j, k    :: loop indices
       INTEGER i, j, k
@@ -82,27 +83,24 @@ C-    Fills up array edges:
 C     str11 = u_x
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx-1
-          str11(i,j,k) =
-     &        recip_dxF(i,j,bi,bj)*(
-     &              uVel(i+1, j , k ,bi,bj)-uVel( i , j , k ,bi,bj) )
+          str11(i,j,k) = recip_dxF(i,j,bi,bj)
+     &           *( uVel(i+1, j , k ,bi,bj)-uVel( i , j , k ,bi,bj) )
         ENDDO
        ENDDO
 
 C     str22 = v_y
        DO j=1-OLy,sNy+OLy-1
         DO i=1-OLx,sNx+OLx
-          str22(i,j,k) =
-     &        recip_dyF(i,j,bi,bj)*(
-     &              vVel( i ,j+1, k ,bi,bj)-vVel( i , j , k ,bi,bj) )
+          str22(i,j,k) = recip_dyF(i,j,bi,bj)
+     &           *( vVel( i ,j+1, k ,bi,bj)-vVel( i , j , k ,bi,bj) )
         ENDDO
        ENDDO
 
 C     str33 = w_z
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-          str33(i,j,k) =
-     &        recip_drF(k)*rkSign*(
-     &       maskp1*wVel( i , j ,kp1,bi,bj)-wVel( i , j , k ,bi,bj) )
+          str33(i,j,k) = recip_drF(k)*rkSign
+     &    *( maskp1*wVel( i , j ,kp1,bi,bj)-wVel( i , j , k ,bi,bj) )
         ENDDO
        ENDDO
 
@@ -110,10 +108,10 @@ C     str12 = ( u_y + v_x )/2
        DO j=2-OLy,sNy+OLy
         DO i=2-OLx,sNx+OLx
           str12(i,j,k) = halfRL*(
-     &      recip_dyU(i,j,bi,bj)*(
-     &              uVel( i , j , k ,bi,bj)-uVel( i ,j-1, k ,bi,bj) )
-     &     +recip_dxV(i,j,bi,bj)*(
-     &              vVel( i , j , k ,bi,bj)-vVel(i-1, j , k ,bi,bj) )
+     &      recip_dyU(i,j,bi,bj)
+     &           *( uVel( i , j , k ,bi,bj)-uVel( i ,j-1, k ,bi,bj) )
+     &     +recip_dxV(i,j,bi,bj)
+     &           *( vVel( i , j , k ,bi,bj)-vVel(i-1, j , k ,bi,bj) )
      &                          )
         ENDDO
        ENDDO
@@ -131,20 +129,20 @@ C--    should put surface wind-stress if z-coords; but right in p-coords:
         DO j=1-OLy,sNy+OLy
          DO i=2-OLx,sNx+OLx
           str13(i,j,k) = halfRL*(
-     &      recip_drC(k)*rkSign*(
-     &              uVel( i , j , k ,bi,bj)*twoRL )
-     &     +recip_dxC(i,j,bi,bj)*(
-     &              wVel( i , j , k ,bi,bj)-wVel(i-1, j , k ,bi,bj) )
+     &      recip_drC(k)*rkSign
+     &           *( uVel( i , j , k ,bi,bj)*twoRL )
+     &     +recip_dxC(i,j,bi,bj)
+     &           *( wVel( i , j , k ,bi,bj)-wVel(i-1, j , k ,bi,bj) )
      &                          )
          ENDDO
         ENDDO
         DO j=2-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           str23(i,j,k) = halfRL*(
-     &      recip_drC(k)*rkSign*(
-     &              vVel( i , j , k ,bi,bj)*twoRL )
-     &     +recip_dyC(i,j,bi,bj)*(
-     &              wVel( i , j , k ,bi,bj)-wVel( i ,j-1, k ,bi,bj) )
+     &      recip_drC(k)*rkSign
+     &           *( vVel( i , j , k ,bi,bj)*twoRL )
+     &     +recip_dyC(i,j,bi,bj)
+     &           *( wVel( i , j , k ,bi,bj)-wVel( i ,j-1, k ,bi,bj) )
      &                          )
          ENDDO
         ENDDO
@@ -153,10 +151,10 @@ C     str13 = ( u_z + w_x )/2
         DO j=1-OLy,sNy+OLy
          DO i=2-OLx,sNx+OLx
           str13(i,j,k) = halfRL*(
-     &      recip_drC(k)*rkSign*(
-     &              uVel( i , j , k ,bi,bj)-uVel( i , j ,k-1 ,bi,bj) )
-     &     +recip_dxC(i,j,bi,bj)*(
-     &              wVel( i , j , k ,bi,bj)-wVel(i-1, j , k ,bi,bj) )
+     &      recip_drC(k)*rkSign
+     &           *( uVel( i , j , k ,bi,bj)-uVel( i , j ,k-1 ,bi,bj) )
+     &     +recip_dxC(i,j,bi,bj)
+     &           *( wVel( i , j , k ,bi,bj)-wVel(i-1, j , k ,bi,bj) )
      &                          )
          ENDDO
         ENDDO
@@ -164,10 +162,10 @@ C     str23 = ( v_z + w_y )/2
         DO j=2-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           str23(i,j,k) = halfRL*(
-     &      recip_drC(k)*rkSign*(
-     &              vVel( i , j , k ,bi,bj)-vVel( i , j ,k-1,bi,bj) )
-     &     +recip_dyC(i,j,bi,bj)*(
-     &              wVel( i , j , k ,bi,bj)-wVel( i ,j-1, k ,bi,bj) )
+     &      recip_drC(k)*rkSign
+     &           *( vVel( i , j , k ,bi,bj)-vVel( i , j ,k-1,bi,bj) )
+     &     +recip_dyC(i,j,bi,bj)
+     &           *( wVel( i , j , k ,bi,bj)-wVel( i ,j-1, k ,bi,bj) )
      &                          )
          ENDDO
         ENDDO
@@ -215,9 +213,9 @@ C     str13 = ( u_z + w_x )/2
        DO j=1-OLy,sNy+OLy
         DO i=2-OLx,sNx+OLx
           str13(i,j,k) =
-     &         recip_drF(Nr)*rkSign*(
-c    &      recip_drC(k)*rkSign*(
-     &               0. _d 0 - uVel( i , j ,k-1 ,bi,bj) )
+     &         recip_drF(Nr)*rkSign
+c    &      recip_drC(k)*rkSign
+     &            *( 0. _d 0 - uVel( i , j ,k-1 ,bi,bj) )
         ENDDO
        ENDDO
 
@@ -225,9 +223,9 @@ C     str23 = ( v_z + w_y )/2
        DO j=2-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
         str23(i,j,k) =
-     &         recip_drF(Nr)*rkSign*(
-c    &      recip_drC(k)*rkSign*(
-     &               0. _d 0 - vVel( i , j ,k-1,bi,bj) )
+     &         recip_drF(Nr)*rkSign
+c    &      recip_drC(k)*rkSign
+     &            *( 0. _d 0 - vVel( i , j ,k-1,bi,bj) )
         ENDDO
        ENDDO
 
@@ -238,5 +236,6 @@ c     IF (useCubedSphereExchange) THEN
 c      STOP 'S/R MOM_CALC_3D_STRAIN: should not be used on the cube!'
 c     ENDIF
 
+#endif /* ALLOW_SMAG_3D */
       RETURN
       END
