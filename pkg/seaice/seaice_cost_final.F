@@ -1,22 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.16 2012/11/09 22:15:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.17 2013/11/06 19:04:36 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
-      subroutine seaice_cost_final( mythid )
+CBOP
+C     !ROUTINE: SEAICE_COST_FINAL
+C     !INTERFACE:
+      SUBROUTINE SEAICE_COST_FINAL( myThid )
 
-c     ==================================================================
-c     SUBROUTINE seaice_cost_final
-c     ==================================================================
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE SEAICE_COST_FINAL
+C     *==========================================================*
 
-      implicit none
+C     !USES:
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #ifdef ALLOW_COST
@@ -26,45 +29,28 @@ c     == global variables ==
 #include "optim.h"
 #endif
 
-c     == routine arguments ==
-
-      integer mythid
+C     !INPUT/OUTPUT PARAMETERS:
+      INTEGER myThid
 
 #ifdef ALLOW_COST
-
-C     === Functions ====
+C     ! FUNCTIONS:
       LOGICAL  MASTER_CPU_THREAD
       EXTERNAL MASTER_CPU_THREAD
 
-c     == local variables ==
-
-      integer bi,bj
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer ifc
-      integer totnum
-
+C     !LOCAL VARIABLES:
+      INTEGER bi, bj
+      INTEGER ifc
       _RL f_ice
       _RL f_smrarea
       _RL f_smrsst
       _RL f_smrsss
-
       _RL no_ice
       _RL no_smrarea
       _RL no_smrsst
       _RL no_smrsss
-
-      character*23 cfname
-#ifdef ECCO_VERBOSE
-      character*(MAX_LEN_MBUF) msgbuf
-#endif
-
-c     == end of interface ==
-
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      CHARACTER*23 cfname
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+CEOP
 
       ifc = 30
 
@@ -72,85 +58,70 @@ c     == end of interface ==
       f_smrarea  = 0. _d 0
       f_smrsst   = 0. _d 0
       f_smrsss   = 0. _d 0
-c
+
       no_ice     = 0. _d 0
       no_smrarea = 0. _d 0
       no_smrsst  = 0. _d 0
       no_smrsss  = 0. _d 0
 
 #ifdef ALLOW_SEAICE_COST_EXPORT
-      call seaice_cost_export( myThid )
+      CALL SEAICE_COST_EXPORT( myThid )
 #endif
 
-c--   Sum up all contributions.
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
+C--   Sum up all contributions.
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
 
-          fc = fc
+          tile_fc(bi,bj) = tile_fc(bi,bj)
      &          + mult_ice_export * objf_ice_export(bi,bj)
      &          + mult_ice        * objf_ice(bi,bj)
      &          + mult_smrarea    * objf_smrarea(bi,bj)
      &          + mult_smrsst     * objf_smrsst(bi,bj)
      &          + mult_smrsss     * objf_smrsss(bi,bj)
 
-          f_ice = f_ice + objf_ice(bi,bj)
-          f_smrarea = f_smrarea + objf_smrarea(bi,bj)
-          f_smrsst = f_smrsst + objf_smrsst(bi,bj)
-          f_smrsss = f_smrsss + objf_smrsss(bi,bj)
+       ENDDO
+      ENDDO
 
-          no_ice = no_ice + num_ice(bi,bj)
-          no_smrarea = no_smrarea + num_smrarea(bi,bj)
-          no_smrsst = no_smrsst + num_smrsst(bi,bj)
-          no_smrsss = no_smrsss + num_smrsss(bi,bj)
+C--   Note: global summation (tile_fc --> fc) is done only in cost_final
 
-        enddo
-      enddo
+C--   Do global summation for each part of the cost function
 
-c--   Do global summation.
-cph this is done only in ecco_cost_final!
-cph      _GLOBAL_SUM_RL( fc , myThid )
+      CALL GLOBAL_SUM_TILE_RL( objf_ice,     f_ice,     myThid )
+      CALL GLOBAL_SUM_TILE_RL( objf_smrarea, f_smrarea, myThid )
+      CALL GLOBAL_SUM_TILE_RL( objf_smrsst,  f_smrsst,  myThid )
+      CALL GLOBAL_SUM_TILE_RL( objf_smrsss,  f_smrsss,  myThid )
 
-c--   Do global summation for each part of the cost function
+      CALL GLOBAL_SUM_TILE_RL( num_ice,     no_ice,     myThid )
+      CALL GLOBAL_SUM_TILE_RL( num_smrarea, no_smrarea, myThid )
+      CALL GLOBAL_SUM_TILE_RL( num_smrsst,  no_smrsst,  myThid )
+      CALL GLOBAL_SUM_TILE_RL( num_smrsss,  no_smrsss,  myThid )
 
-      _GLOBAL_SUM_RL( f_ice , myThid )
-      _GLOBAL_SUM_RL( f_smrarea , myThid )
-      _GLOBAL_SUM_RL( f_smrsst , myThid )
-      _GLOBAL_SUM_RL( f_smrsss , myThid )
-
-      _GLOBAL_SUM_RL( no_ice , myThid )
-      _GLOBAL_SUM_RL( no_smrarea , myThid )
-      _GLOBAL_SUM_RL( no_smrsst , myThid )
-      _GLOBAL_SUM_RL( no_smrsss , myThid )
-
-      write(standardmessageunit,'(A,D22.15)')
+      WRITE(standardMessageUnit,'(A,D22.15)')
      &     ' --> f_ice     =',f_ice
-      write(standardmessageunit,'(A,D22.15)')
+      WRITE(standardMessageUnit,'(A,D22.15)')
      &     ' --> f_smrarea =',f_smrarea
-      write(standardmessageunit,'(A,D22.15)')
+      WRITE(standardMessageUnit,'(A,D22.15)')
      &     ' --> f_smrarea =',f_smrsst
-      write(standardmessageunit,'(A,D22.15)')
+      WRITE(standardMessageUnit,'(A,D22.15)')
      &     ' --> f_smrarea =',f_smrsss
 
-c--   Each process has calculated the global part for itself.
+C--   Each process has calculated the global part for itself.
       IF ( MASTER_CPU_THREAD(myThid) ) THEN
 
-        write(cfname,'(A,i4.4)') 'costfunction_seaice',optimcycle
-        open(unit=ifc,file=cfname)
+        WRITE(cfname,'(A,i4.4)') 'costfunction_seaice',optimcycle
+        OPEN(unit=ifc,file=cfname)
 
-        write(ifc,*) 'fc =', fc
-        write(ifc,*) 'f_ice   =', f_ice, no_ice
-        write(ifc,*) 'f_smrarea   =', f_smrarea, no_smrarea
-        write(ifc,*) 'f_smrsst    =', f_smrsst, no_smrsst
-        write(ifc,*) 'f_smrsss    =', f_smrsss, no_smrsss
+        WRITE(ifc,*) 'fc =', fc
+        WRITE(ifc,*) 'f_ice   =', f_ice, no_ice
+        WRITE(ifc,*) 'f_smrarea   =', f_smrarea, no_smrarea
+        WRITE(ifc,*) 'f_smrsst    =', f_smrsst, no_smrsst
+        WRITE(ifc,*) 'f_smrsss    =', f_smrsss, no_smrsss
 
-        close(ifc)
+        CLOSE(ifc)
 
       ENDIF
 
-      SEAICE_dumpFreq = 0.
-      SEAICE_taveFreq = 0.
-
 #endif /* ALLOW_COST */
 
-      return
-      end
+      RETURN
+      END

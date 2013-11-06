@@ -1,18 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_cost_final.F,v 1.1 2013/03/30 01:23:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_cost_final.F,v 1.2 2013/11/06 19:04:36 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
 
-      subroutine thsice_cost_final( mythid )
+CBOP
+C     !ROUTINE: THSICE_COST_FINAL
+C     !INTERFACE:
+      SUBROUTINE THSICE_COST_FINAL( myThid )
 
-c     ==================================================================
-c     SUBROUTINE thsice_cost_final
-c     ==================================================================
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE THSICE_COST_FINAL
+C     *==========================================================*
 
-      implicit none
+C     !USES:
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -25,62 +29,41 @@ c     == global variables ==
 #include "optim.h"
 #endif
 
-c     == routine arguments ==
-
-      integer mythid
+C     !INPUT/OUTPUT PARAMETERS:
+      INTEGER myThid
 
 #ifdef ALLOW_COST
-
-c     == local variables ==
-
-      integer bi,bj
-      integer itlo,ithi
-      integer jtlo,jthi
-
+C     !LOCAL VARIABLES:
+      INTEGER bi,bj
       _RL f_thsice
       _RL no_thsice
+CEOP
 
-c     == end of interface ==
-
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-
-      print *, 'ph-2 in thsice_cost_final'
+c     print *, 'ph-2 in thsice_cost_final'
 
       f_thsice      = 0. _d 0
       no_thsice     = 0. _d 0
 
-c--   Sum up all contributions.
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
+C--   Sum up all contributions.
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
 
-          fc = fc
+          tile_fc(bi,bj) = tile_fc(bi,bj)
      &          + mult_thsice        * objf_thsice(bi,bj)
 
           f_thsice = f_thsice + objf_thsice(bi,bj)
-          no_thsice = no_thsice + num_thsice(bi,bj)
 
-        enddo
-      enddo
+       ENDDO
+      ENDDO
 
-c--   Do global summation.
-cph this is done only in cost_final!
-cph      _GLOBAL_SUM_RL( fc , myThid )
+C--   Do global summation for each part of the cost function
+c     CALL GLOBAL_SUM_TILE_RL( objf_thsice, f_thsice, myThid )
+c     CALL GLOBAL_SUM_TILE_RL( num_thsice, no_thsice, myThid )
 
-c--   Do global summation for each part of the cost function
-
-cc      _GLOBAL_SUM_RL( f_thsice , myThid )
-cc      _GLOBAL_SUM_RL( no_thsice , myThid )
-
-      write(standardmessageunit,'(A,D22.15)')
+      WRITE(standardMessageUnit,'(A,D22.15)')
      &     ' --> f_thsice     = ', f_thsice
-
-      THSICE_diagFreq = 0.
-      THSICE_taveFreq = 0.
 
 #endif /* ALLOW_COST */
 
-      return
-      end
+      RETURN
+      END
