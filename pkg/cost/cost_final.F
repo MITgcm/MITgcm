@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.31 2013/03/30 01:25:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.32 2013/11/06 18:53:48 jmc Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
 
-      subroutine cost_final( mythid )
+      SUBROUTINE COST_FINAL( myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_final
@@ -15,10 +15,9 @@ c     ==================================================================
 c     SUBROUTINE cost_final
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -34,24 +33,15 @@ c     == global variables ==
 # include "SHELFICE_COST.h"
 #endif
 
-
 c     == routine arguments ==
-
-      integer mythid
+      INTEGER myThid
 
 #ifdef ALLOW_COST
 c     == local variables ==
-
-      integer bi,bj
-      integer itlo,ithi
-      integer jtlo,jthi
+      INTEGER bi,bj
+      _RL glob_fc, loc_fc
 
 c     == end of interface ==
-
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
 
 #ifdef ALLOW_SEAICE
       if (useSEAICE) CALL SEAICE_COST_FINAL (myThid)
@@ -61,13 +51,11 @@ c     == end of interface ==
       CALL SHELFICE_COST_FINAL (myThid)
 #endif
 
-      print *, 'ph-1 in thsice_cost_final'
-
+c     print *, 'ph-1 in thsice_cost_final'
 #ifdef ALLOW_THSICE
-      if (useTHSICE) CALL THSICE_COST_FINAL (myThid)
+      IF (useTHSICE) CALL THSICE_COST_FINAL (myThid)
 #endif
-
-      print *, 'ph-3 in thsice_cost_final'
+c     print *, 'ph-3 in thsice_cost_final'
 
 #ifdef ALLOW_ECCO
       CALL ECCO_COST_FINAL (myThid)
@@ -104,9 +92,12 @@ cgf : to compile previous line user is expected to provide cost_hflux.F
 cgf : to compile previous line user is expected to provide cost_temp.F
 #endif
 
+      write(standardmessageunit,'(A,D22.15)') '  early fc = ', fc
+
 c--   Sum up all contributions.
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
+      loc_fc = 0.
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
 
           write(standardmessageunit,'(A,D22.15)')
      &          ' --> objf_test(bi,bj)   = ', objf_test(bi,bj)
@@ -129,7 +120,7 @@ c--   Sum up all contributions.
      &         ' --> objf_transport(bi,bj) = ', objf_transport(bi,bj)
 #endif
 
-          fc = fc
+         tile_fc(bi,bj) = tile_fc(bi,bj)
      &            + mult_test   * objf_test(bi,bj)
      &            + mult_tracer * objf_tracer(bi,bj)
 #if ( !defined (ALLOW_ECCO) || !defined (ALLOW_COST_ATLANTIC) )
@@ -144,16 +135,22 @@ c--   Sum up all contributions.
 #ifdef ALLOW_COST_HFLUXM
      &            + mult_hflux_tut * objf_hflux_tut(bi,bj)
 #endif
-        enddo
-      enddo
+         loc_fc = loc_fc + tile_fc(bi,bj)
+       ENDDO
+      ENDDO
 
-      write(standardmessageunit,'(A,D22.15)') '  local fc = ', fc
+      write(standardmessageunit,'(A,D22.15)') '  local fc = ', loc_fc
 
 c--   Do global summation.
-      _GLOBAL_SUM_RL( fc , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_fc, glob_fc, myThid )
+      _BEGIN_MASTER( myThid )
+      fc = fc + glob_fc
+      _END_MASTER( myThid )
 
 c--   Add contributions from global mean constraints
-      fc = fc +glofc 
+      _BEGIN_MASTER( myThid )
+      fc = fc + glofc
+      _END_MASTER( myThid )
 
 #ifdef ALLOW_DIC_COST
 cph-- quickly for testing
