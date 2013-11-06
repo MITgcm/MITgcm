@@ -1,9 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1936 2013/11/05 14:39:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1937 2013/11/06 22:18:19 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cost:
+  - define a "final cost function" for each tile, and use GLOBAL_SUM_TILE_RL
+    (instead of _GLOBAL_SUM_RL) to get the final cost from all procs & threads:
+    o this fixes global-sum value if multi-threads (since GLOBAL_SUM_TILE_RL
+      cannot be applied to var in common block).
+    o allows to get results independent of tile-per-proc setting (if using
+      slower GLOBAL_SUM_SEND_RECV option).
+  - update accordingly: seaice_cost_final.F, shelfice_cost_final.F,
+    thsice_cost_final.F and ecco_cost_final.F (this one affects lab_sea
+    forward gradients: update output).
+  - update */code_oad/externalDummies.F by adding dummy GLOBAL_SUM_TILE_RL
+    S/R and, for most exp., also comment out GLOBAL_SUM_R8.
 o pkg/mom_common:
   - move to pkg/mom_common and model/src (previously in tutorial_deep_convection
     code) 2nd version of isotropic 3-D Smagorinsky code interface: strain and
