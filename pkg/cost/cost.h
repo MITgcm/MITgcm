@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost.h,v 1.17 2012/08/10 22:57:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost.h,v 1.18 2013/11/06 18:50:56 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -26,7 +26,6 @@ c     ==================================================================
 c     HEADER COST
 c     ==================================================================
 
-
 c     The cost function, its contributions, and multipliers:
 c     ======================================================
 c
@@ -39,6 +38,10 @@ c                  function contributions.
      &                fc, glofc
       _RL  fc
       _RL  glofc
+
+C     tile_fc   :: Final cost function contribution from this tile
+      COMMON /COST_FINAL_R/ tile_fc
+      _RL  tile_fc (nSx,nSy)
 
       common /cost_objf/
      &                objf_atl,
@@ -161,5 +164,4 @@ cHFLUXM_CONTROL
 c     ==================================================================
 c     END OF HEADER COST
 c     ==================================================================
-
 
