@@ -1,15 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_final.F,v 1.6 2013/03/29 23:09:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_final.F,v 1.7 2013/11/06 19:01:41 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
 
-      subroutine shelfice_cost_final( myThid )
+CBOP
+C     !ROUTINE: SHELFICE_COST_FINAL
+C     !INTERFACE:
+      SUBROUTINE SHELFICE_COST_FINAL( myThid )
+
+C     !DESCRIPTION:
 C     *==========================================================*
 C     | subroutine shelfice_cost_final                           |
 C     | o final cost evalualtion                                 |
 C     *==========================================================*
-C     |                                                          |
-C     *==========================================================*
+
+C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ===
@@ -30,92 +35,80 @@ C     == Global variables ===
 # include "ctrl.h"
 #endif
 
-C     == Routine arguments ==
-C     myThid - Thread number for this instance of the routine.
-      integer myThid
+C     !INPUT/OUTPUT PARAMETERS:
+C     myThid :: Thread number for this instance of the routine.
+      INTEGER myThid
 
 #ifdef ALLOW_COST
-C     === Functions ====
+C     ! FUNCTIONS:
       LOGICAL  MASTER_CPU_THREAD
       EXTERNAL MASTER_CPU_THREAD
 
-C     == Local variables
-      integer bi, bj
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer ifc
-      character*(25) cfname
+C     !LOCAL VARIABLES:
+      INTEGER bi, bj
+      INTEGER ifc
+      CHARACTER*(25) cfname
 
       _RL f_shelfice
       _RL f_shifwflx
-
-CML      _RL no_shelfice
+cML      _RL no_shelfice
       _RL no_shifwflx
 
 #ifndef ALLOW_ECCO
-      integer i, j
+      INTEGER i, j
 #endif
-
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+CEOP
 
       f_shelfice = 0. _d 0
       f_shifwflx = 0. _d 0
-CML      no_shelfice= 0. _d 0
+cML      no_shelfice= 0. _d 0
       no_shifwflx= 0. _d 0
 
 #ifdef ALLOW_ECCO
 #if  (defined ALLOW_SHIFWFLX_CONTROL && \
       defined ALLOW_SHIFWFLX_COST_CONTRIBUTION)
-      CALL SHELFICE_COST_SHIFWFLX( mythid )
+      CALL SHELFICE_COST_SHIFWFLX( myThid )
 #endif /* ALLOW_SHIFWFLX_CONTROL and ALLOW_SHIFWFLX_COST_CONTRIBUTION */
 #else
 C--   Calculate cost function on tile of this instance
-      do bj = jtlo,jthi
-       do bi = itlo,ithi
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
 ccc        do klev = 1, Nr
-         do j=1,sNy
-          do i=1,sNx
-c--
+          DO j=1,sNy
+           DO i=1,sNx
+
              objf_shelfice(bi,bj) = objf_shelfice(bi,bj)
      &            + cMeanSHIforS(i,j,bi,bj)/lastinterval/rhoConstFresh
      &            *_rA(i,j,bi,bj)
-c--
-              end do
-            end do
-ccc          end do
-        end do
-      end do
+
+           ENDDO
+          ENDDO
+ccc        end do
+       ENDDO
+      ENDDO
 #endif /* ALLOW_ECCO */
 
-c--   Sum up all contributions.
-      do bj = jtlo,jthi
-       do bi = itlo,ithi
+C--   Sum up all contributions.
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
         write(standardmessageunit,'(A,D22.15)')
      &       ' --> objf_shelfice(bi,bj) = ', objf_shelfice(bi,bj)
         write(standardmessageunit,'(A,D22.15)')
      &       ' --> objf_shifwflx(bi,bj) = ', objf_shifwflx(bi,bj)
-        fc = fc
+        tile_fc(bi,bj) = tile_fc(bi,bj)
      &       + mult_shelfice * objf_shelfice(bi,bj)
      &       + mult_shifwflx * objf_shifwflx(bi,bj)
 
-        f_shelfice = f_shelfice + objf_shelfice(bi,bj)
-        f_shifwflx = f_shifwflx + objf_shifwflx(bi,bj)
-CML        no_shelfice = no_shelfice + num_shelfice(bi,bj)
-        no_shifwflx = no_shifwflx + num_shifwflx(bi,bj)
+       ENDDO
+      ENDDO
 
-       enddo
-      enddo
-
-      _GLOBAL_SUM_RL( f_shelfice , myThid )
-      _GLOBAL_SUM_RL( f_shifwflx , myThid )
-CML      _GLOBAL_SUM_RL( no_shelfice , myThid )
-      _GLOBAL_SUM_RL( no_shifwflx , myThid )
+      CALL GLOBAL_SUM_TILE_RL( objf_shelfice, f_shelfice, myThid )
+      CALL GLOBAL_SUM_TILE_RL( objf_shifwflx, f_shifwflx, myThid )
+cML      CALL GLOBAL_SUM_TILE_RL( num_shelfice, no_shelfice, myThid )
+      CALL GLOBAL_SUM_TILE_RL( num_shifwflx, no_shifwflx, myThid )
 
 # ifndef ALLOW_AUTODIFF_OPENAD
-c--   Each process has calculated the global part for itself.
+C--   Each process has calculated the global part for itself.
       IF ( MASTER_CPU_THREAD(myThid) ) THEN
 
        ifc = 30
@@ -123,7 +116,7 @@ c--   Each process has calculated the global part for itself.
        OPEN(unit=ifc,file=cfname)
 
        WRITE(ifc,*) 'fc =', fc
-CML       WRITE(ifc,*) 'f_shelfice =', f_shelfice, no_shelfice
+cML       WRITE(ifc,*) 'f_shelfice =', f_shelfice, no_shelfice
        WRITE(ifc,*) 'f_shelfice =', f_shelfice
        WRITE(ifc,*) 'f_shifwflx =', f_shifwflx, no_shifwflx
 
@@ -134,4 +127,5 @@ CML       WRITE(ifc,*) 'f_shelfice =', f_shelfice, no_shelfice
 
 #endif /* ALLOW_COST */
 
+      RETURN
       END
