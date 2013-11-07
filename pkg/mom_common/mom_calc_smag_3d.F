@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_smag_3d.F,v 1.2 2013/11/06 00:37:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_smag_3d.F,v 1.3 2013/11/07 23:09:45 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -70,76 +70,65 @@ CEOP
 
 #ifdef ALLOW_SMAG_3D
 C     !LOCAL VARIABLES:
+C     S66   :: Sum of squared of the 3 strain component @ grid-cell center
+C     S12   :: Squared of strain component Vxy @ grid-cell corner
+C     S13   :: Squared of strain component Vxz @ above uVel
+C     S23   :: Squared of strain component Vyz @ above vVel
       INTEGER i, j
-      INTEGER kp, n
+      INTEGER kl, n
       _RL twoThird, tmpFac
-      _RL S11(1-OLx:sNx+OLx,1-OLy:sNy+OLy,3)
-      _RL S22(1-OLx:sNx+OLx,1-OLy:sNy+OLy,3)
-      _RL S33(1-OLx:sNx+OLx,1-OLy:sNy+OLy,3)
-      _RL S12(1-OLx:sNx+OLx,1-OLy:sNy+OLy,3)
-      _RL S13(1-OLx:sNx+OLx,1-OLy:sNy+OLy,3)
-      _RL S23(1-OLx:sNx+OLx,1-OLy:sNy+OLy,3)
+      _RL S66(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL S12(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL S13(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL S23(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       twoThird = 2. _d 0 / 3. _d 0
 
-      n = 1
-      DO kp=k-1,k+1
-        IF ( kp.GE.1 .AND. kp.LE.Nr ) THEN
+      DO n=1,2
+        kl = k + n - 1
+        IF ( kl.LE.Nr ) THEN
           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-              S11(i,j,n) = str11(i,j,kp)**2
-              S22(i,j,n) = str22(i,j,kp)**2
-              S33(i,j,n) = str33(i,j,kp)**2
-              S12(i,j,n) = str12(i,j,kp)**2
-              S13(i,j,n) = str13(i,j,kp)**2
-              S23(i,j,n) = str23(i,j,kp)**2
-            ENDDO
-          ENDDO
-        ELSEIF ( kp.GE.1 ) THEN
-          DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-              S11(i,j,n) = 0. _d 0
-              S22(i,j,n) = 0. _d 0
-              S33(i,j,n) = 0. _d 0
-              S12(i,j,n) = 0. _d 0
-              S13(i,j,n) = str13(i,j,kp)**2
-              S23(i,j,n) = str23(i,j,kp)**2
-            ENDDO
+           DO i=1-OLx,sNx+OLx
+             S66(i,j,n) = str11(i,j,kl)**2
+     &                  + str22(i,j,kl)**2
+     &                  + str33(i,j,kl)**2
+             S12(i,j,n) = str12(i,j,kl)**2
+           ENDDO
           ENDDO
         ELSE
           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-              S11(i,j,n) = 0. _d 0
-              S22(i,j,n) = 0. _d 0
-              S33(i,j,n) = 0. _d 0
-              S12(i,j,n) = 0. _d 0
-              S13(i,j,n) = 0. _d 0
-              S23(i,j,n) = 0. _d 0
-            ENDDO
+           DO i=1-OLx,sNx+OLx
+             S66(i,j,n) = 0. _d 0
+             S12(i,j,n) = 0. _d 0
+           ENDDO
           ENDDO
         ENDIF
-        n=n+1
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             S13(i,j,n) = str13(i,j,kl)**2
+             S23(i,j,n) = str23(i,j,kl)**2
+           ENDDO
+          ENDDO
       ENDDO
 
 C--  ------------------------------------------------------------------
 C--  calculate current level Smag viscosity coeff
 C--  ------------------------------------------------------------------
 
-C     Current level k --> n=2
-      n = 2
-      tmpFac = smag3D_coeff*twoRL*SQRT(twoRL)*drF(k)**twoThird
+C     Current level k --> n=1
+      kl = k
+      n = 1
+      tmpFac = smag3D_coeff*twoRL*SQRT(twoRL)*drF(kl)**twoThird
 
 C     viscAh3d_00 = sqrt( S11+S22+S33+2*(S12+S13+S23) ) @ grid-cell center
 
       DO j=1-OLy,sNy+OLy-1
        DO i=1-OLx,sNx+OLx-1
-         viscAh3d_00(i,j,k) =
+         viscAh3d_00(i,j,kl) =
      &    smag3D_hLsC(i,j,bi,bj)*tmpFac*SQRT(
-     &            S11( i , j , n )
-     &   +        S22( i , j , n )
-     &   +        S33( i , j , n )
+     &            S66( i , j , n )
      &   +  0.5*( S12( i ,j+1, n )+S12(i+1,j+1, n )
      &           +S12( i , j , n )+S12(i+1, j , n ) )
      &   +  0.5*( S13( i , j , n )+S13(i+1, j , n )
@@ -154,14 +143,10 @@ C     viscAh3d_12 = sqrt( S11+S22+S33+2*(S12+S13+S23) ) @ grid-cell corner
 
       DO j=2-OLy,sNy+OLy
        DO i=2-OLx,sNx+OLx
-         viscAh3d_12(i,j,k) =
+         viscAh3d_12(i,j,kl) =
      &    smag3D_hLsZ(i,j,bi,bj)*tmpFac*SQRT(
-     &     0.25*( S11(i-1, j , n )+S11( i , j , n )
-     &           +S11(i-1,j-1, n )+S11( i ,j-1, n ) )
-     &   + 0.25*( S22(i-1, j , n )+S22( i , j , n )
-     &           +S22(i-1,j-1, n )+S22( i ,j-1, n ) )
-     &   + 0.25*( S33(i-1, j , n )+S33( i , j , n )
-     &           +S33(i-1,j-1, n )+S33( i ,j-1, n ) )
+     &     0.25*( S66(i-1, j , n )+S66( i , j , n )
+     &           +S66(i-1,j-1, n )+S66( i ,j-1, n ) )
      &   + 2.0 *  S12( i , j , n )
      &   + 0.5 *( S13( i ,j-1, n )+S13( i , j , n )
      &           +S13( i ,j-1,n+1)+S13( i , j ,n+1) )
@@ -184,22 +169,19 @@ C--  ------------------------------------------------------------------
         ENDDO
       ENDIF
 
-C     Next level k+1 --> n=3
-      n = 3
-      tmpFac = smag3D_coeff*twoRL*SQRT(twoRL)*drC(k+1)**twoThird
+C     Next level k+1 --> n=2
+      kl = k+1
+      n = 2
+      tmpFac = smag3D_coeff*twoRL*SQRT(twoRL)*drC(kl)**twoThird
 
 C     viscAh3d_13 = sqrt( S11+S22+S33+2*(S12+S13+S23) ) @ above uVel
 
       DO j=1-OLy,sNy+OLy-1
        DO i=2-OLx,sNx+OLx
-         viscAh3d_13(i,j,k+1) =
+         viscAh3d_13(i,j,kl) =
      &    smag3D_hLsW(i,j,bi,bj)*tmpFac*SQRT(
-     &     0.25*( S11(i-1, j ,n-1)+S11( i , j ,n-1)
-     &           +S11(i-1, j , n )+S11( i , j , n ) )
-     &   + 0.25*( S22(i-1, j ,n-1)+S22( i , j ,n-1)
-     &           +S22(i-1, j , n )+S22( i , j , n ) )
-     &   + 0.25*( S33(i-1, j ,n-1)+S33( i , j ,n-1)
-     &           +S33(i-1, j , n )+S33( i , j , n ) )
+     &     0.25*( S66(i-1, j ,n-1)+S66( i , j ,n-1)
+     &           +S66(i-1, j , n )+S66( i , j , n ) )
      &   + 0.5 *( S12( i , j ,n-1)+S12( i ,j+1,n-1)
      &           +S12( i , j , n )+S12( i ,j+1, n ) )
      &   + 2.0 *  S13( i , j , n )
@@ -213,14 +195,10 @@ C     viscAh3d_23 = sqrt( S11+S22+S33+2*(S12+S13+S23) ) @ above vVel
 
       DO j=2-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx-1
-         viscAh3d_23(i,j,k+1) =
+         viscAh3d_23(i,j,kl) =
      &    smag3D_hLsS(i,j,bi,bj)*tmpFac*SQRT(
-     &     0.25*( S11( i ,j-1,n-1)+S11( i , j ,n-1)
-     &           +S11( i ,j-1, n )+S11( i , j , n ) )
-     &   + 0.25*( S22( i ,j-1,n-1)+S22( i , j ,n-1)
-     &           +S22( i ,j-1, n )+S22( i , j , n ) )
-     &   + 0.25*( S33( i ,j-1,n-1)+S33( i , j ,n-1)
-     &           +S33( i ,j-1, n )+S33( i , j , n ) )
+     &     0.25*( S66( i ,j-1,n-1)+S66( i , j ,n-1)
+     &           +S66( i ,j-1, n )+S66( i , j , n ) )
      &   + 0.5 *( S12( i , j ,n-1)+S12(i+1, j ,n-1)
      &           +S12( i , j , n )+S12(i+1, j , n ) )
      &   + 0.5 *( S13( i , j , n )+S13(i+1, j , n )
@@ -231,8 +209,9 @@ C     viscAh3d_23 = sqrt( S11+S22+S33+2*(S12+S13+S23) ) @ above vVel
       ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
-c     IF (useDiagnostics) THEN
-c      CALL DIAGNOSTICS_FILL(viscAh_D,'VISCAHD ',k,1,2,bi,bj,myThid)
+c     IF ( useDiagnostics.AND. k.EQ.Nr ) THEN
+c       CALL DIAGNOSTICS_FILL( viscAh3d_00, 'Smag3D_C',
+c    &                         0, Nr, 2, bi, bj, myThid )
 c     ENDIF
 #endif
 
