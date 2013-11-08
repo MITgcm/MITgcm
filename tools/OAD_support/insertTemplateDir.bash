@@ -23,7 +23,6 @@ do
       echo "c\$openad XXX Template ad_template.${tmpName}.f" >> temp.sed
       ;;
     *)
-      echo "test $OADTOOLS"
       echo "c\$openad XXX Template ad_template.split.f" >> temp.sed
       ;;
   esac
