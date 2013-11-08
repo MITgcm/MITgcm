@@ -5,9 +5,6 @@ car_flux.f
 car_flux_omega_top.f
 carbon_chem.f
 dic_atmos.f
-dic_aver.f
-dic_aver_final.f
-dic_aver_init.f
 dic_biotic_diags.f
 dic_biotic_forcing.f
 dic_biotic_init.f

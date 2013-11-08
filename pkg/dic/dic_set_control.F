@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_set_control.F,v 1.7 2012/08/07 05:40:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_set_control.F,v 1.8 2013/11/08 19:30:37 jahn Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -21,7 +21,6 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #ifdef DIC_BIOTIC
 # include "DIC_VARS.h"
-# include "DIC_DIAGS.h"
 # include "DIC_CTRL.h"
 #endif
 #ifdef ALLOW_CTRL
