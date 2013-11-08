@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/tracer_meanarea.F,v 1.11 2009/04/28 18:11:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/tracer_meanarea.F,v 1.12 2013/11/08 20:03:12 jahn Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
 
 C !INTERFACE: ==========================================================
       SUBROUTINE TRACER_MEANAREA(
-     I                    tracer, kLev,
+     I                    tracer,
      O                    gsm_tracer,
      I                    myThid )
 
@@ -23,7 +23,6 @@ c#include "DYNVARS.h"
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
       INTEGER myThid
-      INTEGER kLev
       _RL tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 C !OUTPUT PARAMETERS: ===================================================
@@ -32,23 +31,30 @@ C  gcm_tracer               :: surface mean of tracer
 
 C !LOCAL VARIABLES: ====================================================
       INTEGER i,j,bi,bj
+      INTEGER kLev
+      _RL sumTracerTile(nSx,nSy)
       _RL sumTracer
 CEOP
 
-       sumTracer= 0. _d 0
+      IF ( usingPCoords ) THEN
+       kLev = Nr
+      ELSE
+       kLev = 1
+      ENDIF
+
+       sumTracerTile= 0. _d 0
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-            sumTracer=sumTracer+
-     &          tracer(i,j,kLev,bi,bj)*rA(i,j,bi,bj)*
-     &                        maskC(i,j,kLev,bi,bj)
+            sumTracerTile(bi,bj)=sumTracerTile(bi,bj)+
+     &          tracer(i,j,kLev,bi,bj)*rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
        ENDDO
-       _GLOBAL_SUM_RL(sumTracer,myThid)
+       CALL GLOBAL_SUM_TILE_RL(sumTracerTile,sumTracer,myThid)
        gsm_tracer=sumTracer/globalArea
 
        RETURN

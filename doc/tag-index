@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1937 2013/11/06 22:18:19 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1938 2013/11/08 20:04:16 jahn Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -28,6 +28,7 @@ o pkg/dic:
   - change dic_cost.F to compute cost on each tile first and then apply
     GLOBAL_SUM_TILE_RL: this affects forward gradient of AD experiments
     tutorial_dic_adjoffline & tutorial_global_oce_biogeo; update output.
+  - remove kLev argument and use GLOBAL_SUM_TILE_RL in tracer_meanarea.
 o eesupp/src & pkg/mdsio:
   - remove gather/scatter_vector.F (from eesupp) and mdsio_read/writevector.F
     (from pkg/mdsio) since they are no longer used for tape IO.

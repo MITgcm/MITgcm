@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_oad/Attic/externalDummies.F,v 1.4 2013/11/06 22:16:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_oad/Attic/externalDummies.F,v 1.5 2013/11/08 20:03:12 jahn Exp $
 C $Name:  $
 C ###########################################################
       SUBROUTINE EXCH1_RL(
@@ -56,19 +56,19 @@ C      INTEGER myThid
 C      maxPhi=2*maxPhi
 C      end subroutine
 C ###########################################################
-      SUBROUTINE GLOBAL_SUM_R8(
-     U                       sumphi,
-     I                       myThid )
-      IMPLICIT NONE
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#include "EXCH.h"
-      Real*8 sumPhi
-      INTEGER myThid
-C dummy self dependence (nontrivial so mfef90 doesn't kill it)
-      sumPhi=2*sumPhi
-      end subroutine
+C      SUBROUTINE GLOBAL_SUM_R8(
+C     U                       sumphi,
+C     I                       myThid )
+C      IMPLICIT NONE
+C#include "SIZE.h"
+C#include "EEPARAMS.h"
+C#include "EESUPPORT.h"
+C#include "EXCH.h"
+C      Real*8 sumPhi
+C      INTEGER myThid
+CC dummy self dependence (nontrivial so mfef90 doesn't kill it)
+C      sumPhi=2*sumPhi
+C      end subroutine
 C ###########################################################
       SUBROUTINE GLOBAL_SUM_TILE_RL(
      U                       phiTile,
