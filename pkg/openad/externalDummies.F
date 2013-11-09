@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_oad/Attic/externalDummies.F,v 1.5 2013/11/08 20:03:12 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/externalDummies.F,v 1.1 2013/11/09 12:17:06 heimbach Exp $
 C $Name:  $
 C ###########################################################
       SUBROUTINE EXCH1_RL(
