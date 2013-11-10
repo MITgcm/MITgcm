@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_check.F,v 1.5 2010/04/30 22:10:39 yunx Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_check.F,v 1.6 2013/11/10 02:58:34 yunx Exp $
 C $Name:  $
 #include "ICEFRONT_OPTIONS.h"
 
@@ -40,38 +40,6 @@ C     So far, ICEFRONT works only with oceanic z-coordinates
          STOP 'ABNORMAL END: S/R ICEFRONT_CHECK'
       ENDIF
 
-#ifdef ALLOW_SUBGLACIAL_RUNOFF
-#ifndef ALLOW_ADDFLUID
-C--  If there is subglacial runoff, addMass (in main code) should be 
-C    turned on by setting #define ALLOW_ADDFLUID in 'CPP_OPTIONS.h'
-      WRITE(msgBuf,'(A,A)')
-     &       'SUBGLACIAL_RUNOFF requires ALLOW_ADDFLUID turned on ',
-     &       'in CPP_OPTIONS.h'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      STOP 'ABNORMAL END: S/R ICEFRONT_CHECK'
-#endif
-      IF (SGrunoffFile .NE. ' ') THEN
-C--   If there is subglacial runoff, addMass (in main code) should
-C     be turned on by setting selectAddFluid = 1;
-       IF ( selectAddFluid .NE. 1 ) THEN
-        WRITE(msgBuf,'(A)')
-     &       'SUBGLACIAL_RUNOFF requires selectAddFluid = 1'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R ICEFRONT_CHECK'
-       ENDIF
-C--   Issue a warning if temp_addMass or salt_addMass are not set.
-       IF ( temp_addMass .EQ. UNSET_RL ) THEN
-        WRITE(msgBuf,'(A)')
-     &       'temp_addMass has not been set; defaults to local value'
-        CALL PRINT_ERROR( msgBuf, myThid )
-       ENDIF
-       IF ( salt_addMass .EQ. UNSET_RL ) THEN
-        WRITE(msgBuf,'(A)')
-     &       'salt_addMass has not been set; defaults to local value'
-        CALL PRINT_ERROR( msgBuf, myThid )
-       ENDIF
-      ENDIF
-#endif /* ALLOW_SUBGLACIAL_RUNOFF*/
 
 CML#ifdef ALLOW_NONHYDROSTATIC
 CML      IF ( nonHydrostatic ) THEN

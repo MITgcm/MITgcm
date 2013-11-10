@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_thermodynamics.F,v 1.9 2011/05/16 22:41:03 yunx Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_thermodynamics.F,v 1.10 2013/11/10 02:58:34 yunx Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -75,12 +75,6 @@ C     aqe, bqe, cqe, discrim, recip_aqe
       EXTERNAL SW_TEMP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-#ifdef ALLOW_SUBGLACIAL_RUNOFF
-      IF ( SGrunofffile .NE. ' '  ) THEN
-       CALL SGRUNOFF_READ(myTime, myIter, myThid)
-      ENDIF
-#endif /* ALLOW_SUBGLACIAL_RUNOFF*/
 
 C     Linear dependence of freezing point on salinity.
       a0 = -0.0575   _d  0

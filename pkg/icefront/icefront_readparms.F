@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.10 2012/01/05 22:01:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.11 2013/11/10 02:58:34 yunx Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -44,9 +44,6 @@ CEOP
      &     ICEFRONTthetaSurface,
      &     applyIcefrontTendT,applyIcefrontTendS,
      &     ICEFRONTdepthFile, ICEFRONTlengthFile
-#ifdef ALLOW_SUBGLACIAL_RUNOFF
-     &   , SGrunoffFile
-#endif
 
       _BEGIN_MASTER(myThid)
 

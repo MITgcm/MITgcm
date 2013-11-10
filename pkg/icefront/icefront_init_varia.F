@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_varia.F,v 1.9 2012/03/20 14:56:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_varia.F,v 1.10 2013/11/10 02:58:34 yunx Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -19,9 +19,6 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "ICEFRONT.h"
-#ifdef ALLOW_SUBGLACIAL_RUNOFF
-# include "EXF_PARAM.h"
-#endif
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance of ICEFRONT_INIT_VARIA
@@ -46,13 +43,6 @@ CEOP
         ENDDO
        ENDDO
       ENDDO
-
-#ifdef ALLOW_SUBGLACIAL_RUNOFF
-      CALL EXF_INIT_RUNOFF (
-     &     sgrunofffile, sgrunoffperiod,
-     &     exf_inscal_sgrunoff, sgrunoffmask, sgrunoffconst,
-     &     sgrunoff, sgrunoff0, sgrunoff1, myThid )
-#endif /* ALLOW_SUBGLACIAL_RUNOFF */
 
 #endif /* ALLOW_ICEFRONT */
 

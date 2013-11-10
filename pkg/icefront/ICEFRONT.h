@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.12 2012/01/05 22:01:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.13 2013/11/10 02:58:34 yunx Exp $
 C $Name:  $
 
 #ifdef ALLOW_ICEFRONT
@@ -93,13 +93,5 @@ CEOP
      &     ICEFRONTlengthFile,
      &     ICEFRONTdepthFile,
      &     SGrunoffFile
-
-#ifdef ALLOW_SUBGLACIAL_RUNOFF
-      _RL SGrunoff (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SGrunoff0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SGrunoff1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      COMMON /SUBGLACIAL_RUNOFF/
-     &     SGrunoff, SGrunoff0,SGrunoff1
-#endif /* ALLOW_SUBGLACIAL_RUNOFF */
 
 #endif /* ALLOW_ICEFRONT */
