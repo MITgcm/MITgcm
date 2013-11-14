@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1938 2013/11/08 20:04:16 jahn Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1939 2013/11/14 02:09:48 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification:
+  - generate new output on baudelaire (gfortran, -ieee) for OpenAD experiments
+    tutorial_global_oce_biogeo and global_ocean.90x40x15.
+  - generate new output (growth & melt) for seaice_itd experiment after
+    updating the input pickup_seaice files (previously wrong).
 o pkg/cost:
   - define a "final cost function" for each tile, and use GLOBAL_SUM_TILE_RL
     (instead of _GLOBAL_SUM_RL) to get the final cost from all procs & threads:
