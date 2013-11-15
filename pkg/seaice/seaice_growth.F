@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.192 2013/10/05 19:36:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.193 2013/11/15 18:51:16 torge Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -2006,10 +2006,11 @@ C            AREA(I,J,bi,bj) = 0.1 _d 0 * HEFF(I,J,bi,bj)
         ENDIF
 #endif
 #ifdef SEAICE_ITD
-C check categories for consistency with limits after growth/melt
-        CALL SEAICE_ITD_REDIST(bi, bj, myTime,myIter,myThid)
-C finally update total AREA, HEFF, HSNOW
-        CALL SEAICE_ITD_SUM(bi, bj, myTime,myIter,myThid)
+C check categories for consistency with limits after growth/melt ...
+        CALL SEAICE_ITD_REDIST(bi, bj, myTime, myIter, myThid)
+C ... and update total AREA, HEFF, HSNOW
+C     (the updated HEFF is used below for ice salinity increments)
+        CALL SEAICE_ITD_SUM(bi, bj, myTime, myIter, myThid)
 #endif
 
 C ===================================================================

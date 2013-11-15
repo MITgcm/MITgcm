@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.65 2013/06/07 13:08:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.66 2013/11/15 18:51:16 torge Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -334,6 +334,16 @@ C     now do the "explicit" time step
         ENDDO
 #endif
         ENDIF
+
+#ifdef SEAICE_ITD
+C     check that all ice thickness categories meet their limits
+C     (includes Hibler-type ridging)
+        CALL SEAICE_ITD_REDIST(bi, bj, myTime, myIter, myThid)
+C     update mean ice thickness HEFF and total ice concentration AREA
+C     to match single category values
+C     (necessary here because updated HEFF is used below for SItracer)
+        CALL SEAICE_ITD_SUM(bi, bj, myTime, myIter, myThid)
+#endif
 
 #ifdef SEAICE_VARIABLE_SALINITY
 C--   Effective Sea Ice Salinity (Mass of salt)
