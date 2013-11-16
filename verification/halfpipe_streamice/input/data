@@ -40,7 +40,7 @@
  &PARM04
  usingCartesianGrid=.TRUE.,
  delX=40*2.e3,
- delY=20*2.e3,
+ delY=3*2.e3,
  delZ=1800.,
  &
 
