@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_calc_uvflow.F,v 1.7 2013/09/18 22:04:27 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_calc_uvflow.F,v 1.8 2013/11/17 22:04:33 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -53,10 +53,25 @@ C     i, j :: loop indices
 #ifdef ALLOW_EDDYPSI
       _RL ustar, vstar
 #endif
+#ifdef GM_CALC_TRANSP_FROM_VEL
+      _RS xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
 CEOP
 
-      IF (GM_AdvForm .AND. .NOT.GM_AdvSeparate
-     & .AND. .NOT.GM_InMomAsStress) THEN
+      IF ( GM_AdvForm .AND. .NOT.GM_AdvSeparate
+     &     .AND. .NOT.GM_InMomAsStress ) THEN
+
+#ifdef GM_CALC_TRANSP_FROM_VEL
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         xA(i,j) = _dyG(i,j,bi,bj)*deepFacC(k)
+     &           *drF(k)*_hFacW(i,j,k,bi,bj)
+         yA(i,j) = _dxG(i,j,bi,bj)*deepFacC(k)
+     &           *drF(k)*_hFacS(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+#endif
 
        kp1 = MIN(k+1,Nr)
        maskp1 = 1.
@@ -67,8 +82,12 @@ CEOP
      &          - GM_PsiX(i,j, k, bi,bj)
          uFld(i,j)   = uFld(i,j)
      &               + delPsi*recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
+#ifdef GM_CALC_TRANSP_FROM_VEL
+         uTrans(i,j) = uFld(i,j)*xA(i,j)*rhoFacC(k)
+#else
          uTrans(i,j) = uTrans(i,j)
      &               + dyG(i,j,bi,bj)*delPsi*maskW(i,j,k,bi,bj)
+#endif
         ENDDO
        ENDDO
        DO j=1-OLy,sNy+OLy
@@ -77,15 +96,20 @@ CEOP
      &          - GM_PsiY(i,j, k, bi,bj)
          vFld(i,j)   = vFld(i,j)
      &               + delPsi*recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
+#ifdef GM_CALC_TRANSP_FROM_VEL
+         vTrans(i,j) = vFld(i,j)*yA(i,j)*rhoFacC(k)
+#else
          vTrans(i,j) = vTrans(i,j)
      &               + dxG(i,j,bi,bj)*delPsi*maskS(i,j,k,bi,bj)
+#endif
         ENDDO
        ENDDO
 
 #ifdef ALLOW_EDDYPSI
-      ELSEIF(GM_AdvForm .AND. .NOT.GM_AdvSeparate
-     & .AND. GM_InMomAsStress) THEN
-C       Calculate the mean velocity from the residual and bolus
+      ELSEIF( GM_AdvForm .AND. .NOT.GM_AdvSeparate
+     &        .AND. GM_InMomAsStress ) THEN
+
+C     Calculate the mean velocity from the residual and bolus
        kp1 = MIN(k+1,Nr)
        maskp1 = 1.
        IF (k.GE.Nr) maskp1 = 0.
@@ -107,10 +131,18 @@ C       Calculate the mean velocity from the residual and bolus
        ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
-       CALL DIAGNOSTICS_FILL(uMean, 'UVELMEAN',0,Nr,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(vMean, 'VVELMEAN',0,Nr,0,1,1,myThid)
+c      CALL DIAGNOSTICS_FILL( uMean(1-OLx,1-OLy,k,bi,bj), 'UVELMEAN',
+c    I                        k, 1, 2, bi, bj, myThid )
+c      CALL DIAGNOSTICS_FILL( vMean(1-OLx,1-OLy,k,bi,bj), 'VVELMEAN',
+c    I                        k, 1, 2, bi, bj, myThid )
+C   or shorter:
+       CALL DIAGNOSTICS_FILL( uMean, 'UVELMEAN',
+     I                        k, Nr, 1, bi, bj, myThid )
+       CALL DIAGNOSTICS_FILL( vMean, 'VVELMEAN',
+     I                        k, Nr, 1, bi, bj, myThid )
 #endif /* ALLOW_DIAGNOSTICS */
-#endif /* ALLOW_EDDYPSI */       
+#endif /* ALLOW_EDDYPSI */
+
       ENDIF
 #endif /* GM_BOLUS_ADVEC */
 #endif /* ALLOW_GMREDI */
