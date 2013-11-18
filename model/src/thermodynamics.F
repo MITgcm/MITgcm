@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.143 2013/02/19 13:42:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.144 2013/11/18 15:51:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -727,14 +727,14 @@ CADJ STORE kappaRTr(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 C--      Freeze water
 C  this bit of code is left here for backward compatibility.
 C  freezing at surface level has been moved to DO_OCEANIC_PHYS
-         IF ( useOldFreezing .AND. .NOT. useSEAICE
-     &       .AND. .NOT.(useThSIce.AND.k.EQ.1) ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gT(:,:,k,bi,bj) = comlev1_bibj_k
-CADJ &   , key = kkey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-            CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, k, myThid )
-         ENDIF
+c        IF ( useOldFreezing .AND. .NOT. useSEAICE
+c    &       .AND. .NOT.(useThSIce.AND.k.EQ.1) ) THEN
+c#ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE gT(:,:,k,bi,bj) = comlev1_bibj_k
+cCADJ &   , key = kkey, byte = isbyte
+c#endif /* ALLOW_AUTODIFF_TAMC */
+c           CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, k, myThid )
+c        ENDIF
 
 C--     end of thermodynamic k loop (Nr:1)
         ENDDO
