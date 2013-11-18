@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.167 2013/07/30 18:51:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.168 2013/11/18 15:58:39 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -196,7 +196,6 @@ Cml      sBeta               = 7.4 _d -4
       globalFiles         = .FALSE.
       useSingleCpuIO      = .FALSE.
       allowFreezing       = .FALSE.
-      useOldFreezing      = .FALSE.
       ivdc_kappa          = 0. _d 0
       hMixCriteria        = -.8 _d 0
       dRhoSmall           = 1. _d -6
