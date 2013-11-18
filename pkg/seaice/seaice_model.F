@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.110 2013/11/15 18:51:16 torge Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.111 2013/11/18 23:08:58 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -57,8 +57,6 @@ C !LOCAL VARIABLES: ====================================================
 C     i,j,bi,bj :: Loop counters
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER i, j
-#endif
-#if defined(ALLOW_AUTODIFF_TAMC) || defined(SEAICE_ITD)
       INTEGER bi, bj
 #endif
 #ifdef ALLOW_SITRACER
