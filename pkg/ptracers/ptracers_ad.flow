@@ -1,5 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_ad.flow,v 1.6 2013/04/12 20:38:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_ad.flow,v 1.7 2013/11/18 21:32:10 heimbach Exp $
 C $Name:  $
+
+C----------------------------------------
+C Naming of adjoint common blocks:
+C Retain naming convention of TAF version 1 via flow directives
+
+c$taf COMMON ptracers_fields  ADNAME = adptracers_fields
+c$taf COMMON ptracers_fields FTLNAME = g_ptracers_fields
+C----------------------------------------
 
 C----------------------------------------
 C subroutine  ptracers_check_pickup
