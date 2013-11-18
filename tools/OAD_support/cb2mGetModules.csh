@@ -2,8 +2,8 @@
 set fileName=${1:r}
 set awkScript=${2}    
 echo '      MODULE '${fileName}_mod   > ${fileName}_temp
+echo '#include "PACKAGES_CONFIG.h"'  >> ${fileName}_temp
 echo '#include "CPP_OPTIONS.h"'      >> ${fileName}_temp
-echo '#include "CPP_EEOPTIONS.h"'    >> ${fileName}_temp
 if ( ${fileName} == 'DIC_LOAD' ) then
   echo '#include "DIC_OPTIONS.h"'    >> ${fileName}_temp
 endif
