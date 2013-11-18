@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.255 2013/07/30 18:51:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.256 2013/11/18 15:48:30 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -132,6 +132,7 @@ C                   from before checkpoint-35, Feb 08, 2001): disabled (Jan 2007
 C     debugMode    :: to print debug msg. now read from parameter file eedata
 C     allowInteriorFreezing :: Allow water at depth to freeze and rise to the surface
 C                              (replaced by pkg/frazil)
+C     useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-12)
 C Namelist PARM03:
 C     tauThetaClimRelax3Dim :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
 C     tauSaltClimRelax3Dim  :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
@@ -156,7 +157,7 @@ C     dQdTfile     :: File containing thermal relaxation coefficient
       LOGICAL useAnisotropicViscAgridMax
       LOGICAL usePickupBeforeC35
       LOGICAL saveDebugMode
-      LOGICAL allowInteriorFreezing
+      LOGICAL allowInteriorFreezing, useOldFreezing
 C-
       _RL tauThetaClimRelax3Dim, tauSaltClimRelax3Dim
       LOGICAL calendarDumps
@@ -325,6 +326,7 @@ C--   Initialise retired parameters to unlikely value
       usePickupBeforeC35    = .FALSE.
       saveDebugMode   = debugMode
       allowInteriorFreezing = .FALSE.
+      useOldFreezing  = .FALSE.
       tauThetaClimRelax3Dim = UNSET_RL
       tauSaltClimRelax3Dim  = UNSET_RL
       calendarDumps   = .FALSE.
@@ -759,6 +761,12 @@ C     Check for retired parameters still being used
        WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: "allowInteriorFreezing" has been replaced',
      &  ' by pkg/frazil and is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( useOldFreezing ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "useOldFreezing" ',
+     &  'is no longer supported & not longer allowed in file "data"'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 

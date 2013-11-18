@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.271 2013/08/11 14:27:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.272 2013/11/18 15:48:30 jmc Exp $
 C $Name:  $
 C
 
@@ -346,7 +346,6 @@ C                        climatology is required.
 C     balanceThetaClimRelax :: substract global mean effect at every time step
 C     balanceSaltClimRelax :: substract global mean effect at every time step
 C     allowFreezing  :: Allows surface water to freeze and form ice
-C     useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-12)
 C     periodicExternalForcing :: Set true if forcing is time-dependant
 C- I/O parameters -
 C     globalFiles    :: Selects between "global" and "tiled" files.
@@ -401,7 +400,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
      & balanceEmPmR, balanceQnet, balancePrintMean,
      & balanceThetaClimRelax, balanceSaltClimRelax,
      & doThetaClimRelax, doSaltClimRelax,
-     & allowFreezing, useOldFreezing,
+     & allowFreezing,
      & periodicExternalForcing,
      & globalFiles,
      & pickupStrictlyMatch, usePickupBeforeC54, startFromPickupAB2,
@@ -496,7 +495,6 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL balanceThetaClimRelax
       LOGICAL balanceSaltClimRelax
       LOGICAL allowFreezing
-      LOGICAL useOldFreezing
       LOGICAL periodicExternalForcing
       LOGICAL globalFiles
       LOGICAL pickupStrictlyMatch
