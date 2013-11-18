@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_oad/CPP_OPTIONS.h,v 1.2 2013/06/22 10:14:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_oad/CPP_OPTIONS.h,v 1.3 2013/11/18 23:51:25 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -17,8 +17,6 @@ C *==================================================================*
 CEOP
 
 C CPP flags controlling particular source code features
-
-#include "PACKAGES_CONFIG.h"
 
 C o Shortwave heating as extra term in external_forcing.F
 C Note: this should be a run-time option
@@ -47,6 +45,9 @@ C o Include/exclude AdamsBashforth-3rd-Order code
 
 C o Include/exclude nonHydrostatic code
 #undef ALLOW_NONHYDROSTATIC
+
+C o Allow to account for heating due to friction (and momentum dissipation)
+#undef ALLOW_FRICTION_HEATING
 
 C o Allow mass source or sink of Fluid in the interior
 C   (3-D generalisation of oceanic real-fresh water flux)
@@ -125,7 +126,9 @@ C   each of the above pkg get its own options from its specific option file.
 C   Although this method, inherited from ECCO setup, has been traditionally
 C   used for all adjoint built, work is in progress to allow to use the
 C   standard method also for adjoint built.
+#ifdef PACKAGES_CONFIG_H
 # include "ECCO_CPPOPTIONS.h"
+#endif
 cph# define STORE_LOADEDREC_TEST
 
 #endif /* CPP_OPTIONS_H */

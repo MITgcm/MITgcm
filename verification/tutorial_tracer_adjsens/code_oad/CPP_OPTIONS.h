@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_oad/CPP_OPTIONS.h,v 1.1 2013/03/21 18:44:32 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_oad/CPP_OPTIONS.h,v 1.2 2013/11/18 23:51:25 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -15,8 +15,6 @@ C | main CPP options file for the model:
 C | Control which optional features to compile in model/src code.
 C *==================================================================*
 CEOP
-
-#include "PACKAGES_CONFIG.h"
 
 C CPP flags controlling particular source code features
 
@@ -48,6 +46,9 @@ C o Include/exclude AdamsBashforth-3rd-Order code
 C o Include/exclude nonHydrostatic code
 #undef ALLOW_NONHYDROSTATIC
 
+C o Allow to account for heating due to friction (and momentum dissipation)
+#undef ALLOW_FRICTION_HEATING
+
 C o Allow mass source or sink of Fluid in the interior
 C   (3-D generalisation of oceanic real-fresh water flux)
 #undef ALLOW_ADDFLUID
@@ -76,7 +77,7 @@ C   so that d/dt(eta) is exactly equal to - Div.Transport
 C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that surface thickness (hFactors) vary with time
 #define NONLIN_FRSURF
-cph#define DISABLE_RSTAR_CODE
+#undef  DISABLE_RSTAR_CODE
 #define DISABLE_SIGMA_CODE
 
 C o Use Non Self-Adjoint (NSA) conjugate-gradient solver
@@ -122,13 +123,13 @@ C   is still useful with, e.g., single-domain curvilinear configurations.
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
 
-C o Include/exclude code specific to the ECCO/SEALION version.
-C   AUTODIFF or EXF package.
-C   Currently controled by a single header file
-C   For this to work, PACKAGES_CONFIG.h needs to be included!
-#if (defined (ALLOW_AUTODIFF) || \
-     defined (ALLOW_ECCO) || \
-     defined (ALLOW_EXF))
+C o Include/exclude single header file containing multiple packages options
+C   (AUTODIFF, COST, CTRL, ECCO, EXF ...) instead of the standard way where
+C   each of the above pkg get its own options from its specific option file.
+C   Although this method, inherited from ECCO setup, has been traditionally
+C   used for all adjoint built, work is in progress to allow to use the
+C   standard method also for adjoint built.
+#ifdef PACKAGES_CONFIG_H
 # include "ECCO_CPPOPTIONS.h"
 #endif
 
