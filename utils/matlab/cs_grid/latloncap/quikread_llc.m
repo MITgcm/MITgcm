@@ -1,6 +1,6 @@
 function fld=quikread_llc(fnam,nx,kx,prec,tiles);
 
-% Function quikread_llc(fnam,nx,kx,prec);
+% Function quikread_llc(fnam,nx,kx,prec,tiles);
 % read lat-lon-cap field
 %
 % INPUTS
