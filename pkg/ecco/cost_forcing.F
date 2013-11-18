@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.17 2012/09/04 15:04:51 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.18 2013/11/18 23:19:33 mmazloff Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -265,8 +265,8 @@ c--   Atmos. lwdown. contribution to the cost function.
 #if (defined (ALLOW_EVAP_COST_CONTRIBUTION) && \
        defined (ALLOW_EVAP_CONTROL))
 c--   Atmos. evap. contribution to the cost function.
-      startrec = ncvarrecstart(36)
-      endrec   = ncvarrecsend(36)
+      startrec = ncvarrecstart(37)
+      endrec   = ncvarrecsend(37)
       call cost_forcing_gen (
      &     myiter, mytime, startrec, endrec,
      &     xx_evap_file, xx_evap_dummy, xx_evapperiod,
@@ -280,8 +280,8 @@ c--   Atmos. evap. contribution to the cost function.
 #if (defined (ALLOW_SNOWPRECIP_COST_CONTRIBUTION) && \
        defined (ALLOW_SNOWPRECIP_CONTROL))
 c--   Atmos. snowprecip. contribution to the cost function.
-      startrec = ncvarrecstart(36)
-      endrec   = ncvarrecsend(36)
+      startrec = ncvarrecstart(38)
+      endrec   = ncvarrecsend(38)
       call cost_forcing_gen (
      &     myiter, mytime, startrec, endrec,
      &     xx_snowprecip_file, xx_snowprecip_dummy, xx_snowprecipperiod,
@@ -295,8 +295,8 @@ c--   Atmos. snowprecip. contribution to the cost function.
 #if (defined (ALLOW_APRESSURE_COST_CONTRIBUTION) && \
        defined (ALLOW_APRESSURE_CONTROL))
 c--   Atmos. apressure. contribution to the cost function.
-      startrec = ncvarrecstart(36)
-      endrec   = ncvarrecsend(36)
+      startrec = ncvarrecstart(39)
+      endrec   = ncvarrecsend(39)
       call cost_forcing_gen (
      &     myiter, mytime, startrec, endrec,
      &     xx_apressure_file, xx_apressure_dummy, xx_apressureperiod,
@@ -310,8 +310,8 @@ c--   Atmos. apressure. contribution to the cost function.
 #if (defined (ALLOW_RUNOFF_COST_CONTRIBUTION) && \
        defined (ALLOW_RUNOFF_CONTROL))
 c--   Atmos. runoff. contribution to the cost function.
-      startrec = ncvarrecstart(36)
-      endrec   = ncvarrecsend(36)
+      startrec = ncvarrecstart(40)
+      endrec   = ncvarrecsend(40)
       call cost_forcing_gen (
      &     myiter, mytime, startrec, endrec,
      &     xx_runoff_file, xx_runoff_dummy, xx_runoffperiod,
