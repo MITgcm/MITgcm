@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI_OPTIONS.h,v 1.17 2013/11/18 15:10:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI_OPTIONS.h,v 1.18 2013/11/19 17:07:11 jmc Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -44,7 +44,6 @@ C be used with the advective form (Bolus velocity) of GM
 C Allows to use the advective form (Bolus velocity) of GM
 C  instead of the Skew-Flux form (=default)
 #define GM_BOLUS_ADVEC
-#define GM_CALC_TRANSP_FROM_VEL
 
 C Allows to use the Boundary-Value-Problem method to evaluate GM Bolus transport
 #define GM_BOLUS_BVP
