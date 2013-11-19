@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.13 2013/11/19 20:20:52 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.14 2013/11/19 20:36:54 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -110,8 +110,11 @@ c for PART 2: compute time mean differences over the model period
 
 c for PART 4/5: compute smooth/raw anomalies
       _RL anom_psMslaobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL anom_slaobs (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL anom_psMslaobs_NUM (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL anom_psMslaobs_MSK (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL anom_psMslaobs_SUB (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL anom_slaobs (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL anom_slaobs_SUB  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       _RL anom_psMtpobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL anom_psMtpobs_NUM (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -177,6 +180,7 @@ c--   First, read tiled data.
       ilps=ilnblnk( psbarfile )
       write(fname(1:80),'(2a,i10.10)')
      &     psbarfile(1:ilps),'.',optimcycle
+
 
 cgf =======================================================
 cgf PART 1:
@@ -548,6 +552,7 @@ c--   END loop over records for the first time.
           enddo
         enddo
 
+
 c--   Do a global summation.
       _GLOBAL_SUM_RL( offset     , mythid )
       _GLOBAL_SUM_RL( offset_sum , mythid )
@@ -713,14 +718,17 @@ cgf =======================================================
       ndaysave=35
       ndaysaveRL=ndaysave
 
-      do irec = 1, ndaysrec-ndaysave+1, 7
+      do irec = 1, ndaysrec-ndaysave+1
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
          do j = jmin,jmax
           do i = imin,imax
               anom_psMslaobs(i,j,bi,bj)  = 0. _d 0
+              anom_psMslaobs_MSK(i,j,bi,bj)  = 0. _d 0
+              anom_psMslaobs_SUB(i,j,bi,bj)  = 0. _d 0
               anom_slaobs(i,j,bi,bj)  = 0. _d 0
+              anom_slaobs_SUB(i,j,bi,bj)  = 0. _d 0
               anom_psMtpobs(i,j,bi,bj)  = 0. _d 0
               anom_psMersobs(i,j,bi,bj) = 0. _d 0
               anom_psMgfoobs(i,j,bi,bj) = 0. _d 0
@@ -787,6 +795,8 @@ c ------------------------------------------------------
      &        anom_psMtpobs_NUM(i,j,bi,bj)+1. _d 0
            anom_psMslaobs_NUM(i,j,bi,bj)=
      &        anom_psMslaobs_NUM(i,j,bi,bj)+1. _d 0
+           if ( (2*jrec.EQ.ndaysave).OR.(2*jrec+1.EQ.ndaysave) ) 
+     &        anom_psMslaobs_MSK(i,j,bi,bj)  = 1. _d 0
       endif
 #endif
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
@@ -804,6 +814,8 @@ c ------------------------------------------------------
      &        ersobs(i,j,bi,bj)
            anom_psMslaobs_NUM(i,j,bi,bj)=
      &        anom_psMslaobs_NUM(i,j,bi,bj)+1. _d 0
+           if ( (2*jrec.EQ.ndaysave).OR.(2*jrec+1.EQ.ndaysave) )
+     &        anom_psMslaobs_MSK(i,j,bi,bj)  = 1. _d 0
       endif
 #endif
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
@@ -821,6 +833,8 @@ c ------------------------------------------------------
      &        gfoobs(i,j,bi,bj)
            anom_psMslaobs_NUM(i,j,bi,bj)=
      &        anom_psMslaobs_NUM(i,j,bi,bj)+1. _d 0
+           if ( (2*jrec.EQ.ndaysave).OR.(2*jrec+1.EQ.ndaysave) )
+     &        anom_psMslaobs_MSK(i,j,bi,bj)  = 1. _d 0
       endif
 #endif
           enddo
@@ -921,20 +935,37 @@ c ------------------------------------
 # if (defined (ALLOW_SSH_GFOANOM_COST_CONTRIBUTION) || \
       defined (ALLOW_SSH_TPANOM_COST_CONTRIBUTION) || \
       defined (ALLOW_SSH_ERSANOM_COST_CONTRIBUTION))
-          junk = anom_psMslaobs(i,j,bi,bj)
+          if ( (gencost_weight(i,j,bi,bj,igen_lsc).GT.0.).AND.
+     &         (anom_psMslaobs_MSK(i,j,bi,bj).GT.0.) ) then
+            junk = anom_psMslaobs(i,j,bi,bj)
+            anom_slaobs_SUB(i,j,bi,bj) = anom_slaobs(i,j,bi,bj)
+            anom_psMslaobs_SUB(i,j,bi,bj) = anom_psMslaobs(i,j,bi,bj)
+          else
+            junk = 0. _d 0
+            anom_slaobs_SUB(i,j,bi,bj)= 0. _d 0
+            anom_psMslaobs_SUB(i,j,bi,bj)= 0. _d 0
+          endif
           objf_gencost(igen_lsc,bi,bj) = objf_gencost(igen_lsc,bi,bj)
      &        + junk*junk*gencost_weight(i,j,bi,bj,igen_lsc)
-     &        *maskc(i,j,1,bi,bj)/ndaysaveRL
           if ( (gencost_weight(i,j,bi,bj,igen_lsc).GT.0.).AND.
-     &         (anom_psMslaobs_NUM(i,j,bi,bj).GT.0.).AND.
-     &         (maskc(i,j,1,bi,bj) .ne. 0.) )
+     &         (anom_psMslaobs_MSK(i,j,bi,bj).GT.0.) )
      &         num_gencost(igen_lsc,bi,bj) =
-     &         num_gencost(igen_lsc,bi,bj) + 1. _d 0 /ndaysaveRL
+     &         num_gencost(igen_lsc,bi,bj) + 1. _d 0
 #endif
            enddo
          enddo
         enddo
        enddo
+
+#ifdef ALLOW_GENCOST_SSHV4_OUTPUT
+      write(fname4test(1:80),'(1a)') 'sladiff_subsample'
+      call mdswritefield(fname4test,32,.false.,'RL',
+     & 1,anom_psMslaobs_SUB,irec,1,mythid)
+
+      write(fname4test(1:80),'(1a)') 'slaobs_subsample'
+      call mdswritefield(fname4test,32,.false.,'RL',
+     & 1,anom_slaobs_SUB,irec,1,mythid)
+#endif
 
       enddo
 
