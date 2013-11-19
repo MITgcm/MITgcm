@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.11 2013/02/05 14:51:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.12 2013/11/19 19:56:51 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -178,7 +178,6 @@ c--   First, read tiled data.
       write(fname(1:80),'(2a,i10.10)')
      &     psbarfile(1:ilps),'.',optimcycle
 
-
 cgf =======================================================
 cgf PART 1:
 cgf        x Get the MDT (tpmean) ... compute the sample mean
@@ -206,8 +205,8 @@ c      tpmean_y0=1993
 c      tpmean_y1=1999
 
       doReference=.FALSE.
-      if ((modelstartdate(1).GT.1992*100).AND.
-     &    (modelstartdate(1).LT.2011*100).AND.
+      if ((modelstartdate(1).GT.1992*10000).AND.
+     &    (modelstartdate(1).LT.2011*10000).AND.
      &    (ndaysrec.GE.365))  doReference=.TRUE.
 
         write(msgbuf,'(a,l)') ' sshv4:re-reference MDT=',doReference
@@ -600,17 +599,19 @@ c use the simpler approach
                endif
 
 c use the simpler approach
-               if ( ( .NOT.doReference ).AND.
-     &              ( tpmeanmask(i,j,bi,bj) .NE. 0. ) .AND.
+               if ( .NOT.doReference ) then
+               if ( ( tpmeanmask(i,j,bi,bj) .NE. 0. ) .AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ) ) then
                    mean_psMssh_all(i,j,bi,bj) =
      &             psmean(i,j,bi,bj) -tpmean(i,j,bi,bj) - offset
                else
                    mean_psMssh_all(i,j,bi,bj) = 0. _d 0
                endif
+               endif
 
                if ( maskc(i,j,1,bi,bj) .NE. 0. )
      &            psmean(i,j,bi,bj)=psmean(i,j,bi,bj)-offset
+
             enddo
           enddo
         enddo
