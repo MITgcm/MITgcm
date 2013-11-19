@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.18 2013/04/03 16:05:47 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.19 2013/11/19 16:59:33 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -9,7 +9,7 @@ C     !INTERFACE:
       SUBROUTINE GAD_IMPLICIT_R(
      I      implicitAdvection, advectionScheme, tracerIdentity,
      I      deltaTLev,
-     I      kappaRX, recip_hFac, wVel, tracer,
+     I      kappaRX, recip_hFac, wFld, tracer,
      U      gTracer,
      I      bi, bj, myTime, myIter, myThid )
 C     !DESCRIPTION:
@@ -32,7 +32,7 @@ C advectionScheme   :: advection scheme to use
 C tracerIdentity    :: Identifier for the tracer
 C kappaRX           :: 3-D array for vertical diffusion coefficient
 C recip_hFac        :: inverse of cell open-depth factor
-C wVel              :: vertical component of the velcity field
+C wFld              :: Advection velocity field, vertical component
 C tracer            :: tracer field at current time step
 C gTracer           :: future tracer field
 C bi,bj             :: tile indices
@@ -45,7 +45,7 @@ C myThid            :: thread number
       _RL     deltaTLev(Nr)
       _RL kappaRX   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RS recip_hFac(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL wVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL wFld      (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL gTracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       INTEGER bi, bj
@@ -83,7 +83,6 @@ C errCode   :: > 0 if singular matrix
       _RL c5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL d5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL e5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL wFld     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rTrans   (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL localTijk(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 #ifdef ALLOW_DIAGNOSTICS
@@ -180,28 +179,16 @@ C--    Compute transport
         IF (k.EQ.1) THEN
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-            wFld(i,j)   = 0. _d 0
             rTrans(i,j) = 0. _d 0
           ENDDO
          ENDDO
         ELSE
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-            wFld(i,j)   = wVel(i,j,k,bi,bj)
-cc#ifdef ALLOW_AUTODIFF_OPENAD
-cc            rTrans(i,j) = wFld(i,j)*rA(i,j,bi,bj)%v*maskC(i,j,k-1,bi,bj)
-cc#else
-            rTrans(i,j) = wFld(i,j)*rA(i,j,bi,bj)*maskC(i,j,k-1,bi,bj)
-cc#endif
+            rTrans(i,j) = wFld(i,j,k)*rA(i,j,bi,bj)
+     &                               *maskC(i,j,k-1,bi,bj)
           ENDDO
          ENDDO
-#ifdef ALLOW_GMREDI
-C--   Residual transp = Bolus transp + Eulerian transp
-         IF (useGMRedi)
-     &     CALL GMREDI_CALC_WFLOW(
-     U                 wFld, rTrans,
-     I                 k, bi, bj, myThid )
-#endif /* ALLOW_GMREDI */
         ENDIF
 
 #ifdef ALLOW_AIM

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.72 2013/03/04 18:20:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.73 2013/11/19 16:59:33 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -11,7 +11,7 @@ C !INTERFACE: ==========================================================
       SUBROUTINE GAD_ADVECTION(
      I     implicitAdvection, advectionScheme, vertAdvecScheme,
      I     trIdentity, deltaTLev,
-     I     uVel, vVel, wVel, tracer,
+     I     uFld, vFld, wFld, tracer,
      O     gTracer,
      I     bi,bj, myTime,myIter,myThid)
 
@@ -58,9 +58,9 @@ C  implicitAdvection :: implicit vertical advection (later on)
 C  advectionScheme   :: advection scheme to use (Horizontal plane)
 C  vertAdvecScheme   :: advection scheme to use (vertical direction)
 C  trIdentity        :: tracer identifier
-C  uVel              :: velocity, zonal component
-C  vVel              :: velocity, meridional component
-C  wVel              :: velocity, vertical component
+C  uFld              :: Advection velocity field, zonal component
+C  vFld              :: Advection velocity field, meridional component
+C  wFld              :: Advection velocity field, vertical component
 C  tracer            :: tracer field
 C  bi,bj             :: tile indices
 C  myTime            :: current time
@@ -70,9 +70,9 @@ C  myThid            :: thread number
       INTEGER advectionScheme, vertAdvecScheme
       INTEGER trIdentity
       _RL deltaTLev(Nr)
-      _RL uVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL vVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL uFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL vFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL wFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER bi,bj
       _RL myTime
@@ -100,10 +100,7 @@ C [jMin,jMax]Upd :: loop range to update tracer field
 C  i,j,k         :: loop indices
 C  kUp           :: index into 2 1/2D array, toggles between 1 and 2
 C  kDown         :: index into 2 1/2D array, toggles between 2 and 1
-C  kp1           :: =k+1 for k<Nr, =Nr for k=Nr
 C  xA,yA         :: areas of X and Y face of tracer cells
-C  uFld,vFld     :: 2-D local copy of horizontal velocity, U,V components
-C  wFld          :: 2-D local copy of vertical velocity
 C  uTrans,vTrans :: 2-D arrays of volume transports at U,V points
 C  rTrans        :: 2-D arrays of volume transports at W points
 C  rTransKp      :: vertical volume transport at interface k+1
@@ -131,9 +128,6 @@ c     _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER i,j,k,kUp,kDown
       _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL wFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -216,20 +210,23 @@ C     point numbers. This prevents spurious hardware signals due to
 C     uninitialised but inert locations.
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        xA(i,j)      = 0. _d 0
-        yA(i,j)      = 0. _d 0
-        uTrans(i,j)  = 0. _d 0
-        vTrans(i,j)  = 0. _d 0
+C-    xA,yA,vFld,uTrans,vTrans are set over the full domain
+C      => no need for extra initialisation
+c       xA(i,j)      = 0. _d 0
+c       yA(i,j)      = 0. _d 0
+c       uTrans(i,j)  = 0. _d 0
+c       vTrans(i,j)  = 0. _d 0
+C-    rTransKp is set over the full domain: no need for extra initialisation
+c       rTransKp(i,j)= 0. _d 0
+C-    rTrans and fVerT need to be initialised to zero:
         rTrans(i,j)  = 0. _d 0
         fVerT(i,j,1) = 0. _d 0
         fVerT(i,j,2) = 0. _d 0
-        rTransKp(i,j)= 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef GAD_MULTIDIM_COMPRESSIBLE
         localVol(i,j) = 0. _d 0
 # endif
         localTij(i,j) = 0. _d 0
-        wFld(i,j)    = 0. _d 0
 #endif /* ALLOW_AUTODIFF_TAMC */
        ENDDO
       ENDDO
@@ -272,18 +269,22 @@ CADJ &     comlev1_bibj_k_gad, key=kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Get temporary terms used by tendency routines
-      CALL CALC_COMMON_FACTORS (
-     I         uVel, vVel,
-     O         uFld, vFld, uTrans, vTrans, xA, yA,
-     I         k,bi,bj, myThid )
-
-#ifdef ALLOW_GMREDI
-C--   Residual transp = Bolus transp + Eulerian transp
-      IF (useGMRedi)
-     &   CALL GMREDI_CALC_UVFLOW(
-     U                  uFld, vFld, uTrans, vTrans,
-     I                  k, bi, bj, myThid )
-#endif /* ALLOW_GMREDI */
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+         xA(i,j) = _dyG(i,j,bi,bj)*deepFacC(k)
+     &           *drF(k)*_hFacW(i,j,k,bi,bj)
+         yA(i,j) = _dxG(i,j,bi,bj)*deepFacC(k)
+     &           *drF(k)*_hFacS(i,j,k,bi,bj)
+       ENDDO
+      ENDDO
+C--   Calculate "volume transports" through tracer cell faces.
+C     anelastic: scaled by rhoFacC (~ mass transport)
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+         uTrans(i,j) = uFld(i,j,k)*xA(i,j)*rhoFacC(k)
+         vTrans(i,j) = vFld(i,j,k)*yA(i,j)*rhoFacC(k)
+       ENDDO
+      ENDDO
 
 C--   Make local copy of tracer array and mask West & South
       DO j=1-OLy,sNy+OLy
@@ -395,25 +396,25 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
         IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &     .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
           CALL GAD_DST2U1_ADV_X(    bi,bj,k, advectionScheme, .TRUE.,
-     I                              deltaTLev(k),uTrans,uFld,localTij,
-     O                              af, myThid )
+     I             deltaTLev(k),uTrans,uFld(1-OLx,1-OLy,k), localTij,
+     O             af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
-     I                              uTrans, uFld, maskLocW, localTij,
-     O                              af, myThid )
+     I             uTrans, uFld(1-OLx,1-OLy,k), maskLocW, localTij,
+     O             af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
           CALL GAD_DST3_ADV_X(      bi,bj,k, .TRUE., deltaTLev(k),
-     I                              uTrans, uFld, maskLocW, localTij,
-     O                              af, myThid )
+     I             uTrans, uFld(1-OLx,1-OLy,k), maskLocW, localTij,
+     O             af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
           CALL GAD_DST3FL_ADV_X(    bi,bj,k, .TRUE., deltaTLev(k),
-     I                              uTrans, uFld, maskLocW, localTij,
-     O                              af, myThid )
+     I             uTrans, uFld(1-OLx,1-OLy,k), maskLocW, localTij,
+     O             af, myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
         ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_X(     bi,bj,k, .TRUE., deltaTLev(k),
-     I                              uTrans, uFld, maskLocW, localTij,
-     O                              af, myThid )
+     I             uTrans, uFld(1-OLx,1-OLy,k), maskLocW, localTij,
+     O             af, myThid )
 #endif
         ELSE
          STOP 'GAD_ADVECTION: adv. scheme incompatibale with multi-dim'
@@ -592,25 +593,25 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
         IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &     .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
           CALL GAD_DST2U1_ADV_Y(    bi,bj,k, advectionScheme, .TRUE.,
-     I                              deltaTLev(k),vTrans,vFld,localTij,
-     O                              af, myThid )
+     I             deltaTLev(k),vTrans,vFld(1-OLx,1-OLy,k), localTij,
+     O             af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
-     I                              vTrans, vFld, maskLocS, localTij,
-     O                              af, myThid )
+     I             vTrans, vFld(1-OLx,1-OLy,k), maskLocS, localTij,
+     O             af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
           CALL GAD_DST3_ADV_Y(      bi,bj,k, .TRUE., deltaTLev(k),
-     I                              vTrans, vFld, maskLocS, localTij,
-     O                              af, myThid )
+     I             vTrans, vFld(1-OLx,1-OLy,k), maskLocS, localTij,
+     O             af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
           CALL GAD_DST3FL_ADV_Y(    bi,bj,k, .TRUE., deltaTLev(k),
-     I                              vTrans, vFld, maskLocS, localTij,
-     O                              af, myThid )
+     I             vTrans, vFld(1-OLx,1-OLy,k), maskLocS, localTij,
+     O             af, myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
         ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_Y(     bi,bj,k, .TRUE., deltaTLev(k),
-     I                              vTrans, vFld, maskLocS, localTij,
-     O                              af, myThid )
+     I             vTrans, vFld(1-OLx,1-OLy,k), maskLocS, localTij,
+     O             af, myThid )
 #endif
         ELSE
          STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
@@ -804,15 +805,12 @@ C--   kUp    Cycles through 1,2 to point to w-layer above
 C--   kDown  Cycles through 2,1 to point to w-layer below
         kUp  = 1+MOD(k+1,2)
         kDown= 1+MOD(k,2)
-c       kp1=min(Nr,k+1)
         kp1Msk=1.
-        if (k.EQ.Nr) kp1Msk=0.
+        IF (k.EQ.Nr) kp1Msk=0.
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE rtrans(:,:)  =
 CADJ &     comlev1_bibj_k_gad, key=kkey, kind=isbyte
-cphCADJ STORE wFld(:,:)  =
-cphCADJ &     comlev1_bibj_k_gad, key=kkey, kind=isbyte
 #endif
 
 C-- Compute Vertical transport
@@ -825,16 +823,10 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
         IF ( k.EQ.1 ) THEN
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
-cphmultiCADJ STORE wFld(:,:)  =
-cphmultiCADJ &     comlev1_bibj_k_gad, key=kkey, kind=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-
 C- Surface interface :
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            rTransKp(i,j) = kp1Msk*rTrans(i,j)
-           wFld(i,j)   = 0.
            rTrans(i,j) = 0.
            fVerT(i,j,kUp) = 0.
           ENDDO
@@ -842,30 +834,16 @@ C- Surface interface :
 
         ELSE
 
-#ifdef ALLOW_AUTODIFF_TAMC
-cphmultiCADJ STORE wFld(:,:)  =
-cphmultiCADJ &     comlev1_bibj_k_gad, key=kkey, kind=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-
 C- Interior interface :
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            rTransKp(i,j) = kp1Msk*rTrans(i,j)
-           wFld(i,j)   = wVel(i,j,k,bi,bj)
-           rTrans(i,j) = wVel(i,j,k,bi,bj)*rA(i,j,bi,bj)
+           rTrans(i,j) = wFld(i,j,k)*rA(i,j,bi,bj)
      &                 *deepFac2F(k)*rhoFacF(k)
      &                 *maskC(i,j,k-1,bi,bj)
            fVerT(i,j,kUp) = 0.
           ENDDO
          ENDDO
-
-#ifdef ALLOW_GMREDI
-C--   Residual transp = Bolus transp + Eulerian transp
-         IF (useGMRedi)
-     &     CALL GMREDI_CALC_WFLOW(
-     U                 wFld, rTrans,
-     I                 k, bi, bj, myThid )
-#endif /* ALLOW_GMREDI */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cphmultiCADJ STORE localT3d(:,:,k)
@@ -878,25 +856,25 @@ C-    Compute vertical advective flux in the interior:
          IF ( vertAdvecScheme.EQ.ENUM_UPWIND_1RST
      &      .OR. vertAdvecScheme.EQ.ENUM_DST2 ) THEN
            CALL GAD_DST2U1_ADV_R(    bi,bj,k, advectionScheme,
-     I                          deltaTLev(k),rTrans,wFld,localT3d,
-     O                               fVerT(1-OLx,1-OLy,kUp), myThid )
+     I              deltaTLev(k),rTrans,wFld(1-OLx,1-OLy,k),localT3d,
+     O              fVerT(1-OLx,1-OLy,kUp), myThid )
          ELSEIF( vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
            CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k, deltaTLev(k),
-     I                               rTrans, wFld, localT3d,
-     O                               fVerT(1-OLx,1-OLy,kUp), myThid )
+     I              rTrans, wFld(1-OLx,1-OLy,k), localT3d,
+     O              fVerT(1-OLx,1-OLy,kUp), myThid )
          ELSEIF( vertAdvecScheme.EQ.ENUM_DST3 ) THEN
            CALL GAD_DST3_ADV_R(      bi,bj,k, deltaTLev(k),
-     I                               rTrans, wFld, localT3d,
-     O                               fVerT(1-OLx,1-OLy,kUp), myThid )
+     I              rTrans, wFld(1-OLx,1-OLy,k), localT3d,
+     O              fVerT(1-OLx,1-OLy,kUp), myThid )
          ELSEIF( vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
            CALL GAD_DST3FL_ADV_R(    bi,bj,k, deltaTLev(k),
-     I                               rTrans, wFld, localT3d,
-     O                               fVerT(1-OLx,1-OLy,kUp), myThid )
+     I              rTrans, wFld(1-OLx,1-OLy,k), localT3d,
+     O              fVerT(1-OLx,1-OLy,kUp), myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
          ELSEIF (vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_R(     bi,bj,k, deltaTLev(k),
-     I                               rTrans, wFld, localT3d,
-     O                               fVerT(1-OLx,1-OLy,kUp), myThid )
+     I              rTrans, wFld(1-OLx,1-OLy,k), localT3d,
+     O              fVerT(1-OLx,1-OLy,kUp), myThid )
 #endif
          ELSE
           STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'

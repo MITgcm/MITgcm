@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.10 2012/03/08 17:13:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.11 2013/11/19 17:00:22 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -9,7 +9,7 @@ C !ROUTINE: PTRACERS_IMPLICIT
 C !INTERFACE: ==========================================================
       SUBROUTINE PTRACERS_IMPLICIT(
      U                              kappaRk,
-     I                              recip_hFac,
+     I                              wFld, recip_hFac,
      I                              bi, bj, myTime, myIter, myThid )
 
 C !DESCRIPTION:
@@ -42,11 +42,13 @@ C !USES: ===============================================================
 #endif
 
 C !INPUT PARAMETERS: ===================================================
+C  wFld       ::  Advection velocity field, vertical component
 C  recip_hFac :: Inverse of cell open-depth factor
 C  bi,bj      :: tile indices
 C  myTime     :: time in simulation
 C  myIter     :: iteration number in simulation
 C  myThid     :: thread number
+      _RL     wFld      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RS     recip_hFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER bi,bj
       _RL     myTime
@@ -115,12 +117,7 @@ CADJ &     key=iptrkey, byte=isbyte
           CALL GAD_IMPLICIT_R(
      I         PTRACERS_ImplVertAdv(iTracer),
      I         PTRACERS_advScheme(iTracer), GAD_TR,
-     I         PTRACERS_dTLev, kappaRk, recip_hFac,
-#ifdef ALLOW_LONGSTEP
-     I         LS_wVel,
-#else
-     I         wVel,
-#endif
+     I         PTRACERS_dTLev, kappaRk, recip_hFac, wFld,
      I         pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      U         gPtr(1-OLx,1-OLy,1,1,1,iTracer),
      I         bi, bj, myTime, myIter, myThid )

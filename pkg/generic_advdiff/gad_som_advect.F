@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.11 2013/03/02 00:32:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.12 2013/11/19 16:59:33 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -11,7 +11,7 @@ C !INTERFACE: ==========================================================
       SUBROUTINE GAD_SOM_ADVECT(
      I     implicitAdvection, advectionScheme, vertAdvecScheme,
      I     tracerIdentity, deltaTLev,
-     I     uVel, vVel, wVel, tracer,
+     I     uFld, vFld, wFld, tracer,
      U     smTr,
      O     gTracer,
      I     bi,bj, myTime,myIter,myThid)
@@ -40,9 +40,9 @@ C  implicitAdvection :: implicit vertical advection (later on)
 C  advectionScheme   :: advection scheme to use (Horizontal plane)
 C  vertAdvecScheme   :: advection scheme to use (vertical direction)
 C  tracerIdentity    :: tracer identifier (required only for OBCS)
-C  uVel              :: velocity, zonal component
-C  vVel              :: velocity, meridional component
-C  wVel              :: velocity, vertical component
+C  uFld              :: Advection velocity field, zonal component
+C  vFld              :: Advection velocity field, meridional component
+C  wFld              :: Advection velocity field, vertical component
 C  tracer            :: tracer field
 C  bi,bj             :: tile indices
 C  myTime            :: current time
@@ -52,9 +52,9 @@ C  myThid            :: thread number
       INTEGER advectionScheme, vertAdvecScheme
       INTEGER tracerIdentity
       _RL deltaTLev(Nr)
-      _RL uVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL vVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL uFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL vFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL wFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER bi,bj
       _RL myTime
@@ -73,8 +73,6 @@ C  i,j,k         :: loop indices
 C  kUp           :: index into 2 1/2D array, toggles between 1 and 2
 C  kDown         :: index into 2 1/2D array, toggles between 2 and 1
 C  xA,yA         :: areas of X and Y face of tracer cells
-C  uFld,vFld     :: 2-D local copy of horizontal velocity, U,V components
-C  wFld          :: 2-D local copy of vertical velocity
 C  uTrans,vTrans :: 2-D arrays of volume transports at U,V points
 C  rTrans        :: 2-D arrays of volume transports at W points
 C  afx           :: 2-D array for horizontal advective flux, x direction
@@ -96,9 +94,6 @@ C  msgBuf        :: Informational/error message buffer
       INTEGER i,j,k,km1,kUp,kDown
       _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL wFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -181,8 +176,8 @@ C     uninitialised but inert locations.
        DO i=1-OLx,sNx+OLx
          afx(i,j) = 0.
          afy(i,j) = 0.
-C-    xA,yA,uFld,vFld,uTrans,vTrans are set over the full domain
-C     in CALC_COMMON_FACTORS: no need for extra initialisation
+C-    xA,yA,uTrans,vTrans are set over the full domain
+C      => no need for extra initialisation
 c       xA(i,j)      = 0. _d 0
 c       yA(i,j)      = 0. _d 0
 c       uTrans(i,j)  = 0. _d 0
@@ -246,18 +241,22 @@ C--   Start of k loop for horizontal fluxes
       DO k=1,Nr
 
 C--   Get temporary terms used by tendency routines
-       CALL CALC_COMMON_FACTORS (
-     I         uVel, vVel,
-     O         uFld, vFld, uTrans, vTrans, xA, yA,
-     I         k,bi,bj, myThid )
-
-#ifdef ALLOW_GMREDI
-C--   Residual transp = Bolus transp + Eulerian transp
-       IF (useGMRedi)
-     &   CALL GMREDI_CALC_UVFLOW(
-     U                  uFld, vFld, uTrans, vTrans,
-     I                  k, bi, bj, myThid )
-#endif /* ALLOW_GMREDI */
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          xA(i,j) = _dyG(i,j,bi,bj)*deepFacC(k)
+     &            *drF(k)*_hFacW(i,j,k,bi,bj)
+          yA(i,j) = _dxG(i,j,bi,bj)*deepFacC(k)
+     &            *drF(k)*_hFacS(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+C--   Calculate "volume transports" through tracer cell faces.
+C     anelastic: scaled by rhoFacC (~ mass transport)
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          uTrans(i,j) = uFld(i,j,k)*xA(i,j)*rhoFacC(k)
+          vTrans(i,j) = vFld(i,j,k)*yA(i,j)*rhoFacC(k)
+        ENDDO
+       ENDDO
 
 C--   grid-box volume and tracer content (zero order moment)
        DO j=1-OLy,sNy+OLy
@@ -514,7 +513,6 @@ c       IF ( k.EQ.1 ) THEN
 C- Surface interface :
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           wFld(i,j)   = 0.
            rTrans(i,j) = 0.
            maskUp(i,j) = 0.
           ENDDO
@@ -524,8 +522,7 @@ C- Surface interface :
 C- Interior interface :
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           wFld(i,j)   = wVel(i,j,k,bi,bj)
-           rTrans(i,j) = wVel(i,j,k,bi,bj)*rA(i,j,bi,bj)
+           rTrans(i,j) = wFld(i,j,k)*rA(i,j,bi,bj)
      &                 *deepFac2F(k)*rhoFacF(k)
      &                 *maskC(i,j,k-1,bi,bj)
            maskUp(i,j) = 1.
@@ -537,8 +534,7 @@ C- Linear Free-Surface: do not mask rTrans :
          km1= MAX(k-1,1)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           wFld(i,j)   = wVel(i,j,k,bi,bj)
-           rTrans(i,j) = wVel(i,j,k,bi,bj)*rA(i,j,bi,bj)
+           rTrans(i,j) = wFld(i,j,k)*rA(i,j,bi,bj)
      &                 *deepFac2F(k)*rhoFacF(k)
            maskUp(i,j) = maskC(i,j,km1,bi,bj)*maskC(i,j,k,bi,bj)
           ENDDO
@@ -546,14 +542,6 @@ C- Linear Free-Surface: do not mask rTrans :
 
 C- end Surface/Interior if bloc
         ENDIF
-
-#ifdef ALLOW_GMREDI
-C--   Residual transp = Bolus transp + Eulerian transp
-        IF (useGMRedi .AND. k.GT.1 )
-     &     CALL GMREDI_CALC_WFLOW(
-     U                 wFld, rTrans,
-     I                 k, bi, bj, myThid )
-#endif /* ALLOW_GMREDI */
 
 C-    Compute vertical advective flux in the interior:
         IF ( vertAdvecScheme.EQ.ENUM_SOM_PRATHER

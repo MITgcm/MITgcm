@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.17 2012/03/08 17:13:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.18 2013/11/19 17:00:22 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -8,7 +8,9 @@ CBOP
 C !ROUTINE: PTRACERS_ADVECTION
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE PTRACERS_ADVECTION( bi,bj,myTime,myIter,myThid )
+      SUBROUTINE PTRACERS_ADVECTION( bi, bj,
+     I                               uFld, vFld, wFld,
+     I                               myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C     Calculates tendency for passive tracers and integrates forward
@@ -20,11 +22,6 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
-#ifdef ALLOW_LONGSTEP
-#include "LONGSTEP_PARAMS.h"
-#include "LONGSTEP.h"
-#endif
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_START.h"
@@ -36,12 +33,18 @@ C !USES: ===============================================================
 #endif
 
 C !INPUT PARAMETERS: ===================================================
-C  bi,bj                :: tile indices
-C  myTime               :: model time
-C  myIter               :: time-step number
-C  myThid               :: thread number
-      INTEGER bi,bj
-      _RL myTime
+C  bi,bj             :: tile indices
+C  uFld              :: Advection velocity field, zonal component
+C  vFld              :: Advection velocity field, meridional component
+C  wFld              :: Advection velocity field, vertical component
+C  myTime            :: model time
+C  myIter            :: time-step number
+C  myThid            :: thread number
+      _RL     uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     wFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      INTEGER bi, bj
+      _RL     myTime
       INTEGER myIter
       INTEGER myThid
 
@@ -51,11 +54,7 @@ C  none
 #ifdef ALLOW_PTRACERS
 
 C !LOCAL VARIABLES: ====================================================
-C  i,j,k,bi,bj,iTracer  :: loop indices
-C  iMin,iMax,jMin,jMax  :: loop ranges
-C  kUp,kDown            :: toggle indices for even/odd level fluxes
-C  km1                  :: =min(1,k-1)
-C  rFlx                 :: vertical flux
+C  i,j,k,iTracer  :: loop indices
       INTEGER iTracer
 CEOP
 
@@ -96,15 +95,11 @@ CADJ &      = comlev1_bibj_ptracers, key=iptrkey, byte=isbyte
      I                       PTRACERS_advScheme(iTracer),
      I                       GAD_TR1+iTracer-1,
      I                       PTRACERS_dTLev,
-#ifdef ALLOW_LONGSTEP
-     I                       LS_uVel, LS_vVel, LS_wVel,
-#else
-     I                       uVel, vVel, wVel,
-#endif
+     I                       uFld, vFld, wFld,
      I                       pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      U                       _Ptracers_som(:,:,:,:,:,:,iTracer),
      O                       gPtr(1-OLx,1-OLy,1,1,1,iTracer),
-     I                       bi,bj,myTime,myIter,myThid)
+     I                       bi, bj, myTime, myIter, myThid )
        ELSEIF ( PTRACERS_MultiDimAdv(iTracer) ) THEN
 #else /* PTRACERS_ALLOW_DYN_STATE */
        IF ( PTRACERS_MultiDimAdv(iTracer) ) THEN
@@ -115,16 +110,11 @@ CADJ &      = comlev1_bibj_ptracers, key=iptrkey, byte=isbyte
      I                        PTRACERS_advScheme(iTracer),
      I                        GAD_TR1+iTracer-1,
      I                        PTRACERS_dTLev,
-#ifdef ALLOW_LONGSTEP
-     I                        LS_uVel, LS_vVel, LS_wVel,
-#else
-     I                        uVel, vVel, wVel,
-#endif
+     I                        uFld, vFld, wFld,
      I                        pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      O                        gPtr(1-OLx,1-OLy,1,1,1,iTracer),
-     I                        bi,bj,myTime,myIter,myThid)
+     I                        bi, bj, myTime, myIter, myThid )
        ENDIF
-
 
 C end of tracer loop
       ENDIF
