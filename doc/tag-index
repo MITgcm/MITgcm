@@ -1,8 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1940 2013/11/17 15:48:18 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1941 2013/11/19 00:03:51 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o tools/OAD_support and (verification/*/) code_oad:
+  - OAD_support/cb2mGetModules.csh: add PACKAGES_CONFIG.h in header file to
+    module conversion ; remove unneeded CPP_EEOPTIONS.h.
+  - code_oad/CPP_OPTIONS.h: remove PACKAGES_CONFIG.h and use a more standard
+    version (closer to model/incCPP_OPTIONS.h).
+o model/src:
+  - remove parameter "useOldFreezing" from PARAMS.h and push it to the
+    retired list of parameters (routine FREEZE has been replace by surface
+    freezing (10.yrs ago) and by pkg/frazil (interior freezing).
+o pkg/gmredi:
+  - add option (GM_CALC_TRANSP_FROM_VEL) to compute transport directly from
+    velocity (same scheme but affects machine truncation) for GM_AdvForm.
+  - update output of FWD experiments: front_relax.bvp,
+    global_ocean.90x40x15.dwnslp, global_ocean.cs32x15 and ideal_2D_oce.
 
 checkpoint64q (2013/11/17)
 o verification:
