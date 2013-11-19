@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.144 2013/11/18 15:51:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.145 2013/11/19 16:58:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -119,9 +119,9 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myTime - Current time in simulation
-C     myIter - Current iteration number in simulation
-C     myThid - Thread number for this instance of the routine.
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration number in simulation
+C     myThid :: Thread number for this instance of the routine.
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -129,55 +129,22 @@ C     myThid - Thread number for this instance of the routine.
 #ifdef ALLOW_GENERIC_ADVDIFF
 C     !LOCAL VARIABLES:
 C     == Local variables
-C     xA, yA                 - Per block temporaries holding face areas
-C     uFld, vFld, wFld       - Local copy of velocity field (3 components)
-C     uTrans, vTrans, rTrans - Per block temporaries holding flow transport
-C                              o uTrans: Zonal transport
-C                              o vTrans: Meridional transport
-C                              o rTrans: Vertical transport
-C     rTransKp1                o vertical volume transp. at interface k+1
-C     maskUp                   o maskUp: land/water mask for W points
-C     fVer[STUV]               o fVer: Vertical flux term - note fVer
-C                                      is "pipelined" in the vertical
-C                                      so we need an fVer for each
-C                                      variable.
-C     kappaRT,       - Total diffusion in vertical at level k, for T and S
-C     kappaRS          (background + spatially varying, isopycnal term).
-C     kappaRTr       - Total diffusion in vertical at level k,
-C                      for each passive Tracer
-C     kappaRk        - Total diffusion in vertical, all levels, 1 tracer
-C     useVariableK   = T when vertical diffusion is not constant
-C     iMin, iMax     - Ranges and sub-block indices on which calculations
-C     jMin, jMax       are applied.
-C     bi, bj
-C     k, kup,        - Index for layer above and below. kup and kDown
-C     kDown, km1       are switched with layer to be the appropriate
-C                      index into fVerTerm.
-      _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS yA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL wFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rTransKp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      _RL fVerS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      _RL kappaRT (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL kappaRS (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#ifdef DO_PTRACERS_HERE
-      _RL fVerP   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2,PTRACERS_num)
-      _RL kappaRTr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,PTRACERS_num)
-#endif
+C     uFld,vFld,wFld :: Local copy of velocity field (3 components)
+C     kappaRk        :: Total diffusion in vertical, all levels, 1 tracer
+C     useVariableK   :: T when vertical diffusion is not constant
+C     iMin, iMax     :: Ranges and sub-block indices on which calculations
+C     jMin, jMax        are applied.
+C     bi, bj         :: Tile indices
+C     i, j, k        :: loop indices
+      _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL vFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL wFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL kappaRk (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RS recip_hFacNew(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       INTEGER bi, bj
-      INTEGER i, j
-      INTEGER k, km1, kup, kDown
+      INTEGER i, j, k
 #ifdef ALLOW_ADAMSBASHFORTH_3
       INTEGER iterNb, m1, m2
       _RL tmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -186,9 +153,8 @@ C                      index into fVerTerm.
       LOGICAL useVariableK
 #endif
 #ifdef DO_PTRACERS_HERE
-      INTEGER iTracer, ip
+      INTEGER iTracer
 #endif
-
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -211,27 +177,15 @@ C-- Compute correction at the surface for Lin Free Surf.
       TsurfCor = 0. _d 0
       SsurfCor = 0. _d 0
 #endif
-      IF (linFSConserveTr) THEN
+      IF ( linFSConserveTr ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta,salt,wvel = comlev1, key = ikey_dynamics, byte=isbyte
 #endif
-       CALL CALC_WSURF_TR(theta,salt,wVel,
-     &                    myTime,myIter,myThid)
+       CALL CALC_WSURF_TR( theta, salt, wVel,
+     &                     myTime, myIter, myThid )
       ENDIF
 
       DO bj=myByLo(myThid),myByHi(myThid)
-
-#ifdef ALLOW_AUTODIFF_TAMC
-C--    HPF directive to help TAMC
-CHPF$  INDEPENDENT, NEW (rTrans,fVerT,fVerS
-CHPF$&                  ,utrans,vtrans,xA,yA
-CHPF$&                  ,kappaRT,kappaRS
-CHPF$&                  )
-# ifdef DO_PTRACERS_HERE
-CHPF$  INDEPENDENT, NEW (fVerP,kappaRTr)
-# endif
-#endif /* ALLOW_AUTODIFF_TAMC */
-
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -253,29 +207,10 @@ C     just ensure that all memory references are to valid floating
 C     point numbers. This prevents spurious hardware signals due to
 C     uninitialised but inert locations.
 
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          xA(i,j)        = 0. _d 0
-          yA(i,j)        = 0. _d 0
-          uTrans(i,j)    = 0. _d 0
-          vTrans(i,j)    = 0. _d 0
-          rTrans (i,j)   = 0. _d 0
-          rTransKp1(i,j) = 0. _d 0
-          fVerT  (i,j,1) = 0. _d 0
-          fVerT  (i,j,2) = 0. _d 0
-          fVerS  (i,j,1) = 0. _d 0
-          fVerS  (i,j,2) = 0. _d 0
-          kappaRT(i,j)   = 0. _d 0
-          kappaRS(i,j)   = 0. _d 0
-          DO k=1,Nr
-           recip_hFacNew(i,j,k) = 0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
+           recip_hFacNew(i,j,k) = 0. _d 0
 C This is currently also used by IVDC and Diagnostics
            kappaRk(i,j,k)    = 0. _d 0
 C- tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
@@ -287,15 +222,6 @@ C- tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
 
 #ifdef DO_PTRACERS_HERE
         IF ( usePTRACERS ) THEN
-         DO ip=1,PTRACERS_num
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             fVerP  (i,j,1,ip) = 0. _d 0
-             fVerP  (i,j,2,ip) = 0. _d 0
-             kappaRTr(i,j,ip)  = 0. _d 0
-            ENDDO
-           ENDDO
-         ENDDO
 C-      set tracer tendency to zero:
          DO iTracer=1,PTRACERS_num
           DO k=1,Nr
@@ -327,31 +253,48 @@ C       compute S^n+1/2 (stored in gsNm) extrapolating S forward in time
      I                                  saltStartAB, iterNb, myThid )
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
 
-c       iMin = 1-OLx
-c       iMax = sNx+OLx
-c       jMin = 1-OLy
-c       jMax = sNy+OLy
-
 #ifdef ALLOW_AUTODIFF_TAMC
 cph avoids recomputation of integrate_for_w
 CADJ STORE wvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C--     Attention: by defining "SINGLE_LAYER_MODE" in CPP_OPTIONS.h
-C--     MOST of THERMODYNAMICS will be disabled
-#ifndef SINGLE_LAYER_MODE
+C--   Set up 3-D velocity field that we use to advect tracers:
+C-    just do a local copy:
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uFld(i,j,k) = uVel(i,j,k,bi,bj)
+           vFld(i,j,k) = vVel(i,j,k,bi,bj)
+           wFld(i,j,k) = wVel(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+#ifdef ALLOW_GMREDI
+C-    add Bolus velocity to Eulerian-mean velocity:
+        IF (useGMRedi) THEN
+          CALL  GMREDI_RESIDUAL_FLOW(
+     U                  uFld, vFld, wFld,
+     I                  bi, bj, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_GMREDI */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-# if ((defined ALLOW_DEPTH_CONTROL) || (defined NONLIN_FRSURF))
-#  ifndef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gtnm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE gsnm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE uFld (:,:,:) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE vFld (:,:,:) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE wFld (:,:,:) = comlev1_bibj, key=itdkey, byte=isbyte
+c# if ((defined ALLOW_DEPTH_CONTROL) || (defined NONLIN_FRSURF))
+#  ifdef ALLOW_ADAMSBASHFORTH_3
+CADJ STORE gtNm(:,:,:,bi,bj,1) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE gtNm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE gsNm(:,:,:,bi,bj,1) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE gsNm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
+#  else
+CADJ STORE gtNm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE gsNm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 #  endif
-# endif
+c# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifndef DISABLE_MULTIDIM_ADVECTION
@@ -367,16 +310,8 @@ C Edit GAD_OPTIONS.h and #define DISABLE_MULTIDIM_ADVECTION to
 C disable this section of code.
 #ifdef GAD_ALLOW_TS_SOM_ADV
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,:,bi,bj)  = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE salt(:,:,:,bi,bj)   = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE som_t = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE som_s = comlev1_bibj, key=itdkey, byte=isbyte
-#  ifdef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gtnm(:,:,:,bi,bj,1) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE gtnm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE gsnm(:,:,:,bi,bj,1) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE gsnm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
-#  endif
+CADJ STORE som_T = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE som_S = comlev1_bibj, key=itdkey, byte=isbyte
 # endif
         IF ( tempSOM_Advection ) THEN
 #ifdef ALLOW_DEBUG
@@ -385,7 +320,7 @@ CADJ STORE gsnm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
           CALL GAD_SOM_ADVECT(
      I             tempImplVertAdv, tempAdvScheme, tempVertAdvScheme,
      I             GAD_TEMPERATURE, dTtracerLev,
-     I             uVel, vVel, wVel, theta,
+     I             uFld, vFld, wFld, theta,
      U             som_T,
      O             gT,
      I             bi,bj,myTime,myIter,myThid)
@@ -399,9 +334,9 @@ CADJ STORE gsnm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
           CALL GAD_ADVECTION(
      I             tempImplVertAdv, tempAdvScheme, tempVertAdvScheme,
      I             GAD_TEMPERATURE, dTtracerLev,
-     I             uVel, vVel, wVel, theta,
+     I             uFld, vFld, wFld, theta,
      O             gT,
-     I             bi,bj,myTime,myIter,myThid)
+     I             bi, bj, myTime, myIter, myThid)
         ENDIF
 #ifdef GAD_ALLOW_TS_SOM_ADV
         IF ( saltSOM_Advection ) THEN
@@ -411,7 +346,7 @@ CADJ STORE gsnm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
           CALL GAD_SOM_ADVECT(
      I             saltImplVertAdv, saltAdvScheme, saltVertAdvScheme,
      I             GAD_SALINITY, dTtracerLev,
-     I             uVel, vVel, wVel, salt,
+     I             uFld, vFld, wFld, salt,
      U             som_S,
      O             gS,
      I             bi,bj,myTime,myIter,myThid)
@@ -425,9 +360,9 @@ CADJ STORE gsnm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
           CALL GAD_ADVECTION(
      I             saltImplVertAdv, saltAdvScheme, saltVertAdvScheme,
      I             GAD_SALINITY, dTtracerLev,
-     I             uVel, vVel, wVel, salt,
+     I             uFld, vFld, wFld, salt,
      O             gS,
-     I             bi,bj,myTime,myIter,myThid)
+     I             bi, bj, myTime, myIter, myThid)
         ENDIF
 
 C Since passive tracers are configurable separately from T,S we
@@ -438,7 +373,9 @@ C of whether multiDimAdvection is set or not.
 #ifdef ALLOW_DEBUG
          IF (debugMode) CALL DEBUG_CALL('PTRACERS_ADVECTION',myThid)
 #endif
-         CALL PTRACERS_ADVECTION( bi,bj,myTime,myIter,myThid )
+         CALL PTRACERS_ADVECTION( bi, bj,
+     I                            uFld, vFld, wFld,
+     I                            myTime, myIter, myThid )
         ENDIF
 #endif /* DO_PTRACERS_HERE */
 #endif /* DISABLE_MULTIDIM_ADVECTION */
@@ -457,287 +394,68 @@ CADJ &     comlev1_bibj, key=itdkey,kind = isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C--     Start of thermodynamics loop
-        DO k=Nr,1,-1
+C--     Calculate active tracer tendencies (gT,gS,...)
+C       and step forward storing result in gT, gS, etc.
+        iMin = 1-OLx+2
+        iMax = sNx+OLx-1
+        jMin = 1-OLy+2
+        jMax = sNy+OLy-1
+
 #ifdef ALLOW_AUTODIFF_TAMC
-C? Patrick Is this formula correct?
-cph Yes, but I rewrote it.
-cph Also, the kappaR? need the index and subscript k!
-         kkey = (itdkey-1)*Nr + k
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-C--       km1    Points to level above k (=k-1)
-C--       kup    Cycles through 1,2 to point to layer above
-C--       kDown  Cycles through 2,1 to point to current layer
-
-          km1  = MAX(1,k-1)
-          kup  = 1+MOD(k+1,2)
-          kDown= 1+MOD(k,2)
-
-          iMin = 1-OLx
-          iMax = sNx+OLx
-          jMin = 1-OLy
-          jMax = sNy+OLy
-
-          IF (k.EQ.Nr) THEN
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             rTransKp1(i,j) = 0. _d 0
-            ENDDO
-           ENDDO
-          ELSE
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             rTransKp1(i,j) = rTrans(i,j)
-            ENDDO
-           ENDDO
-          ENDIF
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE rTransKp1(:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
-#endif
-
-C--       Get temporary terms used by tendency routines :
-C-        Calculate horizontal "volume transport" through tracer cell face
-C         anelastic: uTrans,vTrans are scaled by rhoFacC (~ mass transport)
-          CALL CALC_COMMON_FACTORS (
-     I         uVel, vVel,
-     O         uFld, vFld, uTrans, vTrans, xA, yA,
-     I         k,bi,bj, myThid )
-
-C-        Calculate vertical "volume transport" through tracer cell face
-          IF (k.EQ.1) THEN
-C-         Surface interface :
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             wFld(i,j)   = 0. _d 0
-             maskUp(i,j) = 0. _d 0
-             rTrans(i,j) = 0. _d 0
-            ENDDO
-           ENDDO
-          ELSE
-C-         Interior interface :
-C          anelastic: rTrans is scaled by rhoFacF (~ mass transport)
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             wFld(i,j)   = wVel(i,j,k,bi,bj)
-             maskUp(i,j) = maskC(i,j,k-1,bi,bj)*maskC(i,j,k,bi,bj)
-             rTrans(i,j) = wFld(i,j)*rA(i,j,bi,bj)*maskUp(i,j)
-     &                              *deepFac2F(k)*rhoFacF(k)
-            ENDDO
-           ENDDO
-          ENDIF
-
-#ifdef ALLOW_GMREDI
-C--   Residual transp = Bolus transp + Eulerian transp
-          IF (useGMRedi) THEN
-            CALL GMREDI_CALC_UVFLOW(
-     U                  uFld, vFld, uTrans, vTrans,
-     I                  k, bi, bj, myThid )
-            IF (K.GE.2) THEN
-              CALL GMREDI_CALC_WFLOW(
-     U                  wFld, rTrans,
-     I                  k, bi, bj, myThid )
-            ENDIF
-          ENDIF
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE rTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE wfld(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
-# ifdef GM_BOLUS_ADVEC
-CADJ STORE ufld(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE vfld(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE uTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE vTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
-# endif
-# endif /* ALLOW_AUTODIFF_TAMC */
-#endif /* ALLOW_GMREDI */
-
-#ifdef  INCLUDE_CALC_DIFFUSIVITY_CALL
-C--      Calculate the total vertical diffusivity
-          IF ( .NOT.implicitDiffusion ) THEN
-            CALL CALC_DIFFUSIVITY(
-     I          bi,bj,iMin,iMax,jMin,jMax,k,
-     I          maskUp,
-     O          kappaRT,kappaRS,
-     I          myThid)
-          ENDIF
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE kappaRT(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE kappaRS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
-# endif /* ALLOW_AUTODIFF_TAMC */
-#endif
-
-          iMin = 1-OLx+2
-          iMax = sNx+OLx-1
-          jMin = 1-OLy+2
-          jMax = sNy+OLy-1
-
-C--      Calculate active tracer tendencies (gT,gS,...)
-C        and step forward storing result in gT, gS, etc.
-C--
-# ifdef ALLOW_AUTODIFF_TAMC
-#  if ((defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)) && (defined ALLOW_GMREDI)
-#   ifdef GM_NON_UNITY_DIAGONAL
-CADJ STORE kux(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE kvy(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-#   endif
-#   ifdef GM_EXTRA_DIAGONAL
-CADJ STORE kuz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE kvz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-#   endif
+# if ((defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)) && (defined ALLOW_GMREDI)
+#  ifdef GM_NON_UNITY_DIAGONAL
+CADJ STORE kux(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE kvy(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 #  endif
-# endif /* ALLOW_AUTODIFF_TAMC */
-C
-#ifdef ALLOW_AUTODIFF_TAMC
-# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
-cph-test
-CADJ STORE uFld(:,:), vFld(:,:), wFld(:,:)
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE uTrans(:,:), vTrans(:,:)
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE xA(:,:), yA(:,:)
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-#  ifdef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gT(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gS(:,:,k,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gSnm(:,:,k,bi,bj,1)= comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gSnm(:,:,k,bi,bj,2)= comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gTnm(:,:,k,bi,bj,1)= comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gTnm(:,:,k,bi,bj,2)= comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE salt(:,:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE fvert(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE fvers(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
-#  endif /* ALLOW_ADAMSBASHFORTH_3 */
-# endif /* NONLIN_FRSURF */
-#endif /* ALLOW_AUTODIFF_TAMC */
-C
-         IF ( tempStepping ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifndef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gTnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-# else
-#  ifndef NONLIN_FRSURF
-CADJ STORE gTnm(:,:,k,bi,bj,1)= comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gTnm(:,:,k,bi,bj,2)= comlev1_bibj_k, key=kkey, byte=isbyte
-#  endif /* ndef NONLIN_FRSURF */
-# endif /* ndef ALLOW_ADAMSBASHFORTH_3 */
-# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
-CADJ STORE gt(:,:,:,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE fvert(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+#  ifdef GM_EXTRA_DIAGONAL
+CADJ STORE kuz(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE kvz(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+#  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-          CALL CALC_GT(
-     I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
-     I         xA, yA, maskUp, uFld, vFld, wFld,
-     I         uTrans, vTrans, rTrans, rTransKp1,
-     I         kappaRT,
-     U         fVerT,
-     I         myTime,myIter,myThid)
-#ifdef ALLOW_ADAMSBASHFORTH_3
-          IF ( AdamsBashforth_T ) THEN
-           CALL TIMESTEP_TRACER(
-     I         bi, bj, k, dTtracerLev(k),
-     I         gtNm(1-OLx,1-OLy,1,1,1,m2),
-     U         gT,
-     I         myIter, myThid )
-          ELSE
-#endif
-           CALL TIMESTEP_TRACER(
-     I         bi, bj, k, dTtracerLev(k),
-     I         theta,
-     U         gT,
-     I         myIter, myThid )
-#ifdef ALLOW_ADAMSBASHFORTH_3
-          ENDIF
-#endif
+
+        IF ( tempStepping ) THEN
+#ifdef INCLUDE_CALC_DIFFUSIVITY_CALL
+         IF ( .NOT. implicitDiffusion ) THEN
+          CALL CALC_3D_DIFFUSIVITY(
+     I         bi, bj, iMin, iMax, jMin, jMax,
+     I         GAD_TEMPERATURE, useGMredi, useKPP,
+     O         kappaRk,
+     I         myThid )
          ENDIF
+#endif /* INCLUDE_CALC_DIFFUSIVITY_CALL */
 
-#ifdef ALLOW_AUTODIFF_TAMC
-# if (defined NONLIN_FRSURF) && (defined ALLOW_ADAMSBASHFORTH_3)
-CADJ STORE gTnm(:,:,k,bi,bj,1)= comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gTnm(:,:,k,bi,bj,2)= comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE fvert(:,:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-# endif
-#endif
+          CALL TEMP_INTEGRATE(
+     I         bi, bj, iMin, iMax, jMin, jMax,
+     I         uFld, vFld, wFld, kappaRk,
+     I         myTime, myIter, myThid )
+        ENDIF
 
-         IF ( saltStepping ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifndef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gSnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-# else
-#  ifndef NONLIN_FRSURF
-CADJ STORE gSnm(:,:,k,bi,bj,1)= comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gSnm(:,:,k,bi,bj,2)= comlev1_bibj_k, key=kkey, byte=isbyte
-#  endif /* ndef NONLIN_FRSURF */
-# endif /* ndef ALLOW_ADAMSBASHFORTH_3 */
-# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
-CADJ STORE gs(:,:,:,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE fvers(:,:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-# endif
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-          CALL CALC_GS(
-     I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
-     I         xA, yA, maskUp, uFld, vFld, wFld,
-     I         uTrans, vTrans, rTrans, rTransKp1,
-     I         kappaRS,
-     U         fVerS,
-     I         myTime,myIter,myThid)
-#ifdef ALLOW_ADAMSBASHFORTH_3
-          IF ( AdamsBashforth_S ) THEN
-           CALL TIMESTEP_TRACER(
-     I         bi, bj, k, dTtracerLev(k),
-     I         gsNm(1-OLx,1-OLy,1,1,1,m2),
-     U         gS,
-     I         myIter, myThid )
-          ELSE
-#endif
-           CALL TIMESTEP_TRACER(
-     I         bi, bj, k, dTtracerLev(k),
-     I         salt,
-     U         gS,
-     I         myIter, myThid )
-#ifdef ALLOW_ADAMSBASHFORTH_3
-          ENDIF
-#endif
+        IF ( saltStepping ) THEN
+#ifdef INCLUDE_CALC_DIFFUSIVITY_CALL
+         IF ( .NOT. implicitDiffusion ) THEN
+          CALL CALC_3D_DIFFUSIVITY(
+     I         bi, bj, iMin, iMax, jMin, jMax,
+     I         GAD_SALINITY, useGMredi, useKPP,
+     O         kappaRk,
+     I         myThid )
          ENDIF
+#endif /* INCLUDE_CALC_DIFFUSIVITY_CALL */
+
+          CALL SALT_INTEGRATE(
+     I         bi, bj, iMin, iMax, jMin, jMax,
+     I         uFld, vFld, wFld, kappaRk,
+     I         myTime, myIter, myThid )
+        ENDIF
 
 #ifdef DO_PTRACERS_HERE
-         IF ( usePTRACERS ) THEN
-           IF ( .NOT.implicitDiffusion ) THEN
-             CALL PTRACERS_CALC_DIFF(
-     I            bi,bj,iMin,iMax,jMin,jMax,k,
-     I            maskUp,
-     O            kappaRTr,
-     I            myThid)
-           ENDIF
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE kappaRTr(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
-# endif /* ALLOW_AUTODIFF_TAMC */
+        IF ( usePTRACERS ) THEN
            CALL PTRACERS_INTEGRATE(
-     I          bi,bj,k,
-     I          xA, yA, maskUp, uFld, vFld, wFld,
-     I          uTrans, vTrans, rTrans, rTransKp1,
-     I          kappaRTr,
-     U          fVerP,
-     I          myTime,myIter,myThid)
-         ENDIF
+     I          bi, bj, uFld, vFld, wFld,
+     U          kappaRk,
+     I          myTime, myIter, myThid )
+        ENDIF
 #endif /* DO_PTRACERS_HERE */
-
-C--      Freeze water
-C  this bit of code is left here for backward compatibility.
-C  freezing at surface level has been moved to DO_OCEANIC_PHYS
-c        IF ( useOldFreezing .AND. .NOT. useSEAICE
-c    &       .AND. .NOT.(useThSIce.AND.k.EQ.1) ) THEN
-c#ifdef ALLOW_AUTODIFF_TAMC
-cCADJ STORE gT(:,:,k,bi,bj) = comlev1_bibj_k
-cCADJ &   , key = kkey, byte = isbyte
-c#endif /* ALLOW_AUTODIFF_TAMC */
-c           CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, k, myThid )
-c        ENDIF
-
-C--     end of thermodynamic k loop (Nr:1)
-        ENDDO
 
 C--     Compute new reciprocal hFac for implicit calculation
 #ifdef NONLIN_FRSURF
@@ -868,14 +586,14 @@ C--     Implicit vertical advection & diffusion
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE kappaRk(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE wvel(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
+CADJ STORE wFld(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE recip_hFacNew(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL GAD_IMPLICIT_R(
      I         tempImplVertAdv, tempVertAdvScheme, GAD_TEMPERATURE,
      I         dTtracerLev,
-     I         kappaRk, recip_hFacNew, wVel, theta,
+     I         kappaRk, recip_hFacNew, wFld, theta,
      U         gT,
      I         bi, bj, myTime, myIter, myThid )
         ELSEIF ( tempStepping .AND. implicitDiffusion ) THEN
@@ -920,14 +638,14 @@ c    I                        Nr, 3, deltaTClock, bi, bj, myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE kappaRk(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE wvel(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
+CADJ STORE wFld(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE salt(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE recip_hFacNew(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL GAD_IMPLICIT_R(
      I         saltImplVertAdv, saltVertAdvScheme, GAD_SALINITY,
      I         dTtracerLev,
-     I         kappaRk, recip_hFacNew, wVel, salt,
+     I         kappaRk, recip_hFacNew, wFld, salt,
      U         gS,
      I         bi, bj, myTime, myIter, myThid )
         ELSEIF ( saltStepping .AND. implicitDiffusion ) THEN
@@ -951,7 +669,7 @@ C--     Vertical advection/diffusion (implicit) for passive tracers
 C       Also apply open boundary conditions for each passive tracer
            CALL PTRACERS_IMPLICIT(
      U                             kappaRk,
-     I                             recip_hFacNew,
+     I                             wFld, recip_hFacNew,
      I                             bi, bj, myTime, myIter, myThid )
         ENDIF
 #endif /* DO_PTRACERS_HERE */
@@ -962,8 +680,6 @@ C--      Apply open boundary conditions
            CALL OBCS_APPLY_TS( bi, bj, 0, gT, gS, myThid )
         ENDIF
 #endif   /* ALLOW_OBCS */
-
-#endif /* SINGLE_LAYER_MODE */
 
 C--   end bi,bj loops.
        ENDDO
