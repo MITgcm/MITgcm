@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.12 2013/11/19 19:56:51 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.13 2013/11/19 20:20:52 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -126,7 +126,7 @@ c for PART 4/5: compute smooth/raw anomalies
       _RL anom_gfoobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       integer tpmean_y0,tpmean_y1,year,day
-      integer num_var
+      integer num_var, num0
 
       _RL junk,junkweight
 
@@ -203,6 +203,9 @@ c      tpmean_y1=2002
 c rio
 c      tpmean_y0=1993
 c      tpmean_y1=1999
+
+c minimum number of observations to consider re-referenced MDT
+      num0=100
 
       doReference=.FALSE.
       if ((modelstartdate(1).GT.1992*10000).AND.
@@ -507,7 +510,7 @@ c--   END loop over records for the first time.
                   mean_psMgfoobs_MSK(i,j,bi,bj) = 1. _d 0
                endif
 #endif
-               if ( ( mean_psMssh_all_NUM(i,j,bi,bj) .NE. 0. ).AND.
+               if ( ( mean_psMssh_all_NUM(i,j,bi,bj) .GT. num0 ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
 #ifndef ALLOW_HIGHLAT_ALTIMETRY     
      &              ( abs(YC(i,j,bi,bj)) .LE. 66. ).AND.
@@ -521,11 +524,13 @@ c--   END loop over records for the first time.
      &                 mean_psMssh_all(i,j,bi,bj) /
      &                 mean_psMssh_all_NUM(i,j,bi,bj)-tpmean(i,j,bi,bj)
                   mean_psMssh_all_MSK(i,j,bi,bj) = 1. _d 0
-                  offset=offset+mean_psMssh_all(i,j,bi,bj)*
-     &                 mean_psMssh_all_NUM(i,j,bi,bj)
-                  offset_sum=offset_sum+mean_psMssh_all_NUM(i,j,bi,bj)
+                  offset=offset+RA(i,j,bi,bj)*mean_psMssh_all(i,j,bi,bj)
+                  offset_sum=offset_sum+RA(i,j,bi,bj)
                elseif ( ( tpmeanmask(i,j,bi,bj) .NE. 0. ) .AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ).AND.
+#ifndef ALLOW_HIGHLAT_ALTIMETRY
+     &              ( abs(YC(i,j,bi,bj)) .LE. 66. ).AND.
+#endif
      &              ( .NOT.doReference ) ) then
                   mean_slaobs2(i,j,bi,bj) = 0.d0
                   mean_psMssh_all(i,j,bi,bj) = 0. _d 0
@@ -576,37 +581,32 @@ c--   subtract offset from mean_psMssh_all and psmean
           do j = jmin,jmax
             do i = imin,imax
 
-               if ( (mean_psMssh_all_MSK(i,j,bi,bj) .NE. 0.) .AND.
-     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) 
+               if ( (mean_psMssh_all_NUM(i,j,bi,bj) .GT. num0) .AND.
+     &              ( tpmeanmask(i,j,bi,bj) .NE. 0. ) .AND.
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND. 
 #ifndef ALLOW_HIGHLAT_ALTIMETRY     
-     &              .AND.( abs(YC(i,j,bi,bj)) .LE. 66. ) 
+     &              ( abs(YC(i,j,bi,bj)) .LE. 66. ) .AND.
 #endif
-     &            ) then
+     &              ( doReference ) ) then
 c use the re-referencing approach
-                  mean_psMssh_all(i,j,bi,bj) =
+                   mean_psMssh_all(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) - offset
-               elseif ( ( tpmeanmask(i,j,bi,bj) .NE. 0. ) .AND.
-     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) 
-#ifndef ALLOW_HIGHLAT_ALTIMETRY     
-     &              .AND.( abs(YC(i,j,bi,bj)) .LE. 66. ) 
-#endif
-     &            ) then
-c use the simpler approach
-                  mean_psMssh_all(i,j,bi,bj) =
-     &             psmean(i,j,bi,bj) -tpmean(i,j,bi,bj) - offset
-               else
-                  mean_psMssh_all(i,j,bi,bj) = 0. _d 0
-               endif
+                   mean_psMssh_all_MSK(i,j,bi,bj) = 1. _d 0
 
+               elseif ( ( tpmeanmask(i,j,bi,bj) .NE. 0. ) .AND.
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
+#ifndef ALLOW_HIGHLAT_ALTIMETRY
+     &              ( abs(YC(i,j,bi,bj)) .LE. 66. ) .AND.
+#endif
+     &              ( .NOT.doReference ) ) then     
 c use the simpler approach
-               if ( .NOT.doReference ) then
-               if ( ( tpmeanmask(i,j,bi,bj) .NE. 0. ) .AND.
-     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) ) then
                    mean_psMssh_all(i,j,bi,bj) =
      &             psmean(i,j,bi,bj) -tpmean(i,j,bi,bj) - offset
+                   mean_psMssh_all_MSK(i,j,bi,bj) = 1. _d 0
+
                else
                    mean_psMssh_all(i,j,bi,bj) = 0. _d 0
-               endif
+                   mean_psMssh_all_MSK(i,j,bi,bj) = 0. _d 0
                endif
 
                if ( maskc(i,j,1,bi,bj) .NE. 0. )
@@ -658,6 +658,7 @@ cgf             And similarly for ers and gfo, each treated separately.
         do bi = itlo,ithi
           do j = 1,sny
             do i = 1,snx
+cgf this has not been tested recently
               prof_etan_mean(i,j,bi,bj)=psmean(i,j,bi,bj)
             enddo
           enddo
@@ -679,9 +680,14 @@ cgf =======================================================
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-       junk = mean_psMssh_all(i,j,bi,bj)
-       junkweight = gencost_weight(i,j,bi,bj,igen_mdt)
-     &      *tpmeanmask(i,j,bi,bj)
+       if (mean_psMssh_all_MSK(i,j,bi,bj).NE.0. _d 0) then
+         junk = mean_psMssh_all(i,j,bi,bj)
+         junkweight = gencost_weight(i,j,bi,bj,igen_mdt)
+     &              * tpmeanmask(i,j,bi,bj)
+       else
+         junk = 0. _d 0
+         junkweight = 0. _d 0
+       endif
        objf_gencost(igen_mdt,bi,bj) = objf_gencost(igen_mdt,bi,bj)
      &      + junk*junk*junkweight
        if ( junkweight .ne. 0. ) num_gencost(igen_mdt,bi,bj) =
