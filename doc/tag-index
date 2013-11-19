@@ -1,10 +1,29 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1941 2013/11/19 00:03:51 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1942 2013/11/19 22:16:45 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o tools/OAD_support and (verification/*/) code_oad:
+o model/src/thermodynamics.F and routines called from it:
+  - pkg/gmredi: gmredi_residual_flow.F (replacing gmredi_calc_uvflow.F &
+    gmredi_calc_wflow.F) to update eulerian velocity (input) into residual
+    velocity (outp) by adding bolus velocity.
+  - model/src: calc_adv_flow.F (replacing calc_common_factors.F) to compute
+    mass transport from velocity + lateral grid cell area
+  - rename calc_gt.F to temp_integrate.F (includes call to TIMESTEP_TRACER)
+  - rename calc_gs.F to salt_integrate.F (includes call to TIMESTEP_TRACER)
+ in thermodynamics.F
+  - remove k from thermodynamics.F and move it to temp_integrate.F
+    salt_integrate.F and ptracers_integrate.F (now done inside the tracer
+    loop).
+  - compute locally (in thermodynamics.F) 3-D velocity field that is used to
+    advect tracers; pass it as argument to GAD_ADVECTION, GAD_SOM_ADVECT,
+    PTRACERS_ADVECTION, TEMP_INTEGRATE, SALT_INTEGRATE, PTRACERS_INTEGRATE,
+    GAD_IMPLICIT_R and PTRACERS_IMPLICIT
+  - update AD-output (TAF & OAD) of experiments: 1D_ocean_ice_column,
+    global_ocean.90x40x15, tutorial_global_oce_biogeo and
+    tutorial_tracer_adjsens (+ TLM output).
+o toolm/OAD_support and (verification/*/) code_oad:
   - OAD_support/cb2mGetModules.csh: add PACKAGES_CONFIG.h in header file to
     module conversion ; remove unneeded CPP_EEOPTIONS.h.
   - code_oad/CPP_OPTIONS.h: remove PACKAGES_CONFIG.h and use a more standard
