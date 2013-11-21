@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.48 2013/11/19 17:01:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.49 2013/11/21 00:17:39 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -141,7 +141,12 @@ C--   Loop over tracers
            fVerT(i,j,2) = 0. _d 0
          ENDDO
         ENDDO
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+           rTrans(i,j) = 0. _d 0
+         ENDDO
+        ENDDO
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -149,7 +154,7 @@ C--   Loop over tracers
           ENDDO
          ENDDO
         ENDDO
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
         IF ( .NOT.implicitDiffusion ) THEN
           CALL CALC_3D_DIFFUSIVITY(
