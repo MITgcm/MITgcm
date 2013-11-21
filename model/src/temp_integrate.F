@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.1 2013/11/19 16:58:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.2 2013/11/21 00:16:55 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -132,6 +132,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO i=1-OLx,sNx+OLx
          fVerT(i,j,1) = 0. _d 0
          fVerT(i,j,2) = 0. _d 0
+#ifdef ALLOW_AUTODIFF
+         rTrans(i,j) = 0. _d 0
+#endif /* ALLOW_AUTODIFF */
        ENDDO
       ENDDO
 
