@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.22 2012/08/12 20:25:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.23 2013/11/22 01:07:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -111,11 +111,19 @@ c            recip_Bo(I,J,bi,bj) = wUnit2rVel(1)*recip_gravity
            DO I=1-OLx,sNx+OLx
             IF ( Ro_surf(I,J,bi,bj).GT.0. _d 0
      &          .AND. kSurfC(I,J,bi,bj).LE.Nr ) THEN
-             k = kSurfC(I,J,bi,bj)
              pLoc = Ro_surf(I,J,bi,bj)
+#ifdef ALLOW_OPENAD
+             CALL FIND_RHO_SCALAR(
+     I            tRef(kSurfC(I,J,bi,bj)),
+     I            sRef(kSurfC(I,J,bi,bj)),
+     I            pLoc,
+     O            rhoLoc, myThid )
+#else /* ALLOW_OPENAD */
+             k = kSurfC(I,J,bi,bj)
              CALL FIND_RHO_SCALAR(
      I            tRef(k), sRef(k), pLoc,
      O            rhoLoc, myThid )
+#endif /* ALLOW_OPENAD */
              IF ( rhoLoc .EQ. 0. _d 0 ) THEN
               Bo_surf(I,J,bi,bj) = 0. _d 0
              ELSE
@@ -194,7 +202,6 @@ C--   AND set phi0surf = starting point for integrating Geopotential;
         CALL INI_P_GROUND( -2,
      O                     topoHloc,
      I                     Ro_surf, myThid )
-
 
        IF (selectFindRoSurf.NE.0) THEN
         _EXCH_XY_RS(phi0surf, myThid)
