@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.114 2013/09/17 17:54:47 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.115 2013/11/22 01:06:09 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -198,7 +198,6 @@ CEOI
 # include "STREAMICE_OPTIONS.h"
 #endif
 
-
 CBOP
 C     !ROUTINE: THE_MODEL_MAIN
 
@@ -283,17 +282,16 @@ C     myTime :: Time counter for this thread
 C     myIter :: Iteration counter for this thread
       INTEGER myIter
       _RL     myTime
-      LOGICAL  exst
-      LOGICAL  lastdiva
-
-
+      LOGICAL exst
+      LOGICAL lastdiva
 CEOP
-c--   set default:
+
+C--   set default:
       exst     = .TRUE.
       lastdiva = .TRUE.
 
 #ifdef ALLOW_PETSC
-      call streamice_initialize_petsc 
+      call streamice_initialize_petsc
 #endif
 
 #ifdef ALLOW_DEBUG
@@ -318,9 +316,9 @@ C--   Set model configuration (fixed arrays)
       myIter = nIter0
 
 #if ( defined (ALLOW_ADMTLM) )
-c
+
       STOP 'should never get here; ADMTLM_DSVD calls ADMTLM_DRIVER'
-c
+
 #elif ( defined (ALLOW_AUTODIFF))
 
 # ifndef EXCLUDE_CTRL_PACK
@@ -337,23 +335,22 @@ c
 
 # ifdef ALLOW_COST
       CALL COST_DEPENDENT_INIT ( myThid )
-      _BARRIER
 # endif
 
 # if ( defined (ALLOW_TANGENTLINEAR_RUN) )
-c
+
 #  ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('G_THE_MAIN_LOOP',myThid)
 #  endif
       CALL TIMER_START('G_THE_MAIN_LOOP           [TANGENT RUN]',myThid)
       CALL G_THE_MAIN_LOOP ( myTime, myIter, myThid )
       CALL TIMER_STOP ('G_THE_MAIN_LOOP           [TANGENT RUN]',myThid)
-c
+
 # elif ( defined (ALLOW_ADJOINT_RUN) || \
          defined (ALLOW_ECCO_OPTIMIZATION) )
-c
+
 #  ifdef ALLOW_DIVIDED_ADJOINT
-c-- The following assumes the TAF option '-pure'
+C-- The following assumes the TAF option '-pure'
       inquire( file='costfinal', exist=exst )
       IF ( .NOT. exst) THEN
 #   ifdef ALLOW_DEBUG
@@ -372,7 +369,7 @@ c-- The following assumes the TAF option '-pure'
          CALL TIMER_STOP ('ADTHE_MAIN_LOOP       [ADJOINT RUN]', myThid)
          CALL COST_FINAL_RESTORE ( myThid, lastdiva )
       ENDIF
-c--
+
 #  else /* ALLOW_DIVIDED_ADJOINT undef */
 #   ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('ADTHE_MAIN_LOOP',myThid)
@@ -381,16 +378,13 @@ c--
       CALL ADTHE_MAIN_LOOP ( myThid )
       CALL TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', myThid)
 #  endif /* ALLOW_DIVIDED_ADJOINT */
-c
+
 # else /* forward run only within AD setting */
 
 #  ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('THE_MAIN_LOOP',myThid)
 #  endif
 C--   Call time stepping loop of full model
-#  ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('THE_MAIN_LOOP',myThid)
-#  endif
       CALL TIMER_START('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
       CALL THE_MAIN_LOOP( myTime, myIter, myThid )
       CALL TIMER_STOP ('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
@@ -416,7 +410,6 @@ C--   Call time stepping loop of full model
          CALL TIMER_START('GRDCHK_MAIN         [THE_MODEL_MAIN]',myThid)
          CALL GRDCHK_MAIN( myThid )
          CALL TIMER_STOP ('GRDCHK_MAIN         [THE_MODEL_MAIN]',myThid)
-         _BARRIER
       ENDIF
 # endif
 
@@ -433,7 +426,7 @@ C--   Call time stepping loop of full model
 #endif /* ALLOW_TANGENTLINEAR_RUN ALLOW_ADJOINT_RUN ALLOW_ADMTLM */
 
 #ifdef ALLOW_PETSC
-      call streamice_finalize_petsc 
+      call streamice_finalize_petsc
 #endif
 
 #ifdef ALLOW_MNC
