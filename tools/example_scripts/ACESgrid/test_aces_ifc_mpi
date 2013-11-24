@@ -6,7 +6,7 @@
 #PBS -e /data/jm_c/test_acesgrid/output/tst_ifc.stderr
 #PBS -o /data/jm_c/test_acesgrid/output/tst_ifc.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_ifc_mpi,v 1.1 2013/10/10 19:36:24 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_ifc_mpi,v 1.2 2013/11/24 13:37:00 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -32,10 +32,10 @@ sfx='ifc'
  OPTFILE="../tools/build_options/linux_amd64_ifort11"
  options="-j 2 -MPI 6"
 #- need this to get "staf":
-#export PATH="$PATH:$HOME/bin"
+export PATH="$PATH:$HOME/bin"
 
 dAlt=`date +%j` ; dAlt=`expr $dAlt % 2`
-if [ $dAlt -eq 1 ] ; then options="$options -fast" ; fi
+#if [ $dAlt -eq 1 ] ; then options="$options -fast" ; fi
 
 #- keep a copy of MPI_MFILE:
 cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
@@ -75,7 +75,9 @@ if [ $checkOut -eq 1 ] ; then
         fi
       done )
     ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
-    echo "cvs update of dir $gcmDIR :"
+    echo ' remove all Makefile_syntax and do "cvs update -P -d"'
+    ( cd $gcmDIR/verification ; rm -f */build/Makefile_syntax )
+#   echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q $cvsArg update -P -d ) 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
@@ -115,14 +117,38 @@ fi
 SavD="$HOME/test_$dNam/send"
 SEND="ssh login $SavD/mpack"
 
-echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
-  -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
-./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
-  -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+if [ $dAlt -eq 1 ] ; then
+  options="$options -fast"
 
-echo ''
-echo ../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
-  -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
-../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
-  -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+  echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
+    -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+  ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
+    -send "$SEND" -sd $SavD -a jmc@mitgcm.org
 
+  echo ''
+  echo ../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
+    -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+  ../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
+    -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+
+else
+  options="$options -devel"
+
+  echo ./testreport $options -of $OPTFILE \
+    -repl_mk do_make_syntax.sh -obj -dd
+  ./testreport $options -of $OPTFILE \
+    -repl_mk do_make_syntax.sh -obj -dd 2>&1
+
+  echo ''
+  echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
+    -q -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+  ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
+    -q -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+
+  echo ''
+  echo ../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
+    -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+  ../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
+    -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+
+fi
