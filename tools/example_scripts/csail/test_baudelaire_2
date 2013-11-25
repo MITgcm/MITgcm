@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.20 2013/11/25 14:42:49 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/Attic/test_baudelaire_2,v 1.1 2013/11/25 14:42:49 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu
 #  Linux machines.
@@ -33,16 +33,16 @@ dInWeek=`date +%a`
 outDir=`hostname -s`
 TESTDIR="/scratch/jmc/test_${outDir}"
 MC=13
-checkOut=2
+checkOut=3
 sepDir=1
 option=
 #tst_list='g7a adm mpa g77 gfo+rs mth mp2+rs mpi ifc'
 #if test "x$dInWeek" = xSun ; then tst_list="$tst_list tlm oad" ; fi
-outDir="${outDir}-a"
-tst_list='g7a mpa mth mp2+rs mpi oad'
-#outDir="${outDir}-b"
-#tst_list='adm g77 gfo+rs ifc'
-#if test "x$dInWeek" = xSun ; then tst_list="$tst_list tlm" ; fi
+#outDir="${outDir}-a"
+#tst_list='g7a mpa mth mp2+rs mpi oad'
+outDir="${outDir}-b"
+tst_list='adm g77 gfo+rs ifc'
+if test "x$dInWeek" = xSun ; then tst_list="$tst_list tlm" ; fi
 
 #option="-nc" ; checkOut=1
 #option="-q"  ; checkOut=1
