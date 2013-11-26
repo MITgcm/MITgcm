@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.26 2012/11/15 00:05:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.27 2013/11/26 00:06:01 torge Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -90,6 +90,11 @@ C     division by zero is not possible
        ENDIF
 
        CALL DIAGNOSTICS_FILL(HSNOW  ,'SIhsnow ',0,1 ,0,1,1,myThid)
+
+#ifdef SEAICE_ITD
+       CALL DIAGNOSTICS_FILL(HEFFITD ,'SIheffN ',0,nITD ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(AREAITD ,'SIareaN ',0,nITD ,0,1,1,myThid)
+#endif
 
 #ifdef ALLOW_SITRACER
       DO iTracer = 1, SItrNumInUse
