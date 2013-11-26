@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.26 2012/03/28 20:15:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.27 2013/11/26 00:52:09 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -55,7 +55,6 @@ CEOI
 C--   Get C preprocessor options
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#include "CPP_EEOPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
