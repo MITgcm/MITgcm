@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.111 2013/11/18 23:08:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.112 2013/11/26 00:05:21 torge Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -211,6 +211,11 @@ C--   Update overlap regions for a bunch of stuff
        _EXCH_XY_RL( HEFF,  myThid )
        _EXCH_XY_RL( AREA,  myThid )
        _EXCH_XY_RL( HSNOW, myThid )
+#ifdef SEAICE_ITD
+       CALL EXCH_3D_RL( HEFFITD,  nITD, myThid )
+       CALL EXCH_3D_RL( AREAITD,  nITD, myThid )
+       CALL EXCH_3D_RL( HSNOWITD, nITD, myThid )
+#endif
 #ifdef SEAICE_VARIABLE_SALINITY
        _EXCH_XY_RL( HSALT, myThid )
 #endif
@@ -264,10 +269,6 @@ C     the seaice model
         CALL DIAGNOSTICS_FILL_RS(EmPmR,'SIempmr ',0,1 ,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL_RS(Qnet ,'SIqnet  ',0,1 ,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL_RS(Qsw  ,'SIqsw   ',0,1 ,0,1,1,myThid)
-#ifdef SEAICE_ITD
-        CALL DIAGNOSTICS_FILL(HEFFITD ,'SIheffN ',0,nITD,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(AREAITD ,'SIareaN ',0,nITD,0,1,1,myThid)
-#endif
        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
