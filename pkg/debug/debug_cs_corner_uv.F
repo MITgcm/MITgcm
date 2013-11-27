@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_cs_corner_uv.F,v 1.7 2009/06/28 01:05:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_cs_corner_uv.F,v 1.8 2013/11/27 00:40:31 jmc Exp $
 C $Name:  $
 
 #include "DEBUG_OPTIONS.h"
@@ -53,15 +53,20 @@ C     myThid :: Instance number for this invocation of
 
 C     == Local variables in common block :
       COMMON / DEBUG_CS_CORNER_UV_LOCAL / tmpU, tmpV
-      _RL tmpU(4,Nr,nSx,nSy)
-      _RL tmpV(4,Nr,nSx,nSy)
+      _RL tmpU(4,Nr,nSx*nSy)
+      _RL tmpV(4,Nr,nSx*nSy)
 
 C     == Local variables ==
 C     edgeIndex :: index (in X or Y) from the W. or S. edge of the tile
 C               :: of the U,V field to write
-C     n1        :: tile index
-C     n2,n3     :: W. and S. neigbour tile indices
-      INTEGER n1,n2,n3
+C     n1        :: combined bi,bj index for current tile
+C     n2, n3    :: combined bi,bj index for W. and S. neigbour tile
+C     t1        :: current tile id
+C     t2, t3    :: tile id of W. and S. neigbour tile
+#ifdef ALLOW_EXCH2
+      INTEGER t1, t2, t3
+#endif
+      INTEGER n1, n2, n3
       INTEGER edgeIndex
       INTEGER ic, i, j
 
@@ -73,16 +78,17 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        edgeIndex = 1
 
        j = MIN(MAX(1-Olx,edgeIndex),Olx)
+       n1 = bi + (bj-1)*nSx
  1010 FORMAT(2A,I2,1PE12.4,I3,1P2E12.4)
 c     IF (k.EQ.4 .AND. myIter.EQ.nIter0 ) THEN
-       tmpU(1,k,bi,bj)= uFld(1,j)
-       tmpU(2,k,bi,bj)= uFld(1,sNy+1-j)
-       tmpU(3,k,bi,bj)= uFld(sNx+1,j)
-       tmpU(4,k,bi,bj)= uFld(sNx+1,sNy+1-j)
-       tmpV(1,k,bi,bj)= vFld(j,1)
-       tmpV(2,k,bi,bj)= vFld(sNx+1-j,1)
-       tmpV(3,k,bi,bj)= vFld(j,sNy+1)
-       tmpV(4,k,bi,bj)= vFld(sNx+1-j,sNy+1)
+       tmpU(1,k,n1)= uFld(1,j)
+       tmpU(2,k,n1)= uFld(1,sNy+1-j)
+       tmpU(3,k,n1)= uFld(sNx+1,j)
+       tmpU(4,k,n1)= uFld(sNx+1,sNy+1-j)
+       tmpV(1,k,n1)= vFld(j,1)
+       tmpV(2,k,n1)= vFld(sNx+1-j,1)
+       tmpV(3,k,n1)= vFld(j,sNy+1)
+       tmpV(4,k,n1)= vFld(sNx+1-j,sNy+1)
        _BARRIER
 #ifdef ALLOW_EXCH2
        IF (bi.EQ.nSx .AND. bj.EQ.nSy .AND. sNx.EQ.sNy) THEN
@@ -101,40 +107,46 @@ c     IF (k.EQ.4 .AND. myIter.EQ.nIter0 ) THEN
         DO j=1,nSy
          DO i=1,nSx
 #ifdef ALLOW_EXCH2
-          n1 = W2_myTileList(i,j)
-          n2 = exch2_neighbourId(4,n1)
-          n3 = exch2_neighbourId(2,n1)
-          IF ( exch2_pij(3,4,n1).eq.-1 ) THEN
+          n1 = i + (j-1)*nSx
+          n2 = 0
+          n3 = 0
+          t1 = W2_myTileList(i,j)
+          t2 = exch2_neighbourId(4,t1)
+          t3 = exch2_neighbourId(2,t1)
+          IF ( W2_tileProc(t2).EQ.myProcId+1 ) n2 = W2_tileIndex(t2)
+          IF ( W2_tileProc(t3).EQ.myProcId+1 ) n3 = W2_tileIndex(t3)
+
+          IF ( n2.GE.1 .AND. exch2_pij(3,4,t1).EQ.-1 ) THEN
            WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'W edge, S:',
-     &       n1,tmpU(1,k,n1,1), n2,tmpV(4,k,n2,1),
-     &          tmpU(1,k,n1,1)  -  tmpV(4,k,n2,1)
+     &       t1,tmpU(1,k,n1), t2,tmpV(4,k,n2),
+     &          tmpU(1,k,n1)  -  tmpV(4,k,n2)
            WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'W edge, N:',
-     &       n1,tmpU(2,k,n1,1), n2,tmpV(3,k,n2,1),
-     &          tmpU(2,k,n1,1)  -  tmpV(3,k,n2,1)
+     &       t1,tmpU(2,k,n1), t2,tmpV(3,k,n2),
+     &          tmpU(2,k,n1)  -  tmpV(3,k,n2)
           ENDIF
-          IF ( exch2_pij(4,4,n1).eq.1 ) THEN
+          IF ( n2.GE.1 .AND. exch2_pij(4,4,t1).EQ.1 ) THEN
            WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'W edge, S:',
-     &       n1,tmpU(1,k,n1,1), n2,tmpU(3,k,n2,1),
-     &          tmpU(1,k,n1,1)  -  tmpU(3,k,n2,1)
+     &       t1,tmpU(1,k,n1), t2,tmpU(3,k,n2),
+     &          tmpU(1,k,n1)  -  tmpU(3,k,n2)
            WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'W edge, N:',
-     &       n1,tmpU(2,k,n1,1), n2,tmpU(4,k,n2,1),
-     &          tmpU(2,k,n1,1)  -  tmpU(4,k,n2,1)
+     &       t1,tmpU(2,k,n1), t2,tmpU(4,k,n2),
+     &          tmpU(2,k,n1)  -  tmpU(4,k,n2)
           ENDIF
-          IF ( exch2_pij(1,2,n1).eq.1 ) THEN
+          IF ( n3.GE.1 .AND. exch2_pij(1,2,t1).EQ.1 ) THEN
            WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'S edge, W:',
-     &       n1,tmpV(1,k,n1,1), n3,tmpV(3,k,n3,1),
-     &          tmpV(1,k,n1,1)  -  tmpV(3,k,n3,1)
+     &       t1,tmpV(1,k,n1), t3,tmpV(3,k,n3),
+     &          tmpV(1,k,n1)  -  tmpV(3,k,n3)
            WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'S edge, E:',
-     &       n1,tmpV(2,k,n1,1), n3,tmpV(4,k,n3,1),
-     &          tmpV(2,k,n1,1)  -  tmpV(4,k,n3,1)
+     &       t1,tmpV(2,k,n1), t3,tmpV(4,k,n3),
+     &          tmpV(2,k,n1)  -  tmpV(4,k,n3)
           ENDIF
-          IF ( exch2_pij(2,2,n1).eq.-1 ) THEN
+          IF (  n3.GE.1 .AND. exch2_pij(2,2,t1).EQ.-1 ) THEN
            WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'S edge, W:',
-     &       n1,tmpV(1,k,n1,1), n3,tmpU(4,k,n3,1),
-     &          tmpV(1,k,n1,1)  -  tmpU(4,k,n3,1)
+     &       t1,tmpV(1,k,n1), t3,tmpU(4,k,n3),
+     &          tmpV(1,k,n1)  -  tmpU(4,k,n3)
            WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'S edge, E:',
-     &       n1,tmpV(2,k,n1,1), n3,tmpU(3,k,n3,1),
-     &          tmpV(2,k,n1,1)  -  tmpU(3,k,n3,1)
+     &       t1,tmpV(2,k,n1), t3,tmpU(3,k,n3),
+     &          tmpV(2,k,n1)  -  tmpU(3,k,n3)
           ENDIF
 #else /* ALLOW_EXCH2 */
           n1 = i
@@ -145,20 +157,20 @@ c          n1=3 n2=1,+v,-
 c          n1=3 n3=2,+v,+
 c          n1=5 n2=3,+v,-
 c          n1=5 n3=4,+v,+
-           n2=1+mod(n1-2+5,6)
-           n3=1+mod(n1-1+5,6)
+           n2 = 1+MOD(n1-2+5,6)
+           n3 = 1+MOD(n1-1+5,6)
            WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'W edge, S:',
-     &       n1,tmpU(1,k,n1,1), n2,tmpV(4,k,n2,1),
-     &          tmpU(1,k,n1,1)  -  tmpV(4,k,n2,1)
+     &       n1,tmpU(1,k,n1), n2,tmpV(4,k,n2),
+     &          tmpU(1,k,n1)  -  tmpV(4,k,n2)
            WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'W edge, N:',
-     &       n1,tmpU(2,k,n1,1), n2,tmpV(3,k,n2,1),
-     &          tmpU(2,k,n1,1)  -  tmpV(3,k,n2,1)
+     &       n1,tmpU(2,k,n1), n2,tmpV(3,k,n2),
+     &          tmpU(2,k,n1)  -  tmpV(3,k,n2)
            WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'S edge, W:',
-     &       n1,tmpV(1,k,n1,1), n3,tmpV(3,k,n3,1),
-     &          tmpV(1,k,n1,1)  -  tmpV(3,k,n3,1)
+     &       n1,tmpV(1,k,n1), n3,tmpV(3,k,n3),
+     &          tmpV(1,k,n1)  -  tmpV(3,k,n3)
            WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'S edge, E:',
-     &       n1,tmpV(2,k,n1,1), n3,tmpV(4,k,n3,1),
-     &          tmpV(2,k,n1,1)  -  tmpV(4,k,n3,1)
+     &       n1,tmpV(2,k,n1), n3,tmpV(4,k,n3),
+     &          tmpV(2,k,n1)  -  tmpV(4,k,n3)
           ELSE
 c          n1=2 n2=1,+u,+
 c          n1=2 n3=6,+u,-
@@ -166,20 +178,20 @@ c          n1=4 n2=3,+u,+
 c          n1=4 n3=2,+u,-
 c          n1=6 n2=5,+u,+
 c          n1=6 n3=4,+u,-
-           n2=1+mod(n1-1+5,6)
-           n3=1+mod(n1-2+5,6)
+           n2 = 1+MOD(n1-1+5,6)
+           n3 = 1+MOD(n1-2+5,6)
            WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'W edge, S:',
-     &       n1,tmpU(1,k,n1,1), n2,tmpU(3,k,n2,1),
-     &          tmpU(1,k,n1,1)  -  tmpU(3,k,n2,1)
+     &       n1,tmpU(1,k,n1), n2,tmpU(3,k,n2),
+     &          tmpU(1,k,n1)  -  tmpU(3,k,n2)
            WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'W edge, N:',
-     &       n1,tmpU(2,k,n1,1), n2,tmpU(4,k,n2,1),
-     &          tmpU(2,k,n1,1)  -  tmpU(4,k,n2,1)
+     &       n1,tmpU(2,k,n1), n2,tmpU(4,k,n2),
+     &          tmpU(2,k,n1)  -  tmpU(4,k,n2)
            WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'S edge, W:',
-     &       n1,tmpV(1,k,n1,1), n3,tmpU(4,k,n3,1),
-     &          tmpV(1,k,n1,1)  -  tmpU(4,k,n3,1)
+     &       n1,tmpV(1,k,n1), n3,tmpU(4,k,n3),
+     &          tmpV(1,k,n1)  -  tmpU(4,k,n3)
            WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'S edge, E:',
-     &       n1,tmpV(2,k,n1,1), n3,tmpU(3,k,n3,1),
-     &          tmpV(2,k,n1,1)  -  tmpU(3,k,n3,1)
+     &       n1,tmpV(2,k,n1), n3,tmpU(3,k,n3),
+     &          tmpV(2,k,n1)  -  tmpU(3,k,n3)
           ENDIF
 #endif /* ALLOW_EXCH2 */
          ENDDO
