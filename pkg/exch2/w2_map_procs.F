@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_map_procs.F,v 1.1 2012/09/04 00:44:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_map_procs.F,v 1.2 2013/11/27 00:34:05 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -49,7 +49,7 @@ C     !LOCAL VARIABLES:
 C--   Initialise common blocs W2_MAP_TILE2PROC & W2_EXCH2_COMMFLAG:
       DO I = 1,W2_maxNbTiles
         W2_tileProc(I)  = 0
-c       W2_tileIndex(I) = 0
+        W2_tileIndex(I) = 0
 c       W2_tileRank(I)  = 0
       ENDDO
       DO bj=1,nSy
@@ -92,7 +92,7 @@ C--   switch processor order to match MPI_CART set-up
         bi = 1 + MOD(ii,nSx)
 C--
         W2_tileProc(I) = np
-c       W2_tileIndex(I)= bi + (bj-1)*nSx
+        W2_tileIndex(I)= bi + (bj-1)*nSx
         W2_procTileList(bi,bj,np) = I
         IF ( np.EQ.thisProc ) W2_myTileList(bi,bj) = I
         J = J + 1
@@ -139,20 +139,17 @@ C--   Print tiles connection for this process and set myCommonFlag :
       DO bj=1,nSy
        DO bi=1,nSx
         myTileId = W2_myTileList(bi,bj)
-        WRITE(msgBuf,'(A,I5,A,I3)') ' TILE: ', myTileId,
-     &       ' , Nb of Neighbours =', exch2_nNeighbours(myTileId)
+        WRITE(msgBuf,'(A,I5,A,2I4,2A,I3)')
+     &       ' TILE: ', myTileId,' (bi,bj=', bi, bj, ' )',
+     &       ', Nb of Neighbours =', exch2_nNeighbours(myTileId)
 c       WRITE(msgBuf,'(2(A,I5),A,I3)') ' TILE: ', myTileId,
 c    &       ' , rank=', W2_tileRank(myTileId),
 c    &       ' , Nb of Neighbours =', exch2_nNeighbours(myTileId)
         CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
         DO J=1,exch2_nNeighbours(myTileId)
          commFlag = 'M'
-         DO jj=1,nSy
-          DO ii=1,nSx
-          IF ( W2_myTileList(ii,jj).EQ.exch2_neighbourId(J,myTileId) )
-     &     commFlag = 'P'
-          ENDDO
-         ENDDO
+         jj = exch2_neighbourId(J,myTileId)
+         IF ( W2_tileProc(jj).EQ.thisProc ) commFlag = 'P'
          IF ( commFlag .EQ. 'M' ) THEN
           WRITE(msgBuf,'(A,I3,A,I5,A,I3,2A,I5,A)')
      &    '    NEIGHBOUR',J,' = TILE', exch2_neighbourId(J,myTileId),
