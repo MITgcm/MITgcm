@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_init_fixed.F,v 1.1 2004/10/27 23:19:42 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_init_fixed.F,v 1.2 2013/11/27 21:10:30 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -13,14 +13,12 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     Define MNC variables for use by the coupler.
-      
+
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
-#include "GRID.h"
 
 C     !INPUT PARAMETERS:
       INTEGER myThid
