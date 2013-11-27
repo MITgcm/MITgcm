@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.217 2013/07/18 19:53:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.218 2013/11/27 23:47:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -217,9 +217,6 @@ C     modelEnd  :: true if reaching the end of the run
 C     myTimeBeg :: time at beginning of time step (needed by longstep)
 C     myIterBeg :: iteration number at beginning of time step
       LOGICAL modelEnd
-#ifdef COMPONENT_MODULE
-      INTEGER myItP1
-#endif
 #ifdef ALLOW_LONGSTEP
       INTEGER myIterBeg
       _RL myTimeBeg
