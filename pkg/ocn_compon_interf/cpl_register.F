@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_register.F,v 1.2 2009/12/25 19:43:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_register.F,v 1.3 2013/11/27 21:54:45 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP 0
@@ -25,6 +26,11 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "OCNIDS.h"
+#ifdef ALLOW_EXCH2
+# include "W2_EXCH2_SIZE.h"
+# include "W2_EXCH2_TOPOLOGY.h"
+# include "W2_EXCH2_PARAMS.h"
+#endif /* ALLOW_EXCH2 */
 
 C !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -38,25 +44,39 @@ C     == Local variables ==
 C     bi, bj    :: Tile indices
 C     j         :: Loop counter
 C     iG0, jG0  :: Base coordinates of a tile on the global grid.
-C     iReg,rReg :: Arrays for passing attributes to the coupler
+C     iReg      :: Array for passing attributes to the coupler
       INTEGER iG0, jG0
       INTEGER bi, bj
-c     INTEGER j
-      INTEGER iReg(4,nSx,nSy)
-      Real*4  rReg(4,nSx,nSy)
+      INTEGER j, nTiles
+      INTEGER iReg(6,nSx*nSy)
+#ifdef ALLOW_EXCH2
+      INTEGER tN
+#endif /* ALLOW_EXCH2 */
 
 C--   Register with the MIT coupler
+      j = 0
       DO bj=1,nSy
        DO bi=1,nSx
-        jG0 = myYGlobalLo+(bj-1)*sNy
+        j = j+1
         iG0 = myXGlobalLo+(bi-1)*sNx
-        iReg(1,bi,bj) = sNx
-        iReg(2,bi,bj) = sNy
-        iReg(3,bi,bj) = iG0
-        iReg(4,bi,bj) = jG0
+        jG0 = myYGlobalLo+(bj-1)*sNy
+#ifdef ALLOW_EXCH2
+        IF ( W2_useE2ioLayOut ) THEN
+          tN = W2_myTileList(bi,bj)
+          iG0 = exch2_txGlobalo(tN)
+          jG0 = exch2_tyGlobalo(tN)
+        ENDIF
+#endif /* ALLOW_EXCH2 */
+        iReg(1,j) = bi
+        iReg(2,j) = bj
+        iReg(3,j) = sNx
+        iReg(4,j) = sNy
+        iReg(5,j) = iG0
+        iReg(6,j) = jG0
        ENDDO
       ENDDO
-      CALL MITCOMPONENT_TILE_REGISTER( nSx, nSy, iReg, rReg )
+      nTiles = nSx*nSy
+      CALL MITCOMPONENT_TILE_REGISTER( nTiles, iReg )
 #endif /* COMPONENT_MODULE */
 
       RETURN
