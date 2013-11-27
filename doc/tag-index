@@ -1,9 +1,39 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1942 2013/11/19 22:16:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1943 2013/11/27 22:53:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/build_options:
+  - simplify Warnings options (-ieee & -devel cases) in linux_amd64_gfortran
+o coupling interface pkgs:
+    [compon_communic, atm_compon_interf & ocn_compon_interf]
+  - move declaration of local array "ibuf" out of header file "CPLR_SIG.h"
+    to each S/R that needs it; remove un-used variables.
+  - change component tile registration (cpl_register.F in both compon_interf
+    and mitcomponent_tile_register.F) to pass the full list of tiles
+    information (including bi,bj) in 1 vector (instead of in a bi,bj matrix).
+  - with pkg/exch2: adopt the same convention used for I/O to define mapping
+    towards coupler global array (unless W2_useE2ioLayOut=F):
+     a) can now use different tiling between atm & ocn comp.
+     b) no needs to modify the run-Off map when changing tiling (was needed
+        even if using the same tiling between atm & ocn).
+     c) will allow to run with blank-tiles in 1 component (e.g., for ocean
+        full land tiles); not yet tested.
+  - check for valid mapping from comp. tile to coupler global array
+  - improve report of tile registration results to log file.
+o pkg/exch2:
+  - in eesupp/src/eeboot.F: move call to W2_EEBOOT before Coupler
+    tile-registration (CPL_REGISTER);
+  - activate (un-comment) definition and setting of "W2_tileIndex" list to
+    store the local bi,bj indices of each tile;
+  - also print bi,bj in local report to log file;
+  - fix pkg/debug/debug_cs_corner_uv.F for the case nSy > 1 (left from
+    Jun 2009 modif of pkg/exch2).
+o testing on baudelaire:
+  - run 2 tests at a time: no significant slow down (since enough cpu) and
+    get the full set of test done earlier
+  - switch the ifort test to "-devel" ; run the OpenAD test everyday.
 o model/src/thermodynamics.F and routines called from it:
   - pkg/gmredi: gmredi_residual_flow.F (replacing gmredi_calc_uvflow.F &
     gmredi_calc_wflow.F) to update eulerian velocity (input) into residual
@@ -23,11 +53,11 @@ o model/src/thermodynamics.F and routines called from it:
   - update AD-output (TAF & OAD) of experiments: 1D_ocean_ice_column,
     global_ocean.90x40x15, tutorial_global_oce_biogeo and
     tutorial_tracer_adjsens (+ TLM output).
-o toolm/OAD_support and (verification/*/) code_oad:
+o tools/OAD_support and (verification/*/) code_oad:
   - OAD_support/cb2mGetModules.csh: add PACKAGES_CONFIG.h in header file to
     module conversion ; remove unneeded CPP_EEOPTIONS.h.
   - code_oad/CPP_OPTIONS.h: remove PACKAGES_CONFIG.h and use a more standard
-    version (closer to model/incCPP_OPTIONS.h).
+    version (closer to model/inc/CPP_OPTIONS.h).
 o model/src:
   - remove parameter "useOldFreezing" from PARAMS.h and push it to the
     retired list of parameters (routine FREEZE has been replace by surface
