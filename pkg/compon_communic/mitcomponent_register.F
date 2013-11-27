@@ -1,27 +1,29 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcomponent_register.F,v 1.2 2007/10/08 23:58:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcomponent_register.F,v 1.3 2013/11/27 21:48:30 jmc Exp $
 C $Name:  $
 
 !=======================================================================
       subroutine MITCOMPONENT_register( nx, ny, i0, j0 )
+
       implicit none
-
-! Arguments
-      integer nx,ny,i0,j0
-
 ! MPI variables
 #include "mpif.h"
-      integer myid, numprocs, ierr, rc
 
 ! Predefined constants/arrays
 #include "CPLR_SIG.h"
 
+! Arguments
+      integer nx,ny,i0,j0
+
 ! Functions
       integer mitcplr_match_comp
       integer generate_tag
+      external mitcplr_match_comp
+      external generate_tag
 
 ! Local
-      integer bi,bj,num_tiles,bibj
+      integer ierr
       integer count,datatype,dest,tag,comm
+      integer ibuf(MAX_IBUF)
 
 !     ------------------------------------------------------------------
 
@@ -51,7 +53,7 @@ C $Name:  $
        write(LogUnit,*) 'MITCOMPONENT_register: rank(W,G,L)=',
      &            my_rank_in_world,my_rank_in_global,my_rank_in_local,
      &            ' ierr=',ierr
-       stop 'MITCOMPONENT_register: MPI_Send failed'
+       STOP 'MITCOMPONENT_register: MPI_Send failed'
       endif
 
 !     ------------------------------------------------------------------

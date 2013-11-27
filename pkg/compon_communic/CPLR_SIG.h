@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/CPLR_SIG.h,v 1.2 2007/10/08 23:58:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/CPLR_SIG.h,v 1.3 2013/11/27 21:48:30 jmc Exp $
 C $Name:  $
 
 ! Special meanings/handles
@@ -39,9 +39,8 @@ c     parameter (VERB=.TRUE.)
       integer LogUnit
       parameter( LogUnit=99 )
 
-! Temporary arrays for local use
-c     integer rank(MAX_PROCS)
-      integer ibuf(MAX_IBUF)
+! Temporary arrays for local use: now declared locally where needed
+c     integer ibuf(MAX_IBUF)
 
 ! The list of components
       integer num_components

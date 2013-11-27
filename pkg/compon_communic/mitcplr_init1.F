@@ -1,31 +1,32 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcplr_init1.F,v 1.2 2007/10/08 23:58:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcplr_init1.F,v 1.3 2013/11/27 21:48:30 jmc Exp $
 C $Name:  $
 
 !=======================================================================
       subroutine MITCPLR_init1( myTypeStr, couplerFlag )
       implicit none
 
-! Arguments
-      character*(*) myTypeStr
-      logical couplerFlag
-
 ! MPI variables
 #include "mpif.h"
-      integer myid, numprocs, ierr, rc
-
 
 ! Predefined constants/arrays
 #include "CPLR_SIG.h"
 
+! Arguments
+      character*(*) myTypeStr
+      logical couplerFlag
+
 ! Functions
       integer mitcplr_match_comp
+      external mitcplr_match_comp
 
 ! Local
+      integer myid, numprocs, ierr
       integer n,j
       integer MPI_GROUP_World
       integer MPI_GROUP_Tmp
       integer lenbuf
       integer compind
+      integer ibuf(MAX_IBUF)
       character*(MAXLEN_COMP_NAME) cbuf
 
 !     ------------------------------------------------------------------
@@ -89,7 +90,7 @@ C $Name:  $
       enddo
 
       if ( num_coupler_procs .ne. 1 ) then
-       stop 'MITCPLR_init1: I can only handle one coupler process'
+       STOP 'MITCPLR_init1: I can only handle one coupler process'
       endif
 
       do compind=1,num_components
@@ -101,7 +102,6 @@ C $Name:  $
        rank_compcplr_procs(j,compind)=rank_coupler_procs(1)
        call mitcplr_sortranks( j, rank_compcplr_procs(1,compind) )
       enddo
-
 
       if (DEBUG) write(0,*) 'MITCPLR_init1: ',myid,' ',myTypeStr,
      &   ' coupler=',coupler_Name,

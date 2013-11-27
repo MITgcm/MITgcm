@@ -1,13 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcoupler_register.F,v 1.2 2007/10/08 23:58:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcoupler_register.F,v 1.3 2013/11/27 21:48:30 jmc Exp $
 C $Name:  $
 
 !=======================================================================
       subroutine MITCOUPLER_register( compName, nnx, nny )
       implicit none
-
-! Arguments
-      character*(*) compName
-      integer nnx, nny
 
 ! MPI variables
 #include "mpif.h"
@@ -15,28 +11,35 @@ C $Name:  $
 ! Predefined constants/arrays
 #include "CPLR_SIG.h"
 
+! Arguments
+      character*(*) compName
+      integer nnx, nny
+
 ! Functions
       integer mitcplr_match_comp
       integer generate_tag
+      external mitcplr_match_comp
+      external generate_tag
 
 ! Local
       integer n,numprocs
       integer comm
       integer compind,count,dtype,tag,rank
-      integer ierr, rc
+      integer ierr
       integer stat(MPI_STATUS_SIZE)
-      integer j,numtiles,nx,ny,i0,j0
+      integer numtiles,nx,ny,i0,j0
+      integer ibuf(MAX_IBUF)
 
 !     ------------------------------------------------------------------
 
 ! Establish who I am communicating with
       compind=mitcplr_match_comp( compName )
-      if (compind.le.0) stop 'MITCOUPLER_register: Bad component'
+      if (compind.le.0) STOP 'MITCOUPLER_register: Bad component'
       comm=MPI_COMM_compcplr( compind )
       numprocs=num_component_procs(compind)
       if (numprocs.lt.1) then
        write(LogUnit,*) 'MITCOUPLER_register: compind = ',compind
-       stop 'MITCOUPLER_register: numprocs < 1'
+       STOP 'MITCOUPLER_register: numprocs < 1'
       endif
 
 ! Foreach component process
@@ -54,7 +57,7 @@ C $Name:  $
         write(LogUnit,*) 'MITCOUPLER_register: rank(W,G)=',
      &            my_rank_in_world,my_rank_in_global,
      &            ' ierr=',ierr
-        stop 'MITCOUPLER_register: MPI_Recv failed'
+        STOP 'MITCOUPLER_register: MPI_Recv failed'
        endif
 
 ! Extract data
@@ -66,31 +69,31 @@ C $Name:  $
 
        if (numtiles.ne.1) then
         write(LogUnit,*) 'MITCOUPLER_tile_register: #tiles = ',numtiles
-        stop 'MITCOUPLER_tile_register: invalid value for numtiles'
+        STOP 'MITCOUPLER_tile_register: invalid value for numtiles'
        endif
        if (nx.lt.1) then
         write(LogUnit,*) 'MITCOUPLER_register: nx = ',nx
-        stop 'MITCOUPLER_register: invalid value for nx'
+        STOP 'MITCOUPLER_register: invalid value for nx'
        endif
        if (ny.lt.1) then
         write(LogUnit,*) 'MITCOUPLER_register: ny = ',ny
-        stop 'MITCOUPLER_register: invalid value for ny'
+        STOP 'MITCOUPLER_register: invalid value for ny'
        endif
        if (i0.lt.1) then
         write(LogUnit,*) 'MITCOUPLER_register: i0 = ',i0
-        stop 'MITCOUPLER_register: invalid value for i0'
+        STOP 'MITCOUPLER_register: invalid value for i0'
        endif
        if (j0.lt.1) then
         write(LogUnit,*) 'MITCOUPLER_register: j0 = ',j0
-        stop 'MITCOUPLER_register: invalid value for j0'
+        STOP 'MITCOUPLER_register: invalid value for j0'
        endif
        if (i0+nx-1.gt.nnx) then
         write(LogUnit,*) 'MITCOUPLER_register: i0 = ',i0
-        stop 'MITCOUPLER_register: i0 + nx -1 > nnx'
+        STOP 'MITCOUPLER_register: i0 + nx -1 > nnx'
        endif
        if (j0+ny-1.gt.nny) then
         write(LogUnit,*) 'MITCOUPLER_register: j0 = ',j0
-        stop 'MITCOUPLER_register: j0 + ny -1 > nny'
+        STOP 'MITCOUPLER_register: j0 + ny -1 > nny'
        endif
 
        component_num_tiles(n,compind)=1

@@ -1,18 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcplr_init2a.F,v 1.2 2007/10/08 23:58:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcplr_init2a.F,v 1.3 2013/11/27 21:48:30 jmc Exp $
 C $Name:  $
 
 !=======================================================================
       subroutine mitcplr_init2a( myTypeStr )
+
       implicit none
-! Arguments
-      character*(*) myTypeStr
 ! Predefined constants/arrays
 #include "CPLR_SIG.h"
 ! MPI variables
 #include "mpif.h"
-      integer myid, numprocs, ierr
+
+! Arguments
+      character*(*) myTypeStr
 ! Local
+      integer myid, numprocs, ierr
       integer n,j,lenbuf
+      integer ibuf(MAX_IBUF)
 !     ------------------------------------------------------------------
 
 ! Find-out my position (rank) in the "global" communicator
@@ -67,7 +70,7 @@ C $Name:  $
       enddo
 
       if (num_coupler_procs .ne. 1) then
-       stop 'MITCPLR_init2a: I can only handle one coupling process'
+       STOP 'MITCPLR_init2a: I can only handle one coupling process'
       endif
 
 !     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
