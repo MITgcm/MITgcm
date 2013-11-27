@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_init_fixed.F,v 1.3 2007/11/06 17:33:47 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_init_fixed.F,v 1.4 2013/11/27 21:08:54 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -13,14 +13,12 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     Define MNC variables for use by the coupler.
-      
+
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
-#include "GRID.h"
 
 C     !INPUT PARAMETERS:
       INTEGER myThid
@@ -60,11 +58,11 @@ CEOP
         CALL MNC_CW_ADD_VATTR_TEXT('FWtave','note',
      &       'equals E-P-R', myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('FWtave','units','kg/m^2/s', myThid)
-        
+
         CALL MNC_CW_ADD_VNAME('SFxtave','Cen_xy_Hn__-__t',3,4,myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('SFxtave','long_name',
      &       'salt flux from sea-ice', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('SFxtave','units','psu.kg/m^2/s', 
+        CALL MNC_CW_ADD_VATTR_TEXT('SFxtave','units','psu.kg/m^2/s',
      &       myThid)
 
         CALL MNC_CW_ADD_VNAME('SICtave','Cen_xy_Hn__-__t',3,4,myThid)
@@ -111,7 +109,6 @@ CEOP
         CALL MNC_CW_ADD_VATTR_TEXT('fCO2tave','long_name',
      &       'ocean CO2 flux -> atm', myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('fCO2tave','units','mol/m2/s',myThid)
-
 
       ENDIF
 #endif /* ALLOW_MNC */
