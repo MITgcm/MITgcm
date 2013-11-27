@@ -1,63 +1,61 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcomponent_tile_register.F,v 1.2 2007/10/08 23:58:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcomponent_tile_register.F,v 1.3 2013/11/27 21:53:04 jmc Exp $
 C $Name:  $
 
 !=======================================================================
-      subroutine MITCOMPONENT_tile_register( ntx, nty, ireg, rreg )
+      subroutine MITCOMPONENT_tile_register( num_tiles, iReg )
       implicit none
-
-! Arguments
-      integer ntx,nty
-      integer ireg(4,ntx,nty)
-      real*4  rreg(4,ntx,nty)
 
 ! MPI variables
 #include "mpif.h"
-      integer myid, numprocs, ierr, rc
+c     integer myid, numprocs, ierr, rc
 
 ! Predefined constants/arrays
 #include "CPLR_SIG.h"
 
+! Arguments
+      integer num_tiles
+      integer iReg(6,num_tiles)
+
 ! Functions
       integer mitcplr_match_comp
       integer generate_tag
+      external mitcplr_match_comp
+      external generate_tag
 
 ! Local
-      integer bi,bj,num_tiles,bibj
-      integer count,datatype,dest,tag,comm
+c     integer bi, bj
+      integer n
+      integer count, datatype, dest, tag, comm, ierr
+      integer ibuf(MAX_IBUF)
 
 !     ------------------------------------------------------------------
 
-      num_tiles=0
-      do bj=1,nty
-       do bi=1,ntx
-        if ( ireg(1,bi,bj)*ireg(2,bi,bj).gt.0 ) then
-         num_tiles=num_tiles+1
-         my_tile_nx(num_tiles)=ireg(1,bi,bj)
-         my_tile_ny(num_tiles)=ireg(2,bi,bj)
-         my_tile_i0(num_tiles)=ireg(3,bi,bj)
-         my_tile_j0(num_tiles)=ireg(4,bi,bj)
-         my_tile_bi(num_tiles)=bi
-         my_tile_bj(num_tiles)=bj
-         if (VERB)
-     &   write(LogUnit,*) 'MITCOMPONENT_tile_register: bi,bj=',bi,bj,
-     &              ' nx,ny=',ireg(1,bi,bj),ireg(2,bi,bj)
-        else
-         if (VERB) write(LogUnit,*)
-     &    'MITCOMPONENT_tile_register: blank bi,bj=',bi,bj
-        endif
-       enddo
-      enddo
-      my_num_tiles=num_tiles
-      if (VERB) write(LogUnit,*)
-     &  'MITCOMPONENT_tile_register: num_tiles =',num_tiles
+      write(LogUnit,'(A,I6,A,2I4)')
+     &  'MITCOMPONENT_tile_register (pId=', my_rank_in_local,
+     &  '): Starts ; num_tiles=', num_tiles
 
       if (num_tiles.lt.1)
-     & stop 'MITCOMPONENT_tile_register: num_tiles < 1'
+     & STOP 'MITCOMPONENT_tile_register: num_tiles < 1'
       if (num_tiles.gt.MAX_TILES)
-     & stop 'MITCOMPONENT_tile_register: num_tiles > MAX_TILES'
+     & STOP 'MITCOMPONENT_tile_register: num_tiles > MAX_TILES'
+
+      my_num_tiles = num_tiles
+      do n=1,num_tiles
+        my_tile_bi(n) = iReg(1,n)
+        my_tile_bj(n) = iReg(2,n)
+        my_tile_nx(n) = iReg(3,n)
+        my_tile_ny(n) = iReg(4,n)
+        my_tile_i0(n) = iReg(5,n)
+        my_tile_j0(n) = iReg(6,n)
+        write(LogUnit,'(A,I5,A,2I4,A,2I5,A,2I8)')
+     &    ' tile #', n,
+     &    ' ; bi,bj=', iReg(1,n), iReg(2,n),
+     &    ' ; Ni,Nj=', iReg(3,n), iReg(4,n),
+     &    ' ; Io,Jo=', iReg(5,n), iReg(6,n)
+      enddo
 
 ! Set up buffer
-      ibuf(1)=num_tiles
+      ibuf(1) = num_tiles
 
 ! Send message
       count=1
@@ -72,24 +70,24 @@ C $Name:  $
        write(LogUnit,*) 'MITCOMPONENT_tile_register: rank(W,G,L)=',
      &            my_rank_in_world,my_rank_in_global,my_rank_in_local,
      &            ' ierr=',ierr
-       stop 'MITCOMPONENT_tile_register: MPI_Send failed'
+       STOP 'MITCOMPONENT_tile_register: MPI_Send failed'
       endif
 
-      do bibj=1,my_num_tiles
+      do n=1,my_num_tiles
 
 ! Set up buffer
-       bi=my_tile_bi(bibj)
-       bj=my_tile_bj(bibj)
-       ibuf(1)=my_tile_nx(bibj)
-       ibuf(2)=my_tile_ny(bibj)
-       ibuf(3)=my_tile_i0(bibj)
-       ibuf(4)=my_tile_j0(bibj)
+c      bi = my_tile_bi(n)
+c      bj = my_tile_bj(n)
+       ibuf(1) = my_tile_nx(n)
+       ibuf(2) = my_tile_ny(n)
+       ibuf(3) = my_tile_i0(n)
+       ibuf(4) = my_tile_j0(n)
 
 ! Send message
        count=4
        datatype=MPI_INTEGER
        dest=my_coupler_rank
-       tag=generate_tag(113,bibj,'Register each tile')
+       tag=generate_tag(113,n,'Register each tile')
        comm=MPI_COMM_myglobal
 
        call MPI_Send( ibuf, count, datatype, dest, tag, comm, ierr )
@@ -98,10 +96,13 @@ C $Name:  $
         write(LogUnit,*) 'MITCOMPONENT_tile_register: rank(W,G,L)=',
      &           my_rank_in_world,my_rank_in_global,my_rank_in_local,
      &           ' ierr=',ierr
-        stop 'MITCOMPONENT_tile_register: MPI_Send failed'
+        STOP 'MITCOMPONENT_tile_register: MPI_Send failed'
        endif
 
       enddo
+
+      write(LogUnit,'(A,I6,A,2I4)')
+     &  'MITCOMPONENT_tile_register (pId=', my_rank_in_local, '): done'
 
 !     ------------------------------------------------------------------
       call flush(LogUnit)
