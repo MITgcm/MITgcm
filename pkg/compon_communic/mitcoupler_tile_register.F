@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcoupler_tile_register.F,v 1.2 2007/10/08 23:58:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcoupler_tile_register.F,v 1.3 2013/11/27 21:51:15 jmc Exp $
 C $Name:  $
 
 !=======================================================================
@@ -18,25 +18,34 @@ C $Name:  $
 ! Functions
       integer mitcplr_match_comp
       integer generate_tag
+      external mitcplr_match_comp
+      external generate_tag
 
 ! Local
       integer n,numprocs
       integer comm
       integer compind,count,dtype,tag,rank
-      integer ierr, rc
+      integer ierr
       integer stat(MPI_STATUS_SIZE)
-      integer j,numtiles
+      integer j, numtiles
+      integer nx, ny, i0, j0
+      integer ibuf(MAX_IBUF)
 
 !     ------------------------------------------------------------------
 
+      write(LogUnit,'(3A)')
+     &    'MITCOUPLER_tile_register: do "', compName, '" :'
+
 ! Establish who I am communicating with
       compind=mitcplr_match_comp( compName )
-      if (compind.le.0) stop 'MITCOUPLER_tile_register: Bad component'
+      if (compind.le.0) STOP 'MITCOUPLER_tile_register: Bad component'
       comm=MPI_COMM_compcplr( compind )
       numprocs=num_component_procs(compind)
+
+      write(LogUnit,'(2(A,I6))')
+     &        ' compind=', compind, ' ; numprocs=', numprocs
       if (numprocs.lt.1) then
-       write(LogUnit,*) 'MITCOUPLER_tile_register: compind = ',compind
-       stop 'MITCOUPLER_tile_register: numprocs < 1'
+       STOP 'MITCOUPLER_tile_register: numprocs < 1'
       endif
 
 ! Foreach component process
@@ -54,16 +63,18 @@ C $Name:  $
         write(LogUnit,*) 'MITCOUPLER_tile_register: rank(W,G)=',
      &            my_rank_in_world,my_rank_in_global,
      &            ' ierr=',ierr
-        stop 'MITCOUPLER_tile_register: MPI_Recv failed'
+        STOP 'MITCOUPLER_tile_register: MPI_Recv failed'
        endif
 
        numtiles=ibuf(1)
        if (numtiles.lt.1 .or. numtiles.gt.MAX_TILES) then
         write(LogUnit,*) 'MITCOUPLER_tile_register: #tiles = ',numtiles
-        stop 'MITCOUPLER_tile_register: invalid value for numtiles'
+        STOP 'MITCOUPLER_tile_register: invalid value for numtiles'
        endif
        component_num_tiles(n,compind)=numtiles
 
+       write(LogUnit,'(3(A,I6),A)')   '- proc # =', n,
+     &     ' ; rank=', rank, ' ; numtiles=', numtiles, '  -------'
        do j=1,numtiles
 
 ! Receive message
@@ -78,27 +89,51 @@ C $Name:  $
          write(LogUnit,*) 'MITCOUPLER_tile_register: rank(W,G)=',
      &            my_rank_in_world,my_rank_in_global,
      &            ' ierr=',ierr
-         stop 'MITCOUPLER_tile_register: MPI_Recv failed'
+         STOP 'MITCOUPLER_tile_register: MPI_Recv failed'
         endif
 
-        component_tile_nx(j,n,compind)=ibuf(1)
-        component_tile_ny(j,n,compind)=ibuf(2)
-        component_tile_i0(j,n,compind)=ibuf(3)
-        component_tile_j0(j,n,compind)=ibuf(4)
+! Extract data and store
+        nx = ibuf(1)
+        ny = ibuf(2)
+        i0 = ibuf(3)
+        j0 = ibuf(4)
+        component_tile_nx(j,n,compind) = nx
+        component_tile_ny(j,n,compind) = ny
+        component_tile_i0(j,n,compind) = i0
+        component_tile_j0(j,n,compind) = j0
 
-        if (VERB) then
-         write(LogUnit,*) 'MITCOUPLER_tile_register:',
-     &             my_rank_in_world,my_rank_in_global,
-     &   ' proc,tile,nx,ny,i0,j0 = ',n,j,ibuf(1),ibuf(2),ibuf(3),ibuf(4)
+! Print and check
+        write(LogUnit,'(A,I5,A,2I5,A,2I8)') ' tile #:', j,
+     &     ' ; Ni,Nj=', nx, ny, ' ; Io,Jo=', i0, j0
+
+        if (nx.lt.1) then
+         STOP 'MITCOUPLER_tile_register: invalid value for nx'
+        endif
+        if (ny.lt.1) then
+         STOP 'MITCOUPLER_tile_register: invalid value for ny'
+        endif
+        if (i0.lt.1) then
+         STOP 'MITCOUPLER_tile_register: invalid value for i0'
+        endif
+        if (j0.lt.1) then
+         STOP 'MITCOUPLER_tile_register: invalid value for j0'
+        endif
+        if (i0+nx-1.gt.nnx) then
+         STOP 'MITCOUPLER_tile_register: i0 + nx -1 > nnx'
+        endif
+        if (j0+ny-1.gt.nny) then
+         STOP 'MITCOUPLER_tile_register: j0 + ny -1 > nny'
         endif
 
        enddo ! j
-       write(LogUnit,*) 'MITCOUPLER_tile_register:',
-     &             my_rank_in_world,my_rank_in_global,
-     &            ' rank = ',rank,
-     &            ' num_tiles = ',numtiles
+       write(LogUnit,'(A,2I8,2(A,I8))')
+     &     ' rank(W,G)=', my_rank_in_world, my_rank_in_global,
+     &     ' , rank = ',rank, ' , num_tiles = ', numtiles
 
       enddo ! n
+
+      write(LogUnit,'(3A)') 'MITCOUPLER_tile_register: comp. "',
+     &                         compName, '" done'
 
 !     ------------------------------------------------------------------
       call flush(LogUnit)
