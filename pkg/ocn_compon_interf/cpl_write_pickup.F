@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_write_pickup.F,v 1.6 2013/07/18 20:02:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_write_pickup.F,v 1.7 2013/11/27 21:09:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -37,7 +37,7 @@ C     suff    :: suffix for pickup file (eg. ckptA or 0000000010)
 C     myTime  :: Current time in simulation
 C     myIter  :: Current iteration number in simulation
 C     myThid  :: My Thread Id number
-      LOGICAL permPickup
+c     LOGICAL permPickup
       CHARACTER*(*) suff
       _RL     myTime
       INTEGER myIter
