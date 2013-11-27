@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_adv_flow.F,v 1.1 2013/11/19 16:47:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_adv_flow.F,v 1.2 2013/11/27 23:58:24 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -88,7 +89,16 @@ C--   copy previous rTrans (input) to output array rTransKp
       ELSE
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
+#ifdef ALLOW_AUTODIFF
+C-    Re-compute vertical transport: this changes "rTrans" to be
+C     an output only argument and therefore simplifies dependencies
+          rTransKp(i,j) = wFld(i,j,k+1)*rA(i,j,bi,bj)
+     &                  * maskC(i,j,k,bi,bj)*maskC(i,j,k+1,bi,bj)
+     &                  * deepFac2F(k+1)*rhoFacF(k+1)
+#else /* ALLOW_AUTODIFF */
+C-    Copy rTrans value from previous call (i.e., k+1):
           rTransKp(i,j) = rTrans(i,j)
+#endif /* ALLOW_AUTODIFF */
          ENDDO
         ENDDO
       ENDIF

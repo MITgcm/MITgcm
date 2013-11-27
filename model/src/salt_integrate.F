@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/salt_integrate.F,v 1.2 2013/11/21 00:16:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/salt_integrate.F,v 1.3 2013/11/27 23:58:25 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -133,9 +133,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO i=1-OLx,sNx+OLx
          fVerS(i,j,1) = 0. _d 0
          fVerS(i,j,2) = 0. _d 0
-#ifdef ALLOW_AUTODIFF
-         rTrans(i,j) = 0. _d 0
-#endif /* ALLOW_AUTODIFF */
        ENDDO
       ENDDO
 
@@ -148,8 +145,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         kDown= 1+MOD(k,2)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE rtrans(:,:) = comlev1_bibj_k, key=kkey,
-CADJ &     byte=isbyte,  kind = isbyte
 CADJ STORE fVerS(:,:,:) = comlev1_bibj_k, key=kkey,
 CADJ &     byte=isbyte,  kind = isbyte
 CADJ STORE gS(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey,
