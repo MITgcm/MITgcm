@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.22 2012/05/03 19:45:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.23 2013/11/27 01:24:05 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -137,15 +137,15 @@ C       execution at this stage.
       CALL INI_THREADING_ENVIRONMENT
       IF ( eeBootError ) GOTO 999
 
-C--   Pass attributes to the coupler
-#ifdef COMPONENT_MODULE
-      IF ( useCoupler ) CALL CPL_REGISTER
-#endif
-
 #ifdef ALLOW_EXCH2
 C--   Initialise WRAPPER2 execution environment
       CALL W2_EEBOOT
 #endif /* ALLOW_EXCH2 */
+
+C--   Pass attributes to the coupler
+#ifdef COMPONENT_MODULE
+      IF ( useCoupler ) CALL CPL_REGISTER
+#endif
 
   999 CONTINUE
       RETURN
