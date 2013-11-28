@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.49 2013/11/21 00:17:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.50 2013/11/28 00:00:26 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -142,11 +142,6 @@ C--   Loop over tracers
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-           rTrans(i,j) = 0. _d 0
-         ENDDO
-        ENDDO
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -175,8 +170,6 @@ C--   Loop over tracers
           kDown= 1+MOD(k,2)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE rtrans(:,:) = comlev1_bibj_k_ptracers,
-CADJ &     key = kkey, byte = isbyte, kind = isbyte
 CADJ STORE fVerT(:,:,:) = comlev1_bibj_k_ptracers,
 CADJ &     key = kkey, byte = isbyte, kind = isbyte
 CADJ STORE gPtr(:,:,k,bi,bj,iTracer) = comlev1_bibj_k_ptracers,
