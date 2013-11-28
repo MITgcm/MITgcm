@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.11 2013/11/19 17:00:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.12 2013/11/28 00:02:38 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -24,18 +24,13 @@ C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#ifdef ALLOW_LONGSTEP
-#include "LONGSTEP_PARAMS.h"
-#include "LONGSTEP.h"
-#endif
+#include "PARAMS.h"
+#include "GRID.h"
+#include "GAD.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_START.h"
 #include "PTRACERS_FIELDS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-#include "GAD.h"
-#include "DYNVARS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
@@ -66,6 +61,9 @@ C  iTracer :: tracer index
       INTEGER iTracer
       INTEGER iMin,iMax,jMin,jMax
       INTEGER GAD_TR
+#ifdef ALLOW_AUTODIFF
+      INTEGER i, j, k
+#endif
 CEOP
 
       iMin=0
@@ -76,6 +74,7 @@ CEOP
 C Loop over tracers
       DO iTracer=1,PTRACERS_numInUse
        IF ( PTRACERS_StepFwd(iTracer) ) THEN
+        GAD_TR = GAD_TR1 + iTracer - 1
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act0 = iTracer - 1
@@ -94,7 +93,16 @@ C Loop over tracers
      &                      + act4*max0*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-        GAD_TR = GAD_TR1 + iTracer - 1
+#ifdef ALLOW_AUTODIFF
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           kappaRk(i,j,k) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+#endif /* ALLOW_AUTODIFF */
+
         IF ( implicitDiffusion ) THEN
           CALL CALC_3D_DIFFUSIVITY(
      I         bi,bj,iMin,iMax,jMin,jMax,
@@ -105,8 +113,8 @@ C Loop over tracers
         ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE kappaRk(:,:,:) = comlev1_bibj_ptracers,
-CADJ &     key=iptrkey, byte=isbyte
+c CADJ STORE kappaRk(:,:,:) = comlev1_bibj_ptracers,
+c CADJ &     key=iptrkey, byte=isbyte
 CADJ STORE gPtr(:,:,:,bi,bj,iTracer) = comlev1_bibj_ptracers,
 CADJ &     key=iptrkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
