@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_ad_get_rx1.template,v 1.4 2012/09/15 23:01:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_ad_get_rx1.template,v 1.5 2013/11/29 16:59:33 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -104,7 +104,6 @@ C     i,j    :: Loop counters
       INTEGER soT
       INTEGER oNb
       INTEGER sNb, sBi, sBj, sLv
-      INTEGER i,j
       INTEGER iLoc
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -118,17 +117,12 @@ C  AD: Need to check that buffer synchronisation token is decremented
 C  AD: before filling buffer.
 
 C     find the tile indices (local to this Proc) corresponding to
-C      this source tile Id "soT"
+C      this source tile Id "soT" (note: this is saved in W2_tileIndex array)
        sLv = 1
        sNb = oNb
-       DO j=1,sizeBj
-        DO i=1,sizeBi
-         IF ( W2_myTileList(i,j).EQ.soT ) THEN
-           sBi = i
-           sBj = j
-         ENDIF
-        ENDDO
-       ENDDO
+       sBi = W2_tileIndex(soT)
+       sBj = 1 + (sBi-1)/sizeBi
+       sBi = 1 + MOD(sBi-1,sizeBi)
 #ifdef ALLOW_USE_MPI
       ELSEIF ( commSetting .EQ. 'M' ) THEN
        sLv = 2
