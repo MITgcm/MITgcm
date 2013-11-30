@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1943 2013/11/27 22:53:37 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1944 2013/11/30 23:00:00 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exch2:
+  - in exch2*_get_rx[1,2]: use new list "W2_tileIndex" to replace search
+    through list of all tiles my proc owns.
+o model/src:
+  - AUTODIFF only: in calc_adv_flow.F, recompute rTransKp (instead of copying
+    from rTrans) to simplify dependencies (no need to store rTrans anymore in
+    calling S/R); this affects AD results at machine truncation level:
+    update AD-output (TAF) of experiments: 1D_ocean_ice_column,
+    bottom_ctrl_5x5 & obcs_ctrl (12 digits for AD grad, same FWD grad).
 o tools/build_options:
   - simplify Warnings options (-ieee & -devel cases) in linux_amd64_gfortran
 o coupling interface pkgs:
