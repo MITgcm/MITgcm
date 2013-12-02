@@ -1,8 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcoupler_init.F,v 1.3 2013/11/27 21:48:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcoupler_init.F,v 1.4 2013/12/02 21:37:53 jmc Exp $
 C $Name:  $
 
 !=======================================================================
-      subroutine MITCOUPLER_init( myTypeStr, MPI_COMM_local )
+      subroutine MITCOUPLER_init( 
+     I                      myTypeStr, 
+     O                      MPI_COMM_local, msgUnit )
       implicit none
 
 ! MPI variables
@@ -14,6 +16,7 @@ C $Name:  $
 ! Arguments
       character*(*) myTypeStr
       integer MPI_COMM_local
+      integer msgUnit
 
 ! Functions
 
@@ -23,8 +26,10 @@ C $Name:  $
 !     ------------------------------------------------------------------
 
 ! Homogeneous registration phase (every process Bcasts)
-      couplerFlag=.TRUE.
+!  also open a coupling log file (.clog) with I/O unit: LogUnit
+      couplerFlag = .TRUE.
       call MITCPLR_init1( myTypeStr, couplerFlag )
+      msgUnit = LogUnit
 
 ! Return the communicator for my component
       MPI_COMM_local = MPI_COMM_mylocal
