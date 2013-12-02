@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/cpl_atm2d+ocn/shared_code/ATMIDS.h,v 1.2 2009/09/02 18:52:21 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/verification/cpl_atm2d+ocn/shared_code/ATMIDS.h,v 1.3 2013/12/02 23:48:15 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -9,8 +9,8 @@ C     *==========================================================*
       CHARACTER*(8)  atmCompName
       PARAMETER( atmCompName         = 'UV-Atmos'       )
 
-      CHARACTER*(10) atmDepthName
-      PARAMETER( atmDepthName        = 'ATM Depths'     )
+      CHARACTER*(8)  atmLandName
+      PARAMETER( atmLandName         = 'ATM Land'       )
       CHARACTER*(10) atmMxlDName
       PARAMETER( atmMxlDName         = 'ATM ocMxlD'     )
       CHARACTER*(7)  atmSSTName
