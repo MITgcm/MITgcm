@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_init.F,v 1.2 2009/12/25 19:43:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_init.F,v 1.3 2013/12/02 21:41:59 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -28,17 +28,19 @@ C     == Global variables ==
 #include "ATMIDS.h"
 
 C !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     myThid :: Thread number for this instance of the routine
 c     INTEGER myThid
 CEOP
 
+#ifdef COMPONENT_MODULE
 C !LOCAL VARIABLES:
-C     == Local variables ==
+C     msgUnit  :: log-file I/O unit
+      INTEGER msgUnit
 
 C--   Initialise connection with coupler
-#ifdef COMPONENT_MODULE
-      CALL MITCOMPONENT_INIT( atmCompName, MPI_COMM_MODEL )
+      CALL MITCOMPONENT_INIT(
+     I                  atmCompName,
+     O                  MPI_COMM_MODEL, msgUnit )
 #endif
 
       RETURN
