@@ -1,37 +1,49 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/coupler.F,v 1.3 2006/06/15 23:29:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/coupler.F,v 1.4 2013/12/02 21:55:06 jmc Exp $
 C $Name:  $
 
+CBOP 0
+C !ROUTINE: COUPLER
+
+C !INTERFACE:
       PROGRAM COUPLER
-C     /==========================================================\
-C     | PROGRAM COUPLER                                          |
-C     | o Main routine for 'Coupler' component. 'Coupler'        |
-C     |   component coordiantes the exchange of data between     |
-C     |   component models in a coupled model experiment.        |
-C     |==========================================================|
-C     | This version uses the MIT Coupler "checkpoint1" library  |
-C     | calls.                                                   |
-C     \==========================================================/
+
+C !DESCRIPTION:
+C     *==========================================================*
+C     | PROGRAM COUPLER
+C     | o Main routine for 'Coupler' component. 'Coupler'
+C     |   component coordiantes the exchange of data between
+C     |   component models in a coupled model experiment.
+C     *==========================================================*
+C     | This version uses the MIT Coupler "checkpoint1" library
+C     | calls.
+C     *==========================================================*
+
+C !USES:
       IMPLICIT NONE
+C     == Global variables ==
 #include "mpif.h"
 #include "CPL_PARAMS.h"
 
-C     == Local variables ==
-C     I                - Loop counter
-C     MPI_COMM_Coupler
-C     rc               - MPI return code
+C !LOCAL VARIABLES:
+C     I       :: Loop counter
+C     rc      :: MPI return code
+C     msgUnit :: log-file I/O unit
       INTEGER I
       INTEGER rc
+      INTEGER msgUnit
+CEOP
 
 C     Initialise the coupler component
-      CALL INITIALISE
+      CALL INITIALISE(
+     O                 msgUnit )
 
 C     Perform registration with other components
       CALL ACCEPT_COMPONENT_REGISTRATIONS
 
-C     Coordinate the transfer configuration information 
+C     Coordinate the transfer configuration information
 C     between components
-      CALL RECEIVE_COMPONENT_CONFIGS
-      CALL SENDOUT_COMPONENT_CONFIGS
+      CALL EXCH_COMPONENT_CONFIGS(
+     I                             msgUnit )
 
       DO I=1,nCouplingSteps
 
