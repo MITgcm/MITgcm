@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/initialise.F,v 1.2 2007/10/08 23:48:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/initialise.F,v 1.3 2013/12/02 23:54:43 jmc Exp $
 C $Name:  $
 
 #include "ATM2D_OPTIONS.h"
@@ -29,8 +29,10 @@ C     === Local variables ===
 C     iErr             - Error code
 C     MPI_COMM_Coupler - Communicatior used by this component.
 C                        Stored internally by the coupling library.
+C     msgUnit          :: log-file I/O unit
       INTEGER iErr
       INTEGER MPI_COMM_Coupler
+      INTEGER msgUnit
 
       CALL MPI_Init(iErr)
 
@@ -39,6 +41,10 @@ C--   Set the running directory (= rank_0 )
 
 C     Register this process as the "coupler" participant. Currently there can
 C     only be one coupler participant all others are "component" participants.
+      CALL MITCOUPLER_INIT(
+     I                      cplCompName,
+     O                      MPI_COMM_Coupler, msgUnit )
+
       CALL MITCOUPLER_INIT( cplCompName, MPI_COMM_Coupler )
 
       RETURN

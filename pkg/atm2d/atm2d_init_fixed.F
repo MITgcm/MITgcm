@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_init_fixed.F,v 1.4 2011/06/02 21:33:21 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_init_fixed.F,v 1.5 2013/12/02 23:54:43 jmc Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -39,6 +39,9 @@ C     myThid - thread number for this instance of the routine.
 C     === Local variables ===
 #ifdef OCEAN_3D
       INTEGER nCouplePer    !not a subroutine parm for OCEAN_3D
+# ifdef ATM2D_MPI_ON
+      INTEGER msgUnit
+# endif
 #endif
 
       CALL CHECK_SETTINGS
@@ -90,8 +93,9 @@ C     Perform registration with other components
 
 C     Coordinate the transfer configuration information
 C     between components
-      CALL RECEIVE_COMPONENT_CONFIGS
-      CALL SENDOUT_COMPONENT_CONFIGS
+      msgUnit = standardMessageUnit
+      CALL EXCH_COMPONENT_CONFIGS(
+     I                             msgUnit )
 #  endif
 
       CALL INIT_ATM2D(dtatm, dtocn, dtcouple, myThid)
