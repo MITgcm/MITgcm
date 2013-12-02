@@ -1,14 +1,9 @@
-5
+#- coupler parameter file: Only read 2nd and 3rd lines:
 3644
 runOff_cs32_3644.bin
 #----- End of active fields -----------------------------
-# data.cpl : parameter file for the coupler ; 
+# file "data" : parameter file for the coupler ;
 # needs to be where the coupler is running
-------- 1rst line:
- =Nb of iter of the coupler (CouplingSteps)
-8640   = 1yr , dt=1h
-17280  = 2yr , dt=1h
-43200  = 5yr , dt=1h
 ------- 2nd  line:
  = Nb of connection in the runOff map (nROmap)
 ------- 3rd  line:
