@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_readparms.F,v 1.9 2013/09/24 23:13:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_readparms.F,v 1.10 2013/12/02 21:46:57 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -50,7 +50,7 @@ C     cpl_earlyExpImpCall :: retired; always call coupler early in call sequence
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
 c     INTEGER k, iL
-      _RL  cpl_atmSendFrq
+      _RL  cpl_atmSendFrq, tmpLoc
       LOGICAL cpl_earlyExpImpCall
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -131,8 +131,16 @@ C--   Check parameters and model configuration
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R CPL_READPARMS'
       ENDIF
+      tmpLoc = NINT( cpl_atmSendFrq / deltaTClock )
+      tmpLoc = ABS( tmpLoc - ( cpl_atmSendFrq / deltaTClock ) )
+      IF ( tmpLoc.GT.1. _d -12 .OR. cpl_atmSendFrq.EQ.zeroRL ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: cpl_atmSendFrq',
+     &    ' is not a multiple of deltaT'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CPL_READPARMS'
+      ENDIF
 
-C-    derive other parameters:
+C-    Derive other parameters:
       cplSendFrq_iter = NINT( cpl_atmSendFrq / deltaTClock )
       IF ( cplSendFrq_iter .LT. 1) cplSendFrq_iter = 1
 
