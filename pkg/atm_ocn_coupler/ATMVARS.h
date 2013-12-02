@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/ATMVARS.h,v 1.6 2009/09/14 16:24:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/ATMVARS.h,v 1.7 2013/12/02 23:21:47 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -7,7 +7,8 @@ C     |           grid. Arrays may need adding or removing
 C     |           different couplings.
 C     *==========================================================*
 
-C     AtmDepths_atm  :: Atmos. depths on atmos. grid
+C     landMask_atm   :: Atmosphere land mask (=1 : full land grid-point;
+C                       =0 : full ocean grid-point);
 C     OcMxlD_atm     :: Ocean mixed-layer depths on atmos. grid (m)
 C     SST_atm        :: Sea surface temperature on atmos. grid ( oC).
 C     SSS_atm        :: Sea surface temperature on atmos. grid (psu).
@@ -34,7 +35,7 @@ C     wSpeed_atm     :: surface windspeed on atmos. grid (m/s)
 C     sIceFrac_atm   :: sea-ice fraction  on atmos. grid
 
       COMMON /ATMVARS_R/
-     &       AtmDepths_atm,
+     &       landMask_atm,
      &       OcMxlD_atm, SST_atm, SSS_atm, vSq_atm, fluxCO2_atm,
      &       atmSLPr_atm, HeatFlux_atm, qShortWave_atm,
 c    &       qLatent_atm, qSensible_atm, qLongWave_atm,
@@ -44,7 +45,7 @@ c    &       uVelGround_atm, vVelGround_atm,
      &       SaltFlx_atm, sIceMass_atm,
      &       aCO2_atm, wSpeed_atm, sIceFrac_atm
 
-      _RL AtmDepths_atm  (Nx_atm,Ny_atm)
+      _RL landMask_atm   (Nx_atm,Ny_atm)
       _RL OcMxlD_atm     (Nx_atm,Ny_atm)
       _RL SST_atm        (Nx_atm,Ny_atm)
       _RL SSS_atm        (Nx_atm,Ny_atm)

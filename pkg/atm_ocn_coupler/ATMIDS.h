@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/ATMIDS.h,v 1.2 2007/06/18 21:20:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/ATMIDS.h,v 1.3 2013/12/02 23:21:47 jmc Exp $
 C $Name:  $
 
   These lines are here to deliberately cause a compile-time error.
@@ -18,8 +18,8 @@ C     *==========================================================*
       CHARACTER*(8)  atmCompName
       PARAMETER( atmCompName         = 'UV-Atmos'       )
 
-      CHARACTER*(10) atmDepthName
-      PARAMETER( atmDepthName        = 'ATM Depths'     )
+      CHARACTER*(8)  atmLandName
+      PARAMETER( atmLandName         = 'ATM Land'       )
       CHARACTER*(10) atmMxlDName
       PARAMETER( atmMxlDName         = 'ATM ocMxlD'     )
       CHARACTER*(7)  atmSSTName
