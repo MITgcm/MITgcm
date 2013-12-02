@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_import_atmconfig.F,v 1.2 2009/12/24 16:48:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_import_atmconfig.F,v 1.3 2013/12/02 22:16:19 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -38,8 +38,8 @@ C     o Import atmosphere model orography
       _BARRIER
       _BEGIN_MASTER( myThid )
       CALL COMPRECV_R8TILES(
-     I              atmDepthName, sNx, OLx, sNy, OLy, 1, nSx, nSy,
-     O              Hatm )
+     I              atmLandName, sNx, OLx, sNy, OLy, 1, nSx, nSy,
+     O              landMask )
       _END_MASTER( myThid )
       _BARRIER
 

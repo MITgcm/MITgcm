@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_export_ocnconfig.F,v 1.3 2009/12/24 16:48:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_export_ocnconfig.F,v 1.4 2013/12/02 22:16:19 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -25,22 +25,23 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "OCNCPL.h"
 #include "OCNIDS.h"
+#include "OCNCPL.h"
 
 C !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid :: Thread number for this instance of the routine
       INTEGER myThid
-CEOP
 
-C     == Local variables ==
+C !LOCAL VARIABLES:
       INTEGER i,j,bi,bj
+      INTEGER tmpFld(1)
+CEOP
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           ocMxlD2cpl(i,j,bi,bj) = hFacC(i,j,1,bi,bj)*drF(1)
          ENDDO
         ENDDO
@@ -48,12 +49,18 @@ C     == Local variables ==
       ENDDO
 
 C     Send my configuration information to the coupler
-C     o Send ocean model bathymetry map
       _BARRIER
       _BEGIN_MASTER( myThid )
+
+C     o Send number of coupler time-steps to do for this run
+      tmpFld(1) = nTimeSteps
+      CALL COMPSEND_I4VEC( 'nCouplingSteps', 1, tmpFld )
+
+C     o Send ocean model bathymetry map
       CALL COMPSEND_R8TILES(
      I              ocnMxlDName, sNx, OLx, sNy, OLy, 1, nSx, nSy,
      I              ocMxlD2cpl )
+
       _END_MASTER( myThid )
       _BARRIER
 
