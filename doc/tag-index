@@ -1,9 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1944 2013/11/30 23:00:00 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1945 2013/12/03 00:37:55 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o coupling interface pkgs:
+    [atm_compon_interf, ocn_compon_interf & atm_ocn_coupler]
+  - change the config check to test the agreement of Ocean Depth
+    with ATM land/sea mask (instead of ATM orography);
+  - send to coupler the number of coupler time-steps to do for this run:
+    this allows to check for consistency and don't need anymore to be
+    specified in parameter file "data";
+  in coupler:
+  - check consistency of RunOff map versus Ocean Depth and ATM land/sea mask.
+  - improve report to log-file of config setting (pass log-file unit to few S/R)
+o pkg/compon_communic:
+  - add coupling send/receive for non-tiled integer vector;
+  - add S/R to check and stop if any proc has an error (similar to
+    eesupp/src/stop_if_error.F but single thread and across Comm_World).
 o pkg/exch2:
   - in exch2*_get_rx[1,2]: use new list "W2_tileIndex" to replace search
     through list of all tiles my proc owns.
