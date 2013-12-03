@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.193 2013/11/15 18:51:16 torge Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.194 2013/12/03 22:11:01 torge Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1868,9 +1868,9 @@ CADJ STORE AREA(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef SEAICE_ITD
-C--     account for lateral ice growth and melt only in thinnest category
-C--     use HEFF, ARE, HSNOW, etc. temporarily for 1st category
-C       (this way we can use same code for ITD and non-ITD case)
+C--     in thinnest category account for lateral ice growth and melt the "non-ITD" way,
+C--     so that the ITD simulation with nITD=1 is identical with the non-ITD simulation;
+C--     use HEFF, ARE, HSNOW, etc. as temporal storage for 1st category
         DO J=1,sNy
          DO I=1,sNx
           HEFF(I,J,bi,bj)=HEFFITD(I,J,1,bi,bj)
@@ -1881,31 +1881,6 @@ C       (this way we can use same code for ITD and non-ITD case)
           recip_heffActual(I,J)=recip_heffActualMult(I,J,1)
          ENDDO
         ENDDO
-C       all other categories only experience basal growth or melt,
-C       i.e. change sin AREA only occur when all ice in a category is melted
-        IF (nITD .gt. 1) THEN
-         DO IT=2,nITD
-          DO J=1,sNy
-           DO I=1,sNx
-            IF (HEFFITD(I,J,IT,bi,bj).LE.ZERO) THEN
-             AREAITD(I,J,IT,bi,bj)=ZERO
-            ELSE
-C            actual ice thickness from previous time step
-C            (actual ice thickness not to increase because of lateral melt!)
-             tmpscal1=HEFFITDpreTH(I,J,IT)/AREAITDpreTH(I,J,IT)
-C            melt ice laterally based on an average floe sice
-C            following Steele (1992)
-             AREAITD(I,J,IT,bi,bj) = AREAITD(I,J,IT,bi,bj)
-     &                             * (ONE - latMeltFrac(I,J,IT))
-             AREAITD(I,J,IT,bi,bj) = max(ZERO,AREAITD(I,J,IT,bi,bj))
-C            limit area reduction so that actual ice thickness does not increase
-             AREAITD(I,J,IT,bi,bj) = max(AREAITD(I,J,IT,bi,bj),
-     &                                   HEFFITD(I,J,IT,bi,bj)/tmpscal1)
-            ENDIF
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDIF
 #endif
         DO J=1,sNy
          DO I=1,sNx
@@ -1980,6 +1955,35 @@ C       transfer 1st category values back into ITD variables
           HSNOWITD(I,J,1,bi,bj)=HSNOW(I,J,bi,bj)
          ENDDO
         ENDDO
+C       now melt ice laterally in all other thickness categories
+C       (areal growth, i.e. new ice formation, only occurrs in 1st category)
+        IF (nITD .gt. 1) THEN
+         DO IT=2,nITD
+          DO J=1,sNy
+           DO I=1,sNx
+            IF (HEFFITD(I,J,IT,bi,bj).LE.ZERO) THEN
+C       when thickness is zero, area should be zero, too:
+             AREAITD(I,J,IT,bi,bj)=ZERO
+            ELSE
+C       actual ice thickness from before thermodynamic changes:
+             tmpscal1=HEFFITDpreTH(I,J,IT)/AREAITDpreTH(I,J,IT)
+C       melt ice laterally based on an average floe sice
+C       following Steele (1992)
+             AREAITD(I,J,IT,bi,bj) = AREAITD(I,J,IT,bi,bj)
+     &                             * (ONE - latMeltFrac(I,J,IT))
+             AREAITD(I,J,IT,bi,bj) = max(ZERO,AREAITD(I,J,IT,bi,bj))
+C       limit area reduction so that actual ice thickness does not increase
+             AREAITD(I,J,IT,bi,bj) = max(AREAITD(I,J,IT,bi,bj),
+     &                                   HEFFITD(I,J,IT,bi,bj)/tmpscal1)
+            ENDIF
+#ifdef ALLOW_SITRACER
+            SItrAREA(I,J,bi,bj,3)=SItrAREA(I,J,bi,bj,3)
+     &                           +AREAITD(I,J,IT,bi,bj)
+#endif /* ALLOW_SITRACER */
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
 #endif
 
 #if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_MODIFY_GROWTH_ADJ)
