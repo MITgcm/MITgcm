@@ -1,15 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.3 2013/11/27 23:58:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.4 2013/12/06 01:55:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: TEMP_INTEGRATE
 C     !INTERFACE:
       SUBROUTINE TEMP_INTEGRATE(
-     I           bi, bj, iMin, iMax, jMin, jMax,
-     I           uFld, vFld, wFld, KappaRk,
+     I           bi, bj,
+     I           uFld, vFld, wFld,
+     U           KappaRk,
      I           myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -34,9 +38,9 @@ C     | forms the tendency terms due to advection and mixing
 C     | The baseline implementation here uses a centered
 C     | difference form for the advection term and a tensorial
 C     | divergence of a flux form for the diffusive term. The
-C     | diffusive term is formulated so that isopycnal mixing and
-C     | GM-style subgrid-scale terms can be incorporated b simply
-C     | setting the diffusion tensor terms appropriately.
+C     | diffusive term is formulated so that isopycnal mixing
+C     | and GM-style subgrid-scale terms can be incorporated by
+C     | simply setting the diffusion tensor terms appropriately.
 C     *==========================================================*
 C     \ev
 
@@ -49,7 +53,8 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "RESTART.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
-#include "GAD.h"
+# include "GAD.h"
+# include "GAD_SOM_VARS.h"
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -59,15 +64,13 @@ C     == GLobal variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     bi, bj,   :: tile indices
-C     iMin,iMax :: loop range for called routines
-C     jMin,jMax :: loop range for called routines
 C     uFld,vFld :: Local copy of horizontal velocity field
 C     wFld      :: Local copy of vertical velocity field
 C     KappaRk   :: Vertical diffusion for Tempertature
 C     myTime    :: current time
 C     myIter    :: current iteration number
 C     myThid    :: my Thread Id. number
-      INTEGER bi, bj, iMin, iMax, jMin, jMax
+      INTEGER bi, bj
       _RL uFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL vFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL wFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -79,6 +82,8 @@ CEOP
 
 #ifdef ALLOW_GENERIC_ADVDIFF
 C     !LOCAL VARIABLES:
+C     iMin,iMax :: Range of points for which calculation
+C     jMin,jMax ::       results will be set.
 C     k         :: vertical index
 C     kM1       :: =k-1 for k>1, =1 for k=1
 C     kUp       :: index into 2 1/2D array, toggles between 1|2
@@ -92,6 +97,7 @@ C     rTrans    ::   Vertical volume transport at interface k
 C     rTransKp  :: Vertical volume transport at inteface k+1
 C     fVerT     :: Flux of temperature (T) in the vertical direction
 C                  at the upper(U) and lower(D) faces of a cell.
+      INTEGER iMin, iMax, jMin, jMax
       INTEGER i, j, k
       INTEGER kUp, kDown, kM1
       _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -108,6 +114,16 @@ C                  at the upper(U) and lower(D) faces of a cell.
 #ifdef ALLOW_ADAMSBASHFORTH_3
       INTEGER m1, m2
 #endif
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C-    Loop ranges for daughter routines
+      iMin = 1-OLx+2
+      iMax = sNx+OLx-1
+      jMin = 1-OLy+2
+      jMax = sNy+OLy-1
+
+      iterNb = myIter
+      IF (staggerTimeStep) iterNb = myIter -1
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act1 = bi - myBxLo(myThid)
@@ -122,19 +138,86 @@ C                  at the upper(U) and lower(D) faces of a cell.
      &                      + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-      calcAdvection = tempAdvection .AND. .NOT.tempMultiDimAdvec
-      iterNb = myIter
-      IF (staggerTimeStep) iterNb = myIter -1
-
+C-    Tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
+      DO k=1,Nr
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         gT(i,j,k,bi,bj) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDDO
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
          fVerT(i,j,1) = 0. _d 0
          fVerT(i,j,2) = 0. _d 0
        ENDDO
       ENDDO
+#ifdef ALLOW_AUTODIFF
+      DO k=1,Nr
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         kappaRk(i,j,k) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* ALLOW_AUTODIFF */
 
+#ifdef INCLUDE_CALC_DIFFUSIVITY_CALL
+      IF ( .NOT. implicitDiffusion ) THEN
+        CALL CALC_3D_DIFFUSIVITY(
+     I         bi, bj, iMin, iMax, jMin, jMax,
+     I         GAD_TEMPERATURE, useGMredi, useKPP,
+     O         kappaRk,
+     I         myThid )
+      ENDIF
+#endif /* INCLUDE_CALC_DIFFUSIVITY_CALL */
+
+#ifndef DISABLE_MULTIDIM_ADVECTION
+C--     Some advection schemes are better calculated using a multi-dimensional
+C       method in the absence of any other terms and, if used, is done here.
+C
+C The CPP flag DISABLE_MULTIDIM_ADVECTION is currently unset in GAD_OPTIONS.h
+C The default is to use multi-dimensinal advection for non-linear advection
+C schemes. However, for the sake of efficiency of the adjoint it is necessary
+C to be able to exclude this scheme to avoid excessive storage and
+C recomputation. It *is* differentiable, if you need it.
+C Edit GAD_OPTIONS.h and #define DISABLE_MULTIDIM_ADVECTION to
+C disable this section of code.
+#ifdef GAD_ALLOW_TS_SOM_ADV
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE som_T = comlev1_bibj, key=itdkey, byte=isbyte
+# endif
+      IF ( tempSOM_Advection ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
+# endif
+        CALL GAD_SOM_ADVECT(
+     I             tempImplVertAdv, tempAdvScheme, tempVertAdvScheme,
+     I             GAD_TEMPERATURE, dTtracerLev,
+     I             uFld, vFld, wFld, theta,
+     U             som_T,
+     O             gT,
+     I             bi, bj, myTime, myIter, myThid )
+      ELSEIF (tempMultiDimAdvec) THEN
+#else /* GAD_ALLOW_TS_SOM_ADV */
+      IF (tempMultiDimAdvec) THEN
+#endif /* GAD_ALLOW_TS_SOM_ADV */
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GAD_ADVECTION',myThid)
+# endif
+        CALL GAD_ADVECTION(
+     I             tempImplVertAdv, tempAdvScheme, tempVertAdvScheme,
+     I             GAD_TEMPERATURE, dTtracerLev,
+     I             uFld, vFld, wFld, theta,
+     O             gT,
+     I             bi, bj, myTime, myIter, myThid )
+      ENDIF
+#endif /* DISABLE_MULTIDIM_ADVECTION */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C-    Start vertical index (k) loop (Nr:1)
+      calcAdvection = tempAdvection .AND. .NOT.tempMultiDimAdvec
       DO k=Nr,1,-1
 #ifdef ALLOW_AUTODIFF_TAMC
         kkey = (itdkey-1)*Nr + k

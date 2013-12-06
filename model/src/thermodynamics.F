@@ -1,11 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.145 2013/11/19 16:58:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.146 2013/12/06 01:55:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_GENERIC_ADVDIFF
-# include "GAD_OPTIONS.h"
-#endif
 #if (defined ALLOW_PTRACERS) && (!defined ALLOW_LONGSTEP)
 # define DO_PTRACERS_HERE
 #endif
@@ -87,7 +84,6 @@ C     == Global variables ===
 #include "SURFACE.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
-# include "GAD_SOM_VARS.h"
 #endif
 #ifdef DO_PTRACERS_HERE
 # include "PTRACERS_SIZE.h"
@@ -152,9 +148,6 @@ C     i, j, k        :: loop indices
 #ifdef ALLOW_TIMEAVE
       LOGICAL useVariableK
 #endif
-#ifdef DO_PTRACERS_HERE
-      INTEGER iTracer
-#endif
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -213,27 +206,9 @@ C     uninitialised but inert locations.
            recip_hFacNew(i,j,k) = 0. _d 0
 C This is currently also used by IVDC and Diagnostics
            kappaRk(i,j,k)    = 0. _d 0
-C- tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
-           gT(i,j,k,bi,bj)   = 0. _d 0
-           gS(i,j,k,bi,bj)   = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
-
-#ifdef DO_PTRACERS_HERE
-        IF ( usePTRACERS ) THEN
-C-      set tracer tendency to zero:
-         DO iTracer=1,PTRACERS_num
-          DO k=1,Nr
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             gPTr(i,j,k,bi,bj,itracer) = 0. _d 0
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDIF
-#endif
 
 #ifdef ALLOW_ADAMSBASHFORTH_3
 C-      Apply AB on T,S :
@@ -284,7 +259,6 @@ CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE uFld (:,:,:) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE vFld (:,:,:) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE wFld (:,:,:) = comlev1_bibj, key=itdkey, byte=isbyte
-c# if ((defined ALLOW_DEPTH_CONTROL) || (defined NONLIN_FRSURF))
 #  ifdef ALLOW_ADAMSBASHFORTH_3
 CADJ STORE gtNm(:,:,:,bi,bj,1) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE gtNm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
@@ -294,114 +268,12 @@ CADJ STORE gsNm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE gtNm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE gsNm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 #  endif
-c# endif
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-#ifndef DISABLE_MULTIDIM_ADVECTION
-C--     Some advection schemes are better calculated using a multi-dimensional
-C       method in the absence of any other terms and, if used, is done here.
-C
-C The CPP flag DISABLE_MULTIDIM_ADVECTION is currently unset in GAD_OPTIONS.h
-C The default is to use multi-dimensinal advection for non-linear advection
-C schemes. However, for the sake of efficiency of the adjoint it is necessary
-C to be able to exclude this scheme to avoid excessive storage and
-C recomputation. It *is* differentiable, if you need it.
-C Edit GAD_OPTIONS.h and #define DISABLE_MULTIDIM_ADVECTION to
-C disable this section of code.
-#ifdef GAD_ALLOW_TS_SOM_ADV
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE som_T = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE som_S = comlev1_bibj, key=itdkey, byte=isbyte
-# endif
-        IF ( tempSOM_Advection ) THEN
-#ifdef ALLOW_DEBUG
-          IF (debugMode) CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
-#endif
-          CALL GAD_SOM_ADVECT(
-     I             tempImplVertAdv, tempAdvScheme, tempVertAdvScheme,
-     I             GAD_TEMPERATURE, dTtracerLev,
-     I             uFld, vFld, wFld, theta,
-     U             som_T,
-     O             gT,
-     I             bi,bj,myTime,myIter,myThid)
-        ELSEIF (tempMultiDimAdvec) THEN
-#else /* GAD_ALLOW_TS_SOM_ADV */
-        IF (tempMultiDimAdvec) THEN
-#endif /* GAD_ALLOW_TS_SOM_ADV */
-#ifdef ALLOW_DEBUG
-          IF (debugMode) CALL DEBUG_CALL('GAD_ADVECTION',myThid)
-#endif
-          CALL GAD_ADVECTION(
-     I             tempImplVertAdv, tempAdvScheme, tempVertAdvScheme,
-     I             GAD_TEMPERATURE, dTtracerLev,
-     I             uFld, vFld, wFld, theta,
-     O             gT,
-     I             bi, bj, myTime, myIter, myThid)
-        ENDIF
-#ifdef GAD_ALLOW_TS_SOM_ADV
-        IF ( saltSOM_Advection ) THEN
-#ifdef ALLOW_DEBUG
-          IF (debugMode) CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
-#endif
-          CALL GAD_SOM_ADVECT(
-     I             saltImplVertAdv, saltAdvScheme, saltVertAdvScheme,
-     I             GAD_SALINITY, dTtracerLev,
-     I             uFld, vFld, wFld, salt,
-     U             som_S,
-     O             gS,
-     I             bi,bj,myTime,myIter,myThid)
-        ELSEIF (saltMultiDimAdvec) THEN
-#else /* GAD_ALLOW_TS_SOM_ADV */
-        IF (saltMultiDimAdvec) THEN
-#endif /* GAD_ALLOW_TS_SOM_ADV */
-#ifdef ALLOW_DEBUG
-          IF (debugMode) CALL DEBUG_CALL('GAD_ADVECTION',myThid)
-#endif
-          CALL GAD_ADVECTION(
-     I             saltImplVertAdv, saltAdvScheme, saltVertAdvScheme,
-     I             GAD_SALINITY, dTtracerLev,
-     I             uFld, vFld, wFld, salt,
-     O             gS,
-     I             bi, bj, myTime, myIter, myThid)
-        ENDIF
-
-C Since passive tracers are configurable separately from T,S we
-C call the multi-dimensional method for PTRACERS regardless
-C of whether multiDimAdvection is set or not.
-#ifdef DO_PTRACERS_HERE
-        IF ( usePTRACERS ) THEN
-#ifdef ALLOW_DEBUG
-         IF (debugMode) CALL DEBUG_CALL('PTRACERS_ADVECTION',myThid)
-#endif
-         CALL PTRACERS_ADVECTION( bi, bj,
-     I                            uFld, vFld, wFld,
-     I                            myTime, myIter, myThid )
-        ENDIF
-#endif /* DO_PTRACERS_HERE */
-#endif /* DISABLE_MULTIDIM_ADVECTION */
-
-#ifdef ALLOW_DEBUG
-        IF (debugMode)
-     &    CALL DEBUG_MSG('ENTERING DOWNWARD K LOOP',myThid)
-#endif
-
-#ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_SALT_PLUME
 CADJ STORE saltPlumeFlux(:,:,bi,bj)   =
 CADJ &     comlev1_bibj, key=itdkey,kind = isbyte
 CADJ STORE saltPlumeDepth(:,:,bi,bj)   =
 CADJ &     comlev1_bibj, key=itdkey,kind = isbyte
 # endif
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-C--     Calculate active tracer tendencies (gT,gS,...)
-C       and step forward storing result in gT, gS, etc.
-        iMin = 1-OLx+2
-        iMax = sNx+OLx-1
-        jMin = 1-OLy+2
-        jMax = sNy+OLy-1
-
-#ifdef ALLOW_AUTODIFF_TAMC
 # if ((defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)) && (defined ALLOW_GMREDI)
 #  ifdef GM_NON_UNITY_DIAGONAL
 CADJ STORE kux(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
@@ -414,42 +286,36 @@ CADJ STORE kvz(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-        IF ( tempStepping ) THEN
-#ifdef INCLUDE_CALC_DIFFUSIVITY_CALL
-         IF ( .NOT. implicitDiffusion ) THEN
-          CALL CALC_3D_DIFFUSIVITY(
-     I         bi, bj, iMin, iMax, jMin, jMax,
-     I         GAD_TEMPERATURE, useGMredi, useKPP,
-     O         kappaRk,
-     I         myThid )
-         ENDIF
-#endif /* INCLUDE_CALC_DIFFUSIVITY_CALL */
+C--     Calculate active tracer tendencies (gT,gS,...)
+C       and step forward storing result in gT, gS, etc.
 
+        IF ( tempStepping ) THEN
+#ifdef ALLOW_DEBUG
+          IF (debugMode) CALL DEBUG_CALL('TEMP_INTEGRATE',myThid)
+#endif
           CALL TEMP_INTEGRATE(
-     I         bi, bj, iMin, iMax, jMin, jMax,
-     I         uFld, vFld, wFld, kappaRk,
+     I         bi, bj,
+     I         uFld, vFld, wFld,
+     U         kappaRk,
      I         myTime, myIter, myThid )
         ENDIF
 
         IF ( saltStepping ) THEN
-#ifdef INCLUDE_CALC_DIFFUSIVITY_CALL
-         IF ( .NOT. implicitDiffusion ) THEN
-          CALL CALC_3D_DIFFUSIVITY(
-     I         bi, bj, iMin, iMax, jMin, jMax,
-     I         GAD_SALINITY, useGMredi, useKPP,
-     O         kappaRk,
-     I         myThid )
-         ENDIF
-#endif /* INCLUDE_CALC_DIFFUSIVITY_CALL */
-
+#ifdef ALLOW_DEBUG
+          IF (debugMode) CALL DEBUG_CALL('SALT_INTEGRATE',myThid)
+#endif
           CALL SALT_INTEGRATE(
-     I         bi, bj, iMin, iMax, jMin, jMax,
-     I         uFld, vFld, wFld, kappaRk,
+     I         bi, bj,
+     I         uFld, vFld, wFld,
+     U         kappaRk,
      I         myTime, myIter, myThid )
         ENDIF
 
 #ifdef DO_PTRACERS_HERE
         IF ( usePTRACERS ) THEN
+#ifdef ALLOW_DEBUG
+          IF (debugMode) CALL DEBUG_CALL('PTRACERS_INTEGRATE',myThid)
+#endif
            CALL PTRACERS_INTEGRATE(
      I          bi, bj, uFld, vFld, wFld,
      U          kappaRk,
@@ -614,14 +480,10 @@ CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #ifdef ALLOW_TIMEAVE
         useVariableK = useKPP .OR. usePP81 .OR. useMY82 .OR. useGGL90
      &       .OR. useGMredi .OR. ivdc_kappa.NE.0.
-        IF (taveFreq.GT.0. .AND. useVariableK ) THEN
-         IF (implicitDiffusion) THEN
+        IF ( taveFreq.GT.0. .AND. useVariableK
+     &                      .AND.implicitDiffusion ) THEN
            CALL TIMEAVE_CUMUL_DIF_1T(TdiffRtave, gT, kappaRk,
      I                        Nr, 3, deltaTClock, bi, bj, myThid)
-c        ELSE
-c          CALL TIMEAVE_CUMUL_DIF_1T(TdiffRtave, theta, kappaRT,
-c    I                        Nr, 3, deltaTClock, bi, bj, myThid)
-         ENDIF
         ENDIF
 #endif /* ALLOW_TIMEAVE */
 
@@ -675,7 +537,7 @@ C       Also apply open boundary conditions for each passive tracer
 #endif /* DO_PTRACERS_HERE */
 
 #ifdef   ALLOW_OBCS
-C--      Apply open boundary conditions
+C--   Apply open boundary conditions
         IF ( useOBCS ) THEN
            CALL OBCS_APPLY_TS( bi, bj, 0, gT, gS, myThid )
         ENDIF
