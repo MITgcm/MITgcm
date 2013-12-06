@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.50 2013/11/28 00:00:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.51 2013/12/06 01:56:52 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -18,6 +18,7 @@ C     Calculates tendency for passive tracers and integrates forward
 C     in time.
 
 C !USES: ===============================================================
+#include "PTRACERS_MOD.h"
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -97,6 +98,8 @@ C-    Functions:
 #endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 C-    Loop ranges for daughter routines
       iMin = 1-OLx+2
       iMax = sNx+OLx-1
@@ -114,9 +117,17 @@ C-    Compute iter at beginning of ptracer time step
 
 C--   Loop over tracers
       DO iTracer=1,PTRACERS_numInUse
+
+C-    Initialise tracer tendency to zero
+       DO k=1,Nr
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+           gPTr(i,j,k,bi,bj,iTracer) = 0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
        IF ( PTRACERS_StepFwd(iTracer) ) THEN
         GAD_TR = GAD_TR1 + iTracer - 1
-        calcAdvection = .NOT.PTRACERS_MultiDimAdv(iTracer)
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act0 = iTracer - 1
@@ -160,6 +171,50 @@ C--   Loop over tracers
      I         myThid)
         ENDIF
 
+#ifndef DISABLE_MULTIDIM_ADVECTION
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE pTracer(:,:,:,bi,bj,iTracer)
+CADJ &      = comlev1_bibj_ptracers, key=iptrkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef PTRACERS_ALLOW_DYN_STATE
+        IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
+# ifdef ALLOW_DEBUG
+         IF (debugMode) CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
+# endif
+          CALL GAD_SOM_ADVECT(
+     I                       PTRACERS_ImplVertAdv(iTracer),
+     I                       PTRACERS_advScheme(iTracer),
+     I                       PTRACERS_advScheme(iTracer),
+     I                       GAD_TR1+iTracer-1,
+     I                       PTRACERS_dTLev,
+     I                       uFld, vFld, wFld,
+     I                       pTracer(1-OLx,1-OLy,1,1,1,iTracer),
+     U                       _Ptracers_som(:,:,:,:,:,:,iTracer),
+     O                       gPtr(1-OLx,1-OLy,1,1,1,iTracer),
+     I                       bi, bj, myTime, myIter, myThid )
+        ELSEIF ( PTRACERS_MultiDimAdv(iTracer) ) THEN
+#else /* PTRACERS_ALLOW_DYN_STATE */
+        IF ( PTRACERS_MultiDimAdv(iTracer) ) THEN
+#endif /* PTRACERS_ALLOW_DYN_STATE */
+# ifdef ALLOW_DEBUG
+          IF (debugMode) CALL DEBUG_CALL('GAD_ADVECTION',myThid)
+# endif
+          CALL GAD_ADVECTION(
+     I                        PTRACERS_ImplVertAdv(iTracer),
+     I                        PTRACERS_advScheme(iTracer),
+     I                        PTRACERS_advScheme(iTracer),
+     I                        GAD_TR1+iTracer-1,
+     I                        PTRACERS_dTLev,
+     I                        uFld, vFld, wFld,
+     I                        pTracer(1-OLx,1-OLy,1,1,1,iTracer),
+     O                        gPtr(1-OLx,1-OLy,1,1,1,iTracer),
+     I                        bi, bj, myTime, myIter, myThid )
+        ENDIF
+#endif /* DISABLE_MULTIDIM_ADVECTION */
+
+C-    Start vertical index (k) loop (Nr:1)
+        calcAdvection = .NOT.PTRACERS_MultiDimAdv(iTracer)
         DO k=Nr,1,-1
 #ifdef ALLOW_AUTODIFF_TAMC
           kkey = (iptrkey-1)*Nr + k

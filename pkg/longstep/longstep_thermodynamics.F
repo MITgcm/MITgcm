@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_thermodynamics.F,v 1.7 2013/11/19 17:02:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_thermodynamics.F,v 1.8 2013/12/06 01:57:51 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -95,9 +95,6 @@ C     i, j, k        :: loop indices
 #ifdef ALLOW_ADAMSBASHFORTH_3
       INTEGER iterNb, m1, m2
 #endif
-#ifdef ALLOW_PTRACERS
-      INTEGER iTracer
-#endif
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -144,21 +141,6 @@ C This is currently also used by IVDC and Diagnostics
          ENDDO
         ENDDO
 
-#ifdef ALLOW_PTRACERS
-        IF ( usePTRACERS ) THEN
-C-      set tracer tendency to zero:
-         DO iTracer=1,PTRACERS_num
-          DO k=1,Nr
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             gPTr(i,j,k,bi,bj,itracer) = 0. _d 0
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDIF
-#endif
-
         iMin = 1-OLx
         iMax = sNx+OLx
         jMin = 1-OLy
@@ -189,47 +171,14 @@ C-    add Bolus velocity to Eulerian-mean velocity:
         ENDIF
 #endif /* ALLOW_GMREDI */
 
-#ifndef DISABLE_MULTIDIM_ADVECTION
-C--     Some advection schemes are better calculated using a multi-dimensional
-C       method in the absence of any other terms and, if used, is done here.
-C
-C The CPP flag DISABLE_MULTIDIM_ADVECTION is currently unset in GAD_OPTIONS.h
-C The default is to use multi-dimensinal advection for non-linear advection
-C schemes. However, for the sake of efficiency of the adjoint it is necessary
-C to be able to exclude this scheme to avoid excessive storage and
-C recomputation. It *is* differentiable, if you need it.
-C Edit GAD_OPTIONS.h and #define DISABLE_MULTIDIM_ADVECTION to
-C disable this section of code.
-
-C Since passive tracers are configurable separately from T,S we
-C call the multi-dimensional method for PTRACERS regardless
-C of whether multiDimAdvection is set or not.
-#ifdef ALLOW_PTRACERS
-        IF ( usePTRACERS ) THEN
-#ifdef ALLOW_DEBUG
-          IF (debugMode) CALL DEBUG_CALL('PTRACERS_ADVECTION',myThid)
-#endif
-          CALL PTRACERS_ADVECTION( bi, bj,
-     I                             uFld, vFld, wFld,
-     I                             myTime, myIter, myThid )
-        ENDIF
-#endif /* ALLOW_PTRACERS */
-#endif /* DISABLE_MULTIDIM_ADVECTION */
-
-#ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_MSG(
-     &                'ENTERING DOWNWARD K LOOP IN LONGSTEP', myThid)
-#endif
-
 C--     Calculate active tracer tendencies (gT,gS,...)
 C       and step forward storing result in gT, gS, etc.
-        iMin = 1-OLx+2
-        iMax = sNx+OLx-1
-        jMin = 1-OLy+2
-        jMax = sNy+OLy-1
 
 #ifdef ALLOW_PTRACERS
         IF ( usePTRACERS ) THEN
+#ifdef ALLOW_DEBUG
+           IF (debugMode) CALL DEBUG_CALL('PTRACERS_INTEGRATE',myThid)
+#endif
            CALL PTRACERS_INTEGRATE(
      I          bi, bj, uFld, vFld, wFld,
      U          kappaRk,

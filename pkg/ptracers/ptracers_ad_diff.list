@@ -1,4 +1,3 @@
-ptracers_advection.f
 ptracers_convect.f
 ptracers_cycle.f	
 ptracers_fields_blocking_exch.f
