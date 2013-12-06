@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.10 2012/04/18 22:05:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.11 2013/12/06 01:48:25 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -32,7 +32,9 @@ C     !LOCAL VARIABLES:
 C     iTracer  :: tracer index
 C     msgBuf   :: Informational/error message buffer
       INTEGER iTracer
+#ifndef PTRACERS_ALLOW_DYN_STATE
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
 
       _BEGIN_MASTER( myThid )
 
@@ -65,11 +67,13 @@ C--   Loop over tracers
         IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
           WRITE(msgBuf,'(2A)') 'PTRACERS_INIT_FIXED: ',
      &   'trying to use 2nd.Order-Moment Advection without'
+          CALL PRINT_ERROR( msgBuf, myThid )
           WRITE(msgBuf,'(2A)') 'PTRACERS_INIT_FIXED: ',
      &   'dynamical internal state data structures compiled'
+          CALL PRINT_ERROR( msgBuf, myThid )
           WRITE(msgBuf,'(2A)') 'PTRACERS_INIT_FIXED: ',
      &   'Re-compile with:  #define PTRACERS_ALLOW_DYN_STATE'
-          CALL PRINT_ERROR( msgBuf , myThid)
+          CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R PTRACERS_INIT_FIXED'
         ENDIF
 #endif /* ndef PTRACERS_ALLOW_DYN_STATE */
