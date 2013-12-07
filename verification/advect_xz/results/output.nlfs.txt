@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint63f
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint64q
 (PID.TID 0000.0001) // Build user:        jmc
 (PID.TID 0000.0001) // Build host:        baudelaire
-(PID.TID 0000.0001) // Build date:        Mon Dec  5 17:44:04 EST 2011
+(PID.TID 0000.0001) // Build date:        Sat Dec  7 15:29:39 EST 2013
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -62,23 +62,23 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // Tile <-> Tile connectvity table
 (PID.TID 0000.0001) // ======================================================
-(PID.TID 0000.0001) // Tile number: 000001 (process no. = 000001)
-(PID.TID 0000.0001) //        WEST: Tile = 000002, Process = 000001, Comm = put
+(PID.TID 0000.0001) // Tile number: 000001 (process no. = 000000)
+(PID.TID 0000.0001) //        WEST: Tile = 000002, Process = 000000, Comm = put
 (PID.TID 0000.0001) //                bi = 000002, bj = 000001
-(PID.TID 0000.0001) //        EAST: Tile = 000002, Process = 000001, Comm = put
+(PID.TID 0000.0001) //        EAST: Tile = 000002, Process = 000000, Comm = put
 (PID.TID 0000.0001) //                bi = 000002, bj = 000001
-(PID.TID 0000.0001) //       SOUTH: Tile = 000001, Process = 000001, Comm = put
+(PID.TID 0000.0001) //       SOUTH: Tile = 000001, Process = 000000, Comm = put
 (PID.TID 0000.0001) //                bi = 000001, bj = 000001
-(PID.TID 0000.0001) //       NORTH: Tile = 000001, Process = 000001, Comm = put
+(PID.TID 0000.0001) //       NORTH: Tile = 000001, Process = 000000, Comm = put
 (PID.TID 0000.0001) //                bi = 000001, bj = 000001
-(PID.TID 0000.0001) // Tile number: 000002 (process no. = 000001)
-(PID.TID 0000.0001) //        WEST: Tile = 000001, Process = 000001, Comm = put
+(PID.TID 0000.0001) // Tile number: 000002 (process no. = 000000)
+(PID.TID 0000.0001) //        WEST: Tile = 000001, Process = 000000, Comm = put
 (PID.TID 0000.0001) //                bi = 000001, bj = 000001
-(PID.TID 0000.0001) //        EAST: Tile = 000001, Process = 000001, Comm = put
+(PID.TID 0000.0001) //        EAST: Tile = 000001, Process = 000000, Comm = put
 (PID.TID 0000.0001) //                bi = 000001, bj = 000001
-(PID.TID 0000.0001) //       SOUTH: Tile = 000002, Process = 000001, Comm = put
+(PID.TID 0000.0001) //       SOUTH: Tile = 000002, Process = 000000, Comm = put
 (PID.TID 0000.0001) //                bi = 000002, bj = 000001
-(PID.TID 0000.0001) //       NORTH: Tile = 000002, Process = 000001, Comm = put
+(PID.TID 0000.0001) //       NORTH: Tile = 000002, Process = 000000, Comm = put
 (PID.TID 0000.0001) //                bi = 000002, bj = 000001
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  INI_PARMS: opening model parameter file "data"
@@ -180,53 +180,63 @@
 (PID.TID 0000.0001) // Parameter file "data.diagnostics"
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) ># Diagnostic Package Choices
-(PID.TID 0000.0001) >#-----------------
-(PID.TID 0000.0001) ># for each output-stream:
-(PID.TID 0000.0001) >#  filename(n) : prefix of the output file name (only 8.c long) for outp.stream n
+(PID.TID 0000.0001) >#--------------------
+(PID.TID 0000.0001) >#  dumpAtLast (logical): always write output at the end of simulation (default=F)
+(PID.TID 0000.0001) >#  diag_mnc   (logical): write to NetCDF files (default=useMNC)
+(PID.TID 0000.0001) >#--for each output-stream:
+(PID.TID 0000.0001) >#  fileName(n) : prefix of the output file name (max 80c long) for outp.stream n
 (PID.TID 0000.0001) >#  frequency(n):< 0 : write snap-shot output every |frequency| seconds
 (PID.TID 0000.0001) >#               > 0 : write time-average output every frequency seconds
 (PID.TID 0000.0001) >#  timePhase(n)     : write at time = timePhase + multiple of |frequency|
+(PID.TID 0000.0001) >#    averagingFreq  : frequency (in s) for periodic averaging interval
+(PID.TID 0000.0001) >#    averagingPhase : phase     (in s) for periodic averaging interval
+(PID.TID 0000.0001) >#    repeatCycle    : number of averaging intervals in 1 cycle
 (PID.TID 0000.0001) >#  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
-(PID.TID 0000.0001) >#                 when this entry is missing, select all common levels of this list
-(PID.TID 0000.0001) >#  fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics.log"
-(PID.TID 0000.0001) >#                 file for the list of all available diag. in this particular config)
-(PID.TID 0000.0001) >#-----------------
-(PID.TID 0000.0001) > &diagnostics_list
+(PID.TID 0000.0001) >#                when this entry is missing, select all common levels of this list
+(PID.TID 0000.0001) >#  fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+(PID.TID 0000.0001) >#                (see "available_diagnostics.log" file for the full list of diags)
+(PID.TID 0000.0001) >#  missing_value(n) : missing value for real-type fields in output file "n"
+(PID.TID 0000.0001) >#  fileFlags(n)     : specific code (8c string) for output file "n"
+(PID.TID 0000.0001) >#--------------------
+(PID.TID 0000.0001) > &DIAGNOSTICS_LIST
 (PID.TID 0000.0001) ># diag_mnc     = .FALSE.,
+(PID.TID 0000.0001) >  fields(1:4,1)  = 'ADVx_TH ','ADVr_TH ',
+(PID.TID 0000.0001) >                   'ADVx_SLT','ADVr_SLT',
+(PID.TID 0000.0001) >   fileName(1) = 'flxDiag',
 (PID.TID 0000.0001) >  frequency(1) = 24000.,
-(PID.TID 0000.0001) >   filename(1) = 'flxDiag',
-(PID.TID 0000.0001) >  fields(1:4,1) = 'ADVx_TH ',
-(PID.TID 0000.0001) >                  'ADVr_TH ',
-(PID.TID 0000.0001) >                  'ADVx_SLT',
-(PID.TID 0000.0001) >                  'ADVr_SLT',
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
+(PID.TID 0000.0001) >#--------------------
 (PID.TID 0000.0001) ># Parameter for Diagnostics of per level statistics:
-(PID.TID 0000.0001) >#-----------------
-(PID.TID 0000.0001) ># for each output-stream:
-(PID.TID 0000.0001) >#  stat_fname(n) : prefix of the output file name (only 8.c long) for outp.stream n
+(PID.TID 0000.0001) >#--------------------
+(PID.TID 0000.0001) >#  diagSt_mnc (logical): write stat-diags to NetCDF files (default=diag_mnc)
+(PID.TID 0000.0001) >#  diagSt_regMaskFile : file containing the region-mask to read-in
+(PID.TID 0000.0001) >#  nSetRegMskFile   : number of region-mask sets within the region-mask file
+(PID.TID 0000.0001) >#  set_regMask(i)   : region-mask set-index that identifies the region "i"
+(PID.TID 0000.0001) >#  val_regMask(i)   : region "i" identifier value in the region mask
+(PID.TID 0000.0001) >#--for each output-stream:
+(PID.TID 0000.0001) >#  stat_fName(n) : prefix of the output file name (max 80c long) for outp.stream n
 (PID.TID 0000.0001) >#  stat_freq(n):< 0 : write snap-shot output every |stat_freq| seconds
 (PID.TID 0000.0001) >#               > 0 : write time-average output every stat_freq seconds
 (PID.TID 0000.0001) >#  stat_phase(n)    : write at time = stat_phase + multiple of |stat_freq|
 (PID.TID 0000.0001) >#  stat_region(:,n) : list of "regions" (default: 1 region only=global)
-(PID.TID 0000.0001) >#  stat_fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics.log"
-(PID.TID 0000.0001) >#                 file for the list of all available diag. in this particular config)
-(PID.TID 0000.0001) >#-----------------
+(PID.TID 0000.0001) >#  stat_fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+(PID.TID 0000.0001) >#                (see "available_diagnostics.log" file for the full list of diags)
+(PID.TID 0000.0001) >#--------------------
 (PID.TID 0000.0001) > &DIAG_STATIS_PARMS
 (PID.TID 0000.0001) > stat_fields(1:11,1)= 'UVEL    ','WVEL    ','THETA   ','SALT    ',
 (PID.TID 0000.0001) >                      'ETAN    ','RSURF   ',
 (PID.TID 0000.0001) >                      'ADVx_TH ','ADVr_TH ','ADVx_SLT','ADVr_SLT',
 (PID.TID 0000.0001) >                      'gSinAB  ',
-(PID.TID 0000.0001) >    stat_fname(1)= 'dynStDiag',
+(PID.TID 0000.0001) >    stat_fName(1)= 'dynStDiag',
 (PID.TID 0000.0001) >     stat_freq(1)= -6000.,
 (PID.TID 0000.0001) >#    stat_freq(1)= -1200.,
 (PID.TID 0000.0001) >    stat_phase(1)= 0.,
 (PID.TID 0000.0001) > stat_fields(1:1,2) = 'AB_gS   ',
-(PID.TID 0000.0001) >#   stat_fname(2)= 'flxStDiag',
+(PID.TID 0000.0001) >#   stat_fName(2)= 'flxStDiag',
 (PID.TID 0000.0001) >     stat_freq(2)=  6000.,
 (PID.TID 0000.0001) >    stat_phase(2)= -1000.,
 (PID.TID 0000.0001) > /
-(PID.TID 0000.0001) >
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) S/R DIAGNOSTICS_READPARMS, read namelist "diagnostics_list": start
 (PID.TID 0000.0001) S/R DIAGNOSTICS_READPARMS, read namelist "diagnostics_list": OK
@@ -254,7 +264,7 @@
 (PID.TID 0000.0001) Creating Output Stream: flxDiag
 (PID.TID 0000.0001) Output Frequency:      24000.000000 ; Phase:           0.000000
 (PID.TID 0000.0001)  Averaging Freq.:      24000.000000 , Phase:           0.000000 , Cycle:   1
-(PID.TID 0000.0001)  missing value:  1.234567000000E+05 ; for integers:   123456789
+(PID.TID 0000.0001)  missing value: -9.990000000000E+02
 (PID.TID 0000.0001)  Levels:    will be set later
 (PID.TID 0000.0001)  Fields:    ADVx_TH  ADVr_TH  ADVx_SLT ADVr_SLT
 (PID.TID 0000.0001) -----------------------------------------------------
@@ -470,12 +480,12 @@
 (PID.TID 0000.0001) // ===================================
 (PID.TID 0000.0001) ------------------------------------------------------------
 (PID.TID 0000.0001) DIAGNOSTICS_SET_LEVELS: done
-(PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   140
+(PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   141
 (PID.TID 0000.0001)  write list of available Diagnostics to file: available_diagnostics.log
-(PID.TID 0000.0001) SETDIAG: Allocate 20 x  1 Levels for Diagnostic #   107 ADVx_TH
-(PID.TID 0000.0001) SETDIAG: Allocate 20 x  1 Levels for Diagnostic #   106 ADVr_TH
-(PID.TID 0000.0001) SETDIAG: Allocate 20 x  1 Levels for Diagnostic #   124 ADVx_SLT
-(PID.TID 0000.0001) SETDIAG: Allocate 20 x  1 Levels for Diagnostic #   123 ADVr_SLT
+(PID.TID 0000.0001) SETDIAG: Allocate 20 x  1 Levels for Diagnostic #   108 ADVx_TH
+(PID.TID 0000.0001) SETDIAG: Allocate 20 x  1 Levels for Diagnostic #   107 ADVr_TH
+(PID.TID 0000.0001) SETDIAG: Allocate 20 x  1 Levels for Diagnostic #   125 ADVx_SLT
+(PID.TID 0000.0001) SETDIAG: Allocate 20 x  1 Levels for Diagnostic #   124 ADVr_SLT
 (PID.TID 0000.0001)   space allocated for all diagnostics:      80 levels
 (PID.TID 0000.0001) DIAGNOSTICS_SET_POINTERS: Set levels for Outp.Stream: flxDiag
 (PID.TID 0000.0001)  Levels:       1.   2.   3.   4.   5.   6.   7.   8.   9.  10.  11.  12.  13.  14.  15.  16.  17.  18.  19.  20.
@@ -489,11 +499,11 @@
 (PID.TID 0000.0001) SETDIAG: Allocate 20 Levels for Stats-Diag #    27 SALT
 (PID.TID 0000.0001) SETDIAG: Allocate  1 Levels for Stats-Diag #    23 ETAN
 (PID.TID 0000.0001) SETDIAG: Allocate  1 Levels for Stats-Diag #    95 RSURF
-(PID.TID 0000.0001) SETDIAG: Allocate 20 Levels for Stats-Diag #   107 ADVx_TH
-(PID.TID 0000.0001) SETDIAG: Allocate 20 Levels for Stats-Diag #   106 ADVr_TH
-(PID.TID 0000.0001) SETDIAG: Allocate 20 Levels for Stats-Diag #   124 ADVx_SLT
-(PID.TID 0000.0001) SETDIAG: Allocate 20 Levels for Stats-Diag #   123 ADVr_SLT
-(PID.TID 0000.0001) SETDIAG: Allocate 20 Levels for Stats-Diag #   105 gSinAB
+(PID.TID 0000.0001) SETDIAG: Allocate 20 Levels for Stats-Diag #   108 ADVx_TH
+(PID.TID 0000.0001) SETDIAG: Allocate 20 Levels for Stats-Diag #   107 ADVr_TH
+(PID.TID 0000.0001) SETDIAG: Allocate 20 Levels for Stats-Diag #   125 ADVx_SLT
+(PID.TID 0000.0001) SETDIAG: Allocate 20 Levels for Stats-Diag #   124 ADVr_SLT
+(PID.TID 0000.0001) SETDIAG: Allocate 20 Levels for Stats-Diag #   106 gSinAB
 (PID.TID 0000.0001)   space allocated for all stats-diags:     182 levels
 (PID.TID 0000.0001) DIAGSTATS_SET_POINTERS: done
 (PID.TID 0000.0001) ------------------------------------------------------------
@@ -538,69 +548,6 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) sRef =   /* Reference salinity profile ( psu ) */
 (PID.TID 0000.0001)    20 @  3.000000000000000E+01              /* K =  1: 20 */
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscAh  =   /* Lateral eddy viscosity ( m^2/s ) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscAhMax = /* Maximum lateral eddy viscosity ( m^2/s ) */
-(PID.TID 0000.0001)                 1.000000000000000E+21
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscAhGrid = /* Grid dependent lateral eddy viscosity ( non-dim. ) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useFullLeith = /* Use Full Form of Leith Viscosity on/off flag*/
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useStrainTensionVisc= /* Use StrainTension Form of Viscous Operator flag*/
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useAreaViscLength = /* Use area for visc length instead of geom. mean*/
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscC2leith = /* Leith harmonic visc. factor (on grad(vort),non-dim.) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscC2leithD = /* Leith harmonic viscosity factor (on grad(div),non-dim.)*/
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscC2smag = /* Smagorinsky harmonic viscosity factor (non-dim.) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscA4  =   /* Lateral biharmonic viscosity ( m^4/s ) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscA4Max = /* Maximum biharmonic viscosity ( m^2/s ) */
-(PID.TID 0000.0001)                 1.000000000000000E+21
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscA4Grid = /* Grid dependent biharmonic viscosity ( non-dim. ) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscC4leith = /* Leith biharm viscosity factor (on grad(vort), non-dim.)*/
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscC4leithD = /* Leith biharm viscosity factor (on grad(div), non-dim.) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscC4Smag = /* Smagorinsky biharm viscosity factor (non-dim) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) no_slip_sides =  /* Viscous BCs: No-slip sides */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) sideDragFactor = /* side-drag scaling factor (non-dim) */
-(PID.TID 0000.0001)                 2.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscArNr = /* vertical profile of vertical viscosity ( m^2/s )*/
-(PID.TID 0000.0001)    20 @  0.000000000000000E+00              /* K =  1: 20 */
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) no_slip_bottom =  /* Viscous BCs: No-slip bottom */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) bottomDragLinear = /* linear bottom-drag coefficient ( m/s ) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) bottomDragQuadratic = /* quadratic bottom-drag coefficient (-) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) diffKhT =   /* Laplacian diffusion of heat laterally ( m^2/s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
@@ -647,16 +594,19 @@
 (PID.TID 0000.0001) eosType =  /* Type of Equation of State */
 (PID.TID 0000.0001)               'LINEAR'
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) tAlpha =   /* Linear EOS thermal expansion coefficient ( 1/oC ) */
+(PID.TID 0000.0001) tAlpha = /* Linear EOS thermal expansion coefficient ( 1/oC ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) sBeta =   /* Linear EOS haline contraction coefficient ( 1/psu ) */
+(PID.TID 0000.0001) sBeta  = /* Linear EOS haline contraction coefficient ( 1/psu ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) rhonil =   /* Reference density ( kg/m^3 ) */
+(PID.TID 0000.0001) rhoNil    = /* Reference density for Linear EOS ( kg/m^3 ) */
 (PID.TID 0000.0001)                 9.998000000000000E+02
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) rhoConst =   /* Reference density ( kg/m^3 ) */
+(PID.TID 0000.0001) celsius2K = /* 0 degree Celsius converted to Kelvin ( K ) */
+(PID.TID 0000.0001)                 2.731500000000000E+02
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rhoConst  = /* Reference density (Boussinesq)  ( kg/m^3 ) */
 (PID.TID 0000.0001)                 9.998000000000000E+02
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rhoFacC = /* normalized Reference density @ cell-Center (-) */
@@ -665,7 +615,7 @@
 (PID.TID 0000.0001) rhoFacF = /* normalized Reference density @ W-Interface (-) */
 (PID.TID 0000.0001)    21 @  1.000000000000000E+00              /* K =  1: 21 */
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) rhoConstFresh =   /* Reference density ( kg/m^3 ) */
+(PID.TID 0000.0001) rhoConstFresh = /* Fresh-water reference density ( kg/m^3 ) */
 (PID.TID 0000.0001)                 9.998000000000000E+02
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) gravity =   /* Gravitational acceleration ( m/s^2 ) */
@@ -704,13 +654,10 @@
 (PID.TID 0000.0001) implicDiv2Dflow =  /* Barot. Flow Div. implicit factor (0-1)*/
 (PID.TID 0000.0001)                 1.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) exactConserv =  /* Exact Volume Conservation on/off flag*/
+(PID.TID 0000.0001) uniformLin_PhiSurf = /* use uniform Bo_surf on/off flag*/
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) linFSConserveTr = /* Tracer correction for Lin Free Surface on/off flag*/
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) uniformLin_PhiSurf = /* use uniform Bo_surf on/off flag*/
+(PID.TID 0000.0001) uniformFreeSurfLev = /* free-surface level-index is uniform */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) hFacMin =   /* minimum partial cell factor (hFac) */
@@ -718,6 +665,12 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) hFacMinDr = /* minimum partial cell thickness ( m) */
 (PID.TID 0000.0001)                 1.000000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) exactConserv =  /* Exact Volume Conservation on/off flag*/
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) linFSConserveTr = /* Tracer correction for Lin Free Surface on/off flag*/
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) nonlinFreeSurf = /* Non-linear Free Surf. options (-1,0,1,2,3)*/
 (PID.TID 0000.0001)                       4
@@ -732,9 +685,6 @@
 (PID.TID 0000.0001) select_rStar = /* r* Vertical coord. options (=0 r coord.; >0 uses r*)*/
 (PID.TID 0000.0001)                       2
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) selectAddFluid = /* option for mass source/sink of fluid (=0: off) */
-(PID.TID 0000.0001)                       0
-(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) useRealFreshWaterFlux = /* Real Fresh Water Flux on/off flag*/
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
@@ -743,6 +693,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) salt_EvPrRn = /* Salin. of Evap/Prec/R (UNSET=use local S)(psu)*/
 (PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) selectAddFluid = /* option for mass source/sink of fluid (=0: off) */
+(PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) temp_addMass = /* Temp. of addMass array (UNSET=use local T)(oC)*/
 (PID.TID 0000.0001)                 1.234567000000000E+05
@@ -852,10 +805,13 @@
 (PID.TID 0000.0001) implicitIntGravWave= /* Implicit Internal Gravity Wave flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) staggerTimeStep =   /* Stagger time stepping on/off flag */
+(PID.TID 0000.0001) staggerTimeStep =    /* Stagger time stepping on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) multiDimAdvection =   /* enable/disable Multi-Dim Advection */
+(PID.TID 0000.0001) doResetHFactors = /* reset thickness factors @ each time-step */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) multiDimAdvection =  /* enable/disable Multi-Dim Advection */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) useMultiDimAdvec =   /* Multi-Dim Advection is/is-not used */
@@ -867,7 +823,7 @@
 (PID.TID 0000.0001) tempStepping =  /* Temperature equation on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) tempAdvection=  /* Temperature advection on/off flag */
+(PID.TID 0000.0001) tempAdvection = /* Temperature advection on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tempImplVertAdv = /* Temp. implicit vert. advection on/off */
@@ -876,13 +832,16 @@
 (PID.TID 0000.0001) tempForcing  =  /* Temperature forcing on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) doThetaClimRelax = /* apply SST relaxation on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tempIsActiveTr = /* Temp. is a dynamically Active Tracer */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) saltStepping =  /* Salinity equation on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) saltAdvection=  /* Salinity advection on/off flag */
+(PID.TID 0000.0001) saltAdvection = /* Salinity advection on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) saltImplVertAdv = /* Sali. implicit vert. advection on/off */
@@ -890,6 +849,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) saltForcing  =  /* Salinity forcing on/off flag */
 (PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) doSaltClimRelax = /* apply SSS relaxation on/off flag */
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) saltIsActiveTr = /* Salt  is a dynamically Active Tracer */
 (PID.TID 0000.0001)                   F
@@ -925,6 +887,9 @@
 (PID.TID 0000.0001) cg2dChkResFreq =   /* 2d con. grad convergence test frequency */
 (PID.TID 0000.0001)                       1
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) cg2dUseMinResSol= /* use cg2d last-iter(=0) / min-resid.(=1) solution */
+(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) cg2dTargetResidual =   /* 2d con. grad target residual  */
 (PID.TID 0000.0001)                 1.000000000000000E-13
 (PID.TID 0000.0001)     ;
@@ -943,10 +908,10 @@
 (PID.TID 0000.0001) //
 (PID.TID 0000.0001) // Time stepping paramters ( PARM03 in namelist )
 (PID.TID 0000.0001) //
-(PID.TID 0000.0001) deltaTmom =   /* Momentum equation timestep ( s ) */
+(PID.TID 0000.0001) deltaTMom =   /* Momentum equation timestep ( s ) */
 (PID.TID 0000.0001)                 1.200000000000000E+03
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) deltaTfreesurf = /* FreeSurface equation timestep ( s ) */
+(PID.TID 0000.0001) deltaTFreeSurf = /* FreeSurface equation timestep ( s ) */
 (PID.TID 0000.0001)                 1.200000000000000E+03
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) dTtracerLev =  /* Tracer equation timestep ( s ) */
@@ -1083,7 +1048,8 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) drC =   /* C spacing ( units of r ) */
 (PID.TID 0000.0001)                 5.000000000000000E+01,      /* K =  1 */
-(PID.TID 0000.0001)    19 @  1.000000000000000E+02              /* K =  2: 20 */
+(PID.TID 0000.0001)    19 @  1.000000000000000E+02,             /* K =  2: 20 */
+(PID.TID 0000.0001)                 5.000000000000000E+01       /* K = 21 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) drF =   /* W spacing ( units of r ) */
 (PID.TID 0000.0001)    20 @  1.000000000000000E+02              /* K =  1: 20 */
@@ -1094,10 +1060,10 @@
 (PID.TID 0000.0001) delY = /* V spacing ( m - cartesian, degrees - spherical ) */
 (PID.TID 0000.0001)                 1.000000000000000E+04       /* J =  1 */
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) xgOrigin = /* X-axis origin of West  edge (cartesian: m, lat-lon: deg.) */
+(PID.TID 0000.0001) xgOrigin = /* X-axis origin of West  edge (cartesian: m, lat-lon: deg) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) ygOrigin = /* Y-axis origin of South edge (cartesian: m, lat-lon: deg.) */
+(PID.TID 0000.0001) ygOrigin = /* Y-axis origin of South edge (cartesian: m, lat-lon: deg) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rSphere =  /* Radius ( ignored - cartesian, m - spherical ) */
@@ -1280,6 +1246,7 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) GAD_CHECK: #define ALLOW_GENERIC_ADVDIFF
 (PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Check Model config. (CONFIG_CHECK):
 (PID.TID 0000.0001) // CONFIG_CHECK : Normal End
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
@@ -1299,10 +1266,10 @@ listId=    1 ; file name: flxDiag
     4  |    4  |     24000.000000         0.000000 |  20
  levels:   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20
  diag# | name   |   ipt  |  iMate | kLev|   count |   mate.C|           
-   107 |ADVx_TH |      1 |      0 |  20 |       0 |
-   106 |ADVr_TH |     21 |      0 |  20 |       0 |
-   124 |ADVx_SLT|     41 |      0 |  20 |       0 |
-   123 |ADVr_SLT|     61 |      0 |  20 |       0 |
+   108 |ADVx_TH |      1 |      0 |  20 |       0 |
+   107 |ADVr_TH |     21 |      0 |  20 |       0 |
+   125 |ADVx_SLT|     41 |      0 |  20 |       0 |
+   124 |ADVr_SLT|     61 |      0 |  20 |       0 |
 ------------------------------------------------------------------------
 Global & Regional Statistics diagnostics: Number of lists:     1
 ------------------------------------------------------------------------
@@ -1317,11 +1284,11 @@ listId=   1 ; file name: dynStDiag
     27 |SALT    |     61 |      0 | 0.00000E+00 |
     23 |ETAN    |     81 |      0 | 0.00000E+00 |
     95 |RSURF   |     82 |      0 | 0.00000E+00 |
-   107 |ADVx_TH |     83 |      0 | 0.00000E+00 |
-   106 |ADVr_TH |    103 |      0 | 0.00000E+00 |
-   124 |ADVx_SLT|    123 |      0 | 0.00000E+00 |
-   123 |ADVr_SLT|    143 |      0 | 0.00000E+00 |
-   105 |gSinAB  |    163 |      0 | 0.00000E+00 |
+   108 |ADVx_TH |     83 |      0 | 0.00000E+00 |
+   107 |ADVr_TH |    103 |      0 | 0.00000E+00 |
+   125 |ADVx_SLT|    123 |      0 | 0.00000E+00 |
+   124 |ADVr_SLT|    143 |      0 | 0.00000E+00 |
+   106 |gSinAB  |    163 |      0 | 0.00000E+00 |
 ------------------------------------------------------------------------
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
@@ -1379,22 +1346,22 @@ listId=   1 ; file name: dynStDiag
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -1447,22 +1414,22 @@ listId=   1 ; file name: dynStDiag
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -1509,34 +1476,34 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    107  ADVx_TH      Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_TH      Diagnostic #    108  ADVy_TH  not enabled
- Computing Diagnostic #    106  ADVr_TH      Counter:      20   Parms: WM      LR      
- Computing Diagnostic #    124  ADVx_SLT     Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_SLT     Diagnostic #    125  ADVy_SLT not enabled
- Computing Diagnostic #    123  ADVr_SLT     Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    108  ADVx_TH      Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_TH      Diagnostic #    109  ADVy_TH  not enabled
+ Computing Diagnostic #    107  ADVr_TH      Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    125  ADVx_SLT     Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_SLT     Diagnostic #    126  ADVy_SLT not enabled
+ Computing Diagnostic #    124  ADVr_SLT     Counter:      20   Parms: WM      LR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -1589,22 +1556,22 @@ listId=   1 ; file name: dynStDiag
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -1651,34 +1618,34 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    107  ADVx_TH      Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_TH      Diagnostic #    108  ADVy_TH  not enabled
- Computing Diagnostic #    106  ADVr_TH      Counter:      20   Parms: WM      LR      
- Computing Diagnostic #    124  ADVx_SLT     Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_SLT     Diagnostic #    125  ADVy_SLT not enabled
- Computing Diagnostic #    123  ADVr_SLT     Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    108  ADVx_TH      Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_TH      Diagnostic #    109  ADVy_TH  not enabled
+ Computing Diagnostic #    107  ADVr_TH      Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    125  ADVx_SLT     Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_SLT     Diagnostic #    126  ADVy_SLT not enabled
+ Computing Diagnostic #    124  ADVr_SLT     Counter:      20   Parms: WM      LR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -1705,7 +1672,7 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.6813962663838E-02
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.3612408223702E-04
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.6118424392843E-01
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.3398776783954E-15
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.3398742528784E-15
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.7621201916389E-02
 (PID.TID 0000.0001) %MON dynstat_theta_sd             =   3.6136435949798E-02
 (PID.TID 0000.0001) %MON dynstat_theta_del2           =   1.0543687645401E-03
@@ -1731,22 +1698,22 @@ listId=   1 ; file name: dynStDiag
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -1773,7 +1740,7 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.6812366261158E-02
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.3649185676318E-04
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.2499273617683E-01
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.3396828008248E-15
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.3397591418679E-15
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.7621974038933E-02
 (PID.TID 0000.0001) %MON dynstat_theta_sd             =   3.2932044860749E-02
 (PID.TID 0000.0001) %MON dynstat_theta_del2           =   8.8753224247830E-04
@@ -1793,34 +1760,34 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    107  ADVx_TH      Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_TH      Diagnostic #    108  ADVy_TH  not enabled
- Computing Diagnostic #    106  ADVr_TH      Counter:      20   Parms: WM      LR      
- Computing Diagnostic #    124  ADVx_SLT     Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_SLT     Diagnostic #    125  ADVy_SLT not enabled
- Computing Diagnostic #    123  ADVr_SLT     Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    108  ADVx_TH      Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_TH      Diagnostic #    109  ADVy_TH  not enabled
+ Computing Diagnostic #    107  ADVr_TH      Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    125  ADVx_SLT     Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_SLT     Diagnostic #    126  ADVy_SLT not enabled
+ Computing Diagnostic #    124  ADVr_SLT     Counter:      20   Parms: WM      LR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -1847,7 +1814,7 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.6810787220716E-02
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.3686223360706E-04
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.1646607743120E-01
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.4600993864187E-15
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.4608894639722E-15
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.7623059172764E-02
 (PID.TID 0000.0001) %MON dynstat_theta_sd             =   3.0434434503305E-02
 (PID.TID 0000.0001) %MON dynstat_theta_del2           =   9.0734315157330E-04
@@ -1873,22 +1840,22 @@ listId=   1 ; file name: dynStDiag
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -1915,7 +1882,7 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.6809225558463E-02
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.3723521686078E-04
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.1254425092369E-01
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   8.6254676729611E-13
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   8.6254676729637E-13
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.7623971012535E-02
 (PID.TID 0000.0001) %MON dynstat_theta_sd             =   2.8843836167075E-02
 (PID.TID 0000.0001) %MON dynstat_theta_del2           =   9.5138214606854E-04
@@ -1935,34 +1902,34 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    107  ADVx_TH      Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_TH      Diagnostic #    108  ADVy_TH  not enabled
- Computing Diagnostic #    106  ADVr_TH      Counter:      20   Parms: WM      LR      
- Computing Diagnostic #    124  ADVx_SLT     Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_SLT     Diagnostic #    125  ADVy_SLT not enabled
- Computing Diagnostic #    123  ADVr_SLT     Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    108  ADVx_TH      Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_TH      Diagnostic #    109  ADVy_TH  not enabled
+ Computing Diagnostic #    107  ADVr_TH      Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    125  ADVx_SLT     Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_SLT     Diagnostic #    126  ADVy_SLT not enabled
+ Computing Diagnostic #    124  ADVr_SLT     Counter:      20   Parms: WM      LR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -1989,10 +1956,10 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.6807681290378E-02
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.3761081062632E-04
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0899996300392E-01
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   8.6254676729611E-13
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   8.6254676729637E-13
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.7624534091883E-02
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   2.7694211069559E-02
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   9.1109145277377E-04
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   2.7694211069561E-02
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   9.1109145277341E-04
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   9.3365059241835E-02
 (PID.TID 0000.0001) %MON dynstat_salt_min             =  -8.4770118681592E-03
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.7623921963883E-02
@@ -2015,22 +1982,22 @@ listId=   1 ; file name: dynStDiag
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2060,7 +2027,7 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   8.7107498092217E-11
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.7624769352689E-02
 (PID.TID 0000.0001) %MON dynstat_theta_sd             =   2.6406499163802E-02
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   8.2289471413237E-04
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   8.2289471413227E-04
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   8.7852932496428E-02
 (PID.TID 0000.0001) %MON dynstat_salt_min             =  -8.6393068022147E-03
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.7624276869554E-02
@@ -2077,34 +2044,34 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    107  ADVx_TH      Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_TH      Diagnostic #    108  ADVy_TH  not enabled
- Computing Diagnostic #    106  ADVr_TH      Counter:      20   Parms: WM      LR      
- Computing Diagnostic #    124  ADVx_SLT     Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_SLT     Diagnostic #    125  ADVy_SLT not enabled
- Computing Diagnostic #    123  ADVr_SLT     Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    108  ADVx_TH      Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_TH      Diagnostic #    109  ADVy_TH  not enabled
+ Computing Diagnostic #    107  ADVr_TH      Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    125  ADVx_SLT     Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_SLT     Diagnostic #    126  ADVy_SLT not enabled
+ Computing Diagnostic #    124  ADVr_SLT     Counter:      20   Parms: WM      LR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2130,11 +2097,11 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.3243358333233E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.6804645000780E-02
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.3836984615029E-04
-(PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0201965729003E-01
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   4.6079595077356E-10
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0201965729004E-01
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   4.6079595077360E-10
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.7624692134417E-02
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   2.5003123078007E-02
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   7.1899688171248E-04
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   2.5003123078008E-02
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   7.1899688171257E-04
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   8.1722311515586E-02
 (PID.TID 0000.0001) %MON dynstat_salt_min             =  -9.1975896566094E-03
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.7624149147409E-02
@@ -2157,22 +2124,22 @@ listId=   1 ; file name: dynStDiag
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2198,11 +2165,11 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.3245079416612E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.6803153011377E-02
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.3875329616216E-04
-(PID.TID 0000.0001) %MON dynstat_theta_max            =   9.0734713633964E-02
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   2.3122328832718E-09
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   9.0734713633963E-02
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   2.3122328830470E-09
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.7624331829661E-02
 (PID.TID 0000.0001) %MON dynstat_theta_sd             =   2.3556102541868E-02
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   6.1449790912757E-04
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   6.1449790912755E-04
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   7.2260201545077E-02
 (PID.TID 0000.0001) %MON dynstat_salt_min             =  -8.5623360030474E-03
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.7623653034109E-02
@@ -2219,34 +2186,34 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    107  ADVx_TH      Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_TH      Diagnostic #    108  ADVy_TH  not enabled
- Computing Diagnostic #    106  ADVr_TH      Counter:      20   Parms: WM      LR      
- Computing Diagnostic #    124  ADVx_SLT     Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_SLT     Diagnostic #    125  ADVy_SLT not enabled
- Computing Diagnostic #    123  ADVr_SLT     Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    108  ADVx_TH      Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_TH      Diagnostic #    109  ADVy_TH  not enabled
+ Computing Diagnostic #    107  ADVr_TH      Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    125  ADVx_SLT     Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_SLT     Diagnostic #    126  ADVy_SLT not enabled
+ Computing Diagnostic #    124  ADVr_SLT     Counter:      20   Parms: WM      LR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2272,11 +2239,11 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.3246788918596E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.6801678480358E-02
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.3913937319274E-04
-(PID.TID 0000.0001) %MON dynstat_theta_max            =   8.1488218461576E-02
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   2.5920324702312E-09
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   8.1488218461582E-02
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   2.5920324699940E-09
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.7623825679061E-02
 (PID.TID 0000.0001) %MON dynstat_theta_sd             =   2.2056471959387E-02
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   5.6013964715568E-04
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   5.6013964715562E-04
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   6.9013758211026E-02
 (PID.TID 0000.0001) %MON dynstat_salt_min             =  -8.2062099856861E-03
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.7623008519677E-02
@@ -2299,22 +2266,22 @@ listId=   1 ; file name: dynStDiag
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2340,11 +2307,11 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.3248486833492E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.6800221423851E-02
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.3952808139350E-04
-(PID.TID 0000.0001) %MON dynstat_theta_max            =   7.6775830874664E-02
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   7.6775830874671E-02
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   5.9843541083576E-06
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.7623387219289E-02
 (PID.TID 0000.0001) %MON dynstat_theta_sd             =   2.0764369499012E-02
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   5.6002827583962E-04
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   5.6002827583957E-04
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   6.6277289487042E-02
 (PID.TID 0000.0001) %MON dynstat_salt_min             =  -9.1345000437295E-03
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.7622476066285E-02
@@ -2361,34 +2328,34 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    107  ADVx_TH      Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_TH      Diagnostic #    108  ADVy_TH  not enabled
- Computing Diagnostic #    106  ADVr_TH      Counter:      20   Parms: WM      LR      
- Computing Diagnostic #    124  ADVx_SLT     Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_SLT     Diagnostic #    125  ADVy_SLT not enabled
- Computing Diagnostic #    123  ADVr_SLT     Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    108  ADVx_TH      Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_TH      Diagnostic #    109  ADVy_TH  not enabled
+ Computing Diagnostic #    107  ADVr_TH      Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    125  ADVx_SLT     Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_SLT     Diagnostic #    126  ADVy_SLT not enabled
+ Computing Diagnostic #    124  ADVr_SLT     Counter:      20   Parms: WM      LR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2414,11 +2381,11 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.3250173155682E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.6798781858015E-02
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.3991942492583E-04
-(PID.TID 0000.0001) %MON dynstat_theta_max            =   7.3555118293461E-02
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   7.3555118293468E-02
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   6.1074909294412E-06
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.7623187355465E-02
 (PID.TID 0000.0001) %MON dynstat_theta_sd             =   1.9260788967226E-02
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   5.8292832955636E-04
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   5.8292832955632E-04
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   6.2955105579386E-02
 (PID.TID 0000.0001) %MON dynstat_salt_min             =  -1.0695474052551E-02
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.7622224294675E-02
@@ -2441,22 +2408,22 @@ listId=   1 ; file name: dynStDiag
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2482,11 +2449,11 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.3251847879538E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.6797359799036E-02
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.4031340796103E-04
-(PID.TID 0000.0001) %MON dynstat_theta_max            =   6.6153779901275E-02
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.2720818251022E-05
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   6.6153779901278E-02
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.2720818251023E-05
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.7623249718743E-02
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   1.7720862221139E-02
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   6.0182087691718E-04
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   1.7720862221140E-02
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   6.0182087691711E-04
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   5.5357200244742E-02
 (PID.TID 0000.0001) %MON dynstat_salt_min             =  -9.5611672906399E-03
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.7622260726057E-02
@@ -2503,34 +2470,34 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    107  ADVx_TH      Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_TH      Diagnostic #    108  ADVy_TH  not enabled
- Computing Diagnostic #    106  ADVr_TH      Counter:      20   Parms: WM      LR      
- Computing Diagnostic #    124  ADVx_SLT     Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_SLT     Diagnostic #    125  ADVy_SLT not enabled
- Computing Diagnostic #    123  ADVr_SLT     Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    108  ADVx_TH      Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_TH      Diagnostic #    109  ADVy_TH  not enabled
+ Computing Diagnostic #    107  ADVr_TH      Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    125  ADVx_SLT     Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_SLT     Diagnostic #    126  ADVy_SLT not enabled
+ Computing Diagnostic #    124  ADVr_SLT     Counter:      20   Parms: WM      LR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2556,11 +2523,11 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.3253510999523E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.6795955263131E-02
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.4071003468030E-04
-(PID.TID 0000.0001) %MON dynstat_theta_max            =   5.6131758830860E-02
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.6477865943882E-05
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   5.6131758830862E-02
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.6477865943883E-05
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.7623471531570E-02
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   1.6319009022160E-02
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   5.8745379751385E-04
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   1.6319009022161E-02
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   5.8745379751384E-04
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   4.8678905517512E-02
 (PID.TID 0000.0001) %MON dynstat_salt_min             =  -8.6952243995171E-03
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.7622470255199E-02
@@ -2583,22 +2550,22 @@ listId=   1 ; file name: dynStDiag
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2625,10 +2592,10 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.6794568266546E-02
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.4110930927480E-04
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   5.4600882367816E-02
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   2.2264111042992E-05
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   2.2264111042993E-05
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.7623723478206E-02
 (PID.TID 0000.0001) %MON dynstat_theta_sd             =   1.5013635203575E-02
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   5.1215484900482E-04
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   5.1215484900491E-04
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   4.7759473149654E-02
 (PID.TID 0000.0001) %MON dynstat_salt_min             =  -9.7456872016469E-03
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.7622701963821E-02
@@ -2645,34 +2612,34 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    107  ADVx_TH      Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_TH      Diagnostic #    108  ADVy_TH  not enabled
- Computing Diagnostic #    106  ADVr_TH      Counter:      20   Parms: WM      LR      
- Computing Diagnostic #    124  ADVx_SLT     Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_SLT     Diagnostic #    125  ADVy_SLT not enabled
- Computing Diagnostic #    123  ADVr_SLT     Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    108  ADVx_TH      Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_TH      Diagnostic #    109  ADVy_TH  not enabled
+ Computing Diagnostic #    107  ADVr_TH      Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    125  ADVx_SLT     Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_SLT     Diagnostic #    126  ADVy_SLT not enabled
+ Computing Diagnostic #    124  ADVr_SLT     Counter:      20   Parms: WM      LR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2698,11 +2665,11 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.3256802405851E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.6793198825557E-02
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.4151123594558E-04
-(PID.TID 0000.0001) %MON dynstat_theta_max            =   5.4090733758606E-02
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   3.6870203580460E-05
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   5.4090733758605E-02
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   3.6870203580463E-05
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.7623888761965E-02
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   1.3850837676003E-02
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.2846093305860E-04
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   1.3850837676004E-02
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.2846093305876E-04
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   4.6590507953603E-02
 (PID.TID 0000.0001) %MON dynstat_salt_min             =  -9.0335507141432E-03
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.7622838132047E-02
@@ -2725,22 +2692,22 @@ listId=   1 ; file name: dynStDiag
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.905E+12  Parms: UUR     MR      
  Compute Stats, Diag. #     32  WVEL      vol(   0 ): 3.000E+12  Parms: WM      LR      
  Compute Stats, Diag. #     26  THETA     vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     27  SALT      vol(   0 ): 3.000E+12  Parms: SMR     MR      
  Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.000E+09  Parms: SM      M1      
  Compute Stats, Diag. #     95  RSURF     vol(   0 ): 2.000E+09  Parms: SM      M1      
- Compute Stats, Diag. #    107  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    106  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    124  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
- Compute Stats, Diag. #    123  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
- Compute Stats, Diag. #    105  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
+ Compute Stats, Diag. #    108  ADVx_TH   vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    107  ADVr_TH   vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    125  ADVx_SLT  vol(   0 ): 2.905E+12  Parms: UU      MR      
+ Compute Stats, Diag. #    124  ADVr_SLT  vol(   0 ): 3.000E+12  Parms: WM      LR      
+ Compute Stats, Diag. #    106  gSinAB    vol(   0 ): 3.000E+12  Parms: SMR     MR      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2766,11 +2733,11 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.3258430681288E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.6791846956468E-02
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.4191581890365E-04
-(PID.TID 0000.0001) %MON dynstat_theta_max            =   5.2875529348853E-02
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   8.2233779994756E-05
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   5.2875529348854E-02
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   8.2233779994762E-05
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.7623905951657E-02
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   1.2951960548160E-02
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   3.8239000409999E-04
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   1.2951960548161E-02
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   3.8239000410015E-04
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   4.4760030863375E-02
 (PID.TID 0000.0001) %MON dynstat_salt_min             =  -8.7804053761406E-03
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.7622828317552E-02
@@ -2787,132 +2754,138 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    107  ADVx_TH      Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_TH      Diagnostic #    108  ADVy_TH  not enabled
- Computing Diagnostic #    106  ADVr_TH      Counter:      20   Parms: WM      LR      
- Computing Diagnostic #    124  ADVx_SLT     Counter:      20   Parms: UU      MR      
-           Vector  Mate for  ADVx_SLT     Diagnostic #    125  ADVy_SLT not enabled
- Computing Diagnostic #    123  ADVr_SLT     Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    108  ADVx_TH      Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_TH      Diagnostic #    109  ADVy_TH  not enabled
+ Computing Diagnostic #    107  ADVr_TH      Counter:      20   Parms: WM      LR      
+ Computing Diagnostic #    125  ADVx_SLT     Counter:      20   Parms: UU      MR      
+           Vector  Mate for  ADVx_SLT     Diagnostic #    126  ADVy_SLT not enabled
+ Computing Diagnostic #    124  ADVr_SLT     Counter:      20   Parms: WM      LR      
 (PID.TID 0000.0001) DIAGSTATS_CLOSE_IO: close file: dynStDiag.0000000000.txt , unit=     9
 (PID.TID 0000.0001) %CHECKPOINT       200 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   2.9900000000000002
+(PID.TID 0000.0001)           User time:   1.5000000000000000
 (PID.TID 0000.0001)         System time:  2.00000000000000004E-002
-(PID.TID 0000.0001)     Wall clock time:   3.0285701751708984
+(PID.TID 0000.0001)     Wall clock time:   1.5595200061798096
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  2.00000000000000004E-002
+(PID.TID 0000.0001)           User time:  1.00000000000000002E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.17499732971191406E-002
+(PID.TID 0000.0001)     Wall clock time:  3.06079387664794922E-002
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   2.9700000000000002
+(PID.TID 0000.0001)           User time:   1.4900000000000000
 (PID.TID 0000.0001)         System time:  2.00000000000000004E-002
-(PID.TID 0000.0001)     Wall clock time:   3.0067820549011230
+(PID.TID 0000.0001)     Wall clock time:   1.5288789272308350
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)           User time:  1.00000000000000002E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.01780891418457031E-002
+(PID.TID 0000.0001)     Wall clock time:  5.90515136718750000E-003
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   2.9700000000000002
+(PID.TID 0000.0001)           User time:   1.4800000000000000
 (PID.TID 0000.0001)         System time:  2.00000000000000004E-002
-(PID.TID 0000.0001)     Wall clock time:   2.9965748786926270
+(PID.TID 0000.0001)     Wall clock time:   1.5229489803314209
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
-(PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   2.9699999999999949
+(PID.TID 0000.0001)   Seconds in section "MAIN_DO_LOOP        [THE_MAIN_LOOP]":
+(PID.TID 0000.0001)           User time:   1.4799999999999960
 (PID.TID 0000.0001)         System time:  1.99999999999999935E-002
-(PID.TID 0000.0001)     Wall clock time:   2.9947972297668457
+(PID.TID 0000.0001)     Wall clock time:   1.5212113857269287
 (PID.TID 0000.0001)          No. starts:         200
 (PID.TID 0000.0001)           No. stops:         200
-(PID.TID 0000.0001)   Seconds in section "UPDATE_R_STAR       [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.29999999999999982
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.32487702369689941
-(PID.TID 0000.0001)          No. starts:         400
-(PID.TID 0000.0001)           No. stops:         400
+(PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [MAIN_DO_LOOP]":
+(PID.TID 0000.0001)           User time:   1.4799999999999960
+(PID.TID 0000.0001)         System time:  1.99999999999999935E-002
+(PID.TID 0000.0001)     Wall clock time:   1.5177145004272461
+(PID.TID 0000.0001)          No. starts:         200
+(PID.TID 0000.0001)           No. stops:         200
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  9.99999999999978684E-003
+(PID.TID 0000.0001)           User time:  1.00000000000000089E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.90792083740234375E-002
+(PID.TID 0000.0001)     Wall clock time:  1.54030323028564453E-002
 (PID.TID 0000.0001)          No. starts:         600
 (PID.TID 0000.0001)           No. stops:         600
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  5.36870956420898438E-003
+(PID.TID 0000.0001)     Wall clock time:  5.43308258056640625E-003
 (PID.TID 0000.0001)          No. starts:         200
 (PID.TID 0000.0001)           No. stops:         200
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.79386138916015625E-003
+(PID.TID 0000.0001)     Wall clock time:  1.86204910278320313E-003
 (PID.TID 0000.0001)          No. starts:         200
 (PID.TID 0000.0001)           No. stops:         200
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.79672241210937500E-003
+(PID.TID 0000.0001)     Wall clock time:  1.72543525695800781E-003
 (PID.TID 0000.0001)          No. starts:         200
 (PID.TID 0000.0001)           No. stops:         200
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  5.00000000000002665E-002
+(PID.TID 0000.0001)           User time:  2.00000000000000178E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.77602481842041016E-002
+(PID.TID 0000.0001)     Wall clock time:  2.31611728668212891E-002
+(PID.TID 0000.0001)          No. starts:         200
+(PID.TID 0000.0001)           No. stops:         200
+(PID.TID 0000.0001)   Seconds in section "UPDATE_R_STAR       [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.13999999999999990
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  6.38828277587890625E-002
 (PID.TID 0000.0001)          No. starts:         200
 (PID.TID 0000.0001)           No. stops:         200
 (PID.TID 0000.0001)   Seconds in section "INTEGR_CONTINUITY   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  5.00000000000002665E-002
+(PID.TID 0000.0001)           User time:  1.00000000000000089E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  5.59282302856445313E-002
+(PID.TID 0000.0001)     Wall clock time:  2.21722126007080078E-002
 (PID.TID 0000.0001)          No. starts:         200
 (PID.TID 0000.0001)           No. stops:         200
 (PID.TID 0000.0001)   Seconds in section "CALC_R_STAR         [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.99999999999998046E-002
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.74138450622558594E-002
+(PID.TID 0000.0001)     Wall clock time:  1.18355751037597656E-002
 (PID.TID 0000.0001)          No. starts:         200
 (PID.TID 0000.0001)           No. stops:         200
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.30999999999999783
+(PID.TID 0000.0001)           User time:  0.11999999999999988
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.28800511360168457
+(PID.TID 0000.0001)     Wall clock time:  0.11707377433776855
 (PID.TID 0000.0001)          No. starts:         400
 (PID.TID 0000.0001)           No. stops:         400
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.9999999999999880
+(PID.TID 0000.0001)           User time:   1.0399999999999938
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   2.0112881660461426
+(PID.TID 0000.0001)     Wall clock time:   1.0693452358245850
 (PID.TID 0000.0001)          No. starts:         200
 (PID.TID 0000.0001)           No. stops:         200
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  7.00000000000002842E-002
+(PID.TID 0000.0001)           User time:  2.00000000000000178E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.25112247467041016E-002
+(PID.TID 0000.0001)     Wall clock time:  1.93004608154296875E-002
 (PID.TID 0000.0001)          No. starts:         200
 (PID.TID 0000.0001)           No. stops:         200
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  3.00000000000002487E-002
+(PID.TID 0000.0001)           User time:  3.00000000000000266E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.28309631347656250E-002
+(PID.TID 0000.0001)     Wall clock time:  1.57232284545898438E-002
 (PID.TID 0000.0001)          No. starts:         200
 (PID.TID 0000.0001)           No. stops:         200
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  9.99999999999992006E-002
+(PID.TID 0000.0001)           User time:  6.00000000000000533E-002
 (PID.TID 0000.0001)         System time:  1.99999999999999935E-002
-(PID.TID 0000.0001)     Wall clock time:  0.11214613914489746
+(PID.TID 0000.0001)     Wall clock time:  0.12002539634704590
 (PID.TID 0000.0001)          No. starts:         200
 (PID.TID 0000.0001)           No. stops:         200
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.55823135375976563E-003
+(PID.TID 0000.0001)     Wall clock time:  2.44331359863281250E-003
 (PID.TID 0000.0001)          No. starts:         200
 (PID.TID 0000.0001)           No. stops:         200
 (PID.TID 0000.0001) // ======================================================
