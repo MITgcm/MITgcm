@@ -1,6 +1,6 @@
 % This is a matlab script that generates the input data
 
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_deep_convection/input/gendata.m,v 1.3 2008/04/24 01:48:52 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/verification/tutorial_deep_convection/input/gendata.m,v 1.4 2013/12/07 00:35:18 jmc Exp $
 % $Name:  $
 
 % Dimensions of grid
@@ -57,7 +57,7 @@ end ; end
 var=2*pi*[0:1000]/1000; xl=Rc*cos(var); yl=Rc*sin(var);
 figure(1);clf;
 var=Qc; var(find(var==0))=NaN;
-imagesc(xc,yc,var'); set(gca,'YDir','normal');
+imagesc(x,y,var'); set(gca,'YDir','normal');
 caxis([-15 820]);
 %change_colmap(-1);
 colorbar
