@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1946 2013/12/06 02:06:05 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1947 2013/12/07 22:57:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/*/results:
+  - Update reference output of experiments that were passing with just 13 digits
+     (make it easier to detect future changes in results)
 o model/src & pkg/ptracers:
   - move calls to GAD_ADVECTION (Multi-Dim advection) from thermodynamics.F to
     inside temp_integrate.F and salt_integrate.F and from ptracers_advection.F
