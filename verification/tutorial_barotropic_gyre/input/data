@@ -17,11 +17,13 @@
  eosType='LINEAR',
  readBinaryPrec=64,
  &
+
 # Elliptic solver parameters
  &PARM02
  cg2dMaxIters=1000,
  cg2dTargetResidual=1.E-7,
  &
+
 # Time stepping parameters
  &PARM03
  startTime=0,
@@ -33,8 +35,10 @@
  pChkptFreq=2592000.0,
  chkptFreq=120000.0,
  dumpFreq=2592000.0,
+ monitorSelect=2,
  monitorFreq=1.,
  &
+
 # Gridding parameters
  &PARM04
  usingCartesianGrid=.TRUE.,
@@ -43,6 +47,8 @@
  delY=60*20E3,
  delZ=5000.,
  &
+
+# Input datasets
  &PARM05
  bathyFile='topog.box',
  hydrogThetaFile=,
