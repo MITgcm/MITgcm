@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1947 2013/12/07 22:57:07 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1948 2013/12/08 19:51:21 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint64r (2013/12/08)
 o verification/*/results:
   - Update reference output of experiments that were passing with just 13 digits
      (make it easier to detect future changes in results)
