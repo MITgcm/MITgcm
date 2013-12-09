@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.89 2013/05/30 14:07:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.90 2013/12/09 17:08:19 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1467,6 +1467,13 @@ C     i,j  :: Loop counters
       _RL CUU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       
 #ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+C     Need to initialize local arrays
+      DO J = 1-OLy,sNy+OLy
+       DO I = 1-OLx,sNx+OLx
+        URT(I,J) = 0. _d 0
+        CUU(I,J) = 0. _d 0
+       ENDDO
+      ENDDO
       DO K=0,1
       DO J=jMin+K,jMax,2
 #else
@@ -1592,9 +1599,16 @@ C     i,j  :: Loop counters
       _RL VRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL CVV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-# ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+#ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+C     Need to initialize local arrays
+      DO J = 1-OLy,sNy+OLy
+       DO I = 1-OLx,sNx+OLx
+        VRT(I,J) = 0. _d 0
+        CVV(I,J) = 0. _d 0
+       ENDDO
+      ENDDO
       DO K=0,1
-# endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
+#endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
 #ifdef SEAICE_VECTORIZE_LSR
       DO J=jMin,jMax
 # ifdef SEAICE_VECTORIZE_LSR_ZEBRA
