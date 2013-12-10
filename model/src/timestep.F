@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.54 2013/02/19 13:42:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.55 2013/12/10 00:06:55 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -202,8 +202,8 @@ C     and save gU,gV_[n] into guNm1,gvNm1 for the next time step.
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-        CALL DIAGNOSTICS_FILL(gu_AB,'AB_dU   ',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(gv_AB,'AB_dV   ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(gu_AB,'AB_gU   ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(gv_AB,'AB_gV   ',k,1,2,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
