@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.41 2011/11/30 20:59:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.42 2013/12/10 22:24:29 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -61,8 +61,6 @@ C     == Local variables ==
       INTEGER i,j,k,bi,bj
       INTEGER km1
 
-      tmpFac = 1. _d 0
-
       IF ( selectVars.EQ.2 .OR. selectVars.EQ.3 ) THEN
 C--   fill momentum state-var diagnostics:
 
@@ -81,11 +79,11 @@ C--   fill momentum state-var diagnostics:
          CALL DIAGNOSTICS_FILL(tmp1k,'RSURF   ',0,1,0,1,1,myThid)
         ENDIF
 
-        CALL DIAGNOSTICS_SCALE_FILL(etaN,tmpFac,2,
+        CALL DIAGNOSTICS_SCALE_FILL( etaN, oneRL, 2,
      &                              'ETANSQ  ',0, 1,0,1,1,myThid)
 
 #ifdef EXACT_CONSERV
-        CALL DIAGNOSTICS_SCALE_FILL(dEtaHdt,tmpFac,2,
+        CALL DIAGNOSTICS_SCALE_FILL( dEtaHdt, oneRL, 2,
      &                              'DETADT2 ',0, 1,0,1,1,myThid)
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
@@ -98,11 +96,11 @@ C--   fill momentum state-var diagnostics:
         CALL DIAGNOSTICS_FILL(vVel, 'VVEL    ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(wVel, 'WVEL    ',0,Nr,0,1,1,myThid)
 
-        CALL DIAGNOSTICS_SCALE_FILL(uVel,tmpFac,2,
+        CALL DIAGNOSTICS_SCALE_FILL( uVel, oneRL, 2,
      &                              'UVELSQ  ',0,Nr,0,1,1,myThid)
-        CALL DIAGNOSTICS_SCALE_FILL(vVel,tmpFac,2,
+        CALL DIAGNOSTICS_SCALE_FILL( vVel, oneRL, 2,
      &                              'VVELSQ  ',0,Nr,0,1,1,myThid)
-        CALL DIAGNOSTICS_SCALE_FILL(wVel,tmpFac,2,
+        CALL DIAGNOSTICS_SCALE_FILL( wVel, oneRL, 2,
      &                              'WVELSQ  ',0,Nr,0,1,1,myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -352,46 +350,20 @@ C First fill sequence for state variable tendency diagnostics: subtract state va
 C NOTE: send a '0' for the bibjflag and allow counter to be incremented
 C     (next fill for these diagnostics will NOT allow counter to be incremented)
 
-        IF ( DIAGNOSTICS_IS_ON('TOTUTEND',myThid) ) THEN
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO k=1,Nr
-            DO j = 1,sNy
-             DO i = 1,sNx+1
-               tmpMk(i,j,k,bi,bj) = -uVel(i,j,k,bi,bj)
-     .                    *86400./dTtracerLev(1)
-             ENDDO
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-         CALL DIAGNOSTICS_FILL(tmpMk,'TOTUTEND',0,Nr,0,1,1,myThid)
-        ENDIF
-
-        IF ( DIAGNOSTICS_IS_ON('TOTVTEND',myThid) ) THEN
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO k=1,Nr
-            DO j = 1,sNy+1
-             DO i = 1,sNx
-               tmpMk(i,j,k,bi,bj) = -vVel(i,j,k,bi,bj)
-     .                    *86400./dTtracerLev(1)
-             ENDDO
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-         CALL DIAGNOSTICS_FILL(tmpMk,'TOTVTEND',0,Nr,0,1,1,myThid)
-        ENDIF
+        tmpFac = -86400. _d 0/deltaTMom
+        CALL DIAGNOSTICS_SCALE_FILL( uVel, tmpFac, 1,
+     &                              'TOTUTEND',0,Nr,0,1,1,myThid )
+        CALL DIAGNOSTICS_SCALE_FILL( vVel, tmpFac, 1,
+     &                              'TOTVTEND',0,Nr,0,1,1,myThid )
 
         IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
+            tmpFac = -86400. _d 0/dTtracerLev(k)
             DO j = 1,sNy
              DO i = 1,sNx
-               tmpMk(i,j,k,bi,bj) = -theta(i,j,k,bi,bj)
-     .                    *86400./dTtracerLev(1)
+               tmpMk(i,j,k,bi,bj) = tmpFac*theta(i,j,k,bi,bj)
              ENDDO
             ENDDO
            ENDDO
@@ -404,10 +376,10 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
+            tmpFac = -86400. _d 0/dTtracerLev(k)
             DO j = 1,sNy
              DO i = 1,sNx
-               tmpMk(i,j,k,bi,bj) = -salt(i,j,k,bi,bj)
-     .                    *86400./dTtracerLev(1)
+               tmpMk(i,j,k,bi,bj) = tmpFac*salt(i,j,k,bi,bj)
              ENDDO
             ENDDO
            ENDDO
@@ -449,9 +421,9 @@ C--   fill tracer state-var diagnostics:
       ENDIF
 #endif /* ALLOW_FIZHI */
 
-        CALL DIAGNOSTICS_SCALE_FILL(theta,tmpFac,2,
+        CALL DIAGNOSTICS_SCALE_FILL( theta, oneRL, 2,
      &                              'THETASQ ',0,Nr,0,1,1,myThid)
-        CALL DIAGNOSTICS_SCALE_FILL(salt,tmpFac,2,
+        CALL DIAGNOSTICS_SCALE_FILL( salt, oneRL, 2,
      &                              'SALTSQ  ',0,Nr,0,1,1,myThid)
 
 #ifdef ALLOW_GENERIC_ADVDIFF
@@ -518,7 +490,7 @@ c       ENDIF
           ENDDO
          ENDDO
          CALL DIAGNOSTICS_FILL( tmpMk,'SALTanom',0,Nr,0,1,1,myThid)
-         CALL DIAGNOSTICS_SCALE_FILL(tmpMk,tmpFac,2,
+         CALL DIAGNOSTICS_SCALE_FILL( tmpMk, oneRL, 2,
      &                                'SALTSQan',0,Nr,0,1,1,myThid)
         ENDIF
 
@@ -666,48 +638,26 @@ C--   fill tracer state-var diagnostics: end
       IF ( selectVars.EQ.4 ) THEN
 C Second fill sequence for state variable tendency diagnostics: add state variable
 C NOTE: send a '-1' for the bibjflag and do not increment counter
-C     (next fill for these diagnostics WILL allow counter to be incremented)
+C     (previous fill for these diagnostics DID allow counter to be incremented)
 
-        IF ( DIAGNOSTICS_IS_ON('TOTUTEND',myThid) ) THEN
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO k=1,Nr
-            DO j = 1,sNy
-             DO i = 1,sNx+1
-               tmpMk(i,j,k,bi,bj) = uVel(i,j,k,bi,bj)
-     .                    *86400./dTtracerLev(1)
-             ENDDO
-            ENDDO
-           ENDDO
-           CALL DIAGNOSTICS_FILL(tmpMk,'TOTUTEND',0,Nr,-1,bi,bj,myThid)
-          ENDDO
+        tmpFac = 86400. _d 0/deltaTMom
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL DIAGNOSTICS_SCALE_FILL( uVel, tmpFac, 1,
+     &                           'TOTUTEND',0,Nr,-1,bi,bj,myThid )
+          CALL DIAGNOSTICS_SCALE_FILL( vVel, tmpFac, 1,
+     &                           'TOTVTEND',0,Nr,-1,bi,bj,myThid )
          ENDDO
-        ENDIF
-
-        IF ( DIAGNOSTICS_IS_ON('TOTVTEND',myThid) ) THEN
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO k=1,Nr
-            DO j = 1,sNy+1
-             DO i = 1,sNx
-               tmpMk(i,j,k,bi,bj) = vVel(i,j,k,bi,bj)
-     .                    *86400./dTtracerLev(1)
-             ENDDO
-            ENDDO
-           ENDDO
-           CALL DIAGNOSTICS_FILL(tmpMk,'TOTVTEND',0,Nr,-1,bi,bj,myThid)
-          ENDDO
-         ENDDO
-        ENDIF
+        ENDDO
 
         IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
+            tmpFac = 86400. _d 0/dTtracerLev(k)
             DO j = 1,sNy
              DO i = 1,sNx
-               tmpMk(i,j,k,bi,bj) = theta(i,j,k,bi,bj)
-     .                    *86400./dTtracerLev(1)
+               tmpMk(i,j,k,bi,bj) = tmpFac*theta(i,j,k,bi,bj)
              ENDDO
             ENDDO
            ENDDO
@@ -720,10 +670,10 @@ C     (next fill for these diagnostics WILL allow counter to be incremented)
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
+            tmpFac = 86400. _d 0/dTtracerLev(k)
             DO j = 1,sNy
              DO i = 1,sNx
-               tmpMk(i,j,k,bi,bj) = salt(i,j,k,bi,bj)
-     .                    *86400./dTtracerLev(1)
+               tmpMk(i,j,k,bi,bj) = tmpFac*salt(i,j,k,bi,bj)
              ENDDO
             ENDDO
            ENDDO
