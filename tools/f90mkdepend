@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Header: /u/gcmpack/MITgcm/tools/f90mkdepend,v 1.6 2010/05/03 14:35:01 jahn Exp $
+# $Header: /u/gcmpack/MITgcm/tools/f90mkdepend,v 1.7 2013/12/11 21:53:02 jahn Exp $
 # $Name:  $
 #
 # Generate some make file dependency entries for a Fortran 90 file that employs "use".
@@ -30,6 +30,11 @@ for filename in *.F90 *.F *.h; do
       # ignore modules that don't have an appropriately named source file
       if [ -f $m.F90 ] || [ -f $m.F ]; then
         depline="$depline $m.o"
+      elif [ -f ${m%_mod}.F90 ] || [ -f ${m%_mod}.F ]; then
+        # source file name is module name without "_mod"
+        depline="$depline ${m%_mod}.o"
+      else
+        echo "WARNING: f90mkdepend: no source file found for module $m" 1>&2
       fi
     done
     echo $depline
