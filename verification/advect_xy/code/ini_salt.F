@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_xy/code/ini_salt.F,v 1.3 2010/01/18 19:42:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/advect_xy/code/ini_salt.F,v 1.4 2013/12/16 18:53:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -73,6 +73,9 @@ C=== Set-up specific modification ends here  ===
         ENDDO
        ENDDO
       ENDDO
+C=== Set-up specific modification starts here ===
+      _EXCH_XYZ_RL( salt, myThid )
+C=== Set-up specific modification ends here  ===
 
       IF ( hydrogSaltFile .NE. ' ' ) THEN
         CALL READ_FLD_XYZ_RL( hydrogSaltFile, ' ', salt, 0, myThid )
@@ -124,7 +127,7 @@ C--   Apply mask and test consistency
        ENDIF
       ENDIF
 
-      IF (debugMode) THEN
+      IF ( debugLevel.GE.debLevC ) THEN
         CALL PLOT_FIELD_XYZRL( salt, 'Initial Salinity',
      &                         Nr, 1, myThid )
       ENDIF
