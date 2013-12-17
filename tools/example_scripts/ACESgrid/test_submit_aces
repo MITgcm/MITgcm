@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_submit_aces,v 1.15 2013/10/10 19:36:24 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_submit_aces,v 1.16 2013/12/17 15:28:48 jmc Exp $
 # $Name:  $
 
 #  submit list of jobs or get list of submitted jobs
@@ -210,8 +210,8 @@ else
   TEST_LIST=$*
 fi
 
-QSUB="/usr/local/bin/qsub"
-QSTAT="/usr/local/bin/qstat"
+QSUB="/usr/bin/qsub"
+QSTAT="/usr/bin/qstat"
 TST_DIR="/data/jm_c/test_acesgrid"
 logPfix='tst_submit'
 outPfix='acesgrid'
