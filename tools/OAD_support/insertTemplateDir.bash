@@ -14,6 +14,9 @@ do
     "OpenAD_cg2d" )
       echo "c\$openad XXX Template ad_template.sa_cg2d.f" >> temp.sed
       ;;
+    "OpenAD_streamice_cg_solve" )
+      echo "c\$openad XXX Template ad_template.streamice_cg_solve.f" >> temp.sed
+      ;;
     "OpenAD_exch1_rl" |          \
     "OpenAD_exch1_rs" |          \
     "OpenAD_global_max_r8" |     \
