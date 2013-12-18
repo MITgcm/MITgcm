@@ -11,6 +11,7 @@ CTRL_GENARR
 ctrl_dummy
 ctrl
 ctrl_weights
+DIAGNOSTICS_SIZE
 DYNVARS
 EESUPPORT
 EOS
