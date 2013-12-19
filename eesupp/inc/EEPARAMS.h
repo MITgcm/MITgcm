@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.33 2013/10/28 15:49:48 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.34 2013/12/19 01:06:09 dimitri Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: EEPARAMS.h
@@ -166,6 +166,10 @@ C     debugMode      :: controls printing of debug msg (sequence of S/R calls).
 C     useSingleCpuIO :: When useSingleCpuIO is set, MDS_WRITE_FIELD outputs from
 C                       master MPI process only. -- NOTE: read from main parameter
 C                       file "data" and not set until call to INI_PARMS.
+C     useSingleCpuInput :: When useSingleCpuInput is set, EXF_INTERP_READ
+C                       reads forcing files from master MPI process only.
+C                       -- NOTE: read from main parameter file "data"
+C                          and defaults to useSingleCpuInput = useSingleCpuIO
 C     printMapIncludesZeros  :: Flag that controls whether character constant
 C                               map code ignores exact zero values.
 C     useCubedSphereExchange :: use Cubed-Sphere topology domain.
@@ -176,7 +180,7 @@ C     useOASIS       :: use OASIS-coupler for a multi-components set-up.
       COMMON /EEPARAMS_L/
 c    &  eeBootError, fatalError, eeEndError,
      &  eeBootError, eeEndError, fatalError, debugMode,
-     &  useSingleCpuIO, printMapIncludesZeros,
+     &  useSingleCpuIO, useSingleCpuInput, printMapIncludesZeros,
      &  useCubedSphereExchange, useCoupler,
      &  useNEST_PARENT, useNEST_CHILD, useOASIS,
      &  useSETRLSTK, useSIGREG
@@ -185,6 +189,7 @@ c    &  eeBootError, fatalError, eeEndError,
       LOGICAL fatalError
       LOGICAL debugMode
       LOGICAL useSingleCpuIO
+      LOGICAL useSingleCpuInput
       LOGICAL printMapIncludesZeros
       LOGICAL useCubedSphereExchange
       LOGICAL useCoupler

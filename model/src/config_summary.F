@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.144 2013/07/30 18:51:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.145 2013/12/19 01:06:09 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -540,6 +540,8 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      & ' globalFiles =',' /* write "global" (=not per tile) files */')
       CALL WRITE_0D_L( useSingleCpuIO,  INDEX_NONE,
      & ' useSingleCpuIO =', ' /* only master MPI process does I/O */')
+      CALL WRITE_0D_L( useSingleCpuInput,  INDEX_NONE,
+     & ' useSingleCpuInput =', ' /* only master process reads input */')
       WRITE(msgBuf,'(2A)') '/* debLev[*]  :',
      &             ' level of debug & auxiliary message printing */'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )

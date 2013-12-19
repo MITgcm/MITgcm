@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1949 2013/12/09 17:08:58 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1950 2013/12/19 01:06:09 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o useSingleCpuInput separates single-CPU input from single-CPU output
 o pkg/seaice/seaice_lsr.F: fix an initialisation bug for the 
   SEAICE_VECTORIZE_LSR_ZEBRA option that lead to NaNs on a NEC-SX8
 

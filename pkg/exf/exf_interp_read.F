@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_read.F,v 1.14 2011/06/07 22:19:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_read.F,v 1.15 2013/12/19 01:06:10 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -162,7 +162,7 @@ C--   end if MASTER_CPU_IO
       _BEGIN_MASTER( myThid )
 #ifdef ALLOW_USE_MPI
 C--   broadcast to all processes
-       IF ( useSingleCPUIO ) THEN
+       IF ( useSingleCpuInput ) THEN
          IF ( filePrec .EQ. 32 ) THEN
            CALL MPI_BCAST(buffer_r4,nx_in*ny_in,MPI_REAL,
      &          0,MPI_COMM_MODEL,ierr)

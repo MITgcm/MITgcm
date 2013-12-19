@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.168 2013/11/18 15:58:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.169 2013/12/19 01:06:09 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -195,6 +195,7 @@ Cml      sBeta               = 7.4 _d -4
       quasiHydrostatic    = .FALSE.
       globalFiles         = .FALSE.
       useSingleCpuIO      = .FALSE.
+      useSingleCpuInput   = .FALSE.
       allowFreezing       = .FALSE.
       ivdc_kappa          = 0. _d 0
       hMixCriteria        = -.8 _d 0

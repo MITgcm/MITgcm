@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.256 2013/11/18 15:48:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.257 2013/12/19 01:06:09 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -212,7 +212,7 @@ C--   Continuous equation parameters
      & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
      & rhoConst, rhoConstFresh, buoyancyRelation, HeatCapacity_Cp,
      & writeBinaryPrec, readBinaryPrec, writeStatePrec,
-     & globalFiles, useSingleCpuIO,
+     & globalFiles, useSingleCpuIO, useSingleCpuInput,
      & allowFreezing, allowInteriorFreezing, useOldFreezing, ivdc_kappa,
      & hMixCriteria, dRhoSmall, hMixSmooth,
      & usePickupBeforeC35, usePickupBeforeC54, debugMode, debugLevel,
@@ -634,9 +634,13 @@ C--   for backward compatibility :
       ELSE
        recip_gravity = 1. _d 0 / gravity
       ENDIF
+
 C-    set default printResidualFreq according to debugLevel
       printResidualFreq = 0
       IF ( debugLevel.GE.debLevE ) printResidualFreq = 1
+
+C-    set useSingleCpuInput=.TRUE. if useSingleCpuIO==.TRUE.
+      IF ( useSingleCpuIO ) useSingleCpuInput=.TRUE.
 
 C     Check for retired parameters still being used
       nRetired = 0
