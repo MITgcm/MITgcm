@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/openad_dumpAdjoint.F,v 1.1 2013/08/20 17:41:50 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/openad_dumpAdjoint.F,v 1.2 2013/12/19 20:07:49 utke Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -91,6 +91,7 @@ c They provide the fields to be stored.
 
       if (Mod(myiter,360).eq.0) then 
          WRITE(suff,'(I10.10)') myIter
+# ifndef ALLOW_STREAMICE
          foo5=theta%d
          call write_fld_xyz_rl('adjtheta.',suff,foo5,myiter,1)
          foo5=salt%d
@@ -103,6 +104,7 @@ c They provide the fields to be stored.
          call write_fld_xyz_rl('adjwvel.',suff,foo5,myiter,1)
          foo4=etan%d
          call write_fld_xy_rl('adjetan.',suff,foo4,myiter,1)
+# endif
 # ifdef ALLOW_DIFFKR_CONTROL
          foo5=diffkr%d
          call write_fld_xy_rl('adjdiffkr.',suff,foo5,myiter,1)
