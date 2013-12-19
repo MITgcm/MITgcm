@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.62 2012/09/11 01:32:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.63 2013/12/19 21:48:05 utke Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -126,6 +126,7 @@ C         easier to transfer analyse a particular snap-shots
           WRITE(suff,'(I10.10)') myIter
 
 #ifdef ALLOW_AUTODIFF_OPENAD
+# ifndef ALLOW_STREAMICE
           CALL WRITE_FLD_XYZ_RL( 'U.',suff,uVel%v,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL( 'V.',suff,vVel%v,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL( 'T.',suff,theta%v,myIter,myThid)
@@ -135,6 +136,7 @@ C         easier to transfer analyse a particular snap-shots
           IF ( useDynP_inEos_Zc .OR. myIter.NE.nIter0 ) THEN
             CALL WRITE_FLD_XYZ_RL('PH.',suff,totPhiHyd%v,myIter,myThid)
           ENDIF
+# endif
 #else
           CALL WRITE_FLD_XYZ_RL( 'U.',suff,uVel,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL( 'V.',suff,vVel,myIter,myThid)
