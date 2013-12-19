@@ -13,8 +13,7 @@
       integer iaddr
       external iaddr
 
-      INTEGER numItersHelper
-      INTEGER myThidHelper
+      INTEGER numItersHelper, myThidHelper, nIterMinHelper
 
       Real*8  cg2d_b_p(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       Real*8  cg2d_x_p(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -66,6 +65,7 @@ c reset the mode
 
          numItersHelper=numiters
          mythidHelper=mythid
+         nIterMinHelper=nIterMin
 #ifdef OAD_DEBUG_JOINT
          write(standardmessageunit,'(A,A,A)') 
      +'OAD:',indentation(1:our_indent), 
@@ -97,11 +97,10 @@ c set up for plain execution
         cg2d_x%v=cg2d_x_p        
 c reset the mode
          our_rev_mode=our_orig_mode
-c manually push two integers to the tape:        
-         if(oad_it_sz.lt. oad_it_ptr) call oad_it_grow()
-         oad_it(oad_it_ptr)=numItersHelper; oad_it_ptr=oad_it_ptr+1
-         if(oad_it_sz.lt. oad_it_ptr) call oad_it_grow()
-         oad_it(oad_it_ptr)=mythidHelper; oad_it_ptr=oad_it_ptr+1
+c manually push integers to the tape:
+         call oad_tape_push(numItersHelper)
+         call oad_tape_push(nIterMinHelper)
+         call oad_tape_push(mythidHelper)
       end if
       if (our_rev_mode%adjoint) then
 #ifdef OAD_DEBUG_JOINT
@@ -110,10 +109,9 @@ c manually push two integers to the tape:
      +' __SRNAME__: entering adjoint'
 #endif
 c manually pop two integers from the tape:        
-      oad_it_ptr=oad_it_ptr-1
-      mythid=oad_it(oad_it_ptr)
-      oad_it_ptr=oad_it_ptr-1
-      numiters=oad_it(oad_it_ptr)
+         call oad_tape_pop(mythid)
+         call oad_tape_pop(nIterMin)
+         call oad_tape_pop(numiters)
 c selfadjoint:
 c the original is called with 
 c  cg2d(b,x,...)
