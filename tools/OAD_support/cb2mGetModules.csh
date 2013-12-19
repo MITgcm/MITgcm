@@ -34,6 +34,9 @@ endif
 if ( ${fileName} == 'ctrl' || ${fileName} == 'ctrl_dummy' || ${fileName} == 'CTRL_GENARR' ) then
   echo '      use CTRL_SIZE_mod'     >> ${fileName}_temp
 endif
+if ( ${fileName} == 'DIAGSTATS_REGIONS' || ${fileName} == 'DIAGNOSTICS' ) then
+  echo '      use DIAGNOSTICS_SIZE_mod'     >> ${fileName}_temp
+endif
 if ( ${fileName} == 'PTRACERS_FIELDS' || ${fileName} == 'PTRACERS_PARAMS' || \
      ${fileName} == 'PTRACERS_START' || ${fileName} == 'PTRACERS_TAVE' || \
      ${fileName} == 'GCHEM_FIELDS' ) then
