@@ -1,18 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE_OPTIONS.h,v 1.1 2013/06/12 21:30:22 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE_OPTIONS.h,v 1.2 2013/12/23 21:49:45 jmc Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C CPP options file for MYPACKAGE
+C CPP options file for STREAMICE
 C
 C Use this file for selecting options within package "streamice"
 
 #ifndef STREAMICE_OPTIONS_H
 #define STREAMICE_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_STREAMICE
-
 #include "CPP_OPTIONS.h"
+
+#ifdef ALLOW_STREAMICE
 
 C Place CPP define/undef flag here
 
@@ -22,8 +22,8 @@ C Place CPP define/undef flag here
 #undef STREAMICE_GEOM_FILE_SETUP
 #undef STREAMICE_SMOOTH_FLOATATION
 
-#endif /* ALLOW_MYPACKAGE */
-#endif /* MYPACKAGE_OPTIONS_H */
+#endif /* ALLOW_STREAMICE */
+#endif /* STREAMICE_OPTIONS_H */
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
