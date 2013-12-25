@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/model_ad.flow,v 1.9 2013/08/07 15:35:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/model_ad.flow,v 1.10 2013/12/25 16:39:13 jmc Exp $
 C $Name:  $
 
 C----------------------------------------
@@ -27,6 +27,22 @@ C subroutine  turnoff_model_io
 C----------------------------------------
 CADJ SUBROUTINE TURNOFF_MODEL_IO INPUT  = 1,2
 CADJ SUBROUTINE TURNOFF_MODEL_IO OUTPUT =
+
+C----------------------------------------
+C subroutine  DO_STATEVARS_DIAGS
+C----------------------------------------
+CADJ SUBROUTINE DO_STATEVARS_DIAGS  INPUT  = 1,2,3,4
+CADJ SUBROUTINE DO_STATEVARS_DIAGS  OUTPUT =
+CADJ SUBROUTINE DO_STATEVARS_DIAGS  DEPEND = 1,2,3,4
+CADJ SUBROUTINE DO_STATEVARS_DIAGS  REQUIRED
+
+C----------------------------------------
+C subroutine  DO_STATEVARS_TAVE
+C----------------------------------------
+CADJ SUBROUTINE DO_STATEVARS_TAVE  INPUT  = 1,2,3
+CADJ SUBROUTINE DO_STATEVARS_TAVE  OUTPUT =
+CADJ SUBROUTINE DO_STATEVARS_TAVE  DEPEND = 1,2,3
+CADJ SUBROUTINE DO_STATEVARS_TAVE  REQUIRED
 
 C----------------------------------------
 C subroutine  plot_field_xyrs
