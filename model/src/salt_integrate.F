@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/salt_integrate.F,v 1.4 2013/12/06 01:55:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/salt_integrate.F,v 1.5 2013/12/27 15:46:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -11,7 +11,7 @@ CBOP
 C     !ROUTINE: SALT_INTEGRATE
 C     !INTERFACE:
       SUBROUTINE SALT_INTEGRATE(
-     I           bi, bj,
+     I           bi, bj, recip_hFac,
      I           uFld, vFld, wFld,
      U           KappaRk,
      I           myTime, myIter, myThid )
@@ -48,9 +48,10 @@ C     !USES:
       IMPLICIT NONE
 C     == GLobal variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
+#include "DYNVARS.h"
 #include "RESTART.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
@@ -63,18 +64,20 @@ C     == GLobal variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     bi, bj,   :: tile indices
-C     uFld,vFld :: Local copy of horizontal velocity field
-C     wFld      :: Local copy of vertical velocity field
-C     KappaRk   :: Vertical diffusion for Salinity
-C     myTime    :: current time
-C     myIter    :: current iteration number
-C     myThid    :: my Thread Id. number
+C     bi, bj,    :: tile indices
+C     recip_hFac :: reciprocal of cell open-depth factor (@ next iter)
+C     uFld,vFld  :: Local copy of horizontal velocity field
+C     wFld       :: Local copy of vertical velocity field
+C     KappaRk    :: Vertical diffusion for Salinity
+C     myTime     :: current time
+C     myIter     :: current iteration number
+C     myThid     :: my Thread Id. number
       INTEGER bi, bj
-      _RL uFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL vFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL wFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL KappaRk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RS recip_hFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL uFld      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL vFld      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL wFld      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL KappaRk   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -82,21 +85,23 @@ CEOP
 
 #ifdef ALLOW_GENERIC_ADVDIFF
 C     !LOCAL VARIABLES:
-C     iMin,iMax :: Range of points for which calculation
-C     jMin,jMax ::       results will be set.
-C     k         :: vertical index
-C     kM1       :: =k-1 for k>1, =1 for k=1
-C     kUp       :: index into 2 1/2D array, toggles between 1|2
-C     kDown     :: index into 2 1/2D array, toggles between 2|1
-C     xA        :: Tracer cell face area normal to X
-C     yA        :: Tracer cell face area normal to X
-C     maskUp    :: Land/water mask for Wvel points (interface k)
-C     uTrans    :: Zonal volume transport through cell face
-C     vTrans    :: Meridional volume transport through cell face
-C     rTrans    ::   Vertical volume transport at interface k
-C     rTransKp  :: Vertical volume transport at inteface k+1
-C     fVerS     :: Flux of salt (S) in the vertical direction
-C                  at the upper(U) and lower(D) faces of a cell.
+C     iMin, iMax :: 1rst index loop range
+C     jMin, jMax :: 2nd  index loop range
+C     k          :: vertical index
+C     kM1        :: =k-1 for k>1, =1 for k=1
+C     kUp        :: index into 2 1/2D array, toggles between 1|2
+C     kDown      :: index into 2 1/2D array, toggles between 2|1
+C     xA         :: Tracer cell face area normal to X
+C     yA         :: Tracer cell face area normal to X
+C     maskUp     :: Land/water mask for Wvel points (interface k)
+C     uTrans     :: Zonal volume transport through cell face
+C     vTrans     :: Meridional volume transport through cell face
+C     rTrans     ::   Vertical volume transport at interface k
+C     rTransKp   :: Vertical volume transport at inteface k+1
+C     fZon       :: Flux of salt (S) in the zonal direction
+C     fMer       :: Flux of salt (S) in the meridional direction
+C     fVer       :: Flux of salt (S) in the vertical direction
+C                   at the upper(U) and lower(D) faces of a cell.
       INTEGER iMin, iMax, jMin, jMax
       INTEGER i, j, k
       INTEGER kUp, kDown, kM1
@@ -107,7 +112,9 @@ C                  at the upper(U) and lower(D) faces of a cell.
       _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTransKp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL fVerS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL fZon    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fMer    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fVer    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL gs_AB   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       LOGICAL calcAdvection
       INTEGER iterNb
@@ -148,8 +155,8 @@ C-    Tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
       ENDDO
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-         fVerS(i,j,1) = 0. _d 0
-         fVerS(i,j,2) = 0. _d 0
+         fVer(i,j,1) = 0. _d 0
+         fVer(i,j,2) = 0. _d 0
        ENDDO
       ENDDO
 #ifdef ALLOW_AUTODIFF
@@ -160,16 +167,16 @@ C-    Tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
         ENDDO
        ENDDO
       ENDDO
+CADJ STORE salt(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
+CADJ STORE wFld(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef INCLUDE_CALC_DIFFUSIVITY_CALL
-      IF ( .NOT. implicitDiffusion ) THEN
-        CALL CALC_3D_DIFFUSIVITY(
+      CALL CALC_3D_DIFFUSIVITY(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         GAD_SALINITY, useGMredi, useKPP,
      O         kappaRk,
      I         myThid )
-      ENDIF
 #endif /* INCLUDE_CALC_DIFFUSIVITY_CALL */
 
 #ifndef DISABLE_MULTIDIM_ADVECTION
@@ -227,7 +234,7 @@ C-    Start vertical index (k) loop (Nr:1)
         kDown= 1+MOD(k,2)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE fVerS(:,:,:) = comlev1_bibj_k, key=kkey,
+CADJ STORE fVer(:,:,:) = comlev1_bibj_k, key=kkey,
 CADJ &     byte=isbyte,  kind = isbyte
 CADJ STORE gS(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey,
 CADJ &     byte=isbyte,  kind = isbyte
@@ -261,7 +268,8 @@ CADJ &     byte=isbyte,  kind = isbyte
      I           GAD_SALINITY, saltAdvScheme, saltVertAdvScheme,
      I           calcAdvection, saltImplVertAdv, AdamsBashforth_S,
      I           saltVertDiff4, useGMRedi, useKPP,
-     U           fVerS, gS,
+     O           fZon, fMer,
+     U           fVer, gS,
      I           myTime, myIter, myThid )
 #else /* ALLOW_ADAMSBASHFORTH_3 */
         CALL GAD_CALC_RHS(
@@ -274,7 +282,8 @@ CADJ &     byte=isbyte,  kind = isbyte
      I           GAD_SALINITY, saltAdvScheme, saltVertAdvScheme,
      I           calcAdvection, saltImplVertAdv, AdamsBashforth_S,
      I           saltVertDiff4, useGMRedi, useKPP,
-     U           fVerS, gS,
+     O           fZon, fMer,
+     U           fVer, gS,
      I           myTime, myIter, myThid )
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
 
@@ -361,6 +370,60 @@ CADJ &     kind = isbyte
 
 C-    end of vertical index (k) loop (Nr:1)
       ENDDO
+
+#ifdef ALLOW_DOWN_SLOPE
+      IF ( useDOWN_SLOPE ) THEN
+        IF ( usingPCoords ) THEN
+          CALL DWNSLP_APPLY(
+     I                  GAD_SALINITY, bi, bj, kSurfC,
+     I                  recip_drF, recip_hFacC, recip_rA,
+     I                  dTtracerLev,
+     I                  salt,
+     U                  gS,
+     I                  myTime, myIter, myThid )
+        ELSE
+          CALL DWNSLP_APPLY(
+     I                  GAD_SALINITY, bi, bj, kLowC,
+     I                  recip_drF, recip_hFacC, recip_rA,
+     I                  dTtracerLev,
+     I                  salt,
+     U                  gS,
+     I                  myTime, myIter, myThid )
+        ENDIF
+      ENDIF
+#endif /* ALLOW_DOWN_SLOPE */
+
+      iMin = 0
+      iMax = sNx+1
+      jMin = 0
+      jMax = sNy+1
+
+C--   Implicit vertical advection & diffusion
+
+#ifdef INCLUDE_IMPLVERTADV_CODE
+      IF ( saltImplVertAdv ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        CALL GAD_IMPLICIT_R(
+     I         saltImplVertAdv, saltVertAdvScheme, GAD_SALINITY,
+     I         dTtracerLev,
+     I         kappaRk, recip_hFac, wFld, salt,
+     U         gS,
+     I         bi, bj, myTime, myIter, myThid )
+      ELSEIF ( implicitDiffusion ) THEN
+#else /* INCLUDE_IMPLVERTADV_CODE */
+      IF     ( implicitDiffusion ) THEN
+#endif /* INCLUDE_IMPLVERTADV_CODE */
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        CALL IMPLDIFF(
+     I         bi, bj, iMin, iMax, jMin, jMax,
+     I         GAD_SALINITY, kappaRk, recip_hFac,
+     U         gS,
+     I         myThid )
+      ENDIF
 
 #endif /* ALLOW_GENERIC_ADVDIFF */
 

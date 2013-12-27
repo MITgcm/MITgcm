@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.146 2013/12/06 01:55:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.147 2013/12/27 15:46:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -90,9 +90,9 @@ C     == Global variables ===
 # include "PTRACERS_PARAMS.h"
 # include "PTRACERS_FIELDS.h"
 #endif
-#ifdef ALLOW_TIMEAVE
-# include "TIMEAVE_STATV.h"
-#endif
+c#ifdef ALLOW_TIMEAVE
+c# include "TIMEAVE_STATV.h"
+c#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -127,6 +127,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables
 C     uFld,vFld,wFld :: Local copy of velocity field (3 components)
 C     kappaRk        :: Total diffusion in vertical, all levels, 1 tracer
+C     recip_hFacNew  :: reciprocal of futur time-step hFacC
 C     useVariableK   :: T when vertical diffusion is not constant
 C     iMin, iMax     :: Ranges and sub-block indices on which calculations
 C     jMin, jMax        are applied.
@@ -137,8 +138,8 @@ C     i, j, k        :: loop indices
       _RL wFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL kappaRk (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RS recip_hFacNew(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      INTEGER iMin, iMax
-      INTEGER jMin, jMax
+c     INTEGER iMin, iMax
+c     INTEGER jMin, jMax
       INTEGER bi, bj
       INTEGER i, j, k
 #ifdef ALLOW_ADAMSBASHFORTH_3
@@ -146,7 +147,7 @@ C     i, j, k        :: loop indices
       _RL tmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 #ifdef ALLOW_TIMEAVE
-      LOGICAL useVariableK
+c     LOGICAL useVariableK
 #endif
 CEOP
 
@@ -210,119 +211,6 @@ C This is currently also used by IVDC and Diagnostics
          ENDDO
         ENDDO
 
-#ifdef ALLOW_ADAMSBASHFORTH_3
-C-      Apply AB on T,S :
-        iterNb = myIter
-        IF (staggerTimeStep) iterNb = myIter - 1
-        m1 = 1 + MOD(iterNb+1,2)
-        m2 = 1 + MOD( iterNb ,2)
-C       compute T^n+1/2 (stored in gtNm) extrapolating T forward in time
-        IF ( AdamsBashforth_T ) CALL ADAMS_BASHFORTH3(
-     I                                  bi, bj, 0, Nr,
-     U                                  theta, gtNm, tmpFld,
-     I                                  tempStartAB, iterNb, myThid )
-C       compute S^n+1/2 (stored in gsNm) extrapolating S forward in time
-        IF ( AdamsBashforth_S ) CALL ADAMS_BASHFORTH3(
-     I                                  bi, bj, 0, Nr,
-     U                                  salt, gsNm, tmpFld,
-     I                                  saltStartAB, iterNb, myThid )
-#endif /* ALLOW_ADAMSBASHFORTH_3 */
-
-#ifdef ALLOW_AUTODIFF_TAMC
-cph avoids recomputation of integrate_for_w
-CADJ STORE wvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-C--   Set up 3-D velocity field that we use to advect tracers:
-C-    just do a local copy:
-        DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           uFld(i,j,k) = uVel(i,j,k,bi,bj)
-           vFld(i,j,k) = vVel(i,j,k,bi,bj)
-           wFld(i,j,k) = wVel(i,j,k,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-#ifdef ALLOW_GMREDI
-C-    add Bolus velocity to Eulerian-mean velocity:
-        IF (useGMRedi) THEN
-          CALL  GMREDI_RESIDUAL_FLOW(
-     U                  uFld, vFld, wFld,
-     I                  bi, bj, myIter, myThid )
-        ENDIF
-#endif /* ALLOW_GMREDI */
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE uFld (:,:,:) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE vFld (:,:,:) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE wFld (:,:,:) = comlev1_bibj, key=itdkey, byte=isbyte
-#  ifdef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gtNm(:,:,:,bi,bj,1) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE gtNm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE gsNm(:,:,:,bi,bj,1) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE gsNm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
-#  else
-CADJ STORE gtNm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE gsNm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-#  endif
-# ifdef ALLOW_SALT_PLUME
-CADJ STORE saltPlumeFlux(:,:,bi,bj)   =
-CADJ &     comlev1_bibj, key=itdkey,kind = isbyte
-CADJ STORE saltPlumeDepth(:,:,bi,bj)   =
-CADJ &     comlev1_bibj, key=itdkey,kind = isbyte
-# endif
-# if ((defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)) && (defined ALLOW_GMREDI)
-#  ifdef GM_NON_UNITY_DIAGONAL
-CADJ STORE kux(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE kvy(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-#  endif
-#  ifdef GM_EXTRA_DIAGONAL
-CADJ STORE kuz(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE kvz(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-#  endif
-# endif
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-C--     Calculate active tracer tendencies (gT,gS,...)
-C       and step forward storing result in gT, gS, etc.
-
-        IF ( tempStepping ) THEN
-#ifdef ALLOW_DEBUG
-          IF (debugMode) CALL DEBUG_CALL('TEMP_INTEGRATE',myThid)
-#endif
-          CALL TEMP_INTEGRATE(
-     I         bi, bj,
-     I         uFld, vFld, wFld,
-     U         kappaRk,
-     I         myTime, myIter, myThid )
-        ENDIF
-
-        IF ( saltStepping ) THEN
-#ifdef ALLOW_DEBUG
-          IF (debugMode) CALL DEBUG_CALL('SALT_INTEGRATE',myThid)
-#endif
-          CALL SALT_INTEGRATE(
-     I         bi, bj,
-     I         uFld, vFld, wFld,
-     U         kappaRk,
-     I         myTime, myIter, myThid )
-        ENDIF
-
-#ifdef DO_PTRACERS_HERE
-        IF ( usePTRACERS ) THEN
-#ifdef ALLOW_DEBUG
-          IF (debugMode) CALL DEBUG_CALL('PTRACERS_INTEGRATE',myThid)
-#endif
-           CALL PTRACERS_INTEGRATE(
-     I          bi, bj, uFld, vFld, wFld,
-     U          kappaRk,
-     I          myTime, myIter, myThid )
-        ENDIF
-#endif /* DO_PTRACERS_HERE */
-
 C--     Compute new reciprocal hFac for implicit calculation
 #ifdef NONLIN_FRSURF
         IF ( nonlinFreeSurf.GT.0 ) THEN
@@ -377,162 +265,116 @@ C--     Compute new reciprocal hFac for implicit calculation
         ENDIF
 #endif /* NONLIN_FRSURF */
 
-#ifdef ALLOW_DOWN_SLOPE
-        IF ( tempStepping .AND. useDOWN_SLOPE ) THEN
-          IF ( usingPCoords ) THEN
-            CALL DWNSLP_APPLY(
-     I                  GAD_TEMPERATURE, bi, bj, kSurfC,
-     I                  recip_drF, recip_hFacC, recip_rA,
-     I                  dTtracerLev,
-     I                  theta,
-     U                  gT,
-     I                  myTime, myIter, myThid )
-          ELSE
-            CALL DWNSLP_APPLY(
-     I                  GAD_TEMPERATURE, bi, bj, kLowC,
-     I                  recip_drF, recip_hFacC, recip_rA,
-     I                  dTtracerLev,
-     I                  theta,
-     U                  gT,
-     I                  myTime, myIter, myThid )
-          ENDIF
-        ENDIF
-        IF ( saltStepping .AND. useDOWN_SLOPE ) THEN
-          IF ( usingPCoords ) THEN
-            CALL DWNSLP_APPLY(
-     I                  GAD_SALINITY, bi, bj, kSurfC,
-     I                  recip_drF, recip_hFacC, recip_rA,
-     I                  dTtracerLev,
-     I                  salt,
-     U                  gS,
-     I                  myTime, myIter, myThid )
-          ELSE
-            CALL DWNSLP_APPLY(
-     I                  GAD_SALINITY, bi, bj, kLowC,
-     I                  recip_drF, recip_hFacC, recip_rA,
-     I                  dTtracerLev,
-     I                  salt,
-     U                  gS,
-     I                  myTime, myIter, myThid )
-          ENDIF
-        ENDIF
-#ifdef DO_PTRACERS_HERE
-        IF ( usePTRACERS .AND. useDOWN_SLOPE ) THEN
-          CALL PTRACERS_DWNSLP_APPLY(
-     I                  bi, bj, myTime, myIter, myThid )
-        ENDIF
-#endif /* DO_PTRACERS_HERE */
-#endif /* ALLOW_DOWN_SLOPE */
+#ifdef ALLOW_ADAMSBASHFORTH_3
+C-      Apply AB on T,S :
+        iterNb = myIter
+        IF (staggerTimeStep) iterNb = myIter - 1
+        m1 = 1 + MOD(iterNb+1,2)
+        m2 = 1 + MOD( iterNb ,2)
+C       compute T^n+1/2 (stored in gtNm) extrapolating T forward in time
+        IF ( AdamsBashforth_T ) CALL ADAMS_BASHFORTH3(
+     I                                  bi, bj, 0, Nr,
+     U                                  theta, gtNm, tmpFld,
+     I                                  tempStartAB, iterNb, myThid )
+C       compute S^n+1/2 (stored in gsNm) extrapolating S forward in time
+        IF ( AdamsBashforth_S ) CALL ADAMS_BASHFORTH3(
+     I                                  bi, bj, 0, Nr,
+     U                                  salt, gsNm, tmpFld,
+     I                                  saltStartAB, iterNb, myThid )
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
 
-C       All explicit advection/diffusion/sources should now be
-C       done. The updated tracer field is in gPtr. Accumalate
-C       explicit tendency and also reset gPtr to initial tracer
-C       field for implicit matrix calculation
+C--   Set up 3-D velocity field that we use to advect tracers:
+C-    just do a local copy:
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uFld(i,j,k) = uVel(i,j,k,bi,bj)
+           vFld(i,j,k) = vVel(i,j,k,bi,bj)
+           wFld(i,j,k) = wVel(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+#ifdef ALLOW_GMREDI
+C-    add Bolus velocity to Eulerian-mean velocity:
+        IF (useGMRedi) THEN
+          CALL  GMREDI_RESIDUAL_FLOW(
+     U                  uFld, vFld, wFld,
+     I                  bi, bj, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_GMREDI */
 
-#ifdef ALLOW_MATRIX
-        IF (useMATRIX)
-     &    CALL MATRIX_STORE_TENDENCY_EXP(bi,bj, myTime,myIter,myThid)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE recip_hFacNew(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
+CADJ STORE uFld (:,:,:)       = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE vFld (:,:,:)       = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE wFld (:,:,:)       = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+#  ifdef ALLOW_ADAMSBASHFORTH_3
+CADJ STORE gtNm(:,:,:,bi,bj,1) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE gtNm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE gsNm(:,:,:,bi,bj,1) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE gsNm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
+#  else
+CADJ STORE gtNm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE gsNm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+#  endif
+# ifdef ALLOW_SALT_PLUME
+CADJ STORE saltPlumeFlux(:,:,bi,bj)   =
+CADJ &     comlev1_bibj, key=itdkey,kind = isbyte
+CADJ STORE saltPlumeDepth(:,:,bi,bj)   =
+CADJ &     comlev1_bibj, key=itdkey,kind = isbyte
+# endif
+# if ((defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)) && (defined ALLOW_GMREDI)
+#  ifdef GM_NON_UNITY_DIAGONAL
+CADJ STORE kux(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE kvy(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+#  endif
+#  ifdef GM_EXTRA_DIAGONAL
+CADJ STORE kuz(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE kvz(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+#  endif
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+C--     Calculate active tracer tendencies (gT,gS,...)
+C       and step forward, storing result in gT, gS, etc.
+
+        IF ( tempStepping ) THEN
+#ifdef ALLOW_DEBUG
+          IF (debugMode) CALL DEBUG_CALL('TEMP_INTEGRATE',myThid)
 #endif
-
-        iMin = 1
-        iMax = sNx
-        jMin = 1
-        jMax = sNy
-
-C--     Implicit vertical advection & diffusion
-        IF ( tempStepping .AND. implicitDiffusion ) THEN
-          CALL CALC_3D_DIFFUSIVITY(
-     I         bi,bj,iMin,iMax,jMin,jMax,
-     I         GAD_TEMPERATURE, useGMredi, useKPP,
-     O         kappaRk,
-     I         myThid)
-        ENDIF
-#ifdef INCLUDE_IMPLVERTADV_CODE
-        IF ( tempImplVertAdv ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE kappaRk(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE wFld(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE recip_hFacNew(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-          CALL GAD_IMPLICIT_R(
-     I         tempImplVertAdv, tempVertAdvScheme, GAD_TEMPERATURE,
-     I         dTtracerLev,
-     I         kappaRk, recip_hFacNew, wFld, theta,
-     U         gT,
-     I         bi, bj, myTime, myIter, myThid )
-        ELSEIF ( tempStepping .AND. implicitDiffusion ) THEN
-#else /* INCLUDE_IMPLVERTADV_CODE */
-        IF     ( tempStepping .AND. implicitDiffusion ) THEN
-#endif /* INCLUDE_IMPLVERTADV_CODE */
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE kappaRk(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-          CALL IMPLDIFF(
-     I         bi, bj, iMin, iMax, jMin, jMax,
-     I         GAD_TEMPERATURE, kappaRk, recip_hFacNew,
-     U         gT,
-     I         myThid )
+          CALL TEMP_INTEGRATE(
+     I         bi, bj, recip_hFacNew,
+     I         uFld, vFld, wFld,
+     U         kappaRk,
+     I         myTime, myIter, myThid )
         ENDIF
 
-#ifdef ALLOW_TIMEAVE
-        useVariableK = useKPP .OR. usePP81 .OR. useMY82 .OR. useGGL90
-     &       .OR. useGMredi .OR. ivdc_kappa.NE.0.
-        IF ( taveFreq.GT.0. .AND. useVariableK
-     &                      .AND.implicitDiffusion ) THEN
-           CALL TIMEAVE_CUMUL_DIF_1T(TdiffRtave, gT, kappaRk,
-     I                        Nr, 3, deltaTClock, bi, bj, myThid)
-        ENDIF
-#endif /* ALLOW_TIMEAVE */
-
-        IF ( saltStepping .AND. implicitDiffusion ) THEN
-          CALL CALC_3D_DIFFUSIVITY(
-     I         bi,bj,iMin,iMax,jMin,jMax,
-     I         GAD_SALINITY, useGMredi, useKPP,
-     O         kappaRk,
-     I         myThid)
-        ENDIF
-
-#ifdef INCLUDE_IMPLVERTADV_CODE
-        IF ( saltImplVertAdv ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE kappaRk(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE wFld(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE salt(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE recip_hFacNew(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-          CALL GAD_IMPLICIT_R(
-     I         saltImplVertAdv, saltVertAdvScheme, GAD_SALINITY,
-     I         dTtracerLev,
-     I         kappaRk, recip_hFacNew, wFld, salt,
-     U         gS,
-     I         bi, bj, myTime, myIter, myThid )
-        ELSEIF ( saltStepping .AND. implicitDiffusion ) THEN
-#else /* INCLUDE_IMPLVERTADV_CODE */
-        IF     ( saltStepping .AND. implicitDiffusion ) THEN
-#endif /* INCLUDE_IMPLVERTADV_CODE */
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE kappaRk(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-          CALL IMPLDIFF(
-     I         bi, bj, iMin, iMax, jMin, jMax,
-     I         GAD_SALINITY, kappaRk, recip_hFacNew,
-     U         gS,
-     I         myThid )
+        IF ( saltStepping ) THEN
+#ifdef ALLOW_DEBUG
+          IF (debugMode) CALL DEBUG_CALL('SALT_INTEGRATE',myThid)
+#endif
+          CALL SALT_INTEGRATE(
+     I         bi, bj, recip_hFacNew,
+     I         uFld, vFld, wFld,
+     U         kappaRk,
+     I         myTime, myIter, myThid )
         ENDIF
 
 #ifdef DO_PTRACERS_HERE
-        IF     ( usePTRACERS ) THEN
-C--     Vertical advection/diffusion (implicit) for passive tracers
+C--     Calculate passive tracer tendencies
+C       and step forward, storing result in gPtr
 C       Also apply open boundary conditions for each passive tracer
-           CALL PTRACERS_IMPLICIT(
-     U                             kappaRk,
-     I                             wFld, recip_hFacNew,
-     I                             bi, bj, myTime, myIter, myThid )
+        IF ( usePTRACERS ) THEN
+#ifdef ALLOW_DEBUG
+          IF (debugMode) CALL DEBUG_CALL('PTRACERS_INTEGRATE',myThid)
+#endif
+           CALL PTRACERS_INTEGRATE(
+     I          bi, bj, recip_hFacNew,
+     I          uFld, vFld, wFld,
+     U          kappaRk,
+     I          myTime, myIter, myThid )
         ENDIF
 #endif /* DO_PTRACERS_HERE */
 
