@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_thermodynamics.F,v 1.8 2013/12/06 01:57:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_thermodynamics.F,v 1.9 2013/12/27 16:01:16 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -47,9 +47,6 @@ C     == Global variables ===
 # include "PTRACERS_PARAMS.h"
 # include "PTRACERS_FIELDS.h"
 #endif
-#ifdef ALLOW_TIMEAVE
-# include "TIMEAVE_STATV.h"
-#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -92,9 +89,6 @@ C     i, j, k        :: loop indices
       INTEGER jMin, jMax
       INTEGER bi, bj
       INTEGER i, j, k
-#ifdef ALLOW_ADAMSBASHFORTH_3
-      INTEGER iterNb, m1, m2
-#endif
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -140,51 +134,6 @@ C This is currently also used by IVDC and Diagnostics
           ENDDO
          ENDDO
         ENDDO
-
-        iMin = 1-OLx
-        iMax = sNx+OLx
-        jMin = 1-OLy
-        jMax = sNy+OLy
-
-C     need to recompute surfaceForcingPtr using LS_fwFlux
-        CALL LONGSTEP_FORCING_SURF(
-     I        bi, bj, iMin, iMax, jMin, jMax,
-     I        myTime,myIter,myThid )
-
-C--   Set up 3-D velocity field that we use to advect tracers:
-C-    just do a local copy:
-        DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           uFld(i,j,k) = LS_uVel(i,j,k,bi,bj)
-           vFld(i,j,k) = LS_vVel(i,j,k,bi,bj)
-           wFld(i,j,k) = LS_wVel(i,j,k,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-#ifdef ALLOW_GMREDI
-C-    add Bolus velocity to Eulerian-mean velocity:
-        IF (useGMRedi) THEN
-          CALL  GMREDI_RESIDUAL_FLOW(
-     U                  uFld, vFld, wFld,
-     I                  bi, bj, myIter, myThid )
-        ENDIF
-#endif /* ALLOW_GMREDI */
-
-C--     Calculate active tracer tendencies (gT,gS,...)
-C       and step forward storing result in gT, gS, etc.
-
-#ifdef ALLOW_PTRACERS
-        IF ( usePTRACERS ) THEN
-#ifdef ALLOW_DEBUG
-           IF (debugMode) CALL DEBUG_CALL('PTRACERS_INTEGRATE',myThid)
-#endif
-           CALL PTRACERS_INTEGRATE(
-     I          bi, bj, uFld, vFld, wFld,
-     U          kappaRk,
-     I          myTime, myIter, myThid )
-        ENDIF
-#endif /* ALLOW_PTRACERS */
 
 C--     Compute new reciprocal hFac for implicit calculation
 #ifdef NONLIN_FRSURF
@@ -240,37 +189,49 @@ C--     Compute new reciprocal hFac for implicit calculation
         ENDIF
 #endif /* NONLIN_FRSURF */
 
-#ifdef ALLOW_DOWN_SLOPE
-#ifdef ALLOW_PTRACERS
-        IF ( usePTRACERS .AND. useDOWN_SLOPE ) THEN
-          CALL PTRACERS_DWNSLP_APPLY(
-     I                  bi, bj, myTime, myIter, myThid )
+        iMin = 1-OLx
+        iMax = sNx+OLx
+        jMin = 1-OLy
+        jMax = sNy+OLy
+
+C     need to recompute surfaceForcingPtr using LS_fwFlux
+        CALL LONGSTEP_FORCING_SURF(
+     I        bi, bj, iMin, iMax, jMin, jMax,
+     I        myTime,myIter,myThid )
+
+C--   Set up 3-D velocity field that we use to advect tracers:
+C-    just do a local copy:
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uFld(i,j,k) = LS_uVel(i,j,k,bi,bj)
+           vFld(i,j,k) = LS_vVel(i,j,k,bi,bj)
+           wFld(i,j,k) = LS_wVel(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+#ifdef ALLOW_GMREDI
+C-    add Bolus velocity to Eulerian-mean velocity:
+        IF (useGMRedi) THEN
+          CALL  GMREDI_RESIDUAL_FLOW(
+     U                  uFld, vFld, wFld,
+     I                  bi, bj, myIter, myThid )
         ENDIF
-#endif /* ALLOW_PTRACERS */
-#endif /* ALLOW_DOWN_SLOPE */
-
-C       All explicit advection/diffusion/sources should now be
-C       done. The updated tracer field is in gPtr. Accumalate
-C       explicit tendency and also reset gPtr to initial tracer
-C       field for implicit matrix calculation
-
-#ifdef ALLOW_MATRIX
-        IF (useMATRIX)
-     &    CALL MATRIX_STORE_TENDENCY_EXP(bi,bj, myTime,myIter,myThid)
-#endif
-
-        iMin = 1
-        iMax = sNx
-        jMin = 1
-        jMax = sNy
+#endif /* ALLOW_GMREDI */
 
 #ifdef ALLOW_PTRACERS
-        IF     ( usePTRACERS ) THEN
-C--     Vertical advection/diffusion (implicit) for passive tracers
-           CALL PTRACERS_IMPLICIT(
-     U                             kappaRk,
-     I                             wFld, recip_hFacNew,
-     I                             bi, bj, myTime, myIter, myThid )
+C--     Calculate passive tracer tendencies
+C       and step forward, storing result in gPtr
+C       Also apply open boundary conditions for each passive tracer
+        IF ( usePTRACERS ) THEN
+#ifdef ALLOW_DEBUG
+           IF (debugMode) CALL DEBUG_CALL('PTRACERS_INTEGRATE',myThid)
+#endif
+           CALL PTRACERS_INTEGRATE(
+     I          bi, bj, recip_hFacNew,
+     I          uFld, vFld, wFld,
+     U          kappaRk,
+     I          myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_PTRACERS */
 
