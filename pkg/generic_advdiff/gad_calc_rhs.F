@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.62 2012/07/04 20:21:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.63 2013/12/27 15:52:17 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -16,6 +16,7 @@ C !INTERFACE: ==========================================================
      I           advectionScheme, vertAdvecScheme,
      I           calcAdvection, implicitAdvection, applyAB_onTracer,
      I           trUseDiffKr4, trUseGMRedi, trUseKPP,
+     O           fZon, fMer,
      U           fVerT, gTracer,
      I           myTime, myIter, myThid )
 
@@ -117,8 +118,12 @@ C myThid           :: thread number
 
 C !OUTPUT PARAMETERS: ==================================================
 C gTracer          :: tendency array
+C fZon             :: zonal flux
+C fMer             :: meridional flux
 C fVerT            :: 2 1/2D arrays for vertical advective flux
       _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fZon  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fMer  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerT (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
 
 C !FUNCTIONS:       ====================================================
@@ -130,8 +135,6 @@ C !FUNCTIONS:       ====================================================
 C !LOCAL VARIABLES: ====================================================
 C i,j              :: loop indices
 C df4              :: used for storing del^2 T for bi-harmonic term
-C fZon             :: zonal flux
-C fMer             :: meridional flux
 C af               :: advective flux
 C df               :: diffusive flux
 C localT           :: local copy of tracer field
@@ -140,8 +143,6 @@ C locABT           :: local copy of (AB-extrapolated) tracer field
       _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL df4   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL fZon  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL fMer  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL af    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL localT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -200,17 +201,6 @@ C--   Make local copy of tracer array
          ENDDO
         ENDDO
       ENDIF
-
-C--   Unless we have already calculated the advection terms we initialize
-C     the tendency to zero.
-C     <== now done earlier at the beginning of thermodynamics.
-c     IF (calcAdvection) THEN
-c      DO j=1-OLy,sNy+OLy
-c       DO i=1-OLx,sNx+OLx
-c        gTracer(i,j,k,bi,bj)=0. _d 0
-c       ENDDO
-c      ENDDO
-c     ENDIF
 
 C--   Pre-calculate del^2 T if bi-harmonic coefficient is non-zero
       IF (diffK4 .NE. 0.) THEN
