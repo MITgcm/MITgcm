@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.51 2013/12/06 01:56:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.52 2013/12/27 15:51:26 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: PTRACERS_INTEGRATE
 
 C !INTERFACE: ==========================================================
       SUBROUTINE PTRACERS_INTEGRATE(
-     I                    bi, bj,
+     I                    bi, bj, recip_hFac,
      I                    uFld, vFld, wFld,
      U                    KappaRk,
      I                    myTime, myIter, myThid )
@@ -23,6 +23,7 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #ifdef ALLOW_LONGSTEP
 #include "LONGSTEP_PARAMS.h"
 #endif
@@ -37,17 +38,19 @@ C !USES: ===============================================================
 #endif
 
 C !INPUT PARAMETERS: ===================================================
-C  bi, bj               :: tile indices
-C  uFld, vFld, wFld     :: Local copy of velocity field (3 components)
-C  KappaRk              :: vertical diffusion used for one passive tracer
-C  myTime               :: model time
-C  myIter               :: time-step number
-C  myThid               :: thread number
+C  bi, bj           :: tile indices
+C  recip_hFac       :: reciprocal of cell open-depth factor (@ next iter)
+C  uFld, vFld, wFld :: Local copy of velocity field (3 components)
+C  KappaRk          :: vertical diffusion used for one passive tracer
+C  myTime           :: model time
+C  myIter           :: time-step number
+C  myThid           :: thread number
       INTEGER bi, bj
-      _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL vFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL wFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL KappaRk (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RS recip_hFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL uFld      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL vFld      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL wFld      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL KappaRk   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -58,20 +61,23 @@ C  none
 #ifdef ALLOW_PTRACERS
 
 C !LOCAL VARIABLES: ====================================================
-C  iTracer              :: tracer index
-C  iMin,iMax,jMin,jMax  :: loop ranges
-C  k                    :: vertical level number
-C  kUp,kDown            :: toggle indices for even/odd level fluxes
-C  kM1                  :: =min(1,k-1)
-C  GAD_TR               :: passive tracer id (GAD_TR1+iTracer-1)
-C  xA                   :: face area at U points in level k
-C  yA                   :: face area at V points in level k
-C  maskUp               :: mask for vertical transport
-C  uTrans               :: zonal transport in level k
-C  vTrans               :: meridional transport in level k
-C  rTrans               :: vertical volume transport at interface k
-C  rTransKp             :: vertical volume transport at interface k+1
-C  fVerT                :: passive tracer vertical flux
+C  iTracer          :: tracer index
+C  iMin, iMax       :: 1rst index loop range
+C  jMin, jMax       :: 2nd  index loop range
+C  k                :: vertical level number
+C  kUp,kDown        :: toggle indices for even/odd level fluxes
+C  kM1              :: =min(1,k-1)
+C  GAD_TR           :: passive tracer id (GAD_TR1+iTracer-1)
+C  xA               :: face area at U points in level k
+C  yA               :: face area at V points in level k
+C  maskUp           :: mask for vertical transport
+C  uTrans           :: zonal transport in level k
+C  vTrans           :: meridional transport in level k
+C  rTrans           :: vertical volume transport at interface k
+C  rTransKp         :: vertical volume transport at interface k+1
+C  fZon             :: passive tracer zonal flux
+C  fMer             :: passive tracer meridional flux
+C  fVer             :: passive tracer vertical flux
       INTEGER iTracer
       INTEGER iMin,iMax,jMin,jMax
       INTEGER i, j, k
@@ -84,7 +90,9 @@ C  fVerT                :: passive tracer vertical flux
       _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTransKp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL fZon    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fMer    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fVer    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL gTr_AB  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       LOGICAL calcAdvection
       INTEGER iterNb
@@ -99,12 +107,6 @@ C-    Functions:
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-C-    Loop ranges for daughter routines
-      iMin = 1-OLx+2
-      iMax = sNx+OLx-1
-      jMin = 1-OLy+2
-      jMax = sNy+OLy-1
 
 C-    Compute iter at beginning of ptracer time step
 #ifdef ALLOW_LONGSTEP
@@ -129,6 +131,12 @@ C-    Initialise tracer tendency to zero
        IF ( PTRACERS_StepFwd(iTracer) ) THEN
         GAD_TR = GAD_TR1 + iTracer - 1
 
+C-    Loop ranges for daughter routines
+        iMin = 1-OLx+2
+        iMax = sNx+OLx-1
+        jMin = 1-OLy+2
+        jMax = sNy+OLy-1
+
 #ifdef ALLOW_AUTODIFF_TAMC
           act0 = iTracer - 1
           max0 = PTRACERS_num
@@ -148,8 +156,8 @@ C-    Initialise tracer tendency to zero
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-           fVerT(i,j,1) = 0. _d 0
-           fVerT(i,j,2) = 0. _d 0
+           fVer(i,j,1) = 0. _d 0
+           fVer(i,j,2) = 0. _d 0
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF
@@ -162,14 +170,12 @@ C-    Initialise tracer tendency to zero
         ENDDO
 #endif /* ALLOW_AUTODIFF */
 
-        IF ( .NOT.implicitDiffusion ) THEN
-          CALL CALC_3D_DIFFUSIVITY(
+        CALL CALC_3D_DIFFUSIVITY(
      I         bi, bj, iMin,iMax,jMin,jMax,
      I         GAD_TR,
      I         PTRACERS_useGMRedi(iTracer), PTRACERS_useKPP(iTracer),
      O         kappaRk,
      I         myThid)
-        ENDIF
 
 #ifndef DISABLE_MULTIDIM_ADVECTION
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -225,7 +231,7 @@ C-    Start vertical index (k) loop (Nr:1)
           kDown= 1+MOD(k,2)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE fVerT(:,:,:) = comlev1_bibj_k_ptracers,
+CADJ STORE fVer(:,:,:) = comlev1_bibj_k_ptracers,
 CADJ &     key = kkey, byte = isbyte, kind = isbyte
 CADJ STORE gPtr(:,:,k,bi,bj,iTracer) = comlev1_bibj_k_ptracers,
 CADJ &     key = kkey, byte = isbyte, kind = isbyte
@@ -258,7 +264,8 @@ C      (advection, [explicit] diffusion, parameterizations,...)
      I             .FALSE., .FALSE.,
      I             PTRACERS_useGMRedi(iTracer),
      I             PTRACERS_useKPP(iTracer),
-     U             fVerT, gPtr(1-OLx,1-OLy,1,1,1,iTracer),
+     O             fZon, fMer,
+     U             fVer, gPtr(1-OLx,1-OLy,1,1,1,iTracer),
      I             myTime, myIter, myThid )
 
 C-    External forcing term(s)
@@ -324,6 +331,80 @@ C-    Integrate forward in time, storing in gPtr:  G=T+dt*G
 
 C-    end of vertical index (k) loop (Nr:1)
         ENDDO
+
+#ifdef ALLOW_DOWN_SLOPE
+        IF ( PTRACERS_useDWNSLP(iTracer) ) THEN
+          IF ( usingPCoords ) THEN
+            CALL DWNSLP_APPLY(
+     I                  GAD_TR, bi, bj, kSurfC,
+     I                  recip_drF, recip_hFacC, recip_rA,
+     I                  PTRACERS_dTLev,
+     I                  pTracer(1-OLx,1-OLy,1,1,1,iTracer),
+     O                  gPtr(1-OLx,1-OLy,1,1,1,iTracer),
+     I                  myTime, myIter, myThid )
+          ELSE
+            CALL DWNSLP_APPLY(
+     I                  GAD_TR, bi, bj, kLowC,
+     I                  recip_drF, recip_hFacC, recip_rA,
+     I                  PTRACERS_dTLev,
+     I                  pTracer(1-OLx,1-OLy,1,1,1,iTracer),
+     O                  gPtr(1-OLx,1-OLy,1,1,1,iTracer),
+     I                  myTime, myIter, myThid )
+          ENDIF
+        ENDIF
+#endif /* ALLOW_DOWN_SLOPE */
+
+C       All explicit advection/diffusion/sources should now be
+C       done. The updated tracer field is in gPtr.
+#ifdef ALLOW_MATRIX
+C       Accumalate explicit tendency and also reset gPtr to initial
+C       tracer field for implicit matrix calculation
+        IF ( useMATRIX ) CALL MATRIX_STORE_TENDENCY_EXP(
+     I                               iTracer, bi, bj,
+     I                               myTime, myIter, myThid )
+#endif /* ALLOW_MATRIX */
+
+C--     Vertical advection & diffusion (implicit) for passive tracers
+        iMin = 0
+        iMax = sNx+1
+        jMin = 0
+        jMax = sNy+1
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gPtr(:,:,:,bi,bj,iTracer) = comlev1_bibj_ptracers,
+CADJ &     key=iptrkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef INCLUDE_IMPLVERTADV_CODE
+        IF ( PTRACERS_ImplVertAdv(iTracer) ) THEN
+          CALL GAD_IMPLICIT_R(
+     I         PTRACERS_ImplVertAdv(iTracer),
+     I         PTRACERS_advScheme(iTracer), GAD_TR,
+     I         PTRACERS_dTLev, kappaRk, recip_hFac, wFld,
+     I         pTracer(1-OLx,1-OLy,1,1,1,iTracer),
+     U         gPtr(1-OLx,1-OLy,1,1,1,iTracer),
+     I         bi, bj, myTime, myIter, myThid )
+
+        ELSEIF ( implicitDiffusion ) THEN
+#else /* INCLUDE_IMPLVERTADV_CODE */
+        IF ( implicitDiffusion ) THEN
+#endif /* INCLUDE_IMPLVERTADV_CODE */
+          CALL IMPLDIFF(
+     I         bi, bj, iMin, iMax, jMin, jMax,
+     I         GAD_TR, kappaRk, recip_hFac,
+     U         gPtr(1-OLx,1-OLy,1,1,1,iTracer),
+     I         myThid )
+        ENDIF
+
+#ifdef ALLOW_OBCS
+C--     Apply open boundary conditions for each passive tracer
+        IF ( useOBCS ) THEN
+          CALL OBCS_APPLY_PTRACER(
+     I         bi, bj, 0, iTracer,
+     U         gPtr(1-OLx,1-OLy,1,bi,bj,iTracer),
+     I         myThid )
+        ENDIF
+#endif /* ALLOW_OBCS */
 
 C--   end of tracer loop
        ENDIF
