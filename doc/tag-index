@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1951 2013/12/24 14:01:04 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1952 2013/12/27 21:16:42 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src & pkg/ptracers:
+  - call directly GAD_IMPLICIT_R & IMPLDIFF + DWNSLP_APPLY from temp_integrate.F,
+    salt_integrate.F and ptracers_integrate.F (instead of from thermodynamics.F)
+    and remove ptracers_dwnslp_apply.F & ptracers_implicit.F
+  - call MATRIX_STORE_TENDENCY_EXP for each tracer (in ptracers_integrate.F)
+  - add fZon & fMer as output argument of S/R GAD_CALC_RHS.
+  - update TAF AD-output of experiments global_ocean.90x40x15 (13 for AD-grad).
 o useSingleCpuInput separates single-CPU input from single-CPU output;
     for now only implemented for in exf_interp_read.F
 o verification/advect_xy:
