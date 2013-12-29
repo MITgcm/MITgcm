@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.73 2012/08/22 22:55:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.74 2013/12/29 17:43:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -201,7 +201,7 @@ C     and modify hFac(C,W,S) accordingly :
       IF ( select_rStar.NE.0 )
      &  CALL CALC_R_STAR(etaH, startTime, -1 , myThid )
 # endif /* DISABLE_RSTAR_CODE */
-      IF (nonlinFreeSurf.GT.0) THEN
+      IF ( nonlinFreeSurf.GT.0 ) THEN
        IF ( select_rStar.GT.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
         CALL UPDATE_R_STAR( .TRUE., startTime, nIter0, myThid )
@@ -216,7 +216,7 @@ C     and modify hFac(C,W,S) accordingly :
        ENDIF
       ENDIF
 C-    update also CG2D matrix (and preconditioner)
-      IF ( nonlinFreeSurf.GT.2) THEN
+      IF ( nonlinFreeSurf.GT.2 ) THEN
         CALL UPDATE_CG2D( startTime, nIter0, myThid )
       ENDIF
 #endif /* NONLIN_FRSURF */
@@ -234,7 +234,7 @@ C--   Integrate continuity vertically for vertical velocity
 C--   r* : compute the future level thickness according to etaH(n+1)
           CALL CALC_R_STAR(etaH, startTime, nIter0, myThid )
 #endif
-      ELSEIF ( nonlinFreeSurf.GT.0) THEN
+      ELSEIF ( nonlinFreeSurf.GT.0 .AND. selectSigmaCoord.EQ.0 ) THEN
 C--   compute the future surface level thickness according to etaH(n+1)
           CALL CALC_SURF_DR(etaH, startTime, nIter0, myThid )
       ENDIF
