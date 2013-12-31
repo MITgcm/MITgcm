@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/RBCS_OPTIONS.h,v 1.4 2011/12/24 01:09:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/RBCS_OPTIONS.h,v 1.5 2013/12/31 22:24:28 jmc Exp $
 C $Name:  $
 
 C CPP options file for pkg RBCS
@@ -14,10 +14,6 @@ C Place CPP define/undef flag here
 
 C o disable relaxation conditions on momemtum
 #undef DISABLE_RBCS_MOM
-
-C use RBCS only in early spin-up phase, reducing
-C the relaxation term strength to 0 over 3 years
-#undef ALLOW_RBCS_SPIN
 
 #endif /* ALLOW_RBCS */
 #endif /* RBCS_OPTIONS_H */
