@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_fixed.F,v 1.7 2011/06/07 22:25:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_fixed.F,v 1.8 2013/12/31 22:28:39 jmc Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -37,6 +37,7 @@ C     msgBuf      :: Informational/error message buffer
 #ifndef DISABLE_RBCS_MOM
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
+      CHARACTER*(12) filName
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -98,12 +99,10 @@ C--   Apply mask:
           ENDDO
          ENDDO
          IF ( debugLevel.GE.debLevC ) THEN
-           _BARRIER
-           _BEGIN_MASTER( myThid )
-           CALL PLOT_FIELD_XYRS( RBC_mask(1-Olx,1-Oly,1,1,1,irbc),
-     &                          'Boundary Relaxing' ,1, myThid )
-           _END_MASTER(myThid)
-        ENDIF
+           WRITE(filName,'(A,I3.3)') 'RBC_mask_',irbc
+           CALL WRITE_FLD_XYZ_RS( filName,' ',
+     &                RBC_mask(1-Olx,1-Oly,1,1,1,irbc), 0, myThid )
+         ENDIF
        ENDIF
       ENDDO
 
@@ -168,14 +167,9 @@ C--   Apply mask:
           ENDDO
          ENDDO
          IF ( debugLevel.GE.debLevC ) THEN
-           _BARRIER
-           _BEGIN_MASTER( myThid )
-           CALL PLOT_FIELD_XYRS( RBC_maskU,
-     &                          'Boundary Relaxing U' ,1, myThid )
-           CALL PLOT_FIELD_XYRS( RBC_maskV,
-     &                          'Boundary Relaxing V' ,1, myThid )
-           _END_MASTER(myThid)
-        ENDIF
+           CALL WRITE_FLD_XYZ_RS('RBC_maskU',' ',RBC_maskU,0,myThid )
+           CALL WRITE_FLD_XYZ_RS('RBC_maskV',' ',RBC_maskV,0,myThid )
+         ENDIF
       ENDIF
 #endif /* DISABLE_RBCS_MOM */
 
