@@ -8,7 +8,7 @@
 #   relaxSFile='rbcs_Tr1_fld.bin',
 #   useRBCtemp=.TRUE.,
 #   useRBCsalt=.TRUE.,
-#   rbcsIniter=100,
+#   rbcsForcingOffset=43200,
 #   rbcsForcingPeriod=2592000.,
 #   rbcsForcingCycle=31104000.,
  &
