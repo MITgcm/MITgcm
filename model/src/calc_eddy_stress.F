@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_eddy_stress.F,v 1.1 2013/09/15 14:28:31 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_eddy_stress.F,v 1.2 2014/01/01 23:25:59 m_bates Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -68,7 +68,7 @@ C     Calculate the eddy stress from the eddy induced streamfunction
            coriU = op5*(fcori(i-1,j,bi,bj)
      &                 +fCori(i  ,j,bi,bj))
 
-           tauxEddy(i,j,k,bi,bj) = -rhoConst*coriU*psiy
+           tauxEddy(i,j,k,bi,bj) =  rhoConst*coriU*psiy
           ENDDO
          ENDDO
 
