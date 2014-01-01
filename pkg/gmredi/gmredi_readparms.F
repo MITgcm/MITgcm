@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.31 2013/10/21 18:46:05 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.32 2014/01/01 23:20:48 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -66,11 +66,12 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          subMeso_LfMin, subMeso_Lmax, GM_K3D_b1,
      &          GM_K3D_gamma, GM_useK3D, GM_K3D_vecFreq,
      &          GM_K3D_EadyMinDepth, GM_K3D_EadyMaxDepth,
-     &          GM_K3D_Lambda, GM_K3D_smallK,
+     &          GM_K3D_Lambda, GM_K3D_smallK, GM_K3D_surfK,
      &          GM_K3D_maxC, GM_K3D_minCori, GM_K3D_minN2,
      &          GM_K3D_surfMinDepth, GM_maxK3D, GM_K3D_Rmax,
      &          GM_K3D_constK, GM_K3D_likeGM, GM_K3D_smooth,
-     &          GM_K3D_beta_eq_0, GM_K3D_Rmin, GM_K3D_ThickSheet
+     &          GM_K3D_beta_eq_0, GM_K3D_Rmin, GM_K3D_ThickSheet,
+     &          GM_K3D_constRedi
 
       _BEGIN_MASTER(myThid)
 
@@ -127,6 +128,8 @@ C--   Default values for K3D
       GM_K3D_likeGM    = .FALSE.
       GM_K3D_ThickSheet= .FALSE.
       GM_K3D_smooth    = .TRUE.
+      GM_K3D_surfK     = .FALSE.
+      GM_K3D_constRedi = .FALSE.
       GM_K3D_constK    = 1000.0
       GM_K3D_gamma     = 1.0
       GM_K3D_b1        = 4.0

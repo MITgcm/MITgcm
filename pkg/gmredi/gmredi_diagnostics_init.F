@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.17 2013/10/21 18:46:05 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.18 2014/01/01 23:20:48 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -255,8 +255,24 @@ c     IF ( useDiagnotics ) THEN
 #endif
 
 #ifdef GM_K3D
-        diagName  = 'GM_K3D'
+        diagName  = 'GM_K3D  '
         diagTitle = '3D diffusivity'
+        diagUnits = 'm**2/s          '
+        diagCode  = 'SM P    MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_KPV  '
+        diagTitle = '3D eddy transport diffusivity'
+        diagUnits = 'm**2/s          '
+        diagCode  = 'SM P    MR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_K3D_T'
+        diagTitle = '3D Redi diffusivity'
         diagUnits = 'm**2/s          '
         diagCode  = 'SM P    MR      '
         diagMate  = diagNum

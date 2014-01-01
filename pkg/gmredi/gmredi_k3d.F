@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.13 2013/10/21 18:46:05 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.14 2014/01/01 23:20:48 m_bates Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 #include "GMREDI_OPTIONS.h"
@@ -584,7 +584,8 @@ C          Calculate the meridional slope at the southern cell face (V grid)
        ENDDO
       ENDDO
 
-C     Calculate the thickness flux
+C     Calculate the thickness flux and diffusivity.  These may be altered later 
+C     depending on namelist options.
 C     Enforce a zero slope bottom boundary condition for the bottom most cells (k=Nr)
       k=Nr
       DO j=1-Oly,sNy+Oly
@@ -595,77 +596,100 @@ C          Zonal thickness flux at the western cell face
 C          Meridional thickness flux at the southern cell face
            tfluxY(i,j,k) = -fCoriV(i,j)*SlopeY(i,j,k)
      &                     *recip_drF(k)*recip_hFacS(i,j,k,bi,bj)
+
+C          Use the interior diffusivity. Note: if we are using a 
+C          constant diffusivity KPV is overwritten later
+           KPV(i,j,k) = K3D(i,j,k,bi,bj)
+
        ENDDO
       ENDDO
 
-C     Calculate the thickness flux for other cells (k<Nr)
-C     SlopeX and SlopeY are zero in dry cells, so, the bottom boundary
-C     condition that the slope is zero is taken care of.
-C     We still need to give special treatment for the surface layer however.
+C     Calculate the thickness flux and diffusivity and for other cells (k<Nr)
       DO k=Nr-1,1,-1
-       DO j=1-Oly,sNy+Oly-1
-        DO i=1-Olx,sNx+Olx-1
-         IF(k.LE.surfk(i,j) .AND. GM_K3D_ThickSheet) THEN
-C          We are in the surface layer, so set the thickness flux
-C          based on the average slope over the surface layer
-C          If we are on the edge of a "cliff" the surface layer at the
-C          centre of the grid point could be deeper than the U or V point.  
-C          So, we ensure that we always take a sensible slope.
-           IF(kLow_U(i,j).LT.surfk(i,j)) THEN
-             kk=kLow_U(i,j)
-             hsurf = -rLowW(i,j,bi,bj)
-           ELSE
-             kk=surfk(i,j)
-             hsurf = -surfkz(i,j)
-           ENDIF
-           IF(kk.GT.0) THEN
-             IF(kk.EQ.Nr) THEN
-               tfluxX(i,j,k) = -fCoriU(i,j)*maskW(i,j,k,bi,bj)
-     &              *SlopeX(i,j,kk)/hsurf
-             ELSE
-               tfluxX(i,j,k) = -fCoriU(i,j)*maskW(i,j,k,bi,bj)
-     &              *( SlopeX(i,j,kk)-SlopeX(i,j,kk+1) )/hsurf
-             ENDIF
-           ELSE
-             tfluxX(i,j,k) = zeroRL
-           ENDIF
-
-           IF(kLow_V(i,j).LT.surfk(i,j)) THEN
-             kk=kLow_V(i,j)
-             hsurf = -rLowS(i,j,bi,bj)
-           ELSE
-             kk=surfk(i,j)
-             hsurf = -surfkz(i,j)
-           ENDIF
-           IF(kk.GT.0) THEN
-             IF(kk.EQ.Nr) THEN
-               tfluxY(i,j,k) = -fCoriV(i,j)*maskS(i,j,k,bi,bj)
-     &              *SlopeY(i,j,kk)/hsurf
-             ELSE
-               tfluxY(i,j,k) = -fCoriV(i,j)*maskS(i,j,k,bi,bj)
-     &              *( SlopeY(i,j,kk)-SlopeY(i,j,kk+1) )/hsurf
-             ENDIF
-           ELSE
-             tfluxY(i,j,k) = zeroRL
-           ENDIF
-
-         ELSE
-C          We are not in the surface layer, so calculate the thickness
-C          flux based on the local isopyncal slope
-
-C          Zonal thickness flux at the western cell face
-           tfluxX(i,j,k)=-fCoriU(i,j)*(SlopeX(i,j,k)-SlopeX(i,j,k+1))
-     &                    *recip_drF(k)*recip_hFacW(i,j,k,bi,bj)
-     &                    *maskW(i,j,k,bi,bj)
-
-C          Meridional thickness flux at the southern cell face
-           tfluxY(i,j,k)=-fCoriV(i,j)*(SlopeY(i,j,k)-SlopeY(i,j,k+1))
-     &                    *recip_drF(k)*recip_hFacS(i,j,k,bi,bj)
-     &                    *maskS(i,j,k,bi,bj)
-         ENDIF
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+C        Zonal thickness flux at the western cell face
+         tfluxX(i,j,k)=-fCoriU(i,j)*(SlopeX(i,j,k)-SlopeX(i,j,k+1))
+     &        *recip_drF(k)*recip_hFacW(i,j,k,bi,bj)
+     &        *maskW(i,j,k,bi,bj)
+         
+C        Meridional thickness flux at the southern cell face
+         tfluxY(i,j,k)=-fCoriV(i,j)*(SlopeY(i,j,k)-SlopeY(i,j,k+1))
+     &        *recip_drF(k)*recip_hFacS(i,j,k,bi,bj)
+     &        *maskS(i,j,k,bi,bj)
+         
+C        Use the interior diffusivity. Note: if we are using a 
+C        constant diffusivity KPV is overwritten later
+         KPV(i,j,k) = K3D(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ENDDO
+
+
+C     Special treatment for the surface layer (if necessary), which overwrites 
+C     values in the previous loops.
+      IF (GM_K3D_ThickSheet .OR. GM_K3D_surfK) THEN
+        DO k=Nr-1,1,-1
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           IF(k.LE.surfk(i,j)) THEN 
+C            We are in the surface layer.  Change the thickness flux 
+C            and diffusivity as necessary.
+
+             IF (GM_K3D_ThickSheet) THEN
+C              We are in the surface layer, so set the thickness flux
+C              based on the average slope over the surface layer
+C              If we are on the edge of a "cliff" the surface layer at the
+C              centre of the grid point could be deeper than the U or V point.  
+C              So, we ensure that we always take a sensible slope.
+               IF(kLow_U(i,j).LT.surfk(i,j)) THEN
+                 kk=kLow_U(i,j)
+                 hsurf = -rLowW(i,j,bi,bj)
+               ELSE
+                 kk=surfk(i,j)
+                 hsurf = -surfkz(i,j)
+               ENDIF
+               IF(kk.GT.0) THEN
+                 IF(kk.EQ.Nr) THEN
+                   tfluxX(i,j,k) = -fCoriU(i,j)*maskW(i,j,k,bi,bj)
+     &                  *SlopeX(i,j,kk)/hsurf
+                 ELSE
+                   tfluxX(i,j,k) = -fCoriU(i,j)*maskW(i,j,k,bi,bj)
+     &                  *( SlopeX(i,j,kk)-SlopeX(i,j,kk+1) )/hsurf
+                 ENDIF
+               ELSE
+                 tfluxX(i,j,k) = zeroRL
+               ENDIF
+               
+               IF(kLow_V(i,j).LT.surfk(i,j)) THEN
+                 kk=kLow_V(i,j)
+                 hsurf = -rLowS(i,j,bi,bj)
+               ELSE
+                 kk=surfk(i,j)
+                 hsurf = -surfkz(i,j)
+               ENDIF
+               IF(kk.GT.0) THEN
+                 IF(kk.EQ.Nr) THEN
+                   tfluxY(i,j,k) = -fCoriV(i,j)*maskS(i,j,k,bi,bj)
+     &                  *SlopeY(i,j,kk)/hsurf
+                 ELSE
+                   tfluxY(i,j,k) = -fCoriV(i,j)*maskS(i,j,k,bi,bj)
+     &                  *( SlopeY(i,j,kk)-SlopeY(i,j,kk+1) )/hsurf
+                 ENDIF
+               ELSE
+                 tfluxY(i,j,k) = zeroRL
+               ENDIF
+             ENDIF
+
+             IF (GM_K3D_surfK) THEN
+C              Use a constant K in the surface layer.
+               KPV(i,j,k) = GM_K3D_constK
+             ENDIF
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
 
 C     Calculate gradq
       IF (GM_K3D_likeGM .OR. GM_K3D_beta_eq_0) THEN
@@ -719,24 +743,15 @@ C     It does not affect the end result since it is in the overlap region.
        ENDDO
       ENDDO
 
-C     If GM_K3D_likeGM=.TRUE., K3D becomes a diagnostic field only
-C     and the diffusivity is set to a constant GM_K3D_constK.
+C     If GM_K3D_likeGM=.TRUE., the diffusivity for the eddy transport is
+C     set to a constant equal to GM_K3D_constK.
 C     If the diffusivity is constant the method here is the same as GM.
-C     For the Redi diffusivity K3D is set to GM_K3D_constK at the end
-C     of this routine (after the diagnostics are filled).
+C     If GM_K3D_constRedi=.TRUE. K3D will be set equal to GM_K3D_constK later.
       IF(GM_K3D_likeGM) THEN
         DO k=1,Nr
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
            KPV(i,j,k) = GM_K3D_constK
-          ENDDO
-         ENDDO
-        ENDDO
-      ELSE
-        DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           KPV(i,j,k) = K3D(i,j,k,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -931,6 +946,7 @@ C     ======================================
 C     Diagnostics
       IF ( useDiagnostics ) THEN
         CALL DIAGNOSTICS_FILL(K3D,    'GM_K3D  ',0,Nr,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(KPV,    'GM_KPV  ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(urms,   'GM_URMS ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(Rdef,   'GM_RDEF ',0, 1,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(Rurms,  'GM_RURMS',0, 1,0,1,1,myThid)
@@ -966,8 +982,8 @@ C     Diagnostics
 #endif
 
 C     For the Redi diffusivity, we set K3D to a constant if 
-C     GM_K3D_likeGM=.TRUE. (see earlier comments)
-      IF (GM_K3D_likeGM) THEN
+C     GM_K3D_constRedi=.TRUE.
+      IF (GM_K3D_constRedi) THEN
         DO k=1,Nr
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
@@ -976,6 +992,11 @@ C     GM_K3D_likeGM=.TRUE. (see earlier comments)
          ENDDO
         ENDDO
       ENDIF
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) 
+     &     CALL DIAGNOSTICS_FILL(K3D, 'GM_K3D_T',0,Nr,0,1,1,myThid)
+#endif
 
 #endif /* GM_K3D */
       RETURN
