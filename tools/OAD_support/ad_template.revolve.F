@@ -23,7 +23,9 @@ c we may need these for the checkpointing
       use EXCH_mod
       use FC_NAMEMANGLE_mod
       use FFIELDS_mod
+#ifdef ALLOW_GENERIC_ADVDIFF
       use GAD_mod
+#endif
       use GLOBAL_MAX_mod
       use GLOBAL_SUM_mod
 #ifdef ALLOW_GMREDI
@@ -31,7 +33,9 @@ c we may need these for the checkpointing
       use GMREDI_TAVE_mod
 #endif
       use GRID_mod
+#ifdef ALLOW_MOM_COMMON
       use MOM_VISC_mod
+#endif
       use MPI_INFO_mod
 #ifdef ALLOW_SHAP_FILT
       use SHAP_FILT_mod
