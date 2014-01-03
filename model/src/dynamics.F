@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.167 2013/11/05 13:34:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.168 2014/01/03 16:19:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -346,19 +346,17 @@ C     just ensure that all memory references are to valid floating
 C     point numbers. This prevents spurious hardware signals due to
 C     uninitialised but inert locations.
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-cph(
 c--   need some re-initialisation here to break dependencies
-cph)
            gU(i,j,k,bi,bj) = 0. _d 0
            gV(i,j,k,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           fVerU  (i,j,1) = 0. _d 0
@@ -375,18 +373,16 @@ cph)
           phiSurfY(i,j)  = 0. _d 0
           guDissip(i,j)  = 0. _d 0
           gvDissip(i,j)  = 0. _d 0
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
           phiHydLow(i,j,bi,bj) = 0. _d 0
 # if (defined NONLIN_FRSURF) && (defined ALLOW_MOM_FLUXFORM)
 #  ifndef DISABLE_RSTAR_CODE
-#   ifndef ALLOW_AUTODIFF_OPENAD
           dWtransC(i,j,bi,bj) = 0. _d 0
           dWtransU(i,j,bi,bj) = 0. _d 0
           dWtransV(i,j,bi,bj) = 0. _d 0
-#   endif
 #  endif
 # endif
-#endif
+#endif /* ALLOW_AUTODIFF */
          ENDDO
         ENDDO
 
@@ -416,9 +412,9 @@ CADJ &                 = comlev1_bibj, key=idynkey, byte=isbyte
 #endif /* ALLOW_KPP */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#if (defined INCLUDE_CALC_DIFFUSIVITY_CALL) && !(defined ALLOW_AUTODIFF)
+#ifndef ALLOW_AUTODIFF
         IF ( .NOT.momViscosity ) THEN
-#endif /* INCLUDE_CALC_DIFFUSIVITY_CALL and not ALLOW_AUTODIFF */
+#endif
           DO k=1,Nr
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
@@ -427,13 +423,12 @@ CADJ &                 = comlev1_bibj, key=idynkey, byte=isbyte
             ENDDO
            ENDDO
           ENDDO
+#ifndef ALLOW_AUTODIFF
+        ENDIF
+#endif
 #ifdef INCLUDE_CALC_DIFFUSIVITY_CALL
 C--     Calculate the total vertical viscosity
-#ifdef ALLOW_AUTODIFF
         IF ( momViscosity ) THEN
-#else
-        ELSE
-#endif
           CALL CALC_VISCOSITY(
      I            bi,bj, iMin,iMax,jMin,jMax,
      O            KappaRU, KappaRV,
@@ -485,10 +480,7 @@ C--       kDown  Cycles through 2,1 to point to current layer
 
 #ifdef ALLOW_AUTODIFF_TAMC
          kkey = (idynkey-1)*Nr + k
-c
 CADJ STORE totPhiHyd (:,:,k,bi,bj)
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE phiHydLow (:,:,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE theta (:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -503,14 +495,6 @@ cph-test
 CADJ STORE  phiHydC (:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE  phiHydF (:,:)
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE  guDissip (:,:)
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE  gvDissip (:,:)
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE  fVerU (:,:,:)
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE  fVerV (:,:,:)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE gU(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -541,13 +525,7 @@ CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE vVelD(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #  endif
-# endif
-# ifdef ALLOW_DEPTH_CONTROL
-CADJ STORE  fVerU (:,:,:)
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE  fVerV (:,:,:)
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-# endif
+# endif /* NONLIN_FRSURF */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--      Integrate hydrostatic balance for phiHyd with BC of phiHyd(z=0)=0
@@ -579,9 +557,17 @@ C--      Integrate hydrostatic balance for phiHyd with BC of phiHyd(z=0)=0
 C--      Calculate accelerations in the momentum equations (gU, gV, ...)
 C        and step forward storing the result in gU, gV, etc...
          IF ( momStepping ) THEN
+#ifdef ALLOW_AUTODIFF
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              guDissip(i,j)  = 0. _d 0
+              gvDissip(i,j)  = 0. _d 0
+            ENDDO
+           ENDDO
+#endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifdef NONLIN_FRSURF
-#  if (defined ALLOW_MOM_FLUXFORM) && !(defined DISABLE_RSTAR_CODE)
+# if (defined NONLIN_FRSURF) && (defined ALLOW_MOM_FLUXFORM)
+#  ifndef DISABLE_RSTAR_CODE
 CADJ STORE dWtransC(:,:,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dWtransU(:,:,bi,bj)
@@ -589,11 +575,11 @@ CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dWtransV(:,:,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #  endif
-CADJ STORE fVerU(:,:,:)
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE fVerV(:,:,:)
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-# endif /* NONLIN_FRSURF */
+# endif /* NONLIN_FRSURF and ALLOW_MOM_FLUXFORM */
+# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
+CADJ STORE fVerU(:,:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE fVerV(:,:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
            IF (.NOT. vectorInvariantMomentum) THEN
 #ifdef ALLOW_MOM_FLUXFORM
@@ -662,7 +648,6 @@ C--     Implicit Vertical advection & viscosity
         IF     ( implicitViscosity ) THEN
 #endif /* INCLUDE_IMPLVERTADV_CODE */
 #ifdef    ALLOW_AUTODIFF_TAMC
-CADJ STORE KappaRU(:,:,:) = comlev1_bibj , key=idynkey, byte=isbyte
 CADJ STORE gU(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
@@ -671,7 +656,6 @@ CADJ STORE gU(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
      U         gU,
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
-CADJ STORE KappaRV(:,:,:) = comlev1_bibj , key=idynkey, byte=isbyte
 CADJ STORE gV(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(

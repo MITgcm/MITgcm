@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.219 2013/12/27 15:47:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.220 2014/01/03 16:19:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -470,7 +470,6 @@ CADJ STORE hFacC, hFacS, hFacW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
-
 CADJ STORE surfaceForcingU, surfaceForcingV =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 # endif
@@ -762,7 +761,7 @@ C--   Correct divergence in flow field and cycle time-stepping momentum
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_DEPTH_CONTROL
 CADJ STORE etaN, uVel,vVel
-CADJ &     = comlev1, key = ikey_dynamics
+CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 # endif /* ALLOW_DEPTH_CONTROL */
 #endif /* ALLOW_AUTODIFF_TAMC */
         CALL TIMER_START('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
@@ -773,16 +772,10 @@ CADJ &     = comlev1, key = ikey_dynamics
 #endif
 #endif /* ALLOW_MOM_STEPPING */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uVel, vVel = comlev1, key = ikey_dynamics
+CADJ STORE uVel, vVel = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
       IF ( calc_wVelocity ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifdef NONLIN_FRSURF
-CADJ STORE uVel, vVel    = comlev1, key = ikey_dynamics, kind = isbyte
-cphCADJ STORE dEtaHdt, etaN = comlev1, key = ikey_dynamics, kind = isbyte
-# endif
-#endif
 C--     Integrate continuity vertically for vertical velocity
 C       (+ update "etaN" & "etaH", exact volume conservation):
         CALL TIMER_START('INTEGR_CONTINUITY   [FORWARD_STEP]',myThid)
