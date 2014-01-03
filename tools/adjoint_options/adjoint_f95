@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_f95,v 1.17 2013/08/09 18:28:36 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_f95,v 1.18 2014/01/03 17:11:56 jmc Exp $
 #  $Name:  $
 
 #  This file contains the default F95 settings for the adjoint
@@ -21,6 +21,11 @@ SVD_TAMC_FLAGS="-f95 -reverse -forward -pure -i4 -r4 -l tamc_svd.log $SVD_TAMC_F
 AD_TAF_FLAGS="-f95 -reverse -i4 -r4 -intrinsic system,flush -l taf_ad.log $AD_TAF_FLAGS"
 FTL_TAF_FLAGS="-f95 -forward -i4 -r4 -intrinsic system,flush -l taf_ftl.log $FTL_TAF_FLAGS"
 SVD_TAF_FLAGS="-f95 -reverse -forward -pure -i4 -r4 -intrinsic system,flush -l taf_svd.log $SVD_TAF_FLAGS"
+
+#- switch to fastopt.net TAF server (instead of default fastopt.de):
+AD_TAF_FLAGS="-server fastopt.net $AD_TAF_FLAGS"
+FTL_TAF_FLAGS="-server fastopt.net $FTL_TAF_FLAGS"
+SVD_TAF_FLAGS="-server fastopt.net $SVD_TAF_FLAGS"
 
 #- in case we need to show some MPI code to TAF:
 #if test "x$MPI" != x ; then
