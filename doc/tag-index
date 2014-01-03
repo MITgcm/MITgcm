@@ -1,11 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1952 2013/12/27 21:16:42 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1953 2014/01/03 17:28:19 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/adjoint_options:
+  - switch to fastopt.net TAF server (instead of default fastopt.de) for
+    AD optfiles adjoint_diva & adjoint_f95 (similar to adjoint_default).
+o model/src:
+  - remove some unnecessary TAF storage directives in forward_step.F and
+    in dynamics.F (note: not always removed by TAF, e.g., double storage
+    of kappaRU,kappaRV in former version of dynamics.F).
 o model/src & pkg/ptracers:
-  - call directly GAD_IMPLICIT_R & IMPLDIFF + DWNSLP_APPLY from temp_integrate.F,
+  - call directly GAD_IMPLICIT_R & IMPLDIFF + DWNSLP_APPLY from temp_integrate.F
     salt_integrate.F and ptracers_integrate.F (instead of from thermodynamics.F)
     and remove ptracers_dwnslp_apply.F & ptracers_implicit.F
   - call MATRIX_STORE_TENDENCY_EXP for each tracer (in ptracers_integrate.F)
