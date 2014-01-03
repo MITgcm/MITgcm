@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/openad_dumpAdjoint.F,v 1.2 2013/12/19 20:07:49 utke Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/openad_dumpAdjoint.F,v 1.3 2014/01/03 21:31:29 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -34,7 +34,9 @@ c They provide the fields to be stored.
 # include "DYNVARS.h"
 # include "FFIELDS.h"
 # include "EOS.h"
-# include "GAD.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+#  include "GAD.h"
+# endif
 # ifdef ALLOW_CD_CODE
 #  include "CD_CODE_VARS.h"
 # endif
