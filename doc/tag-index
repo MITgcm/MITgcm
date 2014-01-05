@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1953 2014/01/03 17:28:19 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1954 2014/01/05 20:16:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint64s (2014/01/05)
 o tools/adjoint_options:
   - switch to fastopt.net TAF server (instead of default fastopt.de) for
     AD optfiles adjoint_diva & adjoint_f95 (similar to adjoint_default).
