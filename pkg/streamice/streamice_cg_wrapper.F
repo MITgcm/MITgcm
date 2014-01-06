@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_wrapper.F,v 1.2 2013/08/24 20:34:27 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_wrapper.F,v 1.3 2014/01/06 14:54:25 mlosch Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -73,8 +73,8 @@ C     DIRICHLET BOUNDARY VALUES ADDED TO RHS
      O    ubd_SI, 
      O    vbd_SI)
 
-      _EXCH_XY_RL (ubd_SI, myThid)
-      _EXCH_XY_RL (vbd_SI, myThid)
+      _EXCH_XY_RL(ubd_SI, myThid)
+      _EXCH_XY_RL(vbd_SI, myThid)
 
 !      CALL WRITE_FLD_XY_RL ( "ubd_SI", "",
 !     &   ubd_SI, 0, myThid )

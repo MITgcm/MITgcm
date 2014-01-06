@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.5 2013/09/17 17:47:27 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.6 2014/01/06 14:54:25 mlosch Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -341,7 +341,7 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
        ENDDO
       ENDDO
 
-      _EXCH_XY_RL (H_streamice,myThid)
+      _EXCH_XY_RL(H_streamice,myThid)
 
 
       WRITE(msgBuf,'(A)') 'END STREAMICE_ADVECT_THICKNESS'

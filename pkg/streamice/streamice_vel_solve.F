@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.4 2013/08/24 20:34:27 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.5 2014/01/06 14:54:25 mlosch Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -67,8 +67,8 @@ C     LOCAL VARIABLES
 
 !       CALL WRITE_FULLARRAY_RL ("taudy_SI",taudy_SI,1,0,0,1,0,myThid)
 
-      _EXCH_XY_RL ( taudx_SI , myThid )
-      _EXCH_XY_RL ( taudy_SI , myThid )
+      _EXCH_XY_RL( taudx_SI , myThid )
+      _EXCH_XY_RL( taudy_SI , myThid )
 
 !       CALL WRITE_FULLARRAY_RL ("taudy_SI_2",taudy_SI,1,0,0,1,0,myThid)
 
@@ -103,8 +103,8 @@ C     LOCAL VARIABLES
 !$TAF STORE visc_streamice_full = comlev1, key=ikey_dynamics
 #endif
 
-      _EXCH_XY_RL ( tau_beta_eff_streamice , myThid )
-      _EXCH_XY_RL ( visc_streamice , myThid )
+      _EXCH_XY_RL( tau_beta_eff_streamice , myThid )
+      _EXCH_XY_RL( visc_streamice , myThid )
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -311,8 +311,8 @@ C       but after convergence loop does nothing
 !$TAF STORE V_streamice = comlev1_stream_nl, key=ikey_nl
 #endif
 
-       _EXCH_XY_RL ( tau_beta_eff_streamice , myThid )
-       _EXCH_XY_RL ( visc_streamice , myThid )
+       _EXCH_XY_RL( tau_beta_eff_streamice , myThid )
+       _EXCH_XY_RL( visc_streamice , myThid )
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -470,8 +470,8 @@ C-------------------------------------------------------------------
      &                     SQUEEZE_RIGHT , 1)
       endif
 
-      _EXCH_XY_RL (U_streamice, myThid)
-      _EXCH_XY_RL (V_streamice, myThid)
+      _EXCH_XY_RL(U_streamice, myThid)
+      _EXCH_XY_RL(V_streamice, myThid)
 !      CALL WRITE_FLD_XY_RL("taubx","",streamice_taubx,0,myThid)
 !      CALL WRITE_FLD_XY_RL("tauby","",streamice_tauby,0,myThid)
 
