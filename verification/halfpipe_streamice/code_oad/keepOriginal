@@ -11,3 +11,11 @@ read_rec.F
 read_fld_xy_rs.F
 diagnostics_is_on.F
 master_cpu_io.F
+calc_oce_mxlayer.F
+find_alpha.F
+pressure_for_eos.F
+find_rhoteos.F_
+find_rhop0.F_
+find_rhonum.F
+find_rhoden.F
+find_bulkmod.F
