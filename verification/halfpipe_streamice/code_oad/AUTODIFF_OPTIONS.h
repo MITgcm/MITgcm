@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/Attic/AUTODIFF_OPTIONS.h,v 1.1 2013/12/17 19:08:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/Attic/AUTODIFF_OPTIONS.h,v 1.2 2014/01/09 11:10:49 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -48,9 +48,6 @@ c#undef AUTODIFF_4_LEVEL_CHECKPOINT
 
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
-
-C o Enable some temporary constructs for OpenAD
-#undef ALLOW_AUTODIFF_OPENAD
 
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */
