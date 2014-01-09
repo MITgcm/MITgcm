@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fake.F,v 1.2 2013/08/09 22:59:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fake.F,v 1.3 2014/01/09 19:36:27 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -38,8 +38,14 @@ C     EndOfInterface(global-font-lock-mode 1)
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 
-      INTEGER i, j, k, bi, bj
+      INTEGER i, j, bi, bj
       _RL fac, tempFrz
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+      WRITE(msgBuf,'(2A)') 'SEAICE_FAKE:',
+     &  ' forward code is not meant to be used (adj only)'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      STOP 'ABNORMAL END: S/R SEAICE_FAKE'
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -65,8 +71,8 @@ c relaxation to freezing point
             fac=MIN(1. _d 0, MAX(0. _d 0 , area(i,j,bi,bj)))
             tempFrz = SEAICE_tempFrz0 +
      &                SEAICE_dTempFrz_dS *salt(i,j,1,bi,bj)
-            theta(i,j,k,bi,bj)=theta(i,j,k,bi,bj) + fac *
-     &        ( tempFrz-theta(i,j,k,bi,bj) ) *
+            theta(i,j,1,bi,bj)=theta(i,j,1,bi,bj) + fac *
+     &        ( tempFrz-theta(i,j,1,bi,bj) ) *
      &        SEAICE_mcPheePiston/drF(1)*SEAICE_deltaTtherm
          ENDDO
         ENDDO
