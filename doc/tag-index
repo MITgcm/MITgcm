@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1955 2014/01/06 14:55:07 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1956 2014/01/09 19:47:55 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src/external_forcing_surf.F
+ - add storage directives for EmPmR and PmEpR to avoid recomputation of seaice_model 
+   in the adjoint that is problematic when seaice_model is turned off in the adjoint. 
+   The resolved issue dated back to july when EXTERNAL_FORCING_SURF call was moved.
+   Update global_ocean.cs32x15/results/output_adm.seaice_dynmix.txt accordingly.
+ 
 o pkg/exf/exf_check.F
  - fix a small bug again (originally found by Wentao Liu, now found again)
  - streamline error output
