@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1957 2014/01/14 22:37:15 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1958 2014/01/15 16:22:44 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl, pkg/grdchk, pkg/ecco:
+ - Changes to make GENARR more modular (i.e. invisible if not used)
 o model/src/temp_integrate.F and salt_integrate.F
  - re-include store directives that were removed on Dec 27th.
 o model/src/external_forcing_surf.F
