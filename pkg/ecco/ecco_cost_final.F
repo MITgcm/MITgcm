@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.62 2013/11/06 18:59:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.63 2014/01/15 16:21:20 heimbach Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -101,7 +101,7 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL f_usercost(NUSERCOST)
       _RL f_sshv4cost(NSSHV4COST)
       _RL f_transp, f_ies
-#ifdef ALLOW_CTRL
+#ifdef ALLOW_GENTIM2D_CONTROL
       _RL f_gentim2d(maxCtrlTim2D)
 #endif
 
@@ -132,7 +132,7 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL no_usercost(NUSERCOST)
       _RL no_sshv4cost(NSSHV4COST)
       _RL no_transp, no_ies
-#ifdef ALLOW_CTRL
+#ifdef ALLOW_GENTIM2D_CONTROL
       _RL no_gentim2d(maxCtrlTim2D)
 #endif
 
@@ -261,7 +261,7 @@ c     == end of interface ==
         f_sshv4cost(num_var)= 0. _d 0
        enddo
 #endif
-#ifdef ALLOW_CTRL
+#ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
         f_gentim2d(maxCtrlTim2D)= 0. _d 0
        enddo
@@ -358,7 +358,7 @@ c     == end of interface ==
         no_sshv4cost(num_var)= 0. _d 0
        enddo
 #endif
-#ifdef ALLOW_CTRL
+#ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D      
         no_gentim2d(maxCtrlTim2D)= 0. _d 0
        enddo
@@ -469,7 +469,7 @@ c--   Sum up all contributions.
      &            *objf_sshv4cost(num_var,bi,bj)
        enddo
 #endif
-#ifdef ALLOW_CTRL
+#ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D      
           tile_fc(bi,bj) = tile_fc(bi,bj)
      &            + mult_gentim2d(num_var)
@@ -582,7 +582,7 @@ c--   Sum up all contributions.
      &            +objf_sshv4cost(num_var,bi,bj)
        enddo
 #endif
-#ifdef ALLOW_CTRL
+#ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
           f_gentim2d(num_var) = f_gentim2d(num_var)
      &            +objf_gentim2d(bi,bj,num_var)
@@ -680,7 +680,7 @@ c--   Sum up all contributions.
      &            +num_sshv4cost(num_var,bi,bj)
        enddo
 #endif
-#ifdef ALLOW_CTRL
+#ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
           no_gentim2d(num_var) = no_gentim2d(num_var)
      &            +num_gentim2d(bi,bj,num_var)
@@ -804,7 +804,7 @@ c--   Do global summation for each part of the cost function
         _GLOBAL_SUM_RL(f_sshv4cost(num_var), myThid )
        enddo
 #endif
-#ifdef ALLOW_CTRL
+#ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
         _GLOBAL_SUM_RL(f_gentim2d(num_var), myThid )
        enddo
@@ -897,7 +897,7 @@ c--   Do global summation for each part of the cost function
         _GLOBAL_SUM_RL(no_sshv4cost(num_var), myThid )
        enddo
 #endif
-#ifdef ALLOW_CTRL
+#ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
         _GLOBAL_SUM_RL(no_gentim2d(num_var), myThid )
        enddo
@@ -1097,7 +1097,7 @@ c--   Do global summation for each part of the cost function
         endif
        enddo
 #endif
-#ifdef ALLOW_CTRL
+#ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
         if (no_gentim2d(num_var).GT.0) then
          write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
@@ -1375,7 +1375,6 @@ C     only master thread of master CPU open and write to file
        enddo
 #endif
 
-#ifdef ALLOW_CTRL
 #ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
         if (no_gentim2d(num_var).GT.0) then
@@ -1388,7 +1387,6 @@ C     only master thread of master CPU open and write to file
      &    no_gentim2d(num_var)
          endif
        enddo
-#endif
 #endif
 
         close(ifc)

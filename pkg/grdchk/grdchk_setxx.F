@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.35 2013/01/26 14:46:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.36 2014/01/15 16:21:20 heimbach Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -679,9 +679,12 @@ ce      --> this index does not exist yet.
      &     grdchkvarindex.EQ.27 .OR. grdchkvarindex.EQ.28 .OR.
      &     grdchkvarindex.EQ.15 .OR. grdchkvarindex.EQ.16 .OR.
      &     grdchkvarindex.EQ.17 .OR. grdchkvarindex.EQ.21 .OR.
-     &     grdchkvarindex.EQ.22 .OR. grdchkvarindex.EQ.31 .OR.
-     &     ( grdchkvarindex .ge. 201 .and.
-     &     grdchkvarindex .le. 200+maxCtrlArr3D ) ) then
+     &     grdchkvarindex.EQ.22 .OR. grdchkvarindex.EQ.31 
+#ifdef ALLOW_GENARR3D_CONTROL
+     &     .OR. ( grdchkvarindex .ge. 201 .and.
+     &     grdchkvarindex .le. 200+maxCtrlArr3D )
+#endif
+     &                                            ) then
 
          call active_read_xyz( fname, tmpfld3d, 1,
      &                         doglobalread, ladinit, optimcycle,

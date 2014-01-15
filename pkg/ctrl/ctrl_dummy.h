@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.32 2013/01/26 14:45:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.33 2014/01/15 16:21:20 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -182,6 +182,12 @@ cHFLUXM_CONTROL
 cHFLUXM_CONTROL
       _RL xx_shifwflx_dummy
 
+#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+C--   Parameters maxCtrlArr2D, maxCtrlArr3D, maxCtrlTim2D are set in CTRL_SIZE.h
+#else
+      INTEGER maxCtrlArr2D, maxCtrlArr3D, maxCtrlTim2D
+      PARAMETER(maxCtrlArr2D=1,maxCtrlArr3D=1,maxCtrlTim2D=1)
+#endif
       common /ctrl_dummy_arr/
      &    xx_genarr2d_dummy
      &  , xx_genarr3d_dummy
