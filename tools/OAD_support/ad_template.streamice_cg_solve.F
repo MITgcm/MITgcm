@@ -116,6 +116,7 @@ c set up for plain execution
          call oad_tape_push(A_uv_p)       
          call oad_tape_push(A_vu_p)       
          call oad_tape_push(A_vv_p)       
+         call oad_tape_push(tolerance)
          call oad_tape_push(mythid)
          call STREAMICE_CG_SOLVE( 
      U        cg_Uin_p,     
@@ -145,6 +146,7 @@ c reset the mode
          call oad_tape_pop(cg_Vin_p)     
          call oad_tape_pop(cg_Uin_p)     
          call oad_tape_pop(mythid)
+         call oad_tape_pop(tolerance)
          call oad_tape_pop(A_vv_p)       
          call oad_tape_pop(A_vu_p)       
          call oad_tape_pop(A_uv_p)       
