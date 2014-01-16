@@ -5,8 +5,8 @@ module OAD_tape
   private :: increment , dtt, itt, ltt, stt, & 
        init, dump_tapestats, & 
        dt_grow, it_grow, lt_grow, st_grow, &
-       push_i0, push_d1, push_i1, & 
-       pop_i0, pop_d1, pop_i1, & 
+       push_d0, push_i0, push_d1, push_i1, & 
+       pop_d0, pop_i0, pop_d1, pop_i1, & 
        push_d4, push_d6, & 
        pop_d4, pop_d6
     
@@ -56,13 +56,13 @@ module OAD_tape
   end interface
 
   interface oad_tape_push
-     module procedure push_i0
+     module procedure push_d0, push_i0
      module procedure push_d1, push_i1
      module procedure push_d4, push_d6
   end interface
 
   interface oad_tape_pop
-     module procedure pop_i0
+     module procedure pop_d0, pop_i0
      module procedure pop_d1, pop_i1
      module procedure pop_d4, pop_d6
   end interface
@@ -187,19 +187,19 @@ contains
     oad_st_sz=oad_st_sz+increment
   end subroutine st_grow
 
+  subroutine push_d0(v)
+    implicit none
+    double precision :: v
+    if(oad_dt_sz .lt. oad_dt_ptr+1) call oad_dt_grow()
+    oad_dt(oad_dt_ptr)=v; oad_dt_ptr=oad_dt_ptr+1
+  end subroutine push_d0
+
   subroutine push_i0(v)
     implicit none
     integer :: v
     if(oad_it_sz .lt. oad_it_ptr+1) call oad_it_grow()
     oad_it(oad_it_ptr)=v; oad_it_ptr=oad_it_ptr+1
   end subroutine push_i0
-
-  subroutine pop_i0(v)
-    implicit none
-    integer :: v
-    oad_it_ptr=oad_it_ptr-1
-    v=oad_it(oad_it_ptr)
-  end subroutine pop_i0
 
   subroutine push_d1(v)
     implicit none
@@ -244,6 +244,20 @@ contains
     oad_dt(oad_dt_ptr:oad_dt_ptr+chunk(1)-1)=reshape(v,chunk) 
     oad_dt_ptr=oad_dt_ptr+chunk(1)
   end subroutine push_d6
+
+  subroutine pop_d0(v)
+    implicit none
+    double precision :: v
+    oad_dt_ptr=oad_dt_ptr-1
+    v=oad_dt(oad_dt_ptr)
+  end subroutine pop_d0
+
+  subroutine pop_i0(v)
+    implicit none
+    integer :: v
+    oad_it_ptr=oad_it_ptr-1
+    v=oad_it(oad_it_ptr)
+  end subroutine pop_i0
 
   subroutine pop_d1(v)
     implicit none
