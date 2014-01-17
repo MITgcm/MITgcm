@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.58 2014/01/09 19:34:06 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.59 2014/01/17 21:57:43 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,9 +29,6 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE.h"
-#endif /* ALLOW_SHELFICE */
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
@@ -160,7 +157,7 @@ CADJ &    kind = isbyte
          CALL PTRACERS_FORCING_SURF(
      I        surfaceForcingS(1-OLx,1-OLy,bi,bj),
      I        bi, bj, iMin, iMax, jMin, jMax,
-     I        myTime,myIter,myThid )
+     I        myTime, myIter, myThid )
         ENDDO
        ENDDO
       ENDIF
@@ -223,7 +220,7 @@ C to multiple vertical levels later on as per Duffy et al. (GRL 1999)
         IF ( useSALT_PLUME ) THEN
          CALL SALT_PLUME_FORCING_SURF(
      I        bi, bj, iMin, iMax, jMin, jMax,
-     I        myTime,myIter,myThid )
+     I        myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_SALT_PLUME */
 
@@ -371,15 +368,10 @@ c         ENDDO
 #endif /* ATMOSPHERIC_LOADING */
 
 #ifdef ALLOW_SHELFICE
-        IF ( usingZCoords ) THEN
-         IF ( useSHELFICE) THEN
-          DO j = jMin, jMax
-           DO i = iMin, iMax
-            phi0surf(i,j,bi,bj) = phi0surf(i,j,bi,bj)
-     &         + shelficeLoadAnomaly(i,j,bi,bj)*recip_rhoConst
-           ENDDO
-          ENDDO
-         ENDIF
+        IF ( useSHELFICE) THEN
+          CALL SHELFICE_FORCING_SURF(
+     I                  bi, bj, iMin, iMax, jMin, jMax,
+     I                  myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_SHELFICE */
 
