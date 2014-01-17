@@ -1,7 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_forcing.F,v 1.3 2012/07/07 00:08:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_forcing.F,v 1.4 2014/01/17 21:56:30 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
+
+C--  File shelfice_forcing.F:
+C--   Contents
+C--   o SHELFICE_FORCING_T
+C--   o SHELFICE_FORCING_S
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -57,9 +62,9 @@ C     drLoc   :: fractional cell width of boundary layer in (k+/-1)th layer
 CEOP
 
 C--   Forcing term
-      DO j=1,sNy
-       DO i=1,sNx
-        IF ( SHELFICEBoundaryLayer ) THEN
+      IF ( SHELFICEboundaryLayer ) THEN
+       DO j=1,sNy
+        DO i=1,sNx
          IF ( kLev .LT. Nr .AND. kLev .EQ. kTopC(I,J,bi,bj) ) THEN
           kp1 = MIN(kLev+1,Nr)
           drLoc = drF(kLev)*( 1. _d 0 - _hFacC(I,J,kLev,bi,bj) )
@@ -80,15 +85,9 @@ C                         }/[drF(k+1)*hFacC(k+1)]
           gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj) + gTloc
      &         * drLoc*recip_drF(kLev)* _recip_hFacC(i,j,kLev,bi,bj)
          ENDIF
-        ELSE
-         IF ( kLev .EQ. kTopC(I,J,bi,bj) ) THEN
-          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
-     &         +shelficeForcingT(i,j,bi,bj)
-     &         *recip_drF(kLev)* _recip_hFacC(i,j,kLev,bi,bj)
-         ENDIF
-        ENDIF
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 
 #endif /* ALLOW_SHELFICE */
       RETURN
@@ -149,9 +148,9 @@ C     drLoc :: fractional cell width of boundary layer
 CEOP
 
 C--   Forcing term
-      DO j=1,sNy
-       DO i=1,sNx
-        IF ( SHELFICEBoundaryLayer ) THEN
+      IF ( SHELFICEboundaryLayer ) THEN
+       DO j=1,sNy
+        DO i=1,sNx
          IF ( kLev .LT. Nr .AND. kLev .EQ. kTopC(I,J,bi,bj) ) THEN
           kp1 = MIN(kLev+1,Nr)
           drLoc = drF(kLev)*( 1. _d 0 - _hFacC(I,J,kLev,bi,bj) )
@@ -172,15 +171,9 @@ C                         }/[drF(k+1)*hFacC(k+1)]
           gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj) + gSloc
      &         * drLoc*recip_drF(kLev)* _recip_hFacC(i,j,kLev,bi,bj)
          ENDIF
-        ELSE
-         IF ( kLev .EQ. kTopC(I,J,bi,bj) ) THEN
-          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
-     &         +shelficeForcingS(i,j,bi,bj)
-     &         *recip_drF(kLev)* _recip_hFacC(i,j,kLev,bi,bj)
-         ENDIF
-        ENDIF
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 
 #endif /* ALLOW_SHELFICE */
       RETURN

@@ -2,6 +2,7 @@ shelfice_cost_shifwflx.f
 shelfice_cost_accumulate.f
 shelfice_cost_final.f
 shelfice_forcing.f
+shelfice_forcing_surf.f
 shelfice_init_varia.f
 shelfice_thermodynamics.f
 shelfice_u_drag.f
