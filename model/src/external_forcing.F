@@ -1,9 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.63 2013/05/08 00:07:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.64 2014/01/17 21:58:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
+C--  File external_forcing.F:
+C--   Contents
+C--   o EXTERNAL_FORCING_U
+C--   o EXTERNAL_FORCING_V
+C--   o EXTERNAL_FORCING_T
+C--   o EXTERNAL_FORCING_S
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: EXTERNAL_FORCING_U
 C     !INTERFACE:
@@ -83,9 +91,19 @@ c      DO j=1,sNy
 C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy+1]
        DO j=0,sNy+1
         DO i=1,sNx+1
-         gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
-     &   +foFacMom*surfaceForcingU(i,j,bi,bj)
-     &   *recip_drF(kLev)*_recip_hFacW(i,j,kLev,bi,bj)
+          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
+     &      +foFacMom*surfaceForcingU(i,j,bi,bj)
+     &      *recip_drF(kLev)*_recip_hFacW(i,j,kLev,bi,bj)
+        ENDDO
+       ENDDO
+      ELSEIF ( kSurface.EQ.-1 ) THEN
+       DO j=0,sNy+1
+        DO i=1,sNx+1
+         IF ( kSurfW(i,j,bi,bj).EQ.kLev ) THEN
+          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
+     &      +foFacMom*surfaceForcingU(i,j,bi,bj)
+     &      *recip_drF(kLev)*_recip_hFacW(i,j,kLev,bi,bj)
+         ENDIF
         ENDDO
        ENDDO
       ENDIF
@@ -200,9 +218,19 @@ C     Ocean: Add momentum surface forcing (e.g., wind-stress) in surface level
 c       DO i=1,sNx
 C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx+1]
         DO i=0,sNx+1
-         gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
-     &   +foFacMom*surfaceForcingV(i,j,bi,bj)
-     &   *recip_drF(kLev)*_recip_hFacS(i,j,kLev,bi,bj)
+          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
+     &      +foFacMom*surfaceForcingV(i,j,bi,bj)
+     &      *recip_drF(kLev)*_recip_hFacS(i,j,kLev,bi,bj)
+        ENDDO
+       ENDDO
+      ELSEIF ( kSurface.EQ.-1 ) THEN
+       DO j=1,sNy+1
+        DO i=0,sNx+1
+         IF ( kSurfS(i,j,bi,bj).EQ.kLev ) THEN
+          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
+     &      +foFacMom*surfaceForcingV(i,j,bi,bj)
+     &      *recip_drF(kLev)*_recip_hFacS(i,j,kLev,bi,bj)
+         ENDIF
         ENDDO
        ENDDO
       ENDIF
@@ -299,6 +327,8 @@ c#endif
 
       IF ( fluidIsAir ) THEN
        kSurface = 0
+      ELSEIF ( usingZCoords .AND. useShelfIce ) THEN
+       kSurface = -1
       ELSEIF ( usingPCoords ) THEN
        kSurface = Nr
       ELSE
@@ -442,9 +472,19 @@ C     Ocean: Add temperature surface forcing (e.g., heat-flux) in surface level
       IF ( kLev .EQ. kSurface ) THEN
        DO j=1,sNy
         DO i=1,sNx
-         gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
-     &     +surfaceForcingT(i,j,bi,bj)
-     &     *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
+     &      +surfaceForcingT(i,j,bi,bj)
+     &      *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+        ENDDO
+       ENDDO
+      ELSEIF ( kSurface.EQ.-1 ) THEN
+       DO j=1,sNy
+        DO i=1,sNx
+         IF ( kSurfC(i,j,bi,bj).EQ.kLev ) THEN
+          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
+     &      +surfaceForcingT(i,j,bi,bj)
+     &      *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+         ENDIF
         ENDDO
        ENDDO
       ENDIF
@@ -587,6 +627,8 @@ CEOP
 
       IF ( fluidIsAir ) THEN
        kSurface = 0
+      ELSEIF ( usingZCoords .AND. useShelfIce ) THEN
+       kSurface = -1
       ELSEIF ( usingPCoords ) THEN
        kSurface = Nr
       ELSE
@@ -645,9 +687,19 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
       IF ( kLev .EQ. kSurface ) THEN
        DO j=1,sNy
         DO i=1,sNx
-         gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
-     &     +surfaceForcingS(i,j,bi,bj)
-     &     *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
+     &      +surfaceForcingS(i,j,bi,bj)
+     &      *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+        ENDDO
+       ENDDO
+      ELSEIF ( kSurface.EQ.-1 ) THEN
+       DO j=1,sNy
+        DO i=1,sNx
+         IF ( kSurfC(i,j,bi,bj).EQ.kLev ) THEN
+          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
+     &      +surfaceForcingS(i,j,bi,bj)
+     &      *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+         ENDIF
         ENDDO
        ENDDO
       ENDIF
