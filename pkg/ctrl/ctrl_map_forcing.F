@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_forcing.F,v 1.17 2013/01/26 14:45:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_forcing.F,v 1.18 2014/01/17 22:15:01 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -234,7 +234,13 @@ c--   hfluxm.
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
+# ifdef ALLOW_AUTODIFF_OPENAD
+              Qnetm(i,j,bi,bj) = Qnetm(i,j,bi,bj) +
+     &                          xx_hfluxm(i,j,bi,bj) +
+     &                          tmpfld2d(i,j,bi,bj)
+#else
               Qnetm(i,j,bi,bj) = Qnetm(i,j,bi,bj) + tmpfld2d(i,j,bi,bj)
+#endif
             enddo
           enddo
         enddo
