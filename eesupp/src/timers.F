@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.29 2009/12/08 21:44:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.30 2014/01/19 14:33:43 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -732,8 +732,10 @@ C
      &  SQUEEZE_RIGHT,myThreadId)
       GOTO 1000
 
+#if (defined USE_PAPI) || (defined USE_PCL)
  71   FORMAT(A,' per sec ',D13.7,' ',D13.7,', number ', D13.7)
- 72   FORMAT(A,D13.7)
+#endif
+c72   FORMAT(A,D13.7)
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -1005,7 +1007,6 @@ CCE107 Initialization of common block for PCL event names
       DATA pcl_counter_name(59) /'PCL_L2DCACHE_MISSRATE'/
       DATA pcl_counter_name(60) /'PCL_MEM_FP_RATIO'/
       END
-
 
 #ifdef USE_PCL
 CCE107 Initialization of common block for PCL summary performance

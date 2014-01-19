@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.15 2004/03/27 03:51:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.16 2014/01/19 14:33:43 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -15,6 +15,7 @@ C--   UCASE           - Translates to upper case.
 C--   Routines marked "M" contain specific machine dependent code.
 C--   Routines marked "U" contain UNIX OS calls.
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: DATE
 
@@ -37,21 +38,21 @@ C     string     :: Date returned in string
 C     myThreadId :: My thread number
       CHARACTER*(*) string
       INTEGER myThreadId
-C
+
 C     !LOCAL VARIABLES:
 C     lDate     :: Length of date string
 C     msgBuffer :: Temp. for building error messages
       INTEGER lDate
       CHARACTER*(MAX_LEN_MBUF) msgBuffer
 CEOP
-C
+
       lDate = 24
       IF ( LEN(string) .LT. lDate ) GOTO 901
       string = ' '
 #ifdef HAVE_FDATE
       CALL FDATE( string )
 #endif
-C   
+
  1000 CONTINUE
       RETURN
   901 CONTINUE
@@ -82,6 +83,7 @@ C
       GOTO 1000
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: IFNBLNK
 
@@ -94,7 +96,7 @@ C     *==========================================================*
 C     | FUNCTION IFNBLNK                                         |
 C     | o Find first non-blank in character string.              |
 C     *==========================================================*
-C
+
 C     !INPUT PARAMETERS:
 C     string :: String to find first non-blank in.
       CHARACTER*(*) string
@@ -103,7 +105,7 @@ C     !LOCAL VARIABLES:
 C     L, LS :: Temps for string locations
       INTEGER L, LS
 CEOP
-C
+
       LS     = LEN(string)
       IFNBLNK = 0
       DO 10 L = 1, LS
@@ -112,10 +114,11 @@ C
         GOTO 11
    10 CONTINUE
    11 CONTINUE
-C
+
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ILNBLNK
 
@@ -137,7 +140,7 @@ C     !LOCAL VARIABLES:
 C     L, LS :: Temps. used in scanning string
       INTEGER L, LS
 CEOP
-C
+
       LS      = LEN(string)
 c     ILNBLNK = LS
       ILNBLNK = 0
@@ -147,10 +150,11 @@ c     ILNBLNK = LS
          GOTO 11
    10 CONTINUE
    11 CONTINUE
-C
+
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: IO_ERRCOUNT
 
@@ -181,8 +185,8 @@ CEOP
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-
 C     !ROUTINE: LCASE
 
 C     !INTERFACE:
@@ -208,16 +212,16 @@ C     !LOCALVARIABLES:
       INTEGER   I, L
 CEOP
 
-C
       DO 10 I = 1, LEN(string)
         L = INDEX(UPPER,string(I:I))
         IF ( L .EQ. 0 ) GOTO 10
          string(I:I) = LOWER(L:L)
    10 CONTINUE
-C   
+
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: MACHINE
 
@@ -248,8 +252,8 @@ C     iFirst, iLast,      :: String indexing temps.
 C     iEnd, iFree, idSize
 C     strTmp, idString    :: Temps. for strings.
       INTEGER  iFirst
-      INTEGER  iLast 
-      INTEGER  iEnd  
+      INTEGER  iLast
+      INTEGER  iEnd
       INTEGER  iFree
       INTEGER  idSize
       CHARACTER*1024 strTmp
@@ -296,13 +300,13 @@ CEOP
         ENDIF
         iFree = iFree+iEnd+1
       ENDIF
-C
+
       string = idString
-C
- 1000 CONTINUE
+
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: UCASE
 
@@ -326,13 +330,11 @@ C     !LOCAL VARIABLES:
       INTEGER   I, L
 CEOP
 
-C
       DO 10 I = 1, LEN(string)
         L = INDEX(LOWER,string(I:I))
         IF ( L .EQ. 0 ) GOTO 10
           string(I:I) = UPPER(L:L)
    10 CONTINUE
-C   
+
       RETURN
       END
-C************************************************************************
