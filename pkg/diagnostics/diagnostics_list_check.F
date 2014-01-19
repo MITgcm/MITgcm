@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_list_check.F,v 1.5 2013/06/11 01:34:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_list_check.F,v 1.6 2014/01/19 14:42:58 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -49,9 +49,8 @@ C     !LOCAL VARIABLES:
       CHARACTER*8 diagName
       INTEGER n,m,m1,i
 
-      ndCount = 0.
+      ndCount = 0
       _BEGIN_MASTER(myThid)
-
 
 C-    File names:
       m1 = md
@@ -206,8 +205,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        ENDDO
        m1 = 1
       ENDDO
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _END_MASTER(myThid)
 
