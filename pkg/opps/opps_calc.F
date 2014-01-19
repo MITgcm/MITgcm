@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_calc.F,v 1.11 2012/06/27 22:34:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_calc.F,v 1.12 2014/01/19 14:43:51 jmc Exp $
 C $Name:  $
 
 #include "OPPS_OPTIONS.h"
@@ -31,7 +31,7 @@ C     | by E. Skyllingstad (?)                                              |
 C     | plenty of modifications to make it work:                            |
 C     | - removed many unused parameters and variables                      |
 C     | - turned everything (back) into 1D code                             |
-C     | - pass variables, that are orginially in common blocks:             |
+C     | - pass variables, that are originally in common blocks:             |
 C     |   maxDepth                                                          |
 C     | - pass vertical velocity, set in OPPS_INTERFACE                     |
 C     | - do not use convadj for now (whatever that is)                     |
@@ -414,7 +414,6 @@ C end loop on number of time integration steps
 
         enddo
        ENDDO
- 999   continue
 
 C     count convection event in this grid cell
 
@@ -512,9 +511,10 @@ C There is one common block that is different from the standard model commons
 C (countc) and it is not needed if the array convadj is not used.  The routine
 C does need "kmp" which is why the boundc common is included. For massively
 C parallel codes (like POP) we think this will work well when converted from a
-C "slab" (i=is,ie) to a column, which just means removing the "do i=is,ie" loop.  c There are differences between this
-C code and the 1-d code and the earlier scheme implemented in 3-d models. These c differences are described below.
-
+C "slab" (i=is,ie) to a column, which just means removing the "do i=is,ie" loop.
+C There are differences between this
+C code and the 1-d code and the earlier scheme implemented in 3-d models. These
+C differences are described below.
 
       subroutine nlopps(j,is,ie,ta,sa,gcmdz)
 
@@ -599,7 +599,6 @@ C input the variables through a common
 
       logical problem
       common /countc/ convadj(imt,jmt,km),ics,depth(km),problem
-
 
 C-----may want to setup an option to get this only on first call
 C     otherwise it is repetive

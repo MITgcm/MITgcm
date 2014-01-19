@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.29 2013/06/04 22:52:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.30 2014/01/19 14:47:35 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -218,7 +218,6 @@ C     q2tmp      :: Temporary value of qice for layer 2
 C-    define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
 
- 1010 FORMAT(A,I3,3F8.3)
  1020 FORMAT(A,1P4E11.3)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -269,7 +268,6 @@ C-    Linear relation
         hFrz = hThickIce
       ENDIF
 #endif /* THSICE_FRACEN_POWERLAW */
-
 
 C     initialise local arrays
       DO j=1-OLy,sNy+OLy
@@ -920,7 +918,6 @@ CADJ STORE hnew(i,j,:) = comlev1_thsice_1, key=ikey_1
            hSnow1(i,j) = hSnow1(i,j) - dhs
           ENDIF
 
-
 C limit ice height
 C- NOTE: this part does not conserve Energy ;
 C        but surplus of fresh water and salt are taken into account.
@@ -986,7 +983,7 @@ C     end of inlined S/R THSICE_RESHAPE_LAYERS
 
 C-    if hIce > 0 : end
          ENDIF
- 200     CONTINUE
+c200     CONTINUE
 
 C     endif iceMask > 0
         ENDIF
