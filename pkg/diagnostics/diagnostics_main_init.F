@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.47 2013/09/18 22:04:27 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.48 2014/01/19 14:42:38 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -484,7 +484,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       diagName  = 'RHOANOSQ'
       diagTitle = 'Square of Density Anomaly (=(Rho-rhoConst)^2)'
-      diagUnits = 'kg^2/m^6          '
+      diagUnits = 'kg^2/m^6        '
       diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )

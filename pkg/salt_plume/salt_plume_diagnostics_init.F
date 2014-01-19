@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_diagnostics_init.F,v 1.4 2012/07/10 15:45:11 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_diagnostics_init.F,v 1.5 2014/01/19 14:44:35 jmc Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -55,7 +55,7 @@ C     diagTitle :: local string (80c): description of field in diagnostic
       diagName  = 'oceSPflx'
       diagTitle = 'net surface Salt flux rejected into the ocean during'
      &          //' freezing, (+=down),'
-     &          //' >0 increases salinity'
+c    &          //' >0 increases salinity'
       diagUnits = 'g/m^2/s         '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,

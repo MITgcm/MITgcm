@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.35 2012/12/23 02:13:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.36 2014/01/19 14:46:22 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -70,7 +70,6 @@ C     Functions ::
       EXTERNAL    ILNBLNK
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 
 C=============== state variables ============
 
@@ -168,9 +167,9 @@ C-     use name & units from data.seaice :
        ilnb = MAX(ILNBLNK(locNameTr),1)
 
        WRITE(diagName,'(A4,I2.2,A2)') 'SItr',iTr,'  '
-       WRITE(diagTitle,'(4A)') locNameTr(1:ilnb), 
+       WRITE(diagTitle,'(4A)') locNameTr(1:ilnb),
      &       ' (associated with ',SItrMate(iTr),')'
-       diagUnits = locUnitTr//'         '
+       diagUnits = locUnitTr//'        '
        diagCode  = 'SM  C   M1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum, diagName,
      I      diagCode, diagUnits, diagTitle, numMateTr, myThid )
@@ -178,7 +177,7 @@ C-     use name & units from data.seaice :
        WRITE(diagName,'(A4,I2.2,A2)') 'SItr',iTr,'PT'
        WRITE(diagTitle,'(A4,I2.2,2A)') 'SItr',iTr,
      &     ' preceeeding thermodynamic growth/melt'
-       diagUnits = locUnitTr//'         '
+       diagUnits = locUnitTr//'        '
        diagCode  = 'SM  C   M1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum, diagName,
      I      diagCode, diagUnits, diagTitle, numMateTrPreTh, myThid )
@@ -216,7 +215,6 @@ C-     use name & units from data.seaice :
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
 
 C=============== momentum, heat and fresh water forcing ============
 
@@ -393,7 +391,7 @@ C--     use units from data.seaice :
        IF ( ilnb.GE.1 ) THEN
          WRITE(diagUnits,'(2A)') SItrUnit(iTr)(1:ilnb),'.kg/m^2/s'
        ENDIF
-C--       
+C--
        WRITE(diagName,'(A4,I2.2,A2)') 'SItr',iTr,'Fx'
        WRITE(diagTitle,'(A4,I2.2,A)') 'SItr',iTr,
      I      ' flux out of ice pack (that may enter ocean)'
@@ -661,21 +659,21 @@ C--   Diffusive flux:
 
 C=============== dynamics ============
 
-      diagName  = 'SIpress   '
+      diagName  = 'SIpress '
       diagTitle = 'SEAICE strength (with upper and lower limit)'
       diagUnits = 'm^2/s^2         '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIzeta   '
+      diagName  = 'SIzeta  '
       diagTitle = 'SEAICE nonlinear bulk viscosity'
       diagUnits = 'm^2/s           '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIeta    '
+      diagName  = 'SIeta   '
       diagTitle = 'SEAICE nonlinear shear viscosity'
       diagUnits = 'm^2/s           '
       diagCode  = 'SM      M1      '
@@ -708,7 +706,7 @@ C=============== ice thickness categories ============
       CALL DIAGNOSTICS_SETKLEV( diagName, nITD, myThid )
 
       diagName  = 'SIareaN '
-      diagTitle = 
+      diagTitle =
      I 'SEAICE fractional ice-covered area per category [0 to 1]'
       diagUnits = 'm^2/m^2         '
       diagCode  = 'SM      MX      '
