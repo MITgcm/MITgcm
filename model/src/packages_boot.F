@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.64 2013/05/08 00:06:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.65 2014/01/19 23:58:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -42,6 +42,7 @@ C     msgBuf   :: Informational/error message buffer
 C     iUnit    :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
+      LOGICAL locFlag
 CEOP
 
 C     data.pkg namelists
@@ -99,7 +100,6 @@ C     data.pkg namelists
       WRITE(msgBuf,'(A)') ' PACKAGES_BOOT: opening data.pkg'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid )
-
 
       CALL OPEN_COPY_DATA_FILE(
      I                          'data.pkg', 'PACKAGES_BOOT',
@@ -199,6 +199,256 @@ C--   packages with hard-coded switch
 
 C--   packages with an implied switch
       useGAD = tempStepping .OR. saltStepping .OR. usePTRACERS
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Short summary of which package is compiled and used
+      WRITE(msgBuf,'(2A)') ' PACKAGES_BOOT: On/Off package Summary'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+
+C----- pkgs with a standard "usePKG" On/Off switch in "data.pkg":
+      WRITE(standardMessageUnit,'(2A)') ' --------  pkgs with a',
+     & ' standard "usePKG" On/Off switch in "data.pkg":  --------'
+#ifdef ALLOW_OBCS
+      CALL PACKAGES_PRINT_MSG( useOBCS,       'OBCS',        ' ' )
+#endif
+#ifdef ALLOW_SHAP_FILT
+      CALL PACKAGES_PRINT_MSG( useSHAP_FILT,  'SHAP_FILT',   ' ' )
+#endif
+#ifdef ALLOW_ZONAL_FILT
+      CALL PACKAGES_PRINT_MSG( useZONAL_FILT, 'ZONAL_FILT',  ' ' )
+#endif
+#ifdef ALLOW_OPPS
+      CALL PACKAGES_PRINT_MSG( useOPPS,       'OPPS',        ' ' )
+#endif
+#ifdef ALLOW_PP81
+      CALL PACKAGES_PRINT_MSG( usePP81,       'PP81',        ' ' )
+#endif
+#ifdef ALLOW_MY82
+      CALL PACKAGES_PRINT_MSG( useMY82,       'MY82',        ' ' )
+#endif
+#ifdef ALLOW_GGL90
+      CALL PACKAGES_PRINT_MSG( useGGL90,      'GGL90',       ' ' )
+#endif
+#ifdef ALLOW_KPP
+      CALL PACKAGES_PRINT_MSG( useKPP,        'KPP',         ' ' )
+#endif
+#ifdef ALLOW_GMREDI
+      CALL PACKAGES_PRINT_MSG( useGMRedi,     'GMRedi',      ' ' )
+#endif
+#ifdef ALLOW_DOWN_SLOPE
+      CALL PACKAGES_PRINT_MSG( useDOWN_SLOPE, 'DOWN_SLOPE',  ' ' )
+#endif
+#ifdef ALLOW_BBL
+      CALL PACKAGES_PRINT_MSG( useBBL,        'BBL',         ' ' )
+#endif
+#ifdef ALLOW_CAL
+      CALL PACKAGES_PRINT_MSG( useCAL,        'CAL',         ' ' )
+#endif
+#ifdef ALLOW_EXF
+      CALL PACKAGES_PRINT_MSG( useEXF,        'EXF',         ' ' )
+#endif
+#ifdef ALLOW_BULK_FORCE
+      CALL PACKAGES_PRINT_MSG(useBulkForce,'BULK_FORCE','useBulkForce')
+#endif
+#ifdef ALLOW_EBM
+      CALL PACKAGES_PRINT_MSG( useEBM,        'EBM',         ' ' )
+#endif
+#ifdef ALLOW_CHEAPAML
+      CALL PACKAGES_PRINT_MSG( useCheapAML,   'CheapAML',    ' ' )
+#endif
+#ifdef ALLOW_GRDCHK
+      CALL PACKAGES_PRINT_MSG( useGrdchk,     'Grdchk',      ' ' )
+#endif
+#ifdef ALLOW_SMOOTH
+      CALL PACKAGES_PRINT_MSG( useSMOOTH,     'SMOOTH',      ' ' )
+#endif
+#ifdef ALLOW_PROFILES
+      CALL PACKAGES_PRINT_MSG( usePROFILES,   'PROFILES',    ' ' )
+#endif
+#ifdef ALLOW_ECCO
+      CALL PACKAGES_PRINT_MSG( useECCO,       'ECCO',        ' ' )
+#endif
+#ifdef ALLOW_SBO
+      CALL PACKAGES_PRINT_MSG( useSBO,        'SBO',         ' ' )
+#endif
+#ifdef ALLOW_FLT
+      CALL PACKAGES_PRINT_MSG( useFLT,        'FLT',         ' ' )
+#endif
+#ifdef ALLOW_PTRACERS
+      CALL PACKAGES_PRINT_MSG( usePTRACERS,   'PTRACERS',    ' ' )
+#endif
+#ifdef ALLOW_LONGSTEP
+      CALL PACKAGES_PRINT_MSG( usePTRACERS,'LONGSTEP','usePTRACERS' )
+#endif
+#ifdef ALLOW_GCHEM
+      CALL PACKAGES_PRINT_MSG( useGCHEM,      'GCHEM',       ' ' )
+#endif
+#ifdef ALLOW_RBCS
+      CALL PACKAGES_PRINT_MSG( useRBCS,       'RBCS',        ' ' )
+#endif
+#ifdef ALLOW_OFFLINE
+      CALL PACKAGES_PRINT_MSG( useOffLine,    'OffLine',     ' ' )
+#endif
+#ifdef ALLOW_MATRIX
+      CALL PACKAGES_PRINT_MSG( useMATRIX,     'MATRIX',      ' ' )
+#endif
+#ifdef ALLOW_FRAZIL
+      CALL PACKAGES_PRINT_MSG( useFRAZIL,     'FRAZIL',      ' ' )
+#endif
+#ifdef ALLOW_SEAICE
+      CALL PACKAGES_PRINT_MSG( useSEAICE,     'SEAICE',      ' ' )
+#endif
+#ifdef ALLOW_SALT_PLUME
+      CALL PACKAGES_PRINT_MSG( useSALT_PLUME, 'SALT_PLUME',  ' ' )
+#endif
+#ifdef ALLOW_SHELFICE
+      CALL PACKAGES_PRINT_MSG( useShelfIce,   'ShelfIce',    ' ' )
+#endif
+#ifdef ALLOW_STREAMICE
+      CALL PACKAGES_PRINT_MSG( useStreamIce,  'StreamIce',   ' ' )
+#endif
+#ifdef ALLOW_ICEFRONT
+      CALL PACKAGES_PRINT_MSG( useICEFRONT,   'ICEFRONT',    ' ' )
+#endif
+#ifdef ALLOW_THSICE
+      CALL PACKAGES_PRINT_MSG( useThSIce,     'ThSIce',      ' ' )
+#endif
+#ifdef ALLOW_LAND
+      CALL PACKAGES_PRINT_MSG( useLand,       'Land',        ' ' )
+#endif
+#ifdef ALLOW_ATM2D
+      CALL PACKAGES_PRINT_MSG( useATM2D,      'ATM2D',       ' ' )
+#endif
+#ifdef ALLOW_AIM_V23
+      CALL PACKAGES_PRINT_MSG( useAIM,        'aim_v23', 'useAIM' )
+#endif
+#ifdef ALLOW_ATM_PHYS
+      CALL PACKAGES_PRINT_MSG( useAtm_Phys,   'Atm_Phys',    ' ' )
+#endif
+#ifdef ALLOW_FIZHI
+      CALL PACKAGES_PRINT_MSG( useFizhi,      'Fizhi',       ' ' )
+#endif
+#ifdef ALLOW_GRIDALT
+      CALL PACKAGES_PRINT_MSG( useGridAlt,    'GridAlt',     ' ' )
+#endif
+#ifdef ALLOW_DIAGNOSTICS
+      CALL PACKAGES_PRINT_MSG( useDiagnostics,'Diagnostics', ' ' )
+#endif
+#ifdef ALLOW_REGRID
+      CALL PACKAGES_PRINT_MSG( useREGRID,     'REGRID',      ' ' )
+#endif
+#ifdef ALLOW_LAYERS
+      CALL PACKAGES_PRINT_MSG( useLayers,     'Layers',      ' ' )
+#endif
+#ifdef ALLOW_MNC
+      CALL PACKAGES_PRINT_MSG( useMNC,        'MNC',         ' ' )
+#endif
+#ifdef ALLOW_RUNCLOCK
+      CALL PACKAGES_PRINT_MSG( useRunClock,   'RunClock',    ' ' )
+#endif
+#ifdef ALLOW_EMBED_FILES
+      CALL PACKAGES_PRINT_MSG( useEMBED_FILES,'EMBED_FILES', ' ' )
+#endif
+#ifdef ALLOW_MYPACKAGE
+      CALL PACKAGES_PRINT_MSG( useMYPACKAGE,  'MYPACKAGE',   ' ' )
+#endif
+
+C----- pkgs without standard "usePKG" in "data.pkg":
+      WRITE(standardMessageUnit,'(2A)') ' -------- pkgs without',
+     & ' standard "usePKG" On/Off switch in "data.pkg":  --------'
+#ifdef ALLOW_GENERIC_ADVDIFF
+      CALL PACKAGES_PRINT_MSG( useGAD, 'GENERIC_ADVDIFF', 'useGAD' )
+#endif
+#ifdef ALLOW_MOM_COMMON
+      CALL PACKAGES_PRINT_MSG( momStepping,'MOM_COMMON','momStepping' )
+#endif
+#ifdef ALLOW_MOM_VECINV
+      locFlag = momStepping .AND. vectorInvariantMomentum
+      CALL PACKAGES_PRINT_MSG( locFlag, 'MOM_VECINV',
+     &                                  '+vectorInvariantMomentum' )
+#endif
+#ifdef ALLOW_MOM_FLUXFORM
+      locFlag = momStepping .AND. .NOT.vectorInvariantMomentum
+      CALL PACKAGES_PRINT_MSG( locFlag, 'MOM_FLUXFORM',
+     &                                  '& not vectorInvariantMom' )
+#endif
+#ifdef ALLOW_CD_CODE
+      CALL PACKAGES_PRINT_MSG( useCDscheme, 'CD_CODE', 'useCDscheme' )
+#endif
+#ifdef ALLOW_MONITOR
+      locFlag = monitorFreq.GT.0.
+      CALL PACKAGES_PRINT_MSG( locFlag, 'MONITOR', 'monitorFreq > 0.' )
+#endif
+#ifdef ALLOW_TIMEAVE
+      locFlag = taveFreq.GT.0.
+      CALL PACKAGES_PRINT_MSG( locFlag,  'TIMEAVE', 'taveFreq > 0.' )
+#endif
+#ifdef ALLOW_DEBUG
+      CALL PACKAGES_PRINT_MSG( debugMode, 'DEBUG', 'debugMode' )
+#endif
+#ifdef ALLOW_COMPON_COMMUNIC
+      CALL PACKAGES_PRINT_MSG( useCoupler, 'COMPON_COMMUNIC',
+     &                         'useCoupler' )
+#endif
+#ifdef ALLOW_ATM_COMPON_INTERF
+      CALL PACKAGES_PRINT_MSG( useCoupler, 'ATM_COMPON_INTERF',
+     &                         'useCoupler' )
+#endif
+#ifdef ALLOW_OCN_COMPON_INTERF
+      CALL PACKAGES_PRINT_MSG( useCoupler, 'OCN_COMPON_INTERF',
+     &                         'useCoupler' )
+#endif
+C----- pkgs without a run-time switch:
+      locFlag = .TRUE.
+#ifdef ALLOW_ATM_OCN_COUPLER
+      CALL PACKAGES_PRINT_MSG( locFlag, 'ATM_OCN_COUPLER', 'Used' )
+#endif
+#ifdef ALLOW_EXCH2
+      CALL PACKAGES_PRINT_MSG( locFlag, 'EXCH2',      'Used' )
+#endif
+#ifdef ALLOW_RW
+      CALL PACKAGES_PRINT_MSG( locFlag, 'RW',        'Used' )
+#endif
+#ifdef ALLOW_MDSIO
+      CALL PACKAGES_PRINT_MSG( locFlag, 'MDSIO',     'Used' )
+#endif
+#ifdef ALLOW_SHOWFLOPS
+      CALL PACKAGES_PRINT_MSG( locFlag, 'SHOWFLOPS', 'Used' )
+#endif
+C----- AD related pkgs:
+#ifdef ALLOW_ADMTLM
+      CALL PACKAGES_PRINT_MSG( locFlag, 'ADMTLM',     'Used' )
+#endif
+#ifdef ALLOW_AUTODIFF
+      CALL PACKAGES_PRINT_MSG( locFlag, 'AUTODIFF',   'Used' )
+#endif
+#ifdef ALLOW_OPENAD
+      CALL PACKAGES_PRINT_MSG( locFlag, 'OPENAD',     'Used' )
+#endif
+#ifdef ALLOW_COST
+      CALL PACKAGES_PRINT_MSG( locFlag, 'COST',       'Used' )
+#endif
+#ifdef ALLOW_CTRL
+      CALL PACKAGES_PRINT_MSG( locFlag, 'CTRL',       'Used' )
+#endif
+C----- mysterious pkgs:
+#ifdef ALLOW_SPHERE
+      CALL PACKAGES_PRINT_MSG( locFlag, 'SPHERE',     'None' )
+#endif
+#ifdef ALLOW_CHRONOS
+      CALL PACKAGES_PRINT_MSG( locFlag, 'CHRONOS',    'None' )
+#endif
+#ifdef ALLOW_ATM_COMMON
+      CALL PACKAGES_PRINT_MSG( locFlag, 'ATM_COMMON', 'None' )
+#endif
+
+      WRITE(msgBuf,'(2A)') ' PACKAGES_BOOT: End of package Summary'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
       _END_MASTER(myThid)
 
