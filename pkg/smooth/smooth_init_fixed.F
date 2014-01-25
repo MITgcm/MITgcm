@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_init_fixed.F,v 1.3 2012/09/04 14:37:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_init_fixed.F,v 1.4 2014/01/25 16:03:56 atn Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -43,6 +43,9 @@ C     *==========================================================*
         ENDDO
        ENDDO
       ENDDO
+
+            WRITE(standardMessageUnit,'(A,I6)')
+     & 'smooth2Ddiffnbt: ',smooth2Ddiffnbt
 
       DO smoothOpNb=1,smoothOpNbMax
       if (smooth2Dtype(smoothOpNb).NE.0) then

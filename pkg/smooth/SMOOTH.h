@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/SMOOTH.h,v 1.4 2012/08/21 13:46:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/SMOOTH.h,v 1.5 2014/01/25 16:03:56 atn Exp $
 C $Name:  $
 
 c pkg/smooth constants
@@ -37,7 +37,8 @@ c fields:
 
       integer smooth2Dnbt(smoothOpNbMax),
      & smooth2Dtype(smoothOpNbMax),smooth2Dsize(smoothOpNbMax),
-     & smooth2Dfilter(smoothOpNbMax)
+     & smooth2Dfilter(smoothOpNbMax),
+     & smooth2Ddiffnbt
       _RL smooth2DtotTime,
      & smooth2D_Lx0(smoothOpNbMax),smooth2D_Ly0(smoothOpNbMax),
      & smooth2D_Lx(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy),
@@ -76,7 +77,8 @@ c fields:
      & smooth2Dtype, smooth2Dsize,
      & smooth3DtypeZ, smooth3DsizeZ,
      & smooth3DtypeH, smooth3DsizeH,
-     & smooth2Dfilter, smooth3Dfilter
+     & smooth2Dfilter, smooth3Dfilter,
+     & smooth2Ddiffnbt
 
       COMMON /smooth_operators_r/
      & smooth3D_kappaR,smooth3D_Kwx,smooth3D_Kwy,smooth3D_Kwz,
