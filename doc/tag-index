@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1959 2014/01/17 22:12:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1960 2014/01/25 18:52:38 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o genmake2 & testreport:
+  - add genmake2 option "-oad" to generate a Makefile for OpenAD built and
+    in this case, use tools/adjoint_options/adjoint_oad as default AD optfile.
+    Update testreport accordingly. No need to set "export OPENAD=true"
+    in adjoint_options/adjoint_oad anymore (will be removed later).
 o pkg/shelfice:
   - put T & S shelfice forcing into model surfaceForcing_T,_S (for now,
     only if SHELFICEboundaryLayer=F); Change model/src/external_forcing.F
@@ -156,7 +161,7 @@ o verification:
 o pkg/cost:
   - define a "final cost function" for each tile, and use GLOBAL_SUM_TILE_RL
     (instead of _GLOBAL_SUM_RL) to get the final cost from all procs & threads:
-    o this fixes global-sum value if multi-threads (since GLOBAL_SUM_TILE_RL
+    o this fixes global-sum value if multi-threads (since GLOBAL_SUM_RL
       cannot be applied to var in common block).
     o allows to get results independent of tile-per-proc setting (if using
       slower GLOBAL_SUM_SEND_RECV option).
