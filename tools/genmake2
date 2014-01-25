@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.263 2014/01/06 16:49:10 jahn Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.264 2014/01/25 18:25:49 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -19,9 +19,13 @@ Usage: "$0" [OPTIONS]
     -help | --help | -h | --h
 	  Print this help message and exit.
 
+    -oad | --oad
+	  Generate a Makefile for an OpenAD built
+
     -adoptfile NAME | --adoptfile NAME | -adof NAME | --adof NAME
       -adoptfile=NAME | --adoptfile=NAME | -adof=NAME | --adof=NAME
 	  Use "NAME" as the adoptfile.  By default, the file at
+	  "tools/adjoint_options/adjoint_oad" (for OpenAD built) or
 	  "tools/adjoint_options/adjoint_default" will be used.
 
     -nooptfile | --nooptfile
@@ -1325,6 +1329,7 @@ FS=
 FS90=
 
 AUTODIFF_PKG_USED=f
+OPENAD=
 AD_OPTFILE=
 TAF=
 AD_TAF_FLAGS=
@@ -1355,7 +1360,7 @@ gm_s7="TMP THISHOST THISUSER THISDATE THISVER MACHINE FC_NAMEMANGLE"
 gm_s8="HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME HAVE_LAPACK HAVE_FLUSH"
 
 #  The following are all related to adjoint/tangent-linear stuff
-gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
+gm_s10="AUTODIFF_PKG_USED AD_OPTFILE OPENAD TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
 gm_s11="FTL_TAMC_FLAGS FTL_TAF_FLAGS SVD_TAMC_FLAGS SVD_TAF_FLAGS"
 gm_s12="TAF_EXTRA TAMC_EXTRA DIVA MPIINCLUDEDIR MPI_HEADER_FILES"
 
@@ -1407,6 +1412,8 @@ for ac_option in "$@" ; do
 	-optfile=* | --optfile=* | -of=* | --of=*)
 	    OPTFILE=$ac_optarg ;;
 
+	-oad | --oad)
+	    OPENAD="true" ;;
 	-adoptfile | --adoptfile | -adof | --adof)
 	    ac_prev=AD_OPTFILE ;;
 	-adoptfile=* | --adoptfile=* | -adof=* | --adof=*)
@@ -1680,10 +1687,12 @@ fi
 
 echo "  getting AD_OPTFILE information:"
 if test "x${AD_OPTFILE}" = x ; then
-    if test "x$MITGCM_AD_OF" = x ; then
+    if test "x$MITGCM_AD_OF" != x ; then
+	AD_OPTFILE=$MITGCM_AD_OF
+    elif test "x$OPENAD" = x ; then
 	AD_OPTFILE=$ROOTDIR/tools/adjoint_options/adjoint_default
     else
-	AD_OPTFILE=$MITGCM_AD_OF
+	AD_OPTFILE=$ROOTDIR/tools/adjoint_options/adjoint_oad
     fi
 fi
 if test "x${AD_OPTFILE}" != xNONE ; then
