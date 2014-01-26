@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.11 2012/09/04 15:04:51 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.12 2014/01/26 06:10:10 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -51,6 +51,9 @@ c     == global variables ==
 #include "DYNVARS.h"
 #ifdef ALLOW_PROFILES
 #include "profiles.h"
+#endif
+#ifdef ALLOW_SMOOTH
+#include "SMOOTH.h"
 #endif
 
 c     == routine arguments ==
@@ -275,7 +278,7 @@ c--   smooth mean_slaobs:
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH )
      &  call smooth_hetero2d(mean_slaobs,maskc,
-     &     sshv4cost_scalefile(1),300,mythid)
+     &     sshv4cost_scalefile(1),smooth2Ddiffnbt,mythid)
 #endif
 
       write(fname4test(1:80),'(1a)') 'sla2mdt_smooth'
@@ -541,7 +544,7 @@ c--    smooth mean_psMssh_all
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH )
      &  call smooth_hetero2d(mean_psMssh_all,maskc,
-     &     sshv4cost_scalefile(1),300,mythid)
+     &     sshv4cost_scalefile(1),smooth2Ddiffnbt,mythid)
 #endif
 
       write(fname4test(1:80),'(1a)') 'mdtdiff_smooth'
@@ -555,7 +558,7 @@ c--    smooth mean_psMssh_all
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH )
      &  call smooth_hetero2d(mean_slaobs2,maskc,
-     &     sshv4cost_scalefile(1),300,mythid)
+     &     sshv4cost_scalefile(1),smooth2Ddiffnbt,mythid)
 #endif
 
       write(fname4test(1:80),'(1a)') 'sla2model_smooth'
@@ -792,14 +795,14 @@ c ----------------------------------------
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH )
      &  call smooth_hetero2d(anom_psMslaobs,maskc,
-     &     sshv4cost_scalefile(5),300,mythid)
+     &     sshv4cost_scalefile(5),smooth2Ddiffnbt,mythid)
 #endif
 
 #ifdef ALLOW_SSHV4_OUTPUT
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH )
      &  call smooth_hetero2d(anom_slaobs,maskc,
-     &     sshv4cost_scalefile(5),300,mythid)
+     &     sshv4cost_scalefile(5),smooth2Ddiffnbt,mythid)
 #endif
 
       write(fname4test(1:80),'(1a)') 'sladiff_smooth'
