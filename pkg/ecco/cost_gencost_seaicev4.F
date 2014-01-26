@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.3 2013/03/29 14:53:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.4 2014/01/26 05:09:40 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -96,6 +96,12 @@ c     == local variables ==
       character*(128) fname0, fname1, fname2, fname3
       character*(MAX_LEN_MBUF) msgbuf
 
+#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
+      character*(MAX_LEN_FNAM) localobswfile
+      character*(128) fname0w
+      _RL localobsweight (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
+#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
+
       _RL daytime
       _RL diffsecs
       integer dayiter
@@ -140,6 +146,9 @@ c-- detect the relevant gencost indices
 c--   Initialise local variables.
 
       localwww = 0. _d 0
+      nrecloc=0
+      localperiod=0.
+
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -153,6 +162,11 @@ c--   Initialise local variables.
             do j = jmin,jmax
               do i = imin,imax
                 localobs(i,j,k,bi,bj) = 0. _d 0
+#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
+                if(gencost_timevaryweight(igen_conc)) then
+                  localobsweight(i,j,k,bi,bj) = 0. _d 0
+                endif
+#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
               enddo
             enddo
           enddo
@@ -172,13 +186,13 @@ c--   Assign mask
         enddo
       enddo
 
-      nrecloc=nmonsrec
-      localperiod=0.
-
       areabbbarfile=gencost_barfile(igen_conc)
       heffbbbarfile=gencost_barfile(igen_vol)
       sstbbbarfile=gencost_barfile(igen_sst)
       localobsfile=gencost_datafile(igen_conc)
+#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
+      localobswfile=gencost_errfile(igen_conc)
+#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
       xx_areabbbar_mean_dummy=xx_genbar_dummy(igen_conc)
       xx_heffbbbar_mean_dummy=xx_genbar_dummy(igen_vol)
       xx_sstbbbar_mean_dummy=xx_genbar_dummy(igen_sst)
@@ -189,6 +203,10 @@ c--   Assign mask
       spminloc=gencost_spmin(igen_conc)
       spmaxloc=gencost_spmax(igen_conc)
       spzeroloc=gencost_spzero(igen_conc)
+c-atn need to set local period, else always enter monthly avg
+      localperiod=gencost_period(igen_conc)
+      nrecloc=gencost_nrec(igen_conc)
+c-atn
 
 c--   First, read tiled data.
       doglobalread = .false.
@@ -286,6 +304,42 @@ c not sure why this is not spzeroloc
           enddo
         endif
 
+#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
+catn--- reading time-variable weights -----------
+        if(gencost_timevaryweight(igen_conc)) then
+          il=ilnblnk(localobswfile)
+          write(fname0w(1:128),'(2a,i4)')
+     &       localobswfile(1:il), '_', yday
+          inquire( file=fname0w, exist=exst )
+
+          if (.NOT. exst) then
+           write(fname0w(1:128),'(a)') localobswfile(1:il)
+c to use the data in a repreated cycle, comment next line?
+           localrec = obsrec
+          endif
+
+          if ( localrec .GT. 0 ) then
+          call mdsreadfield( fname0w, cost_iprec, cost_yftype, nnzobs,
+     &         localobsweight, localrec, mythid )
+          else
+          WRITE(standardMessageUnit,'(A)')
+     &     'siv4cost WARNING: ALL WEIGHTS ZEROS! NO CONTRIBUTION'
+          do bj = jtlo,jthi
+            do bi = itlo,ithi
+              do k = 1,nnzobs
+                do j = jmin,jmax
+                  do i = imin,imax
+                     localobsweight(i,j,k,bi,bj) = 0. _d 0
+                  enddo
+                enddo
+              enddo
+            enddo
+          enddo
+          endif
+        endif
+catn---------------------------------------------
+#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
+
         do bj = jtlo,jthi
           do bi = itlo,ithi
 
@@ -299,8 +353,28 @@ c--           Determine the mask on weights
      &               localobs(i,j,k,bi,bj) .eq. spzeroloc ) then
                    cmask(i,j,k) = 0. _d 0
                 endif
-               localweight(i,j,k,bi,bj)=
-     &           gencost_weight(i,j,bi,bj,igen_conc)
+catn----------------------------------------------
+#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
+                if (gencost_timevaryweight(igen_conc)) then
+c--    Test for missing values.
+                  if (localobsweight(i,j,k,bi,bj) .lt. -9900.) then
+                    localobsweight(i,j,k,bi,bj) = 0. _d 0
+                  endif
+                  if (localobsweight(i,j,k,bi,bj) .ne. 0.) then
+                    localweight(i,j,k,bi,bj) =
+     &                1./localobsweight(i,j,k,bi,bj)/
+     &                   localobsweight(i,j,k,bi,bj)
+                  else
+                    localweight(i,j,k,bi,bj) = 0.0 _d 0
+                  endif
+                else
+                  localweight(i,j,k,bi,bj)=
+     &              gencost_weight(i,j,bi,bj,igen_conc)
+                endif
+#else  /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
+                localweight(i,j,k,bi,bj)=
+     &            gencost_weight(i,j,bi,bj,igen_conc)
+#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
               enddo
              enddo
             enddo

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.51 2012/09/30 20:33:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.52 2014/01/26 05:09:40 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -940,6 +940,9 @@ c--           Test for missing values.
               if (wtauu(i,j,bi,bj) .lt. -9900.) then
                 wtauu(i,j,bi,bj) = 0. _d 0
               endif
+catn-- not sure why wtauu*0.1 by default, will remove 0.1,
+catn   but leave for now for purpose of testreport
+catn          wtauu(i,j,bi,bj) = wtauu(i,j,bi,bj)
               wtauu(i,j,bi,bj) = wtauu(i,j,bi,bj)*0.1
               wtauu(i,j,bi,bj) = max(wtauu(i,j,bi,bj),wtau0)
 #ifndef ALLOW_ROTATE_UV_CONTROLS
@@ -1010,6 +1013,9 @@ c--           Test for missing values.
               if (wtauv(i,j,bi,bj) .lt. -9900.) then
                 wtauv(i,j,bi,bj) = 0. _d 0
               endif
+catn-- not sure why wtauu*0.1 by default, will remove 0.1,
+catn   but leave for now for purpose of testreport
+catn          wtauv(i,j,bi,bj) = wtauv(i,j,bi,bj)
               wtauv(i,j,bi,bj) = wtauv(i,j,bi,bj)*0.1
               wtauv(i,j,bi,bj) = max(wtauv(i,j,bi,bj),wtau0)
 #ifndef ALLOW_ROTATE_UV_CONTROLS
@@ -1116,7 +1122,7 @@ c--           Test for missing values.
               if (watemp(i,j,bi,bj) .lt. -9900.) then
                 watemp(i,j,bi,bj) = 0. _d 0
               endif
-c--           Data are in units of W/m**2.
+c--           Data are in units of W/m**2?? should be in degC or degK
               watemp(i,j,bi,bj) = watemp(i,j,bi,bj)
               watemp(i,j,bi,bj) = max(watemp(i,j,bi,bj),watemp0)
      &                            *frame(i,j)
@@ -1607,17 +1613,34 @@ c--           Test for missing values.
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       do k=1,NGENCOST
       if ( gencost_errfile(k) .NE. ' ' ) then
-
+catn ---------------------------------------------------
+#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
+        if(.NOT. gencost_timevaryweight(k)) then
         call mdsreadfield( gencost_errfile(k), cost_iprec, cost_yftype,
      &      1, gencost_weight(:,:,1,1,k), 1, mythid )
+        endif
+#else /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
+        call mdsreadfield( gencost_errfile(k), cost_iprec, cost_yftype,
+     &      1, gencost_weight(:,:,1,1,k), 1, mythid )
+#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
            do j = jmin,jmax
             do i = imin,imax
+#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
+catn --
+c define fallback error all zeros, so if daily err files
+c missing, no cost at all will be calc
+catn --
+              if( gencost_timevaryweight(k)) then
+                gencost_weight(i,j,bi,bj,k) = 0. _d 0
+              endif
+#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
 c--           Test for missing values.
               if (gencost_weight(i,j,bi,bj,k) .lt. -9900.) then
                 gencost_weight(i,j,bi,bj,k) = 0. _d 0
+catn ---------------------------------------------------
               endif
             enddo
            enddo

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.64 2013/03/30 11:57:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.65 2014/01/26 05:09:40 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -154,6 +154,9 @@ c--   Read the namelist input.
      &         gencost_spmax,
      &         gencost_spzero,
      &         gencost_avgperiod,
+#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
+     &         gencost_timevaryweight,
+#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
      &         mult_gencost
 #endif
 
@@ -483,6 +486,9 @@ cgf     &        'genbar', k
          gencost_spmax         = 0. _d 0
          gencost_spzero        = 9876. _d 0
          mult_gencost(k)      = 0. _d 0
+#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
+         gencost_timevaryweight(k) = .FALSE.
+#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
       enddo
 
       READ(  iUnit, nml = ecco_gencost_nml )
