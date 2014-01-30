@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1960 2014/01/25 18:52:38 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1961 2014/01/30 21:07:20 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/thsice
+  - corrected store directive fixes thsice adjoint gradient checks
 o genmake2 & testreport:
   - add genmake2 option "-oad" to generate a Makefile for OpenAD built and
     in this case, use tools/adjoint_options/adjoint_oad as default AD optfile.
