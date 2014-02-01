@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1961 2014/01/30 21:07:20 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1962 2014/02/01 22:51:56 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint64t (2014/02/01)
 o pkg/thsice
   - corrected store directive fixes thsice adjoint gradient checks
 o genmake2 & testreport:
