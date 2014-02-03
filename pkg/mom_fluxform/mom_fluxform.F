@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.47 2013/08/01 20:11:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.48 2014/02/03 22:55:44 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -840,11 +840,7 @@ C      o Cylindrical grid metric terms
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C--   Coriolis term
-C     Note. As coded here, coriolis will not work with "thin walls"
-c     IF (useCDscheme) THEN
-c       CALL MOM_CDSCHEME(bi,bj,k,dPhiHydX,dPhiHydY,myThid)
-c     ELSE
+C--   Coriolis term (call to CD_CODE_SCHEME has been moved to timestep.F)
       IF (.NOT.useCDscheme) THEN
         CALL MOM_U_CORIOLIS(bi,bj,k,vFld,cf,myThid)
         DO j=jMin,jMax
