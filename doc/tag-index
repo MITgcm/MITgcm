@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1962 2014/02/01 22:51:56 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1963 2014/02/04 18:30:56 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice: 
+  - rename recently introduced parameters from (wrong name) AB to
+    BDF (backward difference time discretisation)
+  - retire runtime parameters SEAICEuseAB2, SEAICE_abEps
 
 checkpoint64t (2014/02/01)
 o pkg/thsice
