@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.23 2013/05/30 14:07:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.24 2014/02/04 18:30:31 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -76,8 +76,8 @@ C     parameters to compute convergence criterion
       _RL     JFNKgamma_lin
       _RL     FGMRESeps
       _RL     JFNKtol
-C     Adams-Bashforth extrapolation factors
-      _RL abFac, abAlpha
+C     backward differences extrapolation factors
+      _RL bdfFac, bdfAlpha
 C
       _RL     recip_deltaT
       LOGICAL JFNKconverged, krylovConverged
@@ -87,7 +87,7 @@ C
 C     u/vIceRes :: residual of sea-ice momentum equations
       _RL uIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C     extra time level required for Adams-Bashforth-2 time stepping
+C     extra time level required for backward difference time stepping
       _RL duIcNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dvIcNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     du/vIce   :: ice velocity increment to be added to u/vIce
@@ -118,16 +118,16 @@ C     with iOutFgmres=1, seaice_fgmres prints the residual at each iteration
      &     DIFFERENT_MULTIPLE( SEAICE_monFreq, myTime, deltaTClock ) )
      &     iOutFGMRES=1
 
-C     Adams-Bashforth extrapolation factors
-      abFac = 0. _d 0
-      IF ( SEAICEuseAB2 ) THEN
-       IF ( myIter.EQ.nIter0 .AND. SEAICEmomStartAB.EQ.0 ) THEN
-        abFac = 0. _d 0
+C     backward difference extrapolation factors
+      bdfFac = 0. _d 0
+      IF ( SEAICEuseBDF2 ) THEN
+       IF ( myIter.EQ.nIter0 .AND. SEAICEmomStartBDF.EQ.0 ) THEN
+        bdfFac = 0. _d 0
        ELSE
-        abFac = 0.5 _d 0 + SEAICE_abEps
+        bdfFac = 0.5 _d 0
        ENDIF
       ENDIF
-      abAlpha = 1. _d 0 + abFac 
+      bdfAlpha = 1. _d 0 + bdfFac 
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -142,10 +142,10 @@ C     Adams-Bashforth extrapolation factors
 C     cycle ice velocities
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
-          duIcNm1(I,J,bi,bj) = uIce(I,J,bi,bj) * abAlpha 
-     &         + ( uIce(I,J,bi,bj) - uIceNm1(I,J,bi,bj) ) * abFac
-          dvIcNm1(I,J,bi,bj) = vIce(I,J,bi,bj) * abAlpha 
-     &         + ( vIce(I,J,bi,bj) - vIceNm1(I,J,bi,bj) ) * abFac
+          duIcNm1(I,J,bi,bj) = uIce(I,J,bi,bj) * bdfAlpha 
+     &         + ( uIce(I,J,bi,bj) - uIceNm1(I,J,bi,bj) ) * bdfFac
+          dvIcNm1(I,J,bi,bj) = vIce(I,J,bi,bj) * bdfAlpha 
+     &         + ( vIce(I,J,bi,bj) - vIceNm1(I,J,bi,bj) ) * bdfFac
           uIceNm1(I,J,bi,bj) = uIce(I,J,bi,bj)
           vIceNm1(I,J,bi,bj) = vIce(I,J,bi,bj)
          ENDDO

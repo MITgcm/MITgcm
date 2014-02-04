@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.146 2013/05/30 14:07:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.147 2014/02/04 18:30:31 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -77,6 +77,8 @@ C     SEAICE_freeze     :: FREEZING TEMP. OF SEA WATER
       INTEGER SEAICEadvSchAge, LAD, SEAICEturbFluxFormula
       _RL SEAICEdiffKhAge
       CHARACTER*(MAX_LEN_MBUF) IceAgeFile, IceAgeTrFile(4)
+      _RL SEAICE_abEps
+      LOGICAL SEAICEuseAB2
 
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
@@ -106,8 +108,8 @@ C--   SEAICE parameters
      & SEAICE_JFNK_lsIter, SEAICE_JFNK_tolIter, JFNKres_t,JFNKres_tFac,
      & JFNKgamma_nonlin,JFNKgamma_lin_min,JFNKgamma_lin_max,
      & SEAICE_JFNKepsilon, SEAICE_OLx, SEAICE_OLy,
-     & SEAICE_JFNKphi, SEAICE_JFNKalpha, SEAICEuseIMEX, SEAICEuseAB2,
-     & SEAICE_abEps,
+     & SEAICE_JFNKphi, SEAICE_JFNKalpha, SEAICEuseIMEX, SEAICEuseBDF2,
+     & SEAICEuseAB2, SEAICE_abEps,
      & SEAICEpresH0, SEAICEpresPow0, SEAICEpresPow1,
      & SEAICE_initialHEFF, SEAICEturbFluxFormula,
      & SEAICE_areaGainFormula, SEAICE_areaLossFormula,
@@ -224,8 +226,7 @@ c     DIFF1      = .004 _d 0
       SEAICE_deltaTtherm = dTtracerLev(1)
       SEAICE_deltaTdyn   = dTtracerLev(1)
       SEAICE_deltaTevp   = UNSET_RL
-      SEAICEuseAB2       = .FALSE.
-      SEAICE_abEps       = 0. _d 0
+      SEAICEuseBDF2      = .FALSE.
 C     JFNK stuff
       SEAICEuseJFNK       = .FALSE.
       SEAICEuseIMEX       = .FALSE.
@@ -449,6 +450,8 @@ c     MAX_TICE           = 30.     _d 0
       SEAICEturbFluxFormula =UNSET_I
       SEAICE_freeze      = UNSET_RL
       MAX_HEFF           = UNSET_RL
+      SEAICEuseAB2       = .FALSE.
+      SEAICE_abEps       = UNSET_RL
 C-    end retired parameters
 
 #ifdef ALLOW_COST
@@ -966,6 +969,20 @@ C-    Retired parameters
        nRetired = nRetired + 1
        WRITE(msgBuf,'(A,A)')
      &  'S/R SEAICE_READPARMS: "MAX_HEFF" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( SEAICEuseAB2 ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "SEAICEuseAB2" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( SEAICE_abEps .NE. UNSET_RL ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "SEAICE_abEps" ',
      &  'is no longer allowed in file "data.seaice"'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF

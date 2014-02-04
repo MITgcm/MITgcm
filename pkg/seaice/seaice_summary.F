@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.70 2013/10/05 19:36:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.71 2014/02/04 18:30:31 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -85,10 +85,8 @@ C--  Time-stepping related param.
       CALL WRITE_0D_RL( SEAICE_deltaTevp  ,INDEX_NONE,
      & 'SEAICE_deltaTevp  =', ' /* EVP timestep */')
 #endif
-      CALL WRITE_0D_L ( SEAICEuseAB2, INDEX_NONE,
-     & 'SEAICEuseAB2  =', ' /* use Adams-Bashforth for mom. eq. */')
-      IF ( SEAICEuseAB2 ) CALL WRITE_0D_RL( SEAICE_abEps  ,INDEX_NONE,
-     & 'SEAICE_abEps      =', ' /* AB2 stabilization parameter */')
+      CALL WRITE_0D_L ( SEAICEuseBDF2, INDEX_NONE,
+     & 'SEAICEuseBDF2  =',' /* use backw. differencing for mom. eq. */')
       CALL WRITE_0D_L ( SEAICErestoreUnderIce, INDEX_NONE,
      & 'SEAICErestoreUnderIce  =', ' /* restore T and S under ice */')
 

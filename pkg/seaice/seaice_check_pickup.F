@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.11 2013/05/30 14:07:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.12 2014/02/04 18:30:31 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -134,7 +134,7 @@ C        if SEAICEuseEVPpickup then stop / else warning / endif
      &            fldName(1:8).EQ.'siVicNm1' ) THEN
           IF ( .NOT.pickupStrictlyMatch ) THEN
 C     print a warning and restart anyway
-           SEAICEmomStartAB = 0
+           SEAICEmomStartBDF = 0
            _BEGIN_MASTER( myThid )
            WRITE(msgBuf,'(4A)') '** WARNING ** SEAICE_CHECK_PICKUP:',
      &      ' restart without "',fldName,'" (set to zero)'

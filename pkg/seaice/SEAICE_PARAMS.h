@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.113 2013/05/30 14:01:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.114 2014/02/04 18:30:31 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -33,7 +33,9 @@ C     SEAICE_clipVelocities :: clip velocities to +/- 40cm/s
 C     useHB87stressCoupling :: use an intergral over ice and ocean surface
 C                          layer to define surface stresses on ocean
 C                          following Hibler and Bryan (1987, JPO)
-C     SEAICEuseAB2      :: use Adams-Bashforth2 for momentum equations
+C     SEAICEuseBDF2     :: use 2nd-order backward difference approach
+C                          for momentum equations as described in
+C                          Lemieux et al. 2014, JCP
 C                          so far only implemented for JFNK-solver
 C - advection:
 C     SEAICEuseFluxForm :: use flux form for advection and diffusion
@@ -81,7 +83,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT,
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,
-     &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseAB2,
+     &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
      &     SEAICE_no_slip, SEAICE_maskRHS,
      &     SEAICE_clipVelocities, useHB87stressCoupling,
@@ -100,7 +102,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT,
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,
-     &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseAB2, 
+     &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2, 
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
      &     SEAICE_no_slip, SEAICE_maskRHS,
      &     SEAICE_clipVelocities, useHB87stressCoupling,
@@ -129,8 +131,8 @@ C     SOLV_MAX_ITERS    :: maximum number of allowed LSR-solver iterations
 C     SOLV_NCHECK       :: iteration interval for solver convergence test
 C     NPSEUDOTIMESTEPS  :: number of extra pseudo time steps (>= 2)
 C     SEAICEnEVPstarSteps :: number of evp*-steps
-C     SEAICEmomStartAB  :: number of previous u/vIce time levels available
-C                          to start (or restart) Adams-Bashforth.
+C     SEAICEmomStartBDF   :: number of previous u/vIce time levels available
+C                          to start (or restart) BDF2 scheme.
 C     SEAICEnewtonIterMax :: maximum number of allowed Newton iterations
 C                          in JFNK-solver
 C     SEAICEkrylovIterMax :: maximum number of allowed Krylov iterations
@@ -179,7 +181,7 @@ C
       INTEGER NPSEUDOTIMESTEPS
       INTEGER LSR_mixIniGuess
       INTEGER SEAICEnEVPstarSteps
-      INTEGER SEAICEmomStartAB
+      INTEGER SEAICEmomStartBDF
       INTEGER SEAICEnewtonIterMax, SEAICEkrylovIterMax
       INTEGER SEAICE_JFNK_lsIter, SEAICE_JFNK_tolIter
       INTEGER SEAICE_OLx, SEAICE_OLy
@@ -202,7 +204,7 @@ C
      &     NPSEUDOTIMESTEPS,
      &     LSR_mixIniGuess,
      &     SEAICEnEVPstarSteps,
-     &     SEAICEmomStartAB,
+     &     SEAICEmomStartBDF,
      &     SEAICEnewtonIterMax, SEAICEkrylovIterMax,
      &     SEAICE_JFNK_lsIter, SEAICE_OLx, SEAICE_OLy,
      &     SEAICE_JFNK_tolIter,
@@ -253,7 +255,6 @@ C     SEAICE_evpTauRelax :: relaxation timescale tau                    (s)
 C     SEAICE_evpDampC    :: evp damping constant (Hunke,JCP,2001)       (kg/m^2)
 C     SEAICE_evpAlpha    :: dimensionless parameter 2*evpTauRelax/deltaTevp
 C     SEAICE_evpBeta     :: dimensionless parameter deltaTdyn/deltaTevp
-C     SEAICE_abEps       :: Adams-Bashforth-2 stabilizing weight
 C     JFNKgamma_nonlin   :: non-linear tolerance parameter for JFNK solver
 C     JFNKgamma_lin_min/max :: tolerance parameters for linear JFNK solver
 C     JFNKres_t          :: tolerance parameter for FGMRES residual
@@ -355,7 +356,6 @@ C     SEAICE_tauAreaObsRelax :: Timescale of relaxation to observed
 C                               sea ice concentration (s), default=unset
 C
       _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn, SEAICE_deltaTevp
-      _RL SEAICE_abEps
       _RL SEAICE_LSRrelaxU, SEAICE_LSRrelaxV
       _RL SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq
       _RL SEAICE_initialHEFF
@@ -395,7 +395,7 @@ C
       _RL SEAICE_tauAreaObsRelax
 
       COMMON /SEAICE_PARM_RL/
-     &    SEAICE_deltaTtherm, SEAICE_deltaTdyn, SEAICE_abEps,
+     &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      &    SEAICE_LSRrelaxU, SEAICE_LSRrelaxV,
      &    SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
      &    SEAICE_evpAlpha, SEAICE_evpBeta,

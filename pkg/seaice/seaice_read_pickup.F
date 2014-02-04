@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.20 2013/05/30 14:07:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.21 2014/02/04 18:30:31 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -262,7 +262,7 @@ C--    read Sea-Ice Dynamics variables (all 2-D fields):
      &                                      nj, fp, 1, nIter0, myThid )
          CALL READ_MFLDS_3D_RL( 'siVICE  ', VICE,
      &                                      nj, fp, 1, nIter0, myThid )
-         IF ( SEAICEuseAB2 ) THEN
+         IF ( SEAICEuseBDF2 ) THEN
           CALL READ_MFLDS_3D_RL('siUicNm1', uIceNm1,
      &                                      nj, fp, 1, nIter0, myThid )
           CALL READ_MFLDS_3D_RL('siVicNm1', vIceNm1,

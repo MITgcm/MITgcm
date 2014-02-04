@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.90 2013/12/09 17:08:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.91 2014/02/04 18:30:31 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1189,8 +1189,8 @@ C     i,j,bi,bj  :: Loop counters
 
       INTEGER i, j, bi, bj
       _RL hFacM, hFacP
-C     Adams-Bashforth extrapolation factor
-      _RL abAlpha
+C     backward difference extrapolation factor
+      _RL bdfAlpha
 
 C     coefficients of ice velocities in coefficient matrix
 C     for both U and V-equation
@@ -1211,13 +1211,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   turning angles
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
-C     Adams-Bashforth extrapolation factor
-      abAlpha = 1. _d 0
-      IF ( SEAICEuseAB2 ) THEN
-       IF ( myIter.EQ.nIter0 .AND. SEAICEmomStartAB.EQ.0 ) THEN
-        abAlpha = 1. _d 0
+C     backward difference extrapolation factor
+      bdfAlpha = 1. _d 0
+      IF ( SEAICEuseBDF2 ) THEN
+       IF ( myIter.EQ.nIter0 .AND. SEAICEmomStartBDF.EQ.0 ) THEN
+        bdfAlpha = 1. _d 0
        ELSE
-        abAlpha = 1.5 _d 0 + SEAICE_abEps
+        bdfAlpha = 1.5 _d 0
        ENDIF
       ENDIF
 
@@ -1324,7 +1324,7 @@ C     here we need ad in the contribution from the time derivative
 C     and the symmetric drag term; must be done after normalizing
           BU(I,J,bi,bj)    = BU(I,J,bi,bj)    * recip_rAw(I,J,bi,bj)
      &         + seaiceMaskU(I,J,bi,bj) *
-     &         ( abAlpha*seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
+     &         ( bdfAlpha*seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
      &         + 0.5 _d 0 * ( dwatnLoc(I,  J,bi,bj) 
      &                      + dwatnLoc(I-1,J,bi,bj) )
      &         * COSWAT )
@@ -1390,7 +1390,7 @@ C     here we need ad in the contribution from the time derivative
 C     and the symmetric drag term; must be done after normalizing
           BV(I,J,bi,bj)    = BV(I,J,bi,bj)    * recip_rAs(I,J,bi,bj)
      &         + seaiceMaskV(I,J,bi,bj) *
-     &         ( abAlpha*seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
+     &         ( bdfAlpha*seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
      &         + 0.5 _d 0 * ( dwatnLoc(I,J,  bi,bj) 
      &                      + dwatnLoc(I,J-1,bi,bj) )
      &         * COSWAT )

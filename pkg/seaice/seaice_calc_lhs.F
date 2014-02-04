@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.7 2013/05/30 14:07:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.8 2014/02/04 18:30:31 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -73,8 +73,8 @@ C     i,j,bi,bj,k :: loop indices
       INTEGER k
       _RS     SINWAT
       _RL     COSWAT, recip_deltaT, eplus, eminus
-C     Adams-Bashforth extrapolation factor
-      _RL abAlpha
+C     backward difference extrapolation factor
+      _RL bdfAlpha
 C     components of symmetric stress tensor
       _RL sig11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig22(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -86,13 +86,13 @@ CEOP
 C--   introduce turning angles
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
-C     Adams-Bashforth extrapolation factor
-      abAlpha = 1. _d 0
-      IF ( SEAICEuseAB2 ) THEN
-       IF ( myIter.EQ.nIter0 .AND. SEAICEmomStartAB.EQ.0 ) THEN
-        abAlpha = 1. _d 0
+C     backward difference extrapolation factor
+      bdfAlpha = 1. _d 0
+      IF ( SEAICEuseBDF2 ) THEN
+       IF ( myIter.EQ.nIter0 .AND. SEAICEmomStartBDF.EQ.0 ) THEN
+        bdfAlpha = 1. _d 0
        ELSE
-        abAlpha = 1.5 _d 0 + SEAICE_abEps
+        bdfAlpha = 1.5 _d 0
        ENDIF
       ENDIF
 
@@ -147,11 +147,11 @@ C     compute lhs side of momentum equations
          DO I=1,sNx
 C     mass*(uIce)/deltaT - dsigma/dx
           uIceLHS(I,J,bi,bj) = 
-     &         abAlpha*seaiceMassU(I,J,bi,bj)*recip_deltaT
+     &         bdfAlpha*seaiceMassU(I,J,bi,bj)*recip_deltaT
      &         *uIceLoc(I,J,bi,bj) - stressDivergenceX(I,J,bi,bj)
 C     mass*(vIce)/deltaT - dsigma/dy
           vIceLHS(I,J,bi,bj) = 
-     &         abAlpha*seaiceMassV(I,J,bi,bj)*recip_deltaT
+     &         bdfAlpha*seaiceMassV(I,J,bi,bj)*recip_deltaT
      &         *vIceLoc(I,J,bi,bj) - stressDivergenceY(I,J,bi,bj)
 C     coriols terms: - mass*f*vIce
           uIceLHS(I,J,bi,bj) = uIceLHS(I,J,bi,bj) - 0.5 _d 0*(
