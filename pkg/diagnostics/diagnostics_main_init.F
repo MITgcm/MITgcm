@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.48 2014/01/19 14:42:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.49 2014/02/04 19:39:57 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -767,7 +767,7 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
 
       diagName  = 'MoistCor'
       diagTitle = 'Heating correction due to moist thermodynamics'
-      diagUnits = 'W/s^2           '
+      diagUnits = 'W/m^2           '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
