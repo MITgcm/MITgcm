@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.168 2014/01/03 16:19:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.169 2014/02/06 23:16:46 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -482,6 +482,8 @@ C--       kDown  Cycles through 2,1 to point to current layer
          kkey = (idynkey-1)*Nr + k
 CADJ STORE totPhiHyd (:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE phiHydLow (:,:,bi,bj)
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte     
 CADJ STORE theta (:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE salt  (:,:,k,bi,bj)
