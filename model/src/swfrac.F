@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.15 2009/08/04 21:51:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.16 2014/02/07 15:10:38 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -23,7 +23,7 @@ C     | Reference : Two band solar absorption model of Paulson
 C     |             and Simpson (1977, JPO, 7, 952-956)
 C     | Notes
 C     | =====
-C     | Parameter jwtype is hardcoded to 3 for time being.
+C     | Parameter jwtype is hardcoded to 2 for time being.
 C     | Below 200m the solar penetration gets set to zero,
 C     | otherwise the limit for the exponent (+/- 5678) needs to
 C     | be taken care of.
