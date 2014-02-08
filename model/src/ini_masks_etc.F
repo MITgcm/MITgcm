@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.52 2012/06/17 02:21:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.53 2014/02/08 17:20:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -28,7 +28,9 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "SURFACE.h"
+#ifdef NONLIN_FRSURF
+# include "SURFACE.h"
+#endif /* NONLIN_FRSURF */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -233,18 +235,22 @@ C     rLow & reference rSurf at Western & Southern edges (U and V points)
         ENDDO
         DO j=1-OLy,sNy+OLy
          DO i=2-OLx,sNx+OLx
-           rSurfW(i,j,bi,bj) =
-     &           MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
            rLowW(i,j,bi,bj)  =
      &           MAX(   R_low(i-1,j,bi,bj),   R_low(i,j,bi,bj) )
+           rSurfW(i,j,bi,bj) =
+     &           MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
+           rSurfW(i,j,bi,bj) =
+     &           MAX( rSurfW(i,j,bi,bj), rLowW(i,j,bi,bj) )
          ENDDO
         ENDDO
         DO j=2-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-           rSurfS(i,j,bi,bj) =
-     &           MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
            rLowS(i,j,bi,bj)  =
      &           MAX(   R_low(i,j-1,bi,bj),   R_low(i,j,bi,bj) )
+           rSurfS(i,j,bi,bj) =
+     &           MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
+           rSurfS(i,j,bi,bj) =
+     &           MAX( rSurfS(i,j,bi,bj), rLowS(i,j,bi,bj) )
          ENDDO
         ENDDO
 C-    end bi,bj loops.
@@ -254,21 +260,10 @@ C-    end bi,bj loops.
       CALL EXCH_UV_XY_RS( rSurfW, rSurfS, .FALSE., myThid )
       CALL EXCH_UV_XY_RS( rLowW,  rLowS,  .FALSE., myThid )
 
-C--   The following block allows thin walls representation of non-periodic
-C     boundaries such as happen on the lat-lon grid at the N/S poles.
-C     We should really supply a flag for doing this.
-      DO bj=myByLo(myThid), myByHi(myThid)
-       DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO k=1, Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           IF (dyG(i,j,bi,bj).EQ.0.) hFacW(i,j,k,bi,bj)=0.
-           IF (dxG(i,j,bi,bj).EQ.0.) hFacS(i,j,k,bi,bj)=0.
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
+C--   Addtional closing of Western and Southern grid-cell edges: for example,
+C     a) might add some "thin walls" in specific location
+C--   b) close non-periodic N & S boundaries of lat-lon grid at the N/S poles.
+      CALL ADD_WALLS2MASKS( myThid )
 
 C--   Calculate surface k index for interface W & S (U & V points)
       DO bj=myByLo(myThid), myByHi(myThid)
@@ -289,32 +284,6 @@ C--   Calculate surface k index for interface W & S (U & V points)
         ENDDO
        ENDDO
       ENDDO
-
-       IF ( useShelfIce ) THEN
-C     Adjust reference rSurf at U and V points in order to get consistent
-C     column thickness from Sum_k(hFac*drF) and rSurf-rLow
-        DO bj=myByLo(myThid), myByHi(myThid)
-         DO bi=myBxLo(myThid), myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-             rSurfW(i,j,bi,bj) = rLowW(i,j,bi,bj)
-             rSurfS(i,j,bi,bj) = rLowS(i,j,bi,bj)
-           ENDDO
-          ENDDO
-          DO k=1,Nr
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             rSurfW(i,j,bi,bj) = rSurfW(i,j,bi,bj)
-     &                         + hFacW(i,j,k,bi,bj)*drF(k)
-             rSurfS(i,j,bi,bj) = rSurfS(i,j,bi,bj)
-     &                         + hFacS(i,j,k,bi,bj)*drF(k)
-            ENDDO
-           ENDDO
-          ENDDO
-C-    end bi,bj loops.
-         ENDDO
-        ENDDO
-       ENDIF
 
       ELSE
 #ifndef DISABLE_SIGMA_CODE
