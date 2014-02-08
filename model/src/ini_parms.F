@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.257 2013/12/19 01:06:09 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.258 2014/02/08 17:16:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -271,8 +271,8 @@ C--   Gridding parameters
 
 C--   Input files
       NAMELIST /PARM05/
-     & bathyFile, topoFile, shelfIceFile, diffKrFile,
-     & viscAhDfile, viscAhZfile, viscA4Dfile, viscA4Zfile,
+     & bathyFile, topoFile, addWwallFile, addSwallFile, shelfIceFile,
+     & diffKrFile, viscAhDfile, viscAhZfile, viscA4Dfile, viscA4Zfile,
      & hydrogThetaFile, hydrogSaltFile,
      & maskIniTemp, maskIniSalt, checkIniTemp, checkIniSalt,
      & zonalWindFile, meridWindFile,

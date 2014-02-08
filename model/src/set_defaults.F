@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.169 2013/12/19 01:06:09 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.170 2014/02/08 17:16:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -337,6 +337,8 @@ C--   Time stepping parameters
 C--   Input files
       bathyFile       = ' '
       topoFile        = ' '
+      addWwallFile    = ' '
+      addSwallFile    = ' '
       hydrogSaltFile  = ' '
       hydrogThetaFile = ' '
       maskIniTemp     = .TRUE.

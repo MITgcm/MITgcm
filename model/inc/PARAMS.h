@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.272 2013/11/18 15:48:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.273 2014/02/08 17:15:43 jmc Exp $
 C $Name:  $
 C
 
@@ -49,6 +49,9 @@ C     bathyFile       :: File containing bathymetry. If not defined bathymetry
 C                        is taken from inline function.
 C     topoFile        :: File containing the topography of the surface (unit=m)
 C                        (mainly used for the atmosphere = ground height).
+C     addWwallFile    :: File containing 2-D additional Western  cell-edge wall
+C     addSwallFile    :: File containing 2-D additional Southern cell-edge wall
+C                        (e.g., to add "thin-wall" where it is =1)
 C     hydrogThetaFile :: File containing initial hydrographic data (3-D)
 C                        for potential temperature.
 C     hydrogSaltFile  :: File containing initial hydrographic data (3-D)
@@ -84,7 +87,7 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                tRefFile, sRefFile, rhoRefFile,
      &                delRFile, delRcFile, hybSigmFile,
      &                delXFile, delYFile, horizGridFile,
-     &                bathyFile, topoFile,
+     &                bathyFile, topoFile, addWwallFile, addSwallFile,
      &                viscAhDfile, viscAhZfile,
      &                viscA4Dfile, viscA4Zfile,
      &                hydrogThetaFile, hydrogSaltFile, diffKrFile,
@@ -112,6 +115,7 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) delYFile
       CHARACTER*(MAX_LEN_FNAM) horizGridFile
       CHARACTER*(MAX_LEN_FNAM) bathyFile, topoFile
+      CHARACTER*(MAX_LEN_FNAM) addWwallFile, addSwallFile
       CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile, hydrogSaltFile
       CHARACTER*(MAX_LEN_FNAM) diffKrFile
       CHARACTER*(MAX_LEN_FNAM) viscAhDfile
