@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_sidedrag.F,v 1.12 2006/06/07 01:55:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_sidedrag.F,v 1.13 2014/02/09 18:56:19 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -8,12 +8,12 @@ C !ROUTINE: MOM_U_SIDEDRAG
 
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_U_SIDEDRAG(
-     I        bi,bj,k,
+     I        bi, bj, k,
      I        uFld, del2u, hFacZ,
-     I        viscAh_Z,viscA4_Z,
-     I        harmonic,biharmonic,useVariableViscosity,
+     I        viscAh_Z, viscA4_Z,
+     I        harmonic, biharmonic, useVariableViscosity,
      O        uDragTerms,
-     I        myThid)
+     I        myThid )
 
 C !DESCRIPTION:
 C Calculates the drag terms due to the no-slip condition on viscous stresses:
@@ -35,14 +35,14 @@ C  k                    :: vertical level
 C  uFld                 :: zonal flow
 C  del2u                :: Laplacian of zonal flow
 C  hFacZ                :: fractional open water at vorticity points
-C  myThid               :: thread number
-      INTEGER bi,bj,k
+C  myThid               :: my Thread Id number
+      INTEGER bi, bj, k
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL del2u(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      LOGICAL harmonic,biharmonic,useVariableViscosity
+      LOGICAL harmonic, biharmonic, useVariableViscosity
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -54,34 +54,29 @@ C  i,j                  :: loop indices
 C  hFacZClosedN         :: fractional open water to north
 C  hFacZClosedS         :: fractional open water to south
       INTEGER i,j
-      _RL hFacZClosedS,hFacZClosedN
+      _RL hFacZClosedS, hFacZClosedN
+      _RL Ahtmp, A4tmp
 CEOP
-      _RL Ahtmp,A4tmp
-
 
       IF ( sideDragFactor.LE.0. ) THEN
 C--   Laplacian and bi-harmonic terms: variable-Viscosity coeff. from
 C     MOM_CALC_VISC are not used here (corresponds to the "old" version).
 
-      DO j=2-Oly,sNy+Oly-1
-       DO i=2-Olx,sNx+Olx-1
+      DO j=2-OLy,sNy+OLy-1
+       DO i=2-OLx,sNx+OLx-1
 #ifdef NONLIN_FRSURF
-C-      this will not give any side-drag along thin wall.
-C       (but this might just be what we want ...)
-        hFacZClosedS = h0FacW(i,j,k,bi,bj) - h0FacW(i,j-1,k,bi,bj)
-        hFacZClosedN = h0FacW(i,j,k,bi,bj) - h0FacW(i,j+1,k,bi,bj)
-        hFacZClosedS = MAX( 0. _d 0, hFacZClosedS )
-        hFacZClosedN = MAX( 0. _d 0, hFacZClosedN )
+        hFacZClosedS = h0FacW(i,j,k,bi,bj) - hFacZ(i,j)
+        hFacZClosedN = h0FacW(i,j,k,bi,bj) - hFacZ(i,j+1)
 #else
         hFacZClosedS = _hFacW(i,j,k,bi,bj) - hFacZ(i,j)
         hFacZClosedN = _hFacW(i,j,k,bi,bj) - hFacZ(i,j+1)
 #endif
-        Ahtmp=min(viscAh+viscAhGrid*rAw(i,j,bi,bj)/deltaTmom,
+        Ahtmp=MIN(viscAh+viscAhGrid*rAw(i,j,bi,bj)/deltaTmom,
      &            viscAhMax)
-        A4tmp=min(viscA4+viscA4Grid*(rAw(i,j,bi,bj)**2)/deltaTmom,
+        A4tmp=MIN(viscA4+viscA4Grid*(rAw(i,j,bi,bj)**2)/deltaTmom,
      &            viscA4Max)
-        A4tmp=min(A4tmp,viscA4GridMax*(rAw(i,j,bi,bj)**2)/deltaTmom)
-        A4tmp=max(A4tmp,viscA4GridMin*(rAw(i,j,bi,bj)**2)/deltaTmom)
+        A4tmp=MIN(A4tmp,viscA4GridMax*(rAw(i,j,bi,bj)**2)/deltaTmom)
+        A4tmp=MAX(A4tmp,viscA4GridMin*(rAw(i,j,bi,bj)**2)/deltaTmom)
         uDragTerms(i,j) =
      &   -_recip_hFacW(i,j,k,bi,bj)
      &   *recip_drF(k)*recip_rAw(i,j,bi,bj)
@@ -109,19 +104,15 @@ C       (but this might just be what we want ...)
 C--   Laplacian and bi-harmonic terms: using variable-Viscosity coeff.
 C     from MOM_CALC_VISC, consistent with dissipation in the interior
 
-      DO j=2-Oly,sNy+Oly-1
-       DO i=2-Olx,sNx+Olx-1
-C-      this will not give any side-drag along thin wall.
-C       (but this might just be what we want ...)
+      DO j=2-OLy,sNy+OLy-1
+       DO i=2-OLx,sNx+OLx-1
 #ifdef NONLIN_FRSURF
-        hFacZClosedS = h0FacW(i,j,k,bi,bj) - h0FacW(i,j-1,k,bi,bj)
-        hFacZClosedN = h0FacW(i,j,k,bi,bj) - h0FacW(i,j+1,k,bi,bj)
+        hFacZClosedS = h0FacW(i,j,k,bi,bj) - hFacZ(i,j)
+        hFacZClosedN = h0FacW(i,j,k,bi,bj) - hFacZ(i,j+1)
 #else
-        hFacZClosedS = _hFacW(i,j,k,bi,bj) - _hFacW(i,j-1,k,bi,bj)
-        hFacZClosedN = _hFacW(i,j,k,bi,bj) - _hFacW(i,j+1,k,bi,bj)
+        hFacZClosedS = _hFacW(i,j,k,bi,bj) - hFacZ(i,j)
+        hFacZClosedN = _hFacW(i,j,k,bi,bj) - hFacZ(i,j+1)
 #endif
-        hFacZClosedS = MAX( 0. _d 0, hFacZClosedS )
-        hFacZClosedN = MAX( 0. _d 0, hFacZClosedN )
         uDragTerms(i,j) =
      &   -_recip_hFacW(i,j,k,bi,bj)
      &   *recip_drF(k)*recip_rAw(i,j,bi,bj)

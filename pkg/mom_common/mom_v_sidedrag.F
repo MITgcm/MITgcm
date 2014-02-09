@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_sidedrag.F,v 1.12 2006/06/07 01:55:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_sidedrag.F,v 1.13 2014/02/09 18:56:19 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -8,12 +8,12 @@ C !ROUTINE: MOM_V_SIDEDRAG
 
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_V_SIDEDRAG(
-     I        bi,bj,k,
+     I        bi, bj, k,
      I        vFld, del2v, hFacZ,
      I        viscAh_Z,viscA4_Z,
-     I        harmonic,biharmonic,useVariableViscosity,
+     I        harmonic, biharmonic, useVariableViscosity,
      O        vDragTerms,
-     I        myThid)
+     I        myThid )
 
 C !DESCRIPTION:
 C Calculates the drag terms due to the no-slip condition on viscous stresses:
@@ -32,17 +32,17 @@ C !USES: ===============================================================
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
 C  k                    :: vertical level
-C  uvld                 :: meridional flow
+C  vfld                 :: meridional flow
 C  del2v                :: Laplacian of meridional flow
 C  hFacZ                :: fractional open water at vorticity points
-C  myThid               :: thread number
-      INTEGER bi,bj,k
+C  myThid               :: my Thread Id number
+      INTEGER bi, bj, k
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL del2v(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      LOGICAL harmonic,biharmonic,useVariableViscosity
+      LOGICAL harmonic, biharmonic, useVariableViscosity
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -53,37 +53,32 @@ C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
 C  hFacZClosedE         :: fractional open water to east
 C  hFacZClosedW         :: fractional open water to west
-      INTEGER i,j
-      _RL hFacZClosedE,hFacZClosedW
-CEOP
+      INTEGER i, j
+      _RL hFacZClosedE, hFacZClosedW
       _RL Ahtmp,A4tmp
-
+CEOP
 
       IF ( sideDragFactor.LE.0. ) THEN
 C--   Laplacian and bi-harmonic terms: variable-Viscosity coeff. from
 C     MOM_CALC_VISC are not used here (corresponds to the "old" version).
 
-      DO j=2-Oly,sNy+Oly-1
-       DO i=2-Olx,sNx+Olx-1
+      DO j=2-OLy,sNy+OLy-1
+       DO i=2-OLx,sNx+OLx-1
 #ifdef NONLIN_FRSURF
-C-      this will not give any side-drag along thin wall.
-C       (but this might just be what we want ...)
-        hFacZClosedW = h0FacS(i,j,k,bi,bj) - h0FacS(i-1,j,k,bi,bj)
-        hFacZClosedE = h0FacS(i,j,k,bi,bj) - h0FacS(i+1,j,k,bi,bj)
-        hFacZClosedW = MAX( 0. _d 0, hFacZClosedW )
-        hFacZClosedE = MAX( 0. _d 0, hFacZClosedE )
+        hFacZClosedW = h0FacS(i,j,k,bi,bj) - hFacZ(i,j)
+        hFacZClosedE = h0FacS(i,j,k,bi,bj) - hFacZ(i+1,j)
 #else
         hFacZClosedW = _hFacS(i,j,k,bi,bj) - hFacZ(i,j)
         hFacZClosedE = _hFacS(i,j,k,bi,bj) - hFacZ(i+1,j)
 #endif
-        Ahtmp=min(viscAh+viscAhGrid*rAs(i,j,bi,bj)/deltaTmom,
+        Ahtmp=MIN(viscAh+viscAhGrid*rAs(i,j,bi,bj)/deltaTmom,
      &            viscAhMax)
-        A4tmp=min(viscA4+viscA4Grid*(rAs(i,j,bi,bj)**2)/deltaTmom,
+        A4tmp=MIN(viscA4+viscA4Grid*(rAs(i,j,bi,bj)**2)/deltaTmom,
      &            viscA4Max)
         IF (viscA4GridMax.GT.0.) THEN
-           A4tmp=min(A4tmp,viscA4GridMax*(rAs(i,j,bi,bj)**2)/deltaTmom)
+           A4tmp=MIN(A4tmp,viscA4GridMax*(rAs(i,j,bi,bj)**2)/deltaTmom)
         ENDIF
-        A4tmp=max(A4tmp,viscA4GridMin*(rAs(i,j,bi,bj)**2)/deltaTmom)
+        A4tmp=MAX(A4tmp,viscA4GridMin*(rAs(i,j,bi,bj)**2)/deltaTmom)
         vDragTerms(i,j) =
      &   -_recip_hFacS(i,j,k,bi,bj)
      &   *recip_drF(k)*recip_rAs(i,j,bi,bj)
@@ -106,19 +101,15 @@ C       (but this might just be what we want ...)
 C--   Laplacian and bi-harmonic terms: using variable-Viscosity coeff.
 C     from MOM_CALC_VISC, consistent with dissipation in the interior
 
-      DO j=2-Oly,sNy+Oly-1
-       DO i=2-Olx,sNx+Olx-1
-C-      this will not give any side-drag along thin wall.
-C       (but this might just be what we want ...)
+      DO j=2-OLy,sNy+OLy-1
+       DO i=2-OLx,sNx+OLx-1
 #ifdef NONLIN_FRSURF
-        hFacZClosedW = h0FacS(i,j,k,bi,bj) - h0FacS(i-1,j,k,bi,bj)
-        hFacZClosedE = h0FacS(i,j,k,bi,bj) - h0FacS(i+1,j,k,bi,bj)
+        hFacZClosedW = h0FacS(i,j,k,bi,bj) - hFacZ(i,j)
+        hFacZClosedE = h0FacS(i,j,k,bi,bj) - hFacZ(i+1,j)
 #else
-        hFacZClosedW = _hFacS(i,j,k,bi,bj) - _hFacS(i-1,j,k,bi,bj)
-        hFacZClosedE = _hFacS(i,j,k,bi,bj) - _hFacS(i+1,j,k,bi,bj)
+        hFacZClosedW = _hFacS(i,j,k,bi,bj) - hFacZ(i,j)
+        hFacZClosedE = _hFacS(i,j,k,bi,bj) - hFacZ(i+1,j)
 #endif
-        hFacZClosedW = MAX( 0. _d 0, hFacZClosedW )
-        hFacZClosedE = MAX( 0. _d 0, hFacZClosedE )
         vDragTerms(i,j) =
      &   -_recip_hFacS(i,j,k,bi,bj)
      &   *recip_drF(k)*recip_rAs(i,j,bi,bj)
