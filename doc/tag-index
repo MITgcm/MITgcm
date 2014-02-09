@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1964 2014/02/06 01:34:01 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1965 2014/02/09 19:07:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src + pkg/momentum:
+  - add input files for  2-D additional Western and Southern cell-edge wall
+     (e.g., to add "thin-wall" where it is =1).
+  - fix sideDrag option for thin-walls with Non-Lin Free-Surf
+    using 2nd hFacZ that is computed from initial (fix domain) hFac
+  - known limitations of thin wall implementation: not yet coded for sigma
+    coords; not working with CD-scheme neither.
 o pkg/seaice:
   - rename recently introduced parameters from (wrong name) AB to
     BDF (backward difference time discretisation)
