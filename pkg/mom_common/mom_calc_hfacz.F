@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hfacz.F,v 1.7 2012/06/17 14:18:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hfacz.F,v 1.8 2014/02/09 18:57:01 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -8,9 +8,9 @@ C !ROUTINE: MOM_CALC_HFACZ
 
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_CALC_HFACZ(
-     I        bi,bj,k,
-     O        hFacZ,r_hFacZ,
-     I        myThid)
+     I        bi, bj, k,
+     O        hFacZ, r_hFacZ,
+     I        myThid )
 
 C !DESCRIPTION:
 C Calculates the fractional thickness at vorticity points
@@ -21,31 +21,33 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef ALLOW_EXCH2
-#include "W2_EXCH2_SIZE.h"
-#include "W2_EXCH2_TOPOLOGY.h"
-#endif /* ALLOW_EXCH2 */
-
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-# include "tamc_keys.h"
-#endif
+#ifdef ALLOW_DEPTH_CONTROL
+# ifdef ALLOW_AUTODIFF_TAMC
+#  include "tamc.h"
+#  include "tamc_keys.h"
+# endif
+#else /* ALLOW_DEPTH_CONTROL */
+# ifdef ALLOW_EXCH2
+#  include "W2_EXCH2_SIZE.h"
+#  include "W2_EXCH2_TOPOLOGY.h"
+# endif
+#endif /* ALLOW_DEPTH_CONTROL */
 
 C !INPUT PARAMETERS: ===================================================
-C  bi,bj                :: tile indices
-C  k                    :: vertical level
-C  myThid               :: thread number
-      INTEGER bi,bj,k
+C  bi,bj      :: tile indices
+C  k          :: vertical level
+C  myThid     :: my Thread Id number
+      INTEGER bi, bj, k
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
-C  hFacZ                :: fractional thickness at vorticity points
-C  r_hFacZ              :: reciprocal
+C  hFacZ      :: fractional thickness at vorticity points
+C  r_hFacZ    :: reciprocal
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C !LOCAL VARIABLES: ====================================================
-C  i,j                  :: loop indices
+C  i,j        :: loop indices
 C  hZoption   :: forward mode option to select the way hFacZ is computed:
 C                0 : = minimum of 4 hFacW,hFacS arround (consistent with
 C                    definition of partial cell & mask near topography)
@@ -53,30 +55,33 @@ C                1 : = minimum of 2 average (hFacW)_j,(hFacS)_i
 C                2 : = average of 4 hFacW,hFacS arround (consistent with
 C                    how free surface affects hFacW,hFacS it using r* and
 C                    without topography)
-      INTEGER I,J
+      INTEGER i,j
 #ifdef ALLOW_DEPTH_CONTROL
-      _RL hFacZOpen(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL hFacZOpen (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hFacZOpenI(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hFacZOpenJ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 # ifdef USE_SMOOTH_MIN
       _RS      SMOOTHMIN_RS
       EXTERNAL SMOOTHMIN_RS
 # endif /* USE_SMOOTH_MIN */
-#else
+#else /* ALLOW_DEPTH_CONTROL */
       _RS     hFacZOpen
       INTEGER hZoption
       LOGICAL northWestCorner, northEastCorner,
      &        southWestCorner, southEastCorner
       INTEGER myFace
-#ifdef ALLOW_EXCH2
+# ifdef ALLOW_EXCH2
       INTEGER myTile
-#endif /* ALLOW_EXCH2 */
-CEOP
+# endif /* ALLOW_EXCH2 */
       PARAMETER ( hZoption = 0 )
 #endif /* ALLOW_DEPTH_CONTROL */
+CEOP
+
+C--   Calculate open water fraction at vorticity points
+
+#ifdef ALLOW_DEPTH_CONTROL
 
 #ifdef ALLOW_AUTODIFF_TAMC
-#ifdef ALLOW_DEPTH_CONTROL
           act1 = bi - myBxLo(myThid)
           max1 = myBxHi(myThid) - myBxLo(myThid) + 1
           act2 = bj - myByLo(myThid)
@@ -88,18 +93,14 @@ CEOP
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
           kkey = (ikey-1)*Nr + k
-#endif /* ALLOW_DEPTH_CONTROL */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C--   Calculate open water fraction at vorticity points
-
-#ifdef ALLOW_DEPTH_CONTROL
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         hFacZ(i,j)     =0.
         r_hFacZ(i,j)   =0.
         hFacZOpen(i,j) =0.
-        hFacZOpenJ(i,j)=0.
+        hFacZOpenI(i,j)=0.
         hFacZOpenJ(i,j)=0.
        ENDDO
       ENDDO
@@ -128,12 +129,10 @@ CADJ STORE    r_hFacZ(:,:) = comlev1_bibj_k , key=kkey, byte=isbyte
      &         *maskS(i,j,k,bi,bj)*maskS(i-1,j,k,bi,bj)
        ENDDO
       ENDDO
-#ifdef    ALLOW_AUTODIFF_TAMC
-#ifdef ALLOW_DEPTH_CONTROL
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hFacZOpenI(:,:) = comlev1_bibj_k , key=kkey, byte=isbyte
 CADJ STORE hFacZOpenJ(:,:) = comlev1_bibj_k , key=kkey, byte=isbyte
-#endif /* ALLOW_DEPTH_CONTROL */
-#endif    /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF_TAMC */
       DO j=2-OLy,sNy+OLy
        DO i=2-OLx,sNx+OLx
         hFacZ(i,j) =
@@ -146,25 +145,21 @@ CADJ STORE hFacZOpenJ(:,:) = comlev1_bibj_k , key=kkey, byte=isbyte
      &         *maskS(i,j,k,bi,bj)*maskS(i-1,j,k,bi,bj)
        ENDDO
       ENDDO
-#ifdef    ALLOW_AUTODIFF_TAMC
-#ifdef ALLOW_DEPTH_CONTROL
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hFacZ(:,:) = comlev1_bibj_k , key=kkey, byte=isbyte
-#endif /* ALLOW_DEPTH_CONTROL */
-#endif    /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF_TAMC */
       DO j=2-OLy,sNy+OLy
        DO i=2-OLx,sNx+OLx
         IF (hFacZ(i,j).EQ.0.) THEN
-         r_hFacZ(i,j)=0.
+         r_hFacZ(i,j) = 0. _d 0
         ELSE
-         r_hFacZ(i,j)=1./hFacZ(i,j)
+         r_hFacZ(i,j) = 1. _d 0/hFacZ(i,j)
         ENDIF
        ENDDO
       ENDDO
-#ifdef    ALLOW_AUTODIFF_TAMC
-#ifdef ALLOW_DEPTH_CONTROL
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE    r_hFacZ(:,:) = comlev1_bibj_k , key=kkey, byte=isbyte
-#endif /* ALLOW_DEPTH_CONTROL */
-#endif    /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #else /* not ALLOW_DEPTH_CONTROL */
 
@@ -235,7 +230,7 @@ c         hFacZ(i,j) = 0.5 _d 0 * hFacZOpen*recip_rAz(i,j,bi,bj)
         ENDDO
       ENDIF
 
-C---+----1----+----2----+----3----+----4
+C-----------------------------------------
 C     Special stuff for Cubed Sphere
       IF ( useCubedSphereExchange .AND. hZoption.GE.1 ) THEN
 
@@ -243,7 +238,7 @@ C     Special stuff for Cubed Sphere
         myTile = W2_myTileList(bi,bj)
         myFace = exch2_myFace(myTile)
         southWestCorner = exch2_isWedge(myTile).EQ.1
-     &               .AND. exch2_isSedge(myTile).EQ.1
+     &              .AND. exch2_isSedge(myTile).EQ.1
         southEastCorner = exch2_isEedge(myTile).EQ.1
      &              .AND. exch2_isSedge(myTile).EQ.1
         northEastCorner = exch2_isEedge(myTile).EQ.1
@@ -257,7 +252,6 @@ C     Special stuff for Cubed Sphere
         northWestCorner = .TRUE.
         northEastCorner = .TRUE.
 #endif /* ALLOW_EXCH2 */
-
 
         IF ( southWestCorner ) THEN
          i=1
@@ -284,8 +278,8 @@ C     Special stuff for Cubed Sphere
         ENDIF
 
         IF ( southEastCorner ) THEN
-         I=sNx+1
-         J=1
+         i=sNx+1
+         j=1
 C-    to get the same truncation, independent from the face Nb:
          IF ( hZoption.EQ.1 ) THEN
           hFacZOpen=MIN(_hFacW(i,j,k,bi,bj),
@@ -368,7 +362,8 @@ C-    to get the same truncation, independent from the face Nb:
         ENDIF
 
       ENDIF
-C---+----1----+----2----+----3----+----4
+C     Special Cubed Sphere block ends here
+C-----------------------------------------
 
 C--   Calculate reciprol:
       DO j=1-OLy,sNy+OLy
