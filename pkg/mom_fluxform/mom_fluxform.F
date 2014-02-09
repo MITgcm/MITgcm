@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.48 2014/02/03 22:55:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.49 2014/02/09 18:51:46 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -128,6 +128,7 @@ C                     foFacMom - Forcing
 C                     mtFacMom - Metric term
 C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching terms off
       _RS    hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS   h0FacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS  r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS      xA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS      yA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -257,7 +258,7 @@ C       vorticity at a no-slip boundary by a factor of 2 = sideDragFactor
       ENDIF
 
 C--   Calculate open water fraction at vorticity points
-      CALL MOM_CALC_HFACZ(bi,bj,k,hFacZ,r_hFacZ,myThid)
+      CALL MOM_CALC_HFACZ( bi,bj,k,hFacZ,r_hFacZ,myThid )
 
 C---- Calculate common quantities used in both U and V equations
 C     Calculate tracer cell face open areas
@@ -267,8 +268,21 @@ C     Calculate tracer cell face open areas
      &          *drF(k)*_hFacW(i,j,k,bi,bj)
         yA(i,j) = _dxG(i,j,bi,bj)*deepFacC(k)
      &          *drF(k)*_hFacS(i,j,k,bi,bj)
+        h0FacZ(i,j) = hFacZ(i,j)
        ENDDO
       ENDDO
+#ifdef NONLIN_FRSURF
+      IF ( momViscosity .AND. no_slip_sides
+     &                  .AND. nonlinFreeSurf.GT.0 ) THEN
+        DO j=2-OLy,sNy+OLy
+         DO i=2-OLx,sNx+OLx
+          h0FacZ(i,j) = MIN(
+     &       MIN( h0FacW(i,j,k,bi,bj), h0FacW(i,j-1,k,bi,bj) ),
+     &       MIN( h0FacS(i,j,k,bi,bj), h0FacS(i-1,j,k,bi,bj) ) )
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* NONLIN_FRSURF */
 
 C     Make local copies of horizontal flow field
       DO j=1-OLy,sNy+OLy
@@ -287,12 +301,12 @@ C     anelastic: transports are scaled by rhoFacC (~ mass transport)
        ENDDO
       ENDDO
 
-      CALL MOM_CALC_KE(bi,bj,k,2,uFld,vFld,KE,myThid)
-      IF ( momViscosity) THEN
-        CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
-        CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
-        CALL MOM_CALC_TENSION(bi,bj,k,uFld,vFld,tension,myThid)
-        CALL MOM_CALC_STRAIN(bi,bj,k,uFld,vFld,hFacZ,strain,myThid)
+      CALL MOM_CALC_KE( bi,bj,k,2,uFld,vFld,KE,myThid )
+      IF ( momViscosity ) THEN
+        CALL MOM_CALC_HDIV( bi,bj,k,2,uFld,vFld,hDiv,myThid )
+        CALL MOM_CALC_RELVORT3( bi,bj,k,uFld,vFld,hFacZ,vort3,myThid )
+        CALL MOM_CALC_TENSION( bi,bj,k,uFld,vFld,tension,myThid )
+        CALL MOM_CALC_STRAIN( bi,bj,k,uFld,vFld,hFacZ,strain,myThid )
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
            IF ( hFacZ(i,j).EQ.0. ) THEN
@@ -338,7 +352,7 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         CALL MOM_CALC_RTRANS( k, bi, bj,
      O                        rTransU, rTransV,
-     I                        myTime, myIter, myThid)
+     I                        myTime, myIter, myThid )
 
 C-    Free surface correction term (flux at k=1)
         CALL MOM_U_ADV_WU( bi,bj,k,uVel,wVel,rTransU,
@@ -354,7 +368,7 @@ C---  Calculate vertical transports (at k+1) below U & V points :
       IF (momAdvection) THEN
         CALL MOM_CALC_RTRANS( k+1, bi, bj,
      O                        rTransU, rTransV,
-     I                        myTime, myIter, myThid)
+     I                        myTime, myIter, myThid )
       ENDIF
 
 #ifdef MOM_BOUNDARY_CONSERVE
@@ -402,11 +416,11 @@ C---  Calculate mean fluxes (advection)   between cells for zonal flow.
 #else /* MOM_BOUNDARY_CONSERVE */
 C--   Zonal flux (fZon is at east face of "u" cell)
 C     Mean flow component of zonal flux -> fZon
-        CALL MOM_U_ADV_UU(bi,bj,k,uTrans,uFld,fZon,myThid)
+        CALL MOM_U_ADV_UU( bi,bj,k,uTrans,uFld,fZon,myThid )
 
 C--   Meridional flux (fMer is at south face of "u" cell)
 C     Mean flow component of meridional flux -> fMer
-        CALL MOM_U_ADV_VU(bi,bj,k,vTrans,uFld,fMer,myThid)
+        CALL MOM_U_ADV_VU( bi,bj,k,vTrans,uFld,fMer,myThid )
 
 C--   Vertical flux (fVer is at upper face of "u" cell)
 C     Mean flow component of vertical flux (at k+1) -> fVer
@@ -494,20 +508,21 @@ C---  Calculate eddy fluxes (dissipation) between cells for zonal flow.
 
 C     Bi-harmonic term del^2 U -> v4F
         IF ( useBiharmonicVisc )
-     &  CALL MOM_U_DEL2U(bi,bj,k,uFld,hFacZ,v4f,myThid)
+     &  CALL MOM_U_DEL2U( bi, bj, k, uFld, hFacZ, h0FacZ,
+     O                    v4f, myThid )
 
 C     Laplacian and bi-harmonic terms, Zonal  Fluxes -> fZon
-        CALL MOM_U_XVISCFLUX(bi,bj,k,uFld,v4F,fZon,
-     I    viscAh_D,viscA4_D,myThid)
+        CALL MOM_U_XVISCFLUX( bi,bj,k,uFld,v4F,fZon,
+     I                        viscAh_D,viscA4_D,myThid )
 
 C     Laplacian and bi-harmonic termis, Merid Fluxes -> fMer
-        CALL MOM_U_YVISCFLUX(bi,bj,k,uFld,v4F,hFacZ,fMer,
-     I    viscAh_Z,viscA4_Z,myThid)
+        CALL MOM_U_YVISCFLUX( bi,bj,k,uFld,v4F,hFacZ,fMer,
+     I                        viscAh_Z,viscA4_Z,myThid )
 
 C     Eddy component of vertical flux (interior component only) -> fVrUp & fVrDw
        IF (.NOT.implicitViscosity) THEN
-        CALL MOM_U_RVISCFLUX(bi,bj, k, uVel,KappaRU,fVrUp,myThid)
-        CALL MOM_U_RVISCFLUX(bi,bj,k+1,uVel,KappaRU,fVrDw,myThid)
+        CALL MOM_U_RVISCFLUX( bi,bj, k, uVel,KappaRU,fVrUp,myThid )
+        CALL MOM_U_RVISCFLUX( bi,bj,k+1,uVel,KappaRU,fVrDw,myThid )
        ENDIF
 
 C--   Tendency is minus divergence of the fluxes
@@ -543,7 +558,7 @@ C-- No-slip and drag BCs appear as body forces in cell abutting topography
         IF (no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
          CALL MOM_U_SIDEDRAG( bi, bj, k,
-     I        uFld, v4f, hFacZ,
+     I        uFld, v4f, h0FacZ,
      I        viscAh_Z, viscA4_Z,
      I        useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
      O        vF,
@@ -556,7 +571,7 @@ C-     No-slip BCs impose a drag at walls...
         ENDIF
 C-    No-slip BCs impose a drag at bottom
         IF (bottomDragTerms) THEN
-         CALL MOM_U_BOTTOMDRAG(bi,bj,k,uFld,KE,KappaRU,vF,myThid)
+         CALL MOM_U_BOTTOMDRAG( bi,bj,k,uFld,KE,KappaRU,vF,myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
            gUdiss(i,j) = gUdiss(i,j) + vF(i,j)
@@ -566,7 +581,7 @@ C-    No-slip BCs impose a drag at bottom
 
 #ifdef ALLOW_SHELFICE
         IF (useShelfIce) THEN
-         CALL SHELFICE_U_DRAG(bi,bj,k,uFld,KE,KappaRU,vF,myThid)
+         CALL SHELFICE_U_DRAG( bi,bj,k,uFld,KE,KappaRU,vF,myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
            gUdiss(i,j) = gUdiss(i,j) + vF(i,j)
@@ -587,7 +602,7 @@ c    I     myTime,myThid)
 C--   Metric terms for curvilinear grid systems
       IF (useNHMTerms) THEN
 C      o Non-Hydrostatic (spherical) metric terms
-       CALL MOM_U_METRIC_NH(bi,bj,k,uFld,wVel,mT,myThid)
+       CALL MOM_U_METRIC_NH( bi,bj,k,uFld,wVel,mT,myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mtNHFacU*mT(i,j)
@@ -596,7 +611,7 @@ C      o Non-Hydrostatic (spherical) metric terms
       ENDIF
       IF ( usingSphericalPolarGrid .AND. metricTerms ) THEN
 C      o Spherical polar grid metric terms
-       CALL MOM_U_METRIC_SPHERE(bi,bj,k,uFld,vFld,mT,myThid)
+       CALL MOM_U_METRIC_SPHERE( bi,bj,k,uFld,vFld,mT,myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mtFacU*mT(i,j)
@@ -605,7 +620,7 @@ C      o Spherical polar grid metric terms
       ENDIF
       IF ( usingCylindricalGrid .AND. metricTerms ) THEN
 C      o Cylindrical grid metric terms
-       CALL MOM_U_METRIC_CYLINDER(bi,bj,k,uFld,vFld,mT,myThid)
+       CALL MOM_U_METRIC_CYLINDER( bi,bj,k,uFld,vFld,mT,myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mtFacU*mT(i,j)
@@ -719,20 +734,21 @@ C-    endif momAdvection.
 C---  Calculate eddy fluxes (dissipation) between cells for meridional flow.
 C     Bi-harmonic term del^2 V -> v4F
         IF ( useBiharmonicVisc )
-     &  CALL MOM_V_DEL2V(bi,bj,k,vFld,hFacZ,v4f,myThid)
+     &  CALL MOM_V_DEL2V( bi, bj, k, vFld, hFacZ, h0FacZ,
+     O                    v4f, myThid )
 
 C     Laplacian and bi-harmonic terms, Zonal  Fluxes -> fZon
-        CALL MOM_V_XVISCFLUX(bi,bj,k,vFld,v4f,hFacZ,fZon,
-     I    viscAh_Z,viscA4_Z,myThid)
+        CALL MOM_V_XVISCFLUX( bi,bj,k,vFld,v4f,hFacZ,fZon,
+     I                        viscAh_Z,viscA4_Z,myThid )
 
 C     Laplacian and bi-harmonic termis, Merid Fluxes -> fMer
-        CALL MOM_V_YVISCFLUX(bi,bj,k,vFld,v4f,fMer,
-     I    viscAh_D,viscA4_D,myThid)
+        CALL MOM_V_YVISCFLUX( bi,bj,k,vFld,v4f,fMer,
+     I                        viscAh_D,viscA4_D,myThid )
 
 C     Eddy component of vertical flux (interior component only) -> fVrUp & fVrDw
        IF (.NOT.implicitViscosity) THEN
-        CALL MOM_V_RVISCFLUX(bi,bj, k, vVel,KappaRV,fVrUp,myThid)
-        CALL MOM_V_RVISCFLUX(bi,bj,k+1,vVel,KappaRV,fVrDw,myThid)
+        CALL MOM_V_RVISCFLUX( bi,bj, k, vVel,KappaRV,fVrUp,myThid )
+        CALL MOM_V_RVISCFLUX( bi,bj,k+1,vVel,KappaRV,fVrDw,myThid )
        ENDIF
 
 C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
@@ -768,8 +784,8 @@ C-- No-slip and drag BCs appear as body forces in cell abutting topography
         IF (no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
          CALL MOM_V_SIDEDRAG( bi, bj, k,
-     I        vFld, v4f, hFacZ,
-     I        viscAh_Z,viscA4_Z,
+     I        vFld, v4f, h0FacZ,
+     I        viscAh_Z, viscA4_Z,
      I        useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
      O        vF,
      I        myThid )
@@ -781,7 +797,7 @@ C-     No-slip BCs impose a drag at walls...
         ENDIF
 C-    No-slip BCs impose a drag at bottom
         IF (bottomDragTerms) THEN
-         CALL MOM_V_BOTTOMDRAG(bi,bj,k,vFld,KE,KappaRV,vF,myThid)
+         CALL MOM_V_BOTTOMDRAG( bi,bj,k,vFld,KE,KappaRV,vF,myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
            gvDiss(i,j) = gvDiss(i,j) + vF(i,j)
@@ -791,7 +807,7 @@ C-    No-slip BCs impose a drag at bottom
 
 #ifdef ALLOW_SHELFICE
         IF (useShelfIce) THEN
-         CALL SHELFICE_V_DRAG(bi,bj,k,vFld,KE,KappaRV,vF,myThid)
+         CALL SHELFICE_V_DRAG( bi,bj,k,vFld,KE,KappaRV,vF,myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
            gvDiss(i,j) = gvDiss(i,j) + vF(i,j)
@@ -812,7 +828,7 @@ c    I     myTime,myThid)
 C--   Metric terms for curvilinear grid systems
       IF (useNHMTerms) THEN
 C      o Non-Hydrostatic (spherical) metric terms
-       CALL MOM_V_METRIC_NH(bi,bj,k,vFld,wVel,mT,myThid)
+       CALL MOM_V_METRIC_NH( bi,bj,k,vFld,wVel,mT,myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mtNHFacV*mT(i,j)
@@ -821,7 +837,7 @@ C      o Non-Hydrostatic (spherical) metric terms
       ENDIF
       IF ( usingSphericalPolarGrid .AND. metricTerms ) THEN
 C      o Spherical polar grid metric terms
-       CALL MOM_V_METRIC_SPHERE(bi,bj,k,uFld,mT,myThid)
+       CALL MOM_V_METRIC_SPHERE( bi,bj,k,uFld,mT,myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mtFacV*mT(i,j)
@@ -830,7 +846,7 @@ C      o Spherical polar grid metric terms
       ENDIF
       IF ( usingCylindricalGrid .AND. metricTerms ) THEN
 C      o Cylindrical grid metric terms
-       CALL MOM_V_METRIC_CYLINDER(bi,bj,k,uFld,vFld,mT,myThid)
+       CALL MOM_V_METRIC_CYLINDER( bi,bj,k,uFld,vFld,mT,myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mtFacV*mT(i,j)
@@ -842,7 +858,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Coriolis term (call to CD_CODE_SCHEME has been moved to timestep.F)
       IF (.NOT.useCDscheme) THEN
-        CALL MOM_U_CORIOLIS(bi,bj,k,vFld,cf,myThid)
+        CALL MOM_U_CORIOLIS( bi,bj,k,vFld,cf,myThid )
         DO j=jMin,jMax
          DO i=iMin,iMax
           gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+fuFac*cf(i,j)
@@ -852,7 +868,7 @@ C--   Coriolis term (call to CD_CODE_SCHEME has been moved to timestep.F)
         IF ( useDiagnostics )
      &    CALL DIAGNOSTICS_FILL(cf,'Um_Cori ',k,1,2,bi,bj,myThid)
 #endif
-        CALL MOM_V_CORIOLIS(bi,bj,k,uFld,cf,myThid)
+        CALL MOM_V_CORIOLIS( bi,bj,k,uFld,cf,myThid )
         DO j=jMin,jMax
          DO i=iMin,iMax
           gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+fvFac*cf(i,j)
@@ -866,7 +882,7 @@ C--   Coriolis term (call to CD_CODE_SCHEME has been moved to timestep.F)
 
 C--   3.D Coriolis term (horizontal momentum, Eastward component: -fprime*w)
       IF ( use3dCoriolis ) THEN
-        CALL MOM_U_CORIOLIS_NH(bi,bj,k,wVel,cf,myThid)
+        CALL MOM_U_CORIOLIS_NH( bi,bj,k,wVel,cf,myThid )
         DO j=jMin,jMax
          DO i=iMin,iMax
           gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+fuFac*cf(i,j)
@@ -874,7 +890,7 @@ C--   3.D Coriolis term (horizontal momentum, Eastward component: -fprime*w)
         ENDDO
        IF ( usingCurvilinearGrid ) THEN
 C-     presently, non zero angleSinC array only supported with Curvilinear-Grid
-        CALL MOM_V_CORIOLIS_NH(bi,bj,k,wVel,cf,myThid)
+        CALL MOM_V_CORIOLIS_NH( bi,bj,k,wVel,cf,myThid )
         DO j=jMin,jMax
          DO i=iMin,iMax
           gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+fvFac*cf(i,j)
