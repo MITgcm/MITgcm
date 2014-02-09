@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.70 2013/08/01 20:12:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.71 2014/02/09 18:46:46 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -35,6 +35,7 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SURFACE.h"
 #include "DYNVARS.h"
 #ifdef ALLOW_MOM_COMMON
 # include "MOM_VISC.h"
@@ -92,6 +93,7 @@ C     == Local variables ==
       _RL      uCf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      vCf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZ   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS h0FacZ  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS r_hFacZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -250,6 +252,23 @@ c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
 C--    For viscous term, compute horizontal divergence, tension & strain
 C      and mask relative vorticity (free-slip case):
 
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          h0FacZ(i,j) = hFacZ(i,j)
+        ENDDO
+       ENDDO
+#ifdef NONLIN_FRSURF
+       IF ( no_slip_sides .AND. nonlinFreeSurf.GT.0 ) THEN
+        DO j=2-OLy,sNy+OLy
+         DO i=2-OLx,sNx+OLx
+          h0FacZ(i,j) = MIN(
+     &       MIN( h0FacW(i,j,k,bi,bj), h0FacW(i,j-1,k,bi,bj) ),
+     &       MIN( h0FacS(i,j,k,bi,bj), h0FacS(i-1,j,k,bi,bj) ) )
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* NONLIN_FRSURF */
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE vort3(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
@@ -378,7 +397,7 @@ C-- No-slip and drag BCs appear as body forces in cell abutting topography
       IF ( no_slip_sides ) THEN
 C-     No-slip BCs impose a drag at walls...
        CALL MOM_U_SIDEDRAG( bi, bj, k,
-     I          uFld, del2u, hFacZ,
+     I          uFld, del2u, h0FacZ,
      I          viscAh_Z, viscA4_Z,
      I          useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
      O          vF,
@@ -437,7 +456,7 @@ C-- No-slip and drag BCs appear as body forces in cell abutting topography
       IF ( no_slip_sides ) THEN
 C-     No-slip BCs impose a drag at walls...
        CALL MOM_V_SIDEDRAG( bi, bj, k,
-     I          vFld, del2v, hFacZ,
+     I          vFld, del2v, h0FacZ,
      I          viscAh_Z, viscA4_Z,
      I          useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
      O          vF,
