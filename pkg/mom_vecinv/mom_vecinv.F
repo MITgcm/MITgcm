@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.71 2014/02/09 18:46:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.72 2014/02/11 20:24:06 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -88,6 +88,8 @@ C     == Functions ==
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     == Local variables ==
+C     strainBC :: same as strain but account for no-slip BC
+C     vort3BC  :: same as vort3  but account for no-slip BC
       _RL      vF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      vrF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      uCf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -103,9 +105,11 @@ C     == Local variables ==
       _RL zStar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tension (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL strain  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL strainBC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL omega3  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vort3   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vort3BC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hDiv    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -200,6 +204,7 @@ c       viscAh_D(i,j) = 0.
 c       viscA4_Z(i,j) = 0.
 c       viscA4_D(i,j) = 0.
         strain(i,j)  = 0. _d 0
+        strainBC(i,j)= 0. _d 0
         tension(i,j) = 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
         hFacZ(i,j)   = 0. _d 0
@@ -248,6 +253,17 @@ c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
 
       CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
 
+C-    mask vort3 and account for no-slip / free-slip BC in vort3BC:
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+         vort3BC(i,j) = vort3(i,j)
+         IF ( hFacZ(i,j).EQ.zeroRS ) THEN
+           vort3BC(i,j) = sideMaskFac*vort3BC(i,j)
+           vort3(i,j)   = 0.
+         ENDIF
+       ENDDO
+      ENDDO
+
       IF (momViscosity) THEN
 C--    For viscous term, compute horizontal divergence, tension & strain
 C      and mask relative vorticity (free-slip case):
@@ -269,26 +285,22 @@ C      and mask relative vorticity (free-slip case):
        ENDIF
 #endif /* NONLIN_FRSURF */
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE vort3(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-#endif
-
        CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
 
-       CALL MOM_CALC_TENSION(bi,bj,k,uFld,vFld,tension,myThid)
-
-       CALL MOM_CALC_STRAIN(bi,bj,k,uFld,vFld,hFacZ,strain,myThid)
-
-C-     account for no-slip / free-slip BC:
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-          IF ( hFacZ(i,j).EQ.0. ) THEN
-            vort3(i,j)  = sideMaskFac*vort3(i,j)
-            strain(i,j) = sideMaskFac*strain(i,j)
-          ENDIF
+       IF ( useVariableVisc .OR. useStrainTensionVisc ) THEN
+        CALL MOM_CALC_TENSION( bi,bj,k,uFld,vFld,tension,myThid )
+        CALL MOM_CALC_STRAIN( bi,bj,k,uFld,vFld,hFacZ,strain,myThid )
+C-    mask strain and account for no-slip / free-slip BC in strainBC:
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+           strainBC(i,j) = strain(i,j)
+           IF ( hFacZ(i,j).EQ.zeroRS ) THEN
+             strainBC(i,j) = sideMaskFac*strainBC(i,j)
+             strain(i,j)   = 0.
+           ENDIF
+         ENDDO
         ENDDO
-       ENDDO
+       ENDIF
 
 C--    Calculate Lateral Viscosities
        DO j=1-OLy,sNy+OLy
@@ -300,9 +312,10 @@ C--    Calculate Lateral Viscosities
         ENDDO
        ENDDO
        IF ( useVariableVisc ) THEN
+C-     uses vort3BC & strainBC which account for no-slip / free-slip BC
          CALL MOM_CALC_VISC( bi, bj, k,
      O            viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
-     I            hDiv, vort3, tension, strain, KE, hfacZ,
+     I            hDiv, vort3BC, tension, strainBC, KE, hfacZ,
      I            myThid )
        ENDIF
 
@@ -310,64 +323,31 @@ C      Calculate del^2 u and del^2 v for bi-harmonic term
        IF (useBiharmonicVisc) THEN
          CALL MOM_VI_DEL2UV(bi,bj,k,hDiv,vort3,hFacZ,
      O                      del2u,del2v,
-     &                      myThid)
+     I                      myThid)
          CALL MOM_CALC_HDIV(bi,bj,k,2,del2u,del2v,dStar,myThid)
          CALL MOM_CALC_RELVORT3(bi,bj,k,
      &                          del2u,del2v,hFacZ,zStar,myThid)
-         IF ( writeDiag ) THEN
-           CALL WRITE_LOCAL_RL( 'del2u', 'I10', 1, del2u,
-     &                           bi,bj,k, myIter, myThid )
-           CALL WRITE_LOCAL_RL( 'del2v', 'I10', 1, del2v,
-     &                           bi,bj,k, myIter, myThid )
-           CALL WRITE_LOCAL_RL( 'dStar', 'I10', 1, dStar,
-     &                           bi,bj,k, myIter, myThid )
-           CALL WRITE_LOCAL_RL( 'zStar', 'I10', 1, zStar,
-     &                           bi,bj,k, myIter, myThid )
-         ENDIF
        ENDIF
-
-C-    Strain diagnostics:
-       IF ( writeDiag ) THEN
-        IF (snapshot_mdsio) THEN
-          CALL WRITE_LOCAL_RL('Ds','I10',1,strain,bi,bj,k,myIter,myThid)
-        ENDIF
-#ifdef ALLOW_MNC
-        IF (useMNC .AND. snapshot_mnc) THEN
-          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'Ds',strain,
-     &          offsets, myThid)
-        ENDIF
-#endif /*  ALLOW_MNC  */
-       ENDIF
-#ifdef ALLOW_DIAGNOSTICS
-       IF ( useDiagnostics ) THEN
-        CALL DIAGNOSTICS_FILL(strain, 'Strain  ',k,1,2,bi,bj,myThid)
-       ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
 
 C---   Calculate dissipation terms for U and V equations
 
-C      in terms of tension and strain
+C-     in terms of tension and strain
        IF (useStrainTensionVisc) THEN
-C        mask strain as if free-slip since side-drag is computed separately
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-            IF ( hFacZ(i,j).EQ.0. ) strain(i,j) = 0. _d 0
-          ENDDO
-         ENDDO
+C      use masked strain as if free-slip since side-drag is computed separately
          CALL MOM_HDISSIP( bi, bj, k,
-     I            hDiv, vort3, tension, strain, KE, hFacZ,
+     I            tension, strain, hFacZ,
      I            viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
      I            useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
      O            guDiss, gvDiss,
      I            myThid )
        ELSE
-C      in terms of vorticity and divergence
+C-     in terms of vorticity and divergence
          CALL MOM_VI_HDISSIP( bi, bj, k,
-     I            hDiv, vort3, tension, strain, KE, hFacZ,dStar,zStar,
+     I            hDiv, vort3, dStar, zStar, hFacZ,
      I            viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
      I            useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
      O            guDiss, gvDiss,
-     &            myThid )
+     I            myThid )
        ENDIF
 
 C---  Other dissipation terms in Zonal momentum equation
@@ -494,33 +474,10 @@ C--   if (momViscosity) end of block.
 C-    Return to standard hfacZ (min-4) and mask vort3 accordingly:
 c     CALL MOM_VI_MASK_VORT3(bi,bj,k,hFacZ,r_hFacZ,vort3,myThid)
 
-C-    Vorticity diagnostics:
-      IF ( writeDiag ) THEN
-        IF (snapshot_mdsio) THEN
-          CALL WRITE_LOCAL_RL('Z3','I10',1,vort3, bi,bj,k,myIter,myThid)
-        ENDIF
-#ifdef ALLOW_MNC
-        IF (useMNC .AND. snapshot_mnc) THEN
-          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'Z3',vort3,
-     &          offsets, myThid)
-        ENDIF
-#endif /*  ALLOW_MNC  */
-      ENDIF
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
-        CALL DIAGNOSTICS_FILL(vort3,  'momVort3',k,1,2,bi,bj,myThid)
-      ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C---  Prepare for Advection & Coriolis terms:
-C-    Mask relative vorticity and calculate absolute vorticity
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-         IF ( hFacZ(i,j).EQ.0. ) vort3(i,j) = 0.
-       ENDDO
-      ENDDO
+C-    calculate absolute vorticity
       IF (useAbsVorticity)
      &  CALL MOM_CALC_ABSVORT3(bi,bj,k,vort3,omega3,myThid)
 
@@ -753,11 +710,24 @@ C--   Set du/dt & dv/dt on boundaries to zero
 #endif /* ALLOW_DEBUG */
 
       IF ( writeDiag ) THEN
+        IF (useBiharmonicVisc) THEN
+         CALL WRITE_LOCAL_RL( 'del2u', 'I10', 1, del2u,
+     &                        bi,bj,k, myIter, myThid )
+         CALL WRITE_LOCAL_RL( 'del2v', 'I10', 1, del2v,
+     &                        bi,bj,k, myIter, myThid )
+         CALL WRITE_LOCAL_RL( 'dStar', 'I10', 1, dStar,
+     &                        bi,bj,k, myIter, myThid )
+         CALL WRITE_LOCAL_RL( 'zStar', 'I10', 1, zStar,
+     &                        bi,bj,k, myIter, myThid )
+        ENDIF
         IF (snapshot_mdsio) THEN
          CALL WRITE_LOCAL_RL('W3','I10',1,omega3, bi,bj,k,myIter,myThid)
+         CALL WRITE_LOCAL_RL('Z3','I10',1,vort3BC,bi,bj,k,myIter,myThid)
          CALL WRITE_LOCAL_RL('KE','I10',1,KE,     bi,bj,k,myIter,myThid)
          CALL WRITE_LOCAL_RL('D', 'I10',1,hDiv,   bi,bj,k,myIter,myThid)
          CALL WRITE_LOCAL_RL('Dt','I10',1,tension,bi,bj,k,myIter,myThid)
+         CALL WRITE_LOCAL_RL( 'Ds', 'I10', 1, strainBC,
+     &                        bi,bj,k, myIter, myThid )
          CALL WRITE_LOCAL_RL('Du','I10',1,guDiss, bi,bj,k,myIter,myThid)
          CALL WRITE_LOCAL_RL('Dv','I10',1,gvDiss, bi,bj,k,myIter,myThid)
         ENDIF
@@ -765,11 +735,15 @@ C--   Set du/dt & dv/dt on boundaries to zero
         IF (useMNC .AND. snapshot_mnc) THEN
           CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'W3',omega3,
      &          offsets, myThid)
+          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'Z3',vort3BC,
+     &          offsets, myThid)
           CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'KE',KE,
      &          offsets, myThid)
           CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'D', hDiv,
      &          offsets, myThid)
           CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'Dt',tension,
+     &          offsets, myThid)
+          CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'Ds',strainBC,
      &          offsets, myThid)
           CALL MNC_CW_RL_W_OFFSET(pf,'mom_vi',bi,bj,'Du',guDiss,
      &          offsets, myThid)
@@ -781,12 +755,16 @@ C--   Set du/dt & dv/dt on boundaries to zero
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL(vort3BC,'momVort3',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(KE,     'momKE   ',k,1,2,bi,bj,myThid)
        IF (momViscosity) THEN
         CALL DIAGNOSTICS_FILL(hDiv,   'momHDiv ',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(tension,'Tension ',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(guDiss, 'Um_Diss ',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(gvDiss, 'Vm_Diss ',k,1,2,bi,bj,myThid)
+       ENDIF
+       IF ( useVariableVisc .OR. useStrainTensionVisc ) THEN
+        CALL DIAGNOSTICS_FILL(tension, 'Tension ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(strainBC,'Strain  ',k,1,2,bi,bj,myThid)
        ENDIF
         CALL DIAGNOSTICS_FILL(gU(1-OLx,1-OLy,k,bi,bj),
      &                                'Um_Advec',k,1,2,bi,bj,myThid)
