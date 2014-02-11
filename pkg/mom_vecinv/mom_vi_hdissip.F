@@ -1,67 +1,56 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.33 2011/10/11 14:35:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.34 2014/02/11 20:23:24 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
 
       SUBROUTINE MOM_VI_HDISSIP(
-     I        bi,bj,k,
-     I        hDiv,vort3,tension,strain,KE,
-     I        hFacZ,dStar,zStar,
-     I        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
-     I        harmonic,biharmonic,useVariableViscosity,
-     O        uDissip,vDissip,
-     I        myThid)
-
-cph(
-cph The following line was commented in the argument list
-cph TAMC cannot digest commented lines within continuing lines
-c    I        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
-cph)
+     I        bi, bj, k,
+     I        hDiv, vort3, dStar, zStar, hFacZ,
+     I        viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
+     I        harmonic, biharmonic, useVariableViscosity,
+     O        uDissip, vDissip,
+     I        myThid )
 
       IMPLICIT NONE
-C
+
 C     Calculate horizontal dissipation terms
 C     [del^2 - del^4] (u,v)
-C
 
 C     == Global variables ==
 #include "SIZE.h"
-#include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 
 C     == Routine arguments ==
-      INTEGER bi,bj,k
-      _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER bi, bj, k
+      _RL hDiv (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL strain(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dStar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL zStar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       LOGICAL harmonic, biharmonic, useVariableViscosity
+      _RL uDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C     == Local variables ==
-      INTEGER I,J
-      _RL Zip,Zij,Zpj,Dim,Dij,Dmj,uD2,vD2,uD4,vD4
-      _RL Zip1,Zij1,Zpj1
+      INTEGER i, j
+      _RL Zip, Zij, Zpj, Dim, Dij, Dmj, uD2, vD2, uD4, vD4
+      _RL Zip1, Zij1, Zpj1
 
 C     - Laplacian  terms
       IF (harmonic) THEN
 C This bit scales the harmonic dissipation operator to be proportional
 C to the grid-cell area over the time-step. viscAh is then non-dimensional
-C and should be less than 1/8, for example viscAh=0.01 
+C and should be less than 1/8, for example viscAh=0.01
        IF (useVariableViscosity) THEN
-        DO j=2-Oly,sNy+Oly-1
-         DO i=2-Olx,sNx+Olx-1
+        DO j=2-OLy,sNy+OLy-1
+         DO i=2-OLx,sNx+OLx-1
 
           Dij=hDiv( i , j )*viscAh_D(i,j)
           Dim=hDiv( i ,j-1)*viscAh_D(i,j-1)
@@ -90,8 +79,8 @@ C and should be less than 1/8, for example viscAh=0.01
          ENDDO
         ENDDO
        ELSE
-        DO j=2-Oly,sNy+Oly-1
-         DO i=2-Olx,sNx+Olx-1
+        DO j=2-OLy,sNy+OLy-1
+         DO i=2-OLx,sNx+OLx-1
 
           Dim=hDiv( i ,j-1)
           Dij=hDiv( i , j )
@@ -121,8 +110,8 @@ C and should be less than 1/8, for example viscAh=0.01
         ENDDO
        ENDIF
       ELSE
-       DO j=2-Oly,sNy+Oly-1
-        DO i=2-Olx,sNx+Olx-1
+       DO j=2-OLy,sNy+OLy-1
+        DO i=2-OLx,sNx+OLx-1
          uDissip(i,j) = 0.
          vDissip(i,j) = 0.
         ENDDO
@@ -134,16 +123,16 @@ C     - Bi-harmonic terms
 
 C This bit scales the harmonic dissipation operator to be proportional
 C to the grid-cell area over the time-step. viscAh is then non-dimensional
-C and should be less than 1/8, for example viscAh=0.01 
+C and should be less than 1/8, for example viscAh=0.01
        IF (useVariableViscosity) THEN
-        DO j=2-Oly,sNy+Oly-1
-         DO i=2-Olx,sNx+Olx-1
+        DO j=2-OLy,sNy+OLy-1
+         DO i=2-OLx,sNx+OLx-1
 
 #ifdef MOM_VI_ORIGINAL_VISCA4
           Dim=dyF( i ,j-1,bi,bj)*dStar( i ,j-1)
           Dij=dyF( i , j ,bi,bj)*dStar( i , j )
           Dmj=dyF(i-1, j ,bi,bj)*dStar(i-1, j )
-          
+
           Zip1=dxV( i ,j+1,bi,bj)*hFacZ( i ,j+1)*zStar( i ,j+1)
           Zij1=dxV( i , j ,bi,bj)*hFacZ( i , j )*zStar( i , j )
           Zpj1=dxV(i+1, j ,bi,bj)*hFacZ(i+1, j )*zStar(i+1, j )
@@ -166,14 +155,14 @@ C and should be less than 1/8, for example viscAh=0.01
 #ifdef MOM_VI_ORIGINAL_VISCA4
           uD4 = recip_rAw(i,j,bi,bj)*(
      &                             ( (Dij-Dmj)*cosFacU(j,bi,bj) )
-     &  -_recip_hFacW(i,j,k,bi,bj)*( Zip-Zij ) 
+     &  -_recip_hFacW(i,j,k,bi,bj)*( Zip-Zij )
 # ifdef ISOTROPIC_COS_SCALING
      &                                        *cosFacU(j,bi,bj)
 # endif /* ISOTROPIC_COS_SCALING */
      &         )
           vD4 = recip_rAs(i,j,bi,bj)*(
      &   _recip_hFacS(i,j,k,bi,bj)*( (Zpj-Zij)*cosFacV(j,bi,bj) )
-     &   +                         ( Dij-Dim ) 
+     &   +                         ( Dij-Dim )
 # ifdef ISOTROPIC_COS_SCALING
      &                                        *cosFacV(j,bi,bj)
 # endif /* ISOTROPIC_COS_SCALING */
@@ -200,14 +189,14 @@ C and should be less than 1/8, for example viscAh=0.01
          ENDDO
         ENDDO
        ELSE
-        DO j=2-Oly,sNy+Oly-1
-         DO i=2-Olx,sNx+Olx-1
+        DO j=2-OLy,sNy+OLy-1
+         DO i=2-OLx,sNx+OLx-1
 
 #ifdef MOM_VI_ORIGINAL_VISCA4
           Dim=dyF( i ,j-1,bi,bj)*dStar( i ,j-1)
           Dij=dyF( i , j ,bi,bj)*dStar( i , j )
           Dmj=dyF(i-1, j ,bi,bj)*dStar(i-1, j )
-          
+
           Zip1=dxV( i ,j+1,bi,bj)*hFacZ( i ,j+1)*zStar( i ,j+1)
           Zij1=dxV( i , j ,bi,bj)*hFacZ( i , j )*zStar( i , j )
           Zpj1=dxV(i+1, j ,bi,bj)*hFacZ(i+1, j )*zStar(i+1, j )
@@ -226,19 +215,19 @@ C and should be less than 1/8, for example viscAh=0.01
 
 #ifdef MOM_VI_ORIGINAL_VISCA4
           uD4 = recip_rAw(i,j,bi,bj)*(
-     &                             viscA4*( (Dij-Dmj)*cosFacU(j,bi,bj) )
-     &  -_recip_hFacW(i,j,k,bi,bj)*viscA4*( Zip-Zij ) 
+     &                             viscA4D*( Dij-Dmj )*cosFacU(j,bi,bj)
+     &  -_recip_hFacW(i,j,k,bi,bj)*viscA4Z*( Zip-Zij )
 # ifdef ISOTROPIC_COS_SCALING
-     &                                               *cosFacU(j,bi,bj)
+     &                                                *cosFacU(j,bi,bj)
 # endif /* ISOTROPIC_COS_SCALING */
-     &         )
+     &                               )
           vD4 = recip_rAs(i,j,bi,bj)*(
-     &   _recip_hFacS(i,j,k,bi,bj)*viscA4*( (Zpj-Zij)*cosFacV(j,bi,bj) )
-     &   +                         viscA4*( Dij-Dim ) 
+     &   _recip_hFacS(i,j,k,bi,bj)*viscA4Z*( Zpj-Zij )*cosFacV(j,bi,bj)
+     &   +                         viscA4D*( Dij-Dim )
 # ifdef ISOTROPIC_COS_SCALING
-     &                                               *cosFacV(j,bi,bj)
+     &                                                *cosFacV(j,bi,bj)
 # endif /* ISOTROPIC_COS_SCALING */
-     &         )
+     &                               )
 #else /* MOM_VI_ORIGINAL_VISCA4 */
           uD4 = viscA4D*
      &               cosFacU(j,bi,bj)*( Dij-Dmj )*recip_DXC(i,j,bi,bj)
@@ -257,7 +246,7 @@ C and should be less than 1/8, for example viscAh=0.01
 
           uDissip(i,j) = uDissip(i,j) - uD4
           vDissip(i,j) = vDissip(i,j) - vD4
-          
+
          ENDDO
         ENDDO
        ENDIF
