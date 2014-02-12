@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/MLAdjust/code/DIAGNOSTICS_SIZE.h,v 1.3 2005/09/20 21:03:31 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/verification/MLAdjust/code/DIAGNOSTICS_SIZE.h,v 1.4 2014/02/12 23:11:08 jmc Exp $
 C $Name:  $
 
 
@@ -23,7 +23,7 @@ C  and "diagSt_size" (statistics-diags) since values here are deliberately small
       PARAMETER( numlists = 10, numperlist = 50, numLevels=2*Nr )
       PARAMETER( numdiags = 50*Nr )
       PARAMETER( nRegions = 0 , nStats = 4 )
-      PARAMETER( diagSt_size = 10*Nr )
+      PARAMETER( diagSt_size = 50*Nr )
 
 
 CEH3 ;;; Local Variables: ***
