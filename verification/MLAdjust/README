@@ -1,0 +1,42 @@
+Simple set-up to test flow-dependent horizontal viscosity implementation.
+
+ Domain size is 50 x 26 x 40 grid-cells, 
+ with uniform resolution dx=dy= 1.km , dz = 5.m
+ 
+ Zonally re-entrant, flat bottom channel (closed by Northern Wall @ j=26)
+
+ input files are real*8 (see matlab script input/genit.m )
+
+ start from initial density field (given by initial Temp), no forcing
+
+ Test Exp. |  Momentum   | useFullLeith | Strain-Tension | Biharmonic | side-drag   |
+           | formulation |              |  formulation   | vs harmonic| (no_slip BC)|
+-------------------------------------------------------------------------------------
+ standard  | Vector-Inv. | FullLeith    |       No       |   viscC4   |    No       |
+(dir=input)|             |              |                |            |             |
+-------------------------------------------------------------------------------------
+ .0.smag   | Vector-Inv. | FullLeith    |       No       |   viscC2   |    No       |
+-------------------------------------------------------------------------------------
+ .0.leith  | Vector-Inv. | FullLeith    |       Yes      |   viscC2   |    No       |
+-------------------------------------------------------------------------------------
+ .0.leithD | Vector-Inv. |    No        |       No       |   viscC2   |    No       |
+-------------------------------------------------------------------------------------
+ .1.leith  | Vector-Inv. | FullLeith    |       No       |   viscC4   |    No       |
+-------------------------------------------------------------------------------------
+ 
+Notes: 
+1) Stain-Tension viscosity formulation is used when setting 
+     useStrainTensionVisc=.TRUE.,
+   default is .False., to use vorticity & divergence formulation
+2) test 1.leith (input.1.leith) starts from a pickup-file, 
+   all other test exp. start from iter0=0
+3) test with Biharmonic visc. are using:
+    viscC4leith = viscC4leithD = 1.85, 
+    viscC4smag  = 1.,
+    viscA4GridMax = 1.,
+4) test with Harmonic visc. are using:
+    viscC2leith = viscC2leithD=1.85, 
+    viscC2smag  = 1.,
+    viscAhGridMax = 1.,
+
+-------------------------------------
