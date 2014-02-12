@@ -1,0 +1,108 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ viscAr=5.E-5,
+#- This is the background viscosity used; total=viscah+viscleith
+# viscAh=1.E2,
+# viscA4=1.E2,
+#- This is the background viscosity used on vorticity points
+# viscAhZ=1.E2,
+# viscA4Z=1.E2,
+#- This is the background viscosity used on divergence points
+# viscAhD=1.E2,
+# viscA4D=1.E2,
+#- viscAhD and viscAhZ are set to viscah if they are unset initially
+#
+#- This is a maximum gridscale Reynolds number limiter
+# viscAhReMax=10.,
+# viscA4ReMax=10.,
+#- This is a minimum autoscaling viscosity
+# viscAhGridMin=.01,
+# viscA4GridMin=.01,
+#- This is the standard Leith Viscosity, prop to grad(curl v_h)
+ viscC2leith = 1.85,
+#viscC4leith = 1.85,
+# -This is an additional Leith Viscosity, prop to grad(div.v_h)
+#  It traps instabilities that have no signal in grad(curl v_h)
+ viscC2leithD = 1.85,
+#viscC4leithD = 1.85,
+# This is harmonic Smagorinsky Coefficient
+# 0.2-0.9 = value from 3-d turbulence theory; Smagorinsky (1993)
+# 2.2-4   = stable oceanic values (Griffies and Hallberg, 2000)
+# 1. smag is approximately the same as 1.85 leith+leithd for this grid spacing
+ viscC2smag = 1.,
+#viscC4smag = 1.,
+#- This is the max Viscosity used, be it Smag or Leith, and it scales
+#  with grid size and timestep
+ viscAhGridMax = 1.,
+#viscA4GridMax = 1.,
+#- This uses the full grad(vort) and grad(div)
+ useFullLeith=.TRUE.,
+#- This uses the Strain-Tension form for calculating viscous terms
+ useStrainTensionVisc=.TRUE.,
+#no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ vectorInvariantMomentum=.TRUE.,
+ ivdc_kappa=10.,
+ implicitDiffusion=.TRUE.,
+ implicitViscosity=.TRUE.,
+ f0=7.29E-5,
+ beta=0.E-11,
+ useJamartWetPoints=.TRUE.,
+ eosType='LINEAR',
+# Using Temperature as only Active Tracer
+ tAlpha=2.E-4,
+# Using Salinity as Spice
+ sBeta =0.E-4,
+ gravity=9.81,
+ rhoNil=1035.,
+ implicitFreeSurface=.TRUE.,
+ staggerTimeStep=.TRUE.,
+ tempAdvScheme=33,
+ saltAdvScheme=33,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-11,
+ cg3dMaxIters=40,
+ cg3dTargetResidual=1.E-9,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=0,
+#endTime=864000.,
+#- for testing, only run for 12 iterations:
+ nTimeSteps=12,
+ deltaT=1200.,
+ abEps=0.01,
+#- for testing, reduce amount of output by commenting out output frequencies:
+# pchkptFreq=43200.,
+#taveFreq=7200.,
+#dumpFreq=7200.,
+#diagFreq=7200.,
+ monitorSelect=2,
+ monitorFreq=1200.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ delR= 40*5.0,
+ dxSpacing=1.E3,
+ dySpacing=1.E3,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile='topo_sl.bin',
+ hydrogThetaFile='thetaInitial.bin',
+ hydrogSaltFile='spiceInitial.bin',
+ &
