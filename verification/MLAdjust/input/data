@@ -78,7 +78,7 @@
 # Time stepping parameters
  &PARM03
  nIter0=0,
-#endTime=86400.,
+#endTime=864000.,
 #- for testing, only run for 12 iterations:
  nTimeSteps=12,
  deltaT=1200.,
