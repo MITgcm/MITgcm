@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1966 2014/02/11 20:25:03 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1967 2014/02/13 00:12:27 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/MLAdjust:
+  - rename secondary test suffix:
+     1.leith  -> A4FlxF  + switch to flux-form & add side-drag
+     0.leithD -> AhFlxF  + switch to flux-form
+     0.smag   -> AhVrDv  (use Vorticity-Div. visc form) + add side-drag
+     0.leith  -> AhStTn  (use Strain-Tension visc form) + add side-drag
 o pkg/mom_vecinv:
   - remove unused arguments from S/R MOM_VI_HDISSIP & MOM_HDISSIP (as it used
     to be before mom_calc_visc.F)
