@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.26 2013/10/28 07:42:24 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.27 2014/02/13 02:18:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -202,19 +202,6 @@ C--    Get number of MPI processes
 #endif /* ALLOW_USE_MPI */
       ENDIF
 
-C--    Can not have more processes than compile time MAX_NO_PROCS
-       IF ( numberOfProcs .GT. MAX_NO_PROCS ) THEN
-        eeBootError = .TRUE.
-        WRITE(msgBuf,'(A,2I6)')
-     &    'EEBOOT_MINIMAL: Nb. of procs exceeds MAX_NO_PROCS',
-     &    numberOfProcs, MAX_NO_PROCS
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)')
-     &    ' Needs to increase MAX_NO_PROCS',
-     &    ' in file "EEPARAMS.h" and to re-compile'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        GOTO 999
-       ENDIF
 C--    Under MPI only allow same number of processes as proc grid size.
 C      Strictly we are allowed more procs but knowing there
 C      is an exact match makes things easier.
