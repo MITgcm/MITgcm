@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.35 2014/02/10 22:06:32 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.36 2014/02/13 04:10:25 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: EEPARAMS.h
@@ -17,9 +17,9 @@ CEOP
 
 C     ========  EESIZE.h  ========================================
 
-C     MAX_LEN_MBUF  - Default message buffer max. size
-C     MAX_LEN_FNAM  - Default file name max. size
-C     MAX_LEN_PREC  - Default rec len for reading "parameter" files
+C     MAX_LEN_MBUF  :: Default message buffer max. size
+C     MAX_LEN_FNAM  :: Default file name max. size
+C     MAX_LEN_PREC  :: Default rec len for reading "parameter" files
 
       INTEGER MAX_LEN_MBUF
       PARAMETER ( MAX_LEN_MBUF = 512 )
@@ -28,18 +28,18 @@ C     MAX_LEN_PREC  - Default rec len for reading "parameter" files
       INTEGER MAX_LEN_PREC
       PARAMETER ( MAX_LEN_PREC = 200 )
 
-C     MAX_NO_THREADS  - Maximum number of threads allowed.
-C     MAX_NO_PROCS    - Maximum number of processes allowed.
-C     MAX_NO_BARRIERS - Maximum number of distinct thread "barriers"
+C     MAX_NO_THREADS  :: Maximum number of threads allowed.
+CC    MAX_NO_PROCS    :: Maximum number of processes allowed.
+CC    MAX_NO_BARRIERS :: Maximum number of distinct thread "barriers"
       INTEGER MAX_NO_THREADS
       PARAMETER ( MAX_NO_THREADS =  4 )
-      INTEGER MAX_NO_PROCS
-      PARAMETER ( MAX_NO_PROCS   =  70000 )
-      INTEGER MAX_NO_BARRIERS
-      PARAMETER ( MAX_NO_BARRIERS = 1 )
+c     INTEGER MAX_NO_PROCS
+c     PARAMETER ( MAX_NO_PROCS   =  70000 )
+c     INTEGER MAX_NO_BARRIERS
+c     PARAMETER ( MAX_NO_BARRIERS = 1 )
 
 C     Particularly weird and obscure voodoo numbers
-C     lShare  - This wants to be the length in
+C     lShare :: This wants to be the length in
 C               [148]-byte words of the size of
 C               the address "window" that is snooped
 C               on an SMP bus. By separating elements in
@@ -60,8 +60,9 @@ C               one dimensional.
       PARAMETER ( lShare4 =  cacheLineSize/4 )
       PARAMETER ( lShare8 =  cacheLineSize/8 )
 
-      INTEGER MAX_VGS
-      PARAMETER ( MAX_VGS = 8192 )
+CC    MAX_VGS  :: Maximum buffer size for Global Vector Sum
+c     INTEGER MAX_VGS
+c     PARAMETER ( MAX_VGS = 8192 )
 
 C     ========  EESIZE.h  ========================================
 
@@ -102,18 +103,18 @@ C     debLevX  :: used to decide when to print debug messages
       PARAMETER ( debLevD=4 )
       PARAMETER ( debLevE=5 )
 
-C     SQUEEZE_RIGHT       - Flag indicating right blank space removal
+C     SQUEEZE_RIGHT      :: Flag indicating right blank space removal
 C                           from text field.
-C     SQUEEZE_LEFT        - Flag indicating left blank space removal
+C     SQUEEZE_LEFT       :: Flag indicating left blank space removal
 C                           from text field.
-C     SQUEEZE_BOTH        - Flag indicating left and right blank
+C     SQUEEZE_BOTH       :: Flag indicating left and right blank
 C                           space removal from text field.
-C     PRINT_MAP_XY        - Flag indicating to plot map as XY slices
-C     PRINT_MAP_XZ        - Flag indicating to plot map as XZ slices
-C     PRINT_MAP_YZ        - Flag indicating to plot map as YZ slices
-C     commentCharacter    - Variable used in column 1 of parameter
+C     PRINT_MAP_XY       :: Flag indicating to plot map as XY slices
+C     PRINT_MAP_XZ       :: Flag indicating to plot map as XZ slices
+C     PRINT_MAP_YZ       :: Flag indicating to plot map as YZ slices
+C     commentCharacter   :: Variable used in column 1 of parameter
 C                           files to indicate comments.
-C     INDEX_I             - Variable used to select an index label
+C     INDEX_I            :: Variable used to select an index label
 C     INDEX_J               for formatted input parameters.
 C     INDEX_K
 C     INDEX_NONE
@@ -140,9 +141,8 @@ C     INDEX_NONE
      &            INDEX_K    = 3,
      &            INDEX_NONE = 4 )
 
-C     EXCH_IGNORE_CORNERS - Flag to select ignoring or
-C     EXCH_UPDATE_CORNERS   updating of corners during
-C                           an edge exchange.
+C     EXCH_IGNORE_CORNERS :: Flag to select ignoring or
+C     EXCH_UPDATE_CORNERS    updating of corners during an edge exchange.
       INTEGER EXCH_IGNORE_CORNERS
       INTEGER EXCH_UPDATE_CORNERS
       PARAMETER ( EXCH_IGNORE_CORNERS = 0,
@@ -200,40 +200,36 @@ c    &  eeBootError, fatalError, eeEndError,
       LOGICAL useSIGREG
 
 C--   COMMON /EPARAMS_I/ Execution environment public integer variables.
-C     errorMessageUnit    - Fortran IO unit for error messages
-C     standardMessageUnit - Fortran IO unit for informational messages
+C     errorMessageUnit    :: Fortran IO unit for error messages
+C     standardMessageUnit :: Fortran IO unit for informational messages
 C     maxLengthPrt1D :: maximum length for printing (to Std-Msg-Unit) 1-D array
-C     scrUnit1      - Scratch file 1 unit number
-C     scrUnit2      - Scratch file 2 unit number
-C     eeDataUnit    - Unit # for reading "execution environment" parameter file.
-C     modelDataUnit - Unit number for reading "model" parameter file.
-C     numberOfProcs - Number of processes computing in parallel
-C     pidIO         - Id of process to use for I/O.
-C     myBxLo, myBxHi - Extents of domain in blocks in X and Y
-C     myByLo, myByHi   that each threads is responsble for.
-C     myProcId      - My own "process" id.
-C     myPx     - My X coord on the proc. grid.
-C     myPy     - My Y coord on the proc. grid.
-C     myXGlobalLo - My bottom-left (south-west) x-index
-C                   global domain. The x-coordinate of this
-C                   point in for example m or degrees is *not*
-C                   specified here. A model needs to provide a
-C                   mechanism for deducing that information if it
-C                   is needed.
-C     myYGlobalLo - My bottom-left (south-west) y-index in
-C                   global domain. The y-coordinate of this
-C                   point in for example m or degrees is *not*
-C                   specified here. A model needs to provide a
-C                   mechanism for deducing that information if it
-C                   is needed.
-C     nThreads    - No. of threads
-C     nTx         - No. of threads in X
-C     nTy         - No. of threads in Y
-C                   This assumes a simple cartesian
-C                   gridding of the threads which is not required elsewhere
-C                   but that makes it easier.
-C     ioErrorCount - IO Error Counter. Set to zero initially and increased
-C                    by one every time an IO error occurs.
+C     scrUnit1      :: Scratch file 1 unit number
+C     scrUnit2      :: Scratch file 2 unit number
+C     eeDataUnit    :: Unit # for reading "execution environment" parameter file
+C     modelDataUnit :: Unit number for reading "model" parameter file.
+C     numberOfProcs :: Number of processes computing in parallel
+C     pidIO         :: Id of process to use for I/O.
+C     myBxLo, myBxHi :: Extents of domain in blocks in X and Y
+C     myByLo, myByHi :: that each threads is responsble for.
+C     myProcId      :: My own "process" id.
+C     myPx          :: My X coord on the proc. grid.
+C     myPy          :: My Y coord on the proc. grid.
+C     myXGlobalLo   :: My bottom-left (south-west) x-index global domain.
+C                      The x-coordinate of this point in for example m or
+C                      degrees is *not* specified here. A model needs to
+C                      provide a mechanism for deducing that information
+C                      if it is needed.
+C     myYGlobalLo   :: My bottom-left (south-west) y-index in global domain.
+C                      The y-coordinate of this point in for example m or
+C                      degrees is *not* specified here. A model needs to
+C                      provide a mechanism for deducing that information
+C                      if it is needed.
+C     nThreads      :: No. of threads
+C     nTx, nTy      :: No. of threads in X and in Y
+C                      This assumes a simple cartesian gridding of the threads
+C                      which is not required elsewhere but that makes it easier
+C     ioErrorCount  :: IO Error Counter. Set to zero initially and increased
+C                      by one every time an IO error occurs.
       COMMON /EEPARAMS_I/
      &  errorMessageUnit, standardMessageUnit, maxLengthPrt1D,
      &  scrUnit1, scrUnit2, eeDataUnit, modelDataUnit,
