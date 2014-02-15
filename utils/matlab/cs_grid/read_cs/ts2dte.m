@@ -1,6 +1,6 @@
 function dte=ts2dte(ts,deltat,startyr,startmo,startdy,form)
 
-% Function dte=ts2dte(ts,deltat,startyr,startmo,startdy)
+% Function dte=ts2dte(ts,deltat,startyr,startmo,startdy,form)
 % convert model time step to a date
 %
 % INPUTS
@@ -21,4 +21,4 @@ if nargin < 3, startyr=1992; end
 if nargin < 2, deltat=1200; end
 if nargin < 1, error('please specify time step number'); end
 
-dte=datestr(datenum(startyr,startmo,startdy)+ts*deltat/60/60/24);
+dte=datestr(datenum(startyr,startmo,startdy)+ts*deltat/60/60/24,form);
