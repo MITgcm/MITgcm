@@ -1,4 +1,4 @@
-function dte=ts2dte(ts,deltat,startyr,startmo,startdy)
+function dte=ts2dte(ts,deltat,startyr,startmo,startdy,form)
 
 % Function dte=ts2dte(ts,deltat,startyr,startmo,startdy)
 % convert model time step to a date
@@ -9,10 +9,12 @@ function dte=ts2dte(ts,deltat,startyr,startmo,startdy)
 % startyr  start year (default 1992)
 % startmo  start month (default 1)
 % startdy  start day (default 1)
+% form     format of date ("help datestr" for details)
 % 
 % OUTPUTS
 % dte      date
 
+if nargin < 6, form=-1; end
 if nargin < 5, startdy=1; end
 if nargin < 4, startmo=1; end
 if nargin < 3, startyr=1992; end
