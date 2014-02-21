@@ -5,7 +5,7 @@ function fld=quikread_llc(fnam,nx,kx,prec,tiles);
 %
 % INPUTS
 % fnam  input path and file name
-% nx    face dimension (default 270)
+% nx    tile dimension (default 270)
 % kx    vertical indices to read, e.g., 1:50 (default 1)
 % prec  numeric precision (see fread; default 'real*4')
 % tiles llc tiles to read (default 1:13)
@@ -18,6 +18,9 @@ function fld=quikread_llc(fnam,nx,kx,prec,tiles);
 % quikpcolor(fld')
 % fld=quikread_llc('Depth.data',270,1,'real*4',8:10);
 % quikpcolor(rot90(fld,2)');
+%
+% SEE ALSO
+% quilplot_llc
 
 if nargin < 5, tiles=1:13; end
 if nargin < 4, prec='real*4'; end
