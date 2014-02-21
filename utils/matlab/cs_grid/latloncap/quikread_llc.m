@@ -28,9 +28,6 @@ if nargin < 3, kx=1; end
 if nargin < 2, nx=270; end
 if nargin < 1, error('please specify input file name'); end
 
-fld=zeros(nx,nx*length(tiles),length(kx));
-fid=fopen(fnam,'r','ieee-be');
-
 switch prec
  case {'int8','integer*1'}
   preclength=1;
@@ -41,6 +38,17 @@ switch prec
  case {'int64','integer*8','uint64','double','real*8','float64'}
   preclength=8;
 end
+
+if preclength<=4
+    % if input is single precision,
+    % output single precision to save space
+    fld=zeros(nx,nx*length(tiles),length(kx),'single');
+    prec=[prec '=>' prec];
+else
+    fld=zeros(length(ix),length(jx),length(kx));
+end
+
+fid=fopen(fnam,'r','ieee-be');
 
 if length(tiles)==13
     for k=1:length(kx)
@@ -61,7 +69,11 @@ else
                 tmp=fread(fid,nx*nx,prec);
                 tmp=reshape(tmp,nx,nx);
               case {8,9,10}
-                tmp=zeros(nx);
+                if preclength<=4
+                    tmp=zeros(nx,'single');
+                else
+                    tmp=zeros(nx);
+                end
                 for j=1:nx
                     skip=sk+7*nx*nx+nx*(tiles(tl)-8)+(j-1)*nx*3;
                     if(fseek(fid,skip*preclength,'bof')<0)
@@ -71,7 +83,11 @@ else
                 end
                 tmp=rot90(tmp,1);
               case {11,12,13}
-                tmp=zeros(nx);
+                if preclength<=4
+                    tmp=zeros(nx,'single');
+                else
+                    tmp=zeros(nx);
+                end
                 for j=1:nx
                     skip=sk+10*nx*nx+nx*(tiles(tl)-11)+(j-1)*nx*3;
                     if(fseek(fid,skip*preclength,'bof')<0)
