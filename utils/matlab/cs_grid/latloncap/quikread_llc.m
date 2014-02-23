@@ -14,13 +14,12 @@ function fld=quikread_llc(fnam,nx,kx,prec,tiles);
 % fld  output array of dimension nx*nx*length(tiles)*length(kx)
 %
 % EXAMPLES
-% fld=quikread_llc('Depth.data',270,1,'real*4',4:7);
-% quikpcolor(fld')
-% fld=quikread_llc('Depth.data',270,1,'real*4',8:10);
-% quikpcolor(rot90(fld,2)');
+% fld=quikread_llc('Depth.data',270); quikplot_llc(fld)
+% fld=quikread_llc('Depth.data',270,1,'real*4',4:7); quikpcolor(fld')
+% fld=quikread_llc('Depth.data',270,1,'real*4',8:10); quikpcolor(fld')
 %
 % SEE ALSO
-% quilplot_llc
+% read_llc_fkij quilplot_llc quikpcolor
 
 if nargin < 5, tiles=1:13; end
 if nargin < 4, prec='real*4'; end
@@ -43,63 +42,49 @@ if preclength<=4
     % if input is single precision,
     % output single precision to save space
     fld=zeros(nx,nx*length(tiles),length(kx),'single');
-    prec=[prec '=>' prec];
 else
     fld=zeros(length(ix),length(jx),length(kx));
 end
 
-fid=fopen(fnam,'r','ieee-be');
 
 if length(tiles)==13
+    fid=fopen(fnam,'r','ieee-be');
+    if preclength<=4
+        % if input is single precision,
+        % read single precision to save space
+        prec=[prec '=>' prec];
+    end    
     for k=1:length(kx)
         skip=(kx(k)-1)*nx*nx*13;
         if(fseek(fid,skip*preclength,'bof')<0), error('past end of file'); end
         fld(:,:,k)=reshape(fread(fid,nx*nx*13,prec),nx,nx*13);
-    end
+    end    
+    fid=fclose(fid);
 else
+    ix=1:nx;
     for k=1:length(kx)
-        sk=(kx(k)-1)*nx*nx*13;
         for tl=1:length(tiles)
             switch tiles(tl)
-              case {1,2,3,4,5,6,7}
-                skip=sk+(tiles(tl)-1)*nx*nx;
-                if(fseek(fid,skip*preclength,'bof')<0)
-                    error(['past end of file']);
-                end
-                tmp=fread(fid,nx*nx,prec);
-                tmp=reshape(tmp,nx,nx);
+              case {1,2,3}
+                face=1;
+              case {4,5,6}
+                face=2;
+              case 7
+                face=3;
               case {8,9,10}
-                if preclength<=4
-                    tmp=zeros(nx,'single');
-                else
-                    tmp=zeros(nx);
-                end
-                for j=1:nx
-                    skip=sk+7*nx*nx+nx*(tiles(tl)-8)+(j-1)*nx*3;
-                    if(fseek(fid,skip*preclength,'bof')<0)
-                        error(['past end of file']);
-                    end
-                    tmp(:,j)=fread(fid,nx,prec);
-                end
-                tmp=rot90(tmp,1);
+                face=4;
               case {11,12,13}
-                if preclength<=4
-                    tmp=zeros(nx,'single');
-                else
-                    tmp=zeros(nx);
-                end
-                for j=1:nx
-                    skip=sk+10*nx*nx+nx*(tiles(tl)-11)+(j-1)*nx*3;
-                    if(fseek(fid,skip*preclength,'bof')<0)
-                        error(['past end of file']);
-                    end
-                    tmp(:,j)=fread(fid,nx,prec);
-                end
-                tmp=rot90(tmp,1);
+                face=5;
             end
-            fld(:,(nx*(tl-1)+1):(nx*tl),k)=tmp;
+            switch tiles(tl)
+              case {1,4,7,8,11}
+                jx=1:nx;
+              case {2,5,9,12}
+                jx=(nx+1):(2*nx);
+              case {3,6,10,13}
+                jx=(2*nx+1):(3*nx);
+            end
+            fld(:,(nx*(tl-1)+1):(nx*tl),k)=read_llc_fkij(fnam,nx,face,kx(k),ix,jx,prec);
         end
     end
 end
-
-fid=fclose(fid);
