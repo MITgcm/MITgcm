@@ -1,7 +1,7 @@
 import sys
 import glob
 import numpy as np
-from scipy.io.netcdf import netcdf_file
+from pupynere import netcdf_file
 
 _exclude_global = ['close',
                    'createDimension',
