@@ -279,7 +279,10 @@ class MNCVariable:
             if d[0] == 'Y': self._Ydim = i
 
     def __getattr__(self, k):
-        return self._attributes[k]
+        try:
+            return self._attributes[k]
+        except KeyError:
+            raise AttributeError
 
     def __dir__(self):
         return self.__dict__.keys() + self._attributes.keys()
