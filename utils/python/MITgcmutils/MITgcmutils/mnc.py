@@ -36,7 +36,7 @@ def getattributes(nc, exclude=[]):
     return a
 
 
-class MNC(object):
+class MNC:
     """
     A file object for MNC (tiled NetCDF) data.
 
@@ -108,6 +108,8 @@ class MNC(object):
         self._ie = []
         self._j0 = []
         self._je = []
+        self._fn = []
+        self._nf = 0
         if layout == 'model':
             self._nx = self.Nx
             self._ny = self.Ny
@@ -141,7 +143,6 @@ class MNC(object):
                 self._ie[i] = ie or None
                 self._je[i] = je or None
         elif layout == 'faces':
-            self._fn = []
             self._nx = {}
             self._ny = {}
             for nc in self.nc:
@@ -248,10 +249,17 @@ def calcstrides(slices, dims):
     return tuple(strides), tuple(shape), tuple(fullshape)
 
 
-class MNCVariable(object):
+class MNCVariable:
     def __init__(self, mnc, name):
-        self._mnc = mnc
         self._name = name
+        self.nc = mnc.nc
+        self.layout = mnc.layout
+        self._i0 = mnc._i0
+        self._ie = mnc._ie
+        self._j0 = mnc._j0
+        self._je = mnc._je
+        self._nf = mnc._nf
+        self._fn = mnc._fn
         v0 = mnc.nc[0].variables[name]
         self._attributes = getattributes(v0, _exclude_var)
         self.itemsize = v0.data.itemsize
@@ -277,19 +285,18 @@ class MNCVariable(object):
         return self.__dict__.keys() + self._attributes.keys()
 
     def __getitem__(self, ind):
-        mnc = self._mnc
-        if mnc.layout == 'faces':
+        if self.layout == 'faces':
             return self._getfaces(ind)
 
         if ind in [Ellipsis, slice(None)]:
             # whole array
             res = np.zeros(self.shape, self.typecode())
             s = [slice(None) for d in self.shape]
-            for i,nc in enumerate(mnc.nc):
+            for i,nc in enumerate(self.nc):
                 if self._Xdim is not None:
-                    s[self._Xdim] = slice(mnc._i0[i], mnc._ie[i])
+                    s[self._Xdim] = slice(self._i0[i], self._ie[i])
                 if self._Ydim is not None:
-                    s[self._Ydim] = slice(mnc._j0[i], mnc._je[i])
+                    s[self._Ydim] = slice(self._j0[i], self._je[i])
                 res[s] = nc.variables[self._name][:]
 
             return res
@@ -301,17 +308,17 @@ class MNCVariable(object):
             sres = [slice(None) for d in fullshape]
             if self._Xdim is not None: I0,Ie,Is = strides[self._Xdim]
             if self._Ydim is not None: J0,Je,Js = strides[self._Ydim]
-            for i,nc in enumerate(mnc.nc):
+            for i,nc in enumerate(self.nc):
                 if self._Xdim is not None:
-                    i0 = mnc._i0[i]
-                    ie = self.shape[self._Xdim] + (mnc._ie[i] or 0)
+                    i0 = self._i0[i]
+                    ie = self.shape[self._Xdim] + (self._ie[i] or 0)
                     a,b = divmod(I0 - i0, Is)
                     e = np.clip(ie, I0, Ie)
                     sres[self._Xdim] = slice(max(-a, 0), (e - I0)//Is)
                     s[self._Xdim] = slice(max(I0 - i0, b), max(Ie - i0, 0), Is)
                 if self._Ydim is not None:
-                    j0 = mnc._j0[i]
-                    je = self.shape[self._Ydim] + (mnc._je[i] or 0)
+                    j0 = self._j0[i]
+                    je = self.shape[self._Ydim] + (self._je[i] or 0)
                     a,b = divmod(J0 - j0, Js)
                     e = np.clip(je, J0, Je)
                     sres[self._Ydim] = slice(max(-a, 0), (e - J0)//Js)
@@ -321,38 +328,34 @@ class MNCVariable(object):
             return res.reshape(resshape)
 
     def _getfaces(self, ind):
-        mnc = self._mnc
-
         res = []
-        for f in range(mnc._nf):
+        for f in range(self._nf):
             shape = tuple(np.isscalar(d) and d or d[f] for d in self.shape)
             a = np.zeros(shape, self.typecode())
             res.append(a)
         s = [slice(None) for d in self.shape]
-        for i,nc in enumerate(mnc.nc):
-            fn = mnc._fn[i]
+        for i,nc in enumerate(self.nc):
+            fn = self._fn[i]
             if self._Xdim is not None:
-                s[self._Xdim] = slice(mnc._i0[i], mnc._ie[i])
+                s[self._Xdim] = slice(self._i0[i], self._ie[i])
             if self._Ydim is not None:
-                s[self._Ydim] = slice(mnc._j0[i], mnc._je[i])
+                s[self._Ydim] = slice(self._j0[i], self._je[i])
             res[fn][s] = nc.variables[self._name][:]
-        for f in range(mnc._nf):
+        for f in range(self._nf):
             res[f] = res[f][ind]
 
         return res
 
     def face(self, fn):
-        mnc = self._mnc
-
         shape = tuple(np.isscalar(d) and d or d[fn] for d in self.shape)
         res = np.zeros(shape, self.typecode())
         s = [slice(None) for d in self.shape]
-        for i,nc in enumerate(mnc.nc):
-            if mnc._fn[i] == fn:
+        for i,nc in enumerate(self.nc):
+            if self._fn[i] == fn:
                 if self._Xdim is not None:
-                    s[self._Xdim] = slice(mnc._i0[i], mnc._ie[i])
+                    s[self._Xdim] = slice(self._i0[i], self._ie[i])
                 if self._Ydim is not None:
-                    s[self._Ydim] = slice(mnc._j0[i], mnc._je[i])
+                    s[self._Ydim] = slice(self._j0[i], self._je[i])
                 res[s] = nc.variables[self._name][:]
 
         return res
