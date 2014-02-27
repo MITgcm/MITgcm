@@ -1,0 +1,48 @@
+#!/bin/bash
+#
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort_discover,v 1.1 2014/02/27 16:24:18 dimitri Exp $
+# $Name:  $
+
+# Used for serial and mpi compilation on discover at NCCS with:
+# module load comp/intel-13.1.2.183 other/mpi/mvapich2-1.8.1/intel-13.1.2.183
+
+if test "x$MPI" = xtrue ; then
+  FC=mpif90
+  CC=mpicc
+else
+  FC=ifort
+  CC=icc
+fi
+
+DEFINES='-DWORDLENGTH=4'
+CPP='/lib/cpp  -traditional -P'
+EXTENDED_SRC_FLAG='-132'
+OMPFLAG='-openmp'
+CFLAGS='-fPIC'
+LDADD='-shared-intel'
+
+LIBS='-L/usr/local/other/SLES11.1/mvapich2/1.8.1/intel-13.1.2.183/lib'
+INCLUDES='-I/usr/local/other/SLES11.1/mvapich2/1.8.1/intel-13.1.2.183/include'
+INCLUDEDIRS='/usr/local/other/SLES11.1/mvapich2/1.8.1/intel-13.1.2.183/include'
+#- used for parallel (MPI) DIVA
+MPIINCLUDEDIR='/usr/local/other/SLES11.1/mvapich2/1.8.1/intel-13.1.2.183/include'
+#MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
+
+NOOPTFLAGS='-O0 -fPIC'
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FFLAGS="$FFLAGS -fPIC -W0 -WB -convert big_endian -assume byterecl -align"
+    FOPTIM='-O2 -ip -fp-model precise -axSSSE4.2,SSSE3 -traceback -ftz'
+    NOOPTFILES='seaice_growth.F calc_oce_mxlayer.F fizhi_lsm.F fizhi_clockstuff.F'
+else
+    #  Try to follow IEEE-754
+    FFLAGS="$FFLAGS -fPIC -w95 -W0 -WB -convert big_endian -assume byterecl -noalign"
+    FOPTIM='-O0'
+fi
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+
+#- For really big executable (> 2 GB), uncomment following 2 lines
+#FFLAGS="$FFLAGS -mcmodel=medium -shared-intel"
+#CFLAGS="$CFLAGS -mcmodel=medium -shared-intel"
