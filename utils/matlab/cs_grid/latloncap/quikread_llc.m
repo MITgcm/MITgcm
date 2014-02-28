@@ -1,6 +1,7 @@
-function fld=quikread_llc(fnam,nx,kx,prec,pname,minlat,maxlat,minlon,maxlon);
+function [fld fc ix jx]=quikread_llc(fnam,nx,kx,prec,gdir,minlat,maxlat,minlon,maxlon);
 
-% Function quikread_llc(fnam,nx,kx,prec,pname,minlat,maxlat,minlon,maxlon);
+% Function [fld fc ix jx]=quikread_llc(fnam,nx,kx,prec, ...
+%                                      gdir,minlat,maxlat,minlon,maxlon);
 % Read lat-lon-cap field
 % If there is less than 5 input arguments: read the complete field.
 % If there is more than 5 input arguments: read a region.
@@ -10,7 +11,7 @@ function fld=quikread_llc(fnam,nx,kx,prec,pname,minlat,maxlat,minlon,maxlon);
 % nx     tile dimension (default 270)
 % kx     vertical indices to read, e.g., 1:50 (default 1)
 % prec   numeric precision (see fread; default 'real*4')
-% pname  directory path name that contains XC.data and YC.data
+% gdir   directory path name that contains grid files XC.data and YC.data
 % minlat minimum latitude of region to extract
 % maxlat maximum latitude of region to extract
 % minlon minimum longitude of region to extract
@@ -18,9 +19,9 @@ function fld=quikread_llc(fnam,nx,kx,prec,pname,minlat,maxlat,minlon,maxlon);
 %
 % OUTPUTS
 % fld  output array
-%
-% SEE ALSO
-% read_llc_fkij quilplot_llc quikpcolor
+% fc   face or faces that contain requested region
+% ix   i-indices of requested region
+% jx   j-indices of requested region
 %
 % EXAMPLES
 %
@@ -31,12 +32,15 @@ function fld=quikread_llc(fnam,nx,kx,prec,pname,minlat,maxlat,minlon,maxlon);
 % % read and plot the region 120W to 40W and 80S and 60N
 % fld=quikread_llc('Depth.data',270,1,'real*4','',-80,60,-120,-40);
 % quikpcolor(fld')
+%
+% SEE ALSO
+% read_llc_fkij quilplot_llc quikpcolor
 
 if nargin < 9, maxlon=180; end
 if nargin < 8, minlon=-180; end
 if nargin < 7, maxlat=90; end
 if nargin < 6, minlat=-90; end
-if nargin < 5, pname=''; end
+if nargin < 5, gdir=''; end
 if nargin < 4, prec='real*4'; end
 if nargin < 3, kx=1; end
 if nargin < 2, nx=270; end
@@ -93,8 +97,8 @@ if nargin < 6
 else
     fc=[];
     for f=1:5
-        yc=read_llc_fkij([pname 'YC.data'],nx,f);
-        xc=read_llc_fkij([pname 'XC.data'],nx,f);
+        yc=read_llc_fkij([gdir 'YC.data'],nx,f);
+        xc=read_llc_fkij([gdir 'XC.data'],nx,f);
         [i j]=find(yc>=minlat&yc<=maxlat&xc>=minlon&xc<=maxlon);
         if ~isempty(i)
             if isempty(fc)
