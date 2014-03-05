@@ -20,8 +20,8 @@ function [fld fc ix jx]=quikread_llc(fnam,nx,kx,prec,gdir,minlat,maxlat,minlon,m
 % OUTPUTS
 % fld  output array
 % fc   face or faces that contain requested region
-% ix   i-indices of requested region
-% jx   j-indices of requested region
+% ix   i-indices or structure of indices for requested region
+% jx   j-indices or structure of indices for requested region
 %
 % EXAMPLES
 %
@@ -96,28 +96,30 @@ if nargin < 6
     fid=fclose(fid);
 else
     fc=[];
+    ix=[];
+    jx=[];
     for f=1:5
         yc=read_llc_fkij([gdir 'YC.data'],nx,f);
         xc=read_llc_fkij([gdir 'XC.data'],nx,f);
         [i j]=find(yc>=minlat&yc<=maxlat&xc>=minlon&xc<=maxlon);
         if ~isempty(i)
-            if isempty(fc)
-                fc=f;
-                ix=min(i):max(i);
-                jx=min(j):max(j);
-            else
-                error(['multiface output not yet implemented: please email menemenlis@jpl.nasa.gov'])
-            end
+            fc=[fc f];
+            ix{f}=min(i):max(i);
+            jx{f}=min(j):max(j);
         end
     end
-    if preclength <= 4
-        % if input is single precision,
-        % output single precision to save space
-        fld=zeros(length(ix),length(jx),length(kx),'single');
+    if length(fc) == 1
+        if preclength <= 4
+            % if input is single precision,
+            % output single precision to save space
+            fld=zeros(length(ix{f}),length(jx{f}),length(kx),'single');
+        else
+            fld=zeros(length(ix{f}),length(jx{f}),length(kx));
+        end
+        for k=1:length(kx)
+            fld(:,:,k)=read_llc_fkij(fnam,nx,fc,kx(k),ix{f},jx{f},prec);
+        end
     else
-        fld=zeros(length(ix),length(jx),length(kx));
-    end
-    for k=1:length(kx)
-        fld(:,:,k)=read_llc_fkij(fnam,nx,fc,kx(k),ix,jx,prec);
+        fld=[];
     end
 end
