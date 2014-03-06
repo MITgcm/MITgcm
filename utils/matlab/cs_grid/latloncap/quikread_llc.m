@@ -116,7 +116,7 @@ else
                 fld{f}=zeros(length(ix{f}),length(jx{f}),length(kx));
             end
             for k=1:length(kx)
-                fld{f}(:,:,k)=read_llc_fkij(fnam,nx,fc,kx(k),ix{f},jx{f},prec);
+                fld{f}(:,:,k)=read_llc_fkij(fnam,nx,f,kx(k),ix{f},jx{f},prec);
             end
         end
     end
