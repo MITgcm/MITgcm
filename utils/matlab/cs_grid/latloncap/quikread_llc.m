@@ -22,6 +22,8 @@ function [fld fc ix jx]=quikread_llc(fnam,nx,kx,prec,gdir,minlat,maxlat,minlon,m
 % fc   faces that contain requested region
 % ix   i-indices for requested region
 % jx   j-indices for requested region
+% (note that if length(fc)>1, fld, ix, and jx are matlab
+%  cell arrays that can be accessed as fld{fc(1)}, etc.)
 %
 % EXAMPLES
 %
@@ -95,9 +97,10 @@ if nargin < 6
     end
     fid=fclose(fid);
 else
-    fc=[];
-    ix=[];
-    jx=[];
+    fld=[];
+    fc =[];
+    ix =[];
+    jx =[];
     for f=1:5
         yc=read_llc_fkij([gdir 'YC.data'],nx,f);
         xc=read_llc_fkij([gdir 'XC.data'],nx,f);
@@ -106,20 +109,18 @@ else
             fc=[fc f];
             ix{f}=min(i):max(i);
             jx{f}=min(j):max(j);
+            if preclength <= 4
+                % if input is single precision,
+                % output single precision to save space
+                fld{f}=zeros(length(ix{f}),length(jx{f}),length(kx),'single');
+            else
+                fld{f}=zeros(length(ix{f}),length(jx{f}),length(kx));
+            end
         end
     end
     if length(fc) == 1
-        if preclength <= 4
-            % if input is single precision,
-            % output single precision to save space
-            fld=zeros(length(ix{f}),length(jx{f}),length(kx),'single');
-        else
-            fld=zeros(length(ix{f}),length(jx{f}),length(kx));
-        end
-        for k=1:length(kx)
-            fld(:,:,k)=read_llc_fkij(fnam,nx,fc,kx(k),ix{f},jx{f},prec);
-        end
-    else
-        fld=[];
+        fld=fld{fc};
+        ix = ix{fc};
+        jx = jx{fc};
     end
 end
