@@ -19,9 +19,9 @@ function [fld fc ix jx]=quikread_llc(fnam,nx,kx,prec,gdir,minlat,maxlat,minlon,m
 %
 % OUTPUTS
 % fld  output array
-% fc   face or faces that contain requested region
-% ix   i-indices or structure of indices for requested region
-% jx   j-indices or structure of indices for requested region
+% fc   faces that contain requested region
+% ix   i-indices for requested region
+% jx   j-indices for requested region
 %
 % EXAMPLES
 %
