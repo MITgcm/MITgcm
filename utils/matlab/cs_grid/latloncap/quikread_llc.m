@@ -48,19 +48,6 @@ if nargin < 3, kx=1; end
 if nargin < 2, nx=270; end
 if nargin < 1, error('please specify input file name'); end
 
-if minlon < -180
-    error('minlon<-180 not yet implemented: please email menemenlis@jpl.nasa.gov')
-end
-if maxlon > 180
-    error('maxlon>180 not yet implemented: please email menemenlis@jpl.nasa.gov')
-end
-if minlat >= maxlat
-    error('maxlat must be greater than minlat')
-end
-if minlon >= maxlon
-    error('maxlon must be greater than minlon')
-end
-
 switch prec
  case {'int8','integer*1'}
   preclength=1;
@@ -97,6 +84,18 @@ if nargin < 6
     end
     fid=fclose(fid);
 else
+    if minlon < -180
+        error('minlon<-180 not yet implemented: please email menemenlis@jpl.nasa.gov')
+    end
+    if maxlon > 180
+        error('maxlon>180 not yet implemented: please email menemenlis@jpl.nasa.gov')
+    end
+    if minlat >= maxlat
+        error('maxlat must be greater than minlat')
+    end
+    if minlon >= maxlon
+        error('maxlon must be greater than minlon')
+    end    
     fld=[];
     fc =[];
     ix =[];
