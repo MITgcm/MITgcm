@@ -1,5 +1,6 @@
 
-kwr=1;
+kwr=1; kprt=0;
+kwr=0; kprt=0;
 nx=80; ny=42; nr=3; nt=1;
 
 xc=[1:nx]; xc=xc-mean(xc);
@@ -195,24 +196,53 @@ dewPt=(qa_x*atmrho)/cvapor_fac;
 dewPt=-cvapor_exp./log(dewPt);
 
 figure(2);clf;
-subplot(211)
-plot(xc,ta_x-cel2K,'r-'); hold on;
-plot(xc,dewPt-cel2K,'b-');
-plot(xc,tfreeze*ones(nx,1),'k-');
-hold off;
-AA=axis; axis([-nx/2 nx/2 AA(3:4)]);
+subplot(311)
+P(1)=plot(xc,ta_x-cel2K,'r-'); hold on;
+P(2)=plot(xc,dewPt-cel2K,'b-');
+P(3)=plot(xc,tfreeze*ones(nx,1),'k-');
+set(P,'LineWidth',1);
+hold off; AA=axis;
+axis([-nx/2 nx/2 AA(3:4)]);
 legend('ta','dew');
 grid
-title(['del-Temp-X= ',int2str(dtx),' ; RH= ',int2str(rh),' ; Air Temp (^oC)']);
-subplot(212)
-plot(yc,to_y,'b-'); hold on;
-plot(yc,tfreeze*ones(ny,1),'k-');
-hold off;
-AA=axis; axis([0 ny AA(3:4)]);
+xlabel('X')
+title(['Air Temp (^oC): del-Temp-X = ',int2str(dtx),' , RH= ',int2str(rh)]);
+subplot(312)
+P(1)=plot(yc,to_y,'b-'); hold on;
+P(2)=plot(yc,tfreeze*ones(ny,1),'k-');
+set(P,'LineWidth',1);
+hold off; AA=axis;
+L=line([1 1],AA(3:4)); set(L,'LineWidth',2.,'Color',[0 0 0]);
+axis([0 ny AA(3:4)]);
 grid
+xlabel('Y')
 title('Ocean Temp ^oC');
 
-%--
+subplot(313)
+var=iceConc(1,:);
+P(1)=semilogy(yc,var,'b-x'); hold on;
+%plot(yc,var,'b-x'); hold on;
+var=iceVol(1,:);
+P(2)=semilogy(yc,var,'r-x');
+%plot(yc,var,'r-x');
+set(P,'LineWidth',1);
+hold off; AA=axis;
+L=line([1 1],AA(3:4)); set(L,'LineWidth',2.,'Color',[0 0 0]);
+axis([0 ny [0 2]*iceC0]);
+grid
+xlabel('Y')
+legend('iceC','hEff','Location','South');
+title('Initial ice in Channel : y-section');
+%-----
+if kprt == 1, f=2;
+ namfig=sprintf('forcing_%2.2i',f);
+ fprintf([' print fig= %2i to file: ',namfig,' '],f);
+ set(f,'PaperOrientation','portrait')
+%set(f,'PaperPosition',[0.25 1.5 6. 8.]);
+ set(f,'PaperPosition',[0.25 1.5 5.25 7.]);
+ print(f,'-depsc2',namfig); fprintf('\n');
+end
+%-----
 
 figure(3);clf;
 subplot(311)
@@ -242,4 +272,6 @@ AA=axis; axis([0 ny [0 2]*iceC0]);
 grid
 legend('iceC','hEff','Location','South');
 title('Initial ice in Channel : y-section');
-%--
+%-----
+
+return
