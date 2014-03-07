@@ -1,6 +1,5 @@
 
 kwr=1; kprt=0;
-kwr=0; kprt=0;
 nx=80; ny=42; nr=3; nt=1;
 
 xc=[1:nx]; xc=xc-mean(xc);
