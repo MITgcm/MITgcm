@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1967 2014/02/13 00:12:27 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1968 2014/03/07 16:50:02 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint64u (2014/03/07)
 o verification/MLAdjust:
   - rename secondary test suffix:
      1.leith  -> A4FlxF  + switch to flux-form & add side-drag
