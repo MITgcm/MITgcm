@@ -1,13 +1,13 @@
 test - experiment : ideal_2D_oce
 
-purpose: Shows that the residual mean circulation is becoming small 
- at the Equilibrium (Bolus cancel the Euleurian circ.) and is function 
+purpose: Shows that the residual mean circulation is becoming small
+ at the Equilibrium (Bolus cancel the Euleurian circ.) and is function
  of the diapycnal mixing.
 
-Set up: 
+Set up:
  Idealized 2D global ocean with flat bathymetry and no continent,
  symetric relative to the Eq.
- Forcing: zonal wind stress and surface temp. relaxation toward a 
+ Forcing: zonal wind stress and surface temp. relaxation toward a
  "realistic" SST (function of Latitude).
 
 To reduce diapycnal mixing, "exotic" parameters are used (and tested)

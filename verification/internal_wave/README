@@ -2,19 +2,21 @@ Example: "Internal Wave Forced by Open Boundary"
 ================================================
 
 This uses a simply EOS (rho = - rho_o alpha T')
- and treats salt as a passive tracer. 
+ and treats salt as a passive tracer.
 
 Configure and compile the code:
   cd build
   ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
   make depend
   make
+  cd ..
 
 To run:
   cd run
   ln -s ../input/* .
   ln -s ../build/mitgcmuv .
   ./mitgcmuv > output.txt
+  cd ..
 
 There is comparison output in:
   results/output.txt

@@ -1,4 +1,4 @@
-Tutorial Example: "Gravity plume on a continental slope" 
+Tutorial Example: "Gravity plume on a continental slope"
 ========================================================
 (formerly "plume_on_slope" verification ;
  also "nonhydrostatic_plume_on_slope" in release.1 branch)
@@ -8,11 +8,14 @@ Configure and compile the code:
   ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
   make depend
   make
+  cd ..
 
 To run:
-  cd build
+  cd run
   ln -s ../input/* .
+  ln -s ../build/mitgcmuv .
   ./mitgcmuv > output.txt
+  cd ..
 
 There is comparison output in the directory:
   results/output.txt

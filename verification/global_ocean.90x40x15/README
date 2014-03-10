@@ -4,19 +4,24 @@ Example: "4x4 Global Simulation with Seasonal Forcing"
 
 From verification/global_ocean.90x40x15 dir:
 
-To apply the changes to the default configuration of MITgcmUV:
 Configure and compile the code:
   cd build
-  ../../../tools/genmake2 -mods='../code'
+  ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
  [make Clean]
   make depend
   make
   cd ..
-To run the code:
-  cd input
-  ./prepare_run
-  ../build/mitgcmuv > output.txt
+
+To run:
+  cd run
+  ln -s ../input/* .
+  ../input/prepare_run
+  ln -s ../build/mitgcmuv .
+  ./mitgcmuv > output.txt
   cd ..
+
+There is comparison output in the directory:
+  results/output.txt
 
 There is comparison output in directory:
   (verification/global_ocean.90x40x1/) results

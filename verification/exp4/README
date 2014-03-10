@@ -8,14 +8,16 @@ default paths are (as used in testreport):
 
 Configure and compile the code:
   cd ${build_dir}
-  ${ROOT}/tools/genmake2 -mods ../code
+  ${ROOT}/tools/genmake2 -mods ../code [-of my_platform_optionFile]
   make depend
   make
+  cd ..
 
 To run:
   cd ${run_dir}
-  cp ../input/* .
-  ${build_dir}/mitgcmuv
+  ln -s ../input/* .
+  ${build_dir}/mitgcmuv > output.txt
+  cd ..
 
 There is comparison output in the directory:
  results      ( absolute path: ${run_dir}/../results )

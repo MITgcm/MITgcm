@@ -3,12 +3,11 @@ Example: "4 Layer Double Gyre with Pressure Loading"
 
 Comments:
 The input data is real*8 and can be generated with the supplied
-matlab script gendata.m  
+matlab script gendata.m
 To change the input precision to real*4 change readBinaryPrec=32 in
-data as well as in gendata.m 
+data as well as in gendata.m
 
-The experiment follow roughly the analytical analysis 
+The experiment follow roughly the analytical analysis
 Wunsch and Stammer, Atmospheric loading and the oceanic "inverted
 barometer" effect. Rev. Geophys., 35, pp. 79-107, 1997.
-
 

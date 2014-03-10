@@ -1,7 +1,7 @@
  heimbach@mit.edu 07-Nov-2002.
 This verification experiment is almost identical to the
-global_ocean.90x40x15 experiment, except that it uses
-the exf (and cal) package instead of the 
+tutorial_global_oce_latlon experiment, except that it uses
+the exf (and cal) package instead of the
 external_fields_load routine.
 To obtain identical results between the two experiments,
 the following 2 modifications are necessary:

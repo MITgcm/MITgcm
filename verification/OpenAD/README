@@ -1,10 +1,10 @@
 Starting a configuration for OpenAD
 19-Aug-2005, heimbach@mit.edu, utke@mcs.anl.gov, cnh@mit.edu
 ############################################################
-                                                                                                                                                      
+
 This experiment is derived from global_ocean.90x40x15,
 but excludes packages gmredi, kpp.
-                                                                                                                                                      
+
 STEP 1:
 ######
 To bypass incomplete canonicalizer, convert COMMON blocks to MODULES.
@@ -12,7 +12,7 @@ Successfully completed.
 The built process needed to be modified, and some routines
 needed changes. Most changes were commited to default routines,
 the remaining changes are kept in code/ for now.
-                                                                                                                                                      
+
 To build:
 --------
 o short version:
@@ -74,5 +74,4 @@ o short version:
 ../code_ad/genmake2  -of ../../../tools/build_options/linux_ia32_ifort -adof ../../../tools/adjoint_options/adjoint_f95 -mods ../code_ad
 
 make adAll
-
 

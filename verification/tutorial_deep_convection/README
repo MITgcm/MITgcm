@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/verification/tutorial_deep_convection/README,v 1.2 2008/04/24 02:26:22 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/tutorial_deep_convection/README,v 1.3 2014/03/10 01:35:17 jmc Exp $
 # $Name:  $
 
 Tutorial Example: "Surface Driven (Deep) Convection"
@@ -6,18 +6,19 @@ Tutorial Example: "Surface Driven (Deep) Convection"
 (formerly "exp5" ;
  also "nonhydrostatic_deep_convection" in release.1 branch)
 
-
 Configure and compile the code:
   cd build
   ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
   make depend
   make
+  cd ..
 
 To run:
   cd run
   ln -s ../input/* .
   ln -s ../build/mitgcmuv .
   ./mitgcmuv > output.txt
+  cd ..
 
 There is comparison output in the directory:
   results/output.txt

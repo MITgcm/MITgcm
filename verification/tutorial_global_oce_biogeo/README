@@ -1,4 +1,4 @@
-Tutorial Example: "Biochemistry Tutorial" 
+Tutorial Example: "Biochemistry Tutorial"
 =========================================
 (formerly "dic_example" verification)
 
@@ -7,16 +7,18 @@ Configure and compile the code:
   ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
   make depend
   make
+  cd ..
 
 To run:
-  cd build
+  cd run
   ln -s ../input/* .
+  ../input/prepare_run
+  ln -s ../build/mitgcmuv .
   ./mitgcmuv > output.txt
+  cd ..
 
 There is comparison output in the directory:
   results/output.txt
 
 Comments:
-  The input data is real*8 and generated using the MATLAB script
-  gendata.m.
 

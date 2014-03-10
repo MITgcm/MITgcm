@@ -4,16 +4,16 @@ global ocean using the cubed-sphere grid 32x32x32 with 15 levels
 Specific option:
 * Use Non-Linear Free surface formulation with z* coordinate
    with real fresh-water flux.
-* Oceanic set-up on the cubed-sphere grid using the vector-invariant 
+* Oceanic set-up on the cubed-sphere grid using the vector-invariant
    formulation.
 
-Forcing : 
+Forcing :
  use Monthly mean climatological forcing (except P-E-R, annual mean).
  same data set as global-ocean lat-long experiments but interpolated
   on CS-32 grid.
 
 Comments:
-* bathymetry : 
+* bathymetry :
  designed to be coupled to Atmospheric model, therefore includes
  most of the semi-enclosed sea (Mediterranean, Black-Sea, Red-Sea,
    Hudson Bay ...)
@@ -28,10 +28,10 @@ Comments:
   set-up.
 
 * additional forcing fields and parameter files are provided (in input.thsice)
-  in order to illustrate the use of thSIce pkg. 
+  in order to illustrate the use of thSIce pkg.
   the output of a short run (20.iter) is given in results/output_thsice.txt
 
 October 1rst, 2005:
 * input.viscA4/data has been added to test biharmonic viscosity on CS-grid
-  with side-drag. However, this set of parameters has only be used for 
+  with side-drag. However, this set of parameters has only be used for
   short tests and is not recommended to begin with.

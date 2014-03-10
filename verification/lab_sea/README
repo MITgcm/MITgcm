@@ -36,13 +36,12 @@ More pkg/seaice test experiments, configured for low and
 high-resolution global cube-sphere domains are described
 in MITgcm_contrib/high_res_cube/README_ice.
 
-
 Using testscript to test sea-ice code
 =====================================
 
 Running the testscript experiment:
   cd MITgcm/verification
-  ./testreport -t lab_sea
+  ./testreport -t lab_sea [-of my_platform_optionFile]
 
 Note that fairly large differences in accuracy occur across different
 platforms.  For example, testscript comparisons between g77 (Linux)
@@ -56,43 +55,54 @@ g d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .
 
 Y Y Y Y  8 10  9 11 10  9 11 13 10  9  8  8  9  8  9  8  9 FAIL  lab_sea
 
-
 Instructions for generating and running a 1-CPU experiment
 ==========================================================
 
   cd MITgcm/verification/lab_sea
-  mkdir build
+
+Configure and compile the code:
   cd build
-  cp ../code/*.h ../code/packages.conf .
-  ../../../tools/genmake2
+  ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
   make depend
   make
-  cd ../input
-  ../build/mitgcmuv > output.txt
+  cd ..
 
-Use matlab script lookat_exp1.m to compare the output
-of exp1 with that from checkpoint51f sea-ice code:
+To run:
+  cd run
+  ln -s ../input/* .
+  ln -s ../build/mitgcmuv .
+  ./mitgcmuv > output.txt
+  cd ..
+
+There is comparison output in the directory:
+  results/output.txt
+
+Use matlab script lookat_ice.m to compare the output
+ with that from checkpoint51f sea-ice code:
   cd ../../../verification/lab_sea/matlab
   matlab
   lookat_ice
 
-
-Instructions for generating and running a 2-CPU experiment on kalpana
-=====================================================================
+Instructions for generating and running a 2-CPU experiment
+==========================================================
 
   cd MITgcm/verification/lab_sea
-  mkdir build
+
+Configure and compile the code:
   cd build
-  \cp ../code/*.h ../code/packages.conf .
-  \cp ../code/SIZE.h_mpi SIZE.h
-  ../../../tools/genmake2 -of ../../../tools/build_options/linux_ia64_efc+mpi_altix
+  ../../../tools/genmake2 -mpi -mods ../code [-of my_platform_optionFile]
+  ln -s ../code/SIZE.h_mpi SIZE.h
   make depend
   make
-  cd ../input
+  cd ..
+
+To run:
+  cd run
+  ln -s ../input/* .
   mpirun -np 2 ../build/mitgcmuv
+  cd ..
 
-
-Instructions for testing useExfYearlyFields
+Instructions for testing useExfYearlyFields (Note: might not be up-to-date)
 ===========================================
 
   cd MITgcm/verification/lab_sea/build

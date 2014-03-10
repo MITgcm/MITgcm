@@ -1,32 +1,37 @@
 Five level intermediate atmospheric physics example.
  Experimental configuration is an equatorial channel
- of 65 degrees wide cented on the Equator. A warm SST anomaly 
+ of 65 degrees wide cented on the Equator. A warm SST anomaly
  with a gaussian shape is defined at the center of the domain
- with an extension of ~30 degrees meridionally and ~60 degrees 
+ with an extension of ~30 degrees meridionally and ~60 degrees
  zonally.
 
-The local copy of S/R aim_surf_bc.F (in code directory) provide 
+The local copy of S/R aim_surf_bc.F (in code directory) provide
 a) the SST field (hard coded).
 b) the time in the year is fixed and corresponds to the spring equinox;
  this ensures a symetric forcing between N & S hemispheres.
 The model uses the standard 5-level vertical resolution of the Speedy_v23
  code; the horizontal resolution is 2.8125 with 128x23 grid points.
 
-==================================================================== 
+====================================================================
 
-o To reproduce the run : 
+Configure and compile the code:
+  cd build
+  ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
+  make depend
+  make
+  cd ..
 
-The genmake options are in .genmakerc, so that the simplest form
-of genmake can be used :
-cd build
-../../../tools/genmake2 -mods=../code [-of= ... if needed]
-make depend
-make
+To run:
+  cd run
+  ln -s ../input/* .
+  ln -s ../build/mitgcmuv .
+  ./mitgcmuv > output.txt
+  cd ..
 
-ln -s ../input/* .
-mitgcmuv
+There is comparison output in the directory:
+  results/output.txt
 
---------------------------- 
+---------------------------
 Notes:
 * To produce a short test that is relevant for the Atmosphere physics part,
   a restart file (pickup.0000051840) is included. The model reaches
@@ -34,12 +39,12 @@ Notes:
 * the file aim_SST.* contains the SST field.
 * Since aim pkg uses arrays with MAX_NO_THREADS as dimension, the maximum
   number of treads is set to 1 (in code/EEPARAMS.h) instead of 32, so that the
-  size of the executable is reduced. This obviously needs to be changed 
+  size of the executable is reduced. This obviously needs to be changed
   before compiling on a multi-threaded platform.
---------------------------- 
-Northern boundary : 
-o initially, the domain (SIZE.h) 128x24x5 with a land line as the Northern 
-  boundary, reduciong the effective domain to 128x23x5. 
+---------------------------
+Northern boundary :
+o initially, the domain (SIZE.h) 128x24x5 with a land line as the Northern
+  boundary, reduciong the effective domain to 128x23x5.
 o To have a more efficient code (and a good starting point for MIT Atmos.
-  Physics), the new domain (SIZE.h) is now 128x23x5 . 
-  Northern and Southern boundaries are "closed" like the in Lat-Lon set-up. 
+  Physics), the new domain (SIZE.h) is now 128x23x5 .
+  Northern and Southern boundaries are "closed" like the in Lat-Lon set-up.

@@ -1,8 +1,8 @@
 Simple set-up to test flow-dependent horizontal viscosity implementation.
 
- Domain size is 50 x 26 x 40 grid-cells, 
+ Domain size is 50 x 26 x 40 grid-cells,
  with uniform resolution dx=dy= 1.km , dz = 5.m
- 
+
  Zonally re-entrant, flat bottom channel (closed by Northern Wall @ j=26)
 
  input files are real*8 (see matlab script input/gendata.m )
@@ -23,21 +23,21 @@ Simple set-up to test flow-dependent horizontal viscosity implementation.
 ----------------------------------------------------------------------------------
  .AhStTn   | Vector-Inv. | Strain-Tens |  FullLeith   |   viscC2   |    Yes      |
 ----------------------------------------------------------------------------------
- 
-Notes: 
-1) Stain-Tension viscosity formulation is used when setting 
+
+Notes:
+1) Stain-Tension viscosity formulation is used when setting
      useStrainTensionVisc=.TRUE.,
    and currently only available with Vector-Invariant momentum.
    Default is .False., to use Vorticity & Divergence formulation
    (pkg/mom_vecinv) or Flux-Form formulation (pkg/mom_fluxform)
-2) test .A4FlxF (input.A4FlxF) starts from a pickup-file, 
+2) test .A4FlxF (input.A4FlxF) starts from a pickup-file,
    all other test exp. start from iter0=0
 3) test with Biharmonic visc. are using:
-    viscC4leith = viscC4leithD = 1.85, 
+    viscC4leith = viscC4leithD = 1.85,
     viscC4smag  = 1.,
     viscA4GridMax = 1.,
 4) test with Harmonic visc. are using:
-    viscC2leith = viscC2leithD=1.85, 
+    viscC2leith = viscC2leithD=1.85,
     viscC2smag  = 1.,
     viscAhGridMax = 1.,
 
