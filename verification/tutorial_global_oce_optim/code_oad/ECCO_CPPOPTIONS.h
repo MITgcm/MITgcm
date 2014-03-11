@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_oad/ECCO_CPPOPTIONS.h,v 1.2 2014/01/29 16:12:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_oad/ECCO_CPPOPTIONS.h,v 1.3 2014/03/11 20:23:29 heimbach Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -56,8 +56,8 @@ C ********************************************************************
 
 #define  ALLOW_NONDIMENSIONAL_CONTROL_IO
 C       >>> Initial values.
-#define ALLOW_THETA0_CONTROL
-#define ALLOW_SALT0_CONTROL
+#undef ALLOW_THETA0_CONTROL
+#undef ALLOW_SALT0_CONTROL
 #undef ALLOW_TR10_CONTROL
 #undef ALLOW_TAUU0_CONTROL
 #undef ALLOW_TAUV0_CONTROL
