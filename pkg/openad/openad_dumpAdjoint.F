@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/openad_dumpAdjoint.F,v 1.4 2014/01/03 22:57:22 utke Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/openad_dumpAdjoint.F,v 1.5 2014/03/11 19:43:00 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -127,6 +127,10 @@ c They provide the fields to be stored.
          foo4=fv%d
          call write_fld_xy_rl('adjfv.',suff,foo4,myiter,1)
 # endif
+# ifdef ALLOW_HFLUXM_CONTROL
+         foo4=qnetm%d
+         call write_fld_xy_rl('adjhfluxm.',suff,foo4,myiter,1)
+#endif
       endif
       END
 

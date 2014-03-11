@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.3 2013/12/19 20:07:49 utke Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.4 2014/03/11 19:43:00 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -482,6 +482,10 @@ C     Temporarily change setting of writeBinaryPrec
 #  ifdef ALLOW_SALT0_CONTROL
       foo=xx_salt%d
       call write_fld_xyz_rl('adxx_salt.',suff,foo,myIter,1)
+#  endif
+#  ifdef ALLOW_HFLUXM_CONTROL
+      foo=xx_hfluxm%d
+      call write_fld_xy_rl('adxx_hfluxm.',suff,foo,myIter,1)
 #  endif
 #  ifndef ALLOW_STREAMICE
       fooEtan=etan%d
