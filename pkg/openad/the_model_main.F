@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.4 2014/03/11 19:43:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.5 2014/03/11 19:48:45 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -293,7 +293,7 @@ C     myIter :: Iteration counter for this thread
       LOGICAL lastdiva
 C -->> OpenAD
       _RL foo(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL fooEtan(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL foo2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fname
 C     Temprarily change precision to agree with ctrlprec
@@ -484,12 +484,12 @@ C     Temporarily change setting of writeBinaryPrec
       call write_fld_xyz_rl('adxx_salt.',suff,foo,myIter,1)
 #  endif
 #  ifdef ALLOW_HFLUXM_CONTROL
-      foo=xx_hfluxm%d
-      call write_fld_xy_rl('adxx_hfluxm.',suff,foo,myIter,1)
+      foo2D=xx_hfluxm%d
+      call write_fld_xy_rl('adxx_hfluxm.',suff,foo2D,myIter,1)
 #  endif
 #  ifndef ALLOW_STREAMICE
-      fooEtan=etan%d
-      call write_fld_xy_rl('adxx_etan.',suff,fooEtan,myIter,1)
+      foo2D=etan%d
+      call write_fld_xy_rl('adxx_etan.',suff,foo2D,myIter,1)
 #  endif
 #  ifdef ALLOW_GENARR3D_CONTROL
       do ik = 1, maxCtrlArr3D
