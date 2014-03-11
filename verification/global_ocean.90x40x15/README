@@ -1,3 +1,4 @@
+============================================
 Example: "4x4 Global Simulation with Seasonal Forcing"
 ============================================
 (see also similar set-up in: verification/tutorial_global_oce_latlon/)
@@ -49,8 +50,110 @@ to run this 2nd example:
   ../build/mitgcmuv > output.dwnslp.txt
   cd ..
 
+
+============================================
+Use of "blank tiles" in conjunction with exch2 package:
+============================================
+
+This verification experiment also demonstrate the omission of tiles
+(or processors) for tiles that are fully land cover and don't need computation.
+The relevant config. files to be manipulated are:
+* at compile time, in dir. code/: packages.conf, SIZE.h
+* at run time, in dir. input/: data.exch2
+
+To enable this feature requires package "exch2"
+(see Section 6.2.4 "exch2: Extended Cubed Sphere Topology" of online manual),
+i.e. in code/packages.conf add "exch2"
+
+The basic layout of the experiment is Nx*Ny = 90x40.
+In a single-processor config. with very small tile sizes (sNx*sNy=10*10)
+this can be represented, e.g. via
+     &           sNx =  10,
+     &           sNy =  10,
+     &           OLx =   3,
+     &           OLy =   3,
+     &           nSx =   9,
+     &           nSy =   4,
+     &           nPx =   1,
+     &           nPy =   1,
+i.e. we use nSx*nSy=9*4=36 virtual processors.
+
+An equivalent parallel setup using 9 virtual and 4 real processors
+would look like:
+     &           sNx =  10,
+     &           sNy =  10,
+     &           OLx =   3,
+     &           OLy =   3,
+     &           nSx =   9,
+     &           nSy =   1,
+     &           nPx =   1,
+     &           nPy =   4,
+
+In this layout it turns out that tile number 30 is "empty", i.e. fully land covered.
+We wish to remove this tile from our calculation. How to proceed?
+
+1. Find out which tiles to eliminate via a config. that uses all tiles
+---
+1.1. At compile time:
+* add line "exch2" to packages.conf
+* configure SIZE.h using your desired individual tile size, e.g. sNx*sNy=10*10, as follows:
+     &           sNx =  10,
+     &           sNy =  10,
+     &           OLx =   3,
+     &           OLy =   3,
+     &           nSx =   9,
+     &           nSy =   1,
+     &           nPx =   1,
+     &           nPy =   4,
+  As described above you are using 4 real processors with 9 virtual tiles per processor.
+* compile (don't forget to compile via -mpi or similar)
+
+1.2 At runtime:
+* need to reflect your basic layout in data.exch2
+  This is simple: since you are not using any non-trivial topology with
+  multiple facets (such as cubed-sphere),
+  you only need to specify one basic facet (Nx,Ny)=(90,40) layout via following line:
+  dimsFacets = 90, 40,
+  Then run the moodel, e.g. via:
+  mpirun -np 4 ./mitgcmuv
+
+1.3 Diagnose which tile numbers are empty:
+* from STDOUT.000[0-3] you can infer which tiles are empty using following grep:
+  grep "Empty tile" STDOUT.* | awk '{print "  " $6 ","}' > empty_tiles.txt 
+* In this example there's only one empty tile, and it is #30.
+
+2. Configuring with empty tiles removed
+---
+2.1 At compile time:
+   We've determined that 1 out of nSx*nPx*nSy*nPy=36 tiles is empty and can be removed,
+   leaving 36-1=35 non-empty tiles. We are free to re-order nSx,nPx,nSy,nPy in any way,
+   as long as nSx*nPx*nSy*nPy=35. Here's how it's chosen in the verif. experiment
+   (see file SIZE.h_mpi)
+     &           sNx =  10,
+     &           sNy =  10,
+     &           OLx =   3,
+     &           OLy =   3,
+     &           nSx =   7,
+     &           nSy =   1,
+     &           nPx =   1,
+     &           nPy =   5,
+   and for which, as required nSx*nPx*nSy*nPy=35
+
+2.2 At runtime:
+We now need to specify in data.exch2 the number of the empty tile to be removed.
+This is done as follows (see file data.exch2.mpi):
+  blankList  = 30,
+If there were more empty tiles, this would be a more extensive index array, e.g.
+  blankList = tile1, tile2, tile3, ... 
+Now run the model (note that we've selected nPy=5, so in this example we actually
+*increase* the number of "real" processors used, despite reducing the number of
+total, i.e. "real" plus virtual tiles from 36 to 35):
+mpirun -np 5 ./mitgcmuv
+
+
 ============================================
 Adjoint set-up example:
+============================================
 
 Configure and compile the code:
   cd build
