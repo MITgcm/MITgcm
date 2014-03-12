@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.5 2014/03/11 19:48:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.6 2014/03/12 19:32:26 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -298,9 +298,7 @@ C -->> OpenAD
       CHARACTER*(MAX_LEN_FNAM) fname
 C     Temprarily change precision to agree with ctrlprec
       INTEGER tmpprec
-#ifdef ALLOW_GENARR3D_CONTROL
       INTEGER ik
-#endif
 #ifdef OAD_DEBUG
       INTEGER i1, i2, i3, i4, i5
 #endif
@@ -490,6 +488,14 @@ C     Temporarily change setting of writeBinaryPrec
 #  ifndef ALLOW_STREAMICE
       foo2D=etan%d
       call write_fld_xy_rl('adxx_etan.',suff,foo2D,myIter,1)
+#  endif
+#  ifdef ALLOW_GENARR2D_CONTROL
+      do ik = 1, maxCtrlArr2D
+        foo2d=xx_genarr2d(:,:,:,:,ik)%d
+        write(fname,'(A,I2.2,A)') 'adxx_genarr2d_',ik,'.'
+        call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
+      enddo
+
 #  endif
 #  ifdef ALLOW_GENARR3D_CONTROL
       do ik = 1, maxCtrlArr3D
