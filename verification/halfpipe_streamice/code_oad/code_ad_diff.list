@@ -1,2 +1,3 @@
+diagnostics_is_on.f
 set_ref_state.f
 master_cpu_io.f
