@@ -16,6 +16,7 @@ function [fld fc ix jx]=quikread_llc(fnam,nx,kx,prec,gdir,minlat,maxlat,minlon,m
 % maxlat maximum latitude of region to extract
 % minlon minimum longitude of region to extract
 % maxlon maximum longitude of region to extract
+% (valid longitude range is -180 to 180 or 0 to 360)
 %
 % OUTPUTS
 % fld  output array
@@ -87,9 +88,9 @@ else
     if minlon < -180
         error('minlon<-180 not yet implemented: please email menemenlis@jpl.nasa.gov')
     end
-    if maxlon > 180
-        error('maxlon>180 not yet implemented: please email menemenlis@jpl.nasa.gov')
-    end
+    if maxlon > 360
+        error('maxlon>360 not yet implemented: please email menemenlis@jpl.nasa.gov')
+    end    
     if minlat >= maxlat
         error('maxlat must be greater than minlat')
     end
@@ -103,6 +104,10 @@ else
     for f=1:5
         yc=read_llc_fkij([gdir 'YC.data'],nx,f);
         xc=read_llc_fkij([gdir 'XC.data'],nx,f);
+        if maxlon>180
+            in=find(xc<0);
+            xc(in)=xc(in)+360;
+        end
         [i j]=find(yc>=minlat&yc<=maxlat&xc>=minlon&xc<=maxlon);
         if ~isempty(i)
             fc=[fc f];
