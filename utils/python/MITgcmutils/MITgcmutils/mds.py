@@ -2,6 +2,7 @@ import sys
 import re
 import glob
 import numpy as np
+from operator import mul
 
 debug = False
 
@@ -344,7 +345,7 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
                 size = np.dtype(tp).itemsize
                 if astype is None: astype = tp
                 recshape = tuple( ie-i0 for i0,ie in zip(i0s,ies) )
-                count = np.prod(recshape)
+                count = reduce(mul, recshape)
                 nrecords, = meta['nrecords']
                 tileshape = (nrecords,) + recshape
                 if allrec:
