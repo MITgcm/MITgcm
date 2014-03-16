@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.6 2014/03/12 19:32:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.7 2014/03/16 17:08:16 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -515,6 +515,11 @@ C <<-- OpenAD
 # endif /* forward run only within AD setting */
 
 # ifndef EXCLUDE_CTRL_PACK
+#  ifdef ALLOW_OPENAD
+cph-- ad hoc fix for OpenAD time stepping counter lagging one step
+cph-- after final adjoint step
+      myIter=nIter0
+#  endif
       IF ( lastdiva .AND. doMainPack ) THEN
          CALL TIMER_START('CTRL_PACK           [THE_MODEL_MAIN]',myThid)
          CALL CTRL_PACK( .FALSE. , myThid )
