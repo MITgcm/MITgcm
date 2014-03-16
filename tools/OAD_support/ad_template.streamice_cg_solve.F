@@ -175,13 +175,13 @@ c set up for plain execution
          A_vv_d  = A_vv%d
       call ADSTREAMICE_CG_SOLVE(
      U                               cg_Uin_p,   ! velocities - solution 
-     I                               cg_Bu_d,      ! adjoint of vel (input)
+     I                               cg_Uin_d,      ! adjoint of vel (input)
      U                               cg_Vin_p,   ! velocities - solution
-     I                               cg_Bv_d,      ! adjoint of vel (input)
+     I                               cg_Vin_d,      ! adjoint of vel (input)
      I                               cg_Bu_p,    ! to recalc velocities
-     U                               cg_Uin_d,     ! adjoint of RHS (output)
+     U                               cg_Bu_d,     ! adjoint of RHS (output)
      I                               cg_Bv_p,    ! to recalc velocities
-     U                               cg_Vin_d,     ! adjoint of RHS (output)
+     U                               cg_Bv_d,     ! adjoint of RHS (output)
      I                               A_uu_p,     ! section of matrix that multiplies u and projects on u
      U                               A_uu_d,     ! adjoint of matrix coeffs (output)
      I                               A_uv_p,     ! section of matrix that multiplies v and projects on u
