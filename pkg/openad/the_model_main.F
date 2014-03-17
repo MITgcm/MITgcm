@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.9 2014/03/17 16:12:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.10 2014/03/17 19:00:10 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -273,6 +273,7 @@ C <<-- OpenAD
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
 # include "optim.h"
+# include "CTRL_GENARR.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -557,6 +558,14 @@ C     Temporarily change setting of writeBinaryPrec
         write(fname,'(A,I2.2,A)') 'adxx_genarr3d_',ik,'.'
         call write_fld_xyz_rl(fname,suff,foo,myIter,1)
       enddo
+#  endif
+#  ifdef ALLOW_GENTIM2D_CONTROL
+      do ik = 1, maxCtrlTim2D
+        foo2d=xx_gentim2d(:,:,:,:,ik)%d
+        write(fname,'(A,I2.2,A)') 'adxx_gentim2d_',ik,'.'
+        call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
+      enddo
+
 #  endif
 C     Change back to original writeBinaryPrec
       writeBinaryPrec = tmpprec
