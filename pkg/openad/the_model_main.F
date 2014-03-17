@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.8 2014/03/17 15:57:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.9 2014/03/17 16:12:43 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -494,7 +494,7 @@ C     Temporarily change setting of writeBinaryPrec
      &     'ad',xx_salt_file(1:il),'.'
       call write_fld_xyz_rl(fname,suff,foo,myIter,1)
 #  endif
-#  ifdef ALLOW_TAUU0_CONTROL
+#  ifdef ALLOW_DIFFKR_CONTROL
       foo=diffkr%d
       il=ilnblnk( xx_diffkr_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
