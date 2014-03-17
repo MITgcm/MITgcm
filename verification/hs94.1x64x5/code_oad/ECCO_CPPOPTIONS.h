@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/Attic/ECCO_CPPOPTIONS.h,v 1.1 2013/06/21 17:36:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/Attic/ECCO_CPPOPTIONS.h,v 1.2 2014/03/17 16:12:27 heimbach Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -68,7 +68,8 @@ cph(
 cph#define ALLOW_BOTTOMDRAG_CONTROL
 #define ALLOW_GENARR2D_CONTROL
 #define ALLOW_GENARR3D_CONTROL
-#define ALLOW_GENTIM2D_CONTROL
+cph-- GENTIM2D_CONTROL disabled for OpenAD (I need to fix this)
+cph#define ALLOW_GENTIM2D_CONTROL
 cph)
 
 C ********************************************************************
