@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.7 2014/03/16 17:08:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.8 2014/03/17 15:57:31 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -265,6 +265,7 @@ C <<-- OpenAD
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#include "FFIELDS.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -298,11 +299,17 @@ C -->> OpenAD
       CHARACTER*(MAX_LEN_FNAM) fname
 C     Temprarily change precision to agree with ctrlprec
       INTEGER tmpprec
-      INTEGER ik
+      INTEGER ik, il
 #ifdef OAD_DEBUG
       INTEGER i1, i2, i3, i4, i5
 #endif
 C <<-- OpenAD
+
+C     !EXTERNAL VARIABLES:
+c     == external ==
+      integer  ilnblnk
+      external ilnblnk
+
 CEOP
 
 C--   set default:
@@ -472,22 +479,69 @@ c     CALL TIMER_STOP ('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
 C     Temporarily change setting of writeBinaryPrec
       tmpprec = writeBinaryPrec
       writeBinaryPrec = ctrlprec
-      WRITE(suff,'(I10.10)') 0
+      WRITE(suff,'(I10.10)') optimcycle
 #  ifdef ALLOW_THETA0_CONTROL
       foo=xx_theta%d
-      call write_fld_xyz_rl('adxx_theta.',suff,foo,myIter,1)
+      il=ilnblnk( xx_theta_file )
+      write(fname(1:MAX_LEN_FNAM),'(3a)')
+     &     'ad',xx_theta_file(1:il),'.'
+      call write_fld_xyz_rl(fname,suff,foo,myIter,1)
 #  endif
 #  ifdef ALLOW_SALT0_CONTROL
       foo=xx_salt%d
-      call write_fld_xyz_rl('adxx_salt.',suff,foo,myIter,1)
+      il=ilnblnk( xx_salt_file )
+      write(fname(1:MAX_LEN_FNAM),'(3a)')
+     &     'ad',xx_salt_file(1:il),'.'
+      call write_fld_xyz_rl(fname,suff,foo,myIter,1)
+#  endif
+#  ifdef ALLOW_TAUU0_CONTROL
+      foo=diffkr%d
+      il=ilnblnk( xx_diffkr_file )
+      write(fname(1:MAX_LEN_FNAM),'(3a)')
+     &     'ad',xx_diffkr_file(1:il),'.'
+      call write_fld_xyz_rl(fname,suff,foo,myIter,1)
+#  endif
+#  ifdef ALLOW_TAUU0_CONTROL
+      foo2D=fu%d
+      il=ilnblnk( xx_tauu_file )
+      write(fname(1:MAX_LEN_FNAM),'(3a)')
+     &     'ad',xx_tauu_file(1:il),'.'
+      call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
+#  endif
+#  ifdef ALLOW_TAUV0_CONTROL
+      foo2D=fv%d
+      il=ilnblnk( xx_tauv_file )
+      write(fname(1:MAX_LEN_FNAM),'(3a)')
+     &     'ad',xx_tauv_file(1:il),'.'
+      call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
+#  endif
+#  ifdef ALLOW_HFLUX0_CONTROL
+      foo2D=qnet%d
+      il=ilnblnk( xx_hflux_file )
+      write(fname(1:MAX_LEN_FNAM),'(3a)')
+     &     'ad',xx_hflux_file(1:il),'.'
+      call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
+#  endif
+#  ifdef ALLOW_SFLUX0_CONTROL
+      foo2D=empmr%d
+      il=ilnblnk( xx_sflux_file )
+      write(fname(1:MAX_LEN_FNAM),'(3a)')
+     &     'ad',xx_sflux_file(1:il),'.'
+      call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
 #  endif
 #  ifdef ALLOW_HFLUXM_CONTROL
       foo2D=xx_hfluxm%d
-      call write_fld_xy_rl('adxx_hfluxm.',suff,foo2D,myIter,1)
+      il=ilnblnk( xx_hfluxm_file )
+      write(fname(1:MAX_LEN_FNAM),'(3a)')
+     &     'ad',xx_hfluxm_file(1:il),'.'
+      call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
 #  endif
-#  ifndef ALLOW_STREAMICE
+#  ifdef ALLOW_ETAN0_CONTROL
       foo2D=etan%d
-      call write_fld_xy_rl('adxx_etan.',suff,foo2D,myIter,1)
+      il=ilnblnk( xx_etan_file )
+      write(fname(1:MAX_LEN_FNAM),'(3a)')
+     &     'ad',xx_etan_file(1:il),'.'
+      call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
 #  endif
 #  ifdef ALLOW_GENARR2D_CONTROL
       do ik = 1, maxCtrlArr2D
