@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.31 2013/09/29 15:32:11 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.32 2014/03/18 16:09:11 jmc Exp $
 # $Name:  $
 
 #  submit list of jobs or get list of submitted jobs
@@ -119,7 +119,7 @@ get_outp_back()
 #-         add to rejected list if it fails in less than "freq" minutes
                  REJECTED="$REJECTED $i"
                fi
-             else
+             elif [ $action -le 4 ] ; then
                rm -f "/tmp/tr_$outPfix-"$i".tar.gz"
                ( cd $run_dir ; tar -czf "/tmp/tr_$outPfix-"$i".tar.gz" ./$tdir )
                if test "x$HAVE_MPACK" = xt ; then
@@ -148,7 +148,7 @@ get_outp_back()
              if test $chk = '0' ; then
                echo "tdir='$tdir'" | tee -a $LOG_FIL
                echo "Restart output do not match, no email sent for $i" | tee -a $LOG_FIL
-             else
+             elif [ $action -le 4 ] ; then
                rm -f "/tmp/rs_$outPfix-"$i".tar.gz"
                ( cd $run_dir ; tar -czf "/tmp/rs_$outPfix-"$i".tar.gz" ./$tdir )
                if test "x$HAVE_MPACK" = xt ; then
@@ -176,6 +176,7 @@ get_outp_back()
         echo ' ' $nbJobs '/' $NB_SUB_JOBS 'tests not yet finished' | tee -a $LOG_FIL
         exit 1
      fi
+     if [ $action -eq 5 ] ; then nbJobs=0 ; fi
 
    done
 
@@ -189,12 +190,13 @@ get_outp_back()
 #---------------------------------------------
 
 # action =1 : submit test jobs ; =2 : get jobs output ; =3 : do both
+# action =4 or 5 : same as, respectively, 3 or 1 but re-submit fast failed jobs
 case $1 in
  '-subOnly') action=1 ; shift ;;
  '-getOnly') action=2 ; shift ;;
  '-sub+get') action=3 ; shift ;;
  '-double' ) action=4 ; shift ;;
-          *) action=1 ;;
+          *) action=5 ;;
 esac
 #echo "action= $action , Arg= $# "
 
@@ -202,7 +204,7 @@ today=`date +%Y%m%d`
 
 if test $# = 0
 then
-  TEST_LIST='g77 gnu ifc pgi adm mp2 mth tuv opa tlm'
+  TEST_LIST='opa g77 adm tlm ifc mp2 mth pgi tuv gnu'
 else
   TEST_LIST=$*
 fi
@@ -250,6 +252,8 @@ cd $TST_DIR
 
 if test $action = 1 ; then
   NB_JOBS2GET=0
+elif test $action = 5 ; then
+  NB_JOBS2GET=$NB_SUB_JOBS
 else
 #date_str=`date +%Y%m%d`"_0"
 
@@ -287,17 +291,21 @@ fi
   get_outp_back $NB_JOBS2GET
  #echo " info-main:     REJECTED='$REJECTED'" >> $LOG_FIL
 
-if test $action = 4 -a "x$REJECTED" != x ; then
+if test "x$REJECTED" != x ; then
 
+ if [ $action -ge 4 ] ; then
   echo "" >> $LOG_FIL
   echo "Try 2nd round for fast-failed jobs: '$REJECTED'" | tee -a $LOG_FIL
   JOB_LIST=$REJECTED
   sub_list_jobs
  #echo " info-main:     NB_SUB_JOBS='$NB_SUB_JOBS'" >> $LOG_FIL
+ fi
 
+ if [ $action -eq 4 ] ; then
   echo "" >> $LOG_FIL
   get_outp_back $NB_SUB_JOBS
  #echo " info-main:     REJECTED='$REJECTED'" >> $LOG_FIL
+ fi
 
 fi
 
