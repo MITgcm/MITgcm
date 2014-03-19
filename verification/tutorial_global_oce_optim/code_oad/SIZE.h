@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_oad/SIZE.h,v 1.1 2014/01/17 22:01:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_oad/SIZE.h,v 1.2 2014/03/19 22:29:22 jmc Exp $
 C $Name:  $
 
 C
@@ -44,12 +44,12 @@ C     Nr  :: No. points in Z for full process domain.
       INTEGER Ny
       INTEGER Nr
       PARAMETER (
-     &           sNx =  90,
-     &           sNy =  40,
+     &           sNx =  45,
+     &           sNy =  20,
      &           OLx =   2,
      &           OLy =   2,
-     &           nSx =   1,
-     &           nSy =   1,
+     &           nSx =   2,
+     &           nSy =   2,
      &           nPx =   1,
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,
@@ -64,6 +64,6 @@ C                routine buffers.
       PARAMETER ( MAX_OLX = OLx,
      &            MAX_OLY = OLy )
 
-      integer     nobcs
-      parameter ( nobcs = 4 )
+      INTEGER     nobcs
+      PARAMETER ( nobcs = 4 )
 
