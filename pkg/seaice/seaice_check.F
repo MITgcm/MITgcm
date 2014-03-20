@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.87 2014/02/04 18:30:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.88 2014/03/20 09:23:36 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -886,7 +886,7 @@ C
       ENDIF
 #endif /* SEAICE_ALLOW_JFNK */
 
-      IF ( .NOT.SEAICEuseJFNK ) THEN
+      IF ( SEAICEuseDynamics .AND. .NOT.SEAICEuseJFNK ) THEN
        IF ( SEAICEuseBDF2 ) THEN
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseBDF2 = .TRUE. '//
      &       'only allowed with SEAICEuseJFNK = .TRUE.'
@@ -899,6 +899,12 @@ C
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
        ENDIF
+      ENDIF
+      IF ( SEAICEuseIMEX ) THEN
+       WRITE(msgBuf,'(A)') '** WARNING ** SEAICE_CHECK: '//
+     &      'SEAICEuseIMEX = .TRUE. '//
+     &      'currently has no effect, because the code is missing'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       ENDIF
 
       IF ( .NOT.(SEAICEetaZmethod.EQ.0.OR.SEAICEetaZmethod.EQ.3) ) THEN
