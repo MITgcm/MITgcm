@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.25 2014/02/07 14:27:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.26 2014/03/20 09:24:49 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -150,7 +150,8 @@ C     cycle ice velocities
           vIceNm1(I,J,bi,bj) = vIce(I,J,bi,bj)
          ENDDO
         ENDDO
-        IF ( .NOT.SEAICEuseIMEX ) THEN
+C     As long as IMEX is not properly implemented leave this commented out
+CML        IF ( .NOT.SEAICEuseIMEX ) THEN
 C     Compute things that do no change during the Newton iteration:
 C     sea-surface tilt and wind stress:
 C     FORCEX/Y0 - mass*(1.5*u/vIceNm1+0.5*(u/vIceNm1-u/vIceNm2))/deltaT
@@ -162,7 +163,7 @@ C     FORCEX/Y0 - mass*(1.5*u/vIceNm1+0.5*(u/vIceNm1-u/vIceNm2))/deltaT
      &         + seaiceMassV(I,J,bi,bj)*dvIcNm1(I,J,bi,bj)*recip_deltaT
          ENDDO
         ENDDO
-        ENDIF
+CML        ENDIF
        ENDDO
       ENDDO
 C     Start nonlinear Newton iteration: outer loop iteration
