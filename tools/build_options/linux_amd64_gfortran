@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.23 2013/11/27 22:07:11 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.24 2014/03/20 18:51:43 jmc Exp $
 #  $Name:  $
 
 # Build options for gfortran compiler (GNU) on Linux AMD64 platform
@@ -85,9 +85,10 @@ if test "x$IEEE" = x ; then     #- with optimisation:
    #FOPTIM='-O2 -funroll-loops'
 else
    # these may also be useful, but require specific gfortran versions:
-   # -Wnonstd-intrinsics  for gfortran <= 4.3
-   # -Wintrinsics-std     for gfortran >= 4.4
-   # -Wno-tabs            for gfortran >= 4.3
+   # -Wnonstd-intrinsics        for gfortran <= 4.3
+   # -Wintrinsics-std           for gfortran >= 4.4
+   # -Wno-tabs                  for gfortran >= 4.3
+   # -Wno-unused-dummy-argument for gfortran >= 4.6
    #FFLAGS="$FFLAGS -Waliasing -Wampersand -Wsurprising -Wline-truncation"
    #- or simply:
     FFLAGS="$FFLAGS -Wall -Wno-unused-dummy-argument"
