@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1968 2014/03/07 16:50:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1969 2014/03/20 09:26:56 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice: 
+  - refine checks for jfnk-related parameters
+  - comment out if statement with SEAICEuseIMEX parameter as long as there
+    is no IMEX code to avoid confusion and surprises
 
 checkpoint64u (2014/03/07)
 o verification/MLAdjust:
