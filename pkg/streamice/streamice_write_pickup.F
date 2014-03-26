@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_write_pickup.F,v 1.1 2013/12/23 21:39:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_write_pickup.F,v 1.2 2014/03/26 17:40:11 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -88,6 +88,58 @@ C-    switch to 2-D fields:
      &                 area_shelf_streamice, nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'SI_area '
 
+        j = j + 1
+        nj = nj-1
+        CALL WRITE_REC_3D_RL( fn, fp, 1,
+     &                 streamice_hmask, nj, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'SI_hmask'
+
+        j = j + 1
+        nj = nj-1
+        CALL WRITE_REC_3D_RL( fn, fp, 1,
+     &                 u_streamice, nj, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'SI_uvel '
+
+        j = j + 1
+        nj = nj-1
+        CALL WRITE_REC_3D_RL( fn, fp, 1,
+     &                 v_streamice, nj, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'SI_vvel '
+
+        j = j + 1
+        nj = nj-1
+        CALL WRITE_REC_3D_RL( fn, fp, 1,
+     &                 h_streamice, nj, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'SI_thick'
+      
+        j = j + 1
+        nj = nj-1
+        CALL WRITE_REC_3D_RL( fn, fp, 1,
+     &                 tau_beta_eff_streamice, 
+     &                 nj, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'SI_betaF'
+
+        j = j + 1
+        nj = nj-1
+        CALL WRITE_REC_3D_RL( fn, fp, 1,
+     &                 visc_streamice, nj, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'SI_visc '
+
+#ifdef STREAMICE_HYBRID_STRESS
+        j = j + 1
+        nj = nj-1
+        CALL WRITE_REC_3D_RL( fn, fp, 1,
+     &                 streamice_taubx, 
+     &                 nj, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'SI_taubx'
+
+        j = j + 1
+        nj = nj-1
+        CALL WRITE_REC_3D_RL( fn, fp, 1,
+     &                 streamice_tauby, nj, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'SI_tauby'
+#endif
+
 c       j = j + 1
 c       nj = nj-1
 c       CALL WRITE_REC_3D_RL( fn, fp, 1,
@@ -125,6 +177,7 @@ C     uses this specific S/R to write (with more informations) only meta files
 C--------------------------
 
 #endif /* ALLOW_STREAMICE */
+
 
       RETURN
       END

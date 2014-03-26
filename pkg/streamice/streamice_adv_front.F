@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_adv_front.F,v 1.1 2013/06/12 21:30:21 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_adv_front.F,v 1.2 2014/03/26 17:40:11 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -146,6 +146,9 @@ CADJ STORE streamice_hmask(i,j,bi,bj)
 CADJ &     = comlev1_stream_ij, key = ikey_1
 #endif
 
+            IF (.not. STREAMICE_calve_to_mask .OR. 
+     &       STREAMICE_calve_mask (i,j,bi,bj) .eq. 1.0) THEN
+
             IF ((Gi .ge. 1) .and. (Gi .le. Nx) .and.
      &          (STREAMICE_Hmask(i,j,bi,bj).eq.0.0 .or.
      &           STREAMICE_Hmask(i,j,bi,bj).eq.2.0)) THEN
@@ -222,12 +225,14 @@ CADJ &     = comlev1_stream_ij, key = ikey_1
                H_streamice (i,j,bi,bj) = href
               ELSE ! cell is filled - do overflow
 
+               
 
                STREAMICE_hmask (i,j,bi,bj) = 1.0
                area_shelf_streamice(i,j,bi,bj) = 
      &           rA(i,j,bi,bj)
 
-               
+               PRINT *, "GOT HERE OVERFLOW ", i,j, 
+     &          area_shelf_streamice(i,j,bi,bj)
                partial_vol = partial_vol - href * rA(i,j,bi,bj)
 
                iter_flag  = 1. _d 0
@@ -238,7 +243,10 @@ CADJ &     = comlev1_stream_ij, key = ikey_1
                ENDDO
 
                DO k=1,2
-                IF (STREAMICE_ufacemask(i-1+k,j,bi,bj).eq.2.0) THEN  ! at a permanent calving boundary - no advance allowed
+                IF ( (STREAMICE_ufacemask(i-1+k,j,bi,bj).eq.2.0) .or. 
+     &            (STREAMICE_calve_to_mask .and. 
+     &             STREAMICE_calve_mask(i+2*k-3,j,bi,bj).ne.1.0) 
+     &             ) THEN  ! at a permanent calving boundary - no advance allowed
                    n_flux_2 = n_flux_2 + 1. _d 0
                 ELSEIF (STREAMICE_hmask(i+2*k-3,j,bi,bj).eq.0 _d 0) THEN ! adjacent cell is completely ice free
                    n_flux_2 = n_flux_2 + 1. _d 0
@@ -246,7 +254,10 @@ CADJ &     = comlev1_stream_ij, key = ikey_1
                 ENDIF
                ENDDO
                DO k=1,2
-                IF (STREAMICE_vfacemask (i,j-1+k,bi,bj).eq.2.0) THEN
+                IF ( (STREAMICE_vfacemask (i,j-1+k,bi,bj).eq.2.0) .or. 
+     &            (STREAMICE_calve_to_mask .and. 
+     &             STREAMICE_calve_mask(i,j+2*k-3,bi,bj).ne.1.0) 
+     &             ) THEN  ! at a permanent calving boundary - no advance allowed
                     n_flux_2 = n_flux_2 + 1. _d 0
                 ELSEIF (STREAMICE_hmask(i,j+2*k-3,bi,bj).eq.0 _d 0) THEN
                     n_flux_2 = n_flux_2 + 1. _d 0
@@ -280,6 +291,7 @@ CADJ &     = comlev1_stream_ij, key = ikey_1
               ENDIF
              ENDIF
 
+            ENDIF
             ENDIF
            ENDDO
           ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.6 2013/08/22 23:01:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.7 2014/03/26 17:40:11 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -69,9 +69,9 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
         CALL READ_FLD_XY_RS( STREAMICEcalveMaskFile, ' ',
      &   STREAMICE_calve_mask, 0, myThid )
        ELSE
-        WRITE(msgBuf,'(A)') 'INIT CALVE MASK - NOT IMPLENTED'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+        STOP 'ABNORMAL END - CALVEMASK FILE MISSING'
+!         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+!      &                    SQUEEZE_RIGHT , 1)
        ENDIF
       ENDIF
 

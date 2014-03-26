@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_read_pickup.F,v 1.1 2013/12/23 21:39:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_read_pickup.F,v 1.2 2014/03/26 17:40:11 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -8,7 +8,7 @@ CBOP
 C     !ROUTINE: STREAMICE_READ_PICKUP
 
 C     !INTERFACE:
-      SUBROUTINE STREAMICE_READ_PICKUP( myIter, myThid )
+      SUBROUTINE STREAMICE_READ_PICKUP( myThid )
 
 C     !DESCRIPTION:
 C     Reads current state of STREAMICE from a pickup file
@@ -52,16 +52,18 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
        IF ( pickupSuff.EQ.' ' ) THEN
-        WRITE(fn,'(A,I10.10)') 'pickup_streamice.',myIter
+        WRITE(fn,'(A,I10.10)') 'pickup_streamice.',nIter0
        ELSE
         WRITE(fn,'(A,A10)')    'pickup_streamice.',pickupSuff
        ENDIF
        fp = precFloat64
 
+
        CALL READ_MFLDS_SET(
      I                      fn,
      O                      nbFields, filePrec,
-     I                      Nr, myIter, myThid )
+     I                      Nr, nIter0, myThid )
+
        _BEGIN_MASTER( myThid )
        IF ( nbFields.GE.0 .AND. filePrec.NE.fp ) THEN
          WRITE(msgBuf,'(2A,I4)') 'STREAMICE_READ_PICKUP: ',
@@ -74,6 +76,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          STOP 'ABNORMAL END: S/R STREAMICE_READ_PICKUP (data-prec Pb)'
        ENDIF
        _END_MASTER( myThid )
+
+
 
        IF ( nbFields.LE.0 ) THEN
 C-      No meta-file or old meta-file without List of Fields
@@ -130,10 +134,37 @@ C---    read STREAMICE 3-D fields for restart
 #endif /* STREAMICE_HYBRID_STRESS */
         nj = nj*Nr
 C---    read STREAMICE 2-D fields for restart
+
+      
+
         CALL READ_MFLDS_3D_RL( 'SI_area ', area_shelf_streamice,
      &                                 nj, fp, 1 , myIter, myThid )
-c       CALL READ_MFLDS_3D_RL( 'myPaSur2', myPa_Surf2,
-c    &                                 nj, fp, 1 , myIter, myThid )
+        CALL READ_MFLDS_3D_RL( 'SI_hmask', streamice_hmask,
+     &                                 nj, fp, 1 , myIter, myThid )
+        CALL READ_MFLDS_3D_RL( 'SI_uvel ', u_streamice,
+     &                                 nj, fp, 1 , myIter, myThid )
+        CALL READ_MFLDS_3D_RL( 'SI_vvel ', v_streamice,
+     &                                 nj, fp, 1 , myIter, myThid )
+        CALL READ_MFLDS_3D_RL( 'SI_thick', h_streamice,
+     &                                 nj, fp, 1 , myIter, myThid )
+        CALL READ_MFLDS_3D_RL( 'SI_betaF', tau_beta_eff_streamice,
+     &                                 nj, fp, 1 , myIter, myThid )
+        CALL READ_MFLDS_3D_RL( 'SI_visc ', visc_streamice,
+     &                                 nj, fp, 1 , myIter, myThid )
+
+#ifdef STREAMICE_HYBRID_STRESS
+        CALL READ_MFLDS_3D_RL( 'SI_taubx', streamice_taubx,
+     &                                 nj, fp, 1 , myIter, myThid )
+        CALL READ_MFLDS_3D_RL( 'SI_tauby', streamice_tauby,
+     &                                 nj, fp, 1 , myIter, myThid )
+#endif
+
+!         IF (j.LE.listDim) wrFldList(j) = 'SI_hmask'
+!         IF (j.LE.listDim) wrFldList(j) = 'SI_uvel '
+!         IF (j.LE.listDim) wrFldList(j) = 'SI_vvel '
+!         IF (j.LE.listDim) wrFldList(j) = 'SI_thick'
+!         IF (j.LE.listDim) wrFldList(j) = 'SI_betaF'
+!         IF (j.LE.listDim) wrFldList(j) = 'SI_visc '
 
 C--    end: new way to read pickup file
        ENDIF
@@ -162,11 +193,20 @@ C--    Check for missing fields:
         STOP 'ABNORMAL END: S/R STREAMICE_READ_PICKUP'
        ENDIF
 
+
 C--    Update overlap regions:
 #ifdef STREAMICE_HYBRID_STRESS
         CALL EXCH_3D_RL( visc_streamice_full, Nr, myThid )
 #endif /* STREAMICE_HYBRID_STRESS */
         CALL EXCH_XY_RL( area_shelf_streamice, myThid )
+        CALL EXCH_XY_RL( h_streamice, myThid )
+        CALL EXCH_XY_RL( u_streamice, myThid )
+        CALL EXCH_XY_RL( v_streamice, myThid )
+        CALL EXCH_XY_RS( streamice_hmask, myThid )
+        CALL EXCH_XY_RL( tau_beta_eff_streamice, myThid )
+        CALL EXCH_XY_RL( visc_streamice, myThid )
+
+
 c       CALL EXCH_XY_RL( myPa_Surf2, myThid )
 
 #endif /* ALLOW_STREAMICE */
