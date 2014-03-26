@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.5 2014/01/06 14:54:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.6 2014/03/26 17:46:48 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -343,12 +343,12 @@ C       but after convergence loop does nothing
      I    V_streamice,
      I    0, sNx+1, 0, sNy+1 )
 
-      if (iter .eq. streamice_max_nl_iter) then
-      CALL WRITE_FLD_XY_RL("u_bound_cont_A","",ubd_SI,0,myThid)
-      CALL WRITE_FLD_XY_RL("v_bound_cont_A","",vbd_SI,0,myThid)
-      CALL WRITE_FLD_XY_RL("u_bound_cont_B","",Au_SI,0,myThid)
-      CALL WRITE_FLD_XY_RL("v_bound_cont_B","",Av_SI,0,myThid)
-      endif
+!      if (iter .eq. streamice_max_nl_iter) then
+!      CALL WRITE_FLD_XY_RL("u_bound_cont_A","",ubd_SI,0,myThid)
+!      CALL WRITE_FLD_XY_RL("v_bound_cont_A","",vbd_SI,0,myThid)
+!      CALL WRITE_FLD_XY_RL("u_bound_cont_B","",Au_SI,0,myThid)
+!      CALL WRITE_FLD_XY_RL("v_bound_cont_B","",Av_SI,0,myThid)
+!      endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 !$TAF STORE U_streamice = comlev1_stream_nl, key=ikey_nl
