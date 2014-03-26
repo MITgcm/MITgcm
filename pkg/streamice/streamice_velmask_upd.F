@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_velmask_upd.F,v 1.4 2013/08/24 20:34:27 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_velmask_upd.F,v 1.5 2014/03/26 17:48:36 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -34,7 +34,7 @@ C     === Global variables ===
 #ifdef ALLOW_STREAMICE
 
       INTEGER i, j, bi, bj, ki, kj
-      INTEGER maskFlag
+      INTEGER maskFlag, myThidCopy
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_USE_MPI
       integer mpiRC, mpiMyWid
@@ -188,7 +188,8 @@ C     === Global variables ===
 !      CALL WRITE_FLD_XY_RL ("vfacemask","",STREAMICE_vfacemask,0,myThid)
 
 #ifdef ALLOW_PETSC
-      call streamice_petsc_numerate (myThid)
+      myThidCopy = myThid
+      call streamice_petsc_numerate (myThidCopy)
 #endif
 
 
