@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_petsc_numerate.F,v 1.2 2013/10/12 13:55:47 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_petsc_numerate.F,v 1.3 2014/03/26 17:49:51 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
-      SUBROUTINE STREAMICE_PETSC_NUMERATE 
+      SUBROUTINE STREAMICE_PETSC_NUMERATE (myThid)
 
 C     /============================================================\
 C     | SUBROUTINE                                                 |
@@ -28,6 +28,7 @@ C     === Global variables ===
 # endif
 #endif
 
+      INTEGER myThid
 
 #ifdef ALLOW_STREAMICE
 
