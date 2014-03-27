@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.14 2014/01/01 23:20:48 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.15 2014/03/27 05:47:49 m_bates Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 #include "GMREDI_OPTIONS.h"
@@ -149,6 +149,20 @@ C     surfkz   :: Depth of surface layer (in r units)
       _RL fCoriU(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL fCoriV(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL surfkz(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+
+      _RL centreX, centreY
+      _RL numerator, denominator
+      _RL uInt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL vInt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL KdqdxInt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL KdqdyInt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL uKdqdyInt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL vKdqdxInt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL uXiyInt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL vXixInt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL Renorm(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL RenormU(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL RenormV(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
 C     gradqx   :: Potential vorticity gradient in x direction
 C     gradqy   :: Potential vorticity gradient in y direction
@@ -881,11 +895,86 @@ C     ENDIF (.NOT. GM_K3D_smooth)
       ENDIF
 
 
+C     Calculate the renormalisation factor
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+        uInt(i,j)=zeroRL
+        vInt(i,j)=zeroRL
+        KdqdyInt(i,j)=zeroRL
+        KdqdxInt(i,j)=zeroRL
+        uKdqdyInt(i,j)=zeroRL
+        vKdqdxInt(i,j)=zeroRL
+        uXiyInt(i,j)=zeroRL
+        vXixInt(i,j)=zeroRL
+        Renorm(i,j)=zeroRL
+       ENDDO
+      ENDDO
+      DO k=1,Nr
+       DO j=1-Oly,sNy+Oly-1
+        DO i=1-Olx,sNx+Olx-1
+         centreX = op5*(uVel(i,j,k,bi,bj)+uVel(i+1,j,k,bi,bj))
+         centreY = op5*(Kdqdy(i,j,k)     +Kdqdy(i,j+1,k)     )
+C        For the numerator
+         uInt(i,j) = uInt(i,j) 
+     &        + centreX*hfacC(i,j,k,bi,bj)*drF(k)
+         KdqdyInt(i,j) = KdqdyInt(i,j)
+     &        + centreY*hfacC(i,j,k,bi,bj)*drF(k)
+         uKdqdyInt(i,j) = uKdqdyInt(i,j)
+     &        + centreX*centreY*hfacC(i,j,k,bi,bj)*drF(k)
+C        For the denominator
+         centreY = op5*(Xiy(i,j,k) + Xiy(i,j+1,k))
+         uXiyInt(i,j) = uXiyInt(i,j)
+     &        + centreX*centreY*hfacC(i,j,k,bi,bj)*drF(k)
+
+         centreX = op5*(Kdqdx(i,j,k)     +Kdqdx(i+1,j,k))
+         centreY = op5*(vVel(i,j,k,bi,bj)+vVel(i,j+1,k,bi,bj) )
+C        For the numerator
+         vInt(i,j) = vInt(i,j)
+     &        + centreY*hfacC(i,j,k,bi,bj)*drF(k)
+         KdqdxInt(i,j) = KdqdxInt(i,j)
+     &        + CentreX*hfacC(i,j,k,bi,bj)*drF(k)
+         vKdqdxInt(i,j) = vKdqdxInt(i,j)
+     &        + centreY*centreX*hfacC(i,j,k,bi,bj)*drF(k)
+C        For the denominator
+         centreX = op5*(Xix(i,j,k) + Xix(i+1,j,k))
+         vXixInt(i,j) = vXixInt(i,j)
+     &        + centreY*centreX*hfacC(i,j,k,bi,bj)*drF(k)
+
+        ENDDO
+       ENDDO
+      ENDDO
+
+      DO j=1-Oly,sNy+Oly-1
+       DO i=1-Olx,sNx+Olx-1
+        IF (kLowC(i,j,bi,bj).GT.0) THEN
+          numerator = 
+     &         (uKdqdyInt(i,j)-uInt(i,j)*KdqdyInt(i,j)/R_low(i,j,bi,bj))
+     &        -(vKdqdxInt(i,j)-vInt(i,j)*KdqdxInt(i,j)/R_low(i,j,bi,bj))
+          denominator = uXiyInt(i,j) - vXixInt(i,j)
+C         We can have troubles with floating point exceptions if the denominator 
+C         of the renormalisation if the ocean is resting (e.g. intial conditions). 
+C         So we make the renormalisation factor zero if the denominator is very small
+          IF (denominator.LE.small) THEN
+            Renorm(i,j)=zeroRL
+          ELSE
+            Renorm(i,j) = ABS(numerator/denominator)
+          ENDIF
+        ENDIF
+       ENDDO
+      ENDDO
+C     Now put it back on to the velocity grids
+      DO j=1-Oly+1,sNy+Oly-1
+       DO i=1-Olx+1,sNx+Olx-1
+        RenormU(i,j) = op5*(Renorm(i-1,j)+Renorm(i,j))
+        RenormV(i,j) = op5*(Renorm(i,j-1)+Renorm(i,j))
+       ENDDO
+      ENDDO
+
 C     Calculate the eddy induced velocity in the X direction at the west face
       DO k=1,Nr
        DO j=1-Oly+1,sNy+Oly
         DO i=1-Olx+1,sNx+Olx
-         ustar(i,j,k) = -Xix(i,j,k)/coriU(i,j)
+         ustar(i,j,k) = -Renorm(i,j)*Xix(i,j,k)/coriU(i,j)
         ENDDO
        ENDDO
       ENDDO      
@@ -894,7 +983,7 @@ C     Calculate the eddy induced velocity in the Y direction at the south face
       DO k=1,Nr
        DO j=1-Oly+1,sNy+Oly
         DO i=1-Olx+1,sNx+Olx
-         vstar(i,j,k) = -Xiy(i,j,k)/coriV(i,j)
+         vstar(i,j,k) = -Renorm(i,j)*Xiy(i,j,k)/coriV(i,j)
         ENDDO
        ENDDO
       ENDDO      
@@ -977,6 +1066,7 @@ C     Diagnostics
         CALL DIAGNOSTICS_FILL(N2loc,  'GM_N2   ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(M4onN2, 'GM_M4_N2',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(slopeC, 'GM_SLOPE',0,Nr,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(Renorm, 'GM_RENRM',0, 1,0,1,1,myThid)
 
       ENDIF
 #endif
