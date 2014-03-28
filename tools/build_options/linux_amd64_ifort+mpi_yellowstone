@@ -1,0 +1,32 @@
+# Provided by Michael Bates
+# http://mitgcm.org/pipermail/mitgcm-support/2013-September/008497.html
+# Tested on yellowstone using modules:
+#Currently Loaded Modules:
+#  1) ncarenv/1.0        3) intel/12.1.5         5) netcdf/4.3.0
+#  2) ncarbinlibs/1.0    4) ncarcompilers/1.0    6) impi/4.0.3.008
+
+FC=mpif90
+CC=mpicc
+F90C=mpif90
+
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
+CPP='/lib/cpp  -traditional -P'
+EXTENDED_SRC_FLAG='-132'
+OMPFLAG='-openmp'
+CFLAGS='-fPIC'
+LDADD='-shared-intel'
+
+LIBS=$LIB_NCAR
+INCLUDES="$INC_NCAR -I${I_MPI_ROOT}intel64/include"
+
+CPPINCLUDES=$INC_NCAR
+
+NOOPTFLAGS='-O0 -fPIC'
+
+FFLAGS="-fPIC -convert big_endian -assume byterecl -align -march=corei7 -axAVX"
+FDEBUG='-W0 -WB'
+FFLAGS="$FDEBUG $FFLAGS"
+
+FOPTIM='-O2'
+FOPTIM="$FOPTIM -ip -fp-model precise -traceback -ftz"
+
