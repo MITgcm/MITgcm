@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.18 2014/01/01 23:20:48 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.19 2014/03/28 04:22:11 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -540,6 +540,14 @@ c     IF ( useDiagnotics ) THEN
         diagName  = 'GM_KDEF '
         diagTitle = 'Rossby wavenumber'
         diagUnits = '1/m             '
+        diagCode  = 'SM      M1      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        
+        diagName  = 'GM_RENRM'
+        diagTitle = 'renormalisation factor'
+        diagUnits = 'none            '
         diagCode  = 'SM      M1      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,

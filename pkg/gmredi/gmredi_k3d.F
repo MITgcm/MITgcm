@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.15 2014/03/27 05:47:49 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.16 2014/03/28 04:22:11 m_bates Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 #include "GMREDI_OPTIONS.h"
@@ -150,6 +150,19 @@ C     surfkz   :: Depth of surface layer (in r units)
       _RL fCoriV(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL surfkz(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
+C     centreX,centreY :: used for calculating averages at centre of cell
+C     numerator,denominator :: of the renormalisation factor
+C     uInt      :: column integral of u velocity (sum u*dz)
+C     vInt      :: column integral of v velocity (sum v*dz)
+C     KdqdxInt  :: column integral of K*dqdx (sum K*dqdx*dz)
+C     KdqdyInt  :: column integral of K*dqdy (sum K*dqdy*dz)
+C     uKdqdyInt :: column integral of u*K*dqdy (sum u*K*dqdy*dz)
+C     vKdqdxInt :: column integral of v*K*dqdx (sum v*K*dqdx*dz)
+C     uXiyInt   :: column integral of u*Xiy (sum u*Xiy*dz)
+C     vXixInt   :: column integral of v*Xix (sum v*Xix*dz)
+C     Renorm    :: renormalisation factor at the centre of a cell
+C     RenormU   :: renormalisation factor at the western face of a cell
+C     RenormV   :: renormalisation factor at the southern face of a cell
       _RL centreX, centreY
       _RL numerator, denominator
       _RL uInt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -906,7 +919,9 @@ C     Calculate the renormalisation factor
         vKdqdxInt(i,j)=zeroRL
         uXiyInt(i,j)=zeroRL
         vXixInt(i,j)=zeroRL
-        Renorm(i,j)=zeroRL
+        Renorm(i,j)=oneRL
+        RenormU(i,j)=oneRL
+        RenormV(i,j)=oneRL
        ENDDO
       ENDDO
       DO k=1,Nr
@@ -953,11 +968,15 @@ C        For the denominator
           denominator = uXiyInt(i,j) - vXixInt(i,j)
 C         We can have troubles with floating point exceptions if the denominator 
 C         of the renormalisation if the ocean is resting (e.g. intial conditions). 
-C         So we make the renormalisation factor zero if the denominator is very small
-          IF (denominator.LE.small) THEN
-            Renorm(i,j)=zeroRL
-          ELSE
+C         So we make the renormalisation factor one if the denominator is very small
+C         The renormalisation factor is supposed to correct the error in the extraction of
+C         potential energy associated with the truncation of the expansion. Thus, we
+C         enforce a minimum value for the renormalisation factor.
+C         We also enforce a maximum renormalisation factor.
+          IF (denominator.GT.small) THEN
             Renorm(i,j) = ABS(numerator/denominator)
+            Renorm(i,j) = MAX(Renorm(i,j),GM_K3D_minRenorm)
+            Renorm(i,j) = MIN(Renorm(i,j),GM_K3D_maxRenorm)
           ENDIF
         ENDIF
        ENDDO
@@ -974,7 +993,7 @@ C     Calculate the eddy induced velocity in the X direction at the west face
       DO k=1,Nr
        DO j=1-Oly+1,sNy+Oly
         DO i=1-Olx+1,sNx+Olx
-         ustar(i,j,k) = -Renorm(i,j)*Xix(i,j,k)/coriU(i,j)
+         ustar(i,j,k) = -RenormU(i,j)*Xix(i,j,k)/coriU(i,j)
         ENDDO
        ENDDO
       ENDDO      
@@ -983,7 +1002,7 @@ C     Calculate the eddy induced velocity in the Y direction at the south face
       DO k=1,Nr
        DO j=1-Oly+1,sNy+Oly
         DO i=1-Olx+1,sNx+Olx
-         vstar(i,j,k) = -Renorm(i,j)*Xiy(i,j,k)/coriV(i,j)
+         vstar(i,j,k) = -RenormV(i,j)*Xiy(i,j,k)/coriV(i,j)
         ENDDO
        ENDDO
       ENDDO      

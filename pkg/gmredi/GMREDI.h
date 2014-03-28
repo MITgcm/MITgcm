@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.28 2014/01/01 23:20:48 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.29 2014/03/28 04:22:11 m_bates Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -107,6 +107,8 @@ C     GM_K3D_minCori :: minimum value for f (to stop things blowing up near the 
 C     GM_K3D_minN2   :: minimum value for the square of the buoyancy frequency
 C     GM_K3D_surfMinDepth :: minimum value for the depth of the surface layer
 C     GM_K3D_vecFreq :: Frequency at which to update the baroclinic modes
+C     GM_K3D_minRenorm:: minimum value for the renormalisation factor
+C     GM_K3D_maxRenorm:: maximum value for the renormalisation factor
 
       _RL GM_isopycK
       _RL GM_background_K
@@ -136,6 +138,8 @@ C     GM_K3D_vecFreq :: Frequency at which to update the baroclinic modes
       _RL GM_K3D_minN2
       _RL GM_K3D_surfMinDepth
       _RL GM_K3D_vecFreq
+      _RL GM_K3D_minRenorm
+      _RL GM_K3D_maxRenorm
       _RL GM_facTrL2dz
       _RL GM_facTrL2ML
       _RL GM_maxTransLay
@@ -160,7 +164,8 @@ C     GM_K3D_vecFreq :: Frequency at which to update the baroclinic modes
      &                   GM_K3D_smallK, GM_K3D_maxC,
      &                   GM_maxK3D, GM_K3D_minCori, GM_K3D_minN2, 
      &                   GM_K3D_surfMinDepth, GM_K3D_Rmax, GM_K3D_Rmin,
-     &                   GM_K3D_constK, GM_K3D_vecFreq, 
+     &                   GM_K3D_constK, GM_K3D_vecFreq,
+     &                   GM_K3D_minRenorm, GM_K3D_maxRenorm,
      &                   GM_facTrL2dz, GM_facTrL2ML, GM_maxTransLay,
      &                   GM_Scrit, GM_Sd, GM_BVP_cMin,
      &                   subMeso_Ceff, subMeso_invTau, subMeso_LfMin
