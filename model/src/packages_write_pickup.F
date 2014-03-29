@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.41 2013/07/11 14:16:00 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.42 2014/03/29 19:40:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -129,6 +129,13 @@ C     Write restart file for GCHEM pkg & GCHEM sub-packages
      I                    suffix, myTime, myIter, myThid )
       ENDIF
 #endif  /* ALLOW_SEAICE */
+
+#ifdef ALLOW_STREAMICE
+      IF (useStreamIce) THEN
+        CALL STREAMICE_WRITE_PICKUP( permPickup,
+     I                    suffix, myTime, myIter, myThid )
+      ENDIF
+#endif
 
 #ifdef ALLOW_THSICE
       IF (useThSIce) THEN
