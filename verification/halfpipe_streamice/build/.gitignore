@@ -10,14 +10,24 @@
 mfile*
 mitgcmuv*
 work.pc*
-SIZE.h.mpi
 PACKAGES_CONFIG.h
 BUILD_INFO.h
 AD_CONFIG.h
 FC_NAMEMANGLE.h
+SIZE.h.mpi
+Makefile_syntax
 genmake_state
 genmake_ad_optfile
 genmake_optfile
 taf_command
 taf_output
-*_mod.h
+mpi_headers
+#- for OpenAD built:
+*_mod.h 
+*_mod.F90 
+*.FF90 
+*.ff90 
+*.mod-whirl 
+*.pre.s2p.*
+temp.sed 
+postProcess.tag
