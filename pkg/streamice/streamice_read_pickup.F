@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_read_pickup.F,v 1.2 2014/03/26 17:40:11 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_read_pickup.F,v 1.3 2014/03/30 18:00:23 jmc Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -58,7 +58,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        ENDIF
        fp = precFloat64
 
-
        CALL READ_MFLDS_SET(
      I                      fn,
      O                      nbFields, filePrec,
@@ -76,8 +75,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          STOP 'ABNORMAL END: S/R STREAMICE_READ_PICKUP (data-prec Pb)'
        ENDIF
        _END_MASTER( myThid )
-
-
 
        IF ( nbFields.LE.0 ) THEN
 C-      No meta-file or old meta-file without List of Fields
@@ -135,17 +132,15 @@ C---    read STREAMICE 3-D fields for restart
         nj = nj*Nr
 C---    read STREAMICE 2-D fields for restart
 
-      
-
         CALL READ_MFLDS_3D_RL( 'SI_area ', area_shelf_streamice,
      &                                 nj, fp, 1 , myIter, myThid )
-        CALL READ_MFLDS_3D_RL( 'SI_hmask', streamice_hmask,
+        CALL READ_MFLDS_LEV_RS('SI_hmask', STREAMICE_hmask,
+     &                            nj, fp, 1, 1, 1, myIter, myThid )
+        CALL READ_MFLDS_3D_RL( 'SI_uvel ', U_streamice,
      &                                 nj, fp, 1 , myIter, myThid )
-        CALL READ_MFLDS_3D_RL( 'SI_uvel ', u_streamice,
+        CALL READ_MFLDS_3D_RL( 'SI_vvel ', V_streamice,
      &                                 nj, fp, 1 , myIter, myThid )
-        CALL READ_MFLDS_3D_RL( 'SI_vvel ', v_streamice,
-     &                                 nj, fp, 1 , myIter, myThid )
-        CALL READ_MFLDS_3D_RL( 'SI_thick', h_streamice,
+        CALL READ_MFLDS_3D_RL( 'SI_thick', H_streamice,
      &                                 nj, fp, 1 , myIter, myThid )
         CALL READ_MFLDS_3D_RL( 'SI_betaF', tau_beta_eff_streamice,
      &                                 nj, fp, 1 , myIter, myThid )
@@ -158,13 +153,6 @@ C---    read STREAMICE 2-D fields for restart
         CALL READ_MFLDS_3D_RL( 'SI_tauby', streamice_tauby,
      &                                 nj, fp, 1 , myIter, myThid )
 #endif
-
-!         IF (j.LE.listDim) wrFldList(j) = 'SI_hmask'
-!         IF (j.LE.listDim) wrFldList(j) = 'SI_uvel '
-!         IF (j.LE.listDim) wrFldList(j) = 'SI_vvel '
-!         IF (j.LE.listDim) wrFldList(j) = 'SI_thick'
-!         IF (j.LE.listDim) wrFldList(j) = 'SI_betaF'
-!         IF (j.LE.listDim) wrFldList(j) = 'SI_visc '
 
 C--    end: new way to read pickup file
        ENDIF
@@ -193,7 +181,6 @@ C--    Check for missing fields:
         STOP 'ABNORMAL END: S/R STREAMICE_READ_PICKUP'
        ENDIF
 
-
 C--    Update overlap regions:
 #ifdef STREAMICE_HYBRID_STRESS
         CALL EXCH_3D_RL( visc_streamice_full, Nr, myThid )
@@ -205,7 +192,6 @@ C--    Update overlap regions:
         CALL EXCH_XY_RS( streamice_hmask, myThid )
         CALL EXCH_XY_RL( tau_beta_eff_streamice, myThid )
         CALL EXCH_XY_RL( visc_streamice, myThid )
-
 
 c       CALL EXCH_XY_RL( myPa_Surf2, myThid )
 

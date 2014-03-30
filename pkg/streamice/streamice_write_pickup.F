@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_write_pickup.F,v 1.2 2014/03/26 17:40:11 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_write_pickup.F,v 1.3 2014/03/30 18:00:23 jmc Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -74,8 +74,8 @@ C       Firstly, write 3-D fields as consecutive records,
 #ifdef STREAMICE_HYBRID_STRESS
 C     record number < 0 : a hack not to write meta files now:
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, fp, Nr,
-     &                 visc_streamice_full, -j, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, visc_streamice_full,
+     &                        -j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'visc3d  '
 #endif /* STREAMICE_HYBRID_STRESS */
 
@@ -84,66 +84,64 @@ C-    switch to 2-D fields:
 
         j = j + 1
         nj = nj-1
-        CALL WRITE_REC_3D_RL( fn, fp, 1,
-     &                 area_shelf_streamice, nj, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, fp, 1, area_shelf_streamice,
+     &                        nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'SI_area '
 
         j = j + 1
         nj = nj-1
-        CALL WRITE_REC_3D_RL( fn, fp, 1,
-     &                 streamice_hmask, nj, myIter, myThid )
+        CALL WRITE_REC_3D_RS( fn, fp, 1, STREAMICE_hmask,
+     &                        nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'SI_hmask'
 
         j = j + 1
         nj = nj-1
-        CALL WRITE_REC_3D_RL( fn, fp, 1,
-     &                 u_streamice, nj, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, fp, 1, U_streamice,
+     &                        nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'SI_uvel '
 
         j = j + 1
         nj = nj-1
-        CALL WRITE_REC_3D_RL( fn, fp, 1,
-     &                 v_streamice, nj, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, fp, 1, V_streamice,
+     &                        nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'SI_vvel '
 
         j = j + 1
         nj = nj-1
-        CALL WRITE_REC_3D_RL( fn, fp, 1,
-     &                 h_streamice, nj, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, fp, 1, H_streamice,
+     &                        nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'SI_thick'
-      
+
         j = j + 1
         nj = nj-1
-        CALL WRITE_REC_3D_RL( fn, fp, 1,
-     &                 tau_beta_eff_streamice, 
-     &                 nj, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, fp, 1, tau_beta_eff_streamice,
+     &                        nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'SI_betaF'
 
         j = j + 1
         nj = nj-1
-        CALL WRITE_REC_3D_RL( fn, fp, 1,
-     &                 visc_streamice, nj, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, fp, 1, visc_streamice,
+     &                        nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'SI_visc '
 
 #ifdef STREAMICE_HYBRID_STRESS
         j = j + 1
         nj = nj-1
-        CALL WRITE_REC_3D_RL( fn, fp, 1,
-     &                 streamice_taubx, 
-     &                 nj, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, fp, 1, streamice_taubx,
+     &                        nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'SI_taubx'
 
         j = j + 1
         nj = nj-1
-        CALL WRITE_REC_3D_RL( fn, fp, 1,
-     &                 streamice_tauby, nj, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, fp, 1, streamice_tauby,
+     &                        nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'SI_tauby'
 #endif
 
 c       j = j + 1
 c       nj = nj-1
-c       CALL WRITE_REC_3D_RL( fn, fp, 1,
-c    &                        myPa_Surf2, nj, myIter, myThid )
+c       CALL WRITE_REC_3D_RL( fn, fp, 1, myPa_Surf2,
+c    &                        nj, myIter, myThid )
 c       IF (j.LE.listDim) wrFldList(j) = 'myPaSur2'
 
 C--------------------------
@@ -177,7 +175,6 @@ C     uses this specific S/R to write (with more informations) only meta files
 C--------------------------
 
 #endif /* ALLOW_STREAMICE */
-
 
       RETURN
       END
