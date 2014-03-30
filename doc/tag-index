@@ -1,10 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1969 2014/03/20 09:26:56 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1970 2014/03/30 18:10:46 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: 
+o pkg/rw:
+  - add RS version of S/R READ_MFLDS_LEV.
+o pkg/streamice:
+  - fix the restart test by writing/reading pickup_streamice files.
+o pkg/seaice:
   - refine checks for jfnk-related parameters
   - comment out if statement with SEAICEuseIMEX parameter as long as there
     is no IMEX code to avoid confusion and surprises
