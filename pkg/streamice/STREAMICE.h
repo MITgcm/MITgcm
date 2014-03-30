@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.5 2013/08/22 22:56:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.6 2014/03/30 18:07:48 jmc Exp $
 C $Name:  $
 
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_STREAMICE
 
-C     -------------------------- REAL PARAMS ---------------------------------------------------
+C     -------------------------- REAL PARAMS -----------------------------------
 
       COMMON /STREAMICE_PARMS_R/
      & streamice_density, streamice_density_ocean_avg,
-C     & A_glen_isothermal, n_glen, eps_glen_min, eps_u_min,
+c     & A_glen_isothermal, n_glen, eps_glen_min, eps_u_min,
      & B_glen_isothermal, n_glen, eps_glen_min, eps_u_min,
      & C_basal_fric_const, n_basal_friction, streamice_input_flux_unif,
      & streamice_vel_update, streamice_cg_tol, streamice_nonlin_tol,
@@ -44,7 +44,6 @@ C      _RL A_glen_isothermal, n_glen, eps_glen_min, eps_u_min
       _RL streamice_smooth_gl_width
       _RL streamice_adot_uniform
 
-
 C     parms for parameterized initial thickness
 C     SHELF_MAX_DRAFT: max thickness of ice in m
 C     SHELF_MIN_DRAFT: min thickness of ice in m
@@ -68,7 +67,7 @@ C     FLOW_DIR: 1.0=west, 2.0=east, 3.0=south, 4.0=north
       _RL shelf_flat_width
       _RL flow_dir
 
-C     -------------------------- INT PARAMS ---------------------------------------------------
+C     -------------------------- INT PARAMS ------------------------------------
 
       INTEGER streamice_max_nl
       PARAMETER ( streamice_max_nl = 100 )
@@ -81,7 +80,7 @@ C     -------------------------- INT PARAMS ------------------------------------
       INTEGER streamice_vel_upd_counter, streamice_nstep_velocity
       INTEGER streamice_n_sub_regularize
 
-C     -------------------------- CHAR PARAMS ---------------------------------------------------
+C     -------------------------- CHAR PARAMS -----------------------------------
 
       CHARACTER*(MAX_LEN_FNAM) STREAMICEthickFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEthickInit
@@ -100,8 +99,8 @@ C     -------------------------- CHAR PARAMS -----------------------------------
       CHARACTER*(MAX_LEN_FNAM) STREAMICEcostMaskFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICE_ADV_SCHEME
 
-!     THE FOLLOWING FILENAMES ARE FOR SPECIFYING IRREGULAR DOMAIN GEOMETRIES
-!     (i.e. boundaries that do not conform with rectangular walls)
+C     THE FOLLOWING FILENAMES ARE FOR SPECIFYING IRREGULAR DOMAIN GEOMETRIES
+C     (i.e. boundaries that do not conform with rectangular walls)
       CHARACTER*(MAX_LEN_FNAM) STREAMICEhmaskFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEHBCxFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEHBCyFile
@@ -111,13 +110,13 @@ C     -------------------------- CHAR PARAMS -----------------------------------
       CHARACTER*(MAX_LEN_FNAM) STREAMICEvDirichValsFile
 
 #ifdef ALLOW_PETSC
-!     CHARACTER PARAMS FOR PETSC
+C     CHARACTER PARAMS FOR PETSC
       CHARACTER*(MAX_LEN_FNAM) PETSC_SOLVER_TYPE
       CHARACTER*(MAX_LEN_FNAM) PETSC_PRECOND_TYPE
 #endif
 
 #ifdef ALLOW_STREAMICE_2DTRACER
-!     CHARACTER PARAMS FOR TRACER
+C     CHARACTER PARAMS FOR TRACER
       CHARACTER*(MAX_LEN_FNAM) STREAMICETrac2DBCxFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICETrac2DBCyFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICETrac2DinitFile
@@ -161,7 +160,7 @@ C     -------------------------- CHAR PARAMS -----------------------------------
      &     STREAMICETrac2DinitFile
 #endif
 
-C     -------------------------- LOGICAL PARAMS ---------------------------------------------------
+C     -------------------------- LOGICAL PARAMS --------------------------------
 
       LOGICAL STREAMICEison
       LOGICAL STREAMICE_dump_mdsio
@@ -198,11 +197,11 @@ C      LOGICAL STREAMICE_hybrid_stress
      & STREAMICE_ppm_driving_stress,
      & STREAMICE_h_ctrl_const_surf
 
-C     -------------------------- AND NOW ARRAYS ---------------------------------------------------
+C     -------------------------- AND NOW ARRAYS --------------------------------
 
 C     EXPLANATION OF MASKS
 
-C     STREAMICE_hmask           VALUES	1=ice-covered cell
+C     STREAMICE_hmask           VALUES  1=ice-covered cell
 C                                       2=partially ice-covered cell (no dynamics)
 C                                       0=ice-free cell (for now, it means the cell
 C                                                           is treated as an open-ocean cell
@@ -273,6 +272,8 @@ C     All other masks are updated within a timestep BASED ON STREAMICE_hmask
 C    Number of quadrature points are hardcoded.. could turn into a CPP macro
 
 C    REAL ARRAYS
+C    BDOT_streamice :: mass balances in meters per year
+C    ADOT_streamice :: mass balances in meters per year
 
       COMMON /STREAMICE_FIELDS_RL/
      &     H_streamice,
@@ -295,7 +296,7 @@ C    REAL ARRAYS
      &     C_basal_friction,
 C     &     A_glen,
      &     B_glen,
-     &     BDOT_streamice, ADOT_streamice,  ! mass balances in meters per year
+     &     BDOT_streamice, ADOT_streamice,
      &     streamice_sigma_coord, streamice_delsigma,
      &     H_streamice_prev
 
@@ -322,7 +323,6 @@ C     &     A_glen,
       COMMON /STREAMICE_RLOW/
      &     R_low_si
 #endif
-
 
       _RL H_streamice           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL U_streamice           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -377,13 +377,11 @@ C     The following arrays are used for the hybrid stress balance
 #endif
 
       _RL ADOT_streamice (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-!! IMPORTANT: MELT RATE IN METERS PER YEAR
-!! POSITIVE WHERE MELTING
+C IMPORTANT: MELT RATE IN METERS PER YEAR
+C POSITIVE WHERE MELTING
       _RL BDOT_streamice (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL H_streamice_prev (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL STREAMICE_dummy_array (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-
 
       COMMON /STREAMICE_COST_RL/
      &       cost_func1_streamice
@@ -414,7 +412,6 @@ C        velocity initial guess, so they are kept
      & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER n_dofs_process (0:nPx*nPy-1)
 #endif
-
 
 #endif /* ALLOW_STREAMICE */
 
