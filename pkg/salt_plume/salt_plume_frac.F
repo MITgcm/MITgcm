@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_frac.F,v 1.7 2012/01/31 17:33:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_frac.F,v 1.8 2014/03/31 20:45:37 atn Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -21,13 +21,18 @@ C     | specified depth, plumek, due to rejected salt
 C     | during freezing.
 C     | For example, if surface value is Saltplume0,
 C     | and each level gets equal fraction 1/5 down to SPDepth=5,
-C     | SALT_PLUME_FRAC will report plumek = 4/5 on output if the input
-C     | plumek = 1. Else, output plumek = 0.                
+C     | SALT_PLUME_FRAC will report plumek = 1/5,2/5,3/5,4/5,5/5 on
+C     | output if input plumek = 1,2,3,4,5. Else, output plumek = 0.                
 C     | Reference : Duffy et al, (GRL 1999)
 C     |
 C     | =====
 C     | Written by   : ATN (based on SWFRAC)
 C     | Date         : Sep 13, 2007
+C     | Modified     : Mar 16, 2014 by atn to improve/clean up
+C     | -> replace 1-[cummulative plumefrac] code which was based 
+C     |    on swfrac with cleaner [cummulative plumefrac] on output
+C     |    in order to avoid 1-[1-[cummulative_plumefrac]] whenever
+C     |    SALT_PLUME_FRAC is called and used from outside.
 C     *==========================================================*
 C     \ev
 
@@ -64,103 +69,128 @@ C     !LOCAL VARIABLES:
 #ifndef TARGET_NEC_SX
       INTEGER kk
 #endif
-      _RL     one, two, three, tempN, tempN20
+      _RL     one, two, three, S, So, zero
       parameter( one = 1. _d 0, two = 2. _d 0, three = 3. _d 0 )
+      parameter( zero = 0. _d 0 )
 C     This is an abbreviation of 1./(exp(1.)-1.)
       _RL     recip_expOneM1
       parameter( recip_expOneM1 = 0.581976706869326343 )
 
       DO i = 1,imax
        facz = abs(fact*plumek(i))
-       IF (SPDepth(i).GT.facz) THEN
+
+       IF (SPDepth(i).GE.facz .and. SPDepth(i) .GT. zero) THEN
 
 C     Default: uniform distribution, PlumeMethod=1, Npower=0
         IF (PlumeMethod .EQ. 1) THEN
          dd20 = (abs(SPDepth(i)))
 #ifdef TARGET_NEC_SX
-         IF ( dd20 .GT. 0. _d 0 ) THEN
-          tempN   = (facz/dd20)
-C     crazy attempt to make the code faster and raise tempN to (Npower+1)
-          IF (Npower .GT. 0) tempN = tempN*tempN**Npower          
+         IF ( dd20 .GT. zero ) THEN
+          S   = (facz/dd20)
+C     crazy attempt to make the code faster and raise S to (Npower+1)
+          IF (Npower .GT. 0) S = S*S**Npower
          ELSE
-          tempN = 0. _d 0
+          S = zero
          ENDIF
-         plumek(i) = one - min(one,tempN)
+         plumek(i) = max(zero,S)
 #else
-         tempN   = one          !input depth temp
-         tempN20 = one
+         S  = one                  !input depth temp
+         So = one
          DO kk=1,Npower+1
-          tempN   = facz*tempN  !raise to the Npower+1
-          tempN20 = dd20*tempN20
+          S  = facz*S              !raise to the Npower+1
+          So = dd20*So
          ENDDO
-         plumek(i) = one - min(one,tempN/tempN20)
+         plumek(i) = max(zero,S/So)
 #endif /* TARGET_NEC_SX */
 
         ELSEIF (PlumeMethod .EQ. 2) THEN !exponential distribution
          dd = abs(SPDepth(i))
-CML         plumek(i) = one - (exp(facz/dd)-one)/
-CML     &                     (exp(one    )-one)
-         plumek(i) = one - (exp(facz/dd)-one)*recip_expOneM1
+         S  = exp(facz/dd)-one
+         So = recip_expOneM1       !So = exp(one)-one
+         plumek(i) = max(zero,S*So)
 
 C     PlumeMethod = 3, distribute salt LINEARLY between SPDepth and 
 C     SPDepth/SPovershoot
-C     (1-SPovershoot) has already been taken into account in SPDepth 
-C     calculation, i.e., SPDepth = SPovershoot*SPDepth.
+C     (1-SPovershoot)percent has already been taken into account in
+C     SPDepth calculation, i.e., SPDepth = SPovershoot*SPDepth.
         ELSEIF (PlumeMethod .EQ. 3) THEN !overshoot 20%
          dd20 = (abs(SPDepth(i)))
          dd   = dd20/SPovershoot
+         So=dd20-dd
+         S =facz-dd
          IF( (facz.GE.dd).AND.(facz.LT.dd20) ) THEN
-          plumek(i) = one - min(one,(facz-dd)/(dd20-dd))
+          plumek(i) = max(zero,S/So)
          ELSE
-          plumek(i) = one
+          plumek(i) = zero
          ENDIF
-            
+
 C     PlumeMethod = 5, dumping all salt at the top layer
         ELSEIF (PlumeMethod .EQ. 5) THEN
-         dd   = 0.
+         dd   = zero
          dd20 = one
          IF( (facz.GE.dd).AND.(facz.LT.dd20) ) THEN
-CML          plumek(i) = one - min(one,(facz-dd)/(dd20-dd))
-          plumek(i) = one - min(one,facz)
+          plumek(i) = zero 
          ELSE
-          plumek(i) = 0.
+          plumek(i) = one
          ENDIF
         ELSEIF (PlumeMethod .EQ. 6) THEN
 C     PLumeMethod = 6, currently only works for Npower = 1 and 2.
          dd20 = (abs(SPDepth(i)))
 #ifdef TARGET_NEC_SX
-         IF ( dd20 .GT. 0. _d 0 ) THEN
-          tempN   = (facz/dd20)
-C     crazy attempt to make the code faster and raise tempN to (Npower+1)
-          IF (Npower .GT. 0) tempN = tempN*tempN**Npower          
-          tempN20 = 1. _d 0/dd20
+         IF ( dd20 .GT. zero ) THEN
+          S  = (facz/dd20)
+C     crazy attempt to make the code faster and raise S to (Npower+1)
+          IF (Npower .GT. 0) S = S*S**Npower
+          So = 1. _d 0/dd20
          ELSE
-          tempN   = 0. _d 0
-          tempN20 = 0. _d 0
+          S  = zero
+          So = zero
          ENDIF
-         IF(Npower.EQ.1) THEN   !Npower=1
-          plumek(i) = one - min(one,two*tempN20*facz-tempN)
-         ELSE                   !Npower=2
-          plumek(i) = one - min(one,
-     &         three*tempN20*facz - three*tempN20*tempN20*facz*facz
-     &         + tempN)
+         IF(Npower.EQ.1) THEN      !Npower=1
+          plumek(i) = max(zero,two*So*facz-S)
+         ELSE                      !Npower=2
+          plumek(i) = max(zero,
+     &         three*So*facz - three*So*So*facz*facz + S)
          ENDIF
 #else
-         tempN   = one          !input depth temp
-         tempN20 = one
+         S  = one                  !input depth temp
+         So = one
          DO kk=1,Npower+1
-          tempN   = facz*tempN  !raise to the Npower+1
-          tempN20 = dd20*tempN20
+          S  = facz*S              !raise to the Npower+1
+          So = dd20*So
          ENDDO
-         IF(Npower.EQ.1) THEN   !Npower=1
-          plumek(i) = one - min(one,two/dd20*facz-tempN/tempN20)
-         ELSE                   !Npower=2
-          plumek(i) = one - min(one,
-     &         three/dd20*facz - three/(dd20*dd20)*facz*facz
-     &         + tempN/tempN20)
+         IF(Npower.EQ.1) THEN      !Npower=1
+          plumek(i) = max(zero,two/dd20*facz-S/So)
+         ELSE                      !Npower=2
+          plumek(i) = max(zero,
+     &         three/dd20*facz - three/(dd20*dd20)*facz*facz + S/So)
          ENDIF
 #endif /* TARGET_NEC_SX */
-               
+          
+catn: 15.Mar.2014
+catn: this is a new method by atn. After fixing adjoint compiling error,
+catn: will switch this on.  Currently commenting out for purpose of 
+catn: comparing old (1-abc) vs new (abc) way of coding
+c        ELSEIF (PlumeMethod .EQ. 7) THEN 
+cC     PLumeMethod = 7, dump an offset parabolla with more salt at surface
+cC        tapered to zero at depth SPDepth/2, then increased until SPDepth
+cC        need input SPDepth, NPower = percentage of SPDepth
+cC        Ex: if Npower = 10 -> (10/2)=5% of SPDepth
+cC        NPower can be negative integer here.
+cC        0 -> parabola centered at SPDepth/2;
+cC        + -> parabola offset, salt @ surface < @ SPDepth
+cC        - -> parabola offset, salt @ surface > @ SPDepth
+cC        S and So are dummy variables
+c         dd   = (abs(SPDepth(i)))
+c         dd20 = dd*(one/two-Npower/200. _d 0)
+c         So   = (dd*dd*dd/three)
+c     &            -(dd*dd)      *dd20
+c     &            +(dd)         *dd20*dd20
+c         S    = (facz*facz *facz/three)
+c     &             - (facz*facz)*dd20
+c     &             + (facz)     *dd20*dd20
+c         plumek(i) = max(zero,(S/So))
+c
 #ifndef TARGET_NEC_SX
         ELSE
          WRITE(*,*) 'salt_plume_frac: PLumeMethod =', PLumeMethod,
@@ -169,7 +199,7 @@ C     crazy attempt to make the code faster and raise tempN to (Npower+1)
 #endif /* not TARGET_NEC_SX */
         ENDIF
        ELSE
-        plumek(i) = 0. _d 0
+        plumek(i) = one
        ENDIF
       ENDDO
       

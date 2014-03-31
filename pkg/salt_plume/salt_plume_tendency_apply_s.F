@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_tendency_apply_s.F,v 1.8 2012/07/10 15:45:11 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_tendency_apply_s.F,v 1.9 2014/03/31 20:45:37 atn Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -64,7 +64,7 @@ C     is still faster than non-vector code.
      I      myTime, 1, myThid )
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
-         plumefrac(I,J) = plumekb2D(i,j)*maskC(i,j,klev,bi,bj)
+         plumefrac(I,J) = plumekb2D(i,j)
          plumekb2D(i,j) = abs(rF(kLev+1))
         ENDDO
        ENDDO
@@ -74,15 +74,15 @@ C     is still faster than non-vector code.
      I      myTime, 1, myThid )
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
-C     Penetrating saltplume fraction:
-         IF ( SaltPlumeDepth(i,j,bi,bj) .GT. -rF(kLev) ) THEN
-          plumefrac(i,j)     = plumefrac(i,j)
-     &         -plumekb2D(i,j)*maskC(i,j,klev,bi,bj)
+C     Penetrating saltplume fraction:cumSP(klev+1)-cumSP(klev)
+         IF ( SaltPlumeDepth(i,j,bi,bj) .GT. abs(rF(kLev)) ) THEN
+          plumefrac(i,j) = ( plumekb2D(i,j)-plumefrac(i,j) )
+     &                     *maskC(i,j,klev,bi,bj)
           plumetend(I,J) = saltPlumeFlux(i,j,bi,bj)*plumefrac(I,J)
           gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)+plumetend(I,J)
      &        *recip_drF(kLev)*mass2rUnit*_recip_hFacC(i,j,kLev,bi,bj)
          ELSE
-          plumefrac(i,j)=0. _d 0         
+          plumefrac(i,j) = 0. _d 0
           plumetend(I,J) = 0. _d 0
          ENDIF
         ENDDO
@@ -91,8 +91,8 @@ C     Penetrating saltplume fraction:
 #else
       DO j=jMin,jMax
        DO i=iMin,iMax
-C Penetrating saltplume fraction:
-        IF ( SaltPlumeDepth(i,j,bi,bj) .GT. -rF(kLev) ) THEN
+C Penetrating saltplume fraction:cumulativeSP(klev+1)-cumulativeSP(klev)
+        IF ( SaltPlumeDepth(i,j,bi,bj) .GT. abs(rF(kLev)) ) THEN
          plumefrac(I,J) = 0. _d 0
          plumekb(1)=abs(rF(klev))
          plumekb(2)=abs(rF(klev+1))
@@ -102,7 +102,7 @@ C Penetrating saltplume fraction:
      I                   two2,minusone,SPdepth,
      U                   plumekb,
      I                   myTime, 1, myThid )
-         plumefrac(I,J)=(plumekb(1)-plumekb(2))*maskC(i,j,klev,bi,bj)
+         plumefrac(I,J) = (plumekb(2)-plumekb(1))*maskC(i,j,klev,bi,bj)
          plumetend(I,J) = saltPlumeFlux(i,j,bi,bj)*plumefrac(I,J)
          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)+plumetend(I,J)
      &        *recip_drF(kLev)*mass2rUnit*_recip_hFacC(i,j,kLev,bi,bj)
