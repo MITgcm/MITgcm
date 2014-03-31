@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.50 2013/08/11 02:38:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.51 2014/03/31 20:47:32 atn Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -447,7 +447,7 @@ c     compute bfsfc = plume fraction at hbf * zgrid
      U         worka,
      I         myTime, myIter, myThid)
            do i = 1, imt
-              bfsfc(i) = bfsfc(i) + boplume(i)*(1. - worka(i))
+              bfsfc(i) = bfsfc(i) + boplume(i)*(worka(i))
            enddo
          ENDIF
 #endif /* ALLOW_SALT_PLUME */
@@ -581,7 +581,7 @@ CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
      U         worka,
      I         myTime, myIter, myThid )
         do i = 1, imt
-           bfsfc(i) = bfsfc(i) + boplume(i) * (1. - worka(i))
+           bfsfc(i) = bfsfc(i) + boplume(i) * (worka(i))
         enddo
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
@@ -677,7 +677,7 @@ CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
      U         worka,
      I         myTime, myIter, myThid )
         do i = 1, imt
-           bfsfc(i) = bfsfc(i) + boplume(i) * (1. - worka(i))
+           bfsfc(i) = bfsfc(i) + boplume(i) * (worka(i))
         enddo
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
