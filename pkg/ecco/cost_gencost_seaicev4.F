@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.4 2014/01/26 05:09:40 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.5 2014/04/01 22:02:10 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -121,6 +121,24 @@ c     == external functions ==
 
 c     == end of interface ==
 
+C- jmc: params SEAICE_freeze has been retired; set it locally until someone
+C       who knows what this cost-cointribution means fix it.
+C- atn: also adding 1 normalizing factor same order of magnitude as
+C       rhoNil*HeatCapacity_cp*dz = SEAICE_rhoice*SEAICE_lhFusion*heff 
+C       = 1e3*1e3*1e1=1e7
+C- atn: lastly, define 2 cutoff values for cost to be read in from data.seaice
+C      and initialized in seaice_readparms: SEAICE_cutoff_[area,heff]
+C      Reason: some iceconc data set have "bogus" mask with area>0
+C      at climatological max locations -> not real data.  So either need
+C      to clean up the data or take SEAICE_cutoff_area>=0.15 for example.
+C      Might need to migrate into pkg/ecco instead of in pkg/seaice.
+      _RL SEAICE_freeze, epsilonTemp, epsilonHEFF
+      _RL localnorm
+      SEAICE_freeze  = -1.96  _d 0
+      epsilonTemp = 0.0001 _d 0
+      epsilonHEFF = 0.01 _d 0
+      localnorm = 1. _d -07
+
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
@@ -148,7 +166,6 @@ c--   Initialise local variables.
       localwww = 0. _d 0
       nrecloc=0
       localperiod=0.
-
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -375,6 +392,7 @@ c--    Test for missing values.
                 localweight(i,j,k,bi,bj)=
      &            gencost_weight(i,j,bi,bj,igen_conc)
 #endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
+catn----------------------------------------------
               enddo
              enddo
             enddo
@@ -394,10 +412,23 @@ c area term
      &               num_gencost(bi,bj,igen_conc) =
      &                 num_gencost(bi,bj,igen_conc) + 1. _d 0
 
-c heff term
-                if ( (localobs(i,j,k,bi,bj) .EQ. 0.).AND.
-     &               (heffbbbar(i,j,k,bi,bj) .GT. 0.) ) then
-                   junk=10. _d 0 *cmask(i,j,k)*heffbbbar(i,j,k,bi,bj)
+c atn removing ice: model_A > 0 but obs_A==0, calc enthalpy E:
+c E_current = [(sstbbbar-SEAICE_freeze) * HeatCapacity_Cp * rhoNil * drF(1) 
+c            - (heffbbbar * SEAICE_lhFusion * SEAICE_rhoIce) 
+c            - (HSNOW * SEAICE_lhFusion * SEAICE_rhoSnow)]
+c E_target = (epsilonTemp) * HeatCapacity_Cp * rhoNil * drF(1)
+c cost(Model-data)^2
+c heff and sst term
+                if ((localobs(i,j,k,bi,bj) .LE. SEAICE_cutoff_area)
+     &            .AND.
+     &              (heffbbbar(i,j,k,bi,bj) .GT. SEAICE_cutoff_heff))
+     &             then
+                   junk=1. _d 0 *cmask(i,j,k)*
+     &              (( (sstbbbar(i,j,k,bi,bj)-SEAICE_freeze)*
+     &                 HeatCapacity_Cp*rhoNil*drF(1)
+     &              - heffbbbar(i,j,k,bi,bj)*
+     &                 SEAICE_lhFusion*SEAICE_rhoIce )
+     &              - (epsilonTemp*HeatCapacity_Cp*rhoNil*drF(1)))
                      num_gencost(bi,bj,igen_vol) =
      &                 num_gencost(bi,bj,igen_vol) + 1. _d 0
                 else
@@ -407,13 +438,22 @@ c heff term
                 endif
 
                 objf_gencost(bi,bj,igen_vol) =
-     &            objf_gencost(bi,bj,igen_vol) + junk
+     &            objf_gencost(bi,bj,igen_vol) + 
+     &            junk*junk*localnorm*localnorm
 
+c atn add ice: model_A==0 but obs_A > 0, calc enthalpy E:
+c E_current = (sstbbbar(i,j,k,bi,bj)-SEAICE_freeze)*HeatCapacity_Cp*rhoNil*drF(1)
+c HEFF_target = epsilon_HEFF [m]
+c E_target  = -(HEFF_target*SEAICE_lhFusion*SEAICE_rhoIce)
+c cost=(Model-data)^2
 c sst term
                 if ( (areabbbar(i,j,1,bi,bj) .LE. 0.).AND.
      &               (localobs(i,j,1,bi,bj) .GT. 0.) ) then
                  junk=1. _d 0 *cmask(i,j,k)*
-     &               ( 3. _d 0 + sstbbbar(i,j,k,bi,bj) )
+     &               (( (sstbbbar(i,j,k,bi,bj)-SEAICE_freeze)*
+     &                  HeatCapacity_Cp*rhoNil*drF(1) )
+     &               - (-1. _d 0 *epsilonHEFF*
+     &                  SEAICE_lhFusion*SEAICE_rhoIce))
                      num_gencost(bi,bj,igen_sst) =
      &                 num_gencost(bi,bj,igen_sst) + 1. _d 0
                 else
@@ -423,7 +463,8 @@ c sst term
                 endif
 
                 objf_gencost(bi,bj,igen_sst) =
-     &            objf_gencost(bi,bj,igen_sst) + junk
+     &            objf_gencost(bi,bj,igen_sst) + 
+     &            junk*junk*localnorm*localnorm
 
               enddo
              enddo

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.149 2014/02/10 18:08:20 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.150 2014/04/01 22:02:10 atn Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -157,6 +157,7 @@ C--   SEAICE parameters
      &          costIceEnd1, costIceEnd2,
      &          cost_ice_flag,
      &          SEAICE_clamp_salt, SEAICE_clamp_theta,
+     &          SEAICE_cutoff_area, SEAICE_cutoff_heff,
      &          mult_smrsst, smrsstbarfile,
      &          mult_smrsss, smrsssbarfile,
      &          mult_smrarea, smrareabarfile, smrareadatfile,
@@ -469,6 +470,8 @@ C-    end retired parameters
       cost_ice_flag     =  1
       SEAICE_clamp_salt  = 27.5   _d 0
       SEAICE_clamp_theta = 0.0001 _d 0
+      SEAICE_cutoff_area = 0.0001 _d 0
+      SEAICE_cutoff_heff = 0. _d 0
 c
       mult_smrsst       =  0. _d 0
       mult_smrsss       =  0. _d 0

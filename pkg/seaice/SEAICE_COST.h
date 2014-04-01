@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_COST.h,v 1.4 2009/11/20 22:33:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_COST.h,v 1.5 2014/04/01 22:02:10 atn Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -33,6 +33,8 @@ c     objf_ice    - sea-ice volume
      &              , mult_ice_export
      &              , SEAICE_clamp_salt
      &              , SEAICE_clamp_theta
+     &              , SEAICE_cutoff_area
+     &              , SEAICE_cutoff_heff
       _RL  num_ice  (nsx,nsy)
       _RL  num_smrarea (nsx,nsy)
       _RL  num_smrsst  (nsx,nsy)
@@ -44,6 +46,8 @@ c     objf_ice    - sea-ice volume
       _RL  mult_ice_export
       _RL  SEAICE_clamp_salt
       _RL  SEAICE_clamp_theta
+      _RL  SEAICE_cutoff_area
+      _RL  SEAICE_cutoff_heff
 
       common /seaice_cost_data_aux_i/
      &                           costIceStart1,
