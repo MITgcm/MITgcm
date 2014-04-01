@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.63 2014/01/15 16:21:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.64 2014/04/01 10:28:41 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -74,12 +74,15 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL f_uwind, f_vwind
       _RL f_atemp, f_aqh, f_precip
       _RL f_swflux, f_swdown
+      _RL f_lwflux, f_lwdown
       _RL f_uwindm, f_vwindm
       _RL f_atempm, f_aqhm, f_precipm
       _RL f_swfluxm, f_swdownm
+      _RL f_lwfluxm, f_lwdownm
       _RL f_uwindsmoo, f_vwindsmoo
       _RL f_atempsmoo, f_aqhsmoo, f_precipsmoo
       _RL f_swfluxsmoo, f_swdownsmoo
+      _RL f_lwfluxsmoo, f_lwdownsmoo
       _RL f_tauu, f_tauv, f_hflux, f_sflux
       _RL f_tauum, f_tauvm, f_hfluxm, f_sfluxm
       _RL f_tauusmoo, f_tauvsmoo, f_hfluxsmoo, f_sfluxsmoo
@@ -109,8 +112,10 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL no_etan0, no_uvel0, no_vvel0
       _RL no_uwind, no_vwind
       _RL no_atemp, no_aqh, no_precip, no_swflux, no_swdown
+      _RL no_lwflux, no_lwdown
       _RL no_uwindm, no_vwindm
       _RL no_atempm, no_aqhm, no_precipm, no_swfluxm, no_swdownm
+      _RL no_lwfluxm, no_lwdownm
       _RL no_tauu, no_tauv, no_hflux, no_sflux
       _RL no_tauum, no_tauvm, no_hfluxm, no_sfluxm
       _RL no_hfluxmm, no_sfluxmm
@@ -187,6 +192,8 @@ c     == end of interface ==
       f_precip = 0. _d 0
       f_swflux = 0. _d 0
       f_swdown = 0. _d 0
+      f_lwflux = 0. _d 0
+      f_lwdown = 0. _d 0
       f_uwindm  = 0. _d 0
       f_vwindm  = 0. _d 0
       f_atempm  = 0. _d 0
@@ -194,6 +201,8 @@ c     == end of interface ==
       f_precipm = 0. _d 0
       f_swfluxm = 0. _d 0
       f_swdownm = 0. _d 0
+      f_lwfluxm = 0. _d 0
+      f_lwdownm = 0. _d 0
       f_uwindsmoo  = 0. _d 0
       f_vwindsmoo  = 0. _d 0
       f_atempsmoo  = 0. _d 0
@@ -201,6 +210,8 @@ c     == end of interface ==
       f_precipsmoo = 0. _d 0
       f_swfluxsmoo = 0. _d 0
       f_swdownsmoo = 0. _d 0
+      f_lwfluxsmoo = 0. _d 0
+      f_lwdownsmoo = 0. _d 0
       f_ssh = 0. _d 0
       f_tp = 0. _d 0
       f_ers = 0. _d 0
@@ -291,6 +302,8 @@ c     == end of interface ==
       no_precip = 0. _d 0
       no_swflux = 0. _d 0
       no_swdown = 0. _d 0
+      no_lwflux = 0. _d 0
+      no_lwdown = 0. _d 0
       no_uwindm  = 0. _d 0
       no_vwindm  = 0. _d 0
       no_atempm  = 0. _d 0
@@ -298,6 +311,8 @@ c     == end of interface ==
       no_precipm = 0. _d 0
       no_swfluxm = 0. _d 0
       no_swdownm = 0. _d 0
+      no_lwfluxm = 0. _d 0
+      no_lwdownm = 0. _d 0
       no_ssh = 0. _d 0
       no_tp = 0. _d 0
       no_ers = 0. _d 0
@@ -426,6 +441,10 @@ c--   Sum up all contributions.
      &                         +mult_smooth_bc*objf_swfluxsmoo(bi,bj) )
      &         + mult_swdown  * ( objf_swdown(bi,bj)+objf_swdownm(bi,bj)
      &                         +mult_smooth_bc*objf_swdownsmoo(bi,bj) )
+     &         + mult_lwflux  * ( objf_lwflux(bi,bj)+objf_lwfluxm(bi,bj)
+     &                         +mult_smooth_bc*objf_lwfluxsmoo(bi,bj) )
+     &         + mult_lwdown  * ( objf_lwdown(bi,bj)+objf_lwdownm(bi,bj)
+     &                         +mult_smooth_bc*objf_lwdownsmoo(bi,bj) )
      &         + mult_obcsn   * objf_obcsn(bi,bj)
      &         + mult_obcss   * objf_obcss(bi,bj)
      &         + mult_obcsw   * objf_obcsw(bi,bj)
@@ -502,6 +521,8 @@ c--   Sum up all contributions.
           f_precip = f_precip + objf_precip(bi,bj)
           f_swflux = f_swflux + objf_swflux(bi,bj)
           f_swdown = f_swdown + objf_swdown(bi,bj)
+          f_lwflux = f_lwflux + objf_lwflux(bi,bj)
+          f_lwdown = f_lwdown + objf_lwdown(bi,bj)
           f_uwindm   = f_uwindm + objf_uwindm(bi,bj)
           f_vwindm   = f_vwindm + objf_vwindm(bi,bj)
           f_atempm   = f_atempm + objf_atempm(bi,bj)
@@ -509,6 +530,8 @@ c--   Sum up all contributions.
           f_precipm  = f_precipm + objf_precipm(bi,bj)
           f_swfluxm  = f_swfluxm + objf_swfluxm(bi,bj)
           f_swdownm  = f_swdownm + objf_swdownm(bi,bj)
+          f_lwfluxm  = f_lwfluxm + objf_lwfluxm(bi,bj)
+          f_lwdownm  = f_lwdownm + objf_lwdownm(bi,bj)
           f_uwindsmoo  = f_uwindsmoo + objf_uwindsmoo(bi,bj)
           f_vwindsmoo  = f_vwindsmoo + objf_vwindsmoo(bi,bj)
           f_atempsmoo  = f_atempsmoo + objf_atempsmoo(bi,bj)
@@ -516,6 +539,8 @@ c--   Sum up all contributions.
           f_precipsmoo = f_precipsmoo + objf_precipsmoo(bi,bj)
           f_swfluxsmoo = f_swfluxsmoo + objf_swfluxsmoo(bi,bj)
           f_swdownsmoo = f_swdownsmoo + objf_swdownsmoo(bi,bj)
+          f_lwfluxsmoo = f_lwfluxsmoo + objf_lwfluxsmoo(bi,bj)
+          f_lwdownsmoo = f_lwdownsmoo + objf_lwdownsmoo(bi,bj)
           f_ssh  = f_ssh + objf_h(bi,bj)
           f_tp   = f_tp  + objf_tp(bi,bj)
           f_ers  = f_ers + objf_ers(bi,bj)
@@ -608,6 +633,8 @@ c--   Sum up all contributions.
           no_precip = no_precip + num_precip(bi,bj)
           no_swflux = no_swflux + num_swflux(bi,bj)
           no_swdown = no_swdown + num_swdown(bi,bj)
+          no_lwflux = no_lwflux + num_lwflux(bi,bj)
+          no_lwdown = no_lwdown + num_lwdown(bi,bj)
           no_uwind  = no_uwind + num_uwind(bi,bj)
           no_vwind  = no_vwind + num_vwind(bi,bj)
           no_atempm  = no_atempm + num_atempm(bi,bj)
@@ -615,6 +642,8 @@ c--   Sum up all contributions.
           no_precipm = no_precipm + num_precipm(bi,bj)
           no_swfluxm = no_swfluxm + num_swfluxm(bi,bj)
           no_swdownm = no_swdownm + num_swdownm(bi,bj)
+          no_lwfluxm = no_lwfluxm + num_lwfluxm(bi,bj)
+          no_lwdownm = no_lwdownm + num_lwdownm(bi,bj)
           no_uwindm  = no_uwindm + num_uwindm(bi,bj)
           no_vwindm  = no_vwindm + num_vwindm(bi,bj)
           no_ssh  = no_ssh + num_h(bi,bj)
@@ -731,6 +760,8 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( f_precip , myThid )
       _GLOBAL_SUM_RL( f_swflux , myThid )
       _GLOBAL_SUM_RL( f_swdown , myThid )
+      _GLOBAL_SUM_RL( f_lwflux , myThid )
+      _GLOBAL_SUM_RL( f_lwdown , myThid )
       _GLOBAL_SUM_RL( f_uwindm , myThid )
       _GLOBAL_SUM_RL( f_vwindm , myThid )
       _GLOBAL_SUM_RL( f_atempm , myThid )
@@ -738,6 +769,8 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( f_precipm , myThid )
       _GLOBAL_SUM_RL( f_swfluxm , myThid )
       _GLOBAL_SUM_RL( f_swdownm , myThid )
+      _GLOBAL_SUM_RL( f_lwfluxm , myThid )
+      _GLOBAL_SUM_RL( f_lwdownm , myThid )
       _GLOBAL_SUM_RL( f_uwindsmoo , myThid )
       _GLOBAL_SUM_RL( f_vwindsmoo , myThid )
       _GLOBAL_SUM_RL( f_atempsmoo , myThid )
@@ -745,6 +778,8 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( f_precipsmoo , myThid )
       _GLOBAL_SUM_RL( f_swfluxsmoo , myThid )
       _GLOBAL_SUM_RL( f_swdownsmoo , myThid )
+      _GLOBAL_SUM_RL( f_lwfluxsmoo , myThid )
+      _GLOBAL_SUM_RL( f_lwdownsmoo , myThid )
       _GLOBAL_SUM_RL( f_ssh , myThid )
       _GLOBAL_SUM_RL( f_tp , myThid )
       _GLOBAL_SUM_RL( f_ers , myThid )
@@ -831,6 +866,8 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( no_precip , myThid )
       _GLOBAL_SUM_RL( no_swflux , myThid )
       _GLOBAL_SUM_RL( no_swdown , myThid )
+      _GLOBAL_SUM_RL( no_lwflux , myThid )
+      _GLOBAL_SUM_RL( no_lwdown , myThid )
       _GLOBAL_SUM_RL( no_uwindm , myThid )
       _GLOBAL_SUM_RL( no_vwindm , myThid )
       _GLOBAL_SUM_RL( no_atempm , myThid )
@@ -838,6 +875,8 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( no_precipm , myThid )
       _GLOBAL_SUM_RL( no_swfluxm , myThid )
       _GLOBAL_SUM_RL( no_swdownm , myThid )
+      _GLOBAL_SUM_RL( no_lwfluxm , myThid )
+      _GLOBAL_SUM_RL( no_lwdownm , myThid )
       _GLOBAL_SUM_RL( no_ssh , myThid )
       _GLOBAL_SUM_RL( no_tp , myThid )
       _GLOBAL_SUM_RL( no_ers , myThid )
@@ -978,6 +1017,10 @@ c--   Do global summation for each part of the cost function
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_swdown  =',f_swdown
       write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_lwflux  =',f_lwflux
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_lwdown  =',f_lwdown
+      write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_uwindm     =',f_uwindm
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_vwindm     =',f_vwindm
@@ -990,7 +1033,11 @@ c--   Do global summation for each part of the cost function
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_swfluxm  =',f_swfluxm
       write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_lwfluxm  =',f_lwfluxm
+      write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_swdownm  =',f_swdownm
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_lwdownm  =',f_lwdownm
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_uwindsmoo     =',f_uwindsmoo
       write(standardmessageunit,'(A,D22.15)')
@@ -1004,7 +1051,11 @@ c--   Do global summation for each part of the cost function
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_swfluxsmoo  =',f_swfluxsmoo
       write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_lwfluxsmoo  =',f_lwfluxsmoo
+      write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_swdownsmoo  =',f_swdownsmoo
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_lwdownsmoo  =',f_lwdownsmoo
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_atl     =',f_atl
       write(standardmessageunit,'(A,D22.15)')
@@ -1223,7 +1274,11 @@ C     only master thread of master CPU open and write to file
         write(ifc,'(A,2D22.15)')
      &       'f_swflux =', f_swflux, no_swflux
         write(ifc,'(A,2D22.15)')
+     &       'f_lwflux =', f_lwflux, no_lwflux
+        write(ifc,'(A,2D22.15)')
      &       'f_swdown =', f_swdown, no_swdown
+        write(ifc,'(A,2D22.15)')
+     &       'f_lwdown =', f_lwdown, no_lwdown
         write(ifc,'(A,2D22.15)')
      &       'f_uwindm   =', f_uwindm, no_uwindm
         write(ifc,'(A,2D22.15)')
@@ -1237,7 +1292,11 @@ C     only master thread of master CPU open and write to file
         write(ifc,'(A,2D22.15)')
      &       'f_swfluxm  =', f_swfluxm, no_swfluxm
         write(ifc,'(A,2D22.15)')
+     &       'f_lwfluxm  =', f_lwfluxm, no_lwfluxm
+        write(ifc,'(A,2D22.15)')
      &       'f_swdownm  =', f_swdownm, no_swdownm
+        write(ifc,'(A,2D22.15)')
+     &       'f_lwdownm  =', f_lwdownm, no_lwdownm
         write(ifc,'(A,2D22.15)')
      &       'f_uwindsmoo  =', f_uwindsmoo, no_uwind
         write(ifc,'(A,2D22.15)')
@@ -1251,7 +1310,11 @@ C     only master thread of master CPU open and write to file
         write(ifc,'(A,2D22.15)')
      &       'f_swfluxsmoo =', f_swfluxsmoo, no_swflux
         write(ifc,'(A,2D22.15)')
+     &       'f_lwfluxsmoo =', f_lwfluxsmoo, no_lwflux
+        write(ifc,'(A,2D22.15)')
      &       'f_swdownsmoo =', f_swdownsmoo, no_swdown
+        write(ifc,'(A,2D22.15)')
+     &       'f_lwdownsmoo =', f_lwdownsmoo, no_lwdown
         write(ifc,'(A,2D22.15)')
      &       'f_ssh =', f_ssh, no_ssh
         write(ifc,'(A,2D22.15)')

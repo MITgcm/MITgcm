@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.23 2012/08/10 19:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.24 2014/04/01 10:28:41 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -127,6 +127,8 @@ c--   Initialize the tiled cost function contributions.
           objf_precip(bi,bj)   = 0. _d 0
           objf_swflux(bi,bj)   = 0. _d 0
           objf_swdown(bi,bj)   = 0. _d 0
+          objf_lwflux(bi,bj)   = 0. _d 0
+          objf_lwdown(bi,bj)   = 0. _d 0
           objf_uwind(bi,bj)    = 0. _d 0
           objf_vwind(bi,bj)    = 0. _d 0
           objf_obcsn(bi,bj)    = 0. _d 0
@@ -202,6 +204,8 @@ c
           num_precip(bi,bj)   = 0. _d 0
           num_swflux(bi,bj)   = 0. _d 0
           num_swdown(bi,bj)   = 0. _d 0
+          num_lwflux(bi,bj)   = 0. _d 0
+          num_lwdown(bi,bj)   = 0. _d 0
           num_uwind(bi,bj)    = 0. _d 0
           num_vwind(bi,bj)    = 0. _d 0
           num_obcsn(bi,bj)    = 0. _d 0
