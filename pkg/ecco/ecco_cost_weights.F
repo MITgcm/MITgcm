@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.52 2014/01/26 05:09:40 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.53 2014/04/01 12:11:53 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -940,10 +940,6 @@ c--           Test for missing values.
               if (wtauu(i,j,bi,bj) .lt. -9900.) then
                 wtauu(i,j,bi,bj) = 0. _d 0
               endif
-catn-- not sure why wtauu*0.1 by default, will remove 0.1,
-catn   but leave for now for purpose of testreport
-catn          wtauu(i,j,bi,bj) = wtauu(i,j,bi,bj)
-              wtauu(i,j,bi,bj) = wtauu(i,j,bi,bj)*0.1
               wtauu(i,j,bi,bj) = max(wtauu(i,j,bi,bj),wtau0)
 #ifndef ALLOW_ROTATE_UV_CONTROLS
               wtauu(i,j,bi,bj) = wtauu(i,j,bi,bj)*maskw(i,j,k,bi,bj)
@@ -1013,10 +1009,6 @@ c--           Test for missing values.
               if (wtauv(i,j,bi,bj) .lt. -9900.) then
                 wtauv(i,j,bi,bj) = 0. _d 0
               endif
-catn-- not sure why wtauu*0.1 by default, will remove 0.1,
-catn   but leave for now for purpose of testreport
-catn          wtauv(i,j,bi,bj) = wtauv(i,j,bi,bj)
-              wtauv(i,j,bi,bj) = wtauv(i,j,bi,bj)*0.1
               wtauv(i,j,bi,bj) = max(wtauv(i,j,bi,bj),wtau0)
 #ifndef ALLOW_ROTATE_UV_CONTROLS
               wtauv(i,j,bi,bj) = wtauv(i,j,bi,bj)*masks(i,j,k,bi,bj)
