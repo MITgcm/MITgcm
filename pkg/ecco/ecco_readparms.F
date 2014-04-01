@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.65 2014/01/26 05:09:40 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.66 2014/04/01 08:03:42 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -154,6 +154,9 @@ c--   Read the namelist input.
      &         gencost_spmax,
      &         gencost_spzero,
      &         gencost_avgperiod,
+#ifdef ALLOW_SMOOTH
+     &         gencost_smooth2Ddiffnbt,
+#endif /* ALLOW_SMOOTH */
 #ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
      &         gencost_timevaryweight,
 #endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
@@ -482,10 +485,13 @@ c--   Set default values.
 cgf         write(gencost_barfile(k)(1:8),'(a,i2.2)')
 cgf     &        'genbar', k
          gencost_barfile(k)    = ' '
-         gencost_spmin         = 0. _d 0
-         gencost_spmax         = 0. _d 0
-         gencost_spzero        = 9876. _d 0
-         mult_gencost(k)      = 0. _d 0
+         gencost_spmin(k)      = 0. _d 0
+         gencost_spmax(k)      = 0. _d 0
+         gencost_spzero(k)     = 9876. _d 0
+         mult_gencost(k)       = 0. _d 0
+#ifdef ALLOW_SMOOTH
+         gencost_smooth2Ddiffnbt(k) = 300
+#endif /* ALLOW_SMOOTH */
 #ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
          gencost_timevaryweight(k) = .FALSE.
 #endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */

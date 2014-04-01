@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.9 2014/01/26 06:10:10 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.10 2014/04/01 08:03:42 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -282,11 +282,13 @@ c ----------------------------------------
 #endif
 
          call smooth_hetero2d(anom_sst,maskc,
-     &     gencost_scalefile(igen_amsre_lsc),smooth2Ddiffnbt,mythid)
+     &     gencost_scalefile(igen_amsre_lsc),
+     &     gencost_smooth2Ddiffnbt(igen_amsre_lsc),mythid)
 
 #ifdef ALLOW_GENCOST_SSTV4_OUTPUT
          call smooth_hetero2d(obs_sst,maskc,
-     &     gencost_scalefile(igen_amsre_lsc),smooth2Ddiffnbt,mythid)
+     &     gencost_scalefile(igen_amsre_lsc),
+     &     gencost_smooth2Ddiffnbt(igen_amsre_lsc),mythid)
 
          write(fname2(1:80),'(1a)') 'sstdiff_smooth'
          call mdswritefield(fname2,32,.false.,'RL',
