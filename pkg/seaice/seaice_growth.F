@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.194 2013/12/03 22:11:01 torge Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.195 2014/04/02 15:58:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1315,29 +1315,38 @@ C determine lateral melt rate at floe edges based on an
 C average floe diameter or a floe size distribution
 C following Steele (1992, Tab. 2)
 C ======================================================
-        DO J=1,sNy
-         DO I=1,sNx
-          tmpscal1=(theta(I,J,kSurface,bi,bj)-tempFrz)
-          tmpscal2=sqrt(0.87 + 0.067*UG(i,j)) * UG(i,j)
+        DO IT=1,nITD
+         DO J=1,sNy
+          DO I=1,sNx
+           tempFrz = SEAICE_tempFrz0 +
+     &          SEAICE_dTempFrz_dS *salt(I,J,kSurface,bi,bj)
+           tmpscal1=(theta(I,J,kSurface,bi,bj)-tempFrz)
+           tmpscal2=sqrt(0.87 + 0.067*UG(i,j)) * UG(i,j)
 
-C variable floe diameter following Luepkes et al. (2012, JGR, Equ. 26) with beta=1
-          tmpscal3=ONE/(ONE-(floeDiameterMin/floeDiameterMax))
-          floeDiameter = floeDiameterMin
-     &                 * (tmpscal3 / (tmpscal3-AREApreTH(I,J)))
-          DO IT=1,nITD
-C following the idea of SEAICE_areaLossFormula == 1:
+C     variable floe diameter following Luepkes et al. (2012, JGR, Equ. 26) 
+C     with beta=1
+CML           tmpscal3=ONE/(ONE-(floeDiameterMin/floeDiameterMax))
+CML           floeDiameter = floeDiameterMin
+CML     &          * (tmpscal3 / (tmpscal3-AREApreTH(I,J)))
+C     this form involves fewer divisions but gives the same result
+           floeDiameter = floeDiameterMin * floeDiameterMax
+     &          / ( floeDiameterMax*( 1. _d 0 - AREApreTH(I,J) )
+     &            + floeDiameterMin*AREApreTH(I,J) )
+C     following the idea of SEAICE_areaLossFormula == 1:
            IF (a_QbyATMmult_cover(i,j,it).LT.ZERO .OR.
      &         a_QbyATM_open(i,j) .LT.ZERO .OR.
      &         a_QbyOCN(i,j)      .LT.ZERO) THEN
-C lateral melt rate as suggested by Perovich, 1983 (PhD thesis)
+C     lateral melt rate as suggested by Perovich, 1983 (PhD thesis)
             latMeltRate(i,j,it) = 1.6 _d -6 * tmpscal1**1.36
-C lateral melt rate as suggested by Maykut and Perovich, 1987 (JGR 92(C7)), Equ. 24
-c            latMeltRate(i,j,it) = 13.5 _d -6 * tmpscal2 * tmpscal1**1.3
-C further suggestion by Maykut and Perovich to avoid latMeltRate -> 0 for UG -> 0
-c            latMeltRate(i,j,it) = (1.6 _d -6 + 13.5 _d -6 * tmpscal2)
-c     &                          * tmpscal1**1.3
-C factor determining fraction of area and ice volume reduction
-C due to lateral melt
+C     lateral melt rate as suggested by Maykut and Perovich, 1987 
+C     (JGR 92(C7)), Equ. 24
+c           latMeltRate(i,j,it) = 13.5 _d -6 * tmpscal2 * tmpscal1**1.3
+C     further suggestion by Maykut and Perovich to avoid 
+C     latMeltRate -> 0 for UG -> 0
+c           latMeltRate(i,j,it) = (1.6 _d -6 + 13.5 _d -6 * tmpscal2)
+c    &                          * tmpscal1**1.3
+C     factor determining fraction of area and ice volume reduction
+C     due to lateral melt
             latMeltFrac(i,j,it) =
      &       latMeltRate(i,j,it)*SEAICE_deltaTtherm*PI /
      &       (floeAlpha * floeDiameter)
