@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1970 2014/03/30 18:10:46 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1971 2014/04/02 15:58:54 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_growth: 
+  - fix a bug in the lateral melt parameterization for SEAICE_ITD
+    in seaice_growth; tempFrz needs to be computed inside the i/j-loop
+  - rearrange loop order for better vector code in the same code block
+  - rewrite the floeDiameter formula to have fewer divisions
+  -  (miraculously) none of this changes the results of seaice_itd
 o pkg/rw:
   - add RS version of S/R READ_MFLDS_LEV.
 o pkg/streamice:
