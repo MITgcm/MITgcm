@@ -1,4 +1,4 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/radiation_mod.F90,v 1.1 2013/05/08 22:14:14 jmc Exp $
+! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/radiation_mod.F90,v 1.2 2014/04/03 00:28:21 jmc Exp $
 ! $Name:  $
 
 module radiation_mod
@@ -24,7 +24,7 @@ private
 
 ! version information
 
-character(len=128) :: version='$Id: radiation_mod.F90,v 1.1 2013/05/08 22:14:14 jmc Exp $'
+character(len=128) :: version='$Id: radiation_mod.F90,v 1.2 2014/04/03 00:28:21 jmc Exp $'
 character(len=128) :: tag='homemade'
 
 !==================================================================================
@@ -86,7 +86,7 @@ integer, intent(in)               :: is, ie, js, je, num_levels
 integer, intent(in)               :: nSx, nSy
 integer, intent(in)               :: myThid
 !-------------------------------------------------------------------------------------
-integer, dimension(3) :: half = (/1,2,4/)
+!integer, dimension(3) :: half = (/1,2,4/)
 !integer :: ierr, io
 integer         :: iUnit
 CHARACTER*(gcm_LEN_MBUF) :: msgBuf
@@ -197,10 +197,11 @@ real, intent(out), dimension(:,:,:) :: down
 real, intent(out), dimension(:,:,:) :: solar_down
 integer, intent(in)                 :: myThid
 
-integer :: i, j, k, n
+!integer :: i, j
+integer :: k, n
 integer :: im, jm
 
-logical :: used
+!logical :: used
 
 ! -------------------------------------------------------------------------
 !real, allocatable, dimension(:,:)   :: swin
@@ -318,8 +319,8 @@ end subroutine radiation_down
 ! ==================================================================================
 
 !subroutine radiation_up (is, js, Time_diag, lat, p_half, t_surf, t, tdt)
-subroutine radiation_up ( is, js, Time_diag, lat, p_half, t_surf, t, tdt, olr, &
-                           albedo, dtrans, b, down, solar_down,                &
+subroutine radiation_up ( is, js, Time_diag, lat, p_half, t_surf, t, tdt,  &
+                          olr, tsr,  albedo, dtrans, b, down, solar_down,  &
                            myThid )
 
 ! Now complete the radiation calculation by computing the upward and net fluxes.
@@ -332,6 +333,7 @@ real, intent(in) , dimension(:,:)   :: t_surf
 real, intent(in) , dimension(:,:,:) :: t, p_half
 real, intent(inout), dimension(:,:,:) :: tdt
 real, intent(out), dimension(:,:)   :: olr
+real, intent(out), dimension(:,:)   :: tsr      ! net Top SW (+=down)
 real, intent(in),  dimension(:,:)   :: albedo
 real, intent(in),  dimension(:,:,:) :: dtrans
 real, intent(in),  dimension(:,:,:) :: b
@@ -339,10 +341,11 @@ real, intent(in),  dimension(:,:,:) :: down
 real, intent(in),  dimension(:,:,:) :: solar_down
 integer, intent(in)                 :: myThid
 
-integer :: i, j, k, n
+!integer :: i, j
+integer :: k, n
 integer :: im, jm
 
-logical :: used
+!logical :: used
 
 ! -------------------------------------------------------------------------
 real, allocatable, dimension(:,:)     :: b_surf
@@ -394,6 +397,7 @@ do k = 1,n
 end do
 
 olr = up(:,:,1)
+tsr=-flux_sw(:,:,1)
 
 !------- outgoing lw flux toa (olr) -------
 !     if ( id_olr > 0 ) then

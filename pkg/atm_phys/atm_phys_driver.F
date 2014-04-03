@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.2 2013/09/24 19:29:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.3 2014/04/03 00:28:21 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -72,6 +72,7 @@ C-- radiation fields:
       _RL lw_down_3d(sNx,sNy,Nr+1)
       _RL sw_down_3d(sNx,sNy,Nr+1)
       _RL olr_2d    (sNx,sNy)
+      _RL tsr_2d    (sNx,sNy)
       LOGICAL coldT (sNx,sNy)
 C-- output from convection & LSC :
       _RL t3d_tmp    (sNx,sNy,Nr)
@@ -123,12 +124,12 @@ C-- Mixed Layer fields:
       _RL delta_t_surf(sNx,sNy)
 C--
       _RL conv_theta2T, conv_T2theta
-      INTEGER j, k, kc, ki, kp
+      INTEGER k, kc, ki, kp
 c     INTEGER ioUnit
 c     _RS     dummyRS(1)
 c     CHARACTER*40 namFile
 #ifdef COMPONENT_MODULE
-      INTEGER i
+      INTEGER i, j
       _RL taux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tauy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* COMPONENT_MODULE */
@@ -268,6 +269,25 @@ C-    store updated state to pass to LSC (addition from POG)
         IF ( useDiagnostics ) THEN
          CALL DIAGNOSTICS_FILL( rain2d , 'AtPhCnvP',
      &                          0, 1, 3, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( cape   , 'AtPhCAPE',
+     &                          0, 1, 3, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( cin    , 'AtPhCnIn',
+     &                          0, 1, 3, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( klzbs  , 'AtPhKlzb',
+     &                          0, 1, 3, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( bmflag , 'AtPhConv',
+     &                          0, 1, 3, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( invtau_bm_t, 'AtPhRlxT',
+     &                          0, 1, 3, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( invtau_bm_q, 'AtPhRlxQ',
+     &                          0, 1, 3, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( t_ref  , 'AtPh_Trf',
+     &                         -1,Nr, 3, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( q_ref  , 'AtPh_Qrf',
+     &                         -1,Nr, 3, bi, bj, myThid )
+c        snow2d = snow2d / deltaTconv
+c        CALL DIAGNOSTICS_FILL( snow2d , 'SDIAG1  ',
+c    &                          0, 1, 3, bi, bj, myThid )
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
       ELSE
@@ -340,7 +360,7 @@ c    &      lw_down_3d(1,1,15), lw_down_3d(1,sNy,15)
       IF ( two_stream ) THEN
         CALL RADIATION_UP(
      I                     sNx,sNy, myTime, lat2d, pHalf3d, t_surf, t3d,
-     U                     tdt3d, olr_2d,
+     U                     tdt3d, olr_2d, tsr_2d,
      I                     albedo_2d, dtrans_3d, b_3d,
      I                     lw_down_3d, sw_down_3d, myThid )
 
@@ -453,7 +473,11 @@ C-    surface wind-stress (+ = down) at grid cell center (A-grid):
      &                          -1, Nr, 3, bi, bj, myThid )
          CALL DIAGNOSTICS_FILL( sw_down_3d,'AtPhInSR',
      &                          0, 1, 3, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( tsr_2d ,'AtPhNTSR',
+     &                          0, 1, 3, bi, bj, myThid )
          CALL DIAGNOSTICS_FILL( olr_2d ,   'AtPhOLR ',
+     &                          0, 1, 3, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( sw_down_3d(:,:,Nr+1),'AtPhDSSR',
      &                          0, 1, 3, bi, bj, myThid )
          CALL DIAGNOSTICS_FILL( s_sw_dwn,  'AtPhNSSR',
      &                          0, 1, 3, bi, bj, myThid )

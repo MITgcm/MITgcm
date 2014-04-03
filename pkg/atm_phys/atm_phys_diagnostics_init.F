@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_diagnostics_init.F,v 1.1 2013/05/08 22:14:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_diagnostics_init.F,v 1.2 2014/04/03 00:28:21 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -114,8 +114,20 @@ c     IF ( useDiagnotics ) THEN
         diagCode  = 'SM P    U1      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhNTSR'
+        diagTitle = 'ATM_PHYS: Net Top Shortwave Radiation (+=dw)'
+        diagUnits = 'W/m^2           '
+        diagCode  = 'SM P    U1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
         diagName  = 'AtPhOLR '
         diagTitle = 'ATM_PHYS: Outgoing Longwave  Radiation (+=up)'
+        diagUnits = 'W/m^2           '
+        diagCode  = 'SM P    U1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhDSSR'
+        diagTitle = 'ATM_PHYS: Downward Surface Shortwave Rad. (+=dw)'
         diagUnits = 'W/m^2           '
         diagCode  = 'SM P    U1      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -161,6 +173,57 @@ c     IF ( useDiagnotics ) THEN
         diagTitle = 'ATM_PHYS: Meridional comp of surface stress'
         diagUnits = 'unit            '
         diagCode  = 'SM      L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C--     Dargan BettsMiller Convection:
+        diagName  = 'AtPhCAPE'
+        diagTitle = 'ATM_PHYS: Convective Avail. Pot. Energy: CAPE'
+        diagUnits = 'J/kg            '
+        diagCode  = 'SM      L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhCnIn'
+        diagTitle = 'ATM_PHYS: Convection inhibition'
+        diagUnits = '1               '
+        diagCode  = 'SM      L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhKlzb'
+        diagTitle = 'ATM_PHYS: Level of zero buoyancy (=klzb, Convect)'
+        diagUnits = '1               '
+        diagCode  = 'SM      L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhConv'
+        diagTitle = 'ATM_PHYS: B.M. Convection Flag '
+     &            //'(0:no, 1:shallow, 2:Deep)'
+        diagUnits = '1               '
+        diagCode  = 'SM      L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhRlxT'
+        diagTitle = 'ATM_PHYS: Temp. Relax. inv time-scale (Convection)'
+        diagUnits = '1/s             '
+        diagCode  = 'SM      L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhRlxQ'
+        diagTitle = 'ATM_PHYS: Humid Relax. inv time-scale (Convection)'
+        diagUnits = '1/s             '
+        diagCode  = 'SM      L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPh_Trf'
+        diagTitle = 'ATM_PHYS: Ref Temp for convection (Moist Adiabat)'
+        diagUnits = 'K               '
+        diagCode  = 'SM      MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPh_Qrf'
+        diagTitle = 'ATM_PHYS: Ref Humid for convection (Saturated)'
+        diagUnits = 'kg/kg           '
+        diagCode  = 'SM      MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
