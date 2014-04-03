@@ -31,5 +31,6 @@ END {}
 EOF
   awk -f cb2mUseMPI.awk ${file}.tmp > ${file}.tmp.1
   mv ${file}.tmp.1 ${file}.tmp
+  rm -f cb2mUseMPI.awk
 fi
 mv ${file}.tmp ${file%.F}_cb2m.FF90
