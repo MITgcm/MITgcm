@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.26 2012/08/28 19:18:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.27 2014/04/03 10:01:44 atn Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -321,6 +321,13 @@ c
       CALL MNC_CW_ADD_VATTR_TEXT('adswdown','long_name',
      &     'adjoint downward shortwave radiation', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adswdown',
+     &     'coordinates','XC YC RC iter', myThid)
+      CALL MNC_CW_ADD_VNAME('adlwdown', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adlwdown',
+     &     'units','[cost]/[W/m^2]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adlwdown','long_name',
+     &     'adjoint downward wave radiation', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adlwdown',
      &     'coordinates','XC YC RC iter', myThid)
 # endif
 # ifdef ALLOW_CLIMSST_RELAXATION
