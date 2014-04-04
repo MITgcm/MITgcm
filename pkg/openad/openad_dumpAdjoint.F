@@ -1,8 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/openad_dumpAdjoint.F,v 1.5 2014/03/11 19:43:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/openad_dumpAdjoint.F,v 1.6 2014/04/04 21:25:59 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+c#ifdef ALLOW_AUTODIFF
+c# include "AUTODIFF_OPTIONS.h"
+c#endif
+#ifdef ALLOW_COST
+# include "COST_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
@@ -24,10 +33,10 @@ C     == Global variables ==
 #include "PARAMS.h"
 
 c**************************************
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 
-c These includes are needed for 
-c AD-checkpointing. 
+c These includes are needed for
+c AD-checkpointing.
 c They provide the fields to be stored.
 
 # include "GRID.h"
@@ -80,9 +89,9 @@ c They provide the fields to be stored.
 # include "ctrl_dummy.h"
 # include "cost.h"
 
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
-      INTEGER myThid 
+      INTEGER myThid
       INTEGER myIter
       _RL     myTime
 
@@ -91,45 +100,45 @@ c They provide the fields to be stored.
 
       CHARACTER*(10) suff
 
-      if (Mod(myiter,360).eq.0) then 
+      if (Mod(myIter,360).eq.0) then
          WRITE(suff,'(I10.10)') myIter
 # ifndef ALLOW_STREAMICE
          foo5=theta%d
-         call write_fld_xyz_rl('adjtheta.',suff,foo5,myiter,1)
+         call write_fld_xyz_rl('adjtheta.',suff,foo5,myIter,1)
          foo5=salt%d
-         call write_fld_xyz_rl('adjsalt.',suff,foo5,myiter,1)
+         call write_fld_xyz_rl('adjsalt.',suff,foo5,myIter,1)
          foo5=uvel%d
-         call write_fld_xyz_rl('adjuvel.',suff,foo5,myiter,1)
+         call write_fld_xyz_rl('adjuvel.',suff,foo5,myIter,1)
          foo5=vvel%d
-         call write_fld_xyz_rl('adjvvel.',suff,foo5,myiter,1)
+         call write_fld_xyz_rl('adjvvel.',suff,foo5,myIter,1)
          foo5=wvel%d
-         call write_fld_xyz_rl('adjwvel.',suff,foo5,myiter,1)
+         call write_fld_xyz_rl('adjwvel.',suff,foo5,myIter,1)
          foo4=etan%d
-         call write_fld_xy_rl('adjetan.',suff,foo4,myiter,1)
+         call write_fld_xy_rl('adjetan.',suff,foo4,myIter,1)
 # endif
 # ifdef ALLOW_DIFFKR_CONTROL
          foo5=diffkr%d
-         call write_fld_xy_rl('adjdiffkr.',suff,foo5,myiter,1)
+         call write_fld_xy_rl('adjdiffkr.',suff,foo5,myIter,1)
 # endif
 # ifdef ALLOW_HFLUX0_CONTROL
          foo4=qnet%d
-         call write_fld_xy_rl('adjqnet.',suff,foo4,myiter,1)
+         call write_fld_xy_rl('adjqnet.',suff,foo4,myIter,1)
 # endif
 # ifdef ALLOW_SFLUX0_CONTROL
          foo4=empmr%d
-         call write_fld_xy_rl('adjempmr.',suff,foo4,myiter,1)
+         call write_fld_xy_rl('adjempmr.',suff,foo4,myIter,1)
 # endif
-# ifdef ALLOW_TAUU0_CONTROL 
+# ifdef ALLOW_TAUU0_CONTROL
          foo4=fu%d
-         call write_fld_xy_rl('adjfu.',suff,foo4,myiter,1)
+         call write_fld_xy_rl('adjfu.',suff,foo4,myIter,1)
 # endif
-# ifdef ALLOW_TAUV0_CONTROL 
+# ifdef ALLOW_TAUV0_CONTROL
          foo4=fv%d
-         call write_fld_xy_rl('adjfv.',suff,foo4,myiter,1)
+         call write_fld_xy_rl('adjfv.',suff,foo4,myIter,1)
 # endif
 # ifdef ALLOW_HFLUXM_CONTROL
          foo4=qnetm%d
-         call write_fld_xy_rl('adjhfluxm.',suff,foo4,myiter,1)
+         call write_fld_xy_rl('adjhfluxm.',suff,foo4,myIter,1)
 #endif
       endif
       END
