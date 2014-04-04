@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.63 2013/12/19 21:48:05 utke Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.64 2014/04/04 20:39:25 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -125,7 +125,7 @@ C         method) -- creates many files but for large configurations is
 C         easier to transfer analyse a particular snap-shots
           WRITE(suff,'(I10.10)') myIter
 
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
 # ifndef ALLOW_STREAMICE
           CALL WRITE_FLD_XYZ_RL( 'U.',suff,uVel%v,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL( 'V.',suff,vVel%v,myIter,myThid)
