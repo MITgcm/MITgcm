@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.10 2014/03/17 19:00:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.11 2014/04/04 21:31:54 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -194,6 +194,12 @@ CEOI
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #include "AD_CONFIG.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
 #endif
@@ -416,25 +422,18 @@ C-- The following assumes the TAF option '-pure'
       ENDIF
 
 #  else /* ALLOW_DIVIDED_ADJOINT undef */
-#   ifdef ALLOW_DEBUG
+#   ifndef ALLOW_OPENAD
+#    ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('ADTHE_MAIN_LOOP',myThid)
-#   endif
+#    endif
       CALL TIMER_START('ADTHE_MAIN_LOOP          [ADJOINT RUN]', myThid)
       CALL ADTHE_MAIN_LOOP ( myThid )
       CALL TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', myThid)
-#  endif /* ALLOW_DIVIDED_ADJOINT */
-
-# else /* forward run only within AD setting */
-
-#  ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('THE_MAIN_LOOP',myThid)
-#  endif
-C--   Call time stepping loop of full model
+#   else /* ALLOW_OPENAD defined */
 C -->> OpenAD
-c     CALL TIMER_START('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
-c     CALL THE_MAIN_LOOP( myTime, myIter, myThid )
-c     CALL TIMER_STOP ('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
-
+#   ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('THE_MAIN_LOOP',myThid)
+#   endif
       CALL TIMER_START('THE_MAIN_LOOP (F)      [THE_MODEL_MAIN]',myThid)
       our_rev_mode%plain=.FALSE.
       our_rev_mode%tape=.TRUE.
@@ -458,8 +457,8 @@ c     CALL TIMER_STOP ('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
       our_rev_mode%plain=.TRUE.
       our_rev_mode%tape=.FALSE.
       our_rev_mode%adjoint=.FALSE.
-#  ifdef OAD_DEBUG
-#   if (defined (ALLOW_THETA0_CONTROL) && defined (ALLOW_SALT0_CONTROL))
+#   ifdef OAD_DEBUG
+#    if (defined (ALLOW_THETA0_CONTROL) && defined (ALLOW_SALT0_CONTROL))
       do i1=1-olx,snx+olx
         do i2=1-oly,sny+oly
           do i3=1,nr
@@ -475,105 +474,117 @@ c     CALL TIMER_STOP ('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
           end do
         end do
       end do
-#   endif
-#  endif /* OAD_DEBUG */
+#    endif
+#   endif /* OAD_DEBUG */
 C     Temporarily change setting of writeBinaryPrec
       tmpprec = writeBinaryPrec
       writeBinaryPrec = ctrlprec
       WRITE(suff,'(I10.10)') optimcycle
-#  ifdef ALLOW_THETA0_CONTROL
+#   ifdef ALLOW_THETA0_CONTROL
       foo=xx_theta%d
       il=ilnblnk( xx_theta_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_theta_file(1:il),'.'
       call write_fld_xyz_rl(fname,suff,foo,myIter,1)
-#  endif
-#  ifdef ALLOW_SALT0_CONTROL
+#   endif
+#   ifdef ALLOW_SALT0_CONTROL
       foo=xx_salt%d
       il=ilnblnk( xx_salt_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_salt_file(1:il),'.'
       call write_fld_xyz_rl(fname,suff,foo,myIter,1)
-#  endif
-#  ifdef ALLOW_DIFFKR_CONTROL
+#   endif
+#   ifdef ALLOW_DIFFKR_CONTROL
       foo=diffkr%d
       il=ilnblnk( xx_diffkr_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_diffkr_file(1:il),'.'
       call write_fld_xyz_rl(fname,suff,foo,myIter,1)
-#  endif
-#  ifdef ALLOW_TAUU0_CONTROL
+#   endif
+#   ifdef ALLOW_TAUU0_CONTROL
       foo2D=fu%d
       il=ilnblnk( xx_tauu_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_tauu_file(1:il),'.'
       call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
-#  endif
-#  ifdef ALLOW_TAUV0_CONTROL
+#   endif
+#   ifdef ALLOW_TAUV0_CONTROL
       foo2D=fv%d
       il=ilnblnk( xx_tauv_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_tauv_file(1:il),'.'
       call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
-#  endif
-#  ifdef ALLOW_HFLUX0_CONTROL
+#   endif
+#   ifdef ALLOW_HFLUX0_CONTROL
       foo2D=qnet%d
       il=ilnblnk( xx_hflux_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_hflux_file(1:il),'.'
       call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
-#  endif
-#  ifdef ALLOW_SFLUX0_CONTROL
+#   endif
+#   ifdef ALLOW_SFLUX0_CONTROL
       foo2D=empmr%d
       il=ilnblnk( xx_sflux_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_sflux_file(1:il),'.'
       call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
-#  endif
-#  ifdef ALLOW_HFLUXM_CONTROL
+#   endif
+#   ifdef ALLOW_HFLUXM_CONTROL
       foo2D=xx_hfluxm%d
       il=ilnblnk( xx_hfluxm_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_hfluxm_file(1:il),'.'
       call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
-#  endif
-#  ifdef ALLOW_ETAN0_CONTROL
+#   endif
+#   ifdef ALLOW_ETAN0_CONTROL
       foo2D=etan%d
       il=ilnblnk( xx_etan_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_etan_file(1:il),'.'
       call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
-#  endif
-#  ifdef ALLOW_GENARR2D_CONTROL
+#   endif
+#   ifdef ALLOW_GENARR2D_CONTROL
       do ik = 1, maxCtrlArr2D
         foo2d=xx_genarr2d(:,:,:,:,ik)%d
         write(fname,'(A,I2.2,A)') 'adxx_genarr2d_',ik,'.'
         call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
       enddo
 
-#  endif
-#  ifdef ALLOW_GENARR3D_CONTROL
+#   endif
+#   ifdef ALLOW_GENARR3D_CONTROL
       do ik = 1, maxCtrlArr3D
         foo=xx_genarr3d(:,:,:,:,:,ik)%d
         write(fname,'(A,I2.2,A)') 'adxx_genarr3d_',ik,'.'
         call write_fld_xyz_rl(fname,suff,foo,myIter,1)
       enddo
-#  endif
-#  ifdef ALLOW_GENTIM2D_CONTROL
+#   endif
+#   ifdef ALLOW_GENTIM2D_CONTROL
       do ik = 1, maxCtrlTim2D
         foo2d=xx_gentim2d(:,:,:,:,ik)%d
         write(fname,'(A,I2.2,A)') 'adxx_gentim2d_',ik,'.'
         call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
       enddo
-
-#  endif
+#   endif
 C     Change back to original writeBinaryPrec
       writeBinaryPrec = tmpprec
       our_rev_mode%plain=.TRUE.
       our_rev_mode%tape=.FALSE.
       our_rev_mode%adjoint=.FALSE.
       CALL TIMER_STOP ('THE_MAIN_LOOP (A)      [THE_MODEL_MAIN]',myThid)
+
 C <<-- OpenAD
+#   endif /* ALLOW_OPENAD */
+#  endif /* ALLOW_DIVIDED_ADJOINT */
+
+# else /* forward run only within AD setting */
+
+#  ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('THE_MAIN_LOOP',myThid)
+#  endif
+C--   Call time stepping loop of full model
+      CALL TIMER_START('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
+      CALL THE_MAIN_LOOP( myTime, myIter, myThid )
+      CALL TIMER_STOP ('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
 
 # endif /* forward run only within AD setting */
 
