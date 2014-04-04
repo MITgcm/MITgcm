@@ -1,55 +1,55 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/tamc.h,v 1.11 2012/06/17 03:36:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/tamc.h,v 1.12 2014/04/04 23:06:34 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
+C     ================================================================
+C     HEADER TAMC
+C     ================================================================
+C
+C     o Header for the use of the Tangent Linear and Adjoint Model
+C       Compiler (TAMC).
+C
+C     started: Christian Eckert eckert@mit.edu  04-Feb-1999
+C     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
+C              - New parameter nlevchk_0 for dimensionalising
+C                common blocks in the undef ALLOW_TAMC_CHECKPOINTING case
+C              - nhreads_chkpt was declared at the wrong place
+C              - new keys, separate for different packages
 
-c     ================================================================
-c     HEADER TAMC
-c     ================================================================
-c
-c     o Header for the use of the Tangent Linear and Adjoint Model
-c       Compiler (TAMC).
-c
-c     started: Christian Eckert eckert@mit.edu  04-Feb-1999
-c     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
-c              - New parameter nlevchk_0 for dimensionalising
-c                common blocks in the undef ALLOW_TAMC_CHECKPOINTING case
-c              - nhreads_chkpt was declared at the wrong place
-c              - new keys, separate for different packages
+C     ================================================================
+C     HEADER TAMC
+C     ================================================================
+#ifdef ALLOW_AUTODIFF_TAMC
 
-THESE LINES ARE DELIBERAELY UNCOMMENTED AS A WARNING THAT
-THIS HEADER FILE SHOULD BE CUSTOMIZED, IN PARTICULAR THE PARAMETERS
-nchklev_1/2/3
-(POSSIBLY ALSO MAXPASS AND MAXCUBE IN CASE YOU ARE USING
- PTRACERS OR CUBED SPHERE)
-COMMENT THESE LINES, MAKE SURE ABOVE PARAMETERS ARE SET CORRECTLY
-AND ADD THIS FILE TO YOUR SET OF CUSTOMIZED HEADERS (E.G. SIZE.h)
+  These lines are here to deliberately cause a compile-time error.
+  If you see these lines in your .f files or the compiler shows them
+  as an error then it means you have not placed your customized "tamc.h"
+  file in the appropriate place.
+  You need to place you own copy of tamc.h in the include path for the
+  model (e.g., where your SIZE.h is), and comment out these lines.
+  In particular the parameters nchklev_1/2/3 (and possibly also maxpass
+   and maxcube in case you are using ptracers or cubed sphere grid)
+  need to be set correctly.
 
-c     ================================================================
-c     HEADER TAMC
-c     ================================================================
-
-
-c     TAMC checkpointing parameters:
-c     ==============================
-c
-c     The checkpointing parameters have to be consistent with other model
-c     parameters and variables. This has to be checked before the model is
-c     run.
-c
-c     nyears_chkpt   - Number of calendar years affected by the assimilation
-c                      experiment; nyears_chkpt has to be at least equal to
-c                      the result of cal_IntYears(mythid).
-c     nmonths_chkpt  - Number of months per year; nmonth_chkpt has to be at
-c                      least equal to nmonthyear.
-c     ndays_chkpt    - Number of days per month; nday_chkpt has to be at least
-c                      equal to nmaxdaymonth.
-c     nsteps_chkpt   - Number of steps per day; nsteps_chkpt has to be at
-c                      least equal to cal_nStepDay(mythid)
-c     ncheck_chkpt   - Number of innermost checkpoints.
-c
-c     ngeom_chkpt    - Geometry factor.
-c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
+C     TAMC checkpointing parameters:
+C     ==============================
+C
+C     The checkpointing parameters have to be consistent with other model
+C     parameters and variables. This has to be checked before the model is
+C     run.
+C
+C     nyears_chkpt   :: Number of calendar years affected by the assimilation
+C                       experiment; nyears_chkpt has to be at least equal to
+C                       the result of cal_IntYears(mythid).
+C     nmonths_chkpt  :: Number of months per year; nmonth_chkpt has to be at
+C                       least equal to nmonthyear.
+C     ndays_chkpt    :: Number of days per month; nday_chkpt has to be at least
+C                       equal to nmaxdaymonth.
+C     nsteps_chkpt   :: Number of steps per day; nsteps_chkpt has to be at
+C                       least equal to cal_nStepDay(mythid)
+C     ncheck_chkpt   :: Number of innermost checkpoints.
+C
+C     ngeom_chkpt    :: Geometry factor.
+C     nthreads_chkpt :: Number of threads to be used; nth_chkpt .eq. nTx*nTy
 
       integer nyears_chkpt
       integer nmonths_chkpt
@@ -76,7 +76,7 @@ c      parameter( nchklev_2      =  150 )
       parameter( nchklev_3      =    3 )
 c      parameter( nchklev_3      =  150 )
 
-c--   Note always check for the correct sizes of the common blocks!
+C--   Note always check for the correct sizes of the common blocks!
 
 #else /* ALLOW_TAMC_CHECKPOINTING undefined */
 
@@ -87,17 +87,17 @@ c--   Note always check for the correct sizes of the common blocks!
 
 #endif /* ALLOW_TAMC_CHECKPOINTING */
 
-c     TAMC keys:
-c     ==========
-c
-c     The keys are used for storing and reading data of the reference
-c     trajectory.
-c
-c     The convention used here is:
-c                                    ikey_<name>
-c
-c     which means that this key is used in routine <name> for reading
-c     and writing data.
+C     TAMC keys:
+C     ==========
+C
+C     The keys are used for storing and reading data of the reference
+C     trajectory.
+C
+C     The convention used here is:
+C                                    ikey_<name>
+C
+C     which means that this key is used in routine <name> for reading
+C     and writing data.
 
       common /tamc_keys_i/
      &                     ikey_dynamics,
@@ -136,6 +136,7 @@ C     (numItersMax >= cg2dMaxIters in data-file)
       PARAMETER ( numItersMax = 100 )
 #endif
 
-c     ================================================================
-c     END OF HEADER TAMC
-c     ================================================================
+#endif /* ALLOW_AUTODIFF_TAMC */
+C     ================================================================
+C     END OF HEADER TAMC
+C     ================================================================
