@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.59 2014/01/17 21:57:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.60 2014/04/04 20:54:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 #undef CHECK_OVERLAP_FORCING
 
 CBOP
@@ -29,7 +32,7 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # include "tamc.h"
 # include "tamc_keys.h"
 #endif

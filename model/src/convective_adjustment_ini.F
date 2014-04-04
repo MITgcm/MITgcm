@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.22 2008/08/11 22:25:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.23 2014/04/04 20:54:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CONVECTIVE_ADJUSTMENT_INI
@@ -31,12 +34,10 @@ C     == Global data ==
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 #include "tamc.h"
 #include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
-      EXTERNAL DIFFERENT_MULTIPLE
-      LOGICAL  DIFFERENT_MULTIPLE
+#endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -50,6 +51,10 @@ C     myThid :: Thread number of this instance of S/R CONVECT
       INTEGER myThid
 
 #ifdef INCLUDE_CONVECT_CALL
+
+C     !FUNCTIONS:
+      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -71,10 +76,10 @@ C--   Check to see if should convect now
      &   ) THEN
 
 C--   Define computation domain
-        iMin=1-Olx
-        iMax=sNx+Olx
-        jMin=1-Oly
-        jMax=sNy+Oly
+        iMin=1-OLx
+        iMax=sNx+OLx
+        jMin=1-OLy
+        jMax=sNy+OLy
 
 C--   Initialise counters
         kTop    = 0

@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d_nsa.F,v 1.6 2012/08/12 20:24:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d_nsa.F,v 1.7 2014/04/04 20:54:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CML THIS DOES NOT WORK +++++
 #undef ALLOW_LOOP_DIRECTIVE
@@ -50,7 +53,7 @@ C     === Global data ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CG2D.h"
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # include "tamc.h"
 # include "tamc_keys.h"
 #endif

@@ -1,20 +1,23 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.147 2013/12/27 15:46:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.148 2014/04/04 20:54:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 #if (defined ALLOW_PTRACERS) && (!defined ALLOW_LONGSTEP)
 # define DO_PTRACERS_HERE
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_GMREDI
 #  include "GMREDI_OPTIONS.h"
 # endif
 # ifdef ALLOW_KPP
 #  include "KPP_OPTIONS.h"
 # endif
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 CBOP
 C     !ROUTINE: THERMODYNAMICS
@@ -94,7 +97,7 @@ c#ifdef ALLOW_TIMEAVE
 c# include "TIMEAVE_STATV.h"
 c#endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # include "tamc.h"
 # include "tamc_keys.h"
 # include "FFIELDS.h"
@@ -111,7 +114,7 @@ c#endif
 # ifdef ALLOW_SALT_PLUME
 #  include "SALT_PLUME.h"
 # endif
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -167,7 +170,7 @@ CHPF$ INDEPENDENT
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-- Compute correction at the surface for Lin Free Surf.
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       TsurfCor = 0. _d 0
       SsurfCor = 0. _d 0
 #endif

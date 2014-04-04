@@ -1,8 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.93 2013/05/10 20:18:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.94 2014/04/04 20:54:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: PACKAGES_INIT_VARIABLES
@@ -110,7 +116,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # include "DYNVARS.h"
 # include "tamc.h"
 # include "tamc_keys.h"
@@ -137,11 +143,11 @@ CEOP
 C--   Here we call OFFLINE_INIT_VARIA (which calls OFFLINE_FIELDS_LOAD)
 C     before other {PKG}_init_varia, closer to where main pickup-file
 C     are usually read-in (but skipped when using pkg/offline)
-# ifndef ALLOW_AUTODIFF_TAMC
+# ifndef ALLOW_AUTODIFF
       IF ( useOFFLINE ) THEN
 # endif
         CALL OFFLINE_INIT_VARIA( myThid )
-# ifndef ALLOW_AUTODIFF_TAMC
+# ifndef ALLOW_AUTODIFF
       ENDIF
 # endif
 #endif /* ALLOW_OFFLINE */
@@ -242,7 +248,7 @@ C--   Initialize GM/Redi parameterization
 #endif /* ALLOW_BULK_FORCE */
 
 #ifdef ALLOW_EBM
-# ifdef ALLOW_AUTODIFF
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta = tapelev_init, key = 1
 # endif
       IF (useEBM) THEN
@@ -275,7 +281,7 @@ C--   Initialise float position
 #endif /* ALLOW_FLT */
 
 #ifdef ALLOW_PTRACERS
-# ifndef ALLOW_AUTODIFF_TAMC
+# ifndef ALLOW_AUTODIFF
       IF ( usePTRACERS ) THEN
 # endif
 # ifdef ALLOW_DEBUG
@@ -288,7 +294,7 @@ C--   Initialise float position
 #  endif
         CALL LONGSTEP_INIT_VARIA( myThid )
 # endif /* ALLOW_LONGSTEP */
-# ifndef ALLOW_AUTODIFF_TAMC
+# ifndef ALLOW_AUTODIFF
       ENDIF
 # endif
 #endif /* ALLOW_PTRACERS */
@@ -461,12 +467,15 @@ C--   Initialize NEST in PARENT configuration
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
 
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta  = tapelev_init, key = 1
 CADJ STORE salt   = tapelev_init, key = 1
 # ifdef ALLOW_DIFFKR_CONTROL
 CADJ STORE diffkr = tapelev_init, key = 1
 # endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef ALLOW_AUTODIFF
 C--   Initialise auxiliary xx_ fields
       IF (debugMode) CALL DEBUG_CALL('CTRL_INIT_VARIABLES',myThid)
       CALL CTRL_INIT_VARIABLES ( myThid )

@@ -1,12 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mixing.F,v 1.11 2012/09/04 14:23:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_mixing.F,v 1.12 2014/04/04 20:54:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 # if (defined (ALLOW_GMREDI) && (defined (ALLOW_KAPGM_CONTROL)||defined (ALLOW_KAPREDI_CONTROL)))
 # include "GMREDI_OPTIONS.h"
 #endif
-
 
 CBOP
 C     !ROUTINE: INI_MIXING
@@ -47,8 +49,8 @@ CEOP
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO k=1,Nr
-          DO j = 1-Oly, sNy+Oly
-           DO i = 1-Olx, sNx+Olx
+          DO j = 1-OLy, sNy+OLy
+           DO i = 1-OLx, sNx+OLx
 #ifdef ALLOW_3D_DIFFKR
             diffKr(i,j,k,bi,bj) = diffKrNrS(k)
 #endif
@@ -67,8 +69,8 @@ CEOP
 #ifdef ALLOW_BL79_LAT_VARY
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j = 1-Oly, sNy+Oly
-          DO i = 1-Olx, sNx+Olx
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
            BL79LatArray(i,j,bi,bj) = 0.0 _d 0
            IF ( abs(YC(i,j,bi,bj)) .LT. BL79LatVary )
      &          BL79LatArray(i,j,bi,bj) =

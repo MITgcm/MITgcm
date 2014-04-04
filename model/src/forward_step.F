@@ -1,9 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.220 2014/01/03 16:19:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.221 2014/04/04 20:54:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD_OPTIONS.h"
 #endif
@@ -30,6 +33,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
+#endif
+#ifdef ALLOW_COST
+# include "COST_OPTIONS.h"
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
@@ -88,7 +94,7 @@ C     == Global variables ==
 # include "LONGSTEP.h"
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_MYFIELDS.h"
 # include "FFIELDS.h"
 # include "SURFACE.h"
@@ -194,7 +200,7 @@ C     == Global variables ==
 # ifdef ALLOW_CG2D_NSA
 #  include "CG2D.h"
 # endif
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -227,11 +233,11 @@ CEOP
       IF (debugMode) CALL DEBUG_ENTER('FORWARD_STEP',myThid)
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       CALL AUTODIFF_INADMODE_UNSET( myThid )
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 C--   Reset the model iteration counter and the model time.
       myIter = nIter0 + (iloop-1)
       myTime = startTime + float(iloop-1)*deltaTClock
@@ -255,7 +261,7 @@ c**************************************
 C--   Reset geometric factors (hFacC,W,S & recip_hFac) to their current values:
 C     added to simplify adjoint derivation - no effect in forward run
 #ifdef NONLIN_FRSURF
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
       IF ( doResetHFactors ) THEN
 #endif
        IF ( select_rStar.GT.0 ) THEN
@@ -364,7 +370,7 @@ C--   Add control vector for forcing and parameter fields
      &     CALL CTRL_MAP_FORCING (myThid)
 #endif
 
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_AUTODIFF_MONITOR))
+#ifdef ALLOW_AUTODIFF_MONITOR
       CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
 #endif
 
@@ -631,7 +637,7 @@ CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 
 C--   Step forward fields and calculate time tendency terms.
 #ifdef ALLOW_MOM_STEPPING
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
       IF ( momStepping ) THEN
 #endif
 #ifdef ALLOW_DEBUG
@@ -640,7 +646,7 @@ C--   Step forward fields and calculate time tendency terms.
         CALL TIMER_START('DYNAMICS            [FORWARD_STEP]',myThid)
         CALL DYNAMICS( myTime, myIter, myThid )
         CALL TIMER_STOP ('DYNAMICS            [FORWARD_STEP]',myThid)
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
       ENDIF
 #endif
 #endif /* ALLOW_MOM_STEPPING */
@@ -681,10 +687,10 @@ CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
         CALL UPDATE_SIGMA( etaH, myTime, myIter, myThid )
 # endif /* DISABLE_RSTAR_CODE */
        ELSE
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hFac_surfC, hFac_surfS, hFac_surfW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
-#endif
+# endif
         CALL TIMER_START('UPDATE_SURF_DR      [FORWARD_STEP]',myThid)
         CALL UPDATE_SURF_DR( .TRUE., myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_SURF_DR      [FORWARD_STEP]',myThid)
@@ -755,7 +761,7 @@ CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 
 C--   Correct divergence in flow field and cycle time-stepping momentum
 #ifdef ALLOW_MOM_STEPPING
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
       IF ( momStepping ) THEN
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -767,7 +773,7 @@ CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
         CALL TIMER_START('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
         CALL MOMENTUM_CORRECTION_STEP(myTime, myIter, myThid)
         CALL TIMER_STOP ('MOM_CORRECTION_STEP [FORWARD_STEP]',myThid)
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
       ENDIF
 #endif
 #endif /* ALLOW_MOM_STEPPING */
@@ -1032,7 +1038,7 @@ C--   Save state for restarts
       ENDIF
 #endif /* HAVE_SIGREG */
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       CALL AUTODIFF_INADMODE_SET( myThid )
 #endif
 

@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/salt_integrate.F,v 1.6 2014/01/13 20:49:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/salt_integrate.F,v 1.7 2014/04/04 20:54:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD_OPTIONS.h"
 #endif
@@ -57,7 +60,7 @@ C     == GLobal variables ==
 # include "GAD.h"
 # include "GAD_SOM_VARS.h"
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # include "tamc.h"
 # include "tamc_keys.h"
 #endif
@@ -403,11 +406,11 @@ C--   Implicit vertical advection & diffusion
 #ifdef INCLUDE_IMPLVERTADV_CODE
       IF ( saltImplVertAdv ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE kappaRk(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte	 
-CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte	 
-CADJ STORE wFld(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte	 
-CADJ STORE salt(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte	 
-CADJ STORE recip_hFac(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte	 
+CADJ STORE kappaRk(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
+CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
+CADJ STORE wFld(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
+CADJ STORE salt(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
+CADJ STORE recip_hFac(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         CALL GAD_IMPLICIT_R(
      I         saltImplVertAdv, saltVertAdvScheme, GAD_SALINITY,
@@ -420,7 +423,7 @@ CADJ STORE recip_hFac(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
       IF     ( implicitDiffusion ) THEN
 #endif /* INCLUDE_IMPLVERTADV_CODE */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE kappaRk(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte	
+CADJ STORE kappaRk(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         CALL IMPLDIFF(

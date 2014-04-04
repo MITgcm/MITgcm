@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.33 2009/02/13 21:56:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.34 2014/04/04 20:54:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CONVECTIVE_ADJUSTMENT
@@ -27,12 +30,10 @@ C     == Global data ==
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 #include "tamc.h"
 #include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
-      EXTERNAL DIFFERENT_MULTIPLE
-      LOGICAL  DIFFERENT_MULTIPLE
+#endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -46,6 +47,10 @@ C     myThid :: My Thread Id number
       INTEGER myThid
 
 #ifdef INCLUDE_CONVECT_CALL
+
+C     !FUNCTIONS:
+      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -71,10 +76,10 @@ c       iMin = 1
 c       iMax = sNx
 c       jMin = 1
 c       jMax = sNy
-        iMin=1-Olx
-        iMax=sNx+Olx
-        jMin=1-Oly
-        jMax=sNy+Oly
+        iMin=1-OLx
+        iMax=sNx+OLx
+        jMin=1-OLy
+        jMax=sNy+OLy
 
 C--   Initialise counters
         kTop    = 0
@@ -205,7 +210,7 @@ C--       End DO K=1,Nr
 #ifdef ALLOW_TIMEAVE
           IF (myIter.NE.nIter0 .AND. taveFreq.GT.0.) THEN
             CALL TIMEAVE_CUMUL_1T(ConvectCountTave, ConvectCount,
-     I                            Nr, deltaTclock, bi, bj, myThid)
+     I                            Nr, deltaTClock, bi, bj, myThid)
           ENDIF
 #endif /* ALLOW_TIMEAVE */
 

@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_masks_etc.F,v 1.9 2012/08/12 20:24:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_masks_etc.F,v 1.10 2014/04/04 20:54:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 C--  File update_masks_etc.F:
 C--   Contents
@@ -44,7 +47,7 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SURFACE.h"
 Cml we need optimcycle for storing the new hFaC(C/W/S) and depth
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # include "optim.h"
 #endif
 
@@ -239,7 +242,7 @@ C     We should really supply a flag for doing this.
         ENDDO
        ENDDO
       ENDDO
-#if ( defined (ALLOW_AUTODIFF_TAMC) && \
+#if ( defined (ALLOW_AUTODIFF) && \
       defined (ALLOW_AUTODIFF_MONITOR) && \
       defined (ALLOW_DEPTH_CONTROL) )
 C     Include call to a dummy routine. Its adjoint will be called at the proper
@@ -250,7 +253,7 @@ Cml      CALL DUMMY_IN_HFAC( 'W', 0, myThid )
 Cml      CALL DUMMY_IN_HFAC( 'S', 0, myThid )
 #endif
       CALL EXCH_UV_XYZ_RS(hFacW,hFacS,.FALSE.,myThid)
-#if ( defined (ALLOW_AUTODIFF_TAMC) && \
+#if ( defined (ALLOW_AUTODIFF) && \
       defined (ALLOW_AUTODIFF_MONITOR) && \
       defined (ALLOW_DEPTH_CONTROL) )
 C     Include call to a dummy routine. Its adjoint will be called at the proper

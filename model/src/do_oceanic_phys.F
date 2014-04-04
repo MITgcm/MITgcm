@@ -1,10 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.133 2013/09/24 01:42:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.134 2014/04/04 20:54:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_GMREDI
 #  include "GMREDI_OPTIONS.h"
 # endif
@@ -17,7 +23,7 @@ C $Name:  $
 # ifdef ALLOW_EXF
 #  include "EXF_OPTIONS.h"
 # endif
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 CBOP
 C     !ROUTINE: DO_OCEANIC_PHYS
@@ -48,7 +54,7 @@ C     == Global variables ===
 # include "OFFLINE_SWITCH.h"
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_MYFIELDS.h"
 # include "tamc.h"
 # include "tamc_keys.h"
@@ -85,7 +91,7 @@ C     == Global variables ===
 # ifdef ALLOW_SALT_PLUME
 #  include "SALT_PLUME.h"
 # endif
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -171,7 +177,7 @@ CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
       ENDIF
 #endif  /* ALLOW_OBCS */
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_SALT_PLUME
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -184,7 +190,7 @@ CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
        ENDDO
       ENDDO
 # endif
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_FRAZIL
       IF ( useFRAZIL ) THEN
@@ -239,7 +245,7 @@ C       and modify forcing terms including effects from ice
 #endif /* ndef OLD_THSICE_CALL_SEQUENCE */
 
 #ifdef ALLOW_SEAICE
-# ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF
 CADJ STORE area   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE fu,fv  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE qnet   = comlev1, key=ikey_dynamics, kind=isbyte
@@ -249,11 +255,9 @@ CADJ STORE salt   = comlev1, key=ikey_dynamics, kind=isbyte
 #if (defined ALLOW_EXF) && (defined ALLOW_ATM_TEMP)
 CADJ STORE evap   = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
-      IF ( .NOT.useSEAICE ) THEN
-      IF ( SEAICEadjMODE .EQ. -1 ) THEN
+      IF ( .NOT.useSEAICE .AND. SEAICEadjMODE .EQ. -1 ) THEN
         CALL SEAICE_FAKE( myTime, myIter, myThid )
       ENDIF
-      ENDIF
 CADJ STORE area   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE fu,fv  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE qnet   = comlev1, key=ikey_dynamics, kind=isbyte
@@ -263,7 +267,7 @@ CADJ STORE salt   = comlev1, key=ikey_dynamics, kind=isbyte
 #if (defined ALLOW_EXF) && (defined ALLOW_ATM_TEMP)
 CADJ STORE evap   = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
-# endif /* ALLOW_AUTODIFF_TAMC */
+# endif /* ALLOW_AUTODIFF */
 #endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_SEAICE
@@ -460,14 +464,14 @@ C     relaxation terms, etc.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('EXTERNAL_FORCING_SURF',myThid)
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 CADJ STORE salt, theta = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-#else  /* ALLOW_AUTODIFF_TAMC */
+#else  /* ALLOW_AUTODIFF */
 C--   if fluid is not water, by-pass surfaceForcing, find_rho, gmredi
 C     and all vertical mixing schemes, but keep OBCS_CALC
       IF ( fluidIsWater ) THEN
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
         CALL EXTERNAL_FORCING_SURF(
      I             iMin, iMax, jMin, jMax,
      I             myTime, myIter, myThid )
@@ -512,7 +516,7 @@ C This is currently used by GMRedi, IVDC, MXL-depth  and Diagnostics
          ENDDO
         ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           rhoKm1 (i,j)   = 0. _d 0
@@ -590,7 +594,7 @@ cph although some of these are re-initialised later.
 #ifdef ALLOW_OFFLINE
        ENDIF
 #endif
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey,
@@ -617,9 +621,9 @@ C     needed here, will be used anyway in calc_phi_hyd (data flow easier this wa
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('FIND_RHO_2D (xNr)',myThid)
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
         IF ( fluidIsWater ) THEN
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_DOWN_SLOPE
          IF ( useDOWN_SLOPE ) THEN
            DO k=1,Nr
@@ -654,7 +658,7 @@ C     dry grid boxes of rhoInSitu.  See BBL_CALC_RHO for details.
      I                k, bi, bj, myThid )
            ENDDO
          ENDIF
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
         ELSE
 C-        fluid is not water:
           DO k=1,Nr
@@ -665,7 +669,7 @@ C-        fluid is not water:
            ENDDO
           ENDDO
         ENDIF
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_MSG('ENTERING UPWARD K LOOP',myThid)
@@ -724,7 +728,7 @@ cph Avoid variable aliasing for adjoint !!!
      I             rhoInSitu(1-OLx,1-OLy,k,bi,bj), rhoKm1, rhoKp1,
      O             sigmaX, sigmaY, sigmaR,
      I             myThid )
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 #ifdef GMREDI_WITH_STABLE_ADJOINT
 cgf zero out adjoint fields to stabilize pkg/gmredi adjoint
 cgf -> cuts adjoint dependency from slope to state
@@ -732,7 +736,7 @@ cgf -> cuts adjoint dependency from slope to state
             CALL ZERO_ADJ_LOC( Nr, sigmaY, myThid)
             CALL ZERO_ADJ_LOC( Nr, sigmaR, myThid)
 #endif
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
           ENDIF
 
 C--       Implicit Vertical Diffusion for Convection
@@ -818,11 +822,11 @@ C--     Compute KPP mixing coefficients
           CALL KPP_CALC(
      I                  bi, bj, myTime, myIter, myThid )
           CALL TIMER_STOP ('KPP_CALC [DO_OCEANIC_PHYS]', myThid)
-#if (defined ALLOW_AUTODIFF_TAMC) && !(defined ALLOW_OFFLINE)
+#if (defined ALLOW_AUTODIFF) && !(defined ALLOW_OFFLINE)
         ELSE
           CALL KPP_CALC_DUMMY(
      I                  bi, bj, myTime, myIter, myThid )
-#endif /* ALLOW_AUTODIFF_TAMC and not ALLOW_OFFLINE */
+#endif /* ALLOW_AUTODIFF and not ALLOW_OFFLINE */
         ENDIF
 #endif  /* ALLOW_KPP */
 
@@ -900,13 +904,13 @@ C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
      I             iMin, iMax, jMin, jMax,
      I             sigmaX, sigmaY, sigmaR,
      I             bi, bj, myTime, myIter, myThid )
-#if (defined ALLOW_AUTODIFF_TAMC) && !(defined ALLOW_OFFLINE)
+#if (defined ALLOW_AUTODIFF) && !(defined ALLOW_OFFLINE)
         ELSE
           CALL GMREDI_CALC_TENSOR_DUMMY(
      I             iMin, iMax, jMin, jMax,
      I             sigmaX, sigmaY, sigmaR,
      I             bi, bj, myTime, myIter, myThid )
-#endif /* ALLOW_AUTODIFF_TAMC and not ALLOW_OFFLINE */
+#endif /* ALLOW_AUTODIFF and not ALLOW_OFFLINE */
         ENDIF
 #endif /* ALLOW_GMREDI */
 
@@ -929,7 +933,7 @@ C--   end bi,bj loops.
        ENDDO
       ENDDO
 
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
 C---  if fluid Is Water: end
       ENDIF
 #endif
