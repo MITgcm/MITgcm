@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.19 2013/04/13 23:14:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.20 2014/04/04 21:05:31 jmc Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOI
 C
@@ -76,7 +79,7 @@ C     == Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "cost.h"
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # include "tamc.h"
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
@@ -128,7 +131,7 @@ CADJ &     kind = isbyte
 #endif
 
 #ifdef ALLOW_THSICE_COST_TEST
-         IF (useTHSICE) 
+         IF (useThSIce)
      &    CALL THSICE_COST_DRIVER (myTime, myIter, myThid)
 #endif
 
