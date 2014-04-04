@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_whtapeio_sync.F,v 1.8 2012/12/10 21:12:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_whtapeio_sync.F,v 1.9 2014/04/04 23:04:40 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 #include "MDSIO_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       subroutine autodiff_whtapeio_sync( myLev, myStep, myThid )
       IMPLICIT NONE
@@ -15,7 +18,7 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "ctrl.h"
-#ifndef ALLOW_AUTODIFF_OPENAD
+#ifndef ALLOW_OPENAD
 # include "AUTODIFF.h"
 #endif
 #ifdef ALLOW_WHIO_3D
@@ -65,7 +68,7 @@ c     == functions ==
        filePrec = 32
       ELSE
        filePrec = 64
-      ENDIF      
+      ENDIF
 
 C Only do I/O if I am the master thread (and mpi process 0 IF tapeSingleCpuIO):
       iAmDoingIO = .FALSE.
@@ -73,16 +76,16 @@ C Only do I/O if I am the master thread (and mpi process 0 IF tapeSingleCpuIO):
         _BEGIN_MASTER( myThid )
         iAmDoingIO = .TRUE.
         _END_MASTER( myThid )
-      ENDIF      
+      ENDIF
 
       IF ( iAmDoingIO ) THEN
         IL = ilnblnk( adTapeDir )
         IF ( .NOT.tapeSingleCpuIO ) THEN
-          WRITE(fName,'(2A,I1.1,A,I3.3,A)') 
+          WRITE(fName,'(2A,I1.1,A,I3.3,A)')
      &         adTapeDir(1:IL),'tapes',myLev,'.',myProcId,'.data'
           length_of_rec = MDS_RECLEN( filePrec,sNxWh*procNyWh,myThid )
         ELSE
-          WRITE(fName,'(2A,I1.1,A)') 
+          WRITE(fName,'(2A,I1.1,A)')
      &         adTapeDir(1:IL),'tapes',myLev,'.data'
           length_of_rec = MDS_RECLEN( filePrec,sNxWh*gloNyWh,myThid)
         ENDIF
@@ -118,7 +121,7 @@ c exst needs to have been tested before opening the file
               WRITE(tapeFileUnit,rec=iWh) fld3d_procbuff_r4
             ELSE
               WRITE(tapeFileUnit,rec=iWh) fld3d_procbuff_r8
-            ENDIF 
+            ENDIF
           ELSE
 #  ifdef INCLUDE_WHIO_GLOBUFF_3D
             IF (filePrec .EQ. precFloat32) THEN
@@ -126,11 +129,11 @@ c exst needs to have been tested before opening the file
             ELSE
               WRITE(tapeFileUnit,rec=iWh) fld3d_globuff_r8
             ENDIF
-#  endif  
+#  endif
           ENDIF
           iWh=0
       ENDIF
-#endif    
+#endif
       ENDIF
 
 #ifdef ALLOW_WHIO_3D
