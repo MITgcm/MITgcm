@@ -1,7 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_g.F,v 1.8 2012/07/06 23:06:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_g.F,v 1.9 2014/04/04 21:21:53 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 #include "AD_CONFIG.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -28,10 +34,8 @@ C     !USES:
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
 #endif
-#ifdef ALLOW_AUTODIFF
-# ifdef ALLOW_AUTODIFF_MONITOR
-#  include "g_common.h"
-# endif
+#ifdef ALLOW_AUTODIFF_MONITOR
+# include "g_common.h"
 #endif
 
 C     !INPUT PARAMETERS:
@@ -41,7 +45,7 @@ C     !INPUT PARAMETERS:
 CEOP
 
 #if (defined (ALLOW_TANGENTLINEAR_RUN) || defined (ALLOW_ADMTLM))
-#if (defined (ALLOW_AUTODIFF) && defined (ALLOW_AUTODIFF_MONITOR))
+#ifdef ALLOW_AUTODIFF_MONITOR
 
 C     === Functions ====
       LOGICAL  DIFFERENT_MULTIPLE
@@ -148,7 +152,7 @@ c       ENDIF
 
 C       Print the numerical stablility parameters for current state
         CALL MON_SET_PREF('g__g_vcfl',myThid)
-        dT = MAX(dTtracerLev(1),deltaTmom)
+        dT = MAX(dTtracerLev(1),deltaTMom)
         CALL MON_ADVCFL( '_g_uvel', g_uVel,recip_dxC,dT,myThid )
         CALL MON_ADVCFL( '_g_vvel', g_vVel,recip_dyC,dT,myThid )
         CALL MON_ADVCFLW( '_g_wvel',g_wVel,recip_drC,dT,myThid )
