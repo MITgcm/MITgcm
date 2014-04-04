@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.63 2013/12/27 15:52:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.64 2014/04/04 20:29:08 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -47,14 +47,9 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "SURFACE.h"
 #include "GAD.h"
-
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_PARAMS.h"
 #endif /* ALLOW_AUTODIFF */
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-# include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 C !INPUT PARAMETERS: ===================================================
 C bi,bj            :: tile indices
@@ -157,7 +152,7 @@ C locABT           :: local copy of (AB-extrapolated) tracer field
 #endif
 CEOP
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 C--   only the kUp part of fverT is set in this subroutine
 C--   the kDown is still required
       fVerT(1,1,kDown) = fVerT(1,1,kDown)
@@ -262,7 +257,7 @@ cph with limiters in forward, but without limiters in reverse.
            CALL GAD_DST3FL_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
      I              uTrans, uFld, maskLocW, locABT,
      O              af, myThid )
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
          ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
      I              uTrans, uFld, maskLocW, locABT,
@@ -399,7 +394,7 @@ cph with limiters in forward, but without limiters in reverse.
            CALL GAD_DST3FL_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
      I              vTrans, vFld, maskLocS, locABT,
      O              af, myThid )
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
          ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
      I              vTrans, vFld, maskLocS, locABT,
@@ -526,7 +521,7 @@ cph with limiters in forward, but without limiters in reverse.
            CALL GAD_DST3FL_ADV_R( bi,bj,k, deltaTLev(k),
      I              rTrans, wFld, TracAB(1-OLx,1-OLy,1,bi,bj),
      O              af, myThid )
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
         ELSEIF (vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_R( bi,bj,k, deltaTLev(k),
      I              rTrans, wFld, TracAB(1-OLx,1-OLy,1,bi,bj),

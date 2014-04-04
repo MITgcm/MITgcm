@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_check.F,v 1.7 2013/03/25 19:26:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_check.F,v 1.8 2014/04/04 20:29:08 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -106,22 +106,22 @@ C     for mom limitations, done in CONFIG_CHECK, but can move to MOM_INIT_FIXED
       minOlSize = MAX( GAD_OlMinSize(1)+GAD_OlMinSize(2),
      &                 GAD_OlMinSize(2)+GAD_OlMinSize(3),
      &                 GAD_OlMinSize(1)*GAD_OlMinSize(3) )
-      IF ( Olx.LT.minOlSize .OR. Oly.LT.minOlSize ) THEN
-        WRITE(msgBuf,'(A,2I3,A)') 'GAD_CHECK: Overlap Size Olx,Oly=',
-     &                             Olx, Oly,' too small'
+      IF ( OLx.LT.minOlSize .OR. OLy.LT.minOlSize ) THEN
+        WRITE(msgBuf,'(A,2I3,A)') 'GAD_CHECK: Overlap Size OLx,OLy=',
+     &                             OLx, OLy,' too small'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'GAD_CHECK: ',
      &     'One tracer (T,S,pTrac, ...) advection scheme'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A,I3,A,3I2,A)') 'GAD_CHECK: ',
-     &     'needs at least Olx,Oly=', minOlSize,
+     &     'needs at least OLx,OLy=', minOlSize,
      &     ' (OlMinSize=', (GAD_OlMinSize(n),n=1,3), ')'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R GAD_CHECK'
       ENDIF
 
 C Check compatibility with adjoint
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       IF ( tempAdvScheme.EQ.ENUM_OS7MP .OR.
      &     saltAdvScheme.EQ.ENUM_OS7MP ) THEN
         WRITE(msgBuf,'(A,I3,A)') 'GAD_CHECK: advection scheme OS7MP ',
@@ -130,7 +130,7 @@ C Check compatibility with adjoint
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R GAD_CHECK'
       ENDIF
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
       _END_MASTER(myThid)
 

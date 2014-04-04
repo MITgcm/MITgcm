@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_x.F,v 1.15 2011/10/13 15:10:32 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_x.F,v 1.16 2014/04/04 20:29:08 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -42,14 +42,14 @@ C- jmc: an alternative would be to compute directly psiM*Rj & psiP*Rj
 C       (if Rj*Rjm < 0 => psiP*Rj = 0 , elsef Rj > 0 ... , else  ... )
 C       with no need to compute thetaM (might be easier to differentiate)
 
-      DO j=1-Oly,sNy+Oly
-       uT(1-Olx,j)=0. _d 0
-       uT(2-Olx,j)=0. _d 0
-       uT(sNx+Olx,j)=0. _d 0
+      DO j=1-OLy,sNy+OLy
+       uT(1-OLx,j)=0. _d 0
+       uT(2-OLx,j)=0. _d 0
+       uT(sNx+OLx,j)=0. _d 0
       ENDDO
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx+2,sNx+Olx-1
-#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx+2,sNx+OLx-1
+#if (defined ALLOW_AUTODIFF && defined TARGET_NEC_SX)
 C     These lines make TAF create vectorizable code
         thetaP = 0. _d 0
         thetaM = 0. _d 0

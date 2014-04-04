@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3c4_impl_r.F,v 1.10 2011/12/01 14:14:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3c4_impl_r.F,v 1.11 2014/04/04 20:29:08 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -70,7 +70,7 @@ C     rC4km, rC4kp :: high order contribution
 C     rHigh        :: high order term factor
       LOGICAL flagC4
       INTEGER i,j,kp1,km2
-#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+#if (defined ALLOW_AUTODIFF && defined TARGET_NEC_SX)
       _RL rC4km2D  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rC4kp2D  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rCenter2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -96,7 +96,7 @@ C--   process interior interface only:
 
 C--    Add centered, upwind and high-order contributions
        deltaTcfl = deltaTarg(k)
-#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+#if (defined ALLOW_AUTODIFF && defined TARGET_NEC_SX)
        DO j=jMin,jMax
         DO i=iMin,iMax
          rCenter2D(i,j) =
@@ -122,10 +122,10 @@ c         rUpwind2D(i,j) = (2. _d 0*rHigh - wCFL)*ABS(rCenter)
          ENDIF
         ENDDO
        ENDDO
-#endif /* ALLOW_AUTODIFF_TAMC and TARGET_NEC_SX */
+#endif /* ALLOW_AUTODIFF and TARGET_NEC_SX */
        DO j=jMin,jMax
          DO i=iMin,iMax
-#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+#if (defined ALLOW_AUTODIFF && defined TARGET_NEC_SX)
            rC4km   = rC4km2D  (i,j)
            rC4kp   = rC4kp2D  (i,j)
            rCenter = rCenter2D(i,j)
@@ -151,7 +151,7 @@ c           rUpwind= (2. _d 0*rHigh - wCFL)*ABS(rCenter)
             rC4km  = oneSixth*(rCenter+ABS(rCenter))*mskM
             rC4kp  = oneSixth*(rCenter-ABS(rCenter))*mskP
            ENDIF
-#endif /* ALLOW_AUTODIFF_TAMC and TARGET_NEC_SX */
+#endif /* ALLOW_AUTODIFF and TARGET_NEC_SX */
            a5d(i,j,k)   = a5d(i,j,k)
      &                  + rC4km
      &                   *deltaTarg(k)

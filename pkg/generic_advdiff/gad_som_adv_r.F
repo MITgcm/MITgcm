@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_r.F,v 1.8 2013/03/02 00:39:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_r.F,v 1.9 2014/04/04 20:29:08 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -117,7 +117,7 @@ C  wLoc         :: volume transported (per time step)
       _RL  alfn, alnq, aln1, locTn
 CEOP
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       alp(1,1,kDw) = alp(1,1,kDw)
       aln(1,1,kDw) = aln(1,1,kDw)
       fp_v(1,1,kDw) = fp_v(1,1,kDw)
