@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.50 2013/02/01 19:25:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.51 2014/04/04 21:17:33 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
+#ifdef ALLOW_COST
+# include "COST_OPTIONS.h"
+#endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
@@ -180,7 +183,7 @@ c     >>> Initialise control vector for optimcycle=0 <<<
 c     >>> Write gradient vector <<<
           lxxadxx   = .FALSE.
           ictrlgrad = 2
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
           fcloc     = fc%v
 #else
           fcloc     = fc
@@ -724,8 +727,8 @@ cc          write(weighttype(1:80),'(80a)') ' '
 cc          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_pack_xy(
      &         cunit, ivartype, genarr2dPrecond(iarr),
-     &         fname_local(ictrlgrad), "maskCtrlC", 
-     &         xx_genarr2d_weight(iarr), 
+     &         fname_local(ictrlgrad), "maskCtrlC",
+     &         xx_genarr2d_weight(iarr),
      &         lxxadxx, mythid)
        enddo
 #endif
@@ -739,7 +742,7 @@ cc          write(weighttype(1:80),'(80a)') ' '
 cc          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, fname_local(ictrlgrad), "maskCtrlC",
-     &         xx_genarr3d_weight(iarr), 
+     &         xx_genarr3d_weight(iarr),
      &         wunit, lxxadxx, mythid)
        enddo
 #endif
@@ -754,7 +757,7 @@ cc          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_pack_xy(
      &         cunit, ivartype, gentim2dPrecond(iarr),
      &         fname_local(ictrlgrad), "maskCtrlC",
-     &         xx_gentim2d_weight(iarr), 
+     &         xx_gentim2d_weight(iarr),
      &         lxxadxx, mythid)
        enddo
 #endif
