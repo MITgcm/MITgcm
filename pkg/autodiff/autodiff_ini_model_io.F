@@ -1,9 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.27 2014/04/03 10:01:44 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.28 2014/04/04 23:03:59 jmc Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #include "AUTODIFF_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
@@ -68,7 +71,8 @@ C      create directory
        WRITE(namBuf,'(2A)') ' mkdir -p ', adTapeDir(1:iL)
        pIL = 1 + ILNBLNK( namBuf )
        WRITE(standardMessageUnit,'(3A)')
-     & '==> SYSTEM CALL (from INI_MODEL_IO): >',namBuf(1:pIL),'<'
+     &  '==> SYSTEM CALL (from AUTODIFF_INI_MODEL_IO): >',
+     &                                 namBuf(1:pIL), '<'
        CALL SYSTEM( namBuf(1:pIL) )
       ENDIF
 

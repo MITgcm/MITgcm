@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_dummy_in_dynamics.F,v 1.3 2012/08/29 13:12:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_dummy_in_dynamics.F,v 1.4 2014/04/04 23:03:59 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 #include "AD_CONFIG.h"
 
 CBOP
@@ -64,7 +67,6 @@ CEOP
 
         CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
 c       write(*,*) 'myIter= ',myIter
-
 
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter

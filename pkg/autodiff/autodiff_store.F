@@ -1,17 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.21 2012/08/28 19:18:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.22 2014/04/04 23:03:59 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
 #endif
-#ifdef ALLOW_ECCO_EVOLUTION
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
-#endif
 #endif
 
       subroutine autodiff_store( mythid )

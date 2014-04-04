@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.59 2012/08/29 13:12:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.60 2014/04/04 23:03:59 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 #include "AD_CONFIG.h"
 
 CBOP
@@ -83,6 +86,10 @@ c      IF ( debugMode ) print*,'dumpAdRecMn',dumpAdRecMn
 c#endif
 
         IF ( dumpAdVarExch.EQ.1 ) THEN
+#ifdef ALLOW_OPENAD
+C--   need to all the correct OpenAD EXCH S/R ; left empty for now
+#else /* ALLOW_OPENAD */
+
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
 
          call adexch_xy_rl( myThid,adetan)
@@ -151,6 +158,7 @@ c#endif
 # endif
 
 #endif /* AUTODIFF_TAMC_COMPATIBILITY */
+#endif /* ALLOW_OPENAD */
         ENDIF
 
 C--     Set suffix for this set of data files.

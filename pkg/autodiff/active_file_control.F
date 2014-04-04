@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_control.F,v 1.12 2012/08/02 22:06:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_control.F,v 1.13 2014/04/04 23:03:59 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 C     ==================================================================
 C     active_file_control.F: Routines to handle the I/O of active
