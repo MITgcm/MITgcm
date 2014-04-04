@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.35 2014/01/15 16:21:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.36 2014/04/04 21:39:56 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       subroutine grdchk_getxx(
      I                       icvrec,
@@ -322,7 +325,6 @@ c--   == end of interface ==
      &           xx_kapredi_file(1:il),'.',optimcycle
          end if
 #endif /* ALLOW_KAPREDI_CONTROL */
-
 
 #ifdef ALLOW_TR10_CONTROL
       else if ( grdchkvarindex .eq. 17 ) then
@@ -669,7 +671,6 @@ c--   == end of interface ==
 ce      --> this index does not exist yet.
       endif
 
-
       xx_comp_ref=0. _d 0
       xx_comp_pert=0. _d 0
 
@@ -747,7 +748,6 @@ ce      --> this index does not exist yet.
 
       endif
       endif
-
 
 #endif /* ALLOW_GRDCHK */
 

@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.36 2014/01/15 16:21:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.37 2014/04/04 21:39:56 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       subroutine grdchk_setxx(
      I                       icvrec,
@@ -673,13 +676,12 @@ c--   == end of interface ==
 ce      --> this index does not exist yet.
       endif
 
-
       if (ierr .EQ. 0 ) then
       if ( grdchkvarindex.EQ.1 .OR. grdchkvarindex.EQ.2 .OR.
      &     grdchkvarindex.EQ.27 .OR. grdchkvarindex.EQ.28 .OR.
      &     grdchkvarindex.EQ.15 .OR. grdchkvarindex.EQ.16 .OR.
      &     grdchkvarindex.EQ.17 .OR. grdchkvarindex.EQ.21 .OR.
-     &     grdchkvarindex.EQ.22 .OR. grdchkvarindex.EQ.31 
+     &     grdchkvarindex.EQ.22 .OR. grdchkvarindex.EQ.31
 #ifdef ALLOW_GENARR3D_CONTROL
      &     .OR. ( grdchkvarindex .ge. 201 .and.
      &     grdchkvarindex .le. 200+maxCtrlArr3D )

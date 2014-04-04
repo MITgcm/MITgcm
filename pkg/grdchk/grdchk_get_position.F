@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.9 2011/08/12 18:30:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.10 2014/04/04 21:39:56 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       subroutine grdchk_get_position( mythid )
 

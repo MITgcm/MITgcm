@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_check.F,v 1.4 2011/05/24 22:41:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_check.F,v 1.5 2014/04/04 21:39:56 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       SUBROUTINE GRDCHK_CHECK( myThid )
 

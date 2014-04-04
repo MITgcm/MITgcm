@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.36 2014/01/15 16:21:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.37 2014/04/04 21:39:56 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       subroutine grdchk_getadxx(
      I                       icvrec,
@@ -477,7 +480,6 @@ c--   == end of interface ==
          STOP 'grdchk_getadxx: grdchkvarindex not implemented'
       endif
 
-
       if (ierr .EQ. 0 ) then
       if ( grdchkvarindex.EQ.1 .OR. grdchkvarindex.EQ.2 .OR.
      &     grdchkvarindex.EQ.27 .OR. grdchkvarindex.EQ.28 .OR.
@@ -519,7 +521,7 @@ c--   == end of interface ==
          call active_read_xy( fname, tmpfld2d, icvrec,
      &                        doglobalread, ladinit, optimcycle,
      &                        mythid, dummy)
-         if ( myProcId .EQ. grdchkwhichproc ) 
+         if ( myProcId .EQ. grdchkwhichproc )
      &   xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
 
       endif
