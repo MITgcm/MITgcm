@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_ke.F,v 1.5 2012/03/04 23:13:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_ke.F,v 1.6 2014/04/04 20:08:11 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -53,7 +53,7 @@ C                 1  /  ___I    ___J   \
 C           KE = --- |   U    +  V     |
 C                 2  \                 /
 C
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
          KE(i,j) = 0.

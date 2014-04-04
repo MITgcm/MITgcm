@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hfacz.F,v 1.8 2014/02/09 18:57:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hfacz.F,v 1.9 2014/04/04 20:08:11 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: MOM_CALC_HFACZ
@@ -22,7 +25,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_DEPTH_CONTROL
-# ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF
 #  include "tamc.h"
 #  include "tamc_keys.h"
 # endif

@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.12 2012/07/23 15:52:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.13 2014/04/04 20:08:11 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: MOM_U_BOTTOMDRAG
@@ -96,7 +99,7 @@ C-    viscous (no-slip BC) and linear bottom drag
      &    *(
      &       KappaRU(i,j,kLowF)*recDrC*viscFac
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-     &     + bottomdragfld(i,j,bi,bj)*dragFac
+     &     + bottomDragFld(i,j,bi,bj)*dragFac
 #endif
      &     + bottomDragLinear*dragFac
      &     )*uFld(i,j)

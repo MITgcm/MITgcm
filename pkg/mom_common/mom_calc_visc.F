@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.46 2013/08/01 20:13:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.47 2014/04/04 20:08:11 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -78,10 +81,10 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "MOM_VISC.h"
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 #include "tamc.h"
 #include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid               :: my thread Id number
@@ -162,7 +165,7 @@ c     IF ( useVariableVisc ) THEN
 C---- variable viscosity :
 
        recip_dt = 1. _d 0
-       IF ( deltaTmom.NE.0. ) recip_dt = 1. _d 0/deltaTmom
+       IF ( deltaTMom.NE.0. ) recip_dt = 1. _d 0/deltaTMom
 
        IF ( useHarmonicVisc .AND. viscAhReMax.NE.0. ) THEN
         viscAhRe_max=SQRT(2. _d 0)/viscAhReMax
@@ -306,7 +309,7 @@ C--   end if calcLeith
         DO i=2-OLx,sNx+OLx-1
 CCCCCCCCCCCCCCC Divergence Point CalculationsCCCCCCCCCCCCCCCCCCCC
 
-#ifdef    ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF_TAMC
 # ifndef AUTODIFF_DISABLE_LEITH
            lockey_2 = i+olx + (sNx+2*olx)*(j+oly-1)
      &                      + (sNx+2*olx)*(sNy+2*oly)*(lockey_1-1)
@@ -315,7 +318,7 @@ CADJ &     = comlev1_mom_ijk_loop , key=lockey_2, byte=isbyte
 CADJ STORE viscAh_ZSmg(i,j)
 CADJ &     = comlev1_mom_ijk_loop , key=lockey_2, byte=isbyte
 # endif
-#endif    /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C These are (powers of) length scales
          L2 = L2_D(i,j,bi,bj)
