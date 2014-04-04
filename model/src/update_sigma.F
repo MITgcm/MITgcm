@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_sigma.F,v 1.1 2010/09/11 21:27:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_sigma.F,v 1.2 2014/04/04 20:56:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+c#ifdef ALLOW_AUTODIFF
+c# include "AUTODIFF_OPTIONS.h"
+c#endif
 
 CBOP
 C     !ROUTINE: UPDATE_SIGMA
@@ -25,10 +28,10 @@ C     == Global variables
 c #include "DYNVARS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-# include "tamc_keys.h"
-#endif
+c#ifdef ALLOW_AUTODIFF_TAMC
+c# include "tamc.h"
+c# include "tamc_keys.h"
+c#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -98,8 +101,8 @@ c       ENDIF
 c#endif /* ALLOW_OBCS */
 
 C-- Update the fractional thickness hFacC (& "recip_hFac") :
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           IF ( kSurfC(i,j,bi,bj).LE.Nr ) THEN
            tmpFld(i,j) = etaHc(i,j,bi,bj)
      &                 + ( Ro_surf(i,j,bi,bj)-R_low(i,j,bi,bj) )
@@ -109,8 +112,8 @@ C-- Update the fractional thickness hFacC (& "recip_hFac") :
          ENDDO
         ENDDO
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             hFacC(i,j,k,bi,bj) = maskC(i,j,k,bi,bj)
      &                         *( dAHybSigF(k)*rFullDepth
      &                           +dBHybSigF(k)*tmpFld(i,j)
@@ -124,8 +127,8 @@ C-- Update the fractional thickness hFacC (& "recip_hFac") :
         ENDDO
 
 C-- Update the fractional thickness hFacW (& "recip_hFac") :
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           IF ( kSurfW(i,j,bi,bj).LE.Nr ) THEN
            tmpFld(i,j) = etaHw(i,j,bi,bj)
      &                 + ( rSurfW(i,j,bi,bj)-rLowW(i,j,bi,bj) )
@@ -135,8 +138,8 @@ C-- Update the fractional thickness hFacW (& "recip_hFac") :
          ENDDO
         ENDDO
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             hFacW(i,j,k,bi,bj) = maskW(i,j,k,bi,bj)
      &                         *( dAHybSigF(k)*rFullDepth
      &                           +dBHybSigF(k)*tmpFld(i,j)
@@ -150,8 +153,8 @@ C-- Update the fractional thickness hFacW (& "recip_hFac") :
         ENDDO
 
 C-- Update the fractional thickness hFacS (& "recip_hFac") :
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           IF ( kSurfS(i,j,bi,bj).LE.Nr ) THEN
            tmpFld(i,j) = etaHs(i,j,bi,bj)
      &                 + ( rSurfS(i,j,bi,bj)-rLowS(i,j,bi,bj) )
@@ -161,8 +164,8 @@ C-- Update the fractional thickness hFacS (& "recip_hFac") :
          ENDDO
         ENDDO
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             hFacS(i,j,k,bi,bj) = maskS(i,j,k,bi,bj)
      &                         *( dAHybSigF(k)*rFullDepth
      &                           +dBHybSigF(k)*tmpFld(i,j)

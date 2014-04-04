@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.20 2012/08/12 20:24:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.21 2014/04/04 20:56:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -141,7 +141,7 @@ C     abbreviations
                t2 = t1*t1
                t3 = t2*t1
 
-#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+#if (defined ALLOW_AUTODIFF && defined TARGET_NEC_SX)
 C     this line makes TAF create vectorizable code
                s3o2 = 0. _d 0
 #endif
@@ -245,7 +245,7 @@ C     of sea water at p
                t1  = theta(i,j,k,bi,bj)
                t2  = t1*t1
                s1  = salt(i,j,k,bi,bj)
-#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+#if (defined ALLOW_AUTODIFF && defined TARGET_NEC_SX)
 C     this line makes TAF create vectorizable code
                sp5 = 0. _d 0
 #endif
@@ -296,7 +296,7 @@ C     this line makes TAF create vectorizable code
         DO i=iMin,iMax
          ct      = theta(i,j,k,bi,bj)
          sa      = salt(i,j,k,bi,bj)
-#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+#if (defined ALLOW_AUTODIFF && defined TARGET_NEC_SX)
 C     this line makes TAF create vectorizable code
          sqrtsa  = 0. _d 0
 #endif
@@ -470,7 +470,7 @@ C     abbreviations
                t3 = t2*t1
 
                s1  = salt(i,j,k,bi,bj)
-#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+#if (defined ALLOW_AUTODIFF && defined TARGET_NEC_SX)
 C     this line makes TAF create vectorizable code
                s3o2 = 0. _d 0
 #endif
@@ -559,7 +559,7 @@ C     of sea water at p
                t1  = theta(i,j,k,bi,bj)
                t2  = t1*t1
                s1  = salt(i,j,k,bi,bj)
-#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+#if (defined ALLOW_AUTODIFF && defined TARGET_NEC_SX)
 C     this line makes TAF create vectorizable code
                sp5 = 0. _d 0
 #endif
@@ -603,7 +603,7 @@ C     this line makes TAF create vectorizable code
         DO i=iMin,iMax
          ct      = theta(i,j,k,bi,bj)
          sa      = salt(i,j,k,bi,bj)
-#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+#if (defined ALLOW_AUTODIFF && defined TARGET_NEC_SX)
 C     this line makes TAF create vectorizable code
          sqrtsa  = 0. _d 0
 #endif

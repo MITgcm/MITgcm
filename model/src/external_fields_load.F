@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.39 2011/06/08 01:21:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.40 2014/04/04 20:56:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -72,7 +72,7 @@ C--   Now calculate whether it is time to update the forcing arrays
       CALL GET_PERIODIC_INTERVAL(
      O                  intimeP, intime0, intime1, bWght, aWght,
      I                  externForcingCycle, externForcingPeriod,
-     I                  deltaTclock, myTime, myThid )
+     I                  deltaTClock, myTime, myThid )
 
       bi = myBxLo(myThid)
       bj = myByLo(myThid)
@@ -86,7 +86,7 @@ C--   Now calculate whether it is time to update the forcing arrays
         _END_MASTER(myThid)
       ENDIF
 #endif /* ALLOW_DEBUG */
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 C-    assuming that we call S/R EXTERNAL_FIELDS_LOAD at each time-step and
 C     with increasing time, this will catch when we need to load new records;
 C     But with Adjoint run, this is not always the case => might end-up using
@@ -96,12 +96,12 @@ C     the wrong time-records
 # else
       IF ( intime1.NE.loadedRec(bi,bj) ) THEN
 # endif
-#else /* ALLOW_AUTODIFF_TAMC */
+#else /* ALLOW_AUTODIFF */
 C-    Make no assumption on sequence of calls to EXTERNAL_FIELDS_LOAD ;
 C     This is the correct formulation (works in Adjoint run).
 C     Unfortunatly, produces many recomputations <== not used until it is fixed
       IF ( intime1.NE.loadedRec(bi,bj) ) THEN
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 C--   If the above condition is met then we need to read in
 C     data for the period ahead and the period behind myTime.
@@ -146,8 +146,8 @@ c        IF ( convertEmP2rUnit.EQ.mass2rUnit ) THEN
 C-    EmPmR is now (after c59h) expressed in kg/m2/s (fresh water mass flux)
           DO bj = myByLo(myThid), myByHi(myThid)
            DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO j=1-Oly,sNy+Oly
-             DO i=1-Olx,sNx+Olx
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
               EmPmR0(i,j,bi,bj) = EmPmR0(i,j,bi,bj)*rhoConstFresh
               EmPmR1(i,j,bi,bj) = EmPmR1(i,j,bi,bj)*rhoConstFresh
              ENDDO
@@ -184,8 +184,8 @@ c        ENDIF
 C-    Qnet is now (after c54) the net Heat Flux (including SW)
           DO bj = myByLo(myThid), myByHi(myThid)
            DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO j=1-Oly,sNy+Oly
-             DO i=1-Olx,sNx+Olx
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
               Qnet0(i,j,bi,bj) = Qnet0(i,j,bi,bj) + Qsw0(i,j,bi,bj)
               Qnet1(i,j,bi,bj) = Qnet1(i,j,bi,bj) + Qsw1(i,j,bi,bj)
              ENDDO
@@ -240,32 +240,32 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         IF ( thetaClimFile .NE. ' '  ) THEN
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             SST(i,j,bi,bj)   = bWght*SST0(i,j,bi,bj)
      &                       + aWght*SST1(i,j,bi,bj)
            ENDDO
           ENDDO
         ENDIF
         IF ( saltClimFile .NE. ' '  ) THEN
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             SSS(i,j,bi,bj)   = bWght*SSS0(i,j,bi,bj)
      &                       + aWght*SSS1(i,j,bi,bj)
            ENDDO
           ENDDO
         ENDIF
         IF ( zonalWindFile .NE. ' '  ) THEN
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             fu(i,j,bi,bj)    = bWght*taux0(i,j,bi,bj)
      &                       + aWght*taux1(i,j,bi,bj)
            ENDDO
           ENDDO
         ENDIF
         IF ( meridWindFile .NE. ' '  ) THEN
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             fv(i,j,bi,bj)    = bWght*tauy0(i,j,bi,bj)
      &                       + aWght*tauy1(i,j,bi,bj)
            ENDDO
@@ -273,24 +273,24 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
         ENDIF
         IF ( surfQnetFile .NE. ' '
      &     .OR. surfQFile .NE. ' '  ) THEN
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             Qnet(i,j,bi,bj)  = bWght*Qnet0(i,j,bi,bj)
      &                       + aWght*Qnet1(i,j,bi,bj)
            ENDDO
           ENDDO
         ENDIF
         IF ( EmPmRfile .NE. ' '  ) THEN
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             EmPmR(i,j,bi,bj) = bWght*EmPmR0(i,j,bi,bj)
      &                       + aWght*EmPmR1(i,j,bi,bj)
            ENDDO
           ENDDO
         ENDIF
         IF ( saltFluxFile .NE. ' '  ) THEN
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             saltFlux(i,j,bi,bj) = bWght*saltFlux0(i,j,bi,bj)
      &                          + aWght*saltFlux1(i,j,bi,bj)
            ENDDO
@@ -298,8 +298,8 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
         ENDIF
 #ifdef SHORTWAVE_HEATING
         IF ( surfQswFile .NE. ' '  ) THEN
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             Qsw(i,j,bi,bj)   = bWght*Qsw0(i,j,bi,bj)
      &                       + aWght*Qsw1(i,j,bi,bj)
            ENDDO
@@ -308,8 +308,8 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
 #endif
 #ifdef ATMOSPHERIC_LOADING
         IF ( pLoadFile .NE. ' '  ) THEN
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             pLoad(i,j,bi,bj) = bWght*pLoad0(i,j,bi,bj)
      &                       + aWght*pLoad1(i,j,bi,bj)
            ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.29 2011/12/01 14:22:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.30 2014/04/04 20:56:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -32,18 +32,18 @@ C     == Global data ==
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
-#include "GAD.h"
+# include "GAD.h"
 #endif
 #ifdef ALLOW_LONGSTEP
-#include "LONGSTEP_PARAMS.h"
+# include "LONGSTEP_PARAMS.h"
 #endif
 #ifdef ALLOW_PTRACERS
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS_PARAMS.h"
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS_PARAMS.h"
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
-#include "tamc_keys.h"
-#endif
+c#ifdef ALLOW_AUTODIFF_TAMC
+c# include "tamc_keys.h"
+c#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
@@ -101,7 +101,7 @@ cph)
         ENDDO
       ELSE
         DO k=1,Nr
-         deltaTX(k) = deltaTmom
+         deltaTX(k) = deltaTMom
         ENDDO
       ENDIF
 
@@ -245,7 +245,6 @@ CADJ loop = sequential
 
       ENDIF
 
-
 #ifdef TARGET_NEC_SX
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
@@ -269,7 +268,6 @@ CADJ loop = sequential
         ENDDO
        ENDDO
       ENDDO
-
 
 C--    Backward sweep
 CADJ loop = sequential

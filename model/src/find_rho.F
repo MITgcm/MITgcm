@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.41 2012/08/12 20:24:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.42 2014/04/04 20:56:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -73,7 +73,7 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         rhoLoc(i,j)  = 0. _d 0
@@ -317,7 +317,7 @@ C     abbreviations
             t3 = t2*t
             t4 = t3*t
 
-#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+#if (defined ALLOW_AUTODIFF && defined TARGET_NEC_SX)
 C     this line makes TAF create vectorizable code
             s3o2 = 0. _d 0
 #endif
@@ -470,7 +470,7 @@ C     abbreviations
             t3 = t2*t
             t4 = t3*t
 
-#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+#if (defined ALLOW_AUTODIFF && defined TARGET_NEC_SX)
 C     this line makes TAF create vectorizable code
             s3o2 = 0. _d 0
 #endif
@@ -681,7 +681,7 @@ C     abbreviations
             t1  = tFld(i,j)
             t2 = t1*t1
             s1  = sFld(i,j)
-#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+#if (defined ALLOW_AUTODIFF && defined TARGET_NEC_SX)
 C     this line makes TAF create vectorizable code
             sp5 = 0. _d 0
 #endif
@@ -764,7 +764,7 @@ CEOP
 C     abbreviations
         ct      = tFld(i,j)
         sa      = sFld(i,j)
-#if (defined ALLOW_AUTODIFF_TAMC && defined TARGET_NEC_SX)
+#if (defined ALLOW_AUTODIFF && defined TARGET_NEC_SX)
 C     this line makes TAF create vectorizable code
         sqrtsa = 0. _d 0
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.18 2013/07/30 18:51:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.19 2014/04/04 20:56:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -136,7 +136,7 @@ C        calculation in surface grid-cell below ice-shelf
      &                      SQUEEZE_RIGHT, myThid )
         selectNHfreeSurf = 0
       ENDIF
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       doResetHFactors = .TRUE.
 #endif
 #ifndef NONLIN_FRSURF

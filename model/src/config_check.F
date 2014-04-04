@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.75 2013/11/05 18:30:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.76 2014/04/04 20:56:31 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -151,7 +151,7 @@ C       code is being compiled
       ENDIF
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       IF ( momImplVertAdv ) THEN
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: momImplVertAdv is not yet'

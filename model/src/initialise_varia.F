@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.74 2013/12/29 17:43:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.75 2014/04/04 20:56:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -25,7 +25,7 @@ C     \ev
 C     !CALLING SEQUENCE:
 C     INITIALISE_VARIA
 C       |
-C #ifdef ALLOW_AUTODIFF_TAMC
+C #ifdef ALLOW_AUTODIFF
 C       |-- INI_DEPTHS         \
 C       |-- CTRL_DEPTH_INI      \
 C       |-- UPDATE_MASKS_ETC     } ALLOW_DEPTH_CONTROL case
@@ -94,7 +94,7 @@ CEOP
       IF (debugMode) CALL DEBUG_ENTER('INITIALISE_VARIA',myThid)
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 
       nIter0 = NINT( (startTime-baseTime)/deltaTClock )
 
@@ -109,7 +109,7 @@ C--   Update laplace operators for use in 2D conjugate gradient solver.
       CALL UPDATE_CG2D( startTime, nIter0, myThid )
 # endif /* ALLOW_DEPTH_CONTROL */
 
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 C--   Initialise Non-Lin FreeSurf variables:
       CALL INI_NLFS_VARS( myThid )
@@ -168,7 +168,7 @@ C     here to prevent resetting cost-funct in adinitialise_varia recomput.)
       CALL COST_INIT_VARIA( myThid )
 #endif /* ALLOW_COST */
 
-c#ifndef ALLOW_AUTODIFF_TAMC
+c#ifndef ALLOW_AUTODIFF
 c     IF ( usePickupBeforeC35 .AND. startTime .NE. baseTime ) THEN
 C-- IMPORTANT : Need to activate the following call to restart from a pickup
 C     file written by MITgcmUV_checkpoint34 (Feb-08, 2001) or earlier.
