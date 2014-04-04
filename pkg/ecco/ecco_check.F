@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.14 2013/04/01 13:16:19 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.15 2014/04/04 21:33:07 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -49,7 +49,7 @@ C     msgBuf      - Informational/error meesage buffer
      &        'ECCO_CHECK: for ALLOW_TRANSPORT_COST_CONTRIBUTION: ',
      &        'ndaysrec > maxNumDays in ecco_cost.h ',
      &        ndaysrec, maxNumDays
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
        CALL PRINT_ERROR( msgBuf , myThid )
        STOP 'ABNORMAL END: S/R ECCO_CHECK'
@@ -61,7 +61,7 @@ C     msgBuf      - Informational/error meesage buffer
        WRITE(msgBuf,'(2A)')
      &        'ECCO_CHECK: for ALLOW_PROFILES_CONTRIBUTION ',
      &        'requires usePROFILES to be .true.'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
        CALL PRINT_ERROR( msgBuf , myThid )
        STOP 'ABNORMAL END: S/R ECCO_CHECK'
@@ -79,7 +79,7 @@ c check for missing data files
       CALL ECCO_CHECK_FILES( using_cost_sst,'sst',
      & sstdatfile, sststartdate(1), myThid )
 #endif
-#ifdef ALLOW_TMI_COST_CONTRIBUTION
+#ifdef ALLOW_TMI_SST_COST_CONTRIBUTION
       CALL ECCO_CHECK_FILES( using_cost_sst,'sst',
      & tmidatfile, tmistartdate(1), myThid )
 #endif
@@ -125,10 +125,29 @@ c left for later : slightly different treatment would apply to profiles and genc
 #ifdef ALLOW_SEAICE_COST_CONTRIBUTION
          if (gencost_name(k).EQ.'siv4-conc') 
      &       using_cost_seaice=using_gencost(k)
-         if (gencost_name(k).EQ.'siv4-sst')
+         if (gencost_name(k).EQ.'siv4-deconc')
      &       using_cost_seaice=using_gencost(k)
-         if (gencost_name(k).EQ.'siv4-vol')
+         if (gencost_name(k).EQ.'siv4-exconc')
      &       using_cost_seaice=using_gencost(k)
+catn-- put stop statement if use old siv4 names:
+         if (gencost_name(k).EQ.'siv4-sst') then
+           WRITE(msgBuf,'(2A)')
+     &      'ECCO_CHECK: OLD seaice gencost_name siv4-sst is retired,',
+     &      ' NEW name is siv4-deconc'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+           CALL PRINT_ERROR( msgBuf , myThid )
+           STOP 'ABNORMAL END: S/R ECCO_CHECK'
+         endif
+         if (gencost_name(k).EQ.'siv4-vol') then
+           WRITE(msgBuf,'(2A)')
+     &      'ECCO_CHECK: OLD seaice gencost_name siv4-vol is retired,',
+     &      ' NEW name is siv4-exconc'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+           CALL PRINT_ERROR( msgBuf , myThid )
+           STOP 'ABNORMAL END: S/R ECCO_CHECK'
+         endif
 #endif
          endif
       enddo

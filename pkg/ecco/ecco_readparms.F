@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.66 2014/04/01 08:03:42 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.67 2014/04/04 21:33:07 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -518,8 +518,8 @@ c pre-specified generic cost terms using otherwise created barfiles
 #ifdef ALLOW_GENCOST_SEAICEV4
          elseif ( 
      &        (gencost_name(k).EQ.'siv4-conc').OR.
-     &        (gencost_name(k).EQ.'siv4-sst').OR.
-     &        (gencost_name(k).EQ.'siv4-vol') ) then
+     &        (gencost_name(k).EQ.'siv4-deconc').OR.
+     &        (gencost_name(k).EQ.'siv4-exconc') ) then
 c pre-specified generic cost terms that create their own barfile
            gencost_flag(k)=2
            using_gencost(k)=.TRUE.

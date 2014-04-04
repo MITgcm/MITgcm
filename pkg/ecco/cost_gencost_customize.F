@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.6 2013/03/28 17:24:41 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.7 2014/04/04 21:33:07 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -71,11 +71,11 @@ c
 
 #ifdef ALLOW_GENCOST_SEAICEV4
       do k=1,NGENCOST
-        if (gencost_name(k).EQ.'siv4-conc') gencost_modfld(i,j,bi,bj,k)
+       if (gencost_name(k).EQ.'siv4-conc') gencost_modfld(i,j,bi,bj,k)
      &        = area(i,j,bi,bj)*maskC(i,j,1,bi,bj) 
-        if (gencost_name(k).EQ.'siv4-sst') gencost_modfld(i,j,bi,bj,k)
+       if (gencost_name(k).EQ.'siv4-deconc') gencost_modfld(i,j,bi,bj,k)
      &        = theta(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
-        if (gencost_name(k).EQ.'siv4-vol') gencost_modfld(i,j,bi,bj,k)  
+       if (gencost_name(k).EQ.'siv4-exconc') gencost_modfld(i,j,bi,bj,k)  
      &        = heff(i,j,bi,bj)*maskC(i,j,1,bi,bj)
       enddo
 #endif
