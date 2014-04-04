@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.115 2013/11/22 01:06:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.116 2014/04/04 20:55:36 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -194,6 +194,12 @@ CEOI
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #include "AD_CONFIG.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
 #endif
@@ -259,7 +265,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # include "tamc.h"
 #endif
 #ifdef ALLOW_CTRL

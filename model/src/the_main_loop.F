@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.159 2014/03/17 19:00:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.160 2014/04/04 20:55:36 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
@@ -23,6 +26,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
+#endif
+#ifdef ALLOW_COST
+# include "COST_OPTIONS.h"
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
@@ -60,7 +66,7 @@ C     == Global variables ==
 
 c**************************************
 #ifdef ALLOW_AUTODIFF
-# ifndef ALLOW_AUTODIFF_OPENAD
+# ifndef ALLOW_OPENAD
 
 c These includes are needed for
 c AD-checkpointing.
@@ -175,7 +181,7 @@ c They provide the fields to be stored.
 #  endif
 # endif
 
-# endif /* undef ALLOW_AUTODIFF_OPENAD */
+# endif /* undef ALLOW_OPENAD */
 
 # ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
@@ -256,7 +262,7 @@ CADJ STORE heffm = tapelev_init, key = 1
 # endif
 #endif
 
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
 # ifdef ALLOW_THETA0_CONTROL
 c$openad INDEPENDENT(xx_theta)
 # endif
@@ -296,7 +302,7 @@ c$openad INDEPENDENT(xx_genarr3d)
 # ifdef ALLOW_GENTIM2D_CONTROL
 c$openad INDEPENDENT(xx_gentim2d)
 # endif
-#endif
+#endif /* ALLOW_OPENAD */
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INITIALISE_VARIA',myThid)
@@ -326,7 +332,7 @@ c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#ifndef ALLOW_AUTODIFF_OPENAD
+#ifndef ALLOW_OPENAD
 # ifdef ALLOW_AUTODIFF
 #  ifdef ALLOW_TAMC_CHECKPOINTING
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -531,7 +537,7 @@ c--         choice of the 3-tupel ( nchklev_1, nchklev_2, nchklev_3 ).
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #  endif /* ALLOW_TAMC_CHECKPOINTING */
 # endif /* ALLOW_AUTODIFF */
-#endif /* undef ALLOW_AUTODIFF_OPENAD */
+#endif /* undef ALLOW_OPENAD */
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #ifndef ALLOW_AUTODIFF
@@ -540,12 +546,12 @@ c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 c--     >>> Loop body start <<<
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       nIter0 = NINT( (startTime-baseTime)/deltaTClock )
 C--   Reset the model iteration counter and the model time.
       myIter = nIter0 + (iloop-1)
       myTime = startTime + float(iloop-1)*deltaTClock
-# ifndef ALLOW_AUTODIFF_OPENAD
+# ifndef ALLOW_OPENAD
       ikey_dynamics = ilev_1
 # endif
 #endif
@@ -582,7 +588,7 @@ C--   Reset the model iteration counter and the model time.
       CALL TIMER_STOP ('MAIN_DO_LOOP        [THE_MAIN_LOOP]', myThid)
 
 c--     >>> Loop body end <<<
-#ifndef ALLOW_AUTODIFF_OPENAD
+#ifndef ALLOW_OPENAD
 # ifdef ALLOW_AUTODIFF
 #   ifdef ALLOW_TAMC_CHECKPOINTING
             endif
@@ -603,7 +609,7 @@ c--     >>> Loop body end <<<
 # else /* ALLOW_AUTODIFF */
       ENDDO
 # endif /* ALLOW_AUTODIFF */
-#endif /* undef ALLOW_AUTODIFF_OPENAD */
+#endif /* undef ALLOW_OPENAD */
 
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STOPS   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -641,9 +647,9 @@ c--   Sum all cost function contributions.
       CALL COST_FINAL ( myThid )
       CALL TIMER_STOP ('COST_FINAL         [ADJOINT SPIN-DOWN]', myThid)
 
-# ifdef ALLOW_AUTODIFF_OPENAD
+# ifdef ALLOW_OPENAD
 c$openad DEPENDENT(fc)
-# endif /* ALLOW_AUTODIFF_OPENAD */
+# endif /* ALLOW_OPENAD */
 
 #endif /* ALLOW_COST */
 

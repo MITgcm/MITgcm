@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.15 2013/08/03 23:15:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.16 2014/04/04 20:55:36 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+c#ifdef ALLOW_AUTODIFF
+c# include "AUTODIFF_OPTIONS.h"
+c#endif
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
@@ -23,6 +26,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
+#endif
+#ifdef ALLOW_COST
+# include "COST_OPTIONS.h"
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
@@ -59,7 +65,7 @@ C     == Global variables ==
 #include "PARAMS.h"
 
 c**************************************
-#if (defined ALLOW_AUTODIFF) && (defined ALLOW_AUTODIFF_OPENAD)
+#ifdef ALLOW_OPENAD
 
 C-- The folowing header files are included in the_main_loop.F for TAF
 C    and might be needed here (where the iloop is done) for OpenAD
@@ -173,7 +179,7 @@ c# endif
 #  include "STREAMICE_CG.h"
 # endif
 
-#endif /* ALLOW_AUTODIFF and ALLOW_AUTODIFF_OPENAD */
+#endif /* ALLOW_OPENAD */
 c**************************************
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -202,7 +208,7 @@ CEOP
       IF (debugMode) CALL DEBUG_ENTER('MAIN_DO_LOOP',myThid)
 #endif
 
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
 C     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
       DO iloop = 1, nTimeSteps
@@ -222,7 +228,7 @@ C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
         CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
 #endif
 
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
       ENDDO
 C     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STOPS   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
