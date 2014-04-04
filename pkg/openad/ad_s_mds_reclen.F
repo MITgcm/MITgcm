@@ -2,10 +2,10 @@
 
       subroutine oad_s_MDS_RECLEN( filePrec, nnn, mythid, reclen )
 C IN:
-C   filePrec	integer - precision of file in bits
-C   nnn		integer - number of elements in record
+C   filePrec    integer :: precision of file in bits
+C   nnn         integer :: number of elements in record
 C OUT:
-C   MDS_RECLEN  integer - appropriate length of record in bytes or words
+C   MDS_RECLEN  integer :: appropriate length of record in bytes or words
 C
 C Created: 03/29/99 eckert@mit.edu + adcroft@mit.edu
 
