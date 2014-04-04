@@ -1,9 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1971 2014/04/02 15:58:54 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1972 2014/04/04 23:09:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o autodiff:
+  - Start to include explicitly AUTODIFF_OPTIONS.h, COST_OPTIONS.h,
+    and CTRL_OPTIONS.h in src files (to enable to skip the ECCO_CPPOPTIONS.h)
+    For now, only in pkgs used in verification/hs94.1x64x5.
+  - Replace ALLOW_AUTODIFF_TAMC by ALLOW_AUTODIFF (except for tape/storage
+    which are specific to TAF/TAMC).
+  - Replace ALLOW_AUTODIFF_OPENAD by ALLOW_OPENAD: 
+    since ALLOW_OPENAD is defined in PACKAGES_CONFIG.h (any time pkg/openad 
+    is compiled), this simplifies/reduces which *_OPTIONS.h file to include.
+  - OpenAD: change Makefile to generate the appropriate AD_CONFIG.h when 
+    building mitgcmuv_ad (make adAll).
+o pkg/atm_phys: 
+  - add some diagnostics for Short-wave and for convection S/R.
 o pkg/seaice/seaice_growth: 
   - fix a bug in the lateral melt parameterization for SEAICE_ITD
     in seaice_growth; tempFrz needs to be computed inside the i/j-loop
