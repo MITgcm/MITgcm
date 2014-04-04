@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.50 2014/02/12 00:45:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.51 2014/04/04 19:53:30 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -26,6 +26,9 @@ C stresses as well as internal viscous stresses.
 CEOI
 
 #include "MOM_FLUXFORM_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 #ifdef ALLOW_MOM_COMMON
 # include "MOM_COMMON_OPTIONS.h"
 #endif
@@ -59,7 +62,7 @@ C     == Global variables ==
 #ifdef ALLOW_MOM_COMMON
 # include "MOM_VISC.h"
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # include "tamc.h"
 # include "tamc_keys.h"
 # include "MOM_FLUXFORM.h"
@@ -462,7 +465,7 @@ C-- account for 3.D divergence of the flow in rStar coordinate:
          DO j=jMin,jMax
           DO i=iMin,iMax
            gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)
-     &     - (rStarExpW(i,j,bi,bj) - 1. _d 0)/deltaTfreesurf
+     &     - (rStarExpW(i,j,bi,bj) - 1. _d 0)/deltaTFreeSurf
      &       *uVel(i,j,k,bi,bj)
           ENDDO
          ENDDO
@@ -689,7 +692,7 @@ C-- account for 3.D divergence of the flow in rStar coordinate:
          DO j=jMin,jMax
           DO i=iMin,iMax
            gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)
-     &     - (rStarExpS(i,j,bi,bj) - 1. _d 0)/deltaTfreesurf
+     &     - (rStarExpS(i,j,bi,bj) - 1. _d 0)/deltaTFreeSurf
      &       *vVel(i,j,k,bi,bj)
           ENDDO
          ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/MDSIO_OPTIONS.h,v 1.10 2011/12/24 01:09:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/MDSIO_OPTIONS.h,v 1.11 2014/04/04 19:53:23 jmc Exp $
 C $Name:  $
 
 #ifndef MDSIO_OPTIONS_H
@@ -18,7 +18,7 @@ C Defining SAFE_IO stops the model from overwriting its own files
 #define _NEW_STATUS 'unknown'
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 #define ALLOW_BROKEN_MDSIO_GL
 #define _OLD_STATUS 'unknown'
 #else
@@ -28,7 +28,7 @@ C Defining SAFE_IO stops the model from overwriting its own files
 
 C I/O that includes tile halos in the files
 #undef ALLOW_WHIO
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # define ALLOW_WHIO
 # define ALLOW_WHIO_3D
 #endif
