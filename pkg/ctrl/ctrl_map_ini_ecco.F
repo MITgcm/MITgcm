@@ -1,8 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.27 2013/03/30 11:52:05 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.28 2014/04/04 21:16:56 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
-
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
       subroutine ctrl_map_ini_ecco( mythid )
 
@@ -51,10 +53,10 @@ c     == global variables ==
 #include "ecco_cost.h"
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 #include "tamc.h"
 #include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 c     == routine arguments ==
 
@@ -116,7 +118,6 @@ c--   only do interior, and exchange at the end
 
       fac = 1. _d 0
 
-
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do j = jmin,jmax
@@ -141,8 +142,6 @@ c--   only do interior, and exchange at the end
       enddo
       _EXCH_XYZ_RL( tmpfld3d, mythid)
 
-
-
 #ifdef ALLOW_THETA0_CONTROL
 c--   Temperature field.
       boundsVec(1)=-2.
@@ -157,7 +156,6 @@ c--   Temperature field.
       _EXCH_XYZ_RL( theta, mythid)
 #endif
 
-
 #ifdef ALLOW_SALT0_CONTROL
 c--   Salinity field.
       boundsVec(1)=29.
@@ -171,7 +169,6 @@ c--   Salinity field.
      & mythid )
       _EXCH_XYZ_RL( salt, mythid)
 #endif
-
 
 #if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
       boundsVec(1)=0.
@@ -192,7 +189,6 @@ c-- eschange UV:
        CALL EXCH_UV_XYZ_RS(uvel,vvel,.TRUE.,myThid)
 #endif
 
-
 #ifdef ALLOW_ETAN0_CONTROL
 c--   initial Eta.
       boundsVec(1)=0.
@@ -206,9 +202,6 @@ c--   initial Eta.
      & mythid )
       _EXCH_XY_RL( etan, mythid)
 #endif
-
-
-
 
 #ifdef ALLOW_RELAXSST_CONTROL
 c--   SST relaxation coefficient.
@@ -224,7 +217,6 @@ c--   SST relaxation coefficient.
       _EXCH_XY_RS( lambdaThetaClimRelax, mythid)
 #endif
 
-
 #ifdef ALLOW_RELAXSSS_CONTROL
 c--   SSS relaxation coefficient.
       boundsVec(1)=0.
@@ -239,13 +231,9 @@ c--   SSS relaxation coefficient.
       _EXCH_XY_RS( lambdaSaltClimRelax, mythid)
 #endif
 
-
-
-
 #ifdef ALLOW_SEAICE
       call seaice_ctrl_map_ini( mythid )
 #endif
-
 
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
       boundsVec(1)=0.
@@ -259,7 +247,6 @@ c--   SSS relaxation coefficient.
      & paramSmooth, mythid )
       _EXCH_XY_RL( bottomdragfld, mythid)
 #endif
-
 
 #ifdef ALLOW_EDDYPSI_CONTROL
       boundsVec(1)=-0.4
@@ -280,7 +267,6 @@ c-- exchange UV:
        CALL EXCH_UV_XYZ_RS(eddyPsiX,eddyPsiY,.TRUE.,myThid)
 #endif
 
-
 #ifdef ALLOW_DIFFKR_CONTROL
       boundsVec(1)=1. _d -6
       boundsVec(2)=2. _d -6
@@ -293,7 +279,6 @@ c-- exchange UV:
      & mythid )
       _EXCH_XYZ_RL( diffkr, mythid)
 #endif
-
 
 #ifdef ALLOW_KAPGM_CONTROL
       boundsVec(1)=1. _d 2
@@ -308,7 +293,6 @@ c-- exchange UV:
       _EXCH_XYZ_RL( kapgm, mythid)
 #endif
 
-
 #ifdef ALLOW_KAPREDI_CONTROL
       boundsVec(1)=1. _d 2
       boundsVec(2)=2. _d 2
@@ -321,7 +305,6 @@ c-- exchange UV:
      & mythid )
       _EXCH_XYZ_RL( kapredi, mythid)
 #endif
-
 
 #ifdef ALLOW_GENTIM2D_CONTROL
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -341,4 +324,3 @@ c-- exchange UV:
 
       return
       end
-

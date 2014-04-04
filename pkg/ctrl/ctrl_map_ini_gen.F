@@ -1,8 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.21 2012/09/04 14:58:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.22 2014/04/04 21:16:56 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
-
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
       subroutine ctrl_map_ini_gen3D(xxFileCur, wFileCur, xxDummyCur,
      & boundsVec, paramFld3d, maskFld3d, paramSmooth, mythid )
@@ -39,10 +41,10 @@ c     == global variables ==
 #include "ecco_cost.h"
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 #include "tamc.h"
 #include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 c     == routine arguments ==
 
@@ -98,7 +100,6 @@ c--   only do interior, and exchange outside
       doglobalread = .false.
       ladinit      = .false.
 
-
       call mdsreadfield(wFileCur,ctrlprec,'RL',nR,wFld3d,1,mythid)
       _EXCH_XYZ_RL( wFld3d, mythid )
 
@@ -107,7 +108,6 @@ c--   only do interior, and exchange outside
      &     xxFileCur(1:il),'.',optimcycle
       call active_read_xyz( fnamegeneric, xxFld3d, 1,
      & doglobalread, ladinit, optimcycle, mythid, xxDummyCur )
-
 
       IF ( .NOT.ctrlSmoothCorrel3D ) THEN
 
@@ -199,7 +199,6 @@ c avoid param out of [boundsVec(1) boundsVec(4)]
      &    nr, paramFld3d, 1, optimcycle, mythid)
       ENDIF
 
-
       RETURN
       END
 
@@ -239,10 +238,10 @@ c     == global variables ==
 #include "ecco_cost.h"
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 #include "tamc.h"
 #include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 c     == routine arguments ==
 
@@ -298,7 +297,6 @@ c--   only do interior, and exchange outside
       doglobalread = .false.
       ladinit      = .false.
 
-
       call mdsreadfield(wFileCur,ctrlprec,'RL',1,wFld2d,1,mythid)
       _EXCH_XY_RL( wFld2d, mythid )
 
@@ -307,7 +305,6 @@ c--   only do interior, and exchange outside
      &     xxFileCur(1:il),'.',optimcycle
       call active_read_xy( fnamegeneric, xxFld2d, 1,
      & doglobalread, ladinit, optimcycle, mythid, xxDummyCur )
-
 
       IF ( .NOT.ctrlSmoothCorrel2D ) THEN
 
