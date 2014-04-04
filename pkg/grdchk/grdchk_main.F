@@ -1,8 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.42 2012/08/25 14:18:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.43 2014/04/04 21:39:04 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
 #include "AD_CONFIG.h"
+#ifdef ALLOW_COST
+# include "COST_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOI
 C
@@ -159,7 +165,7 @@ Cph   assuming all xx_ fields are initialised to zero.
       ftlxxmemo = 0.
 #if (defined  (ALLOW_ADMTLM))
       fcref = objf_state_final(idep,jdep,1,1,1)
-#elif (defined (ALLOW_AUTODIFF_OPENAD))
+#elif (defined (ALLOW_OPENAD))
       fcref = fc%v
 #else
       fcref = fc
@@ -323,7 +329,7 @@ C--   perturb it and write back to file
 C--   forward run with perturbed control vector
           myTime = startTime
           myIter = nIter0
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
           CALL OpenAD_THE_MAIN_LOOP( myTime, myIter, myThid )
 #else
           CALL THE_MAIN_LOOP( myTime, myIter, myThid )
@@ -331,7 +337,7 @@ C--   forward run with perturbed control vector
 
 #if (defined (ALLOW_ADMTLM))
           fcpertplus = objf_state_final(idep,jdep,1,1,1)
-#elif (defined (ALLOW_AUTODIFF_OPENAD))
+#elif (defined (ALLOW_OPENAD))
           fcpertplus = fc%v
 #else
           fcpertplus = fc
@@ -362,7 +368,7 @@ C--   perturb it and write back to file
 C--   forward run with perturbed control vector
             myTime = startTime
             myIter = nIter0
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
             CALL OpenAD_THE_MAIN_LOOP( myTime, myIter, myThid )
 #else
             CALL THE_MAIN_LOOP( myTime, myIter, myThid )
@@ -370,7 +376,7 @@ C--   forward run with perturbed control vector
 
 #if (defined (ALLOW_ADMTLM))
             fcpertminus = objf_state_final(idep,jdep,1,1,1)
-#elif (defined (ALLOW_AUTODIFF_OPENAD))
+#elif (defined (ALLOW_OPENAD))
             fcpertminus = fc%v
 #else
             fcpertminus = fc
