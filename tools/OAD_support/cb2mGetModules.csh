@@ -2,8 +2,20 @@
 set fileName=${1:r}
 set awkScript=${2}    
 echo '      MODULE '${fileName}_mod   > ${fileName}_temp
-echo '#include "PACKAGES_CONFIG.h"'  >> ${fileName}_temp
-echo '#include "CPP_OPTIONS.h"'      >> ${fileName}_temp
+echo '#include "PACKAGES_CONFIG.h"'   >> ${fileName}_temp
+echo '#include "CPP_OPTIONS.h"'       >> ${fileName}_temp
+echo '#ifdef ALLOW_AUTODIFF'          >> ${fileName}_temp
+echo '# include "AUTODIFF_OPTIONS.h"' >> ${fileName}_temp
+echo '#endif'                         >> ${fileName}_temp
+echo '#ifdef ALLOW_COST'              >> ${fileName}_temp
+echo '# include "COST_OPTIONS.h"'     >> ${fileName}_temp
+echo '#endif'                         >> ${fileName}_temp
+echo '#ifdef ALLOW_CTRL'              >> ${fileName}_temp
+echo '# include "CTRL_OPTIONS.h"'     >> ${fileName}_temp
+echo '#endif'                         >> ${fileName}_temp
+echo '#ifdef ALLOW_ECCO'              >> ${fileName}_temp
+echo '# include "ECCO_OPTIONS.h"'     >> ${fileName}_temp
+echo '#endif'                         >> ${fileName}_temp
 if ( ${fileName} == 'DIC_LOAD' ) then
   echo '#include "DIC_OPTIONS.h"'    >> ${fileName}_temp
 endif
