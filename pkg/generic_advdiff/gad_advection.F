@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.73 2013/11/19 16:59:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.74 2014/04/04 20:28:13 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -41,7 +44,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "GAD.h"
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # include "tamc.h"
 # include "tamc_keys.h"
 # ifdef ALLOW_PTRACERS
@@ -222,12 +225,12 @@ C-    rTrans and fVerT need to be initialised to zero:
         rTrans(i,j)  = 0. _d 0
         fVerT(i,j,1) = 0. _d 0
         fVerT(i,j,2) = 0. _d 0
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # ifdef GAD_MULTIDIM_COMPRESSIBLE
         localVol(i,j) = 0. _d 0
 # endif
         localTij(i,j) = 0. _d 0
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
        ENDDO
       ENDDO
 
@@ -351,7 +354,7 @@ C-    not CubedSphere
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   X direction
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 C-     Always reset advective flux in X
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -364,7 +367,7 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
 CADJ STORE af(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
 # endif
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
       IF (calc_fluxes_X) THEN
 
@@ -380,18 +383,18 @@ C-     Internal exchange for calculations in X
         ENDIF
 
 C-     Advective flux in X
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           af(i,j) = 0.
          ENDDO
         ENDDO
-#else /* ALLOW_AUTODIFF_TAMC */
+#else /* ALLOW_AUTODIFF */
 # ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
 # endif
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
         IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &     .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
@@ -410,7 +413,7 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
           CALL GAD_DST3FL_ADV_X(    bi,bj,k, .TRUE., deltaTLev(k),
      I             uTrans, uFld(1-OLx,1-OLy,k), maskLocW, localTij,
      O             af, myThid )
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
         ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_X(     bi,bj,k, .TRUE., deltaTLev(k),
      I             uTrans, uFld(1-OLx,1-OLy,k), maskLocW, localTij,
@@ -548,7 +551,7 @@ C--   End of X direction
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Y direction
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 C-     Always reset advective flux in Y
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -561,7 +564,7 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
 CADJ STORE af(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
 # endif
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
       IF (calc_fluxes_Y) THEN
 
@@ -577,18 +580,18 @@ C-     Internal exchange for calculations in Y
         ENDIF
 
 C-     Advective flux in Y
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           af(i,j) = 0.
          ENDDO
         ENDDO
-#else /* ALLOW_AUTODIFF_TAMC */
+#else /* ALLOW_AUTODIFF */
 #ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
 #endif
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
         IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &     .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
@@ -607,7 +610,7 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
           CALL GAD_DST3FL_ADV_Y(    bi,bj,k, .TRUE., deltaTLev(k),
      I             vTrans, vFld(1-OLx,1-OLy,k), maskLocS, localTij,
      O             af, myThid )
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
         ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_Y(     bi,bj,k, .TRUE., deltaTLev(k),
      I             vTrans, vFld(1-OLx,1-OLy,k), maskLocS, localTij,
@@ -870,7 +873,7 @@ C-    Compute vertical advective flux in the interior:
            CALL GAD_DST3FL_ADV_R(    bi,bj,k, deltaTLev(k),
      I              rTrans, wFld(1-OLx,1-OLy,k), localT3d,
      O              fVerT(1-OLx,1-OLy,kUp), myThid )
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
          ELSEIF (vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_R(     bi,bj,k, deltaTLev(k),
      I              rTrans, wFld(1-OLx,1-OLy,k), localT3d,
