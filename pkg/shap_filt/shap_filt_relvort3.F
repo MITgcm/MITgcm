@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_relvort3.F,v 1.7 2009/06/28 01:08:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_relvort3.F,v 1.8 2014/04/04 19:38:23 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -46,16 +46,16 @@ C     == Local variables ==
 #endif /* ALLOW_EXCH2 */
       _RL AZcorner
 
-#ifdef ALLOW_AUTODIFF_TAMC
-      DO J=1-Oly,sNy+Oly
-       DO I=1-Olx,sNx+Olx
+#ifdef ALLOW_AUTODIFF
+      DO J=1-OLy,sNy+OLy
+       DO I=1-OLx,sNx+OLx
         vort3(I,J) = 0. _d 0
        ENDDO
       ENDDO
 #endif
 
-      DO J=2-Oly,sNy+Oly
-       DO I=2-Olx,sNx+Olx
+      DO J=2-OLy,sNy+OLy
+       DO I=2-OLx,sNx+OLx
 
 C       Horizontal curl of flow field - ignoring lopping factors
         vort3(I,J)=

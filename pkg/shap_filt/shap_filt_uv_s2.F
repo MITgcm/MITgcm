@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.17 2009/06/28 01:08:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.18 2014/04/04 19:38:23 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -75,8 +75,8 @@ CEOP
 
         IF (useCubedSphereExchange) THEN
 C-      need to initialise hDiv for MOM_VI_DEL2UV(call FILL_CS_CORNER_TR_RL)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             hDiv(i,j) = 0. _d 0
            ENDDO
           ENDDO
@@ -85,8 +85,8 @@ C-      need to initialise hDiv for MOM_VI_DEL2UV(call FILL_CS_CORNER_TR_RL)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO k=1,kSize
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              tmpFldU(i,j,k,bi,bj)=uFld(i,j,k,bi,bj)
      &                *_maskW(i,j,k,bi,bj)
              tmpFldV(i,j,k,bi,bj)=vFld(i,j,k,bi,bj)
@@ -134,8 +134,8 @@ C-    [d_xx+d_yy] tmpFld
 #endif
          ELSE
 C-    replace Physical calc Div & Vort by computational one :
-           DO j=1-Oly,sNy+Oly-1
-            DO i=1-Olx,sNx+Olx-1
+           DO j=1-OLy,sNy+OLy-1
+            DO i=1-OLx,sNx+OLx-1
              hDiv(i,j)=(tmpFldU(i+1,j,k,bi,bj)-tmpFldU(i,j,k,bi,bj))
      &                +(tmpFldV(i,j+1,k,bi,bj)-tmpFldV(i,j,k,bi,bj))
             ENDDO
@@ -151,13 +151,13 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
          IF (n.GT.nShapUV-nShapUVPhys) THEN
            IF (Shap_uvLength.LT.0.) THEN
-             DO j=1-Oly,sNy+Oly-1
-              DO i=1-Olx,sNx+Olx-1
+             DO j=1-OLy,sNy+OLy-1
+              DO i=1-OLx,sNx+OLx-1
                 hDiv(i,j) = hDiv(i,j) * rA(i,j,bi,bj)
               ENDDO
              ENDDO
-             DO j=2-Oly,sNy+Oly
-              DO i=2-Olx,sNx+Olx
+             DO j=2-OLy,sNy+OLy
+              DO i=2-OLx,sNx+OLx
                 vort3(i,j)= vort3(i,j)*rAz(i,j,bi,bj)
               ENDDO
              ENDDO
@@ -168,8 +168,8 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      O                    tmpFldV(1-OLx,1-OLy,k,bi,bj),
      I                    myThid)
            IF (Shap_uvLength.LT.0.) THEN
-            DO j=2-Oly,sNy+Oly-1
-             DO i=2-Olx,sNx+Olx-1
+            DO j=2-OLy,sNy+OLy-1
+             DO i=2-OLx,sNx+OLx-1
               tmpFldU(i,j,k,bi,bj) = -0.125 _d 0*tmpFldU(i,j,k,bi,bj)
      &                                          *_maskW(i,j,k,bi,bj)
               tmpFldV(i,j,k,bi,bj) = -0.125 _d 0*tmpFldV(i,j,k,bi,bj)
@@ -177,8 +177,8 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
              ENDDO
             ENDDO
            ELSEIF (Shap_uvLength.EQ.0.) THEN
-            DO j=2-Oly,sNy+Oly-1
-             DO i=2-Olx,sNx+Olx-1
+            DO j=2-OLy,sNy+OLy-1
+             DO i=2-OLx,sNx+OLx-1
               tmpFldU(i,j,k,bi,bj) = -0.125 _d 0*tmpFldU(i,j,k,bi,bj)
      &                            *rAw(i,j,bi,bj)*_maskW(i,j,k,bi,bj)
               tmpFldV(i,j,k,bi,bj) = -0.125 _d 0*tmpFldV(i,j,k,bi,bj)
@@ -186,8 +186,8 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
              ENDDO
             ENDDO
            ELSE
-            DO j=2-Oly,sNy+Oly-1
-             DO i=2-Olx,sNx+Olx-1
+            DO j=2-OLy,sNy+OLy-1
+             DO i=2-OLx,sNx+OLx-1
               tmpFldU(i,j,k,bi,bj) = -0.125 _d 0*tmpFldU(i,j,k,bi,bj)
      &               *Shap_uvLength*Shap_uvLength*_maskW(i,j,k,bi,bj)
               tmpFldV(i,j,k,bi,bj) = -0.125 _d 0*tmpFldV(i,j,k,bi,bj)
@@ -197,7 +197,7 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
            ENDIF
          ELSE
 C-       replace derivatives in physical space of Div & Vort by computational ones:
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
            IF ( .NOT.Shap_alwaysExchUV
      &          .AND. useCubedSphereExchange ) THEN
 C          to compute d/dx(hDiv), fill corners with appropriate values:
@@ -205,15 +205,15 @@ C          to compute d/dx(hDiv), fill corners with appropriate values:
      &                                  hDiv, bi,bj, myThid )
            ENDIF
 #endif
-           DO j=2-Oly,sNy+Oly-1
-            DO i=2-Olx,sNx+Olx-1
+           DO j=2-OLy,sNy+OLy-1
+            DO i=2-OLx,sNx+OLx-1
              tmpFldU(i,j,k,bi,bj) = -0.125 _d 0*
      &                   ( (hDiv(i,j) - hDiv(i-1,j))
      &                    -(vort3(i,j+1)-vort3(i,j))
      &                   )*maskW(i,j,k,bi,bj)
             ENDDO
            ENDDO
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
            IF ( .NOT.Shap_alwaysExchUV
      &          .AND. useCubedSphereExchange ) THEN
 C          to compute d/dy(hDiv), fill corners with appropriate values:
@@ -221,8 +221,8 @@ C          to compute d/dy(hDiv), fill corners with appropriate values:
      &                                  hDiv, bi,bj, myThid )
            ENDIF
 #endif
-           DO j=2-Oly,sNy+Oly-1
-            DO i=2-Olx,sNx+Olx-1
+           DO j=2-OLy,sNy+OLy-1
+            DO i=2-OLx,sNx+OLx-1
              tmpFldV(i,j,k,bi,bj) = -0.125 _d 0*
      &                   ( (hDiv(i,j) - hDiv(i,j-1))
      &                    +(vort3(i+1,j)-vort3(i,j))
@@ -248,14 +248,14 @@ C      F <-  [1 - (d_xx+d_yy)^n *deltaT/tau].F
           DO j=1,sNy
            DO i=1,sNx+1
             uFld(i,j,k,bi,bj)=uFld(i,j,k,bi,bj)
-     &                  -tmpFldU(i,j,k,bi,bj)*deltaTmom/Shap_uvtau
+     &                  -tmpFldU(i,j,k,bi,bj)*deltaTMom/Shap_uvtau
             tmpFldU(i,j,k,bi,bj)= -tmpFldU(i,j,k,bi,bj)/Shap_uvtau
            ENDDO
           ENDDO
           DO j=1,sNy+1
            DO i=1,sNx
             vFld(i,j,k,bi,bj)=vFld(i,j,k,bi,bj)
-     &                  -tmpFldV(i,j,k,bi,bj)*deltaTmom/Shap_uvtau
+     &                  -tmpFldV(i,j,k,bi,bj)*deltaTMom/Shap_uvtau
             tmpFldV(i,j,k,bi,bj)= -tmpFldV(i,j,k,bi,bj)/Shap_uvtau
            ENDDO
           ENDDO

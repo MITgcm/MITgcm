@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s2.F,v 1.15 2009/04/28 18:20:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s2.F,v 1.16 2014/04/04 19:38:23 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -78,15 +78,14 @@ C-------
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO k=1,kSize
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              tmpFld(i,j,k,bi,bj)=field(i,j,k,bi,bj)
             ENDDO
            ENDDO
           ENDDO
          ENDDO
         ENDDO
-
 
 C      ( d_xx +d_yy )^n tmpFld
 
@@ -110,12 +109,12 @@ C      ( d_xx +d_yy )^n tmpFld
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--        Calculate gradient in X direction:
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
            IF ( .NOT.Shap_alwaysExchTr
      &          .AND. useCubedSphereExchange ) THEN
 C          to compute d/dx(tmpFld), fill corners with appropriate values:
              CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
-     &                                 tmpFld(1-Olx,1-Oly,k,bi,bj),
+     &                                 tmpFld(1-OLx,1-OLy,k,bi,bj),
      &                                 bi,bj, myThid )
            ENDIF
 #endif
@@ -141,12 +140,12 @@ C-         Physical space: grad_x
            ENDIF
 
 C--        Calculate gradient in Y direction:
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
            IF ( .NOT.Shap_alwaysExchTr
      &          .AND. useCubedSphereExchange ) THEN
 C          to compute d/dy(tmpFld), fill corners with appropriate values:
              CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
-     &                                 tmpFld(1-Olx,1-Oly,k,bi,bj),
+     &                                 tmpFld(1-OLx,1-OLy,k,bi,bj),
      &                                 bi,bj, myThid )
            ENDIF
 #endif
