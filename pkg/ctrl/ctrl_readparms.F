@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.47 2014/03/16 17:08:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.48 2014/04/04 21:19:04 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -171,7 +171,7 @@ c--     Set default values.
         doZscaleUnpack      = .FALSE.
         doZscalePack        = .FALSE.
         doMainUnpack        = .TRUE.
-#if (defined (ALLOW_ADJOINT_RUN)||defined (ALLOW_TANGENTLINEAR_RUN) || defined (ALLOW_AUTODIFF_OPENAD))
+#if (defined (ALLOW_ADJOINT_RUN)||defined (ALLOW_TANGENTLINEAR_RUN))
         doMainPack          = .TRUE.
 #else
         doMainPack          = .FALSE.
