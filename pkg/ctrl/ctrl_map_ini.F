@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.38 2013/03/14 15:00:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.39 2014/04/04 21:16:09 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -112,7 +112,7 @@ c--   Temperature field.
      $          tmpfld3d(i,j,k,bi,bj)=
      $          sign(2.0/sqrt(wtheta(k,bi,bj)),tmpfld3d(i,j,k,bi,bj))
 #endif
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
                 theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj) +
      &                               fac*xx_theta(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
@@ -152,7 +152,7 @@ c--   Temperature field.
      $          tmpfld3d(i,j,k,bi,bj)=
      $          sign(2.0/sqrt(wsalt(k,bi,bj)),tmpfld3d(i,j,k,bi,bj))
 #endif
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
                 salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj) +
      &                               fac*xx_salt(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
@@ -183,7 +183,7 @@ c--   Temperature field.
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
                 ptracer(i,j,k,bi,bj,1) = ptracer(i,j,k,bi,bj,1) +
      &                               fac*xx_tr1(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
@@ -255,7 +255,7 @@ c--   diffkr.
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
                 diffkr(i,j,k,bi,bj) = diffkr(i,j,k,bi,bj) +
      &                                xx_diffkr(i,j,k,bi,bj) +
      &                                tmpfld3d(i,j,k,bi,bj)
@@ -285,7 +285,7 @@ c--   kapgm.
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
                 kapgm(i,j,k,bi,bj) = kapgm(i,j,k,bi,bj) +
      &                               xx_kapgm(i,j,k,bi,bj) +
      &                               tmpfld3d(i,j,k,bi,bj)
@@ -455,7 +455,7 @@ c-- initial zonal velocity
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
                 uVel(i,j,k,bi,bj) = uVel(i,j,k,bi,bj) +
      &                                  fac*xx_uvel(i,j,k,bi,bj)
 #else
@@ -482,7 +482,7 @@ c-- initial merid. velocity
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
                 vVel(i,j,k,bi,bj) = vVel(i,j,k,bi,bj) +
      &                                  fac*xx_vvel(i,j,k,bi,bj)
 #else
@@ -508,7 +508,7 @@ c--   initial Eta.
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
               etaN(i,j,bi,bj) = etaN(i,j,bi,bj) +
      &                              fac*xx_etan(i,j,bi,bj)
 #else

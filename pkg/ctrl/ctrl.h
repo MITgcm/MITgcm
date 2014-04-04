@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.69 2014/01/17 21:36:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.70 2014/04/04 21:16:09 jmc Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -55,7 +55,7 @@ cph Need to put this in namelist at some point!
 
 C     doInitXX               ::   at iter 0 only, set ctrls to 0 and write to xx*000.data
 C     doMainPack             ::   pack adxx*data files into ecco_cost_* file (usually for optim.x)
-C     doMainUnpack           ::   unpack ecco_ctrl_* file (usually from optim.x) into xx_*data files 
+C     doMainUnpack           ::   unpack ecco_ctrl_* file (usually from optim.x) into xx_*data files
 C     doPackDiag             ::   output diag_pack*/diag_unpack* files during ctrl_pack/ctrl_unpack
 C     doSinglePrecTapelev    ::   reduce precision of ad tape files to float32 (only used in pkg/autodiff ...)
 C     ctrlSmoothCorrel2D     ::   use pkg/smooth correlation operator (incl. smoother) for 2D controls (Weaver, Courtier 01)
@@ -74,7 +74,7 @@ C     ctrlSmoothCorrel3D     ::   use pkg/smooth correlation operator (incl. smo
      &                       doSinglePrecTapelev,
      &                       doAdmtlmBypassAD
 
-      logical ctrlSmoothCorrel2D, ctrlSmoothCorrel3D 
+      logical ctrlSmoothCorrel2D, ctrlSmoothCorrel3D
       logical doInitXX
       logical doAdmTlm
       logical doPackDiag
@@ -293,7 +293,7 @@ c     TAMC sees xx_..._dummy
       _RL tmpfld3d
      &    (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
 C
       common /controlvars_r_openad/
      &        xx_theta
@@ -359,7 +359,7 @@ c     xx_tauu1 - zonal wind stress record after  current date.
 c     xx_tauv0 - meridional wind stress record before current date.
 c     xx_tauv1 - meridional wind stress record after  current date.
 
-#if     (defined  (ALLOW_HFLUX_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined  (ALLOW_HFLUX0_CONTROL)))
+#if     (defined  (ALLOW_HFLUX_CONTROL) || (defined (ALLOW_OPENAD) && defined  (ALLOW_HFLUX0_CONTROL)))
       common /controlaux_hflux_r/
      &                      xx_hflux0,
      &                      xx_hflux1
@@ -369,7 +369,7 @@ c     xx_tauv1 - meridional wind stress record after  current date.
      &                      xx_atemp1
 #endif
 
-#if     (defined  (ALLOW_SFLUX_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined  (ALLOW_SFLUX0_CONTROL)))
+#if     (defined  (ALLOW_SFLUX_CONTROL) || (defined (ALLOW_OPENAD) && defined  (ALLOW_SFLUX0_CONTROL)))
       common /controlaux_swflux_r/
      &                      xx_sflux0,
      &                      xx_sflux1
@@ -389,7 +389,7 @@ c     xx_tauv1 - meridional wind stress record after  current date.
      &                      xx_swdown_mean
 #endif
 
-#if     (defined  (ALLOW_USTRESS_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined (ALLOW_TAUU0_CONTROL)))
+#if     (defined  (ALLOW_USTRESS_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_TAUU0_CONTROL)))
       common /controlaux_ustress_r/
      &                      xx_tauu0,
      &                      xx_tauu1
@@ -401,7 +401,7 @@ c     xx_tauv1 - meridional wind stress record after  current date.
      &                      xx_uwind1
 #endif
 
-#if     (defined  (ALLOW_VSTRESS_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined (ALLOW_TAUV0_CONTROL)))
+#if     (defined  (ALLOW_VSTRESS_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_TAUV0_CONTROL)))
       common /controlaux_vstress_r/
      &                      xx_tauv0,
      &                      xx_tauv1
@@ -435,7 +435,7 @@ c     xx_tauv1 - meridional wind stress record after  current date.
      &                      xx_obcse0,
      &                      xx_obcse1
 #endif
-#ifdef ALLOW_OBCS_CONTROL_MODES 
+#ifdef ALLOW_OBCS_CONTROL_MODES
        common /ih_modes/ modesv
        _RL modesv (nr,nr,nr)
 #endif
@@ -514,21 +514,21 @@ c     xx_tauv1 - meridional wind stress record after  current date.
       _RL xx_shifwflx1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif /* ALLOW_SHIFWFLX_CONTROL */
 
-#if     (defined  (ALLOW_HFLUX_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined (ALLOW_HFLUX0_CONTROL)))
+#if     (defined  (ALLOW_HFLUX_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_HFLUX0_CONTROL)))
       _RL xx_hflux0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_hflux1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #elif   (defined  (ALLOW_ATEMP_CONTROL))
       _RL xx_atemp0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_atemp1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
-#if     (defined  (ALLOW_SFLUX_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined (ALLOW_SFLUX0_CONTROL)))
+#if     (defined  (ALLOW_SFLUX_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_SFLUX0_CONTROL)))
       _RL xx_sflux0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_sflux1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #elif   (defined  (ALLOW_AQH_CONTROL))
       _RL xx_aqh0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_aqh1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
-#if     (defined  (ALLOW_USTRESS_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined (ALLOW_TAUU0_CONTROL)))
+#if     (defined  (ALLOW_USTRESS_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_TAUU0_CONTROL)))
       _RL xx_tauu0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_tauu1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
@@ -536,7 +536,7 @@ c     xx_tauv1 - meridional wind stress record after  current date.
       _RL xx_uwind0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_uwind1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
-#if     (defined  (ALLOW_VSTRESS_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined (ALLOW_TAUV0_CONTROL)))
+#if     (defined  (ALLOW_VSTRESS_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_TAUV0_CONTROL)))
       _RL xx_tauv0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_tauv1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
@@ -569,15 +569,15 @@ c     xx_tauv1 - meridional wind stress record after  current date.
       _RL xx_evap1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 #if (defined  (ALLOW_SNOWPRECIP_CONTROL))
-      _RL xx_snowprecip0 
+      _RL xx_snowprecip0
      &    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL xx_snowprecip1 
+      _RL xx_snowprecip1
      &    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 #if (defined  (ALLOW_APRESSURE_CONTROL))
-      _RL xx_apressure0 
+      _RL xx_apressure0
      &    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL xx_apressure1 
+      _RL xx_apressure1
      &    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 #if (defined  (ALLOW_RUNOFF_CONTROL))
@@ -601,7 +601,6 @@ c     xx_tauv1 - meridional wind stress record after  current date.
       _RL xx_swdown_mean(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
-
 #ifdef ALLOW_OBCSN_CONTROL
       _RL xx_obcsn0 (1-Olx:sNx+Olx,Nr,nSx,nSy,nobcs)
       _RL xx_obcsn1 (1-Olx:sNx+Olx,Nr,nSx,nSy,nobcs)
@@ -618,7 +617,6 @@ c     xx_tauv1 - meridional wind stress record after  current date.
       _RL xx_obcse0 (1-Oly:sNy+Oly,Nr,nSx,nSy,nobcs)
       _RL xx_obcse1 (1-Oly:sNy+Oly,Nr,nSx,nSy,nobcs)
 #endif
-
 
 c     Files where the control variables are stored:
 c     =============================================
@@ -773,15 +771,15 @@ cHFLUXM_CONTROL
 c     Calendar information for the control variables:
 c     ===============================================
 c
-c     xx_${varname}period - sampling interval for the ${varname} control 
+c     xx_${varname}period - sampling interval for the ${varname} control
 c                           part in seconds
 c     special cases for ifdef ALLOW_CAL (in anology to pkg/exf):
 c     xx_${varname}period = -12. : control parameter is the seasonal cycle
 c     xx_${varname}period =   0. : control parameter is constant in time
-c     
+c
 c     The naming convention follows mostly that of the exf-pkg. A few
 c     examples follow:
-c     xx_atempperiod - sampling interval for the atmospheric surface 
+c     xx_atempperiod - sampling interval for the atmospheric surface
 c                      temperature control part.
 c     ...
 c     xx_hfluxperiod - sampling interval for the heat flux control part.
@@ -863,9 +861,9 @@ c                      control part.
      &       xx_lwflux_remo_intercept, xx_lwflux_remo_slope,
      &       xx_lwdown_remo_intercept, xx_lwdown_remo_slope,
      &       xx_evap_remo_intercept, xx_evap_remo_slope,
-     &       xx_snowprecip_remo_intercept, 
+     &       xx_snowprecip_remo_intercept,
      &       xx_snowprecip_remo_slope,
-     &       xx_apressure_remo_intercept, 
+     &       xx_apressure_remo_intercept,
      &       xx_apressure_remo_slope,
      &       xx_sst_remo_intercept, xx_sst_remo_slope,
      &       xx_sss_remo_intercept, xx_sss_remo_slope,
@@ -896,7 +894,6 @@ c                      control part.
       _RL xx_uwind_remo_intercept, xx_uwind_remo_slope
       _RL xx_vwind_remo_intercept, xx_vwind_remo_slope
       _RL xx_shifwflx_remo_intercept,xx_shifwflx_remo_slope
-
 
 c     xx_hfluxstartdate - start date for the heat flux control part.
 c     xx_sfluxstartdate - start date for the salt flux control part.
@@ -1120,9 +1117,7 @@ cHFLUXM_CONTROL
       double precision phtmpadmtlm(maxn)
 #endif
 
-
 c     ==================================================================
 c     END OF HEADER CONTROLVARS ctrl.h
 c     ==================================================================
-
 
