@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.20 2013/04/11 15:49:56 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.21 2014/04/04 19:34:00 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -109,7 +109,7 @@ C     Write each passive tracer in its own file
          ENDIF
 #endif /* MULTIPLE_RECORD_STATE_FILES */
 
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
          CALL WRITE_REC_XYZ_RL(pref,
      &        pTracer(:,:,:,:,:,iTracer)%v,iRec,myIter,myThid)
 #else

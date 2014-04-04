@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_final.F,v 1.7 2013/11/06 19:01:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_final.F,v 1.8 2014/04/04 19:34:00 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -107,7 +107,7 @@ C--   Sum up all contributions.
 cML      CALL GLOBAL_SUM_TILE_RL( num_shelfice, no_shelfice, myThid )
       CALL GLOBAL_SUM_TILE_RL( num_shifwflx, no_shifwflx, myThid )
 
-# ifndef ALLOW_AUTODIFF_OPENAD
+# ifndef ALLOW_OPENAD
 C--   Each process has calculated the global part for itself.
       IF ( MASTER_CPU_THREAD(myThid) ) THEN
 
@@ -123,7 +123,7 @@ cML       WRITE(ifc,*) 'f_shelfice =', f_shelfice, no_shelfice
        CLOSE(ifc)
 
       ENDIF
-# endif /* ALLOW_AUTODIFF_OPENAD */
+# endif /* ALLOW_OPENAD */
 
 #endif /* ALLOW_COST */
 

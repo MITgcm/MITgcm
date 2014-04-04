@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.33 2013/04/11 19:01:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.34 2014/04/04 19:34:00 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -97,7 +97,7 @@ C     drKp1, recip_drLoc
       PARAMETER ( shiTwoThirds = 0.66666666666666666666666666667D0 )
 #endif
 
-#ifndef ALLOW_AUTODIFF_OPENAD
+#ifndef ALLOW_OPENAD
       _RL SW_TEMP
       EXTERNAL SW_TEMP
 #endif
@@ -284,7 +284,7 @@ C--   turn potential temperature into in-situ temperature relative
 C--   to the surface
         DO J = 1, sNy
          DO I = 1, sNx
-#ifndef ALLOW_AUTODIFF_OPENAD
+#ifndef ALLOW_OPENAD
           tLoc(I,J) = SW_TEMP(sLoc(I,J),tLoc(I,J),pLoc(I,J),zeroRL)
 #else
           CALL SW_TEMP(sLoc(I,J),tLoc(I,J),pLoc(I,J),zeroRL,tLoc(I,J))
