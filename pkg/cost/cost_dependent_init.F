@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.13 2012/09/11 01:32:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.14 2014/04/04 21:04:47 jmc Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
@@ -46,7 +46,7 @@ c     == end of interface ==
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
 
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
       fc%v = 0.0
 #else
       fc   = 0. _d 0
@@ -54,7 +54,7 @@ c     == end of interface ==
 
 #ifdef ALLOW_AUTODIFF
 
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
       adfc = 1.0
 #else
       if ( myProcId .EQ. 0 ) then
