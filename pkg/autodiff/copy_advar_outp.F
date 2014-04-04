@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/copy_advar_outp.F,v 1.2 2012/07/29 16:31:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/copy_advar_outp.F,v 1.3 2014/04/04 23:06:04 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -87,6 +87,10 @@ CEOP
        ENDDO
       ENDIF
 
+#ifdef ALLOW_OPENAD
+C--   need to all the correct OpenAD EXCH S/R ; left empty for now
+#else /* ALLOW_OPENAD */
+
       IF ( gridloc.EQ.1 ) THEN
        IF ( wSign ) THEN
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
@@ -114,6 +118,7 @@ c       CALL ADEXCH_Z_3D_RL( outFld, nNz, myThid )
         STOP 'ABNORMAL END: COPY_ADVAR_OUTP missing noSign,loc=2'
        ENDIF
       ENDIF
+#endif /* ALLOW_OPENAD */
 
 #endif /* ALLOW_ADJOINT_RUN or ALLOW_ADMTLM */
 #endif /* ALLOW_AUTODIFF_MONITOR */
