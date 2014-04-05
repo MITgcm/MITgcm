@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_OPTIONS.h,v 1.2 2012/09/04 14:56:52 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_OPTIONS.h,v 1.3 2014/04/05 21:52:51 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -29,11 +29,19 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 C   ==================================================================
 C-- Package-specific Options & Macros go here
 
-#undef  ALLOW_NONDIMENSIONAL_CONTROL_IO
+#undef EXCLUDE_CTRL_PACK
+#undef ALLOW_NONDIMENSIONAL_CONTROL_IO
 
 C       >>> Initial values.
 #undef ALLOW_THETA0_CONTROL
 #undef ALLOW_SALT0_CONTROL
+#undef ALLOW_TR10_CONTROL
+#undef ALLOW_TAUU0_CONTROL
+#undef ALLOW_TAUV0_CONTROL
+#undef ALLOW_SFLUX0_CONTROL
+#undef ALLOW_HFLUX0_CONTROL
+#undef ALLOW_SSS0_CONTROL
+#undef ALLOW_SST0_CONTROL
 
 C       >>> Surface fluxes.
 #undef ALLOW_HFLUX_CONTROL
@@ -49,6 +57,16 @@ C       >>> Atmospheric state.
 #undef ALLOW_UWIND_CONTROL
 #undef ALLOW_VWIND_CONTROL
 #undef ALLOW_PRECIP_CONTROL
+
+C       >>> Other Control.
+#undef ALLOW_DIFFKR_CONTROL
+#undef ALLOW_KAPGM_CONTROL
+#undef ALLOW_BOTTOMDRAG_CONTROL
+
+C       >>> Generic Control.
+#undef ALLOW_GENARR2D_CONTROL
+#undef ALLOW_GENARR3D_CONTROL
+#undef ALLOW_GENTIM2D_CONTROL
 
 C  o Rotation of wind/stress controls adjustments
 C    from Eastward/Northward to model grid directions

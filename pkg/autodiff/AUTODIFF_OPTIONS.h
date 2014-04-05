@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF_OPTIONS.h,v 1.7 2012/08/10 17:37:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF_OPTIONS.h,v 1.8 2014/04/05 21:52:51 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -51,6 +51,11 @@ C o use divided adjoint to split adjoint computations
 
 C o Enable some temporary constructs for OpenAD
 #undef ALLOW_AUTODIFF_OPENAD
+
+#undef ALLOW_AUTODIFF_WHTAPEIO
+#undef ALLOW_PACKUNPACK_METHOD2
+#undef AUTODIFF_USE_OLDSTORE_3D
+#undef AUTODIFF_USE_OLDSTORE_2D
 
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */

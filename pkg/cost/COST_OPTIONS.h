@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/COST_OPTIONS.h,v 1.1 2012/08/10 17:28:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/COST_OPTIONS.h,v 1.2 2014/04/05 21:52:51 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -45,6 +45,10 @@ C       >>> Cost function contributions
 #undef ALLOW_CTDT_COST_CONTRIBUTION
 #undef ALLOW_CTDS_COST_CONTRIBUTION
 #undef ALLOW_COST_ATLANTIC
+
+#undef ALLOW_COST_TEST
+#undef ALLOW_COST_TSQUARED
+#undef ALLOW_COST_TRACER
 
 C       >>> ALLOW_GENCOST_CONTRIBUTION: interactive way to add basic 2D cost
 C         function terms.
