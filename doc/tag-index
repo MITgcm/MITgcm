@@ -1,8 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1972 2014/04/04 23:09:20 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1973 2014/04/05 22:51:52 atn Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+<<<<<<< tag-index
+o pkg/salt_plume:
+  - salt_plume_frac.F:
+     clean up local param names
+     reformulate (1-frac) to frac; original 1-frac was based on swfrac code 
+o pkg/ecco:
+  - cost_gencost_seaicev4.F:
+     reformulate proxy cost as function of sst and local param SEAICE_freeze
+     change cost names from siv4-[sst,vol] to siv4-[deconc,exconc]
+  - add stop statement if old names siv4-[sst,vol] are used
+  - add snapshots + cost reports for atmospheric longwave
+  - remove factor 0.1 in front of wtau[u,v]
+  - replace never used flag ALLOW_TMI_COST_CONTRIBUTION with
+     ALLOW_TMI_SST_COST_CONTRIBUTION
+o pkg/smooth:
+  - move param smooth2Ddiffnbt to pkg/ecco
+=======
 
 o autodiff:
   - Start to include explicitly AUTODIFF_OPTIONS.h, COST_OPTIONS.h,
@@ -23,6 +40,7 @@ o pkg/seaice/seaice_growth:
   - rearrange loop order for better vector code in the same code block
   - rewrite the floeDiameter formula to have fewer divisions
   -  (miraculously) none of this changes the results of seaice_itd
+>>>>>>> 1.1972
 o pkg/rw:
   - add RS version of S/R READ_MFLDS_LEV.
 o pkg/streamice:
@@ -60,6 +78,11 @@ o tools/adjoint_options:
   - remove setting of "OPENAD=true" (now set by command line "genmake2 -oad")
 
 checkpoint64t (2014/02/01)
+o pkg/ecco
+  - add compile flag ALLOW_GENCOST_TIMEVARY_WEIGHT in ECCO_OPTIONS.h and
+    runtime logical flag gencost_timevaryweight to read daily sea-ice sigma
+  - replace hard-coded record number and period which only work for monthly
+    with read-in runtime param that works for other periods (month,day,year)
 o pkg/thsice
   - corrected store directive fixes thsice adjoint gradient checks
 o genmake2 & testreport:
