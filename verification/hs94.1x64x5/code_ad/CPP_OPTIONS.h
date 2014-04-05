@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/CPP_OPTIONS.h,v 1.8 2012/08/14 03:09:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/CPP_OPTIONS.h,v 1.9 2014/04/05 21:47:39 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -45,6 +45,9 @@ C o Include/exclude AdamsBashforth-3rd-Order code
 
 C o Include/exclude nonHydrostatic code
 #undef ALLOW_NONHYDROSTATIC
+
+C o Allow to account for heating due to friction (and momentum dissipation)
+#undef ALLOW_FRICTION_HEATING
 
 C o Allow mass source or sink of Fluid in the interior
 C   (3-D generalisation of oceanic real-fresh water flux)
@@ -121,8 +124,8 @@ C   each of the above pkg get its own options from its specific option file.
 C   Although this method, inherited from ECCO setup, has been traditionally
 C   used for all adjoint built, work is in progress to allow to use the
 C   standard method also for adjoint built.
-#ifdef PACKAGES_CONFIG_H
-# include "ECCO_CPPOPTIONS.h"
-#endif
+c#ifdef PACKAGES_CONFIG_H
+c# include "ECCO_CPPOPTIONS.h"
+c#endif
 
 #endif /* CPP_OPTIONS_H */
