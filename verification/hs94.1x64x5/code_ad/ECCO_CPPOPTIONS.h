@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.7 2013/01/26 14:47:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.8 2014/04/05 21:46:35 jmc Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -34,7 +34,7 @@ C ********************************************************************
 C CPP flags controlling which code is included in the files that
 C will be compiled.
 
-CPH >>>>>> THERE ARE NO MORE CAL OPTIONS TO BE SET <<<<<<
+C >>>>>> THERE ARE NO MORE CAL OPTIONS TO BE SET <<<<<<
 
 C ********************************************************************
 C ***                Cost function Package                         ***
