@@ -1,13 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1973 2014/04/05 22:51:52 atn Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1974 2014/04/05 23:37:41 atn Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
-<<<<<<< tag-index
 o pkg/salt_plume:
   - salt_plume_frac.F:
      clean up local param names
-     reformulate (1-frac) to frac; original 1-frac was based on swfrac code 
+     reformulate (1-frac) to frac; original 1-frac was based on swfrac code
 o pkg/ecco:
   - cost_gencost_seaicev4.F:
      reformulate proxy cost as function of sst and local param SEAICE_freeze
@@ -19,8 +18,6 @@ o pkg/ecco:
      ALLOW_TMI_SST_COST_CONTRIBUTION
 o pkg/smooth:
   - move param smooth2Ddiffnbt to pkg/ecco
-=======
-
 o autodiff:
   - Start to include explicitly AUTODIFF_OPTIONS.h, COST_OPTIONS.h,
     and CTRL_OPTIONS.h in src files (to enable to skip the ECCO_CPPOPTIONS.h)
@@ -40,7 +37,6 @@ o pkg/seaice/seaice_growth:
   - rearrange loop order for better vector code in the same code block
   - rewrite the floeDiameter formula to have fewer divisions
   -  (miraculously) none of this changes the results of seaice_itd
->>>>>>> 1.1972
 o pkg/rw:
   - add RS version of S/R READ_MFLDS_LEV.
 o pkg/streamice:
