@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/Attic/ECCO_CPPOPTIONS.h,v 1.3 2014/03/17 19:00:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/Attic/ECCO_CPPOPTIONS.h,v 1.4 2014/04/05 23:15:26 jmc Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -20,14 +20,13 @@ C o Include/exclude code in order to be able to automatically
 C   differentiate the MITgcmUV by using the Tangent Linear and
 C   Adjoint Model Compiler (TAMC).
 
-#define ALLOW_AUTODIFF_TAMC
+#undef ALLOW_AUTODIFF_TAMC
 C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
 
 C       >>> Extract adjoint state
 #undef ALLOW_AUTODIFF_MONITOR
 
-C 
 #define ALLOW_AUTODIFF_OPENAD
 
 C ********************************************************************
@@ -37,7 +36,7 @@ C ********************************************************************
 C CPP flags controlling which code is included in the files that
 C will be compiled.
 
-CPH >>>>>> THERE ARE NO MORE CAL OPTIONS TO BE SET <<<<<<
+C >>>>>> THERE ARE NO MORE CAL OPTIONS TO BE SET <<<<<<
 
 C ********************************************************************
 C ***                Cost function Package                         ***
@@ -68,7 +67,6 @@ cph(
 cph#define ALLOW_BOTTOMDRAG_CONTROL
 #define ALLOW_GENARR2D_CONTROL
 #define ALLOW_GENARR3D_CONTROL
-cph-- GENTIM2D_CONTROL disabled for OpenAD (I need to fix this)
 #define ALLOW_GENTIM2D_CONTROL
 cph)
 
