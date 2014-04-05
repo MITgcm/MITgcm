@@ -1,12 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1974 2014/04/05 23:37:41 atn Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1975 2014/04/05 23:51:15 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
-o pkg/salt_plume:
-  - salt_plume_frac.F:
-     clean up local param names
-     reformulate (1-frac) to frac; original 1-frac was based on swfrac code
+
+o verification/hs94.1x64x5:
+  - leave ALLOW_AUTODIFF_TAMC undefined in code_oad/AUTODIFF_OPTIONS.h
+  - do not use ECCO_CPPOPTIONS.h anymore for TAF & OpenAD Adjoint tests.
+o autodiff:
+  - Start to include explicitly AUTODIFF_OPTIONS.h, COST_OPTIONS.h,
+    and CTRL_OPTIONS.h in src files (to enable to skip the ECCO_CPPOPTIONS.h)
+    For now, only in pkgs used in verification/hs94.1x64x5.
+  - Replace ALLOW_AUTODIFF_TAMC by ALLOW_AUTODIFF (except for tape/storage
+    which are specific to TAF/TAMC).
+  - Replace ALLOW_AUTODIFF_OPENAD by ALLOW_OPENAD:
+    since ALLOW_OPENAD is defined in PACKAGES_CONFIG.h (any time pkg/openad
+    is compiled), this simplifies/reduces which *_OPTIONS.h file to include.
+  - OpenAD: change Makefile to generate the appropriate AD_CONFIG.h when
+    building mitgcmuv_ad (make adAll).
 o pkg/ecco:
   - cost_gencost_seaicev4.F:
      reformulate proxy cost as function of sst and local param SEAICE_freeze
@@ -16,27 +27,20 @@ o pkg/ecco:
   - remove factor 0.1 in front of wtau[u,v]
   - replace never used flag ALLOW_TMI_COST_CONTRIBUTION with
      ALLOW_TMI_SST_COST_CONTRIBUTION
-o pkg/smooth:
-  - move param smooth2Ddiffnbt to pkg/ecco
-o autodiff:
-  - Start to include explicitly AUTODIFF_OPTIONS.h, COST_OPTIONS.h,
-    and CTRL_OPTIONS.h in src files (to enable to skip the ECCO_CPPOPTIONS.h)
-    For now, only in pkgs used in verification/hs94.1x64x5.
-  - Replace ALLOW_AUTODIFF_TAMC by ALLOW_AUTODIFF (except for tape/storage
-    which are specific to TAF/TAMC).
-  - Replace ALLOW_AUTODIFF_OPENAD by ALLOW_OPENAD: 
-    since ALLOW_OPENAD is defined in PACKAGES_CONFIG.h (any time pkg/openad 
-    is compiled), this simplifies/reduces which *_OPTIONS.h file to include.
-  - OpenAD: change Makefile to generate the appropriate AD_CONFIG.h when 
-    building mitgcmuv_ad (make adAll).
-o pkg/atm_phys: 
+o pkg/atm_phys:
   - add some diagnostics for Short-wave and for convection S/R.
-o pkg/seaice/seaice_growth: 
+o pkg/seaice/seaice_growth:
   - fix a bug in the lateral melt parameterization for SEAICE_ITD
     in seaice_growth; tempFrz needs to be computed inside the i/j-loop
   - rearrange loop order for better vector code in the same code block
   - rewrite the floeDiameter formula to have fewer divisions
   -  (miraculously) none of this changes the results of seaice_itd
+o pkg/smooth:
+  - move param smooth2Ddiffnbt to pkg/ecco
+o pkg/salt_plume:
+  - salt_plume_frac.F:
+     clean up local param names
+     reformulate (1-frac) to frac; original 1-frac was based on swfrac code
 o pkg/rw:
   - add RS version of S/R READ_MFLDS_LEV.
 o pkg/streamice:
