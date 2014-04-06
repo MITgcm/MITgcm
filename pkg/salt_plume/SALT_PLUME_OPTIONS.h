@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/SALT_PLUME_OPTIONS.h,v 1.3 2011/12/24 01:09:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/SALT_PLUME_OPTIONS.h,v 1.4 2014/04/06 09:34:00 atn Exp $
 C $Name:  $
 
 C CPP options file for salt_plume package
@@ -12,5 +12,16 @@ C Use this file for selecting options within the salt_plume package
 #ifdef ALLOW_SALT_PLUME
 C Place CPP define/undef flag here
 
+C SALT_PLUME_IN_LEADS
+C   Motivation: As ice concentration AREA -> 1, leads occur -> ice
+C     production is no longer uniform in grid box -> assumptions
+C     which motivate KPP no longer holds -> treat overturn more
+C     realistic with this flag.
+C   if defined: Activate pkg/salt_plume only when seaice AREA exceeds
+C               a certain value representative of lead opening AND only
+C               if seaice growth dh is from atmospheric cooling.
+C   if undefined: Activate pkg/salt_plume whenever seaice forms.
+C                 This is the default of pkg/salt_plume.
+#undef SALT_PLUME_IN_LEADS
 #endif /* ALLOW_SALT_PLUME */
 #endif /* SALT_PLUME_OPTIONS_H */
