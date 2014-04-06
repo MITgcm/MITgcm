@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/ECCO_CPPOPTIONS.h,v 1.1 2013/12/17 19:08:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/ECCO_CPPOPTIONS.h,v 1.2 2014/04/06 21:39:46 jmc Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -29,7 +29,6 @@ C       >>> DO 2-level checkpointing instead of 3-level
 C
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
-#undef ALLOW_DIVIDED_ADJOINT_MPI
 
 C ********************************************************************
 C ***                Cost function Package                         ***
