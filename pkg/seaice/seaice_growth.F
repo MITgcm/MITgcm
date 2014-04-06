@@ -1,9 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.195 2014/04/02 15:58:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.196 2014/04/06 09:33:09 atn Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
+#endif
+#ifdef ALLOW_SALT_PLUME
+# include "SALT_PLUME_OPTIONS.h"
 #endif
 
 CBOP
@@ -310,6 +313,14 @@ C     Helper variables for diagnostics
       _RL FWF2HFsiTile(nSx,nSy)
       _RL FWF2HFsiGlob
 #endif
+
+#ifdef ALLOW_SALT_PLUME
+      _RL localSPfrac          (1:sNx,1:sNy)
+#ifdef SALT_PLUME_IN_LEADS
+      _RL leadPlumeFraction    (1:sNx,1:sNy)
+      _RL IceGrowthRateInLeads (1:sNx,1:sNy)
+#endif /* SALT_PLUME_IN_LEADS */
+#endif /* ALLOW_SALT_PLUME */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -2050,14 +2061,38 @@ CADJ &                       key = iicekey, byte = isbyte
 #ifdef EXF_SEAICE_FRACTION
      &             + d_HEFFbyRLX(I,J)
 #endif
-          tmpscal2 = tmpscal1 * SEAICE_salt0 * HEFFM(I,J,bi,bj)
+Catn: can not take out more that surface salinity when SSS<SEAICE_salt0
+          tmpscal3 = max( 0. _d 0,
+     &                    min(SEAICE_salt0,salt(I,J,kSurface,bi,bj)) )
+          tmpscal2 = tmpscal1 * tmpscal3 * HEFFM(I,J,bi,bj)
      &            * recip_deltaTtherm * SEAICE_rhoIce
           saltFlux(I,J,bi,bj) = tmpscal2
 #ifdef ALLOW_SALT_PLUME
+          localSPfrac(I,J) = SPsalFRAC
+#ifdef SALT_PLUME_IN_LEADS
+Catn: Only d_HEFFbyATMonOCN should contribute to plume.
+C     By redefining tmpscal1 here, saltPlumeFlux is smaller in case
+C     define inLeads than case undef inLeads.  Physical interpretation
+C     is that when d_HEFF is formed from below via ocean freezing, it
+C     occurs more uniform over grid cell and not inLeads, thus not
+C     participating in pkg/salt_plume.
+C     Note: tmpscal1 is defined only after saltFlux is calculated.
+          IceGrowthRateInLeads(I,J)=max(0. _d 0,d_HEFFbyATMonOCN(I,J))
+          tmpscal1 = IceGrowthRateInLeads(I,J)
+          leadPlumeFraction(I,J) =
+     &      (ONE + EXP( (SPinflectionPoint - AREApreTH(I,J))*5.0
+     &                 /(ONE - SPinflectionPoint) ))**(-ONE)
+          localSPfrac(I,J)=localSPfrac(I,J)*leadPlumeFraction(I,J)
+#endif /* SALT_PLUME_IN_LEADS */
           tmpscal3 = tmpscal1*salt(I,J,kSurface,bi,bj)*HEFFM(I,J,bi,bj)
      &            * recip_deltaTtherm * SEAICE_rhoIce
           saltPlumeFlux(I,J,bi,bj) = MAX( tmpscal3-tmpscal2 , 0. _d 0)
-     &            *SPsalFRAC
+     &            *localSPfrac(I,J)
+C if SaltPlumeSouthernOcean=.FALSE. turn off salt plume in Southern Ocean
+          IF ( .NOT. SaltPlumeSouthernOcean ) THEN
+           IF ( YC(I,J,bi,bj) .LT. 0.0 _d 0 )
+     &          saltPlumeFlux(i,j,bi,bj) = 0.0 _d 0
+          ENDIF
 #endif /* ALLOW_SALT_PLUME */
          ENDDO
         ENDDO
@@ -2083,17 +2118,14 @@ C tmpscal1 > 0 : m of sea ice that is created
      &            *SEAICE_saltFrac*salt(I,J,kSurface,bi,bj)
      &            *tmpscal1*SEAICE_rhoIce
 #ifdef ALLOW_SALT_PLUME
+#ifndef SALT_PLUME_IN_LEADS
 C saltPlumeFlux is defined only during freezing:
              saltPlumeFlux(I,J,bi,bj)=
      &            HEFFM(I,J,bi,bj)*recip_deltaTtherm
      &            *(ONE-SEAICE_saltFrac)*salt(I,J,kSurface,bi,bj)
      &            *tmpscal1*SEAICE_rhoIce
      &            *SPsalFRAC
-C if SaltPlumeSouthernOcean=.FALSE. turn off salt plume in Southern Ocean
-             IF ( .NOT. SaltPlumeSouthernOcean ) THEN
-              IF ( YC(I,J,bi,bj) .LT. 0.0 _d 0 )
-     &             saltPlumeFlux(i,j,bi,bj) = 0.0 _d 0
-             ENDIF
+#endif /* ndef SALT_PLUME_IN_LEADS */
 #endif /* ALLOW_SALT_PLUME */
 
 C tmpscal1 < 0 : m of sea ice that is melted
@@ -2103,9 +2135,44 @@ C tmpscal1 < 0 : m of sea ice that is melted
      &         *HSALT(I,J,bi,bj)
      &         *tmpscal1/tmpscal2
 #ifdef ALLOW_SALT_PLUME
+#ifndef SALT_PLUME_IN_LEADS
              saltPlumeFlux(i,j,bi,bj) = 0.0 _d 0
+#endif /* ndef SALT_PLUME_IN_LEADS */
 #endif /* ALLOW_SALT_PLUME */
           ENDIF
+
+#ifdef ALLOW_SALT_PLUME
+#ifdef SALT_PLUME_IN_LEADS
+Catn: only d_HEFFbyATMonOCN should contribute to plume
+C     By redefining tmpscal1 here, saltPlumeFlux is smaller in case
+C     define inLeads than case undef inLeads.  Physical interpretation
+C     is that when d_HEFF is formed from below via ocean freezing, it
+C     occurs more uniform over grid cell and not inLeads, thus not
+C     participating in pkg/salt_plume.
+C     Note: tmpscal1 is defined only after saltFlux is calculated.
+          IceGrowthRateInLeads(I,J)=max(0. _d 0,d_HEFFbyATMonOCN(I,J))
+          tmpscal1 = IceGrowthRateInLeads(I,J)
+          leadPlumeFraction(I,J) =
+     &      (ONE + EXP( (SPinflectionPoint - AREApreTH(I,J))*5.0
+     &                 /(ONE - SPinflectionPoint) ))**(-ONE)
+          localSPfrac(I,J)=SPsalFRAC*leadPlumeFraction(I,J)
+          IF ( tmpscal1 .GE. 0.0) THEN
+C saltPlumeFlux is defined only during freezing:
+             saltPlumeFlux(I,J,bi,bj)=
+     &            HEFFM(I,J,bi,bj)*recip_deltaTtherm
+     &            *(ONE-SEAICE_saltFrac)*salt(I,J,kSurface,bi,bj)
+     &            *tmpscal1*SEAICE_rhoIce
+     &            *localSPfrac(I,J)
+          ELSE
+             saltPlumeFlux(I,J,bi,bj) = 0. _d 0
+          ENDIF
+#endif /* SALT_PLUME_IN_LEADS */
+C if SaltPlumeSouthernOcean=.FALSE. turn off salt plume in Southern Ocean
+          IF ( .NOT. SaltPlumeSouthernOcean ) THEN
+           IF ( YC(I,J,bi,bj) .LT. 0.0 _d 0 )
+     &          saltPlumeFlux(i,j,bi,bj) = 0.0 _d 0
+          ENDIF
+#endif /* ALLOW_SALT_PLUME */
 C update HSALT based on surface saltFlux
           HSALT(I,J,bi,bj) = HSALT(I,J,bi,bj) +
      &         saltFlux(I,J,bi,bj) * SEAICE_deltaTtherm
@@ -2230,6 +2297,8 @@ C Below we therefore anticipate on external_forcing_surf.F
 C to diagnoze and/or apply the correction to QNET.
         DO J=1,sNy
          DO I=1,sNx
+catn: initialize tmpscal1
+           tmpscal1 = ZERO
 C ocean water going to ice/snow, in precip units
            tmpscal3=rhoConstFresh*maskC(I,J,kSurface,bi,bj)*(
      &       ( d_HSNWbyATMonSNW(I,J)*SNOW2ICE
