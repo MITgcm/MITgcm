@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/openad_dumpAdjoint.F,v 1.6 2014/04/04 21:25:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/openad_dumpAdjoint.F,v 1.7 2014/04/06 21:41:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -79,9 +79,6 @@ c They provide the fields to be stored.
 #  include "KPP.h"
 #  include "KPP_DIAGS.h"
 #  include "KPP_PARAMS.h"
-# endif
-# ifdef ALLOW_DIVIDED_ADJOINT_MPI
-#  include "mpif.h"
 # endif
 
 # include "tamc.h"
