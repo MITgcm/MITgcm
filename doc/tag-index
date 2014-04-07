@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1975 2014/04/05 23:51:15 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1976 2014/04/07 14:52:38 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: 
+  - make deltaC a global variable, so that it can be used in ridging code 
+  - first step towards ridging: introduce new routines that compute
+    ice strength based on ridging parameters
 o verification/hs94.1x64x5:
   - leave ALLOW_AUTODIFF_TAMC undefined in code_oad/AUTODIFF_OPTIONS.h
   - do not use ECCO_CPPOPTIONS.h anymore for TAF & OpenAD Adjoint tests.
