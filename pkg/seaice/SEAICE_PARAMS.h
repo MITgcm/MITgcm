@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.115 2014/04/07 14:47:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.116 2014/04/07 14:58:22 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -385,7 +385,7 @@ C     SEAICEshearParm :: <=1 reduces amount of energy lost to ridge building
 C     SEAICEmuRidging :: tuning parameter similar to hStar for Lipcomb et al
 C                        (2007)-scheme
 C     SEAICEmaxRaft   :: regularization parameter (default=1)
-C     SEAICEsnowFractRidge :: fraction of snow that remains on ridged
+C     SEAICEsnowFracRidge :: fraction of snow that remains on ridged
 C
       _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn, SEAICE_deltaTevp
       _RL SEAICE_LSRrelaxU, SEAICE_LSRrelaxV
@@ -427,7 +427,7 @@ C
       _RL SEAICE_tauAreaObsRelax
       _RL SEAICEgStar, SEAICEhStar, SEAICEaStar, SEAICEshearParm
       _RL SEAICEmuRidging, SEAICEmaxRaft, SEAICE_cf
-      _RL SEAICEsnowFractRidge
+      _RL SEAICEsnowFracRidge
 
       COMMON /SEAICE_PARM_RL/
      &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
@@ -468,7 +468,7 @@ C
      &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      &    SEAICEgStar, SEAICEhStar, SEAICEaStar, SEAICEshearParm,
      &    SEAICEmuRidging, SEAICEmaxRaft, SEAICE_cf,
-     &    SEAICEsnowFractRidge
+     &    SEAICEsnowFracRidge
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values
 C     MIN_ATEMP         :: minimum air temperature   (deg C)

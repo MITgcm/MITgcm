@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.72 2014/04/07 14:48:58 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.73 2014/04/07 14:58:22 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -462,6 +462,9 @@ c
      & 'SEAICEmuRidging  =', ' /* ridging parameter */')
       CALL WRITE_0D_RL( SEAICEmaxRaft  ,INDEX_NONE,
      & 'SEAICEmaxRaft  =', ' /* ridging parameter */')
+      CALL WRITE_0D_RL( SEAICEsnowFracRidge ,INDEX_NONE,
+     & 'SEAICEsnowFracRidge  =',
+     &     ' /* fraction of snow remaining on ridges */')
 #else
       CALL WRITE_0D_I (SEAICE_multDim,INDEX_NONE,'SEAICE_multDim    ='
      & , ' /* number of ice categories (1 or 7) */')
