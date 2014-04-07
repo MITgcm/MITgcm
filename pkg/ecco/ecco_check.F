@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.15 2014/04/04 21:33:07 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.16 2014/04/07 18:10:21 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -112,7 +112,7 @@ c switch off cost function term
 #endif
 #ifdef ALLOW_SSH_MEAN_COST_CONTRIBUTION
       CALL ECCO_CHECK_FILES( using_cost_altim,
-     & 'mdt', topexmeanfile, modelstartdate(1), myThid ) 
+     & 'mdt', mdtdatfile, modelstartdate(1), myThid ) 
 #endif
 
 c left for later : slightly different treatment would apply to profiles and gencost

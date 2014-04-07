@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.20 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.21 2014/04/07 18:10:21 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -169,10 +169,10 @@ c--   Sum over this thread tiles.
           do j = 1,sny
             do i = 1,snx
               offset     = offset +
-     &                     tpmeanmask(i,j,bi,bj)*cosphi(i,j,bi,bj)*
-     &                     (tpmean(i,j,bi,bj) - psmean(i,j,bi,bj))
+     &                     mdtmask(i,j,bi,bj)*cosphi(i,j,bi,bj)*
+     &                     (mdt(i,j,bi,bj) - psmean(i,j,bi,bj))
               offset_sum = offset_sum +
-     &                     tpmeanmask(i,j,bi,bj)*cosphi(i,j,bi,bj)
+     &                     mdtmask(i,j,bi,bj)*cosphi(i,j,bi,bj)
             enddo
           enddo
         enddo
@@ -272,10 +272,10 @@ c--             The array psobs contains SSH anomalies.
                 if ( wwwtp(i,j)*junk .ne. 0. )
      &               num_tp(bi,bj) = num_tp(bi,bj) + 1. _d 0
 #else
-                if (tpmeanmask(i,j,bi,bj)*tpmask(i,j,bi,bj)
+                if (mdtmask(i,j,bi,bj)*tpmask(i,j,bi,bj)
      &                  *wp(i,j,bi,bj)*wwwtp(i,j) .ne.0.) then
                 junk       = ( psbar(i,j,bi,bj) -
-     &                 (tpobs(i,j,bi,bj)+tpmean(i,j,bi,bj)-offset) )
+     &                 (tpobs(i,j,bi,bj)+mdt(i,j,bi,bj)-offset) )
                 objf_tp(bi,bj) = objf_tp(bi,bj)
      &              +junk*junk/( 1/wp(i,j,bi,bj)+1/wwwtp(i,j) )
                 num_tp(bi,bj) = num_tp(bi,bj) + 1. _d 0
@@ -299,10 +299,10 @@ c--             The array ersobs contains SSH anomalies.
                 if ( wwwers(i,j)*junk .ne. 0. )
      &               num_ers(bi,bj) = num_ers(bi,bj) + 1. _d 0
 #else
-                if (tpmeanmask(i,j,bi,bj)*ersmask(i,j,bi,bj)
+                if (mdtmask(i,j,bi,bj)*ersmask(i,j,bi,bj)
      &                  *wp(i,j,bi,bj)*wwwers(i,j) .ne.0.) then
                 junk       = ( psbar(i,j,bi,bj) -
-     &                 (ersobs(i,j,bi,bj)+tpmean(i,j,bi,bj)-offset) )
+     &                 (ersobs(i,j,bi,bj)+mdt(i,j,bi,bj)-offset) )
                 objf_ers(bi,bj) = objf_ers(bi,bj)
      &              +junk*junk/( 1/wp(i,j,bi,bj)+1/wwwers(i,j) )
                 num_ers(bi,bj) = num_ers(bi,bj) + 1. _d 0
@@ -326,10 +326,10 @@ c--             The array gfoobs contains SSH anomalies.
                 if ( wwwgfo(i,j)*junk .ne. 0. )
      &               num_gfo(bi,bj) = num_gfo(bi,bj) + 1. _d 0
 #else
-                if (tpmeanmask(i,j,bi,bj)*gfomask(i,j,bi,bj)
+                if (mdtmask(i,j,bi,bj)*gfomask(i,j,bi,bj)
      &                  *wp(i,j,bi,bj)*wwwgfo(i,j) .ne.0.) then
                 junk       = ( psbar(i,j,bi,bj) -
-     &                 (gfoobs(i,j,bi,bj)+tpmean(i,j,bi,bj)-offset) )
+     &                 (gfoobs(i,j,bi,bj)+mdt(i,j,bi,bj)-offset) )
                 objf_gfo(bi,bj) = objf_gfo(bi,bj)
      &              +junk*junk/( 1/wp(i,j,bi,bj)+1/wwwgfo(i,j) )
                 num_gfo(bi,bj) = num_gfo(bi,bj) + 1. _d 0

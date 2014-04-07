@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopexmean.F,v 1.7 2013/02/05 14:51:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopexmean.F,v 1.8 2014/04/07 18:10:21 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -67,8 +67,8 @@ c--   Convert mean ssh from cm to m
       factor =  0.01 _d 0
       spval  = -9990. _d 0
 
-      call mdsreadfield( topexmeanfile, cost_iprec, cost_yftype, 1,
-     &                   tpmean, 1, mythid )
+      call mdsreadfield( mdtdatfile, cost_iprec, cost_yftype, 1,
+     &                   mdt, 1, mythid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -76,26 +76,26 @@ c--   Convert mean ssh from cm to m
           do j = jmin,jmax
             do i = imin,imax
               if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
-                tpmeanmask(i,j,bi,bj) = 0. _d 0
+                mdtmask(i,j,bi,bj) = 0. _d 0
               else
-                tpmeanmask(i,j,bi,bj) = 1. _d 0
+                mdtmask(i,j,bi,bj) = 1. _d 0
               endif
-              if (tpmean(i,j,bi,bj) .lt. spval) then
-                tpmeanmask(i,j,bi,bj) = 0. _d 0
+              if (mdt(i,j,bi,bj) .lt. spval) then
+                mdtmask(i,j,bi,bj) = 0. _d 0
               endif
-              if (tpmean(i,j,bi,bj) .eq. 0. _d 0 ) then
-                 tpmeanmask(i,j,bi,bj) = 0. _d 0
+              if (mdt(i,j,bi,bj) .eq. 0. _d 0 ) then
+                 mdtmask(i,j,bi,bj) = 0. _d 0
               endif
 
 #ifndef ALLOW_SHALLOW_ALTIMETRY
               if ( R_low(i,j,bi,bj) .GT. -200. ) then
-                tpmeanmask(i,j,bi,bj) = 0. _d 0
+                mdtmask(i,j,bi,bj) = 0. _d 0
               endif
 #endif
 
-              tpmeanmask(i,j,bi,bj) = tpmeanmask(i,j,bi,bj)*frame(i,j)
-              tpmean(i,j,bi,bj) = tpmean(i,j,bi,bj)*
-     &                            tpmeanmask(i,j,bi,bj)*
+              mdtmask(i,j,bi,bj) = mdtmask(i,j,bi,bj)*frame(i,j)
+              mdt(i,j,bi,bj) = mdt(i,j,bi,bj)*
+     &                            mdtmask(i,j,bi,bj)*
      &                             factor
             enddo
           enddo

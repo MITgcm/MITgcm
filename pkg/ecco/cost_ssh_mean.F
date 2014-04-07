@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_mean.F,v 1.12 2012/09/06 14:52:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_mean.F,v 1.13 2014/04/07 18:10:21 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -118,9 +118,9 @@ c--   compute misfit on local domain
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-               if ( tpmeanmask(i,j,bi,bj) .gt. 0. ) then
+               if ( mdtmask(i,j,bi,bj) .gt. 0. ) then
                  misfit(i,j,bi,bj) =
-     &           tpmean(i,j,bi,bj) - offset - psmean(i,j,bi,bj)
+     &           mdt(i,j,bi,bj) - offset - psmean(i,j,bi,bj)
               else
                  misfit(i,j,bi,bj) = 0.
               endif
@@ -235,13 +235,13 @@ c--         --> no weighting by cosphi.
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              diff = psmean(i,j,bi,bj) - tpmean(i,j,bi,bj) + offset
+              diff = psmean(i,j,bi,bj) - mdt(i,j,bi,bj) + offset
               sumc = sumc + diff*diff
-     &                    * wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
-              if ( wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj) .ne. 0. )
+     &                    * wp(i,j,bi,bj)*mdtmask(i,j,bi,bj)
+              if ( wp(i,j,bi,bj)*mdtmask(i,j,bi,bj) .ne. 0. )
      &             num_hmean = num_hmean + 1. _d 0
               diagnosfld(i,j,bi,bj) = diff*diff
-     &                    * wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
+     &                    * wp(i,j,bi,bj)*mdtmask(i,j,bi,bj)
             enddo
           enddo
         enddo
@@ -263,17 +263,17 @@ C     Because of different truncation, expect also slight difference on 1 proc.
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              diff = psmean(i,j,bi,bj) - tpmean(i,j,bi,bj)
-              sumC0 = sumC0 + wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
+              diff = psmean(i,j,bi,bj) - mdt(i,j,bi,bj)
+              sumC0 = sumC0 + wp(i,j,bi,bj)*mdtmask(i,j,bi,bj)
               sumC1 = sumC1 + diff
-     &                      * wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
+     &                      * wp(i,j,bi,bj)*mdtmask(i,j,bi,bj)
               sumC2 = sumC2 + diff*diff
-     &                      * wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
-              if ( wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj) .ne. 0. )
+     &                      * wp(i,j,bi,bj)*mdtmask(i,j,bi,bj)
+              if ( wp(i,j,bi,bj)*mdtmask(i,j,bi,bj) .ne. 0. )
      &            num_hmean = num_hmean + 1. _d 0
               diagnosfld(i,j,bi,bj) =
      &          ( diff*diff + 2. _d 0*offset*diff + offset*offset )
-     &                      * wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
+     &                      * wp(i,j,bi,bj)*mdtmask(i,j,bi,bj)
             enddo
           enddo
         enddo
