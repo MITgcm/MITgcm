@@ -13,7 +13,7 @@
  topexstartdate2 = 00000,
  topexperiod     = 2635200.0,
  topexfile       = 'labsea_TP_fields',
- topexmeanfile   = 'labsea_TP_mean',
+ mdtdatfile      = 'labsea_TP_mean',
 #
  ersfile       = 'labsea_ERS_fields',
  ersstartdate1 = 19790101,
