@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.32 2013/03/30 11:57:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.33 2014/04/07 18:08:50 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -106,6 +106,16 @@ c--     ... IES data.
         if ( iesdatfile .ne. ' ' )
      &   call cal_FullDate( iesstartdate1,   iesstartdate2,
      &                      iesstartdate,    mythid )
+#ifdef ALLOW_SSH_MEAN_COST_CONTRIBUTION
+c--     ... mdt data.
+        if ( mdtdatfile .ne. ' ' )
+     &  call cal_FullDate( mdtstartdate1, mdtstartdate2,
+     &                     mdtstartdate,  mythid )
+c--     ... mdt data.
+        if ( mdtdatfile .ne. ' ' )
+     &  call cal_FullDate( mdtenddate1, mdtenddate2,
+     &                     mdtenddate,  mythid )
+#endif /* ALLOW_SSH_MEAN_COST_CONTRIBUTION */
 c--     ... T/P data.
         if ( topexfile .ne. ' ' )
      &  call cal_FullDate( topexstartdate1, topexstartdate2,

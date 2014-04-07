@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.63 2014/04/01 08:03:42 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.64 2014/04/07 18:08:50 atn Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -1286,8 +1286,8 @@ c     sstmask    - mask for reference sea surface temperature data.
 c     tmimask    - mask for reference sea surface temperature data.
 c     sssmask    - mask for reference sea surface temperature data.
 c     sdat       - reference salinity data.
-c     tpmean     - reference mean sea surface height data.
-c     tpmeanmask - mask for reference mean sea surface height data.
+c     mdt        - reference mean sea surface height data.
+c     mdtmask    - mask for reference mean sea surface height data.
 c     tpobs      - TOPEX/POSEIDON data.
 c     tpmask     - mask for TOPEX/POSEIDON data.
 c     ersobs     - ERS data.
@@ -1316,8 +1316,8 @@ c     vdriftdat  - drifters meridional velocities
      &                     scatxmask,
      &                     scatymask,
      &                     sdat,
-     &                     tpmean,
-     &                     tpmeanmask,
+     &                     mdt,
+     &                     mdtmask,
      &                     tpobs,
      &                     tpmask,
      &                     ersobs,
@@ -1349,8 +1349,8 @@ c     vdriftdat  - drifters meridional velocities
       _RL bpmask    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL iesmask    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL sdat      (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL tpmean    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-      _RL tpmeanmask(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL mdt       (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL mdtmask   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL tpobs     (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL tpmask    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL ersobs    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
@@ -1377,7 +1377,7 @@ c     scatxdatfile  - reference data file for zonal wind stress.
 c     scatydatfile  - reference data file for meridional wind stress.
 c     sstdatfile    - reference data file for sea surface temperature.
 c     tmidatfile    - reference data file for TMI sea surface temperature.
-c     topexmeanfile - reference data file for mean sea surface height.
+c     mdtdatfile    - reference data file for mean sea surface height.
 c     topexfile     - reference data file for sea surface height data
 c                     (TOPEX/POSEIDON).
 c     ersfile       - reference data file for sea surface height data
@@ -1401,7 +1401,7 @@ c     driftfile     - reference data file for drifter mean velocities
      &                     sssdatfile,
      &                     bpdatfile,
      &                     iesdatfile,
-     &                     topexmeanfile,
+     &                     mdtdatfile,
      &                     topexfile,
      &                     ersfile,
      &                     gfofile,
@@ -1427,7 +1427,7 @@ c     driftfile     - reference data file for drifter mean velocities
       character*(MAX_LEN_FNAM) sssdatfile
       character*(MAX_LEN_FNAM) bpdatfile
       character*(MAX_LEN_FNAM) iesdatfile
-      character*(MAX_LEN_FNAM) topexmeanfile
+      character*(MAX_LEN_FNAM) mdtdatfile
       character*(MAX_LEN_FNAM) topexfile
       character*(MAX_LEN_FNAM) ersfile
       character*(MAX_LEN_FNAM) gfofile
@@ -1490,7 +1490,9 @@ c     sshperiod      - sampling interval for the sea surface height data.
      &                           iesstartdate,
      &                           topexstartdate,
      &                           ersstartdate,
-     &                           gfostartdate
+     &                           gfostartdate,
+     &                           mdtstartdate,
+     &                           mdtenddate
       integer scatxstartdate(4)
       integer scatystartdate(4)
       integer sststartdate(4)
@@ -1503,6 +1505,8 @@ c     sshperiod      - sampling interval for the sea surface height data.
       integer topexstartdate(4)
       integer ersstartdate(4)
       integer gfostartdate(4)
+      integer mdtstartdate(4)
+      integer mdtenddate(4)
 
       common /ecco_cost_data_aux_i/
      &                           tmistartdate1,
@@ -1526,7 +1530,11 @@ c     sshperiod      - sampling interval for the sea surface height data.
      &                           gfostartdate1,
      &                           gfostartdate2,
      &                           scatstartdate1,
-     &                           scatstartdate2
+     &                           scatstartdate2,
+     &                           mdtstartdate1,
+     &                           mdtstartdate2,
+     &                           mdtenddate1,
+     &                           mdtenddate2
 
       integer tmistartdate1
       integer tmistartdate2
@@ -1550,6 +1558,10 @@ c     sshperiod      - sampling interval for the sea surface height data.
       integer gfostartdate2
       integer scatstartdate1
       integer scatstartdate2
+      integer mdtstartdate1
+      integer mdtstartdate2
+      integer mdtenddate1
+      integer mdtenddate2
 
       common /ecco_cost_data_times_r/
      &                           topexperiod,

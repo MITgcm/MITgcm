@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.6 2012/10/02 01:40:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.7 2014/04/07 18:08:50 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -225,10 +225,26 @@ c     == end of interface ==
      &                    SQUEEZE_RIGHT , mythid)
 
 #ifdef ALLOW_SSH_MEAN_COST_CONTRIBUTION
+      write(msgbuf,'(a,l)')
+     &  '  using_cost_altim[T=mdt,F=no]:   ',using_cost_altim
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
       if (using_cost_altim) then
-        il = ilnblnk(topexmeanfile)
+        il = ilnblnk(mdtdatfile)
         write(msgbuf,'(a,a)')
-     &  '  T/P mean is read from:          ',topexmeanfile(1:il)
+     &  '  MDT is read from:               ',mdtdatfile(1:il)
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a,i10,i8)')
+     &  '  MDT startdate are:          ',
+     &                        mdtstartdate(1),
+     &                        mdtstartdate(2)
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a,i10,i8)')
+     &  '  MDT enddate are:            ',
+     &                        mdtenddate(1),
+     &                        mdtenddate(2)
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
       endif

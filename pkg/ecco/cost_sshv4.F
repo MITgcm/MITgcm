@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.13 2014/04/01 08:03:42 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.14 2014/04/07 18:08:50 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -96,7 +96,7 @@ c for llc270 it should be about 1000 else get nan.
 #endif /* ALLOW_SMOOTH */
 catn -------------
 
-c for PART 1: re-reference MDT (tpmean) to the inferred SLA reference field
+c for PART 1: re-reference MDT (mdt) to the inferred SLA reference field
       _RL mean_slaobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL mean_slaobs_NUM(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
@@ -135,7 +135,7 @@ c for PART 4/5: compute smooth/raw anomalies
       _RL anom_psMgfoobs_NUM(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL anom_gfoobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
-      integer tpmean_y0,tpmean_y1,year,day
+      integer mdt_y0,mdt_y1,year,day
       integer num_var
 
       _RL junk,junkweight
@@ -180,29 +180,32 @@ c--   First, read tiled data.
 
 cgf =======================================================
 cgf PART 1:
-cgf        x Get the MDT (tpmean) ... compute the sample mean
+cgf        x Get the MDT (mdt) ... compute the sample mean
 cgf        (mean_slaobs) of the SLA data (i.e. RADS for tp, ers, and gfo
 cgf        together) over the time interval of the MDT ... subtract
-cgf        mean_slaobs from tpmean.
-cgf        x At this point, tpmean is the inferred SLA reference field.
-cgf        x From there on, tpmean+sla will be directly comparable to
+cgf        mean_slaobs from mdt.
+cgf        x At this point, mdt is the inferred SLA reference field.
+cgf        x From there on, mdt+sla will be directly comparable to
 cgf        the model SSH (psbar).
 cgf =======================================================
 
 c--   Read mean field and mask
       call cost_ReadTopexMean( mythid )
 
-c--   Compute mean_slaobs: sample mean SLA over the time period of tpmean.
+c--   Compute mean_slaobs: sample mean SLA over the time period of mdt.
 
 c pavlis and ecco/rio
-      tpmean_y0=1993
-      tpmean_y1=2004
+c      mdt_y0=1993
+c      mdt_y1=2004
 c maximenko
-c      tpmean_y0=1992
-c      tpmean_y1=2002
+c      mdt_y0=1992
+c      mdt_y1=2002
 c rio
-c      tpmean_y0=1993
-c      tpmean_y1=1999
+c      mdt_y0=1993
+c      mdt_y1=1999
+c generalized:
+       mdt_y0=mdtstartdate(1)/10000
+       mdt_y1=mdtenddate(1)/10000
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -215,7 +218,7 @@ c      tpmean_y1=1999
         enddo
        enddo
 
-      do year=tpmean_y0,tpmean_y1
+      do year=mdt_y0,mdt_y1
        do day=1,366
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
       call cost_sla_read_yd( topexfile, topexstartdate,
@@ -237,7 +240,7 @@ c      tpmean_y1=1999
          do j = jmin,jmax
           do i = imin,imax
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-      if ( tpmask(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)*
+      if ( tpmask(i,j,bi,bj)*mdtmask(i,j,bi,bj)*
      &    wsshv4(i,j,2,bi,bj) .NE. 0. ) then
           mean_slaobs(i,j,bi,bj)= mean_slaobs(i,j,bi,bj)+
      &  tpobs(i,j,bi,bj)
@@ -245,7 +248,7 @@ c      tpmean_y1=1999
       endif
 #endif
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-      if ( ersmask(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)*
+      if ( ersmask(i,j,bi,bj)*mdtmask(i,j,bi,bj)*
      &    wsshv4(i,j,3,bi,bj) .NE. 0. ) then
           mean_slaobs(i,j,bi,bj)= mean_slaobs(i,j,bi,bj)+
      &  ersobs(i,j,bi,bj)
@@ -253,7 +256,7 @@ c      tpmean_y1=1999
       endif
 #endif
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-      if ( gfomask(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)*
+      if ( gfomask(i,j,bi,bj)*mdtmask(i,j,bi,bj)*
      &    wsshv4(i,j,4,bi,bj) .NE. 0. ) then
           mean_slaobs(i,j,bi,bj)= mean_slaobs(i,j,bi,bj)+
      &  gfoobs(i,j,bi,bj)
@@ -266,7 +269,7 @@ c      tpmean_y1=1999
        enddo
 
        enddo !do day=1,366
-      enddo !do year=tpmean_y0,tpmean_y1
+      enddo !do year=mdt_y0,mdt_y1
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -275,7 +278,7 @@ c      tpmean_y1=1999
                if ( ( mean_slaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ).AND.
      &              ( abs(YC(i,j,bi,bj)) .LE. 66. ).AND.
-     &              ( tpmeanmask(i,j,bi,bj) .NE. 0. ) ) then
+     &              ( mdtmask(i,j,bi,bj) .NE. 0. ) ) then
                   mean_slaobs(i,j,bi,bj) = mean_slaobs(i,j,bi,bj) /
      &                 mean_slaobs_NUM(i,j,bi,bj)
                else
@@ -303,14 +306,14 @@ c--   smooth mean_slaobs:
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,mean_slaobs,1,1,mythid)
 
-c--   re-reference tpmean:
+c--   re-reference mdt:
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-               if ( ( tpmeanmask(i,j,bi,bj) .NE. 0. ).AND.
+               if ( ( mdtmask(i,j,bi,bj) .NE. 0. ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ) ) then
-                  tpmean(i,j,bi,bj) = tpmean(i,j,bi,bj)
+                  mdt(i,j,bi,bj) = mdt(i,j,bi,bj)
      &                 -mean_slaobs(i,j,bi,bj)
                endif
             enddo
@@ -481,13 +484,13 @@ c--   END loop over records for the first time.
                if ( ( mean_psMssh_all_NUM(i,j,bi,bj) .NE. 0. ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
      &              ( abs(YC(i,j,bi,bj)) .LE. 66. ).AND.
-     &              ( tpmeanmask(i,j,bi,bj) .NE. 0. ) ) then
+     &              ( mdtmask(i,j,bi,bj) .NE. 0. ) ) then
                   mean_slaobs2(i,j,bi,bj) =
      &                 mean_slaobs2(i,j,bi,bj) /
      &                 mean_psMssh_all_NUM(i,j,bi,bj)
                   mean_psMssh_all(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) /
-     &                 mean_psMssh_all_NUM(i,j,bi,bj)-tpmean(i,j,bi,bj)
+     &                 mean_psMssh_all_NUM(i,j,bi,bj)-mdt(i,j,bi,bj)
                   mean_psMssh_all_MSK(i,j,bi,bj) = 1. _d 0
                   offset=offset+mean_psMssh_all(i,j,bi,bj)*
      &                 mean_psMssh_all_NUM(i,j,bi,bj)
@@ -537,12 +540,12 @@ c--   subtract offset from mean_psMssh_all and psmean
 c use the re-referencing approach
                   mean_psMssh_all(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) - offset
-               elseif ( ( tpmeanmask(i,j,bi,bj) .NE. 0. ) .AND.
+               elseif ( ( mdtmask(i,j,bi,bj) .NE. 0. ) .AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
      &              ( abs(YC(i,j,bi,bj)) .GT. 66. ) ) then
 c use the simpler approach
                   mean_psMssh_all(i,j,bi,bj) =
-     &             psmean(i,j,bi,bj) -tpmean(i,j,bi,bj) - offset
+     &             psmean(i,j,bi,bj) -mdt(i,j,bi,bj) - offset
                else
                   mean_psMssh_all(i,j,bi,bj) = 0. _d 0
                endif
@@ -584,7 +587,7 @@ c--    smooth mean_psMssh_all
      &    1,mean_slaobs2,1,1,mythid)
 
 cgf at this point:
-cgf     1) mean_psMssh_all is the sample mean <psbar-slaobs-tpmean-offset>,
+cgf     1) mean_psMssh_all is the sample mean <psbar-slaobs-mdt-offset>,
 cgf             to which a smoothing filter has been applied.
 cgf     2) mean_psMtpobs is the (unsmoothed) sample mean <psbar-tpobs>.
 cgf             And similarly for ers and gfo, each treated separately.
@@ -618,11 +621,11 @@ cgf =======================================================
             do i = imin,imax
        junk = mean_psMssh_all(i,j,bi,bj)
        objf_sshv4cost(1,bi,bj) = objf_sshv4cost(1,bi,bj) + junk*junk
-     &      *wsshv4(i,j,1,bi,bj)*tpmeanmask(i,j,bi,bj)
-       if ( wsshv4(i,j,1,bi,bj)*tpmeanmask(i,j,bi,bj) .ne. 0. )
+     &      *wsshv4(i,j,1,bi,bj)*mdtmask(i,j,bi,bj)
+       if ( wsshv4(i,j,1,bi,bj)*mdtmask(i,j,bi,bj) .ne. 0. )
      &      num_sshv4cost(1,bi,bj) = num_sshv4cost(1,bi,bj) + 1. _d 0
        diagnosfld(i,j,bi,bj) = junk*junk
-     &      * wsshv4(i,j,1,bi,bj)*tpmeanmask(i,j,bi,bj)
+     &      * wsshv4(i,j,1,bi,bj)*mdtmask(i,j,bi,bj)
             enddo
           enddo
         enddo

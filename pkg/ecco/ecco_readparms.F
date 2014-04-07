@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.67 2014/04/04 21:33:07 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.68 2014/04/07 18:08:50 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -40,6 +40,10 @@ C     iUnit       - Work variable for IO unit number
       INTEGER IL
 #endif
 
+Catn-- retired parameters
+      character*(MAX_LEN_FNAM) topexmeanfile
+      integer nRetired
+
 c     == external functions ==
 
       integer  ilnblnk
@@ -55,7 +59,9 @@ c--   Read the namelist input.
      &                   ubarfile, vbarfile, wbarfile,
      &                   tauxbarfile, tauybarfile,
      &                   hfluxmeanbarfile, sfluxmeanbarfile,
-     &                   costTranspDataFile,  topexmeanfile,
+     &                   costTranspDataFile, mdtdatfile,
+     &                   mdtstartdate1, mdtstartdate2,
+     &                   mdtenddate1, mdtenddate2,
      &                   using_cost_altim, 
      &                   using_cost_bp, using_cost_scat, 
      &                   using_cost_sst, using_cost_seaice,
@@ -140,6 +146,7 @@ c--   Read the namelist input.
      &                   wmean_lwflux, wmean_lwdown, wmean_evap,
      &                   wmean_snowprecip, wmean_apressure,
      &                   cost_iprec, cost_yftype
+     &                   ,topexmeanfile
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       namelist /ecco_gencost_nml/
@@ -222,7 +229,13 @@ c other run time parameters
         topexintercept        =      0. _d 0
         topexslope            =      0. _d 0
         topexfile             =    ' '
-        topexmeanfile         =    ' '
+catn: defaulting mdt[start,end]date1 to pavlis so that
+catn  eccov4 will run without needing to read in these params
+        mdtdatfile            =    ' '
+        mdtstartdate1         =      19930101
+        mdtstartdate2         =      0
+        mdtenddate1           =      20041231
+        mdtenddate2           =      0
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
         using_ers             = .true.
 #else
@@ -444,7 +457,11 @@ c other run time parameters
         cost_iprec  = precFloat32
         cost_yftype = 'RL'
 
-c--     Next, read the cost data file.
+Catn-- retired parameters
+        topexmeanfile         =    ' '
+        nRetired              =      0
+
+c--     Next, read the data.ecco file.
         WRITE(msgBuf,'(A)') 'ECCO_READPARMS: opening data.ecco'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
@@ -465,6 +482,27 @@ C--   Check parameters:
         IF ( cost_yftype.NE.'RL' ) THEN
           STOP 'ABNORMAL END: S/R ECCO_READPARMS: invalid cost_yftype'
         ENDIF
+Catn -- retired parameters
+      IF ( topexmeanfile .NE. ' ' ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R ECCO_READPARMS: "topexmeanfile" ',
+     &  'is no longer allowed in file "data.ecco"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'S/R ECCO_READPARMS: set "mdtdatfile" instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R ECCO_READPARMS'
+      ENDIF
+      IF ( nRetired .GT. 0 ) THEN
+       WRITE(msgBuf,'(2A)') 'S/R ECCO_READPARMS: ',
+     &  'Error reading parameter file "data.ecco"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'some out of date parameters were found in the namelist'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R ECCO_READPARMS'
+      ENDIF
 
       _END_MASTER( myThid )
 
