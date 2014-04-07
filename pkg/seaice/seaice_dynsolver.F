@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.54 2012/10/21 04:34:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.55 2014/04/07 14:50:31 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -61,7 +61,6 @@ C     i,j,bi,bj :: Loop counters
       _RL PSTAR
       _RL phiSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  mask_uice, mask_vice
-      _RL tmpscal1, tmpscal2
 
 # ifdef ALLOW_AUTODIFF_TAMC
 C Following re-initialisation breaks some "artificial" AD dependencies
@@ -234,27 +233,8 @@ C--   now add in tilt
         ENDDO
         ENDIF
 
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-C--   now set up ice pressure and viscosities
-          IF ( (HEFF(i,j,bi,bj).LE.SEAICEpresH0).AND.
-     &         (SEAICEpresPow0.NE.1) ) THEN
-            tmpscal1=MAX(HEFF(i,j,bi,bj)/SEAICEpresH0,ZERO)
-            tmpscal2=SEAICEpresH0*(tmpscal1**SEAICEpresPow0)
-          ELSEIF ( (HEFF(i,j,bi,bj).GT.SEAICEpresH0).AND.
-     &             (SEAICEpresPow1.NE.1) ) THEN
-            tmpscal1=MAX(HEFF(i,j,bi,bj)/SEAICEpresH0,ZERO)
-            tmpscal2=SEAICEpresH0*(tmpscal1**SEAICEpresPow1)
-          ELSE
-            tmpscal2=HEFF(i,j,bi,bj)         
-          ENDIF
-          PRESS0(I,J,bi,bj)=PSTAR*tmpscal2
-     &         *EXP(-20.0 _d 0*(SEAICE_area_max-AREA(i,j,bi,bj)))
-          ZMAX(I,J,bi,bj)  = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
-          ZMIN(I,J,bi,bj)  = SEAICE_zetaMin
-          PRESS0(I,J,bi,bj)= PRESS0(I,J,bi,bj)*HEFFM(I,J,bi,bj)
-         ENDDO
-        ENDDO
+        CALL SEAICE_CALC_ICE_STRENGTH( bi, bj, myTime, myIter, myThid )
+
        ENDDO
       ENDDO
 
