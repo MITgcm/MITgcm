@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.91 2014/02/04 18:30:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.92 2014/04/07 13:07:29 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -283,7 +283,7 @@ CADJ &     key = itmpkey
 
       CALL SEAICE_CALC_VISCOSITIES(
      I     e11, e22, e12, zMin, zMax, hEffM, press0,
-     O     eta, etaZ, zeta, press,
+     O     eta, etaZ, zeta, press, deltaC,
      I     ilcall, myTime, myIter, myThid )
 
       CALL SEAICE_OCEANDRAG_COEFFS(

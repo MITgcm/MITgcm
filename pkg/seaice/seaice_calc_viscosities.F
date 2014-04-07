@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.24 2013/05/03 14:51:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.25 2014/04/07 13:07:29 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 CStartOfInterface
       SUBROUTINE SEAICE_CALC_VISCOSITIES(
      I     e11, e22, e12, zMin, zMax, hEffM, press0,
-     O     eta, etaZ, zeta, press,
+     O     eta, etaZ, zeta, press, deltaC,
      I     iStep, myTime, myIter, myThid )
 C     *==========================================================*
 C     | SUBROUTINE  SEAICE_CALC_VISCOSITIES                      |
@@ -51,6 +51,8 @@ C
 C
       _RL press0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL press (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C
+      _RL deltaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     bulk viscosity
       _RL  eta  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  etaZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -64,7 +66,7 @@ C     i,j,bi,bj - Loop counters
 C     e11, e12, e22 - components of strain rate tensor
 C     ecm2          - inverse of square of eccentricity of yield curve
       INTEGER i, j, bi, bj
-      _RL ECM2, deltaC, deltaCreg, tmp
+      _RL ECM2, deltaCreg, tmp
       _RL e12Csqr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef SEAICE_ALLOW_TEM
       _RL etaMax, etaDen
@@ -109,16 +111,18 @@ C     (and energy conserving)
         ENDIF
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
-          deltaC = (e11(i,j,bi,bj)**2+e22(i,j,bi,bj)**2)*(ONE+ecm2)
+          deltaC(I,J,bi,bj) = 
+     &         (e11(i,j,bi,bj)**2+e22(i,j,bi,bj)**2)*(ONE+ecm2)
      &         + 4. _d 0*ecm2*e12Csqr(i,j)
      &         + 2. _d 0*e11(i,j,bi,bj)*e22(i,j,bi,bj)*(ONE-ecm2)
 #ifdef ALLOW_AUTODIFF_TAMC
 C     avoid sqrt of 0
-          IF ( deltaC .GT. 0. _d 0 ) deltaC = SQRT(deltaC)
+          IF ( deltaC(I,J,bi,bj) .GT. 0. _d 0 ) 
+     &         deltaC(I,J,bi,bj) = SQRT(deltaC(I,J,bi,bj))
 #else
-          deltaC    = SQRT(deltaC)
+          deltaC(I,J,bi,bj)    = SQRT(deltaC(I,J,bi,bj))
 #endif /* ALLOW_AUTODIFF_TAMC */
-          deltaCreg = MAX(deltaC,SEAICE_EPS)
+          deltaCreg = MAX(deltaC(I,J,bi,bj),SEAICE_EPS)
 C     "replacement pressure"
           zeta (I,J,bi,bj) = HALF*press0(I,J,bi,bj)/deltaCreg
 C     put min and max viscosities in
@@ -136,7 +140,7 @@ C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
 C     set viscosities to zero at hEffM flow pts
           zeta (I,J,bi,bj) = zeta(I,J,bi,bj)*HEFFM(I,J,bi,bj)
           eta  (I,J,bi,bj) = ECM2*zeta(I,J,bi,bj)
-          press(I,J,bi,bj) = TWO *zeta(I,J,bi,bj)*deltaC
+          press(I,J,bi,bj) = TWO *zeta(I,J,bi,bj)*deltaC(I,J,bi,bj)
          ENDDO
         ENDDO
 #ifdef SEAICE_ALLOW_TEM

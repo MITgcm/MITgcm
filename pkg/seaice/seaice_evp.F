@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.48 2013/03/13 09:57:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.49 2014/04/07 13:07:29 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -103,7 +103,6 @@ C     auxilliary variables
       _RL zetaC         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL deltaZ        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL zetaZ         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL deltaC        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL deltaCreg, deltaZreg, pressZ
 #ifdef SEAICE_ALLOW_TEM
       _RL etaDenC, zetaMaxC, etaDenZ, zetaMaxZ
@@ -221,7 +220,7 @@ CADJ STORE e22  = comlev1_evp,key = ikeyloc, byte = isbyte
             zetaC         (I,J) = 0. _d 0
             deltaZ        (I,J) = 0. _d 0
             zetaZ         (I,J) = 0. _d 0
-            deltaC        (I,J) = 0. _d 0
+            deltaC  (I,J,bi,bj) = 0. _d 0
            ENDDO
           ENDDO
           DO j=1-OLy,sNy+OLy
@@ -241,7 +240,7 @@ CML     &           +          maskC(I,  J-1,kSrf,bi,bj)
 CML     &           +          maskC(I-1,J-1,kSrf,bi,bj) )
 C     Averaging the squares gives more accurate viscous-plastic behavior
 C     than squaring the averages
-            deltaC(I,J) =
+            deltaC(I,J,bi,bj) =
      &           ep(I,J)**2 + recip_ecc2*em(I,J)**2
      &           + recip_ecc2*
      &               ( e12(I,  J,bi,bj)**2 + e12(I+1,J+1,bi,bj)**2
@@ -255,15 +254,15 @@ C     than squaring the averages
      &           + 4. _d 0*recip_ecc2*e12(I,J,bi,bj)**2
 #ifdef ALLOW_AUTODIFF_TAMC
 C     avoid sqrt of 0
-            IF ( deltaC(I,J) .GT. 0. _d 0 )
-     &           deltaC(I,J) = SQRT(deltaC(I,J))
+            IF ( deltaC(I,J,bi,bj) .GT. 0. _d 0 )
+     &           deltaC(I,J,bi,bj) = SQRT(deltaC(I,J,bi,bj))
             IF ( deltaZ(I,J) .GT. 0. _d 0 )
      &           deltaZ(I,J) = SQRT(deltaZ(I,J))
 #else
-            deltaC(I,J) = SQRT(deltaC(I,J))
-            deltaZ(I,J) = SQRT(deltaZ(I,J))
+            deltaC(I,J,bi,bj) = SQRT(deltaC(I,J,bi,bj))
+            deltaZ(I,J)       = SQRT(deltaZ(I,J))
 #endif /* ALLOW_AUTODIFF_TAMC */
-            deltaCreg   = MAX(deltaC(I,J),SEAICE_EPS)
+            deltaCreg   = MAX(deltaC(I,J,bi,bj),SEAICE_EPS)
             deltaZreg   = MAX(deltaZ(I,J),SEAICE_EPS)
 C     modify pressure (copied from seaice_calc_viscosities)
             zetaC(I,J)  = HALF*press0(I,J,bi,bj)/deltaCreg
@@ -300,7 +299,7 @@ C     masked by boundaries/land points
 C     recompute pressure
           DO j=0,sNy+1
            DO i=0,sNx+1
-            pressC(I,J) = TWO*zetaC(I,J)*deltaC(I,J)
+            pressC(I,J) = TWO*zetaC(I,J)*deltaC(I,J,bi,bj)
            ENDDO
           ENDDO
 #ifdef ALLOW_DIAGNOSTICS
@@ -336,7 +335,8 @@ C     than squaring the averages
      &            ( e12(I,  J,bi,bj)**2 + e12(I+1,J+1,bi,bj)**2
      &            + e12(I+1,J,bi,bj)**2 + e12(I,  J+1,bi,bj)**2 )
              etaDenC  = SQRT(MAX(SEAICE_EPS_SQ,etaDenC))
-             zetaMaxC = ecc2*zetaC(I,J)*(deltaC(I,J)-ep(I,J))/etaDenC
+             zetaMaxC = ecc2*zetaC(I,J)
+     &            *(deltaC(I,J,bi,bj)-ep(I,J))/etaDenC
              etaDenZ  =
      &            facZ * ( em(I,  J  )**2 + em(I-1,J-1)**2
      &                   + em(I-1,J  )**2 + em(I,  J-1)**2 )

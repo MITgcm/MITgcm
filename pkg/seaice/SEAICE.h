@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.71 2013/05/03 19:36:29 torge Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.72 2014/04/07 13:07:29 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -83,7 +83,7 @@ C--   Dynamical variables
 C     uIceC :: average of UICE between last two time steps
 C     vIceC :: average of VICE between last two time steps
       COMMON/SEAICE_DYNVARS_3/
-     &     ETA,etaZ,ZETA,PRESS, e11, e22, e12,
+     &     ETA,etaZ,ZETA,PRESS, e11, e22, e12, deltaC,
      &     FORCEX,FORCEY,
      &     uIceC, vIceC, uIceNm1, vIceNm1
       _RL ETA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -95,6 +95,9 @@ C     strain rate tensor
       _RL e11        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL e22        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL e12        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     deformation rate tensor invariant, for viscous plastic sea ice = 
+C     sqrt[(e11**2+e22**2)*(1+1/e**2)+ 4./e**2*e12C**2 + 2*e11*e22*(1-1/e**2))
+      _RL deltaC     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C
       _RL FORCEX     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL FORCEY     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
