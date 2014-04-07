@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.150 2014/04/01 22:02:10 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.151 2014/04/07 14:48:58 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -109,6 +109,10 @@ C--   SEAICE parameters
      & JFNKgamma_nonlin,JFNKgamma_lin_min,JFNKgamma_lin_max,
      & SEAICE_JFNKepsilon, SEAICE_OLx, SEAICE_OLy,
      & SEAICE_JFNKphi, SEAICE_JFNKalpha, SEAICEuseIMEX, SEAICEuseBDF2,
+     & useHibler79IceStrength, SEAICEpartFunc, SEAICEredistFunc,
+     & SEAICEridgingIterMax, SEAICEsimpleRidging, SEAICEsnowFractRidge,
+     & SEAICEgStar, SEAICEhStar, SEAICEaStar, SEAICEshearParm,
+     & SEAICEmuRidging, SEAICEmaxRaft, SEAICE_cf,
      & SEAICEuseAB2, SEAICE_abEps,
      & SEAICEpresH0, SEAICEpresPow0, SEAICEpresPow1,
      & SEAICE_initialHEFF, SEAICEturbFluxFormula,
@@ -197,6 +201,21 @@ C--   set default sea ice parameters
       SEAICE_ageTracer      = .FALSE.
       useHB87stressCoupling = .FALSE.
       usePW79thermodynamics = .TRUE.
+C     ridging parameters
+      useHibler79IceStrength= .TRUE.
+      SEAICEsimpleRidging   = .TRUE.
+      SEAICE_cf             = 17. _d 0
+      SEAICEpartFunc        = 0
+      SEAICEredistFunc      = 0
+      SEAICEridgingIterMax  = 10
+      SEAICEshearParm       = 0.5 _d 0
+      SEAICEgStar           = 0.15 _d 0
+      SEAICEhStar           = 100. _d 0
+      SEAICEaStar           = 0.05 _d 0
+      SEAICEmuRidging       = 5. _d 0
+      SEAICEmaxRaft         = 1. _d 0
+      SEAICEsnowFractRidge  = 0.5 _d 0
+C     end ridging parampeters
       useMaykutSatVapPoly = .FALSE.
       SEAICEuseFluxForm  = .TRUE.
       SEAICEadvHeff      = .TRUE.
@@ -620,6 +639,22 @@ C     Check if all parameters are set.
      &                    SQUEEZE_RIGHT , myThid)
       ENDIF
 #endif /* SEAICE_ALLOW_FREEDRIFT */
+
+#ifndef SEAICE_ITD
+      IF ( .NOT.useHibler79IceStrength ) THEN
+       useHibler79IceStrength = .TRUE.
+       WRITE(msgBuf,'(A,A)')
+     &      'WARNING FROM S/R SEAICE_READPARMS:',
+     &      ' resetting useHibler79IceStrength = .TRUE., because'
+      CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+       WRITE(msgBuf,'(A,A)')
+     &      'WARNING FROM S/R SEAICE_READPARMS:',
+     &      ' SEAICE_ITD is not defined.'
+      CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+      ENDIF
+#endif /* SEAICE_ITD */
 
 C     Make sure that we have least two pseudo time steps
       NPSEUDOTIMESTEPS = MAX(NPSEUDOTIMESTEPS,2)

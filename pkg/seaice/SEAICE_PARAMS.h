@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.114 2014/02/04 18:30:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.115 2014/04/07 14:47:28 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -37,6 +37,11 @@ C     SEAICEuseBDF2     :: use 2nd-order backward difference approach
 C                          for momentum equations as described in
 C                          Lemieux et al. 2014, JCP
 C                          so far only implemented for JFNK-solver
+C     useHibler79IceStrength :: if true original ice strength parameterization 
+C                          other use Rothrock (1975) parameterization based
+C                          on energetics and an ice thickness distribution
+C                          (default = .true.)
+C     SEAICEsimpleRidging :: use Hibler(1979) ridging (default=.true.)
 C - advection:
 C     SEAICEuseFluxForm :: use flux form for advection and diffusion
 C                          of seaice
@@ -84,6 +89,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
+     &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
      &     SEAICE_no_slip, SEAICE_maskRHS,
      &     SEAICE_clipVelocities, useHB87stressCoupling,
@@ -103,6 +109,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2, 
+     &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
      &     SEAICE_no_slip, SEAICE_maskRHS,
      &     SEAICE_clipVelocities, useHB87stressCoupling,
@@ -152,6 +159,16 @@ C                          resid.;
 C                       :: =2,4 : mix with (1/local-residual)^2,4 factor
 C     SEAICEpresPow0    :: HEFF exponent for ice strength below SEAICEpresH0
 C     SEAICEpresPow1    :: HEFF exponent for ice strength above SEAICEpresH0
+C     rigding parameters (only active when SEAICE_ITD is defined)
+C     SEAICEpartFunc    :: =0 use Thorndyke et al (1975) participation function
+C                       :: =1 use Lipscomb et al (2007) participation function
+C     SEAICEredistFunc  :: =0 assume ridged ice is uniformly distributed
+C                             (Hibler, 1980)
+C                          =1 Following Lipscomb et al. (2007), ridged ice is 
+C                             distributed following an exponentially
+C                             decaying function
+C     SEAICEridgingIterMax :: maximum number of ridging iterations
+C     end ridging parameters
 C     SEAICEadvScheme   :: sets the advection scheme for thickness and area
 C     SEAICEadvSchArea  :: sets the advection scheme for area
 C     SEAICEadvSchHeff  :: sets the advection scheme for effective thickness
@@ -198,6 +215,8 @@ C
       INTEGER SEAICE_debugPointI
       INTEGER SEAICE_debugPointJ
       INTEGER SEAICEpresPow0, SEAICEpresPow1
+      INTEGER SEAICEpartFunc, SEAICEredistFunc
+      INTEGER SEAICEridgingIterMax
       COMMON /SEAICE_PARM_I/
      &     IMAX_TICE, postSolvTempIter,
      &     SOLV_MAX_ITERS, SOLV_NCHECK,
@@ -209,6 +228,7 @@ C
      &     SEAICE_JFNK_lsIter, SEAICE_OLx, SEAICE_OLy,
      &     SEAICE_JFNK_tolIter,
      &     SEAICEpresPow0, SEAICEpresPow1,
+     &     SEAICEpartFunc, SEAICEredistFunc, SEAICEridgingIterMax, 
      &     SEAICEadvScheme,
      &     SEAICEadvSchArea,
      &     SEAICEadvSchHeff,
@@ -354,6 +374,18 @@ C     SEAICE_airTurnAngle   :: turning angles of air-ice interfacial stress
 C     SEAICE_waterTurnAngle :: and ice-water interfacial stress (in degrees)
 C     SEAICE_tauAreaObsRelax :: Timescale of relaxation to observed
 C                               sea ice concentration (s), default=unset
+C     ridging parameters (Lipscomb et al, 2007, Bitz et al. 2001):
+C     SEAICE_cf       :: ratio of total energy sinks to gravitational sink
+C                        (scales ice strength, suggested values: 2 to 17)
+C     SEAICEgStar     :: maximum ice concentration that participates in ridging
+C     SEAICEhStar     :: empirical thickness (ridging parameter)
+C     SEAICEaStar     :: ice concentration parameter similar to gStar for
+C                        exponential distribution (Lipscomb et al 2007)
+C     SEAICEshearParm :: <=1 reduces amount of energy lost to ridge building
+C     SEAICEmuRidging :: tuning parameter similar to hStar for Lipcomb et al
+C                        (2007)-scheme
+C     SEAICEmaxRaft   :: regularization parameter (default=1)
+C     SEAICEsnowFractRidge :: fraction of snow that remains on ridged
 C
       _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn, SEAICE_deltaTevp
       _RL SEAICE_LSRrelaxU, SEAICE_LSRrelaxV
@@ -393,6 +425,9 @@ C
       _RL SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow
       _RL SEAICEdiffKhSalt
       _RL SEAICE_tauAreaObsRelax
+      _RL SEAICEgStar, SEAICEhStar, SEAICEaStar, SEAICEshearParm
+      _RL SEAICEmuRidging, SEAICEmaxRaft, SEAICE_cf
+      _RL SEAICEsnowFractRidge
 
       COMMON /SEAICE_PARM_RL/
      &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
@@ -430,7 +465,10 @@ C
      &    SEAICE_area_floor, SEAICE_area_max,
      &    SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow,
      &    SEAICEdiffKhSalt, SEAICE_tauAreaObsRelax,
-     &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle
+     &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
+     &    SEAICEgStar, SEAICEhStar, SEAICEaStar, SEAICEshearParm,
+     &    SEAICEmuRidging, SEAICEmaxRaft, SEAICE_cf,
+     &    SEAICEsnowFractRidge
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values
 C     MIN_ATEMP         :: minimum air temperature   (deg C)

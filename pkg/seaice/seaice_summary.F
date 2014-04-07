@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.71 2014/02/04 18:30:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.72 2014/04/07 14:48:58 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -436,6 +436,32 @@ c
 #ifdef SEAICE_ITD
       CALL WRITE_0D_I (SEAICE_multDim,INDEX_NONE,'nITD              ='
      & , ' /* number of ice thickness categories */')
+      CALL WRITE_0D_L ( useHibler79IceStrength, INDEX_NONE,
+     & 'useHibler79IceStrength  =',
+     & ' /* select ice strength parameterizationd */')
+      CALL WRITE_0D_L ( SEAICEsimpleRidging, INDEX_NONE,
+     & 'SEAICEsimpleRidging  =',
+     & ' /* select ridging scheme */')
+      CALL WRITE_0D_I (SEAICEpartFunc,INDEX_NONE,
+     &     'SEAICEpartFunc   ='
+     & , ' /* select ridging participation function */')
+      CALL WRITE_0D_I (SEAICEredistFunc,INDEX_NONE,
+     &     'SEAICEredistFunc ='
+     & , ' /* select ridging redistribution function */')
+      CALL WRITE_0D_RL( SEAICE_cf  ,INDEX_NONE,
+     & 'SEAICE_cf  =', ' /* ice strength parameter */')
+      CALL WRITE_0D_RL( SEAICEshearParm  ,INDEX_NONE,
+     & 'SEAICEshearParm  =', ' /* amount of energy lost to shear */')
+      CALL WRITE_0D_RL( SEAICEgStar  ,INDEX_NONE,
+     & 'SEAICEgStar  =', ' /* ridging parameter */')
+      CALL WRITE_0D_RL( SEAICEhStar  ,INDEX_NONE,
+     & 'SEAICEhStar  =', ' /* ridging parameter */')
+      CALL WRITE_0D_RL( SEAICEaStar  ,INDEX_NONE,
+     & 'SEAICEaStar  =', ' /* ridging parameter */')
+      CALL WRITE_0D_RL( SEAICEmuRidging  ,INDEX_NONE,
+     & 'SEAICEmuRidging  =', ' /* ridging parameter */')
+      CALL WRITE_0D_RL( SEAICEmaxRaft  ,INDEX_NONE,
+     & 'SEAICEmaxRaft  =', ' /* ridging parameter */')
 #else
       CALL WRITE_0D_I (SEAICE_multDim,INDEX_NONE,'SEAICE_multDim    ='
      & , ' /* number of ice categories (1 or 7) */')
