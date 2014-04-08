@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.7 2014/04/07 18:08:50 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.8 2014/04/08 18:52:41 jmc Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -225,7 +225,7 @@ c     == end of interface ==
      &                    SQUEEZE_RIGHT , mythid)
 
 #ifdef ALLOW_SSH_MEAN_COST_CONTRIBUTION
-      write(msgbuf,'(a,l)')
+      write(msgbuf,'(A,L5)')
      &  '  using_cost_altim[T=mdt,F=no]:   ',using_cost_altim
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
