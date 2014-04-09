@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.72 2014/04/07 13:07:29 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.73 2014/04/09 16:24:51 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -65,7 +65,8 @@ C                    for metric terms in U/V ice equations.
 C--   Dynamical variables
 #ifdef SEAICE_ITD
       COMMON/SEAICE_DYNVARS_1/AREA,HEFF,HSNOW,UICE,VICE,
-     &                        AREAITD,HEFFITD,HSNOWITD
+     &                        AREAITD,HEFFITD,HSNOWITD,
+     &                        opnWtrFrac 
 #else
       COMMON/SEAICE_DYNVARS_1/AREA,HEFF,HSNOW,UICE,VICE
 #endif
@@ -78,6 +79,8 @@ C--   Dynamical variables
       _RL AREAITD    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
       _RL HEFFITD    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
       _RL HSNOWITD   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
+C     fraction of open water (= 1-AREA) needed for ridging parameterization
+      _RL opnWtrFrac (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 C     uIceC :: average of UICE between last two time steps

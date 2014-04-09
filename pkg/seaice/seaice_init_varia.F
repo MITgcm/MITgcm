@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.80 2013/01/03 20:51:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.81 2014/04/09 16:24:51 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -384,6 +384,7 @@ C--   Read initial snow thickness from file if available.
            AREAITD(I,J,1,bi,bj) =AREA(I,J,bi,bj)
            HEFFITD(I,J,1,bi,bj) =HEFF(I,J,bi,bj)
            HSNOWITD(I,J,1,bi,bj)=HSNOW(I,J,bi,bj)
+           opnWtrFrac(I,J,bi,bj)=1. _d 0 - AREA(I,J,bi,bj)
           ENDDO
          ENDDO
         ENDDO

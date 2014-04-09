@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.67 2013/11/19 20:42:23 torge Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.68 2014/04/09 16:24:51 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -55,7 +55,7 @@ C     === Local variables ===
 C     i,j,bi,bj :: Loop counters
 #ifdef SEAICE_ITD
 C     it        :: Loop counter for ice thickness categories
-#endif
+#endif /* SEAICE_ITD */
 C     ks        :: surface level index
 C     uc/vc     :: current ice velocity on C-grid
 C     uTrans    :: volume transport, x direction
@@ -67,7 +67,7 @@ C     xA,yA     :: "areas" of X and Y face of tracer cells
       INTEGER i, j, bi, bj
 #ifdef SEAICE_ITD
       INTEGER it
-#endif
+#endif /* SEAICE_ITD */
       INTEGER ks
       LOGICAL SEAICEmultiDimAdvection
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -138,6 +138,15 @@ C     Do we need this? I am afraid so.
 CADJ STORE uc   = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE vc   = comlev1, key = ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef SEAICE_ITD
+C     compute the fraction of open water before advection
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          opnWtrFrac(i,j,bi,bj)=1. _d 0 - AREA(i,j,bi,bj)
+         ENDDO
+        ENDDO
+#endif /* SEAICE_ITD */
 
       SEAICEmultidimadvection = .TRUE.
       IF ( SEAICEadvScheme.EQ.ENUM_CENTERED_2ND
@@ -215,7 +224,7 @@ C--   Effective Thickness (Volume)
            HEFF(i,j,bi,bj)=HEFFITD(i,j,it,bi,bj)
           ENDDO
          ENDDO
-#endif
+#endif /* SEAICE_ITD */
           CALL SEAICE_ADVECTION(
      I         GAD_HEFF, SEAICEadvSchHeff,
      I         uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
@@ -246,7 +255,7 @@ C     now do the "explicit" time step
           ENDDO
          ENDDO
         ENDDO
-#endif
+#endif /* SEAICE_ITD */
         ENDIF
 
 C--   Fractional area
@@ -289,7 +298,31 @@ C     now do the "explicit" time step
           ENDDO
          ENDDO
         ENDDO
-#endif
+C     open water fraction needs to be advected for the ridging scheme
+        CALL SEAICE_ADVECTION(
+     I       GAD_AREA, SEAICEadvSchArea,
+     I       uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
+     I       uTrans, vTrans, opnWtrFrac(1-OLx,1-OLy,bi,bj), recip_heff,
+     O       gFld, afx, afy,
+     I       bi, bj, myTime, myIter, myThid )
+        IF ( SEAICEdiffKhArea .GT. 0. _d 0 ) THEN
+C-    Add tendency due to diffusion
+         CALL SEAICE_DIFFUSION(
+     I        GAD_AREA, SEAICEdiffKhArea, ONE,
+     I        opnWtrFrac(1-OLx,1-OLy,bi,bj), HEFFM,
+     I        xA(1-OLx,1-OLy,bi,bj), yA(1-OLx,1-OLy,bi,bj),
+     U        gFld,
+     I        bi, bj, myTime, myIter, myThid )
+        ENDIF
+C     now do the "explicit" time step
+        DO j=1,sNy
+         DO i=1,sNx
+          opnWtrFrac(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
+     &         opnWtrFrac(i,j,bi,bj) + SEAICE_deltaTtherm * gFld(i,j)
+     &         )
+         ENDDO
+        ENDDO
+#endif /* SEAICE_ITD */
         ENDIF
 
 C--   Effective Snow Thickness (Volume)
@@ -301,7 +334,7 @@ C--   Effective Snow Thickness (Volume)
            HSNOW(i,j,bi,bj)=HSNOWITD(i,j,it,bi,bj)
           ENDDO
          ENDDO
-#endif
+#endif /* SEAICE_ITD */
           CALL SEAICE_ADVECTION(
      I         GAD_SNOW, SEAICEadvSchSnow,
      I         uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
@@ -332,7 +365,7 @@ C     now do the "explicit" time step
           ENDDO
          ENDDO
         ENDDO
-#endif
+#endif /* SEAICE_ITD */
         ENDIF
 
 #ifdef SEAICE_ITD
@@ -343,7 +376,7 @@ C     update mean ice thickness HEFF and total ice concentration AREA
 C     to match single category values
 C     (necessary here because updated HEFF is used below for SItracer)
         CALL SEAICE_ITD_SUM(bi, bj, myTime, myIter, myThid)
-#endif
+#endif /* SEAICE_ITD */
 
 #ifdef SEAICE_VARIABLE_SALINITY
 C--   Effective Sea Ice Salinity (Mass of salt)
@@ -538,7 +571,7 @@ CADJ STORE heff = comlev1, key = ikey_dynamics, kind=isbyte
            ENDDO
           ENDDO
          ENDDO
-#endif
+#endif /* SEAICE_ITD */
         CALL ADVECT( uc, vc, hEff, fldNm1, HEFFM, myThid )
         IF ( SEAICEdiffKhHeff .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
@@ -564,7 +597,7 @@ C-    Add tendency due to diffusion
           ENDDO
          ENDDO
         ENDDO
-#endif
+#endif /* SEAICE_ITD */
        ENDIF
        IF ( SEAICEadvArea ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -581,7 +614,7 @@ CADJ STORE area = comlev1, key = ikey_dynamics, kind=isbyte
            ENDDO
           ENDDO
          ENDDO
-#endif
+#endif /* SEAICE_ITD */
         CALL ADVECT( uc, vc, area, fldNm1, HEFFM, myThid )
         IF ( SEAICEdiffKhArea .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
@@ -607,7 +640,22 @@ C-    Add tendency due to diffusion
           ENDDO
          ENDDO
         ENDDO
-#endif
+C     open water fraction needs to be advected for the ridging scheme
+        CALL ADVECT( uc, vc, opnWtrFrac, fldNm1, HEFFM, myThid )
+        IF ( SEAICEdiffKhArea .GT. 0. _d 0 ) THEN
+C-    Add tendency due to diffusion
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+            CALL SEAICE_DIFFUSION(
+     I           GAD_AREA, SEAICEdiffKhArea, SEAICE_deltaTtherm,
+     I           fldNm1(1-OLx,1-OLy,bi,bj), HEFFM,
+     I           xA(1-OLx,1-OLy,bi,bj), yA(1-OLx,1-OLy,bi,bj),
+     U           opnWtrFrac(1-OLx,1-OLy,bi,bj),
+     I           bi, bj, myTime, myIter, myThid )
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* SEAICE_ITD */
        ENDIF
        IF ( SEAICEadvSnow ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -624,7 +672,7 @@ CADJ STORE hsnow = comlev1, key = ikey_dynamics, kind=isbyte
            ENDDO
           ENDDO
          ENDDO
-#endif
+#endif /* SEAICE_ITD */
         CALL ADVECT( uc, vc, HSNOW, fldNm1, HEFFM, myThid )
         IF ( SEAICEdiffKhSnow .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
@@ -650,7 +698,7 @@ C-    Add tendency due to diffusion
           ENDDO
          ENDDO
         ENDDO
-#endif
+#endif /* SEAICE_ITD */
        ENDIF
 
 #ifdef SEAICE_ITD
@@ -665,7 +713,7 @@ C     (necessary here because updated HEFF is used below for SItracer)
          CALL SEAICE_ITD_SUM(bi, bj, myTime, myIter, myThid)
         ENDDO
        ENDDO
-#endif
+#endif /* SEAICE_ITD */
 
 #ifdef SEAICE_VARIABLE_SALINITY
        IF ( SEAICEadvSalt ) THEN
