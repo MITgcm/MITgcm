@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.36 2014/01/19 14:46:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.37 2014/04/09 16:19:24 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -709,6 +709,14 @@ C=============== ice thickness categories ============
       diagTitle =
      I 'SEAICE fractional ice-covered area per category [0 to 1]'
       diagUnits = 'm^2/m^2         '
+      diagCode  = 'SM      MX      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      CALL DIAGNOSTICS_SETKLEV( diagName, nITD, myThid )
+
+      diagName  = 'SIhsnowN'
+      diagTitle = 'SEAICE effective snow thickness per category'
+      diagUnits = 'm               '
       diagCode  = 'SM      MX      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
