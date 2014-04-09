@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1977 2014/04/07 18:41:13 atn Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1978 2014/04/09 16:25:19 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -11,6 +11,8 @@ o pkg/seaice:
   - make deltaC a global variable, so that it can be used in ridging code 
   - first step towards ridging: introduce new routines that compute
     ice strength based on ridging parameters
+  - add diagnostic for HSNOWITD
+  - add opnWtrFrac as a global variable (required for ridging scheme)
 o pkg/salt_plume + pkg/seaice/seaice_growth.F
   - add SALT_PLUME_IN_LEADS flag to activate pkg/salt_plume only when ice
     AREA exceeds a threshold (code contributed by I.Fenty in 2011)
