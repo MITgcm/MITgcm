@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_prepare_ridging.F,v 1.1 2014/04/07 14:50:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_prepare_ridging.F,v 1.2 2014/04/10 14:37:50 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -70,11 +70,9 @@ CEndOfInterface
 C !LOCAL VARIABLES: ====================================================
 C     === Local variables ===
 C     i,j,k       :: inner loop counters
-C     openWater   :: open water area fraction
 C
       INTEGER i, j
       INTEGER k
-      _RL openWater       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     variables related to ridging schemes
 C     gSum        :: cumulative distribution function G
       _RL gSum            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,-1:nITD)
@@ -95,19 +93,6 @@ C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         ENDDO
        ENDDO
       ENDDO
-C     calculate area of open water
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        openWater(i,j) = ONE
-       ENDDO
-      ENDDO
-      DO k=1,nITD
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         openWater(i,j) = openWater(i,j) - AREAITD(i,j,k,bi,bj)
-        ENDDO
-       ENDDO
-      ENDDO
       
 C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -116,8 +101,8 @@ C     compute the cumulative thickness distribution function gSum
        DO i=iMin,iMax
         gSum(i,j,-1) = 0. _d 0
         gSum(i,j,0)  = 0. _d 0
-        IF ( openWater(i,j) .GT. SEAICE_area_floor ) 
-     &       gSum(i,j,0) = openWater(i,j)
+        IF ( opnWtrFrac(i,j,bi,bj) .GT. SEAICE_area_floor ) 
+     &       gSum(i,j,0) = opnWtrFrac(i,j,bi,bj)
        ENDDO
       ENDDO
       DO k = 1, nITD
@@ -265,9 +250,17 @@ C     rigdingModeNorm = 1 - 1/3 = 2/3.
       DO k = 1, nITD
        DO j=jMin,jMax
         DO i=iMin,iMax
+         partFunc(i,j,k) = partFunc(i,j,k) * heffM(i,j,bi,bj)
          ridgingModeNorm(i,j) = ridgingModeNorm(i,j)
      &        + partFunc(i,j,k)*( 1. _d 0 - 1. _d 0/ridgeRatio(i,j,k) )
         ENDDO
+       ENDDO
+      ENDDO
+C     avoid division by zero
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        IF ( ridgingModeNorm(i,j) .LE. 0. _d 0 )
+     &       ridgingModeNorm(i,j) = 1. _d 0
        ENDDO
       ENDDO
 
