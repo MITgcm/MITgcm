@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_pgi.stderr
 #PBS -o /home/jmc/test_aces/output/tst_pgi.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.28 2013/08/20 18:53:11 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.29 2014/04/11 16:04:52 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -36,9 +36,9 @@ sfx='pgi'
 #- keep a copy of MPI_MFILE:
 cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
 
-checkOut=1 ; options="$options -do"
-#options="$options -nc" ; checkOut=0
-#options="$options -q"  ; checkOut=0
+checkOut=1 ; options="$options -do" ; dblRun=1 ;
+#options="$options -nc" ; checkOut=0 ; dblRun=0 ;
+#options="$options -q"  ; checkOut=0 ; dblRun=0 ;
 
 addExp=0
 cvsArg="-d :pserver:cvsanon@mitgcm.org:/u/gcmpack"
@@ -113,8 +113,21 @@ fi
 SavD="$HOME/test_$dNam/send"
 SEND="ssh geo $SavD/mpack"
 
-echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx \
-  -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
-./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx \
-  -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+if [ $dblRun -eq 1 ] ; then
 
+ echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx
+ ./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx
+
+ echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx \
+   -q -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+ ./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx \
+   -q -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+
+else
+
+ echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx \
+   -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+ ./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx \
+   -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+
+fi
