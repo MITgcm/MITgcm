@@ -1,14 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1978 2014/04/09 16:25:19 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1979 2014/04/11 13:28:04 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint64v (2014/04/11)
 o pkg/ecco:
   - add runtime parameters mdt[start,end]date[1,2]
   - rename variable "tpmean" as "mdt" and "topexmeanfile" as "mdtdatfile"
-o pkg/seaice: 
-  - make deltaC a global variable, so that it can be used in ridging code 
+o pkg/seaice:
+  - make deltaC a global variable, so that it can be used in ridging code
   - first step towards ridging: introduce new routines that compute
     ice strength based on ridging parameters
   - add diagnostic for HSNOWITD
