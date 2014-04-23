@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.69 2014/04/10 14:19:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.70 2014/04/23 12:37:50 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -368,9 +368,6 @@ C     now do the "explicit" time step
         ENDIF
 
 #ifdef SEAICE_ITD
-C     check that all ice thickness categories meet their limits
-C     (includes Hibler-type ridging)
-        CALL SEAICE_ITD_REDIST(bi, bj, myTime, myIter, myThid)
 C     update mean ice thickness HEFF and total ice concentration AREA
 C     to match single category values
 C     (necessary here because updated HEFF is used below for SItracer)
@@ -703,9 +700,6 @@ C-    Add tendency due to diffusion
 #ifdef SEAICE_ITD
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-C     check that all ice thickness categories meet their limits
-C     (includes Hibler-type ridging)
-         CALL SEAICE_ITD_REDIST(bi, bj, myTime, myIter, myThid)
 C     update mean ice thickness HEFF and total ice concentration AREA
 C     to match single category values
 C     (necessary here because updated HEFF is used below for SItracer)
