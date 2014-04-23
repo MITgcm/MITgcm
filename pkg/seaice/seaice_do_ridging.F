@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_do_ridging.F,v 1.1 2014/04/23 12:38:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_do_ridging.F,v 1.2 2014/04/23 12:40:45 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -308,8 +308,6 @@ C     this ridging category
        ENDDO
 C     inner loop over categories: distribute what has been removed from the 
 C     kth category to all categories according to area/volFraction
-       areaTest=0. _d 0
-       volTest =0. _d 0
        DO l=1,nITD
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -377,8 +375,6 @@ C     decaying function, see also s/r seaice_prepare_ridging.
           ENDDO
          ENDIF
         ENDIF 
-        areaTest=areaTest + areaFraction(ii,jj)
-        volTest =volTest  + volFraction(ii,jj)
 C     after computing the fraction ridged ice for this category, apply it 
         DO j=jMin,jMax
          DO i=iMin,iMax
