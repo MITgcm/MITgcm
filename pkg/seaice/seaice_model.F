@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.112 2013/11/26 00:05:21 torge Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.113 2014/04/23 12:38:40 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -179,6 +179,12 @@ C NOW DO ADVECTION and DIFFUSION
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heffm  = comlev1, key=ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
+
+C     After advection, the sea ice variables may have unphysical values
+C     e.g., < 0, that are regularized here. Concentration as a special case 
+C     may be > 1 in convergent motion and a ridging algorithm redistributes
+C     the ice to limit the concentration to 1.
+      CALL SEAICE_REG_RIDGE( myTime, myIter, myThid )
 
 #ifndef DISABLE_SEAICE_GROWTH
 C     thermodynamics growth

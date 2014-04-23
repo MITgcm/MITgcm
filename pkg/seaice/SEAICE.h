@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.73 2014/04/09 16:24:51 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.74 2014/04/23 12:38:40 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -137,10 +137,24 @@ C--   Dynamical variables
       _RL ZMAX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ZMIN       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+      COMMON/SEAICE_REG_NEG/d_HEFFbyNEG,d_HSNWbyNEG
+C     The change of mean ice thickness due to out-of-bounds values following
+C     sea ice dynamics and advection
+      _RL d_HEFFbyNEG (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL d_HSNWbyNEG (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     
+#ifdef EXF_SEAICE_FRACTION
+      COMMON/SEAICE_RELAX/d_AREAbyRLX,d_HEFFbyRLX
+C     ICE/SNOW stocks tendency associated with relaxation towards observation
+      _RL d_AREAbyRLX (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     The change of mean ice thickness due to relaxation
+      _RL d_HEFFbyRLX (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* EXF_SEAICE_FRACTION */
 #ifdef SEAICE_VARIABLE_SALINITY
-      COMMON/SEAICE_SALINITY_R/HSALT
-      _RL HSALT      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
+      COMMON/SEAICE_SALINITY_R/HSALT, saltFluxAdjust
+      _RL HSALT         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL saltFluxAdjust(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* SEAICE_VARIABLE_SALINITY */
 
 C     saltWtrIce contains m of salty ice melted (<0) or created (>0)
 C     frWtrIce contains m of freshwater ice melted (<0) or created (>0)
