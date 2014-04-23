@@ -1,8 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1979 2014/04/11 13:28:04 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1980 2014/04/23 12:42:19 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice: preparations for ridging code and first real ridging code
+  - move most of "PART 1" of S/R seaice_growth into a new and separate 
+    S/R seaice_reg_ridge that will both regularize the state variable after
+    advection call the actual ridging routine;
+  - requires to make 5 fields global fields: d_HEFFbyNEG,d_HSNWbyNEG, 
+    d_AREAbyRLX,d_HEFFbyRLX,saltFluxAdjust;
+  - remove ridging code from seaice_advdiff
+  - clean up remaining part 1 of seaice_growth in an attempt to make it 
+    more readable (this is probably subjective)
+  - call seaice_itd_redist once in the initialisation phase to have the initial
+    conditions in the correct category
+  - finally: add new ridging routine for ITD code
 
 checkpoint64v (2014/04/11)
 o pkg/ecco:
