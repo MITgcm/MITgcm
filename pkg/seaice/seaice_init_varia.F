@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.81 2014/04/09 16:24:51 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.82 2014/04/23 12:41:09 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -387,14 +387,9 @@ C--   Read initial snow thickness from file if available.
            opnWtrFrac(I,J,bi,bj)=1. _d 0 - AREA(I,J,bi,bj)
           ENDDO
          ENDDO
+         CALL SEAICE_ITD_REDIST(bi, bj, baseTime, nIter0, myThid)
         ENDDO
        ENDDO
-C       DO bj=myByLo(myThid),myByHi(myThid)
-C        DO bi=myBxLo(myThid),myBxHi(myThid)
-C         CALL SEAICE_ITD_REDIST(bi, bj, myTime, myIter, myThid)
-C        ENDDO
-C       ENDDO
-C      it is sufficient to have first call of SEAICE_ITD_REDIST before SEAICE_GROWTH
 #endif
 
 #ifdef SEAICE_VARIABLE_SALINITY
