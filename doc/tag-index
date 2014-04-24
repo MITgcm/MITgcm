@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1980 2014/04/23 12:42:19 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1981 2014/04/24 09:23:49 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: some small modifications to the ridging code
+  - make fw2ObyRidge a global variable and add the freshwater flux to
+    seaice_growth
+  - pass actual thickness from seaice_prepare_ridging, so that it is 
+    computed only in one place and compute it in the same way as in
+    seaice_growth
+  - initialise more fields in seaice_do_ridging that where cause floating
+    point exceptions over land
 o pkg/seaice: preparations for ridging code and first real ridging code
   - move most of "PART 1" of S/R seaice_growth into a new and separate 
     S/R seaice_reg_ridge that will both regularize the state variable after
