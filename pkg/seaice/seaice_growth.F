@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.197 2014/04/23 12:38:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.198 2014/04/24 09:23:07 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -140,10 +140,6 @@ C     facilitate multi-category snow implementation
 
 C     temporary variables available for the various computations
       _RL tmpscal0, tmpscal1, tmpscal2, tmpscal3, tmpscal4
-#ifdef SEAICE_ITD
-      _RL tmpscal1itd(1:sNx,1:sNy), tmpscal2itd(1:sNx,1:sNy)
-      _RL tmpscal3itd(1:sNx,1:sNy)
-#endif
 
 #ifdef ALLOW_SITRACER
       INTEGER iTr
@@ -2138,6 +2134,12 @@ C     If r_FWbySublim>0, then it is evaporated from ocean.
 #endif /* ALLOW_RUNOFF */
      &         + tmpscal1*convertHI2PRECIP
      &         )*rhoConstFresh
+#ifdef SEAICE_ITD
+C     beware of the sign: fw2ObyRidge is snow mass moved into the ocean
+C     by ridging, so requires a minus sign
+     &         - fw2ObyRidge(I,J,bi,bj)*recip_deltaTtherm
+     &           * maskC(I,J,kSurface,bi,bj)
+#endif /* SEAICE_ITD */
 C and the flux leaving/entering the ocean+ice
            SIatmFW(I,J,bi,bj) = maskC(I,J,kSurface,bi,bj)*(
      &          EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
