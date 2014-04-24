@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_visc_beta_hybrid.F,v 1.3 2014/04/24 12:01:50 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_visc_beta_hybrid.F,v 1.4 2014/04/24 16:37:51 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -189,9 +189,13 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
 
            ub = umid - streamice_taubx(i,j,bi,bj) *
      &      streamice_omega(i,j,bi,bj) / H_streamice(i,j,bi,bj)
+ 
+           streamice_u_bed (i,j,bi,bj) = ub
 
            vb = vmid - streamice_tauby(i,j,bi,bj) *
      &      streamice_omega(i,j,bi,bj) / H_streamice(i,j,bi,bj)
+
+           streamice_v_bed (i,j,bi,bj) = vb
 
            unorm = sqrt(ub**2+vb**2+eps_u_min**2)
 
