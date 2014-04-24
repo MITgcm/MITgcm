@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_prepare_ridging.F,v 1.2 2014/04/10 14:37:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_prepare_ridging.F,v 1.3 2014/04/24 08:50:27 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -8,6 +8,7 @@ C !ROUTINE: SEAICE_PREPARE_RIDGING
 C !INTERFACE: ==========================================================
       SUBROUTINE SEAICE_PREPARE_RIDGING(
 #ifdef SEAICE_ITD
+     O     hActual,
      O     hrMin, hrMax, hrExp, ridgeRatio, ridgingModeNorm, partFunc,
 #endif /* SEAICE_ITD */
      I     iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
@@ -59,12 +60,14 @@ C     ridgeRatio :: mean ridge thickness/ thickness of ridging ice
 C     hrMin      :: min ridge thickness
 C     hrMax      :: max ridge thickness   (SEAICEredistFunc = 0)
 C     hrExp      :: ridge e-folding scale (SEAICEredistFunc = 1)
+C     hActual    :: HEFFITD/AREAITD, regularized
       _RL ridgingModeNorm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL partFunc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,0:nITD)
       _RL hrMin           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
       _RL hrMax           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
       _RL hrExp           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
       _RL ridgeRatio      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
+      _RL hActual         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD) 
 CEndOfInterface
 
 C !LOCAL VARIABLES: ====================================================
@@ -77,18 +80,28 @@ C     variables related to ridging schemes
 C     gSum        :: cumulative distribution function G
       _RL gSum            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,-1:nITD)
       _RL recip_gStar, recip_aStar, tmp
-C     hActual    :: HEFFITD/AREAITD
-      _RL hActual         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD) 
+C     Regularization values squared
+      _RL area_reg_sq, hice_reg_sq
 CEOP
 
 C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+C     regularization constants
+      area_reg_sq = SEAICE_area_reg * SEAICE_area_reg
+      hice_reg_sq = SEAICE_hice_reg * SEAICE_hice_reg
       DO k=1,nITD
        DO j=jMin,jMax
         DO i=iMin,iMax
          hActual(i,j,k) = 0. _d 0
-         IF ( AREAITD(i,j,k,bi,bj) .GT. SEAICE_area_reg ) THEN
-          hActual(i,j,k) = HEFFITD(i,j,k,bi,bj)/AREAITD(i,j,k,bi,bj)
+CML         IF ( AREAITD(i,j,k,bi,bj) .GT. SEAICE_area_reg ) THEN
+CML          hActual(i,j,k) = HEFFITD(i,j,k,bi,bj)/AREAITD(i,j,k,bi,bj)
+CML         ENDIF
+         IF ( HEFFITD(i,j,k,bi,bj) .GT. 0. _d 0 ) THEN
+C     regularize as in seaice_growth: compute hActual with regularized 
+C     AREA and regularize from below with a minimum thickness
+          tmp = HEFFITD(i,j,k,bi,bj)
+     &         /( AREAITD(i,j,k,bi,bj)**2 + area_reg_sq )
+          hActual(i,j,k) = SQRT(tmp * tmp + hice_reg_sq)
          ENDIF
         ENDDO
        ENDDO
@@ -221,13 +234,13 @@ C     decaying function
         DO j=jMin,jMax
          DO i=iMin,iMax
           IF ( hActual(i,j,k) .GT. 0. _d 0 ) THEN
-C     regularization is only required in this case
-           hActual(i,j,k) = MAX(hActual(i,j,k), SEAICE_hice_reg)
-           hrMin(i,j,k) = MIN(2. _d 0 * hActual(i,j,k),
-     &          hActual(i,j,k)+SEAICEmaxRaft)
-           hrExp(i,j,k) = SEAICEmuRidging*SQRT(hActual(i,j,k))
+C     regularization is only required in this case but already done above
+CML           tmp = MAX(hActual(i,j,k), SEAICE_hice_reg)
+           tmp = hActual(i,j,k)
+           hrMin(i,j,k) = MIN(2.D0 * tmp, tmp+SEAICEmaxRaft)
+           hrExp(i,j,k) = SEAICEmuRidging*SQRT(tmp)
 C     arent we missing a factor 0.5 here?
-           ridgeRatio(i,j,k)=(hrMin(i,j,k)+hrExp(i,j,k))/hActual(i,j,k)
+           ridgeRatio(i,j,k)=(hrMin(i,j,k)+hrExp(i,j,k))/tmp
           ENDIF
          ENDDO
         ENDDO

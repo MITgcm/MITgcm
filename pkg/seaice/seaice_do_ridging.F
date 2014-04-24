@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_do_ridging.F,v 1.2 2014/04/23 12:40:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_do_ridging.F,v 1.3 2014/04/24 08:50:27 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -57,7 +57,6 @@ C
       INTEGER iMin, iMax, jMin, jMax
 #ifdef SEAICE_ITD
       INTEGER k, l, n
-      _RL FW2ObyRidge     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ridgingModeNorm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL partFunc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,0:nITD)
 C     ridgeRatio :: mean ridge thickness/ thickness of ridging ice
@@ -68,6 +67,8 @@ C     hrExp      :: ridge e-folding scale (SEAICEredistFunc = 1)
       _RL hrMax           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
       _RL hrExp           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
       _RL ridgeRatio      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
+C     computed and returned by S/R seaice_prepare_ridging, but not needed here
+      _RL hActual         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD) 
 C
       _RL openWater       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL netArea         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -136,9 +137,21 @@ C     and eventual rafting occured in thinnest category:
        ENDDO
 C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ELSE
-       CALL SEAICE_PREPARE_RIDGING(
-     O      hrMin, hrMax, hrExp, ridgeRatio, ridgingModeNorm, partFunc,
-     I      iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
+C     initialisation
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        ridgingArea(i,j)       = 0. _d 0
+        ridgingHeff(i,j)       = 0. _d 0
+        ridgingHsnw(i,j)       = 0. _d 0
+        areaFraction(i,j)      = 0. _d 0
+        volFraction(i,j)       = 0. _d 0
+        fw2ObyRidge(i,j,bi,bj) = 0. _d 0
+       ENDDO
+      ENDDO
+      CALL SEAICE_PREPARE_RIDGING(
+     O     hActual,
+     O     hrMin, hrMax, hrExp, ridgeRatio, ridgingModeNorm, partFunc,
+     I     iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
 C     Compute the first strain rate invariant epsilonI (divergence)
 C     energy dissipation by convergence = -min (divergence, 0)
 C     energy dissipation by shearing    = (1/2) * (Delta - abs(divergence))
@@ -265,8 +278,7 @@ CML     &       areaTooLarge = areaTooLarge.OR.netArea(i,j).GT.SEAICE_area_max
         IF (areaTooLarge) areaScaling(i,j) = 1. _d 0 - divAdv/ridgingIce
        ENDDO
       ENDDO
-C     
-      FW2ObyRidge(i,j,bi,bj) = 0. _d 0
+C
       DO k=1,nITD
 C     need to catch partFunc*grossClosing > AREAITD (or areaPR)
        DO j=jMin,jMax
@@ -293,7 +305,7 @@ C     ridging category
 C     part of the snow mass is pushed into the ocean during ridging;
 C     this freshwater flux will be added to the net feshwater flux into 
 C     the ocean in seaice_growth
-          FW2ObyRidge(i,j,bi,bj) = FW2ObyRidge(i,j,bi,bj) 
+          fw2ObyRidge(i,j,bi,bj) = fw2ObyRidge(i,j,bi,bj) 
      &         + SEAICE_rhoSnow*ridgingHsnw(i,j)
      &         *(1. _d 0 - SEAICEsnowFracRidge)
 C     reduce the snow volume that is left for redistribution
@@ -421,6 +433,7 @@ C     we need a new estimate of the total AREA
       ENDDO
       doRidgeAgain = doRidgeAgain .AND. n.LT.SEAICEridgingIterMax
       IF ( doRidgeAgain ) CALL SEAICE_PREPARE_RIDGING(
+     O     hActual,
      O     hrMin, hrMax, hrExp, ridgeRatio, ridgingModeNorm, partFunc,
      I     iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
       n = n + 1

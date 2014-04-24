@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_ice_strength.F,v 1.2 2014/04/09 16:39:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_ice_strength.F,v 1.3 2014/04/24 08:50:27 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -47,6 +47,16 @@ C     myThid    :: Thread no. that called this routine.
       INTEGER bi,bj
       INTEGER myIter
       INTEGER myThid
+CEndOfInterface
+
+C !LOCAL VARIABLES: ====================================================
+C     === Local variables ===
+C     i,j,k       :: inner loop counters
+C     i/jMin/Max  :: loop boundaries
+C
+      INTEGER i, j, k
+      INTEGER iMin, iMax, jMin, jMax
+      _RL tmpscal1, tmpscal2
 #ifdef SEAICE_ITD
 C     variables related to ridging schemes
 C     ridgingModeNorm :: norm to ensure convervation (N in Lipscomb et al 2007)
@@ -64,16 +74,6 @@ C     hActual    :: HEFFITD/AREAITD
       _RL ridgeRatio      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
       _RL hActual         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD) 
 #endif /* SEAICE_ITD */
-CEndOfInterface
-
-C !LOCAL VARIABLES: ====================================================
-C     === Local variables ===
-C     i,j,k       :: inner loop counters
-C     i/jMin/Max  :: loop boundaries
-C
-      INTEGER i, j, k
-      INTEGER iMin, iMax, jMin, jMax
-      _RL tmpscal1, tmpscal2
 CEOP
 
 C     loop boundaries
@@ -117,18 +117,9 @@ C     not useHiber79IceStrength
         ENDDO
        ENDDO
        CALL SEAICE_PREPARE_RIDGING(
+     O      hActual,
      O      hrMin, hrMax, hrExp, ridgeRatio, ridgingModeNorm, partFunc,
      I      iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
-       DO k=1,nITD
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          hActual(i,j,k) = 0. _d 0
-          IF ( AREAITD(i,j,k,bi,bj) .GT. SEAICE_area_reg ) THEN
-           hActual(i,j,k) = HEFFITD(i,j,k,bi,bj)/AREAITD(i,j,k,bi,bj)
-          ENDIF
-         ENDDO
-        ENDDO
-       ENDDO
        IF ( SEAICEredistFunc .EQ. 0 ) THEN
         DO k = 1, nITD
          DO j=jMin,jMax
