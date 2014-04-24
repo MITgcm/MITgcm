@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.75 2014/04/24 08:49:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.76 2014/04/24 09:14:01 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -66,7 +66,7 @@ C--   Dynamical variables
 #ifdef SEAICE_ITD
       COMMON/SEAICE_DYNVARS_1/AREA,HEFF,HSNOW,UICE,VICE,
      &                        AREAITD,HEFFITD,HSNOWITD,
-     &                        opnWtrFrac 
+     &                        opnWtrFrac, fw2ObyRidge
 #else
       COMMON/SEAICE_DYNVARS_1/AREA,HEFF,HSNOW,UICE,VICE
 #endif
