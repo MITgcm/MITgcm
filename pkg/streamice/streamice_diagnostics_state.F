@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_diagnostics_state.F,v 1.3 2013/06/21 22:00:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_diagnostics_state.F,v 1.4 2014/04/24 12:02:41 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -55,6 +55,14 @@ C     === Global variables ===
        CALL DIAGNOSTICS_FILL(streamice_u_surf,'SI_usurf',
      &      0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(STREAMICE_v_surf,'SI_vsurf',
+     &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(streamice_u_bed,'SI_ubase',
+     &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(STREAMICE_v_bed,'SI_vbase',
+     &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(streamice_taubx,'SI_taubx',
+     &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(STREAMICE_tauby,'SI_tauby',
      &      0,1,0,1,1,myThid)
 #endif
        CALL DIAGNOSTICS_FILL(surf_el_streamice,'SI_selev',

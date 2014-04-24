@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_diagnostics.F,v 1.1 2013/06/12 21:30:22 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_diagnostics.F,v 1.2 2014/04/24 12:02:41 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -90,6 +90,34 @@ C     myThid ::  my Thread Id number
 
       diagName  = 'SI_vsurf'
       diagTitle = 'Ice stream surface y-vel'
+      diagUnits = 'none       '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SI_ubase'
+      diagTitle = 'Ice stream basal x-vel'
+      diagUnits = 'none       '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SI_vbase'
+      diagTitle = 'Ice stream basal y-vel'
+      diagUnits = 'none       '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SI_taubx'
+      diagTitle = 'Ice stream basal x-stress'
+      diagUnits = 'none       '
+      diagCode  = 'SM      L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SI_tauby'
+      diagTitle = 'Ice stream basal y-stress'
       diagUnits = 'none       '
       diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
