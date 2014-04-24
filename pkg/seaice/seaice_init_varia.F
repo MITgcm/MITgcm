@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.82 2014/04/23 12:41:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.83 2014/04/24 08:49:50 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -381,10 +381,11 @@ C--   Read initial snow thickness from file if available.
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           AREAITD(I,J,1,bi,bj) =AREA(I,J,bi,bj)
-           HEFFITD(I,J,1,bi,bj) =HEFF(I,J,bi,bj)
-           HSNOWITD(I,J,1,bi,bj)=HSNOW(I,J,bi,bj)
-           opnWtrFrac(I,J,bi,bj)=1. _d 0 - AREA(I,J,bi,bj)
+           AREAITD(I,J,1,bi,bj)   = AREA(I,J,bi,bj)
+           HEFFITD(I,J,1,bi,bj)   = HEFF(I,J,bi,bj)
+           HSNOWITD(I,J,1,bi,bj)  = HSNOW(I,J,bi,bj)
+           opnWtrFrac(I,J,bi,bj)  = 1. _d 0 - AREA(I,J,bi,bj)
+           fw2ObyRidge(I,J,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
          CALL SEAICE_ITD_REDIST(bi, bj, baseTime, nIter0, myThid)

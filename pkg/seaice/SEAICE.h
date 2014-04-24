@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.74 2014/04/23 12:38:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.75 2014/04/24 08:49:50 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -81,6 +81,7 @@ C--   Dynamical variables
       _RL HSNOWITD   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
 C     fraction of open water (= 1-AREA) needed for ridging parameterization
       _RL opnWtrFrac (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL fw2ObyRidge(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 C     uIceC :: average of UICE between last two time steps
