@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.6 2014/03/26 17:46:48 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.7 2014/04/24 12:01:50 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -62,6 +62,21 @@ C     LOCAL VARIABLES
       ELSE
        CALL STREAMICE_DRIVING_STRESS (myThid)
       ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
+!$TAF STORE taudx_SI = comlev1, key=ikey_dynamics
+!$TAF STORE taudy_SI = comlev1, key=ikey_dynamics
+#endif
+#endif
+
+#ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
+      _EXCH_XY_RL( taudx_SI , myThid )
+      _EXCH_XY_RL( taudy_SI , myThid )
+      CALL STREAMICE_FORCED_BUTTRESS (myThid)
+#endif
+
+      
 
       cgtol = streamice_cg_tol
 

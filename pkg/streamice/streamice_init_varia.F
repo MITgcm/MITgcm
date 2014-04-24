@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.6 2014/03/26 17:40:11 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.7 2014/04/24 12:01:50 dgoldberg Exp $
 C $Name:  $
 
 #ifdef ALLOW_COST
@@ -36,7 +36,7 @@ CEndOfInterface
 #ifdef ALLOW_STREAMICE
 C     === Local variables ===
 C     I,J,bi,bj - Loop counters
-      INTEGER i, j, k, bi, bj, Gi, Gj
+      INTEGER i, j, k, bi, bj, Gi, Gj, r
       INTEGER col_y, col_x
       _RL slope_pos, c1, x, y, lenx, leny
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -64,8 +64,24 @@ C     ZERO OUT FLOATING POINT ARRAYS
           BDOT_streamice(i,j,bi,bj) = 0. _d 0
           ADOT_streamice(i,j,bi,bj) = streamice_adot_uniform
           C_basal_friction(i,j,bi,bj) = C_basal_fric_const
+#ifndef STREAMICE_3D_GLEN_CONST
           B_glen(i,j,bi,bj) = B_glen_isothermal
+#else
+          do k=1,Nr
+           B_glen(i,j,k,bi,bj) = B_glen_isothermal
+          enddo
+#endif
           H_streamice_prev(i,j,bi,bj) = 0. _d 0
+#ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
+          STREAMICE_u_normal_pert(i,j,bi,bj) = 0. _d 0      
+          STREAMICE_v_normal_pert(i,j,bi,bj) = 0. _d 0      
+          STREAMICE_u_shear_pert(i,j,bi,bj) = 0. _d 0      
+          STREAMICE_v_shear_pert(i,j,bi,bj) = 0. _d 0      
+          STREAMICE_u_normal_stress(i,j,bi,bj) = 0. _d 0
+          STREAMICE_v_normal_stress(i,j,bi,bj) = 0. _d 0
+          STREAMICE_u_shear_stress(i,j,bi,bj) = 0. _d 0
+          STREAMICE_v_shear_stress(i,j,bi,bj) = 0. _d 0
+#endif
 #ifdef ALLOW_STREAMICE_2DTRACER
 #ifdef STREAMICE_TRACER_AB
          GAD_trac_2d (i,j,bi,bj) = 0. _d 0
@@ -96,6 +112,8 @@ C     ZERO OUT FLOATING POINT ARRAYS
 
 #ifdef ALLOW_COST_TEST
         cost_func1_streamice (bi,bj) = 0.0
+        cost_vel_streamice (bi,bj) = 0.0
+        cost_surf_streamice (bi,bj) = 0.0
 #endif
 
        ENDDO
@@ -287,15 +305,6 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
 ! STREAMICE_GEOM_FILE_SETUP
 
 
-      IF ( .NOT. ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
-     &     .AND. pickupSuff .EQ. ' ') ) THEN
-
-         CALL STREAMICE_READ_PICKUP ( myThid )
-
-      ENDIF
-
-
-
 ! finish initialize thickness
 
 ! initialize glen constant
@@ -305,9 +314,18 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
        IF ( STREAMICEGlenConstFile .NE. ' ' ) THEN
         _BARRIER
 
+#ifdef STREAMICE_3D_GLEN_CONST
+
+        CALL READ_FLD_XYZ_RL( STREAMICEGlenConstFile, ' ',
+     &      B_glen, 0, myThid )
+
+
+#else
+
         CALL READ_FLD_XY_RL( STREAMICEGlenConstFile, ' ',
      &      B_glen, 0, myThid )
 
+#endif
        ELSE
         WRITE(msgBuf,'(A)') 'INIT GLEN - FILENAME MISSING'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -320,7 +338,13 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1,sNy
            DO i=1,sNx
-            B_glen(i,j,bi,bj) = B_glen_isothermal
+#ifdef STREAMICE_3D_GLEN_CONST
+            DO r=1,Nr
+             B_glen(i,j,r,bi,bj) = B_glen_isothermal
+            ENDDO
+#else
+             B_glen(i,j,bi,bj) = B_glen_isothermal
+#endif
            ENDDO
           ENDDO
          ENDDO
@@ -457,13 +481,67 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
 
 #endif /*STREAMICE_ALLOW_2DTRACER*/
 
+#ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
+      IF ( STREAMICEuNormalStressFile .NE. ' ') THEN
+        _BARRIER
+       CALL READ_FLD_XY_RL ( STREAMICEuNormalStressFile, ' ',
+     &  streamice_u_normal_stress, 0, myThid )
+      ELSE
+       WRITE(msgBuf,'(A)') 'IMPOSED NORMAL U STRESS NOT SET'
+       CALL PRINT_ERROR( msgBuf, myThid)
+      ENDIF
+
+      IF ( STREAMICEvNormalStressFile .NE. ' ') THEN
+        _BARRIER
+       CALL READ_FLD_XY_RL ( STREAMICEvNormalStressFile, ' ',
+     &  streamice_v_normal_stress, 0, myThid )
+      ELSE
+       WRITE(msgBuf,'(A)') 'IMPOSED NORMAL V STRESS NOT SET'
+       CALL PRINT_ERROR( msgBuf, myThid)
+      ENDIF
+
+      IF ( STREAMICEuShearStressFile .NE. ' ') THEN
+        _BARRIER
+       CALL READ_FLD_XY_RL ( STREAMICEuShearStressFile, ' ',
+     &  streamice_u_shear_stress, 0, myThid )
+      ELSE
+       WRITE(msgBuf,'(A)') 'IMPOSED SHEAR U STRESS NOT SET'
+       CALL PRINT_ERROR( msgBuf, myThid)
+      ENDIF
+
+      IF ( STREAMICEvShearStressFile .NE. ' ') THEN
+        _BARRIER
+       CALL READ_FLD_XY_RL ( STREAMICEvShearStressFile, ' ',
+     &  streamice_v_shear_stress, 0, myThid )
+      ELSE
+       WRITE(msgBuf,'(A)') 'IMPOSED SHEAR V STRESS NOT SET'
+       CALL PRINT_ERROR( msgBuf, myThid)
+      ENDIF
+
+      CALL EXCH_XY_RL 
+     & (streamice_v_shear_stress, myThid)
+      CALL EXCH_XY_RL 
+     & (streamice_u_shear_stress, myThid)
+      CALL EXCH_XY_RL 
+     & (streamice_v_normal_stress, myThid)
+      CALL EXCH_XY_RL 
+     & (streamice_u_normal_stress, myThid)
+
+#endif /*STREAMICE_STRESS_BOUNDARY_CONTROL*/
+
+
       CALL STREAMICE_UPD_FFRAC_UNCOUPLED ( myThid )
 
       _EXCH_XY_RL(H_streamice, myThid )
       _EXCH_XY_RS(STREAMICE_hmask, myThid )
       _EXCH_XY_RL(area_shelf_streamice, myThid )
       _EXCH_XY_RL(C_basal_friction, myThid )
+#ifndef STREAMICE_3D_GLEN_CONST
       _EXCH_XY_RL(B_glen, myThid )
+#else
+      CALL EXCH_3D_RL(B_glen, Nr,myThid )
+#endif
+
 #ifdef USE_ALT_RLOW
       _EXCH_XY_RL(R_low_si, myThid )
 #endif

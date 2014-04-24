@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/Attic/streamice_solo_timestep.F,v 1.1 2013/06/12 21:30:22 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/Attic/streamice_solo_timestep.F,v 1.2 2014/04/24 12:01:50 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -99,9 +99,9 @@ c**************************************
 !#endif
 ! NEW DIRECTIVES - DNG
 
-#ifdef ALLOW_GENTIM2D_CONTROL
-      CALL CTRL_MAP_GENTIM2D (myTime, myIter, myThid)
-#endif
+!#ifdef ALLOW_GENTIM2D_CONTROL
+!      CALL CTRL_MAP_GENTIM2D (myTime, myIter, myThid)
+!#endif
 
       if (myIter.eq.0) then
       CALL STREAMICE_UPD_FFRAC_UNCOUPLED ( myThid )

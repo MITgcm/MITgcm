@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.6 2014/03/30 18:07:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.7 2014/04/24 12:01:50 dgoldberg Exp $
 C $Name:  $
 
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_STREAMICE
 
-C     -------------------------- REAL PARAMS -----------------------------------
+C     -------------------------- REAL PARAMS ---------------------------------------------------
 
       COMMON /STREAMICE_PARMS_R/
      & streamice_density, streamice_density_ocean_avg,
-c     & A_glen_isothermal, n_glen, eps_glen_min, eps_u_min,
+C     & A_glen_isothermal, n_glen, eps_glen_min, eps_u_min,
      & B_glen_isothermal, n_glen, eps_glen_min, eps_u_min,
      & C_basal_fric_const, n_basal_friction, streamice_input_flux_unif,
      & streamice_vel_update, streamice_cg_tol, streamice_nonlin_tol,
@@ -44,6 +44,7 @@ C      _RL A_glen_isothermal, n_glen, eps_glen_min, eps_u_min
       _RL streamice_smooth_gl_width
       _RL streamice_adot_uniform
 
+
 C     parms for parameterized initial thickness
 C     SHELF_MAX_DRAFT: max thickness of ice in m
 C     SHELF_MIN_DRAFT: min thickness of ice in m
@@ -67,7 +68,7 @@ C     FLOW_DIR: 1.0=west, 2.0=east, 3.0=south, 4.0=north
       _RL shelf_flat_width
       _RL flow_dir
 
-C     -------------------------- INT PARAMS ------------------------------------
+C     -------------------------- INT PARAMS ---------------------------------------------------
 
       INTEGER streamice_max_nl
       PARAMETER ( streamice_max_nl = 100 )
@@ -80,7 +81,7 @@ C     -------------------------- INT PARAMS ------------------------------------
       INTEGER streamice_vel_upd_counter, streamice_nstep_velocity
       INTEGER streamice_n_sub_regularize
 
-C     -------------------------- CHAR PARAMS -----------------------------------
+C     -------------------------- CHAR PARAMS ---------------------------------------------------
 
       CHARACTER*(MAX_LEN_FNAM) STREAMICEthickFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEthickInit
@@ -99,8 +100,8 @@ C     -------------------------- CHAR PARAMS -----------------------------------
       CHARACTER*(MAX_LEN_FNAM) STREAMICEcostMaskFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICE_ADV_SCHEME
 
-C     THE FOLLOWING FILENAMES ARE FOR SPECIFYING IRREGULAR DOMAIN GEOMETRIES
-C     (i.e. boundaries that do not conform with rectangular walls)
+!     THE FOLLOWING FILENAMES ARE FOR SPECIFYING IRREGULAR DOMAIN GEOMETRIES
+!     (i.e. boundaries that do not conform with rectangular walls)
       CHARACTER*(MAX_LEN_FNAM) STREAMICEhmaskFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEHBCxFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEHBCyFile
@@ -108,15 +109,23 @@ C     (i.e. boundaries that do not conform with rectangular walls)
       CHARACTER*(MAX_LEN_FNAM) STREAMICEvFaceBdryFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEuDirichValsFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEvDirichValsFile
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEuMassFluxFile
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEvMassFluxFile
+
+!     THE FOLLOWING FILENAMES ARE FOR SPECIFYING buttressing along calving fronts
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEuNormalStressFile
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEvNormalStressFile
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEuShearStressFile
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEvShearStressFile
 
 #ifdef ALLOW_PETSC
-C     CHARACTER PARAMS FOR PETSC
+!     CHARACTER PARAMS FOR PETSC
       CHARACTER*(MAX_LEN_FNAM) PETSC_SOLVER_TYPE
       CHARACTER*(MAX_LEN_FNAM) PETSC_PRECOND_TYPE
 #endif
 
 #ifdef ALLOW_STREAMICE_2DTRACER
-C     CHARACTER PARAMS FOR TRACER
+!     CHARACTER PARAMS FOR TRACER
       CHARACTER*(MAX_LEN_FNAM) STREAMICETrac2DBCxFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICETrac2DBCyFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICETrac2DinitFile
@@ -141,6 +150,12 @@ C     CHARACTER PARAMS FOR TRACER
      &     STREAMICEvFaceBdryFile,
      &     STREAMICEuDirichValsFile,
      &     STREAMICEvDirichValsFile,
+     &     STREAMICEuMassFluxFile,
+     &     STREAMICEvMassFluxFile,
+     &     STREAMICEuNormalStressFile,
+     &     STREAMICEvNormalStressFile,
+     &     STREAMICEuShearStressFile,
+     &     STREAMICEvShearStressFile,
      &     STREAMICEGlenConstFile,
      &     STREAMICEBdotFile,
      &     STREAMICEGlenConstConfig,
@@ -160,7 +175,7 @@ C     CHARACTER PARAMS FOR TRACER
      &     STREAMICETrac2DinitFile
 #endif
 
-C     -------------------------- LOGICAL PARAMS --------------------------------
+C     -------------------------- LOGICAL PARAMS ---------------------------------------------------
 
       LOGICAL STREAMICEison
       LOGICAL STREAMICE_dump_mdsio
@@ -197,11 +212,11 @@ C      LOGICAL STREAMICE_hybrid_stress
      & STREAMICE_ppm_driving_stress,
      & STREAMICE_h_ctrl_const_surf
 
-C     -------------------------- AND NOW ARRAYS --------------------------------
+C     -------------------------- AND NOW ARRAYS ---------------------------------------------------
 
 C     EXPLANATION OF MASKS
 
-C     STREAMICE_hmask           VALUES  1=ice-covered cell
+C     STREAMICE_hmask           VALUES	1=ice-covered cell
 C                                       2=partially ice-covered cell (no dynamics)
 C                                       0=ice-free cell (for now, it means the cell
 C                                                           is treated as an open-ocean cell
@@ -272,8 +287,6 @@ C     All other masks are updated within a timestep BASED ON STREAMICE_hmask
 C    Number of quadrature points are hardcoded.. could turn into a CPP macro
 
 C    REAL ARRAYS
-C    BDOT_streamice :: mass balances in meters per year
-C    ADOT_streamice :: mass balances in meters per year
 
       COMMON /STREAMICE_FIELDS_RL/
      &     H_streamice,
@@ -296,14 +309,27 @@ C    ADOT_streamice :: mass balances in meters per year
      &     C_basal_friction,
 C     &     A_glen,
      &     B_glen,
-     &     BDOT_streamice, ADOT_streamice,
+     &     BDOT_streamice, ADOT_streamice,  BDOT_pert,! mass balances in meters per year
      &     streamice_sigma_coord, streamice_delsigma,
      &     H_streamice_prev
+
+#ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
+      COMMON /STREAMICE_STRESS_BOUNDARY/
+     &      streamice_u_normal_pert, 
+     &      streamice_v_normal_pert,
+     &      streamice_u_shear_pert,
+     &      streamice_v_shear_pert,
+     &      streamice_u_normal_stress, 
+     &      streamice_v_normal_stress,
+     &      streamice_u_shear_stress,
+     &      streamice_v_shear_stress
+#endif
 
 #ifdef STREAMICE_HYBRID_STRESS
       COMMON /STREAMICE_HYBRID/
      &     streamice_taubx, streamice_tauby,
      &     streamice_u_surf, streamice_v_surf,
+     &     streamice_u_bed, streamice_v_bed,
      &     visc_streamice_full, streamice_omega, streamice_basal_geom,
      &     streamice_vert_shear_uz, streamice_vert_shear_vz
 #endif
@@ -324,6 +350,7 @@ C     &     A_glen,
      &     R_low_si
 #endif
 
+
       _RL H_streamice           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL U_streamice           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL V_streamice           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -342,7 +369,11 @@ C     &     A_glen,
       _RL v_bdry_values_SI    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL C_basal_friction    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C      _RL A_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef STREAMICE_3D_GLEN_CONST
+      _RL B_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#else
       _RL B_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
       _RL streamice_sigma_coord (Nr)
       _RL streamice_delsigma (Nr)
 
@@ -353,9 +384,11 @@ C      _RL A_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     The following arrays are used for the hybrid stress balance
 #ifdef STREAMICE_HYBRID_STRESS
       _RL streamice_taubx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL streamice_tauby (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL streamice_u_surf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL streamice_v_surf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_u_bed (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_v_bed (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_tauby (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL streamice_omega (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL streamice_basal_geom
      & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -376,16 +409,42 @@ C     The following arrays are used for the hybrid stress balance
 #endif
 #endif
 
+#ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
+      _RL streamice_u_normal_stress
+     &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_v_normal_stress
+     &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_u_shear_stress
+     &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_v_shear_stress
+     &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_u_normal_pert
+     &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_v_normal_pert
+     &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_u_shear_pert
+     &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_v_shear_pert
+     &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+
       _RL ADOT_streamice (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C IMPORTANT: MELT RATE IN METERS PER YEAR
-C POSITIVE WHERE MELTING
+!! IMPORTANT: MELT RATE IN METERS PER YEAR
+!! POSITIVE WHERE MELTING
       _RL BDOT_streamice (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL BDOT_pert (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL H_streamice_prev (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL STREAMICE_dummy_array (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+
+
       COMMON /STREAMICE_COST_RL/
-     &       cost_func1_streamice
+     &       cost_func1_streamice,
+     &       cost_vel_streamice,
+     &       cost_surf_streamice
       _RL cost_func1_streamice(nSx,nSy)
+      _RL cost_vel_streamice(nSx,nSy)
+      _RL cost_surf_streamice(nSx,nSy)
 
 C    NOTES :
 C      REAL ARRAYS THAT COMPRISE "STATE":
@@ -412,6 +471,7 @@ C        velocity initial guess, so they are kept
      & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER n_dofs_process (0:nPx*nPy-1)
 #endif
+
 
 #endif /* ALLOW_STREAMICE */
 

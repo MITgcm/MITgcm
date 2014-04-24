@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_velmask_upd.F,v 1.5 2014/03/26 17:48:36 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_velmask_upd.F,v 1.6 2014/04/24 12:01:50 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -53,8 +53,8 @@ C     === Global variables ===
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          STREAMICE_umask(i,j,bi,bj) = 0. _d 0
-          STREAMICE_vmask(i,j,bi,bj) = 0. _d 0
+          STREAMICE_umask(i,j,bi,bj) = -1. _d 0
+          STREAMICE_vmask(i,j,bi,bj) = -1. _d 0
           STREAMICE_ufacemask(i,j,bi,bj) = 0. _d 0
           STREAMICE_vfacemask(i,j,bi,bj) = 0. _d 0
          ENDDO
@@ -66,12 +66,16 @@ C     === Global variables ===
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=0,sNy+1
          DO i=0,sNx+1
-          IF (STREAMICE_hmask(i,j,bi,bj) .eq. 1) THEN
+          IF (STREAMICE_hmask(i,j,bi,bj) .eq. 1.0) THEN
 
            DO kj=0,1
             DO ki=0,1
-             STREAMICE_umask (i+ki,j+kj,bi,bj) = 1.0
-             STREAMICE_vmask (i+ki,j+kj,bi,bj) = 1.0
+             if (STREAMICE_umask(i+ki,j+kj,bi,bj).eq.-1.0) then
+              STREAMICE_umask (i+ki,j+kj,bi,bj) = 1.0
+             endif
+             if (STREAMICE_vmask(i+ki,j+kj,bi,bj).eq.-1.0) then
+              STREAMICE_vmask (i+ki,j+kj,bi,bj) = 1.0
+             endif
             ENDDO
            ENDDO
 
@@ -79,8 +83,12 @@ C     === Global variables ===
             maskFlag=INT(STREAMICE_ufacemask_bdry(i+ki,j,bi,bj))
              IF (maskFlag.EQ.3) THEN
               DO kj=0,1
-               STREAMICE_umask(i+ki,j+kj,bi,bj) = 3.0
-               STREAMICE_vmask(i+ki,j+kj,bi,bj) = 3.0
+               if (STREAMICE_umask(i+ki,j+kj,bi,bj).ne.0.0) then
+                STREAMICE_umask(i+ki,j+kj,bi,bj) = 3.0
+               endif
+               if(STREAMICE_vmask(i+ki,j+kj,bi,bj).ne.0.0) then
+                STREAMICE_vmask(i+ki,j+kj,bi,bj) = 3.0
+               endif
               ENDDO
               STREAMICE_ufacemask(i+ki,j,bi,bj) = 3.0
              ELSE IF (maskFlag.EQ.2) THEN
@@ -110,8 +118,12 @@ C     === Global variables ===
             maskFlag=INT(STREAMICE_vfacemask_bdry(i,j+kj,bi,bj))
             IF (maskFlag.EQ.3) THEN
               DO ki=0,1
-               STREAMICE_vmask(i+ki,j+kj,bi,bj) = 3.0
-               STREAMICE_umask(i+ki,j+kj,bi,bj) = 3.0
+               if(STREAMICE_vmask(i+ki,j+kj,bi,bj).ne.0.0) then
+                STREAMICE_vmask(i+ki,j+kj,bi,bj) = 3.0
+               endif
+               if(STREAMICE_umask(i+ki,j+kj,bi,bj).ne.0.0) then
+                STREAMICE_umask(i+ki,j+kj,bi,bj) = 3.0
+               endif
               ENDDO
               STREAMICE_vfacemask(i,j+kj,bi,bj) = 3.0
            ELSE IF (maskFlag.EQ.2) THEN
@@ -174,6 +186,23 @@ C     === Global variables ===
         ENDDO
        ENDDO
       ENDDO
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=0,sNy+1
+         DO i=0,sNx+1
+          IF(streamice_umask(i,j,bi,bj).eq.-1.0) THEN
+           u_streamice(i,j,bi,bj)=0. _d 0
+          ENDIF
+          IF(streamice_vmask(i,j,bi,bj).eq.-1.0) THEN
+           v_streamice(i,j,bi,bj)=0. _d 0
+          ENDIF
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+      
 
       _EXCH_XY_RS( STREAMICE_ufacemask, myThid )
       _EXCH_XY_RS( STREAMICE_vfacemask, myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_visc_beta_hybrid.F,v 1.2 2013/06/21 19:59:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_visc_beta_hybrid.F,v 1.3 2014/04/24 12:01:50 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -136,9 +136,15 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
      &            0.25 * streamice_vert_shear_uz(m)**2 +
      &            0.25 * streamice_vert_shear_vz(m)**2)
 
+#ifdef STREAMICE_3D_GLEN_CONST
+            visc_streamice_full(i,j,m,bi,bj) = 
+     &       .5 * B_glen(i,j,m,bi,bj)**2 *
+     &        second_inv**((1-n_glen)/n_glen) 
+#else
             visc_streamice_full(i,j,m,bi,bj) = 
      &       .5 * B_glen(i,j,bi,bj)**2 *
      &        second_inv**((1-n_glen)/n_glen) 
+#endif
 
             visc_streamice (i,j,bi,bj) = visc_streamice (i,j,bi,bj) +
      &       H_streamice(i,j,bi,bj) * streamice_delsigma (m) * 

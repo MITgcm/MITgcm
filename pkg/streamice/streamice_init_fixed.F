@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.7 2014/03/26 17:40:11 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.8 2014/04/24 12:01:50 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -69,9 +69,9 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
         CALL READ_FLD_XY_RS( STREAMICEcalveMaskFile, ' ',
      &   STREAMICE_calve_mask, 0, myThid )
        ELSE
-        STOP 'ABNORMAL END - CALVEMASK FILE MISSING'
-!         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-!      &                    SQUEEZE_RIGHT , 1)
+        WRITE(msgBuf,'(A)') 'INIT CALVE MASK - NOT IMPLENTED'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
        ENDIF
       ENDIF
 
@@ -92,7 +92,7 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
       ENDIF
 
 #ifdef ALLOW_COST
-      IF ( STREAMICEcostMaskFile .NE. ' ') THEN
+       IF ( STREAMICEcostMaskFile .NE. ' ') THEN
         _BARRIER
 C       The 0 is the "iteration" argument. The ' ' is an empty suffix
         CALL READ_FLD_XY_RS( STREAMICEcostMaskFile, ' ',
@@ -102,17 +102,17 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
-           STREAMICE_cost_mask (i,j,bi,bj) = 1.0
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1,sNy
+           DO i=1,sNx
+            STREAMICE_cost_mask (i,j,bi,bj) = 1.0
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
-       ENDDO
 
-      ENDIF
+       ENDIF
 #endif
 
 !    READ IN FILES FOR BOUNDARY MASKS AND DIRICH VALUES
@@ -137,7 +137,7 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
       ENDIF
 
       _EXCH_XY_RS(temp_ufacemask,myThid)
-      _EXCH_XY_RS(temp_ufacemask,myThid)
+      _EXCH_XY_RS(temp_vfacemask,myThid)
 
       IF ( STREAMICEuDirichValsFile .NE. ' ') THEN
         _BARRIER
@@ -180,6 +180,25 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
      &   h_vbdry_values_SI, 0, myThid )
       ELSE
        WRITE(msgBuf,'(A)') 'THICK BC AT V FACE - NOT SET'
+       CALL PRINT_ERROR( msgBuf, myThid)
+      ENDIF
+
+
+      IF ( streamiceumassfluxfile .NE. ' ') THEN
+        _BARRIER
+       CALL READ_FLD_XY_RL ( streamiceumassfluxfile , ' ',
+     &   u_flux_bdry_SI, 0, myThid )
+      ELSE
+       WRITE(msgBuf,'(A)') 'MASS FLUX AT U FACE - NOT SET'
+       CALL PRINT_ERROR( msgBuf, myThid)
+      ENDIF
+
+      IF ( streamicevmassfluxfile .NE. ' ') THEN
+        _BARRIER
+       CALL READ_FLD_XY_RL ( streamicevmassfluxfile , ' ',
+     &   v_flux_bdry_SI, 0, myThid )
+      ELSE
+       WRITE(msgBuf,'(A)') 'MASS FLUX AT V FACE - NOT SET'
        CALL PRINT_ERROR( msgBuf, myThid)
       ENDIF
 
@@ -402,6 +421,8 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
            maskFlag=INT(temp_ufacemask(i,j,bi,bj))
            IF (maskFlag.eq.2) THEN
             STREAMICE_ufacemask_bdry (i,j,bi,bj) = 2.0
+           ELSEIF (maskflag.eq.4.0) THEN
+            STREAMICE_ufacemask_bdry (i,j,bi,bj) = 4.0
            ELSEIF (maskFlag.eq.3) THEN
             STREAMICE_ufacemask_bdry (i,j,bi,bj) = 3.0
            ELSEIF (maskFlag.eq.1) THEN
@@ -425,6 +446,8 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
            maskFlag=INT(temp_ufacemask(i+1,j,bi,bj))
            IF (maskFlag.eq.2) THEN
             STREAMICE_ufacemask_bdry (i+1,j,bi,bj) = 2.0
+           ELSEIF (maskFlag.eq.4.0) THEN
+            STREAMICE_ufacemask_bdry (i+1,j,bi,bj) = 4.0
            ELSEIF (maskFlag.eq.3) THEN
             STREAMICE_ufacemask_bdry (i+1,j,bi,bj) = 3.0
            ELSEIF (maskFlag.eq.1) THEN
@@ -447,6 +470,8 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
            maskFlag=INT(temp_vfacemask(i,j,bi,bj))
            IF (maskFlag.eq.2) THEN
             STREAMICE_vfacemask_bdry (i,j,bi,bj) = 2.0
+           ELSEIF (maskFlag.eq.4.0) THEN
+            STREAMICE_vfacemask_bdry (i,j,bi,bj) = 4.0
            ELSEIF (maskFlag.eq.3) THEN
             STREAMICE_vfacemask_bdry (i,j,bi,bj) = 3.0
            ELSEIF (maskFlag.eq.1) THEN
@@ -470,6 +495,8 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
            maskFlag=INT(temp_vfacemask(i,j+1,bi,bj))
            IF (maskFlag.eq.2) THEN
             STREAMICE_vfacemask_bdry (i,j+1,bi,bj) = 2.0
+           ELSEIF (maskFlag.eq.4.0) THEN
+            STREAMICE_vfacemask_bdry (i,j+1,bi,bj) = 4.0
            ELSEIF (maskFlag.eq.3) THEN
             STREAMICE_vfacemask_bdry (i,j+1,bi,bj) = 3.0
            ELSEIF (maskFlag.eq.1) THEN
@@ -502,6 +529,8 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
       CALL WRITE_FLD_XY_RS ( 'maskCost', '',
      & STREAMICE_cost_mask, 0, myThid )
 #endif
+
+
 
       _EXCH_XY_RL(k1AtC_str, myThid )
       _EXCH_XY_RL(k2AtC_str, myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_visc_beta.F,v 1.1 2013/06/12 21:30:22 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_visc_beta.F,v 1.2 2014/04/24 12:01:50 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -93,7 +93,11 @@ C     LOCAL VARIABLES
 
 
            visc_streamice(i,j,bi,bj) = 
+#ifdef STREAMICE_3D_GLEN_CONST
+     &      .5 * (B_glen(i,j,1,bi,bj))**2 *
+#else
      &      .5 * (B_glen(i,j,bi,bj))**2 *
+#endif
      &      second_inv**((1-n_glen)/n_glen) * H_streamice(i,j,bi,bj)
 
            unorm = sqrt(umid**2+vmid**2+eps_u_min**2)

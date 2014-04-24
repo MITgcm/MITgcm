@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_ad_check_lev1_dir.h,v 1.1 2013/06/12 21:30:22 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_ad_check_lev1_dir.h,v 1.2 2014/04/24 12:01:50 dgoldberg Exp $
 C $Name:  $
 
 #ifdef ALLOW_STREAMICE
@@ -47,7 +47,26 @@ CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef ALLOW_GENTIM2D_CONTROL
 CADJ STORE bdot_streamice
 CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
-# endif
+#ifdef  STREAMICE_STRESS_BOUNDARY_CONTROL
+CADJ STORE streamice_u_normal_stress
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE streamice_v_normal_stress
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE streamice_u_shear_stress
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE streamice_v_shear_stress
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE streamice_u_normal_pert
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE streamice_v_normal_pert
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE streamice_u_shear_pert
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE streamice_v_shear_pert
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
+#endif
+
 
 #ifdef STREAMICE_TRACER_AB
 CADJ STORE GAD_trac_2d

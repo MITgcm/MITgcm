@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_driving_stress.F,v 1.3 2013/09/17 17:52:34 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_driving_stress.F,v 1.4 2014/04/24 12:01:50 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -50,8 +50,8 @@ C     LOCAL VARIABLES
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
           taudx_SI(i,j,bi,bj) = 0. _d 0
           taudy_SI(i,j,bi,bj) = 0. _d 0
          ENDDO
@@ -362,6 +362,9 @@ C     LOCAL VARIABLES
         ENDDO
        ENDDO
       ENDDO
+
+!      taudx_SI (1,1,1,1) = taudx_SI (1,1,1,1) +
+!     & streamice_v_normal_pert (1,1,1,1)
 
 
 

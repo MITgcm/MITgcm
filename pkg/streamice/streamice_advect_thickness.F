@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.6 2014/01/06 14:54:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.7 2014/04/24 12:01:50 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -70,6 +70,8 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
 
           hflux_x_SI (i,j,bi,bj) = 0. _d 0
           hflux_y_SI (i,j,bi,bj) = 0. _d 0
+          h_after_uflux_SI(i,j,bi,bj) = H_streamice(i,j,bi,bj)
+          h_after_vflux_SI(i,j,bi,bj) = H_streamice(i,j,bi,bj)
 
 
           IF (STREAMICE_ufacemask(i,j,bi,bj).eq.3.0) THEN
@@ -148,6 +150,8 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
       _EXCH_XY_RS(BCMASKy,myThid)
       _EXCH_XY_RL(BCVALX,myThid)
       _EXCH_XY_RL(BCVALY,myThid)
+      _EXCH_XY_RL(h_after_uflux_SI,myThid)
+      _EXCH_XY_RL(h_after_vflux_SI,myThid)
 
 #ifndef ALLOW_AUTODIFF_TAMC
 
@@ -320,22 +324,29 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-           IF (STREAMICE_hmask(i,j,bi,bj).eq.1.0 .or.
+          Gi = (myXGlobalLo-1)+(bi-1)*sNx+i
+          Gj = (myYGlobalLo-1)+(bj-1)*sNy+j
+          IF (STREAMICE_hmask(i,j,bi,bj).eq.1.0 .or.
      &       STREAMICE_hmask(i,j,bi,bj).eq.2.0) THEN
              MR = (1.-float_frac_streamice(i,j,bi,bj)) *
-     &             BDOT_STREAMICE(i,j,bi,bj)
+     &             (BDOT_STREAMICE(i,j,bi,bj) +
+     &              BDOT_pert(i,j,bi,bj))
              SMB = ADOT_STREAMICE(i,j,bi,bj)
              TMB = SMB - MR
+
              IF ((TMB.lt.0.0) .and.
      &         (MR * time_step_loc .gt.
      &          H_streamice (i,j,bi,bj))) THEN
                 H_streamice (i,j,bi,bj) = 0. _d 0
-                STREAMICE_hmask(i,j,bi,bj) = 0.
+                STREAMICE_hmask(i,j,bi,bj) = 0.0
+               PRINT *, "GOT HERE melted away! ", i,j
              ELSE
                H_streamice (i,j,bi,bj) =
      &          H_streamice (i,j,bi,bj) + TMB * time_step_loc
              ENDIF
-           ENDIF
+
+
+          ENDIF
          ENDDO
         ENDDO
        ENDDO
