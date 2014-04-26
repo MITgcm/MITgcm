@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_ice_strength.F,v 1.3 2014/04/24 08:50:27 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_ice_strength.F,v 1.4 2014/04/26 18:58:11 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -13,7 +13,7 @@ C !DESCRIPTION: \bv
 C     *===========================================================*
 C     | SUBROUTINE SEAICE_CALC_ICE_STRENGTH
 C     | o compute ice strengh PRESS0
-C     |   according to 
+C     |   according to
 C     |   (a) Hibler (1979)
 C     |   (b) Thorndyke et al (1975) and Hibler (1980)
 C     |   (c) Bitz et al (2001) and Lipscomb et al (2007)
@@ -43,18 +43,18 @@ C     bi, bj    :: outer loop counters
 C     myTime    :: current time
 C     myIter    :: iteration number
 C     myThid    :: Thread no. that called this routine.
-      _RL myTime
       INTEGER bi,bj
+      _RL myTime
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 C !LOCAL VARIABLES: ====================================================
 C     === Local variables ===
 C     i,j,k       :: inner loop counters
 C     i/jMin/Max  :: loop boundaries
 C
-      INTEGER i, j, k
+      INTEGER i, j
       INTEGER iMin, iMax, jMin, jMax
       _RL tmpscal1, tmpscal2
 #ifdef SEAICE_ITD
@@ -66,21 +66,22 @@ C     hrMin      :: min ridge thickness
 C     hrMax      :: max ridge thickness   (SEAICEredistFunc = 0)
 C     hrExp      :: ridge e-folding scale (SEAICEredistFunc = 1)
 C     hActual    :: HEFFITD/AREAITD
+      INTEGER k
       _RL ridgingModeNorm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL partFunc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,0:nITD)
       _RL hrMin           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
       _RL hrMax           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
       _RL hrExp           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
       _RL ridgeRatio      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
-      _RL hActual         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD) 
+      _RL hActual         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
 #endif /* SEAICE_ITD */
 CEOP
 
 C     loop boundaries
-      iMin=1-Olx
-      iMax=sNx+Olx
-      jMin=1-Oly
-      jMax=sNy+Oly
+      iMin=1-OLx
+      iMax=sNx+OLx
+      jMin=1-OLy
+      jMax=sNy+OLy
 
 #ifdef SEAICE_ITD
       IF ( useHibler79IceStrength ) THEN
@@ -99,7 +100,7 @@ C--   now set up ice pressure and viscosities
           tmpscal1=MAX(HEFF(i,j,bi,bj)/SEAICEpresH0,ZERO)
           tmpscal2=SEAICEpresH0*(tmpscal1**SEAICEpresPow1)
          ELSE
-          tmpscal2=HEFF(i,j,bi,bj)         
+          tmpscal2=HEFF(i,j,bi,bj)
          ENDIF
          PRESS0(I,J,bi,bj)=SEAICE_strength*tmpscal2
      &        *EXP(-20.0 _d 0*(SEAICE_area_max-AREA(i,j,bi,bj)))
@@ -107,7 +108,7 @@ C--   now set up ice pressure and viscosities
          ZMIN(I,J,bi,bj)  = SEAICE_zetaMin
          PRESS0(I,J,bi,bj)= PRESS0(I,J,bi,bj)*HEFFM(I,J,bi,bj)
         ENDDO
-       ENDDO       
+       ENDDO
 #ifdef SEAICE_ITD
       ELSE
 C     not useHiber79IceStrength
@@ -124,10 +125,10 @@ C     not useHiber79IceStrength
         DO k = 1, nITD
          DO j=jMin,jMax
           DO i=iMin,iMax
-           IF ( partFunc(i,j,k) .GT. 0. _d 0 ) 
+           IF ( partFunc(i,j,k) .GT. 0. _d 0 )
      &          PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)
-     &          + partFunc(i,j,k) * ( - hActual(i,j,k)**2 
-     &          + ( hrMax(i,j,k)**3 - hrMin(i,j,k)**3 )  
+     &          + partFunc(i,j,k) * ( - hActual(i,j,k)**2
+     &          + ( hrMax(i,j,k)**3 - hrMin(i,j,k)**3 )
      &          / (3. _d 0 * (hrMax(i,j,k) - hrMin(i,j,k)))
      &          / ridgeRatio(i,j,k) )
           ENDDO
@@ -138,7 +139,7 @@ C     not useHiber79IceStrength
          DO j=jMin,jMax
           DO i=iMin,iMax
            PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)
-     &          + partFunc(i,j,k) * ( - hActual(i,j,k)**2 + 
+     &          + partFunc(i,j,k) * ( - hActual(i,j,k)**2 +
      &          (           hrMin(i,j,k)*hrMin(i,j,k)
      &          + 2. _d 0 * hrMin(i,j,k)*hrExp(i,j,k)
      &          + 2. _d 0 * hrExp(i,j,k)*hrExp(i,j,k)
@@ -147,7 +148,7 @@ C     not useHiber79IceStrength
          ENDDO
         ENDDO
        ENDIF
-C     
+C
        tmpscal1 = SEAICE_cf*0.5*gravity*(rhoConst-SEAICE_rhoSnow)
      &      * SEAICE_rhoSnow/rhoConst
        DO j=jMin,jMax
