@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.39 2014/04/04 21:16:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.40 2014/04/26 19:20:43 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: ctrl_map_ini
@@ -29,6 +32,7 @@ c     == global variables ==
 #include "FFIELDS.h"
 #include "CTRL_SIZE.h"
 #include "ctrl.h"
+#include "CTRL_FIELDS.h"
 #include "CTRL_GENARR.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
@@ -286,11 +290,11 @@ c--   kapgm.
             do j = jmin,jmax
               do i = imin,imax
 #ifdef ALLOW_OPENAD
-                kapgm(i,j,k,bi,bj) = kapgm(i,j,k,bi,bj) +
+                kapGM(i,j,k,bi,bj) = kapGM(i,j,k,bi,bj) +
      &                               xx_kapgm(i,j,k,bi,bj) +
      &                               tmpfld3d(i,j,k,bi,bj)
 #else
-                kapgm(i,j,k,bi,bj) = kapgm(i,j,k,bi,bj) +
+                kapGM(i,j,k,bi,bj) = kapGM(i,j,k,bi,bj) +
      &                               tmpfld3d(i,j,k,bi,bj)
 #endif
               enddo
@@ -315,7 +319,7 @@ c--   kapredi.
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-                kapredi(i,j,k,bi,bj) = kapredi(i,j,k,bi,bj) +
+                kapRedi(i,j,k,bi,bj) = kapRedi(i,j,k,bi,bj) +
      &                               tmpfld3d(i,j,k,bi,bj)
               enddo
             enddo
@@ -393,7 +397,7 @@ c--   bottom drag
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              bottomdragfld(i,j,bi,bj) = bottomdragfld(i,j,bi,bj)
+              bottomDragFld(i,j,bi,bj) = bottomDragFld(i,j,bi,bj)
      &                                   + tmpfld2d(i,j,bi,bj)
             enddo
           enddo
@@ -589,13 +593,13 @@ c--   Update the tile edges.
 
 #ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_DIFFKR_CONTROL
-      _EXCH_XYZ_RL( diffkr, mythid)
+      _EXCH_XYZ_RL( diffKr, mythid)
 # endif
 # ifdef ALLOW_KAPGM_CONTROL
-      _EXCH_XYZ_RL( kapgm, mythid)
+      _EXCH_XYZ_RL( kapGM, mythid)
 # endif
 # ifdef ALLOW_KAPREDI_CONTROL
-      _EXCH_XYZ_RL( kapredi, mythid)
+      _EXCH_XYZ_RL( kapRedi, mythid)
 # endif
 #endif
 
@@ -606,7 +610,7 @@ c--   Update the tile edges.
       _EXCH_XYZ_RL( EfluxP, mythid )
 #endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-      _EXCH_XY_RL( bottomdragfld, mythid )
+      _EXCH_XY_RL( bottomDragFld, mythid )
 #endif
 
 #ifdef ALLOW_EDDYPSI_CONTROL
@@ -634,6 +638,5 @@ c--   Update the tile edges.
       _EXCH_XY_RS( lambdaThetaClimRelax, mythid )
 #endif
 
-      return
-      end
-
+      RETURN
+      END

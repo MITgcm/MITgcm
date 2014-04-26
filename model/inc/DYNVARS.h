@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.46 2013/09/18 01:39:01 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.47 2014/04/26 19:20:07 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -79,25 +79,11 @@ C               for mixing of tracers vertically ( units of r^2/s )
       _RL  diffKr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
-cph(
-cph the following block will eventually move to a separate
-cph header file containing requires anomaly fields of control vars.
-#ifdef ALLOW_KAPGM_CONTROL
-      COMMON /DYNVARS_KAPGM/
-     &                       kapGM
-      _RL  kapGM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif
-#ifdef ALLOW_KAPREDI_CONTROL
-      COMMON /DYNVARS_KAPREDI/
-     &                       kapRedi
-      _RL  kapRedi  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif
-#ifdef ALLOW_BOTTOMDRAG_CONTROL
-      COMMON /DYNVARS_BOTTOMDRAG/
-     &                       bottomdragFld
-      _RL  bottomdragFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-cph)
+C   The following blocks containing requires anomaly fields of control vars
+C   and related to Options: 
+C   ALLOW_KAPGM_CONTROL , ALLOW_KAPREDI_CONTROL and ALLOW_BOTTOMDRAG_CONTROL
+C   have been moved to header file "CTRL_FIELDS.h"
+
 #ifdef ALLOW_EDDYPSI
 C     uMean    :: The mean zonal velocity (residual velocity less the bolus velocity)
 C     vMean    :: The mean meridional velocity (residual velocity less the bolus velocity)

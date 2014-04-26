@@ -1,9 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.28 2014/04/04 21:16:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.29 2014/04/26 19:20:43 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
+#endif
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
 #endif
 
       subroutine ctrl_map_ini_ecco( mythid )
@@ -41,22 +44,15 @@ c     == global variables ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-#ifdef ALLOW_GMREDI
-# include "GMREDI_OPTIONS.h"
-#endif
 #include "CTRL_SIZE.h"
 #include "ctrl.h"
+#include "CTRL_FIELDS.h"
 #include "CTRL_GENARR.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
 #ifdef ALLOW_ECCO
-#include "ecco_cost.h"
+# include "ecco_cost.h"
 #endif
-
-#ifdef ALLOW_AUTODIFF
-#include "tamc.h"
-#include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF */
 
 c     == routine arguments ==
 
@@ -88,13 +84,6 @@ c     == external ==
       external ilnblnk
 
 c     == end of interface ==
-
-#ifdef ALLOW_AUTODIFF_TAMC
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = 0
-          ikey = (act3 + 1) + act4*max3
-#endif /* ALLOW_AUTODIFF_TAMC */
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -243,9 +232,9 @@ c--   SSS relaxation coefficient.
       boundsVec(5)=0.
       paramSmooth=1
       call ctrl_map_ini_gen2D(xx_bottomdrag_file, 'wbottomdrag',
-     & xx_bottomdrag_dummy, boundsVec, bottomdragfld, maskc,
+     & xx_bottomdrag_dummy, boundsVec, bottomDragFld, maskc,
      & paramSmooth, mythid )
-      _EXCH_XY_RL( bottomdragfld, mythid)
+      _EXCH_XY_RL( bottomDragFld, mythid)
 #endif
 
 #ifdef ALLOW_EDDYPSI_CONTROL
@@ -275,9 +264,9 @@ c-- exchange UV:
       boundsVec(5)=0.
       paramSmooth=1
       call ctrl_map_ini_gen3D(xx_diffkr_file, 'wdiffkrFld',
-     & xx_diffkr_dummy, boundsVec, diffkr, maskc, paramSmooth,
+     & xx_diffkr_dummy, boundsVec, diffKr, maskc, paramSmooth,
      & mythid )
-      _EXCH_XYZ_RL( diffkr, mythid)
+      _EXCH_XYZ_RL( diffKr, mythid )
 #endif
 
 #ifdef ALLOW_KAPGM_CONTROL
@@ -288,9 +277,9 @@ c-- exchange UV:
       boundsVec(5)=0.
       paramSmooth=1
       call ctrl_map_ini_gen3D(xx_kapgm_file, 'wkapgmFld',
-     & xx_kapgm_dummy, boundsVec, kapgm, maskc, paramSmooth,
+     & xx_kapgm_dummy, boundsVec, kapGM, maskC, paramSmooth,
      & mythid )
-      _EXCH_XYZ_RL( kapgm, mythid)
+      _EXCH_XYZ_RL( kapGM, mythid )
 #endif
 
 #ifdef ALLOW_KAPREDI_CONTROL
@@ -301,9 +290,9 @@ c-- exchange UV:
       boundsVec(5)=0.
       paramSmooth=1
       call ctrl_map_ini_gen3D(xx_kapredi_file, 'wkaprediFld',
-     & xx_kapredi_dummy, boundsVec, kapredi, maskc, paramSmooth,
+     & xx_kapredi_dummy, boundsVec, kapRedi, maskC, paramSmooth,
      & mythid )
-      _EXCH_XYZ_RL( kapredi, mythid)
+      _EXCH_XYZ_RL( kapRedi, mythid )
 #endif
 
 #ifdef ALLOW_GENTIM2D_CONTROL

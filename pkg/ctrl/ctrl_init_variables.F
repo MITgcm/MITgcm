@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_variables.F,v 1.13 2012/08/10 19:38:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_variables.F,v 1.14 2014/04/26 19:20:43 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
 
-      subroutine ctrl_init_variables( mythid )
+      subroutine ctrl_init_variables( myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_init_variables
@@ -25,13 +25,14 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "GRID.h"
-#include "DYNVARS.h"
+c#include "GRID.h"
+c#include "DYNVARS.h"
 #include "ctrl.h"
+#include "CTRL_FIELDS.h"
 
 c     == routine arguments ==
 
-      integer mythid
+      integer myThid
 
 c     == local variables ==
 
@@ -46,14 +47,14 @@ c     == local variables ==
 
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
+      jmin = 1-OLy
+      jmax = sNy+OLy
+      imin = 1-OLx
+      imax = sNx+OLx
 
 #ifdef ALLOW_HFLUX_CONTROL
       do bj = jtlo,jthi
@@ -320,7 +321,7 @@ c     == end of interface ==
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              bottomdragfld(i,j,bi,bj) = 0. _d 0
+              bottomDragFld(i,j,bi,bj) = 0. _d 0
             enddo
           enddo
         enddo
@@ -357,9 +358,8 @@ c     == end of interface ==
 #endif /* ALLOW_ATM_MEAN_CONTROL */
 
 #ifdef ALLOW_OBCS_CONTROL
-      IF (useOBCS) CALL CTRL_INIT_OBCS_VARIABLES( mythid )
+      IF (useOBCS) CALL CTRL_INIT_OBCS_VARIABLES( myThid )
 #endif
 
-      return
-      end
-
+      RETURN
+      END
