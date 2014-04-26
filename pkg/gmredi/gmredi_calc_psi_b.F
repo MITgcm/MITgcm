@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.11 2011/01/11 00:54:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.12 2014/04/26 19:47:46 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: GMREDI_CALC_PSI_B
@@ -30,6 +33,9 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "GMREDI.h"
 #include "FFIELDS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_FIELDS.h"
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
@@ -38,11 +44,11 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-      _RL sigmaX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL sigmaY(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL sigmaR(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL ldd97_LrhoW(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL ldd97_LrhoS(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL sigmaX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL sigmaY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL sigmaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL ldd97_LrhoW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL ldd97_LrhoS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER myThid
 CEOP
@@ -54,12 +60,12 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k, km1
       _RL half_K
-      _RL SlopeX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL SlopeY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL dSigmaDrW(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL dSigmaDrS(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL taperX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL taperY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL SlopeX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL SlopeY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dSigmaDrW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dSigmaDrS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL taperX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL taperY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C-    Initialization : <= done in S/R gmredi_init
 
@@ -87,8 +93,8 @@ CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
 
 #ifdef ALLOW_AUTODIFF_TAMC
        kkey = (igmkey-1)*Nr + k
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          SlopeX(i,j)       = 0. _d 0
          SlopeY(i,j)       = 0. _d 0
          dSigmaDrW(i,j)    = 0. _d 0
@@ -98,16 +104,16 @@ CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
 #endif
 
 C      Gradient of Sigma below U and V points
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx+1,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx+1,sNx+OLx
          SlopeX(i,j)=op5*( sigmaX(i,j,km1)+sigmaX(i,j,k) )
      &                  *maskW(i,j,k,bi,bj)
          dSigmaDrW(i,j)=op5*( sigmaR(i-1,j,k)+sigmaR(i,j,k) )
      &                  *maskW(i,j,k,bi,bj)
         ENDDO
        ENDDO
-       DO j=1-Oly+1,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy+1,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          SlopeY(i,j)=op5*( sigmaY(i,j,km1)+sigmaY(i,j,k) )
      &                  *maskS(i,j,k,bi,bj)
          dSigmaDrS(i,j)=op5*( sigmaR(i,j-1,k)+sigmaR(i,j,k) )
@@ -133,11 +139,11 @@ CADJ STORE taperY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 C-  Compute the 2 stream-function Components ( GM bolus vel.)
        half_K = GM_background_K
      &         *(GM_bolFac1d(km1)+GM_bolFac1d(k))*op25
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx+1,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx+1,sNx+OLx
           GM_PsiX(i,j,k,bi,bj) = SlopeX(i,j)*taperX(i,j)
-#if (defined (ALLOW_AUTODIFF) && defined (ALLOW_KAPGM_CONTROL))
-     &     *( kapgm(i,j,k,bi,bj)
+#ifdef ALLOW_KAPGM_CONTROL
+     &     *( kapGM(i,j,k,bi,bj)
 #else
      &     *( half_K
      &          *(GM_bolFac2d(i-1,j,bi,bj)+GM_bolFac2d(i,j,bi,bj))
@@ -151,11 +157,11 @@ C-  Compute the 2 stream-function Components ( GM bolus vel.)
 #endif
         ENDDO
        ENDDO
-       DO j=1-Oly+1,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy+1,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          GM_PsiY(i,j,k,bi,bj) = SlopeY(i,j)*taperY(i,j)
-#if (defined (ALLOW_AUTODIFF) && defined (ALLOW_KAPGM_CONTROL))
-     &     *( kapgm(i,j,k,bi,bj)
+#ifdef ALLOW_KAPGM_CONTROL
+     &     *( kapGM(i,j,k,bi,bj)
 #else
      &     *( half_K
      &          *(GM_bolFac2d(i,j-1,bi,bj)+GM_bolFac2d(i,j,bi,bj))

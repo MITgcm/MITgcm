@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.42 2013/07/11 14:33:23 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.43 2014/04/26 19:47:46 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 #ifdef ALLOW_KPP
 # include "KPP_OPTIONS.h"
 #endif
@@ -33,6 +36,9 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "GMREDI.h"
 #include "GMREDI_TAVE.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_FIELDS.h"
+#endif
 #ifdef ALLOW_KPP
 # include "KPP.h"
 #endif
@@ -50,9 +56,9 @@ C     myIter    :: Current iteration number in simulation
 C     myThid    :: My Thread Id. number
 C
       INTEGER iMin,iMax,jMin,jMax
-      _RL sigmaX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL sigmaY(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL sigmaR(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL sigmaX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL sigmaY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL sigmaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER bi, bj
       _RL     myTime
       INTEGER myIter
@@ -64,25 +70,25 @@ CEOP
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k
-      _RL SlopeX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL SlopeY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL dSigmaDx(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL dSigmaDy(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL dSigmaDr(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL SlopeSqr(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL taperFct(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL ldd97_LrhoC(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL ldd97_LrhoW(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL ldd97_LrhoS(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL SlopeX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL SlopeY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dSigmaDx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dSigmaDy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dSigmaDr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL SlopeSqr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL taperFct(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL ldd97_LrhoC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL ldd97_LrhoW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL ldd97_LrhoS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Cspd, LrhoInf, LrhoSup, fCoriLoc
       _RL Kgm_tmp, isopycK, bolus_K
 
-      INTEGER kLow_W (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      INTEGER kLow_S (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL locMixLayer(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL baseSlope  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL hTransLay  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL recipLambda(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      INTEGER kLow_W (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER kLow_S (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL locMixLayer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL baseSlope  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL hTransLay  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL recipLambda(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER  km1
 #if ( defined (GM_NON_UNITY_DIAGONAL) || defined (GM_EXTRA_DIAGONAL) )
       INTEGER kp1
@@ -91,7 +97,7 @@ C     == Local variables ==
 
 #ifdef GM_VISBECK_VARIABLE_K
 #ifdef OLD_VISBECK_CALC
-      _RL Ssq(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL Ssq(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #else
       _RL dSigmaH, dSigmaR
       _RL Sloc, M2loc
@@ -140,8 +146,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( GM_Visbeck_maxSlope.GT.0. _d 0 ) THEN
         recipMaxSlope = 1. _d 0 / GM_Visbeck_maxSlope
       ENDIF
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         VisbeckK(i,j,bi,bj) = 0. _d 0
        ENDDO
       ENDDO
@@ -154,8 +160,8 @@ C--   set ldd97_Lrho (for tapering scheme ldd97):
        LrhoInf = 15. _d 3
        LrhoSup = 100. _d 3
 C-     Tracer point location (center):
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          IF (fCori(i,j,bi,bj).NE.0.) THEN
            ldd97_LrhoC(i,j) = Cspd/ABS(fCori(i,j,bi,bj))
          ELSE
@@ -165,10 +171,10 @@ C-     Tracer point location (center):
         ENDDO
        ENDDO
 C-     U point location (West):
-       DO j=1-Oly,sNy+Oly
-        kLow_W(1-Olx,j) = 0
-        ldd97_LrhoW(1-Olx,j) = LrhoSup
-        DO i=1-Olx+1,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        kLow_W(1-OLx,j) = 0
+        ldd97_LrhoW(1-OLx,j) = LrhoSup
+        DO i=1-OLx+1,sNx+OLx
          kLow_W(i,j) = MIN(kLowC(i-1,j,bi,bj),kLowC(i,j,bi,bj))
          fCoriLoc = op5*(fCori(i-1,j,bi,bj)+fCori(i,j,bi,bj))
          IF (fCoriLoc.NE.0.) THEN
@@ -180,12 +186,12 @@ C-     U point location (West):
         ENDDO
        ENDDO
 C-     V point location (South):
-       DO i=1-Olx+1,sNx+Olx
-         kLow_S(i,1-Oly) = 0
-         ldd97_LrhoS(i,1-Oly) = LrhoSup
+       DO i=1-OLx+1,sNx+OLx
+         kLow_S(i,1-OLy) = 0
+         ldd97_LrhoS(i,1-OLy) = LrhoSup
        ENDDO
-       DO j=1-Oly+1,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy+1,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          kLow_S(i,j) = MIN(kLowC(i,j-1,bi,bj),kLowC(i,j,bi,bj))
          fCoriLoc = op5*(fCori(i,j-1,bi,bj)+fCori(i,j,bi,bj))
          IF (fCoriLoc.NE.0.) THEN
@@ -198,8 +204,8 @@ C-     V point location (South):
        ENDDO
       ELSE
 C-    Just initialize to zero (not use anyway)
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
           ldd97_LrhoC(i,j) = 0. _d 0
           ldd97_LrhoW(i,j) = 0. _d 0
           ldd97_LrhoS(i,j) = 0. _d 0
@@ -209,8 +215,8 @@ C-    Just initialize to zero (not use anyway)
 
 #ifdef GM_BOLUS_ADVEC
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          GM_PsiX(i,j,k,bi,bj)  = 0. _d 0
          GM_PsiY(i,j,k,bi,bj)  = 0. _d 0
         ENDDO
@@ -219,8 +225,8 @@ C-    Just initialize to zero (not use anyway)
 #endif /* GM_BOLUS_ADVEC */
 #ifdef ALLOW_AUTODIFF_TAMC
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          Kwx(i,j,k,bi,bj)  = 0. _d 0
          Kwy(i,j,k,bi,bj)  = 0. _d 0
          Kwz(i,j,k,bi,bj)  = 0. _d 0
@@ -238,8 +244,8 @@ C-    Just initialize to zero (not use anyway)
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Initialise Mixed Layer related array:
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
          hTransLay(i,j) = R_low(i,j,bi,bj)
          baseSlope(i,j) =  0. _d 0
          recipLambda(i,j) = 0. _d 0
@@ -248,8 +254,8 @@ C--   Initialise Mixed Layer related array:
       ENDDO
 #ifdef ALLOW_KPP
       IF ( useKPP ) THEN
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          locMixLayer(i,j) = KPPhbl(i,j,bi,bj)
         ENDDO
        ENDDO
@@ -257,8 +263,8 @@ C--   Initialise Mixed Layer related array:
 #else
       IF ( .TRUE. ) THEN
 #endif
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          locMixLayer(i,j) = hMixLayer(i,j,bi,bj)
         ENDDO
        ENDDO
@@ -267,15 +273,15 @@ C--   Initialise Mixed Layer related array:
 #ifdef GM_K3D
       IF (GM_useK3D) THEN
 C     Calculate the 3D diffusivity as per Bates et al. (2013)
-        CALL TIMER_START('GMREDI_K3D      [GMREDI_CALC_TENSOR]', 
+        CALL TIMER_START('GMREDI_K3D      [GMREDI_CALC_TENSOR]',
      &                    myThid)
-      
+
         CALL GMREDI_K3D(
      I       iMin, iMax, jMin, jMax,
      I       sigmaX, sigmaY, sigmaR,
      I       bi, bj, myTime, myThid)
-        
-        CALL TIMER_STOP('GMREDI_K3D      [GMREDI_CALC_TENSOR]', 
+
+        CALL TIMER_STOP('GMREDI_K3D      [GMREDI_CALC_TENSOR]',
      &                  myThid)
       ENDIF
 #endif
@@ -287,8 +293,8 @@ C-- 1rst loop on k : compute Tensor Coeff. at W points.
 
 #ifdef ALLOW_AUTODIFF_TAMC
        kkey = (igmkey-1)*Nr + k
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          SlopeX(i,j)       = 0. _d 0
          SlopeY(i,j)       = 0. _d 0
          dSigmaDx(i,j)     = 0. _d 0
@@ -300,8 +306,8 @@ C-- 1rst loop on k : compute Tensor Coeff. at W points.
        ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-       DO j=1-Oly+1,sNy+Oly-1
-        DO i=1-Olx+1,sNx+Olx-1
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
 C      Gradient of Sigma at rVel points
          dSigmaDx(i,j)=op25*( sigmaX(i+1,j,k-1)+sigmaX(i,j,k-1)
      &                       +sigmaX(i+1,j, k )+sigmaX(i,j, k )
@@ -318,8 +324,8 @@ c        dSigmaDr(i,j)=sigmaR(i,j,k)
        IF ( GM_Visbeck_alpha.GT.0. .AND.
      &      -rC(k-1).LT.GM_Visbeck_depth ) THEN
 
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           dSigmaDr(i,j) = MIN( sigmaR(i,j,k), 0. _d 0 )
          ENDDO
         ENDDO
@@ -332,8 +338,8 @@ C       in the "variable K" parameterisaton:
 C       compute depth average from surface down to the bottom or
 C       GM_Visbeck_depth, whatever is the shallower.
 
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
           IF ( maskC(i,j,k,bi,bj).NE.0. ) THEN
            integrDepth = -rC( kLowC(i,j,bi,bj) )
 C-      in 2 steps to avoid mix of RS & RL type in min fct. arguments
@@ -394,8 +400,8 @@ c            N2loc = -gravity*recip_rhoConst*dSigmaDr(i,j)
        ENDIF
 #endif /* ndef OLD_VISBECK_CALC */
 #endif /* GM_VISBECK_VARIABLE_K */
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          dSigmaDr(i,j)=sigmaR(i,j,k)
         ENDDO
        ENDDO
@@ -417,11 +423,11 @@ C     Calculate slopes for use in tensor, taper and/or clip
      U             dSigmaDr,
      I             dSigmaDx, dSigmaDy,
      I             ldd97_LrhoC, locMixLayer, rF,
-     I             kLowC(1-Olx,1-Oly,bi,bj),
+     I             kLowC(1-OLx,1-OLy,bi,bj),
      I             k, bi, bj, myTime, myIter, myThid )
 
-       DO j=1-Oly+1,sNy+Oly-1
-        DO i=1-Olx+1,sNx+Olx-1
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
 C      Mask Iso-neutral slopes
          SlopeX(i,j)=SlopeX(i,j)*maskC(i,j,k,bi,bj)
          SlopeY(i,j)=SlopeY(i,j)*maskC(i,j,k,bi,bj)
@@ -438,8 +444,8 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C      Components of Redi/GM tensor
-       DO j=1-Oly+1,sNy+Oly-1
-        DO i=1-Olx+1,sNx+Olx-1
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
           Kwx(i,j,k,bi,bj)= SlopeX(i,j)*taperFct(i,j)
           Kwy(i,j,k,bi,bj)= SlopeY(i,j)*taperFct(i,j)
           Kwz(i,j,k,bi,bj)= SlopeSqr(i,j)*taperFct(i,j)
@@ -448,8 +454,8 @@ C      Components of Redi/GM tensor
 
 #ifdef GM_VISBECK_VARIABLE_K
 #ifdef OLD_VISBECK_CALC
-       DO j=1-Oly+1,sNy+Oly-1
-        DO i=1-Olx+1,sNx+Olx-1
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
 
 C- note (jmc) : moved here since only used in VISBECK_VARIABLE_K
 C           but do not know if *taperFct (or **2 ?) is necessary
@@ -485,15 +491,14 @@ C       Now we convert deltaH to a non-dimensional fraction
 C-- end 1rst loop on vertical level index k
       ENDDO
 
-
 #ifdef GM_VISBECK_VARIABLE_K
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
 #endif
       IF ( GM_Visbeck_alpha.GT.0. ) THEN
 C-     Limit range that KapGM can take
-       DO j=1-Oly+1,sNy+Oly-1
-        DO i=1-Olx+1,sNx+Olx-1
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
          VisbeckK(i,j,bi,bj)=
      &       MIN( MAX( VisbeckK(i,j,bi,bj), GM_Visbeck_minVal_K ),
      &            GM_Visbeck_maxVal_K )
@@ -523,15 +528,15 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
      &         *(GM_isoFac1d(km1)+GM_isoFac1d(k))*op5
        bolus_K = GM_background_K
      &         *(GM_bolFac1d(km1)+GM_bolFac1d(k))*op5
-       DO j=1-Oly+1,sNy+Oly-1
-        DO i=1-Olx+1,sNx+Olx-1
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
 #ifdef ALLOW_KAPREDI_CONTROL
-         Kgm_tmp = kapredi(i,j,k,bi,bj)
+         Kgm_tmp = kapRedi(i,j,k,bi,bj)
 #else
          Kgm_tmp = isopycK*GM_isoFac2d(i,j,bi,bj)
 #endif
 #ifdef ALLOW_KAPGM_CONTROL
-     &           + GM_skewflx*kapgm(i,j,k,bi,bj)
+     &           + GM_skewflx*kapGM(i,j,k,bi,bj)
 #else
      &           + GM_skewflx*bolus_K*GM_bolFac2d(i,j,bi,bj)
 #endif
@@ -545,7 +550,7 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
          Kwx(i,j,k,bi,bj)= Kgm_tmp*Kwx(i,j,k,bi,bj)
          Kwy(i,j,k,bi,bj)= Kgm_tmp*Kwy(i,j,k,bi,bj)
 #ifdef ALLOW_KAPREDI_CONTROL
-         Kwz(i,j,k,bi,bj)= ( kapredi(i,j,k,bi,bj)
+         Kwz(i,j,k,bi,bj)= ( kapRedi(i,j,k,bi,bj)
 #else
          Kwz(i,j,k,bi,bj)= ( isopycK*GM_isoFac2d(i,j,bi,bj)
 #endif
@@ -615,8 +620,8 @@ C-- 2nd  k loop : compute Tensor Coeff. at U point
 
 #ifdef ALLOW_KPP
       IF ( useKPP ) THEN
-       DO j=1-Oly,sNy+Oly
-        DO i=2-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=2-OLx,sNx+OLx
          locMixLayer(i,j) = ( KPPhbl(i-1,j,bi,bj)
      &                      + KPPhbl( i ,j,bi,bj) )*op5
         ENDDO
@@ -625,20 +630,20 @@ C-- 2nd  k loop : compute Tensor Coeff. at U point
 #else
       IF ( .TRUE. ) THEN
 #endif
-       DO j=1-Oly,sNy+Oly
-        DO i=2-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=2-OLx,sNx+OLx
          locMixLayer(i,j) = ( hMixLayer(i-1,j,bi,bj)
      &                      + hMixLayer( i ,j,bi,bj) )*op5
         ENDDO
        ENDDO
       ENDIF
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
          hTransLay(i,j) =  0.
          baseSlope(i,j) =  0.
          recipLambda(i,j)= 0.
        ENDDO
-       DO i=2-Olx,sNx+Olx
+       DO i=2-OLx,sNx+OLx
          hTransLay(i,j) = MAX( R_low(i-1,j,bi,bj), R_low(i,j,bi,bj) )
        ENDDO
       ENDDO
@@ -652,8 +657,8 @@ C-- 2nd  k loop : compute Tensor Coeff. at U point
 #endif
 
 C     Gradient of Sigma at U points
-       DO j=1-Oly+1,sNy+Oly-1
-        DO i=1-Olx+1,sNx+Olx-1
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
          dSigmaDx(i,j)=sigmaX(i,j,k)
      &                       *_maskW(i,j,k,bi,bj)
          dSigmaDy(i,j)=op25*( sigmaY(i-1,j+1,k)+sigmaY(i,j+1,k)
@@ -694,11 +699,11 @@ CADJ STORE taperFct(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 
 #ifdef GM_NON_UNITY_DIAGONAL
 c      IF ( GM_nonUnitDiag ) THEN
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
           Kux(i,j,k,bi,bj) =
 #ifdef ALLOW_KAPREDI_CONTROL
-     &     ( kapredi(i,j,k,bi,bj)
+     &     ( kapRedi(i,j,k,bi,bj)
 #else
      &     ( GM_isopycK*GM_isoFac1d(k)
      &        *op5*(GM_isoFac2d(i-1,j,bi,bj)+GM_isoFac2d(i,j,bi,bj))
@@ -717,8 +722,8 @@ c      IF ( GM_nonUnitDiag ) THEN
 CADJ STORE Kux(:,:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
           Kux(i,j,k,bi,bj) = MAX( Kux(i,j,k,bi,bj), GM_Kmin_horiz )
          ENDDO
         ENDDO
@@ -732,17 +737,17 @@ CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
        IF ( GM_ExtraDiag ) THEN
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
           Kuz(i,j,k,bi,bj) =
 #ifdef ALLOW_KAPREDI_CONTROL
-     &     ( kapredi(i,j,k,bi,bj)
+     &     ( kapRedi(i,j,k,bi,bj)
 #else
      &     ( GM_isopycK*GM_isoFac1d(k)
      &        *op5*(GM_isoFac2d(i-1,j,bi,bj)+GM_isoFac2d(i,j,bi,bj))
 #endif
 #ifdef ALLOW_KAPGM_CONTROL
-     &     - GM_skewflx*kapgm(i,j,k,bi,bj)
+     &     - GM_skewflx*kapGM(i,j,k,bi,bj)
 #else
      &     - GM_skewflx*GM_background_K*GM_bolFac1d(k)
      &        *op5*(GM_bolFac2d(i-1,j,bi,bj)+GM_bolFac2d(i,j,bi,bj))
@@ -766,7 +771,7 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
          DO i=1,sNx+1
 C         store in tmp1k Kuz_Redi
 #ifdef ALLOW_KAPREDI_CONTROL
-          tmp1k(i,j) = ( kapredi(i,j,k,bi,bj)
+          tmp1k(i,j) = ( kapRedi(i,j,k,bi,bj)
 #else
           tmp1k(i,j) = ( GM_isopycK*GM_isoFac1d(k)
      &        *op5*(GM_isoFac2d(i-1,j,bi,bj)+GM_isoFac2d(i,j,bi,bj))
@@ -813,8 +818,8 @@ C-- 3rd  k loop : compute Tensor Coeff. at V point
 
 #ifdef ALLOW_KPP
       IF ( useKPP ) THEN
-       DO j=2-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=2-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          locMixLayer(i,j) = ( KPPhbl(i,j-1,bi,bj)
      &                      + KPPhbl(i, j ,bi,bj) )*op5
         ENDDO
@@ -823,22 +828,22 @@ C-- 3rd  k loop : compute Tensor Coeff. at V point
 #else
       IF ( .TRUE. ) THEN
 #endif
-       DO j=2-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=2-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          locMixLayer(i,j) = ( hMixLayer(i,j-1,bi,bj)
      &                      + hMixLayer(i, j ,bi,bj) )*op5
         ENDDO
        ENDDO
       ENDIF
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
          hTransLay(i,j) =  0.
          baseSlope(i,j) =  0.
          recipLambda(i,j)= 0.
        ENDDO
       ENDDO
-      DO j=2-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=2-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
          hTransLay(i,j) = MAX( R_low(i,j-1,bi,bj), R_low(i,j,bi,bj) )
        ENDDO
       ENDDO
@@ -852,8 +857,8 @@ C     Gradient of Sigma at V points
        kkey = (igmkey-1)*Nr + k
 #endif
 
-       DO j=1-Oly+1,sNy+Oly-1
-        DO i=1-Olx+1,sNx+Olx-1
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
          dSigmaDx(i,j)=op25*( sigmaX(i, j ,k) +sigmaX(i+1, j ,k)
      &                       +sigmaX(i,j-1,k) +sigmaX(i+1,j-1,k)
      &                      )*_maskS(i,j,k,bi,bj)
@@ -895,11 +900,11 @@ cph)
 
 #ifdef GM_NON_UNITY_DIAGONAL
 c      IF ( GM_nonUnitDiag ) THEN
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
           Kvy(i,j,k,bi,bj) =
 #ifdef ALLOW_KAPREDI_CONTROL
-     &     ( kapredi(i,j,k,bi,bj)
+     &     ( kapRedi(i,j,k,bi,bj)
 #else
      &     ( GM_isopycK*GM_isoFac1d(k)
      &        *op5*(GM_isoFac2d(i,j-1,bi,bj)+GM_isoFac2d(i,j,bi,bj))
@@ -918,8 +923,8 @@ c      IF ( GM_nonUnitDiag ) THEN
 CADJ STORE Kvy(:,:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
           Kvy(i,j,k,bi,bj) = MAX( Kvy(i,j,k,bi,bj), GM_Kmin_horiz )
          ENDDO
         ENDDO
@@ -933,17 +938,17 @@ CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
        IF ( GM_ExtraDiag ) THEN
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
           Kvz(i,j,k,bi,bj) =
 #ifdef ALLOW_KAPREDI_CONTROL
-     &     ( kapredi(i,j,k,bi,bj)
+     &     ( kapRedi(i,j,k,bi,bj)
 #else
      &     ( GM_isopycK*GM_isoFac1d(k)
      &        *op5*(GM_isoFac2d(i,j-1,bi,bj)+GM_isoFac2d(i,j,bi,bj))
 #endif
 #ifdef ALLOW_KAPGM_CONTROL
-     &     - GM_skewflx*kapgm(i,j,k,bi,bj)
+     &     - GM_skewflx*kapGM(i,j,k,bi,bj)
 #else
      &     - GM_skewflx*GM_background_K*GM_bolFac1d(k)
      &        *op5*(GM_bolFac2d(i,j-1,bi,bj)+GM_bolFac2d(i,j,bi,bj))
@@ -967,7 +972,7 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
          DO i=1,sNx
 C         store in tmp1k Kvz_Redi
 #ifdef ALLOW_KAPREDI_CONTROL
-          tmp1k(i,j) = ( kapredi(i,j,k,bi,bj)
+          tmp1k(i,j) = ( kapRedi(i,j,k,bi,bj)
 #else
           tmp1k(i,j) = ( GM_isopycK*GM_isoFac1d(k)
      &        *op5*(GM_isoFac2d(i,j-1,bi,bj)+GM_isoFac2d(i,j,bi,bj))
@@ -1077,9 +1082,9 @@ C     == Global variables ==
 #include "GMREDI.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-      _RL sigmaX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL sigmaY(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL sigmaR(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL sigmaX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL sigmaY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL sigmaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER iMin,iMax,jMin,jMax
       INTEGER bi, bj
       _RL     myTime
@@ -1092,8 +1097,8 @@ C     !LOCAL VARIABLES:
       INTEGER i, j, k
 
       DO k=1,Nr
-       DO j=1-Oly+1,sNy+Oly-1
-        DO i=1-Olx+1,sNx+Olx-1
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
          Kwx(i,j,k,bi,bj) = 0.0
          Kwy(i,j,k,bi,bj) = 0.0
          Kwz(i,j,k,bi,bj) = 0.0

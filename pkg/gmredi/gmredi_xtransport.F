@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_xtransport.F,v 1.18 2010/01/20 01:20:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_xtransport.F,v 1.19 2014/04/26 19:47:46 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       SUBROUTINE GMREDI_XTRANSPORT(
      I     iMin,iMax,jMin,jMax,bi,bj,K,
@@ -21,6 +24,9 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "GMREDI.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_FIELDS.h"
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -109,7 +115,7 @@ C--   Area integrated zonal flux
      &    *Kux(i,j,k,bi,bj)
 #else
 #ifdef ALLOW_KAPREDI_CONTROL
-     &    *(kapredi(i,j,k,bi,bj)
+     &    *(kapRedi(i,j,k,bi,bj)
 #else
      &    *(GM_isopycK
 #endif
@@ -144,7 +150,6 @@ C-        Vertical gradients interpolated to U points
      &        +maskC( i ,j,kp1,bi,bj)*
      &           (Tracer( i ,j,k,bi,bj)-Tracer( i ,j,kp1,bi,bj))
      &       )      )
-
 
         ENDDO
        ENDDO
