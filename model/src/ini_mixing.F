@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mixing.F,v 1.12 2014/04/04 20:54:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_mixing.F,v 1.13 2014/04/26 19:26:36 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -6,7 +6,7 @@ C $Name:  $
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
-# if (defined (ALLOW_GMREDI) && (defined (ALLOW_KAPGM_CONTROL)||defined (ALLOW_KAPREDI_CONTROL)))
+#ifdef ALLOW_GMREDI
 # include "GMREDI_OPTIONS.h"
 #endif
 
@@ -29,19 +29,22 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-# if (defined (ALLOW_GMREDI) && (defined (ALLOW_KAPGM_CONTROL)||defined (ALLOW_KAPREDI_CONTROL)))
-# include "GMREDI.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_FIELDS.h"
+# ifdef ALLOW_GMREDI
+#  include "GMREDI.h"
+# endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance
+C     myThid ::  Number of this instance
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     bi,bj  - Loop counters
-C     I,J
+C     bi,bj  :: tile indices
+C     i,j,k  :: Loop counters
       INTEGER bi, bj
       INTEGER i, j, k
 CEOP
@@ -54,12 +57,14 @@ CEOP
 #ifdef ALLOW_3D_DIFFKR
             diffKr(i,j,k,bi,bj) = diffKrNrS(k)
 #endif
-#if (defined (ALLOW_GMREDI) && defined (ALLOW_KAPGM_CONTROL))
+#if (defined (ALLOW_CTRL) && defined (ALLOW_GMREDI))
+# ifdef ALLOW_KAPGM_CONTROL
             KapGM(i,j,k,bi,bj) = GM_background_K
-#endif
-#if (defined (ALLOW_GMREDI) && defined (ALLOW_KAPREDI_CONTROL))
-            kapredi(i,j,k,bi,bj) = GM_isopycK
-#endif
+# endif
+# ifdef ALLOW_KAPREDI_CONTROL
+            kapRedi(i,j,k,bi,bj) = GM_isopycK
+# endif
+#endif /* ALLOW_CTRL & ALLOW_GMREDI */
            ENDDO
           ENDDO
          ENDDO
@@ -84,14 +89,16 @@ CEOP
 #ifdef ALLOW_3D_DIFFKR
        IF ( diffKrFile .NE. ' ' ) THEN
           CALL READ_FLD_XYZ_RL(diffKrFile,' ',diffKr,0,myThid)
-          _EXCH_XYZ_RL(diffKr , myThid )
+          _EXCH_XYZ_RL( diffKr, myThid )
        ENDIF
-#endif
-#if (defined (ALLOW_GMREDI) && defined (ALLOW_KAPGM_CONTROL))
-      _EXCH_XYZ_RL(KapGM,   myThid )
-#endif
-#if (defined (ALLOW_GMREDI) && defined (ALLOW_KAPREDI_CONTROL))
-      _EXCH_XYZ_RL(kapredi,   myThid )
-#endif
+#endif /* ALLOW_3D_DIFFKR */
+#ifdef ALLOW_CTRL
+# ifdef ALLOW_KAPGM_CONTROL
+      _EXCH_XYZ_RL( KapGM, myThid )
+# endif
+# ifdef ALLOW_KAPREDI_CONTROL
+      _EXCH_XYZ_RL( kapRedi, myThid )
+# endif
+#endif /* ALLOW_CTRL */
       RETURN
       END

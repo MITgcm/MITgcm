@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.13 2014/04/04 20:08:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.14 2014/04/26 19:29:55 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -28,8 +28,8 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef ALLOW_BOTTOMDRAG_CONTROL
-# include "DYNVARS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_FIELDS.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================
