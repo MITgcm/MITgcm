@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/ctrl_map_ini_genarr.F,v 1.7 2014/04/05 21:44:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/ctrl_map_ini_genarr.F,v 1.8 2014/04/26 19:55:12 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -29,6 +29,7 @@ C     == global variables ==
 #include "FFIELDS.h"
 #include "CTRL_SIZE.h"
 #include "ctrl.h"
+#include "CTRL_FIELDS.h"
 #include "CTRL_GENARR.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
@@ -96,7 +97,7 @@ C--   generic - user-defined control vars
 #ifndef ALLOW_OPENAD
               if ( iarr .eq. 1 ) then
 # ifdef ALLOW_BOTTOMDRAG_CONTROL
-                bottomdragfld(i,j,bi,bj) = bottomdragfld(i,j,bi,bj)
+                bottomDragFld(i,j,bi,bj) = bottomDragFld(i,j,bi,bj)
      &                                   + tmpfld2d(i,j,bi,bj)
 # endif
               elseif ( iarr .eq. 2 ) then
@@ -109,7 +110,7 @@ C--   generic - user-defined control vars
 #else
               if ( iarr .eq. 1 ) then
 # ifdef ALLOW_BOTTOMDRAG_CONTROL
-                bottomdragfld(i,j,bi,bj) = bottomdragfld(i,j,bi,bj)
+                bottomDragFld(i,j,bi,bj) = bottomDragFld(i,j,bi,bj)
      &           + xx_genarr2d(i,j,bi,bj,iarr)
      &           + tmpfld2d(i,j,bi,bj)
 # endif
@@ -130,7 +131,7 @@ C--   generic - user-defined control vars
 C--   end iarr loop
       ENDDO
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-       _EXCH_XY_RL( bottomdragfld, myThid )
+       _EXCH_XY_RL( bottomDragFld, myThid )
 #endif
        _EXCH_XYZ_RL( theta, myThid )
        _EXCH_XYZ_RL( salt, myThid )
