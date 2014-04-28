@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.12 2012/04/19 16:06:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.13 2014/04/28 15:09:27 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -180,7 +180,7 @@ c     heat content of top level plus sea-ice plus latent heat of snow
      &                 tempVar * rA(i,j,bi,bj) * (
      &                 (THETA(i,j,kSrf,bi,bj) + 1.96 _d 0 ) *
      &                 drF(1) * 3996. _d 0 * 1026. _d 0 +
-     &                 (TICE(i,j,bi,bj) - 273.15 _d 0 + 1.96 _d 0 ) *
+     &                 (TICES(i,j,1,bi,bj) - 273.15 _d 0 + 1.96 _d 0 ) *
      &                 HEFF(i,j,bi,bj) * 2090. _d 0 * 910. _d 0 -
      &                 HEFF(i,j,bi,bj) * 334000. _d 0 * 910. _d 0 -
      &                 HSNOW(i,j,bi,bj) * 334000. _d 0 * 330. _d 0 )
