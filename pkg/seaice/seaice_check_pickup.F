@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.12 2014/02/04 18:30:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.13 2014/04/28 15:18:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -106,18 +106,7 @@ c        IF ( missFldList(nj).EQ.'siAGE   ' ) oldIceAge = .FALSE.
      &      ' restart from single category Tice (copied to TICES)'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
            _END_MASTER( myThid )
-C      copy TICE -> TICES
-           DO bj=myByLo(myThid),myByHi(myThid)
-            DO bi=myBxLo(myThid),myBxHi(myThid)
-             DO k=1,MULTDIM
-              DO j=1-OLy,sNy+OLy
-               DO i=1-OLx,sNx+OLx
-                TICES(i,j,k,bi,bj) = TICE(i,j,bi,bj)
-               ENDDO
-              ENDDO
-             ENDDO
-            ENDDO
-           ENDDO
+C     copy TICE -> TICES, already done in s/r seaice_read_pickup
           ENDIF
          ELSEIF ( fldName(1:6).EQ.'siSigm' ) THEN
 C- Note: try to restart without Sigma1,2,12 (as if SEAICEuseEVPpickup=F)
