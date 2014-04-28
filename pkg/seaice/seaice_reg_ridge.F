@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_reg_ridge.F,v 1.1 2014/04/23 12:38:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_reg_ridge.F,v 1.2 2014/04/28 15:07:53 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -219,7 +219,6 @@ CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
           IF (HEFF(I,J,bi,bj).LE.siEps) THEN
            tmpscal1=-HEFF(I,J,bi,bj)
            tmpscal2=-HSNOW(I,J,bi,bj)
-           TICE(I,J,bi,bj)=celsius2K
            DO IT=1,SEAICE_multDim
             TICES(I,J,IT,bi,bj)=celsius2K
            ENDDO
@@ -339,11 +338,6 @@ C     also compute total of AREAITD for diagnostics and SItrArea
         ENDDO
         DO J=1,sNy
          DO I=1,sNx
-          IF ( tmpscal2itd(i,j).GT.zeroRL ) THEN
-           TICE(I,J,bi,bj)=tmpscal1itd(i,j)/tmpscal2itd(i,j)
-          ELSE
-           TICE(I,J,bi,bj)=celsius2K
-          ENDIF
 C     save pre-ridging ice concentration for diagnostics:
 C     these lines are executed before "ridging" is applied to AREA
 C     hence we execute them here before SEAICE_ITD_REDIST is called
