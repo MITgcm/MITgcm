@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.59 2013/03/15 13:35:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.60 2014/04/28 16:18:44 mlosch Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -23,7 +23,7 @@ CADJ STORE area,heff,hsnow = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE uice,vice = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-CADJ STORE tice = comlev1, key = ikey_dynamics,
+CADJ STORE tices = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE eta,zeta = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
