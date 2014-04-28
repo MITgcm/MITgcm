@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.20 2014/02/04 18:30:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.21 2014/04/28 15:20:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -108,7 +108,8 @@ C-    switch to 2-D fields:
 c         nj = nj*MULTDIM
          nj = nj-MULTDIM+1
         ELSE
-         CALL WRITE_REC_3D_RL( fn, fp,  1, TICE  , nj, myIter, myThid )
+CML         CALL WRITE_REC_3D_RL( fn, fp,  1, TICE  , nj, myIter, myThid )
+         CALL WRITE_REC_3D_RL( fn, fp,  1, TICES , nj, myIter, myThid )
          IF (j.LE.listDim) wrFldList(j) = 'siTICE  '
         ENDIF
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.21 2014/02/04 18:30:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.22 2014/04/28 15:20:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -55,6 +55,8 @@ C     bi,bj       :: tile indices
       INTEGER nj, ioUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER i,j,k,bi,bj
+C      temporary array
+      _RL tIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_SITRACER
       CHARACTER*(8) fldName
       INTEGER iTrac
@@ -136,11 +138,22 @@ C---   Old way to read seaice fields:
 C--    Read ice model fields
         nj = 1
         IF (SEAICE_multDim.GT.1) THEN
-          CALL READ_REC_3D_RL(fn,fp,MULTDIM,TICES,nj,nIter0,myThid)
-          nj = nj + MULTDIM
+         CALL READ_REC_3D_RL(fn,fp,MULTDIM,TICES,nj,nIter0,myThid)
+         nj = nj + MULTDIM
         ELSE
-          CALL READ_REC_3D_RL(fn,fp,1,TICE,nj,nIter0,myThid)
+         CALL READ_REC_3D_RL(fn,fp,1,tIce,nj,nIter0,myThid)
          nj = nj + 1
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO k=1,MULTDIM
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+              TICES(i,j,k,bi,bj) = tIce(i,j,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
         ENDIF
 c       CALL READ_REC_3D_RL( fn, fp, 1, YNEG     , nj, nIter0, myThid )
         nj = nj + 1
@@ -179,35 +192,47 @@ C---   New way to read model fields:
          nj = 0
 C--    read Sea-Ice Thermodynamics State variables, starting with 3-D fields:
         IF ( .NOT.useThSIce ) THEN
-        IF (SEAICE_multDim.GT.1) THEN
-         CALL READ_MFLDS_3D_RL( 'siTICES ', TICES,
+         IF (SEAICE_multDim.GT.1) THEN
+          CALL READ_MFLDS_3D_RL( 'siTICES ', TICES,
      &                                nj, fp, MULTDIM, nIter0, myThid )
-         nj = nj*MULTDIM
-         IF ( nj.EQ.0 ) THEN
-         CALL READ_MFLDS_3D_RL( 'siTICE  ', TICE,
+          nj = nj*MULTDIM
+          IF ( nj.EQ.0 ) THEN
+          CALL READ_MFLDS_3D_RL( 'siTICE  ', tIce,
      &                                      nj, fp, 1, nIter0, myThid )
-         ENDIF
-        ELSE
-         CALL READ_MFLDS_3D_RL( 'siTICE  ', TICE,
-     &                                      nj, fp, 1, nIter0, myThid )
-C        map to TICES(1)
-         DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-           DO k=1,MULTDIM
-            DO j=1-OLy,sNy+OLy
-             DO i=1-OLx,sNx+OLx
-              TICES(i,j,k,bi,bj) = TICE(i,j,bi,bj)
+C        map to TICES
+          DO bj=myByLo(myThid),myByHi(myThid)
+           DO bi=myBxLo(myThid),myBxHi(myThid)
+            DO k=1,MULTDIM
+             DO j=1-OLy,sNy+OLy
+              DO i=1-OLx,sNx+OLx
+               TICES(i,j,k,bi,bj) = tIce(i,j,bi,bj)
+              ENDDO
              ENDDO
             ENDDO
            ENDDO
           ENDDO
-         ENDDO
-
-         IF ( nj.EQ.0 ) THEN
-         CALL READ_MFLDS_3D_RL( 'siTICES ', TICE,
+          ENDIF
+         ELSE
+C     SEAICE_multDim.EQ.1
+          CALL READ_MFLDS_3D_RL( 'siTICE  ', tIce,
      &                                      nj, fp, 1, nIter0, myThid )
+          IF ( nj.EQ.0 ) THEN
+           CALL READ_MFLDS_3D_RL( 'siTICES ', tIce,
+     &                                      nj, fp, 1, nIter0, myThid )
+          ENDIF
+C        map to TICES
+          DO bj=myByLo(myThid),myByHi(myThid)
+           DO bi=myBxLo(myThid),myBxHi(myThid)
+            DO k=1,MULTDIM
+             DO j=1-OLy,sNy+OLy
+              DO i=1-OLx,sNx+OLx
+               TICES(i,j,k,bi,bj) = tIce(i,j,bi,bj)
+              ENDDO
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
          ENDIF
-       ENDIF
 C--    continue with 2-D fields:
 #ifdef SEAICE_ITD
          CALL READ_MFLDS_3D_RL( 'siAREAn ', AREAITD,
@@ -309,7 +334,6 @@ C--    Update overlap regions
        _EXCH_XY_RL( HEFF, myThid )
        _EXCH_XY_RL( AREA, myThid )
        CALL EXCH_3D_RL   ( TICES, MULTDIM, myThid )
-       _EXCH_XY_RL(TICE , myThid )
 c      _EXCH_XY_RL(YNEG , myThid )
        _EXCH_XY_RL(HSNOW, myThid )
 #if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
