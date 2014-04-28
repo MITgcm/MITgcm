@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.23 2014/04/04 23:03:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.24 2014/04/28 15:22:36 mlosch Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -445,7 +445,7 @@ C-      2D arrays
           AREA(I,J,bi,bj)   = StoreSEAICE(I,J,bi,bj,1)
           HEFF(I,J,bi,bj)   = StoreSEAICE(I,J,bi,bj,2)
           HSNOW(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,3)
-          TICE(I,J,bi,bj)     = StoreSEAICE(I,J,bi,bj,4)
+CML          TICE(I,J,bi,bj)     = StoreSEAICE(I,J,bi,bj,4)
           RUNOFF(I,J,bi,bj)   = StoreSEAICE(I,J,bi,bj,5)
 # ifdef SEAICE_CGRID
           stressDivergenceX(I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,14)
