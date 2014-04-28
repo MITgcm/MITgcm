@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.199 2014/04/24 16:59:23 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.200 2014/04/28 15:17:03 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -732,8 +732,6 @@ C     Compute relative wind speed over sea ice.
         ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tice(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE hsnowActual = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE heffActual  = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE UG          = comlev1_bibj, key = iicekey, byte = isbyte
@@ -749,7 +747,6 @@ C--   Start loop over multi-categories
           DO I=1,sNx
            ticeInMult(I,J,IT)  = TICES(I,J,IT,bi,bj)
            ticeOutMult(I,J,IT) = TICES(I,J,IT,bi,bj)
-           TICE(I,J,bi,bj)     = ZERO
            TICES(I,J,IT,bi,bj) = ZERO
           ENDDO
          ENDDO
@@ -820,20 +817,21 @@ CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
         DO IT=1,SEAICE_multDim
          DO J=1,sNy
           DO I=1,sNx
-C     update TICE & TICES
-#ifdef SEAICE_ITD
-C     calculate area weighted mean
-C     (although the ice temperature relates to its energy content
-C      and hence should be averaged weighted by ice volume,
-C      the temperature here is a result of the fluxes through the ice surface
-C      computed individually for each single category in SEAICE_SOLVE4TEMP
-C      and hence is averaged area weighted [areaFracFactor])
-           TICE(I,J,bi,bj) = TICE(I,J,bi,bj)
-     &          +  ticeOutMult(I,J,IT)*areaFracFactor(I,J,IT)
-#else
-           TICE(I,J,bi,bj) = TICE(I,J,bi,bj)
-     &          +  ticeOutMult(I,J,IT)*recip_multDim
-#endif
+C     update TICES
+CMLC     and tIce, if required later on (currently not the case)
+CML#ifdef SEAICE_ITD
+CMLC     calculate area weighted mean
+CMLC     (although the ice temperature relates to its energy content
+CMLC      and hence should be averaged weighted by ice volume,
+CMLC      the temperature here is a result of the fluxes through the ice surface
+CMLC      computed individually for each single category in SEAICE_SOLVE4TEMP
+CMLC      and hence is averaged area weighted [areaFracFactor])
+CML           tIce(I,J,bi,bj) = tIce(I,J,bi,bj)
+CML     &          +  ticeOutMult(I,J,IT)*areaFracFactor(I,J,IT)
+CML#else
+CML           tIce(I,J,bi,bj) = tIce(I,J,bi,bj)
+CML     &          +  ticeOutMult(I,J,IT)*recip_multDim
+CML#endif
            TICES(I,J,IT,bi,bj) = ticeOutMult(I,J,IT)
 C     average over categories
 #ifdef SEAICE_ITD
@@ -1344,7 +1342,7 @@ C depending on atmospheric conditions.
          DO J=1,sNy
           DO I=1,sNx
 C possible alternatives to the a_QbyATM_cover criterium
-c          IF (TICE(I,J,bi,bj) .LT. TMIX) THEN
+c          IF (tIce(I,J,bi,bj) .LT. TMIX) THEN ! would require computing tIce
 c          IF (atemp(I,J,bi,bj) .LT. celsius2K) THEN
            IF ( a_QbyATM_cover(I,J).GE. 0. _d 0 ) THEN
 C           add precip as snow
