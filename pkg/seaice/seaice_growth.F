@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.200 2014/04/28 15:17:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.201 2014/04/28 17:13:23 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1744,9 +1744,10 @@ C =============PART 5: determine ice salinity increments=============
 C ===================================================================
 
 #ifndef SEAICE_VARIABLE_SALINITY
-# if (defined ALLOW_AUTODIFF_TAMC && defined ALLOW_SALT_PLUME)
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE d_HEFFbyNEG(:,:,bi,bj) = comlev1_bibj,
 CADJ &                              key = iicekey, byte = isbyte
+#  ifdef ALLOW_SALT_PLUME
 CADJ STORE d_HEFFbyOCNonICE = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE d_HEFFbyATMonOCN = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE d_HEFFbyATMonOCN_open = comlev1_bibj,key=iicekey,byte=isbyte
@@ -1755,7 +1756,8 @@ CADJ STORE d_HEFFbyFLOODING = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE d_HEFFbySublim = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE salt(:,:,kSurface,bi,bj) = comlev1_bibj,
 CADJ &                       key = iicekey, byte = isbyte
-# endif /* ALLOW_AUTODIFF_TAMC and ALLOW_SALT_PLUME */
+#  endif /* ALLOW_SALT_PLUME */
+# endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
           tmpscal1 = d_HEFFbyNEG(I,J,bi,bj) + d_HEFFbyOCNonICE(I,J) +
