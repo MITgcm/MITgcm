@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.83 2014/04/24 08:49:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.84 2014/04/28 15:17:32 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -140,7 +140,6 @@ c "ice concentration" tracer that should remain .EQ.1.
            SItrAREA (i,j,bi,bj,jTh) = 0. _d 0
           ENDDO
 #endif
-          TICE(i,j,bi,bj)   = 0. _d 0
           DO k=1,MULTDIM
             TICES(i,j,k,bi,bj)=0. _d 0
           ENDDO
@@ -228,7 +227,6 @@ C Western boundary
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          TICE(i,j,bi,bj)=273.0 _d 0
           DO k=1,MULTDIM
            TICES(i,j,k,bi,bj)=273.0 _d 0
           ENDDO
