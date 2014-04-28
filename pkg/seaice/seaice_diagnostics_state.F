@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.28 2014/04/09 16:19:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.29 2014/04/28 15:22:09 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,6 +41,7 @@ CEOP
 #ifdef ALLOW_DIAGNOSTICS
 C     == Local variables ==
       INTEGER i,j,bi,bj
+      _RL tIce (1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
 #ifdef SEAICE_CGRID
       _RL sigI (1-oLx:sNx+oLx,1-oLy:sNy+oLy)
       _RL sigII(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
@@ -48,6 +49,7 @@ C     == Local variables ==
 #endif
       INTEGER k
       _RL recip_multDim
+      _RL tmp
 #ifdef ALLOW_SITRACER
       INTEGER iTracer
       CHARACTER*8   diagName
@@ -66,10 +68,10 @@ C     == Local variables ==
        IF ( DIAGNOSTICS_IS_ON('SItices ',myThid) ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-C     use TICE as a temporary field, as it is done in seaice_growth
+C     use tIce as a temporary field, as it is done in seaice_growth
           DO j=1,sNy
            DO i=1,sNx
-            TICE(I,J,bi,bj) = 0. _d 0
+            tIce(I,J,bi,bj) = 0. _d 0
            ENDDO
           ENDDO
 C     division by zero is not possible
@@ -77,15 +79,20 @@ C     division by zero is not possible
           DO k=1,SEAICE_multDim
            DO j=1,sNy
             DO i=1,sNx
-             TICE(I,J,bi,bj) = TICE(I,J,bi,bj)
-     &            + TICES(I,J,K,bi,bj)*recip_multDim
+             tmp = 1. _d 0
+#ifdef SEAICE_ITD
+             IF (AREA(I,J,bi,bj) .GT. ZERO) 
+     &            tmp=AREAITD(I,J,K,bi,bj)/AREA(I,J,bi,bj)
+#endif /* SEAICE_ITD */
+             tIce(I,J,bi,bj) = tIce(I,J,bi,bj)
+     &            + TICES(I,J,K,bi,bj)*tmp*recip_multDim
             ENDDO
            ENDDO
           ENDDO
          ENDDO
         ENDDO
         CALL DIAGNOSTICS_FRACT_FILL(
-     I                   TICE, AREA, 1. _d 0, 1, 'SItices ',
+     I                   tIce, AREA, 1. _d 0, 1, 'SItices ',
      I                   0, 1, 0, 1, 1, myThid )
        ENDIF
 
