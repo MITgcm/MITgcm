@@ -21,4 +21,9 @@
 # *********************
  &CTRL_PACKNAMES
  &
-
+#
+# *********************
+# names for CTRL_GENARR, CTRL_GENTIM
+# *********************
+ &CTRL_NML_GENARR
+ &
