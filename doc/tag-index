@@ -1,15 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1984 2014/04/29 14:49:14 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1985 2014/04/29 21:16:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src: for atmosphere in p* coords:
+  - store factor rStarFacC**atm_kappa (= pStarFacK) in common block
+  - implement more accurate p* coordinate slope term (in calc_grad_phi_hyd.F),
+    but not yet activated.
 o pkg/seaice: fix restart problem for ITD with new ice strength parameterisation:
   - move computation of opnWtrFrac = 1-AREA to before computing ice strength
-  - this changes the results (but not for any verification experiment, because none tests
-    this), but avoids having an extra field in the restart files
+  - this changes the results (but not for any verification experiment, because
+    none tests this), but avoids having an extra field in the restart files
 o pkg/seaice: remove global variable TICE (not needed)
-  - replace by TICES or local variable where necessary (cost_seaice_test, 
+  - replace by TICES or local variable where necessary (cost_seaice_test,
     seaice_diagnostics_state)
   - move copying TICE to TICES from seaice_check_pickup to seaice_read_pickup
   - use specific read/write routines for reading and writing individual leves
