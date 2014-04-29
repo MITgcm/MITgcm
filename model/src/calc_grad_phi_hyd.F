@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.15 2012/12/31 20:47:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.16 2014/04/29 21:10:48 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
+#define OLD_PSTAR_SLOPE_TERM
 
 CBOP
 C     !ROUTINE: CALC_GRAD_PHI_HYD
@@ -59,8 +60,7 @@ C     i,j :: Loop counters
       INTEGER i,j
       _RL varLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef NONLIN_FRSURF
-      _RL factorZ, factorP, conv_theta2T
-      _RL factPI
+      _RL factorZ, factorP, factPI
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 CEOP
@@ -71,11 +71,11 @@ CEOP
 C-    Integral of b.dr = rStarFac * Integral of b.dr* :
 C      and will add later (select_rStar=2) the contribution of
 C      the slope of the r* coordinate.
-       IF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
-C-     Consistent with Phi'= Integr[ theta'.dPi ] :
+       IF ( fluidIsAir ) THEN
+C-     Consistent with Phi'= Integr[ theta'.dPI ] :
         DO j=jMin,jMax
          DO i=iMin,iMax
-          varLoc(i,j) = phiHydC(i,j)*rStarFacC(i,j,bi,bj)**atm_kappa
+          varLoc(i,j) = phiHydC(i,j)*pStarFacK(i,j,bi,bj)
      &                + phi0surf(i,j,bi,bj)
          ENDDO
         ENDDO
@@ -90,8 +90,8 @@ C-     Consistent with Phi'= Integr[ theta'.dPi ] :
       ELSEIF (select_rStar.GE.1 .AND. nonlinFreeSurf.GE.4 ) THEN
 C-    Integral of b.dr but scaled to correspond to a fixed r-level (=r*)
 C      no contribution of the slope of the r* coordinate (select_rStar=1)
-       IF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
-C-     Consistent with Phi'= Integr[ theta'.dPi ] :
+       IF ( fluidIsAir ) THEN
+C-     Consistent with Phi'= Integr[ theta'.dPI ] :
         DO j=jMin,jMax
          DO i=iMin,iMax
           IF (Ro_surf(i,j,bi,bj).EQ.rC(k)) THEN
@@ -160,8 +160,9 @@ C--   Zonal & Meridional gradient of potential anomaly
       ENDDO
 
 #ifdef NONLIN_FRSURF
+# ifndef DISABLE_RSTAR_CODE
       IF (select_rStar.GE.2 .AND. nonlinFreeSurf.GE.1 ) THEN
-       IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
+       IF ( fluidIsWater .AND. usingZCoords ) THEN
 C--    z* coordinate slope term: rho_prime/rho0 * Grad_r(g.z)
         factorZ = gravity*recip_rhoConst*recip_rhoFacC(k)*0.5 _d 0
         DO j=jMin,jMax
@@ -186,7 +187,7 @@ C--    z* coordinate slope term: rho_prime/rho0 * Grad_r(g.z)
      &             *recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
          ENDDO
         ENDDO
-       ELSEIF (buoyancyRelation .EQ. 'OCEANICP' ) THEN
+       ELSEIF ( fluidIsWater ) THEN
 C--    p* coordinate slope term: alpha_prime * Grad_r( p )
         factorP = 0.5 _d 0
         DO j=jMin,jMax
@@ -205,28 +206,49 @@ C--    p* coordinate slope term: alpha_prime * Grad_r( p )
      &             *rC(k)*recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
          ENDDO
         ENDDO
-       ELSEIF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
-C--    p* coordinate slope term: alpha_prime * Grad_r( p )
-        conv_theta2T = (rC(k)/atm_Po)**atm_kappa
-        factorP = (atm_Rd/rC(k))*conv_theta2T*0.5 _d 0
+       ELSEIF ( fluidIsAir ) THEN
+#ifdef OLD_PSTAR_SLOPE_TERM
+C--    p* coordinate slope term: alpha_prime * Grad_r( p ):
+C      PI_star * (Theta_eq^prime)_bar_i * kappa * delta^i( rStarFacC )
+C- Note: factor: ( p_s / p_s^o )^(kappa - 1) = rStarFacC^(kappa -1)
+C        is missing here.
+        factorP = (rC(k)/atm_Po)**atm_kappa
+        factorP = (atm_Rd/rC(k))*factorP*0.5 _d 0
+#else
+C--    p* coordinate slope term: theta_prime * Grad_r( PI ):
+C      PI_star * (Theta_eq^prime)_bar_i * delta^i( rStarFacC^kappa )
+C      This is also consitent with geopotential factor: rStarFacC^kappa
+        factorP = halfRL*atm_Cp*(rC(k)/atm_Po)**atm_kappa
+#endif
         DO j=jMin,jMax
          DO i=iMin+1,iMax
           dPhiHydX(i,j) = dPhiHydX(i,j)
      &     +factorP*(alphRho(i-1,j)+alphRho(i,j))
+#ifdef OLD_PSTAR_SLOPE_TERM
      &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i-1,j,bi,bj))
      &             *rC(k)*recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+#else
+     &             *(pStarFacK(i,j,bi,bj)-pStarFacK(i-1,j,bi,bj))
+     &             *recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+#endif
          ENDDO
         ENDDO
         DO j=jMin+1,jMax
          DO i=iMin,iMax
           dPhiHydY(i,j) = dPhiHydY(i,j)
      &     +factorP*(alphRho(i,j-1)+alphRho(i,j))
+#ifdef OLD_PSTAR_SLOPE_TERM
      &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i,j-1,bi,bj))
      &             *rC(k)*recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
+#else
+     &             *(pStarFacK(i,j,bi,bj)-pStarFacK(i,j-1,bi,bj))
+     &             *recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
+#endif
          ENDDO
         ENDDO
        ENDIF
       ENDIF
+# endif /* DISABLE_RSTAR_CODE */
 #endif /* NONLIN_FRSURF */
 
 C--   Apply mask:
