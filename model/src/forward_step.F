@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.221 2014/04/04 20:54:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.222 2014/04/29 21:07:39 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -264,6 +264,7 @@ C     added to simplify adjoint derivation - no effect in forward run
 #ifndef ALLOW_AUTODIFF
       IF ( doResetHFactors ) THEN
 #endif
+       CALL RESET_NLFS_VARS( myTime, myIter, myThid )
        IF ( select_rStar.GT.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
 # ifdef ALLOW_AUTODIFF_TAMC

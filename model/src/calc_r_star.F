@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.21 2011/05/20 01:09:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.22 2014/04/29 21:07:39 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,7 +35,7 @@ C     etaFld    :: current eta field used to update the hFactor
 C     myTime    :: current time in simulation
 C     myIter    :: current iteration number in simulation
 C     myThid    :: thread number for this instance of the routine.
-      _RL etaFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL etaFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -78,8 +78,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO bi=myBxLo(myThid), myBxHi(myThid)
 
 C--   before updating rStarFacC/S/W save current fields
-         DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
              rStarFacNm1C(i,j,bi,bj) = rStarFacC(i,j,bi,bj)
              rStarFacNm1S(i,j,bi,bj) = rStarFacS(i,j,bi,bj)
              rStarFacNm1W(i,j,bi,bj) = rStarFacW(i,j,bi,bj)
@@ -89,8 +89,8 @@ C--   before updating rStarFacC/S/W save current fields
 C-    1rst bi,bj loop :
 
 C-- copy rStarFacX -> rStarExpX
-        DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             rStarExpC(i,j,bi,bj) = rStarFacC(i,j,bi,bj)
             rStarExpW(i,j,bi,bj) = rStarFacW(i,j,bi,bj)
             rStarExpS(i,j,bi,bj) = rStarFacS(i,j,bi,bj)
@@ -274,10 +274,10 @@ C-    2nd bi,bj loop :
 #ifdef ALLOW_EXCH2
 #ifdef W2_FILL_NULL_REGIONS
 C- Note: rStarFacC was non-zero EVERYWHERE before exch, but exch2 put zeros
-C        in the corner regions of the tile (e.g.:[1-Olx:0,1-Oly:0])
+C        in the corner regions of the tile (e.g.:[1-OLx:0,1-OLy:0])
 C       => need to add those lines (or to fix exch2):
-        DO j=1,Oly
-         DO i=1,Olx
+        DO j=1,OLy
+         DO i=1,OLx
           ii = sNx+i
           jj = sNy+j
 
@@ -301,14 +301,14 @@ C       => need to add those lines (or to fix exch2):
 #endif /* W2_FILL_NULL_REGIONS */
 #endif /* ALLOW_EXCH2 */
 
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
            rStarDhCDt(i,j,bi,bj)=(rStarFacC(i,j,bi,bj)
-     &                           -rStarExpC(i,j,bi,bj))/deltaTfreesurf
+     &                           -rStarExpC(i,j,bi,bj))/deltaTFreeSurf
            rStarDhWDt(i,j,bi,bj)=(rStarFacW(i,j,bi,bj)
-     &                           -rStarExpW(i,j,bi,bj))/deltaTfreesurf
+     &                           -rStarExpW(i,j,bi,bj))/deltaTFreeSurf
            rStarDhSDt(i,j,bi,bj)=(rStarFacS(i,j,bi,bj)
-     &                           -rStarExpS(i,j,bi,bj))/deltaTfreesurf
+     &                           -rStarExpS(i,j,bi,bj))/deltaTFreeSurf
            rStarExpC(i,j,bi,bj) = rStarFacC(i,j,bi,bj)
      &                          / rStarExpC(i,j,bi,bj)
            rStarExpW(i,j,bi,bj) = rStarFacW(i,j,bi,bj)
@@ -317,6 +317,22 @@ C       => need to add those lines (or to fix exch2):
      &                          / rStarExpS(i,j,bi,bj)
          ENDDO
         ENDDO
+
+        IF ( fluidIsAir ) THEN
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           pStarFacK(i,j,bi,bj) = rStarFacC(i,j,bi,bj)**atm_kappa
+          ENDDO
+         ENDDO
+#ifdef ALLOW_AUTODIFF
+        ELSE
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           pStarFacK(i,j,bi,bj) = 1. _d 0
+          ENDDO
+         ENDDO
+#endif
+        ENDIF
 
 C-    end 2nd bi,bj loop.
         ENDDO

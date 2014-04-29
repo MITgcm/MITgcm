@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_nlfs_vars.F,v 1.9 2012/08/10 22:35:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_nlfs_vars.F,v 1.10 2014/04/29 21:07:39 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -87,6 +87,7 @@ C-- Initialise arrays (NLFS using r* coordinate):
             rStarFacC(i,j,bi,bj) = 1.
             rStarFacW(i,j,bi,bj) = 1.
             rStarFacS(i,j,bi,bj) = 1.
+            pStarFacK(i,j,bi,bj) = 1.
             rStarFacNm1C(i,j,bi,bj) = 1.
             rStarFacNm1W(i,j,bi,bj) = 1.
             rStarFacNm1S(i,j,bi,bj) = 1.

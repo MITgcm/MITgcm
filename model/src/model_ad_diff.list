@@ -74,6 +74,7 @@ packages_init_variables.f
 pressure_for_eos.f
 read_pickup.f
 remove_mean.f
+reset_nlfs_vars.f
 rotate_uv2en.f
 salt_integrate.f
 temp_integrate.f
