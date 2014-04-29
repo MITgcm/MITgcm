@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xyz.F,v 1.29 2013/08/06 20:57:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xyz.F,v 1.30 2014/04/29 23:35:47 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -331,7 +331,7 @@ c     == local variables ==
       _RL fld3dDim(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL fld3dNodim(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 
-#ifdef CTRL_PACK_PRECISE
+#ifdef CTRL_UNPACK_PRECISE
       _RL wei3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 #endif
 
@@ -351,7 +351,7 @@ c     == end of interface ==
 
 c-- part 1: preliminary reads and definitions
 
-#ifdef CTRL_PACK_PRECISE
+#ifdef CTRL_UNPACK_PRECISE
       call active_read_xyz(weighttype, wei3d, 1,
      &    .FALSE., .FALSE., 0 , mythid, dummy)
 #endif
@@ -477,7 +477,7 @@ c-- 2.2: normalize field if needed
             if (lxxadxx) then
                fld3dDim(i,j,k,bi,bj) =
      &              fld3dNodim(i,j,k,bi,bj) * delZnorm
-#  ifdef CTRL_PACK_PRECISE
+#  ifdef CTRL_UNPACK_PRECISE
      &              / sqrt(wei3d(i,j,k,bi,bj))
 #  else
      &              / sqrt(weightfld(k,bi,bj))
@@ -485,7 +485,7 @@ c-- 2.2: normalize field if needed
             else
                fld3dDim(i,j,k,bi,bj) =
      &              fld3dNodim(i,j,k,bi,bj) / delZnorm
-#  ifdef CTRL_PACK_PRECISE
+#  ifdef CTRL_UNPACK_PRECISE
      &              * sqrt(wei3d(i,j,k,bi,bj))
 #  else
      &              * sqrt(weightfld(k,bi,bj))
