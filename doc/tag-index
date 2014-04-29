@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1982 2014/04/26 20:45:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1983 2014/04/29 14:23:52 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: remove global variable TICE (not needed)
+  - replace by TICES or local variable where necessary (cost_seaice_test, 
+    seaice_diagnostics_state)
+  - move copying TICE to TICES from seaice_check_pickup to seaice_read_pickup
+  - use specific read/write routines for reading and writing individual leves
+    of a multilevel field
 o pkg/ctrl & model/inc:
   - move additional anomaly fields of control vars (related to options:
      ALLOW_KAPGM_CONTROL, ALLOW_KAPREDI_CONTROL and ALLOW_BOTTOMDRAG_CONTROL)
