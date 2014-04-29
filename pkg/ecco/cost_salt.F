@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt.F,v 1.13 2013/03/27 15:43:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt.F,v 1.14 2014/04/29 23:27:34 heimbach Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -217,8 +217,9 @@ c--         End of loop over layers.
 
           enddo
         enddo
-        CALL WRITE_REC_XYZ_RL( 'DiagnosCost_ClimSalt',
-     &                 diagnosfld3d, irec, optimcycle, mythid )
+
+cph        CALL WRITE_REC_XYZ_RL( 'DiagnosCost_ClimSalt',
+cph     &                 diagnosfld3d, irec, optimcycle, mythid )
 
       enddo
 c--   End of loop over records.
