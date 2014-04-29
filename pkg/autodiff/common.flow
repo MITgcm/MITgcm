@@ -43,18 +43,6 @@ c$taf COMMON ffields_lambdaThetaClimRelax FTLNAME = g_ffields_lambdaThetaClimRel
 c$taf COMMON ffields_lambdaSaltClimRelax  ADNAME = adffields_lambdaSaltClimRelax
 c$taf COMMON ffields_lambdaSaltClimRelax FTLNAME = g_ffields_lambdaSaltClimRelax
 
-c$taf COMMON DYNVARS_DIFFKR  ADNAME = adDYNVARS_DIFFKR
-c$taf COMMON DYNVARS_DIFFKR FTLNAME = g_DYNVARS_DIFFKR
-
-c$taf COMMON DYNVARS_KAPGM  ADNAME = adDYNVARS_KAPGM
-c$taf COMMON DYNVARS_KAPGM FTLNAME = g_DYNVARS_KAPGM
-
-c$taf COMMON DYNVARS_KAPREDI  ADNAME = adDYNVARS_KAPREDI
-c$taf COMMON DYNVARS_KAPREDI FTLNAME = g_DYNVARS_KAPREDI
-
-c$taf COMMON DYNVARS_BOTTOMDRAG  ADNAME = adDYNVARS_BOTTOMDRAG
-c$taf COMMON DYNVARS_BOTTOMDRAG FTLNAME = g_DYNVARS_BOTTOMDRAG
-
 c$taf COMMON eddypsiffield  ADNAME = adeddypsiffield
 c$taf COMMON eddypsiffield FTLNAME = g_eddypsiffield
 
@@ -90,6 +78,18 @@ c$taf COMMON seaice_dynvars_1 FTLNAME = g_seaice_dynvars_1
 
 c$taf COMMON ggl90_fields  ADNAME = adggl90_fields
 c$taf COMMON ggl90_fields FTLNAME = g_ggl90_fields
+
+c$taf COMMON dynvars_diffkr     ADNAME = addynvars_diffkr
+c$taf COMMON dynvars_diffkr    FTLNAME = g_dynvars_diffkr
+
+c$taf COMMON ctrl_fields_kapgm  ADNAME = adctrl_fields_kapgm
+c$taf COMMON ctrl_fields_kapgm FTLNAME = g_ctrl_fields_kapgm
+
+c$taf COMMON ctrl_fields_kapredi  ADNAME = adctrl_fields_kapredi
+c$taf COMMON ctrl_fields_kapredi FTLNAME = g_ctrl_fields_kapredi
+
+c$taf COMMON ctrl_fields_bottomdrag  ADNAME = adctrl_fields_bottomdrag
+c$taf COMMON ctrl_fields_bottomdrag FTLNAME = g_ctrl_fields_bottomdrag
 
 c$taf COMMON grid_r  ADNAME = adgrid_r
 c$taf COMMON grid_r FTLNAME = g_grid_r
