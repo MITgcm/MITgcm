@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.23 2014/04/29 01:53:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.24 2014/04/29 14:43:56 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -328,6 +328,11 @@ C--    Update overlap regions
 #ifdef SEAICE_VARIABLE_SALINITY
        _EXCH_XY_RL(HSALT, myThid )
 #endif
+#ifdef SEAICE_ITD
+       CALL EXCH_3D_RL( HEFFITD,  nITD, myThid )
+       CALL EXCH_3D_RL( AREAITD,  nITD, myThid )
+       CALL EXCH_3D_RL( HSNOWITD, nITD, myThid )
+#endif /* SEAICE_ITD */
 
       RETURN
       END
