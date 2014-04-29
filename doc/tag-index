@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1983 2014/04/29 14:23:52 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1984 2014/04/29 14:49:14 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: fix restart problem for ITD with new ice strength parameterisation:
+  - move computation of opnWtrFrac = 1-AREA to before computing ice strength
+  - this changes the results (but not for any verification experiment, because none tests
+    this), but avoids having an extra field in the restart files
 o pkg/seaice: remove global variable TICE (not needed)
   - replace by TICES or local variable where necessary (cost_seaice_test, 
     seaice_diagnostics_state)
