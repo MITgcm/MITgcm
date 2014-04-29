@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_ice_strength.F,v 1.4 2014/04/26 18:58:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_ice_strength.F,v 1.5 2014/04/29 14:48:50 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -84,6 +84,15 @@ C     loop boundaries
       jMax=sNy+OLy
 
 #ifdef SEAICE_ITD
+C     compute the fraction of open water as early as possible, i.e.
+C     before advection, but also before it is used in calculating the ice
+C     strength according to Rothrock (1975), hidden in S/R seaice_repare_ridging
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        opnWtrFrac(i,j,bi,bj) = 1. _d 0 - AREA(i,j,bi,bj)
+       ENDDO
+      ENDDO
+
       IF ( useHibler79IceStrength ) THEN
 #else
       IF ( .TRUE. ) THEN

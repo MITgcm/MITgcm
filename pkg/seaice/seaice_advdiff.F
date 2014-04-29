@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.71 2014/04/23 12:54:08 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.72 2014/04/29 14:48:50 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -126,14 +126,6 @@ C-    compute cell areas used by all tracers
           yA(i,j,bi,bj) = _dxG(i,j,bi,bj)*_maskS(i,j,ks,bi,bj)
          ENDDO
         ENDDO
-#ifdef SEAICE_ITD
-C     compute the fraction of open water before advection
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          opnWtrFrac(i,j,bi,bj)=1. _d 0 - AREA(i,j,bi,bj)
-         ENDDO
-        ENDDO
-#endif /* SEAICE_ITD */
        ENDDO
       ENDDO
 
