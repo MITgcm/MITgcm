@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.33 2013/04/22 02:39:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.34 2014/04/30 02:46:16 heimbach Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -103,17 +103,17 @@ C--   heimbach@mit.edu 11-Jan-2001
       _RL  addiffKr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 #ifdef ALLOW_KAPGM_CONTROL
-      COMMON /ADDYNVARS_KAPGM/
+      COMMON /ADCTRL_FIELDS_KAPGM/
      &                       adkapgm
       _RL  adkapgm (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 #ifdef ALLOW_KAPREDI_CONTROL
-      COMMON /ADDYNVARS_KAPREDI/
+      COMMON /ADCTRL_FIELDS_KAPREDI/
      &                       adkapredi
       _RL  adkapredi (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-      COMMON /ADDYNVARS_BOTTOMDRAG/
+      COMMON /ADCTRL_FIELDS_BOTTOMDRAG/
      &                adbottomdragfld
       _RL  adbottomdragfld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif

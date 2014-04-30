@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.24 2013/04/22 02:39:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.25 2014/04/30 02:46:16 heimbach Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -120,17 +120,17 @@ cph larger common block, so be careful
       _RL  g_diffKr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 #ifdef ALLOW_KAPGM_CONTROL
-      COMMON /G_DYNVARS_KAPGM/
+      COMMON /G_CTRL_FIELDS_KAPGM/
      &                       g_kapgm
       _RL  g_kapgm (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 #ifdef ALLOW_KAPREDI_CONTROL
-      COMMON /G_DYNVARS_KAPREDI/
+      COMMON /G_CTRL_FIELDS_KAPREDI/
      &                       g_kapredi
       _RL  g_kapredi (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-      COMMON /G_DYNVARS_BOTTOMDRAG/
+      COMMON /G_CTRL_FIELDS_BOTTOMDRAG/
      &                       g_bottomdragfld
       _RL  g_bottomdragfld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
