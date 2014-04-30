@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.14 2014/04/07 18:08:50 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.15 2014/04/30 00:19:09 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -631,7 +631,7 @@ cgf =======================================================
         enddo
       enddo
 
-      CALL WRITE_FLD_XY_RL( 'DiagnosSSHmean', ' ', diagnosfld,
+      CALL WRITE_FLD_XY_RL( 'DiagnosMDT', ' ', diagnosfld,
      &                           optimcycle, mythid )
 
 #endif /* ALLOW_SSH_MEAN_COST_CONTRIBUTION */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_mean.F,v 1.13 2014/04/07 18:10:21 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_mean.F,v 1.14 2014/04/30 00:19:09 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -290,7 +290,7 @@ C--   Do the global summation.
 #endif /* else ORIGINAL_COST_SSH_MEAN */
 
 cph(
-      CALL WRITE_FLD_XY_RL( 'DiagnosSSHmean', ' ', diagnosfld,
+      CALL WRITE_FLD_XY_RL( 'DiagnosMDT', ' ', diagnosfld,
      &                           optimcycle, mythid )
 cph)
 
