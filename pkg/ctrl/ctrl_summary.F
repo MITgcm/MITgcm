@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.6 2012/08/10 19:38:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.7 2014/04/30 00:11:33 atn Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -313,6 +313,18 @@ c     == end of interface ==
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
+#ifdef ALLOW_SMOOTH_CORREL3D
+      write(msgbuf,'(a,L5)')
+     &'ctrlSmoothCorrel3D: ',ctrlSmoothCorrel3D
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif /* ALLOW_SMOOTH_CORREL3D */
+#ifdef ALLOW_SMOOTH_CORREL2D
+      write(msgbuf,'(a,L5)')
+     &'ctrlSmoothCorrel2D: ',ctrlSmoothCorrel2D
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif /* ALLOW_SMOOTH_CORREL2D */
 
       write(msgbuf,'(a)')
      &' '
