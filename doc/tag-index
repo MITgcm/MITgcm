@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1985 2014/04/29 21:16:20 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1986 2014/04/30 20:27:16 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification:
+  - update output_adm.txt files for experiment global_ocean.cs32x15 (seaice &
+    seaice_dynmix) and lab_sea (primary test & noseaicedyn): moving/changing
+    code from seaice_growth.F & seaice_advdiff.F to new ridging routines
+    affects AD gradient (down to 8-7 matching digits for global_ocean and
+    5-6 for lab_sea).
+seaice_reg_ridge.F seaice_do_ridging.F
 o model/src: for atmosphere in p* coords:
   - store factor rStarFacC**atm_kappa (= pStarFacK) in common block
   - implement more accurate p* coordinate slope term (in calc_grad_phi_hyd.F),
