@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/reset_nlfs_vars.F,v 1.1 2014/04/29 21:07:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/reset_nlfs_vars.F,v 1.2 2014/05/02 16:56:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -48,7 +48,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO bi=myBxLo(myThid), myBxHi(myThid)
 
 #ifndef DISABLE_RSTAR_CODE
-        IF ( fluidIsAir ) THEN
+        IF ( fluidIsAir .AND. select_rStar.GE.1 ) THEN
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            pStarFacK(i,j,bi,bj) = rStarFacC(i,j,bi,bj)**atm_kappa
