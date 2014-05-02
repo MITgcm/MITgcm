@@ -4,5 +4,5 @@
  &PACKAGES
  useGMRedi    = .TRUE.,
  useGrdchk    = .TRUE.,
-#useMNC       = .TRUE.,
+ useMNC       = .TRUE.,
  &
