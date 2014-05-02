@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.10 2012/12/31 22:06:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.11 2014/05/02 16:57:43 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -140,7 +140,7 @@ C-    Integral of b.dr = rStarFac * Integral of b.dr* :
 C-     Consistent with Phi'= Integr[ theta'.dPi ] :
          DO j=jMin,jMax
           DO i=iMin,iMax
-           facP = rStarFacC(i,j,bi,bj)**atm_kappa
+           facP = pStarFacK(i,j,bi,bj)
            dPhiRef = phiRef(2*k+1) - gravity*topoZ(i,j,bi,bj)
      &                             - phi0surf(i,j,bi,bj)
            phiHydLow(i,j,bi,bj) =
