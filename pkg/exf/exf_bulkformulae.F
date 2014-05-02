@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.29 2012/12/08 15:24:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.30 2014/05/02 22:14:52 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -187,7 +187,10 @@ C     these need to be 2D-arrays for vectorizing code
       _RL rd    (1:sNx,1:sNy)   ! = sqrt(Cd)          [-]
       _RL delq  (1:sNx,1:sNy)   ! specific humidity difference [kg/kg]
       _RL deltap(1:sNx,1:sNy)
-C
+#ifdef EXF_CALC_ATMRHO
+      _RL atmrho_loc(1:sNx,1:sNy) ! local atmospheric density [kg/m^3]
+#endif
+
 #ifdef ALLOW_BULK_LARGEYEAGER04
       _RL dzTmp
 #endif
@@ -239,7 +242,7 @@ C-- Set surface parameters :
 C--   abbreviation
       recip_rhoConstFresh = 1. _d 0/rhoConstFresh
 
-c     Loop over tiles.
+C     Loop over tiles.
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   HPF directive to help TAMC
 CHPF$ INDEPENDENT
@@ -289,9 +292,16 @@ C-   Surface Temp.
      &              *  maskC(i,j,ksrfp1,bi,bj)
             Tsf = Tsf + MAX( SSTtmp, 0. _d 0 )
            ENDIF
-c
+
            tmpbulk = cvapor_fac*exp(-cvapor_exp/Tsf)
+#ifdef EXF_CALC_ATMRHO
+           atmrho_loc(i,j) = apressure(i,j,bi,bj) /
+     &                  (287.04 _d 0*atemp(i,j,bi,bj)
+     &                  *(1. _d 0 + humid_fac*aqh(i,j,bi,bj)))
+           ssq = saltsat*tmpbulk/atmrho_loc(i,j)
+#else
            ssq = saltsat*tmpbulk/atmrho
+#endif
            deltap(i,j) = atemp(i,j,bi,bj) + gamma_blk*ht - Tsf
            delq(i,j)   = aqh(i,j,bi,bj) - ssq
 C--  no negative evaporation over ocean:
@@ -314,9 +324,14 @@ C--   Wind speed
            ELSE
             rdn(i,j)   = 0. _d 0
             windStress = wStress(i,j,bi,bj)
+#ifdef EXF_CALC_ATMRHO
+            ustar(i,j) = sqrt(windStress/atmrho_loc(i,j))
+            tau(i,j)   = sqrt(windStress*atmrho_loc(i,j))
+#else
             ustar(i,j) = sqrt(windStress/atmrho)
 c           tau(i,j)   = windStress/ustar(i,j)
             tau(i,j)   = sqrt(windStress*atmrho)
+#endif
            ENDIF
 
 C--  initial guess for exchange other coefficients:
@@ -374,7 +389,7 @@ C--   Large&Pond1981:
             hqol   = huol*hq/hu
             stable = exf_half + sign(exf_half, huol)
 
-c                 Evaluate all stability functions assuming hq = ht.
+C     Evaluate all stability functions assuming hq = ht.
             IF ( solve4Stress ) THEN
 #ifdef ALLOW_BULK_LARGEYEAGER04
 C--   Large&Yeager04:
@@ -413,8 +428,8 @@ C--   Large&Yeager04:
 C--   Large&Pond1981:
 c           rd(i,j)= rdn(i,j)/(exf_one - rdn(i,j)/karman*psimh )
 c           usn    = sh(i,j,bi,bj)*rd(i,j)/rdn(i,j)
-c     ML: the original formulation above is replaced below to be
-c     similar to largeyeager04, but does not give the same results, strange
+C     ML: the original formulation above is replaced below to be
+C     similar to largeyeager04, but does not give the same results, strange
              usn   = sh(i,j,bi,bj)/(exf_one - rdn(i,j)/karman*psimh)
 #endif /* ALLOW_BULK_LARGEYEAGER04 */
              usm   = MAX(usn, umin)
@@ -430,7 +445,11 @@ C-   Update the 10m, neutral stability transfer coefficients (momentum)
 #endif /* ALLOW_BULK_LARGEYEAGER04 */
              ustar(i,j) = rd(i,j)*sh(i,j,bi,bj)
 C-   Coeff:
+#ifdef EXF_CALC_ATMRHO
+             tau(i,j)   = atmrho_loc(i,j)*rd(i,j)*wspeed(i,j,bi,bj)
+#else
              tau(i,j)   = atmrho*rd(i,j)*wspeed(i,j,bi,bj)
+#endif
             ENDIF
 
 C-   Update the 10m, neutral stability transfer coefficients (sens&evap)
@@ -448,7 +467,7 @@ C--  Update ustar, tstar, qstar using updated, shifted coefficients.
            ENDIF
           ENDDO
          ENDDO
-c end of iteration loop
+C end of iteration loop
         ENDDO
         DO j = 1,sNy
          DO i = 1,sNx

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.29 2013/10/05 19:36:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.30 2014/05/02 22:14:52 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -83,6 +83,10 @@ C
 C   >>> USE_EXF_INTERPOLATION <<<
 C       Allows specification of arbitrary Cartesian input grids.
 C
+C   >>> EXF_CALC_ATMRHO
+C       Calculate the local atm density as function of temp, humidity
+C       and pressure
+C
 C   ====================================================================
 C
 C       The following CPP options:
@@ -156,6 +160,9 @@ C   Bulk formulae related flags.
 #if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
 # define ALLOW_BULKFORMULAE
 # undef  ALLOW_BULK_LARGEYEAGER04
+#endif
+#if (defined (ALLOW_ATM_TEMP) && defined (ATMOSPHERIC_LOADING))
+# undef  EXF_CALC_ATMRHO
 #endif
 
 C   Zenith Angle/Albedo related flags.

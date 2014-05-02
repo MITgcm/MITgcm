@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.23 2013/06/01 19:49:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.24 2014/05/02 22:15:26 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -107,6 +107,10 @@ C     neutral, zref (=10m) values of rd
 C     specific humidity difference [kg/kg]
       _RL delq  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL deltap(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef EXF_CALC_ATMRHO
+C     local atmospheric density [kg/m^3]
+      _RL atmrho_loc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
 C
       _RL ssq   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ren, rhn           ! neutral, zref (=10m) values of re, rh
@@ -199,7 +203,7 @@ C
        DO i=iMin,iMax
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_DBUG_THSICE
-        IF ( dBug(i,j,bi,bj) .AND. (icFlag(i,j).GT.0. _d 0) ) 
+        IF ( dBug(i,j,bi,bj) .AND. (icFlag(i,j).GT.0. _d 0) )
      &    WRITE(stdUnit,'(A,2I4,2I2,2F12.6)')
      &    'ThSI_GET_EXF: i,j,atemp,lwd=',
      &           i,j,bi,bj, atemp(i,j,bi,bj),lwdown(i,j,bi,bj)
@@ -223,7 +227,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
 
 C--   Use atmospheric state to compute surface fluxes.
-        IF ( (icFlag(i,j).GT.0. _d 0) .AND. 
+        IF ( (icFlag(i,j).GT.0. _d 0) .AND.
      &       (atemp(i,j,bi,bj).NE.0. _d 0) ) THEN
          IF ( hSnow1(i,j).GT.3. _d -1 ) THEN
           emiss = snow_emissivity
@@ -242,7 +246,14 @@ C--   air - surface difference of temperature & humidity
 c        tmpbulk= exf_BulkqSat(Tsf)
 c        ssq(i,j)    = saltsat*tmpbulk/atmrho
          tmpbulk     = qsat_fac*EXP(-qsat_exp/Tsf)
+#ifdef EXF_CALC_ATMRHO
+         atmrho_loc(i,j) = apressure(i,j,bi,bj) /
+     &                  (287.04 _d 0*atemp(i,j,bi,bj)
+     &                  *(1. _d 0 + humid_fac*aqh(i,j,bi,bj)))
+         ssq(i,j)    = tmpbulk/atmrho_loc(i,j)
+#else
          ssq(i,j)    = tmpbulk/atmrho
+#endif
          deltap(i,j) = atemp(i,j,bi,bj) + gamma_blk*ht - Tsf
          delq(i,j)   = aqh(i,j,bi,bj) - ssq(i,j)
 C     Do the part of the output variables that do not depend
@@ -286,10 +297,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--
 CADJ STORE sh(i,j,bi,bj) = comlev1_thsice_3, key = ikey_1
 #endif
-         IF ( (icFlag(i,j).GT.0. _d 0) .AND. 
+         IF ( (icFlag(i,j).GT.0. _d 0) .AND.
      &        (atemp(i,j,bi,bj).NE.0. _d 0) ) THEN
 C--   Compute the turbulent surface fluxes (function of stability).
-
 
 C             Initial guess: z/l=0.0; hu=ht=hq=z
 C             Iterations:    converge on z/l and hence the fluxes.
@@ -320,7 +330,7 @@ C     start iteration
        DO iter = 1,niter_bulk
         DO j=jMin,jMax
          DO i=iMin,iMax
-          IF ( (icFlag(i,j).GT.0. _d 0) .AND. 
+          IF ( (icFlag(i,j).GT.0. _d 0) .AND.
      &         (atemp(i,j,bi,bj).NE.0. _d 0) ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -419,9 +429,13 @@ C     end iteration loop
        ENDDO
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( (icFlag(i,j).GT.0. _d 0) .AND. 
+         IF ( (icFlag(i,j).GT.0. _d 0) .AND.
      &        (atemp(i,j,bi,bj).NE.0. _d 0) ) THEN
+#ifdef EXF_CALC_ATMRHO
+          tau     = atmrho_loc(i,j)*rd(i,j)*wspeed(i,j,bi,bj)
+#else
           tau     = atmrho*rd(i,j)*wspeed(i,j,bi,bj)
+#endif
           evapLoc(i,j)  = -tau*qstar(i,j)
           hlLocal       = -lath*evapLoc(i,j)
           hsLocal       = atmcp*tau*tstar(i,j)
@@ -447,13 +461,22 @@ C--   Compute the turbulent surface fluxes using fixed transfert Coeffs
 C     with no stability dependence ( useStabilityFct_overIce = false )
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( (icFlag(i,j).GT.0. _d 0) .AND. 
+         IF ( (icFlag(i,j).GT.0. _d 0) .AND.
      &        (atemp(i,j,bi,bj).NE.0. _d 0) ) THEN
           wsm           = sh(i,j,bi,bj)
+#ifdef EXF_CALC_ATMRHO
+          tau           = atmrho_loc(i,j)*exf_iceCe*wsm
+#else
           tau           = atmrho*exf_iceCe*wsm
+#endif
           evapLoc(i,j)  = -tau*delq(i,j)
           hlLocal       = -lath*evapLoc(i,j)
+#ifdef EXF_CALC_ATMRHO
+          hsLocal       = atmcp*atmrho_loc(i,j)
+     &                                *exf_iceCh*wsm*deltap(i,j)
+#else
           hsLocal       = atmcp*atmrho*exf_iceCh*wsm*deltap(i,j)
+#endif
 #ifdef ALLOW_DBUG_THSICE
           IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,'(A,4F12.6)')
      &      'ThSI_GET_EXF: wsm,hl,hs,Lw=',
@@ -463,7 +486,11 @@ C---  surf.Temp derivative of turbulent Fluxes
 C     complete computation of dEvdT
           dEvdT(i,j)    = tau*dEvdT(i,j)
           dflhdT        = -lath*dEvdT(i,j)
+#ifdef EXF_CALC_ATMRHO
+          dfshdT        = -atmcp*atmrho_loc(i,j)*exf_iceCh*wsm
+#else
           dfshdT        = -atmcp*atmrho*exf_iceCh*wsm
+#endif
 C--   Update total derivative with respect to surface temperature
           dFlxdT(i,j)   = dFlxdT(i,j)   + dfshdT  + dflhdT
 C--   Update net downward radiation excluding shortwave
@@ -481,7 +508,7 @@ C     endif useStabilityFct_overIce
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       DO j=jMin,jMax
        DO i=iMin,iMax
-        IF ( (icFlag(i,j).GT.0. _d 0) .AND. 
+        IF ( (icFlag(i,j).GT.0. _d 0) .AND.
      &       (atemp(i,j,bi,bj).LE.0. _d 0) ) THEN
 C--   in case atemp is zero:
          flxExcSw(i,j) = 0. _d 0
