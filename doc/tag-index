@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1986 2014/04/30 20:27:16 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1987 2014/05/02 18:33:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint64w (2014/05/02)
 o verification:
   - update output_adm.txt files for experiment global_ocean.cs32x15 (seaice &
     seaice_dynmix) and lab_sea (primary test & noseaicedyn): moving/changing
