@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.73 2013/08/14 01:02:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.74 2014/05/05 20:08:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -80,6 +80,8 @@ C       |
 C       |-- SALT_PLUME_READPARMS
 C       |
 C       |-- SHELFICE_READPARMS
+C       |
+C       |-- STREAMICE_READPARMS
 C       |
 C       |-- ICEFRONT_READPARMS
 C       |
