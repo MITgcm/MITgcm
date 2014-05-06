@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.64 2014/01/17 21:58:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.65 2014/05/06 15:47:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -314,6 +314,7 @@ C     kSurface  :: index of surface level
       INTEGER km, kc, kp
       _RL tmpVar(1:sNx,1:sNy)
       _RL tmpFac, delPI
+      _RL recip_Cp
 CEOP
 c#ifdef ALLOW_FRICTION_HEATING
 c     _RL tmpFac
@@ -334,6 +335,7 @@ c#endif
       ELSE
        kSurface = 1
       ENDIF
+      recip_Cp = 1. _d 0 / HeatCapacity_Cp
 
 C--   Forcing term
 #ifdef ALLOW_AIM
