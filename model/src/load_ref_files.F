@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_ref_files.F,v 1.2 2010/12/22 00:05:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_ref_files.F,v 1.3 2014/05/06 15:47:05 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -49,6 +49,7 @@ C--   Set reference Potential Temperature
 C-    set default vertical profile for temperature: tRef
         tracerDefault = 20.
         IF ( fluidIsAir ) tracerDefault = 300.
+        IF ( thetaConst.NE.UNSET_RL ) tracerDefault = thetaConst
         DO k=1,Nr
           IF (tRef(k).EQ.UNSET_RL) tRef(k) = tracerDefault
           tracerDefault = tRef(k)
@@ -73,6 +74,7 @@ C-    read from file:
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT , myThid )
       ENDIF
+      IF ( thetaConst.EQ.UNSET_RL ) thetaConst = tRef(1)
 
 C--   Set reference Salinity/Specific Humidity
       IF ( sRefFile .EQ. ' ' ) THEN

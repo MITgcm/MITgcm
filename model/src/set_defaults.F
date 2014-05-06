@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.170 2014/02/08 17:16:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.171 2014/05/06 15:47:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -58,6 +58,11 @@ C-    vertical profile
       tRefFile            = ' '
       sRefFile            = ' '
       rhoRefFile          = ' '
+      thetaConst          = UNSET_RL
+      DO k=1,Nr
+       tRef(k)            = UNSET_RL
+       sRef(k)            = UNSET_RL
+      ENDDO
 
 C-    Horizontal gridding
       delXFile            = ' '
@@ -95,15 +100,20 @@ C     grid rotation
 C--   Set default "physical" parameters
       nh_Am2              = 1. _d 0
       gravity             = 9.81 _d 0
+      gBaro               = UNSET_RL
       rhoNil              = 999.8 _d 0
+      rhoConst            = UNSET_RL
 C-- jmc : the default is to set rhoConstFresh to rhoConst (=rhoNil by default)
 C         (so that the default produces same results as before)
 c     rhoConstFresh       = 999.8 _d 0
+      rhoConstFresh       = UNSET_RL
+      convertFW2Salt      = UNSET_RL
       f0                  = 1. _d -4
       beta                = 1. _d -11
       fPrime              = 0. _d 0
 C-    Earth rotation period is 86400*365.25/366.25 (use to be 1.day)
       rotationPeriod      = 86164. _d 0
+      omega               = UNSET_RL
 C-    viscosity and diffusivity default value:
       viscAh              = 0. _d 3
       smag3D_coeff        = 1. _d -2
@@ -156,8 +166,6 @@ C-    viscosity and diffusivity default value:
        diffKr4S(k)        = 0.
       ENDDO
       HeatCapacity_Cp     = 3994. _d 0
-Cml      tAlpha              = 2. _d -4
-Cml      sBeta               = 7.4 _d -4
       eosType             = 'LINEAR'
       buoyancyRelation    = 'OCEANIC'
       smoothAbsFuncRange  = 0. _d 0

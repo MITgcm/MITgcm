@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.273 2014/02/08 17:15:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.274 2014/05/06 15:45:21 jmc Exp $
 C $Name:  $
 C
 
@@ -541,21 +541,22 @@ C                :: most cell face (Lat-Lon grid) (Note: this is an "inert"
 C                :: parameter but it makes geographical references simple.)
 C     ygOrigin   :: Origin of the Y-axis (Cartesian Grid) / Latitude of Southern
 C                :: most face (Lat-Lon grid).
-C     gravity   :: Accel. due to gravity ( m/s^2 )
+C     gravity    :: Accel. due to gravity ( m/s^2 )
 C     recip_gravity and its inverse
-C     gBaro     :: Accel. due to gravity used in barotropic equation ( m/s^2 )
-C     rhoNil    :: Reference density for the linear equation of state
-C     rhoConst  :: Vertically constant reference density (Boussinesq)
-C     rhoFacC   :: normalized (by rhoConst) reference density at cell-Center
-C     rhoFacF   :: normalized (by rhoConst) reference density at cell-interFace
+C     gBaro      :: Accel. due to gravity used in barotropic equation ( m/s^2 )
+C     rhoNil     :: Reference density for the linear equation of state
+C     rhoConst   :: Vertically constant reference density (Boussinesq)
+C     thetaConst :: Constant reference for potential temperature
+C     rhoFacC    :: normalized (by rhoConst) reference density at cell-Center
+C     rhoFacF    :: normalized (by rhoConst) reference density at cell-interFace
 C     rhoConstFresh :: Constant reference density for fresh water (rain)
-C     rho1Ref   :: reference vertical profile for density
-C     tRef      :: reference vertical profile for potential temperature
-C     sRef      :: reference vertical profile for salinity/specific humidity
-C     phiRef    :: reference potential (pressure/rho, geopotential) profile
-C     dBdrRef   :: vertical gradient of reference buoyancy  [(m/s/r)^2]:
-C               :: z-coord: = N^2_ref = Brunt-Vaissala frequency [s^-2]
-C               :: p-coord: = -(d.alpha/dp)_ref          [(m^2.s/kg)^2]
+C     rho1Ref    :: reference vertical profile for density
+C     tRef       :: reference vertical profile for potential temperature
+C     sRef       :: reference vertical profile for salinity/specific humidity
+C     phiRef     :: reference potential (pressure/rho, geopotential) profile
+C     dBdrRef    :: vertical gradient of reference buoyancy  [(m/s/r)^2]:
+C                :: z-coord: = N^2_ref = Brunt-Vaissala frequency [s^-2]
+C                :: p-coord: = -(d.alpha/dp)_ref          [(m^2.s/kg)^2]
 C     rVel2wUnit :: units conversion factor (Non-Hydrostatic code),
 C                :: from r-coordinate vertical velocity to vertical velocity [m/s].
 C                :: z-coord: = 1 ; p-coord: wSpeed [m/s] = rVel [Pa/s] * rVel2wUnit
@@ -767,7 +768,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & freeSurfFac, implicSurfPress, implicDiv2Dflow, implicitNHPress,
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
      & gravity, recip_gravity, gBaro,
-     & rhoNil, rhoConst, recip_rhoConst,
+     & rhoNil, rhoConst, recip_rhoConst, thetaConst,
      & rhoFacC, recip_rhoFacC, rhoFacF, recip_rhoFacF,
      & rhoConstFresh, rho1Ref, tRef, sRef, phiRef, dBdrRef,
      & rVel2wUnit, wUnit2rVel, mass2rUnit, rUnit2mass,
@@ -865,6 +866,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL gBaro
       _RL rhoNil
       _RL rhoConst,      recip_rhoConst
+      _RL thetaConst
       _RL rhoFacC(Nr),   recip_rhoFacC(Nr)
       _RL rhoFacF(Nr+1), recip_rhoFacF(Nr+1)
       _RL rhoConstFresh
@@ -920,9 +922,8 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL phiEuler, thetaEuler, psiEuler
 
 C--   COMMON /PARM_A/ Thermodynamics constants ?
-      COMMON /PARM_A/ HeatCapacity_Cp,recip_Cp
+      COMMON /PARM_A/ HeatCapacity_Cp
       _RL HeatCapacity_Cp
-      _RL recip_Cp
 
 C--   COMMON /PARM_ATM/ Atmospheric physical parameters (Ideal Gas EOS, ...)
 C     celsius2K :: convert centigrade (Celsius) degree to Kelvin

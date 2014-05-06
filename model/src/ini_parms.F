@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.258 2014/02/08 17:16:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.259 2014/05/06 15:47:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -187,7 +187,7 @@ C--   Continuous equation parameters
      & diffKhT, diffK4T, diffKhS, diffK4S,
      & tRef, sRef, tRefFile, sRefFile, rhoRefFile,
      & eosType, integr_GeoPot, selectFindRoSurf,
-     & celsius2K, atm_Cp, atm_Rd, atm_Rq, atm_Po,
+     & HeatCapacity_Cp, celsius2K, atm_Cp, atm_Rd, atm_Rq, atm_Po,
      & no_slip_sides, sideDragFactor,
      & no_slip_bottom, bottomDragLinear, bottomDragQuadratic,
      & momViscosity,  momAdvection, momForcing, useCoriolis,
@@ -210,7 +210,7 @@ C--   Continuous equation parameters
      & diffKr4T, diffKr4S, BL79LatVary,
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
      & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
-     & rhoConst, rhoConstFresh, buoyancyRelation, HeatCapacity_Cp,
+     & rhoConst, thetaConst, rhoConstFresh, buoyancyRelation,
      & writeBinaryPrec, readBinaryPrec, writeStatePrec,
      & globalFiles, useSingleCpuIO, useSingleCpuInput,
      & allowFreezing, allowInteriorFreezing, useOldFreezing, ivdc_kappa,
@@ -366,21 +366,12 @@ C--   Set default "physical" parameters
       diffKzS  = UNSET_RL
       diffKpS  = UNSET_RL
       diffKrS  = UNSET_RL
-      DO k=1,Nr
-       tRef(k)      = UNSET_RL
-       sRef(k)      = UNSET_RL
-      ENDDO
-      gBaro    = UNSET_RL
-      rhoConst = UNSET_RL
-      omega    = UNSET_RL
-      hFacMinDr           = UNSET_RL
-      hFacMinDz           = UNSET_RL
-      hFacMinDp           = UNSET_RL
-      rhoConstFresh  = UNSET_RL
-      convertFW2Salt = UNSET_RL
-      tAlpha              = UNSET_RL
-      sBeta               = UNSET_RL
-      implicitNHPress     = UNSET_RL
+      hFacMinDr         = UNSET_RL
+      hFacMinDz         = UNSET_RL
+      hFacMinDp         = UNSET_RL
+      tAlpha            = UNSET_RL
+      sBeta             = UNSET_RL
+      implicitNHPress   = UNSET_RL
       tempVertAdvScheme = 0
       saltVertAdvScheme = 0
 C--   z,p,r coord input switching.
@@ -452,7 +443,7 @@ C-     No barotropic solver selected => use implicitFreeSurface as default
       ELSE
         rotationPeriod = 2. _d 0 * PI / omega
       ENDIF
-      IF (atm_Rd .EQ. UNSET_RL) THEN
+      IF ( atm_Rd .EQ. UNSET_RL ) THEN
         atm_Rd = atm_Cp * atm_kappa
       ELSE
         atm_kappa = atm_Rd / atm_Cp
@@ -584,7 +575,7 @@ C--   for backward compatibility :
         ENDIF
       ENDIF
 
-      IF ( ivdc_kappa .NE. 0. .AND. .NOT. implicitDiffusion ) THEN
+      IF ( ivdc_kappa.NE.zeroRL .AND. .NOT.implicitDiffusion ) THEN
         WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: To use ivdc_kappa you must enable implicit',
      &  ' vertical diffusion.'
@@ -622,8 +613,6 @@ C--   for backward compatibility :
      &  'S/R INI_PARMS: HeatCapacity_Cp must be greater than 0.'
        CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1
-      ELSE
-       recip_Cp = 1. _d 0 / HeatCapacity_Cp
       ENDIF
       IF ( gravity .LE. 0. ) THEN
        WRITE(msgBuf,'(A)')

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.146 2014/02/03 02:50:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.147 2014/05/06 15:47:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -258,22 +258,29 @@ C-    Vertical viscosity parameters:
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         ENDDO
       ENDIF
+      IF ( fluidIsWater ) THEN
+       CALL WRITE_0D_RL( HeatCapacity_Cp, INDEX_NONE,
+     &   'HeatCapacity_Cp =',
+     &   '  /* Specific heat capacity ( J/kg/K ) */')
+      ENDIF
       CALL WRITE_0D_RL( celsius2K, INDEX_NONE, 'celsius2K =',
      &  ' /* 0 degree Celsius converted to Kelvin ( K ) */')
       IF ( fluidIsAir ) THEN
-       CALL WRITE_0D_RL( atm_Rd, INDEX_NONE, 'atm_Rd =',
+       CALL WRITE_0D_RL( atm_Rd, INDEX_NONE, 'atm_Rd =  ',
      & '  /* gas constant for dry air ( J/kg/K ) */')
-      CALL WRITE_0D_RL( atm_Cp, INDEX_NONE, 'atm_Cp =',
+       CALL WRITE_0D_RL( atm_Cp, INDEX_NONE, 'atm_Cp =  ',
      & '  /* specific heat (Cp) of dry air ( J/kg/K ) */')
-      CALL WRITE_0D_RL( atm_kappa, INDEX_NONE, 'atm_kappa =',
-     & '  /* kappa (=Rd/Cp ) of dry air */')
-       CALL WRITE_0D_RL( atm_Rq, INDEX_NONE, 'atm_Rq =',
+       CALL WRITE_0D_RL( atm_kappa, INDEX_NONE, 'atm_kappa =',
+     &  ' /* kappa (=Rd/Cp ) of dry air */')
+       CALL WRITE_0D_RL( atm_Rq, INDEX_NONE, 'atm_Rq = ',
      &  ' /* water vap. specific vol. anomaly relative to dry air */')
-      CALL WRITE_0D_RL( atm_Po, INDEX_NONE, 'atm_Po =',
+       CALL WRITE_0D_RL( atm_Po, INDEX_NONE, 'atm_Po =  ',
      & '  /* standard reference pressure ( Pa ) */')
-      CALL WRITE_0D_I( integr_GeoPot, INDEX_NONE, 'integr_GeoPot =',
+       CALL WRITE_0D_RL( thetaConst, INDEX_NONE, 'thetaConst=',
+     &  ' /* constant reference for potential temperature ( K ) */')
+       CALL WRITE_0D_I( integr_GeoPot, INDEX_NONE, 'integr_GeoPot =',
      & '  /* select how the geopotential is integrated */')
-      CALL WRITE_0D_I( selectFindRoSurf, INDEX_NONE,
+       CALL WRITE_0D_I( selectFindRoSurf, INDEX_NONE,
      & 'selectFindRoSurf=',
      & '  /* select how Surf.Ref. pressure is defined */')
       ENDIF
