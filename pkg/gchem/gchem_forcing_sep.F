@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.33 2013/11/08 20:03:12 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.34 2014/05/06 20:46:53 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -82,11 +82,11 @@ c find global surface averages
        gsm_s = 0. _d 0
        gsm_dic = 0. _d 0
        gsm_alk = 0. _d 0
-       CALL TRACER_MEANAREA(salt,gsm_s,myThid)
-       CALL TRACER_MEANAREA(
+       CALL GCHEM_SURFMEAN(salt,gsm_s,myThid)
+       CALL GCHEM_SURFMEAN(
      &             pTracer(1-OLx,1-OLy,1,1,1,1), gsm_dic, myThid )
        print*,'mean surface dic', gsm_dic,gsm_s
-       CALL TRACER_MEANAREA(
+       CALL GCHEM_SURFMEAN(
      &             pTracer(1-OLx,1-OLy,1,1,1,2), gsm_alk, myThid )
 #endif
 #ifdef ALLOW_DARWIN
@@ -94,11 +94,11 @@ c find global surface averages
        gsm_s = 0. _d 0
        gsm_dic = 0. _d 0
        gsm_alk = 0. _d 0
-       CALL TRACER_MEANAREA(salt,gsm_s,myThid)
-       CALL TRACER_MEANAREA(
+       CALL GCHEM_SURFMEAN(salt,gsm_s,myThid)
+       CALL GCHEM_SURFMEAN(
      &             pTracer(1-OLx,1-OLy,1,1,1,iDIC), gsm_dic, myThid )
        print*,'mean surface dic', gsm_dic,gsm_s
-       CALL TRACER_MEANAREA(
+       CALL GCHEM_SURFMEAN(
      &             pTracer(1-OLx,1-OLy,1,1,1,iALK), gsm_alk, myThid )
 #endif
 ccccccccccccccccccccccccccccccccccccccccccc

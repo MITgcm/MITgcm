@@ -1,16 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/tracer_meanarea.F,v 1.13 2013/11/09 14:10:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_surfmean.F,v 1.1 2014/05/06 20:46:53 jahn Exp $
 C $Name:  $
 
-#include "DIC_OPTIONS.h"
+#include "GCHEM_OPTIONS.h"
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE TRACER_MEANAREA(
+      SUBROUTINE GCHEM_SURFMEAN(
      I                    tracer,
      O                    gsm_tracer,
      I                    myThid )
 
 C !DESCRIPTION:
-C  Calculate surface means of tracer
+C  Calculate surface mean of tracer
 
 C !USES: ===============================================================
       IMPLICIT NONE
