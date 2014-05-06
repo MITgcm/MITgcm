@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tidal_basin_2d/code/external_forcing.F,v 1.6 2007/05/03 21:42:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tidal_basin_2d/code/external_forcing.F,v 1.7 2014/05/06 15:52:51 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -85,7 +85,6 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy
         ENDDO
        ENDDO
       ENDIF
-
 
 C--   Tidal body force: written as gradient of geopotential
 C True M2 frequency is
@@ -275,6 +274,7 @@ C     i,j       :: Loop counters
 C     kSurface  :: index of surface layer
       INTEGER i, j
       INTEGER kSurface
+      _RL recip_Cp
 CEOP
 #ifdef SHORTWAVE_HEATING
       integer two
@@ -291,6 +291,7 @@ CEOP
       ELSE
        kSurface = 1
       ENDIF
+      recip_Cp = 1. _d 0 / HeatCapacity_Cp
 
 C--   Forcing term
 #ifdef ALLOW_AIM

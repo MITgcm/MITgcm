@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_t.F,v 1.19 2010/01/20 01:32:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_t.F,v 1.20 2014/05/06 15:50:14 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -42,9 +42,9 @@ C     == GLobal variables ==
 #endif
 
 C     == Routine arguments ==
-C     iMin,iMax,jMin,  - Range of points for which calculation
-C     jMax,bi,bj,k,km1   results will be set.
-C     df               - Diffusive flux component work array.
+C     iMin,iMax,jMin,  :: Range of points for which calculation
+C     jMax,bi,bj,k,km1    results will be set.
+C     df               :: Diffusive flux component work array.
 C     myTime :: Current time in simulation
 C     myIter :: Current iteration number in simulation
 C     myThid :: My Thread Id. number
@@ -57,13 +57,15 @@ C     myThid :: My Thread Id. number
 #if defined(ALLOW_KPP) && defined(KPP_GHAT)
 
 C     == Local variables ==
-C     I, J - Loop counters
-      INTEGER I, J
+C     i, j :: Loop counters
+      INTEGER i, j
+      _RL recip_Cp
 #ifdef ALLOW_GMREDI
       _RL tmpFac
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      recip_Cp = 1. _d 0 / HeatCapacity_Cp
 
 #ifdef ALLOW_GMREDI
 

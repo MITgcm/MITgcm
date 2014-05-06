@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/external_forcing_surf.F,v 1.6 2013/07/04 23:08:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/external_forcing_surf.F,v 1.7 2014/05/06 15:52:51 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 #undef CHECK_OVERLAP_FORCING
 
 CBOP
@@ -29,10 +32,7 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE.h"
-#endif /* ALLOW_SHELFICE */
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # include "tamc.h"
 # include "tamc_keys.h"
 #endif
@@ -57,6 +57,7 @@ C     ks     :: index of surface interface layer
       INTEGER bi,bj
       INTEGER i,j
       INTEGER ks
+      _RL recip_Cp
 #ifdef ALLOW_BALANCE_FLUXES
       _RS tmpVar(1)
 #endif
@@ -70,6 +71,7 @@ CEOP
       ELSE
        ks        = 1
       ENDIF
+      recip_Cp = 1. _d 0 / HeatCapacity_Cp
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -112,6 +114,7 @@ C NB: synchronous time step: PmEpR lag 1 time step behind EmPmR
 C     to stay consitent with volume change (=d/dt etaH).
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE PmEpR = comlev1, key = ikey_dynamics,  kind = isbyte
+CADJ STORE EmPmR = comlev1, key = ikey_dynamics,  kind = isbyte
 # endif
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -159,7 +162,7 @@ CADJ &    kind = isbyte
          CALL PTRACERS_FORCING_SURF(
      I        surfaceForcingS(1-OLx,1-OLy,bi,bj),
      I        bi, bj, iMin, iMax, jMin, jMax,
-     I        myTime,myIter,myThid )
+     I        myTime, myIter, myThid )
         ENDDO
        ENDDO
       ENDIF
@@ -172,6 +175,26 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          ikey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE EmPmR(:,:,bi,bj) = comlev1_bibj, key=ikey,  kind = isbyte
+#ifdef EXACT_CONSERV
+CADJ STORE PmEpR(:,:,bi,bj) = comlev1_bibj, key=ikey,  kind = isbyte
+#endif
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Surface Fluxes :
         DO j = jMin, jMax
@@ -205,7 +228,7 @@ C to multiple vertical levels later on as per Duffy et al. (GRL 1999)
         IF ( useSALT_PLUME ) THEN
          CALL SALT_PLUME_FORCING_SURF(
      I        bi, bj, iMin, iMax, jMin, jMax,
-     I        myTime,myIter,myThid )
+     I        myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_SALT_PLUME */
 
@@ -353,15 +376,10 @@ c         ENDDO
 #endif /* ATMOSPHERIC_LOADING */
 
 #ifdef ALLOW_SHELFICE
-        IF ( usingZCoords ) THEN
-         IF ( useSHELFICE) THEN
-          DO j = jMin, jMax
-           DO i = iMin, iMax
-            phi0surf(i,j,bi,bj) = phi0surf(i,j,bi,bj)
-     &         + shelficeLoadAnomaly(i,j,bi,bj)*recip_rhoConst
-           ENDDO
-          ENDDO
-         ENDIF
+        IF ( useSHELFICE) THEN
+          CALL SHELFICE_FORCING_SURF(
+     I                  bi, bj, iMin, iMax, jMin, jMax,
+     I                  myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_SHELFICE */
 

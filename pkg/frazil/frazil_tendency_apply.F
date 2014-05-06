@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_tendency_apply.F,v 1.3 2012/03/04 23:11:20 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_tendency_apply.F,v 1.4 2014/05/06 15:50:14 jmc Exp $
 C $Name:  $
 
 #include "FRAZIL_OPTIONS.h"
@@ -41,7 +41,9 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER i, j
+      _RL recip_Cp
 
+      recip_Cp = 1. _d 0 / HeatCapacity_Cp
       DO j=jMin,jMax
        DO i=iMin,iMax
         gT(i,j,k,bi,bj) = gT(i,j,k,bi,bj)

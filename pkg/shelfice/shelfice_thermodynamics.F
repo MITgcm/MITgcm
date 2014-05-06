@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.34 2014/04/04 19:34:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.35 2014/05/06 15:50:14 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -81,7 +81,7 @@ C     drKp1, recip_drLoc
       _RL pLoc(1:sNx,1:sNy)
       _RL uLoc(1:sNx,1:sNy)
       _RL vLoc(1:sNx,1:sNy)
-      _RL thetaFreeze, saltFreeze
+      _RL thetaFreeze, saltFreeze, recip_Cp
       _RL freshWaterFlux, convertFW2SaltLoc
       _RL a0, a1, a2, b, c0
       _RL eps1, eps2, eps3, eps3a, eps4, eps5, eps6, eps7, eps8
@@ -152,6 +152,7 @@ C     instead of etastar = sqrt(1+zetaN*ustar./(f*Lo*Rc))
 #endif /* SHI_ALLOW_GAMMAFRICT */
 
 C     are we doing the conservative form of Jenkins et al. (2001)?
+      recip_Cp = 1. _d 0 / HeatCapacity_Cp
       cFac = 0. _d 0
       IF ( SHELFICEconserve ) cFac = 1. _d 0
 C     with "real fresh water flux" (affecting ETAN),
