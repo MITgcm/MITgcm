@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1988 2014/05/02 22:16:03 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1989 2014/05/06 15:59:40 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - since we have several heat capacity (even in model/src), define "recip_Cp"
+    as local variable (no longer in common block) to avoid any confusion.
+  - add thetaConst in PARAMS.h (to be used with pStar or sigma-P coords).
 o pkg/exf:
   - from Jeff Scott: add option (#define EXF_CALC_ATMRHO) to calculate local
     air density as function of air Temp, Humidity and atm pressure.
