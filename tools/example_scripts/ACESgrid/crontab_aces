@@ -4,17 +4,16 @@
 #   sed -n '1,/^# \$Header:/ p' crontab_aces.bak > crontab_aces
 #   ( echo '' ; crontab -l ) >> crontab_aces
 #-
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/crontab_aces,v 1.3 2013/09/29 15:29:43 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/crontab_aces,v 1.4 2014/05/07 16:16:04 jmc Exp $
 
 MAILTO=jmc@ocean.mit.edu
 
-#-- running in HOME dir:
-#05 00  * * * cd /mit/jm_c/test_acesgrid/MITgcm_tools && cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d
-#10 00  * * * /mit/jm_c/test_acesgrid/MITgcm_tools/example_scripts/ACESgrid/test_submit_aces
+#-- using scripts and putting log files in HOME dir:
+05 00  * * * cd /mit/jm_c/test_acesgrid/MITgcm_tools && cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d
+10 00  * * * /mit/jm_c/test_acesgrid/MITgcm_tools/example_scripts/ACESgrid/test_submit_aces
+#10 00  * * * /mit/jm_c/test_acesgrid/temp/test_submit_aces
 
-#-- running on /data disk:
-05 00  * * * cd /data/jm_c/test_acesgrid/MITgcm_tools && cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d
-10 00  * * * /data/jm_c/test_acesgrid/MITgcm_tools/example_scripts/ACESgrid/test_submit_aces
 #-- other options:
-#10 00  * * * /data/jm_c/test_acesgrid/MITgcm_tools/example_scripts/ACESgrid/test_submit_aces gnu mp2 pgi path mth op64 tuv
-#27 08  * * * /data/jm_c/test_acesgrid/temp/test_submit_aces
+#10 00  * * * /mit/jm_c/test_acesgrid/MITgcm_tools/example_scripts/ACESgrid/test_submit_aces gnu mp2 pgi path mth op64 tuv
+#10 00  * * * /mit/jm_c/test_acesgrid/temp/test_submit_aces
+

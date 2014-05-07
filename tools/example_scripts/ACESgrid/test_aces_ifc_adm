@@ -3,10 +3,10 @@
 #PBS -q one
 #PBS -N tst_iad
 #PBS -l nodes=1:ppn=6
-#PBS -e /data/jm_c/test_acesgrid/output/tst_iad.stderr
-#PBS -o /data/jm_c/test_acesgrid/output/tst_iad.stdout
+#PBS -e /mit/jm_c/test_acesgrid/output/tst_iad.stderr
+#PBS -o /mit/jm_c/test_acesgrid/output/tst_iad.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_ifc_adm,v 1.4 2014/03/18 18:50:55 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_ifc_adm,v 1.5 2014/05/07 16:16:04 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -15,15 +15,29 @@ fi
 # Note: added "ulimit -s unlimited" in file "~/.bashrc"
 # to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI
 
-dNam='acesgrid'
-TST_DIR="/data/jm_c/test_$dNam"
-echo "start from TST_DIR='$TST_DIR' at: "`date`
-
 umask 0022
 #- to get case insensitive "ls" (and order of tested experiments)
 export LC_ALL="en_US.UTF-8"
+echo " running on: "`hostname`
 
-HERE=$TST_DIR/output
+dNam='acesgrid'
+HERE="$HOME/test_$dNam"
+SavD="$HERE/send"
+SEND="ssh login $SavD/mpack"
+TST_DIR="/scratch/jm_c/test_$dNam"
+
+if test -d $TST_DIR ; then
+  echo "start from TST_DIR='$TST_DIR' at: "`date`
+else
+  if test ! -d /scratch/jm_c ; then mkdir /scratch/jm_c ; fi
+  if test ! -d $TST_DIR ; then mkdir $TST_DIR ; fi
+  if test ! -d $TST_DIR ; then
+    echo "ERROR: Can't create directory \"$TST_DIR\""
+    exit 1
+  fi
+  echo "start in new dir TST_DIR='$TST_DIR' at: "`date`
+fi
+
 sfx='iad'
  export MODULEPATH="/mit/jahn/usr/modulefiles:${MODULEPATH}"
  module add intel
@@ -36,10 +50,10 @@ dAlt=`date +%j` ; dAlt=`expr $dAlt % 2`
 #if [ $dAlt -eq 1 ] ; then options="$options -fast" ; fi
 
 #- keep a copy of MPI_MFILE:
-cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
+cp -p $PBS_NODEFILE $HERE"/output/mf_"$sfx
 
-checkOut=1
-#options="$options -nc" ; checkOut=0
+checkOut=2
+#options="$options -nc" ; checkOut=1
 #options="$options -q"  ; checkOut=0
 
 addExp=0
@@ -50,7 +64,7 @@ cd $TST_DIR
 #dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
 #if [ $dsp -gt 99 ] ; then
 dsp=`df -P . | tail -1 | awk '{print $4}'`
-if [ $dsp -le 200000000 ] ; then
+if [ $dsp -le 100000000 ] ; then
   echo 'Not enough space on this disk => do not run testreport.'
   df .
   exit
@@ -111,9 +125,6 @@ else
   echo "no dir: $gcmDIR/verification => exit"
   exit
 fi
-
-SavD="$HOME/test_$dNam/send"
-SEND="ssh login $SavD/mpack"
 
 if [ $dAlt -eq 1 ] ; then
   options="$options -fast"
