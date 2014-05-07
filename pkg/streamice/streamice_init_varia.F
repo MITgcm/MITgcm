@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.7 2014/04/24 12:01:50 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.8 2014/05/07 12:44:18 dgoldberg Exp $
 C $Name:  $
 
 #ifdef ALLOW_COST
@@ -304,6 +304,12 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
 #endif
 ! STREAMICE_GEOM_FILE_SETUP
 
+      IF ( .NOT. ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
+     &     .AND. pickupSuff .EQ. ' ') ) THEN
+    
+            CALL STREAMICE_READ_PICKUP ( myThid )
+    
+      ENDIF
 
 ! finish initialize thickness
 
