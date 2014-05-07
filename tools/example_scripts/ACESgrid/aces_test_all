@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.32 2014/03/18 16:09:11 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.33 2014/05/07 16:22:24 jmc Exp $
 # $Name:  $
 
 #  submit list of jobs or get list of submitted jobs
@@ -209,24 +209,27 @@ else
   TEST_LIST=$*
 fi
 
-# QSUB="/usr/local/bin/qsub"
-# QSTAT="/usr/local/bin/qstat"
-# TST_DIR="/mit/jm_c/test_acesgrid"
+# QSUB="/usr/bin/qsub"
+# QSTAT="/usr/bin/qstat"
 # logPfix='tst_submit'
 # outPfix='acesgrid'
+# HERE="$HOME/test_$outPfix"
+# #TST_DIR="/data/jm_c/test_$outPfix"
+# TST_DIR="/scratch/jm_c/test_$outPfix"
 QSUB=qsub
 QSTAT=qstat
-TST_DIR="/home/jmc/test_aces"
 logPfix='tst_all'
 outPfix='aces'
+HERE="$HOME/test_$outPfix"
+TST_DIR=$HERE
 
 MPACK="MITgcm_tools/mpack-1.6/mpack"
 SUB_DIR="MITgcm_tools/example_scripts/ACESgrid"
-TMP_FIL="$TST_DIR/output/TTT.$$"
-LOG_FIL="$TST_DIR/output/$logPfix."`date +%m%d`".log"
+TMP_FIL="$HERE/output/TTT.$$"
+LOG_FIL="$HERE/output/$logPfix."`date +%m%d`".log"
 
 #-- clean up old log files and start a new one:
-cd $TST_DIR/output
+cd $HERE/output
 
 rm -f $logPfix.*.log_bak
 if test -f $LOG_FIL ; then mv -f $LOG_FIL ${LOG_FIL}_bak ; fi
@@ -244,7 +247,7 @@ fi
 module list >> $LOG_FIL 2>&1
 
 #-- now really do something:
-cd $TST_DIR
+cd $HERE
 
   JOB_LIST=$TEST_LIST
   sub_list_jobs

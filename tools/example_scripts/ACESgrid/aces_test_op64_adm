@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_opa.stderr
 #PBS -o /home/jmc/test_aces/output/tst_opa.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_adm,v 1.9 2013/08/20 18:53:11 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_adm,v 1.10 2014/05/07 16:22:24 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: test using open64 + "Trap Un-initialised Var." option
@@ -17,15 +17,29 @@ fi
 # Note: added "ulimit -s unlimited" in file "~/.bashrc"
 # to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI
 
-dNam='aces'
-TST_DIR="$HOME/test_$dNam"
-echo "start from TST_DIR='$TST_DIR' at: "`date`
-
 umask 0022
 #- to get case insensitive "ls" (and order of tested experiments)
 export LC_ALL="en_US.UTF-8"
+echo " running on: "`hostname`
 
-HERE=$TST_DIR/output
+dNam='aces'
+HERE="$HOME/test_$dNam"
+SavD="$HERE/send"
+SEND="ssh geo $SavD/mpack"
+TST_DIR=$HERE
+
+if test -d $TST_DIR ; then
+  echo "start from TST_DIR='$TST_DIR' at: "`date`
+else
+# if test ! -d /scratch/jm_c ; then mkdir /scratch/jm_c ; fi
+  if test ! -d $TST_DIR ; then mkdir $TST_DIR ; fi
+  if test ! -d $TST_DIR ; then
+    echo "ERROR: Can't create directory \"$TST_DIR\""
+    exit 1
+  fi
+  echo "start in new dir TST_DIR='$TST_DIR' at: "`date`
+fi
+
 sfx='opa'
  module add open64
  export NETCDF_ROOT='/usr/local/pkg/netcdf/netcdf-3.5.1/g77'
@@ -36,7 +50,7 @@ sfx='opa'
  export PATH="$PATH:$HOME/bin"
 
 #- keep a copy of MPI_MFILE:
-cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
+cp -p $PBS_NODEFILE $HERE"/output/mf_"$sfx
 
 checkOut=1 ; options="$options -do"
 #options="$options -nc" ; checkOut=0
@@ -111,9 +125,6 @@ else
   echo "no dir: $gcmDIR/verification => exit"
   exit
 fi
-
-SavD="$HOME/test_$dNam/send"
-SEND="ssh geo $SavD/mpack"
 
 echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
   -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org

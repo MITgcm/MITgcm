@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_mp2.stderr
 #PBS -o /home/jmc/test_aces/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mp2,v 1.1 2013/09/29 15:32:11 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mp2,v 1.2 2014/05/07 16:22:24 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for MPI+Multi-Threaded test using ifort (v9) & mpich2
@@ -17,15 +17,29 @@ fi
 # Note: added "ulimit -s unlimited" in file "~/.bashrc"
 # to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI
 
-dNam='aces'
-TST_DIR="$HOME/test_$dNam"
-echo "start from TST_DIR='$TST_DIR' at: "`date`
-
 umask 0022
 #- to get case insensitive "ls" (and order of tested experiments)
 export LC_ALL="en_US.UTF-8"
+echo " running on: "`hostname`
 
-HERE=$TST_DIR/output
+dNam='aces'
+HERE="$HOME/test_$dNam"
+SavD="$HERE/send"
+SEND="ssh geo $SavD/mpack"
+TST_DIR=$HERE
+
+if test -d $TST_DIR ; then
+  echo "start from TST_DIR='$TST_DIR' at: "`date`
+else
+# if test ! -d /scratch/jm_c ; then mkdir /scratch/jm_c ; fi
+  if test ! -d $TST_DIR ; then mkdir $TST_DIR ; fi
+  if test ! -d $TST_DIR ; then
+    echo "ERROR: Can't create directory \"$TST_DIR\""
+    exit 1
+  fi
+  echo "start in new dir TST_DIR='$TST_DIR' at: "`date`
+fi
+
 sfx='mp2'
 #- to build:
  module add ifc/9.0.021 icc/9.0.021 intel/9.0
@@ -42,7 +56,7 @@ sfx='mp2'
 #export KMP_STACKSIZE=400m  <-- added in file "~/.bashrc"
 
 #- keep a copy of MPI_MFILE:
-cp -p $PBS_NODEFILE $HERE"/mf_"$sfx
+cp -p $PBS_NODEFILE $HERE"/output/mf_"$sfx
 
 checkOut=1 ; options="$options -do"
 #options="$options -nc" ; checkOut=0
@@ -125,9 +139,6 @@ if test -x $HERE/$check_sh ; then
    mv -f $HERE/${check_sh}.log $HERE/${check_sh}.log_bak
    ( cd $HERE ; ./$check_sh > ${check_sh}.log 2>&1 ) &
 fi
-
-SavD="$HOME/test_$dNam/send"
-SEND="ssh geo $SavD/mpack"
 
 echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx \
   -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
