@@ -22,4 +22,3 @@ fe_chem.f
 insol.f
 o2_surfforcing.f
 phos_flux.f
-tracer_meanarea.f
