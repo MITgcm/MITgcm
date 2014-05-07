@@ -1,13 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1990 2014/05/07 10:24:19 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1991 2014/05/07 15:25:25 jahn Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ptracers: compute ptracer source/sink due to linear free surface.
+    not used right now, but can be used in BGC packages to fix conservation.
+o pkg/dic, pkg/gchem: move tracer_meanarea to gchem, so it can be used by
+    other packages too.
 o pkg/seaice/seaice_calc_ice_strength.F: replace SEAICE_rhoSnow by 
    SEAICE_rhoIce in the Rothrock (1975)-type strength calculations
    (bug fix)
- 
 o model/src:
   - since we have several heat capacity (even in model/src), define "recip_Cp"
     as local variable (no longer in common block) to avoid any confusion.
