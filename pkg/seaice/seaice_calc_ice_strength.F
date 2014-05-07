@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_ice_strength.F,v 1.5 2014/04/29 14:48:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_ice_strength.F,v 1.6 2014/05/07 10:23:58 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -158,8 +158,8 @@ C     not useHiber79IceStrength
         ENDDO
        ENDIF
 C
-       tmpscal1 = SEAICE_cf*0.5*gravity*(rhoConst-SEAICE_rhoSnow)
-     &      * SEAICE_rhoSnow/rhoConst
+       tmpscal1 = SEAICE_cf*0.5*gravity*(rhoConst-SEAICE_rhoIce)
+     &      * SEAICE_rhoIce/rhoConst
        DO j=jMin,jMax
         DO i=iMin,iMax
          PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)/ridgingModeNorm(i,j)
