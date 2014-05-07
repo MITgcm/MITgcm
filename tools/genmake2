@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.265 2014/04/04 21:34:01 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.266 2014/05/07 19:36:22 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -1083,9 +1083,7 @@ EOF
 }
 
 check_lapack_libs()  {
-    if test ! "x$SKIP_LAPACK_CHECK" = x ; then
-	return
-    fi
+    if test "x$CHECK_FOR_LAPACK" = xf ; then return ; fi
     echo >> $LOGFILE
     echo "running: check_lapack_libs()" >> $LOGFILE
     cat <<EOF > genmake_tla.F
@@ -1281,8 +1279,8 @@ GSL=
 DEVEL=
 HAVE_TEST_L=
 
-# comment this line out to enable lapack test
-SKIP_LAPACK_CHECK=t
+# set this to "t" to enable lapack test
+CHECK_FOR_LAPACK=f
 
 # DEFINES checked by test compilation or command-line
 HAVE_SYSTEM=
@@ -2973,10 +2971,6 @@ links: \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(SP
 
 small_f: \$(F77_PP_SRC_FILES) \$(F90_PP_SRC_FILES)
 
-# output.txt: \$(EXECUTABLE)
-#	@printf 'running ... '
-#	@\$(EXECUTABLE) > \$@
-
 # remove most of the files that "make" generates
 clean:
 	-rm -rf *.p *.$FS90 *.mod ${RMFILES} work.{pc,pcl} *.template
@@ -3375,13 +3369,6 @@ AD_OBJ_FILES_S2=\$(AD_OBJ_FILES_S1) \$(NON_AD_F77_SRC_FILES:.F=_cb2m.o) \$(C_SRC
 # makefile debug rule
 small_f: \$(CB2M_F90_PP_SRC_FILES)
 .PHONY: small_f
-
-# ad_output.txt: \$(EXE_AD)
-#	@printf 'linking data files ... '
-#	\$(LN) -f ../input_ad/data* ../input_ad/eedata .
-#	\$(LN) -f ../../global_ocean.90x40x15/input/*.bin .
-#	@printf 'running ... '
-#	@./\$(EXE_AD) > \$@
 
 ad_input_code.f$FS90:  \$(CB2M_AD_FILES)
 	cat \$^ > \$@
