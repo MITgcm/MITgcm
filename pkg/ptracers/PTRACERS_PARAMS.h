@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.10 2013/01/22 23:39:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.11 2014/05/07 15:23:04 jahn Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -90,6 +90,7 @@ C     PTRACERS_startAllTrc   :: internal flag, all tracers start at startTime
       LOGICAL PTRACERS_addSrelax2EmP
       LOGICAL PTRACERS_startAllTrc
       LOGICAL PTRACERS_useRecords
+      LOGICAL PTRACERS_calcSurfCor
       LOGICAL
      &     PTRACERS_monitor_mnc, PTRACERS_monitor_stdio,
      &     PTRACERS_timeave_mdsio, PTRACERS_snapshot_mdsio,
@@ -107,6 +108,7 @@ C     PTRACERS_startAllTrc   :: internal flag, all tracers start at startTime
      &     PTRACERS_addSrelax2EmP,
      &     PTRACERS_startAllTrc,
      &     PTRACERS_useRecords,
+     &     PTRACERS_calcSurfCor,
      &     PTRACERS_timeave_mdsio, PTRACERS_snapshot_mdsio,
      &     PTRACERS_pickup_write_mdsio, PTRACERS_pickup_read_mdsio,
      &     PTRACERS_monitor_stdio, PTRACERS_monitor_mnc,

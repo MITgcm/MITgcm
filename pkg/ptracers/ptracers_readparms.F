@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.41 2013/01/22 23:39:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.42 2014/05/07 15:23:04 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -235,6 +235,9 @@ C     Check for valid advection-scheme number
          STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
         ENDIF
       ENDDO
+
+C     Whether to compute linear surface correction (set by other packages)
+      PTRACERS_calcSurfCor = .FALSE.
 
 #ifdef ALLOW_MNC
       PTRACERS_timeave_mnc      = useMNC .AND. PTRACERS_timeave_mnc
