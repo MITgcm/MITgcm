@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1989 2014/05/06 15:59:40 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1990 2014/05/07 10:24:19 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_calc_ice_strength.F: replace SEAICE_rhoSnow by 
+   SEAICE_rhoIce in the Rothrock (1975)-type strength calculations
+   (bug fix)
+ 
 o model/src:
   - since we have several heat capacity (even in model/src), define "recip_Cp"
     as local variable (no longer in common block) to avoid any confusion.
