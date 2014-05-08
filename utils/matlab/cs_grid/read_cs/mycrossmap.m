@@ -1,6 +1,6 @@
 function mycrossmap(fld,cx,label,mask,col)
 
-% Function crossmap(fld,cx)
+% Function crossmap(fld,cx,label,mask,col)
 % plot a cube sphere field as a cross
 % fixes a discontinuity at edges of cube faces
 % requires mypcolor.m
@@ -11,6 +11,12 @@ function mycrossmap(fld,cx,label,mask,col)
 % label colorbar label
 % mask  landmask: 0 is land, 1 is ocean
 
+clf reset
+
+for f=1:6
+  eval(['a' int2str(f) '=squeeze(fld(:,' int2str(f) ',:));']);
+end
+
 if nargin<2
   cx=[min(fld(:)) max(fld(:))];
 end
@@ -19,14 +25,13 @@ if nargin<3
   label='';
 end
 
+cm=colormap;
 if nargin>3
-  clf reset
   if nargin<5
     col=[1 1 1]*.5;
   end
   fld(find(fld<cx(1)))=cx(1);
   fld(find(fld>cx(2)))=cx(2);
-  cm=colormap;
   cm=[col; cm; col];
   colormap(cm)
   fld(find(mask==0))=nan;
@@ -35,11 +40,12 @@ end
 c1=cx(1)-2*(cx(2)-cx(1))/length(cm);
 c2=cx(2)+2*(cx(2)-cx(1))/length(cm);  
 
-for f=1:6
-  eval(['a' int2str(f) '=squeeze(fld(:,' int2str(f) ',:));']);
-  eval(['in=find(isnan(a' int2str(f) '));']);
-  eval(['a' int2str(f) '(in(1))=c1;']);
-  eval(['a' int2str(f) '(in(2:end))=c2;']);
+if nargin>3
+  for f=1:6
+    eval(['in=find(isnan(a' int2str(f) '));']);
+    eval(['a' int2str(f) '(in(1))=c1;']);
+    eval(['a' int2str(f) '(in(2:end))=c2;']);
+  end
 end
 
 tmp=cat(1,a2,rot90(a4,-1),rot90(a5,-1),a1);
