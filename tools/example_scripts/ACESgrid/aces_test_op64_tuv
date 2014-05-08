@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_tuv.stderr
 #PBS -o /home/jmc/test_aces/output/tst_tuv.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.27 2014/05/07 16:22:24 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.28 2014/05/08 18:44:03 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: test using open64 + "Trap Un-initialised Var." option
@@ -24,7 +24,7 @@ echo " running on: "`hostname`
 
 dNam='aces'
 HERE="$HOME/test_$dNam"
-SavD="$HERE/send"
+OUTP="$HERE/output"; SavD="$HERE/send"
 SEND="ssh geo $SavD/mpack"
 TST_DIR=$HERE
 
@@ -41,20 +41,20 @@ else
 fi
 
 sfx='tuv'
+addExp=''
  module add open64
  export NETCDF_ROOT='/usr/local/pkg/netcdf/netcdf-3.5.1/g77'
  OPTFILE="../tools/build_options/linux_ia32_open64"
  options='-j 2 -devel -gsl'
  export GSL_IEEE_MODE=double-precision,mask-underflow,mask-denormalized
 
-#- keep a copy of MPI_MFILE:
-cp -p $PBS_NODEFILE $HERE"/output/mf_"$sfx
-
 checkOut=1 ; options="$options -do"
 #options="$options -nc" ; checkOut=0
 #options="$options -q"  ; checkOut=0
 
-addExp=0
+#- keep a copy of MPI_MFILE:
+cp -p $PBS_NODEFILE $OUTP"/mf_"$sfx
+
 cvsArg="-d :pserver:cvsanon@mitgcm.org:/u/gcmpack"
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
@@ -105,11 +105,11 @@ if [ $checkOut -eq 2 ] ; then
   fi
 # cvs co MITgcm
   cvs $cvsArg co -P -d $gcmDIR MITgcm > /dev/null 2>&1
-  if [ $addExp -ge 1 ]; then
-   echo " add dir: offline_cheapaml (from Contrib:verification_other)"
-   ( cd $gcmDIR/verification ; cvs $cvsArg co -P -d offline_cheapaml \
-                  MITgcm_contrib/verification_other/offline_cheapaml > /dev/null 2>&1 )
-  fi
+  for exp2add in $addExp ; do
+   echo " add dir: $exp2add (from Contrib:verification_other)"
+   ( cd $gcmDIR/verification ; cvs $cvsArg co -P -d $exp2add \
+                  MITgcm_contrib/verification_other/$exp2add > /dev/null 2>&1 )
+  done
   /usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
   /usr/bin/find $gcmDIR -type f | xargs chmod g+r
 fi

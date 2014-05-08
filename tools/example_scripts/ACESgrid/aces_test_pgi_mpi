@@ -6,8 +6,10 @@
 #PBS -e /home/jmc/test_aces/output/tst_pgi.stderr
 #PBS -o /home/jmc/test_aces/output/tst_pgi.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.30 2014/05/07 16:22:24 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.31 2014/05/08 18:44:03 jmc Exp $
 # $Name:  $
+
+# ACES-grid PBS-batch script: MPI test using PGI (pgf77) compiler & mpich
 
 if test -f /etc/profile.d/modules.sh ; then
     . /etc/profile.d/modules.sh
@@ -22,7 +24,7 @@ echo " running on: "`hostname`
 
 dNam='aces'
 HERE="$HOME/test_$dNam"
-SavD="$HERE/send"
+OUTP="$HERE/output"; SavD="$HERE/send"
 SEND="ssh geo $SavD/mpack"
 TST_DIR=$HERE
 
@@ -39,6 +41,7 @@ else
 fi
 
 sfx='pgi'
+addExp=''
  module add mpich/$sfx
  export MPI_INC_DIR='/usr/local/pkg/mpich/mpich-pgi/include'
  export NETCDF_ROOT='/usr/local/pkg/pgi/pgi-5.2/linux86/5.2'
@@ -47,14 +50,13 @@ sfx='pgi'
 #options="$options -skd tutorial_advection_in_gyre"
  EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
 
-#- keep a copy of MPI_MFILE:
-cp -p $PBS_NODEFILE $HERE"/output/mf_"$sfx
-
 checkOut=1 ; options="$options -do" ; dblRun=1 ;
 #options="$options -nc" ; checkOut=0 ; dblRun=0 ;
 #options="$options -q"  ; checkOut=0 ; dblRun=0 ;
 
-addExp=0
+#- keep a copy of MPI_MFILE:
+cp -p $PBS_NODEFILE $OUTP"/mf_"$sfx
+
 cvsArg="-d :pserver:cvsanon@mitgcm.org:/u/gcmpack"
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
@@ -105,11 +107,11 @@ if [ $checkOut -eq 2 ] ; then
   fi
 # cvs co MITgcm
   cvs $cvsArg co -P -d $gcmDIR MITgcm > /dev/null 2>&1
-  if [ $addExp -ge 1 ]; then
-   echo " add dir: offline_cheapaml (from Contrib:verification_other)"
-   ( cd $gcmDIR/verification ; cvs $cvsArg co -P -d offline_cheapaml \
-                  MITgcm_contrib/verification_other/offline_cheapaml > /dev/null 2>&1 )
-  fi
+  for exp2add in $addExp ; do
+   echo " add dir: $exp2add (from Contrib:verification_other)"
+   ( cd $gcmDIR/verification ; cvs $cvsArg co -P -d $exp2add \
+                  MITgcm_contrib/verification_other/$exp2add > /dev/null 2>&1 )
+  done
   /usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
   /usr/bin/find $gcmDIR -type f | xargs chmod g+r
 fi

@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_mp2.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.20 2014/05/07 16:16:04 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mp2,v 1.21 2014/05/08 18:44:03 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -22,7 +22,7 @@ echo " running on: "`hostname`
 
 dNam='acesgrid'
 HERE="$HOME/test_$dNam"
-SavD="$HERE/send"
+OUTP="$HERE/output"; SavD="$HERE/send"
 SEND="ssh login $SavD/mpack"
 TST_DIR="/scratch/jm_c/test_$dNam"
 
@@ -39,6 +39,7 @@ else
 fi
 
 sfx='mp2'
+addExp='offline_cheapaml atm_gray'
  module add gcc
  module add openmpi
  OPTFILE="../tools/build_options/linux_amd64_gfortran"
@@ -50,14 +51,13 @@ sfx='mp2'
 dAlt=`date +%d` ; dAlt=`expr $dAlt % 3`
 if [ $dAlt -eq 1 ] ; then options="$options -fast" ; fi
 
-#- keep a copy of MPI_MFILE:
-cp -p $PBS_NODEFILE $HERE"/output/mf_"$sfx
-
 checkOut=2
 #options="$options -nc" ; checkOut=1
 #options="$options -q"  ; checkOut=0
 
-addExp=2
+#- keep a copy of MPI_MFILE:
+cp -p $PBS_NODEFILE $OUTP"/mf_"$sfx
+
 cvsArg="-d :pserver:cvsanon@mitgcm.org:/u/gcmpack"
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
@@ -106,16 +106,11 @@ if [ $checkOut -eq 2 ] ; then
   fi
 # cvs co MITgcm
   cvs $cvsArg co -P -d $gcmDIR MITgcm > /dev/null 2>&1
-  if [ $addExp -ge 1 ]; then
-   echo " add dir: offline_cheapaml (from Contrib:verification_other)"
-   ( cd $gcmDIR/verification ; cvs $cvsArg co -P -d offline_cheapaml \
-                  MITgcm_contrib/verification_other/offline_cheapaml > /dev/null 2>&1 )
-  fi
-  if [ $addExp -ge 2 ]; then
-   echo " add dir: atm_gray (from Contrib:verification_other)"
-   ( cd $gcmDIR/verification ; cvs $cvsArg co -P -d atm_gray \
-                  MITgcm_contrib/verification_other/atm_gray > /dev/null 2>&1 )
-  fi
+  for exp2add in $addExp ; do
+   echo " add dir: $exp2add (from Contrib:verification_other)"
+   ( cd $gcmDIR/verification ; cvs $cvsArg co -P -d $exp2add \
+                  MITgcm_contrib/verification_other/$exp2add > /dev/null 2>&1 )
+  done
   /usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
   /usr/bin/find $gcmDIR -type f | xargs chmod g+r
 fi
@@ -132,10 +127,10 @@ fi
 
 #-- in case 1 proc get stuck, run this script in background to check
 check_sh=check_aces_$sfx
-if test -x $HERE/$check_sh ; then
+if test -x $OUTP/$check_sh ; then
    echo "start $check_sh in background"
-   mv -f $HERE/${check_sh}.log $HERE/${check_sh}.log_bak
-   ( cd $HERE ; ./$check_sh > ${check_sh}.log 2>&1 ) &
+   mv -f $OUTP/${check_sh}.log $OUTP/${check_sh}.log_bak
+   ( cd $OUTP ; ./$check_sh > ${check_sh}.log 2>&1 ) &
 fi
 
 echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \

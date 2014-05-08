@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_mp2.stderr
 #PBS -o /home/jmc/test_aces/output/tst_mp2.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mp2,v 1.2 2014/05/07 16:22:24 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mp2,v 1.3 2014/05/08 18:44:03 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script for MPI+Multi-Threaded test using ifort (v9) & mpich2
@@ -24,7 +24,7 @@ echo " running on: "`hostname`
 
 dNam='aces'
 HERE="$HOME/test_$dNam"
-SavD="$HERE/send"
+OUTP="$HERE/output"; SavD="$HERE/send"
 SEND="ssh geo $SavD/mpack"
 TST_DIR=$HERE
 
@@ -41,6 +41,7 @@ else
 fi
 
 sfx='mp2'
+addExp=''
 #- to build:
  module add ifc/9.0.021 icc/9.0.021 intel/9.0
  module add mpich2/1.0.3/intel
@@ -49,20 +50,18 @@ sfx='mp2'
 #- to run:
  module add mpiexec
  OPTFILE="../tools/build_options/linux_ia32_ifort"
-#OPTFILE="$HERE/linux_ia32_ifort+mpi_aces"
  options="-j 2 -MPI 3 -mth -mf $PBS_NODEFILE -devel"
  export OMP_NUM_THREADS=2
  EXE="mpiexec -pernode -comm pmi -np TR_NPROC ./mitgcmuv"
 #export KMP_STACKSIZE=400m  <-- added in file "~/.bashrc"
 
-#- keep a copy of MPI_MFILE:
-cp -p $PBS_NODEFILE $HERE"/output/mf_"$sfx
-
 checkOut=1 ; options="$options -do"
 #options="$options -nc" ; checkOut=0
 #options="$options -q"  ; checkOut=0
 
-addExp=0
+#- keep a copy of MPI_MFILE:
+cp -p $PBS_NODEFILE $OUTP"/mf_"$sfx
+
 cvsArg="-d :pserver:cvsanon@mitgcm.org:/u/gcmpack"
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
@@ -113,11 +112,11 @@ if [ $checkOut -eq 2 ] ; then
   fi
 # cvs co MITgcm
   cvs $cvsArg co -P -d $gcmDIR MITgcm > /dev/null 2>&1
-  if [ $addExp -ge 1 ]; then
-   echo " add dir: offline_cheapaml (from Contrib:verification_other)"
-   ( cd $gcmDIR/verification ; cvs $cvsArg co -P -d offline_cheapaml \
-                  MITgcm_contrib/verification_other/offline_cheapaml > /dev/null 2>&1 )
-  fi
+  for exp2add in $addExp ; do
+   echo " add dir: $exp2add (from Contrib:verification_other)"
+   ( cd $gcmDIR/verification ; cvs $cvsArg co -P -d $exp2add \
+                  MITgcm_contrib/verification_other/$exp2add > /dev/null 2>&1 )
+  done
   /usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
   /usr/bin/find $gcmDIR -type f | xargs chmod g+r
 fi
@@ -134,10 +133,10 @@ fi
 
 #-- in case mpiexec get stuck, run this script in background to check
 check_sh=${dNam}_check_$sfx
-if test -x $HERE/$check_sh ; then
+if test -x $OUTP/$check_sh ; then
    echo "start $check_sh in background"
-   mv -f $HERE/${check_sh}.log $HERE/${check_sh}.log_bak
-   ( cd $HERE ; ./$check_sh > ${check_sh}.log 2>&1 ) &
+   mv -f $OUTP/${check_sh}.log $OUTP/${check_sh}.log_bak
+   ( cd $OUTP ; ./$check_sh > ${check_sh}.log 2>&1 ) &
 fi
 
 echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx \
