@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1991 2014/05/07 15:25:25 jahn Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1992 2014/05/08 11:36:21 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: fix a bug in seaice_prepare_ridging.F, forgot a sqrt
 o pkg/ptracers: compute ptracer source/sink due to linear free surface.
     not used right now, but can be used in BGC packages to fix conservation.
 o pkg/dic, pkg/gchem: move tracer_meanarea to gchem, so it can be used by
@@ -24,9 +25,8 @@ o verification:
   - update output_adm.txt files for experiment global_ocean.cs32x15 (seaice &
     seaice_dynmix) and lab_sea (primary test & noseaicedyn): moving/changing
     code from seaice_growth.F & seaice_advdiff.F to new ridging routines
-    affects AD gradient (down to 8-7 matching digits for global_ocean and
-    5-6 for lab_sea).
-seaice_reg_ridge.F seaice_do_ridging.F
+    seaice_reg_ridge.F seaice_do_ridging.F affects AD gradient 
+    (down to 8-7 matching digits for global_ocean and 5-6 for lab_sea).
 o model/src: for atmosphere in p* coords:
   - store factor rStarFacC**atm_kappa (= pStarFacK) in common block
   - implement more accurate p* coordinate slope term (in calc_grad_phi_hyd.F),
