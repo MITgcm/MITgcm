@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_prepare_ridging.F,v 1.3 2014/04/24 08:50:27 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_prepare_ridging.F,v 1.4 2014/05/08 11:29:26 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -100,7 +100,7 @@ CML         ENDIF
 C     regularize as in seaice_growth: compute hActual with regularized 
 C     AREA and regularize from below with a minimum thickness
           tmp = HEFFITD(i,j,k,bi,bj)
-     &         /( AREAITD(i,j,k,bi,bj)**2 + area_reg_sq )
+     &         /SQRT( AREAITD(i,j,k,bi,bj)**2 + area_reg_sq )
           hActual(i,j,k) = SQRT(tmp * tmp + hice_reg_sq)
          ENDIF
         ENDDO
