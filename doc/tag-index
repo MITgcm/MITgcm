@@ -1,10 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1994 2014/05/12 14:15:52 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1995 2014/05/12 15:29:14 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice/seaice_do_ridging.F: clean up the insectarium
+o pkg/seaice
+  seaice_calc_ice_strength.F: modify expression to avoid divisions 
+    (affects truncation)
+  seaice_do_ridging.F: clean up the insectarium
   - fix a bug that was compensated by areaScaling (-> remove areaScaling code)
   - added SEAICEsnowFracRidge to redistributed snow (2nd bug)
   - set closing/openingRate to zero where no extra iteration is need (3rd bug)
