@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.3 2014/04/03 00:28:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.4 2014/05/12 01:35:42 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -214,6 +214,11 @@ c     ENDIF
      &               + uVel(2:sNx+1,1:sNy,kc,bi,bj) )*0.5 _d 0
         v3d(:,:,k) = ( vVel(1:sNx,1:sNy,  kc,bi,bj)
      &               + vVel(1:sNx,2:sNy+1,kc,bi,bj) )*0.5 _d 0
+#ifdef NONLIN_FRSURF
+       IF ( select_rStar.GE.1 ) THEN
+          t3d(:,:,k) = t3d(:,:,k)*pStarFacK(1:sNx,1:sNy,bi,bj)
+       ENDIF
+#endif /* NONLIN_FRSURF */
       ENDDO
 c       ioUnit = 0
 c       WRITE(namFile,'(A,I10.10)') 'z1_Atm.', myIter
@@ -285,7 +290,7 @@ C-    store updated state to pass to LSC (addition from POG)
      &                         -1,Nr, 3, bi, bj, myThid )
          CALL DIAGNOSTICS_FILL( q_ref  , 'AtPh_Qrf',
      &                         -1,Nr, 3, bi, bj, myThid )
-c        snow2d = snow2d / deltaTconv
+c        snow2d = snow2d / deltaT
 c        CALL DIAGNOSTICS_FILL( snow2d , 'SDIAG1  ',
 c    &                          0, 1, 3, bi, bj, myThid )
         ENDIF
@@ -434,9 +439,18 @@ C--- update OLR (assume adjustment of surf LW emission goes directly to space):
       DO k=1,Nr
         kc = Nr-k+1
         conv_T2theta = (atm_po/rC(kc))**atm_kappa
-        atmPhys_dT(1:sNx,1:sNy,kc,bi,bj) = tdt3d(:,:,k)
-     &                                       * conv_T2theta
-        atmPhys_dQ(1:sNx,1:sNy,kc,bi,bj) = qdt3d(:,:,k)
+#ifdef NONLIN_FRSURF
+        IF ( select_rStar.GE.1 ) THEN
+         atmPhys_dT(1:sNx,1:sNy,kc,bi,bj) = tdt3d(:,:,k)
+     &                   * conv_T2theta/pStarFacK(1:sNx,1:sNy,bi,bj)
+        ELSE
+#else /* NONLIN_FRSURF */
+        IF ( .TRUE. ) THEN
+#endif /* NONLIN_FRSURF */
+         atmPhys_dT(1:sNx,1:sNy,kc,bi,bj) = tdt3d(:,:,k)
+     &                   * conv_T2theta
+        ENDIF
+        atmPhys_dQ(1:sNx,1:sNy,kc,bi,bj)  = qdt3d(:,:,k)
         atmPhys_dU (1:sNx,1:sNy,kc,bi,bj) = udt3d(:,:,k)
         atmPhys_dV (1:sNx,1:sNy,kc,bi,bj) = vdt3d(:,:,k)
       ENDDO
