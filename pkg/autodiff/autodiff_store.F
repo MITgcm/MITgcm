@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.23 2014/04/28 15:22:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.24 2014/05/12 22:05:15 heimbach Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -546,14 +546,13 @@ C-      2D arrays
           StoreSEAICE(I,J,bi,bj,4) = 0.0
           StoreSEAICE(I,J,bi,bj,5) = RUNOFF(I,J,bi,bj)
           StoreSEAICE(I,J,bi,bj,6) = 0.0
-#  ifdef SEAICE_CGRID
+# ifdef SEAICE_CGRID
           StoreSEAICE(I,J,bi,bj,14) = stressDivergenceX(I,J,bi,bj)
           StoreSEAICE(I,J,bi,bj,15) = stressDivergenceY(I,J,bi,bj)
-#  else
+# else
           StoreSEAICE(I,J,bi,bj,14) = 0.0
           StoreSEAICE(I,J,bi,bj,15) = 0.0
 # endif
-# ifdef SEAICE_ALLOW_DYNAMICS
           StoreSEAICE(I,J,bi,bj,7) = UICE(I,J,bi,bj)
           StoreSEAICE(I,J,bi,bj,8) = VICE(I,J,bi,bj)
           StoreSEAICE(I,J,bi,bj,9) = ZETA(I,J,bi,bj)
@@ -565,7 +564,7 @@ C-      2D arrays
 #  else
           StoreSEAICE(I,J,bi,bj,11) = 0.0
           StoreSEAICE(I,J,bi,bj,12) = 0.0
-          StoreSEAICE(I,J,bi,bj,15) = 0.0
+          StoreSEAICE(I,J,bi,bj,13) = 0.0
 #  endif /* SEAICE_CGRID */
 #  ifdef SEAICE_ALLOW_EVP
           StoreSEAICE(I,J,bi,bj,16) = seaice_sigma1(I,J,bi,bj)
@@ -576,20 +575,6 @@ C-      2D arrays
           StoreSEAICE(I,J,bi,bj,17) = 0.0
           StoreSEAICE(I,J,bi,bj,18) = 0.0
 #  endif /* SEAICE_ALLOW_EVP */
-# else
-          StoreSEAICE(I,J,bi,bj,7) = 0.0
-          StoreSEAICE(I,J,bi,bj,8) = 0.0
-          StoreSEAICE(I,J,bi,bj,9) = 0.0
-          StoreSEAICE(I,J,bi,bj,10) = 0.0
-          StoreSEAICE(I,J,bi,bj,11) = 0.0
-          StoreSEAICE(I,J,bi,bj,12) = 0.0
-          StoreSEAICE(I,J,bi,bj,13) = 0.0
-          StoreSEAICE(I,J,bi,bj,14) = 0.0
-          StoreSEAICE(I,J,bi,bj,15) = 0.0
-          StoreSEAICE(I,J,bi,bj,16) = 0.0
-          StoreSEAICE(I,J,bi,bj,17) = 0.0
-          StoreSEAICE(I,J,bi,bj,18) = 0.0
-# endif /* SEAICE_ALLOW_DYNAMICS */
 # ifdef SEAICE_VARIABLE_SALINITY
           StoreSEAICE(I,J,bi,bj,19) = HSALT(I,J,bi,bj)
 # else

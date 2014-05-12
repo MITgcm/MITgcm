@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.24 2014/04/28 15:22:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.25 2014/05/12 22:05:15 heimbach Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -455,7 +455,6 @@ CML          TICE(I,J,bi,bj)     = StoreSEAICE(I,J,bi,bj,4)
 cph moved to seaice_ad_check_lev because of extra dim. MULTDIM
 cph          TICES(I,J,bi,bj)     = StoreSEAICE(I,J,bi,bj,6)
 # endif
-# ifdef SEAICE_ALLOW_DYNAMICS
           UICE(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,7)
           VICE(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,8)
           ZETA(I,J,bi,bj)      = StoreSEAICE(I,J,bi,bj,9)
@@ -470,7 +469,6 @@ cph          TICES(I,J,bi,bj)     = StoreSEAICE(I,J,bi,bj,6)
           seaice_sigma2(I,J,bi,bj)  = StoreSEAICE(I,J,bi,bj,17)
           seaice_sigma12(I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,18)
 #  endif /* SEAICE_ALLOW_EVP */
-# endif /* SEAICE_ALLOW_DYNAMICS */
 # ifdef SEAICE_VARIABLE_SALINITY
           HSALT(I,J,bi,bj)          = StoreSEAICE(I,J,bi,bj,19)
 # endif

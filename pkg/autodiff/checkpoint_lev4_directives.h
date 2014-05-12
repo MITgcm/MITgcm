@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev4_directives.h,v 1.34 2013/03/15 13:35:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev4_directives.h,v 1.35 2014/05/12 22:05:15 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
@@ -106,9 +106,9 @@ CADJ &     = tapelev4, key = ilev_4
 
 # ifdef ALLOW_CG2D_NSA
 CADJ STORE aW2d, aS2d, aC2d =
-CADJ &     tapelev3, key = ilev_3 
+CADJ &     tapelev4, key = ilev_4
 CADJ STORE pc, ps, pw =
-CADJ &     tapelev3, key = ilev_3 
+CADJ &     tapelev4, key = ilev_4
 # endif
 
 #endif /* NONLIN_FRSURF */
