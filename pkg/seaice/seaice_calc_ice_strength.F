@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_ice_strength.F,v 1.6 2014/05/07 10:23:58 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_ice_strength.F,v 1.7 2014/05/12 15:28:50 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -131,14 +131,18 @@ C     not useHiber79IceStrength
      O      hrMin, hrMax, hrExp, ridgeRatio, ridgingModeNorm, partFunc,
      I      iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
        IF ( SEAICEredistFunc .EQ. 0 ) THEN
+        tmpscal1 = 1. _d 0 / 3. _d 0
         DO k = 1, nITD
          DO j=jMin,jMax
           DO i=iMin,iMax
+C     replace (hrMax**3-hrMin**3)/(hrMax-hrMin) by identical
+C     hrMax**2+hrMin**2 + hrMax*hrMin to avoid division by potentially
+C     small number
            IF ( partFunc(i,j,k) .GT. 0. _d 0 )
      &          PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)
      &          + partFunc(i,j,k) * ( - hActual(i,j,k)**2
-     &          + ( hrMax(i,j,k)**3 - hrMin(i,j,k)**3 )
-     &          / (3. _d 0 * (hrMax(i,j,k) - hrMin(i,j,k)))
+     &          + ( hrMax(i,j,k)**2 + hrMin(i,j,k)**2 
+     &          + hrMax(i,j,k)*hrMin(i,j,k) )*tmpscal1
      &          / ridgeRatio(i,j,k) )
           ENDDO
          ENDDO
