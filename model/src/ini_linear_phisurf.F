@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.23 2013/11/22 01:07:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.24 2014/05/12 01:27:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -82,10 +82,10 @@ C--
 C-  gBaro = gravity (except for External mode test with reduced gravity)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-OLy,sNy+OLy
-           DO I=1-OLx,sNx+OLx
-             Bo_surf(I,J,bi,bj) = gBaro
-             recip_Bo(I,J,bi,bj) = 1. _d 0 / gBaro
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             Bo_surf(i,j,bi,bj) = gBaro
+             recip_Bo(i,j,bi,bj) = 1. _d 0 / gBaro
            ENDDO
           ENDDO
          ENDDO
@@ -94,45 +94,47 @@ C-  gBaro = gravity (except for External mode test with reduced gravity)
 C-  use a linear (in ps) uniform relation : Phi'_surf = 1/rhoConst * ps'_surf
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-OLy,sNy+OLy
-           DO I=1-OLx,sNx+OLx
-c            Bo_surf(I,J,bi,bj)  = rVel2wUnit(1)*gravity
-c            recip_Bo(I,J,bi,bj) = wUnit2rVel(1)*recip_gravity
-             Bo_surf(I,J,bi,bj)  = recip_rhoConst
-             recip_Bo(I,J,bi,bj) = rhoConst
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+c            Bo_surf(i,j,bi,bj)  = rVel2wUnit(1)*gravity
+c            recip_Bo(i,j,bi,bj) = wUnit2rVel(1)*recip_gravity
+             Bo_surf(i,j,bi,bj)  = recip_rhoConst
+             recip_Bo(i,j,bi,bj) = rhoConst
            ENDDO
           ENDDO
          ENDDO
         ENDDO
       ELSEIF ( fluidIsWater ) THEN
+C--   More precise than uniformLin_PhiSurf case but inconsistent
+C     with nonlinFreeSurf=4 in CALC_PHI_HYD (eta contribution to phiHyd)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-OLy,sNy+OLy
-           DO I=1-OLx,sNx+OLx
-            IF ( Ro_surf(I,J,bi,bj).GT.0. _d 0
-     &          .AND. kSurfC(I,J,bi,bj).LE.Nr ) THEN
-             pLoc = Ro_surf(I,J,bi,bj)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            IF ( Ro_surf(i,j,bi,bj).GT.0. _d 0
+     &          .AND. kSurfC(i,j,bi,bj).LE.Nr ) THEN
+             pLoc = Ro_surf(i,j,bi,bj)
 #ifdef ALLOW_OPENAD
              CALL FIND_RHO_SCALAR(
-     I            tRef(kSurfC(I,J,bi,bj)),
-     I            sRef(kSurfC(I,J,bi,bj)),
+     I            tRef(kSurfC(i,j,bi,bj)),
+     I            sRef(kSurfC(i,j,bi,bj)),
      I            pLoc,
      O            rhoLoc, myThid )
 #else /* ALLOW_OPENAD */
-             k = kSurfC(I,J,bi,bj)
+             k = kSurfC(i,j,bi,bj)
              CALL FIND_RHO_SCALAR(
      I            tRef(k), sRef(k), pLoc,
      O            rhoLoc, myThid )
 #endif /* ALLOW_OPENAD */
              IF ( rhoLoc .EQ. 0. _d 0 ) THEN
-              Bo_surf(I,J,bi,bj) = 0. _d 0
+              Bo_surf(i,j,bi,bj) = 0. _d 0
              ELSE
-              Bo_surf(I,J,bi,bj) = 1. _d 0/rhoLoc
+              Bo_surf(i,j,bi,bj) = 1. _d 0/rhoLoc
              ENDIF
-             recip_Bo(I,J,bi,bj) =  rhoLoc
+             recip_Bo(i,j,bi,bj) =  rhoLoc
             ELSE
-              Bo_surf(I,J,bi,bj)  = 0. _d 0
-              recip_Bo(I,J,bi,bj) = 0. _d 0
+              Bo_surf(i,j,bi,bj)  = 0. _d 0
+              recip_Bo(i,j,bi,bj) = 0. _d 0
             ENDIF
            ENDDO
           ENDDO
@@ -140,23 +142,43 @@ c            recip_Bo(I,J,bi,bj) = wUnit2rVel(1)*recip_gravity
         ENDDO
       ELSEIF ( fluidIsAir ) THEN
 C-  use a linearized (in ps) Non-uniform relation : Bo_surf(Po_surf,tRef_surf)
-C--- Bo = d/d_p(Phi_surf) = tRef_surf*d/d_p(PI) ; PI = Cp*(p/Po)^kappa
+C    Bo = d/d_p(Phi_surf) = tRef_surf*d/d_p(PI) ; PI = Cp*(p/Po)^kappa
+C   and atm_Cp*atm_kappa = atm_Rd
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-OLy,sNy+OLy
-           DO I=1-OLx,sNx+OLx
-            IF ( Ro_surf(I,J,bi,bj).GT.0. _d 0
-     &          .AND. kSurfC(I,J,bi,bj).LE.Nr ) THEN
-              dPIdp = (atm_Cp*atm_kappa/atm_Po)*
-     &         (Ro_surf(I,J,bi,bj)/atm_Po)**(atm_kappa-1. _d 0)
-              Bo_surf(I,J,bi,bj) = dPIdp*tRef(kSurfC(I,J,bi,bj))
-              recip_Bo(I,J,bi,bj) = 1. _d 0 / Bo_surf(I,J,bi,bj)
-            ELSE
-              Bo_surf(I,J,bi,bj) = 0.
-              recip_Bo(I,J,bi,bj) = 0.
-            ENDIF
+          IF ( select_rStar.GE.1 .OR. selectSigmaCoord.GE.1 ) THEN
+C-      isothermal (theta=const) reference state
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             IF ( Ro_surf(i,j,bi,bj).GT.0. _d 0
+     &          .AND. kSurfC(i,j,bi,bj).LE.Nr ) THEN
+              dPIdp = (atm_Rd/atm_Po)*
+     &         (Ro_surf(i,j,bi,bj)/atm_Po)**(atm_kappa-1. _d 0)
+              Bo_surf(i,j,bi,bj) = dPIdp*thetaConst
+              recip_Bo(i,j,bi,bj) = 1. _d 0 / Bo_surf(i,j,bi,bj)
+             ELSE
+              Bo_surf(i,j,bi,bj) = 0.
+              recip_Bo(i,j,bi,bj) = 0.
+             ENDIF
+            ENDDO
            ENDDO
-          ENDDO
+          ELSE
+C-      horizontally uniform (tRef) reference state
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             IF ( Ro_surf(i,j,bi,bj).GT.0. _d 0
+     &          .AND. kSurfC(i,j,bi,bj).LE.Nr ) THEN
+              dPIdp = (atm_Rd/atm_Po)*
+     &         (Ro_surf(i,j,bi,bj)/atm_Po)**(atm_kappa-1. _d 0)
+              Bo_surf(i,j,bi,bj) = dPIdp*tRef(kSurfC(i,j,bi,bj))
+              recip_Bo(i,j,bi,bj) = 1. _d 0 / Bo_surf(i,j,bi,bj)
+             ELSE
+              Bo_surf(i,j,bi,bj) = 0.
+              recip_Bo(i,j,bi,bj) = 0.
+             ENDIF
+            ENDDO
+           ENDDO
+          ENDIF
          ENDDO
         ENDDO
       ELSE
@@ -166,8 +188,8 @@ C--- Bo = d/d_p(Phi_surf) = tRef_surf*d/d_p(PI) ; PI = Cp*(p/Po)^kappa
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Update overlap regions (jmc: is it really needed ?)
-      _EXCH_XY_RL(Bo_surf, myThid)
-      _EXCH_XY_RL(recip_Bo, myThid)
+c     _EXCH_XY_RL(Bo_surf, myThid)
+c     _EXCH_XY_RL(recip_Bo, myThid)
 
       IF ( usingPCoords .AND. .NOT.uniformLin_PhiSurf ) THEN
         CALL WRITE_FLD_XY_RL( 'Bo_surf',' ',Bo_surf,0,myThid)
@@ -180,9 +202,9 @@ C                               or topographic geopotential anom. (p-coord)
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-OLy,sNy+OLy
-           DO I=1-OLx,sNx+OLx
-             phi0surf(I,J,bi,bj) = 0.
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             phi0surf(i,j,bi,bj) = 0.
            ENDDO
           ENDDO
          ENDDO
