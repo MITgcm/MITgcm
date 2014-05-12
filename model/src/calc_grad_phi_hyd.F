@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.16 2014/04/29 21:10:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.17 2014/05/12 01:22:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-#define OLD_PSTAR_SLOPE_TERM
+#undef OLD_PSTAR_SLOPE_TERM
 
 CBOP
 C     !ROUTINE: CALC_GRAD_PHI_HYD
@@ -103,7 +103,7 @@ C-     Consistent with Phi'= Integr[ theta'.dPI ] :
           ELSEIF (Ro_surf(i,j,bi,bj).NE.0. _d 0) THEN
            factPI = (rC(k)/Ro_surf(i,j,bi,bj))**atm_kappa
            varLoc(i,j) = phiHydC(i,j)
-     &                  *(rStarFacC(i,j,bi,bj)**atm_kappa - factPI)
+     &                  *(pStarFacK(i,j,bi,bj) - factPI)
      &                  /(1. _d 0 -factPI)
      &                 + phi0surf(i,j,bi,bj)
           ENDIF
