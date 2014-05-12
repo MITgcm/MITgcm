@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_do_ridging.F,v 1.4 2014/05/12 14:15:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_do_ridging.F,v 1.5 2014/05/12 16:03:28 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -148,6 +148,7 @@ C     initialisation
         areaFraction(i,j)      = 0. _d 0
         volFraction(i,j)       = 0. _d 0
         fw2ObyRidge(i,j,bi,bj) = 0. _d 0
+        ridgedArea(i,j)        = 0. _d 0
        ENDDO
       ENDDO
       CALL SEAICE_PREPARE_RIDGING(
@@ -305,6 +306,8 @@ C     this ridging category
 C     inner loop over categories: distribute what has been removed from the 
 C     kth category to all categories according to area/volFraction
        DO l=1,nITD
+C     initialising these is essential, because here the ridging-mask doRidging
+C     to area/volFraction, and applied via these fields
         DO j=jMin,jMax
          DO i=iMin,iMax
           areaFraction(i,j) = 0. _d 0
