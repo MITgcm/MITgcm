@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2dyn.F,v 1.8 2013/01/21 21:55:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2dyn.F,v 1.9 2014/05/12 01:32:41 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -103,7 +103,7 @@ C-    Near surface wind speed
 
       DO k=1,Nr
        Katm = _KD2KA( k )
-       conv_T2theta = (atm_po/rC(k))**atm_kappa
+       conv_T2theta = (atm_Po/rC(k))**atm_kappa
 
 C-     Add all tendencies (ignoring partial cell factor) for T & Q
 C          and convert Temp. tendency to Pot.Temp. tendency
@@ -123,6 +123,16 @@ C        water vapor tendency
      &                            +QT_LSC(I2,Katm,myThid)
         ENDDO
        ENDDO
+#ifdef NONLIN_FRSURF
+       IF ( select_rStar.GE.1 ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+            aim_dTdt(i,j,k,bi,bj) = aim_dTdt(i,j,k,bi,bj)
+     &                            / pStarFacK(i,j,bi,bj)
+          ENDDO
+         ENDDO
+       ENDIF
+#endif /* NONLIN_FRSURF */
 
 #ifdef ALLOW_DIAGNOSTICS
        IF ( physTendDiag ) THEN
@@ -139,43 +149,43 @@ C-     Account for partial cell filling:
         IF ( select_rStar.GT.0 ) THEN
          DO j=1,sNy
           DO i=1,sNx
-           aim_dTdt(i,j,k,bi,bj) = aim_dTdt(i,j,k,bi,bj)
-     &                         *recip_hFacC(i,j,k,bi,bj)
-     &                             /rStarExpC(i,j,bi,bj)
-           aim_dSdt(i,j,k,bi,bj) = aim_dSdt(i,j,k,bi,bj)
-     &                         *recip_hFacC(i,j,k,bi,bj)
-     &                             /rStarExpC(i,j,bi,bj)
+            aim_dTdt(i,j,k,bi,bj) = aim_dTdt(i,j,k,bi,bj)
+     &                          *recip_hFacC(i,j,k,bi,bj)
+     &                              /rStarExpC(i,j,bi,bj)
+            aim_dSdt(i,j,k,bi,bj) = aim_dSdt(i,j,k,bi,bj)
+     &                          *recip_hFacC(i,j,k,bi,bj)
+     &                              /rStarExpC(i,j,bi,bj)
           ENDDO
          ENDDO
         ELSE
          DO j=1,sNy
-         DO i=1,sNx
-          IF ( k.EQ.kSurfC(i,j,bi,bj) ) THEN
-           aim_dTdt(i,j,k,bi,bj) = aim_dTdt(i,j,k,bi,bj)
-     &                            /hFac_surfC(i,j,bi,bj)
-           aim_dSdt(i,j,k,bi,bj) = aim_dSdt(i,j,k,bi,bj)
-     &                            /hFac_surfC(i,j,bi,bj)
-          ELSE
-           aim_dTdt(i,j,k,bi,bj) = aim_dTdt(i,j,k,bi,bj)
-     &                         *recip_hFacC(i,j,k,bi,bj)
-           aim_dSdt(i,j,k,bi,bj) = aim_dSdt(i,j,k,bi,bj)
-     &                         *recip_hFacC(i,j,k,bi,bj)
-          ENDIF
-         ENDDO
+          DO i=1,sNx
+           IF ( k.EQ.kSurfC(i,j,bi,bj) ) THEN
+            aim_dTdt(i,j,k,bi,bj) = aim_dTdt(i,j,k,bi,bj)
+     &                             /hFac_surfC(i,j,bi,bj)
+            aim_dSdt(i,j,k,bi,bj) = aim_dSdt(i,j,k,bi,bj)
+     &                             /hFac_surfC(i,j,bi,bj)
+           ELSE
+            aim_dTdt(i,j,k,bi,bj) = aim_dTdt(i,j,k,bi,bj)
+     &                          *recip_hFacC(i,j,k,bi,bj)
+            aim_dSdt(i,j,k,bi,bj) = aim_dSdt(i,j,k,bi,bj)
+     &                          *recip_hFacC(i,j,k,bi,bj)
+           ENDIF
+          ENDDO
          ENDDO
         ENDIF
        ELSE
 #else /* ndef NONLIN_FRSURF */
        IF (.TRUE.) THEN
 #endif /* NONLIN_FRSURF */
-        DO j=1,sNy
-         DO i=1,sNx
-          aim_dTdt(i,j,k,bi,bj) =  aim_dTdt(i,j,k,bi,bj)
-     &                         *recip_hFacC(i,j,k,bi,bj)
-          aim_dSdt(i,j,k,bi,bj) =  aim_dSdt(i,j,k,bi,bj)
-     &                         *recip_hFacC(i,j,k,bi,bj)
+         DO j=1,sNy
+          DO i=1,sNx
+            aim_dTdt(i,j,k,bi,bj) =  aim_dTdt(i,j,k,bi,bj)
+     &                           *recip_hFacC(i,j,k,bi,bj)
+            aim_dSdt(i,j,k,bi,bj) =  aim_dSdt(i,j,k,bi,bj)
+     &                           *recip_hFacC(i,j,k,bi,bj)
+          ENDDO
          ENDDO
-        ENDDO
        ENDIF
 
 C--- end of k loop.
