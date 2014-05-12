@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.160 2014/04/04 20:55:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.161 2014/05/12 22:09:46 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -256,9 +256,6 @@ CADJ  INIT tapelev3 = USER
 # ifdef NONLIN_FRSURF
 CADJ STORE hFacC = tapelev_init, key = 1
 CADJ STORE recip_hFacC = tapelev_init, key = 1
-# endif
-# ifdef ALLOW_SEAICE
-CADJ STORE heffm = tapelev_init, key = 1
 # endif
 #endif
 
