@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_ref_state.F,v 1.5 2013/07/28 16:01:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_ref_state.F,v 1.6 2014/05/12 01:27:19 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -40,7 +40,7 @@ C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER k, ks, stdUnit
       _RL rHalf(2*Nr+1)
-      _RL rhoRef(Nr)
+      _RL rhoRef(Nr), tLoc(Nr)
       _RL pLoc, rhoUp, rhoDw, rhoLoc
       _RL ddPI, conv_theta2T, thetaLoc
 CEOP
@@ -212,9 +212,20 @@ C     note: wUnit2rVel & rVel2wUnit replace horiVertRatio & recip_horiVertRatio
         ENDDO
 
 C-    Compute Reference Geopotential at Half levels :
-C      Tracer level: phiRef(2k)  ;  Interface_W level: phiRef(2k+1)
+C      Tracer level k: phiRef(2k)  ;  Interface_W level k: phiRef(2k-1)
 
        phiRef(1) = 0. _d 0
+       IF ( select_rStar.GE.1 .OR. selectSigmaCoord.GE.1 ) THEN
+C-      isothermal (theta=const) reference state
+        DO k=1,Nr
+         tLoc(k) = thetaConst
+        ENDDO
+       ELSE
+C-      horizontally uniform (tRef) reference state
+        DO k=1,Nr
+         tLoc(k) = tRef(k)
+        ENDDO
+       ENDIF
 
        IF (integr_GeoPot.EQ.1) THEN
 C-    Finite Volume Form, linear by half level :
@@ -222,7 +233,7 @@ C-    Finite Volume Form, linear by half level :
           ks = (k+1)/2
           ddPI=atm_Cp*( ((rHalf( k )/atm_Po)**atm_kappa)
      &                 -((rHalf(k+1)/atm_Po)**atm_kappa) )
-          phiRef(k+1) = phiRef(k)+ddPI*tRef(ks)
+          phiRef(k+1) = phiRef(k)+ddPI*tLoc(ks)
         ENDDO
 C------
        ELSE
@@ -231,18 +242,18 @@ C      works with integr_GeoPot = 0, 2 or 3
         k = 1
           ddPI=atm_Cp*( ((rF(k)/atm_Po)**atm_kappa)
      &                 -((rC(k)/atm_Po)**atm_kappa) )
-          phiRef(2*k)   = phiRef(1) + ddPI*tRef(k)
+          phiRef(2*k)   = phiRef(1) + ddPI*tLoc(k)
         DO k=1,Nr-1
           ddPI=atm_Cp*( ((rC( k )/atm_Po)**atm_kappa)
      &                 -((rC(k+1)/atm_Po)**atm_kappa) )
-          phiRef(2*k+1) = phiRef(2*k) + ddPI*0.5*tRef(k)
+          phiRef(2*k+1) = phiRef(2*k) + ddPI*0.5*tLoc(k)
           phiRef(2*k+2) = phiRef(2*k)
-     &                  + ddPI*0.5*(tRef(k)+tRef(k+1))
+     &                  + ddPI*0.5*(tLoc(k)+tLoc(k+1))
         ENDDO
         k = Nr
           ddPI=atm_Cp*( ((rC( k )/atm_Po)**atm_kappa)
      &                 -((rF(k+1)/atm_Po)**atm_kappa) )
-          phiRef(2*k+1) = phiRef(2*k) + ddPI*tRef(k)
+          phiRef(2*k+1) = phiRef(2*k) + ddPI*tLoc(k)
 C------
        ENDIF
 
@@ -314,9 +325,10 @@ C--   Write to check :
      &    phiRef(k)*recip_gravity
         CALL PRINT_MESSAGE(msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )
        ENDDO
-      ENDIF
+      ELSE
 C--   Write reference density to binary file :
         CALL WRITE_GLVEC_RL( 'RhoRef',' ',rhoRef, Nr, -1, myThid )
+      ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
