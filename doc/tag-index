@@ -1,17 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1992 2014/05/08 11:36:21 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1993 2014/05/12 03:37:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src: modifications relatd to atmosphere p*:
+  - Switch to more accurate p* coordinate slope term (calc_grad_phi_hyd.F)
+  - With p* or Sigma-P, use constant reference Pot.Temp (thetaConst) instead
+    of vertical profile tRef in geopotential background and anomaly.
+  - Acount for true p* correction in theta <-> T conversion in pkg/aim_v23
+    and pkg/atm_phys.
+  - Update FWD output of experiments: aim.5l_cs (x2), fizhi-cs-32x32x40,
+    fizhi-cs-aqualev20, fizhi-gridalt-hs, tutorial_held_suarez_cs, cpl_aim+ocn.
 o pkg/seaice: fix a bug in seaice_prepare_ridging.F, forgot a sqrt
 o pkg/ptracers: compute ptracer source/sink due to linear free surface.
     not used right now, but can be used in BGC packages to fix conservation.
 o pkg/dic, pkg/gchem: move tracer_meanarea to gchem, so it can be used by
     other packages too.
-o pkg/seaice/seaice_calc_ice_strength.F: replace SEAICE_rhoSnow by 
-   SEAICE_rhoIce in the Rothrock (1975)-type strength calculations
-   (bug fix)
+o pkg/seaice/seaice_calc_ice_strength.F: replace SEAICE_rhoSnow by
+    SEAICE_rhoIce in the Rothrock (1975)-type strength calculations (bug fix)
 o model/src:
   - since we have several heat capacity (even in model/src), define "recip_Cp"
     as local variable (no longer in common block) to avoid any confusion.
@@ -25,7 +32,7 @@ o verification:
   - update output_adm.txt files for experiment global_ocean.cs32x15 (seaice &
     seaice_dynmix) and lab_sea (primary test & noseaicedyn): moving/changing
     code from seaice_growth.F & seaice_advdiff.F to new ridging routines
-    seaice_reg_ridge.F seaice_do_ridging.F affects AD gradient 
+    seaice_reg_ridge.F seaice_do_ridging.F affects AD gradient
     (down to 8-7 matching digits for global_ocean and 5-6 for lab_sea).
 o model/src: for atmosphere in p* coords:
   - store factor rStarFacC**atm_kappa (= pStarFacK) in common block
