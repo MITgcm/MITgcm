@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1993 2014/05/12 03:37:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1994 2014/05/12 14:15:52 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_do_ridging.F: clean up the insectarium
+  - fix a bug that was compensated by areaScaling (-> remove areaScaling code)
+  - added SEAICEsnowFracRidge to redistributed snow (2nd bug)
+  - set closing/openingRate to zero where no extra iteration is need (3rd bug)
+  - add some debugging information and error messages (warnings) 
 o model/src: modifications relatd to atmosphere p*:
   - Switch to more accurate p* coordinate slope term (calc_grad_phi_hyd.F)
   - With p* or Sigma-P, use constant reference Pot.Temp (thetaConst) instead
