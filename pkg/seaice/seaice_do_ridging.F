@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_do_ridging.F,v 1.3 2014/04/24 08:50:27 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_do_ridging.F,v 1.4 2014/05/12 14:15:30 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -83,16 +83,18 @@ C     amount of ice that participates in ridging (according to partFunc)
 C     fractions of deformed/ridged ice
       _RL areaFraction    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL volFraction     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL areaScaling     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     absolute area/concentration of deformed/ridged ice
       _RL ridgedArea      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       LOGICAL doRidging   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       LOGICAL doRidgeAgain, areaTooLarge
 C
       _RL recip_deltaT, convergence, divergence, shear, divAdv
-      _RL ridgingIce
       _RL tmp, tmpFac, hL, hR, expL, expR
       _RL areaPR          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD) 
+      _RL heffPR          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD) 
+      _RL hsnwPR          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD) 
+C     
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif /* SEAICE_ITD */
 CEOP
 
@@ -187,6 +189,8 @@ C     (this is copied from CICE but I am not sure about that)
      &       *recip_deltaT
         IF (divAdv .LT. 0. _d 0) 
      &       closingRate(i,j) = MAX(closingRate(i,j), -divAdv)
+C     finally compute a non-negative opening rate that will lead to
+C     a net area of 1
         openingRate(i,j) = closingRate(i,j) + divAdv
        ENDDO
       ENDDO
@@ -201,6 +205,8 @@ C     save pre-ridging ice concentration and ridged ice volume
        DO j=jMin,jMax
         DO i=iMin,iMax
          areaPR(i,j,k) = AREAITD(i,j,k,bi,bj)
+         heffPR(i,j,k) = HEFFITD(i,j,k,bi,bj)
+         hsnwPR(i,j,k) = HSNOWITD(i,j,k,bi,bj)
 C        ridgeFrac(i,j,k) = 0. _d 0 
 C        IF (HEFFITD(i,j,k,bi,bj) .GT. 0. _d 0 )
 C   &     ridgeFrac(i,j,k) = ridgedHeff/HEFF
@@ -251,34 +257,12 @@ C     open water first
         opnWtrFrac(i,j,bi,bj) = opnWtrFrac(i,j,bi,bj) 
      &       - partFunc(i,j,0)*grossClosing(i,j)
      &       + openingRate(i,j)*SEAICE_deltaTtherm
+C     need to catch openWater << 0 properly
+C     negative open water it not allowed
+        opnWtrFrac(i,j,bi,bj) = MAX( 0. _d 0, opnWtrFrac(i,j,bi,bj) )
        ENDDO
       ENDDO
-C     need to catch openWater < 0 properly
 C     
-C     After reducing the open water fraction new net area = opnWtrFrac 
-C     + sum(AREAITD) may still be larger than one. If this is the case,
-C     the ridged ice that is taken away from category k is still distributed
-C     to categories l, but the distributed area should be reduced so that 
-C     the net area after ridging equals one (or SEAICE_area_max):
-C     opnWtrFrac+sum(AREAITD) - ridgingIce + ridgedIce/Norm = 1
-C     since ridgingIce = ridgedIce, the latter does not need to be computed
-C     and 
-C     1/Norm = 1 - (opnWtrFrac+sum(AREAITD)-1)/ridgingIce
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        areaScaling(i,j) = 1. _d 0
-C     use divAdv again as a temporary variable now with a different sign
-        divAdv = netArea(i,j) + opnWtrFrac(i,j,bi,bj) - 1. _d 0
-        ridgingIce = grossClosing(i,j)*(1. _d 0 - partFunc(i,j,0))
-        areaTooLarge = divAdv .GT. 0. _d 0 
-     &       .AND. netArea(i,j) .GT. SEAICE_area_reg
-     &       .AND. ridgingIce .GT. 0. _d 0
-CML        IF ( SEAICE_area_max .LT. 1. _d 0 )
-CML     &       areaTooLarge = areaTooLarge.OR.netArea(i,j).GT.SEAICE_area_max 
-        IF (areaTooLarge) areaScaling(i,j) = 1. _d 0 - divAdv/ridgingIce
-       ENDDO
-      ENDDO
-C
       DO k=1,nITD
 C     need to catch partFunc*grossClosing > AREAITD (or areaPR)
        DO j=jMin,jMax
@@ -300,8 +284,8 @@ CML     &         areaPR(i,j,k))
           ridgedArea(i,j)   = ridgingArea(i,j)/ridgeRatio(i,j,k)
 C     compute ice volume (HEFF) and snow volume to be removed from this
 C     ridging category
-          ridgingHEFF(i,j) =  HEFFITD(i,j,k,bi,bj) * areaFraction(i,j)
-          ridgingHsnw(i,j) = HSNOWITD(i,j,k,bi,bj) * areaFraction(i,j)
+          ridgingHEFF(i,j) = heffPR(i,j,k) * areaFraction(i,j)
+          ridgingHsnw(i,j) = hsnwPR(i,j,k) * areaFraction(i,j)
 C     part of the snow mass is pushed into the ocean during ridging;
 C     this freshwater flux will be added to the net feshwater flux into 
 C     the ocean in seaice_growth
@@ -391,11 +375,11 @@ C     after computing the fraction ridged ice for this category, apply it
         DO j=jMin,jMax
          DO i=iMin,iMax
           AREAITD(i,j,l,bi,bj) = AREAITD(i,j,l,bi,bj)
-     &         +areaFraction(i,j)*ridgingArea(i,j)*areaScaling(i,j)
+     &         +areaFraction(i,j)*ridgedArea(i,j)
           HEFFITD(i,j,l,bi,bj) = HEFFITD(i,j,l,bi,bj)
      &         +volFraction(i,j)*ridgingHeff(i,j)
           HSNOWITD(i,j,l,bi,bj) = HSNOWITD(i,j,l,bi,bj)
-     &         +volFraction(i,j)*ridgingHsnw(i,j)
+     &         +volFraction(i,j)*ridgingHsnw(i,j)*SEAICEsnowFracRidge
          ENDDO
         ENDDO
 C     category l-loop
@@ -426,12 +410,36 @@ C     we need a new estimate of the total AREA
          doRidging(i,j) = .TRUE.
          doRidgeAgain   = .TRUE.
          divAdv = (1. _d 0-tmp)*recip_deltaT
-         closingRate(I,J) = MAX( 0.D0, -divAdv)
-         openingRate(I,J) = MAX( 0.D0,  divAdv)
+         closingRate(i,j) = MAX( 0. _d 0, -divAdv)
+         openingRate(i,j) = MAX( 0. _d 0,  divAdv)
+        ELSE
+C     set to zero avoid going through this grid point again
+         closingRate(i,j) = 0. _d 0
+         openingRate(i,j) = 0. _d 0
         ENDIF
        ENDDO
       ENDDO
+      IF ( doRidgeAgain .AND. n.GE.SEAICEridgingIterMax ) THEN
+C     some debugging information
+       WRITE(msgBuf,'(A)') 'SEAICE_DO_RIDGING: *** WARNING ***'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,I2,A)') 'SEAICE_DO_RIDGING: '//
+     &      'did not converge in SEAICEridgingIterMax = ', 
+     &      SEAICEridgingIterMax, ' iterations.'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+CML       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
       doRidgeAgain = doRidgeAgain .AND. n.LT.SEAICEridgingIterMax
+      IF ( doRidgeAgain .AND. debugLevel .GE. debLevA ) THEN
+C     some debugging information
+       WRITE(msgBuf,'(A,I2,A,I10)') 
+     &      'SEAICE_DO_RIDGING: Repeat ridging after iteration ',
+     &      n, ' in timestep ', myIter
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+      ENDIF
       IF ( doRidgeAgain ) CALL SEAICE_PREPARE_RIDGING(
      O     hActual,
      O     hrMin, hrMax, hrExp, ridgeRatio, ridgingModeNorm, partFunc,
