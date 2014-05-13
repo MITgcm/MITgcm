@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.85 2014/05/12 22:08:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.86 2014/05/13 01:21:09 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -42,9 +42,7 @@ C     i,j,k,bi,bj :: Loop counters
       INTEGER i, j, bi, bj
       _RL PSTAR
       INTEGER kSurface
-#ifdef SEAICE_CGRID
       _RS  mask_uice
-#endif
       INTEGER k
 #ifdef ALLOW_SITRACER
       INTEGER iTr, jTh
