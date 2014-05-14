@@ -1,4 +1,4 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/dargan_bettsmiller_mod.F90,v 1.1 2013/05/08 22:14:14 jmc Exp $
+! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/dargan_bettsmiller_mod.F90,v 1.2 2014/05/14 21:39:18 jmc Exp $
 ! $Name:  $
 
 module dargan_bettsmiller_mod
@@ -15,7 +15,6 @@ module dargan_bettsmiller_mod
 !   approximate 'saturate out at constant p if r0>rs' calculation to be
 !   consistent with conventional definition of mixing ratio
 ! - CAPE/CIN calculation uses virtual temperature if option set
-
 
 !----------------------------------------------------------------------
 !use            fms_mod, only:  file_exist, error_mesg, open_file,  &
@@ -37,7 +36,7 @@ private
 !-----------------------------------------------------------------------
 !   ---- version number ----
 
- character(len=128) :: version = '$Id: dargan_bettsmiller_mod.F90,v 1.1 2013/05/08 22:14:14 jmc Exp $'
+ character(len=128) :: version = '$Id: dargan_bettsmiller_mod.F90,v 1.2 2014/05/14 21:39:18 jmc Exp $'
  character(len=128) :: tag = '$Name:  $'
 
 !-----------------------------------------------------------------------
@@ -126,7 +125,7 @@ contains
 !           qdel     specific humidity tendency (of water vapor) at
 !                      full model levels
 !           bmflag   flag for which routines you're calling
-!           klzbs    stored klzb values
+!           klzbs    stored (integer part) klzb and ktop (decimal part) values
 !           cape     convectively available potential energy
 !           cin      convective inhibition (this and the above are before the
 !                    adjustment)
@@ -150,18 +149,15 @@ contains
 !-----------------------------------------------------------------------
 !---------------------- local data -------------------------------------
 
-logical,dimension(size(tin,1),size(tin,2),size(tin,3)) :: do_adjust
-   real,dimension(size(tin,1),size(tin,2),size(tin,3)) ::  &
-             rin, esat, qsat, desat, dqsat, pmes, pmass
-   real,dimension(size(tin,1),size(tin,2))             ::  &
-                     hlcp, precip, precip_t
-   real,dimension(size(tin,3))                         :: eref, rpc, tpc, &
-                                                          tpc1, rpc1
+!logical,dimension(size(tin,1),size(tin,2),size(tin,3)) :: do_adjust
+   real,dimension(size(tin,1),size(tin,2),size(tin,3)) :: rin
+   real,dimension(size(tin,1),size(tin,2))             :: precip, precip_t
+   real,dimension(size(tin,3))                         :: eref, rpc, tpc
 
    real                                                ::  &
        cape1, cin1, tot, deltak, deltaq, qrefint, deltaqfrac, deltaqfrac2, &
-       ptopfrac, es, capeflag1, plzb, plcl, cape2, small
- integer  i, j, k, ix, jx, kx, klzb, ktop, klzb2
+       ptopfrac, es, capeflag1, small
+ integer  i, j, k, ix, jx, kx, klzb, ktop
 !-----------------------------------------------------------------------
 !     computation of precipitation by betts-miller scheme
 !-----------------------------------------------------------------------
@@ -175,11 +171,25 @@ logical,dimension(size(tin,1),size(tin,2),size(tin,3)) :: do_adjust
       kx=size(tin,3)
       small = 1.e-10
 
+! initialise output:
+      precip = 0.
+      tdel   = 0.
+      qdel   = 0.
+      t_ref  = tin
+      q_ref  = qin
+      bmflag = 0.
+      klzbs  = 0.
+      cape   = 0.
+      cin    = 0.
+      invtau_bm_t = 0.
+      invtau_bm_q = 0.
+      precip_t = 0.
+
 ! calculate r (where r is the mixing ratio)
        rin = qin/(1.0 - qin)
 
-       do i=1,ix
-          do j=1,jx
+       do j=1,jx
+          do i=1,ix
              cape1 = 0.
              cin1 = 0.
              tot = 0.
@@ -207,7 +217,8 @@ logical,dimension(size(tin,1),size(tin,2),size(tin,3)) :: do_adjust
 !             if((tot.gt.0.).and.(cape1.gt.0.)) then
                 bmflag(i,j) = 1.
 ! reference temperature is just that of the parcel all the way up
-                t_ref(i,j,:) = tpc
+!               t_ref(i,j,:) = tpc
+                t_ref(i,j,klzb:kx) = tpc(klzb:kx)
                 do k=klzb,kx
 ! sets reference spec hum to a certain relative hum (change to vapor pressure,
 ! multiply by rhbm, then back to spec humid)
@@ -226,12 +237,12 @@ logical,dimension(size(tin,1),size(tin,2),size(tin,3)) :: do_adjust
 ! set the reference profiles to be the original profiles (for diagnostic
 ! purposes only --  you can think of this as what you're relaxing to in
 ! areas above the actual convection
-                do k=1,max(klzb-1,1)
-                   qdel(i,j,k) = 0.0
-                   tdel(i,j,k) = 0.0
-                   q_ref(i,j,k) = qin(i,j,k)
-                   t_ref(i,j,k) = tin(i,j,k)
-                end do
+!               do k=1,max(klzb-1,1)
+!                  qdel(i,j,k) = 0.0
+!                  tdel(i,j,k) = 0.0
+!                  q_ref(i,j,k) = qin(i,j,k)
+!                  t_ref(i,j,k) = tin(i,j,k)
+!               end do
 ! initialize p to zero for the loop
                 precip(i,j) = 0.
                 precip_t(i,j) = 0.
@@ -247,10 +258,10 @@ logical,dimension(size(tin,1),size(tin,2),size(tin,3)) :: do_adjust
                    qdel(i,j,k) = - (qin(i,j,k) - q_ref(i,j,k))/tau_bm*dt
 ! Precipitation can be calculated already, based on the change in q on the
 ! way up (this isn't altered in the energy conservation scheme).
-                   precip(i,j) = precip(i,j) - qdel(i,j,k)*(phalf(i,j,k+1)- &
-                                 phalf(i,j,k))/grav
-                   precip_t(i,j)= precip_t(i,j) + cp_air/(hlv+small)*tdel(i,j,k)* &
-                                 (phalf(i,j,k+1)-phalf(i,j,k))/grav
+                   precip(i,j)  = precip(i,j) - qdel(i,j,k)           &
+                                *(phalf(i,j,k+1)- phalf(i,j,k))/grav
+                   precip_t(i,j)= precip_t(i,j) + cp_air/(hlv+small)*tdel(i,j,k) &
+                                *(phalf(i,j,k+1)-phalf(i,j,k))/grav
                 end do
                 if ((precip(i,j).gt.0.).and.(precip_t(i,j).gt.0.)) then
 ! If precip > 0, then correct energy.
@@ -302,13 +313,14 @@ logical,dimension(size(tin,1),size(tin,2),size(tin,3)) :: do_adjust
 ! once we finish this), the actual new top of convection is somewhere between
 ! the current ktop, and one level above this.  set ktop to the level above.
                       ktop = ktop - 1
+                      klzbs(i,j) = klzbs(i,j) + float(ktop)/( kx + 1.d0 )
 ! Adjust the tendencies in the places above back to zero, and the reference
 ! profiles back to the original t,q.
                       if (ktop.gt.klzb) then
                          qdel(i,j,klzb:ktop-1) = 0.
-                         q_ref(i,j,klzb:ktop-1) = qin(i,j,klzb:ktop-1)
+!                        q_ref(i,j,klzb:ktop-1) = qin(i,j,klzb:ktop-1)
                          tdel(i,j,klzb:ktop-1) = 0.
-                         t_ref(i,j,klzb:ktop-1) = tin(i,j,klzb:ktop-1)
+!                        t_ref(i,j,klzb:ktop-1) = tin(i,j,klzb:ktop-1)
                       end if
 ! Then make the change only a fraction of the new top layer so the precip is
 ! identically zero.
@@ -356,11 +368,11 @@ logical,dimension(size(tin,1),size(tin,2),size(tin,3)) :: do_adjust
                       else
                          precip(i,j) = 0.
                          qdel(i,j,kx) = 0.
-                         q_ref(i,j,kx) = qin(i,j,kx)
+!                        q_ref(i,j,kx) = qin(i,j,kx)
                          tdel(i,j,kx) = 0.
-                         t_ref(i,j,kx) = tin(i,j,kx)
-                         invtau_bm_t(i,j) = 0.
-                         invtau_bm_q(i,j) = 0.
+!                        t_ref(i,j,kx) = tin(i,j,kx)
+!                        invtau_bm_t(i,j) = 0.
+!                        invtau_bm_q(i,j) = 0.
                       end if
                    else if(do_changeqref) then
 ! Change the reference profile of q by a certain fraction so that precip is
@@ -404,8 +416,8 @@ logical,dimension(size(tin,1),size(tin,2),size(tin,3)) :: do_adjust
                       precip(i,j) = 0.
                       tdel(i,j,:) = 0.
                       qdel(i,j,:) = 0.
-                      invtau_bm_t(i,j) = 0.
-                      invtau_bm_q(i,j) = 0.
+!                     invtau_bm_t(i,j) = 0.
+!                     invtau_bm_q(i,j) = 0.
                    end if
 ! for cases where virtual temp predicts CAPE but precip_t < 0.
 ! - also note cape and precip_t are different because cape
@@ -414,27 +426,27 @@ logical,dimension(size(tin,1),size(tin,2),size(tin,3)) :: do_adjust
                    tdel(i,j,:) = 0.0
                    qdel(i,j,:) = 0.0
                    precip(i,j) = 0.0
-                   q_ref(i,j,:) = qin(i,j,:)
-                   t_ref(i,j,:) = tin(i,j,:)
-                   invtau_bm_t(i,j) = 0.
-                   invtau_bm_q(i,j) = 0.
+!                  q_ref(i,j,:) = qin(i,j,:)
+!                  t_ref(i,j,:) = tin(i,j,:)
+!                  invtau_bm_t(i,j) = 0.
+!                  invtau_bm_q(i,j) = 0.
                 end if
 ! if no CAPE, set tendencies to zero.
-             else
-                tdel(i,j,:) = 0.0
-                qdel(i,j,:) = 0.0
-                precip(i,j) = 0.0
-                q_ref(i,j,:) = qin(i,j,:)
-                t_ref(i,j,:) = tin(i,j,:)
-                invtau_bm_t(i,j) = 0.
-                invtau_bm_q(i,j) = 0.
+!            else
+!               tdel(i,j,:) = 0.0
+!               qdel(i,j,:) = 0.0
+!               precip(i,j) = 0.0
+!               q_ref(i,j,:) = qin(i,j,:)
+!               t_ref(i,j,:) = tin(i,j,:)
+!               invtau_bm_t(i,j) = 0.
+!               invtau_bm_q(i,j) = 0.
              end if
           end do
        end do
 
        rain = precip
        snow = 0.
-
+!      snow = precip_t  !to output value of precip_t (debug)
 
    end subroutine dargan_bettsmiller
 
@@ -485,12 +497,12 @@ logical,dimension(size(tin,1),size(tin,2),size(tin,3)) :: do_adjust
       real, intent(out)                      :: cape, cin
       integer, intent(in)                    :: i,j,bi,bj,myIter
       integer, intent(in)                    :: myThid
-      integer            :: k, klcl, klfc, klcl2
+      integer            :: k, klcl, klfc
       logical            :: nocape
-      real, dimension(kx)   :: theta, tin_virtual
+      real, dimension(kx)   :: tin_virtual
       real                  :: t0, r0, es, rs, theta0, pstar, value, tlcl, &
-                               a, b, dtdlnp, d2tdlnp2, thetam, rm, tlcl2, &
-                               plcl2, plcl, plzb, small
+                               a, b, dtdlnp, &
+                               plcl, plzb, small
 
       pstar = 1.e5
 ! so we can run dry limit (one expression involves 1/hlv)
@@ -767,7 +779,6 @@ logical,dimension(size(tin,1),size(tin,2),size(tin,3)) :: do_adjust
       v1 = 10.*v1
       tlcl = (v2 + 1.0 - v1)*lcltable(ival+1) + (v1 - v2)*lcltable(ival+2)
 
-
       end subroutine lcltabl
 
 !#######################################################################
@@ -780,10 +791,10 @@ logical,dimension(size(tin,1),size(tin,2),size(tin,3)) :: do_adjust
 !
 !-----------------------------------------------------------------------
 
-  integer  unit,io,ierr
+! integer  unit,io,ierr
   integer, intent(in) ::myThid
 !-------------------------------------------------------------------------------------
-integer, dimension(3) :: half = (/1,2,4/)
+!integer, dimension(3) :: half = (/1,2,4/)
 !integer :: ierr, io
 integer         :: iUnit
 CHARACTER*(gcm_LEN_MBUF) :: msgBuf
