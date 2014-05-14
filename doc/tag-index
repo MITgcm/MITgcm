@@ -1,17 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1995 2014/05/12 15:29:14 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1996 2014/05/14 21:40:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/atm_phys:
+  - change diagnostics (AtPh_Trf & AtPh_Qrf) of DARGAN_BETTSMILLER S/R:
+    skip the reseting of t_ref & q_ref to initial t & q ; this preserve the
+    output of S/R CAPECALCNEW (Parcel temp & q) for diagnostics.
 o pkg/seaice
-  seaice_calc_ice_strength.F: modify expression to avoid divisions 
+  seaice_calc_ice_strength.F: modify expression to avoid divisions
     (affects truncation)
   seaice_do_ridging.F: clean up the insectarium
   - fix a bug that was compensated by areaScaling (-> remove areaScaling code)
   - added SEAICEsnowFracRidge to redistributed snow (2nd bug)
   - set closing/openingRate to zero where no extra iteration is need (3rd bug)
-  - add some debugging information and error messages (warnings) 
+  - add some debugging information and error messages (warnings)
 o model/src: modifications relatd to atmosphere p*:
   - Switch to more accurate p* coordinate slope term (calc_grad_phi_hyd.F)
   - With p* or Sigma-P, use constant reference Pot.Temp (thetaConst) instead
