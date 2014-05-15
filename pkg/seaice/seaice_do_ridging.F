@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_do_ridging.F,v 1.5 2014/05/12 16:03:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_do_ridging.F,v 1.6 2014/05/15 14:43:56 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -403,7 +403,6 @@ C     we need a new estimate of the total AREA
         ENDDO
        ENDDO
       ENDDO
-      doRidging(i,j) = .FALSE.
       doRidgeAgain   = .FALSE.
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -419,6 +418,7 @@ C     we need a new estimate of the total AREA
 C     set to zero avoid going through this grid point again
          closingRate(i,j) = 0. _d 0
          openingRate(i,j) = 0. _d 0
+         doRidging(i,j)   = .FALSE.
         ENDIF
        ENDDO
       ENDDO
