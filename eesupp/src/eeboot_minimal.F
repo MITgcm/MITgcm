@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.27 2014/02/13 02:18:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.28 2014/05/16 18:31:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -167,6 +167,16 @@ C--    Get my process number
         ELSE
          OPEN(errorMessageUnit,FILE='/dev/null',STATUS='unknown')
          standardMessageUnit=errorMessageUnit
+        ENDIF
+        IF( myProcId .EQ. 0 ) THEN
+          WRITE(msgBuf,'(2A)') '** WARNING ** EEBOOT_MINIMAL: ',
+     &     'defined SINGLE_DISK_IO will result in losing'
+          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+          WRITE(msgBuf,'(2A)') '** WARNING ** EEBOOT_MINIMAL: ',
+     &     'any message (error/warning) from any proc <> 0'
+          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
         ENDIF
 #endif
        ENDIF
