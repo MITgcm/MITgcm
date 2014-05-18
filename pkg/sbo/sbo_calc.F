@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.14 2010/01/03 20:01:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.15 2014/05/18 23:55:52 jmc Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: SBO_CALC
@@ -10,109 +13,55 @@ C !INTERFACE: ==========================================================
       SUBROUTINE SBO_CALC( myTime, myIter, myThid )
 
 C !DESCRIPTION: \bv
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE SBO_CALC                                      |
 C     | o Do SBO diagnostic output.                              |
-C     |==========================================================|
+C     *==========================================================*
 C     | NOTE: The following subtleties are ignored for time      |
 C     | being but may need revisiting at some point in time.     |
 C     | 1) The model is volume-preserving and Boussinesq so      |
 C     |    quantities like oceanic mass need to be interpreted   |
-C     |    with some care.                                       |
-C     | 2) The sea surface height variable etaN lags other       |
-C     |    prognostic variables by half a time step.  This lag   |
-C     |    is ignored in SBO computations.                       |
-C     | 3) Density is computed using function SBO_RHO which is   |
-C     |    not exaclty equivalent to the model s FIND_RHO.       |
-C     \==========================================================/
-      IMPLICIT NONE
+C     |    with some care.  We remove spurious mass variations   |
+C     |    from phihydlow using the Greatbatch correction. Real  |
+C     |    freshwater fluxes retained in mass load.              |
+C     | 2) OAM due to currents assumes constant density          |
+C     |    (=rhoConst), rms differences using variable density   |
+C     |    is less than 1%, assuming rhoConst is a good measure  |
+C     |    of the actual mean density                            |
+C     | 3) Seaice motion added to OAMC.  Seaice mass is in OAMP  |
+C     |    in OAMP and COM insofar as seaice mass is in          |
+C     |    phihydlow.  Net freshwater flux is between atmosphere |
+C     |    and liquid ocean plus seaice.  I.e. changes in seaice |
+C     |    mass due to melt/freeze with liquid ocean do not      |
+C     |    change net freshwater flux.                           |
+C     *==========================================================*
 
 C=======================================================================
 C
+C     Based on ftp://euler.jpl.nasa.gov/sbo/software/calc_sbo2.f
 C     Written  by Richard Gross (Richard.Gross@jpl.nasa.gov)
-C     June 10, 2001: Modified for online computations in MIT GCM UV
-C              by Dimitris Menemenlis (Menemenlis@jpl.nasa.gov)
-C
-C       Purpose
-C           calc_sbo calculates the core products of the IERS Special Bureau
-C           for the Oceans including oceanic mass, center-of-mass, angular
-C           momentum, and bottom pressure.
-C
-C       Usage
-C           1. calc_sbo must be called, and the results saved, at each time step
-C              in order to create a time series of the IERS SBO core products
-C           2. it is suggested that after the time series have been generated
-C              and before saving the results to a file, time-mean values be
-C              computed and removed from all of the calculated core products
-C              and that the mean values be reported along with the demeaned
-C              time series
-C
-C       Availability
-C           ftp://euler.jpl.nasa.gov/sbo/software/calc_sbo.f
-C
-C       Reference
+C     Reference
 C           Gross, R. S., F. O. Bryan, Y. Chao, J. O. Dickey, S. L. Marcus,
 C           R. M. Ponte, and R. Tokmakian, The IERS Special Bureau for the
 C           Oceans, in IERS Technical Note on the IERS Global Geophysical
 C           Fluids Center, edited by B. Chao, in press, Observatoire de Paris,
-C           Paris, France, 2000.
+C           Paris, France, 2002.
 C
-C       Required inputs
-C           gridded values of horizontal velocity (u,v), temperature,
-C           salinity, and sea surface height along with the latitude,
-C           and longitude of the grid points and the thicknesses of the
-C           vertical layers
+C     June 10, 2001: Modified for online computations in MIT GCM UV
+C              by Dimitris Menemenlis (Menemenlis@jpl.nasa.gov)
+C     Jan 7, 2014: Modified for real freshwater flux and coordinates other
+C              than spherical polar by Katy Quinn (kquinn@aer.com)
 C
-C       External routines called by calc_sbo
-C           real function rho1(s, t)
-C               returns density of sea water given salinity s and temperature t
-C               (a default version of rho1 has been included with calc_sbo,
-C               however in general this should be replaced by a function that
-C               returns the density of the model ocean so that the same density
-C               as the model s is used to compute the sbo products)
-C
-C       Assumptions
-C           1. the input velocity, temperature, salinity, and sea surface
-C              height fields are assumed to be defined on the same grid
-C           2. the horizontal grid is assumed to be equally spaced in
-C              latitude and longitude
-C           3. land is flagged in the input quantities by a salinity or
-C              temperature value greater than or equal to 999.99
-C           4. input quantities are assumed to have the following units:
-C                 salinity (s)              parts per thousand
-C                 temperature (t)           degrees centigrade
-C                 eastwards  velocity (u)   centimeters per second
-C                 northwards velocity (v)   centimeters per second
-C                 sea surface height (ssh)  meters
-C                 latitude  of grid point   degrees N
-C                 longitude of grid point   degrees E
-C                 thickness of layer        meters
-C           5. input quantities are passed to calc_sbo via common blocks
-C              /ogcm/ and /vgrid/
-C           6. land is flagged in the output ocean-bottom pressure (obp)
-C              by a value of -999.99
-C           7. calulated products have the units:
-C                 mass of oceans (mass)           kilograms (kg)
-C                 center-of-mass of oceans (com)  meters (m)
-C                 oceanic angular momentum (oam)  kg-m**2/second
-C                 ocean-bottom pressure    (obp)  Pascals (Newton/m**2)
-C           8. calculated products are passed out of calc_sbo via common
-C              block /sbo/
-C           9. the sea surface height layer is assumed to have the same
-C              velocity, temperature, and salinity as the first depth layer
-C
-C       For questions regarding calc_sbo or the IERS SBO, please contact:
-C           Richard Gross                 Richard.Gross@jpl.nasa.gov
-C           Jet Propulsion Laboratory     ph. +1 818-354-4010
-C           Mail Stop 238-332             fax +1 818-393-6890
-C           4800 Oak Grove Drive
-C           Pasadena, Ca 91109-8099
-C           USA
+C     Purpose
+C           calc_sbo calculates the core products of the IERS Special Bureau
+C           for the Oceans including oceanic mass, center-of-mass, and angular
+C           momentum.
 C
 C=======================================================================
 C \ev
 
 C !USES: ===============================================================
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -121,6 +70,10 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "SBO.h"
+#ifdef ALLOW_SEAICE
+# include "SEAICE_SIZE.h"
+# include "SEAICE.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C     == Routine arguments ==
@@ -133,40 +86,67 @@ C     myThid  :: Number of this instance of SBO_CALC
 #ifdef ALLOW_SBO
 
 C !LOCAL VARIABLES: ====================================================
-C     external function called by calc_sbo
-C     returns density of sea water
-      _RL rhoK(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-
-C     internal variables
 C     bi, bj    :: array indices
 C     i         :: index over longitude grid points
 C     j         :: index over latitude  grid points
 C     k         :: index over layers
 C     lat       :: latitude  of grid point (radians)
-C     lat_deg   :: latitude  of grid point (degrees)
 C     lon       :: longitude of grid point (radians)
-C     radius    :: radius of bottom of layer (m)
-C     darea     :: element of surface area (unit radius)
-C     dradius   :: element of radius (m)
+C     darea     :: element of surface area (m**2)
 C     dvolume   :: element of volume (m**3)
-C     s         :: salinity at grid point (ppt)
-C     t         :: temperature at grid point (deg C)
-C     u         :: eastward  velocity at grid point (m/s)
-C     v         :: northward velocity at grid point (m/s)
-C     density   :: density at grid point (kg/m**3)
-C     ae        :: earth s mean radius  (m) (PREM value)
-C     grav      :: earth s mean gravity (m/s**2) (PREM)
-C     sbo_omega :: earth s mean angular velocity (rad/s)
-      integer bi, bj, i, j, k, kn0
-      _RL lat, lat_deg, lon, radius, darea, dradius, dvolume, depth
-      _RL u, v, density
-      _RL ae, grav, sbo_omega
+C     ae        :: mean radius of Earth (m) (PREM value)
+C     sbo_omega :: mean angular velocity of Earth (rad/s)
+C     UE,VN     :: geographic (east,north) ocean velocities at cell centers (m/s)
+C     UEice,VNice  :: geographic (east,north) seaice velocities at cell centers (m/s)
+C     Mload     :: total mass load (kg/m**2)
+C     GCload    :: mass load for Greatbatch correction (kg/m**2)
+C     FWLoad    :: real freshwater flux mass load (kg/m**2)
+      integer bi, bj, i, j, k
+      _RL lat, lon, darea, dvolume
+      _RL ae, sbo_omega
       PARAMETER ( ae        = 6.3710 _d 6    )
-      PARAMETER ( grav      = 9.8156         )
       PARAMETER ( sbo_omega = 7.292115 _d -5 )
+      _RL UE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL VN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL UEice(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL VNice(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL Mload(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL GCload, PHLmean, FWload
+C Tiled global sums
+      _RL tile_PHLmean(nSx,nSy)
+      _RL tile_sboarea(nSx,nSy)
+      _RL tile_GCload(nSx,nSy)
+      _RL tile_mass(nSx,nSy)
+      _RL tile_xcom(nSx,nSy)
+      _RL tile_ycom(nSx,nSy)
+      _RL tile_zcom(nSx,nSy)
+      _RL tile_xoamc(nSx,nSy)
+      _RL tile_yoamc(nSx,nSy)
+      _RL tile_zoamc(nSx,nSy)
+      _RL tile_xoamp(nSx,nSy)
+      _RL tile_yoamp(nSx,nSy)
+      _RL tile_zoamp(nSx,nSy)
+      _RL tile_xoamc_si(nSx,nSy)
+      _RL tile_yoamc_si(nSx,nSy)
+      _RL tile_zoamc_si(nSx,nSy)
+      _RL tile_mass_si(nSx,nSy)
+      _RL tile_mass_fw(nSx,nSy)
+      _RL tile_xcom_fw(nSx,nSy)
+      _RL tile_ycom_fw(nSx,nSy)
+      _RL tile_zcom_fw(nSx,nSy)
+      _RL tile_xoamp_fw(nSx,nSy)
+      _RL tile_yoamp_fw(nSx,nSy)
+      _RL tile_zoamp_fw(nSx,nSy)
+      _RL tile_mass_gc (nSx,nSy)
+C Pre-computed cos(lat), sin(lat), cos(lon), sin(lon)
+      _RL COSlat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SINlat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL COSlon(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SINlon(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CEOP
 
-C     initialize variables to be computed
+C Initialize variables to be computed---------------------------------
+
       xoamc = 0.0
       yoamc = 0.0
       zoamc = 0.0
@@ -177,164 +157,306 @@ C     initialize variables to be computed
       xcom  = 0.0
       ycom  = 0.0
       zcom  = 0.0
-      sbobp       = 0.0
-      sboarea     = 0.0
-      sboempmrwet = 0.0
-      sboqnetwet  = 0.0
 
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j = 1-OLy, sNy+OLy
-          DO i = 1-OLx, sNx+OLx
-            obp(i,j,bi,bj) = 0.0
+      xoamc_si = 0.0
+      yoamc_si = 0.0
+      zoamc_si = 0.0
+      mass_si  = 0.0
+
+      xoamp_fw = 0.0
+      yoamp_fw = 0.0
+      zoamp_fw = 0.0
+      mass_fw  = 0.0
+      xcom_fw  = 0.0
+      ycom_fw  = 0.0
+      zcom_fw  = 0.0
+
+      mass_gc  = 0.0
+
+C Get geographic (East,North) velocities------------------------------
+
+      CALL ROTATE_UV2EN_RL(
+     U          uVel, vVel,
+     U          UE, VN,
+     I          .TRUE., .TRUE., .FALSE., Nr, mythid )
+
+#ifdef ALLOW_SEAICE
+      IF ( useSEAICE ) THEN
+        CALL ROTATE_UV2EN_RL(
+     U          UICE, VICE,
+     U          UEice, VNice,
+     I          .TRUE., .TRUE., .FALSE., 1, mythid )
+      ELSE
+#else /* ALLOW_SEAICE */
+      IF ( .TRUE. ) THEN
+#endif /* ALLOW_SEAICE */
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             UEice(i,j,bi,bj) = 0.
+             VNice(i,j,bi,bj) = 0.
+           ENDDO
           ENDDO
          ENDDO
+        ENDDO
+      ENDIF
+
+C Calculate mass load-------------------------------------------------
+C     Calculate mass load (Mload), Greatbatch correction for
+C     spurious mass but spatial mean freshwater flux retained.
+C     Mload *needs* to be total mass (for center of mass), so add
+C     back missing time invariant term: -R_low*rhoConst
+
+c Calculate freshwater load
+C Calculate Greatbatch correction load over global ocean volume
+c Note: no halo regions in i,j loops, do not want to double book sums
+      PHLmean = 0.0
+      GCload = 0.0
+      sboarea = 0.0
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        tile_PHLmean(bi,bj) = 0.0
+        tile_GCload(bi,bj) = 0.0
+        tile_sboarea(bi,bj) = 0.0
+        DO j = 1, sNy
+         DO i = 1, sNx
+            darea = rA(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+            tile_sboarea(bi,bj) = tile_sboarea(bi,bj) + darea
+            tile_PHLmean(bi,bj) =  tile_PHLmean(bi,bj) +
+     &           phiHydLow(i,j,bi,bj)*darea
+            DO k = 1, Nr
+               dvolume = rA(i,j,bi,bj)*drF(k)
+     &              *maskC(i,j,k,bi,bj)*hFacC(i,j,k,bi,bj)
+               tile_GCload(bi,bj) = tile_GCload(bi,bj) +
+     &              rhoInSitu(i,j,k,bi,bj) * dvolume
+            ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      CALL GLOBAL_SUM_TILE_RL( tile_PHLmean , PHLmean , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_sboarea , sboarea , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_GCload  , GCload  , myThid )
+      PHLmean = PHLmean/sboarea
+      GCload = -1.0 * GCload/sboarea
+      FWload = PHLmean*rhoConst*recip_gravity + GCload
+
+c Total mass load with freshwater flux
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j = 1-OLy, sNy+OLy
+         DO i = 1-OLx, sNx+OLx
+            Mload(i,j,bi,bj) =
+     &             phiHydLow(i,j,bi,bj)*rhoConst*recip_gravity
+     &           + GCload - R_low(i,j,bi,bj)*rhoConst
+         ENDDO
+        ENDDO
        ENDDO
       ENDDO
 
-C     loop over all grid points, accumulating mass, com, oam, and obp
+c Pre-compute cos(lat), sin(lat), cos(lon), sin(lon)
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j = 1-OLy, sNy+OLy
+         DO i = 1-OLx, sNx+OLx
+            lat = yC(i,j,bi,bj) * deg2rad
+            lon = xC(i,j,bi,bj) * deg2rad
+            COSlat(i,j,bi,bj) = COS(lat)
+            SINlat(i,j,bi,bj) = SIN(lat)
+            COSlon(i,j,bi,bj) = COS(lon)
+            SINlon(i,j,bi,bj) = SIN(lon)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+C Main loops----------------------------------------------------------
+C     loop over all grid points, accumulating mass, com, oam
+C     Note: no halo regions in i,j loops, do not want to double book sums
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO k = 0, Nr
-          kn0 = max(k,1)
 
-          CALL FIND_RHO_2D(
-     I           1, sNx, 1, sNy, kn0,
-     I           theta(1-OLx,1-OLy,kn0,bi,bj),
-     I           salt(1-OLx,1-OLy,kn0,bi,bj),
-     O           rhoK,
-     I           kn0, bi, bj, myThid )
+C Initialize tile sums---------------------------------
+        tile_xoamc(bi,bj) = 0.0
+        tile_yoamc(bi,bj) = 0.0
+        tile_zoamc(bi,bj) = 0.0
+        tile_xoamp(bi,bj) = 0.0
+        tile_yoamp(bi,bj) = 0.0
+        tile_zoamp(bi,bj) = 0.0
+        tile_mass(bi,bj) = 0.0
+        tile_xcom(bi,bj) = 0.0
+        tile_ycom(bi,bj) = 0.0
+        tile_zcom(bi,bj) = 0.0
 
-C--
-          DO j = 1, sNy
-           DO i = 1, sNx
-            IF ( maskC(i,j,kn0,bi,bj) .NE. 0. ) THEN
+        tile_xoamc_si(bi,bj) = 0.0
+        tile_yoamc_si(bi,bj) = 0.0
+        tile_zoamc_si(bi,bj) = 0.0
+        tile_mass_si(bi,bj) = 0.0
 
-C     latitude (rad)
-              lat_deg = yC(i,j,bi,bj)
-              lat = yC(i,j,bi,bj) * pi / 180.0
-C     longitude (rad)
-              lon = xC(i,j,bi,bj) * pi / 180.0
-C     unit radius : should be using rA like this:
-c             darea = rA(i,j,bi,bj)*maskC(i,j,kn0,bi,bj) /ae/ae
-              darea = dyF(i,j,bi,bj) * dxF(i,j,bi,bj) / ae / ae
-     &              * maskC(i,j,kn0,bi,bj)
+        tile_xoamp_fw(bi,bj) = 0.0
+        tile_yoamp_fw(bi,bj) = 0.0
+        tile_zoamp_fw(bi,bj) = 0.0
+        tile_mass_fw(bi,bj) = 0.0
+        tile_xcom_fw(bi,bj) = 0.0
+        tile_ycom_fw(bi,bj) = 0.0
+        tile_zcom_fw(bi,bj) = 0.0
 
-              IF ( k .EQ. 0 ) THEN
-                sboarea = sboarea + darea
-                sboempmrwet = sboempmrwet + empmr(i,j,bi,bj)*darea
-                sboqnetwet  = sboqnetwet  + qnet(i,j,bi,bj) *darea
-C     k=0 => ssh
-                radius = ae
-                dradius = etaN(i,j,bi,bj) * maskC(i,j,kn0,bi,bj)
+        tile_mass_gc(bi,bj) = 0.0
 
-              ELSE
-C-- k > 0
+        DO j = 1, sNy
+         DO i = 1, sNx
 
-C     radius to center of cell (m)
-                radius = ae - ABS(rC(k))
-                dradius = drF(k) * maskC(i,j,k,bi,bj)
-C-- end of k-if
-              ENDIF
+           IF ( maskC(i,j,1,bi,bj) .NE. 0. ) THEN
 
+C     horizontal area
+              darea = rA(i,j,bi,bj)*maskC(i,j,1,bi,bj)
 
-cph              s = salt(i,j,kn0,bi,bj)
-cph              t = theta(i,j,kn0,bi,bj)
-              u =(uvel(i,j,kn0,bi,bj)+uvel(i+1,j,kn0,bi,bj))*0.5 _d 0
-              v =(vvel(i,j,kn0,bi,bj)+vvel(i,j+1,kn0,bi,bj))*0.5 _d 0
+C     accumulate mass of oceans, Greatbatch correction, seaice
+              tile_mass(bi,bj) = tile_mass(bi,bj) +
+     &          Mload(i,j,bi,bj)*darea
+              tile_mass_gc(bi,bj) = tile_mass_gc(bi,bj) +
+     &          GCload*darea
+              tile_mass_si(bi,bj) = tile_mass_si(bi,bj) +
+     &          sIceLoad(i,j,bi,bj)*darea
 
-C     cell volume (m**3)
-              dvolume = darea * radius**2 * dradius
+C     accumulate center-of-mass of oceans (need to divide by total mass at end)
+              tile_xcom(bi,bj) = tile_xcom(bi,bj) +
+     &          Mload(i,j,bi,bj)*COSlat(i,j,bi,bj)*COSlon(i,j,bi,bj)
+     &          * ae * darea
+              tile_ycom(bi,bj) = tile_ycom(bi,bj) +
+     &          Mload(i,j,bi,bj)*COSlat(i,j,bi,bj)*SINlon(i,j,bi,bj)
+     &          * ae * darea
+              tile_zcom(bi,bj) = tile_zcom(bi,bj) +
+     &          Mload(i,j,bi,bj)*SINlat(i,j,bi,bj)
+     &          * ae * darea
 
-C     get density
-              depth = ae - radius
-cph(
-cph compute density consistent with EOS used by model
-cph              density = sbo_rho(depth,lat_deg,s,t)
-              density = rhoConst + rhoK(i,j)
-cph)
+C     accumulate oceanic angular momentum due to currents (need depth integral too)
+C     Note: depth integral goes from k=1,Nr.  hFacC takes care of R_low and etaN (as per JMC)
+              DO k = 1, Nr
+                 dvolume = rA(i,j,bi,bj)*drF(k)
+     &             * maskC(i,j,k,bi,bj)*hFacC(i,j,k,bi,bj)
+                 tile_xoamc(bi,bj) = tile_xoamc(bi,bj) +
+     &             ( VN(i,j,k,bi,bj)*SINlon(i,j,bi,bj) -
+     &             UE(i,j,k,bi,bj)*
+     &             SINlat(i,j,bi,bj)*COSlon(i,j,bi,bj) )
+     &             * rhoConst * ae * dvolume
+                 tile_yoamc(bi,bj) = tile_yoamc(bi,bj) +
+     &             (-VN(i,j,k,bi,bj)*COSlon(i,j,bi,bj) -
+     &             UE(i,j,k,bi,bj)*
+     &             SINlat(i,j,bi,bj)*SINlon(i,j,bi,bj) )
+     &             * rhoConst * ae * dvolume
+                 tile_zoamc(bi,bj) = tile_zoamc(bi,bj) +
+     &             UE(i,j,k,bi,bj)*COSlat(i,j,bi,bj)
+     &             * rhoConst * ae * dvolume
+              ENDDO
 
-C     accumulate mass of oceans
-              mass = mass + density * dvolume
-
-C     accumulate center-of-mass of oceans
-              xcom = xcom + density * COS(lat) * COS(lon)
-     &             * radius * dvolume
-              ycom = ycom + density * COS(lat) * SIN(lon)
-     &             * radius * dvolume
-              zcom = zcom + density * SIN(lat)
-     &             * radius * dvolume
-
-C     accumulate oceanic angular momentum due to currents
-              xoamc = xoamc + ( v*SIN(lon)-u*SIN(lat)*COS(lon))
-     &              * density * radius * dvolume
-              yoamc = yoamc + (-v*COS(lon)-u*SIN(lat)*SIN(lon))
-     &              * density * radius * dvolume
-              zoamc = zoamc +   u*COS(lat)
-     &              * density * radius * dvolume
+C     accumulate sea angular momentum due to motion (one layer, so no depth integral needed)
+              tile_xoamc_si(bi,bj) = tile_xoamc_si(bi,bj) +
+     &          ( VNice(i,j,bi,bj)*SINlon(i,j,bi,bj) -
+     &          UEice(i,j,bi,bj)*
+     &          SINlat(i,j,bi,bj)*COSlon(i,j,bi,bj) )
+     &          * sIceLoad(i,j,bi,bj) * ae * darea
+              tile_yoamc_si(bi,bj) = tile_yoamc_si(bi,bj) +
+     &          (-VNice(i,j,bi,bj)*COSlon(i,j,bi,bj) -
+     &          UEice(i,j,bi,bj)*
+     &          SINlat(i,j,bi,bj)*SINlon(i,j,bi,bj) )
+     &          * sIceLoad(i,j,bi,bj) * ae * darea
+              tile_zoamc_si(bi,bj) = tile_zoamc_si(bi,bj) +
+     &          UEice(i,j,bi,bj)*COSlat(i,j,bi,bj)
+     &          * sIceLoad(i,j,bi,bj) * ae * darea
 
 C     accumulate oceanic angular momentum due to pressure
-              xoamp = xoamp - SIN(lat) * COS(lat) * COS(lon)
-     &              * sbo_omega * density * radius*radius * dvolume
-              yoamp = yoamp - SIN(lat) * COS(lat) * SIN(lon)
-     &              * sbo_omega * density * radius*radius * dvolume
-              zoamp = zoamp + COS(lat)**2
-     &              * sbo_omega * density * radius*radius * dvolume
+              tile_xoamp(bi,bj) = tile_xoamp(bi,bj) -
+     &          SINlat(i,j,bi,bj)*COSlat(i,j,bi,bj)*COSlon(i,j,bi,bj)
+     &          * sbo_omega * Mload(i,j,bi,bj) * ae*ae * darea
+              tile_yoamp(bi,bj) = tile_yoamp(bi,bj) -
+     &          SINlat(i,j,bi,bj)*COSlat(i,j,bi,bj)*SINlon(i,j,bi,bj)
+     &          * sbo_omega * Mload(i,j,bi,bj) * ae*ae * darea
+              tile_zoamp(bi,bj) = tile_zoamp(bi,bj) +
+     &          COSlat(i,j,bi,bj) * COSlat(i,j,bi,bj)
+     &          * sbo_omega * Mload(i,j,bi,bj) * ae*ae * darea
 
-C     accumulate ocean-bottom pressure
-              obp(i,j,bi,bj) = obp(i,j,bi,bj)
-     &              + grav * density * dradius
+C     accumulate mass of real freshwater flux
+              tile_mass_fw(bi,bj) = tile_mass_fw(bi,bj) +
+     &          FWload * darea
 
-C     end if wet
-            ENDIF
+C     accumulate center-of-mass of real freshwater flux (need to divide by total FW mass at end)
+              tile_xcom_fw(bi,bj) = tile_xcom_fw(bi,bj) +
+     &          FWload * COSlat(i,j,bi,bj) * COSlon(i,j,bi,bj)
+     &          * ae * darea
+              tile_ycom_fw(bi,bj) = tile_ycom_fw(bi,bj) +
+     &          FWload * COSlat(i,j,bi,bj) * SINlon(i,j,bi,bj)
+     &          * ae * darea
+              tile_zcom_fw(bi,bj) = tile_zcom_fw(bi,bj) +
+     &          FWload * SINlat(i,j,bi,bj)
+     &          * ae * darea
+
+C     accumulate oceanic angular momentum due to real freshwater flux
+              tile_xoamp_fw(bi,bj) = tile_xoamp_fw(bi,bj) -
+     &          SINlat(i,j,bi,bj)*COSlat(i,j,bi,bj)*COSlon(i,j,bi,bj)
+     &          * sbo_omega * FWload * ae*ae * darea
+              tile_yoamp_fw(bi,bj) = tile_yoamp_fw(bi,bj) -
+     &          SINlat(i,j,bi,bj)*COSlat(i,j,bi,bj)*SINlon(i,j,bi,bj)
+     &          * sbo_omega * FWload * ae*ae * darea
+              tile_zoamp_fw(bi,bj) = tile_zoamp_fw(bi,bj) +
+     &          COSlat(i,j,bi,bj) * COSlat(i,j,bi,bj)
+     &          * sbo_omega * FWload * ae*ae * darea
+
+C     end if over ocean
+           ENDIF
 C     end loop over i,j
-           ENDDO
-          ENDDO
-
-C     end loop over k
-        ENDDO
-
-C     accumulate for global-mean ocean-bottom pressure
-        DO j = 1, sNy
-          DO i = 1, sNx
-            sbobp = sbobp + obp(i,j,bi,bj)*rA(i,j,bi,bj)
-          ENDDO
+         ENDDO
         ENDDO
 
 C     end loop over bi,bj
        ENDDO
       ENDDO
 
-C     sum all values across model tiles
-C- note: GLOBAL_SUM applied to var. in common block <= wrong if Muti-threaded
-      _GLOBAL_SUM_RL( mass  , myThid )
-      _GLOBAL_SUM_RL( xcom  , myThid )
-      _GLOBAL_SUM_RL( ycom  , myThid )
-      _GLOBAL_SUM_RL( zcom  , myThid )
-      _GLOBAL_SUM_RL( xoamc , myThid )
-      _GLOBAL_SUM_RL( yoamc , myThid )
-      _GLOBAL_SUM_RL( zoamc , myThid )
-      _GLOBAL_SUM_RL( xoamp , myThid )
-      _GLOBAL_SUM_RL( yoamp , myThid )
-      _GLOBAL_SUM_RL( zoamp , myThid )
-cph(
-      _GLOBAL_SUM_RL( sbobp, myThid )
-      _GLOBAL_SUM_RL( sboarea, myThid )
-      _GLOBAL_SUM_RL( sboempmrwet, myThid )
-      _GLOBAL_SUM_RL( sboqnetwet, myThid )
-cph)
+C     sum all global values across model tiles
+      CALL GLOBAL_SUM_TILE_RL( tile_mass  , mass  , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_xcom  , xcom  , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_ycom  , ycom  , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_zcom  , zcom  , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_xoamc , xoamc , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_yoamc , yoamc , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_zoamc , zoamc , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_xoamp , xoamp , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_yoamp , yoamp , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_zoamp , zoamp , myThid )
+
+      CALL GLOBAL_SUM_TILE_RL( tile_xoamc_si , xoamc_si , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_yoamc_si , yoamc_si , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_zoamc_si , zoamc_si , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_mass_si , mass_si , myThid )
+
+      CALL GLOBAL_SUM_TILE_RL( tile_mass_fw  , mass_fw  , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_xcom_fw  , xcom_fw  , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_ycom_fw  , ycom_fw  , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_zcom_fw  , zcom_fw  , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_xoamp_fw , xoamp_fw , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_yoamp_fw , yoamp_fw , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_zoamp_fw , zoamp_fw , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_mass_gc  , mass_gc  , myThid )
 
 C     finish calculating center-of-mass of oceans
-      xcom = xcom / mass
-      ycom = ycom / mass
-      zcom = zcom / mass
-cph(
-c     sbobp       = sbobp / sboarea
-      sbobp       = sbobp / globalArea
-      sboempmrwet = sboempmrwet / sboarea
-      sboqnetwet  = sboqnetwet / sboarea
-cph)
+      IF ( mass.NE.zeroRL ) THEN
+        xcom = xcom / mass
+        ycom = ycom / mass
+        zcom = zcom / mass
+      ENDIF
+
+      IF ( mass_fw.NE.zeroRL ) THEN
+        xcom_fw = xcom_fw / mass_fw
+        ycom_fw = ycom_fw / mass_fw
+        zcom_fw = zcom_fw / mass_fw
+      ENDIF
+
+C     Add seaice OAMC to total OAMC
+      xoamc = xoamc + xoamc_si
+      yoamc = yoamc + yoamc_si
+      zoamc = zoamc + zoamc_si
 
 #endif /* ALLOW_SBO */
 

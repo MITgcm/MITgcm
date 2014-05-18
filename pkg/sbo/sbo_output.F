@@ -1,52 +1,55 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_output.F,v 1.2 2010/01/03 20:03:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_output.F,v 1.3 2014/05/18 23:55:52 jmc Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
 
+CBOP
+C !ROUTINE: SBO_OUTPUT
+
+C !INTERFACE:
       SUBROUTINE SBO_OUTPUT( myTime, myIter, myThid )
+
+C !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE SBO_OUTPUT
 C     | o Do SBO diagnostic output.
 C     *==========================================================*
-      IMPLICIT NONE
 
+C !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "SBO.h"
 
-C     == Routine arguments ==
-C     myTime :: my time in simulation ( s )
-C     myIter :: my Iteration number
-C     myThid :: my Thread Id number
+C !INPUT PARAMETERS:
+C     myTime    :: my time in simulation ( s )
+C     myIter    :: my Iteration number
+C     myThid    :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
 
 #ifdef ALLOW_SBO
+C !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
-c     == Local variables ==
-c     bi, bj    - loop counters
-c     sbo_diag  - vector of SBO diagnostics contains:
-c                 model time (s), xoamc, yoamc, zoamc,
-c                 xoamp, yoamp, zoamp, mass, xcom, ycom, zcom
-c     character*(8) fName
+C !LOCAL VARIABLES:
+C     sbo_diag  :: vector of SBO diagnostics contains:
+C                  model time (s), xoamc, yoamc, zoamc,
+C                  xoamp, yoamp, zoamp, mass, xcom, ycom, zcom
+C     fName     :: output file name
+C     msgBuf    :: Informational/error message buffer
       CHARACTER*(MAX_LEN_FNAM) fName
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER narr
-      PARAMETER( narr = 15 )
+      PARAMETER( narr = 24 )
       INTEGER irecord
-c     Real*8   sbo_diag(15)
       INTEGER ioUnit
       _RL     sbo_diag(narr)
       _RS     dummyRS(1)
-#ifdef ALLOW_TIMEAVE
-      INTEGER bi, bj
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-      _RL DDTT
-      CHARACTER*(MAX_LEN_MBUF) suff
-#endif
 
 C-----------------------------------------------------------------
 C     Save angular momentum and mass variables at every time step
@@ -64,20 +67,23 @@ C-----------------------------------------------------------------
       sbo_diag(10) = ycom
       sbo_diag(11) = zcom
       sbo_diag(12) = sboarea
-      sbo_diag(13) = sbobp
-      sbo_diag(14) = sboempmrwet
-      sbo_diag(15) = sboqnetwet
+
+      sbo_diag(13) = xoamc_si
+      sbo_diag(14) = yoamc_si
+      sbo_diag(15) = zoamc_si
+      sbo_diag(16) = mass_si
+
+      sbo_diag(17) = xoamp_fw
+      sbo_diag(18) = yoamp_fw
+      sbo_diag(19) = zoamp_fw
+      sbo_diag(20) = mass_fw
+      sbo_diag(21) = xcom_fw
+      sbo_diag(22) = ycom_fw
+      sbo_diag(23) = zcom_fw
+
+      sbo_diag(24) = mass_gc
 
       irecord      = myIter - nIter0 + 1
-
-c     fName        = 'SBO_DIAG'
-c     CALL SBO_WRITEVECTOR(
-c    I   fName,
-c    I   narr,
-c    I   sbo_diag,
-c    I   irecord,
-c    I   myIter,
-c    I   myThid )
 
 #ifdef ALLOW_MDSIO
       IF ( nThreads.EQ.1 ) THEN
@@ -93,80 +99,34 @@ C     (due to Pb with GLOBAL_SUM in sbo_calc.F, cf comments there)
 #endif /* ALLOW_MDSIO */
 
 #ifdef ALLOW_TIMEAVE
-      IF ( sbo_taveFreq.GT.0. _d 0 ) THEN
-
 C-----------------------------------------------------------------
+C     NOT doing this anymore:
 C     Save time-averaged bottom pressure at sbo_taveFreq intervals
 C-----------------------------------------------------------------
-
-C     Initialize averages to zero
-       IF ( myIter.EQ.nIter0 ) THEN
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-            CALL TIMEAVE_RESET( OBPtave, 1, bi, bj, myThid )
-            sbo_timeAve(bi,bj) = 0.
-          ENDDO
-         ENDDO
-       ENDIF
-
-C     Time Average SBO fields
-       IF ( myIter .EQ. nIter0 .OR.
-     &     DIFFERENT_MULTIPLE(sbo_taveFreq,myTime,deltaTClock)
-     &    ) THEN
-         DDTT=0.5*deltaTclock
-       ELSE
-         DDTT=deltaTclock
-       ENDIF
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-          CALL TIMEAVE_CUMULATE( OBPtave, obp, 1, DDTT, bi,bj,myThid )
-C     Keep record of how much time has been integrated over
-          sbo_timeAve(bi,bj) = sbo_timeAve(bi,bj)+DDTT
-        ENDDO
-       ENDDO
-
-C     Dump files and restart average computation if needed
-       IF ( myIter.NE.nIter0 .AND.
-     &      DIFFERENT_MULTIPLE(sbo_taveFreq,myTime,deltaTClock)
-     &    ) THEN
-
-C     Normalize by integrated time
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-            CALL TIMEAVE_NORMALIZE(OBPtave,sbo_timeAve,1,bi,bj,myThid)
-          ENDDO
-         ENDDO
-
-         WRITE(suff,'(I10.10)') myIter
-         CALL WRITE_FLD_XY_RL( 'OBPtave.', suff,
-     &                          OBPtave, myIter, myThid )
-
-C     Reset averages to zero
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-            CALL TIMEAVE_RESET( OBPtave, 1, bi, bj, myThid )
-            sbo_timeAve(bi,bj) = 0.
-          ENDDO
-         ENDDO
-
-C     Time Average SBO fields
-         DDTT=0.5*deltaTclock
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           CALL TIMEAVE_CUMULATE( OBPtave, obp, 1, DDTT,bi,bj,myThid )
-C     Keep record of how much time has been integrated over
-            sbo_timeAve(bi,bj) = sbo_timeAve(bi,bj)+DDTT
-          ENDDO
-         ENDDO
-
-C--   end dump-files block
-       ENDIF
-
-C-    end if sbo_taveFreq > 0
-      ENDIF
 #endif /* ALLOW_TIMEAVE */
+
+      IF ( myIter .EQ. nIter0 .OR.
+     &     DIFFERENT_MULTIPLE(sbo_monFreq,myTime,deltaTClock)
+     &   ) THEN
+
+        ioUnit = standardMessageUnit
+        WRITE(msgBuf,'(A,1PE21.13)')
+     &    '%SBO sbo_mass                     = ', mass
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A,1PE21.13)')
+     &    '%SBO sbo_mass_fw                  = ', mass_fw
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A,1PE21.13)')
+     &    '%SBO sbo_zoamc                    = ', zoamc
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A,1PE21.13)')
+     &    '%SBO sbo_zoamp                    = ', zoamp
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+
+      ENDIF
 
 #endif /* ALLOW_SBO */
 
       RETURN
       END
+

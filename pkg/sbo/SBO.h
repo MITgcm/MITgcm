@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/SBO.h,v 1.8 2010/01/03 20:03:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/SBO.h,v 1.9 2014/05/18 23:55:51 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_SBO
@@ -18,42 +18,33 @@ C     mass        :: mass of oceans                           (kg)
 C     xcom        :: x-comp of center-of-mass of oceans        (m)
 C     ycom        :: y-comp of center-of-mass of oceans        (m)
 C     zcom        :: z-comp of center-of-mass of oceans        (m)
-C     obp         :: ocean-bottom pressure               (Pascals)
-cph(
-C     area        :: surface wet area                       (m**2)
-C     sboempmrwet :: net E-P-R over the ocean            (kg/m2/s)
-C     sboqnetwet  :: net heat flux over the ocean         (W/m**2)
-cph)
+C     sboarea     :: surface ocean area                     (m**2)
 C
       _RL xoamc, yoamc, zoamc, xoamp, yoamp, zoamp
       _RL mass, xcom, ycom, zcom
-      _RL sbobp, sboarea, sboempmrwet, sboqnetwet
-      _RL obp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL sboarea
       common /sbo/ xoamc, yoamc, zoamc, xoamp, yoamp, zoamp,
-     &             mass, xcom, ycom, zcom, obp, sbobp,
-     &             sboarea, sboempmrwet, sboqnetwet
+     &             mass, xcom, ycom, zcom,
+     &             sboarea
 
-C     sbo_taveFreq :: SBO time-averaging frequency              (s)
-C
-      _RL sbo_taveFreq
-      COMMON /sbo_r/ sbo_taveFreq
+C components due to real freshwater flux
+      _RL xoamp_fw, yoamp_fw, zoamp_fw
+      _RL mass_fw, xcom_fw, ycom_fw, zcom_fw
+      common /sbo_fw/ xoamp_fw, yoamp_fw, zoamp_fw,
+     &             mass_fw, xcom_fw, ycom_fw, zcom_fw
 
-#ifdef ALLOW_TIMEAVE
+C components due to seaice motion
+      _RL xoamc_si, yoamc_si, zoamc_si
+      _RL mass_si
+      common /sbo_si/ xoamc_si, yoamc_si, zoamc_si,
+     &             mass_si
 
-C----------------------------------------------------------------
-C     sbo_timeAve - time of temporal integration (s) for each thread
-C----------------------------------------------------------------
+C components due to Greatbatch correction
+      _RL mass_gc
+      common /sbo_gc/ mass_gc
 
-      _RL sbo_timeAve(nSx,nSy)
-      COMMON /SBO_TAVE_COUNT/ sbo_timeAve
-
-C----------------------------------------------------------------
-C     OBPtave      - time-averaged ocean-bottom pressure (Pascals)
-C----------------------------------------------------------------
-
-      _RL OBPtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      COMMON /SBO_TAVE_FIELDS/ OBPtave
-
-#endif /* ALLOW_TIMEAVE */
+C sbo_monFreq :: SBO monitor frequency           (s)
+      _RL sbo_monFreq
+      COMMON /sbo_params_r/ sbo_monFreq
 
 #endif /* ALLOW_SBO */

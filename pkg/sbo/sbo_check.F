@@ -1,43 +1,48 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_check.F,v 1.4 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_check.F,v 1.5 2014/05/18 23:55:52 jmc Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
 
       SUBROUTINE SBO_CHECK( myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE SBO_CHECK                                     |
 C     | o Validate basic package setup and inter-package         |
 C     | dependencies.                                            |
-C     \==========================================================/
-      IMPLICIT NONE
+C     *==========================================================*
 
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
 C     === Routine arguments ===
-C     myThid - Number of this instance of SBO_CHECK
+C     myThid   :: my Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_SBO
 
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf   :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       WRITE(msgBuf,'(A)') 'SBO_CHECK: #define ALLOW_SBO'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , myThid )
+     &                    SQUEEZE_RIGHT, myThid )
 
 C     SBO assumes spherical polar coordinates
-      IF ( .NOT. usingSphericalPolarGrid ) THEN
-         WRITE(msgBuf,'(A)') 'SBO requires usingSphericalPolarGrid'
-         CALL PRINT_ERROR( msgBuf , 1)
-         STOP 'ABNORMAL END: S/R SBO_CHECK'
+      IF ( usingCartesianGrid ) THEN
+        WRITE(msgBuf,'(A)') 'SBO not implemented for Cartesian Grid'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SBO_CHECK'
+      ENDIF
+      IF ( usingCylindricalGrid ) THEN
+        WRITE(msgBuf,'(A)') 'SBO not implemented for Cylindrical Grid'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SBO_CHECK'
       ENDIF
 
 #endif /* ALLOW_SBO */
 
-      return
-      end
+      RETURN
+      END
