@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.29 2014/03/28 04:22:11 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.30 2014/05/18 02:58:39 m_bates Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -22,11 +22,12 @@ C     GM_MNC           ::
 C     GM_MDSIO         ::
 C     GM_useK3D        :: use the 3 dimensional calculation for K
 C     GM_K3D_beta_eq_0 :: Ignores the beta term when calculating grad(q)
-C     GM_K3D_likeGM    :: Makes the PV closure similar to the GM closure (for debugging only!)
-C     GM_K3D_ThickSheet:: Use a thick PV sheet (should pretty much always be false)
+C     GM_K3D_likeGM    :: Makes the PV closure similar to the GM closure by enforcing a
+C                      :: constant K and setting beta=0
+C     GM_K3D_ThickSheet:: Use a thick PV sheet
 C     GM_K3D_surfK     :: Imposes a constant K in the surface layer    
 C     GM_K3D_constRedi :: Imposes a constant K for the Redi isoneutral diffusivity
-C     GM_K3D_smooth    :: Expand PV closure in terms of baroclinic modes (for debugging only!)
+C     GM_K3D_smooth    :: Expand PV closure in terms of baroclinic modes (=.FALSE. for debugging only!)
       LOGICAL GM_AdvForm
       LOGICAL GM_AdvSeparate
       LOGICAL GM_useBVP
@@ -251,6 +252,11 @@ C     for Visbeck et al. parameterization)
 
 #ifdef GM_K3D
 C     K3D          :: The three dimensional eddy mixing coeffixint [m**2/s]
+C     modesC       :: First baroclinic mode at the centre of a tracer cell [-]
+C     modesW       :: First N baroclinic mode at the western face of a tracer cell [-]
+C     modesS       :: First N baroclinic mode at the southern face of a tracer cell [-]
+C     Rdef         :: Deformation radius [m]
+
       _RL K3D(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr,nSx,nSy)
       _RL modesC(1,1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr,nSx,nSy)
       _RL modesW(GM_K3D_NModes,1-Olx:sNx+Olx,
