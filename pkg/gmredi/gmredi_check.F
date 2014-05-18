@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.29 2013/09/15 14:31:11 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.30 2014/05/18 02:49:52 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -155,9 +155,9 @@ C     Make sure we are not trying to use some arrays that are unavailable
 #endif
 
 #ifdef GM_K3D
-# ifndef use_lapack
+# ifndef HAVE_LAPACK
       WRITE(msgBuf, '(A)')
-     &     'Must use CPP option use_lapack when using GM_K3D'
+     &     'Must use CPP option HAVE_LAPACK when using GM_K3D'
       CALL PRINT_ERROR( msgBuf, myThid )
       STOP ' ABNORMAL END: S/R GMREDI_CHECK'
 # endif
