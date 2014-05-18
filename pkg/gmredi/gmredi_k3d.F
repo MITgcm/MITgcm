@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.16 2014/03/28 04:22:11 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.17 2014/05/18 02:38:55 m_bates Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 #include "GMREDI_OPTIONS.h"
@@ -266,19 +266,25 @@ C     that it is defined at the equator
        ENDDO
       ENDDO
 C     Coriolis at U and V points
-      DO j=1-Oly+1,sNy+Oly
+      DO j=1-Oly,sNy+Oly
        DO i=1-Olx+1,sNx+Olx
 C       Limited so that the inverse is defined at the equator
         coriU(i,j) = op5*( cori(i,j)+cori(i-1,j) )
         coriU(i,j) = SIGN( MAX( ABS(coriU(i,j)),GM_K3D_minCori ), 
      &       coriU(i,j) )
 
+C       Not limited
+        fCoriU(i,j) = op5*( fCori(i,j,bi,bj)+fCori(i-1,j,bi,bj) )
+       ENDDO
+      ENDDO
+      DO j=1-Oly+1,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+C       Limited so that the inverse is defined at the equator
         coriV(i,j) = op5*( cori(i,j)+cori(i,j-1) )
         coriV(i,j) = SIGN( MAX( ABS(coriV(i,j)),GM_K3D_minCori ), 
      &       coriV(i,j) )
 
 C       Not limited
-        fCoriU(i,j) = op5*( fCori(i,j,bi,bj)+fCori(i-1,j,bi,bj) )
         fCoriV(i,j) = op5*( fCori(i,j,bi,bj)+fCori(i,j-1,bi,bj) )
        ENDDO
       ENDDO
@@ -286,6 +292,17 @@ C       Not limited
        DO i=1-Olx,sNx+Olx
         gradf(i,j) = recip_rSphere*fCoriCos(i,j,bi,bj)
        ENDDO
+      ENDDO
+C     Some dummy values at the edges
+      i=1-Olx
+      DO j=1-Oly,sNy+Oly
+       coriU(i,j)=cori(i,j)
+       fCoriU(i,j)=fCori(i,j,bi,bj)
+      ENDDO
+      j=1-Oly
+      DO i=1-Olx,sNx+Olx
+       coriV(i,j)=cori(i,j)
+       fCoriV(i,j)=fCori(i,j,bi,bj)
       ENDDO
 
 C     Zeroing some cumulative fields
@@ -301,6 +318,36 @@ C     Zeroing some cumulative fields
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
          slopeC(i,j,k)=zeroRL
+        ENDDO
+       ENDDO
+      ENDDO
+
+C     initialise remaining 2d variables
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+        dfdy(i,j)=zeroRL
+        dfdy(i,j)=zeroRL
+        Rurms(i,j)=zeroRL
+        RRhines(i,j)=zeroRL
+        Rmix(i,j)=zeroRL
+       ENDDO
+      ENDDO
+C     initialise remaining 3d variables
+      DO k=1,Nr
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         N2loc(i,j,k)=GM_K3D_minN2
+         N2W(i,j,k) = GM_K3D_minN2
+         N2S(i,j,k) = GM_K3D_minN2
+         M4loc(i,j,k)=zeroRL
+         M4onN2(i,j,k)=zeroRL
+         urms(i,j,k)=zeroRL
+         SlopeX(i,j,k)=zeroRL
+         SlopeY(i,j,k)=zeroRL
+         dSigmaDx(i,j,k)=zeroRL
+         dSigmaDy(i,j,k)=zeroRL
+         gradqx(i,j,k)=zeroRL
+         gradqy(i,j,k)=zeroRL
         ENDDO
        ENDDO
       ENDDO
@@ -332,8 +379,8 @@ C     N2(k=1) is always zero
       k=1
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        N2(i,j,k) = 0.0
-        N(i,j,k)  = 0.0
+        N2(i,j,k) = zeroRL
+        N(i,j,k)  = zeroRL
        ENDDO
       ENDDO
 C     Enforce a minimum N2 
@@ -755,18 +802,6 @@ C     This is necessary to find the eigenvectors at those points
          N2S(i,j,k) = maskS(i,j,k,bi,bj)
      &                *( N2(i,j,k)+N2(i,j-1,k) )
         ENDDO
-       ENDDO
-C     This fudge is necessary to avoid division by zero in gmredi_calc_eigs.
-C     It does not affect the end result since it is in the overlap region.
-       j=1-Oly
-       DO i=1-Olx,sNx+Olx
-        N2W(i,j,k) = GM_K3D_minN2
-        N2S(i,j,k) = GM_K3D_minN2
-       ENDDO
-       i=1-Olx
-       DO j=1-Oly,sNy+Oly
-        N2W(i,j,k) = GM_K3D_minN2
-        N2S(i,j,k) = GM_K3D_minN2
        ENDDO
       ENDDO
 
