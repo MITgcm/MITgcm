@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1996 2014/05/14 21:40:17 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1997 2014/05/19 14:15:02 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/sbo:
+  - incorporate modifications from Katherine Quinn to enable the use of sbo 
+    pkg in ECCO-v4 set-up ; remove SBO-TimeAve output ; add monitor-like
+    output for future testreport verification (unfinished).
 o pkg/atm_phys:
   - change diagnostics (AtPh_Trf & AtPh_Qrf) of DARGAN_BETTSMILLER S/R:
     skip the reseting of t_ref & q_ref to initial t & q ; this preserve the
