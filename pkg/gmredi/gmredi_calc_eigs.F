@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_eigs.F,v 1.5 2014/05/18 02:49:52 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_eigs.F,v 1.6 2014/05/20 11:42:28 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -203,7 +203,7 @@ C         and the first M baroclinic modes (eigenvectors)
           DO k=1,kLow(i,j)
            eigval(0) = MAX(eigval(0),eigR(k))
           ENDDO
-          DO m=1,MIN(nmodes,klow(i,j))
+          DO m=1,MIN(nmodes,klow(i,j)-1)
            DO k=1,kLow(i,j)
             IF (eigR(k).LT.eigval(m-1)) THEN
               eigval(m) = MAX(eigval(m),eigR(k))
