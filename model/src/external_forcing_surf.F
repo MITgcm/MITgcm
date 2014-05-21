@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.62 2014/05/21 10:44:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.63 2014/05/21 21:48:32 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -60,6 +60,7 @@ C     ks     :: index of surface interface layer
       INTEGER bi,bj
       INTEGER i,j
       INTEGER ks
+      _RL recip_Cp
 #ifdef ALLOW_BALANCE_FLUXES
       _RS tmpVar(1)
 #endif
@@ -73,6 +74,7 @@ CEOP
       ELSE
        ks        = 1
       ENDIF
+      recip_Cp = 1. _d 0 / HeatCapacity_Cp
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -211,7 +213,7 @@ C     Net heat flux Qnet:
 #ifdef SHORTWAVE_HEATING
      &          -Qsw(i,j,bi,bj)
 #endif
-     &         ) *mass2rUnit/HeatCapacity_Cp
+     &         ) *recip_Cp*mass2rUnit
 C     Net Salt Flux :
           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
      &      -saltFlux(i,j,bi,bj)*mass2rUnit

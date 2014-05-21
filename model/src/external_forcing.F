@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.66 2014/05/21 10:44:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.67 2014/05/21 21:48:32 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -317,6 +317,7 @@ C     kSurface  :: index of surface level
       INTEGER km, kc, kp
       _RL tmpVar(1:sNx,1:sNy)
       _RL tmpFac, delPI
+      _RL recip_Cp
 CEOP
 c#ifdef ALLOW_FRICTION_HEATING
 c     _RL tmpFac
@@ -337,6 +338,7 @@ c#endif
       ELSE
        kSurface = 1
       ENDIF
+      recip_Cp = 1. _d 0 / HeatCapacity_Cp
 
 C--   Forcing term
 #ifdef ALLOW_AIM
@@ -395,7 +397,7 @@ C         conversion from W/m^2/r_unit to K/s
           tmpFac = (tmpFac/atm_Cp) * mass2rUnit
         ELSE
 C         conversion from W/m^2/r_unit to K/s
-          tmpFac = mass2rUnit/HeatCapacity_Cp
+          tmpFac = recip_Cp * mass2rUnit
         ENDIF
         DO j=1,sNy
           DO i=1,sNx
@@ -542,7 +544,7 @@ c     IF ( usePenetratingSW ) THEN
          gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj)
      &   -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,klev,bi,bj)
      &                   -swfracb(2)*maskC(i,j,kp1, bi,bj))
-     &    *mass2rUnit/HeatCapacity_Cp
+     &    *recip_Cp*mass2rUnit
      &    *recip_drF(klev)*_recip_hFacC(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
