@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_diagnostics_fill.F,v 1.3 2011/12/28 20:50:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_diagnostics_fill.F,v 1.4 2014/05/21 10:46:03 heimbach Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -37,7 +37,18 @@ C-    Salt plume depth (>0), [m]
 C-    net Salt plume flux into the ocean during freezing (+=down), [psu.kg/m2/s ~ g/m2/s]
        CALL DIAGNOSTICS_FILL( saltPlumeFlux,
      &                             'oceSPflx',0, 1,0,1,1,myThid )
-
+#ifdef SALT_PLUME_VOLUME
+       CALL DIAGNOSTICS_FILL(
+     &      SPbrineVolFlux,'oceSPvol',0,1,0,1,1,myThid )
+       CALL DIAGNOSTICS_FILL(
+     &      SPforcS1,'SPforcS1',0,1,0,1,1,myThid )
+       CALL DIAGNOSTICS_FILL(
+     &      SPforcT1,'SPforcT1',0,1,0,1,1,myThid )
+       CALL DIAGNOSTICS_FILL(
+     &      dSPvolSurf2kLev, 'SPVsuf2k',0,Nr,0,1,1,myThid )
+       CALL DIAGNOSTICS_FILL(
+     &      dSPvolkLev2Above,'SPVk2m  ',0,Nr,0,1,1,myThid )
+#endif
       ENDIF
 
 #endif /* ALLOW_DIAGNOSTICS */

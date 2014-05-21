@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_diagnostics_init.F,v 1.9 2010/04/03 22:28:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_diagnostics_init.F,v 1.10 2014/05/21 10:45:33 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
+#ifdef ALLOW_SALT_PLUME
+#include "SALT_PLUME_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: KPP_DIAGNOSTICS_INIT
@@ -189,7 +192,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         diagName  = 'KPPboplm'
         diagTitle = 'Surface haline buoyancy forcing'
         diagUnits = 'm^2/s^3         '
+#ifdef SALT_PLUME_VOLUME
+        diagCode  = 'SM P    UR      '
+#else /* SALT_PLUME_VOLUME */
         diagCode  = 'SM P     1      '
+#endif /* SALT_PLUME_VOLUME */
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_SALT_PLUME */

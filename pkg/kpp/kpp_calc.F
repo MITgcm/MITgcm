@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.55 2014/03/31 20:47:32 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.56 2014/05/21 10:45:33 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
+#ifdef ALLOW_SALT_PLUME
+#include "SALT_PLUME_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: KPP_CALC
@@ -149,10 +152,11 @@ c     imin, imax, jmin, jmax  - array computation indices
 
 c Local arrays and variables
 c     work?  (nx,ny)       - horizontal working arrays
+c     temp?  (nx,ny,Nr)    - 3d working arrays
 c     ustar  (nx,ny)       - surface friction velocity                  (m/s)
 c     bo     (nx,ny)       - surface turbulent buoyancy forcing     (m^2/s^3)
 c     bosol  (nx,ny)       - surface radiative buoyancy forcing     (m^2/s^3)
-c     boplume(nx,ny)       - surface haline buoyancy forcing        (m^2/s^3)
+c     boplume(nx,ny,Nrp1)  - surface haline buoyancy forcing        (m^2/s^3)
 c     shsq   (nx,ny,Nr)    - local velocity shear squared
 c                            at interfaces for ri_iwmix             (m^2/s^2)
 c     dVsq   (nx,ny,Nr)    - velocity shear re surface squared
@@ -179,7 +183,13 @@ c     vRef   (nx,ny)       - Reference meridional velocity              (m/s)
       _RL bo    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bosol ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 #ifdef ALLOW_SALT_PLUME
-      _RL boplume ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy              )
+      _RL temp1   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr          )
+      _RL temp2   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr          )
+      _RL boplume ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1        )
+#ifdef SALT_PLUME_SPLIT_BASIN
+      _RL lon ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                  )
+      _RL lat ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                  )
+#endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
       _RL shsq  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
       _RL dVsq  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
@@ -378,6 +388,8 @@ c     bo    = - g * ( alpha*surfaceForcingT +
 c                     beta *surfaceForcingS ) / rho            (m^2/s^3)
 c     bosol = - g * alpha * Qsw * drF(1) / rho                 (m^2/s^3)
 c     boplume = g * (beta * saltPlumeFlux/rhoConst ) /rho      (m^2/s^3)
+c             = g * (beta * SPforcingS   /rhoConst ) /rho
+c              +g * (alpha* SPforcingT   / ??
 c------------------------------------------------------------------------
 c     velocity shear
 c     --------------
@@ -391,12 +403,32 @@ c     dVsq in the subroutine that does the surface related stuff
 c     (admittedly this is a bit messy)
 c------------------------------------------------------------------------
 
+#ifdef ALLOW_SALT_PLUME
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+#ifndef SALT_PLUME_VOLUME
+        temp1(i,j,1) = saltPlumeFlux(i,j,bi,bj)
+        temp2(i,j,1) = 0. _d 0
+        DO k=2,Nr
+         temp1(i,j,k) = 0. _d 0
+         temp2(i,j,k) = 0. _d 0
+        ENDDO
+#else /* def SALT_PLUME_VOLUME */
+        DO k=1,Nr
+         temp1(i,j,k) = SPforcingS(i,j,k,bi,bj)
+         temp2(i,j,k) = SPforcingT(i,j,k,bi,bj)
+        ENDDO
+#endif /* SALT_PLUME_VOLUME */
+       ENDDO
+      ENDDO
+#endif /* ALLOW_SALT_PLUME */
+
       CALL KPP_FORCING_SURF(
      I     work2, surfaceForcingU, surfaceForcingV,
      I     surfaceForcingT, surfaceForcingS, surfaceForcingTice,
      I     Qsw,
 #ifdef ALLOW_SALT_PLUME
-     I     saltPlumeFlux,
+     I     temp1, temp2,
 #endif /* ALLOW_SALT_PLUME */
      I     ttalpha, ssbeta,
      O     ustar, bo, bosol,
@@ -508,6 +540,9 @@ C     and salt are not passed to kppmix and are thus not available there.
      I     , bo, bosol
 #ifdef ALLOW_SALT_PLUME
      I     , boplume, SaltPlumeDepth(1-Olx,1-Oly,bi,bj)
+#ifdef SALT_PLUME_SPLIT_BASIN
+     I     , XC(1-Olx,1-Oly,bi,bj), YC(1-Olx,1-Oly,bi,bj)
+#endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
      I     , dbloc, Ritop, work2
      I     , KPPdiffKzS(1-Olx,1-Oly,1,bi,bj)
@@ -596,14 +631,22 @@ C     the bottom of the mixing layer.
 C     Compute fraction of saltplume (flux) penetrating to
 C     the bottom of the mixing layer.
       IF ( useSALT_PLUME ) THEN
+#ifndef SALT_PLUME_VOLUME
         DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
               work2(i,j) = SaltPlumeDepth(i,j,bi,bj)
               worka(i,j) = KPPhbl(i,j,bi,bj)
+#ifdef SALT_PLUME_SPLIT_BASIN
+              lon(i,j) = XC(i,j,bi,bj)
+              lat(i,j) = YC(i,j,bi,bj)
+#endif /* SALT_PLUME_SPLIT_BASIN */
            ENDDO
         ENDDO
         CALL SALT_PLUME_FRAC(
      I       (sNx+2*OLx)*(sNy+2*OLy), minusone, work2,
+#ifdef SALT_PLUME_SPLIT_BASIN
+     I       lon,lat,
+#endif /* SALT_PLUME_SPLIT_BASIN */
      U       worka,
      I       myTime, myIter, myThid )
         DO j=1-OLy,sNy+OLy
@@ -611,6 +654,13 @@ C     the bottom of the mixing layer.
               KPPplumefrac(i,j,bi,bj) = 1. _d 0 - worka(i,j)
            ENDDO
         ENDDO
+#else /* SALT_PLUME_VOLUME */
+        DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+              KPPplumefrac(i,j,bi,bj) = 0. _d 0
+           ENDDO
+        ENDDO
+#endif /* SALT_PLUME_VOLUME */
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
 

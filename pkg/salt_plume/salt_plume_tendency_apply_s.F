@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_tendency_apply_s.F,v 1.9 2014/03/31 20:45:37 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_tendency_apply_s.F,v 1.10 2014/05/21 10:46:03 heimbach Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -32,6 +32,7 @@ C     !INPUT PARAMETERS:
 CEOP
 
 #ifdef ALLOW_SALT_PLUME
+C#ifndef SALT_PLUME_VOLUME
 
 C     !LOCAL VARIABLES:
       integer i, j
@@ -47,12 +48,16 @@ C     !LOCAL VARIABLES:
       integer two2
       parameter(two2 = 2)
       _RL plumekb(two2), SPdepth(two2)
+#ifdef SALT_PLUME_SPLIT_BASIN
+      _RL lon(two2), lat(two2)
+#endif /* SALT_PLUME_SPLIT_BASIN */
 #endif
 
 #ifdef TARGET_NEC_SX
 C     The vector version computes plumekb2D at each grid point, but this
 C     is still faster than non-vector code.
       IF ( kLev .LT. Nr ) THEN
+#ifndef SALT_PLUME_VOLUME
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
          plumekb2D(i,j)=abs(rF(kLev))
@@ -60,6 +65,9 @@ C     is still faster than non-vector code.
        ENDDO
        CALL SALT_PLUME_FRAC(
      I      imt,minusone,SaltPlumeDepth(1-Olx,1-Oly,bi,bj),
+#ifdef SALT_PLUME_SPLIT_BASIN
+     I      XC(1-Olx,1-Oly,bi,bj),YC(1-Olx,1-Oly,bi,bj),
+#endif /* SALT_PLUME_SPLIT_BASIN */
      U      plumekb2D,
      I      myTime, 1, myThid )
        DO j=1-Oly,sNy+Oly
@@ -70,15 +78,23 @@ C     is still faster than non-vector code.
        ENDDO
        CALL SALT_PLUME_FRAC(
      I      imt,minusone,SaltPlumeDepth(1-Olx,1-Oly,bi,bj),
+#ifdef SALT_PLUME_SPLIT_BASIN
+     I      XC(1-Olx,1-Oly,bi,bj),YC(1-Olx,1-Oly,bi,bj),
+#endif /* SALT_PLUME_SPLIT_BASIN */
      U      plumekb2D,
      I      myTime, 1, myThid )
+#endif /* SALT_PLUME_VOLUME */
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
 C     Penetrating saltplume fraction:cumSP(klev+1)-cumSP(klev)
          IF ( SaltPlumeDepth(i,j,bi,bj) .GT. abs(rF(kLev)) ) THEN
+#ifndef SALT_PLUME_VOLUME
           plumefrac(i,j) = ( plumekb2D(i,j)-plumefrac(i,j) )
      &                     *maskC(i,j,klev,bi,bj)
           plumetend(I,J) = saltPlumeFlux(i,j,bi,bj)*plumefrac(I,J)
+#else /* SALT_PLUME_VOLUME */
+          plumetend(I,J) = SPforcingS(i,j,kLev,bi,bj)
+#endif /* SALT_PLUME_VOLUME */
           gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)+plumetend(I,J)
      &        *recip_drF(kLev)*mass2rUnit*_recip_hFacC(i,j,kLev,bi,bj)
          ELSE
@@ -94,16 +110,29 @@ C     Penetrating saltplume fraction:cumSP(klev+1)-cumSP(klev)
 C Penetrating saltplume fraction:cumulativeSP(klev+1)-cumulativeSP(klev)
         IF ( SaltPlumeDepth(i,j,bi,bj) .GT. abs(rF(kLev)) ) THEN
          plumefrac(I,J) = 0. _d 0
+#ifndef SALT_PLUME_VOLUME
          plumekb(1)=abs(rF(klev))
          plumekb(2)=abs(rF(klev+1))
          SPdepth(1)=SaltPlumeDepth(i,j,bi,bj)
          SPdepth(2)=SaltPlumeDepth(i,j,bi,bj)
+#ifdef SALT_PLUME_SPLIT_BASIN
+         lon(1) = XC(i,j,bi,bj)
+         lon(2) = XC(i,j,bi,bj)
+         lat(1) = YC(i,j,bi,bj)
+         lat(2) = YC(i,j,bi,bj)
+#endif /* SALT_PLUME_SPLIT_BASIN */
          CALL SALT_PLUME_FRAC(
      I                   two2,minusone,SPdepth,
+#ifdef SALT_PLUME_SPLIT_BASIN
+     I                   lon,lat,
+#endif /* SALT_PLUME_SPLIT_BASIN */
      U                   plumekb,
      I                   myTime, 1, myThid )
          plumefrac(I,J) = (plumekb(2)-plumekb(1))*maskC(i,j,klev,bi,bj)
          plumetend(I,J) = saltPlumeFlux(i,j,bi,bj)*plumefrac(I,J)
+#else /* SALT_PLUME_VOLUME */
+         plumetend(i,j) = SPforcingS(i,j,kLev,bi,bj)
+#endif /* SALT_PLUME_VOLUME */
          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)+plumetend(I,J)
      &        *recip_drF(kLev)*mass2rUnit*_recip_hFacC(i,j,kLev,bi,bj)
         ELSE
@@ -123,6 +152,7 @@ C Penetrating saltplume fraction:cumulativeSP(klev+1)-cumulativeSP(klev)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
       
+C#endif /* SALT_PLUME_VOLUME */
 #endif /* ALLOW_SALT_PLUME */
       
       RETURN

@@ -1,9 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_s.F,v 1.16 2010/01/20 01:32:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_s.F,v 1.17 2014/05/21 10:45:33 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
 #ifdef ALLOW_GMREDI
 #include "GMREDI_OPTIONS.h"
+#endif
+#ifdef ALLOW_SALT_PLUME
+#include "SALT_PLUME_OPTIONS.h"
 #endif
 
       SUBROUTINE KPP_TRANSPORT_S (
@@ -67,9 +70,15 @@ C     I, J - Loop counters
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+catn: will not apply if use SALT_PLUME_VOLUME because volumes
+c      will be exchanged 
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME ) THEN
+#ifndef SALT_PLUME_VOLUME
          tmpFac1 = 1. _d 0
+#else
+         tmpFac1 = 0. _d 0
+#endif /* ndef SALT_PLUME_VOLUME */
       ELSE
          tmpFac1 = 0. _d 0
       ENDIF

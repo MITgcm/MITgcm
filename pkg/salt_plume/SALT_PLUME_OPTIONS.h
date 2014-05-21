@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/SALT_PLUME_OPTIONS.h,v 1.4 2014/04/06 09:34:00 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/SALT_PLUME_OPTIONS.h,v 1.5 2014/05/21 10:46:03 heimbach Exp $
 C $Name:  $
 
 C CPP options file for salt_plume package
@@ -23,5 +23,8 @@ C               if seaice growth dh is from atmospheric cooling.
 C   if undefined: Activate pkg/salt_plume whenever seaice forms.
 C                 This is the default of pkg/salt_plume.
 #undef SALT_PLUME_IN_LEADS
+#undef SALT_PLUME_SPLIT_BASIN
+#undef SALT_PLUME_VOLUME
+
 #endif /* ALLOW_SALT_PLUME */
 #endif /* SALT_PLUME_OPTIONS_H */

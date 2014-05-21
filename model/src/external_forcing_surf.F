@@ -1,10 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.61 2014/05/06 15:47:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.62 2014/05/21 10:44:59 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
+#endif
+#ifdef ALLOW_SALT_PLUME
+# include "SALT_PLUME_OPTIONS.h"
 #endif
 #undef CHECK_OVERLAP_FORCING
 
@@ -57,7 +60,6 @@ C     ks     :: index of surface interface layer
       INTEGER bi,bj
       INTEGER i,j
       INTEGER ks
-      _RL recip_Cp
 #ifdef ALLOW_BALANCE_FLUXES
       _RS tmpVar(1)
 #endif
@@ -71,7 +73,6 @@ CEOP
       ELSE
        ks        = 1
       ENDIF
-      recip_Cp = 1. _d 0 / HeatCapacity_Cp
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -210,7 +211,7 @@ C     Net heat flux Qnet:
 #ifdef SHORTWAVE_HEATING
      &          -Qsw(i,j,bi,bj)
 #endif
-     &         ) *recip_Cp*mass2rUnit
+     &         ) *mass2rUnit/HeatCapacity_Cp
 C     Net Salt Flux :
           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
      &      -saltFlux(i,j,bi,bj)*mass2rUnit
@@ -222,11 +223,16 @@ C     Net Salt Flux :
 C saltPlume is the amount of salt rejected by ice while freezing;
 C it is here subtracted from surfaceForcingS and will be redistributed
 C to multiple vertical levels later on as per Duffy et al. (GRL 1999)
+C-- for the case of SALT_PLUME_VOLUME, need to call this S/R right
+C-- before kpp in do_oceanic_phys.F due to recent moved of
+C-- external_forcing_surf.F outside bi,bj loop.
+#ifndef SALT_PLUME_VOLUME
         IF ( useSALT_PLUME ) THEN
          CALL SALT_PLUME_FORCING_SURF(
      I        bi, bj, iMin, iMax, jMin, jMax,
      I        myTime, myIter, myThid )
         ENDIF
+#endif /* SALT_PLUME_VOLUME */
 #endif /* ALLOW_SALT_PLUME */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

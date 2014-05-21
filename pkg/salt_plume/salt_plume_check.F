@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_check.F,v 1.5 2014/04/06 09:34:00 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_check.F,v 1.6 2014/05/21 10:46:03 heimbach Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -34,18 +34,44 @@ C     msgBuf      - Informational/error meesage buffer
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
 
+#ifdef SALT_PLUME_SPLIT_BASIN
+      IF ( (SPsalFRAC(1) .LT. 0. _d 0).OR.
+     &     (SPsalFRAC(1) .GT. 1. _d 0) ) then
+       WRITE(msgBuf,'(2A)') 'SALT_PLUME_CHECK:',
+     &  ' SPsalFRAC(1) needs to lie between 0. and 1.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SALT_PLUME_CHECK'
+      ENDIF
+      IF ( (SPsalFRAC(2) .LT. 0. _d 0).OR.
+     &     (SPsalFRAC(2) .GT. 1. _d 0) ) then
+       WRITE(msgBuf,'(2A)') 'SALT_PLUME_CHECK:',
+     &  ' SPsalFRAC(2) needs to lie between 0. and 1.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SALT_PLUME_CHECK'
+      ENDIF
+#else
       IF ( (SPsalFRAC .LT. 0. _d 0).OR.(SPsalFRAC .GT. 1. _d 0) ) then
        WRITE(msgBuf,'(2A)') 'SALT_PLUME_CHECK:',
      &  ' SPsalFRAC needs to lie between 0. and 1.'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SALT_PLUME_CHECK'
       ENDIF
+#endif
 
 #ifdef SALT_PLUME_IN_LEADS
       IF ( (SPinflectionPoint .LT. 0. _d 0).OR.
      &     (SPinflectionPoint .GT. 1. _d 0) ) then
        WRITE(msgBuf,'(2A)') 'SALT_PLUME_CHECK:',
      &  ' SPinflectionPoint needs to lie between 0. and 1.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SALT_PLUME_CHECK'
+      ENDIF
+#endif
+#ifdef SALT_PLUME_VOLUME
+      IF ( (SPbrineSconst .LT. 0. _d 0).OR.
+     &     (SPbrineSconst .GT. SPbrineSaltmax) ) then
+       WRITE(msgBuf,'(2A,F6.1,A)') 'SALT_PLUME_CHECK:',
+     &  ' SPbrineSconst valid range: [0.,',SPbrineSaltmax,']'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SALT_PLUME_CHECK'
       ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_readparms.F,v 1.6 2014/04/06 09:34:00 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_readparms.F,v 1.7 2014/05/21 10:46:03 heimbach Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -32,6 +32,12 @@ CEOP
 #ifdef SALT_PLUME_IN_LEADS
      &     , SPinflectionPoint
 #endif
+#ifdef SALT_PLUME_SPLIT_BASIN
+     &     , SaltPlumeSplitBasin
+#endif
+#ifdef SALT_PLUME_VOLUME
+     &     , SPbrineSconst, SPbrineSaltmax
+#endif
 
 C     !LOCAL VARIABLES:
 C     msgBuf      - Informational/error meesage buffer
@@ -45,12 +51,24 @@ C--   Default values for SALT_PLUME
       SaltPlumeSouthernOcean = .TRUE.
       CriterionType       = 1
       PlumeMethod         = 1
-      Npower              = 0
       SaltPlumeCriterion  = UNSET_RL
       SPovershoot         = 1.0 _d 0
+#ifdef SALT_PLUME_SPLIT_BASIN
+      SaltPlumeSplitBasin = .FALSE.
+      Npower(1)           = 0
+      Npower(2)           = 0
+      SPsalFRAC(1)        = 1.0 _d 0
+      SPsalFRAC(2)        = 1.0 _d 0
+#else
+      Npower              = 0
       SPsalFRAC           = 1.0 _d 0
+#endif
 #ifdef SALT_PLUME_IN_LEADS
       SPinflectionPoint   = 0.8 _d 0
+#endif
+#ifdef SALT_PLUME_VOLUME
+      SPbrineSconst       = 45. _d 0
+      SPbrineSaltmax      = 100. _d 0
 #endif
 
       WRITE(msgBuf,'(A)')'SALT_PLUME_READPARMS: opening data.salt_plume'

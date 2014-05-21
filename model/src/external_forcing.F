@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.65 2014/05/06 15:47:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.66 2014/05/21 10:44:59 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_SALT_PLUME
+#include "SALT_PLUME_OPTIONS.h"
+#endif
 
 C--  File external_forcing.F:
 C--   Contents
@@ -314,7 +317,6 @@ C     kSurface  :: index of surface level
       INTEGER km, kc, kp
       _RL tmpVar(1:sNx,1:sNy)
       _RL tmpFac, delPI
-      _RL recip_Cp
 CEOP
 c#ifdef ALLOW_FRICTION_HEATING
 c     _RL tmpFac
@@ -335,7 +337,6 @@ c#endif
       ELSE
        kSurface = 1
       ENDIF
-      recip_Cp = 1. _d 0 / HeatCapacity_Cp
 
 C--   Forcing term
 #ifdef ALLOW_AIM
@@ -394,7 +395,7 @@ C         conversion from W/m^2/r_unit to K/s
           tmpFac = (tmpFac/atm_Cp) * mass2rUnit
         ELSE
 C         conversion from W/m^2/r_unit to K/s
-          tmpFac = recip_Cp * mass2rUnit
+          tmpFac = mass2rUnit/HeatCapacity_Cp
         ENDIF
         DO j=1,sNy
           DO i=1,sNx
@@ -541,7 +542,7 @@ c     IF ( usePenetratingSW ) THEN
          gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj)
      &   -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,klev,bi,bj)
      &                   -swfracb(2)*maskC(i,j,kp1, bi,bj))
-     &    *recip_Cp*mass2rUnit
+     &    *mass2rUnit/HeatCapacity_Cp
      &    *recip_drF(klev)*_recip_hFacC(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
@@ -730,11 +731,20 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
      &     bi,bj, kLev, myTime, myThid )
 #endif /* ALLOW_ICEFRONT */
 
+Catn: org. version of SP: do within k-loop
+Catn  new version: outside k-loop; called from [temp,salt]_integrate.F
 #ifdef ALLOW_SALT_PLUME
+CC#ifndef SALT_PLUME_VOLUME
       IF ( useSALT_PLUME )
      &     CALL SALT_PLUME_TENDENCY_APPLY_S(
      I     iMin,iMax, jMin,jMax, bi,bj, kLev,
      I     myTime, myThid )
+#ifdef SALT_PLUME_VOLUME
+      IF ( useSALT_PLUME )
+     &     CALL SALT_PLUME_TENDENCY_APPLY_T(
+     I     iMin,iMax, jMin,jMax, bi,bj, kLev,
+     I     myTime, myThid )
+#endif /* ndef SALT_PLUME_VOLUME */
 #endif /* ALLOW_SALT_PLUME */
 
 #ifdef ALLOW_RBCS

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_calc_depth.F,v 1.7 2012/04/28 22:18:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_calc_depth.F,v 1.8 2014/05/21 10:46:03 heimbach Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -187,10 +187,10 @@ C Make sure that the deepest SaltPlumeDepth is bottom topography:
          ENDDO
       ENDDO
 
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics )
-     &      CALL SALT_PLUME_DIAGNOSTICS_FILL(bi,bj,myThid)
-#endif /* ALLOW_DIAGNOSTICS */
+C#ifdef ALLOW_DIAGNOSTICS
+C      IF ( useDiagnostics )
+C     &      CALL SALT_PLUME_DIAGNOSTICS_FILL(bi,bj,myThid)
+C#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_SALT_PLUME */
 

@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_forcing_surf.F,v 1.6 2014/05/06 15:50:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_forcing_surf.F,v 1.7 2014/05/21 10:45:33 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
+#ifdef ALLOW_SALT_PLUME
+#include "SALT_PLUME_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: KPP_FORCING_SURF
@@ -9,13 +12,13 @@ C !ROUTINE: KPP_FORCING_SURF
 C !INTERFACE: ==========================================================
       SUBROUTINE KPP_FORCING_SURF(
      I     rhoSurf, surfForcU, surfForcV,
-     I     surfForcT, surfForcS, surfForcTice,
-     I     Qsw,
+     I     surfForcT, surfForcS, surfForcTice, 
+     I     Qsw, 
 #ifdef ALLOW_SALT_PLUME
-     I     saltPlumeFlux,
+     I     SPforcS,SPforcT,
 #endif /* ALLOW_SALT_PLUME */
-     I     ttalpha, ssbeta,
-     O     ustar, bo, bosol,
+     I     ttalpha, ssbeta,  
+     O     ustar, bo, bosol, 
 #ifdef ALLOW_SALT_PLUME
      O     boplume,
 #endif /* ALLOW_SALT_PLUME */
@@ -44,7 +47,9 @@ c     ustar = sqrt( sqrt( taux^2 + tauy^2 ) / rho )        (m/s)
 c     bo    = - g * ( alpha*surfForcT +
 c                     beta *surfForcS ) / rho              (m^2/s^3)
 c     bosol = - g * alpha * Qsw * drF(1) / rho             (m^2/s^3)
-c     boplume = g * ( beta *saltPlumeFlux/rhoConst )/rho   (m^2/s^3)
+c     boplume =-g * ( beta *saltPlumeFlux/rhoConst )/rho   (m^2/s^3) 
+c             =-g * ( beta *SPforcS      /rhoConst )/rho   (m^2/s^3)
+c              -g * (alpha *SPforcT/Cp   /rhoConst )/rho   (m^2/s^3)
 c------------------------------------------------------------------------
 
 c \ev
@@ -91,11 +96,11 @@ C     ttalpha - thermal expansion coefficient without 1/rho factor
 C               d(rho{k,k})/d(T(k))                           (kg/m^3/C)
 C     ssbeta  - salt expansion coefficient without 1/rho factor
 C               d(rho{k,k})/d(S(k))                         (kg/m^3/PSU)
-C !OUTPUT PARAMETERS:
+C !OUTPUT PARAMETERS: 
 C     ustar  (nx,ny)       - surface friction velocity                  (m/s)
 C     bo     (nx,ny)       - surface turbulent buoyancy forcing     (m^2/s^3)
 C     bosol  (nx,ny)       - surface radiative buoyancy forcing     (m^2/s^3)
-C     boplume(nx,ny)       - surface haline buoyancy forcing        (m^2/s^3)
+C     boplume(nx,ny,Nr+1)  - surface haline buoyancy forcing        (m^2/s^3)
 C     dVsq   (nx,ny,Nr)    - velocity shear re surface squared
 C                            at grid levels for bldepth             (m^2/s^2)
 
@@ -119,19 +124,22 @@ C                            at grid levels for bldepth             (m^2/s^2)
       _RL bo    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bosol ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 #ifdef ALLOW_SALT_PLUME
-      _RL saltPlumeFlux   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL boplume(1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _RL SPforcS     (1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr       )
+      _RL SPforcT     (1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr       )
+      _RL boplume     (1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1     )
+#ifdef SALT_PLUME_VOLUME
+      _RL temparray   (1-OLx:sNx+OLx, 1-OLy:sNy+OLy           )
+#endif /* SALT_PLUME_VOLUME */
 #endif /* ALLOW_SALT_PLUME */
       _RL dVsq  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
 
 C !LOCAL VARIABLES: ====================================================
 c Local constants
 c     minusone, p0, p5, p25, p125, p0625
-      _RL        p0    , p5    , p125
+      _RL        p0    , p5    , p125      
       parameter( p0=0.0, p5=0.5, p125=0.125 )
-      integer i, j, k, im1, ip1, jm1, jp1
+      integer i, j, k, im1, ip1, jm1, jp1, kp1
       _RL tempvar2
-      _RL recip_Cp
 
       _RL work3 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 
@@ -153,10 +161,11 @@ c     ustar = sqrt( sqrt( taux^2 + tauy^2 ) / rho )        (m/s)
 c     bo    = - g * ( alpha*surfForcT +
 c                     beta *surfForcS ) / rho            (m^2/s^3)
 c     bosol = - g * alpha * Qsw * drF(1) / rho           (m^2/s^3)
-c     boplume = g * ( beta *saltPlumeFlux/rhoConst )/rho (m^2/s^3)
+c     boplume =-g * ( beta *saltPlumeFlux/rhoConst )/rho (m^2/s^3)
+c             =-g * ( beta *SPforcS      /rhoConst )/rho (m^2/s^3)
+c              -g * (alpha *SPforcT/Cp   /rhoConst )/rho (m^2/s^3)
 c------------------------------------------------------------------------
 
-      recip_Cp = 1. _d 0 / HeatCapacity_Cp
 c initialize arrays to zero
       DO j = 1-OLy, sNy+OLy
          DO i = 1-OLx, sNx+OLx
@@ -164,7 +173,10 @@ c initialize arrays to zero
             bo   (I,J) = p0
             bosol(I,J) = p0
 #ifdef ALLOW_SALT_PLUME
-            boplume(I,J) = p0
+            DO k = 1, Nr
+               boplume(I,J,k) = p0
+            ENDDO
+            boplume(I,J,Nrp1) = p0
 #endif /* ALLOW_SALT_PLUME */
          END DO
       END DO
@@ -208,22 +220,41 @@ cph)
      &       SSBETA(I,J,1) * surfForcS(i,j,bi,bj) )
      &       / rhoSurf(I,J)
         bosol(I,J) = gravity * TTALPHA(I,J,1) * Qsw(i,j,bi,bj) *
-     &       recip_Cp*recip_rhoConst
+     &       recip_rhoConst/HeatCapacity_Cp
      &       / rhoSurf(I,J)
        END DO
       END DO
 
 #ifdef ALLOW_SALT_PLUME
+Catn: need check sign of SPforcT
+Cnote: on input, if notdef salt_plume_volume, SPforc[S,T](k>1)=!0
       IF ( useSALT_PLUME ) THEN
+#ifdef SALT_PLUME_VOLUME
          DO j = jmin, jmax
-            jp1 = j + 1
             DO i = imin, imax
-               ip1 = i+1
-               boplume(I,J) = - gravity * SSBETA(I,J,1)
-     &              * saltPlumeFlux(i,j,bi,bj)
+             DO k = 1, Nr
+              kp1 = k+1
+              temparray(I,J) = - gravity * 
+     &            ( SSBETA(I,J,k) * SPforcS(i,j,k) + 
+     &              TTALPHA(I,J,k)* SPforcT(i,j,k) / HeatCapacity_Cp )
      &              * recip_rhoConst / rhoSurf(I,J)
+              boplume(I,J,kp1) = boplume(I,J,k)+temparray(I,J)
+             ENDDO
             END DO
          END DO
+#else /* SALT_PLUME_VOLUME */
+         DO j = jmin, jmax
+          DO i = imin, imax
+           DO k = 2, Nrp1
+            boplume(I,J,k) = 0. _d 0
+           ENDDO
+           boplume(I,J,1) = - gravity * SSBETA(I,J,1)
+     &              * SPforcS(i,j,1)
+     &              * recip_rhoConst / rhoSurf(I,J)
+          ENDDO
+         ENDDO 
+
+#endif /* SALT_PLUME_VOLUME */
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
 
@@ -236,7 +267,7 @@ cph)
          CALL DIAGNOSTICS_FILL(bo     ,'KPPbo   ',0,1,2,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(bosol  ,'KPPbosol',0,1,2,bi,bj,myThid)
 #ifdef ALLOW_SALT_PLUME
-         CALL DIAGNOSTICS_FILL(boplume,'KPPboplm',0,1,2,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(boplume,'KPPboplm',0,Nr,2,bi,bj,myThid)
 #endif /* ALLOW_SALT_PLUME */
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
@@ -298,7 +329,7 @@ c     Linearly interpolate to find hMix.
         ELSE
          zRef(i,j) = rF(k+1)
         ENDIF
-
+        
 c     Compute roughness length scale z0 subject to 0 < z0
         tempVar1 = p5 * (
      &       (uVel(i,  j,  1,bi,bj)-uVel(i,  j,  2,bi,bj)) *
@@ -306,7 +337,7 @@ c     Compute roughness length scale z0 subject to 0 < z0
      &       (uVel(ip1,j,  1,bi,bj)-uVel(ip1,j,  2,bi,bj)) *
      &       (uVel(ip1,j,  1,bi,bj)-uVel(ip1,j,  2,bi,bj)) +
      &       (vVel(i,  j,  1,bi,bj)-vVel(i,  j,  2,bi,bj)) *
-     &       (vVel(i,  j,  1,bi,bj)-vVel(i,  j,  2,bi,bj)) +
+     &       (vVel(i,  j,  1,bi,bj)-vVel(i,  j,  2,bi,bj)) + 
      &       (vVel(i,  jp1,1,bi,bj)-vVel(i,  jp1,2,bi,bj)) *
      &       (vVel(i,  jp1,1,bi,bj)-vVel(i,  jp1,2,bi,bj)) )
         IF ( tempVar1 .lt. (epsln*epsln) ) THEN
@@ -324,12 +355,12 @@ c     Compute roughness length scale z0 subject to 0 < z0
 c     zRef is set to 0.1 * hMix subject to z0 <= zRef <= drF(1)
         zRef(i,j) = MAX ( epsilon * zRef(i,j), z0(i,j) )
         zRef(i,j) = MIN ( zRef(i,j), drF(1) )
-
+        
 c     Estimate reference velocity uRef and vRef.
         uRef(i,j) = p5 * ( uVel(i,j,1,bi,bj) + uVel(ip1,j,1,bi,bj) )
         vRef(i,j) = p5 * ( vVel(i,j,1,bi,bj) + vVel(i,jp1,1,bi,bj) )
         IF ( zRef(i,j) .LT. drF(1) ) THEN
-         ustarX = ( surfForcU(i,  j,bi,bj) +
+         ustarX = ( surfForcU(i,  j,bi,bj) + 
      &        surfForcU(ip1,j,bi,bj) ) * p5 *recip_drF(1)
          ustarY = ( surfForcV(i,j,  bi,bj) +
      &        surfForcV(i,jp1,bi,bj) ) * p5 *recip_drF(1)
@@ -346,7 +377,7 @@ c     Estimate reference velocity uRef and vRef.
          uRef(i,j) = uRef(i,j) + ustarX * tempVar2
          vRef(i,j) = vRef(i,j) + ustarY * tempVar2
         ENDIF
-
+        
        ENDDO
       ENDDO
 
@@ -363,7 +394,7 @@ c     Estimate reference velocity uRef and vRef.
      $        (uRef(i,j) - uVel(ip1,j,  k,bi,bj)) *
      $        (uRef(i,j) - uVel(ip1,j,  k,bi,bj)) +
      $        (vRef(i,j) - vVel(i,  j,  k,bi,bj)) *
-     $        (vRef(i,j) - vVel(i,  j,  k,bi,bj)) +
+     $        (vRef(i,j) - vVel(i,  j,  k,bi,bj)) + 
      $        (vRef(i,j) - vVel(i,  jp1,k,bi,bj)) *
      $        (vRef(i,j) - vVel(i,  jp1,k,bi,bj)) )
 #ifdef KPP_SMOOTH_DVSQ
@@ -377,11 +408,11 @@ c     Estimate reference velocity uRef and vRef.
      $        (uRef(i,j) - uVel(ip1,jp1,k,bi,bj)) *
      $        (uRef(i,j) - uVel(ip1,jp1,k,bi,bj)) +
      $        (vRef(i,j) - vVel(im1,j,  k,bi,bj)) *
-     $        (vRef(i,j) - vVel(im1,j,  k,bi,bj)) +
+     $        (vRef(i,j) - vVel(im1,j,  k,bi,bj)) + 
      $        (vRef(i,j) - vVel(im1,jp1,k,bi,bj)) *
      $        (vRef(i,j) - vVel(im1,jp1,k,bi,bj)) +
      $        (vRef(i,j) - vVel(ip1,j,  k,bi,bj)) *
-     $        (vRef(i,j) - vVel(ip1,j,  k,bi,bj)) +
+     $        (vRef(i,j) - vVel(ip1,j,  k,bi,bj)) + 
      $        (vRef(i,j) - vVel(ip1,jp1,k,bi,bj)) *
      $        (vRef(i,j) - vVel(ip1,jp1,k,bi,bj)) )
 #endif /* KPP_SMOOTH_DVSQ */
@@ -404,7 +435,7 @@ c     Estimate reference velocity uRef and vRef.
      $        (uVel(ip1,j,  1,bi,bj)-uVel(ip1,j,  k,bi,bj)) *
      $        (uVel(ip1,j,  1,bi,bj)-uVel(ip1,j,  k,bi,bj)) +
      $        (vVel(i,  j,  1,bi,bj)-vVel(i,  j,  k,bi,bj)) *
-     $        (vVel(i,  j,  1,bi,bj)-vVel(i,  j,  k,bi,bj)) +
+     $        (vVel(i,  j,  1,bi,bj)-vVel(i,  j,  k,bi,bj)) + 
      $        (vVel(i,  jp1,1,bi,bj)-vVel(i,  jp1,k,bi,bj)) *
      $        (vVel(i,  jp1,1,bi,bj)-vVel(i,  jp1,k,bi,bj)) )
 #ifdef KPP_SMOOTH_DVSQ
@@ -418,11 +449,11 @@ c     Estimate reference velocity uRef and vRef.
      $        (uVel(ip1,jp1,1,bi,bj)-uVel(ip1,jp1,k,bi,bj)) *
      $        (uVel(ip1,jp1,1,bi,bj)-uVel(ip1,jp1,k,bi,bj)) +
      $        (vVel(im1,j,  1,bi,bj)-vVel(im1,j,  k,bi,bj)) *
-     $        (vVel(im1,j,  1,bi,bj)-vVel(im1,j,  k,bi,bj)) +
+     $        (vVel(im1,j,  1,bi,bj)-vVel(im1,j,  k,bi,bj)) + 
      $        (vVel(im1,jp1,1,bi,bj)-vVel(im1,jp1,k,bi,bj)) *
      $        (vVel(im1,jp1,1,bi,bj)-vVel(im1,jp1,k,bi,bj)) +
      $        (vVel(ip1,j,  1,bi,bj)-vVel(ip1,j,  k,bi,bj)) *
-     $        (vVel(ip1,j,  1,bi,bj)-vVel(ip1,j,  k,bi,bj)) +
+     $        (vVel(ip1,j,  1,bi,bj)-vVel(ip1,j,  k,bi,bj)) + 
      $        (vVel(ip1,jp1,1,bi,bj)-vVel(ip1,jp1,k,bi,bj)) *
      $        (vVel(ip1,jp1,1,bi,bj)-vVel(ip1,jp1,k,bi,bj)) )
 #endif /* KPP_SMOOTH_DVSQ */

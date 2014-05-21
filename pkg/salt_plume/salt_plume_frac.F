@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_frac.F,v 1.8 2014/03/31 20:45:37 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_frac.F,v 1.9 2014/05/21 10:46:03 heimbach Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -8,6 +8,9 @@ C     !ROUTINE: SALT_PLUME_FRAC
 C     !INTERFACE:
       SUBROUTINE SALT_PLUME_FRAC(
      I                  imax, fact,SPDepth,
+#ifdef SALT_PLUME_SPLIT_BASIN
+     I                  lon,lat,
+#endif
      U                  plumek,
      I                  myTime, myIter, myThid )
 
@@ -59,13 +62,16 @@ C     plumek :: on input: vertical depth for desired plume fraction
 C               (fact*plumek) is negative distance (m) from surface
 C     plumek :: on output: saltplume contribution fraction
       _RL     plumek(imax), SPDepth(imax)
+#ifdef SALT_PLUME_SPLIT_BASIN
+      _RL     lon(imax), lat(imax)
+#endif
 CEOP
 
 #ifdef ALLOW_SALT_PLUME
 
 C     !LOCAL VARIABLES:
       _RL facz, dd, dd20
-      INTEGER i
+      INTEGER i, Npowerloc
 #ifndef TARGET_NEC_SX
       INTEGER kk
 #endif
@@ -78,6 +84,17 @@ C     This is an abbreviation of 1./(exp(1.)-1.)
 
       DO i = 1,imax
        facz = abs(fact*plumek(i))
+#ifdef SALT_PLUME_SPLIT_BASIN
+       IF(SaltPlumeSplitBasin) THEN
+         Npowerloc = Npower(2)
+         IF(lat(imax).LT. 85.0 .AND. lat(imax).GT. 71.0
+     &      .AND. lon(imax) .LT. -90.0) Npowerloc = Npower(1)
+       ELSE
+         Npowerloc = Npower(1)
+       ENDIF
+#else
+         Npowerloc = Npower
+#endif
 
        IF (SPDepth(i).GE.facz .and. SPDepth(i) .GT. zero) THEN
 
@@ -88,7 +105,7 @@ C     Default: uniform distribution, PlumeMethod=1, Npower=0
          IF ( dd20 .GT. zero ) THEN
           S   = (facz/dd20)
 C     crazy attempt to make the code faster and raise S to (Npower+1)
-          IF (Npower .GT. 0) S = S*S**Npower
+          IF (Npowerloc .GT. 0) S = S*S**Npowerloc
          ELSE
           S = zero
          ENDIF
@@ -96,8 +113,8 @@ C     crazy attempt to make the code faster and raise S to (Npower+1)
 #else
          S  = one                  !input depth temp
          So = one
-         DO kk=1,Npower+1
-          S  = facz*S              !raise to the Npower+1
+         DO kk=1,Npowerloc+1
+          S  = facz*S              !raise to the Npowerloc+1
           So = dd20*So
          ENDDO
          plumek(i) = max(zero,S/So)
@@ -140,13 +157,13 @@ C     PLumeMethod = 6, currently only works for Npower = 1 and 2.
          IF ( dd20 .GT. zero ) THEN
           S  = (facz/dd20)
 C     crazy attempt to make the code faster and raise S to (Npower+1)
-          IF (Npower .GT. 0) S = S*S**Npower
+          IF (Npowerloc .GT. 0) S = S*S**Npowerloc
           So = 1. _d 0/dd20
          ELSE
           S  = zero
           So = zero
          ENDIF
-         IF(Npower.EQ.1) THEN      !Npower=1
+         IF(Npowerloc.EQ.1) THEN   !Npower=1
           plumek(i) = max(zero,two*So*facz-S)
          ELSE                      !Npower=2
           plumek(i) = max(zero,
@@ -155,11 +172,11 @@ C     crazy attempt to make the code faster and raise S to (Npower+1)
 #else
          S  = one                  !input depth temp
          So = one
-         DO kk=1,Npower+1
+         DO kk=1,Npowerloc+1
           S  = facz*S              !raise to the Npower+1
           So = dd20*So
          ENDDO
-         IF(Npower.EQ.1) THEN      !Npower=1
+         IF(Npowerloc.EQ.1) THEN   !Npower=1
           plumek(i) = max(zero,two/dd20*facz-S/So)
          ELSE                      !Npower=2
           plumek(i) = max(zero,

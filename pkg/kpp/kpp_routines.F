@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.51 2014/03/31 20:47:32 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.52 2014/05/21 10:45:33 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
+#ifdef ALLOW_SALT_PLUME
+#include "SALT_PLUME_OPTIONS.h"
+#endif
 
 C-- File kpp_routines.F: subroutines needed to implement
 C--                      KPP vertical mixing scheme
@@ -24,6 +27,9 @@ c***********************************************************************
      I     , bo, bosol
 #ifdef ALLOW_SALT_PLUME
      I     , boplume,SPDepth
+#ifdef SALT_PLUME_SPLIT_BASIN
+     I     , lon,lat
+#endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
      I     , dbloc, Ritop, coriol
      I     , diffusKzS, diffusKzT
@@ -69,7 +75,7 @@ c     dvsq   (imt,Nr)  - (velocity shear re sfc)^2                    ((m/s)^2)
 c     ustar  (imt)     - surface friction velocity                        (m/s)
 c     bo     (imt)     - surface turbulent buoy. forcing              (m^2/s^3)
 c     bosol  (imt)     - radiative buoyancy forcing                   (m^2/s^3)
-c     boplume(imt)     - haline buoyancy forcing                      (m^2/s^3)
+c     boplume(imt,Nrp1)- haline buoyancy forcing                      (m^2/s^3)
 c     dbloc  (imt,Nr)  - local delta buoyancy across interfaces         (m/s^2)
 c     dblocSm(imt,Nr)  - horizontally smoothed dbloc                    (m/s^2)
 c                          stored in ghat to save space
@@ -92,8 +98,12 @@ c           where hbl(i,j) -> hbl((j-1)*sNx+i)
       _RL bo       (imt   )
       _RL bosol    (imt   )
 #ifdef ALLOW_SALT_PLUME
-      _RL boplume  (imt   )
+      _RL boplume  (imt,Nrp1)
       _RL SPDepth  (imt   )
+#ifdef SALT_PLUME_SPLIT_BASIN
+      _RL lon  (imt   )
+      _RL lat  (imt   )
+#endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
       _RL dbloc    (imt,Nr)
       _RL Ritop    (imt,Nr)
@@ -189,6 +199,9 @@ c-----------------------------------------------------------------------
      I     , dvsq, dbloc, Ritop, ustar, bo, bosol
 #ifdef ALLOW_SALT_PLUME
      I     , boplume,SPDepth
+#ifdef SALT_PLUME_SPLIT_BASIN
+     I     , lon,lat
+#endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
      I     , coriol
      I     , ikppkey
@@ -268,6 +281,9 @@ c*************************************************************************
      I     , dvsq, dbloc, Ritop, ustar, bo, bosol
 #ifdef ALLOW_SALT_PLUME
      I     , boplume,SPDepth
+#ifdef SALT_PLUME_SPLIT_BASIN
+     I     , lon,lat
+#endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
      I     , coriol
      I     , ikppkey
@@ -336,8 +352,12 @@ c coriol    : Coriolis parameter                        (1/s)
       _RL coriol  (imt)
       integer ikppkey
 #ifdef ALLOW_SALT_PLUME
-      _RL boplume (imt)
+      _RL boplume (imt,Nrp1)
       _RL SPDepth (imt)
+#ifdef SALT_PLUME_SPLIT_BASIN
+      _RL lon (imt)
+      _RL lat (imt)
+#endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
 
 c  output
@@ -365,7 +385,8 @@ c wm, ws    : turbulent velocity scales         (m/s)
       _RL wm(imt), ws(imt)
       _RL worka(imt)
       _RL bvsq, vtsq, hekman, hmonob, hlimit, tempVar1, tempVar2
-      integer i, kl
+      integer i, k, kl, km, km1
+      _RL temp
 
       _RL         p5    , eins
       parameter ( p5=0.5, eins=1.0 )
@@ -439,16 +460,34 @@ c     compute bfsfc= Bo + radiative contribution down to hbf * hbl
 #ifdef ALLOW_SALT_PLUME
 c     compute bfsfc = plume fraction at hbf * zgrid
          IF ( useSALT_PLUME ) THEN
+#ifndef SALT_PLUME_VOLUME
            do i = 1, imt
               worka(i) = zgrid(kl)
            enddo
+Ccatn: in original way: accumulate all fractions of boplume above zgrid(kl)
            call SALT_PLUME_FRAC(
      I         imt, hbf,SPDepth,
+#ifdef SALT_PLUME_SPLIT_BASIN
+     I         lon,lat,
+#endif /* SALT_PLUME_SPLIT_BASIN */
      U         worka,
      I         myTime, myIter, myThid)
            do i = 1, imt
-              bfsfc(i) = bfsfc(i) + boplume(i)*(worka(i))
+              bfsfc(i) = bfsfc(i) + boplume(i,1)*(worka(i))
+C            km=max(1,kbl(i)-1)
+C            temp = (plumefrac(i,km)+plumefrac(i,kbl(i)))/2.0
+C            bfsfc(i) = bfsfc(i) + boplume(i,1)*temp
            enddo
+#else /* def SALT_PLUME_VOLUME */
+catn: in vol way: need to integrate down to hbl, so first locate
+c     k level associated with this hbl, then sum up all SPforc[T,S]
+           DO i = 1, imt
+            km =max(1,kbl(i)-1)
+            km1=max(1,kbl(i))
+            temp = (boplume(i,km)+boplume(i,km1))/2.0
+            bfsfc(i) = bfsfc(i) + temp
+           ENDDO
+#endif /* ndef SALT_PLUME_VOLUME */
          ENDIF
 #endif /* ALLOW_SALT_PLUME */
 
@@ -573,16 +612,31 @@ CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME ) THEN
+#ifndef SALT_PLUME_VOLUME
         do i = 1, imt
            worka(i) = hbl(i)
         enddo
         call SALT_PLUME_FRAC(
      I         imt,minusone,SPDepth,
+#ifdef SALT_PLUME_SPLIT_BASIN
+     I         lon,lat,
+#endif /* SALT_PLUME_SPLIT_BASIN */
      U         worka,
      I         myTime, myIter, myThid )
         do i = 1, imt
-           bfsfc(i) = bfsfc(i) + boplume(i) * (worka(i))
+           bfsfc(i) = bfsfc(i) + boplume(i,1) * (worka(i))
+C            km=max(1,kbl(i)-1)
+C            temp = (plumefrac(i,km)+plumefrac(i,kbl(i)))/2.0
+C            bfsfc(i) = bfsfc(i) + boplume(i,1)*temp
         enddo
+#else /* def SALT_PLUME_VOLUME */
+        DO i = 1, imt
+            km =max(1,kbl(i)-1)
+            km1=max(1,kbl(i))
+            temp = (boplume(i,km)+boplume(i,km1))/2.0
+            bfsfc(i) = bfsfc(i) + temp
+        ENDDO
+#endif /* ndef SALT_PLUME_VOLUME */
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
 CADJ store bfsfc = comlev1_kpp
@@ -669,16 +723,31 @@ CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME ) THEN
+#ifndef SALT_PLUME_VOLUME
         do i = 1, imt
            worka(i) = hbl(i)
         enddo
         call SALT_PLUME_FRAC(
      I         imt,minusone,SPDepth,
+#ifdef SALT_PLUME_SPLIT_BASIN
+     I         lon,lat,
+#endif /* SALT_PLUME_SPLIT_BASIN */
      U         worka,
      I         myTime, myIter, myThid )
         do i = 1, imt
-           bfsfc(i) = bfsfc(i) + boplume(i) * (worka(i))
+           bfsfc(i) = bfsfc(i) + boplume(i,1) * (worka(i))
+C            km=max(1,kbl(i)-1)
+C            temp = (plumefrac(i,km)+plumefrac(i,kbl(i)))/2.0
+C            bfsfc(i) = bfsfc(i) + boplume(i,1)*temp
         enddo
+#else /* def SALT_PLUME_VOLUME */
+        DO i = 1, imt
+            km =max(1,kbl(i)-1)
+            km1=max(1,kbl(i)-0)
+            temp = (boplume(i,km)+boplume(i,km1))/2.0
+            bfsfc(i) = bfsfc(i) + temp
+        ENDDO
+#endif /* ndef SALT_PLUME_VOLUME */
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
 CADJ store bfsfc = comlev1_kpp

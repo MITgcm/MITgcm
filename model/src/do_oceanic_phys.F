@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.135 2014/04/29 23:42:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.136 2014/05/21 10:44:59 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,6 +8,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
+#endif
+#ifdef ALLOW_SALT_PLUME
+# include "SALT_PLUME_OPTIONS.h"
 #endif
 
 #ifdef ALLOW_AUTODIFF
@@ -120,10 +123,17 @@ C     i,j,k         :: loop indices
       INTEGER i, j, k
       INTEGER doDiagsRho
       LOGICAL calcGMRedi, calcKPP, calcConvect
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
 #endif /* ALLOW_DIAGNOSTICS */
+
+C#ifdef ALLOW_SALT_PLUME
+C#ifdef SALT_PLUME_VOLUME
+C      _RL temparray(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C#endif
+C#endif
 
 CEOP
 
@@ -433,6 +443,7 @@ C     ice-front ocean interface
 
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME ) THEN
+Catn: exchanging saltPlumeFlux:
           CALL SALT_PLUME_DO_EXCH( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
@@ -534,6 +545,12 @@ cph although some of these are re-initialised later.
            GGL90viscArV(i,j,k,bi,bj)  = 0. _d 0
            GGL90diffKr(i,j,k,bi,bj)  = 0. _d 0
 # endif /* ALLOW_GGL90 */
+# ifdef ALLOW_SALT_PLUME
+#  ifdef SALT_PLUME_VOLUME
+           SPforcingS(i,j,k,bi,bj) = 0. _d 0
+           SPforcingT(i,j,k,bi,bj) = 0. _d 0
+#  endif
+# endif /* ALLOW_SALT_PLUME */
           ENDDO
          ENDDO
         ENDDO
@@ -782,6 +799,27 @@ C--     Diagnose Mixed Layer Depth:
           CALL SALT_PLUME_CALC_DEPTH(
      I              rhoInSitu(1-OLx,1-OLy,1,bi,bj), sigmaR,
      I              bi, bj, myTime, myIter, myThid )
+#ifdef SALT_PLUME_VOLUME
+          CALL SALT_PLUME_VOLFRAC(
+     I              bi, bj, myTime, myIter, myThid )
+C-- get forcings for kpp
+C-- note: temprray is just a dummy var here, not used anywhere.
+C         so didnt need initialization, all zero on output.
+          CALL SALT_PLUME_APPLY(
+     I              1, bi, bj, recip_hFacC(1-OLx,1-OLy,1,bi,bj),
+     I              theta, 0,
+     I              myTime, myIter, myThid )
+C     U              temparray,
+          CALL SALT_PLUME_APPLY(
+     I              2, bi, bj, recip_hFacC(1-OLx,1-OLy,1,bi,bj),
+     I              salt, 0,
+     I              myTime, myIter, myThid )
+C     U              temparray,
+C-- need to call this S/R from here to apply just before kpp
+          CALL SALT_PLUME_FORCING_SURF(
+     I              bi, bj, iMin, iMax, jMin, jMax,
+     I              myTime, myIter, myThid )
+#endif /* SALT_PLUME_VOLUME */
         ENDIF
 #endif /* ALLOW_SALT_PLUME */
 
@@ -979,6 +1017,10 @@ C---  if fluid Is Water: end
         CALL DIAGNOSTICS_FILL( IVDConvCount, 'CONVADJ ',
      &                               0, Nr, 0, 1, 1, myThid )
       ENDIF
+#ifdef ALLOW_SALT_PLUME
+      IF ( useDiagnostics )
+     &      CALL SALT_PLUME_DIAGNOSTICS_FILL(bi,bj,myThid)
+#endif
 #endif
 
 #ifdef ALLOW_ECCO
