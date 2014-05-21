@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_check.F,v 1.6 2013/06/10 02:59:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_check.F,v 1.7 2014/05/21 19:31:23 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -35,24 +35,35 @@ C     msgBuf   :: Informational/error message buffer
 
 #ifdef GCHEM_SEPARATE_FORCING
       IF ( useCFC ) THEN
-         WRITE(msgBuf,'(A)') 'GCHEM_SEPARATE_FORCING not coded for CFC'
-         CALL PRINT_ERROR( msgBuf , myThid )
-         STOP 'ABNORMAL END: S/R GCHEM_CHECK'
+        WRITE(msgBuf,'(A)') 'GCHEM_SEPARATE_FORCING not coded for CFC'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R GCHEM_CHECK'
       ENDIF
-#endif
+#else  /* GCHEM_SEPARATE_FORCING */
+      IF ( useDIC ) THEN
+        WRITE(msgBuf,'(A)') 'GCHEM_SEPARATE_FORCING needed to use DIC'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R GCHEM_CHECK'
+      ENDIF
+      IF ( useDARWIN ) THEN
+        WRITE(msgBuf,'(A)') 'GCHEM_SEPARATE_FORCING needed for DARWIN'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R GCHEM_CHECK'
+      ENDIF
+#endif /* GCHEM_SEPARATE_FORCING */
 
 C     GCHEM needs passive tracer package
       IF ( .NOT.usePTRACERS) THEN
-         WRITE(msgBuf,'(A)') 'usePTRACERS has to be .TRUE. for GCHEM'
-         CALL PRINT_ERROR( msgBuf , myThid )
-         STOP 'ABNORMAL END: S/R GCHEM_CHECK'
+        WRITE(msgBuf,'(A)') 'usePTRACERS has to be .TRUE. for GCHEM'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R GCHEM_CHECK'
       ENDIF
 
 C     GCHEM cannot (yet!) run cfc and dic together
       IF ( useDIC .AND. useCFC ) THEN
-         WRITE(msgBuf,'(A)') 'useDIC and useCFC cannot both be .TRUE.'
-         CALL PRINT_ERROR( msgBuf , myThid )
-         STOP 'ABNORMAL END: S/R GCHEM_CHECK'
+        WRITE(msgBuf,'(A)') 'useDIC and useCFC cannot both be .TRUE.'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R GCHEM_CHECK'
       ENDIF
 
 C     GCHEM cannot run darwin and dic together
@@ -69,6 +80,8 @@ C     GCHEM cannot run darwin and cfc together
         STOP 'ABNORMAL END: S/R GCHEM_CHECK'
       ENDIF
 
+      _END_MASTER(myThid)
+
 #ifdef ALLOW_CFC
 C     run checks specific to CFC
       IF ( useCFC ) THEN
@@ -82,8 +95,6 @@ C     run checks specific to darwin
         CALL DARWIN_CHECK( myThid )
       ENDIF
 #endif
-
-      _END_MASTER(myThid)
 
 #endif /* ALLOW_GCHEM */
 
