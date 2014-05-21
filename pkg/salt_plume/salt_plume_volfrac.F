@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_volfrac.F,v 1.1 2014/05/21 10:52:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_volfrac.F,v 1.2 2014/05/21 13:59:39 atn Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -100,7 +100,7 @@ C use dMbdt+temp as a temporary arrays here to save memory:
        CALL SALT_PLUME_FRAC(
      I               imt,oneRS,temp,
 #ifdef SALT_PLUME_SPLIT_BASIN
-     I               XC,YC,
+     I               XC(1-Olx,1-Oly,bi,bj),YC(1-Olx,1-Oly,bi,bj),
 #endif
      U               dMbdt,
      I               myTime, 1, myThid )
