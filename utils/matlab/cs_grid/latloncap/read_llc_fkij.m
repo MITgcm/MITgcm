@@ -1,6 +1,6 @@
 function fld=read_llc_fkij(fnam,nx,face,kx,ix,jx,prec)
 
-% Function fld=read_llc_fijk(fnam,nx,face,kx,ix,jx,prec)
+% Function fld=read_llc_fkij(fnam,nx,face,kx,ix,jx,prec)
 % read in specific face and indices for llc configuration
 %
 % INPUTS
