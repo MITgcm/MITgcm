@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_apply.F,v 1.1 2014/05/21 10:52:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_apply.F,v 1.2 2014/05/22 22:55:07 jmc Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -64,7 +64,7 @@ C      _RL trStar        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     msgBuf     :: Informational/error message buffer
-C     plumetend  :: forcing terms [W/m2 or kg/m2/s*psu] 
+C     plumetend  :: forcing terms [W/m2 or kg/m2/s*psu]
 C     work       :: working array
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER i, j, k
@@ -114,7 +114,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c       upward = rkSign*NINT(-gravitySign)
         upward = 1
         IF (usingZCoords) upward = -1
- 
+
         IF ( trIdentity.EQ.GAD_TEMPERATURE ) THEN
          SurfVal          = SEAICE_Tfrz
          ConvertFac       = HeatCapacity_Cp*rhoConst
@@ -131,7 +131,7 @@ c       upward = rkSign*NINT(-gravitySign)
          IF ( useDiagnostics ) diagSufx = '_SLT'
 #endif /* ALLOW_DIAGNOSTICS */
         ENDIF
-       
+
 #ifdef ALLOW_DIAGNOSTICS
         doDiagSPtend = .FALSE.
         diagName = 'SPtd'
@@ -162,11 +162,11 @@ C-- initializing:
         ENDDO
 C-----------------
 
-Catn: After discussion with JM, it's cleaner to remove the negative
+Catn: After discussion with JM, it is cleaner to remove the negative
 c     buoyancy associated with saltplumeflux from the surface lev
 c     here instead of inside salt_plume_forcing_surf.F and
 c     kpp_forcing_surf.F:
- 
+
         IF(trApplyFlag.LT.1) THEN
 C ======= if trApplyFlag==0: calc SPforcing[T,S] =================
          IF(trIdentity.EQ.GAD_TEMPERATURE) THEN
@@ -200,7 +200,7 @@ Catn: m/s*[degC,psu]
             dSPvolBelow2kLev = -dSPvolkLev2Above(i,j,kp1,bi,bj)
             gTr_Below2kLev= dSPvolBelow2kLev * work(i,j,kp1)
 Catn: gTr_kLev2Above works even for kLev=1 because this is how much
-C volume of original [salinity,heat] associated with [SSS,SST] 
+C volume of original [salinity,heat] associated with [SSS,SST]
 C was replaced by same volume of brine [salt,heat(from SEAICE_Tfrz)].
 C Note: by design, dSPvolkLev2Above already is negative
             gTr_kLev2Above= dSPvolkLev2Above(i,j,k,bi,bj) * work(i,j,k)
@@ -209,12 +209,12 @@ C salt: [m/s * psu * kg/m3] = [kg/s/m2 psu] = unit of saltPlumeFlux
 C theta:[m/s * kg/m3 * J/kg/degC * degC] = [W/m2]
             plumetend(i,j,k) = ConvertFac *
      &          ( gTr_Surf2kLev + gTr_Below2kLev + gTr_kLev2Above )
-            IF(k.eq.1) plumetend(i,j,k) = ConvertFac * 
+            IF(k.eq.1) plumetend(i,j,k) = ConvertFac *
      &          ( gTr_Surf2kLev + gTr_Below2kLev)
-C remove negative buoyancy from surface, 
+C remove negative buoyancy from surface,
 C used to be in salt_plume_forcing_surf.F
 C           IF(k.EQ.1) THEN
-C            plumetend(i,j,k) = plumetend(i,j,k) 
+C            plumetend(i,j,k) = plumetend(i,j,k)
 C     &                         - ConvertFac*gTr_totSurf2Below
 C           ENDIF
 
@@ -246,12 +246,12 @@ C     &                      SQUEEZE_RIGHT, myThid )
           kp1=k+1
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            IF (trIdentity.EQ.GAD_TEMPERATURE) 
+            IF (trIdentity.EQ.GAD_TEMPERATURE)
      &       plumetend(i,j,k)=SPforcingT(i,j,k,bi,bj)
             IF (trIdentity.EQ.GAD_SALINITY) THEN
              plumetend(i,j,k)=SPforcingS(i,j,k,bi,bj)
             ENDIF
-         
+
 C            trStar(i,j,k,bi,bj)=trStar(i,j,k,bi,bj)+plumetend(i,j,k)
 C     &      *recip_drF(k)*recip_hFac_arg(i,j,k)
 C     &      *recip_ConvertFac
