@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_forcing_surf.F,v 1.7 2014/05/21 10:45:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_forcing_surf.F,v 1.8 2014/05/22 13:11:14 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -140,6 +140,7 @@ c     minusone, p0, p5, p25, p125, p0625
       parameter( p0=0.0, p5=0.5, p125=0.125 )
       integer i, j, k, im1, ip1, jm1, jp1, kp1
       _RL tempvar2
+      _RL recip_Cp
 
       _RL work3 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 
@@ -166,6 +167,7 @@ c             =-g * ( beta *SPforcS      /rhoConst )/rho (m^2/s^3)
 c              -g * (alpha *SPforcT/Cp   /rhoConst )/rho (m^2/s^3)
 c------------------------------------------------------------------------
 
+      recip_Cp = 1. _d 0 / HeatCapacity_Cp
 c initialize arrays to zero
       DO j = 1-OLy, sNy+OLy
          DO i = 1-OLx, sNx+OLx
@@ -220,7 +222,7 @@ cph)
      &       SSBETA(I,J,1) * surfForcS(i,j,bi,bj) )
      &       / rhoSurf(I,J)
         bosol(I,J) = gravity * TTALPHA(I,J,1) * Qsw(i,j,bi,bj) *
-     &       recip_rhoConst/HeatCapacity_Cp
+     &       recip_Cp*recip_rhoConst
      &       / rhoSurf(I,J)
        END DO
       END DO
