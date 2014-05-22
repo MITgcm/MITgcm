@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.67 2014/05/21 21:48:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.68 2014/05/22 22:00:36 atn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -551,6 +551,15 @@ c     IF ( usePenetratingSW ) THEN
 c     ENDIF
 #endif
 
+#ifdef ALLOW_SALT_PLUME
+#ifdef SALT_PLUME_VOLUME
+      IF ( useSALT_PLUME )
+     &     CALL SALT_PLUME_TENDENCY_APPLY_T(
+     I     iMin,iMax, jMin,jMax, bi,bj, kLev,
+     I     myTime, myThid )
+#endif /* SALT_PLUME_VOLUME */
+#endif /* ALLOW_SALT_PLUME */
+
 #ifdef ALLOW_RBCS
        IF (useRBCS) THEN
           CALL RBCS_ADD_TENDENCY(bi,bj,klev, 1,
@@ -733,20 +742,11 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
      &     bi,bj, kLev, myTime, myThid )
 #endif /* ALLOW_ICEFRONT */
 
-Catn: org. version of SP: do within k-loop
-Catn  new version: outside k-loop; called from [temp,salt]_integrate.F
 #ifdef ALLOW_SALT_PLUME
-CC#ifndef SALT_PLUME_VOLUME
       IF ( useSALT_PLUME )
      &     CALL SALT_PLUME_TENDENCY_APPLY_S(
      I     iMin,iMax, jMin,jMax, bi,bj, kLev,
      I     myTime, myThid )
-#ifdef SALT_PLUME_VOLUME
-      IF ( useSALT_PLUME )
-     &     CALL SALT_PLUME_TENDENCY_APPLY_T(
-     I     iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I     myTime, myThid )
-#endif /* ndef SALT_PLUME_VOLUME */
 #endif /* ALLOW_SALT_PLUME */
 
 #ifdef ALLOW_RBCS
