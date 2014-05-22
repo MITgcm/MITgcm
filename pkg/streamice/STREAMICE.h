@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.7 2014/04/24 12:01:50 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.8 2014/05/22 22:54:13 jmc Exp $
 C $Name:  $
 
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -43,7 +43,6 @@ C      _RL A_glen_isothermal, n_glen, eps_glen_min, eps_u_min
       _RL streamice_addl_backstress
       _RL streamice_smooth_gl_width
       _RL streamice_adot_uniform
-
 
 C     parms for parameterized initial thickness
 C     SHELF_MAX_DRAFT: max thickness of ice in m
@@ -216,7 +215,7 @@ C     -------------------------- AND NOW ARRAYS --------------------------------
 
 C     EXPLANATION OF MASKS
 
-C     STREAMICE_hmask           VALUES	1=ice-covered cell
+C     STREAMICE_hmask           VALUES  1=ice-covered cell
 C                                       2=partially ice-covered cell (no dynamics)
 C                                       0=ice-free cell (for now, it means the cell
 C                                                           is treated as an open-ocean cell
@@ -315,11 +314,11 @@ C     &     A_glen,
 
 #ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
       COMMON /STREAMICE_STRESS_BOUNDARY/
-     &      streamice_u_normal_pert, 
+     &      streamice_u_normal_pert,
      &      streamice_v_normal_pert,
      &      streamice_u_shear_pert,
      &      streamice_v_shear_pert,
-     &      streamice_u_normal_stress, 
+     &      streamice_u_normal_stress,
      &      streamice_v_normal_stress,
      &      streamice_u_shear_stress,
      &      streamice_v_shear_stress
@@ -349,7 +348,6 @@ C     &     A_glen,
       COMMON /STREAMICE_RLOW/
      &     R_low_si
 #endif
-
 
       _RL H_streamice           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL U_streamice           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -436,8 +434,6 @@ C     The following arrays are used for the hybrid stress balance
       _RL H_streamice_prev (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL STREAMICE_dummy_array (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-
-
       COMMON /STREAMICE_COST_RL/
      &       cost_func1_streamice,
      &       cost_vel_streamice,
@@ -471,7 +467,6 @@ C        velocity initial guess, so they are kept
      & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER n_dofs_process (0:nPx*nPy-1)
 #endif
-
 
 #endif /* ALLOW_STREAMICE */
 
