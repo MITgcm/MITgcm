@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.136 2014/05/21 10:44:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.137 2014/05/22 22:05:46 atn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -128,12 +128,6 @@ C     i,j,k         :: loop indices
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
 #endif /* ALLOW_DIAGNOSTICS */
-
-C#ifdef ALLOW_SALT_PLUME
-C#ifdef SALT_PLUME_VOLUME
-C      _RL temparray(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-C#endif
-C#endif
 
 CEOP
 
@@ -809,12 +803,10 @@ C         so didnt need initialization, all zero on output.
      I              1, bi, bj, recip_hFacC(1-OLx,1-OLy,1,bi,bj),
      I              theta, 0,
      I              myTime, myIter, myThid )
-C     U              temparray,
           CALL SALT_PLUME_APPLY(
      I              2, bi, bj, recip_hFacC(1-OLx,1-OLy,1,bi,bj),
      I              salt, 0,
      I              myTime, myIter, myThid )
-C     U              temparray,
 C-- need to call this S/R from here to apply just before kpp
           CALL SALT_PLUME_FORCING_SURF(
      I              bi, bj, iMin, iMax, jMin, jMax,
