@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.64 2014/04/04 20:29:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.65 2014/05/23 19:59:47 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -677,11 +677,7 @@ coj   Add outgoing fluxes
      &      +MAX(0. _d 0,fVerT(i,j,kDown)*rkSign)
      &      +MAX(0. _d 0,-fVerT(i,j,kUp)*rkSign)
      &     )
-         IF ( applyAB_onTracer ) THEN
-           trac=TracerN(i,j,k,bi,bj)
-         ELSE
-           trac=TracAB(i,j,k,bi,bj)
-         ENDIF
+         trac = localT(i,j)
 coj   If they would reduce tracer by a fraction of more than
 coj   SmolarkiewiczMaxFrac, scale them down
          IF (outFlux.GT.0. _d 0 .AND.
