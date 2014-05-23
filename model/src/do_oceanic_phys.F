@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.138 2014/05/23 01:18:07 atn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.139 2014/05/23 20:04:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -123,7 +123,6 @@ C     i,j,k         :: loop indices
       INTEGER i, j, k
       INTEGER doDiagsRho
       LOGICAL calcGMRedi, calcKPP, calcConvect
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
