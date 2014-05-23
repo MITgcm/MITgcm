@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.201 2014/04/28 17:13:23 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.202 2014/05/23 01:12:56 atn Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1773,7 +1773,19 @@ Catn: can not take out more that surface salinity when SSS<SEAICE_salt0
      &            * recip_deltaTtherm * SEAICE_rhoIce
           saltFlux(I,J,bi,bj) = tmpscal2
 #ifdef ALLOW_SALT_PLUME
+#ifdef SALT_PLUME_SPLIT_BASIN
+catn attempt to split East/West basins in Arctic
+          localSPfrac(I,J) = SPsalFRAC(1)
+          IF ( SaltPlumeSplitBasin ) THEN
+            localSPfrac(I,J) = SPsalFRAC(2)
+            IF(YC(I,J,bi,bj).LT. 85.0 .AND. YC(I,J,bi,bj).GT. 71.0
+     &       .AND. XC(I,J,bi,bj) .LT. -90.0) THEN
+             localSPfrac(I,J) = SPsalFRAC(1)
+            ENDIF
+          ENDIF
+#else
           localSPfrac(I,J) = SPsalFRAC
+#endif /* SALT_PLUME_SPLIT_BASIN */
 #ifdef SALT_PLUME_IN_LEADS
 Catn: Only d_HEFFbyATMonOCN should contribute to plume.
 C     By redefining tmpscal1 here, saltPlumeFlux is smaller in case
@@ -1823,13 +1835,26 @@ C tmpscal1 > 0 : m of sea ice that is created
      &            *SEAICE_saltFrac*salt(I,J,kSurface,bi,bj)
      &            *tmpscal1*SEAICE_rhoIce
 #ifdef ALLOW_SALT_PLUME
+#ifdef SALT_PLUME_SPLIT_BASIN
+catn attempt to split East/West basins in Arctic
+             localSPfrac(I,J) = SPsalFRAC(1)
+             IF ( SaltPlumeSplitBasin ) THEN
+               localSPfrac(I,J) = SPsalFRAC(2)
+               IF(YC(I,J,bi,bj).LT. 85.0 .AND. YC(I,J,bi,bj).GT. 71.0
+     &                  .AND. XC(I,J,bi,bj) .LT. -90.0) THEN
+                 localSPfrac(I,J) = SPsalFRAC(1)
+               ENDIF
+             ENDIF
+#else
+             localSPfrac(I,J) = SPsalFRAC
+#endif /* SALT_PLUME_SPLIT_BASIN */
 #ifndef SALT_PLUME_IN_LEADS
 C saltPlumeFlux is defined only during freezing:
              saltPlumeFlux(I,J,bi,bj)=
      &            HEFFM(I,J,bi,bj)*recip_deltaTtherm
      &            *(ONE-SEAICE_saltFrac)*salt(I,J,kSurface,bi,bj)
      &            *tmpscal1*SEAICE_rhoIce
-     &            *SPsalFRAC
+     &            *localSPfrac(I,J)
 #endif /* ndef SALT_PLUME_IN_LEADS */
 #endif /* ALLOW_SALT_PLUME */
 
@@ -1860,7 +1885,7 @@ C     Note: tmpscal1 is defined only after saltFlux is calculated.
           leadPlumeFraction(I,J) =
      &      (ONE + EXP( (SPinflectionPoint - AREApreTH(I,J))*5.0
      &                 /(ONE - SPinflectionPoint) ))**(-ONE)
-          localSPfrac(I,J)=SPsalFRAC*leadPlumeFraction(I,J)
+          localSPfrac(I,J)=localSPfrac(I,J)*leadPlumeFraction(I,J)
           IF ( tmpscal1 .GE. 0.0) THEN
 C saltPlumeFlux is defined only during freezing:
              saltPlumeFlux(I,J,bi,bj)=
