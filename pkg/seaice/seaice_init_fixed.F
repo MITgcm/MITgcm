@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.27 2014/05/12 22:08:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.28 2014/05/23 20:00:41 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -36,15 +36,11 @@ C     msgBuf      :: Informational/error message buffer
 C     k - loop counter for ITD categories
       INTEGER k
 #endif
-C     i,j,k,bi,bj - Loop counters
-
-      INTEGER i, j, bi, bj
+C     i,j, bi,bj  :: Loop counters
+c     INTEGER i, j, bi, bj
       INTEGER kSurface
 #ifdef ALLOW_SITRACER
       INTEGER iTracer
-#endif
-#ifndef SEAICE_CGRID
-      _RS  mask_uice
 #endif
 #ifdef SHORTWAVE_HEATING
 cif   Helper variable for determining the fraction of sw radiation

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.13 2014/04/28 15:18:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.14 2014/05/23 20:00:41 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -10,7 +10,6 @@ C     !INTERFACE:
      I                        missFldList,
      I                        nMissing, nbFields,
      I                        myIter, myThid )
-
 
 C     !DESCRIPTION:
 C     Check that fields that are needed to restart have been read.
@@ -65,7 +64,7 @@ C      (program will stop if fields liek AREA are missing)
 #endif
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(8) fldName
-      INTEGER i,j,k,bi,bj
+c     INTEGER i,j,k,bi,bj
 #ifdef ALLOW_SITRACER
       INTEGER iTracer
       CHARACTER*(2) fldNum
