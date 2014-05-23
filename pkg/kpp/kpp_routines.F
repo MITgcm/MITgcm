@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.52 2014/05/21 10:45:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.53 2014/05/23 20:02:43 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -385,13 +385,16 @@ c wm, ws    : turbulent velocity scales         (m/s)
       _RL wm(imt), ws(imt)
       _RL worka(imt)
       _RL bvsq, vtsq, hekman, hmonob, hlimit, tempVar1, tempVar2
-      integer i, k, kl, km, km1
-      _RL temp
+      integer i, kl
 
       _RL         p5    , eins
       parameter ( p5=0.5, eins=1.0 )
       _RL         minusone
       parameter ( minusone=-1.0 )
+#ifdef SALT_PLUME_VOLUME
+      integer km, km1
+      _RL temp
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
       integer kkppkey
 #endif
@@ -484,7 +487,7 @@ c     k level associated with this hbl, then sum up all SPforc[T,S]
            DO i = 1, imt
             km =max(1,kbl(i)-1)
             km1=max(1,kbl(i))
-            temp = (boplume(i,km)+boplume(i,km1))/2.0
+            temp = (boplume(i,km)+boplume(i,km1))*p5
             bfsfc(i) = bfsfc(i) + temp
            ENDDO
 #endif /* ndef SALT_PLUME_VOLUME */
