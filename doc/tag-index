@@ -1,24 +1,26 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1998 2014/05/21 12:31:05 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1999 2014/05/24 13:26:28 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint64x (2014/05/24)
 o verification/lab_sea:
-  update adjoint and TLM output following changes to pkg/salt_plume
+  - update adjoint and TLM output following changes to pkg/salt_plume
+  - un-do the update after putting back local recip_Cp in few places.
 o pkg/salt_plume: modifications by An Nguyen:
-  - add capability to do brine rejection (salt-plume) as function of 
+  - add capability to do brine rejection (salt-plume) as function of
     volume+tracers (instead of only salinity tracer).
-  - conserve volume by exchanging volume from each kLev to above to 
+  - conserve volume by exchanging volume from each kLev to above to
     accommodate in-coming brine volume
   - store surface and klev exchanged fraction + volume in 4 new 3-d arrays
-  - switch KPP surf buoyancy due to brine forcing to 3-d 
+  - switch KPP surf buoyancy due to brine forcing to 3-d
     (3 more 3-d arrays, 2 for SPforcing[T,S], 1 for boplume)
   - add salt_plume_volfrac, salt_plume_apply, salt_plume_tendency_apply_t
-  - unrelatedly, also add ad-hoc capability to vary salt_plume scheme 
+  - unrelatedly, also add ad-hoc capability to vary salt_plume scheme
     in East/West Arctic.
 o pkg/sbo:
-  - incorporate modifications from Katherine Quinn to enable the use of sbo 
+  - incorporate modifications from Katherine Quinn to enable the use of sbo
     pkg in ECCO-v4 set-up ; remove SBO-TimeAve output ; add monitor-like
     output for future testreport verification (unfinished).
 o pkg/atm_phys:
