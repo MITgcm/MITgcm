@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1999 2014/05/24 13:26:28 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2000 2014/05/27 15:27:14 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice: 
+  - remove code that resets useThSice in S/R seaice_readparms and
+    replace by a warning in S/R seaice_check
+  - remove parameter MULTDIM, replace with nITD and runtime
+    parameter SEAICE_multDim (still hard-wired to nITD if
+    SEAICE_ITD is defined)
 
 checkpoint64x (2014/05/24)
 o verification/lab_sea:
