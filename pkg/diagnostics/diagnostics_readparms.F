@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.35 2013/08/14 21:16:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.36 2014/05/27 21:24:54 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -84,7 +84,6 @@ C     stat_fName  :: List of statistics output Filename
       INTEGER ku, stdUnit
       INTEGER j,k,l,n,m,nf
       INTEGER iLen, regionCount
-      LOGICAL existing
 
 C--   full level output:
       NAMELIST / DIAGNOSTICS_LIST /
@@ -105,23 +104,13 @@ C--   per level statistics output:
      &     set_regMask, val_regMask,
      &     diagSt_regMaskFile, nSetRegMskFile
 
-C-    PKG diagnostics is not used
       IF ( .NOT.useDiagnostics ) THEN
+C-    pkg DIAGNOSTICS is not used
         _BEGIN_MASTER(myThid)
 C-    Track diagnostics pkg activation status:
          diag_pkgStatus = -1
 C     print a (weak) warning if data.diagnostics is found
-         INQUIRE( FILE='data.diagnostics', EXIST=existing )
-         IF ( existing ) THEN
-           WRITE(msgBuf,'(2A)') '** Warning ** DIAGNOSTICS_READPARMS:',
-     &       ' ignores "data.diagnostics" file since'
-           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                         SQUEEZE_RIGHT, myThid )
-           WRITE(msgBuf,'(2A)') '** Warning ** DIAGNOSTICS_READPARMS:',
-     &       ' useDiagnostics= F (set from "data.pkg")'
-           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                         SQUEEZE_RIGHT, myThid )
-         ENDIF
+         CALL PACKAGES_UNUSED_MSG( 'useDiagnostics', ' ', ' ' )
         _END_MASTER(myThid)
         RETURN
       ENDIF
