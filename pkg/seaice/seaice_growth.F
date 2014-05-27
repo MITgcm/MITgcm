@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.202 2014/05/23 01:12:56 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.203 2014/05/27 15:24:00 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -181,22 +181,22 @@ C     wind speed
 C     temporary variables available for the various computations
       _RL tmparr1             (1:sNx,1:sNy)
 
-      _RL ticeInMult          (1:sNx,1:sNy,MULTDIM)
-      _RL ticeOutMult         (1:sNx,1:sNy,MULTDIM)
-      _RL heffActualMult      (1:sNx,1:sNy,MULTDIM)
-      _RL hsnowActualMult     (1:sNx,1:sNy,MULTDIM)
+      _RL ticeInMult          (1:sNx,1:sNy,nITD)
+      _RL ticeOutMult         (1:sNx,1:sNy,nITD)
+      _RL heffActualMult      (1:sNx,1:sNy,nITD)
+      _RL hsnowActualMult     (1:sNx,1:sNy,nITD)
 #ifdef SEAICE_ITD
-      _RL recip_heffActualMult(1:sNx,1:sNy,MULTDIM)
+      _RL recip_heffActualMult(1:sNx,1:sNy,nITD)
 #endif
-      _RL a_QbyATMmult_cover  (1:sNx,1:sNy,MULTDIM)
-      _RL a_QSWbyATMmult_cover(1:sNx,1:sNy,MULTDIM)
-      _RL a_FWbySublimMult    (1:sNx,1:sNy,MULTDIM)
+      _RL a_QbyATMmult_cover  (1:sNx,1:sNy,nITD)
+      _RL a_QSWbyATMmult_cover(1:sNx,1:sNy,nITD)
+      _RL a_FWbySublimMult    (1:sNx,1:sNy,nITD)
 #ifdef SEAICE_ITD
-      _RL r_QbyATMmult_cover  (1:sNx,1:sNy,MULTDIM)
-      _RL r_FWbySublimMult    (1:sNx,1:sNy,MULTDIM)
+      _RL r_QbyATMmult_cover  (1:sNx,1:sNy,nITD)
+      _RL r_FWbySublimMult    (1:sNx,1:sNy,nITD)
 C for lateral melt parameterization:
-      _RL latMeltFrac         (1:sNx,1:sNy,MULTDIM)
-      _RL latMeltRate         (1:sNx,1:sNy,MULTDIM)
+      _RL latMeltFrac         (1:sNx,1:sNy,nITD)
+      _RL latMeltRate         (1:sNx,1:sNy,nITD)
       _RL floeAlpha
       _RL floeDiameter
       _RL floeDiameterMin
@@ -255,7 +255,7 @@ C                     as EVAP (positive upward)
 C     The latent heat flux which will sublimate all snow and ice
 C     over one time step
       _RL latentHeatFluxMax   (1:sNx,1:sNy)
-      _RL latentHeatFluxMaxMult(1:sNx,1:sNy,MULTDIM)
+      _RL latentHeatFluxMaxMult(1:sNx,1:sNy,nITD)
 #endif
 
 #ifdef SEAICE_ITD
@@ -481,7 +481,7 @@ C     store regularized values of heff, hsnow, area at the onset of thermo.
          ENDDO
         ENDDO
 #ifdef SEAICE_ITD
-        DO IT=1,nITD
+        DO IT=1,SEAICE_multDim
          DO J=1,sNy
           DO I=1,sNx
            HEFFITDpreTH(I,J,IT)=HEFFITD(I,J,IT,bi,bj)
@@ -553,7 +553,7 @@ Cgf no additional dependency of air-sea fluxes to ice
           ENDDO
          ENDDO
 #ifdef SEAICE_ITD
-         DO IT=1,nITD
+         DO IT=1,SEAICE_multDim
           DO J=1,sNy
            DO I=1,sNx
             HEFFITDpreTH(I,J,IT) = 0. _d 0
@@ -583,7 +583,7 @@ CADJ STORE HEFFpreTH = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE HSNWpreTH = comlev1_bibj, key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef SEAICE_ITD
-        DO IT=1,nITD
+        DO IT=1,SEAICE_multDim
          DO J=1,sNy
           DO I=1,sNx
            IF (HEFFITDpreTH(I,J,IT) .GT. ZERO) THEN
@@ -648,7 +648,7 @@ C     The latent heat flux over the sea ice which
 C     will sublimate all of the snow and ice over one time
 C     step (W/m^2)
 #ifdef SEAICE_ITD
-        DO IT=1,nITD
+        DO IT=1,SEAICE_multDim
          DO J=1,sNy
           DO I=1,sNx
            IF (HEFFITDpreTH(I,J,IT) .GT. ZERO) THEN
@@ -884,7 +884,7 @@ CADJ STORE a_FWbySublim    = comlev1_bibj, key = iicekey, byte = isbyte
 
 C switch heat fluxes from W/m2 to 'effective' ice meters
 #ifdef SEAICE_ITD
-        DO IT=1,nITD
+        DO IT=1,SEAICE_multDim
          DO J=1,sNy
           DO I=1,sNx
            a_QbyATMmult_cover(I,J,IT)   = a_QbyATMmult_cover(I,J,IT)
@@ -957,7 +957,7 @@ CADJ STORE r_FWbySublim    = comlev1_bibj, key = iicekey, byte = isbyte
 Cgf no additional dependency through ice cover
         IF ( SEAICEadjMODE.GE.3 ) THEN
 #ifdef SEAICE_ITD
-         DO IT=1,nITD
+         DO IT=1,SEAICE_multDim
           DO J=1,sNy
            DO I=1,sNx
             a_QbyATMmult_cover(I,J,IT)   = 0. _d 0
@@ -1027,7 +1027,7 @@ C determine lateral melt rate at floe edges based on an
 C average floe diameter or a floe size distribution
 C following Steele (1992, Tab. 2)
 C ======================================================
-        DO IT=1,nITD
+        DO IT=1,SEAICE_multDim
          DO J=1,sNy
           DO I=1,sNx
            tempFrz = SEAICE_tempFrz0 +
@@ -1088,7 +1088,7 @@ CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE r_FWbySublim     = comlev1_bibj,key=iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef SEAICE_ITD
-        DO IT=1,nITD
+        DO IT=1,SEAICE_multDim
 #endif /* SEAICE_ITD */
         DO J=1,sNy
          DO I=1,sNx
@@ -1164,7 +1164,7 @@ CADJ STORE r_QbyOCN = comlev1_bibj,key=iicekey,byte=isbyte
        IF (.NOT.SEAICE_growMeltByConv) THEN
 
 #ifdef SEAICE_ITD
-        DO IT=1,nITD
+        DO IT=1,SEAICE_multDim
          DO J=1,sNy
           DO I=1,sNx
 C          ice growth/melt due to ocean heat r_QbyOCN (W/m^2) is
@@ -1215,7 +1215,7 @@ CADJ STORE r_QbyATM_cover = comlev1_bibj,key=iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef SEAICE_ITD
-        DO IT=1,nITD
+        DO IT=1,SEAICE_multDim
          DO J=1,sNy
           DO I=1,sNx
 C     Convert to standard units (meters of ice) rather than to meters
@@ -1267,7 +1267,7 @@ Cgf the v1.81=>v1.82 revision would change results in
 Cgf warming conditions, the lab_sea results were not changed.
 
 #ifdef SEAICE_ITD
-        DO IT=1,nITD
+        DO IT=1,SEAICE_multDim
          DO J=1,sNy
           DO I=1,sNx
            tmpscal1 = HEFFITDpreTH(I,J,IT)
@@ -1358,7 +1358,7 @@ C           add precip to the fresh water bucket
          ENDDO
         ENDDO
 #ifdef SEAICE_ITD
-        DO IT=1,nITD
+        DO IT=1,SEAICE_multDim
          DO J=1,sNy
           DO I=1,sNx
            d_HSNWbyRAIN_ITD(I,J,IT)
@@ -1393,7 +1393,7 @@ CADJ STORE r_QbyOCN = comlev1_bibj,key=iicekey,byte=isbyte
       IF (.NOT.SEAICE_growMeltByConv) THEN
 
 #ifdef SEAICE_ITD
-        DO IT=1,nITD
+        DO IT=1,SEAICE_multDim
          DO J=1,sNy
           DO I=1,sNx
            tmpscal4 = HSNWITDpreTH(I,J,IT)
@@ -1506,7 +1506,7 @@ CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         IF ( SEAICEuseFlooding ) THEN
 #ifdef SEAICE_ITD
-         DO IT=1,nITD
+         DO IT=1,SEAICE_multDim
           DO J=1,sNy
            DO I=1,sNx
             tmpscal3 = HEFFITDpreTH(I,J,IT)
@@ -1544,7 +1544,7 @@ CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 #ifdef SEAICE_ITD
 C apply ice and snow thickness changes
 C =================================================================
-         DO IT=1,nITD
+         DO IT=1,SEAICE_multDim
           DO J=1,sNy
            DO I=1,sNx
             HEFFITD(I,J,IT,bi,bj) = HEFFITD(I,J,IT,bi,bj)
@@ -1590,8 +1590,8 @@ CADJ STORE AREA(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 
 #ifdef SEAICE_ITD
 C--   in thinnest category account for lateral ice growth and melt the 
-C--   "non-ITD" way, so that the ITD simulation with nITD=1 is identical 
-C--   with the non-ITD simulation;
+C--   "non-ITD" way, so that the ITD simulation with SEAICE_multDim=1
+C--   is identical with the non-ITD simulation;
 C--   use HEFF, ARE, HSNOW, etc. as temporal storage for 1st category
         DO J=1,sNy
          DO I=1,sNx
@@ -1679,8 +1679,8 @@ C       transfer 1st category values back into ITD variables
         ENDDO
 C       now melt ice laterally in all other thickness categories
 C       (areal growth, i.e. new ice formation, only occurrs in 1st category)
-        IF (nITD .gt. 1) THEN
-         DO IT=2,nITD
+        IF (SEAICE_multDim .gt. 1) THEN
+         DO IT=2,SEAICE_multDim
           DO J=1,sNy
            DO I=1,sNx
             IF (HEFFITD(I,J,IT,bi,bj).LE.ZERO) THEN
@@ -1712,7 +1712,7 @@ C       limit area reduction so that actual ice thickness does not increase
 Cgf 'bulk' linearization of area=f(HEFF)
         IF ( SEAICEadjMODE.GE.1 ) THEN
 #ifdef SEAICE_ITD
-         DO IT=1,nITD
+         DO IT=1,SEAICE_multDim
           DO J=1,sNy
            DO I=1,sNx
             AREAITD(I,J,IT,bi,bj) = AREAITDpreTH(I,J,IT) + 0.1 _d 0 *
@@ -1939,7 +1939,7 @@ C compute total of "mult" fluxes for ocean forcing
           r_FWbySublim(I,J)     = 0.0 _d 0
          ENDDO
         ENDDO
-        DO IT=1,nITD
+        DO IT=1,SEAICE_multDim
          DO J=1,sNy
           DO I=1,sNx
 C if fluxes in W/m^2 then use:

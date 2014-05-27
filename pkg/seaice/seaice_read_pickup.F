@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.24 2014/04/29 14:43:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.25 2014/05/27 15:24:00 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -80,7 +80,7 @@ C--    Read meta file (if exist) and prepare for reading Multi-Fields file
        CALL READ_MFLDS_SET(
      I                      fn,
      O                      nbFields, filePrec,
-     I                      MULTDIM, nIter0, myThid )
+     I                      nITD, nIter0, myThid )
 
        _BEGIN_MASTER( myThid )
        IF ( nbFields.GE.0 .AND. filePrec.NE.fp ) THEN
@@ -138,11 +138,11 @@ C---   Old way to read seaice fields:
 C--    Read ice model fields
         nj = 1
         IF (SEAICE_multDim.GT.1) THEN
-         CALL READ_REC_3D_RL( fn,fp,MULTDIM, TICES, nj,nIter0,myThid )
-         nj = nj + MULTDIM
+         CALL READ_REC_3D_RL( fn,fp,nITD, TICES, nj,nIter0,myThid )
+         nj = nj + nITD
         ELSE
          doMapTice = .TRUE.
-         CALL READ_REC_LEV_RL( fn, fp, MULTDIM,1,1, TICES,
+         CALL READ_REC_LEV_RL( fn, fp, nITD,1,1, TICES,
      I                         nj, nIter0, myThid )
          nj = nj + 1
         ENDIF
@@ -184,21 +184,21 @@ C--    read Sea-Ice Thermodynamics State variables, starting with 3-D fields:
         IF ( .NOT.useThSIce ) THEN
          IF (SEAICE_multDim.GT.1) THEN
           CALL READ_MFLDS_3D_RL( 'siTICES ', TICES,
-     &                                nj, fp, MULTDIM, nIter0, myThid )
-          nj = nj*MULTDIM
+     &                                nj, fp, nITD, nIter0, myThid )
+          nj = nj*nITD
           IF ( nj.EQ.0 ) THEN
            doMapTice = .TRUE.
            CALL READ_MFLDS_LEV_RL( 'siTICE  ', TICES,
-     &                            nj, fp, MULTDIM,1,1, nIter0, myThid )
+     &                            nj, fp, nITD,1,1, nIter0, myThid )
           ENDIF
          ELSE
 C     SEAICE_multDim.EQ.1
           doMapTice = .TRUE.
           CALL READ_MFLDS_LEV_RL( 'siTICE  ', TICES,
-     &                            nj, fp, MULTDIM,1,1, nIter0, myThid )
+     &                            nj, fp, nITD,1,1, nIter0, myThid )
           IF ( nj.EQ.0 ) THEN
            CALL READ_MFLDS_LEV_RL( 'siTICES ', TICES,
-     &                            nj, fp, MULTDIM,1,1, nIter0, myThid )
+     &                            nj, fp, nITD,1,1, nIter0, myThid )
           ENDIF
          ENDIF
 C--    continue with 2-D fields:
@@ -301,7 +301,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C      copy TICES(k=1) to TICES(k)
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
-           DO k=2,MULTDIM
+           DO k=2,nITD
             DO j=1,sNy
              DO i=1,sNx
                TICES(i,j,k,bi,bj) = TICES(i,j,1,bi,bj)
@@ -316,7 +316,7 @@ C--    Update overlap regions
        CALL EXCH_UV_XY_RL( uIce, vIce,.TRUE.,myThid)
        _EXCH_XY_RL( HEFF, myThid )
        _EXCH_XY_RL( AREA, myThid )
-       CALL EXCH_3D_RL( TICES, MULTDIM, myThid )
+       CALL EXCH_3D_RL( TICES, nITD, myThid )
        _EXCH_XY_RL(HSNOW, myThid )
 #if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
        IF ( SEAICEuseEVP ) THEN
