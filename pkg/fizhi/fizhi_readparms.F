@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.18 2007/12/05 00:55:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.19 2014/05/27 23:56:23 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -38,10 +38,22 @@ C     !LOCAL VARIABLES:
       integer nymdend,nhmsend
       logical climsst, climsice
 
-      namelist / fizhi_list / 
-     .     nymdbegin, nhmsbegin,
-     .     fizhi_mnc_write_pickup, fizhi_mnc_read_pickup,
-     .     runlength, climsst, climsice
+      namelist / fizhi_list /
+     &     nymdbegin, nhmsbegin,
+     &     fizhi_mnc_write_pickup, fizhi_mnc_read_pickup,
+     &     runlength, climsst, climsice
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useFizhi ) THEN
+C-    pkg FIZHI is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.fizhi is found
+         CALL PACKAGES_UNUSED_MSG( 'useFizhi', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
 C     Set defaults
       fizhi_mdsio_read_pickup = .TRUE.
@@ -82,8 +94,8 @@ C  if runlength has been set in the fizhi namelist
        nTimeSteps = int(nincr/deltaT)
        nEndIter = nIter0 + nTimeSteps
        endTime = startTime + deltaT*float(nTimeSteps)
-       WRITE(msgBuf,'(A,I10)') 
-     .         ' CHANGING NUMBER OF MODEL TIMESTEPS TO',ntimesteps
+       WRITE(msgBuf,'(A,I10)')
+     &         ' CHANGING NUMBER OF MODEL TIMESTEPS TO',ntimesteps
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,SQUEEZE_RIGHT,1)
        WRITE(msgBuf,'(A,F12.2)') ' CHANGING END TIME TO',endtime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,SQUEEZE_RIGHT,1)
@@ -107,5 +119,3 @@ C     Echo Date and Time Info
 
       return
       end
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

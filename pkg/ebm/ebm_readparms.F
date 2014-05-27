@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_readparms.F,v 1.3 2011/08/29 19:38:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_readparms.F,v 1.4 2014/05/27 23:56:23 jmc Exp $
 C $Name:  $
 #include "EBM_OPTIONS.h"
 
@@ -43,6 +43,18 @@ C--   Namelist
      & tauThetaZonRelax,
      & scale_runoff,
      & RunoffFile
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useEBM ) THEN
+C-    PKG ebm is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.ebm is found
+         CALL PACKAGES_UNUSED_MSG( 'useEBM', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 
