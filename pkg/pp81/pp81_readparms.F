@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_readparms.F,v 1.3 2010/08/24 14:59:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_readparms.F,v 1.4 2014/05/27 23:41:29 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
@@ -47,9 +47,22 @@ CEOP
      &     PPwriteState,
      &     PPtaveFreq
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.usePP81 ) THEN
+C-    pkg PP81 is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+         PP81isON = .FALSE.
+C     print a (weak) warning if data.pp81 is found
+         CALL PACKAGES_UNUSED_MSG( 'usePP81', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
+
 C This routine has been called by the main model so we set our
 C internal flag to indicate we are in business
-      PP81isON=.TRUE.
+      PP81isON = .TRUE.
 
 C Set defaults values for parameters in PP81.h
       PPnRi        = 2

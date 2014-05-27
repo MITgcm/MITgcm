@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.21 2009/09/18 11:40:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.22 2014/05/27 23:41:29 jmc Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -25,10 +25,9 @@ CEOP
 
 C     !LOCAL VARIABLES:
 #ifdef ALLOW_KPP
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf      - Informational/error message buffer
 C     errIO       - IO error flag
 C     iUnit       - Work variable for IO unit number
-
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER errIO, iUnit
 
@@ -47,15 +46,26 @@ C--   KPP vertical mixing parameters
      & num_z_smooth_sh, num_m_smooth_sh,
      & Riinfty, BVSQcon, difm0, difs0, dift0,
      & difmcon, difscon, diftcon,
-     & Rrho0, dsfmax, 
+     & Rrho0, dsfmax,
      & cstar
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useKPP ) THEN
+C-    pkg KPP is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.kpp is found
+         CALL PACKAGES_UNUSED_MSG( 'useKPP', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 
       WRITE(msgBuf,'(A)') ' KPP_INIT: opening data.kpp'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-
 
       CALL OPEN_COPY_DATA_FILE(
      I                          'data.kpp', 'KPP_INIT',

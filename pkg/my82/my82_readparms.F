@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_readparms.F,v 1.2 2009/01/20 00:26:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_readparms.F,v 1.3 2014/05/27 23:41:29 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -44,9 +44,22 @@ CEOP
      &     MYwriteState,
      &     MYtaveFreq
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useMY82 ) THEN
+C-    pkg MY82 is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+         MYisON = .FALSE.
+C     print a (weak) warning if data.my82 is found
+         CALL PACKAGES_UNUSED_MSG( 'useMY82', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
+
 C This routine has been called by the main model so we set our
 C internal flag to indicate we are in business
-      MYisON=.TRUE.
+      MYisON = .TRUE.
 
 C Set defaults values for parameters in MY82.h
       MYviscMax    = 1. _d 0

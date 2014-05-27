@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.12 2013/02/18 21:16:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.13 2014/05/27 23:41:28 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -65,13 +65,23 @@ C--   Bulk Formula parameter
      &         useClouds,
      &         useDLongWave
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useCheapAML ) THEN
+C-    pkg CHEAPAML is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.cheapaml is found
+         CALL PACKAGES_UNUSED_MSG( 'useCheapAML', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
+
       _BEGIN_MASTER(myThid)
 
       WRITE(msgBuf,'(A)') ' BULKF_READPARMS: opening data.cheapaml'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-
-
+     &                    SQUEEZE_RIGHT, myThid )
 
       CALL OPEN_COPY_DATA_FILE(
      I                          'data.cheapaml', 'CHEAPAML_READPARMS',
@@ -178,19 +188,19 @@ C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=CHEAPAML_CONST)
       WRITE(msgBuf,'(A)') ' CHEAPAML_READPARMS: read CHEAPAML_CONST'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=CHEAPAML_PARM01)
       WRITE(msgBuf,'(A)') ' CHEAPAML_READPARMS: read CHEAPAML_PARM01'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=CHEAPAML_PARM02)
       WRITE(msgBuf,'(A)') ' CHEAPAML_READPARMS: read CHEAPAML_PARM02'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
 C--   Close the open data file
       CLOSE(iUnit)

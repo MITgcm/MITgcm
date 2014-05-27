@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_readparms.F,v 1.2 2010/08/24 14:58:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_readparms.F,v 1.3 2014/05/27 23:41:30 jmc Exp $
 C $Name:  $
 
 #include "OPPS_OPTIONS.h"
@@ -49,9 +49,22 @@ CEOP
      &     OPPStaveFreq,
      &     OPPSwriteState
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useOPPS ) THEN
+C-    pkg OPPS is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+         OPPSisON = .FALSE.
+C     print a (weak) warning if data.opps is found
+         CALL PACKAGES_UNUSED_MSG( 'useOPPS', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
+
 C This routine has been called by the main model so we set our
 C internal flag to indicate we are in business
-      OPPSisON=.TRUE.
+      OPPSisON = .TRUE.
 
 C Set defaults values for parameters in OPPS.h
       MAX_ABE_ITERATIONS   =  1

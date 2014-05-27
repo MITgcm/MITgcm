@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.15 2009/04/28 23:27:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.16 2014/05/27 23:41:30 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -33,8 +33,8 @@ C     === Routine arguments ===
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
-C     iUnit       - Work variable for IO unit number
+C     msgBuf     :: Informational/error message buffer
+C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
 CEOP
@@ -46,9 +46,20 @@ CEOP
      &   nShapUV, nShapUVPhys, Shap_uvtau, Shap_uvLength,
      &   Shap_noSlip, Shap_diagFreq
 
+      IF ( .NOT.useSHAP_FILT ) THEN
+C-    pkg SHAP_FILT is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+c        SHAPIsOn = .FALSE.
+C     print a (weak) warning if data.shap is found
+         CALL PACKAGES_UNUSED_MSG( 'useSHAP_FILT', ' ', 'shap' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
+
 C--   SHAP_FILT_READPARMS has been called so we know that
 C     the package is active.
-c     SHAPIsOn=.TRUE.
+c     SHAPIsOn = .TRUE.
 
       _BEGIN_MASTER(myThid)
 

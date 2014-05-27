@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_readparms.F,v 1.3 2010/01/18 01:04:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_readparms.F,v 1.4 2014/05/27 23:41:28 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -44,6 +44,19 @@ C                            (use new U,V,W and T,S; reproduces online with
 C                            staggerTimeStep=.TRUE. for LS_nIter=1)
       NAMELIST /LONGSTEP_PARM01/
      &     LS_nIter, LS_whenToSample
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.usePTRACERS ) THEN
+C-    pkg LONGSTEP is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.longstep is found
+         CALL PACKAGES_UNUSED_MSG(
+     &        'usePTRACERS', 'LONGSTEP_READPARMS', 'longstep' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 

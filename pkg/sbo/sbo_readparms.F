@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_readparms.F,v 1.6 2014/05/18 23:55:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_readparms.F,v 1.7 2014/05/27 23:41:27 jmc Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
@@ -44,6 +44,16 @@ C--   SBO parameters
       NAMELIST /SBO_PARM01/ sbo_taveFreq, sbo_monFreq
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useSBO ) THEN
+C-    pkg SBO is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.sbo is found
+         CALL PACKAGES_UNUSED_MSG( 'useSBO', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
       errCount = 0

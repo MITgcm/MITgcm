@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.19 2011/12/22 19:05:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.20 2014/05/27 23:41:28 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -59,6 +59,16 @@ C  to test the flag before any corresponding pkg S/R call
      &           tIter0
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useGCHEM ) THEN
+C-    pkg GCHEM is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.gchem is found
+         CALL PACKAGES_UNUSED_MSG( 'useGCHEM', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 

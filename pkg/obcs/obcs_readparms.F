@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.45 2012/11/15 15:55:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.46 2014/05/27 23:41:30 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -176,7 +176,17 @@ C     retired parameters
      &          SLrelaxobcsinner,SLrelaxobcsbound,
      &          SNrelaxobcsinner,SNrelaxobcsbound,
      &          seaiceSpongeThickness
-#endif 
+#endif
+
+      IF ( .NOT.useOBCS ) THEN
+C-    pkg OBCS is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.obcs is found
+         CALL PACKAGES_UNUSED_MSG( 'useOBCS', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 

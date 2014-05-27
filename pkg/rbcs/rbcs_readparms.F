@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_readparms.F,v 1.11 2013/12/31 22:22:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_readparms.F,v 1.12 2014/05/27 23:41:28 jmc Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -80,6 +80,16 @@ C--   RBCS parameters:
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useRBCS ) THEN
+C-    pkg RBCS is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.rbcs is found
+         CALL PACKAGES_UNUSED_MSG( 'useRBCS', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 

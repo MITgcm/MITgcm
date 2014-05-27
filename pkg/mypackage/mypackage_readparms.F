@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_readparms.F,v 1.4 2009/12/27 23:40:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_readparms.F,v 1.5 2014/05/27 23:41:31 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -44,6 +44,16 @@ C     iUnit      :: Work variable for IO unit number
      &       myPa_Scal1File,  myPa_Scal2File,
      &       myPa_VelUFile,   myPa_VelVFile,
      &       myPa_Surf1File,  myPa_Surf2File
+
+      IF ( .NOT.useMYPACKAGE ) THEN
+C-    pkg MYPACKAGE is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.mypackage is found
+         CALL PACKAGES_UNUSED_MSG( 'useMYPACKAGE', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 

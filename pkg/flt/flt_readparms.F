@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_readparms.F,v 1.8 2012/09/12 22:03:00 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_readparms.F,v 1.9 2014/05/27 23:41:28 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -34,6 +34,16 @@ C     == local variables ==
      &                   flt_file, mapIniPos2Index
 
 C     == end of interface ==
+
+      IF ( .NOT.useFLT ) THEN
+C-    pkg FLT is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.flt is found
+         CALL PACKAGES_UNUSED_MSG( 'useFLT', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 

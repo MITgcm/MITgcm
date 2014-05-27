@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.42 2014/05/07 15:23:04 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.43 2014/05/27 23:41:28 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -83,6 +83,18 @@ C     tauTr1ClimRelax :: old parameter (will be removed 1 day)
      &     PTRACERS_monitor_mnc,
      &     PTRACERS_pickup_write_mnc,
      &     PTRACERS_pickup_read_mnc
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.usePTRACERS ) THEN
+C-    pkg PTRACERS is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.ptracers is found
+         CALL PACKAGES_UNUSED_MSG( 'usePTRACERS', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 

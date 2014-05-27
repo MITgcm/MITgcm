@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.33 2014/03/28 04:22:11 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.34 2014/05/27 23:41:29 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -74,6 +74,18 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_K3D_constRedi, GM_K3D_minRenorm,
      &          GM_K3D_maxRenorm
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useGMRedi ) THEN
+C-    pkg GMREDI is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.gmredi is found
+         CALL PACKAGES_UNUSED_MSG( 'useGMRedi', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
+
       _BEGIN_MASTER(myThid)
 
 C--   Default values GM/Redi
@@ -148,7 +160,7 @@ C--   Default values for K3D
       GM_K3D_vecFreq   = 2592000.0
       GM_K3D_minRenorm = oneRL
       GM_K3D_maxRenorm = 20.0
-      
+
       WRITE(msgBuf,'(A)') ' GM_READPARMS: opening data.gmredi'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)

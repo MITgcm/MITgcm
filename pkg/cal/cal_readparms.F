@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.14 2012/04/07 15:44:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.15 2014/05/27 23:41:30 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -67,6 +67,17 @@ C     Calendar parameters
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('CAL_READPARMS',myThid)
 #endif
+
+      IF ( .NOT.useCAL ) THEN
+C-    pkg CAL is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+         cal_setStatus = -1
+C     print a (weak) warning if data.cal is found
+         CALL PACKAGES_UNUSED_MSG( 'useCAL', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 

@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_readparms.F,v 1.6 2006/05/25 17:30:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_readparms.F,v 1.7 2014/05/27 23:41:28 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
 
       SUBROUTINE BULKF_READPARMS( myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE BULKF_READPARMS                               |
 C     | o Routine to initialize BULKF variables and constants.   |
-C     |==========================================================|
+C     *==========================================================*
 C     | Initialize BULKF    parameters, read in data.blk         |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -27,8 +27,8 @@ C     === Routine arguments ===
 
 #ifdef ALLOW_BULK_FORCE
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
-C     iUnit       - Work variable for IO unit number
+C     msgBuf     :: Informational/error message buffer
+C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
 
@@ -62,6 +62,18 @@ c-    conserving qnet, empmr
      &         qnet_off, empmr_off, conservcycle
 #endif
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useBulkForce ) THEN
+C-    pkg BULK_FORCE is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.blk is found
+         CALL PACKAGES_UNUSED_MSG(
+     I                'useBulkForce', 'BULKF_READPARMS', 'blk' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 

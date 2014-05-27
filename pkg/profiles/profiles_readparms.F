@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.12 2012/10/12 12:53:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.13 2014/05/27 23:41:27 jmc Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
 
-      subroutine profiles_readparms( mythid )
+      subroutine profiles_readparms( myThid )
 
 c     ==================================================================
 c     SUBROUTINE profiles_readparms
@@ -30,10 +30,10 @@ cph#include "ecco_cost.h"
 
 c     == routine arguments ==
 
-      integer mythid
+      integer myThid
 
 c     == local variables ==
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf      - Informational/error message buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit, num_file, num_var, IL
@@ -53,6 +53,16 @@ c--   Read the namelist input.
      &                   mult_profiles,
      &                   profilesDoNcOutput,
      &                   profilesDoGenGrid
+
+      IF ( .NOT.usePROFILES ) THEN
+C-    pkg PROFILES is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.profiles is found
+         CALL PACKAGES_UNUSED_MSG( 'usePROFILES', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER( myThid )
 
@@ -138,8 +148,9 @@ c switch off this file (and potential cost function term)
           endif
         enddo
 
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
 
       _BARRIER
 
-      end
+      RETURN
+      END

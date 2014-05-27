@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_readparms.F,v 1.10 2013/07/07 22:25:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_readparms.F,v 1.11 2014/05/27 23:41:27 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -45,12 +45,21 @@ C--   Bulk Formula parameter
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+      IF ( .NOT.useOffLine ) THEN
+C-    pkg OFFLINE is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.off is found
+         CALL PACKAGES_UNUSED_MSG( 'useOffLine', ' ', 'off' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
+
       _BEGIN_MASTER(myThid)
 
       WRITE(msgBuf,'(A)') ' OFFLINE_READPARMS: opening data.off'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
-
 
       CALL OPEN_COPY_DATA_FILE(
      I                          'data.off', 'OFFLINE_READPARMS',

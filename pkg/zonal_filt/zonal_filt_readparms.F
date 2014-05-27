@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_readparms.F,v 1.2 2002/07/31 21:02:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_readparms.F,v 1.3 2014/05/27 23:41:30 jmc Exp $
 C $Name:  $
 
 #include "ZONAL_FILT_OPTIONS.h"
 
       SUBROUTINE ZONAL_FILT_READPARMS( myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE ZONAL_FILT_READPARMS                          |
 C     | o Routine to initialize Zonal Filter (=FFT) parameters   |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
+
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -21,22 +21,32 @@ C     === Routine arguments ===
       INTEGER myThid
 
 #ifdef ALLOW_ZONAL_FILT
-
-      NAMELIST /ZONFILT_PARM01/ 
-     &          zonal_filt_uvStar, zonal_filt_TrStagg,
-     &          zonal_filt_lat, 
-     &          zonal_filt_cospow, zonal_filt_sinpow,
-     &          zonal_filt_mode2dx
-
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
-C     iUnit       - Work variable for IO unit number
+C     msgBuf     :: Informational/error message buffer
+C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
 
+      NAMELIST /ZONFILT_PARM01/
+     &          zonal_filt_uvStar, zonal_filt_TrStagg,
+     &          zonal_filt_lat,
+     &          zonal_filt_cospow, zonal_filt_sinpow,
+     &          zonal_filt_mode2dx
+
+      IF ( .NOT.useZONAL_FILT ) THEN
+C-    pkg ZONAL_FILT is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+c        ZONFILTisOn = .FALSE.
+C     print a (weak) warning if data.zonfilt is found
+          CALL PACKAGES_UNUSED_MSG( 'useZONAL_FILT', ' ', 'zonfilt' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
+
 C--   ZONAL_FILT_READPARMS has been called so we know that
 C     the package is active.
-c     ZONFILTisOn=.TRUE.
+c     ZONFILTisOn = .TRUE.
 
       _BEGIN_MASTER(myThid)
 
@@ -50,17 +60,17 @@ c     ZONFILTisOn=.TRUE.
      I                         myThid )
 
 C--   Default flags and values for Zonal Filter
-      zonal_filt_uvStar   = .TRUE.    
-      zonal_filt_TrStagg  = .TRUE.    
+      zonal_filt_uvStar   = .TRUE.
+      zonal_filt_TrStagg  = .TRUE.
       zonal_filt_lat      = 90.
       zonal_filt_sinpow   = 2
-      zonal_filt_cospow   = 2    
+      zonal_filt_cospow   = 2
       zonal_filt_mode2dx  = 0
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=ZONFILT_PARM01)
 
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &   ' ZONAL_FILT_READPARMS: finished reading data.zonfilt'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
@@ -81,7 +91,7 @@ C--   Check the parameters :
        IF ( .NOT.zonal_filt_uvStar ) THEN
 
 C- Notes: applying the filter at the end of the time step (after SOLVE_FOR_P)
-C    affects the barotropic flow divergence ; this might not be consistent 
+C    affects the barotropic flow divergence ; this might not be consistent
 C    with some option of the code.
 
         IF ( rigidLid ) THEN
@@ -96,10 +106,11 @@ C    with some option of the code.
          WRITE(msgBuf,'(2A)') 'S/R ZONAL_FILT_READPARMS: WARNING <<< ',
      &    'requires to recompute Eta after ==> turn on exactConserv !'
          CALL PRINT_MESSAGE(msgBuf, errorMessageUnit, SQUEEZE_RIGHT,1)
-        ENDIF                                       
+        ENDIF
 
-       ENDIF                                       
+       ENDIF
 
 #endif /* ALLOW_ZONAL_FILT */
+
       RETURN
       END

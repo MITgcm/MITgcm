@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.21 2013/03/30 15:39:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.22 2014/05/27 23:41:27 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -80,6 +80,18 @@ C--   Th-Sea-ICE parameter
       NAMELIST /THSICE_COST/
      &     mult_thsice, thsice_cost_ice_flag
 #endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useThSIce ) THEN
+C-    pkg THSICE is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.ice is found
+         CALL PACKAGES_UNUSED_MSG( 'useThSIce', ' ', 'ice' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 
@@ -270,7 +282,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       fmtI = '(A6,A20,I10)'
       fmtL = '(A6,A20,L10)'
       fmtC = '(A26,1X,A)'
-c     CALL MDSFINDUNIT( iUnit, mythid )
+c     CALL MDSFINDUNIT( iUnit, myThid )
 c     OPEN(iUnit,file='thsice_check_params',status='unknown')
       WRITE(iUnit,fmtR) 'ThSI:', 'rhos        =', rhos
       WRITE(iUnit,fmtR) 'ThSI:', 'rhoi        =', rhoi

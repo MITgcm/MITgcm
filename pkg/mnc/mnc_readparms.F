@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.34 2010/03/16 00:16:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.35 2014/05/27 23:41:27 jmc Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -30,13 +30,17 @@ C     !USES:
 #include "MNC_PARAMS.h"
 
 C     !INPUT PARAMETERS:
-      integer myThid
+      INTEGER myThid
 CEOP
 
+C     !FUNCTIONS:
+      INTEGER ILNBLNK
+
 C     !LOCAL VARIABLES:
-      integer i, nl, ku
-      character*(MAX_LEN_MBUF) data_file
-      character*(MAX_LEN_MBUF) msgBuf
+      INTEGER i, nl, ku
+      CHARACTER*(MAX_LEN_MBUF) data_file
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+
       NAMELIST /MNC_01/
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
      &     mnc_outdir_num, mnc_use_name_ni0, mnc_echo_gvtypes,
@@ -47,8 +51,17 @@ C     !LOCAL VARIABLES:
      &     mnc_filefreq,
      &     mnc_read_bathy, mnc_read_salt, mnc_read_theta
 
-C     Functions
-      integer ILNBLNK
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useMNC ) THEN
+C-    pkg MNC is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.mnc is found
+         CALL PACKAGES_UNUSED_MSG( 'useMNC', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
 C-----
 C     Need some work to make MNC multi-threaded safe.
@@ -113,7 +126,7 @@ C     Set the file name
       WRITE(msgbuf,'(3a)') ' MNC_READPARMS: opening file ''',
      &       data_file(1:nl), ''''
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
-     &     SQUEEZE_RIGHT,mythid)
+     &     SQUEEZE_RIGHT,myThid)
 
       CALL OPEN_COPY_DATA_FILE(data_file(1:nl),'MNC_READPARMS',
      &     ku, myThid )
@@ -122,7 +135,7 @@ C     Set the file name
 
       WRITE(msgBuf,'(a)') ' MNC_READPARMS: finished reading data.mnc'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
-     &     SQUEEZE_RIGHT,mythid)
+     &     SQUEEZE_RIGHT,myThid)
 
 C     Pickups must always be read in an EXCLUSIVE fashion
       IF (pickup_read_mnc)  pickup_read_mdsio = .FALSE.
@@ -242,5 +255,3 @@ C     Functions
 
       RETURN
       END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_readparms.F,v 1.3 2010/04/23 13:19:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_readparms.F,v 1.4 2014/05/27 23:41:28 jmc Exp $
 C $Name:  $
 
 #include "DWNSLP_OPTIONS.h"
@@ -28,18 +28,30 @@ C     === Routine arguments ===
       INTEGER myThid
 
 #ifdef ALLOW_DOWN_SLOPE
+C     !LOCAL VARIABLES:
+C     === Local variables ===
+C     msgBuf     :: Informational/error message buffer
+C     iUnit      :: Work variable for IO unit number
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER iUnit
+CEOP
 
       NAMELIST /DWNSLP_PARM01/
      &          DWNSLP_slope, DWNSLP_rec_mu, DWNSLP_drFlow,
      &          temp_useDWNSLP, salt_useDWNSLP
 
-C     !LOCAL VARIABLES:
-C     === Local variables ===
-C     msgBuf      - Informational/error message buffer
-C     iUnit       - Work variable for IO unit number
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit
-CEOP
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useDOWN_SLOPE ) THEN
+C-    pkg DOWN_SLOPE is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.down_slope is found
+         CALL PACKAGES_UNUSED_MSG(
+     I                'useDOWN_SLOPE', 'DWNSLP_READPARMS', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 

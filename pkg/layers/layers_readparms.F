@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_readparms.F,v 1.8 2013/01/09 00:03:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_readparms.F,v 1.9 2014/05/27 23:41:31 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -20,18 +20,27 @@ C     INPUT PARAMETERS:
       INTEGER myThid
 
 #ifdef ALLOW_LAYERS
+C     === Local variables ===
+C     msgBuf     :: Informational/error message buffer
+C     iUnit      :: Work variable for IO unit number
+C     k          :: index
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER iUnit, k, iLa
 
       NAMELIST /LAYERS_PARM01/
      &       layers_G, layers_taveFreq, layers_diagFreq,
      &       LAYER_nb, layers_kref, useBOLUS, layers_bolus,
      &       layers_name, layers_bounds, layers_krho
 
-C     === Local variables ===
-C     msgBuf      - Informational/error message buffer
-C     iUnit       - Work variable for IO unit number
-C     k           - index
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit, k, iLa
+      IF ( .NOT.useLayers ) THEN
+C-    pkg LAYERS is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.layers is found
+         CALL PACKAGES_UNUSED_MSG( 'useLayers', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 
@@ -67,7 +76,6 @@ C     The MNC stuff is not working yet
      I                     'data.layers', 'LAYERS_READPARMS',
      O                     iUnit,
      I                     myThid )
-
 
 C     Read parameters from open data file
       READ(UNIT=iUnit,NML=LAYERS_PARM01)

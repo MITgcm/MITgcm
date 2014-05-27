@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_readparms.F,v 1.2 2013/08/27 21:34:21 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_readparms.F,v 1.3 2014/05/27 23:41:29 jmc Exp $
 C $Name:  $
 
 #include "BBL_OPTIONS.h"
@@ -35,6 +35,18 @@ C     iUnit      :: Work variable for IO unit number
       NAMELIST /BBL_PARM01/
      &     bbl_wvel, bbl_hvel, bbl_initEta,
      &     bbl_thetaFile, bbl_saltFile, bbl_etaFile
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useBBL ) THEN
+C-    pkg BBL is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.bbl is found
+         CALL PACKAGES_UNUSED_MSG( 'useBBL', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.153 2014/05/27 09:27:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.154 2014/05/27 23:41:27 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -179,6 +179,16 @@ C--   SEAICE parameters
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+      IF ( .NOT.useSEAICE ) THEN
+C-    pkg SEAICE is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.seaice is found
+         CALL PACKAGES_UNUSED_MSG( 'useSEAICE', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
+
       _BEGIN_MASTER(myThid)
 
 C--   set default sea ice parameters
@@ -264,7 +274,7 @@ C     JFNK stuff
       SEAICE_JFNKepsilon  = 1. _d -06
 C     factor for inexact Newton forcing, .gt. 0 and .le. 1
       SEAICE_JFNKphi      = 1. _d 0
-C     exponent for inexact Newton forcing .gt. 1 and .le. 2 
+C     exponent for inexact Newton forcing .gt. 1 and .le. 2
       SEAICE_JFNKalpha    = 1. _d 0
 C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICE_evpDampC    = -1. _d 0
@@ -354,7 +364,7 @@ C     old default value of 0.97001763668430343479
 #ifdef SEAICE_ITD
 C in case defined(SEAICE_ITD) MULTDIM = nITD (see SEAICE_SIZE.h)
 c      SEAICE_multDim     = MULTDIM
-C the switch MULTICATEGORY (and with it parameter MULTDIM) has been retired 
+C the switch MULTICATEGORY (and with it parameter MULTDIM) has been retired
 C  and SEAICE_multDim is now a runtime parameter;
 C  in case SEAICE_multDim is given in data.seaice it needs to be overwritten
 C  after PARM01 was read (see below)
@@ -668,7 +678,7 @@ C     maximum number of LSOR steps as preconditioner in JFNK solver
       ENDIF
 C     Turn line search with JFNK solver off by default by making this
 C     number much larger than the maximum allowed Newton iterations
-      IF ( SEAICE_JFNK_lsIter .EQ. UNSET_I ) 
+      IF ( SEAICE_JFNK_lsIter .EQ. UNSET_I )
      &     SEAICE_JFNK_lsIter  = 2*SEAICEnewtonIterMax
 
 C-    The old ways of specifying mcPheeTaper, mcPheePiston & frazilFrac:

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.78 2013/04/23 19:04:33 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.79 2014/05/27 23:41:31 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -257,6 +257,16 @@ C     Surface flux data.
       gridNy = Ny
 # endif /* ALLOW_EXCH2 */
 #endif /* USE_EXF_INTERPOLATION */
+
+      IF ( .NOT.useEXF ) THEN
+C-    pkg EXF is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.exf is found
+         CALL PACKAGES_UNUSED_MSG( 'useEXF', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 

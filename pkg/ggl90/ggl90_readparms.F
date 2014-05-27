@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.12 2012/08/08 22:22:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.13 2014/05/27 23:41:29 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -23,16 +23,16 @@ C     myThid -  Number of this instance of GGL90_READPARMS
 
 #ifdef ALLOW_GGL90
 
-C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
-C     errIO       - IO error flag
-C     iUnit       - Work variable for IO unit number
-
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER errIO, iUnit, iL
-
+C     === Functions ===
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
+
+C     === Local variables ===
+C     msgBuf      - Informational/error message buffer
+C     errIO       - IO error flag
+C     iUnit       - Work variable for IO unit number
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER errIO, iUnit, iL
 
 C--   GGL90 vertical mixing parameters
       NAMELIST /GGL90_PARM01/
@@ -43,12 +43,24 @@ C--   GGL90 vertical mixing parameters
      &     GGL90TKEmin, GGL90TKEsurfMin, GGL90TKEbottom,
      &     GGL90mixingLengthMin, mxlMaxFlag, mxlSurfFlag,
      &     GGL90viscMax, GGL90diffMax, GGL90TKEFile
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useGGL90 ) THEN
+C-    pkg GGL90 is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.ggl90 is found
+         CALL PACKAGES_UNUSED_MSG( 'useGGL90', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
+
       _BEGIN_MASTER(myThid)
 
       WRITE(msgBuf,'(A)') ' GGL90_READPARMS: opening data.ggl90'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-
 
       CALL OPEN_COPY_DATA_FILE(
      I                          'data.ggl90', 'GGL90_READPARMS',
@@ -220,5 +232,5 @@ C--   Everyone else must wait for the parameters to be loaded
 
 #endif /* ALLOW_GGL90 */
 
-      return
-      end
+      RETURN
+      END

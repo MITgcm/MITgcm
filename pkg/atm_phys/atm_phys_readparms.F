@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_readparms.F,v 1.2 2013/06/28 21:25:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_readparms.F,v 1.3 2014/05/27 23:41:27 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -41,6 +41,16 @@ C     iUnit      :: Work variable for IO unit number
      &       atmPhys_SSTFile, atmPhys_QflxFile
 
       _BEGIN_MASTER(myThid)
+
+      IF ( .NOT.useAtm_Phys ) THEN
+C-    pkg ATM_PHYS is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.atm_phys is found
+         CALL PACKAGES_UNUSED_MSG( 'useAtm_Phys', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
 C--   Default values for ATM_PHYS
       atmPhys_addTendT  = .TRUE.
