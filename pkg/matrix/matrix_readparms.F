@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_readparms.F,v 1.4 2011/08/26 19:47:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_readparms.F,v 1.5 2014/05/27 23:47:42 jmc Exp $
 C $Name:  $
 
 #include "MATRIX_OPTIONS.h"
@@ -13,6 +13,7 @@ C     Initialize MATRIX parameters, read in data.matrix
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
 #include "MATRIX.h"
 
@@ -22,16 +23,27 @@ C     myThid            :: thread number
 
 C     !OUTPUT PARAMETERS:
 C     none
+
+#ifdef ALLOW_MATRIX
 C     !LOCAL VARIABLES:
 C     iUnit  :: unit number for I/O
 C     msgBuf :: message buffer
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-#ifdef ALLOW_MATRIX
 C     Open and read the data.matrix file
 
       NAMELIST /MATRIX_PARM01/ expMatrixWriteTime, impMatrixWriteTime
+
+      IF ( .NOT.useMATRIX ) THEN
+C-    pkg MATRIX is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.matrix is found
+         CALL PACKAGES_UNUSED_MSG( 'useMATRIX', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
 
