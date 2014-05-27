@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.152 2014/04/07 14:58:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.153 2014/05/27 09:27:14 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -752,13 +752,6 @@ C     to set SEAICE_mcPheePiston once drF is known)
         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
 
-#ifdef SEAICE_ITD
-C     The ice thickness distribution (ITD) module can only be used with
-C      package seaice thermodynamics (seaice_growth)
-C      SEAICE_ADVDIFF and
-C      SEAICE_GROWTH, i.e. needs usePW79thermodynamics = .TRUE.
-      useTHSice = .FALSE.
-#endif
       IF ( useThSice ) THEN
 C     If the thsice package with the Winton thermodynamics is used
 C     is does not make sense to have the following parameters defined,
