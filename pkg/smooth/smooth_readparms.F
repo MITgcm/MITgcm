@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_readparms.F,v 1.4 2014/04/01 08:05:37 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_readparms.F,v 1.5 2014/05/28 00:13:16 jmc Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
 
-      subroutine smooth_readparms( mythid )
+      subroutine smooth_readparms( myThid )
 
 C     *==========================================================*
 C     | SUBROUTINE smooth_readparms
@@ -23,10 +23,10 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer mythid
+      integer myThid
 
 c     == local variables ==
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf      - Informational/error message buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit, num_file, num_var
@@ -35,7 +35,7 @@ C     iUnit       - Work variable for IO unit number
 c     == end of interface ==
 
 c--   Read the namelist input.
-      namelist /smooth_nml/ 
+      namelist /smooth_nml/
      &                   smooth2Dnbt,
      &                   smooth2Dtype,
      &                   smooth2Dsize,
@@ -52,6 +52,17 @@ c--   Read the namelist input.
      &                   smooth3D_Lz0,
      &                   smooth3Dfilter
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useSMOOTH ) THEN
+C-    pkg SMOOTH is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.smooth is found
+         CALL PACKAGES_UNUSED_MSG( 'useSMOOTH', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER( myThid )
 
@@ -96,9 +107,9 @@ c--     Next, read the cost data file.
 
         CLOSE( iUnit )
 
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
 
       _BARRIER
 
-
-      end
+      RETURN
+      END

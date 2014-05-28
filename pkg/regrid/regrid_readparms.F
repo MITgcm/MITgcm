@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/regrid/regrid_readparms.F,v 1.1 2006/08/15 04:05:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/regrid/regrid_readparms.F,v 1.2 2014/05/28 00:13:16 jmc Exp $
 C $Name:  $
 
 #include "REGRID_OPTIONS.h"
@@ -37,6 +37,18 @@ CEOP
      &     regrid_ngrids, regrid_fbname_in,
      &     regrid_nout
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useREGRID ) THEN
+C-    pkg REGRID is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.regrid is found
+         CALL PACKAGES_UNUSED_MSG( 'useREGRID', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
+
       _BEGIN_MASTER(myThid)
 
       DO i = 1,MAX_LEN_FNAM
@@ -52,7 +64,7 @@ C     Default values for REGRID
         REGRID_fbname_out(i)(1:MAX_LEN_FNAM) = blank(1:MAX_LEN_FNAM)
         regrid_nout(i) = 0
       ENDDO
-      
+
       WRITE(msgBuf,'(A)') 'REGRID_READPARMS: opening data.regrid'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
@@ -63,7 +75,7 @@ C     Default values for REGRID
 
 C     Read parameters from open data file
       READ(UNIT=iUnit,NML=REGRID_PARM01)
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &     'REGRID_READPARMS: finished reading data.regrid'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)

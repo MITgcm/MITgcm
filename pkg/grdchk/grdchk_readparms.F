@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.16 2014/04/04 21:39:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.17 2014/05/28 00:16:28 jmc Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 # include "CTRL_OPTIONS.h"
 #endif
 
-      subroutine grdchk_readparms( mythid )
+      SUBROUTINE GRDCHK_READPARMS( mythid )
 
 c     ==================================================================
 c     SUBROUTINE grdchk_readparms
@@ -25,8 +25,9 @@ c     ==================================================================
 
 c     == global variables ==
 
-#include "EEPARAMS.h"
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 
 #include "ctrl.h"
 #include "grdchk.h"
@@ -78,6 +79,18 @@ c--   Optimization parameters.
      &                  jdep,
      &                  obcsglo,
      &                  recglo
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useGrdChk ) THEN
+C-    pkg GRDCHK is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.grdchk is found
+         CALL PACKAGES_UNUSED_MSG( 'useGrdChk', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
 c     jtlo = mybylo(mythid)
 c     jthi = mybyhi(mythid)
@@ -159,5 +172,5 @@ c--     Summarize the gradient check setup.
 
 #endif /* ALLOW_GRDCHK */
 
-      return
-      end
+      RETURN
+      END
