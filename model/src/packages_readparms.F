@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.75 2014/05/28 19:42:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.76 2014/05/28 22:01:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -86,6 +86,8 @@ C       |
 C       |-- ICEFRONT_READPARMS
 C       |
 C       |-- THSICE_READPARMS
+C       |
+C       |-- LAND_READPARMS
 C       |
 C       |-- AUTODIFF_READPARMS
 C       |
@@ -286,6 +288,11 @@ C--   if useICEFRONT=T, set ICEFRONT parameters; otherwise just return
 #ifdef ALLOW_THSICE
 C--   if useThSIce=T, set Therm.Sea-Ice parameters; otherwise just return
       CALL THSICE_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_LAND
+C--   if useLand=T, set LAND pkg parameters; otherwise just return
+      CALL LAND_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_AUTODIFF

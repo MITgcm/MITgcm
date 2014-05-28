@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.64 2013/07/07 22:26:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.65 2014/05/28 22:01:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -282,7 +282,9 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useThSIce) CALL PACKAGES_ERROR_MSG('ThSIce',' ',myThid)
 #endif
 
-#ifndef ALLOW_LAND
+#ifdef ALLOW_LAND
+      IF (useLand) CALL LAND_CHECK( myThid )
+#else
       IF (useLand) CALL PACKAGES_ERROR_MSG('Land',' ',myThid)
 #endif
 
@@ -321,7 +323,9 @@ C---  Continue with standard packages (with standard usePKG flag)
 #endif
 
 #ifdef ALLOW_GRDCHK
-      IF (useGRDCHK) CALL GRDCHK_CHECK( myThid )
+      IF (useGrdChk) CALL GRDCHK_CHECK( myThid )
+#else
+      IF (useGrdChk) CALL PACKAGES_ERROR_MSG('GrdChk',' ',myThid)
 #endif
 
 #ifndef ALLOW_SMOOTH
