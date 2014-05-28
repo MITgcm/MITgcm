@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.74 2014/05/05 20:08:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.75 2014/05/28 19:42:56 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -138,144 +138,154 @@ C     == Routine arguments ==
 CEOP
 
 #ifdef ALLOW_MNC
-C     Read run-time flags for MNC
-      IF (useMNC) THEN
-        CALL MNC_READPARMS( myThid )
-      ENDIF
+C--   if useMNC=T, read run-time flags for MNC; otherwise just return
+      CALL MNC_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_CAL
-C--   Initialise the calendar package.
-      IF ( useCAL ) CALL CAL_READPARMS( myThid )
+C--   if useCAL=T, set the calendar package parameters.
+C      otherwise, just set cal_setStatus=-1 and return
+      CALL CAL_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_EXF
-C--   Custom routine to set forcing fields.
-      IF (useEXF) CALL EXF_READPARMS  ( myThid )
+C--   if useEXF=T, set EXF parameters; otherwise just return
+      CALL EXF_READPARMS  ( myThid )
 #endif
 
 #ifdef ALLOW_OBCS
-      IF (useOBCS) CALL OBCS_READPARMS( myThid )
+C--   if useOBCS=T, set OBCS parameters; otherwise just return
+      CALL OBCS_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_SHAP_FILT
-      IF (useSHAP_FILT) CALL SHAP_FILT_READPARMS( myThid )
+C--   if useSHAP_FILT=T, set Shapiro-Filter parameters; otherwise just return
+      CALL SHAP_FILT_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_ZONAL_FILT
-      IF (useZONAL_FILT) CALL ZONAL_FILT_READPARMS( myThid )
+C--   if useZONAL_FILT=T, set Zonal-Filter parameters; otherwise just return
+      CALL ZONAL_FILT_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_OPPS
-C--   Initialize OPPS parameters
-      IF (useOPPS) CALL OPPS_READPARMS( myThid )
+C--   if useOPPS=T, set OPPS parameters; otherwise just return
+      CALL OPPS_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_PP81
-C--   Initialize PP81 parameters
-      IF (usePP81) CALL PP81_READPARMS( myThid )
+C--   if usePP81=T, set PP81 parameters; otherwise just return
+      CALL PP81_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_MY82
-C--   Initialize MY82 parameters
-      IF (useMY82) CALL MY82_READPARMS( myThid )
+C--   if useMY82=T, set MY82 parameters; otherwise just return
+      CALL MY82_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_GGL90
-C--   Initialize GGL90 parameters
-      IF (useGGL90) CALL GGL90_READPARMS( myThid )
+C--   if useGGL90=T, set GGL90 parameters; otherwise just return
+      CALL GGL90_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_KPP
-C--   Initialize KPP parameters
-      IF (useKPP) CALL KPP_READPARMS( myThid )
+C--   if useKPP=T, set KPP parameters; otherwise just return
+      CALL KPP_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_GMREDI
-C--   Initialize GM/Redi parameters
-      IF (useGMRedi) CALL GMREDI_READPARMS( myThid )
+C--   if useGMRedi=T, set GM/Redi parameters; otherwise just return
+      CALL GMREDI_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_BBL
-C--   Initialize BBL parameters
-      IF (useBBL) CALL BBL_READPARMS( myThid )
+C--   if useBBL=T, set BBL parameters; otherwise just return
+      CALL BBL_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_DOWN_SLOPE
-C--   Initialize Down-Slope flow parameters
-      IF (useDOWN_SLOPE) CALL DWNSLP_READPARMS( myThid )
+C--   if useDOWN_SLOPE=T, set Down-Slope flow parameters; otherwise just return
+      CALL DWNSLP_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_BULK_FORCE
-C -- initialize Bulkf parameters
-      IF (useBulkForce) CALL BULKF_READPARMS( myThid )
+C--   if useBulkForce=T, set BULKF parameters; otherwise just return
+      CALL BULKF_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_EBM
-      IF (useEBM) CALL EBM_READPARMS( myThid )
+C--   if useEBM=T, set EBM parameters; otherwise just return
+      CALL EBM_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_CHEAPAML
-C -- initialize cheapaml parameters
-      IF (useCheapAML) CALL CHEAPAML_READPARMS( myThid )
+C--   if useCheapAML=T, set CheapAML parameters; otherwise just return
+      CALL CHEAPAML_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_FLT
-      IF ( useFLT ) CALL FLT_READPARMS( myThid )
+C--   if useFLT=T, set Floats (FLT) parameters; otherwise just return
+      CALL FLT_READPARMS( myThid )
 #endif /* ALLOW_FLT */
 
 #ifdef ALLOW_LONGSTEP
-C-- note: need to call LONGSTEP_READPARMS before PTRACERS_READPARMS
-      IF (usePTRACERS) CALL LONGSTEP_READPARMS( myThid )
+C--   if usePTRACERS=T, set Long-Step parameters; otherwise just return
+C- note : need to call LONGSTEP_READPARMS before PTRACERS_READPARMS
+      CALL LONGSTEP_READPARMS( myThid )
 #endif
 #ifdef ALLOW_PTRACERS
-      IF (usePTRACERS) CALL PTRACERS_READPARMS( myThid )
+C--   if usePTRACERS=T, set Passive-Traces parameters; otherwise just return
+      CALL PTRACERS_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_GCHEM
-      IF (useGCHEM) CALL GCHEM_READPARMS( myThid )
+C--   if useGCHEM=T, set GCHEM parameters; otherwise just return
+      CALL GCHEM_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_RBCS
-      IF (useRBCS) CALL RBCS_READPARMS( myThid )
+C--   if useRBCS=T, set RBCS parameters; otherwise just return
+      CALL RBCS_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_OFFLINE
-      IF (useOffLine) CALL OFFLINE_READPARMS( myThid )
+C--   if useOffLine=T, set OFFLINE parameters; otherwise just return
+      CALL OFFLINE_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_MATRIX
-C--    Initialize matrix package parameters
-       IF (useMATRIX) CALL MATRIX_READPARMS ( myThid )
+C--   if useMATRIX=T, set MATRIX parameters; otherwise just return
+      CALL MATRIX_READPARMS ( myThid )
 #endif
 
 #ifdef ALLOW_SEAICE
-C--   Initialize SEAICE parameters
-      IF (useSEAICE) CALL SEAICE_READPARMS( myThid )
+C--   if useSEAICE=T, set SEAICE parameters; otherwise just return
+      CALL SEAICE_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_SALT_PLUME
-      IF (useSALT_PLUME) CALL SALT_PLUME_READPARMS( myThid )
+C--   if useSALT_PLUME=T, set SALT_PLUME parameters; otherwise just return
+      CALL SALT_PLUME_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_SHELFICE
-C--   Initialize SHELFICE parameters
-      IF (useShelfIce) CALL SHELFICE_READPARMS( myThid )
+C--   if useShelfIce=T, set SHELFICE parameters; otherwise just return
+      CALL SHELFICE_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_STREAMICE
-C--   Initialize STREAMICE parameters
-      IF (useStreamIce) CALL STREAMICE_READPARMS( myThid )
+C--   if useStreamIce=T, set STREAMICE parameters; otherwise just return
+      CALL STREAMICE_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_ICEFRONT
-C--   Initialize ICEFRONT parameters
-      IF (useICEFRONT) CALL ICEFRONT_READPARMS( myThid )
+C--   if useICEFRONT=T, set ICEFRONT parameters; otherwise just return
+      CALL ICEFRONT_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_THSICE
-C -- initialize Therm.Sea-Ice parameters
-      IF (useThSIce) CALL THSICE_READPARMS( myThid )
+C--   if useThSIce=T, set Therm.Sea-Ice parameters; otherwise just return
+      CALL THSICE_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_AUTODIFF
@@ -296,13 +306,13 @@ C--   Initialise the cost parameters
 #endif
 
 #ifdef ALLOW_GRDCHK
-C--   Initialise gradient check parameters
-      if (useGrdchk) CALL GRDCHK_READPARMS( myThid )
+C--   if useGrdChk=T, set gradient-check parameters; otherwise just return
+      CALL GRDCHK_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_SMOOTH
-c--   Initialize SMOOTH package parameters
-      IF ( useSMOOTH ) CALL SMOOTH_READPARMS ( myThid )
+C--   if useSMOOTH=T, set SMOOTH parameters; otherwise just return
+      CALL SMOOTH_READPARMS ( myThid )
 #endif
 
 #ifdef ALLOW_ECCO
@@ -311,23 +321,23 @@ c--   Initialize ECCO package parameters
 #endif
 
 #ifdef ALLOW_PROFILES
-c--   Initialize PROFILES package parameters
-      IF ( usePROFILES) CALL PROFILES_READPARMS ( myThid )
+C--   if usePROFILES=T, set PROFILES parameters; otherwise just return
+      CALL PROFILES_READPARMS ( myThid )
 #endif
 
 #ifdef ALLOW_SBO
-C--   Initialize SBO parameters
-      IF (useSBO) CALL SBO_READPARMS( myThid )
+C--   if useSBO=T, set SBO parameters; otherwise just return
+      CALL SBO_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_ATM_PHYS
-C -- initialize Atm_Phys parameters
-      IF (useAtm_Phys) CALL ATM_PHYS_READPARMS( myThid )
+C--   if useAtm_Phys=T, set Atm_Phys parameters; otherwise just return
+      CALL ATM_PHYS_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_FIZHI
-C--   set model date and time and other fizhi parameters
-      IF ( useFizhi ) CALL FIZHI_READPARMS( myThid )
+C--   if useFizhi=T, set fizhi parameters; otherwise just return
+      CALL FIZHI_READPARMS( myThid )
 #endif /* ALLOW_FIZHI */
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -337,11 +347,13 @@ C      otherwise, just set pkgStatus=-1 and return
 #endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef ALLOW_REGRID
-      IF ( useREGRID ) CALL REGRID_READPARMS( myThid )
+C--   if useREGRID=T, set REGRID parameters; otherwise just return
+      CALL REGRID_READPARMS( myThid )
 #endif /* ALLOW_REGRID */
 
 #ifdef ALLOW_LAYERS
-      IF ( useLayers ) CALL LAYERS_READPARMS( myThid )
+C--   if useLayers=T, set layers parameters; otherwise just return
+      CALL LAYERS_READPARMS( myThid )
 #endif /* ALLOW_LAYERS */
 
 #ifdef ALLOW_NEST_CHILD
@@ -364,12 +376,13 @@ C--   set Coupling parameters
 #endif
 
 #ifdef ALLOW_RUNCLOCK
-C--   Initialize RUNCLOCK parameters
-      IF (useRunClock) CALL RUNCLOCK_READPARMS( myThid )
+C--   if useRunClock=T, set RUNCLOCK parameters; otherwise just return
+      CALL RUNCLOCK_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_MYPACKAGE
-      IF (useMYPACKAGE) CALL MYPACKAGE_READPARMS( myThid )
+C--   if useMYPACKAGE=T, set mypackage parameters; otherwise just return
+      CALL MYPACKAGE_READPARMS( myThid )
 #endif
 
       RETURN
