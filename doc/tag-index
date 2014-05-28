@@ -1,10 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2000 2014/05/27 15:27:14 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2001 2014/05/28 20:00:24 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: 
+o model/src & most packages:
+  - always call {PKG}_READPARMS even if corresponding use{PKG}=F;
+  - in {PKG}_READPARMS, in case use{PKG}=F: add a call to new S/R
+    PACKAGES_UNUSED_MSG to print a weak warning when parameter file
+    "data.{pkg}" exist ; and leave the S/R (return) just after.
+o pkg/seaice:
   - remove code that resets useThSice in S/R seaice_readparms and
     replace by a warning in S/R seaice_check
   - remove parameter MULTDIM, replace with nITD and runtime
