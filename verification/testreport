@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.196 2014/01/25 18:29:03 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.197 2014/05/29 22:02:41 jmc Exp $
 #  $Name:  $
 #
 
@@ -331,6 +331,10 @@ testoutput_run()
 	'HthSiN') testoutput_var $1 "thSI_IceH_ave_N" "thSIc H North-av"  $2 $refoutp ; yy=$? ;;
 	'HthMxS') testoutput_var $1 "thSI_IceH_max_S" "thSIc H South-max" $2 $refoutp ; yy=$? ;;
 	'HthMxN') testoutput_var $1 "thSI_IceH_max_N" "thSIc H North-max" $2 $refoutp ; yy=$? ;;
+	 'sbo_M') testoutput_var $1 "sbo_mass"          "SBO mass"	  $2 $refoutp ; yy=$? ;;
+	 'sboFW') testoutput_var $1 "sbo_mass_fw"       "SBO m-FW"	  $2 $refoutp ; yy=$? ;;
+	 'sboAc') testoutput_var $1 "sbo_zoamc"         "SBO AM-C"	  $2 $refoutp ; yy=$? ;;
+	 'sboAp') testoutput_var $1 "sbo_zoamp"         "SBO AM-P"	  $2 $refoutp ; yy=$? ;;
 	'StrmIc') testoutput_var $1 "STREAMICE_FP_ERR" "StreamIce Solver" $2 $refoutp ; yy=$? ;;
 	      *) yy=99; echo "WARNING: asking for var=$xx : not recognized !" 1>&2 ;;
 	  esac
