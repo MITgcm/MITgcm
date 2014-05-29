@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.15 2014/05/18 23:55:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.16 2014/05/29 17:08:51 jmc Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
@@ -22,15 +22,17 @@ C     | being but may need revisiting at some point in time.     |
 C     | 1) The model is volume-preserving and Boussinesq so      |
 C     |    quantities like oceanic mass need to be interpreted   |
 C     |    with some care.  We remove spurious mass variations   |
-C     |    from phihydlow using the Greatbatch correction. Real  |
-C     |    freshwater fluxes retained in mass load.              |
-C     | 2) OAM due to currents assumes constant density          |
+C     |    using the Greatbatch correction. Real freshwater      |
+C     |    fluxes retained in mass load.                         |
+C     | 2) The sea surface height variable etaN might lag other  |
+C     |    prognostic variables by half a time step.  This lag   |
+C     |    is ignored in SBO computations.                       |
+C     | 3) OAM due to currents assumes constant density          |
 C     |    (=rhoConst), rms differences using variable density   |
 C     |    is less than 1%, assuming rhoConst is a good measure  |
 C     |    of the actual mean density                            |
-C     | 3) Seaice motion added to OAMC.  Seaice mass is in OAMP  |
-C     |    in OAMP and COM insofar as seaice mass is in          |
-C     |    phihydlow.  Net freshwater flux is between atmosphere |
+C     | 4) Seaice motion added to OAMC.  Seaice mass is in OAMP  |
+C     |    and COM.   Net freshwater flux is between atmosphere  |
 C     |    and liquid ocean plus seaice.  I.e. changes in seaice |
 C     |    mass due to melt/freeze with liquid ocean do not      |
 C     |    change net freshwater flux.                           |
@@ -111,9 +113,9 @@ C     FWLoad    :: real freshwater flux mass load (kg/m**2)
       _RL UEice(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL VNice(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL Mload(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL GCload, PHLmean, FWload
+      _RL GCload, FWload
 C Tiled global sums
-      _RL tile_PHLmean(nSx,nSy)
+      _RL tile_FWload(nSx,nSy)
       _RL tile_sboarea(nSx,nSy)
       _RL tile_GCload(nSx,nSy)
       _RL tile_mass(nSx,nSy)
@@ -211,23 +213,23 @@ C     back missing time invariant term: -R_low*rhoConst
 c Calculate freshwater load
 C Calculate Greatbatch correction load over global ocean volume
 c Note: no halo regions in i,j loops, do not want to double book sums
-      PHLmean = 0.0
+      FWload = 0.0
       GCload = 0.0
       sboarea = 0.0
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        tile_PHLmean(bi,bj) = 0.0
+        tile_FWload(bi,bj) = 0.0
         tile_GCload(bi,bj) = 0.0
         tile_sboarea(bi,bj) = 0.0
         DO j = 1, sNy
          DO i = 1, sNx
             darea = rA(i,j,bi,bj)*maskC(i,j,1,bi,bj)
             tile_sboarea(bi,bj) = tile_sboarea(bi,bj) + darea
-            tile_PHLmean(bi,bj) =  tile_PHLmean(bi,bj) +
-     &           phiHydLow(i,j,bi,bj)*darea
+            tile_FWload(bi,bj) =  tile_FWload(bi,bj) +
+     &           rhoConst*etaN(i,j,bi,bj)*darea +
+     &           sIceLoad(i,j,bi,bj)*darea
             DO k = 1, Nr
-               dvolume = rA(i,j,bi,bj)*drF(k)
-     &              *maskC(i,j,k,bi,bj)*hFacC(i,j,k,bi,bj)
+               dvolume = rA(i,j,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
                tile_GCload(bi,bj) = tile_GCload(bi,bj) +
      &              rhoInSitu(i,j,k,bi,bj) * dvolume
             ENDDO
@@ -235,21 +237,24 @@ c Note: no halo regions in i,j loops, do not want to double book sums
         ENDDO
        ENDDO
       ENDDO
-      CALL GLOBAL_SUM_TILE_RL( tile_PHLmean , PHLmean , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_FWload  , FWload  , myThid )
       CALL GLOBAL_SUM_TILE_RL( tile_sboarea , sboarea , myThid )
       CALL GLOBAL_SUM_TILE_RL( tile_GCload  , GCload  , myThid )
-      PHLmean = PHLmean/sboarea
+      FWload = FWload/sboarea
       GCload = -1.0 * GCload/sboarea
-      FWload = PHLmean*rhoConst*recip_gravity + GCload
 
 c Total mass load with freshwater flux
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j = 1-OLy, sNy+OLy
          DO i = 1-OLx, sNx+OLx
-            Mload(i,j,bi,bj) =
-     &             phiHydLow(i,j,bi,bj)*rhoConst*recip_gravity
-     &           + GCload - R_low(i,j,bi,bj)*rhoConst
+            Mload(i,j,bi,bj) =  rhoConst*etaN(i,j,bi,bj) +
+     &           sIceLoad(i,j,bi,bj) +
+     &           GCload - R_low(i,j,bi,bj)*rhoConst
+            DO k = 1, Nr
+               Mload(i,j,bi,bj) = Mload(i,j,bi,bj) +
+     &           rhoInSitu(i,j,k,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
+            ENDDO
          ENDDO
         ENDDO
        ENDDO
