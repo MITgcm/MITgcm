@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.16 2014/05/29 17:08:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.17 2014/05/30 17:10:15 jmc Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
@@ -148,6 +148,8 @@ C Pre-computed cos(lat), sin(lat), cos(lon), sin(lon)
 CEOP
 
 C Initialize variables to be computed---------------------------------
+C-    note: only done once (by master thread) for var in common block
+      _BEGIN_MASTER(myThid)
 
       xoamc = 0.0
       yoamc = 0.0
@@ -159,6 +161,7 @@ C Initialize variables to be computed---------------------------------
       xcom  = 0.0
       ycom  = 0.0
       zcom  = 0.0
+      sboarea = 0.0
 
       xoamc_si = 0.0
       yoamc_si = 0.0
@@ -174,6 +177,8 @@ C Initialize variables to be computed---------------------------------
       zcom_fw  = 0.0
 
       mass_gc  = 0.0
+
+      _END_MASTER(myThid)
 
 C Get geographic (East,North) velocities------------------------------
 
@@ -215,7 +220,6 @@ C Calculate Greatbatch correction load over global ocean volume
 c Note: no halo regions in i,j loops, do not want to double book sums
       FWload = 0.0
       GCload = 0.0
-      sboarea = 0.0
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         tile_FWload(bi,bj) = 0.0
@@ -446,6 +450,9 @@ C     sum all global values across model tiles
       CALL GLOBAL_SUM_TILE_RL( tile_mass_gc  , mass_gc  , myThid )
 
 C     finish calculating center-of-mass of oceans
+C-    note: only master thread updates/modifies var in common block
+      _BEGIN_MASTER(myThid)
+
       IF ( mass.NE.zeroRL ) THEN
         xcom = xcom / mass
         ycom = ycom / mass
@@ -462,6 +469,8 @@ C     Add seaice OAMC to total OAMC
       xoamc = xoamc + xoamc_si
       yoamc = yoamc + yoamc_si
       zoamc = zoamc + zoamc_si
+
+      _END_MASTER(myThid)
 
 #endif /* ALLOW_SBO */
 
