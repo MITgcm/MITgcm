@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2003 2014/05/29 17:10:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2004 2014/05/30 17:19:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -7,6 +7,9 @@ $Name:  $
 o pkg/sbo:
   - update from Katherine Quinn: evaluate mass directly from density and SSH
     (budget using Finite Volume method) instead of from bottom pressure.
+  - allow testreport to collect few selected SBO output ; tested in exp.
+    global_ocean.90x40x15 (after updating the results, to include SBO output).
+  - fix some multi-threading issues (in output part).
 o model/src & most packages:
   - always call {PKG}_READPARMS even if corresponding use{PKG}=F;
   - in {PKG}_READPARMS, in case use{PKG}=F: add a call to new S/R
