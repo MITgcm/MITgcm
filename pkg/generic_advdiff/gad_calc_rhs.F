@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.65 2014/05/23 19:59:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.66 2014/06/04 14:48:32 rpa Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -338,6 +338,9 @@ C       excluding advective terms:
      &    (diffKh.NE.0. .OR. diffK4 .NE.0. .OR. trUseGMRedi) ) THEN
           diagName = 'DFxE'//diagSufx
           CALL DIAGNOSTICS_FILL( df, diagName, k,1, 2,bi,bj, myThid )
+#ifdef ALLOW_LAYERS
+          CALL LAYERS_FILL_DFX( df, trIdentity, k, 1, 2,bi,bj, myThid )
+#endif /* ALLOW_LAYERS */
       ENDIF
 #endif
 
@@ -475,6 +478,9 @@ C       excluding advective terms:
      &    (diffKh.NE.0. .OR. diffK4 .NE.0. .OR. trUseGMRedi) ) THEN
           diagName = 'DFyE'//diagSufx
           CALL DIAGNOSTICS_FILL( df, diagName, k,1, 2,bi,bj, myThid )
+#ifdef ALLOW_LAYERS
+            CALL LAYERS_FILL_DFY( df, trIdentity,k, 1, 2,bi,bj, myThid )
+#endif /* ALLOW_LAYERS */
       ENDIF
 #endif
 
@@ -605,6 +611,9 @@ C       Explicit terms only & excluding advective terms:
      &    (.NOT.implicitDiffusion .OR. trUseGMRedi) ) THEN
           diagName = 'DFrE'//diagSufx
           CALL DIAGNOSTICS_FILL( df, diagName, k,1, 2,bi,bj, myThid )
+#ifdef ALLOW_LAYERS
+          CALL LAYERS_FILL_DFR( df, trIdentity, k, 1, 2,bi,bj, myThid )
+#endif /* ALLOW_LAYERS */
       ENDIF
 #endif
 
@@ -653,6 +662,9 @@ C-    Diagnostics of Non-Local Tracer (vertical) flux
 C- note: needs to explicitly increment the counter since DIAGNOSTICS_FILL
 C        does it only if k=1 (never the case here)
          IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT(diagName,bi,bj,myThid)
+#ifdef ALLOW_LAYERS
+         CALL LAYERS_FILL_DFR( df, trIdentity, k, 1, 2,bi,bj, myThid )
+#endif /* ALLOW_LAYERS */
        ENDIF
 #endif
       ENDIF

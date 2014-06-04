@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS_OPTIONS.h,v 1.5 2012/10/18 12:55:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS_OPTIONS.h,v 1.6 2014/06/04 14:48:32 rpa Exp $
 C $Name:  $
 
 C CPP options file for LAYERS package
@@ -18,6 +18,8 @@ C Compute isopycnal tranports in the V direction?
 #define LAYERS_VFLUX
 C Keep track of layer thicknesses?
 #define LAYERS_THICKNESS
+C Do water mass thermodynamics?
+#undef LAYERS_THERMODYNAMICS
 
 C The MNC stuff is too complicated
 #undef LAYERS_MNC

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_diagnostics_init.F,v 1.5 2012/10/17 23:12:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_diagnostics_init.F,v 1.6 2014/06/04 14:48:32 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -141,6 +141,82 @@ C --- U, V
 #endif /* LAYERS_THICKNESS */
 
 #endif /* LAYERS_UFLUX or LAYERS_VFLUX */
+
+#ifdef LAYERS_THERMODYNAMICS
+
+        WRITE(diagName,'(A4,I1,A3)') 'LaTs',iLa,layers_name(iLa)
+        diagTitle = 'Layer THETA transformation from surf. forc.'
+        diagUnits = 'm deg./s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
+
+        WRITE(diagName,'(A4,I1,A3)') 'LaTh',iLa,layers_name(iLa)
+        diagTitle = 'Layer THETA transformation from horiz. diff.'
+        diagUnits = 'm deg./s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
+
+        WRITE(diagName,'(A4,I1,A3)') 'LaTr',iLa,layers_name(iLa)
+        diagTitle = 'Layer THETA transformation from vert. diff.'
+        diagUnits = 'm deg./s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
+
+        WRITE(diagName,'(A4,I1,A3)') 'LaSs',iLa,layers_name(iLa)
+        diagTitle = 'Layer SALT transformation from surf. forc.'
+        diagUnits = 'm PSU/s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
+
+        WRITE(diagName,'(A4,I1,A3)') 'LaSh',iLa,layers_name(iLa)
+        diagTitle = 'Layer SALT transformation from horiz. diff.'
+        diagUnits = 'm PSU/s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
+
+        WRITE(diagName,'(A4,I1,A3)') 'LaSr',iLa,layers_name(iLa)
+        diagTitle = 'Layer SALT transformation from vert. diff.'
+        diagUnits = 'm PSU/s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
+
+        WRITE(diagName,'(A4,I1,A3)') 'LaHc',iLa,layers_name(iLa)
+        diagTitle = 'Layer Thickness at tracer points (m)'
+        diagUnits = DIAGS_MK_UNITS( rUnit2c, myThid )
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
+
+C --- PI
+        WRITE(diagName,'(A4,I1,A3)') 'LaPc',iLa,layers_name(iLa)
+        diagTitle = 'Layer Probability at tracer points [-]'
+        diagUnits = '1               '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
+#endif /* LAYERS_THERMODYNAMICS */
 
        ENDIF
       ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.13 2012/10/19 18:01:44 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.14 2014/06/04 14:48:32 rpa Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAYERS
@@ -83,6 +83,52 @@ C      layers_V     :: mean meridional velocity in layer (only if layer exists) 
       COMMON /LAYERS_PRHO/ prho
       _RL prho(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
+
+C -- Thermodynamics fields
+C    Right-hand-side tendency terms times thickness
+C
+C      layers_TtendSurf  :: Temperature tendency from surface forcing (m deg/s)
+C      layers_TtendDiffh :: Temperature tendency from horizontal mixing (m deg/s)
+C      layers_TtendDiffr :: Temperature tendency from vertical mixing (m deg/s)
+C      layers_StendSurf  :: Salinity tendency from surface forcing (m PSU/s)
+C      layers_StendDiffh :: Salinity tendency from horizontal mixing (m PSU/s)
+C      layers_StendDiffr :: Salinity tendency from vertical mixing (m PSU/s)
+C  -- The following are temporary arrays that need to be stored.
+C  -- They are in regular vertical coordinates.
+C  -- The fourth index is tracer id: 1 for T and 2 for S
+C      layers_surfflux   :: surface temperature flux (same as diagnostics TFLUX and SFLUX)
+C      layers_dfx        :: zonal diffusive flux of T / S
+C      layers_dfy        :: meridional diffusive flux of T / S
+C      layers_dfr        :: vertical diffusive flux of T / S
+C  -- to save memory, the same arrays are converted in place to divergences
+
+# ifdef LAYERS_THERMODYNAMICS
+      COMMON /LAYERS_VAR_THERMODYNAMICS/
+     &    layers_TtendSurf, layers_TtendDiffh, layers_TtendDiffr,
+     &    layers_StendSurf, layers_StendDiffh, layers_StendDiffr,
+     &    layers_Hc, layers_PIc,
+     &    layers_surfflux, layers_dfx, layers_dfy, layers_dfr
+      _RL layers_TtendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                         Nlayers,nSx,nSy)
+      _RL layers_TtendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                         Nlayers,nSx,nSy)
+      _RL layers_TtendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                         Nlayers,nSx,nSy)
+      _RL layers_StendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                         Nlayers,nSx,nSy)
+      _RL layers_StendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                         Nlayers,nSx,nSy)
+      _RL layers_StendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                         Nlayers,nSx,nSy)      
+      _RL layers_Hc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                         Nlayers,nSx,nSy)      
+      _RL layers_PIc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                         Nlayers,nSx,nSy)      
+      _RL layers_surfflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,2,nSx,nSy)
+      _RL layers_dfx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
+      _RL layers_dfy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
+      _RL layers_dfr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
+# endif /* LAYERS_THERMODYAMICS */
 
 #ifdef ALLOW_TIMEAVE
 C-- The same variables, time-averaged

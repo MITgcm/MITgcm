@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.9 2013/02/09 14:52:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.10 2014/06/04 14:48:32 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -9,6 +9,7 @@ C $Name:  $
 C--  File layers_fluxcalc.F:
 C--   Contents
 C--   o LAYERS_FLUXCALC
+C--   o LAYERS_DIAPYCNAL
 C--   o LAYERS_LOCATE
 
 CBOP 0
@@ -339,6 +340,206 @@ C --- End bi,bj loop
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C     !ROUTINE: LAYERS_DIAPYCNAL
+C     !INTERFACE:
+      SUBROUTINE LAYERS_DIAPYCNAL(
+     I                  tracer,iLa,
+     O                  TtendSurf, TtendDiffh, TtendDiffr,
+     O                  StendSurf, StendDiffh, StendDiffr,
+     O                  Hc, PIc,
+     I                  myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE LAYERS_DIAPYCNAL
+C     | Calculate the diapycnal velocity in isotracer layers, for a chosen
+C     | tracer.
+C     *==========================================================*
+C     \ev
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "LAYERS_SIZE.h"
+#include "LAYERS.h"
+
+C !INPUT PARAMETERS:
+C     myThid    :: my Thread Id number
+C     tracer    :: potential temperature, salt or potential density prho
+C     iLa       :: layer coordinate index
+C     TtendSurf :: temperature tendency due to surface forcing times thickness 
+C     TtendDiffh:: temperature tendency due to horiz. diffusion times thickness
+C     TtendDiffr:: temperature tendency due to vert. diffusion times thickness
+C     TtendSurf :: salinity tendency due to surface forcing times thickness 
+C     TtendDiffh:: salinity tendency due to horiz. diffusion times thickness
+C     TtendDiffr:: salinity tendency due to vert. diffusion times thickness
+C     Hc        :: Layer thickness at the tracer point (m)
+C     PIw       :: 1 if layer exists, 0 otherwise (at tracer point)
+      INTEGER iLa, myThid
+      _RL tracer    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,     nSx,nSy)
+      _RL TtendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL TtendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL TtendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)  
+      _RL StendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL StendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL StendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)  
+      _RL Hc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL PIc       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+CEOP
+
+#ifdef LAYERS_THERMODYNAMICS
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C !LOCAL VARIABLES:
+C     bi, bj   :: tile indices
+C     i,j      :: horizontal indices
+C     k        :: vertical index for model grid
+C     kci      :: index from CellIndex
+C     kg       :: index for looping though layers_bounds
+C     kk       :: vertical index for ZZ (fine) grid
+C     kloc     :: local copy of kgu/v to reduce accesses to index arrays
+C     mSteps   :: maximum number of steps for bisection method
+C     TatC     :: temperature at C point
+
+      INTEGER bi, bj
+      INTEGER i,j,k,kk,kg,kci,kloc
+      INTEGER mSteps
+      INTEGER kgc(sNx+1,sNy+1)
+      _RL TatC(sNx+1,sNy+1), dzfac
+      LOGICAL errorFlag
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+ 
+C     compute maximum number of steps for bisection method (approx.
+C     log2(Nlayers)) as log2(Nlayers) + 1 for safety
+      mSteps = int(log10(dble(Nlayers))/log10(2. _d 0))+1
+
+C      STOP 'DEBUG END: S/R LAYERS_DIAPYCNAL'
+
+C --- The tile loops
+      DO bj=myByLo(myThid),myByHi(myThid)
+      DO bi=myBxLo(myThid),myBxHi(myThid)
+
+C     Initialize the search indices
+      DO j = 1,sNy+1
+        DO i = 1,sNx+1
+C       The temperature index (layer_G) goes from cold to warm.
+C       The water column goes from warm (k=1) to cold (k=Nr).
+C       So initialize the search with the warmest value.
+          kgc(i,j) = Nlayers
+        ENDDO
+      ENDDO
+
+C     Reset the arrays
+      DO kg=1,Nlayers
+       DO j = 1-OLy,sNy+OLy
+        DO i = 1-OLx,sNx+OLx
+         TtendSurf (i,j,kg,bi,bj) = 0. _d 0
+         TtendDiffh(i,j,kg,bi,bj) = 0. _d 0
+         TtendDiffr(i,j,kg,bi,bj) = 0. _d 0
+         StendSurf (i,j,kg,bi,bj) = 0. _d 0
+         StendDiffh(i,j,kg,bi,bj) = 0. _d 0
+         StendDiffr(i,j,kg,bi,bj) = 0. _d 0  
+         Hc(i,j,kg,bi,bj) = 0. _d 0
+         PIc(i,j,kg,bi,bj) = 0. _d 0       
+        ENDDO
+       ENDDO
+      ENDDO
+
+      DO kk=1,NZZ
+       k = MapIndex(kk)
+       kci = CellIndex(kk)
+       DO j = 1,sNy+1
+        DO i = 1,sNx+1
+         TatC(i,j) = MapFact(kk) *  tracer(i,j,k,bi,bj) +
+     &    (1.0-MapFact(kk)) *  tracer(i,j,k+1,bi,bj)
+        ENDDO
+       ENDDO
+C ------ Now that we know T everywhere, determine the binning.
+C        find the layer indices kgu
+       CALL LAYERS_LOCATE(
+     I      layers_bounds(1,iLa),Nlayers,mSteps,sNx,sNy,TatC,
+     O      kgc,
+     I      myThid )
+#ifndef TARGET_NEC_SX
+C     check for failures
+       IF ( debugLevel .GE. debLevC ) THEN
+        errorFlag = .FALSE.
+        DO j = 1,sNy+1
+         DO i = 1,sNx+1
+          IF ( kgc(i,j) .LE. 0 ) THEN
+           WRITE(msgBuf,'(2A,I3,A,I3,A,1E14.6)')
+     &          'S/R LAYERS_LOCATE: Could not find a bin in ',
+     &          'layers_bounds for TatC(',i,',',j,',)=',TatC(i,j)
+           CALL PRINT_ERROR( msgBuf, myThid )
+           errorFlag = .TRUE.
+          ENDIF
+         ENDDO
+        ENDDO
+        IF ( errorFlag ) STOP 'ABNORMAL END: S/R LAYERS_DIAPYCNAL'
+       ENDIF
+#endif /* ndef TARGET_NEC_SX */
+C 
+
+C ------ Augment the bin values  
+       DO j = 1,sNy+1
+        DO i = 1,sNx+1
+         dzfac = dZZf(kk) * hFacC(i,j,kci,bi,bj) 
+         kloc = kgc(i,j)
+         IF (kci.EQ.1) THEN
+C ------- We are in the surface layer
+          TtendSurf(i,j,kloc,bi,bj) =
+     &     TtendSurf(i,j,kloc,bi,bj) + 
+     &     dzfac * layers_surfflux(i,j,1,1,bi,bj)
+          StendSurf(i,j,kloc,bi,bj) =
+     &     StendSurf(i,j,kloc,bi,bj) + 
+     &     dzfac * layers_surfflux(i,j,1,2,bi,bj)
+         ENDIF
+         TtendDiffh(i,j,kloc,bi,bj) =
+     &     TtendDiffh(i,j,kloc,bi,bj) + dzfac *
+     &    (layers_dfx(i,j,kci,1,bi,bi)+
+     &     layers_dfy(i,j,kci,1,bi,bi))
+         TtendDiffr(i,j,kloc,bi,bj) =
+     &     TtendDiffr(i,j,kloc,bi,bj) + 
+     &     dzfac * layers_dfr(i,j,kci,1,bi,bi)
+         StendDiffh(i,j,kloc,bi,bj) =
+     &     StendDiffh(i,j,kloc,bi,bj) + dzfac *
+     &    (layers_dfx(i,j,kci,2,bi,bi)+
+     &     layers_dfy(i,j,kci,2,bi,bi))
+         StendDiffr(i,j,kloc,bi,bj) =
+     &     StendDiffr(i,j,kloc,bi,bj) + 
+     &     dzfac * layers_dfr(i,j,kci,2,bi,bi)
+         Hc(i,j,kloc,bi,bj) = Hc(i,j,kloc,bi,bj)
+     &     + dzfac
+
+        ENDDO
+       ENDDO
+      ENDDO
+      
+C--   Now that we know the thicknesses, compute the heaviside function
+C--   (Needs another loop through Ng)
+      DO kg=1,Nlayers
+       DO j = 1,sNy+1
+        DO i = 1,sNx+1
+         IF (Hc(i,j,kg,bi,bj) .GT. 0.) THEN
+          PIc(i,j,kg,bi,bj) = 1. _d 0
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDDO
+
+C --- End bi,bj loop
+      ENDDO
+      ENDDO
+
+#endif /* LAYERS_THERMODYNAMICS */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
       SUBROUTINE LAYERS_LOCATE(
@@ -453,3 +654,4 @@ C     that should have covered all the options
 
       RETURN
       END
+

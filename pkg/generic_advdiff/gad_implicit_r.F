@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.19 2013/11/19 16:59:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.20 2014/06/04 14:48:32 rpa Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -317,6 +317,12 @@ C         since skipping k=1 DIAGNOSTICS_FILL call.
            diagName = 'DFrI'//diagSufx
            CALL DIAGNOSTICS_FILL(df,diagName, k,1, 2,bi,bj, myThid)
            IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT(diagName,bi,bj,myThid)
+#ifdef ALLOW_LAYERS
+           IF ( (tracerIdentity.EQ.1).OR.(tracerIdentity.EQ.2) ) THEN
+             CALL LAYERS_FILL_DFR( df, tracerIdentity,
+     &                           k, 1, 2,bi,bj, myThid )
+           ENDIF 
+#endif /* ALLOW_LAYERS */
           ENDIF
           IF ( diagAdv ) THEN
            km1=MAX(1,k-1)

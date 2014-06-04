@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.30 2014/04/04 20:56:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.31 2014/06/04 14:48:32 rpa Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -374,6 +374,10 @@ C         otherwise counter is not incremented !!
             ENDDO
           ENDIF
           CALL DIAGNOSTICS_FILL(df,diagName, k,1, 2,bi,bj, myThid)
+#ifdef ALLOW_LAYERS
+          CALL LAYERS_FILL_DFR( df, tracerId,
+     &                           k, 1, 2,bi,bj, myThid )
+#endif /* ALLOW_LAYERS */
          ENDDO
         ENDIF
       ENDIF
