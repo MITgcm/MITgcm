@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.66 2014/06/04 14:48:32 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.67 2014/06/04 22:18:55 rpa Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -339,7 +339,9 @@ C       excluding advective terms:
           diagName = 'DFxE'//diagSufx
           CALL DIAGNOSTICS_FILL( df, diagName, k,1, 2,bi,bj, myThid )
 #ifdef ALLOW_LAYERS
-          CALL LAYERS_FILL_DFX( df, trIdentity, k, 1, 2,bi,bj, myThid )
+          IF ( useLayers ) THEN
+           CALL LAYERS_FILL_DFX( df, trIdentity, k, 1, 2,bi,bj, myThid )
+          ENDIF
 #endif /* ALLOW_LAYERS */
       ENDIF
 #endif
@@ -479,7 +481,9 @@ C       excluding advective terms:
           diagName = 'DFyE'//diagSufx
           CALL DIAGNOSTICS_FILL( df, diagName, k,1, 2,bi,bj, myThid )
 #ifdef ALLOW_LAYERS
-            CALL LAYERS_FILL_DFY( df, trIdentity,k, 1, 2,bi,bj, myThid )
+          IF ( useLayers ) THEN
+           CALL LAYERS_FILL_DFY( df, trIdentity,k, 1, 2,bi,bj, myThid )
+          ENDIF
 #endif /* ALLOW_LAYERS */
       ENDIF
 #endif
@@ -612,7 +616,9 @@ C       Explicit terms only & excluding advective terms:
           diagName = 'DFrE'//diagSufx
           CALL DIAGNOSTICS_FILL( df, diagName, k,1, 2,bi,bj, myThid )
 #ifdef ALLOW_LAYERS
-          CALL LAYERS_FILL_DFR( df, trIdentity, k, 1, 2,bi,bj, myThid )
+          IF ( useLayers ) THEN
+           CALL LAYERS_FILL_DFR( df, trIdentity, k, 1, 2,bi,bj, myThid )
+          ENDIF
 #endif /* ALLOW_LAYERS */
       ENDIF
 #endif
@@ -663,7 +669,9 @@ C- note: needs to explicitly increment the counter since DIAGNOSTICS_FILL
 C        does it only if k=1 (never the case here)
          IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT(diagName,bi,bj,myThid)
 #ifdef ALLOW_LAYERS
-         CALL LAYERS_FILL_DFR( df, trIdentity, k, 1, 2,bi,bj, myThid )
+         IF ( useLayers ) THEN
+          CALL LAYERS_FILL_DFR( df, trIdentity, k, 1, 2,bi,bj, myThid )
+         ENDIF
 #endif /* ALLOW_LAYERS */
        ENDIF
 #endif

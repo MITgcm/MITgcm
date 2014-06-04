@@ -35,7 +35,7 @@ C     myThid    :: my Thread Id number
 CEOP
 
 #ifdef ALLOW_LAYERS
-
+#ifdef LAYERS_THERMODYNAMICS
 C !LOCAL VARIABLES:
 C     bi, bj   :: tile indices
 C     i,j      :: horizontal indices
@@ -201,6 +201,7 @@ C     ENDDO
 
 
 #endif /* LAYERS_THERMODYNAMICS */
+#endif /* USE_LAYERS */
       RETURN
       END
 C -- end of S/R LAYERS_CALC_RHS

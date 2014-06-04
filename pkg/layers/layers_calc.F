@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.20 2014/06/04 14:48:32 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.21 2014/06/04 22:18:55 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -176,6 +176,19 @@ C--   Direct Snap-shot output
           CALL WRITE_FLD_3D_RL( 'layers_VH.', suff, Nlayers,
      &                           layers_VH, myIter, myThid )
 #ifdef LAYERS_THICKNESS
+          CALL WRITE_FLD_3D_RL( 'layers_Hs.', suff, Nlayers,
+     &                           layers_Hw, myIter, myThid )
+#endif /* LAYERS_THICKNESS */
+#endif /* LAYERS_VFLUX */
+#ifdef LAYERS_PRHO_REF
+          IF ( layers_num(1).EQ.3 ) THEN
+           CALL WRITE_FLD_3D_RL( 'layers_prho.', suff, Nr,
+     &                           prho, myIter, myThid )
+          CALL WRITE_FLD_3D_RL( 'layers_.', suff, Nlayers,
+     &                           layers_Hs, myIter, myThid )
+          ENDIF
+#endif /* LAYERS_PRHO_REF */
+#ifdef LAYERS_THERMODYNAMCS
           CALL WRITE_FLD_3D_RL( 'layers_surfflux.', suff, Nr,
      &                           layers_surfflux, myIter, myThid )
           CALL WRITE_FLD_3D_RL( 'layers_dfx.', suff, Nr,
@@ -184,18 +197,7 @@ C--   Direct Snap-shot output
      &                           layers_dfy, myIter, myThid )
           CALL WRITE_FLD_3D_RL( 'layers_dfr.', suff, Nr,
      &                           layers_dfr, myIter, myThid )
-#endif /* LAYERS_THICKNESS */
-#endif /* LAYERS_VFLUX */
-#ifdef LAYERS_PRHO_REF
-          IF ( layers_num(1).EQ.3 ) THEN
-           CALL WRITE_FLD_3D_RL( 'layers_prho.', suff, Nr,
-     &                           prho, myIter, myThid )
-#ifdef LAYERS_THERMODYNAMCS
-          CALL WRITE_FLD_3D_RL( 'layers_.', suff, Nlayers,
-     &                           layers_Hs, myIter, myThid )
 #endif /* LAYERS_THERMODYNAMCS */
-          ENDIF
-#endif /* LAYERS_PRHO_REF */
         ENDIF
 
 c#ifdef ALLOW_MNC
