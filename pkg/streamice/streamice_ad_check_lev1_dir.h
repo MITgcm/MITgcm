@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_ad_check_lev1_dir.h,v 1.2 2014/04/24 12:01:50 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_ad_check_lev1_dir.h,v 1.3 2014/06/04 12:55:58 dgoldberg Exp $
 C $Name:  $
 
 #ifdef ALLOW_STREAMICE
@@ -66,6 +66,32 @@ CADJ STORE streamice_v_shear_pert
 CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
 #endif
+
+#ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
+CADJ STORE bdot_streamice0
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE bdot_streamice1
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+#ifdef  STREAMICE_STRESS_BOUNDARY_CONTROL
+CADJ STORE streamice_u_normal_stress0
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE streamice_v_normal_stress0
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE streamice_u_shear_stress0
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE streamice_v_shear_stress0
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE streamice_u_normal_stress1
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE streamice_v_normal_stress1
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE streamice_u_shear_stress1
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE streamice_v_shear_stress1
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
+#endif
+
 
 
 #ifdef STREAMICE_TRACER_AB

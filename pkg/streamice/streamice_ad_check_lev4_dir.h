@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_ad_check_lev4_dir.h,v 1.2 2014/04/24 12:01:50 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_ad_check_lev4_dir.h,v 1.3 2014/06/04 12:55:58 dgoldberg Exp $
 C $Name:  $
 
 #ifdef ALLOW_STREAMICE
@@ -35,8 +35,8 @@ CADJ &     = tapelev4, key = ilev_4
 
 # ifdef ALLOW_GENTIM2D_CONTROL
 CADJ STORE bdot_streamice
-CADJ &     = tapelev4, key = ilev_4
 #ifdef  STREAMICE_STRESS_BOUNDARY_CONTROL
+CADJ &     = tapelev4, key = ilev_4
 CADJ STORE streamice_u_normal_stress
 CADJ &     = tapelev4, key = ilev_4
 CADJ STORE streamice_v_normal_stress
@@ -55,6 +55,31 @@ CADJ STORE streamice_v_shear_pert
 CADJ &     = tapelev4, key = ilev_4
 #endif
 # endif
+
+#ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
+CADJ STORE bdot_streamice0
+CADJ &     = tapelev4, key = ilev_4
+CADJ STORE bdot_streamice1
+CADJ &     = tapelev4, key = ilev_4
+#ifdef  STREAMICE_STRESS_BOUNDARY_CONTROL
+CADJ STORE streamice_u_normal_stress0
+CADJ &     = tapelev4, key = ilev_4
+CADJ STORE streamice_v_normal_stress0
+CADJ &     = tapelev4, key = ilev_4
+CADJ STORE streamice_u_shear_stress0
+CADJ &     = tapelev4, key = ilev_4
+CADJ STORE streamice_v_shear_stress0
+CADJ &     = tapelev4, key = ilev_4
+CADJ STORE streamice_u_normal_stress1
+CADJ &     = tapelev4, key = ilev_4
+CADJ STORE streamice_v_normal_stress1
+CADJ &     = tapelev4, key = ilev_4
+CADJ STORE streamice_u_shear_stress1
+CADJ &     = tapelev4, key = ilev_4
+CADJ STORE streamice_v_shear_stress1
+CADJ &     = tapelev4, key = ilev_4
+#endif
+#endif
 
 #ifdef STREAMICE_TRACER_AB
 CADJ STORE GAD_trac_2d
