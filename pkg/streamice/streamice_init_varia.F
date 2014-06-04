@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.8 2014/05/07 12:44:18 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.9 2014/06/04 13:08:52 dgoldberg Exp $
 C $Name:  $
 
 #ifdef ALLOW_COST
@@ -62,6 +62,9 @@ C     ZERO OUT FLOATING POINT ARRAYS
           area_shelf_streamice(i,j,bi,bj) = 0. _d 0
           mass_ice_streamice(i,j,bi,bj) = 0. _d 0
           BDOT_streamice(i,j,bi,bj) = 0. _d 0
+#ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
+          BDOT_streamice1(i,j,bi,bj) = 0. _d 0
+#endif          
           ADOT_streamice(i,j,bi,bj) = streamice_adot_uniform
           C_basal_friction(i,j,bi,bj) = C_basal_fric_const
 #ifndef STREAMICE_3D_GLEN_CONST
@@ -81,6 +84,12 @@ C     ZERO OUT FLOATING POINT ARRAYS
           STREAMICE_v_normal_stress(i,j,bi,bj) = 0. _d 0
           STREAMICE_u_shear_stress(i,j,bi,bj) = 0. _d 0
           STREAMICE_v_shear_stress(i,j,bi,bj) = 0. _d 0
+#ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
+          STREAMICE_u_normal_stress1(i,j,bi,bj) = 0. _d 0
+          STREAMICE_v_normal_stress1(i,j,bi,bj) = 0. _d 0
+          STREAMICE_u_shear_stress1(i,j,bi,bj) = 0. _d 0
+          STREAMICE_v_shear_stress1(i,j,bi,bj) = 0. _d 0
+#endif
 #endif
 #ifdef ALLOW_STREAMICE_2DTRACER
 #ifdef STREAMICE_TRACER_AB
@@ -304,12 +313,6 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
 #endif
 ! STREAMICE_GEOM_FILE_SETUP
 
-      IF ( .NOT. ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
-     &     .AND. pickupSuff .EQ. ' ') ) THEN
-    
-            CALL STREAMICE_READ_PICKUP ( myThid )
-    
-      ENDIF
 
 ! finish initialize thickness
 
