@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/Attic/streamice_solo_timestep.F,v 1.2 2014/04/24 12:01:50 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/Attic/streamice_solo_timestep.F,v 1.3 2014/06/04 13:03:11 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -112,7 +112,12 @@ c**************************************
 
 #ifdef ALLOW_STREAMICE_FLUX_CONTROL
       CALL STREAMICE_APPLY_FLUX_CTRL ( myTime, myIter, myThid )
-#endif      
+#endif     
+
+#ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
+      CALL STREAMICE_FIELDS_LOAD( myTime, myIter, myThid )
+#endif
+
 
       CALL STREAMICE_VEL_SOLVE( myThid )
       
