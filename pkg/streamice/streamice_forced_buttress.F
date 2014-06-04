@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_forced_buttress.F,v 1.1 2014/04/24 12:01:50 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_forced_buttress.F,v 1.2 2014/06/04 12:56:40 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -115,9 +115,6 @@ C     LOCAL VARIABLES
             if (streamice_vfacemask(i,j+1,bi,bj).eq.2.0) then
           
 
-             if (i.lt.70) then
-              print *, "GOT HERE FORCED BUTTRESS ", i, j
-             endif
              do k=0,1
               if (streamice_umask(i+k,j+1,bi,bj).eq.1.0) then
 
@@ -137,9 +134,6 @@ C     LOCAL VARIABLES
 
             if (streamice_vfacemask(i,j,bi,bj).eq.2.0) then
            
-             if (i.lt.70) then
-              print *, "GOT HERE FORCED BUTTRESS ", i, j
-             endif
              do k=0,1
               if (streamice_umask(i+k,j,bi,bj).eq.1.0) then
 
