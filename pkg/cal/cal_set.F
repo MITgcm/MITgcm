@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_set.F,v 1.9 2012/04/08 19:17:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_set.F,v 1.10 2014/06/05 19:38:45 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -84,15 +84,42 @@ C     == end of interface ==
 
       _BEGIN_MASTER(myThid)
 
-C     Initialise some variables.
+C-    Initialise some variables.
+      usingNoLeapYearCal     = .FALSE.
       usingGregorianCalendar = .FALSE.
       usingModelCalendar     = .FALSE.
       usingJulianCalendar    = .FALSE.
 
-C     The calendar type: Start setting the calendar parameters.
+C-    Set calendar parameters which are independent of the calendar choice:
+      hoursPerDay      = 24
+      minutesPerHour   = 60
+      minutesPerDay    = minutesPerHour*hoursPerDay
+      secondsPerMinute = 60
+      secondsPerHour   = secondsPerMinute*minutesPerHour
+      secondsPerDay    = secondsPerMinute*minutesPerDay
 
-      if ( TheCalendar .eq. 'gregorian') then
+C-    Select which calendar type to use:
+      IF ( theCalendar .EQ. 'gregorian') THEN
         usingGregorianCalendar = .TRUE.
+c     ELSE IF ( theCalendar .EQ. 'julian') THEN
+c       usingJulianCalendar = .TRUE.
+c       STOP ' stopped in cal_Set (Julian Calendar).'
+      ELSE IF ( theCalendar .EQ. 'noLeapYear') THEN
+        usingNoLeapYearCal = .TRUE.
+      ELSE IF ( theCalendar .EQ. 'model') THEN
+        usingModelCalendar = .TRUE.
+c     ELSE IF ( theCalendar .EQ. 'none') THEN
+c       usingNoCalendar = .TRUE.
+c       STOP ' stopped in cal_Set (No Calendar).'
+      ELSE
+        ierr = 101
+        CALL cal_PrintError( ierr, myThid )
+        STOP
+      ENDIF
+
+C-    Set calendar parameters according to the calendar type:
+
+      IF ( usingGregorianCalendar .OR. usingNoLeapYearCal ) THEN
 C       The reference date for the Gregorian Calendar.
 C       and its format: ( yymmdd , hhmmss , leap year, weekday )
 C                                             (1/2)    (1 - 7)
@@ -106,12 +133,6 @@ C       Number of months per year and other useful numbers.
         nDaysNoLeap      = 365
         nDaysLeap        = 366
         nMaxDayMonth     = 31
-        hoursPerDay      = 24
-        minutesPerHour   = 60
-        minutesPerDay    = minutesPerHour*hoursPerDay
-        secondsPerMinute = 60
-        secondsPerHour   = secondsPerMinute*minutesPerHour
-        secondsPerDay    = secondsPerMinute*minutesPerDay
 
 C       Number of days per month.
 C       The "magic" number 2773 derives from the sequence: 101010110101
@@ -120,12 +141,12 @@ C         alternative would be to take 2741 with the loop being
 C         executed in reverse order. Accidentially, the latter
 C         is a prime number.
         k=2773
-        do i=1,nMonthYear
-          j = mod(k,2)
+        DO i=1,nMonthYear
+          j = MOD(k,2)
           k = (k-j)/2
           nDayMonth(i,1) = 30+j
           nDayMonth(i,2) = 30+j
-        enddo
+        ENDDO
         nDayMonth(2,1) = 28
         nDayMonth(2,2) = 29
 
@@ -137,9 +158,9 @@ C       Week days.
         dayOfWeek(5) = 'TUE'
         dayOfWeek(6) = 'WED'
         dayOfWeek(7) = 'THU'
+      ENDIF
 
-      else if ( TheCalendar .eq. 'model') then
-        usingModelCalendar = .TRUE.
+      IF ( usingModelCalendar ) THEN
 C       Assume a model calendar having 12 months with thirty days each.
 C       Reference date is the first day of year 0 at 0am, and model day 1.
         refDate(1) = 00000101
@@ -151,16 +172,10 @@ C       Some useful numbers.
         nDaysNoLeap      = 360
         nDaysLeap        = 360
         nMaxDayMonth     = 30
-        hoursPerDay      = 24
-        minutesPerHour   = 60
-        minutesPerDay    = minutesPerHour*hoursPerDay
-        secondsPerMinute = 60
-        secondsPerHour   = secondsPerMinute*minutesPerHour
-        secondsPerDay    = secondsPerMinute*minutesPerDay
-        do i=1,nMonthYear
+        DO i=1,nMonthYear
           nDayMonth(i,1) = 30
           nDayMonth(i,2) = 30
-        enddo
+        ENDDO
 
 C       Week days (Model Day 1 - 7).
         dayOfWeek(1) = 'MD1'
@@ -171,17 +186,7 @@ C       Week days (Model Day 1 - 7).
         dayOfWeek(6) = 'MD6'
         dayOfWeek(7) = 'MD7'
 
-c     else if ( TheCalendar .eq. 'julian') then
-c       usingJulianCalendar = .TRUE.
-c       stop ' stopped in cal_Set (Julian Calendar).'
-c     else if ( TheCalendar .eq. 'none') then
-c       usingNoCalendar = .TRUE.
-c       stop ' stopped in cal_Set (No Calendar).'
-      else
-        ierr = 101
-        call cal_PrintError( ierr, myThid )
-        stop
-      endif
+      ENDIF
 
 C-    Record completion of calendar settings: stage 1 = calendar is defined
       cal_setStatus = 1
@@ -196,29 +201,29 @@ C     Map the numerical model parameters. --> common blocks in CALENDAR.h
 
 C     Do first consistency checks
 C     o Time step.
-      if ( modelStep .le. 0. ) then
+      IF ( modelStep .LE. 0. ) THEN
         ierr = 102
-        call cal_PrintError( ierr, myThid )
-        stop ' stopped in cal_Set.'
-      endif
-      if ( modelStep .lt. 1. ) then
+        CALL cal_PrintError( ierr, myThid )
+        STOP ' stopped in cal_Set.'
+      ENDIF
+      IF ( modelStep .LT. 1. ) THEN
         ierr = 103
-        call cal_PrintError( ierr, myThid )
-        stop ' stopped in cal_Set.'
-      endif
-      if ( abs(modelStep - nint(modelStep)) .gt. 0.000001 ) then
+        CALL cal_PrintError( ierr, myThid )
+        STOP ' stopped in cal_Set.'
+      ENDIF
+      IF ( ABS(modelStep - NINT(modelStep)) .GT. 0.000001 ) THEN
         ierr = 104
-        call cal_PrintError( ierr, myThid )
-        stop ' stopped in cal_Set.'
-      else
-        modelStep = float(nint(modelStep))
-      endif
+        CALL cal_PrintError( ierr, myThid )
+        STOP ' stopped in cal_Set.'
+      ELSE
+        modelStep = FLOAT(NINT(modelStep))
+      ENDIF
 
 C-    Record completion of calendar settings: stage 2 = numerical model parms
       cal_setStatus = 2
 
 C     Complete the start date specification to get a full date array.
-      call cal_FullDate( startdate_1, startdate_2,
+      CALL cal_FullDate( startdate_1, startdate_2,
      &                   modelBaseDate, myThid )
 
 C     From here on, the final calendar settings are determined by the
@@ -231,12 +236,12 @@ C     Determine the startdate of the integration.
 c     iterinisecs = float(modelIter0)*modelStep
 C-jmc: above does not work if baseTime <> 0 ; fix it below:
       iterinisecs = modelStart
-      call cal_TimeInterval( iterinisecs, 'secs', iterinitime, myThid )
-      call cal_AddTime( modelBaseDate, iterinitime, modelStartDate,
+      CALL cal_TimeInterval( iterinisecs, 'secs', iterinitime, myThid )
+      CALL cal_AddTime( modelBaseDate, iterinitime, modelStartDate,
      &                  myThid )
 
-      call cal_TimeInterval( runtimesecs, 'secs', timediff, myThid )
-      call cal_AddTime( modelStartDate, timediff, modelEndDate,
+      CALL cal_TimeInterval( runtimesecs, 'secs', timediff, myThid )
+      CALL cal_AddTime( modelStartDate, timediff, modelEndDate,
      &                  myThid )
 
 C-    Record completion of calendar settings: stage 3 = fully set-up.

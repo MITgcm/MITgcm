@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal.h,v 1.8 2012/04/08 19:17:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal.h,v 1.9 2014/06/05 19:38:45 jmc Exp $
 C $Name:  $
 
 C     ==================================================================
@@ -28,7 +28,7 @@ C     modelStep        :: timestep of the numerical model.
 C     modelIntSteps    :: number of timestep that are to be performed.
 C     modelIter0       :: the numerical models initial timestep number.
 C     modelIterEnd     :: the models last timestep number.
-C     modelstepsperday :: number of model time steps per day (<- removed).
+C     modelStepsperday :: number of model time steps per day (<- removed).
 
 C   - Parameters used by the calendar:
 C
@@ -109,23 +109,26 @@ C                    calendar months and years.  Requires pkg/cal.
       COMMON /CALENDAR_L/
      &               calendarDumps,
      &               usingModelCalendar,
+     &               usingNoLeapYearCal,
      &               usingJulianCalendar,
      &               usingGregorianCalendar
       LOGICAL calendarDumps
       LOGICAL usingModelCalendar
+      LOGICAL usingNoLeapYearCal
       LOGICAL usingJulianCalendar
       LOGICAL usingGregorianCalendar
 
-C     TheCalendar :: type of calendar to use; available: 'model' or 'gregorian'.
+C     theCalendar :: type of calendar to use; available:
+C                    'model', 'gregorian' or 'noLeapYear'.
 C     dayOfWeek   :: Week day number one is the week day of refDate.
 C                    For the Gregorian calendar this is Friday, 15-Oct-1582.
 C     monthOfYear :: Both available calendars are assumed to have twelve
 C                    months.
       COMMON /CALENDAR_C/
-     &                     TheCalendar,
+     &                     theCalendar,
      &                     dayOfWeek,
      &                     monthOfYear
-      CHARACTER*(9) TheCalendar
+      CHARACTER*(20) theCalendar
       CHARACTER*(3) dayOfWeek(7)
       CHARACTER*(3) monthOfYear(nMonthYear)
 
