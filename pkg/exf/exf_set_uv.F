@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.26 2013/04/02 13:05:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.27 2014/06/05 16:11:53 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -78,8 +78,14 @@ C     *vec_lat_inc         :: vector y-grid increments for *vec
       INTEGER myIter
       INTEGER myThid
 
+C     == Functions ==
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     == local variables ==
 #ifdef USE_EXF_INTERPOLATION
+C     msgBuf     :: Informational/error message buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(128) uvecfile0, uvecfile1
       CHARACTER*(128) vvecfile0, vvecfile1
       LOGICAL first, changed
@@ -122,6 +128,22 @@ C--   Load and interpolate a new reccord (= 1rst one of this run)
      I         vvecfile,
      O         vvecfile0,
      I         myTime, myIter, myThid )
+          IF ( exf_debugLev.GE.debLevC ) THEN
+            _BEGIN_MASTER(myThid)
+            j = ILNBLNK(uvecfile0)
+            WRITE(msgBuf,'(A,I10,A,I6,2A)')
+     &        ' EXF_SET_UV: it=', myIter, ' loading rec=', count0,
+     &        ' from: ', uvecfile0(1:j)
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
+            j = ILNBLNK(vvecfile0)
+            WRITE(msgBuf,'(A,I10,A,I6,2A)')
+     &        ' EXF_SET_UV: it=', myIter, ' loading rec=', count0,
+     &        ' from: ', vvecfile0(1:j)
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                            SQUEEZE_RIGHT, myThid )
+            _END_MASTER(myThid)
+          ENDIF
 
           IF ( uvInterp ) THEN
 C-    vector interpolation to (xC,yC) locations
@@ -232,6 +254,22 @@ C--   Load and interpolate a new reccord
      I         vvecfile,
      O         vvecfile1,
      I         myTime, myIter, myThid )
+          IF ( exf_debugLev.GE.debLevC ) THEN
+            _BEGIN_MASTER(myThid)
+            j = ILNBLNK(uvecfile1)
+            WRITE(msgBuf,'(A,I10,A,I6,2A)')
+     &        ' EXF_SET_UV: it=', myIter, ' loading rec=', count1,
+     &        ' from: ', uvecfile1(1:j)
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                            SQUEEZE_RIGHT, myThid )
+            j = ILNBLNK(vvecfile1)
+            WRITE(msgBuf,'(A,I10,A,I6,2A)')
+     &        ' EXF_SET_UV: it=', myIter, ' loading rec=', count1,
+     &        ' from: ', vvecfile1(1:j)
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                            SQUEEZE_RIGHT, myThid )
+            _END_MASTER(myThid)
+          ENDIF
 
           IF ( uvInterp ) THEN
 C-    vector interpolation to (xC,yC) locations
