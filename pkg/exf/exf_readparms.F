@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.80 2014/06/05 15:37:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.81 2014/06/05 19:33:08 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -273,7 +273,6 @@ C     print a (weak) warning if data.exf is found
 
 C     Set default values.
 
-      year2sec           = 365.*86400.
 c     exf_verbose        = debugMode
       exf_verbose        = .FALSE.
       exf_debugLev       = debugLevel
