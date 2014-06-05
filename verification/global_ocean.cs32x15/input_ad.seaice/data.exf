@@ -2,7 +2,7 @@
 # External Forcing Data
 # *********************
  &EXF_NML_01
-#exf_verbose       = .TRUE.,
+#exf_debugLev      = 3,
 #useExfCheckRange  = .TRUE.,
 #useStabilityFct_overIce=.TRUE.,
 #snow_emissivity   = 0.98,
