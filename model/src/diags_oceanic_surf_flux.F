@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_oceanic_surf_flux.F,v 1.14 2014/06/04 22:18:55 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_oceanic_surf_flux.F,v 1.15 2014/06/05 16:18:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -50,7 +50,6 @@ C     ks        :: surface level index
       INTEGER ks
       _RL tmp1k(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tmpFac
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C-    Time Averages of surface fluxes
        IF ( usingPCoords ) THEN
