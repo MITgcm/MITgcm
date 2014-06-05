@@ -4,7 +4,7 @@
 # *********************
  &EXF_NML_01
  exf_iprec         = 32,
-#exf_verbose       = .TRUE.,
+ exf_debugLev      = 3,
  &
 
 # *********************
