@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.79 2014/05/27 23:41:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.80 2014/06/05 15:37:46 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -70,6 +70,7 @@ C     == local variables ==
       _RL inp_lon0, inp_lat0, inp_dLon, inp_dLat
 #endif /* USE_EXF_INTERPOLATION */
       INTEGER iUnit
+      LOGICAL exf_verbose
       CHARACTER*(2) exf_yftype
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 C     == end of interface ==
@@ -79,9 +80,9 @@ C     Surface flux data.
      &      windstressmax,       repeatPeriod,    exf_albedo,
      &   ocean_emissivity,     ice_emissivity, snow_emissivity,
      &          exf_iceCd,          exf_iceCe,     exf_iceCh,
-     &   exf_scal_BulkCdn,     climtempfreeze,
-     &          exf_iprec,     exf_iprec_obcs,     exf_yftype,
-     &        exf_verbose,   useExfCheckRange,     exf_monFreq,
+     &   exf_scal_BulkCdn,     climtempfreeze, useExfCheckRange,
+     &      exf_iprec    ,   exf_iprec_obcs  , exf_yftype,
+     &      exf_verbose  ,   exf_debugLev    , exf_monFreq,
      & useExfYearlyFields,  twoDigitYear,
      & useStabilityFct_overIce, readStressOnAgrid, readStressOnCgrid,
      & useAtmWind, useRelativeWind, noNegativeEvap,
@@ -273,7 +274,9 @@ C     print a (weak) warning if data.exf is found
 C     Set default values.
 
       year2sec           = 365.*86400.
-      exf_verbose        = debugMode
+c     exf_verbose        = debugMode
+      exf_verbose        = .FALSE.
+      exf_debugLev       = debugLevel
       exf_monFreq        = monitorFreq
       useExfCheckRange   = .TRUE.
       useExfZenAlbedo    = .FALSE.
@@ -915,6 +918,7 @@ C--   Retired parameters
       ENDIF
 
 C--   Derive other parameters:
+      IF ( exf_verbose ) exf_debugLev = MAX( exf_debugLev, debLevD )
       hq = ht
       stressIsOnCgrid = readStressOnCgrid
 #if ( defined (ALLOW_BULKFORMULAE) )

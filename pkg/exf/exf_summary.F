@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.33 2013/10/05 19:36:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.34 2014/06/05 15:37:46 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -97,11 +97,11 @@ C--   Print general parameters:
      &  ' /* add extension _YEAR to input file names */')
       CALL WRITE_0D_L( twoDigitYear, INDEX_NONE, 'twoDigitYear =',
      &  ' /* use 2-digit year extension */')
-      CALL WRITE_0D_L( exf_verbose, INDEX_NONE, 'exf_verbose =',
-     &  ' /* print more messages to STDOUT */')
       CALL WRITE_0D_L( useExfCheckRange, INDEX_NONE,
      &  'useExfCheckRange =', ' /* check for fields range */')
-      CALL WRITE_0D_RL( exf_monFreq, INDEX_NONE, 'exf_monFreq =',
+      CALL WRITE_0D_I( exf_debugLev, INDEX_NONE, 'exf_debugLev =',
+     &  ' /* select EXF-debug printing level */')
+      CALL WRITE_0D_RL( exf_monFreq, INDEX_NONE, 'exf_monFreq  =',
      &  ' /* EXF monitor frequency [ s ] */')
       CALL WRITE_0D_RL( repeatPeriod, INDEX_NONE, 'repeatPeriod =',
      &  ' /* period for cycling forcing dataset [ s ] */')

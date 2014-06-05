@@ -1,59 +1,111 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.31 2013/10/25 17:31:43 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.32 2014/06/05 15:37:46 jmc Exp $
 C $Name:  $
-c
-c
-c     ==================================================================
-c     HEADER EXF_PARAM.h
-c     ==================================================================
-c
-c     o Header file for the surface flux data. Used by the external
-c       forcing package.
-c
-c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu  14-Jan-2000
-c              - Restructured the original version in order to have a
-c                better interface to the MITgcmUV.
-c
-c              Christian Eckert eckert@mit.edu  12-Feb-2000
-c              - Changed some variables names (package prefix: exf_)
-c
-c              Patrick Heimbach, heimbach@mit.edu  04-May-2000
-c              - included exf_iprec to enable easy
-c                switch between 32bit/64 bit data format
-c
-c              Patrick Heimbach, heimbach@mit.edu  01-May-2001
-c              - added obcs parameters
-c
-c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
-c
-c     ==================================================================
-c     HEADER EXF_PARAM.h
-c     ==================================================================
+C
+C     ==================================================================
+C     HEADER EXF_PARAM.h
+C     ==================================================================
+C
+C     o Header file for the surface flux data. Used by the external
+C       forcing package.
+C
+C     started: Christian Eckert eckert@mit.edu  30-Jun-1999
+C
+C     changed: Christian Eckert eckert@mit.edu  14-Jan-2000
+C              - Restructured the original version in order to have a
+C                better interface to the MITgcmUV.
+C
+C              Christian Eckert eckert@mit.edu  12-Feb-2000
+C              - Changed some variables names (package prefix: exf_)
+C
+C              Patrick Heimbach, heimbach@mit.edu  04-May-2000
+C              - included exf_iprec to enable easy
+C                switch between 32bit/64 bit data format
+C
+C              Patrick Heimbach, heimbach@mit.edu  01-May-2001
+C              - added obcs parameters
+C
+C     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
+C
+C     ==================================================================
+C     HEADER EXF_PARAM.h
+C     ==================================================================
 
-c     Year in seconds
-      _RL     year2sec
-
-c     Repeat period for forcing fields (s)
-c     For example, for yearly repeat period: repeatPeriod=31556925.
-c     Note: this option is not yet coded for sub-daily
-c           forcing and for leap years but this limitation can be
-c           circumvented by using a 4-year (1461-day) repeatPeriod
+C     Repeat period for forcing fields (s)
+C     For example, for yearly repeat period: repeatPeriod=31556925.
+C     Note: this option is not yet coded for sub-daily
+C           forcing and for leap years but this limitation can be
+C           circumvented by using a 4-year (1461-day) repeatPeriod
       _RL     repeatPeriod
 
-c     Monitor Frequency (s)
+C     useExfCheckRange   :: check range of input/output field values
+C     useExfYearlyFields :: when set, automatically add extension
+C                           _YEAR to input file names; the yearly files need
+C                           to contain all the records that pertain to
+C                           a particular year, including day 1, hour zero
+C     twoDigitYear       :: when set, use 2-digit year extension YR
+C                           instead of _YEAR for useExfYearlyFields
+C    useOBCSYearlyFields :: when reading Open-Boundary values, assume yearly
+C                           climatology (def=false)
+C     readStressOnAgrid  :: read wind-streess located on model-grid, A-grid position
+C     readStressOnCgrid  :: read wind-streess located on model-grid, C-grid position
+C     stressIsOnCgrid    :: ustress & vstress are positioned on Arakawa C-grid
+C     useStabilityFct_overIce :: over sea-ice, compute turbulent transfert
+C                                coeff. function of stability (like over
+C                                open ocean) rather than using fixed Coeff.
+C     useAtmWind         :: use wind vector (uwind/vwind) to compute
+C                           the wind stress (ustress/vstress)
+C     useRelativeWind    :: Subtract U/VVEL or U/VICE from U/VWIND before
+C                           computing U/VSTRESS
+C     noNegativeEvap     :: prevent negative evap (= sea-surface condensation)
+C     useExfZenAlbedo    :: ocean albedo (direct part) may vary
+C                           with zenith angle (see select_ZenAlbedo)
+C     select_ZenAlbedo   :: switch to different methods to compute albedo (direct part)
+C                        :: 0 just use exf_albedo
+C                        :: 1 use daily mean albedo from exf_zenithangle_table.F
+C                        :: 2 use daily mean albedo computed as in pkg/aim_v23
+C                        :: 3 use daily variable albedo
+C     useExfZenIncoming  :: compute incoming solar radiation along with zenith angle
+C     exf_debugLev       :: select message printing to STDOUT (e.g., when read rec)
+C     exf_monFreq        :: Monitor Frequency (s) for EXF
+
+      logical useExfCheckRange
+      logical useExfYearlyFields, twoDigitYear
+      logical useOBCSYearlyFields
+      logical readStressOnAgrid
+      logical readStressOnCgrid
+      logical stressIsOnCgrid
+      logical useStabilityFct_overIce
+      logical useRelativeWind
+      logical noNegativeEvap
+      logical useAtmWind
+
+      logical useExfZenAlbedo
+      integer select_ZenAlbedo
+      logical useExfZenIncoming
+
+      INTEGER exf_debugLev
       _RL     exf_monFreq
 
-c     Drag coefficient scaling factor
+C     Year in seconds
+      _RL     year2sec
+
+C     Drag coefficient scaling factor
       _RL     exf_scal_BulkCdn
 
-c     Maximum absolute windstress, used to reset unreastically high
-c     data values
+C     Maximum absolute windstress, used to reset unreastically high
+C     data values
       _RL     windstressmax
 
-c     Description of contents of surface boundary condition files
-c     Note: fieldperiod=0 means input file is one time-constant field
-c           fieldperiod=-12 means input file contains 12 monthly means
+C     freezing temperature is the minimum temperature allowed, used
+C     to reset climatological temperatures fields where they have
+C     values below climtempfreeze
+      _RL climtempfreeze
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C     Description of contents of surface boundary condition files
+C     Note: fieldperiod=0 means input file is one time-constant field
+C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer hfluxstartdate1
       integer hfluxstartdate2
@@ -272,11 +324,6 @@ c     Calendar data.
       _RL     climvstr_exfremo_slope
       character*1 climvstrmask
 
-c     freezing temperature is the minimum temperature allowed, used
-c     to reset climatological temperatures fields where they have
-c     values below climtempfreeze
-      _RL climtempfreeze
-
 c     the following variables are used in conjunction
 c     with pkg/icefront to specify sub-glacial runoff
       integer sgrunoffstartdate1
@@ -354,51 +401,8 @@ c     File names.
       character*(128) climustrfile
       character*(128) climvstrfile
 
-C     exf_verbose        :: print more messages to STDOUT (e.g., when read new rec)
-C     useExfCheckRange   :: check range of input/output field values
-C     useExfYearlyFields :: when set, automatically add extension
-C                           _YEAR to input file names; the yearly files need
-C                           to contain all the records that pertain to
-C                           a particular year, including day 1, hour zero
-C     twoDigitYear       :: when set, use 2-digit year extension YR
-C                           instead of _YEAR for useExfYearlyFields
-C    useOBCSYearlyFields :: when reading Open-Boundary values, assume yearly
-C                           climatology (def=false)
-C     readStressOnAgrid  :: read wind-streess located on model-grid, A-grid position
-C     readStressOnCgrid  :: read wind-streess located on model-grid, C-grid position
-C     stressIsOnCgrid    :: ustress & vstress are positioned on Arakawa C-grid
-C     useStabilityFct_overIce :: over sea-ice, compute turbulent transfert
-C                                coeff. function of stability (like over
-C                                open ocean) rather than using fixed Coeff.
-C     useAtmWind         :: use wind vector (uwind/vwind) to compute the wind stress (ustress/vstress)
-C     useRelativeWind    :: Subtract U/VVEL or U/VICE from U/VWIND before computing U/VSTRESS
-C     noNegativeEvap     :: prevent negative evaporation (= sea-surface condensation)
-C     useExfZenAlbedo    :: ocean albedo (direct part) may vary with zenith angle (see select_ZenAlbedo)
-C     select_ZenAlbedo   :: switch to different methods to compute albedo (direct part)
-C                        :: 0 just use exf_albedo
-C                        :: 1 use daily mean albedo from exf_zenithangle_table.F
-C                        :: 2 use daily mean albedo computed as in pkg/aim_v23
-C                        :: 3 use daily variable albedo
-C     useExfZenIncoming  :: compute incoming solar radiation along with zenith angle
-
-      logical exf_verbose
-      logical useExfCheckRange
-      logical useExfYearlyFields, twoDigitYear
-      logical useOBCSYearlyFields
-      logical readStressOnAgrid
-      logical readStressOnCgrid
-      logical stressIsOnCgrid
-      logical useStabilityFct_overIce
-      logical useRelativeWind
-      logical noNegativeEvap
-      logical useAtmWind
-
-      logical useExfZenAlbedo
-      integer select_ZenAlbedo
-      logical useExfZenIncoming
-
       COMMON /EXF_PARAM_L/
-     &       exf_verbose, useExfCheckRange,
+     &       useExfCheckRange,
      &       useExfYearlyFields, twoDigitYear,
      &       useOBCSYearlyFields,
      &       useExfZenAlbedo, useExfZenIncoming,
@@ -406,7 +410,7 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
      &       stressIsOnCgrid, useStabilityFct_overIce,
      &       useAtmWind, useRelativeWind, noNegativeEvap
       COMMON /EXF_PARAM_I/
-     &       select_ZenAlbedo,
+     &       select_ZenAlbedo,  exf_debugLev,
      &       hfluxstartdate1,   hfluxstartdate2,
      &       atempstartdate1,   atempstartdate2,
      &       aqhstartdate1,     aqhstartdate2,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.30 2012/04/02 21:24:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.31 2014/06/05 15:37:46 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -29,6 +29,9 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_DEBUG
+# include "EXF_PARAM.h"
+#endif
 
 C !INPUT/OUTPUT PARAMETERS:
 C  inFile      (string)  :: name of the binary input file (direct access)
@@ -256,8 +259,8 @@ C     averaging properly done if uvInterp=T in S/R EXF_INTERP_UV
       ENDIF
 
 #ifdef ALLOW_DEBUG
-      debugFlag = ( debugLevel.GE.debLevC )
-     &       .OR. ( debugLevel.GE.debLevB .AND. myIter.LE.nIter0 )
+      debugFlag = ( exf_debugLev.GE.debLevC )
+     &       .OR. ( exf_debugLev.GE.debLevB .AND. myIter.LE.nIter0 )
 C     prtPole(l)=0 : extended, =1 : changed to pole, =2 : changed to symetric
       IF ( debugFlag ) THEN
         l = ILNBLNK(inFile)
