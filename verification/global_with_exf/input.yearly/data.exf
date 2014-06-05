@@ -6,7 +6,7 @@
 #repeatPeriod= 31104000.,
  exf_iprec         = 32,
  useEXFYearlyFields= .TRUE.,
- exf_verbose       = .TRUE.,
+ exf_debugLev      = 4,
  &
 
 # *********************
