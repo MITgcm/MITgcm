@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2004 2014/05/30 17:19:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2005 2014/06/06 21:17:12 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/global_with_exf:
+  - swith all fields period to -12. (was previously untested) in input/data.exf
+    (but keep secondary test ".yearly" unchanged); update the reference output.
+o pkg/cal:
+  - new calendar type "noLeapYear" for 365 days calendar without any leap year.
+o pkg/exf:
+  - new integer parameter "exf_debugLev" (default set to main model debugLevel)
+    to replace logical switch "exf_verbose"
+  - report in STDOUT when loading a new reccord (if exf_debugLev >= 3)
 o pkg/sbo:
   - update from Katherine Quinn: evaluate mass directly from density and SSH
     (budget using Finite Volume method) instead of from bottom pressure.
