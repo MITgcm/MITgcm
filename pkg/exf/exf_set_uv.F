@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.27 2014/06/05 16:11:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.28 2014/06/07 17:52:18 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -107,13 +107,48 @@ C     == end of interface ==
      &     uvecfile.NE.' ' .AND. vvecfile.NE.' ' .AND.
      &     (usingCurvilinearGrid .OR. rotateGrid .OR. uvInterp) ) THEN
 
+        IF ( uvecperiod .EQ. -12. ) THEN
+C-    genperiod=-12 means input file contains 12 monthly means
+C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
+          CALL cal_GetMonthsRec(
+     O             fac, first, changed,
+     O             count0, count1,
+     I             myTime, myIter, myThid )
+
+        ELSEIF ( uvecperiod .LE. 0. ) THEN
+          j = ILNBLNK(uvecfile)
+          WRITE(msgBuf,'(A,1PE16.8,2A)')
+     &        'EXF_SET_UV: Invalid uvecperiod=', uvecperiod,
+     &        ' for file: ', uvecfile(1:j)
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R EXF_SET_UV'
+        ELSE
 C-    get record numbers and interpolation factor
-        CALL exf_GetFFieldRec(
-     I           uvecstartdate, uvecperiod,
-     I           useExfYearlyFields,
-     O           fac, first, changed,
-     O           count0, count1, year0, year1,
-     I           myTime, myIter, myThid )
+          CALL exf_GetFFieldRec(
+     I             uvecstartdate, uvecperiod,
+     I             useExfYearlyFields,
+     O             fac, first, changed,
+     O             count0, count1, year0, year1,
+     I             myTime, myIter, myThid )
+        ENDIF
+        IF ( exf_debugLev.GE.debLevD ) THEN
+          _BEGIN_MASTER( myThid )
+           i = ILNBLNK(uvecfile)
+           j = ILNBLNK(vvecfile)
+           WRITE(msgBuf,'(5A)') ' EXF_SET_UV: ',
+     &       'processing: ', uvecfile(1:i), ' & ', vvecfile(1:j)
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(2A,I10,2I7)') ' EXF_SET_UV: ',
+     &       ' myIter, count0, count1:', myIter, count0, count1
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(2A,2(L2,2X),E16.9)') ' EXF_SET_UV: ',
+     &       ' first, changed, fac:  ', first, changed, fac
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+          _END_MASTER( myThid )
+        ENDIF
 
         IF ( first ) THEN
 C--   Load and interpolate a new reccord (= 1rst one of this run)
