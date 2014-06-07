@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.31 2014/06/05 16:11:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.32 2014/06/07 17:50:34 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -47,7 +47,6 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
 
@@ -102,29 +101,45 @@ cph-exf-print         if (genfile .EQ. hfluxfile)  year0 = 3000
 cph)
 
          IF ( genperiod .EQ. -12. ) THEN
-C     genperiod=-12 means input file contains 12 monthly means
-C     record numbers are assumed 1 to 12 corresponding to
-C     Jan. through Dec.
+C-    genperiod=-12 means input file contains 12 monthly means
+C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
             CALL cal_GetMonthsRec(
      O           fac, first, changed,
      O           count0, count1,
-     I           myTime, myIter, myThid
-     &           )
-
+     I           myTime, myIter, myThid )
          ELSEIF ( genperiod .LT. 0. ) THEN
-            print *, 'genperiod is out of range'
-            STOP 'ABNORMAL END: S/R EXF_SET_GEN'
-
+           j = ILNBLNK(genfile)
+           WRITE(msgBuf,'(A,1PE16.8,2A)')
+     &        'EXF_SET_GEN: Invalid genperiod=', genperiod,
+     &        ' for file: ', genfile(1:j)
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R EXF_SET_GEN'
          ELSE
-C     get record numbers and interpolation factor for gen
+C-    get record numbers and interpolation factor for gen
             CALL exf_GetFFieldRec(
-     I           genstartdate, genperiod
-     I           , useExfYearlyFields
-     O           , fac, first, changed
-     O           , count0, count1, year0, year1
-     I           , myTime, myIter, myThid
-     &           )
+     I           genstartdate, genperiod,
+     I           useExfYearlyFields,
+     O           fac, first, changed,
+     O           count0, count1, year0, year1,
+     I           myTime, myIter, myThid )
 
+         ENDIF
+         IF ( exf_debugLev.GE.debLevD ) THEN
+           _BEGIN_MASTER( myThid )
+           j = ILNBLNK(genfile)
+           WRITE(msgBuf,'(3A)') ' EXF_SET_GEN: ',
+     &       'processing file: ', genfile(1:j)
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(2A,I10,2I7)') ' EXF_SET_GEN: ',
+     &       ' myIter, count0, count1:', myIter, count0, count1
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(2A,2(L2,2X),E16.9)') ' EXF_SET_GEN: ',
+     &       ' first, changed, fac:  ', first, changed, fac
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           _END_MASTER( myThid )
          ENDIF
 
          IF ( first ) THEN
@@ -253,8 +268,6 @@ C     ==================================================================
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "PARAMS.h"
-
 #include "EXF_PARAM.h"
 
 C     == routine arguments ==
@@ -310,7 +323,7 @@ C     == end of interface ==
            _BEGIN_MASTER(myThid)
            j = ILNBLNK(genfile)
            WRITE(msgBuf,'(A,I10,A,I6,2A)')
-     &        ' EXF_INIT_GEN: it=', nIter0, ' loading rec=', count,
+     &        ' EXF_INIT_GEN: it=', -1, ' loading rec=', count,
      &        ' from: ', genfile(1:j)
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )

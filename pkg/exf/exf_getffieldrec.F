@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.25 2014/06/05 15:37:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.26 2014/06/07 17:50:34 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -182,28 +182,6 @@ c     Set switch for reading new record.
 
       endif
 c     if (fldperiod .eq. 0.)
-
-c     Do some printing for the protocol.
-      IF ( exf_debugLev.GE.debLevD ) THEN
-        _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(a)') ' EXF_GetFFieldRec:'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(A,2X,L2,2X,L2,2X,D15.8)')
-     &    ' EXF_GetFFieldRec: first, changed, fac:',
-     &                        first, changed, fac
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(A,I10,2I7)')
-     &    ' EXF_GetFFieldRec: myIter, count0, count1:',
-     &                        myIter, count0, count1
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-c       WRITE(msgBuf,'(A)') ' EXF_GetFFieldRec:'
-c       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-c    &                      SQUEEZE_RIGHT, myThid )
-        _END_MASTER( myThid )
-      ENDIF
 
       RETURN
       END
