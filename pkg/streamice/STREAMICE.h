@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.9 2014/06/04 13:08:52 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.10 2014/06/07 16:13:17 jmc Exp $
 C $Name:  $
 
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -25,7 +25,6 @@ C     & A_glen_isothermal, n_glen, eps_glen_min, eps_u_min,
      & streamice_adot_uniform,
      & streamice_forcing_period
 
-
       _RL streamice_density, streamice_density_ocean_avg
 C      _RL A_glen_isothermal, n_glen, eps_glen_min, eps_u_min
       _RL B_glen_isothermal, n_glen, eps_glen_min, eps_u_min
@@ -44,9 +43,8 @@ C      _RL A_glen_isothermal, n_glen, eps_glen_min, eps_u_min
       _RL streamice_wgt_tikh
       _RL streamice_addl_backstress
       _RL streamice_smooth_gl_width
-      _RL streamice_adot_uniform 
+      _RL streamice_adot_uniform
       _RL streamice_forcing_period
-
 
 C     parms for parameterized initial thickness
 C     SHELF_MAX_DRAFT: max thickness of ice in m
@@ -229,7 +227,7 @@ C     -------------------------- AND NOW ARRAYS --------------------------------
 
 C     EXPLANATION OF MASKS
 
-C     STREAMICE_hmask           VALUES	1=ice-covered cell
+C     STREAMICE_hmask           VALUES  1=ice-covered cell
 C                                       2=partially ice-covered cell (no dynamics)
 C                                       0=ice-free cell (for now, it means the cell
 C                                                           is treated as an open-ocean cell
@@ -328,11 +326,11 @@ C     &     A_glen,
 
 #ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
       COMMON /STREAMICE_STRESS_BOUNDARY/
-     &      streamice_u_normal_pert, 
+     &      streamice_u_normal_pert,
      &      streamice_v_normal_pert,
      &      streamice_u_shear_pert,
      &      streamice_v_shear_pert,
-     &      streamice_u_normal_stress, 
+     &      streamice_u_normal_stress,
      &      streamice_v_normal_stress,
      &      streamice_u_shear_stress,
      &      streamice_v_shear_stress
@@ -347,21 +345,20 @@ C     &     A_glen,
      &     streamice_vert_shear_uz, streamice_vert_shear_vz
 #endif
 
-
 #ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
       COMMON /STREAMICE_TIMEDEP_FORCE/
      &      bdot_streamice0,
      &      bdot_streamice1
 #ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
      &      ,streamice_u_normal_stress0,
-     &      streamice_u_normal_stress1, 
+     &      streamice_u_normal_stress1,
      &      streamice_v_normal_stress0,
      &      streamice_v_normal_stress1,
      &      streamice_u_shear_stress0,
      &      streamice_u_shear_stress1,
      &      streamice_v_shear_stress0,
      &      streamice_v_shear_stress1
-#endif     
+#endif
 #endif
 
 #ifdef ALLOW_STREAMICE_2DTRACER
@@ -379,7 +376,6 @@ C     &     A_glen,
       COMMON /STREAMICE_RLOW/
      &     R_low_si
 #endif
-
 
       _RL H_streamice           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL U_streamice           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -468,9 +464,9 @@ C     The following arrays are used for the hybrid stress balance
 
 #ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
 #ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
-	_RL streamice_u_normal_stress0
+      _RL streamice_u_normal_stress0
      &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL streamice_u_normal_stress1 
+      _RL streamice_u_normal_stress1
      &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL streamice_v_normal_stress0
      &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -484,7 +480,7 @@ C     The following arrays are used for the hybrid stress balance
      &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL streamice_v_shear_stress1
      &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif     
+#endif
       _RL bdot_streamice0
      &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL bdot_streamice1
@@ -524,7 +520,6 @@ C        velocity initial guess, so they are kept
      & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER n_dofs_process (0:nPx*nPy-1)
 #endif
-
 
 #endif /* ALLOW_STREAMICE */
 
