@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.21 2014/06/04 22:18:55 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.22 2014/06/07 16:06:54 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -93,7 +93,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &              layers_Hw, layers_Hs,
      &              layers_PIw,layers_PIs,
      &              layers_U,  layers_V,
-     &              myThid ) 
+     &              myThid )
 #ifdef LAYERS_THERMODYNAMICS
         CALL LAYERS_DIAPYCNAL( theta,iLa,
      &              layers_TtendSurf, layers_TtendDiffh,
@@ -108,12 +108,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &              layers_Hw, layers_Hs,
      &              layers_PIw,layers_PIs,
      &              layers_U,  layers_V,
-     &              layers_Hs, layers_PIs,
      &              myThid )
 #ifdef LAYERS_THERMODYNAMICS
         CALL LAYERS_DIAPYCNAL( salt,iLa,
      &              layers_TtendSurf, layers_TtendDiffh,
-     &              layers_TtendDiffr, layers_StendSurf, 
+     &              layers_TtendDiffr, layers_StendSurf,
      &              layers_StendDiffh, layers_StendDiffr,
      &              layers_Hc, layers_PIc,
      &              myThid)
@@ -148,14 +147,13 @@ C     the model level given by layers_krho.
 #ifdef LAYERS_THERMODYNAMICS
         CALL LAYERS_DIAPYCNAL( prho,iLa,
      &              layers_TtendSurf, layers_TtendDiffh,
-     &              layers_TtendDiffr, layers_StendSurf, 
+     &              layers_TtendDiffr, layers_StendSurf,
      &              layers_StendDiffh, layers_StendDiffr,
      &              layers_Hc, layers_PIc,
      &              myThid)
 #endif
 #endif /* LAYERS_PRHO_REF */
        ENDIF
-
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Direct Snap-shot output
