@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2005 2014/06/06 21:17:12 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2006 2014/06/07 17:54:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - add code to process the case field period = -12. with UV interpolation.
+  - move debug print (formerly active when exf_verbose=T) from EXF_getFFieldRec
+    into S/R that calls it (i.e., exf_set_gen.F, exf_set_uv.F & obcs_exf_load.F)
 o verification/global_with_exf:
   - swith all fields period to -12. (was previously untested) in input/data.exf
     (but keep secondary test ".yearly" unchanged); update the reference output.
