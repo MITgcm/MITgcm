@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopexmean.F,v 1.9 2014/06/09 17:47:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopexmean.F,v 1.10 2014/06/09 21:27:39 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -92,7 +92,7 @@ c--   Convert mean ssh from cm to m
                 mdtmask(i,j,bi,bj) = 0. _d 0
               endif
 #endif
-#ifndef ALLOW_HIGHLAT_ALTIMETRY
+#ifdef OMIT_HIGHLAT_MDT
               if ( abs(YC(i,j,bi,bj)) .GT. 66. ) then
                 mdtmask(i,j,bi,bj) = 0. _d 0
               endif
