@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.19 2014/06/09 17:50:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.20 2014/06/09 17:51:46 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -84,12 +84,15 @@ c mapping to gencost
       integer igen_mdt, igen_lsc
       integer igen_tp, igen_ers, igen_gfo
 
-      _RL offset,fac
+      _RL offset
       _RL offset_sum
-      _RL psmean    ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
+      _RL slaoffset
+      _RL slaoffset_sum
+
       _RL diagnosfld ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
 
 c for PART 1: re-reference MDT (mdt) to the inferred SLA reference field
+      _RL psmean    ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
       _RL mean_slaobs_mdt(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL mean_slaobs_NUM(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
@@ -763,6 +766,7 @@ cgf =======================================================
               anom_psMslaobs_SUB(i,j,bi,bj)  = 0. _d 0
               anom_slaobs(i,j,bi,bj)  = 0. _d 0
               anom_slaobs_SUB(i,j,bi,bj)  = 0. _d 0
+cgf this is not currently used in PART 4
               anom_psMtpobs(i,j,bi,bj)  = 0. _d 0
               anom_psMersobs(i,j,bi,bj) = 0. _d 0
               anom_psMgfoobs(i,j,bi,bj) = 0. _d 0
@@ -817,16 +821,11 @@ c ------------------------------------------------------
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
       if ( tpmask(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj)
      &  .NE.0. ) then
-           anom_psMtpobs(i,j,bi,bj)= anom_psMtpobs(i,j,bi,bj)+
-     &        psbar(i,j,bi,bj)-tpobs(i,j,bi,bj)
-     &        -mean_psMslaobs(i,j,bi,bj)
            anom_psMslaobs(i,j,bi,bj)= anom_psMslaobs(i,j,bi,bj)+
      &        psbar(i,j,bi,bj)-tpobs(i,j,bi,bj)
      &        -mean_psMslaobs(i,j,bi,bj)
            anom_slaobs(i,j,bi,bj)= anom_slaobs(i,j,bi,bj)+
      &        tpobs(i,j,bi,bj)
-           anom_psMtpobs_NUM(i,j,bi,bj)=
-     &        anom_psMtpobs_NUM(i,j,bi,bj)+1. _d 0
            anom_psMslaobs_NUM(i,j,bi,bj)=
      &        anom_psMslaobs_NUM(i,j,bi,bj)+1. _d 0
            if ( (2*jrec.EQ.ndaysave).OR.(2*jrec+1.EQ.ndaysave) ) 
@@ -836,11 +835,6 @@ c ------------------------------------------------------
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
       if ( ersmask(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj)
      &  .NE.0. ) then
-           anom_psMersobs(i,j,bi,bj)= anom_psMersobs(i,j,bi,bj)+
-     &        psbar(i,j,bi,bj)-ersobs(i,j,bi,bj)
-     &        -mean_psMslaobs(i,j,bi,bj)
-           anom_psMersobs_NUM(i,j,bi,bj)=
-     &        anom_psMersobs_NUM(i,j,bi,bj)+1. _d 0
            anom_psMslaobs(i,j,bi,bj)= anom_psMslaobs(i,j,bi,bj)+
      &        psbar(i,j,bi,bj)-ersobs(i,j,bi,bj)
      &        -mean_psMslaobs(i,j,bi,bj)
@@ -855,11 +849,6 @@ c ------------------------------------------------------
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
       if ( gfomask(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj)
      &  .NE.0. ) then
-           anom_psMgfoobs(i,j,bi,bj)= anom_psMgfoobs(i,j,bi,bj)+
-     &        psbar(i,j,bi,bj)-gfoobs(i,j,bi,bj)
-     &        -mean_psMslaobs(i,j,bi,bj)
-           anom_psMgfoobs_NUM(i,j,bi,bj)=
-     &        anom_psMgfoobs_NUM(i,j,bi,bj)+1. _d 0
            anom_psMslaobs(i,j,bi,bj)= anom_psMslaobs(i,j,bi,bj)+
      &        psbar(i,j,bi,bj)-gfoobs(i,j,bi,bj)
      &        -mean_psMslaobs(i,j,bi,bj)
@@ -882,27 +871,6 @@ c ------------------------------------------------------
           do bi = itlo,ithi
             do j = jmin,jmax
               do i = imin,imax
-#ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-               if ( anom_psMtpobs_NUM(i,j,bi,bj) .NE. 0. ) then
-                  anom_psMtpobs(i,j,bi,bj) =
-     &                 anom_psMtpobs(i,j,bi,bj) /
-     &                 anom_psMtpobs_NUM(i,j,bi,bj)
-               endif
-#endif
-#ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-               if ( anom_psMersobs_NUM(i,j,bi,bj) .NE. 0. ) then
-                  anom_psMersobs(i,j,bi,bj) =
-     &                 anom_psMersobs(i,j,bi,bj) /
-     &                 anom_psMersobs_NUM(i,j,bi,bj)
-               endif
-#endif
-#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-               if ( anom_psMgfoobs_NUM(i,j,bi,bj) .NE. 0. ) then
-                  anom_psMgfoobs(i,j,bi,bj) =
-     &                 anom_psMgfoobs(i,j,bi,bj) /
-     &                 anom_psMgfoobs_NUM(i,j,bi,bj)
-               endif
-#endif
                if ( ( anom_psMslaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ) 
 #ifndef ALLOW_HIGHLAT_ALTIMETRY     
@@ -923,6 +891,82 @@ c ------------------------------------------------------
             enddo
           enddo
         enddo
+
+c PART 4.11: compute time variable offset
+c ----------------------------------------
+
+      slaoffset     = 0. _d 0
+      slaoffset_sum = 0. _d 0
+
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do j = jmin,jmax
+              do i = imin,imax
+               if ( ( anom_psMslaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) 
+#ifndef ALLOW_HIGHLAT_ALTIMETRY     
+     &              .AND.( abs(YC(i,j,bi,bj)) .LE. 66. ) 
+#endif
+     &            ) then
+                  slaoffset=slaoffset+RA(i,j,bi,bj)*
+     &                      anom_psMslaobs(i,j,bi,bj)
+                  slaoffset_sum=slaoffset_sum+RA(i,j,bi,bj)
+               endif
+              enddo
+            enddo
+          enddo
+        enddo
+
+      _GLOBAL_SUM_RL( slaoffset     , mythid )
+      _GLOBAL_SUM_RL( slaoffset_sum , mythid )
+
+       write(msgbuf,'(a,2d22.15)') ' sshv4:slaoffset=',
+     &                         slaoffset,slaoffset_sum
+       call print_message( msgbuf, standardmessageunit,
+     &                          SQUEEZE_RIGHT , mythid)
+
+      if (slaoffset_sum .eq. 0.0) then
+        _BEGIN_MASTER( mythid )
+        write(msgbuf,'(a)') ' sshv4: slaoffset_sum = zero!'
+        call print_message( msgbuf, standardmessageunit,
+     &                          SQUEEZE_RIGHT , mythid)
+        _END_MASTER( mythid )
+c        stop   '  ... stopped in cost_ssh.'
+      else
+        _BEGIN_MASTER( mythid )
+        write(msgbuf,'(a,d22.15)')
+     &          ' sshv4: slaoffset_sum = ',slaoffset_sum
+        call print_message( msgbuf, standardmessageunit,
+     &                          SQUEEZE_RIGHT , mythid)
+        _END_MASTER( mythid )
+      endif
+
+c--   Compute (average) slaoffset
+      slaoffset = slaoffset / slaoffset_sum
+
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do j = jmin,jmax
+              do i = imin,imax
+               if ( ( anom_psMslaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) 
+#ifndef ALLOW_HIGHLAT_ALTIMETRY     
+     &              .AND.( abs(YC(i,j,bi,bj)) .LE. 66. ) 
+#endif
+     &            ) then
+                  anom_psMslaobs(i,j,bi,bj) =
+     &                 anom_psMslaobs(i,j,bi,bj) - slaoffset
+                  anom_slaobs(i,j,bi,bj) =
+     &                 anom_slaobs(i,j,bi,bj) - slaoffset
+               else
+                  anom_psMslaobs(i,j,bi,bj) = 0. _d 0
+                  anom_slaobs(i,j,bi,bj) = 0. _d 0
+               endif
+              enddo
+            enddo
+          enddo
+        enddo
+
 
 c PART 4.2: smooth anom_psMslaobs in space
 c ----------------------------------------
