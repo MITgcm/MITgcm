@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_sla_read.F,v 1.6 2013/02/05 14:51:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_sla_read.F,v 1.7 2014/06/09 17:47:57 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -151,13 +151,16 @@ c mask data:
                  sla_mask(i,j,bi,bj) = 0. _d 0
               endif
 
-cph(
 #ifndef ALLOW_SHALLOW_ALTIMETRY
               if ( R_low(i,j,bi,bj) .GT. -200. ) then
                 sla_mask(i,j,bi,bj) = 0. _d 0
               endif
 #endif
-cph)
+#ifndef ALLOW_HIGHLAT_ALTIMETRY
+              if ( abs(YC(i,j,bi,bj)) .GT. 66. ) then
+                sla_mask(i,j,bi,bj) = 0. _d 0
+              endif
+#endif
 
               sla_mask(i,j,bi,bj) = sla_mask(i,j,bi,bj)*frame(i,j)
               sla_obs(i,j,bi,bj)  = sla_mask(i,j,bi,bj)*factor*
