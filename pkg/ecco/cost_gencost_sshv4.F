@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.22 2014/06/09 17:53:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.23 2014/06/09 17:55:22 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -317,9 +317,6 @@ c minimum number of observations to consider re-referenced MDT
             do i = imin,imax
                if ( ( mean_slaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ).AND.
-#ifndef ALLOW_HIGHLAT_ALTIMETRY
-     &              ( abs(YC(i,j,bi,bj)) .LE. 66. ).AND.
-#endif
      &              ( mdtmask(i,j,bi,bj) .NE. 0. ) ) then
                   mean_slaobs_mdt(i,j,bi,bj) =
      &                 mean_slaobs_mdt(i,j,bi,bj) /
@@ -489,9 +486,6 @@ c--   END loop over records for the first time.
               do i = imin,imax
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
                if ( ( mean_psMtpobs_NUM(i,j,bi,bj) .NE. 0. )
-#ifndef ALLOW_HIGHLAT_ALTIMETRY
-     &              .AND.( abs(YC(i,j,bi,bj)) .LE. 66. ) 
-#endif
      &              ) then
                   mean_psMssh_all(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) +
@@ -506,9 +500,6 @@ c--   END loop over records for the first time.
 #endif
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
                if ( ( mean_psMersobs_NUM(i,j,bi,bj) .NE. 0. )
-#ifndef ALLOW_HIGHLAT_ALTIMETRY     
-     &              .AND.( abs(YC(i,j,bi,bj)) .LE. 66. )
-#endif
      &              ) then
                   mean_psMssh_all(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) +
@@ -523,9 +514,6 @@ c--   END loop over records for the first time.
 #endif
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
                if ( ( mean_psMgfoobs_NUM(i,j,bi,bj) .NE. 0. )
-#ifndef ALLOW_HIGHLAT_ALTIMETRY     
-     &              .AND.( abs(YC(i,j,bi,bj)) .LE. 66. )
-#endif
      &              ) then
                   mean_psMssh_all(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) +
@@ -540,10 +528,7 @@ c--   END loop over records for the first time.
 #endif
 
                if ( ( mean_psMssh_all_NUM(i,j,bi,bj) .GT. 0 ).AND.
-     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
-#ifndef ALLOW_HIGHLAT_ALTIMETRY     
-     &              ( abs(YC(i,j,bi,bj)) .LE. 66. )
-#endif
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. )
      &              ) then
                   mean_psMslaobs(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) /
@@ -556,9 +541,6 @@ c--   END loop over records for the first time.
 
                if ( ( mean_psMssh_all_NUM(i,j,bi,bj) .GT. num0 ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
-#ifndef ALLOW_HIGHLAT_ALTIMETRY     
-     &              ( abs(YC(i,j,bi,bj)) .LE. 66. ).AND.
-#endif
      &              ( mdtmask(i,j,bi,bj) .NE. 0. ).AND.
      &              ( doReference ) ) then
                   mean_slaobs_model(i,j,bi,bj) =
@@ -572,9 +554,6 @@ c--   END loop over records for the first time.
                   offset_sum=offset_sum+RA(i,j,bi,bj)
                elseif ( ( mdtmask(i,j,bi,bj) .NE. 0. ) .AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ).AND.
-#ifndef ALLOW_HIGHLAT_ALTIMETRY
-     &              ( abs(YC(i,j,bi,bj)) .LE. 66. ).AND.
-#endif
      &              ( .NOT.doReference ) ) then
                   mean_slaobs_model(i,j,bi,bj) = 0.d0
                   mean_psMssh_all(i,j,bi,bj) = 0. _d 0
@@ -625,9 +604,6 @@ c--   subtract offset from mean_psMssh_all and psmean
                if ( (mean_psMssh_all_NUM(i,j,bi,bj) .GT. num0) .AND.
      &              ( mdtmask(i,j,bi,bj) .NE. 0. ) .AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND. 
-#ifndef ALLOW_HIGHLAT_ALTIMETRY     
-     &              ( abs(YC(i,j,bi,bj)) .LE. 66. ) .AND.
-#endif
      &              ( doReference ) ) then
 c use the re-referencing approach
                    mean_psMssh_all(i,j,bi,bj) =
@@ -636,10 +612,7 @@ c use the re-referencing approach
 
                elseif ( ( mdtmask(i,j,bi,bj) .NE. 0. ) .AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
-#ifndef ALLOW_HIGHLAT_ALTIMETRY
-     &              ( abs(YC(i,j,bi,bj)) .LE. 66. ) .AND.
-#endif
-     &              ( .NOT.doReference ) ) then     
+     &              ( .NOT.doReference ) ) then
 c use the simpler approach
                    mean_psMssh_all(i,j,bi,bj) =
      &             psmean(i,j,bi,bj) -mdt(i,j,bi,bj) - offset
@@ -867,9 +840,6 @@ c ------------------------------------------------------
               do i = imin,imax
                if ( ( anom_psMslaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ) 
-#ifndef ALLOW_HIGHLAT_ALTIMETRY     
-     &              .AND.( abs(YC(i,j,bi,bj)) .LE. 66. ) 
-#endif
      &            ) then
                   anom_psMslaobs(i,j,bi,bj) =
      &                 anom_psMslaobs(i,j,bi,bj) /
@@ -899,9 +869,6 @@ c ----------------------------------------
               do i = imin,imax
                if ( ( anom_psMslaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ) 
-#ifndef ALLOW_HIGHLAT_ALTIMETRY     
-     &              .AND.( abs(YC(i,j,bi,bj)) .LE. 66. ) 
-#endif
      &            ) then
                   slaoffset=slaoffset+RA(i,j,bi,bj)*
      &                      anom_psMslaobs(i,j,bi,bj)
@@ -946,9 +913,6 @@ c--   Subtract slaoffset from anom_psMslaobs
               do i = imin,imax
                if ( ( anom_psMslaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ) 
-#ifndef ALLOW_HIGHLAT_ALTIMETRY     
-     &              .AND.( abs(YC(i,j,bi,bj)) .LE. 66. ) 
-#endif
      &            ) then
                   anom_psMslaobs(i,j,bi,bj) =
      &                 anom_psMslaobs(i,j,bi,bj) - slaoffset
@@ -1045,7 +1009,8 @@ c ------------------------------------
 c PART 4.4: compute cost function term for global mean sea level
 c --------------------------------------------------------------
 
-      IF ( MASTER_CPU_THREAD(myThid).AND.(igen_gmsl.NE.0) ) THEN
+      IF ( ( MASTER_CPU_THREAD(myThid).AND.(igen_gmsl.NE.0) ).AND.
+     &     ( slaoffset_sum.GT.0.25 _d 0 * globalArea ) ) THEN
           junk=slaoffset
           junkweight=slaoffset_weight
           objf_gencost(1,1,igen_gmsl) = objf_gencost(1,1,igen_gmsl)
