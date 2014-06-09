@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.21 2014/06/09 17:52:28 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.22 2014/06/09 17:53:59 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -65,6 +65,11 @@ c     == routine arguments ==
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
 #ifdef ALLOW_GENCOST_CONTRIBUTION
+
+c     == functions ==
+      LOGICAL  MASTER_CPU_THREAD
+      EXTERNAL MASTER_CPU_THREAD
+
 c     == local variables ==
 
       integer bi,bj
@@ -81,13 +86,14 @@ c     == local variables ==
       logical ladinit
 
 c mapping to gencost
-      integer igen_mdt, igen_lsc
+      integer igen_mdt, igen_lsc, igen_gmsl
       integer igen_tp, igen_ers, igen_gfo
 
       _RL offset
       _RL offset_sum
       _RL slaoffset
       _RL slaoffset_sum
+      _RL slaoffset_weight
 
       _RL diagnosfld ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
 
@@ -167,12 +173,14 @@ c-- detect the relevant gencost indices
       igen_ers=0
       igen_gfo=0
       igen_lsc=0
+      igen_gmsl=0
       do k=1,NGENCOST
         if (gencost_name(k).EQ.'sshv4-mdt') igen_mdt=k
         if (gencost_name(k).EQ.'sshv4-tp') igen_tp=k
         if (gencost_name(k).EQ.'sshv4-ers') igen_ers=k
         if (gencost_name(k).EQ.'sshv4-gfo') igen_gfo=k
         if (gencost_name(k).EQ.'sshv4-lsc') igen_lsc=k
+        if (gencost_name(k).EQ.'sshv4-gmsl') igen_gmsl=k
       enddo
 
 c--   First, read tiled data.
@@ -589,10 +597,6 @@ c--   Do a global summation.
       _GLOBAL_SUM_RL( offset     , mythid )
       _GLOBAL_SUM_RL( offset_sum , mythid )
 
-       write(msgbuf,'(a,2d22.15)') ' sshv4:offset=',offset,offset_sum
-       call print_message( msgbuf, standardmessageunit,
-     &                          SQUEEZE_RIGHT , mythid)
-
       if (offset_sum .eq. 0.0) then
         _BEGIN_MASTER( mythid )
         write(msgbuf,'(a)') ' sshv4: offset_sum = zero!'
@@ -602,8 +606,8 @@ c--   Do a global summation.
 c        stop   '  ... stopped in cost_ssh.'
       else
         _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a,d22.15)')
-     &          ' sshv4: offset_sum = ',offset_sum
+        write(msgbuf,'(a,2d22.15)') ' sshv4:offset,sum=',
+     &      offset,offset_sum
         call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
         _END_MASTER( mythid )
@@ -882,11 +886,12 @@ c ------------------------------------------------------
           enddo
         enddo
 
-c PART 4.11: compute time variable offset
+c PART 4.11: separate time variable offset
 c ----------------------------------------
 
       slaoffset     = 0. _d 0
       slaoffset_sum = 0. _d 0
+      slaoffset_weight = 0. _d 0
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -901,6 +906,10 @@ c ----------------------------------------
                   slaoffset=slaoffset+RA(i,j,bi,bj)*
      &                      anom_psMslaobs(i,j,bi,bj)
                   slaoffset_sum=slaoffset_sum+RA(i,j,bi,bj)
+c Of interest is the total weight for an average of N indep sample (not the area weighted average of weight)
+c Since slaoffset is itself area weighted, however, the total weight is only approx the simple weight sum :
+                  slaoffset_weight=slaoffset_weight+
+     &                      gencost_weight(i,j,bi,bj,igen_lsc)
                endif
               enddo
             enddo
@@ -908,12 +917,8 @@ c ----------------------------------------
         enddo
 
       _GLOBAL_SUM_RL( slaoffset     , mythid )
+      _GLOBAL_SUM_RL( slaoffset_weight , mythid )
       _GLOBAL_SUM_RL( slaoffset_sum , mythid )
-
-       write(msgbuf,'(a,2d22.15)') ' sshv4:slaoffset=',
-     &                         slaoffset,slaoffset_sum
-       call print_message( msgbuf, standardmessageunit,
-     &                          SQUEEZE_RIGHT , mythid)
 
       if (slaoffset_sum .eq. 0.0) then
         _BEGIN_MASTER( mythid )
@@ -924,8 +929,8 @@ c ----------------------------------------
 c        stop   '  ... stopped in cost_ssh.'
       else
         _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a,d22.15)')
-     &          ' sshv4: slaoffset_sum = ',slaoffset_sum
+        write(msgbuf,'(a,3d22.15)') ' sshv4:slaoffset,sum,weight=',
+     &         slaoffset,slaoffset_sum,slaoffset_weight
         call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
         _END_MASTER( mythid )
@@ -934,6 +939,7 @@ c        stop   '  ... stopped in cost_ssh.'
 c--   Compute (average) slaoffset
       slaoffset = slaoffset / slaoffset_sum
 
+c--   Subtract slaoffset from anom_psMslaobs
         do bj = jtlo,jthi
           do bi = itlo,ithi
             do j = jmin,jmax
@@ -1036,6 +1042,18 @@ c ------------------------------------
      & 1,anom_slaobs_SUB,irec,1,mythid)
 #endif
 
+c PART 4.4: compute cost function term for global mean sea level
+c --------------------------------------------------------------
+
+      IF ( MASTER_CPU_THREAD(myThid).AND.(igen_gmsl.NE.0) ) THEN
+          junk=slaoffset
+          junkweight=slaoffset_weight
+          objf_gencost(1,1,igen_gmsl) = objf_gencost(1,1,igen_gmsl)
+     &        + junk*junk*junkweight
+          num_gencost(1,1,igen_gmsl) = num_gencost(1,1,igen_gmsl)
+     &        + 1. _d 0
+c      print*,'igen_gmsl',igen_gmsl,
+      ENDIF
 
 cgf =======================================================
 cgf PART 5: compute raw SLA cost term
