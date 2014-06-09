@@ -1,4 +1,4 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/gcm_params_mod.F90,v 1.1 2013/05/08 22:14:14 jmc Exp $
+! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/gcm_params_mod.F90,v 1.2 2014/06/09 12:51:00 jmc Exp $
 ! $Name:  $
 
 module gcm_params_mod
@@ -60,7 +60,11 @@ subroutine gcm_params_init(                                          &
                inp_debugLevel, inp_debugMode,                        &
                myThid )
 
-  real,    intent(in) :: inp_unset_RS
+#ifdef LET_RS_BE_REAL4
+  real*4,  intent(in) :: inp_unset_RS
+#else
+  real*8,  intent(in) :: inp_unset_RS
+#endif
   real,    intent(in) :: inp_unset_RL
   integer, intent(in) :: inp_unset_I
 ! integer, intent(in) :: inp_LEN_MBUF
