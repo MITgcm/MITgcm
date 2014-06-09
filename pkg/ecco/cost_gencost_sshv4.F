@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.20 2014/06/09 17:51:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.21 2014/06/09 17:52:28 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -123,15 +123,12 @@ c for PART 4/5: compute smooth/raw anomalies
       _RL anom_slaobs_SUB  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       _RL anom_psMtpobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL anom_psMtpobs_NUM (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL anom_tpobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       _RL anom_psMersobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL anom_psMersobs_NUM(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL anom_ersobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       _RL anom_psMgfoobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL anom_psMgfoobs_NUM(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL anom_gfoobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       integer mdt_y0,mdt_y1,year,day
@@ -766,14 +763,7 @@ cgf =======================================================
               anom_psMslaobs_SUB(i,j,bi,bj)  = 0. _d 0
               anom_slaobs(i,j,bi,bj)  = 0. _d 0
               anom_slaobs_SUB(i,j,bi,bj)  = 0. _d 0
-cgf this is not currently used in PART 4
-              anom_psMtpobs(i,j,bi,bj)  = 0. _d 0
-              anom_psMersobs(i,j,bi,bj) = 0. _d 0
-              anom_psMgfoobs(i,j,bi,bj) = 0. _d 0
               anom_psMslaobs_NUM(i,j,bi,bj)  = 0. _d 0
-              anom_psMtpobs_NUM(i,j,bi,bj)  = 0. _d 0
-              anom_psMersobs_NUM(i,j,bi,bj) = 0. _d 0
-              anom_psMgfoobs_NUM(i,j,bi,bj) = 0. _d 0
           enddo
          enddo
         enddo
@@ -967,7 +957,6 @@ c--   Compute (average) slaoffset
           enddo
         enddo
 
-
 c PART 4.2: smooth anom_psMslaobs in space
 c ----------------------------------------
 
@@ -1047,17 +1036,15 @@ c ------------------------------------
      & 1,anom_slaobs_SUB,irec,1,mythid)
 #endif
 
-      enddo
-
 
 cgf =======================================================
 cgf PART 5: compute raw SLA cost term
 cgf =======================================================
 
+c time associated with this ndaysrec mean
+        krec = irec + (ndaysave/2)
 
-      do irec = 1, ndaysrec
-
-        call active_read_xy( fname, psbar, irec, doglobalread,
+        call active_read_xy( fname, psbar, krec, doglobalread,
      &                       ladinit, optimcycle, mythid,
      &                       xx_psbar_mean_dummy )
 
@@ -1067,13 +1054,13 @@ cgf =======================================================
 #endif
 
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-        call cost_readtopex( irec, mythid )
+        call cost_readtopex( krec, mythid )
 #endif
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-        call cost_readers( irec, mythid )
+        call cost_readers( krec, mythid )
 #endif
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-        call cost_readgfo( irec, mythid )
+        call cost_readgfo( krec, mythid )
 #endif
 
        do bj = jtlo,jthi
@@ -1100,8 +1087,10 @@ cgf =======================================================
      & then
          anom_psMtpobs(i,j,bi,bj)=
      &       psbar(i,j,bi,bj) - tpobs(i,j,bi,bj)
-     &       - mean_psMslaobs(i,j,bi,bj)
-         anom_tpobs(i,j,bi,bj)=tpobs(i,j,bi,bj)
+     &       - mean_psMslaobs(i,j,bi,bj) - slaoffset
+     &       - anom_psMslaobs(i,j,bi,bj)
+         anom_tpobs(i,j,bi,bj)=tpobs(i,j,bi,bj) - slaoffset
+     &       - anom_slaobs(i,j,bi,bj)
       endif
 #endif
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
@@ -1109,8 +1098,10 @@ cgf =======================================================
      & then
          anom_psMersobs(i,j,bi,bj)=
      &       psbar(i,j,bi,bj) - ersobs(i,j,bi,bj)
-     &       - mean_psMslaobs(i,j,bi,bj)
-         anom_ersobs(i,j,bi,bj)=ersobs(i,j,bi,bj)
+     &       - mean_psMslaobs(i,j,bi,bj) - slaoffset
+     &       - anom_psMslaobs(i,j,bi,bj)
+         anom_ersobs(i,j,bi,bj)=ersobs(i,j,bi,bj) - slaoffset
+     &       - anom_slaobs(i,j,bi,bj)
       endif
 #endif
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
@@ -1118,8 +1109,10 @@ cgf =======================================================
      & then
          anom_psMgfoobs(i,j,bi,bj)=
      &       psbar(i,j,bi,bj) - gfoobs(i,j,bi,bj)
-     &       - mean_psMslaobs(i,j,bi,bj)
-         anom_gfoobs(i,j,bi,bj)=gfoobs(i,j,bi,bj)
+     &       - mean_psMslaobs(i,j,bi,bj) - slaoffset
+     &       - anom_psMslaobs(i,j,bi,bj)
+         anom_gfoobs(i,j,bi,bj)=gfoobs(i,j,bi,bj) - slaoffset
+     &       - anom_slaobs(i,j,bi,bj)
       endif
 #endif
           enddo
