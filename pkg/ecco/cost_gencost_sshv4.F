@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.17 2014/04/07 18:08:50 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.18 2014/06/09 17:50:12 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -715,10 +715,10 @@ cgf =======================================================
          junk = 0. _d 0
          junkweight = 0. _d 0
        endif
-       objf_gencost(igen_mdt,bi,bj) = objf_gencost(igen_mdt,bi,bj)
+       objf_gencost(bi,bj,igen_mdt) = objf_gencost(bi,bj,igen_mdt)
      &      + junk*junk*junkweight
-       if ( junkweight .ne. 0. ) num_gencost(igen_mdt,bi,bj) =
-     &      num_gencost(igen_mdt,bi,bj) + 1. _d 0
+       if ( junkweight .ne. 0. ) num_gencost(bi,bj,igen_mdt) =
+     &      num_gencost(bi,bj,igen_mdt) + 1. _d 0
        diagnosfld(i,j,bi,bj) = junk*junk*junkweight
             enddo
           enddo
@@ -969,12 +969,12 @@ c ------------------------------------
             anom_slaobs_SUB(i,j,bi,bj)= 0. _d 0
             anom_psMslaobs_SUB(i,j,bi,bj)= 0. _d 0
           endif
-          objf_gencost(igen_lsc,bi,bj) = objf_gencost(igen_lsc,bi,bj)
+          objf_gencost(bi,bj,igen_lsc) = objf_gencost(bi,bj,igen_lsc)
      &        + junk*junk*gencost_weight(i,j,bi,bj,igen_lsc)
           if ( (gencost_weight(i,j,bi,bj,igen_lsc).GT.0.).AND.
      &         (anom_psMslaobs_MSK(i,j,bi,bj).GT.0.) )
-     &         num_gencost(igen_lsc,bi,bj) =
-     &         num_gencost(igen_lsc,bi,bj) + 1. _d 0
+     &         num_gencost(bi,bj,igen_lsc) =
+     &         num_gencost(bi,bj,igen_lsc) + 1. _d 0
 #endif
            enddo
          enddo
@@ -1104,11 +1104,11 @@ c--             The array psobs contains SSH anomalies.
      &                      *tpmask(i,j,bi,bj)
      &                      *cosphi(i,j,bi,bj)
                 junk = anom_psMtpobs(i,j,bi,bj)
-                objf_gencost(igen_tp,bi,bj) =
-     &              objf_gencost(igen_tp,bi,bj)+junk*junk*junkweight
+                objf_gencost(bi,bj,igen_tp) =
+     &              objf_gencost(bi,bj,igen_tp)+junk*junk*junkweight
                 if ( junkweight .ne. 0. )
-     &              num_gencost(igen_tp,bi,bj) =
-     &              num_gencost(igen_tp,bi,bj) + 1. _d 0
+     &              num_gencost(bi,bj,igen_tp) =
+     &              num_gencost(bi,bj,igen_tp) + 1. _d 0
 #endif
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
 c--             The array ersobs contains SSH anomalies.
@@ -1117,11 +1117,11 @@ c--             The array ersobs contains SSH anomalies.
      &                      *ersmask(i,j,bi,bj)
      &                      *cosphi(i,j,bi,bj)
                 junk = anom_psMersobs(i,j,bi,bj)
-                objf_gencost(igen_ers,bi,bj) =
-     &               objf_gencost(igen_ers,bi,bj)+junk*junk*junkweight
+                objf_gencost(bi,bj,igen_ers) =
+     &               objf_gencost(bi,bj,igen_ers)+junk*junk*junkweight
                 if ( junkweight .ne. 0. )
-     &              num_gencost(igen_ers,bi,bj) =
-     &              num_gencost(igen_ers,bi,bj) + 1. _d 0
+     &              num_gencost(bi,bj,igen_ers) =
+     &              num_gencost(bi,bj,igen_ers) + 1. _d 0
 #endif
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
 c--             The array gfoobs contains SSH anomalies.
@@ -1130,11 +1130,11 @@ c--             The array gfoobs contains SSH anomalies.
      &                      *gfomask(i,j,bi,bj)
      &                      *cosphi(i,j,bi,bj)
                 junk = anom_psMgfoobs(i,j,bi,bj)
-                objf_gencost(igen_gfo,bi,bj) =
-     &              objf_gencost(igen_gfo,bi,bj)+junk*junk*junkweight
+                objf_gencost(bi,bj,igen_gfo) =
+     &              objf_gencost(bi,bj,igen_gfo)+junk*junk*junkweight
                 if ( junkweight .ne. 0. )
-     &              num_gencost(igen_gfo,bi,bj) =
-     &              num_gencost(igen_gfo,bi,bj) + 1. _d 0
+     &              num_gencost(bi,bj,igen_gfo) =
+     &              num_gencost(bi,bj,igen_gfo) + 1. _d 0
 #endif
            enddo
          enddo
