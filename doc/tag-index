@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2006 2014/06/07 17:54:20 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2007 2014/06/10 07:18:05 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_reg_ridge.F: 
+  - modify the regularization of very small volumes of ice; only check 
+    total volume HEFF, and do not apply correction to individual ice 
+    classes because that leads to funny patterns in the heat and fw-fluxes 
+    into the ocean. Adjust seaice_itd/results/output.txt
+  - replace nITD by SEAICE_multDim in loop-ranges
 o pkg/exf:
   - add code to process the case field period = -12. with UV interpolation.
   - move debug print (formerly active when exf_verbose=T) from EXF_getFFieldRec
@@ -32,7 +38,7 @@ o model/src & most packages:
     + call LAND_READPARMS from packages_readparms.F
 o pkg/seaice:
   - remove code that resets useThSice in S/R seaice_readparms and
-    replace by a warning in S/R seaice_check
+    replace it by a warning in S/R seaice_check
   - remove parameter MULTDIM, replace with nITD and runtime
     parameter SEAICE_multDim (still hard-wired to nITD if
     SEAICE_ITD is defined)
