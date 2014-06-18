@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_ifc.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_ifc.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_ifc_mpi,v 1.7 2014/05/21 18:34:03 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_ifc_mpi,v 1.8 2014/06/18 19:33:08 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -61,10 +61,10 @@ cvsArg="-d :pserver:cvsanon@mitgcm.org:/u/gcmpack"
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
 #- check for disk space: relative space (99%) or absolute (10.G):
-#dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
-#if [ $dsp -gt 99 ] ; then
-dsp=`df -P . | tail -1 | awk '{print $4}'`
-if [ $dsp -le 100000000 ] ; then
+dsp=`df -P . | tail -1 | awk '{print $5}' | sed 's/%$//'`
+if [ $dsp -gt 99 ] ; then
+#dsp=`df -P . | tail -1 | awk '{print $4}'`
+#if [ $dsp -le 100000000 ] ; then
   echo 'Not enough space on this disk => do not run testreport.'
   df .
   exit
