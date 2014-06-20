@@ -1,13 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2007 2014/06/10 07:18:05 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2008 2014/06/20 13:13:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice/seaice_reg_ridge.F: 
-  - modify the regularization of very small volumes of ice; only check 
-    total volume HEFF, and do not apply correction to individual ice 
-    classes because that leads to funny patterns in the heat and fw-fluxes 
+checkpoint64y (2014/06/20)
+o pkg/seaice/seaice_reg_ridge.F:
+  - modify the regularization of very small volumes of ice; only check
+    total volume HEFF, and do not apply correction to individual ice
+    classes because that leads to funny patterns in the heat and fw-fluxes
     into the ocean. Adjust seaice_itd/results/output.txt
   - replace nITD by SEAICE_multDim in loop-ranges
 o pkg/exf:
@@ -15,14 +16,14 @@ o pkg/exf:
   - move debug print (formerly active when exf_verbose=T) from EXF_getFFieldRec
     into S/R that calls it (i.e., exf_set_gen.F, exf_set_uv.F & obcs_exf_load.F)
 o verification/global_with_exf:
-  - swith all fields period to -12. (was previously untested) in input/data.exf
+  - switch all fields period to -12. (was previously untested) in input/data.exf
     (but keep secondary test ".yearly" unchanged); update the reference output.
 o pkg/cal:
   - new calendar type "noLeapYear" for 365 days calendar without any leap year.
 o pkg/exf:
   - new integer parameter "exf_debugLev" (default set to main model debugLevel)
     to replace logical switch "exf_verbose"
-  - report in STDOUT when loading a new reccord (if exf_debugLev >= 3)
+  - report in STDOUT when loading a new record (if exf_debugLev >= 3)
 o pkg/sbo:
   - update from Katherine Quinn: evaluate mass directly from density and SSH
     (budget using Finite Volume method) instead of from bottom pressure.
