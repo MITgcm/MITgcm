@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Usage: gluemncbig [-q] [--verbose] [--many] [-v <vars>] -o <outfile> <files>
+"""Usage: gluemncbig [-2] [-q] [--verbose] [--many] [-v <vars>] -o <outfile> <files>
 
  -v <vars>  comma-separated list of variable names or glob patterns
+ -2         write a NetCDF version 2 (64-Bit Offset) file allowing for large records
  --many     many tiles: assemble only along x in memory; less efficient
             on some filesystems, but opens fewer files simultaneously and
             uses less memory
@@ -805,6 +806,7 @@ class netcdf_file(object):
         dtypes = {'names': [], 'formats': []}
         rec_vars = []
         count = self._unpack_int()
+        rec_vsizes = []
         for var in range(count):
             name, dimensions, shape, attributes, type, begin_, vsize = self._read_var()
             # http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html
@@ -826,6 +828,7 @@ class netcdf_file(object):
                 # The netCDF "record size" is calculated as the sum of
                 # the vsize's of all the record variables.
                 self.__dict__['_recsize'] += vsize
+                rec_vsizes.append(vsize)
                 if begin == 0: begin = begin_
                 dtypes['names'].append(name)
                 dtypes['formats'].append(str(shape[1:]) + '>' + type.char)
@@ -873,18 +876,35 @@ class netcdf_file(object):
 
             # Build rec array.
             pos = self.fp.tell()
+            rec_arrays = []
             if self.use_mmap:
                 mm = mmap(self.fp.fileno(), begin+self._recs*self._recsize, access=ACCESS_READ)
-                rec_array = ndarray.__new__(ndarray, (self._recs,), dtype=dtypes,
-                        buffer=mm, offset=begin, order=0)
+                if self._recsize >= 1<<31:
+                    # need to work around limitation of numpy.dtype.itemsize to 32 bit
+                    i = 0
+                    while i < len(rec_vsizes):
+                        ends = np.cumsum(rec_vsizes[i:])
+                        n = np.searchsorted(ends, 1<<31)
+                        dtype1 = dict(names=dtypes['names'][i:i+n], formats=dtypes['formats'][i:i+n])
+                        rec_array = ndarray.__new__(ndarray, (self._recs,), dtype=dtype1,
+                                buffer=mm, offset=begin, order=0)
+                        rec_arrays.append(rec_array)
+                        begin += ends[n-1]
+                        i += n
+                else:
+                    rec_array = ndarray.__new__(ndarray, (self._recs,), dtype=dtypes,
+                            buffer=mm, offset=begin, order=0)
+                    rec_arrays = [ rec_array ]
             else:
                 self.fp.seek(begin)
                 rec_array = fromstring(self.fp.read(self._recs*self._recsize), dtype=dtypes)
                 rec_array.shape = (self._recs,)
+                rec_arrays = [ rec_array ]
             self.fp.seek(pos)
 
-            for var in rec_vars:
-                self.variables[var].__dict__['data'] = rec_array[var]
+            for rec_array in rec_arrays:
+                for var in rec_array.dtype.names:
+                    self.variables[var].__dict__['data'] = rec_array[var]
 
     def read_var(self, name):
         var = self.variables[name]
@@ -1178,7 +1198,7 @@ if __name__ == '__main__':
 
     # parse command-line arguments
     try:
-        optlist,args = getopt(sys.argv[1:], 'qo:v:', ['many', 'verbose'])
+        optlist,args = getopt(sys.argv[1:], '2qo:v:', ['many', 'verbose'])
         opts = dict(optlist)
         assert '-o' in opts
         fnames = args
@@ -1187,6 +1207,7 @@ if __name__ == '__main__':
         sys.exit(__doc__)
 
     outname = opts.get('-o')
+    version = '-2' in opts and 2 or 1
     progress = '-q' not in opts
     verbose = '--verbose' in opts
     manytiles = '--many' in opts
@@ -1197,7 +1218,7 @@ if __name__ == '__main__':
     varpatt = [ re.compile(fnmatch.translate(patt.strip())) for patt in varpatt ]
 
     readopts = dict(delay=True)
-    writeopts = dict(delay=True)
+    writeopts = dict(delay=True, version=version)
 
     if len(fnames) == 1 and sum(s in fnames[0] for s in '*?[]'):
         globpatt = fnames[0]
@@ -1342,6 +1363,11 @@ if __name__ == '__main__':
                 setattr(vars[name], attname, att)
 
         ncout.write_metadata()
+
+        if version == 1:
+            for sz in ncout._begins.values():
+                if sz >= 1<<31:
+                    sys.exit('ERROR: Variables too big for NetCDF version 1, try "-2" option.')
 
         if manytiles:
             # open only files along x-slice of tiles simultaneously
