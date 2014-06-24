@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/seaice_itd/code/SEAICE_SIZE.h,v 1.2 2014/05/27 15:26:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/verification/seaice_itd/code/SEAICE_SIZE.h,v 1.3 2014/06/24 08:00:16 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_SEAICE
@@ -12,10 +12,11 @@ C    !DESCRIPTION:
 C Contains seaice array-size definition (number of tracers,categories).
 
 C SItrMaxNum :: number of passive tracers to allocate
-C nITD       :: number of seaice categories to allocate
+C MULTDIM    :: number of seaice categories to allocate
 CEOP
 
 C-    Maximum Number of categories
+      INTEGER MULTDIM
       INTEGER nITD
 C--
 #ifdef SEAICE_ITD
@@ -23,10 +24,13 @@ CToM<<<
 C nITD defines number of ice thickness categories,
 C i.e. size of additional dimension to AREA, HEFF, HSNOW, etc.
 C Bitz et al. (2001, JGR) suggest a minimum of nITD = 5
-      PARAMETER (nITD = 5)
+      PARAMETER(nITD = 7)
+      PARAMETER (MULTDIM=nITD)
 C>>>ToM
 #else
-      PARAMETER (nITD = 7)
+c     PARAMETER (MULTDIM=7)
+      PARAMETER (MULTDIM=1)
+      PARAMETER(nITD = MULTDIM)
 #endif
 
 C-    Maximum Number of tracers

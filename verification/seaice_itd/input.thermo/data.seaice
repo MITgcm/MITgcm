@@ -6,7 +6,7 @@
  LSR_ERROR          = 1.E-12,
  SOLV_MAX_ITERS     = 1500,
  LSR_mixIniGuess    = 1,
- SEAICEadvScheme    = 77,
+ SEAICEadvScheme    = 33,
  AreaFile  = 'const100.bin',
  HeffFile  = 'heff_quartic.bin',
  HsnowFile = 'const_00.bin',
@@ -14,7 +14,7 @@
  SEAICE_monFreq = 1800.,
 # ridging
  SEAICEsimpleRidging = .FALSE.,
- useHibler79IceStrength = .FALSE.,
+ useHibler79IceStrength = .TRUE.,
  SEAICE_cf        = 2.,
  SEAICEredistFunc = 0,
  SEAICEpartFunc   = 0,

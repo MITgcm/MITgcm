@@ -1,0 +1,57 @@
+Seaice-only verification experiment in idealized periodic channel with
+ice thickness distribution (otherwise very similar to
+offline_exf_seaice): CPP-flag SEAICE_ITD is defined
+-----------------------------------------------------------------
+
+1) main forward experiment (code, input)
+
+  Re-entrant zonally periodic channel (80x42 grid points) with just level (Nr=1)
+   uniform resolution (5.km, 10m), solid Southern boundary with triangular shape
+   coastline ("bathy_3c.bin")
+
+  Use seaice (dynamics & thermodynamics from pkg/seaice) with EXF (see data.pkg)
+   with initial ice thickness ranging from nearly 0 m in the "south"
+   to over 7 m in the "north"(but no snow)
+   (HeffFile  = 'heff_quartic.bin', in "input/data.seaice")
+  Initial seaice concentration is 100 % everywhere
+   (AreaFile='const100.bin', in "input/data.seaice")
+  and seaice is initially at rest.
+
+  Ridging is computed according to Thorndyke et al (1975) and Hibler
+  (1980). Ice strength P is computed following Rothrock (1975)
+
+  At runtime turn off time-stepping in 'data', PARM01, using:
+    momStepping  = .FALSE.,
+    saltStepping = .FALSE.,
+    tempAdvection=.FALSE.,
+
+ Forcing:
+  None of the forcing vary with time; the input files have been
+   generated using the python script "input/gendata.py".
+  SST relaxation field is uniform in X, parabolic function of Y with
+   maximum close to Southern boundary.
+
+  Atmospheric air temp is uniform in Y, and only vary with X (~sin(2.pi.x/Lx))
+   with an amplitude of 4.K ('tair_4x.bin');
+  Uses constant Relative Humidity (70%, file 'qa70_4x.bin')
+  constant and uniform downward shortwave (100.W/m2, 'dsw_100.bin'),
+                       downward longwave (250.W/m^2, 'dlw_250.bin'),
+                       zonal wind (10.m/s, 'windx.bin'),
+  no meridional wind, no precip.
+
+  Ocean surface currents comes from a 3 levels ocean-only run (without seaice)
+   using the same wind forcing (uVel_3c0.bin, vVel_3c0.bin) (matlab script:
+  "input/getdata.m")
+
+2) other (secondary) experiments (with the same executable)
+
+ a) input.lipscomb07: seaice-dynamics only with ridging scheme
+    following Lipscomb et al (2007); uses same forcing as main forward 
+    experiment, without thermodynamic forcing
+    (usePW79thermodynamics=.FALSE., SEAICEpartFunc = 1, SEAICEredistFunc = 1,
+    in input.dyn_lsr/data.seaice).
+
+ b) input.thermo: seaice-dynamics and thermodynamics with ridging, but
+    ice strength is computed following Hibler (1979): 
+    P = 27.5e4*(h*c)*exp(-20*(1-c)) 
+

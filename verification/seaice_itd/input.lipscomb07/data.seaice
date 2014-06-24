@@ -1,7 +1,6 @@
 # SEAICE parameters
  &SEAICE_PARM01
-#usePW79thermodynamics=.FALSE.,
- SEAICErestoreUnderIce=.TRUE.,
+ usePW79thermodynamics=.FALSE.,
  SEAICE_no_Slip     = .FALSE.,
  LSR_ERROR          = 1.E-12,
  SOLV_MAX_ITERS     = 1500,
@@ -16,8 +15,9 @@
  SEAICEsimpleRidging = .FALSE.,
  useHibler79IceStrength = .FALSE.,
  SEAICE_cf        = 2.,
- SEAICEredistFunc = 0,
- SEAICEpartFunc   = 0,
+ SEAICEredistFunc = 1,
+ SEAICEpartFunc   = 1,
+ SEAICEsnowFracRidge = 1.,
  &
 
  &SEAICE_PARM03

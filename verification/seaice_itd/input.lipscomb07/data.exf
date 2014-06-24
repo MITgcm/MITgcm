@@ -54,24 +54,24 @@
  climsststartdate1  = 19781216,
  climsststartdate2  = 180000,
  climsstperiod      = 0.0,
- climsstTauRelax    = 2592000.,
+#climsstTauRelax    = 2592000.,
 #
  climsssstartdate1  = 19781216,
  climsssstartdate2  = 180000,
  climsssperiod      = 0.0,
 #climsssTauRelax    = 2592000.,
 #
- ustressfile       = ' ',
- vstressfile       = ' ',
- atempfile         = 'tair_4x.bin',
- aqhfile           = 'qa70_4x.bin',
+#ustressfile       = ' ',
+#vstressfile       = ' ',
+#atempfile         = 'tair_4x.bin',
+#aqhfile           = 'qa70_4x.bin',
  uwindfile         = 'windx.bin',
 #vwindfile         = 'windy.bin',
- precipfile        = 'const_00.bin',
- lwdownfile        = 'dlw_250.bin',
- swdownfile        = 'dsw_100.bin',
- runoffFile        = ' '
- climsstfile       = 'tocn.bin',
+#precipfile        = 'const_00.bin',
+#lwdownfile        = 'dlw_250.bin',
+#swdownfile        = 'dsw_100.bin',
+#runoffFile        = ' '
+#climsstfile       = 'tocn.bin',
 #climsssfile       = 'socn.bin',
  &
 

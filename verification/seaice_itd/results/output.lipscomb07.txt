@@ -8,7 +8,7 @@
 (PID.TID 0000.0001) // MITgcmUV version:  checkpoint64y
 (PID.TID 0000.0001) // Build user:        mlosch
 (PID.TID 0000.0001) // Build host:        csysl24
-(PID.TID 0000.0001) // Build date:        Mon Jun 23 16:33:42 CEST 2014
+(PID.TID 0000.0001) // Build date:        Mon Jun 23 14:58:10 CEST 2014
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -125,10 +125,9 @@
 (PID.TID 0000.0001) > sBeta= 0.,
 (PID.TID 0000.0001) > staggerTimeStep=.TRUE.,
 (PID.TID 0000.0001) > saltStepping=.FALSE.,
-(PID.TID 0000.0001) >#tempStepping=.FALSE.,
-(PID.TID 0000.0001) > tempAdvection=.FALSE.,
+(PID.TID 0000.0001) > tempStepping=.FALSE.,
+(PID.TID 0000.0001) >#tempAdvection=.FALSE.,
 (PID.TID 0000.0001) > momStepping=.FALSE.,
-(PID.TID 0000.0001) >#f0=1.e-4,
 (PID.TID 0000.0001) > f0=0.e-4,
 (PID.TID 0000.0001) > beta=0.,
 (PID.TID 0000.0001) > useJamartWetPoints=.TRUE.,
@@ -157,10 +156,12 @@
 (PID.TID 0000.0001) > abEps=0.1,
 (PID.TID 0000.0001) > forcing_In_AB = .FALSE.,
 (PID.TID 0000.0001) > pChkptFreq=3600000.,
-(PID.TID 0000.0001) > dumpFreq = 864000.,
+(PID.TID 0000.0001) >#pChkptFreq=1.,
+(PID.TID 0000.0001) > dumpFreq  = 432000.,
+(PID.TID 0000.0001) > dumpFreq  = 1.,
+(PID.TID 0000.0001) > monitorFreq=864000.,
 (PID.TID 0000.0001) > monitorSelect=2,
 (PID.TID 0000.0001) > nTimeSteps=12,
-(PID.TID 0000.0001) > monitorFreq=21600.,
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Gridding parameters
@@ -220,7 +221,7 @@
  pkg/thsice               compiled but not used ( useThSIce                = F )
  pkg/diagnostics          compiled   and   used ( useDiagnostics           = T )
  -------- pkgs without standard "usePKG" On/Off switch in "data.pkg":  --------
- pkg/generic_advdiff      compiled   and   used ( useGAD                   = T )
+ pkg/generic_advdiff      compiled but not used ( useGAD                   = F )
  pkg/mom_common           compiled but not used ( momStepping              = F )
  pkg/mom_vecinv           compiled but not used ( +vectorInvariantMomentum = F )
  pkg/mom_fluxform         compiled but not used ( & not vectorInvariantMom = F )
@@ -308,24 +309,24 @@
 (PID.TID 0000.0001) > climsststartdate1  = 19781216,
 (PID.TID 0000.0001) > climsststartdate2  = 180000,
 (PID.TID 0000.0001) > climsstperiod      = 0.0,
-(PID.TID 0000.0001) > climsstTauRelax    = 2592000.,
+(PID.TID 0000.0001) >#climsstTauRelax    = 2592000.,
 (PID.TID 0000.0001) >#
 (PID.TID 0000.0001) > climsssstartdate1  = 19781216,
 (PID.TID 0000.0001) > climsssstartdate2  = 180000,
 (PID.TID 0000.0001) > climsssperiod      = 0.0,
 (PID.TID 0000.0001) >#climsssTauRelax    = 2592000.,
 (PID.TID 0000.0001) >#
-(PID.TID 0000.0001) > ustressfile       = ' ',
-(PID.TID 0000.0001) > vstressfile       = ' ',
-(PID.TID 0000.0001) > atempfile         = 'tair_4x.bin',
-(PID.TID 0000.0001) > aqhfile           = 'qa70_4x.bin',
+(PID.TID 0000.0001) >#ustressfile       = ' ',
+(PID.TID 0000.0001) >#vstressfile       = ' ',
+(PID.TID 0000.0001) >#atempfile         = 'tair_4x.bin',
+(PID.TID 0000.0001) >#aqhfile           = 'qa70_4x.bin',
 (PID.TID 0000.0001) > uwindfile         = 'windx.bin',
 (PID.TID 0000.0001) >#vwindfile         = 'windy.bin',
-(PID.TID 0000.0001) > precipfile        = 'const_00.bin',
-(PID.TID 0000.0001) > lwdownfile        = 'dlw_250.bin',
-(PID.TID 0000.0001) > swdownfile        = 'dsw_100.bin',
-(PID.TID 0000.0001) > runoffFile        = ' '
-(PID.TID 0000.0001) > climsstfile       = 'tocn.bin',
+(PID.TID 0000.0001) >#precipfile        = 'const_00.bin',
+(PID.TID 0000.0001) >#lwdownfile        = 'dlw_250.bin',
+(PID.TID 0000.0001) >#swdownfile        = 'dsw_100.bin',
+(PID.TID 0000.0001) >#runoffFile        = ' '
+(PID.TID 0000.0001) >#climsstfile       = 'tocn.bin',
 (PID.TID 0000.0001) >#climsssfile       = 'socn.bin',
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
@@ -356,8 +357,7 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) ># SEAICE parameters
 (PID.TID 0000.0001) > &SEAICE_PARM01
-(PID.TID 0000.0001) >#usePW79thermodynamics=.FALSE.,
-(PID.TID 0000.0001) > SEAICErestoreUnderIce=.TRUE.,
+(PID.TID 0000.0001) > usePW79thermodynamics=.FALSE.,
 (PID.TID 0000.0001) > SEAICE_no_Slip     = .FALSE.,
 (PID.TID 0000.0001) > LSR_ERROR          = 1.E-12,
 (PID.TID 0000.0001) > SOLV_MAX_ITERS     = 1500,
@@ -372,8 +372,9 @@
 (PID.TID 0000.0001) > SEAICEsimpleRidging = .FALSE.,
 (PID.TID 0000.0001) > useHibler79IceStrength = .FALSE.,
 (PID.TID 0000.0001) > SEAICE_cf        = 2.,
-(PID.TID 0000.0001) > SEAICEredistFunc = 0,
-(PID.TID 0000.0001) > SEAICEpartFunc   = 0,
+(PID.TID 0000.0001) > SEAICEredistFunc = 1,
+(PID.TID 0000.0001) > SEAICEpartFunc   = 1,
+(PID.TID 0000.0001) > SEAICEsnowFracRidge = 1.,
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) > &SEAICE_PARM03
@@ -720,7 +721,7 @@
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) AdamsBashforthGt = /* apply Adams-Bashforth extrapolation on Gt */
-(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) AdamsBashforth_T = /* apply Adams-Bashforth extrapolation on Temp */
 (PID.TID 0000.0001)                   F
@@ -928,12 +929,12 @@
 (PID.TID 0000.0001)    Atmospheric temperature starts at                     0.
 (PID.TID 0000.0001)    Atmospheric temperature period is                     0.
 (PID.TID 0000.0001)    Atmospheric temperature is read from file:
-(PID.TID 0000.0001)    >>  tair_4x.bin  <<
+(PID.TID 0000.0001)    >>    <<
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)    Atmospheric specific humidity starts at               0.
 (PID.TID 0000.0001)    Atmospheric specific humidity period is               0.
 (PID.TID 0000.0001)    Atmospheric specific humidity is read from file:
-(PID.TID 0000.0001)    >>  qa70_4x.bin  <<
+(PID.TID 0000.0001)    >>    <<
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)    Net longwave flux forcing starts at                 0.
 (PID.TID 0000.0001)    Net longwave flux forcing period is                 0.
@@ -943,7 +944,7 @@
 (PID.TID 0000.0001)    Precipitation data set starts at                      0.
 (PID.TID 0000.0001)    Precipitation data period is                          0.
 (PID.TID 0000.0001)    Precipitation data is read from file:
-(PID.TID 0000.0001)    >>  const_00.bin  <<
+(PID.TID 0000.0001)    >>    <<
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // EXF_READ_EVAP:                  NOT defined
 (PID.TID 0000.0001) 
@@ -957,12 +958,12 @@
 (PID.TID 0000.0001)    Downward shortwave flux forcing starts at                0.
 (PID.TID 0000.0001)    Downward shortwave flux forcing period is                0.
 (PID.TID 0000.0001)    Downward shortwave flux forcing is read from file:
-(PID.TID 0000.0001)    >>  dsw_100.bin  <<
+(PID.TID 0000.0001)    >>    <<
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)    Downward longwave flux forcing starts at                 0.
 (PID.TID 0000.0001)    Downward longwave flux forcing period is                 0.
 (PID.TID 0000.0001)    Downward longwave flux forcing is read from file:
-(PID.TID 0000.0001)    >>  dlw_250.bin  <<
+(PID.TID 0000.0001)    >>    <<
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)    Atmospheric pressure forcing starts at                0.
 (PID.TID 0000.0001)    Atmospheric pressure forcing period is                0.
@@ -979,7 +980,7 @@
 (PID.TID 0000.0001)    Climatological SST starts at                   0.
 (PID.TID 0000.0001)    Climatological SST period is                   0.
 (PID.TID 0000.0001)    Climatological SST is read from file:
-(PID.TID 0000.0001)    >>  tocn.bin  <<
+(PID.TID 0000.0001)    >>    <<
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)    Climatological SSS starts at                   0.
 (PID.TID 0000.0001)    Climatological SSS period is                   0.
@@ -1011,7 +1012,7 @@
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICErestoreUnderIce  = /* restore T and S under ice */
-(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)    Seaice dynamics configuration   > START <
@@ -1173,184 +1174,9 @@
 (PID.TID 0000.0001)                 1.200000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) usePW79thermodynamics  = /* default 0-layer TD */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_lhEvap     = /* latent heat of evaporation */
-(PID.TID 0000.0001)                 2.500000000000000E+06
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_lhFusion   = /* latent heat of fusion */
-(PID.TID 0000.0001)                 3.340000000000000E+05
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_mcPheePiston = /* turbulent flux "piston velocity" a la McPhee (m/s) */
-(PID.TID 0000.0001)                 8.749999999999999E-04
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_mcPheeTaper = /* tapering of turbulent flux (0.< <1.) for AREA=1. */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_mcPheeStepFunc = /* replace linear tapering with step funct. */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_frazilFrac = /* frazil (T<tempFrz) to seaice conversion rate (0.< <1.) */
-(PID.TID 0000.0001)                 1.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_tempFrz0   = /* freezing temp. of sea water (intercept) */
-(PID.TID 0000.0001)                 9.010000000000000E-02
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_dTempFrz_dS= /* freezing temp. of sea water (slope) */
-(PID.TID 0000.0001)                -5.750000000000000E-02
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_growMeltByConv  = /* grow,melt by vert. conv. */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_doOpenWaterGrowth = /* grow by open water */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_doOpenWaterMelt = /* melt by open water */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_areaGainFormula = /* ice cover gain formula (1,2)*/
-(PID.TID 0000.0001)                       1
-(PID.TID 0000.0001)     1=from growth by ATM
-(PID.TID 0000.0001)     2=from predicted growth by ATM
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_areaLossFormula = /* ice cover loss formula (1,2)*/
-(PID.TID 0000.0001)                       1
-(PID.TID 0000.0001)     1=from all but only melt conributions by ATM and OCN
-(PID.TID 0000.0001)     2=from net melt-grow>0 by ATM and OCN
-(PID.TID 0000.0001)     3=from predicted melt by ATM
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) HO                = /* nominal thickness of new ice */
-(PID.TID 0000.0001)                 5.000000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) HO_south               = /* Southern Ocean HO */
-(PID.TID 0000.0001)                 5.000000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_area_max        = /* set to les than 1. to mimic open leads */
-(PID.TID 0000.0001)                 1.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_salt0   = /* constant sea ice salinity */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_salinityTracer = /* test SITR varia. salinity */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEuseFlooding = /* turn submerged snow into ice */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)    Seaice air-sea fluxes configuration,   > START <
-(PID.TID 0000.0001)    -----------------------------------------------
-(PID.TID 0000.0001) SEAICEheatConsFix  = /* accound for ocn<->seaice advect. heat flux */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) nITD              = /* number of ice thickness categories */
-(PID.TID 0000.0001)                       7
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useHibler79IceStrength  = /* select ice strength parameterizationd */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEsimpleRidging  = /* select ridging scheme */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEpartFunc   = /* select ridging participation function */
-(PID.TID 0000.0001)                       0
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEredistFunc = /* select ridging redistribution function */
-(PID.TID 0000.0001)                       0
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_cf  = /* ice strength parameter */
-(PID.TID 0000.0001)                 2.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEshearParm  = /* amount of energy lost to shear */
-(PID.TID 0000.0001)                 5.000000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEgStar  = /* ridging parameter */
-(PID.TID 0000.0001)                 1.500000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEhStar  = /* ridging parameter */
-(PID.TID 0000.0001)                 2.500000000000000E+01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEaStar  = /* ridging parameter */
-(PID.TID 0000.0001)                 5.000000000000000E-02
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEmuRidging  = /* ridging parameter */
-(PID.TID 0000.0001)                 3.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEmaxRaft  = /* ridging parameter */
-(PID.TID 0000.0001)                 1.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICEsnowFracRidge  = /* fraction of snow remaining on ridges */
-(PID.TID 0000.0001)                 5.000000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) IMAX_TICE         = /* iterations for ice surface temp */
-(PID.TID 0000.0001)                      10
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) postSolvTempIter= /* flux calculation after surf. temp iter */
-(PID.TID 0000.0001)                       2
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_dryIceAlb  = /* winter albedo */
-(PID.TID 0000.0001)                 7.500000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_wetIceAlb  = /* summer albedo */
-(PID.TID 0000.0001)                 6.600000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_drySnowAlb = /* dry snow albedo */
-(PID.TID 0000.0001)                 8.400000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_wetSnowAlb = /* wet snow albedo */
-(PID.TID 0000.0001)                 7.000000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_dryIceAlb_south = /* Southern Ocean dryIceAlb */
-(PID.TID 0000.0001)                 7.500000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_wetIceAlb_south = /* Southern Ocean wetIceAlb */
-(PID.TID 0000.0001)                 6.600000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_drySnowAlb_south= /* Southern Ocean drySnowAlb */
-(PID.TID 0000.0001)                 8.400000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_wetSnowAlb_south= /* Southern Ocean wetSnowAlb */
-(PID.TID 0000.0001)                 7.000000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_wetAlbTemp= /* Temp (o.C) threshold for wet-albedo */
-(PID.TID 0000.0001)                -1.000000000000000E-03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_snow_emiss = /* snow emissivity */
-(PID.TID 0000.0001)                 9.500000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_ice_emiss = /* seaice emissivity */
-(PID.TID 0000.0001)                 9.500000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_cpAir      = /* heat capacity of air */
-(PID.TID 0000.0001)                 1.005000000000000E+03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_dalton     = /* constant dalton number */
-(PID.TID 0000.0001)                 1.750000000000000E-03
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_iceConduct = /* sea-ice conductivity */
-(PID.TID 0000.0001)                 2.165600000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_snowConduct= /* snow conductivity */
-(PID.TID 0000.0001)                 3.100000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_snowThick  = /* cutoff snow thickness (for albedo) */
-(PID.TID 0000.0001)                 1.500000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_shortwave  = /* penetration shortwave radiation */
-(PID.TID 0000.0001)                 3.000000000000000E-01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useMaykutSatVapPoly = /* use Maykut Polynomial for Sat.Vap.Pr */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) MIN_ATEMP         = /* minimum air temperature */
-(PID.TID 0000.0001)                -5.000000000000000E+01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) MIN_LWDOWN        = /* minimum downward longwave */
-(PID.TID 0000.0001)                 6.000000000000000E+01
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) MIN_TICE          = /* minimum ice temperature */
-(PID.TID 0000.0001)                -5.000000000000000E+01
-(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)    pkg/seaice thermodynamics is OFF
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)    Seaice initialization and IO config.,   > START <
 (PID.TID 0000.0001)    -------------------------------------------------
@@ -1379,7 +1205,7 @@
 (PID.TID 0000.0001)                 1.800000000000000E+03
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICE_dumpFreq   = /* dump frequency */
-(PID.TID 0000.0001)                 8.640000000000000E+05
+(PID.TID 0000.0001)                 1.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICE_taveFreq   = /* time-averaging frequency */
 (PID.TID 0000.0001)                 0.000000000000000E+00
@@ -1797,7 +1623,7 @@
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tempStepping =  /* Temperature equation on/off flag */
-(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tempAdvection = /* Temperature advection on/off flag */
 (PID.TID 0000.0001)                   F
@@ -1806,10 +1632,10 @@
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tempForcing  =  /* Temperature forcing on/off flag */
-(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) doThetaClimRelax = /* apply SST relaxation on/off flag */
-(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tempIsActiveTr = /* Temp. is a dynamically Active Tracer */
 (PID.TID 0000.0001)                   F
@@ -1957,7 +1783,7 @@
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) dumpFreq =   /* Model state write out interval ( s ). */
-(PID.TID 0000.0001)                 8.640000000000000E+05
+(PID.TID 0000.0001)                 1.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) dumpInitAndLast= /* write out Initial & Last iter. model state */
 (PID.TID 0000.0001)                   T
@@ -1966,7 +1792,7 @@
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) monitorFreq =   /* Monitor output interval ( s ). */
-(PID.TID 0000.0001)                 2.160000000000000E+04
+(PID.TID 0000.0001)                 8.640000000000000E+05
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) monitorSelect = /* select group of variables to monitor */
 (PID.TID 0000.0001)                       2
@@ -1981,7 +1807,7 @@
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tauThetaClimRelax =   /* relaxation time scale (s) */
-(PID.TID 0000.0001)                 2.592000000000000E+06
+(PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tauSaltClimRelax =   /* relaxation time scale (s) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
@@ -2233,7 +2059,6 @@
 (PID.TID 0000.0001) == Packages configuration : Check & print summary ==
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) SEAICE_CHECK: #define ALLOW_SEAICE
-(PID.TID 0000.0001) GAD_CHECK: #define ALLOW_GENERIC_ADVDIFF
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Check Model config. (CONFIG_CHECK):
 (PID.TID 0000.0001) // CONFIG_CHECK : Normal End
@@ -2274,12 +2099,6 @@ listId=   1 ; file name: iceStDiag
    152 |SIvice  |      5 |      0 | 0.00000E+00 |
 ------------------------------------------------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: windx.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tair_4x.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: qa70_4x.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: const_00.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dsw_100.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dlw_250.bin
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: tocn.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: heff_quartic.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: const100.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: const_00.bin
@@ -2379,26 +2198,26 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON exf_tsnumber                 =                     0
 (PID.TID 0000.0001) %MON exf_time_sec                 =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_ustress_max              =   1.5090582345178E-01
-(PID.TID 0000.0001) %MON exf_ustress_min              =   1.2184383176727E-01
-(PID.TID 0000.0001) %MON exf_ustress_mean             =   1.3639677841392E-01
-(PID.TID 0000.0001) %MON exf_ustress_sd               =   1.0660482943078E-02
-(PID.TID 0000.0001) %MON exf_ustress_del2             =   5.0007679327149E-06
+(PID.TID 0000.0001) %MON exf_ustress_max              =   1.3964039188763E-01
+(PID.TID 0000.0001) %MON exf_ustress_min              =   1.3964039188763E-01
+(PID.TID 0000.0001) %MON exf_ustress_mean             =   1.3964039188763E-01
+(PID.TID 0000.0001) %MON exf_ustress_sd               =   5.5511151231258E-17
+(PID.TID 0000.0001) %MON exf_ustress_del2             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_vstress_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_vstress_min              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_vstress_mean             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_vstress_sd               =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_vstress_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_hflux_max                =   6.5891206537299E+01
-(PID.TID 0000.0001) %MON exf_hflux_min                =  -8.1404237426772E+01
-(PID.TID 0000.0001) %MON exf_hflux_mean               =  -1.2615253864378E+01
-(PID.TID 0000.0001) %MON exf_hflux_sd                 =   5.2562085706909E+01
-(PID.TID 0000.0001) %MON exf_hflux_del2               =   2.4884597814969E-01
-(PID.TID 0000.0001) %MON exf_sflux_max                =   2.4349220321116E-08
-(PID.TID 0000.0001) %MON exf_sflux_min                =  -2.4559554123212E-09
-(PID.TID 0000.0001) %MON exf_sflux_mean               =   1.1240274785629E-08
-(PID.TID 0000.0001) %MON exf_sflux_sd                 =   9.7326718386416E-09
-(PID.TID 0000.0001) %MON exf_sflux_del2               =   7.9927232086011E-11
+(PID.TID 0000.0001) %MON exf_hflux_max                =   1.3256147102117E+02
+(PID.TID 0000.0001) %MON exf_hflux_min                =   1.3256147102117E+02
+(PID.TID 0000.0001) %MON exf_hflux_mean               =   1.3256147102117E+02
+(PID.TID 0000.0001) %MON exf_hflux_sd                 =   9.6633812063374E-13
+(PID.TID 0000.0001) %MON exf_hflux_del2               =   7.8352778346434E-01
+(PID.TID 0000.0001) %MON exf_sflux_max                =   5.8259080752307E-08
+(PID.TID 0000.0001) %MON exf_sflux_min                =   5.8259080752307E-08
+(PID.TID 0000.0001) %MON exf_sflux_mean               =   5.8259080752308E-08
+(PID.TID 0000.0001) %MON exf_sflux_sd                 =   8.7350272685600E-22
+(PID.TID 0000.0001) %MON exf_sflux_del2               =   3.4435049684410E-10
 (PID.TID 0000.0001) %MON exf_uwind_max                =   1.0000000000000E+01
 (PID.TID 0000.0001) %MON exf_uwind_min                =   1.0000000000000E+01
 (PID.TID 0000.0001) %MON exf_uwind_mean               =   1.0000000000000E+01
@@ -2414,87 +2233,47 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON exf_wspeed_mean              =   1.0000000000000E+01
 (PID.TID 0000.0001) %MON exf_wspeed_sd                =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_wspeed_del2              =   5.9106750809910E-02
-(PID.TID 0000.0001) %MON exf_atemp_max                =   2.7714691614496E+02
-(PID.TID 0000.0001) %MON exf_atemp_min                =   2.6915308385504E+02
-(PID.TID 0000.0001) %MON exf_atemp_mean               =   2.7315000000000E+02
-(PID.TID 0000.0001) %MON exf_atemp_sd                 =   2.9037718208063E+00
-(PID.TID 0000.0001) %MON exf_atemp_del2               =   1.2859997507300E-02
-(PID.TID 0000.0001) %MON exf_aqh_max                  =   3.7064806789606E-03
-(PID.TID 0000.0001) %MON exf_aqh_min                  =   2.1441807824757E-03
-(PID.TID 0000.0001) %MON exf_aqh_mean                 =   2.8804761552935E-03
-(PID.TID 0000.0001) %MON exf_aqh_sd                   =   5.6734393616353E-04
-(PID.TID 0000.0001) %MON exf_aqh_del2                 =   1.7078962742152E-05
-(PID.TID 0000.0001) %MON exf_lwflux_max               =   5.6469966707287E+01
-(PID.TID 0000.0001) %MON exf_lwflux_min               =   5.6469966707287E+01
-(PID.TID 0000.0001) %MON exf_lwflux_mean              =   5.6469966707288E+01
-(PID.TID 0000.0001) %MON exf_lwflux_sd                =   7.6028072726331E-13
-(PID.TID 0000.0001) %MON exf_lwflux_del2              =   3.3377562504116E-01
-(PID.TID 0000.0001) %MON exf_precip_max               =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_precip_min               =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_precip_mean              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_precip_sd                =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_precip_del2              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_swflux_max               =  -9.0000000000000E+01
-(PID.TID 0000.0001) %MON exf_swflux_min               =  -9.0000000000000E+01
-(PID.TID 0000.0001) %MON exf_swflux_mean              =  -9.0000000000000E+01
-(PID.TID 0000.0001) %MON exf_swflux_sd                =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_swflux_del2              =   5.3196075728919E-01
-(PID.TID 0000.0001) %MON exf_evap_max                 =   2.4349220321116E-08
-(PID.TID 0000.0001) %MON exf_evap_min                 =  -2.4559554123212E-09
-(PID.TID 0000.0001) %MON exf_evap_mean                =   1.1240274785629E-08
-(PID.TID 0000.0001) %MON exf_evap_sd                  =   9.7326718386416E-09
-(PID.TID 0000.0001) %MON exf_evap_del2                =   7.9927232086011E-11
-(PID.TID 0000.0001) %MON exf_swdown_max               =   1.0000000000000E+02
-(PID.TID 0000.0001) %MON exf_swdown_min               =   1.0000000000000E+02
-(PID.TID 0000.0001) %MON exf_swdown_mean              =   1.0000000000000E+02
-(PID.TID 0000.0001) %MON exf_swdown_sd                =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_swdown_del2              =   5.9106750809910E-01
-(PID.TID 0000.0001) %MON exf_lwdown_max               =   2.5000000000000E+02
-(PID.TID 0000.0001) %MON exf_lwdown_min               =   2.5000000000000E+02
-(PID.TID 0000.0001) %MON exf_lwdown_mean              =   2.5000000000000E+02
-(PID.TID 0000.0001) %MON exf_lwdown_sd                =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON exf_lwdown_del2              =   1.4776687702478E+00
-(PID.TID 0000.0001) %MON exf_climsst_max              =  -1.1200000000000E+00
-(PID.TID 0000.0001) %MON exf_climsst_min              =  -1.9000000000000E+00
-(PID.TID 0000.0001) %MON exf_climsst_mean             =  -1.4758380996034E+00
-(PID.TID 0000.0001) %MON exf_climsst_sd               =   2.7690286535789E-01
-(PID.TID 0000.0001) %MON exf_climsst_del2             =   1.0615551600389E-04
+(PID.TID 0000.0001) %MON exf_evap_max                 =   5.8259080752307E-08
+(PID.TID 0000.0001) %MON exf_evap_min                 =   5.8259080752307E-08
+(PID.TID 0000.0001) %MON exf_evap_mean                =   5.8259080752308E-08
+(PID.TID 0000.0001) %MON exf_evap_sd                  =   8.7350272685600E-22
+(PID.TID 0000.0001) %MON exf_evap_del2                =   3.4435049684410E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR EXF statistics
 (PID.TID 0000.0001) // =======================================================
  SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  9.24106196E-01  1.17296801E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  8.85662486E+02  2.08251541E+02
- SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  6.32371401E-06  1.43573007E+00
- SEAICE_LSR (ipass=   1) iters,dV,Resid=   272  9.57417739E-13  6.31107157E-09
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  1.07958570E+00  4.14679524E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  7.79521472E+02  1.26524975E+02
- SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  8.80342310E-06  1.85071944E+00
- SEAICE_LSR (ipass=   2) iters,dV,Resid=   144  8.10294540E-13  2.33810202E-09
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  9.86328478E+02  2.13264534E+02
+ SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  5.82036947E-06  1.49621319E+00
+ SEAICE_LSR (ipass=   1) iters,dV,Resid=   262  9.51364096E-13  6.21782792E-09
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  1.10270138E+00  4.57691419E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  9.00111561E+02  1.46701502E+02
+ SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  7.85942877E-06  1.88589018E+00
+ SEAICE_LSR (ipass=   2) iters,dV,Resid=   138  9.74267542E-13  2.93259017E-09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     1
 (PID.TID 0000.0001) %MON seaice_time_sec              =   1.8000000000000E+03
-(PID.TID 0000.0001) %MON seaice_uice_max              =   4.5501172010391E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   1.8320915382542E-02
-(PID.TID 0000.0001) %MON seaice_uice_mean             =   1.1783918135520E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.5174085220464E-01
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.3648672953237E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   6.5669958021762E-02
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -5.8329612802282E-02
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -8.6151447920027E-04
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   1.4520275861260E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   2.4610735448366E-05
-(PID.TID 0000.0001) %MON seaice_area_max              =   9.9999985023495E-01
-(PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   9.7492847659121E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   1.5093954414079E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   2.7282813479760E-03
-(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6254861823847E+00
-(PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9235072729840E+00
-(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2083682848396E+00
-(PID.TID 0000.0001) %MON seaice_heff_del2             =   4.7613380554169E-04
+(PID.TID 0000.0001) %MON seaice_uice_max              =   4.5785861648568E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   1.6417452505188E-02
+(PID.TID 0000.0001) %MON seaice_uice_mean             =   1.1795014980475E-01
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.5454680748272E-01
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.4105643072444E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   6.8172893461305E-02
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -6.0419618189294E-02
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -8.8257198042639E-04
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   1.5068797369797E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   2.5562733033719E-05
+(PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON seaice_area_min              =   9.0994303709186E-01
+(PID.TID 0000.0001) %MON seaice_area_mean             =   9.9908220599181E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   4.9845253598634E-03
+(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7786829098585E-05
+(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6258091592509E+00
+(PID.TID 0000.0001) %MON seaice_heff_min              =   1.1843632972116E-05
+(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9238269172251E+00
+(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2084055511425E+00
+(PID.TID 0000.0001) %MON seaice_heff_del2             =   4.7612981468277E-04
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   0.0000000000000E+00
@@ -2508,40 +2287,39 @@ listId=   1 ; file name: iceStDiag
  Compute Stats, Diag. #    147  SIhsnow   vol(   0 ): 6.950E+10  Parms: SM      M1      
  Compute Stats, Diag. #    151  SIuice    vol(   0 ): 6.900E+10  Parms: UU      M1      
  Compute Stats, Diag. #    152  SIvice    vol(   0 ): 6.750E+10  Parms: VV      M1      
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  1.24615519E+00  5.65831449E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  6.99433130E+02  1.59365918E+02
- SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  1.20835907E-05  2.01206211E+00
- SEAICE_LSR (ipass=   1) iters,dV,Resid=    96  8.04280254E-13  1.29811608E-10
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  1.22830955E+00  4.91338252E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  6.42816432E+02  1.75758332E+02
- SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  1.29463161E-05  1.90046176E+00
- SEAICE_LSR (ipass=   2) iters,dV,Resid=    96  8.01199385E-13  5.85987660E-12
-(PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  1 in timestep          1
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  1.30215741E+00  6.16009135E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  8.28955332E+02  1.84370871E+02
+ SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  1.03797737E-05  2.02999433E+00
+ SEAICE_LSR (ipass=   1) iters,dV,Resid=    94  6.53723603E-13  1.14941528E-10
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  1.29534547E+00  5.22648272E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  7.76689576E+02  2.04049703E+02
+ SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  1.09310005E-05  1.92167536E+00
+ SEAICE_LSR (ipass=   2) iters,dV,Resid=    92  9.53785662E-13  7.15720455E-12
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     2
 (PID.TID 0000.0001) %MON seaice_time_sec              =   3.6000000000000E+03
-(PID.TID 0000.0001) %MON seaice_uice_max              =   6.5736941554973E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   4.7643209162990E-02
-(PID.TID 0000.0001) %MON seaice_uice_mean             =   2.4295560436875E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.8990363366360E-01
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   4.4078808676976E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.0971088930701E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.1683303112755E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -8.2190977537203E-03
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   3.5591262630156E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   5.4934208780414E-05
-(PID.TID 0000.0001) %MON seaice_area_max              =   9.9999973409824E-01
-(PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   9.6658792300462E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   1.6797967246002E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   2.8381350474293E-03
-(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6252332108459E+00
-(PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9232267861546E+00
-(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2082386075713E+00
-(PID.TID 0000.0001) %MON seaice_heff_del2             =   4.7952211667024E-04
+(PID.TID 0000.0001) %MON seaice_uice_max              =   6.5500711893629E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   4.1156434192512E-02
+(PID.TID 0000.0001) %MON seaice_uice_mean             =   2.3801519152579E-01
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.9281545962067E-01
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   4.4846503565925E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.0977236081255E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.1734162879091E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -8.0510108464115E-03
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   3.5684707285799E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   5.3628656114990E-05
+(PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON seaice_area_min              =   8.0746553906649E-01
+(PID.TID 0000.0001) %MON seaice_area_mean             =   9.9703000812682E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   1.3202771998136E-02
+(PID.TID 0000.0001) %MON seaice_area_del2             =   2.5808519651525E-04
+(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6258261183342E+00
+(PID.TID 0000.0001) %MON seaice_heff_min              =   1.0507987147848E-05
+(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9238269172251E+00
+(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2083171871108E+00
+(PID.TID 0000.0001) %MON seaice_heff_del2             =   4.7940408028674E-04
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   0.0000000000000E+00
@@ -2550,40 +2328,41 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  1.18197064E+00  4.36335263E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  5.15645157E+02  1.78606009E+02
- SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  1.46406413E-05  1.72753347E+00
- SEAICE_LSR (ipass=   1) iters,dV,Resid=   104  7.59114993E-13  6.25787423E-13
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  1.13023201E+00  4.14471789E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  4.94923253E+02  1.81854168E+02
- SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  1.44096135E-05  1.51577416E+00
- SEAICE_LSR (ipass=   2) iters,dV,Resid=   136  7.07184311E-13  9.53663900E-13
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  1.25866776E+00  4.51097578E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  6.44365921E+02  2.10982043E+02
+ SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  1.20964195E-05  1.76884007E+00
+ SEAICE_LSR (ipass=   1) iters,dV,Resid=    96  6.61332100E-13  5.24162663E-13
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  1.21292376E+00  4.23656768E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  6.18844127E+02  2.14620724E+02
+ SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  1.19720289E-05  1.59659742E+00
+ SEAICE_LSR (ipass=   2) iters,dV,Resid=   124  7.77794495E-13  1.08316659E-12
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  1 in timestep          2
+(PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  2 in timestep          2
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     3
 (PID.TID 0000.0001) %MON seaice_time_sec              =   5.4000000000000E+03
-(PID.TID 0000.0001) %MON seaice_uice_max              =   6.1493052227316E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   8.1989463781332E-02
-(PID.TID 0000.0001) %MON seaice_uice_mean             =   3.0067921891439E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.7281244323925E-01
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.6551978591787E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.1675138672070E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.5424197238422E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -1.7765658726226E-02
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   4.7434275092949E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   6.4163588771564E-05
-(PID.TID 0000.0001) %MON seaice_area_max              =   9.9999860555012E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   6.0936482085954E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   6.9299913482398E-02
+(PID.TID 0000.0001) %MON seaice_uice_mean             =   2.9301485657003E-01
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.7896145821628E-01
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.6882964448692E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.1748734516504E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.5434093805956E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -1.7521381476872E-02
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   4.7445147739516E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   6.4590390252668E-05
+(PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   9.6119308083835E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   1.7603015973849E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   2.8290354120154E-03
-(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6250359046779E+00
+(PID.TID 0000.0001) %MON seaice_area_mean             =   9.9496791050427E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   2.7265082191534E-02
+(PID.TID 0000.0001) %MON seaice_area_del2             =   6.0263348617220E-04
+(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6258431764618E+00
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9229856520600E+00
-(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2078121834239E+00
-(PID.TID 0000.0001) %MON seaice_heff_del2             =   4.9817631964643E-04
+(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9238269138576E+00
+(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2079427793961E+00
+(PID.TID 0000.0001) %MON seaice_heff_del2             =   4.9777441782380E-04
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   0.0000000000000E+00
@@ -2598,14 +2377,14 @@ listId=   1 ; file name: iceStDiag
            Vector  Mate for  SIvice       Diagnostic #    151  SIuice   exists 
  Computing Diagnostic #    145  SIheff       Counter:       1   Parms: SM      M1      
  Computing Diagnostic #    142  SIarea       Counter:       1   Parms: SM      M1      
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  1.06848344E+00  4.01484072E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  4.45040862E+02  1.84649295E+02
- SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  1.51104456E-05  1.27178807E+00
- SEAICE_LSR (ipass=   1) iters,dV,Resid=   288  9.27216637E-13  6.44776525E-12
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  1.01832387E+00  4.02266694E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  4.45045740E+02  1.82888042E+02
- SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  1.42008504E-05  1.07238065E+00
- SEAICE_LSR (ipass=   2) iters,dV,Resid=   332  9.25634569E-13  8.89938645E-12
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  1.15154871E+00  4.04292458E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  5.58013209E+02  2.17652249E+02
+ SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  1.25440869E-05  1.41002186E+00
+ SEAICE_LSR (ipass=   1) iters,dV,Resid=   266  9.84393123E-13  6.02847690E-12
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  1.11262746E+00  4.00214446E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  5.55908424E+02  2.18203423E+02
+ SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  1.20029879E-05  1.23115022E+00
+ SEAICE_LSR (ipass=   2) iters,dV,Resid=   306  9.69252456E-13  8.20606313E-12
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  1 in timestep          3
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  2 in timestep          3
 (PID.TID 0000.0001) // =======================================================
@@ -2613,26 +2392,26 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     4
 (PID.TID 0000.0001) %MON seaice_time_sec              =   7.2000000000000E+03
-(PID.TID 0000.0001) %MON seaice_uice_max              =   6.7798043010881E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   1.1678954835797E-01
-(PID.TID 0000.0001) %MON seaice_uice_mean             =   3.3804207204463E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.6305735637977E-01
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.5123314693749E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.1543327649604E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.7909720162181E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -2.5000091786550E-02
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.4093920917234E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   6.3032228114739E-05
-(PID.TID 0000.0001) %MON seaice_area_max              =   9.9999618514982E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   6.7996921868116E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   9.8121158536407E-02
+(PID.TID 0000.0001) %MON seaice_uice_mean             =   3.2873952599547E-01
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.7198107764953E-01
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.5513793539147E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.1600511718191E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.8014852316620E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -2.4621138079837E-02
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.4258947791005E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   6.4500278885663E-05
+(PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   9.5623892722263E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   1.8291499006347E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   2.9139932746058E-03
-(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6248773666726E+00
+(PID.TID 0000.0001) %MON seaice_area_mean             =   9.9303471434479E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   3.2402095671798E-02
+(PID.TID 0000.0001) %MON seaice_area_del2             =   6.2296634069867E-04
+(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6258567170102E+00
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9227761329722E+00
-(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2070526806101E+00
-(PID.TID 0000.0001) %MON seaice_heff_del2             =   5.3729654684915E-04
+(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9238269138555E+00
+(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2072434105177E+00
+(PID.TID 0000.0001) %MON seaice_heff_del2             =   5.3647356513537E-04
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   0.0000000000000E+00
@@ -2641,14 +2420,14 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  9.31892180E-01  3.82255317E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  3.96435734E+02  1.59276191E+02
- SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  1.42962841E-05  9.21305067E-01
- SEAICE_LSR (ipass=   1) iters,dV,Resid=   464  9.37125377E-13  1.59373562E-11
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  8.69122080E-01  3.46462753E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  3.70592042E+02  1.37150424E+02
- SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  1.37616661E-05  8.09691776E-01
- SEAICE_LSR (ipass=   2) iters,dV,Resid=   484  9.48824352E-13  1.80478676E-11
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  1.03903014E+00  3.95193930E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  5.19666284E+02  2.09285726E+02
+ SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  1.19897327E-05  1.05933583E+00
+ SEAICE_LSR (ipass=   1) iters,dV,Resid=   426  9.86460913E-13  1.46193276E-11
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  9.91892259E-01  3.80283986E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  5.01734672E+02  1.91343287E+02
+ SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  1.14796349E-05  9.39892995E-01
+ SEAICE_LSR (ipass=   2) iters,dV,Resid=   448  9.20638565E-13  1.51776980E-11
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  1 in timestep          4
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  2 in timestep          4
 (PID.TID 0000.0001) // =======================================================
@@ -2656,26 +2435,26 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     5
 (PID.TID 0000.0001) %MON seaice_time_sec              =   9.0000000000000E+03
-(PID.TID 0000.0001) %MON seaice_uice_max              =   6.8404564106473E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   1.5022641895570E-01
-(PID.TID 0000.0001) %MON seaice_uice_mean             =   3.6260014391014E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.5073566521926E-01
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.5590361343726E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.1598161052091E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.8891591811148E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -2.8694572943693E-02
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.7096247796843E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   6.3949320827372E-05
-(PID.TID 0000.0001) %MON seaice_area_max              =   9.9999605202642E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   6.8724282539858E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   1.2567603871324E-01
+(PID.TID 0000.0001) %MON seaice_uice_mean             =   3.5215001864286E-01
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.6228521155974E-01
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.6204769801292E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.1639854730222E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.8952611147410E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -2.8147769671671E-02
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.7299847261180E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   6.6361024786053E-05
+(PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   9.5141083277568E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   1.8935410994725E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   2.8937290781147E-03
-(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6247444335223E+00
+(PID.TID 0000.0001) %MON seaice_area_mean             =   9.9082063811483E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   4.1794319294771E-02
+(PID.TID 0000.0001) %MON seaice_area_del2             =   8.4537089209081E-04
+(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6258670571433E+00
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9225941027405E+00
-(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2060541491159E+00
-(PID.TID 0000.0001) %MON seaice_heff_del2             =   5.9588912992953E-04
+(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9238269103969E+00
+(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2063082288634E+00
+(PID.TID 0000.0001) %MON seaice_heff_del2             =   5.9394063328569E-04
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   0.0000000000000E+00
@@ -2689,14 +2468,14 @@ listId=   1 ; file name: iceStDiag
  Compute Stats, Diag. #    147  SIhsnow   vol(   0 ): 2.780E+11  Parms: SM      M1      
  Compute Stats, Diag. #    151  SIuice    vol(   0 ): 2.760E+11  Parms: UU      M1      
  Compute Stats, Diag. #    152  SIvice    vol(   0 ): 2.700E+11  Parms: VV      M1      
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  7.46234583E-01  3.35798986E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  3.07809484E+02  1.07534470E+02
- SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  1.46970577E-05  7.46356194E-01
- SEAICE_LSR (ipass=   1) iters,dV,Resid=   562  9.68308767E-13  2.46218437E-11
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  6.99223365E-01  2.98505412E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  2.89719467E+02  9.62665012E+01
- SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  1.41041851E-05  6.69273536E-01
- SEAICE_LSR (ipass=   2) iters,dV,Resid=   586  9.65227898E-13  2.70315536E-11
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  8.67951257E-01  3.22891198E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  4.33608232E+02  1.55019171E+02
+ SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  1.18604006E-05  8.53164684E-01
+ SEAICE_LSR (ipass=   1) iters,dV,Resid=   514  9.95314942E-13  2.17938877E-11
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  8.12273163E-01  3.11884304E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  4.09087894E+02  1.37856361E+02
+ SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  1.15781846E-05  7.78273512E-01
+ SEAICE_LSR (ipass=   2) iters,dV,Resid=   548  9.54097912E-13  2.28825054E-11
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  1 in timestep          5
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  2 in timestep          5
 (PID.TID 0000.0001) // =======================================================
@@ -2704,26 +2483,26 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     6
 (PID.TID 0000.0001) %MON seaice_time_sec              =   1.0800000000000E+04
-(PID.TID 0000.0001) %MON seaice_uice_max              =   6.7991789386992E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   1.8496837774802E-01
-(PID.TID 0000.0001) %MON seaice_uice_mean             =   3.8231079464357E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.3761865743359E-01
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.6403397198331E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.1659226852541E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.8972992039304E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -3.0183697758773E-02
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.8111687785269E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   7.8968278306873E-05
-(PID.TID 0000.0001) %MON seaice_area_max              =   9.9999513462012E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   6.8369301459031E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   1.5339912338483E-01
+(PID.TID 0000.0001) %MON seaice_uice_mean             =   3.7054126120667E-01
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.5206760351248E-01
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.7193580473419E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.1685808983169E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.8987119982309E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -2.9552877871102E-02
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.8345821408292E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   7.4386284831532E-05
+(PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   9.4732820162193E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   1.9403692650198E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   2.8586121542299E-03
-(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6245834522947E+00
+(PID.TID 0000.0001) %MON seaice_area_mean             =   9.8890622386233E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   4.6392626723720E-02
+(PID.TID 0000.0001) %MON seaice_area_del2             =   8.1122800693926E-04
+(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6258529240304E+00
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9224347182222E+00
-(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2049157730283E+00
-(PID.TID 0000.0001) %MON seaice_heff_del2             =   6.6662056385792E-04
+(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9238269103938E+00
+(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2052282803138E+00
+(PID.TID 0000.0001) %MON seaice_heff_del2             =   6.6309266922913E-04
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   0.0000000000000E+00
@@ -2732,14 +2511,14 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  6.54201061E-01  2.70401339E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  2.46869273E+02  8.17422106E+01
- SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  1.46858432E-05  6.47713595E-01
- SEAICE_LSR (ipass=   1) iters,dV,Resid=   662  9.89291982E-13  3.65219215E-11
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  6.44049573E-01  2.28082730E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  2.40942335E+02  7.70751440E+01
- SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  1.34800974E-05  5.96017013E-01
- SEAICE_LSR (ipass=   2) iters,dV,Resid=   682  9.83296777E-13  4.09475107E-11
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  7.41747849E-01  3.03287704E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  3.53510186E+02  1.16748343E+02
+ SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  1.20953701E-05  7.37813224E-01
+ SEAICE_LSR (ipass=   1) iters,dV,Resid=   644  9.78085668E-13  3.10115765E-11
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  7.15677450E-01  2.63409305E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  3.42009132E+02  1.09639106E+02
+ SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  1.15099035E-05  6.83720721E-01
+ SEAICE_LSR (ipass=   2) iters,dV,Resid=   604  9.60329039E-13  3.42924946E-11
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  1 in timestep          6
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  2 in timestep          6
 (PID.TID 0000.0001) // =======================================================
@@ -2747,26 +2526,26 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     7
 (PID.TID 0000.0001) %MON seaice_time_sec              =   1.2600000000000E+04
-(PID.TID 0000.0001) %MON seaice_uice_max              =   6.7604918386186E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   2.1903755598044E-01
-(PID.TID 0000.0001) %MON seaice_uice_mean             =   3.9889363024504E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.2505328374296E-01
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.7135616242669E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.1715136045632E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.8708970603228E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -3.0306471718706E-02
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.8114351602766E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   9.6138213486840E-05
-(PID.TID 0000.0001) %MON seaice_area_max              =   9.9999339446332E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   6.8094691743790E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   1.8143279180074E-01
+(PID.TID 0000.0001) %MON seaice_uice_mean             =   3.8616350153162E-01
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.4183338965564E-01
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.8170068939279E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.1742753913028E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.8719339063554E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -2.9704634296374E-02
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.8448691037124E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   8.4566856812640E-05
+(PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   9.4442602627346E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   1.9605092469088E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   2.7857512303631E-03
-(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6243782791889E+00
+(PID.TID 0000.0001) %MON seaice_area_mean             =   9.8678489770639E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   5.4178917115524E-02
+(PID.TID 0000.0001) %MON seaice_area_del2             =   9.2742794973955E-04
+(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6257965599349E+00
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9222939213656E+00
-(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2037195304046E+00
-(PID.TID 0000.0001) %MON seaice_heff_del2             =   7.4320804351255E-04
+(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9238269069439E+00
+(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2040778844826E+00
+(PID.TID 0000.0001) %MON seaice_heff_del2             =   7.3836320541826E-04
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   0.0000000000000E+00
@@ -2775,14 +2554,14 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  6.48838188E-01  1.96944187E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  2.21633272E+02  7.20935387E+01
- SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  1.31838737E-05  6.31139473E-01
- SEAICE_LSR (ipass=   1) iters,dV,Resid=   928  9.67101399E-13  5.59561861E-11
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  6.43108540E-01  2.02320213E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  2.23513530E+02  7.09270635E+01
- SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  1.18742423E-05  5.84470963E-01
- SEAICE_LSR (ipass=   2) iters,dV,Resid=   974  9.72430469E-13  6.44117961E-11
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  7.02902264E-01  2.24198303E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  3.10503219E+02  1.01244422E+02
+ SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  1.14616005E-05  6.85033756E-01
+ SEAICE_LSR (ipass=   1) iters,dV,Resid=   910  9.80132642E-13  4.96738405E-11
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  7.02746467E-01  2.02255254E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  3.10153207E+02  9.96983880E+01
+ SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  1.05749720E-05  6.48582333E-01
+ SEAICE_LSR (ipass=   2) iters,dV,Resid=   950  9.68863878E-13  5.72958030E-11
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  1 in timestep          7
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  2 in timestep          7
 (PID.TID 0000.0001) // =======================================================
@@ -2790,26 +2569,26 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     8
 (PID.TID 0000.0001) %MON seaice_time_sec              =   1.4400000000000E+04
-(PID.TID 0000.0001) %MON seaice_uice_max              =   6.7391070534207E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   2.4927966457772E-01
-(PID.TID 0000.0001) %MON seaice_uice_mean             =   4.1251606897051E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.1439569834118E-01
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.7534748353321E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.1782686676589E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.8298225662575E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -2.9654664299121E-02
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.7608391105327E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   1.0132894930797E-04
-(PID.TID 0000.0001) %MON seaice_area_max              =   9.9999099964849E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   6.7887692701065E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   2.0757143381293E-01
+(PID.TID 0000.0001) %MON seaice_uice_mean             =   3.9935297042670E-01
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.3258474602504E-01
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.9146630464345E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.1807499137665E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.8334390079514E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -2.9120698361914E-02
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.8083972385301E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   9.1443092543981E-05
+(PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   9.4070423415692E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   2.0062554631355E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   2.8464160482030E-03
-(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6242676573173E+00
+(PID.TID 0000.0001) %MON seaice_area_mean             =   9.8498635392615E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   5.8436069213921E-02
+(PID.TID 0000.0001) %MON seaice_area_del2             =   8.7311966078397E-04
+(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6257539533025E+00
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9221687221216E+00
-(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2025214314821E+00
-(PID.TID 0000.0001) %MON seaice_heff_del2             =   8.1456604271135E-04
+(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9238269069395E+00
+(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2029119092714E+00
+(PID.TID 0000.0001) %MON seaice_heff_del2             =   8.0843771446075E-04
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   0.0000000000000E+00
@@ -2818,14 +2597,14 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  6.10730578E-01  2.11853047E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  2.17587442E+02  6.98877524E+01
- SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  1.14694412E-05  5.86546228E-01
- SEAICE_LSR (ipass=   1) iters,dV,Resid=  1262  9.93996552E-13  9.74387397E-11
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  5.94673927E-01  2.06205002E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  2.21708981E+02  6.86670240E+01
- SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  1.03715134E-05  5.32165074E-01
- SEAICE_LSR (ipass=   2) iters,dV,Resid=  1354  9.85836413E-13  1.17296219E-10
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  6.92646805E-01  2.07699726E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  2.98859586E+02  9.96473948E+01
+ SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  1.01265997E-05  6.60697064E-01
+ SEAICE_LSR (ipass=   1) iters,dV,Resid=  1306  9.74428871E-13  9.19751931E-11
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  6.78004698E-01  2.11075333E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  3.03185205E+02  9.96656401E+01
+ SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  9.29118006E-06  6.13502911E-01
+ SEAICE_LSR (ipass=   2) iters,dV,Resid=  1352  9.98791327E-13  1.07815714E-10
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  1 in timestep          8
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  2 in timestep          8
 (PID.TID 0000.0001) // =======================================================
@@ -2833,26 +2612,26 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     9
 (PID.TID 0000.0001) %MON seaice_time_sec              =   1.6200000000000E+04
-(PID.TID 0000.0001) %MON seaice_uice_max              =   6.7279265763855E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   2.7550974953855E-01
-(PID.TID 0000.0001) %MON seaice_uice_mean             =   4.2379037368464E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.0564031340295E-01
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.7884185334176E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.1850264020001E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.7920020365799E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -2.8630385239501E-02
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.6902169320927E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   1.0000986674439E-04
-(PID.TID 0000.0001) %MON seaice_area_max              =   9.9998858569923E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   6.7776213711387E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   2.3055247410663E-01
+(PID.TID 0000.0001) %MON seaice_uice_mean             =   4.1030880188561E-01
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.2477301254515E-01
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   2.0185982873126E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.1866831254631E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.7961216265413E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -2.8155125031555E-02
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.7521536191991E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   9.4976608543996E-05
+(PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   9.3736278279897E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   2.0444461496633E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   2.8300678734605E-03
-(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6241793528299E+00
+(PID.TID 0000.0001) %MON seaice_area_mean             =   9.8298177918210E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   6.5283316352161E-02
+(PID.TID 0000.0001) %MON seaice_area_del2             =   9.7343236985708E-04
+(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6257405023924E+00
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9220573622219E+00
-(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2013521579445E+00
-(PID.TID 0000.0001) %MON seaice_heff_del2             =   8.8076285720765E-04
+(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9238269034696E+00
+(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2017641019926E+00
+(PID.TID 0000.0001) %MON seaice_heff_del2             =   8.7394719280249E-04
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   0.0000000000000E+00
@@ -2866,14 +2645,14 @@ listId=   1 ; file name: iceStDiag
  Compute Stats, Diag. #    147  SIhsnow   vol(   0 ): 2.780E+11  Parms: SM      M1      
  Compute Stats, Diag. #    151  SIuice    vol(   0 ): 2.760E+11  Parms: UU      M1      
  Compute Stats, Diag. #    152  SIvice    vol(   0 ): 2.700E+11  Parms: VV      M1      
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  5.56496368E-01  1.73475658E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  2.22061082E+02  6.72197338E+01
- SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  9.96567138E-06  5.19444930E-01
- SEAICE_LSR (ipass=   1) iters,dV,Resid=  1500  8.26820556E-12  1.43137093E-09
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  5.44492577E-01  1.67380579E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  2.28166304E+02  6.61025804E+01
- SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  9.03131262E-06  4.75925360E-01
- SEAICE_LSR (ipass=   2) iters,dV,Resid=  1500  1.15070453E-11  2.16739126E-09
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  6.38370297E-01  1.96249682E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  3.00100948E+02  1.00665323E+02
+ SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  8.82504449E-06  5.94853376E-01
+ SEAICE_LSR (ipass=   1) iters,dV,Resid=  1500  9.71103059E-12  1.47656213E-09
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  6.21381351E-01  1.88014365E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  3.06240642E+02  1.00672600E+02
+ SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  8.09953002E-06  5.49861020E-01
+ SEAICE_LSR (ipass=   2) iters,dV,Resid=  1500  1.76966428E-11  3.17691544E-09
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  1 in timestep          9
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  2 in timestep          9
 (PID.TID 0000.0001) // =======================================================
@@ -2881,26 +2660,26 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                    10
 (PID.TID 0000.0001) %MON seaice_time_sec              =   1.8000000000000E+04
-(PID.TID 0000.0001) %MON seaice_uice_max              =   6.7247718995355E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   2.9815491342304E-01
-(PID.TID 0000.0001) %MON seaice_uice_mean             =   4.3319659350544E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   9.8515811673248E-02
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.8325093008285E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.1914203701008E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.7615796170188E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -2.7444876533227E-02
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.6158104035372E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   9.7726457772595E-05
-(PID.TID 0000.0001) %MON seaice_area_max              =   9.9998649124195E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   6.7759088458732E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   2.5048961362490E-01
+(PID.TID 0000.0001) %MON seaice_uice_mean             =   4.1946444875115E-01
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.1827028386616E-01
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   2.1238031748739E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.1931991435721E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.7675005502997E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -2.7026295489785E-02
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.6912205653791E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   9.6108321897329E-05
+(PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   9.3441570751489E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   2.0746894298536E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   2.8061905268736E-03
-(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6241063198563E+00
+(PID.TID 0000.0001) %MON seaice_area_mean             =   9.8129562237319E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   6.9261879616088E-02
+(PID.TID 0000.0001) %MON seaice_area_del2             =   9.2199442637817E-04
+(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6257275423480E+00
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9219572116100E+00
-(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2002288754512E+00
-(PID.TID 0000.0001) %MON seaice_heff_del2             =   9.4507382897013E-04
+(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9238269034638E+00
+(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.2006537298937E+00
+(PID.TID 0000.0001) %MON seaice_heff_del2             =   9.3767921596252E-04
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   0.0000000000000E+00
@@ -2909,14 +2688,14 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  5.15492347E-01  1.47388426E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  2.32143604E+02  6.44067789E+01
- SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  8.61385952E-06  4.68835094E-01
- SEAICE_LSR (ipass=   1) iters,dV,Resid=  1500  1.56252254E-10  3.96412197E-08
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  5.06065424E-01  1.44519784E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  2.38705163E+02  6.32598012E+01
- SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  7.84046426E-06  4.35126573E-01
- SEAICE_LSR (ipass=   2) iters,dV,Resid=  1500  2.13936202E-10  6.13853452E-08
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  5.84126842E-01  1.64437705E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  3.08191917E+02  1.01538690E+02
+ SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  7.63248464E-06  5.30028611E-01
+ SEAICE_LSR (ipass=   1) iters,dV,Resid=  1500  3.26664459E-10  8.27700043E-08
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  5.70187717E-01  1.60131125E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  3.15998410E+02  1.01694891E+02
+ SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  7.01276853E-06  4.94213171E-01
+ SEAICE_LSR (ipass=   2) iters,dV,Resid=  1500  2.57542418E-10  6.75578362E-08
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  1 in timestep         10
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  2 in timestep         10
 (PID.TID 0000.0001) // =======================================================
@@ -2924,26 +2703,26 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                    11
 (PID.TID 0000.0001) %MON seaice_time_sec              =   1.9800000000000E+04
-(PID.TID 0000.0001) %MON seaice_uice_max              =   6.7270955986473E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   3.1289309702802E-01
-(PID.TID 0000.0001) %MON seaice_uice_mean             =   4.4109353168132E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   9.2790347741583E-02
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.8793246585908E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.1974431769311E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.7337844807107E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -2.6218141033287E-02
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.5459521032470E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   9.5371434932226E-05
-(PID.TID 0000.0001) %MON seaice_area_max              =   9.9998475127796E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   6.7779365019116E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   2.6764072129244E-01
+(PID.TID 0000.0001) %MON seaice_uice_mean             =   4.2712667581127E-01
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.1290903268477E-01
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   2.2314780971480E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.2003460279939E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.7412054141386E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -2.5852533976412E-02
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.6331379549579E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   9.6282266673963E-05
+(PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   9.3187405989420E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   2.0977342827461E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   2.7858242349318E-03
-(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6240491942881E+00
+(PID.TID 0000.0001) %MON seaice_area_mean             =   9.7939556088202E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   7.5385702623782E-02
+(PID.TID 0000.0001) %MON seaice_area_del2             =   1.0258590099415E-03
+(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6257169461414E+00
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9218663951810E+00
-(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.1991595643582E+00
-(PID.TID 0000.0001) %MON seaice_heff_del2             =   1.0039946994130E-03
+(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9238269000117E+00
+(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.1995907767369E+00
+(PID.TID 0000.0001) %MON seaice_heff_del2             =   9.9583796818366E-04
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   0.0000000000000E+00
@@ -2952,95 +2731,41 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  4.83339437E-01  1.38159058E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  2.45880887E+02  6.11778779E+01
- SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  7.42370384E-06  4.31596039E-01
- SEAICE_LSR (ipass=   1) iters,dV,Resid=  1500  1.03884490E-09  3.64376591E-07
- SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  4.74794782E-01  1.39502175E-01
- SEAICE_LSR: Residual FrDrift U_fd,V_fd=  2.53499365E+02  5.98551788E+01
- SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  6.79120531E-06  4.04544433E-01
- SEAICE_LSR (ipass=   2) iters,dV,Resid=  1500  9.45308991E-10  3.47983731E-07
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    1  5.40354734E-01  1.49924117E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  3.22399724E+02  1.02464803E+02
+ SEAICE_LSR (ipass=   1) iters,dU,Resid=  1500  6.56511531E-06  4.80145791E-01
+ SEAICE_LSR (ipass=   1) iters,dV,Resid=  1500  1.63386343E-09  5.20007514E-07
+ SEAICE_LSR: Residual Initial ipass,Uice,Vice=    2  5.28745096E-01  1.49404458E-01
+ SEAICE_LSR: Residual FrDrift U_fd,V_fd=  3.31402721E+02  1.02632951E+02
+ SEAICE_LSR (ipass=   2) iters,dU,Resid=  1500  6.05154551E-06  4.52032468E-01
+ SEAICE_LSR (ipass=   2) iters,dV,Resid=  1500  1.52383820E-09  5.33111273E-07
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  1 in timestep         11
 (PID.TID 0000.0001) SEAICE_DO_RIDGING: Repeat ridging after iteration  2 in timestep         11
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON time_tsnumber                =                    12
-(PID.TID 0000.0001) %MON time_secondsf                =   2.1600000000000E+04
-(PID.TID 0000.0001) %MON dynstat_eta_max              =   1.4855271423662E-02
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -1.5547625271979E-02
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -6.8609663050809E-19
-(PID.TID 0000.0001) %MON dynstat_eta_sd               =   5.6185276903544E-03
-(PID.TID 0000.0001) %MON dynstat_eta_del2             =   3.4210904025025E-06
-(PID.TID 0000.0001) %MON dynstat_uvel_max             =   5.4694595665363E-01
-(PID.TID 0000.0001) %MON dynstat_uvel_min             =   8.1797628424127E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   3.2603530929361E-01
-(PID.TID 0000.0001) %MON dynstat_uvel_sd              =   8.4661197148990E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   1.3392731599312E-04
-(PID.TID 0000.0001) %MON dynstat_vvel_max             =   2.2780617104059E-01
-(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.4793000868950E-01
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -3.2450632095700E-04
-(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   6.0970835295293E-02
-(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   8.1836652323282E-05
-(PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.6555698845343E-04
-(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -2.4393468746960E-04
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.8006686469634E-21
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.8006622332191E-05
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   3.4047422448573E-07
-(PID.TID 0000.0001) %MON dynstat_theta_max            =  -1.5751098890513E+00
-(PID.TID 0000.0001) %MON dynstat_theta_min            =  -1.6340295441595E+00
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =  -1.6302490181791E+00
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   7.7590370487679E-03
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   3.5383436681718E-05
-(PID.TID 0000.0001) %MON dynstat_salt_max             =   3.0000000000000E+01
-(PID.TID 0000.0001) %MON dynstat_salt_min             =   3.0000000000000E+01
-(PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.0000000000000E+01
-(PID.TID 0000.0001) %MON dynstat_salt_sd              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_salt_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON advcfl_uvel_max              =   1.9690054439531E-01
-(PID.TID 0000.0001) %MON advcfl_vvel_max              =   8.2010221574612E-02
-(PID.TID 0000.0001) %MON advcfl_wvel_max              =   8.7816487489057E-02
-(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON pe_b_mean                    =   1.5484032096270E-05
-(PID.TID 0000.0001) %MON ke_max                       =   1.4564487757410E-01
-(PID.TID 0000.0001) %MON ke_mean                      =   5.8130401708830E-02
-(PID.TID 0000.0001) %MON ke_vol                       =   6.9500000000000E+11
-(PID.TID 0000.0001) %MON vort_r_min                   =  -1.4191202448594E-04
-(PID.TID 0000.0001) %MON vort_r_max                   =   8.9657385579761E-05
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -6.5586096803907E-22
-(PID.TID 0000.0001) %MON vort_a_sd                    =   1.5889649807104E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -6.8228760045090E-22
-(PID.TID 0000.0001) %MON vort_p_sd                    =   3.0669223294758E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.9331870359107E-08
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   1.6750406018264E-20
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR dynamic field statistics
-(PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                    12
 (PID.TID 0000.0001) %MON seaice_time_sec              =   2.1600000000000E+04
-(PID.TID 0000.0001) %MON seaice_uice_max              =   6.7327660398945E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   3.1281567791219E-01
-(PID.TID 0000.0001) %MON seaice_uice_mean             =   4.4774245466454E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.8227048194542E-02
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.9275386151082E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.2031175403427E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.7089675458293E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -2.5012460532870E-02
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.4835963743217E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   9.4520994793827E-05
-(PID.TID 0000.0001) %MON seaice_area_max              =   9.9998330738387E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   6.7838163183743E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   2.8232836178939E-01
+(PID.TID 0000.0001) %MON seaice_uice_mean             =   4.3356565227975E-01
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   1.0851439450682E-01
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   2.3422159889761E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.2071888957525E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.7388832730308E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -2.4691349641826E-02
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.5818774541897E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   9.7318156076616E-05
+(PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   9.2971116744345E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   2.1138235229308E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   2.7623911055486E-03
-(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6240037941682E+00
+(PID.TID 0000.0001) %MON seaice_area_mean             =   9.7780129884506E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   7.9032802136533E-02
+(PID.TID 0000.0001) %MON seaice_area_del2             =   9.8121322326779E-04
+(PID.TID 0000.0001) %MON seaice_heff_max              =   7.6257092573862E+00
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9217833143730E+00
-(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.1981468749711E+00
-(PID.TID 0000.0001) %MON seaice_heff_del2             =   1.0571050182117E-03
+(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.9238269000049E+00
+(PID.TID 0000.0001) %MON seaice_heff_sd               =   2.1985791760368E+00
+(PID.TID 0000.0001) %MON seaice_heff_del2             =   1.0486872276113E-03
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   0.0000000000000E+00
@@ -3057,129 +2782,129 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) DIAGSTATS_CLOSE_IO: close file: iceStDiag.0000000000.txt , unit=     9
 (PID.TID 0000.0001) %CHECKPOINT        12 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   16.980000000000000
-(PID.TID 0000.0001)         System time:  4.00000000000000008E-002
-(PID.TID 0000.0001)     Wall clock time:   17.082051992416382
+(PID.TID 0000.0001)           User time:   16.910000000000000
+(PID.TID 0000.0001)         System time:  5.99999999999999978E-002
+(PID.TID 0000.0001)     Wall clock time:   17.158791065216064
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:  2.00000000000000004E-002
-(PID.TID 0000.0001)         System time:  1.00000000000000002E-002
-(PID.TID 0000.0001)     Wall clock time:  3.28431129455566406E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  3.12411785125732422E-002
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   16.960000000000001
-(PID.TID 0000.0001)         System time:  2.99999999999999989E-002
-(PID.TID 0000.0001)     Wall clock time:   17.049175977706909
+(PID.TID 0000.0001)           User time:   16.890000000000001
+(PID.TID 0000.0001)         System time:  5.99999999999999978E-002
+(PID.TID 0000.0001)     Wall clock time:   17.127515077590942
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
 (PID.TID 0000.0001)           User time:  2.00000000000000004E-002
 (PID.TID 0000.0001)         System time:  1.00000000000000002E-002
-(PID.TID 0000.0001)     Wall clock time:  2.92990207672119141E-002
+(PID.TID 0000.0001)     Wall clock time:  2.86731719970703125E-002
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   16.940000000000001
-(PID.TID 0000.0001)         System time:  2.00000000000000004E-002
-(PID.TID 0000.0001)     Wall clock time:   17.019853115081787
+(PID.TID 0000.0001)           User time:   16.870000000000001
+(PID.TID 0000.0001)         System time:  4.99999999999999958E-002
+(PID.TID 0000.0001)     Wall clock time:   17.098819017410278
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN_DO_LOOP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   16.940000000000005
-(PID.TID 0000.0001)         System time:  1.99999999999999969E-002
-(PID.TID 0000.0001)     Wall clock time:   17.019763231277466
+(PID.TID 0000.0001)           User time:   16.869999999999997
+(PID.TID 0000.0001)         System time:  4.99999999999999889E-002
+(PID.TID 0000.0001)     Wall clock time:   17.098723411560059
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [MAIN_DO_LOOP]":
-(PID.TID 0000.0001)           User time:   16.940000000000005
-(PID.TID 0000.0001)         System time:  1.99999999999999969E-002
-(PID.TID 0000.0001)     Wall clock time:   17.019595146179199
+(PID.TID 0000.0001)           User time:   16.869999999999997
+(PID.TID 0000.0001)         System time:  4.99999999999999889E-002
+(PID.TID 0000.0001)     Wall clock time:   17.098539113998413
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.73935699462890625E-003
+(PID.TID 0000.0001)     Wall clock time:  4.01496887207031250E-003
 (PID.TID 0000.0001)          No. starts:          36
 (PID.TID 0000.0001)           No. stops:          36
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.99999999999993605E-002
+(PID.TID 0000.0001)           User time:  3.99999999999991473E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.90644073486328125E-002
+(PID.TID 0000.0001)     Wall clock time:  4.13751602172851563E-002
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  2.99999999999993605E-002
+(PID.TID 0000.0001)           User time:  3.99999999999991473E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.87170314788818359E-002
+(PID.TID 0000.0001)     Wall clock time:  4.10258769989013672E-002
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  8.63075256347656250E-005
+(PID.TID 0000.0001)     Wall clock time:  8.67843627929687500E-005
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  8.53538513183593750E-005
+(PID.TID 0000.0001)     Wall clock time:  8.70227813720703125E-005
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   16.879999999999995
-(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
-(PID.TID 0000.0001)     Wall clock time:   16.928085565567017
+(PID.TID 0000.0001)           User time:   16.730000000000000
+(PID.TID 0000.0001)         System time:  2.99999999999999989E-002
+(PID.TID 0000.0001)     Wall clock time:   16.797481775283813
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL    [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:   16.879999999999995
-(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
-(PID.TID 0000.0001)     Wall clock time:   16.922990322113037
+(PID.TID 0000.0001)           User time:   16.730000000000000
+(PID.TID 0000.0001)         System time:  2.99999999999999989E-002
+(PID.TID 0000.0001)     Wall clock time:   16.793789625167847
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "SEAICE_DYNSOLVER   [SEAICE_MODEL]":
-(PID.TID 0000.0001)           User time:   16.100000000000001
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   16.154267311096191
+(PID.TID 0000.0001)           User time:   16.280000000000005
+(PID.TID 0000.0001)         System time:  2.99999999999999989E-002
+(PID.TID 0000.0001)     Wall clock time:   16.356903791427612
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.50132179260253906E-003
+(PID.TID 0000.0001)     Wall clock time:  1.46746635437011719E-003
 (PID.TID 0000.0001)          No. starts:          24
 (PID.TID 0000.0001)           No. stops:          24
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  9.99999999999801048E-003
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.28500461578369141E-002
+(PID.TID 0000.0001)     Wall clock time:  1.62911415100097656E-003
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.96149063110351563E-004
+(PID.TID 0000.0001)     Wall clock time:  9.05990600585937500E-005
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.47216224670410156E-003
+(PID.TID 0000.0001)     Wall clock time:  9.39369201660156250E-005
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.00000000000031264E-002
-(PID.TID 0000.0001)         System time:  1.00000000000000019E-002
-(PID.TID 0000.0001)     Wall clock time:  2.37154960632324219E-002
+(PID.TID 0000.0001)           User time:  7.99999999999982947E-002
+(PID.TID 0000.0001)         System time:  1.99999999999999900E-002
+(PID.TID 0000.0001)     Wall clock time:  0.24433159828186035
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)           User time:  1.00000000000015632E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  6.35814666748046875E-003
+(PID.TID 0000.0001)     Wall clock time:  6.74557685852050781E-003
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001) // ======================================================
@@ -3230,9 +2955,9 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =          56722
+(PID.TID 0000.0001) //            No. barriers =          57040
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =          56722
+(PID.TID 0000.0001) //     Total barrier spins =          57040
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
 PROGRAM MAIN: Execution ended Normally
