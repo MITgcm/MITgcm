@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.154 2014/05/27 23:41:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.155 2014/06/24 08:05:12 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -211,18 +211,33 @@ C--   set default sea ice parameters
       SEAICE_ageTracer      = .FALSE.
       useHB87stressCoupling = .FALSE.
       usePW79thermodynamics = .TRUE.
-C     ridging parameters
+C     start of ridging parameters
       useHibler79IceStrength= .TRUE.
       SEAICEsimpleRidging   = .TRUE.
+C     The range of this proportionality constant is 2 to 17
       SEAICE_cf             = 17. _d 0
+C     By default use partition function of Thorndyke et al. (1975) ...
       SEAICEpartFunc        = 0
+C     and redistribution function of Hibler (1980)
       SEAICEredistFunc      = 0
       SEAICEridgingIterMax  = 10
+C     This parameter is not well constraint (Lipscomb et al. 2007)
       SEAICEshearParm       = 0.5 _d 0
+C     Thorndyke et al. (1975)
       SEAICEgStar           = 0.15 _d 0
-      SEAICEhStar           = 100. _d 0
+C     suggested by Hibler (1980), Flato and Hibler (1995)
+C     SEAICEhStar           = 100. _d 0
+C     but this value of 25 seems to give thinner ridges in better agreement 
+C     with observations (according to Lipscomb et al 2007)
+      SEAICEhStar           =  25. _d 0
+C     according to Lipscomb et al. (2007) these values for aStar and mu
+C     are approximately equivalent to gStar=0.15 (aStar = gStar/3) for
+C     SEAICEpartFunc = 1 ...
       SEAICEaStar           = 0.05 _d 0
-      SEAICEmuRidging       = 5. _d 0
+C     ... and hStar=25 for SEAICEredistFunc = 1
+C     Libscomb et al. (2007): mu =  3,  4,  5,   6 
+C     correspond to        hStar = 25, 50, 75, 100
+      SEAICEmuRidging       = 3. _d 0
       SEAICEmaxRaft         = 1. _d 0
       SEAICEsnowFracRidge   = 0.5 _d 0
 C     end ridging parampeters
