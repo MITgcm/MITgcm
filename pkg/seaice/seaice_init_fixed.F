@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.28 2014/05/23 20:00:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.29 2014/06/24 21:54:11 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -35,6 +35,7 @@ C     msgBuf      :: Informational/error message buffer
       CHARACTER*15 HlimitMsgFormat
 C     k - loop counter for ITD categories
       INTEGER k
+      _RL tmpVar
 #endif
 C     i,j, bi,bj  :: Loop counters
 c     INTEGER i, j, bi, bj
@@ -63,11 +64,13 @@ C     Initialize MNC variable information for SEAICE
         CALL SEAICE_MNC_INIT( myThid )
       ENDIF
 
+C     Only Master Thread updates parameter in commom block:
+      _BEGIN_MASTER(myThid)
+
 C     restart parameter
       SEAICEmomStartBDF = 0
       IF ( SEAICEuseBDF2 ) SEAICEmomStartBDF = nIter0
 
-      _BEGIN_MASTER(myThid)
 #ifdef SHORTWAVE_HEATING
        tmpFac    = -1.0
        dummyTime = 1.0
@@ -81,10 +84,8 @@ C     restart parameter
 #else /* SHORTWAVE_HEATING */
        SWFracB = 0. _d 0
 #endif /* SHORTWAVE_HEATING */
-      _END_MASTER(myThid)
 
 C--   Set mcPheePiston coeff (if still unset)
-      _BEGIN_MASTER(myThid)
       IF ( SEAICE_mcPheePiston.EQ.UNSET_RL ) THEN
         IF ( SEAICE_availHeatFrac.NE.UNSET_RL ) THEN
           SEAICE_mcPheePiston = SEAICE_availHeatFrac
@@ -96,11 +97,9 @@ C--   Set mcPheePiston coeff (if still unset)
      &                          drF(kSurface)/SEAICE_deltaTtherm )
         ENDIF
       ENDIF
-      _END_MASTER(myThid)
 
 C--   SItracer specifications for basic tracers
 #ifdef ALLOW_SITRACER
-      _BEGIN_MASTER(myThid)
       DO iTracer = 1, SItrNumInUse
 C     "ice concentration" tracer that should remain .EQ.1.
        IF (SItrName(iTracer).EQ.'one') THEN
@@ -137,11 +136,7 @@ C     simple, made up, ice surface roughness index prototype
          SItrFromFloodFrac(iTracer) =ZERO
        ENDIF
       ENDDO
-      _END_MASTER(myThid)
 #endif
-
-C--   all threads wait for master to finish initialisation of shared params
-      _BARRIER
 
 #ifdef SEAICE_ITD
 C     use Equ. 22 of Lipscomb et al. (2001, JGR) to generate ice
@@ -152,41 +147,47 @@ C       c1=3.0/N, c2=15*c1, c3=3.0
 C       or emphasize thin end of ITD (in order to enhance ice growth):
 C       c1=1.5/N, c2=42*c1, c3=3.3
 C       -> HINT: set parameters c1, c2 and c3 in seaice_readparms.F
-C
-      Hlimit(0) = 0.0
-      Hlimit_c1=Hlimit_c1/float(nITD)
-      Hlimit_c2=Hlimit_c2*Hlimit_c1
-      IF (nITD .gt. 1) THEN
+      Hlimit(0) = 0. _d 0
+      IF ( nITD.GT.1 ) THEN
+       tmpVar = nITD
+       tmpVar = oneRL / tmpVar
+       Hlimit_c1 = Hlimit_c1*tmpVar
+       Hlimit_c2 = Hlimit_c2*Hlimit_c1
        DO k=1,nITD-1
         Hlimit(k) = Hlimit(k-1)
      &            + Hlimit_c1
      &            + Hlimit_c2
-     &  *( 1.+tanh( Hlimit_c3 *(float(k-1)/float(nITD) -1. ) ) )
+     &  *( oneRL + TANH( Hlimit_c3 *( FLOAT(k-1)*tmpVar - oneRL ) ) )
        ENDDO
       ENDIF
 C     thickest category is unlimited
-      Hlimit(nITD) = 999.9
+      Hlimit(nITD) = 999.9 _d 0
 
       WRITE(msgBuf,'(A,I2,A)')
      &     ' SEAICE_INIT_FIXED: ', nITD,
      &     ' sea ice thickness categories'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(HlimitMsgFormat,'(A,I2,A)') '(A,',nITD,'F6.2,F6.1)'
       WRITE(msgBuf,HlimitMsgFormat)
      &     ' SEAICE_INIT_FIXED: Hlimit = ', (Hlimit(k),k=0,nITD)
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                    SQUEEZE_RIGHT, myThid )
+#endif /* SEAICE_ITD */
 
-#endif
+C     Only Master Thread updates parameter in common block:
+      _END_MASTER(myThid)
 
 #ifdef SEAICE_ALLOW_JFNK
+C     Only Master Thread updates parameter in common block:
+      _BEGIN_MASTER(myThid)
 C     initialise some diagnostic counters for the JFNK solver
       totalNewtonIters   = 0
       totalNewtonFails   = 0
       totalKrylovIters   = 0
       totalKrylovFails   = 0
       totalJFNKtimeSteps = 0
+      _END_MASTER(myThid)
 C     this cannot be done here, because globalArea is only defined
 C     after S/R PACKAGES_INIT_FIXED, so we move it to S/R SEAICE_INIT_VARIA
 CML      CALL SEAICE_MAP2VEC( nVec, rAw, rAs,
@@ -200,6 +201,9 @@ CML        ENDDO
 CML       ENDDO
 CML      ENDDO
 #endif /* SEAICE_ALLOW_JFNK */
+
+C--   all threads wait for master to finish initialisation of shared params
+      _BARRIER
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
