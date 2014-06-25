@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/SEAICE_SIZE.h,v 1.3 2014/05/27 15:26:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/SEAICE_SIZE.h,v 1.4 2014/06/25 10:54:27 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_SEAICE
@@ -41,6 +41,8 @@ C-    Maximum Number of tracers
       PARAMETER ( NMAX_TICE=10 )
       INTEGER SOLV_MAX_FIXED
       PARAMETER ( SOLV_MAX_FIXED=500 )
+      INTEGER MPSEUDOTIMESTEPS
+      PARAMETER (MPSEUDOTIMESTEPS=2)
 #endif
 
 #endif /* ALLOW_SEAICE */
