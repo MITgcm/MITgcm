@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2010 2014/06/24 22:03:47 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2011 2014/06/25 10:57:05 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice
+  - move definition of MPSEUDOTIMESTEPS into TAMC-block in
+    SEAICE_SIZE.h
+  - add a store directive in S/R seaice_calc_viscosities
 o pkg/seaice (ITD code):
   - fix definition of Hlimit for multi-threaded case
   - use double precision arithmetic to compute Hlimit: this affects results;
