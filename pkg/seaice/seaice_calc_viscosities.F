@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.25 2014/04/07 13:07:29 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.26 2014/06/25 10:47:52 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -85,6 +85,9 @@ C--   FIRST SET UP BASIC CONSTANTS
 C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE e12Csqr = comlev1_dynsol, kind=isbyte, key = ikey_dynamics
+#endif /* ALLOW_AUTODIFF_TAMC */
 C     need to do this beforehand for easier vectorization after
 C     TAFization
         IF ( SEAICEetaZmethod .EQ. 0 ) THEN
