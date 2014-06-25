@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/SEAICE_OPTIONS.h,v 1.19 2013/03/29 02:03:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/SEAICE_OPTIONS.h,v 1.20 2014/06/25 14:11:22 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -89,6 +89,9 @@ C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
 #  undef SEAICE_ZETA_SMOOTHREG
 C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
 # undef SEAICE_ALLOW_TEM
+C     The adjoint compiler TAF complains the least (and gives the best code)
+C     when SEAICE_VECTORIZE_LSR is defined, but this is a bit of a hack
+# define SEAICE_VECTORIZE_LSR
 #else /* not SEAICE_CGRID, but old B-grid */
 C--   By default for B-grid dynamics solver wind stress under sea-ice is
 C     set to the same value as it would be if there was no sea-ice.
