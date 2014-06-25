@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.116 2014/04/07 14:58:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.117 2014/06/25 10:48:26 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -502,8 +502,6 @@ C--   Constants used by sea-ice model
       PARAMETER ( QUART = 0.25 _d 0, HALF = 0.5 _d 0 )
       _RL siEps
       PARAMETER ( siEps = 1. _d -5 )
-      INTEGER MPSEUDOTIMESTEPS
-      PARAMETER (MPSEUDOTIMESTEPS=2)
 
 C--   Constants needed by McPhee formulas for turbulent ocean fluxes :
 C        Stanton number (dimensionless), typical friction velocity
