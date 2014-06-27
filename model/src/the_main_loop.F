@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.161 2014/05/12 22:09:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.162 2014/06/27 14:36:37 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -449,6 +449,10 @@ c--
 #   ifdef ALLOW_SEAICE
 #    ifdef SEAICE_ALLOW_DYNAMICS
 CADJ INIT comlev1_dynsol = COMMON,nchklev_1*MPSEUDOTIMESTEPS
+CADJ INIT comlev1_lsr = COMMON, 
+CADJ &                        nchklev_1*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
+CADJ INIT comlev1_bibj_dyniter = COMMON,
+CADJ & nchklev_1*nsx*nsy*nthreads_chkpt*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
 #    ifdef SEAICE_LSR_ADJOINT_ITER
 CADJ INIT comlev1_dyniter =
 CADJ &    COMMON,nchklev_1*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
@@ -457,10 +461,10 @@ CADJ &    COMMON,nchklev_1*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
 #   ifdef SEAICE_ALLOW_EVP
 CADJ INIT comlev1_evp = COMMON,nEVPstepMax*nchklev_1
 #   endif
-#   ifdef SEAICE_MULTICATEGORY
-CADJ INIT comlev1_multdim
-CADJ &    = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt*multdim
-#   endif
+CML#   ifdef SEAICE_MULTICATEGORY
+CMLCADJ INIT comlev1_multdim
+CMLCADJ &    = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt*nitd
+CML#   endif
 #    ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ INIT comlev1_bibj_k_gadice = COMMON,
 CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*maxpass
