@@ -25,6 +25,7 @@ cost_gencost_customize.f
 cost_gencost_sshv4.f
 cost_gencost_sstv4.f
 cost_gencost_seaicev4.f
+cost_gencost_boxmean.f
 cost_genctrl.f
 cost_gen_transport.f
 cost_geoid.f                    

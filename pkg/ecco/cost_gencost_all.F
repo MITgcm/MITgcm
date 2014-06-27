@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.12 2013/03/28 00:25:56 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.13 2014/06/27 14:23:19 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -75,6 +75,8 @@ c     == end of interface ==
          endif
 
       end do
+
+      call cost_gencost_boxmean( mythid )
 
 # if (defined(ALLOW_GENCOST_SSHV4))
       IF (using_cost_altim) 

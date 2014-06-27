@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.69 2014/06/09 17:47:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.70 2014/06/27 14:23:19 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -549,6 +549,7 @@ cgf     &        'genbar', k
      &        (gencost_name(k).EQ.'sshv4-gfo').OR.
      &        (gencost_name(k).EQ.'sshv4-lsc').OR.
      &        (gencost_name(k).EQ.'sshv4-gmsl').OR.
+     &        (gencost_name(k).EQ.'boxmean').OR.
      &        (gencost_name(k).EQ.'sstv4-amsre').OR.
      &        (gencost_name(k).EQ.'sstv4-amsre-lsc') ) then
 c pre-specified generic cost terms using otherwise created barfiles
