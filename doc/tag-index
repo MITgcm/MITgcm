@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2012 2014/06/27 14:37:03 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2013 2014/06/27 14:48:07 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -12,6 +12,7 @@ o pkg/seaice
     for SEAICE_VECTORIZE_LSR defined (i.e. no extensive recomputation
     warnings left), but there are still too many recomputations on the
     solver iteration level
+  - define SEAICE_VECTORISZE_LSR in offline_exf_seaice/code_ad/SEAICE_OPTIONS.h
   - move definition of MPSEUDOTIMESTEPS into TAMC-block in
     SEAICE_SIZE.h
   - add a store directive in S/R seaice_calc_viscosities
