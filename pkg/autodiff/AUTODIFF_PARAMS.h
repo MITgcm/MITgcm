@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF_PARAMS.h,v 1.7 2012/11/15 18:11:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF_PARAMS.h,v 1.8 2014/06/27 14:18:57 gforget Exp $
 C $Name:  $
 
 CBOP
@@ -30,6 +30,7 @@ C     SEAICEuseDYNAMICSswitchInAd  :: switch on/off seaice Dyn in adjoint mode (
       LOGICAL useSALT_PLUMEinAdMode, useSALT_PLUMEInFwdMode
       LOGICAL SEAICEuseFREEDRIFTswitchInAd, SEAICEuseFREEDRIFTinFwdMode
       LOGICAL SEAICEuseDYNAMICSswitchInAd, SEAICEuseDYNAMICSinFwdMode
+      LOGICAL useSmoothCorrel2DinAdMode, useSmoothCorrel2DinFwdMode
 
 C-    Logical for ad dump format (if true then write all records
 C       to one file per variable; else write one file per record)
@@ -44,6 +45,7 @@ C       to one file per variable; else write one file per record)
      &       useSALT_PLUMEinAdMode, useSALT_PLUMEInFwdMode,
      &       SEAICEuseFREEDRIFTswitchInAd, SEAICEuseFREEDRIFTinFwdMode,
      &       SEAICEuseDYNAMICSswitchInAd, SEAICEuseDYNAMICSinFwdMode,
+     &       useSmoothCorrel2DinAdMode, useSmoothCorrel2DinFwdMode,
      &       dumpAdByRec
 
 C--   COMMON /AUTODIFF_PARM_I/ Integer valued parameters used by the pkg.

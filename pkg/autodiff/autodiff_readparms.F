@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.9 2012/11/15 18:11:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.10 2014/06/27 14:18:57 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -38,7 +38,7 @@ C     iUnit      :: Work variable for IO unit number
      &       dumpAdByRec,
      &       useKPPinAdMode, useGGL90inAdMode,
      &       useGMRediInAdMode, useSALT_PLUMEinAdMode,
-     &       useSEAICEinAdMode,
+     &       useSEAICEinAdMode, useSmoothCorrel2DinAdMode,
      &       inAdExact,
      &       SEAICEuseFREEDRIFTswitchInAd, SEAICEuseDYNAMICSswitchInAd
 
@@ -63,6 +63,7 @@ C--   default : write one file per record
 C-- pkg/seaice related switches
       SEAICEuseFREEDRIFTswitchInAd = .FALSE.
       SEAICEuseDYNAMICSswitchInAd  = .FALSE.
+      useSmoothCorrel2DinAdMode = .TRUE.
 
       WRITE(msgBuf,'(A)') 'AUTODIFF_READPARMS: opening data.autodiff'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
