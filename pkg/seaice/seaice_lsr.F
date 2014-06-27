@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.93 2014/06/27 14:35:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.94 2014/06/27 21:15:59 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -614,12 +614,9 @@ cph--- need to kick out goto
       doIterate4v = .TRUE.
 
 C ITERATION START -----------------------------------------------------
-C     Ideally, we would like to the the loop-directive for this
-C     iterative loop, but (unsurprisingly) it does not seem to work for 
-C     this convoluted case of mixed iterations, so it is commented out
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ LOOP = iteration uice, vice = comlev1_dyniter
-CML#endif /* ALLOW_AUTODIFF_TAMC */
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ LOOP = iteration uice, vice
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (SEAICE_LSR_ADJOINT_ITER))
       IF ( inAdMode ) THEN
@@ -636,11 +633,16 @@ CML#endif /* ALLOW_AUTODIFF_TAMC */
 
       DO m = 1, SOLV_MAX_TMP
 
-# if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_LSR_ADJOINT_ITER)
+# ifdef ALLOW_AUTODIFF_TAMC
+#  ifdef SEAICE_LSR_ADJOINT_ITER
          itmpkey2 = (itmpkey-1)*SOLV_MAX_FIXED +
      &              MIN(m,SOLV_MAX_FIXED)
-CADJ STORE wfau, wfav = comlev1_lsr,  kind=isbyte, key = itmpkey2
-CADJ STORE doIterate4u, doIterate4v = comlev1_lsr, key = itmpkey2
+CADJ STORE utmp, vtmp = comlev1_dyniter, kind=isbyte,
+CADJ &     key = itmpkey2
+#  else
+CADJ STORE utmp, vtmp = comlev1_dynsol, kind=isbyte,
+CADJ &     key = itmpkey
+#  endif
 # endif /* ALLOW_AUTODIFF_TAMC */
 
        IF ( doIterate4u .OR. doIterate4v ) THEN
@@ -727,25 +729,33 @@ C     end bi,bj-loops
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
 
+C-jmc: get less TAF warnings when always (no if doIterate) saving uIce,vIce:
+C     save uIce prior to iteration, NOW SET U(3)=U(1)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            uTmp(I,J,bi,bj)=uIce(I,J,bi,bj)
+           ENDDO
+          ENDDO
+C     save vIce prior to iteration, NOW SET V(3)=V(1)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            vTmp(I,J,bi,bj)=vIce(I,J,bi,bj)
+           ENDDO
+          ENDDO
+
           IF ( doIterate4u ) THEN
 C Solve for uIce :
            CALL SEAICE_LSR_TRIDIAGU(
-     I          AU, BU, CU, uRt1, uRt2, rhsU, seaiceMaskU, WFAU,
+     I          AU, BU, CU, uRt1, uRt2, rhsU, uTmp, seaiceMaskU, WFAU,
      U          uIce,
-#ifdef ALLOW_AUTODIFF_TAMC
-     I          ilcall, m,
-#endif /*  ALLOW_AUTODIFF_TAMC */
      I          iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
           ENDIF
 
           IF ( doIterate4v ) THEN
 C Solve for vIce
            CALL SEAICE_LSR_TRIDIAGV(
-     I          AV, BV, CV, vRt1, vRt2, rhsV, seaiceMaskV, WFAV, 
+     I          AV, BV, CV, vRt1, vRt2, rhsV, vTmp, seaiceMaskV, WFAV, 
      U          vIce,
-#ifdef ALLOW_AUTODIFF_TAMC
-     I          ilcall, m,
-#endif /*  ALLOW_AUTODIFF_TAMC */
      I          iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
           ENDIF
 
@@ -963,16 +973,16 @@ C     evaluate divergence of stress and apply to forcing
      &          + sig12(I  ,J+1) * _dxV(I  ,J+1,bi,bj)
      &          - sig12(I  ,J  ) * _dxV(I  ,J  ,bi,bj)
      &          ) * recip_rAw(I,J,bi,bj)
-           stressDivergenceY(I,J,bi,bj) =
+            stressDivergenceY(I,J,bi,bj) =
      &          ( sig22(I  ,J  ) * _dxF(I  ,J  ,bi,bj)
      &          - sig22(I  ,J-1) * _dxF(I  ,J-1,bi,bj)
      &          + sig12(I+1,J  ) * _dyU(I+1,J  ,bi,bj)
      &          - sig12(I  ,J  ) * _dyU(I  ,J  ,bi,bj)
      &          ) * recip_rAs(I,J,bi,bj)
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
-       ENDDO
 C     endif  useHB87StressCoupling
       ENDIF
 
@@ -1402,11 +1412,8 @@ CBOP
 C     !ROUTINE: SEAICE_LSR_TRIDIAGU
 C     !INTERFACE:
       SUBROUTINE SEAICE_LSR_TRIDIAGU(
-     I     AU, BU, CU, uRt1, uRt2, rhsU, seaiceMaskU, WFAU,
+     I     AU, BU, CU, uRt1, uRt2, rhsU, uTmp, seaiceMaskU, WFAU,
      U     uIce,
-#ifdef ALLOW_AUTODIFF_TAMC
-     I     ilcall, m,
-#endif /*  ALLOW_AUTODIFF_TAMC */
      I     iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
@@ -1419,12 +1426,6 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "EEPARAMS.h"
-# include "SEAICE_SIZE.h"
-# include "AUTODIFF_PARAMS.h"
-# include "tamc.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -1435,9 +1436,6 @@ C     myThid     :: my Thread Id. number
       INTEGER myIter
       INTEGER myThid
       INTEGER iMin, iMax, jMin, jMax, bi, bj
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ilcall, m
-#endif /*  ALLOW_AUTODIFF_TAMC */
 C     diagonals of coefficient matrices
       _RL AU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -1447,6 +1445,8 @@ C     coefficients for lateral points, v(j+/-1)
       _RL uRt2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     right hand side
       _RL rhsU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     velocity of previous iteration step
+      _RL uTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     on entry: first guess and on exit: solution
       _RL uIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     mask
@@ -1462,29 +1462,10 @@ C     i,j  :: Loop counters
 #ifdef SEAICE_VECTORIZE_LSR_ZEBRA
       INTEGER K
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ilockey
-#endif /* ALLOW_AUTODIFF_TAMC */
       _RL AA3
       _RL URT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL CUU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       
-#ifdef ALLOW_AUTODIFF_TAMC
-      ilockey = (ikey_dynamics-1)*MPSEUDOTIMESTEPS + ilcall
-      ilockey = (ilockey-1)*SOLV_MAX_FIXED + MIN(m,SOLV_MAX_FIXED)
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-      act3 = myThid - 1
-      max3 = nTx*nTy
-      act4 = ilockey - 1
-      ilockey = (act1 + 1) + act2*max1
-     &                     + act3*max1*max2
-     &                     + act4*max1*max2*max3
-CADJ STORE uice(:,:,bi,bj) = 
-CADJ &     comlev1_bibj_dyniter, kind=isbyte, key = ilockey
-#endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef SEAICE_VECTORIZE_LSR_ZEBRA
 C     Need to initialize local arrays
       DO J = 1-OLy,sNy+OLy
@@ -1547,8 +1528,8 @@ C     go back to original order
         URT(IM,J)=URT(IM,J)-CUU(IM,J)*URT(IM+1,J)
        ENDDO
        DO I=iMin,iMax
-        uIce(I,J,bi,bj)=uIce(I,J,bi,bj)
-     &       +WFAU*(URT(I,J)-uIce(I,J,bi,bj))
+        uIce(I,J,bi,bj)=uTmp(I,J,bi,bj)
+     &       +WFAU*(URT(I,J)-uTmp(I,J,bi,bj))
        ENDDO
       ENDDO
 #ifdef SEAICE_VECTORIZE_LSR_ZEBRA
@@ -1564,11 +1545,8 @@ CBOP
 C     !ROUTINE: SEAICE_LSR_TRIDIAGV
 C     !INTERFACE:
       SUBROUTINE SEAICE_LSR_TRIDIAGV(
-     I     AV, BV, CV, vRt1, vRt2, rhsV, seaiceMaskV, WFAV, 
+     I     AV, BV, CV, vRt1, vRt2, rhsV, vTmp, seaiceMaskV, WFAV, 
      U     vIce,
-#ifdef ALLOW_AUTODIFF_TAMC
-     I     ilcall, m,
-#endif /*  ALLOW_AUTODIFF_TAMC */
      I     iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
@@ -1581,12 +1559,6 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "EEPARAMS.h"
-# include "SEAICE_SIZE.h"
-# include "AUTODIFF_PARAMS.h"
-# include "tamc.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -1597,9 +1569,6 @@ C     myThid     :: my Thread Id. number
       INTEGER myIter
       INTEGER myThid
       INTEGER iMin, iMax, jMin, jMax, bi, bj
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ilcall, m
-#endif /*  ALLOW_AUTODIFF_TAMC */
 C     diagonals of coefficient matrices
       _RL AV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -1609,6 +1578,8 @@ C     coefficients for lateral points, v(j+/-1)
       _RL vRt2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     right hand side
       _RL rhsV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     velocity of previous iteration step
+      _RL vTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     on entry: first guess and on exit: solution
       _RL vIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     mask
@@ -1624,29 +1595,10 @@ C     i,j  :: Loop counters
 #ifdef SEAICE_VECTORIZE_LSR_ZEBRA
       INTEGER K
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ilockey
-#endif /* ALLOW_AUTODIFF_TAMC */
       _RL AA3
       _RL VRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL CVV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-#ifdef ALLOW_AUTODIFF_TAMC
-      ilockey = (ikey_dynamics-1)*MPSEUDOTIMESTEPS + ilcall
-      ilockey = (ilockey-1)*SOLV_MAX_FIXED + MIN(m,SOLV_MAX_FIXED)
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-      act3 = myThid - 1
-      max3 = nTx*nTy
-      act4 = ilockey - 1
-      ilockey = (act1 + 1) + act2*max1
-     &                     + act3*max1*max2
-     &                     + act4*max1*max2*max3
-CADJ STORE vice(:,:,bi,bj) = 
-CADJ &     comlev1_bibj_dyniter, kind=isbyte, key = ilockey
-#endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef SEAICE_VECTORIZE_LSR_ZEBRA
 C     Need to initialize local arrays
       DO J = 1-OLy,sNy+OLy
@@ -1718,8 +1670,8 @@ C     go back to original order
         VRT(I,JM)=VRT(I,JM)-CVV(I,JM)*VRT(I,JM+1)
        ENDDO
        DO J=jMin,jMax
-        vIce(I,J,bi,bj)=vIce(I,J,bi,bj)
-     &       +WFAV*(VRT(I,J)-vIce(I,J,bi,bj))
+        vIce(I,J,bi,bj)=vTmp(I,J,bi,bj)
+     &       +WFAV*(VRT(I,J)-vTmp(I,J,bi,bj))
        ENDDO
       ENDDO
 #ifdef SEAICE_VECTORIZE_LSR_ZEBRA
