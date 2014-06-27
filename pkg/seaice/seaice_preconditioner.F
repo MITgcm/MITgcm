@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.21 2013/04/04 07:02:51 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.22 2014/06/27 14:34:00 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -278,14 +278,6 @@ C ITERATION START -----------------------------------------------------
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
 
-C     save du/vIce prior to iteration
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           uTmp(I,J,bi,bj)=duIce(I,J,bi,bj)
-           vTmp(I,J,bi,bj)=dvIce(I,J,bi,bj)
-          ENDDO
-         ENDDO
-
 C     set up right-hand sides for u- and v-equations
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -325,8 +317,12 @@ C--     prevent tri-diagonal solver to modify OB values:
 
 C Solve for uIce :
          CALL SEAICE_LSR_TRIDIAGU(
-     I        AU, BU, CU, uRt1, uRt2, rhsU, uTmp, seaiceMaskU, WFAU,
+     I        AU, BU, CU, uRt1, uRt2, rhsU, seaiceMaskU, WFAU,
      U        duIce,
+# if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_LSR_ADJOINT_ITER)
+C     these are parameters for storing uIce(:,:,bi,bj), dummies for now
+     I        1,1,
+# endif /* ALLOW_AUTODIFF_TAMC and SEAICE_LSR_ADJOINT_ITER */
      I        imin, imax, jmin, jmax, bi, bj, myTime, myIter, myThid )
 
 #ifdef SEAICE_PRECOND_EXTRA_EXCHANGE
@@ -362,8 +358,12 @@ C--     prevent tri-diagonal solver to modify OB values:
 
 C Solve for dvIce
          CALL SEAICE_LSR_TRIDIAGV(
-     I        AV, BV, CV, vRt1, vRt2, rhsV, vTmp, seaiceMaskV, WFAV, 
+     I        AV, BV, CV, vRt1, vRt2, rhsV, seaiceMaskV, WFAV, 
      U        dvIce,
+# if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_LSR_ADJOINT_ITER)
+C     these are parameters for storing uIce(:,:,bi,bj), dummies for now
+     I        1,1,
+# endif /* ALLOW_AUTODIFF_TAMC and SEAICE_LSR_ADJOINT_ITER */
      I        imin, imax, jmin, jmax, bi, bj, myTime, myIter, myThid )
 
 C     end bi,bj-loops
