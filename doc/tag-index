@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2013 2014/06/27 14:48:07 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2014 2014/06/27 14:49:22 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -9,9 +9,9 @@ o pkg/seaice
     seaice_lsr_tridiagu/v
   - remove some store directives and add new ones in an effort to get
     finally rid off the recomputation warnings. This is successful
-    for SEAICE_VECTORIZE_LSR defined (i.e. no extensive recomputation
-    warnings left), but there are still too many recomputations on the
-    solver iteration level
+    when SEAICE_VECTORIZE_LSR ***and*** SEAICE_LSR_ADJOINT_ITER are
+    defined (i.e. no extensive recomputation warnings left), but there
+    are still too many recomputations on the solver iteration level
   - define SEAICE_VECTORISZE_LSR in offline_exf_seaice/code_ad/SEAICE_OPTIONS.h
   - move definition of MPSEUDOTIMESTEPS into TAMC-block in
     SEAICE_SIZE.h
