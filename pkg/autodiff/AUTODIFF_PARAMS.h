@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF_PARAMS.h,v 1.8 2014/06/27 14:18:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF_PARAMS.h,v 1.9 2014/06/28 22:41:00 gforget Exp $
 C $Name:  $
 
 CBOP
@@ -53,12 +53,21 @@ C     dumpAdVarExch :: control ad-variables exchange before dumping output
 C     mon_AdVarExch :: control ad-variables exchange before monitor output
 C      - for both   :: =0 : no exch ; =1 : apply adexch ;
 C      *AdVarExch - :: =2 : do adexch on a local copy.
+C     SEAICEapproxLevInAd :: level of approximation in seaice adjoint
+C       -1 (and .NOT.useSEAICEinAdMode) : use seaice_fake adjoint
+C       0 (and .NOT.useSEAICEinAdMode)  : omit all of seaice thermo adjoint 
+C       0 (and useSEAICEinAdMode)       : use all of seaice thermo adjoint
+C       >= 1 (and useSEAICEinAdMode)    : omit pieces of seaice thermo adjoint 
       INTEGER dumpAdVarExch
       INTEGER mon_AdVarExch
+      INTEGER SEAICEapproxLevInAd
       COMMON /AUTODIFF_PARM_I/
-     &       dumpAdVarExch, mon_AdVarExch
+     &       dumpAdVarExch, mon_AdVarExch, SEAICEapproxLevInAd
 
 C--   COMMON /AUTODIFF_PARM_R/ "Real" valued parameters used by the pkg.
+C     viscFacInAd :: viscosity factor for adjoint
+      _RL viscFacInAd
+      COMMON /AUTODIFF_PARM_R/ viscFacInAd
 
 C--   COMMON /AUTODIFF_PARM_C/ Character valued parameters used by the pkg.
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.10 2014/06/27 14:18:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.11 2014/06/28 22:41:00 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -39,7 +39,7 @@ C     iUnit      :: Work variable for IO unit number
      &       useKPPinAdMode, useGGL90inAdMode,
      &       useGMRediInAdMode, useSALT_PLUMEinAdMode,
      &       useSEAICEinAdMode, useSmoothCorrel2DinAdMode,
-     &       inAdExact,
+     &       inAdExact, SEAICEapproxLevInAd, viscFacInAd,
      &       SEAICEuseFREEDRIFTswitchInAd, SEAICEuseDYNAMICSswitchInAd
 
       _BEGIN_MASTER(myThid)
@@ -59,6 +59,8 @@ C--   default : write one file per record
       useGGL90inAdMode   = .TRUE.
       useSALT_PLUMEinAdMode = .TRUE.
       inAdExact          = .TRUE.
+      SEAICEapproxLevInAd = 0
+      viscFacInAd        = 1. _d 0
 
 C-- pkg/seaice related switches
       SEAICEuseFREEDRIFTswitchInAd = .FALSE.
@@ -107,6 +109,14 @@ C     store value of usePKG as it will be set in S/R ADAUTODIFF_INADMODE_SET
       useGGL90inAdMode  = useGGL90inAdMode  .AND. useGGL90
       useSALT_PLUMEinAdMode = useSALT_PLUMEinAdMode .AND. useSALT_PLUME
 
+#ifdef ALLOW_SEAICE
+c     level of approximation in seaice thermodynamics adjoint
+      if (useSEAICEinFwdMode.AND.(.NOT.useSEAICEinAdMode))
+     &   SEAICEapproxLevInAd=MIN(SEAICEapproxLevInAd,0)
+      if (useSEAICEinAdMode)
+     &   SEAICEapproxLevInAd=MAX(SEAICEapproxLevInAd,0)
+#endif
+
 C--   Print out some kee parameters :
       WRITE(msgBuf,'(A)') '// ==================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -137,11 +147,16 @@ C--   Print out some kee parameters :
        CALL WRITE_0D_L( SEAICEuseFREEDRIFTswitchInAd, INDEX_NONE,
      &  'SEAICEuseFREEDRIFTswitchInAd=',
      &            ' /* switch On/Off Free-Drift in AD mode */')
+       CALL WRITE_0D_I( SEAICEapproxLevInAd, INDEX_NONE,
+     &  'SEAICEapproxLevInAd =',
+     &  ' /* -1:SEAICE_FAKE, >0:other adjoint approximation */')
 #endif /* ALLOW_SEAICE */
        CALL WRITE_0D_I( dumpAdVarExch, INDEX_NONE,
      &  'dumpAdVarExch =', ' /* control adexch before dumpinp */')
        CALL WRITE_0D_I( mon_AdVarExch, INDEX_NONE,
      &  'mon_AdVarExch =', ' /* control adexch before monitor */')
+       CALL WRITE_0D_RL( viscFacInAd, INDEX_NONE,
+     &  'viscFacInAd =', ' /* viscosity factor for adjoint */')
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_inadmode_unset_ad.F,v 1.10 2014/06/27 14:18:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_inadmode_unset_ad.F,v 1.11 2014/06/28 22:41:00 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -44,7 +44,9 @@ C     myThid :: my Thread Id number
       IF ( SEAICEuseDYNAMICSswitchInAd ) THEN
         SEAICEuseDYNAMICS  = SEAICEuseDYNAMICSinFwdMode
       ENDIF
+      SEAICEadjMODE=0
 #endif /* ALLOW_SEAICE */
+      viscFacAdj=1. _d 0
 
       IF ( debugLevel.GE.debLevC ) THEN
        WRITE(msgBuf,'(A,L5)')
@@ -69,6 +71,11 @@ C     myThid :: my Thread Id number
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
 
+       WRITE(msgBuf,'(A,1PE21.14)')
+     &      'S/R ADAUTODIFF_INADMODE_UNSET: viscFacAdj =',viscFacAdj
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+
 #ifdef ALLOW_CTRL
        WRITE(msgBuf,'(A,L5)')
      &      'S/R ADAUTODIFF_INADMODE_UNSET: ctrlSmoothCorrel2D    =',
@@ -87,6 +94,12 @@ C     myThid :: my Thread Id number
        IF ( SEAICEuseDYNAMICSswitchInAd ) THEN
          WRITE(msgBuf,'(2A,L5)') 'S/R ADAUTODIFF_INADMODE_UNSET: ',
      &        'SEAICEuseDYNAMICS =', SEAICEuseDYNAMICS
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+       ENDIF
+       IF ( SEAICEapproxLevInAd.NE.0 ) THEN
+         WRITE(msgBuf,'(2A,I2)') 'S/R ADAUTODIFF_INADMODE_UNSET: ',
+     &        'SEAICEadjMODE =', SEAICEadjMODE
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
        ENDIF
