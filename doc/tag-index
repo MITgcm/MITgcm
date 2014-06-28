@@ -1,9 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2014 2014/06/27 14:49:22 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2015 2014/06/28 22:50:34 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff :
+  - introduce useSmoothCorrel2DinAdMode, SEAICEapproxLevInAd, and 
+    viscFacInAd : run time parameters allowing for adjoint switches
+    note : logic for useSmoothCorrel2DinAdMode is in ctrl_readparms.F
+o pkg/ecco : 
+  - introduce cost_gencost_boxmean.F that computes a box mean 
+    temperature (for use in adjoint sensitivity studies).
+o model/src/set_defaults.F : initialize viscFacAdj to 1.
+o pkg/mom_common/mom_calc_visc.F :
+  - ifdef ALLOW_AUTODIFF then include viscFacAdj factor.
+o pkg/seaice/seaice_summary.F : 
+  - statement for SEAICEadjMODE now in autodiff_readparms.F
 o pkg/seaice
   - remove unnecessary u/vTmp from subroutine call of
     seaice_lsr_tridiagu/v
