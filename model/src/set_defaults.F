@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.171 2014/05/06 15:47:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.172 2014/06/28 22:34:16 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -126,6 +126,7 @@ C-    viscosity and diffusivity default value:
       viscC2leithD        = 0. _d 0
       viscC2smag          = 0. _d 0
       viscArDefault       = 0. _d -3
+      viscFacAdj          = 1. _d 0
       no_slip_sides       = .TRUE.
       no_slip_bottom      = .TRUE.
       sideDragFactor      = 2. _d 0
