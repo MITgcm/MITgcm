@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.74 2014/05/23 01:30:06 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.75 2014/06/28 22:37:13 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -640,12 +640,6 @@ C--  Output related param.
      & 'SEAICE_hice_reg   =', ' /* reduce derivative singularities */')
       CALL WRITE_0D_RL( SEAICE_area_floor        ,INDEX_NONE,
      & 'SEAICE_area_floor =', ' /* reduce derivative singularities */')
-
-#ifdef ALLOW_AUTODIFF_TAMC
-       CALL WRITE_0D_I ( SEAICEadjMODE, INDEX_NONE,
-     & 'SEAICEadjMODE =',
-     & ' /* -1:SEAICE_FAKE */')
-#endif /* ALLOW_AUTODIFF_TAMC */
 
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
