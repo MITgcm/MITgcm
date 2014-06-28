@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.47 2014/04/04 20:08:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.48 2014/06/28 22:36:04 gforget Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -404,6 +404,9 @@ C  Harmonic on Div.u points
      &          +viscAh_DLth(i,j)+viscAh_DSmg(i,j)
 #ifdef ALLOW_3D_VISCAH
      &          +viscAhDfld(i,j,k,bi,bj)
+#ifdef ALLOW_AUTODIFF
+     &          *viscFacAdj
+#endif
 #endif
          viscAh_DMin(i,j)=MAX(viscAhGridMin*L2rdt,Uscl)
          viscAh_D(i,j)=MAX(viscAh_DMin(i,j),Alin)
@@ -415,6 +418,9 @@ C  BiHarmonic on Div.u points
      &          +viscA4_DLth(i,j)+viscA4_DSmg(i,j)
 #ifdef ALLOW_3D_VISCA4
      &          +viscA4Dfld(i,j,k,bi,bj)
+#ifdef ALLOW_AUTODIFF
+     &          *viscFacAdj
+#endif
 #endif
          viscA4_DMin(i,j)=MAX(viscA4GridMin*L4rdt,U4scl)
          viscA4_D(i,j)=MAX(viscA4_DMin(i,j),Alin)
