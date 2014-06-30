@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2015 2014/06/28 22:50:34 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2016 2014/06/30 07:27:55 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -17,8 +17,6 @@ o pkg/mom_common/mom_calc_visc.F :
 o pkg/seaice/seaice_summary.F : 
   - statement for SEAICEadjMODE now in autodiff_readparms.F
 o pkg/seaice
-  - remove unnecessary u/vTmp from subroutine call of
-    seaice_lsr_tridiagu/v
   - remove some store directives and add new ones in an effort to get
     finally rid off the recomputation warnings. This is successful
     when SEAICE_VECTORIZE_LSR ***and*** SEAICE_LSR_ADJOINT_ITER are
