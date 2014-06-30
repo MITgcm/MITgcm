@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.24 2014/05/12 22:05:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.25 2014/06/30 15:42:39 mlosch Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -559,8 +559,10 @@ C-      2D arrays
           StoreSEAICE(I,J,bi,bj,10) = ETA(I,J,bi,bj)
 #  ifdef SEAICE_CGRID
           StoreSEAICE(I,J,bi,bj,11) = dwatn(I,J,bi,bj)
-          StoreSEAICE(I,J,bi,bj,12) = seaicemasku(I,J,bi,bj)
-          StoreSEAICE(I,J,bi,bj,13) = seaicemaskv(I,J,bi,bj)
+CML          StoreSEAICE(I,J,bi,bj,12) = seaicemasku(I,J,bi,bj)
+CML          StoreSEAICE(I,J,bi,bj,13) = seaicemaskv(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,12) = 0.0
+          StoreSEAICE(I,J,bi,bj,13) = 0.0
 #  else
           StoreSEAICE(I,J,bi,bj,11) = 0.0
           StoreSEAICE(I,J,bi,bj,12) = 0.0
