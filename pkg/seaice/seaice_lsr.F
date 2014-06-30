@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.95 2014/06/30 07:27:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.96 2014/06/30 15:45:49 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -594,6 +594,7 @@ CADJ &     key = itmpkey
         ENDDO
        ENDDO
        CALL EXCH_UV_XY_RL( uIce, vIce, .TRUE., myThid )
+#ifndef ALLOW_AUTODIFF_TAMC
        IF ( printResidual ) THEN
         CALL SEAICE_RESIDUAL(
      I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
@@ -601,6 +602,7 @@ CADJ &     key = itmpkey
      O                  residUmix, residVmix, uTmp, vTmp,
      I                  printResidual, myIter, myThid )
        ENDIF
+#endif /* ALLOW_AUTODIFF_TAMC */
       ENDIF
 #endif /* SEAICE_ALLOW_FREEDRIFT */
 
@@ -828,6 +830,7 @@ C ITERATION END -----------------------------------------------------
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+#ifndef ALLOW_AUTODIFF_TAMC
       IF ( printResidual ) THEN
 C--   Calculate final residual of the linearised system
         CALL SEAICE_RESIDUAL(
@@ -878,6 +881,7 @@ C--   Calculate final residual of the linearised system
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       ENDIF
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     APPLY MASKS
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -934,6 +938,12 @@ C     end outer ilcall pseudo-time stepping loop
       ENDDO
 
       IF ( useHB87StressCoupling ) THEN
+# ifdef ALLOW_AUTODIFF_TAMC
+C     These directives do not remove any recomputation warnings but avoid
+C     recomputing the entire LSR loop before evaluating this code block
+CADJ STORE uice, vice, eta, etaz, zeta = comlev1_dynsol, 
+CADJ &     kind=isbyte, key = ikey_dynamics
+# endif /* ALLOW_AUTODIFF_TAMC */
 C     compute the divergence of stress here to be used later
 C
 C     compute strain rate from latest velocities
@@ -1643,7 +1653,7 @@ C     i,j  :: Loop counters
       INTEGER K
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ilockey
+      INTEGER ilockey, klockey
 #endif /* ALLOW_AUTODIFF_TAMC */
       _RL AA3
       _RL VRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -1674,6 +1684,13 @@ C     Need to initialize local arrays
        ENDDO
       ENDDO
       DO K=0,1
+#ifdef ALLOW_AUTODIFF_TAMC
+C     not clear to my, why this is needed here and not in 
+C     s/r seaice_lsr_tridiagu, but it is ...
+      klockey = ilockey*(1 + k)
+CADJ STORE vice(:,:,bi,bj) = 
+CADJ &     comlev1_bibj_dyniter2, kind=isbyte, key = klockey
+#endif /* ALLOW_AUTODIFF_TAMC */
 #endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
 #ifdef SEAICE_VECTORIZE_LSR
       DO J=jMin,jMax
