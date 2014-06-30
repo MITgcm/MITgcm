@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.23 2014/06/27 21:15:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.24 2014/06/30 07:27:05 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -327,6 +327,10 @@ C Solve for uIce :
          CALL SEAICE_LSR_TRIDIAGU(
      I        AU, BU, CU, uRt1, uRt2, rhsU, uTmp, seaiceMaskU, WFAU,
      U        duIce,
+# if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_LSR_ADJOINT_ITER)
+C     these are parameters for storing uIce(:,:,bi,bj), dummies for now
+     I        1,1,
+# endif /* ALLOW_AUTODIFF_TAMC and SEAICE_LSR_ADJOINT_ITER */
      I        imin, imax, jmin, jmax, bi, bj, myTime, myIter, myThid )
 
 #ifdef SEAICE_PRECOND_EXTRA_EXCHANGE
@@ -364,6 +368,10 @@ C Solve for dvIce
          CALL SEAICE_LSR_TRIDIAGV(
      I        AV, BV, CV, vRt1, vRt2, rhsV, vTmp, seaiceMaskV, WFAV, 
      U        dvIce,
+# if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_LSR_ADJOINT_ITER)
+C     these are parameters for storing uIce(:,:,bi,bj), dummies for now
+     I        1,1,
+# endif /* ALLOW_AUTODIFF_TAMC and SEAICE_LSR_ADJOINT_ITER */
      I        imin, imax, jmin, jmax, bi, bj, myTime, myIter, myThid )
 
 C     end bi,bj-loops
