@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2017 2014/06/30 15:47:20 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2018 2014/07/04 11:57:23 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_lsr.F
+  - always initialize local arrays in seaice_lsr_tridiagu/v
+  - add more local tapes to seaice_lsr_tridiagu/v
+  - move storing u/vice(:,:,bi,bj) out of seaice_lsr_tridiagu/v, but 
+    keep it in bi/bj loop; this seems to be essential
+  - gradients are still wrong but only by 4-7 orders of magnitude
+    instead of 15 orders of magnitude, lab_sea improves a little
 o pkg/seaice
   - (pkg/autodiff) remove storing/restoring of seaiceMaskU/V that
     generates unnecessary code in seaice_lsr_ad
