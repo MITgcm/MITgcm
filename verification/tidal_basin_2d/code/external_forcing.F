@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tidal_basin_2d/code/external_forcing.F,v 1.7 2014/05/06 15:52:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tidal_basin_2d/code/external_forcing.F,v 1.8 2014/07/05 15:11:36 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -61,17 +61,6 @@ CEOP
       ENDIF
 
 C--   Forcing term
-#ifdef ALLOW_AIM
-      IF ( useAIM ) CALL AIM_TENDENCY_APPLY_U(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
-#endif /* ALLOW_AIM */
-
-#ifdef ALLOW_FIZHI
-      IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_U(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
-#endif /* ALLOW_FIZHI */
 
 C     Add windstress momentum impulse into the top-layer
       IF ( kLev .EQ. kSurface ) THEN
@@ -113,20 +102,6 @@ C Make the tide relatively strong (about 1 m)
 c    &   *min( myTime/86400. , 1.)
        ENDDO
       ENDDO
-
-#if (defined (ALLOW_TAU_EDDY))
-       CALL TAUEDDY_EXTERNAL_FORCING_U(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
-#endif
-
-#ifdef ALLOW_OBCS
-      IF (useOBCS) THEN
-       CALL OBCS_SPONGE_U(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
-      ENDIF
-#endif
 
       RETURN
       END
@@ -187,17 +162,6 @@ CEOP
       ENDIF
 
 C--   Forcing term
-#ifdef ALLOW_AIM
-      IF ( useAIM ) CALL AIM_TENDENCY_APPLY_V(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
-#endif /* ALLOW_AIM */
-
-#ifdef ALLOW_FIZHI
-      IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_V(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
-#endif /* ALLOW_FIZHI */
 
 C     Add windstress momentum impulse into the top-layer
       IF ( kLev .EQ. kSurface ) THEN
@@ -211,20 +175,6 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx
         ENDDO
        ENDDO
       ENDIF
-
-#if (defined (ALLOW_TAU_EDDY))
-       CALL TAUEDDY_EXTERNAL_FORCING_V(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
-#endif
-
-#ifdef ALLOW_OBCS
-      IF (useOBCS) THEN
-       CALL OBCS_SPONGE_V(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
-      ENDIF
-#endif
 
       RETURN
       END
@@ -294,17 +244,6 @@ CEOP
       recip_Cp = 1. _d 0 / HeatCapacity_Cp
 
 C--   Forcing term
-#ifdef ALLOW_AIM
-      IF ( useAIM ) CALL AIM_TENDENCY_APPLY_T(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
-#endif /* ALLOW_AIM */
-
-#ifdef ALLOW_FIZHI
-      IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_T(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
-#endif /* ALLOW_FIZHI */
 
 C     Add heat in top-layer
       IF ( kLev .EQ. kSurface ) THEN
@@ -341,14 +280,6 @@ c     IF ( usePenetratingSW ) THEN
         ENDDO
        ENDDO
 c     ENDIF
-#endif
-
-#ifdef ALLOW_OBCS
-      IF (useOBCS) THEN
-       CALL OBCS_SPONGE_T(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
-      ENDIF
 #endif
 
       RETURN
@@ -411,17 +342,6 @@ CEOP
       ENDIF
 
 C--   Forcing term
-#ifdef ALLOW_AIM
-      IF ( useAIM ) CALL AIM_TENDENCY_APPLY_S(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
-#endif /* ALLOW_AIM */
-
-#ifdef ALLOW_FIZHI
-      IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_S(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
-#endif /* ALLOW_FIZHI */
 
 C     Add fresh-water in top-layer
       IF ( kLev .EQ. kSurface ) THEN
@@ -433,14 +353,6 @@ C     Add fresh-water in top-layer
         ENDDO
        ENDDO
       ENDIF
-
-#ifdef ALLOW_OBCS
-      IF (useOBCS) THEN
-       CALL OBCS_SPONGE_S(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
-      ENDIF
-#endif
 
       RETURN
       END
