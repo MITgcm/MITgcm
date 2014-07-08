@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_save.F,v 1.2 2014/07/08 19:04:21 jmc Exp $
+C $Name:  $
+
 #include "LAYERS_OPTIONS.h"
 C--  File layers_save.F:
 C--   Contents
@@ -5,6 +8,7 @@ C--   o LAYERS_FILL_SURFACE_FLUX
 C--   o LAYERS_FILL_DFX
 C--   o LAYERS_FILL_DFY
 C--   o LAYERS_FILL_DFR
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: LAYERS_FILL_TFLUX
@@ -30,7 +34,7 @@ C***********************************************************************
 C   This is designed to look and work exactly like the a regular
 C   diagnostics_fill call.
 C***********************************************************************
-C     surfflux  :: The surface temperature flux, the same as what is filled into 
+C     surfflux  :: The surface temperature flux, the same as what is filled into
 C                   the TFLUX and SFLUX diagnostics
 C     trIdentity:: Index to let us know what tracer it is (1 for T, 2 for S)
 C     kLev      :: Integer flag for vertical levels:
@@ -83,8 +87,8 @@ C  diagnsostics are filled in all sorts of different ways.
 
 C -- only operate on T and S
        IF ((trIdentity.EQ.1).OR.(trIdentity.EQ.2)) THEN
- 
-        IF ( (kLev.EQ.0) .AND. (nLevs.EQ.1) .AND. (bibjFlg.EQ.0) 
+
+        IF ( (kLev.EQ.0) .AND. (nLevs.EQ.1) .AND. (bibjFlg.EQ.0)
      &       .AND. ((trIdentity.EQ.1) .OR. (trIdentity.EQ.2)) ) THEN
          DO bj=myByLo(myThid), myByHi(myThid)
           DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -95,7 +99,7 @@ C            DO i = 1,iRun
 C -- But here we need to explicitly fill the halo in order to compute flux divergence
            DO j = 1-OLy,sNy+OLy
             DO i = 1-OLx,sNx+OLx
-             layers_surfflux(i,j,1,trIdentity,bi,bj) = 
+             layers_surfflux(i,j,1,trIdentity,bi,bj) =
      &       layers_surfflux(i,j,1,trIdentity,bi,bj) +
      &              surfflux(i,j,bi,bj)
             ENDDO
@@ -149,14 +153,14 @@ C msgBuf           :: error message buffer
 C    CALL LAYERS_FILL_DFX( df, trIdentity, k, 1, 2,bi,bj, myThid )
 C -- only operate on T and S
        IF ((trIdentity.EQ.1).OR.(trIdentity.EQ.2)) THEN
- 
+
 C -- expect to be called INSIDE the bi-bj loop, with overlap present (bibjFlg=2)
-  
-       IF ( (nLevs.EQ.1) .AND. (bibjFlg.EQ.2) 
-     &     .AND. ((trIdentity.EQ.1) .OR. (trIdentity.EQ.2)) ) THEN  
+
+       IF ( (nLevs.EQ.1) .AND. (bibjFlg.EQ.2)
+     &     .AND. ((trIdentity.EQ.1) .OR. (trIdentity.EQ.2)) ) THEN
         DO j = 1-OLy,sNy+OLy
          DO i = 1-OLx,sNx+OLx
-          layers_dfx(i,j,kLev,trIdentity,biArg,bjArg) = 
+          layers_dfx(i,j,kLev,trIdentity,biArg,bjArg) =
      &      layers_dfx(i,j,kLev,trIdentity,biArg,bjArg) +
      &      df(i,j)
          ENDDO
@@ -170,11 +174,11 @@ C -- raise an error if this gets called in an unexpected way
         STOP 'ABNORMAL END: S/R LAYERS_FILL_DFX'
        ENDIF
       ENDIF
-#endif /* LAYERS_THERMODYNAMICS */    
+#endif /* LAYERS_THERMODYNAMICS */
       RETURN
       END
 C end of S/R LAYERS_FILL_DFX
-            
+
       SUBROUTINE LAYERS_FILL_DFY(
      I               df, trIdentity,
      I               kLev, nLevs, bibjFlg, biArg, bjArg, myThid )
@@ -206,14 +210,14 @@ C msgBuf           :: error message buffer
 C    CALL LAYERS_FILL_DFY( df, trIdentity, k, 1, 2,bi,bj, myThid )
 C -- only operate on T and S
        IF ((trIdentity.EQ.1).OR.(trIdentity.EQ.2)) THEN
- 
+
 C -- expect to be called INSIDE the bi-bj loop, with overlap present (bibjFlg=2)
- 
-       IF ( (nLevs.EQ.1) .AND. (bibjFlg.EQ.2) 
-     &     .AND. ((trIdentity.EQ.1) .OR. (trIdentity.EQ.2)) ) THEN  
+
+       IF ( (nLevs.EQ.1) .AND. (bibjFlg.EQ.2)
+     &     .AND. ((trIdentity.EQ.1) .OR. (trIdentity.EQ.2)) ) THEN
         DO j = 1-OLy,sNy+OLy
          DO i = 1-OLx,sNx+OLx
-          layers_dfy(i,j,kLev,trIdentity,biArg,bjArg) = 
+          layers_dfy(i,j,kLev,trIdentity,biArg,bjArg) =
      &      layers_dfy(i,j,kLev,trIdentity,biArg,bjArg) +
      &      df(i,j)
          ENDDO
@@ -225,8 +229,8 @@ C -- raise an error if this gets called in an unexpected way
      &          'was called in an unexpected way'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R LAYERS_FILL_DFY'
-       ENDIF    
-      
+       ENDIF
+
       ENDIF
 #endif /* LAYERS_THERMODYNAMICS */
 
@@ -265,14 +269,14 @@ C msgBuf           :: error message buffer
 C    CALL LAYERS_FILL_DFY( df, trIdentity, k, 1, 2,bi,bj, myThid )
 C -- only operate on T and S
        IF ((trIdentity.EQ.1).OR.(trIdentity.EQ.2)) THEN
- 
+
 C -- expect to be called INSIDE the bi-bj loop, with overlap present (bibjFlg=2)
 
-       IF ( (nLevs.EQ.1) .AND. (bibjFlg.EQ.2) 
-     &     .AND. ((trIdentity.EQ.1) .OR. (trIdentity.EQ.2)) ) THEN  
+       IF ( (nLevs.EQ.1) .AND. (bibjFlg.EQ.2)
+     &     .AND. ((trIdentity.EQ.1) .OR. (trIdentity.EQ.2)) ) THEN
         DO j = 1-OLy,sNy+OLy
          DO i = 1-OLx,sNx+OLx
-          layers_dfr(i,j,kLev,trIdentity,biArg,bjArg) = 
+          layers_dfr(i,j,kLev,trIdentity,biArg,bjArg) =
      &      layers_dfr(i,j,kLev,trIdentity,biArg,bjArg) +
      &      df(i,j)
          ENDDO
@@ -284,7 +288,7 @@ C -- raise an error if this gets called in an unexpected way
      &          'was called in an unexpected way'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R LAYERS_FILL_DFY'
-       ENDIF    
+       ENDIF
 
       ENDIF
 #endif /* LAYERS_THERMODYNAMICS */
@@ -292,7 +296,4 @@ C -- raise an error if this gets called in an unexpected way
       RETURN
       END
 C end of S/R LAYERS_FILL_DFR
-
-
-
 
