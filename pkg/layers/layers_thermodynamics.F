@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_thermodynamics.F,v 1.3 2014/07/08 19:03:39 jmc Exp $
+C $Name:  $
+
 #include "LAYERS_OPTIONS.h"
 C--  File layers_thermodynamics.F:
 C--   Contents
@@ -31,7 +34,6 @@ C     == Global variables ===
 C !INPUT PARAMETERS:
 C     myThid    :: my Thread Id number
       INTEGER myThid
-      INTEGER iLa
 CEOP
 
 #ifdef ALLOW_LAYERS
@@ -39,14 +41,14 @@ CEOP
 C !LOCAL VARIABLES:
 C     bi, bj   :: tile indices
 C     i,j      :: horizontal indices
-C     k        :: vertical index for model grid 
+C     k        :: vertical index for model grid
 C     kdown    :: temporary placeholder
 C     fluxfac  :: scaling factor for converting surface flux to tendency
-C     fluxfac  :: scaling factor for converting diffusive flux to tendency 
+C     fluxfac  :: scaling factor for converting diffusive flux to tendency
 C     downfac  :: mask for lower point
 
       INTEGER bi, bj
-      INTEGER i,j,k,kdown,iTracer                             
+      INTEGER i,j,k,kdown,iTracer
       _RL fluxfac(2), downfac, tmpfac
 
 C --  These factors convert the units of TFLUX and SFLUX diagnostics
@@ -55,18 +57,18 @@ C --  back to surfaceForcingT and surfaceForcingS units
       fluxfac(2) = 1.0/rUnit2mass
 
         DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid) 
-          DO iTracer = 1,2 
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO iTracer = 1,2
            k = 1
-C --       Loop for surface fluxes             
+C --       Loop for surface fluxes
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              layers_surfflux(i,j,k,iTracer,bi,bj) =
      &       layers_surfflux(i,j,k,iTracer,bi,bj)
-     &       *recip_drF(1)*_recip_hFacC(i,j,1,bi,bj) 
+     &       *recip_drF(1)*_recip_hFacC(i,j,1,bi,bj)
      &       *fluxfac(iTracer)
             ENDDO
-           ENDDO 
+           ENDDO
 C --       Loop for diffusive fluxes
 C --       If done correctly, we can overwrite the flux array in place
 C --       with its own divergence
@@ -76,22 +78,22 @@ C --       with its own divergence
               downfac = 0. _d 0
             ELSE
               downfac = 1. _d 0
-            ENDIF 
+            ENDIF
             DO j=1-OLy,sNy+OLy
              DO i=1-OLx,sNx+OLx
               tmpfac = -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &          *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)*recip_rhoFacC(k)
               layers_dfx(i,j,k,iTracer,bi,bj) = maskInC(i,j,bi,bj) *
-     &         tmpfac * ( layers_dfx(i+1,j,k,iTracer,bi,bj) - 
+     &         tmpfac * ( layers_dfx(i+1,j,k,iTracer,bi,bj) -
      &          layers_dfx(i,j,k,iTracer,bi,bj) )
               layers_dfy(i,j,k,iTracer,bi,bj) = maskInC(i,j,bi,bj) *
-     &         tmpfac * ( layers_dfy(i,j+1,k,iTracer,bi,bj) - 
-     &          layers_dfy(i,j,k,iTracer,bi,bj) )     
+     &         tmpfac * ( layers_dfy(i,j+1,k,iTracer,bi,bj) -
+     &          layers_dfy(i,j,k,iTracer,bi,bj) )
               layers_dfr(i,j,k,iTracer,bi,bj) = tmpfac * rkSign *
      &        ( layers_dfr(i,j,kdown,iTracer,bi,bj)*downfac -
      &          layers_dfr(i,j,k,iTracer,bi,bj) )
              ENDDO
-            ENDDO                                 
+            ENDDO
            ENDDO
           ENDDO
          ENDDO
@@ -127,7 +129,7 @@ C         ENDDO
 C        ENDDO
 C        CALL DIAGNOSTICS_FILL( tmp1k,'TFLUX   ',0,1,0,1,1,myThid )
 C       ENDIF
-C 
+C
 C C-    SFLUX (=total salt flux, match salt-content variations [g/m2/s])
 C       IF ( fluidIsWater .AND.
 C      &     DIAGNOSTICS_IS_ON('SFLUX   ',myThid) ) THEN
@@ -139,7 +141,7 @@ C            tmp1k(i,j,bi,bj) =
 C      &      surfaceForcingS(i,j,bi,bj)*rUnit2mass
 C           ENDDO
 C          ENDDO
-C 
+C
 C #ifdef NONLIN_FRSURF
 C          IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
 C      &        .AND. useRealFreshWaterFlux ) THEN
@@ -151,12 +153,11 @@ C            ENDDO
 C           ENDDO
 C          ENDIF
 C #endif /* NONLIN_FRSURF */
-C 
+C
 C         ENDDO
 C        ENDDO
 C        CALL DIAGNOSTICS_FILL( tmp1k,'SFLUX   ',0,1,0,1,1,myThid )
 C       ENDIF
-
 
 C     Ocean: Add temperature surface forcing (e.g., heat-flux) in surface level
 C      IF ( kLev .EQ. kSurface ) THEN
@@ -179,7 +180,6 @@ C        ENDDO
 C       ENDDO
 C      ENDIF
 
-
 C--   Divergence of fluxes
 C     Anelastic: scale vertical fluxes by rhoFac and leave Horizontal fluxes unchanged
 C     for Stevens OBC: keep only vertical diffusive contribution on boundaries
@@ -197,8 +197,7 @@ C    &                   +(rTransKp1(i,j)-rTrans(i,j))*rAdvFac
 C    &                  )*maskInC(i,j,bi,bj)
 C    &    )
 C      ENDDO
-C     ENDDO          
-
+C     ENDDO
 
 #endif /* LAYERS_THERMODYNAMICS */
 #endif /* USE_LAYERS */
