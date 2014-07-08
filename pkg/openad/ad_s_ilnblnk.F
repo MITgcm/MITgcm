@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/openad/ad_s_ilnblnk.F,v 1.2 2014/07/08 19:05:13 jmc Exp $
+C $Name:  $
+
 #include "CPP_EEOPTIONS.h"
 
 CBOP

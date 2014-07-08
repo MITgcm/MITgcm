@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/openad/ad_s_different_multiple.F,v 1.2 2014/07/08 19:05:13 jmc Exp $
+C $Name:  $
+
 #include "CPP_EEOPTIONS.h"
 CBOP
 C     !ROUTINE: DIFFERENT_MULTIPLE
@@ -8,23 +11,23 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | LOGICAL FUNCTION DIFFERENT\_MULTIPLE                       
+C     | LOGICAL FUNCTION DIFFERENT\_MULTIPLE
 C     | o Checks if a multiple of freq exist
 C     |   around val1 +/- step/2
 C     *==========================================================*
-C     | This routine is used for diagnostic and other periodic    
-C     | operations. It is very sensitive to arithmetic precision. 
-C     | For IEEE conforming arithmetic it works well but for      
-C     | cases where short cut arithmetic  is used it may not work 
-C     | as expected. To overcome this issue compile this routine  
-C     | separately with no optimisation.                          
+C     | This routine is used for diagnostic and other periodic
+C     | operations. It is very sensitive to arithmetic precision.
+C     | For IEEE conforming arithmetic it works well but for
+C     | cases where short cut arithmetic  is used it may not work
+C     | as expected. To overcome this issue compile this routine
+C     | separately with no optimisation.
 C     *==========================================================*
 
 C     !INPUT PARAMETERS:
 C     == Routine arguments ==
 C     freq       :: Frequency by which time is divided.
-C     val1       :: time that is checked 
-C     step       :: length of time interval (around val1) that is checked 
+C     val1       :: time that is checked
+C     step       :: length of time interval (around val1) that is checked
       _RL  freq, val1, step
       logical isit
 
