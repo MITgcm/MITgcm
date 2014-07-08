@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.22 2014/06/07 16:06:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.23 2014/07/08 19:02:42 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -52,10 +52,13 @@ C     bi, bj   :: tile indices
 C     i,j      :: horizontal indices
 C     iLa      :: layer coordinate index
 C     k        :: vertical index for model grid
-      INTEGER bi, bj, iLa, iTracer
+      INTEGER bi, bj, iLa
       CHARACTER*(MAX_LEN_MBUF) suff
 #ifdef LAYERS_PRHO_REF
       INTEGER i, j, k
+#endif
+#ifdef LAYERS_THERMODYNAMICS
+      INTEGER iTracer
 #endif
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8    diagName
