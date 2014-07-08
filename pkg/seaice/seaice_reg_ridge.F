@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_reg_ridge.F,v 1.3 2014/06/10 07:17:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_reg_ridge.F,v 1.4 2014/07/08 18:56:29 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -15,12 +15,12 @@ C     *=================================================================*
 C     | SUBROUTINE seaice_reg_ridge
 C     | o this routine has two purposes:
 C     |   (1) clean up after advection (undershoots etc.);
-C     |       after advection, the sea ice variables may have unphysical 
-C     |       values, e.g. < 0 or very thin ice, that are regularized 
-C     |       here. 
+C     |       after advection, the sea ice variables may have unphysical
+C     |       values, e.g. < 0 or very thin ice, that are regularized
+C     |       here.
 C     |   (2) driver for ice ridging;
 C     |       concentration as a special case may be > 1 in convergent
-C     |       motion and a ridging algorithm redistributes the ice to 
+C     |       motion and a ridging algorithm redistributes the ice to
 C     |       limit the concentration to 1.
 C     | o called after S/R seaice_advdiff
 C     *=================================================================*
@@ -58,7 +58,7 @@ C     i,j,bi,bj :: Loop counters
       INTEGER i, j, bi, bj
 C     number of surface interface layer
 C     IT :: ice thickness category index (ITD and SEAICE_multDim code)
-      INTEGER IT, nIT
+      INTEGER IT
 C     reciprocal of time step
       _RL recip_deltaTtherm
 C     temporary variables available for the various computations
@@ -96,8 +96,8 @@ C
      &                       + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
           d_HEFFbyNEG(I,J,bi,bj)    = 0.0 _d 0
           d_HSNWbyNEG(I,J,bi,bj)    = 0.0 _d 0
 #ifdef EXF_SEAICE_FRACTION
@@ -109,7 +109,6 @@ C
 #endif /* SEAICE_VARIABLE_SALINITY */
          ENDDO
         ENDDO
-
 
 C =====================================================================
 C ========== PART 1: treat pathological cases (post advdiff) ==========
@@ -170,7 +169,7 @@ C     by calling SEAICE_ITD_SUM
           ENDDO
          ENDDO
         ENDDO
-C     update mean thicknesses HEFF and HSNOW and total ice 
+C     update mean thicknesses HEFF and HSNOW and total ice
 C     concentration AREA to match single category values
         CALL SEAICE_ITD_SUM   ( bi, bj, myTime, myIter, myThid )
 #else /* ndef SEAICE_ITD */
@@ -195,7 +194,7 @@ C--   (2) treat the case of very thin ice:
 #ifdef SEAICE_ITD
 C     Here we risk that even though HEFF may be larger than siEps (=1e-5)
 C     HEFFITD can have classes with very small (< siEps) non-zero ice volume.
-C     We avoid applying the correction to each class because that leads to 
+C     We avoid applying the correction to each class because that leads to
 C     funny structures in the net heat and freshwater flux into the ocean.
 C     Let us keep our fingers crossed, that the model will be benign!
         DO IT=1,SEAICE_multDim
@@ -355,7 +354,7 @@ C     Thorndyke et al. (1975), Hibler (1980)
 C     check that all ice thickness categories meet their limits
 C     (includes Hibler-type ridging)
         CALL SEAICE_ITD_REDIST( bi, bj, myTime, myIter, myThid )
-C     update mean thicknesses HEFF and HSNOW and total ice 
+C     update mean thicknesses HEFF and HSNOW and total ice
 C     concentration AREA to match single category values
         CALL SEAICE_ITD_SUM   ( bi, bj, myTime, myIter, myThid )
 
@@ -373,7 +372,7 @@ C     save pre-ridging ice concentration for diagnostics
 #ifdef ALLOW_SITRACER
           SItrAREA(I,J,bi,bj,1)=AREA(I,J,bi,bj)
 #endif /*  ALLOW_SITRACER */
-C     this is the simple Hibler (1979)-type ridging (capping of 
+C     this is the simple Hibler (1979)-type ridging (capping of
 C     concentrations > 1) for the non-ITD sea ice model
           AREA(I,J,bi,bj)=MIN(AREA(I,J,bi,bj),SEAICE_area_max)
          ENDDO
