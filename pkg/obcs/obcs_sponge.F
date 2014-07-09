@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_sponge.F,v 1.11 2012/09/18 20:09:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_sponge.F,v 1.12 2014/07/09 17:00:49 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -14,8 +14,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CStartOfInterface
       SUBROUTINE OBCS_SPONGE_U(
-     I           iMin, iMax, jMin, jMax,bi,bj,kLev,
-     I           myTime, myThid )
+     U                gU_arr,
+     I                iMin,iMax,jMin,jMax, k, bi, bj,
+     I                myTime, myIter, myThid )
 C     *==========================================================*
 C     | S/R OBCS_SPONGE_U
 C     | o Contains problem specific forcing for zonal velocity.
@@ -35,13 +36,16 @@ C     == Global data ==
 #include "OBCS_FIELDS.h"
 
 C     == Routine arguments ==
-C     iMin - Working range of tile for applying forcing.
-C     iMax
-C     jMin
-C     jMax
-C     kLev
-      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
+C     gU_arr    :: the tendency array
+C     iMin,iMax :: Working range of x-index for applying forcing.
+C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
+C     bi,bj     :: Current tile indices
+      _RL gU_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
       _RL myTime
+      INTEGER myIter
       INTEGER myThid
 CEndOfInterface
 
@@ -62,8 +66,8 @@ C Northern Open Boundary
 
          IF ((j.ge.jmin).and.(j.le.jmax)) THEN
           urelax=(
-     &      float(spongeThickness-jsl)*OBNu(i,kLev,bi,bj)
-     &    + float(jsl)*uVel(i,j,kLev,bi,bj) )
+     &      float(spongeThickness-jsl)*OBNu(i,k,bi,bj)
+     &    + float(jsl)*uVel(i,j,k,bi,bj) )
      &    / float(spongeThickness)
 
           lambda_obcs_u = (
@@ -77,9 +81,9 @@ C Northern Open Boundary
            lambda_obcs_u = 0. _d 0
           ENDIF
 
-          gU(i,j,kLev,bi,bj) =  gU(i,j,kLev,bi,bj)
-     &    - _maskW(i,j,kLev,bi,bj) * lambda_obcs_u
-     &    * ( uVel(i,j,kLev,bi,bj) - urelax )
+          gU_arr(i,j) = gU_arr(i,j)
+     &    - _maskW(i,j,k,bi,bj) * lambda_obcs_u
+     &    * ( uVel(i,j,k,bi,bj) - urelax )
          ENDIF
 
         ENDDO
@@ -96,8 +100,8 @@ C Southern Open Boundary
 
          IF ((j.ge.jmin).and.(j.le.jmax)) THEN
           urelax=(
-     &      float(spongeThickness-jsl)*OBSu(i,kLev,bi,bj)
-     &    + float(jsl)*uVel(i,j,kLev,bi,bj) )
+     &      float(spongeThickness-jsl)*OBSu(i,k,bi,bj)
+     &    + float(jsl)*uVel(i,j,k,bi,bj) )
      &    / float(spongeThickness)
 
           lambda_obcs_u = (
@@ -111,9 +115,9 @@ C Southern Open Boundary
             lambda_obcs_u = 0. _d 0
           endif
 
-         gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
-     &   - _maskW(i,j,kLev,bi,bj) * lambda_obcs_u
-     &   * ( uVel(i,j,kLev,bi,bj) - urelax )
+          gU_arr(i,j) = gU_arr(i,j)
+     &   - _maskW(i,j,k,bi,bj) * lambda_obcs_u
+     &   * ( uVel(i,j,k,bi,bj) - urelax )
          ENDIF
 
         ENDDO
@@ -130,8 +134,8 @@ C Eastern Open Boundary
 
          IF ((i.ge.imin).and.(i.le.imax)) THEN
           urelax=(
-     &      float(spongeThickness-isl)*OBEu(j,kLev,bi,bj)
-     &    + float(isl)*uVel(i,j,kLev,bi,bj) )
+     &      float(spongeThickness-isl)*OBEu(j,k,bi,bj)
+     &    + float(isl)*uVel(i,j,k,bi,bj) )
      &    / float(spongeThickness)
 
           lambda_obcs_u = (
@@ -145,9 +149,9 @@ C Eastern Open Boundary
             lambda_obcs_u = 0. _d 0
           endif
 
-          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
-     &    - _maskW(i,j,kLev,bi,bj) * lambda_obcs_u
-     &    * ( uVel(i,j,kLev,bi,bj) - urelax )
+          gU_arr(i,j) = gU_arr(i,j)
+     &    - _maskW(i,j,k,bi,bj) * lambda_obcs_u
+     &    * ( uVel(i,j,k,bi,bj) - urelax )
          ENDIF
 
         ENDDO
@@ -164,8 +168,8 @@ C Western Open Boundary
 
          IF ((i.ge.imin).and.(i.le.imax)) THEN
           urelax=(
-     &      float(spongeThickness-isl)*OBWu(j,kLev,bi,bj)
-     &    + float(isl)*uVel(i,j,kLev,bi,bj) )
+     &      float(spongeThickness-isl)*OBWu(j,k,bi,bj)
+     &    + float(isl)*uVel(i,j,k,bi,bj) )
      &    / float(spongeThickness)
 
           lambda_obcs_u= (
@@ -179,9 +183,9 @@ C Western Open Boundary
             lambda_obcs_u = 0. _d 0
           endif
 
-          gU(i,j,kLev,bi,bj) =  gU(i,j,kLev,bi,bj)
-     &    - _maskW(i,j,kLev,bi,bj) * lambda_obcs_u
-     &    * ( uVel(i,j,kLev,bi,bj) - urelax )
+          gU_arr(i,j) = gU_arr(i,j)
+     &    - _maskW(i,j,k,bi,bj) * lambda_obcs_u
+     &    * ( uVel(i,j,k,bi,bj) - urelax )
          ENDIF
 
         ENDDO
@@ -200,8 +204,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CStartOfInterface
       SUBROUTINE OBCS_SPONGE_V(
-     I           iMin, iMax, jMin, jMax,bi,bj,kLev,
-     I           myTime, myThid )
+     U                gV_arr,
+     I                iMin,iMax,jMin,jMax, k, bi, bj,
+     I                myTime, myIter, myThid )
 C     *==========================================================*
 C     | S/R OBCS_SPONGE_V
 C     | o Contains problem specific forcing for merid velocity.
@@ -221,13 +226,16 @@ C     == Global data ==
 #include "OBCS_FIELDS.h"
 
 C     == Routine arguments ==
-C     iMin - Working range of tile for applying forcing.
-C     iMax
-C     jMin
-C     jMax
-C     kLev
-      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
+C     gV_arr    :: the tendency array
+C     iMin,iMax :: Working range of x-index for applying forcing.
+C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
+C     bi,bj     :: Current tile indices
+      _RL gV_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
       _RL myTime
+      INTEGER myIter
       INTEGER myThid
 CEndOfInterface
 
@@ -248,8 +256,8 @@ C Northern Open Boundary
 
          IF ((j.ge.jmin).and.(j.le.jmax)) THEN
           vrelax=(
-     &      float(spongeThickness-jsl)*OBNv(i,kLev,bi,bj)
-     &    + float(jsl)*vVel(i,j,kLev,bi,bj) )
+     &      float(spongeThickness-jsl)*OBNv(i,k,bi,bj)
+     &    + float(jsl)*vVel(i,j,k,bi,bj) )
      &    / float(spongeThickness)
 
           lambda_obcs_v = (
@@ -263,9 +271,9 @@ C Northern Open Boundary
             lambda_obcs_v = 0. _d 0
           ENDIF
 
-          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
-     &    - _maskS(i,j,kLev,bi,bj) * lambda_obcs_v
-     &    * ( vVel(i,j,kLev,bi,bj) - vrelax )
+          gV_arr(i,j) = gV_arr(i,j)
+     &    - _maskS(i,j,k,bi,bj) * lambda_obcs_v
+     &    * ( vVel(i,j,k,bi,bj) - vrelax )
          ENDIF
 
         ENDDO
@@ -282,8 +290,8 @@ C Southern Open Boundary
 
          IF ((j.ge.jmin).and.(j.le.jmax)) THEN
           vrelax=(
-     &      float(spongeThickness-jsl)*OBSv(i,kLev,bi,bj)
-     &    + float(jsl)*vVel(i,j,kLev,bi,bj) )
+     &      float(spongeThickness-jsl)*OBSv(i,k,bi,bj)
+     &    + float(jsl)*vVel(i,j,k,bi,bj) )
      &    / float(spongeThickness)
 
           lambda_obcs_v = (
@@ -297,9 +305,9 @@ C Southern Open Boundary
             lambda_obcs_v = 0. _d 0
           endif
 
-          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
-     &    - _maskS(i,j,kLev,bi,bj) * lambda_obcs_v
-     &    * ( vVel(i,j,kLev,bi,bj) - vrelax )
+          gV_arr(i,j) = gV_arr(i,j)
+     &    - _maskS(i,j,k,bi,bj) * lambda_obcs_v
+     &    * ( vVel(i,j,k,bi,bj) - vrelax )
          ENDIF
 
         ENDDO
@@ -316,8 +324,8 @@ C Eastern Open Boundary
 
          IF ((i.ge.imin).and.(i.le.imax)) THEN
           vrelax=(
-     &      float(spongeThickness-isl)*OBEv(j,kLev,bi,bj)
-     &    + float(isl)*vVel(i,j,kLev,bi,bj) )
+     &      float(spongeThickness-isl)*OBEv(j,k,bi,bj)
+     &    + float(isl)*vVel(i,j,k,bi,bj) )
      &    / float(spongeThickness)
 
           lambda_obcs_v = (
@@ -331,9 +339,9 @@ C Eastern Open Boundary
             lambda_obcs_v = 0. _d 0
           endif
 
-          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
-     &    - _maskS(i,j,kLev,bi,bj) * lambda_obcs_v
-     &    * ( vVel(i,j,kLev,bi,bj) - vrelax )
+          gV_arr(i,j) = gV_arr(i,j)
+     &    - _maskS(i,j,k,bi,bj) * lambda_obcs_v
+     &    * ( vVel(i,j,k,bi,bj) - vrelax )
          ENDIF
 
         ENDDO
@@ -351,8 +359,8 @@ C Western Open Boundary
          IF ((i.ge.imin).and.(i.le.imax)) THEN
 
           vrelax=(
-     &      float(spongeThickness-isl)*OBWv(j,kLev,bi,bj)
-     &    + float(isl)*vVel(i,j,kLev,bi,bj) )
+     &      float(spongeThickness-isl)*OBWv(j,k,bi,bj)
+     &    + float(isl)*vVel(i,j,k,bi,bj) )
      &    / float(spongeThickness)
 
           lambda_obcs_v = (
@@ -366,9 +374,9 @@ C Western Open Boundary
             lambda_obcs_v = 0. _d 0
           endif
 
-         gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
-     &   - _maskS(i,j,kLev,bi,bj) * lambda_obcs_v
-     &   * ( vVel(i,j,kLev,bi,bj) - vrelax )
+          gV_arr(i,j) = gV_arr(i,j)
+     &   - _maskS(i,j,k,bi,bj) * lambda_obcs_v
+     &   * ( vVel(i,j,k,bi,bj) - vrelax )
          ENDIF
 
         ENDDO
@@ -387,8 +395,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CStartOfInterface
       SUBROUTINE OBCS_SPONGE_T(
-     I           iMin, iMax, jMin, jMax,bi,bj,kLev,
-     I           myTime, myThid )
+     U                gT_arr,
+     I                iMin,iMax,jMin,jMax, k, bi, bj,
+     I                myTime, myIter, myThid )
 C     *==========================================================*
 C     | S/R OBCS_SPONGE_T
 C     | o Contains problem specific forcing for temperature.
@@ -412,13 +421,16 @@ C     == Global data ==
 #endif
 
 C     == Routine arguments ==
-C     iMin - Working range of tile for applying forcing.
-C     iMax
-C     jMin
-C     jMax
-C     kLev
-      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
+C     gT_arr    :: the tendency array
+C     iMin,iMax :: Working range of x-index for applying forcing.
+C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
+C     bi,bj     :: Current tile indices
+      _RL gT_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
       _RL myTime
+      INTEGER myIter
       INTEGER myThid
 CEndOfInterface
 
@@ -441,14 +453,14 @@ C     Loop counters
           ikey = (act1 + 1) + act2*max1
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
-          kkey = (ikey-1)*Nr + klev
+          kkey = (ikey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C Northern Open Boundary
 #ifdef ALLOW_OBCS_NORTH
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE OBNt(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE OBNt(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
       DO i=iMin,iMax
@@ -457,10 +469,10 @@ CADJ STORE OBNt(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
          j=OB_Jn(i,bi,bj)-jsl
 
          IF ((j.ge.jmin).and.(j.le.jmax)) THEN
-           IF  (OBNt(i,klev,bi,bj).ne. 0.d0) then
+           IF  (OBNt(i,k,bi,bj).ne. 0.d0) then
           trelax=(
-     &      float(spongeThickness-jsl)*OBNt(i,kLev,bi,bj)
-     &    + float(jsl)*theta(i,j,kLev,bi,bj) )
+     &      float(spongeThickness-jsl)*OBNt(i,k,bi,bj)
+     &    + float(jsl)*theta(i,j,k,bi,bj) )
      &    / float(spongeThickness)
           lambda_obcs_t = (
      &      float(spongeThickness-jsl)*Vrelaxobcsbound
@@ -473,9 +485,9 @@ CADJ STORE OBNt(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
            lambda_obcs_t = 0. _d 0
           ENDIF
 
-          gT(i,j,kLev,bi,bj) =  gT(i,j,kLev,bi,bj)
-     &    -  maskC(i,j,kLev,bi,bj) * lambda_obcs_t
-     &    * ( theta(i,j,kLev,bi,bj) - trelax )
+          gT_arr(i,j) = gT_arr(i,j)
+     &    -  maskC(i,j,k,bi,bj) * lambda_obcs_t
+     &    * ( theta(i,j,k,bi,bj) - trelax )
            endif
          ENDIF
 
@@ -488,7 +500,7 @@ C Southern Open Boundary
 #ifdef ALLOW_OBCS_SOUTH
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE OBSt(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE OBSt(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
       DO i=iMin,iMax
@@ -497,10 +509,10 @@ CADJ STORE OBSt(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
          j=OB_Js(i,bi,bj)+jsl
 
          IF ((j.ge.jmin).and.(j.le.jmax)) THEN
-           IF  (OBSt(i,klev,bi,bj).ne. 0.d0) then
+           IF  (OBSt(i,k,bi,bj).ne. 0.d0) then
           trelax=(
-     &      float(spongeThickness-jsl)*OBSt(i,kLev,bi,bj)
-     &    + float(jsl)*theta(i,j,kLev,bi,bj) )
+     &      float(spongeThickness-jsl)*OBSt(i,k,bi,bj)
+     &    + float(jsl)*theta(i,j,k,bi,bj) )
      &    / float(spongeThickness)
 
           lambda_obcs_t = (
@@ -514,9 +526,9 @@ CADJ STORE OBSt(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
             lambda_obcs_t = 0. _d 0
           endif
 
-         gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
-     &   - maskC(i,j,kLev,bi,bj) * lambda_obcs_t
-     &   * ( theta(i,j,kLev,bi,bj) - trelax )
+          gT_arr(i,j) = gT_arr(i,j)
+     &   - maskC(i,j,k,bi,bj) * lambda_obcs_t
+     &   * ( theta(i,j,k,bi,bj) - trelax )
            endif
          ENDIF
 
@@ -529,7 +541,7 @@ C Eastern Open Boundary
 #ifdef ALLOW_OBCS_EAST
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE OBEt(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE OBEt(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
       DO j=jMin,jMax
@@ -538,10 +550,10 @@ CADJ STORE OBEt(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
          i=OB_Ie(j,bi,bj)-isl
 
          IF ((i.ge.imin).and.(i.le.imax)) THEN
-           IF  (OBEt(j,klev,bi,bj).ne. 0.d0) then
+           IF  (OBEt(j,k,bi,bj).ne. 0.d0) then
           trelax=(
-     &      float(spongeThickness-isl)*OBEt(j,kLev,bi,bj)
-     &    + float(isl)*theta(i,j,kLev,bi,bj) )
+     &      float(spongeThickness-isl)*OBEt(j,k,bi,bj)
+     &    + float(isl)*theta(i,j,k,bi,bj) )
      &    / float(spongeThickness)
 
           lambda_obcs_t = (
@@ -555,9 +567,9 @@ CADJ STORE OBEt(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
             lambda_obcs_t = 0. _d 0
           endif
 
-          gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
-     &    - maskC(i,j,kLev,bi,bj) * lambda_obcs_t
-     &    * ( theta(i,j,kLev,bi,bj) - trelax )
+          gT_arr(i,j) = gT_arr(i,j)
+     &    - maskC(i,j,k,bi,bj) * lambda_obcs_t
+     &    * ( theta(i,j,k,bi,bj) - trelax )
            endif
          ENDIF
 
@@ -570,7 +582,7 @@ C Western Open Boundary
 #ifdef ALLOW_OBCS_WEST
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE OBWt(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE OBWt(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
       DO j=jMin,jMax
@@ -581,10 +593,10 @@ cgg  Needed to fix the coordinate of the tracer open boundary. This is the class
          i=OB_Iw(j,bi,bj)+isl
 
          IF ((i.ge.imin).and.(i.le.imax)) THEN
-           IF  (OBWt(j,klev,bi,bj).ne. 0.d0) then
+           IF  (OBWt(j,k,bi,bj).ne. 0.d0) then
           trelax=(
-     &      float(spongeThickness-isl)*OBWt(j,kLev,bi,bj)
-     &    + float(isl)*theta(i,j,kLev,bi,bj) )
+     &      float(spongeThickness-isl)*OBWt(j,k,bi,bj)
+     &    + float(isl)*theta(i,j,k,bi,bj) )
      &    / float(spongeThickness)
 
           lambda_obcs_t= (
@@ -598,9 +610,9 @@ cgg  Needed to fix the coordinate of the tracer open boundary. This is the class
             lambda_obcs_t = 0. _d 0
           endif
 
-          gT(i,j,kLev,bi,bj) =  gT(i,j,kLev,bi,bj)
-     &    - maskC(i,j,kLev,bi,bj) * lambda_obcs_t
-     &    * ( theta(i,j,kLev,bi,bj) - trelax )
+          gT_arr(i,j) = gT_arr(i,j)
+     &    - maskC(i,j,k,bi,bj) * lambda_obcs_t
+     &    * ( theta(i,j,k,bi,bj) - trelax )
            endif
          ENDIF
 
@@ -620,8 +632,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CStartOfInterface
       SUBROUTINE OBCS_SPONGE_S(
-     I           iMin, iMax, jMin, jMax,bi,bj,kLev,
-     I           myTime, myThid )
+     U                gS_arr,
+     I                iMin,iMax,jMin,jMax, k, bi, bj,
+     I                myTime, myIter, myThid )
 C     *==========================================================*
 C     | S/R OBCS_SPONGE_S
 C     | o Contains problem specific forcing for salinity.
@@ -645,13 +658,16 @@ C     == Global data ==
 #endif
 
 C     == Routine arguments ==
-C     iMin - Working range of tile for applying forcing.
-C     iMax
-C     jMin
-C     jMax
-C     kLev
-      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
+C     gS_arr    :: the tendency array
+C     iMin,iMax :: Working range of x-index for applying forcing.
+C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
+C     bi,bj     :: Current tile indices
+      _RL gS_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
       _RL myTime
+      INTEGER myIter
       INTEGER myThid
 CEndOfInterface
 
@@ -674,14 +690,14 @@ C     Loop counters
           ikey = (act1 + 1) + act2*max1
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
-          kkey = (ikey-1)*Nr + klev
+          kkey = (ikey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C Northern Open Boundary
 #ifdef ALLOW_OBCS_NORTH
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE OBNs(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE OBNs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
       DO i=iMin,iMax
@@ -690,10 +706,10 @@ CADJ STORE OBNs(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
          j=OB_Jn(i,bi,bj)-jsl
 
          IF ((j.ge.jmin).and.(j.le.jmax)) THEN
-           IF  (OBNs(i,klev,bi,bj).ne. 0.d0) then
+           IF  (OBNs(i,k,bi,bj).ne. 0.d0) then
           srelax=(
-     &      float(spongeThickness-jsl)*OBNs(i,kLev,bi,bj)
-     &    + float(jsl)*salt(i,j,kLev,bi,bj) )
+     &      float(spongeThickness-jsl)*OBNs(i,k,bi,bj)
+     &    + float(jsl)*salt(i,j,k,bi,bj) )
      &    / float(spongeThickness)
 
           lambda_obcs_s = (
@@ -707,9 +723,9 @@ CADJ STORE OBNs(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
            lambda_obcs_s = 0. _d 0
           ENDIF
 
-          gS(i,j,kLev,bi,bj) =  gS(i,j,kLev,bi,bj)
-     &    - maskC(i,j,kLev,bi,bj) * lambda_obcs_s
-     &    * ( salt(i,j,kLev,bi,bj) - srelax )
+          gS_arr(i,j) = gS_arr(i,j)
+     &    - maskC(i,j,k,bi,bj) * lambda_obcs_s
+     &    * ( salt(i,j,k,bi,bj) - srelax )
            endif
          ENDIF
 
@@ -722,7 +738,7 @@ C Southern Open Boundary
 #ifdef ALLOW_OBCS_SOUTH
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE OBSs(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE OBSs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
       DO i=iMin,iMax
@@ -731,10 +747,10 @@ CADJ STORE OBSs(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
          j=OB_Js(i,bi,bj)+jsl
 
          IF ((j.ge.jmin).and.(j.le.jmax)) THEN
-           IF  (OBSs(i,klev,bi,bj).ne. 0.d0) then
+           IF  (OBSs(i,k,bi,bj).ne. 0.d0) then
           srelax=(
-     &      float(spongeThickness-jsl)*OBSs(i,kLev,bi,bj)
-     &    + float(jsl)*salt(i,j,kLev,bi,bj) )
+     &      float(spongeThickness-jsl)*OBSs(i,k,bi,bj)
+     &    + float(jsl)*salt(i,j,k,bi,bj) )
      &    / float(spongeThickness)
 
           lambda_obcs_s = (
@@ -748,9 +764,9 @@ CADJ STORE OBSs(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
             lambda_obcs_s = 0. _d 0
           endif
 
-         gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)
-     &   - maskC(i,j,kLev,bi,bj) * lambda_obcs_s
-     &   * ( salt(i,j,kLev,bi,bj) - srelax )
+          gS_arr(i,j) = gS_arr(i,j)
+     &   - maskC(i,j,k,bi,bj) * lambda_obcs_s
+     &   * ( salt(i,j,k,bi,bj) - srelax )
            endif
          ENDIF
 
@@ -763,7 +779,7 @@ C Eastern Open Boundary
 #ifdef ALLOW_OBCS_EAST
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE OBEs(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE OBEs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
       DO j=jMin,jMax
@@ -772,10 +788,10 @@ CADJ STORE OBEs(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
          i=OB_Ie(j,bi,bj)-isl
 
          IF ((i.ge.imin).and.(i.le.imax)) THEN
-           IF  (OBEs(j,klev,bi,bj).ne. 0.d0) then
+           IF  (OBEs(j,k,bi,bj).ne. 0.d0) then
           srelax=(
-     &      float(spongeThickness-isl)*OBEs(j,kLev,bi,bj)
-     &    + float(isl)*salt(i,j,kLev,bi,bj) )
+     &      float(spongeThickness-isl)*OBEs(j,k,bi,bj)
+     &    + float(isl)*salt(i,j,k,bi,bj) )
      &    / float(spongeThickness)
 
           lambda_obcs_s = (
@@ -789,9 +805,9 @@ CADJ STORE OBEs(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
             lambda_obcs_s = 0. _d 0
           endif
 
-          gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)
-     &    - maskC(i,j,kLev,bi,bj) * lambda_obcs_s
-     &    * ( salt(i,j,kLev,bi,bj) - srelax )
+          gS_arr(i,j) = gS_arr(i,j)
+     &    - maskC(i,j,k,bi,bj) * lambda_obcs_s
+     &    * ( salt(i,j,k,bi,bj) - srelax )
            endif
          ENDIF
 
@@ -804,7 +820,7 @@ C Western Open Boundary
 #ifdef ALLOW_OBCS_WEST
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE OBWs(:,klev,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE OBWs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
       DO j=jMin,jMax
@@ -816,10 +832,10 @@ cgg  Fix the tracer o.b. coordinate.
          i=OB_Iw(j,bi,bj)+isl
 
          IF ((i.ge.imin).and.(i.le.imax)) THEN
-           IF  (OBWs(j,klev,bi,bj).ne. 0.d0) then
+           IF  (OBWs(j,k,bi,bj).ne. 0.d0) then
           srelax=(
-     &      float(spongeThickness-isl)*OBWs(j,kLev,bi,bj)
-     &    + float(isl)*salt(i,j,kLev,bi,bj) )
+     &      float(spongeThickness-isl)*OBWs(j,k,bi,bj)
+     &    + float(isl)*salt(i,j,k,bi,bj) )
      &    / float(spongeThickness)
 
           lambda_obcs_s= (
@@ -833,9 +849,9 @@ cgg  Fix the tracer o.b. coordinate.
             lambda_obcs_s = 0. _d 0
           endif
 
-          gS(i,j,kLev,bi,bj) =  gS(i,j,kLev,bi,bj)
-     &    - maskC(i,j,kLev,bi,bj) * lambda_obcs_s
-     &    * ( salt(i,j,kLev,bi,bj) - srelax )
+          gS_arr(i,j) = gS_arr(i,j)
+     &    - maskC(i,j,k,bi,bj) * lambda_obcs_s
+     &    * ( salt(i,j,k,bi,bj) - srelax )
            endif
          ENDIF
 

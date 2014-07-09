@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_tendency_apply.F,v 1.2 2013/06/28 21:25:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_tendency_apply.F,v 1.3 2014/07/09 17:00:49 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -15,8 +15,9 @@ C !ROUTINE: ATM_PHYS_TENDENCY_APPLY_U
 
 C !INTERFACE:
       SUBROUTINE ATM_PHYS_TENDENCY_APPLY_U(
-     &                     iMin, iMax, jMin, jMax,
-     &                     bi, bj, k, myTime, myThid )
+     U                    gU_arr,
+     I                    iMin,iMax,jMin,jMax, k, bi, bj,
+     I                    myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     Add AtmPhys tendency terms to U tendency.  Routine works for one
@@ -33,9 +34,21 @@ C     !USES:
 #include "ATM_PHYS_PARAMS.h"
 #include "ATM_PHYS_VARS.h"
 
-C     !INPUT PARAMETERS:
-      INTEGER iMin, iMax, jMin, jMax, k, bi, bj, myThid
-      _RL myTime
+C     !INPUT/OUTPUT PARAMETERS:
+C     gU_arr    :: the tendency array
+C     iMin,iMax :: Working range of x-index for applying forcing.
+C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
+C     bi,bj     :: Current tile indices
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     gU_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 CEOP
 
 C     !LOCAL VARIABLES:
@@ -47,7 +60,7 @@ C     !LOCAL VARIABLES:
 C--   Assume Agrid position:
         DO j=jMin,jMax
          DO i=iMin,iMax
-          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)
+          gU_arr(i,j) = gU_arr(i,j)
      &     + maskW(i,j,k,bi,bj)*( atmPhys_dU(i-1,j,k,bi,bj)
      &                           +atmPhys_dU( i ,j,k,bi,bj)
      &                          )*0.5 _d 0
@@ -57,7 +70,7 @@ C--   Assume Agrid position:
        IF ( atmPhys_dampUVfac(k).GT.zeroRL ) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
-          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)
+          gU_arr(i,j) = gU_arr(i,j)
      &     - maskW(i,j,k,bi,bj)*uVel(i,j,k,bi,bj)*atmPhys_dampUVfac(k)
           damp_dKE(i,j) =
      &     - uVel(i,j,k,bi,bj)*uVel(i,j,k,bi,bj)*atmPhys_dampUVfac(k)
@@ -88,8 +101,9 @@ C !ROUTINE: ATM_PHYS_TENDENCY_APPLY_V
 
 C !INTERFACE:
       SUBROUTINE ATM_PHYS_TENDENCY_APPLY_V(
-     &                     iMin, iMax, jMin, jMax,
-     &                     bi, bj, k, myTime, myThid )
+     U                    gV_arr,
+     I                    iMin,iMax,jMin,jMax, k, bi, bj,
+     I                    myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     Add AtmPhys tendency terms to V tendency.  Routine works for one
@@ -106,9 +120,21 @@ C     !USES:
 #include "ATM_PHYS_PARAMS.h"
 #include "ATM_PHYS_VARS.h"
 
-C     !INPUT PARAMETERS:
-      INTEGER iMin, iMax, jMin, jMax, k, bi, bj, myThid
-      _RL myTime
+C     !INPUT/OUTPUT PARAMETERS:
+C     gV_arr    :: the tendency array
+C     iMin,iMax :: Working range of x-index for applying forcing.
+C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
+C     bi,bj     :: Current tile indices
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     gV_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 CEOP
 
 C     !LOCAL VARIABLES:
@@ -120,7 +146,7 @@ C     !LOCAL VARIABLES:
 C--   Assume Agrid position:
         DO j=jMin,jMax
          DO i=iMin,iMax
-          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)
+          gV_arr(i,j) = gV_arr(i,j)
      &     + maskS(i,j,k,bi,bj)*( atmPhys_dV(i,j-1,k,bi,bj)
      &                           +atmPhys_dV(i, j ,k,bi,bj)
      &                          )*0.5 _d 0
@@ -130,7 +156,7 @@ C--   Assume Agrid position:
        IF ( atmPhys_dampUVfac(k).GT.zeroRL ) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
-          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)
+          gV_arr(i,j) = gV_arr(i,j)
      &     - maskS(i,j,k,bi,bj)*vVel(i,j,k,bi,bj)*atmPhys_dampUVfac(k)
           damp_dKE(i,j) =
      &     - vVel(i,j,k,bi,bj)*vVel(i,j,k,bi,bj)*atmPhys_dampUVfac(k)
@@ -161,8 +187,9 @@ C !ROUTINE: ATM_PHYS_TENDENCY_APPLY_T
 
 C !INTERFACE:
       SUBROUTINE ATM_PHYS_TENDENCY_APPLY_T(
-     &                     iMin, iMax, jMin, jMax,
-     &                     bi, bj, k, myTime, myThid )
+     U                    gT_arr,
+     I                    iMin,iMax,jMin,jMax, k, bi, bj,
+     I                    myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     Add AtmPhys tendency terms to T (theta) tendency.  Routine works
@@ -173,13 +200,25 @@ C     !USES:
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
-#include "DYNVARS.h"
+c#include "DYNVARS.h"
 #include "ATM_PHYS_PARAMS.h"
 #include "ATM_PHYS_VARS.h"
 
-C     !INPUT PARAMETERS:
-      INTEGER iMin, iMax, jMin, jMax, k, bi, bj, myThid
-      _RL myTime
+C     !INPUT/OUTPUT PARAMETERS:
+C     gT_arr    :: the tendency array
+C     iMin,iMax :: Working range of x-index for applying forcing.
+C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
+C     bi,bj     :: Current tile indices
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     gT_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 CEOP
 
 C     !LOCAL VARIABLES:
@@ -188,7 +227,7 @@ C     !LOCAL VARIABLES:
       IF ( atmPhys_addTendT ) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
-          gT(i,j,k,bi,bj) = gT(i,j,k,bi,bj)
+          gT_arr(i,j) = gT_arr(i,j)
      &     + maskC(i,j,k,bi,bj) * atmPhys_dT(i,j,k,bi,bj)
          ENDDO
         ENDDO
@@ -203,25 +242,38 @@ C !ROUTINE: ATM_PHYS_TENDENCY_APPLY_S
 
 C !INTERFACE:
       SUBROUTINE ATM_PHYS_TENDENCY_APPLY_S(
-     &                     iMin, iMax, jMin, jMax,
-     &                     bi, bj, k, myTime, myThid )
+     U                    gS_arr,
+     I                    iMin,iMax,jMin,jMax, k, bi, bj,
+     I                    myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     Add AtmPhys tendency terms to S tendency.  Routine works for one
 C     level at a time
 
-C     !INPUT PARAMETERS:
+C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
-#include "DYNVARS.h"
+c#include "DYNVARS.h"
 #include "ATM_PHYS_PARAMS.h"
 #include "ATM_PHYS_VARS.h"
 
-C     !INPUT PARAMETERS:
-      INTEGER iMin, iMax, jMin, jMax, k, bi, bj, myThid
-      _RL myTime
+C     !INPUT/OUTPUT PARAMETERS:
+C     gS_arr    :: the tendency array
+C     iMin,iMax :: Working range of x-index for applying forcing.
+C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
+C     bi,bj     :: Current tile indices
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     gS_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 CEOP
 
 C     !LOCAL VARIABLES:
@@ -230,7 +282,7 @@ C     !LOCAL VARIABLES:
       IF ( atmPhys_addTendS ) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
-          gS(i,j,k,bi,bj) = gS(i,j,k,bi,bj)
+          gS_arr(i,j) = gS_arr(i,j)
      &     + maskC(i,j,k,bi,bj) * atmPhys_dQ(i,j,k,bi,bj)
          ENDDO
         ENDDO

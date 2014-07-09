@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_forcing.F,v 1.4 2014/01/17 21:56:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_forcing.F,v 1.5 2014/07/09 17:00:50 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -13,8 +13,10 @@ CBOP
 C     !ROUTINE: SHELFICE_FORCING_T
 C     !INTERFACE:
       SUBROUTINE SHELFICE_FORCING_T(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
+     U                    gT_arr,
+     I                    iMin,iMax,jMin,jMax, kLev, bi, bj,
+     I                    myTime, myIter, myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R SHELFICE_FORCING_T
@@ -32,20 +34,24 @@ C     == Global data ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
-#include "FFIELDS.h"
+c#include "DYNVARS.h"
+c#include "FFIELDS.h"
 #include "SHELFICE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
+C     gT_arr    :: the tendency array
 C     iMin,iMax :: Working range of x-index for applying forcing.
 C     jMin,jMax :: Working range of y-index for applying forcing.
-C     bi,bj     :: Current tile indices
 C     kLev      :: Current vertical level index
+C     bi,bj     :: Current tile indices
 C     myTime    :: Current time in simulation
-C     myThid    :: Thread Id number
-      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
-      _RL myTime
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     gT_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER kLev, bi, bj
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 
 #ifdef ALLOW_SHELFICE
@@ -71,7 +77,7 @@ C--   Forcing term
           drLoc = MIN( drLoc, drF(Kp1) * _hFacC(I,J,Kp1,bi,bj) )
           gTloc = shelficeForcingT(i,j,bi,bj)
      &         /( drF(kLev)*_hFacC(I,J,kLev,bi,bj)+drLoc )
-          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj) + gTloc
+          gT_arr(i,j) = gT_arr(i,j) + gTloc
          ELSEIF ( kLev .GT. 1 .AND. kLev-1 .EQ. kTopC(I,J,bi,bj) ) THEN
           km1 = MAX(kLev-1,1)
           drLoc = drF(km1)*( 1. _d 0 - _hFacC(I,J,km1,bi,bj) )
@@ -82,7 +88,7 @@ C     The following is shorthand for the averaged tendency:
 C     gT(k+1) = gT(k+1) + { gTloc * [drF(k)*(1-hFacC(k))]
 C                       +   0     * [drF(k+1) - drF(k)*(1-hFacC(k))]
 C                         }/[drF(k+1)*hFacC(k+1)]
-          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj) + gTloc
+          gT_arr(i,j) = gT_arr(i,j) + gTloc
      &         * drLoc*recip_drF(kLev)* _recip_hFacC(i,j,kLev,bi,bj)
          ENDIF
         ENDDO
@@ -98,8 +104,9 @@ CBOP
 C     !ROUTINE: SHELFICE_FORCING_S
 C     !INTERFACE:
       SUBROUTINE SHELFICE_FORCING_S(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
+     U                    gS_arr,
+     I                    iMin,iMax,jMin,jMax, kLev, bi, bj,
+     I                    myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -118,25 +125,28 @@ C     == Global data ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
-C#include "FFIELDS.h"
+c#include "DYNVARS.h"
+c#include "FFIELDS.h"
 #include "SHELFICE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
+C     gS_arr    :: the tendency array
 C     iMin,iMax :: Working range of x-index for applying forcing.
 C     jMin,jMax :: Working range of y-index for applying forcing.
-C     bi,bj     :: Current tile indices
 C     kLev      :: Current vertical level index
+C     bi,bj     :: Current tile indices
 C     myTime    :: Current time in simulation
-C     myThid    :: Thread Id number
-      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
-      _RL myTime
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     gS_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER kLev, bi, bj
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 
 #ifdef ALLOW_SHELFICE
 C     !LOCAL VARIABLES:
-C     == Local variables ==
 C     i,j   :: Loop counters
 C     kp/m1 :: index of next/previous level
 C     gTloc :: local tendency in boundary layer
@@ -157,7 +167,7 @@ C--   Forcing term
           drLoc = MIN( drLoc, drF(Kp1) * _hFacC(I,J,Kp1,bi,bj) )
           gSloc = shelficeForcingS(i,j,bi,bj)
      &         /( drF(kLev)*_hFacC(I,J,kLev,bi,bj)+drLoc )
-          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj) + gSloc
+          gS_arr(i,j) = gS_arr(i,j) + gSloc
          ELSEIF ( kLev .GT. 1 .AND. kLev-1 .EQ. kTopC(I,J,bi,bj) ) THEN
           km1 = MAX(kLev-1,1)
           drLoc = drF(km1)*( 1. _d 0 - _hFacC(I,J,km1,bi,bj) )
@@ -168,7 +178,7 @@ C     The following is shorthand for the averaged tendency:
 C     gS(k+1) = gS(k+1) + { gSloc * [drF(k)*(1-hFacC(k))]
 C                       +   0     * [drF(k+1) - drF(k)*(1-hFacC(k))]
 C                         }/[drF(k+1)*hFacC(k+1)]
-          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj) + gSloc
+          gS_arr(i,j) = gS_arr(i,j) + gSloc
      &         * drLoc*recip_drF(kLev)* _recip_hFacC(i,j,kLev,bi,bj)
          ENDIF
         ENDDO

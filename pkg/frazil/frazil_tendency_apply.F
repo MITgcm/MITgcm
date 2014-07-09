@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_tendency_apply.F,v 1.4 2014/05/06 15:50:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_tendency_apply.F,v 1.5 2014/07/09 17:00:49 jmc Exp $
 C $Name:  $
 
 #include "FRAZIL_OPTIONS.h"
@@ -11,8 +11,9 @@ CBOP 0
 
 C !INTERFACE:
       SUBROUTINE FRAZIL_TENDENCY_APPLY_T(
-     I                     iMin, iMax, jMin, jMax,
-     I                     bi, bj, k, myTime, myThid )
+     U                     gT_arr,
+     I                     iMin,iMax,jMin,jMax, k, bi, bj,
+     I                     myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     Add frazil tendency terms to T (theta) tendency.
@@ -20,20 +21,29 @@ C     Routine works for one level at a time.
 
 C     !USES:
       IMPLICIT NONE
-#include "EEPARAMS.h"
 #include "SIZE.h"
+#include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
+c#include "DYNVARS.h"
 #ifdef ALLOW_FRAZIL
 # include "FRAZIL.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     myTime :: current time in simulation
-C     myThid :: my Thread Id number
-      INTEGER iMin, iMax, jMin, jMax, k, bi, bj
+C     gT_arr    :: the tendency array
+C     iMin,iMax :: Working range of x-index for applying forcing.
+C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
+C     bi,bj     :: Current tile indices
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     gT_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
       _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 CEOP
 
@@ -46,7 +56,7 @@ C     !LOCAL VARIABLES:
       recip_Cp = 1. _d 0 / HeatCapacity_Cp
       DO j=jMin,jMax
        DO i=iMin,iMax
-        gT(i,j,k,bi,bj) = gT(i,j,k,bi,bj)
+        gT_arr(i,j) = gT_arr(i,j)
      &       + FrazilForcingT(i,j,k,bi,bj)
      &       * recip_Cp * mass2rUnit
      &       * recip_drF(k) * _recip_hFacC(i,j,k,bi,bj)

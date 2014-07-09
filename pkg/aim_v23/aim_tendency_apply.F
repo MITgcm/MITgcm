@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.12 2012/12/17 04:49:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.13 2014/07/09 17:00:49 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -15,8 +15,9 @@ CBOP
 C     !ROUTINE: AIM_TENDENCY_APPLY_U
 C     !INTERFACE:
       SUBROUTINE AIM_TENDENCY_APPLY_U(
-     I           iMin, iMax, jMin, jMax, bi, bj, k,
-     I           myTime, myThid )
+     U                        gU_arr,
+     I                        iMin,iMax,jMin,jMax, k, bi, bj,
+     I                        myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R AIM_TENDENCY_APPLY_U
@@ -42,13 +43,19 @@ C     == Global data ==
 #include "AIM_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     iMin,iMax :: Working range of tile indices for applying forcing.
-C     jMin,jMax :: Working range of tile indices for applying forcing.
-C     k         :: current level index
+C     gU_arr    :: the tendency array
+C     iMin,iMax :: Working range of x-index for applying forcing.
+C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
+C     bi,bj     :: Current tile indices
 C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
 C     myThid    :: my Thread Id number
-      INTEGER iMin, iMax, jMin, jMax, k, bi, bj
-      _RL myTime
+      _RL     gU_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 CEOP
 
@@ -87,7 +94,7 @@ C- Note: exclusive IF / ELSE is legitimate here since surface drag
 C        is not supposed to be applied in stratosphere
        DO j=jMin,jMax
         DO i=iMin,iMax
-          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)
+          gU_arr(i,j) = gU_arr(i,j)
      &     -maskW(i,j,k,bi,bj)*uVel(i,j,k,bi,bj)/aim_dragStrato
 #if ( defined ALLOW_FRICTION_HEATING ) || ( defined ALLOW_DIAGNOSTICS )
           aim_dKE(i,j) =
@@ -103,9 +110,9 @@ C        is not supposed to be applied in stratosphere
           uStr_tmp =
      &     -( aim_drag(i-1,j,bi,bj)+aim_drag(i,j,bi,bj) )
      &       * 0.5 _d 0 * uVel(i,j,k,bi,bj)
-          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)
-     &                       + uStr_tmp*gravity*recip_drF(k)
-     &                       * recip_hFacW(i,j,k,bi,bj)
+          gU_arr(i,j) = gU_arr(i,j)
+     &                + uStr_tmp*gravity*recip_drF(k)
+     &                * recip_hFacW(i,j,k,bi,bj)
 #if ( defined ALLOW_AIM_TAVE ) || ( defined ALLOW_DIAGNOSTICS )
           aim_uStress(i,j,bi,bj) = uStr_tmp
 #endif
@@ -126,9 +133,9 @@ C        is not supposed to be applied in stratosphere
      &      -( (1.-maskC(i-1,j,k-1,bi,bj))*aim_drag(i-1,j,bi,bj)
      &        +(1.-maskC( i ,j,k-1,bi,bj))*aim_drag( i ,j,bi,bj)
      &       )* 0.5 _d 0 * uVel(i,j,k,bi,bj)
-          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)
-     &                       + uStr_tmp*gravity*recip_drF(k)
-     &                       * recip_hFacW(i,j,k,bi,bj)
+          gU_arr(i,j) = gU_arr(i,j)
+     &                + uStr_tmp*gravity*recip_drF(k)
+     &                * recip_hFacW(i,j,k,bi,bj)
 #if ( defined ALLOW_AIM_TAVE ) || ( defined ALLOW_DIAGNOSTICS )
           aim_uStress(i,j,bi,bj) = uStr_tmp
 #endif
@@ -195,8 +202,9 @@ CBOP
 C     !ROUTINE: AIM_TENDENCY_APPLY_V
 C     !INTERFACE:
       SUBROUTINE AIM_TENDENCY_APPLY_V(
-     I           iMin, iMax, jMin, jMax, bi, bj, k,
-     I           myTime, myThid )
+     U                        gV_arr,
+     I                        iMin,iMax,jMin,jMax, k, bi, bj,
+     I                        myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R TENDENCY_APPLY_V
@@ -222,13 +230,19 @@ C     == Global data ==
 #include "AIM_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     iMin,iMax :: Working range of tile indices for applying forcing.
-C     jMin,jMax :: Working range of tile indices for applying forcing.
-C     k         :: current level index
+C     gV_arr    :: the tendency array
+C     iMin,iMax :: Working range of x-index for applying forcing.
+C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
+C     bi,bj     :: Current tile indices
 C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
 C     myThid    :: my Thread Id number
-      INTEGER iMin, iMax, jMin, jMax, k, bi, bj
-      _RL myTime
+      _RL     gV_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 CEOP
 
@@ -267,7 +281,7 @@ C- Note: exclusive IF / ELSE is legitimate here since surface drag
 C        is not supposed to be applied in the stratosphere
        DO j=jMin,jMax
         DO i=iMin,iMax
-          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)
+          gV_arr(i,j) = gV_arr(i,j)
      &     -maskS(i,j,k,bi,bj)*vVel(i,j,k,bi,bj)/aim_dragStrato
 #if ( defined ALLOW_FRICTION_HEATING ) || ( defined ALLOW_DIAGNOSTICS )
           aim_dKE(i,j) =
@@ -283,9 +297,9 @@ C        is not supposed to be applied in the stratosphere
           vStr_tmp =
      &     -( aim_drag(i,j-1,bi,bj)+aim_drag(i,j,bi,bj) )
      &       * 0.5 _d 0 * vVel(i,j,k,bi,bj)
-          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)
-     &                       + vStr_tmp*gravity*recip_drF(k)
-     &                       * recip_hFacS(i,j,k,bi,bj)
+          gV_arr(i,j) = gV_arr(i,j)
+     &                + vStr_tmp*gravity*recip_drF(k)
+     &                * recip_hFacS(i,j,k,bi,bj)
 #if ( defined ALLOW_AIM_TAVE ) || ( defined ALLOW_DIAGNOSTICS )
           aim_vStress(i,j,bi,bj) = vStr_tmp
 #endif
@@ -306,9 +320,9 @@ C        is not supposed to be applied in the stratosphere
      &     -( (1.-maskC(i,j-1,k-1,bi,bj))*aim_drag(i,j-1,bi,bj)
      &       +(1.-maskC(i, j ,k-1,bi,bj))*aim_drag(i, j ,bi,bj)
      &      )* 0.5 _d 0 * vVel(i,j,k,bi,bj)
-          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)
-     &                       + vStr_tmp*gravity*recip_drF(k)
-     &                       * recip_hFacS(i,j,k,bi,bj)
+          gV_arr(i,j) = gV_arr(i,j)
+     &                + vStr_tmp*gravity*recip_drF(k)
+     &                * recip_hFacS(i,j,k,bi,bj)
 #if ( defined ALLOW_AIM_TAVE ) || ( defined ALLOW_DIAGNOSTICS )
           aim_vStress(i,j,bi,bj) = vStr_tmp
 #endif
@@ -375,8 +389,9 @@ CBOP
 C     !ROUTINE: AIM_TENDENCY_APPLY_T
 C     !INTERFACE:
       SUBROUTINE AIM_TENDENCY_APPLY_T(
-     I           iMin, iMax, jMin, jMax, bi, bj, k,
-     I           myTime, myThid )
+     U                        gT_arr,
+     I                        iMin,iMax,jMin,jMax, k, bi, bj,
+     I                        myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R AIM_TENDENCY_APPLY_T
@@ -392,18 +407,24 @@ C     == Global data ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
+c#include "DYNVARS.h"
 
 #include "AIM2DYN.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     iMin,iMax :: Working range of tile indices for applying forcing.
-C     jMin,jMax :: Working range of tile indices for applying forcing.
-C     k         :: current level index
+C     gT_arr    :: the tendency array
+C     iMin,iMax :: Working range of x-index for applying forcing.
+C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
+C     bi,bj     :: Current tile indices
 C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
 C     myThid    :: my Thread Id number
-      INTEGER iMin, iMax, jMin, jMax, k, bi, bj
-      _RL myTime
+      _RL     gT_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 CEOP
 
@@ -415,8 +436,8 @@ C     i,j  :: Loop counters
 C--   Forcing: add AIM heating/cooling tendency to gT:
       DO J=1,sNy
        DO I=1,sNx
-        gT(i,j,k,bi,bj) = maskC(i,j,k,bi,bj)
-     &       *( gT(i,j,k,bi,bj) + aim_dTdt(i,j,k,bi,bj) )
+        gT_arr(i,j) = maskC(i,j,k,bi,bj)
+     &              *( gT_arr(i,j) + aim_dTdt(i,j,k,bi,bj) )
        ENDDO
       ENDDO
 
@@ -427,11 +448,12 @@ C--   Forcing: add AIM heating/cooling tendency to gT:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: AIM_TENDENCY_APPLY_U
+C     !ROUTINE: AIM_TENDENCY_APPLY_S
 C     !INTERFACE:
       SUBROUTINE AIM_TENDENCY_APPLY_S(
-     I           iMin, iMax, jMin, jMax, bi, bj, k,
-     I           myTime, myThid )
+     U                        gS_arr,
+     I                        iMin,iMax,jMin,jMax, k, bi, bj,
+     I                        myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R AIM_TENDENCY_APPLY_S
@@ -447,18 +469,24 @@ C     == Global data ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
+c#include "DYNVARS.h"
 
 #include "AIM2DYN.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     iMin,iMax :: Working range of tile indices for applying forcing.
-C     jMin,jMax :: Working range of tile indices for applying forcing.
-C     k         :: current level index
+C     gS_arr    :: the tendency array
+C     iMin,iMax :: Working range of x-index for applying forcing.
+C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
+C     bi,bj     :: Current tile indices
 C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
 C     myThid    :: my Thread Id number
-      INTEGER iMin, iMax, jMin, jMax, k, bi, bj
-      _RL myTime
+      _RL     gS_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 CEOP
 
@@ -470,8 +498,8 @@ C     i,j  :: Loop counters
 C--   Forcing: add AIM dq/dt tendency to gS:
       DO J=1,sNy
        DO I=1,sNx
-        gS(i,j,k,bi,bj) = maskC(i,j,k,bi,bj)
-     &       *( gS(i,j,k,bi,bj) + aim_dSdt(i,j,k,bi,bj) )
+        gS_arr(i,j) = maskC(i,j,k,bi,bj)
+     &              *( gS_arr(i,j) + aim_dSdt(i,j,k,bi,bj) )
        ENDDO
       ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_tendency_apply.F,v 1.3 2010/02/16 21:25:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_tendency_apply.F,v 1.4 2014/07/09 17:00:49 jmc Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -13,7 +13,8 @@ C !ROUTINE: ICEFRONT_TENDENCY_APPLY_T
 
 C !INTERFACE:
       SUBROUTINE ICEFRONT_TENDENCY_APPLY_T(
-     &                     bi, bj, k, myTime, myThid )
+     U                    gT_arr,
+     I                    k, bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     Add icefront tendency terms to T (theta) tendency.
@@ -22,14 +23,23 @@ C     Routine works for one level at a time.
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
-#include "GRID.h"
 #include "EEPARAMS.h"
-#include "DYNVARS.h"
+c#include "GRID.h"
+c#include "DYNVARS.h"
 #include "ICEFRONT.h"
 
-C     !INPUT PARAMETERS:
-      INTEGER k, bi, bj, myThid
-      _RL myTime
+C     !INPUT/OUTPUT PARAMETERS:
+C     gT_arr    :: the tendency array
+C     k         :: Current vertical level index
+C     bi,bj     :: Current tile indices
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     gT_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 CEOP
 
 C     !LOCAL VARIABLES:
@@ -38,8 +48,8 @@ C     !LOCAL VARIABLES:
       IF ( applyIcefrontTendT ) THEN
        DO j=1,sNy
         DO i=1,sNx
-         IF (k .LE. k_icefront(i,j,bi,bj)) THEN  
-          gT(i,j,k,bi,bj) = gT(i,j,k,bi,bj)
+         IF ( k .LE. k_icefront(i,j,bi,bj) ) THEN  
+          gT_arr(i,j) = gT_arr(i,j)
      &         + ICEFRONT_TendT(i,j,k,bi,bj)
          ENDIF
         ENDDO
@@ -55,7 +65,8 @@ C !ROUTINE: ICEFRONT_TENDENCY_APPLY_S
 
 C !INTERFACE:
       SUBROUTINE ICEFRONT_TENDENCY_APPLY_S(
-     &                     bi, bj, k, myTime, myThid )
+     U                    gS_arr,
+     I                    k, bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     Add icefront tendency terms to S tendency.
@@ -64,14 +75,23 @@ C     Routine works for one level at a time.
 C     !INPUT PARAMETERS:
       IMPLICIT NONE
 #include "SIZE.h"
-#include "GRID.h"
 #include "EEPARAMS.h"
-#include "DYNVARS.h"
+c#include "GRID.h"
+c#include "DYNVARS.h"
 #include "ICEFRONT.h"
 
-C     !INPUT PARAMETERS:
-      INTEGER k, bi, bj, myThid
-      _RL myTime
+C     !INPUT/OUTPUT PARAMETERS:
+C     gS_arr    :: the tendency array
+C     k         :: Current vertical level index
+C     bi,bj     :: Current tile indices
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     gS_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 CEOP
 
 C     !LOCAL VARIABLES:
@@ -80,8 +100,8 @@ C     !LOCAL VARIABLES:
       IF ( applyIcefrontTendS ) THEN
        DO j=1,sNy
         DO i=1,sNx
-         IF (k .LE. k_icefront(i,j,bi,bj)) THEN  
-          gS(i,j,k,bi,bj) = gS(i,j,k,bi,bj)
+         IF ( k .LE. k_icefront(i,j,bi,bj) ) THEN  
+          gS_arr(i,j) = gS_arr(i,j)
      &         + ICEFRONT_TendS(i,j,k,bi,bj)
          ENDIF
         ENDDO
