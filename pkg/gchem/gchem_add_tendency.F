@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_add_tendency.F,v 1.4 2011/12/22 19:05:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_add_tendency.F,v 1.5 2014/07/09 16:56:08 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -7,8 +7,10 @@ CBOP
 C !ROUTINE: GCHEM_ADD_TENDENCY
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GCHEM_ADD_TENDENCY(bi,bj,iMin,iMax,jMin,jMax,k,
-     &                           iTracer, myTime,myIter, myThid )
+      SUBROUTINE GCHEM_ADD_TENDENCY(
+     U                     gPtracer,
+     I                     iMin,iMax,jMin,jMax, k, bi, bj,
+     I                     iTracer, myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C     In the case of GCHEM_SEPARATE_FORCING undefined, GCHEM_ADD_TENDENCY
@@ -26,18 +28,20 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS_FIELDS.h"
+c#include "PTRACERS_FIELDS.h"
 #include "GCHEM_FIELDS.h"
 
-C !INPUT PARAMETERS: ===================================================
-C  bi,bj                :: tile indices
+C !INPUT/OUTPUT PARAMETERS: ============================================
+C  gPtracer             :: the tendency array
 C  k                    :: vertical level
+C  bi,bj                :: tile indices
 C  iTracer              :: ptracer number
 C  myTime               :: current time
 C  myIter               :: current timestep
 C  myThid               :: thread number
-      INTEGER bi,bj,iMin,iMax,jMin,jMax,k
-      INTEGER iTracer
+      _RL gPtracer   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin,iMax,jMin,jMax
+      INTEGER k, bi, bj, iTracer
       _RL myTime
       INTEGER myIter, myThid
 CEOP
@@ -55,8 +59,8 @@ C     but this way, no gchem-related header files and CPP-flags are required
 C     within ptracers_forcing.
       DO j=jMin,jMax
        DO i=iMin,iMax
-        gPtr(i,j,k,bi,bj,iTracer) = gPtr(i,j,k,bi,bj,iTracer)
-     &       + gchemTendency(i,j,k,bi,bj,iTracer)
+         gPtracer(i,j) = gPtracer(i,j)
+     &                 + gchemTendency(i,j,k,bi,bj,iTracer)
        ENDDO
       ENDDO
 # endif /* GCHEM_SEPARATE_FORCING */
