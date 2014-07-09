@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.52 2013/12/27 15:51:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.53 2014/07/09 16:54:21 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -78,6 +78,7 @@ C  rTransKp         :: vertical volume transport at interface k+1
 C  fZon             :: passive tracer zonal flux
 C  fMer             :: passive tracer meridional flux
 C  fVer             :: passive tracer vertical flux
+C  gTr_AB           :: Adams-Bashforth tracer tendency increment
       INTEGER iTracer
       INTEGER iMin,iMax,jMin,jMax
       INTEGER i, j, k
@@ -192,9 +193,8 @@ CADJ &      = comlev1_bibj_ptracers, key=iptrkey, byte=isbyte
      I                       PTRACERS_ImplVertAdv(iTracer),
      I                       PTRACERS_advScheme(iTracer),
      I                       PTRACERS_advScheme(iTracer),
-     I                       GAD_TR1+iTracer-1,
-     I                       PTRACERS_dTLev,
-     I                       uFld, vFld, wFld,
+     I                       GAD_TR,
+     I                       PTRACERS_dTLev, uFld, vFld, wFld,
      I                       pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      U                       _Ptracers_som(:,:,:,:,:,:,iTracer),
      O                       gPtr(1-OLx,1-OLy,1,1,1,iTracer),
@@ -210,9 +210,8 @@ CADJ &      = comlev1_bibj_ptracers, key=iptrkey, byte=isbyte
      I                        PTRACERS_ImplVertAdv(iTracer),
      I                        PTRACERS_advScheme(iTracer),
      I                        PTRACERS_advScheme(iTracer),
-     I                        GAD_TR1+iTracer-1,
-     I                        PTRACERS_dTLev,
-     I                        uFld, vFld, wFld,
+     I                        GAD_TR,
+     I                        PTRACERS_dTLev, uFld, vFld, wFld,
      I                        pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      O                        gPtr(1-OLx,1-OLy,1,1,1,iTracer),
      I                        bi, bj, myTime, myIter, myThid )
@@ -270,11 +269,11 @@ C      (advection, [explicit] diffusion, parameterizations,...)
 
 C-    External forcing term(s)
           IF ( tracForcingOutAB.NE.1 )
-     &      CALL PTRACERS_FORCING(
-     I                    bi,bj,iMin,iMax,jMin,jMax,k,iTracer,
-     U                    gPtr(1-OLx,1-OLy,1,1,1,iTracer),
-     I                    surfaceForcingPTr(1-OLx,1-OLy,1,1,iTracer),
-     I                    myIter, myTime, myThid )
+     &      CALL PTRACERS_APPLY_FORCING(
+     U                    gPtr(1-OLx,1-OLy,k,bi,bj,iTracer),
+     I                    surfaceForcingPTr(1-OLx,1-OLy,bi,bj,iTracer),
+     I                    iMin,iMax,jMin,jMax, k, bi, bj,
+     I                    iTracer, myTime, myIter, myThid )
 
 C-    If using Adams-Bashforth II, then extrapolate tendencies
 C     gPtr is now the tracer tendency for explicit advection/diffusion
@@ -301,11 +300,11 @@ C     prevent gPtr from being replaced by the average of gPtr and gpTrNm1.
 
 C-    External forcing term(s)
           IF ( tracForcingOutAB.EQ.1 )
-     &      CALL PTRACERS_FORCING(
-     I                    bi,bj,iMin,iMax,jMin,jMax,k,iTracer,
-     U                    gPtr(1-OLx,1-OLy,1,1,1,iTracer),
-     I                    surfaceForcingPTr(1-OLx,1-OLy,1,1,iTracer),
-     I                    myIter, myTime, myThid )
+     &      CALL PTRACERS_APPLY_FORCING(
+     U                    gPtr(1-OLx,1-OLy,k,bi,bj,iTracer),
+     I                    surfaceForcingPTr(1-OLx,1-OLy,bi,bj,iTracer),
+     I                    iMin,iMax,jMin,jMax, k, bi, bj,
+     I                    iTracer, myTime, myIter, myThid )
 
 #ifdef NONLIN_FRSURF
 C-    Account for change in level thickness
