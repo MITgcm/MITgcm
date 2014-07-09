@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.68 2014/05/22 22:00:36 atn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.69 2014/07/09 17:03:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -72,20 +72,23 @@ CEOP
 C--   Forcing term
 #ifdef ALLOW_AIM
       IF ( useAIM ) CALL AIM_TENDENCY_APPLY_U(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+     U                       gU(1-OLx,1-OLy,kLev,bi,bj),
+     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                       myTime, 0, myThid )
 #endif /* ALLOW_AIM */
 
 #ifdef ALLOW_ATM_PHYS
       IF ( useAtm_Phys ) CALL ATM_PHYS_TENDENCY_APPLY_U(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+     U                       gU(1-OLx,1-OLy,kLev,bi,bj),
+     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                       myTime, 0, myThid )
 #endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_U(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+     U                       gU(1-OLx,1-OLy,kLev,bi,bj),
+     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                       myTime, 0, myThid )
 #endif /* ALLOW_FIZHI */
 
 C     Ocean: Add momentum surface forcing (e.g., wind-stress) in surface level
@@ -112,30 +115,38 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy
       ENDIF
 
 #ifdef ALLOW_EDDYPSI
-       CALL TAUEDDY_EXTERNAL_FORCING_U(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
+         CALL TAUEDDY_TENDENCY_APPLY_U(
+     U                 gU(1-OLx,1-OLy,kLev,bi,bj),
+     I                 iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                 myTime, 0, myThid )
 #endif
 
 #ifdef ALLOW_RBCS
       IF (useRBCS) THEN
-        CALL RBCS_ADD_TENDENCY( bi, bj, klev, -1,
-     &                          myTime, myThid )
+        CALL RBCS_ADD_TENDENCY(
+     U                 gU(1-OLx,1-OLy,kLev,bi,bj),
+     I                 kLev, bi, bj, -1,
+     I                 myTime, 0, myThid )
+
       ENDIF
-#endif
+#endif /* ALLOW_RBCS */
 
 #ifdef ALLOW_OBCS
       IF (useOBCS) THEN
-       CALL OBCS_SPONGE_U(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
+        CALL OBCS_SPONGE_U(
+     U                   gU(1-OLx,1-OLy,kLev,bi,bj),
+     I                   iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                   myTime, 0, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_MYPACKAGE
-      IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_U(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+      IF ( useMYPACKAGE ) THEN
+        CALL MYPACKAGE_TENDENCY_APPLY_U(
+     U                 gU(1-OLx,1-OLy,kLev,bi,bj),
+     I                 iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                 myTime, 0, myThid )
+      ENDIF
 #endif /* ALLOW_MYPACKAGE */
 
       RETURN
@@ -199,20 +210,23 @@ CEOP
 C--   Forcing term
 #ifdef ALLOW_AIM
       IF ( useAIM ) CALL AIM_TENDENCY_APPLY_V(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+     U                       gV(1-OLx,1-OLy,kLev,bi,bj),
+     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                       myTime, 0, myThid )
 #endif /* ALLOW_AIM */
 
 #ifdef ALLOW_ATM_PHYS
       IF ( useAtm_Phys ) CALL ATM_PHYS_TENDENCY_APPLY_V(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+     U                       gV(1-OLx,1-OLy,kLev,bi,bj),
+     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                       myTime, 0, myThid )
 #endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_V(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+     U                       gV(1-OLx,1-OLy,kLev,bi,bj),
+     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                       myTime, 0, myThid )
 #endif /* ALLOW_FIZHI */
 
 C     Ocean: Add momentum surface forcing (e.g., wind-stress) in surface level
@@ -239,30 +253,37 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx
       ENDIF
 
 #ifdef ALLOW_EDDYPSI
-       CALL TAUEDDY_EXTERNAL_FORCING_V(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
+         CALL TAUEDDY_TENDENCY_APPLY_V(
+     U                 gV(1-OLx,1-OLy,kLev,bi,bj),
+     I                 iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                 myTime, 0, myThid )
 #endif
 
 #ifdef ALLOW_RBCS
       IF (useRBCS) THEN
-        CALL RBCS_ADD_TENDENCY( bi, bj, klev, -2,
-     &                          myTime, myThid )
+        CALL RBCS_ADD_TENDENCY(
+     U                 gV(1-OLx,1-OLy,kLev,bi,bj),
+     I                 kLev, bi, bj, -2,
+     I                 myTime, 0, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_RBCS */
 
 #ifdef ALLOW_OBCS
       IF (useOBCS) THEN
-       CALL OBCS_SPONGE_V(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
+        CALL OBCS_SPONGE_V(
+     U                   gV(1-OLx,1-OLy,kLev,bi,bj),
+     I                   iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                   myTime, 0, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_MYPACKAGE
-      IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_V(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+      IF ( useMYPACKAGE ) THEN
+        CALL MYPACKAGE_TENDENCY_APPLY_V(
+     U                 gV(1-OLx,1-OLy,kLev,bi,bj),
+     I                 iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                 myTime, 0, myThid )
+      ENDIF
 #endif /* ALLOW_MYPACKAGE */
 
       RETURN
@@ -319,9 +340,6 @@ C     kSurface  :: index of surface level
       _RL tmpFac, delPI
       _RL recip_Cp
 CEOP
-c#ifdef ALLOW_FRICTION_HEATING
-c     _RL tmpFac
-c#endif
 #ifdef SHORTWAVE_HEATING
       _RL minusone
       PARAMETER (minusOne=-1.)
@@ -343,20 +361,23 @@ c#endif
 C--   Forcing term
 #ifdef ALLOW_AIM
       IF ( useAIM ) CALL AIM_TENDENCY_APPLY_T(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+     U                       gT(1-OLx,1-OLy,kLev,bi,bj),
+     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                       myTime, 0, myThid )
 #endif /* ALLOW_AIM */
 
 #ifdef ALLOW_ATM_PHYS
       IF ( useAtm_Phys ) CALL ATM_PHYS_TENDENCY_APPLY_T(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+     U                       gT(1-OLx,1-OLy,kLev,bi,bj),
+     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                       myTime, 0, myThid )
 #endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_T(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+     U                       gT(1-OLx,1-OLy,kLev,bi,bj),
+     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                       myTime, 0, myThid )
 #endif /* ALLOW_FIZHI */
 
 #ifdef ALLOW_ADDFLUID
@@ -505,86 +526,97 @@ C     Ocean: Add temperature surface forcing (e.g., heat-flux) in surface level
        ENDDO
       ENDIF
 
-#ifdef ALLOW_FRAZIL
-      IF ( useFRAZIL )
-     &     CALL FRAZIL_TENDENCY_APPLY_T(
-     I     iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I     myTime, myThid )
-#endif /* ALLOW_FRAZIL */
-
-#ifdef ALLOW_SHELFICE
-      IF ( useShelfIce )
-     &     CALL SHELFICE_FORCING_T(
-     I     iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I     myTime, myThid )
-#endif /* ALLOW_SHELFICE */
-
-#ifdef ALLOW_ICEFRONT
-      IF ( useICEFRONT )
-     &     CALL ICEFRONT_TENDENCY_APPLY_T(
-     &     bi,bj, kLev, myTime, myThid )
-#endif /* ALLOW_ICEFRONT */
-
 #ifdef SHORTWAVE_HEATING
 C Penetrating SW radiation
 c     IF ( usePenetratingSW ) THEN
-       swfracb(1)=abs(rF(klev))
-       swfracb(2)=abs(rF(klev+1))
+       swfracb(1)=abs(rF(kLev))
+       swfracb(2)=abs(rF(kLev+1))
        CALL SWFRAC(
      I             2, minusOne,
      U             swfracb,
      I             myTime, 1, myThid )
-       kp1 = klev+1
-       IF (klev.EQ.Nr) THEN
-        kp1 = klev
+       kp1 = kLev+1
+       IF (kLev.EQ.Nr) THEN
+        kp1 = kLev
         swfracb(2)=0. _d 0
        ENDIF
        DO j=1,sNy
         DO i=1,sNx
-         gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj)
-     &   -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,klev,bi,bj)
+         gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
+     &   -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,kLev,bi,bj)
      &                   -swfracb(2)*maskC(i,j,kp1, bi,bj))
      &    *recip_Cp*mass2rUnit
-     &    *recip_drF(klev)*_recip_hFacC(i,j,kLev,bi,bj)
+     &    *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
 c     ENDIF
 #endif
 
+#ifdef ALLOW_FRAZIL
+      IF ( useFRAZIL )
+     &     CALL FRAZIL_TENDENCY_APPLY_T(
+     U                 gT(1-OLx,1-OLy,kLev,bi,bj),
+     I                 iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                 myTime, 0, myThid )
+#endif /* ALLOW_FRAZIL */
+
+#ifdef ALLOW_SHELFICE
+      IF ( useShelfIce )
+     &     CALL SHELFICE_FORCING_T(
+     U                   gT(1-OLx,1-OLy,kLev,bi,bj),
+     I                   iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                   myTime, 0, myThid )
+#endif /* ALLOW_SHELFICE */
+
+#ifdef ALLOW_ICEFRONT
+      IF ( useICEFRONT )
+     &     CALL ICEFRONT_TENDENCY_APPLY_T(
+     U                   gT(1-OLx,1-OLy,kLev,bi,bj),
+     I                   kLev, bi, bj, myTime, 0, myThid )
+#endif /* ALLOW_ICEFRONT */
+
 #ifdef ALLOW_SALT_PLUME
 #ifdef SALT_PLUME_VOLUME
       IF ( useSALT_PLUME )
      &     CALL SALT_PLUME_TENDENCY_APPLY_T(
-     I     iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I     myTime, myThid )
+     U                     gT(1-OLx,1-OLy,kLev,bi,bj),
+     I                     iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                     myTime, 0, myThid )
 #endif /* SALT_PLUME_VOLUME */
 #endif /* ALLOW_SALT_PLUME */
 
 #ifdef ALLOW_RBCS
-       IF (useRBCS) THEN
-          CALL RBCS_ADD_TENDENCY(bi,bj,klev, 1,
-     &                            myTime, myThid )
-       ENDIF
-#endif
+      IF (useRBCS) THEN
+        CALL RBCS_ADD_TENDENCY(
+     U                 gT(1-OLx,1-OLy,kLev,bi,bj),
+     I                 kLev, bi, bj, 1,
+     I                 myTime, 0, myThid )
+      ENDIF
+#endif /* ALLOW_RBCS */
 
 #ifdef ALLOW_OBCS
       IF (useOBCS) THEN
-       CALL OBCS_SPONGE_T(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
+        CALL OBCS_SPONGE_T(
+     U                   gT(1-OLx,1-OLy,kLev,bi,bj),
+     I                   iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                   myTime, 0, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_BBL
       IF ( useBBL ) CALL BBL_TENDENCY_APPLY_T(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+     U                       gT(1-OLx,1-OLy,kLev,bi,bj),
+     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                       myTime, 0, myThid )
 #endif /* ALLOW_BBL */
 
 #ifdef ALLOW_MYPACKAGE
-      IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_T(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+      IF ( useMYPACKAGE ) THEN
+        CALL MYPACKAGE_TENDENCY_APPLY_T(
+     U                 gT(1-OLx,1-OLy,kLev,bi,bj),
+     I                 iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                 myTime, 0, myThid )
+      ENDIF
 #endif /* ALLOW_MYPACKAGE */
 
       RETURN
@@ -652,20 +684,23 @@ CEOP
 C--   Forcing term
 #ifdef ALLOW_AIM
       IF ( useAIM ) CALL AIM_TENDENCY_APPLY_S(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+     U                       gS(1-OLx,1-OLy,kLev,bi,bj),
+     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                       myTime, 0, myThid )
 #endif /* ALLOW_AIM */
 
 #ifdef ALLOW_ATM_PHYS
       IF ( useAtm_Phys ) CALL ATM_PHYS_TENDENCY_APPLY_S(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+     U                       gS(1-OLx,1-OLy,kLev,bi,bj),
+     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                       myTime, 0, myThid )
 #endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_S(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+     U                       gS(1-OLx,1-OLy,kLev,bi,bj),
+     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                       myTime, 0, myThid )
 #endif /* ALLOW_FIZHI */
 
 #ifdef ALLOW_ADDFLUID
@@ -732,48 +767,58 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
 #ifdef ALLOW_SHELFICE
       IF ( useShelfIce )
      &     CALL SHELFICE_FORCING_S(
-     I     iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I     myTime, myThid )
+     U                   gS(1-OLx,1-OLy,kLev,bi,bj),
+     I                   iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                   myTime, 0, myThid )
 #endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_ICEFRONT
       IF ( useICEFRONT )
      &     CALL ICEFRONT_TENDENCY_APPLY_S(
-     &     bi,bj, kLev, myTime, myThid )
+     U                   gS(1-OLx,1-OLy,kLev,bi,bj),
+     I                   kLev, bi, bj, myTime, 0, myThid )
 #endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME )
      &     CALL SALT_PLUME_TENDENCY_APPLY_S(
-     I     iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I     myTime, myThid )
+     U                     gS(1-OLx,1-OLy,kLev,bi,bj),
+     I                     iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                     myTime, 0, myThid )
 #endif /* ALLOW_SALT_PLUME */
 
 #ifdef ALLOW_RBCS
-       IF (useRBCS) THEN
-          CALL RBCS_ADD_TENDENCY(bi,bj,klev, 2,
-     &                            myTime, myThid )
-       ENDIF
+      IF (useRBCS) THEN
+        CALL RBCS_ADD_TENDENCY(
+     U                 gS(1-OLx,1-OLy,kLev,bi,bj),
+     I                 kLev, bi, bj, 2,
+     I                 myTime, 0, myThid )
+      ENDIF
 #endif /* ALLOW_RBCS */
 
 #ifdef ALLOW_OBCS
       IF (useOBCS) THEN
-       CALL OBCS_SPONGE_S(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
+        CALL OBCS_SPONGE_S(
+     U                   gS(1-OLx,1-OLy,kLev,bi,bj),
+     I                   iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                   myTime, 0, myThid )
       ENDIF
 #endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_BBL
       IF ( useBBL ) CALL BBL_TENDENCY_APPLY_S(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+     U                       gS(1-OLx,1-OLy,kLev,bi,bj),
+     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                       myTime, 0, myThid )
 #endif /* ALLOW_BBL */
 
 #ifdef ALLOW_MYPACKAGE
-      IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_S(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
+      IF ( useMYPACKAGE ) THEN
+        CALL MYPACKAGE_TENDENCY_APPLY_S(
+     U                 gS(1-OLx,1-OLy,kLev,bi,bj),
+     I                 iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                 myTime, 0, myThid )
+      ENDIF
 #endif /* ALLOW_MYPACKAGE */
 
       RETURN

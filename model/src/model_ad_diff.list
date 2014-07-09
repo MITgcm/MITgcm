@@ -83,8 +83,8 @@ solve_for_pressure.f
 state_summary.f	
 solve_pentadiagonal.f
 solve_tridiagonal.f
-taueddy_external_forcing.f
 taueddy_init_varia.f
+taueddy_tendency_apply.f
 timestep.f	
 the_main_loop.f	
 thermodynamics.f	
