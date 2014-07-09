@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/adstreamice_invert_surf_forthick.F,v 1.3 2013/06/21 20:49:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/adstreamice_invert_surf_forthick.F,v 1.4 2014/07/09 16:09:48 dgoldberg Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -30,10 +30,10 @@ C $Name:  $
 
       _RL H(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 !      _RL Rtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL adr_low_si(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      common /adstreamice_rlow/ adr_low_si
-      _RL adh_streamice(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      common /adstreamice_fields_rl/ adh_streamice
+      _RL r_low_si_ad(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /streamice_rlow_ad/ r_low_si_ad
+      _RL h_streamice_ad(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /streamice_fields_rl_ad/ h_streamice_ad
 
 !       il=ILNBLNK( xx_genarr2d_file(iarr) )
 !       write(fnamegeneric(1:80),'(2a,i10.10)')
@@ -78,10 +78,10 @@ C $Name:  $
      &             delta*hf,
      &             streamice_smooth_gl_width)
 
-              adr_low_si (i,j,bi,bj) =
-     &          adr_low_si (i,j,bi,bj) -
+              r_low_si_ad (i,j,bi,bj) =
+     &          r_low_si_ad (i,j,bi,bj) -
      &          i_r * (fp-delta)/fp *
-     &          adh_streamice(i,j,bi,bj)
+     &          h_streamice_ad(i,j,bi,bj)
 
             enddo
           enddo
