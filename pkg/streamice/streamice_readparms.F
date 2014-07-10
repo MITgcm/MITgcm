@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.5 2014/06/04 13:08:52 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.6 2014/07/10 15:09:40 dgoldberg Exp $
 C $Name:  $
 
 
@@ -43,7 +43,6 @@ C     iUnit      :: Work variable for IO unit number
      &     streamice_vel_update,streamice_cg_tol,streamice_nonlin_tol,
      &     streamice_nonlin_tol_fp,
      &     streamice_max_cg_iter, streamice_max_nl_iter,
-     &     STREAMICE_GL_regularize,
      &     STREAMICEthickInit,
      &     STREAMICEsigcoordInit,
      &     STREAMICEsigcoordFile,
@@ -53,7 +52,7 @@ C     iUnit      :: Work variable for IO unit number
      &     STREAMICEison,
      &     STREAMICE_dump_mdsio, STREAMICE_tave_mdsio,
      &     STREAMICE_dump_mnc, STREAMICE_tave_mnc,
-     &     STREAMICE_GL_regularize, STREAMICE_move_front,
+     &     STREAMICE_move_front,
      &     STREAMICE_calve_to_mask,
      &     STREAMICE_diagnostic_only,
      &     STREAMICE_lower_cg_tol,
@@ -166,7 +165,7 @@ C--   Default values for STREAMICE
       streamice_nonlin_tol_fp = 1.e-14
       streamice_max_cg_iter = 2000
       streamice_max_nl_iter = 100
-      streamice_n_sub_regularize = 4
+!      streamice_n_sub_regularize = 4
       streamice_CFL_factor = .5
       streamice_adjDump = 0.
       streamice_bg_surf_slope_x = .0
@@ -243,7 +242,7 @@ C--   Default values for STREAMICE
       STREAMICE_dump_mdsio = .TRUE.
       STREAMICE_dump_mnc = .FALSE. 
       STREAMICE_tave_mnc = .FALSE.
-      STREAMICE_GL_regularize = .FALSE.
+!      STREAMICE_GL_regularize = .FALSE.
       STREAMICE_move_front = .FALSE.
       STREAMICE_calve_to_mask = .FALSE.
 !       STREAMICE_geom_file_setup = .FALSE.

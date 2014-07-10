@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_check.F,v 1.2 2013/06/21 22:00:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_check.F,v 1.3 2014/07/10 15:09:40 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -252,8 +252,8 @@ C-   write out logical parameters
      & ' streamice_dump_mnc =', ' /* user defined parameter */')
        CALL WRITE_0D_L( STREAMICE_tave_mnc, INDEX_NONE,
      & ' streamice_tave_mnc =', ' /* user defined parameter */')
-       CALL WRITE_0D_L( STREAMICE_GL_regularize, INDEX_NONE,
-     & ' streamice_GL_regularize =', ' /* user defined parameter */')
+!       CALL WRITE_0D_L( STREAMICE_GL_regularize, INDEX_NONE,
+!     & ' streamice_GL_regularize =', ' /* user defined parameter */')
        CALL WRITE_0D_L( STREAMICE_move_front, INDEX_NONE,
      & ' streamice_move_front =', ' /* user defined parameter */')
        CALL WRITE_0D_L( STREAMICE_calve_to_mask, INDEX_NONE,

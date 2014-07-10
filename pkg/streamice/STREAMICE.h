@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.10 2014/06/07 16:13:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.11 2014/07/10 15:09:40 dgoldberg Exp $
 C $Name:  $
 
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -76,11 +76,11 @@ C     -------------------------- INT PARAMS ------------------------------------
 
       COMMON /STREAMICE_PARMS_I/
      &     streamice_max_cg_iter, streamice_max_nl_iter,
-     &     streamice_vel_upd_counter, streamice_nstep_velocity,
-     &     streamice_n_sub_regularize
+     &     streamice_vel_upd_counter, streamice_nstep_velocity
+!     &     streamice_n_sub_regularize
       INTEGER streamice_max_cg_iter, streamice_max_nl_iter
       INTEGER streamice_vel_upd_counter, streamice_nstep_velocity
-      INTEGER streamice_n_sub_regularize
+!      INTEGER streamice_n_sub_regularize
 
 C     -------------------------- CHAR PARAMS ---------------------------------------------------
 
@@ -193,7 +193,7 @@ C     -------------------------- LOGICAL PARAMS --------------------------------
       LOGICAL STREAMICE_tave_mdsio
       LOGICAL STREAMICE_dump_mnc
       LOGICAL STREAMICE_tave_mnc
-      LOGICAL STREAMICE_GL_regularize, STREAMICE_move_front
+      LOGICAL STREAMICE_move_front
       LOGICAL STREAMICE_calve_to_mask
       LOGICAL STREAMICE_construct_matrix
       LOGICAL STREAMICE_lower_cg_tol
@@ -214,7 +214,7 @@ C      LOGICAL STREAMICE_hybrid_stress
      & STREAMICEison,
      & STREAMICE_dump_mdsio, STREAMICE_tave_mdsio,
      & STREAMICE_dump_mnc, STREAMICE_tave_mnc,
-     & STREAMICE_GL_regularize, STREAMICE_move_front,
+     & STREAMICE_move_front,
      & STREAMICE_calve_to_mask,
      & STREAMICE_construct_matrix,
      & STREAMICE_lower_cg_tol,
