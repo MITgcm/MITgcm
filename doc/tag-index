@@ -1,13 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2018 2014/07/04 11:57:23 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2019 2014/07/10 00:24:24 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src and several pkgs:
+  - change argument list of all S/R called from external_forcing.F and
+    called from ptracers_forcing.F (renamed to ptracers_apply_forcing.F)
+    to pass, as argument, the current level tendency array to update
+    (instead of a direct update of the common bloc array).
+  - change also (in the same way) argument list of PTRACERS_APPLY_FORCING;
+  - rename taueddy_external_forcing.f to taueddy_tendency_apply.F
 o pkg/seaice/seaice_lsr.F
   - always initialize local arrays in seaice_lsr_tridiagu/v
   - add more local tapes to seaice_lsr_tridiagu/v
-  - move storing u/vice(:,:,bi,bj) out of seaice_lsr_tridiagu/v, but 
+  - move storing u/vice(:,:,bi,bj) out of seaice_lsr_tridiagu/v, but
     keep it in bi/bj loop; this seems to be essential
   - gradients are still wrong but only by 4-7 orders of magnitude
     instead of 15 orders of magnitude, lab_sea improves a little
@@ -18,25 +25,25 @@ o pkg/seaice
     in seaice_lsr_ad
   - exclude some residual computations in seaice_lsr when
     ALLOW_AUTODIFF_TAMC is defined in order to avoid unnecessary code
-    in seaice_lsr_ad 
+    in seaice_lsr_ad
   - add more storing, a new tape (model/src/the_main_loop.F) and
     another key for SEAICE_LSR_VECTORIZE_ZEBRA (the local keys ilockey
-    and klockey should be checked by a specialist) 
+    and klockey should be checked by a specialist)
   - modify ( define SEAICE_VECTORIZE_LSR and SEAICE_LSR_ADJOINT_ITER )
     and update lab_sea after previous changes in pkg/seaice below
-o pkg/autodiff :
-  - introduce useSmoothCorrel2DinAdMode, SEAICEapproxLevInAd, and 
+o pkg/autodiff:
+  - introduce useSmoothCorrel2DinAdMode, SEAICEapproxLevInAd, and
     viscFacInAd : run time parameters allowing for adjoint switches
     note : logic for useSmoothCorrel2DinAdMode is in ctrl_readparms.F
-o pkg/ecco : 
-  - introduce cost_gencost_boxmean.F that computes a box mean 
+o pkg/ecco:
+  - introduce cost_gencost_boxmean.F that computes a box mean
     temperature (for use in adjoint sensitivity studies).
 o model/src/set_defaults.F : initialize viscFacAdj to 1.
-o pkg/mom_common/mom_calc_visc.F :
+o pkg/mom_common/mom_calc_visc.F:
   - ifdef ALLOW_AUTODIFF then include viscFacAdj factor.
-o pkg/seaice/seaice_summary.F : 
+o pkg/seaice/seaice_summary.F:
   - statement for SEAICEadjMODE now in autodiff_readparms.F
-o pkg/seaice
+o pkg/seaice:
   - remove some store directives and add new ones in an effort to get
     finally rid off the recomputation warnings. This is successful
     when SEAICE_VECTORIZE_LSR ***and*** SEAICE_LSR_ADJOINT_ITER are
