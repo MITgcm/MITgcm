@@ -1,11 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.69 2014/07/09 17:03:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.70 2014/07/10 00:37:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_SALT_PLUME
-#include "SALT_PLUME_OPTIONS.h"
-#endif
 
 C--  File external_forcing.F:
 C--   Contents
@@ -576,13 +573,11 @@ c     ENDIF
 #endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_SALT_PLUME
-#ifdef SALT_PLUME_VOLUME
       IF ( useSALT_PLUME )
      &     CALL SALT_PLUME_TENDENCY_APPLY_T(
      U                     gT(1-OLx,1-OLy,kLev,bi,bj),
      I                     iMin,iMax,jMin,jMax, kLev, bi,bj,
      I                     myTime, 0, myThid )
-#endif /* SALT_PLUME_VOLUME */
 #endif /* ALLOW_SALT_PLUME */
 
 #ifdef ALLOW_RBCS
