@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2019 2014/07/10 00:24:24 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2020 2014/07/10 19:13:13 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint64z (2014/07/10)
 o model/src and several pkgs:
   - change argument list of all S/R called from external_forcing.F and
     called from ptracers_forcing.F (renamed to ptracers_apply_forcing.F)
