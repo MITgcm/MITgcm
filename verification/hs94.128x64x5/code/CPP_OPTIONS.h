@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_held_suarez_cs/code/CPP_OPTIONS.h,v 1.3 2014/07/11 18:48:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.128x64x5/code/CPP_OPTIONS.h,v 1.8 2014/07/11 18:52:04 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -76,7 +76,7 @@ C   so that d/dt(eta) is exactly equal to - Div.Transport
 
 C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that surface thickness (hFactors) vary with time
-#define NONLIN_FRSURF
+#undef NONLIN_FRSURF
 
 C o Include/exclude code for single reduction Conjugate-Gradient solver
 #define ALLOW_SRCG
