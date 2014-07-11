@@ -1,6 +1,7 @@
 adams_bashforth2.f
 adams_bashforth3.f
 add_walls2masks.f
+apply_forcing.f
 calc_3d_diffusivity.f
 calc_adv_flow.f
 calc_div_ghat.f	

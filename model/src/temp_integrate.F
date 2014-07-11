@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.7 2014/04/04 20:54:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.8 2014/07/11 18:43:41 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -24,7 +24,7 @@ C     | SUBROUTINE TEMP_INTEGRATE
 C     | o Calculate tendency for temperature
 C     |   and integrates forward in time.
 C     *==========================================================*
-C     | A procedure called EXTERNAL_FORCING_T is called from
+C     | A procedure called APPLY_FORCING_T is called from
 C     | here. These procedures can be used to add per problem
 C     | heat flux source terms.
 C     | Note: Although it is slightly counter-intuitive the
@@ -108,6 +108,7 @@ C     fZon       :: Flux of temperature (T) in the zonal direction
 C     fMer       :: Flux of temperature (T) in the meridional direction
 C     fVer       :: Flux of temperature (T) in the vertical direction
 C                   at the upper(U) and lower(D) faces of a cell.
+C     gt_AB      :: Adams-Bashforth temperature tendency increment
 C   useVariableK :: T when vertical diffusion is not constant
       INTEGER iMin, iMax, jMin, jMax
       INTEGER i, j, k
@@ -210,9 +211,9 @@ CADJ STORE som_T = comlev1_bibj, key=itdkey, byte=isbyte
         IF (debugMode) CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
 # endif
         CALL GAD_SOM_ADVECT(
-     I             tempImplVertAdv, tempAdvScheme, tempVertAdvScheme,
-     I             GAD_TEMPERATURE, dTtracerLev,
-     I             uFld, vFld, wFld, theta,
+     I             tempImplVertAdv,
+     I             tempAdvScheme, tempVertAdvScheme, GAD_TEMPERATURE,
+     I             dTtracerLev, uFld, vFld, wFld, theta,
      U             som_T,
      O             gT,
      I             bi, bj, myTime, myIter, myThid )
@@ -224,9 +225,9 @@ CADJ STORE som_T = comlev1_bibj, key=itdkey, byte=isbyte
         IF (debugMode) CALL DEBUG_CALL('GAD_ADVECTION',myThid)
 # endif
         CALL GAD_ADVECTION(
-     I             tempImplVertAdv, tempAdvScheme, tempVertAdvScheme,
-     I             GAD_TEMPERATURE, dTtracerLev,
-     I             uFld, vFld, wFld, theta,
+     I             tempImplVertAdv,
+     I             tempAdvScheme, tempVertAdvScheme, GAD_TEMPERATURE,
+     I             dTtracerLev, uFld, vFld, wFld, theta,
      O             gT,
      I             bi, bj, myTime, myIter, myThid )
       ENDIF
@@ -300,9 +301,10 @@ CADJ &     byte=isbyte,  kind = isbyte
 
 C--   External thermal forcing term(s) inside Adams-Bashforth:
         IF ( tempForcing .AND. tracForcingOutAB.NE.1 )
-     &    CALL EXTERNAL_FORCING_T(
-     I         iMin, iMax, jMin, jMax, bi, bj, k,
-     I         myTime, myThid )
+     &    CALL APPLY_FORCING_T(
+     U                        gT(1-OLx,1-OLy,k,bi,bj),
+     I                        iMin,iMax,jMin,jMax, k, bi,bj,
+     I                        myTime, myIter, myThid )
 
         IF ( AdamsBashforthGt ) THEN
 #ifdef ALLOW_ADAMSBASHFORTH_3
@@ -325,9 +327,10 @@ C--   External thermal forcing term(s) inside Adams-Bashforth:
 
 C--   External thermal forcing term(s) outside Adams-Bashforth:
         IF ( tempForcing .AND. tracForcingOutAB.EQ.1 )
-     &    CALL EXTERNAL_FORCING_T(
-     I         iMin, iMax, jMin, jMax, bi, bj, k,
-     I         myTime, myThid )
+     &    CALL APPLY_FORCING_T(
+     U                        gT(1-OLx,1-OLy,k,bi,bj),
+     I                        iMin,iMax,jMin,jMax, k, bi,bj,
+     I                        myTime, myIter, myThid )
 
 #ifdef NONLIN_FRSURF
         IF (nonlinFreeSurf.GT.0) THEN

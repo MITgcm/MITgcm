@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/salt_integrate.F,v 1.7 2014/04/04 20:54:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/salt_integrate.F,v 1.8 2014/07/11 18:43:41 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -24,7 +24,7 @@ C     | SUBROUTINE SALT_INTEGRATE
 C     | o Calculate tendency for salt
 C     |   and integrates forward in time.
 C     *==========================================================*
-C     | A procedure called EXTERNAL_FORCING_S is called from
+C     | A procedure called APPLY_FORCING_S is called from
 C     | here. These procedures can be used to add per problem
 C     | E-P  flux source terms.
 C     | Note: Although it is slightly counter-intuitive the
@@ -105,6 +105,7 @@ C     fZon       :: Flux of salt (S) in the zonal direction
 C     fMer       :: Flux of salt (S) in the meridional direction
 C     fVer       :: Flux of salt (S) in the vertical direction
 C                   at the upper(U) and lower(D) faces of a cell.
+C     gs_AB      :: Adams-Bashforth salinity tendency increment
       INTEGER iMin, iMax, jMin, jMax
       INTEGER i, j, k
       INTEGER kUp, kDown, kM1
@@ -202,9 +203,9 @@ CADJ STORE som_S = comlev1_bibj, key=itdkey, byte=isbyte
         IF (debugMode) CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
 # endif
         CALL GAD_SOM_ADVECT(
-     I             saltImplVertAdv, saltAdvScheme, saltVertAdvScheme,
-     I             GAD_SALINITY, dTtracerLev,
-     I             uFld, vFld, wFld, salt,
+     I             saltImplVertAdv,
+     I             saltAdvScheme, saltVertAdvScheme, GAD_SALINITY,
+     I             dTtracerLev, uFld, vFld, wFld, salt,
      U             som_S,
      O             gS,
      I             bi, bj, myTime, myIter, myThid )
@@ -216,9 +217,9 @@ CADJ STORE som_S = comlev1_bibj, key=itdkey, byte=isbyte
         IF (debugMode) CALL DEBUG_CALL('GAD_ADVECTION',myThid)
 # endif
         CALL GAD_ADVECTION(
-     I             saltImplVertAdv, saltAdvScheme, saltVertAdvScheme,
-     I             GAD_SALINITY, dTtracerLev,
-     I             uFld, vFld, wFld, salt,
+     I             saltImplVertAdv,
+     I             saltAdvScheme, saltVertAdvScheme, GAD_SALINITY,
+     I             dTtracerLev, uFld, vFld, wFld, salt,
      O             gS,
      I             bi, bj, myTime, myIter, myThid )
       ENDIF
@@ -292,9 +293,10 @@ CADJ &     byte=isbyte,  kind = isbyte
 
 C--   External salinity forcing term(s) inside Adams-Bashforth:
         IF ( saltForcing .AND. tracForcingOutAB.NE.1 )
-     &    CALL EXTERNAL_FORCING_S(
-     I         iMin, iMax, jMin, jMax, bi, bj, k,
-     I         myTime, myThid )
+     &    CALL APPLY_FORCING_S(
+     U                        gS(1-OLx,1-OLy,k,bi,bj),
+     I                        iMin,iMax,jMin,jMax, k, bi,bj,
+     I                        myTime, myIter, myThid )
 
         IF ( AdamsBashforthGs ) THEN
 #ifdef ALLOW_ADAMSBASHFORTH_3
@@ -317,9 +319,10 @@ C--   External salinity forcing term(s) inside Adams-Bashforth:
 
 C--   External salinity forcing term(s) outside Adams-Bashforth:
         IF ( saltForcing .AND. tracForcingOutAB.EQ.1 )
-     &    CALL EXTERNAL_FORCING_S(
-     I         iMin, iMax, jMin, jMax, bi, bj, k,
-     I         myTime, myThid )
+     &    CALL APPLY_FORCING_S(
+     U                        gS(1-OLx,1-OLy,k,bi,bj),
+     I                        iMin,iMax,jMin,jMax, k, bi,bj,
+     I                        myTime, myIter, myThid )
 
 #ifdef NONLIN_FRSURF
         IF (nonlinFreeSurf.GT.0) THEN

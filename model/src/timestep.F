@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.55 2013/12/10 00:06:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.56 2014/07/11 18:43:41 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -148,12 +148,14 @@ C--   Forcing term inside the Adams-Bashforth:
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
-        CALL EXTERNAL_FORCING_U(
-     I     iMin,iMax,jMin,jMax,bi,bj,k,
-     I     myTime,myThid)
-        CALL EXTERNAL_FORCING_V(
-     I     iMin,iMax,jMin,jMax,bi,bj,k,
-     I     myTime,myThid)
+        CALL APPLY_FORCING_U(
+     U                        gU(1-OLx,1-OLy,k,bi,bj),
+     I                        iMin,iMax,jMin,jMax, k, bi,bj,
+     I                        myTime, myIter, myThid )
+        CALL APPLY_FORCING_V(
+     U                        gV(1-OLx,1-OLy,k,bi,bj),
+     I                        iMin,iMax,jMin,jMax, k, bi,bj,
+     I                        myTime, myIter, myThid )
 
 #ifdef ALLOW_DIAGNOSTICS
         IF ( externForcDiagIsOn ) THEN
@@ -221,12 +223,14 @@ C--   Forcing term outside the Adams-Bashforth:
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS or CD_CODE_NO_AB_MOMENTUM */
 
-        CALL EXTERNAL_FORCING_U(
-     I     iMin,iMax,jMin,jMax,bi,bj,k,
-     I     myTime,myThid)
-        CALL EXTERNAL_FORCING_V(
-     I     iMin,iMax,jMin,jMax,bi,bj,k,
-     I     myTime,myThid)
+        CALL APPLY_FORCING_U(
+     U                        gU(1-OLx,1-OLy,k,bi,bj),
+     I                        iMin,iMax,jMin,jMax, k, bi,bj,
+     I                        myTime, myIter, myThid )
+        CALL APPLY_FORCING_V(
+     U                        gV(1-OLx,1-OLy,k,bi,bj),
+     I                        iMin,iMax,jMin,jMax, k, bi,bj,
+     I                        myTime, myIter, myThid )
 
 #if (defined ALLOW_DIAGNOSTICS) || (defined CD_CODE_NO_AB_MOMENTUM)
         IF ( externForcDiagIsOn .OR. useCDscheme ) THEN
