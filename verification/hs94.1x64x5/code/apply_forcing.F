@@ -1,17 +1,26 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/Attic/external_forcing.F,v 1.1 2013/06/21 17:36:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code/apply_forcing.F,v 1.1 2014/07/11 18:57:32 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+C--  File apply_forcing.F:
+C--   Contents
+C--   o APPLY_FORCING_U
+C--   o APPLY_FORCING_V
+C--   o APPLY_FORCING_T
+C--   o APPLY_FORCING_S
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: EXTERNAL_FORCING_U
+C     !ROUTINE: APPLY_FORCING_U
 C     !INTERFACE:
-      SUBROUTINE EXTERNAL_FORCING_U(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
+      SUBROUTINE APPLY_FORCING_U(
+     U                     gU_arr,
+     I                     iMin,iMax,jMin,jMax, k, bi, bj,
+     I                     myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R EXTERNAL_FORCING_U
+C     | S/R APPLY_FORCING_U
 C     | o Contains problem specific forcing for zonal velocity.
 C     *==========================================================*
 C     | Adds terms to gU for forcing by external sources
@@ -30,39 +39,42 @@ C     == Global data ==
 #include "FFIELDS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
+C     gU_arr    :: the tendency array
 C     iMin,iMax :: Working range of x-index for applying forcing.
 C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
 C     bi,bj     :: Current tile indices
-C     kLev      :: Current vertical level index
 C     myTime    :: Current time in simulation
-C     myThid    :: Thread Id number
-      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
-      _RL myTime
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     gU_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
 C     i,j       :: Loop counters
       INTEGER i, j
 CEOP
       _RL recip_P0g, termP, kV, kF, sigma_b
 
-C--   Forcing term(s)
-      kF=1. _d 0/86400. _d 0
+C--   Forcing term
+      kF = 1. _d 0/86400. _d 0
       sigma_b = 0.7 _d 0
 c     DO j=1,sNy
 C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy+1]
       DO j=0,sNy+1
        DO i=1,sNx+1
-        IF ( hFacW(i,j,kLev,bi,bj) .GT. 0. ) THEN
-         recip_P0g=MAX(recip_Rcol(i,j,bi,bj),recip_Rcol(i-1,j,bi,bj))
-         termP=0.5 _d 0*( MIN(rF(kLev)*recip_P0g,1. _d 0)
-     &                   +rF(kLev+1)*recip_P0g )
-c        termP=0.5 _d 0*( rF(kLev) + rF(kLev+1) )*recip_P0g
-         kV=kF*MAX( 0. _d 0, (termP-sigma_b)/(1. _d 0-sigma_b) )
-         gU(i,j,kLev,bi,bj)=gU(i,j,kLev,bi,bj)
-     &                     -kV*uVel(i,j,kLev,bi,bj)
+        IF ( maskW(i,j,k,bi,bj).EQ.oneRS ) THEN
+         recip_P0g = MAX(recip_Rcol(i,j,bi,bj),recip_Rcol(i-1,j,bi,bj))
+         termP = 0.5 _d 0*( MIN( rF(k)*recip_P0g, oneRL )
+     &                     +rF(k+1)*recip_P0g )
+c        termP = 0.5 _d 0*( rF(k) + rF(k+1) )*recip_P0g
+         kV = kF*MAX( zeroRL, (termP-sigma_b)/(1. _d 0-sigma_b) )
+         gU_arr(i,j) = gU_arr(i,j)
+     &               - kV*uVel(i,j,k,bi,bj)
         ENDIF
        ENDDO
       ENDDO
@@ -72,14 +84,15 @@ c        termP=0.5 _d 0*( rF(kLev) + rF(kLev+1) )*recip_P0g
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: EXTERNAL_FORCING_V
+C     !ROUTINE: APPLY_FORCING_V
 C     !INTERFACE:
-      SUBROUTINE EXTERNAL_FORCING_V(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
+      SUBROUTINE APPLY_FORCING_V(
+     U                     gV_arr,
+     I                     iMin,iMax,jMin,jMax, k, bi, bj,
+     I                     myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R EXTERNAL_FORCING_V
+C     | S/R APPLY_FORCING_V
 C     | o Contains problem specific forcing for merid velocity.
 C     *==========================================================*
 C     | Adds terms to gV for forcing by external sources
@@ -98,39 +111,42 @@ C     == Global data ==
 #include "FFIELDS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
+C     gV_arr    :: the tendency array
 C     iMin,iMax :: Working range of x-index for applying forcing.
 C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
 C     bi,bj     :: Current tile indices
-C     kLev      :: Current vertical level index
 C     myTime    :: Current time in simulation
-C     myThid    :: Thread Id number
-      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
-      _RL myTime
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     gV_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
 C     i,j       :: Loop counters
       INTEGER i, j
 CEOP
       _RL recip_P0g, termP, kV, kF, sigma_b
 
-C--   Forcing term(s)
-      kF=1. _d 0/86400. _d 0
+C--   Forcing term
+      kF = 1. _d 0/86400. _d 0
       sigma_b = 0.7 _d 0
       DO j=1,sNy+1
 c      DO i=1,sNx
 C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx+1]
        DO i=0,sNx+1
-        IF ( hFacS(i,j,kLev,bi,bj) .GT. 0. ) THEN
-         recip_P0g=MAX(recip_Rcol(i,j,bi,bj),recip_Rcol(i,j-1,bi,bj))
-         termP=0.5 _d 0*( MIN(rF(kLev)*recip_P0g,1. _d 0)
-     &                   +rF(kLev+1)*recip_P0g )
-c        termP=0.5 _d 0*( rF(kLev) + rF(kLev+1) )*recip_P0g
-         kV=kF*MAX( 0. _d 0, (termP-sigma_b)/(1. _d 0-sigma_b) )
-         gV(i,j,kLev,bi,bj)=gV(i,j,kLev,bi,bj)
-     &                      -kV*vVel(i,j,kLev,bi,bj)
+        IF ( maskS(i,j,k,bi,bj).EQ.oneRS ) THEN
+         recip_P0g = MAX(recip_Rcol(i,j,bi,bj),recip_Rcol(i,j-1,bi,bj))
+         termP = 0.5 _d 0*( MIN( rF(k)*recip_P0g, oneRL )
+     &                     +rF(k+1)*recip_P0g )
+c        termP = 0.5 _d 0*( rF(k) + rF(k+1) )*recip_P0g
+         kV = kF*MAX( zeroRL, (termP-sigma_b)/(1. _d 0-sigma_b) )
+         gV_arr(i,j) = gV_arr(i,j)
+     &               - kV*vVel(i,j,k,bi,bj)
         ENDIF
        ENDDO
       ENDDO
@@ -140,14 +156,15 @@ c        termP=0.5 _d 0*( rF(kLev) + rF(kLev+1) )*recip_P0g
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: EXTERNAL_FORCING_T
+C     !ROUTINE: APPLY_FORCING_T
 C     !INTERFACE:
-      SUBROUTINE EXTERNAL_FORCING_T(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
+      SUBROUTINE APPLY_FORCING_T(
+     U                     gT_arr,
+     I                     iMin,iMax,jMin,jMax, k, bi, bj,
+     I                     myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R EXTERNAL_FORCING_T
+C     | S/R APPLY_FORCING_T
 C     | o Contains problem specific forcing for temperature.
 C     *==========================================================*
 C     | Adds terms to gT for forcing by external sources
@@ -164,47 +181,53 @@ C     == Global data ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
+C     gT_arr    :: the tendency array
 C     iMin,iMax :: Working range of x-index for applying forcing.
 C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
 C     bi,bj     :: Current tile indices
-C     kLev      :: Current vertical level index
 C     myTime    :: Current time in simulation
-C     myThid    :: Thread Id number
-      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
-      _RL myTime
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     gT_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
 C     i,j       :: Loop counters
+C     kSurface  :: index of surface level
       INTEGER i, j
 CEOP
       _RL thetaLim,kT,ka,ks,sigma_b,term1,term2,thetaEq,termP
 
-C--   Forcing term(s)
-      ka=1. _d 0/(40. _d 0*86400. _d 0)
-      ks=1. _d 0/(4. _d 0 *86400. _d 0)
+C--   Forcing term
+      ka = 1. _d 0/(40. _d 0*86400. _d 0)
+      ks = 1. _d 0/(4. _d 0 *86400. _d 0)
       sigma_b = 0.7 _d 0
       DO j=1,sNy
        DO i=1,sNx
-         term1=60. _d 0*(SIN(yC(i,j,bi,bj)*deg2rad)**2)
-         termP=0.5 _d 0*( rF(kLev) + rF(kLev+1) )
-         term2=10. _d 0*LOG(termP/atm_po)
+         term1 = 60. _d 0*(SIN(yC(i,j,bi,bj)*deg2rad)**2)
+         termP = 0.5 _d 0*( rF(k) + rF(k+1) )
+         term2 = 10. _d 0*LOG(termP/atm_po)
      &            *(COS(yC(i,j,bi,bj)*deg2rad)**2)
          thetaLim = 200. _d 0/ ((termP/atm_po)**atm_kappa)
-         thetaEq=315. _d 0-term1-term2
-         thetaEq=MAX(thetaLim,thetaEq)
-         termP=0.5 _d 0*( MIN(rF(kLev),Ro_surf(i,j,bi,bj))+rF(kLev+1) )
-         kT=ka+(ks-ka)
-     &     *MAX(0. _d 0,
+         thetaEq = 315. _d 0-term1-term2
+         thetaEq = MAX(thetaLim,thetaEq)
+         termP = 0.5 _d 0*( MIN(rF(k),Ro_surf(i,j,bi,bj))
+     &                    + rF(k+1) )
+         kT = ka+(ks-ka)
+     &      *MAX( zeroRL,
      &       (termP*recip_Rcol(i,j,bi,bj)-sigma_b)/(1. _d 0-sigma_b) )
-     &     *COS((yC(i,j,bi,bj)*deg2rad))**4
-         gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
-     &        - kT*( theta(i,j,kLev,bi,bj)-thetaEq )
-     &            *maskC(i,j,kLev,bi,bj)
+     &      *COS((yC(i,j,bi,bj)*deg2rad))**4
+         gT_arr(i,j) = gT_arr(i,j)
+     &               - kT*( theta(i,j,k,bi,bj)-thetaEq )
+     &                *maskC(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
@@ -213,15 +236,15 @@ C--   Forcing term(s)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: EXTERNAL_FORCING_S
+C     !ROUTINE: APPLY_FORCING_S
 C     !INTERFACE:
-      SUBROUTINE EXTERNAL_FORCING_S(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
-
+      SUBROUTINE APPLY_FORCING_S(
+     U                     gS_arr,
+     I                     iMin,iMax,jMin,jMax, k, bi, bj,
+     I                     myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R EXTERNAL_FORCING_S
+C     | S/R APPLY_FORCING_S
 C     | o Contains problem specific forcing for merid velocity.
 C     *==========================================================*
 C     | Adds terms to gS for forcing by external sources
@@ -238,26 +261,30 @@ C     == Global data ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
+C     gS_arr    :: the tendency array
 C     iMin,iMax :: Working range of x-index for applying forcing.
 C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
 C     bi,bj     :: Current tile indices
-C     kLev      :: Current vertical level index
 C     myTime    :: Current time in simulation
-C     myThid    :: Thread Id number
-      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
-      _RL myTime
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     gS_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
 C     i,j       :: Loop counters
 c     INTEGER i, j
 CEOP
 
-C--   Forcing term(s)
+C--   Forcing term
 
       RETURN
       END
