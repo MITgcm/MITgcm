@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.51 2012/11/09 22:29:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.52 2014/07/11 18:28:45 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -111,14 +111,17 @@ C   such other header files.
 C#define COSINEMETH_III
 
 C o Use "OLD" UV discretisation near boundaries (*not* recommended)
-C   Note - only works with  #undef NO_SLIP_LATERAL  in calc_mom_rhs.F
+C   Note - only works with pkg/mom_fluxform and "no_slip_sides=.FALSE."
 C          because the old code did not have no-slip BCs
-#undef  OLD_ADV_BCS
+#undef OLD_ADV_BCS
 
 C o Use LONG.bin, LATG.bin, etc., initialization for ini_curviliear_grid.F
 C   Default is to use "new" grid files (OLD_GRID_IO undef) but OLD_GRID_IO
 C   is still useful with, e.g., single-domain curvilinear configurations.
 #undef OLD_GRID_IO
+
+C o Use old EXTERNAL_FORCING_U,V,T,S subroutines (for backward compatibility)
+#undef USE_OLD_EXTERNAL_FORCING
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
