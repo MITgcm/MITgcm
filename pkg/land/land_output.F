@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_output.F,v 1.5 2010/01/03 21:08:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_output.F,v 1.6 2014/07/11 23:24:58 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -55,7 +55,6 @@ C     == Local variables ==
       CHARACTER*(10) suff
 #ifdef ALLOW_MNC
       CHARACTER*(1) pf
-      CHARACTER*(80) fmnc
 #endif
 
 #ifdef ALLOW_AIM
@@ -119,39 +118,35 @@ C--   fluxes (2-D map):
           ELSE
             pf(1:1) = 'R'
           ENDIF
-          DO k = 1,MAX_LEN_MBUF
-            fmnc(k:k) = ' '
-          ENDDO
-          fmnc(1:13) = 'land_snapshot'
+          WRITE(fn,'(A)') 'land_snapshot'
+          CALL MNC_CW_SET_UDIM(fn, -1, myThid)
+          CALL MNC_CW_RL_W_S('D',fn,0,0,'T', myTime, myThid)
+          CALL MNC_CW_SET_UDIM(fn, 0, myThid)
+          CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
 
-          CALL MNC_CW_SET_UDIM(fmnc, -1, myThid)
-          CALL MNC_CW_RL_W_S('D',fmnc,0,0,'T', myTime, myThid)
-          CALL MNC_CW_SET_UDIM(fmnc, 0, myThid)
-          CALL MNC_CW_I_W_S('I',fmnc,0,0,'iter', myIter, myThid)
-
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fn,0,0,
      &         'land_groundT', land_groundT, myThid)
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fn,0,0,
      &         'land_enthalp', land_enthalp, myThid)
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fn,0,0,
      &         'land_groundW', land_groundW, myThid)
 
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fn,0,0,
      &         'land_skinT', land_skinT, myThid)
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fn,0,0,
      &         'land_hSnow', land_hSnow, myThid)
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fn,0,0,
      &         'land_snAge', land_snowAge, myThid)
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fn,0,0,
      &         'land_RunOff', land_runOff, myThid)
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fn,0,0,
      &         'land_enRnOf', land_enRnOf, myThid)
 
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fn,0,0,
      &         'land_HeatFx', land_HeatFlx, myThid)
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fn,0,0,
      &         'land_frWaFx', land_Pr_m_Ev, myThid)
-          CALL MNC_CW_RL_W(pf,fmnc,0,0,
+          CALL MNC_CW_RL_W(pf,fn,0,0,
      &         'land_EnWaFx', land_EnWFlux, myThid)
 
           _BARRIER
@@ -236,11 +231,7 @@ C      Normalize by integrated time
          ELSE
            pf(1:1) = 'R'
          ENDIF
-
-         DO k = 1,MAX_LEN_FNAM
-           fn(k:k) = ' '
-         ENDDO
-         WRITE(fn,'(a)') 'land_tave'
+         WRITE(fn,'(A)') 'land_tave'
          CALL MNC_CW_SET_UDIM(fn, -1, myThid)
          CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
          CALL MNC_CW_SET_UDIM(fn, 0, myThid)
