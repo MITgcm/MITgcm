@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.97 2014/07/04 11:56:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.98 2014/07/11 09:37:35 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -172,10 +172,10 @@ cph break artificial dependencies
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        DO ilcall=1,MPSEUDOTIMESTEPS
-         itmpkey = (ikey_dynamics-1)*MPSEUDOTIMESTEPS + ilcall
+      DO ilcall=1,MPSEUDOTIMESTEPS
+       itmpkey = (ikey_dynamics-1)*MPSEUDOTIMESTEPS + ilcall
 #else
-        DO ilcall=1,NPSEUDOTIMESTEPS
+      DO ilcall=1,NPSEUDOTIMESTEPS
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -189,7 +189,7 @@ CADJ STORE utmp,vtmp = comlev1_dynsol, kind=isbyte,
 CADJ &     key = itmpkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-         IF ( ilcall .LE. NPSEUDOTIMESTEPS ) THEN
+      IF ( ilcall .LE. NPSEUDOTIMESTEPS ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice = comlev1_dynsol, kind=isbyte,
 CADJ &     key = itmpkey
@@ -290,6 +290,23 @@ CADJ &     key = itmpkey
      I     uIceC, vIceC,
      O     DWATN,
      I     ilcall, myTime, myIter, myThid )
+C
+C     some abbreviations
+C
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=jMin-1,jMax
+         DO I=iMin-1,iMax
+          etaPlusZeta (I,J,bi,bj) = ETA (I,J,bi,bj)+ZETA(I,J,bi,bj)
+          zetaMinusEta(I,J,bi,bj) = ZETA(I,J,bi,bj)-ETA (I,J,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C
+C     Set up of right hand sides of momentum equations starts here
+C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=jMin,jMax
@@ -348,53 +365,7 @@ C      this is the rhs contribution of the time derivative
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)* seaiceMaskV(I,J,bi,bj)
          ENDDO
         ENDDO
-#ifdef SEAICE_ALLOW_FREEDRIFT
-        IF ( LSR_mixIniGuess.GE.1 ) THEN
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-          uIce_fd(i,j,bi,bj) = FORCEX(i,j,bi,bj)
-     &       / ( 1. _d 0 - seaiceMaskU(i,j,bi,bj)
-     &         + seaiceMassU(i,j,bi,bj)/SEAICE_deltaTdyn
-     &         + HALF*( DWATN(i,j,bi,bj) + DWATN(i-1,j,bi,bj) ) * COSWAT
-     &         )
-          vIce_fd(i,j,bi,bj) = FORCEY(i,j,bi,bj)
-     &       / ( 1. _d 0 - seaiceMaskV(i,j,bi,bj)
-     &         + seaiceMassV(i,j,bi,bj)/SEAICE_deltaTdyn
-     &         + HALF*( DWATN(i,j,bi,bj) + DWATN(i,j-1,bi,bj) ) * COSWAT
-     &         )
-          ENDDO
-         ENDDO
-        ENDIF
-#endif /* SEAICE_ALLOW_FREEDRIFT */
-       ENDDO
-      ENDDO
-C
-C     some abbreviations
-C
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=jMin-1,jMax
-         DO I=iMin-1,iMax
-          etaPlusZeta (I,J,bi,bj) = ETA (I,J,bi,bj)+ZETA(I,J,bi,bj)
-          zetaMinusEta(I,J,bi,bj) = ZETA(I,J,bi,bj)-ETA (I,J,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C
-C     calculate coefficients of tridiagonal matrices for both u- and
-C     v-equations
-C
-      CALL SEAICE_LSR_CALC_COEFFS( 
-     I     etaPlusZeta, zetaMinusEta, etaZ, dwatn,
-     O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
-     I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
-C
-C     Set up right hand sides of momentum equations
-C
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
 C
 C     u-equation
 C
@@ -491,6 +462,18 @@ C     contribution to the rhs part of grad(sigma)_y
         ENDDO
        ENDDO
       ENDDO
+C
+C     Set up of right hand sides of momentum equations ends here
+C
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C
+C     calculate coefficients of tridiagonal matrices for both u- and
+C     v-equations
+C
+      CALL SEAICE_LSR_CALC_COEFFS( 
+     I     etaPlusZeta, zetaMinusEta, etaZ, dwatn,
+     O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
+     I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
 
 #ifndef OBCS_UVICE_OLD
 C--     prevent tri-diagonal solver from modifying OB values:
@@ -534,24 +517,43 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_DEBUG */
 
 C--   Calculate initial residual of the linearised system
-      IF ( printResidual .OR. LSR_mixIniGuess.GE.1 ) THEN
+      IF ( printResidual .OR. LSR_mixIniGuess.GE.1 )
+     & CALL SEAICE_RESIDUAL(
+     I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
+     I                  AU, BU, CU, AV, BV, CV, uIce, vIce,
+     O                  residUini, residVini, uTmp, vTmp,
+     I                  printResidual, myIter, myThid )
+
 #ifdef SEAICE_ALLOW_FREEDRIFT
-        IF ( LSR_mixIniGuess.GE.1 )
-     &  CALL EXCH_UV_XY_RL( uIce_fd, vIce_fd, .TRUE., myThid )
-        IF ( LSR_mixIniGuess.GE.0 )
+      IF ( printResidual .OR. LSR_mixIniGuess.GE.1 ) THEN
+       IF ( LSR_mixIniGuess.GE.1 ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+            uIce_fd(i,j,bi,bj) = FORCEX(i,j,bi,bj)
+     &         / ( 1. _d 0 - seaiceMaskU(i,j,bi,bj)
+     &           + seaiceMassU(i,j,bi,bj)/SEAICE_deltaTdyn
+     &           + HALF*( DWATN(i,j,bi,bj) + DWATN(i-1,j,bi,bj) )*COSWAT
+     &           )
+            vIce_fd(i,j,bi,bj) = FORCEY(i,j,bi,bj)
+     &         / ( 1. _d 0 - seaiceMaskV(i,j,bi,bj)
+     &           + seaiceMassV(i,j,bi,bj)/SEAICE_deltaTdyn
+     &           + HALF*( DWATN(i,j,bi,bj) + DWATN(i,j-1,bi,bj) )*COSWAT
+     &           )
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL EXCH_UV_XY_RL( uIce_fd, vIce_fd, .TRUE., myThid )
+       ENDIF
+       IF ( LSR_mixIniGuess.GE.0 )
      &  CALL SEAICE_RESIDUAL(
      I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
      I                  AU, BU, CU, AV, BV, CV, uIce_fd, vIce_fd,
      O                  residU_fd, residV_fd, uRes, vRes,
      I                  printResidual, myIter, myThid )
-#endif /* SEAICE_ALLOW_FREEDRIFT */
-        CALL SEAICE_RESIDUAL(
-     I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
-     I                  AU, BU, CU, AV, BV, CV, uIce, vIce,
-     O                  residUini, residVini, uTmp, vTmp,
-     I                  printResidual, myIter, myThid )
       ENDIF
-#ifdef SEAICE_ALLOW_FREEDRIFT
       IF ( LSR_mixIniGuess.GE.2 ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice, vice = comlev1_dynsol, kind=isbyte,
@@ -561,36 +563,36 @@ CADJ &     key = itmpkey
 # endif /* ALLOW_AUTODIFF_TAMC */
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=jMin,jMax
-           DO i=iMin,iMax
-             errIni = uTmp(i,j,bi,bj)*uTmp(i,j,bi,bj)
-             errFD  = uRes(i,j,bi,bj)*uRes(i,j,bi,bj)
-             IF ( LSR_mixIniGuess.GE.4 ) THEN
-               errIni = errIni*errIni
-               errFD  = errFD *errFD
-             ENDIF
-             errSum = ( errIni + errFD )
-     &               *maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj)
-             IF ( errSum.GT.0. ) THEN
-               uIce(i,j,bi,bj) = ( errFD *uIce(i,j,bi,bj)
-     &                           + errIni*uIce_fd(i,j,bi,bj)
-     &                           )/errSum
-             ENDIF
-             errIni = vTmp(i,j,bi,bj)*vTmp(i,j,bi,bj)
-             errFD  = vRes(i,j,bi,bj)*vRes(i,j,bi,bj)
-             IF ( LSR_mixIniGuess.GE.4 ) THEN
-               errIni = errIni*errIni
-               errFD  = errFD *errFD
-             ENDIF
-             errSum = ( errIni + errFD )
-     &               *maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj)
-             IF ( errSum.GT.0. ) THEN
-               vIce(i,j,bi,bj) = ( errFD *vIce(i,j,bi,bj)
-     &                           + errIni*vIce_fd(i,j,bi,bj)
-     &                           )/errSum
-             ENDIF
-           ENDDO
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           errIni = uTmp(i,j,bi,bj)*uTmp(i,j,bi,bj)
+           errFD  = uRes(i,j,bi,bj)*uRes(i,j,bi,bj)
+           IF ( LSR_mixIniGuess.GE.4 ) THEN
+            errIni = errIni*errIni
+            errFD  = errFD *errFD
+           ENDIF
+           errSum = ( errIni + errFD )
+     &          *maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj)
+           IF ( errSum.GT.0. ) THEN
+            uIce(i,j,bi,bj) = ( errFD *uIce(i,j,bi,bj)
+     &                        + errIni*uIce_fd(i,j,bi,bj)
+     &                        )/errSum
+           ENDIF
+           errIni = vTmp(i,j,bi,bj)*vTmp(i,j,bi,bj)
+           errFD  = vRes(i,j,bi,bj)*vRes(i,j,bi,bj)
+           IF ( LSR_mixIniGuess.GE.4 ) THEN
+            errIni = errIni*errIni
+            errFD  = errFD *errFD
+           ENDIF
+           errSum = ( errIni + errFD )
+     &          *maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj)
+           IF ( errSum.GT.0. ) THEN
+            vIce(i,j,bi,bj) = ( errFD *vIce(i,j,bi,bj)
+     &                        + errIni*vIce_fd(i,j,bi,bj)
+     &                        )/errSum
+           ENDIF
           ENDDO
+         ENDDO
         ENDDO
        ENDDO
        CALL EXCH_UV_XY_RL( uIce, vIce, .TRUE., myThid )
@@ -616,7 +618,7 @@ cph--- need to kick out goto
       doIterate4v = .TRUE.
 
 C ITERATION START -----------------------------------------------------
-C     Ideally, we would like to the the loop-directive for this
+C     Ideally, we would like to use the loop-directive for this
 C     iterative loop, but (unsurprisingly) it does not seem to work for 
 C     this convoluted case of mixed iterations, so it is commented out
 CML#ifdef ALLOW_AUTODIFF_TAMC
