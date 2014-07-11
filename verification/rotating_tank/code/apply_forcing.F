@@ -1,29 +1,27 @@
-C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/external_forcing.F,v 1.10 2014/07/09 17:10:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/apply_forcing.F,v 1.1 2014/07/11 18:46:36 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_SALT_PLUME
-#include "SALT_PLUME_OPTIONS.h"
-#endif
 
-C--  File external_forcing.F:
+C--  File apply_forcing.F:
 C--   Contents
-C--   o EXTERNAL_FORCING_U
-C--   o EXTERNAL_FORCING_V
-C--   o EXTERNAL_FORCING_T
-C--   o EXTERNAL_FORCING_S
+C--   o APPLY_FORCING_U
+C--   o APPLY_FORCING_V
+C--   o APPLY_FORCING_T
+C--   o APPLY_FORCING_S
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: EXTERNAL_FORCING_U
+C     !ROUTINE: APPLY_FORCING_U
 C     !INTERFACE:
-      SUBROUTINE EXTERNAL_FORCING_U(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
+      SUBROUTINE APPLY_FORCING_U(
+     U                     gU_arr,
+     I                     iMin,iMax,jMin,jMax, k, bi, bj,
+     I                     myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R EXTERNAL_FORCING_U
+C     | S/R APPLY_FORCING_U
 C     | o Contains problem specific forcing for zonal velocity.
 C     *==========================================================*
 C     | Adds terms to gU for forcing by external sources
@@ -42,24 +40,52 @@ C     == Global data ==
 #include "FFIELDS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
+C     gU_arr    :: the tendency array
 C     iMin,iMax :: Working range of x-index for applying forcing.
 C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
 C     bi,bj     :: Current tile indices
-C     kLev      :: Current vertical level index
 C     myTime    :: Current time in simulation
-C     myThid    :: Thread Id number
-      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
-      _RL myTime
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     gU_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
 C     i,j       :: Loop counters
 C     kSurface  :: index of surface level
       INTEGER i, j
+#ifdef USE_OLD_EXTERNAL_FORCING
+      _RL     locVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     tmpVar
+#else
       INTEGER kSurface
+#endif
 CEOP
+
+#ifdef USE_OLD_EXTERNAL_FORCING
+
+      DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          locVar(i,j) = gU(i,j,k,bi,bj)
+        ENDDO
+      ENDDO
+      CALL EXTERNAL_FORCING_U(
+     I              iMin, iMax, jMin, jMax, bi, bj, k,
+     I              myTime, myThid )
+      DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          tmpVar = gU(i,j,k,bi,bj) - locVar(i,j)
+          gU(i,j,k,bi,bj) = locVar(i,j)
+          gU_arr(i,j) = gU_arr(i,j) + tmpVar
+        ENDDO
+      ENDDO
+
+#else  /* USE_OLD_EXTERNAL_FORCING */
 
       IF ( fluidIsAir ) THEN
        kSurface = 0
@@ -72,43 +98,43 @@ CEOP
 C--   Forcing term
 #ifdef ALLOW_AIM
       IF ( useAIM ) CALL AIM_TENDENCY_APPLY_U(
-     U                       gU(1-OLx,1-OLy,kLev,bi,bj),
-     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                       gU_arr,
+     I                       iMin,iMax,jMin,jMax, k, bi,bj,
      I                       myTime, 0, myThid )
 #endif /* ALLOW_AIM */
 
 #ifdef ALLOW_ATM_PHYS
       IF ( useAtm_Phys ) CALL ATM_PHYS_TENDENCY_APPLY_U(
-     U                       gU(1-OLx,1-OLy,kLev,bi,bj),
-     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                       gU_arr,
+     I                       iMin,iMax,jMin,jMax, k, bi,bj,
      I                       myTime, 0, myThid )
 #endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_U(
-     U                       gU(1-OLx,1-OLy,kLev,bi,bj),
-     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                       gU_arr,
+     I                       iMin,iMax,jMin,jMax, k, bi,bj,
      I                       myTime, 0, myThid )
 #endif /* ALLOW_FIZHI */
 
 C     Ocean: Add momentum surface forcing (e.g., wind-stress) in surface level
-      IF ( kLev .EQ. kSurface ) THEN
+      IF ( k .EQ. kSurface ) THEN
 c      DO j=1,sNy
 C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy+1]
        DO j=0,sNy+1
         DO i=1,sNx+1
-          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
+          gU_arr(i,j) = gU_arr(i,j)
      &      +foFacMom*surfaceForcingU(i,j,bi,bj)
-     &      *recip_drF(kLev)*_recip_hFacW(i,j,kLev,bi,bj)
+     &      *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ELSEIF ( kSurface.EQ.-1 ) THEN
        DO j=0,sNy+1
         DO i=1,sNx+1
-         IF ( kSurfW(i,j,bi,bj).EQ.kLev ) THEN
-          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
+         IF ( kSurfW(i,j,bi,bj).EQ.k ) THEN
+          gU_arr(i,j) = gU_arr(i,j)
      &      +foFacMom*surfaceForcingU(i,j,bi,bj)
-     &      *recip_drF(kLev)*_recip_hFacW(i,j,kLev,bi,bj)
+     &      *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
          ENDIF
         ENDDO
        ENDDO
@@ -116,16 +142,16 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy
 
 #ifdef ALLOW_EDDYPSI
          CALL TAUEDDY_TENDENCY_APPLY_U(
-     U                 gU(1-OLx,1-OLy,kLev,bi,bj),
-     I                 iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                 gU_arr,
+     I                 iMin,iMax,jMin,jMax, k, bi,bj,
      I                 myTime, 0, myThid )
 #endif
 
 #ifdef ALLOW_RBCS
       IF (useRBCS) THEN
         CALL RBCS_ADD_TENDENCY(
-     U                 gU(1-OLx,1-OLy,kLev,bi,bj),
-     I                 kLev, bi, bj, -1,
+     U                 gU_arr,
+     I                 k, bi, bj, -1,
      I                 myTime, 0, myThid )
 
       ENDIF
@@ -134,8 +160,8 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy
 #ifdef ALLOW_OBCS
       IF (useOBCS) THEN
         CALL OBCS_SPONGE_U(
-     U                   gU(1-OLx,1-OLy,kLev,bi,bj),
-     I                   iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                   gU_arr,
+     I                   iMin,iMax,jMin,jMax, k, bi,bj,
      I                   myTime, 0, myThid )
       ENDIF
 #endif /* ALLOW_OBCS */
@@ -143,25 +169,28 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy
 #ifdef ALLOW_MYPACKAGE
       IF ( useMYPACKAGE ) THEN
         CALL MYPACKAGE_TENDENCY_APPLY_U(
-     U                 gU(1-OLx,1-OLy,kLev,bi,bj),
-     I                 iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                 gU_arr,
+     I                 iMin,iMax,jMin,jMax, k, bi,bj,
      I                 myTime, 0, myThid )
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
+
+#endif /* USE_OLD_EXTERNAL_FORCING */
 
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: EXTERNAL_FORCING_V
+C     !ROUTINE: APPLY_FORCING_V
 C     !INTERFACE:
-      SUBROUTINE EXTERNAL_FORCING_V(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
+      SUBROUTINE APPLY_FORCING_V(
+     U                     gV_arr,
+     I                     iMin,iMax,jMin,jMax, k, bi, bj,
+     I                     myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R EXTERNAL_FORCING_V
+C     | S/R APPLY_FORCING_V
 C     | o Contains problem specific forcing for merid velocity.
 C     *==========================================================*
 C     | Adds terms to gV for forcing by external sources
@@ -180,24 +209,52 @@ C     == Global data ==
 #include "FFIELDS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
+C     gV_arr    :: the tendency array
 C     iMin,iMax :: Working range of x-index for applying forcing.
 C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
 C     bi,bj     :: Current tile indices
-C     kLev      :: Current vertical level index
 C     myTime    :: Current time in simulation
-C     myThid    :: Thread Id number
-      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
-      _RL myTime
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     gV_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
 C     i,j       :: Loop counters
 C     kSurface  :: index of surface level
       INTEGER i, j
+#ifdef USE_OLD_EXTERNAL_FORCING
+      _RL     locVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     tmpVar
+#else
       INTEGER kSurface
+#endif
 CEOP
+
+#ifdef USE_OLD_EXTERNAL_FORCING
+
+      DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          locVar(i,j) = gV(i,j,k,bi,bj)
+        ENDDO
+      ENDDO
+      CALL EXTERNAL_FORCING_V(
+     I              iMin, iMax, jMin, jMax, bi, bj, k,
+     I              myTime, myThid )
+      DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          tmpVar = gV(i,j,k,bi,bj) - locVar(i,j)
+          gV(i,j,k,bi,bj) = locVar(i,j)
+          gV_arr(i,j) = gV_arr(i,j) + tmpVar
+        ENDDO
+      ENDDO
+
+#else  /* USE_OLD_EXTERNAL_FORCING */
 
       IF ( fluidIsAir ) THEN
        kSurface = 0
@@ -210,43 +267,43 @@ CEOP
 C--   Forcing term
 #ifdef ALLOW_AIM
       IF ( useAIM ) CALL AIM_TENDENCY_APPLY_V(
-     U                       gV(1-OLx,1-OLy,kLev,bi,bj),
-     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                       gV_arr,
+     I                       iMin,iMax,jMin,jMax, k, bi,bj,
      I                       myTime, 0, myThid )
 #endif /* ALLOW_AIM */
 
 #ifdef ALLOW_ATM_PHYS
       IF ( useAtm_Phys ) CALL ATM_PHYS_TENDENCY_APPLY_V(
-     U                       gV(1-OLx,1-OLy,kLev,bi,bj),
-     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                       gV_arr,
+     I                       iMin,iMax,jMin,jMax, k, bi,bj,
      I                       myTime, 0, myThid )
 #endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_V(
-     U                       gV(1-OLx,1-OLy,kLev,bi,bj),
-     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                       gV_arr,
+     I                       iMin,iMax,jMin,jMax, k, bi,bj,
      I                       myTime, 0, myThid )
 #endif /* ALLOW_FIZHI */
 
 C     Ocean: Add momentum surface forcing (e.g., wind-stress) in surface level
-      IF ( kLev .EQ. kSurface ) THEN
+      IF ( k .EQ. kSurface ) THEN
        DO j=1,sNy+1
 c       DO i=1,sNx
 C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx+1]
         DO i=0,sNx+1
-          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
+          gV_arr(i,j) = gV_arr(i,j)
      &      +foFacMom*surfaceForcingV(i,j,bi,bj)
-     &      *recip_drF(kLev)*_recip_hFacS(i,j,kLev,bi,bj)
+     &      *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ELSEIF ( kSurface.EQ.-1 ) THEN
        DO j=1,sNy+1
         DO i=0,sNx+1
-         IF ( kSurfS(i,j,bi,bj).EQ.kLev ) THEN
-          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
+         IF ( kSurfS(i,j,bi,bj).EQ.k ) THEN
+          gV_arr(i,j) = gV_arr(i,j)
      &      +foFacMom*surfaceForcingV(i,j,bi,bj)
-     &      *recip_drF(kLev)*_recip_hFacS(i,j,kLev,bi,bj)
+     &      *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
          ENDIF
         ENDDO
        ENDDO
@@ -254,16 +311,16 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx
 
 #ifdef ALLOW_EDDYPSI
          CALL TAUEDDY_TENDENCY_APPLY_V(
-     U                 gV(1-OLx,1-OLy,kLev,bi,bj),
-     I                 iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                 gV_arr,
+     I                 iMin,iMax,jMin,jMax, k, bi,bj,
      I                 myTime, 0, myThid )
 #endif
 
 #ifdef ALLOW_RBCS
       IF (useRBCS) THEN
         CALL RBCS_ADD_TENDENCY(
-     U                 gV(1-OLx,1-OLy,kLev,bi,bj),
-     I                 kLev, bi, bj, -2,
+     U                 gV_arr,
+     I                 k, bi, bj, -2,
      I                 myTime, 0, myThid )
       ENDIF
 #endif /* ALLOW_RBCS */
@@ -271,8 +328,8 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx
 #ifdef ALLOW_OBCS
       IF (useOBCS) THEN
         CALL OBCS_SPONGE_V(
-     U                   gV(1-OLx,1-OLy,kLev,bi,bj),
-     I                   iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                   gV_arr,
+     I                   iMin,iMax,jMin,jMax, k, bi,bj,
      I                   myTime, 0, myThid )
       ENDIF
 #endif /* ALLOW_OBCS */
@@ -280,25 +337,28 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx
 #ifdef ALLOW_MYPACKAGE
       IF ( useMYPACKAGE ) THEN
         CALL MYPACKAGE_TENDENCY_APPLY_V(
-     U                 gV(1-OLx,1-OLy,kLev,bi,bj),
-     I                 iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                 gV_arr,
+     I                 iMin,iMax,jMin,jMax, k, bi,bj,
      I                 myTime, 0, myThid )
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
+
+#endif /* USE_OLD_EXTERNAL_FORCING */
 
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: EXTERNAL_FORCING_T
+C     !ROUTINE: APPLY_FORCING_T
 C     !INTERFACE:
-      SUBROUTINE EXTERNAL_FORCING_T(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
+      SUBROUTINE APPLY_FORCING_T(
+     U                     gT_arr,
+     I                     iMin,iMax,jMin,jMax, k, bi, bj,
+     I                     myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R EXTERNAL_FORCING_T
+C     | S/R APPLY_FORCING_T
 C     | o Contains problem specific forcing for temperature.
 C     *==========================================================*
 C     | Adds terms to gT for forcing by external sources
@@ -318,22 +378,29 @@ C     == Global data ==
 #include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
+C     gT_arr    :: the tendency array
 C     iMin,iMax :: Working range of x-index for applying forcing.
 C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
 C     bi,bj     :: Current tile indices
-C     kLev      :: Current vertical level index
 C     myTime    :: Current time in simulation
-C     myThid    :: Thread Id number
-      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
-      _RL myTime
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     gT_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
 C     i,j       :: Loop counters
 C     kSurface  :: index of surface level
       INTEGER i, j
+#ifdef USE_OLD_EXTERNAL_FORCING
+      _RL     locVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     tmpVar
+#else
       INTEGER kSurface
       INTEGER km, kc, kp
       _RL tmpVar(1:sNx,1:sNy)
@@ -390,6 +457,27 @@ C    (plexiglass, air, water in the compound tank case)
       INTEGER iGSource
       INTEGER jGSource
 C---- Experiment specific declaration:  ends  here -------------------
+#endif
+
+#ifdef USE_OLD_EXTERNAL_FORCING
+
+      DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          locVar(i,j) = gT(i,j,k,bi,bj)
+        ENDDO
+      ENDDO
+      CALL EXTERNAL_FORCING_T(
+     I              iMin, iMax, jMin, jMax, bi, bj, k,
+     I              myTime, myThid )
+      DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          tmpVar = gT(i,j,k,bi,bj) - locVar(i,j)
+          gT(i,j,k,bi,bj) = locVar(i,j)
+          gT_arr(i,j) = gT_arr(i,j) + tmpVar
+        ENDDO
+      ENDDO
+
+#else  /* USE_OLD_EXTERNAL_FORCING */
 
       IF ( fluidIsAir ) THEN
        kSurface = 0
@@ -405,22 +493,22 @@ C---- Experiment specific declaration:  ends  here -------------------
 C--   Forcing term
 #ifdef ALLOW_AIM
       IF ( useAIM ) CALL AIM_TENDENCY_APPLY_T(
-     U                       gT(1-OLx,1-OLy,kLev,bi,bj),
-     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                       gT_arr,
+     I                       iMin,iMax,jMin,jMax, k, bi,bj,
      I                       myTime, 0, myThid )
 #endif /* ALLOW_AIM */
 
 #ifdef ALLOW_ATM_PHYS
       IF ( useAtm_Phys ) CALL ATM_PHYS_TENDENCY_APPLY_T(
-     U                       gT(1-OLx,1-OLy,kLev,bi,bj),
-     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                       gT_arr,
+     I                       iMin,iMax,jMin,jMax, k, bi,bj,
      I                       myTime, 0, myThid )
 #endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_T(
-     U                       gT(1-OLx,1-OLy,kLev,bi,bj),
-     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                       gT_arr,
+     I                       iMin,iMax,jMin,jMax, k, bi,bj,
      I                       myTime, 0, myThid )
 #endif /* ALLOW_FIZHI */
 
@@ -430,23 +518,23 @@ C--   Forcing term
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
          DO j=1,sNy
           DO i=1,sNx
-            gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
-     &        + addMass(i,j,kLev,bi,bj)*mass2rUnit
-     &          *( temp_addMass - theta(i,j,kLev,bi,bj) )
+            gT_arr(i,j) = gT_arr(i,j)
+     &        + addMass(i,j,k,bi,bj)*mass2rUnit
+     &          *( temp_addMass - theta(i,j,k,bi,bj) )
      &          *recip_rA(i,j,bi,bj)
-     &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
-C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
+     &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
           ENDDO
          ENDDO
        ELSE
          DO j=1,sNy
           DO i=1,sNx
-            gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
-     &        + addMass(i,j,kLev,bi,bj)*mass2rUnit
-     &          *( temp_addMass - tRef(kLev) )
+            gT_arr(i,j) = gT_arr(i,j)
+     &        + addMass(i,j,k,bi,bj)*mass2rUnit
+     &          *( temp_addMass - tRef(k) )
      &          *recip_rA(i,j,bi,bj)
-     &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
-C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
+     &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
           ENDDO
          ENDDO
        ENDIF
@@ -457,7 +545,7 @@ C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
       IF ( addFrictionHeating ) THEN
         IF ( fluidIsAir ) THEN
 C         conversion from in-situ Temp to Pot.Temp
-          tmpFac = (atm_Po/rC(kLev))**atm_kappa
+          tmpFac = (atm_Po/rC(k))**atm_kappa
 C         conversion from W/m^2/r_unit to K/s
           tmpFac = (tmpFac/atm_Cp) * mass2rUnit
         ELSE
@@ -466,10 +554,10 @@ C         conversion from W/m^2/r_unit to K/s
         ENDIF
         DO j=1,sNy
           DO i=1,sNx
-            gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
-     &         + frictionHeating(i,j,kLev,bi,bj)
+            gT_arr(i,j) = gT_arr(i,j)
+     &         + frictionHeating(i,j,k,bi,bj)
      &          *tmpFac*recip_rA(i,j,bi,bj)
-     &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+     &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
           ENDDO
         ENDDO
       ENDIF
@@ -484,13 +572,13 @@ C     conversion term in KE eq) and same discretisation ( [T*Q]_bar_k )
 C     as for Theta_v in CALC_PHI_HYD
 
 C     conversion from in-situ Temp to Pot.Temp
-        tmpFac = (atm_Po/rC(kLev))**atm_kappa
+        tmpFac = (atm_Po/rC(k))**atm_kappa
 C     conversion from W/kg to K/s
         tmpFac = tmpFac/atm_Cp
-        km = kLev-1
-        kc = kLev
-        kp = kLev+1
-        IF ( kLev.EQ.1 ) THEN
+        km = k-1
+        kc = k
+        kp = k+1
+        IF ( k.EQ.1 ) THEN
           DO j=1,sNy
            DO i=1,sNx
             tmpVar(i,j) = 0.
@@ -508,7 +596,7 @@ C     conversion from W/kg to K/s
            ENDDO
           ENDDO
         ENDIF
-        IF ( kLev.LT.Nr ) THEN
+        IF ( k.LT.Nr ) THEN
           delPI = atm_Cp*( (rC(kc)/atm_Po)**atm_kappa
      &                   - (rC(kp)/atm_Po)**atm_kappa )
           DO j=1,sNy
@@ -523,9 +611,9 @@ C     conversion from W/kg to K/s
         ENDIF
         DO j=1,sNy
           DO i=1,sNx
-            gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
+            gT_arr(i,j) = gT_arr(i,j)
      &         + tmpVar(i,j)*tmpFac
-     &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+     &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
           ENDDO
         ENDDO
 #ifdef ALLOW_DIAGNOSTICS
@@ -539,21 +627,21 @@ C     conversion to W/m^2
       ENDIF
 
 C     Ocean: Add temperature surface forcing (e.g., heat-flux) in surface level
-      IF ( kLev .EQ. kSurface ) THEN
+      IF ( k .EQ. kSurface ) THEN
        DO j=1,sNy
         DO i=1,sNx
-          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
+          gT_arr(i,j) = gT_arr(i,j)
      &      +surfaceForcingT(i,j,bi,bj)
-     &      *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+     &      *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ELSEIF ( kSurface.EQ.-1 ) THEN
        DO j=1,sNy
         DO i=1,sNx
-         IF ( kSurfC(i,j,bi,bj).EQ.kLev ) THEN
-          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
+         IF ( kSurfC(i,j,bi,bj).EQ.k ) THEN
+          gT_arr(i,j) = gT_arr(i,j)
      &      +surfaceForcingT(i,j,bi,bj)
-     &      *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+     &      *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
          ENDIF
         ENDDO
        ENDDO
@@ -562,9 +650,9 @@ C     Ocean: Add temperature surface forcing (e.g., heat-flux) in surface level
       IF (linFSConserveTr) THEN
        DO j=1,sNy
         DO i=1,sNx
-          IF (kLev .EQ. kSurfC(i,j,bi,bj)) THEN
-            gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
-     &        +TsurfCor*recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+          IF (k .EQ. kSurfC(i,j,bi,bj)) THEN
+            gT_arr(i,j) = gT_arr(i,j)
+     &        +TsurfCor*recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
           ENDIF
         ENDDO
        ENDDO
@@ -573,24 +661,24 @@ C     Ocean: Add temperature surface forcing (e.g., heat-flux) in surface level
 #ifdef SHORTWAVE_HEATING
 C Penetrating SW radiation
 c     IF ( usePenetratingSW ) THEN
-       swfracb(1)=abs(rF(kLev))
-       swfracb(2)=abs(rF(kLev+1))
+       swfracb(1)=abs(rF(k))
+       swfracb(2)=abs(rF(k+1))
        CALL SWFRAC(
      I             2, minusOne,
      U             swfracb,
      I             myTime, 1, myThid )
-       kp1 = kLev+1
-       IF (kLev.EQ.Nr) THEN
-        kp1 = kLev
+       kp1 = k+1
+       IF (k.EQ.Nr) THEN
+        kp1 = k
         swfracb(2)=0. _d 0
        ENDIF
        DO j=1,sNy
         DO i=1,sNx
-         gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
-     &   -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,kLev,bi,bj)
+         gT_arr(i,j) = gT_arr(i,j)
+     &   -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,k,bi,bj)
      &                   -swfracb(2)*maskC(i,j,kp1, bi,bj))
      &    *recip_Cp*mass2rUnit
-     &    *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+     &    *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
         ENDDO
        ENDDO
 c     ENDIF
@@ -617,44 +705,44 @@ c     the following bites the big one
          tCyl = tCylOut
       ENDIF
 c      IF(iG .GE. iGSource-rSource .AND. iG .LE. iGSource+rSource) THEN
-          hC = hFacC(i  ,j  ,kLev,bi,bj)
-          hW = hFacW(i  ,j  ,kLev,bi,bj)
-          hE = hFacW(i+1,j  ,kLev,bi,bj)
-          hN = hFacS(i  ,j+1,kLev,bi,bj)
-          hS = hFacS(i  ,j  ,kLev,bi,bj)
+          hC = hFacC(i  ,j  ,k,bi,bj)
+          hW = hFacW(i  ,j  ,k,bi,bj)
+          hE = hFacW(i+1,j  ,k,bi,bj)
+          hN = hFacS(i  ,j+1,k,bi,bj)
+          hS = hFacS(i  ,j  ,k,bi,bj)
           IF ( hC .NE. 0. .AND .hW .EQ. 0. ) THEN
 C          Cylinder to west
-           faceArea = drF(kLev)*dyG(i,j,bi,bj)
+           faceArea = drF(k)*dyG(i,j,bi,bj)
            dFluxW =
-     &      -faceArea*kDiffCyl*(theta(i,j,kLev,bi,bj) - tCyl)
+     &      -faceArea*kDiffCyl*(theta(i,j,k,bi,bj) - tCyl)
      &      *recip_dxC(i,j,bi,bj)
           ENDIF
           IF ( hC .NE. 0. .AND .hE .EQ. 0. ) THEN
 C          Cylinder to east
-           faceArea = drF(kLev)*dyG(i+1,j,bi,bj)
+           faceArea = drF(k)*dyG(i+1,j,bi,bj)
            dFluxE =
-     &      -faceArea*kDiffCyl*(tCyl - theta(i,j,kLev,bi,bj))
+     &      -faceArea*kDiffCyl*(tCyl - theta(i,j,k,bi,bj))
      &      *recip_dxC(i,j,bi,bj)
           ENDIF
           IF ( hC .NE. 0. .AND .hN .EQ. 0. ) THEN
 C          Cylinder to north
-           faceArea = drF(kLev)*dxG(i,j+1,bi,bj)
+           faceArea = drF(k)*dxG(i,j+1,bi,bj)
            dFluxN =
-     &      -faceArea*kDiffCyl*(tCyl-theta(i,j,kLev,bi,bj))
+     &      -faceArea*kDiffCyl*(tCyl-theta(i,j,k,bi,bj))
      &      *recip_dyC(i,j,bi,bj)
           ENDIF
           IF ( hC .NE. 0. .AND .hS .EQ. 0. ) THEN
 C          Cylinder to south
-           faceArea = drF(kLev)*dxG(i,j,bi,bj)
+           faceArea = drF(k)*dxG(i,j,bi,bj)
            dFluxS =
-     &      -faceArea*kDiffCyl*(theta(i,j,kLev,bi,bj) - tCyl)
+     &      -faceArea*kDiffCyl*(theta(i,j,k,bi,bj) - tCyl)
      &      *recip_dyC(i,j,bi,bj)
           ENDIF
 c      ENDIF
 c      ENDIF
 C       Net tendency term is minus flux divergence divided by the volume.
-        gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
-     &  -_recip_hFacC(i,j,kLev,bi,bj)*recip_drF(kLev)
+        gT_arr(i,j) = gT_arr(i,j)
+     &  -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &  *recip_rA(i,j,bi,bj)
      &  *(
      &    dFluxE-dFluxW
@@ -668,41 +756,39 @@ C---- Experiment specific code:  ends  here --------------------------
 #ifdef ALLOW_FRAZIL
       IF ( useFRAZIL )
      &     CALL FRAZIL_TENDENCY_APPLY_T(
-     U                 gT(1-OLx,1-OLy,kLev,bi,bj),
-     I                 iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                 gT_arr,
+     I                 iMin,iMax,jMin,jMax, k, bi,bj,
      I                 myTime, 0, myThid )
 #endif /* ALLOW_FRAZIL */
 
 #ifdef ALLOW_SHELFICE
       IF ( useShelfIce )
      &     CALL SHELFICE_FORCING_T(
-     U                   gT(1-OLx,1-OLy,kLev,bi,bj),
-     I                   iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                   gT_arr,
+     I                   iMin,iMax,jMin,jMax, k, bi,bj,
      I                   myTime, 0, myThid )
 #endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_ICEFRONT
       IF ( useICEFRONT )
      &     CALL ICEFRONT_TENDENCY_APPLY_T(
-     U                   gT(1-OLx,1-OLy,kLev,bi,bj),
-     I                   kLev, bi, bj, myTime, 0, myThid )
+     U                   gT_arr,
+     I                   k, bi, bj, myTime, 0, myThid )
 #endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_SALT_PLUME
-#ifdef SALT_PLUME_VOLUME
       IF ( useSALT_PLUME )
      &     CALL SALT_PLUME_TENDENCY_APPLY_T(
-     U                     gT(1-OLx,1-OLy,kLev,bi,bj),
-     I                     iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                     gT_arr,
+     I                     iMin,iMax,jMin,jMax, k, bi,bj,
      I                     myTime, 0, myThid )
-#endif /* SALT_PLUME_VOLUME */
 #endif /* ALLOW_SALT_PLUME */
 
 #ifdef ALLOW_RBCS
       IF (useRBCS) THEN
         CALL RBCS_ADD_TENDENCY(
-     U                 gT(1-OLx,1-OLy,kLev,bi,bj),
-     I                 kLev, bi, bj, 1,
+     U                 gT_arr,
+     I                 k, bi, bj, 1,
      I                 myTime, 0, myThid )
       ENDIF
 #endif /* ALLOW_RBCS */
@@ -710,42 +796,44 @@ C---- Experiment specific code:  ends  here --------------------------
 #ifdef ALLOW_OBCS
       IF (useOBCS) THEN
         CALL OBCS_SPONGE_T(
-     U                   gT(1-OLx,1-OLy,kLev,bi,bj),
-     I                   iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                   gT_arr,
+     I                   iMin,iMax,jMin,jMax, k, bi,bj,
      I                   myTime, 0, myThid )
       ENDIF
 #endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_BBL
       IF ( useBBL ) CALL BBL_TENDENCY_APPLY_T(
-     U                       gT(1-OLx,1-OLy,kLev,bi,bj),
-     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                       gT_arr,
+     I                       iMin,iMax,jMin,jMax, k, bi,bj,
      I                       myTime, 0, myThid )
 #endif /* ALLOW_BBL */
 
 #ifdef ALLOW_MYPACKAGE
       IF ( useMYPACKAGE ) THEN
         CALL MYPACKAGE_TENDENCY_APPLY_T(
-     U                 gT(1-OLx,1-OLy,kLev,bi,bj),
-     I                 iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                 gT_arr,
+     I                 iMin,iMax,jMin,jMax, k, bi,bj,
      I                 myTime, 0, myThid )
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
+
+#endif /* USE_OLD_EXTERNAL_FORCING */
 
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: EXTERNAL_FORCING_S
+C     !ROUTINE: APPLY_FORCING_S
 C     !INTERFACE:
-      SUBROUTINE EXTERNAL_FORCING_S(
-     I           iMin,iMax, jMin,jMax, bi,bj, kLev,
-     I           myTime, myThid )
-
+      SUBROUTINE APPLY_FORCING_S(
+     U                     gS_arr,
+     I                     iMin,iMax,jMin,jMax, k, bi, bj,
+     I                     myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R EXTERNAL_FORCING_S
+C     | S/R APPLY_FORCING_S
 C     | o Contains problem specific forcing for merid velocity.
 C     *==========================================================*
 C     | Adds terms to gS for forcing by external sources
@@ -765,24 +853,52 @@ C     == Global data ==
 #include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
+C     gS_arr    :: the tendency array
 C     iMin,iMax :: Working range of x-index for applying forcing.
 C     jMin,jMax :: Working range of y-index for applying forcing.
+C     k         :: Current vertical level index
 C     bi,bj     :: Current tile indices
-C     kLev      :: Current vertical level index
 C     myTime    :: Current time in simulation
-C     myThid    :: Thread Id number
-      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
-      _RL myTime
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     gS_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
+      INTEGER k, bi, bj
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
 C     i,j       :: Loop counters
 C     kSurface  :: index of surface level
       INTEGER i, j
+#ifdef USE_OLD_EXTERNAL_FORCING
+      _RL     locVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     tmpVar
+#else
       INTEGER kSurface
+#endif
 CEOP
+
+#ifdef USE_OLD_EXTERNAL_FORCING
+
+      DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          locVar(i,j) = gS(i,j,k,bi,bj)
+        ENDDO
+      ENDDO
+      CALL EXTERNAL_FORCING_S(
+     I              iMin, iMax, jMin, jMax, bi, bj, k,
+     I              myTime, myThid )
+      DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          tmpVar = gS(i,j,k,bi,bj) - locVar(i,j)
+          gS(i,j,k,bi,bj) = locVar(i,j)
+          gS_arr(i,j) = gS_arr(i,j) + tmpVar
+        ENDDO
+      ENDDO
+
+#else  /* USE_OLD_EXTERNAL_FORCING */
 
       IF ( fluidIsAir ) THEN
        kSurface = 0
@@ -797,22 +913,22 @@ CEOP
 C--   Forcing term
 #ifdef ALLOW_AIM
       IF ( useAIM ) CALL AIM_TENDENCY_APPLY_S(
-     U                       gS(1-OLx,1-OLy,kLev,bi,bj),
-     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                       gS_arr,
+     I                       iMin,iMax,jMin,jMax, k, bi,bj,
      I                       myTime, 0, myThid )
 #endif /* ALLOW_AIM */
 
 #ifdef ALLOW_ATM_PHYS
       IF ( useAtm_Phys ) CALL ATM_PHYS_TENDENCY_APPLY_S(
-     U                       gS(1-OLx,1-OLy,kLev,bi,bj),
-     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                       gS_arr,
+     I                       iMin,iMax,jMin,jMax, k, bi,bj,
      I                       myTime, 0, myThid )
 #endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_S(
-     U                       gS(1-OLx,1-OLy,kLev,bi,bj),
-     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                       gS_arr,
+     I                       iMin,iMax,jMin,jMax, k, bi,bj,
      I                       myTime, 0, myThid )
 #endif /* ALLOW_FIZHI */
 
@@ -822,23 +938,23 @@ C--   Forcing term
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
          DO j=1,sNy
           DO i=1,sNx
-            gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)
-     &        + addMass(i,j,kLev,bi,bj)*mass2rUnit
-     &          *( salt_addMass - salt(i,j,kLev,bi,bj) )
+            gS_arr(i,j) = gS_arr(i,j)
+     &        + addMass(i,j,k,bi,bj)*mass2rUnit
+     &          *( salt_addMass - salt(i,j,k,bi,bj) )
      &          *recip_rA(i,j,bi,bj)
-     &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
-C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
+     &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
           ENDDO
          ENDDO
        ELSE
          DO j=1,sNy
           DO i=1,sNx
-            gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)
-     &        + addMass(i,j,kLev,bi,bj)*mass2rUnit
-     &          *( salt_addMass - sRef(kLev) )
+            gS_arr(i,j) = gS_arr(i,j)
+     &        + addMass(i,j,k,bi,bj)*mass2rUnit
+     &          *( salt_addMass - sRef(k) )
      &          *recip_rA(i,j,bi,bj)
-     &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
-C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
+     &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
           ENDDO
          ENDDO
        ENDIF
@@ -846,21 +962,21 @@ C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
 #endif /* ALLOW_ADDFLUID */
 
 C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
-      IF ( kLev .EQ. kSurface ) THEN
+      IF ( k .EQ. kSurface ) THEN
        DO j=1,sNy
         DO i=1,sNx
-          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
+          gS_arr(i,j) = gS_arr(i,j)
      &      +surfaceForcingS(i,j,bi,bj)
-     &      *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+     &      *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ELSEIF ( kSurface.EQ.-1 ) THEN
        DO j=1,sNy
         DO i=1,sNx
-         IF ( kSurfC(i,j,bi,bj).EQ.kLev ) THEN
-          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
+         IF ( kSurfC(i,j,bi,bj).EQ.k ) THEN
+          gS_arr(i,j) = gS_arr(i,j)
      &      +surfaceForcingS(i,j,bi,bj)
-     &      *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+     &      *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
          ENDIF
         ENDDO
        ENDDO
@@ -869,9 +985,9 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
       IF (linFSConserveTr) THEN
        DO j=1,sNy
         DO i=1,sNx
-          IF (kLev .EQ. kSurfC(i,j,bi,bj)) THEN
-            gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
-     &        +SsurfCor*recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+          IF (k .EQ. kSurfC(i,j,bi,bj)) THEN
+            gS_arr(i,j) = gS_arr(i,j)
+     &        +SsurfCor*recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
           ENDIF
         ENDDO
        ENDDO
@@ -880,31 +996,31 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
 #ifdef ALLOW_SHELFICE
       IF ( useShelfIce )
      &     CALL SHELFICE_FORCING_S(
-     U                   gS(1-OLx,1-OLy,kLev,bi,bj),
-     I                   iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                   gS_arr,
+     I                   iMin,iMax,jMin,jMax, k, bi,bj,
      I                   myTime, 0, myThid )
 #endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_ICEFRONT
       IF ( useICEFRONT )
      &     CALL ICEFRONT_TENDENCY_APPLY_S(
-     U                   gS(1-OLx,1-OLy,kLev,bi,bj),
-     I                   kLev, bi, bj, myTime, 0, myThid )
+     U                   gS_arr,
+     I                   k, bi, bj, myTime, 0, myThid )
 #endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME )
      &     CALL SALT_PLUME_TENDENCY_APPLY_S(
-     U                     gS(1-OLx,1-OLy,kLev,bi,bj),
-     I                     iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                     gS_arr,
+     I                     iMin,iMax,jMin,jMax, k, bi,bj,
      I                     myTime, 0, myThid )
 #endif /* ALLOW_SALT_PLUME */
 
 #ifdef ALLOW_RBCS
       IF (useRBCS) THEN
         CALL RBCS_ADD_TENDENCY(
-     U                 gS(1-OLx,1-OLy,kLev,bi,bj),
-     I                 kLev, bi, bj, 2,
+     U                 gS_arr,
+     I                 k, bi, bj, 2,
      I                 myTime, 0, myThid )
       ENDIF
 #endif /* ALLOW_RBCS */
@@ -912,27 +1028,29 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
 #ifdef ALLOW_OBCS
       IF (useOBCS) THEN
         CALL OBCS_SPONGE_S(
-     U                   gS(1-OLx,1-OLy,kLev,bi,bj),
-     I                   iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                   gS_arr,
+     I                   iMin,iMax,jMin,jMax, k, bi,bj,
      I                   myTime, 0, myThid )
       ENDIF
 #endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_BBL
       IF ( useBBL ) CALL BBL_TENDENCY_APPLY_S(
-     U                       gS(1-OLx,1-OLy,kLev,bi,bj),
-     I                       iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                       gS_arr,
+     I                       iMin,iMax,jMin,jMax, k, bi,bj,
      I                       myTime, 0, myThid )
 #endif /* ALLOW_BBL */
 
 #ifdef ALLOW_MYPACKAGE
       IF ( useMYPACKAGE ) THEN
         CALL MYPACKAGE_TENDENCY_APPLY_S(
-     U                 gS(1-OLx,1-OLy,kLev,bi,bj),
-     I                 iMin,iMax,jMin,jMax, kLev, bi,bj,
+     U                 gS_arr,
+     I                 iMin,iMax,jMin,jMax, k, bi,bj,
      I                 myTime, 0, myThid )
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
+
+#endif /* USE_OLD_EXTERNAL_FORCING */
 
       RETURN
       END
