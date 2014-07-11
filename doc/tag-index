@@ -1,12 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2021 2014/07/11 09:37:49 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2022 2014/07/11 19:17:29 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - new file "apply_forcing.F" containing all the code previously in
+    external_forcing.F, but with new argument list: pass, as new argument,
+    the current level tendency array to update (instead of a direct update
+    of the common bloc array). Change the corresponding calls.
+  - add CPP option USE_OLD_EXTERNAL_FORCING (default is undef) to use
+    EXTERNAL_FORCING_U,V,T,S subroutines (for backward compatibility).
 o pkg/seaice/seaice_lsr, a little bit of clean up
   - rearrange some code blocks, so that now all calculations for
-    setting up the right-hand-sides done within one single block 
+    setting up the right-hand-sides done within one single block
     (I find that easier to read and understand)
   - rearrange freedrift-code to reduce the number of ifdefs
   - adjust some indentations and comments
