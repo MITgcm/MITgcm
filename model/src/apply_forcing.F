@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/apply_forcing.F,v 1.1 2014/07/11 18:43:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/apply_forcing.F,v 1.2 2014/07/12 16:35:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -61,7 +61,7 @@ C     kSurface  :: index of surface level
       INTEGER i, j
 #ifdef USE_OLD_EXTERNAL_FORCING
       _RL     locVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     tmpVar
+      _RL     tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #else
       INTEGER kSurface
 #endif
@@ -77,11 +77,18 @@ CEOP
       CALL EXTERNAL_FORCING_U(
      I              iMin, iMax, jMin, jMax, bi, bj, k,
      I              myTime, myThid )
+C-    Use 2-d local array tmpVar and split loop in 2 parts to avoid compiler
+C     to mess-up this part by re-arranging the order of instructions (wrong
+C     when gU and gU_arr are the same array, i.e., called with argument gU).
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-          tmpVar = gU(i,j,k,bi,bj) - locVar(i,j)
+          tmpVar(i,j) = gU(i,j,k,bi,bj) - locVar(i,j)
           gU(i,j,k,bi,bj) = locVar(i,j)
-          gU_arr(i,j) = gU_arr(i,j) + tmpVar
+        ENDDO
+      ENDDO
+      DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          gU_arr(i,j) = gU_arr(i,j) + tmpVar(i,j)
         ENDDO
       ENDDO
 
@@ -230,7 +237,7 @@ C     kSurface  :: index of surface level
       INTEGER i, j
 #ifdef USE_OLD_EXTERNAL_FORCING
       _RL     locVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     tmpVar
+      _RL     tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #else
       INTEGER kSurface
 #endif
@@ -246,11 +253,18 @@ CEOP
       CALL EXTERNAL_FORCING_V(
      I              iMin, iMax, jMin, jMax, bi, bj, k,
      I              myTime, myThid )
+C-    Use 2-d local array tmpVar and split loop in 2 parts to avoid compiler
+C     to mess-up this part by re-arranging the order of instructions (wrong
+C     when gV and gV_arr are the same array, i.e., called with argument gV).
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-          tmpVar = gV(i,j,k,bi,bj) - locVar(i,j)
+          tmpVar(i,j) = gV(i,j,k,bi,bj) - locVar(i,j)
           gV(i,j,k,bi,bj) = locVar(i,j)
-          gV_arr(i,j) = gV_arr(i,j) + tmpVar
+        ENDDO
+      ENDDO
+      DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          gV_arr(i,j) = gV_arr(i,j) + tmpVar(i,j)
         ENDDO
       ENDDO
 
@@ -399,7 +413,7 @@ C     kSurface  :: index of surface level
       INTEGER i, j
 #ifdef USE_OLD_EXTERNAL_FORCING
       _RL     locVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     tmpVar
+      _RL     tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #else
       INTEGER kSurface
       INTEGER km, kc, kp
@@ -425,11 +439,18 @@ CEOP
       CALL EXTERNAL_FORCING_T(
      I              iMin, iMax, jMin, jMax, bi, bj, k,
      I              myTime, myThid )
+C-    Use 2-d local array tmpVar and split loop in 2 parts to avoid compiler
+C     to mess-up this part by re-arranging the order of instructions (wrong
+C     when gT and gT_arr are the same array, i.e., called with argument gT).
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-          tmpVar = gT(i,j,k,bi,bj) - locVar(i,j)
+          tmpVar(i,j) = gT(i,j,k,bi,bj) - locVar(i,j)
           gT(i,j,k,bi,bj) = locVar(i,j)
-          gT_arr(i,j) = gT_arr(i,j) + tmpVar
+        ENDDO
+      ENDDO
+      DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          gT_arr(i,j) = gT_arr(i,j) + tmpVar(i,j)
         ENDDO
       ENDDO
 
@@ -761,7 +782,7 @@ C     kSurface  :: index of surface level
       INTEGER i, j
 #ifdef USE_OLD_EXTERNAL_FORCING
       _RL     locVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     tmpVar
+      _RL     tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #else
       INTEGER kSurface
 #endif
@@ -777,11 +798,18 @@ CEOP
       CALL EXTERNAL_FORCING_S(
      I              iMin, iMax, jMin, jMax, bi, bj, k,
      I              myTime, myThid )
+C-    Use 2-d local array tmpVar and split loop in 2 parts to avoid compiler
+C     to mess-up this part by re-arranging the order of instructions (wrong
+C     when gS and gS_arr are the same array, i.e., called with argument gS).
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-          tmpVar = gS(i,j,k,bi,bj) - locVar(i,j)
+          tmpVar(i,j) = gS(i,j,k,bi,bj) - locVar(i,j)
           gS(i,j,k,bi,bj) = locVar(i,j)
-          gS_arr(i,j) = gS_arr(i,j) + tmpVar
+        ENDDO
+      ENDDO
+      DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          gS_arr(i,j) = gS_arr(i,j) + tmpVar(i,j)
         ENDDO
       ENDDO
 
