@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.56 2014/07/11 18:43:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.57 2014/07/14 23:27:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -302,6 +302,18 @@ C      and return coriolis terms on C-grid (guCor,gvCor)
       ENDIF
 #endif /* ALLOW_CD_CODE */
 
+C--   Dissipation term outside the Adams-Bashforth:
+      IF ( momViscosity .AND. .NOT.momDissip_In_AB ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gUtmp(i,j) = gUtmp(i,j) + guDissip(i,j)
+          gVtmp(i,j) = gVtmp(i,j) + gvDissip(i,j)
+         ENDDO
+        ENDDO
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 #ifdef NONLIN_FRSURF
       IF ( .NOT. vectorInvariantMomentum
      &     .AND. nonlinFreeSurf.GT.1 ) THEN
@@ -347,18 +359,6 @@ C      and return coriolis terms on C-grid (guCor,gvCor)
        ENDIF
       ENDIF
 #endif /* NONLIN_FRSURF */
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-C--   Dissipation term outside the Adams-Bashforth:
-      IF ( momViscosity .AND. .NOT.momDissip_In_AB ) THEN
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          gUtmp(i,j) = gUtmp(i,j) + guDissip(i,j)
-          gVtmp(i,j) = gVtmp(i,j) + gvDissip(i,j)
-         ENDDO
-        ENDDO
-      ENDIF
 
 #ifdef ALLOW_NONHYDROSTATIC
 C-- explicit part of the NH pressure gradient is added here
