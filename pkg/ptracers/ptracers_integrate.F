@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.53 2014/07/09 16:54:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.54 2014/07/14 22:47:09 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -336,7 +336,7 @@ C-    end of vertical index (k) loop (Nr:1)
           IF ( usingPCoords ) THEN
             CALL DWNSLP_APPLY(
      I                  GAD_TR, bi, bj, kSurfC,
-     I                  recip_drF, recip_hFacC, recip_rA,
+     I                  recip_drF, recip_hFac, recip_rA,
      I                  PTRACERS_dTLev,
      I                  pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      O                  gPtr(1-OLx,1-OLy,1,1,1,iTracer),
@@ -344,7 +344,7 @@ C-    end of vertical index (k) loop (Nr:1)
           ELSE
             CALL DWNSLP_APPLY(
      I                  GAD_TR, bi, bj, kLowC,
-     I                  recip_drF, recip_hFacC, recip_rA,
+     I                  recip_drF, recip_hFac, recip_rA,
      I                  PTRACERS_dTLev,
      I                  pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      O                  gPtr(1-OLx,1-OLy,1,1,1,iTracer),

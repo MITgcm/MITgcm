@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.8 2014/07/11 18:43:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.9 2014/07/14 22:47:39 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -390,7 +390,7 @@ C-    end of vertical index (k) loop (Nr:1)
         IF ( usingPCoords ) THEN
           CALL DWNSLP_APPLY(
      I                  GAD_TEMPERATURE, bi, bj, kSurfC,
-     I                  recip_drF, recip_hFacC, recip_rA,
+     I                  recip_drF, recip_hFac, recip_rA,
      I                  dTtracerLev,
      I                  theta,
      U                  gT,
@@ -398,7 +398,7 @@ C-    end of vertical index (k) loop (Nr:1)
         ELSE
           CALL DWNSLP_APPLY(
      I                  GAD_TEMPERATURE, bi, bj, kLowC,
-     I                  recip_drF, recip_hFacC, recip_rA,
+     I                  recip_drF, recip_hFac, recip_rA,
      I                  dTtracerLev,
      I                  theta,
      U                  gT,
