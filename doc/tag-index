@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2022 2014/07/11 19:17:29 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2023 2014/07/14 23:30:12 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - using MOM fluxform and Non-Lin Free-Surf with momDissip_In_AB=F
+    (not currently tested): add dissipation terms before NLFS rescaling of
+    tendencies (previously done after).
+o pkg/diagnostics:
+  - write stats-diags in ascii file with more digits (same as in monitor).
+o pkg/down_slope:
+  - drop the bi,bj dimension of argument recip_hFac in S/R DWNSLP_APPLY; with
+    NLFS (not tested), use new recip_hFac value in order to conserve tracer.
 o model/src:
   - new file "apply_forcing.F" containing all the code previously in
     external_forcing.F, but with new argument list: pass, as new argument,
