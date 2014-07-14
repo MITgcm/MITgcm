@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ascii_out.F,v 1.5 2008/02/05 15:31:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ascii_out.F,v 1.6 2014/07/14 23:26:03 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -65,14 +65,20 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c        WRITE(nUnit,'(5A)')       ' k |',
 c    &             ' --   Average  --  |', ' --   Std.Dev   -- |',
 c    &             ' --      min   --  |', ' --      max    -- |'
-         WRITE(nUnit,'(6A)')       ' k |',
-     &             ' --  Average --  |', ' --  Std.Dev  -- |',
-     &             ' --     min  --  |', ' --     max   -- |',' Vol'
+c        WRITE(nUnit,'(6A)')     ' k |',
+c    &             ' --  Average  -- |', ' --  Std.Dev  -- |',
+c    &             ' --    min    -- |', ' --    max    -- |',' --  Vol'
+         WRITE(nUnit,'(6A)') ' k |',
+     &     ' --   Average    -- |', ' --   Std.Dev    -- |',
+     &     ' --     min      -- |', ' --     max      -- |',' --    Vol'
          DO k=0,klev
 C     full precision, do not write the volume:
 c         WRITE(nUnit,'(I3,1P4E20.12)') k,(statGlob(i,k,j),i=1,nStats)
 C     reduced precision + write the volume (usefull for testing):
-          WRITE(nUnit,'(I3,1P5E18.10)')
+c         WRITE(nUnit,'(I3,1P5E18.10)')
+c    &       k, (statGlob(i,k,j),i=1,nStats), statGlob(0,k,j)
+C     full precision + write the volume:
+          WRITE(nUnit,'(I3,1P5E21.13)')
      &       k, (statGlob(i,k,j),i=1,nStats), statGlob(0,k,j)
          ENDDO
         ENDIF
