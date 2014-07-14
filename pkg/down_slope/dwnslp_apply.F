@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_apply.F,v 1.4 2011/06/07 21:05:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_apply.F,v 1.5 2014/07/14 22:46:13 jmc Exp $
 C $Name:  $
 
 #include "DWNSLP_OPTIONS.h"
@@ -8,7 +8,7 @@ C     !ROUTINE: DWNSLP_APPLY
 C     !INTERFACE:
       SUBROUTINE DWNSLP_APPLY(
      I            trIdentity, bi, bj, kBottom,
-     I            recip_drF, recip_hFac_arg, recip_rA_arg,
+     I            recip_drF, recip_hFac, recip_rA_arg,
      I            deltaTLev,
      I            tracer,
      U            trStar,
@@ -40,9 +40,9 @@ C     === Routine arguments ===
 C     trIdentity :: tracer identification number
 C     bi,bj      :: Tile indices
 C     kBottom    :: bottom level
-C     recip_drF  :: Reciprol of cell thickness
-C     recip_hFac_arg :: Reciprol of cell open-depth factor
-C     recip_rA_arg   :: Reciprol of cell Area
+C     recip_drF  :: Reciprocal of cell thickness
+C     recip_hFac :: Reciprocal of cell open-depth factor
+C     recip_rA_arg :: Reciprocal of cell Area
 C     tracer     :: tracer field at current time (input)
 C     trStar     :: future tracer field (modified)
 C     myTime     :: Current time in simulation
@@ -54,7 +54,7 @@ C     myThid     :: my Thread Id. number
       _RL deltaTLev(Nr)
       _RS recip_drF(Nr)
       _RS recip_rA_arg( xySize, nSx, nSy )
-      _RS recip_hFac_arg( xySize, Nr, nSx, nSy )
+      _RS recip_hFac( xySize, Nr )
       _RL tracer        ( xySize, Nr, nSx, nSy )
       _RL trStar        ( xySize, Nr, nSx, nSy )
       _RL     myTime
@@ -149,7 +149,7 @@ C- downsloping flow (in) & upward return flow :
          DO k=DWNSLP_deepK(n,bi,bj),kshelf,upward
           gTrLoc(k) = DWNSLP_Transp(n,bi,bj)
      &       *( tmpFld - tracer(ijd,k,bi,bj) )
-     &       *recip_drF(k)*recip_hFac_arg(ijd,k,bi,bj)
+     &       *recip_drF(k)*recip_hFac(ijd,k)
      &       *recip_rA_arg(ijd,bi,bj)
           trStar(ijd,k,bi,bj) = trStar(ijd,k,bi,bj)
      &                        + deltaTLev(k)*gTrLoc(k)
@@ -159,7 +159,7 @@ C- downsloping flow (out) & return flow to the shelf
           k = kshelf
           gTrLoc(0) = DWNSLP_Transp(n,bi,bj)
      &       *( tmpFld - tracer(ijs,k,bi,bj) )
-     &       *recip_drF(k)*recip_hFac_arg(ijs,k,bi,bj)
+     &       *recip_drF(k)*recip_hFac(ijs,k)
      &       *recip_rA_arg(ijs,bi,bj)
           trStar(ijs,k,bi,bj) = trStar(ijs,k,bi,bj)
      &                        + deltaTLev(k)*gTrLoc(0)
@@ -180,12 +180,12 @@ C- downsloping flow (out) & return flow to the shelf
      &      bi,bj,n,ijd,ijs,k,
      &      tracer(ijd,k,bi,bj),
      &      deltaTLev(k)*DWNSLP_Transp(n,bi,bj)
-     &       *recip_drF(k)*recip_hFac_arg(ijd,k,bi,bj)
+     &       *recip_drF(k)*recip_hFac(ijd,k)
      &       *recip_rA_arg(ijd,bi,bj)*
      &        (tracer(ijs,kshelf,bi,bj)-tracer(ijd,k,bi,bj)),
      &      tracer(ijs,kshelf,bi,bj),
      &      deltaTLev(k)*DWNSLP_Transp(n,bi,bj)
-     &       *recip_drF(kshelf)*recip_hFac_arg(ijs,kshelf,bi,bj)
+     &       *recip_drF(kshelf)*recip_hFac(ijs,kshelf)
      &       *recip_rA_arg(ijs,bi,bj)*
      &        (tmpFld-tracer(ijs,kshelf,bi,bj))
           _END_MASTER(myThid)
