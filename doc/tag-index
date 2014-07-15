@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2023 2014/07/14 23:30:12 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2024 2014/07/15 23:07:57 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o OpenAD
+  - clean up code_oad/ directories somewhat by moving files
+    dontCompile, dontTransform, keepOriginal to OAD_support/
 o model/src:
   - using MOM fluxform and Non-Lin Free-Surf with momDissip_In_AB=F
     (not currently tested): add dissipation terms before NLFS rescaling of
