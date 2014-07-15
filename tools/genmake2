@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.266 2014/05/07 19:36:22 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.267 2014/07/15 23:05:54 heimbach Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -2631,7 +2631,7 @@ if test "x$OPENAD" != x ; then
     OAD_CB2M_FILES="/dev/null"
     OADTOOLS="$TOOLSDIR/OAD_support"
     echo "  looking for dontCompile file:  "
-    for i in "." $MODS ; do
+    for i in "." $MODS $OADTOOLS ; do
 	if test -r $i"/dontCompile" ; then
 	    OAD_DONT_COMPILE=$i"/dontCompile"
 	    echo "     found $OAD_DONT_COMPILE"
@@ -2639,7 +2639,7 @@ if test "x$OPENAD" != x ; then
 	fi
     done
     echo "  looking for dontTransform file:  "
-    for i in "." $MODS ; do
+    for i in "." $MODS $OADTOOLS ; do
 	if test -r $i"/dontTransform" ; then
 	    OAD_DONT_TRANSFORM=$i"/dontTransform"
 	    echo "     found $OAD_DONT_TRANSFORM"
@@ -2647,7 +2647,7 @@ if test "x$OPENAD" != x ; then
 	fi
     done
     echo "  looking for keepOriginal file:  "
-    for i in "." $MODS ; do
+    for i in "." $MODS $OADTOOLS ; do
 	if test -r $i"/keepOriginal" ; then
 	    OAD_KEEP_ORIGINAL=$i"/keepOriginal"
 	    echo "     found $OAD_KEEP_ORIGINAL"
@@ -2655,7 +2655,7 @@ if test "x$OPENAD" != x ; then
 	fi
     done
     echo "  looking for cb2mFiles:  "
-    for i in "." $MODS ; do
+    for i in "." $MODS $OADTOOLS ; do
 	if test -r $i"/cb2mFiles" ; then
 	    OAD_CB2M_FILES=$i"/cb2mFiles"
 	    echo "     found $OAD_CB2M_FILES"
