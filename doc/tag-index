@@ -1,9 +1,33 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2024 2014/07/15 23:07:57 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2025 2014/07/16 12:03:54 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: more clean up
+  - rename TAF common block tapes to be more consistent and remove
+    unnecessary duplicates
+  - add store directives to remove more recomputations, 
+    but use smaller tapes (and adjust keys) when
+    SEAICE_LSR_ADJOINT_ITER is undefined. The idea behind this flag is
+    to reduce the memory footprint when the adjoint of the LSR is not
+    required. As of now, defining the flag SEAICE_LSR_ADJOINT_ITER
+    increase 4 common block tapes for 2D field by a factor of
+    SOLV_MAX_FIXED (=500 by default in SEAICE_SIZE.h). For experiment
+    offline_exf_seaice, this means on a linux box with gfortran nearly
+    a factor of 10 (but keep in mind there is mostly seaice code
+    in this experiment)
+    > size mitgcmuv_ad
+    text    data        bss     dec 	   hex	
+    5100659 1216  220458952  225560827  d71c8fb	
+    5339425 1200 1868783272 1874123897 6fb4dc79 (SEAICE_LSR_ADJOINT_ITER)
+    but only a moderate increase of 36% for global_ocean.cs32x15
+    text    data        bss     dec        hex
+    6695027 1648 1014578664 1021275339 3cdf6ccb
+    6695203 1648 1382505320 1389202171 52cd8afb (SEAICE_LSR_ADJOINT_ITER)
+  - note: there are still recomputations in global_ocean.cs32x15 and
+    the gradient agreement changes (gets a little worse)
+  - in general, the AD gradients still are wrong
 o OpenAD
   - clean up code_oad/ directories somewhat by moving files
     dontCompile, dontTransform, keepOriginal to OAD_support/
