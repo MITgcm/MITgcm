@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.13 2014/07/09 17:00:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.14 2014/07/16 20:12:21 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
-      subroutine fizhi_tendency_apply_u(
+      SUBROUTINE fizhi_tendency_apply_u(
      U                        gU_arr,
      I                        iMin,iMax,jMin,jMax, kLev, bi, bj,
      I                        myTime, myIter, myThid )
@@ -21,7 +21,7 @@ C
 C Notes: Routine works for one level at a time
 C        Assumes that U and V tendencies are already on C-Grid
 C=======================================================================
-      implicit none
+      IMPLICIT NONE
 
 #include "SIZE.h"
 #include "GRID.h"
@@ -40,50 +40,52 @@ C=======================================================================
 
       _RL rayleighdrag
       _RL tmpdiag(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      integer i, j
+      INTEGER i, j
 #ifdef ALLOW_DIAGNOSTICS
-      logical  diagnostics_is_on
-      external diagnostics_is_on
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
 #endif
 
-      if(klev.eq.Nr .or. rC(klev).lt.1000.)then
+      IF ( klev.EQ.Nr .OR. rC(klev).LT.1000. ) THEN
        rayleighdrag = 1./(31.*86400.*2.)
-      else
+      ELSE
        rayleighdrag = 0.
-      endif
+      ENDIF
 
-      do j=jMin,jMax
-       do i=iMin,iMax
-        gU_arr(i,j) = gU_arr(i,j) +
-     .      maskW(i,j,kLev,bi,bj) * guphy(i,j,kLev,bi,bj)
-     . - rayleighdrag * maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)
-       enddo
-      enddo
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        gU_arr(i,j) = gU_arr(i,j)
+     &              + maskW(i,j,kLev,bi,bj)
+     &               *( guphy(i,j,kLev,bi,bj)
+     &                - rayleighdrag*uVel(i,j,kLev,bi,bj) )
+       ENDDO
+      ENDDO
 
-      if(diagnostics_is_on('DIABUDYN',myThid) ) then
-       do j=jMin,jMax
-       do i=iMin,iMax
-        tmpdiag(i,j) = ( maskW(i,j,kLev,bi,bj) * guphy(i,j,kLev,bi,bj)
-     .    - rayleighdrag * maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj) )
-     .    * 86400
-       enddo
-       enddo
-       call diagnostics_fill(tmpdiag,'DIABUDYN',kLev,1,2,bi,bj,myThid)
-      endif
+      IF ( DIAGNOSTICS_IS_ON('DIABUDYN',myThid) ) THEN
+       DO j=jMin,jMax
+       DO i=iMin,iMax
+        tmpdiag(i,j) = maskW(i,j,kLev,bi,bj)
+     &               *( guphy(i,j,kLev,bi,bj)
+     &                - rayleighdrag*uVel(i,j,kLev,bi,bj) )
+     &               * 86400
+       ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpdiag,'DIABUDYN',kLev,1,2,bi,bj,myThid)
+      ENDIF
 
-      if(diagnostics_is_on('RFU     ',myThid) ) then
-       do j=jMin,jMax
-       do i=iMin,iMax
+      IF ( DIAGNOSTICS_IS_ON('RFU     ',myThid) ) THEN
+       DO j=jMin,jMax
+       DO i=iMin,iMax
         tmpdiag(i,j) = -1. _d 0 * rayleighdrag *
-     .       maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj) * 86400
-       enddo
-       enddo
-       call diagnostics_fill(tmpdiag,'RFU     ',kLev,1,2,bi,bj,myThid)
-      endif
+     &       maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj) * 86400
+       ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpdiag,'RFU     ',kLev,1,2,bi,bj,myThid)
+      ENDIF
 
-      return
-      end
-      subroutine fizhi_tendency_apply_v(
+      RETURN
+      END
+      SUBROUTINE fizhi_tendency_apply_v(
      U                        gV_arr,
      I                        iMin,iMax,jMin,jMax, kLev, bi, bj,
      I                        myTime, myIter, myThid )
@@ -102,7 +104,7 @@ C
 C Notes: Routine works for one level at a time
 C        Assumes that U and V tendencies are already on C-Grid
 C=======================================================================
-      implicit none
+      IMPLICIT NONE
 
 #include "SIZE.h"
 #include "GRID.h"
@@ -121,50 +123,52 @@ C=======================================================================
 
       _RL rayleighdrag
       _RL tmpdiag(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      integer i, j
+      INTEGER i, j
 #ifdef ALLOW_DIAGNOSTICS
-      logical  diagnostics_is_on
-      external diagnostics_is_on
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
 #endif
 
-      if(klev.eq.Nr .or. rC(klev).lt.1000.)then
+      IF ( klev.EQ.Nr .OR. rC(klev).LT.1000. ) THEN
        rayleighdrag = 1./(31.*86400.*2.)
-      else
+      ELSE
        rayleighdrag = 0.
-      endif
+      ENDIF
 
-      do j=jMin,jMax
-       do i=iMin,iMax
-        gV_arr(i,j) = gV_arr(i,j) +
-     .      maskS(i,j,kLev,bi,bj) * gvphy(i,j,kLev,bi,bj)
-     . - rayleighdrag * maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)
-       enddo
-      enddo
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        gV_arr(i,j) = gV_arr(i,j)
+     &              + maskS(i,j,kLev,bi,bj)
+     &               *( gvphy(i,j,kLev,bi,bj)
+     &                - rayleighdrag*vVel(i,j,kLev,bi,bj) )
+       ENDDO
+      ENDDO
 
-      if(diagnostics_is_on('DIABVDYN',myThid) ) then
-       do j=jMin,jMax
-       do i=iMin,iMax
-        tmpdiag(i,j) = ( maskS(i,j,kLev,bi,bj) * gvphy(i,j,kLev,bi,bj)
-     .    - rayleighdrag * maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj) )
-     .    * 86400
-       enddo
-       enddo
-       call diagnostics_fill(tmpdiag,'DIABVDYN',kLev,1,2,bi,bj,myThid)
-      endif
+      IF ( DIAGNOSTICS_IS_ON('DIABVDYN',myThid) ) THEN
+       DO j=jMin,jMax
+       DO i=iMin,iMax
+        tmpdiag(i,j) = maskS(i,j,kLev,bi,bj)
+     &               *( gvphy(i,j,kLev,bi,bj)
+     &                - rayleighdrag*vVel(i,j,kLev,bi,bj) )
+     &               * 86400
+       ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpdiag,'DIABVDYN',kLev,1,2,bi,bj,myThid)
+      ENDIF
 
-      if(diagnostics_is_on('RFV     ',myThid) ) then
-       do j=jMin,jMax
-       do i=iMin,iMax
+      IF ( DIAGNOSTICS_IS_ON('RFV     ',myThid) ) THEN
+       DO j=jMin,jMax
+       DO i=iMin,iMax
         tmpdiag(i,j) = -1. _d 0 * rayleighdrag *
-     .       maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj) * 86400
-       enddo
-       enddo
-       call diagnostics_fill(tmpdiag,'RFV     ',kLev,1,2,bi,bj,myThid)
-      endif
+     &       maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj) * 86400
+       ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpdiag,'RFV     ',kLev,1,2,bi,bj,myThid)
+      ENDIF
 
-      return
-      end
-      subroutine fizhi_tendency_apply_t(
+      RETURN
+      END
+      SUBROUTINE fizhi_tendency_apply_t(
      U                        gT_arr,
      I                        iMin,iMax,jMin,jMax, kLev, bi, bj,
      I                        myTime, myIter, myThid )
@@ -182,7 +186,7 @@ C     kLev
 C
 C Notes: Routine works for one level at a time
 C=======================================================================
-      implicit none
+      IMPLICIT NONE
 
 #include "SIZE.h"
 #include "GRID.h"
@@ -201,71 +205,79 @@ C=======================================================================
 
       _RL rayleighdrag,getcon,cp,kappa,pNrkappa
       _RL tmpdiag(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      integer i, j
+      INTEGER i, j
 #ifdef ALLOW_DIAGNOSTICS
-      logical  diagnostics_is_on
-      external diagnostics_is_on
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
 #endif
 
-      if(klev.eq.Nr .or. rC(klev).lt.1000.)then
+      IF ( klev.EQ.Nr .OR. rC(klev).LT.1000. ) THEN
        cp = getcon('CP')
        kappa = getcon('KAPPA')
        pNrkappa = (rC(klev)/100000.)**kappa
        rayleighdrag = 1./((31.*86400.*2.)*(pNrkappa*cp))
-      else
+      ELSE
        rayleighdrag = 0.
-      endif
+      ENDIF
 
-      do j=jMin,jMax
-       do i=iMin,iMax
-        gT_arr(i,j) = maskC(i,j,kLev,bi,bj)
-     .       *( gT_arr(i,j) + gthphy(i,j,kLev,bi,bj) )
-     . + rayleighdrag * 0.5 *
-     . (maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)+
-     .  maskW(i+1,j,kLev,bi,bj)*
-     .                uVel(i+1,j,kLev,bi,bj)*uVel(i+1,j,kLev,bi,bj)+
-     .  maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)+
-     .  maskS(i,j+1,kLev,bi,bj)*
-     .                vVel(i,j+1,kLev,bi,bj)*vVel(i,j+1,kLev,bi,bj))
-       enddo
-      enddo
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        gT_arr(i,j) = gT_arr(i,j)
+     &    + ( maskC(i,j,kLev,bi,bj)*gthphy(i,j,kLev,bi,bj)
+     &      + rayleighdrag * 0.5
+     &        *( maskW(i,j,kLev,bi,bj)
+     &              *uVel(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)
+     &         + maskW(i+1,j,kLev,bi,bj)
+     &              *uVel(i+1,j,kLev,bi,bj)*uVel(i+1,j,kLev,bi,bj)
+     &         + maskS(i,j,kLev,bi,bj)
+     &              *vVel(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)
+     &         + maskS(i,j+1,kLev,bi,bj)
+     &              *vVel(i,j+1,kLev,bi,bj)*vVel(i,j+1,kLev,bi,bj)
+     &         ) )
+       ENDDO
+      ENDDO
 
-      if(diagnostics_is_on('DIABTDYN',myThid) ) then
-       do j=jMin,jMax
-       do i=iMin,iMax
-        tmpdiag(i,j) = ( maskC(i,j,kLev,bi,bj) * gthphy(i,j,kLev,bi,bj)
-     . + rayleighdrag * 0.5 *
-     . (maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)+
-     .  maskW(i+1,j,kLev,bi,bj)*
-     .                uVel(i+1,j,kLev,bi,bj)*uVel(i+1,j,kLev,bi,bj)+
-     .  maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)+
-     .  maskS(i,j+1,kLev,bi,bj)*
-     .                vVel(i,j+1,kLev,bi,bj)*vVel(i,j+1,kLev,bi,bj)) )
-     .    * 86400
-       enddo
-       enddo
-       call diagnostics_fill(tmpdiag,'DIABTDYN',kLev,1,2,bi,bj,myThid)
-      endif
+      IF ( DIAGNOSTICS_IS_ON('DIABTDYN',myThid) ) THEN
+       DO j=jMin,jMax
+       DO i=iMin,iMax
+        tmpdiag(i,j) =
+     &      ( maskC(i,j,kLev,bi,bj)*gthphy(i,j,kLev,bi,bj)
+     &      + rayleighdrag * 0.5
+     &        *( maskW(i,j,kLev,bi,bj)
+     &              *uVel(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)
+     &         + maskW(i+1,j,kLev,bi,bj)
+     &              *uVel(i+1,j,kLev,bi,bj)*uVel(i+1,j,kLev,bi,bj)
+     &         + maskS(i,j,kLev,bi,bj)
+     &              *vVel(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)
+     &         + maskS(i,j+1,kLev,bi,bj)
+     &              *vVel(i,j+1,kLev,bi,bj)*vVel(i,j+1,kLev,bi,bj)
+     &         ) ) * 86400
+       ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpdiag,'DIABTDYN',kLev,1,2,bi,bj,myThid)
+      ENDIF
 
-      if(diagnostics_is_on('RFT     ',myThid) ) then
-       do j=jMin,jMax
-       do i=iMin,iMax
-        tmpdiag(i,j) = ( rayleighdrag * 0.5 *
-     . (maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)+
-     .  maskW(i+1,j,kLev,bi,bj)*
-     .                uVel(i+1,j,kLev,bi,bj)*uVel(i+1,j,kLev,bi,bj)+
-     .  maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)+
-     .  maskS(i,j+1,kLev,bi,bj)*
-     .                vVel(i,j+1,kLev,bi,bj)*vVel(i,j+1,kLev,bi,bj)) )
-     .       * 86400
-       enddo
-       enddo
-       call diagnostics_fill(tmpdiag,'RFT     ',kLev,1,2,bi,bj,myThid)
-      endif
+      IF ( DIAGNOSTICS_IS_ON('RFT     ',myThid) ) THEN
+       DO j=jMin,jMax
+       DO i=iMin,iMax
+        tmpdiag(i,j) = ( rayleighdrag * 0.5
+     &        *( maskW(i,j,kLev,bi,bj)
+     &              *uVel(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)
+     &         + maskW(i+1,j,kLev,bi,bj)
+     &              *uVel(i+1,j,kLev,bi,bj)*uVel(i+1,j,kLev,bi,bj)
+     &         + maskS(i,j,kLev,bi,bj)
+     &              *vVel(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)
+     &         + maskS(i,j+1,kLev,bi,bj)
+     &              *vVel(i,j+1,kLev,bi,bj)*vVel(i,j+1,kLev,bi,bj)
+     &         ) ) * 86400
+       ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpdiag,'RFT     ',kLev,1,2,bi,bj,myThid)
+      ENDIF
 
-      return
-      end
-      subroutine fizhi_tendency_apply_s(
+      RETURN
+      END
+      SUBROUTINE fizhi_tendency_apply_s(
      U                        gS_arr,
      I                        iMin,iMax,jMin,jMax, kLev, bi, bj,
      I                        myTime, myIter, myThid )
@@ -283,7 +295,7 @@ C     kLev
 C
 C Notes: Routine works for one level at a time
 C=======================================================================
-      implicit none
+      IMPLICIT NONE
 
 #include "SIZE.h"
 #include "GRID.h"
@@ -301,28 +313,28 @@ C=======================================================================
       INTEGER myThid
 
       _RL tmpdiag(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      integer i, j
+      INTEGER i, j
 #ifdef ALLOW_DIAGNOSTICS
-      logical  diagnostics_is_on
-      external diagnostics_is_on
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
 #endif
 
-      do j=jMin,jMax
-       do i=iMin,iMax
-        gS_arr(i,j) = maskC(i,j,kLev,bi,bj)
-     .       *( gS_arr(i,j) + gsphy(i,j,kLev,bi,bj) )
-       enddo
-      enddo
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        gS_arr(i,j) = gS_arr(i,j)
+     &    + maskC(i,j,kLev,bi,bj)*gsphy(i,j,kLev,bi,bj)
+       ENDDO
+      ENDDO
 
-      if(diagnostics_is_on('DIABQDYN',myThid) ) then
-       do j=jMin,jMax
-       do i=iMin,iMax
+      IF ( DIAGNOSTICS_IS_ON('DIABQDYN',myThid) ) THEN
+       DO j=jMin,jMax
+       DO i=iMin,iMax
         tmpdiag(i,j) = ( maskC(i,j,kLev,bi,bj) * gsphy(i,j,kLev,bi,bj) )
-     .    * 86400
-       enddo
-       enddo
-       call diagnostics_fill(tmpdiag,'DIABQDYN',kLev,1,2,bi,bj,myThid)
-      endif
+     &    * 86400
+       ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmpdiag,'DIABQDYN',kLev,1,2,bi,bj,myThid)
+      ENDIF
 
-      return
-      end
+      RETURN
+      END
