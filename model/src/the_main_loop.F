@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.163 2014/06/30 15:44:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.164 2014/07/16 12:03:03 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -449,22 +449,19 @@ c--
 #   ifdef ALLOW_SEAICE
 #    ifdef SEAICE_ALLOW_DYNAMICS
 CADJ INIT comlev1_dynsol = COMMON,nchklev_1*MPSEUDOTIMESTEPS
-CADJ INIT comlev1_lsr = COMMON, 
-CADJ &                        nchklev_1*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
-CADJ INIT comlev1_bibj_dyniter = COMMON,
-CADJ & nchklev_1*nsx*nsy*nthreads_chkpt*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
-#    ifdef SEAICE_VECTORIZE_LSR_ZEBRA
-CADJ INIT comlev1_bibj_dyniter2 = COMMON,
-CADJ &nchklev_1*nsx*nsy*nthreads_chkpt*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED*2
-#    endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
-#    ifdef SEAICE_LSR_ADJOINT_ITER
-CADJ INIT comlev1_dyniter =
-CADJ &    COMMON,nchklev_1*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
+#     ifdef SEAICE_LSR_ADJOINT_ITER
+CADJ INIT comlev1_lsr = COMMON,nchklev_1*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
+CADJ INIT comlev1_bibj_lsr = COMMON,
+CADJ &  nchklev_1*nsx*nsy*nthreads_chkpt*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
+#     else /* make the common blocks smaller to reduce memory footprint */
+CADJ INIT comlev1_lsr = COMMON,nchklev_1*MPSEUDOTIMESTEPS
+CADJ INIT comlev1_bibj_lsr = COMMON,
+CADJ &  nsx*nsy*nthreads_chkpt*nchklev_1*MPSEUDOTIMESTEPS
+#     endif
 #    endif
-#    endif
-#   ifdef SEAICE_ALLOW_EVP
+#    ifdef SEAICE_ALLOW_EVP
 CADJ INIT comlev1_evp = COMMON,nEVPstepMax*nchklev_1
-#   endif
+#    endif
 CML#   ifdef SEAICE_MULTICATEGORY
 CMLCADJ INIT comlev1_multdim
 CMLCADJ &    = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt*nitd
