@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.11 2013/09/23 23:36:27 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.12 2014/07/16 18:45:15 jmc Exp $
 #  $Name:  $
 #
 # Build options for PathScale (EKOPATH) Compiler on Linux x86-64
@@ -63,10 +63,13 @@ if test "x$IEEE" = x ; then     #- with optimisation:
    #FOPTIM='-Ofast -LNO:fusion=2 -funsafe-math-optimizations'
    #- high optimisation (-O3 & (loop)fusion=2), might find Pb with few S/R:
    #FOPTIM='-O3 -LNO:fusion=2 -funsafe-math-optimizations'
-   #- fully safe: switch to -O2 without (loop)fusion=2:
     FOPTIM='-O3 -funsafe-math-optimizations'
+   #- fully safe: switch to -O2 without (loop)fusion=2 (to fix some restart Pb):
+   #FOPTIM='-O2 -funsafe-math-optimizations'
+    NOOPTFILES="$NOOPTFILES exf_interpolate.F"
    #- multi-threaded: mon_set_iounit.F needs lower optimisation (lower than -02)
     NOOPTFILES="$NOOPTFILES mon_set_iounit.F"
+    NOOPTFLAGS='-O1'
 else
   if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
     FOPTIM='-O0 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
