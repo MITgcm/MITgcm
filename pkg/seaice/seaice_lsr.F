@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.98 2014/07/11 09:37:35 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.99 2014/07/16 12:03:32 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -597,6 +597,9 @@ CADJ &     key = itmpkey
        ENDDO
        CALL EXCH_UV_XY_RL( uIce, vIce, .TRUE., myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
+C     Here residU/Vmix and u/vTmp are computed but never used for anything
+C     but reporting to STDOUT. Still TAF thinks this requires recomputations
+C     so we hide this part of the code from TAF.
        IF ( printResidual ) THEN
         CALL SEAICE_RESIDUAL(
      I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
@@ -622,7 +625,7 @@ C     Ideally, we would like to use the loop-directive for this
 C     iterative loop, but (unsurprisingly) it does not seem to work for 
 C     this convoluted case of mixed iterations, so it is commented out
 CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ LOOP = iteration uice, vice = comlev1_dyniter
+CMLCADJ LOOP = iteration uice, vice = comlev1_lsr
 CML#endif /* ALLOW_AUTODIFF_TAMC */
 
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (SEAICE_LSR_ADJOINT_ITER))
@@ -640,12 +643,15 @@ CML#endif /* ALLOW_AUTODIFF_TAMC */
 
       DO m = 1, SOLV_MAX_TMP
 
-# if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_LSR_ADJOINT_ITER)
-         itmpkey2 = (itmpkey-1)*SOLV_MAX_FIXED +
-     &              MIN(m,SOLV_MAX_FIXED)
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef SEAICE_LSR_ADJOINT_ITER
+       itmpkey2 = (itmpkey-1)*SOLV_MAX_FIXED + MIN(m,SOLV_MAX_FIXED)
+# else
+       itmpkey2 = itmpkey
+# endif /* SEAICE_LSR_ADJOINT_ITER */
 CADJ STORE wfau, wfav = comlev1_lsr,  kind=isbyte, key = itmpkey2
 CADJ STORE doIterate4u, doIterate4v = comlev1_lsr, key = itmpkey2
-# endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF_TAMC */
 
        IF ( doIterate4u .OR. doIterate4v ) THEN
 
@@ -655,13 +661,7 @@ CADJ STORE doIterate4u, doIterate4v = comlev1_lsr, key = itmpkey2
         ENDIF
 
 # ifdef ALLOW_AUTODIFF_TAMC
-#  ifdef SEAICE_LSR_ADJOINT_ITER
-CADJ STORE uice, vice = comlev1_dyniter, kind=isbyte,
-CADJ &     key = itmpkey2
-#  else
-CADJ STORE uice, vice = comlev1_dynsol, kind=isbyte,
-CADJ &     key = itmpkey
-#  endif
+CADJ STORE uice, vice = comlev1_lsr, kind=isbyte, key = itmpkey2
 # endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef SEAICE_GLOBAL_3DIAG_SOLVER
@@ -732,7 +732,6 @@ C     end bi,bj-loops
          DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifdef SEAICE_LSR_ADJOINT_ITER
           act1 = bi - myBxLo(myThid)
           max1 = myBxHi(myThid) - myBxLo(myThid) + 1
           act2 = bj - myByLo(myThid)
@@ -743,11 +742,8 @@ C     end bi,bj-loops
           itmpkey3 = (act1 + 1) + act2*max1
      &                          + act3*max1*max2
      &                          + act4*max1*max2*max3
-CADJ STORE uice(:,:,bi,bj) = 
-CADJ &     comlev1_bibj_dyniter, kind=isbyte, key = itmpkey3
-CADJ STORE vice(:,:,bi,bj) = 
-CADJ &     comlev1_bibj_dyniter, kind=isbyte, key = itmpkey3
-# endif /* SEAICE_LSR_ADJOINT_ITER */
+CADJ STORE uice(:,:,bi,bj) = comlev1_bibj_lsr,kind=isbyte,key=itmpkey3
+CADJ STORE vice(:,:,bi,bj) = comlev1_bibj_lsr,kind=isbyte,key=itmpkey3
 #endif /* ALLOW_AUTODIFF_TAMC */
 C-jmc: get less TAF warnings when always (no if doIterate) saving uIce,vIce:
 C     save uIce prior to iteration, NOW SET U(3)=U(1)
@@ -851,6 +847,9 @@ C ITERATION END -----------------------------------------------------
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifndef ALLOW_AUTODIFF_TAMC
+C     Here residU/Vend and u/vTmp are computed but never used for anything
+C     but reporting to STDOUT. Still TAF thinks this requires recomputations
+C     so we hide this part of the code from TAF.
       IF ( printResidual ) THEN
 C--   Calculate final residual of the linearised system
         CALL SEAICE_RESIDUAL(
