@@ -1,5 +1,3 @@
-calc_oce_mxlayer.f
-set_ref_state.f
 cost_temp.f
 cost_hflux.f
 
