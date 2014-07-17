@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.117 2014/06/25 10:48:26 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.118 2014/07/17 11:53:23 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -187,8 +187,8 @@ C                        :: 2=from predicted growth by ATM
 C     SEAICEetaZmethod   :: determines how shear-viscosity eta is computed at
 C                           Z-points
 C                           0=simple averaging from C-points (default and old)
-C                           1=linear averaging of strain rates to Z-points
-C                           2=averaging of squares of strain rates
+C                           3=weighted averaging of squares of strain rates 
+C                             (recommended for energy conservation)
 C     SEAICE_multDim     :: number of ice categories
 C     SEAICE_debugPointI :: I,J index for seaice-specific debuggin
 C     SEAICE_debugPointJ
