@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_init.F,v 1.10 2011/11/07 20:22:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_init.F,v 1.11 2014/07/18 22:17:28 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -28,11 +28,18 @@ C     myThid :: my Thread Id. number
 CEOP
 
 #ifdef ALLOW_DIAGNOSTICS
+C     !FUNCTIONS:
+      INTEGER     ILNBLNK
+      EXTERNAL    ILNBLNK
+      CHARACTER*4 GAD_DIAG_SUFX
+      EXTERNAL    GAD_DIAG_SUFX
+      CHARACTER*16 DIAGS_MK_UNITS
+      EXTERNAL     DIAGS_MK_UNITS
+
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     msgBuf      :: Informational/error message buffer
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-
       INTEGER       diagNum
       INTEGER       diagMate
       CHARACTER*8   diagName
@@ -40,16 +47,12 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
 
-      INTEGER      iTrc, ilnb, tracerId
+      INTEGER      iTrc, ilnb, ilng, tracerId
       CHARACTER*7  trcUnits
       CHARACTER*9  flxUnits, wUnits
       CHARACTER*30 locName
+      CHARACTER*60 longName
       CHARACTER*4  diagSufx
-C     Functions ::
-      INTEGER     ILNBLNK
-      EXTERNAL    ILNBLNK
-      CHARACTER*4 GAD_DIAG_SUFX
-      EXTERNAL    GAD_DIAG_SUFX
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -65,40 +68,43 @@ C--   Add diagnostics to the (long) list
 
       DO iTrc=1,PTRACERS_num
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 C--    Set default name & tracer Units:
-       WRITE(locName,'(A,I4,A)') 'Tracer ',iTrc
-       trcUnits  = '(kg/kg)'
-C-     use name & units from data.ptracers :
+       WRITE(locName,'(A,I4.4,A)') 'Tracer ',iTrc
+       trcUnits  = 'kg/kg  '
+C-     use units & names from data.ptracers :
        ilnb = ILNBLNK(PTRACERS_units(iTrc))
        IF ( ilnb.GE.1 ) THEN
          ilnb = LEN(trcUnits)
          trcUnits = PTRACERS_units(iTrc)(1:ilnb)
        ENDIF
-       ilnb = ILNBLNK(PTRACERS_long_names(iTrc))
+       ilnb = ILNBLNK(PTRACERS_names(iTrc))
        IF ( ilnb.GE.1 ) THEN
          ilnb = MIN(LEN(locName),ilnb)
-         WRITE(locName,'(A)') PTRACERS_long_names(iTrc)(1:ilnb)
-       ELSE
-         ilnb = ILNBLNK(PTRACERS_names(iTrc))
-         IF ( ilnb.GE.1 ) THEN
-           ilnb = MIN(LEN(locName),ilnb)
-           WRITE(locName,'(A)') PTRACERS_names(iTrc)(1:ilnb)
-         ENDIF
+         WRITE(locName,'(A)') PTRACERS_names(iTrc)(1:ilnb)
        ENDIF
        ilnb = MAX(ILNBLNK(locName),1)
+C-     long name:
+       WRITE(longName,'(A)') locName
+       ilng = ILNBLNK(PTRACERS_long_names(iTrc))
+       IF ( ilng.GE.1 ) THEN
+         ilng = MIN(LEN(longName),ilng)
+         WRITE(longName,'(A)') PTRACERS_long_names(iTrc)(1:ilng)
+       ENDIF
+       ilng = MAX(ILNBLNK(longName),1)
 
 C--    Add diagnostics of Tracer concentration & u,v,w Transport
        WRITE(diagName,'(A4,A2,A2)') 'TRAC',PTRACERS_ioLabel(iTrc),'  '
-       WRITE(diagTitle,'(2A)') locName(1:ilnb), ' concentration'
-       diagUnits = trcUnits//'         '
+       WRITE(diagTitle,'(2A)') longName(1:ilng), ' concentration'
+       WRITE(diagUnits,'(A)') trcUnits
        diagCode  = 'SMR     MR      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+       diagUnits = DIAGS_MK_UNITS( trcUnits//'.m/s', myThid )
        WRITE(diagName,'(A5,A2,A1)') 'UTRAC',PTRACERS_ioLabel(iTrc),' '
        WRITE(diagTitle,'(2A)') 'Zonal Mass-Weighted Transp of ',
      &                 locName(1:ilnb)
-       diagUnits = trcUnits//'.m/s   '
        diagCode  = 'UUr     MR      '
        diagMate  = diagNum + 2
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -107,25 +113,41 @@ C--    Add diagnostics of Tracer concentration & u,v,w Transport
        WRITE(diagName,'(A5,A2,A1)') 'VTRAC',PTRACERS_ioLabel(iTrc),' '
        WRITE(diagTitle,'(2A)') 'Merid Mass-Weighted Transp of ',
      &                 locName(1:ilnb)
-       diagUnits = trcUnits//'.m/s   '
        diagCode  = 'VVr     MR      '
        diagMate  = diagNum
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
+       diagUnits = DIAGS_MK_UNITS( trcUnits//wUnits, myThid )
        WRITE(diagName,'(A5,A2,A1)') 'WTRAC',PTRACERS_ioLabel(iTrc),' '
        WRITE(diagTitle,'(2A)') 'Vert  Mass-Weighted Transp of ',
      &                 locName(1:ilnb)
-       diagUnits = trcUnits//wUnits
        diagCode  = 'WM      MR      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C--    add diagnostics of advective & diffusive flux:
-       diagUnits = trcUnits//flxUnits
+C--    add diagnostics for Forcing and Adams-Bashforth tendency increment
        tracerId = iTrc + GAD_TR1 - 1
        diagSufx = GAD_DIAG_SUFX( tracerId, myThid )
+       diagUnits = DIAGS_MK_UNITS( trcUnits//'/s', myThid )
+       diagName  = 'Forc'//diagSufx
+       WRITE(diagTitle,'(2A)') locName(1:ilnb),
+     &                   ' forcing tendency'
+       diagCode  = 'SMR     MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'AB_g'//diagSufx
+       WRITE(diagTitle,'(2A)') locName(1:ilnb),
+     &                   ' tendency from Adams-Bashforth'
+       diagCode  = 'SMR     MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--    Add diagnostics of advective & diffusive flux:
+       diagUnits = DIAGS_MK_UNITS( trcUnits//flxUnits, myThid )
 
 C-     Advective flux:
        diagName  = 'ADVr'//diagSufx
@@ -178,23 +200,15 @@ C-     Diffusive flux:
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-C--    add diagnostics for Adams-Bashforth tendency increment
-       diagName  = 'AB_g'//diagSufx
-       WRITE(diagTitle,'(2A)') locName(1:ilnb),
-     &                   ' tendency from Adams-Bashforth'
-       diagCode  = 'SMR     MR      '
-       diagUnits = trcUnits//'/s       '
-       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C--    add diagnostics for other pkg contribution to ptracer solution
+
+C--    Add diagnostics for other pkg contribution to ptracer solution
        IF ( useKPP ) THEN
         diagName  = 'KPPg'//diagSufx
         WRITE(diagTitle,'(2A)') 'KPP non-local Flux of ',
      &                 locName(1:ilnb)
         diagCode  = 'WM      LR      '
-        diagUnits = trcUnits//flxUnits
+        diagUnits = DIAGS_MK_UNITS( trcUnits//flxUnits, myThid )
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
        ENDIF
@@ -204,7 +218,7 @@ C--    add diagnostics for other pkg contribution to ptracer solution
         WRITE(diagTitle,'(2A)') locName(1:ilnb),
      &                   ' tendency from Down-Slope package'
         diagCode  = 'SMR     MR      '
-        diagUnits = trcUnits//'/s       '
+        diagUnits = DIAGS_MK_UNITS( trcUnits//'/s', myThid )
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
        ENDIF
