@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.32 2013/08/14 00:54:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.33 2014/07/18 22:04:10 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -489,7 +489,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER i,j,n
+      INTEGER i,j,n,nbc
 
       DIAGS_MK_UNITS = '                '
       n = LEN(diagUnitsInPieces)
@@ -501,6 +501,29 @@ C     !LOCAL VARIABLES:
          IF ( j.LE.16 ) DIAGS_MK_UNITS(j:j) = diagUnitsInPieces(i:i)
        ENDIF
       ENDDO
+      nbc = j
+
+      IF ( nbc.GT.16 ) THEN
+C-    try to reduce length by changing m^2 & m^3 to m2 & m3:
+       DIAGS_MK_UNITS = '                '
+       j = 0
+       DO i=1,n
+        IF ( diagUnitsInPieces(i:i) .NE. ' ' ) THEN
+         IF ( j.GE.1 .AND. nbc.GT.16 .AND.
+     &         diagUnitsInPieces(i:i).EQ.'^' ) THEN
+          IF ( diagUnitsInPieces(i-1:i-1).EQ.'m' ) THEN
+            nbc = nbc - 1
+          ELSE
+           j = j+1
+           IF ( j.LE.16 ) DIAGS_MK_UNITS(j:j) = diagUnitsInPieces(i:i)
+          ENDIF
+         ELSE
+          j = j+1
+          IF ( j.LE.16 ) DIAGS_MK_UNITS(j:j) = diagUnitsInPieces(i:i)
+         ENDIF
+        ENDIF
+       ENDDO
+      ENDIF
 
       IF ( j.GT.16 ) THEN
          WRITE(msgBuf,'(2A,I4,A)') '** WARNING ** ',
