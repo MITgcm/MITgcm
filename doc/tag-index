@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2027 2014/07/17 15:36:24 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2028 2014/07/18 13:37:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint65 (2014/07/18)
 o pkg/fizhi:
   - add parenthesis around fizhi tendencies in fizhi_tendency_apply.F: this
     affects results at machine truncation level. Update output of experiments
@@ -19,7 +20,7 @@ o pkg/seaice: more clean up
     a factor of SOLV_MAX_FIXED (=500 by default in SEAICE_SIZE.h).
     For experiment offline_exf_seaice, this means on a linux box with gfortran
     nearly a factor of 10 (but keep in mind there is mostly seaice code in
-    this experiment): 
+    this experiment):
     > size mitgcmuv_ad
     text    data        bss     dec 	   hex	
     5100659 1216  220458952  225560827  d71c8fb	
