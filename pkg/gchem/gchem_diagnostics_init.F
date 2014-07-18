@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_diagnostics_init.F,v 1.7 2013/08/11 20:28:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_diagnostics_init.F,v 1.8 2014/07/18 22:12:17 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -49,24 +49,18 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Define diagnostics Names :
       DO iTrc=1,PTRACERS_num
 C-     Set default name & tracer Units:
-       WRITE(locName,'(A,I4,A)') 'Tracer ',iTrc
+       WRITE(locName,'(A,I4.4,A)') 'Tracer ',iTrc
        trcUnits  = '(kg/kg)'
-C-     use name & units from data.ptracers :
+C-     use units & (short) name from data.ptracers :
        ilnb = ILNBLNK(PTRACERS_units(iTrc))
        IF ( ilnb.GE.1 ) THEN
          ilnb = LEN(trcUnits)
          trcUnits = PTRACERS_units(iTrc)(1:ilnb)
        ENDIF
-       ilnb = ILNBLNK(PTRACERS_long_names(iTrc))
+       ilnb = ILNBLNK(PTRACERS_names(iTrc))
        IF ( ilnb.GE.1 ) THEN
          ilnb = MIN(LEN(locName),ilnb)
-         WRITE(locName,'(A)') PTRACERS_long_names(iTrc)(1:ilnb)
-       ELSE
-         ilnb = ILNBLNK(PTRACERS_names(iTrc))
-         IF ( ilnb.GE.1 ) THEN
-           ilnb = MIN(LEN(locName),ilnb)
-           WRITE(locName,'(A)') PTRACERS_names(iTrc)(1:ilnb)
-         ENDIF
+         WRITE(locName,'(A)') PTRACERS_names(iTrc)(1:ilnb)
        ENDIF
        ilnb = MAX(ILNBLNK(locName),1)
 
