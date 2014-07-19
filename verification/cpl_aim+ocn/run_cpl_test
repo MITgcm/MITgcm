@@ -1,6 +1,6 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.21 2013/12/02 23:39:42 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.22 2014/07/19 22:54:20 jmc Exp $
 # $Name:  $
 
 #- default:
@@ -88,10 +88,10 @@ then
  echo '==== compile coupler:'
  cd build_cpl
  echo ' --- genmake2 (cpl):'
- ../../../tools/genmake2 -of $OPTFILE -mpi $GMKopt >  TTT.genmake.$$
+ ../../../tools/genmake2 -of $OPTFILE -mpi $GMKopt >  TTT.genmake.$$ 2>&1
  tail -5 TTT.genmake.$$
  echo ' --- make depend (cpl):'
- make depend > TTT.mkdepend.$$
+ make depend > TTT.mkdepend.$$ 2>&1
  tail -5 TTT.mkdepend.$$
  echo ' --- make (cpl):' ; touch TTT.make.$$
 #do_make_syntax.sh obj > TTT.make.$$ 2>&1
@@ -102,10 +102,10 @@ then
  echo '==== compile OGCM:'
  cd build_ocn
  echo ' --- genmake2 (ocn):'
- ../../../tools/genmake2 -of $OPTFILE -mpi $MTHo $GMKopt >  TTT.genmake.$$
+ ../../../tools/genmake2 -of $OPTFILE -mpi $MTHo $GMKopt >  TTT.genmake.$$ 2>&1
  tail -5 TTT.genmake.$$
  echo ' --- make depend (ocn):'
- make depend > TTT.mkdepend.$$
+ make depend > TTT.mkdepend.$$ 2>&1
  tail -10 TTT.mkdepend.$$
  echo ' --- make (ocn):' ; touch TTT.make.$$
 #do_make_syntax.sh obj > TTT.make.$$ 2>&1
@@ -116,10 +116,10 @@ then
  echo '==== compile AGCM:'
  cd build_atm
  echo ' --- genmake2 (atm):'
- ../../../tools/genmake2 -of $OPTFILE -mpi $MTHa $GMKopt >  TTT.genmake.$$
+ ../../../tools/genmake2 -of $OPTFILE -mpi $MTHa $GMKopt >  TTT.genmake.$$ 2>&1
  tail -5 TTT.genmake.$$
  echo ' --- make depend (atm):'
- make depend > TTT.mkdepend.$$
+ make depend > TTT.mkdepend.$$ 2>&1
  tail -10 TTT.mkdepend.$$
  echo ' --- make (atm):' ; touch TTT.make.$$
 #do_make_syntax.sh obj > TTT.make.$$ 2>&1
