@@ -1,12 +1,28 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2029 2014/07/19 01:26:19 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2030 2014/07/19 23:05:52 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - collect momentum forcing tendency into local 2-D array (passed as argument
+    to apply_forcing S/R); this simplifies mom. Forcing diagnostics and CD_CODE
+    parts in timestep.F (without CD_CODE_NO_AB_MOMENTUM defined = the default);
+    affects results at machine truncation level (e.g., if using OBCS_SPONGE).
+  - collect T & S forcing tendency into local 2-D array (passed as argument to
+    apply_forcing S/R); add 3-D diagnostics for temp & salt forcing tendency.
+    affects results at machine truncation level (e.g., ocean: if using
+    SHORTWAVE_HEATING and atmos:, if using FrictionHeating or (atm_Rq<>0)
+    moist correction due to vertical advection).
+  - update output of experiments: fizhi-cs-32x32x40 (13 digits),
+    global_ocean.cs32x15 (fwd: icedyn, seaice, thsice, all 3 @ 11d; adm & tml:
+    seaice_dynmix & thsice, fwd grd @ 3 & 8), hs94.1x64x5 (ad grd @ 13),
+    obcs_ctrl (ad & fwd grd @ 12 & 7).
 o pkg/ptracers & diagnostics:
   - use ptracers (short) name (instead of long one) to make ptracers diagnostics
     title (to avoid some unexpected truncation); sort out ptracers diags units.
+  - collect ptracer forcing tendency into local 2-D array (passed as argument
+    to apply_forcing S/R); add 3-D diagnostics for ptracers forcing tendency.
 
 checkpoint65 (2014/07/18)
 o pkg/fizhi:
