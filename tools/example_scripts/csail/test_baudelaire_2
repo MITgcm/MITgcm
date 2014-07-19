@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/Attic/test_baudelaire_2,v 1.1 2013/11/25 14:42:49 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/Attic/test_baudelaire_2,v 1.2 2014/07/19 15:16:24 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu
 #  Linux machines.
@@ -120,6 +120,15 @@ do
         echo "  done"
       fi
     else
+      if test -d prev ; then
+      #-- save previous summary:
+        oldS=`ls -t ${new_dir}/verification/tr_${outDir}_*/summary.txt 2> /dev/null | head -1`
+        if test "x$oldS" != x ; then cp -p -f $oldS prev/tr_out.$typ ; fi
+       if test $tt != $typ ; then
+        oldS=`ls -t ${new_dir}/verification/rs_${outDir}_*/summary.txt 2> /dev/null | head -1`
+        if test "x$oldS" != x ; then cp -p -f $oldS prev/rs_out.$typ ; fi
+       fi
+      fi
       test -e $new_dir  &&  rm -rf $new_dir
       mkdir $new_dir
       pushd $new_dir
