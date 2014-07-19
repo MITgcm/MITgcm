@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.49 2014/02/04 19:39:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.50 2014/07/19 16:46:25 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -131,7 +131,6 @@ C-    free-surface (eTitle) and fixed-boundary (fTitle) position:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    state variables of the main code (and related quadratic var):
-
 
       diagName  = 'ETAN    '
       diagTitle = DIAGS_MK_TITLE( eTitle//rTitle//' Anomaly', myThid )
@@ -465,7 +464,7 @@ C-    use 'PhiVEL' as mate.
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'VVELPHI '
-      diagTitle = DIAGS_MK_TITLE( 'Meridional Mass-Weight Transp of '
+      diagTitle = DIAGS_MK_TITLE( 'Merid. Mass-Weight Transp of '
      I                 //pTitle//' Anomaly', myThid )
       diagUnits = 'm^3/s^3         '
       diagCode  = 'VVr     MR      '
@@ -772,32 +771,22 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'AB_gU   '
-      diagTitle = 'U momentum tendency from Adams-Bashforth'
-      diagUnits = 'm/s^2           '
-      diagCode  = 'UUR     MR      '
-      diagMate  = diagNum + 2
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
-      diagName  = 'AB_gV   '
-      diagTitle = 'V momentum tendency from Adams-Bashforth'
-      diagUnits = 'm/s^2           '
-      diagCode  = 'VVR     MR      '
-      diagMate  = diagNum
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
-#ifdef ALLOW_NONHYDROSTATIC
-      diagName  = 'AB_gW   '
-      diagTitle = 'W momentum tendency from Adams-Bashforth'
-      diagUnits = DIAGS_MK_UNITS( rUnit2c//'/s^2', myThid )
-      diagCode  = 'WM      LR      '
+#ifdef ALLOW_GENERIC_ADVDIFF
+      diagName  = 'gT_Forc '
+      diagTitle = 'Potential Temp. forcing tendency'
+      diagUnits = DIAGS_MK_UNITS( tUnit4c//'/s', myThid )
+      diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-#endif /* ALLOW_NONHYDROSTATIC */
 
-#ifdef ALLOW_GENERIC_ADVDIFF
+      diagName  = 'gS_Forc '
+      diagTitle = DIAGS_MK_TITLE(
+     &            sTitle//'forcing tendency', myThid )
+      diagUnits = DIAGS_MK_UNITS( sUnit5c//'/s', myThid )
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'AB_gT   '
       diagTitle = 'Potential Temp. tendency from Adams-Bashforth'
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'/s', myThid )
@@ -829,6 +818,31 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_GENERIC_ADVDIFF */
 
+      diagName  = 'AB_gU   '
+      diagTitle = 'U momentum tendency from Adams-Bashforth'
+      diagUnits = 'm/s^2           '
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'AB_gV   '
+      diagTitle = 'V momentum tendency from Adams-Bashforth'
+      diagUnits = 'm/s^2           '
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+#ifdef ALLOW_NONHYDROSTATIC
+      diagName  = 'AB_gW   '
+      diagTitle = 'W momentum tendency from Adams-Bashforth'
+      diagUnits = DIAGS_MK_UNITS( rUnit2c//'/s^2', myThid )
+      diagCode  = 'WM      LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif /* ALLOW_NONHYDROSTATIC */
+
 #ifdef ALLOW_EDDYPSI
       diagName  = 'TAUXEDDY'
       diagTitle = 'Zonal Eddy Stress'
@@ -837,7 +851,7 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
       diagName  = 'TAUYEDDY'
       diagTitle = 'Meridional Eddy Stress'
       diagUnits = 'N/m**2          '
@@ -846,7 +860,7 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-#ifdef ALLOW_GMREDI
+# ifdef ALLOW_GMREDI
       diagName  = 'UVELMEAN'
       diagTitle = 'Zonal Component of Mean Velocity (m/s)'
       diagUnits = 'm/s             '
@@ -854,7 +868,7 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
       diagMate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
       diagName  = 'VVELMEAN'
       diagTitle = 'Meridional Component of Mean Velocity (m/s)'
       diagUnits = 'm/s             '
@@ -862,9 +876,7 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
-#endif /* ALLOW_GMREDI */
-
+# endif /* ALLOW_GMREDI */
 #endif /* ALLOW_EDDYPSI */
 
       RETURN
