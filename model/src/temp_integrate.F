@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.9 2014/07/14 22:47:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.10 2014/07/19 16:49:59 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -90,6 +90,12 @@ C     myThid     :: my Thread Id. number
 CEOP
 
 #ifdef ALLOW_GENERIC_ADVDIFF
+#ifdef ALLOW_DIAGNOSTICS
+C     !FUNCTIONS:
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif /* ALLOW_DIAGNOSTICS */
+
 C     !LOCAL VARIABLES:
 C     iMin, iMax :: 1rst index loop range
 C     jMin, jMax :: 2nd  index loop range
@@ -108,6 +114,7 @@ C     fZon       :: Flux of temperature (T) in the zonal direction
 C     fMer       :: Flux of temperature (T) in the meridional direction
 C     fVer       :: Flux of temperature (T) in the vertical direction
 C                   at the upper(U) and lower(D) faces of a cell.
+C     gtForc     :: Temperature forcing tendency
 C     gt_AB      :: Adams-Bashforth temperature tendency increment
 C   useVariableK :: T when vertical diffusion is not constant
       INTEGER iMin, iMax, jMin, jMax
@@ -123,7 +130,11 @@ C   useVariableK :: T when vertical diffusion is not constant
       _RL fZon    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fMer    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVer    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL gtForc  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL gt_AB   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL diagForcing, diagAB_tend
+#endif
       LOGICAL calcAdvection
       INTEGER iterNb
 #ifdef ALLOW_ADAMSBASHFORTH_3
@@ -143,6 +154,15 @@ C-    Loop ranges for daughter routines
 
       iterNb = myIter
       IF (staggerTimeStep) iterNb = myIter - 1
+
+#ifdef ALLOW_DIAGNOSTICS
+      diagForcing = .FALSE.
+      diagAB_tend = .FALSE.
+      IF ( useDiagnostics .AND. tempForcing )
+     &     diagForcing = DIAGNOSTICS_IS_ON( 'gT_Forc ', myThid )
+      IF ( useDiagnostics .AND. AdamsBashforthGt )
+     &     diagAB_tend = DIAGNOSTICS_IS_ON( 'AB_gT   ', myThid )
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act1 = bi - myBxLo(myThid)
@@ -267,6 +287,24 @@ CADJ &     byte=isbyte,  kind = isbyte
      O                maskUp, xA, yA,
      I                k, bi, bj, myThid )
 
+C--   Collect forcing term in local array gtForc:
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          gtForc(i,j) = 0. _d 0
+         ENDDO
+        ENDDO
+        IF ( tempForcing ) THEN
+          CALL APPLY_FORCING_T(
+     U                        gtForc,
+     I                        iMin,iMax,jMin,jMax, k, bi,bj,
+     I                        myTime, myIter, myThid )
+#ifdef ALLOW_DIAGNOSTICS
+          IF ( diagForcing ) THEN
+            CALL DIAGNOSTICS_FILL(gtForc,'gT_Forc ',k,1,2,bi,bj,myThid)
+          ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+        ENDIF
+
 #ifdef ALLOW_ADAMSBASHFORTH_3
         m1 = 1 + MOD(iterNb+1,2)
         m2 = 1 + MOD( iterNb ,2)
@@ -300,11 +338,13 @@ CADJ &     byte=isbyte,  kind = isbyte
 #endif
 
 C--   External thermal forcing term(s) inside Adams-Bashforth:
-        IF ( tempForcing .AND. tracForcingOutAB.NE.1 )
-     &    CALL APPLY_FORCING_T(
-     U                        gT(1-OLx,1-OLy,k,bi,bj),
-     I                        iMin,iMax,jMin,jMax, k, bi,bj,
-     I                        myTime, myIter, myThid )
+        IF ( tempForcing .AND. tracForcingOutAB.NE.1 ) THEN
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            gT(i,j,k,bi,bj) = gT(i,j,k,bi,bj) + gtForc(i,j)
+           ENDDO
+          ENDDO
+        ENDIF
 
         IF ( AdamsBashforthGt ) THEN
 #ifdef ALLOW_ADAMSBASHFORTH_3
@@ -319,18 +359,20 @@ C--   External thermal forcing term(s) inside Adams-Bashforth:
      I                          tempStartAB, iterNb, myThid )
 #endif
 #ifdef ALLOW_DIAGNOSTICS
-          IF ( useDiagnostics ) THEN
+          IF ( diagAB_tend ) THEN
             CALL DIAGNOSTICS_FILL(gt_AB,'AB_gT   ',k,1,2,bi,bj,myThid)
           ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
         ENDIF
 
 C--   External thermal forcing term(s) outside Adams-Bashforth:
-        IF ( tempForcing .AND. tracForcingOutAB.EQ.1 )
-     &    CALL APPLY_FORCING_T(
-     U                        gT(1-OLx,1-OLy,k,bi,bj),
-     I                        iMin,iMax,jMin,jMax, k, bi,bj,
-     I                        myTime, myIter, myThid )
+        IF ( tempForcing .AND. tracForcingOutAB.EQ.1 ) THEN
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            gT(i,j,k,bi,bj) = gT(i,j,k,bi,bj) + gtForc(i,j)
+           ENDDO
+          ENDDO
+        ENDIF
 
 #ifdef NONLIN_FRSURF
         IF (nonlinFreeSurf.GT.0) THEN
