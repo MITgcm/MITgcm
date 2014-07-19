@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2028 2014/07/18 13:37:32 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2029 2014/07/19 01:26:19 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/ptracers & diagnostics:
+  - use ptracers (short) name (instead of long one) to make ptracers diagnostics
+    title (to avoid some unexpected truncation); sort out ptracers diags units.
 
 checkpoint65 (2014/07/18)
 o pkg/fizhi:
