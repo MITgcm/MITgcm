@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/atm_to_ocn_maprunoff.F,v 1.3 2006/06/15 23:29:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/atm_to_ocn_maprunoff.F,v 1.4 2014/07/19 23:01:48 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE ATM_TO_OCN_MAPRUNOFF( 
-     I           fld_atm, 
+      SUBROUTINE ATM_TO_OCN_MAPRUNOFF(
+     I           fld_atm,
      U           fld_ocn )
 C     *==========================================================*
 C     | SUBROUTINE ATM_TO_OCN_MAPRUNOFF
@@ -28,12 +28,12 @@ CEndOfInterface
 C     == Local variables ==
       INTEGER n, ijo, ija
 
-C       Set to zero's everywhere
+C       Set to zero everywhere
 c       DO ijo=1,Nx_ocn*Ny_ocn
 c         fld_ocn(ijo)=0.
 c       ENDDO
 
-C       Maps Runoff from land grid point to ocean grid point 
+C       Maps Runoff from land grid point to ocean grid point
 C       and update oceanic FreshWater flux (substract RunOff)
         DO n=1,nROmap
           ijo=ijROocn(n)

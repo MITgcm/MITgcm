@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/ocn_to_atm_mapxyr8.F,v 1.3 2006/06/15 23:29:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/ocn_to_atm_mapxyr8.F,v 1.4 2014/07/19 23:01:48 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE OCN_TO_ATM_MAPXYR8( 
+      SUBROUTINE OCN_TO_ATM_MAPXYR8(
      I           oNx, oNy,
-     I           fld_ocn, 
+     I           fld_ocn,
      I           aNx, aNy,
      O           fld_atm )
 C     /==========================================================\
@@ -35,7 +35,7 @@ CEndOfInterface
 C     == Local variables ==
       INTEGER I,J
 
-C     Set to zero's everywhere
+C     Set to zero everywhere
       DO J=1,aNy
        DO I=1,aNx
         fld_atm(I,J)=0.
