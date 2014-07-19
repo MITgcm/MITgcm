@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.54 2014/07/14 22:47:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.55 2014/07/19 16:47:23 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -59,6 +59,13 @@ C !OUTPUT PARAMETERS: ==================================================
 C  none
 
 #ifdef ALLOW_PTRACERS
+#ifdef ALLOW_DIAGNOSTICS
+C     !FUNCTIONS:
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+      CHARACTER*4 GAD_DIAG_SUFX
+      EXTERNAL    GAD_DIAG_SUFX
+#endif /* ALLOW_DIAGNOSTICS */
 
 C !LOCAL VARIABLES: ====================================================
 C  iTracer          :: tracer index
@@ -78,6 +85,7 @@ C  rTransKp         :: vertical volume transport at interface k+1
 C  fZon             :: passive tracer zonal flux
 C  fMer             :: passive tracer meridional flux
 C  fVer             :: passive tracer vertical flux
+C  gTrForc          :: passive tracer forcing tendency
 C  gTr_AB           :: Adams-Bashforth tracer tendency increment
       INTEGER iTracer
       INTEGER iMin,iMax,jMin,jMax
@@ -94,6 +102,7 @@ C  gTr_AB           :: Adams-Bashforth tracer tendency increment
       _RL fZon    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fMer    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVer    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL gTrForc (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL gTr_AB  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       LOGICAL calcAdvection
       INTEGER iterNb
@@ -101,9 +110,7 @@ C  gTr_AB           :: Adams-Bashforth tracer tendency increment
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
       CHARACTER*4 diagSufx
-C-    Functions:
-      CHARACTER*4 GAD_DIAG_SUFX
-      EXTERNAL    GAD_DIAG_SUFX
+      LOGICAL diagForcing, diagAB_tend
 #endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
@@ -137,6 +144,19 @@ C-    Loop ranges for daughter routines
         iMax = sNx+OLx-1
         jMin = 1-OLy+2
         jMax = sNy+OLy-1
+
+#ifdef ALLOW_DIAGNOSTICS
+        diagForcing = .FALSE.
+        diagAB_tend = .FALSE.
+        IF ( useDiagnostics ) THEN
+          diagSufx = GAD_DIAG_SUFX( GAD_TR, myThid )
+          diagName = 'Forc'//diagSufx
+          diagForcing = DIAGNOSTICS_IS_ON( diagName, myThid )
+          diagName = 'AB_g'//diagSufx
+          IF ( PTRACERS_AdamsBashGtr(iTracer) )
+     &    diagAB_tend = DIAGNOSTICS_IS_ON( diagName, myThid )
+        ENDIF
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act0 = iTracer - 1
@@ -244,6 +264,24 @@ CADJ &     key = kkey, byte = isbyte, kind = isbyte
      O                maskUp, xA, yA,
      I                k, bi, bj, myThid )
 
+C--   Collect forcing term in local array gTrForc:
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            gTrForc(i,j) = 0. _d 0
+           ENDDO
+          ENDDO
+          CALL PTRACERS_APPLY_FORCING(
+     U                    gTrForc,
+     I                    surfaceForcingPTr(1-OLx,1-OLy,bi,bj,iTracer),
+     I                    iMin,iMax,jMin,jMax, k, bi, bj,
+     I                    iTracer, myTime, myIter, myThid )
+#ifdef ALLOW_DIAGNOSTICS
+          IF ( diagForcing ) THEN
+            diagName = 'Forc'//diagSufx
+            CALL DIAGNOSTICS_FILL(gTrForc,diagName,k,1,2,bi,bj,myThid)
+          ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
 C-    Calculate active tracer tendencies (gPtr) due to internal processes
 C      (advection, [explicit] diffusion, parameterizations,...)
           CALL GAD_CALC_RHS(
@@ -267,13 +305,15 @@ C      (advection, [explicit] diffusion, parameterizations,...)
      U             fVer, gPtr(1-OLx,1-OLy,1,1,1,iTracer),
      I             myTime, myIter, myThid )
 
-C-    External forcing term(s)
-          IF ( tracForcingOutAB.NE.1 )
-     &      CALL PTRACERS_APPLY_FORCING(
-     U                    gPtr(1-OLx,1-OLy,k,bi,bj,iTracer),
-     I                    surfaceForcingPTr(1-OLx,1-OLy,bi,bj,iTracer),
-     I                    iMin,iMax,jMin,jMax, k, bi, bj,
-     I                    iTracer, myTime, myIter, myThid )
+C-    External forcing term(s) inside Adams-Bashforth:
+          IF ( tracForcingOutAB.NE.1 ) THEN
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+              gPtr(i,j,k,bi,bj,iTracer) = gPtr(i,j,k,bi,bj,iTracer)
+     &                                  + gTrForc(i,j)
+             ENDDO
+            ENDDO
+          ENDIF
 
 C-    If using Adams-Bashforth II, then extrapolate tendencies
 C     gPtr is now the tracer tendency for explicit advection/diffusion
@@ -290,21 +330,22 @@ C     prevent gPtr from being replaced by the average of gPtr and gpTrNm1.
      U                      gTr_AB,
      I                      PTRACERS_startAB(iTracer), iterNb, myThid )
 #ifdef ALLOW_DIAGNOSTICS
-           IF ( useDiagnostics ) THEN
-             diagSufx = GAD_DIAG_SUFX( GAD_TR, myThid )
+           IF ( diagAB_tend ) THEN
              diagName = 'AB_g'//diagSufx
              CALL DIAGNOSTICS_FILL(gTr_AB,diagName,k,1,2,bi,bj,myThid)
            ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
           ENDIF
 
-C-    External forcing term(s)
-          IF ( tracForcingOutAB.EQ.1 )
-     &      CALL PTRACERS_APPLY_FORCING(
-     U                    gPtr(1-OLx,1-OLy,k,bi,bj,iTracer),
-     I                    surfaceForcingPTr(1-OLx,1-OLy,bi,bj,iTracer),
-     I                    iMin,iMax,jMin,jMax, k, bi, bj,
-     I                    iTracer, myTime, myIter, myThid )
+C-    External forcing term(s) outside Adams-Bashforth:
+          IF ( tracForcingOutAB.EQ.1 ) THEN
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+              gPtr(i,j,k,bi,bj,iTracer) = gPtr(i,j,k,bi,bj,iTracer)
+     &                                  + gTrForc(i,j)
+             ENDDO
+            ENDDO
+          ENDIF
 
 #ifdef NONLIN_FRSURF
 C-    Account for change in level thickness
