@@ -47,7 +47,7 @@
  deltaT=1200.,
  nIter0=25920,
  nTimeSteps=10,
-#forcing_In_AB=.FALSE.,
+ forcing_In_AB=.FALSE.,
 #alph_AB=0.6,
 #beta_AB=0.,
  alph_AB=0.5,
