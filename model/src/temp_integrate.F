@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.10 2014/07/19 16:49:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.11 2014/07/22 12:04:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -138,7 +138,7 @@ C   useVariableK :: T when vertical diffusion is not constant
       LOGICAL calcAdvection
       INTEGER iterNb
 #ifdef ALLOW_ADAMSBASHFORTH_3
-      INTEGER m1, m2
+      INTEGER m2
 #endif
 #ifdef ALLOW_TIMEAVE
       LOGICAL useVariableK
@@ -306,7 +306,7 @@ C--   Collect forcing term in local array gtForc:
         ENDIF
 
 #ifdef ALLOW_ADAMSBASHFORTH_3
-        m1 = 1 + MOD(iterNb+1,2)
+c       m1 = 1 + MOD(iterNb+1,2)
         m2 = 1 + MOD( iterNb ,2)
         CALL GAD_CALC_RHS(
      I           bi, bj, iMin,iMax,jMin,jMax, k, kM1, kUp, kDown,
@@ -314,7 +314,7 @@ C--   Collect forcing term in local array gtForc:
      I           vFld(1-OLx,1-OLy,k), wFld(1-OLx,1-OLy,k),
      I           uTrans, vTrans, rTrans, rTransKp,
      I           diffKhT, diffK4T, KappaRk(1-OLx,1-OLy,k), diffKr4T,
-     I           gtNm(1-OLx,1-OLy,1,1,1,m2), theta, dTtracerLev,
+     I           theta, gtNm(1-OLx,1-OLy,1,1,1,m2), dTtracerLev,
      I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
      I           calcAdvection, tempImplVertAdv, AdamsBashforth_T,
      I           tempVertDiff4, useGMRedi, useKPP,
@@ -328,7 +328,7 @@ C--   Collect forcing term in local array gtForc:
      I           vFld(1-OLx,1-OLy,k), wFld(1-OLx,1-OLy,k),
      I           uTrans, vTrans, rTrans, rTransKp,
      I           diffKhT, diffK4T, KappaRk(1-OLx,1-OLy,k), diffKr4T,
-     I           gtNm1, theta, dTtracerLev,
+     I           theta, gtNm1, dTtracerLev,
      I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
      I           calcAdvection, tempImplVertAdv, AdamsBashforth_T,
      I           tempVertDiff4, useGMRedi, useKPP,
@@ -406,23 +406,11 @@ CADJ &     byte=isbyte,  kind = isbyte
         ENDIF
 #endif /* NONLIN_FRSURF */
 
-#ifdef ALLOW_ADAMSBASHFORTH_3
-        IF ( AdamsBashforth_T ) THEN
-          CALL TIMESTEP_TRACER(
-     I           bi, bj, k, dTtracerLev(k),
-     I           gtNm(1-OLx,1-OLy,1,1,1,m2),
-     U           gT,
-     I           myIter, myThid )
-        ELSE
-#endif
-          CALL TIMESTEP_TRACER(
+        CALL TIMESTEP_TRACER(
      I           bi, bj, k, dTtracerLev(k),
      I           theta,
      U           gT,
      I           myIter, myThid )
-#ifdef ALLOW_ADAMSBASHFORTH_3
-        ENDIF
-#endif
 
 C-    end of vertical index (k) loop (Nr:1)
       ENDDO

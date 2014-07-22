@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/adams_bashforth3.F,v 1.5 2013/02/19 13:42:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/adams_bashforth3.F,v 1.6 2014/07/22 12:04:09 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -79,8 +79,8 @@ C     ab1,ab2,ab3 :: Adams bashforth extrapolation weights.
       _RL ab0, ab1, ab2
 CEOP
 
-      m1 = 1 + mod(myIter+1,2)
-      m2 = 1 + mod( myIter ,2)
+      m1 = 1 + MOD(myIter+1,2)
+      m2 = 1 + MOD( myIter ,2)
 
 C     Adams-Bashforth timestepping weights
       IF ( myIter.EQ.nIter0 .AND. startAB.EQ.0 ) THEN
@@ -108,8 +108,7 @@ C-    Extrapolate forward in time the state variable, with AB weights:
            AB_gTr(i,j) = ab0*gTracer(i,j,k,bi,bj)
      &                 + ab1*gTrNm(i,j,k,bi,bj,m1)
      &                 + ab2*gTrNm(i,j,k,bi,bj,m2)
-           gTrNm(i,j,k,bi,bj,m2) = gTracer(i,j,k,bi,bj)
-           gTracer(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj) + AB_gTr(i,j)
+           gTrNm(i,j,k,bi,bj,m2) = gTracer(i,j,k,bi,bj) + AB_gTr(i,j)
           ENDDO
          ENDDO
         ENDDO

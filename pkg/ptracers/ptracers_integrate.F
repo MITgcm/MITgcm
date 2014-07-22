@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.55 2014/07/19 16:47:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.56 2014/07/22 12:04:32 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -292,8 +292,8 @@ C      (advection, [explicit] diffusion, parameterizations,...)
      I             PTRACERS_diffKh(iTracer),
      I             PTRACERS_diffK4(iTracer),
      I             KappaRk(1-OLx,1-OLy,k), dummy,
-     I             gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),
      I             pTracer(1-OLx,1-OLy,1,1,1,iTracer),
+     I             gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),
      I             PTRACERS_dTLev, GAD_TR,
      I             PTRACERS_advScheme(iTracer),
      I             PTRACERS_advScheme(iTracer),

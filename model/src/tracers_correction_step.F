@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.16 2009/10/14 19:54:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.17 2014/07/22 12:04:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -36,12 +36,15 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myTime - Current time in simulation
-C     myIter - Current iteration number in simulation
-C     myThid - Thread number for this instance of the routine.
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration number in simulation
+C     myThid :: my Thread Id number
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -52,23 +55,55 @@ C     == Local variables
       INTEGER iMin,iMax
       INTEGER jMin,jMax
       INTEGER bi,bj
-
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      INTEGER m2
+#endif
 CEOP
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
+#ifdef ALLOW_ADAMSBASHFORTH_3
+        IF ( AdamsBashforth_T ) THEN
+C-      Save current tracer field (for AB on tracer) and then update tracer
+c         iterNb = myIter - 1
+c         m1 = 1 + MOD(iterNb+1,2)
+c         m2 = 1 + MOD( iterNb ,2)
+          m2 = 1 + MOD(myIter-1,2)
+          CALL CYCLE_AB_TRACER(
+     I               bi, bj,
+     U               theta, gT, gtNm(1-OLx,1-OLy,1,1,1,m2),
+     I               myTime, myIter, myThid )
+        ELSEIF ( tempStepping ) THEN
+#else /* ALLOW_ADAMSBASHFORTH_3 */
+        IF ( tempStepping ) THEN
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
 C-      Update tracer fields:  T(n) = T**
-        IF (tempStepping)
-     &      CALL CYCLE_TRACER(
-     I           bi,bj,
-     U           theta,gT,
-     I           myTime,myIter,myThid )
-        IF (saltStepping)
-     &      CALL CYCLE_TRACER(
-     I           bi,bj,
-     U           salt,gS,
-     I           myTime,myIter,myThid )
+          CALL CYCLE_TRACER(
+     I               bi, bj,
+     U               theta, gT,
+     I               myTime, myIter, myThid )
+        ENDIF
+
+#ifdef ALLOW_ADAMSBASHFORTH_3
+        IF ( AdamsBashforth_S ) THEN
+C-      Save current tracer field (for AB on tracer) and then update tracer
+          m2 = 1 + MOD(myIter-1,2)
+          CALL CYCLE_AB_TRACER(
+     I               bi, bj,
+     U               salt, gS, gsNm(1-OLx,1-OLy,1,1,1,m2),
+     I               myTime, myIter, myThid )
+        ELSEIF ( saltStepping ) THEN
+#else /* ALLOW_ADAMSBASHFORTH_3 */
+        IF ( saltStepping ) THEN
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
+C-      Update tracer fields:  T(n) = T**
+          CALL CYCLE_TRACER(
+     I               bi, bj,
+     U               salt, gS,
+     I               myTime, myIter, myThid )
+        ENDIF
+
 #ifdef ALLOW_PTRACERS
 #ifndef ALLOW_LONGSTEP
 C-      Update passive tracer fields:  T(n) = T**

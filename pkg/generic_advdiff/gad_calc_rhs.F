@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.67 2014/06/04 22:18:55 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.68 2014/07/22 12:05:23 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -191,8 +191,8 @@ C--   Make local copy of tracer array
       ELSE
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          localT(i,j)= TracAB(i,j,k,bi,bj)
-          locABT(i,j)= TracAB(i,j,k,bi,bj)
+          localT(i,j)=TracerN(i,j,k,bi,bj)
+          locABT(i,j)=TracerN(i,j,k,bi,bj)
          ENDDO
         ENDDO
       ENDIF
@@ -309,19 +309,11 @@ C-    Add bi-harmonic diffusive flux in X
 C-    GM/Redi flux in X
       IF ( trUseGMRedi ) THEN
 C *note* should update GMREDI_XTRANSPORT to set df  *aja*
-        IF ( applyAB_onTracer ) THEN
-          CALL GMREDI_XTRANSPORT(
+        CALL GMREDI_XTRANSPORT(
      I         iMin,iMax,jMin,jMax,bi,bj,k,
      I         xA,TracerN,trIdentity,
      U         df,
      I         myThid)
-        ELSE
-          CALL GMREDI_XTRANSPORT(
-     I         iMin,iMax,jMin,jMax,bi,bj,k,
-     I         xA,TracAB, trIdentity,
-     U         df,
-     I         myThid)
-        ENDIF
       ENDIF
 #endif
 C     anelastic: advect.fluxes are scaled by rhoFac but hor.diff. flx are not
@@ -451,19 +443,11 @@ C-    Add bi-harmonic flux in Y
 C-    GM/Redi flux in Y
       IF ( trUseGMRedi ) THEN
 C *note* should update GMREDI_YTRANSPORT to set df  *aja*
-        IF ( applyAB_onTracer ) THEN
-          CALL GMREDI_YTRANSPORT(
+        CALL GMREDI_YTRANSPORT(
      I         iMin,iMax,jMin,jMax,bi,bj,k,
      I         yA,TracerN,trIdentity,
      U         df,
      I         myThid)
-        ELSE
-          CALL GMREDI_YTRANSPORT(
-     I         iMin,iMax,jMin,jMax,bi,bj,k,
-     I         yA,TracAB, trIdentity,
-     U         df,
-     I         myThid)
-        ENDIF
       ENDIF
 #endif
 C     anelastic: advect.fluxes are scaled by rhoFac but hor.diff. flx are not
@@ -498,7 +482,8 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
 #else
       IF (calcAdvection .AND. .NOT.implicitAdvection .AND. k.GE.2) THEN
 #endif
-C-    Compute vertical advective flux in the interior:
+       IF ( applyAB_onTracer ) THEN
+C-    Compute vertical advective flux in the interior using TracAB:
         IF (vertAdvecScheme.EQ.ENUM_CENTERED_2ND) THEN
            CALL GAD_C2_ADV_R( bi,bj,k, rTrans, TracAB, af, myThid )
         ELSEIF ( vertAdvecScheme.EQ.ENUM_UPWIND_1RST
@@ -540,20 +525,64 @@ cph with limiters in forward, but without limiters in reverse.
         ELSE
           STOP 'GAD_CALC_RHS: Bad vertAdvecScheme (R)'
         ENDIF
+       ELSE
+C-    Compute vertical advective flux in the interior using TracerN:
+        IF (vertAdvecScheme.EQ.ENUM_CENTERED_2ND) THEN
+           CALL GAD_C2_ADV_R( bi,bj,k, rTrans, TracerN, af, myThid )
+        ELSEIF ( vertAdvecScheme.EQ.ENUM_UPWIND_1RST
+     &          .OR. vertAdvecScheme.EQ.ENUM_DST2 ) THEN
+           CALL GAD_DST2U1_ADV_R( bi,bj,k,vertAdvecScheme,deltaTLev(k),
+     I              rTrans, wFld, TracerN(1-OLx,1-OLy,1,bi,bj),
+     O              af, myThid )
+        ELSEIF (vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
+           CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k, deltaTLev(k),
+     I              rTrans, wFld, TracerN(1-OLx,1-OLy,1,bi,bj),
+     O              af, myThid )
+        ELSEIF (vertAdvecScheme.EQ.ENUM_UPWIND_3RD ) THEN
+           CALL GAD_U3_ADV_R( bi,bj,k, rTrans, TracerN, af, myThid )
+        ELSEIF (vertAdvecScheme.EQ.ENUM_CENTERED_4TH) THEN
+           CALL GAD_C4_ADV_R( bi,bj,k, rTrans, TracerN, af, myThid )
+#ifdef ALLOW_AUTODIFF
+        ELSEIF( vertAdvecScheme.EQ.ENUM_DST3 .OR.
+     &         (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT .AND. inAdMode)
+     &        ) THEN
+cph This block is to trick the adjoint:
+cph If inAdExact=.FALSE., we want to use DST3
+cph with limiters in forward, but without limiters in reverse.
+#else /* ALLOW_AUTODIFF */
+        ELSEIF( vertAdvecScheme.EQ.ENUM_DST3 ) THEN
+#endif /* ALLOW_AUTODIFF */
+           CALL GAD_DST3_ADV_R( bi,bj,k, deltaTLev(k),
+     I              rTrans, wFld, TracerN(1-OLx,1-OLy,1,bi,bj),
+     O              af, myThid )
+        ELSEIF (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+           CALL GAD_DST3FL_ADV_R( bi,bj,k, deltaTLev(k),
+     I              rTrans, wFld, TracerN(1-OLx,1-OLy,1,bi,bj),
+     O              af, myThid )
+#ifndef ALLOW_AUTODIFF
+        ELSEIF (vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
+           CALL GAD_OS7MP_ADV_R( bi,bj,k, deltaTLev(k),
+     I              rTrans, wFld, TracerN(1-OLx,1-OLy,1,bi,bj),
+     O              af, myThid )
+#endif
+        ELSE
+          STOP 'GAD_CALC_RHS: Bad vertAdvecScheme (R)'
+        ENDIF
+       ENDIF
 C-     add the advective flux to fVerT
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
           fVerT(i,j,kUp) = fVerT(i,j,kUp) + af(i,j)*maskInC(i,j,bi,bj)
-         ENDDO
         ENDDO
+       ENDDO
 #ifdef ALLOW_DIAGNOSTICS
-        IF ( useDiagnostics ) THEN
+       IF ( useDiagnostics ) THEN
           diagName = 'ADVr'//diagSufx
           CALL DIAGNOSTICS_FILL( af, diagName, k,1, 2,bi,bj, myThid )
 C- note: needs to explicitly increment the counter since DIAGNOSTICS_FILL
 C        does it only if k=1 (never the case here)
           IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT(diagName,bi,bj,myThid)
-        ENDIF
+       ENDIF
 #endif
       ENDIF
 
@@ -567,38 +596,22 @@ C           boundary condition.
         ENDDO
        ENDDO
       ELSE
-       IF ( applyAB_onTracer ) THEN
-         CALL GAD_DIFF_R(bi,bj,k,KappaR,TracerN,df,myThid)
-       ELSE
-         CALL GAD_DIFF_R(bi,bj,k,KappaR,TracAB, df,myThid)
-       ENDIF
+        CALL GAD_DIFF_R(bi,bj,k,KappaR,TracerN,df,myThid)
       ENDIF
 
       IF ( trUseDiffKr4 ) THEN
-       IF ( applyAB_onTracer ) THEN
-         CALL GAD_BIHARM_R( bi,bj,k, diffKr4, TracerN, df, myThid )
-       ELSE
-         CALL GAD_BIHARM_R( bi,bj,k, diffKr4, TracAB,  df, myThid )
-       ENDIF
+        CALL GAD_BIHARM_R( bi,bj,k, diffKr4, TracerN, df, myThid )
       ENDIF
 
 #ifdef ALLOW_GMREDI
 C-    GM/Redi flux in R
       IF ( trUseGMRedi ) THEN
 C *note* should update GMREDI_RTRANSPORT to set df  *aja*
-        IF ( applyAB_onTracer ) THEN
-          CALL GMREDI_RTRANSPORT(
+        CALL GMREDI_RTRANSPORT(
      I         iMin,iMax,jMin,jMax,bi,bj,k,
      I         TracerN,trIdentity,
      U         df,
      I         myThid)
-        ELSE
-          CALL GMREDI_RTRANSPORT(
-     I         iMin,iMax,jMin,jMax,bi,bj,k,
-     I         TracAB, trIdentity,
-     U         df,
-     I         myThid)
-        ENDIF
       ENDIF
 #endif
 
