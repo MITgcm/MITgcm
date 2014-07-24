@@ -31,7 +31,6 @@ do_oceanic_phys.f
 do_stagger_fields_exchanges.f
 dynamics.f	
 external_fields_load.f
-external_forcing.f
 external_forcing_surf.f
 forcing_surf_relax.f
 find_alpha.f	
