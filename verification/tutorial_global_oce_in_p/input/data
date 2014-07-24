@@ -4,8 +4,8 @@
 #
 # Continuous equation parameters
  &PARM01
- tRef=15*20.,
- sRef=15*35.,
+ tRef = 15*20.,
+ sRef = 15*35.,
  viscAh =3.E5,
  no_slip_sides=.TRUE.,
  viscAr =1.721611620915750e5,
@@ -20,15 +20,13 @@
  implicitDiffusion=.TRUE.,
  ivdc_kappa=1.030905162225000e9,
 #ivdc_kappa=10.0,
- rotationPeriod=86400.,
  gravity=9.81,
- rhonil=1035.,
- rhoConstFresh=999.8,
+ rhoConst=1035.,
+ rhoConstFresh=1000.,
  buoyancyRelation='OCEANICP',
  integr_GeoPot=1,
  eosType='JMD95P',
  useNHMTerms=.TRUE.,
- rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  exactConserv=.TRUE.,
  nonlinFreeSurf=4,
@@ -54,10 +52,11 @@
  endTime   =     3456000.,
 # after 100 years of intergration, one gets a reasonable flow field
 #endTime   = 3110400000.,
- deltaTmom      =   1200.0,
+ deltaTMom      =   1200.0,
  deltaTtracer   = 172800.0,
- deltaTfreesurf = 172800.0,
+ deltaTFreeSurf = 172800.0,
  deltaTClock    = 172800.0,
+ abEps     = 0.1,
  pChkptFreq  = 3110400000.,
  dumpFreq    = 3110400000.,
  taveFreq    = 3110400000.,
@@ -66,14 +65,13 @@
  externForcingPeriod=2592000.,
  externForcingCycle=31104000.,
  tauThetaClimRelax=5184000.0,
- abEps=0.1,
  &
 
 # Gridding parameters
  &PARM04
  usingSphericalPolarGrid=.TRUE.,
- dXspacing=4.,
- dYspacing=4.,
+ dxSpacing=4.,
+ dySpacing=4.,
  Ro_SeaLevel=53023122.566084,
  delR=7103300.720021, 6570548.440790, 6041670.010249,
       5516436.666057, 4994602.034410, 4475903.435290,
