@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.19 2012/06/01 18:42:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.20 2014/07/24 15:41:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -67,13 +67,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO bi=myBxLo(myThid), myBxHi(myThid)
 
 C--   before updating hFac_surfC/S/W save current fields
-         DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-             hFac_surfNm1C(i,j,bi,bj) = hFac_surfC(i,j,bi,bj)
-             hFac_surfNm1S(i,j,bi,bj) = hFac_surfS(i,j,bi,bj)
-             hFac_surfNm1W(i,j,bi,bj) = hFac_surfW(i,j,bi,bj)
-           ENDDO
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+           hFac_surfNm1C(i,j,bi,bj) = hFac_surfC(i,j,bi,bj)
+           hFac_surfNm1S(i,j,bi,bj) = hFac_surfS(i,j,bi,bj)
+           hFac_surfNm1W(i,j,bi,bj) = hFac_surfW(i,j,bi,bj)
          ENDDO
+        ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- Compute the new fractional thickness of surface level (kSurfC):
@@ -83,7 +83,7 @@ C-- Compute the new fractional thickness of surface level (kSurfC):
           rSurftmp(i,j) = Ro_surf(i,j,bi,bj)+etaFld(i,j,bi,bj)
           ks = kSurfC(i,j,bi,bj)
           IF (ks.LE.Nr) THEN
-           IF (rSurftmp(i,j) .LT. Rmin_surf(i,j,bi,bj)) THEN
+           IF ( rSurftmp(i,j).LT.Rmin_surf(i,j,bi,bj) ) THEN
 C-- Needs to do something :
             IF (numbWrite.LE.numbWrMax) THEN
              numbWrite = numbWrite + 1
@@ -98,24 +98,22 @@ C-- Needs to do something :
      &         'WARNING: hFac < hFacInf near:',
      &         ' i,j,k,bi,bj,Thid,Iter=',i,j,ks,bi,bj,myThid,myIter
              ENDIF
-              WRITE(errorMessageUnit,'(A,2F10.6,1PE14.6)')
+             WRITE(errorMessageUnit,'(A,2F10.6,1PE14.6)')
      &         'hFac_n-1,hFac_n,eta =',
      &          hfacC(i,j,ks,bi,bj), hFactmp, etaFld(i,j,bi,bj)
             ENDIF
 C-- Decide to STOP :
-c             WRITE(errorMessageUnit,'(A)')
+c            WRITE(errorMessageUnit,'(A)')
 c    &        'STOP in CALC_SURF_DR : too SMALL hFac !'
-c             STOP 'ABNORMAL END: S/R CALC_SURF_DR'
-C----------
-
-C-- Continue with Rmin_surf:
-             IF ( i.GE.1.AND.i.LE.sNx .AND.
-     &            j.GE.1.AND.j.LE.sNy ) THEN
-               adjust_nb_pt = adjust_nb_pt + 1.
-               adjust_volum = adjust_volum
+c            STOP 'ABNORMAL END: S/R CALC_SURF_DR'
+C-- Or continue with Rmin_surf:
+            IF ( i.GE.1.AND.i.LE.sNx .AND.
+     &           j.GE.1.AND.j.LE.sNy ) THEN
+              adjust_nb_pt = adjust_nb_pt + 1.
+              adjust_volum = adjust_volum
      &          + rA(i,j,bi,bj)*(Rmin_surf(i,j,bi,bj)-rSurftmp(i,j))
-             ENDIF
-             rSurftmp(i,j) = Rmin_surf(i,j,bi,bj)
+            ENDIF
+            rSurftmp(i,j) = Rmin_surf(i,j,bi,bj)
 C----------
            ENDIF
 
@@ -148,10 +146,15 @@ C-- Compute fractional thickness of surface level, for U & V point:
          DO i=1,sNx+1
           ks = kSurfW(i,j,bi,bj)
           IF (ks.LE.Nr) THEN
-            hhm = rF(ks)
-            IF(ks.EQ.kSurfC(i-1,j,bi,bj)) hhm = rSurftmp(i-1,j)
-            hhp = rF(ks)
-            IF(ks.EQ.kSurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)
+C-  allows hFacW to be larger than surrounding hFacC=1 @ edge of a step with
+C   different kSurfC on either side (topo in p-coords, ice-shelf in z-coords)
+            hhm = rSurftmp(i-1,j)
+            hhp = rSurftmp(i,j)
+C-  make sure hFacW is not larger than the 2 surrounding hFacC
+c           hhm = rF(ks)
+c           IF(ks.EQ.kSurfC(i-1,j,bi,bj)) hhm = rSurftmp(i-1,j)
+c           hhp = rF(ks)
+c           IF(ks.EQ.kSurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)
             hFac_surfW(i,j,bi,bj) = h0FacW(i,j,ks,bi,bj)
      &            + ( MIN(hhm,hhp)
      &              - MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
@@ -164,10 +167,15 @@ C-- Compute fractional thickness of surface level, for U & V point:
          DO i=1,sNx
           ks = kSurfS(i,j,bi,bj)
           IF (ks.LE.Nr) THEN
-            hhm = rF(ks)
-            IF(ks.EQ.kSurfC(i,j-1,bi,bj)) hhm = rSurftmp(i,j-1)
-            hhp = rF(ks)
-            IF(ks.EQ.kSurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)
+C-  allows hFacS to be larger than surrounding hFacC=1 @ edge of a step with
+C   different kSurfC on either side (topo in p-coords, ice-shelf in z-coords)
+            hhm = rSurftmp(i,j-1)
+            hhp = rSurftmp(i,j)
+C-  make sure hFacS is not larger than the 2 surrounding hFacC
+c           hhm = rF(ks)
+c           IF(ks.EQ.kSurfC(i,j-1,bi,bj)) hhm = rSurftmp(i,j-1)
+c           hhp = rF(ks)
+c           IF(ks.EQ.kSurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)
             hFac_surfS(i,j,bi,bj) = h0FacS(i,j,ks,bi,bj)
      &            + ( MIN(hhm,hhp)
      &              - MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
