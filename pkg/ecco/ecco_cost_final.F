@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.65 2014/07/25 03:38:16 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.66 2014/07/25 04:04:31 mmazloff Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -724,7 +724,7 @@ c local copy used in print statements, for
 c which we always want to do the global sum.
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          locfc=tile_fc(bi,bj)
+          locfc=locfc + tile_fc(bi,bj)
         enddo
       enddo
       _GLOBAL_SUM_RL( locfc , myThid )
