@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/apply_forcing.F,v 1.3 2014/07/15 22:07:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/apply_forcing.F,v 1.4 2014/07/25 18:52:41 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -86,7 +86,8 @@ C     when gU and gU_arr are the same array, i.e., called with argument gU).
           gU(i,j,k,bi,bj) = locVar(i,j)
         ENDDO
       ENDDO
-      CALL FOOL_THE_COMPILER_RL( tmpVar(1,1) )
+C-    not needed since APPLY_FORCING_U is no longer called with argument gU
+c     CALL FOOL_THE_COMPILER_RL( tmpVar(1,1) )
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
           gU_arr(i,j) = gU_arr(i,j) + tmpVar(i,j)
@@ -263,7 +264,8 @@ C     when gV and gV_arr are the same array, i.e., called with argument gV).
           gV(i,j,k,bi,bj) = locVar(i,j)
         ENDDO
       ENDDO
-      CALL FOOL_THE_COMPILER_RL( tmpVar(1,1) )
+C-    not needed since APPLY_FORCING_V is no longer called with argument gV
+c     CALL FOOL_THE_COMPILER_RL( tmpVar(1,1) )
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
           gV_arr(i,j) = gV_arr(i,j) + tmpVar(i,j)
@@ -450,7 +452,8 @@ C     when gT and gT_arr are the same array, i.e., called with argument gT).
           gT(i,j,k,bi,bj) = locVar(i,j)
         ENDDO
       ENDDO
-      CALL FOOL_THE_COMPILER_RL( tmpVar(1,1) )
+C-    not needed since APPLY_FORCING_T is no longer called with argument gT
+c     CALL FOOL_THE_COMPILER_RL( tmpVar(1,1) )
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
           gT_arr(i,j) = gT_arr(i,j) + tmpVar(i,j)
@@ -810,7 +813,8 @@ C     when gS and gS_arr are the same array, i.e., called with argument gS).
           gS(i,j,k,bi,bj) = locVar(i,j)
         ENDDO
       ENDDO
-      CALL FOOL_THE_COMPILER_RL( tmpVar(1,1) )
+C-    not needed since APPLY_FORCING_S is no longer called with argument gS
+c     CALL FOOL_THE_COMPILER_RL( tmpVar(1,1) )
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
           gS_arr(i,j) = gS_arr(i,j) + tmpVar(i,j)
