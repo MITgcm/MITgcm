@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.66 2014/07/25 04:04:31 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.67 2014/07/26 03:27:39 jmc Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -374,7 +374,7 @@ c     == end of interface ==
        enddo
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
-       do num_var=1,maxCtrlTim2D      
+       do num_var=1,maxCtrlTim2D
         no_gentim2d(maxCtrlTim2D)= 0. _d 0
        enddo
 #endif
@@ -489,7 +489,7 @@ c--   Sum up all contributions.
        enddo
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
-       do num_var=1,maxCtrlTim2D      
+       do num_var=1,maxCtrlTim2D
           tile_fc(bi,bj) = tile_fc(bi,bj)
      &            + mult_gentim2d(num_var)
      &            *objf_gentim2d(bi,bj,num_var)
@@ -719,15 +719,9 @@ c--   Sum up all contributions.
         enddo
       enddo
 
-
 c local copy used in print statements, for
 c which we always want to do the global sum.
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          locfc=locfc + tile_fc(bi,bj)
-        enddo
-      enddo
-      _GLOBAL_SUM_RL( locfc , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tile_fc, locfc, myThid )
 
 #ifndef ALLOW_COST
 cgf global sum is now done in cost_final if allow_cost
@@ -944,7 +938,7 @@ c--   Do global summation for each part of the cost function
        do num_var=1,maxCtrlTim2D
         _GLOBAL_SUM_RL(no_gentim2d(num_var), myThid )
        enddo
-#endif      
+#endif
 
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_temp    =',f_temp
@@ -1160,7 +1154,7 @@ c--   Do global summation for each part of the cost function
      &      num_var
         endif
        enddo
-#endif      
+#endif
 
 c--   Each process has calculated the global part for itself.
 
