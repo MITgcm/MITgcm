@@ -1,14 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2031 2014/07/24 18:21:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2032 2014/07/27 18:04:14 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint65a (2014/07/27)
 o model/src:
   - Non-Lin Free-Surf in p/z coords: allows hFacW,S to be larger than
     surrounding hFacC=1 @ edge of a step with different kSurfC on either side
-    (topo in p-coords, ice-shelf in z-coords); update output of experiment
-    tutorial_global_oce_in_p.
+    (topo in p-coords, ice-shelf in z-coords); update output of experiments
+    tutorial_global_oce_in_p and isomip (both AD and OpenAD output).
 o model/src:
   - collect momentum forcing tendency into local 2-D array (passed as argument
     to apply_forcing S/R); this simplifies mom. Forcing diagnostics and CD_CODE
