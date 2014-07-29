@@ -14,7 +14,7 @@
  diffKhS=100.0,
  diffKzS=5.E-5,
  bottomDragQuadratic=2.5E-3,
- eosType='JMD95Z', 
+ eosType='JMD95Z',
  HeatCapacity_cp = 3974.0,
  rhoConst=1030.,
  rhoNil=1030.,
@@ -23,10 +23,12 @@
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  exactConserv=.TRUE.,
+ nonlinFreeSurf=4,
+ hFacInf=0.02,
  hFacMin=0.05,
  nonHydrostatic=.FALSE.,
- readBinaryPrec=64,
  useCDScheme = .TRUE.,
+ readBinaryPrec=64,
  &
 
 # Elliptic solver parameters
