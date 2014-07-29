@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.99 2014/07/16 12:03:32 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.100 2014/07/29 15:39:25 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -764,9 +764,6 @@ C Solve for uIce :
            CALL SEAICE_LSR_TRIDIAGU(
      I          AU, BU, CU, uRt1, uRt2, rhsU, uTmp, seaiceMaskU, WFAU,
      U          uIce,
-#ifdef ALLOW_AUTODIFF_TAMC
-     I          ilcall, m,
-#endif /*  ALLOW_AUTODIFF_TAMC */
      I          iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
           ENDIF
 
@@ -775,9 +772,6 @@ C Solve for vIce
            CALL SEAICE_LSR_TRIDIAGV(
      I          AV, BV, CV, vRt1, vRt2, rhsV, vTmp, seaiceMaskV, WFAV, 
      U          vIce,
-#ifdef ALLOW_AUTODIFF_TAMC
-     I          ilcall, m,
-#endif /*  ALLOW_AUTODIFF_TAMC */
      I          iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
           ENDIF
 
@@ -1447,9 +1441,6 @@ C     !INTERFACE:
       SUBROUTINE SEAICE_LSR_TRIDIAGU(
      I     AU, BU, CU, uRt1, uRt2, rhsU, uTmp, seaiceMaskU, WFAU,
      U     uIce,
-#ifdef ALLOW_AUTODIFF_TAMC
-     I     ilcall, m,
-#endif /*  ALLOW_AUTODIFF_TAMC */
      I     iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
@@ -1463,9 +1454,6 @@ C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #ifdef ALLOW_AUTODIFF_TAMC
-# include "EEPARAMS.h"
-# include "SEAICE_SIZE.h"
-# include "AUTODIFF_PARAMS.h"
 # include "tamc.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -1478,9 +1466,6 @@ C     myThid     :: my Thread Id. number
       INTEGER myIter
       INTEGER myThid
       INTEGER iMin, iMax, jMin, jMax, bi, bj
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ilcall, m
-#endif /*  ALLOW_AUTODIFF_TAMC */
 C     diagonals of coefficient matrices
       _RL AU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -1607,9 +1592,6 @@ C     !INTERFACE:
       SUBROUTINE SEAICE_LSR_TRIDIAGV(
      I     AV, BV, CV, vRt1, vRt2, rhsV, vTmp, seaiceMaskV, WFAV, 
      U     vIce,
-#ifdef ALLOW_AUTODIFF_TAMC
-     I     ilcall, m,
-#endif /*  ALLOW_AUTODIFF_TAMC */
      I     iMin, iMax, jMin, jMax, bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
@@ -1623,9 +1605,6 @@ C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #ifdef ALLOW_AUTODIFF_TAMC
-# include "EEPARAMS.h"
-# include "SEAICE_SIZE.h"
-# include "AUTODIFF_PARAMS.h"
 # include "tamc.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -1638,9 +1617,6 @@ C     myThid     :: my Thread Id. number
       INTEGER myIter
       INTEGER myThid
       INTEGER iMin, iMax, jMin, jMax, bi, bj
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ilcall, m
-#endif /*  ALLOW_AUTODIFF_TAMC */
 C     diagonals of coefficient matrices
       _RL AV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -1676,7 +1652,6 @@ C     i,j  :: Loop counters
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ INIT comlev1_tridiagv = COMMON, (sNx+2*Olx)*(sNy+2*Oly)
-CADJ INIT comlev1_tridiagvice = COMMON, 2
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Need to initialize local arrays
       DO J = 1-OLy,sNy+OLy
@@ -1687,17 +1662,20 @@ C     Need to initialize local arrays
       ENDDO
 #ifdef SEAICE_VECTORIZE_LSR_ZEBRA
       DO K=0,1
-# ifdef ALLOW_AUTODIFF_TAMC
-C     not clear to my, why this is needed here and not in 
-C     s/r seaice_lsr_tridiagu, but it is ...
-CADJ STORE vice(:,:,bi,bj) = comlev1_tridiagvice, kind=isbyte, key = k+1
-# endif /* ALLOW_AUTODIFF_TAMC */
 #endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
 #ifdef SEAICE_VECTORIZE_LSR
-      DO J=jMin,jMax
 # ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+#  ifdef ALLOW_AUTODIFF_TAMC
+C     the order of the loop is relevant for TAF. We avoid having
+C     to store vice with this order
+      DO I=iMin+K,iMax,2
+       DO J=jMin,jMax
+#  else
+      DO J=jMin,jMax
        DO I=iMin+K,iMax,2
+#  endif /* ALLOW_AUTODIFF_TAMC */
 # else
+      DO J=jMin,jMax
        DO I=iMin,iMax
 # endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
 #else
@@ -1718,7 +1696,11 @@ CADJ STORE vice(:,:,bi,bj) = comlev1_tridiagvice, kind=isbyte, key = k+1
        ENDDO
 #ifdef SEAICE_VECTORIZE_LSR
       ENDDO
+# ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+      DO I=iMin+K,iMax,2
+# else
       DO I=iMin,iMax
+# endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
 #endif /* SEAICE_VECTORIZE_LSR */
        CVV(I,jMin)=CVV(I,jMin)/BV(I,jMin,bi,bj)
        VRT(I,jMin)=VRT(I,jMin)/BV(I,jMin,bi,bj)
