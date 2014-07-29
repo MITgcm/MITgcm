@@ -1,21 +1,29 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2033 2014/07/29 16:29:56 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2034 2014/07/29 19:52:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: 
+o isomip experiment:
+  - test pkg/shelfice with Non-Lin Free-Surf in one of the FWD set-up
+    (input.htd) and update the output.
+o cd_code experiments:
+  - use default cd_code options (#undef CD_CODE_NO_AB_MOMENTUM &
+    #undef CD_CODE_NO_AB_CORIOLIS) in experiments: cfc_example (fwd)
+    global_ocean.90x40x15 (ad & oad) and OpenAD (ad & oad) and
+    update the corresponding output.
+o pkg/seaice:
   - reduce the number of include files and store directives in
     S/R seaice_lsr_tridiagu/v
   - change the order of loops in one case in S/R seaice_lsr_tridiagv
     (only for SEAICE_VECTORIZE_LSR_ZEBRA defined), which allows me to
-    get rid off one store directive (a TAF bug?) 
+    get rid off one store directive (a TAF bug?)
   - add one more instance of ifdef SEAICE_VECTORIZE_LSR_ZEBRA in
     S/R seaice_lsr_tridiagv to change the loop range for consistency
-  - remove ilcall, m from parameter list of S/R seaice_lsr_tridiagu/v 
+  - remove ilcall, m from parameter list of S/R seaice_lsr_tridiagu/v
   - fix a bug that affects the JFNK solver: replace sNx/y by i/jMax in
     S/R seaice_lsr_tridiagu/v (requires update of
-    offline_exf_seaice/input.dyn_jfnk) 
+    offline_exf_seaice/input.dyn_jfnk)
 
 checkpoint65a (2014/07/27)
 o model/src:
