@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_calc.F,v 1.1 2014/07/30 03:28:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_calc.F,v 1.2 2014/07/30 19:52:38 jmc Exp $
 C $Name:  $
 
 #include "KL10_OPTIONS.h"
@@ -7,28 +7,27 @@ CBOP
 C !ROUTINE: KL10_CALC
 
 C !INTERFACE: =======================================================
-       subroutine KL10_CALC(
-     I     bi, bj, myTime, myThid )
+      SUBROUTINE KL10_CALC(
+     I                bi, bj, sigmaR, myTime, myIter, myThid )
 
 C !DESCRIPTION: \bv
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE KL10_CALC                                     |
 C     | o Compute all KL10 fields defined in KL10.h              |
-C     |==========================================================|
+C     *==========================================================*
 C     | This subroutine is based on SPEM code                    |
-C     \==========================================================/
-      IMPLICIT NONE
-C
+C     *==========================================================*
+C \ev
+
 C--------------------------------------------------------------------
 
 C JMK
 C global parameters updated by kl_calc
-C     KLviscAz   - KL eddy viscosity coefficient              (m^2/s)
-C     KLdiffKzT  - KL diffusion coefficient for temperature   (m^2/s)
-C
-C \ev
+C     KLviscAz  :: KL eddy viscosity coefficient              (m^2/s)
+C     KLdiffKzT :: KL diffusion coefficient for temperature   (m^2/s)
 
 C !USES: ============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -46,32 +45,35 @@ C !USES: ============================================================
 
 C !INPUT PARAMETERS: ===================================================
 c Routine arguments
-c     bi, bj - array indices on which to apply calculations
-c     myTime - Current time in simulation
-
-       INTEGER bi, bj
-       INTEGER myThid
-       _RL     myTime
+C     bi, bj :: Current tile indices
+C     sigmaR :: Vertical gradient of iso-neutral density
+C     myTime :: Current time in simulation
+C     myIter :: Current time-step number
+C     myThid :: My Thread Id number
+      INTEGER bi, bj
+      _RL     sigmaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 #ifdef ALLOW_KL10
-
 C !LOCAL VARIABLES: ====================================================
 c Local constants
-C     imin, imax, jmin, jmax  - array computation indices
-C     RiNumber                - Richardson Number
+C     iMin, iMax, jMin, jMax :: array computation indices
+C     RiNumber               :: Richardson Number
       INTEGER I, J, K, Km1, JJ
       INTEGER   iMin ,iMax ,jMin ,jMax,di
       _RL     denom, KLviscTmp, buoyFreq,rhot,tempu,tempv,oldK,Ri
       _RL     b0, buoyFreqf, buoyFreqc, KLviscold,zsum,zsums
       _RL     rhoS(1:Nr),RS(1:Nr)
       _RL     dzc,dzp,ec,ep,es,epss(-1:0),epsw(-1:0),dz,KTemp
-!      _RL     bF(1:Nr)
-!      _RL     theta_mcb(1:Nr),theta_mcb3(1:Nr)
+c     _RL     bF(1:Nr)
+c     _RL     theta_mcb(1:Nr),theta_mcb3(1:Nr)
 C     === Local variables ===
-C     msgBuf      - Informational/error message buffer
-      CHARACTER*(1024) msgBuf
-
+C     msgBuf     :: Informational/error message buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
+
       iMin = 2-OLx
       iMax = sNx+OLx-1
       jMin = 2-OLy
@@ -86,7 +88,7 @@ CEOP
             RS(1)=rC(1)
 
             KLeps(I-1,J-1,1,bi,bj)=0.0
-C           eps(k-1) = (dz(k-1)*eps0(k-1) +dz(k)*eps0(k))/(dz(k-1)+dz(k))
+c           eps(k-1) = (dz(k-1)*eps0(k-1) +dz(k)*eps0(k))/(dz(k-1)+dz(k))
             ep = 0.0
             dzp = 0.0
 
@@ -99,15 +101,15 @@ C the density came from, RS.
      $              ,bj),totPhiHyd(I,J,K,bi,bj),rhot,myThid )
                rhoS(K)=rhot
                RS(K)=rC(K)
-C$$$               WRITE(msgBuf, '(A,I10.10,A,E10.4,A,E10.4)') 'Hellok ', K
-C$$$     $              -1,' ',theta(I,J,K,bi,bj),' ',rhot
-C$$$               CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
-C$$$     &              SQUEEZE_RIGHT , 1)
+c$$$               WRITE(msgBuf, '(A,I10.10,A,E10.4,A,E10.4)') 'Hellok ', K
+c$$$     $              -1,' ',theta(I,J,K,bi,bj),' ',rhot
+c$$$               CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+c$$$     &              SQUEEZE_RIGHT , 1)
                IF ( (rhoS(K).LT.rhoS(K-1)).AND.(maskC(I,J,K,bi
      &              ,bj).GT.0)) THEN
                   JJ=K-1
                   DO WHILE ( (JJ.GT.0).AND.(rhoS(K).LT.rhoS(JJ)) )
-C                     write(*,*) K,JJ,rhoS(K),rhoS(JJ)
+c                    write(*,*) K,JJ,rhoS(K),rhoS(JJ)
                      JJ=JJ-1
                   ENDDO
                   rhoS(JJ+1:K)=cshift(rhoS(JJ+1:K),-1)
@@ -125,7 +127,7 @@ C diffKrNrT(K) = viscArNr(K) = background value
 C N at surface = zero or uses gradient
             b0 = MAX(-gravity*mass2rUnit*
      &              (rhoS(1) - rhoS(2))*recip_drC(2),0. _d 0)
-C            b0 = 0.
+c           b0 = 0.
             DO di=-1,0
                epss(di)=0.0
                epsw(di)=0.0
@@ -228,7 +230,8 @@ C add the u and v dissipations:
 C Note this ec is defined on cell faces K=2..NR at the center of the
 C cells (i.e. at XC), so its above the density variables.
 C
-C So to get at the center of the cells, just average this one and the previous one.  And its a true average because the
+C So to get at the center of the cells, just average this one and the previous one.
+C  And its a true average because the
 
                   KLeps(I-1,J-1,Km1,bi,bj) = 0.5*(ep+ec)
                   IF (Km1.EQ.1) THEN
@@ -258,4 +261,3 @@ C           ENDDO I
 
       RETURN
       END
-
