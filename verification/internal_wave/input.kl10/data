@@ -1,0 +1,77 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ Tref = 0.04842, 0.0433231, 0.0382263, 0.0331295,
+        0.0280326, 0.0229358, 0.0178389, 0.0127421,
+        0.00764526, 0.00254842, -0.00254842, -0.00764526,
+       -0.0127421, -0.0178389, -0.0229358, -0.0280326,
+       -0.0331295, -0.0382263, -0.0433231, -0.04842,
+ sRef= 20*35.,
+ viscAz=1.E-5,
+ viscAh=1.E-5,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ diffKhT=1.E-5
+ diffKzT=1.E-5,
+ implicitDiffusion=.TRUE.
+ implicitViscosity=.TRUE.
+ f0=0.0,
+ beta=0.E-11,
+ eosType='LINEAR',
+ tAlpha=2.E-4,
+ sBeta =0.E-4,
+ gravity=9.81,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.
+ nonHydrostatic=.FALSE.,
+ hFacMin=0.2,
+ implicSurfPress=0.5,
+ implicDiv2DFlow=0.5,
+ nonlinFreeSurf=3,
+ hFacInf=0.2,
+ hFacSup=1.8,
+ saltStepping=.FALSE.,
+#- not safe to use globalFiles in multi-processors runs
+#globalFiles=.TRUE.,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ writeStatePrec=64,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-13,
+ cg3dMaxIters=400,
+ cg3dTargetResidual=1.E-13,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=0,
+ nTimeSteps=300,
+ deltaT=450.,
+ abEps=0.1,
+ pChkptFreq=0.,
+ chkptFreq=0.,
+ dumpFreq=86400.,
+ monitorFreq=7200.,
+ monitorSelect=2,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ delXfile='delXvar',
+ delY=5.E3,
+ delZ=20*10.,
+ &
+
+# Input datasets
+ &PARM05
+ hydrogThetaFile='T.init',
+ bathyFile='topog.slope',
+ &
