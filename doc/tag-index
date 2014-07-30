@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2034 2014/07/29 19:52:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2035 2014/07/30 20:01:31 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/kl10:
+  - add new pkg "kl10" for mixing due to internal wave breaking, from
+    http://www.sciencedirect.com/science/article/pii/S1463500310000144
+    (contribution from Jody Klymak), tested in verification experiment
+    verification/internal_wave/input.kl10/
 o isomip experiment:
   - test pkg/shelfice with Non-Lin Free-Surf in one of the FWD set-up
     (input.htd) and update the output.
