@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.94 2014/04/04 20:54:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.95 2014/07/30 03:31:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -34,6 +34,8 @@ C       |
 C       |-- CD_CODE_INI_VARS
 C       |
 C       |-- PP81_INIT_VARIA
+C       |
+C       |-- KL10_INIT_VARIA
 C       |
 C       |-- MY82_INIT_VARIA
 C       |
@@ -182,6 +184,16 @@ C--   Initialize PP81 vertical mixing scheme.
        CALL PP81_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_PP81 */
+
+#ifdef ALLOW_KL10
+C--   Initialize KL10 vertical mixing scheme.
+      IF (useKL10) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('KL10_INIT_VARIA',myThid)
+# endif
+       CALL KL10_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_KL10 */
 
 #ifdef ALLOW_MY82
 C--   Initialize MY82 vertical mixing scheme.

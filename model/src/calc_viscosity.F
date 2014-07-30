@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_viscosity.F,v 1.9 2009/10/08 20:03:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_viscosity.F,v 1.10 2014/07/30 03:31:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,8 +37,8 @@ C     KappaRV :: Total vertical viscosity for meridional flow.
 C     myThid  :: my Thread Id number
       INTEGER iMin,iMax,jMin,jMax
       INTEGER bi,bj
-      _RL KappaRU(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL KappaRV(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL KappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -49,8 +49,8 @@ CEOP
 
       DO k = 1,Nr
 
-       DO j = 1-Oly, sNy+Oly
-        DO i = 1-Olx, sNx+Olx
+       DO j = 1-OLy, sNy+OLy
+        DO i = 1-OLx, sNx+OLx
          KappaRU(i,j,k) = viscArNr(k)
          KappaRV(i,j,k) = viscArNr(k)
         ENDDO
@@ -65,6 +65,13 @@ CEOP
 
 #ifdef ALLOW_PP81
        IF (usePP81) CALL PP81_CALC_VISC(
+     I        bi,bj, iMin,iMax,jMin,jMax, k,
+     O        KappaRU,KappaRV,
+     I        myThid)
+#endif
+
+#ifdef ALLOW_KL10
+       IF (useKL10) CALL KL10_CALC_VISC(
      I        bi,bj, iMin,iMax,jMin,jMax, k,
      O        KappaRU,KappaRV,
      I        myThid)

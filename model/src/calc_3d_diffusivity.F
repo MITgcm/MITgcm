@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.17 2011/09/20 22:25:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.18 2014/07/30 03:31:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -55,7 +55,7 @@ C     KappaRTr   :: Net diffusivity for this tracer (trIdentity)
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER trIdentity
       LOGICAL trUseGMRedi, trUseKPP
-      _RL KappaRTr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL KappaRTr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
 #ifdef ALLOW_GENERIC_ADVDIFF
@@ -83,8 +83,8 @@ CEOP
         KbryanLewisEQ=diffKrBLEQsurf+(diffKrBLEQdeep-diffKrBLEQsurf)
      &       *(atan(-(rF(k)-diffKrBLEQHo)/diffKrBLEQscl)/PI+0.5 _d 0)
 #endif
-        DO j = 1-Oly,sNy+Oly
-         DO i = 1-Olx,sNx+Olx
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
 #ifdef ALLOW_LONGSTEP
           IF ( trIdentity .GE. GAD_TR1) THEN
            KappaRTr(i,j,k) =
@@ -109,8 +109,8 @@ CEOP
        ENDDO
        IF ( trIdentity.EQ.GAD_TEMPERATURE ) THEN
         DO k = 1,Nr
-         DO j = 1-Oly,sNy+Oly
-          DO i = 1-Olx,sNx+Olx
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
            KappaRTr(i,j,k) = KappaRTr(i,j,k)
 #ifdef ALLOW_3D_DIFFKR
      &          + diffKr(i,j,k,bi,bj)
@@ -122,8 +122,8 @@ CEOP
         ENDDO
        ELSEIF ( trIdentity.EQ.GAD_SALINITY) THEN
         DO k = 1,Nr
-         DO j = 1-Oly, sNy+Oly
-          DO i = 1-Olx, sNx+Olx
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
            KappaRTr(i,j,k) = KappaRTr(i,j,k)
 #ifdef ALLOW_3D_DIFFKR
      &          + diffKr(i,j,k,bi,bj)
@@ -138,8 +138,8 @@ CEOP
 
         iTr = trIdentity - GAD_TR1 + 1
         DO k = 1,Nr
-         DO j = 1-Oly, sNy+Oly
-          DO i = 1-Olx, sNx+Olx
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
            KappaRTr(i,j,k) = KappaRTr(i,j,k)
 #ifdef ALLOW_3D_DIFFKR
      &          + diffKr(i,j,k,bi,bj)
@@ -208,6 +208,15 @@ C--   Set vertical diffusivity contribution from KPP
       ENDIF
 #endif
 
+#ifdef ALLOW_KL10
+      IF (useKL10) THEN
+         CALL KL10_CALC_DIFF(
+     I        bi,bj,iMin,iMax,jMin,jMax,0,Nr,
+     U        KappaRTr,
+     I        myThid)
+      ENDIF
+#endif
+
 #ifdef ALLOW_MY82
       IF (useMY82) THEN
          CALL MY82_CALC_DIFF(
@@ -229,8 +238,8 @@ C--   Set vertical diffusivity contribution from KPP
 C-    Apply mask to vertical diffusivity
 C jmc: do not have the impression that masking is needed
 C      but could be removed later if it is the case.
-c     DO j = 1-Oly, sNy+Oly
-c      DO i = 1-Olx, sNx+Olx
+c     DO j = 1-OLy, sNy+OLy
+c      DO i = 1-OLx, sNx+OLx
 c       KappaRTr(i,j,k) = maskUp(i,j)*KappaRTr(i,j,k)
 c      ENDDO
 c     ENDDO

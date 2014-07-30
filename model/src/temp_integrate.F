@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.11 2014/07/22 12:04:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.12 2014/07/30 03:31:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -475,8 +475,8 @@ CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
       ENDIF
 
 #ifdef ALLOW_TIMEAVE
-      useVariableK = useKPP .OR. usePP81 .OR. useMY82 .OR. useGGL90
-     &       .OR. useGMredi .OR. ivdc_kappa.NE.0.
+      useVariableK = useKPP .OR. usePP81 .OR. useKL10 .OR. useMY82
+     &       .OR. useGGL90 .OR. useGMredi .OR. ivdc_kappa.NE.0.
       IF ( taveFreq.GT.0. .AND. useVariableK
      &                    .AND.implicitDiffusion ) THEN
         CALL TIMEAVE_CUMUL_DIF_1T(TdiffRtave, gT, kappaRk,

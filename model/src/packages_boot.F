@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.65 2014/01/19 23:58:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.66 2014/07/30 03:31:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,6 +52,7 @@ C     data.pkg namelists
      &          useZONAL_FILT,
      &          useOPPS,
      &          usePP81,
+     &          useKL10,
      &          useMY82,
      &          useGGL90,
      &          useKPP,
@@ -113,6 +114,7 @@ c     useGAD          =.FALSE.
       useZONAL_FILT   =.FALSE.
       useOPPS         =.FALSE.
       usePP81         =.FALSE.
+      useKL10         =.FALSE.
       useMY82         =.FALSE.
       useGGL90        =.FALSE.
       useKPP          =.FALSE.
@@ -223,6 +225,9 @@ C----- pkgs with a standard "usePKG" On/Off switch in "data.pkg":
 #endif
 #ifdef ALLOW_PP81
       CALL PACKAGES_PRINT_MSG( usePP81,       'PP81',        ' ' )
+#endif
+#ifdef ALLOW_KL10
+      CALL PACKAGES_PRINT_MSG( useKL10,       'KL10',        ' ' )
 #endif
 #ifdef ALLOW_MY82
       CALL PACKAGES_PRINT_MSG( useMY82,       'MY82',        ' ' )

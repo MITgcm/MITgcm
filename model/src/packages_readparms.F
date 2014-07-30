@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.76 2014/05/28 22:01:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.77 2014/07/30 03:31:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -43,6 +43,8 @@ C       |
 C       |-- OPPS_READPARMS
 C       |
 C       |-- PP81_READPARMS
+C       |
+C       |-- KL10_READPARMS
 C       |
 C       |-- MY82_READPARMS
 C       |
@@ -178,6 +180,11 @@ C--   if useOPPS=T, set OPPS parameters; otherwise just return
 #ifdef ALLOW_PP81
 C--   if usePP81=T, set PP81 parameters; otherwise just return
       CALL PP81_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_KL10
+C--   if useKL10=T, set KL10 parameters; otherwise just return
+      CALL KL10_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_MY82

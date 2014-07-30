@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.64 2011/02/28 15:37:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.65 2014/07/30 03:31:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,7 +45,6 @@ C     myThid   :: Thread number for this instance of the routine.
       INTEGER myThid
       INTEGER myIter
 CEOP
-
 
 C     Generaly only thread 1 does IO here. It can not start until
 C     all threads fields are ready.
@@ -117,6 +116,12 @@ C     Do KPP diagnostics.
 C     Do PP81 diagnostics.
       IF ( usePP81 )
      &     CALL PP81_OUTPUT( myTime, myIter, myThid )
+#endif
+
+#ifdef ALLOW_KL10
+C     Do KL10 diagnostics.
+      IF ( useKL10 )
+     &     CALL KL10_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_MY82
@@ -205,7 +210,6 @@ C-- added by RPA
         CALL LAYERS_OUTPUT( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_LAYERS */
-
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics )

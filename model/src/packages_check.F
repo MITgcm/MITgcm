@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.65 2014/05/28 22:01:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.66 2014/07/30 03:31:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -152,6 +152,12 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (usePP81) CALL PP81_CHECK( myThid )
 #else
       IF (usePP81) CALL PACKAGES_ERROR_MSG('PP81',' ',myThid)
+#endif
+
+#ifdef ALLOW_KL10
+      IF (useKL10) CALL KL10_CHECK( myThid )
+#else
+      IF (useKL10) CALL PACKAGES_ERROR_MSG('KL10',' ',myThid)
 #endif
 
 #ifdef ALLOW_MY82
