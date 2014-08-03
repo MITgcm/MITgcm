@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_fixed.F,v 1.7 2010/11/16 17:39:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_fixed.F,v 1.8 2014/08/03 03:13:07 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -59,8 +59,8 @@ C-- Initialise advection scheme parameter
         WRITE(msgBuf,'(A)')
      &     'GAD_INIT_FIXED: Coding error in Advection-Scheme Number'
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A,I4)') 'GAD_INIT_FIXED:',
-     &     ' one exceeds GAD_Scheme_MaxNum=', GAD_Scheme_MaxNum
+        WRITE(msgBuf,'(2A,I4)') 'GAD_INIT_FIXED: ',
+     &     'unknown or exceeding GAD_Scheme_MaxNum=', GAD_Scheme_MaxNum
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R GAD_INIT_FIXED'
       ENDIF
@@ -98,29 +98,29 @@ C-  Set SOM I/O suffix (used for pickup, diagnostics ...)
 C-- Check that Temp & Salt have valid advection scheme number:
       validNum = GAD_VALID_ADVSCHEME(tempAdvScheme)
       IF ( .NOT.validNum ) THEN
-        WRITE(msgBuf,'(2A,I6)') 'GAD_INIT_FIXED:',
-     &   ' invalid Temp. advection scheme number=', tempAdvScheme
+        WRITE(msgBuf,'(2A,I6)') 'GAD_INIT_FIXED: ',
+     &   'invalid Temp. advection scheme number=', tempAdvScheme
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R GAD_INIT_FIXED'
       ENDIF
       validNum = GAD_VALID_ADVSCHEME(tempVertAdvScheme)
       IF ( .NOT.validNum ) THEN
-        WRITE(msgBuf,'(2A,I6)') 'GAD_INIT_FIXED:',
-     &   ' invalid Temp. Vert. Adv.scheme number=', tempVertAdvScheme
+        WRITE(msgBuf,'(2A,I6)') 'GAD_INIT_FIXED: ',
+     &   'invalid Temp. Vert. Adv.scheme number=', tempVertAdvScheme
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R GAD_INIT_FIXED'
       ENDIF
       validNum = GAD_VALID_ADVSCHEME(saltAdvScheme)
       IF ( .NOT.validNum ) THEN
-        WRITE(msgBuf,'(2A,I6)') 'GAD_INIT_FIXED:',
-     &   ' invalid Salt. advection scheme number=', saltAdvScheme
+        WRITE(msgBuf,'(2A,I6)') 'GAD_INIT_FIXED: ',
+     &   'invalid Salt. advection scheme number=', saltAdvScheme
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R GAD_INIT_FIXED'
       ENDIF
       validNum = GAD_VALID_ADVSCHEME(saltVertAdvScheme)
       IF ( .NOT.validNum ) THEN
-        WRITE(msgBuf,'(2A,I6)') 'GAD_INIT_FIXED:',
-     &   ' invalid Salt. Vert. Adv.scheme number=', saltVertAdvScheme
+        WRITE(msgBuf,'(2A,I6)') 'GAD_INIT_FIXED: ',
+     &   'invalid Salt. Vert. Adv.scheme number=', saltVertAdvScheme
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R GAD_INIT_FIXED'
       ENDIF
@@ -169,8 +169,7 @@ C-- Set Temp & Salt Adams-Bashforth flag according to advection scheme used
 #ifdef ALLOW_ADAMSBASHFORTH_3
 C-    For now, A-B on T,S is only implemented in AB-3 code, and not working
 C     with synchronous time-step, which would require to do also AB(u,v,w)
-      IF ( .NOT.doAB_onGtGs .AND.
-     &     (staggerTimeStep .OR. implicitIntGravWave) ) THEN
+      IF ( .NOT.doAB_onGtGs ) THEN
         AdamsBashforth_T = AdamsBashforthGt
         AdamsBashforth_S = AdamsBashforthGs
         AdamsBashforthGt = .FALSE.
@@ -192,7 +191,7 @@ C-- Set Overlap minimum size according to Temp & Salt advection
      &                           GAD_Scheme_olSize(saltAdvScheme) )
       ENDIF
       IF ( useCubedSphereExchange .AND. useMultiDimAdvec ) THEN
-C-    multi-dim-advection on CS-grid requires to double the size of Olx,Oly
+C-    multi-dim-advection on CS-grid requires to double the size of OLx,OLy
         GAD_OlMinSize(3) = MAX( GAD_OlMinSize(3), 2 )
       ENDIF
       WRITE(msgBuf,'(A,9I3)')
