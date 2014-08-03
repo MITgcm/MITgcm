@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.29 2011/04/28 23:18:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.30 2014/08/03 03:17:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,7 +52,7 @@ c     INTEGER bi, bj
       IF ( .NOT.useOffLine ) THEN
 C-    Apply Exchanges on dynamics state variable, except in Off-Line mode
 
-      IF ( .NOT.staggerTimeStep .OR. .NOT.useMultiDimAdvec ) THEN
+      IF ( .NOT.staggerTimeStep ) THEN
        CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
        IF ( .NOT.implicitIntGravWave )
      & _EXCH_XYZ_RL( wVel , myThid )
@@ -67,9 +67,9 @@ c    & _EXCH_XY_RL( etaN , myThid )
 c     IF ( useOBCS ) THEN
 c      DO bj = myByLo(myThid), myByHi(myThid)
 c       DO bi = myBxLo(myThid), myBxHi(myThid)
-c        CALL OBCS_COPY_TRACER( theta(1-Olx,1-Oly,1,bi,bj),
+c        CALL OBCS_COPY_TRACER( theta(1-OLx,1-OLy,1,bi,bj),
 c    I                          Nr, bi, bj, myThid )
-c        CALL OBCS_COPY_TRACER( salt (1-Olx,1-Oly,1,bi,bj),
+c        CALL OBCS_COPY_TRACER( salt (1-OLx,1-OLy,1,bi,bj),
 c    I                          Nr, bi, bj, myThid )
 c       ENDDO
 c      ENDDO
