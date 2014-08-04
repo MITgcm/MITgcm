@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2036 2014/08/04 04:04:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2037 2014/08/04 15:12:14 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: another attempt to make the adjoint work for sea ice dynamics
+  - re-initialize more variables in seaice_lsr: u/vIceC, u/vIceNm1
+  - add an auxilliary variable "bet" and fix store directives and keys in
+    seaice_lsr_tridiagu/v, this seems to do the trick (i.e. more or
+    less exact gradients in my tests); but there are still
+    recomputation warning (although gradients are sort of OK), when
+    SEAICE_LSR_VECTORIZE is not defined, so this flag and
+    SEAICE_LSR_VECTORIZE_ZEBRA are recommended for efficiency.
+  - update verification experiments lab_sea. 
+  - change some comments in S/R seaice_calc_viscosities
 o model/src:
   - if staggerTimeStep=T, always apply exchange to velocity field in
     do_stagger_fields_exchanges.F instead of in do_fields_blocking_exchanges.F
