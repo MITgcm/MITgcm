@@ -1,9 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2035 2014/07/30 20:01:31 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2036 2014/08/04 04:04:21 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - if staggerTimeStep=T, always apply exchange to velocity field in
+    do_stagger_fields_exchanges.F instead of in do_fields_blocking_exchanges.F
+    (independent of using multi-dim advection or not); no effect on FWD run
+    but affects AD results (at machine truncation level): update output of
+    experiment 1D_ocean_ice_column (ad: 12 digits), hs94.1x64x5 (ad,oad: 13.d)
+    and isomip (oad: 12.d).
+o pkg/generic_advdiff:
+  - stop if doAB_onGtGs is set to FALSE but ignored
+  - refine warning related to stability of tracer time-stepping
+    regarding internal wave dynamics.
+  - setting of AdamsBashforth_T,S when doAB_onGtGs=F: remove condition
+    on staggerTimeStep & implicitIntGravWave (will now get a warning
+    if potentially unstable).
 o pkg/kl10:
   - add new pkg "kl10" for mixing due to internal wave breaking, from
     http://www.sciencedirect.com/science/article/pii/S1463500310000144
