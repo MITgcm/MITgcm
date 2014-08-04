@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.26 2014/06/25 10:47:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.27 2014/08/04 15:06:49 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -126,9 +126,6 @@ C     avoid sqrt of 0
           deltaC(I,J,bi,bj)    = SQRT(deltaC(I,J,bi,bj))
 #endif /* ALLOW_AUTODIFF_TAMC */
           deltaCreg = MAX(deltaC(I,J,bi,bj),SEAICE_EPS)
-C     "replacement pressure"
-          zeta (I,J,bi,bj) = HALF*press0(I,J,bi,bj)/deltaCreg
-C     put min and max viscosities in
 #ifdef SEAICE_ZETA_SMOOTHREG
 C     regularize zeta to zmax with a smooth tanh-function instead
 C     of a min(zeta,zmax). This improves convergence of iterative
@@ -137,12 +134,15 @@ C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
           zeta (I,J,bi,bj) = ZMAX(I,J,bi,bj)
      &         *(1. _d 0 - argTmp)/(1. _d 0 + argTmp)
 #else
+          zeta (I,J,bi,bj) = HALF*press0(I,J,bi,bj)/deltaCreg
+C     put min and max viscosities in
           zeta (I,J,bi,bj) = MIN(ZMAX(I,J,bi,bj),zeta(I,J,bi,bj))
 #endif /*  SEAICE_ZETA_SMOOTHREG */
           zeta (I,J,bi,bj) = MAX(ZMIN(I,J,bi,bj),zeta(I,J,bi,bj))
 C     set viscosities to zero at hEffM flow pts
           zeta (I,J,bi,bj) = zeta(I,J,bi,bj)*HEFFM(I,J,bi,bj)
           eta  (I,J,bi,bj) = ECM2*zeta(I,J,bi,bj)
+C     "replacement pressure"
           press(I,J,bi,bj) = TWO *zeta(I,J,bi,bj)*deltaC(I,J,bi,bj)
          ENDDO
         ENDDO
@@ -172,7 +172,7 @@ C     compute eta at Z-points by simple averaging
      &         + eta (I,J-1,bi,bj)  + eta (I-1,J-1,bi,bj) )
          ENDDO
         ENDDO
-C     free-slip means no lateral stress, which is best achieved masking
+C     free-slip means no lateral stress, which is best achieved by masking
 C     eta on vorticity(=Z)-points; from now on we only need to worry
 C     about the no-slip boundary conditions
         IF (.NOT.SEAICE_no_slip) THEN
