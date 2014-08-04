@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.101 2014/07/29 15:47:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.102 2014/08/04 15:09:30 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -161,10 +161,14 @@ cph break artificial dependencies
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          press(i,j,bi,bj)=0. _d 0
-          zeta(i,j,bi,bj)=0. _d 0
-          eta(i,j,bi,bj)=0. _d 0
-          etaZ(i,j,bi,bj)=0. _d 0
+          press  (i,j,bi,bj )= 0. _d 0
+          zeta   (i,j,bi,bj) = 0. _d 0
+          eta    (i,j,bi,bj) = 0. _d 0
+          etaZ   (i,j,bi,bj) = 0. _d 0
+          uIceC  (i,j,bi,bj) = 0. _d 0
+          vIceC  (i,j,bi,bj) = 0. _d 0
+          uIceNm1(i,j,bi,bj) = 0. _d 0
+          vIceNm1(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
@@ -1495,7 +1499,7 @@ C     i,j  :: Loop counters
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER ilockey
 #endif /* ALLOW_AUTODIFF_TAMC */
-      _RL AA3
+      _RL AA3, bet
       _RL URT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL CUU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       
@@ -1547,13 +1551,13 @@ C     start a new loop with reversed order to support automatic vectorization
         IM=I-1
 #endif /* SEAICE_VECTORIZE_LSR */
 #ifdef ALLOW_AUTODIFF_TAMC
-        ilockey = I-iMin + (sNx+2*OLx)*(J-jMin)
-CADJ STORE urt(i,j) = comlev1_tridiagu, kind=isbyte, key = ilockey
-CADJ STORE cuu(i,j) = comlev1_tridiagu, kind=isbyte, key = ilockey
-#endif /* ALLOW_AUTODIFF_TAMC */
-        CUU(I,J)=CUU(I,J)/(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
-        URT(I,J)=(URT(I,J)-AU(I,J,bi,bj)*URT(IM,J))
-     &       /(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
+        ilockey = 1 + I-iMin + (sNx+2*OLx)*(J-jMin)
+CADJ STORE urt(i,j),urt(im,j),cuu(i,j),cuu(im,j) = comlev1_tridiagu, 
+CADJ & kind=isbyte, key = ilockey
+#endif /* ALLOW_AUTODIFF_TAC */
+        bet      = BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J)
+        CUU(I,J) = CUU(I,J)/bet
+        URT(I,J) = (URT(I,J)-AU(I,J,bi,bj)*URT(IM,J))/bet
        ENDDO
 #ifdef SEAICE_VECTORIZE_LSR
       ENDDO
@@ -1565,11 +1569,12 @@ C     go back to original order
 #endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
 #endif /* SEAICE_VECTORIZE_LSR */
        DO I=iMin,iMax-1
+        IM=iMax-I
 #ifdef ALLOW_AUTODIFF_TAMC
         ilockey = 1 + I-iMin + (sNx+2*OLx)*(J-jMin)
-CADJ STORE urt(i,j) = comlev1_tridiagu, kind=isbyte, key = ilockey
+CADJ STORE urt(im,j),urt(im+1,j) = comlev1_tridiagu, 
+CADJ & kind=isbyte, key = ilockey
 #endif /* ALLOW_AUTODIFF_TAMC */
-        IM=iMax-I
         URT(IM,J)=URT(IM,J)-CUU(IM,J)*URT(IM+1,J)
        ENDDO
        DO I=iMin,iMax
@@ -1646,7 +1651,7 @@ C     i,j  :: Loop counters
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER ilockey
 #endif /* ALLOW_AUTODIFF_TAMC */
-      _RL AA3
+      _RL AA3, bet
       _RL VRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL CVV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
@@ -1719,13 +1724,13 @@ C     start a new loop with reversed order to support automatic vectorization
         JM=J-1
 #endif /* SEAICE_VECTORIZE_LSR */
 #ifdef ALLOW_AUTODIFF_TAMC
-        ilockey = J-jMin + (sNy+2*OLy)*(I-iMin)
-CADJ STORE vrt(i,j) = comlev1_tridiagv, kind=isbyte, key = ilockey
-CADJ STORE cvv(i,j) = comlev1_tridiagv, kind=isbyte, key = ilockey
+        ilockey = 1 + J-jMin + (sNy+2*OLy)*(I-iMin)
+CADJ STORE vrt(i,j),vrt(i,jm),cvv(i,j),cvv(i,jm) = comlev1_tridiagv, 
+CADJ & kind=isbyte, key = ilockey
 #endif /* ALLOW_AUTODIFF_TAMC */
-        CVV(I,J)=CVV(I,J)/(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
-        VRT(I,J)=(VRT(I,J)-AV(I,J,bi,bj)*VRT(I,JM))
-     &       /(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
+        bet      = BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM)
+        CVV(I,J) = CVV(I,J)/bet
+        VRT(I,J) = (VRT(I,J)-AV(I,J,bi,bj)*VRT(I,JM))/bet
        ENDDO
 #ifdef SEAICE_VECTORIZE_LSR
       ENDDO
@@ -1737,11 +1742,12 @@ C     go back to original order
 # endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
 #endif /* SEAICE_VECTORIZE_LSR */
        DO J=jMin,jMax-1
+        JM=jMax-J
 #ifdef ALLOW_AUTODIFF_TAMC
         ilockey = 1 + J-jMin + (sNy+2*OLy)*(I-iMin)
-CADJ STORE vrt(i,j) = comlev1_tridiagv, kind=isbyte, key = ilockey
+CADJ STORE vrt(i,jm), vrt(i,jm+1) = comlev1_tridiagv, 
+CADJ &                              kind=isbyte, key = ilockey
 #endif /* ALLOW_AUTODIFF_TAMC */
-        JM=jMax-J
         VRT(I,JM)=VRT(I,JM)-CVV(I,JM)*VRT(I,JM+1)
        ENDDO
        DO J=jMin,jMax
