@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2037 2014/08/04 15:12:14 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2038 2014/08/05 12:44:51 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_lsr.F
+  - rename integer variable ilcall to ipass (that's what it is called
+    in the residual diagnostics
+  - change time stepping for NPSEUDOTIMESTEP > 2 (does not change the
+    default) for improved non-linear convergence of the first few
+    steps
+  - add a few comments and add new ones to explain some of the store
+    directives 
 o pkg/seaice: another attempt to make the adjoint work for sea ice dynamics
   - re-initialize more variables in seaice_lsr: u/vIceC, u/vIceNm1
   - add an auxilliary variable "bet" and fix store directives and keys in
