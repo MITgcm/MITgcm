@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2038 2014/08/05 12:44:51 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2039 2014/08/05 12:48:42 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -10,7 +10,7 @@ o pkg/seaice/seaice_lsr.F
   - change time stepping for NPSEUDOTIMESTEP > 2 (does not change the
     default) for improved non-linear convergence of the first few
     steps
-  - add a few comments and add new ones to explain some of the store
+  - adjust a few comments and add new ones to explain some of the store
     directives 
 o pkg/seaice: another attempt to make the adjoint work for sea ice dynamics
   - re-initialize more variables in seaice_lsr: u/vIceC, u/vIceNm1
