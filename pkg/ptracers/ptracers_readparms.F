@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.43 2014/05/27 23:41:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.44 2014/08/05 01:51:29 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -32,10 +32,6 @@ C     !INPUT PARAMETERS:
 CEOP
 
 #ifdef ALLOW_PTRACERS
-C     !FUNCTIONS
-      LOGICAL  GAD_VALID_ADVSCHEME
-      EXTERNAL GAD_VALID_ADVSCHEME
-
 C     !LOCAL VARIABLES:
 C     k,iTracer  :: loop indices
 C     iUnit      :: unit number for I/O
@@ -233,20 +229,6 @@ C     Set flag to check when each tracer starts
         STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
       ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-C     Check for valid advection-scheme number
-      DO iTracer=1,PTRACERS_numInUse
-        validNum = GAD_VALID_ADVSCHEME( PTRACERS_advScheme(iTracer) )
-        IF ( .NOT.validNum ) THEN
-         WRITE(msgBuf,'(2A,I6)') 'PTRACERS_READPARMS: ',
-     &   'invalid advection scheme number=',PTRACERS_advScheme(iTracer)
-         CALL PRINT_ERROR( msgBuf, myThid )
-         WRITE(msgBuf,'(2A,I6)') 'PTRACERS_READPARMS: ',
-     &   'for tracer #', iTracer
-         CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
-        ENDIF
-      ENDDO
 
 C     Whether to compute linear surface correction (set by other packages)
       PTRACERS_calcSurfCor = .FALSE.

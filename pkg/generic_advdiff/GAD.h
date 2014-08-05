@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.23 2010/11/16 17:39:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.24 2014/08/05 01:50:35 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -110,13 +110,10 @@ C      somSfx       :: 1rst & 2nd Order moment suffix
      & somSfx
 
 C--   COMMON /GAD_PARM_I/ Integer parameters for GAD pkg routines
-C GAD_Scheme_olSize :: overlap minimum size for this advection scheme
 C GAD_OlMinSize     :: overlap minimum size for GAD routines
 C           1: min required; 2: to add to current min; 3: factor to apply
-      INTEGER GAD_Scheme_olSize(GAD_Scheme_MaxNum)
       INTEGER GAD_OlMinSize(3)
       COMMON /GAD_PARM_I/
-     &        GAD_Scheme_olSize,
      &        GAD_OlMinSize
 
 C--   COMMON /GAD_PARM_L/ Logical parameters for GAD pkg routines
