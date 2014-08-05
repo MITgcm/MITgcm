@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.102 2014/08/04 15:09:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.103 2014/08/05 12:44:35 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -74,7 +74,7 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j,bi,bj  :: Loop counters
 
-      INTEGER ilcall
+      INTEGER ipass, ipass0
       INTEGER i, j, m, bi, bj
       INTEGER iMin, iMax, jMin, jMax
       INTEGER ICOUNT1, ICOUNT2
@@ -175,11 +175,15 @@ cph break artificial dependencies
       ENDDO
 #endif
 
+      ipass0 = 2
+C     modify time stepping a little if more than the default 
+C     modified Eulerian time step is used.
+      IF ( NPSEUDOTIMESTEPS.GT.2 ) ipass0 = 1
 #ifdef ALLOW_AUTODIFF_TAMC
-      DO ilcall=1,MPSEUDOTIMESTEPS
-       itmpkey = (ikey_dynamics-1)*MPSEUDOTIMESTEPS + ilcall
+      DO ipass=1,MPSEUDOTIMESTEPS
+       itmpkey = (ikey_dynamics-1)*MPSEUDOTIMESTEPS + ipass
 #else
-      DO ilcall=1,NPSEUDOTIMESTEPS
+      DO ipass=1,NPSEUDOTIMESTEPS
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -193,7 +197,7 @@ CADJ STORE utmp,vtmp = comlev1_dynsol, kind=isbyte,
 CADJ &     key = itmpkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-      IF ( ilcall .LE. NPSEUDOTIMESTEPS ) THEN
+      IF ( ipass .LE. NPSEUDOTIMESTEPS ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice = comlev1_dynsol, kind=isbyte,
 CADJ &     key = itmpkey
@@ -221,7 +225,7 @@ C SET SOME VALUES
       S1A=0.80 _d 0
       S2A=0.80 _d 0
 
-      IF ( ilcall .EQ. 1 ) THEN
+      IF ( ipass .EQ. 1 ) THEN
 C NOW DO PREDICTOR TIME STEP
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -235,12 +239,6 @@ C NOW DO PREDICTOR TIME STEP
          ENDDO
         ENDDO
        ENDDO
-#ifdef ALLOW_AUTODIFF_TAMC
-cphCADJ STORE uicec = comlev1_dynsol, kind=isbyte,
-cphCADJ &     key = itmpkey
-cphCADJ STORE vicec = comlev1_dynsol, kind=isbyte,
-cphCADJ &     key = itmpkey
-#endif
       ELSE
 C NOW DO MODIFIED EULER STEP
        DO bj=myByLo(myThid),myByHi(myThid)
@@ -256,7 +254,7 @@ C NOW DO MODIFIED EULER STEP
         ENDDO
        ENDDO
       ENDIF
-      IF ( ilcall .GT. 2 ) THEN
+      IF ( ipass .GT. ipass0 ) THEN
 C     for additional (pseudo-time)steps update u/vIceNm1
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -271,9 +269,10 @@ C     for additional (pseudo-time)steps update u/vIceNm1
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-cph That is an important one! Note, that
-cph * lsr is called twice, thus the icall index
-cph * this storing is still outside the iteration loop
+C     That is an important one! Note, that
+C     * lsr is called multiple times (twice by default), thus the 
+C       ipass index is part of itmpkey
+C     * this storing is still outside the lsr iteration loop
 CADJ STORE uice = comlev1_dynsol, kind=isbyte,
 CADJ &     key = itmpkey
 CADJ STORE vice = comlev1_dynsol, kind=isbyte,
@@ -283,17 +282,17 @@ CADJ &     key = itmpkey
       CALL SEAICE_CALC_STRAINRATES(
      I     uIceC, vIceC,
      O     e11, e22, e12,
-     I     ilcall, myTime, myIter, myThid )
+     I     ipass, myTime, myIter, myThid )
 
       CALL SEAICE_CALC_VISCOSITIES(
      I     e11, e22, e12, zMin, zMax, hEffM, press0,
      O     eta, etaZ, zeta, press, deltaC,
-     I     ilcall, myTime, myIter, myThid )
+     I     ipass, myTime, myIter, myThid )
 
       CALL SEAICE_OCEANDRAG_COEFFS(
      I     uIceC, vIceC,
      O     DWATN,
-     I     ilcall, myTime, myIter, myThid )
+     I     ipass, myTime, myIter, myThid )
 C
 C     some abbreviations
 C
@@ -512,10 +511,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevD ) THEN
         WRITE(msgBuf,'(A,I3,A)')
-     &        'Uice pre  iter (SEAICE_LSR', MOD(ilcall,1000), ')'
+     &        'Uice pre  iter (SEAICE_LSR', MOD(ipass,1000), ')'
         CALL DEBUG_STATS_RL( 1, UICE, msgBuf, myThid )
         WRITE(msgBuf,'(A,I3,A)')
-     &        'Vice pre  iter (SEAICE_LSR', MOD(ilcall,1000), ')'
+     &        'Vice pre  iter (SEAICE_LSR', MOD(ipass,1000), ')'
         CALL DEBUG_STATS_RL( 1, VICE, msgBuf, myThid )
       ENDIF
 #endif /* ALLOW_DEBUG */
@@ -653,6 +652,8 @@ CML#endif /* ALLOW_AUTODIFF_TAMC */
 # else
        itmpkey2 = itmpkey
 # endif /* SEAICE_LSR_ADJOINT_ITER */
+C     Storing these scalars and logicals is necessary to do an exact
+C     backward iteration
 CADJ STORE wfau, wfav = comlev1_lsr,  kind=isbyte, key = itmpkey2
 CADJ STORE doIterate4u, doIterate4v = comlev1_lsr, key = itmpkey2
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -665,6 +666,10 @@ CADJ STORE doIterate4u, doIterate4v = comlev1_lsr, key = itmpkey2
         ENDIF
 
 # ifdef ALLOW_AUTODIFF_TAMC
+C     Note that itmpkey2 can get very large when SEAICE_LSR_ADJOINT_ITER
+C     is defined for an accurate adjoint, otherwise it is the same for
+C     each m, so that the tapes get overwritten for each iterate and
+C     the adjoint is necessarily wrong.
 CADJ STORE uice, vice = comlev1_lsr, kind=isbyte, key = itmpkey2
 # endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -699,7 +704,7 @@ C     end bi,bj-loops
           ENDDO
          ENDDO
 
-         iSubIter = SOLV_MAX_TMP*(ilcall-1) + m
+         iSubIter = SOLV_MAX_TMP*(ipass-1) + m
          CALL SOLVE_UV_TRIDIAGO(
      I                 1, OLx, doIterate4u, doIterate4v,
      I                 AU, BU, CU, rhsUx,
@@ -750,15 +755,10 @@ CADJ STORE uice(:,:,bi,bj) = comlev1_bibj_lsr,kind=isbyte,key=itmpkey3
 CADJ STORE vice(:,:,bi,bj) = comlev1_bibj_lsr,kind=isbyte,key=itmpkey3
 #endif /* ALLOW_AUTODIFF_TAMC */
 C-jmc: get less TAF warnings when always (no if doIterate) saving uIce,vIce:
-C     save uIce prior to iteration, NOW SET U(3)=U(1)
+C     save u/vIce prior to iteration
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             uTmp(I,J,bi,bj)=uIce(I,J,bi,bj)
-           ENDDO
-          ENDDO
-C     save vIce prior to iteration, NOW SET V(3)=V(1)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
             vTmp(I,J,bi,bj)=vIce(I,J,bi,bj)
            ENDDO
           ENDDO
@@ -802,7 +802,7 @@ C     end bi,bj-loops
          ENDDO
          _GLOBAL_MAX_RL( S1, myThid )
 c        WRITE(standardMessageUnit,'(A,2I6,1P4E16.9)')
-c    &   ' U iters,error,WF = ',ilcall,M,S1,S1A,WFAU
+c    &   ' U iters,error,WF = ',ipass,M,S1,S1A,WFAU
 C SAFEGUARD AGAINST BAD FORCING ETC
          IF(m.GT.1.AND.S1.GT.S1A) WFAU=WFAU2
          S1A=S1
@@ -858,7 +858,7 @@ C--   Calculate final residual of the linearised system
         _BEGIN_MASTER( myThid )
         WRITE(standardMessageUnit,'(A,1X,I4,1P3E16.8)')
      &    ' SEAICE_LSR: Residual Initial ipass,Uice,Vice=',
-     &        ilcall, residUini, residVini
+     &        ipass, residUini, residVini
 #ifdef SEAICE_ALLOW_FREEDRIFT
         IF ( LSR_mixIniGuess.GE.0 )
      &  WRITE(standardMessageUnit,'(A,1P3E16.8)')
@@ -870,26 +870,26 @@ C--   Calculate final residual of the linearised system
      &        residUmix, residVmix
 #endif /* SEAICE_ALLOW_FREEDRIFT */
         WRITE(standardMessageUnit,'(A,I4,A,I6,1P2E16.8)')
-     &    ' SEAICE_LSR (ipass=',ilcall,') iters,dU,Resid=',
+     &    ' SEAICE_LSR (ipass=',ipass,') iters,dU,Resid=',
      &      ICOUNT1, S1, residUend
         WRITE(standardMessageUnit,'(A,I4,A,I6,1P2E16.8)')
-     &    ' SEAICE_LSR (ipass=',ilcall,') iters,dV,Resid=',
+     &    ' SEAICE_LSR (ipass=',ipass,') iters,dV,Resid=',
      &      ICOUNT2, S2, residVend
         _END_MASTER( myThid )
       ENDIF
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevD ) THEN
         WRITE(msgBuf,'(A,I3,A)')
-     &        'Uice post iter (SEAICE_LSR', MOD(ilcall,1000), ')'
+     &        'Uice post iter (SEAICE_LSR', MOD(ipass,1000), ')'
         CALL DEBUG_STATS_RL( 1, UICE, msgBuf, myThid )
         WRITE(msgBuf,'(A,I3,A)')
-     &        'Vice post iter (SEAICE_LSR', MOD(ilcall,1000), ')'
+     &        'Vice post iter (SEAICE_LSR', MOD(ipass,1000), ')'
         CALL DEBUG_STATS_RL( 1, VICE, msgBuf, myThid )
       ENDIF
 #endif /* ALLOW_DEBUG */
       IF ( doIterate4u .OR. doIterate4v ) THEN
         WRITE(msgBuf,'(2A,I10,A,I4,A)') '** WARNING ** SEAICE_LSR ',
-     &    '(it=', myIter, ',', ilcall,') did not converge :'
+     &    '(it=', myIter, ',', ipass,') did not converge :'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(2(A,I6,0PF6.3,1PE14.6))')
@@ -945,13 +945,13 @@ C--   Compute residual norm and print
        _BEGIN_MASTER( myThid )
        WRITE(standardMessageUnit,'(A,I7,1X,2E22.14)')
      &      'S/R SEAICE_LSR: IPSEUDO, RESNORM, EKNORM = ',
-     &      ilcall, sqrt(resnorm), EKnorm
+     &      ipass, sqrt(resnorm), EKnorm
        _END_MASTER( myThid )
       ENDIF
 #endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
 
       ENDIF
-C     end outer ilcall pseudo-time stepping loop
+C     end outer ipass pseudo-time stepping loop
       ENDDO
 
       IF ( useHB87StressCoupling ) THEN
@@ -1554,6 +1554,8 @@ C     start a new loop with reversed order to support automatic vectorization
         ilockey = 1 + I-iMin + (sNx+2*OLx)*(J-jMin)
 CADJ STORE urt(i,j),urt(im,j),cuu(i,j),cuu(im,j) = comlev1_tridiagu, 
 CADJ & kind=isbyte, key = ilockey
+C     appart from storing urt/cuu(i/im,j), it seems to be important to 
+C     rewrite the code: introduce abbreviate "bet"
 #endif /* ALLOW_AUTODIFF_TAC */
         bet      = BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J)
         CUU(I,J) = CUU(I,J)/bet
@@ -1727,6 +1729,8 @@ C     start a new loop with reversed order to support automatic vectorization
         ilockey = 1 + J-jMin + (sNy+2*OLy)*(I-iMin)
 CADJ STORE vrt(i,j),vrt(i,jm),cvv(i,j),cvv(i,jm) = comlev1_tridiagv, 
 CADJ & kind=isbyte, key = ilockey
+C     appart from storing vrt/cvv(i,j/jm), it seems to be important to 
+C     rewrite the code: introduce abbreviate "bet"
 #endif /* ALLOW_AUTODIFF_TAMC */
         bet      = BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM)
         CVV(I,J) = CVV(I,J)/bet
