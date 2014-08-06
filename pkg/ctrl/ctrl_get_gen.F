@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.29 2013/02/05 14:32:19 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.30 2014/08/06 16:55:36 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -114,9 +114,15 @@ c--   Get the counters, flags, and the interpolation factor.
      I                       mytime, myiter, mythid )
 
       if ( genfirst ) then
+cc#ifdef ALLOW_OPENAD
+cc        call oad_active_read_xy( fnamegen, xx_gen1, gencount0,
+cc     &                       doglobalread, ladinit, optimcycle,
+cc     &                       mythid, xx_gen_dummy )
+cc#else
         call active_read_xy( fnamegen, xx_gen1, gencount0,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
+cc#endif /* ALLOW_OPENAD */
 #ifdef ALLOW_CTRL_SMOOTH
         if ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file )
@@ -148,9 +154,15 @@ c--   Get the counters, flags, and the interpolation factor.
       if (( genfirst ) .or. ( genchanged )) then
         call CTRL_SWAPFFIELDS( xx_gen0, xx_gen1, mythid )
 
+cc#ifdef ALLOW_OPENAD
+cc        call oad_active_read_xy( fnamegen, xx_gen1 , gencount1,
+cc     &                       doglobalread, ladinit, optimcycle,
+cc     &                       mythid, xx_gen_dummy )
+cc#else
         call active_read_xy( fnamegen, xx_gen1 , gencount1,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
+cc#endif /* ALLOW_OPENAD */
 #ifdef ALLOW_CTRL_SMOOTH
         if ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file )
