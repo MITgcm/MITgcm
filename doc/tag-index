@@ -1,17 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2039 2014/08/05 12:48:42 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2040 2014/08/06 23:19:25 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - store in common bloc array "rhoInSitu" the virtual potential temperature
+    anomaly that is used to compute geopotential: this make the atmos code
+    more similar to ocean code which already uses rhoInSitu in calc_phi_hyd.F
 o pkg/seaice/seaice_lsr.F
   - rename integer variable ilcall to ipass (that's what it is called
     in the residual diagnostics
   - change time stepping for NPSEUDOTIMESTEP > 2 (does not change the
-    default) for improved non-linear convergence of the first few
-    steps
+    default) for improved non-linear convergence of the first few steps
   - adjust a few comments and add new ones to explain some of the store
-    directives 
+    directives
+o pkg/generic_advdiff (& ptracers):
+  - re-work the code to check for valid advection scheme and for minimum
+    size of overlap (now stored in local common bloc in gad_advscheme.F)
 o pkg/seaice: another attempt to make the adjoint work for sea ice dynamics
   - re-initialize more variables in seaice_lsr: u/vIceC, u/vIceNm1
   - add an auxilliary variable "bet" and fix store directives and keys in
@@ -20,7 +26,7 @@ o pkg/seaice: another attempt to make the adjoint work for sea ice dynamics
     recomputation warning (although gradients are sort of OK), when
     SEAICE_LSR_VECTORIZE is not defined, so this flag and
     SEAICE_LSR_VECTORIZE_ZEBRA are recommended for efficiency.
-  - update verification experiments lab_sea. 
+  - update verification experiments lab_sea.
   - change some comments in S/R seaice_calc_viscosities
 o model/src:
   - if staggerTimeStep=T, always apply exchange to velocity field in
