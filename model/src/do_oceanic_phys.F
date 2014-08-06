@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.140 2014/07/30 03:31:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.141 2014/08/06 23:17:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -127,7 +127,9 @@ C     i,j,k         :: loop indices
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
 #endif /* ALLOW_DIAGNOSTICS */
-
+#ifdef ALLOW_AUTODIFF
+      _RL thetaRef
+#endif /* ALLOW_AUTODIFF */
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -674,9 +676,19 @@ C     dry grid boxes of rhoInSitu.  See BBL_CALC_RHO for details.
         ELSE
 C-        fluid is not water:
           DO k=1,Nr
+           IF ( select_rStar.GE.1 .OR. selectSigmaCoord.GE.1 ) THEN
+C-    isothermal (theta=const) reference state
+             thetaRef = thetaConst
+           ELSE
+C-    horizontally uniform (tRef) reference state
+             thetaRef = tRef(k)
+           ENDIF
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-              rhoInSitu(i,j,k,bi,bj) = 0.
+             rhoInSitu(i,j,k,bi,bj) =
+     &         ( theta(i,j,k,bi,bj)
+     &              *( salt(i,j,k,bi,bj)*atm_Rq + oneRL )
+     &         - thetaRef )*maskC(i,j,k,bi,bj)
             ENDDO
            ENDDO
           ENDDO
