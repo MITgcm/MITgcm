@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_atmospheric_phys.F,v 1.11 2013/05/08 00:07:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_atmospheric_phys.F,v 1.12 2014/08/06 23:12:41 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: DO_ATMOSPHERIC_PHYS
@@ -24,6 +27,11 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
+#include "DYNVARS.h"
+#ifdef ALLOW_AUTODIFF
+# include "tamc.h"
+#endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -37,11 +45,61 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     == Local variables
-C     bi, bj
+C     bi, bj   :: tile indices
+C     i,j,k    :: loop indices
+      INTEGER bi, bj
+      INTEGER i, j, k
+      _RL thetaRef
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('DO_ATMOSPHERIC_PHYS',myThid)
 #endif
+
+      IF ( fluidIsAir ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+
+C--   Compute virtual potential temperature anomaly (including water vapour
+C     effect), stored in rhoInSitu (similar to what is done for oceanic EOS)
+          DO k=1,Nr
+           IF ( select_rStar.GE.1 .OR. selectSigmaCoord.GE.1 ) THEN
+C-    isothermal (theta=const) reference state
+             thetaRef = thetaConst
+           ELSE
+C-    horizontally uniform (tRef) reference state
+             thetaRef = tRef(k)
+           ENDIF
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             rhoInSitu(i,j,k,bi,bj) =
+     &         ( theta(i,j,k,bi,bj)
+     &              *( salt(i,j,k,bi,bj)*atm_Rq + oneRL )
+     &         - thetaRef )*maskC(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+
+        ENDDO
+       ENDDO
+#ifdef ALLOW_AUTODIFF
+      ELSE
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              rhoInSitu(i,j,k,bi,bj) = 0.
+            ENDDO
+           ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+#endif /* ALLOW_AUTODIFF */
+      ENDIF
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) THEN
