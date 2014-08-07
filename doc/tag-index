@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2040 2014/08/06 23:19:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2041 2014/08/07 18:47:03 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -8,6 +8,9 @@ o model/src:
   - store in common bloc array "rhoInSitu" the virtual potential temperature
     anomaly that is used to compute geopotential: this make the atmos code
     more similar to ocean code which already uses rhoInSitu in calc_phi_hyd.F
+  - add geothermal flux
+    read in ini_forcing.F as time-constant field geothermalFlux
+    applied in S/R APPLY_FORCING_T (apply_forcing.F)
 o pkg/seaice/seaice_lsr.F
   - rename integer variable ilcall to ipass (that's what it is called
     in the residual diagnostics
