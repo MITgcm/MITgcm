@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.275 2014/07/30 03:30:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.276 2014/08/07 18:43:33 heimbach Exp $
 C $Name:  $
 C
 
@@ -98,7 +98,7 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                lambdaThetaFile, lambdaSaltFile,
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
      &                pLoadFile, addMassFile,
-     &                eddyPsiXFile, eddyPsiYFile,
+     &                eddyPsiXFile, eddyPsiYFile, geothermalFile,
      &                the_run_name
       CHARACTER*(MAX_LEN_FNAM) buoyancyRelation
       CHARACTER*(6)  eosType
@@ -138,6 +138,7 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) addMassFile
       CHARACTER*(MAX_LEN_FNAM) eddyPsiXFile
       CHARACTER*(MAX_LEN_FNAM) eddyPsiYFile
+      CHARACTER*(MAX_LEN_FNAM) geothermalFile
       CHARACTER*(MAX_LEN_FNAM) lambdaThetaFile
       CHARACTER*(MAX_LEN_FNAM) lambdaSaltFile
       CHARACTER*(MAX_LEN_PREC/2) the_run_name

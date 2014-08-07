@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.259 2014/05/06 15:47:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.260 2014/08/07 18:43:33 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -281,7 +281,7 @@ C--   Input files
      & lambdaThetaFile, lambdaSaltFile,
      & uVelInitFile, vVelInitFile, pSurfInitFile,
      & dQdTFile, ploadFile, addMassFile, tCylIn, tCylOut,
-     & eddyPsiXFile, eddyPsiYFile,
+     & eddyPsiXFile, eddyPsiYFile, geothermalFile,
      & mdsioLocalDir, adTapeDir,
      & the_run_name
 CEOP

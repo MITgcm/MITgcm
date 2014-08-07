@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.45 2013/07/04 23:05:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.46 2014/08/07 18:43:33 heimbach Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h
@@ -117,6 +117,14 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
 #ifdef ALLOW_ADDFLUID
       COMMON /FFIELDS_ADD_FLUID/ addMass
       _RL addMass(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+#ifdef ALLOW_GEOTHERMAL_FLUX
+C  geothermalFlux :: Upward geothermal flux through bottom cell [W/m^2]
+C                    > 0 for increase in theta (ocean warming)
+C                    Typical range: 0 < geothermalFlux < 1.5 W/m^2
+C                    (global mean on the order 0.09 - 0.1 W/m^2)
+      COMMON /FFIELDS_geothermal/ geothermalFlux
+      _RS geothermalFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 C- jmc: commented out until corresponding (ghost-like) code apparition

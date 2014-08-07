@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.52 2012/11/09 22:43:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.53 2014/08/07 18:43:33 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -62,6 +62,9 @@ C-    Initialise all arrays in common blocks
           surfaceForcingT (i,j,bi,bj) = 0. _d 0
           surfaceForcingS (i,j,bi,bj) = 0. _d 0
           surfaceForcingTice(i,j,bi,bj) = 0. _d 0
+#ifdef ALLOW_GEOTHERMAL_FLUX
+          geothermalFlux  (i,j,bi,bj) = 0. _d 0
+#endif
 #ifndef EXCLUDE_FFIELDS_LOAD
           taux0           (i,j,bi,bj) = 0. _d 0
           taux1           (i,j,bi,bj) = 0. _d 0
@@ -91,10 +94,6 @@ C-    Initialise all arrays in common blocks
 #ifndef EXCLUDE_FFIELDS_LOAD
         loadedRec(bi,bj) = 0
 #endif /* EXCLUDE_FFIELDS_LOAD */
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-         ENDDO
-        ENDDO
 #ifdef ALLOW_ADDFLUID
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
@@ -212,6 +211,17 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
        CALL EXCH_XYZ_RL( addMass, myThid )
       ENDIF
 #endif /* ALLOW_ADDFLUID */
+#ifdef ALLOW_GEOTHERMAL_FLUX
+      IF ( geothermalFile .NE. ' ' ) THEN
+       CALL READ_FLD_XY_RS( geothermalFile, ' ', 
+     &  geothermalFlux, 0, myThid )
+       CALL EXCH_XY_RS( geothermalFlux, myThid )
+# ifdef ALLOW_MONITOR
+       CALL MON_PRINTSTATS_RS(
+     &  1,geothermalFlux,'geothermalFlux',myThid)
+# endif
+      ENDIF
+#endif /* ALLOW_GEOTHERMAL_FLUX */
 
       CALL EXCH_UV_XY_RS( fu,fv, .TRUE., myThid )
       CALL EXCH_XY_RS( Qnet , myThid )

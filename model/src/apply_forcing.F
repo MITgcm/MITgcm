@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/apply_forcing.F,v 1.4 2014/07/25 18:52:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/apply_forcing.F,v 1.5 2014/08/07 18:43:33 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -640,6 +640,21 @@ C     Ocean: Add temperature surface forcing (e.g., heat-flux) in surface level
         ENDDO
        ENDDO
       ENDIF
+
+#ifdef ALLOW_GEOTHERMAL_FLUX
+      IF ( usingZCoords ) THEN
+       DO j=1,sNy
+        DO i=1,sNx
+         IF ( k.EQ.kLowC(i,j,bi,bj) ) THEN
+          gT_arr(i,j)=gT_arr(i,j)
+     &      + geothermalFlux(i,j,bi,bj)
+     &        *recip_Cp*mass2rUnit
+     &        *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* ALLOW_GEOTHERMAL_FLUX */
 
 #ifdef SHORTWAVE_HEATING
 C Penetrating SW radiation
