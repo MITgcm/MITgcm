@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_correction_step.F,v 1.2 2010/01/18 01:04:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_correction_step.F,v 1.3 2014/08/07 17:37:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -13,13 +13,7 @@ C     *==========================================================*
 C     | SUBROUTINE LONGSTEP_CORRECTION_STEP
 C     *==========================================================*
 C     | part of tracer_correction_step that affect ptracers
-C     | (except convective adjustment):
-C     |
-C     | The arrays used for time stepping are cycled.
-C     | Tracers:
-C     |           T(n) = Gt(n)
-C     |
-C     | pTracers* (contained in gPtr) is copied to pTracers
+C     | (except convective adjustment): -> empty
 C     *==========================================================*
 C     \ev
 
@@ -29,7 +23,6 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
 #include "LONGSTEP.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -44,7 +37,7 @@ C     myThid :: Thread number for this instance of the routine.
 #ifdef ALLOW_GENERIC_ADVDIFF
 C     !LOCAL VARIABLES:
 C     == Local variables
-      INTEGER bi,bj
+c     INTEGER bi,bj
 CEOP
 
 #ifdef ALLOW_LONGSTEP
@@ -53,18 +46,7 @@ C     only cycle if we have computed gPtr in this time step
 #else
       IF ( .TRUE. ) THEN
 #endif
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
 
-#ifdef ALLOW_PTRACERS
-C-        Update passive tracer fields:  T(n) = T**
-          IF (usePTRACERS)
-     &      CALL PTRACERS_CYCLE(bi,bj,myTime,myIter,myThid)
-#endif /* ALLOW_PTRACERS */
-
-C--      End of 1rst bi,bj loop
-         ENDDO
-        ENDDO
 C     endif LS_doTimeStep
       ENDIF
 
