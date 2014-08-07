@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.44 2014/08/05 01:51:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.45 2014/08/07 18:00:51 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -39,7 +39,6 @@ C     msgBuf     :: message buffer
       INTEGER k, iTracer
       INTEGER iUnit
       INTEGER ic
-      LOGICAL validNum
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL PTRACERS_diffKr(PTRACERS_num)
       _RL tauTr1ClimRelax
