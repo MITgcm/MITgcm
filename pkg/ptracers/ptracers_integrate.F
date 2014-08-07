@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.56 2014/07/22 12:04:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.57 2014/08/07 17:33:33 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -14,8 +14,10 @@ C !INTERFACE: ==========================================================
      I                    myTime, myIter, myThid )
 
 C !DESCRIPTION:
-C     Calculates tendency for passive tracers and integrates forward
-C     in time.
+C     Calculates tendency for passive tracers and integrates forward in
+C     time. The tracer array is updated here while adjustments (filters,
+C     conv.adjustment) are applied later, in S/R TRACERS_CORRECTION_STEP
+
 
 C !USES: ===============================================================
 #include "PTRACERS_MOD.h"
@@ -436,12 +438,19 @@ CADJ &     key=iptrkey, byte=isbyte
      I         myThid )
         ENDIF
 
+C--     Cycle time-stepping arrays
+        CALL CYCLE_TRACER(
+     I             bi, bj,
+     U             pTracer(1-OLx,1-OLy,1,1,1,iTracer),
+     U             gPtr(1-OLx,1-OLy,1,1,1,iTracer),
+     I             myTime, myIter, myThid )
+
 #ifdef ALLOW_OBCS
 C--     Apply open boundary conditions for each passive tracer
         IF ( useOBCS ) THEN
           CALL OBCS_APPLY_PTRACER(
      I         bi, bj, 0, iTracer,
-     U         gPtr(1-OLx,1-OLy,1,bi,bj,iTracer),
+     U         pTracer(1-OLx,1-OLy,1,bi,bj,iTracer),
      I         myThid )
         ENDIF
 #endif /* ALLOW_OBCS */
