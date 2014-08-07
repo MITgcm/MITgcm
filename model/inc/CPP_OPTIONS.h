@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.52 2014/07/11 18:28:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.53 2014/08/07 21:00:17 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -21,6 +21,9 @@ C CPP flags controlling particular source code features
 C o Shortwave heating as extra term in external_forcing.F
 C Note: this should be a run-time option
 #undef SHORTWAVE_HEATING
+
+C o Include/exclude Geothermal Heat Flux at the bottom of the ocean
+#undef ALLOW_GEOTHERMAL_FLUX
 
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
