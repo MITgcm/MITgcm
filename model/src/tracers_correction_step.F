@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.17 2014/07/22 12:04:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.18 2014/08/07 17:32:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -13,15 +13,6 @@ C     *==========================================================*
 C     | SUBROUTINE TRACERS_CORRECTION_STEP
 C     *==========================================================*
 C     |1rst Part : Update T,S.
-C     |
-C     | The arrays used for time stepping are cycled.
-C     | Tracers:
-C     |           T(n) = Gt(n)
-C     |
-C     |part1: update T,S
-C     |  T* (contained in gT) is copied to T (theta)
-C     |  S* (contained in gS) is copied to S (salt)
-C     |
 C     |part2: Adjustments & Diagnostics
 C     |   o Filter  T,S (Shapiro Filter, Zonal_Filter)
 C     |   o Convective Adjustment
@@ -54,73 +45,18 @@ C     !LOCAL VARIABLES:
 C     == Local variables
       INTEGER iMin,iMax
       INTEGER jMin,jMax
-      INTEGER bi,bj
-#ifdef ALLOW_ADAMSBASHFORTH_3
-      INTEGER m2
-#endif
+      INTEGER bi, bj
 CEOP
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-
-#ifdef ALLOW_ADAMSBASHFORTH_3
-        IF ( AdamsBashforth_T ) THEN
-C-      Save current tracer field (for AB on tracer) and then update tracer
-c         iterNb = myIter - 1
-c         m1 = 1 + MOD(iterNb+1,2)
-c         m2 = 1 + MOD( iterNb ,2)
-          m2 = 1 + MOD(myIter-1,2)
-          CALL CYCLE_AB_TRACER(
-     I               bi, bj,
-     U               theta, gT, gtNm(1-OLx,1-OLy,1,1,1,m2),
-     I               myTime, myIter, myThid )
-        ELSEIF ( tempStepping ) THEN
-#else /* ALLOW_ADAMSBASHFORTH_3 */
-        IF ( tempStepping ) THEN
-#endif /* ALLOW_ADAMSBASHFORTH_3 */
-C-      Update tracer fields:  T(n) = T**
-          CALL CYCLE_TRACER(
-     I               bi, bj,
-     U               theta, gT,
-     I               myTime, myIter, myThid )
-        ENDIF
-
-#ifdef ALLOW_ADAMSBASHFORTH_3
-        IF ( AdamsBashforth_S ) THEN
-C-      Save current tracer field (for AB on tracer) and then update tracer
-          m2 = 1 + MOD(myIter-1,2)
-          CALL CYCLE_AB_TRACER(
-     I               bi, bj,
-     U               salt, gS, gsNm(1-OLx,1-OLy,1,1,1,m2),
-     I               myTime, myIter, myThid )
-        ELSEIF ( saltStepping ) THEN
-#else /* ALLOW_ADAMSBASHFORTH_3 */
-        IF ( saltStepping ) THEN
-#endif /* ALLOW_ADAMSBASHFORTH_3 */
-C-      Update tracer fields:  T(n) = T**
-          CALL CYCLE_TRACER(
-     I               bi, bj,
-     U               salt, gS,
-     I               myTime, myIter, myThid )
-        ENDIF
-
-#ifdef ALLOW_PTRACERS
-#ifndef ALLOW_LONGSTEP
-C-      Update passive tracer fields:  T(n) = T**
-        IF (usePTRACERS)
-     &      CALL PTRACERS_CYCLE(bi,bj,myTime,myIter,myThid)
-#endif /* ! ALLOW_LONGSTEP */
-#endif /* ALLOW_PTRACERS */
-
 #ifdef ALLOW_NONHYDROSTATIC
-        IF ( implicitIntGravWave ) THEN
+      IF ( implicitIntGravWave ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
           CALL TRACERS_IIGW_CORRECTION(bi,bj, myTime,myIter,myThid)
-        ENDIF
-#endif /* ALLOW_NONHYDROSTATIC */
-
-C--    End of 1rst bi,bj loop
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
 
 C--- 2nd Part : Adjustment.
 C

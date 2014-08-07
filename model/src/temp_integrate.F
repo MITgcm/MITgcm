@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.12 2014/07/30 03:31:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.13 2014/08/07 17:32:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -21,8 +21,10 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE TEMP_INTEGRATE
-C     | o Calculate tendency for temperature
-C     |   and integrates forward in time.
+C     | o Calculate tendency for temperature and integrates
+C     |   forward in time. The temperature array is updated here
+C     |   while adjustments (filters, conv.adjustment) are applied
+C     |   later, in S/R TRACERS_CORRECTION_STEP.
 C     *==========================================================*
 C     | A procedure called APPLY_FORCING_T is called from
 C     | here. These procedures can be used to add per problem
@@ -483,6 +485,26 @@ CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
      I                        Nr, 3, deltaTClock, bi, bj, myThid)
       ENDIF
 #endif /* ALLOW_TIMEAVE */
+
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      IF ( AdamsBashforth_T ) THEN
+C-    Save current tracer field (for AB on tracer) and then update tracer
+c       m1 = 1 + MOD(iterNb+1,2)
+        m2 = 1 + MOD( iterNb ,2)
+        CALL CYCLE_AB_TRACER(
+     I             bi, bj,
+     U             theta, gT, gtNm(1-OLx,1-OLy,1,1,1,m2),
+     I             myTime, myIter, myThid )
+      ELSEIF ( tempStepping ) THEN
+#else /* ALLOW_ADAMSBASHFORTH_3 */
+      IF ( tempStepping ) THEN
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
+C-    Update tracer fields:  T(n) = T**
+        CALL CYCLE_TRACER(
+     I             bi, bj,
+     U             theta, gT,
+     I             myTime, myIter, myThid )
+      ENDIF
 
 #endif /* ALLOW_GENERIC_ADVDIFF */
 

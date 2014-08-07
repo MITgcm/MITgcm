@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/salt_integrate.F,v 1.11 2014/07/22 12:04:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/salt_integrate.F,v 1.12 2014/08/07 17:32:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -21,8 +21,10 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE SALT_INTEGRATE
-C     | o Calculate tendency for salt
-C     |   and integrates forward in time.
+C     | o Calculate tendency for salinity and integrates
+C     |   forward in time. The salinity array is updated here
+C     |   while adjustments (filters, conv.adjustment) are applied
+C     |   later, in S/R TRACERS_CORRECTION_STEP.
 C     *==========================================================*
 C     | A procedure called APPLY_FORCING_S is called from
 C     | here. These procedures can be used to add per problem
@@ -464,6 +466,26 @@ CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
      I         GAD_SALINITY, kappaRk, recip_hFac,
      U         gS,
      I         myThid )
+      ENDIF
+
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      IF ( AdamsBashforth_S ) THEN
+C-    Save current tracer field (for AB on tracer) and then update tracer
+c       m1 = 1 + MOD(iterNb+1,2)
+        m2 = 1 + MOD( iterNb ,2)
+        CALL CYCLE_AB_TRACER(
+     I             bi, bj,
+     U             salt, gS, gsNm(1-OLx,1-OLy,1,1,1,m2),
+     I             myTime, myIter, myThid )
+      ELSEIF ( saltStepping ) THEN
+#else /* ALLOW_ADAMSBASHFORTH_3 */
+      IF ( saltStepping ) THEN
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
+C-    Update tracer fields:  S(n) = S**
+        CALL CYCLE_TRACER(
+     I             bi, bj,
+     U             salt, gS,
+     I             myTime, myIter, myThid )
       ENDIF
 
 #endif /* ALLOW_GENERIC_ADVDIFF */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.222 2014/04/29 21:07:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.223 2014/08/07 17:32:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -864,7 +864,7 @@ cph find_rho which may use pressure()
 CADJ STORE totPhiHyd  = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #endif
-C--   Cycle time-stepping Tracers arrays (T,S,+pTracers)
+C--   Apply adjustments to Tracers arrays (T,S,+pTracers)
       CALL TIMER_START('TRC_CORRECTION_STEP [FORWARD_STEP]',myThid)
       CALL TRACERS_CORRECTION_STEP(myTime, myIter, myThid)
       CALL TIMER_STOP ('TRC_CORRECTION_STEP [FORWARD_STEP]',myThid)
@@ -896,10 +896,10 @@ C       should be determined by myIter at beginning of timestep
 C--    if LS_whenToSample.EQ.2: end
        ENDIF
 
-C--   Cycle time-stepping Tracers arrays (pTracers)
-       CALL TIMER_START('LS_CORRECTION_STEP  [FORWARD_STEP]',myThid)
-       CALL LONGSTEP_CORRECTION_STEP(myTime, myIter, myThid)
-       CALL TIMER_STOP ('LS_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+C--   Apply adjustments to passive Tracers arrays (pTracers)
+c      CALL TIMER_START('LS_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+c      CALL LONGSTEP_CORRECTION_STEP(myTime, myIter, myThid)
+c      CALL TIMER_STOP ('LS_CORRECTION_STEP  [FORWARD_STEP]',myThid)
 C--    if usePTRACERS: end
       ENDIF
 #endif /* ALLOW_LONGSTEP */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.151 2014/07/22 12:06:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.152 2014/08/07 17:32:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -390,7 +390,7 @@ C       Also apply open boundary conditions for each passive tracer
 #ifdef   ALLOW_OBCS
 C--   Apply open boundary conditions
         IF ( useOBCS ) THEN
-           CALL OBCS_APPLY_TS( bi, bj, 0, gT, gS, myThid )
+           CALL OBCS_APPLY_TS( bi, bj, 0, theta, salt, myThid )
         ENDIF
 #endif   /* ALLOW_OBCS */
 

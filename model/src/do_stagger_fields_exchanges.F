@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_stagger_fields_exchanges.F,v 1.10 2014/08/03 03:17:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_stagger_fields_exchanges.F,v 1.11 2014/08/07 17:32:03 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -47,10 +47,10 @@ c    &  _EXCH_XYZ_RL( wVel, myThid )
       ENDIF
 c #ifdef ALLOW_NONHYDROSTATIC
       IF ( implicitIntGravWave ) THEN
-c       _EXCH_XYZ_RL( gT , myThid )
-c       _EXCH_XYZ_RL( gS , myThid )
-        CALL EXCH_SM_3D_RL( gT, .FALSE., Nr, myThid )
-        CALL EXCH_SM_3D_RL( gS, .FALSE., Nr, myThid )
+c       _EXCH_XYZ_RL( theta, myThid )
+c       _EXCH_XYZ_RL( salt , myThid )
+        CALL EXCH_SM_3D_RL( theta, .FALSE., Nr, myThid )
+        CALL EXCH_SM_3D_RL( salt , .FALSE., Nr, myThid )
       ENDIF
 c #endif
 
