@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep_tracer.F,v 1.17 2011/12/13 15:12:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep_tracer.F,v 1.18 2014/08/08 19:55:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,10 +8,10 @@ CBOP
 C     !ROUTINE: TIMESTEP_TRACER
 C     !INTERFACE:
       SUBROUTINE TIMESTEP_TRACER(
-     I                     bi, bj, k, deltaTloc,
+     I                     bi, bj, deltaTLev,
      I                     tracer,
      U                     gTracer,
-     I                     myIter, myThid )
+     I                     myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R TIMESTEP_TRACER
@@ -29,24 +29,33 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-      INTEGER bi, bj, k
-      _RL     deltaTloc
-      _RL  tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C     bi, bj     :: current tile indices
+C     deltaTLev  :: time-step [s] (vertical dimension vector)
+C     tracer     :: tracer field
+C     gTracer    :: input: tracer tendency ; output: updated tracer
+C     myTime     :: current time in simulation
+C     myIter     :: current iteration number
+C     myThid     :: my Thread Id number
+      INTEGER bi, bj
+      _RL     deltaTLev(Nr)
+      _RL     tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     myTime
       INTEGER myIter, myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER i,j
+      INTEGER i, j, k
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Step tracer forward in time and store provisional value in gTracer array
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-         gTracer(i,j,k,bi,bj)=tracer(i,j,k,bi,bj)
-     &            +deltaTloc*gTracer(i,j,k,bi,bj)
+      DO k=1,Nr
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          gTracer(i,j,k) = tracer(i,j,k)
+     &                   + deltaTLev(k)*gTracer(i,j,k)
 #ifdef ALLOW_OBCS
 CML   For the Stevens open boundary conditions, we need to step forward
 CML   the tracer even on the boundary in order to include surface
@@ -55,6 +64,7 @@ CML   this mask was meant to avoid unrealistic values on the open boundaries.
 CML   Lets hope that we can live without this safety net.
 C    &                      *maskInC(i,j,bi,bj)
 #endif
+        ENDDO
        ENDDO
       ENDDO
 

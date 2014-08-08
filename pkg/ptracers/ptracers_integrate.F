@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.57 2014/08/07 17:33:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.58 2014/08/08 19:56:37 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -17,7 +17,6 @@ C !DESCRIPTION:
 C     Calculates tendency for passive tracers and integrates forward in
 C     time. The tracer array is updated here while adjustments (filters,
 C     conv.adjustment) are applied later, in S/R TRACERS_CORRECTION_STEP
-
 
 C !USES: ===============================================================
 #include "PTRACERS_MOD.h"
@@ -364,13 +363,6 @@ C-    Account for change in level thickness
           ENDIF
 #endif /* NONLIN_FRSURF */
 
-C-    Integrate forward in time, storing in gPtr:  G=T+dt*G
-          CALL TIMESTEP_TRACER(
-     I                         bi, bj, k, PTRACERS_dTLev(k),
-     I                         pTracer(1-OLx,1-OLy,1,1,1,iTracer),
-     U                         gPtr(1-OLx,1-OLy,1,1,1,iTracer),
-     I                         myIter, myThid )
-
 C-    end of vertical index (k) loop (Nr:1)
         ENDDO
 
@@ -379,22 +371,27 @@ C-    end of vertical index (k) loop (Nr:1)
           IF ( usingPCoords ) THEN
             CALL DWNSLP_APPLY(
      I                  GAD_TR, bi, bj, kSurfC,
-     I                  recip_drF, recip_hFac, recip_rA,
-     I                  PTRACERS_dTLev,
-     I                  pTracer(1-OLx,1-OLy,1,1,1,iTracer),
-     O                  gPtr(1-OLx,1-OLy,1,1,1,iTracer),
-     I                  myTime, myIter, myThid )
+     I                  pTracer(1-OLx,1-OLy,1,bi,bj,iTracer),
+     U                  gPtr(1-OLx,1-OLy,1,bi,bj,iTracer),
+     I                  recip_hFac, recip_rA, recip_drF,
+     I                  PTRACERS_dTLev, myTime, myIter, myThid )
           ELSE
             CALL DWNSLP_APPLY(
      I                  GAD_TR, bi, bj, kLowC,
-     I                  recip_drF, recip_hFac, recip_rA,
-     I                  PTRACERS_dTLev,
-     I                  pTracer(1-OLx,1-OLy,1,1,1,iTracer),
-     O                  gPtr(1-OLx,1-OLy,1,1,1,iTracer),
-     I                  myTime, myIter, myThid )
+     I                  pTracer(1-OLx,1-OLy,1,bi,bj,iTracer),
+     U                  gPtr(1-OLx,1-OLy,1,bi,bj,iTracer),
+     I                  recip_hFac, recip_rA, recip_drF,
+     I                  PTRACERS_dTLev, myTime, myIter, myThid )
           ENDIF
         ENDIF
 #endif /* ALLOW_DOWN_SLOPE */
+
+C-    Integrate forward in time, storing in gPtr:  gPtr <= pTr + dt*gPtr
+        CALL TIMESTEP_TRACER(
+     I                bi, bj, PTRACERS_dTLev,
+     I                pTracer(1-OLx,1-OLy,1,bi,bj,iTracer),
+     U                gPtr(1-OLx,1-OLy,1,bi,bj,iTracer),
+     I                myTime, myIter, myThid )
 
 C       All explicit advection/diffusion/sources should now be
 C       done. The updated tracer field is in gPtr.

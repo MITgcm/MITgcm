@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.13 2014/08/07 17:32:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.14 2014/08/08 19:55:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -408,12 +408,6 @@ CADJ &     byte=isbyte,  kind = isbyte
         ENDIF
 #endif /* NONLIN_FRSURF */
 
-        CALL TIMESTEP_TRACER(
-     I           bi, bj, k, dTtracerLev(k),
-     I           theta,
-     U           gT,
-     I           myIter, myThid )
-
 C-    end of vertical index (k) loop (Nr:1)
       ENDDO
 
@@ -422,22 +416,27 @@ C-    end of vertical index (k) loop (Nr:1)
         IF ( usingPCoords ) THEN
           CALL DWNSLP_APPLY(
      I                  GAD_TEMPERATURE, bi, bj, kSurfC,
-     I                  recip_drF, recip_hFac, recip_rA,
-     I                  dTtracerLev,
-     I                  theta,
-     U                  gT,
-     I                  myTime, myIter, myThid )
+     I                  theta(1-OLx,1-OLy,1,bi,bj),
+     U                  gT(1-OLx,1-OLy,1,bi,bj),
+     I                  recip_hFac, recip_rA, recip_drF,
+     I                  dTtracerLev, myTime, myIter, myThid )
         ELSE
           CALL DWNSLP_APPLY(
      I                  GAD_TEMPERATURE, bi, bj, kLowC,
-     I                  recip_drF, recip_hFac, recip_rA,
-     I                  dTtracerLev,
-     I                  theta,
-     U                  gT,
-     I                  myTime, myIter, myThid )
+     I                  theta(1-OLx,1-OLy,1,bi,bj),
+     U                  gT(1-OLx,1-OLy,1,bi,bj),
+     I                  recip_hFac, recip_rA, recip_drF,
+     I                  dTtracerLev, myTime, myIter, myThid )
         ENDIF
       ENDIF
 #endif /* ALLOW_DOWN_SLOPE */
+
+C-    Integrate forward in time, storing in gT:  gT <= T + dt*gT
+      CALL TIMESTEP_TRACER(
+     I                  bi, bj, dTtracerLev,
+     I                  theta(1-OLx,1-OLy,1,bi,bj),
+     U                  gT(1-OLx,1-OLy,1,bi,bj),
+     I                  myTime, myIter, myThid )
 
       iMin = 0
       iMax = sNx+1
