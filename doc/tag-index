@@ -1,9 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2042 2014/08/07 21:07:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2043 2014/08/08 20:52:54 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src & pkg/down_slope:
+  - push the k loop inside S/R TIMESTEP_TRACER (now called outside the k loop).
+  - in dwnslp_apply.F, update tracer tendency instead of the future tracer
+    field and call S/R DWNSLP_APPLY before TIMESTEP_TRACER; this affects
+    results at machine truncation level: update output of experiments
+    global_ocean.90x40x15.dwnslp (FWD) and lab_sea.noseaicedyn (AD).
+o pkg/diagnostics (Stats-Diags):
+  - do not cumulate the full volume when DIAGNOSTICS_FILL is
+    called with bibjFlg < 0 (no increment of the counter for 2D/3D diag);
+    This fix the mean statistics when DIAGNOSTICS_FILL is called multiple
+    times (but Min,Max and StD are still wrong).
 o model/src:
   - add geothermal flux forcing: read in ini_forcing.F as time-constant
     field "geothermalFlux" applied in S/R APPLY_FORCING_T (apply_forcing.F)
