@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_fill.F,v 1.5 2009/09/03 20:41:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_fill.F,v 1.6 2014/08/08 19:29:48 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -20,7 +20,7 @@ C     !INTERFACE:
 #endif
      I               scaleFact, power, arrType, nLevFract,
      I               ndId, kInQSd, region2fill, kLev, nLevs,
-     I               bibjflg, biArg, bjArg, myThid )
+     I               bibjFlg, biArg, bjArg, myThid )
 
 C     !DESCRIPTION:
 C***********************************************************************
@@ -63,7 +63,7 @@ C                  0 : fill-in in the same order as the input array
 C                  -1: fill-in in reverse order.
 C     nLevs     :: indicates Number of levels of the input field array
 C                  (whether to fill-in all the levels (kLev<1) or just one (kLev>0))
-C     bibjflg   :: Integer flag to indicate instructions for bi bj loop
+C     bibjFlg   :: Integer flag to indicate instructions for bi bj loop
 C                  0 indicates that the bi-bj loop must be done here
 C                  1 indicates that the bi-bj loop is done OUTSIDE
 C                  2 indicates that the bi-bj loop is done OUTSIDE
@@ -71,13 +71,13 @@ C                     AND that we have been sent a local array (with overlap reg
 C                  3 indicates that the bi-bj loop is done OUTSIDE
 C                     AND that we have been sent a local array
 C                     AND that the array has no overlap region (interior only)
-C                  NOTE - bibjflg can be NEGATIVE to indicate not to increment counter
-C     biArg     :: X-direction tile number - used for bibjflg=1-3
-C     bjArg     :: Y-direction tile number - used for bibjflg=1-3
+C                  NOTE - bibjFlg can be NEGATIVE to indicate not to increment counter
+C     biArg     :: X-direction tile number - used for bibjFlg=1-3
+C     bjArg     :: Y-direction tile number - used for bibjFlg=1-3
 C     myThid    :: my thread Id number
 C***********************************************************************
 C                  NOTE: User beware! If a local (1 tile only) array
-C                        is sent here, bibjflg MUST NOT be set to 0
+C                        is sent here, bibjFlg MUST NOT be set to 0
 C                        or there will be out of bounds problems!
 C***********************************************************************
       _RL inpFldRL(*)
@@ -92,7 +92,7 @@ C***********************************************************************
       INTEGER nLevFract
       INTEGER ndId, kInQSd
       INTEGER region2fill(0:nRegions)
-      INTEGER kLev, nLevs, bibjflg, biArg, bjArg
+      INTEGER kLev, nLevs, bibjFlg, biArg, bjArg
       INTEGER myThid
 CEOP
 
@@ -135,7 +135,7 @@ c        jRun = sNy+1
         ENDIF
 
 C-      Dimension of the input array:
-        IF (ABS(bibjflg).EQ.3) THEN
+        IF (ABS(bibjFlg).EQ.3) THEN
           sizI1 = 1
           sizI2 = sNx
           sizJ1 = 1
@@ -148,7 +148,7 @@ C-      Dimension of the input array:
           sizJ1 = 1-OLy
           sizJ2 = sNy+OLy
         ENDIF
-        IF (ABS(bibjflg).GE.2) THEN
+        IF (ABS(bibjFlg).GE.2) THEN
          sizTx = 1
          sizTy = 1
         ELSE
@@ -216,7 +216,7 @@ C-      Check for consistency with Nb of levels reserved in storage array
 #ifndef REAL4_IS_SLOW
       IF ( arrType.EQ.0 .OR. ( arrType.EQ.1 .AND. .NOT.useFract ) ) THEN
 #endif
-        IF ( bibjflg.EQ.0 ) THEN
+        IF ( bibjFlg.EQ.0 ) THEN
          DO bj=myByLo(myThid), myByHi(myThid)
           DO bi=myBxLo(myThid), myBxHi(myThid)
            DO k = kFirst,kLast
@@ -228,7 +228,7 @@ C-      Check for consistency with Nb of levels reserved in storage array
      I                  scaleFact, power, useFract, sizF,
      I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
      I                  iRun,jRun,k,bi,bj,
-     I                  km, bi, bj, region2fill,
+     I                  km, bi, bj, bibjFlg, region2fill,
      I                  ndId, gdiag(ndId), myThid )
            ENDDO
           ENDDO
@@ -245,14 +245,14 @@ C-      Check for consistency with Nb of levels reserved in storage array
      I                  scaleFact, power, useFract, sizF,
      I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
      I                  iRun,jRun,k,bi,bj,
-     I                  km, biArg, bjArg, region2fill,
+     I                  km, biArg, bjArg, bibjFlg, region2fill,
      I                  ndId, gdiag(ndId), myThid )
           ENDDO
         ENDIF
 
 #ifndef REAL4_IS_SLOW
       ELSE
-        IF ( bibjflg.EQ.0 ) THEN
+        IF ( bibjFlg.EQ.0 ) THEN
          DO bj=myByLo(myThid), myByHi(myThid)
           DO bi=myBxLo(myThid), myBxHi(myThid)
            DO k = kFirst,kLast
@@ -270,7 +270,7 @@ C-      Check for consistency with Nb of levels reserved in storage array
      I                  scaleFact, power, useFract, 1,
      I                  1, iRun, 1, jRun, 1, 1, 1,
      I                  iRun, jRun, 1, 1, 1,
-     I                  km, bi, bj, region2fill,
+     I                  km, bi, bj, bibjFlg, region2fill,
      I                  ndId, gdiag(ndId), myThid )
            ENDDO
           ENDDO
@@ -293,7 +293,7 @@ C-      Check for consistency with Nb of levels reserved in storage array
      I                  scaleFact, power, useFract, 1,
      I                  1, iRun, 1, jRun, 1, 1, 1,
      I                  iRun, jRun, 1, 1, 1,
-     I                  km, biArg, bjArg, region2fill,
+     I                  km, biArg, bjArg, bibjFlg, region2fill,
      I                  ndId, gdiag(ndId), myThid )
           ENDDO
         ENDIF

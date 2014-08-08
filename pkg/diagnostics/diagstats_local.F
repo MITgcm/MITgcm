@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_local.F,v 1.10 2012/09/03 20:29:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_local.F,v 1.11 2014/08/08 19:29:48 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -12,8 +12,8 @@ C     !INTERFACE:
      I                  scaleFact, power, useFract, sizF,
      I                  sizI1,sizI2,sizJ1,sizJ2,sizK,sizTx,sizTy,
      I                  iRun,jRun,kIn,biIn,bjIn,
-     I                  k,bi,bj, region2fill, ndId, parsFld,
-     I                  myThid )
+     I                  k,bi,bj, bibjFlg, region2fill,
+     I                  ndId, parsFld, myThid )
 
 C     !DESCRIPTION:
 C     Update array statFld
@@ -54,6 +54,7 @@ C     iRun,jRun   :: range of 1rst & 2nd index
 C     kIn         :: level index of inpFld array to process
 C     biIn,bjIn   :: tile indices of inpFld array to process
 C     k,bi,bj     :: level and tile indices used for weighting (mask,area ...)
+C     bibjFlg     :: passed from calling S/R (see diagstats_fill.F)
 C     region2fill :: indicates whether to compute statistics over this region
 C     ndId        :: Diagnostics Id Number (in available diag. list)
 C     parsFld     :: parser field with characteristics of the diagnostics
@@ -67,8 +68,9 @@ C     myThid      :: my Thread Id number
       INTEGER power
       LOGICAL useFract
       INTEGER iRun, jRun, kIn, biIn, bjIn
-      INTEGER k, bi, bj, ndId
+      INTEGER k, bi, bj, bibjFlg
       INTEGER region2fill(0:nRegions)
+      INTEGER ndId
       CHARACTER*16 parsFld
       INTEGER myThid
 CEOP
@@ -222,16 +224,22 @@ c        ELSEIF ( parsFld(10:10) .EQ. '1' ) THEN
 
 C     Update cumulative statistics array
          IF ( statLoc(0).GT.0. ) THEN
-            IF ( statFld(0,n).LE.0. ) THEN
-              statFld(im,n) = statLoc(im)
-              statFld(ix,n) = statLoc(ix)
-            ELSE
-              statFld(im,n) = MIN( statFld(im,n), statLoc(im) )
-              statFld(ix,n) = MAX( statFld(ix,n), statLoc(ix) )
-            ENDIF
+           IF ( statFld(0,n).LE.0. ) THEN
+             statFld(im,n) = statLoc(im)
+             statFld(ix,n) = statLoc(ix)
+           ELSE
+             statFld(im,n) = MIN( statFld(im,n), statLoc(im) )
+             statFld(ix,n) = MAX( statFld(ix,n), statLoc(ix) )
+           ENDIF
+           IF ( bibjFlg.GE.0 ) THEN
             DO i=0,iv
-              statFld(i,n) = statFld(i,n) + statLoc(i)
+             statFld(i,n) = statFld(i,n) + statLoc(i)
             ENDDO
+           ELSE
+            DO i=1,iv
+             statFld(i,n) = statFld(i,n) + statLoc(i)
+            ENDDO
+           ENDIF
          ENDIF
 
 C---   processing region "n" ends here.
