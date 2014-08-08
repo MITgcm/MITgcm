@@ -1,0 +1,7 @@
+#! /usr/bin/env bash
+
+# $Header: /u/gcmpack/MITgcm/verification/internal_wave/build/genmake_local,v 1.1 2014/08/08 21:03:06 jmc Exp $
+
+#  This is the local options file for the "new" version of genmake
+
+ALWAYS_USE_F90=1
