@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_pgi.stderr
 #PBS -o /home/jmc/test_aces/output/tst_pgi.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.32 2014/05/15 16:32:01 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.33 2014/08/10 20:24:34 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: MPI test using PGI (pgf77) compiler & mpich
@@ -50,8 +50,7 @@ addExp=''
 #options="$options -skd tutorial_advection_in_gyre"
  EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
 
-#checkOut=1 ; dblRun=1 ; options="$options -do" ;
- checkOut=1 ; dblRun=0 ; options="$options -do" ;
+checkOut=1 ; options="$options -do" ; dblRun=1 ;
 #options="$options -nc" ; checkOut=0 ; dblRun=0 ;
 #options="$options -q"  ; checkOut=0 ; dblRun=0 ;
 
