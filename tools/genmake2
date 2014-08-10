@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.267 2014/07/15 23:05:54 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.268 2014/08/10 16:46:04 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -1411,7 +1411,7 @@ for ac_option in "$@" ; do
 	    OPTFILE=$ac_optarg ;;
 
 	-oad | --oad)
-	    OPENAD="true" ;;
+	    OPENAD="true" ; ALWAYS_USE_F90=1 ;;
 	-adoptfile | --adoptfile | -adof | --adof)
 	    ac_prev=AD_OPTFILE ;;
 	-adoptfile=* | --adoptfile=* | -adof=* | --adof=*)
