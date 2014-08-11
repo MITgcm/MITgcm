@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.58 2014/08/08 19:56:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.59 2014/08/11 20:29:24 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -398,9 +398,12 @@ C       done. The updated tracer field is in gPtr.
 #ifdef ALLOW_MATRIX
 C       Accumalate explicit tendency and also reset gPtr to initial
 C       tracer field for implicit matrix calculation
-        IF ( useMATRIX ) CALL MATRIX_STORE_TENDENCY_EXP(
-     I                               iTracer, bi, bj,
-     I                               myTime, myIter, myThid )
+        IF ( useMATRIX ) THEN
+          CALL MATRIX_STORE_TENDENCY_EXP(
+     I                      iTracer, bi, bj,
+     U                      gPtr(1-OLx,1-OLy,1,bi,bj,iTracer),
+     I                      myTime, myIter, myThid )
+        ENDIF
 #endif /* ALLOW_MATRIX */
 
 C--     Vertical advection & diffusion (implicit) for passive tracers
