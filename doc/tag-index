@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2043 2014/08/08 20:52:54 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2044 2014/08/11 20:32:15 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/matrix:
+  - pass, as argument, updated tracer field to S/R MATRIX_STORE_TENDENCY_EXP
+o model/src:
+  - fix initialisation of geothermalFile; compile geothermal-flux code in
+    natl_box verification experiment.
 o model/src & pkg/down_slope:
   - push the k loop inside S/R TIMESTEP_TRACER (now called outside the k loop).
   - in dwnslp_apply.F, update tracer tendency instead of the future tracer
