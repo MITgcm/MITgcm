@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_store_tendency.F,v 1.5 2013/12/27 15:53:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_store_tendency.F,v 1.6 2014/08/11 20:29:06 jmc Exp $
 C $Name:  $
 
 #include "MATRIX_OPTIONS.h"
@@ -15,6 +15,7 @@ C !ROUTINE: MATRIX_STORE_TENDENCY_EXP
 C !INTERFACE: ==========================================================
       SUBROUTINE MATRIX_STORE_TENDENCY_EXP(
      I                  iTracer, bi, bj,
+     U                  tracNew,
      I                  myTime, myIter, myThid )
 
 C !DESCRIPTION:
@@ -30,13 +31,14 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-#include "PTRACERS_FIELDS.h"
 #include "MATRIX.h"
 
 C !INPUT/OUTPUT PARAMETERS: ============================================
+C     tracNew :: updated tracer field (after adding explicit contributions)
       INTEGER iTracer
       INTEGER bi, bj
-      _RL myTime
+      _RL     myTime
+      _RL     tracNew(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myIter
       INTEGER myThid
 
@@ -45,20 +47,15 @@ C !LOCAL VARIABLES: ====================================================
       INTEGER i,j,k
 CEOP
 
-c     DO iTracer=1,PTRACERS_numInUse
-        DO k=1,Nr
-         DO j=1-OLy, sNy+OLy
-          DO i=1-OLx, sNx+OLx
-            MATRIX(i,j,k,bi,bj,iTracer,1) =
-     &             MATRIX(i,j,k,bi,bj,iTracer,1)
-     &           + ( gPtr(i,j,k,bi,bj,iTracer)
-     &             - PTRACERS_initial(i,j,k,bi,bj,iTracer) )
-            gPtr(i,j,k,bi,bj,iTracer)=
-     &             PTRACERS_initial(i,j,k,bi,bj,iTracer)
-          ENDDO
-         ENDDO
+      DO k=1,Nr
+       DO j=1-OLy, sNy+OLy
+        DO i=1-OLx, sNx+OLx
+          MATRIX(i,j,k,bi,bj,iTracer,1) = MATRIX(i,j,k,bi,bj,iTracer,1)
+     &     + ( tracNew(i,j,k) - PTRACERS_initial(i,j,k,bi,bj,iTracer) )
+          tracNew(i,j,k) = PTRACERS_initial(i,j,k,bi,bj,iTracer)
         ENDDO
-c     ENDDO
+       ENDDO
+      ENDDO
 
 C-    Increment counter when processing the last pTracer
       IF ( iTracer.EQ.PTRACERS_numInUse ) THEN
