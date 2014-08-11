@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.172 2014/06/28 22:34:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.173 2014/08/11 15:09:54 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -375,6 +375,7 @@ C--   Input files
       addMassFile     = ' '
       eddyPsiXFile    = ' '
       eddyPsiYFile    = ' '
+      geothermalFile  = ' '
       lambdaThetaFile = ' '
       lambdaSaltFile  = ' '
       mdsioLocalDir   = ' '
