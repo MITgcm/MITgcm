@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_calc.F,v 1.2 2014/07/30 19:52:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_calc.F,v 1.3 2014/08/11 15:31:24 jmc Exp $
 C $Name:  $
 
 #include "KL10_OPTIONS.h"
@@ -36,12 +36,10 @@ C !USES: ============================================================
 #include "KL10.h"
 #include "FFIELDS.h"
 #include "GRID.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-#include "tamc.h"
-#include "tamc_keys.h"
-#else /* ALLOW_AUTODIFF_TAMC */
-      integer ikppkey
-#endif /* ALLOW_AUTODIFF_TAMC */
+c#ifdef ALLOW_AUTODIFF_TAMC
+c# include "tamc.h"
+c# include "tamc_keys.h"
+c#endif /* ALLOW_AUTODIFF_TAMC */
 
 C !INPUT PARAMETERS: ===================================================
 c Routine arguments
@@ -60,18 +58,17 @@ C     myThid :: My Thread Id number
 C !LOCAL VARIABLES: ====================================================
 c Local constants
 C     iMin, iMax, jMin, jMax :: array computation indices
-C     RiNumber               :: Richardson Number
       INTEGER I, J, K, Km1, JJ
       INTEGER   iMin ,iMax ,jMin ,jMax,di
-      _RL     denom, KLviscTmp, buoyFreq,rhot,tempu,tempv,oldK,Ri
+      _RL     KLviscTmp, rhot, tempu
       _RL     b0, buoyFreqf, buoyFreqc, KLviscold,zsum,zsums
       _RL     rhoS(1:Nr),RS(1:Nr)
-      _RL     dzc,dzp,ec,ep,es,epss(-1:0),epsw(-1:0),dz,KTemp
+      _RL     dzp,ec,ep,es,epss(-1:0),epsw(-1:0),dz,KTemp
 c     _RL     bF(1:Nr)
 c     _RL     theta_mcb(1:Nr),theta_mcb3(1:Nr)
 C     === Local variables ===
 C     msgBuf     :: Informational/error message buffer
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
       iMin = 2-OLx
@@ -83,7 +80,7 @@ CEOP
          DO I=iMin,iMax
             K=1
             CALL FIND_RHO_SCALAR(theta(I,J,K,bi,bj), salt(I,J,K,bi,bj),
-     $           totPhiHyd(I,J,K,bi,bj),rhot,myThid )
+     &           totPhiHyd(I,J,K,bi,bj),rhot,myThid )
             rhoS(1)=rhot
             RS(1)=rC(1)
 
@@ -98,13 +95,13 @@ C get sorted densities rhoS, and the array with the depths from which
 C the density came from, RS.
             DO K=2,Nr
                CALL FIND_RHO_SCALAR(theta(I,J,K,bi,bj), salt(I,J,K,bi
-     $              ,bj),totPhiHyd(I,J,K,bi,bj),rhot,myThid )
+     &              ,bj),totPhiHyd(I,J,K,bi,bj),rhot,myThid )
                rhoS(K)=rhot
                RS(K)=rC(K)
 c$$$               WRITE(msgBuf, '(A,I10.10,A,E10.4,A,E10.4)') 'Hellok ', K
-c$$$     $              -1,' ',theta(I,J,K,bi,bj),' ',rhot
-c$$$               CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
-c$$$     &              SQUEEZE_RIGHT , 1)
+c$$$     &              -1,' ',theta(I,J,K,bi,bj),' ',rhot
+c$$$               CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+c$$$     &                             SQUEEZE_RIGHT, myThid )
                IF ( (rhoS(K).LT.rhoS(K-1)).AND.(maskC(I,J,K,bi
      &              ,bj).GT.0)) THEN
                   JJ=K-1
@@ -180,12 +177,12 @@ C bathy.
                   DO di=-1,0
                      IF (hfacW(I+di,J-1,K,bi,bj).GT.0.000001) THEN
                         dz = 0.5*(drF(K)*hfacW(I+di,J-1,K,bi,bj)
-     $                       +drF(Km1)*hfacW(I+di,J-1,Km1,bi,bj))
+     &                       +drF(Km1)*hfacW(I+di,J-1,Km1,bi,bj))
                         IF (dz.GT.0.00001) THEN
                            tempu = (uVel(I+di,J-1,Km1,bi,bj)-uVel(I+di,J
-     $                          -1,K,bi,bj))/dz
+     &                          -1,K,bi,bj))/dz
                            epsw(di)=tempu*tempu*KLviscAr(I+di,J-1,K,bi
-     $                          ,bj)
+     &                          ,bj)
                            ec=ec+epsw(di)*dz
                            zsum = zsum+dz
                         ENDIF
@@ -199,12 +196,12 @@ C                       previous and dz = half the face.
 C Now do the v-component
                      IF (hfacS(I-1,J+di,K,bi,bj).GT.0.000001) THEN
                         dz = 0.5*(drF(K)*hfacS(I-1,J+di,K,bi,bj)
-     $                       +drF(Km1)*hfacS(I-1,J+di,Km1,bi,bj))
+     &                       +drF(Km1)*hfacS(I-1,J+di,Km1,bi,bj))
                         IF (dz.GT.0.00001) THEN
                            tempu = (vVel(I-1,J+di,Km1,bi,bj)-vVel(I-1,J
-     $                          +di,K,bi,bj))/dz
+     &                          +di,K,bi,bj))/dz
                            epss(di)=tempu*tempu*KLviscAr(I-1,J+di,K,bi
-     $                          ,bj)
+     &                          ,bj)
                            es = es+epss(di)*dz
                            zsums = zsums+dz
                         ENDIF
@@ -240,10 +237,10 @@ C  And its a true average because the
                   ep=ec
                ENDIF
 c$$$               WRITE(msgBuf, '(A,I10.10,A,E10.4,A,E10.4)') 'Hellok ', K
-c$$$     $              -1,' ',theta(I,J,K,bi,bj),' ',KLeps(I-1,J-1,Km1,bi
-c$$$     $              ,bj)
-c$$$               CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
-c$$$     &              SQUEEZE_RIGHT , 1)
+c$$$     &              -1,' ',theta(I,J,K,bi,bj),' ',KLeps(I-1,J-1,Km1,bi
+c$$$     &              ,bj)
+c$$$               CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+c$$$     &                             SQUEEZE_RIGHT, myThid )
 
                b0        = buoyFreqf ! at previous cell face
                KLviscold = KLviscTmp ! at previous cell center
