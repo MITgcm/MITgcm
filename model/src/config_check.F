@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.77 2014/08/06 23:11:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.78 2014/08/11 15:27:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -282,6 +282,19 @@ C       code is being compiled
         errCount = errCount + 1
       ENDIF
 #endif
+
+C     o Need to define ALLOW_GEOTHERMAL_FLUX to use geothermalFile forcing
+#ifndef ALLOW_GEOTHERMAL_FLUX
+      IF ( geothermalFile.NE.' ' ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &  'geothermalFile is set but Geothermal-Flux code'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)')' is not compiled.',
+     &  ' Re-compile with "#define ALLOW_GEOTHERMAL_FLUX"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* ALLOW_GEOTHERMAL_FLUX */
 
 #ifndef ALLOW_FRICTION_HEATING
       IF ( addFrictionHeating ) THEN
