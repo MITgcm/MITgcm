@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2044 2014/08/11 20:32:15 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2045 2014/08/12 13:28:52 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint65b (2014/08/12)
 o pkg/matrix:
   - pass, as argument, updated tracer field to S/R MATRIX_STORE_TENDENCY_EXP
 o model/src:
