@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.19 2013/01/13 22:43:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.20 2014/08/12 17:38:11 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -169,17 +169,36 @@ C Assume nothing
 C Only do I/O if I am the master thread (and mpi process 0 IF useSingleCpuIO):
       iAmDoingIO = MASTER_CPU_IO(myThid)
 
+C File name should not be too long:
+C    IL(+pIL if not useCurrentDir)(+5: '.data')(+8: bi,bj) =< MAX_LEN_FNAM
+C    and shorter enough to be written to msgBuf with other informations
+      IF ( useCurrentDir .AND. (90+IL).GT.MAX_LEN_MBUF ) THEN
+        WRITE(msgBuf,'(2A,2(I4,A))') 'MDS_WRITE_FIELD: ',
+     &   'Too long (IL=',IL,') file name:'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(errorMessageUnit,'(3A)')'file: >',fName(1:IL),'<'
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+      ELSEIF ( (90+IL+pIL).GT.MAX_LEN_MBUF ) THEN
+        WRITE(msgBuf,'(2A,2(I4,A))') 'MDS_WRITE_FIELD: ',
+     &   'Too long (pIL=',pIL,', IL=',IL,') pfix + file name:'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(errorMessageUnit,'(3A)')'pfix: >',mdsioLocalDir(1:pIL),'<'
+        WRITE(errorMessageUnit,'(3A)')'file: >',fName(1:IL),'<'
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+      ENDIF
 C Record number must be >= 1
       IF (irecord .LT. 1) THEN
         WRITE(msgBuf,'(3A,I10)')
      &    ' MDS_WRITE_FIELD: file="', fName(1:IL), '" , iter=', myIter
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid )
+     &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(A,I9.8)')
      &    ' MDS_WRITE_FIELD: argument irecord = ',irecord
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid )
-         WRITE(msgBuf,'(A)')
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A)')
      &    ' MDS_WRITE_FIELD: invalid value for irecord'
         CALL PRINT_ERROR( msgBuf, myThid )
         CALL ALL_PROC_DIE( myThid )
@@ -190,12 +209,12 @@ C check for valid sub-set of levels:
         WRITE(msgBuf,'(3A,I10)')
      &    ' MDS_WRITE_FIELD: file="', fName(1:IL), '" , iter=', myIter
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid )
+     &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(3(A,I6))')
      &    ' MDS_WRITE_FIELD: arguments kSize=', kSize,
      &    ' , kLo=', kLo, ' , kHi=', kHi
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid )
+     &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(A)')
      &    ' MDS_WRITE_FIELD: invalid sub-set of levels'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -207,19 +226,19 @@ C check for 3-D Buffer size:
         WRITE(msgBuf,'(3A,I10)')
      &    ' MDS_WRITE_FIELD: file="', fName(1:IL), '" , iter=', myIter
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid )
+     &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(3(A,I6))')
      &    ' MDS_WRITE_FIELD: Nb Lev to write =', nNz,
      &    ' >', size3dBuf, ' = buffer 3rd Dim'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid )
+     &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(A)')
      &    ' MDS_WRITE_FIELD: buffer 3rd Dim. too small'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &    ' increase "size3dBuf" in "MDSIO_BUFF_3D.h" and recompile'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid)
+     &                      SQUEEZE_RIGHT, myThid)
         CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
       ENDIF

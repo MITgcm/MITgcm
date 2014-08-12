@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.17 2011/06/07 22:33:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.18 2014/08/12 17:38:11 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -141,16 +141,35 @@ C Assume nothing
 C Only do I/O if I am the master thread (and mpi process 0 IF useSingleCpuIO):
       iAmDoingIO = MASTER_CPU_IO(myThid)
 
+C File name should not be too long:
+C    IL(+pIL if not useCurrentDir)(+5: '.data')(+8: bi,bj) =< MAX_LEN_FNAM
+C    and shorter enough to be written to msgBuf with other informations
+      IF ( useCurrentDir .AND. (90+IL).GT.MAX_LEN_MBUF ) THEN
+        WRITE(msgBuf,'(2A,2(I4,A))') 'MDS_READ_FIELD: ',
+     &   'Too long (IL=',IL,') file name:'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(errorMessageUnit,'(3A)')'file: >',fName(1:IL),'<'
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
+      ELSEIF ( (90+IL+pIL).GT.MAX_LEN_MBUF ) THEN
+        WRITE(msgBuf,'(2A,2(I4,A))') 'MDS_READ_FIELD: ',
+     &   'Too long (pIL=',pIL,', IL=',IL,') pfix + file name:'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(errorMessageUnit,'(3A)')'pfix: >',mdsioLocalDir(1:pIL),'<'
+        WRITE(errorMessageUnit,'(3A)')'file: >',fName(1:IL),'<'
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
+      ENDIF
 C Record number must be >= 1
       IF (irecord .LT. 1) THEN
         WRITE(msgBuf,'(3A,I10)')
      &    ' MDS_READ_FIELD: file="', fName(1:IL), '"'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid )
+     &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(A,I9.8)')
      &    ' MDS_READ_FIELD: argument irecord = ',irecord
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid )
+     &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(A)')
      &    ' MDS_READ_FIELD: Invalid value for irecord'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -162,12 +181,12 @@ C check for valid sub-set of levels:
         WRITE(msgBuf,'(3A,I10)')
      &    ' MDS_READ_FIELD: file="', fName(1:IL), '"'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid )
+     &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(3(A,I6))')
      &    ' MDS_READ_FIELD: arguments kSize=', kSize,
      &    ' , kLo=', kLo, ' , kHi=', kHi
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid )
+     &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(A)')
      &    ' MDS_READ_FIELD: invalid sub-set of levels'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -179,19 +198,19 @@ C check for 3-D Buffer size:
         WRITE(msgBuf,'(3A,I10)')
      &    ' MDS_READ_FIELD: file="', fName(1:IL), '"'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid )
+     &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(3(A,I6))')
      &    ' MDS_READ_FIELD: Nb Lev to read =', nNz,
      &    ' >', size3dBuf, ' = buffer 3rd Dim'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid )
+     &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(A)')
      &    ' MDS_READ_FIELD: buffer 3rd Dim. too small'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &    ' increase "size3dBuf" in "MDSIO_BUFF_3D.h" and recompile'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid )
+     &                      SQUEEZE_RIGHT, myThid )
         CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
       ENDIF
@@ -218,7 +237,7 @@ C Check first for global file with simple name (ie. fName)
             WRITE(msgBuf,'(A,A)')
      &      ' MDS_READ_FIELD: opening global file: ',dataFName(1:IL)
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT , myThid)
+     &                          SQUEEZE_RIGHT, myThid)
           ENDIF
           globalFile = .TRUE.
         ENDIF
@@ -232,7 +251,7 @@ C If negative check for global file with MDS name (ie. fName.data)
             WRITE(msgBuf,'(A,A)')
      &      ' MDS_READ_FIELD: opening global file: ',dataFName(1:IL+5)
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT , myThid)
+     &                          SQUEEZE_RIGHT, myThid)
            ENDIF
            globalFile = .TRUE.
           ENDIF
@@ -257,12 +276,12 @@ C Otherwise stop program.
           WRITE(msgBuf,'(2A)')
      &      ' MDS_READ_FIELD: filename: ', dataFName(1:IL+5)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT , myThid)
+     &                        SQUEEZE_RIGHT, myThid)
           CALL PRINT_ERROR( msgBuf, myThid )
           WRITE(msgBuf,'(A)')
      &      ' MDS_READ_FIELD: File does not exist'
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT , myThid)
+     &                        SQUEEZE_RIGHT, myThid)
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
          ENDIF
@@ -443,7 +462,7 @@ C (This is a place-holder for the active/passive mechanism
              WRITE(msgBuf,'(A,A)')
      &       ' MDS_READ_FIELD: opening file: ',dataFName(1:pIL+13)
              CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT , myThid)
+     &                        SQUEEZE_RIGHT, myThid)
             ENDIF
             length_of_rec = MDS_RECLEN( filePrec, sNx*sNy*nNz, myThid )
             OPEN( dUnit, file=dataFName, status='old',
@@ -454,12 +473,12 @@ C (This is a place-holder for the active/passive mechanism
             WRITE(msgBuf,'(4A)') ' MDS_READ_FIELD: filename: ',
      &             fName(1:IL),' , ', dataFName(1:pIL+13)
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT , myThid)
+     &                          SQUEEZE_RIGHT, myThid)
             CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(A)')
      &      ' MDS_READ_FIELD: Files DO not exist'
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT , myThid)
+     &                          SQUEEZE_RIGHT, myThid)
             CALL PRINT_ERROR( msgBuf, myThid )
             STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
            ENDIF
