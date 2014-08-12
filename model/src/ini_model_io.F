@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.46 2013/04/22 02:35:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.47 2014/08/12 17:36:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -135,9 +135,19 @@ C-    Initialise Alternating pickup-suffix
 C-    Flags specific to RW and MDSIO (and PLOT_FIELDS)
       printDomain = debugLevel.GE.debLevB
 
-C-    now we make local directories with myProcessStr appended
+C-    now we make local directories with myProcessStr appended.
       IF ( mdsioLocalDir .NE. ' ' ) THEN
         iL = ILNBLNK( mdsioLocalDir )
+C     Local dir name should not be too long to fit MAX_LEN_FNAM
+C     after adding file-name: set a limit to half MAX_LEN_FNAM
+        IF ( 2*IL.GT.MAX_LEN_FNAM ) THEN
+          WRITE(msgBuf,'(2A,I4,A)') 'INI_MODEL_IO: ',
+     &    'Too long (IL=',IL,') mdsioLocalDir:'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(errorMessageUnit,'(3A)')
+     &       'localDir: >',mdsioLocalDir(1:IL),'<'
+          STOP 'ABNORMAL END: S/R INI_MODEL_IO (mdsioLocalDir)'
+        ENDIF
         WRITE(namBuf,'(3A)')
      &         ' mkdir -p ', mdsioLocalDir(1:iL),myProcessStr(1:4)
         pIL = 1 + ILNBLNK( namBuf )
