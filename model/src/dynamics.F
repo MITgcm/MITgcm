@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.171 2014/08/07 17:32:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.172 2014/08/14 16:52:40 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -649,7 +649,7 @@ CADJ STORE gU(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         -1, KappaRU, recip_hFacW(1-OLx,1-OLy,1,bi,bj),
-     U         gU,
+     U         gU(1-OLx,1-OLy,1,bi,bj),
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
 CADJ STORE gV(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
@@ -657,7 +657,7 @@ CADJ STORE gV(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         -2, KappaRV, recip_hFacS(1-OLx,1-OLy,1,bi,bj),
-     U         gV,
+     U         gV(1-OLx,1-OLy,1,bi,bj),
      I         myThid )
         ENDIF
 
@@ -681,7 +681,7 @@ CADJ STORE vVelD(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         0, KappaRU, recip_hFacW(1-OLx,1-OLy,1,bi,bj),
-     U         vVelD,
+     U         vVelD(1-OLx,1-OLy,1,bi,bj),
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
 CADJ STORE uVelD(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
@@ -689,7 +689,7 @@ CADJ STORE uVelD(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         0, KappaRV, recip_hFacS(1-OLx,1-OLy,1,bi,bj),
-     U         uVelD,
+     U         uVelD(1-OLx,1-OLy,1,bi,bj),
      I         myThid )
         ENDIF
 #endif    /* ALLOW_CD_CODE */
