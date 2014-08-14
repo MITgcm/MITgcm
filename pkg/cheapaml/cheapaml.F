@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.26 2013/08/22 20:27:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.27 2014/08/14 16:40:02 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -272,7 +272,8 @@ C compute advective and diffusive flux divergence
          startAB = cheapTairStartAB + nt - 1
          CALL ADAMS_BASHFORTH2(
      I           bi, bj, 1, 1,
-     U           gTair, gTairm, tmpFld,
+     U           gTair(1-OLx,1-OLy,bi,bj),
+     U           gTairm(1-OLx,1-OLy,bi,bj), tmpFld,
      I           startAB, myIter, myThid )
          CALL CHEAPAML_TIMESTEP(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
@@ -309,7 +310,8 @@ C do water
           startAB = cheapTairStartAB + nt - 1
           CALL ADAMS_BASHFORTH2(
      I           bi, bj, 1, 1,
-     U           gqair, gqairm, tmpFld,
+     U           gqair(1-OLx,1-OLy,bi,bj),
+     U           gqairm(1-OLx,1-OLy,bi,bj), tmpFld,
      I           startAB, myIter, myThid )
           CALL CHEAPAML_TIMESTEP(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
@@ -347,7 +349,8 @@ C     do tracer
           startAB = cheapTracStartAB + nt - 1
           CALL ADAMS_BASHFORTH2(
      I           bi, bj, 1, 1,
-     U           gCheaptracer, gCheaptracerm, tmpFld,
+     U           gCheaptracer(1-OLx,1-OLy,bi,bj),
+     U           gCheaptracerm(1-OLx,1-OLy,bi,bj), tmpFld,
      I           startAB, myIter, myThid )
           CALL CHEAPAML_TIMESTEP(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
