@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.53 2013/11/05 13:34:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.54 2014/08/14 16:51:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -661,12 +661,15 @@ C     and save gW_[n] into gwNm1 for the next time step.
 #ifdef ALLOW_ADAMSBASHFORTH_3
         CALL ADAMS_BASHFORTH3(
      I                         bi, bj, k, Nr,
-     U                         gW, gwNm, gw_AB,
+     U                         gW(1-OLx,1-OLy,1,bi,bj), gwNm,
+     O                         gw_AB,
      I                         nHydStartAB, myIter, myThid )
 #else /* ALLOW_ADAMSBASHFORTH_3 */
         CALL ADAMS_BASHFORTH2(
      I                         bi, bj, k, Nr,
-     U                         gW, gwNm1, gw_AB,
+     U                         gW(1-OLx,1-OLy,1,bi,bj),
+     U                         gwNm1(1-OLx,1-OLy,1,bi,bj),
+     O                         gw_AB,
      I                         nHydStartAB, myIter, myThid )
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
 #ifdef ALLOW_DIAGNOSTICS

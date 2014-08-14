@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.58 2014/07/19 16:50:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.59 2014/08/14 16:51:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -164,20 +164,26 @@ C     and save gU,gV_[n] into guNm1,gvNm1 for the next time step.
 #ifdef ALLOW_ADAMSBASHFORTH_3
       CALL ADAMS_BASHFORTH3(
      I                        bi, bj, k, Nr,
-     U                        gU, guNm, gu_AB,
+     U                        gU(1-OLx,1-OLy,1,bi,bj), guNm,
+     O                        gu_AB,
      I                        mom_StartAB, myIter, myThid )
       CALL ADAMS_BASHFORTH3(
      I                        bi, bj, k, Nr,
-     U                        gV, gvNm, gv_AB,
+     U                        gV(1-OLx,1-OLy,1,bi,bj), gvNm,
+     O                        gv_AB,
      I                        mom_StartAB, myIter, myThid )
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       CALL ADAMS_BASHFORTH2(
      I                        bi, bj, k, Nr,
-     U                        gU, guNm1, gu_AB,
+     U                        gU(1-OLx,1-OLy,1,bi,bj),
+     U                        guNm1(1-OLx,1-OLy,1,bi,bj),
+     O                        gu_AB,
      I                        mom_StartAB, myIter, myThid )
       CALL ADAMS_BASHFORTH2(
      I                        bi, bj, k, Nr,
-     U                        gV, gvNm1, gv_AB,
+     U                        gV(1-OLx,1-OLy,1,bi,bj),
+     U                        gvNm1(1-OLx,1-OLy,1,bi,bj),
+     O                        gv_AB,
      I                        mom_StartAB, myIter, myThid )
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
 #ifdef ALLOW_DIAGNOSTICS
