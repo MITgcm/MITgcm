@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.25 2014/07/29 15:39:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.26 2014/08/14 07:14:20 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -517,8 +517,8 @@ C     contribution to the rhs part of grad(sigma)_x
      &       - _dxV(I  ,J  ,bi,bj)*sig12(I  ,J  ) )
        ENDDO
       ENDDO
-      IF ( fricFac+coriFac .NE. 0. _d 0 ) THEN
 C     neglected for preconditioning step
+      IF ( fricFac+coriFac .NE. 0. _d 0 ) THEN
        DO J=jMin,jMax
         DO I=iMin,iMax
          rhsU(I,J,bi,bj) = rhsU(I,J,bi,bj)
