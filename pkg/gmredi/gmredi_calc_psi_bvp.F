@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_bvp.F,v 1.4 2012/03/16 20:55:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_bvp.F,v 1.5 2014/08/14 16:43:37 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -156,10 +156,10 @@ C       However in our case this term is zero since Psi(k=Nr+1)=0
         ENDDO
        ENDDO
 
-       CALL SOLVE_TRIDIAGONAL( iMin+1,iMax,jMin,jMax,
-     &                          GM_a3d,GM_b3d,GM_c3d,
-     &                          GM_PsiX,
-     &                          errCode,bi,bj,myThid)
+       CALL SOLVE_TRIDIAGONAL( iMin+1, iMax, jMin, jMax,
+     &                         GM_a3d, GM_b3d, GM_c3d,
+     &                         GM_PsiX(1-OLx,1-OLy,1,bi,bj),
+     &                         errCode, bi, bj, myThid )
 
        IF ( errCode .GT. 0 ) THEN
         WRITE(msgBuf,'(A)')
@@ -227,10 +227,10 @@ C      This is initially the RHS
         ENDDO
        ENDDO
 
-       CALL SOLVE_TRIDIAGONAL( iMin,iMax,jMin+1,jMax,
-     &                          GM_a3d,GM_b3d,GM_c3d,
-     &                          GM_PsiY,
-     &                          errCode,bi,bj,myThid)
+       CALL SOLVE_TRIDIAGONAL( iMin, iMax, jMin+1, jMax,
+     &                         GM_a3d, GM_b3d, GM_c3d,
+     &                         GM_PsiY(1-OLx,1-OLy,1,bi,bj),
+     &                         errCode, bi, bj, myThid )
 
        IF ( errCode .GT. 0 ) THEN
         WRITE(msgBuf,'(A)')

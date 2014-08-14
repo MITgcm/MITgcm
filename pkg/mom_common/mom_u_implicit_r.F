@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_implicit_r.F,v 1.4 2006/06/07 01:55:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_implicit_r.F,v 1.5 2014/08/14 16:44:40 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -185,7 +185,7 @@ C--   end if momImplVertAdv
 C--   Solve tri-diagonal system :
         CALL SOLVE_TRIDIAGONAL( iMin,iMax, jMin,jMax,
      I                          b5d, c5d, d5d,
-     U                          gU,
+     U                          gU(1-OLx,1-OLy,1,bi,bj),
      O                          errCode,
      I                          bi, bj, myThid )
         IF (errCode.GE.1) THEN

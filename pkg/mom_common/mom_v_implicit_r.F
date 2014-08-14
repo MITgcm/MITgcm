@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_implicit_r.F,v 1.4 2006/06/07 01:55:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_implicit_r.F,v 1.5 2014/08/14 16:44:40 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -29,7 +29,7 @@ C     == Global data ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-      _RL kappaRV(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL kappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER bi, bj
       _RL myTime
       INTEGER myIter, myThid
@@ -39,18 +39,18 @@ C     == Local variables ==
       INTEGER iMin,iMax,jMin,jMax
       INTEGER i,j,k
       INTEGER diagonalNumber, errCode
-c     _RL a5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL b5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL c5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL d5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-c     _RL e5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL rTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+c     _RL a5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL b5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL c5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL d5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+c     _RL e5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rCenter, rUpwind, upwindFac
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
       LOGICAL     DIAGNOSTICS_IS_ON
       EXTERNAL    DIAGNOSTICS_IS_ON
-      _RL vf (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL vf (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 CEOP
 
@@ -64,8 +64,8 @@ C--   Initialise
       iMax = sNx
       jMax = sNy+1
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
 c        a5d(i,j,k) = 0. _d 0
          b5d(i,j,k) = 0. _d 0
          c5d(i,j,k) = 1. _d 0
@@ -85,7 +85,7 @@ C-     1rst lower diagonal :
         DO j=jMin,jMax
          DO i=iMin,iMax
           IF (maskS(i,j,k-1,bi,bj).EQ.1.)
-     &     b5d(i,j,k) = -deltaTmom
+     &     b5d(i,j,k) = -deltaTMom
      &                  *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
      &                  *kappaRV(i,j, k )*recip_drC( k )
          ENDDO
@@ -96,7 +96,7 @@ C-     1rst upper diagonal :
         DO j=jMin,jMax
          DO i=iMin,iMax
           IF (maskS(i,j,k+1,bi,bj).EQ.1.)
-     &     d5d(i,j,k) = -deltaTmom
+     &     d5d(i,j,k) = -deltaTMom
      &                 *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
      &                 *KappaRV(i,j,k+1)*recip_drC(k+1)
          ENDDO
@@ -139,7 +139,7 @@ C-          space Centered/Upwind advection scheme, Advective form:
             ENDIF
             DO j=jMin,jMax
              DO i=iMin,iMax
-              rCenter = 0.5 _d 0 *deltaTmom*rTrans(i,j)
+              rCenter = 0.5 _d 0 *deltaTMom*rTrans(i,j)
      &                           *recip_rAs(i,j,bi,bj)*rkSign
               rUpwind = ABS(rCenter)*upwindFac
               b5d(i,j,k) = b5d(i,j,k)
@@ -160,7 +160,7 @@ C-          space Centered/Upwind advection scheme, Advective form:
 C-          space Centered advection scheme, Flux form:
             DO j=jMin,jMax
              DO i=iMin,iMax
-              rCenter = 0.5 _d 0 *deltaTmom*rTrans(i,j)
+              rCenter = 0.5 _d 0 *deltaTMom*rTrans(i,j)
      &                           *recip_rAs(i,j,bi,bj)*rkSign
               b5d(i,j,k) = b5d(i,j,k)
      &            - rCenter*_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
@@ -185,7 +185,7 @@ C--   end if momImplVertAdv
 C--   Solve tri-diagonal system :
         CALL SOLVE_TRIDIAGONAL( iMin,iMax, jMin,jMax,
      I                          b5d, c5d, d5d,
-     U                          gV,
+     U                          gV(1-OLx,1-OLy,1,bi,bj),
      O                          errCode,
      I                          bi, bj, myThid )
         IF (errCode.GE.1) THEN
