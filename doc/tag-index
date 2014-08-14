@@ -1,8 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2045 2014/08/12 13:28:52 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2046 2014/08/14 09:16:28 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice:
+  - move computation of stress contributions to rhsU/V in s/r seaice_lsr 
+    to separate s/r seaice_lsr_rhsu/v in order to be able to re-use code
+  - make u/vIceC local variables if SEAICE_CGRID is defined only to be used
+    in seaice_lsr 
+  - seaice_lsr.F: make local 4D arrays UXX, VYY, etc 2D 
+    in s/r seaice_lsr_calc_coeffs 
 
 checkpoint65b (2014/08/12)
 o pkg/matrix:
