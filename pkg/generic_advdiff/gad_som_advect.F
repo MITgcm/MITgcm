@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.12 2013/11/19 16:59:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.13 2014/08/14 16:46:36 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -65,7 +65,7 @@ C !OUTPUT PARAMETERS: ==================================================
 C  smTr              :: tracer 1rst & 2nd Order moments
 C  gTracer           :: tendency array
       _RL smTr   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,nSOM)
-      _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 C !LOCAL VARIABLES: ====================================================
 C  maskUp        :: 2-D array mask for W points
@@ -403,10 +403,10 @@ C-    explicit advection is done ; store tendency in gTracer:
          DO i=1-OLx,sNx+OLx
 C--  without rescaling of tendencies:
 c         localTr = smTr0(i,j,k)/smVol(i,j,k)
-c         gTracer(i,j,k,bi,bj) = ( localTr - tracer(i,j,k,bi,bj) )
-c    &                         / deltaTLev(k)
+c         gTracer(i,j,k) = ( localTr - tracer(i,j,k,bi,bj) )
+c    &                   / deltaTLev(k)
 C--  consistent with rescaling of tendencies (in FREESURF_RESCALE_G):
-          gTracer(i,j,k,bi,bj) =
+          gTracer(i,j,k) =
      &          ( smTr0(i,j,k) - tracer(i,j,k,bi,bj)*smVol(i,j,k) )
      &            *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &            *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
@@ -575,15 +575,15 @@ C--   Compute new tracer value and store tracer tendency
          DO i=1-OLx,sNx+OLx
 C--  without rescaling of tendencies:
 c         localTr = smTr0(i,j,k)/smVol(i,j,k)
-c         gTracer(i,j,k,bi,bj) = ( localTr - tracer(i,j,k,bi,bj) )
-c    &                         / deltaTLev(k)
+c         gTracer(i,j,k) = ( localTr - tracer(i,j,k,bi,bj) )
+c    &                   / deltaTLev(k)
 C--  Non-Lin Free-Surf: consistent with rescaling of tendencies
 C     (in FREESURF_RESCALE_G) and RealFreshFlux/addMass.
 C    Also valid for linear Free-Surf (r & r* coords) except that surf tracer
 C    loss/gain is computed (in GAD_SOM_ADV_R) from partially updated tracer
 C     (instead of from Tr^n as fresh-water dilution effect) resulting in
 C    inaccurate linFSConserveTr and "surfExpan_" monitor.
-          gTracer(i,j,k,bi,bj) =
+          gTracer(i,j,k) =
      &          ( smTr0(i,j,k) - tracer(i,j,k,bi,bj)*smVol(i,j,k) )
      &            *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &            *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)

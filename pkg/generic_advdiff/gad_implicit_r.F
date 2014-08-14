@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.21 2014/06/04 22:18:55 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.22 2014/08/14 16:46:36 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -43,11 +43,11 @@ C myThid            :: thread number
       INTEGER advectionScheme
       INTEGER tracerIdentity
       _RL     deltaTLev(Nr)
-      _RL kappaRX   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RS recip_hFac(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL wFld      (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL gTracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL kappaRX   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RS recip_hFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL wFld      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL tracer    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL gTracer   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER bi, bj
       _RL myTime
       INTEGER myIter, myThid
@@ -78,22 +78,22 @@ C errCode   :: > 0 if singular matrix
       PARAMETER( jMin = 1, jMax = sNy )
       INTEGER i,j,k
       INTEGER diagonalNumber, errCode
-      _RL a5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL b5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL c5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL d5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL e5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL rTrans   (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL localTijk(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL a5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL b5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL c5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL d5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL e5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL rTrans   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL localTijk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
       CHARACTER*4 diagSufx
       LOGICAL     diagDif, diagAdv
       INTEGER km1, km2, kp1, kp2
-      _RL df (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL af (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL div(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL flx(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL df (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL af (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL div(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL flx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 CEOP
 
@@ -102,8 +102,8 @@ C--   no need to solve anything with only 1 level:
 
 C--   Initialise
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          a5d(i,j,k) = 0. _d 0
          b5d(i,j,k) = 0. _d 0
          c5d(i,j,k) = 1. _d 0
@@ -119,17 +119,17 @@ C--   Non-Linear Advection scheme: keep a local copy of tracer field
      &     advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
         IF ( multiDimAdvection ) THEN
          DO k=1,Nr
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            localTijk(i,j,k) = gTracer(i,j,k,bi,bj)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            localTijk(i,j,k) = gTracer(i,j,k)
            ENDDO
           ENDDO
          ENDDO
         ELSE
          DO k=1,Nr
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            localTijk(i,j,k) = tracer(i,j,k,bi,bj)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            localTijk(i,j,k) = tracer(i,j,k)
            ENDDO
           ENDDO
          ENDDO
@@ -177,14 +177,14 @@ C--   end if implicitDiffusion
 
 C--    Compute transport
         IF (k.EQ.1) THEN
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             rTrans(i,j) = 0. _d 0
           ENDDO
          ENDDO
         ELSE
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             rTrans(i,j) = wFld(i,j,k)*rA(i,j,bi,bj)
      &                               *maskC(i,j,k-1,bi,bj)
           ENDDO
@@ -299,7 +299,7 @@ cc#else
      &             -rA(i,j,bi,bj)
 cc#endif
      &            * KappaRX(i,j,k)*recip_drC(k)*rkSign
-     &            * (gTracer(i,j,k,bi,bj) - gTracer(i,j,k-1,bi,bj))
+     &            * (gTracer(i,j,k) - gTracer(i,j,k-1))
      &            * maskC(i,j,k,bi,bj)
      &            * maskC(i,j,k-1,bi,bj)
              ENDDO
@@ -323,7 +323,7 @@ C         since skipping k=1 DIAGNOSTICS_FILL call.
              CALL LAYERS_FILL_DFR( df, tracerIdentity,
      &                           k, 1, 2,bi,bj, myThid )
             ENDIF
-           ENDIF 
+           ENDIF
 #endif /* ALLOW_LAYERS */
           ENDIF
           IF ( diagAdv ) THEN
@@ -335,17 +335,17 @@ C--   Flux_divergence*deltaT = Tr^n - Tr^n+1 = [A-I](Tr^n+1)
 C                            = deltaT*rkSign*[ Flx_k+1 - Flx_k ]/dz
            DO j=jMin,jMax
             DO i=iMin,iMax
-              div(i,j) = gTracer(i,j,k,bi,bj)*( c5d(i,j,k) - 1. _d 0 )
-     &                 + gTracer(i,j,km1,bi,bj)*b5d(i,j,k)
-     &                 + gTracer(i,j,kp1,bi,bj)*d5d(i,j,k)
+              div(i,j) = gTracer(i,j,k)*( c5d(i,j,k) - 1. _d 0 )
+     &                 + gTracer(i,j,km1)*b5d(i,j,k)
+     &                 + gTracer(i,j,kp1)*d5d(i,j,k)
             ENDDO
            ENDDO
            IF ( diagonalNumber .EQ. 5 ) THEN
             DO j=jMin,jMax
              DO i=iMin,iMax
               div(i,j) = div(i,j)
-     &                 + gTracer(i,j,km2,bi,bj)*a5d(i,j,k)
-     &                 + gTracer(i,j,kp2,bi,bj)*e5d(i,j,k)
+     &                 + gTracer(i,j,km2)*a5d(i,j,k)
+     &                 + gTracer(i,j,kp2)*e5d(i,j,k)
              ENDDO
             ENDDO
            ENDIF
@@ -364,7 +364,7 @@ C--    use future hFac to stay consistent with solver matrix
               DO i=iMin,iMax
                div(i,j) = div(i,j)*(
      &               _hFacC(i,j,k,bi,bj)*drF(k)
-     &              + dBHybSigF(k)*dEtaHdt(i,j,bi,bj)*deltaTfreesurf
+     &              + dBHybSigF(k)*dEtaHdt(i,j,bi,bj)*deltaTFreeSurf
      &                             )
               ENDDO
              ENDDO

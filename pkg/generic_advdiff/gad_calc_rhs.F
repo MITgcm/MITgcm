@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.68 2014/07/22 12:05:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.69 2014/08/14 16:46:36 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -116,7 +116,7 @@ C gTracer          :: tendency array
 C fZon             :: zonal flux
 C fMer             :: meridional flux
 C fVerT            :: 2 1/2D arrays for vertical advective flux
-      _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL fZon  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fMer  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerT (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
@@ -742,7 +742,7 @@ coj   Other factors that have been applied to gTracer since the last call:
              ENDIF
 #endif /* NONLIN_FRSURF */
 coj   Now: undo down flux, ...
-             gTracer(i,j,k+1,bi,bj)=gTracer(i,j,k+1,bi,bj)
+             gTracer(i,j,k+1) = gTracer(i,j,k+1)
      &        +gTrFac
      &         *_recip_hFacC(i,j,k+1,bi,bj)*recip_drF(k+1)
      &         *recip_rA(i,j,bi,bj)*recip_deepFac2C(k+1)
@@ -751,7 +751,7 @@ coj   Now: undo down flux, ...
 coj   ... scale ...
              fVerT(i,j,kDown)=fac*fVerT(i,j,kDown)
 coj   ... and reapply
-             gTracer(i,j,k+1,bi,bj)=gTracer(i,j,k+1,bi,bj)
+             gTracer(i,j,k+1) = gTracer(i,j,k+1)
      &        +gTrFac
      &         *_recip_hFacC(i,j,k+1,bi,bj)*recip_drF(k+1)
      &         *recip_rA(i,j,bi,bj)*recip_deepFac2C(k+1)
@@ -770,7 +770,7 @@ C     Anelastic: scale vertical fluxes by rhoFac and leave Horizontal fluxes unc
 C     for Stevens OBC: keep only vertical diffusive contribution on boundaries
       DO j=1-OLy,sNy+OLy-1
        DO i=1-OLx,sNx+OLx-1
-        gTracer(i,j,k,bi,bj)=gTracer(i,j,k,bi,bj)
+        gTracer(i,j,k) = gTracer(i,j,k)
      &   -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &   *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)*recip_rhoFacC(k)
      &   *( (fZon(i+1,j)-fZon(i,j))*maskInC(i,j,bi,bj)

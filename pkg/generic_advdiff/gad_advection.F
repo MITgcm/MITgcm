@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.74 2014/04/04 20:28:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.75 2014/08/14 16:46:36 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -84,7 +84,7 @@ C  myThid            :: thread number
 
 C !OUTPUT PARAMETERS: ==================================================
 C  gTracer           :: tendency array
-      _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 C !FUNCTIONS: ==========================================================
 #ifdef ALLOW_DIAGNOSTICS
@@ -755,8 +755,8 @@ C-    explicit advection is done ; store tendency in gTracer:
 #endif /* GAD_MULTIDIM_COMPRESSIBLE */
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          gTracer(i,j,k,bi,bj)=
-     &     (localTij(i,j)-tracer(i,j,k,bi,bj))/deltaTLev(k)
+          gTracer(i,j,k) =
+     &     ( localTij(i,j) - tracer(i,j,k,bi,bj) )/deltaTLev(k)
          ENDDO
         ENDDO
       ELSE
@@ -912,13 +912,13 @@ C--   Divergence of vertical fluxes
 C- localTij only needed for Variance Bugget: can be move there
           localTij(i,j) = tmpTrac/localVol(i,j)
 C--  without rescaling of tendencies:
-c         gTracer(i,j,k,bi,bj)=
-c    &     (localTij(i,j)-tracer(i,j,k,bi,bj))/deltaTLev(k)
+c         gTracer(i,j,k) =
+c    &     ( localTij(i,j) - tracer(i,j,k,bi,bj) )/deltaTLev(k)
 C--  Non-Lin Free-Surf: consistent with rescaling of tendencies
 C     (in FREESURF_RESCALE_G) and RealFreshFlux/addMass.
 C    Also valid for linear Free-Surf (r & r* coords) w/wout RealFreshFlux
 C     and consistent with linFSConserveTr and "surfExpan_" monitor.
-          gTracer(i,j,k,bi,bj) =
+          gTracer(i,j,k) =
      &          ( tmpTrac - tracer(i,j,k,bi,bj)*localVol(i,j) )
      &            *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &            *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
@@ -936,8 +936,8 @@ C     and consistent with linFSConserveTr and "surfExpan_" monitor.
      &       *( fVerT(i,j,kDown)-fVerT(i,j,kUp)
      &         -tracer(i,j,k,bi,bj)*(rTransKp(i,j)-rTrans(i,j))
      &        )*rkSign*maskInC(i,j,bi,bj)
-          gTracer(i,j,k,bi,bj)=
-     &     (localTij(i,j)-tracer(i,j,k,bi,bj))/deltaTLev(k)
+          gTracer(i,j,k) =
+     &     ( localTij(i,j) - tracer(i,j,k,bi,bj) )/deltaTLev(k)
          ENDDO
         ENDDO
 #endif /* GAD_MULTIDIM_COMPRESSIBLE */
