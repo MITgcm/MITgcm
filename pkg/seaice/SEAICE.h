@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.78 2014/05/27 15:24:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.79 2014/08/14 07:33:10 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -85,7 +85,7 @@ C     vIceC :: average of VICE between last two time steps
       COMMON/SEAICE_DYNVARS_3/
      &     ETA,etaZ,ZETA,PRESS, e11, e22, e12, deltaC,
      &     FORCEX,FORCEY,
-     &     uIceC, vIceC, uIceNm1, vIceNm1
+     &     uIceNm1, vIceNm1
       _RL ETA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaZ       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ZETA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -101,8 +101,6 @@ C     sqrt[(e11**2+e22**2)*(1+1/e**2)+ 4./e**2*e12C**2 + 2*e11*e22*(1-1/e**2))
 C
       _RL FORCEX     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL FORCEY     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL uIceC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL vIceC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL uIceNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
@@ -114,9 +112,11 @@ C--   Dynamical variables
 #endif
 
 #ifndef SEAICE_CGRID
-      COMMON/SEAICE_DYNVARS_BGRID/ AMASS, DAIRN
+      COMMON/SEAICE_DYNVARS_BGRID/ AMASS, DAIRN, uIceC, vIceC
       _RL AMASS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL DAIRN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL uIceC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vIceC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #else
       COMMON/SEAICE_DYNVARS_CGRID/
      &     seaiceMassC, seaiceMassU, seaiceMassV

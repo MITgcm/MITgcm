@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.87 2014/05/27 15:24:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.88 2014/08/14 07:33:10 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -277,8 +277,6 @@ C
           ZETA(i,j,bi,bj)   = 0. _d 0
           FORCEX(i,j,bi,bj) = 0. _d 0
           FORCEY(i,j,bi,bj) = 0. _d 0
-          uIceC(i,j,bi,bj)  = 0. _d 0
-          vIceC(i,j,bi,bj)  = 0. _d 0
 #ifdef SEAICE_CGRID
           seaiceMassC(i,j,bi,bj)=0. _d 0
           seaiceMassU(i,j,bi,bj)=0. _d 0
@@ -291,6 +289,8 @@ C
           seaice_sigma12(i,j,bi,bj) = 0. _d 0
 # endif /* SEAICE_ALLOW_EVP */
 #else /* SEAICE_CGRID */
+          uIceC(i,j,bi,bj)  = 0. _d 0
+          vIceC(i,j,bi,bj)  = 0. _d 0
           AMASS(i,j,bi,bj)  = 0. _d 0
           DAIRN(i,j,bi,bj)  = 0. _d 0
           WINDX(i,j,bi,bj)  = 0. _d 0
