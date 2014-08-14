@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_pentadiagonal.F,v 1.10 2012/03/15 15:25:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_pentadiagonal.F,v 1.11 2014/08/14 16:49:19 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -50,7 +50,7 @@ C     errCode :: > 0 if singular matrix
       _RL c5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL d5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL e5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL y5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL y5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER errCode
       INTEGER bi, bj, myThid
 
@@ -101,8 +101,7 @@ C--       [k] <- [k] - b_k/c_k-1 * [k-1]
           b5d(i,j,k) = b5d(i,j,k)*c5d(i,j,k-1)
           c5d(i,j,k) = c5d(i,j,k) - b5d(i,j,k)*d5d(i,j,k-1)
           d5d(i,j,k) = d5d(i,j,k) - b5d(i,j,k)*e5d(i,j,k-1)
-          y5d(i,j,k,bi,bj) = y5d(i,j,k,bi,bj)
-     &                     - b5d(i,j,k)*y5d(i,j,k-1,bi,bj)
+          y5d(i,j,k) = y5d(i,j,k) - b5d(i,j,k)*y5d(i,j,k-1)
           IF ( c5d(i,j,k).NE.0. _d 0 ) THEN
            c5d(i,j,k) = 1. _d 0 / c5d(i,j,k)
           ELSE
@@ -124,9 +123,8 @@ C--       [k] <- [k] - b_k/c_k-1 * [k-1]
           b5d(i,j,k) = b5d(i,j,k)*c5d(i,j,k-1)
           c5d(i,j,k) = c5d(i,j,k) - b5d(i,j,k)*d5d(i,j,k-1)
           d5d(i,j,k) = d5d(i,j,k) - b5d(i,j,k)*e5d(i,j,k-1)
-          y5d(i,j,k,bi,bj) = y5d(i,j,k,bi,bj)
-     &                     - b5d(i,j,k)*y5d(i,j,k-1,bi,bj)
-     &                     - a5d(i,j,k)*y5d(i,j,k-2,bi,bj)
+          y5d(i,j,k) = y5d(i,j,k) - b5d(i,j,k)*y5d(i,j,k-1)
+     &                            - a5d(i,j,k)*y5d(i,j,k-2)
           IF ( c5d(i,j,k).NE.0. _d 0 ) THEN
            c5d(i,j,k) = 1. _d 0 / c5d(i,j,k)
           ELSE
@@ -144,24 +142,24 @@ C--   Backward sweep (starting from bottom)
        IF (k.EQ.Nr) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
-          y5d(i,j,k,bi,bj) =   y5d(i,j,k,bi,bj)*c5d(i,j,k)
+          y5d(i,j,k) =   y5d(i,j,k)*c5d(i,j,k)
          ENDDO
         ENDDO
        ELSEIF (k.EQ.Nr-1) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
-          y5d(i,j,k,bi,bj) = ( y5d(i,j,k,bi,bj)
-     &                       - d5d(i,j,k)*y5d(i,j,k+1,bi,bj)
-     &                       )*c5d(i,j,k)
+          y5d(i,j,k) = ( y5d(i,j,k)
+     &                 - d5d(i,j,k)*y5d(i,j,k+1)
+     &                 )*c5d(i,j,k)
          ENDDO
         ENDDO
        ELSE
         DO j=jMin,jMax
          DO i=iMin,iMax
-          y5d(i,j,k,bi,bj) = ( y5d(i,j,k,bi,bj)
-     &                       - d5d(i,j,k)*y5d(i,j,k+1,bi,bj)
-     &                       - e5d(i,j,k)*y5d(i,j,k+2,bi,bj)
-     &                       )*c5d(i,j,k)
+          y5d(i,j,k) = ( y5d(i,j,k)
+     &                 - d5d(i,j,k)*y5d(i,j,k+1)
+     &                 - e5d(i,j,k)*y5d(i,j,k+2)
+     &                 )*c5d(i,j,k)
          ENDDO
         ENDDO
 C-      end if k= .. ; end of k loop
@@ -176,7 +174,7 @@ C--   Temporary array
         DO i=1-OLx,sNx+OLx
 c      DO j=jMin,jMax
 c       DO i=iMin,iMax
-         y5d_m1(i,j,k) = y5d(i,j,k,bi,bj)
+         y5d_m1(i,j,k) = y5d(i,j,k)
         ENDDO
        ENDDO
       ENDDO
@@ -259,7 +257,7 @@ C--   Backward sweep (starting from bottom)
 
 C--   Update array
         DO k=1,Nr
-         y5d(i,j,k,bi,bj)=y5d_update(k)
+         y5d(i,j,k) = y5d_update(k)
         ENDDO
 
 C-- i,j loop
@@ -372,7 +370,7 @@ C--   Update array
         DO i=1-OLx,sNx+OLx
 c      DO j=jMin,jMax
 c       DO i=iMin,iMax
-         y5d(i,j,k,bi,bj)=y5d_update(i,j,k)
+         y5d(i,j,k) = y5d_update(i,j,k)
         ENDDO
        ENDDO
       ENDDO

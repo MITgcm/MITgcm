@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.32 2014/06/04 22:18:55 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.33 2014/08/14 16:49:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -56,7 +56,7 @@ C     gTracer    :: future tracer field
       INTEGER tracerId
       _RL KappaRX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RS recip_hFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -79,6 +79,13 @@ C     == Local variables ==
       LOGICAL     DIAGNOSTICS_IS_ON
       EXTERNAL    DIAGNOSTICS_IS_ON
       _RL df (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      LOGICAL diagAdvVar, fwdSqGrad, bwdSqGrad
+      _RL delTr, barTr, maskUp
+      _RL diagTr  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL diagTrKm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL diagVTR (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL diagVPR (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL diagSqD (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
@@ -107,29 +114,17 @@ cph)
 
 C--   Initialise
       DO k=1,Nr
-#ifdef TARGET_NEC_SX
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-#else
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-#endif
          locTr(i,j,k) = 0. _d 0
+         a(i,j,k) = 0. _d 0
+         b(i,j,k) = 1. _d 0
+         c(i,j,k) = 0. _d 0
         ENDDO
        ENDDO
       ENDDO
 
 C--   Old aLower
-#ifdef TARGET_NEC_SX
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-#else
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-#endif
-         a(i,j,1) = 0. _d 0
-       ENDDO
-      ENDDO
       DO k=2,Nr
 #ifdef TARGET_NEC_SX
        DO j=1-OLy,sNy+OLy
@@ -164,26 +159,11 @@ C--   Old aUpper
         ENDDO
        ENDDO
       ENDDO
-#ifdef TARGET_NEC_SX
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-#else
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-#endif
-         c(i,j,Nr) = 0. _d 0
-       ENDDO
-      ENDDO
 
 C--   Old aCenter
       DO k=1,Nr
-#ifdef TARGET_NEC_SX
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-#else
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-#endif
           b(i,j,k) = 1. _d 0 - c(i,j,k) - a(i,j,k)
         ENDDO
        ENDDO
@@ -191,13 +171,8 @@ C--   Old aCenter
 
 C--   Old and new gam, bet are the same
       DO k=1,Nr
-#ifdef TARGET_NEC_SX
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-#else
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-#endif
           bet(i,j,k) = 1. _d 0
           gam(i,j,k) = 0. _d 0
         ENDDO
@@ -205,36 +180,23 @@ C--   Old and new gam, bet are the same
       ENDDO
 
 C--   Only need do anything if Nr>1
-      IF (Nr.GT.1) THEN
+c     IF (Nr.GT.1) THEN
 
        k = 1
 C--    Beginning of forward sweep (top level)
-#ifdef TARGET_NEC_SX
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-#else
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-#endif
          IF (b(i,j,1).NE.0.) bet(i,j,1) = 1. _d 0 / b(i,j,1)
         ENDDO
        ENDDO
 
-      ENDIF
-
 C--   Middle of forward sweep
-      IF (Nr.GE.2) THEN
 
 CADJ loop = sequential
        DO k=2,Nr
 
-#ifdef TARGET_NEC_SX
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-#else
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-#endif
           gam(i,j,k) = c(i,j,k-1)*bet(i,j,k-1)
           IF ( ( b(i,j,k) - a(i,j,k)*gam(i,j,k) ) .NE. 0.)
      &        bet(i,j,k) = 1. _d 0 / ( b(i,j,k) - a(i,j,k)*gam(i,j,k) )
@@ -243,7 +205,8 @@ CADJ loop = sequential
 
        ENDDO
 
-      ENDIF
+C-    end if Nr > 1
+c     ENDIF
 
 #ifdef TARGET_NEC_SX
       DO j=1-OLy,sNy+OLy
@@ -252,9 +215,10 @@ CADJ loop = sequential
       DO j=jMin,jMax
        DO i=iMin,iMax
 #endif
-        locTr(i,j,1) = gTracer(i,j,1,bi,bj)*bet(i,j,1)
+        locTr(i,j,1) = gTracer(i,j,1)*bet(i,j,1)
        ENDDO
       ENDDO
+CADJ loop = sequential
       DO k=2,Nr
 #ifdef TARGET_NEC_SX
        DO j=1-OLy,sNy+OLy
@@ -264,41 +228,29 @@ CADJ loop = sequential
         DO i=iMin,iMax
 #endif
          locTr(i,j,k) = bet(i,j,k)*
-     &        (gTracer(i,j,k,bi,bj) - a(i,j,k)*locTr(i,j,k-1))
+     &        (gTracer(i,j,k) - a(i,j,k)*locTr(i,j,k-1))
         ENDDO
        ENDDO
       ENDDO
 
 C--    Backward sweep
 CADJ loop = sequential
-       DO k=Nr-1,1,-1
+      DO k=Nr-1,1,-1
 #ifdef TARGET_NEC_SX
-            DO j=1-OLy,sNy+OLy
-             DO i=1-OLx,sNx+OLx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
 #else
-        DO j=jMin,jMax
-         DO i=iMin,iMax
+       DO j=jMin,jMax
+        DO i=iMin,iMax
 #endif
           locTr(i,j,k) = locTr(i,j,k) - gam(i,j,k+1)*locTr(i,j,k+1)
-         ENDDO
         ENDDO
        ENDDO
-
-       DO k=1,Nr
-#ifdef TARGET_NEC_SX
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-#else
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-#endif
-          gTracer(i,j,k,bi,bj) = locTr(i,j,k)
-         ENDDO
-        ENDDO
-       ENDDO
+      ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics .AND.tracerId.NE.0 ) THEN
+        diagAdvVar = .FALSE.
         IF ( tracerId.GE. 1 ) THEN
 C--   Set diagnostic suffix for the current tracer
 #ifdef ALLOW_GENERIC_ADVDIFF
@@ -306,6 +258,18 @@ C--   Set diagnostic suffix for the current tracer
 #else
           diagSufx = 'aaaa'
 #endif
+C---
+          diagName = 'VTRi'//diagSufx
+          diagAdvVar = diagAdvVar.OR.DIAGNOSTICS_IS_ON(diagName,myThid)
+          diagName = 'VPRi'//diagSufx
+          diagAdvVar = diagAdvVar.OR.DIAGNOSTICS_IS_ON(diagName,myThid)
+          diagName = 'SqDi'//diagSufx
+          diagAdvVar = diagAdvVar.OR.DIAGNOSTICS_IS_ON(diagName,myThid)
+          fwdSqGrad  = .TRUE.
+          bwdSqGrad  = .FALSE.
+c         fwdSqGrad  = .FALSE.
+c         bwdSqGrad  = .TRUE.
+C---
           diagName = 'DFrI'//diagSufx
         ELSEIF ( tracerId.EQ. -1 ) THEN
           diagName = 'VISrI_Um'
@@ -314,7 +278,8 @@ C--   Set diagnostic suffix for the current tracer
         ELSE
           STOP 'IMPLIDIFF: should never reach this point !'
         ENDIF
-        IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
+c       IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
+        IF ( DIAGNOSTICS_IS_ON(diagName,myThid) .OR. diagAdvVar ) THEN
          DO k= 1,Nr
           IF ( k.EQ.1 ) THEN
 C-  Note: Needs to call DIAGNOSTICS_FILL at level k=1 even if array == 0
@@ -325,6 +290,7 @@ C         otherwise counter is not incremented !!
              ENDDO
             ENDDO
           ELSEIF ( tracerId.GE.1 ) THEN
+            diagName = 'DFrI'//diagSufx
 #ifdef TARGET_NEC_SX
             DO j=1-OLy,sNy+OLy
              DO i=1-OLx,sNx+OLx
@@ -335,7 +301,7 @@ C         otherwise counter is not incremented !!
                df(i,j) =
      &             -rA(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
      &            * KappaRX(i,j,k)*recip_drC(k)*rkSign
-     &            * (gTracer(i,j,k,bi,bj) - gTracer(i,j,k-1,bi,bj))
+     &            *( locTr(i,j,k) - locTr(i,j,k-1) )
      &            * maskC(i,j,k,bi,bj)
      &            * maskC(i,j,k-1,bi,bj)
              ENDDO
@@ -351,7 +317,7 @@ C         otherwise counter is not incremented !!
                df(i,j) =
      &             -rAw(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
      &            * KappaRX(i,j,k)*recip_drC(k)*rkSign
-     &            * (gTracer(i,j,k,bi,bj) - gTracer(i,j,k-1,bi,bj))
+     &            *( locTr(i,j,k) - locTr(i,j,k-1) )
      &            * _maskW(i,j,k,bi,bj)
      &            * _maskW(i,j,k-1,bi,bj)
              ENDDO
@@ -367,7 +333,7 @@ C         otherwise counter is not incremented !!
                df(i,j) =
      &             -rAs(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
      &            * KappaRX(i,j,k)*recip_drC(k)*rkSign
-     &            * (gTracer(i,j,k,bi,bj) - gTracer(i,j,k-1,bi,bj))
+     &            *( locTr(i,j,k) - locTr(i,j,k-1) )
      &            * _maskS(i,j,k,bi,bj)
      &            * _maskS(i,j,k-1,bi,bj)
              ENDDO
@@ -380,10 +346,74 @@ C         otherwise counter is not incremented !!
      &                           k, 1, 2,bi,bj, myThid )
           ENDIF
 #endif /* ALLOW_LAYERS */
+          IF ( diagAdvVar ) THEN
+C--   Calculate centered-in-time average of tracer
+           IF ( k.GE.2 ) THEN
+            DO j=1,sNy
+             DO i=1,sNx
+              diagTrKm(i,j) = diagTr(i,j)
+             ENDDO
+            ENDDO
+           ENDIF
+           DO j=1,sNy
+            DO i=1,sNx
+              diagTr(i,j) = ( gTracer(i,j,k)
+     &                      + locTr(i,j,k) )*halfRl
+            ENDDO
+           ENDDO
+           IF ( k.EQ.1 ) THEN
+            DO j=1,sNy
+             DO i=1,sNx
+              diagVTR(i,j) = zeroRL
+              diagVPR(i,j) = zeroRL
+              diagSqD(i,j) = zeroRL
+             ENDDO
+            ENDDO
+           ELSE
+            DO j=1,sNy
+             DO i=1,sNx
+              maskUp = 1.
+              IF ( recip_hFac(i,j,k-1).EQ.zeroRS .OR.
+     &             recip_hFac(i,j,k).EQ.zeroRS ) maskUp = 0.
+              delTr = ( diagTr(i,j) - diagTrKm(i,j) )*rkSign*maskUp
+              barTr = ( diagTr(i,j) + diagTrKm(i,j) )*halfRL
+              diagVTR(i,j) = twoRL*df(i,j)*barTr
+              diagVPR(i,j) = twoRL*df(i,j)*delTr
+              IF ( fwdSqGrad ) THEN
+               delTr = ( gTracer(i,j,k)
+     &                 - gTracer(i,j,k-1) )*rkSign*maskUp
+              ELSEIF ( bwdSqGrad ) THEN
+               delTr = ( locTr(i,j,k) - locTr(i,j,k-1) )*rkSign*maskUp
+              ENDIF
+              diagSqD(i,j) = delTr*delTr*rA(i,j,bi,bj)
+             ENDDO
+            ENDDO
+           ENDIF
+           diagName = 'VTRi'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagVTR,diagName,k,1,2,bi,bj,myThid)
+           diagName = 'VPRi'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,2,bi,bj,myThid)
+           diagName = 'SqDi'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagSqD,diagName,k,1,2,bi,bj,myThid)
+          ENDIF
          ENDDO
         ENDIF
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
+
+C--   put results back in gTracer:
+      DO k=1,Nr
+#ifdef TARGET_NEC_SX
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+#else
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+#endif
+          gTracer(i,j,k) = locTr(i,j,k)
+        ENDDO
+       ENDDO
+      ENDDO
 
       RETURN
       END

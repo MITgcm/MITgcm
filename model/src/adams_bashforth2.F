@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/adams_bashforth2.F,v 1.9 2013/02/19 13:42:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/adams_bashforth2.F,v 1.10 2014/08/14 16:49:19 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,15 +7,18 @@ CBOP
 C     !ROUTINE: ADAMS_BASHFORTH2
 C     !INTERFACE:
       SUBROUTINE ADAMS_BASHFORTH2(
-     I                     bi, bj, k, kSize,
+     I                     bi, bj, kArg, kSize,
      U                     gTracer, gTrNm1,
      O                     AB_gTr,
      I                     startAB, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R ADAMS_BASHFORTH2
-C     | o Extrapolate tendencies forward in time using
-C     |   quasi-second order Adams-Bashforth method.
+C     | o Extrapolate forward in time using quasi-second order
+C     |   Adams-Bashforth method.
+C     *==========================================================*
+C     | Either apply to tendency (kArg>0) at level k=kArg,
+C     |     or apply to state variable (kArg=0) for all levels
 C     *==========================================================*
 C     \ev
 
@@ -28,28 +31,32 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C     bi,bj,k :: Tile and level indices
+C     bi,bj   :: Tile indices
+C     kArg    :: if >0: apply AB on tendency at level k=kArg
+C             :: if =0: apply AB on state variable and process all levels
 C     kSize   :: 3rd dimension of tracer and tendency arrays
-C     gTracer ::  in: Tendency at current time  ( generally units of quantity/sec )
-C             :: out: Extrapolated Tendency at current time ( same units )
-C     gTrNm1  ::  in: Tendency at previous time             ( same units )
-C             :: out: Save tendency at current time         ( same units )
+C     gTracer ::  in: Tendency/State at current time
+C             :: out (kArg >0): Extrapolated Tendency at current time
+C     gTrNm1  ::  in: Tendency/State at previous time
+C             :: out: (kArg >0) Save tendency at current time
+C             :: out: (kArg =0) Extrapolated State at current time
 C     AB_gTr  :: Adams-Bashforth tendency increment
 C     startAB :: number of previous time level available to start/restart AB
 C     myIter  :: Current time step number
 C     myThid  :: my Thread Id. number
-      INTEGER bi, bj, k, kSize
-      _RL  gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
-      _RL  gTrNm1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
+      INTEGER bi, bj, kArg, kSize
+      _RL  gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize)
+      _RL  gTrNm1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize)
       _RL  AB_gTr (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER startAB
       INTEGER myIter, myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     k          :: level index
 C     i,j        :: Loop counters
 C     abFac      :: Adams bashforth extrapolation factor
-      INTEGER i,j
+      INTEGER i, j, k
       _RL abFac
 CEOP
 
@@ -62,15 +69,27 @@ C     Adams-Bashforth extrapolation factor
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C-    Compute effective G-term with Adams-Bashforth weights:
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        AB_gTr(i,j) = abFac
-     &              *( gTracer(i,j,k,bi,bj)- gTrNm1(i,j,k,bi,bj) )
-        gTrNm1(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj)
-        gTracer(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj) + AB_gTr(i,j)
-       ENDDO
-      ENDDO
+      IF ( kArg.EQ.0 ) THEN
+C-    Extrapolate forward in time the state variable, with AB weights:
+        DO k=1,kSize
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           AB_gTr(i,j) = abFac*( gTracer(i,j,k) - gTrNm1(i,j,k) )
+           gTrNm1(i,j,k) = gTracer(i,j,k) + AB_gTr(i,j)
+          ENDDO
+         ENDDO
+        ENDDO
+      ELSE
+C-    Extrapolate forward in time the tendency, with AB weights:
+        k = kArg
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+           AB_gTr(i,j) = abFac*( gTracer(i,j,k) - gTrNm1(i,j,k) )
+           gTrNm1(i,j,k) = gTracer(i,j,k)
+           gTracer(i,j,k) = gTracer(i,j,k) + AB_gTr(i,j)
+         ENDDO
+        ENDDO
+      ENDIF
 
       RETURN
       END

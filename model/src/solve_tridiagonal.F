@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_tridiagonal.F,v 1.10 2012/03/15 15:25:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_tridiagonal.F,v 1.11 2014/08/14 16:49:19 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -38,7 +38,7 @@ C     errCode :: > 0 if singular matrix
       _RL a3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL b3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL c3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL y3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL y3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER errCode
       INTEGER bi, bj, myThid
 
@@ -95,15 +95,15 @@ C--   Middle of forward sweep
 
       DO j=jMin,jMax
        DO i=iMin,iMax
-         y3d(i,j,1,bi,bj) = y3d(i,j,1,bi,bj)*b3d(i,j,1)
+         y3d(i,j,1) = y3d(i,j,1)*b3d(i,j,1)
        ENDDO
       ENDDO
       DO k=2,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
-         y3d(i,j,k,bi,bj) = ( y3d(i,j,k,bi,bj)
-     &                      - a3d(i,j,k)*y3d(i,j,k-1,bi,bj)
-     &                      )*b3d(i,j,k)
+         y3d(i,j,k) = ( y3d(i,j,k)
+     &                - a3d(i,j,k)*y3d(i,j,k-1)
+     &                )*b3d(i,j,k)
         ENDDO
        ENDDO
       ENDDO
@@ -112,8 +112,8 @@ C--    Backward sweep
       DO k=Nr-1,1,-1
        DO j=jMin,jMax
         DO i=iMin,iMax
-          y3d(i,j,k,bi,bj) = y3d(i,j,k,bi,bj)
-     &         - c3d(i,j,k)*b3d(i,j,k)*y3d(i,j,k+1,bi,bj)
+          y3d(i,j,k) = y3d(i,j,k)
+     &               - c3d(i,j,k)*b3d(i,j,k)*y3d(i,j,k+1)
         ENDDO
        ENDDO
       ENDDO
@@ -127,7 +127,7 @@ C--   Temporary array
 c      DO j=jMin,jMax
 c       DO i=iMin,iMax
          c3d_m1(i,j,k) = c3d(i,j,k)
-         y3d_m1(i,j,k) = y3d(i,j,k,bi,bj)
+         y3d_m1(i,j,k) = y3d(i,j,k)
         ENDDO
        ENDDO
       ENDDO
@@ -181,7 +181,7 @@ C--   Backward sweep
 
 C--   Update array
         DO k=1,Nr
-         y3d(i,j,k,bi,bj)=y3d_update(k)
+         y3d(i,j,k) = y3d_update(k)
         ENDDO
 
        ENDDO
@@ -263,7 +263,7 @@ C--   Update array
         DO i=1-OLx,sNx+OLx
 c      DO j=jMin,jMax
 c       DO i=iMin,iMax
-         y3d(i,j,k,bi,bj) = y3d_update(i,j,k)
+         y3d(i,j,k) = y3d_update(i,j,k)
         ENDDO
        ENDDO
 C-- k-loop
