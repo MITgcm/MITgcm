@@ -1,16 +1,28 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2046 2014/08/14 09:16:28 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2047 2014/08/14 19:56:30 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src & pkgs:
+  - change gTracer (and/or tracer) argument (drop bi,bj indices) in S/R
+     ADAMS_BASHFORTH(2&3), CYCLE_(AB_)TRACER, FREESURF_RESCALE_G,
+     IMPLDIFF, SOLVE_TRIDIAGONAL & _PENTADIAGONAL, GAD_SOM_ADVECT,
+     GAD_ADVECTION, GAD_CALC_RHS, GAD_IMPLICIT_R, TIMEAVE_CUMUL_DIF_1T
+  + change accordingly all calling S/R.
+  - use local temperature/salinity/ptracer tendency array (without bi,bj)
+    in S/R temp/salt/ptracers_integrate.F
 o pkg/seaice:
-  - move computation of stress contributions to rhsU/V in s/r seaice_lsr 
+  - move computation of stress contributions to rhsU/V in s/r seaice_lsr
     to separate s/r seaice_lsr_rhsu/v in order to be able to re-use code
   - make u/vIceC local variables if SEAICE_CGRID is defined only to be used
-    in seaice_lsr 
-  - seaice_lsr.F: make local 4D arrays UXX, VYY, etc 2D 
-    in s/r seaice_lsr_calc_coeffs 
+    in seaice_lsr
+  - seaice_lsr.F: make local 4D arrays UXX, VYY, etc 2D
+    in s/r seaice_lsr_calc_coeffs
+o pkg/mdsio:
+  - in MDS_READ/WRITE_FIELD, stop if file-name (+prefix) is too long
+    (e.g., > MAX_LEN_MBUF -90 ) or, in INI_MODEL_IO, if mdsioLocalDir is
+    too long (e.g., > MAX_LEN_FNAM/2 )
 
 checkpoint65b (2014/08/12)
 o pkg/matrix:
