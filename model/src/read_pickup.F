@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.9 2013/09/18 18:08:55 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.10 2014/08/15 19:22:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -173,10 +173,10 @@ C---   Old way to read model fields:
           CALL READ_REC_3D_RL( fn, fp, Nr, gV,    5, myIter,myThid )
           CALL READ_REC_3D_RL( fn, fp, Nr, gvNm1, 6, myIter,myThid )
           CALL READ_REC_3D_RL( fn, fp, Nr, theta, 7, myIter,myThid )
-          CALL READ_REC_3D_RL( fn, fp, Nr, gT,    8, myIter,myThid )
+c         CALL READ_REC_3D_RL( fn, fp, Nr, gT,    8, myIter,myThid )
           CALL READ_REC_3D_RL( fn, fp, Nr, gtNm1, 9, myIter,myThid )
           CALL READ_REC_3D_RL( fn, fp, Nr, salt, 10, myIter,myThid )
-          CALL READ_REC_3D_RL( fn, fp, Nr, gS,   11, myIter,myThid )
+c         CALL READ_REC_3D_RL( fn, fp, Nr, gS,   11, myIter,myThid )
           CALL READ_REC_3D_RL( fn, fp, Nr, gsNm1,12, myIter,myThid )
 #endif /*  ALLOW_ADAMSBASHFORTH_3 */
           CALL READ_REC_3D_RL( fn, fp,  1, etaN,

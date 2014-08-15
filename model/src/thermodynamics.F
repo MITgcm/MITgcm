@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.153 2014/08/14 16:51:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.154 2014/08/15 19:22:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -409,8 +409,6 @@ C--   end bi,bj loops.
        CALL DEBUG_STATS_RL(Nr,wVel,'Wvel (THERMODYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,theta,'Theta (THERMODYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,salt,'Salt (THERMODYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,gT,'Gt (THERMODYNAMICS)',myThid)
-       CALL DEBUG_STATS_RL(Nr,gS,'Gs (THERMODYNAMICS)',myThid)
 #ifndef ALLOW_ADAMSBASHFORTH_3
        CALL DEBUG_STATS_RL(Nr,gtNm1,'GtNm1 (THERMODYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,gsNm1,'GsNm1 (THERMODYNAMICS)',myThid)
