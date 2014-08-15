@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.28 2012/10/02 17:01:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.29 2014/08/15 09:27:03 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -72,6 +72,9 @@ c     == local variables ==
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       character*(128) fname_gencostbar(NGENCOST)
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+      character*(128) fnamesigmaRbar
+#endif 
 c
       character*(128) adfnamepsbar
       character*(128) adfnametbar
@@ -91,6 +94,9 @@ c
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       character*(128) adfname_gencostbar(NGENCOST)
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+      character*(128) adfnamesigmaRbar
+#endif 
       character*(128) adfnameiestaubar
 
 c     == external functions ==
@@ -164,6 +170,22 @@ c--   Save bpbar on file.
 #endif
       enddo
       ENDIF !      IF (using_cost_bp) THEN
+#endif
+
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+c--   Save sigmaRbar on file.
+      ilt=ilnblnk( sigmaRbarfile )
+      write(fnamesigmaRbar,'(2a,i10.10)')
+     &     sigmaRbarfile(1:ilt), '.', optimcycle
+      write(adfnamesigmaRbar,'(3a,i10.10)')
+     &     yadprefix, sigmaRbarfile(1:ilt), '.', optimcycle
+
+      do irec = 1,nmonsrec
+#ifdef ALLOW_ADJOINT_RUN
+        call active_write_xyz( adfnamesigmaRbar, tmpfld3d, irec,
+     &              optimcycle, mythid, xx_sigmaRbar_mean_dummy )
+#endif
+      enddo
 #endif
 
 #if (defined (ALLOW_THETA_COST_CONTRIBUTION) || \

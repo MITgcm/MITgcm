@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.12 2012/08/10 19:43:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.13 2014/08/15 09:27:03 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -305,6 +305,20 @@ c--   Include code to use the meridional wind stress contribution.
 #else
       write(msgbuf,'(a)')
      &'// ALLOW_VSTRESS_COST_CONTRIBUTION:  NOT defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif
+
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+c--   Enable testing of the 3d sigmaR field contribution
+c--   to the cost function.
+      write(msgbuf,'(a)')
+     &'// ALLOW_SIGMAR_COST_CONTRIBUTION:        defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#else
+      write(msgbuf,'(a)')
+     &'// ALLOW_SIGMAR_COST_CONTRIBUTION:    NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif

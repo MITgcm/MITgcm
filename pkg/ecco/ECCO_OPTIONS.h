@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ECCO_OPTIONS.h,v 1.1 2012/08/10 17:28:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ECCO_OPTIONS.h,v 1.2 2014/08/15 09:27:03 atn Exp $
 C $Name:  $
 
 CBOP
@@ -54,6 +54,9 @@ cph >>>>>> !!!!!! SPECIAL SEAICE FLAG FOR TESTING !!!!!! <<<<<<
 
 C       >>> Do a long protocol.
 #undef ECCO_VERBOSE
+
+C-- default turn off cost for sigmaR
+#undef ALLOW_SIGMAR_COST_CONTRIBUTION
 
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */

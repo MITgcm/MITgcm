@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.16 2012/08/10 19:45:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.17 2014/08/15 09:27:03 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -110,6 +110,19 @@ c--       Initialize roundtrip travel time average
             enddo
           enddo
           xx_iestaubar_mean_dummy = 0. _d 0
+#endif
+
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+c--       Initialise sigmaR average (3d).
+          do k = 1,nr
+            do j = jmin,jmax
+              do i =  imin,imax
+                sigmaRbar(i,j,k,bi,bj) = 0. _d 0
+              enddo
+            enddo
+          enddo
+          xx_sigmaRbar_mean_dummy = 0. _d 0
+          nnzsigmaRbar = nr
 #endif
 
 #if (defined (ALLOW_THETA_COST_CONTRIBUTION) || \

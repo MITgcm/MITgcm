@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averages_bar_directives.h,v 1.7 2011/12/06 04:14:04 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averages_bar_directives.h,v 1.8 2014/08/15 09:27:03 atn Exp $
 C $Name:  $
 
 c
@@ -9,6 +9,9 @@ c     created: heimbach@mit.edu 4-Mar-2003
 c
 CADJ STORE xx_psbar_mean_dummy = onetape
 CADJ STORE xx_tbar_mean_dummy  = onetape
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+CADJ STORE xx_sigmaRbar_mean_dummy  = onetape
+#endif
 CADJ STORE xx_sbar_mean_dummy  = onetape
 CADJ STORE xx_tbar_daily_mean_dummy  = onetape
 CADJ STORE xx_sbar_daily_mean_dummy  = onetape

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_ad_check_lev2_dir.h,v 1.3 2012/08/10 14:34:41 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_ad_check_lev2_dir.h,v 1.4 2014/08/15 09:27:03 atn Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 2
@@ -31,6 +31,9 @@ CADJ STORE sstbar  = tapelev2, key=ilev_2
 
 CADJ STORE xx_tbar_mean_dummy  = dummytape, key=1, kind=isbyte
 CADJ STORE xx_sbar_mean_dummy  = dummytape, key=1, kind=isbyte
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+CADJ STORE xx_sigmaRbar_mean_dummy  = dummytape, key=1, kind=isbyte
+#endif
 CADJ STORE xx_ubar_mean_dummy  = dummytape, key=1, kind=isbyte
 CADJ STORE xx_vbar_mean_dummy  = dummytape, key=1, kind=isbyte
 CADJ STORE xx_wbar_mean_dummy  = dummytape, key=1, kind=isbyte

@@ -47,6 +47,7 @@ cost_sshv4.f
 cost_ssh.f                      
 cost_ssh_new.f
 cost_ssh_mean.f                 
+cost_sigmar.f
 cost_tau_eddy.f
 cost_kapgm.f
 cost_kapredi.f

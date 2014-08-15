@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.27 2012/09/30 20:33:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.28 2014/08/15 09:27:03 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -210,6 +210,13 @@ cph      call cost_sss   ( myiter, mytime, mythid )
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
       call cost_salt  ( myiter, mytime, mythid )
+#endif
+
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+      write(msgbuf,'(a)') 'ph-cost call cost_sigmar'
+      call print_message( msgbuf, standardmessageunit,
+     &     SQUEEZE_RIGHT , mythid)
+      call cost_sigmar  ( myiter, mytime, mythid )
 #endif
 
 #ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION

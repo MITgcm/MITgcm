@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.64 2014/04/07 18:08:50 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.65 2014/08/15 09:27:03 atn Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -128,6 +128,9 @@ c             intantaneous temperatures.
 c     sbar  - contains the averaged salinity field after the call
 c             to subroutine POST_MONTHLY. Before, it accumulates the
 c             intantaneous salinities.
+c     sigmaRbar - contains the averaged sigmaR field after the call
+c             to subroutine POST_MONTHLY. Before, it accumulates the
+c             intantaneous sigmaR.
 c     psbar - contains the averaged surface pressure field after the call
 c             to subroutine POST_DAILY. Before, it accumulates the
 c             intantaneous surface pressure field.
@@ -153,6 +156,10 @@ c             intantaneous field.
       common /averages_r/
      &                    tbar,
      &                    sbar,
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+     &                    sigmaRbar,
+     &                    sigmaRfield,
+#endif
      &                    sstbar,
      &                    psbar,
      &                    bpbar,
@@ -171,6 +178,9 @@ c             intantaneous field.
      &                    Tfmean,
      &                    sbar_gen,
      &                    tbar_gen,
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+     &                    sigmaRbar_gen,
+#endif
      &                    VOLsumGlob_0,
      &                    VOLsumGlob,
      &                    RHOsumGlob_0,
@@ -179,6 +189,11 @@ c             intantaneous field.
 
       _RL VOLsumGlob_0, VOLsumGlob, RHOsumGlob_0, RHOsumGlob
 
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+      _RL sigmaRfield    (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL sigmaRbar      (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL sigmaRbar_gen  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
 #if (defined (ALLOW_THETA_COST_CONTRIBUTION) || \
      defined (ALLOW_CTDT_COST_CONTRIBUTION) || \
      defined (ALLOW_XBT_COST_CONTRIBUTION) || \
@@ -301,6 +316,9 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
       common /averages_c/
      &                    tbarfile,
      &                    sbarfile,
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+     &                    sigmaRbarfile,
+#endif
      &                    sstbarfile,
      &                    psbarfile,
      &                    bpbarfile,
@@ -315,6 +333,9 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
      &                    costTranspDataFile
       character*(MAX_LEN_FNAM) tbarfile
       character*(MAX_LEN_FNAM) sbarfile
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+      character*(MAX_LEN_FNAM) sigmaRbarfile
+#endif
       character*(MAX_LEN_FNAM) sstbarfile
       character*(MAX_LEN_FNAM) psbarfile
       character*(MAX_LEN_FNAM) bpbarfile
@@ -399,6 +420,7 @@ c     objf_ers   - Residual sea surface height contribution from T/P
 c     objf_gfo   - Residual sea surface height contribution from T/P
 c     objf_temp  - Temperature contribution.
 c     objf_salt  - Salinity contribution.
+c     objf_sigmaR  - sigmaR contribution.
 c     objf_temp0 - Initial conditions Temperature contribution.
 c     objf_salt0 - Initial conditions Salinity contribution.
 c     objf_sst   - Sea surface temperature contribution.
@@ -435,6 +457,9 @@ c                  function contributions.
      &     objf_hmean,
      &     objf_h, objf_tp, objf_ers, objf_gfo,
      &     objf_sshv4cost,
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+     &     objf_sigmaR,
+#endif
      &     objf_temp,      objf_salt,
      &     objf_temp0,     objf_salt0,
      &     objf_temp0smoo, objf_salt0smoo,
@@ -492,6 +517,9 @@ c                  function contributions.
       _RL  objf_ers  (nsx,nsy)
       _RL  objf_gfo  (nsx,nsy)
       _RL  objf_sshv4cost(NSSHV4COST,nsx,nsy)
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+      _RL  objf_sigmaR(nsx,nsy)
+#endif
       _RL  objf_temp (nsx,nsy)
       _RL  objf_salt (nsx,nsy)
       _RL  objf_temp0(nsx,nsy)
@@ -594,6 +622,9 @@ c                  function contributions.
      &                num_ers,
      &                num_gfo,
      &                num_sshv4cost,
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+     &                num_sigmaR,
+#endif
      &                num_temp,
      &                num_salt,
      &                num_temp0,
@@ -680,6 +711,9 @@ c                  function contributions.
       _RL  num_ers  (nsx,nsy)
       _RL  num_gfo  (nsx,nsy)
       _RL  num_sshv4cost(NSSHV4COST,nsx,nsy)
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+      _RL  num_sigmaR (nsx,nsy)
+#endif
       _RL  num_temp (nsx,nsy)
       _RL  num_salt (nsx,nsy)
       _RL  num_temp0(nsx,nsy)
@@ -763,6 +797,9 @@ c                  function contributions.
      &                    mult_ers,
      &                    mult_gfo,
      &                    mult_sshv4cost,
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+     &                    mult_sigmaR,
+#endif
      &                    mult_temp,
      &                    mult_salt,
      &                    mult_temp0,
@@ -830,6 +867,9 @@ c                  function contributions.
       _RL  mult_ers
       _RL  mult_gfo
       _RL  mult_sshv4cost(NSSHV4COST)
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+      _RL  mult_sigmaR
+#endif
       _RL  mult_temp
       _RL  mult_salt
       _RL  mult_temp0
@@ -902,11 +942,17 @@ c                 the current model integration.
      &                ndaysrec,
      &                nnztbar,
      &                nnzsbar
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+     &               ,nnzsigmaRbar
+#endif
       integer nyearsrec
       integer nmonsrec
       integer ndaysrec
       integer nnztbar
       integer nnzsbar
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+      integer nnzsigmaRbar
+#endif
 
 
 c     Data files for the weights used in the cost function:
@@ -929,6 +975,7 @@ c     ctds_errfile          - CTD salinity error.
 c     drift_errfile         - drifter error.
 c     salterrfile           - representation error due unresolved eddies
 c     temperrfile           - representation error due unresolved eddies
+c     sigmaRerrfile         - representation error due unresolved eddies
 c     velerrfile            - representation error
 
       common /ecco_cost_c/
@@ -956,6 +1003,9 @@ c     velerrfile            - representation error
      &                drift_errfile,
      &                udrifterrfile,
      &                vdrifterrfile,
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+     &                sigmaRerrfile,
+#endif
      &                salterrfile,
      &                temperrfile,
      &                velerrfile,
@@ -1012,6 +1062,9 @@ c     velerrfile            - representation error
       character*(MAX_LEN_FNAM) drift_errfile
       character*(MAX_LEN_FNAM) udrifterrfile
       character*(MAX_LEN_FNAM) vdrifterrfile
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+      character*(MAX_LEN_FNAM) sigmaRerrfile
+#endif
       character*(MAX_LEN_FNAM) salterrfile
       character*(MAX_LEN_FNAM) temperrfile
       character*(MAX_LEN_FNAM) velerrfile
@@ -1062,6 +1115,8 @@ c     wsst       - weight for sea surface temperature.
 c     wsss       - weight for sea surface salinity.
 c     wsalt      - weight for salinity.
 c     wsalt2     - representation error due to unresolved eddies
+c     wsigmaR    - weight for sigmaR
+c     wsigmaR2   - representation error due to unresolved eddies
 c     wtp        - weight for TOPEX/POSEIDON data.
 c     wers       - weight for ERS data.
 c     wp         - weight for geoid.
@@ -1081,6 +1136,9 @@ c     wetan      - weight for etan0
      &                      wbottomdrag,
      &                      wuwind,wvwind,
      &                      wscatx,wscaty,
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+     &                      wsigmaR,wsigmaR2,wsigmaRLev,
+#endif
      &                      wtheta,wtheta2,wthetaLev,
      &                      wsalt,wsalt2,wsaltLev,
      &                      wdiffkr,wdiffkr2,wdiffkrFld,
@@ -1132,6 +1190,11 @@ c     wetan      - weight for etan0
       _RL wsalt2  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL wthetaLev (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL wsaltLev  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+      _RL wsigmaR   (                            nr,nsx,nsy)
+      _RL wsigmaR2  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL wsigmaRLev(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
       _RL wuvel   (                            nr,nsx,nsy)
       _RL wvvel   (                            nr,nsx,nsy)
       _RL wsst    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
@@ -1270,6 +1333,7 @@ c
 c     Arrays that contain observations for the model-data comparison:
 c     ===============================================================
 c
+c     sigmaRdat  - reference sigmaR data.
 c     tdat       - reference temperature data.
 c     scatxdat   - reference zonal wind stress.
 c     scatydat   - reference meridional wind stress.
@@ -1301,6 +1365,9 @@ c     udriftdat  - drifters zonal velocities
 c     vdriftdat  - drifters meridional velocities
 
       common /ecco_cost_data_r/
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+     &                     sigmaRdat,
+#endif
      &                     tdat,
      &                     scatxdat,
      &                     scatydat,
@@ -1334,6 +1401,9 @@ c     vdriftdat  - drifters meridional velocities
      &                     curmtruobs,
      &                     curmtrvobs
 
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+      _RL sigmaRdat (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
       _RL tdat      (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL scatxdat  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL scatydat  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
@@ -1371,6 +1441,7 @@ c     vdriftdat  - drifters meridional velocities
 c     Files that contain obervations:
 c     ===============================
 c
+C     sigmaRdatfile - reference data file for sigmaR
 c     tdatfile      - reference data file for temperature.
 c     sdatfile      - reference data file for salinity.
 c     scatxdatfile  - reference data file for zonal wind stress.
@@ -1392,6 +1463,9 @@ c     ARGOsfile     - reference data file for ARGO
 c     driftfile     - reference data file for drifter mean velocities
 
       common /ecco_cost_data_c/
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+     &                     sigmaRdatfile,
+#endif
      &                     tdatfile,
      &                     sdatfile,
      &                     scatxdatfile,
@@ -1418,6 +1492,9 @@ c     driftfile     - reference data file for drifter mean velocities
      &                     curmtrufile,
      &                     curmtrvfile
 
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+      character*(MAX_LEN_FNAM) sigmaRdatfile
+#endif
       character*(MAX_LEN_FNAM) tdatfile
       character*(MAX_LEN_FNAM) sdatfile
       character*(MAX_LEN_FNAM) scatxdatfile
