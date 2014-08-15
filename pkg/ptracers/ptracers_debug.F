@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_debug.F,v 1.6 2007/11/05 18:48:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_debug.F,v 1.7 2014/08/15 19:18:12 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -42,13 +42,10 @@ C Loop over tracers
 
        WRITE(strng(1:9),'(a7,i2.2)') 'PTRACER',iTracer
        CALL DEBUG_STATS_RL(Nr,
-     &   pTracer(1-Olx,1-Oly,1,1,1,iTracer),strng,myThid)
-       WRITE(strng(1:9),'(a7,i2.2)') 'GTRACER',iTracer
-       CALL DEBUG_STATS_RL(Nr,
-     &   gPtr(1-Olx,1-Oly,1,1,1,iTracer),strng,myThid)
+     &   pTracer(1-OLx,1-OLy,1,1,1,iTracer),strng,myThid)
        WRITE(strng(1:9),'(a7,i2.2)') 'GNm1TRC',iTracer
        CALL DEBUG_STATS_RL(Nr,
-     &   gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),strng,myThid)
+     &   gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),strng,myThid)
 
 C end of tracer loop
       ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_FIELDS.h,v 1.2 2014/05/07 15:23:04 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_FIELDS.h,v 1.3 2014/08/15 19:18:12 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -15,19 +15,16 @@ CEOP
 
 C     COMMON /PTRACERS_FIELDS/
 C     pTracer  :: passive tracer concentration (tr per unit volume).
-C     gPtr     :: work-space for time-stepping
 C     gpTrNm1  :: work-space for time-stepping
 C     surfaceForcingPTr :: passive tracer surface forcing
       _RL  pTracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
-     &              PTRACERS_num)
-      _RL  gPtr    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
      &              PTRACERS_num)
       _RL  gpTrNm1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
      &              PTRACERS_num)
       _RL  surfaceForcingPTr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,
      &              PTRACERS_num)
       COMMON /PTRACERS_FIELDS/
-     &              pTracer, gPtr, gpTrNm1, surfaceForcingPTr
+     &              pTracer, gpTrNm1, surfaceForcingPTr
 
       _RL totSurfCorPTr(PTRACERS_num)
       COMMON /PTRACERS_SURFCOR_FIELDS/ totSurfCorPTr

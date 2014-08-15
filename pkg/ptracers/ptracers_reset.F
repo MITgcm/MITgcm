@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_reset.F,v 1.2 2013/03/21 18:07:59 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_reset.F,v 1.3 2014/08/15 19:18:12 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -73,7 +73,6 @@ C     Initialise again this tracer arrays
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              pTracer(i,j,k,bi,bj,iTracer) = PTRACERS_ref(k,iTracer)
-             gPtr(i,j,k,bi,bj,iTracer)    = 0. _d 0
              gpTrNm1(i,j,k,bi,bj,iTracer) = 0. _d 0
             ENDDO
            ENDDO
