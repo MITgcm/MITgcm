@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.70 2014/07/10 00:37:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.71 2014/08/15 19:19:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -50,6 +50,7 @@ C     myThid    :: Thread Id number
       _RL myTime
       INTEGER myThid
 
+#ifdef USE_OLD_EXTERNAL_FORCING
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j       :: Loop counters
@@ -146,6 +147,7 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
 
+#endif /* USE_OLD_EXTERNAL_FORCING */
       RETURN
       END
 
@@ -188,6 +190,7 @@ C     myThid    :: Thread Id number
       _RL myTime
       INTEGER myThid
 
+#ifdef USE_OLD_EXTERNAL_FORCING
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j       :: Loop counters
@@ -283,6 +286,7 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
 
+#endif /* USE_OLD_EXTERNAL_FORCING */
       RETURN
       END
 
@@ -326,6 +330,7 @@ C     myThid    :: Thread Id number
       _RL myTime
       INTEGER myThid
 
+#ifdef USE_OLD_EXTERNAL_FORCING
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j       :: Loop counters
@@ -614,6 +619,7 @@ c     ENDIF
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
 
+#endif /* USE_OLD_EXTERNAL_FORCING */
       RETURN
       END
 
@@ -658,6 +664,7 @@ C     myThid    :: Thread Id number
       _RL myTime
       INTEGER myThid
 
+#ifdef USE_OLD_EXTERNAL_FORCING
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j       :: Loop counters
@@ -816,5 +823,6 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
 
+#endif /* USE_OLD_EXTERNAL_FORCING */
       RETURN
       END
