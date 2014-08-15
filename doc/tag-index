@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2047 2014/08/14 19:56:30 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2048 2014/08/15 20:54:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src & pkg/ptracers:
+  - remove common block variables gT,gS (in DYNVARS.h), except when 
+     USE_OLD_EXTERNAL_FORCING is defined; update TAF storage accordingly. 
+  - remove common block variable gPtr.
 o model/src & pkgs:
   - change gTracer (and/or tracer) argument (drop bi,bj indices) in S/R
      ADAMS_BASHFORTH(2&3), CYCLE_(AB_)TRACER, FREESURF_RESCALE_G,
