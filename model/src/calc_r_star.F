@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.22 2014/04/29 21:07:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.23 2014/08/15 08:21:57 atn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -49,10 +49,10 @@ C     i,j, bi,bj      :: loop counter
 C     numbWrite       :: count the Number of warning written on STD-ERR file
 C     numbWrMax       ::  maximum  Number of warning written on STD-ERR file
       LOGICAL rStarAreaWeight
+      _RL maxhFacC
       INTEGER i,j,bi,bj
       INTEGER numbWrite, numbWrMax
       INTEGER icntc1, icntc2, icntw, icnts
-      INTEGER iic, jjc, iic2, jjc2, iiw, jjw, iis, jjs
       _RL tmpfldW, tmpfldS
 CEOP
 
@@ -61,6 +61,8 @@ CEOP
 #endif
       DATA numbWrite / 0 /
       numbWrMax = Nx*Ny
+
+      maxhFacC    = 0. _d 0
 
       rStarAreaWeight = .TRUE.
 C-    Area-weighted average consistent with KE (& vert. advection):
@@ -185,77 +187,72 @@ C     for now, just stop
          DO i=1,sNx+1
           IF ( rStarFacC(i,j,bi,bj).LT.hFacInf ) THEN
             icntc1 = icntc1 + 1
-            iic = i
-            jjc = j
           ENDIF
           IF ( rStarFacW(i,j,bi,bj).LT.hFacInf ) THEN
             icntw = icntw + 1
-            iiw = i
-            jjw = j
           ENDIF
           IF ( rStarFacS(i,j,bi,bj).LT.hFacInf ) THEN
             icnts = icnts + 1
-            iis = i
-            jjs = j
           ENDIF
           IF ( rStarFacC(i,j,bi,bj).GT.hFacSup ) THEN
             icntc2 = icntc2 + 1
-            iic2 = i
-            jjc2 = j
+            maxhFacC = max(rStarFacC(i,j,bi,bj),maxhFacC)
           ENDIF
          ENDDO
         ENDDO
+
         IF ( icntc1+icnts+icntw .GT. 0 ) THEN
 C-    Print an error msg and then stop:
-         IF ( icntw  .GT. 0 ) THEN
-          tmpfldW = rSurfW(iiw,jjw,bi,bj) - rLowW(iiw,jjw,bi,bj)
-          WRITE(errorMessageUnit,'(A,I8,A,3I4,I10)')
-     &     'WARNING: r*FacW < hFacInf at',icntw,
-     &     ' pts : bi,bj,Thid,Iter=',bi,bj,myThid,myIter
-          WRITE(errorMessageUnit,'(A,2I4,A,1F10.6,1P3E14.6)')
-     &     ' e.g. at i,j=',iiw,jjw,' ; rStarFac,H,eta =',
-     &      rStarFacW(iiw,jjw,bi,bj), tmpfldW,
-     &      etaFld(iiw-1,jjw,bi,bj), etaFld(iiw,jjw,bi,bj)
-          WRITE(errorMessageUnit,'(A)')
-     &     'STOP in CALC_R_STAR : too SMALL rStarFacW !'
-         ENDIF
-         IF ( icnts  .GT. 0 ) THEN
-          tmpfldS = rSurfS(iis,jjs,bi,bj) - rLowS(iis,jjs,bi,bj)
-          WRITE(errorMessageUnit,'(A,I8,A,3I4,I10)')
-     &     'WARNING: r*FacS < hFacInf at',icnts,
-     &     ' pts : bi,bj,Thid,Iter=',bi,bj,myThid,myIter
-          WRITE(errorMessageUnit,'(A,2I4,A,1F10.6,1P3E14.6)')
-     &     ' e.g. at i,j=',iis,jjs,' ; rStarFac,H,eta =',
-     &      rStarFacS(iis,jjs,bi,bj), tmpfldS,
-     &      etaFld(iis,jjs-1,bi,bj), etaFld(iis,jjs,bi,bj)
-          WRITE(errorMessageUnit,'(A)')
-     &     'STOP in CALC_R_STAR : too SMALL rStarFacS !'
-         ENDIF
-         IF ( icntc1 .GT. 0 ) THEN
-          WRITE(errorMessageUnit,'(A,I8,A,3I4,I10)')
+         DO j=1,sNy+1
+          DO i=1,sNx+1
+           IF ( rStarFacC(i,j,bi,bj).LT.hFacInf ) THEN
+            WRITE(errorMessageUnit,'(A,2I4,A,1F10.6,1P2E14.6)')
+     &       ' fail at i,j=',i,j,' ; rStarFacC,H,eta =',
+     &       rStarFacC(i,j,bi,bj),
+     &       Ro_surf(i,j,bi,bj)-R_low(i,j,bi,bj),
+     &       etaFld(i,j,bi,bj)
+           ENDIF
+           IF ( rStarFacW(i,j,bi,bj).LT.hFacInf ) THEN
+            tmpfldW = rSurfW(i,j,bi,bj) - rLowW(i,j,bi,bj)
+            WRITE(errorMessageUnit,'(A,2I4,A,1F10.6,1P3E14.6)')
+     &       ' fail at i,j=',i,j,' ; rStarFacW,H,eta =',
+     &        rStarFacW(i,j,bi,bj), tmpfldW,
+     &        etaFld(i-1,j,bi,bj), etaFld(i,j,bi,bj)
+           ENDIF
+           IF ( rStarFacS(i,j,bi,bj).LT.hFacInf ) THEN
+            tmpfldS = rSurfS(i,j,bi,bj) - rLowS(i,j,bi,bj)
+            WRITE(errorMessageUnit,'(A,2I4,A,1F10.6,1P3E14.6)')
+     &       ' fail at i,j=',i,j,' ; rStarFacS,H,eta =',
+     &        rStarFacS(i,j,bi,bj), tmpfldS,
+     &        etaFld(i,j-1,bi,bj), etaFld(i,j,bi,bj)
+           ENDIF
+          ENDDO
+         ENDDO
+         IF ( icntc1  .GT. 0 ) 
+     &    WRITE(errorMessageUnit,'(A,I8,A,3I4,I10)')
      &     'WARNING: r*FacC < hFacInf at',icntc1,
      &     ' pts : bi,bj,Thid,Iter=',bi,bj,myThid,myIter
-          WRITE(errorMessageUnit,'(A,2I4,A,1F10.6,1P2E14.6)')
-     &     ' e.g. at i,j=',iic,jjc,' ; rStarFac,H,eta =',
-     &     rStarFacC(iic,jjc,bi,bj),
-     &     Ro_surf(iic,jjc,bi,bj)-R_low(iic,jjc,bi,bj),
-     &     etaFld(iic,jjc,bi,bj)
-          WRITE(errorMessageUnit,'(A)')
-     &     'STOP in CALC_R_STAR : too SMALL rStarFacC !'
-         ENDIF
+         IF ( icntw  .GT. 0 ) 
+     &    WRITE(errorMessageUnit,'(A,I8,A,3I4,I10)')
+     &     'WARNING: r*FacW < hFacInf at',icntw,
+     &     ' pts : bi,bj,Thid,Iter=',bi,bj,myThid,myIter
+         IF ( icnts  .GT. 0 ) 
+     &    WRITE(errorMessageUnit,'(A,I8,A,3I4,I10)')
+     &     'WARNING: r*FacS < hFacInf at',icnts,
+     &     ' pts : bi,bj,Thid,Iter=',bi,bj,myThid,myIter
+         WRITE(errorMessageUnit,'(A)')
+     &    'STOP in CALC_R_STAR : too SMALL rStarFac[C,W,S] !'
          STOP 'ABNORMAL END: S/R CALC_R_STAR'
         ENDIF
+
 C-- Usefull warning when r*Fac becomes very large:
         IF ( icntc2.GT.0 .AND. numbWrite.LE.numbWrMax ) THEN
          numbWrite = numbWrite + 1
          WRITE(errorMessageUnit,'(A,I8,A,3I4,I10)')
      &    'WARNING: r*FacC > hFacSup at',icntc2,
      &    ' pts : bi,bj,Thid,Iter=',bi,bj,myThid,myIter
-         WRITE(errorMessageUnit,'(A,2I4,A,1F10.6,1P2E14.6)')
-     &    ' e.g. at i,j=',iic2,jjc2,' ; rStarFac,H,eta =',
-     &    rStarFacC(iic2,jjc2,bi,bj),
-     &    Ro_surf(iic2,jjc2,bi,bj)-R_low(iic2,jjc2,bi,bj),
-     &    etaFld(iic2,jjc2,bi,bj)
+         WRITE(errorMessageUnit,'(A,E14.6)')
+     &    'WARNING: max(hFacC) is ',maxhFacC
         ENDIF
 
 C-    end 1rst bi,bj loop.
