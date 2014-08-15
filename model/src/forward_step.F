@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.223 2014/08/07 17:32:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.224 2014/08/15 20:41:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,19 +52,54 @@ C     !INTERFACE:
       SUBROUTINE FORWARD_STEP( iloop, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
-C     *==================================================================
+C     *=================================================================
 C     | SUBROUTINE forward_step
-C     | o Run the ocean model and, optionally, evaluate a cost function.
-C     *==================================================================
+C     | o Step forward in time the model variables for one time-step
+C     *=================================================================
+C     | The algorithm...
 C     |
-C     | THE_MAIN_LOOP is the toplevel routine for the Tangent Linear and
-C     | Adjoint Model Compiler (TAMC). For this purpose the initialization
-C     | of the model was split into two parts. Those parameters that do
-C     | not depend on a specific model run are set in INITIALISE_FIXED,
-C     | whereas those that do depend on the specific realization are
-C     | initialized in INITIALISE_VARIA.
+C     | "Calculation of Gs"
+C     | ===================
+C     | This is where all the accelerations and tendencies (ie.
+C     | physics, parameterizations etc...) are calculated
+C     |   rho = rho ( theta[n], salt[n] )
+C     |   b   = b(rho, theta)
+C     |   K31 = K31 ( rho )
+C     |   Gu[n] = Gu( u[n], v[n], wVel, b, ... )
+C     |   Gv[n] = Gv( u[n], v[n], wVel, b, ... )
+C     |   Gt[n] = Gt( theta[n], u[n], v[n], wVel, K31, ... )
+C     |   Gs[n] = Gs( salt[n], u[n], v[n], wVel, K31, ... )
 C     |
-C     *==================================================================
+C     | "Time-stepping" or "Prediction"
+C     | ================================
+C     | The models variables are stepped forward with the appropriate
+C     | time-stepping scheme (currently we use Adams-Bashforth II)
+C     | - For momentum, the result is always *only* a "prediction"
+C     | in that the flow may be divergent and will be "corrected"
+C     | later with a surface pressure gradient.
+C     | - Normally for tracers the result is the new field at time
+C     | level [n+1} *BUT* in the case of implicit diffusion the result
+C     | is also *only* a prediction.
+C     | - We denote "predictors" with an asterisk (*).
+C     |   U* = U[n] + dt x ( 3/2 Gu[n] - 1/2 Gu[n-1] )
+C     |   V* = V[n] + dt x ( 3/2 Gv[n] - 1/2 Gv[n-1] )
+C     |   theta[n+1] = theta[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C     |   salt[n+1]  = salt[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C     | With implicit diffusion:
+C     |   theta* = theta[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C     |   salt*  = salt[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C     |   (1 + dt * K * d_zz) theta[n+1] = theta*
+C     |   (1 + dt * K * d_zz) salt[n+1]  = salt*
+C     |
+C     | "Correction Step"
+C     | =================
+C     | Here we update the horizontal velocities with the surface
+C     | pressure such that the resulting flow is either consistent
+C     | with the free-surface evolution or the rigid-lid:
+C     |   U[n] = U* + dt x d/dx P
+C     |   V[n] = V* + dt x d/dy P
+C     |   W[n] = W* + dt x d/dz P  (NH mode)
+C     *=================================================================
 C     \ev
 
 C     !USES:

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.116 2014/04/04 20:55:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.117 2014/08/15 20:41:50 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -112,21 +112,27 @@ C/\  | | |-DO_ATMOSPHERIC_PHYS :: Atmospheric physics computation
 C/\  | | |
 C/\  | | |-DO_OCEANIC_PHYS     :: Oceanic (& seaice) physics computation
 C/\  | | | |-OBCS_CALC         :: Open boundary. package (see pkg/obcs).
+C/\  | | | |-EXTERNAL_FORCING_SURF:: Accumulates appropriately dimensioned
+C/\  | | | |                      :: forcing terms.
 C/\  | | |
 C/\  | | |-GCHEM_CALC_TENDENCY :: geochemistry driver routine (see pkg/gchem)
 C/\  | | |
 C/\  | | |-THERMODYNAMICS      :: (synchronous time-stepping)
 C/\  | | |                        theta, salt + tracer equations driver.
-C/\  | | | |-EXTERNAL_FORCING_SURF:: Accumulates appropriately dimensioned
-C/\  | | | |                      :: forcing terms.
-C/\  | | | |-GAD_ADVECTION        :: Generalised advection driver (multi-dim
-C/\  | | | |                         advection case) (see pkg/gad).
-C/\  | | | |-CALC_GT              :: Calculate the temperature tendency terms
-C/\  | | | |-TIMESTEP_TRACER      :: Step tracer field forward in time
-C/\  | | | |-CALC_GS              :: Calculate the salinity tendency terms
-C/\  | | | |-TIMESTEP_TRACER      :: Step tracer field forward in time
+C/\  | | | |-GMREDI_RESIDUAL_FLOW :: Get the flow field used to advect tracer
+C/\  | | | |
+C/\  | | | |-TEMP_INTEGRATE       :: Step forward Prognostic Eq for Temperature
+C/\  | | | | |-GAD_ADVECTION      :: Generalised advection driver (multi-dim
+C/\  | | | | |                         advection case) (see pkg/gad).
+C/\  | | | | |-GAD_CALC_RHS       :: Calculate Advection-Diffusion tendency terms
+C/\  | | | | |-TIMESTEP_TRACER    :: Step tracer field forward in time
+C/\  | | | | |-IMPLDIFF           :: Solve vertical implicit diffusion equation.
+C/\  | | | | |-CYCLE_AB_TRACER    :: Cycle time-stepping arrays for tracer field
+C/\  | | | |
+C/\  | | | |-SALT_INTEGRATE       :: Step forward Prognostic Eq for Salinity
+C/\  | | | |
 C/\  | | | |-PTRACERS_INTEGRATE   :: Integrate other tracer(s) (see pkg/ptracers).
-C/\  | | | |-IMPLDIFF             :: Solve vertical implicit diffusion equation.
+C/\  | | | |
 C/\  | | | |-OBCS_APPLY_TS        :: Open boundary package (see pkg/obcs ).
 C/\  | | |
 C/\  | | |-DYNAMICS       :: Momentum equations driver.
@@ -160,7 +166,8 @@ C/\  | | |
 C/\  | | |-THERMODYNAMICS       :: (staggered time-stepping)
 C/\  | | |                         theta, salt + tracer equations driver.
 C/\  | | |
-C/\  | | |-TRACERS_CORRECTION_STEP :: Finalise tracer stepping
+C/\  | | |-TRACERS_CORRECTION_STEP :: Finalise tracer steppin:
+C/\  | | |                             apply filter, conv.adjustment
 C/\  | | |
 C/\  | | |-GCHEM_FORCING_SEP :: tracer forcing for gchem pkg (if tracer
 C/\  | | |                      dependent tendencies calculated separately)
