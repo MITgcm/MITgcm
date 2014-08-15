@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.141 2014/08/06 23:17:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.142 2014/08/15 09:25:29 atn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -11,6 +11,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_SALT_PLUME
 # include "SALT_PLUME_OPTIONS.h"
+#endif
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
 #endif
 
 #ifdef ALLOW_AUTODIFF
@@ -93,6 +96,11 @@ C     == Global variables ===
 # endif
 # ifdef ALLOW_SALT_PLUME
 #  include "SALT_PLUME.h"
+# endif
+# ifdef ALLOW_ECCO
+#  ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+#   include "ecco_cost.h"
+#  endif
 # endif
 #endif /* ALLOW_AUTODIFF */
 
@@ -194,6 +202,21 @@ CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
         ENDDO
        ENDDO
       ENDDO
+# endif
+# ifdef ALLOW_ECCO
+#  ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           sigmaRfield(i,j,k,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#  endif
 # endif
 #endif /* ALLOW_AUTODIFF */
 
@@ -753,6 +776,15 @@ cph Avoid variable aliasing for adjoint !!!
      I             rhoInSitu(1-OLx,1-OLy,k,bi,bj), rhoKm1, rhoKp1,
      O             sigmaX, sigmaY, sigmaR,
      I             myThid )
+#ifdef ALLOW_ECCO
+# ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+            DO j=jMin,jMax
+             DO i=iMin,iMax
+              sigmaRfield(i,j,k,bi,bj)=sigmaR(i,j,k)
+             ENDDO
+            ENDDO
+# endif
+#endif /* ALLOW_ECCO */
 #ifdef ALLOW_AUTODIFF
 #ifdef GMREDI_WITH_STABLE_ADJOINT
 cgf zero out adjoint fields to stabilize pkg/gmredi adjoint
