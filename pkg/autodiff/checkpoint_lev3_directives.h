@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.59 2013/03/15 13:35:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.60 2014/08/15 19:27:13 jmc Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
@@ -45,23 +45,21 @@ c
 c
 #ifdef AUTODIFF_USE_OLDSTORE_3D
 c
-CADJ STORE gs  = tapelev3, key = ilev_3
-CADJ STORE gt  = tapelev3, key = ilev_3             
 #ifdef ALLOW_ADAMSBASHFORTH_3
 CADJ STORE gtnm  = tapelev3, key = ilev_3
 CADJ STORE gsnm  = tapelev3, key = ilev_3
 CADJ STORE gunm  = tapelev3, key = ilev_3
 CADJ STORE gvnm  = tapelev3, key = ilev_3
 #else
-CADJ STORE gtnm1  = tapelev3, key = ilev_3             
-CADJ STORE gsnm1  = tapelev3, key = ilev_3             
-CADJ STORE gunm1  = tapelev3, key = ilev_3             
-CADJ STORE gvnm1  = tapelev3, key = ilev_3             
+CADJ STORE gtnm1  = tapelev3, key = ilev_3
+CADJ STORE gsnm1  = tapelev3, key = ilev_3
+CADJ STORE gunm1  = tapelev3, key = ilev_3
+CADJ STORE gvnm1  = tapelev3, key = ilev_3
 #endif
-CADJ STORE theta  = tapelev3, key = ilev_3             
-CADJ STORE salt  = tapelev3, key = ilev_3             
-CADJ STORE uvel  = tapelev3, key = ilev_3             
-CADJ STORE vvel  = tapelev3, key = ilev_3     
+CADJ STORE theta  = tapelev3, key = ilev_3
+CADJ STORE salt  = tapelev3, key = ilev_3
+CADJ STORE uvel  = tapelev3, key = ilev_3
+CADJ STORE vvel  = tapelev3, key = ilev_3
 CADJ STORE wvel  = tapelev3, key = ilev_3
 CADJ STORE totphihyd  = tapelev3, key = ilev_3
 c
@@ -71,19 +69,12 @@ CADJ STORE StoreDynVars3D     = tapelev3, key = ilev_3
 c
 #endif /* AUTODIFF_USE_OLDSTORE_3D */
 
-
-
 CADJ STORE phi0surf     = tapelev3, key = ilev_3
 CADJ STORE saltflux     = tapelev3, key = ilev_3
 
 #ifdef EXACT_CONSERV
 cphCADJ STORE hDivFlow  = tapelev3, key = ilev_3
 #endif /* EXACT_CONSERV */
-
-#ifdef ALLOW_PASSIVE_TRACER
-CADJ STORE tr1       = tapelev3, key = ilev_3
-CADJ STORE gtr1nm1   = tapelev3, key = ilev_3
-#endif /* ALLOW_PASSIVE_TRACER */
 
 #ifdef NONLIN_FRSURF
 CADJ STORE hfac_surfc    = tapelev3, key = ilev_3
@@ -94,13 +85,13 @@ CADJ STORE hFac_surfNm1S= tapelev3, key = ilev_3
 CADJ STORE hFac_surfNm1W= tapelev3, key = ilev_3
 
 # ifndef DISABLE_RSTAR_CODE
-CADJ STORE rstarexpc,rstarexps,rstarexpw 
+CADJ STORE rstarexpc,rstarexps,rstarexpw
 CADJ &     = tapelev3, key = ilev_3
-CADJ STORE rstarfacc,rstarfacs,rstarfacw 
+CADJ STORE rstarfacc,rstarfacs,rstarfacw
 CADJ &     = tapelev3, key = ilev_3
 CADJ STORE rStarFacNm1C,rStarFacNm1S,rStarFacNm1W
 CADJ &     = tapelev3, key = ilev_3
-CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt 
+CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
 CADJ &     = tapelev3, key = ilev_3
 # endif
 
@@ -131,7 +122,7 @@ CADJ &     tapelev3, key = ilev_3
 
 #ifdef ALLOW_CTRL
 # include "ctrl_ad_check_lev3_dir.h"
-#endif 
+#endif
 
 #ifdef ALLOW_PTRACERS
 # include "ptracers_ad_check_lev3_dir.h"
@@ -172,11 +163,11 @@ CADJ &     tapelev3, key = ilev_3
 #ifdef ALLOW_GCHEM
 # include "gchem_ad_check_lev3_dir.h"
 #endif
- 
+
 #ifdef ALLOW_CFC
 # include "cfc_ad_check_lev3_dir.h"
 #endif
- 
+
 #ifdef ALLOW_DIC
 # include "dic_ad_check_lev3_dir.h"
 #endif

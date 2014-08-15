@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.26 2014/06/30 15:42:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.27 2014/08/15 19:27:13 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -15,7 +15,7 @@ C $Name:  $
 # include "EXF_OPTIONS.h"
 #endif
 
-      subroutine autodiff_restore( mythid )
+      subroutine autodiff_restore( myThid )
 
 c     ==================================================================
 c     SUBROUTINE autodiff_restore
@@ -65,13 +65,13 @@ c They provide the fields to be stored.
 # include "ctrl.h"
 
 c     == routine arguments ==
-c     note: under the multi-threaded model myiter and
-c           mytime are local variables passed around as routine
+c     note: under the multi-threaded model myIter and
+c           myTime are local variables passed around as routine
 c           arguments. Although this is fiddly it saves the need to
 c           impose additional synchronisation points when they are
 c           updated.
-c     mythid - thread number for this instance of the routine.
-      integer mythid
+c     myThid - thread number for this instance of the routine.
+      integer myThid
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c     == local variables ==
@@ -91,9 +91,9 @@ C--   Over all tiles
 
 #ifndef AUTODIFF_USE_OLDSTORE_2D
 C-      2D arrays
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-          etan(I,J,bi,bj)               = StoreDynVars2D(I,J,bi,bj,1)
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
+          etaN(I,J,bi,bj)               = StoreDynVars2D(I,J,bi,bj,1)
           surfaceforcingTice(I,J,bi,bj) = StoreDynVars2D(I,J,bi,bj,2)
           taux0(I,J,bi,bj) = StoreDynVars2D(I,J,bi,bj,3)
           taux1(I,J,bi,bj) = StoreDynVars2D(I,J,bi,bj,4)
@@ -129,32 +129,30 @@ C-      2D arrays
 #ifndef AUTODIFF_USE_OLDSTORE_3D
 C-      3D arrays
         DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
-       gs(I,J,K,bi,bj)       = StoreDynVars3D(I,J,K,bi,bj,1)
-       gt(I,J,K,bi,bj)       = StoreDynVars3D(I,J,K,bi,bj,2)
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
 #ifdef ALLOW_ADAMSBASHFORTH_3
-       gtnm(I,J,K,bi,bj,1)  = StoreDynVars3D(I,J,K,bi,bj,3)
-       gsnm(I,J,K,bi,bj,1)  = StoreDynVars3D(I,J,K,bi,bj,4)
-       gunm(I,J,K,bi,bj,1)  = StoreDynVars3D(I,J,K,bi,bj,5)
-       gvnm(I,J,K,bi,bj,1)  = StoreDynVars3D(I,J,K,bi,bj,6)
+           gtNm(I,J,K,bi,bj,1)   = StoreDynVars3D(I,J,K,bi,bj,1)
+           gsNm(I,J,K,bi,bj,1)   = StoreDynVars3D(I,J,K,bi,bj,2)
+           guNm(I,J,K,bi,bj,1)   = StoreDynVars3D(I,J,K,bi,bj,3)
+           gvNm(I,J,K,bi,bj,1)   = StoreDynVars3D(I,J,K,bi,bj,4)
 #else
-       gtnm1(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,3)
-       gsnm1(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,4)
-       gunm1(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,5)
-       gvnm1(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,6)
+           gtNm1(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,1)
+           gsNm1(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,2)
+           guNm1(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,3)
+           gvNm1(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,4)
 #endif
-       theta(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,7)
-       salt(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,8)
-       uvel(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,9)
-       vvel(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,10)
-       wvel(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,11)
-       totphihyd(I,J,K,bi,bj)= StoreDynVars3D(I,J,K,bi,bj,12)
+           theta(I,J,K,bi,bj)    = StoreDynVars3D(I,J,K,bi,bj,5)
+           salt(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,6)
+           uVel(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,7)
+           vVel(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,8)
+           wVel(I,J,K,bi,bj)     = StoreDynVars3D(I,J,K,bi,bj,9)
+           totPhiHyd(I,J,K,bi,bj)= StoreDynVars3D(I,J,K,bi,bj,10)
 #ifdef ALLOW_ADAMSBASHFORTH_3
-       gtnm(I,J,K,bi,bj,2)  = StoreDynVars3D(I,J,K,bi,bj,13)
-       gsnm(I,J,K,bi,bj,2)  = StoreDynVars3D(I,J,K,bi,bj,14)
-       gunm(I,J,K,bi,bj,2)  = StoreDynVars3D(I,J,K,bi,bj,15)
-       gvnm(I,J,K,bi,bj,2)  = StoreDynVars3D(I,J,K,bi,bj,16)
+           gtNm(I,J,K,bi,bj,2)   = StoreDynVars3D(I,J,K,bi,bj,11)
+           gsNm(I,J,K,bi,bj,2)   = StoreDynVars3D(I,J,K,bi,bj,12)
+           guNm(I,J,K,bi,bj,2)   = StoreDynVars3D(I,J,K,bi,bj,13)
+           gvNm(I,J,K,bi,bj,2)   = StoreDynVars3D(I,J,K,bi,bj,14)
 #endif
           ENDDO
          ENDDO
@@ -170,8 +168,8 @@ C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 C-      2D arrays
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
           hflux0(I,J,bi,bj)            = StoreEXF1(I,J,bi,bj,1)
           hflux1(I,J,bi,bj)            = StoreEXF1(I,J,bi,bj,2)
           sflux0(I,J,bi,bj)            = StoreEXF1(I,J,bi,bj,3)
@@ -213,8 +211,8 @@ C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 C-      2D arrays
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
 #  ifdef ALLOW_ATM_TEMP
           aqh0(I,J,bi,bj)            = StoreEXF2(I,J,bi,bj,1)
           aqh1(I,J,bi,bj)            = StoreEXF2(I,J,bi,bj,2)
@@ -253,8 +251,8 @@ C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 C-      2D arrays
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
 # ifdef ALLOW_UWIND_CONTROL
           xx_uwind0(I,J,bi,bj)     = StoreCTRLS1(I,J,bi,bj,1)
           xx_uwind1(I,J,bi,bj)     = StoreCTRLS1(I,J,bi,bj,2)
@@ -308,7 +306,7 @@ C--   Over all tiles
        DO bi = myBxLo(myThid), myBxHi(myThid)
 C-      2D arrays
         DO K=1,Nr
-         DO I=1-Olx,sNx+Olx
+         DO I=1-OLx,sNx+OLx
           OBNt(I,K,bi,bj)    = StoreOBCSN(I,K,bi,bj,1)
           OBNs(I,K,bi,bj)    = StoreOBCSN(I,K,bi,bj,2)
           OBNu0(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,3)
@@ -341,7 +339,7 @@ C--   Over all tiles
        DO bi = myBxLo(myThid), myBxHi(myThid)
 C-      2D arrays
         DO K=1,Nr
-         DO I=1-Olx,sNx+Olx
+         DO I=1-OLx,sNx+OLx
           OBSt(I,K,bi,bj)       = StoreOBCSS(I,K,bi,bj,1)
           OBSs(I,K,bi,bj)       = StoreOBCSS(I,K,bi,bj,2)
           OBSu0(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,3)
@@ -374,7 +372,7 @@ C--   Over all tiles
        DO bi = myBxLo(myThid), myBxHi(myThid)
 C-      2D arrays
         DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
+         DO J=1-OLy,sNy+OLy
           OBEt(J,K,bi,bj)      = StoreOBCSE(J,K,bi,bj,1)
           OBEs(J,K,bi,bj)      = StoreOBCSE(J,K,bi,bj,2)
           OBEu0(J,K,bi,bj)     = StoreOBCSE(J,K,bi,bj,3)
@@ -407,7 +405,7 @@ C--   Over all tiles
        DO bi = myBxLo(myThid), myBxHi(myThid)
 C-      2D arrays
         DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
+         DO J=1-OLy,sNy+OLy
           OBWt(J,K,bi,bj)      = StoreOBCSW(J,K,bi,bj,1)
           OBWs(J,K,bi,bj)      = StoreOBCSW(J,K,bi,bj,2)
           OBWu0(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,3)
@@ -440,8 +438,8 @@ C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 C-      2D arrays
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
           AREA(I,J,bi,bj)   = StoreSEAICE(I,J,bi,bj,1)
           HEFF(I,J,bi,bj)   = StoreSEAICE(I,J,bi,bj,2)
           HSNOW(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,3)

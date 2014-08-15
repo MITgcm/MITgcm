@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF.h,v 1.12 2012/08/07 21:17:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF.h,v 1.13 2014/08/15 19:27:13 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
@@ -27,9 +27,9 @@ c ad dump record number (used only if dumpAdByRec is true)
       integer max_lev4
       integer NDV3D, NDV2D, NEXF1, NEXF2, NCTRL1, NOB, NSI
 #ifdef ALLOW_ADAMSBASHFORTH_3
-      PARAMETER (NDV3D  = 16)
+      PARAMETER (NDV3D  = 14)
 #else
-      PARAMETER (NDV3D  = 12)
+      PARAMETER (NDV3D  = 10)
 #endif
       PARAMETER (NDV2D  = 23)
       PARAMETER (NEXF1  = 21)
