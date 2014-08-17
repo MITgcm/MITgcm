@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_adm.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_adm.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_adm_mpi,v 1.18 2014/06/18 19:33:08 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_adm_mpi,v 1.19 2014/08/17 16:07:01 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -52,7 +52,7 @@ export PATH="$PATH:$HOME/bin"
 dAlt=`date +%d` ; dAlt=`expr $dAlt % 3`
 if [ $dAlt -eq 1 ] ; then options="$options -fast" ; fi
 
-checkOut=2
+checkOut=2 ; options="$options -do"
 #options="$options -nc" ; checkOut=1
 #options="$options -q"  ; checkOut=0
 
