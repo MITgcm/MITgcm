@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.12 2014/08/05 01:51:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.13 2014/08/18 14:34:27 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -51,6 +51,7 @@ C     Initialise internal parameter in common block:
         PTRACERS_MultiDimAdv(iTracer)  = multiDimAdvection
         PTRACERS_SOM_Advection(iTracer)= .FALSE.
         PTRACERS_AdamsBashGtr(iTracer) = .FALSE.
+        PTRACERS_AdamsBash_Tr(iTracer) = .FALSE.
       ENDDO
 
 C--   Loop over tracers
@@ -82,6 +83,10 @@ C     Overlap minimum size consistent with ptracers advection
      &       PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND .OR.
      &       PTRACERS_advScheme(iTracer).EQ.ENUM_UPWIND_3RD .OR.
      &       PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH
+        IF ( .NOT.PTRACERS_doAB_onGpTr ) THEN
+         PTRACERS_AdamsBash_Tr(iTracer) = PTRACERS_AdamsBashGtr(iTracer)
+         PTRACERS_AdamsBashGtr(iTracer) = .FALSE.
+        ENDIF
 
         PTRACERS_SOM_Advection(iTracer) =
      &    PTRACERS_advScheme(iTracer).GE.ENUM_SOM_PRATHER

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.61 2014/08/18 12:25:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.62 2014/08/18 14:34:27 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -178,6 +178,17 @@ C-    Loop ranges for daughter routines
      &                      + act4*max0*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+C-    Apply AB on Tracer :
+        IF ( PTRACERS_AdamsBash_Tr(iTracer) ) THEN
+C     compute pTr^n+1/2 (stored in gpTrNm1) extrapolating pTr forward in time
+          CALL ADAMS_BASHFORTH2(
+     I                      bi, bj, 0, Nr,
+     I                      pTracer(1-OLx,1-OLy,1,bi,bj,iTracer),
+     U                      gpTrNm1(1-OLx,1-OLy,1,bi,bj,iTracer),
+     O                      gTr_AB,
+     I                      PTRACERS_startAB(iTracer), iterNb, myThid )
+        ENDIF
+
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
            fVer(i,j,1) = 0. _d 0
@@ -301,7 +312,7 @@ C      (advection, [explicit] diffusion, parameterizations,...)
      I             PTRACERS_advScheme(iTracer),
      I             PTRACERS_advScheme(iTracer),
      I             calcAdvection, PTRACERS_ImplVertAdv(iTracer),
-     I             .FALSE., .FALSE.,
+     I             PTRACERS_AdamsBash_Tr(iTracer), .FALSE.,
      I             PTRACERS_useGMRedi(iTracer),
      I             PTRACERS_useKPP(iTracer),
      O             fZon, fMer,
@@ -437,11 +448,20 @@ CADJ &     key=iptrkey, byte=isbyte
      I         myThid )
         ENDIF
 
-C--   Cycle time-stepping arrays
-        CALL CYCLE_TRACER(
-     I             bi, bj,
-     O             pTracer(1-OLx,1-OLy,1,bi,bj,iTracer),
-     I             gTracer, myTime, myIter, myThid )
+        IF ( PTRACERS_AdamsBash_Tr(iTracer) ) THEN
+C--   Save current tracer field (for AB on tracer) and then update tracer
+          CALL CYCLE_AB_TRACER(
+     I               bi, bj, gTracer,
+     U               pTracer(1-OLx,1-OLy,1,bi,bj,iTracer),
+     O               gpTrNm1(1-OLx,1-OLy,1,bi,bj,iTracer),
+     I               myTime, myIter, myThid )
+        ELSE
+C--   Update tracer fields:  pTr(n) = pTr**
+          CALL CYCLE_TRACER(
+     I               bi, bj,
+     O               pTracer(1-OLx,1-OLy,1,bi,bj,iTracer),
+     I               gTracer, myTime, myIter, myThid )
+        ENDIF
 
 #ifdef ALLOW_OBCS
 C--   Apply open boundary conditions for each passive tracer

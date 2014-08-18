@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.45 2014/08/07 18:00:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.46 2014/08/18 14:34:27 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -50,6 +50,7 @@ C     tauTr1ClimRelax :: old parameter (will be removed 1 day)
      &     tauTr1ClimRelax,
      &     PTRACERS_numInUse,
      &     PTRACERS_Iter0,
+     &     PTRACERS_doAB_onGpTr,
      &     PTRACERS_addSrelax2EmP,
      &     PTRACERS_startStepFwd,
      &     PTRACERS_resetFreq,
@@ -128,6 +129,7 @@ C     Set defaults values for parameters in PTRACERS.h
           PTRACERS_units(iTracer)(ic:ic) = ' '
         ENDDO
       ENDDO
+      PTRACERS_doAB_onGpTr      = doAB_onGtGs
       PTRACERS_addSrelax2EmP    = .FALSE.
       PTRACERS_useRecords       = .FALSE.
 #ifdef ALLOW_MNC

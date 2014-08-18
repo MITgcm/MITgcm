@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_check.F,v 1.3 2014/08/05 01:51:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_check.F,v 1.4 2014/08/18 14:34:27 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -61,6 +61,9 @@ C--   Print a summary of pTracer parameter values:
      &   ' /* timestep number when tracers are initialized */')
       CALL WRITE_0D_L( PTRACERS_startAllTrc, INDEX_NONE,
      &   'PTRACERS_startAllTrc =','/* all tracers start @ startTime */')
+      CALL WRITE_0D_L( PTRACERS_doAB_onGpTr, INDEX_NONE,
+     &   'PTRACERS_doAB_onGpTr =',
+     &   '/* apply AB on Tendencies (rather than on Tracers) */')
       CALL WRITE_0D_L( PTRACERS_addSrelax2EmP, INDEX_NONE,
      &   'PTRACERS_addSrelax2EmP =','/* add Salt relaxation to EmP */')
       CALL WRITE_1D_RL( PTRACERS_dTLev, Nr, INDEX_K,
@@ -113,6 +116,15 @@ C--   Print a summary of pTracer parameter values:
         CALL WRITE_0D_L( PTRACERS_ImplVertAdv(iTracer), INDEX_NONE,
      &     'PTRACERS_ImplVertAdv =',
      &     ' /* implicit vert. advection flag */')
+        CALL WRITE_0D_L( PTRACERS_MultiDimAdv(iTracer), INDEX_NONE,
+     &     'PTRACERS_MultiDimAdv =',
+     &     ' /* tracer uses Multi-Dim advection */')
+        CALL WRITE_0D_L( PTRACERS_AdamsBashGtr(iTracer), INDEX_NONE,
+     &     'PTRACERS_AdamsBashGtr =',
+     &     ' /* apply AB on tracer tendency */')
+        CALL WRITE_0D_L( PTRACERS_AdamsBash_Tr(iTracer), INDEX_NONE,
+     &     'PTRACERS_AdamsBash_Tr =',
+     &     ' /* apply AB on passive tracer */')
         CALL WRITE_0D_RL( PTRACERS_diffKh(iTracer), INDEX_NONE,
      &     'PTRACERS_diffKh =', ' /* Laplacian Diffusivity */')
         CALL WRITE_0D_RL( PTRACERS_diffK4(iTracer), INDEX_NONE,

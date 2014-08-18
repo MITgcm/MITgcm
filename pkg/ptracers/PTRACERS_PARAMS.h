@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.11 2014/05/07 15:23:04 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.12 2014/08/18 14:34:27 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -72,25 +72,37 @@ C     PTRACERS_Iter0    :: timestep number when tracers are initialized
      &     PTRACERS_advScheme
 
 C--   COMMON /PTRACERS_PARAMS_L/ PTRACERS logical-type parameters:
+C     PTRACERS_ImplVertAdv   :: use Implicit Vertical Advection for this tracer
 C     PTRACERS_MultiDimAdv   :: internal flag (depend on the advection scheme),
 C                               true if this tracer uses Multi-Dim advection
 C     PTRACERS_SOM_Advection :: internal flag (depend on the advection scheme),
 C                               true if this tracer uses 2nd-order moment advection
 C     PTRACERS_AdamsBashGtr  :: internal flag (depend on the advection scheme),
 C                               true if applies Adams-Bashforth on tracer tendency
+C     PTRACERS_AdamsBash_Tr  :: internal flag (depend on the advection scheme),
+C                               true if applies Adams-Bashforth on passive Tracer
+C     PTRACERS_useGMRedi(n)  :: true if GM-Redi applies to pTracer n
 C     PTRACERS_useDWNSLP(n)  :: true if Down-Sloping flow applies to pTracer n
+C     PTRACERS_useKPP(n)     :: true if KPP applies to pTracer n
+C     PTRACERS_doAB_onGpTr   :: if Adams-Bashforth time stepping is used, apply
+C                               AB on tracer tendencies (rather than on Tracers)
+C     PTRACERS_addSrelax2EmP :: add Salt relaxation to EmP
 C     PTRACERS_startAllTrc   :: internal flag, all tracers start at startTime
+C     PTRACERS_calcSurfCor   :: calculate Linear Free-Surf source/sink of tracer
+C     PTRACERS_useRecords    :: snap-shot output: put all pTracers in one file
       LOGICAL PTRACERS_ImplVertAdv(PTRACERS_num)
       LOGICAL PTRACERS_MultiDimAdv(PTRACERS_num)
       LOGICAL PTRACERS_SOM_Advection(PTRACERS_num)
       LOGICAL PTRACERS_AdamsBashGtr(PTRACERS_num)
+      LOGICAL PTRACERS_AdamsBash_Tr(PTRACERS_num)
       LOGICAL PTRACERS_useGMRedi(PTRACERS_num)
       LOGICAL PTRACERS_useDWNSLP(PTRACERS_num)
       LOGICAL PTRACERS_useKPP(PTRACERS_num)
+      LOGICAL PTRACERS_doAB_onGpTr
       LOGICAL PTRACERS_addSrelax2EmP
       LOGICAL PTRACERS_startAllTrc
-      LOGICAL PTRACERS_useRecords
       LOGICAL PTRACERS_calcSurfCor
+      LOGICAL PTRACERS_useRecords
       LOGICAL
      &     PTRACERS_monitor_mnc, PTRACERS_monitor_stdio,
      &     PTRACERS_timeave_mdsio, PTRACERS_snapshot_mdsio,
@@ -101,14 +113,15 @@ C     PTRACERS_startAllTrc   :: internal flag, all tracers start at startTime
      &     PTRACERS_ImplVertAdv,
      &     PTRACERS_MultiDimAdv,
      &     PTRACERS_SOM_Advection,
-     &     PTRACERS_AdamsBashGtr,
+     &     PTRACERS_AdamsBashGtr, PTRACERS_AdamsBash_Tr,
      &     PTRACERS_useGMRedi,
      &     PTRACERS_useDWNSLP,
      &     PTRACERS_useKPP,
+     &     PTRACERS_doAB_onGpTr,
      &     PTRACERS_addSrelax2EmP,
      &     PTRACERS_startAllTrc,
-     &     PTRACERS_useRecords,
      &     PTRACERS_calcSurfCor,
+     &     PTRACERS_useRecords,
      &     PTRACERS_timeave_mdsio, PTRACERS_snapshot_mdsio,
      &     PTRACERS_pickup_write_mdsio, PTRACERS_pickup_read_mdsio,
      &     PTRACERS_monitor_stdio, PTRACERS_monitor_mnc,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.16 2013/06/21 22:06:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.17 2014/08/18 14:34:27 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -228,8 +228,12 @@ C---    read pTracer 3-D fields for restart
         ENDDO
         DO iTracer = 1, PTRACERS_numInUse
 C---    read pTracer 3-D tendencies for AB-restart
-         IF ( PTRACERS_AdamsBashGtr(iTracer) ) THEN
-          fldName = 'gPtr'//PTRACERS_ioLabel(iTracer)//'m1'
+         IF ( PTRACERS_AdamsBashGtr(iTracer) .OR.
+     &        PTRACERS_AdamsBash_Tr(iTracer) ) THEN
+          IF ( PTRACERS_AdamsBashGtr(iTracer) )
+     &      fldName = 'gPtr'//PTRACERS_ioLabel(iTracer)//'m1'
+          IF ( PTRACERS_AdamsBash_Tr(iTracer) )
+     &      fldName = 'pTr'//PTRACERS_ioLabel(iTracer)//'Nm1'
           CALL READ_MFLDS_3D_RL( fldName,
      O                     gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),
      &                     nj, prec, Nr, myIter, myThid )
