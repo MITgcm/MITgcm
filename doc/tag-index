@@ -1,12 +1,28 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2048 2014/08/15 20:54:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2049 2014/08/18 20:16:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ptracers:
+  - implement Adams-Bashforth on pTracers (instead of on tracer tendency),
+    switched on by setting PTRACERS_doAB_onGpTr=F (default set to doAB_onGtGs)
+  - change exp4 secondary test (input.nlfs) to test AB on T & S & pTracer
+    with AB-2 code (so that it get tested).
+o model/src:
+  - allow to apply Adams-Bashforth on Temp & Salt (instead of on gT,gS)
+    with AB-2 code (previously only available with AB-3 code).
+    Also move the code (call to ADAMS_BASHFORTH S/R) form thermodynamics.F
+    to temp/salt_integrate.F (since the 2nd part of gt/sNm1 update is done
+    there, by calling CYCLE_AB_TRACER).
+o pkg/generic_advdiff:
+  - change Tracer argument (drop bi,bj indices) in S/R GAD_CALC_RHS,
+    GAD_C2_ADV_R, GAD_U3_ADV_R, GAD_C4_ADV_R, GAD_DIFF_R, GAD_BIHARM_R
+    + also in GMREDI_X/Y/RTRANSPORT ; and update corresponding calls in
+    S/R temp/salt/ptracers_integrate.F
 o model/src & pkg/ptracers:
-  - remove common block variables gT,gS (in DYNVARS.h), except when 
-     USE_OLD_EXTERNAL_FORCING is defined; update TAF storage accordingly. 
+  - remove common block variables gT,gS (in DYNVARS.h), except when
+     USE_OLD_EXTERNAL_FORCING is defined; update TAF storage accordingly.
   - remove common block variable gPtr.
 o model/src & pkgs:
   - change gTracer (and/or tracer) argument (drop bi,bj indices) in S/R
