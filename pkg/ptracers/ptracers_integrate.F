@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.60 2014/08/14 16:54:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.61 2014/08/18 12:25:58 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -295,8 +295,8 @@ C      (advection, [explicit] diffusion, parameterizations,...)
      I             PTRACERS_diffKh(iTracer),
      I             PTRACERS_diffK4(iTracer),
      I             KappaRk(1-OLx,1-OLy,k), dummy,
-     I             pTracer(1-OLx,1-OLy,1,1,1,iTracer),
-     I             gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),
+     I             pTracer(1-OLx,1-OLy,1,bi,bj,iTracer),
+     I             gpTrNm1(1-OLx,1-OLy,1,bi,bj,iTracer),
      I             PTRACERS_dTLev, GAD_TR,
      I             PTRACERS_advScheme(iTracer),
      I             PTRACERS_advScheme(iTracer),
@@ -392,8 +392,8 @@ C-    Integrate forward in time, storing in gTracer:  gTr <= pTr + dt*gTr
      U                gTracer,
      I                myTime, myIter, myThid )
 
-C       All explicit advection/diffusion/sources should now be
-C       done. The updated tracer field is in gTracer.
+C     All explicit advection/diffusion/sources should now be
+C     done. The updated tracer field is in gTracer.
 #ifdef ALLOW_MATRIX
 C       Accumalate explicit tendency and also reset gTracer to initial
 C       tracer field for implicit matrix calculation
@@ -405,7 +405,7 @@ C       tracer field for implicit matrix calculation
         ENDIF
 #endif /* ALLOW_MATRIX */
 
-C--     Vertical advection & diffusion (implicit) for passive tracers
+C--   Vertical advection & diffusion (implicit) for passive tracers
         iMin = 0
         iMax = sNx+1
         jMin = 0
@@ -437,15 +437,14 @@ CADJ &     key=iptrkey, byte=isbyte
      I         myThid )
         ENDIF
 
-C--     Cycle time-stepping arrays
+C--   Cycle time-stepping arrays
         CALL CYCLE_TRACER(
      I             bi, bj,
-     U             pTracer(1-OLx,1-OLy,1,bi,bj,iTracer),
-     U             gTracer,
-     I             myTime, myIter, myThid )
+     O             pTracer(1-OLx,1-OLy,1,bi,bj,iTracer),
+     I             gTracer, myTime, myIter, myThid )
 
 #ifdef ALLOW_OBCS
-C--     Apply open boundary conditions for each passive tracer
+C--   Apply open boundary conditions for each passive tracer
         IF ( useOBCS ) THEN
           CALL OBCS_APPLY_PTRACER(
      I         bi, bj, 0, iTracer,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.15 2014/08/14 16:53:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.16 2014/08/18 12:25:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -318,7 +318,8 @@ c       m1 = 1 + MOD(iterNb+1,2)
      I           vFld(1-OLx,1-OLy,k), wFld(1-OLx,1-OLy,k),
      I           uTrans, vTrans, rTrans, rTransKp,
      I           diffKhT, diffK4T, KappaRk(1-OLx,1-OLy,k), diffKr4T,
-     I           theta, gtNm(1-OLx,1-OLy,1,1,1,m2), dTtracerLev,
+     I           theta(1-OLx,1-OLy,1,bi,bj),
+     I           gtNm(1-OLx,1-OLy,1,bi,bj,m2), dTtracerLev,
      I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
      I           calcAdvection, tempImplVertAdv, AdamsBashforth_T,
      I           tempVertDiff4, useGMRedi, useKPP,
@@ -332,7 +333,8 @@ c       m1 = 1 + MOD(iterNb+1,2)
      I           vFld(1-OLx,1-OLy,k), wFld(1-OLx,1-OLy,k),
      I           uTrans, vTrans, rTrans, rTransKp,
      I           diffKhT, diffK4T, KappaRk(1-OLx,1-OLy,k), diffKr4T,
-     I           theta, gtNm1, dTtracerLev,
+     I           theta(1-OLx,1-OLy,1,bi,bj),
+     I           gtNm1(1-OLx,1-OLy,1,bi,bj), dTtracerLev,
      I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
      I           calcAdvection, tempImplVertAdv, AdamsBashforth_T,
      I           tempVertDiff4, useGMRedi, useKPP,
@@ -494,9 +496,9 @@ CADJ STORE gT_loc(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
       IF ( AdamsBashforth_T ) THEN
 C-    Save current tracer field (for AB on tracer) and then update tracer
         CALL CYCLE_AB_TRACER(
-     I             bi, bj,
-     U             theta(1-OLx,1-OLy,1,bi,bj), gT_loc,
-     U             gtNm(1-OLx,1-OLy,1,bi,bj,m2),
+     I             bi, bj, gT_loc,
+     U             theta(1-OLx,1-OLy,1,bi,bj),
+     O             gtNm(1-OLx,1-OLy,1,bi,bj,m2),
      I             myTime, myIter, myThid )
       ELSEIF ( tempStepping ) THEN
 #else /* ALLOW_ADAMSBASHFORTH_3 */
@@ -505,8 +507,8 @@ C-    Save current tracer field (for AB on tracer) and then update tracer
 C-    Update tracer fields:  T(n) = T**
         CALL CYCLE_TRACER(
      I             bi, bj,
-     U             theta(1-OLx,1-OLy,1,bi,bj), gT_loc,
-     I             myTime, myIter, myThid )
+     O             theta(1-OLx,1-OLy,1,bi,bj),
+     I             gT_loc, myTime, myIter, myThid )
       ENDIF
 
 #endif /* ALLOW_GENERIC_ADVDIFF */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/salt_integrate.F,v 1.14 2014/08/14 16:53:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/salt_integrate.F,v 1.15 2014/08/18 12:25:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -310,7 +310,8 @@ c       m1 = 1 + MOD(iterNb+1,2)
      I           vFld(1-OLx,1-OLy,k), wFld(1-OLx,1-OLy,k),
      I           uTrans, vTrans, rTrans, rTransKp,
      I           diffKhS, diffK4S, KappaRk(1-OLx,1-OLy,k), diffKr4S,
-     I           salt, gsNm(1-OLx,1-OLy,1,1,1,m2), dTtracerLev,
+     I           salt(1-OLx,1-OLy,1,bi,bj),
+     I           gsNm(1-OLx,1-OLy,1,bi,bj,m2), dTtracerLev,
      I           GAD_SALINITY, saltAdvScheme, saltVertAdvScheme,
      I           calcAdvection, saltImplVertAdv, AdamsBashforth_S,
      I           saltVertDiff4, useGMRedi, useKPP,
@@ -324,7 +325,8 @@ c       m1 = 1 + MOD(iterNb+1,2)
      I           vFld(1-OLx,1-OLy,k), wFld(1-OLx,1-OLy,k),
      I           uTrans, vTrans, rTrans, rTransKp,
      I           diffKhS, diffK4S, KappaRk(1-OLx,1-OLy,k), diffKr4S,
-     I           salt, gsNm1, dTtracerLev,
+     I           salt(1-OLx,1-OLy,1,bi,bj),
+     I           gsNm1(1-OLx,1-OLy,1,bi,bj), dTtracerLev,
      I           GAD_SALINITY, saltAdvScheme, saltVertAdvScheme,
      I           calcAdvection, saltImplVertAdv, AdamsBashforth_S,
      I           saltVertDiff4, useGMRedi, useKPP,
@@ -475,9 +477,9 @@ CADJ STORE gS_loc(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
       IF ( AdamsBashforth_S ) THEN
 C-    Save current tracer field (for AB on tracer) and then update tracer
         CALL CYCLE_AB_TRACER(
-     I             bi, bj,
-     U             salt(1-OLx,1-OLy,1,bi,bj), gS_loc,
-     U             gsNm(1-OLx,1-OLy,1,bi,bj,m2),
+     I             bi, bj, gS_loc,
+     U             salt(1-OLx,1-OLy,1,bi,bj),
+     O             gsNm(1-OLx,1-OLy,1,bi,bj,m2),
      I             myTime, myIter, myThid )
       ELSEIF ( saltStepping ) THEN
 #else /* ALLOW_ADAMSBASHFORTH_3 */
@@ -486,8 +488,8 @@ C-    Save current tracer field (for AB on tracer) and then update tracer
 C-    Update tracer fields:  S(n) = S**
         CALL CYCLE_TRACER(
      I             bi, bj,
-     U             salt(1-OLx,1-OLy,1,bi,bj), gS_loc,
-     I             myTime, myIter, myThid )
+     O             salt(1-OLx,1-OLy,1,bi,bj),
+     I             gS_loc, myTime, myIter, myThid )
       ENDIF
 
 #endif /* ALLOW_GENERIC_ADVDIFF */
