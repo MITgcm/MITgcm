@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.155 2014/08/15 20:41:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.156 2014/08/18 14:26:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -49,9 +49,6 @@ C     == Global variables ===
 # include "PTRACERS_PARAMS.h"
 # include "PTRACERS_FIELDS.h"
 #endif
-c#ifdef ALLOW_TIMEAVE
-c# include "TIMEAVE_STATV.h"
-c#endif
 
 #ifdef ALLOW_AUTODIFF
 # include "tamc.h"
@@ -87,32 +84,25 @@ C     == Local variables
 C     uFld,vFld,wFld :: Local copy of velocity field (3 components)
 C     kappaRk        :: Total diffusion in vertical, all levels, 1 tracer
 C     recip_hFacNew  :: reciprocal of futur time-step hFacC
-C     useVariableK   :: T when vertical diffusion is not constant
-C     iMin, iMax     :: Ranges and sub-block indices on which calculations
-C     jMin, jMax        are applied.
 C     bi, bj         :: Tile indices
 C     i, j, k        :: loop indices
+C     iterNb         :: iteration number when this time-step started
       _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL vFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL wFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL kappaRk (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RS recip_hFacNew(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-c     INTEGER iMin, iMax
-c     INTEGER jMin, jMax
       INTEGER bi, bj
       INTEGER i, j, k
-#ifdef ALLOW_ADAMSBASHFORTH_3
-      INTEGER iterNb, m1, m2
-      _RL tmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif
-#ifdef ALLOW_TIMEAVE
-c     LOGICAL useVariableK
-#endif
+      INTEGER iterNb
 CEOP
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('THERMODYNAMICS',myThid)
 #endif
+
+      iterNb = myIter
+      IF (staggerTimeStep) iterNb = myIter - 1
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   dummy statement to end declaration part
@@ -230,26 +220,6 @@ C--     Compute new reciprocal hFac for implicit calculation
         ENDIF
 #endif /* NONLIN_FRSURF */
 
-#ifdef ALLOW_ADAMSBASHFORTH_3
-C-      Apply AB on T,S :
-        iterNb = myIter
-        IF (staggerTimeStep) iterNb = myIter - 1
-        m1 = 1 + MOD(iterNb+1,2)
-        m2 = 1 + MOD( iterNb ,2)
-C       compute T^n+1/2 (stored in gtNm) extrapolating T forward in time
-        IF ( AdamsBashforth_T ) CALL ADAMS_BASHFORTH3(
-     I                                  bi, bj, 0, Nr,
-     I                                  theta(1-OLx,1-OLy,1,bi,bj),
-     U                                  gtNm, tmpFld,
-     I                                  tempStartAB, iterNb, myThid )
-C       compute S^n+1/2 (stored in gsNm) extrapolating S forward in time
-        IF ( AdamsBashforth_S ) CALL ADAMS_BASHFORTH3(
-     I                                  bi, bj, 0, Nr,
-     I                                  salt(1-OLx,1-OLy,1,bi,bj),
-     U                                  gsNm, tmpFld,
-     I                                  saltStartAB, iterNb, myThid )
-#endif /* ALLOW_ADAMSBASHFORTH_3 */
-
 C--   Set up 3-D velocity field that we use to advect tracers:
 C-    just do a local copy:
         DO k=1,Nr
@@ -270,6 +240,8 @@ C-    add Bolus velocity to Eulerian-mean velocity:
         ENDIF
 #endif /* ALLOW_GMREDI */
 
+C-    Apply AB on T,S : moved inside TEMP/SALT_INTEGRATE
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE recip_hFacNew(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE uFld (:,:,:)       = comlev1_bibj, key=itdkey, byte=isbyte
@@ -277,15 +249,6 @@ CADJ STORE vFld (:,:,:)       = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE wFld (:,:,:)       = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-#  ifdef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gtNm(:,:,:,bi,bj,1) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE gtNm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE gsNm(:,:,:,bi,bj,1) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE gsNm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
-#  else
-CADJ STORE gtNm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE gsNm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-#  endif
 # ifdef ALLOW_SALT_PLUME
 CADJ STORE saltPlumeFlux(:,:,bi,bj)   =
 CADJ &     comlev1_bibj, key=itdkey,kind = isbyte

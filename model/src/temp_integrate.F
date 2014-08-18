@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.16 2014/08/18 12:25:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.17 2014/08/18 14:26:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -181,6 +181,26 @@ C-    Loop ranges for daughter routines
      &                      + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+C-    Apply AB on T :
+      IF ( AdamsBashforth_T ) THEN
+C     compute T^n+1/2 (stored in gtNm) extrapolating T forward in time
+#ifdef ALLOW_ADAMSBASHFORTH_3
+c         m1 = 1 + MOD(iterNb+1,2)
+c         m2 = 1 + MOD( iterNb ,2)
+          CALL ADAMS_BASHFORTH3(
+     I                           bi, bj, 0, Nr,
+     I                           theta(1-OLx,1-OLy,1,bi,bj),
+     U                           gtNm, gt_AB,
+     I                           tempStartAB, iterNb, myThid )
+#else /* ALLOW_ADAMSBASHFORTH_3 */
+          CALL ADAMS_BASHFORTH2(
+     I                           bi, bj, 0, Nr,
+     I                           theta(1-OLx,1-OLy,1,bi,bj),
+     U                           gtNm1(1-OLx,1-OLy,1,bi,bj), gt_AB,
+     I                           tempStartAB, iterNb, myThid )
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
+      ENDIF
+
 C-    Tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
@@ -203,8 +223,14 @@ C-    Tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
         ENDDO
        ENDDO
       ENDDO
-CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE wFld(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
+CADJ STORE wFld(:,:,:)         = comlev1_bibj , key=itdkey, byte=isbyte
+CADJ STORE theta(:,:,:,bi,bj)  = comlev1_bibj , key=itdkey, byte=isbyte
+# ifdef ALLOW_ADAMSBASHFORTH_3
+CADJ STORE gtNm(:,:,:,bi,bj,1) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE gtNm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
+# else
+CADJ STORE gtNm1(:,:,:,bi,bj)  = comlev1_bibj, key=itdkey, byte=isbyte
+# endif
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef INCLUDE_CALC_DIFFUSIVITY_CALL
@@ -492,18 +518,22 @@ CADJ STORE gT_loc(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
       ENDIF
 #endif /* ALLOW_TIMEAVE */
 
-#ifdef ALLOW_ADAMSBASHFORTH_3
       IF ( AdamsBashforth_T ) THEN
 C-    Save current tracer field (for AB on tracer) and then update tracer
+#ifdef ALLOW_ADAMSBASHFORTH_3
         CALL CYCLE_AB_TRACER(
      I             bi, bj, gT_loc,
      U             theta(1-OLx,1-OLy,1,bi,bj),
      O             gtNm(1-OLx,1-OLy,1,bi,bj,m2),
      I             myTime, myIter, myThid )
-      ELSEIF ( tempStepping ) THEN
 #else /* ALLOW_ADAMSBASHFORTH_3 */
-      IF ( tempStepping ) THEN
+        CALL CYCLE_AB_TRACER(
+     I             bi, bj, gT_loc,
+     U             theta(1-OLx,1-OLy,1,bi,bj),
+     O             gtNm1(1-OLx,1-OLy,1,bi,bj),
+     I             myTime, myIter, myThid )
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
+      ELSE
 C-    Update tracer fields:  T(n) = T**
         CALL CYCLE_TRACER(
      I             bi, bj,
