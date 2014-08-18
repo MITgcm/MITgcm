@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_check.F,v 1.9 2014/08/03 03:12:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_check.F,v 1.10 2014/08/18 14:29:29 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -79,27 +79,7 @@ c     IF ( useMultiDimAdvec ) THEN
 
 C--  Check parameters:
 
-      IF ( .NOT.doAB_onGtGs .AND. AdamsBashforthGt ) THEN
-        WRITE(msgBuf,'(2A)') 'GAD_CHECK: ',
-     &   'unable to use AdamsBashforth_T (from "data": doAB_onGtGs=F)'
-        CALL PRINT_ERROR( msgBuf, myThid )
-      ENDIF
-      IF ( .NOT.doAB_onGtGs .AND. AdamsBashforthGs ) THEN
-        WRITE(msgBuf,'(2A)') 'GAD_CHECK: ',
-     &   'unable to use AdamsBashforth_S (from "data": doAB_onGtGs=F)'
-        CALL PRINT_ERROR( msgBuf, myThid )
-      ENDIF
-      IF ( .NOT.doAB_onGtGs .AND.
-     &     ( AdamsBashforthGt .OR. AdamsBashforthGs ) ) THEN
-#ifndef ALLOW_ADAMSBASHFORTH_3
-        WRITE(msgBuf,'(2A)') 'GAD_CHECK: ',
-     &       'since Adams-Bashforth_3 code was not compiled'
-        CALL PRINT_ERROR( msgBuf, myThid )
-#endif
-        STOP 'ABNORMAL END: S/R GAD_CHECK'
-      ENDIF
-
-C-   Check internal wave dynamics stability regarding active tracer time-stepping
+C--  Check internal wave dynamics stability regarding active tracer time-stepping
       IF ( .NOT.(staggerTimeStep.OR.implicitIntGravWave) ) THEN
         IF ( ( tempIsActiveTr .AND. .NOT.AdamsBashforthGt )
      &  .OR. ( saltIsActiveTr .AND. .NOT.AdamsBashforthGs ) ) THEN

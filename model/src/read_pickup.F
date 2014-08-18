@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.10 2014/08/15 19:22:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.11 2014/08/18 14:27:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -366,10 +366,16 @@ C--     Temperature
         IF ( AdamsBashforthGt ) THEN
           CALL READ_MFLDS_3D_RL( 'GtNm1   ', gtNm1,
      &                                     nj, fp, Nr, myIter, myThid )
+        ELSEIF ( AdamsBashforth_T ) THEN
+          CALL READ_MFLDS_3D_RL( 'TempNm1 ', gtNm1,
+     &                                     nj, fp, Nr, myIter, myThid )
         ENDIF
 C--     Salinity
         IF ( AdamsBashforthGs ) THEN
           CALL READ_MFLDS_3D_RL( 'GsNm1   ', gsNm1,
+     &                                     nj, fp, Nr, myIter, myThid )
+        ELSEIF ( AdamsBashforth_S ) THEN
+          CALL READ_MFLDS_3D_RL( 'SaltNm1 ', gsNm1,
      &                                     nj, fp, Nr, myIter, myThid )
         ENDIF
 #ifdef ALLOW_NONHYDROSTATIC

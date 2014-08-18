@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_fixed.F,v 1.9 2014/08/05 01:50:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_fixed.F,v 1.10 2014/08/18 14:29:29 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -152,16 +152,12 @@ C-- Set Temp & Salt Adams-Bashforth flag according to advection scheme used
      & .OR.saltAdvScheme.EQ.ENUM_CENTERED_4TH ) THEN
            AdamsBashforthGs = saltStepping
       ENDIF
-#ifdef ALLOW_ADAMSBASHFORTH_3
-C-    For now, A-B on T,S is only implemented in AB-3 code, and not working
-C     with synchronous time-step, which would require to do also AB(u,v,w)
       IF ( .NOT.doAB_onGtGs ) THEN
         AdamsBashforth_T = AdamsBashforthGt
         AdamsBashforth_S = AdamsBashforthGs
         AdamsBashforthGt = .FALSE.
         AdamsBashforthGs = .FALSE.
       ENDIF
-#endif /* ALLOW_ADAMSBASHFORTH_3 */
 
 #ifdef GAD_SMOLARKIEWICZ_HACK
       SmolarkiewiczMaxFrac = 1. _d 0
