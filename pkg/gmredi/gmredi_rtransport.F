@@ -1,19 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.17 2011/12/12 15:34:08 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.18 2014/08/18 12:23:04 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 
-      subroutine GMREDI_RTRANSPORT(
-     I     iMin,iMax,jMin,jMax,bi,bj,K,
-     I     Tracer,tracerIdentity,
+      SUBROUTINE GMREDI_RTRANSPORT(
+     I     trIdentity, bi, bj, k,
+     I     iMin, iMax, jMin, jMax,
+     I     Tracer,
      U     df,
-     I     myThid)
-C     /==========================================================\
+     I     myThid )
+C     *==========================================================*
 C     | o SUBROUTINE GMREDI_RTRANSPORT                           |
 C     |   Add vertical transport terms from GM/Redi              |
 C     |   parameterization.                                      |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -38,20 +38,19 @@ C     == GLobal variables ==
 C     == Routine arguments ==
 C     iMin,iMax,jMin,  - Range of points for which calculation
 C     jMax,bi,bj,k       results will be set.
-C     xA               - Area of X face
 C     Tracer           - 3D Tracer field
 C     df               - Diffusive flux component work array.
-      INTEGER iMin,iMax,jMin,jMax,bi,bj,k
-      _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      INTEGER tracerIdentity
+      INTEGER trIdentity
+      INTEGER bi, bj, k
+      INTEGER iMin, iMax, jMin, jMax
+      _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 #ifdef ALLOW_GMREDI
-
 C     == Local variables ==
-C     I, J - Loop counters
-      INTEGER I, J
+C     i, j - Loop counters
+      INTEGER i, j
       _RL dTdx  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dTdy  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef GM_BOLUS_ADVEC
@@ -59,7 +58,7 @@ C     I, J - Loop counters
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act0 = tracerIdentity - 1
+          act0 = trIdentity - 1
           max0 = maxpass
           act1 = bi - myBxLo(myThid)
           max1 = myBxHi(myThid) - myBxLo(myThid) + 1
@@ -68,88 +67,94 @@ C     I, J - Loop counters
           act3 = myThid - 1
           max3 = nTx*nTy
           act4 = ikey_dynamics - 1
-          igadkey = (act0 + 1) 
+          igadkey = (act0 + 1)
      &                      + act1*max0
      &                      + act2*max0*max1
      &                      + act3*max0*max1*max2
      &                      + act4*max0*max1*max2*max3
           kkey = (igadkey-1)*Nr + k
-          if (tracerIdentity.GT.maxpass) then
-             print *, 'ph-pass gmredi_rtrans ', maxpass, tracerIdentity
-             STOP 'maxpass seems smaller than tracerIdentity'
+          if (trIdentity.GT.maxpass) then
+             print *, 'ph-pass gmredi_rtrans ', maxpass, trIdentity
+             STOP 'maxpass seems smaller than trIdentity'
           endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Surface flux is zero
-      IF (useGMRedi .AND. K.GT.1) THEN
+      IF ( useGMRedi .AND. k.GT.1 ) THEN
 
-C-      Horizontal gradients interpolated to W points
+C-    Horizontal gradients interpolated to W points
       DO j=jMin,jMax
        DO i=iMin,iMax
         dTdx(i,j) = op5*(
      &   +op5*(_maskW(i+1,j,k,bi,bj)
      &         *_recip_dxC(i+1,j,bi,bj)*
-     &           (Tracer(i+1,j,k,bi,bj)-Tracer(i,j,k,bi,bj))
+     &           (Tracer(i+1,j,k)-Tracer(i,j,k))
      &        +_maskW(i,j,k,bi,bj)
      &         *_recip_dxC(i,j,bi,bj)*
-     &           (Tracer(i,j,k,bi,bj)-Tracer(i-1,j,k,bi,bj)))
+     &           (Tracer(i,j,k)-Tracer(i-1,j,k)) )
      &   +op5*(_maskW(i+1,j,k-1,bi,bj)
      &         *_recip_dxC(i+1,j,bi,bj)*
-     &           (Tracer(i+1,j,k-1,bi,bj)-Tracer(i,j,k-1,bi,bj))
+     &           (Tracer(i+1,j,k-1)-Tracer(i,j,k-1))
      &        +_maskW(i,j,k-1,bi,bj)
      &         *_recip_dxC(i,j,bi,bj)*
-     &           (Tracer(i,j,k-1,bi,bj)-Tracer(i-1,j,k-1,bi,bj)))
+     &           (Tracer(i,j,k-1)-Tracer(i-1,j,k-1)) )
      &       )
 
         dTdy(i,j) = op5*(
      &   +op5*(_maskS(i,j,k,bi,bj)
      &         *_recip_dyC(i,j,bi,bj)*
-     &           (Tracer(i,j,k,bi,bj)-Tracer(i,j-1,k,bi,bj))
+     &           (Tracer(i,j,k)-Tracer(i,j-1,k))
      &        +_maskS(i,j+1,k,bi,bj)
      &         *_recip_dyC(i,j+1,bi,bj)*
-     &           (Tracer(i,j+1,k,bi,bj)-Tracer(i,j,k,bi,bj)))
+     &           (Tracer(i,j+1,k)-Tracer(i,j,k)) )
      &   +op5*(_maskS(i,j,k-1,bi,bj)
      &         *_recip_dyC(i,j,bi,bj)*
-     &           (Tracer(i,j,k-1,bi,bj)-Tracer(i,j-1,k-1,bi,bj))
+     &           (Tracer(i,j,k-1)-Tracer(i,j-1,k-1))
      &        +_maskS(i,j+1,k-1,bi,bj)
      &         *_recip_dyC(i,j+1,bi,bj)*
-     &           (Tracer(i,j+1,k-1,bi,bj)-Tracer(i,j,k-1,bi,bj)))
+     &           (Tracer(i,j+1,k-1)-Tracer(i,j,k-1)) )
      &       )
        ENDDO
       ENDDO
- 
+
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE dTdx(:,:) = 
+CADJ STORE dTdx(:,:) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
-CADJ STORE dTdy(:,:) = 
+CADJ STORE dTdy(:,:) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 #endif
 
-C-      Off-diagonal components of vertical flux
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        IF ( tracerIdentity .LT. GAD_TR1 ) THEN
-         df(i,j) = df(i,j)
-     &      - _rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
-     &        *( Kwx(i,j,k,bi,bj)*dTdx(i,j)+Kwy(i,j,k,bi,bj)*dTdy(i,j) )
-        ELSE
-         df(i,j) = df(i,j)
-     &      - _rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
+C-    Off-diagonal components of vertical flux
 #ifdef ALLOW_LONGSTEP
-     &    *(LS_Kwx(i,j,k,bi,bj)*dTdx(i,j)+LS_Kwy(i,j,k,bi,bj)*dTdy(i,j))
-#else
-     &        *( Kwx(i,j,k,bi,bj)*dTdx(i,j)+Kwy(i,j,k,bi,bj)*dTdy(i,j) )
-#endif
-        ENDIF
-       ENDDO
-      ENDDO
+      IF ( trIdentity .GE. GAD_TR1 ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          df(i,j) = df(i,j)
+     &      - _rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
+     &       *( LS_Kwx(i,j,k,bi,bj)*dTdx(i,j)
+     &        + LS_Kwy(i,j,k,bi,bj)*dTdy(i,j) )
+         ENDDO
+        ENDDO
+      ELSE
+#endif /* ALLOW_LONGSTEP */
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          df(i,j) = df(i,j)
+     &      - _rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
+     &       *( Kwx(i,j,k,bi,bj)*dTdx(i,j)
+     &        + Kwy(i,j,k,bi,bj)*dTdy(i,j) )
+         ENDDO
+        ENDDO
+#ifdef ALLOW_LONGSTEP
+      ENDIF
+#endif /* ALLOW_LONGSTEP */
 
 #ifdef GM_BOLUS_ADVEC
       IF (GM_AdvForm .AND. GM_AdvSeparate
      & .AND. .NOT.GM_InMomAsStress) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-         rTrans(i,j) = 
+         rTrans(i,j) =
      &      dyG(i+1,j,bi,bj)*GM_PsiX(i+1,j,k,bi,bj)
      &     -dyG( i ,j,bi,bj)*GM_PsiX( i ,j,k,bi,bj)
      &     +dxG(i,j+1,bi,bj)*GM_PsiY(i,j+1,k,bi,bj)
@@ -157,32 +162,30 @@ C-      Off-diagonal components of vertical flux
         ENDDO
        ENDDO
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE rtrans(:,:) = 
+CADJ STORE rtrans(:,:) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 #endif
        DO j=jMin,jMax
         DO i=iMin,iMax
          df(i,j) = df(i,j)
      &    +rTrans(i,j)*op5
-     &                *(Tracer(i,j,k,bi,bj)+Tracer(i,j,k-1,bi,bj))
+     &                *(Tracer(i,j,k)+Tracer(i,j,k-1))
      &        *maskInC(i,j,bi,bj)
         ENDDO
        ENDDO
       ENDIF
-#endif /* GM_BOLUS_ADVEC */  
+#endif /* GM_BOLUS_ADVEC */
 
 c     IF (.NOT.implicitDiffusion) THEN
-c
-c This vertical diffusion term is currently implemented
-c by adding the VisbeckK*Kwz diffusivity to KappaRT/S
-c See calc_diffusivity.F and calc_gt.F (calc_gs.F)
-c
+C This vertical diffusion term is currently implemented
+C by adding the VisbeckK*Kwz diffusivity to KappaRT/S
+C See calc_diffusivity.F and calc_gt.F (calc_gs.F)
 c      DO j=jMin,jMax
 c       DO i=iMin,iMax
 c        df(i,j) = df(i,j) - _rA(i,j,bi,bj)
 c    &    *maskUp(i,j)*VisbeckK(i,j,bi,bj)*Kwz(i,j,k,bi,bj)
 c    &    *recip_drC(k)*rkfac
-c    &    *(Tracer(i,j,k-1,bi,bj)-Tracer(i,j,k,bi,bj))
+c    &    *(Tracer(i,j,k-1)-Tracer(i,j,k))
 c    &    *maskInC(i,j,bi,bj)
 c       ENDDO
 c      ENDDO

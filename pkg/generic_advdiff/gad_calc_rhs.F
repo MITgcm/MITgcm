@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.69 2014/08/14 16:46:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.70 2014/08/18 12:22:46 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -100,8 +100,8 @@ C myThid           :: thread number
       _RL diffKh, diffK4
       _RL KappaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL diffKr4(Nr)
-      _RL TracerN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL TracAB (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL TracerN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL TracAB (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL deltaTLev(Nr)
       INTEGER trIdentity
       INTEGER advectionScheme, vertAdvecScheme
@@ -184,15 +184,15 @@ C--   Make local copy of tracer array
       IF ( applyAB_onTracer ) THEN
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          localT(i,j)=TracerN(i,j,k,bi,bj)
-          locABT(i,j)= TracAB(i,j,k,bi,bj)
+          localT(i,j)=TracerN(i,j,k)
+          locABT(i,j)= TracAB(i,j,k)
          ENDDO
         ENDDO
       ELSE
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          localT(i,j)=TracerN(i,j,k,bi,bj)
-          locABT(i,j)=TracerN(i,j,k,bi,bj)
+          localT(i,j)=TracerN(i,j,k)
+          locABT(i,j)=TracerN(i,j,k)
          ENDDO
         ENDDO
       ENDIF
@@ -308,12 +308,11 @@ C-    Add bi-harmonic diffusive flux in X
 #ifdef ALLOW_GMREDI
 C-    GM/Redi flux in X
       IF ( trUseGMRedi ) THEN
-C *note* should update GMREDI_XTRANSPORT to set df  *aja*
         CALL GMREDI_XTRANSPORT(
-     I         iMin,iMax,jMin,jMax,bi,bj,k,
-     I         xA,TracerN,trIdentity,
+     I         trIdentity, bi, bj, k, iMin, iMax, jMin, jMax,
+     I         xA, TracerN,
      U         df,
-     I         myThid)
+     I         myThid )
       ENDIF
 #endif
 C     anelastic: advect.fluxes are scaled by rhoFac but hor.diff. flx are not
@@ -442,12 +441,11 @@ C-    Add bi-harmonic flux in Y
 #ifdef ALLOW_GMREDI
 C-    GM/Redi flux in Y
       IF ( trUseGMRedi ) THEN
-C *note* should update GMREDI_YTRANSPORT to set df  *aja*
         CALL GMREDI_YTRANSPORT(
-     I         iMin,iMax,jMin,jMax,bi,bj,k,
-     I         yA,TracerN,trIdentity,
+     I         trIdentity, bi, bj, k, iMin, iMax, jMin, jMax,
+     I         yA, TracerN,
      U         df,
-     I         myThid)
+     I         myThid )
       ENDIF
 #endif
 C     anelastic: advect.fluxes are scaled by rhoFac but hor.diff. flx are not
@@ -489,11 +487,11 @@ C-    Compute vertical advective flux in the interior using TracAB:
         ELSEIF ( vertAdvecScheme.EQ.ENUM_UPWIND_1RST
      &          .OR. vertAdvecScheme.EQ.ENUM_DST2 ) THEN
            CALL GAD_DST2U1_ADV_R( bi,bj,k,vertAdvecScheme,deltaTLev(k),
-     I              rTrans, wFld, TracAB(1-OLx,1-OLy,1,bi,bj),
+     I              rTrans, wFld, TracAB,
      O              af, myThid )
         ELSEIF (vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
            CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k, deltaTLev(k),
-     I              rTrans, wFld, TracAB(1-OLx,1-OLy,1,bi,bj),
+     I              rTrans, wFld, TracAB,
      O              af, myThid )
         ELSEIF (vertAdvecScheme.EQ.ENUM_UPWIND_3RD ) THEN
            CALL GAD_U3_ADV_R( bi,bj,k, rTrans, TracAB, af, myThid )
@@ -510,16 +508,16 @@ cph with limiters in forward, but without limiters in reverse.
         ELSEIF( vertAdvecScheme.EQ.ENUM_DST3 ) THEN
 #endif /* ALLOW_AUTODIFF */
            CALL GAD_DST3_ADV_R( bi,bj,k, deltaTLev(k),
-     I              rTrans, wFld, TracAB(1-OLx,1-OLy,1,bi,bj),
+     I              rTrans, wFld, TracAB,
      O              af, myThid )
         ELSEIF (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
            CALL GAD_DST3FL_ADV_R( bi,bj,k, deltaTLev(k),
-     I              rTrans, wFld, TracAB(1-OLx,1-OLy,1,bi,bj),
+     I              rTrans, wFld, TracAB,
      O              af, myThid )
 #ifndef ALLOW_AUTODIFF
         ELSEIF (vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_R( bi,bj,k, deltaTLev(k),
-     I              rTrans, wFld, TracAB(1-OLx,1-OLy,1,bi,bj),
+     I              rTrans, wFld, TracAB,
      O              af, myThid )
 #endif
         ELSE
@@ -532,11 +530,11 @@ C-    Compute vertical advective flux in the interior using TracerN:
         ELSEIF ( vertAdvecScheme.EQ.ENUM_UPWIND_1RST
      &          .OR. vertAdvecScheme.EQ.ENUM_DST2 ) THEN
            CALL GAD_DST2U1_ADV_R( bi,bj,k,vertAdvecScheme,deltaTLev(k),
-     I              rTrans, wFld, TracerN(1-OLx,1-OLy,1,bi,bj),
+     I              rTrans, wFld, TracerN,
      O              af, myThid )
         ELSEIF (vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
            CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k, deltaTLev(k),
-     I              rTrans, wFld, TracerN(1-OLx,1-OLy,1,bi,bj),
+     I              rTrans, wFld, TracerN,
      O              af, myThid )
         ELSEIF (vertAdvecScheme.EQ.ENUM_UPWIND_3RD ) THEN
            CALL GAD_U3_ADV_R( bi,bj,k, rTrans, TracerN, af, myThid )
@@ -553,16 +551,16 @@ cph with limiters in forward, but without limiters in reverse.
         ELSEIF( vertAdvecScheme.EQ.ENUM_DST3 ) THEN
 #endif /* ALLOW_AUTODIFF */
            CALL GAD_DST3_ADV_R( bi,bj,k, deltaTLev(k),
-     I              rTrans, wFld, TracerN(1-OLx,1-OLy,1,bi,bj),
+     I              rTrans, wFld, TracerN,
      O              af, myThid )
         ELSEIF (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
            CALL GAD_DST3FL_ADV_R( bi,bj,k, deltaTLev(k),
-     I              rTrans, wFld, TracerN(1-OLx,1-OLy,1,bi,bj),
+     I              rTrans, wFld, TracerN,
      O              af, myThid )
 #ifndef ALLOW_AUTODIFF
         ELSEIF (vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_R( bi,bj,k, deltaTLev(k),
-     I              rTrans, wFld, TracerN(1-OLx,1-OLy,1,bi,bj),
+     I              rTrans, wFld, TracerN,
      O              af, myThid )
 #endif
         ELSE
@@ -606,12 +604,11 @@ C           boundary condition.
 #ifdef ALLOW_GMREDI
 C-    GM/Redi flux in R
       IF ( trUseGMRedi ) THEN
-C *note* should update GMREDI_RTRANSPORT to set df  *aja*
         CALL GMREDI_RTRANSPORT(
-     I         iMin,iMax,jMin,jMax,bi,bj,k,
-     I         TracerN,trIdentity,
+     I         trIdentity, bi, bj, k, iMin, iMax, jMin, jMax,
+     I         TracerN,
      U         df,
-     I         myThid)
+     I         myThid )
       ENDIF
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_r.F,v 1.6 2006/12/05 05:26:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_r.F,v 1.7 2014/08/18 12:22:46 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: GAD_DIFF_R
 
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_DIFF_R(
-     I           bi,bj,k,
+     I           bi, bj, k,
      I           KappaR,
      I           tracer,
      O           dfr,
@@ -36,7 +36,7 @@ C  tracer               :: tracer field
 C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL KappaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -52,18 +52,18 @@ CEOP
       km1=MAX(1,k-1)
 
       IF (k.EQ.1 .OR. k.GT.Nr) THEN
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          dfr(i,j) = 0.
         ENDDO
        ENDDO
       ELSE
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          dfr(i,j) = -KappaR(i,j)
      &            *_rA(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
      &            *recip_drC(k)
-     &            *(tracer(i,j,k,bi,bj)-tracer(i,j,km1,bi,bj))*rkSign
+     &            *(tracer(i,j,k)-tracer(i,j,km1))*rkSign
         ENDDO
        ENDDO
       ENDIF

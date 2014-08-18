@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c2_adv_r.F,v 1.4 2001/09/21 13:11:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c2_adv_r.F,v 1.5 2014/08/18 12:22:46 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,8 +7,8 @@ CBOP
 C !ROUTINE: GAD_C2_ADV_R
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_C2_ADV_R( 
-     I           bi,bj,k,
+      SUBROUTINE GAD_C2_ADV_R(
+     I           bi, bj, k,
      I           rTrans,
      I           tracer,
      O           wT,
@@ -36,7 +36,7 @@ C  tracer               :: tracer field
 C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -52,17 +52,17 @@ CEOP
       km1=max(1,k-1)
 
       IF ( k.EQ.1 .OR. k.GT.Nr) THEN
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          wT(i,j) = 0.
         ENDDO
        ENDDO
       ELSE
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         wT(i,j) = maskC(i,j,kM1,bi,bj)*
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         wT(i,j) = maskC(i,j,km1,bi,bj)*
      &     rTrans(i,j)*
-     &        (Tracer(i,j,k,bi,bj)+Tracer(i,j,kM1,bi,bj))*0.5 _d 0
+     &        (tracer(i,j,k)+tracer(i,j,km1))*0.5 _d 0
         ENDDO
        ENDDO
       ENDIF

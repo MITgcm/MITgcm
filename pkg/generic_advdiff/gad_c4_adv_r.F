@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c4_adv_r.F,v 1.5 2003/05/01 16:12:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c4_adv_r.F,v 1.6 2014/08/18 12:22:46 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,8 +7,8 @@ CBOP
 C !ROUTINE: GAD_C4_ADV_R
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_C4_ADV_R( 
-     I           bi,bj,k,
+      SUBROUTINE GAD_C4_ADV_R(
+     I           bi, bj, k,
      I           rTrans,
      I           tracer,
      O           wT,
@@ -38,7 +38,7 @@ C  tracer               :: tracer field
 C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -65,29 +65,28 @@ CEOP
       IF (k.LE.2 .OR. k.GE.Nr) maskPM = 0.
 
       IF ( k.EQ.1 .OR. k.GT.Nr) THEN
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          wT(i,j) = 0.
         ENDDO
        ENDDO
       ELSE
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          maskBound = maskPM*maskC(i,j,km2,bi,bj)*maskC(i,j,kp1,bi,bj)
-         Rjp=(tracer(i,j,kp1,bi,bj)-tracer(i,j,k,bi,bj))
-     &        *maskC(i,j,kp1,bi,bj)
-         Rj =(tracer(i,j,k,bi,bj)-tracer(i,j,km1,bi,bj))
-         Rjm=(tracer(i,j,km1,bi,bj)-tracer(i,j,km2,bi,bj))
-     &        *maskC(i,j,km1,bi,bj)
+         Rjp = (tracer(i,j,kp1)-tracer(i,j, k ))*maskC(i,j,kp1,bi,bj)
+         Rj  = (tracer(i,j, k )-tracer(i,j,km1))
+         Rjm = (tracer(i,j,km1)-tracer(i,j,km2))*maskC(i,j,km1,bi,bj)
+     &
          Rjjp=(Rjp-Rj)
          Rjjm=(Rj-Rjm)
          wT(i,j) = maskC(i,j,km1,bi,bj)*(
-     &     rTrans(i,j)*(
-     &        (Tracer(i,j,k,bi,bj)+Tracer(i,j,km1,bi,bj))*0.5 _d 0
-     &        -oneSixth*(Rjjm+Rjjp)*0.5 _d 0 )
+     &     rTrans(i,j)*( (tracer(i,j,k)+tracer(i,j,km1))*0.5 _d 0
+     &                  -oneSixth*(Rjjm+Rjjp)*0.5 _d 0 )
      &    +ABS(rTrans(i,j))*
-     &         oneSixth*(Rjjm-Rjjp)*0.5 _d 0*(1. _d 0 - maskBound)
-     &                                  )                      
+     &                   oneSixth*(Rjjm-Rjjp)*0.5 _d 0
+     &                     *(1. _d 0 - maskBound)
+     &                                  )
         ENDDO
        ENDDO
       ENDIF

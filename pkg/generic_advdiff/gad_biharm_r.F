@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_biharm_r.F,v 1.1 2012/06/15 13:26:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_biharm_r.F,v 1.2 2014/08/18 12:22:46 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -34,7 +34,7 @@ C  tracer               :: tracer field
 C  myThid               :: my thread Id number
       INTEGER bi, bj, k
       _RL diffKr4(Nr)
-      _RL tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -68,7 +68,7 @@ C     Calculate vertical gradient @ interface k-1, k & k+1 (n=1:3)
          tmpFac = recip_drC(kl)*deepFac2F(kl)*rhoFacF(kl)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           gradR(i,j,n) = ( tracer(i,j,kl,bi,bj)-tracer(i,j,km,bi,bj) )
+           gradR(i,j,n) = ( tracer(i,j,kl)-tracer(i,j,km) )
      &                *tmpFac*maskC(i,j,kl,bi,bj)*maskC(i,j,km,bi,bj)
           ENDDO
          ENDDO
