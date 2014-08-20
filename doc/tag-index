@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2049 2014/08/18 20:16:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2050 2014/08/20 20:59:34 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification (hs94):
+  - convert Held & Suarez external_forcing.F (from hs94.cs, with Sigma-coords
+    bits) to apply_forcing.F and undef USE_OLD_EXTERNAL_FORCING in experiments
+    hs94.cs-32x32x5 and tutorial_held_suarez_cs ; also use the same version of
+    apply_forcing.F in 2D hs94 (fwd, ad & oad) but keep LatLon hs94 unchanged.
 o pkg/ptracers:
   - implement Adams-Bashforth on pTracers (instead of on tracer tendency),
     switched on by setting PTRACERS_doAB_onGpTr=F (default set to doAB_onGtGs)
