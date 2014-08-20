@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_apply.F,v 1.6 2014/08/08 19:57:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_apply.F,v 1.7 2014/08/20 22:35:50 jmc Exp $
 C $Name:  $
 
 #include "DWNSLP_OPTIONS.h"
@@ -70,7 +70,7 @@ C-    !FUNCTIONS:
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     msgBuf     :: Informational/error message buffer
-      INTEGER ij, k
+      INTEGER k
       INTEGER n,ijd,ijs,kshelf
       _RL     gTrLoc(0:Nr)
       _RL     tmpFld
