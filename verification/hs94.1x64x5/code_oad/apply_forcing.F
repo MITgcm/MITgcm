@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/apply_forcing.F,v 1.1 2014/07/11 18:57:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/apply_forcing.F,v 1.2 2014/08/20 20:27:43 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -35,6 +35,7 @@ C     == Global data ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SURFACE.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 
@@ -58,20 +59,40 @@ C     !LOCAL VARIABLES:
 C     i,j       :: Loop counters
       INTEGER i, j
 CEOP
-      _RL recip_P0g, termP, kV, kF, sigma_b
+      _RL recip_P0g, termP, rFullDepth
+      _RL kV, kF, sigma_b
 
 C--   Forcing term
       kF = 1. _d 0/86400. _d 0
       sigma_b = 0.7 _d 0
+      rFullDepth = rF(1)-rF(Nr+1)
 c     DO j=1,sNy
 C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy+1]
       DO j=0,sNy+1
        DO i=1,sNx+1
         IF ( maskW(i,j,k,bi,bj).EQ.oneRS ) THEN
-         recip_P0g = MAX(recip_Rcol(i,j,bi,bj),recip_Rcol(i-1,j,bi,bj))
-         termP = 0.5 _d 0*( MIN( rF(k)*recip_P0g, oneRL )
-     &                     +rF(k+1)*recip_P0g )
-c        termP = 0.5 _d 0*( rF(k) + rF(k+1) )*recip_P0g
+         IF ( selectSigmaCoord.EQ.0 ) THEN
+          recip_P0g = MAX(recip_Rcol(i,j,bi,bj),recip_Rcol(i-1,j,bi,bj))
+          termP = 0.5 _d 0*( MIN( rF(k)*recip_P0g, oneRL )
+     &                      +rF(k+1)*recip_P0g )
+c         termP = 0.5 _d 0*( rF(k) + rF(k+1) )*recip_P0g
+         ELSE
+C-- Pressure at U.point :
+c         midP = rLowW(i,j,bi,bj) + aHybSigmC(k)*rFullDepth
+c    &         + bHybSigmC(k)
+c    &          *(etaHw(i,j,bi,bj)+rSurfW(i,j,bi,bj)-rLowW(i,j,bi,bj))
+C-- Sigma at U.point :
+c         termP = ( midP - rLowW(i,j,bi,bj))
+c    &          /(etaHw(i,j,bi,bj)+rSurfW(i,j,bi,bj)-rLowW(i,j,bi,bj))
+C-  which simplifies to:
+          termP = aHybSigmC(k)*rFullDepth
+#ifdef NONLIN_FRSURF
+     &          /(etaHw(i,j,bi,bj)+rSurfW(i,j,bi,bj)-rLowW(i,j,bi,bj))
+#else
+     &          /(rSurfW(i,j,bi,bj)-rLowW(i,j,bi,bj))
+#endif
+     &          + bHybSigmC(k)
+         ENDIF
          kV = kF*MAX( zeroRL, (termP-sigma_b)/(1. _d 0-sigma_b) )
          gU_arr(i,j) = gU_arr(i,j)
      &               - kV*uVel(i,j,k,bi,bj)
@@ -107,6 +128,7 @@ C     == Global data ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SURFACE.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 
@@ -130,20 +152,40 @@ C     !LOCAL VARIABLES:
 C     i,j       :: Loop counters
       INTEGER i, j
 CEOP
-      _RL recip_P0g, termP, kV, kF, sigma_b
+      _RL recip_P0g, termP, rFullDepth
+      _RL kV, kF, sigma_b
 
 C--   Forcing term
       kF = 1. _d 0/86400. _d 0
       sigma_b = 0.7 _d 0
+      rFullDepth = rF(1)-rF(Nr+1)
       DO j=1,sNy+1
 c      DO i=1,sNx
 C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx+1]
        DO i=0,sNx+1
         IF ( maskS(i,j,k,bi,bj).EQ.oneRS ) THEN
-         recip_P0g = MAX(recip_Rcol(i,j,bi,bj),recip_Rcol(i,j-1,bi,bj))
-         termP = 0.5 _d 0*( MIN( rF(k)*recip_P0g, oneRL )
-     &                     +rF(k+1)*recip_P0g )
-c        termP = 0.5 _d 0*( rF(k) + rF(k+1) )*recip_P0g
+         IF ( selectSigmaCoord.EQ.0 ) THEN
+          recip_P0g = MAX(recip_Rcol(i,j,bi,bj),recip_Rcol(i,j-1,bi,bj))
+          termP = 0.5 _d 0*( MIN( rF(k)*recip_P0g, oneRL )
+     &                      +rF(k+1)*recip_P0g )
+c         termP = 0.5 _d 0*( rF(k) + rF(k+1) )*recip_P0g
+         ELSE
+C-- Pressure at V.point :
+c         midP = rLowS(i,j,bi,bj) + aHybSigmC(k)*rFullDepth
+c    &         + bHybSigmC(k)
+c    &          *(etaHs(i,j,bi,bj)+rSurfS(i,j,bi,bj)-rLowS(i,j,bi,bj))
+C-- Sigma at V.point :
+c         termP = ( midP - rLowS(i,j,bi,bj))
+c    &          /(etaHs(i,j,bi,bj)+rSurfS(i,j,bi,bj)-rLowS(i,j,bi,bj))
+C-  which simplifies to:
+          termP = aHybSigmC(k)*rFullDepth
+#ifdef NONLIN_FRSURF
+     &          /(etaHs(i,j,bi,bj)+rSurfS(i,j,bi,bj)-rLowS(i,j,bi,bj))
+#else
+     &          /(rSurfS(i,j,bi,bj)-rLowS(i,j,bi,bj))
+#endif
+     &          + bHybSigmC(k)
+         ENDIF
          kV = kF*MAX( zeroRL, (termP-sigma_b)/(1. _d 0-sigma_b) )
          gV_arr(i,j) = gV_arr(i,j)
      &               - kV*vVel(i,j,k,bi,bj)
@@ -181,7 +223,6 @@ C     == Global data ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-#include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     gT_arr    :: the tendency array
@@ -204,26 +245,46 @@ C     i,j       :: Loop counters
 C     kSurface  :: index of surface level
       INTEGER i, j
 CEOP
-      _RL thetaLim,kT,ka,ks,sigma_b,term1,term2,thetaEq,termP
+      _RL thetaLim, kT, ka, ks, sigma_b, term1, term2, thetaEq
+      _RL termP, rFullDepth
 
 C--   Forcing term
       ka = 1. _d 0/(40. _d 0*86400. _d 0)
       ks = 1. _d 0/(4. _d 0 *86400. _d 0)
       sigma_b = 0.7 _d 0
-      DO j=1,sNy
-       DO i=1,sNx
+      rFullDepth = rF(1)-rF(Nr+1)
+      DO j=0,sNy+1
+       DO i=0,sNx+1
          term1 = 60. _d 0*(SIN(yC(i,j,bi,bj)*deg2rad)**2)
          termP = 0.5 _d 0*( rF(k) + rF(k+1) )
          term2 = 10. _d 0*LOG(termP/atm_po)
      &            *(COS(yC(i,j,bi,bj)*deg2rad)**2)
          thetaLim = 200. _d 0/ ((termP/atm_po)**atm_kappa)
-         thetaEq = 315. _d 0-term1-term2
+         thetaEq = 315. _d 0 - term1 - term2
          thetaEq = MAX(thetaLim,thetaEq)
-         termP = 0.5 _d 0*( MIN(rF(k),Ro_surf(i,j,bi,bj))
-     &                    + rF(k+1) )
+         IF ( selectSigmaCoord.EQ.0 ) THEN
+          termP = 0.5 _d 0*( MIN(rF(k),Ro_surf(i,j,bi,bj))
+     &                     + rF(k+1) )
+     &                    *recip_Rcol(i,j,bi,bj)
+         ELSE
+C-- Pressure at T.point :
+c         midP = R_low(i,j,bi,bj) + aHybSigmC(k)*rFullDepth
+c    &         + bHybSigmC(k)
+c    &          *(etaH(i,j,bi,bj)+Ro_surf(i,j,bi,bj)-R_low(i,j,bi,bj))
+C-- Sigma at T.point :
+c         termP = ( midP - R_low(i,j,bi,bj))
+c    &          /(etaH(i,j,bi,bj)+Ro_surf(i,j,bi,bj)-R_low(i,j,bi,bj))
+C-  which simplifies to:
+          termP = aHybSigmC(k)*rFullDepth
+#ifdef NONLIN_FRSURF
+     &          /(etaH(i,j,bi,bj)+Ro_surf(i,j,bi,bj)-R_low(i,j,bi,bj))
+#else
+     &          /(Ro_surf(i,j,bi,bj)-R_low(i,j,bi,bj))
+#endif
+     &          + bHybSigmC(k)
+         ENDIF
          kT = ka+(ks-ka)
-     &      *MAX( zeroRL,
-     &       (termP*recip_Rcol(i,j,bi,bj)-sigma_b)/(1. _d 0-sigma_b) )
+     &      *MAX( zeroRL, (termP-sigma_b)/(1. _d 0-sigma_b) )
      &      *COS((yC(i,j,bi,bj)*deg2rad))**4
          gT_arr(i,j) = gT_arr(i,j)
      &               - kT*( theta(i,j,k,bi,bj)-thetaEq )
