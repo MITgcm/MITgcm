@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_held_suarez_cs/code/CPP_OPTIONS.h,v 1.3 2014/07/11 18:48:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_held_suarez_cs/code/CPP_OPTIONS.h,v 1.4 2014/08/20 20:24:09 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -21,6 +21,9 @@ C CPP flags controlling particular source code features
 C o Shortwave heating as extra term in external_forcing.F
 C Note: this should be a run-time option
 #undef SHORTWAVE_HEATING
+
+C o Include/exclude Geothermal Heat Flux at the bottom of the ocean
+#undef ALLOW_GEOTHERMAL_FLUX
 
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
@@ -121,7 +124,7 @@ C   is still useful with, e.g., single-domain curvilinear configurations.
 #undef OLD_GRID_IO
 
 C o Use old EXTERNAL_FORCING_U,V,T,S subroutines (for backward compatibility)
-#define USE_OLD_EXTERNAL_FORCING
+#undef USE_OLD_EXTERNAL_FORCING
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
