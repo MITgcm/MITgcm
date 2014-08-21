@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.39 2014/01/30 21:05:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.40 2014/08/21 23:18:32 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -233,6 +233,10 @@ C--  end bi,bj loop
 #ifdef ALLOW_BALANCE_FLUXES
 C--   Balance net Fresh-Water flux from Atm+Land
       IF ( thSIceBalanceAtmFW.NE.0 ) THEN
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE icFrwAtm =
+CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
+# endif
         CALL THSICE_BALANCE_FRW(
      I                      iMin, iMax, jMin, jMax,
      I                      prcAtm, myTime, myIter, myThid )
