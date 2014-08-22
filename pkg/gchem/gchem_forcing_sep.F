@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.34 2014/05/06 20:46:53 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.35 2014/08/22 22:15:12 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -8,7 +8,6 @@ C $Name:  $
 #ifdef ALLOW_DARWIN
 #include "DARWIN_OPTIONS.h"
 #endif
-
 
 CBOP
 C !ROUTINE: GCHEM_FORCING_SEP
@@ -56,8 +55,10 @@ C  bi,bj                :: tile indices
 C  k                    :: vertical level
       INTEGER bi,bj,iMin,iMax,jMin,jMax
 c     INTEGER i,j
-#ifdef ALLOW_DIAGNOSTICS
+#if (defined ALLOW_OBCS) || (defined ALLOW_DIAGNOSTICS)
       INTEGER iTr
+#endif
+#ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
 #endif /* ALLOW_DIAGNOSTICS */
 
@@ -78,6 +79,7 @@ c global calculations   c
 ccccccccccccccccccccccccc
 #ifdef ALLOW_OLD_VIRTUALFLUX
 #ifdef ALLOW_DIC
+c     IF ( useDIC ) THEN
 c find global surface averages
        gsm_s = 0. _d 0
        gsm_dic = 0. _d 0
@@ -88,8 +90,10 @@ c find global surface averages
        print*,'mean surface dic', gsm_dic,gsm_s
        CALL GCHEM_SURFMEAN(
      &             pTracer(1-OLx,1-OLy,1,1,1,2), gsm_alk, myThid )
-#endif
+c     ENDIF
+#endif /* ALLOW_DIC */
 #ifdef ALLOW_DARWIN
+c     IF ( useDARWIN ) THEN
 c find global surface averages
        gsm_s = 0. _d 0
        gsm_dic = 0. _d 0
@@ -100,28 +104,29 @@ c find global surface averages
        print*,'mean surface dic', gsm_dic,gsm_s
        CALL GCHEM_SURFMEAN(
      &             pTracer(1-OLx,1-OLy,1,1,1,iALK), gsm_alk, myThid )
+c     ENDIF
 #endif
 ccccccccccccccccccccccccccccccccccccccccccc
 #ifdef ALLOW_OFFLINE
-       IF ( useOffLine ) THEN
-         CALL OFFLINE_GET_SURFFORCING( myTime, myIter, myThid )
-       ENDIF
+      IF ( useOffLine ) THEN
+        CALL OFFLINE_GET_SURFFORCING( myTime, myIter, myThid )
+      ENDIF
 #endif /* ALLOW_OFFLINE */
 #endif /* ALLOW_OLD_VIRTUALFLUX */
 
 #ifdef ALLOW_DARWIN
-       IF ( useDARWIN ) THEN
-         CALL DARWIN_CONS( myIter, myTime, myThid )
-       ENDIF
+      IF ( useDARWIN ) THEN
+        CALL DARWIN_CONS( myIter, myTime, myThid )
+      ENDIF
 #endif
 
 ccccccccccccccccccccccccc
 c chemical forcing      c
 ccccccccccccccccccccccccc
 C$taf loop = parallel
-       DO bj=myByLo(myThid),myByHi(myThid)
+      DO bj=myByLo(myThid),myByHi(myThid)
 C$taf loop = parallel
-        DO bi=myBxLo(myThid),myBxHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
 
         jMin=1
         jMax=sNy
@@ -131,6 +136,7 @@ c
 ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
 
 #ifdef ALLOW_DIC
+c       IF ( useDIC ) THEN
 #ifdef ALLOW_FE
           CALL DIC_BIOTIC_FORCING( pTracer(1-OLx,1-OLy,1,bi,bj,1),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,2),
@@ -158,11 +164,12 @@ ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
      &                          myIter,myTime,myThid)
 #endif
 #endif
-
-#endif
+c       ENDIF
+#endif /* ALLOW_DIC */
 cccccccccccccccccccccccccc END DIC cccccccccccccccccccccccccccccccccc
+
 #ifdef ALLOW_DARWIN
-         IF ( useDARWIN ) THEN
+        IF ( useDARWIN ) THEN
 #ifdef NUT_SUPPLY
 c articficial supply of nutrients
           CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,1),
@@ -184,29 +191,47 @@ C array because of last (iPtr) index
           CALL DARWIN_FORCING(  pTracer(1-OLx,1-OLy,1,1,1,1),
      &                          bi,bj,imin,imax,jmin,jmax,
      &                          myIter,myTime,myThid)
-         ENDIF
+        ENDIF
 #endif /* ALLOW_DARWIN */
 
-        ENDDO
+#ifdef ALLOW_OBCS
+C--   Apply (again) open boundary conditions for each passive tracer
+C Note: could skip this 2nd call to OBCS_APPLY if all DIC/DARWIN
+C       updates of ptracers were only done in the interior (i.e. with
+C       tendency multiplied by maskInC)
+        IF ( useOBCS ) THEN
+          DO iTr = 1,PTRACERS_numInUse
+            CALL OBCS_APPLY_PTRACER(
+     I                bi, bj, 0, iTr,
+     U                pTracer(1-OLx,1-OLy,1,bi,bj,iTr),
+     I                myThid )
+          ENDDO
+        ENDIF
+#endif /* ALLOW_OBCS */
+
        ENDDO
+      ENDDO
 
 #ifdef ALLOW_DARWIN
-       IF ( useDARWIN ) THEN
+      IF ( useDARWIN ) THEN
          CALL DARWIN_CONS( myIter, myTime, myThid )
 #ifdef ALLOW_CARBON
          CALL DIC_ATMOS( 1, myTime, myIter, myThid )
 #endif
-       ENDIF
+      ENDIF
 #endif /* ALLOW_DARWIN */
 
 #ifdef ALLOW_DIC
+      IF ( useDIC ) THEN
        CALL DIC_ATMOS( 1, myTime, myIter, myThid )
+# ifdef COMPONENT_MODULE
        CALL DIC_STORE_FLUXCO2( myTime, myIter, myThid )
-#endif
-
-#ifdef ALLOW_COST
+# endif
+# ifdef ALLOW_COST
        CALL DIC_COST( myTime, myIter, myThid )
-#endif
+# endif
+      ENDIF
+#endif */ ALLOW_DIC */
 
 #endif /* GCHEM_SEPARATE_FORCING */
 #endif /* ALLOW_GCHEM */
