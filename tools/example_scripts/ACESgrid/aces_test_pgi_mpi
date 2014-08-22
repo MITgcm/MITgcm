@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_pgi.stderr
 #PBS -o /home/jmc/test_aces/output/tst_pgi.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.33 2014/08/10 20:24:34 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.34 2014/08/22 15:51:16 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: MPI test using PGI (pgf77) compiler & mpich
@@ -50,7 +50,7 @@ addExp=''
 #options="$options -skd tutorial_advection_in_gyre"
  EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
 
-checkOut=1 ; options="$options -do" ; dblRun=1 ;
+checkOut=1 ; options="$options -do" ; dblRun=2 ;
 #options="$options -nc" ; checkOut=0 ; dblRun=0 ;
 #options="$options -q"  ; checkOut=0 ; dblRun=0 ;
 
@@ -126,11 +126,15 @@ else
   exit
 fi
 
-if [ $dblRun -eq 1 ] ; then
+if [ $dblRun -ge 1 ] ; then
 
  echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx
  ./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx
 
+ if [ $dblRun -ge 2 ] ; then
+  echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx -q
+  ./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx -q 
+ fi
  echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx \
    -q -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
  ./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx \
