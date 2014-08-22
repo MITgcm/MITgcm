@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2050 2014/08/20 20:59:34 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2051 2014/08/22 22:22:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gchem:
+  - add a (2nd) call to OBCS_APPLY_PTRACER in gchem_forcing_sep.F (needed since
+    pkg/dic is currently changing/updating ptracers values beyond the OB).
 o verification (hs94):
   - convert Held & Suarez external_forcing.F (from hs94.cs, with Sigma-coords
     bits) to apply_forcing.F and undef USE_OLD_EXTERNAL_FORCING in experiments
