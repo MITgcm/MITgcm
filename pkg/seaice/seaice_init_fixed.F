@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.29 2014/06/24 21:54:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.30 2014/08/23 20:22:16 torge Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -135,8 +135,20 @@ C     simple, made up, ice surface roughness index prototype
          SItrFromOceanFrac(iTracer) =ZERO
          SItrFromFloodFrac(iTracer) =ZERO
        ENDIF
+#ifdef SEAICE_GREASE
+C     grease ice tracer:
+c     (Smedrud and Martin, 2014, Ann. Glac.)
+       IF (SItrName(iTracer).EQ.'grease') THEN
+         SItrMate(iTracer)          ='HEFF'
+         SItrFromOcean0(iTracer)    =ZERO
+         SItrFromFlood0(iTracer)    =ZERO
+         SItrExpand0(iTracer)       =ZERO
+         SItrFromOceanFrac(iTracer) =ZERO
+         SItrFromFloodFrac(iTracer) =ZERO
+       ENDIF
+#endif /* SEAICE_GREASE */
       ENDDO
-#endif
+#endif /* ALLOW_SITRACER */
 
 #ifdef SEAICE_ITD
 C     use Equ. 22 of Lipscomb et al. (2001, JGR) to generate ice

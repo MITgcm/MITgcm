@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_tracer_phys.F,v 1.10 2013/08/11 02:31:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_tracer_phys.F,v 1.11 2014/08/23 20:22:16 torge Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -90,7 +90,7 @@ c ==================================
         DIAGarray(I,J,5+(iTr-1)*5) =
      &    HEFFprev*SItracer(i,j,bi,bj,iTr) + SItrBucket(i,j,bi,bj,iTr)
 #endif
-c apply the sequence of thermodynamics increments to actual traceur
+c apply the sequence of thermodynamics increments to actual tracer
 c (see seaice_growth.F)
 c (jTh=1 tendency due to ice-ocean interaction)
 c (jTh=2 tendency due to the atmosphere, over ice covered part)
@@ -223,7 +223,9 @@ c should work for both constant and variable ice salinity -- to be tested
      &  *HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm*SEAICE_rhoIce
 #endif
 c empty bucket
-        SItrBucket(i,j,bi,bj,iTr)=0. _d 0
+c  but not for 'grease' (see seaice_growth.F)
+        if (SItrName(iTr).NE.'grease') 
+     &      SItrBucket(i,j,bi,bj,iTr)=0. _d 0
        ENDDO
       ENDDO
 

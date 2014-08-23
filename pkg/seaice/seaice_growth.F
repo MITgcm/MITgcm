@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.203 2014/05/27 15:24:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.204 2014/08/23 20:22:16 torge Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -146,6 +146,13 @@ C     temporary variables available for the various computations
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8   diagName
 #endif
+#ifdef SEAICE_GREASE
+      INTEGER iTrGrease
+      _RL greaseDecayTime
+      _RL greaseNewFrazil
+      _RL THIRD
+      PARAMETER (THIRD = 1.0 _d 0 / 3.0 _d 0)
+#endif
 #endif /* ALLOW_SITRACER */
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER ilockey
@@ -191,6 +198,10 @@ C     temporary variables available for the various computations
       _RL a_QbyATMmult_cover  (1:sNx,1:sNy,nITD)
       _RL a_QSWbyATMmult_cover(1:sNx,1:sNy,nITD)
       _RL a_FWbySublimMult    (1:sNx,1:sNy,nITD)
+#ifdef SEAICE_GREASE
+      _RL greaseLayerThick    (1:sNx,1:sNy)
+      _RL d_HEFFbyGREASE      (1:sNx,1:sNy)
+#endif
 #ifdef SEAICE_ITD
       _RL r_QbyATMmult_cover  (1:sNx,1:sNy,nITD)
       _RL r_FWbySublimMult    (1:sNx,1:sNy,nITD)
@@ -378,6 +389,17 @@ C parameters needed for variable floe diameter following Luepkes et al. (2012):
      &                       + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+#ifdef SEAICE_GREASE
+C time scale of grease ice decline by solidification,
+C with 50% grease ice becoming solid pancake ice within 1 day:
+        greaseDecayTime=1.44*86400. _d 0
+C store position of 'grease' in tracer array
+        iTrGrease=-1
+        DO iTr = 1, SItrNumInUse
+         if (SItrName(iTr).EQ.'grease') iTrGrease=iTr
+        ENDDO
+#endif
+
 C array initializations
 C =====================
 
@@ -419,6 +441,10 @@ C =====================
 #endif
           d_HFRWbyRAIN(I,J)          = 0.0 _d 0
           tmparr1(I,J)               = 0.0 _d 0
+#ifdef SEAICE_GREASE
+          greaseLayerThick(I,J)      = 0.0 _d 0
+          d_HEFFbyGREASE(I,J)        = 0.0 _d 0
+#endif
           DO IT=1,SEAICE_multDim
             ticeInMult(I,J,IT)            = 0.0 _d 0
             ticeOutMult(I,J,IT)           = 0.0 _d 0
@@ -1080,6 +1106,94 @@ C ===================================================================
 C =========PART 3: determine effective thicknesses increments========
 C ===================================================================
 
+#ifdef SEAICE_GREASE
+C convert SItracer 'grease' from ratio to grease ice volume:
+C ==========================================================
+        DO J=1,sNy
+         DO I=1,sNx
+          SItracer(I,J,bi,bj,iTrGrease) =
+     &     SItracer(I,J,bi,bj,iTrGrease) * HEFF(I,J,bi,bj)
+         ENDDO
+        ENDDO
+C compute actual grease ice layer thickness
+C as a function of wind stress
+C following Smedsrud [2011, Ann.Glac.]
+C =========================================
+         DO J=1,sNy
+          DO I=1,sNx
+C
+C          computing compaction force acting on grease 
+C           (= air and water stress acting on ice)
+C          wind stress (using calculation of SPEED_SQ & UG as template)
+C          u_a**2 + v_a**2:
+           tmpscal1 = uWind(I,J,bi,bj)*uWind(I,J,bi,bj)
+     &              + vWind(I,J,bi,bj)*vWind(I,J,bi,bj)
+           IF ( tmpscal1 .LE. SEAICE_EPS_SQ ) THEN
+             tmpscal1=SEAICE_EPS
+           ELSE
+             tmpscal1=SQRT(tmpscal2)
+           ENDIF
+           tmpscal1 = 1.4 _d 0 * 1.3 _d -3 * tmpscal1
+C          water stress
+C          u_w - u_i:
+           tmpscal2 = 
+     &        0.5 _d 0*(uVel(i,j,kSurface,bi,bj)
+     &                 +uVel(i+1,j,kSurface,bi,bj))
+     &       -0.5 _d 0*(uice(i,j,bi,bj)+uice(i+1,j,bi,bj))
+C          v_w - v_i:
+           tmpscal3 = 
+     &        0.5 _d 0*(vVel(i,j,kSurface,bi,bj)
+     &                 +vVel(i,j+1,kSurface,bi,bj))
+     &       -0.5 _d 0*(vice(i,j,bi,bj)+vice(i,j+1,bi,bj))
+C          (u_w - u_i)**2 + (v_w - v_i)**2:
+           tmpscal4 = (tmpscal2*tmpscal2 + tmpscal3*tmpscal3)
+           IF ( tmpscal4 .LE. SEAICE_EPS_SQ ) THEN
+             tmpscal4=SEAICE_EPS
+           ELSE
+             tmpscal4=SQRT(tmpscal4)
+           ENDIF
+           tmpscal4 = 1027.0 _d 0 * 6.0 _d -3 * tmpscal4
+C          magnitude of compined stresses:
+           tmpscal0 = 
+     &         ( tmpscal1 * uWind(I,J,bi,bj) + tmpscal4 * tmpscal2 )**2
+     &       + ( tmpscal1 * vWind(I,J,bi,bj) + tmpscal4 * tmpscal3 )**2
+           IF ( tmpscal0 .LE. SEAICE_EPS_SQ ) THEN
+             tmpscal0=SEAICE_EPS
+           ELSE
+             tmpscal0=SQRT(tmpscal0)
+           ENDIF
+C
+C          mean grid cell width between tracer points
+           tmpscal3 = 0.5 _d 0 * (dxC(I,J,bi,bj)+dyC(I,J,bi,bj))
+C          grease ice volume Vg [m^3/m] as in Smedsrud [2011]
+C           is SItracer * gridcell_area / lead_width
+C           where lead width is lead extent along lead, 
+C           i.e. perpendicular to L_lead in Smedsrud (2011),
+C           which is in the absence of lead length statistics
+C           simply the grid cell length
+           tmpscal4 = 4. _d 0 * SItracer(I,J,bi,bj,iTrGrease) * tmpscal3
+C        
+C          mean grease ice layer thickness <h_g>, Eq.10 in Smedsrud [2011] but incl. water stress
+           greaseLayerThick(I,J) = 0.763 _d 0
+C          grease ice volume
+     &           * ( tmpscal4
+C          times magnitude of vector sum of air and water stresses
+C          (in fact, only the component perpendicular to the lead edge, i.e. along L_lead counts)
+C          ATTENTION: since we don't have lead orientation with respect to wind
+C                     we use 80% of the total force assuming angles 45-90deg between wind and lead edge
+     &           * 0.8 _d 0 * tmpscal0
+C          devided by K_r = 100 N/m^3 (resistance of grease against compression)
+     &           * 0.01 _d 0 )**THIRD
+C
+C          assure a minimum thickness of 4 cm (equals HO=0.01):
+           greaseLayerThick(I,J)=max(4. _d -2, greaseLayerThick(I,J))
+C          ... and a maximum thickness of 4 m (equals HO=1.0):
+           greaseLayerThick(I,J)=min(4. _d 0 , greaseLayerThick(I,J))
+C
+          ENDDO
+         ENDDO
+#endif /* SEAICE_GREASE */
+
 C compute snow/ice tendency due to sublimation
 C ============================================
 
@@ -1469,6 +1583,54 @@ C           impose -HEFF as the maxmum melting if SEAICE_doOpenWaterMelt
 C           or 0. otherwise (no melting if not SEAICE_doOpenWaterMelt)
             tmpscal3=facOpenGrow*MAX(tmpscal1-tmpscal2,
      &           -tmpscal4*facOpenMelt)*HEFFM(I,J,bi,bj)
+#ifdef SEAICE_GREASE
+C Grease ice is a tracer or "bucket" for newly formed frazil ice
+C  that instead of becoming solid sea ice instantly has a half-time
+C  of 1 day (see greaseDecayTime) before solidifying. 
+C The most important effect is that for fluxes the grease ice area/volume 
+C  acts like open water.
+C
+C store freezing/melting condition:
+          greaseNewFrazil = max(0.0 _d 0, tmpscal3)
+C
+C 1) mechanical removal of grease by ridging:
+C    if there is no open water left after advection, there cannot be any grease ice
+          if ((1.0 _d 0 - AREApreTH(I,J)).LE.siEps) then
+           tmpscal3 = tmpscal3 + SItracer(I,J,bi,bj,iTrGrease)
+           SItracer(I,J,bi,bj,iTrGrease) = 0. _d 0
+          
+          elseif (greaseNewFrazil .GT. 0. _d 0) then
+C    new ice growth goes into grease tracer not HEFF:
+	   tmpscal3=0. _d 0
+C
+C 2) solidification of "old" grease ice
+C    (only when cold enough for ice growth)
+C
+C    time scale dependent solidification 
+C    (50%  of grease ice area become solid ice within 24h):
+           tmpscal1=exp(-SEAICE_deltaTtherm/greaseDecayTime)
+C    gain in solid sea ice volume due to solidified grease:
+           d_HEFFbyGREASE(I,J) =
+     &             SItracer(I,J,bi,bj,iTrGrease) 
+     &           * (1.0 _d 0 - tmpscal1)
+C    ... and related loss of grease ice (tracer) volume
+           SItracer(I,J,bi,bj,iTrGrease) =
+     &             SItracer(I,J,bi,bj,iTrGrease) * tmpscal1
+C    the solidified grease ice volume needs to be added to HEFF:
+           SItrBucket(I,J,bi,bj,iTrGrease) =
+     &             SItrBucket(I,J,bi,bj,iTrGrease)
+     &           + d_HEFFbyGREASE(I,J)
+C
+C 3) grease ice growth from new frazil ice:
+C
+           SItracer(i,j,bi,bj,iTrGrease) = 
+     &      SItracer(i,j,bi,bj,iTrGrease) + greaseNewFrazil
+          endif
+C 4) mapping SItrBucket to external variable, in this case HEFF, ...
+          tmpscal3=tmpscal3+SItrBucket(I,J,bi,bj,iTrGrease)
+C    ... and empty SItrBucket for tracer 'grease'
+          SItrBucket(I,J,bi,bj,iTrGrease)=0. _d 0
+#endif /* SEAICE_GREASE */
 #ifdef SEAICE_ITD
 C         ice growth in open water adds to first category
           d_HEFFbyATMonOCN_open_ITD(I,J,1)=tmpscal3
@@ -1607,14 +1769,25 @@ C--   use HEFF, ARE, HSNOW, etc. as temporal storage for 1st category
         DO J=1,sNy
          DO I=1,sNx
 
+#ifdef SEAICE_GREASE
+C         grease ice layer thickness (Hg) includes 
+C         1 part frazil ice and 3 parts sea water
+C         i.e. HO = 0.25 * Hg
+	  recip_HO=4. _d 0 / greaseLayerThick(I,J)
+#else /* SEAICE_GREASE */
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
            recip_HO=1. _d 0 / HO_south
           ELSE
            recip_HO=1. _d 0 / HO
           ENDIF
+#endif /* SEAICE_GREASE */
           recip_HH = recip_heffActual(I,J)
 
 C gain of ice over open water : computed from
+#ifdef SEAICE_GREASE
+C   from growth by ATM with grease ice time delay
+          tmpscal4 = MAX(ZERO,d_HEFFbyGREASE(I,J))
+#else /* SEAICE_GREASE */
 C   (SEAICE_areaGainFormula.EQ.1) from growth by ATM
 C   (SEAICE_areaGainFormula.EQ.2) from predicted growth by ATM
           IF (SEAICE_areaGainFormula.EQ.1) THEN
@@ -1622,6 +1795,7 @@ C   (SEAICE_areaGainFormula.EQ.2) from predicted growth by ATM
           ELSE
             tmpscal4=MAX(ZERO,a_QbyATM_open(I,J))
           ENDIF
+#endif /* SEAICE_GREASE */
 
 C loss of ice cover by melting : computed from
 C   (SEAICE_areaLossFormula.EQ.1) from all but only melt conributions by ATM and OCN
@@ -1738,6 +1912,20 @@ C ... and update total AREA, HEFF, HSNOW
 C     (the updated HEFF is used below for ice salinity increments)
         CALL SEAICE_ITD_SUM(bi, bj, myTime, myIter, myThid)
 #endif /* SEAICE_ITD */
+#ifdef SEAICE_GREASE
+C convert SItracer 'grease' from grease ice volume back to ratio:
+C ===============================================================
+        DO J=1,sNy
+         DO I=1,sNx
+          if (HEFF(I,J,bi,bj).GT.siEps) then
+           SItracer(I,J,bi,bj,iTrGrease) =
+     &      SItracer(I,J,bi,bj,iTrGrease) / HEFF(I,J,bi,bj)
+          else
+           SItracer(I,J,bi,bj,iTrGrease) = 0. _d 0
+          endif
+         ENDDO
+        ENDDO
+#endif /* SEAICE_GREASE */
 
 C ===================================================================
 C =============PART 5: determine ice salinity increments=============
@@ -2354,7 +2542,11 @@ C the latent heat flux
          CALL DIAGNOSTICS_FILL(DIAGarrayA,'SIacSubl',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(DIAGarrayC,'SIrsSubl',0,1,3,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(DIAGarrayB,'SIhl    ',0,1,3,bi,bj,myThid)
-
+# ifdef SEAICE_GREASE
+C actual grease ice layer thickness
+         CALL DIAGNOSTICS_FILL(greaseLayerThick,
+     &        'SIgrsLT ',0,1,3,bi,bj,myThid)
+# endif /* SEAICE_GREASE */
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
