@@ -16,7 +16,7 @@
  streamice_nonlin_tol_fp = 1.e-9,
  streamice_max_cg_iter = 500,
  streamice_max_nl_iter = 20,
- STREAMICE_move_front = .false.,
+ STREAMICE_move_front = .true.,
  STREAMICE_calve_to_mask = .false.,
  streamice_CFL_factor = 0.5,
  STREAMICE_dump_mdsio = .true.,
