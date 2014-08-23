@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.36 2014/08/23 15:33:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.37 2014/08/23 19:11:50 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -243,7 +243,7 @@ C       tendency multiplied by maskInC)
        CALL DIC_COST( myTime, myIter, myThid )
 # endif
       ENDIF
-#endif */ ALLOW_DIC */
+#endif /* ALLOW_DIC */
 
 #endif /* GCHEM_SEPARATE_FORCING */
 #endif /* ALLOW_GCHEM */
