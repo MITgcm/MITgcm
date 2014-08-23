@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_driving_stress.F,v 1.4 2014/04/24 12:01:50 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_driving_stress.F,v 1.5 2014/08/23 10:29:47 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -78,16 +78,16 @@ C     LOCAL VARIABLES
            IF (streamice_hmask(i-1,j,bi,bj).eq.1.0.AND.
      &      streamice_hmask(i,j,bi,bj).eq.1.0) THEN
          
-            geom_fac = sqrt(rA(i-1,j,bi,bj)*recip_rA(i,j,bi,bj)*
-     &        dxF(i,j,bi,bj)*recip_dxF(i-1,j,bi,bj))
+!             geom_fac = sqrt(rA(i-1,j,bi,bj)*recip_rA(i,j,bi,bj)*
+!      &        dxF(i,j,bi,bj)*recip_dxF(i-1,j,bi,bj))
 
             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) - 
-     &       0.25 * rA(i,j,bi,bj) * recip_dxF(i,j,bi,bj) *
+     &       0.25 * dyG(i,j,bi,bj) *
      &       streamice_density * gravity *
      &       (H_streamice(i,j,bi,bj)+
-     &        H_streamice(i-1,j,bi,bj) * geom_fac) *
+     &        H_streamice(i-1,j,bi,bj)) *
      &       (surf_el_streamice(i,j,bi,bj)-
-     &              geom_fac*surf_el_streamice(i-1,j,bi,bj))
+     &              surf_el_streamice(i-1,j,bi,bj))
 
             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) -
      &       streamice_density * gravity * 
@@ -99,7 +99,7 @@ C     LOCAL VARIABLES
             IF (float_frac_streamice(i-1,j,bi,bj) .eq. 1.0) THEN
 
              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
-     &        0.25 * rA(i-1,j,bi,bj) * recip_dxf(i-1,j,bi,bj) *
+     &        0.25 * dyG(i,j,bi,bj) *
      &        gravity * 
      &        (streamice_density * H_streamice(i-1,j,bi,bj)**2 -
 #ifdef USE_ALT_RLOW
@@ -111,7 +111,7 @@ C     LOCAL VARIABLES
             ELSE
 
              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
-     &        0.25 * rA(i-1,j,bi,bj) * recip_dxf(i-1,j,bi,bj) *
+     &        0.25 * dyG(i,j,bi,bj) *
      &        streamice_density * gravity *
      &        (1-streamice_density/streamice_density_ocean_avg) *
      &         H_streamice(i-1,j,bi,bj)**2 
@@ -123,7 +123,7 @@ C     LOCAL VARIABLES
             IF (float_frac_streamice(i,j,bi,bj) .eq. 1.0) THEN
 
              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) -
-     &        0.25 * rA(i,j,bi,bj) * recip_dxf(i,j,bi,bj) *
+     &        0.25 * dyG(i,j,bi,bj) *
      &        gravity *
      &        (streamice_density * H_streamice(i,j,bi,bj)**2 -
 #ifdef USE_ALT_RLOW
@@ -135,7 +135,7 @@ C     LOCAL VARIABLES
             ELSE
 
              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) -
-     &        0.25 * rA(i,j,bi,bj) * recip_dxf(i,j,bi,bj) *
+     &        0.25 * dyG(i,j,bi,bj) *
      &        streamice_density * gravity *
      &        (1-streamice_density/streamice_density_ocean_avg) *
      &         H_streamice(i,j,bi,bj)**2
@@ -148,20 +148,20 @@ C     LOCAL VARIABLES
            IF (streamice_hmask(i-1,j-1,bi,bj).eq.1.0.AND.
      &      streamice_hmask(i,j-1,bi,bj).eq.1.0) THEN
          
-            geom_fac = sqrt(rA(i-1,j-1,bi,bj)*recip_rA(i,j-1,bi,bj)*
-     &             dxF(i,j-1,bi,bj)*recip_dxF(i-1,j-1,bi,bj))
+!             geom_fac = sqrt(rA(i-1,j-1,bi,bj)*recip_rA(i,j-1,bi,bj)*
+!      &             dxF(i,j-1,bi,bj)*recip_dxF(i-1,j-1,bi,bj))
 
             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) - 
-     &       0.25 * rA(i,j-1,bi,bj) * recip_dxF(i,j-1,bi,bj) *
+     &       0.25 * dyg(i,j-1,bi,bj) *
      &       streamice_density * gravity *
      &       (H_streamice(i,j-1,bi,bj)+
-     &        H_streamice(i-1,j-1,bi,bj) * geom_fac) *
+     &        H_streamice(i-1,j-1,bi,bj)) *
      &       (surf_el_streamice(i,j-1,bi,bj)-
-     &              geom_fac*surf_el_streamice(i-1,j-1,bi,bj))
+     &              surf_el_streamice(i-1,j-1,bi,bj))
 
             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) -
      &       streamice_density * gravity *
-     &       streamice_bg_surf_slope_x * .25 * rA(i,j,bi,bj) * 
+     &       streamice_bg_surf_slope_x * .25 * rA(i,j-1,bi,bj) * 
      &       (H_streamice(i-1,j-1,bi,bj) + H_streamice(i,j-1,bi,bj))
 
            ELSE IF (streamice_hmask(i-1,j-1,bi,bj).eq.1.0) THEN
@@ -169,7 +169,7 @@ C     LOCAL VARIABLES
             IF (float_frac_streamice(i-1,j-1,bi,bj) .eq. 1.0) THEN
 
              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
-     &        0.25 * rA(i-1,j-1,bi,bj) * recip_dxf(i-1,j-1,bi,bj) *
+     &        0.25 * dyg(i,j-1,bi,bj) *
      &        gravity * 
      &        (streamice_density * H_streamice(i-1,j-1,bi,bj)**2 -
 #ifdef USE_ALT_RLOW
@@ -181,7 +181,7 @@ C     LOCAL VARIABLES
             ELSE
 
              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
-     &        0.25 * rA(i-1,j-1,bi,bj) * recip_dxf(i-1,j-1,bi,bj) *
+     &        0.25 * dyg(i,j-1,bi,bj) *
      &        streamice_density * gravity *
      &        (1-streamice_density/streamice_density_ocean_avg) * 
      &         H_streamice(i-1,j-1,bi,bj)**2 
@@ -193,7 +193,7 @@ C     LOCAL VARIABLES
             IF (float_frac_streamice(i,j-1,bi,bj) .eq. 1.0) THEN
 
              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) -
-     &        0.25 * rA(i,j-1,bi,bj) * recip_dxf(i,j-1,bi,bj) *
+     &        0.25 * dyg(i,j-1,bi,bj) *
      &        gravity *
      &        (streamice_density * H_streamice(i,j-1,bi,bj)**2 -
 #ifdef USE_ALT_RLOW
@@ -205,7 +205,7 @@ C     LOCAL VARIABLES
             ELSE
 
              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) -
-     &        0.25 * rA(i,j-1,bi,bj) * recip_dxf(i,j-1,bi,bj) *
+     &        0.25 * dyg(i,j-1,bi,bj) *
      &        streamice_density * gravity *
      &        (1-streamice_density/streamice_density_ocean_avg) *
      &         H_streamice(i,j-1,bi,bj)**2
@@ -221,16 +221,16 @@ C     LOCAL VARIABLES
            IF (streamice_hmask(i,j-1,bi,bj).eq.1.0.AND.
      &      streamice_hmask(i,j,bi,bj).eq.1.0) THEN
          
-            geom_fac = sqrt(rA(i,j-1,bi,bj)*recip_rA(i,j,bi,bj)*
-     &        dxF(i,j,bi,bj)*recip_dyF(i,j-1,bi,bj))
+!             geom_fac = sqrt(rA(i,j-1,bi,bj)*recip_rA(i,j,bi,bj)*
+!      &        dxF(i,j,bi,bj)*recip_dyF(i,j-1,bi,bj))
 
             taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) - 
-     &       0.25 * rA(i,j,bi,bj) * recip_dyF(i,j,bi,bj) *
+     &       0.25 * dxG(i,j,bi,bj) *
      &       streamice_density * gravity *
      &       (H_streamice(i,j,bi,bj)+
-     &        H_streamice(i,j-1,bi,bj) * geom_fac) *
+     &        H_streamice(i,j-1,bi,bj)) *
      &       (surf_el_streamice(i,j,bi,bj)-
-     &              geom_fac*surf_el_streamice(i,j-1,bi,bj))
+     &              surf_el_streamice(i,j-1,bi,bj))
 
             taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
      &       streamice_density * gravity *
@@ -242,7 +242,7 @@ C     LOCAL VARIABLES
             IF (float_frac_streamice(i,j-1,bi,bj) .eq. 1.0) THEN
 
              taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) +
-     &        0.25 * rA(i,j-1,bi,bj) * recip_dyf(i,j-1,bi,bj) *
+     &        0.25 * dxG(i,j,bi,bj) *
      &        gravity * 
      &        (streamice_density * H_streamice(i,j-1,bi,bj)**2 -
 #ifdef USE_ALT_RLOW
@@ -254,7 +254,7 @@ C     LOCAL VARIABLES
             ELSE
 
              taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) +
-     &        0.25 * rA(i,j-1,bi,bj) * recip_dyf(i,j-1,bi,bj) *
+     &        0.25 * dxG(i,j,bi,bj) *
      &        streamice_density * gravity *
      &        (1-streamice_density/streamice_density_ocean_avg) * 
      &         H_streamice(i,j-1,bi,bj)**2 
@@ -266,7 +266,7 @@ C     LOCAL VARIABLES
             IF (float_frac_streamice(i,j,bi,bj) .eq. 1.0) THEN
 
              taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
-     &        0.25 * rA(i,j,bi,bj) * recip_dyf(i,j,bi,bj) *
+     &        0.25 * dxG(i,j,bi,bj) *
      &        gravity *
      &        (streamice_density * H_streamice(i,j,bi,bj)**2 -
 #ifdef USE_ALT_RLOW
@@ -278,7 +278,7 @@ C     LOCAL VARIABLES
             ELSE
 
              taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
-     &        0.25 * rA(i,j,bi,bj) * recip_dyf(i,j,bi,bj) *
+     &        0.25 * dxG(i,j,bi,bj) *
      &        streamice_density * gravity *
      &        (1-streamice_density/streamice_density_ocean_avg) *
      &         H_streamice(i,j,bi,bj)**2
@@ -291,20 +291,20 @@ C     LOCAL VARIABLES
            IF (streamice_hmask(i-1,j-1,bi,bj).eq.1.0.AND.
      &      streamice_hmask(i-1,j,bi,bj).eq.1.0) THEN
          
-            geom_fac = sqrt(rA(i-1,j-1,bi,bj)*recip_rA(i-1,j,bi,bj)*
-     &        dxF(i-1,j,bi,bj)*recip_dxF(i-1,j-1,bi,bj))
+!             geom_fac = sqrt(rA(i-1,j-1,bi,bj)*recip_rA(i-1,j,bi,bj)*
+!      &        dxF(i-1,j,bi,bj)*recip_dxF(i-1,j-1,bi,bj))
 
             taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
-     &       0.25 * rA(i-1,j,bi,bj) * recip_dyF(i-1,j,bi,bj) *
+     &       0.25 * dxG(i-1,j,bi,bj) *
      &       streamice_density * gravity *
      &       (H_streamice(i-1,j,bi,bj)+
-     &        H_streamice(i-1,j-1,bi,bj) * geom_fac) *
+     &        H_streamice(i-1,j-1,bi,bj)) *
      &       (surf_el_streamice(i-1,j,bi,bj)-
-     &              geom_fac*surf_el_streamice(i-1,j-1,bi,bj))
+     &              surf_el_streamice(i-1,j-1,bi,bj))
 
             taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
      &       streamice_density * gravity *
-     &       streamice_bg_surf_slope_y * .25 * rA(i,j,bi,bj) *
+     &       streamice_bg_surf_slope_y * .25 * rA(i-1,j,bi,bj) *
      &       (H_streamice(i-1,j-1,bi,bj) + H_streamice(i-1,j,bi,bj))
 
 
@@ -313,7 +313,7 @@ C     LOCAL VARIABLES
             IF (float_frac_streamice(i-1,j-1,bi,bj) .eq. 1.0) THEN
 
              taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) +
-     &        0.25 * rA(i-1,j-1,bi,bj) * recip_dyf(i-1,j-1,bi,bj) *
+     &        0.25 * dxG(i-1,j,bi,bj) *
      &        gravity * 
      &        (streamice_density * H_streamice(i-1,j-1,bi,bj)**2 -
 #ifdef USE_ALT_RLOW
@@ -325,7 +325,7 @@ C     LOCAL VARIABLES
             ELSE
 
              taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) +
-     &        0.25 * rA(i-1,j-1,bi,bj) * recip_dyf(i-1,j-1,bi,bj) *
+     &        0.25 * dxG(i-1,j,bi,bj) *
      &        streamice_density * gravity *
      &        (1-streamice_density/streamice_density_ocean_avg) * 
      &         H_streamice(i-1,j-1,bi,bj)**2 
@@ -337,7 +337,7 @@ C     LOCAL VARIABLES
             IF (float_frac_streamice(i-1,j,bi,bj) .eq. 1.0) THEN
 
              taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
-     &        0.25 * rA(i-1,j,bi,bj) * recip_dxf(i-1,j,bi,bj) *
+     &        0.25 * dxG(i-1,j,bi,bj) *
      &        gravity *
      &        (streamice_density * H_streamice(i-1,j,bi,bj)**2 -
 #ifdef USE_ALT_RLOW
@@ -349,7 +349,7 @@ C     LOCAL VARIABLES
             ELSE
 
              taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
-     &        0.25 * rA(i-1,j,bi,bj) * recip_dxf(i-1,j,bi,bj) *
+     &        0.25 * dxG(i-1,j,bi,bj) *
      &        streamice_density * gravity *
      &        (1-streamice_density/streamice_density_ocean_avg) *
      &         H_streamice(i-1,j,bi,bj)**2
