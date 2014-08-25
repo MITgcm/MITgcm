@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2051 2014/08/22 22:22:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2052 2014/08/25 22:12:06 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics (Stats-Diags):
+  - re-write S/R DIAGSTATS_CALC (more similar to TARGET_NEC_SX part) to:
+    a) refine region where stats are computed, excluding where arrhFac=0 ;
+    b) fix missing interior mask (use with OBCS) in 3-D fields statistics;
+    c) extend regional stats over the region edges (for U or V pt location).
 o pkg/gchem:
   - add a (2nd) call to OBCS_APPLY_PTRACER in gchem_forcing_sep.F (needed since
     pkg/dic is currently changing/updating ptracers values beyond the OB).
