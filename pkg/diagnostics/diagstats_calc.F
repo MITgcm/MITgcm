@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_calc.F,v 1.5 2012/01/20 14:24:08 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_calc.F,v 1.6 2014/08/25 21:50:02 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -9,7 +9,7 @@ C     !INTERFACE:
       SUBROUTINE DIAGSTATS_CALC(
      O                  statArr,
      I                  inpArr, frcArr, scaleFact, power, useFract,
-     I                  regId, regMskVal,
+     I                  useReg, regMskVal,
      I                  nStats,sizI1,sizI2,sizJ1,sizJ2, iRun,jRun,
      I                  regMask, arrMask, arrhFac, arrArea,
      I                  arrDr, specialVal, exclSpVal, useWeight,
@@ -32,9 +32,10 @@ C     frcArr      :: fraction used for weighted-average diagnostics
 C     scaleFact   :: scaling factor
 C     power       :: option to fill-in with the field square (power=2)
 C     useFract    :: if True, use fraction-weight
-C     regId       :: region number Id
+C     useReg      :: how to use region-mask: =0 : not used ;
+C                    =1 : grid-center location ; =2 : U location ; =3 : V location
 C     regMskVal   :: region-mask identificator value
-C                (point i,j belong to region "regId" <=> regMask(i,j) = regMskVal)
+C                    (point i,j belong to region <=> regMask(i,j) = regMskVal)
 C     nStats      :: size of output array: statArr
 C     sizI1,sizI2 :: size of inpArr array: 1rst index range (min,max)
 C     sizJ1,sizJ2 :: size of inpArr array: 2nd  index range (min,max)
@@ -58,7 +59,7 @@ C     myThid      :: my Thread Id number
       _RL scaleFact
       INTEGER power
       LOGICAL useFract
-      INTEGER regId
+      INTEGER useReg
       _RS regMskVal
       _RS regMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS arrMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -76,8 +77,9 @@ C     i,j    :: loop indices
       INTEGER i, j, n
       INTEGER im, ix
 #ifndef TARGET_NEC_SX
-      _RL tmpVol
-      _RL tmpFld
+      LOGICAL inside(sNx+1,sNy+1)
+      _RL     tmpFld(sNx+1,sNy+1)
+      _RL     tmpVol(sNx+1,sNy+1)
 #else
 C     Extra variables and fields to support vectorization.
 C     This code also uses the intrinsic F90 routines SUM, MINVAL, MAXVAL
@@ -86,326 +88,135 @@ C     and thus will not compile with a F77 compiler.
       _RL     tmpFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     tmpVol  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
-      _RL tmpFac
 
       im = nStats - 1
       ix = nStats
       DO n=0,nStats
         statArr(n) = 0.
       ENDDO
-      tmpFac = scaleFact
-      IF ( power.EQ.2) tmpFac = scaleFact*scaleFact
 
 #ifndef TARGET_NEC_SX
-      IF ( regId.EQ.0 .AND. useFract .AND. exclSpVal ) THEN
 
+C-    Apply Scaling Factor and power option to Input Field (-> tmpFld):
+      IF ( power.EQ.2 ) THEN
        DO j = 1,jRun
         DO i = 1,iRun
-          IF ( arrMask(i,j).NE.0. .AND. frcArr(i,j).NE.0.
-     &                     .AND. inpArr(i,j).NE.specialVal ) THEN
-            IF ( power.EQ.2) THEN
-              tmpFld = tmpFac*inpArr(i,j)*inpArr(i,j)
-            ELSE
-              tmpFld = tmpFac*inpArr(i,j)
-            ENDIF
-            IF ( statArr(0).EQ.0. ) THEN
-              statArr(im) = tmpFld
-              statArr(ix) = tmpFld
-            ELSE
-              statArr(im) = MIN(tmpFld,statArr(im))
-              statArr(ix) = MAX(tmpFld,statArr(ix))
-            ENDIF
-            IF ( useWeight ) THEN
-              tmpVol = arrDr*arrhFac(i,j)*arrArea(i,j)*frcArr(i,j)
-            ELSE
-              tmpVol = arrDr*arrArea(i,j)*frcArr(i,j)
-            ENDIF
-            statArr(0) = statArr(0) + tmpVol
-            statArr(1) = statArr(1) + tmpVol*tmpFld
-            statArr(2) = statArr(2) + tmpVol*tmpFld*tmpFld
-          ENDIF
+          tmpFld(i,j) = scaleFact*inpArr(i,j)
+          tmpFld(i,j) = tmpFld(i,j)*tmpFld(i,j)
         ENDDO
        ENDDO
-
-      ELSEIF ( regId.EQ.0 .AND. useFract ) THEN
-
-       DO j = 1,jRun
-        DO i = 1,iRun
-          IF ( arrMask(i,j).NE.0. .AND. frcArr(i,j).NE.0. ) THEN
-            IF ( power.EQ.2) THEN
-              tmpFld = tmpFac*inpArr(i,j)*inpArr(i,j)
-            ELSE
-              tmpFld = tmpFac*inpArr(i,j)
-            ENDIF
-            IF ( statArr(0).EQ.0. ) THEN
-              statArr(im) = tmpFld
-              statArr(ix) = tmpFld
-            ELSE
-              statArr(im) = MIN(tmpFld,statArr(im))
-              statArr(ix) = MAX(tmpFld,statArr(ix))
-            ENDIF
-            IF ( useWeight ) THEN
-              tmpVol = arrDr*arrhFac(i,j)*arrArea(i,j)*frcArr(i,j)
-            ELSE
-              tmpVol = arrDr*arrArea(i,j)*frcArr(i,j)
-            ENDIF
-            statArr(0) = statArr(0) + tmpVol
-            statArr(1) = statArr(1) + tmpVol*tmpFld
-            statArr(2) = statArr(2) + tmpVol*tmpFld*tmpFld
-          ENDIF
-        ENDDO
-       ENDDO
-
-      ELSEIF ( regId.EQ.0 .AND. exclSpVal ) THEN
-
-       DO j = 1,jRun
-        DO i = 1,iRun
-          IF ( arrMask(i,j).NE.0.
-     &                     .AND. inpArr(i,j).NE.specialVal ) THEN
-            IF ( power.EQ.2) THEN
-              tmpFld = tmpFac*inpArr(i,j)*inpArr(i,j)
-            ELSE
-              tmpFld = tmpFac*inpArr(i,j)
-            ENDIF
-            IF ( statArr(0).EQ.0. ) THEN
-              statArr(im) = tmpFld
-              statArr(ix) = tmpFld
-            ELSE
-              statArr(im) = MIN(tmpFld,statArr(im))
-              statArr(ix) = MAX(tmpFld,statArr(ix))
-            ENDIF
-            IF ( useWeight ) THEN
-              tmpVol = arrDr*arrhFac(i,j)*arrArea(i,j)
-            ELSE
-              tmpVol = arrDr*arrArea(i,j)
-            ENDIF
-            statArr(0) = statArr(0) + tmpVol
-            statArr(1) = statArr(1) + tmpVol*tmpFld
-            statArr(2) = statArr(2) + tmpVol*tmpFld*tmpFld
-          ENDIF
-        ENDDO
-       ENDDO
-
-      ELSEIF ( regId.EQ.0 ) THEN
-
-       DO j = 1,jRun
-        DO i = 1,iRun
-          IF ( arrMask(i,j).NE.0. ) THEN
-            IF ( power.EQ.2) THEN
-              tmpFld = tmpFac*inpArr(i,j)*inpArr(i,j)
-            ELSE
-              tmpFld = tmpFac*inpArr(i,j)
-            ENDIF
-            IF ( statArr(0).EQ.0. ) THEN
-              statArr(im) = tmpFld
-              statArr(ix) = tmpFld
-            ELSE
-              statArr(im) = MIN(tmpFld,statArr(im))
-              statArr(ix) = MAX(tmpFld,statArr(ix))
-            ENDIF
-            IF ( useWeight ) THEN
-              tmpVol = arrDr*arrhFac(i,j)*arrArea(i,j)
-            ELSE
-              tmpVol = arrDr*arrArea(i,j)
-            ENDIF
-            statArr(0) = statArr(0) + tmpVol
-            statArr(1) = statArr(1) + tmpVol*tmpFld
-            statArr(2) = statArr(2) + tmpVol*tmpFld*tmpFld
-          ENDIF
-        ENDDO
-       ENDDO
-
-      ELSEIF ( useFract .AND. exclSpVal ) THEN
-
-       DO j = 1,jRun
-        DO i = 1,iRun
-          IF ( arrMask(i,j).NE.0. .AND. frcArr(i,j).NE.0.
-     &                     .AND. inpArr(i,j).NE.specialVal
-     &                     .AND. regMask(i,j).EQ.regMskVal ) THEN
-            IF ( power.EQ.2) THEN
-              tmpFld = tmpFac*inpArr(i,j)*inpArr(i,j)
-            ELSE
-              tmpFld = tmpFac*inpArr(i,j)
-            ENDIF
-            IF ( statArr(0).EQ.0. ) THEN
-              statArr(im) = tmpFld
-              statArr(ix) = tmpFld
-            ELSE
-              statArr(im) = MIN(tmpFld,statArr(im))
-              statArr(ix) = MAX(tmpFld,statArr(ix))
-            ENDIF
-            IF ( useWeight ) THEN
-              tmpVol = arrDr*arrhFac(i,j)*arrArea(i,j)*frcArr(i,j)
-            ELSE
-              tmpVol = arrDr*arrArea(i,j)*frcArr(i,j)
-            ENDIF
-            statArr(0) = statArr(0) + tmpVol
-            statArr(1) = statArr(1) + tmpVol*tmpFld
-            statArr(2) = statArr(2) + tmpVol*tmpFld*tmpFld
-          ENDIF
-        ENDDO
-       ENDDO
-
-      ELSEIF ( useFract ) THEN
-
-       DO j = 1,jRun
-        DO i = 1,iRun
-          IF ( arrMask(i,j).NE.0. .AND. frcArr(i,j).NE.0.
-     &                     .AND. regMask(i,j).EQ.regMskVal ) THEN
-            IF ( power.EQ.2) THEN
-              tmpFld = tmpFac*inpArr(i,j)*inpArr(i,j)
-            ELSE
-              tmpFld = tmpFac*inpArr(i,j)
-            ENDIF
-            IF ( statArr(0).EQ.0. ) THEN
-              statArr(im) = tmpFld
-              statArr(ix) = tmpFld
-            ELSE
-              statArr(im) = MIN(tmpFld,statArr(im))
-              statArr(ix) = MAX(tmpFld,statArr(ix))
-            ENDIF
-            IF ( useWeight ) THEN
-              tmpVol = arrDr*arrhFac(i,j)*arrArea(i,j)*frcArr(i,j)
-            ELSE
-              tmpVol = arrDr*arrArea(i,j)*frcArr(i,j)
-            ENDIF
-            statArr(0) = statArr(0) + tmpVol
-            statArr(1) = statArr(1) + tmpVol*tmpFld
-            statArr(2) = statArr(2) + tmpVol*tmpFld*tmpFld
-          ENDIF
-        ENDDO
-       ENDDO
-
-      ELSEIF ( exclSpVal ) THEN
-
-       DO j = 1,jRun
-        DO i = 1,iRun
-          IF ( arrMask(i,j).NE.0.
-     &                     .AND. inpArr(i,j).NE.specialVal
-     &                     .AND. regMask(i,j).EQ.regMskVal ) THEN
-            IF ( power.EQ.2) THEN
-              tmpFld = tmpFac*inpArr(i,j)*inpArr(i,j)
-            ELSE
-              tmpFld = tmpFac*inpArr(i,j)
-            ENDIF
-            IF ( statArr(0).EQ.0. ) THEN
-              statArr(im) = tmpFld
-              statArr(ix) = tmpFld
-            ELSE
-              statArr(im) = MIN(tmpFld,statArr(im))
-              statArr(ix) = MAX(tmpFld,statArr(ix))
-            ENDIF
-            IF ( useWeight ) THEN
-              tmpVol = arrDr*arrhFac(i,j)*arrArea(i,j)
-            ELSE
-              tmpVol = arrDr*arrArea(i,j)
-            ENDIF
-            statArr(0) = statArr(0) + tmpVol
-            statArr(1) = statArr(1) + tmpVol*tmpFld
-            statArr(2) = statArr(2) + tmpVol*tmpFld*tmpFld
-          ENDIF
-        ENDDO
-       ENDDO
-
       ELSE
-
        DO j = 1,jRun
         DO i = 1,iRun
-          IF ( arrMask(i,j).NE.0.
-     &                     .AND. regMask(i,j).EQ.regMskVal ) THEN
-            IF ( power.EQ.2) THEN
-              tmpFld = tmpFac*inpArr(i,j)*inpArr(i,j)
-            ELSE
-              tmpFld = tmpFac*inpArr(i,j)
-            ENDIF
-            IF ( statArr(0).EQ.0. ) THEN
-              statArr(im) = tmpFld
-              statArr(ix) = tmpFld
-            ELSE
-              statArr(im) = MIN(tmpFld,statArr(im))
-              statArr(ix) = MAX(tmpFld,statArr(ix))
-            ENDIF
-            IF ( useWeight ) THEN
-              tmpVol = arrDr*arrhFac(i,j)*arrArea(i,j)
-            ELSE
-              tmpVol = arrDr*arrArea(i,j)
-            ENDIF
-            statArr(0) = statArr(0) + tmpVol
-            statArr(1) = statArr(1) + tmpVol*tmpFld
-            statArr(2) = statArr(2) + tmpVol*tmpFld*tmpFld
-          ENDIF
+          tmpFld(i,j) = scaleFact*inpArr(i,j)
         ENDDO
        ENDDO
-
       ENDIF
+
+C-    Set weight factor "tmpVol" (area and hFac and/or fraction field)
+C     and part of domain (=inside) where to compute stats
+      IF ( useFract .AND. useWeight ) THEN
+       DO j = 1,jRun
+        DO i = 1,iRun
+          inside(i,j) = arrMask(i,j).NE.0.
+     &            .AND. arrhFac(i,j).NE.0.
+     &            .AND. frcArr(i,j) .NE.0.
+          tmpVol(i,j) = arrArea(i,j)*arrhFac(i,j)*frcArr(i,j)
+        ENDDO
+       ENDDO
+      ELSEIF ( useFract ) THEN
+       DO j = 1,jRun
+        DO i = 1,iRun
+          inside(i,j) = arrMask(i,j).NE.0.
+     &            .AND. arrhFac(i,j).NE.0.
+     &            .AND. frcArr(i,j) .NE.0.
+          tmpVol(i,j) = arrArea(i,j)*frcArr(i,j)
+        ENDDO
+       ENDDO
+      ELSEIF ( useWeight ) THEN
+       DO j = 1,jRun
+        DO i = 1,iRun
+          inside(i,j) = arrMask(i,j).NE.0.
+     &            .AND. arrhFac(i,j).NE.0.
+          tmpVol(i,j) = arrArea(i,j)*arrhFac(i,j)
+        ENDDO
+       ENDDO
+      ELSE
+       DO j = 1,jRun
+        DO i = 1,iRun
+          inside(i,j) = arrMask(i,j).NE.0.
+     &            .AND. arrhFac(i,j).NE.0.
+          tmpVol(i,j) = arrArea(i,j)
+        ENDDO
+       ENDDO
+      ENDIF
+
+C-    Exclude (setting inside=F) Special Value:
+      IF ( exclSpVal ) THEN
+       DO j = 1,jRun
+        DO i = 1,iRun
+          inside(i,j) = inside(i,j) .AND. inpArr(i,j).NE.specialVal
+        ENDDO
+       ENDDO
+      ENDIF
+C-    Account for Region-mask (refine "inside"):
+      IF ( useReg.EQ.1 ) THEN
+       DO j = 1,jRun
+        DO i = 1,iRun
+          inside(i,j) = inside(i,j) .AND. regMask(i,j).EQ.regMskVal
+        ENDDO
+       ENDDO
+      ELSEIF ( useReg.EQ.2 ) THEN
+       DO j = 1,jRun
+        DO i = 1,iRun
+          inside(i,j) = inside(i,j) .AND.( regMask(i,j).EQ.regMskVal
+     &                              .OR. regMask(i-1,j).EQ.regMskVal )
+        ENDDO
+       ENDDO
+      ELSEIF ( useReg.EQ.3 ) THEN
+       DO j = 1,jRun
+        DO i = 1,iRun
+          inside(i,j) = inside(i,j) .AND.( regMask(i,j).EQ.regMskVal
+     &                              .OR. regMask(i,j-1).EQ.regMskVal )
+        ENDDO
+       ENDDO
+      ENDIF
+
+C-    Calculate Stats
+      DO j = 1,jRun
+       DO i = 1,iRun
+        IF ( inside(i,j) ) THEN
+          statArr(im) = tmpFld(i,j)
+          statArr(0) = statArr(0) + tmpVol(i,j)
+          statArr(1) = statArr(1) + tmpVol(i,j)*tmpFld(i,j)
+          statArr(2) = statArr(2) + tmpVol(i,j)*tmpFld(i,j)*tmpFld(i,j)
+        ENDIF
+       ENDDO
+      ENDDO
+      statArr(ix) = statArr(im)
+      DO j = 1,jRun
+       DO i = 1,iRun
+        IF ( inside(i,j) ) THEN
+          statArr(im) = MIN(tmpFld(i,j),statArr(im))
+          statArr(ix) = MAX(tmpFld(i,j),statArr(ix))
+        ENDIF
+       ENDDO
+      ENDDO
+      statArr(0) = statArr(0)*arrDr
+      statArr(1) = statArr(1)*arrDr
+      statArr(2) = statArr(2)*arrDr
 
 #else /* TARGET_NEC_SX defined */
 
       arrMaskL = 0. _d 0
 
-      IF ( regId.EQ.0 .AND. useFract .AND. exclSpVal ) THEN
+      IF ( useFract .AND. exclSpVal ) THEN
 
        DO j = 1,jRun
         DO i = 1,iRun
          IF ( arrMask(i,j).NE.0. .AND. frcArr(i,j).NE.0.
-     &        .AND. inpArr(i,j).NE.specialVal ) 
-     &        arrMaskL(i,j) = 1. _d 0
-        ENDDO
-       ENDDO
-       IF ( useWeight ) THEN
-        tmpVol = arrhFac*arrArea*frcArr
-       ELSE
-        tmpVol = arrArea*frcArr
-       ENDIF
-
-      ELSEIF ( regId.EQ.0 .AND. useFract ) THEN
-
-       DO j = 1,jRun
-        DO i = 1,iRun
-         IF ( arrMask(i,j).NE.0. .AND. frcArr(i,j).NE.0.)
-     &        arrMaskL(i,j) = 1. _d 0
-        ENDDO
-       ENDDO
-       IF ( useWeight ) THEN
-        tmpVol = arrhFac*arrArea*frcArr
-       ELSE
-        tmpVol = arrArea*frcArr
-       ENDIF
-
-      ELSEIF ( regId.EQ.0 .AND. exclSpVal ) THEN
-
-       DO j = 1,jRun
-        DO i = 1,iRun
-         IF ( arrMask(i,j).NE.0. .AND. inpArr(i,j).NE.specialVal )
-     &        arrMaskL(i,j) = 1. _d 0
-        ENDDO
-       ENDDO
-       IF ( useWeight ) THEN
-        tmpVol = arrhFac*arrArea
-       ELSE
-        tmpVol = arrArea
-       ENDIF
-
-      ELSEIF ( regId.EQ.0 ) THEN
-
-       DO j = 1,jRun
-        DO i = 1,iRun
-         IF ( arrMask(i,j).NE.0. ) arrMaskL(i,j) = 1. _d 0
-        ENDDO
-       ENDDO
-       IF ( useWeight ) THEN
-        tmpVol = arrhFac*arrArea
-       ELSE
-        tmpVol = arrArea
-       ENDIF
-
-      ELSEIF ( useFract .AND. exclSpVal ) THEN
-
-       DO j = 1,jRun
-        DO i = 1,iRun
-         IF ( arrMask(i,j).NE.0. .AND. frcArr(i,j).NE.0.
-     &             .AND. inpArr(i,j).NE.specialVal
-     &             .AND. regMask(i,j).EQ.regMskVal )
+     &             .AND. arrhFac(i,j).NE.0.
+     &             .AND. inpArr(i,j).NE.specialVal )
      &        arrMaskL(i,j) = 1. _d 0
         ENDDO
        ENDDO
@@ -420,7 +231,7 @@ C     and thus will not compile with a F77 compiler.
        DO j = 1,jRun
         DO i = 1,iRun
          IF ( arrMask(i,j).NE.0. .AND. frcArr(i,j).NE.0.
-     &             .AND. regMask(i,j).EQ.regMskVal )
+     &             .AND. arrhFac(i,j).NE.0. )
      &        arrMaskL(i,j) = 1. _d 0
         ENDDO
        ENDDO
@@ -435,8 +246,8 @@ C     and thus will not compile with a F77 compiler.
        DO j = 1,jRun
         DO i = 1,iRun
          IF ( arrMask(i,j).NE.0.
-     &              .AND. inpArr(i,j).NE.specialVal
-     &              .AND. regMask(i,j).EQ.regMskVal )
+     &             .AND. arrhFac(i,j).NE.0.
+     &             .AND. inpArr(i,j).NE.specialVal )
      &        arrMaskL(i,j) = 1. _d 0
         ENDDO
        ENDDO
@@ -451,7 +262,7 @@ C     and thus will not compile with a F77 compiler.
        DO j = 1,jRun
         DO i = 1,iRun
          IF ( arrMask(i,j).NE.0.
-     &        .AND. regMask(i,j).EQ.regMskVal  )
+     &             .AND. arrhFac(i,j).NE.0. )
      &        arrMaskL(i,j) = 1. _d 0
         ENDDO
        ENDDO
@@ -462,12 +273,36 @@ C     and thus will not compile with a F77 compiler.
        ENDIF
 
       ENDIF
+
+C-    Account for Region-mask:
+      IF ( useReg.EQ.1 ) THEN
+       DO j = 1,jRun
+        DO i = 1,iRun
+          IF ( regMask(i,j).NE.regMskVal ) arrMaskL(i,j) = 0. _d 0
+        ENDDO
+       ENDDO
+      ELSEIF ( useReg.EQ.2 ) THEN
+       DO j = 1,jRun
+        DO i = 1,iRun
+          IF ( regMask(i,j).NE.regMskVal .AND.
+     &       regMask(i-1,j).NE.regMskVal ) arrMaskL(i,j) = 0. _d 0
+        ENDDO
+       ENDDO
+      ELSEIF ( useReg.EQ.3 ) THEN
+       DO j = 1,jRun
+        DO i = 1,iRun
+          IF ( regMask(i,j).NE.regMskVal .AND.
+     &       regMask(i,j-1).NE.regMskVal ) arrMaskL(i,j) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDIF
+
 C     inpArr can be undefined/non-initialised in overlaps, so we need
 C     to clean this fields first by copying the defined range to tmpFld
       tmpFld = 0. _d 0
       DO j = 1,jRun
        DO i = 1,iRun
-        tmpFld(i,j) = inpArr(i,j)*tmpFac
+        tmpFld(i,j) = inpArr(i,j)*scaleFact
        ENDDO
       ENDDO
       IF ( power.EQ.2) THEN
