@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_others_calc.F,v 1.3 2012/09/03 20:29:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_others_calc.F,v 1.4 2014/08/25 22:13:51 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -14,7 +14,7 @@ C     !INTERFACE:
       SUBROUTINE DIAGSTATS_LM_CALC(
      O                  statArr,
      I                  inpArr, frcArr, scaleFact, power, useFract,
-     I                  regId, regMskVal,
+     I                  useReg, regMskVal,
      I                  nStats,sizI1,sizI2,sizJ1,sizJ2, iRun,jRun,
      I                  regMask, arrMask, arrArea,
      I                  specialVal, exclSpVal,
@@ -42,7 +42,8 @@ C     frcArr      :: fraction used for weighted-average diagnostics
 C     scaleFact   :: scaling factor
 C     power       :: option to fill-in with the field square (power=2)
 C     useFract    :: if True, use fraction-weight
-C     regId       :: region number Id
+C     useReg      :: how to use region-mask: =0 : not used ;
+C                    =1 : grid-center location ; =2 : U location ; =3 : V location
 C     regMskVal   :: region-mask identificator value
 C     nStats      :: size of output statArr
 C     sizI1,sizI2 :: size of inpArr array: 1rst index range (min,max)
@@ -64,7 +65,7 @@ C     myThid      :: my Thread Id number
       _RL scaleFact
       INTEGER power
       LOGICAL useFract
-      INTEGER regId
+      INTEGER useReg
       _RS regMskVal
       _RS regMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS arrMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -101,7 +102,7 @@ c     IF ( useFIZHI ) THEN
         CALL DIAGSTATS_CALC(
      O            statArr,
      I            inpArr, frcArr, scaleFact, power, useFract,
-     I            regId, regMskVal,
+     I            useReg, regMskVal,
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            regMask, arrMask,
      I            dpphys(1-OLx,1-OLy,kl,bi,bj), arrArea,
@@ -116,7 +117,7 @@ C    make local copy of dpphys (RL type) into RS array tmp_hFac
         CALL DIAGSTATS_CALC(
      O            statArr,
      I            inpArr, frcArr, scaleFact, power, useFract,
-     I            regId, regMskVal,
+     I            useReg, regMskVal,
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            regMask, arrMask, tmp_hFac, arrArea,
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
@@ -136,7 +137,7 @@ C     !INTERFACE:
       SUBROUTINE DIAGSTATS_G_CALC(
      O                  statArr,
      I                  inpArr, frcArr, scaleFact, power, useFract,
-     I                  regId, regMskVal,
+     I                  useReg, regMskVal,
      I                  nStats,sizI1,sizI2,sizJ1,sizJ2, iRun,jRun,
      I                  regMask, arrArea,
      I                  specialVal, exclSpVal,
@@ -168,7 +169,8 @@ C     frcArr      :: fraction used for weighted-average diagnostics
 C     scaleFact   :: scaling factor
 C     power       :: option to fill-in with the field square (power=2)
 C     useFract    :: if True, use fraction-weight
-C     regId       :: region number Id
+C     useReg      :: how to use region-mask: =0 : not used ;
+C                    =1 : grid-center location ; =2 : U location ; =3 : V location
 C     regMskVal   :: region-mask identificator value
 C     nStats      :: size of output statArr
 C     sizI1,sizI2 :: size of inpArr array: 1rst index range (min,max)
@@ -189,7 +191,7 @@ C     myThid      :: my Thread Id number
       _RL scaleFact
       INTEGER power
       LOGICAL useFract
-      INTEGER regId
+      INTEGER useReg
       _RS regMskVal
       _RS regMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS arrArea(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -219,7 +221,7 @@ c     IF ( useLand ) THEN
         CALL DIAGSTATS_CALC(
      O            statArr,
      I            inpArr, frcArr, scaleFact, power, useFract,
-     I            regId, regMskVal,
+     I            useReg, regMskVal,
      I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
      I            regMask, aim_landFr(1-OLx,1-OLy,bi,bj),
      I            aim_landFr(1-OLx,1-OLy,bi,bj), arrArea,
