@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.205 2014/08/26 20:08:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.206 2014/08/26 20:16:02 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1179,7 +1179,7 @@ C          grease ice volume
      &           * ( tmpscal4
 C          times magnitude of vector sum of air and water stresses
 C          (in fact, only the component perpendicular to the lead edge, i.e. along L_lead counts)
-C          ATTENTION: since we don't have lead orientation with respect to wind
+C          ATTENTION: since we do not have lead orientation with respect to wind
 C                     we use 80% of the total force assuming angles 45-90deg between wind and lead edge
      &           * 0.8 _d 0 * tmpscal0
 C          devided by K_r = 100 N/m^3 (resistance of grease against compression)
