@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2052 2014/08/25 22:12:06 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2053 2014/08/26 15:27:38 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - when allowFreezing=T, only reset below freezing initial Temp to Tfreezing
+    (at any k) if checkIniTemp is not set to FALSE (default checkIniTemp=T).
 o pkg/diagnostics (Stats-Diags):
   - re-write S/R DIAGSTATS_CALC (more similar to TARGET_NEC_SX part) to:
     a) refine region where stats are computed, excluding where arrhFac=0 ;
