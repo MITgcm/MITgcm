@@ -1,0 +1,48 @@
+# Open-boundaries
+ &OBCS_PARM01
+# This flag turns off checking and fixing problematic topography across
+# open boundaries.
+ OBCSfixTopo=.FALSE.,
+ OB_Iwest = 20*1,
+ OB_Ieast = 20*-1,
+ OB_Jnorth= 42*-1,
+ useOBCSprescribe = .TRUE.,
+ OBCS_u1_adv_T = 1,
+ OBCS_u1_adv_S = 1,
+ OBCS_u1_adv_Tr(1:5) = 1,
+ OBWuFile = 'U_obW.bin',
+ OBEuFile = 'U_obE.bin',
+ OBNuFile = 'U_obN.bin',
+ OBWvFile = 'V_obW.bin',
+ OBEvFile = 'V_obE.bin',
+ OBNvFile = 'V_obN.bin',
+ OBWtFile = 'T_obW.bin',
+ OBEtFile = 'T_obE.bin',
+ OBNtFile = 'T_obN.bin',
+ OBWsFile = 'S_obW.bin',
+ OBEsFile = 'S_obE.bin',
+ OBNsFile = 'S_obN.bin',
+ OBWptrFile(1) = 'Trac01_obW.bin',
+ OBEptrFile(1) = 'Trac01_obE.bin',
+ OBNptrFile(1) = 'Trac01_obN.bin',
+ OBWptrFile(2) = 'Trac02_obW.bin',
+ OBEptrFile(2) = 'Trac02_obE.bin',
+ OBNptrFile(2) = 'Trac02_obN.bin',
+ OBWptrFile(3) = 'Trac03_obW.bin',
+ OBEptrFile(3) = 'Trac03_obE.bin',
+ OBNptrFile(3) = 'Trac03_obN.bin',
+ OBWptrFile(4) = 'Trac04_obW.bin',
+ OBEptrFile(4) = 'Trac04_obE.bin',
+ OBNptrFile(4) = 'Trac04_obN.bin',
+ OBWptrFile(5) = 'Trac05_obW.bin',
+ OBEptrFile(5) = 'Trac05_obE.bin',
+ OBNptrFile(5) = 'Trac05_obN.bin',
+#OBCS_monitorFreq= 1200.,
+ OBCS_monSelect = 1,
+ &
+
+# Orlanski parameters
+ &OBCS_PARM02
+#Cmax=0.45,
+#cVelTimeScale=1000.,
+ &

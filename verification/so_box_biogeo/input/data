@@ -1,0 +1,94 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=15*20.,
+ sRef=15*35.,
+ viscAh=3.E5,
+ viscAz=1.E-3,
+ diffKhT=0.E3,
+ diffKhS=0.E3,
+#diffKzT=3.E-5,
+#diffKzS=3.E-5,
+ diffKrBL79surf= 3.E-5,
+ diffKrBL79deep= 13.E-5,
+ diffKrBL79Ho  = -2000.,
+ diffKrBL79scl = 150.,
+ gravity=9.81,
+ rhoConst=1035.,
+ rhoConstFresh=1000.,
+ eosType='JMD95Z',
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+#implicitViscosity=.TRUE.,
+ implicitDiffusion=.TRUE.,
+ ivdc_kappa=10.,
+ allowFreezing=.TRUE.,
+#useCDscheme=.TRUE.,
+# turn on looped cells
+ hFacMin=.1,
+ hFacMindz=50.,
+#- I/O params:
+ globalFiles=.TRUE.,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-13,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=0,
+#nTimeSteps = 1440,
+ nTimeSteps = 10,
+#tauCD      = 321428.,
+ deltaTMom     = 900.,
+ deltaTtracer  = 43200.,
+ deltaTFreeSurf= 43200.,
+ deltaTClock   = 43200.,
+ abEps      = 0.1,
+ pChkptFreq = 311040000.,
+ chkptFreq  = 31104000.,
+ dumpFreq   = 2592000.,
+ monitorFreq= 864000.,
+ tauThetaClimRelax = 5184000.,
+ tauSaltClimRelax  = 7776000.,
+ periodicExternalForcing=.TRUE.,
+ externForcingPeriod = 2592000.,
+ externForcingCycle = 31104000.,
+ monitorFreq= 1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingSphericalPolarGrid=.TRUE.,
+ delZ=  50., 70.,  100., 140., 190.,
+       240., 290., 340., 390., 440.,
+       490., 540., 590., 640., 690.,
+ xgOrigin= 236.25,
+ ygOrigin= -81.5625,
+ delX=42*2.8125,
+ delY=20*2.8125,
+ &
+
+# Input datasets
+ &PARM05
+ checkIniTemp  = .FALSE.,
+ bathyFile     = 'bathy_box.bin',
+ pSurfInitFile = 'Eta_ini.bin',
+ uVelInitFile  = 'U_ini.bin',
+ vVelInitFile  = 'V_ini.bin',
+ hydrogThetaFile='T_ini.bin',
+ hydrogSaltFile= 'S_ini.bin',
+ zonalWindFile = 'tren_taux_box.bin',
+ meridWindFile = 'tren_tauy_box.bin',
+ thetaClimFile = 'lev_monthly_temp_box.bin',
+ saltClimFile  = 'lev_monthly_salt_box.bin',
+ surfQnetFile  = 'shi_qnet_box.bin',
+ EmPmRFile     = 'shi_empmr_year_box.bin',
+ the_run_name  = 'OBC + Biogeo S.Ocean Box',
+ &
