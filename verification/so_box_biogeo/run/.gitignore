@@ -1,0 +1,17 @@
+*.log
+*.data
+*.meta
+*.nc
+STDERR.*
+STDOUT.*
+*.txt
+*.tr_log
+mnc_test_*
+ecco_cost_MIT_CE_000.opt0000
+ecco_ctrl_MIT_CE_000.opt0000
+costfunction*0000
+costfinal
+divided.ctrl
+snapshot*
+output_adm.txt.diva_*
+oad_cp.[0-9][0-9][0-9].?????
