@@ -1,13 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2054 2014/08/27 03:03:27 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2055 2014/08/30 01:04:15 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic:
+  - take out of dic_atmos.F the initialisation part (corresponding to istate=0)
+    and move it to new S/R DIC_INI_ATMOS ; also simplify the dependencies for
+    AD compilers (but still a Pb with multi-threading and Ajoint dependencies).
 o verification:
-  - new experiment testing OBCS and DIC pkgs, using params & output from 
-    tutorial_global_oce_biogeo but limited to a sub-domain around Drake 
-    passage: take OBCS from the last year of a 2 yrs simulation and initial 
+  - new experiment testing OBCS and DIC pkgs, using params & output from
+    tutorial_global_oce_biogeo but limited to a sub-domain around Drake
+    passage: take OBCS from the last year of a 2 yrs simulation and initial
     conditions from t=1.yr while keeping the same forcing.
 o model/src:
   - when allowFreezing=T, only reset below freezing initial Temp to Tfreezing
