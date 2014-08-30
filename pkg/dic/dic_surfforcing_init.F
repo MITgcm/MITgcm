@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.35 2013/05/10 20:17:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.36 2014/08/30 00:48:49 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -56,7 +56,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       kLev=1
 
-      CALL DIC_ATMOS(0, startTime, nIter0, myThid )
+      CALL DIC_INI_ATMOS( startTime, nIter0, myThid )
 
 ccccccccccccccccccccccccccccccccccccccccc
       IF ( periodicExternalForcing ) THEN
