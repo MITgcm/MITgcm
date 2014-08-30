@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2055 2014/08/30 01:04:15 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2056 2014/08/30 14:57:10 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint65c (2014/08/30)
 o pkg/dic:
   - take out of dic_atmos.F the initialisation part (corresponding to istate=0)
     and move it to new S/R DIC_INI_ATMOS ; also simplify the dependencies for
@@ -172,8 +173,8 @@ o model/src:
   - collect T & S forcing tendency into local 2-D array (passed as argument to
     apply_forcing S/R); add 3-D diagnostics for temp & salt forcing tendency.
     affects results at machine truncation level (e.g., ocean: if using
-    SHORTWAVE_HEATING and atmos:, if using FrictionHeating or (atm_Rq<>0)
-    moist correction due to vertical advection).
+    SHORTWAVE_HEATING ; atmos: if using FrictionHeating or (atm_Rq<>0) moist
+    correction due to vertical advection).
   - update output of experiments: fizhi-cs-32x32x40 (13 digits),
     global_ocean.cs32x15 (fwd: icedyn, seaice, thsice, all 3 @ 11d; adm & tml:
     seaice_dynmix & thsice, fwd grd @ 3 & 8), hs94.1x64x5 (ad grd @ 13),
