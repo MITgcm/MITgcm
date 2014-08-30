@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.37 2014/08/23 19:11:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.38 2014/08/30 00:51:18 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -80,7 +80,7 @@ ccccccccccccccccccccccccc
 #ifdef ALLOW_OLD_VIRTUALFLUX
 #ifdef ALLOW_DIC
 # ifdef ALLOW_AUTODIFF
-      IF ( .NOT.useDIC ) STOP 'ABNORMAL END: S/R GCHEM_FORCING_SEP'
+      IF ( .NOT.useDIC ) STOP 'ABNORMAL END: S/R GCHEM_FORCING_SEP (1)'
 # else /* ALLOW_AUTODIFF */
       IF ( useDIC ) THEN
 # endif /* ALLOW_AUTODIFF */
@@ -143,7 +143,7 @@ ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
 
 #ifdef ALLOW_DIC
 # ifdef ALLOW_AUTODIFF
-        IF ( .NOT.useDIC ) STOP 'ABNORMAL END: S/R GCHEM_FORCING_SEP'
+        IF (.NOT.useDIC) STOP 'ABNORMAL END: S/R GCHEM_FORCING_SEP (2)'
 # else /* ALLOW_AUTODIFF */
         IF ( useDIC ) THEN
 # endif /* ALLOW_AUTODIFF */
@@ -234,15 +234,21 @@ C       tendency multiplied by maskInC)
 #endif /* ALLOW_DARWIN */
 
 #ifdef ALLOW_DIC
+# ifdef ALLOW_AUTODIFF
+      IF ( .NOT.useDIC ) STOP 'ABNORMAL END: S/R GCHEM_FORCING_SEP (3)'
+# else /* ALLOW_AUTODIFF */
       IF ( useDIC ) THEN
-       CALL DIC_ATMOS( 1, myTime, myIter, myThid )
+# endif /* ALLOW_AUTODIFF */
+       CALL DIC_ATMOS( myTime, myIter, myThid )
 # ifdef COMPONENT_MODULE
        CALL DIC_STORE_FLUXCO2( myTime, myIter, myThid )
 # endif
 # ifdef ALLOW_COST
        CALL DIC_COST( myTime, myIter, myThid )
 # endif
+# ifndef ALLOW_AUTODIFF
       ENDIF
+# endif /* ALLOW_AUTODIFF */
 #endif /* ALLOW_DIC */
 
 #endif /* GCHEM_SEPARATE_FORCING */
