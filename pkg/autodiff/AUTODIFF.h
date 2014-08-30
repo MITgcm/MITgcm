@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF.h,v 1.13 2014/08/15 19:27:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF.h,v 1.14 2014/08/30 21:49:53 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
@@ -35,7 +35,7 @@ c ad dump record number (used only if dumpAdByRec is true)
       PARAMETER (NEXF1  = 21)
       PARAMETER (NEXF2  = 20)
       PARAMETER (NCTRL1 = 20)
-      PARAMETER (NOB = 18)
+      PARAMETER (NOB = 20)
       PARAMETER (NSI = 19)
       _RL StoreDynVars3D
      &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,NDV3D)

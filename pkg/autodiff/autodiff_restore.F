@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.27 2014/08/15 19:27:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.28 2014/08/30 21:49:53 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -201,10 +201,10 @@ C-      2D arrays
           climsst0(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,20)
           climsst1(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,21)
 # endif
-         enddo
-        enddo
-       enddo
-      enddo
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 # ifdef ALLOW_BULKFORMULAE
 C--   Over all tiles
@@ -241,10 +241,10 @@ C-      2D arrays
           uwind1(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,18)
           vwind0(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,19)
           vwind1(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,20)
-         enddo
-        enddo
-       enddo
-      enddo
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 # endif /* ALLOW_ATM_TEMP */
 
 C--   Over all tiles
@@ -293,10 +293,10 @@ C-      2D arrays
           xx_apressure0(I,J,bi,bj) = StoreCTRLS1(I,J,bi,bj,19)
           xx_apressure1(I,J,bi,bj) = StoreCTRLS1(I,J,bi,bj,20)
 #  endif
-         enddo
-        enddo
-       enddo
-      enddo
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 #endif /* ALLOW_EXF */
 
 #ifdef ALLOW_OBCS
@@ -307,30 +307,32 @@ C--   Over all tiles
 C-      2D arrays
         DO K=1,Nr
          DO I=1-OLx,sNx+OLx
-          OBNt(I,K,bi,bj)    = StoreOBCSN(I,K,bi,bj,1)
-          OBNs(I,K,bi,bj)    = StoreOBCSN(I,K,bi,bj,2)
-          OBNu0(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,3)
-          OBNv0(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,4)
-          OBNt0(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,5)
-          OBNs0(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,6)
-          OBNu1(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,7)
-          OBNv1(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,8)
-          OBNt1(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,9)
-          OBNs1(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,10)
+          OBNu(I,K,bi,bj)    = StoreOBCSN(I,K,bi,bj,1)
+          OBNv(I,K,bi,bj)    = StoreOBCSN(I,K,bi,bj,2)
+          OBNt(I,K,bi,bj)    = StoreOBCSN(I,K,bi,bj,3)
+          OBNs(I,K,bi,bj)    = StoreOBCSN(I,K,bi,bj,4)
+          OBNu0(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,5)
+          OBNv0(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,6)
+          OBNt0(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,7)
+          OBNs0(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,8)
+          OBNu1(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,9)
+          OBNv1(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,10)
+          OBNt1(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,11)
+          OBNs1(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,12)
 #  ifdef ALLOW_OBCSN_CONTROL
-          xx_obcsn0(I,K,bi,bj,1)   = StoreOBCSN(I,K,bi,bj,11)
-          xx_obcsn0(I,K,bi,bj,2)   = StoreOBCSN(I,K,bi,bj,12)
-          xx_obcsn0(I,K,bi,bj,3)   = StoreOBCSN(I,K,bi,bj,13)
-          xx_obcsn0(I,K,bi,bj,4)   = StoreOBCSN(I,K,bi,bj,14)
-          xx_obcsn1(I,K,bi,bj,1)   = StoreOBCSN(I,K,bi,bj,15)
-          xx_obcsn1(I,K,bi,bj,2)   = StoreOBCSN(I,K,bi,bj,16)
-          xx_obcsn1(I,K,bi,bj,3)   = StoreOBCSN(I,K,bi,bj,17)
-          xx_obcsn1(I,K,bi,bj,4)   = StoreOBCSN(I,K,bi,bj,18)
+          xx_obcsn0(I,K,bi,bj,1)   = StoreOBCSN(I,K,bi,bj,13)
+          xx_obcsn0(I,K,bi,bj,2)   = StoreOBCSN(I,K,bi,bj,14)
+          xx_obcsn0(I,K,bi,bj,3)   = StoreOBCSN(I,K,bi,bj,15)
+          xx_obcsn0(I,K,bi,bj,4)   = StoreOBCSN(I,K,bi,bj,16)
+          xx_obcsn1(I,K,bi,bj,1)   = StoreOBCSN(I,K,bi,bj,17)
+          xx_obcsn1(I,K,bi,bj,2)   = StoreOBCSN(I,K,bi,bj,18)
+          xx_obcsn1(I,K,bi,bj,3)   = StoreOBCSN(I,K,bi,bj,19)
+          xx_obcsn1(I,K,bi,bj,4)   = StoreOBCSN(I,K,bi,bj,20)
 #  endif
-         enddo
-        enddo
-       enddo
-      enddo
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 # endif /* ALLOW_OBCS_NORTH */
 
 # ifdef ALLOW_OBCS_SOUTH
@@ -340,30 +342,32 @@ C--   Over all tiles
 C-      2D arrays
         DO K=1,Nr
          DO I=1-OLx,sNx+OLx
-          OBSt(I,K,bi,bj)       = StoreOBCSS(I,K,bi,bj,1)
-          OBSs(I,K,bi,bj)       = StoreOBCSS(I,K,bi,bj,2)
-          OBSu0(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,3)
-          OBSv0(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,4)
-          OBSt0(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,5)
-          OBSs0(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,6)
-          OBSu1(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,7)
-          OBSv1(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,8)
-          OBSt1(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,9)
-          OBSs1(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,10)
+          OBSu(I,K,bi,bj)       = StoreOBCSS(I,K,bi,bj,1)
+          OBSv(I,K,bi,bj)       = StoreOBCSS(I,K,bi,bj,2)
+          OBSt(I,K,bi,bj)       = StoreOBCSS(I,K,bi,bj,3)
+          OBSs(I,K,bi,bj)       = StoreOBCSS(I,K,bi,bj,4)
+          OBSu0(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,5)
+          OBSv0(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,6)
+          OBSt0(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,7)
+          OBSs0(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,8)
+          OBSu1(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,9)
+          OBSv1(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,10)
+          OBSt1(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,11)
+          OBSs1(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,12)
 #  ifdef ALLOW_OBCSS_CONTROL
-          xx_obcss0(I,K,bi,bj,1)   = StoreOBCSS(I,K,bi,bj,11)
-          xx_obcss0(I,K,bi,bj,2)   = StoreOBCSS(I,K,bi,bj,12)
-          xx_obcss0(I,K,bi,bj,3)   = StoreOBCSS(I,K,bi,bj,13)
-          xx_obcss0(I,K,bi,bj,4)   = StoreOBCSS(I,K,bi,bj,14)
-          xx_obcss1(I,K,bi,bj,1)   = StoreOBCSS(I,K,bi,bj,15)
-          xx_obcss1(I,K,bi,bj,2)   = StoreOBCSS(I,K,bi,bj,16)
-          xx_obcss1(I,K,bi,bj,3)   = StoreOBCSS(I,K,bi,bj,17)
-          xx_obcss1(I,K,bi,bj,4)   = StoreOBCSS(I,K,bi,bj,18)
+          xx_obcss0(I,K,bi,bj,1)   = StoreOBCSS(I,K,bi,bj,13)
+          xx_obcss0(I,K,bi,bj,2)   = StoreOBCSS(I,K,bi,bj,14)
+          xx_obcss0(I,K,bi,bj,3)   = StoreOBCSS(I,K,bi,bj,15)
+          xx_obcss0(I,K,bi,bj,4)   = StoreOBCSS(I,K,bi,bj,16)
+          xx_obcss1(I,K,bi,bj,1)   = StoreOBCSS(I,K,bi,bj,17)
+          xx_obcss1(I,K,bi,bj,2)   = StoreOBCSS(I,K,bi,bj,18)
+          xx_obcss1(I,K,bi,bj,3)   = StoreOBCSS(I,K,bi,bj,19)
+          xx_obcss1(I,K,bi,bj,4)   = StoreOBCSS(I,K,bi,bj,20)
 #  endif
-         enddo
-        enddo
-       enddo
-      enddo
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 # endif /* ALLOW_OBCS_SOUTH */
 
 # ifdef ALLOW_OBCS_EAST
@@ -373,30 +377,32 @@ C--   Over all tiles
 C-      2D arrays
         DO K=1,Nr
          DO J=1-OLy,sNy+OLy
-          OBEt(J,K,bi,bj)      = StoreOBCSE(J,K,bi,bj,1)
-          OBEs(J,K,bi,bj)      = StoreOBCSE(J,K,bi,bj,2)
-          OBEu0(J,K,bi,bj)     = StoreOBCSE(J,K,bi,bj,3)
-          OBEv0(J,K,bi,bj)     = StoreOBCSE(J,K,bi,bj,4)
-          OBEt0(J,K,bi,bj)     = StoreOBCSE(J,K,bi,bj,5)
-          OBEs0(J,K,bi,bj)     = StoreOBCSE(J,K,bi,bj,6)
-          OBEu1(J,K,bi,bj)     = StoreOBCSE(J,K,bi,bj,7)
-          OBEv1(J,K,bi,bj)     = StoreOBCSE(J,K,bi,bj,8)
-          OBEt1(J,K,bi,bj)     = StoreOBCSE(J,K,bi,bj,9)
-          OBEs1(J,K,bi,bj)     = StoreOBCSE(J,K,bi,bj,10)
+          OBEu(J,K,bi,bj)      = StoreOBCSE(J,K,bi,bj,1)
+          OBEv(J,K,bi,bj)      = StoreOBCSE(J,K,bi,bj,2)
+          OBEt(J,K,bi,bj)      = StoreOBCSE(J,K,bi,bj,3)
+          OBEs(J,K,bi,bj)      = StoreOBCSE(J,K,bi,bj,4)
+          OBEu0(J,K,bi,bj)     = StoreOBCSE(J,K,bi,bj,5)
+          OBEv0(J,K,bi,bj)     = StoreOBCSE(J,K,bi,bj,6)
+          OBEt0(J,K,bi,bj)     = StoreOBCSE(J,K,bi,bj,7)
+          OBEs0(J,K,bi,bj)     = StoreOBCSE(J,K,bi,bj,8)
+          OBEu1(J,K,bi,bj)     = StoreOBCSE(J,K,bi,bj,9)
+          OBEv1(J,K,bi,bj)     = StoreOBCSE(J,K,bi,bj,10)
+          OBEt1(J,K,bi,bj)     = StoreOBCSE(J,K,bi,bj,11)
+          OBEs1(J,K,bi,bj)     = StoreOBCSE(J,K,bi,bj,12)
 #  ifdef ALLOW_OBCSE_CONTROL
-          xx_obcse0(J,K,bi,bj,1)     = StoreOBCSE(J,K,bi,bj,11)
-          xx_obcse0(J,K,bi,bj,2)     = StoreOBCSE(J,K,bi,bj,12)
-          xx_obcse0(J,K,bi,bj,3)     = StoreOBCSE(J,K,bi,bj,13)
-          xx_obcse0(J,K,bi,bj,4)     = StoreOBCSE(J,K,bi,bj,14)
-          xx_obcse1(J,K,bi,bj,1)     = StoreOBCSE(J,K,bi,bj,15)
-          xx_obcse1(J,K,bi,bj,2)     = StoreOBCSE(J,K,bi,bj,16)
-          xx_obcse1(J,K,bi,bj,3)     = StoreOBCSE(J,K,bi,bj,17)
-          xx_obcse1(J,K,bi,bj,4)     = StoreOBCSE(J,K,bi,bj,18)
+          xx_obcse0(J,K,bi,bj,1)     = StoreOBCSE(J,K,bi,bj,13)
+          xx_obcse0(J,K,bi,bj,2)     = StoreOBCSE(J,K,bi,bj,14)
+          xx_obcse0(J,K,bi,bj,3)     = StoreOBCSE(J,K,bi,bj,15)
+          xx_obcse0(J,K,bi,bj,4)     = StoreOBCSE(J,K,bi,bj,16)
+          xx_obcse1(J,K,bi,bj,1)     = StoreOBCSE(J,K,bi,bj,17)
+          xx_obcse1(J,K,bi,bj,2)     = StoreOBCSE(J,K,bi,bj,18)
+          xx_obcse1(J,K,bi,bj,3)     = StoreOBCSE(J,K,bi,bj,19)
+          xx_obcse1(J,K,bi,bj,4)     = StoreOBCSE(J,K,bi,bj,20)
 #  endif
-          enddo
-        enddo
-       enddo
-      enddo
+          ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 # endif /* ALLOW_OBCS_EAST */
 
 # ifdef ALLOW_OBCS_WEST
@@ -406,30 +412,32 @@ C--   Over all tiles
 C-      2D arrays
         DO K=1,Nr
          DO J=1-OLy,sNy+OLy
-          OBWt(J,K,bi,bj)      = StoreOBCSW(J,K,bi,bj,1)
-          OBWs(J,K,bi,bj)      = StoreOBCSW(J,K,bi,bj,2)
-          OBWu0(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,3)
-          OBWv0(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,4)
-          OBWt0(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,5)
-          OBWs0(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,6)
-          OBWu1(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,7)
-          OBWv1(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,8)
-          OBWt1(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,9)
-          OBWs1(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,10)
+          OBWu(J,K,bi,bj)      = StoreOBCSW(J,K,bi,bj,1)
+          OBWv(J,K,bi,bj)      = StoreOBCSW(J,K,bi,bj,2)
+          OBWt(J,K,bi,bj)      = StoreOBCSW(J,K,bi,bj,3)
+          OBWs(J,K,bi,bj)      = StoreOBCSW(J,K,bi,bj,4)
+          OBWu0(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,5)
+          OBWv0(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,6)
+          OBWt0(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,7)
+          OBWs0(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,8)
+          OBWu1(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,9)
+          OBWv1(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,10)
+          OBWt1(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,11)
+          OBWs1(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,12)
 #  ifdef ALLOW_OBCSW_CONTROL
-          xx_obcsw0(J,K,bi,bj,1) = StoreOBCSW(J,K,bi,bj,11)
-          xx_obcsw0(J,K,bi,bj,2) = StoreOBCSW(J,K,bi,bj,12)
-          xx_obcsw0(J,K,bi,bj,3) = StoreOBCSW(J,K,bi,bj,13)
-          xx_obcsw0(J,K,bi,bj,4) = StoreOBCSW(J,K,bi,bj,14)
-          xx_obcsw1(J,K,bi,bj,1) = StoreOBCSW(J,K,bi,bj,15)
-          xx_obcsw1(J,K,bi,bj,2) = StoreOBCSW(J,K,bi,bj,16)
-          xx_obcsw1(J,K,bi,bj,3) = StoreOBCSW(J,K,bi,bj,17)
-          xx_obcsw1(J,K,bi,bj,4) = StoreOBCSW(J,K,bi,bj,18)
+          xx_obcsw0(J,K,bi,bj,1) = StoreOBCSW(J,K,bi,bj,13)
+          xx_obcsw0(J,K,bi,bj,2) = StoreOBCSW(J,K,bi,bj,14)
+          xx_obcsw0(J,K,bi,bj,3) = StoreOBCSW(J,K,bi,bj,15)
+          xx_obcsw0(J,K,bi,bj,4) = StoreOBCSW(J,K,bi,bj,16)
+          xx_obcsw1(J,K,bi,bj,1) = StoreOBCSW(J,K,bi,bj,17)
+          xx_obcsw1(J,K,bi,bj,2) = StoreOBCSW(J,K,bi,bj,18)
+          xx_obcsw1(J,K,bi,bj,3) = StoreOBCSW(J,K,bi,bj,19)
+          xx_obcsw1(J,K,bi,bj,4) = StoreOBCSW(J,K,bi,bj,20)
 #  endif
-          enddo
-        enddo
-       enddo
-      enddo
+          ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 # endif /* ALLOW_OBCS_WEST */
 #endif /* ALLOW_OBCS */
 
@@ -470,10 +478,10 @@ CML          seaicemaskv(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,13)
 # ifdef SEAICE_VARIABLE_SALINITY
           HSALT(I,J,bi,bj)          = StoreSEAICE(I,J,bi,bj,19)
 # endif
-         enddo
-        enddo
-       enddo
-      enddo
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 #endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_DEBUG

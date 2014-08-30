@@ -1,15 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev1_dir.h,v 1.11 2012/10/23 20:15:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev1_dir.h,v 1.12 2014/08/30 21:50:35 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
 
 #ifdef ALLOW_OBCS_NORTH
+CADJ STORE OBNu    = comlev1, key = ikey_dynamics
+CADJ STORE OBNv    = comlev1, key = ikey_dynamics
 CADJ STORE OBNt    = comlev1, key = ikey_dynamics
 CADJ STORE OBNs    = comlev1, key = ikey_dynamics
-CADJ STORE obns0,obns1  = comlev1, key = ikey_dynamics
-CADJ STORE obnt0,obnt1  = comlev1, key = ikey_dynamics
 CADJ STORE obnu0,obnu1  = comlev1, key = ikey_dynamics
 CADJ STORE obnv0,obnv1  = comlev1, key = ikey_dynamics
+CADJ STORE obnt0,obnt1  = comlev1, key = ikey_dynamics
+CADJ STORE obns0,obns1  = comlev1, key = ikey_dynamics
 #ifdef NONLIN_FRSURF
 CADJ STORE obneta0,obneta1 = comlev1, key = ikey_dynamics
 #endif
@@ -24,12 +26,14 @@ CADJ STORE xx_obcsn0,xx_obcsn1 = comlev1, key = ikey_dynamics
 #endif /* ALLOW_OBCS_NORTH */
 
 #ifdef ALLOW_OBCS_SOUTH
+CADJ STORE OBSu    = comlev1, key = ikey_dynamics
+CADJ STORE OBSv    = comlev1, key = ikey_dynamics
 CADJ STORE OBSt    = comlev1, key = ikey_dynamics
 CADJ STORE OBSs    = comlev1, key = ikey_dynamics
-CADJ STORE obss0,obss1  = comlev1, key = ikey_dynamics
-CADJ STORE obst0,obst1  = comlev1, key = ikey_dynamics
 CADJ STORE obsu0,obsu1  = comlev1, key = ikey_dynamics
 CADJ STORE obsv0,obsv1  = comlev1, key = ikey_dynamics
+CADJ STORE obst0,obst1  = comlev1, key = ikey_dynamics
+CADJ STORE obss0,obss1  = comlev1, key = ikey_dynamics
 #ifdef NONLIN_FRSURF
 CADJ STORE obseta0,obseta1 = comlev1, key = ikey_dynamics
 #endif
@@ -44,12 +48,14 @@ CADJ STORE xx_obcss0,xx_obcss1 = comlev1, key = ikey_dynamics
 #endif /* ALLOW_OBCS_SOUTH */
 
 #ifdef ALLOW_OBCS_EAST
+CADJ STORE OBEu    = comlev1, key = ikey_dynamics
+CADJ STORE OBEv    = comlev1, key = ikey_dynamics
 CADJ STORE OBEt    = comlev1, key = ikey_dynamics
 CADJ STORE OBEs    = comlev1, key = ikey_dynamics
-CADJ STORE obes0,obes1  = comlev1, key = ikey_dynamics
-CADJ STORE obet0,obet1  = comlev1, key = ikey_dynamics
 CADJ STORE obeu0,obeu1  = comlev1, key = ikey_dynamics
 CADJ STORE obev0,obev1  = comlev1, key = ikey_dynamics
+CADJ STORE obet0,obet1  = comlev1, key = ikey_dynamics
+CADJ STORE obes0,obes1  = comlev1, key = ikey_dynamics
 #ifdef NONLIN_FRSURF
 CADJ STORE obeeta0,obeeta1 = comlev1, key = ikey_dynamics
 #endif
@@ -64,12 +70,14 @@ CADJ STORE xx_obcse0,xx_obcse1 = comlev1, key = ikey_dynamics
 #endif /* ALLOW_OBCS_EAST */
 
 #ifdef ALLOW_OBCS_WEST
+CADJ STORE OBWu    = comlev1, key = ikey_dynamics
+CADJ STORE OBWv    = comlev1, key = ikey_dynamics
 CADJ STORE OBWt    = comlev1, key = ikey_dynamics
 CADJ STORE OBWs    = comlev1, key = ikey_dynamics
-CADJ STORE obws0,obws1  = comlev1, key = ikey_dynamics
-CADJ STORE obwt0,obwt1  = comlev1, key = ikey_dynamics
 CADJ STORE obwu0,obwu1  = comlev1, key = ikey_dynamics
 CADJ STORE obwv0,obwv1  = comlev1, key = ikey_dynamics
+CADJ STORE obwt0,obwt1  = comlev1, key = ikey_dynamics
+CADJ STORE obws0,obws1  = comlev1, key = ikey_dynamics
 #ifdef NONLIN_FRSURF
 CADJ STORE obweta0,obweta1 = comlev1, key = ikey_dynamics
 #endif
