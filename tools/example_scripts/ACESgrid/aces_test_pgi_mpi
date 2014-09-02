@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_pgi.stderr
 #PBS -o /home/jmc/test_aces/output/tst_pgi.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.34 2014/08/22 15:51:16 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.35 2014/09/02 18:03:12 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: MPI test using PGI (pgf77) compiler & mpich
@@ -50,7 +50,7 @@ addExp=''
 #options="$options -skd tutorial_advection_in_gyre"
  EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
 
-checkOut=1 ; options="$options -do" ; dblRun=2 ;
+checkOut=1 ; options="$options -do" ; dblRun=6 ;
 #options="$options -nc" ; checkOut=0 ; dblRun=0 ;
 #options="$options -q"  ; checkOut=0 ; dblRun=0 ;
 
@@ -131,14 +131,51 @@ if [ $dblRun -ge 1 ] ; then
  echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx
  ./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx
 
- if [ $dblRun -ge 2 ] ; then
-  echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx -q
-  ./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx -q 
+ iRun=0 ; nFail=0 ; pFail=$nFail
+ outpSum=`ls -t tr_${dNam}-${sfx}_????????_?/summary.txt | head -1`
+ if test "x$outpSum" != x ; then
+  nFail=`grep -c '^Y Y N N ' $outpSum`
+  echo "  from outpSum='$outpSum' nFail=$nFail"
+ else
+  echo "  no outpfile summary: outpSum='$outpSum'"
+  ls -lt tr_${dNam}-${sfx}_????????_?/summary.txt
  fi
- echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx \
-   -q -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
- ./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx \
-   -q -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+ while test $nFail != $pFail ; do
+   iRun=`expr $iRun + 1`
+   printf "  fails=%3i , prev=%3i ==> Re-run (run #%2i ):\n" $nFail $pFail $iRun
+   echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx -q
+   ./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx -q
+   #- update counts:
+   pFail=$nFail
+   outpSum=`ls -t tr_${dNam}-${sfx}_????????_?/summary.txt | head -1`
+   if [ $iRun -lt $dblRun ] ; then
+    nFail=`grep -c '^Y Y N N ' $outpSum`
+    if [ $nFail -eq 0 ] ; then pFail=0 ; fi
+   fi
+ done
+ if test "x$outpSum" != x ; then
+   dirRes=`echo $outpSum | sed 's/\/summary.txt$//'`
+#-- taken from testreport:
+#   tar -cf ${SAVDIR}/${DRESULTS}".tar" $DRESULTS > /dev/null 2>&1 \
+#         && gzip ${SAVDIR}/${DRESULTS}".tar" \
+#         && $SENDCMD -s MITgcm-test -m 3555000 ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES
+   tar -cf ${SavD}/${dirRes}".tar" $dirRes > /dev/null 2>&1 \
+           && gzip ${SavD}/${dirRes}".tar" \
+           && $SEND -s MITgcm-test -m 3555000 ${SavD}/${dirRes}".tar.gz" -a jmc@mitgcm.org
+   RETVAL=$?
+   if test "x$RETVAL" != x0 ; then
+     echo "ERROR in tar/gzip/send results dir \"$dirRes\" to jmc@mitgcm.org"
+   else
+     echo " $dirRes output sent to eamil jmc@mitgcm.org"
+     test -f ${SavD}/${dirRes}".tar" &&  rm -f ${SavD}/${dirRes}".tar"
+     test -f ${SavD}/${dirRes}".tar.gz" &&  rm -f ${SavD}/${dirRes}".tar.gz"
+   fi
+ fi
+
+#echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx \
+#  -q -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+#./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx \
+#  -q -send "$SEND" -sd $SavD -a jmc@mitgcm.org
 
 else
 
