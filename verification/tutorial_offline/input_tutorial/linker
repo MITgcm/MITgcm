@@ -1,0 +1,65 @@
+cd /net/ds-01/scratch-3/helen/documentation/example_run_04/input_off
+
+ln -s Convtave.0004248060.data Convtave.0000000001.data
+ln -s Convtave.0004248060.data Convtave.0000000002.data
+ln -s Convtave.0004248060.data Convtave.0000000003.data
+ln -s Convtave.0004248060.data Convtave.0000000004.data
+ln -s Convtave.0004248060.data Convtave.0000000005.data
+ln -s Convtave.0004248060.data Convtave.0000000006.data
+ln -s Convtave.0004248060.data Convtave.0000000007.data
+ln -s Convtave.0004248060.data Convtave.0000000008.data
+ln -s Convtave.0004248060.data Convtave.0000000009.data
+ln -s Convtave.0004248060.data Convtave.0000000010.data
+ln -s Convtave.0004248060.data Convtave.0000000011.data
+ln -s Convtave.0004248060.data Convtave.0000000012.data
+
+
+
+ln -s uVeltave.0004248060.data uVeltave.0000000001.data
+ln -s uVeltave.0004248060.data uVeltave.0000000002.data
+ln -s uVeltave.0004248060.data uVeltave.0000000003.data
+ln -s uVeltave.0004248060.data uVeltave.0000000004.data
+ln -s uVeltave.0004248060.data uVeltave.0000000005.data
+ln -s uVeltave.0004248060.data uVeltave.0000000006.data
+ln -s uVeltave.0004248060.data uVeltave.0000000007.data
+ln -s uVeltave.0004248060.data uVeltave.0000000008.data
+ln -s uVeltave.0004248060.data uVeltave.0000000009.data
+ln -s uVeltave.0004248060.data uVeltave.0000000010.data
+ln -s uVeltave.0004248060.data uVeltave.0000000011.data
+ln -s uVeltave.0004248060.data uVeltave.0000000012.data
+
+
+
+
+
+ln -s vVeltave.0004248060.data vVeltave.0000000001.data
+ln -s vVeltave.0004248060.data vVeltave.0000000002.data
+ln -s vVeltave.0004248060.data vVeltave.0000000003.data
+ln -s vVeltave.0004248060.data vVeltave.0000000004.data
+ln -s vVeltave.0004248060.data vVeltave.0000000005.data
+ln -s vVeltave.0004248060.data vVeltave.0000000006.data
+ln -s vVeltave.0004248060.data vVeltave.0000000007.data
+ln -s vVeltave.0004248060.data vVeltave.0000000008.data
+ln -s vVeltave.0004248060.data vVeltave.0000000009.data
+ln -s vVeltave.0004248060.data vVeltave.0000000010.data
+ln -s vVeltave.0004248060.data vVeltave.0000000011.data
+ln -s vVeltave.0004248060.data vVeltave.0000000012.data
+
+
+
+ln -s wVeltave.0004248060.data wVeltave.0000000001.data
+ln -s wVeltave.0004248060.data wVeltave.0000000002.data
+ln -s wVeltave.0004248060.data wVeltave.0000000003.data
+ln -s wVeltave.0004248060.data wVeltave.0000000004.data
+ln -s wVeltave.0004248060.data wVeltave.0000000005.data
+ln -s wVeltave.0004248060.data wVeltave.0000000006.data
+ln -s wVeltave.0004248060.data wVeltave.0000000007.data
+ln -s wVeltave.0004248060.data wVeltave.0000000008.data
+ln -s wVeltave.0004248060.data wVeltave.0000000009.data
+ln -s wVeltave.0004248060.data wVeltave.0000000010.data
+ln -s wVeltave.0004248060.data wVeltave.0000000011.data
+ln -s wVeltave.0004248060.data wVeltave.0000000012.data
+
+
+
+
