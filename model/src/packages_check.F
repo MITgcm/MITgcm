@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.66 2014/07/30 03:31:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.67 2014/09/04 22:30:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -21,7 +21,80 @@ C     | in at build time.
 C     *==========================================================*
 C     \ev
 
-C     !USES:
+C     !CALLING SEQUENCE:
+C     PACKAGES_CHECK
+C       |
+C       |-- OBCS_CHECK
+C       |
+C       |-- OPPS_CHECK
+C       |
+C       |-- PP81_CHECK
+C       |
+C       |-- KL10_CHECK
+C       |
+C       |-- MY82_CHECK
+C       |
+C       |-- GGL90_CHECK
+C       |
+C       |-- KPP_CHECK
+C       |
+C       |-- GMREDI_CHECK
+C       |
+C       |-- BBL_CHECK
+C       |
+C       |-- EXF_CHECK
+C       |
+C       |-- PTRACERS_CHECK
+C       |
+C       |-- GCHEM_CHECK
+C       |
+C       |-- OFFLINE_CHECK
+C       |
+C       |-- SEAICE_CHECK
+C       |
+C       |-- SHELFICE_CHECK
+C       |
+C       |-- STREAMICE_CHECK
+C       |
+C       |-- ICEFRONT_CHECK
+C       |
+C       |-- THSICE_CHECK
+C       |
+C       |-- LAND_CHECK
+C       |
+C       |-- ATM_PHYS_CHECK
+C       |
+C       |-- AUTODIFF_CHECK
+C       |
+C       |-- CTRL_CHECK
+C       |
+C       |-- COST_CHECK
+C       |
+C       |-- GRDCHK_CHECK
+C       |
+C       |-- SBO_CHECK
+C       |
+C       |-- ECCO_CHECK
+C       |
+C       |-- DIAGNOSTICS_CHECK
+C       |
+C       |-- REGRID_CHECK
+C       |
+C       |-- LAYERS_CHECK
+C       |
+C       |-- NEST_CHILD_CHECK
+C       |
+C       |-- NEST_PARENT_CHECK
+C       |
+C       |-- OASIS_CHECK
+C       |
+C       |-- RUNCLOCK_CHECK
+C       |
+C       |-- MYPACKAGE_CHECK
+C       |
+C       |-- GAD_CHECK
+
+      !USES:
       IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"

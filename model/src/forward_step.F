@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.224 2014/08/15 20:41:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.225 2014/09/04 22:30:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -101,6 +101,120 @@ C     |   V[n] = V* + dt x d/dy P
 C     |   W[n] = W* + dt x d/dz P  (NH mode)
 C     *=================================================================
 C     \ev
+
+C     !CALLING SEQUENCE:
+C     FORWARD_STEP
+C       |
+C       |-- AUTODIFF_INADMODE_UNSET
+C       |
+C       |-- RESET_NLFS_VARS
+C       |-- UPDATE_R_STAR
+C       |-- UPDATE_SURF_DR
+C       |
+C       |-- PTRACERS_SWITCH_ONOFF
+C       |
+C       |-- DIAGNOSTICS_SWITCH_ONOFF
+C       |-- DO_STATEVARS_DIAGS
+C       |
+C       |-- NEST_CHILD_SETMEMO
+C       |-- NEST_PARENT_IO_1
+C       |
+C       |-- LOAD_FIELDS_DRIVER
+C       |
+C       |-- BULKF_FORCING
+C       |
+C       |-- CHEAPAML
+C       |
+C       |-- CTRL_MAP_FORCING
+C       |-- DUMMY_IN_STEPPING
+C       |
+C       |-- CPL_EXPORT_MY_DATA
+C       |-- CPL_IMPORT_EXTERNAL_DATA
+C       |
+C       |-- OASIS_PUT
+C       |-- OASIS_GET
+C       |
+C       |-- EBM_DRIVER
+C       |
+C       |-- DO_ATMOSPHERIC_PHYS
+C       |
+C       |-- DO_OCEANIC_PHYS
+C       |
+C       |-- STREAMICE_SOLO_TIMESTEP
+C       |
+C       |-- GCHEM_CALC_TENDENCY
+C       |
+C       |-- LONGSTEP_AVERAGE
+C       |-- LONGSTEP_THERMODYNAMICS
+C       |
+C       |-- THERMODYNAMICS
+C       |
+C       |-- LONGSTEP_AVERAGE
+C       |--_THERMODYNAMICS
+C       |
+C       |-- DO_STAGGER_FIELDS_EXCHANGES
+C       |
+C       |-- DYNAMICS
+C       |
+C       |-- MNC_UPDATE_TIME
+C       |
+C       |-- UPDATE_R_STAR
+C       |-- UPDATE_SIGMA
+C       |-- UPDATE_SURF_DR
+C       |-- UPDATE_CG2D
+C       |
+C       |-- SHAP_FILT_APPLY_UV
+C       |-- ZONAL_FILT_APPLY_UV
+C       |
+C       |-- SOLVE_FOR_PRESSURE
+C       |
+C       |-- MOMENTUM_CORRECTION_STEP
+C       |
+C       |-- INTEGR_CONTINUITY
+C       |
+C       |-- CALC_R_STAR
+C       |-- CALC_SURF_DR
+C       |
+C       |-- DO_STAGGER_FIELDS_EXCHANGES
+C       |
+C       |-- DO_STATEVARS_DIAGS
+C       |
+C       |-- THERMODYNAMICS
+C       |
+C       |-- TRACERS_CORRECTION_STEP
+C       |
+C       |-- LONGSTEP_AVERAGE
+C       |-- LONGSTEP_THERMODYNAMICS
+C       |
+C       |-- GCHEM_FORCING_SEP
+C       |
+C       |-- DO_FIELDS_BLOCKING_EXCHANGES
+C       |
+C       |-- DO_STATEVARS_DIAGS
+C       |
+C       |-- GRIDALT_UPDATE
+C       |-- STEP_FIZHI_CORR
+C       |
+C       |-- FLT_MAIN
+C       |
+C       |-- DO_STATEVARS_TAVE
+C       |
+C       |-- NEST_PARENT_IO_2
+C       |-- NEST_CHILD_TRANSP
+C       |
+C       |-- MONITOR
+C       |
+C       |-- COST_TILE
+C       |
+C       |-- DO_THE_MODEL_IO
+C       |
+C       |-- PTRACERS_RESET
+C       |
+C       |-- DO_WRITE_PICKUP
+C       |
+C       |-- AUTODIFF_INADMODE_SET
+C       |
+C       |-- SHOWFLOPS_INLOOP
 
 C     !USES:
       IMPLICIT NONE

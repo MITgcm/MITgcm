@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.65 2014/07/30 03:31:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.66 2014/09/04 22:30:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -26,14 +26,65 @@ C     portion of data of interest to this process is actually loaded. To
 C     work well this assumes the existence of some reliable tool to join
 C     datasets together at the end of a run -- see joinds.
 
+C     !CALLING SEQUENCE:
+C     DO_THE_MODEL_IO
+C       |
+C       |-- WRITE_STATE
+C       |
+C       |-- TIMEAVE_STATV_WRITE
+C       |
+C       |-- FIZHI_WRITE_STATE
+C       |
+C       |-- AIM_WRITE_TAVE
+C       |
+C       |-- LAND_OUTPUT
+C       |
+C       |-- OBCS_OUTPUT
+C       |
+C       |-- GMREDI_OUTPUT
+C       |
+C       |-- KPP_OUTPUT
+C       |
+C       |-- PP81_OUTPUT
+C       |
+C       |-- KL10_OUTPUT
+C       |
+C       |-- MY82_OUTPUT
+C       |
+C       |-- OPPS_OUTPUT
+C       |
+C       |-- GGL90_OUTPUT
+C       |
+C       |-- SBO_CALC
+C       |-- SBO_OUTPUT
+C       |
+C       |-- SEAICE_OUTPUT
+C       |
+C       |-- SHELFICE_OUTPUT
+C       |
+C       |-- BULKF_OUTPUT
+C       |
+C       |-- THSICE_OUTPUT
+C       |
+C       |-- PTRACERS_OUTPUT
+C       |
+C       |-- MATRIX_OUTPUT
+C       |
+C       |-- GCHEM_OUTPUT
+C       |
+C       |-- CPL_OUTPUT
+C       |
+C       |-- LAYERS_CALC
+C       |-- LAYERS_OUTPUT
+C       |
+C       |-- DIAGNOSTICS_WRITE
+
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     modelEnd :: true if call at end of model run.
@@ -44,6 +95,10 @@ C     myThid   :: Thread number for this instance of the routine.
       _RL     myTime
       INTEGER myThid
       INTEGER myIter
+
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 CEOP
 
 C     Generaly only thread 1 does IO here. It can not start until

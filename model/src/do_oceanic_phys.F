@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.142 2014/08/15 09:25:29 atn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.143 2014/09/04 22:30:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -44,6 +44,82 @@ C     *==========================================================*
 C     | o originally, part of S/R thermodynamics
 C     *==========================================================*
 C     \ev
+
+C     !CALLING SEQUENCE:
+C     DO_OCEANIC_PHYS
+C       |
+C       |-- OBCS_CALC
+C       |
+C       |-- FRAZIL_CALC_RHS
+C       |
+C       |-- THSICE_MAIN
+C       |
+C       |-- SEAICE_FAKE
+C       |-- SEAICE_MODEL
+C       |-- SEAICE_COST_SENSI
+C       |
+C       |-- SHELFICE_THERMODYNAMICS
+C       |
+C       |-- ICEFRONT_THERMODYNAMICS
+C       |
+C       |-- SALT_PLUME_DO_EXCH
+C       |
+C       |-- FREEZE_SURFACE
+C       |
+C       |-- OCN_APPLY_IMPORT
+C       |
+C       |-- EXTERNAL_FORCING_SURF
+C       |
+C       |- k loop (Nr:1):
+C       | - DWNSLP_CALC_RHO
+C       | - BBL_CALC_RHO
+C       | - FIND_RHO_2D @ p(k)
+C       | - FIND_RHO_2D @ p(k-1)
+C       | - GRAD_SIGMA
+C       | - CALC_IVDC
+C       | - DIAGS_RHO_L
+C       |- end k loop.
+C       |
+C       |-- CALC_OCE_MXLAYER
+C       |
+C       |-- SALT_PLUME_CALC_DEPTH
+C       |-- SALT_PLUME_VOLFRAC
+C       |-- SALT_PLUME_APPLY
+C       |-- SALT_PLUME_APPLY
+C       |-- SALT_PLUME_FORCING_SURF
+C       |
+C       |-- KPP_CALC
+C       |-- KPP_CALC_DUMMY
+C       |
+C       |-- PP81_CALC
+C       |
+C       |-- KL10_CALC
+C       |
+C       |-- MY82_CALC
+C       |
+C       |-- GGL90_CALC
+C       |
+C       |-- TIMEAVE_SURF_FLUX
+C       |
+C       |-- GMREDI_CALC_TENSOR
+C       |-- GMREDI_CALC_TENSOR_DUMMY
+C       |
+C       |-- DWNSLP_CALC_FLOW
+C       |-- DWNSLP_CALC_FLOW
+C       |
+C       |-- BBL_CALC_RHS
+C       |
+C       |-- MYPACKAGE_CALC_RHS
+C       |
+C       |-- GMREDI_DO_EXCH
+C       |
+C       |-- KPP_DO_EXCH
+C       |
+C       |-- DIAGS_RHO_G
+C       |-- DIAGS_OCEANIC_SURF_FLUX
+C       |-- SALT_PLUME_DIAGNOSTICS_FILL
+C       |
+C       |-- ECCO_PHYS
 
 C     !USES:
       IMPLICIT NONE
