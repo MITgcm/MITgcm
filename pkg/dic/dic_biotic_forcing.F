@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.28 2012/08/22 00:40:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.29 2014/09/04 20:04:00 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -7,16 +7,16 @@ CBOP
 C !ROUTINE: DIC_BIOTIC_FORCING
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE DIC_BIOTIC_FORCING( PTR_DIC, PTR_ALK, PTR_PO4,
-     &                            PTR_DOP,
+      SUBROUTINE DIC_BIOTIC_FORCING(
+     U                      PTR_DIC, PTR_ALK, PTR_PO4, PTR_DOP,
 #ifdef ALLOW_O2
-     &                            PTR_O2,
+     U                      PTR_O2,
 #endif
 #ifdef ALLOW_FE
-     &                            PTR_FE,
+     U                      PTR_FE,
 #endif
-     &                            bi,bj,imin,imax,jmin,jmax,
-     &                             myIter,myTime,myThid)
+     I                      bi, bj, iMin, iMax, jMin, jMax,
+     I                      myIter, myTime, myThid )
 
 C !DESCRIPTION:
 C updates all the tracers for the effects of air-sea exchange, biological
@@ -25,27 +25,25 @@ c activity and remineralization
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "DYNVARS.h"
 #include "DIC_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 
-C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
-C  myIter               :: current timestep
-C  myTime               :: current time
+C !INPUT/OUTPUT PARAMETERS: ===================================================
 C  PTR_DIC              :: dissolced inorganic carbon
 C  PTR_ALK              :: alkalinity
 C  PTR_PO4              :: phosphate
 c  PTR_DOP              :: dissolve organic phosphurous
 c  PTR_O2               :: oxygen
 C  PTR_FE               :: iron
-      INTEGER myIter
-      _RL myTime
-      INTEGER myThid
+c  bi, bj               :: current tile indices
+C  myIter               :: current timestep
+C  myTime               :: current time
+C  myThid               :: thread number
       _RL  PTR_DIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  PTR_ALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -56,7 +54,10 @@ C  PTR_FE               :: iron
 #ifdef ALLOW_FE
       _RL  PTR_FE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
-      INTEGER bi, bj, imin, imax, jmin, jmax
+      INTEGER bi, bj, iMin, iMax, jMin, jMax
+      INTEGER myIter
+      _RL myTime
+      INTEGER myThid
 
 #ifdef ALLOW_PTRACERS
 #ifdef DIC_BIOTIC
@@ -130,56 +131,66 @@ c          freefe(i,j,k)  =0. _d 0
           ENDDO
          ENDDO
        ENDDO
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
+       DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
            SURA(i,j)   =0. _d 0
            SURC(i,j)   =0. _d 0
            SURO(i,j)   =0. _d 0
-          ENDDO
          ENDDO
+       ENDDO
 
 C carbon air-sea interaction
-       CALL DIC_SURFFORCING( PTR_DIC, PTR_ALK, PTR_PO4, SURC,
-     &                    bi,bj,imin,imax,jmin,jmax,
-     &                    myIter,myTime,myThid)
+       CALL DIC_SURFFORCING(
+     I                    PTR_DIC, PTR_ALK, PTR_PO4,
+     O                    SURC,
+     I                    bi, bj, iMin, iMax, jMin, jMax,
+     I                    myIter, myTime, myThid )
 
 C alkalinity air-sea interaction
-       CALL ALK_SURFFORCING( PTR_ALK, SURA,
-     &                    bi,bj,imin,imax,jmin,jmax,
-     &                    myIter,myTime,myThid)
+       CALL ALK_SURFFORCING(
+     I                    PTR_ALK,
+     O                    SURA,
+     I                    bi, bj, iMin, iMax, jMin, jMax,
+     I                    myIter, myTime, myThid )
 
 #ifdef ALLOW_O2
 C oxygen air-sea interaction
-       CALL O2_SURFFORCING( PTR_O2, SURO,
-     &                    bi,bj,imin,imax,jmin,jmax,
-     &                    myIter,myTime,myThid)
+       CALL O2_SURFFORCING(
+     I                    PTR_O2,
+     O                    SURO,
+     I                    bi, bj, iMin, iMax, jMin, jMax,
+     I                    myIter, myTime, myThid )
 #endif
 
 #ifdef ALLOW_FE
 C find free iron
-       CALL FE_CHEM( bi,bj,iMin,iMax,jMin,jMax, PTR_FE, freefe,
-     &               myIter, myThid )
+       CALL FE_CHEM( bi, bj, iMin, iMax, jMin, jMax,
+     U               PTR_FE,
+     O               freefe,
+     I               myIter, myThid )
 #endif
-
 
 C biological activity
-       CALL BIO_EXPORT( PTR_PO4 ,
+       CALL BIO_EXPORT(
+     I               PTR_PO4,
 #ifdef ALLOW_FE
-     I           PTR_FE,
+     I               PTR_FE,
 #endif
-     I           BIOac,
-     I           bi,bj,imin,imax,jmin,jmax,
-     I           myIter,myTime,myThid)
+     O               BIOac,
+     I               bi, bj, iMin, iMax, jMin, jMax,
+     I               myIter, myTime, myThid )
 
 C flux of po4 from layers with biological activity
-       CALL PHOS_FLUX( BIOac, pflux, exportflux,
-     &                    bi,bj,imin,imax,jmin,jmax,
-     &                    myIter,myTime,myThid)
+       CALL PHOS_FLUX(
+     I               BIOac,
+     U               pflux, exportflux,
+     I               bi, bj, iMin, iMax, jMin, jMax,
+     I               myIter, myTime, myThid )
 
 C- Carbonate sink
        DO k=1,Nr
-         DO j=jmin,jmax
-          DO i=imin,imax
+         DO j=jMin,jMax
+          DO i=iMin,iMax
              CAR_S(i,j,k)=BIOac(i,j,k)*R_CP*rain_ratio(i,j,bi,bj)*
      &                    (1. _d 0-DOPfraction)
           ENDDO
@@ -190,28 +201,33 @@ C carbonate
 #ifdef CAR_DISS
 C dissolution only below saturation horizon
 C code following method by Karsten Friis
-         nCALCITEstep = 3600
-         IF(myIter .lt. (nIter0+5) .or.
+        nCALCITEstep = 3600
+        IF(myIter .lt. (nIter0+5) .or.
      &               mod(myIter,nCALCITEstep) .eq. 0)THEN
-           CALL CALCITE_SATURATION(PTR_DIC, PTR_ALK, PTR_PO4,
-     I                    bi,bj,imin,imax,jmin,jmax,
-     I                    myIter,myTime,myThid)
+           CALL CALCITE_SATURATION(
+     I                    PTR_DIC, PTR_ALK, PTR_PO4,
+     I                    bi, bj, iMin, iMax, jMin, jMax,
+     I                    myIter, myTime, myThid )
         ENDIF
-c
-        CALL CAR_FLUX_OMEGA_TOP( BIOac, cflux,
-     &                    bi,bj,imin,imax,jmin,jmax,
-     &                    myIter,myTime,myThid)
+
+        CALL CAR_FLUX_OMEGA_TOP(
+     I                    BIOac,
+     O                    cflux,
+     I                    bi, bj, iMin, iMax, jMin, jMax,
+     I                    myIter, myTime, myThid )
 #else
 C old OCMIP way
-        CALL CAR_FLUX( CAR_S, cflux,
-     &                    bi,bj,imin,imax,jmin,jmax,
-     &                    myIter,myTime,myThid)
+        CALL CAR_FLUX(
+     I                    CAR_S,
+     U                    cflux,
+     I                    bi, bj, iMin, iMax, jMin, jMax,
+     I                    myIter, myTime, myThid )
 #endif
 
 C add all tendencies for PO4, DOP, ALK, DIC
        DO k=1,Nr
-         DO j=jmin,jmax
-          DO i=imin,imax
+         DO j=jMin,jMax
+          DO i=iMin,iMax
 #ifdef DIC_NO_NEG
            RDOP(i,j,k)= MAX(maskC(i,j,k,bi,bj)*KDOPRemin*PTR_DOP(i,j,k)
      &                     ,0. _d 0)
@@ -243,8 +259,8 @@ C add all tendencies for PO4, DOP, ALK, DIC
          ENDDO
        ENDDO
 
-         DO j=jmin,jmax
-          DO i=imin,imax
+       DO j=jMin,jMax
+         DO i=iMin,iMax
                GALK(i,j,1)=GALK(i,j,1)+SURA(i,j)
                GDIC(i,j,1)=GDIC(i,j,1)+SURC(i,j)
 #ifdef ALLOW_O2
@@ -255,14 +271,32 @@ C add all tendencies for PO4, DOP, ALK, DIC
      &                    InputFe(i,j,bi,bj)*recip_drF(1)
      &                       *recip_hFacC(i,j,1,bi,bj)
 #endif
+         ENDDO
+       ENDDO
+
+       IF ( useOBCS ) THEN
+        DO k=1,Nr
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+            GDIC(i,j,k) = GDIC(i,j,k)*maskInC(i,j,bi,bj)
+            GALK(i,j,k) = GALK(i,j,k)*maskInC(i,j,bi,bj)
+            GPO4(i,j,k) = GPO4(i,j,k)*maskInC(i,j,bi,bj)
+            GDOP(i,j,k) = GDOP(i,j,k)*maskInC(i,j,bi,bj)
+#ifdef ALLOW_O2
+            GO2(i,j,k)  =  GO2(i,j,k)*maskInC(i,j,bi,bj)
+#endif
+#ifdef ALLOW_FE
+            GFE(i,j,k)  =  GFE(i,j,k)*maskInC(i,j,bi,bj)
+#endif
           ENDDO
          ENDDO
-
+        ENDDO
+       ENDIF
 
 C update
        DO k=1,Nr
-         DO j=jmin,jmax
-          DO i=imin,imax
+         DO j=jMin,jMax
+          DO i=iMin,iMax
            PTR_DIC(i,j,k)=
      &      PTR_DIC(i,j,k)+GDIC(i,j,k)*PTRACERS_dTLev(k)
            PTR_ALK(i,j,k)=
@@ -286,18 +320,19 @@ C update
 #ifdef ALLOW_FE
 #ifdef MINFE
 c find free iron and get rid of insoluble part
-       CALL FE_CHEM( bi,bj,iMin,iMax,jMin,jMax, PTR_FE, freefe,
-     &               myIter, myThid )
+       CALL FE_CHEM( bi, bj, iMin, iMax, jMin, jMax,
+     U               PTR_FE,
+     O               freefe,
+     I               myIter, myThid )
 #endif
 #endif
-
 
 #ifdef ALLOW_TIMEAVE
 C save averages
        IF ( PTRACERS_taveFreq.GT.0. ) THEN
         DO k=1,Nr
-         DO j=jmin,jmax
-          DO i=imin,imax
+         DO j=jMin,jMax
+          DO i=iMin,iMax
             BIOave(i,j,k,bi,bj)   =BIOave(i,j,k,bi,bj)+
      &                             BIOac(i,j,k)*deltaTClock
             CARave(i,j,k,bi,bj)   =CARave(i,j,k,bi,bj)+
@@ -313,8 +348,8 @@ C save averages
           ENDDO
          ENDDO
         ENDDO
-         DO j=jmin,jmax
-          DO i=imin,imax
+         DO j=jMin,jMax
+          DO i=iMin,iMax
               SURave(i,j,bi,bj)    =SURave(i,j,bi,bj)+
      &                              SURC(i,j)*deltaTClock
 #ifdef ALLOW_O2
