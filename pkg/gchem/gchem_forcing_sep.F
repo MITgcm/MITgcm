@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.38 2014/08/30 00:51:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.39 2014/09/04 20:08:48 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -154,24 +154,24 @@ ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,4),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,5),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,6),
-     &                          bi,bj,imin,imax,jmin,jmax,
-     &                          myIter,myTime,myThid)
+     &                          bi, bj, iMin, iMax, jMin, jMax,
+     &                          myIter, myTime, myThid )
 #else
 #ifdef ALLOW_O2
-          CALL DIC_BIOTIC_fORCING( pTracer(1-OLx,1-OLy,1,bi,bj,1),
+          CALL DIC_BIOTIC_FORCING( pTracer(1-OLx,1-OLy,1,bi,bj,1),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,2),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,3),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,4),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,5),
-     &                          bi,bj,imin,imax,jmin,jmax,
-     &                          myIter,myTime,myThid)
+     &                          bi, bj, iMin, iMax, jMin, jMax,
+     &                          myIter, myTime, myThid )
 #else
-          CALL DIC_BIOTIC_Forcing( pTracer(1-OLx,1-OLy,1,bi,bj,1),
+          CALL DIC_BIOTIC_FORCING( pTracer(1-OLx,1-OLy,1,bi,bj,1),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,2),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,3),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,4),
-     &                          bi,bj,imin,imax,jmin,jmax,
-     &                          myIter,myTime,myThid)
+     &                          bi, bj, iMin, iMax, jMin, jMax,
+     &                          myIter, myTime, myThid )
 #endif
 #endif
 # ifndef ALLOW_AUTODIFF
@@ -185,24 +185,24 @@ cccccccccccccccccccccccccc END DIC cccccccccccccccccccccccccccccccccc
 #ifdef NUT_SUPPLY
 c articficial supply of nutrients
           CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,1),
-     &                          bi,bj,imin,imax,jmin,jmax,
-     &                          myIter,myTime,myThid)
+     &                          bi, bj, iMin, iMax, jMin, jMax,
+     &                          myIter, myTime, myThid )
           CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,2),
-     &                          bi,bj,imin,imax,jmin,jmax,
-     &                          myIter,myTime,myThid)
+     &                          bi, bj, iMin, iMax, jMin, jMax,
+     &                          myIter, myTime, myThid )
           CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,3),
-     &                          bi,bj,imin,imax,jmin,jmax,
-     &                          myIter,myTime,myThid)
+     &                          bi, bj, iMin, iMax, jMin, jMax,
+     &                          myIter, myTime, myThid )
           CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,4),
-     &                          bi,bj,imin,imax,jmin,jmax,
-     &                          myIter,myTime,myThid)
+     &                          bi, bj, iMin, iMax, jMin, jMax,
+     &                          myIter, myTime, myThid )
 #endif
 ccccccccccccccc
 C darwin_forcing operates on bi,bj part only, but needs to get full
 C array because of last (iPtr) index
           CALL DARWIN_FORCING(  pTracer(1-OLx,1-OLy,1,1,1,1),
-     &                          bi,bj,imin,imax,jmin,jmax,
-     &                          myIter,myTime,myThid)
+     &                          bi, bj, iMin, iMax, jMin, jMax,
+     &                          myIter, myTime, myThid )
         ENDIF
 #endif /* ALLOW_DARWIN */
 
@@ -211,7 +211,7 @@ C--   Apply (again) open boundary conditions for each passive tracer
 C Note: could skip this 2nd call to OBCS_APPLY if all DIC/DARWIN
 C       updates of ptracers were only done in the interior (i.e. with
 C       tendency multiplied by maskInC)
-        IF ( useOBCS ) THEN
+        IF ( useOBCS .AND. .NOT.useDIC ) THEN
           DO iTr = 1,PTRACERS_numInUse
             CALL OBCS_APPLY_PTRACER(
      I                bi, bj, 0, iTr,
