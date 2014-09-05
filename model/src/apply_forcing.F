@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/apply_forcing.F,v 1.5 2014/08/07 18:43:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/apply_forcing.F,v 1.6 2014/09/05 21:04:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,7 +64,7 @@ C     kSurface  :: index of surface level
       _RL     tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #else
       INTEGER kSurface
-#endif
+#endif /* USE_OLD_EXTERNAL_FORCING */
 CEOP
 
 #ifdef USE_OLD_EXTERNAL_FORCING
@@ -242,7 +242,7 @@ C     kSurface  :: index of surface level
       _RL     tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #else
       INTEGER kSurface
-#endif
+#endif /* USE_OLD_EXTERNAL_FORCING */
 CEOP
 
 #ifdef USE_OLD_EXTERNAL_FORCING
@@ -415,48 +415,34 @@ C     !LOCAL VARIABLES:
 C     i,j       :: Loop counters
 C     kSurface  :: index of surface level
       INTEGER i, j
-#ifdef USE_OLD_EXTERNAL_FORCING
-      _RL     locVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#else
+#ifndef USE_OLD_EXTERNAL_FORCING
       INTEGER kSurface
       INTEGER km, kc, kp
-      _RL tmpVar(1:sNx,1:sNy)
+      _RL     tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmpFac, delPI
       _RL recip_Cp
-CEOP
 #ifdef SHORTWAVE_HEATING
       _RL minusone
       PARAMETER (minusOne=-1.)
       _RL swfracb(2)
       INTEGER kp1
 #endif
-#endif
+#endif /* USE_OLD_EXTERNAL_FORCING */
+CEOP
 
 #ifdef USE_OLD_EXTERNAL_FORCING
 
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-          locVar(i,j) = gT(i,j,k,bi,bj)
+          gT(i,j,k,bi,bj) = 0. _d 0
         ENDDO
       ENDDO
       CALL EXTERNAL_FORCING_T(
      I              iMin, iMax, jMin, jMax, bi, bj, k,
      I              myTime, myThid )
-C-    Use 2-d local array tmpVar and split loop in 2 parts to avoid compiler
-C     to mess-up this part by re-arranging the order of instructions (wrong
-C     when gT and gT_arr are the same array, i.e., called with argument gT).
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-          tmpVar(i,j) = gT(i,j,k,bi,bj) - locVar(i,j)
-          gT(i,j,k,bi,bj) = locVar(i,j)
-        ENDDO
-      ENDDO
-C-    not needed since APPLY_FORCING_T is no longer called with argument gT
-c     CALL FOOL_THE_COMPILER_RL( tmpVar(1,1) )
-      DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-          gT_arr(i,j) = gT_arr(i,j) + tmpVar(i,j)
+          gT_arr(i,j) = gT_arr(i,j) + gT(i,j,k,bi,bj)
         ENDDO
       ENDDO
 
@@ -472,6 +458,11 @@ c     CALL FOOL_THE_COMPILER_RL( tmpVar(1,1) )
        kSurface = 1
       ENDIF
       recip_Cp = 1. _d 0 / HeatCapacity_Cp
+
+C--   Note on loop range: For model dynamics, only needs to get correct
+C     forcing (update gT_arr) in tile interior (1:sNx,1:sNy);
+C     However, for some diagnostics, we may want to get valid forcing
+C     extended over 1 point in tile halo region (0:sNx+1,0:sNy=1).
 
 C--   Forcing term
 #ifdef ALLOW_AIM
@@ -499,8 +490,8 @@ C--   Forcing term
       IF ( selectAddFluid.NE.0 .AND. temp_addMass.NE.UNSET_RL ) THEN
        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
-         DO j=1,sNy
-          DO i=1,sNx
+         DO j=0,sNy+1
+          DO i=0,sNx+1
             gT_arr(i,j) = gT_arr(i,j)
      &        + addMass(i,j,k,bi,bj)*mass2rUnit
      &          *( temp_addMass - theta(i,j,k,bi,bj) )
@@ -510,8 +501,8 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
           ENDDO
          ENDDO
        ELSE
-         DO j=1,sNy
-          DO i=1,sNx
+         DO j=0,sNy+1
+          DO i=0,sNx+1
             gT_arr(i,j) = gT_arr(i,j)
      &        + addMass(i,j,k,bi,bj)*mass2rUnit
      &          *( temp_addMass - tRef(k) )
@@ -535,8 +526,8 @@ C         conversion from W/m^2/r_unit to K/s
 C         conversion from W/m^2/r_unit to K/s
           tmpFac = recip_Cp * mass2rUnit
         ENDIF
-        DO j=1,sNy
-          DO i=1,sNx
+        DO j=0,sNy+1
+          DO i=0,sNx+1
             gT_arr(i,j) = gT_arr(i,j)
      &         + frictionHeating(i,j,k,bi,bj)
      &          *tmpFac*recip_rA(i,j,bi,bj)
@@ -562,16 +553,16 @@ C     conversion from W/kg to K/s
         kc = k
         kp = k+1
         IF ( k.EQ.1 ) THEN
-          DO j=1,sNy
-           DO i=1,sNx
+          DO j=0,sNy+1
+           DO i=0,sNx+1
             tmpVar(i,j) = 0.
            ENDDO
           ENDDO
         ELSE
           delPI = atm_Cp*( (rC(km)/atm_Po)**atm_kappa
      &                   - (rC(kc)/atm_Po)**atm_kappa )
-          DO j=1,sNy
-           DO i=1,sNx
+          DO j=0,sNy+1
+           DO i=0,sNx+1
             tmpVar(i,j) = wVel(i,j,kc,bi,bj)*delPI*atm_Rq
      &                  *( theta(i,j,km,bi,bj)*salt(i,j,km,bi,bj)
      &                   + theta(i,j,kc,bi,bj)*salt(i,j,kc,bi,bj)
@@ -582,8 +573,8 @@ C     conversion from W/kg to K/s
         IF ( k.LT.Nr ) THEN
           delPI = atm_Cp*( (rC(kc)/atm_Po)**atm_kappa
      &                   - (rC(kp)/atm_Po)**atm_kappa )
-          DO j=1,sNy
-           DO i=1,sNx
+          DO j=0,sNy+1
+           DO i=0,sNx+1
             tmpVar(i,j) = tmpVar(i,j)
      &                  + wVel(i,j,kp,bi,bj)*delPI*atm_Rq
      &                  *( theta(i,j,kc,bi,bj)*salt(i,j,kc,bi,bj)
@@ -592,8 +583,8 @@ C     conversion from W/kg to K/s
            ENDDO
           ENDDO
         ENDIF
-        DO j=1,sNy
-          DO i=1,sNx
+        DO j=0,sNy+1
+          DO i=0,sNx+1
             gT_arr(i,j) = gT_arr(i,j)
      &         + tmpVar(i,j)*tmpFac
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
@@ -604,23 +595,23 @@ C     conversion from W/kg to K/s
 C     conversion to W/m^2
           tmpFac = rUnit2mass
           CALL DIAGNOSTICS_SCALE_FILL( tmpVar, tmpFac, 1,
-     &                     'MoistCor', kc, 1, 3, bi,bj,myThid )
+     &                     'MoistCor', kc, 1, 2, bi,bj,myThid )
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
       ENDIF
 
 C     Ocean: Add temperature surface forcing (e.g., heat-flux) in surface level
       IF ( k .EQ. kSurface ) THEN
-       DO j=1,sNy
-        DO i=1,sNx
+       DO j=0,sNy+1
+        DO i=0,sNx+1
           gT_arr(i,j) = gT_arr(i,j)
      &      +surfaceForcingT(i,j,bi,bj)
      &      *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ELSEIF ( kSurface.EQ.-1 ) THEN
-       DO j=1,sNy
-        DO i=1,sNx
+       DO j=0,sNy+1
+        DO i=0,sNx+1
          IF ( kSurfC(i,j,bi,bj).EQ.k ) THEN
           gT_arr(i,j) = gT_arr(i,j)
      &      +surfaceForcingT(i,j,bi,bj)
@@ -631,8 +622,8 @@ C     Ocean: Add temperature surface forcing (e.g., heat-flux) in surface level
       ENDIF
 
       IF (linFSConserveTr) THEN
-       DO j=1,sNy
-        DO i=1,sNx
+       DO j=0,sNy+1
+        DO i=0,sNx+1
           IF (k .EQ. kSurfC(i,j,bi,bj)) THEN
             gT_arr(i,j) = gT_arr(i,j)
      &        +TsurfCor*recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
@@ -643,8 +634,8 @@ C     Ocean: Add temperature surface forcing (e.g., heat-flux) in surface level
 
 #ifdef ALLOW_GEOTHERMAL_FLUX
       IF ( usingZCoords ) THEN
-       DO j=1,sNy
-        DO i=1,sNx
+       DO j=0,sNy+1
+        DO i=0,sNx+1
          IF ( k.EQ.kLowC(i,j,bi,bj) ) THEN
           gT_arr(i,j)=gT_arr(i,j)
      &      + geothermalFlux(i,j,bi,bj)
@@ -670,8 +661,8 @@ c     IF ( usePenetratingSW ) THEN
         kp1 = k
         swfracb(2)=0. _d 0
        ENDIF
-       DO j=1,sNy
-        DO i=1,sNx
+       DO j=0,sNy+1
+        DO i=0,sNx+1
          gT_arr(i,j) = gT_arr(i,j)
      &   -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,k,bi,bj)
      &                   -swfracb(2)*maskC(i,j,kp1, bi,bj))
@@ -801,38 +792,24 @@ C     !LOCAL VARIABLES:
 C     i,j       :: Loop counters
 C     kSurface  :: index of surface level
       INTEGER i, j
-#ifdef USE_OLD_EXTERNAL_FORCING
-      _RL     locVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#else
+#ifndef USE_OLD_EXTERNAL_FORCING
       INTEGER kSurface
-#endif
+#endif /* USE_OLD_EXTERNAL_FORCING */
 CEOP
 
 #ifdef USE_OLD_EXTERNAL_FORCING
 
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-          locVar(i,j) = gS(i,j,k,bi,bj)
+          gS(i,j,k,bi,bj) = 0. _d 0
         ENDDO
       ENDDO
       CALL EXTERNAL_FORCING_S(
      I              iMin, iMax, jMin, jMax, bi, bj, k,
      I              myTime, myThid )
-C-    Use 2-d local array tmpVar and split loop in 2 parts to avoid compiler
-C     to mess-up this part by re-arranging the order of instructions (wrong
-C     when gS and gS_arr are the same array, i.e., called with argument gS).
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-          tmpVar(i,j) = gS(i,j,k,bi,bj) - locVar(i,j)
-          gS(i,j,k,bi,bj) = locVar(i,j)
-        ENDDO
-      ENDDO
-C-    not needed since APPLY_FORCING_S is no longer called with argument gS
-c     CALL FOOL_THE_COMPILER_RL( tmpVar(1,1) )
-      DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-          gS_arr(i,j) = gS_arr(i,j) + tmpVar(i,j)
+          gS_arr(i,j) = gS_arr(i,j) + gS(i,j,k,bi,bj)
         ENDDO
       ENDDO
 
@@ -847,6 +824,11 @@ c     CALL FOOL_THE_COMPILER_RL( tmpVar(1,1) )
       ELSE
        kSurface = 1
       ENDIF
+
+C--   Note on loop range: For model dynamics, only needs to get correct
+C     forcing (update gS_arr) in tile interior (1:sNx,1:sNy);
+C     However, for some diagnostics, we may want to get valid forcing
+C     extended over 1 point in tile halo region (0:sNx+1,0:sNy=1).
 
 C--   Forcing term
 #ifdef ALLOW_AIM
@@ -874,8 +856,8 @@ C--   Forcing term
       IF ( selectAddFluid.NE.0 .AND. salt_addMass.NE.UNSET_RL ) THEN
        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
-         DO j=1,sNy
-          DO i=1,sNx
+         DO j=0,sNy+1
+          DO i=0,sNx+1
             gS_arr(i,j) = gS_arr(i,j)
      &        + addMass(i,j,k,bi,bj)*mass2rUnit
      &          *( salt_addMass - salt(i,j,k,bi,bj) )
@@ -885,8 +867,8 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
           ENDDO
          ENDDO
        ELSE
-         DO j=1,sNy
-          DO i=1,sNx
+         DO j=0,sNy+1
+          DO i=0,sNx+1
             gS_arr(i,j) = gS_arr(i,j)
      &        + addMass(i,j,k,bi,bj)*mass2rUnit
      &          *( salt_addMass - sRef(k) )
@@ -901,16 +883,16 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
 
 C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
       IF ( k .EQ. kSurface ) THEN
-       DO j=1,sNy
-        DO i=1,sNx
+       DO j=0,sNy+1
+        DO i=0,sNx+1
           gS_arr(i,j) = gS_arr(i,j)
      &      +surfaceForcingS(i,j,bi,bj)
      &      *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ELSEIF ( kSurface.EQ.-1 ) THEN
-       DO j=1,sNy
-        DO i=1,sNx
+       DO j=0,sNy+1
+        DO i=0,sNx+1
          IF ( kSurfC(i,j,bi,bj).EQ.k ) THEN
           gS_arr(i,j) = gS_arr(i,j)
      &      +surfaceForcingS(i,j,bi,bj)
@@ -921,8 +903,8 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
       ENDIF
 
       IF (linFSConserveTr) THEN
-       DO j=1,sNy
-        DO i=1,sNx
+       DO j=0,sNy+1
+        DO i=0,sNx+1
           IF (k .EQ. kSurfC(i,j,bi,bj)) THEN
             gS_arr(i,j) = gS_arr(i,j)
      &        +SsurfCor*recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
