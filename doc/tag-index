@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2057 2014/09/04 20:11:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2058 2014/09/05 21:18:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src & generic_advdiff:
+  - change hard-coded loop-range in S/R APPLY_FORCING_T/S to set T & S
+    forcing over 0:sNx+1, 0:sNy=1 (instead of just 1:sNx,1:sNy): Model
+    dynamics requires valid tracer forcing only over tile interior but, for
+    some diagnostics, may need to extend it over 1 point in tile halo region.
+  - in gad_calc_rhs.F, update calls to gmredi_x/ytransport to get valid
+    tendency over i,j_Min,Max range. This allows to simplfy i,j_Min,Max
+    setting in temp/salt/ptracer_integrate.F
 o pkg/dic:
   - multiply tracer tendencies by maskInC (if ussing OBCS) before updating
     gchem tracers: this allows to skip the 2nd call to OBCS_APPLY_PTRACER
