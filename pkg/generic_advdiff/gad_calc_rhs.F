@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.70 2014/08/18 12:22:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.71 2014/09/05 21:05:16 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -52,17 +52,17 @@ C !USES: ===============================================================
 #endif /* ALLOW_AUTODIFF */
 
 C !INPUT PARAMETERS: ===================================================
-C bi,bj            :: tile indices
-C iMin,iMax        :: loop range for called routines
-C jMin,jMax        :: loop range for called routines
+C bi, bj           :: tile indices
+C iMin, iMax       :: for called routines, to get valid output "gTracer"
+C jMin, jMax       ::                      over this range of indices
 C k                :: vertical index
 C kM1              :: =k-1 for k>1, =1 for k=1
 C kUp              :: index into 2 1/2D array, toggles between 1|2
 C kDown            :: index into 2 1/2D array, toggles between 2|1
-C xA,yA            :: areas of X and Y face of tracer cells
+C xA, yA           :: areas of X and Y face of tracer cells
 C maskUp           :: 2-D array for mask at W points
-C uFld,vFld,wFld   :: Local copy of velocity field (3 components)
-C uTrans,vTrans    :: 2-D arrays of volume transports at U,V points
+C uFld, vFld, wFld :: Local copy of velocity field (3 components)
+C uTrans, vTrans   :: 2-D arrays of volume transports at U,V points
 C rTrans           :: 2-D arrays of volume transports at W points
 C rTransKp1        :: 2-D array of volume trans at W pts, interf k+1
 C diffKh           :: horizontal diffusion coefficient
@@ -309,7 +309,7 @@ C-    Add bi-harmonic diffusive flux in X
 C-    GM/Redi flux in X
       IF ( trUseGMRedi ) THEN
         CALL GMREDI_XTRANSPORT(
-     I         trIdentity, bi, bj, k, iMin, iMax, jMin, jMax,
+     I         trIdentity, bi, bj, k, iMin, iMax+1, jMin, jMax,
      I         xA, TracerN,
      U         df,
      I         myThid )
@@ -442,7 +442,7 @@ C-    Add bi-harmonic flux in Y
 C-    GM/Redi flux in Y
       IF ( trUseGMRedi ) THEN
         CALL GMREDI_YTRANSPORT(
-     I         trIdentity, bi, bj, k, iMin, iMax, jMin, jMax,
+     I         trIdentity, bi, bj, k, iMin, iMax, jMin, jMax+1,
      I         yA, TracerN,
      U         df,
      I         myThid )
