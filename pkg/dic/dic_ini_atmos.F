@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_atmos.F,v 1.1 2014/08/30 00:48:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_atmos.F,v 1.2 2014/09/05 18:27:34 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -65,12 +65,9 @@ C for carbon budget ouput
       _RL total_ocean_carbon_old
       _RL total_atmos_carbon_old
       _RL total_carbon_old, carbon_diff
-      _RL year_diff_ocean, year_diff_atmos, year_total
-      _RL start_diff_ocean, start_diff_atmos, start_total
 C variables for reading CO2 input files
       _RL aWght, bWght
       _RL atm_pCO2
-      LOGICAL timeCO2budget
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
