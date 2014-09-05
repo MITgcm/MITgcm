@@ -77,6 +77,7 @@ c set up for plain execution
      I        A_vv_p,       
      I        tolerance, 
      O        iters,
+     I        maxIter,
      I        myThid )
          cg_Uin%v = cg_Uin_p
          cg_Vin%v = cg_Vin_p
@@ -129,6 +130,7 @@ c set up for plain execution
      I        A_vv_p,       
      I        tolerance, 
      O        iters,
+     I        maxIter,
      I        myThid )
          call oad_tape_push(cg_Uin_p)     
          call oad_tape_push(cg_Vin_p)     
@@ -191,7 +193,7 @@ c set up for plain execution
      I                               A_vv_p,     ! section of matrix that multiplies v and projects on v
      U                               A_vv_d,     ! adjoint of matrix coeffs (output)
      I                               tolerance,
-c    I                               iters,
+     I                               maxIter,
      I                               myThid )
 c reset the mode
          cg_Uin%d = cg_Uin_d
