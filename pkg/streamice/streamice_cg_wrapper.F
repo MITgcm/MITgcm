@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_wrapper.F,v 1.3 2014/01/06 14:54:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_wrapper.F,v 1.4 2014/09/05 14:25:11 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -13,6 +13,7 @@ CBOP
      I                               cg_tauV,
      I                               tolerance, 
      O                               iters,
+     I                               maxIter,
      I                               myThid )
        
 C     /============================================================\
@@ -37,6 +38,7 @@ C     cg_Bu, cg_Bv - driving stress
 
       INTEGER myThid
       INTEGER iters
+      INTEGER maxIter
       _RL tolerance
 
       _RL cg_Uin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -235,6 +237,7 @@ c
      &  streamice_cg_A4, 
      &  tolerance, 
      &  iters,
+     &  maxIter,
      &  myThid )
 
       _EXCH_XY_RL( RHSu_SI, myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve_petsc.F,v 1.1 2013/08/24 20:32:03 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve_petsc.F,v 1.2 2014/09/05 14:25:11 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -17,6 +17,7 @@ CBOP
      I                               A_vv,       ! section of matrix that multiplies v and projects on v
      I                               tolerance, 
      O                               iters,
+     I                               maxIter,
      I                               myThid )
 C     /============================================================\
 C     | SUBROUTINE                                                 |   
@@ -49,7 +50,7 @@ C     !INPUT/OUTPUT ARGUMENTS
 C     cg_Uin, cg_Vin - input and output velocities
 C     cg_Bu, cg_Bv - driving stress
       INTEGER myThid
-      INTEGER iters
+      INTEGER iters, maxiter
       _RL tolerance
       _RL cg_Uin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL cg_Vin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -326,7 +327,7 @@ C     LOCAL VARIABLES
       call KSPSetTolerances(ksp,tolerance,
      &     PETSC_DEFAULT_DOUBLE_PRECISION,     
      &     PETSC_DEFAULT_DOUBLE_PRECISION,
-     &     streamice_max_cg_iter,ierr)
+     &     maxiter,ierr)
 
       SELECT CASE (PETSC_PRECOND_TYPE)
        CASE ('BLOCKJACOBI')

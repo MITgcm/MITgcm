@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/adstreamice_cg_solve.F,v 1.4 2013/08/22 22:56:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/adstreamice_cg_solve.F,v 1.5 2014/09/05 14:25:11 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -24,7 +24,7 @@ CBOP
      I                               A_vv,       ! section of matrix that multiplies v and projects on v
      U                               adA_vv,     ! adjoint of matrix coeffs (output)
      I                               tolerance,
-c    I                               iters,
+     I                               maxiters,
      I                               myThid )
 C     *============================================================*
 C     | SUBROUTINE                                                 |
@@ -62,7 +62,7 @@ C     cg_Bu, cg_Bv - driving stress
      & adA_uv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
      & adA_vv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
       _RL tolerance
-c     INTEGER iters
+      INTEGER maxiters
       INTEGER myThid
 
 C     !LOCAL VARIABLES
@@ -87,6 +87,8 @@ CEOP
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , 1)
 
+      print *, "GOT HERE mythid=", mythid, tolerance
+
       conv_flag = 0
       ad_tolerance = 1.e-14
 
@@ -107,6 +109,8 @@ CEOP
        ENDDO
       ENDDO
 
+      print *, "GOT HERE 2 mythid=", mythid, tolerance
+
       CALL STREAMICE_CG_SOLVE(
      &  U_state,
      &  V_state,
@@ -118,7 +122,10 @@ CEOP
      &  A_vv,
      &  tolerance,
      &  tmpiter,
+     &  maxiters,
      &  myThid )
+
+      print *, "GOT HERE 3 mythid=", mythid, tolerance
 
       tmpiter = 0
 
@@ -136,7 +143,10 @@ CEOP
      &  A_vv,
      &  ad_tolerance,
      &  tmpiter,
+     &  maxiters,
      &  myThid )
+
+      print *, "GOT HERE 4 mythid=", mythid, tolerance
 
       _EXCH_XY_RL( cg_Uin, myThid )
       _EXCH_XY_RL( cg_Vin, myThid )

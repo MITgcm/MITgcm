@@ -6,7 +6,7 @@ streamice_cg_functions.f
 streamice_driving_stress.f
 streamice_driving_stress_ppm.f
 streamice_init_varia.f
-streamice_solo_timestep.f
+streamice_timestep.f
 streamice_upd_ffrac_uncoupled.f
 streamice_vel_solve.f
 streamice_velmask_upd.f
@@ -26,4 +26,6 @@ streamice_adv_flux_fl_y.f
 streamice_advect_2dtracer.f
 streamice_forced_buttress.f
 streamice_read_pickup.f
+streamice_get_vel_resid_err.f
+streamice_get_vel_fp_err.f
 streamice_fields_load.f

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.6 2014/07/10 15:09:40 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.7 2014/09/05 14:25:11 dgoldberg Exp $
 C $Name:  $
 
 
@@ -43,6 +43,7 @@ C     iUnit      :: Work variable for IO unit number
      &     streamice_vel_update,streamice_cg_tol,streamice_nonlin_tol,
      &     streamice_nonlin_tol_fp,
      &     streamice_max_cg_iter, streamice_max_nl_iter,
+     &     streamice_maxcgiter_cpl, streamice_maxnliter_cpl,
      &     STREAMICEthickInit,
      &     STREAMICEsigcoordInit,
      &     STREAMICEsigcoordFile,
@@ -92,7 +93,10 @@ C     iUnit      :: Work variable for IO unit number
      &     streamice_addl_backstress,
      &     streamice_smooth_gl_width,
      &     streamice_adot_uniform,
-     &     STREAMICE_ADV_SCHEME, streamice_forcing_period
+     &     STREAMICE_ADV_SCHEME, streamice_forcing_period,
+     &     STREAMICE_chkfixedptconvergence,
+     &     STREAMICE_chkresidconvergence,
+     &     STREAMICE_allow_cpl
 
 #ifdef ALLOW_STREAMICE_2DTRACER
       NAMELIST /STREAMICE_PARMTRACER/
@@ -159,12 +163,14 @@ C--   Default values for STREAMICE
       eps_u_min = 1.0e-6
       C_basal_fric_const = 31.71 ! Pa (m/a)-1n
       n_basal_friction = 1.
-      streamice_vel_update = 169200. ! seconds
+      streamice_vel_update = deltaT ! seconds
       streamice_cg_tol = 1e-6
       streamice_nonlin_tol = 1e-6
       streamice_nonlin_tol_fp = 1.e-14
       streamice_max_cg_iter = 2000
       streamice_max_nl_iter = 100
+      streamice_maxcgiter_cpl = 0
+      streamice_maxnliter_cpl = 0
 !      streamice_n_sub_regularize = 4
       streamice_CFL_factor = .5
       streamice_adjDump = 0.
@@ -250,7 +256,10 @@ C--   Default values for STREAMICE
       STREAMICE_lower_cg_tol = .FALSE.
       STREAMICE_diagnostic_only = .FALSE.
       STREAMICE_ppm_driving_stress = .FALSE.
+      STREAMICE_chkfixedptconvergence = .true.
+      STREAMICE_chkresidconvergence = .true.
       STREAMICE_h_ctrl_const_surf = .FALSE.
+      STREAMICE_allow_cpl = .false.
 !       STREAMICE_hybrid_stress= .FALSE.
 
       min_x_noflow_NORTH = 0.

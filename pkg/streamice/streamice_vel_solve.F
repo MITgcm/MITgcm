@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.7 2014/04/24 12:01:50 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.8 2014/09/05 14:25:11 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -6,7 +6,8 @@ C $Name:  $
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
-      SUBROUTINE STREAMICE_VEL_SOLVE( myThid )
+      SUBROUTINE STREAMICE_VEL_SOLVE( myThid, maxNLIter, maxCGiter,
+     &                                myiter )
 C     /============================================================\
 C     | SUBROUTINE                                                 |
 C     | o                                                          |
@@ -31,6 +32,9 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT ARGUMENTS
       INTEGER myThid
+      INTEGER maxNLIter
+      INTEGER maxCGIter
+      INTEGER myIter
 
 #ifdef ALLOW_STREAMICE
 
@@ -44,12 +48,13 @@ C     LOCAL VARIABLES
 !                         isdq, iedq, jsdq, jedq, isd, ied, jsd, jed, isumstart, jsumstart, nodefloat, nsub
 !   real                     :: err_max, err_tempu, err_tempv, err_init, area, max_vel, tempu, tempv, rhoi, rhow
 
-      INTEGER conv_flag, i, j, k, l, iter, cg_iters, bi, bj
+      INTEGER i, j, k, l, iter, cg_iters, bi, bj
       INTEGER iter_numconv
       INTEGER ikey_nl, myThidTemp
       _RL err_max, err_tempu, err_tempv, err_init, area, err_max_fp
       _RL max_vel, tempu, tempv, err_lastchange, cgtol
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL CONVERGED
 #ifdef ALLOW_PETSC
 !      myThidTemp = myThid
 !      call streamice_initialize_petsc (myThidTemp)
@@ -76,16 +81,18 @@ C     LOCAL VARIABLES
       CALL STREAMICE_FORCED_BUTTRESS (myThid)
 #endif
 
-      
+      CALL TIMER_START ('STREAMICE_VEL_SOLVE',myThid)
+ 
 
       cgtol = streamice_cg_tol
+      CONVERGED = .false.
+      err_max = 0.
+      err_max_fp = 0.
 
-!       CALL WRITE_FULLARRAY_RL ("taudy_SI",taudy_SI,1,0,0,1,0,myThid)
 
       _EXCH_XY_RL( taudx_SI , myThid )
       _EXCH_XY_RL( taudy_SI , myThid )
 
-!       CALL WRITE_FULLARRAY_RL ("taudy_SI_2",taudy_SI,1,0,0,1,0,myThid)
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -121,83 +128,22 @@ C     LOCAL VARIABLES
       _EXCH_XY_RL( tau_beta_eff_streamice , myThid )
       _EXCH_XY_RL( visc_streamice , myThid )
 
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
-          Au_SI (i,j,bi,bj) = 0. _d 0
-          Av_SI (i,j,bi,bj) = 0. _d 0
-          ubd_SI (i,j,bi,bj) = 0. _d 0
-          vbd_SI (i,j,bi,bj) = 0. _d 0
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
 
+      if (STREAMICE_chkresidconvergence .or.
+     &    (streamice_maxnliter_cpl.eq.0 .and. myIter.eq.0)) then
 
-      CALL STREAMICE_CG_BOUND_VALS( myThid,
-     O    ubd_SI,
-     O    vbd_SI)
+        CALL STREAMICE_GET_VEL_RESID_ERR ( err_init, myThid )
 
-
-!      CALL WRITE_FLD_XY_RL("u_bound_cont","",ubd_SI,0,myThid)
-!      CALL WRITE_FLD_XY_RL("v_bound_cont","",vbd_SI,0,myThid)
-!      CALL WRITE_FLD_XY_RL("taudx_u","",taudx_SI,0,myThid)
-!      CALL WRITE_FLD_XY_RL("taudx_v","",taudy_SI,0,myThid)
-
-#ifdef ALLOW_AUTODIFF_TAMC
-!$TAF STORE U_streamice = comlev1, key=ikey_dynamics
-!$TAF STORE V_streamice = comlev1, key=ikey_dynamics
-#endif
-
-      CALL STREAMICE_CG_ACTION( myThid,
-     O    Au_SI,
-     O    Av_SI,
-     I    U_streamice,
-     I    V_streamice,
-     I    0, sNx+1, 0, sNy+1 )
-
-
-
-      err_init = 0. _d 0
-
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-#ifdef ALLOW_AUTODIFF_TAMC
-!$TAF STORE err_init = comlev1, key=ikey_dynamics
-#endif
-        DO j=1,sNy
-         DO i=1,sNx
-          err_tempu = 0. _d 0
-          err_tempv = 0. _d 0
-          IF (STREAMICE_umask(i,j,bi,bj).eq.1) THEN
-           err_tempu =
-     &      ABS (Au_SI(i,j,bi,bj)+0*ubd_SI(i,j,bi,bj) -
-     &           taudx_SI(i,j,bi,bj))
-!            print *, "err_temp_u", err_tempu
-          ENDIF
-          IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
-           err_tempv = MAX( err_tempu,
-     &      ABS (Av_SI(i,j,bi,bj)+0*vbd_SI(i,j,bi,bj) -
-     &           taudy_SI(i,j,bi,bj)))
-          ENDIF
-          IF (err_tempv .ge. err_init) THEN
-            err_init = err_tempv
-          ENDIF
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
 !$TAF STORE err_init = comlev1, key=ikey_dynamics
 #endif
 
-      CALL GLOBAL_MAX_R8 (err_init, myThid)
-
-      WRITE(msgBuf,'(A,E15.7)') 'initial nonlinear resid (error): ',
+       WRITE(msgBuf,'(A,E15.7)') 'initial nonlinear resid (error): ',
      &                       err_init
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
+
+      endif !STREAMICE_chkresidconvergence
 
 
       iter_numconv = 0
@@ -208,7 +154,7 @@ C     LOCAL VARIABLES
 C START NL ITER. LOOP
 C-------------------------------------------------------------------
 
-      DO iter=1,streamice_max_nl_iter
+      DO iter=1,maxNLIter
 
 C     To avoid using "exit", loop goes through all iterations
 C       but after convergence loop does nothing
@@ -239,8 +185,15 @@ C       but after convergence loop does nothing
 !$TAF STORE zv_old_si = comlev1_stream_nl, key=ikey_nl
 #endif
 
-       IF ((err_max .GT. streamice_nonlin_tol * err_init) .and.
-     &     (err_max_fp .GT. streamice_nonlin_tol_fp)) THEN
+!        IF ((err_max .GT. streamice_nonlin_tol * err_init) .and.
+!      &     (err_max_fp .GT. streamice_nonlin_tol_fp)) THEN
+
+#ifdef ALLOW_AUTODIFF_TAMC
+!$TAF STORE CONVERGED = comlev1_stream_nl, key=ikey_nl
+#endif
+       
+       IF (.not.CONVERGED) THEN
+
 
        iter_numconv = iter_numconv + 1
 
@@ -264,18 +217,6 @@ C       but after convergence loop does nothing
 !$TAF STORE zv_old_si = comlev1_stream_nl, key=ikey_nl
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
-!       DO bj = myByLo(myThid), myByHi(myThid)
-!        DO bi = myBxLo(myThid), myBxHi(myThid)
-!         DO j=1-OLy,sNy+OLy
-!          DO i=1-OLx,sNx+OLx
-!           U_streamice (i,j,bi,bj) = 0. _d 0
-!           V_streamice (i,j,bi,bj) = 0. _d 0
-!          ENDDO
-!         ENDDO
-!        ENDDO
-!       ENDDO
-#endif
 
        CALL STREAMICE_CG_WRAPPER(
      &       U_streamice,
@@ -284,6 +225,7 @@ C       but after convergence loop does nothing
      &       taudy_SI,
      &       cgtol,
      &       cg_iters,
+     &       maxCGIter,
      &       myThid )
 
 #ifdef STREAMICE_HYBRID_STRESS
@@ -297,12 +239,14 @@ C       but after convergence loop does nothing
         CALL STREAMICE_TAUB (myThid)
 #endif
 
+!-----------------------------------------------------------------------------
        WRITE(msgBuf,'(A,I5,A,I4,A)') 'streamice linear solve number',
      &                       iter, " ",
      &                       cg_iters,
      &                       ' iterations '
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
+!-----------------------------------------------------------------------------
 
 #ifdef ALLOW_AUTODIFF_TAMC
 !$TAF STORE U_streamice = comlev1_stream_nl, key=ikey_nl
@@ -321,119 +265,34 @@ C       but after convergence loop does nothing
 #endif
 
 
-#ifdef ALLOW_AUTODIFF_TAMC
-!$TAF STORE U_streamice = comlev1_stream_nl, key=ikey_nl
-!$TAF STORE V_streamice = comlev1_stream_nl, key=ikey_nl
-#endif
+      _EXCH_XY_RL( tau_beta_eff_streamice , myThid )
+      _EXCH_XY_RL( visc_streamice , myThid )
 
-       _EXCH_XY_RL( tau_beta_eff_streamice , myThid )
-       _EXCH_XY_RL( visc_streamice , myThid )
+!----------------------CONVERGENCE TESTS-------------------------------
 
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
-           Au_SI (i,j,bi,bj) = 0. _d 0
-           Av_SI (i,j,bi,bj) = 0. _d 0
-           ubd_SI (i,j,bi,bj) = 0. _d 0
-           vbd_SI (i,j,bi,bj) = 0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
+      if (STREAMICE_chkresidconvergence .or.
+     &    (streamice_maxnliter_cpl.eq.0 .and. myIter.eq.0)) then
 
-       CALL STREAMICE_CG_BOUND_VALS( myThid,
-     O    ubd_SI,
-     O    vbd_SI)
+        CALL STREAMICE_GET_VEL_RESID_ERR ( err_max, myThid )
 
-#ifdef ALLOW_AUTODIFF_TAMC
-!$TAF STORE U_streamice = comlev1_stream_nl, key=ikey_nl
-!$TAF STORE V_streamice = comlev1_stream_nl, key=ikey_nl
-#endif
-
-       CALL STREAMICE_CG_ACTION( myThid,
-     O    Au_SI,
-     O    Av_SI,
-     I    U_streamice,
-     I    V_streamice,
-     I    0, sNx+1, 0, sNy+1 )
-
-!      if (iter .eq. streamice_max_nl_iter) then
-!      CALL WRITE_FLD_XY_RL("u_bound_cont_A","",ubd_SI,0,myThid)
-!      CALL WRITE_FLD_XY_RL("v_bound_cont_A","",vbd_SI,0,myThid)
-!      CALL WRITE_FLD_XY_RL("u_bound_cont_B","",Au_SI,0,myThid)
-!      CALL WRITE_FLD_XY_RL("v_bound_cont_B","",Av_SI,0,myThid)
-!      endif
-
-#ifdef ALLOW_AUTODIFF_TAMC
-!$TAF STORE U_streamice = comlev1_stream_nl, key=ikey_nl
-!$TAF STORE V_streamice = comlev1_stream_nl, key=ikey_nl
-#endif
-
-       err_max = 0. _d 0
-       err_max_fp = 0. _d 0
-
-#ifdef ALLOW_AUTODIFF_TAMC
-!$TAF STORE err_max = comlev1_stream_nl, key=ikey_nl
-#endif
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-#ifdef ALLOW_AUTODIFF_TAMC
-!$TAF STORE err_max = comlev1_stream_nl, key=ikey_nl
-#endif
-         DO j=1,sNy
-          DO i=1,sNx
-           err_tempu = 0. _d 0
-           err_tempv = 0. _d 0
-           IF (STREAMICE_umask(i,j,bi,bj).eq.1) THEN
-            err_tempu =
-     &       ABS (Au_SI(i,j,bi,bj)+0*ubd_SI(i,j,bi,bj) -
-     &            taudx_SI(i,j,bi,bj))
-           ENDIF
-           IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
-            err_tempv = MAX( err_tempu,
-     &       ABS (Av_SI(i,j,bi,bj)+0*vbd_SI(i,j,bi,bj) -
-     &            taudy_SI(i,j,bi,bj)))
-           ENDIF
-!           if (err_tempu.ge.1.e2.or.err_tempv.ge.1.e2) THEN
-!            print *, "FOUND MAX ", i,j,err_tempu,err_tempv,
-!     &      ubd_SI(i,j,bi,bj),vbd_SI(i,j,bi,bj)
-!           endif
-           IF (err_tempv .ge. err_max) THEN
-            err_max = err_tempv
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-
-       CALL GLOBAL_MAX_R8 (err_max, myThid)
-
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
-           err_tempu = 0. _d 0
-           err_tempv = 0. _d 0
-           IF (STREAMICE_umask(i,j,bi,bj).eq.1) THEN
-            err_tempu =
-     &       ABS (U_streamice(i,j,bi,bj)-u_old_SI(i,j,bi,bj))
-           ENDIF
-           IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
-            err_tempv = MAX( err_tempu,
-     &       ABS (V_streamice(i,j,bi,bj)-v_old_SI(i,j,bi,bj)))
-           ENDIF
-           IF (err_tempv .ge. err_max_fp) err_max_fp = err_tempv
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-
-       CALL GLOBAL_MAX_R8 (err_max_fp, myThid)
-       WRITE(msgBuf,'(A,1PE22.14)') 'STREAMICE_FP_ERROR =',
-     &                       err_max_fp
+       WRITE(msgBuf,'(A,E15.7)') 'err/err_init',
+     &                       err_max/err_init
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
+
+       IF (err_max .LE. streamice_nonlin_tol * err_init) THEN
+        CONVERGED = .true.
+       ENDIF
+
+
+      endif 
+
+
+
+      if (STREAMICE_chkfixedptconvergence .or.
+     &    (streamice_maxnliter_cpl.eq.0 .and. myIter.eq.0)) then
+
+        CALL STREAMICE_GET_VEL_FP_ERR ( err_max_fp, myThid )
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -446,10 +305,24 @@ C       but after convergence loop does nothing
         ENDDO
        ENDDO
 
-       WRITE(msgBuf,'(A,E15.7)') 'err/err_init',
-     &                       err_max/err_init
+       WRITE(msgBuf,'(A,1PE22.14)') 'STREAMICE_FP_ERROR =',
+     &                       err_max_fp
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
+
+       IF (err_max_fp .LE. streamice_nonlin_tol_fp) THEN
+        CONVERGED = .true.
+       ENDIF
+
+      endif 
+
+
+
+
+!----------------------END CONVERGENCE TESTS-------------------------------
+
+
+
 
        IF (err_max<err_lastchange*1.e-2 .and.
      &   STREAMICE_lower_cg_tol) THEN
@@ -487,8 +360,9 @@ C-------------------------------------------------------------------
 
       _EXCH_XY_RL(U_streamice, myThid)
       _EXCH_XY_RL(V_streamice, myThid)
-!      CALL WRITE_FLD_XY_RL("taubx","",streamice_taubx,0,myThid)
-!      CALL WRITE_FLD_XY_RL("tauby","",streamice_tauby,0,myThid)
+
+
+      CALL TIMER_STOP ('STREAMICE_VEL_SOLVE',myThid)
 
 #endif
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.11 2014/07/10 15:09:40 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.12 2014/09/05 14:25:11 dgoldberg Exp $
 C $Name:  $
 
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -76,10 +76,13 @@ C     -------------------------- INT PARAMS ------------------------------------
 
       COMMON /STREAMICE_PARMS_I/
      &     streamice_max_cg_iter, streamice_max_nl_iter,
-     &     streamice_vel_upd_counter, streamice_nstep_velocity
+     &     streamice_vel_upd_counter, streamice_nstep_velocity,
+     &     streamice_maxcgiter_cpl, streamice_maxnliter_cpl
 !     &     streamice_n_sub_regularize
+
       INTEGER streamice_max_cg_iter, streamice_max_nl_iter
       INTEGER streamice_vel_upd_counter, streamice_nstep_velocity
+      INTEGER streamice_maxcgiter_cpl, streamice_maxnliter_cpl
 !      INTEGER streamice_n_sub_regularize
 
 C     -------------------------- CHAR PARAMS ---------------------------------------------------
@@ -200,6 +203,10 @@ C     -------------------------- LOGICAL PARAMS --------------------------------
       LOGICAL STREAMICE_diagnostic_only
       LOGICAL STREAMICE_ppm_driving_stress
       LOGICAL STREAMICE_h_ctrl_const_surf
+      LOGICAL STREAMICE_chkfixedptconvergence
+      LOGICAL STREAMICE_chkresidconvergence
+      LOGICAL STREAMICE_allow_cpl
+      
 
 C     The following parameters specify periodic boundary conditions.
 C     For now this will completely override all other boundary conditions
@@ -221,7 +228,10 @@ C      LOGICAL STREAMICE_hybrid_stress
      & STREAMICE_NS_periodic, STREAMICE_EW_periodic,
      & STREAMICE_diagnostic_only,
      & STREAMICE_ppm_driving_stress,
-     & STREAMICE_h_ctrl_const_surf
+     & STREAMICE_h_ctrl_const_surf,
+     & STREAMICE_chkfixedptconvergence,
+     & STREAMICE_chkresidconvergence,
+     & STREAMICE_allow_cpl
 
 C     -------------------------- AND NOW ARRAYS ---------------------------------------------------
 
