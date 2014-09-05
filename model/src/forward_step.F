@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.225 2014/09/04 22:30:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.226 2014/09/05 14:33:02 dgoldberg Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -140,7 +140,7 @@ C       |-- DO_ATMOSPHERIC_PHYS
 C       |
 C       |-- DO_OCEANIC_PHYS
 C       |
-C       |-- STREAMICE_SOLO_TIMESTEP
+C       |-- STREAMICE_TIMESTEP
 C       |
 C       |-- GCHEM_CALC_TENDENCY
 C       |
@@ -601,7 +601,7 @@ CADJ STORE hFacC = comlev1, key = ikey_dynamics, kind = isbyte
        CALL TIMER_STOP ('DO_OCEANIC_PHYS     [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_STREAMICE
-       CALL STREAMICE_SOLO_TIMESTEP ( myThid, myIter,
+       CALL STREAMICE_TIMESTEP ( myThid, myIter,
      &   iLoop, myTime )
 #endif
 
