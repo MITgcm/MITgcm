@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.17 2014/08/18 14:26:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/temp_integrate.F,v 1.18 2014/09/05 21:07:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -150,14 +150,22 @@ C   useVariableK :: T when vertical diffusion is not constant
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C-    Loop ranges for daughter routines
-      iMin = 1-OLx+2
-      iMax = sNx+OLx-1
-      jMin = 1-OLy+2
-      jMax = sNy+OLy-1
-
       iterNb = myIter
       IF (staggerTimeStep) iterNb = myIter - 1
+
+C-    Loop ranges for daughter routines:
+c     iMin = 1
+c     iMax = sNx
+c     jMin = 1
+c     jMax = sNy
+C     Regarding model dynamics, only needs to get correct tracer tendency
+C     (gT_loc) in tile interior (1:sNx,1:sNy);
+C     However, for some diagnostics, we may want to get valid tendency
+C     extended over 1 point in tile halo region (0:sNx+1,0:sNy=1).
+      iMin = 0
+      iMax = sNx+1
+      jMin = 0
+      jMax = sNy+1
 
 #ifdef ALLOW_DIAGNOSTICS
       diagForcing = .FALSE.
@@ -469,11 +477,6 @@ C-    Integrate forward in time, storing in gT_loc:  gT <= T + dt*gT
      I                  theta(1-OLx,1-OLy,1,bi,bj),
      U                  gT_loc,
      I                  myTime, myIter, myThid )
-
-      iMin = 0
-      iMax = sNx+1
-      jMin = 0
-      jMax = sNy+1
 
 C--   Implicit vertical advection & diffusion
 

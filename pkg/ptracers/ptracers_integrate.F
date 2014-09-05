@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.62 2014/08/18 14:34:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.63 2014/09/05 21:07:16 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -128,6 +128,20 @@ C-    Compute iter at beginning of ptracer time step
       IF (staggerTimeStep) iterNb = myIter - 1
 #endif
 
+C-    Loop ranges for daughter routines
+c     iMin = 1
+c     iMax = sNx
+c     jMin = 1
+c     jMax = sNy
+C     Regarding model dynamics, only needs to get correct tracer tendency
+C     (gTracer) in tile interior (1:sNx,1:sNy);
+C     However, for some diagnostics, we may want to get valid tendency
+C     extended over 1 point in tile halo region (0:sNx+1,0:sNy=1).
+      iMin = 0
+      iMax = sNx+1
+      jMin = 0
+      jMax = sNy+1
+
 C--   Loop over tracers
       DO iTracer=1,PTRACERS_numInUse
        IF ( PTRACERS_StepFwd(iTracer) ) THEN
@@ -141,12 +155,6 @@ C-    Initialise tracer tendency to zero
           ENDDO
          ENDDO
         ENDDO
-
-C-    Loop ranges for daughter routines
-        iMin = 1-OLx+2
-        iMax = sNx+OLx-1
-        jMin = 1-OLy+2
-        jMax = sNy+OLy-1
 
 #ifdef ALLOW_DIAGNOSTICS
         diagForcing = .FALSE.
@@ -417,10 +425,6 @@ C       tracer field for implicit matrix calculation
 #endif /* ALLOW_MATRIX */
 
 C--   Vertical advection & diffusion (implicit) for passive tracers
-        iMin = 0
-        iMax = sNx+1
-        jMin = 0
-        jMax = sNy+1
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE gTracer(:,:,:) = comlev1_bibj_ptracers,
