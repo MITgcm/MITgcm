@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.7 2014/04/24 12:01:50 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.8 2014/09/05 14:27:31 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -26,6 +26,9 @@ C     === Global variables ===
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+#endif
 
       INTEGER myThid, myIter
       _RL time_step
@@ -35,7 +38,7 @@ C     === Global variables ===
       INTEGER i, j, bi, bj, Gi, Gj
       _RL thick_bd, uflux, vflux, max_icfl, loc_icfl
       _RL time_step_full, time_step_rem
-      _RL sec_per_year, time_step_loc, MR, SMB, TMB
+      _RL sec_per_year, time_step_loc, MR, SMB, TMB, irho
       _RL BCVALX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BCVALY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS BCMASKX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -319,6 +322,7 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
 
 ! NOW WE APPLY MELT RATES !!
 ! THIS MAY BE MOVED TO A SEPARATE SUBROUTINE
+      irho = 1./streamice_density
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -328,22 +332,34 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
           Gj = (myYGlobalLo-1)+(bj-1)*sNy+j
           IF (STREAMICE_hmask(i,j,bi,bj).eq.1.0 .or.
      &       STREAMICE_hmask(i,j,bi,bj).eq.2.0) THEN
-             MR = (1.-float_frac_streamice(i,j,bi,bj)) *
+
+           IF (STREAMICE_allow_cpl) THEN
+#ifdef ALLOW_SHELFICE
+            MR = -1. * (1.-float_frac_streamice(i,j,bi,bj)) *
+     &        shelfIceFreshWaterFlux(I,J,bi,bj) * irho * 
+     &        sec_per_year
+
+#else
+            STOP 'SHELFICE IS NOT ENABLED'
+#endif      
+           ELSE
+              MR = (1.-float_frac_streamice(i,j,bi,bj)) *
      &             (BDOT_STREAMICE(i,j,bi,bj) +
      &              BDOT_pert(i,j,bi,bj))
-             SMB = ADOT_STREAMICE(i,j,bi,bj)
-             TMB = SMB - MR
+           ENDIF
 
-             IF ((TMB.lt.0.0) .and.
+           SMB = ADOT_STREAMICE(i,j,bi,bj)
+           TMB = SMB - MR
+           IF ((TMB.lt.0.0) .and.
      &         (MR * time_step_loc .gt.
      &          H_streamice (i,j,bi,bj))) THEN
                 H_streamice (i,j,bi,bj) = 0. _d 0
                 STREAMICE_hmask(i,j,bi,bj) = 0.0
                PRINT *, "GOT HERE melted away! ", i,j
-             ELSE
+           ELSE
                H_streamice (i,j,bi,bj) =
      &          H_streamice (i,j,bi,bj) + TMB * time_step_loc
-             ENDIF
+           ENDIF
 
 
           ENDIF
