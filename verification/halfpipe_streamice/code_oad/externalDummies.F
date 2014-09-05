@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/Attic/externalDummies.F,v 1.1 2013/12/18 19:58:40 utke Exp $
+C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/Attic/externalDummies.F,v 1.2 2014/09/05 21:09:25 dgoldberg Exp $
 C $Name:  $
 C ###########################################################
       SUBROUTINE EXCH1_RL(
@@ -97,6 +97,7 @@ C ###########################################################
      I                               A_vv,       ! section of matrix that multiplies v and projects on v
      I                               tolerance, 
      O                               iters,
+     I                               maxiter,
      I                               myThid )
       IMPLICIT NONE
 
@@ -107,6 +108,7 @@ C ###########################################################
 #include "STREAMICE_CG.h"
       INTEGER myThid
       INTEGER iters
+      INTEGER maxiter
       _RL tolerance
       _RL cg_Uin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL cg_Vin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
