@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.118 2014/09/04 22:29:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.119 2014/09/05 18:32:18 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -301,7 +301,7 @@ C/\  | | | |-DIAGS_OCEANIC_SURF_FLUX :: Diagnose oceanic surface fluxes
 C/\  | | | |-SALT_PLUME_DIAGNOSTICS_FILL :: (see pkg/salt_plume )
 C/\  | | | |-ECCO_PHYS          :: ( see pkg/ecco )
 C/\  | | |
-C/\  | | |-STREAMICE_SOLO_TIMESTEP :: ( see pkg/streamice )
+C/\  | | |-STREAMICE_TIMESTEP   :: ( see pkg/streamice )
 C/\  | | |
 C/\  | | |-GCHEM_CALC_TENDENCY  :: geochemistry driver routine (see pkg/gchem)
 C/\  | | |
