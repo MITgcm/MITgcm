@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_add_tendency.F,v 1.10 2014/07/09 16:58:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_add_tendency.F,v 1.11 2014/09/06 19:31:05 jmc Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -90,8 +90,8 @@ c    &        *maskS(i,j,k,bi,bj)
 #endif /* DISABLE_RBCS_MOM */
 
       IF ( tracerNum.EQ.1 .AND. useRBCtemp ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
+        DO j=0,sNy+1
+         DO i=0,sNx+1
           gTendency(i,j) = gTendency(i,j)
      &       - RBC_mask(i,j,k,bi,bj,1)/tauRelaxT
      &        *( theta(i,j,k,bi,bj)- RBCtemp(i,j,k,bi,bj) )
@@ -103,8 +103,8 @@ c    &        *maskC(i,j,k,bi,bj)
       ENDIF
 
       IF ( tracerNum.EQ.2 .AND. useRBCsalt ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
+        DO j=0,sNy+1
+         DO i=0,sNx+1
           gTendency(i,j) = gTendency(i,j)
      &       - RBC_mask(i,j,k,bi,bj,2)/tauRelaxS
      &        *( salt(i,j,k,bi,bj)- RBCsalt(i,j,k,bi,bj) )
@@ -119,8 +119,8 @@ c    &        *maskC(i,j,k,bi,bj)
        iTracer = tracerNum-2
        irbc = MIN(maskLEN,tracerNum)
        IF ( useRBCpTrNum(iTracer) ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
+        DO j=0,sNy+1
+         DO i=0,sNx+1
           gTendency(i,j) = gTendency(i,j)
      &       - RBC_mask(i,j,k,bi,bj,irbc)/tauRelaxPTR(iTracer)
      &        *( pTracer(i,j,k,bi,bj,iTracer)
