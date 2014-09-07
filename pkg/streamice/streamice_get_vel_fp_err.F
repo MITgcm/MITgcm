@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_vel_fp_err.F,v 1.1 2014/09/05 14:26:20 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_vel_fp_err.F,v 1.2 2014/09/07 07:46:40 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -65,6 +65,7 @@ C     !INPUT/OUTPUT ARGUMENTS
         ENDDO
        ENDDO
 
+       CALL GLOBAL_MAX_R8 (err_max, myThid)
 
 
 
