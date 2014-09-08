@@ -26,6 +26,11 @@ function [fld fc ix jx]=quikread_llc(fnam,nx,kx,prec,gdir,minlat,maxlat,minlon,m
 % (note that if length(fc)>1, fld, ix, and jx are matlab
 %  cell arrays that can be accessed as fld{fc(1)}, etc.)
 %
+% NOTES
+%  For faces 4 and 5, southwest velocity is:
+%   u_East (i,j) =   v_Model(i,j)
+%   v_North(i,j) = - u_Model(i,j-1)
+%
 % EXAMPLES
 %
 % % read and plot complete field

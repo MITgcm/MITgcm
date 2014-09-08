@@ -15,6 +15,11 @@ function fld=read_llc_fkij(fnam,nx,face,kx,ix,jx,prec)
 % OUTPUTS
 % fld   output array of dimension length(ix)*length(jx)*length(kx)
 %
+% NOTES
+%  For faces 4 and 5, southwest velocity is:
+%   u_East (i,j) =   v_Model(i,j)
+%   v_North(i,j) = - u_Model(i,j-1)
+%
 % SEE ALSO
 % quilread_llc
 
