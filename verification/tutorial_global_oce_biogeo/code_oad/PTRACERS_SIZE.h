@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_oad/PTRACERS_SIZE.h,v 1.1 2013/04/23 16:29:35 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_oad/PTRACERS_SIZE.h,v 1.2 2014/09/08 23:41:15 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -7,7 +7,7 @@ CBOP
 C    !ROUTINE: PTRACERS_SIZE.h
 C    !INTERFACE:
 C #include PTRACERS_SIZE.h
- 
+
 C    !DESCRIPTION:
 C Contains passive tracer array size (number of tracers).
 
@@ -19,9 +19,7 @@ C     Number of tracers
       PARAMETER(PTRACERS_num = 5 )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-#ifndef ALLOW_AUTODIFF_OPENAD
       INTEGER    iptrkey
-#endif
       INTEGER    maxpass
       PARAMETER( maxpass     = PTRACERS_num + 2 )
 #endif
