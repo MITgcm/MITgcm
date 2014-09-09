@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.8 2014/09/05 14:25:11 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.9 2014/09/09 23:09:21 jmc Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -82,17 +85,14 @@ C     LOCAL VARIABLES
 #endif
 
       CALL TIMER_START ('STREAMICE_VEL_SOLVE',myThid)
- 
 
       cgtol = streamice_cg_tol
       CONVERGED = .false.
       err_max = 0.
       err_max_fp = 0.
 
-
       _EXCH_XY_RL( taudx_SI , myThid )
       _EXCH_XY_RL( taudy_SI , myThid )
-
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -128,7 +128,6 @@ C     LOCAL VARIABLES
       _EXCH_XY_RL( tau_beta_eff_streamice , myThid )
       _EXCH_XY_RL( visc_streamice , myThid )
 
-
       if (STREAMICE_chkresidconvergence .or.
      &    (streamice_maxnliter_cpl.eq.0 .and. myIter.eq.0)) then
 
@@ -144,7 +143,6 @@ C     LOCAL VARIABLES
      &                    SQUEEZE_RIGHT , 1)
 
       endif !STREAMICE_chkresidconvergence
-
 
       iter_numconv = 0
       err_max = err_init
@@ -191,9 +189,8 @@ C       but after convergence loop does nothing
 #ifdef ALLOW_AUTODIFF_TAMC
 !$TAF STORE CONVERGED = comlev1_stream_nl, key=ikey_nl
 #endif
-       
-       IF (.not.CONVERGED) THEN
 
+       IF (.not.CONVERGED) THEN
 
        iter_numconv = iter_numconv + 1
 
@@ -216,7 +213,6 @@ C       but after convergence loop does nothing
 !$TAF STORE zu_old_si = comlev1_stream_nl, key=ikey_nl
 !$TAF STORE zv_old_si = comlev1_stream_nl, key=ikey_nl
 #endif
-
 
        CALL STREAMICE_CG_WRAPPER(
      &       U_streamice,
@@ -264,7 +260,6 @@ C       but after convergence loop does nothing
        CALL STREAMICE_VISC_BETA ( myThid )
 #endif
 
-
       _EXCH_XY_RL( tau_beta_eff_streamice , myThid )
       _EXCH_XY_RL( visc_streamice , myThid )
 
@@ -284,10 +279,7 @@ C       but after convergence loop does nothing
         CONVERGED = .true.
        ENDIF
 
-
-      endif 
-
-
+      endif
 
       if (STREAMICE_chkfixedptconvergence .or.
      &    (streamice_maxnliter_cpl.eq.0 .and. myIter.eq.0)) then
@@ -314,15 +306,9 @@ C       but after convergence loop does nothing
         CONVERGED = .true.
        ENDIF
 
-      endif 
-
-
-
+      endif
 
 !----------------------END CONVERGENCE TESTS-------------------------------
-
-
-
 
        IF (err_max<err_lastchange*1.e-2 .and.
      &   STREAMICE_lower_cg_tol) THEN
@@ -333,7 +319,6 @@ C       but after convergence loop does nothing
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
        ENDIF
-
 
        ENDIF ! (err_max .GT. streamice_nonlin_tol * err_init)
       ENDDO
@@ -361,10 +346,8 @@ C-------------------------------------------------------------------
       _EXCH_XY_RL(U_streamice, myThid)
       _EXCH_XY_RL(V_streamice, myThid)
 
-
       CALL TIMER_STOP ('STREAMICE_VEL_SOLVE',myThid)
 
 #endif
       RETURN
       END
-

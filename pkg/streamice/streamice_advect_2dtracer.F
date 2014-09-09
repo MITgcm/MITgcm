@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_2dtracer.F,v 1.2 2013/07/02 19:09:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_2dtracer.F,v 1.3 2014/09/09 23:09:21 jmc Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -63,7 +66,6 @@ C     === Global variables ===
 
       PRINT *, "time_step_loc ", time_step_loc
 
-
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-3,sNy+3
@@ -78,7 +80,6 @@ C     === Global variables ===
           GAD_trac_2dNm1(i,j,bi,bj)=GAD_trac_2d(i,j,bi,bj)
           GAD_trac_2d (i,j,bi,bj) = 0. _d 0
 #endif
-
 
           IF (STREAMICE_ufacemask(i,j,bi,bj).eq.3.0) THEN
            BCVALX(i,j,bi,bj) = trac2d_ubdry_values_SI(i,j,bi,bj)
@@ -100,12 +101,9 @@ C     === Global variables ===
       _EXCH_XY_RL(BCVALX,myThid)
       _EXCH_XY_RL(BCVALY,myThid)
 
-
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE trac2d  = comlev1, key=ikey_dynamics
 #endif
-
-
 
       CALL STREAMICE_ADV_FLUX_FL_X ( myThid ,
      I   uTrans ,
@@ -114,7 +112,6 @@ CADJ STORE trac2d  = comlev1, key=ikey_dynamics
      I   BCVALX,
      O   xtracflux,
      I   time_step_loc)
-
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -125,11 +122,8 @@ CADJ STORE trac2d  = comlev1, key=ikey_dynamics
           IF (((Gj .ge. 1) .and. (Gj .le. Ny))
      &       .or.STREAMICE_NS_PERIODIC) THEN
 
-
           IF (STREAMICE_hmask(i,j,bi,bj).eq.1.0 .or.
      &        STREAMICE_hmask(i,j,bi,bj).eq.2.0) THEN
-
-
 
 #ifdef STREAMICE_TRACER_AB
            GAD_trac_2d(i,j,bi,bj) = GAD_trac_2d(i,j,bi,bj) -
@@ -160,7 +154,6 @@ CADJ STORE trac2d  = comlev1, key=ikey_dynamics
 # endif
 #endif
 
-
       CALL STREAMICE_ADV_FLUX_FL_Y ( myThid ,
      I   vTrans ,
      I   trac2d ,
@@ -168,7 +161,6 @@ CADJ STORE trac2d  = comlev1, key=ikey_dynamics
      I   BCVALy,
      O   ytracflux,
      I   time_step_loc)
-
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -223,7 +215,6 @@ CADJ STORE trac2d  = comlev1, key=ikey_dynamics
      &      (GAD_trac_2d(i,j,bi,bj) - GAD_trac_2dNm1(i,j,bi,bj))
           ENDIF
 
-
          ENDDO
         ENDDO
        ENDDO
@@ -239,4 +230,5 @@ CADJ STORE trac2d  = comlev1, key=ikey_dynamics
 
 #endif
 #endif
+      RETURN
       END
