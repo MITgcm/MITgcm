@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_inadmode_set_ad.F,v 1.11 2014/06/28 22:41:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_inadmode_set_ad.F,v 1.12 2014/09/09 22:37:23 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       SUBROUTINE ADAUTODIFF_INADMODE_SET( myThid )
 C     *==========================================================*
@@ -79,7 +82,7 @@ C     myThid :: my Thread Id number
 
 #ifdef ALLOW_CTRL
        WRITE(msgBuf,'(A,L5)')
-     &      'S/R ADAUTODIFF_INADMODE_SET: ctrlSmoothCorrel2D    =', 
+     &      'S/R ADAUTODIFF_INADMODE_SET: ctrlSmoothCorrel2D    =',
      &       ctrlSmoothCorrel2D
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
