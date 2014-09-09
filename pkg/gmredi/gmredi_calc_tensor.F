@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.43 2014/04/26 19:47:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.44 2014/09/09 22:34:06 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
@@ -223,7 +226,7 @@ C-    Just initialize to zero (not use anyway)
        ENDDO
       ENDDO
 #endif /* GM_BOLUS_ADVEC */
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
@@ -241,7 +244,7 @@ C-    Just initialize to zero (not use anyway)
         ENDDO
        ENDDO
       ENDDO
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 C--   Initialise Mixed Layer related array:
       DO j=1-OLy,sNy+OLy
@@ -291,8 +294,7 @@ C-- 1rst loop on k : compute Tensor Coeff. at W points.
 
       DO k=Nr,2,-1
 
-#ifdef ALLOW_AUTODIFF_TAMC
-       kkey = (igmkey-1)*Nr + k
+#ifdef ALLOW_AUTODIFF
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
          SlopeX(i,j)       = 0. _d 0
@@ -304,7 +306,7 @@ C-- 1rst loop on k : compute Tensor Coeff. at W points.
          taperFct(i,j)     = 0. _d 0
         ENDDO
        ENDDO
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
@@ -407,6 +409,7 @@ c            N2loc = -gravity*recip_rhoConst*dSigmaDr(i,j)
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
+       kkey = (igmkey-1)*Nr + k
 CADJ STORE dSigmaDx(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDy(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte

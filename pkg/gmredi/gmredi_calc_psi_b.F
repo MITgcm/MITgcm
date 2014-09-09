@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.12 2014/04/26 19:47:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.13 2014/09/09 22:34:06 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
@@ -91,8 +94,7 @@ CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
        DO k=2,Nr
        km1 = k-1
 
-#ifdef ALLOW_AUTODIFF_TAMC
-       kkey = (igmkey-1)*Nr + k
+#ifdef ALLOW_AUTODIFF
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
          SlopeX(i,j)       = 0. _d 0
@@ -130,6 +132,7 @@ C      Calculate slopes , taper and/or clip
      I             bi, bj, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
+       kkey = (igmkey-1)*Nr + k
 CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE taperX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte

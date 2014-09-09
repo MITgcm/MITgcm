@@ -1,21 +1,30 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.18 2014/08/18 12:23:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.19 2014/09/09 22:34:06 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
+C     !ROUTINE: GMREDI_RTRANSPORT
+C     !INTERFACE:
       SUBROUTINE GMREDI_RTRANSPORT(
      I     trIdentity, bi, bj, k,
      I     iMin, iMax, jMin, jMax,
      I     Tracer,
      U     df,
      I     myThid )
+
+C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | o SUBROUTINE GMREDI_RTRANSPORT                           |
 C     |   Add vertical transport terms from GM/Redi              |
 C     |   parameterization.                                      |
 C     *==========================================================*
-      IMPLICIT NONE
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     == GLobal variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -35,21 +44,26 @@ C     == GLobal variables ==
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C     == Routine arguments ==
-C     iMin,iMax,jMin,  - Range of points for which calculation
-C     jMax,bi,bj,k       results will be set.
-C     Tracer           - 3D Tracer field
-C     df               - Diffusive flux component work array.
+C     !INPUT/OUTPUT PARAMETERS:
+C     trIdentity   :: tracer Id number
+C     bi, bj       :: current tile indices
+C     k            :: current level index
+C     iMin,iMax    :: Range of 1rst index where results will be set
+C     jMin,jMax    :: Range of 2nd  index where results will be set
+C     Tracer       :: 3D Tracer field
+C     df           :: Diffusive flux component work array.
+C     myThid       :: my Thread Id number
       INTEGER trIdentity
       INTEGER bi, bj, k
       INTEGER iMin, iMax, jMin, jMax
       _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_GMREDI
-C     == Local variables ==
-C     i, j - Loop counters
+C     !LOCAL VARIABLES:
+C     i, j    ::  Loop counters
       INTEGER i, j
       _RL dTdx  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dTdy  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)

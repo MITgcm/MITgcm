@@ -1,24 +1,34 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_xtransport.F,v 1.20 2014/08/18 12:23:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_xtransport.F,v 1.21 2014/09/09 22:34:06 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
 
+CBOP
+C     !ROUTINE: GMREDI_XTRANSPORT
+C     !INTERFACE:
       SUBROUTINE GMREDI_XTRANSPORT(
      I     trIdentity, bi, bj, k,
      I     iMin, iMax, jMin, jMax,
      I     xA, Tracer,
      U     df,
      I     myThid )
+
+C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | o SUBROUTINE GMREDI_XTRANSPORT
 C     |   Add horizontal x transport terms from GM/Redi
 C     |   parameterization.
 C     *==========================================================*
-      IMPLICIT NONE
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     == GLobal variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -37,12 +47,16 @@ C     == GLobal variables ==
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C     == Routine arguments ==
-C     iMin,iMax,jMin,  - Range of points for which calculation
-C     jMax,bi,bj,k       results will be set.
-C     xA               - Area of X face
-C     Tracer           - 3D Tracer field
-C     df               - Diffusive flux component work array.
+C     !INPUT/OUTPUT PARAMETERS:
+C     trIdentity   :: tracer Id number
+C     bi, bj       :: current tile indices
+C     k            :: current level index
+C     iMin,iMax    :: Range of 1rst index where results will be set
+C     jMin,jMax    :: Range of 2nd  index where results will be set
+C     xA           :: Area of X face
+C     Tracer       :: 3D Tracer field
+C     df           :: Diffusive flux component work array.
+C     myThid       :: my Thread Id number
       INTEGER trIdentity
       INTEGER bi, bj, k
       INTEGER iMin, iMax, jMin, jMax
@@ -50,10 +64,11 @@ C     df               - Diffusive flux component work array.
       _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_GMREDI
-C     == Local variables ==
-C     i, j - Loop counters
+C     !LOCAL VARIABLES:
+C     i, j    ::  Loop counters
       INTEGER i, j
 #if ( defined (GM_EXTRA_DIAGONAL) || defined (GM_BOLUS_ADVEC) )
       INTEGER kp1
@@ -105,7 +120,7 @@ CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 CADJ STORE Kuz(:,:,k,bi,bj) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 # endif
-#endif
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Area integrated zonal flux
       DO j=jMin,jMax
