@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.174 2014/08/15 20:41:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.175 2014/09/09 22:32:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -577,7 +577,7 @@ C--     end of dynamics k loop (1:Nr)
 
 C--     Implicit Vertical advection & viscosity
 #if (defined (INCLUDE_IMPLVERTADV_CODE) && \
-     defined (ALLOW_MOM_COMMON) && !(defined ALLOW_AUTODIFF_TAMC))
+     defined (ALLOW_MOM_COMMON) && !(defined ALLOW_AUTODIFF))
         IF ( momImplVertAdv ) THEN
           CALL MOM_U_IMPLICIT_R( kappaRU,
      I                           bi, bj, myTime, myIter, myThid )
