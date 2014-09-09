@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.11 2014/09/05 14:25:11 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.12 2014/09/09 23:10:22 jmc Exp $
 C $Name:  $
 
-#ifdef ALLOW_COST
-# include "COST_OPTIONS.h"
-#endif
+c#ifdef ALLOW_COST
+c# include "COST_OPTIONS.h"
+c#endif
 #include "STREAMICE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -46,7 +46,6 @@ CEOP
 
 C     ZERO OUT FLOATING POINT ARRAYS
 
-
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
@@ -64,7 +63,7 @@ C     ZERO OUT FLOATING POINT ARRAYS
           BDOT_streamice(i,j,bi,bj) = 0. _d 0
 #ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
           BDOT_streamice1(i,j,bi,bj) = 0. _d 0
-#endif          
+#endif
           ADOT_streamice(i,j,bi,bj) = streamice_adot_uniform
           C_basal_friction(i,j,bi,bj) = C_basal_fric_const
 #ifndef STREAMICE_3D_GLEN_CONST
@@ -76,10 +75,10 @@ C     ZERO OUT FLOATING POINT ARRAYS
 #endif
           H_streamice_prev(i,j,bi,bj) = 0. _d 0
 #ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
-          STREAMICE_u_normal_pert(i,j,bi,bj) = 0. _d 0      
-          STREAMICE_v_normal_pert(i,j,bi,bj) = 0. _d 0      
-          STREAMICE_u_shear_pert(i,j,bi,bj) = 0. _d 0      
-          STREAMICE_v_shear_pert(i,j,bi,bj) = 0. _d 0      
+          STREAMICE_u_normal_pert(i,j,bi,bj) = 0. _d 0
+          STREAMICE_v_normal_pert(i,j,bi,bj) = 0. _d 0
+          STREAMICE_u_shear_pert(i,j,bi,bj) = 0. _d 0
+          STREAMICE_v_shear_pert(i,j,bi,bj) = 0. _d 0
           STREAMICE_u_normal_stress(i,j,bi,bj) = 0. _d 0
           STREAMICE_v_normal_stress(i,j,bi,bj) = 0. _d 0
           STREAMICE_u_shear_stress(i,j,bi,bj) = 0. _d 0
@@ -97,7 +96,7 @@ C     ZERO OUT FLOATING POINT ARRAYS
 !         GAD_trac_2dNm1 (i,j,bi,bj) = 0. _d 0
 #endif
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
           ru_old_si(i,j,bi,bj) = 0. _d 0
           rv_old_si(i,j,bi,bj) = 0. _d 0
           zu_old_si(i,j,bi,bj) = 0. _d 0
@@ -163,7 +162,6 @@ C     INIT. INTEGER ARRAYS
         ENDDO
        ENDDO
       ENDDO
-
 
 #ifdef USE_ALT_RLOW
 ! init alternate array for topog
@@ -234,7 +232,6 @@ C             IF (flow_dir .EQ. 2.0) THEN
                area_shelf_streamice(i,j,bi,bj) = rA(i,j,bi,bj)
                STREAMICE_hmask(i,j,bi,bj) = 1.0
               ENDIF
-
 
              ENDIF
             ENDIF
@@ -313,12 +310,11 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
 #endif
 ! STREAMICE_GEOM_FILE_SETUP
 
-
       IF ( .NOT. ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
      &     .AND. pickupSuff .EQ. ' ') ) THEN
-              
+
                           CALL STREAMICE_READ_PICKUP ( myThid )
-              
+
       ENDIF
 
 ! finish initialize thickness
@@ -334,7 +330,6 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
 
         CALL READ_FLD_XYZ_RL( STREAMICEGlenConstFile, ' ',
      &      B_glen, 0, myThid )
-
 
 #else
 
@@ -494,7 +489,6 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
 
       _EXCH_XY_RL (trac2d, myThid)
 
-
 #endif /*STREAMICE_ALLOW_2DTRACER*/
 
 #ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
@@ -534,17 +528,16 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
        CALL PRINT_ERROR( msgBuf, myThid)
       ENDIF
 
-      CALL EXCH_XY_RL 
+      CALL EXCH_XY_RL
      & (streamice_v_shear_stress, myThid)
-      CALL EXCH_XY_RL 
+      CALL EXCH_XY_RL
      & (streamice_u_shear_stress, myThid)
-      CALL EXCH_XY_RL 
+      CALL EXCH_XY_RL
      & (streamice_v_normal_stress, myThid)
-      CALL EXCH_XY_RL 
+      CALL EXCH_XY_RL
      & (streamice_u_normal_stress, myThid)
 
 #endif /*STREAMICE_STRESS_BOUNDARY_CONTROL*/
-
 
       CALL STREAMICE_UPD_FFRAC_UNCOUPLED ( myThid )
 
@@ -574,10 +567,10 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
 
        CALL STREAMICE_UPD_FFRAC_UNCOUPLED ( myThid )
        CALL STREAMICE_VELMASK_UPD (myThid)
-       CALL STREAMICE_VEL_SOLVE( 
-     &     myThid, 
+       CALL STREAMICE_VEL_SOLVE(
+     &     myThid,
      &     streamice_max_nl_iter,
-     &     streamice_max_cg_iter, 
+     &     streamice_max_cg_iter,
      &     0 )
 
 #endif
@@ -625,4 +618,3 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
 
       RETURN
       END
-
