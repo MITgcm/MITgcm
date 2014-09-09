@@ -1,13 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_shifwflx.F,v 1.4 2012/08/07 05:49:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_shifwflx.F,v 1.5 2014/09/09 22:59:55 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
+#ifdef ALLOW_COST
+# include "COST_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: SHELFICE_COST_SHIFWFLX
 C     !INTERFACE:
       SUBROUTINE SHELFICE_COST_SHIFWFLX(
-     I                       mythid
+     I                       myThid
      &                     )
 
 C     !DESCRIPTION: \bv
@@ -45,7 +51,7 @@ c     == global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
 
-      integer mythid
+      integer myThid
 
 #if   (defined (ALLOW_SHELFICE) && \
        defined (ALLOW_SHIFWFLX_COST_CONTRIBUTION) && \
@@ -85,10 +91,10 @@ c     == external functions ==
 c     == end of interface ==
 CEOP
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = mybylo(myThid)
+      jthi = mybyhi(myThid)
+      itlo = mybxlo(myThid)
+      ithi = mybxhi(myThid)
 
       startrec = ncvarrecstart(45)
       endrec   = ncvarrecsend(45)
@@ -103,21 +109,21 @@ c     Number of records to be used.
       fcthread = 0. _d 0
 
 #ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
+      _BEGIN_MASTER( myThid )
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,i9.8)')
      &  ' shelfice_cost_shifwflx: number of records to process: ',nrec
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
+     &                    SQUEEZE_RIGHT, myThid )
+      _END_MASTER( myThid )
 #endif
 
       if (optimcycle .ge. 0) then
@@ -131,7 +137,7 @@ c--   Loop over records.
 
        call active_read_xy(
      &      fnamefld, tmpfld2d, irec, doglobalread,
-     &      ladinit, optimcycle, mythid, xx_shifwflx_dummy )
+     &      ladinit, optimcycle, myThid, xx_shifwflx_dummy )
 
 c--   Loop over this thread s tiles.
        do bj = jtlo,jthi
@@ -164,19 +170,19 @@ c--     Print cost function for all tiles.
       _GLOBAL_SUM_RL( fcthread , myThid )
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,i8.8)')
      &     ' shelfice_cost_shifwflx: irec = ',irec
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,a,d22.15)')
      &     ' global cost function value',
      &     ' (shifwflx) = ',fcthread
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #endif
 
 #endif /* ALLOW_SHEFLICE and (SHIFWFLX_COST_CONTRIBUTION or CONTROL) */

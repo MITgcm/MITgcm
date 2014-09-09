@@ -1,7 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_final.F,v 1.8 2014/04/04 19:34:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_final.F,v 1.9 2014/09/09 22:59:55 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
+#ifdef ALLOW_COST
+# include "COST_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: SHELFICE_COST_FINAL

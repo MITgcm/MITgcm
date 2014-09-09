@@ -1,7 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.10 2013/04/11 18:59:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.11 2014/09/09 22:59:55 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
+#ifdef ALLOW_COST
+# include "COST_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       SUBROUTINE SHELFICE_INIT_FIXED( myThid )
 C     *============================================================*
@@ -102,7 +108,7 @@ c--   use weight as mask
       ENDDO
       CALL ACTIVE_WRITE_XY_LOC( 'wshifwflx', wshifwflx,
      &                          1, 0, myThid, dummy )
-#endif /* ALLOW_SHIFWFLX_COST_CONTRIBUTION or ALLOW_SHIFWFLX_CONTROL */
+#endif /* ALLOW_SHIFWFLX_COST_CONTRIBUTION and ALLOW_SHIFWFLX_CONTROL */
 #endif /* ALLOW_COST */
 
       IF ( SHELFICEloadAnomalyFile .NE. ' ' ) THEN
