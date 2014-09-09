@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/Attic/ECCO_CPPOPTIONS.h,v 1.4 2014/04/05 23:15:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/Attic/ECCO_CPPOPTIONS.h,v 1.5 2014/09/09 23:38:35 jmc Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -26,8 +26,6 @@ C       >>> Checkpointing as handled by TAMC
 
 C       >>> Extract adjoint state
 #undef ALLOW_AUTODIFF_MONITOR
-
-#define ALLOW_AUTODIFF_OPENAD
 
 C ********************************************************************
 C ***                     Calendar Package                         ***

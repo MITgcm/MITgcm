@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/AUTODIFF_OPTIONS.h,v 1.1 2014/04/05 21:47:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/AUTODIFF_OPTIONS.h,v 1.2 2014/09/09 23:38:43 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -48,9 +48,6 @@ c#undef AUTODIFF_4_LEVEL_CHECKPOINT
 
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
-
-C o Enable some temporary constructs for OpenAD
-#undef ALLOW_AUTODIFF_OPENAD
 
 #undef ALLOW_AUTODIFF_WHTAPEIO
 #undef ALLOW_PACKUNPACK_METHOD2
