@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_convect.F,v 1.7 2012/03/08 17:13:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_convect.F,v 1.8 2014/09/09 22:49:15 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: PTRACERS_CONVECT
