@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_oad/ctrl_map_ini_genarr.F,v 1.1 2013/04/23 16:29:35 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_oad/ctrl_map_ini_genarr.F,v 1.2 2014/09/09 23:42:27 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -121,7 +121,7 @@ cc A CONSISTENCY CHECK: FOR THIS CUSTOMIZATION
 cc WE ASSUME maxCtrlArr3D <= PTRACERS_num
 cc
       IF ( maxCtrlArr3D .GT. PTRACERS_num ) THEN
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'CTRL_MAP_INI_GENARR: need maxCtrlArr3D <= PTRACERS_num'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R CTRL_MAP_INI_GENARR'
@@ -142,7 +142,7 @@ C--   generic - user-defined control vars
           do k = 1,Nr
            do j = jmin,jmax
             do i = imin,imax
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
               pTracer(i,j,k,bi,bj,iarr) = pTracer(i,j,k,bi,bj,iarr)
      &         + fac*xx_genarr3d(i,j,k,bi,bj,iarr)
      &         + fac*tmpfld3d(i,j,k,bi,bj)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/ctrl_map_ini_genarr.F,v 1.4 2013/03/19 19:52:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/ctrl_map_ini_genarr.F,v 1.5 2014/09/09 23:45:45 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -139,7 +139,7 @@ C--   generic - user-defined control vars
           do k = 1,Nr
            do j = jmin,jmax
             do i = imin,imax
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_OPENAD
               pTracer(i,j,k,bi,bj,iarr) = pTracer(i,j,k,bi,bj,iarr)
      &         + fac*xx_genarr3d(i,j,k,bi,bj,iarr)
      &         + fac*tmpfld3d(i,j,k,bi,bj)
