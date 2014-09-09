@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.226 2014/09/05 14:33:02 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.227 2014/09/09 22:29:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -438,7 +438,8 @@ CADJ STORE hFacC, hFacS, hFacW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW  =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
-#else
+#endif
+#ifndef ALLOW_AUTODIFF
       ENDIF
 #endif
 #endif /* NONLIN_FRSURF */
