@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/isomip/code_oad/ECCO_CPPOPTIONS.h,v 1.2 2013/07/24 20:53:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/isomip/code_oad/ECCO_CPPOPTIONS.h,v 1.3 2014/09/09 23:39:39 jmc Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -20,7 +20,7 @@ C o Include/exclude code in order to be able to automatically
 C   differentiate the MITgcmUV by using the Tangent Linear and
 C   Adjoint Model Compiler (TAMC).
 
-#define ALLOW_AUTODIFF_TAMC
+#undef ALLOW_AUTODIFF_TAMC
 C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
 
@@ -32,9 +32,6 @@ C       >>> DO 2-level checkpointing instead of 3-level
 
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
-
-C o Enable some temporary constructs for OpenAD
-#define ALLOW_AUTODIFF_OPENAD
 
 C ********************************************************************
 C ***                     Calendar Package                         ***
