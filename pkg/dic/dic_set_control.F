@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_set_control.F,v 1.8 2013/11/08 19:30:37 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_set_control.F,v 1.9 2014/09/09 22:45:55 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 cphc$taf COMMON DIC_XX        adname = addic_xx
 cphc$taf COMMON DIC_COST_CTRL adname = ADDIC_COST_CTRL
