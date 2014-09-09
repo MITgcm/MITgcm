@@ -1,7 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.35 2014/05/06 15:50:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.36 2014/09/09 22:56:20 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: SHELFICE_THERMODYNAMICS
@@ -108,7 +114,7 @@ C     drKp1, recip_drLoc
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef SHI_ALLOW_GAMMAFRICT
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 C     re-initialize here again, curtesy to TAF
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -120,7 +126,7 @@ C     re-initialize here again, curtesy to TAF
         ENDDO
        ENDDO
       ENDDO
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
       IF ( SHELFICEuseGammaFrict ) THEN
 C     Implement friction velocity-dependent transfer coefficient
 C     of Holland and Jenkins, JPO, 1999
@@ -136,7 +142,7 @@ C     instead of etastar = sqrt(1+zetaN*ustar./(f*Lo*Rc))
        etastar = 1. _d 0
        gammaTurbConst  = 1. _d 0 / (2. _d 0 * shiZetaN*etastar)
      &      - recip_shiKarman
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO J = 1-OLy,sNy+OLy
@@ -147,7 +153,7 @@ C     instead of etastar = sqrt(1+zetaN*ustar./(f*Lo*Rc))
          ENDDO
         ENDDO
        ENDDO
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
       ENDIF
 #endif /* SHI_ALLOW_GAMMAFRICT */
 
