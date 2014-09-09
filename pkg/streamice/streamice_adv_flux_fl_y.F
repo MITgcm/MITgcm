@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_adv_flux_fl_y.F,v 1.2 2013/07/02 19:09:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_adv_flux_fl_y.F,v 1.3 2014/09/09 23:01:46 jmc Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -27,11 +27,6 @@ C     === Global variables ===
 #include "STREAMICE.h"
 !#include "GAD_FLUX_LIMITER.h"
 
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
-
-
       INTEGER myThid
       _RL VADV         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL TRAC         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -55,7 +50,6 @@ C     LOCAL VARIABLES
       external SLOPE_LIMITER
 
 !       total_vol_out = 0.0
-
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -82,7 +76,6 @@ C        X DIRECTION AND 1 CELLS OUT IN THE Y DIR
      &         ((STREAMICE_hmask(i,j-1,bi,bj).eq.1.0) .and.
      &          (STREAMICE_hmask(i,j,bi,bj).ne.1.0))) THEN
 
-
             vface = VADV(i,j,bi,bj)
             cfl = ABS(vface) * time_step * recip_dyC(i,j,bi,bj)
 
@@ -98,7 +91,6 @@ C        X DIRECTION AND 1 CELLS OUT IN THE Y DIR
      &          vface.le.0 .and.
      &          STREAMICE_hmask(i,j-1,bi,bj).eq.1.0) THEN
              YFLUX (i,j,bi,bj) = BC_YVALUES(i,j,bi,bj) * vface
-
 
             ELSE
 
@@ -117,7 +109,6 @@ C        X DIRECTION AND 1 CELLS OUT IN THE Y DIR
                YFLUX (i,j,bi,bj) = TRAC(i,j-1,bi,bj) * vface
 
               ELSEIF (H0_valid(i,j,bi,bj)) THEN
-
 
                rdenom = (stencil(1)-stencil(0))
                IF (rdenom .ne. 0.) THEN
@@ -240,8 +231,6 @@ C        X DIRECTION AND 1 CELLS OUT IN THE Y DIR
 !        ENDDO
 !       ENDDO
 !      ENDDO
-
-
 
 #endif
       RETURN

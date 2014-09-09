@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_adv_flux_fl_x.F,v 1.2 2013/07/02 19:09:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_adv_flux_fl_x.F,v 1.3 2014/09/09 23:01:46 jmc Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -25,11 +25,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "STREAMICE.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
 !#include "GAD_FLUX_LIMITER.h"
-
 
       INTEGER myThid
       _RL UADV         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -81,10 +77,8 @@ C        X DIRECTION AND 3 CELLS OUT IN THE Y DIR
 
             Gi = (myXGlobalLo-1)+(bi-1)*sNx+i
 
-
             uface = UADV(i,j,bi,bj)
             cfl = ABS(uface) * time_step * recip_dxC(i,j,bi,bj)
-
 
             IF (BC_FACEMASK(i,j,bi,bj).eq.3.0 .and.
      &          uface.gt.0 .and.
@@ -119,8 +113,6 @@ C        X DIRECTION AND 3 CELLS OUT IN THE Y DIR
                ELSE
                 Cr = 1.E20 *  (stencil(0)-stencil(-1))
                ENDIF
-
-
 
                IF (STREAMICE_ADV_SCHEME.ne.'DST3') THEN
 !                phi = SLOPE_LIMITER(stencil(0)-stencil(-1),
@@ -237,8 +229,6 @@ C        X DIRECTION AND 3 CELLS OUT IN THE Y DIR
 !        ENDDO
 !       ENDDO
 !      ENDDO
-
-
 
 #endif
       RETURN

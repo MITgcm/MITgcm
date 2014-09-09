@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_vel_resid_err.F,v 1.1 2014/09/05 14:26:20 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_vel_resid_err.F,v 1.2 2014/09/09 23:01:46 jmc Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -25,20 +25,20 @@ C     === Global variables ===
 !#include "finclude/petsc.h"
 !#endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
+c#ifdef ALLOW_AUTODIFF_TAMC
+c# include "tamc.h"
+c#endif
 
 C     !INPUT/OUTPUT ARGUMENTS
       _RL err_max
       INTEGER myThid, myiter
-      
+
 #ifdef ALLOW_STREAMICE
 
       INTEGER conv_flag, i, j, bi, bj
-      
+
       INTEGER ikey_nl
-      _RL err_tempu, err_tempv 
+      _RL err_tempu, err_tempv
       _RL max_vel, tempu, tempv, err_lastchange, cgtol
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -47,18 +47,16 @@ C     !INPUT/OUTPUT ARGUMENTS
 !!$TAF STORE V_streamice = comlev1_stream_nl, key=ikey_nl
 !#endif
 
-
-
         err_max = 0. _d 0
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1,sNy
-           DO i=1,sNx 
+           DO i=1,sNx
             Au_SI (i,j,bi,bj) = 0. _d 0
             Av_SI (i,j,bi,bj) = 0. _d 0
             ubd_SI (i,j,bi,bj) = 0. _d 0
-            vbd_SI (i,j,bi,bj) = 0. _d 0 
+            vbd_SI (i,j,bi,bj) = 0. _d 0
            ENDDO
           ENDDO
          ENDDO
@@ -79,7 +77,6 @@ C     !INPUT/OUTPUT ARGUMENTS
      I    U_streamice,
      I    V_streamice,
      I    0, sNx+1, 0, sNy+1 )
-
 
 !#ifdef ALLOW_AUTODIFF_TAMC
 !!$TAF STORE U_streamice = comlev1_stream_nl, key=ikey_nl
