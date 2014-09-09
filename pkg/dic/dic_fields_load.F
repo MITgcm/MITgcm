@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.33 2012/06/08 20:31:10 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.34 2014/09/09 22:46:34 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: DIC_FIELDS_LOAD
 
 C !INTERFACE: ==========================================================
       SUBROUTINE DIC_FIELDS_LOAD (
-     I           myIter,myTime,myThid)
+     I           myIter, myTime, myThid )
 
 C !DESCRIPTION:
 C  Read in fields needed for CO2,O2 fluxterms, silica for pH calculation
@@ -30,9 +30,9 @@ C !USES: ===============================================================
 #endif
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
 C  myIter               :: current timestep
 C  myTime               :: current time
+C  myThid               :: thread number
       INTEGER myIter
       _RL myTime
       INTEGER myThid
@@ -48,13 +48,13 @@ c !LOCAL VARIABLES: ===================================================
 #endif
 CEOP
 
-      IF (  DIC_forcingCycle.gt.0. _d 0 ) THEN
+      IF (  DIC_forcingCycle.GT.0. _d 0 ) THEN
 
 C--   Now calculate whether it is time to update the forcing arrays
        CALL GET_PERIODIC_INTERVAL(
      O                   intimeP, intime0, intime1, bWght, aWght,
      I                   DIC_forcingCycle, DIC_forcingPeriod,
-     I                   deltaTclock, myTime, myThid )
+     I                   deltaTClock, myTime, myThid )
 
        bi = myBxLo(myThid)
        bj = myByLo(myThid)
@@ -69,18 +69,18 @@ C--   Now calculate whether it is time to update the forcing arrays
        ENDIF
 #endif /* ALLOW_DEBUG */
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 C-    assuming that we call S/R DIC_FIELDS_LOAD at each time-step and
 C     with increasing time, this will catch when we need to load new records;
 C     But with Adjoint run, this is not always the case => might end-up using
 C     the wrong time-records
        IF ( intime0.NE.intimeP .OR. myIter.EQ.nIter0 ) THEN
-#else /* ALLOW_AUTODIFF_TAMC */
+#else /* ALLOW_AUTODIFF */
 C-    Make no assumption on sequence of calls to DIC_FIELDS_LOAD ;
 C     This is the correct formulation (works in Adjoint run).
 C     Unfortunatly, produces many recomputations <== not used until it is fixed
        IF ( intime1.NE.DIC_ldRec(bi,bj) ) THEN
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 C--   If the above condition is met then we need to read in
 C     data for the period ahead and the period behind myTime.

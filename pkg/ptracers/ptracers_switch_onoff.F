@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_switch_onoff.F,v 1.1 2012/03/08 17:17:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_switch_onoff.F,v 1.2 2014/09/09 22:48:18 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -37,9 +37,9 @@ C     !LOCAL VARIABLES:
 
       IF ( .NOT.PTRACERS_startAllTrc ) THEN
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
          STOP 'ABNORMAL END: S/R PTRACERS_SWITCH_ONOFF'
-#else /* ALLOW_AUTODIFF_TAMC */
+#else /* ALLOW_AUTODIFF */
 
         _BARRIER
         _BEGIN_MASTER(myThid)
@@ -55,7 +55,7 @@ C     !LOCAL VARIABLES:
         _END_MASTER(myThid)
         _BARRIER
 
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
       ENDIF
 

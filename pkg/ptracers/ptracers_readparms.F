@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.46 2014/08/18 14:34:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.47 2014/09/09 22:48:17 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -219,7 +219,7 @@ C     Set flag to check when each tracer starts
         IF ( PTRACERS_startStepFwd(iTracer) .NE. baseTime )
      &    PTRACERS_startAllTrc = .FALSE.
       ENDDO
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       IF ( .NOT.PTRACERS_startAllTrc ) THEN
         WRITE(msgBuf,'(A)')
      &   'PTRACERS_READPARMS: Compiling AD code does not allow'
@@ -229,7 +229,7 @@ C     Set flag to check when each tracer starts
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
       ENDIF
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 C     Whether to compute linear surface correction (set by other packages)
       PTRACERS_calcSurfCor = .FALSE.
