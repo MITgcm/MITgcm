@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_oad/Attic/ECCO_CPPOPTIONS.h,v 1.3 2013/07/24 20:53:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_oad/Attic/ECCO_CPPOPTIONS.h,v 1.4 2014/09/09 23:46:26 jmc Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -20,7 +20,7 @@ C o Include/exclude code in order to be able to automatically
 C   differentiate the MITgcmUV by using the Tangent Linear and
 C   Adjoint Model Compiler (TAMC).
 
-#define ALLOW_AUTODIFF_TAMC
+#undef ALLOW_AUTODIFF_TAMC
 C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
 
@@ -35,9 +35,6 @@ C o use divided adjoint to split adjoint computations
 
 C o write separate tape files for each ptracer
 C#define AUTODIFF_PTRACERS_SPLIT_FILES
-
-C o Enable some temporary constructs for OpenAD
-#define ALLOW_AUTODIFF_OPENAD
 
 C ********************************************************************
 C ***                     Calendar Package                         ***
