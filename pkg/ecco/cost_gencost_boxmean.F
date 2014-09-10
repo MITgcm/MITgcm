@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.1 2014/06/27 14:23:19 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.2 2014/09/10 23:01:30 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -116,8 +116,7 @@ c initialize maximum mask for time series display
         do k = 1,nr
          do j = 1,sNy
           do i =  1,sNx
-           if (mymsk(i,j,k,bi,bj).GT.tmpmsk(i,j,k,bi,bj))
-     &     tmpmsk(i,j,k,bi,bj)=mymsk(i,j,k,bi,bj)
+      tmpmsk(i,j,k,bi,bj)=mymsk(i,j,k,bi,bj)+mymsk(i,j,k,bi,bj)
           enddo
          enddo
         enddo
@@ -157,22 +156,18 @@ c compute cost
             do j = 1,sNy
               do i =  1,sNx
 c sum that is actually be used in cost function
-                mySumTile(bi,bj)=mySumTile(bi,bj)+
-     &            mybar(i,j,k,bi,bj)*
-     &            hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
-     &            *mymsk(i,j,k,bi,bj)
-                myVolTile(bi,bj)=myVolTile(bi,bj)+
-     &            hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
-     &            *mymsk(i,j,k,bi,bj)
+      objf_gencost(bi,bj,igen_boxmean)=
+     &   objf_gencost(bi,bj,igen_boxmean)
+     &  +mybar(i,j,k,bi,bj)*mymsk(i,j,k,bi,bj)
+      num_gencost(1,1,igen_boxmean)=
+     &   num_gencost(1,1,igen_boxmean)
+     &  +mymsk(i,j,k,bi,bj)
 
 c sum for display of time series
-                tmpSumTile(bi,bj)=tmpSumTile(bi,bj)+
-     &            mybar(i,j,k,bi,bj)*
-     &            hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
-     &            *tmpmsk(i,j,k,bi,bj)
-                tmpVolTile(bi,bj)=tmpVolTile(bi,bj)+
-     &            hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
-     &            *tmpmsk(i,j,k,bi,bj)
+      tmpSumTile(bi,bj)=tmpSumTile(bi,bj)
+     &  +mybar(i,j,k,bi,bj)*tmpmsk(i,j,k,bi,bj)
+      tmpVolTile(bi,bj)=tmpVolTile(bi,bj)
+     &  +tmpmsk(i,j,k,bi,bj)
               enddo
             enddo
           enddo
@@ -186,8 +181,8 @@ c global sums for display of time series
       if ( tmpVolGlo.GT.0. _d 0) 
      &   tmpMeanGlo=tmpSumGlo/tmpVolGlo
 
-      WRITE(msgBuf,'(A,I3,1PE21.14)')
-     &    'boxmean :',irec,tmpMeanGlo
+      WRITE(msgBuf,'(A,I3,1PE21.14,1PE21.14)')
+     &    'boxmean :',irec,tmpMeanGlo,tmpVolGlo
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT, myThid )
 
@@ -197,22 +192,18 @@ c ========
 
 
 c global sums for cost function
-      CALL GLOBAL_SUM_TILE_RL( mySumTile, mySumGlo, myThid )
-      CALL GLOBAL_SUM_TILE_RL( myVolTile, myVolGlo, myThid )
+      CALL GLOBAL_SUM_TILE_RL( objf_gencost(1,1,igen_boxmean),
+     &   mySumGlo, myThid )
+      CALL GLOBAL_SUM_TILE_RL( num_gencost(1,1,igen_boxmean),
+     &   myVolGlo, myThid )
       myMeanGlo=0. _d 0
       if ( myVolGlo.GT.0. _d 0)
      &   myMeanGlo=mySumGlo/myVolGlo
 
-      WRITE(msgBuf,'(A,I3,1PE21.14)') 
-     &    'boxmean fc :',irec,myMeanGlo
+      WRITE(msgBuf,'(A,I3,1PE21.14,1PE21.14)') 
+     &    'boxmean fc :',irec,myMeanGlo,myVolGlo
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT, myThid )
-
-c global sum is assigned to master proc,thread
-      IF ( MASTER_CPU_THREAD(myThid) ) THEN
-      objf_gencost(1,1,igen_boxmean)=myMeanGlo
-      num_gencost(1,1,igen_boxmean)=1. _d 0
-      ENDIF
 
 c ========
 
