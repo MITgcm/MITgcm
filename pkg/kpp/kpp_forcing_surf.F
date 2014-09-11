@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_forcing_surf.F,v 1.9 2014/05/23 20:02:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_forcing_surf.F,v 1.10 2014/09/11 19:23:23 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 #ifdef ALLOW_SALT_PLUME
 #include "SALT_PLUME_OPTIONS.h"
 #endif
@@ -184,9 +187,9 @@ C initialize arrays to zero
      &   (surfForcV(i,j,bi,bj) + surfForcV(i,jp1,bi,bj))
        ENDDO
       ENDDO
-Cph(
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ store work3 = comlev1_kpp, key = ikppkey
-Cph)
+#endif
       DO j = jmin, jmax
        jp1 = j + 1
        DO i = imin, imax
@@ -250,9 +253,9 @@ Cnote: on input, if notdef salt_plume_volume, SPforc[S,T](k>1)=!0
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
 
-Cph(
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ store ustar = comlev1_kpp, key = ikppkey
-Cph)
+#endif
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
