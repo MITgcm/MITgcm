@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_update_masks.F,v 1.5 2011/05/10 07:46:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_update_masks.F,v 1.6 2014/09/11 19:20:38 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: SHELFICE_UPDATE_MASKS
@@ -53,8 +56,8 @@ CEOP
 C     initialize R_shelfIce
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           R_shelfIce(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
@@ -85,8 +88,8 @@ C     taking into account the Reference (=at rest) Surface Position Ro_shelfIce
 C--   compute contributions of shelf ice to looping factors
         DO K=1, Nr
          hFacMnSz=max( hFacMin, min(hFacMinDr*recip_drF(k),1. _d 0) )
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
 C      o Non-dimensional distance between grid boundary and model surface
            hFacCtmp = (rF(k)-R_shelfIce(I,J,bi,bj))*recip_drF(K)
 C      o Reduce the previous fraction : substract the outside part.
@@ -106,22 +109,23 @@ C      o Impose minimum fraction and/or size (dimensional)
           ENDDO
          ENDDO
         ENDDO
+
 #ifdef ALLOW_SHIFWFLX_CONTROL
 C     maskSHI is a hack to play along with the general ctrl-package
-C     infrastructure, where only the k=1 layer of a 3D mask is used 
+C     infrastructure, where only the k=1 layer of a 3D mask is used
 C     for 2D fields. We cannot use maskInC instead, because routines
 C     like ctrl_get_gen and ctrl_set_unpack_xy require 3D masks.
         DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx        
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
            maskSHI(I,J,K,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
         DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx        
-           IF ( ABS(R_shelfice(I,J,bi,bj)) .GT. 0. _d 0 
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
+           IF ( ABS(R_shelfice(I,J,bi,bj)) .GT. 0. _d 0
      &          .AND. hFacC(I,J,K,bi,bj) .NE. 0. _d 0 ) THEN
             maskSHI(I,J,K,bi,bj) = 1. _d 0
             maskSHI(I,J,1,bi,bj) = 1. _d 0
@@ -129,12 +133,12 @@ C     like ctrl_get_gen and ctrl_set_unpack_xy require 3D masks.
           ENDDO
          ENDDO
         ENDDO
-#endif
+#endif /* ALLOW_SHIFWFLX_CONTROL */
+
 C - end bi,bj loops.
        ENDDO
       ENDDO
 #endif /* ALLOW_SHELFICE */
-
 
       RETURN
       END
