@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_cost.F,v 1.14 2013/10/29 20:24:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_cost.F,v 1.15 2014/09/11 19:14:54 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
+#ifdef ALLOW_COST
+# include "COST_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: DIC_COST
