@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_OPTIONS.h,v 1.3 2014/04/05 21:52:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_OPTIONS.h,v 1.4 2014/09/11 19:11:29 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -61,6 +61,7 @@ C       >>> Atmospheric state.
 C       >>> Other Control.
 #undef ALLOW_DIFFKR_CONTROL
 #undef ALLOW_KAPGM_CONTROL
+#undef ALLOW_KAPREDI_CONTROL
 #undef ALLOW_BOTTOMDRAG_CONTROL
 
 C       >>> Generic Control.
