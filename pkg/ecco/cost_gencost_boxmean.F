@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.2 2014/09/10 23:01:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.3 2014/09/11 19:54:15 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -29,6 +29,9 @@ c     == global variables ==
 #ifdef ALLOW_COST
 # include "ecco_cost.h"
 # include "optim.h"
+# include "ctrl.h"
+# include "CTRL_SIZE.h"
+# include "CTRL_GENARR.h"
 # include "ctrl_dummy.h"
 #endif
 
