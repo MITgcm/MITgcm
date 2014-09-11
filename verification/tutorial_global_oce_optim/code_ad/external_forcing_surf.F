@@ -1,10 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/external_forcing_surf.F,v 1.7 2014/05/06 15:52:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/external_forcing_surf.F,v 1.8 2014/09/11 19:52:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
+#ifdef ALLOW_SALT_PLUME
+# include "SALT_PLUME_OPTIONS.h"
 #endif
 #undef CHECK_OVERLAP_FORCING
 
@@ -225,11 +231,16 @@ C     Net Salt Flux :
 C saltPlume is the amount of salt rejected by ice while freezing;
 C it is here subtracted from surfaceForcingS and will be redistributed
 C to multiple vertical levels later on as per Duffy et al. (GRL 1999)
+C-- for the case of SALT_PLUME_VOLUME, need to call this S/R right
+C-- before kpp in do_oceanic_phys.F due to recent moved of
+C-- external_forcing_surf.F outside bi,bj loop.
+#ifndef SALT_PLUME_VOLUME
         IF ( useSALT_PLUME ) THEN
          CALL SALT_PLUME_FORCING_SURF(
      I        bi, bj, iMin, iMax, jMin, jMax,
      I        myTime, myIter, myThid )
         ENDIF
+#endif /* SALT_PLUME_VOLUME */
 #endif /* ALLOW_SALT_PLUME */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
