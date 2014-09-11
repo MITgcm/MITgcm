@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.12 2012/08/28 19:17:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.13 2014/09/11 19:52:24 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -31,6 +31,14 @@ C     == global variables ==
 #include "tamc.h"
 #include "tamc_keys.h"
 #endif
+#if (defined (ALLOW_CTRL) && \
+     defined (ALLOW_GENTIM2D_CONTROL) && \
+     defined (ALLOW_WSPEED_CONTROL))
+# include "ctrl.h"
+# include "optim.h"
+# include "CTRL_SIZE.h"
+# include "CTRL_GENARR.h"
+#endif
 
 C     == routine arguments ==
 
@@ -50,7 +58,11 @@ C     == local variables ==
       _RL     tmp1, tmp2, tmp3, tmp4
       _RL     oneThirdRL
       PARAMETER ( oneThirdRL = 1.d0 / 3.d0 )
-
+#if (defined (ALLOW_CTRL) && \
+     defined (ALLOW_GENTIM2D_CONTROL) && \
+     defined (ALLOW_WSPEED_CONTROL))
+      INTEGER iarr
+#endif
 C     == end of interface ==
 
 C--   Use atmospheric state to compute surface fluxes.
@@ -200,6 +212,20 @@ C--   infer wind field from wind-speed & wind-stress direction
          ENDDO
         ENDDO
         ENDIF
+
+#if (defined (ALLOW_CTRL) && \
+     defined (ALLOW_GENTIM2D_CONTROL) && \
+     defined (ALLOW_WSPEED_CONTROL))
+        DO j = 1,sNy
+         DO i = 1,sNx
+           do iarr = 1, maxCtrlTim2D
+           if (xx_gentim2d_file(iarr).EQ.'xxg_wspeed')
+     &       wspeed(i,j,bi,bj)=wspeed(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+           enddo
+         ENDDO
+        ENDDO
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE wspeed(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
