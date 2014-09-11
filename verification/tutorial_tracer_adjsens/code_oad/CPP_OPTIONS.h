@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_oad/CPP_OPTIONS.h,v 1.2 2013/11/18 23:51:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_oad/CPP_OPTIONS.h,v 1.3 2014/09/11 19:40:48 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -21,6 +21,9 @@ C CPP flags controlling particular source code features
 C o Shortwave heating as extra term in external_forcing.F
 C Note: this should be a run-time option
 #define SHORTWAVE_HEATING
+
+C o Include/exclude Geothermal Heat Flux at the bottom of the ocean
+#undef ALLOW_GEOTHERMAL_FLUX
 
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
@@ -129,8 +132,8 @@ C   each of the above pkg get its own options from its specific option file.
 C   Although this method, inherited from ECCO setup, has been traditionally
 C   used for all adjoint built, work is in progress to allow to use the
 C   standard method also for adjoint built.
-#ifdef PACKAGES_CONFIG_H
-# include "ECCO_CPPOPTIONS.h"
-#endif
+c#ifdef PACKAGES_CONFIG_H
+c# include "ECCO_CPPOPTIONS.h"
+c#endif
 
 #endif /* CPP_OPTIONS_H */
