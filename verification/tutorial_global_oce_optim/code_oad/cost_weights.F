@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_oad/cost_weights.F,v 1.1 2014/01/17 22:01:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_oad/cost_weights.F,v 1.2 2014/09/11 19:54:57 jmc Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       SUBROUTINE COST_WEIGHTS( myThid )
 
@@ -107,7 +110,7 @@ c     print*,'Weights for temperature: wti', (wti(k),k=1,nr)
           ENDDO
         ENDDO
       ENDDO
-#endif
+#endif /* ALLOW_COST_TEMP */
 
 C--   Then the hflux weights :
 
@@ -133,6 +136,6 @@ c            print*,'Uncertainties for Heat Flux',i,j,whfluxm(i,j,bi,bj)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
       CALL ACTIVE_WRITE_XY('whfluxm',whfluxm,1,0,myThid,dummy)
 #endif
-#endif
+#endif /* ALLOW_COST_HFLUXM or ALLOW_HFLUXM_CONTROL */
       RETURN
       END
