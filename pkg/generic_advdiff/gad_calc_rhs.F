@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.71 2014/09/05 21:05:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.72 2014/09/11 17:56:32 jahn Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -725,23 +725,9 @@ coj   If tracer is already negative, scale flux to zero
            IF (k.LT.Nr .AND. fVerT(i,j,kDown)*rkSign.GT.0. _d 0) THEN
 coj   Down flux is special: it has already been applied in lower layer,
 coj   so we have to readjust this.
-coj   Note: for k+1, gTracer is now the updated tracer, not the tendency!
-coj   thus it has an extra factor deltaTLev(k+1)
-             gTrFac=deltaTLev(k+1)
-coj   Other factors that have been applied to gTracer since the last call:
-#ifdef NONLIN_FRSURF
-             IF (nonlinFreeSurf.GT.0) THEN
-              IF (select_rStar.GT.0) THEN
-#ifndef DISABLE_RSTAR_CODE
-                gTrFac = gTrFac/rStarExpC(i,j,bi,bj)
-#endif /* DISABLE_RSTAR_CODE */
-              ENDIF
-             ENDIF
-#endif /* NONLIN_FRSURF */
-coj   Now: undo down flux, ...
+coj   undo down flux, ...
              gTracer(i,j,k+1) = gTracer(i,j,k+1)
-     &        +gTrFac
-     &         *_recip_hFacC(i,j,k+1,bi,bj)*recip_drF(k+1)
+     &        +_recip_hFacC(i,j,k+1,bi,bj)*recip_drF(k+1)
      &         *recip_rA(i,j,bi,bj)*recip_deepFac2C(k+1)
      &         *recip_rhoFacC(k+1)
      &         *( -fVerT(i,j,kDown)*rkSign )
@@ -749,8 +735,7 @@ coj   ... scale ...
              fVerT(i,j,kDown)=fac*fVerT(i,j,kDown)
 coj   ... and reapply
              gTracer(i,j,k+1) = gTracer(i,j,k+1)
-     &        +gTrFac
-     &         *_recip_hFacC(i,j,k+1,bi,bj)*recip_drF(k+1)
+     &        +_recip_hFacC(i,j,k+1,bi,bj)*recip_drF(k+1)
      &         *recip_rA(i,j,bi,bj)*recip_deepFac2C(k+1)
      &         *recip_rhoFacC(k+1)
      &         *( fVerT(i,j,kDown)*rkSign )
