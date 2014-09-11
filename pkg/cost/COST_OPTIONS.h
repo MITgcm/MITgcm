@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/COST_OPTIONS.h,v 1.2 2014/04/05 21:52:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/COST_OPTIONS.h,v 1.3 2014/09/11 19:10:36 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -45,6 +45,7 @@ C       >>> Cost function contributions
 #undef ALLOW_CTDT_COST_CONTRIBUTION
 #undef ALLOW_CTDS_COST_CONTRIBUTION
 #undef ALLOW_COST_ATLANTIC
+#undef ALLOW_COST_ATLANTIC_HEAT
 
 #undef ALLOW_COST_TEST
 #undef ALLOW_COST_TSQUARED
