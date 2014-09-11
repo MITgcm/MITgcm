@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_ad/Attic/CPP_EEOPTIONS.h_mpi,v 1.1 2013/11/09 03:04:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_ad/Attic/CPP_EEOPTIONS.h_mpi,v 1.2 2014/09/11 19:33:43 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -83,8 +83,10 @@ C--   Alternative formulation of BYTESWAP, faster than
 C     compiler flag -byteswapio on the Altix.
 #undef FAST_BYTESWAP
 
-C--   Flag defined for eeset_parms.F and open_copy_data_file.F
-C     to write scratch files from process 0 only
+C--   Flag defined for eeboot_minimal.F, eeset_parms.F and open_copy_data_file.F
+C     to write STDOUT, STDERR and scratch files from process 0 only.
+C WARNING: to use only when absolutely confident that the setup is working
+C     since any message (error/warning/print) from any proc <> 0 will be lost.
 #undef SINGLE_DISK_IO
 
 C=== MPI, EXCH and GLOBAL_SUM related options ===

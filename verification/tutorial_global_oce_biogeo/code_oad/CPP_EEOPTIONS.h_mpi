@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_oad/Attic/CPP_EEOPTIONS.h_mpi,v 1.1 2013/11/08 20:27:24 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_oad/Attic/CPP_EEOPTIONS.h_mpi,v 1.2 2014/09/11 19:33:43 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -65,9 +65,6 @@ C--   Control use of "double" precision constants.
 C     Use D0 where it means REAL*8 but not where it means REAL*16
 #define D0 d0
 
-C--   Enable some old macro conventions for backward compatibility
-#undef USE_OLD_MACROS_R4R8toRSRL
-
 C=== IO related options ===
 C--   Flag used to indicate whether Fortran formatted write
 C     and read are threadsafe. On SGI the routines can be thread
@@ -86,20 +83,16 @@ C--   Alternative formulation of BYTESWAP, faster than
 C     compiler flag -byteswapio on the Altix.
 #undef FAST_BYTESWAP
 
-C--   Flag defined for eeset_parms.F and open_copy_data_file.F
-C     to write scratch files from process 0 only
+C--   Flag defined for eeboot_minimal.F, eeset_parms.F and open_copy_data_file.F
+C     to write STDOUT, STDERR and scratch files from process 0 only.
+C WARNING: to use only when absolutely confident that the setup is working
+C     since any message (error/warning/print) from any proc <> 0 will be lost.
 #undef SINGLE_DISK_IO
 
 C=== MPI, EXCH and GLOBAL_SUM related options ===
 C--   Flag turns off MPI_SEND ready_to_receive polling in the
 C     gather_* subroutines to speed up integrations.
 #undef DISABLE_MPI_READY_TO_RECEIVE
-
-C--   Control MPI based parallel processing
-CXXX We no longer select the use of MPI via this file (CPP_EEOPTIONS.h)
-CXXX To use MPI, use an appropriate genmake2 options file or use
-CXXX genmake2 -mpi .
-CXXX #undef  ALLOW_USE_MPI
 
 C--   Control use of communication that might overlap computation.
 C     Under MPI selects/deselects "non-blocking" sends and receives.
@@ -110,13 +103,6 @@ C--   Control use of communication that is atomic to computation.
 C     Under MPI selects/deselects "blocking" sends and receives.
 #define ALLOW_SYNC_COMMUNICATION
 #undef  ALWAYS_USE_SYNC_COMMUNICATION
-
-C--   Control use of JAM routines for Artic network
-C     These invoke optimized versions of "exchange" and "sum" that
-C     utilize the programmable aspect of Artic cards.
-CXXX No longer supported ; started to remove JAM routines.
-CXXX #undef  LETS_MAKE_JAM
-CXXX #undef  JAM_WITH_TWO_PROCS_PER_NODE
 
 C--   Control XY periodicity in processor to grid mappings
 C     Note: Model code does not need to know whether a domain is
@@ -153,3 +139,4 @@ C     allow to import and export from/to Coupler interface.
 #endif /* _CPP_EEOPTIONS_H_ */
 
 #include "CPP_EEMACROS.h"
+
