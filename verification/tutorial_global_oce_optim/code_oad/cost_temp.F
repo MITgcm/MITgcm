@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_oad/cost_temp.F,v 1.1 2014/01/17 22:01:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_oad/cost_temp.F,v 1.2 2014/09/11 19:55:25 jmc Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
+c#ifdef ALLOW_CTRL
+c# include "CTRL_OPTIONS.h"
+c#endif
 
       SUBROUTINE COST_TEMP( myThid )
 C     *==========================================================*
@@ -17,13 +20,8 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
 #include "cost.h"
 #include "ctrl_weights.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-# include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     ======== Routine arguments ======================
 C     myThid - Thread number for this instance of the routine.
@@ -61,16 +59,6 @@ C  Total number of wet temperature point
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-#ifdef ALLOW_AUTODIFF_TAMC
-         act1 = bi - myBxLo(myThid)
-         max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-         act2 = bj - myByLo(myThid)
-         max2 = myByHi(myThid) - myByLo(myThid) + 1
-         act3 = myThid - 1
-         ikey = (act1 + 1) + act2*max1
-     &                     + act3*max1*max2
-#endif /* ALLOW_AUTODIFF_TAMC */
-
          locfc = 0. _d 0
          DO k=1,Nk
            DO j=1,sNy
@@ -87,6 +75,7 @@ c        print*,'objf_temp_tut =',locfc,startTime,endTime,tmp
 
        ENDDO
       ENDDO
-#endif
+
+#endif /* ALLOW_COST_TEMP */
       RETURN
       END
