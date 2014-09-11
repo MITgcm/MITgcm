@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_ad_dump.F,v 1.4 2012/08/29 13:11:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_ad_dump.F,v 1.5 2014/09/11 19:18:52 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
 #include "AD_CONFIG.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: ptracers_ad_dump

@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor_ad.F,v 1.6 2012/07/06 23:07:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor_ad.F,v 1.7 2014/09/11 19:18:52 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: ADPTRACERS_MONITOR
@@ -23,12 +26,10 @@ C !USES: ===============================================================
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
 #ifdef ALLOW_MONITOR
-#include "MONITOR.h"
+# include "MONITOR.h"
 #endif
-#ifdef ALLOW_AUTODIFF
-# ifdef ALLOW_AUTODIFF_MONITOR
-#  include "ptracers_adcommon.h"
-# endif
+#ifdef ALLOW_AUTODIFF_MONITOR
+# include "ptracers_adcommon.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================
