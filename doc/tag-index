@@ -1,9 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2058 2014/09/05 21:18:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2059 2014/09/12 14:33:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o OpenAD verification experiments:
+  - Include explicitly AUTODIFF_OPTIONS.h, COST_OPTIONS.h, and CTRL_OPTIONS.h
+    in src files (to enable to skip the ECCO_CPPOPTIONS.h);
+    for now, only in pkgs used in OpenAD verification experiments.
+  - Change all except one (halfpipe_streamice) OpenAD experiments to use pkg
+    specific option file (AUTODIFF_OPTIONS.h, COST_OPTIONS.h & CTRL_OPTIONS.h)
+    instead of using ECCO_CPPOPTIONS.h (with all relevant options in it).
+    This applies to both TAF (*/code_ad/) and OpenAD (*/code_oad/) tests.
+o OpenAD verification tests:
+  - finish removing ALLOW_AUTODIFF_OPENAD (replaced by ALLOW_OPENAD);
+  - finish replacing ALLOW_AUTODIFF_TAMC by ALLOW_AUTODIFF (except for
+    tape/storage which are specific to TAF/TAMC) in pkgs used in OpenAD exp.
+  - leave ALLOW_AUTODIFF_TAMC undef in OpenAD verification tests (*/code_oad/)
+    and remove local copy of "tamc.h" (needed only if ALLOW_AUTODIFF_TAMC).
 o model/src & generic_advdiff:
   - change hard-coded loop-range in S/R APPLY_FORCING_T/S to set T & S
     forcing over 0:sNx+1, 0:sNy=1 (instead of just 1:sNx,1:sNy): Model
