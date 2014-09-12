@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.18 2014/05/27 23:41:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.19 2014/09/12 19:19:44 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -72,6 +72,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    pkg SHELFICE is not used
         _BEGIN_MASTER(myThid)
 C-    Track pkg activation status:
+         SHELFICEisOn = .FALSE.
 C     print a (weak) warning if data.shelfice is found
          CALL PACKAGES_UNUSED_MSG( 'useShelfIce', ' ', ' ' )
         _END_MASTER(myThid)
@@ -82,7 +83,7 @@ C     print a (weak) warning if data.shelfice is found
 
 C This routine has been called by the main model so we set our
 C internal flag to indicate we are in business
-      SHELFICEisON=.TRUE.
+      SHELFICEisOn = .TRUE.
 
 C Set defaults values for parameters in SHELFICE.h
       useISOMIPTD              = .FALSE.
