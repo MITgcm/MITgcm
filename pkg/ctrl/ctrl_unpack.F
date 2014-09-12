@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.48 2014/04/04 21:17:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.49 2014/09/12 14:55:29 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -845,6 +845,7 @@ cc          write(weighttype(1:80),'(a)') "wunit"
 
 #ifdef ALLOW_GENTIM2D_CONTROL
        do iarr = 1, maxCtrlTim2D
+        if (xx_gentim2d_file(iarr).NE.' ') then
           call ctrl_set_fname( xx_gentim2d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 300+iarr
@@ -855,6 +856,7 @@ cc          write(weighttype(1:80),'(a)') "wunit"
      &         fname_local(ictrlgrad), "maskCtrlC",
      &         xx_gentim2d_weight(iarr),
      &         nwetcglobal, mythid)
+        endif
        enddo
 #endif
 
