@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2059 2014/09/12 14:33:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2060 2014/09/12 15:02:39 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf : 
+  - exf_getffields.F : add xxg_atemp, xxg_aqh, xxg_swdown, xxg_lwdown, xxg_precip capability
+  - exf_wind.F : no need for ALLOW_WSPEED_CONTROL cpp switch
+o pkg/ctrl : 
+  - ctrl_pack.F, ctrl_unpack.F : omit (un)packing of undefined xx_gentim2d
+o model/src/load_fields_driver.F : 
+  - move call to CTRL_MAP_GENTIM2D ahead of BULKF_FIELDS_LOAD, EXF_GETFORCING
+    so xx_gentim2d can be applied to e.g. exf fields in a timely manner.
 o OpenAD verification experiments:
   - Include explicitly AUTODIFF_OPTIONS.h, COST_OPTIONS.h, and CTRL_OPTIONS.h
     in src files (to enable to skip the ECCO_CPPOPTIONS.h);
