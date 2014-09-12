@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_gentim2d.F,v 1.4 2013/03/31 19:43:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_gentim2d.F,v 1.5 2014/09/12 20:50:19 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -70,12 +70,6 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_GENTIM2D_CONTROL
-C--   An example of connecting specific fields
-C--   to generic time-varying 2D control arrays
-cph--->>>
-cph--->>> COMPILE FAILURE IS DELIBERATE
-cph--->>> BE SURE WHAT YOU ARE DOING AND CUSTOMIZE <<<---
-cph--->>>
 C--   generic - user-defined control vars
       DO iarr = 1, maxCtrlTim2D
 
@@ -145,17 +139,20 @@ C
         ENDDO
        ENDDO
 
-       genprecipGloH=LOCsumGlob/globalArea
-     &          *rhoConstFresh*recip_rhoConst*deltaTClock
+       if (xx_gentim2d_file(iarr).EQ.'xx_gen_precip') then
 
+         genprecipGloH=LOCsumGlob/globalArea
+     &     *rhoConstFresh*recip_rhoConst*deltaTClock
          WRITE(msgBuf,'(A,I6,A,1PE21.14)')
-     &    ' iter=', myiter, ' ; genprecipGloH= ', genprecipGloH
+     &     ' iter=', myiter, ' ; genprecipGloH= ', genprecipGloH
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
 
-       endif
+       endif !if (xx_gentim2d_file(iarr).EQ.'xx_gen_precip') then
 
-      ENDDO
+       endif !if (xx_gentim2d_glosum(iarr)) then
+
+      ENDDO !DO iarr = 1, maxCtrlTim2D
 
 #endif /* ALLOW_GENTIM2D_CONTROL */
 
