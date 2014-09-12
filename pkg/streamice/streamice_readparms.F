@@ -1,6 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.7 2014/09/05 14:25:11 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.8 2014/09/12 22:46:06 jmc Exp $
 C $Name:  $
-
 
 C this needs changes
 
@@ -21,7 +20,7 @@ C     !USES:
 #include "STREAMICE.h"
 #include "STREAMICE_BDRY.h"
 #ifdef ALLOW_STREAMICE_FLUX_CONTROL
-#include "STREAMICE_CTRL_FLUX.h"      
+#include "STREAMICE_CTRL_FLUX.h"
 #endif
 
 C     !INPUT PARAMETERS:
@@ -39,7 +38,7 @@ C     iUnit      :: Work variable for IO unit number
       NAMELIST /STREAMICE_PARM01/
      &     streamice_density, streamice_density_ocean_avg,
      &     B_glen_isothermal, n_glen, eps_glen_min, eps_u_min,
-     &     C_basal_fric_const, n_basal_friction, 
+     &     C_basal_fric_const, n_basal_friction,
      &     streamice_vel_update,streamice_cg_tol,streamice_nonlin_tol,
      &     streamice_nonlin_tol_fp,
      &     streamice_max_cg_iter, streamice_max_nl_iter,
@@ -50,7 +49,6 @@ C     iUnit      :: Work variable for IO unit number
      &     STREAMICEthickFile,
      &     STREAMICEcalveMaskFile,
      &     STREAMICEcostMaskFile,
-     &     STREAMICEison,
      &     STREAMICE_dump_mdsio, STREAMICE_tave_mdsio,
      &     STREAMICE_dump_mnc, STREAMICE_tave_mnc,
      &     STREAMICE_move_front,
@@ -74,9 +72,9 @@ C     iUnit      :: Work variable for IO unit number
      &     STREAMICEuFaceBdryFile,
      &     STREAMICEvFaceBdryFile,
      &     STREAMICEuDirichValsFile,
-     &     STREAMICEvDirichValsFile, 
-     &     STREAMICEuMassFluxFile, 
-     &     STREAMICEvMassFluxFile, 
+     &     STREAMICEvDirichValsFile,
+     &     STREAMICEuMassFluxFile,
+     &     STREAMICEvMassFluxFile,
      &     STREAMICEuNormalStressFile,
      &     STREAMICEvNormalStressFile,
      &     STREAMICEuShearStressFile,
@@ -89,7 +87,7 @@ C     iUnit      :: Work variable for IO unit number
      &     STREAMICE_ppm_driving_stress,
      &     STREAMICE_h_ctrl_const_surf,
      &     streamice_wgt_drift,streamice_wgt_surf,streamice_wgt_vel,
-     &     streamice_wgt_avthick, streamice_wgt_tikh, 
+     &     streamice_wgt_avthick, streamice_wgt_tikh,
      &     streamice_addl_backstress,
      &     streamice_smooth_gl_width,
      &     streamice_adot_uniform,
@@ -116,7 +114,6 @@ C     iUnit      :: Work variable for IO unit number
      &     streamice_ctrl_flux_id,
      &     streamice_ctrl_flux_scaleVel
 #endif
-
 
       NAMELIST /STREAMICE_PARM02/
      &     shelf_max_draft,
@@ -151,11 +148,28 @@ C     iUnit      :: Work variable for IO unit number
      &     flux_bdry_val_WEST, flux_bdry_val_EAST,
      &     STREAMICE_NS_periodic, STREAMICE_EW_periodic
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( .NOT.useStreamIce ) THEN
+C-    pkg STREAMICE is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+         STREAMICEisOn = .FALSE.
+C     print a (weak) warning if data.streamice is found
+         CALL PACKAGES_UNUSED_MSG( 'useStreamIce', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
+
       _BEGIN_MASTER(myThid)
+
+C This routine has been called by the main model so we set our
+C internal flag to indicate we are in business
+      STREAMICEisOn = .TRUE.
 
 C--   Default values for STREAMICE
 
-      streamice_density = 917. 
+      streamice_density = 917.
       streamice_density_ocean_avg = 1024.
       B_glen_isothermal = 9.461e-18   !  Pa (-1/3) a
       n_glen = 3.
@@ -180,8 +194,8 @@ C--   Default values for STREAMICE
       streamice_ky_b_init = 1.
       streamice_wgt_drift = 0.
       streamice_wgt_tikh = 0.
-      streamice_wgt_surf = 0.     
-      streamice_wgt_vel = 0.     
+      streamice_wgt_surf = 0.
+      streamice_wgt_vel = 0.
       streamice_wgt_avthick = 0.
       streamice_addl_backstress = 0.0
       streamice_smooth_gl_width = 0.0
@@ -243,10 +257,9 @@ C--   Default values for STREAMICE
       ENDDO
 #endif
 
-      STREAMICEison = .TRUE.
       STREAMICE_tave_mdsio = .TRUE.
       STREAMICE_dump_mdsio = .TRUE.
-      STREAMICE_dump_mnc = .FALSE. 
+      STREAMICE_dump_mnc = .FALSE.
       STREAMICE_tave_mnc = .FALSE.
 !      STREAMICE_GL_regularize = .FALSE.
       STREAMICE_move_front = .FALSE.
@@ -304,7 +317,7 @@ C--   Default values for STREAMICE
       flux_bdry_val_EAST = 0.
 
       STREAMICE_NS_periodic = .FALSE.
-      STREAMICE_EW_periodic = .FALSE. 
+      STREAMICE_EW_periodic = .FALSE.
 
       WRITE(msgBuf,'(A)') 'STREAMICE_READPARMS: opening data.streamice'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -345,7 +358,6 @@ C     Read parameters from open data file
      &    SQUEEZE_RIGHT , 1)
 #endif
 
-
       READ(UNIT=iUnit,NML=STREAMICE_PARM03)
       WRITE(msgBuf,'(A)')
      &    'STREAMICE_READPARMS: read third param block'
@@ -353,14 +365,12 @@ C     Read parameters from open data file
      &    SQUEEZE_RIGHT , 1)
       CLOSE(iUnit)
 
-
 #ifdef ALLOW_STREAMICE_FLUX_CONTROL
 
       CALL OPEN_COPY_DATA_FILE(
      I                     'data.strmctrlflux', 'STREAMICE_READPARMS',
      O                     iUnit,
      I                     myThid )
-
 
       READ(UNIT=iUnit,NML=STREAMICE_PARMFLUXCTRL)
       WRITE(msgBuf,'(A)')
@@ -370,12 +380,10 @@ C     Read parameters from open data file
       CLOSE(iUnit)
 #endif
 
-
-
       streamice_nstep_velocity = NINT (streamice_vel_update / deltaT)
 
 C-    Set Output type flags :
-      
+
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
         IF ( .NOT.outputTypesInclusive
