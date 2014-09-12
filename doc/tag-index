@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2060 2014/09/12 15:02:39 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2061 2014/09/12 17:24:38 jahn Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/generic_advdiff:
+  - fix bug causing negatives in GAD_SMOLARKIEWICZ_HACK, introduced 8/8/2014.
 o pkg/exf : 
   - exf_getffields.F : add xxg_atemp, xxg_aqh, xxg_swdown, xxg_lwdown, xxg_precip capability
   - exf_wind.F : no need for ALLOW_WSPEED_CONTROL cpp switch
