@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.51 2013/10/05 19:36:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.52 2014/09/12 14:57:44 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -35,6 +35,10 @@ C     == global variables ==
 #ifdef ALLOW_AUTODIFF
 # include "CTRL_SIZE.h"
 # include "ctrl.h"
+#if (defined (ALLOW_CTRL) && \
+     defined (ALLOW_GENTIM2D_CONTROL))
+# include "CTRL_GENARR.h"
+#endif
 # include "ctrl_dummy.h"
 #endif
 
@@ -50,6 +54,10 @@ C     == local variables ==
       _RL     tmpVN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nsx,nsy)
       _RL     tmpUX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nsx,nsy)
       _RL     tmpVY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nsx,nsy)
+#endif
+#if (defined (ALLOW_CTRL) && \
+     defined (ALLOW_GENTIM2D_CONTROL))
+      INTEGER iarr
 #endif
 
 C     == end of interface ==
@@ -564,6 +572,35 @@ cdm      &     maskc, runoff, xx_runoff0, xx_runoff1, xx_runoff_dummy,
 cdm      &     xx_runoff_remo_intercept, xx_runoff_remo_slope,
 cdm      &     0., 0., myThid )
 cdm #endif
+
+#if (defined (ALLOW_CTRL) && \
+     defined (ALLOW_GENTIM2D_CONTROL))
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid),mybxhi(myThid)
+        DO j = 1,sNy
+         DO i = 1,sNx
+           do iarr = 1, maxCtrlTim2D
+           if (xx_gentim2d_file(iarr).EQ.'xxg_atemp')
+     &       atemp(i,j,bi,bj)=atemp(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr).EQ.'xxg_aqh')
+     &       aqh(i,j,bi,bj)=aqh(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr).EQ.'xxg_swdown')
+     &       swdown(i,j,bi,bj)=swdown(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr).EQ.'xxg_lwdown')
+     &       lwdown(i,j,bi,bj)=lwdown(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr).EQ.'xxg_precip')
+     &       precip(i,j,bi,bj)=precip(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+           enddo
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#endif
 
       RETURN
       END
