@@ -1,17 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2061 2014/09/12 17:24:38 jahn Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2062 2014/09/13 15:51:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/streamice:
+  - move call to STREAMICE_INITIALIZE_PETSC from the_model_main.F
+    to streamice_init_fixed.F ; fix setting of STREAMICEisOn.
+  - from model/src, only call pkg/streamice routines if useStreamIce is TRUE.
 o pkg/generic_advdiff:
   - fix bug causing negatives in GAD_SMOLARKIEWICZ_HACK, introduced 8/8/2014.
-o pkg/exf : 
-  - exf_getffields.F : add xxg_atemp, xxg_aqh, xxg_swdown, xxg_lwdown, xxg_precip capability
+o pkg/exf:
+  - exf_getffields.F : add xxg_atemp, xxg_aqh, xxg_swdown, xxg_lwdown,
+     xxg_precip capability
   - exf_wind.F : no need for ALLOW_WSPEED_CONTROL cpp switch
-o pkg/ctrl : 
+o pkg/ctrl:
   - ctrl_pack.F, ctrl_unpack.F : omit (un)packing of undefined xx_gentim2d
-o model/src/load_fields_driver.F : 
+o model/src/load_fields_driver.F :
   - move call to CTRL_MAP_GENTIM2D ahead of BULKF_FIELDS_LOAD, EXF_GETFORCING
     so xx_gentim2d can be applied to e.g. exf fields in a timely manner.
 o OpenAD verification experiments:
