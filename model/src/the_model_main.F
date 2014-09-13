@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.119 2014/09/05 18:32:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.120 2014/09/13 15:27:33 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -514,9 +514,6 @@ CEOI
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
-#ifdef ALLOW_STREAMICE
-# include "STREAMICE_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: THE_MODEL_MAIN
@@ -609,10 +606,6 @@ CEOP
 C--   set default:
       exst     = .TRUE.
       lastdiva = .TRUE.
-
-#ifdef ALLOW_PETSC
-      call streamice_initialize_petsc
-#endif
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('THE_MODEL_MAIN',myThid)
@@ -745,8 +738,10 @@ C--   Call time stepping loop of full model
 
 #endif /* ALLOW_TANGENTLINEAR_RUN ALLOW_ADJOINT_RUN ALLOW_ADMTLM */
 
-#ifdef ALLOW_PETSC
-      call streamice_finalize_petsc
+#ifdef ALLOW_STREAMICE
+      IF (useStreamIce) THEN
+        CALL STREAMICE_FINALIZE_PETSC
+      ENDIF
 #endif
 
 #ifdef ALLOW_MNC
