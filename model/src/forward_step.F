@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.227 2014/09/09 22:29:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.228 2014/09/13 15:28:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -602,8 +602,10 @@ CADJ STORE hFacC = comlev1, key = ikey_dynamics, kind = isbyte
        CALL TIMER_STOP ('DO_OCEANIC_PHYS     [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_STREAMICE
-       CALL STREAMICE_TIMESTEP ( myThid, myIter,
-     &   iLoop, myTime )
+       IF (useStreamIce) THEN
+         CALL STREAMICE_TIMESTEP ( myThid, myIter,
+     &                             iLoop, myTime )
+       ENDIF
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
