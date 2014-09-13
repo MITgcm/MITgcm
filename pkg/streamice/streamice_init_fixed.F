@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.8 2014/04/24 12:01:50 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.9 2014/09/13 15:24:27 jmc Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -30,6 +30,7 @@ C     myThid ::  my Thread Id number
       INTEGER myThid
 CEOP
 
+#ifdef ALLOW_STREAMICE
 C     !LOCAL VARIABLES:
 C     === Local variables ===
       INTEGER bi, bj, i, j, Gi, Gj, m, k
@@ -38,16 +39,17 @@ C     === Local variables ===
       _RS dummyRS
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-#ifdef ALLOW_STREAMICE
-
 #ifdef STREAMICE_GEOM_FILE_SETUP
       _RS temp_ufacemask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS temp_vfacemask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS temp_hmask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
-#ifdef ALLOW_MNC
+#ifdef ALLOW_PETSC
+      CALL STREAMICE_INITIALIZE_PETSC
+#endif
 
+#ifdef ALLOW_MNC
       IF ( useMNC .AND. (streamice_tave_mnc.OR.streamice_dump_mnc)
      &    ) THEN
 C        CALL STREAMICE_MNC_INIT( myThid )
@@ -182,7 +184,6 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
        WRITE(msgBuf,'(A)') 'THICK BC AT V FACE - NOT SET'
        CALL PRINT_ERROR( msgBuf, myThid)
       ENDIF
-
 
       IF ( streamiceumassfluxfile .NE. ' ') THEN
         _BARRIER
@@ -530,8 +531,6 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
      & STREAMICE_cost_mask, 0, myThid )
 #endif
 
-
-
       _EXCH_XY_RL(k1AtC_str, myThid )
       _EXCH_XY_RL(k2AtC_str, myThid )
       _EXCH_XY_RS(STREAMICE_ufacemask_bdry, myThid )
@@ -546,7 +545,7 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
 
       CALL STREAMICE_INIT_PHI( myThid )
 
-#endif
+#endif /* ALLOW_STREAMICE */
 
       RETURN
       END
