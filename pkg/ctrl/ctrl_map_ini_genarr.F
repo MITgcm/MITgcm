@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.5 2014/04/26 19:20:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.6 2014/09/14 21:50:54 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -71,82 +71,88 @@ CEOP
       fac = 1. _d 0
 
 #ifdef ALLOW_GENARR2D_CONTROL
-C--   An example of connecting specific fields
-C--   to 3 generic 2D control arrays
---->>>
---->>> COMPILE FAILURE IS DELIBERATE
---->>> BE SURE WHAT YOU ARE DOING AND CUSTOMIZE <<<---
---->>>
 C--   generic - user-defined control vars
       DO iarr = 1, maxCtrlArr2D
 
-       il=ILNBLNK( xx_genarr2d_file(iarr) )
-       write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_genarr2d_file(iarr)(1:il),'.',optimcycle
-       CALL ACTIVE_READ_XY ( fnamegeneric, tmpfld2d, 1,
-     &                      doglobalread, ladinit, optimcycle,
-     &                      myThid, xx_genarr2d_dummy(iarr) )
        DO bj=myByLo(myThid), myByHi(myThid)
         DO bi=myBxLo(myThid), myBxHi(myThid)
           do j = jmin,jmax
             do i = imin,imax
-              if ( iarr .eq. 1 ) then
+              tmpfld2d(i,j,bi,bj) = 0. _d 0
+              if (xx_genarr2d_file(iarr).EQ.'xxg_etan0') then
+                 tmpfld2d(i,j,bi,bj) = etaN(i,j,bi,bj)
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-                bottomDragFld(i,j,bi,bj) = bottomDragFld(i,j,bi,bj)
-     &                                   + tmpfld2d(i,j,bi,bj)
+              elseif (xx_genarr2d_file(iarr).EQ.'xxg_bottomdrag') then
+                 tmpfld2d(i,j,bi,bj) = bottomDragFld(i,j,bi,bj)
 #endif
-              elseif ( iarr. eq. 2 ) then
-                theta(i,j,1,bi,bj) = theta(i,j,1,bi,bj)
-     &                             + tmpfld2d(i,j,bi,bj)
-              elseif ( iarr .eq. 3 ) then
-                salt(i,j,1,bi,bj) = salt(i,j,1,bi,bj)
-     &                            + tmpfld2d(i,j,bi,bj)
+#ifdef ALLOW_GEOTHERMAL_FLUX
+              elseif (xx_genarr2d_file(iarr).EQ.'xxg_geothermal') then
+                 tmpfld2d(i,j,bi,bj) = geothermalFlux(i,j,bi,bj)
+#endif
               endif
             enddo
           enddo
         ENDDO
        ENDDO
+
+       if (xx_genarr2d_weight(iarr).NE.' ') 
+     &  call ctrl_map_ini_gen2D(xx_genarr2d_file(iarr),
+     &  xx_genarr2d_weight(iarr), xx_genarr2d_dummy(iarr),
+     &  xx_genarr2d_bounds(1,iarr), tmpfld2d, maskc,
+     &  xx_genarr2d_numsmooth(iarr), mythid )
+
+       _EXCH_XY_RL( tmpfld2d, mythid)
+
+       DO bj=myByLo(myThid), myByHi(myThid)
+        DO bi=myBxLo(myThid), myBxHi(myThid)
+          do j = 1-Oly,sNy+Oly
+            do i = 1-Olx,sNy+Olx
+              if (xx_genarr2d_file(iarr).EQ.'xxg_etan0') then
+                 tmpfld2d(i,j,bi,bj) = etaN(i,j,bi,bj)
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+              elseif (xx_genarr2d_file(iarr).EQ.'xxg_bottomdrag') then
+                 bottomDragFld(i,j,bi,bj) = tmpfld2d(i,j,bi,bj)
+#endif
+#ifdef ALLOW_GEOTHERMAL_FLUX
+              elseif (xx_genarr2d_file(iarr).EQ.'xxg_geothermal') then
+                 geothermalFlux(i,j,bi,bj) = tmpfld2d(i,j,bi,bj)
+#endif
+              endif
+            enddo
+          enddo
+        ENDDO
+       ENDDO
+
 C--   end iarr loop
       ENDDO
-#ifdef ALLOW_BOTTOMDRAG_CONTROL
-       _EXCH_XY_RL( bottomDragFld, myThid )
-#endif
-       _EXCH_XYZ_RL( theta, myThid )
-       _EXCH_XYZ_RL( salt, myThid )
 
 #endif /* ALLOW_GENARR2D_CONTROL */
 
 #ifdef ALLOW_GENARR3D_CONTROL
-C--   An example of connecting specific fields
-C--   to 3 generic 3D control arrays
---->>>
---->>> COMPILE FAILURE IS DELIBERATE
---->>> BE SURE WHAT YOU ARE DOING AND CUSTOMIZE <<<---
---->>>
 C--   generic - user-defined control vars
       DO iarr = 1, maxCtrlArr3D
 
-       il=ILNBLNK( xx_genarr3d_file(iarr) )
-       write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_genarr3d_file(iarr)(1:il),'.',optimcycle
-       CALL ACTIVE_READ_XYZ( fnamegeneric, tmpfld3d, 1,
-     &                       doglobalread, ladinit, optimcycle,
-     &                       myThid, xx_genarr3d_dummy(iarr) )
        DO bj=myByLo(myThid), myByHi(myThid)
         DO bi=myBxLo(myThid), myBxHi(myThid)
           do k = 1,Nr
            do j = jmin,jmax
             do i = imin,imax
-              if ( iarr .eq. 1 ) then
-                theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj)
-     &                             + fac*tmpfld3d(i,j,k,bi,bj)
-              elseif ( iarr .eq. 2 ) then
-                salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj)
-     &                            + fac*tmpfld3d(i,j,k,bi,bj)
-              elseif ( iarr .eq. 3 ) then
+              tmpfld3d(i,j,k,bi,bj) = 0. _d 0
+              if (xx_genarr3d_file(iarr).EQ.'xxg_theta') then
+                tmpfld3d(i,j,k,bi,bj) = theta(i,j,k,bi,bj)
+              elseif (xx_genarr3d_file(iarr).EQ.'xxg_salt') then
+                tmpfld3d(i,j,k,bi,bj) = salt(i,j,k,bi,bj)
+#ifdef ALLOW_KAPGM_CONTROL
+              elseif (xx_genarr3d_file(iarr).EQ.'xxg_kapgm') then
+                tmpfld3d(i,j,k,bi,bj) = kapgm(i,j,k,bi,bj)
+#endif
+#ifdef ALLOW_KAPREDI_CONTROL
+              elseif (xx_genarr3d_file(iarr).EQ.'xxg_kapredi') then
+                tmpfld3d(i,j,k,bi,bj) = kapredi(i,j,k,bi,bj)
+#endif
 #ifdef ALLOW_DIFFKR_CONTROL
-                diffKr(i,j,k,bi,bj) = diffKr(i,j,k,bi,bj)
-     &                              + tmpfld3d(i,j,k,bi,bj)
+              elseif (xx_genarr3d_file(iarr).EQ.'xxg_diffkr') then
+                tmpfld3d(i,j,k,bi,bj) = diffKr(i,j,k,bi,bj)
 #endif
               endif
             enddo
@@ -154,13 +160,46 @@ C--   generic - user-defined control vars
           enddo
         ENDDO
        ENDDO
+
+       if (xx_genarr3d_weight(iarr).NE.' ')
+     &  call ctrl_map_ini_gen3D(xx_genarr3d_file(iarr),
+     &  xx_genarr3d_weight(iarr), xx_genarr3d_dummy(iarr),
+     &  xx_genarr3d_bounds(1,iarr), tmpfld3d, maskc,
+     &  xx_genarr3d_numsmooth(iarr), mythid )
+
+       _EXCH_XYZ_RL( tmpfld3d, myThid )
+
+       DO bj=myByLo(myThid), myByHi(myThid)
+        DO bi=myBxLo(myThid), myBxHi(myThid)
+          do k = 1,Nr
+           do j = 1-Oly,sNy+Oly
+            do i = 1-Olx,sNy+Olx
+              tmpfld3d(i,j,k,bi,bj) = 0. _d 0
+              if (xx_genarr3d_file(iarr).EQ.'xxg_theta0') then
+                theta(i,j,k,bi,bj) = tmpfld3d(i,j,k,bi,bj)
+              elseif (xx_genarr3d_file(iarr).EQ.'xxg_salt0') then
+                salt(i,j,k,bi,bj) = tmpfld3d(i,j,k,bi,bj)
+#ifdef ALLOW_KAPGM_CONTROL
+              elseif (xx_genarr3d_file(iarr).EQ.'xxg_kapgm') then
+                kapgm(i,j,k,bi,bj) = tmpfld3d(i,j,k,bi,bj)
+#endif
+#ifdef ALLOW_KAPREDI_CONTROL
+              elseif (xx_genarr3d_file(iarr).EQ.'xxg_kapredi') then
+                kapredi(i,j,k,bi,bj) = tmpfld3d(i,j,k,bi,bj)
+#endif
+#ifdef ALLOW_DIFFKR_CONTROL
+              elseif (xx_genarr3d_file(iarr).EQ.'xxg_diffkr') then
+                diffKr(i,j,k,bi,bj) = tmpfld3d(i,j,k,bi,bj)
+#endif
+              endif
+            enddo
+           enddo
+          enddo
+        ENDDO
+       ENDDO
+
 C--   end iarr loop
       ENDDO
-       _EXCH_XYZ_RL( theta, myThid )
-       _EXCH_XYZ_RL( salt, myThid )
-#ifdef ALLOW_DIFFKR_CONTROL
-       _EXCH_XYZ_RL( diffkr, myThid )
-#endif
 
 #endif /* ALLOW_GENARR3D_CONTROL */
 

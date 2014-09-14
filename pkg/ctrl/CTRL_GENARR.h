@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.9 2014/01/15 16:21:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.10 2014/09/14 21:50:54 gforget Exp $
 C $Name:  $
 
 C     ==================================================================
@@ -18,8 +18,16 @@ C     ==================================================================
       CHARACTER*(MAX_LEN_FNAM) xx_genarr3d_weight(maxCtrlArr3D)
 
       COMMON /CONTROLFILES_RARR/
-     &     genarr2dPrecond
+     &     genarr2dPrecond,
+     &     xx_genarr2d_bounds,xx_genarr3d_bounds
       _RL genarr2dPrecond(maxCtrlArr2D)
+      _RL xx_genarr2d_bounds(5,maxCtrlArr2D)
+      _RL xx_genarr3d_bounds(5,maxCtrlArr3D)
+
+      COMMON /CONTROLFILES_IARR/
+     &     xx_genarr2d_numsmooth,xx_genarr3d_numsmooth
+      INTEGER xx_genarr2d_numsmooth(maxCtrlArr2D)
+      INTEGER xx_genarr3d_numsmooth(maxCtrlArr3D)
 
       COMMON /CONTROLFILES_CTIM/
      &     xx_gentim2d_file,

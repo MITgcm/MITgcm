@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.49 2014/06/27 14:20:58 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.50 2014/09/14 21:50:54 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -55,7 +55,9 @@ c     == local variables ==
       character*(max_len_mbuf) msgbuf
 
       integer nwetc3d
-      integer iarr
+#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+      integer iarr,jarr
+#endif
 
 c     == external ==
 
@@ -145,6 +147,8 @@ cHFLUXM_CONTROL
       namelist /ctrl_nml_genarr/
      &  xx_genarr2d_file, xx_genarr3d_file, xx_gentim2d_file,
      &  xx_genarr2d_weight, xx_genarr3d_weight, xx_gentim2d_weight,
+     &  xx_genarr2d_bounds, xx_genarr3d_bounds,
+     &  xx_genarr2d_numsmooth, xx_genarr3d_numsmooth,
      &  xx_gentim2d_startdate1, xx_gentim2d_startdate2,
      &  xx_gentim2d_startdate, xx_gentim2d_period,
      &  xx_gentim2d_cumsum,xx_gentim2d_glosum,
@@ -198,6 +202,10 @@ c
          write(xx_genarr2d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
          write(xx_genarr2d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          genarr2dPrecond(iarr) = 1. _d 0
+         do jarr = 1, 5
+           xx_genarr2d_bounds(jarr,iarr) = 0. _d 0
+         enddo
+         xx_genarr2d_numsmooth(iarr) = 1
         enddo
 c
         do iarr = 1, maxCtrlArr3D
@@ -205,6 +213,10 @@ c
      &        'xx_genarr3d_', iarr
          write(xx_genarr3d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
          write(xx_genarr3d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
+         do jarr = 1, 5
+           xx_genarr3d_bounds(jarr,iarr) = 0. _d 0
+         enddo
+         xx_genarr3d_numsmooth(iarr) = 1
         enddo
 c
         do iarr = 1, maxCtrlTim2D
