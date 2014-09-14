@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.15 2013/11/06 18:50:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.16 2014/09/14 15:21:13 gforget Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
@@ -106,10 +106,6 @@ cph because we need it in ADM*TLM
 
 #ifdef ALLOW_THSICE
       call thsice_cost_init_varia( mythid )
-#endif
-
-#ifdef ALLOW_ECCO
-      call ecco_cost_init_varia( mythid )
 #endif
 
 c--   Initialise the "global" parts of the cost function.
