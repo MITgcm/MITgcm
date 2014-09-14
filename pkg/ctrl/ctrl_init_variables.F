@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_variables.F,v 1.14 2014/04/26 19:20:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_variables.F,v 1.15 2014/09/14 15:21:45 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -359,6 +359,27 @@ c     == end of interface ==
 
 #ifdef ALLOW_OBCS_CONTROL
       IF (useOBCS) CALL CTRL_INIT_OBCS_VARIABLES( myThid )
+#endif
+
+C--   Map the control variables onto the model state.
+C-    Needs to be called after few {PKG}_init_varia (e.g., PTRACERS_INIT_VARIA)
+# ifdef ALLOW_ECCO
+#  ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CTRL_MAP_INI_ECCO',myThid)
+#  endif
+      CALL CTRL_MAP_INI_ECCO( myThid )
+# else
+#  ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CTRL_MAP_INI',myThid)
+#  endif
+      CALL CTRL_MAP_INI( myThid )
+# endif
+
+#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL))
+      CALL CTRL_MAP_INI_GENARR( myThid )
+#endif
+#ifdef ALLOW_SEAICE
+      CALL SEAICE_CTRL_MAP_INI( myThid )
 #endif
 
       RETURN
