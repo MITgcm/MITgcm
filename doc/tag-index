@@ -1,9 +1,29 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2062 2014/09/13 15:51:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2063 2014/09/14 15:22:40 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o src/packages_init_variables.F :
+  - regroup pkg/estimation calls
+  - remove CTRL_MAP_INI, CTRL_MAP_INI_ECCO
+    (moved to ctrl_init_variables)
+o cost/cost_init_varia.F :
+  - remove ecco_cost_init_varia
+    (moved to ecco_init_varia)
+o ctrl/ctrl_init_variables.F :
+  - add CTRL_MAP_INI, CTRL_MAP_INI_ECCO
+  - add CTRL_MAP_INI_GENARR, SEAICE_CTRL_MAP_INI
+o ctrl/ctrl_map_ini.F :
+  - remove ctrl_map_ini_genarr, seaice_ctrl_map_ini
+    (moved to ctrl_init_variables)
+o ctrl/ctrl_map_ini_ecco.F :
+  - remove ECCO_PHYS (mv to ecco_init_varia)
+  - remove seaice_ctrl_map_ini (mv to ctrl_init_variables)
+o ecco/ecco_ad_diff.list :
+  - add ecco_init_varia.f
+o ecco/ecco_init_varia.F
+  - new routine
 o pkg/streamice:
   - move call to STREAMICE_INITIALIZE_PETSC from the_model_main.F
     to streamice_init_fixed.F ; fix setting of STREAMICEisOn.
