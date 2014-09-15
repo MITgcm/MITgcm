@@ -1,18 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2064 2014/09/14 21:52:03 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2065 2014/09/15 13:45:45 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint65d (2014/09/15)
 o pkg/ctrl/CTRL_GENARR.h, ctrl_readparms.F :
- - add xx_genarr2d_bounds,xx_genarr3d_bounds,
-   xx_genarr2d_numsmooth, xx_genarr3d_numsmooth
+  - add xx_genarr2d_bounds,xx_genarr3d_bounds,
+    xx_genarr2d_numsmooth, xx_genarr3d_numsmooth
 o pkg/ctrl/ctrl_map_ini_genarr.F :
- - remove compilation failure
- - replace hard coded example
- - use ctrl_map_ini_gen2D, 3D
+  - remove compilation failure
+  - replace hard coded example
+  - use ctrl_map_ini_gen2D, 3D
 o pkg/ctrl/ctrl_pack.F, ctrl_unpack.F :
- - on/off switch based upon xx_genarr2d_weight,3d
+  - on/off switch based upon xx_genarr2d_weight,3d
 o src/packages_init_variables.F :
   - regroup pkg/estimation calls
   - remove CTRL_MAP_INI, CTRL_MAP_INI_ECCO
