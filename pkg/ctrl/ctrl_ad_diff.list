@@ -1,3 +1,5 @@
+ctrl_cost_driver.f
+ctrl_cost_gen.f
 ctrl_depth_ini.f
 ctrl_get_gen.f
 ctrl_get_gen_rec.f
