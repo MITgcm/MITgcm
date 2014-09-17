@@ -17,7 +17,6 @@ cost_driftw.f
 cost_etan0.f
 cost_generic.f
 cost_forcing.f                  
-cost_forcing_gen.f
 cost_usercost_all.f
 cost_gencost_all.f
 cost_gencost_assignperiod.f
@@ -26,7 +25,6 @@ cost_gencost_sshv4.f
 cost_gencost_sstv4.f
 cost_gencost_seaicev4.f
 cost_gencost_boxmean.f
-cost_genctrl.f
 cost_gen_transport.f
 cost_geoid.f                    
 cost_hyd.f                      

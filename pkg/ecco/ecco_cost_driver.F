@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.8 2013/02/05 21:48:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.9 2014/09/17 20:57:34 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -208,10 +208,17 @@ c--   Compute user defined cost function contributions (basic)
       call cost_usercost_all( myiter, mytime, mythid )
       call timer_stop ('cost_usercost_all    [ECCO SPIN-DOWN]', mythid)
 
-c--   Compute user defined cost function contributions (controls)
-      call timer_start('cost_genctrl       [ECCO SPIN-DOWN]', mythid)
-      call cost_genctrl( myiter, mytime, mythid )
-      call timer_stop ('cost_genctrl       [ECCO SPIN-DOWN]', mythid)
+
+#ifdef ALLOW_CTRL
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('ctrl_cost_driver',myThid)
+#endif
+c     IF ( useCtrl ) THEN
+      call timer_start('ctrl_cost_driver [ECCO SPIN-DOWN]', mythid)
+      call ctrl_cost_driver( myiter, mytime, mythid )
+      call timer_stop ('ctrl_cost_driver [ECCO SPIN-DOWN]', mythid)
+c     ENDIF
+#endif
 
 #endif /* ALLOW_ECCO_EVOLUTION */
 
