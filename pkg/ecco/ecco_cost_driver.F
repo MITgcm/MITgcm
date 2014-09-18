@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.9 2014/09/17 20:57:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.10 2014/09/18 18:08:29 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
 
-      subroutine ecco_cost_driver(  myTime, myIter, mythid  )
+      subroutine ecco_cost_driver(  myTime, myIter, myThid  )
 
 c     ==================================================================
 c     SUBROUTINE ecco_cost_driver
@@ -25,9 +25,9 @@ c     == global variables ==
 #include "ecco_cost.h"
 
 c     == routine arguments ==
-      integer mythid
-      integer myiter
-      _RL     mytime
+      integer myThid
+      integer myIter
+      _RL     myTime
 
 #ifdef ALLOW_ECCO_EVOLUTION
 
@@ -44,13 +44,13 @@ c--   i.e. heat flux, salt flux, zonal and meridional wind stress.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('cost_forcing',myThid)
 #endif
-      call timer_start('cost_forcing       [ECCO SPIN-DOWN]', mythid)
-      call cost_forcing( myiter, mytime, mythid )
-      call timer_stop ('cost_forcing       [ECCO SPIN-DOWN]', mythid)
+      call timer_start('cost_forcing       [ECCO SPIN-DOWN]', myThid)
+      call cost_forcing( myThid )
+      call timer_stop ('cost_forcing       [ECCO SPIN-DOWN]', myThid)
 cph(
 c--   Compute cost function contribution of wind stress observations.
 #ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
-      call cost_mean_heatflux( myiter, mytime, mythid )
+      call cost_mean_heatflux( myIter, myTime, myThid )
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE objf_hfluxmm = tapelev_init, key=1
 # endif
@@ -58,7 +58,7 @@ CADJ STORE objf_hfluxmm = tapelev_init, key=1
 
 c--   Compute cost function contribution of wind stress observations.
 #ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
-      call cost_mean_saltflux( myiter, mytime, mythid )
+      call cost_mean_saltflux( myIter, myTime, myThid )
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE objf_sfluxmm = tapelev_init, key=1
 # endif
@@ -72,17 +72,17 @@ c--   Compute cost function contribution of SSH.
       IF (debugMode) CALL DEBUG_CALL('cost_ssh',myThid)
 # endif
 # if (defined(ALLOW_SSHV4_COST))
-      call timer_start('cost_sshv4         [ECCO SPIN-DOWN]', mythid)
-      call cost_sshv4( myiter, mytime, mythid )
-      call timer_stop ('cost_sshv4         [ECCO SPIN-DOWN]', mythid)
+      call timer_start('cost_sshv4         [ECCO SPIN-DOWN]', myThid)
+      call cost_sshv4( myIter, myTime, myThid )
+      call timer_stop ('cost_sshv4         [ECCO SPIN-DOWN]', myThid)
 # elif (defined(ALLOW_NEW_SSH_COST))
-      call timer_start('cost_ssh_new       [ECCO SPIN-DOWN]', mythid)
-      call cost_ssh_new( myiter, mytime, mythid )
-      call timer_stop ('cost_ssh_new       [ECCO SPIN-DOWN]', mythid)
+      call timer_start('cost_ssh_new       [ECCO SPIN-DOWN]', myThid)
+      call cost_ssh_new( myIter, myTime, myThid )
+      call timer_stop ('cost_ssh_new       [ECCO SPIN-DOWN]', myThid)
 # elif (!defined (ALLOW_GENCOST_SSHV4))
-      call timer_start('cost_ssh           [ECCO SPIN-DOWN]', mythid)
-      call cost_ssh( myiter, mytime, mythid )
-      call timer_stop ('cost_ssh           [ECCO SPIN-DOWN]', mythid)
+      call timer_start('cost_ssh           [ECCO SPIN-DOWN]', myThid)
+      call cost_ssh( myIter, myTime, myThid )
+      call timer_stop ('cost_ssh           [ECCO SPIN-DOWN]', myThid)
 # endif
       ENDIF !IF (using_cost_altim) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -95,9 +95,9 @@ CADJ STORE prof_etan_mean = tapelev_init, key=1
 #ifdef ALLOW_BP_COST_CONTRIBUTION
 c--   Compute bottom pressure cost
       IF (using_cost_bp) THEN
-      call timer_start('cost_bp    [ECCO SPIN-DOWN]', mythid)
-      call cost_bp( myiter, mytime, mythid )
-      call timer_stop ('cost_bp    [ECCO SPIN-DOWN]', mythid)
+      call timer_start('cost_bp    [ECCO SPIN-DOWN]', myThid)
+      call cost_bp( myIter, myTime, myThid )
+      call timer_stop ('cost_bp    [ECCO SPIN-DOWN]', myThid)
       ENDIF
 #endif
 
@@ -105,18 +105,18 @@ c--   Compute cost function contribution of Temperature and Salinity.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('cost_hyd',myThid)
 #endif
-      call timer_start('cost_hyd           [ECCO SPIN-DOWN]', mythid)
-      call cost_hyd( myiter, mytime, mythid )
-      call timer_stop ('cost_hyd           [ECCO SPIN-DOWN]', mythid)
+      call timer_start('cost_hyd           [ECCO SPIN-DOWN]', myThid)
+      call cost_hyd( myIter, myTime, myThid )
+      call timer_stop ('cost_hyd           [ECCO SPIN-DOWN]', myThid)
 
 #ifdef ALLOW_SEAICE
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('seaice_cost_driver',myThid)
 #endif
       IF ( useSeaice) THEN
-      call timer_start('seaice_cost_driver [ECCO SPIN-DOWN]', mythid)
-      call seaice_cost_driver( myiter, mytime, mythid )
-      call timer_stop ('seaice_cost_driver [ECCO SPIN-DOWN]', mythid)
+      call timer_start('seaice_cost_driver [ECCO SPIN-DOWN]', myThid)
+      call seaice_cost_driver( myIter, myTime, myThid )
+      call timer_stop ('seaice_cost_driver [ECCO SPIN-DOWN]', myThid)
       ENDIF
 #endif
 
@@ -124,18 +124,18 @@ c--   Compute cost function contribution of Temperature and Salinity.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('cost_obcs',myThid)
 #endif
-      call timer_start('cost_obcs          [ECCO SPIN-DOWN]', mythid)
-      call cost_obcs( myiter, mytime, mythid )
-      call timer_stop ('cost_obcs          [ECCO SPIN-DOWN]', mythid)
+      call timer_start('cost_obcs          [ECCO SPIN-DOWN]', myThid)
+      call cost_obcs( myIter, myTime, myThid )
+      call timer_stop ('cost_obcs          [ECCO SPIN-DOWN]', myThid)
 #endif
 
 #ifdef ALLOW_CURMTR_COST_CONTRIBUTION
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('cost_curmtr',myThid)
 #endif
-      call timer_start('cost_curmtr        [ECCO SPIN-DOWN]', mythid)
-      call cost_curmtr( myiter, mytime, mythid )
-      call timer_stop ('cost_curmtr        [ECCO SPIN-DOWN]', mythid)
+      call timer_start('cost_curmtr        [ECCO SPIN-DOWN]', myThid)
+      call cost_curmtr( myIter, myTime, myThid )
+      call timer_stop ('cost_curmtr        [ECCO SPIN-DOWN]', myThid)
 #endif
 
 c--   Compute cost function contribution of drifter velocities.
@@ -144,9 +144,9 @@ c--   Compute cost function contribution of drifter velocities.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('cost_drifter',myThid)
 #endif
-      call timer_start('cost_drifter         [ECCO SPIN-DOWN]', mythid)
-      call cost_drifter( myiter, mytime, mythid )
-      call timer_stop ('cost_drifter         [ECCO SPIN-DOWN]', mythid)
+      call timer_start('cost_drifter         [ECCO SPIN-DOWN]', myThid)
+      call cost_drifter( myIter, myTime, myThid )
+      call timer_stop ('cost_drifter         [ECCO SPIN-DOWN]', myThid)
 #endif
 #endif
 
@@ -157,9 +157,9 @@ c--   Compute cost function contribution of wind stress observations.
       IF (debugMode) CALL DEBUG_CALL('cost_scat',myThid)
 #endif
       IF (using_cost_scat) THEN
-      call timer_start('cost_scat            [ECCO SPIN-DOWN]', mythid)
-      call cost_scat( myiter, mytime, mythid )
-      call timer_stop ('cost_scat            [ECCO SPIN-DOWN]', mythid)
+      call timer_start('cost_scat            [ECCO SPIN-DOWN]', myThid)
+      call cost_scat( myIter, myTime, myThid )
+      call timer_stop ('cost_scat            [ECCO SPIN-DOWN]', myThid)
       ENDIF
 #endif
 
@@ -169,44 +169,44 @@ c     and the last year.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('cost_drift',myThid)
 #endif
-      call timer_start('cost_drift         [ECCO SPIN-DOWN]', mythid)
-      call cost_drift( myiter, mytime, mythid )
-      call timer_stop ('cost_drift         [ECCO SPIN-DOWN]', mythid)
+      call timer_start('cost_drift         [ECCO SPIN-DOWN]', myThid)
+      call cost_drift( myIter, myTime, myThid )
+      call timer_stop ('cost_drift         [ECCO SPIN-DOWN]', myThid)
 #endif
 #ifdef ALLOW_DRIFTW_COST_CONTRIBUTION
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('cost_driftw',myThid)
 #endif
-      call timer_start('cost_driftw        [ECCO SPIN-DOWN]', mythid)
-      call cost_driftw( myiter, mytime, mythid )
-      call timer_stop ('cost_driftw        [ECCO SPIN-DOWN]', mythid)
+      call timer_start('cost_driftw        [ECCO SPIN-DOWN]', myThid)
+      call cost_driftw( myIter, myTime, myThid )
+      call timer_stop ('cost_driftw        [ECCO SPIN-DOWN]', myThid)
 #endif
       _BARRIER
 
 c--   Compute initial vs. final T/S deviation
 #ifdef ALLOW_COST_INI_FIN
-      call timer_start('cost_ini_fin       [ECCO SPIN-DOWN]', mythid)
-      call cost_theta_ini_fin( myiter, mytime, mythid )
-      call cost_salt_ini_fin( myiter, mytime, mythid )
-      call timer_stop ('cost_ini_fin       [ECCO SPIN-DOWN]', mythid)
+      call timer_start('cost_ini_fin       [ECCO SPIN-DOWN]', myThid)
+      call cost_theta_ini_fin( myIter, myTime, myThid )
+      call cost_salt_ini_fin( myIter, myTime, myThid )
+      call timer_stop ('cost_ini_fin       [ECCO SPIN-DOWN]', myThid)
 #endif
       _BARRIER
 
 c--   Internal Parameter controls cost terms:
-      call timer_start('cost_internal_params  [ECCO SPIN-DOWN]', mythid)
-      call cost_internal_params( myiter, mytime, mythid )
-      call timer_stop ('cost_internal_params  [ECCO SPIN-DOWN]', mythid)
+      call timer_start('cost_internal_params  [ECCO SPIN-DOWN]', myThid)
+      call cost_internal_params( myIter, myTime, myThid )
+      call timer_stop ('cost_internal_params  [ECCO SPIN-DOWN]', myThid)
       _BARRIER
 
 c--   Compute user defined cost function contributions (elaborate)
-      call timer_start('cost_gencost_all    [ECCO SPIN-DOWN]', mythid)
-      call cost_gencost_all( myiter, mytime, mythid )
-      call timer_stop ('cost_gencost_all    [ECCO SPIN-DOWN]', mythid)
+      call timer_start('cost_gencost_all    [ECCO SPIN-DOWN]', myThid)
+      call cost_gencost_all( myIter, myTime, myThid )
+      call timer_stop ('cost_gencost_all    [ECCO SPIN-DOWN]', myThid)
 
 c--   Compute user defined cost function contributions (basic)
-      call timer_start('cost_usercost_all    [ECCO SPIN-DOWN]', mythid)
-      call cost_usercost_all( myiter, mytime, mythid )
-      call timer_stop ('cost_usercost_all    [ECCO SPIN-DOWN]', mythid)
+      call timer_start('cost_usercost_all    [ECCO SPIN-DOWN]', myThid)
+      call cost_usercost_all( myIter, myTime, myThid )
+      call timer_stop ('cost_usercost_all    [ECCO SPIN-DOWN]', myThid)
 
 
 #ifdef ALLOW_CTRL
@@ -214,9 +214,9 @@ c--   Compute user defined cost function contributions (basic)
       IF (debugMode) CALL DEBUG_CALL('ctrl_cost_driver',myThid)
 #endif
 c     IF ( useCtrl ) THEN
-      call timer_start('ctrl_cost_driver [ECCO SPIN-DOWN]', mythid)
-      call ctrl_cost_driver( myiter, mytime, mythid )
-      call timer_stop ('ctrl_cost_driver [ECCO SPIN-DOWN]', mythid)
+      call timer_start('ctrl_cost_driver [ECCO SPIN-DOWN]', myThid)
+      call ctrl_cost_driver( myThid )
+      call timer_stop ('ctrl_cost_driver [ECCO SPIN-DOWN]', myThid)
 c     ENDIF
 #endif
 
