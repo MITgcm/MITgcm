@@ -1,12 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_gen.F,v 1.1 2014/09/17 20:58:06 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_gen.F,v 1.2 2014/09/18 18:07:39 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
 
 
       subroutine ctrl_cost_gen2d(
-     I                       myiter,
-     I                       mytime,
      I                       startrec,
      I                       endrec,
      I                       xx_gen_file,
@@ -22,7 +20,7 @@ C $Name:  $
      I                       xx_gen_remo_intercept,
      I                       xx_gen_remo_slope,
      I                       genmask,
-     I                       mythid
+     I                       myThid
      &                         )
 
 c     ==================================================================
@@ -47,13 +45,13 @@ c     == global variables ==
 #ifdef ALLOW_ECCO
 #  include "ecco_cost.h"
 #endif
-#include "ctrl.h"
-#include "optim.h"
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+# include "optim.h"
+#endif
 
 c     == routine arguments ==
 
-      integer myiter
-      _RL     mytime
       integer startrec
       integer endrec
       character*(MAX_LEN_FNAM) xx_gen_file
@@ -70,7 +68,9 @@ c     == routine arguments ==
       _RL xx_gen_remo_intercept
       _RL xx_gen_remo_slope
       _RS genmask(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      integer mythid
+      integer myThid
+
+#ifdef ALLOW_CTRL
 
 c     == local variables ==
 
@@ -107,10 +107,10 @@ c     == external functions ==
 
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = mybylo(myThid)
+      jthi = mybyhi(myThid)
+      itlo = mybxlo(myThid)
+      ithi = mybxhi(myThid)
       jmin = 1
       jmax = sny
       imin = 1
@@ -153,7 +153,7 @@ c--   >>> Loop 1 to compute mean forcing:
 
         call active_read_xy(
      &        fnamefld, tmpfld2d, irec, doglobalread,
-     &        ladinit, optimcycle, mythid, xx_gen_dummy )
+     &        ladinit, optimcycle, myThid, xx_gen_dummy )
 
 c--     Loop over this thread tiles.
         do bj = jtlo,jthi
@@ -207,7 +207,7 @@ c--   >>> Loop 2 over records.
 
         call active_read_xy(
      &        fnamefld, tmpfld2d, irec, doglobalread,
-     &        ladinit, optimcycle, mythid, xx_gen_dummy )
+     &        ladinit, optimcycle, myThid, xx_gen_dummy )
 
 c--     Loop over this thread tiles.
         do bj = jtlo,jthi
@@ -260,9 +260,9 @@ c--   >>> Loop 2 over records.
 
         call active_read_xy(
      &        fnamefld, tmpfld2d, irec, doglobalread,
-     &        ladinit, optimcycle, mythid, xx_gen_dummy )
+     &        ladinit, optimcycle, myThid, xx_gen_dummy )
 
-        _EXCH_XY_RL(tmpfld2d, mythid)
+        _EXCH_XY_RL(tmpfld2d, myThid)
 
 c--     Loop over this thread tiles.
         do bj = jtlo,jthi
@@ -314,6 +314,8 @@ c--   End of loop over records.
 
 #endif
       ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
+
+#endif
 
       return
       end
