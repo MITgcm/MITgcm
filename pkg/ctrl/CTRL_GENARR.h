@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.10 2014/09/14 21:50:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.11 2014/09/19 17:47:58 gforget Exp $
 C $Name:  $
 
 C     ==================================================================
@@ -56,14 +56,37 @@ C     ==================================================================
 
       common /controlaux_gencost_r/
      &     objf_gentim2d,  objf_gentim2dm,  objf_gentim2dsmoo,
-     &     num_gentim2d,   num_gentim2dm,   mult_gentim2d
+     &     num_gentim2d,   num_gentim2dm,   mult_gentim2d,
+     &     objf_genarr2d,  num_genarr2d, mult_genarr2d,
+     &     objf_genarr3d,  num_genarr3d, mult_genarr3d
+
       _RL  objf_gentim2d(nsx,nsy,maxCtrlTim2D)
       _RL  objf_gentim2dm(nsx,nsy,maxCtrlTim2D)
       _RL  objf_gentim2dsmoo(nsx,nsy,maxCtrlTim2D)
       _RL  num_gentim2d(nsx,nsy,maxCtrlTim2D)
       _RL  num_gentim2dm(nsx,nsy,maxCtrlTim2D)
       _RL  mult_gentim2d(maxCtrlTim2D)
+      _RL  objf_genarr2d(nsx,nsy,maxCtrlArr2D)
+      _RL  num_genarr2d(nsx,nsy,maxCtrlArr2D)
+      _RL  mult_genarr2d(maxCtrlArr2D)
+      _RL  objf_genarr3d(nsx,nsy,maxCtrlArr3D)
+      _RL  num_genarr3d(nsx,nsy,maxCtrlArr3D)
+      _RL  mult_genarr3d(maxCtrlArr3D)
 
+#endif
+
+#ifdef ALLOW_GENARR2D_CONTROL
+      common /controlaux_genarr2d_r/
+     &                      wgenarr2d
+      _RL wgenarr2d(1-olx:snx+olx,1-oly:sny+oly,
+     &              nsx,nsy,maxCtrlArr2D)
+#endif
+
+#ifdef ALLOW_GENARR3D_CONTROL
+      common /controlaux_genarr3d_r/
+     &                      wgenarr3d
+      _RL wgenarr3d(1-olx:snx+olx,1-oly:sny+oly,
+     &              nr,nsx,nsy,maxCtrlArr2D)
 #endif
 
 #ifdef ALLOW_GENTIM2D_CONTROL

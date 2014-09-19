@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.6 2014/09/14 21:50:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.7 2014/09/19 17:47:59 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -174,10 +174,9 @@ C--   generic - user-defined control vars
           do k = 1,Nr
            do j = 1-Oly,sNy+Oly
             do i = 1-Olx,sNy+Olx
-              tmpfld3d(i,j,k,bi,bj) = 0. _d 0
-              if (xx_genarr3d_file(iarr).EQ.'xxg_theta0') then
+              if (xx_genarr3d_file(iarr).EQ.'xxg_theta') then
                 theta(i,j,k,bi,bj) = tmpfld3d(i,j,k,bi,bj)
-              elseif (xx_genarr3d_file(iarr).EQ.'xxg_salt0') then
+              elseif (xx_genarr3d_file(iarr).EQ.'xxg_salt') then
                 salt(i,j,k,bi,bj) = tmpfld3d(i,j,k,bi,bj)
 #ifdef ALLOW_KAPGM_CONTROL
               elseif (xx_genarr3d_file(iarr).EQ.'xxg_kapgm') then

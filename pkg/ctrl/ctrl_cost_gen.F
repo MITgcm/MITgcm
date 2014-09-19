@@ -1,5 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_gen.F,v 1.2 2014/09/18 18:07:39 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_gen.F,v 1.3 2014/09/19 17:47:58 gforget Exp $
 C $Name:  $
+
+c ----------------------------------------------------------------
+c --- ctrl_cost_gen2d
+c --- ctrl_cost_gen3d
+c ----------------------------------------------------------------
+
+c ----------------------------------------------------------------
 
 #include "CTRL_OPTIONS.h"
 
@@ -10,8 +17,8 @@ C $Name:  $
      I                       xx_gen_file,
      I                       xx_gen_dummy,
      I                       xx_gen_period,
-     I                       wmean_gen,
-     I                       wgen,
+     I                       xx_gen_wmean,
+     I                       xx_gen_weight,
      O                       num_gen_anom,
      O                       num_gen_mean,
      O                       objf_gen_anom,
@@ -19,7 +26,7 @@ C $Name:  $
      O                       objf_gen_smoo,
      I                       xx_gen_remo_intercept,
      I                       xx_gen_remo_slope,
-     I                       genmask,
+     I                       xx_gen_mask,
      I                       myThid
      &                         )
 
@@ -57,8 +64,8 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) xx_gen_file
       _RL xx_gen_dummy
       _RL xx_gen_period
-      _RL wmean_gen
-      _RL wgen(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_gen_wmean
+      _RL xx_gen_weight(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL num_gen_anom(nsx,nsy)
       _RL num_gen_mean(nsx,nsy)
       _RL num_gen_smoo(nsx,nsy)
@@ -67,7 +74,7 @@ c     == routine arguments ==
       _RL objf_gen_smoo(nsx,nsy)
       _RL xx_gen_remo_intercept
       _RL xx_gen_remo_slope
-      _RS genmask(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RS xx_gen_mask(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       integer myThid
 
 #ifdef ALLOW_CTRL
@@ -171,7 +178,7 @@ c--     Loop over this thread tiles.
 
       enddo
 
-      if ( wmean_gen .NE. 0. ) then
+      if ( xx_gen_wmean .NE. 0. ) then
        do bj = jtlo,jthi
         do bi = itlo,ithi
 c--     Determine the weights to be used.
@@ -181,11 +188,11 @@ c--     Determine the weights to be used.
           do i = imin,imax
             xx_mean(i,j,bi,bj)
      &            = xx_mean(i,j,bi,bj)/float(nrec)
-            tmpx = xx_mean(i,j,bi,bj)/wmean_gen
-            if (genmask(i,j,kk,bi,bj) .ne. 0.) then
+            tmpx = xx_mean(i,j,bi,bj)/xx_gen_wmean
+            if (xx_gen_mask(i,j,kk,bi,bj) .ne. 0.) then
+#ifdef ALLOW_ECCO
               if ( ABS(R_low(i,j,bi,bj)) .LT. 100. )
      &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.
-#ifdef ALLOW_ECCO
               fctilem = fctilem + cosphi(i,j,bi,bj)*tmpx*tmpx
               if ( cosphi(i,j,bi,bj) .ne. 0. )
      &             num_gen_mean(bi,bj) = num_gen_mean(bi,bj) + 1. _d 0
@@ -218,25 +225,28 @@ c--         Determine the weights to be used.
             fctile = 0. _d 0
             do j = jmin,jmax
               do i = imin,imax
-                if (genmask(i,j,kk,bi,bj) .ne. 0.) then
+                if (xx_gen_mask(i,j,kk,bi,bj) .ne. 0.) then
                 IF ( .NOT.ctrlSmoothCorrel2D ) THEN
                   tmpx = tmpfld2d(i,j,bi,bj)-xx_mean(i,j,bi,bj)
      &                   - ( xx_gen_remo_intercept +
      &                       xx_gen_remo_slope*(irec-1)*xx_gen_period )
+#ifdef ALLOW_ECCO
                   if ( ABS(R_low(i,j,bi,bj)) .LT. 100. )
      &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.
-                  fctile = fctile + wgen(i,j,bi,bj)*tmpx*tmpx
-#ifdef ALLOW_ECCO
-     &                 *cosphi(i,j,bi,bj)
+                  fctile = fctile + xx_gen_weight(i,j,bi,bj)*tmpx*tmpx
+     &                   * cosphi(i,j,bi,bj)
+#else
+                  fctile = fctile + xx_gen_weight(i,j,bi,bj)*tmpx*tmpx
 #endif
                 ELSE !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
                   tmpx = tmpfld2d(i,j,bi,bj)
                   fctile = fctile + tmpx*tmpx
                 ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
 #ifdef ALLOW_ECCO
-                  if ( wgen(i,j,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
+                  if ( xx_gen_weight(i,j,bi,bj)
+     &                *cosphi(i,j,bi,bj) .ne. 0. )
 #else
-                  if ( wgen(i,j,bi,bj) .ne. 0. )
+                  if ( xx_gen_weight(i,j,bi,bj) .ne. 0. )
 #endif
      &                 num_gen_anom(bi,bj) = num_gen_anom(bi,bj)
      &                 + 1. _d 0
@@ -273,7 +283,7 @@ c--         Determine the weights to be used.
             fctile = 0. _d 0
             do j = jmin,jmax
               do i = imin,imax
-                if (genmask(i,j,kk,bi,bj) .ne. 0.) then
+                if (xx_gen_mask(i,j,kk,bi,bj) .ne. 0.) then
                   tmpx =
      &                 ( tmpfld2d(i+2,j,bi,bj)-tmpfld2d(i+1,j,bi,bj) )
      &                   *maskW(i+1,j,kk,bi,bj)*maskW(i+2,j,kk,bi,bj)
@@ -283,20 +293,21 @@ c--         Determine the weights to be used.
      &                   *maskS(i,j+1,kk,bi,bj)*maskS(i,j+2,kk,bi,bj)
      &               + ( tmpfld2d(i,j+1,bi,bj)-tmpfld2d(i,j,bi,bj) )
      &                   *maskS(i,j+1,kk,bi,bj)
+#ifdef ALLOW_ECCO
                   if ( ABS(R_low(i,j,bi,bj)) .LT. 100. )
      &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.
                   fctile = fctile
-#ifdef ALLOW_ECCO
-     &               + wgen(i,j,bi,bj)*cosphi(i,j,bi,bj)
+     &               + xx_gen_weight(i,j,bi,bj)*cosphi(i,j,bi,bj)
 #else
-     &               + wgen(i,j,bi,bj)
+                  fctile = fctile
+     &               + xx_gen_weight(i,j,bi,bj)
 #endif
      *                 *0.0161*lengthscale/4.0
      &                 *tmpx*tmpx
 #ifdef ALLOW_ECCO
-                  if ( wgen(i,j,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
+                  if ( xx_gen_weight(i,j,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
 #else
-                  if ( wgen(i,j,bi,bj) .ne. 0. )
+                  if ( xx_gen_weight(i,j,bi,bj) .ne. 0. )
 #endif
      &                 num_gen_smoo(bi,bj) = num_gen_smoo(bi,bj)
      &                 + 1. _d 0
@@ -314,6 +325,147 @@ c--   End of loop over records.
 
 #endif
       ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
+
+#endif
+
+      return
+      end
+
+c ----------------------------------------------------------------
+
+      subroutine ctrl_cost_gen3d(
+     I                       xx_gen_file,
+     I                       xx_gen_dummy,
+     I                       xx_gen_weight,
+     O                       num_gen,
+     O                       objf_gen,
+     I                       xx_gen_mask,
+     I                       myThid
+     &                         )
+
+C     o==========================================================o
+C     | subroutine ctrl_cost_gen3d                                    |
+C     | o GM coefficient adjustment penalization                 |
+C     o==========================================================o
+
+      implicit none
+
+c     == global variables ==
+
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#include "GRID.h"
+
+#ifdef ALLOW_ECCO
+#  include "ecco_cost.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+# include "optim.h"
+#endif
+
+c     == routine arguments ==
+
+      character*(MAX_LEN_FNAM) xx_gen_file
+      _RL xx_gen_dummy
+      _RL xx_gen_weight(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL num_gen(nsx,nsy)
+      _RL objf_gen(nsx,nsy)
+      _RS xx_gen_mask(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      INTEGER myThid
+
+#ifdef ALLOW_CTRL
+
+c     == local variables ==
+
+      integer bi,bj
+      integer i,j,k
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+      integer irec
+      integer ilfld
+
+      _RL fcthread
+      _RL tmpx
+
+      logical doglobalread
+      logical ladinit
+
+      character*(80) fnamefld
+
+      character*(MAX_LEN_MBUF) msgbuf
+
+c     == external functions ==
+
+      integer  ilnblnk
+      external ilnblnk
+
+c     == end of interface ==
+
+      jtlo = mybylo(myThid)
+      jthi = mybyhi(myThid)
+      itlo = mybxlo(myThid)
+      ithi = mybxhi(myThid)
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
+
+c--   Read state record from global file.
+      doglobalread = .false.
+      ladinit      = .false.
+
+      irec = 1
+
+      if (optimcycle .ge. 0) then
+        ilfld = ilnblnk( xx_gen_file )
+        write(fnamefld(1:80),'(2a,i10.10)')
+     &       xx_gen_file(1:ilfld),'.',optimcycle
+      endif
+
+
+c--   >>> Loop 1 to compute mean forcing:
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          num_gen(bi,bj)  = 0. _d 0
+          objf_gen(bi,bj) = 0. _d 0
+        enddo
+      enddo
+
+      call active_read_xyz( fnamefld, tmpfld3d, irec, doglobalread,
+     &                       ladinit, optimcycle, myThid
+     &        , xx_gen_dummy )
+
+c--     Loop over this thread tiles.
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+
+            num_gen(bi,bj)  = 0. _d 0
+            objf_gen(bi,bj) = 0. _d 0
+
+            do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                if (xx_gen_mask(i,j,k,bi,bj) .ne. 0.) then
+                  tmpx = tmpfld3d(i,j,k,bi,bj)
+                IF ( .NOT.ctrlSmoothCorrel3D ) THEN
+                  objf_gen(bi,bj) = objf_gen(bi,bj)
+     &                 + xx_gen_weight(i,j,k,bi,bj)
+     &                 *tmpx*tmpx
+                ELSE !IF ( .NOT.ctrlSmoothCorrel3D ) THEN
+                  objf_gen(bi,bj) = objf_gen(bi,bj) + tmpx*tmpx
+                ENDIF !IF ( .NOT.ctrlSmoothCorrel3D ) THEN
+                num_gen(bi,bj) = num_gen(bi,bj) + 1. _d 0
+                endif
+              enddo
+            enddo
+            enddo
+
+          enddo
+        enddo
 
 #endif
 
