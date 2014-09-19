@@ -1,9 +1,31 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2066 2014/09/17 20:58:54 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2067 2014/09/19 21:03:11 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+
+o pkg/ctrl :
+ - introduce run time switch ctrlUseGen (in ctrl.h, ctrl_check.F,
+   ctrl_init_variables.F, ctrl_readparms.F, ctrl_summary.F)
+ - re-activate ctrl_summary (call in ctrl_init.F)
+o pkg/ctrl/ctrl_cost_gen.F :
+ - rename ctrl_cost_gen2d input parameters {wmean_gen,wgen,genmask}
+   as {xx_gen_wmean,xx_gen_weight,xx_gen_mask}
+ - add ctrl_cost_gen3d for ARR3D (ctrl_cost_gen2d is for ARR2D,TIM2D)
+o pkg/ctrl/CTRL_GENARR.h :
+ - add objf_genarr2d,  num_genarr2d, mult_genarr2d
+ - add objf_genarr3d,  num_genarr3d, mult_genarr3d
+ - add wgenarr2d, wgenarr3d
+o pkg/ctrl/ctrl_readparms.F :
+ - add mult_genarr2d,mult_genarr3d in namelist
+o pkg/ctrl_map_ini_genarr.F :
+ - bug fixes
+o pkg/ctrl/ctrl_cost_driver.F :
+ - remove un-necessary cal.h, fix CCP brackets, remove un-necessary 
+   myiter, mytime, add return
+o pkg/ctrl/ctrl_cost_gen.F :
+ - fix CCP brackets, remove un-necessary myiter, mytime
 o pkg/ecco :
    - remove cost_genctrl.F (now pkg/ctrl/ctrl_cost_driver.F)
    - remove cost_forcing_gen.F (now pkg/ctrl/ctrl_cost_gen2d.F)
