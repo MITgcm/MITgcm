@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.7 2014/04/30 00:11:33 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.8 2014/09/19 20:38:39 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -30,6 +30,9 @@ c     == global variables ==
 # include "cal.h"
 #endif
 #include "ctrl.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_PARAMS.h"
+#endif
 
 c     == routine arguments ==
 
@@ -313,18 +316,34 @@ c     == end of interface ==
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
+
 #ifdef ALLOW_SMOOTH_CORREL3D
       write(msgbuf,'(a,L5)')
      &'ctrlSmoothCorrel3D: ',ctrlSmoothCorrel3D
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif /* ALLOW_SMOOTH_CORREL3D */
+
 #ifdef ALLOW_SMOOTH_CORREL2D
       write(msgbuf,'(a,L5)')
      &'ctrlSmoothCorrel2D: ',ctrlSmoothCorrel2D
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif /* ALLOW_SMOOTH_CORREL2D */
+
+#ifdef ALLOW_AUTODIFF
+c allow for switching off correl2d in adjoint
+       CALL WRITE_0D_L( useSmoothCorrel2DinAdMode, INDEX_NONE,
+     &   'useSmoothCorrel2DinAdMode =',
+     &   ' /* use ctrlSmoothCorrel2D in adjoint mode */')
+#endif
+
+#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+      write(msgbuf,'(a,L5)')
+     &'ctrlUseGen : ',ctrlUseGen
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif /* ALLOW_SMOOTH_CORREL3D */
 
       write(msgbuf,'(a)')
      &' '

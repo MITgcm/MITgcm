@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.51 2014/09/19 17:47:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.52 2014/09/19 20:38:39 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -128,7 +128,7 @@ c--   Read the namelist input.
      &  xx_shifwflx_file,
      &  xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope,
      &  xx_shifwflxstartdate1, xx_shifwflxstartdate2, xx_shifwflxperiod,
-     &  doInitXX, ctrlSmoothCorrel3D, ctrlSmoothCorrel2D,
+     &  doInitXX, ctrlSmoothCorrel3D, ctrlSmoothCorrel2D, ctrlUseGen,
      &  doPackDiag,
      &  doZscaleUnpack, doZscalePack,
      &  doMainUnpack, doMainPack,
@@ -169,6 +169,11 @@ c--     Set default values.
         ctrlSmoothCorrel2D  = .TRUE.
 #else
         ctrlSmoothCorrel2D  = .FALSE.
+#endif
+#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+        ctrlUseGen          = .TRUE.
+#else
+        ctrlUseGen          = .FALSE.
 #endif
 #ifdef ALLOW_ADMTLM
         doAdmTlm            = .TRUE.
@@ -465,9 +470,6 @@ c allow for switching off correl2d in adjoint
       useSmoothCorrel2DinFwdMode = ctrlSmoothCorrel2D
       useSmoothCorrel2DinAdMode =
      &         useSmoothCorrel2DinAdMode .AND. ctrlSmoothCorrel2D
-       CALL WRITE_0D_L( useSmoothCorrel2DinAdMode, INDEX_NONE,
-     &   'useSmoothCorrel2DinAdMode =',
-     &   ' /* use ctrlSmoothCorrel2D in adjoint mode */')
 #endif
 
       _END_MASTER( myThid )

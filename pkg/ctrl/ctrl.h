@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.70 2014/04/04 21:16:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.71 2014/09/19 20:38:39 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -60,10 +60,12 @@ C     doPackDiag             ::   output diag_pack*/diag_unpack* files during ct
 C     doSinglePrecTapelev    ::   reduce precision of ad tape files to float32 (only used in pkg/autodiff ...)
 C     ctrlSmoothCorrel2D     ::   use pkg/smooth correlation operator (incl. smoother) for 2D controls (Weaver, Courtier 01)
 C     ctrlSmoothCorrel3D     ::   use pkg/smooth correlation operator (incl. smoother) for 3D controls (Weaver, Courtier 01)
+C     ctrlUseGen             ::   use generic control approach rather than old codes from pkg/ecco
 
       common /controlvars_l /
      &                       ctrlSmoothCorrel2D,
      &                       ctrlSmoothCorrel3D,
+     &                       ctrlUseGen,
      &                       doInitXX,
      &                       doAdmTlm,
      &                       doPackDiag,
@@ -75,6 +77,7 @@ C     ctrlSmoothCorrel3D     ::   use pkg/smooth correlation operator (incl. smo
      &                       doAdmtlmBypassAD
 
       logical ctrlSmoothCorrel2D, ctrlSmoothCorrel3D
+      logical ctrlUseGen
       logical doInitXX
       logical doAdmTlm
       logical doPackDiag
