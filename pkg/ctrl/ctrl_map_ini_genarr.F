@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.7 2014/09/19 17:47:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.8 2014/09/20 01:14:53 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -138,20 +138,20 @@ C--   generic - user-defined control vars
            do j = jmin,jmax
             do i = imin,imax
               tmpfld3d(i,j,k,bi,bj) = 0. _d 0
-              if (xx_genarr3d_file(iarr).EQ.'xxg_theta') then
+              if (xx_genarr3d_file(iarr).EQ.'xx_theta') then
                 tmpfld3d(i,j,k,bi,bj) = theta(i,j,k,bi,bj)
-              elseif (xx_genarr3d_file(iarr).EQ.'xxg_salt') then
+              elseif (xx_genarr3d_file(iarr).EQ.'xx_salt') then
                 tmpfld3d(i,j,k,bi,bj) = salt(i,j,k,bi,bj)
 #ifdef ALLOW_KAPGM_CONTROL
-              elseif (xx_genarr3d_file(iarr).EQ.'xxg_kapgm') then
+              elseif (xx_genarr3d_file(iarr).EQ.'xx_kapgm') then
                 tmpfld3d(i,j,k,bi,bj) = kapgm(i,j,k,bi,bj)
 #endif
 #ifdef ALLOW_KAPREDI_CONTROL
-              elseif (xx_genarr3d_file(iarr).EQ.'xxg_kapredi') then
+              elseif (xx_genarr3d_file(iarr).EQ.'xx_kapredi') then
                 tmpfld3d(i,j,k,bi,bj) = kapredi(i,j,k,bi,bj)
 #endif
 #ifdef ALLOW_DIFFKR_CONTROL
-              elseif (xx_genarr3d_file(iarr).EQ.'xxg_diffkr') then
+              elseif (xx_genarr3d_file(iarr).EQ.'xx_diffkr') then
                 tmpfld3d(i,j,k,bi,bj) = diffKr(i,j,k,bi,bj)
 #endif
               endif
@@ -160,6 +160,8 @@ C--   generic - user-defined control vars
           enddo
         ENDDO
        ENDDO
+
+       _EXCH_XYZ_RL( tmpfld3d, myThid )
 
        if (xx_genarr3d_weight(iarr).NE.' ')
      &  call ctrl_map_ini_gen3D(xx_genarr3d_file(iarr),
@@ -174,20 +176,20 @@ C--   generic - user-defined control vars
           do k = 1,Nr
            do j = 1-Oly,sNy+Oly
             do i = 1-Olx,sNy+Olx
-              if (xx_genarr3d_file(iarr).EQ.'xxg_theta') then
+              if (xx_genarr3d_file(iarr).EQ.'xx_theta') then
                 theta(i,j,k,bi,bj) = tmpfld3d(i,j,k,bi,bj)
-              elseif (xx_genarr3d_file(iarr).EQ.'xxg_salt') then
+              elseif (xx_genarr3d_file(iarr).EQ.'xx_salt') then
                 salt(i,j,k,bi,bj) = tmpfld3d(i,j,k,bi,bj)
 #ifdef ALLOW_KAPGM_CONTROL
-              elseif (xx_genarr3d_file(iarr).EQ.'xxg_kapgm') then
+              elseif (xx_genarr3d_file(iarr).EQ.'xx_kapgm') then
                 kapgm(i,j,k,bi,bj) = tmpfld3d(i,j,k,bi,bj)
 #endif
 #ifdef ALLOW_KAPREDI_CONTROL
-              elseif (xx_genarr3d_file(iarr).EQ.'xxg_kapredi') then
+              elseif (xx_genarr3d_file(iarr).EQ.'xx_kapredi') then
                 kapredi(i,j,k,bi,bj) = tmpfld3d(i,j,k,bi,bj)
 #endif
 #ifdef ALLOW_DIFFKR_CONTROL
-              elseif (xx_genarr3d_file(iarr).EQ.'xxg_diffkr') then
+              elseif (xx_genarr3d_file(iarr).EQ.'xx_diffkr') then
                 diffKr(i,j,k,bi,bj) = tmpfld3d(i,j,k,bi,bj)
 #endif
               endif
