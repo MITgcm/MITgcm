@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.30 2014/08/06 16:55:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.31 2014/09/22 14:00:42 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -8,6 +8,7 @@ C $Name:  $
      I          xx_gen_file, xx_genstartdate, xx_genperiod,
      I          genmask, genfld, xx_gen0, xx_gen1, xx_gen_dummy,
      I          xx_gen_remo_intercept, xx_gen_remo_slope,
+     I          genweight,
      I          mytime, myiter, mythid
      &                     )
 
@@ -51,6 +52,7 @@ c     == routine arguments ==
       _RL     xx_gen_dummy
       _RL     xx_gen_remo_intercept
       _RL     xx_gen_remo_slope
+      _RL     genweight(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       _RL     mytime
       integer myiter
@@ -133,7 +135,24 @@ cc#endif /* ALLOW_OPENAD */
       IF ( ctrlSmoothCorrel2D ) THEN
       IF ( useSMOOTH ) THEN
       call smooth_correl2D(xx_gen1,genmask,1,mythid)
-      call smooth_correl2Dw(xx_gen1,genmask,xx_gen_file,mythid)
+
+        DO bj = jtlo,jthi
+         DO bi = itlo,ithi
+          DO j = 1,sNy
+           DO i = 1,sNx
+            if ((genmask(i,j,1,bi,bj).NE.0.).AND.
+     &          (genweight(i,j,bi,bj).GT.0.)) then
+                xx_gen1(i,j,bi,bj)=xx_gen1(i,j,bi,bj)
+     &                  /sqrt(genweight(i,j,bi,bj))
+            else
+                xx_gen1(i,j,bi,bj)=0. _d 0
+            endif
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+
+        _EXCH_XY_RL ( xx_gen1 , myThid )
       ENDIF
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xx_gen_file(1:ilgen),'.effective.',optimcycle
@@ -172,8 +191,25 @@ cc#endif /* ALLOW_OPENAD */
 #ifdef ALLOW_SMOOTH
       IF ( ctrlSmoothCorrel2D ) THEN
       IF ( useSMOOTH ) THEN
-      call smooth_correl2D(xx_gen1,genmask,1,mythid)
-      call smooth_correl2Dw(xx_gen1,genmask,xx_gen_file,mythid)
+        call smooth_correl2D(xx_gen1,genmask,1,mythid)
+
+        DO bj = jtlo,jthi
+         DO bi = itlo,ithi
+          DO j = 1,sNy
+           DO i = 1,sNx
+            if ((genmask(i,j,1,bi,bj).NE.0.).AND.
+     &          (genweight(i,j,bi,bj).GT.0.)) then
+                xx_gen1(i,j,bi,bj)=xx_gen1(i,j,bi,bj)
+     &                  /sqrt(genweight(i,j,bi,bj))
+            else
+                xx_gen1(i,j,bi,bj)=0. _d 0
+            endif
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+
+        _EXCH_XY_RL ( xx_gen1 , myThid )
       ENDIF
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xx_gen_file(1:ilgen),'.effective.',optimcycle
