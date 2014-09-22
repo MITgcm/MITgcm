@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/ctrl_map_gentim2d.F,v 1.1 2013/06/21 17:36:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/ctrl_map_gentim2d.F,v 1.2 2014/09/22 14:03:52 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -101,6 +101,7 @@ C
      I      xx_gentim2d1(1-Olx,1-Oly,1,1,iarr),
      I      xx_gentim2d_dummy(iarr),
      I      zeroRL, zeroRL,
+     I      wgentim2d(1-Olx,1-Oly,1,1,iarr),
      I      mytime, myiter, mythid )
 C
       DO bj=myByLo(myThid),myByHi(myThid)
