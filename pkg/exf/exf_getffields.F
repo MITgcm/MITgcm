@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.53 2014/09/22 14:01:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.54 2014/09/22 17:23:40 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -409,7 +409,7 @@ C-- Control variables for atmos. state
      &     xx_precip_file, xx_precipstartdate, xx_precipperiod,
      &     maskc, precip, xx_precip0, xx_precip1, xx_precip_dummy,
      &     xx_precip_remo_intercept, xx_precip_remo_slope,
-     &     precip, myTime, myIter, myThid )
+     &     wprecip, myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_SWFLUX_CONTROL
