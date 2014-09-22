@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.28 2014/08/15 09:27:03 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.29 2014/09/22 21:33:42 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -185,17 +185,21 @@ cph      call cost_sss   ( myiter, mytime, mythid )
 #endif
 
 #ifdef ALLOW_THETA0_COST_CONTRIBUTION
+      if (.NOT.ctrlUseGen) then
       write(msgbuf,'(a)') 'ph-cost call cost_theta0'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
       call cost_theta0 ( myiter, mytime, mythid )
+      endif
 #endif
 
 #ifdef ALLOW_SALT0_COST_CONTRIBUTION
+      if (.NOT.ctrlUseGen) then
       write(msgbuf,'(a)') 'ph-cost call cost_salt0'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
       call cost_salt0  ( myiter, mytime, mythid )
+      endif
 #endif
 
 #ifdef ALLOW_THETA_COST_CONTRIBUTION

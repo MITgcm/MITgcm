@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.20 2014/09/18 18:08:29 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.21 2014/09/22 21:33:42 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -84,6 +84,7 @@ c--   Heat flux contribution to the cost function.
      &     maskC, mythid )
 #elif (defined (ALLOW_ATEMP_COST_CONTRIBUTION) && \
        defined (ALLOW_ATEMP_CONTROL))
+      if (.NOT.ctrlUseGen) then
 c--   Atmos. temp. contribution to the cost function.
       startrec = ncvarrecstart(7)
       endrec   = ncvarrecsend(7)
@@ -95,6 +96,7 @@ c--   Atmos. temp. contribution to the cost function.
      &     objf_atemp, objf_atempm, objf_atempsmoo,
      &     xx_atemp_remo_intercept, xx_atemp_remo_slope,
      &     maskC, mythid )
+      endif
 #endif
 
 #if (defined (ALLOW_SFLUX_COST_CONTRIBUTION) && \
@@ -112,6 +114,7 @@ c--   Salt flux contribution to the cost function.
      &     maskC, mythid )
 #elif (defined (ALLOW_AQH_COST_CONTRIBUTION) && \
        defined (ALLOW_AQH_CONTROL))
+      if (.NOT.ctrlUseGen) then
 c--   Specific humidity contribution to the cost function.
       startrec = ncvarrecstart(8)
       endrec   = ncvarrecsend(8)
@@ -123,11 +126,12 @@ c--   Specific humidity contribution to the cost function.
      &     objf_aqh, objf_aqhm, objf_aqhsmoo,
      &     xx_aqh_remo_intercept, xx_aqh_remo_slope,
      &     maskC, mythid )
+      endif
 #endif
 
 #if (defined (ALLOW_USTRESS_COST_CONTRIBUTION )&& \
      defined (ALLOW_USTRESS_CONTROL))
-      IF ( .NOT.useAtmWind ) THEN
+      IF ( (.NOT.useAtmWind).AND.(.NOT.ctrlUseGen) ) THEN
 c--   Zonal wind stress contribution to the cost function.
       startrec = ncvarrecstart(5)
       endrec   = ncvarrecsend(5)
@@ -161,7 +165,7 @@ c--   Zonal wind speed contribution to the cost function.
 
 #if (defined (ALLOW_VSTRESS_COST_CONTRIBUTION) && \
      defined (ALLOW_VSTRESS_CONTROL))
-      IF ( .NOT.useAtmWind ) THEN
+      IF ( (.NOT.useAtmWind).AND.(.NOT.ctrlUseGen) ) THEN
 c--   Meridional wind stress contribution to the cost function.
       startrec = ncvarrecstart(6)
       endrec   = ncvarrecsend(6)
@@ -195,6 +199,7 @@ c--   Meridional wind speed contribution to the cost function.
 
 #if (defined (ALLOW_PRECIP_COST_CONTRIBUTION) && \
        defined (ALLOW_PRECIP_CONTROL))
+      if (.NOT.ctrlUseGen) then
 c--   Atmos. precip. contribution to the cost function.
       startrec = ncvarrecstart(32)
       endrec   = ncvarrecsend(32)
@@ -206,6 +211,7 @@ c--   Atmos. precip. contribution to the cost function.
      &     objf_precip, objf_precipm, objf_precipsmoo,
      &     xx_precip_remo_intercept, xx_precip_remo_slope,
      &     maskC, mythid )
+      endif
 #endif
 
 #if (defined (ALLOW_SWFLUX_COST_CONTRIBUTION) && \
@@ -225,6 +231,7 @@ c--   Atmos. swflux. contribution to the cost function.
 
 #if (defined (ALLOW_SWDOWN_COST_CONTRIBUTION) && \
        defined (ALLOW_SWDOWN_CONTROL))
+      if (.NOT.ctrlUseGen) then
 c--   Atmos. swdown. contribution to the cost function.
       startrec = ncvarrecstart(34)
       endrec   = ncvarrecsend(34)
@@ -236,6 +243,7 @@ c--   Atmos. swdown. contribution to the cost function.
      &     objf_swdown, objf_swdownm, objf_swdownsmoo,
      &     xx_swdown_remo_intercept, xx_swdown_remo_slope,
      &     maskC, mythid )
+      endif
 #endif
 
 #if (defined (ALLOW_LWFLUX_COST_CONTRIBUTION) && \
@@ -255,6 +263,7 @@ c--   Atmos. lwflux. contribution to the cost function.
 
 #if (defined (ALLOW_LWDOWN_COST_CONTRIBUTION) && \
        defined (ALLOW_LWDOWN_CONTROL))
+      if (.NOT.ctrlUseGen) then
 c--   Atmos. lwdown. contribution to the cost function.
       startrec = ncvarrecstart(36)
       endrec   = ncvarrecsend(36)
@@ -266,6 +275,7 @@ c--   Atmos. lwdown. contribution to the cost function.
      &     objf_lwdown, objf_lwdownm, objf_lwdownsmoo,
      &     xx_lwdown_remo_intercept, xx_lwdown_remo_slope,
      &     maskC, mythid )
+      endif
 #endif
 
 #if (defined (ALLOW_EVAP_COST_CONTRIBUTION) && \

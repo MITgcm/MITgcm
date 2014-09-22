@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.68 2014/09/22 13:59:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.69 2014/09/22 21:33:42 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -1249,6 +1249,15 @@ c--   Do global summation for each part of the cost function
         if (no_genarr2d(num_var).GT.0) then
          write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
      &     ' --> f_genarr2d =',f_genarr2d(num_var),
+     &      num_var
+        endif
+       enddo
+#endif
+#ifdef ALLOW_GENARR3D_CONTROL
+       do num_var=1,maxCtrlArr3D
+        if (no_genarr3d(num_var).GT.0) then
+         write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
+     &     ' --> f_genarr3d =',f_genarr3d(num_var),
      &      num_var
         endif
        enddo

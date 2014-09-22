@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_internal_params.F,v 1.6 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_internal_params.F,v 1.7 2014/09/22 21:33:42 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -26,9 +26,19 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "cal.h"
-#include "ctrl.h"
-#include "ecco_cost.h"
+#ifdef ALLOW_CAL
+# include "cal.h"
+#endif
+
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
+#endif
+
+#ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+#endif
 
 c     == routine arguments ==
 
@@ -46,6 +56,8 @@ c--   Eddy stress penalty term
       call timer_stop ('cost_tau_eddy      [ECCO SPIN-DOWN]', mythid)
 #endif
       _BARRIER
+
+      if (.NOT.ctrlUseGen) then
 
 c--   GM coeffs penalty term
 #ifdef ALLOW_KAPGM_COST_CONTRIBUTION
@@ -70,6 +82,8 @@ c--   DIFFKR coeffs penalty term
       call timer_stop ('cost_diffkr      [ECCO SPIN-DOWN]', mythid)
 #endif
       _BARRIER
+
+      endif !if (.NOT.ctrlUseGen) then
 
 c--   Bottom Drag penalty term
 #ifdef ALLOW_BOTTOMDRAG_COST_CONTRIBUTION
