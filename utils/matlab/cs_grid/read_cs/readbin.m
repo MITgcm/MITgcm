@@ -24,6 +24,10 @@ if nargin < 3, typ=1; end
 if nargin < 2, siz=[360 224 46]; end
 if nargin < 1, error('please specify input file name'); end
 
+if ~exist(fnam)
+    error(['File ' fnam ' does not exist.'])
+end
+
 fid=fopen(fnam,'r',mform);
 
 if skip>0
