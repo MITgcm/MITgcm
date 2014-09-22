@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_driver.F,v 1.2 2014/09/18 18:07:39 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_driver.F,v 1.3 2014/09/22 13:59:10 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -55,8 +55,8 @@ c--   Evaluate the individual cost function contributions.
       endrec   = ncvarrecsend(300+iarr)
       call ctrl_cost_gen2d (
      &     startrec, endrec,
-     &     xx_gentim2d_file(1),xx_gentim2d_dummy(1),
-     &     xx_gentim2d_period(1),
+     &     xx_gentim2d_file(iarr),xx_gentim2d_dummy(iarr),
+     &     xx_gentim2d_period(iarr),
      &     0. _d 0, wgentim2d(1-Olx,1-Oly,1,1,iarr),
      &     num_gentim2d(1,1,iarr), num_gentim2dm(1,1,iarr),
      &     objf_gentim2d(1,1,iarr), objf_gentim2dm(1,1,iarr), 
