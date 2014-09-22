@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.67 2014/07/26 03:27:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.68 2014/09/22 13:59:43 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -107,7 +107,12 @@ c the adjoint, pkg/autodiff most likely require cost though.
 #ifdef ALLOW_GENTIM2D_CONTROL
       _RL f_gentim2d(maxCtrlTim2D)
 #endif
-
+#ifdef ALLOW_GENARR2D_CONTROL
+      _RL f_genarr2d(maxCtrlArr2D)
+#endif
+#ifdef ALLOW_GENARR3D_CONTROL
+      _RL f_genarr3d(maxCtrlArr3D)
+#endif
       _RL no_temp0, no_salt0,  no_temp, no_salt
       _RL no_etan0, no_uvel0, no_vvel0
       _RL no_uwind, no_vwind
@@ -139,6 +144,12 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL no_transp, no_ies
 #ifdef ALLOW_GENTIM2D_CONTROL
       _RL no_gentim2d(maxCtrlTim2D)
+#endif
+#ifdef ALLOW_GENARR2D_CONTROL
+      _RL no_genarr2d(maxCtrlArr2D)
+#endif
+#ifdef ALLOW_GENARR3D_CONTROL
+      _RL no_genarr3d(maxCtrlArr3D)
 #endif
 
       character*20 cfname
@@ -277,6 +288,16 @@ c     == end of interface ==
         f_gentim2d(maxCtrlTim2D)= 0. _d 0
        enddo
 #endif
+#ifdef ALLOW_GENARR2D_CONTROL
+       do num_var=1,maxCtrlArr2D
+        f_genarr2d(maxCtrlArr2D)= 0. _d 0
+       enddo
+#endif
+#ifdef ALLOW_GENARR3D_CONTROL
+       do num_var=1,maxCtrlArr3D
+        f_genarr3d(maxCtrlArr3D)= 0. _d 0
+       enddo
+#endif
 
       no_temp = 0. _d 0
       no_salt = 0. _d 0
@@ -376,6 +397,16 @@ c     == end of interface ==
 #ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
         no_gentim2d(maxCtrlTim2D)= 0. _d 0
+       enddo
+#endif
+#ifdef ALLOW_GENARR2D_CONTROL
+       do num_var=1,maxCtrlArr2D
+        no_genarr2d(maxCtrlarr2D)= 0. _d 0
+       enddo
+#endif
+#ifdef ALLOW_GENARR3D_CONTROL
+       do num_var=1,maxCtrlArr3D
+        no_genarr3d(maxCtrlarr3D)= 0. _d 0
        enddo
 #endif
 
@@ -493,6 +524,20 @@ c--   Sum up all contributions.
           tile_fc(bi,bj) = tile_fc(bi,bj)
      &            + mult_gentim2d(num_var)
      &            *objf_gentim2d(bi,bj,num_var)
+       enddo
+#endif
+#ifdef ALLOW_GENARR2D_CONTROL
+       do num_var=1,maxCtrlArr2D
+          tile_fc(bi,bj) = tile_fc(bi,bj)
+     &            + mult_genarr2d(num_var)
+     &            *objf_genarr2d(bi,bj,num_var)
+       enddo
+#endif
+#ifdef ALLOW_GENARR3D_CONTROL
+       do num_var=1,maxCtrlArr3D
+          tile_fc(bi,bj) = tile_fc(bi,bj)
+     &            + mult_genarr3d(num_var)
+     &            *objf_genarr3d(bi,bj,num_var)
        enddo
 #endif
           f_temp = f_temp + objf_temp(bi,bj)
@@ -613,6 +658,18 @@ c--   Sum up all contributions.
      &            +objf_gentim2d(bi,bj,num_var)
        enddo
 #endif
+#ifdef ALLOW_GENARR2D_CONTROL
+       do num_var=1,maxCtrlArr2D
+          f_genarr2d(num_var) = f_genarr2d(num_var)
+     &            +objf_genarr2d(bi,bj,num_var)
+       enddo
+#endif
+#ifdef ALLOW_GENARR3D_CONTROL
+       do num_var=1,maxCtrlArr3D
+          f_genarr3d(num_var) = f_genarr3d(num_var)
+     &            +objf_genarr3d(bi,bj,num_var)
+       enddo
+#endif
           no_temp = no_temp + num_temp(bi,bj)
           no_salt = no_salt + num_salt(bi,bj)
           no_temp0 = no_temp0 + num_temp0(bi,bj)
@@ -713,6 +770,18 @@ c--   Sum up all contributions.
        do num_var=1,maxCtrlTim2D
           no_gentim2d(num_var) = no_gentim2d(num_var)
      &            +num_gentim2d(bi,bj,num_var)
+       enddo
+#endif
+#ifdef ALLOW_GENARR2D_CONTROL
+       do num_var=1,maxCtrlArr2D
+          no_genarr2d(num_var) = no_genarr2d(num_var)
+     &            +num_genarr2d(bi,bj,num_var)
+       enddo
+#endif
+#ifdef ALLOW_GENARR3D_CONTROL
+       do num_var=1,maxCtrlArr3D
+          no_genarr3d(num_var) = no_genarr3d(num_var)
+     &            +num_genarr3d(bi,bj,num_var)
        enddo
 #endif
 
@@ -842,6 +911,16 @@ c--   Do global summation for each part of the cost function
         _GLOBAL_SUM_RL(f_gentim2d(num_var), myThid )
        enddo
 #endif
+#ifdef ALLOW_GENARR2D_CONTROL
+       do num_var=1,maxCtrlArr2D
+        _GLOBAL_SUM_RL(f_genarr2d(num_var), myThid )
+       enddo
+#endif
+#ifdef ALLOW_GENARR3D_CONTROL
+       do num_var=1,maxCtrlArr3D
+        _GLOBAL_SUM_RL(f_genarr3d(num_var), myThid )
+       enddo
+#endif
       _GLOBAL_SUM_RL( no_temp , myThid )
       _GLOBAL_SUM_RL( no_salt , myThid )
       _GLOBAL_SUM_RL( no_temp0, myThid )
@@ -937,6 +1016,16 @@ c--   Do global summation for each part of the cost function
 #ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
         _GLOBAL_SUM_RL(no_gentim2d(num_var), myThid )
+       enddo
+#endif
+#ifdef ALLOW_GENARR2D_CONTROL
+       do num_var=1,maxCtrlArr2D
+        _GLOBAL_SUM_RL(no_genarr2d(num_var), myThid )
+       enddo
+#endif
+#ifdef ALLOW_GENARR3D_CONTROL
+       do num_var=1,maxCtrlArr3D
+        _GLOBAL_SUM_RL(no_genarr3d(num_var), myThid )
        enddo
 #endif
 
@@ -1151,6 +1240,15 @@ c--   Do global summation for each part of the cost function
         if (no_gentim2d(num_var).GT.0) then
          write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
      &     ' --> f_gentim2d =',f_gentim2d(num_var),
+     &      num_var
+        endif
+       enddo
+#endif
+#ifdef ALLOW_GENARR2D_CONTROL
+       do num_var=1,maxCtrlArr2D
+        if (no_genarr2d(num_var).GT.0) then
+         write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
+     &     ' --> f_genarr2d =',f_genarr2d(num_var),
      &      num_var
         endif
        enddo
@@ -1446,6 +1544,34 @@ C     only master thread of master CPU open and write to file
      &    ' (gentim2d ', num_var, ') = ',
      &    f_gentim2d(num_var),
      &    no_gentim2d(num_var)
+         endif
+       enddo
+#endif
+
+#ifdef ALLOW_GENARR2D_CONTROL
+       do num_var=1,maxCtrlArr2D
+        if (no_genarr2d(num_var).GT.0) then
+         IL  = ILNBLNK( xx_genarr2d_file(num_var) )
+         IL  = max (IL,15)
+         write(ifc,'(2A,i2.0,A,2D22.15)')
+     &    xx_genarr2d_file(num_var)(1:IL),
+     &    ' (genarr2d ', num_var, ') = ',
+     &    f_genarr2d(num_var),
+     &    no_genarr2d(num_var)
+         endif
+       enddo
+#endif
+
+#ifdef ALLOW_GENARR3D_CONTROL
+       do num_var=1,maxCtrlArr3D
+        if (no_genarr3d(num_var).GT.0) then
+         IL  = ILNBLNK( xx_genarr3d_file(num_var) )
+         IL  = max (IL,15)
+         write(ifc,'(2A,i2.0,A,2D22.15)')
+     &    xx_genarr3d_file(num_var)(1:IL),
+     &    ' (genarr3d ', num_var, ') = ',
+     &    f_genarr3d(num_var),
+     &    no_genarr3d(num_var)
          endif
        enddo
 #endif
