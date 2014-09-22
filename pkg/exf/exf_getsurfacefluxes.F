@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.16 2014/09/22 14:01:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.17 2014/09/22 21:32:59 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -45,6 +45,7 @@ c     == global variables ==
 # include "CTRL_SIZE.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"
+# include "CTRL_GENARR.h"
 # ifdef ALLOW_ECCO
 #   include "ecco_cost.h"
 # endif
@@ -63,11 +64,61 @@ c     == global variables ==
       _RL     tmpVN(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     tmpUX(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     tmpVY(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+
+#ifdef ALLOW_GENTIM2D_CONTROL
+      integer iarr
+#endif
+
+#if (defined (ALLOW_ROTATE_UV_CONTROLS) || defined (ALLOW_GENTIM2D_CONTROL))
       integer i,j,bi,bj
 #endif
 
-
 c     == end of interface ==
+
+#ifdef ALLOW_ROTATE_UV_CONTROLS
+        do bj = mybylo(mythid),mybyhi(mythid)
+         do bi = mybxlo(mythid),mybxhi(mythid)
+          do j = 1-oly,sny+oly
+           do i = 1-olx,snx+olx
+             tmpUE(i,j,bi,bj) = 0. _d 0
+             tmpVN(i,j,bi,bj) = 0. _d 0
+             tmpUX(i,j,bi,bj) = 0. _d 0
+             tmpVY(i,j,bi,bj) = 0. _d 0
+           enddo
+          enddo
+         enddo
+        enddo
+#endif
+
+#if (defined (ALLOW_CTRL) && \
+     defined (ALLOW_GENTIM2D_CONTROL))
+      if (ctrlUseGen) then
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid),mybxhi(myThid)
+        DO j = 1,sNy
+         DO i = 1,sNx
+           do iarr = 1, maxCtrlTim2D
+#ifndef ALLOW_ROTATE_UV_CONTROLS
+           if (xx_gentim2d_file(iarr).EQ.'xx_tauu')
+     &       ustress(i,j,bi,bj)=ustress(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr).EQ.'xx_tauv')
+     &       vstress(i,j,bi,bj)=vstress(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+#else
+           if (xx_gentim2d_file(iarr).EQ.'xx_tauu')
+     &       tmpUE(i,j,bi,bj)=xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr).EQ.'xx_tauv')
+     &       tmpVN(i,j,bi,bj)=xx_gentim2d(i,j,bi,bj,iarr)
+#endif
+           enddo
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      endif !if (ctrlUseGen) then
+#endif
 
 #ifdef ALLOW_HFLUX_CONTROL
       call ctrl_get_gen ( 
@@ -87,6 +138,7 @@ c     == end of interface ==
 
       IF ( .NOT.useAtmWind ) THEN
 #ifndef ALLOW_ROTATE_UV_CONTROLS
+      if (.NOT.ctrlUseGen) then
 
 #ifdef ALLOW_USTRESS_CONTROL
       call ctrl_get_gen ( 
@@ -104,22 +156,12 @@ c     == end of interface ==
      &     wtauv, mytime, myiter, mythid )
 #endif
 
+      endif
 #else
 
 #if defined(ALLOW_USTRESS_CONTROL) && defined(ALLOW_VSTRESS_CONTROL)
 
-        do bj = mybylo(mythid),mybyhi(mythid)
-         do bi = mybxlo(mythid),mybxhi(mythid)
-          do j = 1-oly,sny+oly
-           do i = 1-olx,snx+olx
-             tmpUE(i,j,bi,bj) = 0. _d 0
-             tmpVN(i,j,bi,bj) = 0. _d 0
-             tmpUX(i,j,bi,bj) = 0. _d 0
-             tmpVY(i,j,bi,bj) = 0. _d 0
-           enddo
-          enddo
-         enddo
-        enddo
+      if (.NOT.ctrlUseGen) then
 
       call ctrl_get_gen ( 
      &     xx_tauu_file, xx_tauustartdate, xx_tauuperiod,
@@ -133,6 +175,8 @@ c     == end of interface ==
      &     xx_tauv_remo_intercept, xx_tauv_remo_slope,
      &     wtauv, mytime, myiter, mythid )
 
+      endif
+   
       _EXCH_XY_RL(tmpUE,myThid)
       _EXCH_XY_RL(tmpVN,myThid)
 

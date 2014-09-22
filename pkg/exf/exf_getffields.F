@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.54 2014/09/22 17:23:40 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.55 2014/09/22 21:32:58 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -387,6 +387,8 @@ C     Runoff temperature
 #endif /* ALLOW_RUNOFTEMP */
 
 C-- Control variables for atmos. state
+#ifdef ALLOW_CTRL
+      if (.NOT.ctrlUseGen) then
 
 #ifdef ALLOW_ATEMP_CONTROL
       CALL CTRL_GET_GEN (
@@ -412,14 +414,6 @@ C-- Control variables for atmos. state
      &     wprecip, myTime, myIter, myThid )
 #endif
 
-#ifdef ALLOW_SWFLUX_CONTROL
-      CALL CTRL_GET_GEN (
-     &     xx_swflux_file, xx_swfluxstartdate, xx_swfluxperiod,
-     &     maskc, swflux, xx_swflux0, xx_swflux1, xx_swflux_dummy,
-     &     xx_swflux_remo_intercept, xx_swflux_remo_slope,
-     &     wswflux, myTime, myIter, myThid )
-#endif
-
 #ifdef ALLOW_SWDOWN_CONTROL
       CALL CTRL_GET_GEN (
      &     xx_swdown_file, xx_swdownstartdate, xx_swdownperiod,
@@ -428,20 +422,30 @@ C-- Control variables for atmos. state
      &     wswdown, myTime, myIter, myThid )
 #endif
 
-#ifdef ALLOW_LWFLUX_CONTROL
-      CALL CTRL_GET_GEN (
-     &     xx_lwflux_file, xx_lwfluxstartdate, xx_lwfluxperiod,
-     &     maskc, lwflux, xx_lwflux0, xx_lwflux1, xx_lwflux_dummy,
-     &     xx_lwflux_remo_intercept, xx_lwflux_remo_slope,
-     &     wswflux, myTime, myIter, myThid )
-#endif
-
 #ifdef ALLOW_LWDOWN_CONTROL
       CALL CTRL_GET_GEN (
      &     xx_lwdown_file, xx_lwdownstartdate, xx_lwdownperiod,
      &     maskc, lwdown, xx_lwdown0, xx_lwdown1, xx_lwdown_dummy,
      &     xx_lwdown_remo_intercept, xx_lwdown_remo_slope,
      &     wlwdown, myTime, myIter, myThid )
+#endif
+
+      endif !if (.NOT.ctrlUseGen) then
+
+#ifdef ALLOW_SWFLUX_CONTROL
+      CALL CTRL_GET_GEN (
+     &     xx_swflux_file, xx_swfluxstartdate, xx_swfluxperiod,
+     &     maskc, swflux, xx_swflux0, xx_swflux1, xx_swflux_dummy,
+     &     xx_swflux_remo_intercept, xx_swflux_remo_slope,
+     &     wswflux, myTime, myIter, myThid )
+#endif
+
+#ifdef ALLOW_LWFLUX_CONTROL
+      CALL CTRL_GET_GEN (
+     &     xx_lwflux_file, xx_lwfluxstartdate, xx_lwfluxperiod,
+     &     maskc, lwflux, xx_lwflux0, xx_lwflux1, xx_lwflux_dummy,
+     &     xx_lwflux_remo_intercept, xx_lwflux_remo_slope,
+     &     wswflux, myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_EVAP_CONTROL
@@ -576,26 +580,29 @@ cdm      &     xx_runoff_remo_intercept, xx_runoff_remo_slope,
 cdm      &     wrunoff, 0., 0., myThid )
 cdm #endif
 
+#endif /* ALLOW_CTRL */
+
 #if (defined (ALLOW_CTRL) && \
      defined (ALLOW_GENTIM2D_CONTROL))
+      if (ctrlUseGen) then
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),mybxhi(myThid)
         DO j = 1,sNy
          DO i = 1,sNx
            do iarr = 1, maxCtrlTim2D
-           if (xx_gentim2d_file(iarr).EQ.'xxg_atemp')
+           if (xx_gentim2d_file(iarr).EQ.'xx_atemp')
      &       atemp(i,j,bi,bj)=atemp(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
-           if (xx_gentim2d_file(iarr).EQ.'xxg_aqh')
+           if (xx_gentim2d_file(iarr).EQ.'xx_aqh')
      &       aqh(i,j,bi,bj)=aqh(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
-           if (xx_gentim2d_file(iarr).EQ.'xxg_swdown')
+           if (xx_gentim2d_file(iarr).EQ.'xx_swdown')
      &       swdown(i,j,bi,bj)=swdown(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
-           if (xx_gentim2d_file(iarr).EQ.'xxg_lwdown')
+           if (xx_gentim2d_file(iarr).EQ.'xx_lwdown')
      &       lwdown(i,j,bi,bj)=lwdown(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
-           if (xx_gentim2d_file(iarr).EQ.'xxg_precip')
+           if (xx_gentim2d_file(iarr).EQ.'xx_precip')
      &       precip(i,j,bi,bj)=precip(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
            enddo
@@ -603,6 +610,7 @@ cdm #endif
         ENDDO
        ENDDO
       ENDDO
+      endif !if (ctrlUseGen) then
 #endif
 
       RETURN
