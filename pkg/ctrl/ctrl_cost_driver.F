@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_driver.F,v 1.3 2014/09/22 13:59:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_driver.F,v 1.4 2014/09/22 21:32:24 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -40,6 +40,9 @@ c     == local variables ==
 #ifdef ALLOW_GENTIM2D_CONTROL
       integer startrec
       integer endrec
+#endif
+
+#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
       integer iarr
 #endif
 
@@ -61,6 +64,20 @@ c--   Evaluate the individual cost function contributions.
      &     num_gentim2d(1,1,iarr), num_gentim2dm(1,1,iarr),
      &     objf_gentim2d(1,1,iarr), objf_gentim2dm(1,1,iarr), 
      &     objf_gentim2dsmoo(1,1,iarr), 0. _d 0, 0. _d 0,
+     &     maskC, myThid )
+      endif
+
+      enddo
+#endif
+
+#ifdef ALLOW_GENARR3D_CONTROL
+      do iarr = 1, maxCtrlArr3D
+
+      if (xx_genarr3d_weight(iarr).NE.' ') then
+      call ctrl_cost_gen3d (
+     &     xx_genarr3d_file(iarr),xx_genarr3d_dummy(iarr),
+     &     wgenarr3d(1-Olx,1-Oly,1,1,1,iarr),
+     &     num_genarr3d(1,1,iarr), objf_genarr3d(1,1,iarr),
      &     maskC, myThid )
       endif
 
