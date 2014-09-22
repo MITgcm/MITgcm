@@ -1,10 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2068 2014/09/22 14:21:10 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2069 2014/09/22 21:36:02 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-
+o pkg/exf/exf_getffields.F : add ctrlUseGen and .NOT.ctrlUseGen exclusive brackets
+  and activate gentim2d for xx_atemp, xx_aqh, xx_swdown, xx_lwdown, xx_precip
+o pkg/exf/exf_getsurfacefluxes.F : implement gentim2d for xx_tauu, xx_tauv
+  and add ctrlUseGen and .NOT.ctrlUseGen exclusive brackets.
+o pkg/ecco/cost_forcing.F, cost_hyd.F, cost_internal_params.F :
+  add .NOT.ctrlUseGen exclusive brackets -- ctrl_cost_driver
+  is used instead when ctrlUseGen is .TRUE.
+o pkg/ecco/ecco_cost_final.F : print f_genarr3d to stdout
+o pkg/ctrl/ctrl_cost_driver.F : add ctrl_cost_gen3d loop
 o pkg/exf/exf_getclim.F, exf_getffields.F, exf_getsurfacefluxes.F,
   pkg/shelfice/shelfice_thermodynamics.F,
   verification/hs94.1x64x5/code_ad/ctrl_map_gentim2d.F,
