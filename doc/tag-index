@@ -1,10 +1,26 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2067 2014/09/19 21:03:11 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2068 2014/09/22 14:21:10 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 
+o pkg/exf/exf_getclim.F, exf_getffields.F, exf_getsurfacefluxes.F,
+  pkg/shelfice/shelfice_thermodynamics.F,
+  verification/hs94.1x64x5/code_ad/ctrl_map_gentim2d.F,
+  verification/hs94.1x64x5/code_oad/ctrl_map_gentim2d.F :
+ -  add weight in CTRL_GET_GEN calls
+o pkg/ctrl :
+ - ctrl_get_gen.F : add weight as input parameter, and apply
+   it directly rather than using smooth_correl2Dw (to be retired).
+ - ctrl_map_gentim2d.F : add wgentim2d in CTRL_GET_GEN call
+o pkg/ctrl :
+ - CTRL_GENARR.h : add xx_gentim2d_numsmooth
+ - ctrl_cost_driver.F : bug fix (iarr, not 1)
+ - ctrl_init.F : bug fix (missing iarr)
+ - ctrl_readparms.F : add xx_gentim2d_numsmooth, improve numsmooth defaults
+ - ctrl_summary.F : improved report of controls settings
+o pkg/ecco/ecco_cost_final.F : add genarr2d, genarr3d cost contributions
 o pkg/ctrl :
  - introduce run time switch ctrlUseGen (in ctrl.h, ctrl_check.F,
    ctrl_init_variables.F, ctrl_readparms.F, ctrl_summary.F)
