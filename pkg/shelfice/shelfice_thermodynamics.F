@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.36 2014/09/09 22:56:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.37 2014/09/22 14:02:34 gforget Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -36,6 +36,7 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "SHELFICE.h"
+#include "SHELFICE_COST.h"
 #ifdef ALLOW_AUTODIFF
 # include "CTRL_SIZE.h"
 # include "ctrl.h"
@@ -218,6 +219,7 @@ C     where this value is part of the protocol
      &     maskSHI, xx_shifwflx_loc, xx_shifwflx0, xx_shifwflx1,
      &     xx_shifwflx_dummy,
      &     xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope,
+     &     wshifwflx,
      &     myTime, myIter, myThid )
 #endif /* ALLOW_SHIFWFLX_CONTROL */
       DO bj = myByLo(myThid), myByHi(myThid)
