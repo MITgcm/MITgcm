@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.52 2014/09/12 14:57:44 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.53 2014/09/22 14:01:43 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -35,11 +35,14 @@ C     == global variables ==
 #ifdef ALLOW_AUTODIFF
 # include "CTRL_SIZE.h"
 # include "ctrl.h"
-#if (defined (ALLOW_CTRL) && \
+# if (defined (ALLOW_CTRL) && \
      defined (ALLOW_GENTIM2D_CONTROL))
-# include "CTRL_GENARR.h"
-#endif
+#   include "CTRL_GENARR.h"
+# endif
 # include "ctrl_dummy.h"
+# ifdef ALLOW_ECCO
+#   include "ecco_cost.h"
+# endif
 #endif
 
 C     == routine arguments ==
@@ -390,7 +393,7 @@ C-- Control variables for atmos. state
      &     xx_atemp_file, xx_atempstartdate, xx_atempperiod,
      &     maskc, atemp, xx_atemp0, xx_atemp1, xx_atemp_dummy,
      &     xx_atemp_remo_intercept, xx_atemp_remo_slope,
-     &     myTime, myIter, myThid )
+     &     watemp, myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_AQH_CONTROL
@@ -398,7 +401,7 @@ C-- Control variables for atmos. state
      &     xx_aqh_file, xx_aqhstartdate, xx_aqhperiod,
      &     maskc, aqh, xx_aqh0, xx_aqh1, xx_aqh_dummy,
      &     xx_aqh_remo_intercept, xx_aqh_remo_slope,
-     &     myTime, myIter, myThid )
+     &     waqh, myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_PRECIP_CONTROL
@@ -406,7 +409,7 @@ C-- Control variables for atmos. state
      &     xx_precip_file, xx_precipstartdate, xx_precipperiod,
      &     maskc, precip, xx_precip0, xx_precip1, xx_precip_dummy,
      &     xx_precip_remo_intercept, xx_precip_remo_slope,
-     &     myTime, myIter, myThid )
+     &     precip, myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_SWFLUX_CONTROL
@@ -414,7 +417,7 @@ C-- Control variables for atmos. state
      &     xx_swflux_file, xx_swfluxstartdate, xx_swfluxperiod,
      &     maskc, swflux, xx_swflux0, xx_swflux1, xx_swflux_dummy,
      &     xx_swflux_remo_intercept, xx_swflux_remo_slope,
-     &     myTime, myIter, myThid )
+     &     wswflux, myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_SWDOWN_CONTROL
@@ -422,7 +425,7 @@ C-- Control variables for atmos. state
      &     xx_swdown_file, xx_swdownstartdate, xx_swdownperiod,
      &     maskc, swdown, xx_swdown0, xx_swdown1, xx_swdown_dummy,
      &     xx_swdown_remo_intercept, xx_swdown_remo_slope,
-     &     myTime, myIter, myThid )
+     &     wswdown, myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_LWFLUX_CONTROL
@@ -430,7 +433,7 @@ C-- Control variables for atmos. state
      &     xx_lwflux_file, xx_lwfluxstartdate, xx_lwfluxperiod,
      &     maskc, lwflux, xx_lwflux0, xx_lwflux1, xx_lwflux_dummy,
      &     xx_lwflux_remo_intercept, xx_lwflux_remo_slope,
-     &     myTime, myIter, myThid )
+     &     wswflux, myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_LWDOWN_CONTROL
@@ -438,7 +441,7 @@ C-- Control variables for atmos. state
      &     xx_lwdown_file, xx_lwdownstartdate, xx_lwdownperiod,
      &     maskc, lwdown, xx_lwdown0, xx_lwdown1, xx_lwdown_dummy,
      &     xx_lwdown_remo_intercept, xx_lwdown_remo_slope,
-     &     myTime, myIter, myThid )
+     &     wlwdown, myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_EVAP_CONTROL
@@ -446,7 +449,7 @@ C-- Control variables for atmos. state
      &     xx_evap_file, xx_evapstartdate, xx_evapperiod,
      &     maskc, evap, xx_evap0, xx_evap1, xx_evap_dummy,
      &     xx_evap_remo_intercept, xx_evap_remo_slope,
-     &     myTime, myIter, myThid )
+     &     wevap, myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_SNOWPRECIP_CONTROL
@@ -456,7 +459,7 @@ C-- Control variables for atmos. state
      &     maskc, snowprecip, xx_snowprecip0, xx_snowprecip1,
      &     xx_snowprecip_dummy,
      &     xx_snowprecip_remo_intercept, xx_snowprecip_remo_slope,
-     &     myTime, myIter, myThid )
+     &     wsnowprecip, myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_APRESSURE_CONTROL
@@ -466,7 +469,7 @@ C-- Control variables for atmos. state
      &     maskc, apressure, xx_apressure0, xx_apressure1,
      &     xx_apressure_dummy,
      &     xx_apressure_remo_intercept, xx_apressure_remo_slope,
-     &     myTime, myIter, myThid )
+     &     wapressure, myTime, myIter, myThid )
 #endif
 
       IF ( useAtmWind ) THEN
@@ -477,7 +480,7 @@ C-- Control variables for atmos. state
      &     xx_uwind_file, xx_uwindstartdate, xx_uwindperiod,
      &     maskc, uwind, xx_uwind0, xx_uwind1, xx_uwind_dummy,
      &     xx_uwind_remo_intercept, xx_uwind_remo_slope,
-     &     myTime, myIter, myThid )
+     &     wuwind, myTime, myIter, myThid )
 #endif /* ALLOW_UWIND_CONTROL */
 
 #ifdef ALLOW_VWIND_CONTROL
@@ -485,7 +488,7 @@ C-- Control variables for atmos. state
      &     xx_vwind_file, xx_vwindstartdate, xx_vwindperiod,
      &     maskc, vwind, xx_vwind0, xx_vwind1, xx_vwind_dummy,
      &     xx_vwind_remo_intercept, xx_vwind_remo_slope,
-     &     myTime, myIter, myThid )
+     &     wvwind, myTime, myIter, myThid )
 #endif /* ALLOW_VWIND_CONTROL */
 
 #else
@@ -508,13 +511,13 @@ C-- Control variables for atmos. state
      &     xx_uwind_file, xx_uwindstartdate, xx_uwindperiod,
      &     maskc, tmpUE, xx_uwind0, xx_uwind1, xx_uwind_dummy,
      &     xx_uwind_remo_intercept, xx_uwind_remo_slope,
-     &     myTime, myIter, myThid )
+     &     wuwind, myTime, myIter, myThid )
 
       CALL CTRL_GET_GEN (
      &     xx_vwind_file, xx_vwindstartdate, xx_vwindperiod,
      &     maskc, tmpVN, xx_vwind0, xx_vwind1, xx_vwind_dummy,
      &     xx_vwind_remo_intercept, xx_vwind_remo_slope,
-     &     myTime, myIter, myThid )
+     &     wvwind, myTime, myIter, myThid )
 
       CALL ROTATE_UV2EN_RL(tmpUX,tmpVY,tmpUE,tmpVN,
      &     .FALSE.,.FALSE.,.TRUE.,1,myThid)
@@ -570,7 +573,7 @@ cdm       CALL CTRL_GET_GEN (
 cdm      &     xx_runoff_file, xx_runoffstartdate, xx_runoffperiod,
 cdm      &     maskc, runoff, xx_runoff0, xx_runoff1, xx_runoff_dummy,
 cdm      &     xx_runoff_remo_intercept, xx_runoff_remo_slope,
-cdm      &     0., 0., myThid )
+cdm      &     wrunoff, 0., 0., myThid )
 cdm #endif
 
 #if (defined (ALLOW_CTRL) && \

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.15 2012/08/28 19:17:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.16 2014/09/22 14:01:43 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -45,6 +45,9 @@ c     == global variables ==
 # include "CTRL_SIZE.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"
+# ifdef ALLOW_ECCO
+#   include "ecco_cost.h"
+# endif
 #endif
 
 c     == routine arguments ==
@@ -71,7 +74,7 @@ c     == end of interface ==
      &     xx_hflux_file, xx_hfluxstartdate, xx_hfluxperiod,
      &     maskc, hflux, xx_hflux0, xx_hflux1, xx_hflux_dummy,
      &     xx_hflux_remo_intercept, xx_hflux_remo_slope,
-     &     mytime, myiter, mythid )
+     &     whflux, mytime, myiter, mythid )
 #endif
 
 #ifdef ALLOW_SFLUX_CONTROL
@@ -79,7 +82,7 @@ c     == end of interface ==
      &     xx_sflux_file, xx_sfluxstartdate, xx_sfluxperiod,
      &     maskc, sflux, xx_sflux0, xx_sflux1, xx_sflux_dummy,
      &     xx_sflux_remo_intercept, xx_sflux_remo_slope,
-     &     mytime, myiter, mythid )
+     &     wsflux, mytime, myiter, mythid )
 #endif
 
       IF ( .NOT.useAtmWind ) THEN
@@ -90,7 +93,7 @@ c     == end of interface ==
      &     xx_tauu_file, xx_tauustartdate, xx_tauuperiod,
      &     maskw, ustress, xx_tauu0, xx_tauu1, xx_tauu_dummy,
      &     xx_tauu_remo_intercept, xx_tauu_remo_slope,
-     &     mytime, myiter, mythid )
+     &     wtauu, mytime, myiter, mythid )
 #endif
 
 #ifdef ALLOW_VSTRESS_CONTROL
@@ -98,7 +101,7 @@ c     == end of interface ==
      &     xx_tauv_file, xx_tauvstartdate, xx_tauvperiod,
      &     masks, vstress, xx_tauv0, xx_tauv1, xx_tauv_dummy,
      &     xx_tauv_remo_intercept, xx_tauv_remo_slope,
-     &     mytime, myiter, mythid )
+     &     wtauv, mytime, myiter, mythid )
 #endif
 
 #else
@@ -122,13 +125,13 @@ c     == end of interface ==
      &     xx_tauu_file, xx_tauustartdate, xx_tauuperiod,
      &     maskc, tmpUE, xx_tauu0, xx_tauu1, xx_tauu_dummy,
      &     xx_tauu_remo_intercept, xx_tauu_remo_slope,
-     &     mytime, myiter, mythid )
+     &     wtauu, mytime, myiter, mythid )
 
       call ctrl_get_gen ( 
      &     xx_tauv_file, xx_tauvstartdate, xx_tauvperiod,
      &     maskc, tmpVN, xx_tauv0, xx_tauv1, xx_tauv_dummy,
      &     xx_tauv_remo_intercept, xx_tauv_remo_slope,
-     &     mytime, myiter, mythid )
+     &     wtauv, mytime, myiter, mythid )
 
       _EXCH_XY_RL(tmpUE,myThid)
       _EXCH_XY_RL(tmpVN,myThid)

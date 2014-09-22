@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.22 2012/07/31 16:08:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.23 2014/09/22 14:01:43 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -46,9 +46,14 @@ c     == global variables ==
 #include "EXF_CONSTANTS.h"
 #include "EXF_FIELDS.h"
 #ifdef ALLOW_AUTODIFF
-# include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
+# ifdef ALLOW_CTRL
+#  include "CTRL_SIZE.h"
+#  include "ctrl.h"
+#  include "ctrl_dummy.h"
+# endif
+# ifdef ALLOW_ECCO
+#  include "ecco_cost.h"
+# endif
 #endif
 
 c     == routine arguments ==
@@ -95,11 +100,11 @@ c--   Update the tile edges.
 #endif
 
 #ifdef ALLOW_SST_CONTROL
-      call ctrl_get_gen (
+      call CTRL_GET_GEN (
      &     xx_sst_file, xx_sststartdate, xx_sstperiod,
      &     maskc, climsst, xx_sst0, xx_sst1, xx_sst_dummy,
      &     xx_sst_remo_intercept, xx_sst_remo_slope,
-     &     mytime, myiter, mythid )
+     &     wsst, mytime, myiter, mythid )
 #endif
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
@@ -120,11 +125,11 @@ c--   Update the tile edges.
 #endif
 
 #ifdef ALLOW_SSS_CONTROL
-      call ctrl_get_gen (
+      call CTRL_GET_GEN (
      &     xx_sss_file, xx_sssstartdate, xx_sssperiod,
      &     maskc, climsss, xx_sss0, xx_sss1, xx_sss_dummy,
      &     xx_sss_remo_intercept, xx_sss_remo_slope,
-     &     mytime, myiter, mythid )
+     &     wsss, mytime, myiter, mythid )
 #endif
 
 #ifdef ALLOW_CLIMSTRESS_RELAXATION
