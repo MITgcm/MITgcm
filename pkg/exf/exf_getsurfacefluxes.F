@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.17 2014/09/22 21:32:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.18 2014/09/23 01:55:48 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -58,6 +58,8 @@ c     == routine arguments ==
       integer mythid
 
 c     == global variables ==
+
+#ifdef ALLOW_CTRL
 
 #ifdef ALLOW_ROTATE_UV_CONTROLS
       _RL     tmpUE(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -204,5 +206,6 @@ c     == end of interface ==
 #endif /* ALLOW_ROTATE_UV_CONTROLS */
       ENDIF
 
+#endif /* ALLOW_CTRL */
 
       end
