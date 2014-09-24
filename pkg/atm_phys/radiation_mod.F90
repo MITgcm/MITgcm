@@ -1,4 +1,4 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/radiation_mod.F90,v 1.2 2014/04/03 00:28:21 jmc Exp $
+! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/radiation_mod.F90,v 1.3 2014/09/24 00:16:51 jmc Exp $
 ! $Name:  $
 
 module radiation_mod
@@ -24,7 +24,7 @@ private
 
 ! version information
 
-character(len=128) :: version='$Id: radiation_mod.F90,v 1.2 2014/04/03 00:28:21 jmc Exp $'
+character(len=128) :: version='$Id: radiation_mod.F90,v 1.3 2014/09/24 00:16:51 jmc Exp $'
 character(len=128) :: tag='homemade'
 
 !==================================================================================
@@ -35,12 +35,21 @@ public :: radiation_init, radiation_down, radiation_up, radiation_end
 !==================================================================================
 
 ! module variables
+! select_incSW :: select expression for Incoming SW radiation @ the top
+!              :: =0 : no season ; =1 : circular orbit planet (obliquity only)
+! yearLength   :: length of solar year in seconds
+! yearPhase    :: phase in solar year [0-1] relative to NH winter solstice
+! obliquity    :: obliquity of Earth rotation axis in degre
 logical :: initialized =.false.
+integer :: select_incSW    = 0
 
 real    :: solar_constant  = 1360.0
 real    :: del_sol         = 1.4
 ! modif omp: winter/summer hemisphere
 real    :: del_sw          = 0.0
+real    :: yearLength = 86400.*360.
+real    :: yearPhase  = 10./365.    ! winter solstice = 22.Dec.h00
+real    :: obliquity  = 23.45
 real    :: ir_tau_eq       = 6.0
 real    :: ir_tau_pole     = 1.5
 real    :: linear_tau      = 0.1
@@ -55,10 +64,10 @@ real    :: solar_exponent  = 4.0
 
 real, save :: pi, deg_to_rad , rad_to_deg
 
-namelist/radiation_nml/ solar_constant, del_sol, &
+namelist/radiation_nml/ select_incSW, solar_constant, del_sol, &
            ir_tau_eq, ir_tau_pole, linear_tau, ir_tau_co2, ir_tau_wv,   &
            atm_abs, sw_diff, del_sw, albedo_value, window, wv_exponent, &
-           solar_exponent
+           solar_exponent, yearLength, yearPhase, obliquity
 
 !==================================================================================
 !-------------------- diagnostics fields -------------------------------
@@ -200,14 +209,18 @@ integer, intent(in)                 :: myThid
 !integer :: i, j
 integer :: k, n
 integer :: im, jm
+! Variables for seasonal Incoming SW
+real    :: tYear, largeTan, cDecl, sDecl, tanDecl
 
 !logical :: used
 
 ! -------------------------------------------------------------------------
 !real, allocatable, dimension(:,:)   :: swin
-real, allocatable, dimension(:,:)   :: ss, solar, tau_0, solar_tau_0, p2
+real, allocatable, dimension(:,:)   :: ss, solar, solar_tau_0, p2
 real, allocatable, dimension(:,:,:) :: solar_tau
-real, allocatable, dimension(:,:)   :: del_tau, tau_km, tau_kp
+real, allocatable, dimension(:,:)   :: del_tau, tau_0, tau_km, tau_kp
+! Variables for seasonal Incoming SW
+real, allocatable, dimension(:,:)   :: cLat, sLat, cos_H, HourAng
 ! -------------------------------------------------------------------------
 
 n = size(t,3)
@@ -218,24 +231,69 @@ jm = size(t,2)
 !allocate (swin             (im, jm))
 allocate (ss               (im, jm))
 allocate (solar            (im, jm))
-allocate (tau_0            (im, jm))
 allocate (solar_tau_0      (im, jm))
-allocate (p2               (im, jm))
 allocate (solar_tau        (im, jm, n+1))
+if ( select_incSW .eq. 0 ) then
+  allocate (p2             (im, jm))
+elseif ( select_incSW .eq. 1 ) then
+! Variables for seasonal Incoming SW
+  allocate (cLat           (im, jm))
+  allocate (sLat           (im, jm))
+  allocate (cos_H          (im, jm))
+  allocate (HourAng        (im, jm))
+endif
 if ( wv_exponent .eq. 0. ) then
-  allocate (del_tau          (im, jm))
+  allocate (del_tau        (im, jm))
 else
-  allocate (tau_km           (im, jm))
-  allocate (tau_kp           (im, jm))
+  allocate (tau_0          (im, jm))
+  allocate (tau_km         (im, jm))
+  allocate (tau_kp         (im, jm))
 endif
 ! -------------------------------------------------------------------------
 
 ss  = sin(lat)
-p2 = (1. - 3.*ss*ss)/4.
 
-solar = 0.25*solar_constant*(1.0 + del_sol*p2 + del_sw * ss)
+if ( select_incSW .eq. 0 ) then
+! Original Incoming SW (no saisonal cycle):
+   p2 = (1. - 3.*ss*ss)/4.
+   solar = 0.25*solar_constant*(1.0 + del_sol*p2 + del_sw * ss)
 
-tau_0 = ir_tau_eq + (ir_tau_pole - ir_tau_eq)*ss*ss
+elseif ( select_incSW .eq. 1 ) then
+! daily-mean Incoming SW with simple seasonal cycle acounting
+!  only for obliquity (i.e., circular orbit planet)
+   largeTan = 1.e+16
+
+! tYear = time in the solar year, in [0-1]
+   tYear = MOD( Time_diag/yearLength + yearPhase , 1.0 )
+
+! Compute the declination angle
+! a) approximate estimate of declination angle: relative error is less
+!    than 0.03 for current obliq but as large as 0.21 for obliq=60^o
+!  xDecl = - obliquity*deg_to_rad * cos(2.*pi*tYear)
+! b) unaproximate expression:
+   sDecl = -sin(  obliquity*deg_to_rad ) * cos(2.*pi*tYear)
+   cDecl =  cos( asin( sDecl ) )
+   if ( cDecl.EQ.0. ) then
+    tanDecl = sign( largeTan, sDecl )
+   else
+    tanDecl = sDecl / cDecl
+   endif
+
+! Compute Insolation
+   cLat = cos(lat)
+!  sLat = sin(lat)
+   sLat = ss
+   cos_H = sign( largeTan, sLat )
+   where ( cLat .ne. 0. )
+     cos_H = sLat/cLat
+   endwhere
+   cos_H = max( min( - cos_H * tanDecl, 1. ) , -1. )
+   HourAng = acos( cos_H )
+   solar = (solar_constant/pi)                             &
+         *( HourAng*sLat*sDecl + cLat*cDecl*sin(HourAng) )
+else
+  stop 'invalid select_incSW'
+endif
 
 solar_tau_0 = (1.0 - sw_diff*ss*ss)*atm_abs
 
@@ -257,6 +315,8 @@ if ( wv_exponent .eq. 0. ) then
 
 else
 ! longwave optical thickness function of latitude and pressure
+  tau_0 = ir_tau_eq + (ir_tau_pole - ir_tau_eq)*ss*ss
+
   k = 1
   tau_kp =   tau_0(:,:) * (                                                    &
                   linear_tau * p_half(:,:,k)/p_half(:,:,n+1)                   &
@@ -305,11 +365,17 @@ net_surf_sw_down = solar_down(:,:,n+1)*(1. - albedo(:,:))
 ! -------------------------------------------------------------------------
 !deallocate (swin)
 deallocate (solar_tau)
-deallocate (ss, solar, tau_0, solar_tau_0, p2)
+deallocate (ss, solar, solar_tau_0)
+if ( select_incSW .eq. 0 ) then
+  deallocate (p2)
+elseif ( select_incSW .eq. 1 ) then
+! Variables for seasonal Incoming SW
+  deallocate (cLat, sLat, cos_H, HourAng)
+endif
 if ( wv_exponent .eq. 0. ) then
   deallocate (del_tau)
 else
-  deallocate (tau_km, tau_kp)
+  deallocate (tau_0, tau_km, tau_kp)
 endif
 ! -------------------------------------------------------------------------
 
