@@ -1,65 +1,71 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2069 2014/09/22 21:36:02 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2070 2014/09/24 00:17:35 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/exf/exf_getffields.F : add ctrlUseGen and .NOT.ctrlUseGen exclusive brackets
-  and activate gentim2d for xx_atemp, xx_aqh, xx_swdown, xx_lwdown, xx_precip
-o pkg/exf/exf_getsurfacefluxes.F : implement gentim2d for xx_tauu, xx_tauv
-  and add ctrlUseGen and .NOT.ctrlUseGen exclusive brackets.
+o pkg/atm_phys:
+  - implement simple (obliquity only, assuming circular planet orbit)
+    seasonal cycle for incoming insolation ; used when run-time parameter
+    "select_incSW" is set to 1 ; by default (=0), uses old unchanged formula.
+o pkg/exf/exf_getffields.F :
+    add ctrlUseGen and .NOT.ctrlUseGen exclusive brackets
+    and activate gentim2d for xx_atemp, xx_aqh, xx_swdown, xx_lwdown, xx_precip
+o pkg/exf/exf_getsurfacefluxes.F :
+    implement gentim2d for xx_tauu, xx_tauv
+    and add ctrlUseGen and .NOT.ctrlUseGen exclusive brackets.
 o pkg/ecco/cost_forcing.F, cost_hyd.F, cost_internal_params.F :
-  add .NOT.ctrlUseGen exclusive brackets -- ctrl_cost_driver
-  is used instead when ctrlUseGen is .TRUE.
+    add .NOT.ctrlUseGen exclusive brackets -- ctrl_cost_driver
+    is used instead when ctrlUseGen is .TRUE.
 o pkg/ecco/ecco_cost_final.F : print f_genarr3d to stdout
 o pkg/ctrl/ctrl_cost_driver.F : add ctrl_cost_gen3d loop
 o pkg/exf/exf_getclim.F, exf_getffields.F, exf_getsurfacefluxes.F,
-  pkg/shelfice/shelfice_thermodynamics.F,
-  verification/hs94.1x64x5/code_ad/ctrl_map_gentim2d.F,
-  verification/hs94.1x64x5/code_oad/ctrl_map_gentim2d.F :
- -  add weight in CTRL_GET_GEN calls
+    pkg/shelfice/shelfice_thermodynamics.F,
+    verification/hs94.1x64x5/code_ad/ctrl_map_gentim2d.F,
+    verification/hs94.1x64x5/code_oad/ctrl_map_gentim2d.F :
+  - add weight in CTRL_GET_GEN calls
 o pkg/ctrl :
- - ctrl_get_gen.F : add weight as input parameter, and apply
-   it directly rather than using smooth_correl2Dw (to be retired).
- - ctrl_map_gentim2d.F : add wgentim2d in CTRL_GET_GEN call
+  - ctrl_get_gen.F : add weight as input parameter, and apply
+    it directly rather than using smooth_correl2Dw (to be retired).
+  - ctrl_map_gentim2d.F : add wgentim2d in CTRL_GET_GEN call
 o pkg/ctrl :
- - CTRL_GENARR.h : add xx_gentim2d_numsmooth
- - ctrl_cost_driver.F : bug fix (iarr, not 1)
- - ctrl_init.F : bug fix (missing iarr)
- - ctrl_readparms.F : add xx_gentim2d_numsmooth, improve numsmooth defaults
- - ctrl_summary.F : improved report of controls settings
+  - CTRL_GENARR.h : add xx_gentim2d_numsmooth
+  - ctrl_cost_driver.F : bug fix (iarr, not 1)
+  - ctrl_init.F : bug fix (missing iarr)
+  - ctrl_readparms.F : add xx_gentim2d_numsmooth, improve numsmooth defaults
+  - ctrl_summary.F : improved report of controls settings
 o pkg/ecco/ecco_cost_final.F : add genarr2d, genarr3d cost contributions
 o pkg/ctrl :
- - introduce run time switch ctrlUseGen (in ctrl.h, ctrl_check.F,
-   ctrl_init_variables.F, ctrl_readparms.F, ctrl_summary.F)
- - re-activate ctrl_summary (call in ctrl_init.F)
+  - introduce run time switch ctrlUseGen (in ctrl.h, ctrl_check.F,
+    ctrl_init_variables.F, ctrl_readparms.F, ctrl_summary.F)
+  - re-activate ctrl_summary (call in ctrl_init.F)
 o pkg/ctrl/ctrl_cost_gen.F :
- - rename ctrl_cost_gen2d input parameters {wmean_gen,wgen,genmask}
-   as {xx_gen_wmean,xx_gen_weight,xx_gen_mask}
- - add ctrl_cost_gen3d for ARR3D (ctrl_cost_gen2d is for ARR2D,TIM2D)
+  - rename ctrl_cost_gen2d input parameters {wmean_gen,wgen,genmask}
+    as {xx_gen_wmean,xx_gen_weight,xx_gen_mask}
+  - add ctrl_cost_gen3d for ARR3D (ctrl_cost_gen2d is for ARR2D,TIM2D)
 o pkg/ctrl/CTRL_GENARR.h :
- - add objf_genarr2d,  num_genarr2d, mult_genarr2d
- - add objf_genarr3d,  num_genarr3d, mult_genarr3d
- - add wgenarr2d, wgenarr3d
+  - add objf_genarr2d,  num_genarr2d, mult_genarr2d
+  - add objf_genarr3d,  num_genarr3d, mult_genarr3d
+  - add wgenarr2d, wgenarr3d
 o pkg/ctrl/ctrl_readparms.F :
- - add mult_genarr2d,mult_genarr3d in namelist
+  - add mult_genarr2d,mult_genarr3d in namelist
 o pkg/ctrl_map_ini_genarr.F :
- - bug fixes
+  - bug fixes
 o pkg/ctrl/ctrl_cost_driver.F :
- - remove un-necessary cal.h, fix CCP brackets, remove un-necessary 
-   myiter, mytime, add return
+  - remove un-necessary cal.h, fix CCP brackets, remove un-necessary
+    myiter, mytime, add return
 o pkg/ctrl/ctrl_cost_gen.F :
- - fix CCP brackets, remove un-necessary myiter, mytime
+  - fix CCP brackets, remove un-necessary myiter, mytime
 o pkg/ecco :
-   - remove cost_genctrl.F (now pkg/ctrl/ctrl_cost_driver.F)
-   - remove cost_forcing_gen.F (now pkg/ctrl/ctrl_cost_gen2d.F)
-   - update cost_forcing_gen calls in cost_forcing.F
-   - update cost_genctrl call in ecco_cost_driver.F
-   - update ecco_ad_diff.list accordingly
+  - remove cost_genctrl.F (now pkg/ctrl/ctrl_cost_driver.F)
+  - remove cost_forcing_gen.F (now pkg/ctrl/ctrl_cost_gen2d.F)
+  - update cost_forcing_gen calls in cost_forcing.F
+  - update cost_genctrl call in ecco_cost_driver.F
+  - update ecco_ad_diff.list accordingly
 o pkg/ctrl :
-   - add ctrl_cost_driver.F (replaces pkg/ecco/cost_genctrl.F)
-   - add ctrl_cost_gen2d.F (replaces pkg/ecco/cost_forcing_gen.F)
-   - update ctrl_ad_diff.list accordingly
+  - add ctrl_cost_driver.F (replaces pkg/ecco/cost_genctrl.F)
+  - add ctrl_cost_gen2d.F (replaces pkg/ecco/cost_forcing_gen.F)
+  - update ctrl_ad_diff.list accordingly
 
 checkpoint65d (2014/09/15)
 o pkg/ctrl/CTRL_GENARR.h, ctrl_readparms.F :
