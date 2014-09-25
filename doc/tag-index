@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2071 2014/09/24 20:54:02 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2072 2014/09/25 00:40:49 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  - add additional compile-time options for sponge boundary layers
+    (see pkg/obcs/OBCS_OPTIONS.h for details)
 o pkg/atm_phys:
   - implement simple (obliquity only, assuming circular planet orbit)
     seasonal cycle for incoming insolation ; used when run-time parameter
