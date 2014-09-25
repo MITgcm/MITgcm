@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_read_pickup.F,v 1.1 2013/05/08 22:14:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_read_pickup.F,v 1.2 2014/09/25 19:45:23 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -52,6 +52,9 @@ C     msgBuf      :: Informational/error message buffer
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C-    for now, only needs pickup if stepping forward SST
+      IF ( .NOT.atmPhys_stepSST ) RETURN
 
        IF ( pickupSuff.EQ.' ' ) THEN
         WRITE(fn,'(A,I10.10)') 'pickup_atmPhys.',myIter
@@ -161,7 +164,7 @@ C--    Check for missing fields:
        ENDIF
 
 C--    Update overlap regions:
-        CALL EXCH_XY_RL( atmPhys_SST, myThid )
+       CALL EXCH_XY_RL( atmPhys_SST, myThid )
 
 #endif /* ALLOW_ATM_PHYS */
 

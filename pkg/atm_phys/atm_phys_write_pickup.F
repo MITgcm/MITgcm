@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_write_pickup.F,v 1.1 2013/05/08 22:14:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_write_pickup.F,v 1.2 2014/09/25 19:45:23 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -61,6 +61,9 @@ C     msgBuf      :: Informational/error message buffer
       CHARACTER*(8) wrFldList(listDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
+
+C-    for now, only needs pickup if stepping forward SST
+      IF ( .NOT.atmPhys_stepSST ) RETURN
 
         lChar = ILNBLNK(suff)
         IF ( lChar.EQ.0 ) THEN
