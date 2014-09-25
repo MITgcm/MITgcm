@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_sponge.F,v 1.12 2014/07/09 17:00:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_sponge.F,v 1.13 2014/09/25 00:37:05 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -49,7 +49,7 @@ C     bi,bj     :: Current tile indices
       INTEGER myThid
 CEndOfInterface
 
-#if (defined (ALLOW_OBCS) && defined (ALLOW_OBCS_SPONGE))
+#if defined(ALLOW_OBCS) && defined(ALLOW_OBCS_SPONGE)
 C     == Local variables ==
 C     Loop counters
       INTEGER i, j, isl, jsl
@@ -58,17 +58,22 @@ C     Loop counters
       IF ( useOBCSsponge .AND. spongeThickness.NE.0 ) THEN
 
 C Northern Open Boundary
-#ifdef ALLOW_OBCS_NORTH
+#if defined(ALLOW_OBCS_NORTH) && defined(ALLOW_OBCS_SPONGE_N) && defined(ALLOW_OBCS_U_AT_NS)
       DO i=iMin,iMax
        IF ( OB_Jn(i,bi,bj).NE.OB_indexNone ) THEN
         DO jsl= 1,spongeThickness
          j=OB_Jn(i,bi,bj)-jsl
 
          IF ((j.ge.jmin).and.(j.le.jmax)) THEN
+
+#ifdef USE_OBCS_LINEAR
+          urelax = OBNu(i,k,bi,bj)
+#else /* ifndef USE_OBCS_LINEAR */
           urelax=(
      &      float(spongeThickness-jsl)*OBNu(i,k,bi,bj)
      &    + float(jsl)*uVel(i,j,k,bi,bj) )
      &    / float(spongeThickness)
+#endif /* USE_OBCS_LINEAR */
 
           lambda_obcs_u = (
      &      float(spongeThickness-jsl)*Vrelaxobcsbound
@@ -89,20 +94,25 @@ C Northern Open Boundary
         ENDDO
        ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_OBCS_NORTH & ALLOW_OBCS_SPONGE_N & ALLOW_OBCS_U_AT_NS */
 
 C Southern Open Boundary
-#ifdef ALLOW_OBCS_SOUTH
+#if defined(ALLOW_OBCS_SOUTH) && defined(ALLOW_OBCS_SPONGE_S) && defined(ALLOW_OBCS_U_AT_NS)
       DO i=iMin,iMax
        IF ( OB_Js(i,bi,bj).NE.OB_indexNone ) THEN
         DO jsl= 1,spongeThickness
          j=OB_Js(i,bi,bj)+jsl
 
          IF ((j.ge.jmin).and.(j.le.jmax)) THEN
+
+#ifdef USE_OBCS_LINEAR
+          urelax= OBSu(i,k,bi,bj)
+#else /* ifndef USE_OBCS_LINEAR */
           urelax=(
      &      float(spongeThickness-jsl)*OBSu(i,k,bi,bj)
      &    + float(jsl)*uVel(i,j,k,bi,bj) )
      &    / float(spongeThickness)
+#endif /* USE_OBCS_LINEAR */
 
           lambda_obcs_u = (
      &      float(spongeThickness-jsl)*Vrelaxobcsbound
@@ -123,20 +133,25 @@ C Southern Open Boundary
         ENDDO
        ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_OBCS_SOUTH & ALLOW_OBCS_SPONGE_S & ALLOW_OBCS_U_AT_NS */
 
 C Eastern Open Boundary
-#ifdef ALLOW_OBCS_EAST
+#if defined(ALLOW_OBCS_EAST) && defined(ALLOW_OBCS_SPONGE_E) && defined(ALLOW_OBCS_U_AT_EW)
       DO j=jMin,jMax
        IF ( OB_Ie(j,bi,bj).NE.OB_indexNone ) THEN
         DO isl= 1,spongeThickness
          i=OB_Ie(j,bi,bj)-isl
 
          IF ((i.ge.imin).and.(i.le.imax)) THEN
+
+#ifdef USE_OBCS_LINEAR
+          urelax=OBEu(j,k,bi,bj)
+#else /* ifndef USE_OBCS_LINEAR */
           urelax=(
      &      float(spongeThickness-isl)*OBEu(j,k,bi,bj)
      &    + float(isl)*uVel(i,j,k,bi,bj) )
      &    / float(spongeThickness)
+#endif /* USE_OBCS_LINEAR */
 
           lambda_obcs_u = (
      &      float(spongeThickness-isl)*Urelaxobcsbound
@@ -157,20 +172,25 @@ C Eastern Open Boundary
         ENDDO
        ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_OBCS_EAST & ALLOW_OBCS_SPONGE_E & ALLOW_OBCS_U_AT_EW */
 
 C Western Open Boundary
-#ifdef ALLOW_OBCS_WEST
+#if defined(ALLOW_OBCS_WEST) && defined(ALLOW_OBCS_SPONGE_W) && defined(ALLOW_OBCS_U_AT_EW)
       DO j=jMin,jMax
        IF ( OB_Iw(j,bi,bj).NE.OB_indexNone ) THEN
         DO isl= 1,spongeThickness
          i=OB_Iw(j,bi,bj)+isl+1
 
          IF ((i.ge.imin).and.(i.le.imax)) THEN
+
+#ifdef USE_OBCS_LINEAR
+          urelax= OBWu(j,k,bi,bj)
+#else /* ifndef USE_OBCS_LINEAR */
           urelax=(
      &      float(spongeThickness-isl)*OBWu(j,k,bi,bj)
      &    + float(isl)*uVel(i,j,k,bi,bj) )
      &    / float(spongeThickness)
+#endif /* USE_OBCS_LINEAR */
 
           lambda_obcs_u= (
      &      float(spongeThickness-isl)*Urelaxobcsbound
@@ -191,7 +211,7 @@ C Western Open Boundary
         ENDDO
        ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_OBCS_WEST & ALLOW_OBCS_SPONGE_W & ALLOW_OBCS_U_AT_EW */
 
       ENDIF
 
@@ -239,7 +259,7 @@ C     bi,bj     :: Current tile indices
       INTEGER myThid
 CEndOfInterface
 
-#if (defined (ALLOW_OBCS) && defined (ALLOW_OBCS_SPONGE))
+#if defined(ALLOW_OBCS) && defined(ALLOW_OBCS_SPONGE)
 C     == Local variables ==
 C     Loop counters
       INTEGER i, j, isl, jsl
@@ -248,17 +268,22 @@ C     Loop counters
       IF ( useOBCSsponge .AND. spongeThickness.NE.0 ) THEN
 
 C Northern Open Boundary
-#ifdef ALLOW_OBCS_NORTH
+#if defined(ALLOW_OBCS_NORTH) && defined(ALLOW_OBCS_SPONGE_N) && defined(ALLOW_OBCS_V_AT_NS)
       DO i=iMin,iMax
        IF ( OB_Jn(i,bi,bj).NE.OB_indexNone ) THEN
         DO jsl= 1,spongeThickness
          j=OB_Jn(i,bi,bj)-jsl
 
          IF ((j.ge.jmin).and.(j.le.jmax)) THEN
+
+#ifdef USE_OBCS_LINEAR
+          vrelax= OBNv(i,k,bi,bj)
+#else /* ifndef USE_OBCS_LINEAR */
           vrelax=(
      &      float(spongeThickness-jsl)*OBNv(i,k,bi,bj)
      &    + float(jsl)*vVel(i,j,k,bi,bj) )
      &    / float(spongeThickness)
+#endif /* USE_OBCS_LINEAR */
 
           lambda_obcs_v = (
      &      float(spongeThickness-jsl)*Vrelaxobcsbound
@@ -279,20 +304,25 @@ C Northern Open Boundary
         ENDDO
        ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_OBCS_NORTH & ALLOW_OBCS_SPONGE_N & ALLOW_OBCS_V_AT_NS */
 
 C Southern Open Boundary
-#ifdef ALLOW_OBCS_SOUTH
+#if defined(ALLOW_OBCS_SOUTH) && defined(ALLOW_OBCS_SPONGE_S) && defined(ALLOW_OBCS_V_AT_NS)
       DO i=iMin,iMax
        IF ( OB_Js(i,bi,bj).NE.OB_indexNone ) THEN
         DO jsl= 1,spongeThickness
          j=OB_Js(i,bi,bj)+jsl+1
 
          IF ((j.ge.jmin).and.(j.le.jmax)) THEN
+
+#ifdef USE_OBCS_LINEAR
+          vrelax= OBSv(i,k,bi,bj)
+#else /* ifndef USE_OBCS_LINEAR */
           vrelax=(
      &      float(spongeThickness-jsl)*OBSv(i,k,bi,bj)
      &    + float(jsl)*vVel(i,j,k,bi,bj) )
      &    / float(spongeThickness)
+#endif /* USE_OBCS_LINEAR */
 
           lambda_obcs_v = (
      &      float(spongeThickness-jsl)*Vrelaxobcsbound
@@ -313,20 +343,25 @@ C Southern Open Boundary
         ENDDO
        ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_OBCS_SOUTH & ALLOW_OBCS_SPONGE_S & ALLOW_OBCS_V_AT_NS */
 
 C Eastern Open Boundary
-#ifdef ALLOW_OBCS_EAST
+#if defined(ALLOW_OBCS_EAST) && defined(ALLOW_OBCS_SPONGE_E) && defined(ALLOW_OBCS_V_AT_EW)
       DO j=jMin,jMax
        IF ( OB_Ie(j,bi,bj).NE.OB_indexNone ) THEN
         DO isl= 1,spongeThickness
          i=OB_Ie(j,bi,bj)-isl
 
          IF ((i.ge.imin).and.(i.le.imax)) THEN
+
+#ifdef USE_OBCS_LINEAR
+          vrelax= OBEv(j,k,bi,bj)
+#else /* ifndef USE_OBCS_LINEAR */
           vrelax=(
      &      float(spongeThickness-isl)*OBEv(j,k,bi,bj)
      &    + float(isl)*vVel(i,j,k,bi,bj) )
      &    / float(spongeThickness)
+#endif /* USE_OBCS_LINEAR */
 
           lambda_obcs_v = (
      &      float(spongeThickness-isl)*Urelaxobcsbound
@@ -347,10 +382,10 @@ C Eastern Open Boundary
         ENDDO
        ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_OBCS_EAST & ALLOW_OBCS_SPONGE_E & ALLOW_OBCS_V_AT_EW */
 
 C Western Open Boundary
-#ifdef ALLOW_OBCS_WEST
+#if defined(ALLOW_OBCS_WEST) && defined(ALLOW_OBCS_SPONGE_W) && defined(ALLOW_OBCS_V_AT_EW)
       DO j=jMin,jMax
        IF ( OB_Iw(j,bi,bj).NE.OB_indexNone ) THEN
         DO isl= 1,spongeThickness
@@ -358,10 +393,14 @@ C Western Open Boundary
 
          IF ((i.ge.imin).and.(i.le.imax)) THEN
 
+#ifdef USE_OBCS_LINEAR
+          vrelax = OBWv(j,k,bi,bj)
+#else /* ifndef USE_OBCS_LINEAR */
           vrelax=(
      &      float(spongeThickness-isl)*OBWv(j,k,bi,bj)
      &    + float(isl)*vVel(i,j,k,bi,bj) )
      &    / float(spongeThickness)
+#endif /* USE_OBCS_LINEAR */
 
           lambda_obcs_v = (
      &      float(spongeThickness-isl)*Urelaxobcsbound
@@ -382,7 +421,7 @@ C Western Open Boundary
         ENDDO
        ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_OBCS_WEST & ALLOW_OBCS_SPONGE_W & ALLOW_OBCS_V_AT_EW */
 
       ENDIF
 
@@ -434,7 +473,7 @@ C     bi,bj     :: Current tile indices
       INTEGER myThid
 CEndOfInterface
 
-#if (defined (ALLOW_OBCS) && defined (ALLOW_OBCS_SPONGE))
+#if defined(ALLOW_OBCS) && defined(ALLOW_OBCS_SPONGE)
 C     == Local variables ==
 C     Loop counters
       INTEGER i, j, isl, jsl
@@ -457,7 +496,7 @@ C     Loop counters
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C Northern Open Boundary
-#ifdef ALLOW_OBCS_NORTH
+#if defined(ALLOW_OBCS_NORTH) && defined(ALLOW_OBCS_SPONGE_N) && defined(ALLOW_OBCS_SPONGE_THETA)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE OBNt(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -470,10 +509,16 @@ CADJ STORE OBNt(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 
          IF ((j.ge.jmin).and.(j.le.jmax)) THEN
            IF  (OBNt(i,k,bi,bj).ne. 0.d0) then
+
+#ifdef USE_OBCS_LINEAR
+          trelax = OBNt(i,k,bi,bj)
+#else /* ifndef USE_OBCS_LINEAR */
           trelax=(
      &      float(spongeThickness-jsl)*OBNt(i,k,bi,bj)
      &    + float(jsl)*theta(i,j,k,bi,bj) )
      &    / float(spongeThickness)
+#endif /* USE_OBCS_LINEAR */
+
           lambda_obcs_t = (
      &      float(spongeThickness-jsl)*Vrelaxobcsbound
      &    + float(jsl)*Vrelaxobcsinner)
@@ -494,10 +539,10 @@ CADJ STORE OBNt(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
         ENDDO
        ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_OBCS_NORTH & ALLOW_OBCS_SPONGE_N & ALLOW_OBCS_SPONGE_THETA */
 
 C Southern Open Boundary
-#ifdef ALLOW_OBCS_SOUTH
+#if defined(ALLOW_OBCS_SOUTH) && defined(ALLOW_OBCS_SPONGE_S) && defined(ALLOW_OBCS_SPONGE_THETA)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE OBSt(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -510,10 +555,15 @@ CADJ STORE OBSt(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 
          IF ((j.ge.jmin).and.(j.le.jmax)) THEN
            IF  (OBSt(i,k,bi,bj).ne. 0.d0) then
+
+#ifdef USE_OBCS_LINEAR
+          trelax= OBSt(i,k,bi,bj)
+#else /* ifndef USE_OBCS_LINEAR */
           trelax=(
      &      float(spongeThickness-jsl)*OBSt(i,k,bi,bj)
      &    + float(jsl)*theta(i,j,k,bi,bj) )
      &    / float(spongeThickness)
+#endif /* USE_OBCS_LINEAR */
 
           lambda_obcs_t = (
      &      float(spongeThickness-jsl)*Vrelaxobcsbound
@@ -535,10 +585,10 @@ CADJ STORE OBSt(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
         ENDDO
        ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_OBCS_SOUTH & ALLOW_OBCS_SPONGE_S & ALLOW_OBCS_SPONGE_THETA */
 
 C Eastern Open Boundary
-#ifdef ALLOW_OBCS_EAST
+#if defined(ALLOW_OBCS_EAST) && defined(ALLOW_OBCS_SPONGE_E) && defined(ALLOW_OBCS_SPONGE_THETA)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE OBEt(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -551,10 +601,15 @@ CADJ STORE OBEt(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 
          IF ((i.ge.imin).and.(i.le.imax)) THEN
            IF  (OBEt(j,k,bi,bj).ne. 0.d0) then
+
+#ifdef USE_OBCS_LINEAR
+          trelax = OBEt(j,k,bi,bj)
+#else /* ifndef USE_OBCS_LINEAR */
           trelax=(
      &      float(spongeThickness-isl)*OBEt(j,k,bi,bj)
      &    + float(isl)*theta(i,j,k,bi,bj) )
      &    / float(spongeThickness)
+#endif /* USE_OBCS_LINEAR */
 
           lambda_obcs_t = (
      &      float(spongeThickness-isl)*Urelaxobcsbound
@@ -576,10 +631,10 @@ CADJ STORE OBEt(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
         ENDDO
        ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_OBCS_EAST & ALLOW_OBCS_SPONGE_E & ALLOW_OBCS_SPONGE_THETA */
 
 C Western Open Boundary
-#ifdef ALLOW_OBCS_WEST
+#if defined(ALLOW_OBCS_WEST) && defined(ALLOW_OBCS_SPONGE_W) && defined(ALLOW_OBCS_SPONGE_THETA)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE OBWt(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -588,16 +643,19 @@ CADJ STORE OBWt(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
       DO j=jMin,jMax
        IF ( OB_Iw(j,bi,bj).NE.OB_indexNone ) THEN
         DO isl= 1,spongeThickness
-cgg         i=OB_Iw(j,bi,bj)+isl+1
-cgg  Needed to fix the coordinate of the tracer open boundary. This is the classic "cut-and-paste" bug.
          i=OB_Iw(j,bi,bj)+isl
 
          IF ((i.ge.imin).and.(i.le.imax)) THEN
            IF  (OBWt(j,k,bi,bj).ne. 0.d0) then
+
+#ifdef USE_OBCS_LINEAR
+          trelax= OBWt(j,k,bi,bj)
+#else /* ifndef USE_OBCS_LINEAR */
           trelax=(
      &      float(spongeThickness-isl)*OBWt(j,k,bi,bj)
      &    + float(isl)*theta(i,j,k,bi,bj) )
      &    / float(spongeThickness)
+#endif /* USE_OBCS_LINEAR */
 
           lambda_obcs_t= (
      &      float(spongeThickness-isl)*Urelaxobcsbound
@@ -619,7 +677,7 @@ cgg  Needed to fix the coordinate of the tracer open boundary. This is the class
         ENDDO
        ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_OBCS_WEST & ALLOW_OBCS_SPONGE_W & ALLOW_OBCS_SPONGE_THETA */
 
       ENDIF
 
@@ -671,7 +729,7 @@ C     bi,bj     :: Current tile indices
       INTEGER myThid
 CEndOfInterface
 
-#if (defined (ALLOW_OBCS) && defined (ALLOW_OBCS_SPONGE))
+#if defined(ALLOW_OBCS) && defined(ALLOW_OBCS_SPONGE)
 C     == Local variables ==
 C     Loop counters
       INTEGER i, j, isl, jsl
@@ -694,7 +752,7 @@ C     Loop counters
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C Northern Open Boundary
-#ifdef ALLOW_OBCS_NORTH
+#if defined(ALLOW_OBCS_NORTH) && defined(ALLOW_OBCS_SPONGE_N) && defined(ALLOW_OBCS_SPONGE_SALT)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE OBNs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -707,10 +765,15 @@ CADJ STORE OBNs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 
          IF ((j.ge.jmin).and.(j.le.jmax)) THEN
            IF  (OBNs(i,k,bi,bj).ne. 0.d0) then
+
+#ifdef USE_OBCS_LINEAR
+          srelax= OBNs(i,k,bi,bj)
+#else /* ifndef USE_OBCS_LINEAR */
           srelax=(
      &      float(spongeThickness-jsl)*OBNs(i,k,bi,bj)
      &    + float(jsl)*salt(i,j,k,bi,bj) )
      &    / float(spongeThickness)
+#endif /* USE_OBCS_LINEAR */
 
           lambda_obcs_s = (
      &      float(spongeThickness-jsl)*Vrelaxobcsbound
@@ -732,10 +795,10 @@ CADJ STORE OBNs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
         ENDDO
        ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_OBCS_NORTH & ALLOW_OBCS_SPONGE_N & ALLOW_OBCS_SPONGE_SALT */
 
 C Southern Open Boundary
-#ifdef ALLOW_OBCS_SOUTH
+#if defined(ALLOW_OBCS_SOUTH) && defined(ALLOW_OBCS_SPONGE_S) && defined(ALLOW_OBCS_SPONGE_SALT)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE OBSs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -748,10 +811,15 @@ CADJ STORE OBSs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 
          IF ((j.ge.jmin).and.(j.le.jmax)) THEN
            IF  (OBSs(i,k,bi,bj).ne. 0.d0) then
+
+#ifdef USE_OBCS_LINEAR
+          srelax= OBSs(i,k,bi,bj)
+#else /* ifndef USE_OBCS_LINEAR */
           srelax=(
      &      float(spongeThickness-jsl)*OBSs(i,k,bi,bj)
      &    + float(jsl)*salt(i,j,k,bi,bj) )
      &    / float(spongeThickness)
+#endif /* USE_OBCS_LINEAR */
 
           lambda_obcs_s = (
      &      float(spongeThickness)*Vrelaxobcsbound
@@ -773,10 +841,10 @@ CADJ STORE OBSs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
         ENDDO
        ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_OBCS_SOUTH & ALLOW_OBCS_SPONGE_S & ALLOW_OBCS_SPONGE_SALT */
 
 C Eastern Open Boundary
-#ifdef ALLOW_OBCS_EAST
+#if defined(ALLOW_OBCS_EAST) && defined(ALLOW_OBCS_SPONGE_E) && defined(ALLOW_OBCS_SPONGE_SALT)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE OBEs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -789,10 +857,15 @@ CADJ STORE OBEs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 
          IF ((i.ge.imin).and.(i.le.imax)) THEN
            IF  (OBEs(j,k,bi,bj).ne. 0.d0) then
+
+#ifdef USE_OBCS_LINEAR
+          srelax=  OBEs(j,k,bi,bj)
+#else /* ifndef USE_OBCS_LINEAR */
           srelax=(
      &      float(spongeThickness-isl)*OBEs(j,k,bi,bj)
      &    + float(isl)*salt(i,j,k,bi,bj) )
      &    / float(spongeThickness)
+#endif /* USE_OBCS_LINEAR */
 
           lambda_obcs_s = (
      &      float(spongeThickness-isl)*Urelaxobcsbound
@@ -814,10 +887,10 @@ CADJ STORE OBEs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
         ENDDO
        ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_OBCS_EAST & ALLOW_OBCS_SPONGE_E & ALLOW_OBCS_SPONGE_SALT */
 
 C Western Open Boundary
-#ifdef ALLOW_OBCS_WEST
+#if defined(ALLOW_OBCS_WEST) && defined(ALLOW_OBCS_SPONGE_W) && defined(ALLOW_OBCS_SPONGE_SALT)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE OBWs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -826,17 +899,19 @@ CADJ STORE OBWs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
       DO j=jMin,jMax
        IF ( OB_Iw(j,bi,bj).NE.OB_indexNone ) THEN
         DO isl= 1,spongeThickness
-
-cgg         i=OB_Iw(j,bi,bj)+isl+1
-cgg  Fix the tracer o.b. coordinate.
          i=OB_Iw(j,bi,bj)+isl
 
          IF ((i.ge.imin).and.(i.le.imax)) THEN
            IF  (OBWs(j,k,bi,bj).ne. 0.d0) then
+
+#ifdef USE_OBCS_LINEAR
+          srelax= OBWs(j,k,bi,bj)
+#else /* ifndef USE_OBCS_LINEAR */
           srelax=(
      &      float(spongeThickness-isl)*OBWs(j,k,bi,bj)
      &    + float(isl)*salt(i,j,k,bi,bj) )
      &    / float(spongeThickness)
+#endif /* USE_OBCS_LINEAR */
 
           lambda_obcs_s= (
      &      float(spongeThickness-isl)*Urelaxobcsbound
@@ -858,7 +933,7 @@ cgg  Fix the tracer o.b. coordinate.
         ENDDO
        ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_OBCS_WEST & ALLOW_OBCS_SPONGE_W & ALLOW_OBCS_SPONGE_SALT */
 
       ENDIF
 
