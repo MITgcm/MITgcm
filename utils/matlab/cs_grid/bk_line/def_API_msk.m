@@ -1,5 +1,5 @@
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/def_API_msk.m,v 1.4 2013/02/12 17:59:02 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/def_API_msk.m,v 1.5 2014/09/26 23:00:34 jmc Exp $
 % $Name:  $
 
 krd=1; kpr=2; kgr=0; kwr=1;
@@ -76,29 +76,40 @@ if kpr==2,
   end
  %mskU=mskU.*mskW(:,:,1); mskV=mskV.*mskS(:,:,1);
   mskU=reshape(mskU,1,ncx*nc); mskV=reshape(mskV,1,ncx*nc);
-  for b=1:3,
-   [I]=find(abs(mskU)==b);
-   Nu(b)=length(I); Iu(b,1:Nu(b))=I;
+%- Separation bs=1 : Atl/Ind ; bs=2 : Ind/Pac ; bs=3 : Pac/Atl.
+%  Defining msk6 as above (msk6 =1: Atl, =2: Ind, =4: Pac)
+%  allows to get separation number as gradient (=mskU,mskV) of msk6
+  for bs=1:3,
+   [I]=find(abs(mskU)==bs);
+   Nu(bs)=length(I); Iu(bs,1:Nu(bs))=I;
    i0=rem(I-1,ncx);j1=1+fix((I-1)/ncx);
    i1=1+rem(i0,nc); k1=1+fix(i0/nc);
-   for i=1:Nu(b),
-     xSepU(b,i)=(xc6(1+i1(i),1+j1(i),k1(i))+xc6(i1(i),1+j1(i),k1(i)))/2;
-     ySepU(b,i)=(yc6(1+i1(i),1+j1(i),k1(i))+yc6(i1(i),1+j1(i),k1(i)))/2;
-   end
-   [J]=find(abs(mskV)==b);
-   Nv(b)=length(J); Iv(b,1:Nv(b))=J;
+   xx=zeros(2,Nu(bs));
+   for i=1:Nu(bs),
+     xx(1,i)=xc6(1+i1(i),1+j1(i),k1(i)); 
+     xx(2,i)=xc6( i1(i), 1+j1(i),k1(i));
+     ySepU(bs,i)=(yc6(1+i1(i),1+j1(i),k1(i))+yc6(i1(i),1+j1(i),k1(i)))/2;
+   end 
+   var=reshape(xcg,[1 ncx*nc]);
+   xx(1,:)=var(I)-180+rem(xx(1,:)-var(I)+3*180,360);
+   xx(2,:)=var(I)-180+rem(xx(2,:)-var(I)+3*180,360);
+   xSepU(bs,[1:Nu(bs)])=(xx(1,:)+xx(2,:))/2;
+   [J]=find(abs(mskV)==bs);
+   Nv(bs)=length(J); Iv(bs,1:Nv(bs))=J;
    i0=rem(J-1,ncx);j1=1+fix((J-1)/ncx);
    i1=1+rem(i0,nc); k1=1+fix(i0/nc);
-   for i=1:Nv(b),
-     xSepV(b,i)=(xc6(1+i1(i),1+j1(i),k1(i))+xc6(1+i1(i),j1(i),k1(i)))/2;
-     ySepV(b,i)=(yc6(1+i1(i),1+j1(i),k1(i))+yc6(1+i1(i),j1(i),k1(i)))/2;
+   xx=zeros(2,Nv(bs));
+   for i=1:Nv(bs),
+     xx(1,i)=xc6(1+i1(i),1+j1(i),k1(i)); 
+     xx(2,i)=xc6(1+i1(i), j1(i), k1(i));
+     ySepV(bs,i)=(yc6(1+i1(i),1+j1(i),k1(i))+yc6(1+i1(i),j1(i),k1(i)))/2;
    end
+   xx(1,:)=var(J)-180+rem(xx(1,:)-var(J)+3*180,360);
+   xx(2,:)=var(J)-180+rem(xx(2,:)-var(J)+3*180,360);
+   xSepV(bs,[1:Nv(bs)])=(xx(1,:)+xx(2,:))/2;
 %----
-%  xSepU(b,1:Nu(b))=xg1(I); ySepU(b,1:Nu(b))=yg1(I);
-%  xSepV(b,1:Nv(b))=xg1(J); ySepV(b,1:Nv(b))=yg1(J);
-   fprintf('Sep. Line %i , Open Pts : %i %i \n',b,Nu(b),Nv(b));
+   fprintf('Sep. Line %i , Open Pts : %i %i \n',bs,Nu(bs),Nv(bs));
   end
-
 end
 
 if kpr == 3,
@@ -197,8 +208,8 @@ end
 if kgr==1,
 %yy1=[-89.5:1:89.5]; [x3b]=line_sep(yy1);
  figure(1); clf;
- shift=-1; cbV=2; ccB=[0 0]; AxBx=[-180 180 -90 90];
- var=bas ; ccB=[-1.5 4.5];  var(find(mskC(:,:,1)==0))=NaN;
+ shift=-1; cbV=1; ccB=[0 0]; AxBx=[-182 182 -91 91];
+ var=bas ; ccB=[-1.5 5.5];  var(find(mskC(:,:,1)==0))=NaN;
  grph_CS(var,xcs,ycs,xcg,ycg,ccB(1),ccB(2),shift,cbV,AxBx);
  hold on ;
 %plot(x3b(1,:),yy1,'r-');
@@ -207,11 +218,33 @@ if kgr==1,
  plot(xPA,yPA,'*b-');
  plot(xAI,yAI,'*b-');
  plot(xIP,yIP,'*b-');
- for b=1:3,
-  plot(xSepU(b,1:Nu(b)),ySepU(b,1:Nu(b)),'r*');
-  plot(xSepV(b,1:Nv(b)),ySepV(b,1:Nv(b)),'ro');
+ for bs=1:3,
+  plot(xSepU(bs,1:Nu(bs)),ySepU(bs,1:Nu(bs)),'r*');
+  plot(xSepV(bs,1:Nv(bs)),ySepV(bs,1:Nv(bs)),'ro');
  end
  hold off
+%figure(2); clf;
+%for b=1:3,
+%  subplot(310+b);
+%  var=mskBasC(:,:,b); titv='mskBasC';
+% %var=mskBasU(:,:,b); titv='mskBasU';
+% %var=mskBasV(:,:,b); titv='mskBasV';
+%  grph_CS(var,xcs,ycs,xcg,ycg,ccB(1),ccB(2),shift,cbV,AxBx);
+%  title([titv,' : nBas= ',int2str(b)]);
+%end
+ figure(3); clf; bs=3;
+ shift=-1; cbV=1; ccB=[0 0]; AxBx=[-182 182 -91 91]; ccB=[-1 1]*5;
+ subplot(211);
+ var=reshape(mskU,[ncx nc]) ;
+ grph_CS(var,xcs,ycs,xcg,ycg,ccB(1),ccB(2),shift,cbV,AxBx);
+ hold on; plot(xSepU(bs,1:Nu(bs)),ySepU(bs,1:Nu(bs)),'m*'); hold off
+ title(['mskU and SepU for separation bs= ',int2str(bs)]);
+ subplot(212);
+ var=reshape(mskV,[ncx nc]) ;
+ grph_CS(var,xcs,ycs,xcg,ycg,ccB(1),ccB(2),shift,cbV,AxBx);
+ hold on; plot(xSepV(bs,1:Nv(bs)),ySepV(bs,1:Nv(bs)),'mo'); hold off
+ title(['mskV and SepV for separation bs= ',int2str(bs)]);
+
 end
 
 %----

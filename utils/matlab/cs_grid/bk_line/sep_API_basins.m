@@ -2,7 +2,7 @@
 krd=1; kpr=1; kgr=0; kwr=1;
 %krd=0; kpr=0; kgr=1; kwr=0; % <- execute a 2nd time & draw some plot
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/sep_API_basins.m,v 1.3 2013/02/12 17:59:02 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/sep_API_basins.m,v 1.4 2014/09/26 23:00:34 jmc Exp $
 % $Name:  $
 
 if krd == 1,
@@ -26,7 +26,7 @@ if krd == 1,
  namf='maskC_bas.bin';
  fid=fopen([rac,namf],'r','b'); mskBasC=fread(fid,'real*4'); fclose(fid);
 
- G=load_grid(rac,10+ncdf);
+ G=load_grid(rac,0+ncdf);
  xcs=G.xC; ycs=G.yC; xcg=G.xG; ycg=G.yG; arc=G.rAc;
  ncx=G.dims(1); nc=G.dims(2); ncp=nc+1;
 %mskBasC=rdda([rac,namf],[ncx nc 3],1,'real*4','b');
@@ -50,7 +50,7 @@ if krd == 1,
 
 end
 
-if kwr ==1,
+if kpr ==1,
  [xdum,xPA,yPA,xAI,yAI,xIP,yIP]=line_sep(0);
 
 %- define Bas-Sep point (as U,V point) for each Lat-band
@@ -62,7 +62,8 @@ if kwr ==1,
  xc2s=zeros(3,MxSiz,2); yc2s=zeros(3,MxSiz,2);
  for b=1:3,
   fprintf(' b= %i ; Nu,Nv= %3i %3i \n',b,Nu(b),Nv(b));
-  nU=Nu(b); I=Iu(b,1:nU);
+%-
+  nU=Nu(b); I=Iu(b,1:nU); xSp=zeros(2,nU);
    i0=rem(I-1,ncx);j1=1+fix((I-1)/ncx);
    i1=1+rem(i0,nc); k1=1+fix(i0/nc);
    for i=1:nU,
@@ -89,10 +90,16 @@ if kwr ==1,
       xc2s(b,nn,2)=xc1(I(i)); yc2s(b,nn,2)=yc1(I(i));
      end
     end
-    xSepU(b,i)=(xc6(1+i1(i),1+j1(i),k1(i))+xc6(i1(i),1+j1(i),k1(i)))/2;
+    xSp(1,i)=xc6(1+i1(i),1+j1(i),k1(i));
+    xSp(2,i)=xc6( i1(i), 1+j1(i),k1(i));
     ySepU(b,i)=(yc6(1+i1(i),1+j1(i),k1(i))+yc6(i1(i),1+j1(i),k1(i)))/2;
    end
-  nV=Nv(b); J=Iv(b,1:nV);
+   var=reshape(xcg,[1 ncx*nc]);
+   xSp(1,:)=var(I)-180+rem(xSp(1,:)-var(I)+3*180,360);
+   xSp(2,:)=var(I)-180+rem(xSp(2,:)-var(I)+3*180,360);
+   xSepU(b,1:nU)=(xSp(1,:)+xSp(2,:))/2;
+%-
+  nV=Nv(b); J=Iv(b,1:nV); xSp=zeros(2,nV);
    i0=rem(J-1,ncx);j1=1+fix((J-1)/ncx);
    i1=1+rem(i0,nc); k1=1+fix(i0/nc);
    for i=1:nV,
@@ -119,9 +126,13 @@ if kwr ==1,
       xc2s(b,nn,2)=xc1(J(i)); yc2s(b,nn,2)=yc1(J(i));
      end
     end
-    xSepV(b,i)=(xc6(1+i1(i),1+j1(i),k1(i))+xc6(1+i1(i),j1(i),k1(i)))/2;
+    xSp(1,i)=xc6(1+i1(i),1+j1(i),k1(i));
+    xSp(2,i)=xc6(1+i1(i), j1(i), k1(i));
     ySepV(b,i)=(yc6(1+i1(i),1+j1(i),k1(i))+yc6(1+i1(i),j1(i),k1(i)))/2;
    end
+   xSp(1,:)=var(J)-180+rem(xSp(1,:)-var(J)+3*180,360);
+   xSp(2,:)=var(J)-180+rem(xSp(2,:)-var(J)+3*180,360);
+   xSepV(b,1:nV)=(xSp(1,:)+xSp(2,:))/2;
  end
    NbpSep=max(nbpSep');
    fprintf(' NbpSep = %2i %2i %2i \n',NbpSep);
@@ -129,7 +140,7 @@ if kwr ==1,
 
 end
 
-if kpr ==1,
+if kwr ==1,
  %- reduce size :
  mxSiz=max(NbpSep);
  ij_Sep=ijSep(:,:,1:mxSiz); tp_Sep=typSep(:,:,1:mxSiz); np_Sep=nbpSep;
@@ -141,25 +152,27 @@ end
 
 if kgr ==1,
  figure(1); clf;
- shift=-1; cbV=2; ccB=[0 0]; AxBx=[-180 180 -90 90];
- for bp=1:3, subplot(310+b);
-%AxBx=[60 180 -75 15];
+ shift=-1; cbV=1; ccB=[0 0]; AxBx=[-182 182 -90 90];
+ for bp=1:3, subplot(310+bp);
+%for bp=2:2,
+%AxBx=[80 181  30  91];
+%AxBx=[80 181 -91 -30];
  var=mskBasC(:,:,1)+2*mskBasC(:,:,2)+3*mskBasC(:,:,3);
  ccB=[-1 5]; var(find(mskC==0))=NaN;
  grph_CS(var,xcs,ycs,xcg,ycg,ccB(1),ccB(2),shift,cbV,AxBx);
  hold on ;
- [L0]=plot(xPA,yPA,'*b-',xAI,yAI,'*b-',xIP,yIP,'*b-'); set(L0,'MarkerSize',4);
+ [L0]=plot(xPA,yPA,'*b-',xAI,yAI,'*b-',xIP,yIP,'*b-'); set(L0,'MarkerSize',6);
  for b=bp:bp,
   xloc=squeeze(xc2s(b,:,:)); yloc=squeeze(yc2s(b,:,:));
   for i=1:n2s(b), jl=jl2s(b,i)-1;
    ie=bkl_Npts(jl)+1;
    [L1]=plot(bkl_Xsg(1:ie,jl),bkl_Ysg(1:ie,jl),'r-');
   %set(L1,'Color',[.9 .2 .0],'LineWidth',1); % set(L1,'LineStyle','-');
-   [L2]=plot(xloc(i,:),yloc(i,:),'xg-');
+   [L2]=plot(xloc(i,:),yloc(i,:),'xw-');
    set(L2,'LineWidth',2);
   end
-  [L3]=plot(xSepU(b,1:Nu(b)),ySepU(b,1:Nu(b)),'r*'); set(L3,'MarkerSize',3);
-  [L4]=plot(xSepV(b,1:Nv(b)),ySepV(b,1:Nv(b)),'ro'); set(L4,'MarkerSize',3);
+  [L3]=plot(xSepU(b,1:Nu(b)),ySepU(b,1:Nu(b)),'m*'); set(L3,'MarkerSize',6);
+  [L4]=plot(xSepV(b,1:Nv(b)),ySepV(b,1:Nv(b)),'mo'); set(L4,'MarkerSize',6);
  end
  hold off
  end
