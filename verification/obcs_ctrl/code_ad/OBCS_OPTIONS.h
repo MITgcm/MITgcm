@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/obcs_ctrl/code_ad/OBCS_OPTIONS.h,v 1.2 2011/12/24 01:17:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/obcs_ctrl/code_ad/OBCS_OPTIONS.h,v 1.3 2014/09/26 12:27:36 dimitri Exp $
 C $Name:  $
 
 C CPP options file for OBCS package
@@ -28,11 +28,63 @@ C from a file
 C Enable OB conditions following Stevens (1990)
 #undef ALLOW_OBCS_STEVENS
 
-C This includes hooks to sponge layer treatment of uvel, vvel
+C Allow sponge layer treatment of open boundary conditions
 #define ALLOW_OBCS_SPONGE
+
+C Allow sponge layers at following boundaries
+#define ALLOW_OBCS_SPONGE_N
+#define ALLOW_OBCS_SPONGE_S
+#define ALLOW_OBCS_SPONGE_E
+#define ALLOW_OBCS_SPONGE_W
+
+C Allow sponge layers for uVel and vVel at following boundaries
+#define ALLOW_OBCS_U_AT_NS
+#define ALLOW_OBCS_U_AT_EW
+#define ALLOW_OBCS_V_AT_NS
+#define ALLOW_OBCS_V_AT_EW
+
+C Allow sponge layers for Theta and Salt
+#define ALLOW_OBCS_SPONGE_THETA
+#define ALLOW_OBCS_SPONGE_SALT
+
+C Use linear instead of exponential sponge layer
+#undef USE_OBCS_LINEAR
+
+C Include hooks to sponge layer treatment of pkg/seaice variables
+#undef ALLOW_OBCS_SEAICE_SPONGE
 
 C balance barotropic velocity
 #undef ALLOW_OBCS_BALANCE
+
+C add tidal contributions to normal OB flow
+#undef ALLOW_OBCS_TIDES
+
+C Use older implementation of obcs in seaice-dynamics
+C note: most of the "experimental" options listed below have not yet
+C       been implementated in new version.
+#undef OBCS_UVICE_OLD
+
+#ifdef OBCS_UVICE_OLD
+C     The following five CPP options are experimental and aim to deal
+C     with artifacts due to the low-frequency specification of sea-ice
+C     boundary conditions compared to the model forcing frequency.
+C     Ice convergence at edges can cause model to blow up.  The
+C     following CPP option fixes this problem at the expense of less
+C     accurate boundary conditions.
+#undef OBCS_SEAICE_AVOID_CONVERGENCE
+
+C     Smooth the component of sea-ice velocity perpendicular to the edge.
+#undef OBCS_SEAICE_SMOOTH_UVICE_PERP
+
+C     Smooth the component of sea ice velocity parallel to the edge.
+#undef OBCS_SEAICE_SMOOTH_UVICE_PAR
+
+C     Compute rather than specify seaice velocities at the edges.
+#undef OBCS_SEAICE_COMPUTE_UVICE
+#endif /* OBCS_UVICE_OLD */
+
+C     Smooth the tracer sea-ice variables near the edges.
+#undef OBCS_SEAICE_SMOOTH_EDGE
 
 #endif /* ALLOW_OBCS */
 #endif /* OBCS_OPTIONS_H */
