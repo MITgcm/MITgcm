@@ -1,22 +1,38 @@
 function [x3b,xPA,yPA,xAI,yAI,xIP,yIP]=line_sep(yIn);
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/line_sep.m,v 1.1 2005/09/15 16:46:28 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/line_sep.m,v 1.2 2014/09/26 22:58:36 jmc Exp $
 % $Name:  $
 
+%- Realistic continents, check that it works at cs32 resolution
 %-sep. line Pac - Atl (y increasing order):
-xPA=[ -70  -59  -70  -70  -62  -90 -104 -104  -88];
-yPA=[ -70  -64  -52  -40  -10   17   21   64   72];
+ xPA=[ -70  -59  -70  -70  -62  -90 -104 -104  -88];
+ yPA=[ -70  -64  -52  -40  -10   17   21   64   72];
 %-sep. line Atl - Ind (y increasing order):
-xAI=[  21   60  105];
-yAI=[  12   50   75];
+ xAI=[  21   60  105];
+ yAI=[  12   50   75];
 %-sep. line Ind - Pac (y increasing order):
-xIP=[ 146  106  106];
-yIP=[ -34    6   90];
+ xIP=[ 146  106  106];
+ yIP=[ -34    6   90];
+
+%- Idealised Double-Drake type set-up:
+% Note: 1) Define 3 bassins (instead of 2) since all the other scripts
+%   work with 3 bassins ; But can always merge Ind+Pacfic into 1 bassin
+%   when using these files (mask & sep line)
+% Note: 2) Altantic is the large bassin and Ind+Pacific is the small one
+%-sep. line Pac - Atl (y increasing order):
+%xPA=[-180 -180 ];
+%yPA=[ -34   90 ];
+%-sep. line Atl - Ind (y increasing order):
+%xAI=[  90   90 ];
+%yAI=[ -34   90 ];
+%-sep. line Ind - Pac (y increasing order):
+%xIP=[ 135  135 ];
+%yIP=[ -34   90 ];
 
 if yPA(end) < 90, yPA(end+1)=90; xPA(end+1)=xPA(end); end
 if yAI(end) < 90, yAI(end+1)=90; xAI(end+1)=xAI(end); end
 if yIP(end) < 90, yIP(end+1)=90; xIP(end+1)=xIP(end); end
-%if yPA(1) > -90, yPA(end+1)=0; yPA(2:end)=yPA(1:end-1); 
+%if yPA(1) > -90, yPA(end+1)=0; yPA(2:end)=yPA(1:end-1);
 if yPA(1) > -90,  yPA(2:end+1)=yPA(1:end); xPA(2:end+1)=xPA(1:end); yPA(1)=-90; end
 if yAI(1) > -90,  yAI(2:end+1)=yAI(1:end); xAI(2:end+1)=xAI(1:end); yAI(1)=-90; end
 if yIP(1) > -90,  yIP(2:end+1)=yIP(1:end); xIP(2:end+1)=xIP(1:end); yIP(1)=-90; end
