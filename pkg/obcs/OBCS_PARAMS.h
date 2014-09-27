@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_PARAMS.h,v 1.4 2012/11/15 15:55:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_PARAMS.h,v 1.5 2014/09/27 00:13:40 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -48,7 +48,20 @@ C                     computations following Stevens (1990), default = true
 C useStevensAdvection
 C                  :: use advective contribution for open boundary
 C                     computations following Stevens (1990), default = true
-C useOBCSsponge    :: turns on sponge layer along boundary (def=false)
+C
+C useOBCSsponge    :: turns on sponge layer along boundaries (def=false)
+C OBCSsponge_N     :: turns on sponge layer along North boundary (def=true)
+C OBCSsponge_S     :: turns on sponge layer along South boundary (def=true)
+C OBCSsponge_E     :: turns on sponge layer along East boundary (def=true)
+C OBCSsponge_W     :: turns on sponge layer along West boundary (def=true)
+C OBCSsponge_UatNS :: turns on uVel sponge at North/South boundaries (def=true)
+C OBCSsponge_UatEW :: turns on uVel sponge at East/West boundaries (def=true)
+C OBCSsponge_VatNS :: turns on vVel sponge at North/South boundaries (def=true)
+C OBCSsponge_VatEW :: turns on vVel sponge at East/West boundaries (def=true)
+C OBCSsponge_Theta :: turns on Theta sponge along boundaries (def=true)
+C OBCSsponge_Salt  :: turns on Salt sponge along boundaries (def=true)
+C useLinearSponge  :: use linear instead of exponential sponge (def=false)
+C
 C useOBCSbalance   :: balance the volume flux through boundary
 C                     at every time step
 C useOBCStides     :: modify OB normal flow to add tidal forcing
@@ -64,7 +77,13 @@ C                     across boundaries (def=true)
      & useStevensNorth,useStevensSouth,
      & useStevensEast,useStevensWest,
      & useStevensPhaseVel, useStevensAdvection,
-     & useOBCSsponge, useOBCSbalance, useOBCStides, useOBCSprescribe,
+     & useOBCSsponge,
+     & OBCSsponge_N, OBCSsponge_S,
+     & OBCSsponge_E, OBCSsponge_W,
+     & OBCSsponge_UatNS, OBCSsponge_UatEW,
+     & OBCSsponge_VatNS, OBCSsponge_VatEW,
+     & OBCSsponge_Theta, OBCSsponge_Salt, useLinearSponge,
+     & useOBCSbalance, useOBCStides, useOBCSprescribe,
      & OBCSprintDiags,
      & OBCSfixTopo
       LOGICAL useOrlanskiNorth
@@ -78,6 +97,17 @@ C                     across boundaries (def=true)
       LOGICAL useStevensPhaseVel
       LOGICAL useStevensAdvection
       LOGICAL useOBCSsponge
+      LOGICAL OBCSsponge_N
+      LOGICAL OBCSsponge_S
+      LOGICAL OBCSsponge_E
+      LOGICAL OBCSsponge_W
+      LOGICAL OBCSsponge_UatNS
+      LOGICAL OBCSsponge_UatEW
+      LOGICAL OBCSsponge_VatNS
+      LOGICAL OBCSsponge_VatEW
+      LOGICAL OBCSsponge_Theta
+      LOGICAL OBCSsponge_Salt
+      LOGICAL useLinearSponge
       LOGICAL useOBCSbalance
       LOGICAL useOBCStides
       LOGICAL useOBCSprescribe

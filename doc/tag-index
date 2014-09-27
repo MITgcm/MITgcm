@@ -1,11 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2072 2014/09/25 00:40:49 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2073 2014/09/27 00:13:40 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/obcs:
-  - add additional compile-time options for sponge boundary layers
+  - replaced the just-added CPP options with run-time variables
+    (see pkg/obcs/OBCS_PARAMS.h for details)
+o pkg/obcs:
+  - add additional CPP options for sponge boundary layers
     (see pkg/obcs/OBCS_OPTIONS.h for details)
 o pkg/atm_phys:
   - implement simple (obliquity only, assuming circular planet orbit)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.46 2014/05/27 23:41:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.47 2014/09/27 00:13:40 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -145,6 +145,11 @@ C     retired parameters
      &          OBNptrFile,OBSptrFile,OBEptrFile,OBWptrFile,
 #endif
      &          useOBCSsponge, useSeaiceSponge,
+     &          OBCSsponge_N , OBCSsponge_S,
+     &          OBCSsponge_E, OBCSsponge_W,
+     &          OBCSsponge_UatNS, OBCSsponge_UatEW,
+     &          OBCSsponge_VatNS, OBCSsponge_VatEW,
+     &          OBCSsponge_Theta, OBCSsponge_Salt, useLinearSponge,
      &          useOBCSbalance, useOBCStides, useOBCSprescribe,
      &          OBCS_balanceFacN, OBCS_balanceFacS,
      &          OBCS_balanceFacE, OBCS_balanceFacW,
@@ -227,6 +232,17 @@ C--   Default flags and values for OBCS
       useStevensAdvection=.TRUE.
       useOBCSsponge      =.FALSE.
       useSeaiceSponge    =.FALSE.
+      OBCSsponge_N       =.TRUE.
+      OBCSsponge_S       =.TRUE.
+      OBCSsponge_E       =.TRUE.
+      OBCSsponge_W       =.TRUE.
+      OBCSsponge_UatNS   =.TRUE.
+      OBCSsponge_UatEW   =.TRUE.
+      OBCSsponge_VatNS   =.TRUE.
+      OBCSsponge_VatEW   =.TRUE.
+      OBCSsponge_Theta   =.TRUE.
+      OBCSsponge_Salt    =.TRUE.
+      useLinearSponge    =.FALSE.
       useOBCSbalance     =.FALSE.
       OBCS_balanceFacN   = 1. _d 0
       OBCS_balanceFacS   = 1. _d 0

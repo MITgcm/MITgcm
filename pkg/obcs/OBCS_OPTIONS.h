@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_OPTIONS.h,v 1.17 2014/09/25 00:37:05 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_OPTIONS.h,v 1.18 2014/09/27 00:13:40 dimitri Exp $
 C $Name:  $
 
 C CPP options file for OBCS package
@@ -30,25 +30,6 @@ C Enable OB conditions following Stevens (1990)
 
 C Allow sponge layer treatment of open boundary conditions
 #undef ALLOW_OBCS_SPONGE
-
-C Allow sponge layers at following boundaries
-#define ALLOW_OBCS_SPONGE_N
-#define ALLOW_OBCS_SPONGE_S
-#define ALLOW_OBCS_SPONGE_E
-#define ALLOW_OBCS_SPONGE_W
-
-C Allow sponge layers for uVel and vVel at following boundaries
-#define ALLOW_OBCS_U_AT_NS
-#define ALLOW_OBCS_U_AT_EW
-#define ALLOW_OBCS_V_AT_NS
-#define ALLOW_OBCS_V_AT_EW
-
-C Allow sponge layers for Theta and Salt
-#define ALLOW_OBCS_SPONGE_THETA
-#define ALLOW_OBCS_SPONGE_SALT
-
-C Use linear instead of exponential sponge layer
-#undef USE_OBCS_LINEAR
 
 C Include hooks to sponge layer treatment of pkg/seaice variables
 #undef ALLOW_OBCS_SEAICE_SPONGE
