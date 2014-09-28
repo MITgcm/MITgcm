@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2073 2014/09/27 00:13:40 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2074 2014/09/28 13:47:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint65e (2014/09/28)
 o pkg/obcs:
   - replaced the just-added CPP options with run-time variables
     (see pkg/obcs/OBCS_PARAMS.h for details)
@@ -15,11 +16,11 @@ o pkg/atm_phys:
     seasonal cycle for incoming insolation ; used when run-time parameter
     "select_incSW" is set to 1 ; by default (=0), uses old unchanged formula.
 o pkg/exf, pkg/ecco, pkg/ctrl:
-    - add ctrlUseGen and .NOT.ctrlUseGen exclusive brackets
-    - activate gentim2d for xx_atemp,xx_aqh,xx_swdown,xx_lwdown,xx_precip
-    - implement gentim2d for xx_tauu, xx_tauv
-o pkg/ctrl, pkg/ecco : 
-    - fix and complement the generic controls implementation
+  - add ctrlUseGen and .NOT.ctrlUseGen exclusive brackets
+  - activate gentim2d for xx_atemp,xx_aqh,xx_swdown,xx_lwdown,xx_precip
+  - implement gentim2d for xx_tauu, xx_tauv
+o pkg/ctrl, pkg/ecco :
+  - fix and complement the generic controls implementation
 o pkg/exf/exf_getclim.F, exf_getffields.F, exf_getsurfacefluxes.F,
     pkg/shelfice/shelfice_thermodynamics.F,
     verification/hs94.1x64x5/code_ad/ctrl_map_gentim2d.F,
