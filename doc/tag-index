@@ -1,8 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2074 2014/09/28 13:47:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2075 2014/09/29 17:16:46 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/ecco: internal re-organization
+  - resolve un-necessary dependancies within pkg/ecco and to pkg/ctrl 
+    (rm includes of optim.h and ctrl.h, replace optimcycle with eccoiter,
+    mv relevant variables definition from ecco_cost.h to ecco.h, 
+    make sure gencost routines only include ecco.h)
+  - throughout : add missing CCP switches, rm unused variables,
+    and rm un-necessary CPP switches
+  - throughout gencost routines : replace modelstartdate with 
+    gencost_startdate when needed
+  - cost_bp_read.F : use arguments, instead of common blocs
+    so that it can be used also by (new) cost_gencost_bpv4.F 
+  - ecco_init_varia.F : initialize RHOsumGlob_0, VOLsumGlob_0
+  - ecco_phys.F : compute etanFull
+  - ecco_readparms.F : rename using_topex as using_tpj, add
+    bpv4-grace to gencost list, initialize added parameters
+  - ecco_summary.F : include SIZE.h needed for augmented ecco.h
 
 checkpoint65e (2014/09/28)
 o pkg/obcs:
