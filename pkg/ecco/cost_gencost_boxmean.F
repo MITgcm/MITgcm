@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.3 2014/09/11 19:54:15 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.4 2014/09/29 16:46:43 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -26,13 +26,8 @@ c     == global variables ==
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
-#ifdef ALLOW_COST
-# include "ecco_cost.h"
-# include "optim.h"
-# include "ctrl.h"
-# include "CTRL_SIZE.h"
-# include "CTRL_GENARR.h"
-# include "ctrl_dummy.h"
+#ifdef ALLOW_ECCO
+# include "ecco.h"
 #endif
 
 c     == routine arguments ==
@@ -42,7 +37,7 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-      integer igen_boxmean
+      integer kgen
       _RL mybar(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL mymsk(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL tmpmsk(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -73,28 +68,28 @@ c     == external functions ==
 c     == end of interface ==
 
 c-- detect the relevant gencost indices
-      igen_boxmean=0
+      kgen=0
       do k=1,NGENCOST
-        if (gencost_name(k).EQ.'boxmean') igen_boxmean=k
+        if (gencost_name(k).EQ.'boxmean') kgen=k
       enddo
 
-      if (igen_boxmean.NE.0) then
+      if (kgen.NE.0) then
 
 c ========
 
 c set bar field params
       doglobalread = .false.
       ladinit      = .false.
-      mydummy=xx_tbar_mean_dummy
-      il = ilnblnk( tbarfile )
+      mydummy=gencost_dummy(kgen)
+      il = ilnblnk( gencost_barfile(kgen) )
       write(myfname(1:80),'(2a,i10.10)')
-     &    tbarfile(1:il),'.',optimcycle
+     &    gencost_barfile(kgen)(1:il),'.',eccoiter
 
 c initialize various things to 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-          objf_gencost(bi,bj,igen_boxmean) = 0. _d 0
-          num_gencost(bi,bj,igen_boxmean) = 0. _d 0
+          objf_gencost(bi,bj,kgen) = 0. _d 0
+          num_gencost(bi,bj,kgen) = 0. _d 0
           mySumTile(bi,bj)=0. _d 0
           myVolTile(bi,bj)=0. _d 0
           mySumGlo=0. _d 0
@@ -111,7 +106,7 @@ c initialize various things to 0
 
 c initialize maximum mask for time series display
       do irec = 1,nmonsrec
-        call mdsreadfield( gencost_errfile(igen_boxmean),
+        call mdsreadfield( gencost_errfile(kgen),
      &                     cost_iprec, cost_yftype,
      &                     nr, mymsk, irec, mythid)
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -135,11 +130,11 @@ c main loop where cost is computed and time series is displayed
 c read bar field
         call active_read_xyz( myfname, mybar, irec,
      &                        doglobalread, ladinit,
-     &                        optimcycle, mythid,
+     &                        eccoiter, mythid,
      &                        mydummy )
 
 c read mask for averaging (3d, time series)
-        call mdsreadfield( gencost_errfile(igen_boxmean),
+        call mdsreadfield( gencost_errfile(kgen),
      &                     cost_iprec, cost_yftype,
      &                     nr, mymsk, irec, mythid)
 
@@ -159,11 +154,11 @@ c compute cost
             do j = 1,sNy
               do i =  1,sNx
 c sum that is actually be used in cost function
-      objf_gencost(bi,bj,igen_boxmean)=
-     &   objf_gencost(bi,bj,igen_boxmean)
+      objf_gencost(bi,bj,kgen)=
+     &   objf_gencost(bi,bj,kgen)
      &  +mybar(i,j,k,bi,bj)*mymsk(i,j,k,bi,bj)
-      num_gencost(1,1,igen_boxmean)=
-     &   num_gencost(1,1,igen_boxmean)
+      num_gencost(1,1,kgen)=
+     &   num_gencost(1,1,kgen)
      &  +mymsk(i,j,k,bi,bj)
 
 c sum for display of time series
@@ -195,9 +190,9 @@ c ========
 
 
 c global sums for cost function
-      CALL GLOBAL_SUM_TILE_RL( objf_gencost(1,1,igen_boxmean),
+      CALL GLOBAL_SUM_TILE_RL( objf_gencost(1,1,kgen),
      &   mySumGlo, myThid )
-      CALL GLOBAL_SUM_TILE_RL( num_gencost(1,1,igen_boxmean),
+      CALL GLOBAL_SUM_TILE_RL( num_gencost(1,1,kgen),
      &   myVolGlo, myThid )
       myMeanGlo=0. _d 0
       if ( myVolGlo.GT.0. _d 0)
@@ -210,7 +205,7 @@ c global sums for cost function
 
 c ========
 
-      endif !if (igen_boxmean].NE.0)
+      endif !if (kgen].NE.0)
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 

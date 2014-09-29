@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.13 2014/06/27 14:23:19 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.14 2014/09/29 16:46:43 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -24,12 +24,12 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-
-#include "cal.h"
-#include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
-#include "ecco_cost.h"
+#ifdef ALLOW_CAL
+# include "cal.h"
+#endif
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
 
 c     == routine arguments ==
 
@@ -40,12 +40,10 @@ c     == routine arguments ==
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 c     == local variables ==
 
-      integer i,j,k
       character*(max_len_mbuf) msgbuf
-
       integer nnzbar
       integer nnzobs
-      integer nrecloc
+      integer k
 
 c     == external functions ==
 
@@ -61,37 +59,26 @@ c     == end of interface ==
          nnzbar = 1
          nnzobs = 1
          call cost_generic(
-     &        nnzbar, gencost_barfile(k),
-     &        gencost_barfld(1-Olx,1-Oly,1,1,k),
-     &        xx_genbar_dummy(k),
-     &        nnzobs, gencost_datafile(k), mult_gencost(k),
-     &        gencost_nrec(k), modelstartdate, gencost_period(k),
-     &        gencost_mask(k), gencost_weight(1-Olx,1-Oly,1,1,k),
-     &        gencost_spmin(k), gencost_spmax(k),
-     &        gencost_spzero(k),
-     &        objf_gencost(1,1,k), num_gencost(1,1,k),
-     &        myiter, mytime, mythid )
+     &     nnzbar, gencost_barfile(k),
+     &     gencost_barfld(1-Olx,1-Oly,1,1,k),
+     &     gencost_dummy(k),
+     &     nnzobs, gencost_datafile(k), mult_gencost(k),
+     &     gencost_nrec(k), gencost_startdate(1,k), gencost_period(k),
+     &     gencost_mask(k), gencost_weight(1-Olx,1-Oly,1,1,k),
+     &     gencost_spmin(k), gencost_spmax(k),
+     &     gencost_spzero(k),
+     &     objf_gencost(1,1,k), num_gencost(1,1,k),
+     &     myiter, mytime, mythid )
 
          endif
 
       end do
 
       call cost_gencost_boxmean( mythid )
-
-# if (defined(ALLOW_GENCOST_SSHV4))
-      IF (using_cost_altim) 
-     &    call cost_gencost_sshv4( myiter, mytime, mythid )
-# endif /* ALLOW_GENCOST_SSHV4 */
-
-# if (defined(ALLOW_GENCOST_SSTV4))
-      IF (using_cost_sst)
-     &    call cost_gencost_sstv4( myiter, mytime, mythid )
-# endif /* ALLOW_GENCOST_SSTV4 */
-
-#ifdef ALLOW_GENCOST_SEAICEV4
-      IF (using_cost_seaice)
-     &    call cost_gencost_seaicev4( mythid )
-# endif /* ALLOW_GENCOST_SEAICEV4 */
+      call cost_gencost_bpv4( mythid )
+      IF (using_cost_altim) call cost_gencost_sshv4( mythid )
+      IF (using_cost_sst) call cost_gencost_sstv4( mythid )
+      IF (using_cost_seaice) call cost_gencost_seaicev4( mythid )
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 

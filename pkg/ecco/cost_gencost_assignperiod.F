@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_assignperiod.F,v 1.10 2013/03/30 11:57:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_assignperiod.F,v 1.11 2014/09/29 16:46:43 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -22,8 +22,9 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "optim.h"
-#include "ecco_cost.h"
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
 
 c     == routine arguments ==
 
@@ -52,7 +53,8 @@ c     == local variables ==
 c     == end of interface ==
 
       do k = 1, NGENCOST
-       if ( (using_gencost(k)).AND.( gencost_flag(k).GE.1 ) ) then
+       if ( (using_gencost(k)).AND.( (gencost_flag(k).GE.1).OR.
+     &         (gencost_avgperiod(k).NE.'     ') ) ) then
          if ( gencost_avgperiod(k) .EQ. 'day' .OR.
      &        gencost_avgperiod(k) .EQ. 'DAY' ) then
             startofgen(k) = startofday

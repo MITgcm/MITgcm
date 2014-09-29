@@ -1,12 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.23 2014/06/09 17:55:22 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.24 2014/09/29 16:46:43 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
 
 
       subroutine cost_gencost_sshv4(
-     I                     myiter,
-     I                     mytime,
      I                     mythid
      &                   )
 
@@ -42,28 +40,23 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-
-#include "ecco_cost.h"
-#include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
-#include "optim.h"
-#include "DYNVARS.h"
+#ifdef ALLOW_CAL
+# include "cal.h"
+#endif
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
 #ifdef ALLOW_PROFILES
 #include "profiles.h"
 #endif
-#include "cal.h"
 #ifdef ALLOW_SMOOTH
 #include "SMOOTH.h"
 #endif
 
 c     == routine arguments ==
 
-      integer myiter
-      _RL     mytime
       integer mythid
 
-#ifdef ALLOW_SSH_COST_CONTRIBUTION
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 
 c     == functions ==
@@ -80,7 +73,6 @@ c     == local variables ==
       integer imin,imax
       integer irec,jrec,krec
       integer ilps
-      integer gwunit
 
       logical doglobalread
       logical ladinit
@@ -88,14 +80,34 @@ c     == local variables ==
 c mapping to gencost
       integer igen_mdt, igen_lsc, igen_gmsl
       integer igen_tp, igen_ers, igen_gfo
+      integer igen_etabar
 
+      _RL spval, factor
       _RL offset
       _RL offset_sum
       _RL slaoffset
       _RL slaoffset_sum
       _RL slaoffset_weight
 
+#ifdef ALLOW_SSH_MEAN_COST_CONTRIBUTION
       _RL diagnosfld ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
+#endif
+
+c local arrays
+      _RL mdtob(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL tpob(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL ersob(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL gfoob(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL mdtma(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL tpma(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL ersma(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL gfoma(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL etabar(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+
+      character*(MAX_LEN_FNAM) mdtfi, tpfi, ersfi, gfofi
+      integer tpsta(4), erssta(4), gfosta(4)
+      integer mdtsta(4), mdtend(4)
+      _RL tpper, ersper, gfoper
 
 c for PART 1: re-reference MDT (mdt) to the inferred SLA reference field
       _RL psmean    ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
@@ -138,7 +150,7 @@ c for PART 4/5: compute smooth/raw anomalies
       _RL anom_gfoobs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       integer mdt_y0,mdt_y1,year,day
-      integer num_var, num0
+      integer num0
 
       _RL junk,junkweight
 
@@ -174,6 +186,7 @@ c-- detect the relevant gencost indices
       igen_gfo=0
       igen_lsc=0
       igen_gmsl=0
+      igen_etabar=0
       do k=1,NGENCOST
         if (gencost_name(k).EQ.'sshv4-mdt') igen_mdt=k
         if (gencost_name(k).EQ.'sshv4-tp') igen_tp=k
@@ -183,15 +196,73 @@ c-- detect the relevant gencost indices
         if (gencost_name(k).EQ.'sshv4-gmsl') igen_gmsl=k
       enddo
 
+c-- initialize local arrays
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              mdtma(i,j,bi,bj) = 0. _d 0
+              mdtob(i,j,bi,bj) = 0. _d 0
+              tpma(i,j,bi,bj) = 0. _d 0
+              tpob(i,j,bi,bj) = 0. _d 0
+              ersma(i,j,bi,bj) = 0. _d 0
+              ersob(i,j,bi,bj) = 0. _d 0
+              gfoma(i,j,bi,bj) = 0. _d 0
+              gfoob(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
+
+c mdtfi, mdtsta, mdtend
+      if (igen_mdt.GT.0) then
+       ilps=ilnblnk( gencost_datafile(igen_mdt) )
+       mdtfi=gencost_datafile(igen_mdt)(1:ilps)
+       call cal_CopyDate(gencost_startdate(1,igen_mdt),mdtsta,mythid)
+       call cal_CopyDate(gencost_enddate(1,igen_mdt), mdtend, mythid)
+      endif
+c tpfi, tpsta, tpper
+      if (igen_tp.GT.0) then
+       ilps=ilnblnk( gencost_datafile(igen_tp) )
+       tpfi=gencost_datafile(igen_tp)(1:ilps)
+       call cal_CopyDate(gencost_startdate(1,igen_tp),tpsta,mythid)
+       tpper=gencost_period(igen_tp)
+       if (gencost_barfile(igen_tp).EQ.'etabar') igen_etabar=igen_tp
+      endif
+c ersfi, erssta, ersper
+      if (igen_ers.GT.0) then
+       ilps=ilnblnk( gencost_datafile(igen_ers) )
+       ersfi=gencost_datafile(igen_ers)(1:ilps)
+       call cal_CopyDate(gencost_startdate(1,igen_ers),erssta,mythid)
+       ersper=gencost_period(igen_ers)
+       if (gencost_barfile(igen_ers).EQ.'etabar') igen_etabar=igen_ers
+      endif
+c gfofi, gfosta, gfoper
+      if (igen_gfo.GT.0) then
+       ilps=ilnblnk( gencost_datafile(igen_gfo) )
+       gfofi=gencost_datafile(igen_gfo)(1:ilps)
+       call cal_CopyDate(gencost_startdate(1,igen_gfo),gfosta,mythid)
+       gfoper=gencost_period(igen_gfo)
+       if (gencost_barfile(igen_gfo).EQ.'etabar') igen_etabar=igen_gfo
+      endif
+
+      if (igen_etabar.EQ.0) then
+        stop 'ERROR : one gencost term needs to define the barfile'
+      else
+        write(msgbuf,'(a,i3)')
+     &  'etabar defined by gencost ',igen_etabar
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+      endif
+
 c--   First, read tiled data.
       doglobalread = .false.
       ladinit      = .false.
 
       write(fname(1:80),'(80a)') ' '
-      ilps=ilnblnk( psbarfile )
+      ilps=ilnblnk( gencost_barfile(igen_etabar) )
       write(fname(1:80),'(2a,i10.10)')
-     &     psbarfile(1:ilps),'.',optimcycle
-
+     &     gencost_barfile(igen_etabar)(1:ilps),'.',eccoiter
 
 cgf =======================================================
 cgf PART 1:
@@ -201,11 +272,38 @@ cgf        together) over the time interval of the MDT ... subtract
 cgf        mean_slaobs_mdt from mdt.
 cgf        x At this point, mdt is the inferred SLA reference field.
 cgf        x From there on, mdt+sla will be directly comparable to
-cgf        the model SSH (psbar).
+cgf        the model SSH (etabar).
 cgf =======================================================
 
 c--   Read mean field and mask
-      call cost_ReadTopexMean( mythid )
+
+      if (using_mdt)
+     &call mdsreadfield( mdtfi, cost_iprec, cost_yftype, 1,
+     &                   mdtob, 1, mythid )
+
+      factor =  0.01 _d 0
+      spval  = -9990. _d 0
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              if ( (maskC(i,j,1,bi,bj) .eq. 0.).OR.
+#ifndef ALLOW_SHALLOW_ALTIMETRY
+     &             (R_low(i,j,bi,bj).GT.-200.).OR.
+#endif
+     &             (mdtob(i,j,bi,bj) .lt. spval ).OR.
+     &             (mdtob(i,j,bi,bj) .eq. 0. _d 0) ) then
+                mdtma(i,j,bi,bj) = 0. _d 0
+                mdtob(i,j,bi,bj) = 0. _d 0
+              else
+                mdtma(i,j,bi,bj) = 1. _d 0
+                mdtob(i,j,bi,bj) = mdtob(i,j,bi,bj)*factor
+              endif
+            enddo
+          enddo
+        enddo
+      enddo
 
 c--   Compute mean_slaobs_mdt: sample mean SLA over the time period of mdt.
 
@@ -219,12 +317,12 @@ c rio
 c      mdt_y0=1993
 c      mdt_y1=1999
 c generalized:
-       mdt_y0=mdtstartdate(1)/10000
-       mdt_y1=mdtenddate(1)/10000
+       mdt_y0=mdtsta(1)/10000
+       mdt_y1=mdtend(1)/10000
 
        write(msgbuf,'(a,i8,a,i8)')
-     &  'mdt[start,end]date(1): ',mdtstartdate(1),
-     &  ',',mdtenddate(1)
+     &  'mdt[start,end]date(1): ',mdtsta(1),
+     &  ',',mdtend(1)
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
 
@@ -260,49 +358,42 @@ c minimum number of observations to consider re-referenced MDT
 
       do year=mdt_y0,mdt_y1
        do day=1,366
-#ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-      call cost_sla_read_yd( topexfile, topexstartdate,
-     &                tpobs, tpmask,
+
+       if (using_tpj)
+     & call cost_sla_read_yd( tpfi, tpsta,
+     &                tpob, tpma,
      &                year, day, mythid )
-#endif
-#ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-      call cost_sla_read_yd( ersfile, ersstartdate,
-     &                ersobs, ersmask,
+       if (using_ers)
+     & call cost_sla_read_yd( ersfi, erssta,
+     &                ersob, ersma,
      &                year, day, mythid )
-#endif
-#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-      call cost_sla_read_yd( gfofile, gfostartdate,
-     &                gfoobs, gfomask,
+       if (using_gfo)
+     & call cost_sla_read_yd( gfofi, gfosta,
+     &                gfoob, gfoma,
      &                year, day, mythid )
-#endif
+
        do bj = jtlo,jthi
         do bi = itlo,ithi
          do j = jmin,jmax
           do i = imin,imax
-#ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-      if ( tpmask(i,j,bi,bj)*mdtmask(i,j,bi,bj)*
+      if ( tpma(i,j,bi,bj)*mdtma(i,j,bi,bj)*
      &    gencost_weight(i,j,bi,bj,igen_tp) .NE. 0. ) then
           mean_slaobs_mdt(i,j,bi,bj)= mean_slaobs_mdt(i,j,bi,bj)+
-     &  tpobs(i,j,bi,bj)
+     &  tpob(i,j,bi,bj)
           mean_slaobs_NUM(i,j,bi,bj)= mean_slaobs_NUM(i,j,bi,bj)+1. _d 0
       endif
-#endif
-#ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-      if ( ersmask(i,j,bi,bj)*mdtmask(i,j,bi,bj)*
+      if ( ersma(i,j,bi,bj)*mdtma(i,j,bi,bj)*
      &    gencost_weight(i,j,bi,bj,igen_ers) .NE. 0. ) then
           mean_slaobs_mdt(i,j,bi,bj)= mean_slaobs_mdt(i,j,bi,bj)+
-     &  ersobs(i,j,bi,bj)
+     &  ersob(i,j,bi,bj)
           mean_slaobs_NUM(i,j,bi,bj)= mean_slaobs_NUM(i,j,bi,bj)+1. _d 0
       endif
-#endif
-#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-      if ( gfomask(i,j,bi,bj)*mdtmask(i,j,bi,bj)*
+      if ( gfoma(i,j,bi,bj)*mdtma(i,j,bi,bj)*
      &    gencost_weight(i,j,bi,bj,igen_gfo) .NE. 0. ) then
           mean_slaobs_mdt(i,j,bi,bj)= mean_slaobs_mdt(i,j,bi,bj)+
-     &  gfoobs(i,j,bi,bj)
+     &  gfoob(i,j,bi,bj)
           mean_slaobs_NUM(i,j,bi,bj)= mean_slaobs_NUM(i,j,bi,bj)+1. _d 0
       endif
-#endif
           enddo
          enddo
         enddo
@@ -317,7 +408,7 @@ c minimum number of observations to consider re-referenced MDT
             do i = imin,imax
                if ( ( mean_slaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ).AND.
-     &              ( mdtmask(i,j,bi,bj) .NE. 0. ) ) then
+     &              ( mdtma(i,j,bi,bj) .NE. 0. ) ) then
                   mean_slaobs_mdt(i,j,bi,bj) =
      &                 mean_slaobs_mdt(i,j,bi,bj) /
      &                 mean_slaobs_NUM(i,j,bi,bj)
@@ -352,10 +443,10 @@ c--   re-reference mdt:
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-               if ( ( mdtmask(i,j,bi,bj) .NE. 0. ).AND.
+               if ( ( mdtma(i,j,bi,bj) .NE. 0. ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ).AND.
      &              ( doReference ) ) then
-                  mdt(i,j,bi,bj) = mdt(i,j,bi,bj)
+                  mdtob(i,j,bi,bj) = mdtob(i,j,bi,bj)
      &                 -mean_slaobs_mdt(i,j,bi,bj)
                endif
             enddo
@@ -365,8 +456,8 @@ c--   re-reference mdt:
 
 
 cgf =======================================================
-cgf PART 2: compute sample means of psbar-slaobs over the
-cgf          period that is covered by the model (i.e. psbar).
+cgf PART 2: compute sample means of etabar-slaobs over the
+cgf          period that is covered by the model (i.e. etabar).
 cgf          x for all SLA data sets together: mean_psMssh_all, mean_psMssh_all_MSK,
 cgf             and offset will be used in PART 3 (MDT cost term).
 cgf          x for each SLA data individually. mean_psMtpobs, mean_psMtpobs_MS, etc.
@@ -402,76 +493,67 @@ cgf =======================================================
 
       do irec = 1, ndaysrec
 
-        call active_read_xy( fname, psbar, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid,
-     &                       xx_psbar_mean_dummy )
+        call active_read_xy( fname, etabar, irec, doglobalread,
+     &                       ladinit, eccoiter, mythid,
+     &                       gencost_dummy(igen_etabar) )
 
 #ifndef ALLOW_PSBAR_MEAN
-        CALL REMOVE_MEAN_RL( 1, psbar, maskInC, maskInC, rA, drF,
-     &        'psbar', myTime, myThid )
+        CALL REMOVE_MEAN_RL( 1, etabar, maskInC, maskInC, rA, drF,
+     &        'etabar', 0. _d 0, myThid )
 #endif
 
-#ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-      call cost_sla_read( topexfile, topexstartdate, topexperiod,
-     &                topexintercept, topexslope,
-     &                tpobs, tpmask,
+        if (using_tpj)
+     &  call cost_sla_read( tpfi, tpsta, tpper,
+     &                zeroRL, zeroRL,
+     &                tpob, tpma,
      &                irec, mythid )
-#endif
-#ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-      call cost_sla_read( ersfile, ersstartdate, ersperiod,
-     &                ersintercept, ersslope,
-     &                ersobs, ersmask,
+        if (using_ers)
+     &  call cost_sla_read( ersfi, erssta, ersper,
+     &                zeroRL, zeroRL,
+     &                ersob, ersma,
      &                irec, mythid )
-#endif
-#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-      call cost_sla_read( gfofile, gfostartdate, gfoperiod,
-     &                gfointercept, gfoslope,
-     &                gfoobs, gfomask,
+        if (using_gfo)
+     &  call cost_sla_read( gfofi, gfosta, gfoper,
+     &                zeroRL, zeroRL,
+     &                gfoob, gfoma,
      &                irec, mythid )
-#endif
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
             do j = jmin,jmax
               do i = imin,imax
                 psmean(i,j,bi,bj) = psmean(i,j,bi,bj) +
-     &                psbar(i,j,bi,bj) / float(ndaysrec)
-#ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-                if ( tpmask(i,j,bi,bj)*
+     &                etabar(i,j,bi,bj) / float(ndaysrec)
+                if ( tpma(i,j,bi,bj)*
      &             gencost_weight(i,j,bi,bj,igen_tp) .NE. 0. ) then
                    mean_slaobs_model(i,j,bi,bj)=
-     &                 mean_slaobs_model(i,j,bi,bj)+tpobs(i,j,bi,bj)
+     &              mean_slaobs_model(i,j,bi,bj)+tpob(i,j,bi,bj)
                    mean_psMtpobs(i,j,bi,bj) =
      &                 mean_psMtpobs(i,j,bi,bj) +
-     &                 psbar(i,j,bi,bj)-tpobs(i,j,bi,bj)
+     &                 etabar(i,j,bi,bj)-tpob(i,j,bi,bj)
                    mean_psMtpobs_NUM(i,j,bi,bj) =
      &                 mean_psMtpobs_NUM(i,j,bi,bj) + 1. _d 0
                 endif
-#endif
-#ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-                if ( ersmask(i,j,bi,bj)*
+                if ( ersma(i,j,bi,bj)*
      &             gencost_weight(i,j,bi,bj,igen_ers) .NE. 0. ) then
                    mean_slaobs_model(i,j,bi,bj)=
-     &                 mean_slaobs_model(i,j,bi,bj)+ersobs(i,j,bi,bj)
+     &              mean_slaobs_model(i,j,bi,bj)+ersob(i,j,bi,bj)
                    mean_psMersobs(i,j,bi,bj) =
      &                 mean_psMersobs(i,j,bi,bj) +
-     &                 psbar(i,j,bi,bj)-ersobs(i,j,bi,bj)
+     &                 etabar(i,j,bi,bj)-ersob(i,j,bi,bj)
                    mean_psMersobs_NUM(i,j,bi,bj) =
      &                 mean_psMersobs_NUM(i,j,bi,bj) + 1. _d 0
                 endif
-#endif
-#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-                if ( gfomask(i,j,bi,bj)*
+                if ( gfoma(i,j,bi,bj)*
      &             gencost_weight(i,j,bi,bj,igen_gfo) .NE. 0. ) then
                    mean_slaobs_model(i,j,bi,bj)=
-     &                 mean_slaobs_model(i,j,bi,bj)+gfoobs(i,j,bi,bj)
+     &              mean_slaobs_model(i,j,bi,bj)+gfoob(i,j,bi,bj)
                    mean_psMgfoobs(i,j,bi,bj) =
      &                 mean_psMgfoobs(i,j,bi,bj) +
-     &                 psbar(i,j,bi,bj)-gfoobs(i,j,bi,bj)
+     &                 etabar(i,j,bi,bj)-gfoob(i,j,bi,bj)
                    mean_psMgfoobs_NUM(i,j,bi,bj) =
      &                 mean_psMgfoobs_NUM(i,j,bi,bj) + 1. _d 0
                 endif
-#endif
               enddo
             enddo
           enddo
@@ -484,7 +566,6 @@ c--   END loop over records for the first time.
           do bi = itlo,ithi
             do j = jmin,jmax
               do i = imin,imax
-#ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
                if ( ( mean_psMtpobs_NUM(i,j,bi,bj) .NE. 0. )
      &              ) then
                   mean_psMssh_all(i,j,bi,bj) =
@@ -497,8 +578,6 @@ c--   END loop over records for the first time.
      &                 mean_psMtpobs(i,j,bi,bj) /
      &                 mean_psMtpobs_NUM(i,j,bi,bj)
                endif
-#endif
-#ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
                if ( ( mean_psMersobs_NUM(i,j,bi,bj) .NE. 0. )
      &              ) then
                   mean_psMssh_all(i,j,bi,bj) =
@@ -511,8 +590,6 @@ c--   END loop over records for the first time.
      &                 mean_psMersobs(i,j,bi,bj) /
      &                 mean_psMersobs_NUM(i,j,bi,bj)
                endif
-#endif
-#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
                if ( ( mean_psMgfoobs_NUM(i,j,bi,bj) .NE. 0. )
      &              ) then
                   mean_psMssh_all(i,j,bi,bj) =
@@ -525,7 +602,6 @@ c--   END loop over records for the first time.
      &                 mean_psMgfoobs(i,j,bi,bj) /
      &                 mean_psMgfoobs_NUM(i,j,bi,bj)
                endif
-#endif
 
                if ( ( mean_psMssh_all_NUM(i,j,bi,bj) .GT. 0 ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. )
@@ -541,25 +617,25 @@ c--   END loop over records for the first time.
 
                if ( ( mean_psMssh_all_NUM(i,j,bi,bj) .GT. num0 ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
-     &              ( mdtmask(i,j,bi,bj) .NE. 0. ).AND.
+     &              ( mdtma(i,j,bi,bj) .NE. 0. ).AND.
      &              ( doReference ) ) then
                   mean_slaobs_model(i,j,bi,bj) =
      &                 mean_slaobs_model(i,j,bi,bj) /
      &                 mean_psMssh_all_NUM(i,j,bi,bj)
                   mean_psMssh_all(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) /
-     &                 mean_psMssh_all_NUM(i,j,bi,bj)-mdt(i,j,bi,bj)
+     &                 mean_psMssh_all_NUM(i,j,bi,bj)-mdtob(i,j,bi,bj)
                   mean_psMssh_all_MSK(i,j,bi,bj) = 1. _d 0
                   offset=offset+RA(i,j,bi,bj)*mean_psMssh_all(i,j,bi,bj)
                   offset_sum=offset_sum+RA(i,j,bi,bj)
-               elseif ( ( mdtmask(i,j,bi,bj) .NE. 0. ) .AND.
+               elseif ( ( mdtma(i,j,bi,bj) .NE. 0. ) .AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ).AND.
      &              ( .NOT.doReference ) ) then
                   mean_slaobs_model(i,j,bi,bj) = 0.d0
                   mean_psMssh_all(i,j,bi,bj) = 0. _d 0
                   mean_psMssh_all_MSK(i,j,bi,bj) = 1. _d 0
                   offset=offset+RA(i,j,bi,bj)
-     &                  *( psmean(i,j,bi,bj) -mdt(i,j,bi,bj) )
+     &                  *( psmean(i,j,bi,bj) -mdtob(i,j,bi,bj) )
                   offset_sum=offset_sum+RA(i,j,bi,bj)
                else
                   mean_slaobs_model(i,j,bi,bj) = 0.d0
@@ -602,7 +678,7 @@ c--   subtract offset from mean_psMssh_all and psmean
             do i = imin,imax
 
                if ( (mean_psMssh_all_NUM(i,j,bi,bj) .GT. num0) .AND.
-     &              ( mdtmask(i,j,bi,bj) .NE. 0. ) .AND.
+     &              ( mdtma(i,j,bi,bj) .NE. 0. ) .AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND. 
      &              ( doReference ) ) then
 c use the re-referencing approach
@@ -610,12 +686,12 @@ c use the re-referencing approach
      &                 mean_psMssh_all(i,j,bi,bj) - offset
                    mean_psMssh_all_MSK(i,j,bi,bj) = 1. _d 0
 
-               elseif ( ( mdtmask(i,j,bi,bj) .NE. 0. ) .AND.
+               elseif ( ( mdtma(i,j,bi,bj) .NE. 0. ) .AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
      &              ( .NOT.doReference ) ) then
 c use the simpler approach
                    mean_psMssh_all(i,j,bi,bj) =
-     &             psmean(i,j,bi,bj) -mdt(i,j,bi,bj) - offset
+     &             psmean(i,j,bi,bj) -mdtob(i,j,bi,bj) - offset
                    mean_psMssh_all_MSK(i,j,bi,bj) = 1. _d 0
 
                else
@@ -663,9 +739,9 @@ c--    smooth mean_psMssh_all
      &    1,mean_slaobs_model,1,1,mythid)
 
 cgf at this point:
-cgf     1) mean_psMssh_all is the sample mean <psbar-slaobs-mdt-offset>,
+cgf     1) mean_psMssh_all is the sample mean <etabar-slaobs-mdt-offset>,
 cgf             to which a smoothing filter has been applied.
-cgf     2) mean_psMtpobs is the (unsmoothed) sample mean <psbar-tpobs>.
+cgf     2) mean_psMtpobs is the (unsmoothed) sample mean <etabar-tpobs>.
 cgf             And similarly for ers and gfo, each treated separately.
 
 #ifdef ALLOW_PROFILES
@@ -699,7 +775,7 @@ cgf =======================================================
        if (mean_psMssh_all_MSK(i,j,bi,bj).NE.0. _d 0) then
          junk = mean_psMssh_all(i,j,bi,bj)
          junkweight = gencost_weight(i,j,bi,bj,igen_mdt)
-     &              * mdtmask(i,j,bi,bj)
+     &              * mdtma(i,j,bi,bj)
        else
          junk = 0. _d 0
          junkweight = 0. _d 0
@@ -715,10 +791,9 @@ cgf =======================================================
       enddo
 
       CALL WRITE_FLD_XY_RL( 'DiagnosMDT', ' ', diagnosfld,
-     &                           optimcycle, mythid )
+     &                           eccoiter, mythid )
 
 #endif /* ALLOW_SSH_MEAN_COST_CONTRIBUTION */
-
 
 
 cgf =======================================================
@@ -753,80 +828,71 @@ c ------------------------------------------------------
 
         krec=irec+jrec-1
 
-        call active_read_xy( fname, psbar, krec, doglobalread,
-     &                       ladinit, optimcycle, mythid,
-     &                       xx_psbar_mean_dummy )
+        call active_read_xy( fname, etabar, krec, doglobalread,
+     &                       ladinit, eccoiter, mythid,
+     &                       gencost_dummy(igen_etabar) )
 
 #ifndef ALLOW_PSBAR_MEAN
-        CALL REMOVE_MEAN_RL( 1, psbar, maskInC, maskInC, rA, drF,
-     &        'psbar', myTime, myThid )
+        CALL REMOVE_MEAN_RL( 1, etabar, maskInC, maskInC, rA, drF,
+     &        'etabar', 0. _d 0, myThid )
 #endif
 
-#ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-      call cost_sla_read( topexfile, topexstartdate, topexperiod,
-     &                topexintercept, topexslope,
-     &                tpobs, tpmask,
+        if (using_tpj)
+     &  call cost_sla_read( tpfi, tpsta, tpper,
+     &                zeroRL, zeroRL,
+     &                tpob, tpma,
      &                krec, mythid )
-#endif
-#ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-      call cost_sla_read( ersfile, ersstartdate, ersperiod,
-     &                ersintercept, ersslope,
-     &                ersobs, ersmask,
+        if (using_ers)
+     &  call cost_sla_read( ersfi, erssta, ersper,
+     &                zeroRL, zeroRL,
+     &                ersob, ersma,
      &                krec, mythid )
-#endif
-#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-      call cost_sla_read( gfofile, gfostartdate, gfoperiod,
-     &                gfointercept, gfoslope,
-     &                gfoobs, gfomask,
+        if (using_gfo)
+     &  call cost_sla_read( gfofi, gfosta, gfoper,
+     &                zeroRL, zeroRL,
+     &                gfoob, gfoma,
      &                krec, mythid )
-#endif
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
          do j = jmin,jmax
           do i = imin,imax
-#ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-      if ( tpmask(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj)
+      if ( tpma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj)
      &  .NE.0. ) then
            anom_psMslaobs(i,j,bi,bj)= anom_psMslaobs(i,j,bi,bj)+
-     &        psbar(i,j,bi,bj)-tpobs(i,j,bi,bj)
+     &        etabar(i,j,bi,bj)-tpob(i,j,bi,bj)
      &        -mean_psMslaobs(i,j,bi,bj)
            anom_slaobs(i,j,bi,bj)= anom_slaobs(i,j,bi,bj)+
-     &        tpobs(i,j,bi,bj)
+     &        tpob(i,j,bi,bj)
            anom_psMslaobs_NUM(i,j,bi,bj)=
      &        anom_psMslaobs_NUM(i,j,bi,bj)+1. _d 0
            if ( (2*jrec.EQ.ndaysave).OR.(2*jrec+1.EQ.ndaysave) ) 
      &        anom_psMslaobs_MSK(i,j,bi,bj)  = 1. _d 0
       endif
-#endif
-#ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-      if ( ersmask(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj)
+      if ( ersma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj)
      &  .NE.0. ) then
            anom_psMslaobs(i,j,bi,bj)= anom_psMslaobs(i,j,bi,bj)+
-     &        psbar(i,j,bi,bj)-ersobs(i,j,bi,bj)
+     &        etabar(i,j,bi,bj)-ersob(i,j,bi,bj)
      &        -mean_psMslaobs(i,j,bi,bj)
            anom_slaobs(i,j,bi,bj)= anom_slaobs(i,j,bi,bj)+
-     &        ersobs(i,j,bi,bj)
+     &        ersob(i,j,bi,bj)
            anom_psMslaobs_NUM(i,j,bi,bj)=
      &        anom_psMslaobs_NUM(i,j,bi,bj)+1. _d 0
            if ( (2*jrec.EQ.ndaysave).OR.(2*jrec+1.EQ.ndaysave) )
      &        anom_psMslaobs_MSK(i,j,bi,bj)  = 1. _d 0
       endif
-#endif
-#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-      if ( gfomask(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj)
+      if ( gfoma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj)
      &  .NE.0. ) then
            anom_psMslaobs(i,j,bi,bj)= anom_psMslaobs(i,j,bi,bj)+
-     &        psbar(i,j,bi,bj)-gfoobs(i,j,bi,bj)
+     &        etabar(i,j,bi,bj)-gfoob(i,j,bi,bj)
      &        -mean_psMslaobs(i,j,bi,bj)
            anom_slaobs(i,j,bi,bj)= anom_slaobs(i,j,bi,bj)+
-     &        gfoobs(i,j,bi,bj)
+     &        gfoob(i,j,bi,bj)
            anom_psMslaobs_NUM(i,j,bi,bj)=
      &        anom_psMslaobs_NUM(i,j,bi,bj)+1. _d 0
            if ( (2*jrec.EQ.ndaysave).OR.(2*jrec+1.EQ.ndaysave) )
      &        anom_psMslaobs_MSK(i,j,bi,bj)  = 1. _d 0
       endif
-#endif
           enddo
          enddo
         enddo
@@ -971,9 +1037,6 @@ c ------------------------------------
         do bi = itlo,ithi
          do j = jmin,jmax
           do i = imin,imax
-# if (defined (ALLOW_SSH_GFOANOM_COST_CONTRIBUTION) || \
-      defined (ALLOW_SSH_TPANOM_COST_CONTRIBUTION) || \
-      defined (ALLOW_SSH_ERSANOM_COST_CONTRIBUTION))
           if ( (gencost_weight(i,j,bi,bj,igen_lsc).GT.0.).AND.
      &         (anom_psMslaobs_MSK(i,j,bi,bj).GT.0.) ) then
             junk = anom_psMslaobs(i,j,bi,bj)
@@ -990,7 +1053,6 @@ c ------------------------------------
      &         (anom_psMslaobs_MSK(i,j,bi,bj).GT.0.) )
      &         num_gencost(bi,bj,igen_lsc) =
      &         num_gencost(bi,bj,igen_lsc) + 1. _d 0
-#endif
            enddo
          enddo
         enddo
@@ -1027,24 +1089,30 @@ cgf =======================================================
 c time associated with this ndaysrec mean
         krec = irec + (ndaysave/2)
 
-        call active_read_xy( fname, psbar, krec, doglobalread,
-     &                       ladinit, optimcycle, mythid,
-     &                       xx_psbar_mean_dummy )
+        call active_read_xy( fname, etabar, krec, doglobalread,
+     &                       ladinit, eccoiter, mythid,
+     &                       gencost_dummy(igen_etabar) )
 
 #ifndef ALLOW_PSBAR_MEAN
-        CALL REMOVE_MEAN_RL( 1, psbar, maskInC, maskInC, rA, drF,
-     &        'psbar', myTime, myThid )
+        CALL REMOVE_MEAN_RL( 1, etabar, maskInC, maskInC, rA, drF,
+     &        'etabar', 0. _d 0, myThid )
 #endif
 
-#ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-        call cost_readtopex( krec, mythid )
-#endif
-#ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-        call cost_readers( krec, mythid )
-#endif
-#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-        call cost_readgfo( krec, mythid )
-#endif
+        if (using_tpj)
+     &  call cost_sla_read( tpfi, tpsta, tpper,
+     &                zeroRL, zeroRL,
+     &                tpob, tpma,
+     &                krec, mythid )
+        if (using_ers)
+     &  call cost_sla_read( ersfi, erssta, ersper,
+     &                zeroRL, zeroRL,
+     &                ersob, ersma,
+     &                krec, mythid )
+        if (using_gfo)
+     &  call cost_sla_read( gfofi, gfosta, gfoper,
+     &                zeroRL, zeroRL,
+     &                gfoob, gfoma,
+     &                krec, mythid )
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1065,39 +1133,33 @@ c time associated with this ndaysrec mean
         do bi = itlo,ithi
          do j = jmin,jmax
           do i = imin,imax
-#ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-      if ( tpmask(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj).NE.0. )
+      if ( tpma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj).NE.0. )
      & then
          anom_psMtpobs(i,j,bi,bj)=
-     &       psbar(i,j,bi,bj) - tpobs(i,j,bi,bj)
+     &       etabar(i,j,bi,bj) - tpob(i,j,bi,bj)
      &       - mean_psMslaobs(i,j,bi,bj) - slaoffset
      &       - anom_psMslaobs(i,j,bi,bj)
-         anom_tpobs(i,j,bi,bj)=tpobs(i,j,bi,bj) - slaoffset
+         anom_tpobs(i,j,bi,bj)=tpob(i,j,bi,bj) - slaoffset
      &       - anom_slaobs(i,j,bi,bj)
       endif
-#endif
-#ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-      if ( ersmask(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj).NE.0. )
+      if ( ersma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj).NE.0. )
      & then
          anom_psMersobs(i,j,bi,bj)=
-     &       psbar(i,j,bi,bj) - ersobs(i,j,bi,bj)
+     &       etabar(i,j,bi,bj) - ersob(i,j,bi,bj)
      &       - mean_psMslaobs(i,j,bi,bj) - slaoffset
      &       - anom_psMslaobs(i,j,bi,bj)
-         anom_ersobs(i,j,bi,bj)=ersobs(i,j,bi,bj) - slaoffset
+         anom_ersobs(i,j,bi,bj)=ersob(i,j,bi,bj) - slaoffset
      &       - anom_slaobs(i,j,bi,bj)
       endif
-#endif
-#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-      if ( gfomask(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj).NE.0. )
+      if ( gfoma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj).NE.0. )
      & then
          anom_psMgfoobs(i,j,bi,bj)=
-     &       psbar(i,j,bi,bj) - gfoobs(i,j,bi,bj)
+     &       etabar(i,j,bi,bj) - gfoob(i,j,bi,bj)
      &       - mean_psMslaobs(i,j,bi,bj) - slaoffset
      &       - anom_psMslaobs(i,j,bi,bj)
-         anom_gfoobs(i,j,bi,bj)=gfoobs(i,j,bi,bj) - slaoffset
+         anom_gfoobs(i,j,bi,bj)=gfoob(i,j,bi,bj) - slaoffset
      &       - anom_slaobs(i,j,bi,bj)
       endif
-#endif
           enddo
          enddo
         enddo
@@ -1129,45 +1191,36 @@ c time associated with this ndaysrec mean
         do bi = itlo,ithi
          do j = jmin,jmax
           do i = imin,imax
-#ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
 c--             The array psobs contains SSH anomalies.
                 junkweight = mean_psMslaobs_MSK(i,j,bi,bj)
      &                      *gencost_weight(i,j,bi,bj,igen_tp)
-     &                      *tpmask(i,j,bi,bj)
-     &                      *cosphi(i,j,bi,bj)
+     &                      *tpma(i,j,bi,bj)
                 junk = anom_psMtpobs(i,j,bi,bj)
                 objf_gencost(bi,bj,igen_tp) =
      &              objf_gencost(bi,bj,igen_tp)+junk*junk*junkweight
                 if ( junkweight .ne. 0. )
      &              num_gencost(bi,bj,igen_tp) =
      &              num_gencost(bi,bj,igen_tp) + 1. _d 0
-#endif
-#ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
 c--             The array ersobs contains SSH anomalies.
                 junkweight = mean_psMslaobs_MSK(i,j,bi,bj)
      &                      *gencost_weight(i,j,bi,bj,igen_ers)
-     &                      *ersmask(i,j,bi,bj)
-     &                      *cosphi(i,j,bi,bj)
+     &                      *ersma(i,j,bi,bj)
                 junk = anom_psMersobs(i,j,bi,bj)
                 objf_gencost(bi,bj,igen_ers) =
      &               objf_gencost(bi,bj,igen_ers)+junk*junk*junkweight
                 if ( junkweight .ne. 0. )
      &              num_gencost(bi,bj,igen_ers) =
      &              num_gencost(bi,bj,igen_ers) + 1. _d 0
-#endif
-#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
 c--             The array gfoobs contains SSH anomalies.
                 junkweight = mean_psMslaobs_MSK(i,j,bi,bj)
      &                      *gencost_weight(i,j,bi,bj,igen_gfo)
-     &                      *gfomask(i,j,bi,bj)
-     &                      *cosphi(i,j,bi,bj)
+     &                      *gfoma(i,j,bi,bj)
                 junk = anom_psMgfoobs(i,j,bi,bj)
                 objf_gencost(bi,bj,igen_gfo) =
      &              objf_gencost(bi,bj,igen_gfo)+junk*junk*junkweight
                 if ( junkweight .ne. 0. )
      &              num_gencost(bi,bj,igen_gfo) =
      &              num_gencost(bi,bj,igen_gfo) + 1. _d 0
-#endif
            enddo
          enddo
         enddo
@@ -1175,8 +1228,6 @@ c--             The array gfoobs contains SSH anomalies.
 
       enddo
 
-
 #endif /* ifdef ALLOW_GENCOST_CONTRIBUTION */
-#endif /* ifdef ALLOW_SSH_COST_CONTRIBUTION */
 
       end

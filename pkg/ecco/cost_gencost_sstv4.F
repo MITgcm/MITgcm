@@ -1,12 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.10 2014/04/01 08:03:42 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.11 2014/09/29 16:46:43 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
 
 
       subroutine cost_gencost_sstv4(
-     I                     myiter,
-     I                     mytime,
      I                     mythid
      &                   )
 
@@ -31,25 +29,20 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-
-#include "ecco_cost.h"
-#include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
-#include "optim.h"
-#include "DYNVARS.h"
-#include "cal.h"
+#ifdef ALLOW_CAL
+# include "cal.h"
+#endif
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
 #ifdef ALLOW_SMOOTH
-#include "SMOOTH.h"
+# include "SMOOTH.h"
 #endif
 
 c     == routine arguments ==
 
-      integer myiter
-      _RL     mytime
       integer mythid
 
-#ifdef ALLOW_DAILYSST_COST_CONTRIBUTION
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 c     == local variables ==
@@ -62,11 +55,12 @@ c     == local variables ==
       integer imin,imax
       integer irec,jrec,krec
       integer ilps
-      integer gwunit
 
       logical doglobalread
       logical ladinit
 
+      _RL mydummy
+      _RL mybar(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL anom_sst(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL obs_sst (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL nb_sst (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -74,7 +68,6 @@ c     == local variables ==
       _RL tmp_sst (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL spval
 
-      integer num_var
 
       _RL junk,junkweight
 
@@ -101,9 +94,8 @@ c     == local variables ==
       integer locstartdate(4)
       integer yday, ymod
       integer md, dd, sd, ld, wd
-      integer mody, modm
 
-      integer igen_amsre, igen_amsre_lsc
+      integer kgen, kgen_lsc
 
 c     == external functions ==
 
@@ -125,27 +117,31 @@ c     == end of interface ==
       ioUnit=standardMessageUnit
 #endif
 
-      call cal_FullDate(19920101,0,locstartdate,mythid)
-
 c-- detect the relevant gencost indices
-      igen_amsre=0
-      igen_amsre_lsc=0
+      kgen=0
+      kgen_lsc=0
       do k=1,NGENCOST
-        if (gencost_name(k).EQ.'sstv4-amsre') igen_amsre=k
-        if (gencost_name(k).EQ.'sstv4-amsre-lsc') igen_amsre_lsc=k
+        if (gencost_name(k).EQ.'sstv4-amsre') kgen=k
+        if (gencost_name(k).EQ.'sstv4-amsre-lsc') kgen_lsc=k
       enddo
+
+      if (kgen.NE.0) then
+c ------ 
+
+      call cal_FullDate(19920101,0,locstartdate,mythid)
 
 c--   First, read tiled data.
       doglobalread = .false.
       ladinit      = .false.
 
       write(fname(1:80),'(80a)') ' '
-      ilps=ilnblnk( sstbarfile )
+      ilps=ilnblnk( gencost_barfile(kgen) )
       write(fname(1:80),'(2a,i10.10)')
-     &     sstbarfile(1:ilps),'.',optimcycle
+     &     gencost_barfile(kgen)(1:ilps),'.',eccoiter
 
-      spval = -9990.
-
+      spval = gencost_spmin(kgen)
+      mydummy = gencost_dummy(kgen)
+ 
 cgf =======================================================
 cgf PART 1: compute smooth SST cost term
 cgf =======================================================
@@ -177,9 +173,9 @@ c ------------------------------------------------------
            krec=irec+jrec-1
 
 c get modeled sst:
-             call active_read_xy( fname, sstbar, krec, doglobalread,
-     &                       ladinit, optimcycle, mythid,
-     &                       xx_sstbar_mean_dummy )
+             call active_read_xy( fname, mybar, krec, doglobalread,
+     &                       ladinit, eccoiter, mythid,
+     &                       mydummy )
 
 c get observed sst:
              daytime = FLOAT(secondsperday*(krec-1)) + modelstart
@@ -200,9 +196,9 @@ c get observed sst:
 c             localrec = floor(diffsecs/86400.) + 1
              localrec = int(diffsecs/86400.) + 1
 
-             il=ilnblnk(gencost_datafile(igen_amsre))
+             il=ilnblnk(gencost_datafile(kgen))
              write(fname2(1:80),'(2a,i4)')
-     &         gencost_datafile(igen_amsre)(1:il), '_', yday
+     &         gencost_datafile(kgen)(1:il), '_', yday
              inquire( file=fname2, exist=exst )
 
 #ifdef ALLOW_ECCO_DEBUG
@@ -238,7 +234,7 @@ c accumulate obs and misfit:
                  if ( (tmp_sst(i,j,bi,bj).GT.spval).AND.
      &                (maskc(i,j,1,bi,bj).EQ.1.) ) then
                   anom_sst(i,j,bi,bj)= anom_sst(i,j,bi,bj)+
-     &               sstbar(i,j,bi,bj)-tmp_sst(i,j,bi,bj)
+     &               mybar(i,j,bi,bj)-tmp_sst(i,j,bi,bj)
                   obs_sst(i,j,bi,bj)= obs_sst(i,j,bi,bj)+
      &               tmp_sst(i,j,bi,bj)
                   nb_sst(i,j,bi,bj)=nb_sst(i,j,bi,bj)+1. _d 0
@@ -282,13 +278,13 @@ c ----------------------------------------
 #endif
 
          call smooth_hetero2d(anom_sst,maskc,
-     &     gencost_scalefile(igen_amsre_lsc),
-     &     gencost_smooth2Ddiffnbt(igen_amsre_lsc),mythid)
+     &     gencost_scalefile(kgen_lsc),
+     &     gencost_smooth2Ddiffnbt(kgen_lsc),mythid)
 
 #ifdef ALLOW_GENCOST_SSTV4_OUTPUT
          call smooth_hetero2d(obs_sst,maskc,
-     &     gencost_scalefile(igen_amsre_lsc),
-     &     gencost_smooth2Ddiffnbt(igen_amsre_lsc),mythid)
+     &     gencost_scalefile(kgen_lsc),
+     &     gencost_smooth2Ddiffnbt(kgen_lsc),mythid)
 
          write(fname2(1:80),'(1a)') 'sstdiff_smooth'
          call mdswritefield(fname2,32,.false.,'RL',
@@ -307,14 +303,14 @@ c ------------------------------------
            do j = jmin,jmax
             do i = imin,imax
              junk = anom_sst(i,j,bi,bj)
-             junkweight = gencost_weight(i,j,bi,bj,igen_amsre_lsc)*
+             junkweight = gencost_weight(i,j,bi,bj,kgen_lsc)*
      &          maskc(i,j,1,bi,bj)
-             objf_gencost(igen_amsre_lsc,bi,bj) =
-     &          objf_gencost(igen_amsre_lsc,bi,bj)
+             objf_gencost(kgen_lsc,bi,bj) =
+     &          objf_gencost(kgen_lsc,bi,bj)
      &            +junk*junk*junkweight/ndaysaveRL
              if ( (junkweight.GT.0.).AND.(nb_sst(i,j,bi,bj).GT.0.) )
-     &          num_gencost(igen_amsre_lsc,bi,bj) =
-     &          num_gencost(igen_amsre_lsc,bi,bj) + 1. _d 0 /ndaysaveRL
+     &          num_gencost(kgen_lsc,bi,bj) =
+     &          num_gencost(kgen_lsc,bi,bj) + 1. _d 0 /ndaysaveRL
             enddo
            enddo
           enddo
@@ -329,9 +325,9 @@ cgf =======================================================
       do irec = 1, ndaysrec
 
 c get modeled sst:
-        call active_read_xy( fname, sstbar, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid,
-     &                       xx_sstbar_mean_dummy )
+        call active_read_xy( fname, mybar, irec, doglobalread,
+     &                       ladinit, eccoiter, mythid,
+     &                       mydummy )
 
 c get observed sst:
              daytime = FLOAT(secondsperday*(irec-1)) + modelstart
@@ -352,9 +348,9 @@ c get observed sst:
 c             localrec = floor(diffsecs/86400.) + 1
              localrec = int(diffsecs/86400.) + 1
 
-             il=ilnblnk(gencost_datafile(igen_amsre))
+             il=ilnblnk(gencost_datafile(kgen))
              write(fname2(1:80),'(2a,i4)')
-     &         gencost_datafile(igen_amsre)(1:il), '_', yday
+     &         gencost_datafile(kgen)(1:il), '_', yday
              inquire( file=fname2, exist=exst )
 
 #ifdef ALLOW_ECCO_DEBUG
@@ -390,7 +386,7 @@ c compute misfit:
              if ( (tmp_sst(i,j,bi,bj).GT.spval).AND.
      &            (maskc(i,j,1,bi,bj).EQ.1.) ) then
               anom_sst(i,j,bi,bj) =
-     &               sstbar(i,j,bi,bj)-tmp_sst(i,j,bi,bj)
+     &               mybar(i,j,bi,bj)-tmp_sst(i,j,bi,bj)
               msk_sst(i,j,bi,bj) = 1. _d 0
              else
               anom_sst(i,j,bi,bj) = 0. _d 0
@@ -414,13 +410,13 @@ c compute cost:
            do j = jmin,jmax
             do i = imin,imax
              junk = anom_sst(i,j,bi,bj)
-             junkweight = gencost_weight(i,j,bi,bj,igen_amsre)*
+             junkweight = gencost_weight(i,j,bi,bj,kgen)*
      &          maskc(i,j,1,bi,bj)*msk_sst(i,j,bi,bj)
-             objf_gencost(igen_amsre,bi,bj) =
-     &          objf_gencost(igen_amsre,bi,bj)+junk*junk*junkweight
+             objf_gencost(kgen,bi,bj) =
+     &          objf_gencost(kgen,bi,bj)+junk*junk*junkweight
              if (junkweight.GT.0.)
-     &          num_gencost(igen_amsre,bi,bj) =
-     &          num_gencost(igen_amsre,bi,bj) + 1. _d 0
+     &          num_gencost(kgen,bi,bj) =
+     &          num_gencost(kgen,bi,bj) + 1. _d 0
             enddo
            enddo
           enddo
@@ -428,8 +424,10 @@ c compute cost:
 
       enddo
 
+c ------
+      endif !if (kgen.NE.0) then
+
 #endif /* ifdef ALLOW_GENCOST_CONTRIBUTION */
 #endif /* ifdef ALLOW_SMOOTH */
-#endif /* ifdef ALLOW_DAILYSST_COST_CONTRIBUTION */
 
       end

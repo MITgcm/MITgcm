@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.7 2014/04/04 21:33:07 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.8 2014/09/29 16:46:43 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -22,12 +22,15 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-
-#include "optim.h"
-#include "ecco_cost.h"
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
 #ifdef ALLOW_SEAICE
 #  include "SEAICE_SIZE.h"
 #  include "SEAICE.h"
+#endif
+#ifdef ALLOW_EXF
+# include "EXF_FIELDS.h"
 #endif
 
 c     == routine arguments ==
@@ -55,34 +58,49 @@ c     == end of interface ==
       imin = 1
       imax = snx
 
+      do k=1,NGENCOST
       do bj = jtlo,jthi
        do bi = itlo,ithi
         do j = jmin,jmax
          do i =  imin,imax
-c #1:
-c          gencost_modfld(i,j,bi,bj,1) = qnet(i,j,bi,bj)
-c #2:
-          gencost_modfld(i,j,bi,bj,1) = empmr(i,j,bi,bj)
-c #3:
-c          gencost_modfld(i,j,bi,bj,3) = fu(i,j,bi,bj)
-c #4:
-c          gencost_modfld(i,j,bi,bj,4) = fv(i,j,bi,bj)
-c
 
-#ifdef ALLOW_GENCOST_SEAICEV4
-      do k=1,NGENCOST
-       if (gencost_name(k).EQ.'siv4-conc') gencost_modfld(i,j,bi,bj,k)
-     &        = area(i,j,bi,bj)*maskC(i,j,1,bi,bj) 
-       if (gencost_name(k).EQ.'siv4-deconc') gencost_modfld(i,j,bi,bj,k)
-     &        = theta(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
-       if (gencost_name(k).EQ.'siv4-exconc') gencost_modfld(i,j,bi,bj,k)  
-     &        = heff(i,j,bi,bj)*maskC(i,j,1,bi,bj)
-      enddo
+         if (gencost_barfile(k)(1:3).EQ.'eta') then
+           gencost_modfld(i,j,bi,bj,k) = 
+     &      etanFull(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+         elseif (gencost_barfile(k)(1:3).EQ.'sst') then
+           gencost_modfld(i,j,bi,bj,k) = 
+     &      THETA(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
+         elseif (gencost_barfile(k)(1:3).EQ.'sss') then
+           gencost_modfld(i,j,bi,bj,k) = 
+     &      SALT(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
+         elseif (gencost_barfile(k)(1:2).EQ.'bp') then
+           gencost_modfld(i,j,bi,bj,k) = 
+     &      phiHydLow(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+#ifdef ALLOW_EXF
+         elseif (gencost_barfile(k)(1:4).EQ.'taux') then
+           gencost_modfld(i,j,bi,bj,k) = 
+     &      ustress(i,j,bi,bj)*maskW(i,j,1,bi,bj)
+         elseif (gencost_barfile(k)(1:4).EQ.'tauy') then
+           gencost_modfld(i,j,bi,bj,k) = 
+     &      vstress(i,j,bi,bj)*maskS(i,j,1,bi,bj)
 #endif
+#ifdef ALLOW_SEAICE
+         elseif (gencost_name(k).EQ.'siv4-conc') then
+           gencost_modfld(i,j,bi,bj,k) = 
+     &      area(i,j,bi,bj)*maskC(i,j,1,bi,bj) 
+         elseif (gencost_name(k).EQ.'siv4-deconc') then
+           gencost_modfld(i,j,bi,bj,k) = 
+     &      theta(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
+         elseif (gencost_name(k).EQ.'siv4-exconc') then  
+           gencost_modfld(i,j,bi,bj,k) = 
+     &      heff(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+#endif
+       endif
 
          enddo
         enddo
        enddo
+      enddo
       enddo
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
