@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.65 2014/08/15 09:27:03 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.66 2014/09/29 16:45:45 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -14,33 +14,7 @@ c     ==================================================================
 c     HEADER AVERAGES
 c     ==================================================================
 
-c     Averaging counters:
-c     ===================
-c
-c     sum1day - counter for the daily averaging
-c     sum1mon - counter for the monthly averaging
-c     dayrec  - number of averaged surface pressure records.
-c     monrec  - number of averaged theta and salinity records.
-
-      common /average_i/
-     &                   sum1day,sum1mon,sum1year,
-     &                   dayrec,monrec,yearrec
-      integer sum1day
-      integer sum1mon
-      integer sum1year
-      integer dayrec
-      integer monrec
-      integer yearrec
-
-c     Number of sshv4cost Cost terms:
-c     =============================
-      INTEGER NSSHV4COST
-      PARAMETER ( NSSHV4COST=5 )
-
-c     Number of User Cost terms:
-c     =============================
-      INTEGER NUSERCOST
-      PARAMETER ( NUSERCOST=10 )
+#include "ecco.h"
 
 c     Number of days: (hard-coded to set up some vector dimensions
 c     =============================
@@ -48,76 +22,24 @@ c     22 years: 8050
       INTEGER maxNumDays
       PARAMETER ( maxNumDays = 8050 )
 
-c     Number of Generic Cost terms:
+c     Number of levels
+c     ================
+      common /ecco_cost_i/
+     &                nnztbar,
+     &                nnzsbar
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+     &               ,nnzsigmaRbar
+#endif
+      integer nnztbar
+      integer nnzsbar
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+      integer nnzsigmaRbar
+#endif
+
+c     Number of sshv4cost Cost terms:
 c     =============================
-      INTEGER NGENCOST
-      PARAMETER ( NGENCOST=20 )
-
-#ifdef ALLOW_GENCOST_CONTRIBUTION
-c     objf_gencost - gencost user defined contribution
-      common /ecco_gencost_ctrl/
-     &       xx_genbar_dummy
-      _RL  xx_genbar_dummy(NGENCOST)
-
-      common /ecco_gencost_r_1/
-     &       objf_gencost, num_gencost, mult_gencost,
-     &       gencost_barfld, gencost_modfld, gencost_weight,
-     &       gencost_spmin, gencost_spmax, gencost_spzero
-      _RL  objf_gencost(nsx,nsy,NGENCOST)
-      _RL  num_gencost(nsx,nsy,NGENCOST)
-      _RL  mult_gencost(NGENCOST)
-      _RL  gencost_spmin(NGENCOST)
-      _RL  gencost_spmax(NGENCOST)
-      _RL  gencost_spzero(NGENCOST)
-      _RL  gencost_barfld(1-olx:snx+olx,1-oly:sny+oly,
-     &       nsx,nsy,NGENCOST)
-      _RL  gencost_modfld(1-olx:snx+olx,1-oly:sny+oly,
-     &       nsx,nsy,NGENCOST)
-      _RL  gencost_weight(1-olx:snx+olx,1-oly:sny+oly,
-     &       nsx,nsy,NGENCOST)
-
-      common /ecco_gencost_r_2/
-     &       gencost_period
-      _RL     gencost_period(NGENCOST)
-
-      common /ecco_gencost_i_1/
-     &       gencost_nrec, gencost_flag
-#ifdef ALLOW_SMOOTH
-     &       , gencost_smooth2Ddiffnbt
-#endif /* ALLOW_SMOOTH */
-      integer gencost_nrec(NGENCOST)
-      integer gencost_flag(NGENCOST)
-#ifdef ALLOW_SMOOTH
-      integer  gencost_smooth2Ddiffnbt(NGENCOST)
-#endif /* ALLOW_SMOOTH */
-
-      common /ecco_gencost_l_1/
-#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
-     &       gencost_timevaryweight,
-#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
-     &       using_gencost
-      LOGICAL using_gencost(NGENCOST)
-#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
-      LOGICAL gencost_timevaryweight(NGENCOST)
-#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
-
-      common /ecco_gencost_c/
-     &       gencost_name,
-     &       gencost_scalefile,
-     &       gencost_errfile,
-     &       gencost_datafile,
-     &       gencost_barfile,
-     &       gencost_avgperiod,
-     &       gencost_mask
-      character*(MAX_LEN_FNAM) gencost_name(NGENCOST)
-      character*(MAX_LEN_FNAM) gencost_scalefile(NGENCOST)
-      character*(MAX_LEN_FNAM) gencost_errfile(NGENCOST)
-      character*(MAX_LEN_FNAM) gencost_datafile(NGENCOST)
-      character*(MAX_LEN_FNAM) gencost_barfile(NGENCOST)
-      character*(5)            gencost_avgperiod(NGENCOST)
-      character*(1)            gencost_mask(NGENCOST)
-
-#endif /* ALLOW_GENCOST_CONTRIBUTION */
+      INTEGER NSSHV4COST
+      PARAMETER ( NSSHV4COST=5 )
 
 c     Averaged Fields:
 c     ================
@@ -181,13 +103,7 @@ c             intantaneous field.
 #ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
      &                    sigmaRbar_gen,
 #endif
-     &                    VOLsumGlob_0,
-     &                    VOLsumGlob,
-     &                    RHOsumGlob_0,
-     &                    RHOsumGlob,
      &                    wfmean
-
-      _RL VOLsumGlob_0, VOLsumGlob, RHOsumGlob_0, RHOsumGlob
 
 #ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
       _RL sigmaRfield    (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -358,15 +274,6 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
       _RL transpobs(maxNumDays)
       _RL wtransp(maxNumDays)
 #endif
-
-c     file precision and field type
-
-      common /prec_type_cost/
-     &                        cost_iprec,
-     &                        cost_yftype
-
-      integer cost_iprec
-      character*(2) cost_yftype
 
 c     ==================================================================
 c     END OF HEADER AVERAGES
@@ -925,35 +832,6 @@ c                  function contributions.
       _RL  mult_smooth_ic
       _RL  mult_smooth_bc
       _RL  mult_transp
-
-c     Record counters relevant for the cost function evaluation.
-c     ==========================================================
-c
-c     nyearsrec - number of yearly records that will be generated by
-c                 the current model integration.
-c     nmonsrec  - number of monthly records that will be generated by
-c                 the current model integration.
-c     ndaysrec  - number of  daily  records that will be generated by
-c                 the current model integration.
-
-      common /ecco_cost_i/
-     &                nyearsrec,
-     &                nmonsrec,
-     &                ndaysrec,
-     &                nnztbar,
-     &                nnzsbar
-#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-     &               ,nnzsigmaRbar
-#endif
-      integer nyearsrec
-      integer nmonsrec
-      integer ndaysrec
-      integer nnztbar
-      integer nnzsbar
-#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-      integer nnzsigmaRbar
-#endif
-
 
 c     Data files for the weights used in the cost function:
 c     =====================================================
@@ -1521,30 +1399,6 @@ c     driftfile     - reference data file for drifter mean velocities
       character*(MAX_LEN_FNAM) vdriftfile
       character*(MAX_LEN_FNAM) curmtrufile
       character*(MAX_LEN_FNAM) curmtrvfile
-
-
-c     Flags used in the model-data comparison:
-c     ========================================
-c
-c     using_ers - flag that indicates the use of ERS data
-
-      common /ecco_cost_data_flags/
-     &                         using_topex,
-     &                         using_ers,
-     &                         using_gfo,
-     &                         using_cost_altim,
-     &                         using_cost_bp,
-     &                         using_cost_sst,
-     &                         using_cost_scat,
-     &                         using_cost_seaice
-      logical using_topex
-      logical using_ers
-      logical using_gfo
-      logical using_cost_altim
-      logical using_cost_bp
-      logical using_cost_sst
-      logical using_cost_scat
-      logical using_cost_seaice
 
 c     Calendar information for the observations:
 c     ==========================================

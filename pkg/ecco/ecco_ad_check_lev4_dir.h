@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_ad_check_lev4_dir.h,v 1.4 2014/08/15 09:27:03 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_ad_check_lev4_dir.h,v 1.5 2014/09/29 16:45:45 gforget Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
@@ -44,7 +44,7 @@ cccCADJ STORE xx_sssbar_mean_dummy  = dummytape, key=1, kind=isbyte
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 CADJ STORE gencost_barfld  = tapelev4, key=ilev_4
-CADJ STORE xx_genbar_dummy = dummytape, key=1, kind=isbyte
+CADJ STORE gencost_dummy = dummytape, key=1, kind=isbyte
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
 #endif /* ALLOW_ECCO */
