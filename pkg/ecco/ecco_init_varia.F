@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_init_varia.F,v 1.1 2014/09/14 15:20:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_init_varia.F,v 1.2 2014/09/29 16:47:50 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -39,6 +39,10 @@ c     == external functions ==
 
 c     == end of interface ==
 
+#ifdef ALLOW_PSBAR_STERIC
+      RHOsumGlob_0=0. _d 0
+      VOLsumGlob_0=0. _d 0
+#endif
 
       CALL ECCO_PHYS( myThid )
 

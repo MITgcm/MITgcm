@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.10 2014/09/18 18:08:29 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.11 2014/09/29 16:47:50 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -22,7 +22,9 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ecco_cost.h"
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
 
 c     == routine arguments ==
       integer myThid

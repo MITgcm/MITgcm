@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesgeneric.F,v 1.7 2012/08/10 19:45:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesgeneric.F,v 1.8 2014/09/29 16:47:49 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -27,12 +27,8 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 
-#include "ecco_cost.h"
-#ifdef ALLOW_CTRL
-# include "optim.h"
-# include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
+#ifdef ALLOW_ECCO
+# include "ecco.h"
 #endif
 
 c     == routine arguments ==
@@ -66,6 +62,9 @@ c     == local variables ==
       integer il
 
       character*(128) fname
+#ifdef ALLOW_ECCO_DEBUG
+      character*(max_len_mbuf) msgbuf
+#endif
 
 c     == external functions ==
 
@@ -73,6 +72,34 @@ c     == external functions ==
       external ilnblnk
 
 c     == end of interface ==
+
+#ifdef ALLOW_ECCO_DEBUG
+       write(msgbuf,'(a)') '>> entering'
+        call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+
+       il=ilnblnk( localbarfile )
+       write(msgbuf,'(a,a)')
+     & 'cost_averagesgeneric, file : ',localbarfile(1:il)
+       call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+
+       write(msgbuf,'(a,5L5)')
+     & 'cost_averagesgeneric, logicals : ',
+     &  first, last, startofloc, endofloc, inloc
+       call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+
+       write(msgbuf,'(a,3i5)')
+     & 'cost_averagesgeneric, integers : ',
+     &  sum1loc, locrec, nnz
+       call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+
+       write(msgbuf,'(a)') '<< leaving'
+        call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -117,12 +144,12 @@ c--     Save ...bar on file.
         write(fname(1:128),'(80a)') ' '
         il=ilnblnk( localbarfile )
         write(fname,'(2a,i10.10)')
-     &       localbarfile(1:il), '.', optimcycle
+     &       localbarfile(1:il), '.', eccoiter
         if ( nnz .EQ. 1 ) then
-           call active_write_xy( fname, localbar, locrec, optimcycle,
+           call active_write_xy( fname, localbar, locrec, eccoiter,
      &          mythid, xx_localbar_mean_dummy )
         else
-           call active_write_xyz( fname, localbar, locrec, optimcycle,
+           call active_write_xyz( fname, localbar, locrec, eccoiter,
      &          mythid, xx_localbar_mean_dummy )
         endif
       else if (       (       inloc        ) .and.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bp.F,v 1.7 2012/09/04 15:04:51 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bp.F,v 1.8 2014/09/29 16:47:49 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -126,7 +126,8 @@ c--     Compute the mean over all bpdat records.
      &                       ladinit, optimcycle, mythid,
      &                       xx_bpbar_mean_dummy )
 
-        call cost_bp_read( irec, mythid )
+        call cost_bp_read( bpdatfile, bpstartdate,
+     &                     bpdat, bpmask, irec, mythid )
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -173,7 +174,8 @@ c--   Loop over records for the second time.
      &                       ladinit, optimcycle, mythid,
      &                       xx_bpbar_mean_dummy )
 
-        call cost_bp_read( irec, mythid )
+        call cost_bp_read( bpdatfile, bpstartdate,
+     &                     bpdat, bpmask, irec, mythid )
 
 c--    Compute field of anomalies
         do bj = jtlo,jthi

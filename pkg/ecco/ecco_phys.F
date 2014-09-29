@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.1 2013/03/26 22:09:52 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.2 2014/09/29 16:47:50 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -23,14 +23,9 @@ c     == global variables ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "GRID.h"
-#include "CG2D.h"
 
-#include "optim.h"
-#include "ecco_cost.h"
-#ifdef ALLOW_CTRL
-#include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
+#ifdef ALLOW_ECCO
+# include "ecco.h"
 #endif
 
 c     == routine arguments ==
@@ -47,15 +42,16 @@ c     == local variables ==
 #ifdef ALLOW_PSBAR_STERIC
       _RL RHOInSituLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL VOLsumTile(nSx,nSy),RHOsumTile(nSx,nSy)
+      _RL sterGloH
 #endif
-
-#ifdef ALLOW_PSBAR_STERIC
 
 c need to include halos for find_rho_2d
       iMin = 1-OLx
       iMax = sNx+OLx
       jMin = 1-OLy
       jMax = sNy+OLy
+
+#ifdef ALLOW_PSBAR_STERIC
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -93,8 +89,34 @@ c need to include halos for find_rho_2d
       CALL GLOBAL_SUM_TILE_RL( RHOsumTile, RHOsumGlob, myThid )
       RHOsumGlob=RHOsumGlob/VOLsumGlob
 
+      if (RHOsumGlob_0.GT.0. _d 0) then
+        sterGloH=VOLsumGlob_0/globalArea
+     &        *(1. _d 0 - RHOsumGlob/RHOsumGlob_0)
+      else
+        sterGloH=0. _d 0
+      endif
+
+c     WRITE(msgBuf,'(A,1PE21.14)') ' sterGloH= ', sterGloH
+c        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+c    &                       SQUEEZE_RIGHT, myThid )
+
 #endif
 
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+            do j = jmin,jmax
+              do i =  imin,imax
+                etanFull(i,j,bi,bj)=
+     &                 etan(i,j,bi,bj)
+     &                +sIceLoad(i,j,bi,bj)*recip_rhoConst
+#ifdef ALLOW_PSBAR_STERIC
+     &                +sterGloH
+#endif
+              enddo
+            enddo
+        enddo
+      enddo
 
       return
       end

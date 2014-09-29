@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.33 2014/04/07 18:08:50 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.34 2014/09/29 16:47:50 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -41,7 +41,12 @@ c     == global variables ==
 #ifdef ALLOW_CAL
 #include "cal.h"
 #endif
-#include "ecco_cost.h"
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "optim.h"
+#endif
 
 c     == routine arguments ==
 
@@ -74,6 +79,12 @@ c     == external functions ==
       external ilnblnk
 
 c     == end of interface ==
+
+#ifdef ALLOW_CTRL
+      eccoiter=optimcycle
+#else
+      eccoiter=0
+#endif
 
 #ifdef ALLOW_CAL
 
@@ -145,7 +156,9 @@ c--     ... ARGO data.
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       do k = 1, NGENCOST
-       if ( (using_gencost(k)).AND.( gencost_flag(k).GE.1 ) ) then
+
+       if ( (using_gencost(k)).AND.( (gencost_flag(k).GE.1).OR.
+     &         (gencost_avgperiod(k).NE.'     ') ) ) then
          if ( gencost_avgperiod(k) .EQ. 'day' .OR.
      &        gencost_avgperiod(k) .EQ. 'DAY' ) then
             gencost_nrec(k)   = ndaysrec
@@ -163,6 +176,25 @@ c--     ... ARGO data.
      &      'ecco_cost_init_fixed: gencost_avgperiod wrongly specified'
          endif
        endif
+
+       if (gencost_startdate1(k).GT.0) then
+         call cal_FullDate(
+     &     gencost_startdate1(k), gencost_startdate2(k),
+     &     gencost_startdate(1,k), mythid )
+       else
+         call cal_CopyDate(modelStartDate,
+     &     gencost_startdate(1,k),mythid)
+       endif
+
+       if (gencost_enddate1(k).GT.0) then
+         call cal_FullDate(
+     &     gencost_enddate1(k), gencost_enddate2(k),
+     &     gencost_enddate(1,k), mythid )
+       else
+         call cal_CopyDate(modelEndDate,
+     &     gencost_enddate(1,k),mythid)
+       endif
+
       enddo
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 

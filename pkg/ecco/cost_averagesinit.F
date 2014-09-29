@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.17 2014/08/15 09:27:03 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.18 2014/09/29 16:47:49 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -76,7 +76,7 @@ c--   Set the loop ranges.
                 gencost_modfld(i,j,bi,bj,k) = 0. _d 0
               enddo
             enddo
-            xx_genbar_dummy(k) = 0. _d 0
+            gencost_dummy(k) = 0. _d 0
           enddo
 #endif
 

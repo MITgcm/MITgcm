@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.16 2014/04/07 18:10:21 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.17 2014/09/29 16:47:50 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -21,10 +21,12 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#include "ecco_cost.h"
-#include "ctrl.h"
-#include "cal.h"
-#include "optim.h"
+#ifdef ALLOW_CAL
+# include "cal.h"
+#endif
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
+#endif
 #ifdef ALLOW_PROFILES
 #include "profiles.h"
 #endif
@@ -68,6 +70,9 @@ C     msgBuf      - Informational/error meesage buffer
       ENDIF
 #endif
 
+cgf next line is only for backward compatibility
+      IF ( (using_topex).AND.(.NOT.using_tpj) ) using_tpj=.TRUE.
+
       _END_MASTER(myThid)
 
 c check for missing data files
@@ -90,15 +95,18 @@ c check for missing data files
       CALL ECCO_CHECK_FILES( using_cost_scat,'scat',
      & scatydatfile, scatystartdate(1), myThid )
 #endif
+
+#ifdef ALLOW_OLD_ESTIM_CODES
+
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
-      IF ( using_topex ) CALL ECCO_CHECK_FILES( using_topex,
+      IF ( using_tpj ) CALL ECCO_CHECK_FILES( using_tpj,
      & 'altim', topexfile, topexstartdate(1), myThid )
       IF ( using_ers ) CALL ECCO_CHECK_FILES( using_ers,
      & 'altim', ersfile, ersstartdate(1), myThid )
       IF ( using_gfo ) CALL ECCO_CHECK_FILES( using_gfo,
      & 'altim', gfofile, gfostartdate(1), myThid )
 c
-      IF ( (.NOT.using_topex ).AND.(.NOT.using_ers)
+      IF ( (.NOT.using_tpj ).AND.(.NOT.using_ers)
      &     .AND.(.NOT.using_gfo) ) THEN
 c warn user as we override using_cost_altim
              WRITE(msgBuf,'(2A)')
@@ -115,13 +123,15 @@ c switch off cost function term
      & 'mdt', mdtdatfile, modelstartdate(1), myThid ) 
 #endif
 
+#endif /* ALLOW_OLD_ESTIM_CODES */
+
 c left for later : slightly different treatment would apply to profiles and gencost
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       do k=1,NGENCOST
          if ( gencost_datafile(k) .ne. ' ' ) then
            CALL ECCO_CHECK_FILES( using_gencost(k), 'gencost',
-     &       gencost_datafile(k), modelstartdate(1), myThid )
+     &       gencost_datafile(k), gencost_startdate1(k), myThid )
 #ifdef ALLOW_SEAICE_COST_CONTRIBUTION
          if (gencost_name(k).EQ.'siv4-conc') 
      &       using_cost_seaice=using_gencost(k)

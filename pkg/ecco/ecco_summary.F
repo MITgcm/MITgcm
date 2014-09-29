@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.13 2014/08/15 09:27:03 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.14 2014/09/29 16:47:50 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -29,6 +29,7 @@ c     ==================================================================
 c     == global variables ==
 
 #include "EEPARAMS.h"
+#include "SIZE.h"
 #include "ecco.h"
 
 #ifdef ALLOW_ECCO_OPTIMIZATION

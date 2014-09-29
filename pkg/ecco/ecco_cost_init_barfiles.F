@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.29 2014/08/15 09:27:03 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.30 2014/09/29 16:47:50 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -435,7 +435,7 @@ c--   Save gencost_barfile on file.
       do irec = 1,gencost_nrec(k)
 #ifdef ALLOW_ADJOINT_RUN
         call active_write_xy( adfname_gencostbar, tmpfld2d, irec,
-     &       optimcycle, mythid, xx_genbar_dummy(k) )
+     &       optimcycle, mythid, gencost_dummy(k) )
 #endif
       enddo
       endif

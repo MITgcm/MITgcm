@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.8 2014/04/08 18:52:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.9 2014/09/29 16:47:50 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -48,6 +48,8 @@ c     == external ==
       external ilnblnk
 
 c     == end of interface ==
+
+#ifdef ALLOW_OLD_ESTIM_CODES
 
       write(msgbuf,'(a)')
      &' '
@@ -251,7 +253,7 @@ c     == end of interface ==
 #endif /* ALLOW_SSH_MEAN_COST_CONTRIBUTION */
 
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-      if (using_topex) then
+      if (using_tpj) then
         il = ilnblnk(topexfile)
         write(msgbuf,'(a,a)')
      &  '  T/P data are read from:         ',topexfile(1:il)
@@ -312,6 +314,8 @@ c     == end of interface ==
      &                      SQUEEZE_RIGHT , mythid)
       endif
 #endif /* ALLOW_SSH_GFOANOM_COST_CONTRIBUTION */
+
+#endif /* ALLOW_OLD_ESTIM_CODES */
 
       return
       end

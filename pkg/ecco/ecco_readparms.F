@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.70 2014/06/27 14:23:19 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.71 2014/09/29 16:47:50 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -26,6 +26,9 @@ c     == global variables ==
 #include "PARAMS.h"
 
 #include "ecco_cost.h"
+#ifdef ALLOW_CAL
+# include "cal.h"
+#endif
 
 c     == routine arguments ==
 
@@ -65,7 +68,8 @@ c--   Read the namelist input.
      &                   using_cost_altim, 
      &                   using_cost_bp, using_cost_scat, 
      &                   using_cost_sst, using_cost_seaice,
-     &                   using_topex, using_ers, using_gfo,
+     &                   using_mdt, using_tpj, using_ers, using_gfo,
+     &                   using_topex,
      &                   topexstartdate1, topexstartdate2,
      &                   topexperiod, topexfile, tpTimeMaskFile,
      &                   topexintercept, topexslope, ersTimeMaskFile,
@@ -161,6 +165,10 @@ c--   Read the namelist input.
      &         gencost_spmax,
      &         gencost_spzero,
      &         gencost_avgperiod,
+     &         gencost_startdate1,
+     &         gencost_startdate2,
+     &         gencost_enddate1,
+     &         gencost_enddate2,
 #ifdef ALLOW_SMOOTH
      &         gencost_smooth2Ddiffnbt,
 #endif /* ALLOW_SMOOTH */
@@ -177,8 +185,10 @@ c--     Set default values.
 c run time switches for main cost terms
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
       using_cost_altim=.TRUE.
+      using_mdt       =.TRUE.
 #else
       using_cost_altim=.FALSE.
+      using_mdt       =.FALSE.
 #endif
 #ifdef ALLOW_SEAICE_COST_CONTRIBUTION
       using_cost_seaice=.TRUE.
@@ -219,9 +229,9 @@ c other run time parameters
         sfluxmeanbarfile      =    'sfluxmeanbar'
         costTranspDataFile    =    ' '
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-        using_topex           = .true.
+        using_tpj           = .true.
 #else
-        using_topex           = .false.
+        using_tpj           = .false.
 #endif
         topexstartdate1       =      0
         topexstartdate2       =      0
@@ -515,6 +525,10 @@ c--   Set default values.
          using_gencost(k)      = .FALSE.
          gencost_flag(k)       = 0
          gencost_avgperiod(k)  = '     '
+         gencost_startdate1(k) = 0
+         gencost_startdate2(k) = 0
+         gencost_enddate1(k) = 0
+         gencost_enddate2(k) = 0
          gencost_datafile(k)   = ' '
          gencost_name(k)       = 'gencost'
          gencost_scalefile(k)  = ' '
@@ -550,12 +564,12 @@ cgf     &        'genbar', k
      &        (gencost_name(k).EQ.'sshv4-lsc').OR.
      &        (gencost_name(k).EQ.'sshv4-gmsl').OR.
      &        (gencost_name(k).EQ.'boxmean').OR.
+     &        (gencost_name(k).EQ.'bpv4-grace').OR.
      &        (gencost_name(k).EQ.'sstv4-amsre').OR.
      &        (gencost_name(k).EQ.'sstv4-amsre-lsc') ) then
 c pre-specified generic cost terms using otherwise created barfiles
            gencost_flag(k)=-1
            using_gencost(k)=.TRUE.
-#ifdef ALLOW_GENCOST_SEAICEV4
          elseif ( 
      &        (gencost_name(k).EQ.'siv4-conc').OR.
      &        (gencost_name(k).EQ.'siv4-deconc').OR.
@@ -563,12 +577,18 @@ c pre-specified generic cost terms using otherwise created barfiles
 c pre-specified generic cost terms that create their own barfile
            gencost_flag(k)=2
            using_gencost(k)=.TRUE.
-#endif
          elseif ( gencost_datafile(k) .NE. ' ' ) then
 c fully interactive generic cost terms
            gencost_flag(k)=1
            using_gencost(k)=.TRUE.
          endif
+
+c altimetry switches
+        if (gencost_name(k).EQ.'sshv4-mdt') using_mdt=.TRUE.
+        if (gencost_name(k).EQ.'sshv4-tpj') using_tpj=.TRUE.
+        if (gencost_name(k).EQ.'sshv4-ers') using_ers=.TRUE.
+        if (gencost_name(k).EQ.'sshv4-gfo') using_gfo=.TRUE.
+
       enddo
 
 C--   Check parameters:

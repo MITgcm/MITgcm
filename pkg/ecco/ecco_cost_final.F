@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.69 2014/09/22 21:33:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.70 2014/09/29 16:47:50 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -26,7 +26,9 @@ c     == global variables ==
 #ifdef ALLOW_COST
 # include "cost.h"
 #endif
-#include "ecco_cost.h"
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
+#endif
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
 # include "optim.h"

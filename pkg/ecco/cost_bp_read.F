@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_bp_read.F,v 1.4 2012/08/10 19:45:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_bp_read.F,v 1.5 2014/09/29 16:47:49 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
 
 
       subroutine cost_bp_read(
-     I                               irec,
-     I                               mythid
-     &                             )
+     I localobsfile, localstartdate, 
+     O localobs, localmask,
+     I irec,myThid)
 
 c     ==================================================================
 c     SUBROUTINE cost_bp_read
@@ -30,15 +30,23 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "cal.h"
-#include "ecco_cost.h"
+#ifdef ALLOW_CAL
+# include "cal.h"
+#endif
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
+#endif
 
 c     == routine arguments ==
 
+      character*(MAX_LEN_FNAM) localobsfile
+      integer localstartdate(4)
+      _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       integer irec
       integer mythid
 
-#ifdef ALLOW_BP_COST_CONTRIBUTION
+#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -86,11 +94,11 @@ ce    --> there is certainly a better place for this.
       imax = snx
 
 
-       beginlocal = bpstartdate(1)/10000
+       beginlocal = localstartdate(1)/10000
        beginmodel = modelstartdate(1)/10000
        obsrec =  ( beginmodel - beginlocal )*nmonthyear
      &         + ( mod(modelstartdate(1)/100,100)
-     &            -mod(bpstartdate(1)/100,100) )
+     &            -mod(localstartdate(1)/100,100) )
      &         + irec
 
       mody = modelstartdate(1)/10000
@@ -98,24 +106,24 @@ ce    --> there is certainly a better place for this.
       iyear = mody + INT((modm-1+irec-1)/12)
       imonth = 1 + MOD(modm-1+irec-1,12)
 
-      il=ilnblnk(bpdatfile)
+      il=ilnblnk(localobsfile)
       write(fnametmp(1:80),'(2a,i4)')
-     &     bpdatfile(1:il), '_', iyear
+     &     localobsfile(1:il), '_', iyear
       inquire( file=fnametmp, exist=exst )
       if (.NOT. exst) then
-         write(fnametmp(1:80),'(a)') bpdatfile(1:il)
+         write(fnametmp(1:80),'(a)') localobsfile(1:il)
          imonth = obsrec
       endif
 
       if ( (obsrec.GT.0).AND.(imonth.GT.0) ) then
         call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1,
-     &                   bpdat, imonth, mythid )
+     &                   localobs, imonth, mythid )
       else
         do bj = jtlo,jthi
          do bi = itlo,ithi
           do j = jmin,jmax
            do i = imin,imax
-            bpdat(i,j,bi,bj) = spval
+            localobs(i,j,bi,bj) = spval
            enddo
           enddo
          enddo
@@ -130,18 +138,18 @@ ce    --> there is certainly a better place for this.
           do j = jmin,jmax
             do i = imin,imax
 c              if (maskC(i,j,k,bi,bj) .eq. 0.) then
-c                bpmask(i,j,bi,bj) = 0. _d 0
+c                localmask(i,j,bi,bj) = 0. _d 0
 c              else
-c                bpmask(i,j,bi,bj) = 1. _d 0
+c                localmask(i,j,bi,bj) = 1. _d 0
 c              endif
-              if (bpdat(i,j,bi,bj) .le. spval) then
-                bpmask(i,j,bi,bj) = 0. _d 0
+              if (localobs(i,j,bi,bj) .le. spval) then
+                localmask(i,j,bi,bj) = 0. _d 0
               else
-                bpmask(i,j,bi,bj) = 1. _d 0
+                localmask(i,j,bi,bj) = 1. _d 0
               endif
-              bpdat(i,j,bi,bj) = bpdat(i,j,bi,bj)*
-     &                              bpmask(i,j,bi,bj)
-              nobs = nobs + int(bpmask(i,j,bi,bj))
+              localobs(i,j,bi,bj) = localobs(i,j,bi,bj)*
+     &                              localmask(i,j,bi,bj)
+              nobs = nobs + int(localmask(i,j,bi,bj))
             enddo
           enddo
         enddo

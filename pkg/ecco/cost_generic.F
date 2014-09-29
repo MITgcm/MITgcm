@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.18 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.19 2014/09/29 16:47:50 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -35,9 +35,8 @@ c     == global variables ==
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
-#ifdef ALLOW_CTRL
-# include "ecco_cost.h"
-# include "optim.h"
+#ifdef ALLOW_ECCO
+# include "ecco.h"
 #endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE_COST.h"
@@ -95,7 +94,6 @@ c     == local variables ==
       _RL cmask (1-olx:snx+olx,1-oly:sny+oly,nnzobs)
 
       character*(128) fname1, fname2
-      character*(MAX_LEN_MBUF) msgbuf
 
 cnew(
       _RL daytime
@@ -174,9 +172,8 @@ c--   First, read tiled data.
       write(fname1(1:128),'(80a)') ' '
       il=ilnblnk( localbarfile )
       write(fname1(1:128),'(2a,i10.10)')
-     &     localbarfile(1:il),'.',optimcycle
+     &     localbarfile(1:il),'.',eccoiter
 
-cph      if ( .NOT. ( mult_local.EQ.0. .OR. localobsfile.EQ.' ' ) ) then
       if ( .NOT. ( localobsfile.EQ.' ' ) ) then
 
 c--   Loop over records for the second time.
@@ -184,11 +181,11 @@ c--   Loop over records for the second time.
 
         if ( nnzbar .EQ. 1 ) then
            call active_read_xy( fname1, localbar, irec, doglobalread,
-     &                      ladinit, optimcycle, mythid,
+     &                      ladinit, eccoiter, mythid,
      &                      xx_localbar_mean_dummy )
         else
            call active_read_xyz( fname1, localbar, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid,
+     &                       ladinit, eccoiter, mythid,
      &                       xx_localbar_mean_dummy )
         endif
 
@@ -270,7 +267,11 @@ c--           Determine the mask on weights
             do k = 1,nnzobs
              do j = jmin,jmax
               do i = imin,imax
+#ifdef ALLOW_OLD_ESTIM_CODES
                cmask(i,j,k) = cosphi(i,j,bi,bj)*localmask(i,j,k,bi,bj)
+#else
+               cmask(i,j,k) = localmask(i,j,k,bi,bj)
+#endif
                 if ( localobs(i,j,k,bi,bj) .lt. spminloc .or.
      &               localobs(i,j,k,bi,bj) .gt. spmaxloc .or.
      &               localobs(i,j,k,bi,bj) .eq. spzeroloc ) then
@@ -301,7 +302,7 @@ c--
       enddo
 c--   End of second loop over records.
 
-c--   End of mult_local or localobsfile
+c--   End of localobsfile
       endif
 
       end
