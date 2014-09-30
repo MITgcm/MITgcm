@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.7 2014/09/29 16:46:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.8 2014/09/30 19:43:37 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -99,6 +99,7 @@ c old:sst  -> model has deficiency in iceconc -> new:deconc
       character*(MAX_LEN_FNAM) localobswfile
       character*(128) fname0w
       _RL localobsweight (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
+      _RL tmpobsweight (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
 #endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
 
       _RL daytime
@@ -181,6 +182,7 @@ c--   Initialise local variables.
 #ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
                 if(gencost_timevaryweight(igen_conc)) then
                   localobsweight(i,j,k,bi,bj) = 0. _d 0
+                  tmpobsweight(i,j,k,bi,bj) = 0. _d 0
                 endif
 #endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
               enddo
@@ -322,7 +324,8 @@ c not sure why this is not spzeroloc
 
 #ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
 catn--- reading time-variable weights -----------
-        if(gencost_timevaryweight(igen_conc)) then
+cph        if(gencost_timevaryweight(igen_conc)) then
+
           il=ilnblnk(localobswfile)
           write(fname0w(1:128),'(2a,i4)')
      &       localobswfile(1:il), '_', yday
@@ -336,7 +339,7 @@ c to use the data in a repreated cycle, comment next line?
 
           if ( localrec .GT. 0 ) then
           call mdsreadfield( fname0w, cost_iprec, cost_yftype, nnzobs,
-     &         localobsweight, localrec, mythid )
+     &         tmpobsweight, localrec, mythid )
           else
           WRITE(standardMessageUnit,'(A)')
      &     'siv4cost WARNING: ALL WEIGHTS ZEROS! NO CONTRIBUTION'
@@ -345,14 +348,14 @@ c to use the data in a repreated cycle, comment next line?
               do k = 1,nnzobs
                 do j = jmin,jmax
                   do i = imin,imax
-                     localobsweight(i,j,k,bi,bj) = 0. _d 0
+                     tmpobsweight(i,j,k,bi,bj) = 0. _d 0
                   enddo
                 enddo
               enddo
             enddo
           enddo
           endif
-        endif
+cph        endif
 catn---------------------------------------------
 #endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
 
@@ -373,13 +376,13 @@ catn----------------------------------------------
 #ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
                 if (gencost_timevaryweight(igen_conc)) then
 c--    Test for missing values.
-                  if (localobsweight(i,j,k,bi,bj) .lt. -9900.) then
-                    localobsweight(i,j,k,bi,bj) = 0. _d 0
+                  if (tmpobsweight(i,j,k,bi,bj) .lt. -9900.) then
+                    tmpobsweight(i,j,k,bi,bj) = 0. _d 0
                   endif
-                  if (localobsweight(i,j,k,bi,bj) .ne. 0.) then
+                  if (tmpobsweight(i,j,k,bi,bj) .ne. 0.) then
                     localweight(i,j,k,bi,bj) =
-     &                1./localobsweight(i,j,k,bi,bj)/
-     &                   localobsweight(i,j,k,bi,bj)
+     &                1./tmpobsweight(i,j,k,bi,bj)/
+     &                   tmpobsweight(i,j,k,bi,bj)
                   else
                     localweight(i,j,k,bi,bj) = 0.0 _d 0
                   endif
