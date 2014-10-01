@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.33 2014/04/04 21:05:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.34 2014/10/01 12:55:58 gforget Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
@@ -102,13 +102,19 @@ c--   Sum up all contributions.
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
+#ifdef ALLOW_COST_TEST
           write(standardmessageunit,'(A,D22.15)')
      &          ' --> objf_test(bi,bj)   = ', objf_test(bi,bj)
+#endif
+#ifdef ALLOW_COST_TRACER
           write(standardmessageunit,'(A,D22.15)')
      &         ' --> objf_tracer(bi,bj) = ', objf_tracer(bi,bj)
+#endif
 #if ( !defined (ALLOW_ECCO) || !defined (ALLOW_COST_ATLANTIC) )
+# ifdef ALLOW_COST_ATLANTIC_HEAT
           write(standardmessageunit,'(A,D22.15)')
      &         ' --> objf_atl(bi,bj)    = ', objf_atl(bi,bj)
+# endif
 #endif
 #ifdef ALLOW_COST_TEMP
           write(standardmessageunit,'(A,D22.15)')
@@ -124,10 +130,16 @@ c--   Sum up all contributions.
 #endif
 
          tile_fc(bi,bj) = tile_fc(bi,bj)
+#ifdef ALLOW_COST_TEST
      &            + mult_test   * objf_test(bi,bj)
+#endif
+#ifdef ALLOW_COST_TRACER
      &            + mult_tracer * objf_tracer(bi,bj)
+#endif
 #if ( !defined (ALLOW_ECCO) || !defined (ALLOW_COST_ATLANTIC) )
+# ifdef ALLOW_COST_ATLANTIC_HEAT
      &            + mult_atl    * objf_atl(bi,bj)
+# endif
 #endif
 #ifdef ALLOW_COST_TRANSPORT
      &            + mult_transport * objf_transport(bi,bj)
