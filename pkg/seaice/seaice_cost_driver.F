@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.12 2012/07/31 16:09:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.13 2014/10/01 12:54:28 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -129,7 +129,7 @@ c--     &     nnzbar, smrareabarfile, smrareabar, xx_smrareabar_mean_dummy,
 c--     &     nnzobs, smrareadatfile, mult_smrarea,
 c--     &     nrecloc, modelstartdate, localperiod,
 c--     &     'C', wsmrarea,
-c--     &     spminloc, spmaxloc, spzeroloc,
+c--     &     spminloc, spmaxloc, spzeroloc, no_preproc,
 c--     &     objf_smrarea, num_smrarea,
 c--     &     myiter, mytime, mythid )
 

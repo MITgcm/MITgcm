@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.17 2013/11/06 19:04:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.18 2014/10/01 12:54:28 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -33,6 +33,7 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 
 #ifdef ALLOW_COST
+#ifdef ALLOW_SEAICE_COST_SMR_AREA
 C     ! FUNCTIONS:
       LOGICAL  MASTER_CPU_THREAD
       EXTERNAL MASTER_CPU_THREAD
@@ -121,6 +122,7 @@ C--   Each process has calculated the global part for itself.
 
       ENDIF
 
+#endif /* ALLOW_SEAICE_COST_SMR_AREA */
 #endif /* ALLOW_COST */
 
       RETURN
