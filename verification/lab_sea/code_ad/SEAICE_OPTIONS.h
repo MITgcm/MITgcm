@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SEAICE_OPTIONS.h,v 1.26 2014/06/30 08:09:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SEAICE_OPTIONS.h,v 1.27 2014/10/01 16:06:24 gforget Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -123,6 +123,12 @@ C     SEAICE_CAP_SUBLIM is not needed as of now, but kept just in case.
 
 C--   Enable free drift code
 #define SEAICE_ALLOW_FREEDRIFT
+
+C--   pkg/seaice cost functions compile flags
+c       >>> Sea-ice volume (requires pkg/cost)
+#undef  ALLOW_COST_ICE
+c       >>> Sea-ice misfit to obs (requires pkg/cost and ecco)
+#define ALLOW_SEAICE_COST_SMR_AREA
 
 #endif /* ALLOW_SEAICE */
 #endif /* SEAICE_OPTIONS_H */

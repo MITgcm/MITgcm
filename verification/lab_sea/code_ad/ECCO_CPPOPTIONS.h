@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/ECCO_CPPOPTIONS.h,v 1.16 2013/10/05 19:40:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/ECCO_CPPOPTIONS.h,v 1.17 2014/10/01 16:06:24 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -122,12 +122,6 @@ c       >>> Make sure that ALLOW_OBCS is defined
       defined (ALLOW_OBCSE_COST_CONTRIBUTION))
 #  define ALLOW_OBCS_COST_CONTRIBUTION
 # endif
-
-c       >>> Sea-ice volume
-# undef ALLOW_COST_ICE
-
-c       >>> Sea-ice misfit to obs
-# define ALLOW_SEAICE_COST_SMR_AREA
 
 C ********************************************************************
 C ***               Control vector Package                         ***
