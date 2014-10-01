@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.25 2014/06/09 15:57:31 jahn Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.26 2014/10/01 23:12:14 jmc Exp $
 #  $Name:  $
 
 # Build options for gfortran compiler (GNU) on Linux AMD64 platform
@@ -91,7 +91,7 @@ else
    # -Wno-unused-dummy-argument for gfortran >= 4.6
    #FFLAGS="$FFLAGS -Waliasing -Wampersand -Wsurprising -Wline-truncation"
    #- or simply:
-    FFLAGS="$FFLAGS -Wall -Wno-unused-dummy-argument"
+    FFLAGS="$FFLAGS -Wall"
    #- to get plenty of warnings: -Wall -Wextra (older form: -Wall -W) or:
    #FFLAGS="$FFLAGS -Wconversion -Wimplicit-interface -Wunused-labels"
   if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
