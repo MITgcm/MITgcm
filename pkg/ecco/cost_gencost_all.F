@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.14 2014/09/29 16:46:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.15 2014/10/01 12:54:03 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -43,7 +43,7 @@ c     == local variables ==
       character*(max_len_mbuf) msgbuf
       integer nnzbar
       integer nnzobs
-      integer k
+      integer k, kk
 
 c     == external functions ==
 
@@ -51,11 +51,17 @@ c     == end of interface ==
 
       do k = 1, NGENCOST
 
-         if ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 ) ) then
+         if ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 )
+     &   .AND.( .NOT.gencost_is3d(k) ) ) then
 
-         write(msgbuf,'(a,x,i2.2)') 'ph-cost gencost #', k
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevD ) THEN
+         write(msgbuf,'(a,x,i2.2)') 'gencost #', k
          call print_message( msgbuf, standardmessageunit,
      &        SQUEEZE_RIGHT , mythid)
+      ENDIF
+#endif
+
          nnzbar = 1
          nnzobs = 1
          call cost_generic(
@@ -66,9 +72,37 @@ c     == end of interface ==
      &     gencost_nrec(k), gencost_startdate(1,k), gencost_period(k),
      &     gencost_mask(k), gencost_weight(1-Olx,1-Oly,1,1,k),
      &     gencost_spmin(k), gencost_spmax(k),
-     &     gencost_spzero(k),
+     &     gencost_spzero(k), gencost_preproc(k),
      &     objf_gencost(1,1,k), num_gencost(1,1,k),
      &     myiter, mytime, mythid )
+
+#ifdef ALLOW_GENCOST3D
+         elseif ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 )
+     &   .AND.( gencost_is3d(k) ) ) then
+
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevD ) THEN
+         write(msgbuf,'(a,x,i2.2)') 'gencost #', k
+         call print_message( msgbuf, standardmessageunit,
+     &        SQUEEZE_RIGHT , mythid)
+      ENDIF
+#endif
+
+         nnzbar = nr
+         nnzobs = nr
+         kk=gencost_pointer3d(k)
+         call cost_generic(
+     &     nnzbar, gencost_barfile(k),
+     &     gencost_bar3d(1-Olx,1-Oly,1,1,1,kk),
+     &     gencost_dummy(k),
+     &     nnzobs, gencost_datafile(k), mult_gencost(k),
+     &     gencost_nrec(k), gencost_startdate(1,k), gencost_period(k),
+     &     gencost_mask(k), gencost_wei3d(1-Olx,1-Oly,1,1,1,kk),
+     &     gencost_spmin(k), gencost_spmax(k),
+     &     gencost_spzero(k), gencost_preproc(k),
+     &     objf_gencost(1,1,k), num_gencost(1,1,k),
+     &     myiter, mytime, mythid )
+#endif
 
          endif
 

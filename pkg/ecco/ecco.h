@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.3 2014/09/29 16:45:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.4 2014/10/01 12:54:04 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -147,6 +147,11 @@ c     file precision and field type
       integer cost_iprec
       character*(2) cost_yftype
 
+c     empty preprocessing name:
+c     =========================
+      character*(8) no_preproc
+      PARAMETER ( no_preproc='        ' )
+
 c     Number of User Cost terms:
 c     =============================
       INTEGER NUSERCOST
@@ -157,6 +162,13 @@ c     =============================
       INTEGER NGENCOST
       PARAMETER ( NGENCOST=20 )
 
+      INTEGER NGENCOST3D
+#ifdef ALLOW_GENCOST3D
+      PARAMETER ( NGENCOST3D=2 )
+#else
+      PARAMETER ( NGENCOST3D=0 )
+#endif
+
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 c     objf_gencost - gencost user defined contribution
       common /ecco_gencost_ctrl/
@@ -166,6 +178,9 @@ c     objf_gencost - gencost user defined contribution
       common /ecco_gencost_r_1/
      &       objf_gencost, num_gencost, mult_gencost,
      &       gencost_barfld, gencost_modfld, gencost_weight,
+#ifdef ALLOW_GENCOST3D
+     &       gencost_bar3d, gencost_mod3d, gencost_wei3d,
+#endif
      &       gencost_spmin, gencost_spmax, gencost_spzero
       _RL  objf_gencost(nsx,nsy,NGENCOST)
       _RL  num_gencost(nsx,nsy,NGENCOST)
@@ -179,6 +194,14 @@ c     objf_gencost - gencost user defined contribution
      &       nsx,nsy,NGENCOST)
       _RL  gencost_weight(1-olx:snx+olx,1-oly:sny+oly,
      &       nsx,nsy,NGENCOST)
+#ifdef ALLOW_GENCOST3D
+      _RL  gencost_bar3d(1-olx:snx+olx,1-oly:sny+oly,
+     &       nr,nsx,nsy,NGENCOST3D)
+      _RL  gencost_mod3d(1-olx:snx+olx,1-oly:sny+oly,
+     &       nr,nsx,nsy,NGENCOST3D)
+      _RL  gencost_wei3d(1-olx:snx+olx,1-oly:sny+oly,
+     &       nr,nsx,nsy,NGENCOST3D)
+#endif
 
       common /ecco_gencost_r_2/
      &       gencost_period
@@ -188,10 +211,8 @@ c     objf_gencost - gencost user defined contribution
      &       gencost_nrec, gencost_flag,
      &       gencost_startdate1, gencost_startdate2,
      &       gencost_enddate1, gencost_enddate2,
-     &       gencost_startdate, gencost_enddate
-#ifdef ALLOW_SMOOTH
-     &       , gencost_smooth2Ddiffnbt
-#endif /* ALLOW_SMOOTH */
+     &       gencost_startdate, gencost_enddate,
+     &       gencost_pointer3d, gencost_smooth2Ddiffnbt
 
       integer gencost_nrec(NGENCOST)
       integer gencost_flag(NGENCOST)
@@ -201,19 +222,15 @@ c     objf_gencost - gencost user defined contribution
       integer gencost_enddate1(NGENCOST)
       integer gencost_enddate2(NGENCOST)
       integer gencost_enddate(4,NGENCOST)
-#ifdef ALLOW_SMOOTH
+      integer gencost_pointer3d(NGENCOST)
       integer  gencost_smooth2Ddiffnbt(NGENCOST)
-#endif /* ALLOW_SMOOTH */
 
       common /ecco_gencost_l_1/
-#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
      &       gencost_timevaryweight,
-#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
-     &       using_gencost
+     &       using_gencost, gencost_is3d
       LOGICAL using_gencost(NGENCOST)
-#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
+      LOGICAL gencost_is3d(NGENCOST)
       LOGICAL gencost_timevaryweight(NGENCOST)
-#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
 
       common /ecco_gencost_c/
      &       gencost_name,
@@ -222,6 +239,7 @@ c     objf_gencost - gencost user defined contribution
      &       gencost_datafile,
      &       gencost_barfile,
      &       gencost_avgperiod,
+     &       gencost_preproc,
      &       gencost_mask
       character*(MAX_LEN_FNAM) gencost_name(NGENCOST)
       character*(MAX_LEN_FNAM) gencost_scalefile(NGENCOST)
@@ -229,6 +247,7 @@ c     objf_gencost - gencost user defined contribution
       character*(MAX_LEN_FNAM) gencost_datafile(NGENCOST)
       character*(MAX_LEN_FNAM) gencost_barfile(NGENCOST)
       character*(5)            gencost_avgperiod(NGENCOST)
+      character*(8)            gencost_preproc(NGENCOST)
       character*(1)            gencost_mask(NGENCOST)
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */

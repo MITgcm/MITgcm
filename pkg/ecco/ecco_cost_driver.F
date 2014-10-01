@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.11 2014/09/29 16:47:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.12 2014/10/01 12:54:04 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -40,6 +40,8 @@ c     == routine arguments ==
 #  endif
 # endif
 #endif
+
+c#ifdef ALLOW_OLD_ESTIM_CODES
 
 c--   Compute the cost function contribution of the boundary forcing,
 c--   i.e. heat flux, salt flux, zonal and meridional wind stress.
@@ -199,6 +201,12 @@ c--   Internal Parameter controls cost terms:
       call cost_internal_params( myIter, myTime, myThid )
       call timer_stop ('cost_internal_params  [ECCO SPIN-DOWN]', myThid)
       _BARRIER
+
+c#endif /* ALLOW_OLD_ESTIM_CODES */
+
+#if (defined (ALLOW_PROFILES) && defined (ALLOW_PROFILES_CONTRIBUTION))
+      if ( usePROFILES ) CALL cost_profiles( myiter, mytime, mythid)
+#endif
 
 c--   Compute user defined cost function contributions (elaborate)
       call timer_start('cost_gencost_all    [ECCO SPIN-DOWN]', myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.29 2014/09/22 21:33:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.30 2014/10/01 12:54:04 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -77,7 +77,7 @@ c     == end of interface ==
      &     nnzobs, sstdatfile, mult_sst,
      &     nmonsrec, sststartdate, localperiod,
      &     'C', wsst,
-     &     spminloc, spmaxloc, spzeroloc,
+     &     spminloc, spmaxloc, spzeroloc, no_preproc,
      &     objf_sst, num_sst,
      &     myiter, mytime, mythid )
 c
@@ -98,7 +98,7 @@ c
      &     nnzobs, sstdatfile, mult_sst,
      &     nrecloc, sststartdate, localperiod,
      &     'C', wsst,
-     &     spminloc, spmaxloc, spzeroloc,
+     &     spminloc, spmaxloc, spzeroloc, no_preproc,
      &     objf_sst, num_sst,
      &     myiter, mytime, mythid )
 cph      call cost_sst   ( myiter, mytime, mythid )
@@ -142,7 +142,7 @@ cph      call cost_sst   ( myiter, mytime, mythid )
      &     nnzobs, tmidatfile, mult_tmi,
      &     nmonsrec, tmistartdate, localperiod,
      &     'C', wsst,
-     &     spminloc, spmaxloc, spzeroloc,
+     &     spminloc, spmaxloc, spzeroloc, no_preproc,
      &     objf_tmi, num_tmi,
      &     myiter, mytime, mythid )
 cph      call cost_tmi( myiter, mytime, mythid )
@@ -164,7 +164,7 @@ cph      call cost_tmi( myiter, mytime, mythid )
      &     nnzobs, sssdatfile, mult_sss,
      &     nmonsrec, sssstartdate, localperiod,
      &     'C', wsss,
-     &     spminloc, spmaxloc, spzeroloc,
+     &     spminloc, spmaxloc, spzeroloc, no_preproc,
      &     objf_sss, num_sss,
      &     myiter, mytime, mythid )
 cph      call cost_sss   ( myiter, mytime, mythid )
@@ -228,10 +228,6 @@ cph      call cost_sss   ( myiter, mytime, mythid )
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
       call cost_gen_transport  ( myiter, mytime, mythid )
-#endif
-
-#if (defined (ALLOW_PROFILES) && defined (ALLOW_PROFILES_CONTRIBUTION))
-      if ( usePROFILES ) CALL cost_profiles( myiter, mytime, mythid)
 #endif
 
 #ifdef ALLOW_ETAN0_COST_CONTRIBUTION

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.46 2014/09/29 16:47:49 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.47 2014/10/01 12:54:03 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -95,6 +95,7 @@ c     == local variables ==
       logical ingen(NGENCOST)
       integer sum1gen(NGENCOST)
       integer genrec(NGENCOST)
+      integer kk
 #endif
 #if (defined (ALLOW_CTRL) && \
      defined (ALLOW_GENTIM2D_CONTROL) && \
@@ -673,14 +674,29 @@ cmm   accumulate average
 cph currently all assumed to be surface fields, i.e. 2-d
       do k = 1, NGENCOST
       if ( (using_gencost(k)).AND.(gencost_barfile(k).ne.' ') ) then
-      call cost_averagesgeneric(
-     &     gencost_barfile(k),
-     &     gencost_barfld(1-Olx,1-Oly,1,1,k),
-     &     gencost_modfld(1-Olx,1-Oly,1,1,k),
-     &     gencost_dummy(k),
-     &     first, last,
-     &     startofgen(k), endofgen(k), ingen(k),
-     &     sum1gen(k), genrec(k), 1, mythid )
+      if ( .NOT.gencost_is3d(k) ) then
+        call cost_averagesgeneric(
+     &       gencost_barfile(k),
+     &       gencost_barfld(1-Olx,1-Oly,1,1,k),
+     &       gencost_modfld(1-Olx,1-Oly,1,1,k),
+     &       gencost_dummy(k),
+     &       first, last,
+     &       startofgen(k), endofgen(k), ingen(k),
+     &       sum1gen(k), genrec(k), 1, mythid )
+#ifdef ALLOW_GENCOST3D
+      else
+        kk=gencost_pointer3d(k)
+        call cost_averagesgeneric(
+     &       gencost_barfile(k),
+     &       gencost_bar3d(1-Olx,1-Oly,1,1,1,kk),
+     &       gencost_mod3d(1-Olx,1-Oly,1,1,1,kk),
+     &       gencost_dummy(k),
+     &       first, last,
+     &       startofgen(k), endofgen(k), ingen(k),
+     &       sum1gen(k), genrec(k), nr, mythid )
+#endif
+      endif
+
       endif
       end do
 #endif /* ALLOW_GENCOST_CONTRIBUTION */

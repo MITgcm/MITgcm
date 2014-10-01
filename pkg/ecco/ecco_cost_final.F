@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.70 2014/09/29 16:47:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.71 2014/10/01 12:54:04 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -70,6 +70,7 @@ c the adjoint, pkg/autodiff most likely require cost though.
 #endif
       _RL locfc
 
+c#ifdef ALLOW_OLD_ESTIM_CODES
       _RL f_temp0, f_salt0, f_temp0smoo, f_salt0smoo
       _RL f_etan0, f_uvel0, f_vvel0
       _RL f_temp, f_salt
@@ -94,11 +95,13 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL f_ssh , f_tp, f_ers, f_gfo
       _RL f_argot, f_argos, f_ctdtclim, f_ctdsclim
       _RL f_scatx, f_scaty, f_scatxm, f_scatym
-      _RL f_obcsn, f_obcss, f_obcsw, f_obcse
       _RL f_ageos, f_curmtr
       _RL f_ini_fin
       _RL f_kapgm, f_kapredi, f_diffkr
       _RL f_eddytau, f_bottomdrag
+c#endif /* ALLOW_OLD_ESTIM_CODES */
+
+      _RL f_obcsn, f_obcss, f_obcsw, f_obcse
 #ifdef ALLOW_PROFILES
       _RL f_profiles(NFILESPROFMAX,NVARMAX)
 #endif
@@ -115,6 +118,8 @@ c the adjoint, pkg/autodiff most likely require cost though.
 #ifdef ALLOW_GENARR3D_CONTROL
       _RL f_genarr3d(maxCtrlArr3D)
 #endif
+
+c#ifdef ALLOW_OLD_ESTIM_CODES
       _RL no_temp0, no_salt0,  no_temp, no_salt
       _RL no_etan0, no_uvel0, no_vvel0
       _RL no_uwind, no_vwind
@@ -131,12 +136,14 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL no_ssh, no_tp, no_ers, no_gfo
       _RL no_argot, no_argos, no_ctdtclim, no_ctdsclim
       _RL no_scatx, no_scaty, no_scatxm, no_scatym
-      _RL no_obcsn, no_obcss, no_obcsw, no_obcse
       _RL no_ageos, no_curmtr
       _RL no_ini_fin
       _RL no_kapgm, no_kapredi, no_diffkr
       _RL no_eddytau, no_bottomdrag
       _RL no_hmean
+c#endif /* ALLOW_OLD_ESTIM_CODES */
+
+      _RL no_obcsn, no_obcss, no_obcsw, no_obcse
 #ifdef ALLOW_PROFILES
       _RL no_profiles(NFILESPROFMAX,NVARMAX)
 #endif
@@ -173,6 +180,7 @@ c     == end of interface ==
       ifc = 30
 
       locfc = 0. _d 0
+c#ifdef ALLOW_OLD_ESTIM_CODES
       f_temp = 0. _d 0
       f_salt = 0. _d 0
       f_temp0 = 0. _d 0
@@ -249,10 +257,6 @@ c     == end of interface ==
       f_scaty = 0. _d 0
       f_scatxm = 0. _d 0
       f_scatym = 0. _d 0
-      f_obcsn   = 0. _d 0
-      f_obcss   = 0. _d 0
-      f_obcsw   = 0. _d 0
-      f_obcse   = 0. _d 0
       f_curmtr  = 0. _d 0
       f_ageos   = 0. _d 0
       f_ini_fin = 0. _d 0
@@ -263,6 +267,12 @@ c     == end of interface ==
       f_bottomdrag = 0. _d 0
       f_transp  = 0. _d 0
       f_ies = 0. _d 0
+c#endif /* ALLOW_OLD_ESTIM_CODES */
+
+      f_obcsn   = 0. _d 0
+      f_obcss   = 0. _d 0
+      f_obcsw   = 0. _d 0
+      f_obcse   = 0. _d 0
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -301,6 +311,7 @@ c     == end of interface ==
        enddo
 #endif
 
+c#ifdef ALLOW_OLD_ESTIM_CODES
       no_temp = 0. _d 0
       no_salt = 0. _d 0
       no_temp0 = 0. _d 0
@@ -374,6 +385,8 @@ c     == end of interface ==
       no_bottomdrag = 0. _d 0
       no_transp  = 0. _d 0
       no_ies = 0. _d 0
+c#endif /* ALLOW_OLD_ESTIM_CODES */
+
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -417,6 +430,7 @@ c--   Sum up all contributions.
         do bi = itlo,ithi
 
           tile_fc(bi,bj) = tile_fc(bi,bj)
+c#ifdef ALLOW_OLD_ESTIM_CODES
      &         + mult_temp    * objf_temp(bi,bj)
      &         + mult_salt    * objf_salt(bi,bj)
      &         + mult_temp0   * ( objf_temp0(bi,bj)
@@ -491,6 +505,17 @@ c--   Sum up all contributions.
      &                          objf_salt_ini_fin(bi,bj))
      &         + mult_edtau * objf_eddytau(bi,bj)
      &         + mult_bottomdrag * objf_bottomdrag(bi,bj)
+
+#ifdef ALLOW_SSHV4_COST
+       do num_var=1,NSSHV4COST
+          tile_fc(bi,bj) = tile_fc(bi,bj)
+     &            + mult_sshv4cost(num_var)
+     &            *objf_sshv4cost(num_var,bi,bj)
+       enddo
+#endif
+
+c#endif /* ALLOW_OLD_ESTIM_CODES */
+
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -514,13 +539,6 @@ c--   Sum up all contributions.
      &            *objf_usercost(num_var,bi,bj)
        enddo
 #endif
-#ifdef ALLOW_SSHV4_COST
-       do num_var=1,NSSHV4COST
-          tile_fc(bi,bj) = tile_fc(bi,bj)
-     &            + mult_sshv4cost(num_var)
-     &            *objf_sshv4cost(num_var,bi,bj)
-       enddo
-#endif
 #ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
           tile_fc(bi,bj) = tile_fc(bi,bj)
@@ -542,6 +560,8 @@ c--   Sum up all contributions.
      &            *objf_genarr3d(bi,bj,num_var)
        enddo
 #endif
+
+c#ifdef ALLOW_OLD_ESTIM_CODES
           f_temp = f_temp + objf_temp(bi,bj)
           f_salt = f_salt + objf_salt(bi,bj)
           f_temp0 = f_temp0 + objf_temp0(bi,bj)
@@ -624,6 +644,8 @@ c--   Sum up all contributions.
      &         objf_theta_ini_fin(bi,bj) + objf_salt_ini_fin(bi,bj)
           f_eddytau = f_eddytau + objf_eddytau(bi,bj)
           f_bottomdrag = f_bottomdrag + objf_bottomdrag(bi,bj)
+c#endif /* ALLOW_OLD_ESTIM_CODES */
+
           f_obcsn  = f_obcsn + objf_obcsn(bi,bj)
           f_obcss  = f_obcss + objf_obcss(bi,bj)
           f_obcsw  = f_obcsw + objf_obcsw(bi,bj)
@@ -672,6 +694,8 @@ c--   Sum up all contributions.
      &            +objf_genarr3d(bi,bj,num_var)
        enddo
 #endif
+
+c#ifdef ALLOW_OLD_ESTIM_CODES
           no_temp = no_temp + num_temp(bi,bj)
           no_salt = no_salt + num_salt(bi,bj)
           no_temp0 = no_temp0 + num_temp0(bi,bj)
@@ -738,6 +762,16 @@ c--   Sum up all contributions.
      &         num_theta_ini_fin(bi,bj) + num_salt_ini_fin(bi,bj)
           no_eddytau = no_eddytau + num_eddytau(bi,bj)
           no_bottomdrag = no_bottomdrag + num_bottomdrag(bi,bj)
+
+#ifdef ALLOW_SSHV4_COST
+       do num_var=1,NSSHV4COST
+          no_sshv4cost(num_var)=no_sshv4cost(num_var)
+     &            +num_sshv4cost(num_var,bi,bj)
+       enddo
+#endif
+
+c#endif /* ALLOW_OLD_ESTIM_CODES */
+
           no_obcsn = no_obcsn + num_obcsn(bi,bj)
           no_obcss = no_obcss + num_obcss(bi,bj)
           no_obcse = no_obcse + num_obcse(bi,bj)
@@ -760,12 +794,6 @@ c--   Sum up all contributions.
        do num_var=1,NUSERCOST
           no_usercost(num_var)=no_usercost(num_var)
      &            +num_usercost(num_var,bi,bj)
-       enddo
-#endif
-#ifdef ALLOW_SSHV4_COST
-       do num_var=1,NSSHV4COST
-          no_sshv4cost(num_var)=no_sshv4cost(num_var)
-     &            +num_sshv4cost(num_var,bi,bj)
        enddo
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
@@ -802,6 +830,7 @@ c--   Do global summation.
 
 c--   Do global summation for each part of the cost function
 
+c#ifdef ALLOW_OLD_ESTIM_CODES
       _GLOBAL_SUM_RL( f_temp , myThid )
       _GLOBAL_SUM_RL( f_salt , myThid )
       _GLOBAL_SUM_RL( f_temp0, myThid )
@@ -886,6 +915,8 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( f_ini_fin , myThid )
       _GLOBAL_SUM_RL( f_eddytau , myThid )
       _GLOBAL_SUM_RL( f_bottomdrag , myThid )
+c#endif /* ALLOW_OLD_ESTIM_CODES */
+
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -923,6 +954,8 @@ c--   Do global summation for each part of the cost function
         _GLOBAL_SUM_RL(f_genarr3d(num_var), myThid )
        enddo
 #endif
+
+c#ifdef ALLOW_OLD_ESTIM_CODES
       _GLOBAL_SUM_RL( no_temp , myThid )
       _GLOBAL_SUM_RL( no_salt , myThid )
       _GLOBAL_SUM_RL( no_temp0, myThid )
@@ -993,6 +1026,8 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( no_ini_fin , myThid )
       _GLOBAL_SUM_RL( no_eddytau , myThid )
       _GLOBAL_SUM_RL( no_bottomdrag , myThid )
+c#endif /* ALLOW_OLD_ESTIM_CODES */
+
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -1031,6 +1066,7 @@ c--   Do global summation for each part of the cost function
        enddo
 #endif
 
+c#ifdef ALLOW_OLD_ESTIM_CODES
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_temp    =',f_temp
       write(standardmessageunit,'(A,D22.15)')
@@ -1199,6 +1235,8 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_eddytau =', f_eddytau
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_bottomdrag =', f_bottomdrag
+c#endif /* ALLOW_OLD_ESTIM_CODES */
+
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -1239,7 +1277,7 @@ c--   Do global summation for each part of the cost function
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
-        if (no_gentim2d(num_var).GT.0) then
+        if (no_gentim2d(num_var).GT.0. _d 0) then
          write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
      &     ' --> f_gentim2d =',f_gentim2d(num_var),
      &      num_var
@@ -1248,7 +1286,7 @@ c--   Do global summation for each part of the cost function
 #endif
 #ifdef ALLOW_GENARR2D_CONTROL
        do num_var=1,maxCtrlArr2D
-        if (no_genarr2d(num_var).GT.0) then
+        if (no_genarr2d(num_var).GT.0. _d 0) then
          write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
      &     ' --> f_genarr2d =',f_genarr2d(num_var),
      &      num_var
@@ -1257,13 +1295,15 @@ c--   Do global summation for each part of the cost function
 #endif
 #ifdef ALLOW_GENARR3D_CONTROL
        do num_var=1,maxCtrlArr3D
-        if (no_genarr3d(num_var).GT.0) then
+        if (no_genarr3d(num_var).GT.0. _d 0) then
          write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
      &     ' --> f_genarr3d =',f_genarr3d(num_var),
      &      num_var
         endif
        enddo
 #endif
+
+c#ifdef ALLOW_OLD_ESTIM_CODES
 
 c--   Each process has calculated the global part for itself.
 
@@ -1288,6 +1328,8 @@ cph)
      &          + f_hfluxmm2 + f_sfluxmm2
      &          + f_transp
 
+c#endif /* ALLOW_OLD_ESTIM_CODES */
+
 #ifndef ALLOW_COST
 cgf this sum is now done in cost_final if allow_cost
         fc = fc + glofc
@@ -1298,6 +1340,7 @@ cgf this sum is now done in cost_final if allow_cost
 C     only master thread of master CPU open and write to file
       IF ( MASTER_CPU_THREAD(myThid) ) THEN
 
+c#ifdef ALLOW_OLD_ESTIM_CODES
         write(standardmessageunit,'(A,D22.15)')
      &           ' --> f_hfluxmm2           =',f_hfluxmm2
         write(standardmessageunit,'(A,D22.15)')
@@ -1308,6 +1351,7 @@ C     only master thread of master CPU open and write to file
      &           ' --> objf_hmean           =',objf_hmean
         write(standardmessageunit,'(A,D22.15)')
      &           ' --> fc               =', locfc
+c#endif /* ALLOW_OLD_ESTIM_CODES */
 
         write(cfname,'(A,i4.4)') 'costfunction',optimcycle
         open(unit=ifc,file=cfname)
@@ -1318,6 +1362,7 @@ C     only master thread of master CPU open and write to file
         write(ifc,'(A,2D22.15)')
 #endif
      &       'fc =', locfc, 0.
+c#ifdef ALLOW_OLD_ESTIM_CODES
         write(ifc,'(A,2D22.15)')
      &       'f_temp =', f_temp, no_temp
         write(ifc,'(A,2D22.15)')
@@ -1498,6 +1543,8 @@ C     only master thread of master CPU open and write to file
      &       'f_bottomdrag =', f_bottomdrag, no_bottomdrag
         write(ifc,'(A,2D22.15)')
      &       'f_transp =', f_transp, no_transp
+c#endif /* ALLOW_OLD_ESTIM_CODES */
+
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -1547,7 +1594,7 @@ C     only master thread of master CPU open and write to file
 
 #ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
-        if (no_gentim2d(num_var).GT.0) then
+        if (no_gentim2d(num_var).GT.0. _d 0) then
          IL  = ILNBLNK( xx_gentim2d_file(num_var) )
          IL  = max (IL,15)
          write(ifc,'(2A,i2.0,A,2D22.15)')
@@ -1561,7 +1608,7 @@ C     only master thread of master CPU open and write to file
 
 #ifdef ALLOW_GENARR2D_CONTROL
        do num_var=1,maxCtrlArr2D
-        if (no_genarr2d(num_var).GT.0) then
+        if (no_genarr2d(num_var).GT.0. _d 0) then
          IL  = ILNBLNK( xx_genarr2d_file(num_var) )
          IL  = max (IL,15)
          write(ifc,'(2A,i2.0,A,2D22.15)')
@@ -1575,7 +1622,7 @@ C     only master thread of master CPU open and write to file
 
 #ifdef ALLOW_GENARR3D_CONTROL
        do num_var=1,maxCtrlArr3D
-        if (no_genarr3d(num_var).GT.0) then
+        if (no_genarr3d(num_var).GT.0. _d 0) then
          IL  = ILNBLNK( xx_genarr3d_file(num_var) )
          IL  = max (IL,15)
          write(ifc,'(2A,i2.0,A,2D22.15)')
@@ -1591,8 +1638,10 @@ C     only master thread of master CPU open and write to file
 
       ENDIF
 
+c#ifdef ALLOW_OLD_ESTIM_CODES
       call cost_trans_merid( mythid )
       call cost_trans_zonal( mythid )
+c#endif /* ALLOW_OLD_ESTIM_CODES */
 
 #ifdef ECCO_VERBOSE
       write(msgbuf,'(a,D22.15)')

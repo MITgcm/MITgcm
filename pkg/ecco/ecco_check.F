@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.17 2014/09/29 16:47:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.18 2014/10/01 12:54:04 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -129,6 +129,16 @@ c left for later : slightly different treatment would apply to profiles and genc
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       do k=1,NGENCOST
+         if (gencost_pointer3d(k).GT.NGENCOST3D) then
+           WRITE(msgBuf,'(2A)')
+     &      'ECCO_CHECK: too many 3D cost terms; please',
+     &      'increase NGENCOST3D and recompile.'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+           CALL PRINT_ERROR( msgBuf , myThid )
+           STOP 'ABNORMAL END: S/R ECCO_CHECK'
+         endif
+
          if ( gencost_datafile(k) .ne. ' ' ) then
            CALL ECCO_CHECK_FILES( using_gencost(k), 'gencost',
      &       gencost_datafile(k), gencost_startdate1(k), myThid )
@@ -183,7 +193,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "ecco_cost.h"
+#include "ecco.h"
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif

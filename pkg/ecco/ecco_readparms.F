@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.71 2014/09/29 16:47:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.72 2014/10/01 12:54:04 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -40,7 +40,7 @@ C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER k, iUnit, num_file, num_var
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      INTEGER IL
+      INTEGER IL, gencost_k3d
 #endif
 
 Catn-- retired parameters
@@ -160,6 +160,7 @@ c--   Read the namelist input.
      &         gencost_name,
      &         gencost_scalefile,
      &         gencost_errfile,
+     &         gencost_preproc,
      &         gencost_mask,
      &         gencost_spmin,
      &         gencost_spmax,
@@ -169,14 +170,11 @@ c--   Read the namelist input.
      &         gencost_startdate2,
      &         gencost_enddate1,
      &         gencost_enddate2,
-#ifdef ALLOW_SMOOTH
      &         gencost_smooth2Ddiffnbt,
-#endif /* ALLOW_SMOOTH */
-#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
+     &         gencost_is3d,
      &         gencost_timevaryweight,
-#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
      &         mult_gencost
-#endif
+#endif /* ALLOW_GENCOST_CONTRIBUTION */
 
       _BEGIN_MASTER( myThid )
 
@@ -531,22 +529,19 @@ c--   Set default values.
          gencost_enddate2(k) = 0
          gencost_datafile(k)   = ' '
          gencost_name(k)       = 'gencost'
+         gencost_preproc(k)    = '        '
          gencost_scalefile(k)  = ' '
          gencost_errfile(k)    = ' '
          gencost_mask(k)       = 'c'
-cgf         write(gencost_barfile(k)(1:8),'(a,i2.2)')
-cgf     &        'genbar', k
          gencost_barfile(k)    = ' '
          gencost_spmin(k)      = 0. _d 0
          gencost_spmax(k)      = 0. _d 0
          gencost_spzero(k)     = 9876. _d 0
          mult_gencost(k)       = 0. _d 0
-#ifdef ALLOW_SMOOTH
          gencost_smooth2Ddiffnbt(k) = 300
-#endif /* ALLOW_SMOOTH */
-#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
+         gencost_is3d(k)       = .FALSE.
+         gencost_pointer3d(k)=0
          gencost_timevaryweight(k) = .FALSE.
-#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
       enddo
 
       READ(  iUnit, nml = ecco_gencost_nml )
@@ -556,7 +551,11 @@ cgf     &        'genbar', k
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
 
+      gencost_k3d=1
+
       do k=1,NGENCOST
+
+c pre-specified generic cost terms using otherwise created barfiles
          if ( (gencost_name(k).EQ.'sshv4-mdt').OR.
      &        (gencost_name(k).EQ.'sshv4-tp').OR.
      &        (gencost_name(k).EQ.'sshv4-ers').OR.
@@ -567,20 +566,25 @@ cgf     &        'genbar', k
      &        (gencost_name(k).EQ.'bpv4-grace').OR.
      &        (gencost_name(k).EQ.'sstv4-amsre').OR.
      &        (gencost_name(k).EQ.'sstv4-amsre-lsc') ) then
-c pre-specified generic cost terms using otherwise created barfiles
            gencost_flag(k)=-1
            using_gencost(k)=.TRUE.
+c pre-specified generic cost terms that create their own barfile
          elseif ( 
      &        (gencost_name(k).EQ.'siv4-conc').OR.
      &        (gencost_name(k).EQ.'siv4-deconc').OR.
      &        (gencost_name(k).EQ.'siv4-exconc') ) then
-c pre-specified generic cost terms that create their own barfile
            gencost_flag(k)=2
            using_gencost(k)=.TRUE.
-         elseif ( gencost_datafile(k) .NE. ' ' ) then
 c fully interactive generic cost terms
+         elseif ( gencost_datafile(k) .NE. ' ' ) then
            gencost_flag(k)=1
            using_gencost(k)=.TRUE.
+         endif
+
+c fully interactive generic cost terms
+         if ( gencost_is3d(k) ) then
+           gencost_pointer3d(k)=gencost_k3d
+           gencost_k3d=gencost_k3d+1
          endif
 
 c altimetry switches

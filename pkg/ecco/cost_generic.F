@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.19 2014/09/29 16:47:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.20 2014/10/01 12:54:03 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -9,7 +9,7 @@ C $Name:  $
      &     nnzobs, localobsfile, mult_local,
      &     nrecloc, localstartdate, localperiod,
      &     ylocmask, localweight,
-     &     spminloc, spmaxloc, spzeroloc,
+     &     spminloc, spmaxloc, spzeroloc, preproc,
      &     objf_local, num_local,
      &     myiter, mytime, mythid )
 
@@ -66,6 +66,7 @@ c     == routine arguments ==
       character*(1) ylocmask
       character*(MAX_LEN_FNAM) localbarfile
       character*(MAX_LEN_FNAM) localobsfile
+      character*(8) preproc
 
 c     == local variables ==
 
@@ -174,20 +175,16 @@ c--   First, read tiled data.
       write(fname1(1:128),'(2a,i10.10)')
      &     localbarfile(1:il),'.',eccoiter
 
+cgf here nrecloc will be updated based upon preproc
+
       if ( .NOT. ( localobsfile.EQ.' ' ) ) then
 
 c--   Loop over records for the second time.
       do irec = 1, nrecloc
 
-        if ( nnzbar .EQ. 1 ) then
-           call active_read_xy( fname1, localbar, irec, doglobalread,
-     &                      ladinit, eccoiter, mythid,
-     &                      xx_localbar_mean_dummy )
-        else
-           call active_read_xyz( fname1, localbar, irec, doglobalread,
-     &                       ladinit, eccoiter, mythid,
-     &                       xx_localbar_mean_dummy )
-        endif
+        call cost_genread( fname1, localbar, irec, doglobalread,
+     &                     ladinit, eccoiter, nnzbar, preproc,
+     &                     mythid, xx_localbar_mean_dummy )
 
 cnew(
         if ( localperiod .EQ. 86400. ) then

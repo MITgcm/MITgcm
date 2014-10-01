@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.53 2014/04/01 12:11:53 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.54 2014/10/01 12:54:04 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -1602,47 +1602,6 @@ c--           Test for missing values.
       endif
 #endif
 
-#ifdef ALLOW_GENCOST_CONTRIBUTION
-      do k=1,NGENCOST
-      if ( gencost_errfile(k) .NE. ' ' ) then
-catn ---------------------------------------------------
-#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
-        if(.NOT. gencost_timevaryweight(k)) then
-        call mdsreadfield( gencost_errfile(k), cost_iprec, cost_yftype,
-     &      1, gencost_weight(:,:,1,1,k), 1, mythid )
-        endif
-#else /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
-        call mdsreadfield( gencost_errfile(k), cost_iprec, cost_yftype,
-     &      1, gencost_weight(:,:,1,1,k), 1, mythid )
-#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
-
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-           do j = jmin,jmax
-            do i = imin,imax
-#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
-catn --
-c define fallback error all zeros, so if daily err files
-c missing, no cost at all will be calc
-catn --
-              if( gencost_timevaryweight(k)) then
-                gencost_weight(i,j,bi,bj,k) = 0. _d 0
-              endif
-#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
-c--           Test for missing values.
-              if (gencost_weight(i,j,bi,bj,k) .lt. -9900.) then
-                gencost_weight(i,j,bi,bj,k) = 0. _d 0
-catn ---------------------------------------------------
-              endif
-            enddo
-           enddo
-        enddo
-      enddo
-
-      endif
-      enddo
-#endif
-
 #if (defined (ALLOW_ETAN0_COST_CONTRIBUTION) || defined (ALLOW_ETAN0_CONTROL))
       if ( etan0errfile .NE. ' ' ) then
          call mdsreadfield( etan0errfile, 32, 'RL', 1,
@@ -1912,17 +1871,6 @@ cph(
                  wtauv2(i,j,bi,bj) = 0.0 _d 0
               endif
 cph)
-#ifdef ALLOW_GENCOST_CONTRIBUTION
-              do k=1,NGENCOST
-              if (gencost_weight(i,j,bi,bj,k) .ne. 0.) then
-                 gencost_weight(i,j,bi,bj,k) =
-     &                1./gencost_weight(i,j,bi,bj,k)/
-     &                   gencost_weight(i,j,bi,bj,k)
-              else
-                 gencost_weight(i,j,bi,bj,k) = 0.0 _d 0
-              endif
-              enddo
-#endif
             enddo
           enddo
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.34 2014/09/29 16:47:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.35 2014/10/01 12:54:04 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -42,7 +42,11 @@ c     == global variables ==
 #include "cal.h"
 #endif
 #ifdef ALLOW_ECCO
-# include "ecco_cost.h"
+c# ifdef ALLOW_OLD_ESTIM_CODES
+#  include "ecco_cost.h"
+c# else
+c#  include "ecco.h"
+c# endif
 #endif
 #ifdef ALLOW_CTRL
 # include "optim.h"
@@ -54,16 +58,23 @@ c     == routine arguments ==
 
 c     == local variables ==
 
+      integer k
+      logical exst
+c#ifdef ALLOW_OLD_ESTIM_CODES
+      _RL     dummy
       integer tempDate1(4)
       integer tempDate2(4)
       integer gwunit
       integer ilo,ihi
-      integer irec,k
-      logical exst
-      _RL     dummy
+      character*(max_len_mbuf) msgbuf
+      integer irec
       _RL     missingObsFlag
       PARAMETER ( missingObsFlag = 1. _d 23 )
-      character*(max_len_mbuf) msgbuf
+c#endif
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+      integer bi,bj
+      integer i,j,kk,k2
+#endif
 
 c     == external functions ==
 
@@ -95,6 +106,8 @@ c--   current model integration.
       ndaysrec = cal_IntDays( mythid )
 
       _BEGIN_MASTER( myThid )
+
+c#ifdef ALLOW_OLD_ESTIM_CODES
 
 c--     Get the complete dates of the ...
 c--     ... TMI data.
@@ -153,10 +166,12 @@ c--     ... ARGO data.
          if ( argosfile .ne. ' ' )
      &  call cal_FullDate( argosstartdate1,   argotstartdate2,
      &                     argosstartdate,    mythid )
+c#endif /* ALLOW_OLD_ESTIM_CODES */
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       do k = 1, NGENCOST
 
+c--    set time averaging parameters
        if ( (using_gencost(k)).AND.( (gencost_flag(k).GE.1).OR.
      &         (gencost_avgperiod(k).NE.'     ') ) ) then
          if ( gencost_avgperiod(k) .EQ. 'day' .OR.
@@ -177,6 +192,7 @@ c--     ... ARGO data.
          endif
        endif
 
+c--    set observation start/enddate
        if (gencost_startdate1(k).GT.0) then
          call cal_FullDate(
      &     gencost_startdate1(k), gencost_startdate2(k),
@@ -195,7 +211,76 @@ c--     ... ARGO data.
      &     gencost_enddate(1,k),mythid)
        endif
 
-      enddo
+c--   set weights
+      if ( gencost_errfile(k) .NE. ' ' ) then
+
+      kk=gencost_pointer3d(k)
+
+      if ( (.NOT. gencost_timevaryweight(k)).AND.
+     &     (.NOT.gencost_is3d(k)) ) then
+
+           call mdsreadfield( gencost_errfile(k), cost_iprec,
+     &     cost_yftype, 1, gencost_weight(:,:,1,1,k), 1, mythid )
+
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j = 1-Oly,sNy+Oly
+            DO i = 1-Olx,sNx+Olx
+c--           initialize weight to 0 if needed
+              if( gencost_timevaryweight(k)) then
+                gencost_weight(i,j,bi,bj,k) = 0. _d 0
+              endif
+c--           Test for missing values.
+              if (gencost_weight(i,j,bi,bj,k) .lt. -9900.) then
+                gencost_weight(i,j,bi,bj,k) = 0. _d 0
+              endif
+c--           Convert to weight
+              if (gencost_weight(i,j,bi,bj,k) .ne. 0.) then
+                 gencost_weight(i,j,bi,bj,k) =
+     &                1./gencost_weight(i,j,bi,bj,k)/
+     &                   gencost_weight(i,j,bi,bj,k)
+              endif
+            enddo
+           enddo
+          enddo
+         enddo
+
+#ifdef ALLOW_GENCOST3D
+      elseif ( (.NOT. gencost_timevaryweight(k)).AND.
+     &     (gencost_is3d(k)).AND.(kk.LE.NGENCOST3D) ) then
+
+           call mdsreadfield( gencost_errfile(k), cost_iprec,
+     &     cost_yftype, nr, gencost_wei3d(:,:,1,1,1,kk), 1, mythid )
+
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j = 1-Oly,sNy+Oly
+            DO i = 1-Olx,sNx+Olx
+             DO k2 = 1,nr
+c--           initialize weight to 0 if needed
+              if( gencost_timevaryweight(k)) then
+                gencost_wei3d(i,j,k2,bi,bj,kk) = 0. _d 0
+              endif
+c--           Test for missing values.
+              if (gencost_wei3d(i,j,k2,bi,bj,kk) .lt. -9900.) then
+                gencost_wei3d(i,j,k2,bi,bj,kk) = 0. _d 0
+              endif
+c--           Convert to weight
+              if (gencost_wei3d(i,j,k2,bi,bj,kk) .ne. 0.) then
+                 gencost_wei3d(i,j,k2,bi,bj,kk) =
+     &                1./gencost_wei3d(i,j,k2,bi,bj,kk)/
+     &                   gencost_wei3d(i,j,k2,bi,bj,kk)
+              endif
+             enddo
+            enddo
+           enddo
+          enddo
+         enddo
+#endif /* ALLOW_GENCOST3D */
+
+      endif !if ( (.NOT. gencost_timevaryweight(k)).AND.
+      endif !if ( gencost_errfile(k) .NE. ' ' ) then
+      enddo !do k = 1, NGENCOST
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
       _END_MASTER( mythid )
@@ -223,6 +308,8 @@ cph!!!
          call ecco_cost_init_barfiles( mythid )
       endif
 #endif
+
+c#ifdef ALLOW_OLD_ESTIM_CODES
 
 #ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
       do irec = 1, ndaysrec
@@ -332,6 +419,8 @@ c
       _END_MASTER(myThid)
       _BARRIER
 #endif /* ALLOW_NEW_SSH_COST */
+
+c#endif /* ALLOW_OLD_ESTIM_CODES */
 
 c--   Summarize the cost function setup.
       _BEGIN_MASTER( mythid )
