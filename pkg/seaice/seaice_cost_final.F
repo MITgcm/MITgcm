@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.18 2014/10/01 12:54:28 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.19 2014/10/01 16:00:51 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -33,7 +33,7 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 
 #ifdef ALLOW_COST
-#ifdef ALLOW_SEAICE_COST_SMR_AREA
+#if (defined(ALLOW_SEAICE_COST_SMR_AREA) || defined(ALLOW_COST_ICE))
 C     ! FUNCTIONS:
       LOGICAL  MASTER_CPU_THREAD
       EXTERNAL MASTER_CPU_THREAD

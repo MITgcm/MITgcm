@@ -1,8 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.30 2014/10/01 12:54:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.31 2014/10/01 16:00:49 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
-
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+#endif
 
       subroutine cost_hyd( myiter, mytime, mythid )
 
