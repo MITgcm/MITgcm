@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/ECCO_CPPOPTIONS.h,v 1.10 2013/07/24 20:53:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/ECCO_CPPOPTIONS.h,v 1.11 2014/10/01 16:06:55 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -63,7 +63,6 @@ C       >>> Atmospheric state and radiation.
 #define ALLOW_ATEMP_COST_CONTRIBUTION
 #define ALLOW_SWDOWN_COST_CONTRIBUTION
 
-#define ALLOW_COST_ICE
 #define ALLOW_THSICE_COST_TEST
 
 C ********************************************************************
