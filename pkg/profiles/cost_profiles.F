@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.19 2012/08/07 05:59:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.20 2014/10/01 12:55:36 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -14,8 +14,9 @@ C     o==========================================================o
       IMPLICIT NONE
 
 C     ======== Global data ============================
-#include "EEPARAMS.h"
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
 #ifdef ALLOW_CAL
@@ -179,6 +180,8 @@ c prof_salt_mean are never filled. SO I put a stop here.
           endif !if (prof_num.LE.ProfNo(num_file,bi,bj)) then
          enddo !do prof_num=..
 
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevD ) THEN
          if (ProfNo(num_file,bi,bj).GT.0) then
           do num_var=1,NVARMAX
            write(msgbuf,'(a,4I9)') 'bi,bj,prof_num,num_var ',bi,bj,
@@ -190,6 +193,8 @@ c prof_salt_mean are never filled. SO I put a stop here.
      &      num_profiles(num_file,num_var,bi,bj)
           enddo !do num_var...
          endif
+      ENDIF
+#endif /* ALLOW_DEBUG */
         enddo !do num_file=1,NFILESPROFMAX
 
        ENDDO

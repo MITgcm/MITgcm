@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readvector.F,v 1.9 2010/08/24 15:03:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readvector.F,v 1.10 2014/10/01 12:55:36 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -15,8 +15,9 @@ C     o==========================================================o
       implicit none
 
 C ==================== Global Variables ===========================
-#include "EEPARAMS.h"
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
 #ifdef ALLOW_PROFILES
@@ -57,12 +58,16 @@ c implies that a forward loop is calling
       profiles_maxind_buff(bi,bj)=min(tmpprofno,irec+999)
       endif
 
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevD ) THEN
       write(msgbuf,'(a,5I9)')
      &   'buffer readvector ',
      &   profiles_minind_buff(bi,bj), profiles_maxind_buff(bi,bj),
      &   irec, profNo(fNb,bi,bj), tmpprofno
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
+      ENDIF
+#endif
 
       vec_start(1)=1
       vec_start(2)=profiles_minind_buff(bi,bj)
