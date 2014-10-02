@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.19 2014/10/01 12:54:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.20 2014/10/02 12:28:37 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+#endif
 
       subroutine cost_averagesinit( mythid )
 
@@ -32,9 +35,11 @@ c     == global variables ==
 #include "SIZE.h"
 
 #include "ecco_cost.h"
-#include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+#endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE_COST.h"
 #endif
