@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.20 2014/10/01 12:54:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.21 2014/10/02 22:26:17 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -7,9 +7,11 @@ C $Name:  $
       subroutine cost_generic(
      &     nnzbar, localbarfile, localbar, xx_localbar_mean_dummy,
      &     nnzobs, localobsfile, mult_local,
-     &     nrecloc, localstartdate, localperiod,
+     &     nrecloc, nrecobs,
+     &     localstartdate, localperiod,
      &     ylocmask, localweight,
-     &     spminloc, spmaxloc, spzeroloc, preproc,
+     &     spminloc, spmaxloc, spzeroloc,
+     &     preproc, posproc, scalefile, outlev,
      &     objf_local, num_local,
      &     myiter, mytime, mythid )
 
@@ -44,12 +46,12 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer nnzbar
-      integer nnzobs
-      integer nrecloc
+      integer nnzbar, nnzobs
+      integer nrecloc, nrecobs
       integer myiter
       integer mythid
       integer localstartdate(4)
+      integer outlev
 
       _RL localbar   (1-olx:snx+olx,1-oly:sny+oly,nnzbar,nsx,nsy)
       _RL localweight(1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
@@ -66,7 +68,11 @@ c     == routine arguments ==
       character*(1) ylocmask
       character*(MAX_LEN_FNAM) localbarfile
       character*(MAX_LEN_FNAM) localobsfile
-      character*(8) preproc
+      character*(16) preproc
+      character*(16) posproc
+      character*(MAX_LEN_FNAM) scalefile
+
+#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -96,7 +102,6 @@ c     == local variables ==
 
       character*(128) fname1, fname2
 
-cnew(
       _RL daytime
       _RL diffsecs
       integer dayiter
@@ -109,7 +114,7 @@ cnew(
       integer mody, modm
       integer beginmodel, beginlocal
       logical exst
-cnew)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 c     == external functions ==
 
@@ -175,7 +180,8 @@ c--   First, read tiled data.
       write(fname1(1:128),'(2a,i10.10)')
      &     localbarfile(1:il),'.',eccoiter
 
-cgf here nrecloc will be updated based upon preproc
+c-- reset nrecloc, if needed, according to preproc
+      if ( preproc .EQ. 'climmon ') nrecloc=MIN(nrecloc,12)
 
       if ( .NOT. ( localobsfile.EQ.' ' ) ) then
 
@@ -253,7 +259,6 @@ c otherwise assume climatology, used for each year
             enddo
           enddo
         endif
-cnew)
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -301,5 +306,7 @@ c--   End of second loop over records.
 
 c--   End of localobsfile
       endif
+
+#endif /* ALLOW_ECCO */
 
       end

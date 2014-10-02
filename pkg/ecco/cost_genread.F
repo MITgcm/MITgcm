@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_genread.F,v 1.1 2014/10/01 12:54:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_genread.F,v 1.2 2014/10/02 22:26:17 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -51,7 +51,7 @@ C                      (default: .false.)
 C     lAdInit:         initialisation of corresponding adjoint
 C                      variable and write to active file
       CHARACTER*(*) active_var_file
-      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
       INTEGER iRec
       INTEGER myOptimIter
       INTEGER myThid
@@ -59,12 +59,19 @@ C                      variable and write to active file
       LOGICAL lAdInit
       INTEGER nnzbar
       _RL     dummy
-      character*(8) preproc
+      character*(16) preproc
 
 C     !LOCAL VARIABLES:
+      _RL     fld1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      _RL     fld2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      integer i,j,k,bi,bj
+      integer iyear, imon
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 cgf here the read sequence will depend on preproc (e.g. as GENERIC_BAR_MONTH)
+
+      if ( preproc .EQ. '          ') then
 
         if ( nnzbar .EQ. 1 ) then
            call active_read_xy( active_var_file, active_var,
@@ -77,6 +84,67 @@ cgf here the read sequence will depend on preproc (e.g. as GENERIC_BAR_MONTH)
      &                       ladinit, eccoiter, mythid,
      &                       dummy )
         endif
+
+      elseif ( preproc .EQ. 'climmon ') then
+
+c--   Loop over month
+         nyears=int((nmonsrec-irec)/12)+1
+
+         do bj = mybylo(mythid),mybyhi(mythid)
+           do bi = mybxlo(mythid),mybxhi(mythid)
+             do k = 1,nnzbar
+               do j = 1,sNy
+                 do i = 1,sNx
+                   fld1(i,j,k,bi,bj) = 0. _d 0
+                 enddo
+               enddo
+             enddo
+           enddo
+         enddo
+
+         do iyear=1,nyears
+           imon=irec+(iyear-1)*12
+
+           if ( nnzbar .EQ. 1 ) then
+           call active_read_xy( active_var_file, fld2,
+     &                      imon, doglobalread,
+     &                      ladinit, eccoiter, mythid,
+     &                      dummy )
+           else
+           call active_read_xyz( active_var_file, fld2,
+     &                       imon, doglobalread,
+     &                       ladinit, eccoiter, mythid,
+     &                       dummy )
+           endif
+
+           do bj = mybylo(mythid),mybyhi(mythid)
+             do bi = mybxlo(mythid),mybxhi(mythid)
+               do k = 1,nnzbar
+                 do j = 1,sNy
+                   do i = 1,sNx
+                     fld1(i,j,k,bi,bj) =fld1(i,j,k,bi,bj)
+     $                   +fld2(i,j,k,bi,bj)/float(nyears)
+                   enddo
+                 enddo
+               enddo
+             enddo
+           enddo
+
+         enddo
+
+         do bj = mybylo(mythid),mybyhi(mythid)
+           do bi = mybxlo(mythid),mybxhi(mythid)
+             do k = 1,nnzbar
+               do j = 1,sNy
+                 do i = 1,sNx
+                   active_var(i,j,k,bi,bj)=fld1(i,j,k,bi,bj)
+                 enddo
+               enddo
+             enddo
+           enddo
+         enddo
+
+      endif
 
       RETURN
       END

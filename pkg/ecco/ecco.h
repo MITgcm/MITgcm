@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.4 2014/10/01 12:54:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.5 2014/10/02 22:26:17 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -149,8 +149,11 @@ c     file precision and field type
 
 c     empty preprocessing name:
 c     =========================
-      character*(8) no_preproc
+      character*(16) no_preproc,no_posproc
       PARAMETER ( no_preproc='        ' )
+      PARAMETER ( no_posproc='        ' )
+      character*(MAX_LEN_FNAM) no_scalefile
+      PARAMETER ( no_scalefile=' ' )
 
 c     Number of User Cost terms:
 c     =============================
@@ -208,14 +211,17 @@ c     objf_gencost - gencost user defined contribution
       _RL     gencost_period(NGENCOST)
 
       common /ecco_gencost_i_1/
-     &       gencost_nrec, gencost_flag,
+     &       gencost_nrec, gencost_nrecperiod,
+     &       gencost_flag, gencost_outputlevel,
      &       gencost_startdate1, gencost_startdate2,
      &       gencost_enddate1, gencost_enddate2,
      &       gencost_startdate, gencost_enddate,
      &       gencost_pointer3d, gencost_smooth2Ddiffnbt
 
       integer gencost_nrec(NGENCOST)
+      integer gencost_nrecperiod(NGENCOST)
       integer gencost_flag(NGENCOST)
+      integer gencost_outputlevel(NGENCOST)
       integer gencost_startdate1(NGENCOST)
       integer gencost_startdate2(NGENCOST)
       integer gencost_startdate(4,NGENCOST)
@@ -240,6 +246,7 @@ c     objf_gencost - gencost user defined contribution
      &       gencost_barfile,
      &       gencost_avgperiod,
      &       gencost_preproc,
+     &       gencost_posproc,
      &       gencost_mask
       character*(MAX_LEN_FNAM) gencost_name(NGENCOST)
       character*(MAX_LEN_FNAM) gencost_scalefile(NGENCOST)
@@ -247,7 +254,8 @@ c     objf_gencost - gencost user defined contribution
       character*(MAX_LEN_FNAM) gencost_datafile(NGENCOST)
       character*(MAX_LEN_FNAM) gencost_barfile(NGENCOST)
       character*(5)            gencost_avgperiod(NGENCOST)
-      character*(8)            gencost_preproc(NGENCOST)
+      character*(16)           gencost_preproc(NGENCOST)
+      character*(16)           gencost_posproc(NGENCOST)
       character*(1)            gencost_mask(NGENCOST)
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */

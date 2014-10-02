@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.72 2014/10/01 12:54:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.73 2014/10/02 22:26:17 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -161,11 +161,14 @@ c--   Read the namelist input.
      &         gencost_scalefile,
      &         gencost_errfile,
      &         gencost_preproc,
+     &         gencost_posproc,
+     &         gencost_outputlevel,
      &         gencost_mask,
      &         gencost_spmin,
      &         gencost_spmax,
      &         gencost_spzero,
      &         gencost_avgperiod,
+     &         gencost_nrecperiod,
      &         gencost_startdate1,
      &         gencost_startdate2,
      &         gencost_enddate1,
@@ -523,13 +526,16 @@ c--   Set default values.
          using_gencost(k)      = .FALSE.
          gencost_flag(k)       = 0
          gencost_avgperiod(k)  = '     '
+         gencost_nrecperiod(k) = 0
          gencost_startdate1(k) = 0
          gencost_startdate2(k) = 0
          gencost_enddate1(k) = 0
          gencost_enddate2(k) = 0
          gencost_datafile(k)   = ' '
          gencost_name(k)       = 'gencost'
-         gencost_preproc(k)    = '        '
+         gencost_preproc(k)    = '              '
+         gencost_posproc(k)    = '              '
+         gencost_outputlevel(k)= 0
          gencost_scalefile(k)  = ' '
          gencost_errfile(k)    = ' '
          gencost_mask(k)       = 'c'
