@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.5 2014/10/02 22:26:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.6 2014/10/03 15:01:07 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -232,11 +232,12 @@ c     objf_gencost - gencost user defined contribution
       integer  gencost_smooth2Ddiffnbt(NGENCOST)
 
       common /ecco_gencost_l_1/
-     &       gencost_timevaryweight,
+     &       gencost_timevaryweight, gencost_barskip,
      &       using_gencost, gencost_is3d
       LOGICAL using_gencost(NGENCOST)
       LOGICAL gencost_is3d(NGENCOST)
       LOGICAL gencost_timevaryweight(NGENCOST)
+      LOGICAL gencost_barskip(NGENCOST)
 
       common /ecco_gencost_c/
      &       gencost_name,

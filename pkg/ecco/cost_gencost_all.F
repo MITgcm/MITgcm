@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.16 2014/10/02 22:26:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.17 2014/10/03 15:01:07 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -44,6 +44,7 @@ c     == local variables ==
       integer nnzbar
       integer nnzobs
       integer k, kk
+      integer nrecloc, nrecperiodloc
 
 c     == external functions ==
 
@@ -64,17 +65,19 @@ c     == end of interface ==
 
          nnzbar = 1
          nnzobs = 1
+         nrecloc= gencost_nrec(k)
+         nrecperiodloc= gencost_nrecperiod(k)
          call cost_generic(
      &     nnzbar, gencost_barfile(k),
      &     gencost_barfld(1-Olx,1-Oly,1,1,k), gencost_dummy(k),
      &     nnzobs, gencost_datafile(k), mult_gencost(k),
-     &     gencost_nrec(k), gencost_nrecperiod(k),
+     &     nrecloc, nrecperiodloc,
      &     gencost_startdate(1,k), gencost_period(k),
      &     gencost_mask(k), gencost_weight(1-Olx,1-Oly,1,1,k),
      &     gencost_spmin(k), gencost_spmax(k),
      &     gencost_spzero(k), gencost_preproc(k),
      &     gencost_posproc(k), gencost_scalefile(k),
-     &     gencost_outputlevel(k),
+     &     gencost_outputlevel(k), gencost_name(k),
      &     objf_gencost(1,1,k), num_gencost(1,1,k),
      &     myiter, mytime, mythid )
 
@@ -93,18 +96,20 @@ c     == end of interface ==
          nnzbar = nr
          nnzobs = nr
          kk=gencost_pointer3d(k)
+         nrecloc= gencost_nrec(k)
+         nrecperiodloc= gencost_nrecperiod(k)
          call cost_generic(
      &     nnzbar, gencost_barfile(k),
      &     gencost_bar3d(1-Olx,1-Oly,1,1,1,kk),
      &     gencost_dummy(k),
      &     nnzobs, gencost_datafile(k), mult_gencost(k),
-     &     gencost_nrec(k), gencost_nrecperiod(k),
+     &     nrecloc, nrecperiodloc,
      &     gencost_startdate(1,k), gencost_period(k),
      &     gencost_mask(k), gencost_wei3d(1-Olx,1-Oly,1,1,1,kk),
      &     gencost_spmin(k), gencost_spmax(k),
      &     gencost_spzero(k), gencost_preproc(k),
      &     gencost_posproc(k), gencost_scalefile(k),
-     &     gencost_outputlevel(k),
+     &     gencost_outputlevel(k), gencost_name(k),
      &     objf_gencost(1,1,k), num_gencost(1,1,k),
      &     myiter, mytime, mythid )
 #endif

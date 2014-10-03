@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.47 2014/10/01 12:54:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.48 2014/10/03 15:01:07 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -673,7 +673,7 @@ cmm   accumulate average
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 cph currently all assumed to be surface fields, i.e. 2-d
       do k = 1, NGENCOST
-      if ( (using_gencost(k)).AND.(gencost_barfile(k).ne.' ') ) then
+      if ( (using_gencost(k)).AND.(.NOT.gencost_barskip(k)) ) then
       if ( .NOT.gencost_is3d(k) ) then
         call cost_averagesgeneric(
      &       gencost_barfile(k),

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.36 2014/10/02 22:26:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.37 2014/10/03 15:01:07 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -170,6 +170,16 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       do k = 1, NGENCOST
+
+c--    skip averaging when several cost terms use the 
+c      same barfile or when barfile is undefined
+       gencost_barskip(k)=.FALSE.
+       if ( gencost_barfile(k).EQ.' ' ) 
+     &      gencost_barskip(k)=.TRUE.
+       do k2 = 1,k-1
+         if ( gencost_barfile(k2).EQ.gencost_barfile(k) )
+     &      gencost_barskip(k)=.TRUE.
+       enddo
 
 c--    set time averaging parameters
        if ( (using_gencost(k)).AND.( (gencost_flag(k).GE.1).OR.
