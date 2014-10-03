@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.14 2014/10/02 22:25:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.15 2014/10/03 15:01:27 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -128,9 +128,9 @@ c--      call cost_generic(
 c--     &     nnzbar, smrareabarfile, smrareabar, xx_smrareabar_mean_dummy,
 c--     &     nnzobs, smrareadatfile, mult_smrarea,
 c--     &     nrecloc, nrecloc, modelstartdate, localperiod,
-c--     &     'C', wsmrarea,
-c--     &     spminloc, spmaxloc, spzeroloc, no_preproc,
-c--     &     no_posproc, no_scalefile, 0, objf_smrarea, num_smrarea,
+c--     &     'C', wsmrarea, spminloc, spmaxloc, spzeroloc,
+c--     &     no_preproc, no_posproc, no_scalefile,
+c--     &     0, smrareadatfile, objf_smrarea, num_smrarea,
 c--     &     myiter, mytime, mythid )
 
 c--      write(msgbuf,'(a,1P2E18.10)')
