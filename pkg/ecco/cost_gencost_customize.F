@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.9 2014/10/01 12:54:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.10 2014/10/03 19:57:15 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -45,6 +45,12 @@ c     == local variables ==
 #ifdef ALLOW_GENCOST3D
       integer k2,kk
 #endif
+#ifdef ALLOW_EXF
+      _RL uBarC, vBarC
+#endif
+
+      _RL tauZonC        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL tauMerC        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
@@ -60,6 +66,30 @@ c     == end of interface ==
       jmax = sny
       imin = 1
       imax = snx
+
+
+#ifdef ALLOW_EXF
+c rotated to EW/NS tracer point
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do j = jmin,jmax
+              do i = imin,imax
+                uBarC = 0.5 _d 0
+     &           *(ustress(i,j,bi,bj)+ustress(i+1,j,bi,bj))
+                vBarC = 0.5 _d 0
+     &           *(vstress(i,j,bi,bj)+vstress(i,j+1,bi,bj))
+                tauZonC(i,j,bi,bj) = angleCosC(i,j,bi,bj)*uBarC
+     &                           -angleSinC(i,j,bi,bj)*vBarC
+                tauMerC(i,j,bi,bj) = angleSinC(i,j,bi,bj)*uBarC
+     &                           +angleCosC(i,j,bi,bj)*vBarC
+              enddo
+            enddo
+          enddo
+        enddo
+
+#endif
+
+
 
       do k=1,NGENCOST
       do bj = jtlo,jthi
@@ -79,14 +109,12 @@ c     == end of interface ==
          elseif (gencost_barfile(k)(1:2).EQ.'bp') then
            gencost_modfld(i,j,bi,bj,k) = 
      &      phiHydLow(i,j,bi,bj)*maskC(i,j,1,bi,bj)
-#ifdef ALLOW_EXF
-         elseif (gencost_barfile(k)(1:4).EQ.'taux') then
+         elseif (gencost_barfile(k)(1:6).EQ.'tauZon') then
            gencost_modfld(i,j,bi,bj,k) = 
-     &      ustress(i,j,bi,bj)*maskW(i,j,1,bi,bj)
-         elseif (gencost_barfile(k)(1:4).EQ.'tauy') then
+     &      tauZonC(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+         elseif (gencost_barfile(k)(1:6).EQ.'tauMer') then
            gencost_modfld(i,j,bi,bj,k) = 
-     &      vstress(i,j,bi,bj)*maskS(i,j,1,bi,bj)
-#endif
+     &      tauMerC(i,j,bi,bj)*maskC(i,j,1,bi,bj)
 #ifdef ALLOW_SEAICE
          elseif (gencost_name(k).EQ.'siv4-conc') then
            gencost_modfld(i,j,bi,bj,k) = 
