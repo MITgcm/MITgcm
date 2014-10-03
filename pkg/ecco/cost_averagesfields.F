@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.48 2014/10/03 15:01:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.49 2014/10/03 19:57:33 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -670,8 +670,10 @@ cmm   accumulate average
      &     sum1day, dayrec, 1, mythid )
 #endif
 
+
+
+
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-cph currently all assumed to be surface fields, i.e. 2-d
       do k = 1, NGENCOST
       if ( (using_gencost(k)).AND.(.NOT.gencost_barskip(k)) ) then
       if ( .NOT.gencost_is3d(k) ) then
