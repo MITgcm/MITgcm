@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_genread.F,v 1.2 2014/10/02 22:26:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_genread.F,v 1.3 2014/10/04 20:28:20 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -40,7 +40,8 @@ C     == global variables ==
 # include "ecco.h"
 #endif
 
-C     !INPUT/OUTPUT PARAMETERS:
+c     == routine arguments ==
+
 C     active_var_file: filename
 C     active_var:      array
 C     iRec:            record number
@@ -61,15 +62,15 @@ C                      variable and write to active file
       _RL     dummy
       character*(16) preproc
 
-C     !LOCAL VARIABLES:
+#ifdef ALLOW_ECCO
+
+c     == local variables ==
+
       _RL     fld1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
       _RL     fld2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
       integer i,j,k,bi,bj
       integer iyear, imon
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
-
-cgf here the read sequence will depend on preproc (e.g. as GENERIC_BAR_MONTH)
 
       if ( preproc .EQ. '          ') then
 
@@ -90,17 +91,7 @@ cgf here the read sequence will depend on preproc (e.g. as GENERIC_BAR_MONTH)
 c--   Loop over month
          nyears=int((nmonsrec-irec)/12)+1
 
-         do bj = mybylo(mythid),mybyhi(mythid)
-           do bi = mybxlo(mythid),mybxhi(mythid)
-             do k = 1,nnzbar
-               do j = 1,sNy
-                 do i = 1,sNx
-                   fld1(i,j,k,bi,bj) = 0. _d 0
-                 enddo
-               enddo
-             enddo
-           enddo
-         enddo
+         call ecco_zero(fld1,nnzbar,zeroRL,myThid)
 
          do iyear=1,nyears
            imon=irec+(iyear-1)*12
@@ -145,6 +136,8 @@ c--   Loop over month
          enddo
 
       endif
+
+#endif /* ALLOW_ECCO */
 
       RETURN
       END

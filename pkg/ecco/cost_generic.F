@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.22 2014/10/03 15:01:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.23 2014/10/04 20:28:20 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -86,14 +86,11 @@ c     == local variables ==
       integer imin,imax
       integer irec
       integer  il
-      integer localrec
-      integer obsrec
+      integer localrec, obsrec
 
       logical doglobalread
       logical ladinit
 
-      _RL spval
-      parameter (spval = -9999. )
       _RL localwww
       _RL localcost
       _RL junk
@@ -101,24 +98,11 @@ c     == local variables ==
       _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
       _RL localdif   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
-      _RL difmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL cmask (1-olx:snx+olx,1-oly:sny+oly,nnzobs)
+      _RL difmask  (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
 
       character*(128) fname1, fname2, fname3
 
-      _RL daytime
-      _RL diffsecs
-      integer dayiter
-      integer daydate(4)
-      integer difftime(4)
-      integer tempDate_1
-      integer middate(4)
-      integer yday, ymod
-      integer md, dd, sd, ld, wd
-      integer mody, modm
-      integer beginmodel, beginlocal
       logical exst
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 c     == external functions ==
 
@@ -144,17 +128,11 @@ c--   Initialise local variables.
         do bi = itlo,ithi
           objf_local(bi,bj) = 0. _d 0
           num_local(bi,bj) = 0. _d 0
-          do k = 1,nnzobs
-            do j = jmin,jmax
-              do i = imin,imax
-                localobs(i,j,k,bi,bj) = 0. _d 0
-                localdif(i,j,k,bi,bj) = 0. _d 0
-                localmask(i,j,k,bi,bj) = 0. _d 0
-              enddo
-            enddo
-          enddo
         enddo
       enddo
+      call ecco_zero(localobs,nnzobs,zeroRL,myThid)
+      call ecco_zero(localdif,nnzobs,zeroRL,myThid)
+      call ecco_zero(difmask,nnzobs,zeroRL,myThid)
 
 c--   Assign mask
       do bj = jtlo,jthi
@@ -181,11 +159,6 @@ c--   First, read tiled data.
       doglobalread = .false.
       ladinit      = .false.
 
-      write(fname1(1:128),'(80a)') ' '
-      il=ilnblnk( localbarfile )
-      write(fname1(1:128),'(2a,i10.10)')
-     &     localbarfile(1:il),'.',eccoiter
-
 c-- reset nrecloc, if needed, according to preproc
       if ( preproc .EQ. 'climmon ') nrecloc=MIN(nrecloc,12)
 
@@ -194,105 +167,28 @@ c-- reset nrecloc, if needed, according to preproc
 c--   loop over obsfile records
       do irec = 1, nrecloc
 
-c--   get corresponding model average
+c--     determine records and file names
+        exst=.FALSE.
+        call cost_gencal(localbarfile, localobsfile,
+     &     irec, localstartdate, localperiod, fname1,
+     &     fname2, localrec, obsrec, exst, mythid )
+
+c--     load model average and observed average
         call cost_genread( fname1, localbar, irec, doglobalread,
      &                     ladinit, eccoiter, nnzbar, preproc,
      &                     mythid, xx_localbar_mean_dummy )
 
-
-        if ( localperiod .EQ. 86400. ) then
-c-- assume daily fields
-           obsrec = irec
-           daytime = FLOAT(secondsperday*(irec-1)) + modelstart
-           dayiter = hoursperday*(irec-1) + modeliter0
-           call cal_getdate( dayiter, daytime, daydate, mythid )
-           call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
-           ymod = localstartdate(1)/10000
-           do k=1,4
-              middate(k)=0
-           enddo
-           tempDate_1 = yday*10000+100+1
-           if ( ymod .GE. yday ) then
-              call cal_FullDate( localstartdate(1), 0, middate, mythid)
-           else
-              call cal_FullDate( tempDate_1, 0, middate, mythid)
-           endif
-           call cal_TimePassed( middate, daydate, difftime, mythid )
-           call cal_ToSeconds( difftime, diffsecs, mythid )
-c           localrec = floor(diffsecs/localperiod) + 1
-           localrec = int(diffsecs/localperiod) + 1
-        else
-c-- assume monthly fields
-           beginlocal = localstartdate(1)/10000
-           beginmodel = modelstartdate(1)/10000
-           obsrec =
-     &           ( beginmodel - beginlocal )*nmonthyear
-     &         + ( mod(modelstartdate(1)/100,100)
-     &            -mod(localstartdate(1)/100,100) )
-     &         + irec
-           mody   = modelstartdate(1)/10000
-           modm   = modelstartdate(1)/100 - mody*100
-           yday   = mody + INT((modm-1+irec-1)/12)
-           localrec = 1 + MOD(modm-1+irec-1,12)
-        endif
-
-        il=ilnblnk(localobsfile)
-        write(fname2(1:128),'(2a,i4)')
-     &       localobsfile(1:il), '_', yday
-        inquire( file=fname2, exist=exst )
-        if ( (.NOT. exst).AND.( localperiod .NE. 86400. ) ) then
-           write(fname2(1:128),'(a)') localobsfile(1:il)
-           inquire( file=fname2, exist=exst )
-c at this point we are treating a climatology except if ...
-#ifndef COST_GENERIC_ASSUME_CYCLIC
-c ... when we are treating one big (multiyear monthly) file
-           localrec = obsrec
-#endif
-        endif
-
-        if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
-          call mdsreadfield( fname2, cost_iprec, cost_yftype, nnzobs,
+        call ecco_zero(localobs,nnzobs,spzeroloc,myThid)
+        if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) )
+     &  call mdsreadfield( fname2, cost_iprec, cost_yftype, nnzobs,
      &         localobs, localrec, mythid )
-        else
-          do bj = jtlo,jthi
-            do bi = itlo,ithi
-              do k = 1,nnzobs
-                do j = jmin,jmax
-                  do i = imin,imax
-                     localobs(i,j,k,bi,bj) = spval
-                  enddo
-                enddo
-              enddo
-            enddo
-          enddo
-        endif
 
-c--     Determine the model-data difference mask
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nnzobs
-             do j = jmin,jmax
-              do i = imin,imax
-#ifdef ALLOW_OLD_ESTIM_CODES
-               difmask(i,j,k,bi,bj) = cosphi(i,j,bi,bj)*localmask(i,j,k,bi,bj)
-#else
-               difmask(i,j,k,bi,bj) = localmask(i,j,k,bi,bj)
-#endif
-                if ( localobs(i,j,k,bi,bj) .lt. spminloc .or.
-     &               localobs(i,j,k,bi,bj) .gt. spmaxloc .or.
-     &               localobs(i,j,k,bi,bj) .eq. spzeroloc ) then
-                   difmask(i,j,k,bi,bj) = 0. _d 0
-                endif
-               localdif(i,j,k,bi,bj) = difmask(i,j,k,bi,bj)*
-     &             (localbar(i,j,k,bi,bj)-localobs(i,j,k,bi,bj))
-              enddo
-             enddo
-            enddo
-          enddo
-        enddo
+c--     Compute masked model-data difference
+        call cost_gendif( localbar, nnzbar, localobs, nnzobs,
+     &     localmask, spminloc, spmaxloc, spzeroloc, 
+     &     posproc, scalefile, localdif, difmask, myThid )
 
 c--     Compute normalized model-obs cost function
-
         do bj = jtlo,jthi
           do bi = itlo,ithi
             localcost    = 0. _d 0
@@ -314,15 +210,15 @@ c--     Compute normalized model-obs cost function
 
 
 
-c--   output model-data difference to disk
-      if ( outlev.GT.0 ) then
-        il=ilnblnk(outname)
-        write(fname3(1:128),'(2a)') 'misfit_', outname(1:il)
-        if ( nnzbar.EQ.1 ) CALL
-     &  WRITE_REC_XY_RL( fname3, localdif,irec, eccoiter, mythid )
-        if ( nnzbar.EQ.nr ) CALL
-     &  WRITE_REC_XYZ_RL( fname3, localdif,irec, eccoiter, mythid )
-      endif
+c--     output model-data difference to disk
+        if ( outlev.GT.0 ) then
+          il=ilnblnk(outname)
+          write(fname3(1:128),'(2a)') 'misfit_', outname(1:il)
+          if ( nnzobs.EQ.1 ) CALL
+     &    WRITE_REC_XY_RL( fname3, localdif,irec, eccoiter, mythid )
+          if ( nnzobs.EQ.nr ) CALL
+     &    WRITE_REC_XYZ_RL( fname3, localdif,irec, eccoiter, mythid )
+        endif
 
       enddo
 c--   End of loop over obsfile records.
