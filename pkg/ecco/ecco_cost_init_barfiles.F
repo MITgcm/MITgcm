@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.31 2014/10/02 12:28:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.32 2014/10/04 23:55:25 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -429,7 +429,7 @@ c initialize smr sss bar
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 c--   Save gencost_barfile on file.
       do k=1,NGENCOST
-      if ( (using_gencost(k)).AND.(gencost_barfile(k).ne.' ') ) then
+      if ( .NOT.gencost_barskip(k) ) then
       ilt=ilnblnk( gencost_barfile(k) )
       write(fname_gencostbar,'(2a,i10.10)')
      &     gencost_barfile(k)(1:ilt), '.', optimcycle
@@ -437,7 +437,11 @@ c--   Save gencost_barfile on file.
      &     yadprefix, gencost_barfile(k)(1:ilt), '.', optimcycle
       do irec = 1,gencost_nrec(k)
 #ifdef ALLOW_ADJOINT_RUN
-        call active_write_xy( adfname_gencostbar, tmpfld2d, irec,
+        if (.NOT.gencost_is3d(k))
+     &  call active_write_xy( adfname_gencostbar, tmpfld2d, irec,
+     &       optimcycle, mythid, gencost_dummy(k) )
+        if (gencost_is3d(k))
+     &  call active_write_xyz( adfname_gencostbar, tmpfld2d, irec,
      &       optimcycle, mythid, gencost_dummy(k) )
 #endif
       enddo
