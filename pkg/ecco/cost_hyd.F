@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.33 2014/10/03 15:01:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.34 2014/10/06 14:09:03 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -80,8 +80,10 @@ c     == end of interface ==
      &     nnzbar, tbarfile, tbar, xx_tbar_mean_dummy,
      &     nnzobs, sstdatfile, mult_sst,
      &     nmonsloc, nmonsloc, sststartdate, localperiod,
-     &     'C', wsst, spminloc, spmaxloc, spzeroloc, no_preproc,
-     &     no_posproc, no_scalefile, 0, sstdatfile, objf_sst, num_sst,
+     &     'C', wsst, spminloc, spmaxloc, spzeroloc,
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r, 
+     &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
+     &     0, sstdatfile, objf_sst, num_sst,
      &     myiter, mytime, mythid )
 c
 #elif (defined (ALLOW_DAILYSST_COST_CONTRIBUTION))
@@ -101,8 +103,10 @@ c
      &     nnzbar, sstbarfile, sstbar, xx_sstbar_mean_dummy,
      &     nnzobs, sstdatfile, mult_sst,
      &     nrecloc, nmonsloc, sststartdate, localperiod,
-     &     'C', wsst, spminloc, spmaxloc, spzeroloc, no_preproc,
-     &     no_posproc, no_scalefile, 0, sstdatfile, objf_sst, num_sst,
+     &     'C', wsst, spminloc, spmaxloc, spzeroloc, 
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
+     &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
+     &     0, sstdatfile, objf_sst, num_sst,
      &     myiter, mytime, mythid )
 cph      call cost_sst   ( myiter, mytime, mythid )
 #endif
@@ -145,8 +149,10 @@ cph      call cost_sst   ( myiter, mytime, mythid )
      &     nnzbar, tbarfile, tbar, xx_tbar_mean_dummy,
      &     nnzobs, tmidatfile, mult_tmi,
      &     nmonsloc, nmonsloc, tmistartdate, localperiod,
-     &     'C', wsst, spminloc, spmaxloc, spzeroloc, no_preproc,
-     &     no_posproc, no_scalefile, 0, tmidatfile, objf_tmi, num_tmi,
+     &     'C', wsst, spminloc, spmaxloc, spzeroloc, 
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
+     &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
+     &     0, tmidatfile, objf_tmi, num_tmi,
      &     myiter, mytime, mythid )
 cph      call cost_tmi( myiter, mytime, mythid )
 #endif
@@ -167,8 +173,10 @@ cph      call cost_tmi( myiter, mytime, mythid )
      &     nnzbar, sbarfile, sbar, xx_sbar_mean_dummy,
      &     nnzobs, sssdatfile, mult_sss,
      &     nmonsloc, nmonsloc, sssstartdate, localperiod,
-     &     'C', wsss, spminloc, spmaxloc, spzeroloc, no_preproc,
-     &     no_posproc, no_scalefile, 0, sssdatfile, objf_sss, num_sss,
+     &     'C', wsss, spminloc, spmaxloc, spzeroloc, 
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
+     &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
+     &     0, sssdatfile, objf_sss, num_sss,
      &     myiter, mytime, mythid )
 cph      call cost_sss   ( myiter, mytime, mythid )
 #endif

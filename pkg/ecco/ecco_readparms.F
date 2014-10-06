@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.74 2014/10/06 11:44:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.75 2014/10/06 14:09:03 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -38,7 +38,7 @@ c     == local variables ==
 C     msgBuf      - Informational/error meesage buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER k, iUnit, num_file, num_var
+      INTEGER k, k2, iUnit, num_file, num_var
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       INTEGER IL, gencost_k3d
 #endif
@@ -161,7 +161,13 @@ c--   Read the namelist input.
      &         gencost_scalefile,
      &         gencost_errfile,
      &         gencost_preproc,
+     &         gencost_preproc_c,
+     &         gencost_preproc_i,
+     &         gencost_preproc_r,
      &         gencost_posproc,
+     &         gencost_posproc_c,
+     &         gencost_posproc_i,
+     &         gencost_posproc_r,
      &         gencost_outputlevel,
      &         gencost_mask,
      &         gencost_spmin,
@@ -505,6 +511,22 @@ Catn -- retired parameters
 
       _END_MASTER( myThid )
 
+c     empty pre/post-processing :
+c     =========================
+
+      _BEGIN_MASTER( myThid )
+      do k2=1,NGENPPROC
+       no_preproc(k2)   = ' '
+       no_preproc_c(k2) = ' '
+       no_preproc_i(k2) = 0
+       no_preproc_r(k2) = 0. _d 0
+       no_posproc(k2)   = ' '
+       no_posproc_c(k2) = ' '
+       no_posproc_i(k2) = 0
+       no_posproc_r(k2) = 0. _d 0
+      enddo
+      _END_MASTER( myThid )
+
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 
       _BEGIN_MASTER( myThid )
@@ -521,8 +543,16 @@ c--   Set default values.
          gencost_enddate2(k) = 0
          gencost_datafile(k)   = ' '
          gencost_name(k)       = 'gencost'
-         gencost_preproc(k)    = '              '
-         gencost_posproc(k)    = '              '
+         do k2=1,NGENPPROC
+          gencost_preproc(k2,k)   = ' '
+          gencost_preproc_c(k2,k) = ' '
+          gencost_preproc_i(k2,k) = 0
+          gencost_preproc_r(k2,k) = 0. _d 0
+          gencost_posproc(k2,k)   = ' '
+          gencost_posproc_c(k2,k) = ' '
+          gencost_posproc_i(k2,k) = 0
+          gencost_posproc_r(k2,k) = 0. _d 0
+         enddo
          gencost_outputlevel(k)= 0
          gencost_scalefile(k)  = ' '
          gencost_errfile(k)    = ' '

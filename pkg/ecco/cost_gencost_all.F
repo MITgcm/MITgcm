@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.17 2014/10/03 15:01:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.18 2014/10/06 14:09:03 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -74,9 +74,11 @@ c     == end of interface ==
      &     nrecloc, nrecperiodloc,
      &     gencost_startdate(1,k), gencost_period(k),
      &     gencost_mask(k), gencost_weight(1-Olx,1-Oly,1,1,k),
-     &     gencost_spmin(k), gencost_spmax(k),
-     &     gencost_spzero(k), gencost_preproc(k),
-     &     gencost_posproc(k), gencost_scalefile(k),
+     &     gencost_spmin(k), gencost_spmax(k), gencost_spzero(k), 
+     &     gencost_preproc(1,k), gencost_preproc_c(1,k),
+     &     gencost_preproc_i(1,k), gencost_preproc_r(1,k),
+     &     gencost_posproc(1,k), gencost_posproc_c(1,k), 
+     &     gencost_posproc_i(1,k), gencost_posproc_r(1,k),
      &     gencost_outputlevel(k), gencost_name(k),
      &     objf_gencost(1,1,k), num_gencost(1,1,k),
      &     myiter, mytime, mythid )
@@ -106,9 +108,11 @@ c     == end of interface ==
      &     nrecloc, nrecperiodloc,
      &     gencost_startdate(1,k), gencost_period(k),
      &     gencost_mask(k), gencost_wei3d(1-Olx,1-Oly,1,1,1,kk),
-     &     gencost_spmin(k), gencost_spmax(k),
-     &     gencost_spzero(k), gencost_preproc(k),
-     &     gencost_posproc(k), gencost_scalefile(k),
+     &     gencost_spmin(k), gencost_spmax(k), gencost_spzero(k),
+     &     gencost_preproc(1,k), gencost_preproc_c(1,k),
+     &     gencost_preproc_i(1,k), gencost_preproc_r(1,k),
+     &     gencost_posproc(1,k), gencost_posproc_c(1,k),
+     &     gencost_posproc_i(1,k), gencost_posproc_r(1,k),
      &     gencost_outputlevel(k), gencost_name(k),
      &     objf_gencost(1,1,k), num_gencost(1,1,k),
      &     myiter, mytime, mythid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.23 2014/10/04 20:28:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.24 2014/10/06 14:09:03 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -11,7 +11,8 @@ C $Name:  $
      &     localstartdate, localperiod,
      &     ylocmask, localweight,
      &     spminloc, spmaxloc, spzeroloc,
-     &     preproc, posproc, scalefile,
+     &     preproc, preproc_c, preproc_i, preproc_r,
+     &     posproc, posproc_c, posproc_i, posproc_r,
      &     outlev, outname,
      &     objf_local, num_local,
      &     myiter, mytime, mythid )
@@ -47,13 +48,17 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer nnzbar, nnzobs
-      integer nrecloc, nrecobs
       integer myiter
       integer mythid
+      integer nnzbar, nnzobs
+      integer nrecloc, nrecobs
       integer localstartdate(4)
       integer outlev
+      integer preproc_i(NGENPPROC)
+      integer posproc_i(NGENPPROC)
 
+      _RL objf_local(nsx,nsy)
+      _RL num_local(nsx,nsy)
       _RL localbar   (1-olx:snx+olx,1-oly:sny+oly,nnzbar,nsx,nsy)
       _RL localweight(1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
       _RL xx_localbar_mean_dummy
@@ -63,15 +68,16 @@ c     == routine arguments ==
       _RL spminloc
       _RL spmaxloc
       _RL spzeroloc
-      _RL objf_local(nsx,nsy)
-      _RL num_local(nsx,nsy)
+      _RL preproc_r(NGENPPROC)
+      _RL posproc_r(NGENPPROC)
 
       character*(1) ylocmask
       character*(MAX_LEN_FNAM) localbarfile
       character*(MAX_LEN_FNAM) localobsfile
-      character*(16) preproc
-      character*(16) posproc
-      character*(MAX_LEN_FNAM) scalefile
+      character*(MAX_LEN_FNAM) preproc(NGENPPROC)
+      character*(MAX_LEN_FNAM) preproc_c(NGENPPROC)
+      character*(MAX_LEN_FNAM) posproc(NGENPPROC)
+      character*(MAX_LEN_FNAM) posproc_c(NGENPPROC)
       character*(MAX_LEN_FNAM) outname
 
 #ifdef ALLOW_ECCO
@@ -160,7 +166,7 @@ c--   First, read tiled data.
       ladinit      = .false.
 
 c-- reset nrecloc, if needed, according to preproc
-      if ( preproc .EQ. 'climmon ') nrecloc=MIN(nrecloc,12)
+      if ( preproc(1) .EQ. 'climmon') nrecloc=MIN(nrecloc,12)
 
       if ( .NOT. ( localobsfile.EQ.' ' ) ) then
 
@@ -186,7 +192,7 @@ c--     load model average and observed average
 c--     Compute masked model-data difference
         call cost_gendif( localbar, nnzbar, localobs, nnzobs,
      &     localmask, spminloc, spmaxloc, spzeroloc, 
-     &     posproc, scalefile, localdif, difmask, myThid )
+     &     posproc, posproc_c, localdif, difmask, myThid )
 
 c--     Compute normalized model-obs cost function
         do bj = jtlo,jthi

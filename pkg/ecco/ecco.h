@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.6 2014/10/03 15:01:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.7 2014/10/06 14:09:03 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -147,14 +147,6 @@ c     file precision and field type
       integer cost_iprec
       character*(2) cost_yftype
 
-c     empty preprocessing name:
-c     =========================
-      character*(16) no_preproc,no_posproc
-      PARAMETER ( no_preproc='        ' )
-      PARAMETER ( no_posproc='        ' )
-      character*(MAX_LEN_FNAM) no_scalefile
-      PARAMETER ( no_scalefile=' ' )
-
 c     Number of User Cost terms:
 c     =============================
       INTEGER NUSERCOST
@@ -172,6 +164,35 @@ c     =============================
       PARAMETER ( NGENCOST3D=0 )
 #endif
 
+      INTEGER NGENPPROC
+      PARAMETER ( NGENPPROC=10 )
+
+
+c     empty pre/post-processing :
+c     =========================
+      common /ecco_nogencost_c/
+     &       no_preproc,
+     &       no_preproc_c,
+     &       no_posproc,
+     &       no_posproc_c
+      character*(MAX_LEN_FNAM) no_preproc(NGENPPROC)
+      character*(MAX_LEN_FNAM) no_preproc_c(NGENPPROC)
+      character*(MAX_LEN_FNAM) no_posproc(NGENPPROC)
+      character*(MAX_LEN_FNAM) no_posproc_c(NGENPPROC)
+
+      common /ecco_nogencost_r/
+     &       no_preproc_r, no_posproc_r
+      _RL no_preproc_r(NGENPPROC)
+      _RL no_posproc_r(NGENPPROC)
+
+      common /ecco_nogencost_i/
+     &       no_preproc_i, no_posproc_i
+      integer no_preproc_i(NGENPPROC)
+      integer no_posproc_i(NGENPPROC)
+
+c     gencost common blocs:
+c     =====================
+
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 c     objf_gencost - gencost user defined contribution
       common /ecco_gencost_ctrl/
@@ -184,13 +205,16 @@ c     objf_gencost - gencost user defined contribution
 #ifdef ALLOW_GENCOST3D
      &       gencost_bar3d, gencost_mod3d, gencost_wei3d,
 #endif
-     &       gencost_spmin, gencost_spmax, gencost_spzero
+     &       gencost_spmin, gencost_spmax, gencost_spzero,
+     &       gencost_period, gencost_preproc_r, gencost_posproc_r
+
       _RL  objf_gencost(nsx,nsy,NGENCOST)
       _RL  num_gencost(nsx,nsy,NGENCOST)
       _RL  mult_gencost(NGENCOST)
       _RL  gencost_spmin(NGENCOST)
       _RL  gencost_spmax(NGENCOST)
       _RL  gencost_spzero(NGENCOST)
+      _RL  gencost_period(NGENCOST)
       _RL  gencost_barfld(1-olx:snx+olx,1-oly:sny+oly,
      &       nsx,nsy,NGENCOST)
       _RL  gencost_modfld(1-olx:snx+olx,1-oly:sny+oly,
@@ -205,10 +229,8 @@ c     objf_gencost - gencost user defined contribution
       _RL  gencost_wei3d(1-olx:snx+olx,1-oly:sny+oly,
      &       nr,nsx,nsy,NGENCOST3D)
 #endif
-
-      common /ecco_gencost_r_2/
-     &       gencost_period
-      _RL     gencost_period(NGENCOST)
+      _RL gencost_preproc_r(NGENPPROC,NGENCOST)
+      _RL gencost_posproc_r(NGENPPROC,NGENCOST)
 
       common /ecco_gencost_i_1/
      &       gencost_nrec, gencost_nrecperiod,
@@ -216,7 +238,8 @@ c     objf_gencost - gencost user defined contribution
      &       gencost_startdate1, gencost_startdate2,
      &       gencost_enddate1, gencost_enddate2,
      &       gencost_startdate, gencost_enddate,
-     &       gencost_pointer3d, gencost_smooth2Ddiffnbt
+     &       gencost_pointer3d, gencost_smooth2Ddiffnbt,
+     &       gencost_preproc_i, gencost_posproc_i
 
       integer gencost_nrec(NGENCOST)
       integer gencost_nrecperiod(NGENCOST)
@@ -230,6 +253,8 @@ c     objf_gencost - gencost user defined contribution
       integer gencost_enddate(4,NGENCOST)
       integer gencost_pointer3d(NGENCOST)
       integer  gencost_smooth2Ddiffnbt(NGENCOST)
+      integer gencost_preproc_i(NGENPPROC,NGENCOST)
+      integer gencost_posproc_i(NGENPPROC,NGENCOST)
 
       common /ecco_gencost_l_1/
      &       gencost_timevaryweight, gencost_barskip,
@@ -247,7 +272,9 @@ c     objf_gencost - gencost user defined contribution
      &       gencost_barfile,
      &       gencost_avgperiod,
      &       gencost_preproc,
+     &       gencost_preproc_c,
      &       gencost_posproc,
+     &       gencost_posproc_c,
      &       gencost_mask
       character*(MAX_LEN_FNAM) gencost_name(NGENCOST)
       character*(MAX_LEN_FNAM) gencost_scalefile(NGENCOST)
@@ -255,8 +282,10 @@ c     objf_gencost - gencost user defined contribution
       character*(MAX_LEN_FNAM) gencost_datafile(NGENCOST)
       character*(MAX_LEN_FNAM) gencost_barfile(NGENCOST)
       character*(5)            gencost_avgperiod(NGENCOST)
-      character*(16)           gencost_preproc(NGENCOST)
-      character*(16)           gencost_posproc(NGENCOST)
+      character*(MAX_LEN_FNAM) gencost_preproc(NGENPPROC,NGENCOST)
+      character*(MAX_LEN_FNAM) gencost_posproc_c(NGENPPROC,NGENCOST)
+      character*(MAX_LEN_FNAM) gencost_posproc(NGENPPROC,NGENCOST)
+      character*(MAX_LEN_FNAM) gencost_preproc_c(NGENPPROC,NGENCOST)
       character*(1)            gencost_mask(NGENCOST)
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */

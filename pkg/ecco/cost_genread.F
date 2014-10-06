@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_genread.F,v 1.3 2014/10/04 20:28:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_genread.F,v 1.4 2014/10/06 14:09:03 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -60,7 +60,7 @@ C                      variable and write to active file
       LOGICAL lAdInit
       INTEGER nnzbar
       _RL     dummy
-      character*(16) preproc
+      character*(MAX_LEN_FNAM) preproc(NGENPPROC)
 
 #ifdef ALLOW_ECCO
 
@@ -72,7 +72,7 @@ c     == local variables ==
       integer iyear, imon
 CEOP
 
-      if ( preproc .EQ. '          ') then
+      if ( preproc(1) .EQ. ' ') then
 
         if ( nnzbar .EQ. 1 ) then
            call active_read_xy( active_var_file, active_var,
@@ -86,7 +86,7 @@ CEOP
      &                       dummy )
         endif
 
-      elseif ( preproc .EQ. 'climmon ') then
+      elseif ( preproc(1) .EQ. 'climmon') then
 
 c--   Loop over month
          nyears=int((nmonsrec-irec)/12)+1

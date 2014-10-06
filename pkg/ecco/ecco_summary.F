@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.16 2014/10/03 15:01:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.17 2014/10/06 14:09:03 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -46,7 +46,7 @@ c     == local variables ==
 
       character*(max_len_mbuf) msgbuf
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      integer k, il, msgunit
+      integer k, k2, il, msgunit
 #endif
 
 c     == external ==
@@ -824,10 +824,20 @@ c
          write(msgbuf,'(a,a)') ' scale file = ',
      &        gencost_scalefile(k)(1:il)
          call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
-         write(msgbuf,'(a,a)') ' preprocess = ',gencost_preproc(k)
-         call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
-         write(msgbuf,'(a,a)') ' posprocess = ',gencost_posproc(k)
-         call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
+         do k2 = 1, NGENPPROC
+          if (gencost_preproc(k2,k).NE.' ') then
+            il = ilnblnk(gencost_preproc(k2,k))
+            write(msgbuf,'(a,a)') ' preprocess = ',
+     &                            gencost_preproc(k2,k)(1:il)
+            call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
+          endif
+          if (gencost_posproc(k2,k).NE.' ') then
+            il = ilnblnk(gencost_posproc(k2,k))
+            write(msgbuf,'(a,a)') ' posprocess = ',
+     &                            gencost_posproc(k2,k)(1:il)
+            call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
+          endif
+         enddo
 c
          write(msgbuf,'(a,i2,L2,i2,L2,L2,i2,a)') ' flags etc. = ',
      &        gencost_flag(k), gencost_is3d(k),gencost_pointer3d(k),
