@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.54 2014/10/01 12:54:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.55 2014/10/06 11:44:10 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -615,6 +615,7 @@ cgf use general hydrography weights
 c--   Read egm-96 geoid covariance. Data in units of meters.
       nnz   =  1
       irec  =  1
+      if ( geoid_errfile .NE. ' ' ) then
       call mdsreadfield( geoid_errfile, cost_iprec, cost_yftype,
      &    nnz, wp, irec, mythid )
 c--   Set all tile edges to zero.
@@ -635,6 +636,7 @@ cph-indonesian)
           enddo
         enddo
       enddo
+      endif
 #else
       do bj = jtlo,jthi
         do bi = itlo,ithi

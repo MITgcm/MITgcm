@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.18 2014/10/01 12:54:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.19 2014/10/06 11:44:10 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -96,35 +96,6 @@ c check for missing data files
      & scatydatfile, scatystartdate(1), myThid )
 #endif
 
-#ifdef ALLOW_OLD_ESTIM_CODES
-
-#ifdef ALLOW_SSH_COST_CONTRIBUTION
-      IF ( using_tpj ) CALL ECCO_CHECK_FILES( using_tpj,
-     & 'altim', topexfile, topexstartdate(1), myThid )
-      IF ( using_ers ) CALL ECCO_CHECK_FILES( using_ers,
-     & 'altim', ersfile, ersstartdate(1), myThid )
-      IF ( using_gfo ) CALL ECCO_CHECK_FILES( using_gfo,
-     & 'altim', gfofile, gfostartdate(1), myThid )
-c
-      IF ( (.NOT.using_tpj ).AND.(.NOT.using_ers)
-     &     .AND.(.NOT.using_gfo) ) THEN
-c warn user as we override using_cost_altim
-             WRITE(msgBuf,'(2A)')
-     &       '** WARNING ** S/R ECCO_CHECK: missing file: ',
-     &       ' for altimeter data so cost gets switched off'
-             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
-c switch off cost function term
-             using_cost_altim = .FALSE.
-      ENDIF
-#endif
-#ifdef ALLOW_SSH_MEAN_COST_CONTRIBUTION
-      CALL ECCO_CHECK_FILES( using_cost_altim,
-     & 'mdt', mdtdatfile, modelstartdate(1), myThid ) 
-#endif
-
-#endif /* ALLOW_OLD_ESTIM_CODES */
-
 c left for later : slightly different treatment would apply to profiles and gencost
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
@@ -140,9 +111,17 @@ c left for later : slightly different treatment would apply to profiles and genc
          endif
 
          if ( gencost_datafile(k) .ne. ' ' ) then
+
            CALL ECCO_CHECK_FILES( using_gencost(k), 'gencost',
      &       gencost_datafile(k), gencost_startdate1(k), myThid )
-#ifdef ALLOW_SEAICE_COST_CONTRIBUTION
+
+c altimetry related checks
+         if (gencost_name(k).EQ.'sshv4-tp') using_tpj=using_gencost(k)
+         if (gencost_name(k).EQ.'sshv4-ers') using_ers=using_gencost(k)
+         if (gencost_name(k).EQ.'sshv4-gfo') using_gfo=using_gencost(k)
+         if (gencost_name(k).EQ.'sshv4-mdt') using_mdt=using_gencost(k)
+
+c seaice related checks
          if (gencost_name(k).EQ.'siv4-conc') 
      &       using_cost_seaice=using_gencost(k)
          if (gencost_name(k).EQ.'siv4-deconc')
@@ -168,9 +147,12 @@ catn-- put stop statement if use old siv4 names:
            CALL PRINT_ERROR( msgBuf , myThid )
            STOP 'ABNORMAL END: S/R ECCO_CHECK'
          endif
-#endif
-         endif
+
+         endif !if ( gencost_datafile(k) .ne. ' ' ) then
       enddo
+
+      IF ( (using_tpj ).OR.(using_ers).OR.(using_gfo)
+     &     .OR.(using_mdt) ) using_cost_altim = .TRUE.
 #endif
 
       RETURN

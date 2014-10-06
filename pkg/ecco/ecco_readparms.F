@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.73 2014/10/02 22:26:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.74 2014/10/06 11:44:10 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -65,7 +65,7 @@ c--   Read the namelist input.
      &                   costTranspDataFile, mdtdatfile,
      &                   mdtstartdate1, mdtstartdate2,
      &                   mdtenddate1, mdtenddate2,
-     &                   using_cost_altim, 
+     &                   using_cost_altim,
      &                   using_cost_bp, using_cost_scat, 
      &                   using_cost_sst, using_cost_seaice,
      &                   using_mdt, using_tpj, using_ers, using_gfo,
@@ -184,12 +184,11 @@ c--   Read the namelist input.
 c--     Set default values.
 
 c run time switches for main cost terms
-#ifdef ALLOW_SSH_COST_CONTRIBUTION
+#if (defined (ALLOW_SSH_COST_CONTRIBUTION) && \
+     !defined (ALLOW_GENCOST_CONTRIBUTION) )
       using_cost_altim=.TRUE.
-      using_mdt       =.TRUE.
 #else
       using_cost_altim=.FALSE.
-      using_mdt       =.FALSE.
 #endif
 #ifdef ALLOW_SEAICE_COST_CONTRIBUTION
       using_cost_seaice=.TRUE.
@@ -229,11 +228,7 @@ c other run time parameters
         hfluxmeanbarfile      =    'hfluxmeanbar'
         sfluxmeanbarfile      =    'sfluxmeanbar'
         costTranspDataFile    =    ' '
-#ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-        using_tpj           = .true.
-#else
-        using_tpj           = .false.
-#endif
+        using_tpj             = .false.
         topexstartdate1       =      0
         topexstartdate2       =      0
         topexperiod           =      0. _d 0
@@ -242,27 +237,20 @@ c other run time parameters
         topexfile             =    ' '
 catn: defaulting mdt[start,end]date1 to pavlis so that
 catn  eccov4 will run without needing to read in these params
+        using_mdt             =.FALSE.
         mdtdatfile            =    ' '
         mdtstartdate1         =      19930101
         mdtstartdate2         =      0
         mdtenddate1           =      20041231
         mdtenddate2           =      0
-#ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-        using_ers             = .true.
-#else
         using_ers             = .false.
-#endif
         ersstartdate1         =      0
         ersstartdate2         =      0
         ersperiod             =      0. _d 0
         ersintercept          =      0. _d 0
         ersslope              =      0. _d 0
         ersfile               =    ' '
-#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-        using_gfo             = .true.
-#else
         using_gfo             = .false.
-#endif
         gfostartdate1         =      0
         gfostartdate2         =      0
         gfoperiod             =      0. _d 0
@@ -592,12 +580,6 @@ c fully interactive generic cost terms
            gencost_pointer3d(k)=gencost_k3d
            gencost_k3d=gencost_k3d+1
          endif
-
-c altimetry switches
-        if (gencost_name(k).EQ.'sshv4-mdt') using_mdt=.TRUE.
-        if (gencost_name(k).EQ.'sshv4-tpj') using_tpj=.TRUE.
-        if (gencost_name(k).EQ.'sshv4-ers') using_ers=.TRUE.
-        if (gencost_name(k).EQ.'sshv4-gfo') using_gfo=.TRUE.
 
       enddo
 
