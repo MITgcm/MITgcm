@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.37 2014/10/03 15:01:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.38 2014/10/06 22:57:36 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -65,7 +65,7 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
       integer tempDate1(4)
       integer tempDate2(4)
       integer gwunit
-      integer ilo,ihi
+      integer il, ilo,ihi
       character*(max_len_mbuf) msgbuf
       integer irec
       _RL     missingObsFlag
@@ -227,9 +227,12 @@ c--   set weights
       if ( gencost_errfile(k) .NE. ' ' ) then
 
       kk=gencost_pointer3d(k)
+      il = ilnblnk(gencost_errfile(k))
+      inquire( file=gencost_errfile(k)(1:il), exist=exst )
+      if (.NOT.exst) using_gencost(k)=.FALSE.
 
       if ( (.NOT. gencost_timevaryweight(k)).AND.
-     &     (.NOT.gencost_is3d(k)) ) then
+     &     (.NOT.gencost_is3d(k)).AND.(exst) ) then
 
            call mdsreadfield( gencost_errfile(k), cost_iprec,
      &     cost_yftype, 1, gencost_weight(:,:,1,1,k), 1, mythid )
@@ -259,7 +262,7 @@ c--           Convert to weight
 
 #ifdef ALLOW_GENCOST3D
       elseif ( (.NOT. gencost_timevaryweight(k)).AND.
-     &     (gencost_is3d(k)).AND.(kk.LE.NGENCOST3D) ) then
+     &     (gencost_is3d(k)).AND.(kk.LE.NGENCOST3D).AND.(exst) ) then
 
            call mdsreadfield( gencost_errfile(k), cost_iprec,
      &     cost_yftype, nr, gencost_wei3d(:,:,1,1,1,kk), 1, mythid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_bpv4.F,v 1.1 2014/09/29 16:46:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_bpv4.F,v 1.2 2014/10/06 22:57:36 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -90,7 +90,8 @@ c     == end of interface ==
 
       kgen=0
       do k=1,NGENCOST
-      if (gencost_barfile(k)(1:2).EQ.'bp') kgen=k
+      if ( (gencost_barfile(k)(1:2).EQ.'bp').AND.
+     &     (using_gencost(k)) ) kgen=k
       enddo
 
       if (kgen.GT.0) then

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.19 2014/10/06 11:44:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.20 2014/10/06 22:57:36 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -39,7 +39,7 @@ C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      INTEGER k
+      INTEGER k, igen_etaday
 #endif
 
       _BEGIN_MASTER(myThid)
@@ -151,8 +151,32 @@ catn-- put stop statement if use old siv4 names:
          endif !if ( gencost_datafile(k) .ne. ' ' ) then
       enddo
 
+c check that one of the used gencost term defines etaday (needed in sshv4)
       IF ( (using_tpj ).OR.(using_ers).OR.(using_gfo)
      &     .OR.(using_mdt) ) using_cost_altim = .TRUE.
+
+      igen_etaday=0
+      do k=1,NGENCOST
+        if ( (gencost_barfile(k).EQ.'etaday').AND.
+     &       (using_gencost(k)) )  igen_etaday=k
+      enddo
+
+      if (igen_etaday.EQ.0) then
+c warn user as we override using_cost_altim	 
+        using_cost_altim = .FALSE.
+        WRITE(msgBuf,'(2A)')	 
+     &    '** WARNING ** S/R ECCO_CHECK: missing file: ',	 
+     &    ' for altimeter data so cost gets switched off'	 
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,	 
+     &                    SQUEEZE_RIGHT , myThid)	 
+      else
+c print result to screen
+        write(msgbuf,'(a,i3)')
+     &  'etaday defined by gencost ',igen_etaday
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+      endif
+
 #endif
 
       RETURN

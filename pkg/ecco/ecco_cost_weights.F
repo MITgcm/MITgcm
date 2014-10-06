@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.55 2014/10/06 11:44:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.56 2014/10/06 22:57:36 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -857,9 +857,11 @@ c--   Read zonal wind stress variance.
 
       nnz   =   1
       irec  =   1
-      call mdsreadfield( scatx_errfile, cost_iprec, cost_yftype, nnz,
+      if ( scatx_errfile .NE. ' ' ) 
+     &call mdsreadfield( scatx_errfile, cost_iprec, cost_yftype, nnz,
      &                   wscatx, irec, mythid )
-      call mdsreadfield( scaty_errfile, cost_iprec, cost_yftype, nnz,
+      if ( scaty_errfile .NE. ' ' )
+     &call mdsreadfield( scaty_errfile, cost_iprec, cost_yftype, nnz,
      &                   wscaty, irec, mythid )
 
       do bj = jtlo,jthi

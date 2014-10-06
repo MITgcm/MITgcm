@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.4 2014/09/29 16:46:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.5 2014/10/06 22:57:36 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -70,7 +70,8 @@ c     == end of interface ==
 c-- detect the relevant gencost indices
       kgen=0
       do k=1,NGENCOST
-        if (gencost_name(k).EQ.'boxmean') kgen=k
+        if ( (gencost_name(k).EQ.'boxmean').AND.
+     &     (using_gencost(k)) ) kgen=k
       enddo
 
       if (kgen.NE.0) then

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.25 2014/09/30 18:39:33 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.26 2014/10/06 22:57:36 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -80,7 +80,7 @@ c     == local variables ==
 c mapping to gencost
       integer igen_mdt, igen_lsc, igen_gmsl
       integer igen_tp, igen_ers, igen_gfo
-      integer igen_etabar
+      integer igen_etaday
 
       _RL spval, factor
       _RL offset
@@ -102,7 +102,7 @@ c local arrays
       _RL tpma(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL ersma(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL gfoma(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL etabar(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL etaday(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       character*(MAX_LEN_FNAM) mdtfi, tpfi, ersfi, gfofi
       integer tpsta(4), erssta(4), gfosta(4)
@@ -186,7 +186,7 @@ c-- detect the relevant gencost indices
       igen_gfo=0
       igen_lsc=0
       igen_gmsl=0
-      igen_etabar=0
+      igen_etaday=0
       do k=1,NGENCOST
         if (gencost_name(k).EQ.'sshv4-mdt') igen_mdt=k
         if (gencost_name(k).EQ.'sshv4-tp') igen_tp=k
@@ -227,7 +227,7 @@ c tpfi, tpsta, tpper
        tpfi=gencost_datafile(igen_tp)(1:ilps)
        call cal_CopyDate(gencost_startdate(1,igen_tp),tpsta,mythid)
        tpper=gencost_period(igen_tp)
-       if (gencost_barfile(igen_tp).EQ.'etabar') igen_etabar=igen_tp
+       if (gencost_barfile(igen_tp).EQ.'etaday') igen_etaday=igen_tp
       endif
 c ersfi, erssta, ersper
       if (igen_ers.GT.0) then
@@ -235,7 +235,7 @@ c ersfi, erssta, ersper
        ersfi=gencost_datafile(igen_ers)(1:ilps)
        call cal_CopyDate(gencost_startdate(1,igen_ers),erssta,mythid)
        ersper=gencost_period(igen_ers)
-       if (gencost_barfile(igen_ers).EQ.'etabar') igen_etabar=igen_ers
+       if (gencost_barfile(igen_ers).EQ.'etaday') igen_etaday=igen_ers
       endif
 c gfofi, gfosta, gfoper
       if (igen_gfo.GT.0) then
@@ -243,16 +243,7 @@ c gfofi, gfosta, gfoper
        gfofi=gencost_datafile(igen_gfo)(1:ilps)
        call cal_CopyDate(gencost_startdate(1,igen_gfo),gfosta,mythid)
        gfoper=gencost_period(igen_gfo)
-       if (gencost_barfile(igen_gfo).EQ.'etabar') igen_etabar=igen_gfo
-      endif
-
-      if (igen_etabar.EQ.0) then
-        stop 'ERROR : one gencost term needs to define the barfile'
-      else
-        write(msgbuf,'(a,i3)')
-     &  'etabar defined by gencost ',igen_etabar
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
+       if (gencost_barfile(igen_gfo).EQ.'etaday') igen_etaday=igen_gfo
       endif
 
 c--   First, read tiled data.
@@ -260,9 +251,9 @@ c--   First, read tiled data.
       ladinit      = .false.
 
       write(fname(1:80),'(80a)') ' '
-      ilps=ilnblnk( gencost_barfile(igen_etabar) )
+      ilps=ilnblnk( gencost_barfile(igen_etaday) )
       write(fname(1:80),'(2a,i10.10)')
-     &     gencost_barfile(igen_etabar)(1:ilps),'.',eccoiter
+     &     gencost_barfile(igen_etaday)(1:ilps),'.',eccoiter
 
 cgf =======================================================
 cgf PART 1:
@@ -272,7 +263,7 @@ cgf        together) over the time interval of the MDT ... subtract
 cgf        mean_slaobs_mdt from mdt.
 cgf        x At this point, mdt is the inferred SLA reference field.
 cgf        x From there on, mdt+sla will be directly comparable to
-cgf        the model SSH (etabar).
+cgf        the model SSH (etaday).
 cgf =======================================================
 
 c--   Read mean field and mask
@@ -471,8 +462,8 @@ c--   re-reference mdt:
 
 
 cgf =======================================================
-cgf PART 2: compute sample means of etabar-slaobs over the
-cgf          period that is covered by the model (i.e. etabar).
+cgf PART 2: compute sample means of etaday-slaobs over the
+cgf          period that is covered by the model (i.e. etaday).
 cgf          x for all SLA data sets together: mean_psMssh_all, mean_psMssh_all_MSK,
 cgf             and offset will be used in PART 3 (MDT cost term).
 cgf          x for each SLA data individually. mean_psMtpobs, mean_psMtpobs_MS, etc.
@@ -508,13 +499,13 @@ cgf =======================================================
 
       do irec = 1, ndaysrec
 
-        call active_read_xy( fname, etabar, irec, doglobalread,
+        call active_read_xy( fname, etaday, irec, doglobalread,
      &                       ladinit, eccoiter, mythid,
-     &                       gencost_dummy(igen_etabar) )
+     &                       gencost_dummy(igen_etaday) )
 
 #ifndef ALLOW_PSBAR_MEAN
-        CALL REMOVE_MEAN_RL( 1, etabar, maskInC, maskInC, rA, drF,
-     &        'etabar', 0. _d 0, myThid )
+        CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,
+     &        'etaday', 0. _d 0, myThid )
 #endif
 
        do bj = jtlo,jthi
@@ -553,14 +544,14 @@ cgf =======================================================
             do j = jmin,jmax
               do i = imin,imax
                 psmean(i,j,bi,bj) = psmean(i,j,bi,bj) +
-     &                etabar(i,j,bi,bj) / float(ndaysrec)
+     &                etaday(i,j,bi,bj) / float(ndaysrec)
                 if ( tpma(i,j,bi,bj)*
      &             gencost_weight(i,j,bi,bj,igen_tp) .NE. 0. ) then
                    mean_slaobs_model(i,j,bi,bj)=
      &              mean_slaobs_model(i,j,bi,bj)+tpob(i,j,bi,bj)
                    mean_psMtpobs(i,j,bi,bj) =
      &                 mean_psMtpobs(i,j,bi,bj) +
-     &                 etabar(i,j,bi,bj)-tpob(i,j,bi,bj)
+     &                 etaday(i,j,bi,bj)-tpob(i,j,bi,bj)
                    mean_psMtpobs_NUM(i,j,bi,bj) =
      &                 mean_psMtpobs_NUM(i,j,bi,bj) + 1. _d 0
                 endif
@@ -570,7 +561,7 @@ cgf =======================================================
      &              mean_slaobs_model(i,j,bi,bj)+ersob(i,j,bi,bj)
                    mean_psMersobs(i,j,bi,bj) =
      &                 mean_psMersobs(i,j,bi,bj) +
-     &                 etabar(i,j,bi,bj)-ersob(i,j,bi,bj)
+     &                 etaday(i,j,bi,bj)-ersob(i,j,bi,bj)
                    mean_psMersobs_NUM(i,j,bi,bj) =
      &                 mean_psMersobs_NUM(i,j,bi,bj) + 1. _d 0
                 endif
@@ -580,7 +571,7 @@ cgf =======================================================
      &              mean_slaobs_model(i,j,bi,bj)+gfoob(i,j,bi,bj)
                    mean_psMgfoobs(i,j,bi,bj) =
      &                 mean_psMgfoobs(i,j,bi,bj) +
-     &                 etabar(i,j,bi,bj)-gfoob(i,j,bi,bj)
+     &                 etaday(i,j,bi,bj)-gfoob(i,j,bi,bj)
                    mean_psMgfoobs_NUM(i,j,bi,bj) =
      &                 mean_psMgfoobs_NUM(i,j,bi,bj) + 1. _d 0
                 endif
@@ -769,9 +760,9 @@ c--    smooth mean_psMssh_all
      &    1,mean_slaobs_model,1,1,mythid)
 
 cgf at this point:
-cgf     1) mean_psMssh_all is the sample mean <etabar-slaobs-mdt-offset>,
+cgf     1) mean_psMssh_all is the sample mean <etaday-slaobs-mdt-offset>,
 cgf             to which a smoothing filter has been applied.
-cgf     2) mean_psMtpobs is the (unsmoothed) sample mean <etabar-tpobs>.
+cgf     2) mean_psMtpobs is the (unsmoothed) sample mean <etaday-tpobs>.
 cgf             And similarly for ers and gfo, each treated separately.
 
 #ifdef ALLOW_PROFILES
@@ -858,13 +849,13 @@ c ------------------------------------------------------
 
         krec=irec+jrec-1
 
-        call active_read_xy( fname, etabar, krec, doglobalread,
+        call active_read_xy( fname, etaday, krec, doglobalread,
      &                       ladinit, eccoiter, mythid,
-     &                       gencost_dummy(igen_etabar) )
+     &                       gencost_dummy(igen_etaday) )
 
 #ifndef ALLOW_PSBAR_MEAN
-        CALL REMOVE_MEAN_RL( 1, etabar, maskInC, maskInC, rA, drF,
-     &        'etabar', 0. _d 0, myThid )
+        CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,
+     &        'etaday', 0. _d 0, myThid )
 #endif
 
        do bj = jtlo,jthi
@@ -905,7 +896,7 @@ c ------------------------------------------------------
       if ( tpma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj)
      &  .NE.0. ) then
            anom_psMslaobs(i,j,bi,bj)= anom_psMslaobs(i,j,bi,bj)+
-     &        etabar(i,j,bi,bj)-tpob(i,j,bi,bj)
+     &        etaday(i,j,bi,bj)-tpob(i,j,bi,bj)
      &        -mean_psMslaobs(i,j,bi,bj)
            anom_slaobs(i,j,bi,bj)= anom_slaobs(i,j,bi,bj)+
      &        tpob(i,j,bi,bj)
@@ -917,7 +908,7 @@ c ------------------------------------------------------
       if ( ersma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj)
      &  .NE.0. ) then
            anom_psMslaobs(i,j,bi,bj)= anom_psMslaobs(i,j,bi,bj)+
-     &        etabar(i,j,bi,bj)-ersob(i,j,bi,bj)
+     &        etaday(i,j,bi,bj)-ersob(i,j,bi,bj)
      &        -mean_psMslaobs(i,j,bi,bj)
            anom_slaobs(i,j,bi,bj)= anom_slaobs(i,j,bi,bj)+
      &        ersob(i,j,bi,bj)
@@ -929,7 +920,7 @@ c ------------------------------------------------------
       if ( gfoma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj)
      &  .NE.0. ) then
            anom_psMslaobs(i,j,bi,bj)= anom_psMslaobs(i,j,bi,bj)+
-     &        etabar(i,j,bi,bj)-gfoob(i,j,bi,bj)
+     &        etaday(i,j,bi,bj)-gfoob(i,j,bi,bj)
      &        -mean_psMslaobs(i,j,bi,bj)
            anom_slaobs(i,j,bi,bj)= anom_slaobs(i,j,bi,bj)+
      &        gfoob(i,j,bi,bj)
@@ -1134,13 +1125,13 @@ cgf =======================================================
 c time associated with this ndaysrec mean
         krec = irec + (ndaysave/2)
 
-        call active_read_xy( fname, etabar, krec, doglobalread,
+        call active_read_xy( fname, etaday, krec, doglobalread,
      &                       ladinit, eccoiter, mythid,
-     &                       gencost_dummy(igen_etabar) )
+     &                       gencost_dummy(igen_etaday) )
 
 #ifndef ALLOW_PSBAR_MEAN
-        CALL REMOVE_MEAN_RL( 1, etabar, maskInC, maskInC, rA, drF,
-     &        'etabar', 0. _d 0, myThid )
+        CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,
+     &        'etaday', 0. _d 0, myThid )
 #endif
 
        do bj = jtlo,jthi
@@ -1196,7 +1187,7 @@ c time associated with this ndaysrec mean
       if ( tpma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj).NE.0. )
      & then
          anom_psMtpobs(i,j,bi,bj)=
-     &       etabar(i,j,bi,bj) - tpob(i,j,bi,bj)
+     &       etaday(i,j,bi,bj) - tpob(i,j,bi,bj)
      &       - mean_psMslaobs(i,j,bi,bj) - slaoffset
      &       - anom_psMslaobs(i,j,bi,bj)
          anom_tpobs(i,j,bi,bj)=tpob(i,j,bi,bj) - slaoffset
@@ -1205,7 +1196,7 @@ c time associated with this ndaysrec mean
       if ( ersma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj).NE.0. )
      & then
          anom_psMersobs(i,j,bi,bj)=
-     &       etabar(i,j,bi,bj) - ersob(i,j,bi,bj)
+     &       etaday(i,j,bi,bj) - ersob(i,j,bi,bj)
      &       - mean_psMslaobs(i,j,bi,bj) - slaoffset
      &       - anom_psMslaobs(i,j,bi,bj)
          anom_ersobs(i,j,bi,bj)=ersob(i,j,bi,bj) - slaoffset
@@ -1214,7 +1205,7 @@ c time associated with this ndaysrec mean
       if ( gfoma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj).NE.0. )
      & then
          anom_psMgfoobs(i,j,bi,bj)=
-     &       etabar(i,j,bi,bj) - gfoob(i,j,bi,bj)
+     &       etaday(i,j,bi,bj) - gfoob(i,j,bi,bj)
      &       - mean_psMslaobs(i,j,bi,bj) - slaoffset
      &       - anom_psMslaobs(i,j,bi,bj)
          anom_gfoobs(i,j,bi,bj)=gfoob(i,j,bi,bj) - slaoffset
