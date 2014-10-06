@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2077 2014/10/06 12:05:00 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2078 2014/10/06 14:12:28 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -16,11 +16,12 @@ o pkg/ecco: increase modularity and improve logic
     using_ers, using_gfo, using_mdt is now only defined within gencost)
 o pkg/ecco: extend generic cost capabilities
   - pkg/ecco : added 3D gencost (ALLOW_GENCOST3D), added gencost
-    capabilities via gencost_preproc, gencost_posproc, gencost_nrecperiod,
-    gencost_outputlevel, gencost_scalefile arguments to cost_generic
+    capabilities via gencost_preproc (+ _c,_i,_r related params), 
+    gencost_posproc (+ _c,_i,_r related params), gencost_nrecperiod,
+    gencost_outputlevel arguments to cost_generic
   - pkg/ecco/cost_genread.F (new) : interface between cost_generic
     and active_read, making room for gencost_preproc to take effect.
-    Added preproc code ('climmon ') to replace GENERIC_BAR_MONTH.
+    Added preproc code ('climmon') to replace GENERIC_BAR_MONTH.
   - pkg/ecco/cost_generic.F :
     compute and store misfit maks*(model-data) in localdif that is
     then used in cost and for output, output misfit if outlev.GT.0
