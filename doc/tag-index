@@ -1,17 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2078 2014/10/06 14:12:28 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2079 2014/10/07 15:02:47 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/ecco: increase modularity and improve logic
-  - ecco_toolbox.F (new) : basic operations that are often used
-     (for now, ecco_toolbox.F simply contains function ecco_zero).
+  - ecco_toolbox.F (new) : basic operations that are often used,
+    including ecco_zero, ecco_cp, ecco_cprsrl, ecco_diffmsk,
+    ecco_addcost, ecco_add, ecco_div, ecco_readbar.
   - cost_gencal.F (new) : determine filnames and records.
-  - cost_gendif.F (new) : compute masked model-data difference.
-  - cost_genread.F : use ecco_zero to initialize field to 0s.
+  - cost_genread.F, cost_generic.F : condense code using ecco_toolbox.
   - cost_generic.F : use spzeroloc rather than hard-coded -9999,
     and exploit the above functions leading to more compact code.
+  - cost_genread.F : rm un-necessary arguments, re-arrange args order.
   - ecco_check.F, ecco_readparms.F : bring logic up to date (using_tpj,
     using_ers, using_gfo, using_mdt is now only defined within gencost)
 o pkg/ecco: extend generic cost capabilities
