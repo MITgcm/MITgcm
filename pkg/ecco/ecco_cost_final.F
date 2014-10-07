@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.71 2014/10/01 12:54:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.72 2014/10/07 12:36:22 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -297,17 +297,17 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
-        f_gentim2d(maxCtrlTim2D)= 0. _d 0
+        f_gentim2d(num_var)= 0. _d 0
        enddo
 #endif
 #ifdef ALLOW_GENARR2D_CONTROL
        do num_var=1,maxCtrlArr2D
-        f_genarr2d(maxCtrlArr2D)= 0. _d 0
+        f_genarr2d(num_var)= 0. _d 0
        enddo
 #endif
 #ifdef ALLOW_GENARR3D_CONTROL
        do num_var=1,maxCtrlArr3D
-        f_genarr3d(maxCtrlArr3D)= 0. _d 0
+        f_genarr3d(num_var)= 0. _d 0
        enddo
 #endif
 
@@ -411,17 +411,17 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
-        no_gentim2d(maxCtrlTim2D)= 0. _d 0
+        no_gentim2d(num_var)= 0. _d 0
        enddo
 #endif
 #ifdef ALLOW_GENARR2D_CONTROL
        do num_var=1,maxCtrlArr2D
-        no_genarr2d(maxCtrlarr2D)= 0. _d 0
+        no_genarr2d(num_var)= 0. _d 0
        enddo
 #endif
 #ifdef ALLOW_GENARR3D_CONTROL
        do num_var=1,maxCtrlArr3D
-        no_genarr3d(maxCtrlarr3D)= 0. _d 0
+        no_genarr3d(num_var)= 0. _d 0
        enddo
 #endif
 
@@ -1251,7 +1251,7 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
         if (no_gencost(num_var).GT.0) then
-         write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
+         write(standardmessageunit,'(A,D22.15,i2.0)')
      &     ' --> f_gencost =',f_gencost(num_var),
      &      num_var
         endif
@@ -1260,7 +1260,7 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
 #ifdef ALLOW_USERCOST_CONTRIBUTION
        do num_var=1,NUSERCOST
         if (no_usercost(num_var).GT.0) then
-         write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
+         write(standardmessageunit,'(A,D22.15,i2.0)')
      &     ' --> f_usercost =',f_usercost(num_var),
      &      num_var
         endif
@@ -1269,7 +1269,7 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
 #ifdef ALLOW_SSHV4_COST
        do num_var=1,NSSHV4COST
         if (no_sshv4cost(num_var).GT.0) then
-         write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
+         write(standardmessageunit,'(A,D22.15,i2.0)')
      &     ' --> f_sshv4cost =',f_sshv4cost(num_var),
      &      num_var
         endif
@@ -1278,7 +1278,7 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
 #ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
         if (no_gentim2d(num_var).GT.0. _d 0) then
-         write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
+         write(standardmessageunit,'(A,D22.15,i2.0)')
      &     ' --> f_gentim2d =',f_gentim2d(num_var),
      &      num_var
         endif
@@ -1287,7 +1287,7 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
 #ifdef ALLOW_GENARR2D_CONTROL
        do num_var=1,maxCtrlArr2D
         if (no_genarr2d(num_var).GT.0. _d 0) then
-         write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
+         write(standardmessageunit,'(A,D22.15,i2.0)')
      &     ' --> f_genarr2d =',f_genarr2d(num_var),
      &      num_var
         endif
@@ -1296,7 +1296,7 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
 #ifdef ALLOW_GENARR3D_CONTROL
        do num_var=1,maxCtrlArr3D
         if (no_genarr3d(num_var).GT.0. _d 0) then
-         write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
+         write(standardmessageunit,'(A,D22.15,i2.0)')
      &     ' --> f_genarr3d =',f_genarr3d(num_var),
      &      num_var
         endif

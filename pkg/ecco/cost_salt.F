@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt.F,v 1.14 2014/04/29 23:27:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt.F,v 1.15 2014/10/07 12:36:22 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -103,6 +103,8 @@ c     == end of interface ==
 c--   Read tiled data.
       doglobalread = .false.
       ladinit      = .false.
+
+      if ( sdatfile.NE.' ') then
 
       if (optimcycle .ge. 0) then
         ilsalt = ilnblnk( sbarfile )
@@ -223,6 +225,8 @@ cph     &                 diagnosfld3d, irec, optimcycle, mythid )
 
       enddo
 c--   End of loop over records.
+
+      endif !if ( sdatfile.NE.' ') then
 
 #endif /* ALLOW_SALT_COST_CONTRIBUTION */
 

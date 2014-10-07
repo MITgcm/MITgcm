@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta.F,v 1.14 2014/04/29 23:27:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta.F,v 1.15 2014/10/07 12:36:22 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -103,6 +103,8 @@ c     == end of interface ==
 c--   Read tiled data.
       doglobalread = .false.
       ladinit      = .false.
+
+      if ( tdatfile.NE.' ') then
 
       if (optimcycle .ge. 0) then
         iltheta = ilnblnk( tbarfile )
@@ -223,6 +225,8 @@ cph     &                 diagnosfld3d, irec, optimcycle, mythid )
 
       enddo
 c--   End of loop over records.
+
+      endif !if ( tdatfile.NE.' ') then
 
 #endif /* ALLOW_THETA_COST_CONTRIBUTION */
 
