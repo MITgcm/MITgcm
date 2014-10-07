@@ -1,9 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.24 2014/10/06 14:09:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.25 2014/10/07 12:22:55 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
 
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: cost_generic
+C     !INTERFACE:
       subroutine cost_generic(
      &     nnzbar, localbarfile, localbar, xx_localbar_mean_dummy,
      &     nnzobs, localobsfile, mult_local,
@@ -17,17 +20,12 @@ C $Name:  $
      &     objf_local, num_local,
      &     myiter, mytime, mythid )
 
-c     ==================================================================
-c     SUBROUTINE cost_generic
-c     ==================================================================
-c
-c     o Generic routine for evaluating time-dependent
+C     !DESCRIPTION: \bv
+C     Generic routine for evaluating time-dependent
 c       cost function contribution
-c
-c     ==================================================================
-c     SUBROUTINE cost_generic
-c     ==================================================================
+C     \ev
 
+C     !USES:
       implicit none
 
 c     == global variables ==
@@ -85,11 +83,8 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer bi,bj
-      integer i,j,k
       integer itlo,ithi
       integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
       integer irec
       integer  il
       integer localrec, obsrec
@@ -97,14 +92,10 @@ c     == local variables ==
       logical doglobalread
       logical ladinit
 
-      _RL localwww
-      _RL localcost
-      _RL junk
-
       _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
       _RL localdif   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
-      _RL difmask  (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
+      _RL difmask    (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
 
       character*(128) fname1, fname2, fname3
 
@@ -115,20 +106,14 @@ c     == external functions ==
       integer  ilnblnk
       external ilnblnk
 
-c     == end of interface ==
+CEOP
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
-      jmin = 1
-      jmax = sny
-      imin = 1
-      imax = snx
 
 c--   Initialise local variables.
-
-      localwww = 0. _d 0
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -141,25 +126,15 @@ c--   Initialise local variables.
       call ecco_zero(difmask,nnzobs,zeroRL,myThid)
 
 c--   Assign mask
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,Nr
-            do j = 1-oly,sny+oly
-              do i = 1-olx,snx+olx
       if ( ylocmask .EQ. 'C' .OR. ylocmask .EQ. 'c' ) then
-         localmask(i,j,k,bi,bj) = maskC(i,j,k,bi,bj)
+        call ecco_cp(maskC,nr,localmask,nr,myThid)
       elseif ( ylocmask .EQ. 'S' .OR. ylocmask .EQ. 's' ) then
-         localmask(i,j,k,bi,bj) = maskS(i,j,k,bi,bj)
+        call ecco_cp(maskS,nr,localmask,nr,myThid)
       elseif ( ylocmask .EQ. 'W' .OR. ylocmask .EQ. 'w' ) then
-         localmask(i,j,k,bi,bj) = maskW(i,j,k,bi,bj)
+        call ecco_cp(maskW,nr,localmask,nr,myThid)
       else
          STOP 'cost_generic: wrong ylocmask'
       endif
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
 
 c--   First, read tiled data.
       doglobalread = .false.
@@ -190,31 +165,16 @@ c--     load model average and observed average
      &         localobs, localrec, mythid )
 
 c--     Compute masked model-data difference
-        call cost_gendif( localbar, nnzbar, localobs, nnzobs,
+        call ecco_diff( localbar, nnzbar, localobs, nnzobs,
      &     localmask, spminloc, spmaxloc, spzeroloc, 
-     &     posproc, posproc_c, localdif, difmask, myThid )
+     &     localdif, difmask, myThid )
 
 c--     Compute normalized model-obs cost function
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            localcost    = 0. _d 0
-            do k = 1,nnzobs
-             do j = jmin,jmax
-              do i = imin,imax
-                localwww  = localweight(i,j,k,bi,bj)
-     &                    * difmask(i,j,k,bi,bj)
-                junk      = localdif(i,j,k,bi,bj)
-                localcost = localcost + junk*junk*localwww
-                if ( localwww .ne. 0. )
-     &               num_local(bi,bj) = num_local(bi,bj) + 1. _d 0
-              enddo
-             enddo
-            enddo
-            objf_local(bi,bj) = objf_local(bi,bj) + localcost
-          enddo
-        enddo
-
-
+        call ecco_addcost(
+     I                   localdif, localweight, difmask, nnzobs,
+     I                   objf_local, num_local,
+     I                   myThid
+     &                   )
 
 c--     output model-data difference to disk
         if ( outlev.GT.0 ) then

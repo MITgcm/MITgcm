@@ -27,7 +27,6 @@ cost_gencost_seaicev4.f
 cost_gencost_bpv4.f
 cost_gencost_boxmean.f
 cost_gencal.f
-cost_gendif.f
 cost_genread.f
 cost_gen_transport.f
 cost_geoid.f                    
