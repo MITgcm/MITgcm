@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.2 2014/10/07 12:22:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.3 2014/10/07 14:45:53 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -6,9 +6,13 @@ C $Name:  $
 C--  File ecco_toolbox.F: Routines to handle basic operations common in ecco.
 C--   Contents
 C--   o ecco_zero
-C--   o ecco_diff
 C--   o ecco_cp
+C--   o ecco_cprsrl
+C--   o ecco_diffmsk
 C--   o ecco_addcost
+C--   o ecco_add
+C--   o ecco_div
+C--   o ecco_readbar
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -77,9 +81,9 @@ c--     Determine the model-data difference mask
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ecco_diff
+C     !ROUTINE: ecco_diffmsk
 C     !INTERFACE:
-      subroutine ecco_diff(
+      subroutine ecco_diffmsk(
      I                   localbar, nnzbar, localobs, nnzobs, localmask,
      I                   spminloc, spmaxloc, spzeroloc,
      O                   localdif, difmask,
@@ -166,7 +170,6 @@ c--     Determine the model-data difference mask
       RETURN
       END
 
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ecco_cp
@@ -240,6 +243,78 @@ c--     Determine the model-data difference mask
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ecco_cprsrl
+C     !INTERFACE:
+      subroutine ecco_cprsrl(
+     I                   fldIn, nzIn, fldOut, nzOut,
+     I                   myThid
+     &                   )
+
+C     !DESCRIPTION: \bv
+C     copy a field to another array, switching from _RS to _RL
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
+
+c     == routine arguments ==
+
+      INTEGER myThid
+      INTEGER nzOut, nzIn
+
+      _RS fldIn   (1-olx:snx+olx,1-oly:sny+oly,nzIn,nsx,nsy)
+      _RL fldOut   (1-olx:snx+olx,1-oly:sny+oly,nzOut,nsx,nsy)
+
+#ifdef ALLOW_ECCO
+
+c     == local variables ==
+
+      integer bi,bj
+      integer i,j,k
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+
+CEOP
+
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
+
+
+c--     Determine the model-data difference mask
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nzOut
+             do j = jmin,jmax
+              do i = imin,imax
+               fldOut(i,j,k,bi,bj) = fldIn(i,j,k,bi,bj)
+              enddo
+             enddo
+            enddo
+          enddo
+        enddo
+
+#endif /* ALLOW_ECCO */
+
+      RETURN
+      END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -330,3 +405,211 @@ c--     Compute normalized model-obs cost function
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ecco_add
+C     !INTERFACE:
+      subroutine ecco_add(
+     I                   fldIn, nzIn, fldOut, nzOut,
+     I                   myThid
+     &                   )
+
+C     !DESCRIPTION: \bv
+C     add a field to another array
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
+
+c     == routine arguments ==
+
+      INTEGER myThid
+      INTEGER nzOut, nzIn
+
+      _RL fldIn   (1-olx:snx+olx,1-oly:sny+oly,nzIn,nsx,nsy)
+      _RL fldOut   (1-olx:snx+olx,1-oly:sny+oly,nzOut,nsx,nsy)
+
+#ifdef ALLOW_ECCO
+
+c     == local variables ==
+
+      integer bi,bj
+      integer i,j,k
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+
+CEOP
+
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
+
+
+c--     Determine the model-data difference mask
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nzOut
+             do j = jmin,jmax
+              do i = imin,imax
+               fldOut(i,j,k,bi,bj) = fldOut(i,j,k,bi,bj)
+     &                             + fldIn(i,j,k,bi,bj)
+              enddo
+             enddo
+            enddo
+          enddo
+        enddo
+
+#endif /* ALLOW_ECCO */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ecco_div
+C     !INTERFACE:
+      subroutine ecco_div( fld, nnzloc, numerloc, myThid )
+C     !DESCRIPTION: \bv
+C     divide a field with RL constant
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+
+c     == routine arguments ==
+
+      INTEGER myThid
+      INTEGER nnzloc
+      _RL numerloc
+      _RL fld   (1-olx:snx+olx,1-oly:sny+oly,nnzloc,nsx,nsy)
+
+#ifdef ALLOW_ECCO
+
+c     == local variables ==
+
+      integer bi,bj
+      integer i,j,k
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+
+CEOP
+
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
+      jmin = 1-oly
+      jmax = sny+oly
+      imin = 1-olx
+      imax = snx+olx
+
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nnzloc
+             do j = jmin,jmax
+              do i = imin,imax
+                fld(i,j,k,bi,bj) = fld(i,j,k,bi,bj)/numerloc
+              enddo
+             enddo
+            enddo
+          enddo
+        enddo
+
+#endif /* ALLOW_ECCO */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ecco_readbar
+C     !INTERFACE:
+      subroutine ecco_readbar(
+     I                           active_var_file,
+     O                           active_var,
+     I                           iRec,
+     I                           nnzbar,
+     I                           dummy,
+     I                           myThid
+     &                         )
+
+C     !DESCRIPTION: \bv
+C     reads one record from averaged time series ("bar file")
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
+
+c     == routine arguments ==
+
+C     active_var_file: filename
+C     active_var:      array
+C     iRec:            record number
+      CHARACTER*(*) active_var_file
+      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      INTEGER iRec
+      INTEGER myThid
+      INTEGER nnzbar
+      _RL     dummy
+
+#ifdef ALLOW_ECCO
+
+c     == local variables ==
+
+      LOGICAL doglobalread
+      LOGICAL lAdInit
+
+CEOP
+
+      doglobalread = .false.
+      ladinit      = .false.
+
+        if ( nnzbar .EQ. 1 ) then
+           call active_read_xy( active_var_file, active_var,
+     &                      irec, doglobalread,
+     &                      ladinit, eccoiter, mythid,
+     &                      dummy )
+        else
+           call active_read_xyz( active_var_file, active_var,
+     &                       irec, doglobalread,
+     &                       ladinit, eccoiter, mythid,
+     &                       dummy )
+        endif
+
+#endif /* ALLOW_ECCO */
+
+      RETURN
+      END
+
+
+
+

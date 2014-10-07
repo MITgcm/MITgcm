@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.25 2014/10/07 12:22:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.26 2014/10/07 14:45:53 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -8,7 +8,7 @@ CBOP
 C     !ROUTINE: cost_generic
 C     !INTERFACE:
       subroutine cost_generic(
-     &     nnzbar, localbarfile, localbar, xx_localbar_mean_dummy,
+     &     nnzbar, localbarfile, localbar, dummy,
      &     nnzobs, localobsfile, mult_local,
      &     nrecloc, nrecobs,
      &     localstartdate, localperiod,
@@ -59,7 +59,7 @@ c     == routine arguments ==
       _RL num_local(nsx,nsy)
       _RL localbar   (1-olx:snx+olx,1-oly:sny+oly,nnzbar,nsx,nsy)
       _RL localweight(1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
-      _RL xx_localbar_mean_dummy
+      _RL dummy
       _RL mult_local
       _RL mytime
       _RL localperiod
@@ -88,9 +88,6 @@ c     == local variables ==
       integer irec
       integer  il
       integer localrec, obsrec
-
-      logical doglobalread
-      logical ladinit
 
       _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
@@ -127,18 +124,14 @@ c--   Initialise local variables.
 
 c--   Assign mask
       if ( ylocmask .EQ. 'C' .OR. ylocmask .EQ. 'c' ) then
-        call ecco_cp(maskC,nr,localmask,nr,myThid)
+        call ecco_cprsrl(maskC,nr,localmask,nr,myThid)
       elseif ( ylocmask .EQ. 'S' .OR. ylocmask .EQ. 's' ) then
-        call ecco_cp(maskS,nr,localmask,nr,myThid)
+        call ecco_cprsrl(maskS,nr,localmask,nr,myThid)
       elseif ( ylocmask .EQ. 'W' .OR. ylocmask .EQ. 'w' ) then
-        call ecco_cp(maskW,nr,localmask,nr,myThid)
+        call ecco_cprsrl(maskW,nr,localmask,nr,myThid)
       else
          STOP 'cost_generic: wrong ylocmask'
       endif
-
-c--   First, read tiled data.
-      doglobalread = .false.
-      ladinit      = .false.
 
 c-- reset nrecloc, if needed, according to preproc
       if ( preproc(1) .EQ. 'climmon') nrecloc=MIN(nrecloc,12)
@@ -155,9 +148,8 @@ c--     determine records and file names
      &     fname2, localrec, obsrec, exst, mythid )
 
 c--     load model average and observed average
-        call cost_genread( fname1, localbar, irec, doglobalread,
-     &                     ladinit, eccoiter, nnzbar, preproc,
-     &                     mythid, xx_localbar_mean_dummy )
+        call cost_genread( fname1, localbar, irec, nnzbar,
+     &       preproc, dummy, mythid )
 
         call ecco_zero(localobs,nnzobs,spzeroloc,myThid)
         if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) )
@@ -165,7 +157,7 @@ c--     load model average and observed average
      &         localobs, localrec, mythid )
 
 c--     Compute masked model-data difference
-        call ecco_diff( localbar, nnzbar, localobs, nnzobs,
+        call ecco_diffmsk( localbar, nnzbar, localobs, nnzobs,
      &     localmask, spminloc, spmaxloc, spzeroloc, 
      &     localdif, difmask, myThid )
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_genread.F,v 1.4 2014/10/06 14:09:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_genread.F,v 1.5 2014/10/07 14:45:53 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -11,23 +11,14 @@ C     !INTERFACE:
      I                           active_var_file,
      O                           active_var,
      I                           iRec,
-     I                           doglobalread,
-     I                           lAdInit,
-     I                           myOptimIter,
      I                           nnzbar,
      I                           preproc,
-     I                           myThid,
-     I                           dummy
+     I                           dummy,
+     I                           myThid
      &                         )
 
 C     !DESCRIPTION: \bv
-C     ==================================================================
-C     SUBROUTINE cost_genread
-C     ==================================================================
 C     reads and pre-processes bar file records
-C     ==================================================================
-C     SUBROUTINE cost_genread
-C     ==================================================================
 C     \ev
 
 C     !USES:
@@ -45,19 +36,11 @@ c     == routine arguments ==
 C     active_var_file: filename
 C     active_var:      array
 C     iRec:            record number
-C     myOptimIter:     number of optimization iteration (default: 0)
 C     myThid:          thread number for this instance
-C     doglobalread:    flag for global or local read/write
-C                      (default: .false.)
-C     lAdInit:         initialisation of corresponding adjoint
-C                      variable and write to active file
       CHARACTER*(*) active_var_file
       _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
       INTEGER iRec
-      INTEGER myOptimIter
       INTEGER myThid
-      LOGICAL doglobalread
-      LOGICAL lAdInit
       INTEGER nnzbar
       _RL     dummy
       character*(MAX_LEN_FNAM) preproc(NGENPPROC)
@@ -66,74 +49,35 @@ C                      variable and write to active file
 
 c     == local variables ==
 
+      integer nyearsINT
+      _RL     nyearsRL
       _RL     fld1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
       _RL     fld2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
-      integer i,j,k,bi,bj
       integer iyear, imon
 CEOP
 
       if ( preproc(1) .EQ. ' ') then
 
-        if ( nnzbar .EQ. 1 ) then
-           call active_read_xy( active_var_file, active_var,
-     &                      irec, doglobalread,
-     &                      ladinit, eccoiter, mythid,
-     &                      dummy )
-        else
-           call active_read_xyz( active_var_file, active_var,
-     &                       irec, doglobalread,
-     &                       ladinit, eccoiter, mythid,
-     &                       dummy )
-        endif
+         call ecco_readbar( active_var_file, active_var,
+     &                      irec, nnzbar, dummy, mythid )
 
       elseif ( preproc(1) .EQ. 'climmon') then
 
 c--   Loop over month
-         nyears=int((nmonsrec-irec)/12)+1
+         nyearsINT=int((nmonsrec-irec)/12)+1
+         nyearsRL=float(nyearsINT)
 
          call ecco_zero(fld1,nnzbar,zeroRL,myThid)
 
          do iyear=1,nyears
            imon=irec+(iyear-1)*12
-
-           if ( nnzbar .EQ. 1 ) then
-           call active_read_xy( active_var_file, fld2,
-     &                      imon, doglobalread,
-     &                      ladinit, eccoiter, mythid,
-     &                      dummy )
-           else
-           call active_read_xyz( active_var_file, fld2,
-     &                       imon, doglobalread,
-     &                       ladinit, eccoiter, mythid,
-     &                       dummy )
-           endif
-
-           do bj = mybylo(mythid),mybyhi(mythid)
-             do bi = mybxlo(mythid),mybxhi(mythid)
-               do k = 1,nnzbar
-                 do j = 1,sNy
-                   do i = 1,sNx
-                     fld1(i,j,k,bi,bj) =fld1(i,j,k,bi,bj)
-     $                   +fld2(i,j,k,bi,bj)/float(nyears)
-                   enddo
-                 enddo
-               enddo
-             enddo
-           enddo
-
+           call ecco_readbar( active_var_file, fld2,
+     &                      imon, nnzbar, dummy, mythid )
+           call ecco_add(fld2,nnzbar,fld1,nnzbar,myThid)
          enddo
 
-         do bj = mybylo(mythid),mybyhi(mythid)
-           do bi = mybxlo(mythid),mybxhi(mythid)
-             do k = 1,nnzbar
-               do j = 1,sNy
-                 do i = 1,sNx
-                   active_var(i,j,k,bi,bj)=fld1(i,j,k,bi,bj)
-                 enddo
-               enddo
-             enddo
-           enddo
-         enddo
+         call ecco_div(fld1,nnzbar,nyearsRL,myThid)
+         call ecco_cp(fld1,nr,active_var,nnzbar,myThid)
 
       endif
 
