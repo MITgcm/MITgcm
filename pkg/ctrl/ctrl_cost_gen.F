@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_gen.F,v 1.3 2014/09/19 17:47:58 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_gen.F,v 1.4 2014/10/07 12:33:18 gforget Exp $
 C $Name:  $
 
 c ----------------------------------------------------------------
@@ -10,7 +10,10 @@ c ----------------------------------------------------------------
 
 #include "CTRL_OPTIONS.h"
 
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ctrl_cost_gen2d
+C     !INTERFACE:
       subroutine ctrl_cost_gen2d(
      I                       startrec,
      I                       endrec,
@@ -30,15 +33,9 @@ c ----------------------------------------------------------------
      I                       myThid
      &                         )
 
-c     ==================================================================
-c     SUBROUTINE ctrl_cost_gen2d
-c     ==================================================================
-c
-c     o Generic routine for all 2D control penalty terms
-c
-c     ==================================================================
-c     SUBROUTINE ctrl_cost_gen2d
-c     ==================================================================
+C     !DESCRIPTION: \bv
+C     Generic routine for all 2D control penalty terms
+C     \ev
 
       implicit none
 
@@ -112,7 +109,7 @@ c     == external functions ==
       integer  ilnblnk
       external ilnblnk
 
-c     == end of interface ==
+CEOP
 
       jtlo = mybylo(myThid)
       jthi = mybyhi(myThid)
@@ -189,12 +186,12 @@ c--     Determine the weights to be used.
             xx_mean(i,j,bi,bj)
      &            = xx_mean(i,j,bi,bj)/float(nrec)
             tmpx = xx_mean(i,j,bi,bj)/xx_gen_wmean
-            if (xx_gen_mask(i,j,kk,bi,bj) .ne. 0.) then
+            if (xx_gen_mask(i,j,kk,bi,bj) .ne. 0. _d 0) then
 #ifdef ALLOW_ECCO
-              if ( ABS(R_low(i,j,bi,bj)) .LT. 100. )
-     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.
+              if ( ABS(R_low(i,j,bi,bj)) .LT. 100.  _d 0)
+     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.  _d 0
               fctilem = fctilem + cosphi(i,j,bi,bj)*tmpx*tmpx
-              if ( cosphi(i,j,bi,bj) .ne. 0. )
+              if ( cosphi(i,j,bi,bj) .ne. 0. _d 0)
      &             num_gen_mean(bi,bj) = num_gen_mean(bi,bj) + 1. _d 0
 #else
               fctilem = fctilem + tmpx*tmpx
@@ -225,14 +222,14 @@ c--         Determine the weights to be used.
             fctile = 0. _d 0
             do j = jmin,jmax
               do i = imin,imax
-                if (xx_gen_mask(i,j,kk,bi,bj) .ne. 0.) then
+                if (xx_gen_mask(i,j,kk,bi,bj) .ne. 0. _d 0) then
                 IF ( .NOT.ctrlSmoothCorrel2D ) THEN
                   tmpx = tmpfld2d(i,j,bi,bj)-xx_mean(i,j,bi,bj)
      &                   - ( xx_gen_remo_intercept +
      &                       xx_gen_remo_slope*(irec-1)*xx_gen_period )
 #ifdef ALLOW_ECCO
-                  if ( ABS(R_low(i,j,bi,bj)) .LT. 100. )
-     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.
+                  if ( ABS(R_low(i,j,bi,bj)) .LT. 100. _d 0 )
+     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100. _d 0
                   fctile = fctile + xx_gen_weight(i,j,bi,bj)*tmpx*tmpx
      &                   * cosphi(i,j,bi,bj)
 #else
@@ -244,9 +241,9 @@ c--         Determine the weights to be used.
                 ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
 #ifdef ALLOW_ECCO
                   if ( xx_gen_weight(i,j,bi,bj)
-     &                *cosphi(i,j,bi,bj) .ne. 0. )
+     &                *cosphi(i,j,bi,bj) .ne. 0. _d 0 )
 #else
-                  if ( xx_gen_weight(i,j,bi,bj) .ne. 0. )
+                  if ( xx_gen_weight(i,j,bi,bj) .ne. 0. _d 0 )
 #endif
      &                 num_gen_anom(bi,bj) = num_gen_anom(bi,bj)
      &                 + 1. _d 0
@@ -283,7 +280,7 @@ c--         Determine the weights to be used.
             fctile = 0. _d 0
             do j = jmin,jmax
               do i = imin,imax
-                if (xx_gen_mask(i,j,kk,bi,bj) .ne. 0.) then
+                if (xx_gen_mask(i,j,kk,bi,bj) .ne. 0. _d 0) then
                   tmpx =
      &                 ( tmpfld2d(i+2,j,bi,bj)-tmpfld2d(i+1,j,bi,bj) )
      &                   *maskW(i+1,j,kk,bi,bj)*maskW(i+2,j,kk,bi,bj)
@@ -294,20 +291,21 @@ c--         Determine the weights to be used.
      &               + ( tmpfld2d(i,j+1,bi,bj)-tmpfld2d(i,j,bi,bj) )
      &                   *maskS(i,j+1,kk,bi,bj)
 #ifdef ALLOW_ECCO
-                  if ( ABS(R_low(i,j,bi,bj)) .LT. 100. )
-     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.
+                  if ( ABS(R_low(i,j,bi,bj)) .LT. 100. _d 0 )
+     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100. _d 0
                   fctile = fctile
      &               + xx_gen_weight(i,j,bi,bj)*cosphi(i,j,bi,bj)
 #else
                   fctile = fctile
      &               + xx_gen_weight(i,j,bi,bj)
 #endif
-     *                 *0.0161*lengthscale/4.0
+     *                 *0.0161 _d 0*lengthscale/4.0 _d 0
      &                 *tmpx*tmpx
 #ifdef ALLOW_ECCO
-                  if ( xx_gen_weight(i,j,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
+                  if ( xx_gen_weight(i,j,bi,bj)*cosphi(i,j,bi,bj)
+     &                 .ne. 0.  _d 0 )
 #else
-                  if ( xx_gen_weight(i,j,bi,bj) .ne. 0. )
+                  if ( xx_gen_weight(i,j,bi,bj) .ne. 0. _d 0 )
 #endif
      &                 num_gen_smoo(bi,bj) = num_gen_smoo(bi,bj)
      &                 + 1. _d 0
@@ -331,8 +329,10 @@ c--   End of loop over records.
       return
       end
 
-c ----------------------------------------------------------------
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ctrl_cost_gen3d
+C     !INTERFACE:
       subroutine ctrl_cost_gen3d(
      I                       xx_gen_file,
      I                       xx_gen_dummy,
@@ -343,10 +343,9 @@ c ----------------------------------------------------------------
      I                       myThid
      &                         )
 
-C     o==========================================================o
-C     | subroutine ctrl_cost_gen3d                                    |
-C     | o GM coefficient adjustment penalization                 |
-C     o==========================================================o
+C     !DESCRIPTION: \bv
+C     Generic routine for all 3D control penalty terms
+C     \ev
 
       implicit none
 
@@ -403,7 +402,7 @@ c     == external functions ==
       integer  ilnblnk
       external ilnblnk
 
-c     == end of interface ==
+CEOP
 
       jtlo = mybylo(myThid)
       jthi = mybyhi(myThid)
@@ -449,7 +448,7 @@ c--     Loop over this thread tiles.
             do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-                if (xx_gen_mask(i,j,k,bi,bj) .ne. 0.) then
+                if (xx_gen_mask(i,j,k,bi,bj) .ne. 0. _d 0) then
                   tmpx = tmpfld3d(i,j,k,bi,bj)
                 IF ( .NOT.ctrlSmoothCorrel3D ) THEN
                   objf_gen(bi,bj) = objf_gen(bi,bj)

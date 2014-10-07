@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.12 2014/09/22 13:59:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.13 2014/10/07 12:33:18 gforget Exp $
 C $Name:  $
 
 C     ==================================================================
@@ -89,7 +89,7 @@ c (xx_gentim2d_numsmooth is not used yet, cause hard coded 1 in ctrl_get_gen)
       common /controlaux_genarr3d_r/
      &                      wgenarr3d
       _RL wgenarr3d(1-olx:snx+olx,1-oly:sny+oly,
-     &              nr,nsx,nsy,maxCtrlArr2D)
+     &              nr,nsx,nsy,maxCtrlArr3D)
 #endif
 
 #ifdef ALLOW_GENTIM2D_CONTROL
