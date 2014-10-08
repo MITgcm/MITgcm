@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.49 2014/10/03 19:57:33 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.50 2014/10/08 02:02:33 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -46,12 +46,14 @@ c     == global variables ==
 #include "GRID.h"
 #include "CG2D.h"
 
-#include "optim.h"
 #include "ecco_cost.h"
-#include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
-#include "CTRL_GENARR.h"
+#ifdef ALLOW_CTRL
+# include "optim.h"
+# include "CTRL_SIZE.h"
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+# include "CTRL_GENARR.h"
+#endif
 #ifdef ALLOW_EXF
 # include "EXF_FIELDS.h"
 #endif
