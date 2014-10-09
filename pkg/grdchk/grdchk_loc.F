@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.17 2014/04/04 21:39:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.18 2014/10/09 00:50:54 gforget Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -44,6 +44,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #include "ctrl.h"
+#include "CTRL_OBCS.h"
 #include "grdchk.h"
 #ifdef ALLOW_OBCS
 # include "OBCS_GRID.h"

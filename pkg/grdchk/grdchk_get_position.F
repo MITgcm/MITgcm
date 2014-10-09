@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.10 2014/04/04 21:39:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.11 2014/10/09 00:50:54 gforget Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -36,6 +36,7 @@ c     == global variables ==
 # include "OBCS_GRID.h"
 #endif
 #include "ctrl.h"
+#include "CTRL_OBCS.h"
 #include "grdchk.h"
 
 c     == routine arguments ==
