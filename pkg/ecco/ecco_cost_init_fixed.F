@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.38 2014/10/06 22:57:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.39 2014/10/09 21:47:00 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -212,6 +212,8 @@ c--    set observation start/enddate
        else
          call cal_CopyDate(modelStartDate,
      &     gencost_startdate(1,k),mythid)
+         gencost_startdate1(k)=startdate_1
+         gencost_startdate2(k)=startdate_2
        endif
 
        if (gencost_enddate1(k).GT.0) then
