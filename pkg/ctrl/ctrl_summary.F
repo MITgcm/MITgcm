@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.9 2014/09/22 13:59:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.10 2014/10/09 21:46:18 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -388,7 +388,7 @@ c allow for switching off correl2d in adjoint
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,L5,a)')
-     &' ctrlUseGen  = ',ctrlSmoothCorrel3D,
+     &' ctrlUseGen  = ',ctrlUseGen,
      &' /* use generic controls */'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
