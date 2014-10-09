@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcss.F,v 1.11 2012/09/18 18:07:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcss.F,v 1.12 2014/10/09 00:50:16 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -40,12 +40,16 @@ c#ifdef ALLOW_OBCS
 c# include "OBCS_GRID.h"
 c#endif
 
-#include "cal.h"
-#include "ecco_cost.h"
-#include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
-#include "optim.h"
+#ifdef ALLOW_CAL
+# include "cal.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+# include "optim.h"
+# include "CTRL_OBCS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
@@ -55,6 +59,8 @@ c     == routine arguments ==
       integer mythid
       integer startrec
       integer endrec
+
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
 
 #ifdef ALLOW_OBCSS_COST_CONTRIBUTION
 
@@ -211,6 +217,8 @@ c--     Print cost function for all tiles.
 c--   End of loop over records.
 
 #endif /* ALLOW_OBCSS_COST_CONTRIBUTION */
+
+#endif /* ALLOW_CTRL and ALLOW_OBCS */
 
       return
       end

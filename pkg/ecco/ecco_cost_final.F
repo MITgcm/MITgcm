@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.72 2014/10/07 12:36:22 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.73 2014/10/09 00:50:16 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -34,6 +34,7 @@ c     == global variables ==
 # include "optim.h"
 # include "CTRL_SIZE.h"
 # include "CTRL_GENARR.h"
+# include "CTRL_OBCS.h"
 #endif
 #ifdef ALLOW_PROFILES
 # include "profiles.h"
@@ -492,12 +493,7 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
      &                         +mult_smooth_bc*objf_lwfluxsmoo(bi,bj) )
      &         + mult_lwdown  * ( objf_lwdown(bi,bj)+objf_lwdownm(bi,bj)
      &                         +mult_smooth_bc*objf_lwdownsmoo(bi,bj) )
-     &         + mult_obcsn   * objf_obcsn(bi,bj)
-     &         + mult_obcss   * objf_obcss(bi,bj)
-     &         + mult_obcsw   * objf_obcsw(bi,bj)
-     &         + mult_obcse   * objf_obcse(bi,bj)
      &         + mult_curmtr  * objf_curmtr(bi,bj)
-     &         + mult_ageos   * objf_ageos(bi,bj)
      &         + mult_kapgm   * objf_kapgm(bi,bj)
      &         + mult_kapredi   * objf_kapredi(bi,bj)
      &         + mult_diffkr  * objf_diffkr(bi,bj)
@@ -516,6 +512,14 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
 
 c#endif /* ALLOW_OLD_ESTIM_CODES */
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+          tile_fc(bi,bj) = tile_fc(bi,bj)
+     &         + mult_obcsn   * objf_obcsn(bi,bj)
+     &         + mult_obcss   * objf_obcss(bi,bj)
+     &         + mult_obcsw   * objf_obcsw(bi,bj)
+     &         + mult_obcse   * objf_obcse(bi,bj)
+     &         + mult_ageos   * objf_ageos(bi,bj)
+#endif
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -636,7 +640,6 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
           f_scatxm = f_scatxm + objf_scatxm(bi,bj)
           f_scatym = f_scatym + objf_scatym(bi,bj)
           f_curmtr = f_curmtr + objf_curmtr(bi,bj)
-          f_ageos = f_ageos + objf_ageos(bi,bj)
           f_kapgm = f_kapgm + objf_kapgm(bi,bj)
           f_kapredi = f_kapredi + objf_kapredi(bi,bj)
           f_diffkr = f_diffkr + objf_diffkr(bi,bj)
@@ -646,10 +649,13 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
           f_bottomdrag = f_bottomdrag + objf_bottomdrag(bi,bj)
 c#endif /* ALLOW_OLD_ESTIM_CODES */
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
           f_obcsn  = f_obcsn + objf_obcsn(bi,bj)
           f_obcss  = f_obcss + objf_obcss(bi,bj)
           f_obcsw  = f_obcsw + objf_obcsw(bi,bj)
           f_obcse  = f_obcse + objf_obcse(bi,bj)
+          f_ageos  = f_ageos + objf_ageos(bi,bj)
+#endif
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -772,10 +778,12 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
 
 c#endif /* ALLOW_OLD_ESTIM_CODES */
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
           no_obcsn = no_obcsn + num_obcsn(bi,bj)
           no_obcss = no_obcss + num_obcss(bi,bj)
           no_obcse = no_obcse + num_obcse(bi,bj)
           no_obcsw = no_obcsw + num_obcsw(bi,bj)
+#endif
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -903,10 +911,6 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
       _GLOBAL_SUM_RL( f_scaty , myThid )
       _GLOBAL_SUM_RL( f_scatxm , myThid )
       _GLOBAL_SUM_RL( f_scatym , myThid )
-      _GLOBAL_SUM_RL( f_obcsn , myThid )
-      _GLOBAL_SUM_RL( f_obcss , myThid )
-      _GLOBAL_SUM_RL( f_obcsw , myThid )
-      _GLOBAL_SUM_RL( f_obcse , myThid )
       _GLOBAL_SUM_RL( f_curmtr , myThid )
       _GLOBAL_SUM_RL( f_ageos , myThid )
       _GLOBAL_SUM_RL( f_kapgm , myThid )
@@ -917,6 +921,12 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
       _GLOBAL_SUM_RL( f_bottomdrag , myThid )
 c#endif /* ALLOW_OLD_ESTIM_CODES */
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+      _GLOBAL_SUM_RL( f_obcsn , myThid )
+      _GLOBAL_SUM_RL( f_obcss , myThid )
+      _GLOBAL_SUM_RL( f_obcsw , myThid )
+      _GLOBAL_SUM_RL( f_obcse , myThid )
+#endif
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -1014,10 +1024,6 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
       _GLOBAL_SUM_RL( no_scaty , myThid )
       _GLOBAL_SUM_RL( no_scatxm , myThid )
       _GLOBAL_SUM_RL( no_scatym , myThid )
-      _GLOBAL_SUM_RL( no_obcsn , myThid )
-      _GLOBAL_SUM_RL( no_obcss , myThid )
-      _GLOBAL_SUM_RL( no_obcsw , myThid )
-      _GLOBAL_SUM_RL( no_obcse , myThid )
       _GLOBAL_SUM_RL( no_curmtr , myThid )
       _GLOBAL_SUM_RL( no_ageos , myThid )
       _GLOBAL_SUM_RL( no_kapgm , myThid )
@@ -1028,6 +1034,12 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
       _GLOBAL_SUM_RL( no_bottomdrag , myThid )
 c#endif /* ALLOW_OLD_ESTIM_CODES */
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+      _GLOBAL_SUM_RL( no_obcsn , myThid )
+      _GLOBAL_SUM_RL( no_obcss , myThid )
+      _GLOBAL_SUM_RL( no_obcsw , myThid )
+      _GLOBAL_SUM_RL( no_obcse , myThid )
+#endif
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -1214,16 +1226,6 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_scatym  =',f_scatym
       write(standardmessageunit,'(A,D22.15)')
-     &     ' --> f_obcsn   =',f_obcsn
-      write(standardmessageunit,'(A,D22.15)')
-     &     ' --> f_obcss   =',f_obcss
-      write(standardmessageunit,'(A,D22.15)')
-     &     ' --> f_obcsw   =',f_obcsw
-      write(standardmessageunit,'(A,D22.15)')
-     &     ' --> f_obcse   =',f_obcse
-      write(standardmessageunit,'(A,D22.15)')
-     &     ' --> f_ageos   =',f_ageos
-      write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_curmtr  =',f_curmtr
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_kapgm   =',f_kapgm
@@ -1237,6 +1239,18 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
      &     ' --> f_bottomdrag =', f_bottomdrag
 c#endif /* ALLOW_OLD_ESTIM_CODES */
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_obcsn   =',f_obcsn
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_obcss   =',f_obcss
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_obcsw   =',f_obcsw
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_obcse   =',f_obcse
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_ageos   =',f_ageos
+#endif
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -1520,16 +1534,6 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
         write(ifc,'(A,2D22.15)')
      &       'f_scatym =', f_scatym, no_scatym
         write(ifc,'(A,2D22.15)')
-     &       'f_obcsn =', f_obcsn, no_obcsn
-        write(ifc,'(A,2D22.15)')
-     &       'f_obcss =', f_obcss, no_obcss
-        write(ifc,'(A,2D22.15)')
-     &       'f_obcsw =', f_obcsw, no_obcsw
-        write(ifc,'(A,2D22.15)')
-     &       'f_obcse =', f_obcse, no_obcse
-        write(ifc,'(A,2D22.15)')
-     &       'f_ageos =', f_ageos, no_ageos
-        write(ifc,'(A,2D22.15)')
      &       'f_kapgm =', f_kapgm, no_kapgm
         write(ifc,'(A,2D22.15)')
      &       'f_kapredi =', f_kapredi, no_kapredi
@@ -1545,6 +1549,18 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
      &       'f_transp =', f_transp, no_transp
 c#endif /* ALLOW_OLD_ESTIM_CODES */
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+        write(ifc,'(A,2D22.15)')
+     &       'f_obcsn =', f_obcsn, no_obcsn
+        write(ifc,'(A,2D22.15)')
+     &       'f_obcss =', f_obcss, no_obcss
+        write(ifc,'(A,2D22.15)')
+     &       'f_obcsw =', f_obcsw, no_obcsw
+        write(ifc,'(A,2D22.15)')
+     &       'f_obcse =', f_obcse, no_obcse
+        write(ifc,'(A,2D22.15)')
+     &       'f_ageos =', f_ageos, no_ageos
+#endif
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX

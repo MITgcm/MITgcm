@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.66 2014/09/29 16:45:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.67 2014/10/09 00:50:16 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -392,10 +392,7 @@ c                  function contributions.
      &     objf_runoff,     objf_runoffm,     objf_runoffsmoo,
      &     objf_uwind,      objf_uwindm,      objf_uwindsmoo,
      &     objf_vwind,      objf_vwindm,      objf_vwindsmoo,
-     &     objf_obcsn, objf_obcss, objf_obcsw, objf_obcse,
-     &     objf_obcsvol,
      &     objf_curmtr,
-     &     objf_ageos,
      &     objf_kapgm,
      &     objf_kapredi,
      &     objf_diffkr,
@@ -496,13 +493,7 @@ c                  function contributions.
       _RL  objf_runoffsmoo(nsx,nsy)
       _RL  objf_uwindsmoo(nsx,nsy)
       _RL  objf_vwindsmoo(nsx,nsy)
-      _RL  objf_obcsn(nsx,nsy)
-      _RL  objf_obcss(nsx,nsy)
-      _RL  objf_obcsw(nsx,nsy)
-      _RL  objf_obcse(nsx,nsy)
-      _RL  objf_obcsvol
       _RL  objf_curmtr(nsx,nsy)
-      _RL  objf_ageos(nsx,nsy)
       _RL  objf_kapgm(nsx,nsy)
       _RL  objf_kapredi(nsx,nsy)
       _RL  objf_diffkr(nsx,nsy)
@@ -586,13 +577,7 @@ c                  function contributions.
      &                num_runoffm,
      &                num_uwindm,
      &                num_vwindm,
-     &                num_obcsn,
-     &                num_obcss,
-     &                num_obcsw,
-     &                num_obcse,
-     &                num_obcsvol,
      &                num_curmtr,
-     &                num_ageos,
      &                num_kapgm,
      &                num_kapredi,
      &                num_diffkr,
@@ -675,13 +660,7 @@ c                  function contributions.
       _RL  num_runoffm(nsx,nsy)
       _RL  num_uwindm(nsx,nsy)
       _RL  num_vwindm(nsx,nsy)
-      _RL  num_obcsn(nsx,nsy)
-      _RL  num_obcss(nsx,nsy)
-      _RL  num_obcsw(nsx,nsy)
-      _RL  num_obcse(nsx,nsy)
-      _RL  num_obcsvol
       _RL  num_curmtr(nsx,nsy)
-      _RL  num_ageos(nsx,nsy)
       _RL  num_kapgm(nsx,nsy)
       _RL  num_kapredi(nsx,nsy)
       _RL  num_diffkr(nsx,nsy)
@@ -746,13 +725,7 @@ c                  function contributions.
      &                    mult_runoff,
      &                    mult_uwind,
      &                    mult_vwind,
-     &                    mult_obcsn,
-     &                    mult_obcss,
-     &                    mult_obcsw,
-     &                    mult_obcse,
-     &                    mult_obcsvol,
      &                    mult_curmtr,
-     &                    mult_ageos,
      &                    mult_kapgm,
      &                    mult_kapredi,
      &                    mult_diffkr,
@@ -816,13 +789,7 @@ c                  function contributions.
       _RL  mult_runoff
       _RL  mult_uwind
       _RL  mult_vwind
-      _RL  mult_obcsn
-      _RL  mult_obcss
-      _RL  mult_obcsw
-      _RL  mult_obcse
-      _RL  mult_obcsvol
       _RL  mult_curmtr
-      _RL  mult_ageos
       _RL  mult_kapgm
       _RL  mult_kapredi
       _RL  mult_diffkr
@@ -1177,36 +1144,6 @@ c
       _RL wsflux2 (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wtauu2  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wtauv2  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-
-#if (defined (ALLOW_OBCSN_COST_CONTRIBUTION) || \
-     defined (ALLOW_OBCSN_CONTROL))
-      common /ecco_cost_weights_obcsn/
-     &                      wobcsn, wobcsnLev
-      _RL wobcsn     (                      nr,nobcs)
-      _RL wobcsnLev  (1-olx:snx+olx,nr,nsx,nsy,nobcs)
-#endif
-#if (defined (ALLOW_OBCSS_COST_CONTRIBUTION) || \
-     defined (ALLOW_OBCSS_CONTROL))
-      common /ecco_cost_weights_obcss/
-     &                      wobcss, wobcssLev
-      _RL wobcss     (                      nr,nobcs)
-      _RL wobcssLev  (1-olx:snx+olx,nr,nsx,nsy,nobcs)
-#endif
-#if (defined (ALLOW_OBCSW_COST_CONTRIBUTION) || \
-     defined (ALLOW_OBCSW_CONTROL))
-      common /ecco_cost_weights_obcsw/
-     &                      wobcsw, wobcswLev
-      _RL wobcsw     (                      nr,nobcs)
-      _RL wobcswLev  (1-oly:sny+oly,nr,nsx,nsy,nobcs)
-#endif
-#if (defined (ALLOW_OBCSE_COST_CONTRIBUTION) || \
-     defined (ALLOW_OBCSE_CONTROL))
-      common /ecco_cost_weights_obcse/
-     &                      wobcse, wobcseLev
-      _RL wobcse     (                      nr,nobcs)
-      _RL wobcseLev  (1-oly:sny+oly,nr,nsx,nsy,nobcs)
-#endif
-
 
 c     Arrays that contain observations for the model-data comparison:
 c     ===============================================================

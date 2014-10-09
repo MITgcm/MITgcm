@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.56 2014/10/06 22:57:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.57 2014/10/09 00:50:16 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -37,8 +37,13 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "ctrl.h"
-#include "ecco_cost.h"
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+# include "CTRL_OBCS.h"
+#endif
 
 c     == routine arguments ==
 
@@ -203,6 +208,8 @@ cph)
         enddo
       enddo
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+
 #if (defined (ALLOW_OBCS_COST_CONTRIBUTION) || \
      defined (ALLOW_OBCS_CONTROL))
       do iobcs = 1,nobcs
@@ -226,6 +233,8 @@ cph)
         enddo
       enddo
 #endif
+
+#endif /* ALLOW_CTRL and ALLOW_OBCS */
 
 c--   Build area weighting matrix used in the cost function
 c--   contributions.
@@ -324,6 +333,7 @@ c--
             endif
           enddo
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
           do k = 1,nr
 #ifdef ALLOW_OBCSN_COST_CONTRIBUTION
             wobcsn(k,1) = wti(k)
@@ -350,6 +360,8 @@ c--
             wobcse(k,4) = wvi(k)
 #endif
           enddo
+#endif /* ALLOW_CTRL and OBCS */
+
         enddo
       enddo
 
@@ -1878,6 +1890,7 @@ cph)
             enddo
           enddo
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
 #ifdef ALLOW_OBCS_COST_CONTRIBUTION
           do iobcs = 1,nobcs
             do k = 1,nr
@@ -1915,7 +1928,8 @@ cph)
 #endif
             enddo
           enddo
-#endif
+#endif /* ALLOW_OBCS_COST_CONTRIBUTION */
+#endif /* ALLOW_CTRL and ALLOW_OBCS */
 
         enddo
       enddo
@@ -2083,9 +2097,6 @@ c#endif
 
 #if   (defined (ALLOW_VWIND_COST_CONTRIBUTION) || defined (ALLOW_VWIND_CONTROL))
       call active_write_xy_loc( 'wvwind', wvwind, 1, 0, mythid, dummy)
-#endif
-
-#ifdef ALLOW_OBCSN_COST_CONTRIBUTION
 #endif
 
 #if   (defined (ALLOW_KAPGM_COST_CONTRIBUTION) || defined (ALLOW_KAPGM_CONTROL))

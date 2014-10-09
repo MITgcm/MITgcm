@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsvol.F,v 1.11 2012/09/18 20:16:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsvol.F,v 1.12 2014/10/09 00:50:16 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -33,12 +33,18 @@ c     == global variables ==
 # include "OBCS_GRID.h"
 #endif
 
-#include "cal.h"
-#include "ecco_cost.h"
-#include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
-#include "optim.h"
+#ifdef ALLOW_CAL
+# include "cal.h"
+#endif
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+# include "optim.h"
+#endif
 
 c     == routine arguments ==
 
@@ -47,6 +53,8 @@ c     == routine arguments ==
       integer mythid
       integer startrec
       integer endrec
+
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
 
 c     == local variables ==
 
@@ -359,6 +367,8 @@ c--   Do the global summation.
 
 #endif
 #endif
+
+#endif /* ALLOW_CTRL and ALLOW_OBCS */
 
       return
       end

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcs.F,v 1.7 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcs.F,v 1.8 2014/10/09 00:50:16 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -30,8 +30,12 @@ c     == global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 
-#include "cal.h"
-#include "ctrl.h"
+#ifdef ALLOW_CAL
+# include "cal.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
@@ -39,6 +43,8 @@ c     == routine arguments ==
       integer myiter
       _RL     mytime
       integer mythid
+
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -89,5 +95,7 @@ cgg   East boundary contribution to cost function.
       call cost_obcsvol ( myiter,mytime,
      &                    startrec, endrec, mythid)
 #endif
+
+#endif /* ALLOW_CTRL and ALLOW_OBCS */
 
       end

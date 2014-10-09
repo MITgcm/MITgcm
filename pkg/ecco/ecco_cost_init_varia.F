@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.25 2014/04/07 18:10:21 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.26 2014/10/09 00:50:16 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -30,7 +30,12 @@ c     == global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 
-#include "ecco_cost.h"
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OBCS.h"
+#endif
 #ifdef ALLOW_COST
 # include "cost.h"
 #endif
@@ -131,15 +136,17 @@ c--   Initialize the tiled cost function contributions.
           objf_lwdown(bi,bj)   = 0. _d 0
           objf_uwind(bi,bj)    = 0. _d 0
           objf_vwind(bi,bj)    = 0. _d 0
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
           objf_obcsn(bi,bj)    = 0. _d 0
           objf_obcss(bi,bj)    = 0. _d 0
           objf_obcsw(bi,bj)    = 0. _d 0
           objf_obcse(bi,bj)    = 0. _d 0
           objf_curmtr(bi,bj)   = 0. _d 0
+          objf_ageos(bi,bj)    = 0. _d 0
+#endif
 #if ( defined (ALLOW_COST) && defined (ALLOW_COST_ATLANTIC) )
           objf_atl(bi,bj)      = 0. _d 0
 #endif
-          objf_ageos(bi,bj)    = 0. _d 0
           objf_diffkr(bi,bj)   = 0. _d 0
           objf_kapgm(bi,bj)    = 0. _d 0
           objf_kapredi(bi,bj)    = 0. _d 0
@@ -208,12 +215,14 @@ c
           num_lwdown(bi,bj)   = 0. _d 0
           num_uwind(bi,bj)    = 0. _d 0
           num_vwind(bi,bj)    = 0. _d 0
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
           num_obcsn(bi,bj)    = 0. _d 0
           num_obcss(bi,bj)    = 0. _d 0
           num_obcsw(bi,bj)    = 0. _d 0
           num_obcse(bi,bj)    = 0. _d 0
-          num_curmtr(bi,bj)   = 0. _d 0
           num_ageos(bi,bj)    = 0. _d 0
+#endif
+          num_curmtr(bi,bj)   = 0. _d 0
           num_diffkr(bi,bj)   = 0. _d 0
           num_kapgm(bi,bj)    = 0. _d 0
           num_kapredi(bi,bj)    = 0. _d 0
@@ -323,12 +332,14 @@ c
 
 c--   Initialise the "global" parts of the cost function.
       _BEGIN_MASTER( mythid )
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
         objf_obcsvol = 0. _d 0
+        num_obcsvol = 0. _d 0
+#endif
         objf_hmean   = 0. _d 0
         objf_hfluxmm = 0. _d 0
         objf_sfluxmm = 0. _d 0
         objf_transp  = 0. _d 0
-        num_obcsvol = 0. _d 0
         num_hmean   = 0. _d 0
         num_transp  = 0. _d 0
       _END_MASTER( mythid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.75 2014/10/06 14:09:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.76 2014/10/09 00:50:16 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -25,7 +25,12 @@ c     == global variables ==
 #include "GRID.h"
 #include "PARAMS.h"
 
-#include "ecco_cost.h"
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OBCS.h"
+#endif
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
@@ -131,9 +136,12 @@ c--   Read the namelist input.
      &                   mult_sdrift, mult_tdrift, mult_wdrift,
      &                   mult_temp0, mult_salt0,
      &                   mult_etan0, mult_uvel0, mult_vvel0,
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
      &                   mult_obcsn, mult_obcss,
      &                   mult_obcsw, mult_obcse, mult_obcsvol,
-     &                   mult_curmtr, mult_ageos,
+     &                   mult_ageos,
+#endif
+     &                   mult_curmtr,
      &                   mult_kapgm, mult_kapredi, mult_diffkr,
      &                   mult_edtau, mult_bottomdrag,
      &                   mult_usercost, mult_transp,
@@ -405,12 +413,14 @@ catn  eccov4 will run without needing to read in these params
         mult_wdrift           =      0. _d 0
         mult_scatx            =      0. _d 0
         mult_scaty            =      0. _d 0
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
         mult_obcsn            =      0. _d 0
         mult_obcss            =      0. _d 0
         mult_obcsw            =      0. _d 0
         mult_obcse            =      0. _d 0
         mult_obcsvol          =      0. _d 0
         mult_ageos            =      0. _d 0
+#endif
         mult_curmtr           =      0. _d 0
         mult_kapgm            =      0. _d 0
         mult_kapredi            =      0. _d 0
