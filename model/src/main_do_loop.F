@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.16 2014/04/04 20:55:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.17 2014/10/09 00:46:30 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -137,6 +137,7 @@ c# endif
 #  include "ctrl.h"
 #  include "ctrl_dummy.h"
 #  include "CTRL_GENARR.h"
+#  include "CTRL_OBCS.h"
 # endif
 # ifdef ALLOW_COST
 #  include "cost.h"

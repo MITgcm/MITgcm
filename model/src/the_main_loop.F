@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.165 2014/08/06 16:55:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.166 2014/10/09 00:46:30 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -188,6 +188,7 @@ c They provide the fields to be stored.
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 # include "CTRL_GENARR.h"
+# include "CTRL_OBCS.h"
 # endif
 # ifdef ALLOW_COST
 #  include "cost.h"
