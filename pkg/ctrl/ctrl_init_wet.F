@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.15 2013/03/21 18:12:34 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.16 2014/10/09 00:49:27 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -18,6 +18,7 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "ctrl.h"
+#include "CTRL_OBCS.h"
 
 #ifdef ALLOW_OBCS_CONTROL
 # include "OBCS_GRID.h"

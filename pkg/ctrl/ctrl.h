@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.71 2014/09/19 20:38:39 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.72 2014/10/09 00:49:26 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -133,35 +133,6 @@ C     ctrlUseGen             ::   use generic control approach rather than old c
       integer nwetiglobal     ( nr )
       integer filenWetiGlobal(nr)
 #endif /* ALLOW_SHIFWFLX_CONTROL */
-
-#ifdef ALLOW_OBCSN_CONTROL
-      common /controlvars_i_obcsn/
-     &                       nwetobcsn,
-     &                       nwetobcsnglo
-      integer nwetobcsn     ( nsx,nsy,nr,nobcs )
-      integer nwetobcsnglo  ( nr,nobcs )
-#endif
-#ifdef ALLOW_OBCSS_CONTROL
-      common /controlvars_i_obcss/
-     &                       nwetobcss,
-     &                       nwetobcssglo
-      integer nwetobcss     ( nsx,nsy,nr,nobcs )
-      integer nwetobcssglo  ( nr,nobcs )
-#endif
-#ifdef ALLOW_OBCSW_CONTROL
-      common /controlvars_i_obcsw/
-     &                       nwetobcsw,
-     &                       nwetobcswglo
-      integer nwetobcsw     ( nsx,nsy,nr,nobcs )
-      integer nwetobcswglo  ( nr,nobcs )
-#endif
-#ifdef ALLOW_OBCSE_CONTROL
-      common /controlvars_i_obcse/
-     &                       nwetobcse,
-     &                       nwetobcseglo
-      integer nwetobcse     ( nsx,nsy,nr,nobcs )
-      integer nwetobcseglo  ( nr,nobcs )
-#endif
 
       common /controlvars_c/
      &                       ncvargrd
@@ -416,34 +387,6 @@ c     xx_tauv1 - meridional wind stress record after  current date.
      &                      xx_vwind1
 #endif
 
-#ifdef ALLOW_OBCS_CONTROL
-#if     (defined (ALLOW_OBCSN_CONTROL))
-      common /controlaux_obcsn_r/
-     &                      xx_obcsn0,
-     &                      xx_obcsn1
-#endif
-
-#if     (defined (ALLOW_OBCSS_CONTROL))
-      common /controlaux_obcss_r/
-     &                      xx_obcss0,
-     &                      xx_obcss1
-#endif
-#if     (defined (ALLOW_OBCSW_CONTROL))
-      common /controlaux_obcsw_r/
-     &                      xx_obcsw0,
-     &                      xx_obcsw1
-#endif
-#if     (defined (ALLOW_OBCSE_CONTROL))
-      common /controlaux_obcse_r/
-     &                      xx_obcse0,
-     &                      xx_obcse1
-#endif
-#ifdef ALLOW_OBCS_CONTROL_MODES
-       common /ih_modes/ modesv
-       _RL modesv (nr,nr,nr)
-#endif
-#endif
-
 #if (defined  (ALLOW_PRECIP_CONTROL))
       common /controlaux_precip_r/
      &                      xx_precip0,
@@ -604,23 +547,6 @@ c     xx_tauv1 - meridional wind stress record after  current date.
       _RL xx_swdown_mean(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
-#ifdef ALLOW_OBCSN_CONTROL
-      _RL xx_obcsn0 (1-Olx:sNx+Olx,Nr,nSx,nSy,nobcs)
-      _RL xx_obcsn1 (1-Olx:sNx+Olx,Nr,nSx,nSy,nobcs)
-#endif
-#ifdef ALLOW_OBCSS_CONTROL
-      _RL xx_obcss0 (1-Olx:sNx+Olx,Nr,nSx,nSy,nobcs)
-      _RL xx_obcss1 (1-Olx:sNx+Olx,Nr,nSx,nSy,nobcs)
-#endif
-#ifdef ALLOW_OBCSW_CONTROL
-      _RL xx_obcsw0 (1-Oly:sNy+Oly,Nr,nSx,nSy,nobcs)
-      _RL xx_obcsw1 (1-Oly:sNy+Oly,Nr,nSx,nSy,nobcs)
-#endif
-#ifdef ALLOW_OBCSE_CONTROL
-      _RL xx_obcse0 (1-Oly:sNy+Oly,Nr,nSx,nSy,nobcs)
-      _RL xx_obcse1 (1-Oly:sNy+Oly,Nr,nSx,nSy,nobcs)
-#endif
-
 c     Files where the control variables are stored:
 c     =============================================
 c
@@ -630,10 +556,6 @@ c     xx_hflux_file - control vector surface heat flux file.
 c     xx_sflux_file - control vector surface salt flux file.
 c     xx_tauu_file  - control vector zonal wind stress file.
 c     xx_tauv_file  - control vector meridional wind stress file.
-c     xx_obcsn_file - control vector Uvel at boundary
-c     xx_obcss_file - control vector Vvel at boundary
-c     xx_obcsw_file - control vector temp. at boundary
-c     xx_obcse_file - control vector salin. at boundary
       common /controlfiles_c/
      &                      xx_theta_file
      &                    , xx_salt_file
@@ -660,10 +582,6 @@ c     xx_obcse_file - control vector salin. at boundary
      &                    , xx_swdown_mean_file
      &                    , xx_uwind_mean_file
      &                    , xx_vwind_mean_file
-     &                    , xx_obcsn_file
-     &                    , xx_obcss_file
-     &                    , xx_obcsw_file
-     &                    , xx_obcse_file
      &                    , xx_diffkr_file
      &                    , xx_kapgm_file
      &                    , xx_kapredi_file
@@ -718,10 +636,6 @@ cHFLUXM_CONTROL
       character*(MAX_LEN_FNAM) xx_swdown_mean_file
       character*(MAX_LEN_FNAM) xx_uwind_mean_file
       character*(MAX_LEN_FNAM) xx_vwind_mean_file
-      character*(MAX_LEN_FNAM) xx_obcsn_file
-      character*(MAX_LEN_FNAM) xx_obcss_file
-      character*(MAX_LEN_FNAM) xx_obcsw_file
-      character*(MAX_LEN_FNAM) xx_obcse_file
       character*(MAX_LEN_FNAM) xx_diffkr_file
       character*(MAX_LEN_FNAM) xx_kapgm_file
       character*(MAX_LEN_FNAM) xx_kapredi_file
@@ -792,14 +706,6 @@ c                      stress control part.
 c     xx_tauvperiod  - sampling interval for the meridional wind
 c                      stress control part.
 c     ...
-c     xx_obcsuperiod - sampling interval for open boundary u-velocity
-c                      control part.
-c     xx_obcsvperiod - sampling interval for open boundary v-velocity
-c                      control part.
-c     xx_obcstperiod - sampling interval for open boundary temperature
-c                      control part.
-c     xx_obcssperiod - sampling interval for open boundary salinity
-c                      control part.
 
       common /controltimes_r/
      &                        xx_hfluxperiod
@@ -821,10 +727,6 @@ c                      control part.
      &                      , xx_vwindperiod
      &                      , xx_sstperiod
      &                      , xx_sssperiod
-     &                      , xx_obcsnperiod
-     &                      , xx_obcssperiod
-     &                      , xx_obcswperiod
-     &                      , xx_obcseperiod
      &                      , xx_shifwflxperiod
       _RL     xx_hfluxperiod
       _RL     xx_sfluxperiod
@@ -845,10 +747,6 @@ c                      control part.
       _RL     xx_vwindperiod
       _RL     xx_sstperiod
       _RL     xx_sssperiod
-      _RL     xx_obcsnperiod
-      _RL     xx_obcssperiod
-      _RL     xx_obcswperiod
-      _RL     xx_obcseperiod
       _RL     xx_shifwflxperiod
 
       common /ctrl_param_trend_removal/
@@ -963,18 +861,6 @@ c                         control part.
      &                      , xx_vwindstartdate
      &                      , xx_sststartdate
      &                      , xx_sssstartdate
-     &                      , xx_obcsnstartdate1
-     &                      , xx_obcsnstartdate2
-     &                      , xx_obcssstartdate1
-     &                      , xx_obcssstartdate2
-     &                      , xx_obcswstartdate1
-     &                      , xx_obcswstartdate2
-     &                      , xx_obcsestartdate1
-     &                      , xx_obcsestartdate2
-     &                      , xx_obcsnstartdate
-     &                      , xx_obcssstartdate
-     &                      , xx_obcswstartdate
-     &                      , xx_obcsestartdate
      &                      , xx_shifwflxstartdate1
      &                      , xx_shifwflxstartdate2
      &                      , xx_shifwflxstartdate
@@ -1016,14 +902,6 @@ c                         control part.
       integer xx_sststartdate2
       integer xx_sssstartdate1
       integer xx_sssstartdate2
-      integer xx_obcsnstartdate1
-      integer xx_obcsnstartdate2
-      integer xx_obcssstartdate1
-      integer xx_obcssstartdate2
-      integer xx_obcswstartdate1
-      integer xx_obcswstartdate2
-      integer xx_obcsestartdate1
-      integer xx_obcsestartdate2
       integer xx_shifwflxstartdate1
       integer xx_shifwflxstartdate2
 
@@ -1046,10 +924,6 @@ c                         control part.
       integer xx_vwindstartdate(4)
       integer xx_sststartdate(4)
       integer xx_sssstartdate(4)
-      integer xx_obcsnstartdate(4)
-      integer xx_obcssstartdate(4)
-      integer xx_obcswstartdate(4)
-      integer xx_obcsestartdate(4)
       integer xx_shifwflxstartdate(4)
 
       character*( 80)   fname_theta(3)
@@ -1077,10 +951,6 @@ c                         control part.
       character*( 80)   fname_swdown_mean(3)
       character*( 80)   fname_uwind_mean(3)
       character*( 80)   fname_vwind_mean(3)
-      character*( 80)   fname_obcsn(3)
-      character*( 80)   fname_obcss(3)
-      character*( 80)   fname_obcsw(3)
-      character*( 80)   fname_obcse(3)
       character*( 80)   fname_diffkr(3)
       character*( 80)   fname_kapgm(3)
       character*( 80)   fname_kapredi(3)

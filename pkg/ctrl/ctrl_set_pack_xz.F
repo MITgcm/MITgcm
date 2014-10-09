@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xz.F,v 1.16 2012/08/10 19:38:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xz.F,v 1.17 2014/10/09 00:49:27 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -34,6 +34,7 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "ctrl.h"
+#include "CTRL_OBCS.h"
 #include "optim.h"
 
 c     == routine arguments ==

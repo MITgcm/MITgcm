@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getrec.F,v 1.14 2012/08/10 19:38:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getrec.F,v 1.15 2014/10/09 00:49:26 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -44,6 +44,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "ctrl.h"
+#include "CTRL_OBCS.h"
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif

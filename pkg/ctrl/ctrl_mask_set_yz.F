@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_mask_set_yz.F,v 1.9 2012/09/18 20:19:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_mask_set_yz.F,v 1.10 2014/10/09 00:49:27 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -26,6 +26,7 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "ctrl.h"
+#include "CTRL_OBCS.h"
 
 c     == routine arguments ==
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_obcs_variables.F,v 1.9 2012/08/10 19:38:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_obcs_variables.F,v 1.10 2014/10/09 00:49:27 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -28,6 +28,7 @@ c     == global variables ==
 c#include "GRID.h"
 
 #include "ctrl.h"
+#include "CTRL_OBCS.h"
 
 c     == routine arguments ==
 

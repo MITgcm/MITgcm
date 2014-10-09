@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_weights.h,v 1.10 2011/03/14 13:24:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_weights.h,v 1.11 2014/10/09 00:49:27 gforget Exp $
 C $Name:  $
 
 c     Define dummy weights as a placeholder
@@ -19,31 +19,6 @@ c     Define dummy weights as a placeholder
       _RL wkapredi ( nr,nsx,nsy )
       _RL wedtaux ( nr,nsx,nsy )
       _RL wedtauy ( nr,nsx,nsy )
-
-#if (defined (ALLOW_OBCSN_COST_CONTRIBUTION) || defined (ALLOW_OBCSN_CONTROL))
-      common /ctrl_cost_weights_obcsn/
-     &                      wobcsn, wobcsnLev
-      _RL wobcsn     (                      nr,nobcs)
-      _RL wobcsnLev  (1-olx:snx+olx,nr,nsx,nsy,nobcs)
-#endif
-#if (defined (ALLOW_OBCSS_COST_CONTRIBUTION) || defined (ALLOW_OBCSS_CONTROL))
-      common /ctrl_cost_weights_obcss/
-     &                      wobcss, wobcssLev
-      _RL wobcss     (                      nr,nobcs)
-      _RL wobcssLev  (1-olx:snx+olx,nr,nsx,nsy,nobcs)
-#endif
-#if (defined (ALLOW_OBCSW_COST_CONTRIBUTION) || defined (ALLOW_OBCSW_CONTROL))
-      common /ctrl_cost_weights_obcsw/
-     &                      wobcsw, wobcswLev
-      _RL wobcsw     (                      nr,nobcs)
-      _RL wobcswLev  (1-oly:sny+oly,nr,nsx,nsy,nobcs)
-#endif
-#if (defined (ALLOW_OBCSE_COST_CONTRIBUTION) || defined (ALLOW_OBCSE_CONTROL))
-      common /ctrl_cost_weights_obcse/
-     &                      wobcse, wobcseLev
-      _RL wobcse     (                      nr,nobcs)
-      _RL wobcseLev  (1-oly:sny+oly,nr,nsx,nsy,nobcs)
-#endif
 
 #if (defined (ALLOW_COST_HFLUXM) || defined (ALLOW_HFLUXM_CONTROL))
 c     whfluxm       - weight for heat flux.

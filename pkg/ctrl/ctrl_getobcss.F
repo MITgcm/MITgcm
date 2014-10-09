@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcss.F,v 1.16 2012/09/18 20:21:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcss.F,v 1.17 2014/10/09 00:49:26 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -41,6 +41,7 @@ c#include "OBCS_PARAMS.h"
 #include "CTRL_SIZE.h"
 #include "ctrl.h"
 #include "ctrl_dummy.h"
+#include "CTRL_OBCS.h"
 #include "optim.h"
 #endif /* ALLOW_OBCSS_CONTROL */
 

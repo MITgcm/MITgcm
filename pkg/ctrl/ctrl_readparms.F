@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.54 2014/09/30 18:41:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.55 2014/10/09 00:49:27 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -26,6 +26,7 @@ c     == global variables ==
 #include "CTRL_SIZE.h"
 #include "ctrl.h"
 #include "CTRL_GENARR.h"
+#include "CTRL_OBCS.h"
 #ifdef ALLOW_AUTODIFF
 #include "AUTODIFF_PARAMS.h"
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.51 2014/09/14 21:50:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.52 2014/10/09 00:49:27 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -50,11 +50,13 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "ctrl.h"
-#include "CTRL_SIZE.h"
-#include "CTRL_GENARR.h"
-#include "optim.h"
-
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+# include "CTRL_SIZE.h"
+# include "CTRL_GENARR.h"
+# include "optim.h"
+# include "CTRL_OBCS.h"
+#endif
 #ifdef ALLOW_COST
 # include "cost.h"
 #endif
@@ -101,6 +103,7 @@ C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
 
       logical lxxadxx
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
 cgg(  Add OBCS mask names.
 #ifdef ALLOW_OBCSN_CONTROL
       integer        filenWetobcsnGlo(nr,nobcs)
@@ -116,6 +119,7 @@ cgg(  Add OBCS mask names.
 #endif
       integer iobcs
 cgg)
+#endif /* ALLOW_CTRL and ALLOW_OBCS */
 
 c     == end of interface ==
 
@@ -147,10 +151,12 @@ c--   Assign file names.
       call ctrl_set_fname(xx_runoff_file, fname_runoff, mythid)
       call ctrl_set_fname(xx_uwind_file, fname_uwind, mythid)
       call ctrl_set_fname(xx_vwind_file, fname_vwind, mythid)
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       call ctrl_set_fname(xx_obcsn_file, fname_obcsn, mythid)
       call ctrl_set_fname(xx_obcss_file, fname_obcss, mythid)
       call ctrl_set_fname(xx_obcsw_file, fname_obcsw, mythid)
       call ctrl_set_fname(xx_obcse_file, fname_obcse, mythid)
+#endif /* ALLOW_CTRL and ALLOW_OBCS */
       call ctrl_set_fname(xx_diffkr_file, fname_diffkr, mythid)
       call ctrl_set_fname(xx_kapgm_file, fname_kapgm, mythid)
       call ctrl_set_fname(xx_kapredi_file, fname_kapredi, mythid)
@@ -232,6 +238,7 @@ c--       Header information.
 c         read(cunit) filenWetiGlobal(1)
 #endif
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
 cgg(     Add OBCS mask information to the header.
 #ifdef ALLOW_OBCSN_CONTROL
           read(cunit) ((filenWetobcsnGlo(k,iobcs),
@@ -250,6 +257,8 @@ cgg(     Add OBCS mask information to the header.
      &         k=1,nr), iobcs= 1,nobcs)
 #endif
 cgg)
+#endif /* ALLOW_CTRL and ALLOW_OBCS */
+
           read(cunit) (filencvarindex(i), i=1,maxcvars)
           read(cunit) (filencvarrecs(i),  i=1,maxcvars)
           read(cunit) (filencvarxmax(i),  i=1,maxcvars)
@@ -287,8 +296,8 @@ c
           enddo
 #endif /* ALLOW_SHIFWFLX_CONTROL */
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
 cgg(   Lets also check the OBCS mask info in the header.
-
 #ifdef ALLOW_OBCSN_CONTROL
        do iobcs = 1, nobcs
          do k = 1, nr
@@ -300,7 +309,6 @@ cgg(   Lets also check the OBCS mask info in the header.
          end do
        end do
 #endif
-
 #ifdef ALLOW_OBCSS_CONTROL
        do iobcs = 1, nobcs
          do k = 1, nr
@@ -312,7 +320,6 @@ cgg(   Lets also check the OBCS mask info in the header.
          end do
        end do
 #endif
-
 #ifdef ALLOW_OBCSW_CONTROL
        do iobcs = 1, nobcs
          do k = 1, nr
@@ -324,7 +331,6 @@ cgg(   Lets also check the OBCS mask info in the header.
          end do
        end do
 #endif
-
 #ifdef ALLOW_OBCSE_CONTROL
        do iobcs = 1, nobcs
          do k = 1, nr
@@ -337,6 +343,7 @@ cgg(   Lets also check the OBCS mask info in the header.
        end do
 #endif
 cgg)  End OBCS mask check.
+#endif /* ALLOW_CTRL and ALLOW_OBCS */
 
 #endif /* ndef ALLOW_ADMTLM */
 
@@ -480,6 +487,7 @@ c----------------------------------------------------------------------
 #endif
 #endif
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
 #ifdef ALLOW_OBCSN_CONTROL
           ivartype    = 11
           write(weighttype(1:80),'(80a)') ' '
@@ -488,7 +496,6 @@ c----------------------------------------------------------------------
      &         cunit, ivartype, fname_obcsn(ictrlgrad), "maskobcsn",
      &         weighttype, wobcsn, nWetobcsnGlo, mythid)
 #endif
-
 #ifdef ALLOW_OBCSS_CONTROL
           ivartype    = 12
           write(weighttype(1:80),'(80a)') ' '
@@ -497,7 +504,6 @@ c----------------------------------------------------------------------
      &         cunit, ivartype, fname_obcss(ictrlgrad), "maskobcss",
      &         weighttype, wobcss, nWetobcssGlo, mythid)
 #endif
-
 #ifdef ALLOW_OBCSW_CONTROL
           ivartype    = 13
           write(weighttype(1:80),'(80a)') ' '
@@ -506,7 +512,6 @@ c----------------------------------------------------------------------
      &         cunit, ivartype, fname_obcsw(ictrlgrad), "maskobcsw",
      &         weighttype, wobcsw, nWetobcswGlo, mythid)
 #endif
-
 #ifdef ALLOW_OBCSE_CONTROL
           ivartype    = 14
           write(weighttype(1:80),'(80a)') ' '
@@ -515,6 +520,7 @@ c----------------------------------------------------------------------
      &         cunit, ivartype, fname_obcse(ictrlgrad), "maskobcse",
      &         weighttype, wobcse, nWetobcseGlo, mythid)
 #endif
+#endif /* ALLOW_CTRL and ALLOW_OBCS */
 
 #ifdef ALLOW_DIFFKR_CONTROL
           ivartype    = 15

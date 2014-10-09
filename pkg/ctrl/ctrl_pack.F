@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.54 2014/09/14 21:50:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.55 2014/10/09 00:49:27 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -46,11 +46,13 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "ctrl.h"
-#include "CTRL_SIZE.h"
-#include "CTRL_GENARR.h"
-#include "optim.h"
-
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+# include "CTRL_SIZE.h"
+# include "CTRL_GENARR.h"
+# include "optim.h"
+# include "CTRL_OBCS.h"
+#endif
 #ifdef ALLOW_COST
 # include "cost.h"
 #endif
@@ -82,7 +84,9 @@ c     == local variables ==
       integer irec
       integer ig,jg
       integer ivartype
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       integer iobcs
+#endif
 #if (defined ALLOW_GENARR2D_CONTROL) || (defined ALLOW_GENARR3D_CONTROL) || (defined ALLOW_GENTIM2D_CONTROL)
 C-    Provided we set the file name just before calling ctrl_set_pack,
 C     the same local file name variable can be used for different variables.
@@ -138,10 +142,12 @@ c--   Assign file names.
       call ctrl_set_fname(xx_runoff_file, fname_runoff, mythid)
       call ctrl_set_fname(xx_uwind_file, fname_uwind, mythid)
       call ctrl_set_fname(xx_vwind_file, fname_vwind, mythid)
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       call ctrl_set_fname(xx_obcsn_file, fname_obcsn, mythid)
       call ctrl_set_fname(xx_obcss_file, fname_obcss, mythid)
       call ctrl_set_fname(xx_obcsw_file, fname_obcsw, mythid)
       call ctrl_set_fname(xx_obcse_file, fname_obcse, mythid)
+#endif /* ALLOW_CTRL and ALLOW_OBCS */
       call ctrl_set_fname(xx_diffkr_file, fname_diffkr, mythid)
       call ctrl_set_fname(xx_kapgm_file, fname_kapgm, mythid)
       call ctrl_set_fname(xx_kapredi_file, fname_kapredi, mythid)
@@ -226,6 +232,7 @@ C     place holder of obsolete variable jG
 c          write(cunit) nWetiGlobal(1)
 #endif
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
 #ifdef ALLOW_OBCSN_CONTROL
           write(cunit) ((nWetobcsnGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
 #endif
@@ -238,6 +245,8 @@ c          write(cunit) nWetiGlobal(1)
 #ifdef ALLOW_OBCSE_CONTROL
           write(cunit) ((nWetobcseGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
 #endif
+#endif /* ALLOW_CTRL and ALLOW_OBCS */
+
           write(cunit) (ncvarindex(i), i=1,maxcvars)
           write(cunit) (ncvarrecs(i),  i=1,maxcvars)
           write(cunit) (ncvarxmax(i),  i=1,maxcvars)
@@ -384,6 +393,7 @@ c          write(cunit) nWetiGlobal(1)
 #endif
 #endif
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
 #ifdef ALLOW_OBCSN_CONTROL
           ivartype = 11
           write(weighttype(1:80),'(80a)') ' '
@@ -392,7 +402,6 @@ c          write(cunit) nWetiGlobal(1)
      &         cunit, ivartype, fname_obcsn(ictrlgrad), "maskobcsn",
      &         weighttype, wobcsn, lxxadxx, mythid)
 #endif
-
 #ifdef ALLOW_OBCSS_CONTROL
           ivartype = 12
           write(weighttype(1:80),'(80a)') ' '
@@ -401,7 +410,6 @@ c          write(cunit) nWetiGlobal(1)
      &         cunit, ivartype, fname_obcss(ictrlgrad), "maskobcss",
      &         weighttype, wobcss, lxxadxx, mythid)
 #endif
-
 #ifdef ALLOW_OBCSW_CONTROL
           ivartype = 13
           write(weighttype(1:80),'(80a)') ' '
@@ -410,7 +418,6 @@ c          write(cunit) nWetiGlobal(1)
      &         cunit, ivartype, fname_obcsw(ictrlgrad), "maskobcsw",
      &         weighttype, wobcsw, lxxadxx, mythid)
 #endif
-
 #ifdef ALLOW_OBCSE_CONTROL
           ivartype = 14
           write(weighttype(1:80),'(80a)') ' '
@@ -419,6 +426,7 @@ c          write(cunit) nWetiGlobal(1)
      &         cunit, ivartype, fname_obcse(ictrlgrad), "maskobcse",
      &         weighttype, wobcse, lxxadxx, mythid)
 #endif
+#endif /* ALLOW_CTRL and ALLOW_OBCS */
 
 #ifdef ALLOW_DIFFKR_CONTROL
           ivartype = 15
