@@ -8,6 +8,7 @@ CG3D
 cost
 CTRL_SIZE
 CTRL_GENARR
+CTRL_OBCS
 ctrl_dummy
 ctrl
 ctrl_weights
