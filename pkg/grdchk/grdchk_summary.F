@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_summary.F,v 1.10 2011/08/12 18:31:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_summary.F,v 1.11 2014/10/09 21:47:42 gforget Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -61,6 +61,10 @@ c     == end of interface ==
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
+      write(msgbuf,'(a,i10)')
+     &'  grdchkvarindex :                 ',grdchkvarindex
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,e10.3)')
      &'  eps:                             ',grdchk_eps
       call print_message( msgbuf, standardmessageunit,
