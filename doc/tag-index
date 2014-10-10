@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2079 2014/10/07 15:02:47 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2080 2014/10/10 04:09:49 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o global_oce_llc90 : 
+  - ecco_v4 verification experiments now test generic cost 
+    function and control capabilities added since checkpoint65c.
+o pkg/ctrl: regroup all obcs ctrl variables in CTRL_OBCS.h.
 o pkg/ecco: increase modularity and improve logic
   - ecco_toolbox.F (new) : basic operations that are often used,
     including ecco_zero, ecco_cp, ecco_cprsrl, ecco_diffmsk,
