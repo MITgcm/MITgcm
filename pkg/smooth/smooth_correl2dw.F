@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl2dw.F,v 1.8 2013/03/27 15:40:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl2dw.F,v 1.9 2014/10/11 19:05:01 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -22,12 +22,12 @@ C     *==========================================================*
 #include "GRID.h"
 #include "PARAMS.h"
 #include "SMOOTH.h"
-#ifdef ALLOW_CTRL
+#if (defined (ALLOW_CTRL) && defined (CODES_BEING_PHASED_OUT))
 # include "ctrl.h"
 # include "CTRL_SIZE.h"
 # include "CTRL_GENARR.h"
 #endif
-#ifdef ALLOW_ECCO
+#if (defined (ALLOW_ECCO) && defined (CODES_BEING_PHASED_OUT))
 # include "ecco_cost.h"
 #endif
 
@@ -35,6 +35,8 @@ C     *==========================================================*
       _RL fld_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       character*(MAX_LEN_FNAM) xx_gen_file
       integer myThid
+
+#ifdef CODES_BEING_PHASED_OUT
 
 # if (defined ALLOW_CTRL) || (defined ALLOW_ECCO)
 
@@ -129,5 +131,7 @@ C     *==========================================================*
      &       'WARNING: no weights found for ',xx_gen_file
 
 #endif /* ALLOW_ECCO or ALLOW_CTRL */
+
+#endif /* CODES_BEING_PHASED_OUT */
        
       end
