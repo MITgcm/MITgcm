@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.22 2014/04/04 21:16:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.23 2014/10/11 19:04:20 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -32,18 +32,16 @@ c     == global variables ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-#include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "CTRL_GENARR.h"
-#include "ctrl_dummy.h"
-#include "optim.h"
-#ifdef ALLOW_ECCO
-#include "ecco_cost.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
+# include "ctrl.h"
+# include "CTRL_GENARR.h"
+# include "ctrl_dummy.h"
+# include "optim.h"
 #endif
-
 #ifdef ALLOW_AUTODIFF
-#include "tamc.h"
-#include "tamc_keys.h"
+# include "tamc.h"
+# include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF */
 
 c     == routine arguments ==
@@ -230,14 +228,12 @@ c     == global variables ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-#include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
-#include "optim.h"
-#ifdef ALLOW_ECCO
-#include "ecco_cost.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+# include "optim.h"
 #endif
-
 #ifdef ALLOW_AUTODIFF
 #include "tamc.h"
 #include "tamc_keys.h"

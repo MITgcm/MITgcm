@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.41 2014/09/14 15:21:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.42 2014/10/11 19:04:20 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -30,19 +30,23 @@ c     == global variables ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-#include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "CTRL_FIELDS.h"
-#include "CTRL_GENARR.h"
-#include "ctrl_dummy.h"
-#include "optim.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
+# include "ctrl.h"
+# include "CTRL_FIELDS.h"
+# include "CTRL_GENARR.h"
+# include "ctrl_dummy.h"
+# include "optim.h"
+# ifdef ALLOW_ECCO
+#  include "ecco_cost.h"
+# else
+#  include "ctrl_weights.h"
+# endif
+#endif
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
 c#include "PTRACERS_PARAMS.h"
 # include "PTRACERS_FIELDS.h"
-#endif
-#ifdef ALLOW_ECCO
-# include "ecco_cost.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:

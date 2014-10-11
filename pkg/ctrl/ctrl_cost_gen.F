@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_gen.F,v 1.4 2014/10/07 12:33:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_gen.F,v 1.5 2014/10/11 19:04:20 gforget Exp $
 C $Name:  $
 
 c ----------------------------------------------------------------
@@ -47,7 +47,7 @@ c     == global variables ==
 #include "GRID.h"
 
 #ifdef ALLOW_ECCO
-#  include "ecco_cost.h"
+#  include "ecco.h"
 #endif
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
@@ -357,7 +357,7 @@ c     == global variables ==
 #include "GRID.h"
 
 #ifdef ALLOW_ECCO
-#  include "ecco_cost.h"
+#  include "ecco.h"
 #endif
 #ifdef ALLOW_CTRL
 # include "ctrl.h"

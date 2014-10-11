@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.72 2014/10/09 00:49:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.73 2014/10/11 19:04:20 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -199,6 +199,45 @@ c     Define unit weight as a placeholder
       _RL wunit     (nr,nsx,nsy)
       _RL wareaunit (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
+      common /controlvars_r/
+     &                        tmpfld2d
+     &                      , tmpfld3d
+      _RL tmpfld2d
+     &    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL tmpfld3d
+     &    (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+
+      common /packnames_c/
+     &                      yadmark,
+     &                      ctrlname,
+     &                      costname,
+     &                      scalname,
+     &                      maskname,
+     &                      metaname,
+     &                      yctrlid,
+     &                      yctrlposunpack,
+     &                      yctrlpospack
+      character*2 yadmark
+      character*9 ctrlname
+      character*9 costname
+      character*9 scalname
+      character*9 maskname
+      character*9 metaname
+      character*10 yctrlid
+      character*4 yctrlposunpack
+      character*4 yctrlpospack
+
+#ifdef ALLOW_ADMTLM
+      integer          maxm, maxn
+      parameter       ( maxm = Nx*Ny*(4*Nr+1), maxn=Nx*Ny*(4*Nr+1) )
+
+      common /admtlm_i/ nveccount
+      integer nveccount
+
+      common /admtlm_r/ phtmpadmtlm
+      double precision phtmpadmtlm(maxn)
+#endif
+
 #ifndef ALLOW_ECCO
       common /ctrl_weights_atmos_r/
      &                      whflux,
@@ -219,9 +258,7 @@ c     Define unit weight as a placeholder
      &                      wapressure,
      &                      wrunoff,
      &                      wsst,
-     &                      wsss,
-     &                      wbp,
-     &                      wies
+     &                      wsss
       _RL whflux  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wsflux  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wtauu   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -241,8 +278,6 @@ c     Define unit weight as a placeholder
       _RL wrunoff (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wsst    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wsss    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wbp     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wies    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
 c     Control variables:
@@ -258,14 +293,6 @@ cph(
 c     xx_... are to be replaced by tmpfld2d/3d throughout the code;
 c     control variables are written to / read from active files
 c     TAMC sees xx_..._dummy
-
-      common /controlvars_r/
-     &                        tmpfld2d
-     &                      , tmpfld3d
-      _RL tmpfld2d
-     &    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL tmpfld3d
-     &    (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
 #ifdef ALLOW_OPENAD
 C
@@ -665,26 +692,6 @@ cHFLUXM_CONTROL
 cHFLUXM_CONTROL
       character*(MAX_LEN_FNAM) xx_shifwflx_file
 
-      common /packnames_c/
-     &                      yadmark,
-     &                      ctrlname,
-     &                      costname,
-     &                      scalname,
-     &                      maskname,
-     &                      metaname,
-     &                      yctrlid,
-     &                      yctrlposunpack,
-     &                      yctrlpospack
-      character*2 yadmark
-      character*9 ctrlname
-      character*9 costname
-      character*9 scalname
-      character*9 maskname
-      character*9 metaname
-      character*10 yctrlid
-      character*4 yctrlposunpack
-      character*4 yctrlpospack
-
 c     Calendar information for the control variables:
 c     ===============================================
 c
@@ -978,17 +985,6 @@ cHFLUXM_CONTROL
       character*( 80)   fname_hfluxm(3)
 cHFLUXM_CONTROL
       character*( 80)   fname_shifwflx(3)
-
-#ifdef ALLOW_ADMTLM
-      integer          maxm, maxn
-      parameter       ( maxm = Nx*Ny*(4*Nr+1), maxn=Nx*Ny*(4*Nr+1) )
-
-      common /admtlm_i/ nveccount
-      integer nveccount
-
-      common /admtlm_r/ phtmpadmtlm
-      double precision phtmpadmtlm(maxn)
-#endif
 
 c     ==================================================================
 c     END OF HEADER CONTROLVARS ctrl.h
