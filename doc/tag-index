@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2080 2014/10/10 04:09:49 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2081 2014/10/11 19:42:33 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl, ecco, seaice : minor changes in headers
 o global_oce_llc90 : 
   - ecco_v4 verification experiments now test generic cost 
     function and control capabilities added since checkpoint65c.
