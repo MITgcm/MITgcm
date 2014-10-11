@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.7 2014/10/06 14:09:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.8 2014/10/11 19:03:27 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -131,13 +131,13 @@ c                 the current model integration.
 
       common /ecco_r/
      &                    etanFull,
-     &                    VOLsumGlob_0,
-     &                    VOLsumGlob,
-     &                    RHOsumGlob_0,
-     &                    RHOsumGlob
-
+     &                    VOLsumGlob_0, VOLsumGlob,
+     &                    RHOsumGlob_0, RHOsumGlob,
+     &                    frame, cosphi
       _RL VOLsumGlob_0, VOLsumGlob, RHOsumGlob_0, RHOsumGlob
       _RL etanFull       (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL frame   (1-olx:snx+olx,1-oly:sny+oly           )
+      _RL cosphi  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
 
 c     file precision and field type
       common /prec_type_cost/

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.73 2014/10/09 00:50:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.74 2014/10/11 19:03:27 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -71,7 +71,6 @@ c the adjoint, pkg/autodiff most likely require cost though.
 #endif
       _RL locfc
 
-c#ifdef ALLOW_OLD_ESTIM_CODES
       _RL f_temp0, f_salt0, f_temp0smoo, f_salt0smoo
       _RL f_etan0, f_uvel0, f_vvel0
       _RL f_temp, f_salt
@@ -100,7 +99,6 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
       _RL f_ini_fin
       _RL f_kapgm, f_kapredi, f_diffkr
       _RL f_eddytau, f_bottomdrag
-c#endif /* ALLOW_OLD_ESTIM_CODES */
 
       _RL f_obcsn, f_obcss, f_obcsw, f_obcse
 #ifdef ALLOW_PROFILES
@@ -120,7 +118,6 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
       _RL f_genarr3d(maxCtrlArr3D)
 #endif
 
-c#ifdef ALLOW_OLD_ESTIM_CODES
       _RL no_temp0, no_salt0,  no_temp, no_salt
       _RL no_etan0, no_uvel0, no_vvel0
       _RL no_uwind, no_vwind
@@ -142,7 +139,6 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
       _RL no_kapgm, no_kapredi, no_diffkr
       _RL no_eddytau, no_bottomdrag
       _RL no_hmean
-c#endif /* ALLOW_OLD_ESTIM_CODES */
 
       _RL no_obcsn, no_obcss, no_obcsw, no_obcse
 #ifdef ALLOW_PROFILES
@@ -181,7 +177,6 @@ c     == end of interface ==
       ifc = 30
 
       locfc = 0. _d 0
-c#ifdef ALLOW_OLD_ESTIM_CODES
       f_temp = 0. _d 0
       f_salt = 0. _d 0
       f_temp0 = 0. _d 0
@@ -268,7 +263,6 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
       f_bottomdrag = 0. _d 0
       f_transp  = 0. _d 0
       f_ies = 0. _d 0
-c#endif /* ALLOW_OLD_ESTIM_CODES */
 
       f_obcsn   = 0. _d 0
       f_obcss   = 0. _d 0
@@ -312,7 +306,6 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
        enddo
 #endif
 
-c#ifdef ALLOW_OLD_ESTIM_CODES
       no_temp = 0. _d 0
       no_salt = 0. _d 0
       no_temp0 = 0. _d 0
@@ -386,7 +379,6 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
       no_bottomdrag = 0. _d 0
       no_transp  = 0. _d 0
       no_ies = 0. _d 0
-c#endif /* ALLOW_OLD_ESTIM_CODES */
 
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
@@ -431,7 +423,6 @@ c--   Sum up all contributions.
         do bi = itlo,ithi
 
           tile_fc(bi,bj) = tile_fc(bi,bj)
-c#ifdef ALLOW_OLD_ESTIM_CODES
      &         + mult_temp    * objf_temp(bi,bj)
      &         + mult_salt    * objf_salt(bi,bj)
      &         + mult_temp0   * ( objf_temp0(bi,bj)
@@ -510,7 +501,6 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
        enddo
 #endif
 
-c#endif /* ALLOW_OLD_ESTIM_CODES */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
           tile_fc(bi,bj) = tile_fc(bi,bj)
@@ -565,7 +555,6 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
        enddo
 #endif
 
-c#ifdef ALLOW_OLD_ESTIM_CODES
           f_temp = f_temp + objf_temp(bi,bj)
           f_salt = f_salt + objf_salt(bi,bj)
           f_temp0 = f_temp0 + objf_temp0(bi,bj)
@@ -647,7 +636,6 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
      &         objf_theta_ini_fin(bi,bj) + objf_salt_ini_fin(bi,bj)
           f_eddytau = f_eddytau + objf_eddytau(bi,bj)
           f_bottomdrag = f_bottomdrag + objf_bottomdrag(bi,bj)
-c#endif /* ALLOW_OLD_ESTIM_CODES */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
           f_obcsn  = f_obcsn + objf_obcsn(bi,bj)
@@ -701,7 +689,6 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
        enddo
 #endif
 
-c#ifdef ALLOW_OLD_ESTIM_CODES
           no_temp = no_temp + num_temp(bi,bj)
           no_salt = no_salt + num_salt(bi,bj)
           no_temp0 = no_temp0 + num_temp0(bi,bj)
@@ -776,7 +763,6 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
        enddo
 #endif
 
-c#endif /* ALLOW_OLD_ESTIM_CODES */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
           no_obcsn = no_obcsn + num_obcsn(bi,bj)
@@ -838,7 +824,6 @@ c--   Do global summation.
 
 c--   Do global summation for each part of the cost function
 
-c#ifdef ALLOW_OLD_ESTIM_CODES
       _GLOBAL_SUM_RL( f_temp , myThid )
       _GLOBAL_SUM_RL( f_salt , myThid )
       _GLOBAL_SUM_RL( f_temp0, myThid )
@@ -919,7 +904,6 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
       _GLOBAL_SUM_RL( f_ini_fin , myThid )
       _GLOBAL_SUM_RL( f_eddytau , myThid )
       _GLOBAL_SUM_RL( f_bottomdrag , myThid )
-c#endif /* ALLOW_OLD_ESTIM_CODES */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       _GLOBAL_SUM_RL( f_obcsn , myThid )
@@ -965,7 +949,6 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
        enddo
 #endif
 
-c#ifdef ALLOW_OLD_ESTIM_CODES
       _GLOBAL_SUM_RL( no_temp , myThid )
       _GLOBAL_SUM_RL( no_salt , myThid )
       _GLOBAL_SUM_RL( no_temp0, myThid )
@@ -1032,7 +1015,6 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
       _GLOBAL_SUM_RL( no_ini_fin , myThid )
       _GLOBAL_SUM_RL( no_eddytau , myThid )
       _GLOBAL_SUM_RL( no_bottomdrag , myThid )
-c#endif /* ALLOW_OLD_ESTIM_CODES */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       _GLOBAL_SUM_RL( no_obcsn , myThid )
@@ -1078,7 +1060,6 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
        enddo
 #endif
 
-c#ifdef ALLOW_OLD_ESTIM_CODES
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_temp    =',f_temp
       write(standardmessageunit,'(A,D22.15)')
@@ -1237,7 +1218,6 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
      &     ' --> f_eddytau =', f_eddytau
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_bottomdrag =', f_bottomdrag
-c#endif /* ALLOW_OLD_ESTIM_CODES */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       write(standardmessageunit,'(A,D22.15)')
@@ -1317,7 +1297,6 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
        enddo
 #endif
 
-c#ifdef ALLOW_OLD_ESTIM_CODES
 
 c--   Each process has calculated the global part for itself.
 
@@ -1342,7 +1321,6 @@ cph)
      &          + f_hfluxmm2 + f_sfluxmm2
      &          + f_transp
 
-c#endif /* ALLOW_OLD_ESTIM_CODES */
 
 #ifndef ALLOW_COST
 cgf this sum is now done in cost_final if allow_cost
@@ -1354,7 +1332,6 @@ cgf this sum is now done in cost_final if allow_cost
 C     only master thread of master CPU open and write to file
       IF ( MASTER_CPU_THREAD(myThid) ) THEN
 
-c#ifdef ALLOW_OLD_ESTIM_CODES
         write(standardmessageunit,'(A,D22.15)')
      &           ' --> f_hfluxmm2           =',f_hfluxmm2
         write(standardmessageunit,'(A,D22.15)')
@@ -1365,7 +1342,6 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
      &           ' --> objf_hmean           =',objf_hmean
         write(standardmessageunit,'(A,D22.15)')
      &           ' --> fc               =', locfc
-c#endif /* ALLOW_OLD_ESTIM_CODES */
 
         write(cfname,'(A,i4.4)') 'costfunction',optimcycle
         open(unit=ifc,file=cfname)
@@ -1376,7 +1352,6 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
         write(ifc,'(A,2D22.15)')
 #endif
      &       'fc =', locfc, 0.
-c#ifdef ALLOW_OLD_ESTIM_CODES
         write(ifc,'(A,2D22.15)')
      &       'f_temp =', f_temp, no_temp
         write(ifc,'(A,2D22.15)')
@@ -1547,7 +1522,6 @@ c#ifdef ALLOW_OLD_ESTIM_CODES
      &       'f_bottomdrag =', f_bottomdrag, no_bottomdrag
         write(ifc,'(A,2D22.15)')
      &       'f_transp =', f_transp, no_transp
-c#endif /* ALLOW_OLD_ESTIM_CODES */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
         write(ifc,'(A,2D22.15)')
@@ -1654,10 +1628,8 @@ c#endif /* ALLOW_OLD_ESTIM_CODES */
 
       ENDIF
 
-c#ifdef ALLOW_OLD_ESTIM_CODES
       call cost_trans_merid( mythid )
       call cost_trans_zonal( mythid )
-c#endif /* ALLOW_OLD_ESTIM_CODES */
 
 #ifdef ECCO_VERBOSE
       write(msgbuf,'(a,D22.15)')

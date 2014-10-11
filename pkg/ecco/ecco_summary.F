@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.17 2014/10/06 14:09:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.18 2014/10/11 19:03:27 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -13,7 +13,7 @@ c     ==================================================================
 c
 c     o Summarize the setup of the ECCO release.
 c
-#ifdef ALLOW_OLD_ESTIM_CODES
+#ifdef CODES_BEING_PHASED_OUT
 c     started: Christian Eckert eckert@mit.edu 29-Feb-1999
 c
 c              - Introduced to create a package for the MITgcmUV.
@@ -73,7 +73,7 @@ c     == end of interface ==
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-#ifdef ALLOW_OLD_ESTIM_CODES
+#ifdef CODES_BEING_PHASED_OUT
       write(msgbuf,'(a)')
      &' '
       call print_message( msgbuf, standardmessageunit,
@@ -779,7 +779,7 @@ c--   Generation of adjoint code not enabled.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
-#endif /* ALLOW_OLD_ESTIM_CODES */
+#endif /* CODES_BEING_PHASED_OUT */
 
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION

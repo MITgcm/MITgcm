@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.39 2014/10/09 21:47:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.40 2014/10/11 19:03:27 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -42,11 +42,7 @@ c     == global variables ==
 #include "cal.h"
 #endif
 #ifdef ALLOW_ECCO
-c# ifdef ALLOW_OLD_ESTIM_CODES
 #  include "ecco_cost.h"
-c# else
-c#  include "ecco.h"
-c# endif
 #endif
 #ifdef ALLOW_CTRL
 # include "optim.h"
@@ -60,7 +56,6 @@ c     == local variables ==
 
       integer k
       logical exst
-c#ifdef ALLOW_OLD_ESTIM_CODES
       _RL     dummy
       integer tempDate1(4)
       integer tempDate2(4)
@@ -106,8 +101,6 @@ c--   current model integration.
       ndaysrec = cal_IntDays( mythid )
 
       _BEGIN_MASTER( myThid )
-
-c#ifdef ALLOW_OLD_ESTIM_CODES
 
 c--     Get the complete dates of the ...
 c--     ... TMI data.
@@ -166,7 +159,6 @@ c--     ... ARGO data.
          if ( argosfile .ne. ' ' )
      &  call cal_FullDate( argosstartdate1,   argotstartdate2,
      &                     argosstartdate,    mythid )
-c#endif /* ALLOW_OLD_ESTIM_CODES */
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       do k = 1, NGENCOST
@@ -326,8 +318,6 @@ cph!!!
       endif
 #endif
 
-c#ifdef ALLOW_OLD_ESTIM_CODES
-
 #ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
       do irec = 1, ndaysrec
        wtransp(irec)   = 0. _d 0
@@ -436,8 +426,6 @@ c
       _END_MASTER(myThid)
       _BARRIER
 #endif /* ALLOW_NEW_SSH_COST */
-
-c#endif /* ALLOW_OLD_ESTIM_CODES */
 
 c--   Summarize the cost function setup.
       _BEGIN_MASTER( mythid )

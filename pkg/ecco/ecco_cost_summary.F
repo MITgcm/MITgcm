@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.9 2014/09/29 16:47:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.10 2014/10/11 19:03:27 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -49,7 +49,7 @@ c     == external ==
 
 c     == end of interface ==
 
-#ifdef ALLOW_OLD_ESTIM_CODES
+#ifdef CODES_BEING_PHASED_OUT
 
       write(msgbuf,'(a)')
      &' '
@@ -315,7 +315,7 @@ c     == end of interface ==
       endif
 #endif /* ALLOW_SSH_GFOANOM_COST_CONTRIBUTION */
 
-#endif /* ALLOW_OLD_ESTIM_CODES */
+#endif /* CODES_BEING_PHASED_OUT */
 
       return
       end
