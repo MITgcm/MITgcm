@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve.F,v 1.6 2014/09/05 14:25:11 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve.F,v 1.7 2014/10/12 13:26:43 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -113,8 +113,8 @@ C     LOCAL VARIABLES
      I         A_vu,       ! section of matrix that multiplies u and projects on v
      I         A_vv,       ! section of matrix that multiplies v and projects on v
      I         tolerance,
-     I         maxIter,
-     O         iters,
+     I         iters,
+     O         maxiter,
      I         myThid )
 
 
