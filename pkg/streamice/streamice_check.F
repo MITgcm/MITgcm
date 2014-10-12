@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_check.F,v 1.4 2014/10/12 13:27:31 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_check.F,v 1.5 2014/10/12 21:55:02 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -289,16 +289,16 @@ C    write init_thickness array to a binary file
 !        CALL WRITE_FLD_XY_RL ( "ssurf_el_streamice", "init",
 !      & surf_el_streamice, 0, myThid )
 
-     !  DO m=1,4
-     !   DO n=1,4
-     !    DO k=1,2
-     !     WRITE(fname,'(A,I1,A,I1,A,I1)')
-     !&     "Dphi_", m, "_", n, "_", k
-     !     CALL WRITE_FLD_XY_RL (fname, "",
-     !&     Dphi(:,:,:,:,m,n,k),0,myThid)
-     !    ENDDO
-     !   ENDDO
-     !  ENDDO
+!       DO m=1,4
+!        DO n=1,4
+!         DO k=1,2
+!          WRITE(fname,'(A,I1,A,I1,A,I1)')
+!     &     "Dphi_", m, "_", n, "_", k
+!          CALL WRITE_FLD_XY_RL (fname, "",
+!     &     Dphi(:,:,:,:,m,n,k),0,myThid)
+!         ENDDO
+!        ENDDO
+!       ENDDO
 
        CALL WRITE_FLD_XY_RL ( "k1AtC_str", "out",
      & k1AtC_str, 0, myThid )
