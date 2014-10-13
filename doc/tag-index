@@ -1,12 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2081 2014/10/11 19:42:33 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2082 2014/10/13 22:24:01 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint65f (2014/10/13)
 o pkg/ctrl, ecco, seaice : minor changes in headers
-o global_oce_llc90 : 
-  - ecco_v4 verification experiments now test generic cost 
+o global_oce_llc90 :
+  - ecco_v4 verification experiments now test generic cost
     function and control capabilities added since checkpoint65c.
 o pkg/ctrl: regroup all obcs ctrl variables in CTRL_OBCS.h.
 o pkg/ecco: increase modularity and improve logic
@@ -22,7 +23,7 @@ o pkg/ecco: increase modularity and improve logic
     using_ers, using_gfo, using_mdt is now only defined within gencost)
 o pkg/ecco: extend generic cost capabilities
   - pkg/ecco : added 3D gencost (ALLOW_GENCOST3D), added gencost
-    capabilities via gencost_preproc (+ _c,_i,_r related params), 
+    capabilities via gencost_preproc (+ _c,_i,_r related params),
     gencost_posproc (+ _c,_i,_r related params), gencost_nrecperiod,
     gencost_outputlevel arguments to cost_generic
   - pkg/ecco/cost_genread.F (new) : interface between cost_generic
@@ -40,16 +41,16 @@ o pkg/ecco: extend generic cost capabilities
   - pkg/ecco/cost_gencost_customize.F : treat case of scatterometer costs
 o pkg/sea/SEAICE_OPTIONS.h : add ALLOW_COST_ICE, ALLOW_SEAICE_COST_SMR_AREA
 o pkg/ecco: internal re-organization
-  - resolve un-necessary dependancies within pkg/ecco and to pkg/ctrl 
+  - resolve un-necessary dependancies within pkg/ecco and to pkg/ctrl
     (rm includes of optim.h and ctrl.h, replace optimcycle with eccoiter,
-    mv relevant variables definition from ecco_cost.h to ecco.h, 
+    mv relevant variables definition from ecco_cost.h to ecco.h,
     make sure gencost routines only include ecco.h)
   - throughout : add missing CCP switches, rm unused variables,
     and rm un-necessary CPP switches
-  - throughout gencost routines : replace modelstartdate with 
+  - throughout gencost routines : replace modelstartdate with
     gencost_startdate when needed
   - cost_bp_read.F : use arguments, instead of common blocs
-    so that it can be used also by (new) cost_gencost_bpv4.F 
+    so that it can be used also by (new) cost_gencost_bpv4.F
   - ecco_init_varia.F : initialize RHOsumGlob_0, VOLsumGlob_0
   - ecco_phys.F : compute etanFull
   - ecco_readparms.F : rename using_topex as using_tpj, add
