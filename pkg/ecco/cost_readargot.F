@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readargot.F,v 1.3 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readargot.F,v 1.4 2014/10/16 19:55:17 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -39,6 +39,8 @@ c     == routine arguments ==
 
       integer irec
       integer mythid
+
+#ifdef ALLOW_ARGO_THETA_COST_CONTRIBUTION
 
 c     == local variables ==
 
@@ -96,6 +98,9 @@ ce    --> there is certainly a better place for this.
             enddo
          enddo
       endif
+
+#endif /* ALLOW_ARGO_THETA_COST_CONTRIBUTION */
+
       return
       end
 

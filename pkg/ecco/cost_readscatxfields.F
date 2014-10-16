@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatxfields.F,v 1.10 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatxfields.F,v 1.11 2014/10/16 19:55:17 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -42,6 +42,9 @@ c     == routine arguments ==
 
       integer irec
       integer mythid
+
+#if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
+     defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
 
 c     == local variables ==
 
@@ -223,6 +226,8 @@ c--   One could of course do a global sum here.
       else
         vartile = spval
       endif
+
+#endif /* ALLOW_SCAT_COST_CONTRIBUTION || ALLOW_DAILYSCAT_COST_CONTRIBUTION */
 
       return
       end

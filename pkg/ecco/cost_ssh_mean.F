@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_mean.F,v 1.14 2014/04/30 00:19:09 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_mean.F,v 1.15 2014/10/16 19:55:17 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -60,6 +60,8 @@ c     == routine arguments ==
       _RL     offset
       _RL     costmean
       integer mythid
+
+#ifdef ALLOW_SSH_COST_CONTRIBUTION
 
 c     == local variables ==
 
@@ -295,6 +297,8 @@ cph(
 cph)
 
 #endif /* else ALLOW_EGM96_ERROR_COV */
+
+#endif /* ALLOW_SSH_COST_CONTRIBUTION */
 
       return
       end
