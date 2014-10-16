@@ -1,8 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2082 2014/10/13 22:24:01 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2083 2014/10/16 20:23:21 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/ctrl,ecco,exf : 
+  - remove variables associated with NON-generic costs,
+    unless ECCO_CTRL_DEPRECATED is defined.
+  - remove NON-generic NON-obcs controls, 
+    unless ECCO_CTRL_DEPRECATED is defined.
+o pkg/ctrl : added ctrl_local_params.h
+o pkg/ecco : added ecco_local_params.h
+o verification : added ECCO_CTRL_DEPRECATED to most as and oad 
+  experiments, which will progressively be removed once the
+  experiments are revised to use only generic controls/costs. 
 
 checkpoint65f (2014/10/13)
 o pkg/ctrl, ecco, seaice : minor changes in headers
