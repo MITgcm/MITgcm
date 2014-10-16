@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.42 2014/10/11 19:04:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.43 2014/10/16 20:04:23 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -114,7 +114,7 @@ c--   Temperature field.
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-#ifdef ALLOW_ECCO
+#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
                IF (abs(tmpfld3d(i,j,k,bi,bj)).gt.
      $          2.0/sqrt(wtheta(k,bi,bj)))
      $          tmpfld3d(i,j,k,bi,bj)=
@@ -154,7 +154,7 @@ c--   Temperature field.
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-#ifdef ALLOW_ECCO
+#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
                IF (abs(tmpfld3d(i,j,k,bi,bj)).gt.
      $          2.0/sqrt(wsalt(k,bi,bj)))
      $          tmpfld3d(i,j,k,bi,bj)=

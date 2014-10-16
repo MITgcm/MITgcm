@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.55 2014/10/09 00:49:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.56 2014/10/16 20:04:23 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -56,7 +56,7 @@ c     == global variables ==
 #ifdef ALLOW_COST
 # include "cost.h"
 #endif
-#ifdef ALLOW_ECCO
+#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
 # include "ecco_cost.h"
 #else
 # include "ctrl_weights.h"
@@ -123,6 +123,14 @@ c--   Initialise global buffer index
 
 c--   Assign file names.
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+      call ctrl_set_fname(xx_obcsn_file, fname_obcsn, mythid)
+      call ctrl_set_fname(xx_obcss_file, fname_obcss, mythid)
+      call ctrl_set_fname(xx_obcsw_file, fname_obcsw, mythid)
+      call ctrl_set_fname(xx_obcse_file, fname_obcse, mythid)
+#endif /* ALLOW_CTRL and ALLOW_OBCS */
+
+#ifdef ECCO_CTRL_DEPRECATED
       call ctrl_set_fname(xx_theta_file, fname_theta, mythid)
       call ctrl_set_fname(xx_salt_file, fname_salt, mythid)
       call ctrl_set_fname(xx_hflux_file, fname_hflux, mythid)
@@ -142,12 +150,6 @@ c--   Assign file names.
       call ctrl_set_fname(xx_runoff_file, fname_runoff, mythid)
       call ctrl_set_fname(xx_uwind_file, fname_uwind, mythid)
       call ctrl_set_fname(xx_vwind_file, fname_vwind, mythid)
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
-      call ctrl_set_fname(xx_obcsn_file, fname_obcsn, mythid)
-      call ctrl_set_fname(xx_obcss_file, fname_obcss, mythid)
-      call ctrl_set_fname(xx_obcsw_file, fname_obcsw, mythid)
-      call ctrl_set_fname(xx_obcse_file, fname_obcse, mythid)
-#endif /* ALLOW_CTRL and ALLOW_OBCS */
       call ctrl_set_fname(xx_diffkr_file, fname_diffkr, mythid)
       call ctrl_set_fname(xx_kapgm_file, fname_kapgm, mythid)
       call ctrl_set_fname(xx_kapredi_file, fname_kapredi, mythid)
@@ -172,6 +174,7 @@ c--   Assign file names.
 cHFLUXM_CONTROL
       call ctrl_set_fname(xx_hfluxm_file, fname_hfluxm, mythid)
 cHFLUXM_CONTROL
+#endif /* ECCO_CTRL_DEPRECATED */
 
 c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
@@ -260,6 +263,43 @@ c          write(cunit) nWetiGlobal(1)
       _END_MASTER( mythid )
       _BARRIER
 #endif
+
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#ifdef ALLOW_OBCSN_CONTROL
+          ivartype = 11
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wobcsn"
+          call ctrl_set_pack_xz(
+     &         cunit, ivartype, fname_obcsn(ictrlgrad), "maskobcsn",
+     &         weighttype, wobcsn, lxxadxx, mythid)
+#endif
+#ifdef ALLOW_OBCSS_CONTROL
+          ivartype = 12
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wobcss"
+          call ctrl_set_pack_xz(
+     &         cunit, ivartype, fname_obcss(ictrlgrad), "maskobcss",
+     &         weighttype, wobcss, lxxadxx, mythid)
+#endif
+#ifdef ALLOW_OBCSW_CONTROL
+          ivartype = 13
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wobcsw"
+          call ctrl_set_pack_yz(
+     &         cunit, ivartype, fname_obcsw(ictrlgrad), "maskobcsw",
+     &         weighttype, wobcsw, lxxadxx, mythid)
+#endif
+#ifdef ALLOW_OBCSE_CONTROL
+          ivartype = 14
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wobcse"
+          call ctrl_set_pack_yz(
+     &         cunit, ivartype, fname_obcse(ictrlgrad), "maskobcse",
+     &         weighttype, wobcse, lxxadxx, mythid)
+#endif
+#endif /* ALLOW_CTRL and ALLOW_OBCS */
+
+#ifdef ECCO_CTRL_DEPRECATED
 
 #ifdef ALLOW_THETA0_CONTROL
           ivartype = 1
@@ -392,41 +432,6 @@ c          write(cunit) nWetiGlobal(1)
       ENDIF
 #endif
 #endif
-
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
-#ifdef ALLOW_OBCSN_CONTROL
-          ivartype = 11
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wobcsn"
-          call ctrl_set_pack_xz(
-     &         cunit, ivartype, fname_obcsn(ictrlgrad), "maskobcsn",
-     &         weighttype, wobcsn, lxxadxx, mythid)
-#endif
-#ifdef ALLOW_OBCSS_CONTROL
-          ivartype = 12
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wobcss"
-          call ctrl_set_pack_xz(
-     &         cunit, ivartype, fname_obcss(ictrlgrad), "maskobcss",
-     &         weighttype, wobcss, lxxadxx, mythid)
-#endif
-#ifdef ALLOW_OBCSW_CONTROL
-          ivartype = 13
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wobcsw"
-          call ctrl_set_pack_yz(
-     &         cunit, ivartype, fname_obcsw(ictrlgrad), "maskobcsw",
-     &         weighttype, wobcsw, lxxadxx, mythid)
-#endif
-#ifdef ALLOW_OBCSE_CONTROL
-          ivartype = 14
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wobcse"
-          call ctrl_set_pack_yz(
-     &         cunit, ivartype, fname_obcse(ictrlgrad), "maskobcse",
-     &         weighttype, wobcse, lxxadxx, mythid)
-#endif
-#endif /* ALLOW_CTRL and ALLOW_OBCS */
 
 #ifdef ALLOW_DIFFKR_CONTROL
           ivartype = 15
@@ -725,6 +730,8 @@ c          write(cunit) nWetiGlobal(1)
      &         fname_shifwflx(ictrlgrad),
      &         "maskCtrlI", weighttype, lxxadxx, mythid)
 #endif
+
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #ifdef ALLOW_GENARR2D_CONTROL
        do iarr = 1, maxCtrlArr2D

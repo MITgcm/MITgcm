@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.31 2014/09/22 14:00:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.32 2014/10/16 20:04:23 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -125,10 +125,13 @@ cc#else
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
 cc#endif /* ALLOW_OPENAD */
+
+#ifdef ECCO_CTRL_DEPRECATED
 #ifdef ALLOW_CTRL_SMOOTH
         if ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file )
      &     call ctrl_smooth(xx_gen1,genmask,myThid)
+#endif
 #endif
 
 #ifdef ALLOW_SMOOTH
@@ -182,10 +185,12 @@ cc#else
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
 cc#endif /* ALLOW_OPENAD */
+#ifdef ECCO_CTRL_DEPRECATED
 #ifdef ALLOW_CTRL_SMOOTH
         if ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file )
      &     call ctrl_smooth(xx_gen1,genmask,myThid)
+#endif
 #endif
 
 #ifdef ALLOW_SMOOTH
@@ -231,20 +236,20 @@ c--   Add control to model variable.
 cph(
 cph this flag ported from the SIO code
 cph Initial wind stress adjustments are too vigorous.
+      gensign = 1.
+      doCtrlUpdate = .TRUE.
+#ifdef ECCO_CTRL_DEPRECATED
       if ( gencount0 .LE. 2 .AND.
      &     ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file ) .AND.
      &     ( xx_genperiod .NE. 0 ) ) then
          doCtrlUpdate = .FALSE.
-      else
-         doCtrlUpdate = .TRUE.
       endif
       if ( xx_gen_file .EQ. xx_tauu_file .OR.
      &     xx_gen_file .EQ. xx_tauv_file ) then
          gensign = -1.
-      else
-         gensign = 1.
       endif
+#endif
 c
 cph since the above is ECCO specific, we undo it here:
 cph      doCtrlUpdate = .TRUE.

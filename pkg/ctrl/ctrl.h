@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.73 2014/10/11 19:04:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.74 2014/10/16 20:04:23 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -297,23 +297,27 @@ c     TAMC sees xx_..._dummy
 #ifdef ALLOW_OPENAD
 C
       common /controlvars_r_openad/
+     &        xx_place_holder
+# ifdef ECCO_CTRL_DEPRECATED
      &        xx_theta
      &      , xx_salt
      &      , xx_uvel
      &      , xx_vvel
      &      , xx_etan
-# ifdef ALLOW_DIFFKR_CONTROL
+#  ifdef ALLOW_DIFFKR_CONTROL
      &      , xx_diffkr
-# endif
-# ifdef ALLOW_KAPGM_CONTROL
+#  endif
+#  ifdef ALLOW_KAPGM_CONTROL
      &      , xx_kapgm
-# endif
-# ifdef ALLOW_TR10_CONTROL
+#  endif
+#  ifdef ALLOW_TR10_CONTROL
      &      , xx_tr1
-# endif
-# ifdef ALLOW_HFLUXM_CONTROL
+#  endif
+#  ifdef ALLOW_HFLUXM_CONTROL
      &      , xx_hfluxm
-# endif
+#  endif
+# endif /* ECCO_CTRL_DEPRECATED */
+
 # ifdef ALLOW_GENARR2D_CONTROL
      &      , xx_genarr2d
 # endif
@@ -321,23 +325,28 @@ C
      &      , xx_genarr3d
 # endif
 C
+# ifdef ECCO_CTRL_DEPRECATED
       _RL xx_theta(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL xx_salt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL xx_uvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL xx_vvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL xx_etan(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-# ifdef ALLOW_DIFFKR_CONTROL
+#  ifdef ALLOW_DIFFKR_CONTROL
       _RL xx_diffkr(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-# endif
-# ifdef ALLOW_KAPGM_CONTROL
+#  endif
+#  ifdef ALLOW_KAPGM_CONTROL
       _RL xx_kapgm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-# endif
-# ifdef ALLOW_TR10_CONTROL
+#  endif
+#  ifdef ALLOW_TR10_CONTROL
       _RL xx_tr1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-# endif
-# ifdef ALLOW_HFLUXM_CONTROL
+#  endif
+#  ifdef ALLOW_HFLUXM_CONTROL
       _RL xx_hfluxm(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-# endif
+#  endif
+# endif /* ECCO_CTRL_DEPRECATED */
+
+      _RL xx_place_holder
+
 # ifdef ALLOW_GENARR2D_CONTROL
       _RL xx_genarr2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,
      &                maxCtrlArr2D)
@@ -346,6 +355,7 @@ C
       _RL xx_genarr3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy,
      &                maxCtrlArr3D)
 # endif
+
 #endif
 
 c     Auxiliary storage arrays for the control variables:
@@ -360,27 +370,28 @@ c     xx_tauu1 - zonal wind stress record after  current date.
 c     xx_tauv0 - meridional wind stress record before current date.
 c     xx_tauv1 - meridional wind stress record after  current date.
 
-#if     (defined  (ALLOW_HFLUX_CONTROL) || (defined (ALLOW_OPENAD) && defined  (ALLOW_HFLUX0_CONTROL)))
+#ifdef ECCO_CTRL_DEPRECATED
+# if     (defined  (ALLOW_HFLUX_CONTROL) || (defined (ALLOW_OPENAD) && defined  (ALLOW_HFLUX0_CONTROL)))
       common /controlaux_hflux_r/
      &                      xx_hflux0,
      &                      xx_hflux1
-#elif   (defined  (ALLOW_ATEMP_CONTROL))
+# elif   (defined  (ALLOW_ATEMP_CONTROL))
       common /controlaux_atemp_r/
      &                      xx_atemp0,
      &                      xx_atemp1
-#endif
+# endif
 
-#if     (defined  (ALLOW_SFLUX_CONTROL) || (defined (ALLOW_OPENAD) && defined  (ALLOW_SFLUX0_CONTROL)))
+# if     (defined  (ALLOW_SFLUX_CONTROL) || (defined (ALLOW_OPENAD) && defined  (ALLOW_SFLUX0_CONTROL)))
       common /controlaux_swflux_r/
      &                      xx_sflux0,
      &                      xx_sflux1
-#elif   (defined  (ALLOW_AQH_CONTROL))
+# elif   (defined  (ALLOW_AQH_CONTROL))
       common /controlaux_aqh_r/
      &                      xx_aqh0,
      &                      xx_aqh1
-#endif
+# endif
 
-#if (defined (ALLOW_ATM_MEAN_CONTROL))
+# if (defined (ALLOW_ATM_MEAN_CONTROL))
       common /controlaux_atm_mean_r/
      &                      xx_atemp_mean,
      &                      xx_aqh_mean,
@@ -388,192 +399,194 @@ c     xx_tauv1 - meridional wind stress record after  current date.
      &                      xx_vwind_mean,
      &                      xx_precip_mean,
      &                      xx_swdown_mean
-#endif
+# endif
 
-#if     (defined  (ALLOW_USTRESS_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_TAUU0_CONTROL)))
+# if     (defined  (ALLOW_USTRESS_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_TAUU0_CONTROL)))
       common /controlaux_ustress_r/
      &                      xx_tauu0,
      &                      xx_tauu1
-#endif
+# endif
 
-#if     (defined  (ALLOW_UWIND_CONTROL))
+# if     (defined  (ALLOW_UWIND_CONTROL))
       common /controlaux_uwind_r/
      &                      xx_uwind0,
      &                      xx_uwind1
-#endif
+# endif
 
-#if     (defined  (ALLOW_VSTRESS_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_TAUV0_CONTROL)))
+# if     (defined  (ALLOW_VSTRESS_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_TAUV0_CONTROL)))
       common /controlaux_vstress_r/
      &                      xx_tauv0,
      &                      xx_tauv1
-#endif
+# endif
 
-#if   (defined  (ALLOW_VWIND_CONTROL))
+# if   (defined  (ALLOW_VWIND_CONTROL))
       common /controlaux_vwind_r/
      &                      xx_vwind0,
      &                      xx_vwind1
-#endif
+# endif
 
-#if (defined  (ALLOW_PRECIP_CONTROL))
+# if (defined  (ALLOW_PRECIP_CONTROL))
       common /controlaux_precip_r/
      &                      xx_precip0,
      &                      xx_precip1
-#endif
+# endif
 
-#if (defined  (ALLOW_SWFLUX_CONTROL))
+# if (defined  (ALLOW_SWFLUX_CONTROL))
       common /controlaux_swflux_r/
      &                      xx_swflux0,
      &                      xx_swflux1
-#endif
+# endif
 
-#if (defined  (ALLOW_SWDOWN_CONTROL))
+# if (defined  (ALLOW_SWDOWN_CONTROL))
       common /controlaux_swdown_r/
      &                      xx_swdown0,
      &                      xx_swdown1
-#endif
+# endif
 
-#if (defined  (ALLOW_LWFLUX_CONTROL))
+# if (defined  (ALLOW_LWFLUX_CONTROL))
       common /controlaux_lwflux_r/
      &                      xx_lwflux0,
      &                      xx_lwflux1
-#endif
+# endif
 
-#if (defined  (ALLOW_LWDOWN_CONTROL))
+# if (defined  (ALLOW_LWDOWN_CONTROL))
       common /controlaux_lwdown_r/
      &                      xx_lwdown0,
      &                      xx_lwdown1
-#endif
+# endif
 
-#if (defined  (ALLOW_EVAP_CONTROL))
+# if (defined  (ALLOW_EVAP_CONTROL))
       common /controlaux_evap_r/
      &                      xx_evap0,
      &                      xx_evap1
-#endif
+# endif
 
-#if (defined  (ALLOW_SNOWPRECIP_CONTROL))
+# if (defined  (ALLOW_SNOWPRECIP_CONTROL))
       common /controlaux_snowprecip_r/
      &                      xx_snowprecip0,
      &                      xx_snowprecip1
-#endif
+# endif
 
-#if (defined  (ALLOW_APRESSURE_CONTROL))
+# if (defined  (ALLOW_APRESSURE_CONTROL))
       common /controlaux_apressure_r/
      &                      xx_apressure0,
      &                      xx_apressure1
-#endif
+# endif
 
-#if (defined  (ALLOW_RUNOFF_CONTROL))
+# if (defined  (ALLOW_RUNOFF_CONTROL))
       common /controlaux_runoff_r/
      &                      xx_runoff0,
      &                      xx_runoff1
-#endif
+# endif
 
-#if (defined  (ALLOW_SST_CONTROL))
+# if (defined  (ALLOW_SST_CONTROL))
       common /controlaux_sst_r/
      &                      xx_sst0,
      &                      xx_sst1
-#endif
-#if (defined  (ALLOW_SSS_CONTROL))
+# endif
+# if (defined  (ALLOW_SSS_CONTROL))
       common /controlaux_sss_r/
      &                      xx_sss0,
      &                      xx_sss1
-#endif
+# endif
 
-#ifdef ALLOW_SHIFWFLX_CONTROL
+# ifdef ALLOW_SHIFWFLX_CONTROL
       common /controlaux_shifwflx_r/
      &                      xx_shifwflx0,
      &                      xx_shifwflx1
       _RL xx_shifwflx0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_shifwflx1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif /* ALLOW_SHIFWFLX_CONTROL */
+# endif /* ALLOW_SHIFWFLX_CONTROL */
 
-#if     (defined  (ALLOW_HFLUX_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_HFLUX0_CONTROL)))
+# if     (defined  (ALLOW_HFLUX_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_HFLUX0_CONTROL)))
       _RL xx_hflux0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_hflux1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#elif   (defined  (ALLOW_ATEMP_CONTROL))
+# elif   (defined  (ALLOW_ATEMP_CONTROL))
       _RL xx_atemp0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_atemp1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-#if     (defined  (ALLOW_SFLUX_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_SFLUX0_CONTROL)))
+# endif
+# if     (defined  (ALLOW_SFLUX_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_SFLUX0_CONTROL)))
       _RL xx_sflux0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_sflux1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#elif   (defined  (ALLOW_AQH_CONTROL))
+# elif   (defined  (ALLOW_AQH_CONTROL))
       _RL xx_aqh0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_aqh1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-#if     (defined  (ALLOW_USTRESS_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_TAUU0_CONTROL)))
+# endif
+# if     (defined  (ALLOW_USTRESS_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_TAUU0_CONTROL)))
       _RL xx_tauu0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_tauu1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-#if     (defined  (ALLOW_UWIND_CONTROL))
+# endif
+# if     (defined  (ALLOW_UWIND_CONTROL))
       _RL xx_uwind0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_uwind1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-#if     (defined  (ALLOW_VSTRESS_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_TAUV0_CONTROL)))
+# endif
+# if     (defined  (ALLOW_VSTRESS_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_TAUV0_CONTROL)))
       _RL xx_tauv0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_tauv1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-#if     (defined  (ALLOW_VWIND_CONTROL))
+# endif
+# if     (defined  (ALLOW_VWIND_CONTROL))
       _RL xx_vwind0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_vwind1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
+# endif
 #if (defined  (ALLOW_PRECIP_CONTROL))
       _RL xx_precip0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_precip1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
+# endif
 #if (defined  (ALLOW_SWFLUX_CONTROL))
       _RL xx_swflux0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_swflux1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
-#if (defined  (ALLOW_SWDOWN_CONTROL))
+# if (defined  (ALLOW_SWDOWN_CONTROL))
       _RL xx_swdown0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_swdown1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-#if (defined  (ALLOW_LWFLUX_CONTROL))
+# endif
+# if (defined  (ALLOW_LWFLUX_CONTROL))
       _RL xx_lwflux0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_lwflux1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-#if (defined  (ALLOW_LWDOWN_CONTROL))
+# endif
+# if (defined  (ALLOW_LWDOWN_CONTROL))
       _RL xx_lwdown0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_lwdown1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-#if (defined  (ALLOW_EVAP_CONTROL))
+# endif
+# if (defined  (ALLOW_EVAP_CONTROL))
       _RL xx_evap0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_evap1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-#if (defined  (ALLOW_SNOWPRECIP_CONTROL))
+# endif
+# if (defined  (ALLOW_SNOWPRECIP_CONTROL))
       _RL xx_snowprecip0
      &    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_snowprecip1
      &    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-#if (defined  (ALLOW_APRESSURE_CONTROL))
+# endif
+# if (defined  (ALLOW_APRESSURE_CONTROL))
       _RL xx_apressure0
      &    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_apressure1
      &    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-#if (defined  (ALLOW_RUNOFF_CONTROL))
+# endif
+# if (defined  (ALLOW_RUNOFF_CONTROL))
       _RL xx_runoff0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_runoff1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-#if (defined  (ALLOW_SST_CONTROL))
+# endif
+# if (defined  (ALLOW_SST_CONTROL))
       _RL xx_sst0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_sst1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-#if (defined  (ALLOW_SSS_CONTROL))
+# endif
+# if (defined  (ALLOW_SSS_CONTROL))
       _RL xx_sss0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_sss1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-#if     (defined (ALLOW_ATM_MEAN_CONTROL))
+# endif
+# if     (defined (ALLOW_ATM_MEAN_CONTROL))
       _RL xx_atemp_mean (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_aqh_mean   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_uwind_mean (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_vwind_mean (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_precip_mean(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_swdown_mean(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
+# endif
+#endif /* ECCO_CTRL_DEPRECATED */
 
+#ifdef ECCO_CTRL_DEPRECATED
 c     Files where the control variables are stored:
 c     =============================================
 c
@@ -986,6 +999,8 @@ cHFLUXM_CONTROL
 cHFLUXM_CONTROL
       character*( 80)   fname_shifwflx(3)
 
+#endif /* ECCO_CTRL_DEPRECATED */
+    
 c     ==================================================================
 c     END OF HEADER CONTROLVARS ctrl.h
 c     ==================================================================

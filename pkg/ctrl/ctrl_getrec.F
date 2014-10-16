@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getrec.F,v 1.15 2014/10/09 00:49:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getrec.F,v 1.16 2014/10/16 20:04:23 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -103,7 +103,44 @@ c     == end of interface ==
 
 c     Map the field parameters.
 
-      if ( thefield .eq. 'xx_hflux'   ) then
+      if ( thefield .eq. 'xx_obcsn'   ) then
+         call cal_CopyDate(
+     I        xx_obcsnstartdate,
+     O        fldstartdate,
+     I        mythid
+     &        )
+         fldperiod = xx_obcsnperiod
+         lArgErr = .false.
+c
+      else if ( thefield .eq. 'xx_obcss'   ) then
+         call cal_CopyDate(
+     I        xx_obcssstartdate,
+     O        fldstartdate,
+     I        mythid
+     &        )
+         fldperiod = xx_obcssperiod
+         lArgErr = .false.
+c
+      else if ( thefield .eq. 'xx_obcsw'   ) then
+         call cal_CopyDate(
+     I        xx_obcswstartdate,
+     O        fldstartdate,
+     I        mythid
+     &        )
+         fldperiod = xx_obcswperiod
+         lArgErr = .false.
+c
+      else if ( thefield .eq. 'xx_obcse'   ) then
+         call cal_CopyDate(
+     I        xx_obcsestartdate,
+     O        fldstartdate,
+     I        mythid
+     &        )
+         fldperiod = xx_obcseperiod
+         lArgErr = .false.
+c
+#ifdef ECCO_CTRL_DEPRECATED
+      else if ( thefield .eq. 'xx_hflux'   ) then
          call cal_CopyDate(
      I        xx_hfluxstartdate,
      O        fldstartdate,
@@ -256,42 +293,6 @@ c
          fldperiod = xx_vwindperiod
          lArgErr = .false.
 c
-      else if ( thefield .eq. 'xx_obcsn'   ) then
-         call cal_CopyDate(
-     I        xx_obcsnstartdate,
-     O        fldstartdate,
-     I        mythid
-     &        )
-         fldperiod = xx_obcsnperiod
-         lArgErr = .false.
-c
-      else if ( thefield .eq. 'xx_obcss'   ) then
-         call cal_CopyDate(
-     I        xx_obcssstartdate,
-     O        fldstartdate,
-     I        mythid
-     &        )
-         fldperiod = xx_obcssperiod
-         lArgErr = .false.
-c
-      else if ( thefield .eq. 'xx_obcsw'   ) then
-         call cal_CopyDate(
-     I        xx_obcswstartdate,
-     O        fldstartdate,
-     I        mythid
-     &        )
-         fldperiod = xx_obcswperiod
-         lArgErr = .false.
-c
-      else if ( thefield .eq. 'xx_obcse'   ) then
-         call cal_CopyDate(
-     I        xx_obcsestartdate,
-     O        fldstartdate,
-     I        mythid
-     &        )
-         fldperiod = xx_obcseperiod
-         lArgErr = .false.
-c
       else if ( thefield .eq. 'xx_sst'   ) then
          call cal_CopyDate(
      I        xx_sststartdate,
@@ -309,6 +310,7 @@ c
      &        )
          fldperiod = xx_sssperiod
          lArgErr = .false.
+#endif /* ECCO_CTRL_DEPRECATED */
       endif
 
 c--   Check the field argument.
