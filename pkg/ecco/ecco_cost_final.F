@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.74 2014/10/11 19:03:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.75 2014/10/16 20:02:34 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -27,7 +27,11 @@ c     == global variables ==
 # include "cost.h"
 #endif
 #ifdef ALLOW_ECCO
-# include "ecco_cost.h"
+# ifdef ECCO_CTRL_DEPRECATED
+#  include "ecco_cost.h"
+# else
+#  include "ecco.h"
+# endif
 #endif
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
@@ -71,6 +75,7 @@ c the adjoint, pkg/autodiff most likely require cost though.
 #endif
       _RL locfc
 
+#ifdef ECCO_CTRL_DEPRECATED
       _RL f_temp0, f_salt0, f_temp0smoo, f_salt0smoo
       _RL f_etan0, f_uvel0, f_vvel0
       _RL f_temp, f_salt
@@ -99,15 +104,14 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL f_ini_fin
       _RL f_kapgm, f_kapredi, f_diffkr
       _RL f_eddytau, f_bottomdrag
+      _RL f_transp, f_ies
+#endif /* ECCO_CTRL_DEPRECATED */
 
+      _RL f_gencost(NGENCOST)
       _RL f_obcsn, f_obcss, f_obcsw, f_obcse
 #ifdef ALLOW_PROFILES
       _RL f_profiles(NFILESPROFMAX,NVARMAX)
 #endif
-      _RL f_gencost(NGENCOST)
-      _RL f_usercost(NUSERCOST)
-      _RL f_sshv4cost(NSSHV4COST)
-      _RL f_transp, f_ies
 #ifdef ALLOW_GENTIM2D_CONTROL
       _RL f_gentim2d(maxCtrlTim2D)
 #endif
@@ -118,6 +122,7 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL f_genarr3d(maxCtrlArr3D)
 #endif
 
+#ifdef ECCO_CTRL_DEPRECATED
       _RL no_temp0, no_salt0,  no_temp, no_salt
       _RL no_etan0, no_uvel0, no_vvel0
       _RL no_uwind, no_vwind
@@ -139,15 +144,14 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL no_kapgm, no_kapredi, no_diffkr
       _RL no_eddytau, no_bottomdrag
       _RL no_hmean
+      _RL no_transp, no_ies
+#endif /* ECCO_CTRL_DEPRECATED */
 
+      _RL no_gencost(NGENCOST)
       _RL no_obcsn, no_obcss, no_obcsw, no_obcse
 #ifdef ALLOW_PROFILES
       _RL no_profiles(NFILESPROFMAX,NVARMAX)
 #endif
-      _RL no_gencost(NGENCOST)
-      _RL no_usercost(NUSERCOST)
-      _RL no_sshv4cost(NSSHV4COST)
-      _RL no_transp, no_ies
 #ifdef ALLOW_GENTIM2D_CONTROL
       _RL no_gentim2d(maxCtrlTim2D)
 #endif
@@ -177,6 +181,7 @@ c     == end of interface ==
       ifc = 30
 
       locfc = 0. _d 0
+#ifdef ECCO_CTRL_DEPRECATED
       f_temp = 0. _d 0
       f_salt = 0. _d 0
       f_temp0 = 0. _d 0
@@ -263,6 +268,7 @@ c     == end of interface ==
       f_bottomdrag = 0. _d 0
       f_transp  = 0. _d 0
       f_ies = 0. _d 0
+#endif /* ECCO_CTRL_DEPRECATED */
 
       f_obcsn   = 0. _d 0
       f_obcss   = 0. _d 0
@@ -278,16 +284,6 @@ c     == end of interface ==
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
         f_gencost(num_var)= 0. _d 0
-       enddo
-#endif
-#ifdef ALLOW_USERCOST_CONTRIBUTION
-       do num_var=1,NUSERCOST
-        f_usercost(num_var)= 0. _d 0
-       enddo
-#endif
-#ifdef ALLOW_SSHV4_COST
-       do num_var=1,NSSHV4COST
-        f_sshv4cost(num_var)= 0. _d 0
        enddo
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
@@ -306,6 +302,7 @@ c     == end of interface ==
        enddo
 #endif
 
+#ifdef ECCO_CTRL_DEPRECATED
       no_temp = 0. _d 0
       no_salt = 0. _d 0
       no_temp0 = 0. _d 0
@@ -379,6 +376,7 @@ c     == end of interface ==
       no_bottomdrag = 0. _d 0
       no_transp  = 0. _d 0
       no_ies = 0. _d 0
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
@@ -390,16 +388,6 @@ c     == end of interface ==
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
         no_gencost(num_var)= 0. _d 0
-       enddo
-#endif
-#ifdef ALLOW_USERCOST_CONTRIBUTION
-       do num_var=1,NUSERCOST
-        no_usercost(num_var)= 0. _d 0
-       enddo
-#endif
-#ifdef ALLOW_SSHV4_COST
-       do num_var=1,NSSHV4COST
-        no_sshv4cost(num_var)= 0. _d 0
        enddo
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
@@ -423,6 +411,7 @@ c--   Sum up all contributions.
         do bi = itlo,ithi
 
           tile_fc(bi,bj) = tile_fc(bi,bj)
+#ifdef ECCO_CTRL_DEPRECATED
      &         + mult_temp    * objf_temp(bi,bj)
      &         + mult_salt    * objf_salt(bi,bj)
      &         + mult_temp0   * ( objf_temp0(bi,bj)
@@ -493,14 +482,7 @@ c--   Sum up all contributions.
      &         + mult_edtau * objf_eddytau(bi,bj)
      &         + mult_bottomdrag * objf_bottomdrag(bi,bj)
 
-#ifdef ALLOW_SSHV4_COST
-       do num_var=1,NSSHV4COST
-          tile_fc(bi,bj) = tile_fc(bi,bj)
-     &            + mult_sshv4cost(num_var)
-     &            *objf_sshv4cost(num_var,bi,bj)
-       enddo
-#endif
-
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
           tile_fc(bi,bj) = tile_fc(bi,bj)
@@ -526,13 +508,6 @@ c--   Sum up all contributions.
      &            *objf_gencost(bi,bj,num_var)
        enddo
 #endif
-#ifdef ALLOW_USERCOST_CONTRIBUTION
-       do num_var=1,NUSERCOST
-          tile_fc(bi,bj) = tile_fc(bi,bj)
-     &            + mult_usercost(num_var)
-     &            *objf_usercost(num_var,bi,bj)
-       enddo
-#endif
 #ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
           tile_fc(bi,bj) = tile_fc(bi,bj)
@@ -555,6 +530,7 @@ c--   Sum up all contributions.
        enddo
 #endif
 
+#ifdef ECCO_CTRL_DEPRECATED
           f_temp = f_temp + objf_temp(bi,bj)
           f_salt = f_salt + objf_salt(bi,bj)
           f_temp0 = f_temp0 + objf_temp0(bi,bj)
@@ -636,6 +612,7 @@ c--   Sum up all contributions.
      &         objf_theta_ini_fin(bi,bj) + objf_salt_ini_fin(bi,bj)
           f_eddytau = f_eddytau + objf_eddytau(bi,bj)
           f_bottomdrag = f_bottomdrag + objf_bottomdrag(bi,bj)
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
           f_obcsn  = f_obcsn + objf_obcsn(bi,bj)
@@ -658,18 +635,6 @@ c--   Sum up all contributions.
      &            +objf_gencost(bi,bj,num_var)
        enddo
 #endif
-#ifdef ALLOW_USERCOST_CONTRIBUTION
-       do num_var=1,NUSERCOST
-          f_usercost(num_var)=f_usercost(num_var)
-     &            +objf_usercost(num_var,bi,bj)
-       enddo
-#endif
-#ifdef ALLOW_SSHV4_COST
-       do num_var=1,NSSHV4COST
-          f_sshv4cost(num_var)=f_sshv4cost(num_var)
-     &            +objf_sshv4cost(num_var,bi,bj)
-       enddo
-#endif
 #ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
           f_gentim2d(num_var) = f_gentim2d(num_var)
@@ -689,6 +654,7 @@ c--   Sum up all contributions.
        enddo
 #endif
 
+#ifdef ECCO_CTRL_DEPRECATED
           no_temp = no_temp + num_temp(bi,bj)
           no_salt = no_salt + num_salt(bi,bj)
           no_temp0 = no_temp0 + num_temp0(bi,bj)
@@ -756,13 +722,7 @@ c--   Sum up all contributions.
           no_eddytau = no_eddytau + num_eddytau(bi,bj)
           no_bottomdrag = no_bottomdrag + num_bottomdrag(bi,bj)
 
-#ifdef ALLOW_SSHV4_COST
-       do num_var=1,NSSHV4COST
-          no_sshv4cost(num_var)=no_sshv4cost(num_var)
-     &            +num_sshv4cost(num_var,bi,bj)
-       enddo
-#endif
-
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
           no_obcsn = no_obcsn + num_obcsn(bi,bj)
@@ -782,12 +742,6 @@ c--   Sum up all contributions.
        do num_var=1,NGENCOST
           no_gencost(num_var)=no_gencost(num_var)
      &            +num_gencost(bi,bj,num_var)
-       enddo
-#endif
-#ifdef ALLOW_USERCOST_CONTRIBUTION
-       do num_var=1,NUSERCOST
-          no_usercost(num_var)=no_usercost(num_var)
-     &            +num_usercost(num_var,bi,bj)
        enddo
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
@@ -824,6 +778,7 @@ c--   Do global summation.
 
 c--   Do global summation for each part of the cost function
 
+#ifdef ECCO_CTRL_DEPRECATED
       _GLOBAL_SUM_RL( f_temp , myThid )
       _GLOBAL_SUM_RL( f_salt , myThid )
       _GLOBAL_SUM_RL( f_temp0, myThid )
@@ -904,6 +859,7 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( f_ini_fin , myThid )
       _GLOBAL_SUM_RL( f_eddytau , myThid )
       _GLOBAL_SUM_RL( f_bottomdrag , myThid )
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       _GLOBAL_SUM_RL( f_obcsn , myThid )
@@ -923,16 +879,6 @@ c--   Do global summation for each part of the cost function
         _GLOBAL_SUM_RL(f_gencost(num_var), myThid )
        enddo
 #endif
-#ifdef ALLOW_USERCOST_CONTRIBUTION
-       do num_var=1,NUSERCOST
-        _GLOBAL_SUM_RL(f_usercost(num_var), myThid )
-       enddo
-#endif
-#ifdef ALLOW_SSHV4_COST
-       do num_var=1,NSSHV4COST
-        _GLOBAL_SUM_RL(f_sshv4cost(num_var), myThid )
-       enddo
-#endif
 #ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
         _GLOBAL_SUM_RL(f_gentim2d(num_var), myThid )
@@ -949,6 +895,7 @@ c--   Do global summation for each part of the cost function
        enddo
 #endif
 
+#ifdef ECCO_CTRL_DEPRECATED
       _GLOBAL_SUM_RL( no_temp , myThid )
       _GLOBAL_SUM_RL( no_salt , myThid )
       _GLOBAL_SUM_RL( no_temp0, myThid )
@@ -1015,6 +962,7 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( no_ini_fin , myThid )
       _GLOBAL_SUM_RL( no_eddytau , myThid )
       _GLOBAL_SUM_RL( no_bottomdrag , myThid )
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       _GLOBAL_SUM_RL( no_obcsn , myThid )
@@ -1034,16 +982,6 @@ c--   Do global summation for each part of the cost function
         _GLOBAL_SUM_RL(no_gencost(num_var), myThid )
        enddo
 #endif
-#ifdef ALLOW_USERCOST_CONTRIBUTION
-       do num_var=1,NUSERCOST
-        _GLOBAL_SUM_RL(no_usercost(num_var), myThid )
-       enddo
-#endif
-#ifdef ALLOW_SSHV4_COST
-       do num_var=1,NSSHV4COST
-        _GLOBAL_SUM_RL(no_sshv4cost(num_var), myThid )
-       enddo
-#endif
 #ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
         _GLOBAL_SUM_RL(no_gentim2d(num_var), myThid )
@@ -1060,6 +998,7 @@ c--   Do global summation for each part of the cost function
        enddo
 #endif
 
+#ifdef ECCO_CTRL_DEPRECATED
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_temp    =',f_temp
       write(standardmessageunit,'(A,D22.15)')
@@ -1218,6 +1157,7 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_eddytau =', f_eddytau
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_bottomdrag =', f_bottomdrag
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       write(standardmessageunit,'(A,D22.15)')
@@ -1251,24 +1191,6 @@ c--   Do global summation for each part of the cost function
         endif
        enddo
 #endif
-#ifdef ALLOW_USERCOST_CONTRIBUTION
-       do num_var=1,NUSERCOST
-        if (no_usercost(num_var).GT.0) then
-         write(standardmessageunit,'(A,D22.15,i2.0)')
-     &     ' --> f_usercost =',f_usercost(num_var),
-     &      num_var
-        endif
-       enddo
-#endif
-#ifdef ALLOW_SSHV4_COST
-       do num_var=1,NSSHV4COST
-        if (no_sshv4cost(num_var).GT.0) then
-         write(standardmessageunit,'(A,D22.15,i2.0)')
-     &     ' --> f_sshv4cost =',f_sshv4cost(num_var),
-     &      num_var
-        endif
-       enddo
-#endif
 #ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
         if (no_gentim2d(num_var).GT.0. _d 0) then
@@ -1297,6 +1219,7 @@ c--   Do global summation for each part of the cost function
        enddo
 #endif
 
+#ifdef ECCO_CTRL_DEPRECATED
 
 c--   Each process has calculated the global part for itself.
 
@@ -1321,6 +1244,7 @@ cph)
      &          + f_hfluxmm2 + f_sfluxmm2
      &          + f_transp
 
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #ifndef ALLOW_COST
 cgf this sum is now done in cost_final if allow_cost
@@ -1332,6 +1256,7 @@ cgf this sum is now done in cost_final if allow_cost
 C     only master thread of master CPU open and write to file
       IF ( MASTER_CPU_THREAD(myThid) ) THEN
 
+#ifdef ECCO_CTRL_DEPRECATED
         write(standardmessageunit,'(A,D22.15)')
      &           ' --> f_hfluxmm2           =',f_hfluxmm2
         write(standardmessageunit,'(A,D22.15)')
@@ -1340,6 +1265,7 @@ C     only master thread of master CPU open and write to file
      &           ' --> f_transp             =',f_transp
         write(standardmessageunit,'(A,D22.15)')
      &           ' --> objf_hmean           =',objf_hmean
+#endif /* ECCO_CTRL_DEPRECATED */
         write(standardmessageunit,'(A,D22.15)')
      &           ' --> fc               =', locfc
 
@@ -1352,6 +1278,7 @@ C     only master thread of master CPU open and write to file
         write(ifc,'(A,2D22.15)')
 #endif
      &       'fc =', locfc, 0.
+#ifdef ECCO_CTRL_DEPRECATED
         write(ifc,'(A,2D22.15)')
      &       'f_temp =', f_temp, no_temp
         write(ifc,'(A,2D22.15)')
@@ -1522,6 +1449,7 @@ C     only master thread of master CPU open and write to file
      &       'f_bottomdrag =', f_bottomdrag, no_bottomdrag
         write(ifc,'(A,2D22.15)')
      &       'f_transp =', f_transp, no_transp
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
         write(ifc,'(A,2D22.15)')
@@ -1558,26 +1486,6 @@ C     only master thread of master CPU open and write to file
      &    gencost_name(num_var)(1:IL),' (gencost ', num_var, ') = ',
      &    f_gencost(num_var),
      &    no_gencost(num_var)
-         endif
-       enddo
-#endif
-#ifdef ALLOW_USERCOST_CONTRIBUTION
-       do num_var=1,NUSERCOST
-        if (no_usercost(num_var).GT.0) then
-         write(ifc,'(A,i2.0,A,2D22.15)')
-     &    'usercost', num_var, ' = ',
-     &    f_usercost(num_var),
-     &    no_usercost(num_var)
-         endif
-       enddo
-#endif
-#ifdef ALLOW_SSHV4_COST
-       do num_var=1,NSSHV4COST
-        if (no_sshv4cost(num_var).GT.0) then
-         write(ifc,'(A,i2.0,A,2D22.15)')
-     &    'sshv4cost', num_var, ' = ',
-     &    f_sshv4cost(num_var),
-     &    no_sshv4cost(num_var)
          endif
        enddo
 #endif
@@ -1628,8 +1536,10 @@ C     only master thread of master CPU open and write to file
 
       ENDIF
 
+#ifdef ECCO_CTRL_DEPRECATED
       call cost_trans_merid( mythid )
       call cost_trans_zonal( mythid )
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #ifdef ECCO_VERBOSE
       write(msgbuf,'(a,D22.15)')

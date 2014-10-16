@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.76 2014/10/09 00:50:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.77 2014/10/16 20:02:34 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -26,7 +26,12 @@ c     == global variables ==
 #include "PARAMS.h"
 
 #ifdef ALLOW_ECCO
-# include "ecco_cost.h"
+# ifdef ECCO_CTRL_DEPRECATED
+#  include "ecco_cost.h"
+# else
+#  include "ecco.h"
+#  include "ecco_local_params.h"
+# endif
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OBCS.h"

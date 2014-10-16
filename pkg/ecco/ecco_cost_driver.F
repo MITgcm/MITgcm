@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.13 2014/10/11 19:03:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.14 2014/10/16 20:02:34 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -41,6 +41,7 @@ c     == routine arguments ==
 # endif
 #endif
 
+#ifdef ECCO_CTRL_DEPRECATED
 
 c--   Compute the cost function contribution of the boundary forcing,
 c--   i.e. heat flux, salt flux, zonal and meridional wind stress.
@@ -201,20 +202,21 @@ c--   Internal Parameter controls cost terms:
       call timer_stop ('cost_internal_params  [ECCO SPIN-DOWN]', myThid)
       _BARRIER
 
-#if (defined (ALLOW_PROFILES) && defined (ALLOW_PROFILES_CONTRIBUTION))
-      if ( usePROFILES ) CALL cost_profiles( myiter, mytime, mythid)
-#endif
+c--   Compute user defined cost function contributions (basic)
+      call timer_start('cost_usercost_all    [ECCO SPIN-DOWN]', myThid)
+      call cost_usercost_all( myIter, myTime, myThid )
+      call timer_stop ('cost_usercost_all    [ECCO SPIN-DOWN]', myThid)
+
+#endif /* ECCO_CTRL_DEPRECATED */
 
 c--   Compute user defined cost function contributions (elaborate)
       call timer_start('cost_gencost_all    [ECCO SPIN-DOWN]', myThid)
       call cost_gencost_all( myIter, myTime, myThid )
       call timer_stop ('cost_gencost_all    [ECCO SPIN-DOWN]', myThid)
 
-c--   Compute user defined cost function contributions (basic)
-      call timer_start('cost_usercost_all    [ECCO SPIN-DOWN]', myThid)
-      call cost_usercost_all( myIter, myTime, myThid )
-      call timer_stop ('cost_usercost_all    [ECCO SPIN-DOWN]', myThid)
-
+#if (defined (ALLOW_PROFILES) && defined (ALLOW_PROFILES_CONTRIBUTION))
+      if ( usePROFILES ) CALL cost_profiles( myiter, mytime, mythid)
+#endif
 
 #ifdef ALLOW_CTRL
 #ifdef ALLOW_DEBUG

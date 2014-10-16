@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.32 2014/10/04 23:55:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.33 2014/10/16 20:02:34 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -30,7 +30,13 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 
-#include "ecco_cost.h"
+#ifdef ALLOW_ECCO
+# ifdef ECCO_CTRL_DEPRECATED
+#  include "ecco_cost.h"
+# else
+#  include "ecco.h"
+# endif
+#endif
 #ifdef ALLOW_CTRL
 # include "optim.h"
 # include "CTRL_SIZE.h"
@@ -56,6 +62,12 @@ c     == local variables ==
 
       integer ilps, ils, ilt, irec
 
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+      character*(128) fname_gencostbar(NGENCOST)
+      character*(128) adfname_gencostbar(NGENCOST)
+#endif /* ALLOW_GENCOST_CONTRIBUTION */
+
+#ifdef ECCO_CTRL_DEPRECATED
       character*(128) fnamepsbar
       character*(128) fnametbar
       character*(128) fnamesbar
@@ -72,13 +84,9 @@ c     == local variables ==
       character*(128) fnamesmrsstbar
       character*(128) fnamesmrsssbar
       character*(128) fnameiestaubar
-#ifdef ALLOW_GENCOST_CONTRIBUTION
-      character*(128) fname_gencostbar(NGENCOST)
-#endif /* ALLOW_GENCOST_CONTRIBUTION */
 #ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
       character*(128) fnamesigmaRbar
 #endif 
-c
       character*(128) adfnamepsbar
       character*(128) adfnametbar
       character*(128) adfnamesbar
@@ -94,13 +102,11 @@ c
       character*(128) adfnamesmrareabar
       character*(128) adfnamesmrsstbar
       character*(128) adfnamesmrsssbar
-#ifdef ALLOW_GENCOST_CONTRIBUTION
-      character*(128) adfname_gencostbar(NGENCOST)
-#endif /* ALLOW_GENCOST_CONTRIBUTION */
 #ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
       character*(128) adfnamesigmaRbar
 #endif 
       character*(128) adfnameiestaubar
+#endif /* ECCO_CTRL_DEPRECATED */
 
 c     == external functions ==
 
@@ -138,6 +144,8 @@ c     == end of interface ==
           enddo
         enddo
       enddo
+
+#ifdef ECCO_CTRL_DEPRECATED
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
       IF (using_cost_altim) THEN
@@ -387,6 +395,25 @@ c--   Save sfluxmeanbar on file.
       enddo
 #endif
 
+#ifdef ALLOW_IESTAU_COST_CONTRIBUTION
+      ilps=ilnblnk( iestaubarfile )
+      write(fnameiestaubar,'(2a,i10.10)')
+     &     iestaubarfile(1:ilps), '.', optimcycle
+      write(adfnameiestaubar,'(3a,i10.10)')
+     &     yadprefix, iestaubarfile(1:ilps), '.', optimcycle
+      do irec = 1, ndaysrec
+#ifdef ALLOW_ADJOINT_RUN
+        call active_write_xy( adfnameiestaubar, tmpfld2d, irec,
+     &        optimcycle,mythid, xx_iestaubar_mean_dummy )
+#endif
+      enddo
+
+#endif
+
+#endif /* ECCO_CTRL_DEPRECATED */
+
+
+
 #ifdef ALLOW_SEAICE
       if (useSEAICE) then
 
@@ -441,7 +468,7 @@ c--   Save gencost_barfile on file.
      &  call active_write_xy( adfname_gencostbar, tmpfld2d, irec,
      &       optimcycle, mythid, gencost_dummy(k) )
         if (gencost_is3d(k))
-     &  call active_write_xyz( adfname_gencostbar, tmpfld2d, irec,
+     &  call active_write_xyz( adfname_gencostbar, tmpfld3d, irec,
      &       optimcycle, mythid, gencost_dummy(k) )
 #endif
       enddo
@@ -449,20 +476,6 @@ c--   Save gencost_barfile on file.
       enddo
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
-#ifdef ALLOW_IESTAU_COST_CONTRIBUTION
-      ilps=ilnblnk( iestaubarfile )
-      write(fnameiestaubar,'(2a,i10.10)')
-     &     iestaubarfile(1:ilps), '.', optimcycle
-      write(adfnameiestaubar,'(3a,i10.10)')
-     &     yadprefix, iestaubarfile(1:ilps), '.', optimcycle
-      do irec = 1, ndaysrec
-#ifdef ALLOW_ADJOINT_RUN
-        call active_write_xy( adfnameiestaubar, tmpfld2d, irec,
-     &        optimcycle,mythid, xx_iestaubar_mean_dummy )
-#endif
-      enddo
-
-#endif
 
       return
       end

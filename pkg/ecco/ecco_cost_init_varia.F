@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.26 2014/10/09 00:50:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.27 2014/10/16 20:02:34 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -31,7 +31,11 @@ c     == global variables ==
 #include "GRID.h"
 
 #ifdef ALLOW_ECCO
-# include "ecco_cost.h"
+# ifdef ECCO_CTRL_DEPRECATED
+#  include "ecco_cost.h"
+# else
+#  include "ecco.h"
+# endif
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OBCS.h"
@@ -87,6 +91,7 @@ c      endif
 c--   Initialize the tiled cost function contributions.
       do bj = jtlo,jthi
         do bi = itlo,ithi
+#ifdef ECCO_CTRL_DEPRECATED
           objf_hflux(bi,bj)    = 0. _d 0
           objf_hfluxm(bi,bj)   = 0. _d 0
           objf_sflux(bi,bj)    = 0. _d 0
@@ -136,17 +141,10 @@ c--   Initialize the tiled cost function contributions.
           objf_lwdown(bi,bj)   = 0. _d 0
           objf_uwind(bi,bj)    = 0. _d 0
           objf_vwind(bi,bj)    = 0. _d 0
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
-          objf_obcsn(bi,bj)    = 0. _d 0
-          objf_obcss(bi,bj)    = 0. _d 0
-          objf_obcsw(bi,bj)    = 0. _d 0
-          objf_obcse(bi,bj)    = 0. _d 0
-          objf_curmtr(bi,bj)   = 0. _d 0
-          objf_ageos(bi,bj)    = 0. _d 0
-#endif
 #if ( defined (ALLOW_COST) && defined (ALLOW_COST_ATLANTIC) )
           objf_atl(bi,bj)      = 0. _d 0
 #endif
+          objf_curmtr(bi,bj)   = 0. _d 0
           objf_diffkr(bi,bj)   = 0. _d 0
           objf_kapgm(bi,bj)    = 0. _d 0
           objf_kapredi(bi,bj)    = 0. _d 0
@@ -154,18 +152,12 @@ c--   Initialize the tiled cost function contributions.
           objf_salt_ini_fin(bi,bj)  = 0. _d 0
           objf_eddytau(bi,bj)    = 0. _d 0
           objf_bottomdrag(bi,bj)    = 0. _d 0
-#ifdef ALLOW_GENCOST_CONTRIBUTION
-          do k=1,NGENCOST
-            objf_gencost(bi,bj,k)    = 0. _d 0
-          enddo
-#endif
           do k=1,NUSERCOST
             objf_usercost(k,bi,bj)   = 0. _d 0
           enddo
           do k=1,NSSHV4COST
             objf_sshv4cost(k,bi,bj)  = 0. _d 0
           enddo
-c
           num_hflux(bi,bj)    = 0. _d 0
           num_hfluxm(bi,bj)   = 0. _d 0
           num_hfluxmm(bi,bj)  = 0. _d 0
@@ -215,24 +207,12 @@ c
           num_lwdown(bi,bj)   = 0. _d 0
           num_uwind(bi,bj)    = 0. _d 0
           num_vwind(bi,bj)    = 0. _d 0
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
-          num_obcsn(bi,bj)    = 0. _d 0
-          num_obcss(bi,bj)    = 0. _d 0
-          num_obcsw(bi,bj)    = 0. _d 0
-          num_obcse(bi,bj)    = 0. _d 0
-          num_ageos(bi,bj)    = 0. _d 0
-#endif
           num_curmtr(bi,bj)   = 0. _d 0
           num_diffkr(bi,bj)   = 0. _d 0
           num_kapgm(bi,bj)    = 0. _d 0
           num_kapredi(bi,bj)    = 0. _d 0
           num_eddytau(bi,bj)    = 0. _d 0
           num_bottomdrag(bi,bj)    = 0. _d 0
-#ifdef ALLOW_GENCOST_CONTRIBUTION
-          do k=1,NGENCOST
-            num_gencost(bi,bj,k)    = 0. _d 0
-          enddo
-#endif
           do k=1,NUSERCOST
           num_usercost(k,bi,bj)    = 0. _d 0
           enddo
@@ -241,8 +221,31 @@ c
           enddo
           num_theta_ini_fin(bi,bj) = 0. _d 0
           num_salt_ini_fin(bi,bj)  = 0. _d 0
+#endif /* ECCO_CTRL_DEPRECATED */
+
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+          do k=1,NGENCOST
+            objf_gencost(bi,bj,k)    = 0. _d 0
+            num_gencost(bi,bj,k)    = 0. _d 0
+          enddo
+#endif
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+          objf_obcsn(bi,bj)    = 0. _d 0
+          objf_obcss(bi,bj)    = 0. _d 0
+          objf_obcsw(bi,bj)    = 0. _d 0
+          objf_obcse(bi,bj)    = 0. _d 0
+          objf_ageos(bi,bj)    = 0. _d 0
+          num_obcsn(bi,bj)    = 0. _d 0
+          num_obcss(bi,bj)    = 0. _d 0
+          num_obcsw(bi,bj)    = 0. _d 0
+          num_obcse(bi,bj)    = 0. _d 0
+          num_ageos(bi,bj)    = 0. _d 0
+#endif
+
         enddo
       enddo
+
+#ifdef ECCO_CTRL_DEPRECATED
 
       k = 1
       do bj = jtlo,jthi
@@ -332,10 +335,6 @@ c
 
 c--   Initialise the "global" parts of the cost function.
       _BEGIN_MASTER( mythid )
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
-        objf_obcsvol = 0. _d 0
-        num_obcsvol = 0. _d 0
-#endif
         objf_hmean   = 0. _d 0
         objf_hfluxmm = 0. _d 0
         objf_sfluxmm = 0. _d 0
@@ -343,6 +342,16 @@ c--   Initialise the "global" parts of the cost function.
         num_hmean   = 0. _d 0
         num_transp  = 0. _d 0
       _END_MASTER( mythid )
+
+#endif /* ECCO_CTRL_DEPRECATED */
+
+c--   Initialise the "global" parts of the cost function.
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+      _BEGIN_MASTER( mythid )
+        objf_obcsvol = 0. _d 0
+        num_obcsvol = 0. _d 0
+      _END_MASTER( mythid )
+#endif
 
       _BARRIER
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.68 2014/10/11 19:03:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.69 2014/10/16 20:02:34 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -15,6 +15,8 @@ c     HEADER AVERAGES
 c     ==================================================================
 
 #include "ecco.h"
+
+#ifdef ECCO_CTRL_DEPRECATED
 
 c     Number of days: (hard-coded to set up some vector dimensions
 c     =============================
@@ -1469,6 +1471,8 @@ cgf factor to convert sshv4cost_errfile in m
       character*(MAX_LEN_FNAM) tpTimeMaskFile
       character*(MAX_LEN_FNAM) ersTimeMaskFile
       character*(MAX_LEN_FNAM) gfoTimeMaskFile
+
+#endif /* ECCO_CTRL_DEPRECATED */
 
 c     ==================================================================
 c     END OF HEADER COST

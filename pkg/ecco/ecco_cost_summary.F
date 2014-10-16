@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.10 2014/10/11 19:03:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.11 2014/10/16 20:02:34 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -29,8 +29,13 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
+# include "ecco_cost.h"
+#endif
+#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
+# include "CTRL_OBCS.h"
+#endif
 
-#include "ecco_cost.h"
 
 c     == routine arguments ==
 
@@ -49,7 +54,7 @@ c     == external ==
 
 c     == end of interface ==
 
-#ifdef CODES_BEING_PHASED_OUT
+#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
 
       write(msgbuf,'(a)')
      &' '
@@ -188,6 +193,7 @@ c     == end of interface ==
      &'  Ageostrophic bdy flow:        ',mult_ageos
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#ifdef ALLOW_CTRL
       write(msgbuf,'(a,e10.3)')
      &'  OB North:                     ',mult_obcsn
       call print_message( msgbuf, standardmessageunit,
@@ -204,8 +210,7 @@ c     == end of interface ==
      &'  OB East:                      ',mult_obcse
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-
-
+#endif
       write(msgbuf,'(a)')
      &' '
       call print_message( msgbuf, standardmessageunit,
@@ -315,7 +320,7 @@ c     == end of interface ==
       endif
 #endif /* ALLOW_SSH_GFOANOM_COST_CONTRIBUTION */
 
-#endif /* CODES_BEING_PHASED_OUT */
+#endif /* ALLOW_ECCO and ECCO_CTRL_DEPRECATED */
 
       return
       end

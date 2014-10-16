@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.4 2014/10/11 19:03:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.5 2014/10/16 20:02:34 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -147,8 +147,9 @@ c--     Determine the model-data difference mask
             do k = 1,nnzobs
              do j = jmin,jmax
               do i = imin,imax
-#ifdef CODES_BEING_PHASED_OUT
-               difmask(i,j,k,bi,bj) = cosphi(i,j,bi,bj)*localmask(i,j,k,bi,bj)
+#ifdef ECCO_CTRL_DEPRECATED
+               difmask(i,j,k,bi,bj) = cosphi(i,j,bi,bj)*
+     &                           localmask(i,j,k,bi,bj)
 #else
                difmask(i,j,k,bi,bj) = localmask(i,j,k,bi,bj)
 #endif
