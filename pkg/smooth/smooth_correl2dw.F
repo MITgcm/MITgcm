@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl2dw.F,v 1.9 2014/10/11 19:05:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl2dw.F,v 1.10 2014/10/16 19:47:09 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -22,12 +22,12 @@ C     *==========================================================*
 #include "GRID.h"
 #include "PARAMS.h"
 #include "SMOOTH.h"
-#if (defined (ALLOW_CTRL) && defined (CODES_BEING_PHASED_OUT))
+#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
 # include "ctrl.h"
 # include "CTRL_SIZE.h"
 # include "CTRL_GENARR.h"
 #endif
-#if (defined (ALLOW_ECCO) && defined (CODES_BEING_PHASED_OUT))
+#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
 # include "ecco_cost.h"
 #endif
 
@@ -36,7 +36,7 @@ C     *==========================================================*
       character*(MAX_LEN_FNAM) xx_gen_file
       integer myThid
 
-#ifdef CODES_BEING_PHASED_OUT
+#ifdef ECCO_CTRL_DEPRECATED
 
 # if (defined ALLOW_CTRL) || (defined ALLOW_ECCO)
 
@@ -132,6 +132,6 @@ C     *==========================================================*
 
 #endif /* ALLOW_ECCO or ALLOW_CTRL */
 
-#endif /* CODES_BEING_PHASED_OUT */
+#endif /* ECCO_CTRL_DEPRECATED */
        
       end
