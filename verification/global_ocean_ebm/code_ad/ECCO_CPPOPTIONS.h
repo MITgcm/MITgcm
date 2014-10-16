@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean_ebm/code_ad/ECCO_CPPOPTIONS.h,v 1.2 2012/08/09 18:15:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean_ebm/code_ad/ECCO_CPPOPTIONS.h,v 1.3 2014/10/16 20:09:26 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -15,6 +15,9 @@ C   specific option-file) also for adjoint built.
 C ********************************************************************
 C ***                  Adjoint Support Package                     ***
 C ********************************************************************
+
+C allow use of legacy ecco/ctrl codes
+#define ECCO_CTRL_DEPRECATED
 
 C o Include/exclude code in order to be able to automatically
 C   differentiate the MITgcmUV by using the Tangent Linear and

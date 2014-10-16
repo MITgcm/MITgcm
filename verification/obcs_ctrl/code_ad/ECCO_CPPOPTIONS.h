@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/obcs_ctrl/code_ad/ECCO_CPPOPTIONS.h,v 1.4 2014/10/01 16:06:49 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/obcs_ctrl/code_ad/ECCO_CPPOPTIONS.h,v 1.5 2014/10/16 20:09:30 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -15,6 +15,9 @@ C   specific option-file) also for adjoint built.
 C ********************************************************************
 C ***                         ECCO Package                         ***
 C ********************************************************************
+
+C allow use of legacy ecco/ctrl codes
+#define ECCO_CTRL_DEPRECATED
 
 cph#define  ALLOW_ECCO_FORWARD_RUN
 #define  ALLOW_ECCO_OPTIMIZATION

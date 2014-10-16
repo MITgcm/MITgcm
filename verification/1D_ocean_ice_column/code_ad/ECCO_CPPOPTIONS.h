@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code_ad/ECCO_CPPOPTIONS.h,v 1.3 2014/10/01 16:05:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code_ad/ECCO_CPPOPTIONS.h,v 1.4 2014/10/16 20:09:23 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -15,6 +15,9 @@ C   specific option-file) also for adjoint built.
 C ********************************************************************
 C ***                         ECCO Package                         ***
 C ********************************************************************
+
+C allow use of legacy ecco/ctrl codes
+#define ECCO_CTRL_DEPRECATED
 
 cph >>>>>> !!!!!! SPECIAL SEAICE FLAG FOR TESTING !!!!!! <<<<<<
 #define  SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/isomip/code_ad/CTRL_OPTIONS.h,v 1.1 2014/09/11 19:35:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/isomip/code_ad/CTRL_OPTIONS.h,v 1.2 2014/10/16 20:06:40 gforget Exp $
 C $Name:  $
 
 CBOP
@@ -28,6 +28,9 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 #else /* ndef ECCO_CPPOPTIONS_H */
 C   ==================================================================
 C-- Package-specific Options & Macros go here
+
+C allow use of legacy ecco/ctrl codes
+#define ECCO_CTRL_DEPRECATED
 
 #define EXCLUDE_CTRL_PACK
 #undef ALLOW_NONDIMENSIONAL_CONTROL_IO

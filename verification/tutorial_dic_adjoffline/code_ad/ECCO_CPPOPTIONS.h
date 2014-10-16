@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_dic_adjoffline/code_ad/ECCO_CPPOPTIONS.h,v 1.3 2013/07/24 20:53:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_dic_adjoffline/code_ad/ECCO_CPPOPTIONS.h,v 1.4 2014/10/16 20:09:32 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -15,6 +15,9 @@ C   specific option-file) also for adjoint built.
 C ********************************************************************
 C ***                  Adjoint Support Package                     ***
 C ********************************************************************
+
+C allow use of legacy ecco/ctrl codes
+#define ECCO_CTRL_DEPRECATED
 
 C o Include/exclude code in order to be able to automatically
 C   differentiate the MITgcmUV by using the Tangent Linear and

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/ECCO_CPPOPTIONS.h,v 1.17 2014/10/01 16:06:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/ECCO_CPPOPTIONS.h,v 1.18 2014/10/16 20:09:28 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -15,6 +15,9 @@ C   specific option-file) also for adjoint built.
 C ********************************************************************
 C ***                         ECCO Package                         ***
 C ********************************************************************
+
+C allow use of legacy ecco/ctrl codes
+#define ECCO_CTRL_DEPRECATED
 
 cph >>>>>> !!!!!! SPECIAL SEAICE FLAG FOR TESTING !!!!!! <<<<<<
 cph#define  SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING

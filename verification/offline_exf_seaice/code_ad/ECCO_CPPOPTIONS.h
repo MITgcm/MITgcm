@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/ECCO_CPPOPTIONS.h,v 1.11 2014/10/01 16:06:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/ECCO_CPPOPTIONS.h,v 1.12 2014/10/16 20:09:31 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -18,6 +18,10 @@ C ********************************************************************
 C ***                         ECCO Package                         ***
 C ********************************************************************
 C
+
+C allow use of legacy ecco/ctrl codes
+#define ECCO_CTRL_DEPRECATED
+
 C       >>> Do a long protocol.
 #undef ECCO_VERBOSE
 C       >>> use model/src/forward_step.F
