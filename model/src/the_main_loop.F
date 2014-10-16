@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.166 2014/10/09 00:46:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.167 2014/10/16 20:39:37 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -310,7 +310,7 @@ C--   Set initial conditions (variable arrays)
       CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', myThid)
       CALL INITIALISE_VARIA( myThid )
       CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', myThid)
-#ifdef ALLOW_ECCO_EVOLUTION
+#if (defined (ALLOW_ECCO_EVOLUTION) && defined (ECCO_CTRL_DEPRECATED))
 #ifdef ALLOW_ECCO
 cph: avoid renewed call of initialise_varia in recomputation loop
 cph: in some circumstances
