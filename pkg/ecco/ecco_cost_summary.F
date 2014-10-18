@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.11 2014/10/16 20:02:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.12 2014/10/18 18:15:45 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -27,20 +27,20 @@ c     ==================================================================
 
 c     == global variables ==
 
+#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
-# include "ecco_cost.h"
-#endif
-#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
+#include "ecco_cost.h"
+#ifdef ALLOW_CTRL
 # include "CTRL_OBCS.h"
 #endif
-
+#endif
 
 c     == routine arguments ==
 
       integer mythid
 
+#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
 c     == local variables ==
 
       integer il
@@ -53,8 +53,6 @@ c     == external ==
       external ilnblnk
 
 c     == end of interface ==
-
-#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
 
       write(msgbuf,'(a)')
      &' '

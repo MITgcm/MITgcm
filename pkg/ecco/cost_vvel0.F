@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_vvel0.F,v 1.5 2012/09/04 15:04:51 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_vvel0.F,v 1.6 2014/10/18 18:15:45 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -31,6 +31,7 @@ c     ==================================================================
 
 c     == global variables ==
 
+#ifdef ALLOW_VVEL0_COST_CONTRIBUTION
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -40,6 +41,7 @@ c     == global variables ==
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
+#endif
 
 c     == routine arguments ==
 
@@ -47,6 +49,7 @@ c     == routine arguments ==
       _RL     mytime
       integer mythid
 
+#ifdef ALLOW_VVEL0_COST_CONTRIBUTION
 c     == local variables ==
 
       integer bi,bj
@@ -93,8 +96,6 @@ c--   Read state record from global file.
       ladinit      = .false.
 
       irec = 1
-
-#ifdef ALLOW_VVEL0_COST_CONTRIBUTION
 
       if (optimcycle .ge. 0) then
         ilfld = ilnblnk( xx_vvel_file )

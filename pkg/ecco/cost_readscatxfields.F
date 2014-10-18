@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatxfields.F,v 1.11 2014/10/16 19:55:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatxfields.F,v 1.12 2014/10/18 18:15:44 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -30,6 +30,8 @@ c     ==================================================================
 
 c     == global variables ==
 
+#if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
+     defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -37,6 +39,7 @@ c     == global variables ==
 
 #include "cal.h"
 #include "ecco_cost.h"
+#endif
 
 c     == routine arguments ==
 

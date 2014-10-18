@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.15 2014/04/30 00:19:09 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sshv4.F,v 1.16 2014/10/18 18:15:45 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -38,6 +38,7 @@ c     ==================================================================
 
 c     == global variables ==
 
+#ifdef ALLOW_SSH_COST_CONTRIBUTION
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -54,6 +55,7 @@ c     == global variables ==
 #endif
 #ifdef ALLOW_SMOOTH
 #include "SMOOTH.h"
+#endif
 #endif
 
 c     == routine arguments ==

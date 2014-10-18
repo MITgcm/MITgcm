@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_mean_saltflux.F,v 1.16 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_mean_saltflux.F,v 1.17 2014/10/18 18:15:44 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -26,6 +26,7 @@ c     ==================================================================
 
 c     == global variables ==
 
+#ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -38,6 +39,7 @@ c     == global variables ==
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
+#endif
 
 c     == routine arguments ==
 
@@ -45,6 +47,7 @@ c     == routine arguments ==
       _RL     mytime
       integer mythid
 
+#ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
 c     == local variables ==
 
       integer bi,bj
@@ -89,8 +92,6 @@ c     == end of interface ==
 c--   Read tiled data.
       doglobalread = .false.
       ladinit      = .false.
-
-#ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
 
       if (optimcycle .ge. 0) then
         ilsalt = ilnblnk( sfluxmeanbarfile )

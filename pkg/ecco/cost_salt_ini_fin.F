@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt_ini_fin.F,v 1.6 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt_ini_fin.F,v 1.7 2014/10/18 18:15:44 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -22,6 +22,7 @@ c     ==================================================================
 
 c     == global variables ==
 
+#ifdef ALLOW_COST_INI_FIN
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -32,6 +33,7 @@ c     == global variables ==
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
+#endif
 
 c     == routine arguments ==
 
@@ -39,6 +41,7 @@ c     == routine arguments ==
       _RL     mytime
       integer mythid
 
+#ifdef ALLOW_COST_INI_FIN
 c     == local variables ==
 
       integer bi,bj
@@ -83,8 +86,6 @@ c--   Read state record from global file.
       ladinit      = .false.
 
       irec = 1
-
-#ifdef ALLOW_COST_INI_FIN
 
       ilfld = ilnblnk( xx_salt_ini_fin_file )
       write(fnamefld(1:80),'(2a,i10.10)')
@@ -156,29 +157,6 @@ c--     Print cost function for all tiles.
         write(msgbuf,'(a)') ' '
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
-#endif
-
-#else
-c--   Do not enter the calculation of the salinity increment
-c--   contribution to the final cost function.
-
-      fctile   = 0. _d 0
-      fcthread = 0. _d 0
-
-#ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a)')
-     &    ' cost_salt_ini_fin : no contribution of the IC in salin. ',
-     &                    ' to cost function.'
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
 #endif
 
 #endif

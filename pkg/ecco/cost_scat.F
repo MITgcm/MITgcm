@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_scat.F,v 1.11 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_scat.F,v 1.12 2014/10/18 18:15:44 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -26,6 +26,8 @@ c     ==================================================================
 
 c     == global variables ==
 
+#if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
+     defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -37,12 +39,16 @@ c     == global variables ==
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
+#endif
 
 c     == routine arguments ==
 
       integer myiter
       _RL     mytime
       integer mythid
+
+#if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
+     defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
 
 c     == local variables ==
 
@@ -95,9 +101,6 @@ c     == end of interface ==
 c--   Read tiled data.
       doglobalread = .false.
       ladinit      = .false.
-
-#if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
-     defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
 
       if (optimcycle .ge. 0) then
         ilsalt = ilnblnk( tauxbarfile )
@@ -243,33 +246,6 @@ c--     Print cost function for all tiles.
       enddo
 c--   End of loop over records.
 
-#else
-c--   Do not enter the calculation of the temperature contribution to
-c--   the final cost function.
-
-      fctile_scatx     = 0. _d 0
-      fcthread_scatx   = 0. _d 0
-      fctile_scaty     = 0. _d 0
-      fcthread_scaty   = 0. _d 0
-
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a)')
-     &    ' cost_scat: no contribution of temperature field ',
-     &                 'to cost function.'
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a,i9.8)')
-     &    ' cost_scat: number of records that would have',
-     &                ' been processed: ',nmonsrec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
 #endif
 
       return

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ies.F,v 1.3 2012/08/10 19:45:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ies.F,v 1.4 2014/10/18 18:15:44 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -27,6 +27,7 @@ c     ==================================================================
 
 c     == global variables ==
 
+#ifdef ALLOW_IESTAU_COST_CONTRIBUTION
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -40,6 +41,7 @@ c     == global variables ==
 #include "DYNVARS.h"
 #ifdef ALLOW_PROFILES
 #include "profiles.h"
+#endif
 #endif
 
 c     == routine arguments ==

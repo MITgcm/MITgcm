@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdtclim.F,v 1.9 2012/08/10 19:45:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdtclim.F,v 1.10 2014/10/18 18:15:44 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -35,6 +35,7 @@ c     ==================================================================
 
 c     == global variables ==
 
+#ifdef ALLOW_CTDTCLIM_COST_CONTRIBUTION
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -46,6 +47,7 @@ c     == global variables ==
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
+#endif
 
 c     == routine arguments ==
 
@@ -53,6 +55,7 @@ c     == routine arguments ==
       _RL     mytime
       integer mythid
 
+#ifdef ALLOW_CTDTCLIM_COST_CONTRIBUTION
 c     == local variables ==
 
       _RS        one_rs
@@ -105,8 +108,6 @@ c     == end of interface ==
 c--   Read tiled data.
       doglobalread = .false.
       ladinit      = .false.
-
-#ifdef ALLOW_CTDTCLIM_COST_CONTRIBUTION
 
       if (optimcycle .ge. 0) then
         ilctdtclim = ilnblnk( tbarfile )
@@ -254,31 +255,6 @@ c--     Print cost function for all tiles.
 #endif
       enddo
 c--   End of loop over records.
-
-#else
-c--   Do not enter the calculation of the temperature contribution to
-c--   the final cost function.
-
-#ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a)')
-     &    ' cost_Ctdtclim: no contribution of temperature field ',
-     &                 'to cost function.'
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a,i9.8)')
-     &    ' cost_Ctdtclim: number of records that would have',
-     &                ' been processed: ',nmonsrec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
-#endif
 
 #endif
 

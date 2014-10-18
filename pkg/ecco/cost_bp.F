@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bp.F,v 1.8 2014/09/29 16:47:49 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bp.F,v 1.9 2014/10/18 18:15:44 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -29,6 +29,7 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#ifdef ALLOW_BP_COST_CONTRIBUTION
 #include "PARAMS.h"
 #include "GRID.h"
 
@@ -40,6 +41,7 @@ c     == global variables ==
 #include "DYNVARS.h"
 #ifdef ALLOW_PROFILES
 #include "profiles.h"
+#endif
 #endif
 
 c     == routine arguments ==

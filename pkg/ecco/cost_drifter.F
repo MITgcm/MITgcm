@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drifter.F,v 1.8 2012/08/10 19:45:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drifter.F,v 1.9 2014/10/18 18:15:44 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -35,6 +35,7 @@ c     ==================================================================
 
 c     == global variables ==
 
+#ifdef ALLOW_DRIFTER_COST_CONTRIBUTION
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -50,6 +51,7 @@ c     == global variables ==
 # include "tamc.h"
 # include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
+#endif
 
 c     == routine arguments ==
 
@@ -58,6 +60,7 @@ c     == routine arguments ==
       integer mythid
 
 #ifndef ALLOW_AUTODIFF_WHTAPEIO
+#ifdef ALLOW_DRIFTER_COST_CONTRIBUTION
 
 c     == local variables ==
 
@@ -114,8 +117,6 @@ c     == end of interface ==
 c--   Read tiled data.
       doglobalread = .false.
       ladinit      = .false.
-
-#ifdef ALLOW_DRIFTER_COST_CONTRIBUTION
 
       if (optimcycle .ge. 0) then
         ilu = ilnblnk( ubarfile )

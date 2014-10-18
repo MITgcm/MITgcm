@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_trans_zonal.F,v 1.8 2012/08/10 19:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_trans_zonal.F,v 1.9 2014/10/18 18:15:45 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -20,6 +20,7 @@ c     ==================================================================
 
 c     == global variables ==
 
+#ifdef ALLOW_COST_TRANSPORT
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -33,6 +34,7 @@ c#ifdef ALLOW_COST
 c# include "cost.h"
 c#endif
 #include "ecco_cost.h"
+#endif
 
 c     == routine arguments ==
 

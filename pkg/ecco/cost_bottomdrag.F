@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bottomdrag.F,v 1.8 2012/09/04 15:04:51 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bottomdrag.F,v 1.9 2014/10/18 18:15:44 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -21,6 +21,7 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#ifdef ALLOW_BOTTOMDRAG_COST_CONTRIBUTION
 #include "GRID.h"
 #include "DYNVARS.h"
 
@@ -29,11 +30,14 @@ c     == global variables ==
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
+#endif
 c     == routine arguments ==
 
       integer myiter
       _RL     mytime
       integer mythid
+
+#ifdef ALLOW_BOTTOMDRAG_COST_CONTRIBUTION
 
 c     == local variables ==
 
@@ -79,8 +83,6 @@ c--   Read state record from global file.
       ladinit      = .false.
 
       irec = 1
-
-#ifdef ALLOW_BOTTOMDRAG_COST_CONTRIBUTION
 
       if (optimcycle .ge. 0) then
         ilfld = ilnblnk( xx_bottomdrag_file )
@@ -155,26 +157,6 @@ c--     Print cost function for all tiles.
         write(msgbuf,'(a)') ' '
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
-#endif
-
-#else
-
-      fctile   = 0. _d 0
-      fcthread = 0. _d 0
-
-#ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)')
-     &    ' cost_bottomdrag : no contribution to cost function'
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
 #endif
 
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_atlantic.F,v 1.9 2012/08/10 19:45:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_atlantic.F,v 1.10 2014/10/18 18:15:44 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -29,6 +29,7 @@ c     ==================================================================
 
 c     == global variables ==
 
+#ifdef ALLOW_COST_ATLANTIC
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -46,6 +47,7 @@ c     == global variables ==
 c#include "CTRL_SIZE.h"
 c#include "ctrl.h"
 c#include "ctrl_dummy.h"
+#endif
 
 c     == routine arguments ==
 

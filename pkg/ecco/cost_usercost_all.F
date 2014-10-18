@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_usercost_all.F,v 1.3 2012/08/10 19:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_usercost_all.F,v 1.4 2014/10/18 18:15:45 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -20,6 +20,7 @@ c     ==================================================================
 
 c     == global variables ==
 
+#ifdef ECCO_CTRL_DEPRECATED
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -28,6 +29,7 @@ c     == global variables ==
 #include "cal.h"
 #include "ctrl.h"
 #include "ecco_cost.h"
+#endif
 
 c     == routine arguments ==
 
@@ -35,6 +37,7 @@ c     == routine arguments ==
       integer myiter
       _RL     mytime
 
+#ifdef ECCO_CTRL_DEPRECATED
 c     == local variables ==
 
       integer startrec
@@ -44,6 +47,7 @@ c     == end of interface ==
 
 c--   Evaluate user defined cost function contributions.
 c--   [to be added here by user]
+#endif
 
       end
 

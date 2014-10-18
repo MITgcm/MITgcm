@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readargos.F,v 1.4 2014/10/16 19:55:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readargos.F,v 1.5 2014/10/18 18:15:44 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -27,6 +27,7 @@ c     ==================================================================
 
 c     == global variables ==
 
+#ifdef ALLOW_ARGO_SALT_COST_CONTRIBUTION
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -34,6 +35,7 @@ c     == global variables ==
 
 #include "cal.h"
 #include "ecco_cost.h"
+#endif
 
 c     == routine arguments ==
 

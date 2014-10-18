@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.58 2014/10/16 20:02:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.59 2014/10/18 18:15:45 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -32,17 +32,17 @@ c     ==================================================================
 
 c     == global variables ==
 
+#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
 
-#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
-# include "ecco_cost.h"
-#endif
+#include "ecco_cost.h"
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
 # include "CTRL_OBCS.h"
+#endif
 #endif
 
 c     == routine arguments ==

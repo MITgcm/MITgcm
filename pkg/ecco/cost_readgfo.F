@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readgfo.F,v 1.12 2014/06/09 17:47:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readgfo.F,v 1.13 2014/10/18 18:15:44 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -27,6 +27,7 @@ c     ==================================================================
 
 c     == global variables ==
 
+#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -34,6 +35,8 @@ c     == global variables ==
 
 #include "cal.h"
 #include "ecco_cost.h"
+#endif
+#endif
 
 c     == routine arguments ==
 

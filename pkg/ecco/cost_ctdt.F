@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdt.F,v 1.11 2012/08/10 19:45:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdt.F,v 1.12 2014/10/18 18:15:44 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -27,6 +27,7 @@ c     ==================================================================
 
 c     == global variables ==
 
+#ifdef ALLOW_CTDT_COST_CONTRIBUTION
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -38,6 +39,7 @@ c     == global variables ==
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
+#endif
 
 c     == routine arguments ==
 
@@ -47,6 +49,7 @@ c     == routine arguments ==
 
 c     == local variables ==
 
+#ifdef ALLOW_CTDT_COST_CONTRIBUTION
       integer bi,bj
       integer i,j,k
       integer itlo,ithi
@@ -104,8 +107,6 @@ c     == end of interface ==
 c--   Read state record from global file.
       doglobalread = .false.
       ladinit      = .false.
-
-#ifdef ALLOW_CTDT_COST_CONTRIBUTION
 
       if (optimcycle .ge. 0) then
         ilu=ilnblnk( tbarfile )
@@ -231,35 +232,6 @@ c--     Print cost function for all tiles.
       enddo
 c--   End of second loop over records.
 
-#else
-c--   Do not enter the calculation of the CTD temperature contribution
-c--   to the final cost function.
-
-      fctile_ctdt   = 0. _d 0
-      fcthread_ctdt = 0. _d 0
-
-crg
-      nrec = 1
-crg
-
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a)')
-     &    ' cost_CTDT: no contribution of CTD temperature ',
-     &                    ' to cost function.'
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a,i9.8)')
-     &    ' cost_CTDT: number of records that would have',
-     &                      ' been processed: ',nrec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
 #endif
 
       return

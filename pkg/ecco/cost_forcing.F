@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.21 2014/09/22 21:33:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.22 2014/10/18 18:15:44 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -29,6 +29,7 @@ c     ==================================================================
 
 c     == global variables ==
 
+#ifdef ECCO_CTRL_DEPRECATED
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -48,6 +49,7 @@ c     == global variables ==
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
 #endif
+#endif
 
 c     == routine arguments ==
 
@@ -55,7 +57,7 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-#if (defined (ALLOW_ECCO) && defined (ALLOW_CTRL))
+#if (defined (ALLOW_ECCO) && defined (ALLOW_CTRL)&& defined (ECCO_CTRL_DEPRECATED))
 
       integer startrec
       integer endrec

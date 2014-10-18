@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_internal_params.F,v 1.7 2014/09/22 21:33:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_internal_params.F,v 1.8 2014/10/18 18:15:44 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -21,6 +21,7 @@ c     ==================================================================
       implicit none
 
 c     == global variables ==
+#ifdef ECCO_CTRL_DEPRECATED
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -39,6 +40,7 @@ c     == global variables ==
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 #endif
+#endif
 
 c     == routine arguments ==
 
@@ -46,6 +48,7 @@ c     == routine arguments ==
       _RL     mytime
       integer mythid
 
+#ifdef ECCO_CTRL_DEPRECATED
 c     == end of interface ==
 
 
@@ -92,5 +95,7 @@ c--   Bottom Drag penalty term
       call timer_stop ('cost_bottomdrag      [ECCO SPIN-DOWN]', mythid)
 #endif
       _BARRIER
+
+#endif
 
       end
