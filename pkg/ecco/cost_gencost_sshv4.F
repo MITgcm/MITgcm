@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.26 2014/10/06 22:57:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.27 2014/10/18 14:17:53 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -89,11 +89,9 @@ c mapping to gencost
       _RL slaoffset_sum
       _RL slaoffset_weight
 
-#ifdef ALLOW_SSH_MEAN_COST_CONTRIBUTION
-      _RL diagnosfld ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
-#endif
-
 c local arrays
+      _RL diagnosfld ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
+
       _RL mdtob(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL tpob(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL ersob(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -162,6 +160,7 @@ c for PART 4/5: compute smooth/raw anomalies
       character*(MAX_LEN_MBUF) msgbuf
 
       LOGICAL doReference
+      LOGICAL useEtaMean
 
 c     == external functions ==
 
@@ -195,6 +194,28 @@ c-- detect the relevant gencost indices
         if (gencost_name(k).EQ.'sshv4-lsc') igen_lsc=k
         if (gencost_name(k).EQ.'sshv4-gmsl') igen_gmsl=k
       enddo
+
+c the cases when one of multiple igens remain 0 needs to be treated
+
+c switch for excluding global mean
+      useEtaMean=.TRUE.
+
+      write(msgbuf,'(a,l)') 
+     & ' sshv4: use global mean of eta useEtaMean=',useEtaMean
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+
+c minimum number of observations to consider re-referenced MDT
+      num0=100
+c determine whether or not to re-reference
+      doReference=.FALSE.
+      if ((modelstartdate(1).GT.1992*10000).AND.
+     &    (modelstartdate(1).LT.2011*10000).AND.
+     &    (ndaysrec.GE.365))  doReference=.TRUE.
+
+      write(msgbuf,'(a,l)') ' sshv4:re-reference MDT=',doReference
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
 
 c-- initialize local arrays
       do bj = jtlo,jthi
@@ -245,6 +266,19 @@ c gfofi, gfosta, gfoper
        gfoper=gencost_period(igen_gfo)
        if (gencost_barfile(igen_gfo).EQ.'etaday') igen_etaday=igen_gfo
       endif
+
+c mdt_y0, mdt_y1
+       mdt_y0=mdtsta(1)/10000
+       mdt_y1=mdtend(1)/10000
+
+       write(msgbuf,'(a,i8,a,i8)')
+     &  'mdt[start,end]date(1): ', mdtsta(1), ',', mdtend(1)
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a,i4,a,i4)')
+     &  '  TP MDT yrrange:          ', mdt_y0, ',', mdt_y1
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
 
 c--   First, read tiled data.
       doglobalread = .false.
@@ -297,44 +331,6 @@ c--   Read mean field and mask
       enddo
 
 c--   Compute mean_slaobs_mdt: sample mean SLA over the time period of mdt.
-
-c pavlis and ecco/rio
-c      mdt_y0=1993
-c      mdt_y1=2004
-c maximenko
-c      mdt_y0=1992
-c      mdt_y1=2002
-c rio
-c      mdt_y0=1993
-c      mdt_y1=1999
-c generalized:
-       mdt_y0=mdtsta(1)/10000
-       mdt_y1=mdtend(1)/10000
-
-       write(msgbuf,'(a,i8,a,i8)')
-     &  'mdt[start,end]date(1): ',mdtsta(1),
-     &  ',',mdtend(1)
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-
-        write(msgbuf,'(a,i4,a,i4)')
-     &  '  TP MDT yrrange:          ',
-     &                        mdt_y0,',',
-     &                        mdt_y1
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-
-c minimum number of observations to consider re-referenced MDT
-      num0=100
-
-      doReference=.FALSE.
-      if ((modelstartdate(1).GT.1992*10000).AND.
-     &    (modelstartdate(1).LT.2011*10000).AND.
-     &    (ndaysrec.GE.365))  doReference=.TRUE.
-
-        write(msgbuf,'(a,l)') ' sshv4:re-reference MDT=',doReference
-        call print_message( msgbuf, standardmessageunit,
-     &                          SQUEEZE_RIGHT , mythid)
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -429,9 +425,11 @@ c minimum number of observations to consider re-referenced MDT
 
 c--   smooth mean_slaobs_mdt:
 
+      if (gencost_outputlevel(igen_mdt).GT.0) then
       write(fname4test(1:80),'(1a)') 'sla2mdt_raw'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,mean_slaobs_mdt,1,1,mythid)
+      endif
 
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH )
@@ -440,9 +438,11 @@ c--   smooth mean_slaobs_mdt:
      &     gencost_smooth2Ddiffnbt(igen_mdt),mythid)
 #endif
 
+      if (gencost_outputlevel(igen_mdt).GT.0) then
       write(fname4test(1:80),'(1a)') 'sla2mdt_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,mean_slaobs_mdt,1,1,mythid)
+      endif
 
 c--   re-reference mdt:
       do bj = jtlo,jthi
@@ -503,10 +503,9 @@ cgf =======================================================
      &                       ladinit, eccoiter, mythid,
      &                       gencost_dummy(igen_etaday) )
 
-#ifndef ALLOW_PSBAR_MEAN
-        CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,
+        if (.NOT.useEtaMean) 
+     &  CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,
      &        'etaday', 0. _d 0, myThid )
-#endif
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -729,9 +728,11 @@ c use the simpler approach
        enddo
 
 c--    smooth mean_psMssh_all
+      if (gencost_outputlevel(igen_mdt).GT.0) then
       write(fname4test(1:80),'(1a)') 'mdtdiff_raw'
       call mdswritefield(fname4test,32,.false.,'RL',
      &    1,mean_psMssh_all,1,1,mythid)
+      endif
 
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH )
@@ -740,13 +741,17 @@ c--    smooth mean_psMssh_all
      &     gencost_smooth2Ddiffnbt(igen_mdt),mythid)
 #endif
 
+      if (gencost_outputlevel(igen_mdt).GT.0) then
       write(fname4test(1:80),'(1a)') 'mdtdiff_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
      &    1,mean_psMssh_all,1,1,mythid)
+      endif
 
+      if (gencost_outputlevel(igen_mdt).GT.0) then
       write(fname4test(1:80),'(1a)') 'sla2model_raw'
       call mdswritefield(fname4test,32,.false.,'RL',
      &    1,mean_slaobs_model,1,1,mythid)
+      endif
 
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH )
@@ -755,9 +760,11 @@ c--    smooth mean_psMssh_all
      &     gencost_smooth2Ddiffnbt(igen_mdt),mythid)
 #endif
 
+      if (gencost_outputlevel(igen_mdt).GT.0) then
       write(fname4test(1:80),'(1a)') 'sla2model_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
      &    1,mean_slaobs_model,1,1,mythid)
+      endif
 
 cgf at this point:
 cgf     1) mean_psMssh_all is the sample mean <etaday-slaobs-mdt-offset>,
@@ -787,8 +794,6 @@ cgf PART 3: compute MDT cost term
 cgf =======================================================
 
 
-#ifdef ALLOW_SSH_MEAN_COST_CONTRIBUTION
-
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do j = jmin,jmax
@@ -811,11 +816,11 @@ cgf =======================================================
         enddo
       enddo
 
-      CALL WRITE_FLD_XY_RL( 'DiagnosMDT', ' ', diagnosfld,
-     &                           eccoiter, mythid )
-
-#endif /* ALLOW_SSH_MEAN_COST_CONTRIBUTION */
-
+      if (gencost_outputlevel(igen_mdt).GT.0) then
+      write(fname4test(1:80),'(1a)') 'misfits_mdt'
+      call mdswritefield(fname4test,32,.false.,'RL',
+     & 1,diagnosfld,1,1,mythid)
+      endif
 
 cgf =======================================================
 cgf PART 4: compute smooth SLA cost term
@@ -853,10 +858,9 @@ c ------------------------------------------------------
      &                       ladinit, eccoiter, mythid,
      &                       gencost_dummy(igen_etaday) )
 
-#ifndef ALLOW_PSBAR_MEAN
-        CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,
+        if (.NOT.useEtaMean)
+     &  CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,
      &        'etaday', 0. _d 0, myThid )
-#endif
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1032,7 +1036,7 @@ c--   Subtract slaoffset from anom_psMslaobs
 c PART 4.2: smooth anom_psMslaobs in space
 c ----------------------------------------
 
-#ifdef ALLOW_GENCOST_SSHV4_OUTPUT
+      if (gencost_outputlevel(igen_lsc).GT.0) then
       write(fname4test(1:80),'(1a)') 'sladiff_raw'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,anom_psMslaobs,irec,1,mythid)
@@ -1040,7 +1044,7 @@ c ----------------------------------------
       write(fname4test(1:80),'(1a)') 'slaobs_raw'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,anom_slaobs,irec,1,mythid)
-#endif
+      endif
 
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH )
@@ -1049,22 +1053,22 @@ c ----------------------------------------
      &     gencost_smooth2Ddiffnbt(igen_lsc),mythid)
 #endif
 
-#ifdef ALLOW_GENCOST_SSHV4_OUTPUT
+      if (gencost_outputlevel(igen_lsc).GT.0) then
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH )
      &  call smooth_hetero2d(anom_slaobs,maskc,
      &     gencost_scalefile(igen_lsc),
      &     gencost_smooth2Ddiffnbt(igen_lsc),mythid)
 #endif
-
+c
       write(fname4test(1:80),'(1a)') 'sladiff_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,anom_psMslaobs,irec,1,mythid)
-
+c
       write(fname4test(1:80),'(1a)') 'slaobs_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,anom_slaobs,irec,1,mythid)
-#endif
+      endif
 
 c PART 4.3: compute cost function term
 c ------------------------------------
@@ -1094,15 +1098,15 @@ c ------------------------------------
         enddo
        enddo
 
-#ifdef ALLOW_GENCOST_SSHV4_OUTPUT
+      if (gencost_outputlevel(igen_lsc).GT.0) then
       write(fname4test(1:80),'(1a)') 'sladiff_subsample'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,anom_psMslaobs_SUB,irec,1,mythid)
-
+c
       write(fname4test(1:80),'(1a)') 'slaobs_subsample'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,anom_slaobs_SUB,irec,1,mythid)
-#endif
+      endif
 
 c PART 4.4: compute cost function term for global mean sea level
 c --------------------------------------------------------------
@@ -1129,10 +1133,9 @@ c time associated with this ndaysrec mean
      &                       ladinit, eccoiter, mythid,
      &                       gencost_dummy(igen_etaday) )
 
-#ifndef ALLOW_PSBAR_MEAN
-        CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,
+        if (.NOT.useEtaMean)
+     &  CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,
      &        'etaday', 0. _d 0, myThid )
-#endif
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1216,27 +1219,32 @@ c time associated with this ndaysrec mean
         enddo
        enddo
 
-#ifdef ALLOW_GENCOST_SSHV4_OUTPUT
+      if (gencost_outputlevel(igen_tp).GT.0) then
       write(fname4test(1:80),'(1a)') 'sladiff_tp_raw'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,anom_psMtpobs,irec,1,mythid)
-      write(fname4test(1:80),'(1a)') 'sladiff_ers_raw'
-      call mdswritefield(fname4test,32,.false.,'RL',
-     & 1,anom_psMersobs,irec,1,mythid)
-      write(fname4test(1:80),'(1a)') 'sladiff_gfo_raw'
-      call mdswritefield(fname4test,32,.false.,'RL',
-     & 1,anom_psMgfoobs,irec,1,mythid)
-
       write(fname4test(1:80),'(1a)') 'slaobs_tp_raw'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,anom_tpobs,irec,1,mythid)
+      endif
+
+      if (gencost_outputlevel(igen_ers).GT.0) then
+      write(fname4test(1:80),'(1a)') 'sladiff_ers_raw'
+      call mdswritefield(fname4test,32,.false.,'RL',
+     & 1,anom_psMersobs,irec,1,mythid)
       write(fname4test(1:80),'(1a)') 'slaobs_ers_raw'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,anom_ersobs,irec,1,mythid)
+      endif
+
+      if (gencost_outputlevel(igen_gfo).GT.0) then
+      write(fname4test(1:80),'(1a)') 'sladiff_gfo_raw'
+      call mdswritefield(fname4test,32,.false.,'RL',
+     & 1,anom_psMgfoobs,irec,1,mythid)
       write(fname4test(1:80),'(1a)') 'slaobs_gfo_raw'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,anom_gfoobs,irec,1,mythid)
-#endif
+      endif
 
        do bj = jtlo,jthi
         do bi = itlo,ithi

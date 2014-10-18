@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.5 2014/10/06 22:57:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.6 2014/10/18 14:17:53 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -89,8 +89,6 @@ c set bar field params
 c initialize various things to 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-          objf_gencost(bi,bj,kgen) = 0. _d 0
-          num_gencost(bi,bj,kgen) = 0. _d 0
           mySumTile(bi,bj)=0. _d 0
           myVolTile(bi,bj)=0. _d 0
           mySumGlo=0. _d 0
