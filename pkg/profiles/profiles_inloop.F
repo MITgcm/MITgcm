@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_inloop.F,v 1.11 2012/06/22 22:07:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_inloop.F,v 1.12 2014/10/20 03:12:18 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 C     o==========================================================o
 C     | subroutine profiles_inloop                               |

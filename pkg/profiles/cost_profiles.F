@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.20 2014/10/01 12:55:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.21 2014/10/20 03:12:18 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 C     o==========================================================o
 C     | subroutine cost_profiles                                 |
@@ -22,15 +25,12 @@ C     ======== Global data ============================
 #ifdef ALLOW_CAL
 #include "cal.h"
 #endif
-#ifdef ALLOW_CTRL
-#include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
-#include "optim.h"
-#endif
 #ifdef ALLOW_PROFILES
 #include "profiles.h"
 #include "netcdf.inc"
+#endif
+#ifdef ALLOW_CTRL
+#include "optim.h"
 #endif
 
 c     == routine arguments ==
@@ -51,6 +51,9 @@ C     ========= Local variables =======================
       integer prof_i1D(NUM_INTERP_POINTS),prof_j1D(NUM_INTERP_POINTS)
       _RL prof_w1D(NUM_INTERP_POINTS)
 #endif
+#ifndef ALLOW_CTRL
+      integer optimcycle
+#endif
       character*(max_len_mbuf) msgbuf
       character*(80) profilesfile, fnameequinc
       integer IL, JL, err
@@ -60,6 +63,10 @@ C     !FUNCTIONS
       EXTERNAL ILNBLNK
 
 c     == end of interface ==
+
+#ifndef ALLOW_CTRL
+      optimcycle = 0
+#endif
 
         _BEGIN_MASTER( mythid )
 
