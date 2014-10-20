@@ -1,10 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.33 2014/10/16 20:02:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.34 2014/10/20 03:16:12 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
 #include "AD_CONFIG.h"
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
 #endif
 
       subroutine ecco_cost_init_barfiles( mythid )

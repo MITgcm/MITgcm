@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcs.F,v 1.8 2014/10/09 00:50:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcs.F,v 1.9 2014/10/20 03:16:12 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: COST_OBCS

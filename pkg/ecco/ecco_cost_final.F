@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.75 2014/10/16 20:02:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.76 2014/10/20 03:16:12 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       subroutine ecco_cost_final( mythid )
 

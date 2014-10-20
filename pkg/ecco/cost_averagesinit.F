@@ -1,9 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.20 2014/10/02 12:28:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.21 2014/10/20 03:16:12 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
 #endif
 
       subroutine cost_averagesinit( mythid )
