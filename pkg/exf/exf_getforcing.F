@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.46 2014/06/05 15:37:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.47 2014/10/20 03:13:32 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOI
 C

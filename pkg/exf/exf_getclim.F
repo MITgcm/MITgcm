@@ -1,8 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.23 2014/09/22 14:01:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.24 2014/10/20 03:13:32 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
-
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
+#endif
 
       subroutine exf_getclim(
      I                        mytime,

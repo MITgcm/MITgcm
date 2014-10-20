@@ -1,7 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.19 2014/10/16 19:48:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.20 2014/10/20 03:13:32 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
+#endif
 
       subroutine exf_GetSurfaceFluxes(
      I                                 mytime,

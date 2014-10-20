@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.30 2013/10/05 19:36:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.31 2014/10/20 03:13:32 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP 0
 C     !ROUTINE: EXF_MAPFIELDS

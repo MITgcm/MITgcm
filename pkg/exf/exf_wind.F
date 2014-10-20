@@ -1,7 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.14 2014/09/12 14:57:44 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.15 2014/10/20 03:13:32 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
       SUBROUTINE EXF_WIND( myTime, myIter, myThid )
 

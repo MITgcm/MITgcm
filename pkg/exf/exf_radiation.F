@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_radiation.F,v 1.10 2012/12/08 15:24:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_radiation.F,v 1.11 2014/10/20 03:13:32 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
       SUBROUTINE EXF_RADIATION(myTime, myIter, myThid)
 
