@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_calc_depth.F,v 1.8 2014/05/21 10:46:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_calc_depth.F,v 1.9 2014/10/20 03:17:22 gforget Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: SALT_PLUME_CALC_DEPTH
