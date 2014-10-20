@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.53 2014/10/16 20:04:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.54 2014/10/20 03:14:26 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -7,6 +7,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
+#endif
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
 #endif
 
       subroutine ctrl_unpack( first, mythid )
