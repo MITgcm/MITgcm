@@ -1,9 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_reg_ridge.F,v 1.4 2014/07/08 18:56:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_reg_ridge.F,v 1.5 2014/10/20 03:20:58 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
+#endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
 #endif
 
 CBOP

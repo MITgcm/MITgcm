@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.104 2014/08/14 07:33:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.105 2014/10/20 03:20:57 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -6,6 +6,9 @@ C $Name:  $
 # include "OBCS_OPTIONS.h"
 #else
 # define OBCS_UVICE_OLD
+#endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
 #endif
 
 C--  File seaice_lsr.F: seaice LSR dynamical solver S/R:

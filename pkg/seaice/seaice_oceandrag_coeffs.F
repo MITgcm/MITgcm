@@ -1,9 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_oceandrag_coeffs.F,v 1.2 2013/02/14 17:02:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_oceandrag_coeffs.F,v 1.3 2014/10/20 03:20:58 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
+#endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
 #endif
 
 CBOP

@@ -1,7 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_weights.F,v 1.7 2014/10/11 19:02:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_weights.F,v 1.8 2014/10/20 03:20:57 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_ECCO
+#include "ECCO_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+#include "CTRL_OPTIONS.h"
+#endif
 
       subroutine seaice_cost_weights( mythid )
 
@@ -22,20 +28,19 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#ifdef ALLOW_COST
+#ifdef ALLOW_CTRL
 # include "ctrl.h"
-# ifdef ALLOW_ECCO
-#  include "ecco.h"
-# endif
-# include "SEAICE_COST.h"
 #endif
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
+#include "SEAICE_COST.h"
 
 c     == routine arguments ==
 
       integer  mythid
 
 #ifdef ALLOW_ECCO
-#ifdef ALLOW_COST
 c     == local variables ==
 
       integer bi,bj
@@ -139,7 +144,6 @@ c--
       enddo
 #endif /* ALLOW_SEAICE_COST_SMR_AREA */
 
-#endif
 #endif
 
       end

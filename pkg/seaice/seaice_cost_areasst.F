@@ -1,9 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_areasst.F,v 1.7 2012/08/10 19:33:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_areasst.F,v 1.8 2014/10/20 03:20:57 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_COST
 #include "COST_OPTIONS.h"
+#endif
+#ifdef ALLOW_ECCO
+#include "ECCO_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+#include "CTRL_OPTIONS.h"
+#endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
 #endif
 
       subroutine seaice_cost_areasst(
@@ -41,13 +50,11 @@ c     == global variables ==
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 #include "SEAICE_COST.h"
-#ifdef ALLOW_COST
-# ifdef ALLOW_ECCO
-#  include "ecco_cost.h"
-# endif
-# include "optim.h"
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
 #endif
 #ifdef ALLOW_CTRL
+# include "optim.h"
 # include "CTRL_SIZE.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"

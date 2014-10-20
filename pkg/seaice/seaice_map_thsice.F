@@ -1,10 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_map_thsice.F,v 1.4 2012/03/06 16:45:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_map_thsice.F,v 1.5 2014/10/20 03:20:57 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_THSICE
 # include "THSICE_OPTIONS.h"
 #endif /* ALLOW_THSICE */
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CStartOfInterface
       SUBROUTINE SEAICE_MAP_THSICE( myTime, myIter, myThid )

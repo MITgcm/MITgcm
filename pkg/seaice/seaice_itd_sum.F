@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_itd_sum.F,v 1.2 2012/10/23 13:20:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_itd_sum.F,v 1.3 2014/10/20 03:20:57 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 C !ROUTINE: SEAICE_ITD_SUM
 

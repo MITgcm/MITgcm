@@ -1,7 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.15 2014/10/03 15:01:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.16 2014/10/20 03:20:57 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
       subroutine seaice_cost_driver( myiter, mytime, mythid )
 
@@ -20,6 +29,8 @@ c     ==================================================================
 
 c     == global variables ==
 #include "EEPARAMS.h"
+#if (defined (ALLOW_ECCO) && \
+     defined (ALLOW_SEAICE_COST_SMR_AREA))
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
@@ -27,15 +38,16 @@ c     == global variables ==
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
-#ifdef ALLOW_COST
+#ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"
-# ifdef ALLOW_ECCO
-#  include "ecco_cost.h"
-# endif
-# include "SEAICE_COST.h"
 #endif
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
+#endif
+#include "SEAICE_COST.h"
+#endif /* ALLOW_ECCO and ALLOW_SEAICE_COST_SMR_AREA */
 
 c     == routine arguments ==
 
@@ -43,7 +55,9 @@ c     == routine arguments ==
       _RL     mytime
       integer mythid
 
-#ifdef ALLOW_ECCO
+#if (defined (ALLOW_ECCO) && \
+     defined (ALLOW_SEAICE_COST_SMR_AREA))
+
 c     == local variables ==
       character*(max_len_mbuf) msgbuf
 
@@ -58,8 +72,6 @@ c     == local variables ==
 c     == end of interface ==
 
       if (useSEAICE) then
-
-#ifdef ALLOW_SEAICE_COST_SMR_AREA
 
       write(msgbuf,'(a)') 'ph-cost call cost_smrarea'
       call print_message( msgbuf, standardmessageunit,
@@ -139,10 +151,8 @@ c--      call print_message( msgbuf, standardmessageunit,
 c--     &     SQUEEZE_RIGHT , mythid)
 # endif /* ALLOW_SEAICE_COST_AREASST */
 
-#endif
-
       endif
 
-#endif /* ALLOW_ECCO */
+#endif /* ALLOW_ECCO and ALLOW_SEAICE_COST_SMR_AREA */
 
       end
