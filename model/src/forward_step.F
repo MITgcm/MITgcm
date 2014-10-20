@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.229 2014/10/09 00:46:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.230 2014/10/20 03:09:02 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -39,6 +39,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
+#endif
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
 #endif
 
 #define ALLOW_MOM_STEPPING

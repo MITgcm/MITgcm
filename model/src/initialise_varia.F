@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.75 2014/04/04 20:56:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.76 2014/10/20 03:09:03 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: INITIALISE_VARIA

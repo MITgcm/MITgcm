@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.167 2014/10/16 20:39:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.168 2014/10/20 03:09:03 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -32,6 +32,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
+#endif
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
 #endif
 
 CBOP
