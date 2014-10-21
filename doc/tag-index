@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2083 2014/10/16 20:23:21 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2084 2014/10/21 14:12:58 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl/ctrl_map_ini_genarr.F : include GMREDI_OPTIONS.h where 
+  ALLOW_3D_KAPGM, ALLOW_3D_KAPREDI (to be added later) belong.
+o pkg/seaice/SEAICE_SIZE.h : replace ALLOW_AUTODIFF_TAMC with ALLOW_AUTODIFF
+  to avoid needing AUTODIFF_OPTIONS.h anytime SEAICE_SIZE.h is included
+  (it seems that THSICE_SIZE.h, PTRACERS_SIZE.h have the same issue...)
+o model/src, pkg/smooth, profiles, salt_plume, seaice, exf, ecco, ctrl :
+  add ECCO_OPTIONS.h, AUTODIFF_OPTIONS.h, CTRL_OPTIONS.h when needed
+  - ECCO_OPTIONS.h is needed when including ecco_cost.h, ecco.h
+  - AUTODIFF_OPTIONS.h is needed when including tamc.h, tamc_keys.h
+  - CTRL_OPTIONS.h is needed when including ctrl.h, optim.h, etc
 o pkg/ctrl,ecco,exf : 
   - remove variables associated with NON-generic costs,
     unless ECCO_CTRL_DEPRECATED is defined.
