@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.38 2014/10/09 00:50:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.39 2014/10/21 13:13:21 gforget Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -98,6 +98,8 @@ c--   == end of interface ==
 
       if ( grdchkvarindex .eq. 0 ) then
          STOP 'GRDCHK INDEX 0 NOT ALLOWED'
+
+#ifdef ECCO_CTRL_DEPRECATED
 
 #ifdef ALLOW_THETA0_CONTROL
       else if ( grdchkvarindex .eq. 1 ) then
@@ -243,6 +245,8 @@ c--   == end of interface ==
          end if
 #endif /* ALLOW_VWIND_CONTROL */
 
+#endif /* ECCO_CTRL_DEPRECATED */
+
 #ifdef ALLOW_OBCSN_CONTROL
       else if ( grdchkvarindex .eq. 11 ) then
          il=ilnblnk( xx_obcsn_file )
@@ -290,6 +294,8 @@ c--   == end of interface ==
      &           xx_obcse_file(1:il),'.',optimcycle
          end if
 #endif /* ALLOW_OBCSE_CONTROL */
+
+#ifdef ECCO_CTRL_DEPRECATED
 
 #ifdef ALLOW_DIFFKR_CONTROL
       else if ( grdchkvarindex .eq. 15 ) then
@@ -616,6 +622,8 @@ c--   == end of interface ==
      &           xx_etan_file(1:il),'.',optimcycle
          end if
 #endif /* ALLOW_ETAN0_CONTROL */
+
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #ifdef ALLOW_GENARR2D_CONTROL
       else if ( grdchkvarindex .ge. 101 .and.
