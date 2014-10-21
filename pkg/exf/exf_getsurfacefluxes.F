@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.20 2014/10/20 03:13:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.21 2014/10/21 13:12:48 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -130,7 +130,7 @@ c     == end of interface ==
       endif !if (ctrlUseGen) then
 #endif
 
-# if (!defined (ALLOW_ECCO) || defined (ECCO_CTRL_DEPRECATED))
+#if (!defined (ALLOW_ECCO) || defined (ECCO_CTRL_DEPRECATED))
 
 #ifdef ALLOW_HFLUX_CONTROL
       call ctrl_get_gen ( 
@@ -149,8 +149,9 @@ c     == end of interface ==
 #endif
 
       IF ( .NOT.useAtmWind ) THEN
+
+      IF ( .NOT.ctrlUseGen ) THEN
 #ifndef ALLOW_ROTATE_UV_CONTROLS
-      if (.NOT.ctrlUseGen) then
 
 #ifdef ALLOW_USTRESS_CONTROL
       call ctrl_get_gen ( 
@@ -168,12 +169,9 @@ c     == end of interface ==
      &     wtauv, mytime, myiter, mythid )
 #endif
 
-      endif
 #else
 
-#if defined(ALLOW_USTRESS_CONTROL) && defined(ALLOW_VSTRESS_CONTROL)
-
-      if (.NOT.ctrlUseGen) then
+#if (defined (ALLOW_USTRESS_CONTROL) && defined (ALLOW_VSTRESS_CONTROL))
 
       call ctrl_get_gen ( 
      &     xx_tauu_file, xx_tauustartdate, xx_tauuperiod,
@@ -187,8 +185,16 @@ c     == end of interface ==
      &     xx_tauv_remo_intercept, xx_tauv_remo_slope,
      &     wtauv, mytime, myiter, mythid )
 
-      endif
-   
+#endif /* ALLOW_USTRESS_CONTROL and ALLOW_VSTRESS_CONTROL */
+
+#endif /* ALLOW_ROTATE_UV_CONTROLS */
+      ENDIF ! (.NOT.ctrlUseGen)
+
+#else
+      IF ( .NOT.useAtmWind ) THEN
+#endif /* undef ALLOW_ECCO || def ECCO_CTRL_DEPRECATED */
+
+#ifdef ALLOW_ROTATE_UV_CONTROLS
       _EXCH_XY_RL(tmpUE,myThid)
       _EXCH_XY_RL(tmpVN,myThid)
 
@@ -211,12 +217,9 @@ c     == end of interface ==
           enddo
          enddo
         enddo
-
-#endif
 #endif /* ALLOW_ROTATE_UV_CONTROLS */
-      ENDIF
 
-#endif /* undef ALLOW_ECCO) || def ECCO_CTRL_DEPRECATED */
+      ENDIF !( .NOT.useAtmWind )
 
 #endif /* ALLOW_CTRL */
 
