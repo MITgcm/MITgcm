@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2084 2014/10/21 14:12:58 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2085 2014/10/21 14:22:26 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o global_oce_llc90,cs32 : ecco_v4 verification exps now use separate 
+  AUTODIFF_OPTIONS.h, CTRL_OPTIONS.h, ECCO_OPTIONS.h rather than
+  ECCO_CPPOPTIONS.h (i.e. replacing the deprecated, circumvoluted, 
+  approach where CPP_OPTIONS.h includes an omnipotent 
+  ECCO_CPPOPTIONS.h that superseeds pkgs '_OPTIONS.h').
 o pkg/ctrl/ctrl_map_ini_genarr.F : include GMREDI_OPTIONS.h where 
   ALLOW_3D_KAPGM, ALLOW_3D_KAPREDI (to be added later) belong.
 o pkg/seaice/SEAICE_SIZE.h : replace ALLOW_AUTODIFF_TAMC with ALLOW_AUTODIFF
@@ -27,9 +32,8 @@ o verification : added ECCO_CTRL_DEPRECATED to most as and oad
 
 checkpoint65f (2014/10/13)
 o pkg/ctrl, ecco, seaice : minor changes in headers
-o global_oce_llc90 :
-  - ecco_v4 verification experiments now test generic cost
-    function and control capabilities added since checkpoint65c.
+o global_oce_llc90,cs32 : ecco_v4 verification exps now test generic
+  cost function and control capabilities added since checkpoint65c.
 o pkg/ctrl: regroup all obcs ctrl variables in CTRL_OBCS.h.
 o pkg/ecco: increase modularity and improve logic
   - ecco_toolbox.F (new) : basic operations that are often used,
