@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.32 2014/10/16 20:04:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.33 2014/10/21 13:13:40 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -37,6 +37,10 @@ c     == global variables ==
 #include "optim.h"
 #ifdef ALLOW_EXF
 # include "EXF_FIELDS.h"
+#endif
+#ifndef ECCO_CTRL_DEPRECATED
+      character*(MAX_LEN_FNAM) xx_tauu_file
+      character*(MAX_LEN_FNAM) xx_tauv_file
 #endif
 
 c     == routine arguments ==
@@ -236,20 +240,27 @@ c--   Add control to model variable.
 cph(
 cph this flag ported from the SIO code
 cph Initial wind stress adjustments are too vigorous.
-      gensign = 1.
-      doCtrlUpdate = .TRUE.
-#ifdef ECCO_CTRL_DEPRECATED
+
+#ifndef ECCO_CTRL_DEPRECATED
+      xx_tauu_file       = 'xx_tauu'
+      xx_tauv_file       = 'xx_tauv'
+#endif
+
       if ( gencount0 .LE. 2 .AND.
      &     ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file ) .AND.
      &     ( xx_genperiod .NE. 0 ) ) then
          doCtrlUpdate = .FALSE.
+      else
+         doCtrlUpdate = .TRUE.
       endif
       if ( xx_gen_file .EQ. xx_tauu_file .OR.
      &     xx_gen_file .EQ. xx_tauv_file ) then
          gensign = -1.
+      else
+         gensign = 1.
       endif
-#endif
+
 c
 cph since the above is ECCO specific, we undo it here:
 cph      doCtrlUpdate = .TRUE.

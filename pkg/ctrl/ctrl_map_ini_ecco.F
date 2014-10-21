@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.31 2014/10/11 19:04:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.32 2014/10/21 13:13:40 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -36,6 +36,7 @@ c     ==================================================================
 
       implicit none
 
+#ifdef ECCO_CTRL_DEPRECATED
 c     == global variables ==
 
 #include "EEPARAMS.h"
@@ -55,11 +56,13 @@ c     == global variables ==
 #ifdef ALLOW_ECCO
 # include "ecco_cost.h"
 #endif
+#endif /* ECCO_CTRL_DEPRECATED */
 
 c     == routine arguments ==
 
       integer mythid
 
+#ifdef ECCO_CTRL_DEPRECATED
 #ifdef ALLOW_ECCO
 c     == local variables ==
 
@@ -302,6 +305,7 @@ c-- exchange UV:
 #endif
 
 #endif /* ALLOW_ECCO */
+#endif /* ECCO_CTRL_DEPRECATED */
 
       return
       end

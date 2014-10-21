@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.9 2014/09/30 18:41:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.10 2014/10/21 13:13:40 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -96,7 +96,7 @@ C--   generic 3D control variables
 #ifdef ALLOW_KAPREDI_CONTROL
       call ctrl_map_genarr3d(kapredi,igen_kapredi,myThid)
 #endif
-#ifdef ALLOW_DIFFKR_CONTROL
+#ifdef ALLOW_3D_DIFFKR
       call ctrl_map_genarr3d(diffkr,igen_diffkr,myThid)
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.43 2014/10/16 20:04:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.44 2014/10/21 13:13:40 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -23,6 +23,7 @@ C     \ev
 C     !USES:
       implicit none
 
+#ifdef ECCO_CTRL_DEPRECATED
 c     == global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -48,10 +49,13 @@ c     == global variables ==
 c#include "PTRACERS_PARAMS.h"
 # include "PTRACERS_FIELDS.h"
 #endif
+#endif /* ECCO_CTRL_DEPRECATED */
 
 C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
       integer mythid
+
+#ifdef ECCO_CTRL_DEPRECATED
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -633,6 +637,8 @@ c--   Update the tile edges.
 #ifdef ALLOW_RELAXSSS_CONTROL
       _EXCH_XY_RS( lambdaThetaClimRelax, mythid )
 #endif
+
+#endif /* ECCO_CTRL_DEPRECATED */
 
       RETURN
       END
