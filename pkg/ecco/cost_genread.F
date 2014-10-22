@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_genread.F,v 1.5 2014/10/07 14:45:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_genread.F,v 1.6 2014/10/22 14:59:37 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -12,7 +12,11 @@ C     !INTERFACE:
      O                           active_var,
      I                           iRec,
      I                           nnzbar,
+     I                           nrecloc,
      I                           preproc,
+     I                           preproc_c,
+     I                           preproc_i,
+     I                           preproc_r,
      I                           dummy,
      I                           myThid
      &                         )
@@ -33,17 +37,17 @@ C     == global variables ==
 
 c     == routine arguments ==
 
-C     active_var_file: filename
-C     active_var:      array
-C     iRec:            record number
 C     myThid:          thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
       INTEGER iRec
       INTEGER myThid
-      INTEGER nnzbar
+      INTEGER nnzbar, nrecloc
       _RL     dummy
       character*(MAX_LEN_FNAM) preproc(NGENPPROC)
+      character*(MAX_LEN_FNAM) preproc_c(NGENPPROC)
+      integer preproc_i(NGENPPROC)
+      _RL preproc_r(NGENPPROC)
 
 #ifdef ALLOW_ECCO
 
@@ -61,23 +65,23 @@ CEOP
          call ecco_readbar( active_var_file, active_var,
      &                      irec, nnzbar, dummy, mythid )
 
-      elseif ( preproc(1) .EQ. 'climmon') then
+      elseif ( preproc(1) .EQ. 'clim') then
 
 c--   Loop over month
-         nyearsINT=int((nmonsrec-irec)/12)+1
+         nyearsINT=int((nrecloc-irec)/preproc_i(1))+1
          nyearsRL=float(nyearsINT)
 
          call ecco_zero(fld1,nnzbar,zeroRL,myThid)
 
-         do iyear=1,nyears
-           imon=irec+(iyear-1)*12
+         do iyear=1,nyearsINT
+           imon=irec+(iyear-1)*preproc_i(1)
            call ecco_readbar( active_var_file, fld2,
      &                      imon, nnzbar, dummy, mythid )
            call ecco_add(fld2,nnzbar,fld1,nnzbar,myThid)
          enddo
 
          call ecco_div(fld1,nnzbar,nyearsRL,myThid)
-         call ecco_cp(fld1,nr,active_var,nnzbar,myThid)
+         call ecco_cp(fld1,nnzbar,active_var,nnzbar,myThid)
 
       endif
 

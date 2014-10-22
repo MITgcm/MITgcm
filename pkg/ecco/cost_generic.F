@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.27 2014/10/22 13:28:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.28 2014/10/22 14:59:37 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -88,6 +88,7 @@ c     == local variables ==
       integer irec
       integer  il
       integer localrec, obsrec
+      integer nrecloop
 
       _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
@@ -133,13 +134,16 @@ c--   Assign mask
          STOP 'cost_generic: wrong ylocmask'
       endif
 
-c-- reset nrecloc, if needed, according to preproc
-      if ( preproc(1) .EQ. 'climmon') nrecloc=MIN(nrecloc,12)
+c-- set nrecloop to nrecloc
+      nrecloop=nrecloc
+
+c-- reset nrecloop, if needed, according to preproc
+      if ( preproc(1) .EQ. 'clim') nrecloop=MIN(nrecloop,preproc_i(1))
 
       if ( .NOT. ( localobsfile.EQ.' ' ) ) then
 
 c--   loop over obsfile records
-      do irec = 1, nrecloc
+      do irec = 1, nrecloop
 
 c--     determine records and file names
         exst=.FALSE.
@@ -148,8 +152,10 @@ c--     determine records and file names
      &     fname2, localrec, obsrec, exst, mythid )
 
 c--     load model average and observed average
+        call ecco_zero(localbar,nnzbar,zeroRL,myThid)
         call cost_genread( fname1, localbar, irec, nnzbar,
-     &       preproc, dummy, mythid )
+     &       nrecloc, preproc, preproc_c, preproc_i, preproc_r, 
+     &       dummy, mythid )
 
         call ecco_zero(localobs,nnzobs,spzeroloc,myThid)
         if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) )
