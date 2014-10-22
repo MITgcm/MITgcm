@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesgeneric.F,v 1.8 2014/09/29 16:47:49 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesgeneric.F,v 1.9 2014/10/22 13:28:27 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -110,8 +110,32 @@ c     == end of interface ==
       imin = 1
       imax = snx
 
-c--   First, do the daily averages.
-      if (first .or. startofloc) then
+      if (startofloc .and. endofloc) then
+c--     Save snapshot at every time step
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nnz
+              do j = jmin,jmax
+                do i = imin,imax
+                  localbar(i,j,k,bi,bj) = localfld(i,j,k,bi,bj)
+                enddo
+              enddo
+            enddo
+          enddo
+        enddo
+c--     Save ...bar on file.
+        write(fname(1:128),'(80a)') ' '
+        il=ilnblnk( localbarfile )
+        write(fname,'(2a,i10.10)')
+     &       localbarfile(1:il), '.', eccoiter
+        if ( nnz .EQ. 1 ) then
+           call active_write_xy( fname, localbar, locrec, eccoiter,
+     &          mythid, xx_localbar_mean_dummy )
+        else
+           call active_write_xyz( fname, localbar, locrec, eccoiter,
+     &          mythid, xx_localbar_mean_dummy )
+        endif
+      elseif (first .or. startofloc) then
 c--     Assign the first value to the array holding the average.
         do bj = jtlo,jthi
           do bi = itlo,ithi

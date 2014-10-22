@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.50 2014/10/08 02:02:33 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.51 2014/10/22 13:28:27 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -46,21 +46,25 @@ c     == global variables ==
 #include "GRID.h"
 #include "CG2D.h"
 
-#include "ecco_cost.h"
-#ifdef ALLOW_CTRL
-# include "optim.h"
-# include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
-# include "CTRL_GENARR.h"
-#endif
-#ifdef ALLOW_EXF
-# include "EXF_FIELDS.h"
-#endif
-#ifdef ALLOW_SEAICE
-# include "SEAICE_SIZE.h"
-# include "SEAICE.h"
-# include "SEAICE_COST.h"
+#ifndef ECCO_CTRL_DEPRECATED
+# include "ecco.h"
+#else
+# include "ecco_cost.h"
+# ifdef ALLOW_CTRL
+#  include "optim.h"
+#  include "CTRL_SIZE.h"
+#  include "ctrl.h"
+#  include "ctrl_dummy.h"
+#  include "CTRL_GENARR.h"
+# endif
+# ifdef ALLOW_EXF
+#  include "EXF_FIELDS.h"
+# endif
+# ifdef ALLOW_SEAICE
+#  include "SEAICE_SIZE.h"
+#  include "SEAICE.h"
+#  include "SEAICE_COST.h"
+# endif
 #endif
 
 c     == routine arguments ==
@@ -71,6 +75,7 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer myiter
+#ifdef ECCO_CTRL_DEPRECATED
       integer bi,bj
       integer i,j,k
       integer ig,jg
@@ -78,7 +83,11 @@ c     == local variables ==
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-
+      integer ilps, ils,ilt
+      integer locdayrec
+      logical intmp
+#endif
+      integer k
       logical first
       logical startofday
       logical startofmonth
@@ -90,7 +99,6 @@ c     == local variables ==
       logical endofday
       logical endofmonth
       logical endofyear
-      logical intmp
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       logical startofgen(NGENCOST)
       logical endofgen(NGENCOST)
@@ -106,8 +114,7 @@ c     == local variables ==
       INTEGER iarr
 #endif
 
-      integer ilps, ils,ilt
-      integer locdayrec
+#ifdef ECCO_CTRL_DEPRECATED
 
       character*(128) fnamepsbar
       character*(128) fnametbar
@@ -151,6 +158,8 @@ c     == end of interface ==
       imin = 1
       imax = snx
 
+#endif /* ECCO_CTRL_DEPRECATED */
+
       myiter = niter0 + INT((mytime-starttime)/deltaTClock+0.5)
 
 c--   Get the time flags and record numbers for the time averaging.
@@ -176,9 +185,11 @@ c--   Get the time flags and record numbers for the time averaging.
      I                    endofday,   endofmonth,   endofyear,
      O                    startofgen, endofgen,     ingen,
      O                    sum1gen,    genrec,
-     I                    mythid )
+     I                    myiter, mythid )
       call cost_gencost_customize( mythid )
 #endif
+
+#ifdef ECCO_CTRL_DEPRECATED
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
       IF (using_cost_altim) THEN
@@ -672,8 +683,7 @@ cmm   accumulate average
      &     sum1day, dayrec, 1, mythid )
 #endif
 
-
-
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       do k = 1, NGENCOST
@@ -704,6 +714,8 @@ cmm   accumulate average
       endif
       end do
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
+
+#ifdef ECCO_CTRL_DEPRECATED
 
 #ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
 c--   Currently hard-coded Florida Strait transport for 1x1 deg.
@@ -752,6 +764,8 @@ c--   Compute meridional heat transport
       call timer_stop ('cost_atlantic      [ECCO SPIN-DOWN]', mythid)
 #endif
 #endif
+
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #ifdef ALLOW_DEBUG
       IF ( debugMode ) CALL DEBUG_LEAVE('cost_averagesfields',myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.26 2014/10/07 14:45:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.27 2014/10/22 13:28:27 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -160,6 +160,12 @@ c--     Compute masked model-data difference
         call ecco_diffmsk( localbar, nnzbar, localobs, nnzobs,
      &     localmask, spminloc, spmaxloc, spzeroloc, 
      &     localdif, difmask, myThid )
+
+#ifdef ALLOW_SMOOTH
+      if ( (useSMOOTH).AND.(posproc(1).EQ.'smooth') )
+     &  call smooth_hetero2d(localdif,maskc,
+     &     posproc_c(1),posproc_i(1),mythid)
+#endif
 
 c--     Compute normalized model-obs cost function
         call ecco_addcost(

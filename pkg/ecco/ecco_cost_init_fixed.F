@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.41 2014/10/16 20:02:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.42 2014/10/22 13:28:27 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -190,6 +190,10 @@ c--    set time averaging parameters
      &        gencost_avgperiod(k) .EQ. 'MONTH' ) then
             gencost_nrec(k)   =nmonsrec
             gencost_period(k) = 0.
+         else if ( gencost_avgperiod(k) .EQ. 'step' .OR.
+     &        gencost_avgperiod(k) .EQ. 'STEP' ) then
+            gencost_nrec(k)   =nTimeSteps+1
+            gencost_period(k) = dTtracerLev(1)
          else if ( gencost_avgperiod(k) .EQ. 'year' .OR.
      &        gencost_avgperiod(k) .EQ. 'YEAR' ) then
            STOP

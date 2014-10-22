@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.10 2014/10/03 19:57:15 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.11 2014/10/22 13:28:27 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -9,7 +9,7 @@ C $Name:  $
       subroutine cost_gencost_customize( mythid )
 
 c     ==================================================================
-c     SUBROUTINE cost_gencost_assignperiod
+c     SUBROUTINE cost_gencost_customize
 c     ==================================================================
 
       implicit none

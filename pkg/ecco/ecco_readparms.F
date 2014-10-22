@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.77 2014/10/16 20:02:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.78 2014/10/22 13:28:27 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -640,6 +640,8 @@ C--   Check parameters:
      &        gencost_avgperiod(k) .NE. 'DAY  ' .AND.
      &        gencost_avgperiod(k) .NE. 'month' .AND.
      &        gencost_avgperiod(k) .NE. 'MONTH' .AND.
+     &        gencost_avgperiod(k) .NE. 'step' .AND.
+     &        gencost_avgperiod(k) .NE. 'STEP' .AND.
      &        gencost_avgperiod(k) .NE. 'year ' .AND.
      &        gencost_avgperiod(k) .NE. 'YEAR ' ) then
 
