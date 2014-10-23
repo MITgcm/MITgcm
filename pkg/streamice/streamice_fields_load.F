@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_fields_load.F,v 1.1 2014/06/04 12:58:26 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_fields_load.F,v 1.2 2014/10/23 09:42:09 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -122,8 +122,8 @@ C-    Wait for everyone to set loadNewData before Master updates prevMnthIndex
 
 #ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
 
-         PRINT *, "GOT HERE FIELDS LOAD 1", first, changed,
-     &     nm0,nm1,myTime,fac
+!         PRINT *, "GOT HERE FIELDS LOAD 1", first, changed,
+!     &     nm0,nm1,myTime,fac
 
          IF ( STREAMICEuNormalTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEuNormalTimeDepFile,
@@ -148,12 +148,12 @@ C-    Wait for everyone to set loadNewData before Master updates prevMnthIndex
      &                        streamice_v_shear_stress1, 
      &                        nm0,myIter,myThid)
          ENDIF
-         PRINT *, "GOT HERE FIELDS LOAD 2"
+!         PRINT *, "GOT HERE FIELDS LOAD 2"
 
 #endif
 
          IF ( STREAMICEBdotTimeDepFile .NE. ' '  ) THEN
-         PRINT *, "GOT HERE FIELDS LOAD 3",  STREAMICEBdotTimeDepFile
+!         PRINT *, "GOT HERE FIELDS LOAD 3",  STREAMICEBdotTimeDepFile
           CALL READ_REC_XY_RL(STREAMICEBdotTimeDepFile,
      &                        bdot_streamice1, 
      &                        nm0,myIter,myThid)
@@ -183,7 +183,7 @@ C-      endif 1rst iter.
            ENDDO
           ENDDO
          ENDDO
-         PRINT *, "GOT HERE FIELDS LOAD 4"
+!         PRINT *, "GOT HERE FIELDS LOAD 4"
  
          IF ( STREAMICEuNormalTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEuNormalTimeDepFile,
@@ -257,7 +257,7 @@ C-      endif 1rst iter.
          ENDDO
         ENDDO
 
-      print *, "GOT HERE STREAMICE FIELDS LOAD",
+!      print *, "GOT HERE STREAMICE FIELDS LOAD",
      &  first,changed,nm0,nm1,fac
 #endif
 #endif
