@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_pgi.stderr
 #PBS -o /home/jmc/test_aces/output/tst_pgi.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.36 2014/09/12 15:10:33 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.37 2014/10/27 19:03:46 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: MPI test using PGI (pgf77) compiler & mpich
@@ -133,34 +133,46 @@ if [ $dblRun -ge 1 ] ; then
  ./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx
  test -f tr_cmpnum.sav && mv -f tr_cmpnum.sav tr_cmpnum
 
- iRun=0 ; nFail=0 ; pFail=$nFail
- outpSum=`ls -t tr_${dNam}-${sfx}_????????_?/summary.txt | head -1`
- if test "x$outpSum" != x ; then
-  nFail=`grep -c '^Y Y N N ' $outpSum`
-  echo "  from outpSum='$outpSum' nFail=$nFail"
- else
-  echo "  no outpfile summary: outpSum='$outpSum'"
-  ls -lt tr_${dNam}-${sfx}_????????_?/summary.txt
- fi
+ iRun=0 ; nFail=0 ; pFail=$nFail ; totObj=0
+ #- counts executables and number of Object files:
+   bldDir='build' ; gcmExe='mitgcmuv'
+   listD=`ls */$bldDir/Makefile | sed "s/\/$bldDir\/Makefile//g"`
+   for yy in $listD ; do
+     objNb=`( cd $yy/$bldDir ; ls *.o | wc -l)`
+     totObj=`expr $totObj + $objNb`
+   done
+   exeNb=`ls */$bldDir/$gcmExe | wc -l`
+   expNb=`echo $listD | wc -w`
+   difNb=`expr $expNb - $exeNb`
+   printf "  Exe=%3i , Exp=%3i , Fail=%3i , Total # of Obj= %i\n" \
+             $exeNb    $expNb    $difNb    $totObj
+ #----
+ nFail=$difNb
  while test $nFail != $pFail ; do
    iRun=`expr $iRun + 1`
    printf "  fails=%3i , prev=%3i ==> Re-run (run #%2i ):\n" $nFail $pFail $iRun
    echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx -q
    ./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx -q
    #- update counts:
-   pFail=$nFail
-   outpSum=`ls -t tr_${dNam}-${sfx}_????????_?/summary.txt | head -1`
+   pFail=$nFail ; totObj=0
+   for yy in $listD ; do
+     objNb=`( cd $yy/$bldDir ; ls *.o | wc -l)`
+     totObj=`expr $totObj + $objNb`
+   done
+   exeNb=`ls */$bldDir/$gcmExe | wc -l`
+   difNb=`expr $expNb - $exeNb`
+   printf "  Exe=%3i , Exp=%3i , Fail=%3i , Total # of Obj= %i\n" \
+             $exeNb    $expNb    $difNb    $totObj
    if [ $iRun -lt $dblRun ] ; then
-    nFail=`grep -c '^Y Y N N ' $outpSum`
+    nFail=$difNb
     if [ $nFail -eq 0 ] ; then pFail=0 ; fi
    fi
  done
+
+ #-- send output (adapted from testreport):
+ outpSum=`ls -t tr_${dNam}-${sfx}_????????_?/summary.txt | head -1`
  if test "x$outpSum" != x ; then
    dirRes=`echo $outpSum | sed 's/\/summary.txt$//'`
-#-- taken from testreport:
-#   tar -cf ${SAVDIR}/${DRESULTS}".tar" $DRESULTS > /dev/null 2>&1 \
-#         && gzip ${SAVDIR}/${DRESULTS}".tar" \
-#         && $SENDCMD -s MITgcm-test -m 3555000 ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES
    tar -cf ${SavD}/${dirRes}".tar" $dirRes > /dev/null 2>&1 \
            && gzip ${SavD}/${dirRes}".tar" \
            && $SEND -s MITgcm-test -m 3555000 ${SavD}/${dirRes}".tar.gz" -a jmc@mitgcm.org
@@ -168,16 +180,11 @@ if [ $dblRun -ge 1 ] ; then
    if test "x$RETVAL" != x0 ; then
      echo "ERROR in tar/gzip/send results dir \"$dirRes\" to jmc@mitgcm.org"
    else
-     echo " $dirRes output sent to eamil jmc@mitgcm.org"
+     echo " $dirRes output sent to email jmc@mitgcm.org"
      test -f ${SavD}/${dirRes}".tar" &&  rm -f ${SavD}/${dirRes}".tar"
      test -f ${SavD}/${dirRes}".tar.gz" &&  rm -f ${SavD}/${dirRes}".tar.gz"
    fi
  fi
-
-#echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx \
-#  -q -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
-#./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx \
-#  -q -send "$SEND" -sd $SavD -a jmc@mitgcm.org
 
 else
 
