@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.10 2014/10/09 21:46:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.11 2014/11/02 21:23:01 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -9,11 +9,7 @@ c     ==================================================================
 c     SUBROUTINE ctrl_Summary
 c     ==================================================================
 c
-c     o Summarize the control vector part of the ECCO release.
-c
-c     started: Christian Eckert eckert@mit.edu 06-Mar-2000
-c
-c     changed: Christian Eckert eckert@mit.edu
+c     o Summarize the control vector settings.
 c
 c     ==================================================================
 c     SUBROUTINE ctrl_Summary
@@ -76,7 +72,7 @@ c     == end of interface ==
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
-     &'// ECCO control vector configuration  >>> START <<<'
+     &'// control vector configuration  >>> START <<<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
@@ -515,7 +511,7 @@ c allow for switching off correl2d in adjoint
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
-     &'// ECCO control vector configuration  >>> END <<<'
+     &'// control vector configuration  >>> END <<<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')

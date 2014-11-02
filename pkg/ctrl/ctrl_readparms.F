@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.56 2014/10/16 20:04:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.57 2014/11/02 21:23:01 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -162,6 +162,16 @@ cHFLUXM_CONTROL
      &  genarr2dPrecond, gentim2dPrecond,
      &  mult_gentim2d,mult_genarr2d,mult_genarr3d
 #endif
+
+      IF ( .NOT.useCTRL ) THEN
+C-    pkg CTRL is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.ctrl is found
+         CALL PACKAGES_UNUSED_MSG( 'useCTRL', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER( myThid )
 
