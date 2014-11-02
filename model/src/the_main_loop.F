@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.168 2014/10/20 03:09:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.169 2014/11/02 21:22:00 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -564,13 +564,15 @@ C--   Reset the model iteration counter and the model time.
 #endif
 
 #if (defined (ALLOW_ECCO) && defined (ALLOW_ECCO_EVOLUTION))
+      IF ( useECCO ) then
 # ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('cost_averagesfields',myThid)
+        IF (debugMode) CALL DEBUG_CALL('cost_averagesfields',myThid)
 # endif
 c--   Accumulate time averages of temperature, salinity
-      CALL TIMER_START('COST_AVERAGESFIELDS [MAIN_DO_LOOP]',myThid)
-      CALL COST_AVERAGESFIELDS( myTime, myThid )
-      CALL TIMER_STOP ('COST_AVERAGESFIELDS [MAIN_DO_LOOP]',myThid)
+        CALL TIMER_START('COST_AVERAGESFIELDS [MAIN_DO_LOOP]',myThid)
+        CALL COST_AVERAGESFIELDS( myTime, myThid )
+        CALL TIMER_STOP ('COST_AVERAGESFIELDS [MAIN_DO_LOOP]',myThid)
+      ENDIF
 #endif /* ALLOW_ECCO_EVOLUTION */
 
 #ifdef ALLOW_PROFILES
@@ -641,10 +643,12 @@ c--   Accumulate in-situ time averages of temperature, salinity, SSH.
 
 #ifdef ALLOW_ECCO
 #ifdef ALLOW_ECCO_EVOLUTION
+      IF ( useECCO ) then
 c--   Compute all ecco cost function contributions.
-      CALL TIMER_START('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', myThid)
-      CALL ECCO_COST_DRIVER ( endTime, myIter, myThid )
-      CALL TIMER_STOP ('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', myThid)
+        CALL TIMER_START('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', myThid)
+        CALL ECCO_COST_DRIVER ( endTime, myIter, myThid )
+        CALL TIMER_STOP ('ECCO_COST_DRIVER   [THE_MAIN_LOOP]', myThid)
+      ENDIF
 #endif /* ALLOW_ECCO_EVOLUTION */
 #endif /* ALLOW_ECCO */
 

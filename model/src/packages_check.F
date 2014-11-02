@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.67 2014/09/04 22:30:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.68 2014/11/02 21:22:00 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -394,7 +394,7 @@ C---  Continue with standard packages (with standard usePKG flag)
 #endif
 
 #ifdef ALLOW_CTRL
-      CALL CTRL_CHECK( myThid )
+      IF (useCTRL) CALL CTRL_CHECK( myThid )
 #endif
 
 #ifdef ALLOW_COST
@@ -422,7 +422,7 @@ C---  Continue with standard packages (with standard usePKG flag)
 #endif
 
 #ifdef ALLOW_ECCO
-      CALL ECCO_CHECK( myThid )
+      IF (useECCO) CALL ECCO_CHECK( myThid )
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS

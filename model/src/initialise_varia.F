@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.76 2014/10/20 03:09:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.77 2014/11/02 21:21:59 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -98,9 +98,10 @@ CEOP
 #endif
 
 #ifdef ALLOW_AUTODIFF
-
       nIter0 = NINT( (startTime-baseTime)/deltaTClock )
+#endif /* ALLOW_AUTODIFF */
 
+#ifdef ALLOW_CTRL
 # ifdef ALLOW_DEPTH_CONTROL
 C--   Intialize the depth for TAF/TAMC
       CALL INI_DEPTHS( myThid )
@@ -111,8 +112,7 @@ C--   Re-calculate hFacS/W and some other parameters from hFacC
 C--   Update laplace operators for use in 2D conjugate gradient solver.
       CALL UPDATE_CG2D( startTime, nIter0, myThid )
 # endif /* ALLOW_DEPTH_CONTROL */
-
-#endif /* ALLOW_AUTODIFF */
+#endif /* ALLOW_CTRL */
 
 C--   Initialise Non-Lin FreeSurf variables:
       CALL INI_NLFS_VARS( myThid )

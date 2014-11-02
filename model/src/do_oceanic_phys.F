@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.143 2014/09/04 22:30:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.144 2014/11/02 21:21:59 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1145,7 +1145,7 @@ C---  if fluid Is Water: end
 #endif
 
 #ifdef ALLOW_ECCO
-      CALL ECCO_PHYS( myThid )
+      IF ( useECCO ) CALL ECCO_PHYS( myThid )
 #endif
 
 #ifdef ALLOW_DEBUG

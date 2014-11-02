@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.230 2014/10/20 03:09:02 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.231 2014/11/02 21:21:59 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -519,9 +519,9 @@ C-    calculate qnet (and wind stress)
       ENDIF
 #endif /*ALLOW_CHEAPAML */
 
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_CTRL
 C--   Add control vector for forcing and parameter fields
-      IF ( myIter .EQ. nIter0 )
+      IF ( ( useCTRL ).AND.( myIter .EQ. nIter0 ) )
      &     CALL CTRL_MAP_FORCING (myThid)
 #endif
 

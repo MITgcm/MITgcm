@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.97 2014/09/14 15:19:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.98 2014/11/02 21:22:00 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -487,16 +487,18 @@ C--   Initialise pkg/profiles
 
 C--   Initialise pkg/ecco (and related pkgs components)
 #ifdef ALLOW_ECCO
-      CALL ECCO_INIT_VARIA( myThid )
+      IF ( useECCO ) CALL ECCO_INIT_VARIA( myThid )
 #endif
 
 C--   Initialise pkg/ctl (and related pkgs components)
 #ifdef ALLOW_CTRL
+      IF (useCTRL) THEN
 # ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('CTRL_INIT_VARIABLES',myThid)
+        IF (debugMode) CALL DEBUG_CALL('CTRL_INIT_VARIABLES',myThid)
 # endif
-      CALL CTRL_INIT_VARIABLES ( myThid )
-#endif /* ALLOW_AUTODIFF */
+        CALL CTRL_INIT_VARIABLES ( myThid )
+      ENDIF
+#endif /* ALLOW_CTRL */
 
 #ifdef ALLOW_OBCS
 C--   put this call in last position (needs to come after few {PKG}_init_varia)

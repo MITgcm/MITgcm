@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.17 2014/09/12 14:54:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.18 2014/11/02 21:21:59 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -122,7 +122,7 @@ C--   Initialise forcing arrays that may receive multiple contributions
 
 C--   Map generic time varying controls to xx_gentim2d
 #ifdef ALLOW_CTRL
-      CALL CTRL_MAP_GENTIM2D( myTime, myIter, myThid )
+      if (useCTRL) CALL CTRL_MAP_GENTIM2D( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_BULK_FORCE

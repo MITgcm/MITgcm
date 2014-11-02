@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.66 2014/07/30 03:31:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.67 2014/11/02 21:21:59 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -68,6 +68,7 @@ C     data.pkg namelists
      &          useSMOOTH,
      &          usePROFILES,
      &          useECCO,
+     &          useCTRL,
      &          useSBO,
      &          useFLT,
      &          usePTRACERS,
@@ -129,7 +130,16 @@ c     useGAD          =.FALSE.
       useGrdchk       =.FALSE.
       useSMOOTH       =.FALSE.
       usePROFILES     =.FALSE.
+#ifdef ALLOW_ECCO
+      useECCO         =.TRUE.
+#else
       useECCO         =.FALSE.
+#endif
+#ifdef ALLOW_CTRL
+      useCTRL         =.TRUE.
+#else
+      useCTRL         =.FALSE.
+#endif
       useSBO          =.FALSE.
       useFLT          =.FALSE.
       usePTRACERS     =.FALSE.
@@ -196,7 +206,11 @@ C--   packages with hard-coded switch
 #endif
 
 #ifdef ALLOW_ECCO
-      useCAL = .TRUE.
+      IF (useECCO) useCAL = .TRUE.
+#endif
+
+#ifdef ALLOW_CTRL
+      IF (useGrdchk) useCTRL = .TRUE.
 #endif
 
 C--   packages with an implied switch
@@ -273,6 +287,9 @@ C----- pkgs with a standard "usePKG" On/Off switch in "data.pkg":
 #endif
 #ifdef ALLOW_ECCO
       CALL PACKAGES_PRINT_MSG( useECCO,       'ECCO',        ' ' )
+#endif
+#ifdef ALLOW_CTRL
+      CALL PACKAGES_PRINT_MSG( useCTRL,       'CTRL',        ' ' )
 #endif
 #ifdef ALLOW_SBO
       CALL PACKAGES_PRINT_MSG( useSBO,        'SBO',         ' ' )
@@ -433,9 +450,6 @@ C----- AD related pkgs:
 #endif
 #ifdef ALLOW_COST
       CALL PACKAGES_PRINT_MSG( locFlag, 'COST',       'Used' )
-#endif
-#ifdef ALLOW_CTRL
-      CALL PACKAGES_PRINT_MSG( locFlag, 'CTRL',       'Used' )
 #endif
 C----- mysterious pkgs:
 #ifdef ALLOW_SPHERE
