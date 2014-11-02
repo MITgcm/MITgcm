@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.21 2014/10/21 13:12:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.22 2014/11/02 21:23:30 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -47,16 +47,14 @@ c     == global variables ==
 
 #include "EXF_FIELDS.h"
 #include "EXF_PARAM.h"
-#ifdef ALLOW_AUTODIFF
-# ifdef ALLOW_CTRL
-#  include "CTRL_SIZE.h"
-#  include "ctrl.h"
-#  include "ctrl_dummy.h"
-#  include "CTRL_GENARR.h"
-# endif
-# if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
-#   include "ecco_cost.h"
-# endif
+#ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+# include "CTRL_GENARR.h"
+#endif
+#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
+#  include "ecco_cost.h"
 #endif
 
 c     == routine arguments ==
@@ -87,6 +85,7 @@ c     == global variables ==
 c     == end of interface ==
 
 #ifdef ALLOW_ROTATE_UV_CONTROLS
+      if ( useCTRL ) then
         do bj = mybylo(mythid),mybyhi(mythid)
          do bi = mybxlo(mythid),mybxhi(mythid)
           do j = 1-oly,sny+oly
@@ -99,11 +98,12 @@ c     == end of interface ==
           enddo
          enddo
         enddo
+      endif
 #endif
 
 #if (defined (ALLOW_CTRL) && \
      defined (ALLOW_GENTIM2D_CONTROL))
-      if (ctrlUseGen) then
+      if ( useCTRL.AND.ctrlUseGen) then
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),mybxhi(myThid)
         DO j = 1,sNy
@@ -191,7 +191,7 @@ c     == end of interface ==
       ENDIF ! (.NOT.ctrlUseGen)
 
 #else
-      IF ( .NOT.useAtmWind ) THEN
+      IF ( (useCTRL).AND.(.NOT.useAtmWind) ) THEN
 #endif /* undef ALLOW_ECCO || def ECCO_CTRL_DEPRECATED */
 
 #ifdef ALLOW_ROTATE_UV_CONTROLS

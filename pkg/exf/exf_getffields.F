@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.57 2014/10/20 03:13:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.58 2014/11/02 21:23:30 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -38,18 +38,16 @@ C     == global variables ==
 #include "EXF_FIELDS.h"
 #include "EXF_CONSTANTS.h"
 
-#ifdef ALLOW_AUTODIFF
-# ifdef ALLOW_CTRL
-#  include "CTRL_SIZE.h"
-#  include "ctrl.h"
-#  include "ctrl_dummy.h"
-#  ifdef ALLOW_GENTIM2D_CONTROL
-#   include "CTRL_GENARR.h"
-#  endif
+#ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+# ifdef ALLOW_GENTIM2D_CONTROL
+#  include "CTRL_GENARR.h"
 # endif
-# if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
-#   include "ecco_cost.h"
-# endif
+#endif
+#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
+#  include "ecco_cost.h"
 #endif
 
 C     == routine arguments ==
@@ -594,7 +592,7 @@ cdm #endif
 #endif /* undef ALLOW_ECCO) || def ECCO_CTRL_DEPRECATED */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_GENTIM2D_CONTROL))
-      if (ctrlUseGen) then
+      if ( useCTRL.AND.ctrlUseGen ) then
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),mybxhi(myThid)
         DO j = 1,sNy

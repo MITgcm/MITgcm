@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.24 2014/10/20 03:13:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.25 2014/11/02 21:23:30 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -50,12 +50,10 @@ c     == global variables ==
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
 #include "EXF_FIELDS.h"
-#ifdef ALLOW_AUTODIFF
-# ifdef ALLOW_CTRL
-#  include "CTRL_SIZE.h"
-#  include "ctrl.h"
-#  include "ctrl_dummy.h"
-# endif
+#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
+# include "CTRL_SIZE.h"
+# include "ctrl.h"
+# include "ctrl_dummy.h"
 # ifdef ALLOW_ECCO
 #  include "ecco_cost.h"
 # endif
@@ -104,12 +102,14 @@ c--   Update the tile edges.
       _EXCH_XY_RL(climsst, mythid)
 #endif
 
-#ifdef ALLOW_SST_CONTROL
+#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
+# ifdef ALLOW_SST_CONTROL
       call CTRL_GET_GEN (
      &     xx_sst_file, xx_sststartdate, xx_sstperiod,
      &     maskc, climsst, xx_sst0, xx_sst1, xx_sst_dummy,
      &     xx_sst_remo_intercept, xx_sst_remo_slope,
      &     wsst, mytime, myiter, mythid )
+# endif
 #endif
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
@@ -129,12 +129,14 @@ c--   Update the tile edges.
       _EXCH_XY_RL(climsss, mythid)
 #endif
 
-#ifdef ALLOW_SSS_CONTROL
+#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
+# ifdef ALLOW_SSS_CONTROL
       call CTRL_GET_GEN (
      &     xx_sss_file, xx_sssstartdate, xx_sssperiod,
      &     maskc, climsss, xx_sss0, xx_sss1, xx_sss_dummy,
      &     xx_sss_remo_intercept, xx_sss_remo_slope,
      &     wsss, mytime, myiter, mythid )
+# endif
 #endif
 
 #ifdef ALLOW_CLIMSTRESS_RELAXATION
