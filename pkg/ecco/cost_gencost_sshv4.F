@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.27 2014/10/18 14:17:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.28 2014/11/02 22:31:04 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -673,19 +673,23 @@ c--   Do a global summation.
       _GLOBAL_SUM_RL( offset_sum , mythid )
 
       if (offset_sum .eq. 0.0) then
+        if (gencost_outputlevel(igen_gmsl).GT.0) then
         _BEGIN_MASTER( mythid )
         write(msgbuf,'(a)') ' sshv4: offset_sum = zero!'
         call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
         _END_MASTER( mythid )
+        endif
 c        stop   '  ... stopped in cost_ssh.'
       else
+        if (gencost_outputlevel(igen_gmsl).GT.0) then
         _BEGIN_MASTER( mythid )
         write(msgbuf,'(a,2d22.15)') ' sshv4:offset,sum=',
      &      offset,offset_sum
         call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
         _END_MASTER( mythid )
+        endif
       endif
 
 c--   Compute (average) offset
@@ -994,19 +998,23 @@ c Since slaoffset is itself area weighted, however, the total weight is only app
       _GLOBAL_SUM_RL( slaoffset_sum , mythid )
 
       if (slaoffset_sum .eq. 0.0) then
+        if (gencost_outputlevel(igen_gmsl).GT.0) then
         _BEGIN_MASTER( mythid )
         write(msgbuf,'(a)') ' sshv4: slaoffset_sum = zero!'
         call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
         _END_MASTER( mythid )
+        endif
 c        stop   '  ... stopped in cost_ssh.'
       else
+        if (gencost_outputlevel(igen_gmsl).GT.0) then
         _BEGIN_MASTER( mythid )
         write(msgbuf,'(a,3d22.15)') ' sshv4:slaoffset,sum,weight=',
      &         slaoffset,slaoffset_sum,slaoffset_weight
         call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
         _END_MASTER( mythid )
+        endif
       endif
 
 c--   Compute (average) slaoffset
@@ -1114,7 +1122,7 @@ c --------------------------------------------------------------
       IF ( ( MASTER_CPU_THREAD(myThid).AND.(igen_gmsl.NE.0) ).AND.
      &     ( slaoffset_sum.GT.0.25 _d 0 * globalArea ) ) THEN
           junk=slaoffset
-          junkweight=slaoffset_weight
+          junkweight=1. _d 0
           objf_gencost(1,1,igen_gmsl) = objf_gencost(1,1,igen_gmsl)
      &        + junk*junk*junkweight
           num_gencost(1,1,igen_gmsl) = num_gencost(1,1,igen_gmsl)

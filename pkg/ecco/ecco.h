@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.8 2014/10/11 19:03:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.9 2014/11/02 22:31:04 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -159,7 +159,7 @@ c     =============================
 
       INTEGER NGENCOST3D
 #ifdef ALLOW_GENCOST3D
-      PARAMETER ( NGENCOST3D=2 )
+      PARAMETER ( NGENCOST3D=4 )
 #else
       PARAMETER ( NGENCOST3D=0 )
 #endif

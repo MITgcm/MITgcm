@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_bpv4.F,v 1.2 2014/10/06 22:57:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_bpv4.F,v 1.3 2014/11/02 22:31:04 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -263,21 +263,21 @@ c--    Remove global mean value
         enddo
 
 c--    Smooth field of anomalies
-#ifdef ALLOW_BP_COST_OUTPUT
+      if (gencost_outputlevel(kgen).GT.0) then
       write(fname4test(1:80),'(1a)') 'bpdifanom_raw'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,bpdifanom,irec,1,mythid)
       write(fname4test(1:80),'(1a)') 'bpdatanom_raw'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,bpdatanom,irec,1,mythid)
-#endif
+      endif
 
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH )
      &  call smooth_basic2D(bpdifanom,maskc,750000. _d 0,5000,mythid)
 #endif
 
-#ifdef ALLOW_BP_COST_OUTPUT
+      if (gencost_outputlevel(kgen).GT.0) then
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH ) 
      &  call smooth_basic2D(bpdatanom,maskc,750000. _d 0,5000,mythid)
@@ -289,7 +289,7 @@ c--    Smooth field of anomalies
       write(fname4test(1:80),'(1a)') 'bpdatanom_smooth'
       call mdswritefield(fname4test,32,.false.,'RL',
      & 1,bpdatanom,irec,1,mythid)
-#endif
+      endif
 
 c--    Compute cost function
         do bj = jtlo,jthi
