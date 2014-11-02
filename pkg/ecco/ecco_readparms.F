@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.78 2014/10/22 13:28:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.79 2014/11/02 21:23:12 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -197,6 +197,16 @@ c--   Read the namelist input.
      &         gencost_timevaryweight,
      &         mult_gencost
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
+
+      IF ( .NOT.useECCO ) THEN
+C-    pkg ECCO is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.ecco is found
+         CALL PACKAGES_UNUSED_MSG( 'useECCO', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER( myThid )
 
