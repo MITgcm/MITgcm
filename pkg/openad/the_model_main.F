@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.11 2014/04/04 21:31:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.12 2014/11/02 22:12:38 gforget Exp $
 C $Name:  $
 
 CBOI
@@ -372,7 +372,9 @@ C <<-- OpenAD
 
 #elif ( defined (ALLOW_AUTODIFF))
 
+# ifdef  ALLOW_CTRL
 # ifndef EXCLUDE_CTRL_PACK
+      IF (useCTRL) THEN
          inquire( file='costfinal', exist=exst )
          IF ( .NOT. exst ) THEN
             IF ( (optimcycle.NE.0 .OR. .NOT.doinitxx)
@@ -382,7 +384,9 @@ C <<-- OpenAD
                CALL TIMER_STOP ('CTRL_UNPACK   [THE_MODEL_MAIN]',myThid)
             ENDIF
          ENDIF
+      ENDIF
 # endif /* EXCLUDE_CTRL_PACK */
+# endif /* ALLOW_CTRL */
 
 # ifdef ALLOW_COST
       CALL COST_DEPENDENT_INIT ( myThid )
@@ -588,12 +592,14 @@ C--   Call time stepping loop of full model
 
 # endif /* forward run only within AD setting */
 
+# ifdef  ALLOW_CTRL
 # ifndef EXCLUDE_CTRL_PACK
 #  ifdef ALLOW_OPENAD
 cph-- ad hoc fix for OpenAD time stepping counter lagging one step
 cph-- after final adjoint step
       myIter=nIter0
 #  endif
+      IF (useCTRL) THEN
       IF ( lastdiva .AND. doMainPack ) THEN
          CALL TIMER_START('CTRL_PACK           [THE_MODEL_MAIN]',myThid)
          CALL CTRL_PACK( .FALSE. , myThid )
@@ -605,7 +611,9 @@ cph-- after final adjoint step
             CALL TIMER_STOP ('CTRL_PACK     [THE_MODEL_MAIN]',myThid)
          ENDIF
       ENDIF
+      ENDIF
 # endif /* EXCLUDE_CTRL_PACK */
+# endif /* ALLOW_CTRL */
 
 # ifdef ALLOW_GRDCHK
       IF ( useGrdchk .AND. lastdiva ) THEN
