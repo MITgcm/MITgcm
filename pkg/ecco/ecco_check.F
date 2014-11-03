@@ -1,19 +1,26 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.20 2014/10/06 22:57:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.21 2014/11/03 16:09:58 jmc Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
 
+C--  File ecco_check.F:
+C--   Contents
+C--   o ECCO_CHECK
+C--   o ECCO_CHECK_FILES
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE ECCO_CHECK( myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE ECCO_CHECK                                    |
 C     | o Check runtime activated packages have been built in.   |
-C     |==========================================================|
+C     *==========================================================*
 C     | All packages can be selected/deselected at build time    |
 C     | ( when code is compiled ) and activated/deactivated at   |
 C     | runtime. This routine does a quick check to trap packages|
 C     | that were activated at runtime but that were not compiled|
 C     | in at build time.                                        |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -28,7 +35,7 @@ C     === Global variables ===
 # include "ecco_cost.h"
 #endif
 #ifdef ALLOW_PROFILES
-#include "profiles.h"
+# include "profiles.h"
 #endif
 
 C     === Routine arguments ===
@@ -76,11 +83,11 @@ cgf next line is only for backward compatibility
       _END_MASTER(myThid)
 
 c check for missing data files
-#ifdef ALLOW_BP_COST_CONTRIBUTION    
+#ifdef ALLOW_BP_COST_CONTRIBUTION
       CALL ECCO_CHECK_FILES( using_cost_bp,'bp',
      & bpdatfile, bpstartdate(1), myThid )
 #endif
-#ifdef ALLOW_SST_COST_CONTRIBUTION    
+#ifdef ALLOW_SST_COST_CONTRIBUTION
       CALL ECCO_CHECK_FILES( using_cost_sst,'sst',
      & sstdatfile, sststartdate(1), myThid )
 #endif
@@ -122,7 +129,7 @@ c altimetry related checks
          if (gencost_name(k).EQ.'sshv4-mdt') using_mdt=using_gencost(k)
 
 c seaice related checks
-         if (gencost_name(k).EQ.'siv4-conc') 
+         if (gencost_name(k).EQ.'siv4-conc')
      &       using_cost_seaice=using_gencost(k)
          if (gencost_name(k).EQ.'siv4-deconc')
      &       using_cost_seaice=using_gencost(k)
@@ -162,13 +169,13 @@ c check that one of the used gencost term defines etaday (needed in sshv4)
       enddo
 
       if (igen_etaday.EQ.0) then
-c warn user as we override using_cost_altim	 
+c warn user as we override using_cost_altim
         using_cost_altim = .FALSE.
-        WRITE(msgBuf,'(2A)')	 
-     &    '** WARNING ** S/R ECCO_CHECK: missing file: ',	 
-     &    ' for altimeter data so cost gets switched off'	 
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,	 
-     &                    SQUEEZE_RIGHT , myThid)	 
+        WRITE(msgBuf,'(2A)')
+     &    '** WARNING ** S/R ECCO_CHECK: missing file: ',
+     &    ' for altimeter data so cost gets switched off'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
       else
 c print result to screen
         write(msgbuf,'(a,i3)')
@@ -182,17 +189,18 @@ c print result to screen
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      SUBROUTINE ECCO_CHECK_FILES( 
-     O using_cost_local, 
-     I localname, localobsfile, localstartdate1, 
+      SUBROUTINE ECCO_CHECK_FILES(
+     O using_cost_local,
+     I localname, localobsfile, localstartdate1,
      I myThid )
-     
-C     /==========================================================\
+
+C     *==========================================================*
 C     | SUBROUTINE ECCO_CHECK_FILES                              |
 C     | o Check that obs files are present for specified years.  |
 C     |   If not then set using_cost_local to false.             |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -211,7 +219,7 @@ C     myThid -  Number of this instances
       character*(*) localname
       character*(MAX_LEN_FNAM) localobsfile
       integer localstartdate1
-      
+
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -250,7 +258,7 @@ c switch off cost function term
       ENDIF
 
       yearlyFileTest = .FALSE.
-      IF ( (using_cost_local).AND.(.NOT.singleFileTest) ) THEN 
+      IF ( (using_cost_local).AND.(.NOT.singleFileTest) ) THEN
         DO irec = 1, nmonsrec
            mody   = modelstartdate(1)/10000
            modm   = modelstartdate(1)/100 - mody*100
@@ -290,13 +298,10 @@ c switch off cost function term
              using_cost_local = .FALSE.
       ENDIF
       ENDIF
-      
+
       _END_MASTER(myThid)
 
 #endif /* ALLOW_CAL */
 
       RETURN
       END
-
-
-
