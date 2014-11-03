@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.26 2014/08/14 07:14:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.27 2014/11/03 10:17:17 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -70,7 +70,7 @@ C     du/vIce :: solution vector
       _RL dvIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CEOP
 
-#ifdef SEAICE_ALLOW_JFNK
+#if (defined SEAICE_ALLOW_DYNAMICS && defined SEAICE_ALLOW_JFNK)
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
