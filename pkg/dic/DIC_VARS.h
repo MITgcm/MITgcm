@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_VARS.h,v 1.9 2012/06/08 20:31:10 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_VARS.h,v 1.10 2014/11/04 17:15:52 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -23,7 +23,7 @@ C     *==========================================================*
 
        COMMON /CARBON_CHEM/
      &                     ak0,ak1,ak2,akw,akb,aks,akf,
-     &                     ak1p,ak2p,ak3p,aksi, fugf, 
+     &                     ak1p,ak2p,ak3p,aksi, fugf,
      &                     ff,ft,st,bt, Ksp_TP_Calc
       _RL  ak0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ak1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -87,6 +87,7 @@ C  DIC_iceFile     :: file name of seaice fraction
 C  DIC_ironFile    :: file name of aeolian iron flux
 C  DIC_silicaFile  :: file name of surface silica
 C  DIC_parFile     :: file name of photosynthetically available radiation (PAR)
+C  DIC_chlaFile    :: file name of chlorophyll climatology
 C  DIC_forcingPeriod :: periodic forcing parameter specific for dic (seconds)
 C  DIC_forcingCycle  :: periodic forcing parameter specific for dic (seconds)
 C  dic_pCO2          :: Atmospheric pCO2 to be rad in data.dic
@@ -95,6 +96,7 @@ C  dic_int*          :: place holder to read in a integer number, set at run tim
       COMMON /DIC_FILENAMES/
      &        DIC_windFile, DIC_atmospFile, DIC_iceFile,
      &        DIC_ironFile, DIC_silicaFile, DIC_parFile,
+     &        DIC_chlaFile,
      &        DIC_forcingPeriod, DIC_forcingCycle,
      &        dic_pCO2, dic_int1, dic_int2, dic_int3, dic_int4
 
@@ -104,6 +106,7 @@ C  dic_int*          :: place holder to read in a integer number, set at run tim
       CHARACTER*(MAX_LEN_FNAM) DIC_ironFile
       CHARACTER*(MAX_LEN_FNAM) DIC_silicaFile
       CHARACTER*(MAX_LEN_FNAM) DIC_parFile
+      CHARACTER*(MAX_LEN_FNAM) DIC_chlaFile
       _RL     DIC_forcingPeriod
       _RL     DIC_forcingCycle
       _RL dic_pCO2
@@ -121,12 +124,12 @@ C     *==========================================================*
      &     BIOave, CARave, SURave, SUROave, pCO2ave, pHave,
      &     fluxCO2ave, omegaCave, pfluxave, epfluxave, cfluxave,
      &     DIC_timeAve,
-     &     alpha, rain_ratio, InputFe, omegaC,
+     &     par, alpha, rain_ratio, InputFe, omegaC, CHL,
      &     Kpo4, DOPfraction, zcrit, KRemin,
      &     KDOPremin,zca,R_op,R_cp,R_NP, R_FeP,
      &     O2crit, alpfe, KScav, ligand_stab, ligand_tot, KFE,
-     &     freefemax, par,
-     &     parfrac, k0, lit0,
+     &     freefemax, fesedflux_pcm, FeIntSec,
+     &     parfrac, k0, kchl, lit0,
      &     alphaUniform, rainRatioUniform,
      &     alphamax, alphamin,
      &     calpha, crain_ratio, cInputFe, calpfe, feload, cfeload,
@@ -149,11 +152,16 @@ C     For averages
       _RL DIC_timeAve(nSx,nSy)
 
 C     values for biogeochemistry
+C   CHL           :: chlorophyll climatology [mg/m3]
+C   fesedflux_pcm :: ratio of sediment iron to sinking organic matter
+C   FeIntSec      :: Sediment Fe flux, intersect value in:
+C                    Fe_flux = fesedflux_pcm*pflux + FeIntSec
       _RL par(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL alpha(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL rain_ratio(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL InputFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL omegaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL CHL(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL Kpo4
       _RL DOPfraction
       _RL zcrit
@@ -166,13 +174,17 @@ C     values for biogeochemistry
       _RL R_FeP
       _RL O2crit
       _RL alpfe
+      _RL fesedflux_pcm
+      _RL FeIntSec
       _RL KScav
       _RL ligand_stab
       _RL ligand_tot
       _RL  KFe
       _RL freefemax
 C     values for light limited bio activity
-      _RL k0, parfrac, lit0
+C   k0      :: Light attentuation coefficient for water [1/m]
+C   kchl    :: Light attentuation coefficient fct of chlorophyll [m2/mg]
+      _RL k0, kchl, parfrac, lit0
       _RL alphaUniform
       _RL rainRatioUniform
       _RL alphamax, alphamin

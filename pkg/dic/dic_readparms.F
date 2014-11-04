@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.11 2012/06/08 20:31:10 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.12 2014/11/04 17:15:52 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -70,6 +70,8 @@ C   KPO4        :: half saturation phosphate constant (mol/m3)
 C   KFE         :: half saturation fe constant (mol/m3)
 CC Iron chemisty values
 C   alpfe       :: solubility of aeolian fe
+C   fesedflux_pcm :: ratio of sediment iron to sinking organic matter
+C   FeIntSec    :: y-axis crossing for Fe_flux = fesedflux_pcm*pflux + FeIntSec
 C   freefemax   :: max solubility of free iron (mol/m3)
 CC Control variables
 C   KScav       :: iron scavenging rate QQ
@@ -83,8 +85,8 @@ C                  read in rainRatioUniform and filled in 2d array rain_ratio
       NAMELIST /BIOTIC_PARMS/
      & DOPfraction, KDOPRemin, KRemin, zcrit,
      & O2crit, R_OP, R_CP, R_NP, R_FeP, zca,
-     & parfrac, k0, lit0, KPO4, KFE,
-     & alpfe, freefemax,
+     & parfrac, k0, lit0, KPO4, KFE, kchl,
+     & alpfe, fesedflux_pcm, FeIntSec, freefemax,
      & KScav, ligand_stab, ligand_tot,
      & alphaUniform, rainRatioUniform
 #endif
@@ -92,6 +94,7 @@ C                  read in rainRatioUniform and filled in 2d array rain_ratio
       NAMELIST /DIC_FORCING/
      &          DIC_windFile, DIC_atmospFile, DIC_iceFile,
      &          DIC_ironFile, DIC_silicaFile, DIC_parFile,
+     &          DIC_chlaFile,
      &          DIC_forcingPeriod, DIC_forcingCycle,
      &          dic_int1, dic_int2, dic_int3, dic_int4, dic_pCO2
 
@@ -114,10 +117,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        zca         = 3500. _d 0
        parfrac     = 0.4 _d 0
        k0          = 0.02 _d 0
+       kchl        = 0.02 _d 0
        lit0        = 30. _d 0
        KPO4        = 5. _d -4
        KFE         = 1.2 _d -7
        alpfe       = 0.01 _d 0
+       fesedflux_pcm = 6.8 _d -4 * 106. _d 0
+       FeIntSec    = 0.5 _d -6 / 86400. _d 0
        freefemax   = 3. _d -7
        KScav       = 0.19 _d 0/(360. _d 0*86400. _d 0)
        ligand_stab = 1. _d 8
@@ -131,6 +137,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DIC_ironFile  = ' '
        DIC_silicaFile= ' '
        DIC_parFile   = ' '
+       DIC_chlaFile  = ' '
        dic_int1    = 0
        dic_int2    = 0
        dic_int3    = 0
@@ -227,7 +234,9 @@ C- namelist BIOTIC_PARMS
        CALL WRITE_0D_RL( parfrac, INDEX_NONE,'parfrac =',
      &  ' /* Fraction of Qsw that is PAR */')
        CALL WRITE_0D_RL( k0, INDEX_NONE,'k0 =',
-     &  ' /* Light attentuation coefficient (1/m) */')
+     &  ' /* Light attentuation coefficient, water (1/m) */')
+       CALL WRITE_0D_RL( kchl, INDEX_NONE,'kchl =',
+     &  ' /* Light attentuation coefficient, chlorophyll (m2/mg) */')
        CALL WRITE_0D_RL( lit0, INDEX_NONE,'lit0 =',
      &  ' /* Half saturation light constant (W/m2) */')
        CALL WRITE_0D_RL( KPO4, INDEX_NONE,'KPO4 =',
@@ -236,6 +245,10 @@ C- namelist BIOTIC_PARMS
      &  ' /* Half saturation fe constant (mol/m3) */')
        CALL WRITE_0D_RL( alpfe, INDEX_NONE,'alpfe =',
      &  ' /* Solubility of aeolian fe */')
+       CALL WRITE_0D_RL( fesedflux_pcm, INDEX_NONE,'fesedflux_pcm =',
+     &  ' /* Sediment Fe flux = fesedflux_pcm*pflux+FeIntSec */')
+       CALL WRITE_0D_RL( FeIntSec, INDEX_NONE,'FeIntSec =',
+     &  ' /* Sediment Fe flux = fesedflux_pcm * pflux + FeIntSec */')
        CALL WRITE_0D_RL( freefemax, INDEX_NONE,'freefemax =',
      &  ' /* Max solubility of free iron (mol/m3) */')
        CALL WRITE_0D_RL( KScav, INDEX_NONE,'KScav =',
@@ -266,6 +279,8 @@ C- namelist DIC_FORCING
      & '  /* File name of surface silica */')
        CALL WRITE_0D_C( DIC_parFile, -1,INDEX_NONE,'DIC_parFile=',
      & '  /* File name of photosynthetically available radiation */')
+       CALL WRITE_0D_C( DIC_chlaFile, -1,INDEX_NONE,'DIC_chlaFile=',
+     & '  /* File name of chlorophyll climatology */')
        CALL WRITE_0D_RL( DIC_forcingPeriod,
      &   INDEX_NONE,'DIC_forcingPeriod =',
      &  ' /* Periodic forcing parameter specific for DIC (s) */')

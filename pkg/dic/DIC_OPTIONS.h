@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_OPTIONS.h,v 1.10 2011/12/24 01:04:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_OPTIONS.h,v 1.11 2014/11/04 17:15:52 jmc Exp $
 C $Name:  $
 
 #ifndef DIC_OPTIONS_H
@@ -29,6 +29,11 @@ C put back bugs related to Water-Vapour in carbonate chemistry & air-sea fluxes
 
 C dissolution only below saturation horizon following method by Karsten Friis
 #undef CAR_DISS
+
+C Include self-shading effect by phytoplankton
+#undef LIGHT_CHL
+C Include iron sediment source using DOP flux
+#undef SEDFE
 
 #endif /* ALLOW_DIC */
 #endif /* DIC_OPTIONS_H */
