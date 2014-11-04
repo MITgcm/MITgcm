@@ -1,41 +1,45 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2086 2014/11/04 16:20:59 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2087 2014/11/04 18:24:46 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice/seaice_preconditioner.F : fix cpp flags, so that code also 
-  compiles when SEAICE_ALLOW_DYNAMICS is undefined
-o global_oce_llc90,cs32 : ecco_v4 verification exps now use separate 
-  AUTODIFF_OPTIONS.h, CTRL_OPTIONS.h, ECCO_OPTIONS.h rather than
-  ECCO_CPPOPTIONS.h (i.e. replacing the deprecated, circumvoluted, 
-  approach where CPP_OPTIONS.h includes an omnipotent 
-  ECCO_CPPOPTIONS.h that superseeds pkgs '_OPTIONS.h').
-o pkg/ctrl/ctrl_map_ini_genarr.F : include GMREDI_OPTIONS.h where 
-  ALLOW_3D_KAPGM, ALLOW_3D_KAPREDI (to be added later) belong.
+o pkg/dic: add modifications from Hajoon:
+  - add iron sedimentation flux function of the flux of PO4 out of bottom layer
+  - light attenuation: add self-shading effect by climatological Chlorophyll
+    (read from file).
+o pkg/seaice/seaice_preconditioner.F : fix cpp flags, so that code also
+    compiles when SEAICE_ALLOW_DYNAMICS is undefined
+o global_oce_llc90,cs32 : ecco_v4 verification exps now use separate
+    AUTODIFF_OPTIONS.h, CTRL_OPTIONS.h, ECCO_OPTIONS.h rather than
+    ECCO_CPPOPTIONS.h (i.e. replacing the deprecated, circumvoluted,
+    approach where CPP_OPTIONS.h includes an omnipotent
+    ECCO_CPPOPTIONS.h that superseeds pkgs '_OPTIONS.h').
+o pkg/ctrl/ctrl_map_ini_genarr.F : include GMREDI_OPTIONS.h where
+    ALLOW_3D_KAPGM, ALLOW_3D_KAPREDI (to be added later) belong.
 o pkg/seaice/SEAICE_SIZE.h : replace ALLOW_AUTODIFF_TAMC with ALLOW_AUTODIFF
-  to avoid needing AUTODIFF_OPTIONS.h anytime SEAICE_SIZE.h is included
-  (it seems that THSICE_SIZE.h, PTRACERS_SIZE.h have the same issue...)
+    to avoid needing AUTODIFF_OPTIONS.h anytime SEAICE_SIZE.h is included
+    (it seems that THSICE_SIZE.h, PTRACERS_SIZE.h have the same issue...)
 o model/src, pkg/smooth, profiles, salt_plume, seaice, exf, ecco, ctrl :
   add ECCO_OPTIONS.h, AUTODIFF_OPTIONS.h, CTRL_OPTIONS.h when needed
   - ECCO_OPTIONS.h is needed when including ecco_cost.h, ecco.h
   - AUTODIFF_OPTIONS.h is needed when including tamc.h, tamc_keys.h
   - CTRL_OPTIONS.h is needed when including ctrl.h, optim.h, etc
-o pkg/ctrl,ecco,exf : 
+o pkg/ctrl,ecco,exf :
   - remove variables associated with NON-generic costs,
     unless ECCO_CTRL_DEPRECATED is defined.
-  - remove NON-generic NON-obcs controls, 
+  - remove NON-generic NON-obcs controls,
     unless ECCO_CTRL_DEPRECATED is defined.
 o pkg/ctrl : added ctrl_local_params.h
 o pkg/ecco : added ecco_local_params.h
-o verification : added ECCO_CTRL_DEPRECATED to most as and oad 
-  experiments, which will progressively be removed once the
-  experiments are revised to use only generic controls/costs. 
+o verification : added ECCO_CTRL_DEPRECATED to most as and oad
+    experiments, which will progressively be removed once the
+    experiments are revised to use only generic controls/costs.
 
 checkpoint65f (2014/10/13)
 o pkg/ctrl, ecco, seaice : minor changes in headers
 o global_oce_llc90,cs32 : ecco_v4 verification exps now test generic
-  cost function and control capabilities added since checkpoint65c.
+    cost function and control capabilities added since checkpoint65c.
 o pkg/ctrl: regroup all obcs ctrl variables in CTRL_OBCS.h.
 o pkg/ecco: increase modularity and improve logic
   - ecco_toolbox.F (new) : basic operations that are often used,
