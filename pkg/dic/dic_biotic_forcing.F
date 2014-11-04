@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.29 2014/09/04 20:04:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.30 2014/11/04 17:16:53 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -103,6 +103,11 @@ C  freefe                 :: iron not bound to ligand
        INTEGER i,j,k
 #ifdef CAR_DISS
        INTEGER nCALCITEstep
+#endif
+#ifdef ALLOW_FE
+# ifdef SEDFE
+       INTEGER kBottom
+# endif
 #endif
 CEOP
 
@@ -270,6 +275,13 @@ C add all tendencies for PO4, DOP, ALK, DIC
                GFE(i,j,1)=GFE(i,j,1)+alpfe*
      &                    InputFe(i,j,bi,bj)*recip_drF(1)
      &                       *recip_hFacC(i,j,1,bi,bj)
+# ifdef SEDFE
+C include iron sediment source using the flux of po4 into bottom layer
+               kBottom   = MAX(kLowC(i,j,bi,bj),1)
+               GFE(i,j,kBottom)=GFE(i,j,kBottom)
+     &              +( fesedflux_pcm*pflux(i,j,kBottom) + FeIntSec )
+     &              *recip_drF(kBottom)*recip_hFacC(i,j,kBottom,bi,bj)
+# endif
 #endif
          ENDDO
        ENDDO
