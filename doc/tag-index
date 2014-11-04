@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2085 2014/10/21 14:22:26 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2086 2014/11/04 16:20:59 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_preconditioner.F : fix cpp flags, so that code also 
+  compiles when SEAICE_ALLOW_DYNAMICS is undefined
 o global_oce_llc90,cs32 : ecco_v4 verification exps now use separate 
   AUTODIFF_OPTIONS.h, CTRL_OPTIONS.h, ECCO_OPTIONS.h rather than
   ECCO_CPPOPTIONS.h (i.e. replacing the deprecated, circumvoluted, 
