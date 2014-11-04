@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.34 2014/09/09 22:46:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.35 2014/11/04 17:16:32 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -127,6 +127,13 @@ C     data for the period ahead and the period behind myTime.
      &       myIter,myThid )
         ENDIF
 #endif
+#ifdef LIGHT_CHL
+C--   Load chlorophyll climatology data, unit for chlorophyll : mg/m3
+        IF ( DIC_chlaFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( DIC_chlaFile,chlinput,1,
+     &       myIter,myThid )
+        ENDIF
+#endif
 #ifdef ALLOW_FE
         IF ( DIC_ironFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( DIC_ironFile,feinput0,intime0,
@@ -148,6 +155,9 @@ C--   fill-in overlap after loading temp arrays:
 #ifdef READ_PAR
         _EXCH_XY_RS(par0, myThid )
         _EXCH_XY_RS(par1, myThid )
+#endif
+#ifdef LIGHT_CHL
+        _EXCH_XY_RS(chlinput, myThid )
 #endif
 #ifdef ALLOW_FE
         _EXCH_XY_RS(feinput0, myThid )
@@ -219,6 +229,15 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
      &       ' a file if you want to use READ_PAR'
             CALL PRINT_ERROR( msgBuf, myThid )
             STOP 'ABNORMAL END: S/R DIC_FIELDS_LOAD'
+         ENDIF
+#endif
+#ifdef LIGHT_CHL
+         IF ( DIC_chlaFile .NE. ' '  ) THEN
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             CHL(i,j,bi,bj) = chlinput(i,j,bi,bj)
+            ENDDO
+           ENDDO
          ENDIF
 #endif
 #ifdef ALLOW_FE

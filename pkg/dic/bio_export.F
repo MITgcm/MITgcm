@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/bio_export.F,v 1.28 2010/08/02 07:10:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/bio_export.F,v 1.29 2014/11/04 17:16:33 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -12,7 +12,7 @@ C !INTERFACE: ==========================================================
      I           PTR_FE,
 #endif
      I           bioac,
-     I           bi,bj,imin,imax,jmin,jmax,
+     I           bi,bj,iMin,iMax,jMin,jMax,
      I           myIter,myTime,myThid)
 
 c !DESCRIPTION:
@@ -43,8 +43,7 @@ C  PTR_FE               :: iron tracer field
 #ifdef ALLOW_FE
       _RL  PTR_FE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
-      INTEGER imin, imax, jmin, jmax, bi, bj
-
+      INTEGER iMin, iMax, jMin, jMax, bi, bj
 
 C !OUTPUT PARAMETERS: ==================================================
 C  bioac               :: biological productivity (will be split
@@ -55,20 +54,19 @@ C                         between export and dissolved pool)
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j,k                  :: loop indices
-       INTEGER I,J,k
+       INTEGER i,j,k
       _RL sfac    (1-OLy:sNy+OLy)
       _RL lit     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL atten
+      _RL kall, atten
       _RL nutlimit
       _RL tmppo4
-#ifdef ALLOW_FE      
+#ifdef ALLOW_FE
       _RL tmpfe
 #endif
 #ifdef AD_SAFE
       _RL thx, thy, theps, thaux
 #endif
 CEOP
-
 
 #ifndef READ_PAR
 #ifndef USE_QSW
@@ -80,8 +78,8 @@ cph: set in dic_init_fixed.F (ALLOW_AUTODIFF)
 C$TAF INIT bio_export = static, nsx*nsy*nr
 C FORTRAN-77 dynamic memory uses adstore adresto
 CRG C$TAF INIT bio_export = memory
-      DO j=jmin,jmax
-       DO i=imin,imax
+      DO j=jMin,jMax
+       DO i=iMin,iMax
 #ifdef READ_PAR
         lit(i,j)=PAR(i,j,bi,bj)
 #elif (defined USE_QSW)
@@ -89,7 +87,6 @@ CRG C$TAF INIT bio_export = memory
 #else
         lit(i,j)=sfac(j)
 #endif
-
         IF ( .NOT. QSW_underice ) THEN
 c if using Qsw but not seaice/thsice or coupled, then
 c ice fraction needs to be taken into account
@@ -97,23 +94,27 @@ c ice fraction needs to be taken into account
         ENDIF
        ENDDO
       ENDDO
-c
+
+      kall = k0
       DO k=1,nlev
 C$TAF STORE lit = bio_export
-       DO j=jmin,jmax
-        DO i=imin,imax
-         atten=(k0*drF(k)*hFacC(i,j,k,bi,bj)*.5 _d 0)
-         if (k.gt.1) atten=atten+(k0*drF(k-1)
-     &                         *hFacC(i,j,k-1,bi,bj)*.5 _d 0)
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+#ifdef LIGHT_CHL
+c   Add self-shading effects to light attenuation coefficient
+         kall = k0+kchl*CHL(i,j,bi,bj)
+#endif
+         atten = kall*drF(k)*hFacC(i,j,k,bi,bj)*.5 _d 0
+         if (k.gt.1) atten = atten
+     &         +( kall*drF(k-1)*hFacC(i,j,k-1,bi,bj)*.5 _d 0 )
          lit(i,j)=lit(i,j)*exp(-atten)
 #ifndef TARGET_NEC_SX
 C     this statement breaks vectorization and causes a dramatic
 C     performance drop on vector computers
-         IF (lit(i,j).LT.0. _d 0.OR.lit(i,j).GT.350. _d 0) THEN
-          print*,'QQ lit',i,j,lit(i,j)
-         ENDIF
-#endif 
-
+          IF (lit(i,j).LT.0. _d 0.OR.lit(i,j).GT.350. _d 0) THEN
+           print*,'QQ lit',i,j,lit(i,j)
+          ENDIF
+#endif
 #ifdef DIC_NO_NEG
          tmppo4=max(0. _d 0, PTR_PO4(i,j,k))
          lit(i,j)=max(0. _d 0,lit(i,j))
