@@ -9,7 +9,8 @@
  viscAr=1.E-3,
  viscAh=5.E5,
  diffKhT=0.,
- diffKrT=3.E-5,
+#- diffKrT unused when compiled with ALLOW_3D_DIFFKR
+#diffKrT=3.E-5,
  diffKhS=0.,
  diffKrS=3.E-5,
  rhoConst=1035.,
@@ -46,7 +47,7 @@
  tauCD =     321428.,
  deltaTtracer = 43200.,
  deltaTClock  = 43200.,
- deltaTfreesurf=43200.,
+ deltaTFreeSurf=43200.,
  abEps = 0.1,
  pChkptFreq= 311040000.,
  dumpFreq=   311040000.,

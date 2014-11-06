@@ -7,9 +7,10 @@
  tRef = 15*20.,
  sRef = 15*35.,
  viscAr=1.E-3,
- diffKhT=0.0,
- diffKrT=3.E-5,
- diffKhS=0.0,
+ diffKhT=0.,
+#- diffKrT unused when compiled with ALLOW_3D_DIFFKR
+#diffKrT=3.E-5,
+ diffKhS=0.,
  diffKrS=3.E-5,
 #ph(
 #ph Many of the following params. are just for AD testing;
@@ -20,7 +21,7 @@
  useAreaViscLength=.TRUE.,
  bottomDragQuadratic = 0.0021,
 #ph)
- rhonil=1035.,
+ rhoConst=1035.,
  gravity=9.81,
  eosType = 'JMD95Z',
  ivdc_kappa=10.,
@@ -31,14 +32,13 @@
  exactConserv=.TRUE.,
 # turn on looped cells
  hFacMin=.05,
- hFacMindr=50.,
+ hFacMinDr=50.,
 #ph(
  vectorInvariantMomentum=.TRUE.,
  hFacInf=0.2,
  hFacSup=2.0,
  nonlinFreeSurf=2,
  staggerTimeStep=.TRUE.,
- multiDimAdvection=.TRUE.,
  tempAdvScheme=30,
  saltAdvScheme=30,
  tempVertAdvScheme=20,
@@ -92,9 +92,9 @@
 # Gridding parameters
  &PARM04
  usingSphericalPolarGrid=.TRUE.,
- delR= 50., 70., 100., 140., 190.,
-       240., 290., 340., 390., 440.,
-       490., 540., 590., 640., 690.,
+ delR= 50.,  70., 100., 140., 190.,
+      240., 290., 340., 390., 440.,
+      490., 540., 590., 640., 690.,
  ygOrigin=-80.,
  dySpacing=4.,
  dxSpacing=4.,

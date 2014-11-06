@@ -12,7 +12,8 @@
  viscAr =1.E-3,
  diffKhT=0.,
  diffK4T=0.,
- diffKrT=3.E-5,
+#- diffKrT unused when compiled with ALLOW_3D_DIFFKR
+#diffKrT=3.E-5,
  diffKhS=0.,
  diffK4S=0.,
  diffKrS=3.E-5,

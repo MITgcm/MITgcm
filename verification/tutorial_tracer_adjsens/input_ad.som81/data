@@ -17,7 +17,8 @@
  no_slip_sides=.FALSE.,
  no_slip_bottom=.TRUE.,
  diffKhT=1.E3,
- diffKrT=3.E-5,
+#- diffKrT unused when compiled with ALLOW_3D_DIFFKR
+#diffKrT=3.E-5,
  diffKhS=1.E3,
  diffKrS=3.E-5,
  tAlpha=2.E-4,
@@ -57,7 +58,7 @@
  endTime           = 345600.,
  deltaTClock       = 86400.,
  deltaTFreeSurf    = 86400.,
- deltaTmom         = 2400.,
+ deltaTMom         = 2400.,
  tauCD             = 321428.,
  cAdjFreq          = -1.,
  abEps             = 0.1,
