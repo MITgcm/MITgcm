@@ -11,12 +11,13 @@
  no_slip_sides=.FALSE.,
  no_slip_bottom=.FALSE.,
  diffKhT=100.0,
- diffKzT=5.E-5,
+#- diffKzT unused when compiled with ALLOW_3D_DIFFKR
+#diffKzT=5.E-5,
  diffKhS=100.0,
  diffKzS=5.E-5,
  bottomDragQuadratic=2.5E-3,
  eosType='JMD95Z',
- HeatCapacity_cp = 3974.0,
+ HeatCapacity_Cp = 3974.0,
  rhoConst=1030.,
  gravity=9.81,
  convertFW2Salt = 33.4,
@@ -24,7 +25,6 @@
  exactConserv=.TRUE.,
  hFacMin=0.10,
  nonHydrostatic=.FALSE.,
- readBinaryPrec=64,
  useCDScheme = .TRUE.,
 #ph(
  implicitDiffusion=.TRUE.,
@@ -35,6 +35,7 @@
  hFacInf=0.05,
  hFacSup=2.0,
 #ph)
+ readBinaryPrec=64,
  &
 
 # Elliptic solver parameters
