@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2087 2014/11/04 18:24:46 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2088 2014/11/06 20:38:45 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model, pkg : add useCTRL, useECCO parameters (on/off run time switch).
 o pkg/dic: add modifications from Hajoon:
   - add iron sedimentation flux function of the flux of PO4 out of bottom layer
   - light attenuation: add self-shading effect by climatological Chlorophyll
