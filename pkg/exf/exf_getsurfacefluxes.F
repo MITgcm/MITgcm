@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.22 2014/11/02 21:23:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.23 2014/11/09 17:24:59 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -118,9 +118,11 @@ c     == end of interface ==
      &                         xx_gentim2d(i,j,bi,bj,iarr)
 #else
            if (xx_gentim2d_file(iarr).EQ.'xx_tauu')
-     &       tmpUE(i,j,bi,bj)=xx_gentim2d(i,j,bi,bj,iarr)
+     &       tmpUE(i,j,bi,bj)=tmpUE(i,j,bi,bj)
+     &          +xx_gentim2d(i,j,bi,bj,iarr)
            if (xx_gentim2d_file(iarr).EQ.'xx_tauv')
-     &       tmpVN(i,j,bi,bj)=xx_gentim2d(i,j,bi,bj,iarr)
+     &       tmpVN(i,j,bi,bj)=tmpVN(i,j,bi,bj)
+     &          +xx_gentim2d(i,j,bi,bj,iarr)
 #endif
            enddo
          ENDDO
