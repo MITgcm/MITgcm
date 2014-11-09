@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_gen.F,v 1.6 2014/10/20 03:14:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_gen.F,v 1.7 2014/11/09 17:23:43 gforget Exp $
 C $Name:  $
 
 c ----------------------------------------------------------------
@@ -23,15 +23,17 @@ C     !INTERFACE:
      I                       xx_gen_file,
      I                       xx_gen_dummy,
      I                       xx_gen_period,
-     I                       xx_gen_wmean,
      I                       xx_gen_weight,
      O                       num_gen_anom,
-     O                       num_gen_mean,
      O                       objf_gen_anom,
+#ifdef ECCO_CTRL_DEPRECATED
+     I                       xx_gen_wmean,
+     O                       num_gen_mean,
      O                       objf_gen_mean,
      O                       objf_gen_smoo,
      I                       xx_gen_remo_intercept,
      I                       xx_gen_remo_slope,
+#endif /* ECCO_CTRL_DEPRECATED */
      I                       xx_gen_mask,
      I                       myThid
      &                         )
@@ -64,16 +66,18 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) xx_gen_file
       _RL xx_gen_dummy
       _RL xx_gen_period
-      _RL xx_gen_wmean
       _RL xx_gen_weight(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL num_gen_anom(nsx,nsy)
+      _RL objf_gen_anom(nsx,nsy)
+#ifdef ECCO_CTRL_DEPRECATED
+      _RL xx_gen_wmean
       _RL num_gen_mean(nsx,nsy)
       _RL num_gen_smoo(nsx,nsy)
-      _RL objf_gen_anom(nsx,nsy)
       _RL objf_gen_mean(nsx,nsy)
       _RL objf_gen_smoo(nsx,nsy)
       _RL xx_gen_remo_intercept
       _RL xx_gen_remo_slope
+#endif /* ECCO_CTRL_DEPRECATED */
       _RS xx_gen_mask(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       integer myThid
 
@@ -96,7 +100,9 @@ c     == local variables ==
       _RL tmpx
       _RL lengthscale
 
+#ifdef ECCO_CTRL_DEPRECATED
       _RL xx_mean(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif /* ECCO_CTRL_DEPRECATED */
 
       logical doglobalread
       logical ladinit
@@ -137,20 +143,23 @@ c     Number of records to be used.
 c--   >>> Loop 1 to compute mean forcing:
       do bj = jtlo,jthi
         do bi = itlo,ithi
+          num_gen_anom(bi,bj)  = 0. _d 0
+          objf_gen_anom(bi,bj) = 0. _d 0
+#ifdef ECCO_CTRL_DEPRECATED
           do j = jmin,jmax
             do i = imin,imax
               xx_mean(i,j,bi,bj)   = 0. _d 0
             enddo
           enddo
-          num_gen_anom(bi,bj)  = 0. _d 0
           num_gen_mean(bi,bj)  = 0. _d 0
           num_gen_smoo(bi,bj)  = 0. _d 0
-          objf_gen_anom(bi,bj) = 0. _d 0
           objf_gen_mean(bi,bj) = 0. _d 0
           objf_gen_smoo(bi,bj) = 0. _d 0
+#endif /* ECCO_CTRL_DEPRECATED */
         enddo
       enddo
 
+#ifdef ECCO_CTRL_DEPRECATED
       IF ( .NOT.ctrlSmoothCorrel2D ) THEN
       do irec = 1,nrec
 
@@ -204,6 +213,7 @@ c--     Determine the weights to be used.
        enddo
       endif
       ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
+#endif /* ECCO_CTRL_DEPRECATED */
 
 c--   >>> Loop 2 over records.
       do irec = 1,nrec
@@ -223,9 +233,12 @@ c--         Determine the weights to be used.
               do i = imin,imax
                 if (xx_gen_mask(i,j,kk,bi,bj) .ne. 0. _d 0) then
                 IF ( .NOT.ctrlSmoothCorrel2D ) THEN
-                  tmpx = tmpfld2d(i,j,bi,bj)-xx_mean(i,j,bi,bj)
+                  tmpx = tmpfld2d(i,j,bi,bj)
+#ifdef ECCO_CTRL_DEPRECATED
+     &                   - xx_mean(i,j,bi,bj)
      &                   - ( xx_gen_remo_intercept +
      &                       xx_gen_remo_slope*(irec-1)*xx_gen_period )
+#endif /* ECCO_CTRL_DEPRECATED */
 #ifdef ALLOW_ECCO
                   if ( ABS(R_low(i,j,bi,bj)) .LT. 100. _d 0 )
      &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100. _d 0
@@ -258,6 +271,7 @@ c--         Determine the weights to be used.
 c--   End of loop over records.
       enddo
 
+#ifdef ECCO_CTRL_DEPRECATED
       IF ( .NOT.ctrlSmoothCorrel2D ) THEN
 #ifdef ALLOW_SMOOTH_BC_COST_CONTRIBUTION
 
@@ -320,10 +334,11 @@ c--         Determine the weights to be used.
 c--   End of loop over records.
       enddo
 
-#endif
+#endif /* ALLOW_SMOOTH_BC_COST_CONTRIBUTION */
       ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
+#endif /* ECCO_CTRL_DEPRECATED */
 
-#endif
+#endif /* ALLOW_CTRL */
 
       return
       end

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_driver.F,v 1.4 2014/09/22 21:32:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_driver.F,v 1.5 2014/11/09 17:23:43 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -60,10 +60,16 @@ c--   Evaluate the individual cost function contributions.
      &     startrec, endrec,
      &     xx_gentim2d_file(iarr),xx_gentim2d_dummy(iarr),
      &     xx_gentim2d_period(iarr),
-     &     0. _d 0, wgentim2d(1-Olx,1-Oly,1,1,iarr),
-     &     num_gentim2d(1,1,iarr), num_gentim2dm(1,1,iarr),
-     &     objf_gentim2d(1,1,iarr), objf_gentim2dm(1,1,iarr), 
-     &     objf_gentim2dsmoo(1,1,iarr), 0. _d 0, 0. _d 0,
+     &     wgentim2d(1-Olx,1-Oly,1,1,iarr),
+     &     num_gentim2d(1,1,iarr),
+     &     objf_gentim2d(1,1,iarr),
+#ifdef ECCO_CTRL_DEPRECATED
+     &     0. _d 0,
+     &     num_gentim2dm(1,1,iarr),
+     &     objf_gentim2dm(1,1,iarr),
+     &     objf_gentim2dsmoo(1,1,iarr),
+     &     0. _d 0, 0. _d 0,
+#endif /* ECCO_CTRL_DEPRECATED */
      &     maskC, myThid )
       endif
 

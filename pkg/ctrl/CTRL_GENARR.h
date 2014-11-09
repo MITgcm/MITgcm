@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.13 2014/10/07 12:33:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.14 2014/11/09 17:23:43 gforget Exp $
 C $Name:  $
 
 C     ==================================================================
@@ -58,17 +58,21 @@ c (xx_gentim2d_numsmooth is not used yet, cause hard coded 1 in ctrl_get_gen)
       LOGICAL xx_gentim2d_glosum(maxCtrlTim2D)
 
       common /controlaux_gencost_r/
-     &     objf_gentim2d,  objf_gentim2dm,  objf_gentim2dsmoo,
-     &     num_gentim2d,   num_gentim2dm,   mult_gentim2d,
+     &     objf_gentim2d,  num_gentim2d, mult_gentim2d,
+#ifdef ECCO_CTRL_DEPRECATED
+     &     objf_gentim2dm,  objf_gentim2dsmoo, num_gentim2dm,
+#endif /* ECCO_CTRL_DEPRECATED */
      &     objf_genarr2d,  num_genarr2d, mult_genarr2d,
      &     objf_genarr3d,  num_genarr3d, mult_genarr3d
 
       _RL  objf_gentim2d(nsx,nsy,maxCtrlTim2D)
+      _RL  num_gentim2d(nsx,nsy,maxCtrlTim2D)
+      _RL  mult_gentim2d(maxCtrlTim2D)
+#ifdef ECCO_CTRL_DEPRECATED
       _RL  objf_gentim2dm(nsx,nsy,maxCtrlTim2D)
       _RL  objf_gentim2dsmoo(nsx,nsy,maxCtrlTim2D)
-      _RL  num_gentim2d(nsx,nsy,maxCtrlTim2D)
       _RL  num_gentim2dm(nsx,nsy,maxCtrlTim2D)
-      _RL  mult_gentim2d(maxCtrlTim2D)
+#endif /* ECCO_CTRL_DEPRECATED */
       _RL  objf_genarr2d(nsx,nsy,maxCtrlArr2D)
       _RL  num_genarr2d(nsx,nsy,maxCtrlArr2D)
       _RL  mult_genarr2d(maxCtrlArr2D)
