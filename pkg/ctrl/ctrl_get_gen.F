@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.33 2014/10/21 13:13:40 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.34 2014/11/09 13:10:03 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -106,10 +106,16 @@ c--   Now, read the control vector.
       doglobalread = .false.
       ladinit      = .false.
 
-      if (optimcycle .ge. 0) then
+      if ( (optimcycle .ge. 0).AND.(.NOT.ctrlUseGen) ) then
         ilgen=ilnblnk( xx_gen_file )
         write(fnamegen(1:80),'(2a,i10.10)')
      &       xx_gen_file(1:ilgen), '.', optimcycle
+      endif
+
+      if ( (optimcycle .ge. 0).AND.ctrlUseGen ) then
+        ilgen=ilnblnk( xx_gen_file )
+        write(fnamegen(1:80),'(2a,i10.10)')
+     &    xx_gen_file(1:ilgen),'.effective.',optimcycle
       endif
 
 c--   Get the counters, flags, and the interpolation factor.
@@ -139,33 +145,6 @@ cc#endif /* ALLOW_OPENAD */
 #endif
 
 #ifdef ALLOW_SMOOTH
-      IF ( ctrlSmoothCorrel2D ) THEN
-      IF ( useSMOOTH ) THEN
-      call smooth_correl2D(xx_gen1,genmask,1,mythid)
-
-        DO bj = jtlo,jthi
-         DO bi = itlo,ithi
-          DO j = 1,sNy
-           DO i = 1,sNx
-            if ((genmask(i,j,1,bi,bj).NE.0.).AND.
-     &          (genweight(i,j,bi,bj).GT.0.)) then
-                xx_gen1(i,j,bi,bj)=xx_gen1(i,j,bi,bj)
-     &                  /sqrt(genweight(i,j,bi,bj))
-            else
-                xx_gen1(i,j,bi,bj)=0. _d 0
-            endif
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-
-        _EXCH_XY_RL ( xx_gen1 , myThid )
-      ENDIF
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     & xx_gen_file(1:ilgen),'.effective.',optimcycle
-      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
-     & 1, xx_gen1, gencount0, optimcycle, mythid)
-      ENDIF
 #ifdef ALLOW_SMOOTH_CTRL2D
       if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
       write(fnamegeneric(1:80),'(2a,i10.10)')
@@ -198,33 +177,6 @@ cc#endif /* ALLOW_OPENAD */
 #endif
 
 #ifdef ALLOW_SMOOTH
-      IF ( ctrlSmoothCorrel2D ) THEN
-      IF ( useSMOOTH ) THEN
-        call smooth_correl2D(xx_gen1,genmask,1,mythid)
-
-        DO bj = jtlo,jthi
-         DO bi = itlo,ithi
-          DO j = 1,sNy
-           DO i = 1,sNx
-            if ((genmask(i,j,1,bi,bj).NE.0.).AND.
-     &          (genweight(i,j,bi,bj).GT.0.)) then
-                xx_gen1(i,j,bi,bj)=xx_gen1(i,j,bi,bj)
-     &                  /sqrt(genweight(i,j,bi,bj))
-            else
-                xx_gen1(i,j,bi,bj)=0. _d 0
-            endif
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-
-        _EXCH_XY_RL ( xx_gen1 , myThid )
-      ENDIF
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     & xx_gen_file(1:ilgen),'.effective.',optimcycle
-      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
-     & 1, xx_gen1, gencount1, optimcycle, mythid)
-      ENDIF
 #ifdef ALLOW_SMOOTH_CTRL2D
       if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
       write(fnamegeneric(1:80),'(2a,i10.10)')

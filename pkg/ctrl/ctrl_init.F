@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.59 2014/10/21 13:13:40 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.60 2014/11/09 13:10:03 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -68,6 +68,11 @@ c     == local variables ==
       INTEGER  k,length_of_rec,dUnit
       INTEGER  MDS_RECLEN
       EXTERNAL MDS_RECLEN
+#endif
+
+#ifdef ALLOW_GENTIM2D_CONTROL
+      CHARACTER*(MAX_LEN_FNAM) fnamegen
+      INTEGER ilgen
 #endif
 
 c     == external ==
@@ -840,6 +845,16 @@ C
      &       300+iarr, 400+iarr,
      &       diffrec, startrec, endrec,
      &       snx, sny, 1, 'c', 'xy', myThid )
+C
+        ilgen=ilnblnk( xx_gentim2d_file(iarr) )
+        write(fnamegen(1:MAX_LEN_FNAM),'(2a)')
+     &       xx_gentim2d_file(iarr)(1:ilgen),'.effective'
+        call ctrl_init_ctrlvar (
+     &       fnamegen(1:MAX_LEN_FNAM),
+     &       300+iarr, 400+iarr,
+     &       diffrec, startrec, endrec,
+     &       snx, sny, 1, 'c', 'xy', myThid )
+C
        enddo
 #endif /* ALLOW_GENTIM2D_CONTROL */
 

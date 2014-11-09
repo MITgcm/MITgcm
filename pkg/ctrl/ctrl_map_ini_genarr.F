@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.11 2014/10/21 13:27:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.12 2014/11/09 13:10:03 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -32,6 +32,8 @@ C     == global variables ==
 #include "FFIELDS.h"
 #include "CTRL_SIZE.h"
 #include "ctrl.h"
+#include "optim.h"
+#include "ctrl_dummy.h"
 #include "CTRL_FIELDS.h"
 #include "CTRL_GENARR.h"
 #ifdef ALLOW_PTRACERS
@@ -49,7 +51,91 @@ C     == local variables ==
       integer igen_etan0,igen_bdrag,igen_geoth
       integer igen_theta0, igen_salt0
       integer igen_kapgm, igen_kapredi, igen_diffkr
+#ifdef ALLOW_GENTIM2D_CONTROL
+      character*(80) fnamegenIn
+      character*(80) fnamegenOut
+      integer startrec
+      integer endrec
+      integer diffrec
+      integer irec
+      logical doglobalread
+      logical ladinit
+      _RL     xx_gen(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      integer bi,bj
+      integer i,j
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+      integer ilgen
+#endif /* ALLOW_GENTIM2D_CONTROL */
 CEOP
+
+#ifdef ALLOW_GENTIM2D_CONTROL
+
+c--   Now, read the control vector.
+      doglobalread = .false.
+      ladinit      = .false.
+
+C--   generic 2D control variables
+      DO iarr = 1, maxCtrlTim2D
+
+        if (xx_gentim2d_weight(iarr).NE.' ') then
+
+        call ctrl_init_rec ( xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
+     I       xx_gentim2d_startdate1(iarr),
+     I       xx_gentim2d_startdate2(iarr),
+     I       xx_gentim2d_period(iarr),
+     I       1,
+     O       xx_gentim2d_startdate(1,iarr),
+     O       diffrec, startrec, endrec,
+     I       myThid )
+
+        ilgen=ilnblnk( xx_gentim2d_file(iarr) )
+        write(fnamegenIn(1:80),'(2a,i10.10)')
+     &       xx_gentim2d_file(iarr)(1:ilgen), '.', optimcycle
+        write(fnamegenOut(1:80),'(2a,i10.10)')
+     &       xx_gentim2d_file(iarr)(1:ilgen),'.effective.',optimcycle
+
+        DO irec = 1, endrec
+
+        call active_read_xy( fnamegenIn, xx_gen, irec,
+     &                       doglobalread, ladinit, optimcycle,
+     &                       mythid, xx_gentim2d_dummy(iarr) )
+
+#ifdef ALLOW_SMOOTH
+        IF ( ctrlSmoothCorrel2D ) THEN
+        IF ( useSMOOTH ) THEN
+        call smooth_correl2D(xx_gen,maskC,
+     &       xx_gentim2d_numsmooth(iarr),mythid)
+
+        DO bj=myByLo(myThid), myByHi(myThid)
+         DO bi=myBxLo(myThid), myBxHi(myThid)
+          DO j = 1,sNy
+           DO i = 1,sNx
+            if ((maskC(i,j,1,bi,bj).NE.0.).AND.
+     &          (wgentim2d(i,j,bi,bj,iarr).GT.0.)) then
+                xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)
+     &                  /sqrt(wgentim2d(i,j,bi,bj,iarr))
+            else
+                xx_gen(i,j,bi,bj)=0. _d 0
+            endif
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+
+        _EXCH_XY_RL ( xx_gen , myThid )
+        ENDIF
+        ENDIF
+#endif /* ALLOW_SMOOTH */
+
+        call active_write_xy( fnamegenOut, xx_gen, irec, optimcycle,
+     &       mythid, xx_gentim2d_dummy(iarr) )
+
+        ENDDO
+
+        endif
+      ENDDO
+#endif /* ALLOW_GENTIM2D_CONTROL */
 
 #ifdef ALLOW_GENARR2D_CONTROL
 
