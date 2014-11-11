@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.197 2014/05/29 22:02:41 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.198 2014/11/11 15:45:57 jmc Exp $
 #  $Name:  $
 #
 
@@ -1363,7 +1363,6 @@ for xx in "$@" ; do nw=`echo $xx | wc -w`
 			     CMDLINE="$CMDLINE $yy" ; fi
     fi
 done
-#for xx in "$@" ; do CMDLINE="$CMDLINE '$xx'" ; done
 MACH=`hostname`
 UNAMEA=`uname -a`
 DATE=`date +%Y%m%d`
@@ -1371,7 +1370,8 @@ BASE="tr_"$MACH"_"$DATE"_"
 if test "x$OUTDIR" != x ; then
     BASE="tr_"$OUTDIR"_"$DATE"_"
 else
-    short_name=`hostname | sed 's/\..*$//'`
+   #short_name=`hostname | sed 's/\..*$//'`
+    short_name=`hostname -s | tr '[:upper:]' '[:lower:]'`
     BASE="tr_"$short_name"_"$DATE"_"
 fi
 DNUM=0
