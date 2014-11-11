@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.18 2013/09/22 23:37:12 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.19 2014/11/11 15:37:40 jmc Exp $
 # $Name:  $
 
 usage()
@@ -35,7 +35,8 @@ scrArg='All'
 COMMAND=
 mpi=0
 MPI_MFILE=
-OUTDIR=`hostname | sed 's/\..*$//'`
+#OUTDIR=`hostname | sed 's/\..*$//'`
+OUTDIR=`hostname -s | tr '[:upper:]' '[:lower:]'`
 SAVELOG=0
 ADDRESS=
 MPACK="../tools/mpack-1.6/mpack"
@@ -125,7 +126,6 @@ for xx in "$@" ; do nw=`echo $xx | wc -w`
     if test $nw = '1' ; then CMDLINE="$CMDLINE $xx"
                         else CMDLINE="$CMDLINE '$xx'" ; fi
 done
-#for xx in "$@" ; do CMDLINE="$CMDLINE '$xx'" ; done
 DATE=''
 if test -f tr_out.txt ; then
 #  try to use the date corresponding to 'Start time:' in file "tr_out.txt" :
