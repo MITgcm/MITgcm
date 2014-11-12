@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.260 2014/08/07 18:43:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.261 2014/11/12 20:59:43 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -80,12 +80,15 @@ C                     :: z, p or r are used.
 C                     :: coordsSet counts how many vertical coordinate systems have
 C                     :: been used to specify variables. coordsSet > 1 is an error.
 C     vertSetCount    :: to count number of vertical array elements which are set.
+C    specifiedDiffKrT :: internal flag, true when any diffK[r,z,p,Nr]T is specified
+C    specifiedDiffKrS :: internal flag, true when any diffK[r,z,p,Nr]S is specified
 
       LOGICAL zCoordInputData
       LOGICAL pCoordInputData
       LOGICAL rCoordInputData
       INTEGER coordsSet
       INTEGER vertSetCount
+      LOGICAL specifiedDiffKrT, specifiedDiffKrS
 
 C     Variables which have vertical coordinate system dependency.
 C     delZ    :: Vertical grid spacing ( m  ).
@@ -472,25 +475,28 @@ C--   z,p,r coord input switching.
       IF ( viscAr .NE. UNSET_RL ) rCoordInputData = .TRUE.
       IF ( viscAr .EQ. UNSET_RL )          viscAr = viscAz
       IF ( viscAr .EQ. UNSET_RL )          viscAr = viscAp
-      IF ( viscAr .EQ. UNSET_RL )          viscAr = viscArDefault
       vertSetCount = 0
       DO k=1,Nr
-        IF ( viscArNr(k).EQ.UNSET_RL ) THEN
-          viscArNr(k) = viscAr
-        ELSE
-          vertSetCount = vertSetCount + 1
-        ENDIF
+        IF ( viscArNr(k).NE.UNSET_RL ) vertSetCount = vertSetCount + 1
       ENDDO
-      IF ( viscAr.NE.viscArDefault .AND. vertSetCount.GT.0 ) THEN
-       WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set both ',
-     &    'viscArNr and viscAr (or Ap,Az) in param file data'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       errCount = errCount + 1
-      ELSEIF ( vertSetCount.GT.0 .AND. vertSetCount.LT.Nr ) THEN
-       WRITE(msgBuf,'(A,2(I5,A))') 'S/R INI_PARMS: Partial setting (',
-     &       vertSetCount, ' /', Nr, ') of viscArNr is not allowed'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       errCount = errCount + 1
+      IF ( vertSetCount.GT.0 .AND. vertSetCount.LT.Nr ) THEN
+        WRITE(msgBuf,'(A,2(I5,A))') 'S/R INI_PARMS: Partial setting (',
+     &        vertSetCount, ' /', Nr, ') of viscArNr is not allowed'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( viscAr .EQ. UNSET_RL ) THEN
+        viscAr = viscArDefault
+      ELSEIF ( vertSetCount.GT.0 ) THEN
+        WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set both ',
+     &     'viscArNr and viscAr (or Ap,Az) in param file data'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( vertSetCount.EQ.0 ) THEN
+        DO k=1,Nr
+          viscArNr(k) = viscAr
+        ENDDO
       ENDIF
 
       IF ( diffKzT .NE. UNSET_RL ) zCoordInputData  = .TRUE.
@@ -498,25 +504,31 @@ C--   z,p,r coord input switching.
       IF ( diffKrT .NE. UNSET_RL ) rCoordInputData  = .TRUE.
       IF ( diffKrT .EQ. UNSET_RL )          diffKrT = diffKzT
       IF ( diffKrT .EQ. UNSET_RL )          diffKrT = diffKpT
-      IF ( diffKrT .EQ. UNSET_RL )          diffKrT = diffKrTDefault
       vertSetCount = 0
       DO k=1,Nr
-        IF ( diffKrNrT(k).EQ.UNSET_RL ) THEN
-          diffKrNrT(k) = diffKrT
-        ELSE
-          vertSetCount = vertSetCount + 1
-        ENDIF
+        IF ( diffKrNrT(k).NE.UNSET_RL ) vertSetCount = vertSetCount + 1
       ENDDO
-      IF ( diffKrT.NE.diffKrTDefault .AND. vertSetCount.GT.0 ) THEN
-       WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set both ',
-     &    'diffKrNrT and diffKrT (or Kp,Kz) in param file data'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       errCount = errCount + 1
-      ELSEIF ( vertSetCount.GT.0 .AND. vertSetCount.LT.Nr ) THEN
-       WRITE(msgBuf,'(A,2(I5,A))') 'S/R INI_PARMS: Partial setting (',
-     &       vertSetCount, ' /', Nr, ') of diffKrNrT is not allowed'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       errCount = errCount + 1
+      IF ( vertSetCount.GT.0 .AND. vertSetCount.LT.Nr ) THEN
+        WRITE(msgBuf,'(A,2(I5,A))') 'S/R INI_PARMS: Partial setting (',
+     &        vertSetCount, ' /', Nr, ') of diffKrNrT is not allowed'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      specifiedDiffKrT = vertSetCount.EQ.Nr
+      IF ( diffKrT .EQ. UNSET_RL ) THEN
+        diffKrT = diffKrTDefault
+      ELSEIF ( vertSetCount.GT.0 ) THEN
+        WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set both ',
+     &     'diffKrNrT and diffKrT (or Kp,Kz) in param file data'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ELSE
+        specifiedDiffKrT = .TRUE.
+      ENDIF
+      IF ( vertSetCount.EQ.0 ) THEN
+        DO k=1,Nr
+          diffKrNrT(k) = diffKrT
+        ENDDO
       ENDIF
 
       IF ( diffKzS .NE. UNSET_RL ) zCoordInputData  = .TRUE.
@@ -524,25 +536,31 @@ C--   z,p,r coord input switching.
       IF ( diffKrS .NE. UNSET_RL ) rCoordInputData  = .TRUE.
       IF ( diffKrS .EQ. UNSET_RL )          diffKrS = diffKzS
       IF ( diffKrS .EQ. UNSET_RL )          diffKrS = diffKpS
-      IF ( diffKrS .EQ. UNSET_RL )          diffKrS = diffKrSDefault
       vertSetCount = 0
       DO k=1,Nr
-        IF ( diffKrNrS(k).EQ.UNSET_RL ) THEN
-          diffKrNrS(k) = diffKrS
-        ELSE
-          vertSetCount = vertSetCount + 1
-        ENDIF
+        IF ( diffKrNrS(k).NE.UNSET_RL ) vertSetCount = vertSetCount + 1
       ENDDO
-      IF ( diffKrS.NE.diffKrSDefault .AND. vertSetCount.GT.0 ) THEN
-       WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set both ',
-     &    'diffKrNrS and diffKrS (or Kp,Kz) in param file data'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       errCount = errCount + 1
-      ELSEIF ( vertSetCount.GT.0 .AND. vertSetCount.LT.Nr ) THEN
-       WRITE(msgBuf,'(A,2(I5,A))') 'S/R INI_PARMS: Partial setting (',
-     &       vertSetCount, ' /', Nr, ') of diffKrNrS is not allowed'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       errCount = errCount + 1
+      IF ( vertSetCount.GT.0 .AND. vertSetCount.LT.Nr ) THEN
+        WRITE(msgBuf,'(A,2(I5,A))') 'S/R INI_PARMS: Partial setting (',
+     &        vertSetCount, ' /', Nr, ') of diffKrNrS is not allowed'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      specifiedDiffKrS = vertSetCount.EQ.Nr
+      IF ( diffKrS .EQ. UNSET_RL ) THEN
+        diffKrS = diffKrSDefault
+      ELSEIF ( vertSetCount.GT.0 ) THEN
+        WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set both ',
+     &     'diffKrNrS and diffKrS (or Kp,Kz) in param file data'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ELSE
+        specifiedDiffKrS = .TRUE.
+      ENDIF
+      IF ( vertSetCount.EQ.0 ) THEN
+        DO k=1,Nr
+          diffKrNrS(k) = diffKrS
+        ENDDO
       ENDIF
 
       IF (diffKrBLEQsurf .EQ. UNSET_RL) diffKrBLEQsurf = diffKrBL79surf
@@ -1331,6 +1349,21 @@ C     Check for relaxation term:
          CALL PRINT_ERROR( msgBuf, myThid )
          errCount = errCount + 1
        ENDIF
+C     Check vertical diffusivity setting:
+#ifdef ALLOW_3D_DIFFKR
+       IF ( specifiedDiffKrT ) THEN
+         WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set diffKrT',
+     &    ' (or Kp,Kz) in param file data with ALLOW_3D_DIFFKR'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         errCount = errCount + 1
+       ENDIF
+       IF ( specifiedDiffKrS .AND. diffKrFile.NE.' ' ) THEN
+         WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set both ',
+     &    'diffKrS (or Kp,Kz) and diffKrFile in param file data'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         errCount = errCount + 1
+       ENDIF
+#endif
 
 C--   Set Units conversion factor required to incorporate
 C     surface forcing into z-p isomorphic equations:
