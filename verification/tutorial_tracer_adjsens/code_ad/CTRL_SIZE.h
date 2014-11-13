@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/CTRL_SIZE.h,v 1.1 2013/03/15 14:36:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/CTRL_SIZE.h,v 1.2 2014/11/13 17:02:15 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -10,6 +10,8 @@ C     ----------------------------------------
 C
 C     maxCtrlArr2D :: number of 2-dim. generic control variables
 C     maxCtrlArr3D :: number of 3-dim. generic control variables
+C     maxCtrlTim2D :: number of 2-d generic tim-varying ctrl variables
+C     maxCtrlProc  :: number of pre-processing options per ctrl variable
 
       integer     maxCtrlArr2D
       parameter ( maxCtrlArr2D = 1 )
@@ -19,6 +21,9 @@ C     maxCtrlArr3D :: number of 3-dim. generic control variables
 
       integer     maxCtrlTim2D
       parameter ( maxCtrlTim2D = 1 )
+
+      integer     maxCtrlProc
+      parameter ( maxCtrlProc = 1 )
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
