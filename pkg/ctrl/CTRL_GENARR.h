@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.14 2014/11/09 17:23:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.15 2014/11/13 14:50:57 gforget Exp $
 C $Name:  $
 
 C     ==================================================================
@@ -11,46 +11,70 @@ C     ==================================================================
      &     xx_genarr2d_file,
      &     xx_genarr3d_file,
      &     xx_genarr2d_weight,
-     &     xx_genarr3d_weight
+     &     xx_genarr3d_weight,
+     &     xx_genarr2d_preproc, xx_genarr2d_preproc_c,
+     &     xx_genarr3d_preproc, xx_genarr3d_preproc_c
       CHARACTER*(MAX_LEN_FNAM) xx_genarr2d_file(maxCtrlArr2D)
       CHARACTER*(MAX_LEN_FNAM) xx_genarr3d_file(maxCtrlArr3D)
       CHARACTER*(MAX_LEN_FNAM) xx_genarr2d_weight(maxCtrlArr2D)
       CHARACTER*(MAX_LEN_FNAM) xx_genarr3d_weight(maxCtrlArr3D)
+      CHARACTER*(MAX_LEN_FNAM) 
+     &         xx_genarr2d_preproc(maxCtrlProc,maxCtrlArr2D)
+      CHARACTER*(MAX_LEN_FNAM) 
+     &         xx_genarr3d_preproc(maxCtrlProc,maxCtrlArr3D)
+      CHARACTER*(MAX_LEN_FNAM) 
+     &         xx_genarr2d_preproc_c(maxCtrlProc,maxCtrlArr2D)
+      CHARACTER*(MAX_LEN_FNAM) 
+     &         xx_genarr3d_preproc_c(maxCtrlProc,maxCtrlArr3D)
 
       COMMON /CONTROLFILES_RARR/
-     &     genarr2dPrecond,
-     &     xx_genarr2d_bounds,xx_genarr3d_bounds
+     &     genarr2dPrecond, genarr3dPrecond,
+     &     xx_genarr2d_bounds,xx_genarr3d_bounds,
+     &     xx_genarr2d_preproc_r,xx_genarr3d_preproc_r
       _RL genarr2dPrecond(maxCtrlArr2D)
+      _RL genarr3dPrecond(maxCtrlArr3D)
       _RL xx_genarr2d_bounds(5,maxCtrlArr2D)
       _RL xx_genarr3d_bounds(5,maxCtrlArr3D)
+      _RL xx_genarr2d_preproc_r(maxCtrlProc,maxCtrlArr2D)
+      _RL xx_genarr3d_preproc_r(maxCtrlProc,maxCtrlArr3D)
 
       COMMON /CONTROLFILES_IARR/
-     &     xx_genarr2d_numsmooth,xx_genarr3d_numsmooth
+     &     xx_genarr2d_numsmooth,xx_genarr3d_numsmooth,
+     &     xx_genarr2d_preproc_i,xx_genarr3d_preproc_i
       INTEGER xx_genarr2d_numsmooth(maxCtrlArr2D)
       INTEGER xx_genarr3d_numsmooth(maxCtrlArr3D)
+      integer xx_genarr2d_preproc_i(maxCtrlProc,maxCtrlArr2D)
+      integer xx_genarr3d_preproc_i(maxCtrlProc,maxCtrlArr3D)
 
       COMMON /CONTROLFILES_CTIM/
-     &     xx_gentim2d_file,
-     &     xx_gentim2d_weight
+     &     xx_gentim2d_file, xx_gentim2d_weight,
+     &     xx_gentim2d_preproc, xx_gentim2d_preproc_c
       CHARACTER*(MAX_LEN_FNAM) xx_gentim2d_file(maxCtrlTim2D)
       CHARACTER*(MAX_LEN_FNAM) xx_gentim2d_weight(maxCtrlTim2D)
+      CHARACTER*(MAX_LEN_FNAM)
+     &         xx_gentim2d_preproc(maxCtrlProc,maxCtrlTim2D)
+      CHARACTER*(MAX_LEN_FNAM)
+     &         xx_gentim2d_preproc_c(maxCtrlProc,maxCtrlTim2D)
 
       COMMON /CONTROLFILES_ITIM/
      &     xx_gentim2d_numsmooth,
      &     xx_gentim2d_startdate1,
      &     xx_gentim2d_startdate2,
-     &     xx_gentim2d_startdate
+     &     xx_gentim2d_startdate,
+     &     xx_gentim2d_preproc_i
 c (xx_gentim2d_numsmooth is not used yet, cause hard coded 1 in ctrl_get_gen)
       INTEGER xx_gentim2d_numsmooth(maxCtrlTim2D)
       INTEGER xx_gentim2d_startdate1(maxCtrlTim2D)
       INTEGER xx_gentim2d_startdate2(maxCtrlTim2D)
       INTEGER xx_gentim2d_startdate(4,maxCtrlTim2D)
+      INTEGER xx_gentim2d_preproc_i(maxCtrlProc,maxCtrlTim2D)
 
       COMMON /CONTROLFILES_RTIM/
-     &     xx_gentim2d_period
-     &   , gentim2dPrecond
+     &     xx_gentim2d_period, gentim2dPrecond,
+     &     xx_gentim2d_preproc_r
       _RL xx_gentim2d_period(maxCtrlTim2D)
       _RL gentim2dPrecond(maxCtrlTim2D)
+      INTEGER xx_gentim2d_preproc_r(maxCtrlProc,maxCtrlTim2D)
 
       COMMON /CONTROLFILES_LTIM/
      &     xx_gentim2d_cumsum, xx_gentim2d_glosum

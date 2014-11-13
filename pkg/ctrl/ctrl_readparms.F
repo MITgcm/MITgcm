@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.57 2014/11/02 21:23:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.58 2014/11/13 14:50:57 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -155,12 +155,17 @@ cHFLUXM_CONTROL
      &  xx_genarr2d_weight, xx_genarr3d_weight, xx_gentim2d_weight,
      &  xx_genarr2d_bounds, xx_genarr3d_bounds,
      &  xx_genarr2d_numsmooth, xx_genarr3d_numsmooth,
-     &  xx_gentim2d_numsmooth,
+     &  genarr2dPrecond, genarr3dPrecond, gentim2dPrecond,
+     &  mult_gentim2d,mult_genarr2d,mult_genarr3d,
+     &  xx_genarr2d_preproc, xx_genarr2d_preproc_i,
+     &  xx_genarr2d_preproc_r, xx_genarr2d_preproc_c,
+     &  xx_genarr3d_preproc, xx_genarr3d_preproc_i,
+     &  xx_genarr3d_preproc_r, xx_genarr3d_preproc_c,
+     &  xx_gentim2d_preproc, xx_gentim2d_preproc_i,
+     &  xx_gentim2d_preproc_r, xx_gentim2d_preproc_c,
+     &  xx_gentim2d_numsmooth, xx_gentim2d_period,
      &  xx_gentim2d_startdate1, xx_gentim2d_startdate2,
-     &  xx_gentim2d_period,
-     &  xx_gentim2d_cumsum,xx_gentim2d_glosum,
-     &  genarr2dPrecond, gentim2dPrecond,
-     &  mult_gentim2d,mult_genarr2d,mult_genarr3d
+     &  xx_gentim2d_cumsum,xx_gentim2d_glosum
 #endif
 
       IF ( .NOT.useCTRL ) THEN
@@ -234,6 +239,12 @@ c
          do jarr = 1, 5
            xx_genarr2d_bounds(jarr,iarr) = 0. _d 0
          enddo
+         do jarr=1,maxCtrlProc
+          xx_genarr2d_preproc(jarr,iarr)   = ' '
+          xx_genarr2d_preproc_c(jarr,iarr) = ' '
+          xx_genarr2d_preproc_i(jarr,iarr) = 0
+          xx_genarr2d_preproc_r(jarr,iarr) = 0. _d 0
+         enddo
         enddo
 c
         do iarr = 1, maxCtrlArr3D
@@ -241,6 +252,7 @@ c
      &        'xx_genarr3d_', iarr
          write(xx_genarr3d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
          write(xx_genarr3d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
+         genarr3dPrecond(iarr) = 1. _d 0
 #ifdef ALLOW_SMOOTH_CORREL3D
          xx_genarr3d_numsmooth(iarr) = 1
 #else
@@ -249,6 +261,12 @@ c
          mult_genarr3d(iarr)         = 0. _d 0
          do jarr = 1, 5
            xx_genarr3d_bounds(jarr,iarr) = 0. _d 0
+         enddo
+         do jarr=1,maxCtrlProc
+          xx_genarr3d_preproc(jarr,iarr)   = ' '
+          xx_genarr3d_preproc_c(jarr,iarr) = ' '
+          xx_genarr3d_preproc_i(jarr,iarr) = 0
+          xx_genarr3d_preproc_r(jarr,iarr) = 0. _d 0
          enddo
         enddo
 c
@@ -262,6 +280,12 @@ c
          xx_gentim2d_period(iarr)     = 0. _d 0
          xx_gentim2d_cumsum(iarr)     = .FALSE.
          xx_gentim2d_glosum(iarr)     = .FALSE.
+         do jarr=1,maxCtrlProc
+          xx_gentim2d_preproc(jarr,iarr)   = ' '
+          xx_gentim2d_preproc_c(jarr,iarr) = ' '
+          xx_gentim2d_preproc_i(jarr,iarr) = 0
+          xx_gentim2d_preproc_r(jarr,iarr) = 0. _d 0
+         enddo
 #ifdef ALLOW_SMOOTH_CORREL2D
          xx_gentim2d_numsmooth(iarr) = 1
 #else

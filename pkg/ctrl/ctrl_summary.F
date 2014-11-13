@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.11 2014/11/02 21:23:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.12 2014/11/13 14:50:58 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -53,7 +53,7 @@ c     == local variables ==
       character*(max_len_mbuf) msgbuf
 
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
-      INTEGER iarr
+      INTEGER iarr, jarr
 #endif
 
 c     == external ==
@@ -415,6 +415,16 @@ c allow for switching off correl2d in adjoint
         call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
+         do jarr=1,maxCtrlProc
+          if (xx_genarr2d_preproc(jarr,iarr).NE.' ') then
+            il = ilnblnk(xx_genarr2d_preproc(jarr,iarr))
+            write(msgbuf,'(a,a)') ' preprocess = ',
+     &                            xx_genarr2d_preproc(jarr,iarr)(1:il)
+            call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          endif
+         enddo
+
        endif
       enddo
 #endif
@@ -444,6 +454,16 @@ c allow for switching off correl2d in adjoint
      &'      smoother   = ',xx_genarr3d_numsmooth(iarr)
         call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+
+         do jarr=1,maxCtrlProc
+          if (xx_genarr3d_preproc(jarr,iarr).NE.' ') then
+            il = ilnblnk(xx_genarr3d_preproc(jarr,iarr))
+            write(msgbuf,'(a,a)') ' preprocess = ',
+     &                            xx_genarr3d_preproc(jarr,iarr)(1:il)
+            call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          endif
+         enddo
 
        endif
       enddo
@@ -494,6 +514,16 @@ c allow for switching off correl2d in adjoint
      &'      glosum     = ',xx_gentim2d_glosum(iarr)
         call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+
+         do jarr=1,maxCtrlProc
+          if (xx_gentim2d_preproc(jarr,iarr).NE.' ') then
+            il = ilnblnk(xx_gentim2d_preproc(jarr,iarr))
+            write(msgbuf,'(a,a)') ' preprocess = ',
+     &                            xx_gentim2d_preproc(jarr,iarr)(1:il)
+            call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          endif
+         enddo
 
        endif
       enddo
