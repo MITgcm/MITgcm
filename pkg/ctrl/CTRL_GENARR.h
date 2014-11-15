@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.15 2014/11/13 14:50:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_GENARR.h,v 1.16 2014/11/15 22:07:03 gforget Exp $
 C $Name:  $
 
 C     ==================================================================
@@ -39,10 +39,7 @@ C     ==================================================================
       _RL xx_genarr3d_preproc_r(maxCtrlProc,maxCtrlArr3D)
 
       COMMON /CONTROLFILES_IARR/
-     &     xx_genarr2d_numsmooth,xx_genarr3d_numsmooth,
      &     xx_genarr2d_preproc_i,xx_genarr3d_preproc_i
-      INTEGER xx_genarr2d_numsmooth(maxCtrlArr2D)
-      INTEGER xx_genarr3d_numsmooth(maxCtrlArr3D)
       integer xx_genarr2d_preproc_i(maxCtrlProc,maxCtrlArr2D)
       integer xx_genarr3d_preproc_i(maxCtrlProc,maxCtrlArr3D)
 
@@ -57,13 +54,10 @@ C     ==================================================================
      &         xx_gentim2d_preproc_c(maxCtrlProc,maxCtrlTim2D)
 
       COMMON /CONTROLFILES_ITIM/
-     &     xx_gentim2d_numsmooth,
      &     xx_gentim2d_startdate1,
      &     xx_gentim2d_startdate2,
      &     xx_gentim2d_startdate,
      &     xx_gentim2d_preproc_i
-c (xx_gentim2d_numsmooth is not used yet, cause hard coded 1 in ctrl_get_gen)
-      INTEGER xx_gentim2d_numsmooth(maxCtrlTim2D)
       INTEGER xx_gentim2d_startdate1(maxCtrlTim2D)
       INTEGER xx_gentim2d_startdate2(maxCtrlTim2D)
       INTEGER xx_gentim2d_startdate(4,maxCtrlTim2D)

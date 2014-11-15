@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.12 2014/11/13 14:50:58 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.13 2014/11/15 22:07:03 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -410,10 +410,6 @@ c allow for switching off correl2d in adjoint
      &'      weight     = ',xx_genarr2d_weight(iarr)(1:il)
         call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,i5)')
-     &'      smoother   = ',xx_genarr2d_numsmooth(iarr)
-        call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
 
          do jarr=1,maxCtrlProc
           if (xx_genarr2d_preproc(jarr,iarr).NE.' ') then
@@ -448,10 +444,6 @@ c allow for switching off correl2d in adjoint
         il   = ILNBLNK( xx_genarr3d_weight(iarr) )
         write(msgbuf,'(a,a)')
      &'      weight     = ',xx_genarr3d_weight(iarr)(1:il)
-        call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,i5)')
-     &'      smoother   = ',xx_genarr3d_numsmooth(iarr)
         call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
@@ -499,11 +491,6 @@ c allow for switching off correl2d in adjoint
         call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
-
-        write(msgbuf,'(a,i5)')
-     &'      smoother   = ',xx_gentim2d_numsmooth(iarr)
-        call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
 
         write(msgbuf,'(a,L5)')
      &'      cumsum     = ',xx_gentim2d_cumsum(iarr)
