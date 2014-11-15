@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.58 2014/11/13 14:50:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.59 2014/11/15 21:38:24 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -154,7 +154,6 @@ cHFLUXM_CONTROL
      &  xx_genarr2d_file, xx_genarr3d_file, xx_gentim2d_file,
      &  xx_genarr2d_weight, xx_genarr3d_weight, xx_gentim2d_weight,
      &  xx_genarr2d_bounds, xx_genarr3d_bounds,
-     &  xx_genarr2d_numsmooth, xx_genarr3d_numsmooth,
      &  genarr2dPrecond, genarr3dPrecond, gentim2dPrecond,
      &  mult_gentim2d,mult_genarr2d,mult_genarr3d,
      &  xx_genarr2d_preproc, xx_genarr2d_preproc_i,
@@ -163,7 +162,7 @@ cHFLUXM_CONTROL
      &  xx_genarr3d_preproc_r, xx_genarr3d_preproc_c,
      &  xx_gentim2d_preproc, xx_gentim2d_preproc_i,
      &  xx_gentim2d_preproc_r, xx_gentim2d_preproc_c,
-     &  xx_gentim2d_numsmooth, xx_gentim2d_period,
+     &  xx_gentim2d_period,
      &  xx_gentim2d_startdate1, xx_gentim2d_startdate2,
      &  xx_gentim2d_cumsum,xx_gentim2d_glosum
 #endif
@@ -230,11 +229,6 @@ c
          write(xx_genarr2d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
          write(xx_genarr2d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          genarr2dPrecond(iarr) = 1. _d 0
-#ifdef ALLOW_SMOOTH_CORREL2D
-         xx_genarr2d_numsmooth(iarr) = 1
-#else
-         xx_genarr2d_numsmooth(iarr) = 0
-#endif
          mult_genarr2d(iarr)         = 0. _d 0
          do jarr = 1, 5
            xx_genarr2d_bounds(jarr,iarr) = 0. _d 0
@@ -253,11 +247,6 @@ c
          write(xx_genarr3d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
          write(xx_genarr3d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          genarr3dPrecond(iarr) = 1. _d 0
-#ifdef ALLOW_SMOOTH_CORREL3D
-         xx_genarr3d_numsmooth(iarr) = 1
-#else
-         xx_genarr3d_numsmooth(iarr) = 0
-#endif
          mult_genarr3d(iarr)         = 0. _d 0
          do jarr = 1, 5
            xx_genarr3d_bounds(jarr,iarr) = 0. _d 0
@@ -286,11 +275,6 @@ c
           xx_gentim2d_preproc_i(jarr,iarr) = 0
           xx_gentim2d_preproc_r(jarr,iarr) = 0. _d 0
          enddo
-#ifdef ALLOW_SMOOTH_CORREL2D
-         xx_gentim2d_numsmooth(iarr) = 1
-#else
-         xx_gentim2d_numsmooth(iarr) = 0
-#endif
          mult_gentim2d(iarr)          = 0. _d 0
          gentim2dPrecond(iarr)        = 1. _d 0
         enddo

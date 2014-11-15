@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.12 2014/11/09 13:10:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.13 2014/11/15 21:38:24 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -51,6 +51,7 @@ C     == local variables ==
       integer igen_etan0,igen_bdrag,igen_geoth
       integer igen_theta0, igen_salt0
       integer igen_kapgm, igen_kapredi, igen_diffkr
+      integer smoothOpNb
 #ifdef ALLOW_GENTIM2D_CONTROL
       character*(80) fnamegenIn
       character*(80) fnamegenOut
@@ -62,7 +63,7 @@ C     == local variables ==
       logical ladinit
       _RL     xx_gen(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       integer bi,bj
-      integer i,j
+      integer i,j,k2
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
       integer ilgen
@@ -95,6 +96,14 @@ C--   generic 2D control variables
         write(fnamegenOut(1:80),'(2a,i10.10)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.effective.',optimcycle
 
+         smoothOpNb=1
+         do k2 = 1, maxCtrlProc
+          if (xx_gentim2d_preproc(k2,iarr).EQ.'smooth') then
+             if (xx_gentim2d_preproc_i(k2,iarr).NE.0) 
+     &           smoothOpNb=xx_gentim2d_preproc_i(k2,iarr)
+          endif
+         enddo
+
         DO irec = 1, endrec
 
         call active_read_xy( fnamegenIn, xx_gen, irec,
@@ -104,8 +113,7 @@ C--   generic 2D control variables
 #ifdef ALLOW_SMOOTH
         IF ( ctrlSmoothCorrel2D ) THEN
         IF ( useSMOOTH ) THEN
-        call smooth_correl2D(xx_gen,maskC,
-     &       xx_gentim2d_numsmooth(iarr),mythid)
+        call smooth_correl2D(xx_gen,maskC,smoothOpNb,mythid)
 
         DO bj=myByLo(myThid), myByHi(myThid)
          DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -237,6 +245,7 @@ C     == local variables ==
       integer i,j
       integer jmin,jmax
       integer imin,imax
+      integer smoothOpNb, k2
       _RL fldTmp  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 CEOP
 
@@ -255,11 +264,19 @@ CEOP
         ENDDO
        ENDDO
 
+       smoothOpNb=1
+       do k2 = 1, maxCtrlProc
+        if (xx_genarr2d_preproc(k2,iarr).EQ.'smooth') then
+           if (xx_genarr2d_preproc_i(k2,iarr).NE.0)
+     &         smoothOpNb=xx_genarr2d_preproc_i(k2,iarr)
+        endif
+       enddo
+
        if ( (xx_genarr2d_weight(iarr).NE.' ').AND.(iarr.GT.0) )
      &  call ctrl_map_ini_gen2D(xx_genarr2d_file(iarr),
      &       xx_genarr2d_weight(iarr), xx_genarr2d_dummy(iarr),
      &       xx_genarr2d_bounds(1,iarr), fldTmp, maskc,
-     &       xx_genarr2d_numsmooth(iarr), mythid )
+     &       smoothOpNb, mythid )
 
        _EXCH_XY_RL( fldTmp, mythid)
 
@@ -321,6 +338,7 @@ C     == local variables ==
       integer i,j,k
       integer jmin,jmax
       integer imin,imax
+      integer smoothOpNb,k2
       _RL fldTmp  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 CEOP
 
@@ -341,11 +359,19 @@ CEOP
         ENDDO
        ENDDO
 
+       smoothOpNb=1
+       do k2 = 1, maxCtrlProc
+        if (xx_genarr3d_preproc(k2,iarr).EQ.'smooth') then
+           if (xx_genarr3d_preproc_i(k2,iarr).NE.0)
+     &         smoothOpNb=xx_genarr3d_preproc_i(k2,iarr)
+        endif
+       enddo
+
        if ( (xx_genarr3d_weight(iarr).NE.' ').AND.(iarr.GT.0) )
      &  call ctrl_map_ini_gen3D(xx_genarr3d_file(iarr),
      &       xx_genarr3d_weight(iarr), xx_genarr3d_dummy(iarr),
      &       xx_genarr3d_bounds(1,iarr), fldTmp, maskc,
-     &       xx_genarr3d_numsmooth(iarr), mythid )
+     &       smoothOpNb, mythid )
 
        _EXCH_XYZ_RL( fldTmp, mythid)
 
