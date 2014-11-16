@@ -1,9 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2089 2014/11/12 21:04:00 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2090 2014/11/16 16:31:37 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl : add generic pre-processing (xx_genarr2d_preproc etc)
+  - remove xx_genarr2d_numsmooth etc 
+  - use xx_genarr2d_preproc etc instead
+  - carry out smooth_correl2D at initialization 
+  stage rather than during time stepping.
+  - get smoothOpNb from xx_gentim2d_preproc
+o global_oce_cs32 :
+  - add test of generic ecco capabilities.
+o pkg/exf/exf_getsurfacefluxes.F :
+  - add to tmpUE/tmpVN rather than re-initializing them (conventional behavior).
+o pkg/ctrl,ecco :
+  -  omit un-necessary arguments to ctrl_cost_gen.F
+  unless ECCO_CTRL_DEPRECATED is defined.
 o model/src:
   - when ALLOW_3D_DIFFKR is defined, add a STOP if any of the vertical
     diffusivity (background) is specified but ignored.
