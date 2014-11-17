@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_calc.F,v 1.3 2014/08/11 15:31:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_calc.F,v 1.4 2014/11/17 14:13:57 jmc Exp $
 C $Name:  $
 
 #include "KL10_OPTIONS.h"
@@ -32,10 +32,10 @@ C !USES: ============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "EOS.h"
-#include "DYNVARS.h"
-#include "KL10.h"
-#include "FFIELDS.h"
 #include "GRID.h"
+#include "DYNVARS.h"
+#include "FFIELDS.h"
+#include "KL10.h"
 c#ifdef ALLOW_AUTODIFF_TAMC
 c# include "tamc.h"
 c# include "tamc_keys.h"
@@ -120,7 +120,11 @@ C first is between surface and first center
 C diffKrNrT(K) = viscArNr(K) = background value
 
             KLdiffKr(I,J,1,bi,bj) = MAX(KLviscAr(I,J,1,bi,bj),
-     &              diffKrNrT(1))
+#ifdef ALLOW_3D_DIFFKR
+     &                                  diffKr(I,J,1,bi,bj) )
+#else
+     &                                  diffKrNrT(1) )
+#endif
 C N at surface = zero or uses gradient
             b0 = MAX(-gravity*mass2rUnit*
      &              (rhoS(1) - rhoS(2))*recip_drC(2),0. _d 0)
@@ -159,7 +163,12 @@ C Put an upper limit on viscosity to prevent instability when
 C explicit viscosity is C used (e.g. for nonhydrostatic case) SAL
                   KTemp = MIN(KLviscMax,KTemp)
                   KLviscAr(I,J,K,bi,bj) = MAX(KTemp,viscArNr(K))
-                  KLdiffKr(I,J,K,bi,bj) = MAX(KTemp,diffKrNrT(K))
+                  KLdiffKr(I,J,K,bi,bj) = MAX(KTemp,
+#ifdef ALLOW_3D_DIFFKR
+     &                                        diffKr(I,J,K,bi,bj) )
+#else
+     &                                        diffKrNrT(K) )
+#endif
 
 C Compute Epsilon for diagnostics:
 C

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_calc_diff.F,v 1.1 2014/07/30 03:28:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_calc_diff.F,v 1.2 2014/11/17 14:13:57 jmc Exp $
 C $Name:  $
 
 #include "KL10_OPTIONS.h"
@@ -8,20 +8,22 @@ C $Name:  $
      U        KappaRx,
      I        myThid)
 
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE KL10_CALC_DIFF                                |
 C     | o Add contrubution to net diffusivity from KL10 mixing   |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == GLobal variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
-#include "GRID.h"
+c#include "GRID.h"
+#ifdef ALLOW_3D_DIFFKR
+# include "DYNVARS.h"
+#endif
 #ifdef ALLOW_KL10
-#include "KL10.h"
+# include "KL10.h"
 #endif
 
 C     == Routine arguments ==
@@ -52,7 +54,7 @@ C-    do all levels :
           DO i=iMin,iMax
             KappaRx(i,j,k) = KappaRx(i,j,k)
      &                  +( KLdiffKr(i,j,k,bi,bj)
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
+#ifdef ALLOW_3D_DIFFKR
      &                     - diffKr(i,j,k,bi,bj) )
 #else
      &                     - diffKrNrT(k) )
@@ -67,7 +69,7 @@ C-    do level k=kArg only :
           DO i=iMin,iMax
             KappaRx(i,j,k) = KappaRx(i,j,k)
      &                  +( KLdiffKr(i,j,kArg,bi,bj)
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
+#ifdef ALLOW_3D_DIFFKR
      &                     - diffKr(i,j,kArg,bi,bj) )
 #else
      &                     - diffKrNrT(kArg) )
