@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.156 2014/10/20 03:20:58 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.157 2014/11/17 12:52:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -105,7 +105,8 @@ C--   SEAICE parameters
      & SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS,
      & LSR_ERROR, LSR_mixIniGuess, SEAICEuseMultiTileSolver,
      & SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
-     & SEAICE_evpDampC, SEAICEnEVPstarSteps,
+     & SEAICE_evpDampC, SEAICEnEVPstarSteps, 
+     & SEAICE_evpAlpha, SEAICE_evpBeta,
      & SEAICE_zetaMin, SEAICE_zetaMaxFac,
      & SEAICEuseJFNK, SEAICEnewtonIterMax, SEAICEkrylovIterMax,
      & SEAICE_JFNK_lsIter, SEAICE_JFNK_tolIter, JFNKres_t,JFNKres_tFac,
@@ -149,7 +150,8 @@ C--   SEAICE parameters
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
      & SEAICE_EPS, SEAICE_EPS_SQ,
-     & SEAICEwriteState, SEAICEuseEVPpickup, SEAICEuseEVPstar,
+     & SEAICEwriteState, SEAICEuseEVPpickup, 
+     & SEAICEuseEVPstar, SEAICEuseEVPrev,
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc,
 #ifdef SEAICE_ITD
@@ -208,6 +210,7 @@ C--   set default sea ice parameters
       SEAICEuseMetricTerms = .TRUE.
       SEAICEuseEVPpickup = .TRUE.
       SEAICEuseEVPstar   = .FALSE.
+      SEAICEuseEVPrev    = .FALSE.
       SEAICErestoreUnderIce = .FALSE.
       SEAICE_growMeltByConv = .FALSE.
       SEAICE_salinityTracer = .FALSE.
@@ -629,7 +632,7 @@ C     yet been tried nor thought through.
       IF ( SEAICEuseEVP ) THEN
        IF (    (SEAICE_deltaTdyn/SEAICE_deltaTevp) .NE.
      &      INT(SEAICE_deltaTdyn/SEAICE_deltaTevp) .AND.
-     &      .NOT. SEAICEuseEVPstar ) THEN
+     &      .NOT. (SEAICEuseEVPstar.OR.SEAICEuseEVPrev) ) THEN
         WRITE(msgBuf,'(A)')
      &       'SEAICE_deltaTevp must be a factor of SEAICE_deltaTdyn.'
         CALL PRINT_ERROR( msgBuf , myThid)
