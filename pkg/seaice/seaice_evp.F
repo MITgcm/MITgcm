@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.50 2014/10/20 03:20:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.51 2014/11/17 12:56:20 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -92,7 +92,7 @@ C     sig11, sig22   :: sum and difference of diagonal terms of stress tensor
       _RL COSWAT
       _RS SINWAT
       _RL ecc2, recip_ecc2, recip_evpAlpha, recip_deltaT
-      _RL betaFacP1, betaFac, evpStarFac
+      _RL betaFacP1, betaFac, evpStarFac, evpRevFac, recip_evpRevFac
 
       _RL seaice_div    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL seaice_tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -130,15 +130,26 @@ C     determine number of internal time steps
       nEVPstep = INT(SEAICE_deltaTdyn/SEAICE_deltaTevp)
       IF ( SEAICEnEVPstarSteps.NE.UNSET_I ) nEVPstep=SEAICEnEVPstarSteps
 C     SEAICE_evpAlpha = 2. * SEAICE_evpTauRelax/SEAICE_deltaTevp
-      denom1 = SEAICE_evpAlpha / ( SEAICE_evpAlpha + 1. _d 0 )
-      denom2 = SEAICE_evpAlpha / ( SEAICE_evpAlpha + ecc2 )
+      denom1 = 1. _d 0 / ( SEAICE_evpAlpha + 1. _d 0 )
+      denom2 = 1. _d 0 / ( SEAICE_evpAlpha + ecc2 )
 
       recip_deltaT = 1. _d 0 / SEAICE_deltaTdyn
       recip_evpAlpha = 0. _d 0
       IF ( SEAICE_evpAlpha .GT. 0. _d 0 ) 
      &     recip_evpAlpha = 1. _d 0 / SEAICE_evpAlpha
       evpStarFac = 0. _d 0
+      evpRevFac  = 0. _d 0
+      recip_evpRevFac = 1. _d 0
       IF ( SEAICEuseEVPstar ) evpStarFac = 1. _d 0
+      IF ( SEAICEuseEVPrev  ) THEN
+C     the Bouillon discretization in time is less stable, because there are
+C     more explicit terms
+       evpRevFac       = 1. _d 0
+       evpStarFac      = 1. _d 0
+       recip_evpRevFac = recip_ecc2
+       denom1          = 1. _d 0 / SEAICE_evpAlpha
+       denom2          = denom1
+      ENDIF
 
       betaFac   = SEAICE_evpBeta*recip_deltaT
       betaFacP1 = betaFac + evpStarFac*recip_deltaT
@@ -374,7 +385,7 @@ C     save new eta for diagnostics
              seaice_tension(I,J) = 2. _d 0*zetaC(I,J)
      &            * em(I,J) * hEffM(I,J,bi,bj)
              seaice_shear  (I,J) =
-     &            2. _d 0*zetaZ(I,J)*2. _d 0*e12(I,J,bi,bj)
+     &            2. _d 0*zetaZ(I,J)*e12(I,J,bi,bj)
             ENDDO
            ENDDO
           ENDIF
@@ -385,11 +396,13 @@ C
            DO i=0,sNx
 C     sigma1 and sigma2 are computed on C points
             seaice_sigma1 (I,J,bi,bj) = ( seaice_sigma1 (I,J,bi,bj)
-     &           + recip_evpAlpha * seaice_div(I,J)
+     &           * ( SEAICE_evpAlpha - evpRevFac )
+     &           + seaice_div(I,J)
      &           ) * denom1
      &           *hEffM(I,J,bi,bj)
             seaice_sigma2 (I,J,bi,bj) = ( seaice_sigma2 (I,J,bi,bj)
-     &           + recip_evpAlpha * seaice_tension(I,J)
+     &           * ( SEAICE_evpAlpha - evpRevFac )
+     &           + seaice_tension(I,J)*recip_evpRevFac
      &           ) * denom2
      &         *hEffM(I,J,bi,bj)
 #ifdef SEAICE_EVP_ELIMINATE_UNDERFLOWS
@@ -415,7 +428,8 @@ C     sigma12 is computed on Z points
           DO j=1,sNy+1
            DO i=1,sNx+1
             seaice_sigma12(I,J,bi,bj) = ( seaice_sigma12(I,J,bi,bj)
-     &           + 0.5 _d 0 * recip_evpAlpha * seaice_shear(I,J)
+     &           * ( SEAICE_evpAlpha - evpRevFac )
+     &           + seaice_shear(I,J)*recip_evpRevFac
      &           ) * denom2
 #ifdef SEAICE_EVP_ELIMINATE_UNDERFLOWS
             seaice_sigma12(I,J,bi,bj) = SIGN(MAX(
