@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_calc.F,v 1.6 2012/06/27 22:39:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_calc.F,v 1.7 2014/11/17 14:12:06 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
@@ -29,12 +29,15 @@ C !USES: ============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "PP81.h"
 #include "GRID.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-#include "tamc.h"
-#include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
+#ifdef ALLOW_3D_DIFFKR
+# include "DYNVARS.h"
+#endif
+#include "PP81.h"
+c#ifdef ALLOW_AUTODIFF_TAMC
+c#include "tamc.h"
+c#include "tamc_keys.h"
+c#endif /* ALLOW_AUTODIFF_TAMC */
 
 C !INPUT PARAMETERS: ===================================================
 C Routine arguments
@@ -81,7 +84,11 @@ CEOP
 C     assign a minium ( = background ) value
          PPviscAr(I,J,K,bi,bj) = MAX(PPviscTmp,viscArNr(k))
          PPdiffKr(I,J,K,bi,bj) = MAX(PPviscAr(I,J,K,bi,bj)/denom,
-     &        diffKrNrT(k))
+#ifdef ALLOW_3D_DIFFKR
+     &                               diffKr(i,j,k,bi,bj) )
+#else
+     &                               diffKrNrT(k) )
+#endif
 CML         if ( k.eq.2 .and. i.ge.1 .and. i.le.sNx .and. j.eq.1)
 CML     &        print '(A,3I3,5E14.5)', 'ml-pp81', I,J,K, RiLimit,
 CML     &        RiNumber(I,J),denom,

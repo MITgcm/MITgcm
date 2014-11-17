@@ -1,27 +1,29 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_calc_diff.F,v 1.4 2009/08/02 19:30:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_calc_diff.F,v 1.5 2014/11/17 14:12:06 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
 
-      SUBROUTINE PP81_CALC_DIFF( 
+      SUBROUTINE PP81_CALC_DIFF(
      I        bi,bj,iMin,iMax,jMin,jMax,kArg,kSize,
      U        KappaRx,
      I        myThid)
 
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE PP81_CALC_DIFF                                |
 C     | o Add contrubution to net diffusivity from PP81 mixing   |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == GLobal variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
-#include "GRID.h"
+c#include "GRID.h"
+#ifdef ALLOW_3D_DIFFKR
+# include "DYNVARS.h"
+#endif
 #ifdef ALLOW_PP81
-#include "PP81.h"
+# include "PP81.h"
 #endif
 
 C     == Routine arguments ==
@@ -35,7 +37,7 @@ C     KappaRx   :: vertical diffusivity array
 C     myThid    :: Instance number for this innvocation of PP81_CALC_DIFF
 
       INTEGER bi,bj,iMin,iMax,jMin,jMax,kArg,kSize
-      _RL KappaRx(1-Olx:sNx+Olx,1-Oly:sNy+Oly,kSize)
+      _RL KappaRx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize)
       INTEGER myThid
 
 #ifdef ALLOW_PP81
@@ -52,7 +54,7 @@ C-    do all levels :
           DO i=iMin,iMax
             KappaRx(i,j,k) = KappaRx(i,j,k)
      &                  +( PPdiffKr(i,j,k,bi,bj)
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
+#ifdef ALLOW_3D_DIFFKR
      &                     - diffKr(i,j,k,bi,bj) )
 #else
      &                     - diffKrNrT(k) )
@@ -67,7 +69,7 @@ C-    do level k=kArg only :
           DO i=iMin,iMax
             KappaRx(i,j,k) = KappaRx(i,j,k)
      &                  +( PPdiffKr(i,j,kArg,bi,bj)
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
+#ifdef ALLOW_3D_DIFFKR
      &                     - diffKr(i,j,kArg,bi,bj) )
 #else
      &                     - diffKrNrT(kArg) )
