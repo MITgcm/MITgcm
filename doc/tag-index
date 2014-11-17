@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2091 2014/11/17 09:44:26 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2092 2014/11/17 12:58:23 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: 
+  - add new parameter SEAICEuseEVPrev (for revisited EVP by 
+    Bouillon et al 2013)
+  - add SEAICE_evpAlpha/Beta to namelist
+  - modify seaice_evp code to able to use SEAICEuseEVPrev. These changes 
+    involve trivial re-ordering of divisions/multiplications that should not
+    have any effects, but ... they do change the results of lab_sea.hb87 so
+    that only 2 digits of agreement remain, in line with the general 
+    instability/fragility of the evp-code. For now, I do not care and just
+    update the verification experiment
 o pkg/ctrl : add generic pre-processing (xx_genarr2d_preproc etc)
   - remove xx_genarr2d_numsmooth etc 
   - use xx_genarr2d_preproc etc instead
