@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.90 2014/10/20 03:20:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.91 2014/11/17 12:51:57 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -692,7 +692,7 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 # endif
-      IF ( .NOT.SEAICEuseEVPstar
+      IF ( .NOT.(SEAICEuseEVPstar.OR.SEAICEuseEVPrev)
      &     .AND. SEAICEnEVPstarSteps.NE.UNSET_I ) THEN
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEnEVPstarSteps is '//
      &      'set, but SEAICEuseEVPstar = .FALSE.'

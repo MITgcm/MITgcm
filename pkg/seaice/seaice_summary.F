@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.75 2014/06/28 22:37:13 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.76 2014/11/17 12:51:57 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -227,7 +227,9 @@ C--  Seaice-Dynamics parameters
        CALL WRITE_0D_RL( SEAICE_evpDampC  ,INDEX_NONE,
      & 'SEAICE_evpDampC   =', ' /* EVP damping parameter */')
        CALL WRITE_0D_L ( SEAICEuseEVPstar, INDEX_NONE,
-     & 'SEAICEuseEVPstar=', ' /* use EVP* solver */')
+     & 'SEAICEuseEVPstar  =', ' /* use EVP* solver */')
+       CALL WRITE_0D_L ( SEAICEuseEVPrev, INDEX_NONE,
+     & 'SEAICEuseEVPrev   =', ' /* use "revisited EVP" solver */')
        CALL WRITE_0D_RL( SEAICE_evpAlpha  ,INDEX_NONE,
      & 'SEAICE_evpAlpha   =', ' /* EVP* parameter*/')
        CALL WRITE_0D_RL( SEAICE_evpBeta   ,INDEX_NONE,

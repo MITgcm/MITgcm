@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.118 2014/07/17 11:53:23 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.119 2014/11/17 12:51:57 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -15,6 +15,10 @@ C                           or LSR
 C     SEAICEuseEVP      :: If true use elastic viscous plastic solver
 C     SEAICEuseEVPstar  :: If true use modified elastic viscous plastic 
 C                          solver (EVP*) by Lemieux et al (2012)
+C     SEAICEuseEVPrev   :: If true use "revisited" elastic viscous plastic 
+C                          solver following Bouillon et al. (2013), very similar
+C                          to EVP*, but uses fewer implicit terms and drops
+C                          one 1/e^2 in equations for sigma2 and sigma12
 C     SEAICEuseEVPpickup :: Set to false in order to start EVP solver with
 C                          non-EVP pickup files.  Default is true.
 C                          Applied only if SEAICEuseEVP=.TRUE.
@@ -86,7 +90,8 @@ C     SEAICE_dump_mnc   :: write snap-shot output   using MNC
 C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
      &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT,
-     &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPpickup,
+     &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
+     &     SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
      &     useHibler79IceStrength, SEAICEsimpleRidging,
@@ -106,7 +111,8 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
      &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT,
-     &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPpickup,
+     &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
+     &     SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2, 
      &     useHibler79IceStrength, SEAICEsimpleRidging,
