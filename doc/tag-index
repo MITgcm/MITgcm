@@ -1,35 +1,38 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2092 2014/11/17 12:58:23 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2093 2014/11/17 14:20:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: 
-  - add new parameter SEAICEuseEVPrev (for revisited EVP by 
+o pkg/my82,pp81,kl10:
+  - fix ALLOW_3D_DIFFKR implementation (previously had no effect): use 3-D
+    field diffKr as background diffusivity to set minimum diffusivity value.
+o pkg/seaice:
+  - add new parameter SEAICEuseEVPrev (for revisited EVP by
     Bouillon et al 2013)
   - add SEAICE_evpAlpha/Beta to namelist
-  - modify seaice_evp code to able to use SEAICEuseEVPrev. These changes 
+  - modify seaice_evp code to able to use SEAICEuseEVPrev. These changes
     involve trivial re-ordering of divisions/multiplications that should not
     have any effects, but ... they do change the results of lab_sea.hb87 so
-    that only 2 digits of agreement remain, in line with the general 
+    that only 2 digits of agreement remain, in line with the general
     instability/fragility of the evp-code. For now, I do not care and just
     update the verification experiment
 o pkg/ctrl : add generic pre-processing (xx_genarr2d_preproc etc)
-  - remove xx_genarr2d_numsmooth etc 
+  - remove xx_genarr2d_numsmooth etc
   - use xx_genarr2d_preproc etc instead
-  - carry out smooth_correl2D at initialization 
-  stage rather than during time stepping.
+  - carry out smooth_correl2D at initialization stage rather than during
+    time stepping.
   - get smoothOpNb from xx_gentim2d_preproc
 o global_oce_cs32 :
   - add test of generic ecco capabilities.
 o pkg/exf/exf_getsurfacefluxes.F :
   - add to tmpUE/tmpVN rather than re-initializing them (conventional behavior).
 o pkg/ctrl,ecco :
-  -  omit un-necessary arguments to ctrl_cost_gen.F
-  unless ECCO_CTRL_DEPRECATED is defined.
+  - omit un-necessary arguments to ctrl_cost_gen.F unless ECCO_CTRL_DEPRECATED
+    is defined.
 o pkg/seaice: add diagnostics for Delta (deformation parameter)
 o model/src:
-  - when ALLOW_3D_DIFFKR is defined, add a STOP if any of the vertical
+  - when ALLOW_3D_DIFFKR is defined, add a Warning if any of the vertical
     diffusivity (background) is specified but ignored.
 o verification:
   - in testreport, convert hostname to lower case for default output dir name
