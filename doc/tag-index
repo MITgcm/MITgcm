@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2090 2014/11/16 16:31:37 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2091 2014/11/17 09:44:26 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -17,6 +17,7 @@ o pkg/exf/exf_getsurfacefluxes.F :
 o pkg/ctrl,ecco :
   -  omit un-necessary arguments to ctrl_cost_gen.F
   unless ECCO_CTRL_DEPRECATED is defined.
+o pkg/seaice: add diagnostics for Delta (deformation parameter)
 o model/src:
   - when ALLOW_3D_DIFFKR is defined, add a STOP if any of the vertical
     diffusivity (background) is specified but ignored.
