@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS_CALC.h,v 1.3 2011/08/01 20:38:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS_CALC.h,v 1.4 2014/11/18 23:53:04 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -22,6 +22,7 @@ C-- used in Velocity-Potential calculation:
 C     diagCG_maxIters  :: max number of iterations in diag_cg2d solver
 C     diagCG_prtResFrq :: frequency for printing residual in CG iterations
 C     diagCG_resTarget :: residual target for diag_cg2d solver (no units)
+C     diagCG_pcOffDFac :: diag_cg2d preconditioner off-diagonal factor
 C-- used in Stream-Function calculation:
 C     iPsi0,jPsi0 :: indices of grid-point location where Psi == 0
 C     xPsi0,yPsi0 :: grid-point coordinate where Psi == 0
@@ -32,6 +33,7 @@ C     xPsi0,yPsi0 :: grid-point coordinate where Psi == 0
       INTEGER iPsi0(nSx,nSy)
       INTEGER jPsi0(nSx,nSy)
       _RL     diagCG_resTarget
+      _RL     diagCG_pcOffDFac
       _RS     xPsi0, yPsi0
       COMMON / DIAGNOSTICS_CALC_L /
      &     prtFirstCall
@@ -39,7 +41,7 @@ C     xPsi0,yPsi0 :: grid-point coordinate where Psi == 0
      &     diagCG_maxIters, diagCG_prtResFrq,
      &     iPsi0, jPsi0
       COMMON / DIAGNOSTICS_CALC_RL /
-     &     diagCG_resTarget
+     &     diagCG_resTarget, diagCG_pcOffDFac
       COMMON / DIAGNOSTICS_CALC_RS /
      &     xPsi0, yPsi0
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_cg2d.F,v 1.5 2012/03/19 18:22:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_cg2d.F,v 1.6 2014/11/18 23:53:04 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -9,7 +9,7 @@ C     !ROUTINE: DIAG_CG2D
 C     !INTERFACE:
       SUBROUTINE DIAG_CG2D(
      I                aW2d, aS2d, b2d,
-     I                residCriter,
+     I                offDiagFactor, residCriter,
      O                firstResidual, minResidual, lastResidual,
      U                x2d, numIters,
      O                nIterMin,
@@ -40,6 +40,8 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     b2d           :: The source term or "right hand side"
 C     x2d           :: The solution
+C     offDiagFactor :: preconditioner off-diagonal factor
+C     residCriter   :: residual target for convergence
 C     firstResidual :: the initial residual before any iterations
 C     minResidual   :: the lowest residual reached
 C     lastResidual  :: the actual residual reached
@@ -52,6 +54,7 @@ C     myThid        :: my Thread Id number
       _RS  aS2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  b2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  residCriter
+      _RL  offDiagFactor
       _RL  firstResidual
       _RL  minResidual
       _RL  lastResidual
@@ -83,7 +86,6 @@ C     i, j, it2d :: Loop counters ( it2d counts CG iterations )
       _RL    alpha,  alphaTile(nSx,nSy)
       _RL    sumRHS, sumRHStile(nSx,nSy)
       _RL    pW_tmp, pS_tmp
-      _RL    diagCG_pcOffDFac
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL printResidual
 CEOP
@@ -126,7 +128,6 @@ C-    Initialise overlap regions (in case EXCH call do not fill them all)
       CALL EXCH_XY_RS(aC2d, myThid)
 
 C--   Initialise preconditioner
-      diagCG_pcOffDFac = cg2dpcOffDFac
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy+1
@@ -140,15 +141,15 @@ C--   Initialise preconditioner
           IF ( pW_tmp .EQ. 0. ) THEN
            pW(i,j,bi,bj) = 0.
           ELSE
-           pW(i,j,bi,bj) = -aW2d(i,j,bi,bj)
-     &                   /( (diagCG_pcOffDFac*pW_tmp)**2 )
+           pW(i,j,bi,bj) = -aW2d(i,j,bi,bj)*offDiagFactor
+     &                     *4. _d 0/( pW_tmp*pW_tmp )
           ENDIF
           pS_tmp = aC2d(i,j,bi,bj)+aC2d(i,j-1,bi,bj)
           IF ( pS_tmp .EQ. 0. ) THEN
            pS(i,j,bi,bj) = 0.
           ELSE
-           pS(i,j,bi,bj) = -aS2d(i,j,bi,bj)
-     &                   /( (diagCG_pcOffDFac*pS_tmp)**2 )
+           pS(i,j,bi,bj) = -aS2d(i,j,bi,bj)*offDiagFactor
+     &                     *4. _d 0/( pS_tmp*pS_tmp )
           ENDIF
 c         pC(i,j,bi,bj) = 1.
 c         pW(i,j,bi,bj) = 0.

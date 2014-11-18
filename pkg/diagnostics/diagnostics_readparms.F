@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.36 2014/05/27 21:24:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.37 2014/11/18 23:53:04 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -93,7 +93,7 @@ C--   full level output:
      &     levels, fields, fileName, fileFlags,
      &     dumpAtLast, diag_mnc, useMissingValue,
      &     diagCG_maxIters, diagCG_resTarget,
-     &     diagCG_prtResFrq, xPsi0, yPsi0,
+     &     diagCG_pcOffDFac, diagCG_prtResFrq, xPsi0, yPsi0,
      &     diag_pickup_read,     diag_pickup_write,
      &     diag_pickup_read_mnc, diag_pickup_write_mnc
 
@@ -157,6 +157,9 @@ c       missing_value(l)     = UNSET_RL
       diagCG_maxIters  = cg2dMaxIters
       diagCG_resTarget = cg2dTargetResidual
       diagCG_prtResFrq = printResidualFreq
+      diagCG_pcOffDFac = 1.
+      IF ( cg2dpcOffDFac.GT.zeroRL )
+     &  diagCG_pcOffDFac = 0.25 _d 0 /( cg2dpcOffDFac*cg2dpcOffDFac )
       xPsi0 = UNSET_RS
       yPsi0 = UNSET_RS
 
@@ -508,6 +511,9 @@ C     Echo History List Data Structure
      & ' diagCG_maxIters =', ' /* max number of iters in diag_cg2d */')
       CALL WRITE_0D_RL( diagCG_resTarget, INDEX_NONE,
      & ' diagCG_resTarget =', ' /* residual target for diag_cg2d */')
+      CALL WRITE_0D_RL( diagCG_pcOffDFac, INDEX_NONE,
+     & ' diagCG_pcOffDFac =',
+     & ' /* preconditioner off-diagonal factor */')
       WRITE(msgBuf,'(A)')
      & '-----------------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
