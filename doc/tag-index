@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2093 2014/11/17 14:20:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2094 2014/11/19 16:49:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint65g (2014/11/19)
+o pkg/diagnostcis:
+  - add preconditioner off-diagonal factor (diagCG_pcOffDFac) as run-time param
 o pkg/my82,pp81,kl10:
   - fix ALLOW_3D_DIFFKR implementation (previously had no effect): use 3-D
     field diffKr as background diffusivity to set minimum diffusivity value.
@@ -432,8 +435,8 @@ o pkg/seaice: more clean up
     nearly a factor of 10 (but keep in mind there is mostly seaice code in
     this experiment):
     > size mitgcmuv_ad
-    text    data        bss     dec 	   hex	
-    5100659 1216  220458952  225560827  d71c8fb	
+    text    data        bss     dec        hex
+    5100659 1216  220458952  225560827  d71c8fb
     5339425 1200 1868783272 1874123897 6fb4dc79 (SEAICE_LSR_ADJOINT_ITER)
     but only a moderate increase of 36% for global_ocean.cs32x15:
     text    data        bss     dec        hex
