@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2094 2014/11/19 16:49:37 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2095 2014/11/21 21:04:46 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/diagnostcis:
+  - improve treatment of Open-Boundaries in Velocity-Potential calculation:
+  a) use non zero matrix element across OB and solve for Phi 1 grid point
+     outside OB (i.e, where tracer OBCS are applied).
+  b) global imbalance of inFlow/outFlow across OB: instead of modifying
+     velocity across OB, spread it uniformly along the OB in the RHS.
 
 checkpoint65g (2014/11/19)
 o pkg/diagnostcis:
