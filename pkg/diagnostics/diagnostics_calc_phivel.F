@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_calc_phivel.F,v 1.9 2014/11/18 23:53:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_calc_phivel.F,v 1.10 2014/11/21 20:59:06 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
+#undef DIAG_PHIVEL_AS_IF_CLOSED_OB
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
@@ -78,6 +79,9 @@ C     psiLoc  :: horizontal stream-function at special location
       _RL  x2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef DIAG_PHIVEL_AS_IF_CLOSED_OB
+      _RS  maskRHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
       _RL psiVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL psiLoc(2)
       INTEGER iL
@@ -89,6 +93,34 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('DIAGNOSTICS_CALC_PHIVEL',myThid)
 #endif
+
+#ifdef DIAG_PHIVEL_AS_IF_CLOSED_OB
+C     Here we assume zero non-divergent contribution (Psi) to inflow/outflow
+C     through OB (i.e., full flow through OB derived from grad Phi only)
+C     which we obtain by keeping the full RHS just outside OB (i.e., where
+C     tracer OBCS are applied.
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
+          maskRHS(i,j,bi,bj) = maskInC(i,j,bi,bj)
+         ENDDO
+        ENDDO
+        IF ( useOBCS ) THEN
+         DO j = 1,sNy
+          DO i = 1,sNx
+           maskRHS(i,j,bi,bj) = MAX( maskRHS(i,j,bi,bj)
+     &                             , maskInW(i,j,bi,bj)
+     &                             , maskInW(i+1,j,bi,bj)
+     &                             , maskInS(i,j,bi,bj)
+     &                             , maskInS(i,j+1,bi,bj)
+     &                             )
+          ENDDO
+         ENDDO
+        ENDIF
+       ENDDO
+      ENDDO
+#endif /* DIAG_PHIVEL_AS_IF_CLOSED_OB */
 
       DO ks = 1,nlevels(listId)
         k = NINT(levs(ks,listId))
@@ -106,14 +138,16 @@ C-    Initialise fist guess & RHS
             ENDDO
            ENDDO
 C-    calculate cg2d matrix:
+C     Note: Here, at Open-Boundary location, we keep non-zero aW & aS (using
+C     maskInW & maskInS) whereas in S/R CG2D they are zero (product of maskInC)
            DO j = 1,sNy+1
             DO i = 1,sNx+1
               aW2d(i,j,bi,bj) = dyG(i,j,bi,bj)*recip_dxC(i,j,bi,bj)
      &                         *drF(k)*hFacW(i,j,k,bi,bj)
-     &                         *maskInC(i-1,j,bi,bj)*maskInC(i,j,bi,bj)
+     &                         *maskInW(i,j,bi,bj)
               aS2d(i,j,bi,bj) = dxG(i,j,bi,bj)*recip_dyC(i,j,bi,bj)
      &                         *drF(k)*hFacS(i,j,k,bi,bj)
-     &                         *maskInC(i,j-1,bi,bj)*maskInC(i,j,bi,bj)
+     &                         *maskInS(i,j,bi,bj)
               a2dMax = MAX(a2dMax,aW2d(i,j,bi,bj))
               a2dMax = MAX(a2dMax,aS2d(i,j,bi,bj))
             ENDDO
@@ -132,15 +166,6 @@ C-   end bi,bj loops
          ENDDO
         ENDDO
 
-#ifdef ALLOW_OBCS
-        IF ( useOBCS ) THEN
-         CALL OBCS_DIAG_BALANCE(
-     I             k,
-     U             uTrans, vTrans,
-     I             myTime, myIter, myThid )
-        ENDIF
-#endif /* ALLOW_OBCS */
-
 C-    calculate RHS = rAc*Div(uVel,vVel):
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -149,12 +174,33 @@ C-    calculate RHS = rAc*Div(uVel,vVel):
               b2d(i,j,bi,bj) = (
      &                    ( uTrans(i+1,j,bi,bj) - uTrans(i,j,bi,bj) )
      &                  + ( vTrans(i,j+1,bi,bj) - vTrans(i,j,bi,bj) )
+#ifdef DIAG_PHIVEL_AS_IF_CLOSED_OB
+     &                         )*maskRHS(i,j,bi,bj)
+#else
      &                         )*maskInC(i,j,bi,bj)
+#endif
               rhsMax = MAX(ABS(b2d(I,J,bi,bj)),rhsMax)
             ENDDO
            ENDDO
          ENDDO
         ENDDO
+
+#ifndef DIAG_PHIVEL_AS_IF_CLOSED_OB
+C     Here we assume that most inflow/outflow through OB is due to the
+C     non-divergent contribution (Psi), with the exception of the net inFlow
+C     which is kept (for solver convergence) assuming it is uniformly
+C     distributed along OB.
+C Note: This does not work when the domain (at this level k) is composed
+C     of disconnected pieces with more than one with OB.
+#ifdef ALLOW_OBCS
+        IF ( useOBCS ) THEN
+         CALL OBCS_DIAG_BALANCE(
+     U             b2d,
+     I             uTrans, vTrans, k,
+     I             myTime, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_OBCS */
+#endif /* ndef DIAG_PHIVEL_AS_IF_CLOSED_OB */
 
 C-    Normalise Matrice & RHS :
         diagNormaliseRHS = diagCG_resTarget.GT.0.
@@ -243,12 +289,12 @@ C-    Compte divergence-free transport:
      &                        - ( x2d(i,j,bi,bj) - x2d(i-1,j,bi,bj) )
      &                         *recip_dxC(i,j,bi,bj)*dyG(i,j,bi,bj)
      &                         *drF(k)*hFacW(i,j,k,bi,bj)
-     &                         *maskInC(i-1,j,bi,bj)*maskInC(i,j,bi,bj)
+     &                         *maskInW(i,j,bi,bj)
             vTrans(i,j,bi,bj) = vTrans(i,j,bi,bj)
      &                        - ( x2d(i,j,bi,bj) - x2d(i,j-1,bi,bj) )
      &                         *recip_dyC(i,j,bi,bj)*dxG(i,j,bi,bj)
      &                         *drF(k)*hFacS(i,j,k,bi,bj)
-     &                         *maskInC(i,j-1,bi,bj)*maskInC(i,j,bi,bj)
+     &                         *maskInS(i,j,bi,bj)
            ENDDO
           ENDDO
          ENDDO
