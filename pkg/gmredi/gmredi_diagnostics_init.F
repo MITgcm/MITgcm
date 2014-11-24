@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.20 2014/05/18 02:49:52 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.21 2014/11/24 10:12:15 dfer Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -362,7 +362,8 @@ c     IF ( useDiagnotics ) THEN
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
         
         diagName  = 'GM_RURMS'
-        diagTitle = 'Mixing length for calculating u_rms'
+        diagTitle = 
+     I      'Mixing length for calculating u_rms: MIN(Rdef,GM_K3D_Rmax)'
         diagUnits = 'm               '
         diagCode  = 'SM P    M1      '
         diagMate  = diagNum
@@ -370,7 +371,7 @@ c     IF ( useDiagnotics ) THEN
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
         
         diagName  = 'GM_RRHNS'
-        diagTitle = 'Rhines Radius'
+        diagTitle = 'Rhines scale: sqrt(urms/beta)'
         diagUnits = 'm               '
         diagCode  = 'SM P    M1      '
         diagMate  = diagNum
@@ -378,7 +379,7 @@ c     IF ( useDiagnotics ) THEN
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
         
         diagName  = 'GM_RMIX'
-        diagTitle = 'Unmodulated Mixing Length'
+        diagTitle = 'Unmodulated Mixing Length: MIN(Rdef, RRhines)'
         diagUnits = 'm               '
         diagCode  = 'SM P    M1      '
         diagMate  = diagNum
@@ -537,14 +538,6 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
         
-        diagName  = 'GM_KDEF '
-        diagTitle = 'Rossby wavenumber'
-        diagUnits = '1/m             '
-        diagCode  = 'SM      M1      '
-        diagMate  = diagNum
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
         diagName  = 'GM_RENRM'
         diagTitle = 'renormalisation factor'
         diagUnits = 'none            '
@@ -553,6 +546,15 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
         
+#ifdef GM_K3D_PASSIVE
+        diagName  = 'GM_PSTAR'
+        diagTitle = 'Diagnosed bolus streamfunction: V component'
+        diagUnits = 'm**2/s          '
+        diagCode  = 'VV      LR      '
+        diagMate  = diagNum
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+#endif
 #endif
 
 c     ENDIF
