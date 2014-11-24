@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_variables.F,v 1.17 2014/10/01 12:55:13 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_variables.F,v 1.18 2014/11/24 23:32:21 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -382,7 +382,7 @@ C-    Needs to be called after few {PKG}_init_varia (e.g., PTRACERS_INIT_VARIA)
       ENDIF !IF ( .NOT. ctrlUseGen ) THEN
 
       IF ( ctrlUseGen ) THEN
-#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL))
+#if (defined (ALLOW_GENTIM2D_CONTROL) || defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL))
       CALL CTRL_MAP_INI_GENARR( myThid )
 #endif
 
