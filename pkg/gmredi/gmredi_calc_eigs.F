@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_eigs.F,v 1.6 2014/05/20 11:42:28 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_eigs.F,v 1.7 2014/11/24 10:23:50 dfer Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -233,7 +233,6 @@ C         and the first M baroclinic modes (eigenvectors)
        ENDDO
       ENDDO
 
-      DO k=1,Nr
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
          IF (kLow(i,j).GT.2 .AND. val(i,j).NE.zeroRL) THEN
@@ -243,7 +242,6 @@ C         and the first M baroclinic modes (eigenvectors)
          ENDIF
         ENDDO
        ENDDO
-      ENDDO
 
 # else      
       DO k=1,Nr
