@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.13 2014/11/15 21:38:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.14 2014/11/24 23:43:46 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -79,7 +79,7 @@ c--   Now, read the control vector.
 C--   generic 2D control variables
       DO iarr = 1, maxCtrlTim2D
 
-        if (xx_gentim2d_weight(iarr).NE.' ') then
+       if (xx_gentim2d_weight(iarr).NE.' ') then
 
         call ctrl_init_rec ( xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
      I       xx_gentim2d_startdate1(iarr),
@@ -96,52 +96,55 @@ C--   generic 2D control variables
         write(fnamegenOut(1:80),'(2a,i10.10)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.effective.',optimcycle
 
-         smoothOpNb=1
-         do k2 = 1, maxCtrlProc
+        smoothOpNb=1
+        do k2 = 1, maxCtrlProc
           if (xx_gentim2d_preproc(k2,iarr).EQ.'smooth') then
              if (xx_gentim2d_preproc_i(k2,iarr).NE.0) 
      &           smoothOpNb=xx_gentim2d_preproc_i(k2,iarr)
           endif
-         enddo
+        enddo
 
         DO irec = 1, endrec
 
-        call active_read_xy( fnamegenIn, xx_gen, irec,
+         call active_read_xy( fnamegenIn, xx_gen, irec,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gentim2d_dummy(iarr) )
 
 #ifdef ALLOW_SMOOTH
-        IF ( ctrlSmoothCorrel2D ) THEN
-        IF ( useSMOOTH ) THEN
-        call smooth_correl2D(xx_gen,maskC,smoothOpNb,mythid)
+         IF ( ctrlSmoothCorrel2D ) THEN
+          IF ( useSMOOTH ) THEN
+           call smooth_correl2D(xx_gen,maskC,smoothOpNb,mythid)
 
-        DO bj=myByLo(myThid), myByHi(myThid)
-         DO bi=myBxLo(myThid), myBxHi(myThid)
-          DO j = 1,sNy
-           DO i = 1,sNx
-            if ((maskC(i,j,1,bi,bj).NE.0.).AND.
-     &          (wgentim2d(i,j,bi,bj,iarr).GT.0.)) then
+           DO bj=myByLo(myThid), myByHi(myThid)
+            DO bi=myBxLo(myThid), myBxHi(myThid)
+             DO j = 1,sNy
+              DO i = 1,sNx
+               if ((maskC(i,j,1,bi,bj).NE.0.).AND.
+     &           (wgentim2d(i,j,bi,bj,iarr).GT.0.)) then
                 xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)
      &                  /sqrt(wgentim2d(i,j,bi,bj,iarr))
-            else
+               else
                 xx_gen(i,j,bi,bj)=0. _d 0
-            endif
+               endif
+              ENDDO
+             ENDDO
+            ENDDO
            ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
 
-        _EXCH_XY_RL ( xx_gen , myThid )
-        ENDIF
-        ENDIF
+           _EXCH_XY_RL ( xx_gen , myThid )
+          ENDIF
+         ENDIF
 #endif /* ALLOW_SMOOTH */
 
-        call active_write_xy( fnamegenOut, xx_gen, irec, optimcycle,
+         call active_write_xy( fnamegenOut, xx_gen, irec, optimcycle,
      &       mythid, xx_gentim2d_dummy(iarr) )
 
+c-- end irec loop
         ENDDO
 
-        endif
+       endif
+
+c-- end iarr loop
       ENDDO
 #endif /* ALLOW_GENTIM2D_CONTROL */
 
