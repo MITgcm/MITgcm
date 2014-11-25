@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_set_connect.F,v 1.1 2014/11/25 01:07:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_set_connect.F,v 1.2 2014/11/25 15:26:10 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -79,12 +79,16 @@ C--   Initialise domain connected-piece Id for OB grid points:
       ENDDO
 
 C--   Read from files domain connected-piece Id for OB grid points:
+C-    Note: current Section READ routines (MDS_READ_SEC_XZ,_YZ) are
+C     single (Master) thread (output only available to Master Thread)
       prtMsg = 0
       fp = readBinaryPrec
+      _BARRIER
       IF ( OBNconnectFile.NE.' ' ) THEN
         CALL READ_REC_XZ_RS( OBNconnectFile, fp,Nr, tmpXZ, 1,0,myThid )
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
+        _BEGIN_MASTER(myThid)
+        DO bj = 1,nSy
+         DO bi = 1,nSx
           IF ( tileHasOBN(bi,bj) ) THEN
            DO k=1,Nr
             DO i=1,sNx
@@ -94,12 +98,14 @@ C--   Read from files domain connected-piece Id for OB grid points:
           ENDIF
          ENDDO
         ENDDO
+        _END_MASTER(myThid)
         prtMsg = 1
       ENDIF
       IF ( OBSconnectFile.NE.' ' ) THEN
         CALL READ_REC_XZ_RS( OBSconnectFile, fp,Nr, tmpXZ, 1,0,myThid )
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
+        _BEGIN_MASTER(myThid)
+        DO bj = 1,nSy
+         DO bi = 1,nSx
           IF ( tileHasOBS(bi,bj) ) THEN
            DO k=1,Nr
             DO i=1,sNx
@@ -109,12 +115,14 @@ C--   Read from files domain connected-piece Id for OB grid points:
           ENDIF
          ENDDO
         ENDDO
+        _END_MASTER(myThid)
         prtMsg = 1
       ENDIF
       IF ( OBEconnectFile.NE.' ' ) THEN
         CALL READ_REC_YZ_RS( OBEconnectFile, fp,Nr, tmpYZ, 1,0,myThid )
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
+        _BEGIN_MASTER(myThid)
+        DO bj = 1,nSy
+         DO bi = 1,nSx
           IF ( tileHasOBE(bi,bj) ) THEN
            DO k=1,Nr
             DO j=1,sNy
@@ -124,12 +132,14 @@ C--   Read from files domain connected-piece Id for OB grid points:
           ENDIF
          ENDDO
         ENDDO
+        _END_MASTER(myThid)
         prtMsg = 1
       ENDIF
       IF ( OBWconnectFile.NE.' ' ) THEN
         CALL READ_REC_YZ_RS( OBWconnectFile, fp,Nr, tmpYZ, 1,0,myThid )
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
+        _BEGIN_MASTER(myThid)
+        DO bj = 1,nSy
+         DO bi = 1,nSx
           IF ( tileHasOBW(bi,bj) ) THEN
            DO k=1,Nr
             DO j=1,sNy
@@ -139,8 +149,10 @@ C--   Read from files domain connected-piece Id for OB grid points:
           ENDIF
          ENDDO
         ENDDO
+        _END_MASTER(myThid)
         prtMsg = 1
       ENDIF
+      _BARRIER
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -259,6 +271,7 @@ C-   combine set of list (1 per tile) into 1 global list
           STOP 'ABNORMAL END: S/R OBCS_SET_CONNECT'
         ENDIF
         IF ( prtMsg.GE.debLevA ) THEN
+          _BEGIN_MASTER(myThid)
           WRITE(msgBuf,'(A,I4,2(A,I10))') 'OBCS_SET_CONNECT: @ k=', k,
      &     ', maxConnect=', maxConnect, ' , numConnect=', numConnect
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -270,6 +283,7 @@ C-   combine set of list (1 per tile) into 1 global list
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                          SQUEEZE_RIGHT, myThid )
           ENDDO
+          _END_MASTER(myThid)
         ENDIF
 
 C-   reset connected Id in order to use all number from 1 to numConnect
