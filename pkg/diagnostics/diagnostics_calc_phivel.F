@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_calc_phivel.F,v 1.10 2014/11/21 20:59:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_calc_phivel.F,v 1.11 2014/11/25 01:12:11 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
-#undef DIAG_PHIVEL_AS_IF_CLOSED_OB
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
@@ -79,9 +78,6 @@ C     psiLoc  :: horizontal stream-function at special location
       _RL  x2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifdef DIAG_PHIVEL_AS_IF_CLOSED_OB
-      _RS  maskRHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
       _RL psiVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL psiLoc(2)
       INTEGER iL
@@ -93,34 +89,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('DIAGNOSTICS_CALC_PHIVEL',myThid)
 #endif
-
-#ifdef DIAG_PHIVEL_AS_IF_CLOSED_OB
-C     Here we assume zero non-divergent contribution (Psi) to inflow/outflow
-C     through OB (i.e., full flow through OB derived from grad Phi only)
-C     which we obtain by keeping the full RHS just outside OB (i.e., where
-C     tracer OBCS are applied.
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j = 1-OLy,sNy+OLy
-         DO i = 1-OLx,sNx+OLx
-          maskRHS(i,j,bi,bj) = maskInC(i,j,bi,bj)
-         ENDDO
-        ENDDO
-        IF ( useOBCS ) THEN
-         DO j = 1,sNy
-          DO i = 1,sNx
-           maskRHS(i,j,bi,bj) = MAX( maskRHS(i,j,bi,bj)
-     &                             , maskInW(i,j,bi,bj)
-     &                             , maskInW(i+1,j,bi,bj)
-     &                             , maskInS(i,j,bi,bj)
-     &                             , maskInS(i,j+1,bi,bj)
-     &                             )
-          ENDDO
-         ENDDO
-        ENDIF
-       ENDDO
-      ENDDO
-#endif /* DIAG_PHIVEL_AS_IF_CLOSED_OB */
 
       DO ks = 1,nlevels(listId)
         k = NINT(levs(ks,listId))
@@ -174,25 +142,27 @@ C-    calculate RHS = rAc*Div(uVel,vVel):
               b2d(i,j,bi,bj) = (
      &                    ( uTrans(i+1,j,bi,bj) - uTrans(i,j,bi,bj) )
      &                  + ( vTrans(i,j+1,bi,bj) - vTrans(i,j,bi,bj) )
-#ifdef DIAG_PHIVEL_AS_IF_CLOSED_OB
-     &                         )*maskRHS(i,j,bi,bj)
-#else
      &                         )*maskInC(i,j,bi,bj)
-#endif
-              rhsMax = MAX(ABS(b2d(I,J,bi,bj)),rhsMax)
             ENDDO
            ENDDO
          ENDDO
         ENDDO
 
-#ifndef DIAG_PHIVEL_AS_IF_CLOSED_OB
-C     Here we assume that most inflow/outflow through OB is due to the
-C     non-divergent contribution (Psi), with the exception of the net inFlow
-C     which is kept (for solver convergence) assuming it is uniformly
-C     distributed along OB.
-C Note: This does not work when the domain (at this level k) is composed
-C     of disconnected pieces with more than one with OB.
 #ifdef ALLOW_OBCS
+C  There is ambiguity in splitting OB cross flow into divergent (grad.Phi)
+C    contribution and rotational (rot.Psi) contribution:
+C  a) In most cases, will interpret most of the OB cross flow (except
+C     the net inflow which has to come from grad.Phi) as non divergent
+C     and only keep the divergence associated with the net inflow
+C     (assuming here uniform distribution along the OB section;
+C     This processing must be done for each domain-connected section
+C     of the OB (using pkg/obcs OB[N,S,E,W]_connect Id) otherwise the
+C     solver will not converge.
+C  b) When setting a null domain-connected Id for some OB section,
+C     we can recover the other extreme where the OB cross flow is
+C     interpreted as a pure divergent (grad.Phi) contribution (-> constant
+C      Psi along this section). This is done by keeping the full RHS just
+C     outside OB (i.e., where tracer OBCS are applied.
         IF ( useOBCS ) THEN
          CALL OBCS_DIAG_BALANCE(
      U             b2d,
@@ -200,12 +170,22 @@ C     of disconnected pieces with more than one with OB.
      I             myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_OBCS */
-#endif /* ndef DIAG_PHIVEL_AS_IF_CLOSED_OB */
 
 C-    Normalise Matrice & RHS :
         diagNormaliseRHS = diagCG_resTarget.GT.0.
         normaliseMatrice = .TRUE.
         diagNormaliseRHS = .TRUE.
+        IF ( diagNormaliseRHS ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j = 1,sNy
+            DO i = 1,sNx
+              rhsMax = MAX(ABS(b2d(I,J,bi,bj)),rhsMax)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
         a2dNorm = 1. _d 0
         b2dNorm = 1. _d 0
         x2dNorm = 1. _d 0
