@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.18 2012/09/18 20:09:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.19 2014/11/25 01:08:20 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -179,7 +179,7 @@ C-    Eastern boundary
            IF ( OBCS_insideMask(i,j,bi,bj).LT.
      &          OBCS_insideMask(i-1,j,bi,bj)
      &          .AND. ( j.LT.1 .OR. j.GT.sNy )
-     &          .AND. ksurfW(i,j,bi,bj).LE.Nr ) THEN
+     &          .AND. kSurfW(i,j,bi,bj).LE.Nr ) THEN
             IF ( OB_Ie(j,bi,bj).EQ.OB_indexNone ) THEN
               OB_Ie(j,bi,bj) = i
               WRITE(msgBuf,'(A,I5,2(A,I3),2(A,I5))')
@@ -202,7 +202,7 @@ C-    Western boundary
            IF ( OBCS_insideMask(i,j,bi,bj).LT.
      &          OBCS_insideMask(i+1,j,bi,bj)
      &          .AND. ( j.LT.1 .OR. j.GT.sNy )
-     &          .AND. ksurfW(i+1,j,bi,bj).LE.Nr ) THEN
+     &          .AND. kSurfW(i+1,j,bi,bj).LE.Nr ) THEN
             IF ( OB_Iw(j,bi,bj).EQ.OB_indexNone ) THEN
               OB_Iw(j,bi,bj) = i
               WRITE(msgBuf,'(A,I5,2(A,I3),2(A,I5))')
@@ -225,7 +225,7 @@ C-    Northern boundary
            IF ( OBCS_insideMask(i,j,bi,bj).LT.
      &          OBCS_insideMask(i,j-1,bi,bj)
      &          .AND. ( i.LT.1 .OR. i.GT.sNx )
-     &          .AND. ksurfS(i,j,bi,bj).LE.Nr ) THEN
+     &          .AND. kSurfS(i,j,bi,bj).LE.Nr ) THEN
             IF ( OB_Jn(i,bi,bj).EQ.OB_indexNone ) THEN
               OB_Jn(i,bi,bj) = j
               WRITE(msgBuf,'(A,I5,2(A,I3),2(A,I5))')
@@ -248,7 +248,7 @@ C-    Southern boundary
            IF ( OBCS_insideMask(i,j,bi,bj).LT.
      &          OBCS_insideMask(i,j+1,bi,bj)
      &          .AND. ( i.LT.1 .OR. i.GT.sNx )
-     &          .AND. ksurfS(i,j+1,bi,bj).LE.Nr ) THEN
+     &          .AND. kSurfS(i,j+1,bi,bj).LE.Nr ) THEN
             IF ( OB_Js(i,bi,bj).EQ.OB_indexNone ) THEN
               OB_Js(i,bi,bj) = j
               WRITE(msgBuf,'(A,I5,2(A,I3),2(A,I5))')
@@ -399,6 +399,9 @@ C--   Set OB active tiles:
          ENDDO
        ENDDO
       ENDDO
+
+C--   Set domain connected-piece Id for OB grid points:
+      CALL OBCS_SET_CONNECT( myThid )
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('OBCS_INIT_FIXED',myThid)
