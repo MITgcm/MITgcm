@@ -1,10 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2095 2014/11/21 21:04:46 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2096 2014/11/25 01:17:26 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/diagnostcis:
+o pkg/obcs:
+  - add option to specify domain-connected piece Id along OB though files
+    (for now, only used to diagnose PhiVel; default =1 -> global correction)
+  - modify obcs_diag_balance.F to process each connected-part separately;
+    exclude OB where Id = 0 but keep the full divergence there (-> constant
+    Psi along this portion of OB and all inflow derived from grad(Phi))
+  - add example of OB-conect files in verification/so_box_biogeo/input.
+o pkg/diagnostics:
   - improve treatment of Open-Boundaries in Velocity-Potential calculation:
   a) use non zero matrix element across OB and solve for Phi 1 grid point
      outside OB (i.e, where tracer OBCS are applied).
