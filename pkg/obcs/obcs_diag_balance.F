@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_diag_balance.F,v 1.4 2014/11/21 20:59:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_diag_balance.F,v 1.5 2014/11/25 01:08:55 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -18,7 +18,6 @@ C     *==========================================================*
 C     | SUBROUTINE OBCS_DIAG_BALANCE
 C     | o For diagnostics purpose, modify horizontal divergence
 C     |   next (but outside) OB to ensure zero net inflow
-C     | o use similar scheme as OBCS_BALANCE_FLOW
 C     *==========================================================*
 
 C     !USES:
@@ -60,14 +59,13 @@ C     bi, bj       :: tile indices
 C     i,j,k        :: loop indices
 C     iB, jB       :: local index of open boundary
 C     msgBuf       :: Informational/error message buffer
-      INTEGER bi, bj
-      INTEGER i, j, iB, jB
+      INTEGER bi, bj, n
+      INTEGER i, j, iB, jB, iBt, jBt
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL areaOB, inFlow, tmpA
-      _RL tileArea(nSx,nSy)
-      _RL tileFlow(nSx,nSy)
-      _RL tileAreaOB(nSx,nSy)
-      _RL tileInFlow(nSx,nSy)
+      _RL areaOB(OBCS_maxConnect), tmpA
+      _RL inFlow(OBCS_maxConnect)
+      _RL tileAreaOB(nSx,nSy,OBCS_maxConnect)
+      _RL tileInFlow(nSx,nSy,OBCS_maxConnect)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -76,32 +74,36 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
 
 C--   Integrate the transport through each OB
-      areaOB = 0. _d 0
-      inFlow = 0. _d 0
+      DO n=1,OB_connectNumber(k)
+        areaOB(n)= 0. _d 0
+        inFlow(n)= 0. _d 0
+      ENDDO
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        tileAreaOB(bi,bj) = 0.
-        tileInFlow(bi,bj) = 0.
+        DO n=1,OB_connectNumber(k)
+         tileAreaOB(bi,bj,n) = 0.
+         tileInFlow(bi,bj,n) = 0.
+        ENDDO
        ENDDO
       ENDDO
 
 #ifdef ALLOW_OBCS_EAST
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        tileArea(bi,bj) = 0.
-        tileFlow(bi,bj) = 0.
         IF ( tileHasOBE(bi,bj) ) THEN
          DO j=1,sNy
            iB = OB_Ie(j,bi,bj)
            IF ( iB.NE.OB_indexNone .AND. iB.GT.1 ) THEN
-            tmpA = drF(k)*hFacW(iB,j,k,bi,bj)*dyG(iB,j,bi,bj)
-     &                   *maskInW(iB,j,bi,bj)
-            tileArea(bi,bj) = tileArea(bi,bj) + tmpA
-            tileFlow(bi,bj) = tileFlow(bi,bj) + uTrans(iB,j,bi,bj)
+            n = OBE_connect(j,k,bi,bj)
+            IF ( n.GE.1 ) THEN
+              tmpA = drF(k)*hFacW(iB,j,k,bi,bj)*dyG(iB,j,bi,bj)
+     &                     *maskInW(iB,j,bi,bj)
+              tileAreaOB(bi,bj,n) = tileAreaOB(bi,bj,n) + tmpA
+              tileInFlow(bi,bj,n) = tileInFlow(bi,bj,n)
+     &                            - uTrans(iB,j,bi,bj)
+            ENDIF
            ENDIF
          ENDDO
-         tileInFlow(bi,bj) = tileInFlow(bi,bj) - tileFlow(bi,bj)
-         tileAreaOB(bi,bj) = tileAreaOB(bi,bj) + tileArea(bi,bj)
         ENDIF
        ENDDO
       ENDDO
@@ -110,21 +112,21 @@ C--   Integrate the transport through each OB
 #ifdef ALLOW_OBCS_WEST
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        tileArea(bi,bj) = 0.
-        tileFlow(bi,bj) = 0.
         IF ( tileHasOBW(bi,bj) ) THEN
          DO j=1,sNy
            iB = OB_Iw(j,bi,bj)
            IF ( iB.NE.OB_indexNone .AND. iB.LT.sNx ) THEN
-            iB = 1+iB
-            tmpA = drF(k)*hFacW(iB,j,k,bi,bj)*dyG(iB,j,bi,bj)
-     &                   *maskInW(iB,j,bi,bj)
-            tileArea(bi,bj) = tileArea(bi,bj) + tmpA
-            tileFlow(bi,bj) = tileFlow(bi,bj) + uTrans(iB,j,bi,bj)
+            n = OBW_connect(j,k,bi,bj)
+            IF ( n.GE.1 ) THEN
+              iB = 1+iB
+              tmpA = drF(k)*hFacW(iB,j,k,bi,bj)*dyG(iB,j,bi,bj)
+     &                     *maskInW(iB,j,bi,bj)
+              tileAreaOB(bi,bj,n) = tileAreaOB(bi,bj,n) + tmpA
+              tileInFlow(bi,bj,n) = tileInFlow(bi,bj,n)
+     &                            + uTrans(iB,j,bi,bj)
+            ENDIF
            ENDIF
          ENDDO
-         tileInFlow(bi,bj) = tileInFlow(bi,bj) + tileFlow(bi,bj)
-         tileAreaOB(bi,bj) = tileAreaOB(bi,bj) + tileArea(bi,bj)
         ENDIF
        ENDDO
       ENDDO
@@ -133,20 +135,20 @@ C--   Integrate the transport through each OB
 #ifdef ALLOW_OBCS_NORTH
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        tileArea(bi,bj) = 0.
-        tileFlow(bi,bj) = 0.
         IF ( tileHasOBN(bi,bj) ) THEN
          DO i=1,sNx
            jB = OB_Jn(i,bi,bj)
            IF ( jB.NE.OB_indexNone .AND. jB.GT.1 ) THEN
-            tmpA = drF(k)*hFacS(i,jB,k,bi,bj)*dxG(i,jB,bi,bj)
-     &                   *maskInS(i,jB,bi,bj)
-            tileArea(bi,bj) = tileArea(bi,bj) + tmpA
-            tileFlow(bi,bj) = tileFlow(bi,bj) + vTrans(i,jB,bi,bj)
+            n = OBN_connect(i,k,bi,bj)
+            IF ( n.GE.1 ) THEN
+              tmpA = drF(k)*hFacS(i,jB,k,bi,bj)*dxG(i,jB,bi,bj)
+     &                     *maskInS(i,jB,bi,bj)
+              tileAreaOB(bi,bj,n) = tileAreaOB(bi,bj,n) + tmpA
+              tileInFlow(bi,bj,n) = tileInFlow(bi,bj,n)
+     &                            - vTrans(i,jB,bi,bj)
+            ENDIF
            ENDIF
          ENDDO
-         tileInFlow(bi,bj) = tileInFlow(bi,bj) - tileFlow(bi,bj)
-         tileAreaOB(bi,bj) = tileAreaOB(bi,bj) + tileArea(bi,bj)
         ENDIF
        ENDDO
       ENDDO
@@ -155,41 +157,44 @@ C--   Integrate the transport through each OB
 #ifdef ALLOW_OBCS_SOUTH
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        tileArea(bi,bj) = 0.
-        tileFlow(bi,bj) = 0.
         IF ( tileHasOBS(bi,bj) ) THEN
          DO i=1,sNx
            jB = OB_Js(i,bi,bj)
            IF ( jB.NE.OB_indexNone .AND. jB.LT.sNy ) THEN
-            jB = 1+jB
-            tmpA = drF(k)*hFacS(i,jB,k,bi,bj)*dxG(i,jB,bi,bj)
-     &                   *maskInS(i,jB,bi,bj)
-            tileArea(bi,bj) = tileArea(bi,bj) + tmpA
-            tileFlow(bi,bj) = tileFlow(bi,bj) + vTrans(i,jB,bi,bj)
+            n = OBS_connect(i,k,bi,bj)
+            IF ( n.GE.1 ) THEN
+              jB = 1+jB
+              tmpA = drF(k)*hFacS(i,jB,k,bi,bj)*dxG(i,jB,bi,bj)
+     &                     *maskInS(i,jB,bi,bj)
+              tileAreaOB(bi,bj,n) = tileAreaOB(bi,bj,n) + tmpA
+              tileInFlow(bi,bj,n) = tileInFlow(bi,bj,n)
+     &                            + vTrans(i,jB,bi,bj)
+            ENDIF
            ENDIF
          ENDDO
-         tileInFlow(bi,bj) = tileInFlow(bi,bj) + tileFlow(bi,bj)
-         tileAreaOB(bi,bj) = tileAreaOB(bi,bj) + tileArea(bi,bj)
         ENDIF
        ENDDO
       ENDDO
 #endif /* ALLOW_OBCS_SOUTH */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C--   Calculate a unique velocity correction for all (OBCS_balanceFac>0) OB
-C     and correct each OB using corresponding weight factor OBCS_balanceFac
+C--   For each set of OB connected points, calculate a unique velocity
+C     correction and correct to the corresponding OB point divergence
 
-      CALL GLOBAL_SUM_TILE_RL( tileAreaOB, areaOB, myThid )
-      IF ( areaOB.GT.0. ) THEN
-        CALL GLOBAL_SUM_TILE_RL( tileInFlow, inFlow, myThid )
+      DO n=1,OB_connectNumber(k)
+       CALL GLOBAL_SUM_TILE_RL( tileAreaOB(1,1,n), areaOB(n), myThid )
+       IF ( areaOB(n).GT.0. ) THEN
+        CALL GLOBAL_SUM_TILE_RL( tileInFlow(1,1,n), inFlow(n), myThid )
         IF ( debugLevel.GE.debLevC ) THEN
-          WRITE(msgBuf,'(A,I9,A,1P2E16.8)') 'OBCS_DIAG_balance (it=',
-     &       myIter, ' ) correct for inFlow:', inFlow, inFlow/areaOB
+          WRITE(msgBuf,'(A,I9,2I4,A,1P2E16.8)')
+     &     'OBCS_DIAG_BALANCE (it,k,n=', myIter, k, n,
+     &       ' ) inFlow:',inFlow(n),inFlow(n)/areaOB(n)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
         ENDIF
-        inFlow = inFlow / areaOB
-      ENDIF
+        inFlow(n) = inFlow(n) / areaOB(n)
+       ENDIF
+      ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Add correction:
@@ -198,12 +203,19 @@ C--   Add correction:
        DO bi=myBxLo(myThid),myBxHi(myThid)
 #ifdef ALLOW_OBCS_EAST
          IF ( tileHasOBE(bi,bj) ) THEN
-           DO j=1-OLy,sNy+OLy
+c          DO j=1-OLy,sNy+OLy
+           DO j=1,sNy
             IF ( OB_Ie(j,bi,bj).NE.OB_indexNone ) THEN
              iB = OB_Ie(j,bi,bj)
-             div2d(iB,j,bi,bj) = div2d(iB,j,bi,bj)
-     &                   + inFlow*drF(k)*hFacW(iB,j,k,bi,bj)
-     &                           *dyG(iB,j,bi,bj)*maskInW(iB,j,bi,bj)
+             n = OBE_connect(j,k,bi,bj)
+             IF ( n.EQ.0 ) THEN
+               div2d(iB ,j,bi,bj) = div2d(iB ,j,bi,bj)
+     &                            - uTrans(iB,j,bi,bj)
+             ELSE
+               div2d(iB ,j,bi,bj) = div2d(iB,j,bi,bj)
+     &                 + inFlow(n)*drF(k)*hFacW(iB,j,k,bi,bj)
+     &                            *dyG(iB,j,bi,bj)*maskInW(iB,j,bi,bj)
+             ENDIF
             ENDIF
            ENDDO
          ENDIF
@@ -211,12 +223,20 @@ C--   Add correction:
 
 #ifdef ALLOW_OBCS_WEST
          IF ( tileHasOBW(bi,bj) ) THEN
-           DO j=1-OLy,sNy+OLy
+c          DO j=1-OLy,sNy+OLy
+           DO j=1,sNy
             IF ( OB_Iw(j,bi,bj).NE.OB_indexNone ) THEN
-             iB = 1+OB_Iw(j,bi,bj)
-             div2d(iB-1,j,bi,bj) = div2d(iB-1,j,bi,bj)
-     &                   + inFlow*drF(k)*hFacW(iB,j,k,bi,bj)
-     &                           *dyG(iB,j,bi,bj)*maskInW(iB,j,bi,bj)
+             iBt = OB_Iw(j,bi,bj)
+             iB = 1+iBt
+             n = OBW_connect(j,k,bi,bj)
+             IF ( n.EQ.0 ) THEN
+               div2d(iBt,j,bi,bj) = div2d(iBt,j,bi,bj)
+     &                            + uTrans(iB,j,bi,bj)
+             ELSE
+               div2d(iBt,j,bi,bj) = div2d(iBt,j,bi,bj)
+     &                 + inFlow(n)*drF(k)*hFacW(iB,j,k,bi,bj)
+     &                            *dyG(iB,j,bi,bj)*maskInW(iB,j,bi,bj)
+             ENDIF
             ENDIF
            ENDDO
          ENDIF
@@ -224,12 +244,19 @@ C--   Add correction:
 
 #ifdef ALLOW_OBCS_NORTH
          IF ( tileHasOBN(bi,bj) ) THEN
-           DO i=1-OLx,sNx+OLx
+c          DO i=1-OLx,sNx+OLx
+           DO i=1,sNx
             IF ( OB_Jn(i,bi,bj).NE.OB_indexNone ) THEN
              jB = OB_Jn(i,bi,bj)
-             div2d(i,jB,bi,bj) = div2d(i,jB,bi,bj)
-     &                   + inFlow*drF(k)*hFacS(i,jB,k,bi,bj)
-     &                           *dxG(i,jB,bi,bj)*maskInS(i,jB,bi,bj)
+             n = OBN_connect(i,k,bi,bj)
+             IF ( n.EQ.0 ) THEN
+               div2d(i,jB ,bi,bj) = div2d(i,jB ,bi,bj)
+     &                            - vTrans(i,jB,bi,bj)
+             ELSE
+               div2d(i,jB ,bi,bj) = div2d(i,jB ,bi,bj)
+     &                 + inFlow(n)*drF(k)*hFacS(i,jB,k,bi,bj)
+     &                            *dxG(i,jB,bi,bj)*maskInS(i,jB,bi,bj)
+             ENDIF
             ENDIF
            ENDDO
          ENDIF
@@ -237,12 +264,20 @@ C--   Add correction:
 
 #ifdef ALLOW_OBCS_SOUTH
          IF ( tileHasOBS(bi,bj) ) THEN
-           DO i=1-OLx,sNx+OLx
+c          DO i=1-OLx,sNx+OLx
+           DO i=1,sNx
             IF ( OB_Js(i,bi,bj).NE.OB_indexNone ) THEN
-             jB = 1+OB_Js(i,bi,bj)
-             div2d(i,jB-1,bi,bj) = div2d(i,jB-1,bi,bj)
-     &                   + inFlow*drF(k)*hFacS(i,jB,k,bi,bj)
-     &                           *dxG(i,jB,bi,bj)*maskInS(i,jB,bi,bj)
+             jBt = OB_Js(i,bi,bj)
+             jB = 1+jBt
+             n = OBN_connect(i,k,bi,bj)
+             IF ( n.EQ.0 ) THEN
+               div2d(i,jBt,bi,bj) = div2d(i,jBt,bi,bj)
+     &                            + vTrans(i,jB,bi,bj)
+             ELSE
+               div2d(i,jBt,bi,bj) = div2d(i,jBt,bi,bj)
+     &                 + inFlow(n)*drF(k)*hFacS(i,jB,k,bi,bj)
+     &                            *dxG(i,jB,bi,bj)*maskInS(i,jB,bi,bj)
+             ENDIF
             ENDIF
            ENDDO
          ENDIF
