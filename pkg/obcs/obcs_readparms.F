@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.47 2014/09/27 00:13:40 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.48 2014/11/25 01:07:23 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -122,6 +122,8 @@ C     retired parameters
 
       NAMELIST /OBCS_PARM01/
      &          insideOBmaskFile,
+     &          OBNconnectFile, OBSconnectFile,
+     &          OBEconnectFile, OBWconnectFile,
      &          OB_Jnorth,OB_Jsouth,OB_Ieast,OB_Iwest,
      &          useOrlanskiNorth,useOrlanskiSouth,
      &          useOrlanskiEast,useOrlanskiWest,
@@ -211,6 +213,10 @@ C--   Default flags and values for OBCS
       OB_indexNone  = -99
       OB_indexUnset = 0
       insideOBmaskFile = ' '
+      OBNconnectFile   = ' '
+      OBSconnectFile   = ' '
+      OBEconnectFile   = ' '
+      OBWconnectFile   = ' '
       DO i=1,OBNS_Nx
        OB_Jnorth(i) = OB_indexUnset
        OB_Jsouth(i) = OB_indexUnset

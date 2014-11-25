@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_PARAMS.h,v 1.5 2014/09/27 00:13:40 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_PARAMS.h,v 1.6 2014/11/25 01:07:23 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -20,8 +20,11 @@ C     *==========================================================*
 CEOP
 
 C tidalComponents  :: number of tidal components to be applied
+C OBCS_maxConnect  :: maximum number of connected parts
       INTEGER tidalComponents
+      INTEGER OBCS_maxConnect
       PARAMETER ( tidalComponents = 10 )
+      PARAMETER ( OBCS_maxConnect = sNx+sNy )
 
 C--   COMMON /OBC_PARM_I/ OBCS integer-type parameter
 C OBCS_u1_adv_T    :: >0: use 1rst O. upwind adv-scheme @ OB (=1: only if outflow)
@@ -148,13 +151,14 @@ C tidalPeriod             :: tidal period (s)
       _RS SrelaxStevens
 
 C--   COMMON /OBC_FILES/ OBCS character-type parameter
-C insideOBmaskFile   :: File to specify Inside OB region mask (zero beyond OB).
 C OB[N,S,E,W][u,v,w,t,s,eta,am,ph]File :: Files with boundary conditions,
 C                                         the letter combinations mean:
 C                     N/S/E/W   :: northern/southern/eastern/western boundary
 C                     u/v/w/t/s :: ocean u/v/w velocities, temperature/salinity
 C                     eta       :: sea surface height
 C                     am/ph     :: tidal amplitude (m/s) / phase (s)
+C OB[N,S,E,W]connectFile :: Files with connected piece Id for N/S/E/W OB grid pt
+C insideOBmaskFile   :: File to specify Inside OB region mask (zero beyond OB)
       COMMON /OBC_FILES/
      &      OBNuFile,  OBSuFile,  OBEuFile,  OBWuFile,
      &      OBNvFile,  OBSvFile,  OBEvFile,  OBWvFile,
@@ -164,6 +168,8 @@ C                     am/ph     :: tidal amplitude (m/s) / phase (s)
      &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
      &      OBNamFile, OBSamFile, OBEamFile, OBWamFile,
      &      OBNphFile, OBSphFile, OBEphFile, OBWphFile,
+     &      OBNconnectFile, OBSconnectFile,
+     &      OBEconnectFile, OBWconnectFile,
      &      insideOBmaskFile
       CHARACTER*(MAX_LEN_FNAM)
      &      OBNuFile,  OBSuFile,  OBEuFile,  OBWuFile,
@@ -174,6 +180,8 @@ C                     am/ph     :: tidal amplitude (m/s) / phase (s)
      &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
      &      OBNamFile, OBSamFile, OBEamFile, OBWamFile,
      &      OBNphFile, OBSphFile, OBEphFile, OBWphFile,
+     &      OBNconnectFile, OBSconnectFile,
+     &      OBEconnectFile, OBWconnectFile,
      &      insideOBmaskFile
 
 #endif /* ALLOW_OBCS */

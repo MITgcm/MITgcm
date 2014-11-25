@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_GRID.h,v 1.4 2012/09/17 21:47:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_GRID.h,v 1.5 2014/11/25 01:07:23 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -25,6 +25,11 @@ C   OB_Ie, OB_Iw     :: indices of  Eastern & Western  OB location (cell center 
 C   OB_indexNone     :: null value for OB index (if row or column without OB)
 C OBCS_indexStatus   :: track status of OB indices setting
 C OBCS_insideMask    :: Inside OB region mask (zero beyond OB).
+C   OB_connectNumber :: total number of connected parts for this level
+C   OBN_connect      :: domain connected piece Id of this Northern OB grid point
+C   OBS_connect      :: domain connected piece Id of this Southern OB grid point
+C   OBE_connect      :: domain connected piece Id of this Eastern OB grid point
+C   OBW_connect      :: domain connected piece Id of this Western OB grid point
 
       COMMON /OBCS_ACTIVE_TILES/
      &  tileHasOBN, tileHasOBS, tileHasOBE, tileHasOBW
@@ -46,5 +51,14 @@ C OBCS_insideMask    :: Inside OB region mask (zero beyond OB).
       COMMON /OBCS_MASK_RS/
      &  OBCS_insideMask
       _RS OBCS_insideMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      COMMON /OBCS_CONNECTED_ID/
+     &  OB_connectNumber,
+     &  OBN_connect, OBS_connect, OBE_connect, OBW_connect
+      INTEGER OB_connectNumber(Nr)
+      INTEGER OBN_connect(1:sNx,Nr,nSx,nSy)
+      INTEGER OBS_connect(1:sNx,Nr,nSx,nSy)
+      INTEGER OBE_connect(1:sNy,Nr,nSx,nSy)
+      INTEGER OBW_connect(1:sNy,Nr,nSx,nSy)
 
 #endif /* ALLOW_OBCS */
