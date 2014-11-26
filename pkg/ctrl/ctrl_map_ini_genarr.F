@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.14 2014/11/24 23:43:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.15 2014/11/26 03:21:22 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -58,7 +58,9 @@ C     == local variables ==
       integer startrec
       integer endrec
       integer diffrec
-      integer irec
+      integer irec, jrec, krec
+      integer replicated_nrec
+      integer replicated_ntimes
       logical doglobalread
       logical ladinit
       _RL     xx_gen(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -104,11 +106,33 @@ C--   generic 2D control variables
           endif
         enddo
 
-        DO irec = 1, endrec
+        replicated_nrec=endrec
+        replicated_ntimes=0
+        do k2 = 1, maxCtrlProc
+         if (xx_gentim2d_preproc(k2,iarr).EQ.'replicate') then
+           if (xx_gentim2d_preproc_i(k2,iarr).NE.0) then
+            replicated_nrec=min(endrec,xx_gentim2d_preproc_i(k2,iarr))
+            replicated_ntimes=
+     &       int(float(endrec)/float(replicated_nrec))
+            if (replicated_ntimes*replicated_nrec.LT.endrec)
+     &      replicated_ntimes=replicated_ntimes+1
+            if (replicated_ntimes*replicated_nrec.GT.endrec)
+     &      replicated_ntimes=replicated_ntimes-1
+           endif
+         endif
+        enddo
+
+        DO irec = 1, replicated_nrec
 
          call active_read_xy( fnamegenIn, xx_gen, irec,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gentim2d_dummy(iarr) )
+
+        do k2 = 1, maxCtrlProc
+         if (xx_gentim2d_preproc(k2,iarr).EQ.'variaweight')
+     &     call mdsreadfield( xx_gentim2d_weight(iarr), ctrlprec, 'RL',
+     &     1, wgentim2d(1-Olx,1-Oly,1,1,iarr), irec, myThid )
+        enddo
 
 #ifdef ALLOW_SMOOTH
          IF ( ctrlSmoothCorrel2D ) THEN
@@ -140,6 +164,19 @@ C--   generic 2D control variables
      &       mythid, xx_gentim2d_dummy(iarr) )
 
 c-- end irec loop
+        ENDDO
+
+        DO jrec = 1, replicated_ntimes
+        DO irec = 1, replicated_nrec
+        krec=replicated_nrec*(jrec-1)+irec
+        IF (krec.LE.endrec) THEN
+         call active_read_xy( fnamegenOut, xx_gen, irec,
+     &                       doglobalread, ladinit, optimcycle,
+     &                       mythid, xx_gentim2d_dummy(iarr) )
+         call active_write_xy( fnamegenOut, xx_gen, krec, optimcycle,
+     &       mythid, xx_gentim2d_dummy(iarr) )
+        ENDIF
+        ENDDO
         ENDDO
 
        endif

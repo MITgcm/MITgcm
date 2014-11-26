@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_driver.F,v 1.5 2014/11/09 17:23:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_driver.F,v 1.6 2014/11/26 03:21:21 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -40,6 +40,7 @@ c     == local variables ==
 #ifdef ALLOW_GENTIM2D_CONTROL
       integer startrec
       integer endrec
+      integer k2
 #endif
 
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
@@ -56,6 +57,13 @@ c--   Evaluate the individual cost function contributions.
       if (xx_gentim2d_weight(iarr).NE.' ') then
       startrec = ncvarrecstart(300+iarr)
       endrec   = ncvarrecsend(300+iarr)
+      do k2 = 1, maxCtrlProc
+       if (xx_gentim2d_preproc(k2,iarr).EQ.'replicate') then
+         if (xx_gentim2d_preproc_i(k2,iarr).NE.0) then
+          endrec=min(endrec,xx_gentim2d_preproc_i(k2,iarr))
+         endif
+       endif
+      enddo
       call ctrl_cost_gen2d (
      &     startrec, endrec,
      &     xx_gentim2d_file(iarr),xx_gentim2d_dummy(iarr),
