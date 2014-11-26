@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_calc.F,v 1.2 2011/07/06 15:28:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_calc.F,v 1.3 2014/11/26 20:48:32 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -21,10 +21,13 @@ C     *==========================================================*
 C     !USES:
       IMPLICIT NONE
 #include "EEPARAMS.h"
-c#include "PARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 #include "GRID.h"
 #include "DIAGNOSTICS_CALC.h"
+#ifdef ALLOW_OBCS
+# include "OBCS_GRID.h"
+#endif /* ALLOW_OBCS */
 
 C     !INPUT PARAMETERS:
 C     myThid     ::  my thread Id number
@@ -38,6 +41,9 @@ C     !LOCAL VARIABLES:
       _RL     dxLoc, dyLoc, d2Loc, d2Min
       _RL     xLine, xy0, xyLoc, xyMin
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_OBCS
+      LOGICAL kPsi(1:sNx+1,1:sNy+1,nSx,nSy)
+#endif /* ALLOW_OBCS */
 
 C--   Set indices of grid-point location where Psi == 0
       IF ( xPsi0.EQ.UNSET_RS .OR. yPsi0.EQ.UNSET_RS ) THEN
@@ -49,6 +55,28 @@ C-    Set indices to (-1,0) = disabled value
          ENDDO
         ENDDO
       ELSE
+#ifdef ALLOW_OBCS
+C-     set flag where Psi is computed
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j = 1,sNy+1
+           DO i = 1,sNx+1
+             kPsi(i,j,bi,bj) = .TRUE.
+           ENDDO
+          ENDDO
+          IF ( useOBCS ) THEN
+           DO j = 1,sNy+1
+            DO i = 1,sNx+1
+             kPsi(i,j,bi,bj) = OBCS_insideMask( i , j ,bi,bj).EQ.oneRS
+     &                    .OR. OBCS_insideMask(i-1, j ,bi,bj).EQ.oneRS
+     &                    .OR. OBCS_insideMask( i ,j-1,bi,bj).EQ.oneRS
+     &                    .OR. OBCS_insideMask(i-1,j-1,bi,bj).EQ.oneRS
+            ENDDO
+           ENDDO
+          ENDIF
+         ENDDO
+        ENDDO
+#endif /* ALLOW_OBCS */
 C-      find minimum distance:
         d2Min = -1. _d 0
         DO bj=myByLo(myThid),myByHi(myThid)
@@ -58,7 +86,12 @@ C-      find minimum distance:
              dxLoc = xG(i,j,bi,bj)-xPsi0
              dyLoc = yG(i,j,bi,bj)-yPsi0
              d2Loc = dxLoc*dxLoc + dyLoc*dyLoc
+#ifdef ALLOW_OBCS
+             IF ((d2Loc.LT.d2Min .OR. d2Min.EQ.-1. _d 0)
+     &                            .AND. kPsi(i,j,bi,bj) ) d2Min = d2Loc
+#else
              IF ( d2Loc.LT.d2Min .OR. d2Min.EQ.-1. _d 0 ) d2Min = d2Loc
+#endif
            ENDDO
           ENDDO
          ENDDO
@@ -81,7 +114,11 @@ C-      find list of grid-points at minimum distance:
              dxLoc = xG(i,j,bi,bj)-xPsi0
              dyLoc = yG(i,j,bi,bj)-yPsi0
              d2Loc = dxLoc*dxLoc + dyLoc*dyLoc
+#ifdef ALLOW_OBCS
+             IF ( d2Loc.EQ.d2Min .AND. kPsi(i,j,bi,bj) ) THEN
+#else
              IF ( d2Loc.EQ.d2Min ) THEN
+#endif
                xyLoc = xy0 + i + (j-1)*xLine
                IF ( xyMin.EQ.0. _d 0 ) THEN
                  xyMin = xyLoc
@@ -147,6 +184,8 @@ C-      select only one (based on minimum global-map index)
      &                             SQUEEZE_RIGHT, myThid )
               ENDIF
              ENDIF
+c            WRITE(standardMessageUnit,'(2(A,2I5))')
+c    &        ' bi,bj=',bi,bj,' i,jPsi0=', iPsi0(bi,bj),jPsi0(bi,bj)
            ENDDO
           ENDDO
         ENDIF
