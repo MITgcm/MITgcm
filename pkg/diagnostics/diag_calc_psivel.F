@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_calc_psivel.F,v 1.4 2011/08/24 02:24:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_calc_psivel.F,v 1.5 2014/11/26 18:31:34 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -208,6 +208,10 @@ C-    set tile increments
            WRITE(standardMessageUnit,'(3(A,2I4))')
      &          ' diag_calc_psivel:            is,js=', is,js,
      &                 ' ; ix,jx=', ix,jx, ' ; iy,jy=', iy,jy
+c          IF ( iPsi0(bi,bj)*jPsi0(bi,bj).GT.0 )
+c    &     WRITE(standardMessageUnit,'(A,L5))')
+c    &          ' diag_calc_psivel:          kPsi @ i,jPsi0 =',
+c    &                          kPsi(iPsi0(bi,bj),jPsi0(bi,bj))
            _END_MASTER( myThid )
          ENDIF
 #endif /* ALLOW_OBCS */
