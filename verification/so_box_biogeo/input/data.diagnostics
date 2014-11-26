@@ -18,6 +18,13 @@
 #  fileFlags(n)     : specific code (8c string) for output file "n"
 #--------------------
  &DIAGNOSTICS_LIST
+# diagCG_maxIters = 200,
+# diagCG_resTarget = 1.E-10,
+# diagCG_pcOffDFac = 0.96,
+# diagCG_prtResFrq = 20,
+  xPsi0 = 300.,
+  yPsi0 = -26.,
+#--
   fields(1:10,1) = 'ETAN    ','ETANSQ  ','DETADT2 ','PHIBOT  ','PHIBOTSQ',
                    'DICTFLX ','DICOFLX ','DICCFLX ','DICPCO2 ','DICPHAV ',
    levels(1,1) = 1.,
