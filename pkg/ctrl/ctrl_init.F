@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.61 2014/11/26 03:21:21 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.62 2014/11/27 13:29:04 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -72,7 +72,7 @@ c     == local variables ==
 
 #ifdef ALLOW_GENTIM2D_CONTROL
       CHARACTER*(MAX_LEN_FNAM) fnamegen
-      INTEGER ilgen, k2
+      INTEGER ilgen, k2, diffrecFull, endrecFull
 #endif
 
 c     == external ==
@@ -840,25 +840,29 @@ c--
      O       diffrec, startrec, endrec,
      I       myThid )
 C
+
+        diffrecFull=diffrec
+        endrecFull=endrec
         do k2 = 1, maxCtrlProc
          if (xx_gentim2d_preproc(k2,iarr).EQ.'replicate') then
            if (xx_gentim2d_preproc_i(k2,iarr).NE.0) then
+            diffrec=min(diffrec,xx_gentim2d_preproc_i(k2,iarr))
             endrec=min(endrec,xx_gentim2d_preproc_i(k2,iarr))
            endif
          endif
         enddo
-C
-        call ctrl_init_ctrlvar (
-     &       xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
-     &       300+iarr, 400+iarr,
-     &       diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', myThid )
 C
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
         write(fnamegen(1:MAX_LEN_FNAM),'(2a)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.effective'
         call ctrl_init_ctrlvar (
      &       fnamegen(1:MAX_LEN_FNAM),
+     &       300+iarr, 400+iarr,
+     &       diffrecFull, startrec, endrecFull,
+     &       snx, sny, 1, 'c', 'xy', myThid )
+C
+        call ctrl_init_ctrlvar (
+     &       xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
      &       300+iarr, 400+iarr,
      &       diffrec, startrec, endrec,
      &       snx, sny, 1, 'c', 'xy', myThid )
