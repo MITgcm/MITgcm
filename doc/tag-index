@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2096 2014/11/25 01:17:26 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2097 2014/11/28 14:19:20 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff
+  - add extra exchanges in addummy_in_steppging also for mnc output
+o pkg/seaice:
+  - add extra exchanges before dumping adjoint fields in seaice_ad_dump.F
+    to avoid stripes in the adjoint output (similar to addummy_in_stepping.F)
 o pkg/obcs:
   - add option to specify domain-connected piece Id along OB though files
     (for now, only used to diagnose PhiVel; default =1 -> global correction)
