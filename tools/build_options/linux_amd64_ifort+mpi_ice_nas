@@ -1,10 +1,10 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.15 2013/10/22 13:24:48 dfer Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+mpi_ice_nas,v 1.16 2014/11/28 15:56:30 dfer Exp $
 # $Name:  $
 
 # Used to run the testreport on pleiades with:
-# module load comp-intel/2012.0.032 mpi-sgi/mpt.2.06rp16  netcdf/4.0
+# module load comp-intel/2015.0.090 mpi-sgi/mpt.2.11r13 netcdf/4.0
 # works on all types of nodes 
 
 FC=ifort
@@ -17,20 +17,21 @@ OMPFLAG='-openmp'
 CFLAGS='-fPIC'
 LDADD='-shared-intel'
 
-LIBS='-L/nasa/sgi/mpt/2.06rp16/lib -lmpi -L/nasa/netcdf/4.0/lib -lnetcdf'
-INCLUDES='-I/nasa/sgi/mpt/2.06rp16/include -I/nasa/netcdf/4.0/include'
-INCLUDEDIRS='/nasa/sgi/mpt/2.06rp16/include'
+LIBS='-L/nasa/sgi/mpt/2.11r13/lib -lmpi -L/nasa/netcdf/4.0/lib -lnetcdf'
+INCLUDES='-I/nasa/sgi/mpt/2.11r13/include -I/nasa/netcdf/4.0/include'
+#INCLUDEDIRS='/nasa/sgi/mpt/2.11r13/include'
 #- used for parallel (MPI) DIVA
-MPIINCLUDEDIR='/nasa/sgi/mpt/2.06rp16/include'
+#MPIINCLUDEDIR='/nasa/sgi/mpt/2.11r13/include'
 #MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
 
-NOOPTFLAGS='-O1 -fp-model precise'
+#NOOPTFLAGS='-O1 -fp-model precise'
+NOOPTFLAGS='-O0'
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
     FFLAGS="$FFLAGS -fPIC -W0 -WB -convert big_endian -assume byterecl -align"
-    FOPTIM='-O2 -ip -fp-model precise -axAVX -xSSE4.1 -traceback -ftz'
-    NOOPTFILES='seaice_growth.F calc_oce_mxlayer.F fizhi_lsm.F fizhi_clockstuff.F'
+    FOPTIM='-O2 -ipo -fp-model precise -axCORE-AVX2 -xSSE4.2 -traceback -ftz'
+    NOOPTFILES='seaice_growth.F calc_oce_mxlayer.F fizhi_lsm.F fizhi_clockstuff.F ini_parms.F'
 else
     #  Try to follow IEEE-754
     FFLAGS="$FFLAGS -fPIC -W0 -WB -convert big_endian -assume byterecl -noalign"
