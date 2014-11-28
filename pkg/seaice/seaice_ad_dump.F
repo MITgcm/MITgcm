@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.12 2014/11/28 13:51:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.13 2014/11/28 14:17:13 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -179,14 +179,35 @@ C       case dumpAdVarExch = 2
 
 #ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
-
-          CALL MNC_CW_SET_UDIM('adseaice', -1, myThid)
-          CALL MNC_CW_RL_W_S('D','adseaice',0,0,'T',myTime,myThid)
-          CALL MNC_CW_SET_UDIM('adseaice', 0, myThid)
-          CALL MNC_CW_I_W_S('I','adseaice',0,0,'iter',myIter,myThid)
-          CALL MNC_CW_RL_W_S('D','adseaice',0,0,'model_time',myTime,
-     &         myThid)
+         
+         CALL MNC_CW_SET_UDIM('adseaice', -1, myThid)
+         CALL MNC_CW_RL_W_S('D','adseaice',0,0,'T',myTime,myThid)
+         CALL MNC_CW_SET_UDIM('adseaice', 0, myThid)
+         CALL MNC_CW_I_W_S('I','adseaice',0,0,'iter',myIter,myThid)
+         CALL MNC_CW_RL_W_S('D','adseaice',0,0,'model_time',myTime,
+     &        myThid)
 c
+         IF (dumpAdVarExch.EQ.2) THEN
+          CALL COPY_ADVAR_OUTP( dumRS, adarea, var2Du, 1 , 12, myThid )
+          CALL MNC_CW_RL_W('D','adseaice',0,0,'adarea',
+     &         var2Du, myThid)
+          CALL COPY_ADVAR_OUTP( dumRS, adheff, var2Du, 1 , 12, myThid )
+          CALL MNC_CW_RL_W('D','adseaice',0,0,'adheff',
+     &         var2Du, myThid)
+          CALL COPY_ADVAR_OUTP( dumRS, adhsnow, var2Du, 1 , 12, myThid )
+          CALL MNC_CW_RL_W('D','adseaice',0,0,'adhsnow',
+     &         var2Du, myThid)
+# ifdef SEAICE_ALLOW_DYNAMICS
+C          IF (SEAICEuseDYNAMICS) THEN
+          CALL COPY_AD_UV_OUTP( dumRS, dumRS, aduice, advice,
+     &         var2Du, var2Dv, 1, 34, myThid )
+          CALL MNC_CW_RL_W('D','adseaice',0,0,'aduice',
+     &         var2Du, myThid)
+          CALL MNC_CW_RL_W('D','adseaice',0,0,'advice',
+     &         var2Dv, myThid)
+C          ENDIF
+# endif
+         ELSE
           CALL MNC_CW_RL_W('D','adseaice',0,0,'adarea',
      &         adarea, myThid)
           CALL MNC_CW_RL_W('D','adseaice',0,0,'adheff',
@@ -194,13 +215,14 @@ c
           CALL MNC_CW_RL_W('D','adseaice',0,0,'adhsnow',
      &         adhsnow, myThid)
 # ifdef SEAICE_ALLOW_DYNAMICS
-          IF (SEAICEuseDYNAMICS) THEN
-            CALL MNC_CW_RL_W('D','adseaice',0,0,'aduice',
+C          IF (SEAICEuseDYNAMICS) THEN
+          CALL MNC_CW_RL_W('D','adseaice',0,0,'aduice',
      &         aduice, myThid)
-            CALL MNC_CW_RL_W('D','adseaice',0,0,'advice',
+          CALL MNC_CW_RL_W('D','adseaice',0,0,'advice',
      &         advice, myThid)
-          ENDIF
+C          ENDIF
 # endif
+         ENDIF
 
         ENDIF
 #endif /* ALLOW_MNC */

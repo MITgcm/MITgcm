@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.60 2014/04/04 23:03:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.61 2014/11/28 14:16:57 mlosch Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -424,13 +424,67 @@ C       end if dumpAdVarExch = 2
 
 #ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
-          CALL MNC_CW_SET_UDIM('adstate', -1, myThid)
-          CALL MNC_CW_RL_W_S('D','adstate',0,0,'T',myTime,myThid)
-          CALL MNC_CW_SET_UDIM('adstate', 0, myThid)
-          CALL MNC_CW_I_W_S('I','adstate',0,0,'iter',myIter,myThid)
-          CALL MNC_CW_RL_W_S('D','adstate',0,0,'model_time',myTime,
-     &         myThid)
+         CALL MNC_CW_SET_UDIM('adstate', -1, myThid)
+         CALL MNC_CW_RL_W_S('D','adstate',0,0,'T',myTime,myThid)
+         CALL MNC_CW_SET_UDIM('adstate', 0, myThid)
+         CALL MNC_CW_I_W_S('I','adstate',0,0,'iter',myIter,myThid)
+         CALL MNC_CW_RL_W_S('D','adstate',0,0,'model_time',myTime,
+     &        myThid)
 
+         IF ( dumpAdVarExch.EQ.2 ) THEN
+          CALL COPY_AD_UV_OUTP( dumRS, dumRS, aduVel, advVel,
+     &                          var3Du, var3Dv, Nr, 34, myThid )
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adU', var3Du, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adV', var3Dv, myThid)
+          CALL COPY_ADVAR_OUTP( dumRS, adTheta,var3Du, Nr, 12, myThid )
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adT', var3Du, myThid)
+          CALL COPY_ADVAR_OUTP( dumRS, adSalt,var3Du, Nr, 12, myThid )
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adS', var3Du, myThid)
+          CALL COPY_ADVAR_OUTP( dumRS, adEtaN, var2Du, 1 , 12, myThid )
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adEta', var2Du, myThid)
+          CALL COPY_ADVAR_OUTP( dumRS, adwVel, var3Du, Nr, 12, myThid )
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adW', var3Du, myThid)
+
+          CALL COPY_ADVAR_OUTP( adQnet, dumRL, var2Du, 1, 11, myThid )
+          CALL MNC_CW_RS_W('D','adstate',0,0,'adQnet', var2Du, myThid)
+          CALL COPY_ADVAR_OUTP( adEmPmR,dumRL, var2Du, 1, 11, myThid )
+          CALL MNC_CW_RS_W('D','adstate',0,0,'adEmpmr', var2Du, myThid)
+          CALL COPY_AD_UV_OUTP( adFu, adFv, dumRL, dumRL,
+     &                          var2Du, var2Dv, 1, 33, myThid )
+          CALL MNC_CW_RS_W('D','adstate',0,0,'adFu', var2Du, myThid)
+          CALL MNC_CW_RS_W('D','adstate',0,0,'adFv', var2Dv, myThid)
+
+#ifdef ALLOW_SST0_CONTROL
+          CALL COPY_ADVAR_OUTP( adSST, dumRL, var2Du, 1, 11, myThid )
+          CALL MNC_CW_RS_W('D','adstate',0,0,'adSST', var2Du, myThid)
+#endif
+#ifdef ALLOW_SSS0_CONTROL
+          CALL COPY_ADVAR_OUTP( adSSS, dumRL, var2Du, 1, 11, myThid )
+          CALL MNC_CW_RS_W('D','adstate',0,0,'adSSS', var2Du, myThid)
+#endif
+#ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
+          CALL COPY_ADVAR_OUTP( dumRS, adBottomDragFld,
+     &                                        var2Du, 1, 12, myThid )
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &                     'adBottomDrag', var2Du, myThid)
+#endif
+#ifdef ALLOW_DIFFKR_CONTROL
+          CALL COPY_ADVAR_OUTP( dumRS, adDiffKr,var3Du, Nr, 12,myThid )
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &                     'adDiffkr', var3Du, myThid)
+#endif
+#ifdef ALLOW_KAPGM_CONTROL
+          CALL COPY_ADVAR_OUTP( dumRS, adKapGM, var3Du, Nr, 12,myThid )
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &                     'adkapgm', var3Du, myThid)
+#endif
+#ifdef ALLOW_KAPREDI_CONTROL
+          CALL COPY_ADVAR_OUTP( dumRS,adKapRedi,var3Du, Nr, 12,myThid )
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &                     'adkapredi', var3Du, myThid)
+#endif
+         ELSE
+C     dumpAdVarExch.NE.2
           CALL MNC_CW_RL_W('D','adstate',0,0,'adU', aduVel, myThid)
           CALL MNC_CW_RL_W('D','adstate',0,0,'adV', advVel, myThid)
           CALL MNC_CW_RL_W('D','adstate',0,0,'adT', adtheta, myThid)
@@ -465,7 +519,8 @@ C       end if dumpAdVarExch = 2
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adkapredi', adkapredi, myThid)
 #endif
-
+         ENDIF
+C     endif mnc
         ENDIF
 #endif /* ALLOW_MNC */
 
