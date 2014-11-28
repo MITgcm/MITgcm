@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.11 2014/10/20 03:20:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.12 2014/11/28 13:51:38 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -67,6 +67,10 @@ C     suff   :: Hold suffix part of a filename
 C     msgBuf :: Error message buffer
       CHARACTER*(MAX_LEN_FNAM) suff
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RL var2Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL var2Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dumRS(1)
+      _RL dumRL(1)
 CEOP
 
       IF (
@@ -89,39 +93,48 @@ c       writeBinaryPrec = writeStatePrec
 C <<==  If you really want to mess-up with this at your own risk,
 C <<==  uncomment the line above
 
-        IF (.NOT.dumpAdByRec) THEN
+        IF ( dumpAdVarExch.EQ.1 ) THEN
 
-        CALL WRITE_REC_3D_RL(
-     &       'ADJarea.'//suff, writeBinaryPrec,
-     &       1,  adarea, 1, myIter, myThid )
-        CALL WRITE_REC_3D_RL(
-     &       'ADJheff.'//suff, writeBinaryPrec,
-     &       1,  adheff, 1, myIter, myThid )
-        CALL WRITE_REC_3D_RL(
-     &       'ADJhsnow.'//suff, writeBinaryPrec,
-     &       1,  adhsnow, 1, myIter, myThid )
+         CALL ADEXCH_XY_RL( adarea, myThid )
+         CALL ADEXCH_XY_RL( adheff, myThid )
+         CALL ADEXCH_XY_RL( adhsnow, myThid )
+         CALL ADEXCH_UV_3D_RL( aduice,advice, .TRUE., 1, myThid )
+
+        ENDIF
+
+        IF (dumpAdVarExch.NE.2 .AND. .NOT.dumpAdByRec) THEN
+
+         CALL WRITE_REC_3D_RL(
+     &        'ADJarea.'//suff, writeBinaryPrec,
+     &        1,  adarea, 1, myIter, myThid )
+         CALL WRITE_REC_3D_RL(
+     &        'ADJheff.'//suff, writeBinaryPrec,
+     &        1,  adheff, 1, myIter, myThid )
+         CALL WRITE_REC_3D_RL(
+     &        'ADJhsnow.'//suff, writeBinaryPrec,
+     &        1,  adhsnow, 1, myIter, myThid )
 # ifdef SEAICE_ALLOW_DYNAMICS
 cph        IF ( SEAICEuseDynamics ) THEN
           CALL WRITE_REC_3D_RL(
-     &       'ADJuice.'//suff, writeBinaryPrec,
-     &       1,  aduice, 1, myIter, myThid )
+     &        'ADJuice.'//suff, writeBinaryPrec,
+     &        1,  aduice, 1, myIter, myThid )
           CALL WRITE_REC_3D_RL(
-     &       'ADJvice.'//suff, writeBinaryPrec,
-     &       1,  advice, 1, myIter, myThid )
+     &         'ADJvice.'//suff, writeBinaryPrec,
+     &         1,  advice, 1, myIter, myThid )
 cph        ENDIF
 # endif
 
-        ELSE
+        ELSEIF (dumpAdVarExch.NE.2 .AND. .NOT.dumpAdByRec) THEN
 
-        CALL WRITE_REC_3D_RL(
-     &       'ADJarea', writeBinaryPrec,
-     &       1,  adarea, dumpAdRecSi, myIter, myThid )
-        CALL WRITE_REC_3D_RL(
-     &       'ADJheff', writeBinaryPrec,
-     &       1,  adheff, dumpAdRecSi, myIter, myThid )
-        CALL WRITE_REC_3D_RL(
-     &       'ADJhsnow', writeBinaryPrec,
-     &       1,  adhsnow, dumpAdRecSi, myIter, myThid )
+         CALL WRITE_REC_3D_RL(
+     &        'ADJarea', writeBinaryPrec,
+     &        1,  adarea, dumpAdRecSi, myIter, myThid )
+         CALL WRITE_REC_3D_RL(
+     &        'ADJheff', writeBinaryPrec,
+     &        1,  adheff, dumpAdRecSi, myIter, myThid )
+         CALL WRITE_REC_3D_RL(
+     &        'ADJhsnow', writeBinaryPrec,
+     &        1,  adhsnow, dumpAdRecSi, myIter, myThid )
 # ifdef SEAICE_ALLOW_DYNAMICS
 cph        IF ( SEAICEuseDynamics ) THEN
           CALL WRITE_REC_3D_RL(
@@ -131,6 +144,36 @@ cph        IF ( SEAICEuseDynamics ) THEN
      &       'ADJvice', writeBinaryPrec,
      &       1,  advice, dumpAdRecSi, myIter, myThid )
 cph        ENDIF
+# endif
+        ELSE
+C       case dumpAdVarExch = 2
+         CALL COPY_ADVAR_OUTP( dumRS, adarea, var2Du, 1 , 12, myThid )
+         IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL(  'ADJarea.',
+     &                         suff, var2Du, myIter, myThid )
+         IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL(  'ADJarea',
+     &                         var2Du, dumpAdRecMn, myIter, myThid )
+         CALL COPY_ADVAR_OUTP( dumRS, adheff, var2Du, 1 , 12, myThid )
+         IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL(  'ADJheff.',
+     &                         suff, var2Du, myIter, myThid )
+         IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL(  'ADJheff',
+     &                         var2Du, dumpAdRecMn, myIter, myThid )
+         CALL COPY_ADVAR_OUTP( dumRS, adhsnow, var2Du, 1 , 12, myThid )
+         IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL(  'ADJhsnow.',
+     &                         suff, var2Du, myIter, myThid )
+         IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL(  'ADJhsnow',
+     &                         var2Du, dumpAdRecMn, myIter, myThid )
+
+# ifdef SEAICE_ALLOW_DYNAMICS
+         CALL COPY_AD_UV_OUTP( dumRS, dumRS, aduice, advice,
+     &                        var2Du, var2Dv, 1, 34, myThid )
+         IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJuice.',
+     &                         suff, var2Du, myIter, myThid )
+         IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJuice',
+     &                         var2Du, dumpAdRecMn, myIter, myThid )
+         IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJvice.',
+     &                         suff, var2Dv, myIter, myThid )
+         IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJvice',
+     &                         var2Dv, dumpAdRecMn, myIter, myThid )
 # endif
         ENDIF
 
