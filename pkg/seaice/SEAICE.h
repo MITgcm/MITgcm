@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.79 2014/08/14 07:33:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.80 2014/12/01 12:29:06 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -83,12 +83,13 @@ C     fraction of open water (= 1-AREA) needed for ridging parameterization
 C     uIceC :: average of UICE between last two time steps
 C     vIceC :: average of VICE between last two time steps
       COMMON/SEAICE_DYNVARS_3/
-     &     ETA,etaZ,ZETA,PRESS, e11, e22, e12, deltaC,
+     &     ETA,etaZ,ZETA,zetaZ,PRESS, e11, e22, e12, deltaC,
      &     FORCEX,FORCEY,
      &     uIceNm1, vIceNm1
       _RL ETA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaZ       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ZETA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL zetaZ      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     ice strength/pressure term
       _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     strain rate tensor

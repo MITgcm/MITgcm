@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.76 2014/11/17 12:51:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.77 2014/12/01 12:29:06 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -119,6 +119,8 @@ C--  Seaice-Dynamics parameters
       CALL WRITE_0D_C( 'B-GRID', -1, INDEX_NONE,
      & 'model grid type   =', ' /* type of sea ice model grid */')
 #endif /* SEAICE_CGRID */
+      CALL WRITE_0D_L ( SEAICEuseStrImpCpl, INDEX_NONE,
+     & 'SEAICEuseStrImpCpl =', ' /* use strongly implicit coupling */')
       CALL WRITE_0D_L ( SEAICEuseEVP, INDEX_NONE,
      & 'SEAICEuseEVP      =', ' /* use EVP solver rather than LSR */')
 #ifdef SEAICE_ALLOW_FREEDRIFT

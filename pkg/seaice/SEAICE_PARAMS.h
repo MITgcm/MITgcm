@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.119 2014/11/17 12:51:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.120 2014/12/01 12:29:06 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -12,6 +12,9 @@ C     SEAICEuseDYNAMICS :: If false, do not use dynamics;
 C                          default is to use dynamics.
 C     SEAICEuseFREEDRIFT :: If True use free drift velocity instead of EVP
 C                           or LSR
+C     SEAICEuseStrImpCpl:: If true use strongly implicit coupling formulation
+C                          for LSR solver (Hutchings et al 2004, 
+C                          Ocean Modelling, eq.44)
 C     SEAICEuseEVP      :: If true use elastic viscous plastic solver
 C     SEAICEuseEVPstar  :: If true use modified elastic viscous plastic 
 C                          solver (EVP*) by Lemieux et al (2012)
@@ -89,7 +92,7 @@ C     SEAICE_tave_mnc   :: write TimeAverage output using MNC
 C     SEAICE_dump_mnc   :: write snap-shot output   using MNC
 C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
-     &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT,
+     &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
      &     SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,
@@ -110,7 +113,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
-     &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT,
+     &     SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
      &     SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,

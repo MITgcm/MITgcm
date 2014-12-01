@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.158 2014/12/01 10:22:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.159 2014/12/01 12:29:06 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -85,7 +85,7 @@ C     SEAICE_freeze     :: FREEZING TEMP. OF SEA WATER
 
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
-     & SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT,
+     & SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
      & SEAICEuseTEM, SEAICEuseMetricTerms, SEAICEuseTilt,
      & useHB87stressCoupling, SEAICEuseFlooding,
      & usePW79thermodynamics, useMaykutSatVapPoly,
@@ -204,6 +204,7 @@ C--   set default sea ice parameters
 #endif
       SEAICEadjMODE      = 0
       SEAICEuseFREEDRIFT = .FALSE.
+      SEAICEuseStrImpCpl = .FALSE.
       SEAICEuseTilt      = .TRUE.
       SEAICEheatConsFix  = .FALSE.
       SEAICEuseTEM       = .FALSE.
