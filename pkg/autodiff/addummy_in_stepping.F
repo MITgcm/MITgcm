@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.61 2014/11/28 14:16:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.62 2014/12/01 16:36:50 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -446,21 +446,21 @@ C       end if dumpAdVarExch = 2
           CALL MNC_CW_RL_W('D','adstate',0,0,'adW', var3Du, myThid)
 
           CALL COPY_ADVAR_OUTP( adQnet, dumRL, var2Du, 1, 11, myThid )
-          CALL MNC_CW_RS_W('D','adstate',0,0,'adQnet', var2Du, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adQnet', var2Du, myThid)
           CALL COPY_ADVAR_OUTP( adEmPmR,dumRL, var2Du, 1, 11, myThid )
-          CALL MNC_CW_RS_W('D','adstate',0,0,'adEmpmr', var2Du, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adEmpmr', var2Du, myThid)
           CALL COPY_AD_UV_OUTP( adFu, adFv, dumRL, dumRL,
      &                          var2Du, var2Dv, 1, 33, myThid )
-          CALL MNC_CW_RS_W('D','adstate',0,0,'adFu', var2Du, myThid)
-          CALL MNC_CW_RS_W('D','adstate',0,0,'adFv', var2Dv, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adFu', var2Du, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adFv', var2Dv, myThid)
 
 #ifdef ALLOW_SST0_CONTROL
           CALL COPY_ADVAR_OUTP( adSST, dumRL, var2Du, 1, 11, myThid )
-          CALL MNC_CW_RS_W('D','adstate',0,0,'adSST', var2Du, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adSST', var2Du, myThid)
 #endif
 #ifdef ALLOW_SSS0_CONTROL
           CALL COPY_ADVAR_OUTP( adSSS, dumRL, var2Du, 1, 11, myThid )
-          CALL MNC_CW_RS_W('D','adstate',0,0,'adSSS', var2Du, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adSSS', var2Du, myThid)
 #endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
           CALL COPY_ADVAR_OUTP( dumRS, adBottomDragFld,
