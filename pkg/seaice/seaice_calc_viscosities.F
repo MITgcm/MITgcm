@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.28 2014/10/20 03:20:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.29 2014/12/01 12:31:36 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -10,7 +10,7 @@ CBOP
 CStartOfInterface
       SUBROUTINE SEAICE_CALC_VISCOSITIES(
      I     e11, e22, e12, zMin, zMax, hEffM, press0,
-     O     eta, etaZ, zeta, press, deltaC,
+     O     eta, etaZ, zeta, zetaZ, press, deltaC,
      I     iStep, myTime, myIter, myThid )
 C     *==========================================================*
 C     | SUBROUTINE  SEAICE_CALC_VISCOSITIES                      |
@@ -61,6 +61,7 @@ C     bulk viscosity
       _RL  etaZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     shear viscosity
       _RL zeta  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL zetaZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CEndOfInterface
 
 #if ( defined (SEAICE_CGRID) && defined (SEAICE_ALLOW_DYNAMICS) )
@@ -75,7 +76,7 @@ C     ecm2          - inverse of square of eccentricity of yield curve
       _RL etaMax, etaDen
 #endif /* SEAICE_ALLOW_TEM */
       INTEGER k
-      _RL sumNorm
+      _RL sumNorm, maskZ
 #ifdef SEAICE_ZETA_SMOOTHREG
       _RL argTmp
 #endif /* SEAICE_ZETA_SMOOTHREG */
@@ -173,6 +174,9 @@ C     compute eta at Z-points by simple averaging
           etaZ(I,J,bi,bj) = sumNorm *
      &         ( eta (I,J  ,bi,bj)  + eta (I-1,J  ,bi,bj)
      &         + eta (I,J-1,bi,bj)  + eta (I-1,J-1,bi,bj) )
+          zetaZ(I,J,bi,bj) = sumNorm *
+     &         ( zeta(I,J  ,bi,bj)  + zeta(I-1,J  ,bi,bj)
+     &         + zeta(I,J-1,bi,bj)  + zeta(I-1,J-1,bi,bj) )
          ENDDO
         ENDDO
 C     free-slip means no lateral stress, which is best achieved by masking
@@ -181,9 +185,10 @@ C     about the no-slip boundary conditions
         IF (.NOT.SEAICE_no_slip) THEN
          DO J=1-OLy+1,sNy+OLy-1
           DO I=1-OLx+1,sNx+OLx-1
-           etaZ(I,J,bi,bj) = etaZ(I,J,bi,bj)
-     &          *maskC(I,J,  k,bi,bj)*maskC(I-1,J,  k,bi,bj)
-     &          *maskC(I,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
+           maskZ = maskC(I,J,  k,bi,bj)*maskC(I-1,J,  k,bi,bj)
+     &          *  maskC(I,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
+           etaZ (I,J,bi,bj) =  etaZ(I,J,bi,bj) * maskZ
+           zetaZ(I,J,bi,bj) = zetaZ(I,J,bi,bj) * maskZ
           ENDDO
          ENDDO
         ENDIF

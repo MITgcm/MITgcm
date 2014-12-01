@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.27 2014/10/20 03:20:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.28 2014/12/01 12:31:36 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -99,6 +99,7 @@ C     du/vIce   :: ice velocity increment to be added to u/vIce
 C     precomputed (= constant per Newton iteration) versions of
 C     zeta, eta, and DWATN, press
       _RL zetaPre (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL zetaZPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaPre  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaZPre (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dwatPre (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -187,6 +188,7 @@ C     constant for the preconditioner
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            zetaPre(I,J,bi,bj) =  zeta(I,J,bi,bj)
+           zetaZPre(I,J,bi,bj)= zetaZ(I,J,bi,bj)
             etaPre(I,J,bi,bj) =   eta(I,J,bi,bj)
            etaZPre(I,J,bi,bj) =  etaZ(I,J,bi,bj)
            dwatPre(I,J,bi,bj) = DWATN(I,J,bi,bj)
@@ -243,7 +245,7 @@ C     Call preconditioner
           IF ( SOLV_MAX_ITERS .GT. 0 )
      &         CALL SEAICE_PRECONDITIONER(
      U         duIce, dvIce,
-     I         zetaPre, etaPre, etaZpre, dwatPre,
+     I         zetaPre, etaPre, etaZpre, zetaZpre, dwatPre,
      I         newtonIter, krylovIter, myTime, myIter, myThid )
          ELSEIF (iCode.GE.2) THEN
 C     Compute Jacobian times vector

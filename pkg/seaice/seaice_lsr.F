@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.106 2014/12/01 10:22:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.107 2014/12/01 12:31:36 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -166,6 +166,7 @@ cph break artificial dependencies
          DO i=1-OLx,sNx+OLx
           press  (i,j,bi,bj )= 0. _d 0
           zeta   (i,j,bi,bj) = 0. _d 0
+          zetaZ  (i,j,bi,bj) = 0. _d 0
           eta    (i,j,bi,bj) = 0. _d 0
           etaZ   (i,j,bi,bj) = 0. _d 0
           uIceC  (i,j,bi,bj) = 0. _d 0
@@ -289,7 +290,7 @@ CADJ &     key = itmpkey
 
       CALL SEAICE_CALC_VISCOSITIES(
      I     e11, e22, e12, zMin, zMax, hEffM, press0,
-     O     eta, etaZ, zeta, press, deltaC,
+     O     eta, etaZ, zeta, zetaZ, press, deltaC,
      I     ipass, myTime, myIter, myThid )
 
       CALL SEAICE_OCEANDRAG_COEFFS(
@@ -381,7 +382,8 @@ C
          ENDDO
         ENDDO
         CALL SEAICE_LSR_RHSU(
-     I       zetaMinusEta, etaPlusZeta, etaZ, press, vIceC, 
+     I       zetaMinusEta, etaPlusZeta, etaZ, zetaZ, press,
+     I       uIceC, vIceC, 
      U       rhsU,
      I       iMin, iMax, jMin, jMax, bi, bj, myThid )
 C
@@ -393,7 +395,8 @@ C
          ENDDO
         ENDDO
         CALL SEAICE_LSR_RHSV(
-     I       zetaMinusEta, etaPlusZeta, etaZ, press, uIceC, 
+     I       zetaMinusEta, etaPlusZeta, etaZ, zetaZ, press,
+     I       uIceC, vIceC, 
      U       rhsV,
      I       iMin, iMax, jMin, jMax, bi, bj, myThid )
        ENDDO
@@ -407,7 +410,7 @@ C     calculate coefficients of tridiagonal matrices for both u- and
 C     v-equations
 C
       CALL SEAICE_LSR_CALC_COEFFS( 
-     I     etaPlusZeta, zetaMinusEta, etaZ, dwatn,
+     I     etaPlusZeta, zetaMinusEta, etaZ, zetaZ, dwatn,
      O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
      I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
 
@@ -1088,7 +1091,7 @@ CBOP
 C     !ROUTINE: SEAICE_LSR_CALC_COEFFS
 C     !INTERFACE:
       SUBROUTINE SEAICE_LSR_CALC_COEFFS( 
-     I     etaPlusZeta, zetaMinusEta, etaZloc, dwatnLoc,
+     I     etaPlusZeta, zetaMinusEta, etaZloc, zetaZloc, dwatnLoc,
      O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
      I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
 
@@ -1124,8 +1127,9 @@ C     combinations of bulk and shear viscosity at C points
 C     abbreviations
       _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C     shear viscosity at Z points
-      _RL etaZloc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     shear and bulk viscosity at Z points
+      _RL  etaZloc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL zetaZloc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     ice-ocean stress coefficient
       _RL dwatnLoc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     coefficients of ice velocities in coefficient matrix
@@ -1155,6 +1159,8 @@ C     i,j,bi,bj  :: Loop counters
       _RL hFacM, hFacP
 C     backward difference extrapolation factor
       _RL bdfAlpha
+C     strongly implicit coupling factor
+      _RL strImpCplFac
 
 C     coefficients of ice velocities in coefficient matrix
 C     for both U and V-equation
@@ -1185,6 +1191,9 @@ C     backward difference extrapolation factor
        ENDIF
       ENDIF
 
+      strImpCplFac = 0. _d 0
+      IF ( SEAICEuseStrImpCpl ) strImpCplFac = 1. _d 0
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C
@@ -1203,7 +1212,8 @@ C     ... d/dx (zeta-eta) k1 u
         DO J=jMin,jMax+1
          DO I=iMin,iMax
 C     ... d/dy eta d/dy u
-          UYY(I,J) = _dxV(I,J,bi,bj) * etaZloc(I,J,bi,bj)
+          UYY(I,J) = _dxV(I,J,bi,bj) * 
+     &         ( etaZloc(I,J,bi,bj) + strImpCplFac*zetaZloc(I,J,bi,bj) )
      &         * _recip_dyU(I,J,bi,bj)
 C     ... d/dy eta k2 u
           UYM(I,J) = _dxV(I,J,bi,bj) * etaZloc(I,J,bi,bj)
@@ -1213,7 +1223,8 @@ C     ... d/dy eta k2 u
         DO J=jMin,jMax
          DO I=iMin,iMax+1
 C     ... d/dx eta dv/dx
-          VXX(I,J) = _dyU(I,J,bi,bj) * etaZloc(I,J,bi,bj)
+          VXX(I,J) = _dyU(I,J,bi,bj) * 
+     &         ( etaZloc(I,J,bi,bj) + strImpCplFac*zetaZloc(I,J,bi,bj) )
      &         * _recip_dxV(I,J,bi,bj)
 C     ... d/dx eta k1 v
           VXM(I,J) = _dyU(I,J,bi,bj) * etaZloc(I,J,bi,bj)
@@ -1278,11 +1289,11 @@ C     reset coefficients of U(I,J-1) and U(I,J+1)
 C     now we need to normalize everything by the grid cell area
         DO J=jMin,jMax
          DO I=iMin,iMax
-          AU(I,J,bi,bj)    = AU(I,J,bi,bj)    * recip_rAw(I,J,bi,bj)
-          CU(I,J,bi,bj)    = CU(I,J,bi,bj)    * recip_rAw(I,J,bi,bj)
+          AU(I,J,bi,bj)   = AU(I,J,bi,bj)   * recip_rAw(I,J,bi,bj)
+          CU(I,J,bi,bj)   = CU(I,J,bi,bj)   * recip_rAw(I,J,bi,bj)
 C     here we need ad in the contribution from the time derivative
 C     and the symmetric drag term; must be done after normalizing
-          BU(I,J,bi,bj)    = BU(I,J,bi,bj)    * recip_rAw(I,J,bi,bj)
+          BU(I,J,bi,bj)    = BU(I,J,bi,bj)  * recip_rAw(I,J,bi,bj)
      &         + seaiceMaskU(I,J,bi,bj) *
      &         ( bdfAlpha*seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
      &         + 0.5 _d 0 * ( dwatnLoc(I,  J,bi,bj) 
@@ -1340,11 +1351,11 @@ C     reset coefficients of V(I-1,J) and V(I+1,J)
 C     now we need to normalize everything by the grid cell area
         DO J=jMin,jMax
          DO I=iMin,iMax
-          AV(I,J,bi,bj)    = AV(I,J,bi,bj)    * recip_rAs(I,J,bi,bj)
-          CV(I,J,bi,bj)    = CV(I,J,bi,bj)    * recip_rAs(I,J,bi,bj)
+          AV(I,J,bi,bj)   = AV(I,J,bi,bj)   * recip_rAs(I,J,bi,bj)
+          CV(I,J,bi,bj)   = CV(I,J,bi,bj)   * recip_rAs(I,J,bi,bj)
 C     here we need ad in the contribution from the time derivative
 C     and the symmetric drag term; must be done after normalizing
-          BV(I,J,bi,bj)    = BV(I,J,bi,bj)    * recip_rAs(I,J,bi,bj)
+          BV(I,J,bi,bj)   = BV(I,J,bi,bj)   * recip_rAs(I,J,bi,bj)
      &         + seaiceMaskV(I,J,bi,bj) *
      &         ( bdfAlpha*seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
      &         + 0.5 _d 0 * ( dwatnLoc(I,J,  bi,bj) 
@@ -1368,7 +1379,8 @@ CBOP
 C     !ROUTINE: SEAICE_LSR_RHSU
 C     !INTERFACE:
       SUBROUTINE SEAICE_LSR_RHSU(
-     I     zetaMinusEta, etaPlusZeta, etaZloc, pressLoc, vIceC, 
+     I     zetaMinusEta, etaPlusZeta, etaZloc, zetaZloc, pressLoc, 
+     I     uIceC, vIceC, 
      U     rhsU,
      I     iMin, iMax, jMin, jMax, bi, bj, myThid )
 
@@ -1382,8 +1394,10 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
+#include "EEPARAMS.h"
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
+#include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -1395,7 +1409,9 @@ C
       _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaZloc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL zetaZloc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL pressloc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL uIceC       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceC       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL rhsU        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
@@ -1449,6 +1465,30 @@ C     only need to deal with v(i)-v(i-1)
        ENDDO
       ENDDO
 
+      IF ( SEAICEuseStrImpCpl ) THEN
+C     strictly speaking, this is not a contribution to sig12, but for 
+C     convenience we add the explicit term -zetaZ*du/dy here;
+C     we do not have to add any metric terms, because they cancel.
+       DO J=jMin,jMax+1
+        DO I=iMin,iMax
+         hFacM = seaiceMaskV(I,J,bi,bj) - seaiceMaskV(I-1,J,bi,bj)
+         sig12(I,J) = sig12(I,J) - zetaZ(I,J,bi,bj) * (
+     &        ( uIceC(I,J,bi,bj) - uIceC(I,J-1,bi,bj) )
+     &        * _recip_dyU(I,J,bi,bj)
+     &        )
+C     free slip conditions (sig12=0) are taken care of by masking sig12
+     &        *maskC(I  ,J  ,kSrf,bi,bj)*maskC(I-1,J  ,kSrf,bi,bj)
+     &        *maskC(I  ,J-1,kSrf,bi,bj)*maskC(I-1,J-1,kSrf,bi,bj)
+C     no slip boundary conditions (u(j-1)=-u(j))
+C     u(j)+u(j-1) = 0 is also taken care of by masking sig12, so that we
+C     only need to deal with u(j)-u(j-1)
+     &        - zetaZ(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
+     &        * ( uIceC(I,J,bi,bj) + uIceC(I,J-1,bi,bj) )
+     &        * hFacM * 2. _d 0
+        ENDDO
+       ENDDO
+      ENDIF
+        
       DO J=jMin,jMax
        DO I=iMin,iMax
 C     contribution to the rhs part of grad(sigma)_x
@@ -1470,7 +1510,8 @@ CBOP
 C     !ROUTINE: SEAICE_LSR_RHSV
 C     !INTERFACE:
       SUBROUTINE SEAICE_LSR_RHSV(
-     I     zetaMinusEta, etaPlusZeta, etaZloc, pressLoc, uIceC, 
+     I     zetaMinusEta, etaPlusZeta, etaZloc, zetaZloc, pressLoc,
+     I     uIceC, vIceC,
      U     rhsV,
      I     iMin, iMax, jMin, jMax, bi, bj, myThid )
 
@@ -1484,8 +1525,10 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
+#include "EEPARAMS.h"
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
+#include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -1497,8 +1540,10 @@ C
       _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaZloc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL zetaZloc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL pressloc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL uIceC       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vIceC       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL rhsV        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C     !LOCAL VARIABLES:
@@ -1551,6 +1596,30 @@ C     only need to deal with u(j)-u(j-1)
      &         * hFacM * 2. _d 0
        ENDDO
       ENDDO
+
+      IF ( SEAICEuseStrImpCpl ) THEN
+C     strictly speaking, this is not a contribution to sig12, but for 
+C     convenience we add the explicit term -zetaZ*dv/dx here;
+C     we do not have to add any metric terms, because they cancel.
+       DO J=jMin,jMax
+        DO I=iMin,iMax+1
+         hFacM = seaiceMaskU(i,j,bi,bj) - seaiceMaskU(i,j-1,bi,bj)
+         sig12(I,J) = sig12(I,J) - zetaZ(I,J,bi,bj) * (
+     &        ( vIceC(I,J,bi,bj) - vIceC(I-1,J,bi,bj) )
+     &        * _recip_dxV(I,J,bi,bj)
+     &        )
+C     free slip conditions (sig12=0) are taken care of by masking sig12
+     &        *maskC(I  ,J  ,kSrf,bi,bj)*maskC(I-1,J  ,kSrf,bi,bj)
+     &        *maskC(I  ,J-1,kSrf,bi,bj)*maskC(I-1,J-1,kSrf,bi,bj)
+C     no slip boundary conditions (v(i-1)=-v(i))
+C     v(i)+v(i-1) = 0 is also taken care of by masking sig12, so that we
+C     only need to deal with v(i)-v(i-1)
+     &        - zetaZ(I,J,bi,bj) * _recip_dxV(I,J,bi,bj)
+     &        * ( vIceC(I,J,bi,bj) + vIceC(I-1,J,bi,bj) )
+     &        * hFacM * 2. _d 0
+        ENDDO
+       ENDDO
+      ENDIF
 
       DO J=jMin,jMax
        DO I=iMin,iMax
