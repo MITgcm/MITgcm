@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2098 2014/12/01 10:22:59 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2099 2014/12/01 12:33:03 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: introduce strongly implicit coupling, intended for stabilizing
+  LSR (following Hutchings et al. 2004)
+  - introduce zetaZ as a global variable (requires adjustments in
+    seaice_evp.F and seaice_jfnk.F) and compute analoguously to etaZ
+    in seaice_calc_viscosities.F 
+  - new flag SEAICEuseStrImpCpl (default off)
+  - add new terms zetaZ*du/dy and zetaZ*dv/dx on both sides of the
+    momentum equations
+  - JFNK-solver (preconditioner) adjusted to allow using this method
+    (where it does not have any positive effect)
 o pkg/seaice
   - add overlap for restrictive additive Schwartz method also to LSR, but
     turn it off by default (because it only seems to work for non-cubed
