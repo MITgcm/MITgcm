@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.157 2014/11/17 12:52:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.158 2014/12/01 10:22:45 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -285,8 +285,14 @@ C     JFNK stuff
       SEAICEkrylovIterMax = 10
       SEAICE_JFNK_lsIter  = UNSET_I
       SEAICE_JFNK_tolIter = 100
-      SEAICE_OLx          = OLx-2
-      SEAICE_OLy          = OLy-2
+C     This should be the default for both JFNK and for LSR but in order
+C     not jeopardize any existing results, and because it does not yet
+C     work for llc/cubed-sphere topologies, we require that the use knows
+C     what he/she is doing when turning this on.
+CML      SEAICE_OLx          = OLx-2
+CML      SEAICE_OLy          = OLy-2
+      SEAICE_OLx          = UNSET_I
+      SEAICE_OLy          = UNSET_I
       JFNKgamma_nonlin    = 1. _d -05
       JFNKgamma_lin_min   = 0.10 _d 0
       JFNKgamma_lin_max   = 0.99 _d 0
@@ -689,6 +695,17 @@ C     Check if all parameters are set.
 
 C     Make sure that we have least two pseudo time steps
       NPSEUDOTIMESTEPS = MAX(NPSEUDOTIMESTEPS,2)
+
+C     So far we use the restrictive additive Schwartz method only for JFNK
+C     by default
+      IF ( SEAICE_OLx.EQ.UNSET_I ) THEN
+       SEAICE_OLx = 0
+       IF ( SEAICEuseJFNK ) SEAICE_OLx = OLx-2
+      ENDIF
+      IF ( SEAICE_OLy.EQ.UNSET_I ) THEN
+       SEAICE_OLy = 0
+       IF ( SEAICEuseJFNK ) SEAICE_OLy = OLy-2
+      ENDIF
 
 C-    limit preconditioner steps
       IF ( SOLV_MAX_ITERS .EQ. UNSET_I ) THEN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.105 2014/10/20 03:20:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.106 2014/12/01 10:22:45 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -152,15 +152,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       printResidual = debugLevel.GE.debLevA
      &  .AND. DIFFERENT_MULTIPLE( SEAICE_monFreq, myTime, deltaTClock )
 
-CMLC     extra overlap for (restricted) additive Schwarz method
-CML      jMin = 1   - SEAICE_OLy
-CML      jMax = sNy + SEAICE_OLy
-CML      iMin = 1   - SEAICE_OLx
-CML      iMax = sNx + SEAICE_OLx
-      jMin = 1
-      jMax = sNy
-      iMin = 1
-      iMax = sNx
+C     extra overlap for (restricted) additive Schwarz method
+      jMin = 1   - SEAICE_OLy
+      jMax = sNy + SEAICE_OLy
+      iMin = 1   - SEAICE_OLx
+      iMax = sNx + SEAICE_OLx
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph break artificial dependencies
