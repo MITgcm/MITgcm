@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.27 2014/11/03 10:17:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.28 2014/12/01 12:32:15 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -19,7 +19,7 @@ C     !ROUTINE: SEAICE_PRECONDITIONER
 C     !INTERFACE:
       SUBROUTINE SEAICE_PRECONDITIONER(
      U     duIce, dvIce,
-     I     zetaPre, etaPre, etaZpre, dwatPre,
+     I     zetaPre, etaPre, etaZpre, zetaZpre, dwatPre,
      I     newtonIter, krylovIter, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
@@ -54,10 +54,11 @@ C     myThid :: my Thread Id. number
 C     newtonIter :: current iterate of Newton iteration
 C     krylovIter :: current iterate of Krylov iteration
 C     *Pre are precomputed and held fixed during the Krylov iteration
-      _RL  zetaPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL   etaPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  etaZPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  dwatPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL   zetaPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  zetaZPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL    etaPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL   etaZPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL   dwatPre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER newtonIter
       INTEGER krylovIter
       _RL     myTime
@@ -178,7 +179,7 @@ C     calculate coefficients of tridiagonal matrices for both u- and
 C     v-equations
 C
       CALL SEAICE_LSR_CALC_COEFFS(
-     I     etaPlusZeta, zetaMinusEta, etaZpre, dwatPre,
+     I     etaPlusZeta, zetaMinusEta, etaZpre, zetaZpre, dwatPre,
      O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
      I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
 
@@ -235,13 +236,15 @@ C     set up right-hand side now (will be redone in each iteration)
           ENDDO
          ENDDO
          CALL SEAICE_PRECOND_RHSU (
-     I        zetaMinusEta, etaPlusZeta, etaZpre, dvIce,
+     I        zetaMinusEta, etaPlusZeta, etaZpre, zetaZpre,
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
+     I        duIce, dvIce,
      O        rhsU,
      I        iMin,iMax,jMin,jMax,bi,bj,myThid )
          CALL SEAICE_PRECOND_RHSV (
-     I        zetaMinusEta, etaPlusZeta, etaZpre, duIce,
+     I        zetaMinusEta, etaPlusZeta, etaZpre, zetaZpre,
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
+     I        duIce, dvIce,
      O        rhsV,
      I        iMin,iMax,jMin,jMax,bi,bj,myThid )
 #ifndef OBCS_UVICE_OLD
@@ -296,19 +299,21 @@ C     set up right-hand sides for u- and v-equations
           ENDDO
          ENDDO
          CALL SEAICE_PRECOND_RHSU (
-     I        zetaMinusEta, etaPlusZeta, etaZpre, dvIce,
+     I        zetaMinusEta, etaPlusZeta, etaZpre, zetaZPre,
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
+     I        duIce, dvIce,
      U        rhsU,
      I        iMin,iMax,jMin,jMax,bi,bj,myThid )
 #ifndef SEAICE_PRECOND_EXTRA_EXCHANGE
          CALL SEAICE_PRECOND_RHSV (
-     I        zetaMinusEta, etaPlusZeta, etaZpre, duIce,
+     I        zetaMinusEta, etaPlusZeta, etaZpre, zetaZpre,
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
+     I        duIce, dvIce,
      U        rhsV,
      I        iMin,iMax,jMin,jMax,bi,bj,myThid )
 #endif /* SEAICE_PRECOND_EXTRA_EXCHANGE */
 #ifndef OBCS_UVICE_OLD
-C--     prevent tri-diagonal solver to modify OB values:
+C--     prevent tri-diagonal solver from modifying OB values:
          DO J=jMin,jMax
           DO I=iMin,iMax
            IF ( maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj) .EQ. 0. ) THEN
@@ -344,12 +349,13 @@ C     set up right-hand-side for v-equation
           ENDDO
          ENDDO
          CALL SEAICE_PRECOND_RHSV (
-     I        zetaMinusEta, etaPlusZeta, etaZpre, duIce,
+     I        zetaMinusEta, etaPlusZeta, etaZpre, zetaZpre,
      I        dwatPre, coriFac, fricFac, SINWAT, COSWAT,
+     I        duIce, dvIce,
      U        rhsV,
      I        iMin,iMax,jMin,jMax,bi,bj,myThid )
 #ifndef OBCS_UVICE_OLD
-C--     prevent tri-diagonal solver to modify OB values:
+C--     prevent tri-diagonal solver from modifying OB values:
          DO J=jMin,jMax
           DO I=iMin,iMax
            IF ( maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj) .EQ. 0. ) THEN
@@ -428,8 +434,9 @@ CBOP
 C     !ROUTINE: SEAICE_PRECOND_RHSU
 C     !INTERFACE:
       SUBROUTINE SEAICE_PRECOND_RHSU (
-     I     zetaMinusEta, etaPlusZeta, etaZpre, vIceLoc,
+     I     zetaMinusEta, etaPlusZeta, etaZpre, zetaZpre,
      I     dwatPre, coriFac, fricFac, SINWAT, COSWAT,
+     I     uIceLoc, vIceLoc,
      U     rhsU,
      I     iMin,iMax,jMin,jMax,bi,bj,myThid )
 
@@ -449,12 +456,15 @@ C     !USES:
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
+#include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
       _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL etaZpre     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  etaZpre    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL zetaZpre    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL uIceLoc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceLoc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dwatPre     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL coriFac, fricFac
@@ -471,52 +481,22 @@ C     contribution of sigma on righ hand side
       _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hFacM
 
+      _RL zeros(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
 C     surface level
       k = 1
+C     set dummy pressure to zero
+      DO J=1-OLy,sNy+OLy
+       DO I=1-OLx,sNx+OLx
+        zeros(I,J,bi,bj) = 0. _d 0
+       ENDDO
+      ENDDO
+      CALL SEAICE_LSR_RHSU(
+     I     zetaMinusEta, etaPlusZeta, etaZpre, zetaZpre, zeros,
+     I     uIceLoc, vIceLoc, 
+     U     rhsU,
+     I     iMin, iMax, jMin, jMax, bi, bj, myThid )
 
-C     contribution of sigma11 to rhs
-      DO J=jMin,jMax
-       DO I=iMin-1,iMax
-        sig11(I,J) = zetaMinusEta(I,J,bi,bj)
-     &       * ( vIceLoc(I,J+1,bi,bj) - vIceLoc(I,J,bi,bj) )
-     &       * _recip_dyF(I,J,bi,bj)
-     &       + etaPlusZeta(I,J,bi,bj) * k2AtC(I,J,bi,bj)
-     &       * 0.5 _d 0 * (vIceLoc(I,J+1,bi,bj)+vIceLoc(I,J,bi,bj))
-       ENDDO
-      ENDDO
-C     contribution of sigma12 to rhs of u-equation
-      DO J=jMin,jMax+1
-       DO I=iMin,iMax
-        hFacM = seaiceMaskV(I,J,bi,bj) - seaiceMaskV(I-1,J,bi,bj)
-        sig12(I,J) = etaZpre(I,J,bi,bj) * (
-     &       ( vIceLoc(I,J,bi,bj) - vIceLoc(I-1,J,bi,bj) )
-     &       * _recip_dxV(I,J,bi,bj)
-     &       - k1AtZ(I,J,bi,bj)
-     &       * 0.5 _d 0 * (vIceLoc(I,J,bi,bj)+vIceLoc(I-1,J,bi,bj))
-     &       )
-C     free slip conditions (sig12=0) are taken care of by masking sig12
-     &       *maskC(I  ,J  ,k,bi,bj)*maskC(I-1,J  ,k,bi,bj)
-     &       *maskC(I  ,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
-C     no slip boundary conditions (v(i-1)=-v(i))
-C     v(i)+v(i-1) = 0 is also taken care of by masking sig12, so that we
-C     only need to deal with v(i)-v(i-1)
-     &       + etaZpre(I,J,bi,bj) * _recip_dxV(I,J,bi,bj)
-     &       * ( vIceLoc(I,J,bi,bj) + vIceLoc(I-1,J,bi,bj) )
-     &       * hFacM * 2. _d 0
-       ENDDO
-      ENDDO
-
-      DO J=jMin,jMax
-       DO I=iMin,iMax
-C     contribution to the rhs part of grad(sigma)_x
-        rhsU(I,J,bi,bj) = rhsU(I,J,bi,bj)
-     &       + recip_rAw(I,J,bi,bj) * seaiceMaskU(I,J,bi,bj) *
-     &       ( _dyF(I  ,J  ,bi,bj)*sig11(I  ,J  )
-     &       - _dyF(I-1,J  ,bi,bj)*sig11(I-1,J  )
-     &       + _dxV(I  ,J+1,bi,bj)*sig12(I  ,J+1)
-     &       - _dxV(I  ,J  ,bi,bj)*sig12(I  ,J  ) )
-       ENDDO
-      ENDDO
 C     neglected for preconditioning step
       IF ( fricFac+coriFac .NE. 0. _d 0 ) THEN
        DO J=jMin,jMax
@@ -550,8 +530,9 @@ CBOP
 C     !ROUTINE: SEAICE_PRECOND_RHSV
 C     !INTERFACE:
       SUBROUTINE SEAICE_PRECOND_RHSV (
-     I     zetaMinusEta, etaPlusZeta, etaZpre, uIceLoc,
+     I     zetaMinusEta, etaPlusZeta, etaZpre, zetaZpre,
      I     dwatPre, coriFac, fricFac, SINWAT, COSWAT,
+     I     uIceLoc, vIceLoc,
      U     rhsV,
      I     iMin,iMax,jMin,jMax,bi,bj,myThid )
 
@@ -571,13 +552,16 @@ C     !USES:
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
+#include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
       _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL etaZpre     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  etaZpre    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL zetaZpre    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL uIceLoc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vIceLoc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dwatPre     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL coriFac, fricFac
       _RS SINWAT
@@ -593,52 +577,22 @@ C     contribution of sigma on righ hand side
       _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hFacM
 
+      _RL zeros(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
 C     surface level
       k = 1
+C     set dummy pressure to zero
+      DO J=1-OLy,sNy+OLy
+       DO I=1-OLx,sNx+OLx
+        zeros(I,J,bi,bj) = 0. _d 0
+       ENDDO
+      ENDDO
+      CALL SEAICE_LSR_RHSV(
+     I     zetaMinusEta, etaPlusZeta, etaZpre, zetaZpre, zeros,
+     I     uIceLoc, vIceLoc, 
+     U     rhsV,
+     I     iMin, iMax, jMin, jMax, bi, bj, myThid )
 
-C     contribution of sigma22 to rhs
-      DO J=jMin-1,jMax
-       DO I=iMin,iMax
-        sig22(I,J) =  zetaMinusEta(I,J,bi,bj)
-     &       * ( uIceLoc(I+1,J,bi,bj) - uIceLoc(I,J,bi,bj) )
-     &       * _recip_dxF(I,J,bi,bj)
-     &       + etaPlusZeta(I,J,bi,bj) * k1AtC(I,J,bi,bj)
-     &       * 0.5 _d 0 * (uIceLoc(I+1,J,bi,bj)+uIceLoc(I,J,bi,bj))
-       ENDDO
-      ENDDO
-C     contribution of sigma12 to rhs of v-equation
-      DO J=jMin,jMax
-       DO I=iMin,iMax+1
-        hFacM = seaiceMaskU(i,j,bi,bj) - seaiceMaskU(i,j-1,bi,bj)
-        sig12(I,J) = etaZpre(I,J,bi,bj) * (
-     &       ( uIceLoc(I,J,bi,bj) - uIceLoc(I,J-1,bi,bj) )
-     &       * _recip_dyU(I,J,bi,bj)
-     &       - k2AtZ(I,J,bi,bj)
-     &       * 0.5 _d 0 * (uIceLoc(I,J,bi,bj)+uIceLoc(I,J-1,bi,bj))
-     &       )
-C     free slip conditions (sig12=0) are taken care of by masking sig12,
-     &       *maskC(I  ,J  ,k,bi,bj)*maskC(I-1,J  ,k,bi,bj)
-     &       *maskC(I  ,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
-C     no slip boundary conditions (u(j-1)=-u(j))
-C     u(j)+u(j-1) = 0 is also taken care of by masking sig12, so that we
-C     only need to deal with u(j)-u(j-1)
-     &       + etaZpre(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
-     &       * ( uIceLoc(I,J,bi,bj) + uIceLoc(I,J-1,bi,bj) )
-     &       * hFacM * 2. _d 0
-       ENDDO
-      ENDDO
-
-      DO J=jMin,jMax
-       DO I=iMin,iMax
-C     contribution to the rhs part of grad(sigma)_y
-        rhsV(I,J,bi,bj) = rhsV(I,J,bi,bj)
-     &       + recip_rAs(I,J,bi,bj) * seaiceMaskV(I,J,bi,bj) *
-     &       ( _dyU(I+1,J  ,bi,bj) * sig12(I+1,J  )
-     &       - _dyU(I  ,J  ,bi,bj) * sig12(I  ,J  )
-     &       + _dxF(I  ,J  ,bi,bj) * sig22(I  ,J  )
-     &       - _dxF(I  ,J-1,bi,bj) * sig22(I  ,J-1) )
-       ENDDO
-      ENDDO
 C     neglected for preconditioning step
       IF ( fricFac+coriFac .NE. 0. _d 0 ) THEN
        DO J=jMin,jMax
