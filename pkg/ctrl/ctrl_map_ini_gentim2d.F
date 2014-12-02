@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.1 2014/12/02 12:34:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.2 2014/12/02 16:57:27 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -19,6 +19,7 @@ C     !USES:
       IMPLICIT NONE
 
 C     == global variables ==
+#ifndef ALLOW_OPENAD
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -29,17 +30,18 @@ C     == global variables ==
 #include "ctrl.h"
 #include "optim.h"
 #include "ctrl_dummy.h"
-#include "CTRL_FIELDS.h"
 #include "CTRL_GENARR.h"
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_FIELDS.h"
+#endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
       INTEGER myThid
 
+#ifndef ALLOW_OPENAD
 #ifdef ALLOW_GENTIM2D_CONTROL
 C     !LOCAL VARIABLES:
 C     == local variables ==
@@ -175,6 +177,7 @@ c-- end iarr loop
       ENDDO
 
 #endif /* ALLOW_GENTIM2D_CONTROL */
+#endif /* ALLOW_OPENAD */
 
       RETURN
       END
