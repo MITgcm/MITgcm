@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.54 2014/10/20 03:14:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.55 2014/12/03 16:47:45 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -200,7 +200,8 @@ c     >>> Initialise control vector for optimcycle=0 <<<
           write(cfile(1:128),'(4a,i4.4)')
      &         ctrlname(1:9),'_',yctrlid(1:10),
      &         yctrlposunpack(1:4), optimcycle
-          print *, 'ph-pack: unpacking ', ctrlname(1:9)
+          write(standardMessageUnit,*) 'ph-pack: unpacking ', 
+     &         ctrlname(1:9)
       else
 c     >>> Write gradient vector <<<
           lxxadxx   = .FALSE.
@@ -208,7 +209,8 @@ c     >>> Write gradient vector <<<
           write(cfile(1:128),'(4a,i4.4)')
      &         costname(1:9),'_',yctrlid(1:10),
      &         yctrlposunpack(1:4), optimcycle
-          print *, 'ph-pack: unpacking ', costname(1:9)
+          write(standardMessageUnit,*) 'ph-pack: unpacking ', 
+     &         costname(1:9)
        endif
 
 c--   Only Proc 0 will do I/O.
