@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.108 2014/12/03 17:23:26 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.109 2014/12/03 17:26:47 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -773,7 +773,10 @@ C SAFEGUARD AGAINST BAD FORCING ETC
 
         CALL EXCH_UV_XY_RL( uIce, vIce,.TRUE.,myThid)
         IF ( useCubedSphereExchange .AND.
-     &       (SEAICE_OLx.EQ.OLx-2 .OR. SEAICE_OLy.EQ.OLy-2) ) THEN
+     &       (SEAICE_OLx.GT.0 .OR. SEAICE_OLy.GT.0) ) THEN
+C     In my experience we only need to catch the case of SEAICE_OLx/y=OLx/y-2,
+C     but for safety lets call this routine whenever SEAICE_OLx/y > 0
+C     &       (SEAICE_OLx.EQ.OLx-2 .OR. SEAICE_OLy.EQ.OLy-2) ) THEN
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            CALL FILL_CS_CORNER_UV_RL( .TRUE., 
