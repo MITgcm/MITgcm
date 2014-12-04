@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.2 2014/12/02 16:57:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.3 2014/12/04 22:44:57 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CTRL_MAP_INI_GENTIM2D
@@ -35,6 +38,9 @@ C     == global variables ==
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_FIELDS.h"
 #endif
+#ifdef ALLOW_AUTODIFF
+#include "tamc.h"
+#endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -65,13 +71,16 @@ C     == local variables ==
       integer ilgen
 CEOP
 
-
 c--   Now, read the control vector.
       doglobalread = .false.
       ladinit      = .false.
 
 C--   generic 2D control variables
       DO iarr = 1, maxCtrlTim2D
+
+       diffrec=0
+       startrec=0
+       endrec=0
 
        if (xx_gentim2d_weight(iarr).NE.' ') then
 
@@ -115,6 +124,9 @@ C--   generic 2D control variables
         enddo
 
         DO irec = 1, replicated_nrec
+#ifdef ALLOW_AUTODIFF
+CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+#endif
 
          call active_read_xy( fnamegenIn, xx_gen, irec,
      &                       doglobalread, ladinit, optimcycle,
@@ -160,6 +172,9 @@ c-- end irec loop
 
         DO jrec = 1, replicated_ntimes
         DO irec = 1, replicated_nrec
+#ifdef ALLOW_AUTODIFF
+CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+#endif
         krec=replicated_nrec*(jrec-1)+irec
         IF (krec.LE.endrec) THEN
          call active_read_xy( fnamegenOut, xx_gen, irec,
