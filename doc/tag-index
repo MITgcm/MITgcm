@@ -1,16 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2100 2014/12/03 17:27:18 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2101 2014/12/05 01:39:00 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/tutorial_global_oce_biogeo:
+  - AD & OAD set-up: do not set PTRACERS_EvPrRn for tracer 1 & 2 since
+    dilution is already added by pkg/dic ALLOW_OLD_VIRTUALFLUX ;
+    update output_adm,_oadm,_tlm.txt
 o add eesupp/src/fill_cs_corner_rl.F (_RL-copy of fill_cs_corner_rs.F)
-  and call it in seaice_lsr when using nonzero SEAICE_OLx/y
+    and call it in seaice_lsr when using nonzero SEAICE_OLx/y
 o pkg/seaice: introduce strongly implicit coupling, intended for stabilizing
   LSR (following Hutchings et al. 2004)
   - introduce zetaZ as a global variable (requires adjustments in
     seaice_evp.F and seaice_jfnk.F) and compute analoguously to etaZ
-    in seaice_calc_viscosities.F 
+    in seaice_calc_viscosities.F
   - new flag SEAICEuseStrImpCpl (default off)
   - add new terms zetaZ*du/dy and zetaZ*dv/dx on both sides of the
     momentum equations
