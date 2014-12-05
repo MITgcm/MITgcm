@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.18 2014/05/20 11:42:28 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.19 2014/12/05 17:39:39 jmc Exp $
 C $Name:  $
-#include "CPP_OPTIONS.h"
+
 #include "GMREDI_OPTIONS.h"
 
 C     !ROUTINE: GMREDI_K3D
@@ -21,10 +21,10 @@ C     \ev
 
 C     == Global variables ==
 #include "SIZE.h"
-#include "GRID.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
+#include "DYNVARS.h"
 #include "GMREDI.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
