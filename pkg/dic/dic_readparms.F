@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.12 2014/11/04 17:15:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.13 2014/12/05 01:44:32 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -23,6 +23,8 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DIC_VARS.h"
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -306,6 +308,25 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R DIC_READPARMS: dic_pCO2 error'
       ENDIF
+#ifdef ALLOW_OLD_VIRTUALFLUX
+      IF ( PTRACERS_EvPrRn(1).NE.UNSET_RL .OR.
+     &     PTRACERS_EvPrRn(2).NE.UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'when ALLOW_OLD_VIRTUALFLUX is defined (in DIC_OPTIONS.h)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        IF ( PTRACERS_EvPrRn(1).NE.UNSET_RL ) THEN
+         WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &   ' cannot set PTRACERS_EvPrRn(1) (in data.ptracers)'
+         CALL PRINT_ERROR( msgBuf, myThid )
+        ENDIF
+        IF ( PTRACERS_EvPrRn(2).NE.UNSET_RL ) THEN
+         WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &   ' cannot set PTRACERS_EvPrRn(2) (in data.ptracers)'
+         CALL PRINT_ERROR( msgBuf, myThid )
+        ENDIF
+        STOP 'ABNORMAL END: S/R DIC_READPARMS'
+      ENDIF
+#endif /* ALLOW_OLD_VIRTUALFLUX */
 
       _END_MASTER(myThid)
 
