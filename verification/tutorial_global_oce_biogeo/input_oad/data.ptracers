@@ -15,7 +15,7 @@
                      2.1904, 2.2188, 2.2474, 2.2699,
                      2.2792, 2.2814, 2.2815, 2.2806,
                      2.2800, 2.2760, 2.2758,
-#PTRACERS_EvPrRn(1)= 0.,
+ PTRACERS_EvPrRn(1)= 0.,
 # tracer 2 - alk
  PTRACERS_names(2)='Alk',
  PTRACERS_long_names(2)='Alkalinity (Alk) [mol eq/m^3]',
@@ -30,7 +30,7 @@
                      2.3098, 2.3160, 2.3313, 2.3517,
                      2.3667, 2.3761, 2.3832, 2.3862,
                      2.3881, 2.3863, 2.3867,
-#PTRACERS_EvPrRn(2)= 0.,
+ PTRACERS_EvPrRn(2)= 0.,
 # tracer 3 - po4
  PTRACERS_names(3)='PO4',
  PTRACERS_long_names(3)='Phosphate (PO4) [mol P/m^3]',
