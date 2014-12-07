@@ -1,14 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2101 2014/12/05 01:39:00 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2102 2014/12/07 19:13:28 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o verification/tutorial_global_oce_biogeo:
+  - AD & OAD set-up: switch off ALLOW_OLD_VIRTUALFLUX (like in fwd set-up)
+    and set PTRACERS_EvPrRn(1,2) to zero (for DIC & ALK);
+    update output_adm,_oadm,_tlm.txt
+o pkg/dic:
+  - change default to "#undef ALLOW_OLD_VIRTUALFLUX" in DIC_OPTIONS.h
+  - add a stop when ALLOW_OLD_VIRTUALFLUX is defined and PTRACERS_EvPrRn
+    for tracer 1 & 2 is set (to avoid double counting of dilution effect).
+o verification/tutorial_global_oce_biogeo:
   - AD & OAD set-up: do not set PTRACERS_EvPrRn for tracer 1 & 2 since
     dilution is already added by pkg/dic ALLOW_OLD_VIRTUALFLUX ;
     update output_adm,_oadm,_tlm.txt
-o add eesupp/src/fill_cs_corner_rl.F (_RL-copy of fill_cs_corner_rs.F)
+o eesupp/src:
+  - add fill_cs_corner_rl.F (_RL-copy of fill_cs_corner_rs.F)
     and call it in seaice_lsr when using nonzero SEAICE_OLx/y
 o pkg/seaice: introduce strongly implicit coupling, intended for stabilizing
   LSR (following Hutchings et al. 2004)
