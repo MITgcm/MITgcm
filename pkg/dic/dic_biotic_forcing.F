@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.30 2014/11/04 17:16:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.31 2014/12/08 22:59:04 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -100,16 +100,20 @@ C  freefe                 :: iron not bound to ligand
       _RL  GFE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  freefe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
-       INTEGER i,j,k
+      INTEGER i,j,k
 #ifdef CAR_DISS
-       INTEGER nCALCITEstep
+      INTEGER nCALCITEstep
 #endif
 #ifdef ALLOW_FE
 # ifdef SEDFE
-       INTEGER kBottom
+      INTEGER kBottom
 # endif
 #endif
 CEOP
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('DIC_BIOTIC_FORCING',myThid)
+#endif
 
        DO k=1,Nr
          DO j=1-OLy,sNy+OLy
@@ -145,6 +149,9 @@ c          freefe(i,j,k)  =0. _d 0
        ENDDO
 
 C carbon air-sea interaction
+#ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('DIC_SURFFORCING',myThid)
+#endif
        CALL DIC_SURFFORCING(
      I                    PTR_DIC, PTR_ALK, PTR_PO4,
      O                    SURC,
@@ -152,6 +159,9 @@ C carbon air-sea interaction
      I                    myIter, myTime, myThid )
 
 C alkalinity air-sea interaction
+#ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('ALK_SURFFORCING',myThid)
+#endif
        CALL ALK_SURFFORCING(
      I                    PTR_ALK,
      O                    SURA,
@@ -160,6 +170,9 @@ C alkalinity air-sea interaction
 
 #ifdef ALLOW_O2
 C oxygen air-sea interaction
+#ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('O2_SURFFORCING',myThid)
+#endif
        CALL O2_SURFFORCING(
      I                    PTR_O2,
      O                    SURO,
@@ -169,6 +182,9 @@ C oxygen air-sea interaction
 
 #ifdef ALLOW_FE
 C find free iron
+#ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('FE_CHEM',myThid)
+#endif
        CALL FE_CHEM( bi, bj, iMin, iMax, jMin, jMax,
      U               PTR_FE,
      O               freefe,
@@ -176,6 +192,9 @@ C find free iron
 #endif
 
 C biological activity
+#ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('BIO_EXPORT',myThid)
+#endif
        CALL BIO_EXPORT(
      I               PTR_PO4,
 #ifdef ALLOW_FE
@@ -186,6 +205,9 @@ C biological activity
      I               myIter, myTime, myThid )
 
 C flux of po4 from layers with biological activity
+#ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('PHOS_FLUX',myThid)
+#endif
        CALL PHOS_FLUX(
      I               BIOac,
      U               pflux, exportflux,
@@ -209,12 +231,18 @@ C code following method by Karsten Friis
         nCALCITEstep = 3600
         IF(myIter .lt. (nIter0+5) .or.
      &               mod(myIter,nCALCITEstep) .eq. 0)THEN
-           CALL CALCITE_SATURATION(
+#ifdef ALLOW_DEBUG
+          IF (debugMode) CALL DEBUG_CALL('CALCITE_SATURATION',myThid)
+#endif
+          CALL CALCITE_SATURATION(
      I                    PTR_DIC, PTR_ALK, PTR_PO4,
      I                    bi, bj, iMin, iMax, jMin, jMax,
      I                    myIter, myTime, myThid )
         ENDIF
 
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('CAR_FLUX_OMEGA_TOP',myThid)
+#endif
         CALL CAR_FLUX_OMEGA_TOP(
      I                    BIOac,
      O                    cflux,
@@ -222,6 +250,9 @@ C code following method by Karsten Friis
      I                    myIter, myTime, myThid )
 #else
 C old OCMIP way
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('CAR_FLUX',myThid)
+#endif
         CALL CAR_FLUX(
      I                    CAR_S,
      U                    cflux,
@@ -332,6 +363,9 @@ C update
 #ifdef ALLOW_FE
 #ifdef MINFE
 c find free iron and get rid of insoluble part
+#ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('FE_CHEM',myThid)
+#endif
        CALL FE_CHEM( bi, bj, iMin, iMax, jMin, jMax,
      U               PTR_FE,
      O               freefe,
@@ -383,9 +417,7 @@ C save averages
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DIAGNOSTICS
-
       IF ( useDiagnostics ) THEN
-
         CALL DIAGNOSTICS_FILL(BIOac  ,'DICBIOA ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(CAR    ,'DICCARB ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(pCO2   ,'DICPCO2 ',0,1 ,1,bi,bj,myThid)
@@ -395,10 +427,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_O2
         CALL DIAGNOSTICS_FILL(SURO   ,'DICOFLX ',0,1 ,2,bi,bj,myThid)
 #endif
-
       ENDIF
-
 #endif /* ALLOW_DIAGNOSTICS */
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('DIC_BIOTIC_FORCING',myThid)
+#endif
 
 #endif /* DIC_BIOTIC */
 #endif /* ALLOW_PTRACERS */

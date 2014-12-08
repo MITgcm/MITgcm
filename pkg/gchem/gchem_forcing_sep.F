@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.39 2014/09/04 20:08:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.40 2014/12/08 22:58:28 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -55,12 +55,18 @@ C  bi,bj                :: tile indices
 C  k                    :: vertical level
       INTEGER bi,bj,iMin,iMax,jMin,jMax
 c     INTEGER i,j
+      PARAMETER( iMin = 1 , iMax = sNx )
+      PARAMETER( jMin = 1 , jMax = sNy )
 #if (defined ALLOW_OBCS) || (defined ALLOW_DIAGNOSTICS)
       INTEGER iTr
 #endif
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
 #endif /* ALLOW_DIAGNOSTICS */
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('GCHEM_FORCING_SEP',myThid)
+#endif
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
@@ -134,11 +140,6 @@ C$taf loop = parallel
 C$taf loop = parallel
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-        jMin=1
-        jMax=sNy
-        iMin=1
-        iMax=sNx
-c
 ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
 
 #ifdef ALLOW_DIC
@@ -147,6 +148,9 @@ ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
 # else /* ALLOW_AUTODIFF */
         IF ( useDIC ) THEN
 # endif /* ALLOW_AUTODIFF */
+#ifdef ALLOW_DEBUG
+          IF (debugMode) CALL DEBUG_CALL('DIC_BIOTIC_FORCING',myThid)
+#endif
 #ifdef ALLOW_FE
           CALL DIC_BIOTIC_FORCING( pTracer(1-OLx,1-OLy,1,bi,bj,1),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,2),
@@ -184,6 +188,9 @@ cccccccccccccccccccccccccc END DIC cccccccccccccccccccccccccccccccccc
         IF ( useDARWIN ) THEN
 #ifdef NUT_SUPPLY
 c articficial supply of nutrients
+#ifdef ALLOW_DEBUG
+          IF (debugMode) CALL DEBUG_CALL('DARWIN_NUT_SUPPLY',myThid)
+#endif
           CALL DARWIN_NUT_SUPPLY( pTracer(1-OLx,1-OLy,1,bi,bj,1),
      &                          bi, bj, iMin, iMax, jMin, jMax,
      &                          myIter, myTime, myThid )
@@ -200,6 +207,9 @@ c articficial supply of nutrients
 ccccccccccccccc
 C darwin_forcing operates on bi,bj part only, but needs to get full
 C array because of last (iPtr) index
+#ifdef ALLOW_DEBUG
+          IF (debugMode) CALL DEBUG_CALL('DARWIN_FORCING',myThid)
+#endif
           CALL DARWIN_FORCING(  pTracer(1-OLx,1-OLy,1,1,1,1),
      &                          bi, bj, iMin, iMax, jMin, jMax,
      &                          myIter, myTime, myThid )
@@ -212,6 +222,9 @@ C Note: could skip this 2nd call to OBCS_APPLY if all DIC/DARWIN
 C       updates of ptracers were only done in the interior (i.e. with
 C       tendency multiplied by maskInC)
         IF ( useOBCS .AND. .NOT.useDIC ) THEN
+#ifdef ALLOW_DEBUG
+          IF (debugMode) CALL DEBUG_CALL('OBCS_APPLY_PTRACER',myThid)
+#endif
           DO iTr = 1,PTRACERS_numInUse
             CALL OBCS_APPLY_PTRACER(
      I                bi, bj, 0, iTr,
@@ -239,6 +252,9 @@ C       tendency multiplied by maskInC)
 # else /* ALLOW_AUTODIFF */
       IF ( useDIC ) THEN
 # endif /* ALLOW_AUTODIFF */
+#ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('DIC_ATMOS',myThid)
+#endif
        CALL DIC_ATMOS( myTime, myIter, myThid )
 # ifdef COMPONENT_MODULE
        CALL DIC_STORE_FLUXCO2( myTime, myIter, myThid )
@@ -250,6 +266,10 @@ C       tendency multiplied by maskInC)
       ENDIF
 # endif /* ALLOW_AUTODIFF */
 #endif /* ALLOW_DIC */
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('GCHEM_FORCING_SEP',myThid)
+#endif
 
 #endif /* GCHEM_SEPARATE_FORCING */
 #endif /* ALLOW_GCHEM */
