@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.5 2014/10/16 20:02:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.6 2014/12/09 15:51:55 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -610,6 +610,95 @@ CEOP
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ecco_readwei
+C     !INTERFACE:
+      subroutine ecco_readwei(
+     I                           localerr_file,
+     O                           localweight,
+     I                           iRec,
+     I                           nnzbar,
+     I                           myThid
+     &                         )
+
+C     !DESCRIPTION: \bv
+C     reads uncertainty field and compute weight as squared inverse
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
+
+c     == routine arguments ==
+
+C     localerr_file: filename
+C     localweight:      array
+C     iRec:            record number
+      CHARACTER*(*) localerr_file
+      _RL     localweight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      INTEGER iRec
+      INTEGER myThid
+      INTEGER nnzbar
+
+#ifdef ALLOW_ECCO
+
+c     == local variables ==
+
+      integer bi,bj
+      integer i,j,k
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+
+CEOP
+
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
+      jmin = 1-oly
+      jmax = sny+oly
+      imin = 1-olx
+      imax = snx+olx
+
+      call mdsreadfield( localerr_file, cost_iprec,
+     &  cost_yftype, nnzbar, localweight, iRec, mythid )
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j = 1-Oly,sNy+Oly
+         DO i = 1-Olx,sNx+Olx
+          DO k = 1,nnzbar
+c--        Test for missing values.
+           if (localweight(i,j,k,bi,bj) .lt. -9900.) then
+             localweight(i,j,k,bi,bj) = 0. _d 0
+           endif
+c--        Convert to weight
+           if (localweight(i,j,k,bi,bj) .ne. 0.) then
+              localweight(i,j,k,bi,bj) =
+     &             1./localweight(i,j,k,bi,bj)/
+     &                localweight(i,j,k,bi,bj)
+           endif
+          enddo
+         enddo
+        enddo
+       enddo
+      enddo
+
+#endif /* ALLOW_ECCO */
+
+      RETURN
+      END
+
 
 
 

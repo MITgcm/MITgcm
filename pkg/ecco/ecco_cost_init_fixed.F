@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.42 2014/10/22 13:28:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.43 2014/12/09 15:51:55 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -230,74 +230,22 @@ c--    set observation start/enddate
 c--   set weights
       if ( gencost_errfile(k) .NE. ' ' ) then
 
-      kk=gencost_pointer3d(k)
-      il = ilnblnk(gencost_errfile(k))
-      inquire( file=gencost_errfile(k)(1:il), exist=exst )
-      if (.NOT.exst) using_gencost(k)=.FALSE.
+        kk=gencost_pointer3d(k)
+        il = ilnblnk(gencost_errfile(k))
+        inquire( file=gencost_errfile(k)(1:il), exist=exst )
 
-      if ( (.NOT. gencost_timevaryweight(k)).AND.
-     &     (.NOT.gencost_is3d(k)).AND.(exst) ) then
-
-           call mdsreadfield( gencost_errfile(k), cost_iprec,
-     &     cost_yftype, 1, gencost_weight(:,:,1,1,k), 1, mythid )
-
-         DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-           DO j = 1-Oly,sNy+Oly
-            DO i = 1-Olx,sNx+Olx
-c--           initialize weight to 0 if needed
-              if( gencost_timevaryweight(k)) then
-                gencost_weight(i,j,bi,bj,k) = 0. _d 0
-              endif
-c--           Test for missing values.
-              if (gencost_weight(i,j,bi,bj,k) .lt. -9900.) then
-                gencost_weight(i,j,bi,bj,k) = 0. _d 0
-              endif
-c--           Convert to weight
-              if (gencost_weight(i,j,bi,bj,k) .ne. 0.) then
-                 gencost_weight(i,j,bi,bj,k) =
-     &                1./gencost_weight(i,j,bi,bj,k)/
-     &                   gencost_weight(i,j,bi,bj,k)
-              endif
-            enddo
-           enddo
-          enddo
-         enddo
-
+        if ( (.NOT.gencost_is3d(k)).AND.(exst) ) then
+          call ecco_readwei(gencost_errfile(k),
+     &         gencost_weight(:,:,1,1,k), 1, 1, myThid )
 #ifdef ALLOW_GENCOST3D
-      elseif ( (.NOT. gencost_timevaryweight(k)).AND.
-     &     (gencost_is3d(k)).AND.(kk.LE.NGENCOST3D).AND.(exst) ) then
-
-           call mdsreadfield( gencost_errfile(k), cost_iprec,
-     &     cost_yftype, nr, gencost_wei3d(:,:,1,1,1,kk), 1, mythid )
-
-         DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-           DO j = 1-Oly,sNy+Oly
-            DO i = 1-Olx,sNx+Olx
-             DO k2 = 1,nr
-c--           initialize weight to 0 if needed
-              if( gencost_timevaryweight(k)) then
-                gencost_wei3d(i,j,k2,bi,bj,kk) = 0. _d 0
-              endif
-c--           Test for missing values.
-              if (gencost_wei3d(i,j,k2,bi,bj,kk) .lt. -9900.) then
-                gencost_wei3d(i,j,k2,bi,bj,kk) = 0. _d 0
-              endif
-c--           Convert to weight
-              if (gencost_wei3d(i,j,k2,bi,bj,kk) .ne. 0.) then
-                 gencost_wei3d(i,j,k2,bi,bj,kk) =
-     &                1./gencost_wei3d(i,j,k2,bi,bj,kk)/
-     &                   gencost_wei3d(i,j,k2,bi,bj,kk)
-              endif
-             enddo
-            enddo
-           enddo
-          enddo
-         enddo
+        elseif ( (kk.LE.NGENCOST3D).AND.(exst) ) then
+          call ecco_readwei(gencost_errfile(k),
+     &         gencost_wei3d(:,:,1,1,1,kk), 1, nr, myThid )
 #endif /* ALLOW_GENCOST3D */
+        else
+          using_gencost(k)=.FALSE.
+        endif
 
-      endif !if ( (.NOT. gencost_timevaryweight(k)).AND.
       endif !if ( gencost_errfile(k) .NE. ' ' ) then
       enddo !do k = 1, NGENCOST
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
