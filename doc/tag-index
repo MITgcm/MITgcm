@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2102 2014/12/07 19:13:28 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2103 2014/12/09 14:17:23 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/global_ocean.cs32x15/input.seaice
+  - add test for strong implicit coupling and restricted addtive Schwarz
+    methods for LSR
+  - update results/output.seaice.txt
 o verification/tutorial_global_oce_biogeo:
   - AD & OAD set-up: switch off ALLOW_OLD_VIRTUALFLUX (like in fwd set-up)
     and set PTRACERS_EvPrRn(1,2) to zero (for DIC & ALK);
