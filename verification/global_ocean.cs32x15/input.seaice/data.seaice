@@ -1,6 +1,12 @@
 # SEAICE parameters
  &SEAICE_PARM01
  LSR_ERROR             = 1.E-12,
+# test strong implicit coupling method for LSR
+ SEAICEuseStrImpCpl    = .TRUE.,
+# test restricted additive Schwarz (RAS) method for LSR
+# SEAICE_OLx/y have to be .LE. OLx/y-2
+ SEAICE_OLx = 2,
+ SEAICE_OLy = 2,
 #SEAICE_deltaTevp = 60.,
 #SEAICEuseDynamics = .FALSE.,
  SEAICE_clipVelocities = .TRUE.,
