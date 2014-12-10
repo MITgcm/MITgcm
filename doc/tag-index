@@ -1,12 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2104 2014/12/10 17:04:38 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2105 2014/12/10 22:26:41 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice/seaice_lsr.F: fix computation of BU/BV, make sure they are 
-  non-zero, only necessary for cubed sphere exchanges and SEAICE_OLx/y>0.
-  This makes calling s/r fill_cs_corner_rl obsolete (removed).
+o momentum diagnostics:
+  - move filling of diagnostics Um_Diss & Vm_Diss from mom_fluxform.F and
+    mom_vecinv.F to timestep.F (to include Smag-3D contribution).
+o pkg/seaice/seaice_lsr.F:
+  - fix computation of BU/BV, make sure they are non-zero, only necessary
+    for cubed sphere exchanges and SEAICE_OLx/y>0.
+    This makes calling s/r fill_cs_corner_rl obsolete (removed).
 o verification/global_ocean.cs32x15/input.seaice
   - add test for strong implicit coupling and restricted addtive Schwarz
     methods for LSR
