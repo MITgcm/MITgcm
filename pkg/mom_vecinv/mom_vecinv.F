@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.73 2014/04/04 19:53:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.74 2014/12/10 22:20:30 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -762,8 +762,6 @@ C--   Set du/dt & dv/dt on boundaries to zero
         CALL DIAGNOSTICS_FILL(KE,     'momKE   ',k,1,2,bi,bj,myThid)
        IF (momViscosity) THEN
         CALL DIAGNOSTICS_FILL(hDiv,   'momHDiv ',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(guDiss, 'Um_Diss ',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(gvDiss, 'Vm_Diss ',k,1,2,bi,bj,myThid)
        ENDIF
        IF ( useVariableVisc .OR. useStrainTensionVisc ) THEN
         CALL DIAGNOSTICS_FILL(tension, 'Tension ',k,1,2,bi,bj,myThid)

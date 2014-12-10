@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.51 2014/04/04 19:53:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.52 2014/12/10 22:21:17 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -919,10 +919,6 @@ C--   Set du/dt & dv/dt on boundaries to zero
      &                               'Um_Advec',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(gV(1-OLx,1-OLy,k,bi,bj),
      &                               'Vm_Advec',k,1,2,bi,bj,myThid)
-       IF (momViscosity) THEN
-        CALL DIAGNOSTICS_FILL(guDiss,'Um_Diss ',k,1,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(gvDiss,'Vm_Diss ',k,1,2,bi,bj,myThid)
-       ENDIF
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
