@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.110 2014/12/10 17:03:55 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.111 2014/12/11 20:15:04 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1372,8 +1372,8 @@ C     this is clearly a hack: make sure that diagonals BU/BV are non-zero.
 C     In my experience we only need to catch the case of SEAICE_OLx/y=OLx/y-2,
 C     but for safety lets call this routine whenever SEAICE_OLx/y > 0
 C     &       (SEAICE_OLx.EQ.OLx-2 .OR. SEAICE_OLy.EQ.OLy-2) ) THEN
-         DO J=1-OLy,sNy+OLy
-          DO I=1-OLx,sNx+OLx
+         DO J=jMin,jMax
+          DO I=iMin,iMax
            IF (BU(I,J,bi,bj).EQ.0 _d 0) BU(I,J,bi,bj) = 1. _d 0
            IF (BV(I,J,bi,bj).EQ.0 _d 0) BV(I,J,bi,bj) = 1. _d 0
           ENDDO
