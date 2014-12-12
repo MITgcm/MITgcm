@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean_ebm/code_ad/ECCO_CPPOPTIONS.h,v 1.3 2014/10/16 20:09:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean_ebm/code_ad/ECCO_CPPOPTIONS.h,v 1.4 2014/12/12 17:41:49 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -15,9 +15,6 @@ C   specific option-file) also for adjoint built.
 C ********************************************************************
 C ***                  Adjoint Support Package                     ***
 C ********************************************************************
-
-C allow use of legacy ecco/ctrl codes
-#define ECCO_CTRL_DEPRECATED
 
 C o Include/exclude code in order to be able to automatically
 C   differentiate the MITgcmUV by using the Tangent Linear and
@@ -55,19 +52,8 @@ C ********************************************************************
 C ***               Control vector Package                         ***
 C ********************************************************************
 
-#undef  ALLOW_NONDIMENSIONAL_CONTROL_IO
-C       >>> Initial values.
-#define ALLOW_THETA0_CONTROL
-#define ALLOW_SALT0_CONTROL
-#undef ALLOW_TR10_CONTROL
-#define ALLOW_TAUU0_CONTROL
-#define ALLOW_TAUV0_CONTROL
-#undef ALLOW_SFLUX0_CONTROL
-#undef ALLOW_HFLUX0_CONTROL
-#undef ALLOW_SSS0_CONTROL
-#undef ALLOW_SST0_CONTROL
-#define ALLOW_DIFFKR_CONTROL
-#undef ALLOW_KAPGM_CONTROL
+#define ALLOW_GENARR2D_CONTROL
+#define ALLOW_GENARR3D_CONTROL
 
 C ********************************************************************
 #endif /* ECCO_CPPOPTIONS_H */

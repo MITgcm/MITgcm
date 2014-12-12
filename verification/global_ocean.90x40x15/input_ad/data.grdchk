@@ -14,5 +14,5 @@
 ### nbeg             = 1,
  nstep            = 1,
  nend             = 3,
- grdchkvarindex   = 1,
+ grdchkvarindex   = 201,
  &

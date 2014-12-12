@@ -18,5 +18,5 @@
 # *********************
  &CTRL_NML_GENARR
  xx_genarr3d_weight(1) = 'wunit.data',
- xx_genarr3d_file(1)='xx_theta',
+ xx_genarr3d_file(1)='xx_kapredi',
  &
