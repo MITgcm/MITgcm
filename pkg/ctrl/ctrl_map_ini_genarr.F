@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.16 2014/12/02 12:34:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.17 2014/12/12 17:12:28 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -68,16 +68,18 @@ C--   generic 2D control variables
       igen_geoth=0
       DO iarr = 1, maxCtrlArr2D
       if (xx_genarr2d_file(iarr).EQ.'xxg_etan0') igen_etan0=iarr
-      if (xx_genarr2d_file(iarr).EQ.'xxg_bottomdrag') igen_bdrag=iarr
+      if (xx_genarr2d_file(iarr).EQ.'xx_bottomdrag') igen_bdrag=iarr
       if (xx_genarr2d_file(iarr).EQ.'xxg_geothermal') igen_geoth=iarr
       ENDDO
 
       call ctrl_map_genarr2d(etaN,igen_etan0,myThid)
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-      call ctrl_map_genarr2d(bottomDragFld,igen_bdrag,myThid)
+      if (igen_bdrag.GT.0)
+     &  call ctrl_map_genarr2d(bottomDragFld,igen_bdrag,myThid)
 #endif
 #ifdef ALLOW_GEOTHERMAL_FLUX
-      call ctrl_map_genarr2d(geothermalFlux,igen_geoth,myThid)
+      if (igen_geoth.GT.0)
+     &  call ctrl_map_genarr2d(geothermalFlux,igen_geoth,myThid)
 #endif
 
 #endif /* ALLOW_GENARR2D_CONTROL */
@@ -99,16 +101,21 @@ C--   generic 3D control variables
       if (xx_genarr3d_file(iarr).EQ.'xx_diffkr') igen_diffkr=iarr
       ENDDO
 
-      call ctrl_map_genarr3d(theta,igen_theta0,myThid)
-      call ctrl_map_genarr3d(salt,igen_salt0,myThid)
+      if (igen_theta0.GT.0)
+     &   call ctrl_map_genarr3d(theta,igen_theta0,myThid)
+      if (igen_salt0.GT.0)
+     &   call ctrl_map_genarr3d(salt,igen_salt0,myThid)
 #ifdef ALLOW_KAPGM_CONTROL
-      call ctrl_map_genarr3d(kapgm,igen_kapgm,myThid)
+      if (igen_kapgm.GT.0)
+     &   call ctrl_map_genarr3d(kapgm,igen_kapgm,myThid)
 #endif
 #ifdef ALLOW_KAPREDI_CONTROL
-      call ctrl_map_genarr3d(kapredi,igen_kapredi,myThid)
+      if (igen_kapredi.GT.0)
+     &   call ctrl_map_genarr3d(kapredi,igen_kapredi,myThid)
 #endif
 #ifdef ALLOW_3D_DIFFKR
-      call ctrl_map_genarr3d(diffkr,igen_diffkr,myThid)
+      if (igen_diffkr.GT.0)
+     &   call ctrl_map_genarr3d(diffkr,igen_diffkr,myThid)
 #endif
 
 #endif /* ALLOW_GENARR3D_CONTROL */
@@ -197,7 +204,7 @@ CEOP
        DO bj=myByLo(myThid), myByHi(myThid)
         DO bi=myBxLo(myThid), myBxHi(myThid)
           DO j = 1-Oly,sNy+Oly
-            DO i = 1-Olx,sNy+Olx
+            DO i = 1-Olx,sNx+Olx
                 fld(i,j,bi,bj) = fldTmp(i,j,bi,bj)
             ENDDO
           ENDDO
@@ -292,7 +299,7 @@ CEOP
        DO bj=myByLo(myThid), myByHi(myThid)
         DO bi=myBxLo(myThid), myBxHi(myThid)
           DO j = 1-Oly,sNy+Oly
-            DO i = 1-Olx,sNy+Olx
+            DO i = 1-Olx,sNx+Olx
               DO k = 1,nr
                 fld(i,j,k,bi,bj) = fldTmp(i,j,k,bi,bj)
               ENDDO
