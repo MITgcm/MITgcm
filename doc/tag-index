@@ -1,9 +1,33 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2105 2014/12/10 22:26:41 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2106 2014/12/13 01:34:54 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/global_ocean.90x40x15, global_ocean_ebm:
+  - update to generic controls.
+o pkg/ctrl:
+  - ctrl_map_ini_genarr.F: test for igen>0
+  - ctrl_init_variables.F: add call to CTRL_MAP_INI_GENTIM2D.
+  - move gentim2d part of ctrl_map_ini_genarr.F to 
+    new separate routine : ctrl_map_ini_gentim2d.F
+  - ctrl_cost_driver.F,ctrl_init.F ctrl_map_ini_genarr.F:
+    add time variable weights and cyclic controls (time mean, 
+    seasonal cycle, etc) capabilities to gentim2d
+o pkg/ecco:
+  - move reading of error, conversion to weights from
+    ecco_cost_init_fixed.F to ecco_toolbox.F (ecco_readwei)
+o global_oce_llc90, cs32:
+  - activte sbo.
+  - CTRL_SIZE.h : add maxCtrlProc.
+  - activate the new genctrl capabilities.
+  - update following reorganization of global_oce_input_fields.tar.gz	
+o pkg/ctrl/ctrl_ad_diff.list:
+  - add missing ctrl_init_rec.f
+o tools/OAD_support/keepOriginal:
+  - add ctrl_init_rec.F
+o model/src/the_main_loop.F, pkg/ctrl/ctrl_map_ini_genarr.F:
+  - avoid recomputations of xx_gentim2d_dummy.
 o momentum diagnostics:
   - move filling of diagnostics Um_Diss & Vm_Diss from mom_fluxform.F and
     mom_vecinv.F to timestep.F (to include Smag-3D contribution).
