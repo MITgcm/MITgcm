@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.17 2014/12/12 17:12:28 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.18 2014/12/13 10:27:32 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -72,7 +72,8 @@ C--   generic 2D control variables
       if (xx_genarr2d_file(iarr).EQ.'xxg_geothermal') igen_geoth=iarr
       ENDDO
 
-      call ctrl_map_genarr2d(etaN,igen_etan0,myThid)
+      if (igen_etan0.GT.0)
+     &      call ctrl_map_genarr2d(etaN,igen_etan0,myThid)
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
       if (igen_bdrag.GT.0)
      &  call ctrl_map_genarr2d(bottomDragFld,igen_bdrag,myThid)
