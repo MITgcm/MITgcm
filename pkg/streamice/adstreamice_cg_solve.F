@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/adstreamice_cg_solve.F,v 1.6 2014/10/23 09:42:09 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/adstreamice_cg_solve.F,v 1.7 2014/12/13 14:13:11 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -111,6 +111,7 @@ CEOP
 
 !      print *, "GOT HERE 2 mythid=", mythid, tolerance
 
+#ifndef ALLOW_OPENAD
       CALL STREAMICE_CG_SOLVE(
      &  U_state,
      &  V_state,
@@ -124,6 +125,7 @@ CEOP
      &  tmpiter,
      &  maxiters,
      &  myThid )
+#endif
 
 !      print *, "GOT HERE 3 mythid=", mythid, tolerance
 
