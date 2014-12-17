@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.28 2014/12/01 12:32:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.29 2014/12/17 17:57:00 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -368,7 +368,7 @@ C--     prevent tri-diagonal solver from modifying OB values:
 
 C Solve for dvIce
          CALL SEAICE_LSR_TRIDIAGV(
-     I        AV, BV, CV, vRt1, vRt2, rhsV, vTmp, seaiceMaskV, WFAV, 
+     I        AV, BV, CV, vRt1, vRt2, rhsV, vTmp, seaiceMaskV, WFAV,
      U        dvIce,
      I        imin, imax, jmin, jmax, bi, bj, myTime, myIter, myThid )
 
@@ -476,11 +476,6 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER I,J,K
-C     contribution of sigma on righ hand side
-      _RL sig11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL hFacM
-
       _RL zeros(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C     surface level
@@ -493,7 +488,7 @@ C     set dummy pressure to zero
       ENDDO
       CALL SEAICE_LSR_RHSU(
      I     zetaMinusEta, etaPlusZeta, etaZpre, zetaZpre, zeros,
-     I     uIceLoc, vIceLoc, 
+     I     uIceLoc, vIceLoc,
      U     rhsU,
      I     iMin, iMax, jMin, jMax, bi, bj, myThid )
 
@@ -572,11 +567,6 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER I,J,K
-C     contribution of sigma on righ hand side
-      _RL sig22(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL hFacM
-
       _RL zeros(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C     surface level
@@ -589,7 +579,7 @@ C     set dummy pressure to zero
       ENDDO
       CALL SEAICE_LSR_RHSV(
      I     zetaMinusEta, etaPlusZeta, etaZpre, zetaZpre, zeros,
-     I     uIceLoc, vIceLoc, 
+     I     uIceLoc, vIceLoc,
      U     rhsV,
      I     iMin, iMax, jMin, jMax, bi, bj, myThid )
 
