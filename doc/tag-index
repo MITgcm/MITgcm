@@ -1,18 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2106 2014/12/13 01:34:54 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2107 2014/12/17 17:58:39 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint65h (2014/12/17)
 o verification/global_ocean.90x40x15, global_ocean_ebm:
   - update to generic controls.
 o pkg/ctrl:
   - ctrl_map_ini_genarr.F: test for igen>0
   - ctrl_init_variables.F: add call to CTRL_MAP_INI_GENTIM2D.
-  - move gentim2d part of ctrl_map_ini_genarr.F to 
+  - move gentim2d part of ctrl_map_ini_genarr.F to
     new separate routine : ctrl_map_ini_gentim2d.F
   - ctrl_cost_driver.F,ctrl_init.F ctrl_map_ini_genarr.F:
-    add time variable weights and cyclic controls (time mean, 
+    add time variable weights and cyclic controls (time mean,
     seasonal cycle, etc) capabilities to gentim2d
 o pkg/ecco:
   - move reading of error, conversion to weights from
