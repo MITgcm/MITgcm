@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_diag_balance.F,v 1.5 2014/11/25 01:08:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_diag_balance.F,v 1.6 2014/12/19 05:41:20 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -77,14 +77,12 @@ C--   Integrate the transport through each OB
       DO n=1,OB_connectNumber(k)
         areaOB(n)= 0. _d 0
         inFlow(n)= 0. _d 0
-      ENDDO
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO n=1,OB_connectNumber(k)
-         tileAreaOB(bi,bj,n) = 0.
-         tileInFlow(bi,bj,n) = 0.
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          tileAreaOB(bi,bj,n) = 0.
+          tileInFlow(bi,bj,n) = 0.
+         ENDDO
         ENDDO
-       ENDDO
       ENDDO
 
 #ifdef ALLOW_OBCS_EAST
@@ -269,7 +267,7 @@ c          DO i=1-OLx,sNx+OLx
             IF ( OB_Js(i,bi,bj).NE.OB_indexNone ) THEN
              jBt = OB_Js(i,bi,bj)
              jB = 1+jBt
-             n = OBN_connect(i,k,bi,bj)
+             n = OBS_connect(i,k,bi,bj)
              IF ( n.EQ.0 ) THEN
                div2d(i,jBt,bi,bj) = div2d(i,jBt,bi,bj)
      &                            + vTrans(i,jB,bi,bj)
