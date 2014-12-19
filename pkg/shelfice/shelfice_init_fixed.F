@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.11 2014/09/09 22:59:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.12 2014/12/19 18:08:36 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -8,6 +8,7 @@ C $Name:  $
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+
 
       SUBROUTINE SHELFICE_INIT_FIXED( myThid )
 C     *============================================================*
@@ -73,8 +74,9 @@ C-----------------------------------------------------------------------
           ELSE
             kTopC(i,j,bi,bj) = 0
           ENDIF
-          shelficeMass       (i,j,bi,bj) = 0. _d 0
+          shelficeMassInit   (i,j,bi,bj) = 0. _d 0
           shelficeLoadAnomaly(i,j,bi,bj) = 0. _d 0
+          shelficemassdynamics(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
@@ -117,13 +119,13 @@ c--   use weight as mask
       ENDIF
       IF ( SHELFICEmassFile.NE.' ' ) THEN
        CALL READ_FLD_XY_RS( SHELFICEmassFile, ' ',
-     &                      shelficeMass, 0, myThid )
+     &                      shelficeMassInit, 0, myThid )
       ELSE
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j = 1, sNy
           DO i = 1, sNx
-           shelficeMass(i,j,bi,bj) =
+           shelficeMassInit(i,j,bi,bj) =
      &         shelficeLoadAnomaly(i,j,bi,bj)*recip_gravity
      &       - rhoConst*Ro_surf(i,j,bi,bj)
           ENDDO
@@ -131,7 +133,9 @@ c--   use weight as mask
         ENDDO
        ENDDO
       ENDIF
-      _EXCH_XY_RS( shelficeMass, myThid )
+      _EXCH_XY_RS( shelficeMassInit, myThid )
+      call write_fld_xy_rs ('shelficemassinit','',shelficemassinit,
+     &  0, mythid)
 
 c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
 C-   In case we need shelficeLoadAnomaly in phi0surf for initial pressure
@@ -141,7 +145,7 @@ C    calculation when useDynP_inEos_Zc
          DO j = 1-OLy, sNy+OLy
           DO i = 1-OLx, sNx+OLx
            shelficeLoadAnomaly(i,j,bi,bj) = gravity
-     &      *( shelficeMass(i,j,bi,bj) + rhoConst*Ro_surf(i,j,bi,bj) )
+     &      *(shelficeMassInit(i,j,bi,bj)+rhoConst*Ro_surf(i,j,bi,bj))
           ENDDO
          ENDDO
         ENDDO
@@ -152,6 +156,12 @@ c     ENDIF
       IF ( debugLevel.GE.debLevC ) THEN
        CALL WRITE_FLD_XY_RS( 'SHICE_pLoadAnom', ' ',
      I                       shelficeLoadAnomaly, -1, myThid )
+      ENDIF
+
+      IF ( SHELFICEallowThinIceMass .and.
+     & SHELFICEDynamicsFile .NE. ' ' ) THEN
+       CALL READ_FLD_XY_RS( SHELFICEDynamicsFile, ' ',
+     &                      shelficemassdynamics, 0, myThid )
       ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -210,6 +220,13 @@ c     ENDIF
        diagName  = 'SHIgammS'
        diagTitle = 'Ice shelf exchange coefficient for salt'
        diagUnits = 'm/s             '
+       diagCode  = 'SM      L1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'SHI_mass'
+       diagTitle = 'dynamic ice shelf mass for surface load anomaly'
+       diagUnits = 'kg/m^2          '
        diagCode  = 'SM      L1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )

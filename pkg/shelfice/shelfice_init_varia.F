@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.10 2013/04/11 18:59:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.11 2014/12/19 18:08:36 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -46,6 +46,7 @@ c         shelficeLoadAnomaly   (i,j,bi,bj) = 0. _d 0
           shelficeFreshWaterFlux(i,j,bi,bj) = 0. _d 0
           shiTransCoeffT        (i,j,bi,bj) = 0. _d 0
           shiTransCoeffS        (i,j,bi,bj) = 0. _d 0
+          shelficemass          (i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
@@ -63,6 +64,22 @@ C     set coefficients to constant values
         ENDDO
        ENDDO
       ENDIF
+
+      print *, "GOT HERE SHELFICE"
+
+!       IF ( SHELFICEallowThinIceMass ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+           shelficemass(i,j,bi,bj) = shelficemassinit(i,j,bi,bj)
+!           shelficeLoadAnomalyDyn(i,j,bi,bj) = 
+!     &                            shelficeLoadAnomaly(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+!       ENDIF
 
 #ifdef ALLOW_COST
       DO bj = myByLo(myThid), myByHi(myThid)

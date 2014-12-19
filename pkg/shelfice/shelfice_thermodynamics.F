@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.38 2014/11/02 21:23:51 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.39 2014/12/19 18:08:36 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -8,6 +8,10 @@ C $Name:  $
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#ifdef ALLOW_STREAMICE
+# include "STREAMICE_OPTIONS.h"
+#endif
+
 
 CBOP
 C     !ROUTINE: SHELFICE_THERMODYNAMICS
@@ -48,6 +52,10 @@ C     === Global variables ===
 #  include "tamc_keys.h"
 # endif /* SHI_ALLOW_GAMMAFRICT */
 #endif /* ALLOW_AUTODIFF_TAMC */
+#ifdef ALLOW_STREAMICE
+# include "STREAMICE.h"
+#endif
+
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -519,6 +527,30 @@ C--   compute surface tendencies
 C     endif (not) useISOMIPTD
        ENDDO
       ENDDO
+
+      IF (SHELFICEallowThinIceMass) then
+#ifdef ALLOW_STREAMICE
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly-1
+          DO i=1-Olx+1,sNx+Olx-1
+
+           if (streamice_hmask(i,j,bi,bj).eq.1 .or.
+     &         streamice_hmask(i,j,bi,bj).eq.2) then
+
+            shelficeMass(i,j,bi,bj) =
+     &       H_streamice(I,J,bi,bj) * streamice_density
+
+           endif
+
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+#else
+       CALL SHELFICE_STEP_ICEMASS( myTime, myIter, myThid )
+#endif
+      ENDIF
 
 C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
 #ifndef ALLOW_AUTODIFF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.13 2013/10/15 20:33:58 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.14 2014/12/19 18:08:36 dgoldberg Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -20,6 +20,7 @@ C     SHELFICEtopoFile         :: File containing the topography of the
 C                                 shelfice draught (unit=m)
 C     SHELFICEmassFile         :: name of shelfice Mass file
 C     SHELFICEloadAnomalyFile  :: name of shelfice load anomaly file
+C     SHELFICEDynamicsFile     :: file to read for ice mass dynamics
 C     SHELFICEDragLinear       :: linear drag at bottom shelfice (1/s)
 C     SHELFICEDragQuadratic    :: quadratic drag at bottom shelfice (1/m)
 C     SHELFICEheatTransCoeff   :: heat transfer coefficient that determines
@@ -30,6 +31,7 @@ C     SHELFICElatentHeat       :: latent heat of fusion (J/kg)
 C     useISOMIPTD              :: use simple ISOMIP thermodynamics
 C     SHELFICEconserve         :: use conservative form of H&O-thermodynamics
 C                                 following Jenkins et al. (2001, JPO)
+C     SHELFICEallowThinIceMass :: flag to allow thinning/thickening of ice shelf by melt/freeze/ice dynamics
 C     SHELFICEboundaryLayer    :: turn on vertical merging of cells to for a
 C                                 boundary layer of drF thickness
 C     SHELFICEadvDiffHeatFlux  :: use advective-diffusive heat flux into the ice shelf
@@ -48,7 +50,9 @@ C
 C--   Fields
 C     ktopC                  :: index of the top "wet cell" (2D)
 C     R_shelfIce             :: shelfice topography [m]
+C     shelficeMassInit       :: ice-shelf mass (per unit area) [kg/m^2]
 C     shelficeMass           :: ice-shelf mass (per unit area) [kg/m^2]
+C     shelficeMassDynamics    :: artificial divergence of ice shelf transport to simulate dynamic thinning
 C     shelficeLoadAnomaly    :: pressure load anomaly of shelfice [Pa]
 C     shelficeHeatFlux       :: upward heat flux [W/m^2]
 C     shelficeFreshWaterFlux :: upward fresh water flux (virt. salt flux) [kg/m^2/s]
@@ -98,15 +102,19 @@ CEOP
 
       COMMON /SHELFICE_FIELDS_RS/
      &     R_shelfIce,
+     &     shelficeMassInit,
      &     shelficeMass,
      &     shelficeLoadAnomaly,
      &     shelficeHeatFlux,
-     &     shelfIceFreshWaterFlux
+     &     shelfIceFreshWaterFlux,
+     &     shelficeMassDynamics
       _RS R_shelfIce            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeMass          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS shelficeMassInit      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeLoadAnomaly   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeHeatFlux      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeFreshWaterFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS shelficeMassDynamics  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_SHIFWFLX_CONTROL
       COMMON /SHELFICE_MASKS_CTRL/ maskSHI
@@ -125,6 +133,7 @@ CEOP
       LOGICAL SHELFICE_tave_mnc
       LOGICAL SHELFICEadvDiffHeatFlux
       LOGICAL SHELFICEuseGammaFrict
+      LOGICAL SHELFICEallowThinIceMass
       COMMON /SHELFICE_PARMS_L/
      &     SHELFICEisOn,
      &     useISOMIPTD,
@@ -137,14 +146,17 @@ CEOP
      &     SHELFICE_dump_mnc,
      &     SHELFICE_tave_mnc,
      &     SHELFICEadvDiffHeatFlux,
-     &     SHELFICEuseGammaFrict
+     &     SHELFICEuseGammaFrict,
+     &     SHELFICEallowThinIceMass
 
       CHARACTER*(MAX_LEN_FNAM) SHELFICEloadAnomalyFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICEmassFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICEtopoFile
+      CHARACTER*(MAX_LEN_FNAM) SHELFICEDynamicsFile
       COMMON /SHELFICE_PARM_C/
      &     SHELFICEloadAnomalyFile,
      &     SHELFICEmassFile,
-     &     SHELFICEtopoFile
+     &     SHELFICEtopoFile,
+     &     SHELFICEDynamicsFile
 
 #endif /* ALLOW_SHELFICE */
