@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_step_icemass.F,v 1.1 2014/12/19 18:09:33 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_step_icemass.F,v 1.2 2014/12/22 22:51:57 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
+#ifdef ALLOW_STREAMICE
+# include "STREAMICE_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: SHELFICE_U_DRAG
@@ -11,10 +14,10 @@ C !INTERFACE: ==========================================================
      I                        myTime, myIter, myThid )
 
 !        myTime, myIter, myThid
-     
+
 C !DESCRIPTION:
 C Serves as a "stub" for ice dynamics
-C will later be used to 
+C will later be used to
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -23,7 +26,9 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SHELFICE.h"
-!#include "STREAMICE.h"
+#ifdef ALLOW_STREAMICE
+# include "STREAMICE.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -34,44 +39,62 @@ C     myThid :: thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
 CEOP
-      
-      
 
 #ifdef ALLOW_SHELFICE
 C !LOCAL VARIABLES : ====================================================
 C  i,j                  :: loop indices
-      INTEGER bi,bj,k,i,j
+      INTEGER bi,bj,i,j
 
-      print *, "STEP MASS 1", shelficemass(25,25,1,1)
+      IF ( SHELFICEMassStepping ) THEN
 
-      IF (SHELFICEallowThinIceMass) then
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
+#ifdef ALLOW_STREAMICE
+       IF (useStreamIce) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy-1
+           DO i=1-OLx+1,sNx+OLx-1
+            if (streamice_hmask(i,j,bi,bj).eq.1 .or.
+     &          streamice_hmask(i,j,bi,bj).eq.2) then
 
-           shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj) +
-     &      shelfIceFreshWaterFlux(I,J,bi,bj) * deltaT
+             shelficeMass(i,j,bi,bj) =
+     &        H_streamice(I,J,bi,bj) * streamice_density
 
-           shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj) +
-     &      shelficeMassDynamics(I,J,bi,bj) * 910. * deltaT
-!          FOR NOW THE DENSITY OF ICE IS HARDCODED
-!          SHOULD USE PARAM FOR ICE DENSITY FROM STREAMICE
-!          -- but this is just a placeholder for streamice anyway          
-
+            endif
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
-       ENDDO
-      ENDIF
-     
-      _EXCH_XY_RS(shelficeMass, myThid )      
+       ENDIF
+#endif /* ALLOW_STREAMICE */
 
-      print *, "STEP MASS 2",shelficemass(25,25,1,1)
+       IF (.NOT.useStreamIce) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+
+            shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj)
+     &      + shelfIceFreshWaterFlux(I,J,bi,bj) * deltaT
+
+            shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj)
+     &      + shelfIceMassDynTendency(I,J,bi,bj) * 910. * deltaT
+C          FOR NOW THE DENSITY OF ICE IS HARDCODED
+C          SHOULD USE PARAM FOR ICE DENSITY FROM STREAMICE
+C          -- but this is just a placeholder for streamice anyway
+
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+
+       _EXCH_XY_RS(shelficeMass, myThid )
+
+      ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
-        CALL DIAGNOSTICS_FILL(shelficemass,'SHI_mass',0,1,0,1,1,
+        CALL DIAGNOSTICS_FILL(shelficeMass,'SHI_mass',0,1,0,1,1,
      &      myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */

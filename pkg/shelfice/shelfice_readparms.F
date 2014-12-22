@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.20 2014/12/19 18:08:36 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.21 2014/12/22 22:51:57 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -44,7 +44,7 @@ CEOP
       NAMELIST /SHELFICE_PARM01/
      &     SHELFICEheatTransCoeff,
      &     SHELFICEsaltTransCoeff,
-     &     SHELFICEallowThinIceMass,
+     &     SHELFICEMassStepping,
      &     rhoShelfice, SHELFICEkappa,
      &     SHELFICElatentHeat, SHELFICEHeatCapacity_Cp,
      &     SHELFICEDragLinear, SHELFICEDragQuadratic,
@@ -58,7 +58,7 @@ CEOP
      &     SHELFICE_dump_mnc,
      &     SHELFICEtopoFile,
      &     SHELFICEmassFile, SHELFICEloadAnomalyFile,
-     &     SHELFICEDynamicsFile,
+     &     SHELFICEMassDynTendFile,
      &     SHELFICEadvDiffHeatFlux,
      &     SHELFICEuseGammaFrict,
      &     shiCdrag, shiZetaN, shiRc,
@@ -85,17 +85,17 @@ C     print a (weak) warning if data.shelfice is found
 
 C This routine has been called by the main model so we set our
 C internal flag to indicate we are in business
-      SHELFICEisON=.TRUE.
+      SHELFICEisOn = .TRUE.
 
 C Set defaults values for parameters in SHELFICE.h
       useISOMIPTD              = .FALSE.
       SHELFICEconserve         = .FALSE.
       SHELFICEboundaryLayer    = .FALSE.
-      SHELFICEallowThinIceMass = .FALSE.
+      SHELFICEMassStepping     = .FALSE.
       SHELFICEtopoFile         = ' '
       SHELFICEmassFile         = ' '
       SHELFICEloadAnomalyFile  = ' '
-      SHELFICEDynamicsFile     = ' '
+      SHELFICEMassDynTendFile  = ' '
       SHELFICElatentHeat       =  334.0 _d 3
       SHELFICEHeatCapacity_Cp  = 2000.0 _d 0
       recip_SHELFICElatentHeat =    0.0 _d 0

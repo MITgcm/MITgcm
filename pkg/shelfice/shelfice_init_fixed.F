@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.12 2014/12/19 18:08:36 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.13 2014/12/22 22:51:57 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -8,7 +8,6 @@ C $Name:  $
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
-
 
       SUBROUTINE SHELFICE_INIT_FIXED( myThid )
 C     *============================================================*
@@ -76,7 +75,7 @@ C-----------------------------------------------------------------------
           ENDIF
           shelficeMassInit   (i,j,bi,bj) = 0. _d 0
           shelficeLoadAnomaly(i,j,bi,bj) = 0. _d 0
-          shelficemassdynamics(i,j,bi,bj) = 0. _d 0
+          shelfIceMassDynTendency(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
@@ -134,8 +133,8 @@ c--   use weight as mask
        ENDDO
       ENDIF
       _EXCH_XY_RS( shelficeMassInit, myThid )
-      call write_fld_xy_rs ('shelficemassinit','',shelficemassinit,
-     &  0, mythid)
+      CALL WRITE_FLD_XY_RS ( 'shelficemassinit', ' ',
+     &                       shelficeMassInit, 0, myThid )
 
 c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
 C-   In case we need shelficeLoadAnomaly in phi0surf for initial pressure
@@ -158,10 +157,10 @@ c     ENDIF
      I                       shelficeLoadAnomaly, -1, myThid )
       ENDIF
 
-      IF ( SHELFICEallowThinIceMass .and.
-     & SHELFICEDynamicsFile .NE. ' ' ) THEN
-       CALL READ_FLD_XY_RS( SHELFICEDynamicsFile, ' ',
-     &                      shelficemassdynamics, 0, myThid )
+      IF ( SHELFICEMassStepping .AND.
+     &     SHELFICEMassDynTendFile .NE. ' ' ) THEN
+       CALL READ_FLD_XY_RS( SHELFICEMassDynTendFile, ' ',
+     &                      shelfIceMassDynTendency, 0, myThid )
       ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
