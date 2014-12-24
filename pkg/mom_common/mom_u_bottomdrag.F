@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.14 2014/04/26 19:29:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.15 2014/12/24 19:14:36 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -12,7 +12,7 @@ C !ROUTINE: MOM_U_BOTTOMDRAG
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_U_BOTTOMDRAG(
      I        bi,bj,k,
-     I        uFld, KE, KappaRU,
+     I        uFld, KE, kappaRU,
      O        uDragTerms,
      I        myThid)
 
@@ -37,12 +37,12 @@ C  bi,bj                :: tile indices
 C  k                    :: vertical level
 C  uFld                 :: zonal flow
 C  KE                   :: Kinetic energy
-C  KappaRU              :: vertical viscosity
+C  kappaRU              :: vertical viscosity
 C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL KappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL kappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -63,7 +63,7 @@ C-  No-slip BCs impose a drag at bottom
       IF ( usingZCoords ) THEN
        kBottom = Nr
        kDown   = MIN(k+1,Nr)
-       kLowF   = kDown
+       kLowF   = k+1
 c      dragFac = mass2rUnit*rhoConst
 c      dragFac = wUnit2rVel(k+1)
        dragFac = 1. _d 0
@@ -97,7 +97,7 @@ C-    viscous (no-slip BC) and linear bottom drag
          uDragTerms(i,j)=
      &    - recDrF_bot(i,j)
      &    *(
-     &       KappaRU(i,j,kLowF)*recDrC*viscFac
+     &       kappaRU(i,j,kLowF)*recDrC*viscFac
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
      &     + bottomDragFld(i,j,bi,bj)*dragFac
 #endif
