@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2108 2014/12/22 17:18:31 dgoldberg Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2109 2014/12/24 19:16:33 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src & mom pkgs:
+  - add one more level to vertical viscosity local arrays (Nr+1, previously Nr)
+    since no-slip bottom BC uses viscosity @ k+1 to update velocity @ level k
+  - for now and until vertical mixing scheme are updated to fill up level Nr+1,
+    just copy level Nr value to level Nr+1.
+o doc:
+  - add notes form Abhisek Chakraborty on how to close Heat & Salt budgets.
 o pkg/streamice:
   - shelfice_init_varia.F, shelfice_init_fixed.F, shelfice_readparms.F,
     SHELFICE.h: move array shelficemass to init_varia, initialise
@@ -11,12 +18,11 @@ o pkg/streamice:
     has option to be set from file; introduce array
     shelficeMassDynTend array, set thru file in init_fixed
   - NEW FILE: shelfice_step_icemass.F: update shelficemass from either
-    shelfIceFreshWaterFlux and shelficeMassDynTend or H_streamice in 
+    shelfIceFreshWaterFlux and shelficeMassDynTend or H_streamice in
     pkg/streamice
-  - shelfice_thermodynamics.F: call shelfice_step_icemass if 
+  - shelfice_thermodynamics.F: call shelfice_step_icemass if
     SHELFICEMassStepping = .true.
-  - shelfice_ad_diff.list: add new subroutine shelfice_step_icemass.f 
-
+  - shelfice_ad_diff.list: add new subroutine shelfice_step_icemass.f
 
 checkpoint65h (2014/12/17)
 o verification/global_ocean.90x40x15, global_ocean_ebm:
