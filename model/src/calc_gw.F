@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.54 2014/08/14 16:51:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.55 2014/12/24 19:09:33 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -12,7 +12,7 @@ CBOP
 C     !ROUTINE: CALC_GW
 C     !INTERFACE:
       SUBROUTINE CALC_GW(
-     I               bi, bj, KappaRU, KappaRV,
+     I               bi, bj, kappaRU, kappaRV,
      I               str13, str23, str33,
      I               viscAh3d_00, viscAh3d_13, viscAh3d_23,
      I               myTime, myIter, myThid )
@@ -50,14 +50,14 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     bi,bj   :: current tile indices
-C     KappaRU :: vertical viscosity at U points
-C     KappaRV :: vertical viscosity at V points
+C     kappaRU :: vertical viscosity at U points
+C     kappaRV :: vertical viscosity at V points
 C     myTime  :: Current time in simulation
 C     myIter  :: Current iteration number in simulation
 C     myThid  :: Thread number for this instance of the routine.
       INTEGER bi,bj
-      _RL KappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL kappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
+      _RL kappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
 #ifdef ALLOW_SMAG_3D
       _RL str13(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
       _RL str23(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
@@ -405,10 +405,10 @@ C Viscous Flux on Lower face of W-Cell (= at tracer-cell center, level k)
           DO j=jMin,jMax
            DO i=iMin,iMax
 C     Interpolate vert viscosity to center of tracer-cell (level k):
-             viscLoc = ( KappaRU(i,j,k)  +KappaRU(i+1,j,k)
-     &                  +KappaRU(i,j,kp1)+KappaRU(i+1,j,kp1)
-     &                  +KappaRV(i,j,k)  +KappaRV(i,j+1,k)
-     &                  +KappaRV(i,j,kp1)+KappaRV(i,j+1,kp1)
+             viscLoc = ( kappaRU(i,j,k)  +kappaRU(i+1,j,k)
+     &                  +kappaRU(i,j,k+1)+kappaRU(i+1,j,k+1)
+     &                  +kappaRV(i,j,k)  +kappaRV(i,j+1,k)
+     &                  +kappaRV(i,j,k+1)+kappaRV(i,j+1,k+1)
      &                 )*0.125 _d 0
              flx_Dn(i,j) =
      &          - viscLoc*( wVel(i,j,kp1,bi,bj)*mskP1
@@ -425,8 +425,8 @@ C     Interpolate horizontally (but not vertically) vert viscosity to center:
 C     Although background visc. might be defined at k=1, this is not
 C     generally true when using variable visc. (from vertical mixing scheme).
 C     Therefore, no vert. interp. and only horizontal interpolation.
-             viscLoc = ( KappaRU(i,j,k) + KappaRU(i+1,j,k)
-     &                  +KappaRV(i,j,k) + KappaRV(i,j+1,k)
+             viscLoc = ( kappaRU(i,j,k) + kappaRU(i+1,j,k)
+     &                  +kappaRV(i,j,k) + kappaRV(i,j+1,k)
      &                 )*0.25 _d 0
              flxDisUp(i,j) =
      &          - viscLoc*( wVel(i,j, k ,bi,bj)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.175 2014/09/09 22:32:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.176 2014/12/24 19:09:33 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -131,8 +131,8 @@ C     phiSurfX,  ::  gradient of Surface potential (Pressure/rho, ocean)
 C     phiSurfY             or geopotential (atmos) in X and Y direction
 C     guDissip   :: dissipation tendency (all explicit terms), u component
 C     gvDissip   :: dissipation tendency (all explicit terms), v component
-C     KappaRU    :: vertical viscosity for velocity U-component
-C     KappaRV    :: vertical viscosity for velocity V-component
+C     kappaRU    :: vertical viscosity for velocity U-component
+C     kappaRV    :: vertical viscosity for velocity V-component
 C     iMin, iMax :: Ranges and sub-block indices on which calculations
 C     jMin, jMax    are applied.
 C     bi, bj     :: tile indices
@@ -150,8 +150,8 @@ C                   are switched with k to be the appropriate index into fVerU,V
       _RL phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL guDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL gvDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL KappaRU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL KappaRV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL kappaRU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
+      _RL kappaRV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
 #ifdef ALLOW_SMAG_3D
 C     str11       :: strain component Vxx @ grid-cell center
 C     str22       :: strain component Vyy @ grid-cell center
@@ -272,7 +272,7 @@ CHPF$ INDEPENDENT
 C--    HPF directive to help TAMC
 CHPF$  INDEPENDENT, NEW (fVerU,fVerV
 CHPF$&                  ,phiHydF
-CHPF$&                  ,KappaRU,KappaRV
+CHPF$&                  ,kappaRU,kappaRV
 CHPF$&                  )
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -366,11 +366,11 @@ CADJ &                 = comlev1_bibj, key=idynkey, byte=isbyte
 #ifndef ALLOW_AUTODIFF
         IF ( .NOT.momViscosity ) THEN
 #endif
-          DO k=1,Nr
+          DO k=1,Nr+1
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             KappaRU(i,j,k) = 0. _d 0
-             KappaRV(i,j,k) = 0. _d 0
+             kappaRU(i,j,k) = 0. _d 0
+             kappaRV(i,j,k) = 0. _d 0
             ENDDO
            ENDDO
           ENDDO
@@ -382,7 +382,7 @@ C--     Calculate the total vertical viscosity
         IF ( momViscosity ) THEN
           CALL CALC_VISCOSITY(
      I            bi,bj, iMin,iMax,jMin,jMax,
-     O            KappaRU, KappaRV,
+     O            kappaRU, kappaRV,
      I            myThid )
         ENDIF
 #endif /* INCLUDE_CALC_DIFFUSIVITY_CALL */
@@ -396,9 +396,9 @@ C--     Calculate the total vertical viscosity
 #endif /* ALLOW_SMAG_3D */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KappaRU(:,:,:)
+CADJ STORE kappaRU(:,:,:)
 CADJ &     = comlev1_bibj, key=idynkey, byte=isbyte
-CADJ STORE KappaRV(:,:,:)
+CADJ STORE kappaRV(:,:,:)
 CADJ &     = comlev1_bibj, key=idynkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -525,7 +525,7 @@ CADJ STORE fVerV(:,:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_MOM_FLUXFORM
               CALL MOM_FLUXFORM(
      I         bi,bj,k,iMin,iMax,jMin,jMax,
-     I         KappaRU, KappaRV,
+     I         kappaRU, kappaRV,
      U         fVerU(1-OLx,1-OLy,kUp),   fVerV(1-OLx,1-OLy,kUp),
      O         fVerU(1-OLx,1-OLy,kDown), fVerV(1-OLx,1-OLy,kDown),
      O         guDissip, gvDissip,
@@ -535,7 +535,7 @@ CADJ STORE fVerV(:,:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_MOM_VECINV
              CALL MOM_VECINV(
      I         bi,bj,k,iMin,iMax,jMin,jMax,
-     I         KappaRU, KappaRV,
+     I         kappaRU, kappaRV,
      I         fVerU(1-OLx,1-OLy,kUp),   fVerV(1-OLx,1-OLy,kUp),
      O         fVerU(1-OLx,1-OLy,kDown), fVerV(1-OLx,1-OLy,kDown),
      O         guDissip, gvDissip,
@@ -592,7 +592,7 @@ CADJ STORE gU(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         -1, KappaRU, recip_hFacW(1-OLx,1-OLy,1,bi,bj),
+     I         -1, kappaRU, recip_hFacW(1-OLx,1-OLy,1,bi,bj),
      U         gU(1-OLx,1-OLy,1,bi,bj),
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
@@ -600,7 +600,7 @@ CADJ STORE gV(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         -2, KappaRV, recip_hFacS(1-OLx,1-OLy,1,bi,bj),
+     I         -2, kappaRV, recip_hFacS(1-OLx,1-OLy,1,bi,bj),
      U         gV(1-OLx,1-OLy,1,bi,bj),
      I         myThid )
         ENDIF
@@ -624,7 +624,7 @@ CADJ STORE vVelD(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         0, KappaRU, recip_hFacW(1-OLx,1-OLy,1,bi,bj),
+     I         0, kappaRU, recip_hFacW(1-OLx,1-OLy,1,bi,bj),
      U         vVelD(1-OLx,1-OLy,1,bi,bj),
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
@@ -632,7 +632,7 @@ CADJ STORE uVelD(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         0, KappaRV, recip_hFacS(1-OLx,1-OLy,1,bi,bj),
+     I         0, kappaRV, recip_hFacS(1-OLx,1-OLy,1,bi,bj),
      U         uVelD(1-OLx,1-OLy,1,bi,bj),
      I         myThid )
         ENDIF
@@ -649,7 +649,7 @@ C--   Step forward W field in N-H algorithm
 #endif
          CALL TIMER_START('CALC_GW          [DYNAMICS]',myThid)
          CALL CALC_GW(
-     I                 bi,bj, KappaRU, KappaRV,
+     I                 bi,bj, kappaRU, kappaRV,
      I                 str13, str23, str33,
      I                 viscAh3d_00, viscAh3d_13, viscAh3d_23,
      I                 myTime, myIter, myThid )
