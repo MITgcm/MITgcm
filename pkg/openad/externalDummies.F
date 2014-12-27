@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/externalDummies.F,v 1.2 2014/08/06 16:55:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/externalDummies.F,v 1.3 2014/12/27 05:36:48 heimbach Exp $
 C $Name:  $
 C ###########################################################
       SUBROUTINE EXCH1_RL(
@@ -112,7 +112,7 @@ C dummy self dependence (nontrivial so mfef90 doesn't kill it)
       cg2d_x(1,1,1,1)=2*cg2d_b(1,1,1,1)
       end subroutine
 C ###########################################################
-      subroutine oad_active_read_xy(
+      subroutine active_read_xy(
      I                           active_var_file,
      O                           active_var,
      I                           iRec,
@@ -122,12 +122,12 @@ C ###########################################################
      I                           myThid,
      I                           dummy
      &                         )
-!$openad xxx template oad_template.active_read_xy.f90
+! xxx template oad_template.active_read_xy.f90
         implicit none
 !     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-      CHARACTER*(MAX_LEN_MBUF) active_var_file
+      CHARACTER*(80) active_var_file
       _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iRec
       INTEGER myOptimIter
