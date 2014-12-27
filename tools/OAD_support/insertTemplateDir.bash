@@ -18,7 +18,7 @@ do
       echo "c\$openad XXX Template ad_template.streamice_cg_solve.f" >> temp.sed
       ;;
     "OpenAD_active_read_xy" )
-      echo "c\$openad XXX Template oad_template.active_read_xy.f" >> temp.sed
+      echo "c\$openad XXX Template ad_template.active_read_xy.f" >> temp.sed
       ;;
     "OpenAD_exch1_rl" |          \
     "OpenAD_exch1_rs" |          \
