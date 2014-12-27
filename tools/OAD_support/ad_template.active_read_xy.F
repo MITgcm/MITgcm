@@ -1,3 +1,8 @@
+! $Header: /u/gcmpack/MITgcm/tools/OAD_support/ad_template.active_read_xy.F,v 1.2 2014/12/27 20:37:57 heimbach Exp $
+! $Name:  $
+
+#include "OPENAD_OPTIONS.h"
+
       subroutine template()
 C     !FUNCTIONS
       use OAD_tape
@@ -26,6 +31,8 @@ C     !FUNCTIONS
       Real*8  active_var_p(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
+
+#ifdef ALLOW_OPENAD_ACTIVE_FILE
 
       myNr = 1
       useCurrentDir = .FALSE.
@@ -89,5 +96,7 @@ C     !FUNCTIONS
 ! copy back
          active_var%d = active_var_p
       end if
+
+#endif /* ALLOW_OPENAD_ACTIVE_FILE */
 
       end

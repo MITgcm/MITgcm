@@ -1,5 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/externalDummies.F,v 1.3 2014/12/27 05:36:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/externalDummies.F,v 1.4 2014/12/27 20:37:34 heimbach Exp $
 C $Name:  $
+
+#include "OPENAD_OPTIONS.h"
+
 C ###########################################################
       SUBROUTINE EXCH1_RL(
      U                 array,
@@ -135,6 +138,8 @@ C ###########################################################
       LOGICAL doglobalread
       LOGICAL lAdInit
       _RL     dummy
+#ifdef ALLOW_OPENAD_ACTIVE_FILE
       active_var = dummy + active_var
       dummy = active_var(1,1,1,1) + dummy
+#endif /* ALLOW_OPENAD_ACTIVE_FILE */
       end subroutine
