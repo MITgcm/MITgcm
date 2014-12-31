@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/OPENAD_OPTIONS.h,v 1.1 2014/12/27 20:37:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/OPENAD_OPTIONS.h,v 1.2 2014/12/31 17:57:43 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -16,6 +16,7 @@ CEOP
 #ifndef OPENAD_OPTIONS_H
 #define OPENAD_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_OPENAD
 
@@ -23,4 +24,3 @@ CEOP
 
 #endif /* ALLOW_OPENAD */
 #endif /* OPENAD_OPTIONS_H */
-
