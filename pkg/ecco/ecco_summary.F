@@ -1,11 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.19 2014/10/16 20:02:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.20 2014/12/31 20:09:20 jmc Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
 
-      subroutine ecco_summary(
-     I                         mythid
-     &                       )
+      SUBROUTINE ECCO_SUMMARY( mythid )
 
 c     ==================================================================
 c     SUBROUTINE ecco_summary
@@ -28,7 +26,6 @@ c     ==================================================================
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "ecco.h"
@@ -38,19 +35,16 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-
 c     integer mythid - thread number for this instance of the routine.
       integer mythid
 
 c     == local variables ==
-
       character*(max_len_mbuf) msgbuf
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       integer k, k2, il, msgunit
 #endif
 
 c     == external ==
-
       integer  ilnblnk
       external ilnblnk
 
@@ -116,60 +110,60 @@ c--   =======================================================
 
 #ifdef ALLOW_ECCO_FORWARD_RUN
       write(msgbuf,'(a)')
-     &'// ALLOW_ECCO_FORWARD_RUN:             defined'
+     &'// ALLOW_ECCO_FORWARD_RUN:               defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// ALLOW_ECCO_FORWARD_RUN:         NOT defined'
+     &'// ALLOW_ECCO_FORWARD_RUN:           NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
 #ifdef ALLOW_ECCO_DIAGNOSTIC_RUN
       write(msgbuf,'(a)')
-     &'// ALLOW_ECCO_DIAGNOSTIC_RUN:          defined'
+     &'// ALLOW_ECCO_DIAGNOSTIC_RUN:            defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// ALLOW_ECCO_DIAGNOSTIC_RUN:      NOT defined'
+     &'// ALLOW_ECCO_DIAGNOSTIC_RUN:        NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
 #ifdef ALLOW_ADJOINT_RUN
       write(msgbuf,'(a)')
-     &'// ALLOW_ADJOINT_RUN:             defined'
+     &'// ALLOW_ADJOINT_RUN:                    defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// ALLOW_ADJOINT_RUN:         NOT defined'
+     &'// ALLOW_ADJOINT_RUN:                NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
 #ifdef ALLOW_GRADIENT_CHECK
       write(msgbuf,'(a)')
-     &'// ALLOW_GRADIENT_CHECK:          defined'
+     &'// ALLOW_GRADIENT_CHECK:                 defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// ALLOW_GRADIENT_CHECK:      NOT defined'
+     &'// ALLOW_GRADIENT_CHECK:             NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
 #ifdef ALLOW_ECCO_OPTIMIZATION
       write(msgbuf,'(a)')
-     &'// ALLOW_ECCO_OPTIMIZATION:            defined'
+     &'// ALLOW_ECCO_OPTIMIZATION:              defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// ALLOW_ECCO_OPTIMIZATION:        NOT defined'
+     &'// ALLOW_ECCO_OPTIMIZATION:          NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
@@ -186,7 +180,6 @@ c--   Just do a "dry" run ( useful for testing ).
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
-
 
 #ifdef ALLOW_YMDS_TREE
 c--   Use the Yearly-Monthly-Daily-Stepping call tree.
@@ -257,12 +250,12 @@ c--   Read the EGM data from file.
      defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
 c--   Use NSCAT data for getting the weights.
       write(msgbuf,'(a)')
-     &'// ALLOW_SCAT_COST_CONTRIBUTION:                     defined'
+     &'// ALLOW_SCAT_COST_CONTRIBUTION:         defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// ALLOW_SCAT_COST_CONTRIBUTION:                 NOT defined'
+     &'// ALLOW_SCAT_COST_CONTRIBUTION:     NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
@@ -323,12 +316,12 @@ c--   Include code to use the meridional wind stress contribution.
 c--   Enable testing of the 3d sigmaR field contribution
 c--   to the cost function.
       write(msgbuf,'(a)')
-     &'// ALLOW_SIGMAR_COST_CONTRIBUTION:        defined'
+     &'// ALLOW_SIGMAR_COST_CONTRIBUTION:       defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// ALLOW_SIGMAR_COST_CONTRIBUTION:    NOT defined'
+     &'// ALLOW_SIGMAR_COST_CONTRIBUTION:   NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
@@ -393,12 +386,12 @@ c--   to the cost function.
 c--   Enable testing of the heat flux contribution to the
 c--   cost function.
       write(msgbuf,'(a)')
-     &'// APPLY_HFLUX_COST_CONTRIBUTION:      defined'
+     &'// APPLY_HFLUX_COST_CONTRIBUTION:        defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// APPLY_HFLUX_COST_CONTRIBUTION:  NOT defined'
+     &'// APPLY_HFLUX_COST_CONTRIBUTION:    NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
@@ -407,12 +400,12 @@ c--   cost function.
 c--   Enable testing of the salt flux contribution to the
 c--   cost function.
       write(msgbuf,'(a)')
-     &'// APPLY_SFLUX_COST_CONTRIBUTION:      defined'
+     &'// APPLY_SFLUX_COST_CONTRIBUTION:        defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// APPLY_SFLUX_COST_CONTRIBUTION:  NOT defined'
+     &'// APPLY_SFLUX_COST_CONTRIBUTION:    NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
@@ -421,12 +414,12 @@ c--   cost function.
 c--   Enable testing of the zonal wind stress contribution
 c--   to the cost function.
       write(msgbuf,'(a)')
-     &'// APPLY_USTRESS_COST_CONTRIBUTION:    defined'
+     &'// APPLY_USTRESS_COST_CONTRIBUTION:      defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// APPLY_USTRESS_COST_CONTRIBUTION: NOT defined'
+     &'// APPLY_USTRESS_COST_CONTRIBUTION:  NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
@@ -435,12 +428,12 @@ c--   to the cost function.
 c--   Enable testing of the meridional wind stress contribution
 c--   to the cost function.
       write(msgbuf,'(a)')
-     &'// APPLY_VSTRESS_COST_CONTRIBUTION:    defined'
+     &'// APPLY_VSTRESS_COST_CONTRIBUTION:      defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// APPLY_VSTRESS_COST_CONTRIBUTION: NOT defined'
+     &'// APPLY_VSTRESS_COST_CONTRIBUTION:  NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
@@ -449,12 +442,12 @@ c--   to the cost function.
 c--   Enable testing of the initial state temperature contribution
 c--   to the cost function.
       write(msgbuf,'(a)')
-     &'// APPLY_THETA_COST_CONTRIBUTION:      defined'
+     &'// APPLY_THETA_COST_CONTRIBUTION:        defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// APPLY_THETA_COST_CONTRIBUTION:  NOT defined'
+     &'// APPLY_THETA_COST_CONTRIBUTION:    NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
@@ -463,12 +456,12 @@ c--   to the cost function.
 c--   Enable testing of the initial state salinity contribution
 c--   to the cost function.
       write(msgbuf,'(a)')
-     &'// APPLY_SALT_COST_CONTRIBUTION:       defined'
+     &'// APPLY_SALT_COST_CONTRIBUTION:         defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// APPLY_SALT_COST_CONTRIBUTION:   NOT defined'
+     &'// APPLY_SALT_COST_CONTRIBUTION:     NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
@@ -477,12 +470,12 @@ c--   to the cost function.
 c--   Enable testing of the sea surface temperature contribution
 c--   to the cost function.
       write(msgbuf,'(a)')
-     &'// APPLY_SST_COST_CONTRIBUTION:        defined'
+     &'// APPLY_SST_COST_CONTRIBUTION:          defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// APPLY_SST_COST_CONTRIBUTION:    NOT defined'
+     &'// APPLY_SST_COST_CONTRIBUTION:      NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
@@ -491,12 +484,12 @@ c--   to the cost function.
 c--   Enable testing of the sea surface height contribution
 c--   to the cost function.
       write(msgbuf,'(a)')
-     &'// APPLY_SSH_COST_CONTRIBUTION:        defined'
+     &'// APPLY_SSH_COST_CONTRIBUTION:          defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// APPLY_SSH_COST_CONTRIBUTION:    NOT defined'
+     &'// APPLY_SSH_COST_CONTRIBUTION:      NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
@@ -544,36 +537,36 @@ c--   Initial state salinity used as part of the control vector.
 #ifdef ALLOW_ETAN0_CONTROL
 c--   Initial state sealevel used as part of the control vector.
       write(msgbuf,'(a)')
-     &'// ALLOW_ETAN0_CONTROL:                 defined'
+     &'// ALLOW_ETAN0_CONTROL:                  defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// ALLOW_ETAN0_CONTROL:             NOT defined'
+     &'// ALLOW_ETAN0_CONTROL:              NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 #ifdef ALLOW_UVEL0_CONTROL
 c--   Initial state velocity used as part of the control vector.
       write(msgbuf,'(a)')
-     &'// ALLOW_UVEL0_CONTROL:                 defined'
+     &'// ALLOW_UVEL0_CONTROL:                  defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// ALLOW_UVEL0_CONTROL:             NOT defined'
+     &'// ALLOW_UVEL0_CONTROL:              NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 #ifdef ALLOW_VVEL0_CONTROL
 c--   Initial state velocity used as part of the control vector.
       write(msgbuf,'(a)')
-     &'// ALLOW_VVEL0_CONTROL:                 defined'
+     &'// ALLOW_VVEL0_CONTROL:                  defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// ALLOW_VVEL0_CONTROL:             NOT defined'
+     &'// ALLOW_VVEL0_CONTROL:              NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
@@ -724,12 +717,12 @@ c--   Precipitation used as part of the control vector.
 #ifdef ALLOW_AUTODIFF_TAMC
 c--   Enable automatic differentiation of the ECCO code.
       write(msgbuf,'(a)')
-     &'// ALLOW_AUTODIFF_TAMC:                defined'
+     &'// ALLOW_AUTODIFF_TAMC:                  defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// ALLOW_AUTODIFF_TAMC:            NOT defined'
+     &'// ALLOW_AUTODIFF_TAMC:              NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
@@ -748,14 +741,14 @@ c--   Checkpointing as handled by TAMC.
 #endif
 
 c--   General summary.
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,2x,a10)')
-     &' Experiment name:',expId
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+c     write(msgbuf,'(a)')
+c    &' '
+c     call print_message( msgbuf, standardmessageunit,
+c    &                    SQUEEZE_RIGHT , mythid)
+c     write(msgbuf,'(a,2x,a10)')
+c    &' Experiment name:',expId
+c     call print_message( msgbuf, standardmessageunit,
+c    &                    SQUEEZE_RIGHT , mythid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c--   Generation of adjoint code.
@@ -780,7 +773,6 @@ c--   Generation of adjoint code not enabled.
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 #endif /* ECCO_CTRL_DEPRECATED */
-
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       msgunit=standardmessageunit
@@ -876,6 +868,5 @@ c--
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-      return
-      end
-
+      RETURN
+      END
