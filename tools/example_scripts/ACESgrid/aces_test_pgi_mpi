@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_pgi.stderr
 #PBS -o /home/jmc/test_aces/output/tst_pgi.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.38 2014/12/15 20:15:23 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.39 2014/12/31 23:05:13 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: MPI test using PGI (pgf77) compiler & mpich
@@ -171,6 +171,8 @@ if [ $dblRun -ge 1 ] ; then
 
  #-- send output (adapted from testreport):
  outpSum=`ls -t tr_${dNam}-${sfx}_????????_?/summary.txt | head -1`
+ #- only if converge within "dblRun" attempt
+ if test $difNb != 0 -a $difNb != $nFail ; then outpSum='' ; fi
  if test "x$outpSum" != x ; then
    dirRes=`echo $outpSum | sed 's/\/summary.txt$//'`
    tar -cf ${SavD}/${dirRes}".tar" $dirRes > /dev/null 2>&1 \
