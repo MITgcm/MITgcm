@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_step_icemass.F,v 1.2 2014/12/22 22:51:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_step_icemass.F,v 1.3 2015/01/01 16:54:01 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -77,7 +77,7 @@ C  i,j                  :: loop indices
      &      + shelfIceFreshWaterFlux(I,J,bi,bj) * deltaT
 
             shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj)
-     &      + shelfIceMassDynTendency(I,J,bi,bj) * 910. * deltaT
+     &      + shelfIceMassDynTendency(I,J,bi,bj)*910. _d 0 *deltaT
 C          FOR NOW THE DENSITY OF ICE IS HARDCODED
 C          SHOULD USE PARAM FOR ICE DENSITY FROM STREAMICE
 C          -- but this is just a placeholder for streamice anyway
@@ -94,8 +94,8 @@ C          -- but this is just a placeholder for streamice anyway
 
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
-        CALL DIAGNOSTICS_FILL(shelficeMass,'SHI_mass',0,1,0,1,1,
-     &      myThid)
+        CALL DIAGNOSTICS_FILL_RS( shelficeMass, 'SHI_mass',
+     I                            0, 1, 0, 1, 1, myThid )
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_SHELFICE */
