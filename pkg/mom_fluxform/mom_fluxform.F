@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.53 2014/12/24 19:12:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.54 2015/01/03 23:57:57 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -253,7 +253,7 @@ C       vorticity at a no-slip boundary by a factor of 2 = sideDragFactor
       ENDIF
 
       IF (     no_slip_bottom
-     &    .OR. bottomDragQuadratic.NE.0.
+     &    .OR. selectBotDragQuadr.GE.0
      &    .OR. bottomDragLinear.NE.0.) THEN
        bottomDragTerms=.TRUE.
       ELSE
@@ -574,7 +574,10 @@ C-     No-slip BCs impose a drag at walls...
         ENDIF
 C-    No-slip BCs impose a drag at bottom
         IF (bottomDragTerms) THEN
-         CALL MOM_U_BOTTOMDRAG( bi,bj,k,uFld,KE,kappaRU,vF,myThid )
+         CALL MOM_U_BOTTOMDRAG( bi, bj, k,
+     I              uFld, vFld, KE, kappaRU,
+     O              vF,
+     I              myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
            gUdiss(i,j) = gUdiss(i,j) + vF(i,j)
@@ -584,7 +587,10 @@ C-    No-slip BCs impose a drag at bottom
 
 #ifdef ALLOW_SHELFICE
         IF (useShelfIce) THEN
-         CALL SHELFICE_U_DRAG( bi,bj,k,uFld,KE,kappaRU,vF,myThid )
+         CALL SHELFICE_U_DRAG( bi, bj, k,
+     I              uFld, vFld, KE, kappaRU,
+     O              vF,
+     I              myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
            gUdiss(i,j) = gUdiss(i,j) + vF(i,j)
@@ -800,7 +806,10 @@ C-     No-slip BCs impose a drag at walls...
         ENDIF
 C-    No-slip BCs impose a drag at bottom
         IF (bottomDragTerms) THEN
-         CALL MOM_V_BOTTOMDRAG( bi,bj,k,vFld,KE,KappaRV,vF,myThid )
+         CALL MOM_V_BOTTOMDRAG( bi, bj, k,
+     I              uFld, vFld, KE, kappaRV,
+     O              vF,
+     I              myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
            gvDiss(i,j) = gvDiss(i,j) + vF(i,j)
@@ -810,7 +819,10 @@ C-    No-slip BCs impose a drag at bottom
 
 #ifdef ALLOW_SHELFICE
         IF (useShelfIce) THEN
-         CALL SHELFICE_V_DRAG( bi,bj,k,vFld,KE,KappaRV,vF,myThid )
+         CALL SHELFICE_V_DRAG( bi, bj, k,
+     I              uFld, vFld, KE, kappaRV,
+     O              vF,
+     I              myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
            gvDiss(i,j) = gvDiss(i,j) + vF(i,j)
