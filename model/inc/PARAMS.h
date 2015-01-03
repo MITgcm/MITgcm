@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.277 2014/11/02 21:21:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.278 2015/01/03 23:53:50 jmc Exp $
 C $Name:  $
 C
 
@@ -187,6 +187,10 @@ C     saltAdvScheme       :: Salt. Horiz.advection scheme selector
 C     saltVertAdvScheme   :: Salt. Vert. Advection scheme selector
 C     selectKEscheme      :: Kinetic Energy scheme selector (Vector Inv.)
 C     selectVortScheme    :: Scheme selector for Vorticity term (Vector Inv.)
+C     selectBotDragQuadr  :: quadratic bottom drag discretisation option:
+C                           =0: average KE from grid center to U & V location
+C                           =1: use local velocity norm @ U & V location
+C                           =2: same with wet-point averaging of other component
 C     monitorSelect       :: select group of variables to monitor
 C                            =1 : dynvars ; =2 : + vort ; =3 : + surface
 C-    debugLevel          :: controls printing of algorithm intermediate results
@@ -209,6 +213,7 @@ C                            and statistics ; higher -> more writing
      &        tempAdvScheme, tempVertAdvScheme,
      &        saltAdvScheme, saltVertAdvScheme,
      &        selectKEscheme, selectVortScheme,
+     &        selectBotDragQuadr,
      &        monitorSelect, debugLevel
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
@@ -234,6 +239,7 @@ C                            and statistics ; higher -> more writing
       INTEGER saltAdvScheme, saltVertAdvScheme
       INTEGER selectKEscheme
       INTEGER selectVortScheme
+      INTEGER selectBotDragQuadr
       INTEGER monitorSelect
       INTEGER debugLevel
 
@@ -264,6 +270,7 @@ C     setCenterDr    :: set cell-Center depth (put Interface at the middle)
 C- Momentum params:
 C     no_slip_sides  :: Impose "no-slip" at lateral boundaries.
 C     no_slip_bottom :: Impose "no-slip" at bottom boundary.
+C     bottomVisc_pCell :: account for partial-cell in bottom visc. (no-slip BC)
 C     useSmag3D      :: Use isotropic 3-D Smagorinsky
 C     useFullLeith   :: Set to true to use full Leith viscosity(may be unstable
 C                       on irregular grids)
@@ -331,9 +338,10 @@ C     staggerTimeStep   :: enable a Stagger time stepping U,V (& W) then T,S
 C     doResetHFactors   :: Do reset thickness factors @ beginning of each time-step
 C     implicitDiffusion :: Turns implicit vertical diffusion on
 C     implicitViscosity :: Turns implicit vertical viscosity on
-C     tempImplVertAdv :: Turns on implicit vertical advection for Temperature
-C     saltImplVertAdv :: Turns on implicit vertical advection for Salinity
-C     momImplVertAdv  :: Turns on implicit vertical advection for Momentum
+C     implBottomFriction :: Turns on implicit bottom friction (drag & no-slip BC)
+C     tempImplVertAdv   :: Turns on implicit vertical advection for Temperature
+C     saltImplVertAdv   :: Turns on implicit vertical advection for Salinity
+C     momImplVertAdv    :: Turns on implicit vertical advection for Momentum
 C     multiDimAdvection :: Flag that enable multi-dimension advection
 C     useMultiDimAdvec  :: True if multi-dim advection is used at least once
 C     momDissip_In_AB   :: if False, put Dissipation tendency contribution
@@ -378,7 +386,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
      & usingCartesianGrid, usingSphericalPolarGrid, rotateGrid,
      & usingCylindricalGrid, usingCurvilinearGrid, hasWetCSCorners,
      & deepAtmosphere, setInterFDr, setCenterDr,
-     & no_slip_sides, no_slip_bottom, useSmag3D,
+     & no_slip_sides, no_slip_bottom, bottomVisc_pCell, useSmag3D,
      & useFullLeith, useStrainTensionVisc, useAreaViscLength,
      & momViscosity, momAdvection, momForcing,
      & momPressureForcing, metricTerms, useNHMTerms,
@@ -398,7 +406,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
      & exactConserv, linFSConserveTr, useRealFreshWaterFlux,
      & quasiHydrostatic, nonHydrostatic, use3Dsolver,
      & implicitIntGravWave, staggerTimeStep, doResetHFactors,
-     & implicitDiffusion, implicitViscosity,
+     & implicitDiffusion, implicitViscosity, implBottomFriction,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
      & multiDimAdvection, useMultiDimAdvec,
      & momDissip_In_AB, doAB_onGtGs,
@@ -430,6 +438,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
 
       LOGICAL no_slip_sides
       LOGICAL no_slip_bottom
+      LOGICAL bottomVisc_pCell
       LOGICAL useSmag3D
       LOGICAL useFullLeith
       LOGICAL useStrainTensionVisc
@@ -485,6 +494,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL doResetHFactors
       LOGICAL implicitDiffusion
       LOGICAL implicitViscosity
+      LOGICAL implBottomFriction
       LOGICAL tempImplVertAdv
       LOGICAL saltImplVertAdv
       LOGICAL momImplVertAdv
@@ -1000,9 +1010,10 @@ C Logical flags for selecting packages
       COMMON /PARM_PACKAGES/
      &        useGAD, useOBCS, useSHAP_FILT, useZONAL_FILT,
      &        useOPPS, usePP81, useKL10, useMY82, useGGL90, useKPP,
-     &        useGMRedi, useBBL, useDOWN_SLOPE, useCTRL,
+     &        useGMRedi, useBBL, useDOWN_SLOPE,
      &        useCAL, useEXF, useBulkForce, useEBM, useCheapAML,
-     &        useGrdchk,useSMOOTH,usePROFILES,useECCO,useSBO, useFLT,
+     &        useGrdchk, useSMOOTH, usePROFILES, useECCO, useCTRL,
+     &        useSBO, useFLT,
      &        usePTRACERS, useGCHEM, useRBCS, useOffLine, useMATRIX,
      &        useFRAZIL, useSEAICE, useSALT_PLUME, useShelfIce,
      &        useStreamIce, useICEFRONT, useThSIce, useLand,

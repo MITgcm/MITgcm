@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.262 2014/11/13 20:04:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.263 2015/01/03 23:56:41 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -192,7 +192,8 @@ C--   Continuous equation parameters
      & eosType, integr_GeoPot, selectFindRoSurf,
      & HeatCapacity_Cp, celsius2K, atm_Cp, atm_Rd, atm_Rq, atm_Po,
      & no_slip_sides, sideDragFactor,
-     & no_slip_bottom, bottomDragLinear, bottomDragQuadratic,
+     & no_slip_bottom, bottomVisc_pCell,
+     & bottomDragLinear, bottomDragQuadratic, selectBotDragQuadr,
      & momViscosity,  momAdvection, momForcing, useCoriolis,
      & useConstantF, useBetaPlaneF, useSphereF, use3dCoriolis,
      & momPressureForcing, metricTerms, vectorInvariantMomentum,
@@ -206,7 +207,7 @@ C--   Continuous equation parameters
      & nonHydrostatic, selectNHfreeSurf, quasiHydrostatic,
      & implicitIntGravWave, staggerTimeStep, doResetHFactors,
      & tempStepping, saltStepping, momStepping,
-     & implicitDiffusion, implicitViscosity,
+     & implicitDiffusion, implicitViscosity, implBottomFriction,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
      & viscAz, diffKzT, diffKzS, viscAp, diffKpT, diffKpS,
      & viscAr, diffKrT, diffKrS, viscArNr, diffKrNrT, diffKrNrS,
@@ -498,6 +499,11 @@ C--   z,p,r coord input switching.
           viscArNr(k) = viscAr
         ENDDO
       ENDIF
+#ifdef ALLOW_MOM_COMMON
+C-    set default scheme for quadratic bottom-drag
+      IF ( selectBotDragQuadr.EQ.-1 .AND. bottomDragQuadratic.NE.0. )
+     &  selectBotDragQuadr = 0
+#endif /* ALLOW_MOM_COMMON */
 
       IF ( diffKzT .NE. UNSET_RL ) zCoordInputData  = .TRUE.
       IF ( diffKpT .NE. UNSET_RL ) pCoordInputData  = .TRUE.

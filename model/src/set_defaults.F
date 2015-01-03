@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.173 2014/08/11 15:09:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.174 2015/01/03 23:56:41 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -129,9 +129,11 @@ C-    viscosity and diffusivity default value:
       viscFacAdj          = 1. _d 0
       no_slip_sides       = .TRUE.
       no_slip_bottom      = .TRUE.
+      bottomVisc_pCell    = .FALSE.
       sideDragFactor      = 2. _d 0
       bottomDragLinear    = 0.
       bottomDragQuadratic = 0.
+      selectBotDragQuadr  = -1
       viscA4              = 0. _d 11
       viscA4Grid          = 0. _d 0
       viscA4GridMax       = 1. _d 21
@@ -197,6 +199,7 @@ C-    viscosity and diffusivity default value:
       useStrainTensionVisc= .FALSE.
       implicitDiffusion   = .FALSE.
       implicitViscosity   = .FALSE.
+      implBottomFriction  = .FALSE.
       momImplVertAdv      = .FALSE.
       tempImplVertAdv     = .FALSE.
       saltImplVertAdv     = .FALSE.

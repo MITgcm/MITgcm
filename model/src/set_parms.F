@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.19 2014/04/04 20:56:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.20 2015/01/03 23:56:41 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -120,6 +120,8 @@ C-    On/Off flags for viscosity coefficients
       useHarmonicVisc   = momViscosity .AND. useHarmonicVisc
       useBiharmonicVisc = momViscosity .AND. useBiharmonicVisc
 #endif /* ALLOW_MOM_COMMON */
+      IF ( bottomDragQuadratic.EQ.0. .OR. .NOT.momViscosity )
+     &  selectBotDragQuadr = -1
 
 C--   Free-surface & pressure method
       uniformFreeSurfLev = usingZCoords

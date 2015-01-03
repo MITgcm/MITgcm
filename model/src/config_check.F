@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.78 2014/08/11 15:27:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.79 2015/01/03 23:56:41 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -751,6 +751,13 @@ C--   Momentum related limitations:
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
+      IF ( selectBotDragQuadr.LT.-1 .OR. selectBotDragQuadr.GT.2 ) THEN
+        WRITE(msgBuf,'(2A,I8,A)') 'CONFIG_CHECK: ',
+     &       'selectBotDragQuadr=', selectBotDragQuadr,
+     &       ' not valid (-1,0,1,2)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
       IF ( useSmag3D .AND.
      &    ( usingPCoords .OR. deepAtmosphere .OR. selectSigmaCoord.NE.0
      &                   .OR. rhoRefFile.NE.' ' .OR. hasWetCSCorners )
@@ -822,6 +829,12 @@ C--   Time-stepping limitations
       IF ( addFrictionHeating .AND. .NOT.staggerTimeStep ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: addFrictionHeating',
      &  ' not yet coded for synchronous time-stepping.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( implBottomFriction ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: implBottomFriction',
+     &  ' not yet coded.'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.147 2014/05/06 15:47:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.148 2015/01/03 23:56:41 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -193,12 +193,17 @@ C-    Vertical viscosity parameters:
      &  //rUnits//'^2/s )*/')
       CALL WRITE_0D_L( no_slip_bottom, INDEX_NONE,
      & 'no_slip_bottom =', '  /* Viscous BCs: No-slip bottom */')
+      CALL WRITE_0D_L( bottomVisc_pCell, INDEX_NONE,
+     & 'bottomVisc_pCell =', ' /* Partial-cell in bottom Visc. BC */')
       CALL WRITE_0D_RL( bottomDragLinear, INDEX_NONE,
      & 'bottomDragLinear =',
      & ' /* linear bottom-drag coefficient ( m/s ) */')
       CALL WRITE_0D_RL( bottomDragQuadratic, INDEX_NONE,
      & 'bottomDragQuadratic =',
      & ' /* quadratic bottom-drag coefficient (-) */')
+      CALL WRITE_0D_I( selectBotDragQuadr, INDEX_NONE,
+     & 'selectBotDragQuadr =',
+     & ' /* select quadratic bottom drag options */')
 #endif /* ALLOW_MOM_COMMON */
       CALL WRITE_0D_RL( diffKhT, INDEX_NONE,'diffKhT =',
      &'   /* Laplacian diffusion of heat laterally ( m^2/s ) */')
@@ -406,6 +411,9 @@ C-    Vertical viscosity parameters:
      &                ' /* Momentum implicit vert. advection on/off*/')
       CALL WRITE_0D_L( implicitViscosity, INDEX_NONE,
      & 'implicitViscosity =', ' /* Implicit viscosity on/off flag */')
+      CALL WRITE_0D_L( implBottomFriction, INDEX_NONE,
+     & 'implBottomFriction=',
+     & ' /* Implicit bottom friction on/off flag */')
       CALL WRITE_0D_L( metricTerms,  INDEX_NONE, 'metricTerms =',
      &                '  /* metric-Terms on/off flag */')
       CALL WRITE_0D_L( useNHMTerms,  INDEX_NONE, 'useNHMTerms =',
