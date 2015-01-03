@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.75 2014/12/24 19:13:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.76 2015/01/03 23:58:53 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -230,7 +230,7 @@ C       vorticity at a no-slip boundary by a factor of 2 = sideDragFactor
       ENDIF
 
       IF (     no_slip_bottom
-     &    .OR. bottomDragQuadratic.NE.0.
+     &    .OR. selectBotDragQuadr.GE.0
      &    .OR. bottomDragLinear.NE.0.) THEN
        bottomDragTerms=.TRUE.
       ELSE
@@ -394,7 +394,10 @@ C-     No-slip BCs impose a drag at walls...
 
 C-    No-slip BCs impose a drag at bottom
       IF ( bottomDragTerms ) THEN
-       CALL MOM_U_BOTTOMDRAG(bi,bj,k,uFld,KE,kappaRU,vF,myThid)
+       CALL MOM_U_BOTTOMDRAG( bi, bj, k,
+     I            uFld, vFld, KE, kappaRU,
+     O            vF,
+     I            myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          guDiss(i,j) = guDiss(i,j)+vF(i,j)
@@ -402,8 +405,11 @@ C-    No-slip BCs impose a drag at bottom
        ENDDO
       ENDIF
 #ifdef ALLOW_SHELFICE
-      IF ( useShelfIce.AND.bottomDragTerms ) THEN
-       CALL SHELFICE_U_DRAG(bi,bj,k,uFld,KE,kappaRU,vF,myThid)
+      IF ( useShelfIce ) THEN
+       CALL SHELFICE_U_DRAG( bi, bj, k,
+     I            uFld, vFld, KE, kappaRU,
+     O            vF,
+     I            myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          guDiss(i,j) = guDiss(i,j) + vF(i,j)
@@ -453,7 +459,10 @@ C-     No-slip BCs impose a drag at walls...
 
 C-    No-slip BCs impose a drag at bottom
       IF ( bottomDragTerms ) THEN
-       CALL MOM_V_BOTTOMDRAG(bi,bj,k,vFld,KE,kappaRV,vF,myThid)
+       CALL MOM_V_BOTTOMDRAG( bi, bj, k,
+     I            uFld, vFld, KE, kappaRV,
+     O            vF,
+     I            myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          gvDiss(i,j) = gvDiss(i,j)+vF(i,j)
@@ -461,14 +470,17 @@ C-    No-slip BCs impose a drag at bottom
        ENDDO
       ENDIF
 #ifdef ALLOW_SHELFICE
-      IF  (useShelfIce.AND.bottomDragTerms ) THEN
-         CALL SHELFICE_V_DRAG(bi,bj,k,vFld,KE,kappaRV,vF,myThid)
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-           gvDiss(i,j) = gvDiss(i,j) + vF(i,j)
-          ENDDO
-         ENDDO
-        ENDIF
+      IF ( useShelfIce ) THEN
+       CALL SHELFICE_V_DRAG( bi, bj, k,
+     I            uFld, vFld, KE, kappaRV,
+     O            vF,
+     I            myThid )
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gvDiss(i,j) = gvDiss(i,j) + vF(i,j)
+        ENDDO
+       ENDDO
+      ENDIF
 #endif /* ALLOW_SHELFICE */
 
 C--   if (momViscosity) end of block.
