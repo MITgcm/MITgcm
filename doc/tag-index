@@ -1,9 +1,32 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2109 2014/12/24 19:16:33 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2110 2015/01/04 17:13:26 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom_common (bottomdrag):
+  - average bottomDragFld (ALLOW_BOTTOMDRAG_CONTROL) from grid-cell center
+    to correct location (U & V point) in S/R MOM_U/V_BOTTOMDRAG;
+    update output (adm & tlm) of experiment global_ocean.90x40x15.bottomdrag.
+o pkg/shelfice (u/v_drag):
+  - add one argument (the other velocity component) to S/R SHELFICE_U/V_DRAG;
+  - use SHELFICEDragLinear & SHELFICEDragQuadratic in shelfice_v_drag.F
+    (now similar to shelfice_u_drag.F)
+  - remove condition on bottomDragTerms when calling SHELFICE_U/V_DRAG
+    from mom_vecinv.F (similar to mom_fluxform calls).
+o pkg/mom_common (bottomdrag):
+  - add one argument (the other velocity component) to S/R MOM_U/V_BOTTOMDRAG;
+  - add options for alternative discretisation of velocity norm in quadratic
+    bottom drag: averaging of grid-cell-center KE to U.point and V.point
+    (selectBotDragQuadr=0, original code) can produce noisy patterns; this
+    improves when averaging only the other component (e.g. vVel for U bottom
+    drag) using wet-point method (selectBotDragQuadr=2) or not (=1).
+  - add options (bottomVisc_pCell) to account for partial-cell in bottom
+    friction (no-slip BC) thus getting the true distance from the bottom;
+    off by default since this also reduces model stability (explicit bottom
+    friction). Changes produce different machine truncation with linear-drag
+    + no-slip BC: update output of experiments exp4.stevens (10 digits) and
+    front_relax (bvp & mxl, 10 & 11 digits).
 o model/src & mom pkgs:
   - add one more level to vertical viscosity local arrays (Nr+1, previously Nr)
     since no-slip bottom BC uses viscosity @ k+1 to update velocity @ level k
