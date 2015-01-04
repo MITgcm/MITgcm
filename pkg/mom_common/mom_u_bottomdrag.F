@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.16 2015/01/04 00:00:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.17 2015/01/04 16:16:32 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -100,9 +100,8 @@ C--   Linear bottom drag:
      &    - recDrF_bot(i,j)
      &    *( bottomDragLinear*dragFac
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-c    &     + halfRL*( bottomDragFld(i-1,j,bi,bj)
-c    &              + bottomDragFld(i,j,bi,bj) )*dragFac
-     &              + bottomDragFld(i,j,bi,bj)  *dragFac
+     &     + halfRL*( bottomDragFld(i-1,j,bi,bj)
+     &              + bottomDragFld(i,j,bi,bj) )*dragFac
 #endif
      &     )*uFld(i,j)
        ENDDO
