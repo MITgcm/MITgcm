@@ -1,18 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_v_drag.F,v 1.9 2012/10/05 15:18:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_v_drag.F,v 1.10 2015/01/04 00:01:12 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
-#include "MOM_COMMON_OPTIONS.h"
 
 CBOP
 C !ROUTINE: SHELFICE_V_DRAG
 
 C !INTERFACE: ==========================================================
       SUBROUTINE SHELFICE_V_DRAG(
-     I        bi,bj,k,
-     I        vFld, KE, KappaRV,
+     I        bi, bj, k,
+     I        uFld, vFld, KE, kappaRV,
      O        vDragTerms,
-     I        myThid)
+     I        myThid )
 
 C !DESCRIPTION:
 C Calculates the drag due to friction and the no-slip condition at the
@@ -32,14 +31,16 @@ C !USES: ===============================================================
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
 C  k                    :: vertical level
+C  uFld                 :: zonal flow
 C  vFld                 :: meridional flow
 C  KE                   :: Kinetic energy
-C  KappaRV              :: vertical viscosity
+C  kappaRV              :: vertical viscosity
 C  myThid               :: thread number
       INTEGER bi,bj,k
+      _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL kappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -63,26 +64,26 @@ C-  No-slip BCs impose a drag at top
       ELSE
        kTop    = Nr
        kUp     = min(k+1,kTop)
-       kUpC    = kUp
+       kUpC    = k+1
       ENDIF
       rdrckp1=recip_drC(kUpC)
 CML      IF (k.EQ.kTop) rdrckp1=recip_drF(k)
       viscFac=0.
-      IF (no_slip_shelfice) viscFac=1.
-      DO j=1-Oly+1,sNy+Oly-1
-       DO i=1-Olx,sNx+Olx-1
+      IF (no_slip_shelfice) viscFac=2.
+      DO j=1-OLy+1,sNy+OLy-1
+       DO i=1-OLx,sNx+OLx-1
         maskUp=_maskS(i,j,kUp,bi,bj)
 CML        IF (k.EQ.kTop) maskUp=0.
         vDragTerms(i,j)=
      &   -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
      &   *(
-     &     - 2.*KappaRV(i,j,kUpC)*rdrckp1*viscFac
-     &     + bottomDragLinear
+     &     - kappaRV(i,j,kUpC)*rdrckp1*viscFac
+     &     + SHELFICEDragLinear
      &    )*(1.-maskUp)*vFld(i,j)
         IF ( (KE(i,j)+KE(i,j-1)) .GT. 0. ) THEN
          vDragTerms(i,j)=vDragTerms(i,j)
      &    -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-     &    *bottomDragQuadratic*sqrt(KE(i,j)+KE(i,j-1))
+     &    *SHELFICEDragQuadratic*SQRT(KE(i,j)+KE(i,j-1))
      &    *(1.-maskUp)*vFld(i,j)
         ENDIF
        ENDDO

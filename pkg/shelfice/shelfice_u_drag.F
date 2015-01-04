@@ -1,18 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_u_drag.F,v 1.10 2013/03/29 19:32:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_u_drag.F,v 1.11 2015/01/04 00:01:12 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
-#include "MOM_COMMON_OPTIONS.h"
 
 CBOP
 C !ROUTINE: SHELFICE_U_DRAG
 
 C !INTERFACE: ==========================================================
       SUBROUTINE SHELFICE_U_DRAG(
-     I        bi,bj,k,
-     I        uFld, KE, KappaRU,
+     I        bi, bj, k,
+     I        uFld, vFld, KE, kappaRU,
      O        uDragTerms,
-     I        myThid)
+     I        myThid )
 
 C !DESCRIPTION:
 C Calculates the drag due to friction and the no-slip condition at the
@@ -33,13 +32,15 @@ C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
 C  k                    :: vertical level
 C  uFld                 :: zonal flow
+C  vFld                 :: meridional flow
 C  KE                   :: Kinetic energy
-C  KappaRU              :: vertical viscosity
+C  kappaRU              :: vertical viscosity
 C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL KappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL kappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -63,26 +64,26 @@ C-  No-slip BCs impose a drag at top
       ELSE
        kTop    = Nr
        kUp     = min(k+1,kTop)
-       kUpC    = kUp
+       kUpC    = k+1
       ENDIF
       rdrckp1=recip_drC(kUpC)
 CML      IF (k.EQ.kTop) rdrckp1=recip_drF(k)
       viscFac=0.
-      IF (no_slip_shelfice) viscFac=1.
-      DO j=1-Oly,sNy+Oly-1
-       DO i=1-Olx+1,sNx+Olx-1
+      IF (no_slip_shelfice) viscFac=2.
+      DO j=1-OLy,sNy+OLy-1
+       DO i=1-OLx+1,sNx+OLx-1
         maskUp=_maskW(i,j,kUp,bi,bj)
 CML        IF (k.EQ.kTop) maskUp=0.
         uDragTerms(i,j)=
      &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
      &   *(
-     &     - 2.*KappaRU(i,j,kUpC)*rdrckp1*viscFac
+     &     - kappaRU(i,j,kUpC)*rdrckp1*viscFac
      &     + SHELFICEDragLinear
      &    )*(1.-maskUp)*uFld(i,j)
         IF ( (KE(i,j)+KE(i-1,j)) .GT. 0. ) THEN
          uDragTerms(i,j)=uDragTerms(i,j)
      &    -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
-     &    *SHELFICEDragQuadratic*sqrt(KE(i,j)+KE(i-1,j))
+     &    *SHELFICEDragQuadratic*SQRT(KE(i,j)+KE(i-1,j))
      &    *(1.-maskUp)*uFld(i,j)
         ENDIF
        ENDDO
@@ -90,8 +91,7 @@ CML        IF (k.EQ.kTop) maskUp=0.
 
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
-        CALL DIAGNOSTICS_FILL(uDragTerms,'SHIUDrag',k,1,2,bi,bj,
-     &      myThid)
+        CALL DIAGNOSTICS_FILL(uDragTerms,'SHIUDrag',k,1,2,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_SHELFICE */
