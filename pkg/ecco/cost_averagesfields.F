@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.51 2014/10/22 13:28:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.52 2015/01/04 23:43:05 mmazloff Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -77,7 +77,7 @@ c     == local variables ==
       integer myiter
 #ifdef ECCO_CTRL_DEPRECATED
       integer bi,bj
-      integer i,j,k
+      integer i,j
       integer ig,jg
       integer itlo,ithi
       integer jtlo,jthi
