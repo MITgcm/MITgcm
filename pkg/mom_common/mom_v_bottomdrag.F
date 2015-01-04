@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_bottomdrag.F,v 1.15 2014/12/24 19:14:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_bottomdrag.F,v 1.16 2015/01/04 00:00:36 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -11,10 +11,10 @@ C !ROUTINE: MOM_V_BOTTOMDRAG
 
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_V_BOTTOMDRAG(
-     I        bi,bj,k,
-     I        vFld, KE, kappaRV,
+     I        bi, bj, k,
+     I        uFld, vFld, KE, kappaRV,
      O        vDragTerms,
-     I        myThid)
+     I        myThid )
 
 C !DESCRIPTION:
 C Calculates the drag due to friction and the no-slip condition at bottom:
@@ -35,11 +35,13 @@ C !USES: ===============================================================
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
 C  k                    :: vertical level
+C  uFld                 :: zonal flow
 C  vFld                 :: meridional flow
 C  KE                   :: Kinetic energy
 C  kappaRV              :: vertical viscosity
 C  myThid               :: thread number
       INTEGER bi,bj,k
+      _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL kappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
@@ -52,7 +54,7 @@ C  vDragTerms           :: drag term
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
       INTEGER i,j,kDown,kLowF,kBottom
-      _RL viscFac, dragFac
+      _RL viscFac, dragFac, vSq
       _RL recDrC
       _RL recDrF_bot(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
@@ -91,23 +93,48 @@ c      dragFac = wUnit2rVel(k)
        ENDDO
       ENDIF
 
-C-    viscous (no-slip BC) and linear bottom drag
+C--   Linear bottom drag:
       DO j=1-OLy+1,sNy+OLy-1
        DO i=1-OLx,sNx+OLx-1
-         vDragTerms(i,j)=
+         vDragTerms(i,j) =
      &    - recDrF_bot(i,j)
-     &    *(
-     &       kappaRV(i,j,kLowF)*recDrC*viscFac
+     &    *( bottomDragLinear*dragFac
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-     &     + bottomDragFld(i,j,bi,bj)*dragFac
+c    &     + halfRL*( bottomDragFld(i,j-1,bi,bj)
+c    &              + bottomDragFld(i,j,bi,bj) )*dragFac
+     &              + bottomDragFld(i,j,bi,bj)  *dragFac
 #endif
-     &     + bottomDragLinear*dragFac
      &     )*vFld(i,j)
        ENDDO
       ENDDO
 
-C-    Add quadratic bottom drag
-      IF ( bottomDragQuadratic.NE.0. _d 0 ) THEN
+C--   Add friction at the bottom (no-slip BC)
+      IF ( no_slip_bottom .AND. bottomVisc_pCell ) THEN
+C-    bottom friction accounts for true distance (including hFac) to the bottom
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
+         vDragTerms(i,j) = vDragTerms(i,j)
+     &    - recDrF_bot(i,j)
+     &    *( kappaRV(i,j,kLowF)*recDrC*viscFac
+     &                         *_recip_hFacS(i,j,k,bi,bj)
+     &     )*vFld(i,j)
+        ENDDO
+       ENDDO
+      ELSEIF ( no_slip_bottom ) THEN
+C-    ignore partial-cell reduction of the distance to the bottom
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
+         vDragTerms(i,j) = vDragTerms(i,j)
+     &    - recDrF_bot(i,j)
+     &    *( kappaRV(i,j,kLowF)*recDrC*viscFac
+     &     )*vFld(i,j)
+        ENDDO
+       ENDDO
+      ENDIF
+
+C--   Add quadratic bottom drag
+      IF ( selectBotDragQuadr.EQ.0 ) THEN
+C-    average grid-cell-center KE to get velocity norm @ V.pt
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx,sNx+OLx-1
          IF ( (KE(i,j)+KE(i,j-1)) .GT. 0. ) THEN
@@ -118,6 +145,50 @@ C-    Add quadratic bottom drag
          ENDIF
         ENDDO
        ENDDO
+      ELSEIF ( selectBotDragQuadr.EQ.1 ) THEN
+C-    calculate locally velocity norm @ V.pt (local V & 4 U averaged)
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
+         vSq = vFld(i,j)*vFld(i,j)
+     &       + ( (uFld( i ,j-1)*uFld( i ,j-1)*hFacW( i ,j-1,k,bi,bj)
+     &           +uFld( i , j )*uFld( i , j )*hFacW( i , j ,k,bi,bj))
+     &         + (uFld(i+1,j-1)*uFld(i+1,j-1)*hFacW(i+1,j-1,k,bi,bj)
+     &           +uFld(i+1, j )*uFld(i+1, j )*hFacW(i+1, j ,k,bi,bj))
+     &         )*recip_hFacS(i,j,k,bi,bj)*0.25 _d 0
+         IF ( vSq.GT.zeroRL ) THEN
+          vDragTerms(i,j) = vDragTerms(i,j)
+     &     - recDrF_bot(i,j)
+     &      *bottomDragQuadratic*SQRT(vSq)*dragFac
+     &      *vFld(i,j)
+         ENDIF
+        ENDDO
+       ENDDO
+      ELSEIF ( selectBotDragQuadr.EQ.2 ) THEN
+C-    same as above but using wet-point method to average 4 U
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
+         vSq = ( hFacW( i ,j-1,k,bi,bj) + hFacW( i , j ,k,bi,bj) )
+     &       + ( hFacW(i+1,j-1,k,bi,bj) + hFacW(i+1, j ,k,bi,bj) )
+         IF ( vSq.GT.zeroRL ) THEN
+          vSq = vFld(i,j)*vFld(i,j)
+     &        +( (uFld( i ,j-1)*uFld( i ,j-1)*hFacW( i ,j-1,k,bi,bj)
+     &           +uFld( i , j )*uFld( i , j )*hFacW( i , j ,k,bi,bj))
+     &         + (uFld(i+1,j-1)*uFld(i+1,j-1)*hFacW(i+1,j-1,k,bi,bj)
+     &           +uFld(i+1, j )*uFld(i+1, j )*hFacW(i+1, j ,k,bi,bj))
+     &         )/vSq
+         ELSE
+          vSq = vFld(i,j)*vFld(i,j)
+         ENDIF
+         IF ( vSq.GT.zeroRL ) THEN
+          vDragTerms(i,j) = vDragTerms(i,j)
+     &     - recDrF_bot(i,j)
+     &      *bottomDragQuadratic*SQRT(vSq)*dragFac
+     &      *vFld(i,j)
+         ENDIF
+        ENDDO
+       ENDDO
+      ELSEIF ( selectBotDragQuadr.NE.-1 ) THEN
+        STOP 'MOM_V_BOTTOMDRAG: invalid selectBotDragQuadr value'
       ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
