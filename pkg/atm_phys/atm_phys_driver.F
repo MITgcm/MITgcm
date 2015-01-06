@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.4 2014/05/12 01:35:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.5 2015/01/06 21:20:57 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -30,25 +30,32 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
 #include "SURFACE.h"
 #include "FFIELDS.h"
 #include "ATM_PHYS_PARAMS.h"
 #include "ATM_PHYS_VARS.h"
 
 C !INPUT PARAMETERS: ===================================================
-C myTime    :: Current time in simulation
-C myIter    :: Current time-step number
-C myThid    :: my Thread Id number
+C  myTime   :: Current time in simulation
+C  myIter   :: Current time-step number
+C  myThid   :: my Thread Id number
       _RL     myTime
       INTEGER myIter, myThid
 
 C !OUTPUT PARAMETERS: ==================================================
 
 C !LOCAL VARIABLES: ====================================================
-C bi,bj     :: Tile indices
+C  bi,bj    :: Tile indices
+C  lat2d    :: latitude of grid-cell center          [rad]
+C pHalf3d   :: pressure at interface between 2 levels [Pa]
+C pFull3d   :: pressure at level center               [Pa]
+C zHalf3d   :: height of interface between 2 levels   [m]
+C zFull3d   :: height of level center                 [m]
+C  t3d      :: absolute temperature                   [K]
+C  q3d      :: specific humidity                    [kg/kg]
+C  u3d      :: wind speed, 1rst component (X-dir)    [m/s]
+C  v3d      :: wind speed, 2nd  component (Y-dir)    [m/s]
       INTEGER bi, bj
-CEOP
       _RL lat2d   (sNx,sNy)
       _RL pHalf3d (sNx,sNy,Nr+1)
       _RL pFull3d (sNx,sNy,Nr)
@@ -62,6 +69,7 @@ CEOP
       _RL qdt3d   (sNx,sNy,Nr)
       _RL udt3d   (sNx,sNy,Nr)
       _RL vdt3d   (sNx,sNy,Nr)
+CEOP
       _RL s_sw_dwn(sNx,sNy)
       _RL s_lw_dwn(sNx,sNy)
       _RL t_surf  (sNx,sNy)
@@ -123,11 +131,10 @@ C-- Mixed Layer fields:
       _RL ocean_qflux(sNx,sNy)
       _RL delta_t_surf(sNx,sNy)
 C--
-      _RL conv_theta2T, conv_T2theta
-      INTEGER k, kc, ki, kp
+      _RL conv_T2theta
+      INTEGER k, kc
 c     INTEGER ioUnit
 c     _RS     dummyRS(1)
-c     CHARACTER*40 namFile
 #ifdef COMPONENT_MODULE
       INTEGER i, j
       _RL taux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -138,117 +145,58 @@ C--   Loops on tile indices bi,bj
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-      lat2d(:,:) = yC(1:sNx,1:sNy,bi,bj)*deg2rad
-      coldT(:,:) = .FALSE.
-
-      t_surf(:,:) = atmPhys_SST(1:sNx,1:sNy,bi,bj)
+C--   Get surface temperature
+        t_surf(:,:) = atmPhys_SST(1:sNx,1:sNy,bi,bj)
 #ifdef COMPONENT_MODULE
-      IF ( useCoupler ) THEN
+        IF ( useCoupler ) THEN
 C--   take surface data from the ocean component
 C     to replace MxL fields (if use sea-ice) or directly atm_phys SST
-        CALL ATM_APPLY_IMPORT(
-     I           maskInC,
-     U           t_surf, taux,
-c    U           sst1(1,myThid), oice1,
-     I           myTime, myIter, bi, bj, myThid )
-      ENDIF
+          CALL ATM_APPLY_IMPORT(
+     I             maskInC,
+     U             t_surf, taux,
+c    U             sst1(1,myThid), oice1,
+     I             myTime, myIter, bi, bj, myThid )
+        ENDIF
 #endif /* COMPONENT_MODULE */
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
+        IF ( useDiagnostics ) THEN
 C--   fill-up Atm_Phys diagnostics for state variables
          CALL DIAGNOSTICS_FILL( t_surf, 'AtPh_SST',
      &                          0, 1, 3, bi, bj, myThid )
-      ENDIF
+        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-c     IF ( myIter.EQ.nIter0 ) THEN
-c       ioUnit = 0
-c       CALL MDS_WRITEVEC_LOC(
-c    I                       'SST.check', writeBinaryPrec, ioUnit,
-c    I                       'RL', sNx*sNy, t_surf, dummyRS,
-c    I                       bi, bj, 1, myIter, myThid )
-c     ENDIF
-      ocean_qflux(:,:) = atmPhys_Qflx(1:sNx,1:sNy,bi,bj)
+c       IF ( myIter.EQ.nIter0 ) THEN
+c        ioUnit = 0
+c        CALL MDS_WRITEVEC_LOC(
+c    I                     'SST.check', writeBinaryPrec, ioUnit,
+c    I                     'RL', sNx*sNy, t_surf, dummyRS,
+c    I                     bi, bj, 1, myIter, myThid )
+c       ENDIF
+        ocean_qflux(:,:) = atmPhys_Qflx(1:sNx,1:sNy,bi,bj)
 
-      EmPmR(:,:,bi,bj) = 0.
-      rain2d(:,:) = 0.
-      snow2d(:,:) = 0.
-#ifdef NONLIN_FRSURF
-      IF ( nonlinFreeSurf.GT.0 ) THEN
-       IF ( staggerTimeStep.AND.select_rStar.GT.0 ) THEN
-         DO k=1,Nr
-          kc = Nr-k+1
-          pFull3d(:,:,k) = rF(Nr+1) + ( rC(kc) - rF(Nr+1) )
-     &                               *rStarFacC(1:sNx,1:sNy,bi,bj)
-         ENDDO
-         DO k=1,Nr+1
-          ki = Nr-k+2
-          pHalf3d(:,:,k) = rF(Nr+1) + ( rF(ki) - rF(Nr+1) )
-     &                               *rStarFacC(1:sNx,1:sNy,bi,bj)
-         ENDDO
-       ELSE
-         STOP 'DRIVER: misssing code - 1 -'
-       ENDIF
-      ELSE
-#else /* ndef NONLIN_FRSURF */
-      IF (.TRUE.) THEN
-#endif /* NONLIN_FRSURF */
-       DO k=1,Nr
-        kc = Nr-k+1
-        pFull3d(:,:,k) = rC(kc)
-       ENDDO
-       DO k=1,Nr+1
-        ki = Nr-k+2
-        pHalf3d(:,:,k) = rF(ki)
-       ENDDO
-      ENDIF
+C--   Get grid and dynamical fields from main model common blocks
+        CALL ATM_PHYS_DYN2PHYS(
+     O                    lat2d, pHalf3d, pFull3d,
+     O                    zHalf3d, zFull3d,
+     O                    t3d, q3d, u3d, v3d,
+     I                    bi, bj, myTime, myIter, myThid )
 
-      DO k=1,Nr
-        kc = Nr-k+1
-        zFull3d(:,:,k) = ( phiRef(2*kc)
-     &                   + totPhiHyd(1:sNx,1:sNy,kc,bi,bj)
-     &                   )*recip_gravity
-        conv_theta2T = (rC(kc)/atm_po)**atm_kappa
-        t3d(:,:,k) = theta(1:sNx,1:sNy,kc,bi,bj)*conv_theta2T
-        q3d(:,:,k) = MAX( salt(1:sNx,1:sNy,kc,bi,bj), 0. _d 0 )
-        u3d(:,:,k) = ( uVel(1:sNx,  1:sNy,kc,bi,bj)
-     &               + uVel(2:sNx+1,1:sNy,kc,bi,bj) )*0.5 _d 0
-        v3d(:,:,k) = ( vVel(1:sNx,1:sNy,  kc,bi,bj)
-     &               + vVel(1:sNx,2:sNy+1,kc,bi,bj) )*0.5 _d 0
-#ifdef NONLIN_FRSURF
-       IF ( select_rStar.GE.1 ) THEN
-          t3d(:,:,k) = t3d(:,:,k)*pStarFacK(1:sNx,1:sNy,bi,bj)
-       ENDIF
-#endif /* NONLIN_FRSURF */
-      ENDDO
-c       ioUnit = 0
-c       WRITE(namFile,'(A,I10.10)') 'z1_Atm.', myIter
-c       CALL MDS_WRITEVEC_LOC(
-c    I                       namFile, writeBinaryPrec, ioUnit,
-c    I                       'RL', sNx*sNy, zFull3d(1,1,Nr), dummyRS,
-c    I                       bi, bj, 1, myIter, myThid )
-      DO k=1,Nr+1
-        ki = Nr-k+2
-        zHalf3d(:,:,k) = phiRef(2*ki-1)*recip_gravity
-      ENDDO
-      DO k=1,Nr
-        kc = Nr-k+1
-        kp = MIN(kc+1,Nr)
-        zHalf3d(:,:,k) = zHalf3d(:,:,k)
-     &                 + ( totPhiHyd(1:sNx,1:sNy,kp,bi,bj)
-     &                    +totPhiHyd(1:sNx,1:sNy,kc,bi,bj) )*0.5
-     &                  *recip_gravity
-      ENDDO
+C--   initialise
+        coldT(:,:) = .FALSE.
+        EmPmR(:,:,bi,bj) = 0.
+        rain2d(:,:) = 0.
+        snow2d(:,:) = 0.
 
 C--   initialise tendency
-      tdt3d = 0.
-      qdt3d = 0.
-      udt3d = 0.
-      vdt3d = 0.
-      cond_dt_tg = 0.
-      cond_dt_qg = 0.
+        tdt3d = 0.
+        qdt3d = 0.
+        udt3d = 0.
+        vdt3d = 0.
+        cond_dt_tg = 0.
+        cond_dt_qg = 0.
 
-      IF (lwet_convection) THEN
-        CALL DARGAN_BETTSMILLER(
+        IF (lwet_convection) THEN
+          CALL DARGAN_BETTSMILLER(
      I                   deltaT, t3d, q3d, pFull3d, pHalf3d, coldT,
      O                   rain2d, snow2d, cond_dt_tg, cond_dt_qg,
      O                   q_ref,      bmflag,
@@ -259,95 +207,97 @@ C--   initialise tendency
      I                   bi,bj,myIter,myThid )
 
 C-    store updated state to pass to LSC (addition from POG)
-        t3d_tmp = t3d + cond_dt_tg
-        q3d_tmp = q3d + cond_dt_qg
+          t3d_tmp = t3d + cond_dt_tg
+          q3d_tmp = q3d + cond_dt_qg
 
+          cond_dt_tg = cond_dt_tg / deltaT
+          cond_dt_qg = cond_dt_qg / deltaT
+          rain2d = rain2d / deltaT
+          EmPmR(1:sNx,1:sNy,bi,bj) = -rain2d(:,:)
+
+          tdt3d = tdt3d + cond_dt_tg
+          qdt3d = qdt3d + cond_dt_qg
+
+#ifdef ALLOW_DIAGNOSTICS
+          IF ( useDiagnostics ) THEN
+           CALL DIAGNOSTICS_FILL( rain2d , 'AtPhCnvP',
+     &                            0, 1, 3, bi, bj, myThid )
+           CALL DIAGNOSTICS_FILL( cape   , 'AtPhCAPE',
+     &                            0, 1, 3, bi, bj, myThid )
+           CALL DIAGNOSTICS_FILL( cin    , 'AtPhCnIn',
+     &                            0, 1, 3, bi, bj, myThid )
+           CALL DIAGNOSTICS_FILL( klzbs  , 'AtPhKlzb',
+     &                            0, 1, 3, bi, bj, myThid )
+           CALL DIAGNOSTICS_FILL( bmflag , 'AtPhConv',
+     &                            0, 1, 3, bi, bj, myThid )
+           CALL DIAGNOSTICS_FILL( invtau_bm_t, 'AtPhRlxT',
+     &                            0, 1, 3, bi, bj, myThid )
+           CALL DIAGNOSTICS_FILL( invtau_bm_q, 'AtPhRlxQ',
+     &                            0, 1, 3, bi, bj, myThid )
+           CALL DIAGNOSTICS_FILL( t_ref  , 'AtPh_Trf',
+     &                           -1,Nr, 3, bi, bj, myThid )
+           CALL DIAGNOSTICS_FILL( q_ref  , 'AtPh_Qrf',
+     &                           -1,Nr, 3, bi, bj, myThid )
+c          snow2d = snow2d / deltaT
+c          CALL DIAGNOSTICS_FILL( snow2d , 'SDIAG1  ',
+c    &                            0, 1, 3, bi, bj, myThid )
+          ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+        ELSE
+          t3d_tmp = t3d
+          q3d_tmp = q3d
+        ENDIF
+
+        cond_dt_tg = 0.
+        cond_dt_qg = 0.
+        rain2d(:,:) = 0.
+        CALL LSCALE_COND(
+     I              t3d_tmp, q3d_tmp, pFull3d, pHalf3d, coldT,
+     O              rain2d, snow2d, cond_dt_tg, cond_dt_qg, q_ref,
+     I              myThid )
         cond_dt_tg = cond_dt_tg / deltaT
         cond_dt_qg = cond_dt_qg / deltaT
         rain2d = rain2d / deltaT
-        EmPmR(1:sNx,1:sNy,bi,bj) = -rain2d(:,:)
+        EmPmR(1:sNx,1:sNy,bi,bj) = EmPmR(1:sNx,1:sNy,bi,bj)
+     &                           - rain2d(:,:)
 
         tdt3d = tdt3d + cond_dt_tg
         qdt3d = qdt3d + cond_dt_qg
 
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL( rain2d , 'AtPhCnvP',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( cape   , 'AtPhCAPE',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( cin    , 'AtPhCnIn',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( klzbs  , 'AtPhKlzb',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( bmflag , 'AtPhConv',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( invtau_bm_t, 'AtPhRlxT',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( invtau_bm_q, 'AtPhRlxQ',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( t_ref  , 'AtPh_Trf',
-     &                         -1,Nr, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( q_ref  , 'AtPh_Qrf',
-     &                         -1,Nr, 3, bi, bj, myThid )
-c        snow2d = snow2d / deltaT
-c        CALL DIAGNOSTICS_FILL( snow2d , 'SDIAG1  ',
-c    &                          0, 1, 3, bi, bj, myThid )
+           CALL DIAGNOSTICS_FILL( rain2d , 'AtPhLscP',
+     &                            0, 1, 3, bi, bj, myThid )
+C     Re-use "q_ref" array to calculate Relative Humidity (in %)
+           q_ref = 100. _d 0 * q3d_tmp/q_ref
+           CALL DIAGNOSTICS_FILL( q_ref , 'RELHUM  ',
+     &                           -1, Nr, 3, bi, bj, myThid )
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-      ELSE
-        t3d_tmp = t3d
-        q3d_tmp = q3d
-      ENDIF
 
-      cond_dt_tg = 0.
-      cond_dt_qg = 0.
-      rain2d(:,:) = 0.
-      CALL LSCALE_COND (
-     I                   t3d_tmp, q3d_tmp, pFull3d, pHalf3d, coldT,
-     O                   rain2d, snow2d, cond_dt_tg, cond_dt_qg, q_ref,
-     I                   myThid )
-      cond_dt_tg = cond_dt_tg / deltaT
-      cond_dt_qg = cond_dt_qg / deltaT
-      rain2d = rain2d / deltaT
-      EmPmR(1:sNx,1:sNy,bi,bj) = EmPmR(1:sNx,1:sNy,bi,bj) - rain2d(:,:)
+        IF ( two_stream ) THEN
+          CALL RADIATION_DOWN(
+     I                   sNx,sNy, myTime, lat2d, pHalf3d, t3d, q3d,
+     O                   s_sw_dwn, s_lw_dwn,
+     O                   albedo_2d, dtrans_3d, b_3d,
+     O                   lw_down_3d, sw_down_3d, myThid )
 
-      tdt3d = tdt3d + cond_dt_tg
-      qdt3d = qdt3d + cond_dt_qg
-
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL( rain2d , 'AtPhLscP',
-     &                          0, 1, 3, bi, bj, myThid )
-C     Re-use "q_ref" array to calculate Relative Humidity (in %)
-         q_ref = 100. _d 0 * q3d_tmp/q_ref
-         CALL DIAGNOSTICS_FILL( q_ref , 'RELHUM  ',
-     &                         -1, Nr, 3, bi, bj, myThid )
-      ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
-
-      IF ( two_stream ) THEN
-      CALL RADIATION_DOWN(
-     I                     sNx,sNy, myTime, lat2d, pHalf3d, t3d, q3d,
-     O                     s_sw_dwn, s_lw_dwn,
-     O                     albedo_2d, dtrans_3d, b_3d,
-     O                     lw_down_3d, sw_down_3d, myThid )
-
-c     write(errorMessageUnit,'(A,I5,I3,4F9.3)')'it,bj,sw,lw:',myIter,bj,
+c         write(errorMessageUnit,'(A,I5,I3,4F9.3)')
+c    &      'it,bj,sw,lw:',myIter,bj,
 c    &      sw_down_3d(1,1,15), sw_down_3d(1,sNy,15),
 c    &      lw_down_3d(1,1,15), lw_down_3d(1,sNy,15)
-      ENDIF
+        ENDIF
 
-      IF (.TRUE.) THEN
-       land = .false.
-       avail = .true.
-       rough_mom = roughness_mom
-       rough_heat = roughness_heat
-       rough_moist = roughness_moist
-       gust = 1.0
-       u_surf = 0.
-       v_surf = 0.
-       CALL SURFACE_FLUX(
+        IF (.TRUE.) THEN
+         land = .false.
+         avail = .true.
+         rough_mom = roughness_mom
+         rough_heat = roughness_heat
+         rough_moist = roughness_moist
+         gust = 1.0
+         u_surf = 0.
+         v_surf = 0.
+         CALL SURFACE_FLUX(
      I            t3d(:,:,Nr), q3d(:,:,Nr), u3d(:,:,Nr), v3d(:,:,Nr),
      I            pFull3d(:,:,Nr), zFull3d(:,:,Nr), pHalf3d(:,:,Nr+1),
      I            t_surf, t_surf,
@@ -360,35 +310,36 @@ c    &      lw_down_3d(1,1,15), lw_down_3d(1,sNy,15)
      O            dhdt_surf, dedt_surf, dedq_surf, drdt_surf,
      O            dhdt_atm, dedq_atm, dtaudv_atm,
      I            deltaT, land(:,:), avail(:,:), myThid  )
-      ENDIF
+        ENDIF
 
-      IF ( two_stream ) THEN
-        CALL RADIATION_UP(
-     I                     sNx,sNy, myTime, lat2d, pHalf3d, t_surf, t3d,
-     U                     tdt3d, olr_2d, tsr_2d,
-     I                     albedo_2d, dtrans_3d, b_3d,
-     I                     lw_down_3d, sw_down_3d, myThid )
+        IF ( two_stream ) THEN
+          CALL RADIATION_UP(
+     I                   sNx,sNy, myTime, lat2d, pHalf3d, t_surf, t3d,
+     U                   tdt3d, olr_2d, tsr_2d,
+     I                   albedo_2d, dtrans_3d, b_3d,
+     I                   lw_down_3d, sw_down_3d, myThid )
 
-c     write(errorMessageUnit,'(A,I5,I3,4F9.3)')'it,bj,t,tdt:',myIter,bj,
+c         write(errorMessageUnit,'(A,I5,I3,4F9.3)')
+c    &      'it,bj,t,tdt:',myIter,bj,
 c    &      t3d(1,1,15), t3d(1,sNy,15),
 c    &      tdt3d(1,1,15)*86400., tdt3d(1,sNy,15)*86400.
-      ENDIF
+        ENDIF
 
-      IF (turb) THEN
-       fracland = 0.0
-       rough = roughness_mom
-       CALL VERT_TURB_DRIVER(  1, 1, myTime, myTime+deltaT, deltaT,
-     I           fracland(:,:), pHalf3d, pFull3d, zHalf3d, zFull3d,
-     I           ustar, bstar, rough,
-     I           u3d, v3d, t3d, q3d,
-     O           diff_t(:,:,:), diff_m(:,:,:), gust(:,:),
-     I           myThid )
-      ENDIF
+        IF (turb) THEN
+         fracland = 0.0
+         rough = roughness_mom
+         CALL VERT_TURB_DRIVER(  1, 1, myTime, myTime+deltaT, deltaT,
+     I             fracland(:,:), pHalf3d, pFull3d, zHalf3d, zFull3d,
+     I             ustar, bstar, rough,
+     I             u3d, v3d, t3d, q3d,
+     O             diff_t(:,:,:), diff_m(:,:,:), gust(:,:),
+     I             myThid )
+        ENDIF
 
-      diff_dt_tg = tdt3d
-      diff_dt_qg = qdt3d
+        diff_dt_tg = tdt3d
+        diff_dt_qg = qdt3d
 
-      CALL GCM_VERT_DIFF_DOWN( 1, 1, deltaT,
+        CALL GCM_VERT_DIFF_DOWN( 1, 1, deltaT,
      I           u3d, v3d, t3d, q3d,
      I           diff_m(:,:,:), diff_t(:,:,:),
      I           pHalf3d, pFull3d, zFull3d,
@@ -402,118 +353,119 @@ c    &      tdt3d(1,1,15)*86400., tdt3d(1,sNy,15)*86400.
      O           e_global, f_t_global, f_q_global,
      I           myThid )
 
-      CALL MIXED_LAYER(
-     I                   myTime,
-     U                   t_surf(:,:),
-     I                   flux_t(:,:),
-     I                   flux_q(:,:),
-     I                   flux_r(:,:),
-     I                   deltaT,
-     I                   s_sw_dwn(:,:),
-     I                   s_lw_dwn(:,:),
-     U                   tri_surf_dtmass,
-     U                   tri_surf_dflux_t, tri_surf_dflux_q,
-     U                   tri_surf_delta_t, tri_surf_delta_q,
-     I                   dhdt_surf(:,:),
-     I                   dedt_surf(:,:),
-     I                   dedq_surf(:,:),
-     I                   drdt_surf(:,:),
-     I                   dhdt_atm(:,:),
-     I                   dedq_atm(:,:),
-     I                   ocean_qflux(:,:),
-     O                   delta_t_surf(:,:),
-     I                   myThid )
+        CALL MIXED_LAYER(
+     I                    myTime,
+     U                    t_surf(:,:),
+     I                    flux_t(:,:),
+     I                    flux_q(:,:),
+     I                    flux_r(:,:),
+     I                    deltaT,
+     I                    s_sw_dwn(:,:),
+     I                    s_lw_dwn(:,:),
+     U                    tri_surf_dtmass,
+     U                    tri_surf_dflux_t, tri_surf_dflux_q,
+     U                    tri_surf_delta_t, tri_surf_delta_q,
+     I                    dhdt_surf(:,:),
+     I                    dedt_surf(:,:),
+     I                    dedq_surf(:,:),
+     I                    drdt_surf(:,:),
+     I                    dhdt_atm(:,:),
+     I                    dedq_atm(:,:),
+     I                    ocean_qflux(:,:),
+     O                    delta_t_surf(:,:),
+     I                    myThid )
 
-      CALL GCM_VERT_DIFF_UP ( 1, 1, deltat,
+        CALL GCM_VERT_DIFF_UP ( 1, 1, deltat,
      I           tri_surf_delta_t, tri_surf_delta_q,
      I           e_global, f_t_global, f_q_global,
      O           tdt3d, qdt3d,
      I           myThid )
 
-      diff_dt_tg = tdt3d - diff_dt_tg
-      diff_dt_qg = qdt3d - diff_dt_qg
+        diff_dt_tg = tdt3d - diff_dt_tg
+        diff_dt_qg = qdt3d - diff_dt_qg
 
 C--- update OLR (assume adjustment of surf LW emission goes directly to space):
-      olr_2d = olr_2d + drdt_surf*delta_t_surf
+        olr_2d = olr_2d + drdt_surf*delta_t_surf
 
-      DO k=1,Nr
-        kc = Nr-k+1
-        conv_T2theta = (atm_po/rC(kc))**atm_kappa
+        DO k=1,Nr
+          kc = Nr-k+1
+          conv_T2theta = (atm_po/rC(kc))**atm_kappa
 #ifdef NONLIN_FRSURF
-        IF ( select_rStar.GE.1 ) THEN
-         atmPhys_dT(1:sNx,1:sNy,kc,bi,bj) = tdt3d(:,:,k)
+          IF ( select_rStar.GE.1 ) THEN
+           atmPhys_dT(1:sNx,1:sNy,kc,bi,bj) = tdt3d(:,:,k)
      &                   * conv_T2theta/pStarFacK(1:sNx,1:sNy,bi,bj)
-        ELSE
+          ELSE
 #else /* NONLIN_FRSURF */
-        IF ( .TRUE. ) THEN
+          IF ( .TRUE. ) THEN
 #endif /* NONLIN_FRSURF */
-         atmPhys_dT(1:sNx,1:sNy,kc,bi,bj) = tdt3d(:,:,k)
+           atmPhys_dT(1:sNx,1:sNy,kc,bi,bj) = tdt3d(:,:,k)
      &                   * conv_T2theta
-        ENDIF
-        atmPhys_dQ(1:sNx,1:sNy,kc,bi,bj)  = qdt3d(:,:,k)
-        atmPhys_dU (1:sNx,1:sNy,kc,bi,bj) = udt3d(:,:,k)
-        atmPhys_dV (1:sNx,1:sNy,kc,bi,bj) = vdt3d(:,:,k)
-      ENDDO
+          ENDIF
+          atmPhys_dQ(1:sNx,1:sNy,kc,bi,bj)  = qdt3d(:,:,k)
+          atmPhys_dU (1:sNx,1:sNy,kc,bi,bj) = udt3d(:,:,k)
+          atmPhys_dV (1:sNx,1:sNy,kc,bi,bj) = vdt3d(:,:,k)
+        ENDDO
 
 C--   Update SST
-      IF ( atmPhys_stepSST ) THEN
-        atmPhys_SST(1:sNx,1:sNy,bi,bj) = t_surf(:,:)
-      ENDIF
+        IF ( atmPhys_stepSST ) THEN
+          atmPhys_SST(1:sNx,1:sNy,bi,bj) = t_surf(:,:)
+        ENDIF
 
-      EmPmR(1:sNx,1:sNy,bi,bj) = EmPmR(1:sNx,1:sNy,bi,bj) + flux_q(:,:)
-      Qnet(1:sNx,1:sNy,bi,bj) = flux_t(:,:) + flux_r(:,:)
-     &                        - s_lw_dwn(:,:) - s_sw_dwn(:,:)
-     &                        + flux_q(:,:)*HLv
-      Qsw (1:sNx,1:sNy,bi,bj) = -s_sw_dwn(:,:)
+        EmPmR(1:sNx,1:sNy,bi,bj) = EmPmR(1:sNx,1:sNy,bi,bj)
+     &                           + flux_q(:,:)
+        Qnet(1:sNx,1:sNy,bi,bj) = flux_t(:,:) + flux_r(:,:)
+     &                          - s_lw_dwn(:,:) - s_sw_dwn(:,:)
+     &                          + flux_q(:,:)*HLv
+        Qsw (1:sNx,1:sNy,bi,bj) = -s_sw_dwn(:,:)
 #ifdef COMPONENT_MODULE
 C-    surface wind-stress (+ = down) at grid cell center (A-grid):
-      taux(1:sNx,1:sNy,bi,bj) = -flux_u
-      tauy(1:sNx,1:sNy,bi,bj) = -flux_v
+        taux(1:sNx,1:sNy,bi,bj) = -flux_u
+        tauy(1:sNx,1:sNy,bi,bj) = -flux_v
 #endif /* COMPONENT_MODULE */
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL( atmPhys_dT , 'AtPhdTdt',
-     &                          0, Nr, 1, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( atmPhys_dQ , 'AtPhdQdt',
-     &                          0, Nr, 1, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( atmPhys_dU , 'AtPhdUdt',
-     &                          0, Nr, 1, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( atmPhys_dV , 'AtPhdVdt',
-     &                          0, Nr, 1, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( diff_t , 'AtPhDifT',
-     &                          -1, Nr, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( diff_m , 'AtPhDifM',
-     &                          -1, Nr, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( sw_down_3d,'AtPhInSR',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( tsr_2d ,'AtPhNTSR',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( olr_2d ,   'AtPhOLR ',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( sw_down_3d(:,:,Nr+1),'AtPhDSSR',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( s_sw_dwn,  'AtPhNSSR',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( s_lw_dwn,  'AtPhDSLR',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( flux_r ,   'AtPhUSLR',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( flux_t ,   'AtPhSens',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( flux_q ,   'AtPhEvap',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( flux_u , 'AtPhTauX',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( flux_v , 'AtPhTauY',
-     &                          0, 1, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( diff_dt_tg, 'AtPhdtTg',
-     &                          -1, Nr, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( diff_dt_qg, 'AtPhdtQg',
-     &                          -1, Nr, 3, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( diss_heat,  'AtPhDisH',
-     &                          -1, Nr, 3, bi, bj, myThid )
-      ENDIF
+        IF ( useDiagnostics ) THEN
+          CALL DIAGNOSTICS_FILL( atmPhys_dT , 'AtPhdTdt',
+     &                           0, Nr, 1, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( atmPhys_dQ , 'AtPhdQdt',
+     &                           0, Nr, 1, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( atmPhys_dU , 'AtPhdUdt',
+     &                           0, Nr, 1, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( atmPhys_dV , 'AtPhdVdt',
+     &                           0, Nr, 1, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( diff_t , 'AtPhDifT',
+     &                           -1, Nr, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( diff_m , 'AtPhDifM',
+     &                           -1, Nr, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( sw_down_3d,'AtPhInSR',
+     &                           0, 1, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( tsr_2d ,'AtPhNTSR',
+     &                           0, 1, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( olr_2d ,   'AtPhOLR ',
+     &                           0, 1, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( sw_down_3d(:,:,Nr+1),'AtPhDSSR',
+     &                           0, 1, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( s_sw_dwn,  'AtPhNSSR',
+     &                           0, 1, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( s_lw_dwn,  'AtPhDSLR',
+     &                           0, 1, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( flux_r ,   'AtPhUSLR',
+     &                           0, 1, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( flux_t ,   'AtPhSens',
+     &                           0, 1, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( flux_q ,   'AtPhEvap',
+     &                           0, 1, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( flux_u , 'AtPhTauX',
+     &                           0, 1, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( flux_v , 'AtPhTauY',
+     &                           0, 1, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( diff_dt_tg, 'AtPhdtTg',
+     &                           -1, Nr, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( diff_dt_qg, 'AtPhdtQg',
+     &                           -1, Nr, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( diss_heat,  'AtPhDisH',
+     &                           -1, Nr, 3, bi, bj, myThid )
+        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
 C--   end bi,bj loops.
