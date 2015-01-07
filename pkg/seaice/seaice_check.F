@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.91 2014/11/17 12:51:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.92 2015/01/07 08:50:28 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -836,6 +836,20 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
       ENDIF
 #endif /* SEAICE_VARIABLE_SALINITY */
 
+      IF ( SEAICEuseDynamics ) THEN
+       IF ( SEAICE_OLx .GT. OLx-2 .OR. SEAICE_OLy .GT. OLy-2 .OR.
+     &      SEAICE_OLx .LT. 0     .OR. SEAICE_OLy .LT. 0 ) THEN
+        WRITE(msgBuf,'(A,I2,A,I2)') 'S/R SEAICE_CHECK: SEAICE_OLx/y = ',
+     &       SEAICE_OLx, '/', SEAICE_OLy
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A,I2,A,I2)')
+     &       'S/R SEAICE_CHECK: SEAICE_OLx/y cannot be smaller than 0 ',
+     &       'or larger than OLx/y-2 = ', OLx-2, '/', OLy-2
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+       ENDIF
+      ENDIF
+
 #ifdef SEAICE_ALLOW_JFNK
       IF ( SEAICEuseJFNK ) THEN
        IF ( JFNKres_t.NE.UNSET_RL .AND. JFNKres_tFac.NE.UNSET_RL) THEN
@@ -854,18 +868,6 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
        ELSEIF (JFNKres_t.EQ.UNSET_RL.AND.JFNKres_tFac.EQ.UNSET_RL) THEN
         WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: need to specify ',
      &       'JFNKres_t or JFNKres_tFac for SEAICEuseJFNK=.TRUE.'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-       ENDIF
-C
-       IF ( SEAICE_OLx .GT. OLx-2 .OR. SEAICE_OLy .GT. OLy-2 .OR.
-     &      SEAICE_OLx .LT. 0     .OR. SEAICE_OLy .LT. 0 ) THEN
-        WRITE(msgBuf,'(A,I2,A,I2)') 'S/R SEAICE_CHECK: SEAICE_OLx/y = ',
-     &       SEAICE_OLx, '/', SEAICE_OLy
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A,I2,A,I2)')
-     &       'S/R SEAICE_CHECK: SEAICE_OLx/y cannot be smaller than 0 ',
-     &       'or larger than OLx/y-2 = ', OLx-2, '/', OLy-2
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
        ENDIF
