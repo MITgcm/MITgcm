@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.88 2014/08/14 07:33:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.89 2015/01/07 13:27:10 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -672,7 +672,7 @@ C---  Complete initialization
           ZETA(i,j,bi,bj)   = HEFF(i,j,bi,bj)*(1.0 _d 11)
           ETA(i,j,bi,bj)    = ZETA(i,j,bi,bj)/SEAICE_eccen**2
           PRESS0(i,j,bi,bj) = PSTAR*HEFF(i,j,bi,bj)
-     &         *EXP(-20.0 _d 0*(ONE-AREA(i,j,bi,bj)))
+     &         *EXP(-SEAICE_cStar*(ONE-AREA(i,j,bi,bj)))
           ZMAX(I,J,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
           ZMIN(i,j,bi,bj)   = SEAICE_zetaMin
           PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)

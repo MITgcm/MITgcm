@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.56 2014/10/20 03:20:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.57 2015/01/07 13:27:10 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -74,7 +74,7 @@ C incured by IF (DIFFERENT_MULTIPLE ... statement
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
           PRESS0(i,j,bi,bj) = PSTAR*HEFF(i,j,bi,bj)
-     &         *EXP(-20.0 _d 0*(ONE-AREA(i,j,bi,bj)))
+     &         *EXP(-SEAICE_cStar*(ONE-AREA(i,j,bi,bj)))
           ZMAX(I,J,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
           ZMIN(i,j,bi,bj)   = SEAICE_zetaMin
           PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
@@ -105,9 +105,6 @@ CADJ STORE press0 = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE zmax   = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 # endif /* ALLOW_AUTODIFF_TAMC */
-
-C--   FIRST SET UP BASIC CONSTANTS
-      PSTAR  = SEAICE_strength
 
 C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
       DO bj=myByLo(myThid),myByHi(myThid)

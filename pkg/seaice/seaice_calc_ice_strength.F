@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_ice_strength.F,v 1.8 2014/10/20 03:20:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_ice_strength.F,v 1.9 2015/01/07 13:27:10 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -115,7 +115,7 @@ C--   now set up ice pressure and viscosities
           tmpscal2=HEFF(i,j,bi,bj)
          ENDIF
          PRESS0(I,J,bi,bj)=SEAICE_strength*tmpscal2
-     &        *EXP(-20.0 _d 0*(SEAICE_area_max-AREA(i,j,bi,bj)))
+     &        *EXP(-SEAICE_cStar*(SEAICE_area_max-AREA(i,j,bi,bj)))
          ZMAX(I,J,bi,bj)  = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
          ZMIN(I,J,bi,bj)  = SEAICE_zetaMin
          PRESS0(I,J,bi,bj)= PRESS0(I,J,bi,bj)*HEFFM(I,J,bi,bj)
