@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_oad.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_oad.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_pgi_oad,v 1.1 2014/08/10 22:27:04 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_pgi_oad,v 1.2 2015/01/10 20:12:25 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -51,8 +51,8 @@ addExp=''
 #- need this to get "staf":
 #export PATH="$PATH:$HOME/bin"
 
-dAlt=`date +%j` ; dAlt=`expr $dAlt % 2`
-if [ $dAlt -eq 1 ] ; then options="$options -fast" ; fi
+dInWeek=`date +%a`
+if test "x$dInWeek" = xSun ; then options="$options -fast" ; fi
 
 checkOut=2
 #options="$options -nc" ; checkOut=1

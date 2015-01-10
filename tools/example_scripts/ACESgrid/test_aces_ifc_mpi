@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_ifc.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_ifc.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_ifc_mpi,v 1.9 2014/08/10 20:25:14 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_ifc_mpi,v 1.10 2015/01/10 20:12:25 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -47,8 +47,8 @@ addExp='global_ocean.gm_k3d'
 #- need this to get "staf":
 export PATH="$PATH:$HOME/bin"
 
-dAlt=`date +%j` ; dAlt=`expr $dAlt % 2`
-#if [ $dAlt -eq 1 ] ; then options="$options -fast" ; fi
+dInWeek=`date +%a`
+#if test "x$dInWeek" = xSun ; then options="$options -fast" ; fi
 
 checkOut=2
 #options="$options -nc" ; checkOut=1
@@ -126,7 +126,7 @@ else
   exit
 fi
 
-if [ $dAlt -eq 1 ] ; then
+if test "x$dInWeek" = xSun ; then
   options="$options -fast"
 
   echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
