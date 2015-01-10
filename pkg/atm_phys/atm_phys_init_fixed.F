@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_init_fixed.F,v 1.1 2013/05/08 22:14:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_init_fixed.F,v 1.2 2015/01/10 20:25:01 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -51,7 +51,6 @@ C     iUnit      :: Work variable for IO unit number
 
       _BARRIER
       _BEGIN_MASTER(myThid)
-        useDynP_inEos_Zc = .TRUE.
         module_is_initialized =.false.
         turb = .false.
         ldry_convection = .false.
