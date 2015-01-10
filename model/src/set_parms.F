@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.20 2015/01/03 23:56:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.21 2015/01/10 20:24:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -233,6 +233,8 @@ c     useDynP_inEos_Zc = .FALSE.
      &                      eosType .EQ. 'UNESCO' .OR.
      &                      eosType .EQ. 'MDJWF'  .OR.
      &                      eosType .EQ. 'TEOS10'      )  )
+C-    pkg/atm_phys uses main-model geopotential:
+      useDynP_inEos_Zc = useDynP_inEos_Zc .OR. useAtm_Phys
 
 C--   Adjust parameters related to length of the simulation
 
