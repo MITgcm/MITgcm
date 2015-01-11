@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_OPTIONS.h,v 1.12 2014/12/05 01:43:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_OPTIONS.h,v 1.13 2015/01/11 21:16:04 jmc Exp $
 C $Name:  $
 
 #ifndef DIC_OPTIONS_H
@@ -15,6 +15,7 @@ C     Package-specific Options & Macros go here
 #undef READ_PAR
 #undef MINFE
 #undef DIC_NO_NEG
+#undef DIC_BOUNDS
 C these all need to be defined for coupling to atmospheric model:
 #undef USE_QSW
 #undef USE_QSW_UNDERICE
