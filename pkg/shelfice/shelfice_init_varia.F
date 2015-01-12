@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.12 2014/12/22 22:51:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.13 2015/01/12 17:35:30 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -38,7 +38,6 @@ CEOP
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j = 1-OLy, sNy+OLy
          DO i = 1-OLx, sNx+OLx
-c         shelficeLoadAnomaly   (i,j,bi,bj) = 0. _d 0
           shelficeForcingT      (i,j,bi,bj) = 0. _d 0
           shelficeForcingS      (i,j,bi,bj) = 0. _d 0
           shelficeHeatFlux      (i,j,bi,bj) = 0. _d 0
@@ -94,15 +93,6 @@ c--
        ENDDO
       ENDDO
 #endif /* ALLOW_COST */
-
-C    Might be a problem here in case we need shelficeLoadAnomaly in phi0surf
-C    for initial pressure calculation when useDynP_inEos_Zc,
-C    since ini_pressure is called before this S/R.
-c     IF ( SHELFICEloadAnomalyFile .NE. ' ' ) THEN
-c      CALL READ_FLD_XY_RS( SHELFICEloadAnomalyFile, ' ',
-c    &                      shelficeLoadAnomaly, 0, myThid )
-c      _EXCH_XY_RS( shelficeLoadAnomaly, myThid )
-c     ENDIF
 
 #endif /* ALLOW_SHELFICE */
 

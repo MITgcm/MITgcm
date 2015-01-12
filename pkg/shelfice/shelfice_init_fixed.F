@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.13 2014/12/22 22:51:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.14 2015/01/12 17:35:30 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -113,11 +113,11 @@ c--   use weight as mask
 #endif /* ALLOW_COST */
 
       IF ( SHELFICEloadAnomalyFile .NE. ' ' ) THEN
-       CALL READ_FLD_XY_RS( SHELFICEloadAnomalyFile, ' ',
+       CALL READ_FLD_XY_RL( SHELFICEloadAnomalyFile, ' ',
      &                      shelficeLoadAnomaly, 0, myThid )
       ENDIF
       IF ( SHELFICEmassFile.NE.' ' ) THEN
-       CALL READ_FLD_XY_RS( SHELFICEmassFile, ' ',
+       CALL READ_FLD_XY_RL( SHELFICEmassFile, ' ',
      &                      shelficeMassInit, 0, myThid )
       ELSE
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -132,8 +132,8 @@ c--   use weight as mask
         ENDDO
        ENDDO
       ENDIF
-      _EXCH_XY_RS( shelficeMassInit, myThid )
-      CALL WRITE_FLD_XY_RS ( 'shelficemassinit', ' ',
+      _EXCH_XY_RL( shelficeMassInit, myThid )
+      CALL WRITE_FLD_XY_RL ( 'shelficemassinit', ' ',
      &                       shelficeMassInit, 0, myThid )
 
 c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
@@ -153,7 +153,7 @@ c     ELSE
 c      _EXCH_XY_RS( shelficeLoadAnomaly, myThid )
 c     ENDIF
       IF ( debugLevel.GE.debLevC ) THEN
-       CALL WRITE_FLD_XY_RS( 'SHICE_pLoadAnom', ' ',
+       CALL WRITE_FLD_XY_RL( 'SHICE_pLoadAnom', ' ',
      I                       shelficeLoadAnomaly, -1, myThid )
       ENDIF
 

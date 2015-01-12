@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.15 2014/12/22 22:51:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.16 2015/01/12 17:35:30 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -54,7 +54,8 @@ C     ktopC                  :: index of the top "wet cell" (2D)
 C     R_shelfIce             :: shelfice topography [m]
 C     shelficeMassInit       :: ice-shelf mass (per unit area) [kg/m^2]
 C     shelficeMass           :: ice-shelf mass (per unit area) [kg/m^2]
-C     shelfIceMassDynTendency :: other mass balance tendency (e.g., from dynamics)
+C     shelfIceMassDynTendency :: other mass balance tendency  [kg/m^2/s]
+C                            ::  (e.g., from dynamics)
 C     shelficeLoadAnomaly    :: pressure load anomaly of shelfice [Pa]
 C     shelficeHeatFlux       :: upward heat flux [W/m^2]
 C     shelficeFreshWaterFlux :: upward fresh water flux (virt. salt flux) [kg/m^2/s]
@@ -95,8 +96,13 @@ CEOP
       _RL shiPrandtl, shiSchmidt, shiKinVisc
 
       COMMON /SHELFICE_FIELDS_RL/
+     &     shelficeMass, shelficeMassInit,
+     &     shelficeLoadAnomaly,
      &     shelficeForcingT, shelficeForcingS,
      &     shiTransCoeffT, shiTransCoeffS
+      _RL shelficeMass          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL shelficeMassInit      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL shelficeLoadAnomaly   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeForcingT      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeForcingS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shiTransCoeffT        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -104,16 +110,10 @@ CEOP
 
       COMMON /SHELFICE_FIELDS_RS/
      &     R_shelfIce,
-     &     shelficeMassInit,
-     &     shelficeMass,
-     &     shelficeLoadAnomaly,
      &     shelficeHeatFlux,
      &     shelfIceFreshWaterFlux,
      &     shelfIceMassDynTendency
       _RS R_shelfIce            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS shelficeMass          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS shelficeMassInit      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS shelficeLoadAnomaly   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeHeatFlux      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeFreshWaterFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS
