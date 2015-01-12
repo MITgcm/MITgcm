@@ -1,17 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2112 2015/01/12 16:07:33 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2113 2015/01/12 17:36:42 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice:
+  - change units (+ document) of newly added field "shelfIceMassDynTendency"
+  - upgrade from _RS to _RL shelficeMass & shelficeLoadAnomaly arrays.
 o pkg/obcs: re-organize obcs_calc_stevens.F to prepare for passive tracers
-o pkg/seaice: two new runtime parameters: 
-  - SEAICE_cStar replaces the hard wired "20" in the strength formulation, 
+o pkg/seaice: two new runtime parameters:
+  - SEAICE_cStar replaces the hard wired "20" in the strength formulation,
     long overdue
-  - SEAICE_tensilFac: preparation for Koenig-Beatty+Holland (2012) 
+  - SEAICE_tensilFac: preparation for Koenig-Beatty+Holland (2012)
     parameterization of tensil stress for fast ice (does not do anything yet)
 o pkg/seaice/seaice_check.F: left over from restricted addtive Schwarz method
-  for LSR: move checking overlaps out of JFNK-if-block
+    for LSR: move checking overlaps out of JFNK-if-block
 o pkg/atm_phys:
   - move copy of grid and dynamical fields out of atm_phys_driver.F into
     new S/R ATM_PHYS_DYN2PHYS.
