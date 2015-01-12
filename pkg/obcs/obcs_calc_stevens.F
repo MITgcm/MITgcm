@@ -1,8 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.13 2012/09/18 20:09:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.14 2015/01/12 16:06:38 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 #undef CHECK_BALANCE
+
+C--   File obcs_calc_stevens.F: 
+C--    Contents
+C--    o OBCS_CALC_STEVENS
+C--    o OBCS_STEVENS_CALC_TRACER_EAST
+C--    o OBCS_STEVENS_CALC_TRACER_WEST
+C--    o OBCS_STEVENS_CALC_TRACER_NORTH
+C--    o OBCS_STEVENS_CALC_TRACER_SOUTH
+C--    o OBCS_STEVENS_SAVE_TRACER
 
 CBOP
 C     !ROUTINE: OBCS_CALC_STEVENS
@@ -43,7 +52,7 @@ C     |    independently of the time stepping procedure by simple
 C     |    differencing
 C     |  - velocity tangential to the boundary is always zero
 C     |    (although this could be changed)
-C     |  - a new tracer is computed from local advection equation
+C     |  - a new tracer is computed from a local advection equation
 C     |    with an upwind scheme: tracer from the interior is
 C     |    advected out of the domain, and tracer from the boundary
 C     |    is "advected" into the domain by a restoring mechanism
@@ -92,21 +101,14 @@ C     uMer/vZonBar :: vertically averaged velocity at open boundary
 C     drFBar       :: local depth for vertical average
 C     uMer/vZonPri :: velocity anomalies applied to the open boundaries
 C     gammat/s     :: restoring parameters (1./(T/SrelaxStevens - time scale))
-C     u/vPhase     :: estimate of phase velocity for radiation condition
 C     auxillary variables
 C     cflMer/Zon   :: ratio of grid spacing and time step
-C     dtracSpace   :: horizontal difference of tracer
-C     dtracTime    :: temporal difference of tracer
 C     aFac         :: switch (0 or 1) that turns on advective contribution
 C     gFacM/Z      :: switch (0 or 1) that turns on restoring boundary condition
 C     pFac         :: switch that turns on/off phase velocity contribution
       INTEGER bi, bj
       INTEGER I, J, K
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL uPhase
-      _RL vPhase
-      _RL dtracSpace
-      _RL dTracTime
       _RL cflMer (1-OLy:sNy+OLy,Nr)
       _RL gFacM  (1-OLy:sNy+OLy,Nr)
       _RL uMerPri(Nr)
@@ -244,49 +246,38 @@ CML         IF ( uVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFacM(J,K) = 1. _d 0
            ENDIF
           ENDDO
          ENDDO
-         DO K=1,Nr
-          DO J=1-OLy,sNy+OLy
-           I = OB_Ie(J,bi,bj)
-           IF ( I.NE.OB_indexNone ) THEN
-C     Theta first:
-            dTracSpace = (theta(I-1,J,K,bi,bj)-theta(I-2,J,K,bi,bj))
-     &           * _maskW(I-1,J,K,bi,bj)
-            dTracTime  = (theta(I-1,J,K,bi,bj)-OBEtStevens(J,K,bi,bj))
-            uPhase = cflMer(J,K) * pFac
-            IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             uPhase = MIN( cflMer(J,K),
-     &        MAX( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
-     &            ) * pFac
-            ENDIF
-C     Compute the tracer tendency here, the tracer will be updated
-C     with a simple Euler forward step in S/R obcs_apply_ts
-            OBEt(J,K,bi,bj) = _maskW(I,J,K,bi,bj) * (
-     &          - ( aFac*MAX(0.D0,uVel(I,J,K,bi,bj)) + uPhase )
-     &          *(theta(I,J,K,bi,bj)-theta(I-1,J,K,bi,bj))
-     &          * _recip_dxC(I,J,bi,bj)
-     &          - gFacM(J,K) * gammat
-     &           * (theta(I,J,K,bi,bj)-OBEt(J,K,bi,bj)) )
-C     Now salinity:
-            dTracSpace = (salt(I-1,J,K,bi,bj)-salt(I-2,J,K,bi,bj))
-     &          * _maskW(I-1,J,K,bi,bj)
-            dTracTime  = (salt(I-1,J,K,bi,bj)-OBEsStevens(J,K,bi,bj))
-            uPhase = cflMer(J,K) * pFac
-            IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             uPhase = MIN( cflMer(J,K),
-     &        MAX( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
-     &            ) * pFac
-            ENDIF
-C     Compute the tracer tendency here, the tracer will be updated
-C     with a simple Euler forward step in S/R obcs_apply_ts
-            OBEs(J,K,bi,bj) = _maskW(I,J,K,bi,bj) * (
-     &          - ( aFac*MAX(0.D0,uVel(I,J,K,bi,bj)) + uPhase )
-     &          *(salt(I,J,K,bi,bj)-salt(I-1,J,K,bi,bj))
-     &          * _recip_dxC(I,J,bi,bj)
-     &          - gFacM(J,K) * gammas
-     &           * (salt(I,J,K,bi,bj)-OBEs(J,K,bi,bj)) )
-           ENDIF
-          ENDDO
-         ENDDO
+C     theta
+         CALL OBCS_STEVENS_CALC_TRACER_EAST(
+     U        OBEt, 
+     I        OBEtStevens, theta, gammat, 
+     I        uVel, cflMer, gFacM, pFac, aFac,
+     I        OB_Ie, OB_indexNone, bi, bj,
+     I        futureTime, futureIter,
+     I        myThid )
+C     salinity
+         CALL OBCS_STEVENS_CALC_TRACER_EAST(
+     U        OBEs, 
+     I        OBEsStevens, salt, gammas,
+     I        uVel, cflMer, gFacM, pFac, aFac,
+     I        OB_Ie, OB_indexNone, bi, bj,
+     I        futureTime, futureIter,
+     I        myThid )
+C     Template for passive tracers, requires work
+CML#ifdef ALLOW_PTRACERS
+CMLC     ptracers
+CML         IF ( usePtracers ) THEN
+CML          DO itracer = 1, PTRACERnumInUse
+CML           CALL OBCS_STEVENS_CALC_TRACER_EAST(
+CML     O          OBEptr       (1-OLy,1,1,1,iTracer), 
+CML     I          OBEpStevens  (1-OLy,1,1,1,iTracer), 
+CML     I          pTracer(1-OLx,1-OLy,1,1,1,iTracer), gammas,
+CML     I          uVel, cflMer, gFacM, pFac, aFac,
+CML     I          OB_Ie, OB_indexNone, bi, bj,
+CML     I          futureTime, futureIter,
+CML     I          myThid )
+CML          ENDDO
+CML         ENDIF
+CML#endif /* ALLOW_PTRACERS */
 C     IF ( useStevensEast ) THEN
         ENDIF
 #endif /* ALLOW_OBCS_EAST */
@@ -382,50 +373,24 @@ CML         IF ( uVel(I+1,J,K,bi,bj) .GT. 0. _d 0 ) gFacM = 1. _d 0
            ENDIF
           ENDDO
          ENDDO
-         DO K=1,Nr
-          DO J=1-OLy,sNy+OLy
-           I = OB_Iw(J,bi,bj)
-           IF ( I.NE.OB_indexNone ) THEN
-C     Theta first:
-            dTracSpace = (theta(I+2,J,K,bi,bj)-theta(I+1,J,K,bi,bj))
-     &        * _maskW(I+2,J,K,bi,bj)
-            dTracTime  = (theta(I+1,J,K,bi,bj)-OBWtStevens(J,K,bi,bj))
-            uPhase = -cflMer(J,K) * pFac
-            IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             uPhase = MAX( -cflMer(J,K),
-     &        MIN( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
-     &            ) * pFac
-            ENDIF
-C     Compute the tracer tendency here, the tracer will be updated
-C     with a simple Euler forward step in S/R obcs_apply_ts
-            OBWt(J,K,bi,bj) = _maskW(I+1,J,K,bi,bj) * (
-     &        - ( aFac*MIN(0.D0,uVel(I+1,J,K,bi,bj)) + uPhase )
-     &        *(theta(I+1,J,K,bi,bj)-theta(I,J,K,bi,bj))
-     &        * _recip_dxC(I+1,J,bi,bj)
-     &        - gFacM(J,K) * gammat
-     &           * (theta(I,J,K,bi,bj)-OBWt(J,K,bi,bj)) )
-C     Now salinity:
-            dTracSpace = (salt(I+2,J,K,bi,bj)-salt(I+1,J,K,bi,bj))
-     &        * _maskW(I+2,J,K,bi,bj)
-            dTracTime  = (salt(I+1,J,K,bi,bj)-OBWsStevens(J,K,bi,bj))
-            uPhase = -cflMer(J,K) * pFac
-            IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             uPhase = MAX( -cflMer(J,K),
-     &        MIN( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
-     &            ) * pFac
-            ENDIF
-C     Compute the tracer tendency here, the tracer will be updated
-C     with a simple Euler forward step in S/R obcs_apply_ts
-            OBWs(J,K,bi,bj) = _maskW(I+1,J,K,bi,bj) * (
-     &        - ( aFac*MIN(0.D0,uVel(I+1,J,K,bi,bj)) + uPhase )
-     &        *(salt(I+1,J,K,bi,bj)-salt(I,J,K,bi,bj))
-     &        * _recip_dxC(I+1,J,bi,bj)
-     &        - gFacM(J,K) * gammas
-     &           * (salt(I,J,K,bi,bj)-OBWs(J,K,bi,bj)) )
-           ENDIF
-          ENDDO
-         ENDDO
-C      IF ( useStevensWest ) THEN
+C     theta
+         CALL OBCS_STEVENS_CALC_TRACER_WEST(
+     U        OBWt, 
+     I        OBWtStevens, theta, gammat, 
+     I        uVel, cflMer, gFacM, pFac, aFac,
+     I        OB_Iw, OB_indexNone, bi, bj,
+     I        futureTime, futureIter,
+     I        myThid )
+C     salinity
+         CALL OBCS_STEVENS_CALC_TRACER_WEST(
+     U        OBWs, 
+     I        OBWsStevens, salt, gammas,
+     I        uVel, cflMer, gFacM, pFac, aFac,
+     I        OB_Iw, OB_indexNone, bi, bj,
+     I        futureTime, futureIter,
+     I        myThid )
+C     ptracers
+C     IF ( useStevensWest ) THEN
         ENDIF
 #endif /* ALLOW_OBCS_WEST */
 
@@ -519,50 +484,24 @@ CML         IF ( vVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFacZ(I,K) = 1. _d 0
            ENDIF
           ENDDO
          ENDDO
-         DO K=1,Nr
-          DO I=1-OLx,sNx+OLx
-           J = OB_Jn(I,bi,bj)
-           IF ( J.NE.OB_indexNone ) THEN
-C     Theta first:
-            dTracSpace = (theta(I,J-1,K,bi,bj)-theta(I,J-2,K,bi,bj))
-     &        * _maskS(I,J-1,K,bi,bj)
-            dTracTime  = (theta(I,J-1,K,bi,bj)-OBNtStevens(I,K,bi,bj))
-            vPhase = cflZon(I,K) * pFac
-            IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             vPhase = MIN( cflZon(I,K),
-     &        MAX( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
-     &            ) * pFac
-            ENDIF
-C     Compute the tracer tendency here, the tracer will be updated
-C     with a simple Euler forward step in S/R obcs_apply_ts
-            OBNt(I,K,bi,bj) = _maskS(I,J,K,bi,bj) * (
-     &        - ( aFac*MAX(0.D0,vVel(I,J,K,bi,bj)) + vPhase )
-     &        *(theta(I,J,K,bi,bj)-theta(I,J-1,K,bi,bj))
-     &        * _recip_dyC(I,J,bi,bj)
-     &        - gFacZ(I,K) * gammat
-     &           * (theta(I,J,K,bi,bj)-OBNt(I,K,bi,bj)) )
-C     Now salinity:
-            dTracSpace = (salt(I,J-1,K,bi,bj)-salt(I,J-2,K,bi,bj))
-     &        * _maskS(I,J-1,K,bi,bj)
-            dTracTime  = (salt(I,J-1,K,bi,bj)-OBNsStevens(I,K,bi,bj))
-            vPhase = cflZon(I,K) * pFac
-            IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             vPhase = MIN( cflZon(I,K),
-     &        MAX( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
-     &            ) * pFac
-            ENDIF
-C     Compute the tracer tendency here, the tracer will be updated
-C     with a simple Euler forward step in S/R obcs_apply_ts
-            OBNs(I,K,bi,bj) = _maskS(I,J,K,bi,bj) * (
-     &        - ( aFac*MAX(0.D0,vVel(I,J,K,bi,bj)) + vPhase )
-     &        *(salt(I,J,K,bi,bj)-salt(I,J-1,K,bi,bj))
-     &        * _recip_dyC(I,J,bi,bj)
-     &        - gFacZ(I,K) * gammas
-     &           * (salt(I,J,K,bi,bj)-OBNs(I,K,bi,bj)) )
-           ENDIF
-          ENDDO
-         ENDDO
-C      IF ( useStevensNorth ) THEN
+C     theta
+         CALL OBCS_STEVENS_CALC_TRACER_NORTH(
+     U        OBNt, 
+     I        OBNtStevens, theta, gammat,
+     I        vVel, cflZon, gFacZ, pFac, aFac, 
+     I        OB_Jn, OB_indexNone, bi, bj,
+     I        futureTime, futureIter,
+     I        myThid )
+C     salinity
+         CALL OBCS_STEVENS_CALC_TRACER_NORTH(
+     U        OBNs, 
+     I        OBNsStevens, salt, gammas,
+     I        vVel, cflZon, gFacZ, pFac, aFac, 
+     I        OB_Jn, OB_indexNone, bi, bj,
+     I        futureTime, futureIter,
+     I        myThid )
+C     ptracers
+C     IF ( useStevensNorth ) THEN
         ENDIF
 #endif /* ALLOW_OBCS_NORTH */
 
@@ -657,49 +596,23 @@ CML         IF ( vVel(I,J+1,K,bi,bj) .GT. 0. _d 0 ) gFacZ = 1. _d 0
            ENDIF
           ENDDO
          ENDDO
-         DO K=1,Nr
-          DO I=1-OLx,sNx+OLx
-           J = OB_Js(I,bi,bj)
-           IF ( J.NE.OB_indexNone ) THEN
-C     Theta first:
-            dTracSpace = (theta(I,J+2,K,bi,bj)-theta(I,J+1,K,bi,bj))
-     &        * _maskS(I,J+2,K,bi,bj)
-            dTracTime  = (theta(I,J+1,K,bi,bj)-OBStStevens(I,K,bi,bj))
-            vPhase = -cflZon(I,K) * pFac
-            IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             vPhase = MAX( -cflZon(I,K),
-     &        MIN( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
-     &            ) * pFac
-            ENDIF
-C     Compute the tracer tendency here, the tracer will be updated
-C     with a simple Euler forward step in S/R obcs_apply_ts
-            OBSt(I,K,bi,bj) = _maskS(I,J+1,K,bi,bj) * (
-     &        - ( aFac*MIN(0.D0,vVel(I,J+1,K,bi,bj)) + vPhase )
-     &        *(theta(I,J+1,K,bi,bj)-theta(I,J,K,bi,bj))
-     &        * _recip_dyC(I,J+1,bi,bj)
-     &        - gFacZ(I,K) * gammat
-     &           * (theta(I,J,K,bi,bj)-OBSt(I,K,bi,bj)) )
-C     Now salinity:
-            dTracSpace = (salt(I,J+2,K,bi,bj)-salt(I,J+1,K,bi,bj))
-     &        * _maskS(I,J+2,K,bi,bj)
-            dTracTime  = (salt(I,J+1,K,bi,bj)-OBSsStevens(I,K,bi,bj))
-            vPhase = -cflZon(I,K) * pFac
-            IF ( dTracSpace .NE. 0. _d 0 ) THEN
-             vPhase = MAX( -cflZon(I,K),
-     &        MIN( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
-     &            ) * pFac
-            ENDIF
-C     Compute the tracer tendency here, the tracer will be updated
-C     with a simple Euler forward step in S/R obcs_apply_ts
-            OBSs(I,K,bi,bj) = _maskS(I,J+1,K,bi,bj) * (
-     &        - ( aFac*MIN(0.D0,vVel(I,J+1,K,bi,bj)) + vPhase )
-     &        *(salt(I,J+1,K,bi,bj)-salt(I,J,K,bi,bj))
-     &        * _recip_dyC(I,J+1,bi,bj)
-     &        - gFacZ(I,K) * gammas
-     &           * (salt(I,J,K,bi,bj)-OBSs(I,K,bi,bj)) )
-           ENDIF
-          ENDDO
-         ENDDO
+C     theta
+         CALL OBCS_STEVENS_CALC_TRACER_SOUTH(
+     U        OBSt, 
+     I        OBStStevens, theta, gammat,
+     I        vVel, cflZon, gFacZ, pFac, aFac, 
+     I        OB_Js, OB_indexNone, bi, bj,
+     I        futureTime, futureIter,
+     I        myThid )
+C     salinity
+         CALL OBCS_STEVENS_CALC_TRACER_SOUTH(
+     U        OBSs, 
+     I        OBSsStevens, salt, gammas,
+     I        vVel, cflZon, gFacZ, pFac, aFac, 
+     I        OB_Js, OB_indexNone, bi, bj,
+     I        futureTime, futureIter,
+     I        myThid )
+C     ptracers
 C     IF ( useStevensSouth ) THEN
         ENDIF
 #endif /* ALLOW_OBCS_SOUTH */
@@ -752,6 +665,332 @@ CML      print *, 'ml-obcs: OBWp = ', uVelLoc*1 _d -6, ' Sv'
 #ifdef ALLOW_DEBUG
          IF (debugMode) CALL DEBUG_LEAVE('OBCS_CALC_STEVENS',myThid)
 #endif
+
+#endif /* ALLOW_OBCS_STEVENS */
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: OBCS_STEVENS_CALC_TRACER_EAST
+C     !INTERFACE:
+      SUBROUTINE OBCS_STEVENS_CALC_TRACER_EAST(
+     U     OBEf, 
+     I     OBE_Stevens, tracer, gammaf,
+     I     uVel, cflMer, gFacM, pFac, aFac, 
+     I     OB_I, OB_indexNone, bi, bj,
+     I     futureTime, futureIter,
+     I     myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE OBCS_STEVENS_CALC_TRACER_EAST
+C     | Calculate tracer value at the eastern OB location
+C     *==========================================================*
+C     \ev
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ==
+#include "SIZE.h"
+#include "GRID.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C    myThid    :: my Thread Id number
+C    bi, bj    :: indices of current tile
+      _RL futureTime
+      INTEGER futureIter
+      INTEGER myThid
+      INTEGER bi, bj
+      INTEGER OB_indexNone
+      INTEGER OB_I             (1-OLy:sNy+OLy,nSx,nSy)
+      _RL cflMer               (1-OLy:sNy+OLy,Nr)
+      _RL gFacM                (1-OLy:sNy+OLy,Nr)
+      _RL gammaf, pFac, aFac
+      _RL OBEf                 (1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL OBE_Stevens          (1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL uVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+
+#ifdef ALLOW_OBCS_STEVENS
+C     !LOCAL VARIABLES:
+C     i,j,k        :: loop indices
+C     uPhase       :: estimate of phase velocity for radiation condition
+C     dtracSpace   :: horizontal difference of tracer
+C     dtracTime    :: temporal difference of tracer
+      INTEGER i,j,k
+      _RL uPhase
+      _RL dtracSpace
+      _RL dTracTime
+CEOP
+      DO K=1,Nr
+       DO J=1-OLy,sNy+OLy
+        I = OB_I(J,bi,bj)
+        IF ( I.NE.OB_indexNone ) THEN
+         dTracSpace = (tracer(I-1,J,K,bi,bj)-tracer(I-2,J,K,bi,bj))
+     &        * _maskW(I-1,J,K,bi,bj)
+         dTracTime  = (tracer(I-1,J,K,bi,bj)-OBE_Stevens(J,K,bi,bj))
+         uPhase = cflMer(J,K) * pFac
+         IF ( dTracSpace .NE. 0. _d 0 ) THEN
+          uPhase = MIN( cflMer(J,K),
+     &         MAX( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
+     &         ) * pFac
+         ENDIF
+C     Compute the tracer tendency here, the tracer will be updated
+C     with a simple Euler forward step in S/R obcs_apply_ts
+         OBEf(J,K,bi,bj) = _maskW(I,J,K,bi,bj) * (
+     &        - ( aFac*MAX(0.D0,uVel(I,J,K,bi,bj)) + uPhase )
+     &        *(tracer(I,J,K,bi,bj)-tracer(I-1,J,K,bi,bj))
+     &        * _recip_dxC(I,J,bi,bj)
+     &        - gFacM(J,K) * gammaf
+     &        * (tracer(I,J,K,bi,bj)-OBEf(J,K,bi,bj)) )
+        ENDIF
+       ENDDO
+      ENDDO
+
+#endif /* ALLOW_OBCS_STEVENS */
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: OBCS_STEVENS_CALC_TRACER_WEST
+C     !INTERFACE:
+      SUBROUTINE OBCS_STEVENS_CALC_TRACER_WEST(
+     U     OBWf, 
+     I     OBW_Stevens, tracer, gammaf,
+     I     uVel, cflMer, gFacM, pFac, aFac, 
+     I     OB_I, OB_indexNone, bi, bj,
+     I     futureTime, futureIter,
+     I     myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE OBCS_STEVENS_CALC_TRACER_WEST
+C     | Calculate tracer value at the western OB location
+C     *==========================================================*
+C     \ev
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ==
+#include "SIZE.h"
+#include "GRID.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C    myThid    :: my Thread Id number
+C    bi, bj    :: indices of current tile
+      _RL futureTime
+      INTEGER futureIter
+      INTEGER myThid
+      INTEGER bi, bj
+      INTEGER OB_indexNone
+      INTEGER OB_I             (1-OLy:sNy+OLy,nSx,nSy)
+      _RL cflMer               (1-OLy:sNy+OLy,Nr)
+      _RL gFacM                (1-OLy:sNy+OLy,Nr)
+      _RL gammaf, pFac, aFac
+      _RL OBWf                 (1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL OBW_Stevens          (1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL uVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+
+#ifdef ALLOW_OBCS_STEVENS
+C     !LOCAL VARIABLES:
+C     i,j,k        :: loop indices
+C     uPhase       :: estimate of phase velocity for radiation condition
+C     dtracSpace   :: horizontal difference of tracer
+C     dtracTime    :: temporal difference of tracer
+      INTEGER i,j,k
+      _RL uPhase
+      _RL dtracSpace
+      _RL dTracTime
+CEOP
+
+      DO K=1,Nr
+       DO J=1-OLy,sNy+OLy
+        I = OB_I(J,bi,bj)
+        IF ( I.NE.OB_indexNone ) THEN
+         dTracSpace = (tracer(I+2,J,K,bi,bj)-tracer(I+1,J,K,bi,bj))
+     &        * _maskW(I+2,J,K,bi,bj)
+         dTracTime  = (tracer(I+1,J,K,bi,bj)-OBW_Stevens(J,K,bi,bj))
+         uPhase = -cflMer(J,K) * pFac
+         IF ( dTracSpace .NE. 0. _d 0 ) THEN
+          uPhase = MAX( -cflMer(J,K),
+     &         MIN( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
+     &         ) * pFac
+         ENDIF
+C     Compute the tracer tendency here, the tracer will be updated
+C     with a simple Euler forward step in S/R obcs_apply_ts
+         OBWf(J,K,bi,bj) = _maskW(I+1,J,K,bi,bj) * (
+     &        - ( aFac*MIN(0.D0,uVel(I+1,J,K,bi,bj)) + uPhase )
+     &        *(tracer(I+1,J,K,bi,bj)-tracer(I,J,K,bi,bj))
+     &        * _recip_dxC(I+1,J,bi,bj)
+     &        - gFacM(J,K) * gammaf
+     &        * (tracer(I,J,K,bi,bj)-OBWf(J,K,bi,bj)) )
+        ENDIF
+       ENDDO
+      ENDDO
+
+#endif /* ALLOW_OBCS_STEVENS */
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: OBCS_STEVENS_CALC_TRACER_NORTH
+C     !INTERFACE:
+      SUBROUTINE OBCS_STEVENS_CALC_TRACER_NORTH(
+     U     OBNf, 
+     I     OBN_Stevens, tracer, gammaf,
+     I     vVel, cflZon, gFacZ, pFac, aFac, 
+     I     OB_J, OB_indexNone, bi, bj,
+     I     futureTime, futureIter,
+     I     myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE OBCS_STEVENS_CALC_TRACER_NORTH
+C     | Calculate tracer value at the northern OB location
+C     *==========================================================*
+C     \ev
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ==
+#include "SIZE.h"
+#include "GRID.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C    myThid    :: my Thread Id number
+C    bi, bj    :: indices of current tile
+      _RL futureTime
+      INTEGER futureIter
+      INTEGER myThid
+      INTEGER bi, bj
+      INTEGER OB_indexNone
+      INTEGER OB_J             (1-OLx:sNx+OLx,nSx,nSy)
+      _RL cflZon               (1-OLx:sNx+OLx,Nr)
+      _RL gFacZ                (1-OLx:sNx+OLx,Nr)
+      _RL gammaf, pFac, aFac
+      _RL OBNf                 (1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RL OBN_Stevens          (1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL vVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+
+#ifdef ALLOW_OBCS_STEVENS
+C     !LOCAL VARIABLES:
+C     i,j,k        :: loop indices
+C     vPhase       :: estimate of phase velocity for radiation condition
+C     dtracSpace   :: horizontal difference of tracer
+C     dtracTime    :: temporal difference of tracer
+      INTEGER i,j,k
+      _RL vPhase
+      _RL dtracSpace
+      _RL dTracTime
+CEOP
+      DO K=1,Nr
+       DO I=1-OLx,sNx+OLx
+        J = OB_J(I,bi,bj)
+        IF ( J.NE.OB_indexNone ) THEN
+C     Theta first:
+         dTracSpace = (tracer(I,J-1,K,bi,bj)-tracer(I,J-2,K,bi,bj))
+     &        * _maskS(I,J-1,K,bi,bj)
+         dTracTime  = (tracer(I,J-1,K,bi,bj)-OBN_Stevens(I,K,bi,bj))
+         vPhase = cflZon(I,K) * pFac
+         IF ( dTracSpace .NE. 0. _d 0 ) THEN
+          vPhase = MIN( cflZon(I,K),
+     &         MAX( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
+     &         ) * pFac
+         ENDIF
+C     Compute the tracer tendency here, the tracer will be updated
+C     with a simple Euler forward step in S/R obcs_apply_ts
+         OBNf(I,K,bi,bj) = _maskS(I,J,K,bi,bj) * (
+     &        - ( aFac*MAX(0.D0,vVel(I,J,K,bi,bj)) + vPhase )
+     &        *(tracer(I,J,K,bi,bj)-tracer(I,J-1,K,bi,bj))
+     &        * _recip_dyC(I,J,bi,bj)
+     &        - gFacZ(I,K) * gammaf
+     &        * (tracer(I,J,K,bi,bj)-OBNf(I,K,bi,bj)) )
+        ENDIF
+       ENDDO
+      ENDDO
+
+#endif /* ALLOW_OBCS_STEVENS */
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: OBCS_STEVENS_CALC_TRACER_SOUTH
+C     !INTERFACE:
+      SUBROUTINE OBCS_STEVENS_CALC_TRACER_SOUTH(
+     U     OBSf, 
+     I     OBS_Stevens, tracer, gammaf,
+     I     vVel, cflZon, gFacZ, pFac, aFac, 
+     I     OB_J, OB_indexNone, bi, bj,
+     I     futureTime, futureIter,
+     I     myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE OBCS_STEVENS_CALC_TRACER_SOUTH
+C     | Calculate tracer value at the southern OB location
+C     *==========================================================*
+C     \ev
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ==
+#include "SIZE.h"
+#include "GRID.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C    myThid    :: my Thread Id number
+C    bi, bj    :: indices of current tile
+      _RL futureTime
+      INTEGER futureIter
+      INTEGER myThid
+      INTEGER bi, bj
+      INTEGER OB_indexNone
+      INTEGER OB_J             (1-OLx:sNx+OLx,nSx,nSy)
+      _RL cflZon               (1-OLx:sNx+OLx,Nr)
+      _RL gFacZ                (1-OLx:sNx+OLx,Nr)
+      _RL gammaf, pFac, aFac
+      _RL OBSf                 (1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RL OBS_Stevens          (1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL vVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+
+#ifdef ALLOW_OBCS_STEVENS
+C     !LOCAL VARIABLES:
+C     i,j,k        :: loop indices
+C     vPhase       :: estimate of phase velocity for radiation condition
+C     dtracSpace   :: horizontal difference of tracer
+C     dtracTime    :: temporal difference of tracer
+      INTEGER i,j,k
+      _RL vPhase
+      _RL dtracSpace
+      _RL dTracTime
+CEOP
+      DO K=1,Nr
+       DO I=1-OLx,sNx+OLx
+        J = OB_J(I,bi,bj)
+        IF ( J.NE.OB_indexNone ) THEN
+         dTracSpace = (tracer(I,J+2,K,bi,bj)-tracer(I,J+1,K,bi,bj))
+     &        * _maskS(I,J+2,K,bi,bj)
+         dTracTime  = (tracer(I,J+1,K,bi,bj)-OBS_Stevens(I,K,bi,bj))
+         vPhase = -cflZon(I,K) * pFac
+         IF ( dTracSpace .NE. 0. _d 0 ) THEN
+          vPhase = MAX( -cflZon(I,K),
+     &         MIN( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
+     &         ) * pFac
+         ENDIF
+C     Compute the tracer tendency here, the tracer will be updated
+C     with a simple Euler forward step in S/R obcs_apply_ts
+         OBSf(I,K,bi,bj) = _maskS(I,J+1,K,bi,bj) * (
+     &        - ( aFac*MIN(0.D0,vVel(I,J+1,K,bi,bj)) + vPhase )
+     &        *(tracer(I,J+1,K,bi,bj)-tracer(I,J,K,bi,bj))
+     &        * _recip_dyC(I,J+1,bi,bj)
+     &        - gFacZ(I,K) * gammaf
+     &        * (tracer(I,J,K,bi,bj)-OBSf(I,K,bi,bj)) )
+        ENDIF
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_OBCS_STEVENS */
       RETURN
