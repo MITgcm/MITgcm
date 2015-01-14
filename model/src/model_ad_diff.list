@@ -46,6 +46,7 @@ ini_cori.f
 ini_curvilinear_grid.f
 ini_cylinder_grid.f
 ini_depths.f	
+ini_ffields.f	
 ini_fields.f	
 ini_forcing.f	
 ini_grid.f	

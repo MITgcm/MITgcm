@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.77 2014/11/02 21:21:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.78 2015/01/14 18:40:55 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,6 +37,7 @@ C #endif
 C       |-- INI_NLFS_VARS
 C       |-- INI_DYNVARS
 C       |-- INI_NH_VARS
+C       |-- INI_FFIELDS
 C       |
 C       |-- INI_FIELDS
 C       |
@@ -127,6 +128,9 @@ C--   Initialize NH_VARS arrays to zero [always]
 #ifdef ALLOW_NONHYDROSTATIC
       CALL INI_NH_VARS( myThid )
 #endif
+
+C--   Initialize FFIELDS arrays to zero [always]
+      CALL INI_FFIELDS( myThid )
 
 C--   Initialise model fields.
 C     Starting values of U, V, W, temp., salt. and tendency terms

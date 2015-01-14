@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.53 2014/08/07 18:43:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.54 2015/01/14 18:40:55 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,83 +37,10 @@ C     bi,bj  :: Tile indices
 C     i, j   :: Loop counters
       INTEGER bi, bj
       INTEGER  i, j
-#if (defined ALLOW_ADDFLUID) || (defined ALLOW_FRICTION_HEATING)
-      INTEGER k
-#endif
 CEOP
 
 C-    Initialise all arrays in common blocks
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          fu              (i,j,bi,bj) = 0. _d 0
-          fv              (i,j,bi,bj) = 0. _d 0
-          Qnet            (i,j,bi,bj) = 0. _d 0
-          EmPmR           (i,j,bi,bj) = 0. _d 0
-          saltFlux        (i,j,bi,bj) = 0. _d 0
-          SST             (i,j,bi,bj) = 0. _d 0
-          SSS             (i,j,bi,bj) = 0. _d 0
-          Qsw             (i,j,bi,bj) = 0. _d 0
-          pLoad           (i,j,bi,bj) = 0. _d 0
-          sIceLoad        (i,j,bi,bj) = 0. _d 0
-          surfaceForcingU (i,j,bi,bj) = 0. _d 0
-          surfaceForcingV (i,j,bi,bj) = 0. _d 0
-          surfaceForcingT (i,j,bi,bj) = 0. _d 0
-          surfaceForcingS (i,j,bi,bj) = 0. _d 0
-          surfaceForcingTice(i,j,bi,bj) = 0. _d 0
-#ifdef ALLOW_GEOTHERMAL_FLUX
-          geothermalFlux  (i,j,bi,bj) = 0. _d 0
-#endif
-#ifndef EXCLUDE_FFIELDS_LOAD
-          taux0           (i,j,bi,bj) = 0. _d 0
-          taux1           (i,j,bi,bj) = 0. _d 0
-          tauy0           (i,j,bi,bj) = 0. _d 0
-          tauy1           (i,j,bi,bj) = 0. _d 0
-          Qnet0           (i,j,bi,bj) = 0. _d 0
-          Qnet1           (i,j,bi,bj) = 0. _d 0
-          EmPmR0          (i,j,bi,bj) = 0. _d 0
-          EmPmR1          (i,j,bi,bj) = 0. _d 0
-          saltFlux0       (i,j,bi,bj) = 0. _d 0
-          saltFlux1       (i,j,bi,bj) = 0. _d 0
-          SST0            (i,j,bi,bj) = 0. _d 0
-          SST1            (i,j,bi,bj) = 0. _d 0
-          SSS0            (i,j,bi,bj) = 0. _d 0
-          SSS1            (i,j,bi,bj) = 0. _d 0
-#ifdef SHORTWAVE_HEATING
-          Qsw0            (i,j,bi,bj) = 0. _d 0
-          Qsw1            (i,j,bi,bj) = 0. _d 0
-#endif
-#ifdef ATMOSPHERIC_LOADING
-          pLoad0          (i,j,bi,bj) = 0. _d 0
-          pLoad1          (i,j,bi,bj) = 0. _d 0
-#endif
-#endif /* EXCLUDE_FFIELDS_LOAD */
-         ENDDO
-        ENDDO
-#ifndef EXCLUDE_FFIELDS_LOAD
-        loadedRec(bi,bj) = 0
-#endif /* EXCLUDE_FFIELDS_LOAD */
-#ifdef ALLOW_ADDFLUID
-        DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           addMass(i,j,k,bi,bj) = 0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-#endif /* ALLOW_ADDFLUID */
-#ifdef ALLOW_FRICTION_HEATING
-        DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           frictionHeating(i,j,k,bi,bj) = 0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-#endif /* ALLOW_FRICTION_HEATING */
-       ENDDO
-      ENDDO
+C     <-- moved to new S/R INI_FFIELDS
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -213,7 +140,7 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
 #endif /* ALLOW_ADDFLUID */
 #ifdef ALLOW_GEOTHERMAL_FLUX
       IF ( geothermalFile .NE. ' ' ) THEN
-       CALL READ_FLD_XY_RS( geothermalFile, ' ', 
+       CALL READ_FLD_XY_RS( geothermalFile, ' ',
      &  geothermalFlux, 0, myThid )
        CALL EXCH_XY_RS( geothermalFlux, myThid )
 # ifdef ALLOW_MONITOR
