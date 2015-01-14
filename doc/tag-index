@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2113 2015/01/12 17:36:42 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2114 2015/01/14 20:49:27 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - move (from ini_forcing.F) initialisation of all arrays in header file
+    FFIELDS.h into new S/R ini_ffields.F ; this fix broken restart
+    (since Nov 2012) with option selectAddFluid=1.
 o pkg/shelfice:
   - change units (+ document) of newly added field "shelfIceMassDynTendency"
   - upgrade from _RS to _RL shelficeMass & shelficeLoadAnomaly arrays.
