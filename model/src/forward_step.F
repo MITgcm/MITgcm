@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.231 2014/11/02 21:21:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.232 2015/01/14 00:50:30 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -153,7 +153,7 @@ C       |
 C       |-- THERMODYNAMICS
 C       |
 C       |-- LONGSTEP_AVERAGE
-C       |--_THERMODYNAMICS
+C       |-- LONGSTEP_THERMODYNAMICS
 C       |
 C       |-- DO_STAGGER_FIELDS_EXCHANGES
 C       |
