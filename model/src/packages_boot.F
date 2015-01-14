@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.67 2014/11/02 21:21:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.68 2015/01/14 00:51:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -130,16 +130,8 @@ c     useGAD          =.FALSE.
       useGrdchk       =.FALSE.
       useSMOOTH       =.FALSE.
       usePROFILES     =.FALSE.
-#ifdef ALLOW_ECCO
-      useECCO         =.TRUE.
-#else
       useECCO         =.FALSE.
-#endif
-#ifdef ALLOW_CTRL
-      useCTRL         =.TRUE.
-#else
       useCTRL         =.FALSE.
-#endif
       useSBO          =.FALSE.
       useFLT          =.FALSE.
       usePTRACERS     =.FALSE.
@@ -167,6 +159,16 @@ c     useGAD          =.FALSE.
       useRunClock     =.FALSE.
       useEMBED_FILES  =.FALSE.
       useMYPACKAGE    =.FALSE.
+
+C-    Adjust default to account for pkgs without run-time On/Off switch
+#ifdef ALLOW_AUTODIFF
+# ifdef ALLOW_ECCO
+      useECCO         =.TRUE.
+# endif
+# ifdef ALLOW_CTRL
+      useCTRL         =.TRUE.
+# endif
+#endif /* ALLOW_AUTODIFF */
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=PACKAGES)
