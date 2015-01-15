@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.9 2014/09/09 23:10:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.10 2015/01/15 17:34:08 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -90,7 +90,7 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
             BCMASKX(i,j,bi,bj) = 3.0
             BCVALX(i,j,bi,bj) = uflux
             utrans(i,j,bi,bj) = 1.0
-           ELSEIF (STREAMICE_hmask(i+1,j,bi,bj).eq.1.0) THEN
+           ELSEIF (STREAMICE_hmask(i-1,j,bi,bj).eq.1.0) THEN
             uflux = u_flux_bdry_SI(i,j,bi,bj)
             BCMASKX(i,j,bi,bj) = 3.0
             BCVALX(i,j,bi,bj) = uflux
@@ -120,7 +120,7 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
             BCMASKY(i,j,bi,bj) = 3.0
             BCVALY(i,j,bi,bj) = vflux
             vtrans(i,j,bi,bj) = 1.0
-           ELSEIF (STREAMICE_hmask(i,j+1,bi,bj).eq.1.0) THEN
+           ELSEIF (STREAMICE_hmask(i,j-1,bi,bj).eq.1.0) THEN
             vflux = v_flux_bdry_SI(i,j,bi,bj)
             BCMASKY(i,j,bi,bj) = 3.0
             BCVALY(i,j,bi,bj) = vflux
