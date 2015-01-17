@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/ctrl_map_ini_genarr.F,v 1.2 2014/04/05 23:13:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/ctrl_map_ini_genarr.F,v 1.3 2015/01/17 07:19:28 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -57,7 +57,7 @@ C     == local variables ==
 
       logical doglobalread
       logical ladinit
-      character*(MAX_LEN_FNAM) fnamebase
+      character*( 80)   fnamebase
       character*( 80)   fnamegeneric
       character*(MAX_LEN_MBUF) msgBuf
       _RL     fac
