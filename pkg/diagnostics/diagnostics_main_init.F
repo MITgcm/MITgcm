@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.50 2014/07/19 16:46:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.51 2015/01/20 20:50:15 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -771,6 +771,15 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+#ifdef ALLOW_FRICTION_HEATING
+      diagName  = 'HeatDiss'
+      diagTitle = 'Heating from frictional dissipation'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif /* ALLOW_FRICTION_HEATING */
+
 #ifdef ALLOW_GENERIC_ADVDIFF
       diagName  = 'gT_Forc '
       diagTitle = 'Potential Temp. forcing tendency'
@@ -846,31 +855,31 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
 #ifdef ALLOW_EDDYPSI
       diagName  = 'TAUXEDDY'
       diagTitle = 'Zonal Eddy Stress'
-      diagUnits = 'N/m**2          '
-      diagCode  = 'UU P    MR      '
-      diagMate  = diagNum
+      diagUnits = 'N/m^2           '
+      diagCode  = 'UU      LR      '
+      diagMate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'TAUYEDDY'
       diagTitle = 'Meridional Eddy Stress'
-      diagUnits = 'N/m**2          '
-      diagCode  = 'VV P    MR      '
+      diagUnits = 'N/m^2           '
+      diagCode  = 'VV      LR      '
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
 # ifdef ALLOW_GMREDI
-      diagName  = 'UVELMEAN'
-      diagTitle = 'Zonal Component of Mean Velocity (m/s)'
+      diagName  = 'U_EulerM'
+      diagTitle = 'Zonal Eulerian-Mean Velocity (m/s)'
       diagUnits = 'm/s             '
       diagCode  = 'UUR     MR      '
       diagMate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-      diagName  = 'VVELMEAN'
-      diagTitle = 'Meridional Component of Mean Velocity (m/s)'
+      diagName  = 'V_EulerM'
+      diagTitle = 'Meridional Eulerian-Mean Velocity (m/s)'
       diagUnits = 'm/s             '
       diagCode  = 'VVR     MR      '
       diagMate  = diagNum
