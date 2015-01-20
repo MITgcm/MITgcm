@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.46 2014/08/07 18:43:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.47 2015/01/20 20:43:29 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h
@@ -78,7 +78,7 @@ C     addMass  :: source (<0: sink) of fluid in the domain interior
 C                 (generalisation of oceanic real fresh-water flux)
 C                Units are           kg/s  (mass per unit of time)
 C     frictionHeating :: heating caused by friction and momentum dissipation
-C                Units are           in Watts [W] (extensive variable)
+C                Units are           in W/m^2 (thickness integrated)
 C     eddyPsiX -Zonal Eddy Streamfunction in m^2/s used in taueddy_external_forcing.F
 C     eddyPsiY -Meridional Streamfunction in m^2/s used in taueddy_external_forcing.F
 C     EfluxY - y-component of Eliassen-Palm flux vector
@@ -110,13 +110,13 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       _RS  pLoad    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  sIceLoad (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#ifdef ALLOW_FRICTION_HEATING
-      COMMON /FFIELDS_frictionHeat/ frictionHeating
-      _RS frictionHeating(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif
 #ifdef ALLOW_ADDFLUID
       COMMON /FFIELDS_ADD_FLUID/ addMass
       _RL addMass(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+#ifdef ALLOW_FRICTION_HEATING
+      COMMON /FFIELDS_frictionHeat/ frictionHeating
+      _RS frictionHeating(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 #ifdef ALLOW_GEOTHERMAL_FLUX
 C  geothermalFlux :: Upward geothermal flux through bottom cell [W/m^2]
@@ -133,16 +133,28 @@ C              Southwest C-grid tracer point
 c     COMMON /FFIELDS_dQdT/ dQdT
 c     _RS  dQdT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 c#ifdef ALLOW_EP_FLUX
-c     COMMON /efluxFFIELDS/ EfluxY,EfluxP
+c     COMMON /FFIELDS_eflux/ EfluxY,EfluxP
 c     _RL  EfluxY (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 c     _RL  EfluxP (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 c#endif
 
 #ifdef ALLOW_EDDYPSI
-      COMMON /eddypsiFFIELDS/ eddyPsiX,eddyPsiY
+C     uEulerMean  :: The Eulerian mean Zonal  velocity (residual less bolus velocity)
+C     vEulerMean  :: The Eulerian mean Merid. velocity (residual less bolus velocity)
+C     tauxEddy    :: The eddy stress used in the momentum equation of a residual model
+C     tauyEddy    :: The eddy stress used in the momentum equation of a residual model
+
+      COMMON /FFIELDS_eddyPsi_RS/ eddyPsiX, eddyPsiY
       _RS  eddyPsiX (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  eddyPsiY (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif
+
+      COMMON /FFIELDS_eddyPsi_RL/
+     &                tauxEddy, tauyEddy, uEulerMean, vEulerMean
+      _RL tauxEddy  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tauyEddy  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL uEulerMean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL vEulerMean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif /* ALLOW_EDDYPSI */
 
 #ifndef EXCLUDE_FFIELDS_LOAD
 C     loadedRec     :: time-record currently loaded (in temp arrays *[1])
@@ -232,3 +244,5 @@ C              Units are r_unit.K/s (=Kelvin.m/s if r=z) (>0 for ocean warming).
       _RL  surfaceForcingT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  surfaceForcingS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  surfaceForcingTice(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

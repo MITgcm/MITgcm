@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/taueddy_tendency_apply.F,v 1.1 2014/07/09 17:03:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/taueddy_tendency_apply.F,v 1.2 2015/01/20 20:47:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -6,6 +6,7 @@ C $Name:  $
 #ifdef ALLOW_GMREDI
 # include "GMREDI_OPTIONS.h"
 #endif
+
 C--  File taueddy_tendency_apply.F: Routines to apply TAUEDDY tendencies
 C--   Contents
 C--   o TAUEDDY_TENDENCY_APPLY_U
@@ -36,7 +37,6 @@ C     == Global data ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
 #include "FFIELDS.h"
 #ifdef ALLOW_GMREDI
 # include "GMREDI.h"
@@ -88,7 +88,7 @@ C     Add zonal eddy momentum impulse into the layer
       ENDIF
 #endif
 
-#endif
+#endif /* ALLOW_EDDYPSI */
 
       RETURN
       END
@@ -118,7 +118,6 @@ C     == Global data ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
 #include "FFIELDS.h"
 #ifdef ALLOW_GMREDI
 #include "GMREDI.h"
@@ -170,7 +169,7 @@ C     Add meridional eddy momentum impulse into the layer
       ENDIF
 #endif
 
-#endif
+#endif /* ALLOW_EDDYPSI */
 
       RETURN
       END

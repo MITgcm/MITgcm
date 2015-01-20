@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_eddy_stress.F,v 1.2 2014/01/01 23:25:59 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_eddy_stress.F,v 1.3 2015/01/20 20:47:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,7 +8,7 @@ C $Name:  $
 # include "GMREDI_OPTIONS.h"
 #endif
 
-      SUBROUTINE CALC_EDDY_STRESS(bi,bj,myThid)
+      SUBROUTINE CALC_EDDY_STRESS( bi, bj, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -28,7 +28,6 @@ C     \ev
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
 #include "FFIELDS.h"
 #ifdef ALLOW_GMREDI
 # include "GMREDI.h"
@@ -52,8 +51,9 @@ C     Calculate the eddy stress from the eddy induced streamfunction
       IF ( GM_InMomAsStress ) THEN
 #endif
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly-1
-          DO i=1-Olx+1,sNx+Olx
+
+         DO j=1-OLy,sNy+OLy-1
+          DO i=1-OLx+1,sNx+OLx
 #ifdef ALLOW_GMREDI
            psiy = op25*(GM_PsiY(i,  j  ,k,bi,bj)
      &                 +GM_PsiY(i,  j+1,k,bi,bj)
@@ -67,13 +67,12 @@ C     Calculate the eddy stress from the eddy induced streamfunction
 #endif
            coriU = op5*(fcori(i-1,j,bi,bj)
      &                 +fCori(i  ,j,bi,bj))
-
            tauxEddy(i,j,k,bi,bj) =  rhoConst*coriU*psiy
           ENDDO
          ENDDO
 
-         DO j=1-Oly+1,sNy+Oly
-          DO i=1-Olx,sNx+Olx-1
+         DO j=1-OLy+1,sNy+OLy
+          DO i=1-OLx,sNx+OLx-1
 #ifdef ALLOW_GMREDI
            psix = op25*(GM_PsiX(i,  j  ,k,bi,bj)
      &                 +GM_PsiX(i+1,j  ,k,bi,bj)
@@ -87,17 +86,20 @@ C     Calculate the eddy stress from the eddy induced streamfunction
 #endif
            coriV = op5*(fcori(i,j-1,bi,bj)
      &                 +fCori(i,j  ,bi,bj))
-
            tauyEddy(i,j,k,bi,bj) = -rhoConst*coriV*psix
-
           ENDDO
          ENDDO
 
+C-    end k loop
         ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
-        CALL DIAGNOSTICS_FILL(tauxEddy, 'TAUXEDDY',0,Nr,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(tauyEddy, 'TAUYEDDY',0,Nr,0,1,1,myThid)
+        IF ( useDiagnostics ) THEN
+          CALL DIAGNOSTICS_FILL( tauxEddy, 'TAUXEDDY',
+     &                           0, Nr, 1, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( tauyEddy, 'TAUYEDDY',
+     &                           0, Nr, 1, bi, bj, myThid )
+        ENDIF
 #endif
 #ifdef ALLOW_GMREDI
       ENDIF

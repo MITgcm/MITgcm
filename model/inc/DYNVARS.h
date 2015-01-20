@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.48 2014/08/15 19:28:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.49 2015/01/20 20:43:29 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -88,20 +88,6 @@ C   The following blocks containing requires anomaly fields of control vars
 C   and related to Options:
 C   ALLOW_KAPGM_CONTROL , ALLOW_KAPREDI_CONTROL and ALLOW_BOTTOMDRAG_CONTROL
 C   have been moved to header file "CTRL_FIELDS.h"
-
-#ifdef ALLOW_EDDYPSI
-C     uMean    :: The mean zonal velocity (residual velocity less the bolus velocity)
-C     vMean    :: The mean meridional velocity (residual velocity less the bolus velocity)
-C     tauxEddy :: The eddy stress used in the momentum equation of a residual model
-C     tauyEddy :: The eddy stress used in the momentum equation of a residual model
-
-      COMMON /DYNVARS_EDDYPSI/ tauxEddy,tauyEddy, uMean, vMean
-
-      _RL uMean(   1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL vMean(   1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL tauxEddy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL tauyEddy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif
 
 #ifdef ALLOW_BL79_LAT_VARY
 C     BL79LatArray :: is used for latitudinal dependence of
