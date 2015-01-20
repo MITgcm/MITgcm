@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.13 2015/01/12 17:35:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.14 2015/01/20 14:54:36 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -72,6 +72,18 @@ C     set coefficients to constant values
         ENDDO
        ENDDO
       ENDDO
+
+      IF (shelficeMassStepping) THEN
+
+      IF ( .NOT. ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
+     &     .AND. pickupSuff .EQ. ' ') ) THEN
+
+          CALL SHELFICE_READ_PICKUP ( myThid )
+
+      ENDIF
+    
+      ENDIF
+
 
 #ifdef ALLOW_COST
       DO bj = myByLo(myThid), myByHi(myThid)
