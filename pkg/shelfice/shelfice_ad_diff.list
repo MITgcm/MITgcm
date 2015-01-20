@@ -4,6 +4,7 @@ shelfice_cost_final.f
 shelfice_forcing.f
 shelfice_forcing_surf.f
 shelfice_init_varia.f
+shelfice_read_pickup.f
 shelfice_step_icemass.f
 shelfice_thermodynamics.f
 shelfice_u_drag.f
