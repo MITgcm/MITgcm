@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.121 2014/11/02 21:22:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.122 2015/01/20 15:00:55 dgoldberg Exp $
 C $Name:  $
 
 CBOI
@@ -472,6 +472,7 @@ C/\  | | | | |-PTRACERS_WRITE_PICKUP  :: Write pTracers pickups (pkg/ptracers)
 C/\  | | | | |-GCHEM_WRITE_PICKUP     :: Write Geo-Chem pickups (see pkg/gchem)
 C/\  | | | | |-SEAICE_WRITE_PICKUP    :: Write SeaIce pickups  (see pkg/seaice)
 C/\  | | | | |-STREAMICE_WRITE_PICKUP :: Write StreamIce pickups (pkg/streamice)
+C/\  | | | | |-SHELFICE_WRITE_PICKUP :: Write ShelfIce pickups (pkg/shelfice)
 C/\  | | | | |-THSICE_WRITE_PICKUP    :: Write ThSIce pickups  (see pkg/thsice)
 C/\  | | | | |-LAND_WRITE_PICKUP      :: Write Land   pickups  (see pkg/land)
 C/\  | | | | |-ATM_PHYS_WRITE_PICKUP  :: Write Atm-Phys pickups (pkg/atm_phys)
