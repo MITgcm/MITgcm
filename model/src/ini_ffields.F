@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_ffields.F,v 1.1 2015/01/14 18:40:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_ffields.F,v 1.2 2015/01/20 20:46:55 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -108,8 +108,12 @@ C-    3-D forcing fields
 #ifdef ALLOW_EDDYPSI
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           eddyPsiX(i,j,k,bi,bj) = 0. _d 0
-           eddyPsiY(i,j,k,bi,bj) = 0. _d 0
+           eddyPsiX  (i,j,k,bi,bj) = 0. _d 0
+           eddyPsiY  (i,j,k,bi,bj) = 0. _d 0
+           tauxEddy  (i,j,k,bi,bj) = 0. _d 0
+           tauyEddy  (i,j,k,bi,bj) = 0. _d 0
+           uEulerMean(i,j,k,bi,bj) = 0. _d 0
+           vEulerMean(i,j,k,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
 #endif /* ALLOW_EDDYPSI */

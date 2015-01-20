@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/check_pickup.F,v 1.5 2011/10/28 21:20:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/check_pickup.F,v 1.6 2015/01/20 20:46:55 jmc Exp $
 C $Name:  $
 
 c#include "PACKAGES_CONFIG.h"
@@ -140,6 +140,12 @@ C     (no serious problems expected if missing, but get a non-perfect restart)
           IF ( .NOT.pickupStrictlyMatch ) THEN
            WRITE(msgBuf,'(4A)') '** WARNING ** CHECK_PICKUP: ',
      &      'restart with AddMass == 0'
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ENDIF
+         ELSEIF ( missFldList(j).EQ.'FricHeat' ) THEN
+          IF ( .NOT.pickupStrictlyMatch ) THEN
+           WRITE(msgBuf,'(4A)') '** WARNING ** CHECK_PICKUP: ',
+     &      'restart with Frictional Dissipation Heating == 0'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
 

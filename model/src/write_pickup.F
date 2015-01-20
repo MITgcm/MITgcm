@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.16 2014/08/18 14:27:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.17 2015/01/20 20:46:55 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -27,14 +27,12 @@ C     !USES:
 #include "RESTART.h"
 #include "DYNVARS.h"
 #include "SURFACE.h"
+#include "FFIELDS.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
 # include "NH_VARS.h"
-#endif
-#ifdef ALLOW_ADDFLUID
-# include "FFIELDS.h"
 #endif
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
@@ -125,11 +123,13 @@ C---  write State 3-D fields for restart
 #if defined(ALLOW_EDDYPSI) && defined(ALLOW_GMREDI)
         IF (GM_InMomAsStress) THEN
           j = j + 1
-          CALL WRITE_REC_3D_RL( fn, fp, Nr, uMean,   -j, myIter, myThid)
-          IF (j.LE.listDim) wrFldList(j) = 'Umean   '
+          CALL WRITE_REC_3D_RL( fn, fp, Nr, uEulerMean,
+     &                                            -j, myIter, myThid )
+          IF (j.LE.listDim) wrFldList(j) = 'UEulerM '
           j = j + 1
-          CALL WRITE_REC_3D_RL( fn, fp, Nr, vMean,   -j, myIter, myThid)
-          IF (j.LE.listDim) wrFldList(j) = 'Vmean   '
+          CALL WRITE_REC_3D_RL( fn, fp, Nr, vEulerMean,
+     &                                            -j, myIter, myThid )
+          IF (j.LE.listDim) wrFldList(j) = 'VEulerM '
       ENDIF
 #endif
 
@@ -281,10 +281,19 @@ C-    write Full Pressure for EOS in pressure:
 C-    write mass source/sink of fluid (but not needed if selectAddFluid=-1)
        IF ( selectAddFluid.NE.0 ) THEN
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, fp, Nr,addMass,-j,myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, addMass,-j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'AddMass '
        ENDIF
 #endif /* ALLOW_ADDFLUID */
+#ifdef ALLOW_FRICTION_HEATING
+C-    needs frictional heating when using synchronous time-stepping
+       IF ( addFrictionHeating .AND. .NOT.staggerTimeStep ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RS( fn, fp, Nr, frictionHeating,
+     &                                            -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'FricHeat'
+       ENDIF
+#endif /* ALLOW_FRICTION_HEATING */
 
         n3D = j
 C---  Write 2-D fields, starting with Eta:
@@ -365,8 +374,8 @@ C       Then set the actual unlimited dimension
         CALL MNC_CW_RL_W('D',fn,0,0,'V', vVel, myThid)
 #if defined(ALLOW_EDDYPSI) && defined(ALLOW_GMREDI)
         IF (GM_InMomAsStress) THEN
-          CALL MNC_CW_RL_W('D',fn,0,0,'Umean', uMean, myThid)
-          CALL MNC_CW_RL_W('D',fn,0,0,'Vmean', vMean, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'UEulerM', uEulerMean, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'VEulerM', vEulerMean, myThid)
         ENDIF
 #endif
         CALL MNC_CW_RL_W('D',fn,0,0,'Temp', theta, myThid)

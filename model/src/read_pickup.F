@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.11 2014/08/18 14:27:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.12 2015/01/20 20:46:55 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -25,14 +25,12 @@ C     !USES:
 #include "RESTART.h"
 #include "DYNVARS.h"
 #include "SURFACE.h"
+#include "FFIELDS.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
 # include "NH_VARS.h"
-#endif
-#ifdef ALLOW_ADDFLUID
-# include "FFIELDS.h"
 #endif
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
@@ -266,9 +264,9 @@ C---    read State 3-D fields for restart
      &                                     nj, fp, Nr, myIter, myThid )
 #if defined(ALLOW_EDDYPSI) && defined(ALLOW_GMREDI)
           IF (GM_InMomAsStress) THEN
-            CALL READ_MFLDS_3D_RL( 'Umean   ', uMean,
+            CALL READ_MFLDS_3D_RL( 'UEulerM ', uEulerMean,
      &                                      nj, fp, Nr, myIter, myThid )
-            CALL READ_MFLDS_3D_RL( 'Vmean   ', vMean,
+            CALL READ_MFLDS_3D_RL( 'VEulerM ', vEulerMean,
      &                                      nj, fp, Nr, myIter, myThid )
           ENDIF
 #endif
@@ -404,6 +402,13 @@ C-    read mass source/sink of fluid
      &                                     nj, fp, Nr, myIter, myThid )
         ENDIF
 #endif /* ALLOW_ADDFLUID */
+#ifdef ALLOW_FRICTION_HEATING
+C-    needs frictional heating when using synchronous time-stepping
+        IF ( addFrictionHeating .AND. .NOT.staggerTimeStep ) THEN
+          CALL READ_MFLDS_LEV_RS( 'FricHeat', frictionHeating,
+     &                              nj, fp, Nr, 1, Nr, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_FRICTION_HEATING */
 
 C---    read 2-D fields, starting with Eta:
           nj = nj*Nr
@@ -458,8 +463,8 @@ C--   end: pickup_read_mdsio
         CALL MNC_CW_RL_R('D',fn,0,0,'V',vVel, myThid)
 #if defined(ALLOW_EDDYPSI) && defined(ALLOW_GMREDI)
         IF (GM_InMomAsStress) THEN
-          CALL MNC_CW_RL_R('D',fn,0,0,'Umean',uMean, myThid)
-          CALL MNC_CW_RL_R('D',fn,0,0,'Vmean',vMean, myThid)
+          CALL MNC_CW_RL_R('D',fn,0,0,'UEulerM',uEulerMean, myThid)
+          CALL MNC_CW_RL_R('D',fn,0,0,'VEulerM',vEulerMean, myThid)
         ENDIF
 #endif
         CALL MNC_CW_RL_R('D',fn,0,0,'Temp',theta, myThid)
@@ -504,7 +509,7 @@ C     Fill in edge regions
       CALL EXCH_UV_3D_RL( uVel, vVel, .TRUE., Nr, myThid )
 #if defined(ALLOW_EDDYPSI) && defined(ALLOW_GMREDI)
       IF (GM_InMomAsStress) THEN
-        CALL EXCH_UV_3D_RL( uMean, vMean, .TRUE., Nr, myThid )
+        CALL EXCH_UV_3D_RL( uEulerMean, vEulerMean, .TRUE., Nr, myThid )
       ENDIF
 #endif
       CALL EXCH_3D_RL( theta, Nr, myThid )
