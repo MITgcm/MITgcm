@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2114 2015/01/14 20:49:27 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2115 2015/01/21 00:23:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src & gmredi K3D:
+  - add frictionHeating field to pickup-files (for synchronous time-stepping)
+  - move ALLOW_EDDYPSI block out of DYNVARS.h and merge it into FFIELDS.h
+  - rename uMean,vMean --> uEulerMean,vEulerMean (+ change diagnostics name
+    and name in pickup file).
+  - fix arguments of few DIAGNOSTICS_FILL calls in gmredi_k3d.F
 o model/src:
   - move (from ini_forcing.F) initialisation of all arrays in header file
     FFIELDS.h into new S/R ini_ffields.F ; this fix broken restart
