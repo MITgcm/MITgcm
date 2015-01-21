@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2115 2015/01/21 00:23:32 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2116 2015/01/21 19:37:42 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - change units of frictionHeating field from W to W/m^2
+  - fix bug in frictional heating from stratospheric drag in
+    S/R ATM_PHYS_TENDENCY_APPLY_V
 o model/src & gmredi K3D:
   - add frictionHeating field to pickup-files (for synchronous time-stepping)
   - move ALLOW_EDDYPSI block out of DYNVARS.h and merge it into FFIELDS.h
