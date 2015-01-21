@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_tendency_apply.F,v 1.3 2014/07/09 17:00:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_tendency_apply.F,v 1.4 2015/01/21 14:36:01 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -82,8 +82,9 @@ C--   Assume Agrid position:
          DO j=1,sNy
           DO i=1,sNx
            frictionHeating(i,j,k,bi,bj) = frictionHeating(i,j,k,bi,bj)
-     &        -0.5 _d 0 * ( damp_dKE( i, j)*rAw( i, j,bi,bj)
-     &                    + damp_dKE(i+1,j)*rAw(i+1,j,bi,bj) )
+     &         - halfRL * ( damp_dKE( i, j)*rAw( i, j,bi,bj)
+     &                    + damp_dKE(i+1,j)*rAw(i+1,j,bi,bj)
+     &                    )*recip_rA(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF
@@ -168,8 +169,9 @@ C--   Assume Agrid position:
          DO j=1,sNy
           DO i=1,sNx
            frictionHeating(i,j,k,bi,bj) = frictionHeating(i,j,k,bi,bj)
-     &        -0.5 _d 0 * ( damp_dKE( i, j)*rAs(i, j ,bi,bj)
-     &                    + damp_dKE(i+1,j)*rAs(i,j+1,bi,bj) )
+     &         - halfRL * ( damp_dKE( i, j)*rAs(i, j ,bi,bj)
+     &                    + damp_dKE(i+1,j)*rAs(i,j+1,bi,bj)
+     &                    )*recip_rA(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF

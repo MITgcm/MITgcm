@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/apply_forcing.F,v 1.6 2014/09/05 21:04:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/apply_forcing.F,v 1.7 2015/01/21 14:35:16 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -529,8 +529,7 @@ C         conversion from W/m^2/r_unit to K/s
         DO j=0,sNy+1
           DO i=0,sNx+1
             gT_arr(i,j) = gT_arr(i,j)
-     &         + frictionHeating(i,j,k,bi,bj)
-     &          *tmpFac*recip_rA(i,j,bi,bj)
+     &         + frictionHeating(i,j,k,bi,bj)*tmpFac
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
           ENDDO
         ENDDO

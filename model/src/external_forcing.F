@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.71 2014/08/15 19:19:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.72 2015/01/21 14:35:16 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -425,8 +425,7 @@ C         conversion from W/m^2/r_unit to K/s
         DO j=1,sNy
           DO i=1,sNx
             gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
-     &         + frictionHeating(i,j,kLev,bi,bj)
-     &          *tmpFac*recip_rA(i,j,bi,bj)
+     &         + frictionHeating(i,j,k,bi,bj)*tmpFac
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
           ENDDO
         ENDDO
