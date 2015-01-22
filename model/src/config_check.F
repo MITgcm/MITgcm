@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.79 2015/01/03 23:56:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.80 2015/01/22 18:30:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -823,12 +823,6 @@ C--   Time-stepping limitations
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: tracForcingOutAB ',
      &                       'should be =1 (Out of AB) or =0 (In AB)'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-      ENDIF
-      IF ( addFrictionHeating .AND. .NOT.staggerTimeStep ) THEN
-        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: addFrictionHeating',
-     &  ' not yet coded for synchronous time-stepping.'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
