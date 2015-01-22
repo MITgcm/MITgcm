@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.18 2014/11/02 21:21:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.19 2015/01/22 18:21:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -89,7 +89,7 @@ CEOP
 
 C--   Initialise forcing arrays that may receive multiple contributions
 #ifdef ALLOW_ADDFLUID
-      IF ( addMassFile .EQ. ' ' ) THEN
+      IF ( selectAddFluid.NE.0 .AND. addMassFile.EQ.' ' ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO k=1,Nr
@@ -105,7 +105,7 @@ C--   Initialise forcing arrays that may receive multiple contributions
 #endif /* ALLOW_ADDFLUID */
 
 #ifdef ALLOW_FRICTION_HEATING
-      IF ( addFrictionHeating ) THEN
+      IF ( addFrictionHeating .AND. staggerTimeStep ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO k=1,Nr
