@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_dyn2phys.F,v 1.1 2015/01/06 21:20:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_dyn2phys.F,v 1.2 2015/01/22 18:11:13 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -81,6 +81,17 @@ C--   latitude and pressure levels
           ki = Nr-k+2
           pHalf3d(:,:,k) = rF(Nr+1) + ( rF(ki) - rF(Nr+1) )
      &                               *rStarFacC(1:sNx,1:sNy,bi,bj)
+         ENDDO
+       ELSEIF ( select_rStar.GT.0 ) THEN
+         DO k=1,Nr
+          kc = Nr-k+1
+          pFull3d(:,:,k) = rF(Nr+1) + ( rC(kc) - rF(Nr+1) )
+     &                               *rStarFacNm1C(1:sNx,1:sNy,bi,bj)
+         ENDDO
+         DO k=1,Nr+1
+          ki = Nr-k+2
+          pHalf3d(:,:,k) = rF(Nr+1) + ( rF(ki) - rF(Nr+1) )
+     &                               *rStarFacNm1C(1:sNx,1:sNy,bi,bj)
          ENDDO
        ELSE
          STOP 'ATM_PHYS_DYN2PHYS: misssing code - 1 -'
