@@ -1,14 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2117 2015/01/23 01:45:07 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2118 2015/01/23 14:51:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint65i (2015/01/23)
 o model/src:
   - change units of frictionHeating field from W to W/m^2
   - fix bug in frictional heating from stratospheric drag in
     S/R ATM_PHYS_TENDENCY_APPLY_V
-  - with synchronous time-stepping: move resetting to zero of frictionHeating 
+  - with synchronous time-stepping: move resetting to zero of frictionHeating
     field from load_fields_driver.F to thermodynamics.F ;
   - add diagnostics for frictional heating.
 o model/src & gmredi K3D:
