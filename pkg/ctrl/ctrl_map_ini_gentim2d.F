@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.3 2014/12/04 22:44:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.4 2015/01/23 18:57:44 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -159,7 +159,7 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
             ENDDO
            ENDDO
 
-           _EXCH_XY_RL ( xx_gen , myThid )
+           CALL EXCH_XY_RL ( xx_gen , myThid )
           ENDIF
          ENDIF
 #endif /* ALLOW_SMOOTH */
