@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl3d.F,v 1.1 2010/02/15 23:46:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl3d.F,v 1.2 2015/01/23 18:58:26 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -60,23 +60,23 @@ c read smoothing [i.e diffusion] operator:
      &           Nr,smooth3D_Kvx,9, 1, myThid )
       CALL READ_REC_3D_RL(fnamegeneric,smoothprec, 
      &           Nr,smooth3D_kappaR,10, 1, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kwx, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kwy, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kwz, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kux, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kvy, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kuz, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kvz, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kuy, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kvx, myThid )
-      _EXCH_XYZ_RL ( smooth3D_kappaR, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kwx, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kwy, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kwz, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kux, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kvy, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kuz, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kvz, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kuy, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kvx, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_kappaR, myThid )
 
 c read normalization field [i.e. 1/sqrt(var(filter))]:
       write(fnamegeneric(1:80),'(1a,i3.3)')
      &    'smooth3Dnorm',smoothOpNb
       CALL READ_REC_3D_RL(fnamegeneric,smoothprec,
      &           Nr, smooth3Dnorm,1,1,mythid)
-      _EXCH_XYZ_RL ( smooth3Dnorm, myThid )
+      CALL EXCH_XYZ_RL ( smooth3Dnorm, myThid )
 
 c division by ~sqrt(volume):
       DO bj=jtlo,jthi
@@ -91,7 +91,7 @@ c division by ~sqrt(volume):
         ENDDO
        ENDDO
       ENDDO
-      _EXCH_XYZ_RL ( fld_in , myThid )
+      CALL EXCH_XYZ_RL ( fld_in , myThid )
 
 c do the smoothing:
       nbt_in=smooth3Dnbt(smoothOpNb)/2
@@ -110,6 +110,6 @@ c division by ~sqrt(var(filter)):
          ENDDO
         ENDDO
        ENDDO
-      _EXCH_XYZ_RL ( fld_in , myThid )
+      CALL EXCH_XYZ_RL ( fld_in , myThid )
 
       end

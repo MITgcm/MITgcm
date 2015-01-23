@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl2d.F,v 1.1 2010/02/15 23:46:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl2d.F,v 1.2 2015/01/23 18:58:26 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -44,15 +44,15 @@ c read smoothing [i.e diffusion] operator:
      &           1, smooth2D_Kux,1,1,mythid)
       CALL READ_REC_3D_RL(fnamegeneric,smoothprec,
      &           1, smooth2D_Kvy,2,1,mythid)
-      _EXCH_XY_RL ( smooth2D_Kux, myThid )
-      _EXCH_XY_RL ( smooth2D_Kvy, myThid )
+      CALL EXCH_XY_RL ( smooth2D_Kux, myThid )
+      CALL EXCH_XY_RL ( smooth2D_Kvy, myThid )
 
 c read normalization field [i.e. 1/sqrt(var(filter))]:
       write(fnamegeneric(1:80),'(1a,i3.3)')
      &    'smooth2Dnorm',smoothOpNb
       CALL READ_REC_3D_RL(fnamegeneric,smoothprec,
      &           1, smooth2Dnorm,1,1,mythid)
-      _EXCH_XY_RL ( smooth2Dnorm, myThid )
+      CALL EXCH_XY_RL ( smooth2Dnorm, myThid )
 
 c division by ~sqrt(area):
       DO bj = jtlo,jthi
@@ -65,7 +65,7 @@ c division by ~sqrt(area):
         ENDDO
        ENDDO 
       ENDDO
-      _EXCH_XY_RL ( fld_in , myThid )
+      CALL EXCH_XY_RL ( fld_in , myThid )
 
 c do the smoothing:
       nbt_in=smooth2Dnbt(smoothOpNb)/2
@@ -82,6 +82,6 @@ c division by ~sqrt(var(filter)):
          ENDDO
         ENDDO
        ENDDO
-      _EXCH_XY_RL ( fld_in , myThid )
+      CALL EXCH_XY_RL ( fld_in , myThid )
        
       end

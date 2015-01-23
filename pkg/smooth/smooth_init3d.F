@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_init3d.F,v 1.3 2012/09/04 14:37:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_init3d.F,v 1.4 2015/01/23 18:58:26 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -56,7 +56,7 @@ c vertical smoothing:
      &    'smooth3DscalesZ',smoothOpNb
       CALL READ_REC_3D_RL(fnamegeneric,smoothprec,
      &           Nr, smooth3D_Lz,1,1,mythid)
-      _EXCH_XYZ_RL( smooth3D_Lz, mythid )
+      CALL EXCH_XYZ_RL( smooth3D_Lz, mythid )
       else
       DO bj=jtlo,jthi
        DO bi=itlo,ithi
@@ -104,7 +104,7 @@ c avoid excessive vertical smoothing:
       ENDDO
       endif
 
-      _EXCH_XYZ_RL( smooth3D_kappaR,    myThid )
+      CALL EXCH_XYZ_RL( smooth3D_kappaR,    myThid )
 
 
 c hoizontal smoothing:
@@ -116,8 +116,8 @@ c hoizontal smoothing:
      &           Nr, smooth3D_Lx,1,1,mythid)
       CALL READ_REC_3D_RL(fnamegeneric,smoothprec,
      &           Nr, smooth3D_Ly,2,1,mythid)
-      _EXCH_XYZ_RL( smooth3D_Lx, mythid )
-      _EXCH_XYZ_RL( smooth3D_Ly, mythid )
+      CALL EXCH_XYZ_RL( smooth3D_Lx, mythid )
+      CALL EXCH_XYZ_RL( smooth3D_Ly, mythid )
       else
       DO bj=jtlo,jthi
        DO bi=itlo,ithi
@@ -157,16 +157,16 @@ c hoizontal smoothing:
 
 c is exchange useful here?
 
-      _EXCH_XYZ_RL( smooth3D_kappaR,    myThid )
-      _EXCH_XYZ_RL( smooth3D_Kwx,    myThid )
-      _EXCH_XYZ_RL( smooth3D_Kwy,    myThid )
-      _EXCH_XYZ_RL( smooth3D_Kwz,    myThid )
-      _EXCH_XYZ_RL( smooth3D_Kux,    myThid )
-      _EXCH_XYZ_RL( smooth3D_Kvy,    myThid )
-      _EXCH_XYZ_RL( smooth3D_Kuz,    myThid )
-      _EXCH_XYZ_RL( smooth3D_Kvz,    myThid )
-      _EXCH_XYZ_RL( smooth3D_Kuy,    myThid )
-      _EXCH_XYZ_RL( smooth3D_Kvx,    myThid )
+      CALL EXCH_XYZ_RL( smooth3D_kappaR,    myThid )
+      CALL EXCH_XYZ_RL( smooth3D_Kwx,    myThid )
+      CALL EXCH_XYZ_RL( smooth3D_Kwy,    myThid )
+      CALL EXCH_XYZ_RL( smooth3D_Kwz,    myThid )
+      CALL EXCH_XYZ_RL( smooth3D_Kux,    myThid )
+      CALL EXCH_XYZ_RL( smooth3D_Kvy,    myThid )
+      CALL EXCH_XYZ_RL( smooth3D_Kuz,    myThid )
+      CALL EXCH_XYZ_RL( smooth3D_Kvz,    myThid )
+      CALL EXCH_XYZ_RL( smooth3D_Kuy,    myThid )
+      CALL EXCH_XYZ_RL( smooth3D_Kvx,    myThid )
 
 
 c write diffusion operator to file

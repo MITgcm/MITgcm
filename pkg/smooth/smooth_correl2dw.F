@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl2dw.F,v 1.11 2014/10/20 03:10:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_correl2dw.F,v 1.12 2015/01/23 18:58:26 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -128,7 +128,7 @@ C     *==========================================================*
        ENDDO 
       ENDDO
 
-      _EXCH_XY_RL ( fld_in , myThid )
+      CALL EXCH_XY_RL ( fld_in , myThid )
 
       if (.NOT.weightWasFound) WRITE(errorMessageUnit,'(2A)' )
      &       'WARNING: no weights found for ',xx_gen_file

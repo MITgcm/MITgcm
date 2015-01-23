@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_rhs.F,v 1.3 2012/09/04 14:37:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_rhs.F,v 1.4 2015/01/23 18:58:26 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -327,7 +327,7 @@ c     /// end for r ///
 
 c these exchanges are crucial:
       CALL EXCH_UV_XYZ_RL(fZon,fMer,.TRUE.,myThid)
-      _EXCH_XYZ_RL ( fVerT, myThid )
+      CALL EXCH_XYZ_RL ( fVerT, myThid )
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -363,7 +363,7 @@ c 3rd k loop: Divergence of fluxes
        ENDDO
       ENDDO
 
-      _EXCH_XYZ_RL ( gt_in , myThid )
+      CALL EXCH_XYZ_RL ( gt_in , myThid )
 
       END
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_filtervar2d.F,v 1.2 2012/09/04 14:37:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_filtervar2d.F,v 1.3 2015/01/23 18:58:26 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -51,8 +51,8 @@ c read smoothing [i.e diffusion] operator:
      &           1,smooth2D_Kux,1,1,mythid)
       CALL READ_REC_3D_RL(fnamegeneric,smoothprec,
      &           1,smooth2D_Kvy,2,1,mythid)
-      _EXCH_XY_RL ( smooth2D_Kux, myThid )
-      _EXCH_XY_RL ( smooth2D_Kvy, myThid )
+      CALL EXCH_XY_RL ( smooth2D_Kux, myThid )
+      CALL EXCH_XY_RL ( smooth2D_Kvy, myThid )
 
 c initialize filter variance field:
       DO bj=jtlo,jthi
@@ -122,7 +122,7 @@ c division by ~volume:
 
 c coming out of adjoint part: overlaps are 0
 c going in fwd part: we need to fill them up
-      _EXCH_XY_RL ( smoothTmpFld,myThid )
+      CALL EXCH_XY_RL ( smoothTmpFld,myThid )
 
 c fwd:
       CALL smooth_diff2D(smoothTmpFld,maskc,nbt_in,mythid)
@@ -185,7 +185,7 @@ c division by sqrt(area):
        ENDDO
       ENDDO
 
-      _EXCH_XY_RL ( smoothTmpFld, myThid )
+      CALL EXCH_XY_RL ( smoothTmpFld, myThid )
 
 c smooth random number field
       call smooth_diff2D(smoothTmpFld,maskc,nbt_in,mythid)
@@ -229,7 +229,7 @@ c write smooth2Dnorm to file:
      &    'smooth2Dnorm',smoothOpNb
       CALL WRITE_REC_3D_RL(fnamegeneric,smoothprec,
      &            1,smooth2Dnorm,1,1,mythid)
-      _EXCH_XY_RL ( smooth2Dnorm,  myThid )
+      CALL EXCH_XY_RL ( smooth2Dnorm,  myThid )
 
       ENDIF
 

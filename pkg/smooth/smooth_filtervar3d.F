@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_filtervar3d.F,v 1.2 2012/09/04 14:37:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_filtervar3d.F,v 1.3 2015/01/23 18:58:26 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -69,16 +69,16 @@ c read smoothing [i.e diffusion] operator:
      &                     9, 1, myThid )
       CALL READ_REC_3D_RL( fnamegeneric,smoothprec, Nr,smooth3D_kappaR,
      &                     10,1, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kwx, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kwy, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kwz, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kux, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kvy, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kuz, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kvz, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kuy, myThid )
-      _EXCH_XYZ_RL ( smooth3D_Kvx, myThid )
-      _EXCH_XYZ_RL ( smooth3D_kappaR, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kwx, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kwy, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kwz, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kux, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kvy, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kuz, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kvz, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kuy, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_Kvx, myThid )
+      CALL EXCH_XYZ_RL ( smooth3D_kappaR, myThid )
 
 c initialize filter variance field:
       DO bj=jtlo,jthi
@@ -158,7 +158,7 @@ c division by ~sqrt(volume):
 
 c coming out of adjoint part: overlaps are 0
 c going in fwd part: we need to fill them up
-      _EXCH_XYZ_RL ( smoothTmpFld , myThid )
+      CALL EXCH_XYZ_RL ( smoothTmpFld , myThid )
 
 c fwd:
       call smooth_diff3D(smoothTmpFld,nbt_in,myThid)
@@ -227,7 +227,7 @@ c division by sqrt(volume):
        ENDDO
       ENDDO
 
-      _EXCH_XYZ_RL ( smoothTmpFld, myThid )
+      CALL EXCH_XYZ_RL ( smoothTmpFld, myThid )
 
 c smooth random number field
       call smooth_diff3D(smoothTmpFld,nbt_in,myThid)
@@ -275,7 +275,7 @@ c write smooth3Dnorm_3D to file:
      &    'smooth3Dnorm',smoothOpNb
       CALL WRITE_REC_3D_RL( fnamegeneric, smoothprec,
      &                      Nr, smooth3Dnorm, 1, 1, myThid )
-      _EXCH_XYZ_RL ( smooth3Dnorm,  myThid )
+      CALL EXCH_XYZ_RL ( smooth3Dnorm,  myThid )
 
       ENDIF
 

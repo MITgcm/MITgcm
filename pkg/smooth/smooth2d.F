@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth2d.F,v 1.2 2011/05/20 18:41:08 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth2d.F,v 1.3 2015/01/23 18:58:26 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -41,8 +41,8 @@ c read smoothing [i.e diffusion] operator:
      &           1, smooth2D_Kux,1,1,mythid)
       CALL READ_REC_3D_RL(fnamegeneric,smoothprec,
      &           1, smooth2D_Kvy,2,1,mythid)
-      _EXCH_XY_RL ( smooth2D_Kux, myThid )
-      _EXCH_XY_RL ( smooth2D_Kvy, myThid )
+      CALL EXCH_XY_RL ( smooth2D_Kux, myThid )
+      CALL EXCH_XY_RL ( smooth2D_Kvy, myThid )
 
 c do the smoothing:
       nbt_in=smooth2Dnbt(smoothOpNb)

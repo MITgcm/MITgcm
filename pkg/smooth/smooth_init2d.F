@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_init2d.F,v 1.2 2010/10/20 19:22:11 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_init2d.F,v 1.3 2015/01/23 18:58:26 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -43,8 +43,8 @@ cgf the choices of smooth2Dtype and smooth2Dsize need comments...
      &           1, smooth2D_Lx,1,1,mythid)
       CALL READ_REC_3D_RL(fnamegeneric,smoothprec,
      &           1, smooth2D_Ly,2,1,mythid)
-      _EXCH_XY_RL ( smooth2D_Lx, myThid )
-      _EXCH_XY_RL ( smooth2D_Ly, myThid )
+      CALL EXCH_XY_RL ( smooth2D_Lx, myThid )
+      CALL EXCH_XY_RL ( smooth2D_Ly, myThid )
       else
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -71,8 +71,8 @@ cgf the choices of smooth2Dtype and smooth2Dsize need comments...
        ENDDO
       ENDDO
 
-      _EXCH_XY_RL ( smooth2D_Kux , myThid )
-      _EXCH_XY_RL ( smooth2D_Kvy , myThid )
+      CALL EXCH_XY_RL ( smooth2D_Kux , myThid )
+      CALL EXCH_XY_RL ( smooth2D_Kvy , myThid )
 
             WRITE(standardMessageUnit,'(A,I4,2f12.0)')
      & 'smooth 2D default parameters: ',

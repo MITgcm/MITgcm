@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_hetero2d.F,v 1.1 2010/08/25 21:41:05 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_hetero2d.F,v 1.2 2015/01/23 18:58:26 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -65,11 +65,11 @@ c#include "tamc.h"
        ENDDO
       ENDDO
 
-      _EXCH_XY_RL ( smooth2D_Kux , myThid )
-      _EXCH_XY_RL ( smooth2D_Kvy , myThid )
+      CALL EXCH_XY_RL ( smooth2D_Kux , myThid )
+      CALL EXCH_XY_RL ( smooth2D_Kvy , myThid )
 
       call smooth_diff2D(fld_in,mask_in,nbt_in,mythid)
 
-      _EXCH_XY_RL ( fld_in , myThid )
+      CALL EXCH_XY_RL ( fld_in , myThid )
        
       end
