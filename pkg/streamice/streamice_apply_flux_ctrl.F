@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_apply_flux_ctrl.F,v 1.1 2013/06/12 21:30:21 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_apply_flux_ctrl.F,v 1.2 2015/01/24 15:34:32 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -22,15 +22,15 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "STREAMICE.h"
-#ifdef ALLOW_STREAMICE_FLUX_CONTROL
-#include "STREAMICE_CTRL_FLUX.h"
-#endif
+!#ifdef ALLOW_STREAMICE_FLUX_CONTROL
+!#include "STREAMICE_CTRL_FLUX.h"
+!#endif
 
       INTEGER myThid
 
 #ifdef ALLOW_STREAMICE
 #ifdef ALLOW_STREAMICE_FLUX_CONTROL
-
+#ifdef STREAMICE_FALSE
       INTEGER bi, bj, i, j, k
       _RS maskval
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -79,6 +79,7 @@ C     === Global variables ===
         ENDDO
        ENDDO
       ENDDO
+#endif
 #endif
 #endif
       RETURN

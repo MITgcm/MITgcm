@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_fields_load.F,v 1.2 2014/10/23 09:42:09 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_fields_load.F,v 1.3 2015/01/24 15:34:32 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -151,6 +151,18 @@ C-    Wait for everyone to set loadNewData before Master updates prevMnthIndex
 !         PRINT *, "GOT HERE FIELDS LOAD 2"
 
 #endif
+#ifdef ALLOW_STREAMICE_FLUX_CONTROL
+         IF ( STREAMICEuFluxTimeDepFile .NE. ' '  ) THEN
+          CALL READ_REC_XY_RL(STREAMICEuFluxTimeDepFile,
+     &                        u_flux_bdry_SI_1,
+     &                        nm0,myIter,myThid)
+         ENDIF
+         IF ( STREAMICEvFluxTimeDepFile .NE. ' '  ) THEN
+          CALL READ_REC_XY_RL(STREAMICEvFluxTimeDepFile,
+     &                        u_flux_bdry_SI_1,
+     &                        nm0,myIter,myThid)
+         ENDIF
+#endif
 
          IF ( STREAMICEBdotTimeDepFile .NE. ' '  ) THEN
 !         PRINT *, "GOT HERE FIELDS LOAD 3",  STREAMICEBdotTimeDepFile
@@ -210,6 +222,39 @@ C-      endif 1rst iter.
          ENDIF
 
 #endif
+#ifdef ALLOW_STREAMICE_FLUX_CONTROL
+
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+
+             u_flux_bdry_SI_0(i,j,bi,bj) =
+     &        u_flux_bdry_SI_1(i,j,bi,bj)
+             v_flux_bdry_SI_0(i,j,bi,bj) =
+     &        v_flux_bdry_SI_1(i,j,bi,bj)
+
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+!         PRINT *, "GOT HERE FIELDS LOAD 4"
+
+
+         IF ( STREAMICEuFluxTimeDepFile .NE. ' '  ) THEN
+          CALL READ_REC_XY_RL(STREAMICEuFluxTimeDepFile,
+     &                        u_flux_bdry_SI_1,
+     &                        nm1,myIter,myThid)
+         ENDIF
+
+         IF ( STREAMICEuFluxTimeDepFile .NE. ' '  ) THEN
+          CALL READ_REC_XY_RL(STREAMICEvFluxTimeDepFile,
+     &                        v_flux_bdry_SI_1,
+     &                        nm1,myIter,myThid)
+         ENDIF
+
+#endif
+
 
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -249,6 +294,15 @@ C-      endif 1rst iter.
      &        fac    * streamice_v_shear_stress0(i,j,bi,bj)
      &     + (1-fac) * streamice_v_shear_stress1(i,j,bi,bj)
 #endif
+#ifdef ALLOW_STREAMICE_FLUX_CONTROL
+             u_flux_bdry_pert(i,j,bi,bj) =
+     &        fac    * u_flux_bdry_SI_0(i,j,bi,bj)
+     &     + (1-fac) * u_flux_bdry_SI_1(i,j,bi,bj)
+             v_flux_bdry_pert(i,j,bi,bj) =
+     &        fac    * v_flux_bdry_SI_0(i,j,bi,bj)
+     &     + (1-fac) * v_flux_bdry_SI_1(i,j,bi,bj)
+#endif
+
              bdot_streamice (i,j,bi,bj) = 
      &        fac    * bdot_streamice0(i,j,bi,bj)
      &     + (1-fac) * bdot_streamice1(i,j,bi,bj)

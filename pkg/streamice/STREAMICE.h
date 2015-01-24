@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.12 2014/09/05 14:25:11 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.13 2015/01/24 15:34:32 dgoldberg Exp $
 C $Name:  $
 
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -126,6 +126,10 @@ C     -------------------------- CHAR PARAMS -----------------------------------
       CHARACTER*(MAX_LEN_FNAM) STREAMICEvNormalTimeDepFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEuShearTimeDepFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEvShearTimeDepFile
+
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEuFluxTimeDepFile
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEvFluxTimeDepFile
+
 
 #ifdef ALLOW_PETSC
 !     CHARACTER PARAMS FOR PETSC
@@ -334,6 +338,13 @@ C     &     A_glen,
      &     streamice_sigma_coord, streamice_delsigma,
      &     H_streamice_prev
 
+#ifdef ALLOW_STREAMICE_FLUX_CONTROL
+      COMMON /STREAMICE_FLUX_CONTROL/
+     &      u_flux_bdry_pert,
+     &      v_flux_bdry_pert
+#endif
+
+
 #ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
       COMMON /STREAMICE_STRESS_BOUNDARY/
      &      streamice_u_normal_pert,
@@ -368,6 +379,12 @@ C     &     A_glen,
      &      streamice_u_shear_stress1,
      &      streamice_v_shear_stress0,
      &      streamice_v_shear_stress1
+#endif
+#ifdef ALLOW_STREAMICE_FLUX_CONTROL
+     &      ,u_flux_bdry_SI_0,
+     &      u_flux_bdry_SI_1,
+     &      v_flux_bdry_SI_0,
+     &      v_flux_bdry_SI_1
 #endif
 #endif
 
@@ -464,6 +481,13 @@ C     The following arrays are used for the hybrid stress balance
      &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
+#ifdef ALLOW_STREAMICE_FLUX_CONTROL
+      _RL u_flux_bdry_pert
+     &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL v_flux_bdry_pert
+     &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+
       _RL ADOT_streamice (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 !! IMPORTANT: MELT RATE IN METERS PER YEAR
 !! POSITIVE WHERE MELTING
@@ -489,6 +513,16 @@ C     The following arrays are used for the hybrid stress balance
       _RL streamice_v_shear_stress0
      &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL streamice_v_shear_stress1
+     &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+#ifdef ALLOW_STREAMICE_FLUX_CONTROL
+      _RL u_flux_bdry_SI_0
+     &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL v_flux_bdry_SI_0
+     &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL u_flux_bdry_SI_1
+     &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL v_flux_bdry_SI_1
      &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
       _RL bdot_streamice0

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.8 2014/09/12 22:46:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.9 2015/01/24 15:34:32 dgoldberg Exp $
 C $Name:  $
 
 C this needs changes
@@ -19,9 +19,9 @@ C     !USES:
 #include "PARAMS.h"
 #include "STREAMICE.h"
 #include "STREAMICE_BDRY.h"
-#ifdef ALLOW_STREAMICE_FLUX_CONTROL
-#include "STREAMICE_CTRL_FLUX.h"
-#endif
+!#ifdef ALLOW_STREAMICE_FLUX_CONTROL
+!#include "STREAMICE_CTRL_FLUX.h"
+!#endif
 
 C     !INPUT PARAMETERS:
       INTEGER myThid
@@ -83,6 +83,7 @@ C     iUnit      :: Work variable for IO unit number
      &     STREAMICEvNormalTimeDepFile,
      &     STREAMICEuShearTimeDepFile,
      &     STREAMICEvShearTimeDepFile,
+     &     STREAMICEuFluxTimeDepFile, STREAMICEvFluxTimeDepFile,
      &     STREAMICEGlenConstFile, STREAMICEGlenConstConfig,
      &     STREAMICE_ppm_driving_stress,
      &     STREAMICE_h_ctrl_const_surf,
@@ -108,12 +109,12 @@ C     iUnit      :: Work variable for IO unit number
      &     PETSC_PRECOND_TYPE, PETSC_SOLVER_TYPE
 #endif
 
-#ifdef ALLOW_STREAMICE_FLUX_CONTROL
-      NAMELIST /STREAMICE_PARMFLUXCTRL/
-     &     n_fluxes, n_epochs,
-     &     streamice_ctrl_flux_id,
-     &     streamice_ctrl_flux_scaleVel
-#endif
+!#ifdef ALLOW_STREAMICE_FLUX_CONTROL
+!      NAMELIST /STREAMICE_PARMFLUXCTRL/
+!     &     n_fluxes, n_epochs,
+!     &     streamice_ctrl_flux_id,
+!     &     streamice_ctrl_flux_scaleVel
+!#endif
 
       NAMELIST /STREAMICE_PARM02/
      &     shelf_max_draft,
@@ -225,6 +226,8 @@ C--   Default values for STREAMICE
       STREAMICEvNormalTimeDepFile = ' '
       STREAMICEuShearTimeDepFile = ' '
       STREAMICEvShearTimeDepFile = ' '
+      STREAMICEuFluxTimeDepFile = ' '
+      STREAMICEvFluxTimeDepFile = ' '
 
 #ifdef ALLOW_STREAMICE_2DTRACER
       STREAMICETrac2DBCxFile = ''
@@ -246,16 +249,16 @@ C--   Default values for STREAMICE
 #endif
       STREAMICE_ADV_SCHEME = ''
 
-#ifdef ALLOW_STREAMICE_FLUX_CONTROL
-      n_fluxes = 0
-      n_epochs = 0
-      DO iarr=1,n_fluxes_max
-       streamice_ctrl_flux_id(iarr) = 0
-       DO tarr=1,n_epochs_max
-        streamice_ctrl_flux_scaleVel(iarr,tarr) = 0. _d 0
-       ENDDO
-      ENDDO
-#endif
+!#ifdef ALLOW_STREAMICE_FLUX_CONTROL
+!      n_fluxes = 0
+!      n_epochs = 0
+!      DO iarr=1,n_fluxes_max
+!       streamice_ctrl_flux_id(iarr) = 0
+!       DO tarr=1,n_epochs_max
+!        streamice_ctrl_flux_scaleVel(iarr,tarr) = 0. _d 0
+!       ENDDO
+!      ENDDO
+!#endif
 
       STREAMICE_tave_mdsio = .TRUE.
       STREAMICE_dump_mdsio = .TRUE.
@@ -365,20 +368,20 @@ C     Read parameters from open data file
      &    SQUEEZE_RIGHT , 1)
       CLOSE(iUnit)
 
-#ifdef ALLOW_STREAMICE_FLUX_CONTROL
-
-      CALL OPEN_COPY_DATA_FILE(
-     I                     'data.strmctrlflux', 'STREAMICE_READPARMS',
-     O                     iUnit,
-     I                     myThid )
-
-      READ(UNIT=iUnit,NML=STREAMICE_PARMFLUXCTRL)
-      WRITE(msgBuf,'(A)')
-     &    'STREAMICE_READPARMS: read flux_ctrl param block'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , 1)
-      CLOSE(iUnit)
-#endif
+!#ifdef ALLOW_STREAMICE_FLUX_CONTROL
+!
+!      CALL OPEN_COPY_DATA_FILE(
+!     I                     'data.strmctrlflux', 'STREAMICE_READPARMS',
+!     O                     iUnit,
+!     I                     myThid )
+!
+!      READ(UNIT=iUnit,NML=STREAMICE_PARMFLUXCTRL)
+!      WRITE(msgBuf,'(A)')
+!     &    'STREAMICE_READPARMS: read flux_ctrl param block'
+!      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+!     &    SQUEEZE_RIGHT , 1)
+!      CLOSE(iUnit)
+!#endif
 
       streamice_nstep_velocity = NINT (streamice_vel_update / deltaT)
 

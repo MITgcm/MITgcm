@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_timestep.F,v 1.2 2014/09/09 23:10:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_timestep.F,v 1.3 2015/01/24 15:34:32 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -122,9 +122,9 @@ c**************************************
 
       CALL STREAMICE_VELMASK_UPD (myThid)
 
-#ifdef ALLOW_STREAMICE_FLUX_CONTROL
-      CALL STREAMICE_APPLY_FLUX_CTRL ( myTime, myIter, myThid )
-#endif
+!#ifdef ALLOW_STREAMICE_FLUX_CONTROL
+!      CALL STREAMICE_APPLY_FLUX_CTRL ( myTime, myIter, myThid )
+!#endif
 
 #ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
       CALL STREAMICE_FIELDS_LOAD( myTime, myIter, myThid )
