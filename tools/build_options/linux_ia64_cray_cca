@@ -1,0 +1,98 @@
+#!/bin/bash
+#
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_cca,v 1.1 2015/01/27 17:02:30 mlosch Exp $
+# $Name:  $
+
+# Tested on cca at ecmwf.int: 
+# http://www.ecmwf.int/en/computing/our-facilities/supercomputer
+#
+# this requires that the PrgEnv is "cray", i.e. one needs to
+# switch out of the current PrgEnv like this:
+# module load PrgEnv-cray
+# or if something else is loaded
+# module switch PrgEnv-???? PrgEnv-cray
+# after switching the programming environment, the netcdf model needs 
+# to be loaded (and unloaded if it was loaded before)
+# module unload netcdf
+# module load netcdf
+# after "module load netcdf" NETCDF_DIR should be available
+# NETCDF_ROOT = $NETCDF_DIR
+# notes on useful MPI flags (to be set at runtime):
+# export MPICH_COLL_SYNC=1
+#  Adds a barrier before collectives, use this if CrayPAT makes your code
+#  run faster.
+# export MPICH_CPUMASK_DISPLAY=1
+#  Shows the binding of each MPI rank by core and hostname
+# export MPICH_ENV_DISPLAY=1
+#  Print to stderr the value of all MPI environment variables at runtime.
+# export MPICH_MPIIO_STATS=1
+#  Prints some MPI-IO stats to stderr that can be useful for optimisation
+# export MPICH_RANK_REORDER_DISPLAY=1
+#  Prints the node that each rank is residing on, useful for checking 
+#  MPICH_RANK_REORDER_METHOD results.
+# export MPICH_VERSION_DISPLAY=1
+#  Display library version and build information.
+
+FC=ftn
+F90C=ftn
+CC=cc
+# requires that all static libraries are available:
+#LINK='ftn -static'
+LINK='ftn -h byteswapio'
+# for adjoint runs the default makedepend often cannot handle enough files
+#MAKEDEPEND=tools_xmakedepend
+
+DEFINES='-DWORDLENGTH=4'
+CPP='cpp -traditional -P'
+#F90FIXEDFORMAT='-fixed -Tf'
+#EXTENDED_SRC_FLAG=''
+#OMPFLAG=''
+
+NOOPTFLAGS="-O0"
+# reduce floating point reordering
+#NOOPTFLAGS="-O0 -hfp1"
+NOOPTFILES=''
+
+FFLAGS="$FFLAGS"
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8" ???
+
+if test "x$IEEE" = x ; then     #- with optimisation:
+# this is the default anyway
+    FOPTIM='-O2'
+# more aggressive
+#    FOPTIM='-O3 -hfp3'
+else
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    FOPTIM='-O0 -hfp0'
+   # -fltconsistency
+  else                          #- development/check options:
+    FOPTIM='-O0 -hfp0'
+    FOPTIM="$FOPTIM -g -hfp0 -Rbc -rm -hmsgs -hnegmsgs"
+  fi
+fi
+
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+CFLAGS="-O0 $MCMODEL"
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
+
+# after "module load netcdf" NETCDF_DIR should be available
+NETCDF_ROOT=$NETCDF_DIR
+INCLUDEDIRS="${NETCDF_ROOT}/include"
+INCLUDES="-I${NETCDF_ROOT}/include"
+LIBS="-L${NETCDF_ROOT}/lib"
+
+MPI_INC_DIR=$MPICH_DIR/include
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    LIBS="$LIBS -lmpich"
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    #- used for parallel (MPI) DIVA
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+   #MPI_HEADER_FILES='mpif.h mpiof.h'
+fi
+
