@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.78 2015/01/07 13:27:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.79 2015/01/28 15:14:35 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -477,6 +477,8 @@ c
       CALL WRITE_0D_I (SEAICE_multDim,INDEX_NONE,'SEAICE_multDim    ='
      & , ' /* number of ice categories (1 or 7) */')
 #endif
+      CALL WRITE_1D_RL( SEAICE_PDF,nITD,INDEX_K, 'SEAICE_PDF        =',
+     &  ' /* sea-ice distribution (-) */')
       CALL WRITE_0D_I ( IMAX_TICE,         INDEX_NONE,
      & 'IMAX_TICE         =', ' /* iterations for ice surface temp */')
       CALL WRITE_0D_I ( postSolvTempIter,  INDEX_NONE,

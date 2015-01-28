@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.160 2015/01/07 13:27:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.161 2015/01/28 15:14:35 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -55,6 +55,7 @@ C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL chkFlag
       INTEGER iUnit
+      INTEGER l
 #ifdef ALLOW_SITRACER
       INTEGER iTracer
 #endif
@@ -62,6 +63,7 @@ C     iUnit      :: Work variable for IO unit number
       INTEGER locDate(4)
 #endif /* ALLOW_COST */
       INTEGER nRetired
+      _RL tmp
 
 C-    Old parameters (to be retired one day):
       _RL SEAICE_availHeatTaper
@@ -142,7 +144,7 @@ C--   SEAICE parameters
      & SEAICE_saltFrac, SEAICEstressFactor, SEAICE_availHeatTaper,
      & SEAICE_mcPheePiston, SEAICE_frazilFrac, SEAICE_mcPheeTaper,
      & SEAICE_mcPheeStepFunc, SEAICE_gamma_t, SEAICE_gamma_t_frz,
-     & SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
+     & SEAICE_availHeatFrac, SEAICE_availHeatFracFrz, SEAICE_PDF,
      & AreaFile, HeffFile, uIceFile, vIceFile, HsnowFile, HsaltFile,
      & SEAICEheatConsFix, SEAICE_multDim, SEAICE_useMultDimSnow,
      & SEAICE_area_reg, SEAICE_hice_reg,
@@ -399,8 +401,15 @@ C  and SEAICE_multDim is now a runtime parameter;
 C  in case SEAICE_multDim is given in data.seaice it needs to be overwritten
 C  after PARM01 was read (see below)
       SEAICE_multDim     = nITD
+      SEAICE_PDF(1)     = 1. _d 0
+      DO l=2,nITD
+       SEAICE_PDF(l)     = 0. _d 0
+      ENDDO   
 #else
       SEAICE_multDim     = 1
+      DO l=1,nITD
+       SEAICE_PDF(l)     = UNSET_RL
+      ENDDO   
 #endif
       SEAICE_useMultDimSnow = .FALSE.
 C     default to be set later (ocean-seaice turbulent flux coeff):
@@ -603,6 +612,16 @@ C nITD is set in SEAICE_SIZE.h
      &                    SQUEEZE_RIGHT , myThid)
 
 C--   Set default values (if not specified in data.seaice namelist)
+
+C--   If no PDF was prescribed use the default uniform pdf
+      tmp = SEAICE_multDim
+      DO l = 1, SEAICE_multDim
+       IF (SEAICE_PDF(l).EQ.UNSET_RL) SEAICE_PDF(l) = ONE/tmp
+      ENDDO
+      DO l = SEAICE_multDim+1, nITD
+       IF (SEAICE_PDF(l).EQ.UNSET_RL) SEAICE_PDF(l) = 0. _d 0
+      ENDDO
+
       IF (ICE2WATR.EQ.UNSET_RL) ICE2WATR = SEAICE_rhoIce*recip_rhoConst
       IF (SEAICE_drag_south       .EQ. UNSET_RL)
      &    SEAICE_drag_south       = SEAICE_drag

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.207 2014/10/20 03:20:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.208 2015/01/28 15:14:35 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -140,6 +140,8 @@ C     local value (=1/ice thickness)
 C     facilitate multi-category snow implementation
       _RL pFac, pFacSnow
 #endif
+C     additional factors accounting for a non-uniform sea-ice PDF
+      _RL denominator, recip_denominator, areaPDFfac
 
 C     temporary variables available for the various computations
       _RL tmpscal0, tmpscal1, tmpscal2, tmpscal3, tmpscal4
@@ -363,6 +365,19 @@ C conversion factors to go from Q (W/m2) to HEFF (ice meters)
 C conversion factors to go from precip (m/s) unit to HEFF (ice meters)
       convertPRECIP2HI=SEAICE_deltaTtherm*rhoConstFresh/SEAICE_rhoIce
       convertHI2PRECIP = ONE/convertPRECIP2HI
+C     compute parameters for thickness pdf (cheap enough to do it here
+C     and not in seaice_readparms and store in common block)
+      denominator = 0. _d 0
+      DO IT=1,SEAICE_multDim
+       denominator = denominator + IT * SEAICE_pdf(IT)
+      ENDDO
+      denominator = (2.0 _d 0 * denominator) - 1.0 _d 0
+      recip_denominator = 1. _d 0 / denominator
+#ifdef SEAICE_ITD
+      areaPDFfac  = 1. _d 0
+#else
+      areaPDFfac  = denominator * recip_multDim
+#endif /* SEAICE_ITD */
 #ifdef SEAICE_ITD
 C constants for lateral melt parameterization:
 C following Steele (1992), Equ. 2
@@ -781,9 +796,9 @@ C--   Start loop over multi-categories
          ENDDO
 #ifndef SEAICE_ITD
 C     for SEAICE_ITD heffActualMult and latentHeatFluxMaxMult have been
-C     are calculated above (instead of heffActual and latentHeatFluxMax)
+C     calculated above (instead of heffActual and latentHeatFluxMax)
 C--   assume homogeneous distribution between 0 and 2 x heffActual
-         pFac = (2.0 _d 0*IT - 1.0 _d 0)*recip_multDim
+         pFac = (2.0 _d 0*IT - 1.0 _d 0)*recip_denominator
          pFacSnow = 1. _d 0
          IF ( SEAICE_useMultDimSnow ) pFacSnow=pFac
          DO J=1,sNy
@@ -859,7 +874,7 @@ CML           tIce(I,J,bi,bj) = tIce(I,J,bi,bj)
 CML     &          +  ticeOutMult(I,J,IT)*areaFracFactor(I,J,IT)
 CML#else
 CML           tIce(I,J,bi,bj) = tIce(I,J,bi,bj)
-CML     &          +  ticeOutMult(I,J,IT)*recip_multDim
+CML     &          +  ticeOutMult(I,J,IT)*SEAICE_PDF(IT)
 CML#endif
            TICES(I,J,IT,bi,bj) = ticeOutMult(I,J,IT)
 C     average over categories
@@ -874,11 +889,11 @@ C     (fluxes are per unit (ice surface) area and are thus area weighted)
      &          + a_FWbySublimMult(I,J,IT)*areaFracFactor(I,J,IT)
 #else
            a_QbyATM_cover   (I,J) = a_QbyATM_cover(I,J)
-     &          + a_QbyATMmult_cover(I,J,IT)*recip_multDim
+     &          + a_QbyATMmult_cover(I,J,IT)*SEAICE_PDF(IT)
            a_QSWbyATM_cover (I,J) = a_QSWbyATM_cover(I,J)
-     &          + a_QSWbyATMmult_cover(I,J,IT)*recip_multDim
+     &          + a_QSWbyATMmult_cover(I,J,IT)*SEAICE_PDF(IT)
            a_FWbySublim     (I,J) = a_FWbySublim(I,J)
-     &          + a_FWbySublimMult(I,J,IT)*recip_multDim
+     &          + a_FWbySublimMult(I,J,IT)*SEAICE_PDF(IT)
 #endif
           ENDDO
          ENDDO
@@ -1827,7 +1842,8 @@ C apply tendency
      &        (HSNOW(i,j,bi,bj).GT.0. _d 0) ) THEN
            AREA(I,J,bi,bj)=MAX(0. _d 0,
      &      MIN( SEAICE_area_max, AREA(I,J,bi,bj)
-     &       + recip_HO*tmpscal4+HALF*recip_HH*tmpscal3 ))
+     &       + recip_HO*tmpscal4+HALF*recip_HH*tmpscal3
+     &       * areaPDFfac ))
           ELSE
            AREA(I,J,bi,bj)=0. _d 0
           ENDIF
@@ -1838,10 +1854,13 @@ C apply tendency
           d_AREAbyATM(I,J)=
      &       recip_HO*MAX(ZERO,d_HEFFbyATMonOCN_open(I,J))
      &       +HALF*recip_HH*MIN(0. _d 0,d_HEFFbyATMonOCN_open(I,J))
+     &       *areaPDFfac
           d_AREAbyICE(I,J)=
      &        HALF*recip_HH*MIN(0. _d 0,d_HEFFbyATMonOCN_cover(I,J))
+     &       *areaPDFfac
           d_AREAbyOCN(I,J)=
      &        HALF*recip_HH*MIN( 0. _d 0,d_HEFFbyOCNonICE(I,J) )
+     &       *areaPDFfac
 #endif /* ALLOW_DIAGNOSTICS */
          ENDDO
         ENDDO

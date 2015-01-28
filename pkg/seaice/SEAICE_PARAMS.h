@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.121 2015/01/07 13:27:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.122 2015/01/28 15:14:35 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -365,6 +365,7 @@ C                           anomalies (relative to the local freezing point)
 C                           may contribute as frazil over one time step.
 C     SEAICE_tempFrz0    :: sea water freezing point is
 C     SEAICE_dTempFrz_dS :: tempFrz = SEAICE_tempFrz0 + salt*SEAICE_dTempFrz_dS
+C     SEAICE_PDF         :: prescribed sea-ice distribution within grid box 
 C     SEAICEstressFactor :: factor by which ice affects wind stress (default=1)
 C     LSR_ERROR          :: sets accuracy of LSR solver
 C     DIFF1              :: parameter used in advect.F
@@ -423,6 +424,7 @@ C
       _RL SEAICE_frazilFrac, SEAICE_availHeatFrac
       _RL facOpenGrow, facOpenMelt
       _RL SEAICE_tempFrz0, SEAICE_dTempFrz_dS
+      _RL SEAICE_PDF(nITD)
       _RL OCEAN_drag, LSR_ERROR, DIFF1
       _RL JFNKgamma_nonlin, JFNKres_t, JFNKres_tFac
       _RL JFNKgamma_lin_min, JFNKgamma_lin_max, SEAICE_JFNKepsilon
@@ -468,7 +470,7 @@ C
      &    SEAICE_mcPheeTaper, SEAICE_mcPheePiston,
      &    SEAICE_frazilFrac, SEAICE_availHeatFrac,
      &    facOpenGrow, facOpenMelt,
-     &    SEAICE_tempFrz0, SEAICE_dTempFrz_dS,
+     &    SEAICE_tempFrz0, SEAICE_dTempFrz_dS, SEAICE_PDF,
      &    OCEAN_drag, LSR_ERROR, DIFF1,
      &    JFNKgamma_nonlin, JFNKres_t, JFNKres_tFac,
      &    JFNKgamma_lin_min, JFNKgamma_lin_max, SEAICE_JFNKepsilon,
