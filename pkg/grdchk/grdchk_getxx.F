@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.39 2014/10/21 13:13:21 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.40 2015/01/28 12:33:35 heimbach Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -80,6 +80,7 @@ c     == local variables ==
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
       _RL tmpfldyz (1-oly:sny+oly,nr,nsx,nsy)
 #endif
+      _RL loctmp2d (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       character*(80) fname
 
@@ -743,16 +744,16 @@ ce      --> this index does not exist yet.
 
       else
 
-         call active_read_xy( fname, tmpfld2d, icvrec,
+         call active_read_xy( fname, loctmp2d, icvrec,
      &                        doglobalread, ladinit, optimcycle,
      &                        mythid, dummy)
          if ( myProcId .EQ. grdchkwhichproc )
-     &   xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
+     &   xx_comp_ref = loctmp2d( itilepos,jtilepos,itile,jtile )
          if ( myProcId .EQ. grdchkwhichproc )
      &   xx_comp_pert = xx_comp_ref + localEps
          if ( myProcId .EQ. grdchkwhichproc )
-     &   tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
-         call active_write_xy( fname, tmpfld2d, icvrec,
+     &   loctmp2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
+         call active_write_xy( fname, loctmp2d, icvrec,
      &                         optimcycle,
      &                         mythid, dummy)
 

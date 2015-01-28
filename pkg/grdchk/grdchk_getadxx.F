@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.40 2014/10/21 13:13:21 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.41 2015/01/28 12:33:35 heimbach Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -74,6 +74,7 @@ c     == local variables ==
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
       _RL tmpfldyz (1-oly:sny+oly,nr,nsx,nsy)
 #endif
+      _RL loctmp2d (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       character*(80) fname
 
@@ -528,11 +529,11 @@ c--   == end of interface ==
 
       else
 
-         call active_read_xy( fname, tmpfld2d, icvrec,
+         call active_read_xy( fname, loctmp2d, icvrec,
      &                        doglobalread, ladinit, optimcycle,
      &                        mythid, dummy)
          if ( myProcId .EQ. grdchkwhichproc )
-     &   xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
+     &   xx_comp = loctmp2d( itilepos,jtilepos,itile,jtile )
 
       endif
       endif
