@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.74 2014/10/16 20:04:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.75 2015/01/28 12:31:33 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -319,7 +319,7 @@ C
 # endif /* ECCO_CTRL_DEPRECATED */
 
 # ifdef ALLOW_GENARR2D_CONTROL
-     &      , xx_genarr2d
+cph     &      , xx_genarr2d
 # endif
 # ifdef ALLOW_GENARR3D_CONTROL
      &      , xx_genarr3d
@@ -348,8 +348,8 @@ C
       _RL xx_place_holder
 
 # ifdef ALLOW_GENARR2D_CONTROL
-      _RL xx_genarr2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,
-     &                maxCtrlArr2D)
+cph      _RL xx_genarr2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,
+cph     &                maxCtrlArr2D)
 # endif
 # ifdef ALLOW_GENARR3D_CONTROL
       _RL xx_genarr3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy,
