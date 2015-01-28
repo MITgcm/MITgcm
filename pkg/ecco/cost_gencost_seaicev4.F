@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.9 2014/10/18 14:17:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.10 2015/01/28 15:03:43 mlosch Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -30,6 +30,7 @@ c     == global variables ==
 # include "ecco.h"
 #endif
 #ifdef ALLOW_SEAICE
+# include "SEAICE_SIZE.h"
 # include "SEAICE_COST.h"
 # include "SEAICE_PARAMS.h"
 #endif
