@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint64f
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint65i
 (PID.TID 0000.0001) // Build user:        mlosch
 (PID.TID 0000.0001) // Build host:        baudelaire
-(PID.TID 0000.0001) // Build date:        Wed May  1 05:12:06 EDT 2013
+(PID.TID 0000.0001) // Build date:        Wed Jan 28 09:55:36 EST 2015
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -271,6 +271,30 @@
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  PACKAGES_BOOT: finished reading data.pkg
+(PID.TID 0000.0001)  PACKAGES_BOOT: On/Off package Summary
+ --------  pkgs with a standard "usePKG" On/Off switch in "data.pkg":  --------
+ pkg/kpp                  compiled   and   used ( useKPP                   = T )
+ pkg/gmredi               compiled   and   used ( useGMRedi                = T )
+ pkg/cal                  compiled   and   used ( useCAL                   = T )
+ pkg/exf                  compiled   and   used ( useEXF                   = T )
+ pkg/sbo                  compiled but not used ( useSBO                   = F )
+ pkg/seaice               compiled   and   used ( useSEAICE                = T )
+ pkg/salt_plume           compiled but not used ( useSALT_PLUME            = F )
+ pkg/diagnostics          compiled   and   used ( useDiagnostics           = T )
+ pkg/mnc                  compiled   and   used ( useMNC                   = T )
+ -------- pkgs without standard "usePKG" On/Off switch in "data.pkg":  --------
+ pkg/generic_advdiff      compiled   and   used ( useGAD                   = T )
+ pkg/mom_common           compiled   and   used ( momStepping              = T )
+ pkg/mom_vecinv           compiled but not used ( +vectorInvariantMomentum = F )
+ pkg/mom_fluxform         compiled   and   used ( & not vectorInvariantMom = T )
+ pkg/cd_code              compiled   and   used ( useCDscheme              = T )
+ pkg/monitor              compiled   and   used ( monitorFreq > 0.         = T )
+ pkg/timeave              compiled   and   used ( taveFreq > 0.            = T )
+ pkg/debug                compiled but not used ( debugMode                = F )
+ pkg/rw                   compiled   and   used
+ pkg/mdsio                compiled   and   used
+(PID.TID 0000.0001)  PACKAGES_BOOT: End of package Summary
+(PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MNC_READPARMS: opening file 'data.mnc'
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.mnc
 (PID.TID 0000.0001) // =======================================================
@@ -429,18 +453,6 @@
 (PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_02
 (PID.TID 0000.0001) EXF_READPARMS: reading EXF_NML_03
 (PID.TID 0000.0001) EXF_READPARMS: finished reading data.exf
-(PID.TID 0000.0001)  GM_READPARMS: opening data.gmredi
-(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.gmredi
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Parameter file "data.gmredi"
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) ># GMREDI parameters
-(PID.TID 0000.0001) > &GM_PARM01
-(PID.TID 0000.0001) >  GM_background_K = 571.0
-(PID.TID 0000.0001) >  GM_taper_scheme = 'ldd97'
-(PID.TID 0000.0001) > /
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)  GM_READPARMS: finished reading data.gmredi
 (PID.TID 0000.0001)  KPP_INIT: opening data.kpp
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.kpp
 (PID.TID 0000.0001) // =======================================================
@@ -454,6 +466,18 @@
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  KPP_INIT: finished reading data.kpp
+(PID.TID 0000.0001)  GM_READPARMS: opening data.gmredi
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.gmredi
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.gmredi"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) ># GMREDI parameters
+(PID.TID 0000.0001) > &GM_PARM01
+(PID.TID 0000.0001) >  GM_background_K = 571.0
+(PID.TID 0000.0001) >  GM_taper_scheme = 'ldd97'
+(PID.TID 0000.0001) > /
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  GM_READPARMS: finished reading data.gmredi
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  SEAICE_READPARMS: opening data.seaice
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.seaice
@@ -584,6 +608,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001)  diagCG_resTarget = /* residual target for diag_cg2d */
 (PID.TID 0000.0001)                 1.000000000000000E-12
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  diagCG_pcOffDFac = /* preconditioner off-diagonal factor */
+(PID.TID 0000.0001)                 9.611687812379854E-01
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) -----------------------------------------------------
 (PID.TID 0000.0001)  DIAGNOSTICS_READPARMS: active diagnostics summary:
@@ -813,7 +840,7 @@
 (PID.TID 0000.0001) modelend  = /* End time of the model integration [s] */
 (PID.TID 0000.0001)                 3.600000000000000E+04
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) modelstep = /* Time interval for a model forward step [s] */
+(PID.TID 0000.0001) modelStep = /* Time interval for a model forward step [s] */
 (PID.TID 0000.0001)                 3.600000000000000E+03
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) usingGregorianCalendar= /* Calendar Type: Gregorian Calendar */
@@ -822,19 +849,22 @@
 (PID.TID 0000.0001) usingJulianCalendar = /* Calendar Type: Julian Calendar */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) usingNoLeapYearCal  = /* Calendar Type: without Leap Year */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) usingModelCalendar  = /* Calendar Type: Model Calendar */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) modelstartdate YYYYMMDD = /* Model start date YYYY-MM-DD */
+(PID.TID 0000.0001) modelStartDate YYYYMMDD = /* Model start date YYYY-MM-DD */
 (PID.TID 0000.0001)                19790101
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)   modelstartdate HHMMSS = /* Model start date HH-MM-SS  */
+(PID.TID 0000.0001)   modelStartDate HHMMSS = /* Model start date HH-MM-SS  */
 (PID.TID 0000.0001)                   10000
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) modelenddate   YYYYMMDD = /* Model end date YYYY-MM-DD */
+(PID.TID 0000.0001) modelEndDate   YYYYMMDD = /* Model end date YYYY-MM-DD */
 (PID.TID 0000.0001)                19790101
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001)   modelenddate   HHMMSS = /* Model end date HH-MM-SS  */
+(PID.TID 0000.0001)   modelEndDate   HHMMSS = /* Model end date HH-MM-SS  */
 (PID.TID 0000.0001)                  100000
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) intyears = /* Number of calendar years affected by the integration */
@@ -846,13 +876,13 @@
 (PID.TID 0000.0001) intdays = /* Number of calendar days affected by the integration */
 (PID.TID 0000.0001)                       1
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) modeliter0 = /* Base timestep number  */
+(PID.TID 0000.0001) modelIter0 = /* Base timestep number  */
 (PID.TID 0000.0001)                       1
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) modeliterend = /* Final timestep number  */
+(PID.TID 0000.0001) modelIterEnd = /* Final timestep number  */
 (PID.TID 0000.0001)                      10
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) modelintsteps= /* Number of model timesteps  */
+(PID.TID 0000.0001) modelIntSteps= /* Number of model timesteps  */
 (PID.TID 0000.0001)                       9
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) 
@@ -918,13 +948,13 @@
 (PID.TID 0000.0001) twoDigitYear = /* use 2-digit year extension */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) exf_verbose = /* print more messages to STDOUT */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) useExfCheckRange = /* check for fields range */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) exf_monFreq = /* EXF monitor frequency [ s ] */
+(PID.TID 0000.0001) exf_debugLev = /* select EXF-debug printing level */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) exf_monFreq  = /* EXF monitor frequency [ s ] */
 (PID.TID 0000.0001)                 1.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) repeatPeriod = /* period for cycling forcing dataset [ s ] */
@@ -1163,6 +1193,9 @@
 (PID.TID 0000.0001) SEAICE_deltaTevp  = /* EVP timestep */
 (PID.TID 0000.0001)                 1.234567000000000E+05
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEuseBDF2  = /* use backw. differencing for mom. eq. */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICErestoreUnderIce  = /* restore T and S under ice */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
@@ -1174,6 +1207,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) model grid type   = /* type of sea ice model grid */
 (PID.TID 0000.0001)               'C-GRID'
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEuseStrImpCpl = /* use strongly implicit coupling */
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICEuseEVP      = /* use EVP solver rather than LSR */
 (PID.TID 0000.0001)                   F
@@ -1204,6 +1240,12 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICE_strength   = /* sea-ice strength Pstar */
 (PID.TID 0000.0001)                 2.750000000000000E+04
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_cStar      = /* sea-ice strength parameter cStar */
+(PID.TID 0000.0001)                 2.000000000000000E+01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_tensilFac  = /* sea-ice tensile strength factor */
+(PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICEpresH0   = /* sea-ice strength Heff threshold */
 (PID.TID 0000.0001)                 1.000000000000000E+00
@@ -1272,10 +1314,10 @@
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICE_OLx = /* overlap for LSR/preconditioner */
-(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICE_OLy = /* overlap for LSR/preconditioner */
-(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)    Seaice advection diffusion config,   > START <
@@ -1398,6 +1440,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICE_multDim    = /* number of ice categories (1 or 7) */
 (PID.TID 0000.0001)                       7
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_PDF        = /* sea-ice distribution (-) */
+(PID.TID 0000.0001)     7 @  1.428571428571428E-01              /* K =  1:  7 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) IMAX_TICE         = /* iterations for ice surface temp */
 (PID.TID 0000.0001)                      10
@@ -1609,30 +1654,30 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) ------------------------------------------------------------
 (PID.TID 0000.0001) DIAGNOSTICS_SET_LEVELS: done
-(PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   315
+(PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   318
 (PID.TID 0000.0001)  write list of available Diagnostics to file: available_diagnostics.log
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   191 EXFtaux
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   192 EXFtauy
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   190 EXFqnet
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   201 EXFempmr
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   185 EXFhl
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   184 EXFhs
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   187 EXFswnet
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   186 EXFlwnet
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   193 EXFuwind
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   194 EXFvwind
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   196 EXFatemp
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   244 SIarea
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   247 SIheff
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   249 SIhsnow
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   257 SIuice
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   258 SIvice
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   193 EXFtaux
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   194 EXFtauy
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   192 EXFqnet
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   203 EXFempmr
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   187 EXFhl
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   186 EXFhs
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   189 EXFswnet
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   188 EXFlwnet
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   195 EXFuwind
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   196 EXFvwind
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   198 EXFatemp
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   246 SIarea
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   249 SIheff
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   251 SIhsnow
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   259 SIuice
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   260 SIvice
 (PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #    75 MXLDEPTH
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   230 KPPhbl
-(PID.TID 0000.0001) SETDIAG: Allocate 23 x  1 Levels for Diagnostic #   229 KPPghatK
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   211 KPPhbl
+(PID.TID 0000.0001) SETDIAG: Allocate 23 x  1 Levels for Diagnostic #   210 KPPghatK
 (PID.TID 0000.0001)   space allocated for all diagnostics:      41 levels
-(PID.TID 0000.0001)   set mate pointer for diag #   257  SIuice   , Parms: UU      M1 , mate:   258
-(PID.TID 0000.0001)   set mate pointer for diag #   258  SIvice   , Parms: VV      M1 , mate:   257
+(PID.TID 0000.0001)   set mate pointer for diag #   259  SIuice   , Parms: UU      M1 , mate:   260
+(PID.TID 0000.0001)   set mate pointer for diag #   260  SIvice   , Parms: VV      M1 , mate:   259
 (PID.TID 0000.0001) DIAGNOSTICS_SET_POINTERS: Set levels for Outp.Stream: diagsEXF
 (PID.TID 0000.0001)  Levels:       1.
 (PID.TID 0000.0001) DIAGNOSTICS_SET_POINTERS: Set levels for Outp.Stream: diagsSI
@@ -1731,49 +1776,25 @@
 (PID.TID 0000.0001)                 3.470000000000000E+01,      /* K = 22 */
 (PID.TID 0000.0001)                 3.469000000000000E+01       /* K = 23 */
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscAh  =   /* Lateral eddy viscosity ( m^2/s ) */
+(PID.TID 0000.0001) useStrainTensionVisc= /* Use StrainTension Form of Viscous Operator */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useVariableVisc = /* Use variable horizontal viscosity */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useHarmonicVisc = /* Use harmonic horizontal viscosity */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useBiharmonicVisc= /* Use biharmonic horiz.  viscosity */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useSmag3D = /* Use isotropic 3-D Smagorinsky viscosity */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscAh  =   /* Lateral harmonic viscosity ( m^2/s ) */
 (PID.TID 0000.0001)                 5.000000000000000E+04
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscAhMax = /* Maximum lateral eddy viscosity ( m^2/s ) */
-(PID.TID 0000.0001)                 1.000000000000000E+21
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscAhGrid = /* Grid dependent lateral eddy viscosity ( non-dim. ) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useFullLeith = /* Use Full Form of Leith Viscosity on/off flag*/
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useStrainTensionVisc= /* Use StrainTension Form of Viscous Operator flag*/
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useAreaViscLength = /* Use area for visc length instead of geom. mean*/
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscC2leith = /* Leith harmonic visc. factor (on grad(vort),non-dim.) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscC2leithD = /* Leith harmonic viscosity factor (on grad(div),non-dim.)*/
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscC2smag = /* Smagorinsky harmonic viscosity factor (non-dim.) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) viscA4  =   /* Lateral biharmonic viscosity ( m^4/s ) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscA4Max = /* Maximum biharmonic viscosity ( m^2/s ) */
-(PID.TID 0000.0001)                 1.000000000000000E+21
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscA4Grid = /* Grid dependent biharmonic viscosity ( non-dim. ) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscC4leith = /* Leith biharm viscosity factor (on grad(vort), non-dim.)*/
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscC4leithD = /* Leith biharm viscosity factor (on grad(div), non-dim.) */
-(PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) viscC4Smag = /* Smagorinsky biharm viscosity factor (non-dim) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) no_slip_sides =  /* Viscous BCs: No-slip sides */
@@ -1788,11 +1809,17 @@
 (PID.TID 0000.0001) no_slip_bottom =  /* Viscous BCs: No-slip bottom */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) bottomVisc_pCell = /* Partial-cell in bottom Visc. BC */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) bottomDragLinear = /* linear bottom-drag coefficient ( m/s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) bottomDragQuadratic = /* quadratic bottom-drag coefficient (-) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) selectBotDragQuadr = /* select quadratic bottom drag options */
+(PID.TID 0000.0001)                      -1
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) diffKhT =   /* Laplacian diffusion of heat laterally ( m^2/s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
@@ -1838,6 +1865,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) eosType =  /* Type of Equation of State */
 (PID.TID 0000.0001)               'JMD95Z'
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) HeatCapacity_Cp =  /* Specific heat capacity ( J/kg/K ) */
+(PID.TID 0000.0001)                 3.986000000000000E+03
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) celsius2K = /* 0 degree Celsius converted to Kelvin ( K ) */
 (PID.TID 0000.0001)                 2.731600000000000E+02
@@ -1900,7 +1930,7 @@
 (PID.TID 0000.0001)                 1.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) hFacMinDr = /* minimum partial cell thickness ( m) */
-(PID.TID 0000.0001)                 1.000000000000000E+00
+(PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) exactConserv =  /* Exact Volume Conservation on/off flag*/
 (PID.TID 0000.0001)                   F
@@ -1980,6 +2010,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) implicitViscosity = /* Implicit viscosity on/off flag */
 (PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) implBottomFriction= /* Implicit bottom friction on/off flag */
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) metricTerms =  /* metric-Terms on/off flag */
 (PID.TID 0000.0001)                   T
@@ -2102,6 +2135,9 @@
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001)  useSingleCpuIO = /* only master MPI process does I/O */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  useSingleCpuInput = /* only master process reads input */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) /* debLev[*]  : level of debug & auxiliary message printing */
@@ -2321,7 +2357,8 @@
 (PID.TID 0000.0001)                 3.825000000000000E+02,      /* K = 15 */
 (PID.TID 0000.0001)                 4.325000000000000E+02,      /* K = 16 */
 (PID.TID 0000.0001)                 4.750000000000000E+02,      /* K = 17 */
-(PID.TID 0000.0001)     6 @  5.000000000000000E+02              /* K = 18: 23 */
+(PID.TID 0000.0001)     6 @  5.000000000000000E+02,             /* K = 18: 23 */
+(PID.TID 0000.0001)                 2.500000000000000E+02       /* K = 24 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) drF =   /* W spacing ( units of r ) */
 (PID.TID 0000.0001)     2 @  1.000000000000000E+01,             /* K =  1:  2 */
@@ -2797,28 +2834,28 @@ listId=    1 ; file name: diagsEXF
    11  |   11  |    -36000.000000     18000.000000 |   1
  levels:   1
  diag# | name   |   ipt  |  iMate | kLev|   count |   mate.C|           
-   191 |EXFtaux |      1 |      0 |   1 |       0 |
-   192 |EXFtauy |      2 |      0 |   1 |       0 |
-   190 |EXFqnet |      3 |      0 |   1 |       0 |
-   201 |EXFempmr|      4 |      0 |   1 |       0 |
-   185 |EXFhl   |      5 |      0 |   1 |       0 |
-   184 |EXFhs   |      6 |      0 |   1 |       0 |
-   187 |EXFswnet|      7 |      0 |   1 |       0 |
-   186 |EXFlwnet|      8 |      0 |   1 |       0 |
-   193 |EXFuwind|      9 |      0 |   1 |       0 |
-   194 |EXFvwind|     10 |      0 |   1 |       0 |
-   196 |EXFatemp|     11 |      0 |   1 |       0 |
+   193 |EXFtaux |      1 |      0 |   1 |       0 |
+   194 |EXFtauy |      2 |      0 |   1 |       0 |
+   192 |EXFqnet |      3 |      0 |   1 |       0 |
+   203 |EXFempmr|      4 |      0 |   1 |       0 |
+   187 |EXFhl   |      5 |      0 |   1 |       0 |
+   186 |EXFhs   |      6 |      0 |   1 |       0 |
+   189 |EXFswnet|      7 |      0 |   1 |       0 |
+   188 |EXFlwnet|      8 |      0 |   1 |       0 |
+   195 |EXFuwind|      9 |      0 |   1 |       0 |
+   196 |EXFvwind|     10 |      0 |   1 |       0 |
+   198 |EXFatemp|     11 |      0 |   1 |       0 |
 ------------------------------------------------------------------------
 listId=    2 ; file name: diagsSI
  nFlds, nActive,       freq     &     phase        , nLev               
     5  |    5  |     36000.000000         0.000000 |   1
  levels:   1
  diag# | name   |   ipt  |  iMate | kLev|   count |   mate.C|           
-   244 |SIarea  |     12 |      0 |   1 |       0 |
-   247 |SIheff  |     13 |      0 |   1 |       0 |
-   249 |SIhsnow |     14 |      0 |   1 |       0 |
-   257 |SIuice  |     15 |     16 |   1 |       0 |       0 |
-   258 |SIvice  |     16 |     15 |   1 |       0 |       0 |
+   246 |SIarea  |     12 |      0 |   1 |       0 |
+   249 |SIheff  |     13 |      0 |   1 |       0 |
+   251 |SIhsnow |     14 |      0 |   1 |       0 |
+   259 |SIuice  |     15 |     16 |   1 |       0 |       0 |
+   260 |SIvice  |     16 |     15 |   1 |       0 |       0 |
 ------------------------------------------------------------------------
 listId=    3 ; file name: diagsKPP
  nFlds, nActive,       freq     &     phase        , nLev               
@@ -2826,14 +2863,14 @@ listId=    3 ; file name: diagsKPP
  levels:   1
  diag# | name   |   ipt  |  iMate | kLev|   count |   mate.C|           
     75 |MXLDEPTH|     17 |      0 |   1 |       0 |
-   230 |KPPhbl  |     18 |      0 |   1 |       0 |
+   211 |KPPhbl  |     18 |      0 |   1 |       0 |
 ------------------------------------------------------------------------
 listId=    4 ; file name: KPPghatK
  nFlds, nActive,       freq     &     phase        , nLev               
     1  |    1  |     36000.000000         0.000000 |  23
  levels:   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21  22  23
  diag# | name   |   ipt  |  iMate | kLev|   count |   mate.C|           
-   229 |KPPghatK|     19 |      0 |  23 |       0 |
+   210 |KPPghatK|     19 |      0 |  23 |       0 |
 ------------------------------------------------------------------------
 Global & Regional Statistics diagnostics: Number of lists:     0
 ------------------------------------------------------------------------
@@ -2852,7 +2889,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) missingVal=  1.00000000000000E+00 ; nTimRec =   1 , timeList:
 (PID.TID 0000.0001)   3.153600000000E+07
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: field: "siTICES " missing in file: pickup_seaice.0000000001
-(PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "siTICE  ", #   1 in fldList, rec=   1
+(PID.TID 0000.0001) READ_MFLDS_LEV_RL: read field: "siTICE  ", #   1 in fldList, rec=   1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_seaice.0000000001.data
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "siAREA  ", #   2 in fldList, rec=   2
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: pickup_seaice.0000000001.data
@@ -3027,12 +3064,12 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_hflux_min                =   8.9568462713760E+01
 (PID.TID 0000.0001) %MON exf_hflux_mean               =   2.1892827358971E+02
 (PID.TID 0000.0001) %MON exf_hflux_sd                 =   1.3395859134631E+02
-(PID.TID 0000.0001) %MON exf_hflux_del2               =   5.3701004241913E+00
+(PID.TID 0000.0001) %MON exf_hflux_del2               =   1.3729921000727E+01
 (PID.TID 0000.0001) %MON exf_sflux_max                =   4.0715172856145E-08
 (PID.TID 0000.0001) %MON exf_sflux_min                =  -8.3161520051950E-08
 (PID.TID 0000.0001) %MON exf_sflux_mean               =  -1.5743230075191E-08
 (PID.TID 0000.0001) %MON exf_sflux_sd                 =   2.4386840924022E-08
-(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.0009113559248E-09
+(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.6765052839554E-09
 (PID.TID 0000.0001) %MON exf_uwind_max                =   6.4648819946852E+00
 (PID.TID 0000.0001) %MON exf_uwind_min                =  -6.8372648550513E+00
 (PID.TID 0000.0001) %MON exf_uwind_mean               =   2.7698802859475E+00
@@ -3072,7 +3109,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_swflux_min               =  -6.3991984364244E+01
 (PID.TID 0000.0001) %MON exf_swflux_mean              =  -2.6463755238823E+01
 (PID.TID 0000.0001) %MON exf_swflux_sd                =   1.9629736696482E+01
-(PID.TID 0000.0001) %MON exf_swflux_del2              =   8.9598199762134E-02
+(PID.TID 0000.0001) %MON exf_swflux_del2              =   7.7099997232451E-01
 (PID.TID 0000.0001) %MON exf_evap_max                 =   4.7038717969308E-08
 (PID.TID 0000.0001) %MON exf_evap_min                 =   5.5285953006985E-09
 (PID.TID 0000.0001) %MON exf_evap_mean                =   2.0646839623859E-08
@@ -3250,12 +3287,12 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_hflux_min                =   8.9570235434581E+01
 (PID.TID 0000.0001) %MON exf_hflux_mean               =   2.1899135913094E+02
 (PID.TID 0000.0001) %MON exf_hflux_sd                 =   1.3400925230350E+02
-(PID.TID 0000.0001) %MON exf_hflux_del2               =   5.3697448362043E+00
+(PID.TID 0000.0001) %MON exf_hflux_del2               =   1.3736178954718E+01
 (PID.TID 0000.0001) %MON exf_sflux_max                =   4.0722487313376E-08
 (PID.TID 0000.0001) %MON exf_sflux_min                =  -8.3167026113629E-08
 (PID.TID 0000.0001) %MON exf_sflux_mean               =  -1.5738114976035E-08
 (PID.TID 0000.0001) %MON exf_sflux_sd                 =   2.4390914662087E-08
-(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.0008985186343E-09
+(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.6767202122368E-09
 (PID.TID 0000.0001) %MON exf_uwind_max                =   6.4653894471340E+00
 (PID.TID 0000.0001) %MON exf_uwind_min                =  -6.8372916367536E+00
 (PID.TID 0000.0001) %MON exf_uwind_mean               =   2.7699878382919E+00
@@ -3295,7 +3332,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_swflux_min               =  -6.4010854714816E+01
 (PID.TID 0000.0001) %MON exf_swflux_mean              =  -2.6474287454698E+01
 (PID.TID 0000.0001) %MON exf_swflux_sd                =   1.9633572905820E+01
-(PID.TID 0000.0001) %MON exf_swflux_del2              =   8.9626632554875E-02
+(PID.TID 0000.0001) %MON exf_swflux_del2              =   7.7140179220378E-01
 (PID.TID 0000.0001) %MON exf_evap_max                 =   4.7045369715608E-08
 (PID.TID 0000.0001) %MON exf_evap_min                 =   5.5232716211609E-09
 (PID.TID 0000.0001) %MON exf_evap_mean                =   2.0651943878981E-08
@@ -3330,7 +3367,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  cg2d: Sum(rhs),rhsMax =  -7.21274345805156E-10  3.93307933434080E-01
 (PID.TID 0000.0001)      cg2d_init_res =   3.28831883113580E-03
 (PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      39
-(PID.TID 0000.0001)      cg2d_last_res =   5.26204761559959E-13
+(PID.TID 0000.0001)      cg2d_last_res =   5.26204761560234E-13
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3338,7 +3375,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON time_secondsf                =   1.0800000000000E+04
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   1.2129801648075E-01
 (PID.TID 0000.0001) %MON dynstat_eta_min              =  -1.2309831329385E-01
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4116257639765E-12
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4116261922900E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   5.5202962717740E-02
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.4468274843840E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   2.9653162988547E-02
@@ -3353,7 +3390,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.5608759331875E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.0367141966585E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.3007146694839E-05
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.1121752715801E-22
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.2357503017557E-22
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.9882744746219E-06
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.1987947418079E-08
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.2478805256431E+01
@@ -3406,7 +3443,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON vort_p_mean                  =   1.7734843608142E-04
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.1688600005462E-04
 (PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -5.6228011657845E-08
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -8.8693981425700E-11
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -8.8693981425569E-11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3472,12 +3509,12 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_hflux_min                =   8.9564436754502E+01
 (PID.TID 0000.0001) %MON exf_hflux_mean               =   2.1905075741898E+02
 (PID.TID 0000.0001) %MON exf_hflux_sd                 =   1.3408090684069E+02
-(PID.TID 0000.0001) %MON exf_hflux_del2               =   5.3701686743761E+00
+(PID.TID 0000.0001) %MON exf_hflux_del2               =   1.3741442129487E+01
 (PID.TID 0000.0001) %MON exf_sflux_max                =   4.0729387481282E-08
 (PID.TID 0000.0001) %MON exf_sflux_min                =  -8.3172895660368E-08
 (PID.TID 0000.0001) %MON exf_sflux_mean               =  -1.5733619920190E-08
 (PID.TID 0000.0001) %MON exf_sflux_sd                 =   2.4397098912153E-08
-(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.0009290027126E-09
+(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.6769609213855E-09
 (PID.TID 0000.0001) %MON exf_uwind_max                =   6.4658968995829E+00
 (PID.TID 0000.0001) %MON exf_uwind_min                =  -6.8373184184559E+00
 (PID.TID 0000.0001) %MON exf_uwind_mean               =   2.7700953906363E+00
@@ -3517,7 +3554,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_swflux_min               =  -6.4029725065388E+01
 (PID.TID 0000.0001) %MON exf_swflux_mean              =  -2.6484819670573E+01
 (PID.TID 0000.0001) %MON exf_swflux_sd                =   1.9637409707136E+01
-(PID.TID 0000.0001) %MON exf_swflux_del2              =   8.9655141867092E-02
+(PID.TID 0000.0001) %MON exf_swflux_del2              =   7.7180369708849E-01
 (PID.TID 0000.0001) %MON exf_evap_max                 =   4.7051607172584E-08
 (PID.TID 0000.0001) %MON exf_evap_min                 =   5.5179293271605E-09
 (PID.TID 0000.0001) %MON exf_evap_mean                =   2.0656428090792E-08
@@ -3549,10 +3586,10 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  SEAICE_LSR: Residual FrDrift U_fd,V_fd=  1.30126297E+01  4.66303144E+00
  SEAICE_LSR (ipass=   2) iters,dU,Resid=    10  7.50850926E-05  1.46906042E-04
  SEAICE_LSR (ipass=   2) iters,dV,Resid=     8  4.46536351E-05  3.29208539E-05
- cg2d: Sum(rhs),rhsMax =  -7.21289694638472E-10  3.93278872764366E-01
-(PID.TID 0000.0001)      cg2d_init_res =   4.42710474295939E-03
+ cg2d: Sum(rhs),rhsMax =  -7.21289722394047E-10  3.93278872764366E-01
+(PID.TID 0000.0001)      cg2d_init_res =   4.42710474295935E-03
 (PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      38
-(PID.TID 0000.0001)      cg2d_last_res =   8.36464016695264E-13
+(PID.TID 0000.0001)      cg2d_last_res =   8.36464016693759E-13
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3560,12 +3597,12 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON time_secondsf                =   1.4400000000000E+04
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   1.1990594616807E-01
 (PID.TID 0000.0001) %MON dynstat_eta_min              =  -1.2314925270485E-01
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4118480586866E-12
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4118489153136E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   5.5131528114198E-02
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.4404286613097E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   2.9721331005263E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -2.8316219436519E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   6.8734148893405E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   6.8734148893404E-05
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   2.7893759097910E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   1.1918196952542E-04
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   2.8444065844430E-02
@@ -3575,7 +3612,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.5505084137903E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.0360043880931E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.3004222433090E-05
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -9.8860024140455E-23
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.2357503017557E-23
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.9860263725194E-06
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.1671982789191E-08
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.2478707598210E+01
@@ -3627,8 +3664,8 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON vort_a_sd                    =   8.8116902319079E-06
 (PID.TID 0000.0001) %MON vort_p_mean                  =   1.7734843606550E-04
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.1688602047237E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -6.1023011737735E-08
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   3.3705121829279E-09
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -6.1023011737733E-08
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   3.3705121829307E-09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3694,12 +3731,12 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_hflux_min                =   8.9559385123744E+01
 (PID.TID 0000.0001) %MON exf_hflux_mean               =   2.1911022137062E+02
 (PID.TID 0000.0001) %MON exf_hflux_sd                 =   1.3414301592769E+02
-(PID.TID 0000.0001) %MON exf_hflux_del2               =   5.3718273746388E+00
+(PID.TID 0000.0001) %MON exf_hflux_del2               =   1.3745441419029E+01
 (PID.TID 0000.0001) %MON exf_sflux_max                =   4.0735684046718E-08
 (PID.TID 0000.0001) %MON exf_sflux_min                =  -8.3178751229179E-08
 (PID.TID 0000.0001) %MON exf_sflux_mean               =  -1.5729153900391E-08
 (PID.TID 0000.0001) %MON exf_sflux_sd                 =   2.4402788170758E-08
-(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.0011128116417E-09
+(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.6773123977655E-09
 (PID.TID 0000.0001) %MON exf_uwind_max                =   6.4664043520318E+00
 (PID.TID 0000.0001) %MON exf_uwind_min                =  -6.8373452001582E+00
 (PID.TID 0000.0001) %MON exf_uwind_mean               =   2.7702029429808E+00
@@ -3739,7 +3776,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_swflux_min               =  -6.4048595415960E+01
 (PID.TID 0000.0001) %MON exf_swflux_mean              =  -2.6495351886448E+01
 (PID.TID 0000.0001) %MON exf_swflux_sd                =   1.9641247100083E+01
-(PID.TID 0000.0001) %MON exf_swflux_del2              =   8.9683727625812E-02
+(PID.TID 0000.0001) %MON exf_swflux_del2              =   7.7220568684593E-01
 (PID.TID 0000.0001) %MON exf_evap_max                 =   4.7057241027089E-08
 (PID.TID 0000.0001) %MON exf_evap_min                 =   5.5125734251880E-09
 (PID.TID 0000.0001) %MON exf_evap_mean                =   2.0660883266556E-08
@@ -3771,10 +3808,10 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  SEAICE_LSR: Residual FrDrift U_fd,V_fd=  1.40257738E+01  4.89734775E+00
  SEAICE_LSR (ipass=   2) iters,dU,Resid=    10  9.71225480E-05  9.70911997E-05
  SEAICE_LSR (ipass=   2) iters,dV,Resid=     6  6.74166015E-05  4.63307965E-05
- cg2d: Sum(rhs),rhsMax =  -7.21405254977547E-10  3.93230287268329E-01
-(PID.TID 0000.0001)      cg2d_init_res =   5.05698369159809E-03
+ cg2d: Sum(rhs),rhsMax =  -7.21405560288879E-10  3.93230287268328E-01
+(PID.TID 0000.0001)      cg2d_init_res =   5.05698369159810E-03
 (PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      37
-(PID.TID 0000.0001)      cg2d_last_res =   8.49231757797005E-13
+(PID.TID 0000.0001)      cg2d_last_res =   8.49231757792257E-13
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3782,22 +3819,22 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON time_secondsf                =   1.8000000000000E+04
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   1.1796386161062E-01
 (PID.TID 0000.0001) %MON dynstat_eta_min              =  -1.2315645192425E-01
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4117118549914E-12
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4117105700509E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   5.5035508288164E-02
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.4319603999607E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   2.9775081127069E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -2.4595083110427E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   6.9402928743586E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   6.9402928743585E-05
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   2.7728060100168E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   1.1837894227316E-04
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   2.7846615506270E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -5.7132280983433E-02
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   2.7568230018829E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   2.7568230018831E-05
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   4.1746027306402E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.5440133436783E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.0357009341408E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.2984470503761E-05
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -6.1787515087784E-23
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   8.6502521122898E-23
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.9837203274118E-06
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.1254867476971E-08
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.2478623466719E+01
@@ -3849,8 +3886,8 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON vort_a_sd                    =   8.8116906343565E-06
 (PID.TID 0000.0001) %MON vort_p_mean                  =   1.7734843604729E-04
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.1688603943969E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -5.4207946856779E-08
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   6.6889562699226E-09
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -5.4207946856790E-08
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   6.6889562699266E-09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3916,12 +3953,12 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_hflux_min                =   8.9553743315291E+01
 (PID.TID 0000.0001) %MON exf_hflux_mean               =   2.1915013492109E+02
 (PID.TID 0000.0001) %MON exf_hflux_sd                 =   1.3419992766439E+02
-(PID.TID 0000.0001) %MON exf_hflux_del2               =   5.3731504412419E+00
+(PID.TID 0000.0001) %MON exf_hflux_del2               =   1.3752329444206E+01
 (PID.TID 0000.0001) %MON exf_sflux_max                =   4.0741644744175E-08
 (PID.TID 0000.0001) %MON exf_sflux_min                =  -8.3184509911258E-08
 (PID.TID 0000.0001) %MON exf_sflux_mean               =  -1.5727238425773E-08
 (PID.TID 0000.0001) %MON exf_sflux_sd                 =   2.4407761965006E-08
-(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.0011530631066E-09
+(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.6776908655454E-09
 (PID.TID 0000.0001) %MON exf_uwind_max                =   6.4669118044806E+00
 (PID.TID 0000.0001) %MON exf_uwind_min                =  -6.8373719818605E+00
 (PID.TID 0000.0001) %MON exf_uwind_mean               =   2.7703104953252E+00
@@ -3961,7 +3998,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_swflux_min               =  -6.4067465766532E+01
 (PID.TID 0000.0001) %MON exf_swflux_mean              =  -2.6505884102323E+01
 (PID.TID 0000.0001) %MON exf_swflux_sd                =   1.9645085084315E+01
-(PID.TID 0000.0001) %MON exf_swflux_del2              =   8.9712389757958E-02
+(PID.TID 0000.0001) %MON exf_swflux_del2              =   7.7260776134360E-01
 (PID.TID 0000.0001) %MON exf_evap_max                 =   4.7062539013616E-08
 (PID.TID 0000.0001) %MON exf_evap_min                 =   5.5071162875678E-09
 (PID.TID 0000.0001) %MON exf_evap_mean                =   2.0662787897141E-08
@@ -3993,10 +4030,10 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  SEAICE_LSR: Residual FrDrift U_fd,V_fd=  1.45544008E+01  5.02654370E+00
  SEAICE_LSR (ipass=   2) iters,dU,Resid=    10  9.61844435E-05  7.83078825E-05
  SEAICE_LSR (ipass=   2) iters,dV,Resid=     4  8.47688072E-05  5.30546702E-05
- cg2d: Sum(rhs),rhsMax =  -7.21528073399647E-10  3.93155413669789E-01
-(PID.TID 0000.0001)      cg2d_init_res =   4.86265579755219E-03
+ cg2d: Sum(rhs),rhsMax =  -7.21526643987502E-10  3.93155413669789E-01
+(PID.TID 0000.0001)      cg2d_init_res =   4.86265579755194E-03
 (PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      39
-(PID.TID 0000.0001)      cg2d_last_res =   5.45121443181526E-13
+(PID.TID 0000.0001)      cg2d_last_res =   5.45121443195470E-13
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4004,12 +4041,12 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON time_secondsf                =   2.1600000000000E+04
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   1.1601593134378E-01
 (PID.TID 0000.0001) %MON dynstat_eta_min              =  -1.2314207170538E-01
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4115923555230E-12
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4115992085391E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   5.4941104635104E-02
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.4240273612275E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   2.9807490617869E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -2.1212794681559E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   6.9781494351427E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   6.9781494351428E-05
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   2.7599914268886E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   1.1776017347318E-04
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   2.7437450541854E-02
@@ -4019,7 +4056,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.5368958410678E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.0357312430987E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.2951207598290E-05
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -7.4145018105341E-23
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.3593253319313E-22
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.9817191014034E-06
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.0899954799638E-08
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.2478520336603E+01
@@ -4059,7 +4096,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_fv_del2              =   4.4412600150160E-04
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   7.5637759516949E-04
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   9.1060782533240E-04
-(PID.TID 0000.0001) %MON advcfl_wvel_max              =   8.2132916164280E-04
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   8.2132916164279E-04
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.0205548992011E-03
 (PID.TID 0000.0001) %MON pe_b_mean                    =   9.9510203752303E-06
 (PID.TID 0000.0001) %MON ke_max                       =   1.4502242716630E-03
@@ -4071,8 +4108,8 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON vort_a_sd                    =   8.8116910299844E-06
 (PID.TID 0000.0001) %MON vort_p_mean                  =   1.7734843603211E-04
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.1688605952596E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -4.3467298500598E-08
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   8.3942270474586E-09
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -4.3467298500597E-08
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   8.3942270474548E-09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4119,17 +4156,17 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    191  EXFtaux      Counter:       1   Parms: UM      U1      
- Computing Diagnostic #    192  EXFtauy      Counter:       1   Parms: VM      U1      
- Computing Diagnostic #    190  EXFqnet      Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    201  EXFempmr     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    185  EXFhl        Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    184  EXFhs        Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    187  EXFswnet     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    186  EXFlwnet     Counter:       1   Parms: SM      U1      
- Computing Diagnostic #    193  EXFuwind     Counter:       1   Parms: UM      U1      
- Computing Diagnostic #    194  EXFvwind     Counter:       1   Parms: VM      U1      
- Computing Diagnostic #    196  EXFatemp     Counter:       1   Parms: SM      U1      
+ Computing Diagnostic #    193  EXFtaux      Counter:       1   Parms: UM      U1      
+ Computing Diagnostic #    194  EXFtauy      Counter:       1   Parms: VM      U1      
+ Computing Diagnostic #    192  EXFqnet      Counter:       1   Parms: SM      U1      
+ Computing Diagnostic #    203  EXFempmr     Counter:       1   Parms: SM      U1      
+ Computing Diagnostic #    187  EXFhl        Counter:       1   Parms: SM      U1      
+ Computing Diagnostic #    186  EXFhs        Counter:       1   Parms: SM      U1      
+ Computing Diagnostic #    189  EXFswnet     Counter:       1   Parms: SM      U1      
+ Computing Diagnostic #    188  EXFlwnet     Counter:       1   Parms: SM      U1      
+ Computing Diagnostic #    195  EXFuwind     Counter:       1   Parms: UM      U1      
+ Computing Diagnostic #    196  EXFvwind     Counter:       1   Parms: VM      U1      
+ Computing Diagnostic #    198  EXFatemp     Counter:       1   Parms: SM      U1      
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR EXF statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4149,12 +4186,12 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_hflux_min                =   8.9549117852199E+01
 (PID.TID 0000.0001) %MON exf_hflux_mean               =   2.1919825404438E+02
 (PID.TID 0000.0001) %MON exf_hflux_sd                 =   1.3424991799814E+02
-(PID.TID 0000.0001) %MON exf_hflux_del2               =   5.3755073910100E+00
+(PID.TID 0000.0001) %MON exf_hflux_del2               =   1.3759023596016E+01
 (PID.TID 0000.0001) %MON exf_sflux_max                =   4.0747396045993E-08
 (PID.TID 0000.0001) %MON exf_sflux_min                =  -8.3190208602946E-08
 (PID.TID 0000.0001) %MON exf_sflux_mean               =  -1.5723891917637E-08
 (PID.TID 0000.0001) %MON exf_sflux_sd                 =   2.4411605298880E-08
-(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.0013912588199E-09
+(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.6781792224619E-09
 (PID.TID 0000.0001) %MON exf_uwind_max                =   6.4674192569295E+00
 (PID.TID 0000.0001) %MON exf_uwind_min                =  -6.8373987635628E+00
 (PID.TID 0000.0001) %MON exf_uwind_mean               =   2.7704180476696E+00
@@ -4194,7 +4231,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_swflux_min               =  -6.4086336117103E+01
 (PID.TID 0000.0001) %MON exf_swflux_mean              =  -2.6516416318198E+01
 (PID.TID 0000.0001) %MON exf_swflux_sd                =   1.9648923659484E+01
-(PID.TID 0000.0001) %MON exf_swflux_del2              =   8.9741128190352E-02
+(PID.TID 0000.0001) %MON exf_swflux_del2              =   7.7300992044929E-01
 (PID.TID 0000.0001) %MON exf_evap_max                 =   4.7067627604503E-08
 (PID.TID 0000.0001) %MON exf_evap_min                 =   5.5015108305345E-09
 (PID.TID 0000.0001) %MON exf_evap_mean                =   2.0666123561242E-08
@@ -4226,10 +4263,10 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  SEAICE_LSR: Residual FrDrift U_fd,V_fd=  1.47047696E+01  5.07812965E+00
  SEAICE_LSR (ipass=   2) iters,dU,Resid=    10  8.12122014E-05  6.51968841E-05
  SEAICE_LSR (ipass=   2) iters,dV,Resid=     4  2.94282715E-05  4.56470429E-05
- cg2d: Sum(rhs),rhsMax =  -7.21683296456277E-10  3.93063845623743E-01
-(PID.TID 0000.0001)      cg2d_init_res =   4.42762784613019E-03
+ cg2d: Sum(rhs),rhsMax =  -7.21682949511582E-10  3.93063845623743E-01
+(PID.TID 0000.0001)      cg2d_init_res =   4.42762784612991E-03
 (PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      39
-(PID.TID 0000.0001)      cg2d_last_res =   5.60908410613476E-13
+(PID.TID 0000.0001)      cg2d_last_res =   5.60908410603882E-13
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4237,7 +4274,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON time_secondsf                =   2.5200000000000E+04
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   1.1434045011169E-01
 (PID.TID 0000.0001) %MON dynstat_eta_min              =  -1.2312639109941E-01
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4113996144449E-12
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4114137487906E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   5.4860496654496E-02
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.4172151755382E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   2.9817477531416E-02
@@ -4252,9 +4289,9 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.5312431216434E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.0351502943299E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.2912292046199E-05
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -2.4715006035114E-23
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.4829003621068E-22
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.9794877534389E-06
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.0657142632039E-08
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.0657142632038E-08
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.2478429904718E+01
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -1.8567304303660E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.0788083826524E+00
@@ -4289,7 +4326,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_fv_min               =  -4.1807170910595E-02
 (PID.TID 0000.0001) %MON forcing_fv_mean              =  -4.6230711369450E-03
 (PID.TID 0000.0001) %MON forcing_fv_sd                =   1.1526370382459E-02
-(PID.TID 0000.0001) %MON forcing_fv_del2              =   4.4200208804277E-04
+(PID.TID 0000.0001) %MON forcing_fv_del2              =   4.4200208804276E-04
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   7.3572500442025E-04
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   9.1167746925384E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   7.7037266667874E-04
@@ -4304,8 +4341,8 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON vort_a_sd                    =   8.8116912369987E-06
 (PID.TID 0000.0001) %MON vort_p_mean                  =   1.7734843602551E-04
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.1688608080767E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -3.3536052420695E-08
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   8.6480935855526E-09
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -3.3536052420690E-08
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   8.6480935855505E-09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4371,12 +4408,12 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_hflux_min                =   8.9544462140890E+01
 (PID.TID 0000.0001) %MON exf_hflux_mean               =   2.1924921502578E+02
 (PID.TID 0000.0001) %MON exf_hflux_sd                 =   1.3432119980874E+02
-(PID.TID 0000.0001) %MON exf_hflux_del2               =   5.3776346053062E+00
+(PID.TID 0000.0001) %MON exf_hflux_del2               =   1.3763852977502E+01
 (PID.TID 0000.0001) %MON exf_sflux_max                =   4.0753007448717E-08
 (PID.TID 0000.0001) %MON exf_sflux_min                =  -8.3195868917191E-08
 (PID.TID 0000.0001) %MON exf_sflux_mean               =  -1.5720327875617E-08
 (PID.TID 0000.0001) %MON exf_sflux_sd                 =   2.4417501310871E-08
-(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.0014919259754E-09
+(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.6784916491249E-09
 (PID.TID 0000.0001) %MON exf_uwind_max                =   6.4679267093784E+00
 (PID.TID 0000.0001) %MON exf_uwind_min                =  -6.8374255452651E+00
 (PID.TID 0000.0001) %MON exf_uwind_mean               =   2.7705256000140E+00
@@ -4416,7 +4453,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_swflux_min               =  -6.4105206467675E+01
 (PID.TID 0000.0001) %MON exf_swflux_mean              =  -2.6526948534072E+01
 (PID.TID 0000.0001) %MON exf_swflux_sd                =   1.9652762825246E+01
-(PID.TID 0000.0001) %MON exf_swflux_del2              =   8.9769942849714E-02
+(PID.TID 0000.0001) %MON exf_swflux_del2              =   7.7341216403100E-01
 (PID.TID 0000.0001) %MON exf_evap_max                 =   4.7072576296297E-08
 (PID.TID 0000.0001) %MON exf_evap_min                 =   5.4957623526715E-09
 (PID.TID 0000.0001) %MON exf_evap_mean                =   2.0669676759228E-08
@@ -4448,10 +4485,10 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  SEAICE_LSR: Residual FrDrift U_fd,V_fd=  1.47466874E+01  5.10028970E+00
  SEAICE_LSR (ipass=   2) iters,dU,Resid=     8  7.53471973E-05  6.71157818E-05
  SEAICE_LSR (ipass=   2) iters,dV,Resid=     4  7.78392373E-05  4.43968799E-05
- cg2d: Sum(rhs),rhsMax =  -7.21831192040945E-10  3.92969692793014E-01
-(PID.TID 0000.0001)      cg2d_init_res =   4.02742959189137E-03
+ cg2d: Sum(rhs),rhsMax =  -7.21833315342479E-10  3.92969692793014E-01
+(PID.TID 0000.0001)      cg2d_init_res =   4.02742959188353E-03
 (PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      39
-(PID.TID 0000.0001)      cg2d_last_res =   4.67751588979340E-13
+(PID.TID 0000.0001)      cg2d_last_res =   4.67751588995860E-13
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4459,24 +4496,24 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON time_secondsf                =   2.8800000000000E+04
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   1.1296690313465E-01
 (PID.TID 0000.0001) %MON dynstat_eta_min              =  -1.2311779307942E-01
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4113914764883E-12
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4113803403371E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   5.4794468216541E-02
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.4113663706621E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   2.9809102109030E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -2.0262498250935E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   6.9690878796944E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   6.9690878796945E-05
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   2.7522024107361E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   1.1780397506149E-04
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   2.7245803110755E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -5.7080641641239E-02
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   2.1722190348009E-05
-(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   4.1856090538097E-03
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   2.1722190348007E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   4.1856090538096E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.5284784769567E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.0346403172687E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.2876101958260E-05
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   7.4145018105341E-23
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.9768928422875E-06
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.0502829132706E-08
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.0502829132709E-08
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.2478318619610E+01
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -1.8564819244144E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.0787531778642E+00
@@ -4526,8 +4563,8 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON vort_a_sd                    =   8.8116913372878E-06
 (PID.TID 0000.0001) %MON vort_p_mean                  =   1.7734843603000E-04
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.1688610237500E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -2.6226961966064E-08
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   8.1419284811932E-09
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -2.6226961966081E-08
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   8.1419284811827E-09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4593,12 +4630,12 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_hflux_min                =   8.9540436017890E+01
 (PID.TID 0000.0001) %MON exf_hflux_mean               =   2.1929462413076E+02
 (PID.TID 0000.0001) %MON exf_hflux_sd                 =   1.3437962909774E+02
-(PID.TID 0000.0001) %MON exf_hflux_del2               =   5.3798317056439E+00
+(PID.TID 0000.0001) %MON exf_hflux_del2               =   1.3769551985308E+01
 (PID.TID 0000.0001) %MON exf_sflux_max                =   4.0758519775351E-08
 (PID.TID 0000.0001) %MON exf_sflux_min                =  -8.3201505973882E-08
 (PID.TID 0000.0001) %MON exf_sflux_mean               =  -1.5717465965571E-08
 (PID.TID 0000.0001) %MON exf_sflux_sd                 =   2.4422171280195E-08
-(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.0016233610371E-09
+(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.6788676053058E-09
 (PID.TID 0000.0001) %MON exf_uwind_max                =   6.4684341618272E+00
 (PID.TID 0000.0001) %MON exf_uwind_min                =  -6.8374523269674E+00
 (PID.TID 0000.0001) %MON exf_uwind_mean               =   2.7706331523584E+00
@@ -4638,7 +4675,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_swflux_min               =  -6.4124076818247E+01
 (PID.TID 0000.0001) %MON exf_swflux_mean              =  -2.6537480749947E+01
 (PID.TID 0000.0001) %MON exf_swflux_sd                =   1.9656602581253E+01
-(PID.TID 0000.0001) %MON exf_swflux_del2              =   8.9798833662667E-02
+(PID.TID 0000.0001) %MON exf_swflux_del2              =   7.7381449195700E-01
 (PID.TID 0000.0001) %MON exf_evap_max                 =   4.7077425912001E-08
 (PID.TID 0000.0001) %MON exf_evap_min                 =   5.4899168768758E-09
 (PID.TID 0000.0001) %MON exf_evap_mean                =   2.0672527825239E-08
@@ -4670,10 +4707,10 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  SEAICE_LSR: Residual FrDrift U_fd,V_fd=  1.47436095E+01  5.10745592E+00
  SEAICE_LSR (ipass=   2) iters,dU,Resid=     6  8.14199908E-05  7.87269847E-05
  SEAICE_LSR (ipass=   2) iters,dV,Resid=     6  3.40208103E-05  1.37552270E-05
- cg2d: Sum(rhs),rhsMax =  -7.21992424179696E-10  3.92882102565374E-01
-(PID.TID 0000.0001)      cg2d_init_res =   3.71209333969937E-03
+ cg2d: Sum(rhs),rhsMax =  -7.21992618468725E-10  3.92882102565374E-01
+(PID.TID 0000.0001)      cg2d_init_res =   3.71209333970929E-03
 (PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      38
-(PID.TID 0000.0001)      cg2d_last_res =   8.60198941502194E-13
+(PID.TID 0000.0001)      cg2d_last_res =   8.60198941596435E-13
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4681,7 +4718,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON time_secondsf                =   3.2400000000000E+04
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   1.1178266459252E-01
 (PID.TID 0000.0001) %MON dynstat_eta_min              =  -1.2311624259227E-01
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4109229015117E-12
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4109888617918E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   5.4738714206611E-02
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.4062319815205E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   2.9789369523284E-02
@@ -4696,14 +4733,14 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.5285970430608E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.0341582432670E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.2851545101392E-05
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.2357503017557E-22
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.9742595759970E-06
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.0352821159339E-08
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   7.4145018105341E-23
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.9742595759971E-06
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.0352821159341E-08
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.2478222974433E+01
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -1.8562484283931E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.0786976723607E+00
 (PID.TID 0000.0001) %MON dynstat_theta_sd             =   1.4432938198372E+00
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   1.7460848162098E-02
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   1.7460848162097E-02
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   3.5292695762938E+01
 (PID.TID 0000.0001) %MON dynstat_salt_min             =   3.0708123989707E+01
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.4757137440886E+01
@@ -4721,7 +4758,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   3.6821990053105E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =   5.3573728139203E-04
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -8.3184865672688E-05
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =   3.6016058294370E-05
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =   3.6016058294369E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.0875940486101E-04
 (PID.TID 0000.0001) %MON forcing_empmr_del2           =   8.2539475889940E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.2129514733855E-02
@@ -4748,8 +4785,8 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON vort_a_sd                    =   8.8116913423633E-06
 (PID.TID 0000.0001) %MON vort_p_mean                  =   1.7734843604580E-04
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.1688612365850E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -2.1527079572850E-08
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   7.6905423515619E-09
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -2.1527079572821E-08
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   7.6905423515656E-09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4762,7 +4799,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_uice_min              =  -7.2200101586496E-02
 (PID.TID 0000.0001) %MON seaice_uice_mean             =   5.1516345539604E-02
 (PID.TID 0000.0001) %MON seaice_uice_sd               =   4.9173341380031E-02
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.4521586732340E-03
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.4521586732339E-03
 (PID.TID 0000.0001) %MON seaice_vice_max              =   4.5498613224033E-02
 (PID.TID 0000.0001) %MON seaice_vice_min              =  -1.1133952698939E-01
 (PID.TID 0000.0001) %MON seaice_vice_mean             =  -2.2649913335782E-02
@@ -4815,12 +4852,12 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_hflux_min                =   8.9536165999741E+01
 (PID.TID 0000.0001) %MON exf_hflux_mean               =   2.1934228606564E+02
 (PID.TID 0000.0001) %MON exf_hflux_sd                 =   1.3444599404786E+02
-(PID.TID 0000.0001) %MON exf_hflux_del2               =   5.3825732079613E+00
+(PID.TID 0000.0001) %MON exf_hflux_del2               =   1.3775655191916E+01
 (PID.TID 0000.0001) %MON exf_sflux_max                =   4.0763958498669E-08
 (PID.TID 0000.0001) %MON exf_sflux_min                =  -8.3207132202456E-08
 (PID.TID 0000.0001) %MON exf_sflux_mean               =  -1.5714354935509E-08
 (PID.TID 0000.0001) %MON exf_sflux_sd                 =   2.4427621548437E-08
-(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.0017190485224E-09
+(PID.TID 0000.0001) %MON exf_sflux_del2               =   1.6792304793895E-09
 (PID.TID 0000.0001) %MON exf_uwind_max                =   6.4689416142761E+00
 (PID.TID 0000.0001) %MON exf_uwind_min                =  -6.8374791086697E+00
 (PID.TID 0000.0001) %MON exf_uwind_mean               =   2.7707407047028E+00
@@ -4860,7 +4897,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_swflux_min               =  -6.4142947168819E+01
 (PID.TID 0000.0001) %MON exf_swflux_mean              =  -2.6548012965822E+01
 (PID.TID 0000.0001) %MON exf_swflux_sd                =   1.9660442927159E+01
-(PID.TID 0000.0001) %MON exf_swflux_del2              =   8.9827800555732E-02
+(PID.TID 0000.0001) %MON exf_swflux_del2              =   7.7421690409580E-01
 (PID.TID 0000.0001) %MON exf_evap_max                 =   4.7082201924388E-08
 (PID.TID 0000.0001) %MON exf_evap_min                 =   5.4839621531250E-09
 (PID.TID 0000.0001) %MON exf_evap_mean                =   2.0675628011267E-08
@@ -4892,10 +4929,10 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  SEAICE_LSR: Residual FrDrift U_fd,V_fd=  1.46594453E+01  5.08758973E+00
  SEAICE_LSR (ipass=   2) iters,dU,Resid=     4  8.52479868E-05  1.20357869E-04
  SEAICE_LSR (ipass=   2) iters,dV,Resid=     6  3.42431176E-05  1.22572030E-05
- cg2d: Sum(rhs),rhsMax =  -7.22083864923562E-10  3.92803794057561E-01
-(PID.TID 0000.0001)      cg2d_init_res =   3.55658027835003E-03
+ cg2d: Sum(rhs),rhsMax =  -7.22089721350017E-10  3.92803794057561E-01
+(PID.TID 0000.0001)      cg2d_init_res =   3.55658027835225E-03
 (PID.TID 0000.0001)      cg2d_iters(min,last) =      -1      38
-(PID.TID 0000.0001)      cg2d_last_res =   6.63409160165709E-13
+(PID.TID 0000.0001)      cg2d_last_res =   6.63409160005290E-13
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4903,24 +4940,24 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON time_secondsf                =   3.6000000000000E+04
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   1.1065298387725E-01
 (PID.TID 0000.0001) %MON dynstat_eta_min              =  -1.2311872619183E-01
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4107211658499E-12
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.4108102550594E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   5.4688060159758E-02
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.4013539029472E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   2.9765661982491E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -2.1219849302846E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   6.9344338310537E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   6.9344338310539E-05
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   2.7519953290806E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   1.1796212217917E-04
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   2.7620440826850E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -5.9446867007579E-02
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   2.0280907279191E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   2.0280907279189E-05
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   4.2080306328674E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.5296714688572E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.0337327358675E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.2845127072333E-05
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.4829003621068E-22
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.1121752715801E-22
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.9722481798780E-06
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.0192268522316E-08
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.0192268522313E-08
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.2478103774560E+01
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -1.8560308210979E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.0786418678114E+00
@@ -4933,7 +4970,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_salt_del2            =   3.9777362577605E-03
 (PID.TID 0000.0001) %MON forcing_qnet_max             =   2.7441658154116E+02
 (PID.TID 0000.0001) %MON forcing_qnet_min             =  -1.9338390917425E+00
-(PID.TID 0000.0001) %MON forcing_qnet_mean            =   9.4545479625294E+01
+(PID.TID 0000.0001) %MON forcing_qnet_mean            =   9.4545479625295E+01
 (PID.TID 0000.0001) %MON forcing_qnet_sd              =   6.4448698154465E+01
 (PID.TID 0000.0001) %MON forcing_qnet_del2            =   4.9935886089790E+00
 (PID.TID 0000.0001) %MON forcing_qsw_max              =  -1.2238812190807E-09
@@ -4943,7 +4980,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON forcing_qsw_del2             =   3.6849910384258E-01
 (PID.TID 0000.0001) %MON forcing_empmr_max            =   5.2733600752454E-04
 (PID.TID 0000.0001) %MON forcing_empmr_min            =  -8.3190490776015E-05
-(PID.TID 0000.0001) %MON forcing_empmr_mean           =   3.4463002152332E-05
+(PID.TID 0000.0001) %MON forcing_empmr_mean           =   3.4463002152331E-05
 (PID.TID 0000.0001) %MON forcing_empmr_sd             =   1.0657229915527E-04
 (PID.TID 0000.0001) %MON forcing_empmr_del2           =   8.5462627995804E-06
 (PID.TID 0000.0001) %MON forcing_fu_max               =   6.2139576529365E-02
@@ -4970,8 +5007,8 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON vort_a_sd                    =   8.8116911853673E-06
 (PID.TID 0000.0001) %MON vort_p_mean                  =   1.7734843607041E-04
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.1688614398806E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -1.9148055799904E-08
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   7.4960771915593E-09
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -1.9148055799902E-08
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   7.4960771915578E-09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5018,177 +5055,177 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    244  SIarea       Counter:       9   Parms: SM      M1      
- Computing Diagnostic #    247  SIheff       Counter:       9   Parms: SM      M1      
- Computing Diagnostic #    249  SIhsnow      Counter:       9   Parms: SM      M1      
- Computing Diagnostic #    257  SIuice       Counter:       9   Parms: UU      M1      
-           Vector  Mate for  SIuice       Diagnostic #    258  SIvice   exists 
- Computing Diagnostic #    258  SIvice       Counter:       9   Parms: VV      M1      
-           Vector  Mate for  SIvice       Diagnostic #    257  SIuice   exists 
+ Computing Diagnostic #    246  SIarea       Counter:       9   Parms: SM      M1      
+ Computing Diagnostic #    249  SIheff       Counter:       9   Parms: SM      M1      
+ Computing Diagnostic #    251  SIhsnow      Counter:       9   Parms: SM      M1      
+ Computing Diagnostic #    259  SIuice       Counter:       9   Parms: UU      M1      
+           Vector  Mate for  SIuice       Diagnostic #    260  SIvice   exists 
+ Computing Diagnostic #    260  SIvice       Counter:       9   Parms: VV      M1      
+           Vector  Mate for  SIvice       Diagnostic #    259  SIuice   exists 
  Computing Diagnostic #     75  MXLDEPTH     Counter:       9   Parms: SM      M1      
- Computing Diagnostic #    230  KPPhbl       Counter:       9   Parms: SM P     1      
- Computing Diagnostic #    229  KPPghatK     Counter:       9   Parms: SM P    LR      
+ Computing Diagnostic #    211  KPPhbl       Counter:       9   Parms: SM P     1      
+ Computing Diagnostic #    210  KPPghatK     Counter:       9   Parms: SM P    LR      
 (PID.TID 0000.0001) %CHECKPOINT        10 0000000010
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   2.8399999999999999
-(PID.TID 0000.0001)         System time:  0.12000000000000000
-(PID.TID 0000.0001)     Wall clock time:   30.250556945800781
+(PID.TID 0000.0001)           User time:   2.7300000000000000
+(PID.TID 0000.0001)         System time:  0.10000000000000001
+(PID.TID 0000.0001)     Wall clock time:   32.711726903915405
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:  0.35999999999999999
-(PID.TID 0000.0001)         System time:  2.99999999999999989E-002
-(PID.TID 0000.0001)     Wall clock time:   4.7905468940734863
+(PID.TID 0000.0001)         System time:  2.00000000000000004E-002
+(PID.TID 0000.0001)     Wall clock time:   5.3796000480651855
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   2.4700000000000002
-(PID.TID 0000.0001)         System time:  8.99999999999999967E-002
-(PID.TID 0000.0001)     Wall clock time:   25.453815937042236
+(PID.TID 0000.0001)           User time:   2.3600000000000003
+(PID.TID 0000.0001)         System time:  8.00000000000000017E-002
+(PID.TID 0000.0001)     Wall clock time:   27.325747966766357
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
 (PID.TID 0000.0001)           User time:  0.14000000000000001
-(PID.TID 0000.0001)         System time:  2.00000000000000039E-002
-(PID.TID 0000.0001)     Wall clock time:   3.0604121685028076
+(PID.TID 0000.0001)         System time:  9.99999999999999847E-003
+(PID.TID 0000.0001)     Wall clock time:   3.9827919006347656
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   2.3300000000000001
-(PID.TID 0000.0001)         System time:  6.99999999999999928E-002
-(PID.TID 0000.0001)     Wall clock time:   22.393348932266235
+(PID.TID 0000.0001)           User time:   2.2200000000000002
+(PID.TID 0000.0001)         System time:  7.00000000000000067E-002
+(PID.TID 0000.0001)     Wall clock time:   23.342911958694458
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN_DO_LOOP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   2.3300000000000001
-(PID.TID 0000.0001)         System time:  6.99999999999999928E-002
-(PID.TID 0000.0001)     Wall clock time:   22.393314123153687
-(PID.TID 0000.0001)          No. starts:           1
-(PID.TID 0000.0001)           No. stops:           1
-(PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [MAIN_DO_LOOP]":
-(PID.TID 0000.0001)           User time:   2.3300000000000001
+(PID.TID 0000.0001)           User time:   2.2200000000000006
 (PID.TID 0000.0001)         System time:  7.00000000000000067E-002
-(PID.TID 0000.0001)     Wall clock time:   22.393208026885986
+(PID.TID 0000.0001)     Wall clock time:   23.342816591262817
+(PID.TID 0000.0001)          No. starts:           9
+(PID.TID 0000.0001)           No. stops:           9
+(PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [MAIN_DO_LOOP]":
+(PID.TID 0000.0001)           User time:   2.2200000000000006
+(PID.TID 0000.0001)         System time:  7.00000000000000067E-002
+(PID.TID 0000.0001)     Wall clock time:   23.342644691467285
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  9.92536544799804688E-004
+(PID.TID 0000.0001)     Wall clock time:  1.00135803222656250E-003
 (PID.TID 0000.0001)          No. starts:          18
 (PID.TID 0000.0001)           No. stops:          18
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  3.00000000000000266E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.89690399169921875E-002
+(PID.TID 0000.0001)     Wall clock time:  1.88870429992675781E-002
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
 (PID.TID 0000.0001)           User time:  3.00000000000000266E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.86064052581787109E-002
+(PID.TID 0000.0001)     Wall clock time:  1.85611248016357422E-002
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  9.10758972167968750E-005
+(PID.TID 0000.0001)     Wall clock time:  8.55922698974609375E-005
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  8.20159912109375000E-005
+(PID.TID 0000.0001)     Wall clock time:  7.89165496826171875E-005
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.57999999999999985
-(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
-(PID.TID 0000.0001)     Wall clock time:  0.59318137168884277
+(PID.TID 0000.0001)           User time:  0.54000000000000092
+(PID.TID 0000.0001)         System time:  1.00000000000000019E-002
+(PID.TID 0000.0001)     Wall clock time:  0.54469347000122070
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL    [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  8.00000000000000711E-002
+(PID.TID 0000.0001)           User time:  5.00000000000000444E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  8.23163986206054688E-002
+(PID.TID 0000.0001)     Wall clock time:  7.90786743164062500E-002
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "SEAICE_DYNSOLVER   [SEAICE_MODEL]":
-(PID.TID 0000.0001)           User time:  4.00000000000000355E-002
+(PID.TID 0000.0001)           User time:  5.00000000000000444E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  5.04159927368164063E-002
+(PID.TID 0000.0001)     Wall clock time:  4.77728843688964844E-002
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "KPP_CALC [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  0.36999999999999966
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.36522579193115234
+(PID.TID 0000.0001)           User time:  0.28000000000000003
+(PID.TID 0000.0001)         System time:  1.00000000000000019E-002
+(PID.TID 0000.0001)     Wall clock time:  0.33442711830139160
 (PID.TID 0000.0001)          No. starts:          36
 (PID.TID 0000.0001)           No. stops:          36
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.26000000000000001
+(PID.TID 0000.0001)           User time:  0.22999999999999998
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.26247906684875488
+(PID.TID 0000.0001)     Wall clock time:  0.24332022666931152
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.40000000000000013
+(PID.TID 0000.0001)           User time:  0.30999999999999961
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.38705873489379883
+(PID.TID 0000.0001)     Wall clock time:  0.32365131378173828
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.99999999999997957E-002
+(PID.TID 0000.0001)           User time:  4.00000000000000355E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.79452800750732422E-002
+(PID.TID 0000.0001)     Wall clock time:  2.72350311279296875E-002
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.00000000000000178E-002
+(PID.TID 0000.0001)           User time:  1.00000000000000089E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  8.22472572326660156E-003
+(PID.TID 0000.0001)     Wall clock time:  7.93600082397460938E-003
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "INTEGR_CONTINUITY   [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  5.79237937927246094E-003
+(PID.TID 0000.0001)     Wall clock time:  5.65505027770996094E-003
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.56905364990234375E-003
+(PID.TID 0000.0001)     Wall clock time:  8.01086425781250000E-005
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.00000000000000089E-002
+(PID.TID 0000.0001)           User time:  4.00000000000000355E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.20289230346679688E-002
+(PID.TID 0000.0001)     Wall clock time:  2.20272541046142578E-002
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  4.00000000000000355E-002
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.42567062377929688E-002
+(PID.TID 0000.0001)     Wall clock time:  2.46317386627197266E-002
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  4.00000000000000355E-002
+(PID.TID 0000.0001)           User time:  5.00000000000000444E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.17945384979248047E-002
+(PID.TID 0000.0001)     Wall clock time:  4.18472290039062500E-002
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.92000000000000015
-(PID.TID 0000.0001)         System time:  5.99999999999999978E-002
-(PID.TID 0000.0001)     Wall clock time:   20.963174343109131
+(PID.TID 0000.0001)           User time:  0.95999999999999974
+(PID.TID 0000.0001)         System time:  6.00000000000000117E-002
+(PID.TID 0000.0001)     Wall clock time:   22.069981098175049
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  1.00000000000002309E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.12099647521972656E-002
+(PID.TID 0000.0001)     Wall clock time:  1.01802349090576172E-002
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001) // ======================================================
