@@ -1,8 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2118 2015/01/23 14:51:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2119 2015/01/28 17:15:12 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice: add the option to prescribe a fixed thickness PDF
+  for thermodynamic calculations
+  - because of divisions of the type 7/7 not exactly equal to 1, this change 
+    affects results of some verification experiments by up to 4 digits:
+    global_ocean.cs32x15.seaice, lab_sea, lab_sea.fd, lab_sea.salt_plume, 
+    seaice_obcs, seaice_obcs.seaiceSponge, seaice_obcs.tides
+    adjoint: lab_sea, lab_sea.noseaicedyn
+    -> updated
 
 checkpoint65i (2015/01/23)
 o model/src:
