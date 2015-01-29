@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.171 2015/01/28 12:34:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.172 2015/01/29 23:17:50 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -295,7 +295,7 @@ c$openad INDEPENDENT(xx_tr1)
 c$openad INDEPENDENT(xx_hfluxm)
 # endif
 # ifdef ALLOW_GENARR2D_CONTROL
-cph c$openad INDEPENDENT(xx_genarr2d)
+c$openad INDEPENDENT(xx_genarr2d)
 c$openad INDEPENDENT(xx_genarr2d_dummy)
 # endif
 # ifdef ALLOW_GENARR3D_CONTROL

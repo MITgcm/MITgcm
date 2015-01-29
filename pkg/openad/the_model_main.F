@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.13 2015/01/28 12:32:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.14 2015/01/29 23:17:50 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -194,6 +194,9 @@ CEOI
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #include "AD_CONFIG.h"
+#ifdef ALLOW_OPENAD
+# include "OPENAD_OPTIONS.h"
+#endif
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
@@ -548,12 +551,13 @@ C     Temporarily change setting of writeBinaryPrec
       call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
 #   endif
 #   ifdef ALLOW_GENARR2D_CONTROL
-cc      do ik = 1, maxCtrlArr2D
-cc        foo2d=xx_genarr2d(:,:,:,:,ik)%d
-cc        write(fname,'(A,I2.2,A)') 'adxx_genarr2d_',ik,'.'
-cc        call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
-cc      enddo
-
+#    ifndef ALLOW_OPENAD_ACTIVE_FILE
+      do ik = 1, maxCtrlArr2D
+        foo2d=xx_genarr2d(:,:,:,:,ik)%d
+        write(fname,'(A,I2.2,A)') 'adxx_genarr2d_',ik,'.'
+        call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
+      enddo
+#    endif
 #   endif
 #   ifdef ALLOW_GENARR3D_CONTROL
       do ik = 1, maxCtrlArr3D
