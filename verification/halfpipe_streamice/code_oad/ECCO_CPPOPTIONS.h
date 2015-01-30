@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/ECCO_CPPOPTIONS.h,v 1.4 2015/01/30 19:19:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/ECCO_CPPOPTIONS.h,v 1.5 2015/01/30 21:06:24 heimbach Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -45,6 +45,6 @@ C ********************************************************************
 
 C       >>> Initial values.
 #define ALLOW_GENARR2D_CONTROL
-cph#define ALLOW_GENTIM2D_CONTROL
+#define ALLOW_GENTIM2D_CONTROL
 
 #endif /* ECCO_CPPOPTIONS_H */
