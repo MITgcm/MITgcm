@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_fields_load.F,v 1.3 2015/01/24 15:34:32 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_fields_load.F,v 1.4 2015/01/30 22:42:37 heimbach Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -312,7 +312,7 @@ C-      endif 1rst iter.
         ENDDO
 
 !      print *, "GOT HERE STREAMICE FIELDS LOAD",
-     &  first,changed,nm0,nm1,fac
+!     &  first,changed,nm0,nm1,fac
 #endif
 #endif
 
