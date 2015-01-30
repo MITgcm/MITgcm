@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/ctrl_map_gentim2d.F,v 1.1 2015/01/30 21:06:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/ctrl_map_gentim2d.F,v 1.2 2015/01/30 22:14:39 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -137,7 +137,7 @@ C
      O      xx_gentim2d_loc,
      I      xx_gentim2d0(1-Olx,1-Oly,1,1,iarr),
      I      xx_gentim2d1(1-Olx,1-Oly,1,1,iarr),
-     I      xx_gentim2d_dummy,
+     I      xx_gentim2d_dummy(iarr),
      I      zeroRL, zeroRL,
      I      wgentim2d(1-Olx,1-Oly,1,1,iarr),
      I      mytime, myiter, mythid )
@@ -167,7 +167,7 @@ C
 
                 bdot_streamice(i,j,bi,bj) =
      &           bdot_streamice(i,j,bi,bj)+
-     &            xx_gentim2d(i,j,bi,bj)
+     &            xx_gentim2d(i,j,bi,bj,iarr)
 
                endif
           enddo
