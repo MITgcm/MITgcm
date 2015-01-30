@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/ctrl_map_ini_genarr.F,v 1.2 2014/09/09 23:35:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/ctrl_map_ini_genarr.F,v 1.3 2015/01/30 19:19:19 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -100,7 +100,7 @@ C--   generic - user-defined control vars
      &                  H_streamice(i,j,bi,bj)
      &                  + tmpfld2d(i,j,bi,bj)
 #ifdef ALLOW_OPENAD
-     &                  + xx_genarr2d(i,j,bi,bj,iarr)
+cph     &                  + xx_genarr2d(i,j,bi,bj,iarr)
 #endif
 
                 elseif (iarr.eq.1) then
@@ -108,7 +108,7 @@ C--   generic - user-defined control vars
      &                  B_glen(i,j,bi,bj)
      &                  + tmpfld2d(i,j,bi,bj)
 #ifdef ALLOW_OPENAD
-     &                  + xx_genarr2d(i,j,bi,bj,iarr)
+cph     &                  + xx_genarr2d(i,j,bi,bj,iarr)
 #endif
 
 !                elseif (iarr.eq.5) then

@@ -1,5 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/Attic/externalDummies.F,v 1.2 2014/09/05 21:09:25 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/Attic/externalDummies.F,v 1.3 2015/01/30 19:19:19 heimbach Exp $
 C $Name:  $
+
+#include "OPENAD_OPTIONS.h"
+
 C ###########################################################
       SUBROUTINE EXCH1_RL(
      U                 array,
@@ -128,3 +131,33 @@ C ###########################################################
 
       end subroutine
 C ###########################################################
+      subroutine active_read_xy(
+     I                           active_var_file,
+     O                           active_var,
+     I                           iRec,
+     I                           doglobalread,
+     I                           lAdInit,
+     I                           myOptimIter,
+     I                           myThid,
+     I                           dummy
+     &                         )
+! xxx template oad_template.active_read_xy.f90
+        implicit none
+!     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+      CHARACTER*(80) active_var_file
+      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER iRec
+      INTEGER myOptimIter
+      INTEGER myThid
+      LOGICAL doglobalread
+      LOGICAL lAdInit
+      _RL     dummy
+#ifdef ALLOW_OPENAD_ACTIVE_FILE
+      active_var = dummy + active_var
+      dummy = active_var(1,1,1,1) + dummy
+#endif /* ALLOW_OPENAD_ACTIVE_FILE */
+      end subroutine
+C ###########################################################
+
