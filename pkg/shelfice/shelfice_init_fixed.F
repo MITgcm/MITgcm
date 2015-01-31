@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.14 2015/01/12 17:35:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.15 2015/01/31 00:36:37 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -60,15 +60,17 @@ C     Initialize MNC variable information for SHELFICE
 
 C-----------------------------------------------------------------------
 C--   Initialize SHELFICE variables kTopC
-C--   kTopC is the same as kSurfC, except for places over land.
-C--   Over land (completely dry cells), kTop = 0, while kSurfC = Nr+1
+C--   kTopC is the same as kSurfC, except outside ice-shelf area:
+C--   kTop = 0 where there is no ice-shelf (where kSurfC=1)
+C--   and over land (completely dry column) where kSurfC = Nr+1
 C-----------------------------------------------------------------------
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j = 1-OLy, sNy+OLy
          DO i = 1-OLx, sNx+OLx
-          IF ( kSurfC(i,j,bi,bj).LE.Nr ) THEN
+          IF ( kSurfC(i,j,bi,bj).LE.Nr .AND.
+     &         R_shelfIce(i,j,bi,bj).LT.zeroRS ) THEN
             kTopC(i,j,bi,bj) = kSurfC(i,j,bi,bj)
           ELSE
             kTopC(i,j,bi,bj) = 0
