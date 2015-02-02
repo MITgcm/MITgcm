@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2120 2015/01/31 00:37:39 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2121 2015/02/02 22:14:35 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -6,6 +6,10 @@ $Name:  $
 
 o pkg/shelfice:
   - change setting of kTopC to also be zero where there is no ice-shelf.
+  - zero out surface forcing arrays (for now, for T & S + EmPmR) where 
+    ice-shelf is.
+  - first attempt to get RealFreshWaterFlux effects: for now, only without
+    SHELFICEboundaryLayer ; not consistent if using synchronous time-stepping.
 o pkg/seaice: add the option to prescribe a fixed thickness PDF
   for thermodynamic calculations
   - because of divisions of the type 7/7 not exactly equal to 1, this change
