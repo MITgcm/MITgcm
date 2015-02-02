@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_forcing_surf.F,v 1.1 2014/01/17 21:56:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_forcing_surf.F,v 1.2 2015/02/02 22:13:43 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -53,6 +53,17 @@ CEOP
 c     DO bj=myByLo(myThid),myByHi(myThid)
 c      DO bi=myBxLo(myThid),myBxHi(myThid)
 
+C--   Zero out surface forcing terms below ice-shelf
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          IF ( kTopC(i,j,bi,bj).NE.0 ) THEN
+            surfaceForcingT(i,j,bi,bj) = 0.
+            surfaceForcingS(i,j,bi,bj) = 0.
+            EmPmR(i,j,bi,bj) = 0.
+          ENDIF
+         ENDDO
+        ENDDO
+
 C--   Forcing term
 
         IF ( .NOT.SHELFICEboundaryLayer ) THEN
@@ -61,31 +72,48 @@ C     (calling SHELFICE_FORCING_T & _S from EXTERNAL_FORCING_T & _S)
 
          DO j=1,sNy
           DO i=1,sNx
-           IF ( R_shelfIce(i,j,bi,bj).LT.zeroRS ) THEN
+           IF ( kTopC(i,j,bi,bj).NE.0 ) THEN
             surfaceForcingT(i,j,bi,bj) = shelficeForcingT(i,j,bi,bj)
             surfaceForcingS(i,j,bi,bj) = shelficeForcingS(i,j,bi,bj)
            ENDIF
           ENDDO
          ENDDO
 
-c        IF ( staggerTimeStep ) THEN
-c         DO j=1-OLy,sNy+OLy
-c          DO i=1-OLx,sNx+OLx
-c           PmEpR(i,j,bi,bj) = -EmPmR(i,j,bi,bj)
-c          ENDDO
-c         ENDDO
-c        ENDIF
+         IF ( useRealFreshWaterFlux ) THEN
+#ifdef ALLOW_AUTODIFF
+          STOP 'RealFreshWaterFlux disabled in SHELFICE_FORCING_SURF'
+#else /* ALLOW_AUTODIFF */
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+c           IF ( kTopC(i,j,bi,bj).NE.0 ) THEN
+             EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)
+     &         + shelfIceFreshWaterFlux(i,j,bi,bj)
+c           ENDIF
+           ENDDO
+          ENDDO
+#endif /* ALLOW_AUTODIFF */
+         ENDIF
 
 C--   end if not SHELFICEboundaryLayer
         ENDIF
 
-        IF ( usingZCoords ) THEN
-         DO j = jMin, jMax
-          DO i = iMin, iMax
-            phi0surf(i,j,bi,bj) = phi0surf(i,j,bi,bj)
-     &         + shelficeLoadAnomaly(i,j,bi,bj)*recip_rhoConst
+#ifdef EXACT_CONSERV
+        IF ( staggerTimeStep ) THEN
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             PmEpR(i,j,bi,bj) = -EmPmR(i,j,bi,bj)
+           ENDDO
           ENDDO
-         ENDDO
+        ENDIF
+#endif /* EXACT_CONSERV */
+
+        IF ( usingZCoords ) THEN
+          DO j = jMin, jMax
+           DO i = iMin, iMax
+             phi0surf(i,j,bi,bj) = phi0surf(i,j,bi,bj)
+     &         + shelficeLoadAnomaly(i,j,bi,bj)*recip_rhoConst
+           ENDDO
+          ENDDO
         ENDIF
 
 c      ENDDO
