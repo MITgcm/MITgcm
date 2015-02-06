@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.34 2014/02/11 20:23:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.35 2015/02/06 21:42:58 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -250,6 +250,15 @@ C and should be less than 1/8, for example viscAh=0.01
          ENDDO
         ENDDO
        ENDIF
+      ENDIF
+
+      IF ( harmonic .OR. biharmonic ) THEN
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
+         uDissip(i,j) = uDissip(i,j)*maskW(i,j,k,bi,bj)
+         vDissip(i,j) = vDissip(i,j)*maskS(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
       ENDIF
 
       RETURN
