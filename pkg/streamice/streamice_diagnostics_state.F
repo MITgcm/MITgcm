@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_diagnostics_state.F,v 1.4 2014/04/24 12:02:41 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_diagnostics_state.F,v 1.5 2015/02/06 21:53:19 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -23,7 +23,7 @@ C     === Global variables ===
 #include "STREAMICE.h"
 
       _RL myTime
-      INTEGER myIter, myThid
+      INTEGER myIter, myThid, i, j, bi, bj
 
 #ifdef ALLOW_STREAMICE
 
@@ -31,13 +31,72 @@ C     === Global variables ===
 
 #ifdef ALLOW_DIAGNOSTICS
 
+#ifdef ALLOW_OPENAD
 
+      _RL u_streamice_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL v_streamice_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL h_streamice_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL area_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL float_frac_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL surf_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef STREAMICE_HYBRID_STRESS
+      _RL streamice_taubx_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_tauby_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+#ifdef ALLOW_STREAMICE_2DTRACER
+       _RL trac2d_diag
+#endif
 
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+           u_streamice_diag(i,j,bi,bj) = u_streamice(i,j,bi,bj)%v
+           v_streamice_diag(i,j,bi,bj) = v_streamice(i,j,bi,bj)%v
+           h_streamice_diag(i,j,bi,bj) = H_streamice(i,j,bi,bj)%v
+           area_diag(i,j,bi,bj) = area_shelf_streamice(i,j,bi,bj)%v
+           float_frac_diag(i,j,bi,bj) = 
+     &         float_frac_streamice(i,j,bi,bj)%v
+           surf_diag(i,j,bi,bj) =
+     &         surf_el_streamice(i,j,bi,bj)%v       
+#ifdef STREAMICE_HYBRID_STRESS
+           streamice_taubx_diag(i,j,bi,bj) =
+     $         streamice_taubx(i,j,bi,bj)%v
+           streamice_tauby_diag(i,j,bi,bj) =
+     $         streamice_tauby(i,j,bi,bj)%v
+#endif
+#ifdef ALLOW_STREAMICE_2DTRACER
+           trac2d_diag(i,j,bi,bj)=trac2d(i,j,bi,bj)%v
+#endif
+
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+#endif
 
       IF ( useDiagnostics ) THEN
        WRITE(msgBuf,'(A)') 'CALLING FILL DIAGNOSTICS'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , 1)
+
+#ifdef ALLOW_OPENAD
+
+       CALL DIAGNOSTICS_FILL(U_streamice_diag,'SI_Uvel ',
+     &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(V_streamice_diag,'SI_Vvel ',
+     &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(H_streamice_diag,'SI_Thick',
+     &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(area_diag,'SI_area ',
+     &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(float_frac_diag,'SI_float',
+     &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(surf_diag,'SI_selev',
+     &      0,1,0,1,1,myThid)
+
+#else
 
        CALL DIAGNOSTICS_FILL(U_streamice,'SI_Uvel ',
      &      0,1,0,1,1,myThid)
@@ -49,6 +108,11 @@ C     === Global variables ===
      &      0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(float_frac_streamice,'SI_float',
      &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(surf_el_streamice,'SI_selev',
+     &      0,1,0,1,1,myThid)
+
+#endif
+
        CALL DIAGNOSTICS_FILL_RS(STREAMICE_hmask,'SI_hmask',
      &      0,1,0,1,1,myThid)
 #ifdef STREAMICE_HYBRID_STRESS
@@ -60,17 +124,31 @@ C     === Global variables ===
      &      0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(STREAMICE_v_bed,'SI_vbase',
      &      0,1,0,1,1,myThid)
+
+#ifdef ALLOW_OPENAD
+       CALL DIAGNOSTICS_FILL(streamice_taubx_diag,'SI_taubx',
+     &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(STREAMICE_tauby_diag,'SI_tauby',
+     &      0,1,0,1,1,myThid)
+#else
        CALL DIAGNOSTICS_FILL(streamice_taubx,'SI_taubx',
      &      0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(STREAMICE_tauby,'SI_tauby',
      &      0,1,0,1,1,myThid)
 #endif
-       CALL DIAGNOSTICS_FILL(surf_el_streamice,'SI_selev',
-     &      0,1,0,1,1,myThid)
+
+#endif
+
 #ifdef ALLOW_STREAMICE_2DTRACER
+#ifdef ALLOW_OPENAD
+       CALL DIAGNOSTICS_FILL(trac2d_diag,'SI2Dtrac',
+     &      0,1,0,1,1,myThid)
+#else
        CALL DIAGNOSTICS_FILL(trac2d,'SI2Dtrac',
      &      0,1,0,1,1,myThid)
 #endif
+#endif
+
 
       ENDIF
 
