@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/externalDummies.F,v 1.5 2015/02/05 16:46:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/externalDummies.F,v 1.6 2015/02/11 00:09:55 heimbach Exp $
 C $Name:  $
 
 #include "OPENAD_OPTIONS.h"
@@ -188,6 +188,31 @@ C ###########################################################
       active_var = dummy + active_var
       dummy = active_var(1,1,1,1) + dummy
 #endif /* ALLOW_OPENAD_ACTIVE_FILE */
+      end subroutine
+C ###########################################################
+      subroutine active_write_xy(
+     I                           active_var_file,
+     I                           active_var,
+     I                           iRec,
+     I                           myOptimIter,
+     I                           myThid,
+     I                           dummy
+     &                         )
+! xxx template ad_template.active_write_xy.f90
+        implicit none
+!     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+      CHARACTER*(80) active_var_file
+      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER iRec
+      INTEGER myOptimIter
+      INTEGER myThid
+      _RL     dummy
+#ifdef ALLOW_OPENAD_ACTIVE_WRITE
+      active_var = dummy + active_var
+      dummy = active_var(1,1,1,1) + dummy
+#endif /* ALLOW_OPENAD_ACTIVE_WRITE */
       end subroutine
 C ###########################################################
 

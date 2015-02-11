@@ -1,4 +1,10 @@
+! $Header: /u/gcmpack/MITgcm/tools/OAD_support/ad_template.active_write_xy.F,v 1.1 2015/02/11 00:09:55 heimbach Exp $
+! $Name:  $
+
+#include "OPENAD_OPTIONS.h"
+
       subroutine template()
+C     !FUNCTIONS
       use OAD_tape
       use OAD_rev
       use OAD_cp
@@ -21,25 +27,30 @@
       CHARACTER*(80) fname
       INTEGER il
       INTEGER myNr
+      LOGICAL globalFile
       LOGICAL useCurrentDir
       Real*8  active_var_p(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+#ifdef ALLOW_OPENAD_ACTIVE_WRITE
 
       myNr = 1
       useCurrentDir = .FALSE.
 
       if (our_rev_mode%plain) then
+         our_orig_mode = our_rev_mode
 ! original function
          active_var_p = active_var%v
 ! set up for plain execution
-         our_orig_mode=our_rev_mode
          our_rev_mode%arg_store=.FALSE.
          our_rev_mode%arg_restore=.FALSE.
          our_rev_mode%plain=.TRUE.
          our_rev_mode%tape=.FALSE.
          our_rev_mode%adjoint=.FALSE.
-         call ACTIVE_READ_3D_RL(
-     &        active_var_file, active_var_p, doglobalread,
-     &        useCurrentDir, lAdInit, iRec, myNr,
+         call ACTIVE_WRITE_3D_RL(
+     &        active_var_file, active_var_p, globalFile,
+     &        useCurrentDir, iRec, myNr,
      &        FORWARD_SIMULATION, myOptimIter, myThid )
 ! reset the mode
          our_rev_mode=our_orig_mode
@@ -49,19 +60,36 @@
 
       if (our_rev_mode%tape) then
 ! taping
-         call ACTIVE_READ_3D_RL(
-     &        active_var_file, active_var, doglobalread,
-     &        useCurrentDir, lAdInit, iRec, myNr,
+         our_orig_mode=our_rev_mode
+         our_rev_mode%arg_store=.FALSE.
+         our_rev_mode%arg_restore=.FALSE.
+         our_rev_mode%plain=.TRUE.
+         our_rev_mode%tape=.FALSE.
+         our_rev_mode%adjoint=.FALSE.
+         if (oad_st_sz.lt.oad_st_ptr) call oad_st_grow()
+         oad_st(oad_st_ptr) = active_var_file 
+         oad_st_ptr = oad_st_ptr+1 
+         if (oad_it_sz.lt.oad_it_ptr) call oad_it_grow()
+         oad_it(oad_it_ptr) = iRec
+         oad_it_ptr = oad_it_ptr+1 
+         call ACTIVE_WRITE_3D_RL(
+     &        active_var_file, active_var, globalFile,
+     &        useCurrentDir, iRec, myNr,
      &        FORWARD_SIMULATION, myOptimIter, myThid )
+         our_rev_mode=our_orig_mode
       end if
 
       if (our_rev_mode%adjoint) then
 ! adjoint
+         oad_st_ptr = oad_st_ptr-1
+         active_var_file = oad_st(oad_st_ptr) 
+         oad_it_ptr = oad_it_ptr-1
+         iRec = oad_it(oad_it_ptr) 
          adpref = 'ad'
          il   = ILNBLNK( active_var_file )
          WRITE(fname(1:80),'(A)') ' '
-!         WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
-         WRITE(fname(1:2+il),'(2A)') adpref, active_var_file
+         WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+!         WRITE(fname(1:2+il),'(2A)') adpref, active_var_file
          active_var_p = active_var%d
 ! set up for plain execution
          our_orig_mode=our_rev_mode
@@ -70,14 +98,16 @@
          our_rev_mode%plain=.TRUE.
          our_rev_mode%tape=.FALSE.
          our_rev_mode%adjoint=.FALSE.
-         call ACTIVE_READ_3D_RL(
-     &        fname, active_var_p, doglobalread,
-     &        useCurrentDir, lAdInit, iRec, myNr,
+         call ACTIVE_WRITE_3D_RL(
+     &        fname, active_var_p, globalFile,
+     &        useCurrentDir, iRec, myNr,
      &        REVERSE_SIMULATION, myOptimIter, myThid )
 ! reset the mode
          our_rev_mode=our_orig_mode
 ! copy back
          active_var%d = active_var_p
       end if
+
+#endif /* ALLOW_OPENAD_ACTIVE_WRITE */
 
       end

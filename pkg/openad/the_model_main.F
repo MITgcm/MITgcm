@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.14 2015/01/29 23:17:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.15 2015/02/11 00:09:55 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -550,27 +550,27 @@ C     Temporarily change setting of writeBinaryPrec
      &     'ad',xx_etan_file(1:il),'.'
       call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
 #   endif
-#   ifdef ALLOW_GENARR2D_CONTROL
-#    ifndef ALLOW_OPENAD_ACTIVE_FILE
+#   ifndef ALLOW_OPENAD_ACTIVE_FILE
+#    ifdef ALLOW_GENARR2D_CONTROL
       do ik = 1, maxCtrlArr2D
         foo2d=xx_genarr2d(:,:,:,:,ik)%d
         write(fname,'(A,I2.2,A)') 'adxx_genarr2d_',ik,'.'
         call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
       enddo
 #    endif
-#   endif
+#    ifdef ALLOW_GENTIM2D_CONTROL
+      do ik = 1, maxCtrlTim2D
+        foo2d=xx_gentim2d(:,:,:,:,ik)%d
+        write(fname,'(A,I2.2,A)') 'adxx_gentim2d_',ik,'.'
+        call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
+      enddo
+#    endif
+#   endif /* ALLOW_OPENAD_ACTIVE_FILE */
 #   ifdef ALLOW_GENARR3D_CONTROL
       do ik = 1, maxCtrlArr3D
         foo=xx_genarr3d(:,:,:,:,:,ik)%d
         write(fname,'(A,I2.2,A)') 'adxx_genarr3d_',ik,'.'
         call write_fld_xyz_rl(fname,suff,foo,myIter,1)
-      enddo
-#   endif
-#   ifdef ALLOW_GENTIM2D_CONTROL
-      do ik = 1, maxCtrlTim2D
-        foo2d=xx_gentim2d(:,:,:,:,ik)%d
-        write(fname,'(A,I2.2,A)') 'adxx_gentim2d_',ik,'.'
-        call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
       enddo
 #   endif
 C     Change back to original writeBinaryPrec
