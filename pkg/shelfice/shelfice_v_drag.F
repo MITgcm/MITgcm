@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_v_drag.F,v 1.10 2015/01/04 00:01:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_v_drag.F,v 1.11 2015/02/14 21:58:05 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -51,46 +51,142 @@ C  vDragTerms           :: drag term
 C !LOCAL VARIABLES : ====================================================
 C  i,j                  :: loop indices
 C  Kp1                  :: =k+1 for k<Nr, =Nr for k>=Nr
-      INTEGER I,J,kUp,kUpC,kTop
-      _RL viscFac
-      _RL rdrckp1,maskUp
+      INTEGER i,j,kUpC,kTop
+      _RL viscFac, vSq
+      _RL rdrckp1
 CEOP
 
 C-  No-slip BCs impose a drag at top
       IF ( usingZCoords ) THEN
        kTop    = 1
-       kUp     = max(k-1,kTop)
        kUpC    = k
       ELSE
        kTop    = Nr
-       kUp     = min(k+1,kTop)
        kUpC    = k+1
       ENDIF
       rdrckp1=recip_drC(kUpC)
 CML      IF (k.EQ.kTop) rdrckp1=recip_drF(k)
       viscFac=0.
       IF (no_slip_shelfice) viscFac=2.
-      DO j=1-OLy+1,sNy+OLy-1
-       DO i=1-OLx,sNx+OLx-1
-        maskUp=_maskS(i,j,kUp,bi,bj)
-CML        IF (k.EQ.kTop) maskUp=0.
-        vDragTerms(i,j)=
-     &   -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-     &   *(
-     &     - kappaRV(i,j,kUpC)*rdrckp1*viscFac
-     &     + SHELFICEDragLinear
-     &    )*(1.-maskUp)*vFld(i,j)
-        IF ( (KE(i,j)+KE(i,j-1)) .GT. 0. ) THEN
-         vDragTerms(i,j)=vDragTerms(i,j)
-     &    -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-     &    *SHELFICEDragQuadratic*SQRT(KE(i,j)+KE(i,j-1))
-     &    *(1.-maskUp)*vFld(i,j)
-        ENDIF
+
+C--   Friction at the bottom of ice-shelf (no-slip BC)
+      IF ( no_slip_shelfice ) THEN
+C-    ignores partial-cell reduction of the distance to the surface
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
+         IF ( k.EQ.MAX( kTopC(i,j-1,bi,bj),kTopC(i,j,bi,bj) ) ) THEN
+           vDragTerms(i,j) =
+     &      - _recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &      * kappaRV(i,j,kUpC)*rdrckp1*viscFac
+     &      * vFld(i,j)
+         ELSE
+           vDragTerms(i,j) = 0. _d 0
+         ENDIF
+        ENDDO
        ENDDO
-      ENDDO
+      ELSE
+       DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+           vDragTerms(i,j) = 0. _d 0
+         ENDDO
+       ENDDO
+      ENDIF
+      IF ( no_slip_shelfice .AND. bottomVisc_pCell ) THEN
+C-    friction accounts for true distance (including hFac) to the surface
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
+           vDragTerms(i,j) = vDragTerms(i,j)
+     &                     * _recip_hFacS(i,j,k,bi,bj)
+         ENDDO
+       ENDDO
+      ENDIF
+
+C--   Add Linear drag:
+      IF ( SHELFICEDragLinear.NE.zeroRL ) THEN
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
+         IF ( k.EQ.MAX( kTopC(i,j-1,bi,bj),kTopC(i,j,bi,bj) ) ) THEN
+           vDragTerms(i,j) = vDragTerms(i,j)
+     &      - _recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &      * SHELFICEDragLinear
+     &      * vFld(i,j)
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDIF
+
+C--   Add quadratic drag
+      IF ( SHELFICEselectDragQuadr.EQ.0 ) THEN
+C-    average grid-cell-center KE to get velocity norm @ U.pt
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
+          vSq = 0. _d 0
+          IF ( k.EQ.MAX( kTopC(i,j-1,bi,bj),kTopC(i,j,bi,bj) ) ) THEN
+           vSq = KE(i,j)+KE(i,j-1)
+          ENDIF
+          IF ( vSq.GT.zeroRL ) THEN
+           vDragTerms(i,j) = vDragTerms(i,j)
+     &      - _recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &      * SHELFICEDragQuadratic*SQRT(vSq)
+     &      * vFld(i,j)
+          ENDIF
+        ENDDO
+       ENDDO
+      ELSEIF ( SHELFICEselectDragQuadr.EQ.1 ) THEN
+C-    calculate locally velocity norm @ U.pt (local U & 4 V averaged)
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
+          vSq = 0. _d 0
+          IF ( k.EQ.MAX( kTopC(i,j-1,bi,bj),kTopC(i,j,bi,bj) ) ) THEN
+           vSq = vFld(i,j)*vFld(i,j)
+     &       + ( (uFld( i ,j-1)*uFld( i ,j-1)*hFacW( i ,j-1,k,bi,bj)
+     &           +uFld( i , j )*uFld( i , j )*hFacW( i , j ,k,bi,bj))
+     &         + (uFld(i+1,j-1)*uFld(i+1,j-1)*hFacW(i+1,j-1,k,bi,bj)
+     &           +uFld(i+1, j )*uFld(i+1, j )*hFacW(i+1, j ,k,bi,bj))
+     &         )*recip_hFacS(i,j,k,bi,bj)*0.25 _d 0
+          ENDIF
+          IF ( vSq.GT.zeroRL ) THEN
+           vDragTerms(i,j) = vDragTerms(i,j)
+     &      - _recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &      * SHELFICEDragQuadratic*SQRT(vSq)
+     &      * vFld(i,j)
+          ENDIF
+        ENDDO
+       ENDDO
+      ELSEIF ( SHELFICEselectDragQuadr.EQ.2 ) THEN
+C-    same as above but using wet-point method to average 4 V
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
+          vSq = 0. _d 0
+          IF ( k.EQ.MAX( kTopC(i,j-1,bi,bj),kTopC(i,j,bi,bj) ) ) THEN
+           vSq = ( hFacW( i ,j-1,k,bi,bj) + hFacW( i , j ,k,bi,bj) )
+     &         + ( hFacW(i+1,j-1,k,bi,bj) + hFacW(i+1, j ,k,bi,bj) )
+           IF ( vSq.GT.zeroRL ) THEN
+            vSq = vFld(i,j)*vFld(i,j)
+     &        +( (uFld( i ,j-1)*uFld( i ,j-1)*hFacW( i ,j-1,k,bi,bj)
+     &           +uFld( i , j )*uFld( i , j )*hFacW( i , j ,k,bi,bj))
+     &         + (uFld(i+1,j-1)*uFld(i+1,j-1)*hFacW(i+1,j-1,k,bi,bj)
+     &           +uFld(i+1, j )*uFld(i+1, j )*hFacW(i+1, j ,k,bi,bj))
+     &         )/vSq
+           ELSE
+            vSq = vFld(i,j)*vFld(i,j)
+           ENDIF
+          ENDIF
+          IF ( vSq.GT.zeroRL ) THEN
+           vDragTerms(i,j) = vDragTerms(i,j)
+     &      - _recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &      * SHELFICEDragQuadratic*SQRT(vSq)
+     &      * vFld(i,j)
+          ENDIF
+        ENDDO
+       ENDDO
+      ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF (useDiagnostics) THEN
+      IF ( useDiagnostics .AND.
+     &     ( no_slip_shelfice .OR. SHELFICEDragLinear.NE.zeroRL
+     &                        .OR. SHELFICEselectDragQuadr.GE.0 )
+     &   ) THEN
         CALL DIAGNOSTICS_FILL(vDragTerms,'SHIVDrag',k,1,2,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
