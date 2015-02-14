@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2122 2015/02/05 19:33:03 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2123 2015/02/14 22:29:29 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice:
+  - implement alternative discretisation of quadratic drag (selectBotDragQuadr)
+    and true distance in no-slip BC (bottomVisc_pCell) similar to bottom-drag.
+  - fix sign of friction tendency (no-slip BC) and fix u,v drag for thin
+    ice-shelf case (i.e., within surface level).
 o model/src:
   - fix bug (Thanks to Matt) in function SW_TEMP (to convert Pot.Temp to
     in-situ Temp) and in routine SW_TEMP (in pkg/openad);
