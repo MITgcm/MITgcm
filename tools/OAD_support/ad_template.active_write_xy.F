@@ -1,4 +1,4 @@
-! $Header: /u/gcmpack/MITgcm/tools/OAD_support/ad_template.active_write_xy.F,v 1.1 2015/02/11 00:09:55 heimbach Exp $
+! $Header: /u/gcmpack/MITgcm/tools/OAD_support/ad_template.active_write_xy.F,v 1.2 2015/02/14 23:56:59 heimbach Exp $
 ! $Name:  $
 
 #include "OPENAD_OPTIONS.h"
@@ -36,6 +36,7 @@ C     !FUNCTIONS
 #ifdef ALLOW_OPENAD_ACTIVE_WRITE
 
       myNr = 1
+      globalFile = .FALSE.
       useCurrentDir = .FALSE.
 
       if (our_rev_mode%plain) then
