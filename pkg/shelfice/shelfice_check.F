@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_check.F,v 1.8 2013/04/11 18:50:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_check.F,v 1.9 2015/02/14 16:09:25 mlosch Exp $
 C $Name:  $
 #include "SHELFICE_OPTIONS.h"
 
@@ -31,6 +31,103 @@ C     msgBuf   :: Informational/error message buffer
       errCount = 0
 
       WRITE(msgBuf,'(A)') 'SHELFICE_CHECK: #define ALLOW_SHELFICE'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
+
+C     print shelfice summary here before checking the parameter combinations
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') 
+     &     'SHELFICE_CHECK: start of SHELFICE config. summary'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
+C     
+       CALL WRITE_0D_L( SHELFICEisOn, INDEX_NONE,
+     &   'SHELFICEisOn =', ' /* package is turned on */')
+       CALL WRITE_0D_L( SHELFICEwriteState, INDEX_NONE,
+     &   'SHELFICEwriteState  =', ' /* do simple standard output */')
+       CALL WRITE_0D_L( SHELFICE_dump_mdsio, INDEX_NONE,
+     &   'SHELFICE_dump_mdsio =', ' /* use mdsio for snapshots */')
+       CALL WRITE_0D_L( SHELFICE_tave_mdsio, INDEX_NONE,
+     &   'SHELFICE_tave_mdsio =', ' /* use mdsio for time averages */')
+       CALL WRITE_0D_L( SHELFICE_dump_mnc, INDEX_NONE,
+     &   'SHELFICE_dump_mnc   =', ' /* use netcdf for snapshots */')
+       CALL WRITE_0D_L( SHELFICE_tave_mnc, INDEX_NONE,
+     &   'SHELFICE_tave_mnc   =', ' /* use netcdf for time averages */')
+       CALL WRITE_0D_RL( SHELFICE_dumpFreq, INDEX_NONE,
+     & 'SHELFICE_dumpFreq =', ' /* analoguous to dumpFreq */')
+       CALL WRITE_0D_RL( SHELFICE_taveFreq, INDEX_NONE,
+     & 'SHELFICE_taveFreq =', ' /* analoguous to taveFreq */')
+C
+       CALL WRITE_0D_L( useISOMIPTD, INDEX_NONE,
+     &   'useISOMIPTD =', ' /* use simple isomip thermodynamics */')
+       CALL WRITE_0D_L( SHELFICEconserve, INDEX_NONE,
+     &   'SHELFICEconserve =', 
+     &      ' /* use a conservative form of boundary conditions */')
+       CALL WRITE_0D_L( SHELFICEboundaryLayer, INDEX_NONE,
+     &   'SHELFICEboundaryLayer =',
+     &   ' /* use simple boundary layer scheme to suppress noise */')
+       CALL WRITE_0D_L( SHELFICEadvDiffHeatFlux, INDEX_NONE,
+     &   'SHELFICEadvDiffHeatFlux =', 
+     &   ' /* use adv.-diff. instead of just diff. heat flux into'//
+     &   ' the ice shelf */')
+       CALL WRITE_0D_L( SHELFICEMassStepping, INDEX_NONE,
+     &   'SHELFICEMassStepping =',
+     &   ' /* step forward ice shelf mass/thickness */')
+       CALL WRITE_0D_L( no_slip_shelfice, INDEX_NONE,
+     &   'no_slip_shelfice =', ' /* use no slip boundary conditions */')
+       CALL WRITE_0D_RL( SHELFICEdragLinear, INDEX_NONE,
+     & 'SHELFICEdragLinear    =', ' /* linear drag coefficient */')
+       CALL WRITE_0D_RL( SHELFICEdragQuadratic, INDEX_NONE,
+     & 'SHELFICEdragQuadratic =', ' /* quadratic drag coefficient */')
+       CALL WRITE_0D_RL( SHELFICElatentHeat, INDEX_NONE,
+     & 'SHELFICElatentHeat      =', ' /* latent heat of ice */')
+       CALL WRITE_0D_RL( SHELFICEheatCapacity_Cp, INDEX_NONE,
+     & 'SHELFICEheatCapacity_Cp =', ' /* heat capacity of ice shelf */')
+       CALL WRITE_0D_RL( rhoShelfice, INDEX_NONE,
+     & 'rhoShelfice   =', ' /* density of ice shelf */')
+       CALL WRITE_0D_RL( SHELFICEkappa, INDEX_NONE,
+     & 'SHELFICEkappa =', ' /* thermal conductivity of ice shelf */')
+       CALL WRITE_0D_RL( SHELFICEthetaSurface, INDEX_NONE,
+     & 'SHELFICEthetaSurface =',' /* surface temperature above i.s. */')
+       CALL WRITE_0D_RL( SHELFICEheatTransCoeff, INDEX_NONE,
+     & 'SHELFICEheatTransCoeff =', ' /* heat transfer coefficient */')
+       CALL WRITE_0D_RL( SHELFICEsaltTransCoeff, INDEX_NONE,
+     & 'SHELFICEsaltTransCoeff =', ' /* salt transfer coefficient */')
+C     
+       CALL WRITE_0D_L( SHELFICEuseGammaFrict, INDEX_NONE,
+     &   'SHELFICEuseGammaFrict =', 
+     &   ' /* use velocity dependent exchange coefficients */')
+       IF ( SHELFICEuseGammaFrict ) THEN
+        CALL WRITE_0D_RL( shiCdrag, INDEX_NONE,
+     & 'shiCdrag   =', ' /* quadr. drag coefficient for uStar */')
+        CALL WRITE_0D_RL( shiZetaN, INDEX_NONE,
+     & 'shiZetaN   =', ' /* parameter for gammaTurb */')
+        CALL WRITE_0D_RL( shiRc, INDEX_NONE,
+     & 'shiRc      =', ' /* parameter for gammaTurb (not used) */')
+        CALL WRITE_0D_RL( shiPrandtl, INDEX_NONE,
+     & 'shiPrandtl =', ' /* const. Prandtl No. for gammaTurb */')
+        CALL WRITE_0D_RL( shiSchmidt, INDEX_NONE,
+     & 'shiSchmidt =', ' /* const. Schmidt No. for gammaTurb */')
+        CALL WRITE_0D_RL( shiKinVisc, INDEX_NONE,
+     & 'shiKinVisc =', ' /* const. kin. viscosity for gammaTurb */')
+       ENDIF
+C
+      CALL WRITE_0D_C( SHELFICEloadAnomalyFile, -1, INDEX_NONE, 
+     &  'SHELFICEloadAnomalyFile =',
+     &  ' /* file name of loaded loadAnomaly field */')
+      CALL WRITE_0D_C( SHELFICEmassFile, -1, INDEX_NONE, 
+     &  'SHELFICEmassFile =', ' /* file name of loaded mass field */')
+      CALL WRITE_0D_C( SHELFICEtopoFile, -1, INDEX_NONE, 
+     &  'SHELFICEtopoFile =',
+     &  ' /* file name of loaded under-ice topography */')
+      CALL WRITE_0D_C( SHELFICEMassDynTendFile, -1, INDEX_NONE, 
+     &  'SHELFICEMassDynTendFile =',
+     &  ' /* file name of loaded dynamic mass tendency field */')
+C
+      WRITE(msgBuf,'(A)') 
+     &     'SHELFICE_CHECK: end of SHELFICE config. summary'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT, myThid )
 
