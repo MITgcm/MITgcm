@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_forcing_surf.F,v 1.2 2015/02/02 22:13:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_forcing_surf.F,v 1.3 2015/02/14 22:28:57 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -63,12 +63,26 @@ C--   Zero out surface forcing terms below ice-shelf
           ENDIF
          ENDDO
         ENDDO
+        DO j=1-OLy,sNy+OLy
+         DO i=2-OLx,sNx+OLx
+          IF ( MAX( kTopC(i-1,j,bi,bj), kTopC(i,j,bi,bj) ).NE.0 ) THEN
+            surfaceForcingU(i,j,bi,bj) = 0.
+          ENDIF
+         ENDDO
+        ENDDO
+        DO j=2-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          IF ( MAX( kTopC(i,j-1,bi,bj), kTopC(i,j,bi,bj) ).NE.0 ) THEN
+            surfaceForcingV(i,j,bi,bj) = 0.
+          ENDIF
+         ENDDO
+        ENDDO
 
 C--   Forcing term
 
         IF ( .NOT.SHELFICEboundaryLayer ) THEN
 C-    for now, forcing using SHELFICEboundaryLayer is done separately
-C     (calling SHELFICE_FORCING_T & _S from EXTERNAL_FORCING_T & _S)
+C     (calling SHELFICE_FORCING_T & _S from APPLY_FORCING_T & _S)
 
          DO j=1,sNy
           DO i=1,sNx
