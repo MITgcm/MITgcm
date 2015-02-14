@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.17 2015/02/14 16:07:59 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.18 2015/02/14 21:55:57 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -20,7 +20,7 @@ C     SHELFICEtopoFile         :: File containing the topography of the
 C                                 shelfice draught (unit=m)
 C     SHELFICEmassFile         :: name of shelfice Mass file
 C     SHELFICEloadAnomalyFile  :: name of shelfice load anomaly file
-C     SHELFICEMassDynTendFile  :: file name for other mass tendency 
+C     SHELFICEMassDynTendFile  :: file name for other mass tendency
 C                                 (e.g. dynamics)
 C     useISOMIPTD              :: use simple ISOMIP thermodynamics, def: F
 C     SHELFICEconserve         :: use conservative form of H&O-thermodynamics
@@ -30,14 +30,14 @@ C                                 accounts for melting/freezing & dynamics
 C                                 (from file or from coupling), def: F
 C     SHELFICEboundaryLayer    :: turn on vertical merging of cells to for a
 C                                 boundary layer of drF thickness, def: F
-C     SHELFICEadvDiffHeatFlux  :: use advective-diffusive heat flux into the 
+C     SHELFICEadvDiffHeatFlux  :: use advective-diffusive heat flux into the
 C                                 ice shelf instead of default diffusive heat
 C                                 flux, see Holland and Jenkins (1999),
 C                                 eq.21,22,26,31; def: F
 C     SHELFICEheatTransCoeff   :: constant heat transfer coefficient that
-C                                 determines heat flux into shelfice 
+C                                 determines heat flux into shelfice
 C                                 (def: 1e-4 m/s)
-C     SHELFICEsaltTransCoeff   :: constant salinity transfer coefficient that 
+C     SHELFICEsaltTransCoeff   :: constant salinity transfer coefficient that
 C                                 determines salt flux into shelfice
 C                                 (def: 5.05e-3 * 1e-4 m/s)
 C     -----------------------------------------------------------------------
@@ -48,7 +48,7 @@ C     shiCdrag                 :: quadratic drag coefficient to compute uStar
 C                                 (def: 0.0015)
 C     shiZetaN                 :: ??? (def: 0.052)
 C     shiRc                    :: ??? (not used, def: 0.2)
-C     shiPrandtl, shiSchmidt   :: constant Prandtl (13.8) and Schmidt (2432.0) 
+C     shiPrandtl, shiSchmidt   :: constant Prandtl (13.8) and Schmidt (2432.0)
 C                                 numbers used to compute gammaTurb
 C     shiKinVisc               :: constant kinetic viscosity used to compute
 C                                 gammaTurb (def: 1.95e-5)
@@ -79,7 +79,7 @@ C     shelfIceMassDynTendency :: other mass balance tendency  (kg/m^2/s)
 C                            ::  (e.g., from dynamics)
 C     shelficeLoadAnomaly    :: pressure load anomaly of shelfice (Pa)
 C     shelficeHeatFlux       :: upward heat flux (W/m^2)
-C     shelficeFreshWaterFlux :: upward fresh water flux (virt. salt flux) 
+C     shelficeFreshWaterFlux :: upward fresh water flux (virt. salt flux)
 C                               (kg/m^2/s)
 C     shelficeForcingT       :: analogue of surfaceForcingT
 C                               units are  r_unit.Kelvin/s (=Kelvin.m/s if r=z)
@@ -89,8 +89,10 @@ C-----------------------------------------------------------------------
 C \ev
 CEOP
 
-      COMMON /SHELFICE_PARMS_I/  kTopC
+      COMMON /SHELFICE_PARMS_I/  kTopC,
+     &     SHELFICEselectDragQuadr
       INTEGER kTopC (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER SHELFICEselectDragQuadr
 
       COMMON /SHELFICE_PARMS_R/
      &     SHELFICE_dumpFreq, SHELFICE_taveFreq,

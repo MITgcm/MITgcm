@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.21 2014/12/22 22:51:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.22 2015/02/14 21:55:57 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -107,6 +107,7 @@ C Set defaults values for parameters in SHELFICE.h
       no_slip_shelfice         = no_slip_bottom
       SHELFICEDragLinear       = bottomDragLinear
       SHELFICEDragQuadratic    = UNSET_RL
+      SHELFICEselectDragQuadr  = -1
       SHELFICEwriteState       = .FALSE.
       SHELFICE_dumpFreq        = dumpFreq
       SHELFICE_taveFreq        = taveFreq
@@ -164,6 +165,11 @@ C Set quadratic bottom drag depending on choices:
        ELSE
         SHELFICEDragQuadratic = bottomDragQuadratic
        ENDIF
+      ENDIF
+      IF ( SHELFICEDragQuadratic.EQ.0. _d 0 ) THEN
+        SHELFICEselectDragQuadr = -1
+      ELSEIF ( SHELFICEselectDragQuadr.EQ.-1 ) THEN
+        SHELFICEselectDragQuadr = MAX( 0, selectBotDragQuadr )
       ENDIF
 
 C-    Set Output type flags :
