@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.15 2015/01/31 00:36:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.16 2015/02/15 00:23:03 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -220,6 +220,13 @@ c     ENDIF
 
        diagName  = 'SHIgammS'
        diagTitle = 'Ice shelf exchange coefficient for salt'
+       diagUnits = 'm/s             '
+       diagCode  = 'SM      L1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'SHIuStar'
+       diagTitle = 'Friction velocity at bottom of ice shelf'
        diagUnits = 'm/s             '
        diagCode  = 'SM      L1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
