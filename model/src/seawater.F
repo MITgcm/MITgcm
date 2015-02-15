@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/seawater.F,v 1.9 2015/02/05 19:23:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/seawater.F,v 1.10 2015/02/15 16:47:32 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -110,35 +110,10 @@ C     PR     :: reference pressure
 CEOP
 
 C     !FUNCTIONS:
-      _RL sw_adtg
-      EXTERNAL sw_adtg
+      _RL sw_ptmp
+      EXTERNAL sw_ptmp
 
-C     !LOCAL VARIABLES:
-      _RL del_P ,del_th, th, q
-      _RL onehalf, two, three
-      PARAMETER ( onehalf = 0.5 _d 0, two = 2. _d 0, three = 3. _d 0 )
-
-C theta1
-C--   here we swap P and PR in order to get in-situ temperature
-C     del_P  = PR - P ! to get potential from in-situ temperature
-      del_P  = P - PR ! to get in-situ from potential temperature
-      del_th = del_P*sw_adtg(S,T,PR)
-      th     = T + onehalf*del_th
-      q      = del_th
-C theta2
-      del_th = del_P*sw_adtg(S,th,PR+onehalf*del_P)
-
-      th     = th + (1 - 1/sqrt(two))*(del_th - q)
-      q      = (two-sqrt(two))*del_th + (-two+three/sqrt(two))*q
-
-C theta3
-      del_th = del_P*sw_adtg(S,th,PR+onehalf*del_P)
-      th     = th + (1 + 1/sqrt(two))*(del_th - q)
-      q      = (two + sqrt(two))*del_th + (-two-three/sqrt(two))*q
-
-C theta4
-      del_th = del_P*sw_adtg(S,th,PR+del_P)
-      SW_temp= th + (del_th - two*q)/(two*three)
+      SW_temp = SW_PTMP (S,T,PR,P)
 
       RETURN
       END
