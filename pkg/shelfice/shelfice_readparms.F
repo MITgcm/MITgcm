@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.22 2015/02/14 21:55:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.23 2015/02/15 00:19:35 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -98,7 +98,6 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEMassDynTendFile  = ' '
       SHELFICElatentHeat       =  334.0 _d 3
       SHELFICEHeatCapacity_Cp  = 2000.0 _d 0
-      recip_SHELFICElatentHeat =    0.0 _d 0
       rhoShelfIce              =  917.0 _d 0
       SHELFICEheatTransCoeff   =    1.0 _d -04
       SHELFICEsaltTransCoeff   = UNSET_RL
@@ -152,8 +151,6 @@ C Close the open data file
       CLOSE(iUnit)
 
 C Now set-up any remaining parameters that result from the input parameters
-      IF ( SHELFICElatentHeat .NE. 0. _d 0 )
-     &     recip_SHELFICElatentHeat = 1. _d 0/SHELFICElatentHeat
       IF ( SHELFICEsaltTransCoeff .EQ. UNSET_RL )
      &     SHELFICEsaltTransCoeff =
      &     5.05 _d -3 *SHELFICEheatTransCoeff

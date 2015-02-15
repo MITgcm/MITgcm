@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.40 2014/12/22 22:51:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.41 2015/02/15 00:19:35 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -95,6 +95,7 @@ C     drKp1, recip_drLoc
       _RL cFac, rFac, dFac, fwflxFac
       _RL aqe, bqe, cqe, discrim, recip_aqe
       _RL drKp1, recip_drLoc
+      _RL recip_latentHeat
       _RL tmpFac
 
 #ifdef SHI_ALLOW_GAMMAFRICT
@@ -158,6 +159,9 @@ C     instead of etastar = sqrt(1+zetaN*ustar./(f*Lo*Rc))
       ENDIF
 #endif /* SHI_ALLOW_GAMMAFRICT */
 
+      recip_latentHeat = 0. _d 0
+      IF ( SHELFICElatentHeat .NE. 0. _d 0 )
+     &     recip_latentHeat = 1. _d 0/SHELFICElatentHeat
 C     are we doing the conservative form of Jenkins et al. (2001)?
       recip_Cp = 1. _d 0 / HeatCapacity_Cp
       cFac = 0. _d 0
@@ -368,7 +372,7 @@ C     thus a downward (negative upward) fresh water flux (as a mass flux),
 C     and vice versa
             shelfIceFreshWaterFlux(I,J,bi,bj) =
      &           - shelfIceHeatFlux(I,J,bi,bj)
-     &           *recip_SHELFICElatentHeat
+     &           *recip_latentHeat
 C--   compute surface tendencies
             shelficeForcingT(i,j,bi,bj) =
      &           - shelfIceHeatFlux(I,J,bi,bj)

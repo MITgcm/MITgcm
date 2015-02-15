@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.18 2015/02/14 21:55:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.19 2015/02/15 00:19:35 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -98,7 +98,7 @@ CEOP
      &     SHELFICE_dumpFreq, SHELFICE_taveFreq,
      &     SHELFICEheatTransCoeff, SHELFICEsaltTransCoeff,
      &     rhoShelfice, SHELFICEkappa,
-     &     SHELFICElatentHeat, recip_SHELFICElatentHeat,
+     &     SHELFICElatentHeat, 
      &     SHELFICEheatCapacity_Cp,
      &     SHELFICEthetaSurface,
      &     SHELFICEDragLinear, SHELFICEDragQuadratic,
@@ -112,7 +112,6 @@ CEOP
       _RL SHELFICEheatCapacity_Cp
       _RL rhoShelfice
       _RL SHELFICEkappa
-      _RL recip_SHELFICElatentHeat
       _RL SHELFICEDragLinear
       _RL SHELFICEDragQuadratic
       _RL SHELFICEthetaSurface
