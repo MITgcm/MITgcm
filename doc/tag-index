@@ -1,14 +1,28 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2123 2015/02/14 22:29:29 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2124 2015/02/15 17:54:23 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src/seawater.F:
+  - simplify SW_TEMP to just calling SW_PTMP with P and PR exchanged
+    (following the matlab code), which would have avoided the bug caught
+    by Matt (see below) in the first place
 o pkg/shelfice:
   - implement alternative discretisation of quadratic drag (selectBotDragQuadr)
     and true distance in no-slip BC (bottomVisc_pCell) similar to bottom-drag.
   - fix sign of friction tendency (no-slip BC) and fix u,v drag for thin
     ice-shelf case (i.e., within surface level).
+  - add config summary in shelfice_check.F
+  - remove global variable recip_SHELFICElatentHeat and replace by a local
+    variable recip_latentHeat
+  - introduce diagnostics for friction velocity uStar (in case of
+    SHELFICEuseGammaFrict) 
+  - change verification experiment isomip.htd:
+    + start from pickup (as input_ad at nIter0=8640)
+    + start from SHELFICEmassFile instead of SHELFICEloadAnomaly file
+    + test SHELFICEuseGammaFrict = .TRUE.
+    + test SHELFICEadvDiffHeatFlux = .TRUE.
 o model/src:
   - fix bug (Thanks to Matt) in function SW_TEMP (to convert Pot.Temp to
     in-situ Temp) and in routine SW_TEMP (in pkg/openad);
