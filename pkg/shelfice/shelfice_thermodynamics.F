@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.43 2015/02/15 00:31:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.44 2015/02/15 15:46:24 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -575,8 +575,10 @@ C     Transfer coefficients
        CALL DIAGNOSTICS_FILL(shiTransCoeffS,'SHIgammS',
      &      0,1,0,1,1,myThid)
 C     Friction velocity
+#ifdef SHI_ALLOW_GAMMAFRICT
        IF ( SHELFICEuseGammaFrict )
      &  CALL DIAGNOSTICS_FILL(uStarDiag,'SHIuStar',0,1,0,1,1,myThid)
+#endif /* SHI_ALLOW_GAMMAFRICT */
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
