@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.42 2015/02/15 00:23:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.43 2015/02/15 00:31:03 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -209,9 +209,9 @@ C     where this value is part of the protocol
           shelfIceFreshWaterFlux(I,J,bi,bj) = 0. _d 0
           shelficeForcingT      (I,J,bi,bj) = 0. _d 0
           shelficeForcingS      (I,J,bi,bj) = 0. _d 0
-#ifdef ALLOW_DIAGNOSTICS
+#if (defined SHI_ALLOW_GAMMAFRICT && defined ALLOW_DIAGNOSTICS)
           uStarDiag             (I,J,bi,bj) = 0. _d 0
-#endif /* ALLOW_DIAGNOSTICS */
+#endif /* SHI_ALLOW_GAMMAFRICT and ALLOW_DIAGNOSTICS */
          ENDDO
         ENDDO
        ENDDO
