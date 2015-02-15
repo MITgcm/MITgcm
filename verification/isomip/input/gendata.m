@@ -115,3 +115,12 @@ for ix=1:nx
 end
 fid=fopen(['phi0surf.exp1.' eos],'w','b'); fwrite(fid,phi0surf,acc);fclose(fid);
 
+return
+% this matlab code requires that you have already run the MITgcm once to
+% produce rSurfC
+dir0='res_ref/';
+rSurf0=rdmds([dir0,'rSurfC']);
+fid = fopen(['phi0surf.exp1.' eos],'r','b');  
+pLoadAn=fread(fid,[nx ny],acc); fclose(fid);
+mIce=pLoadAn/gravity-rSurf0*rhoConst;
+%fid=fopen('iceShelf_Mass.bin','w','b'); fwrite(fid,mIce,acc);fclose(fid);
