@@ -5,8 +5,10 @@
  SHELFICEconserve = .TRUE.,
  SHELFICEboundaryLayer = .TRUE.,
  SHELFICEtopoFile='icetopo.exp1',
- SHELFICEloadAnomalyFile = 'phi0surf.exp1.jmd95z',
- no_slip_shelfice = .false.,
+#SHELFICEloadAnomalyFile = 'phi0surf.exp1.jmd95z',
+ SHELFICEmassFile='iceShelf_Mass.bin',
+ SHELFICEadvDiffHeatFlux = .TRUE.,
+ no_slip_shelfice = .FALSE.,
+ SHELFICEuseGammaFrict = .TRUE.,
  SHELFICEwriteState = .TRUE.,
- SHELFICEuseGammaFrict = .FALSE.,
  &
