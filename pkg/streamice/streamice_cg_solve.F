@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve.F,v 1.7 2014/10/12 13:26:43 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve.F,v 1.8 2015/02/16 16:46:44 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -103,6 +103,8 @@ C     LOCAL VARIABLES
 
 #ifdef ALLOW_PETSC
 
+      if (streamice_use_petsc) then
+
       CALL STREAMICE_CG_SOLVE_PETSC(
      U         cg_Uin,     ! x-velocities
      U         cg_Vin,     ! y-velocities
@@ -118,7 +120,9 @@ C     LOCAL VARIABLES
      I         myThid )
 
 
-#else  /* ALLOW_PETSC */
+      else
+
+#endif  /* ALLOW_PETSC */
 
 
       iters = maxIter
@@ -520,7 +524,10 @@ c     if iters has reached max_iters there is no convergence
 !       _EXCH_XY_RL( cg_Uin, myThid )
 !       _EXCH_XY_RL( cg_Vin, myThid )        
 
-#endif /* ifndef ALLOW_PETSC */
+
+#ifdef ALLOW_PETSC
+      endif   !if (streamice_use_petsc)
+#endif
 
 #else /* STREAMICE_SERIAL_TRISOLVE */
 

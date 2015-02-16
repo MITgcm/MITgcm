@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.13 2015/01/24 15:34:32 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.14 2015/02/16 16:46:44 dgoldberg Exp $
 C $Name:  $
 
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -210,6 +210,7 @@ C     -------------------------- LOGICAL PARAMS --------------------------------
       LOGICAL STREAMICE_chkfixedptconvergence
       LOGICAL STREAMICE_chkresidconvergence
       LOGICAL STREAMICE_allow_cpl
+      LOGICAL STREAMICE_use_petsc
       
 
 C     The following parameters specify periodic boundary conditions.
@@ -235,7 +236,7 @@ C      LOGICAL STREAMICE_hybrid_stress
      & STREAMICE_h_ctrl_const_surf,
      & STREAMICE_chkfixedptconvergence,
      & STREAMICE_chkresidconvergence,
-     & STREAMICE_allow_cpl
+     & STREAMICE_allow_cpl, streamice_use_petsc
 
 C     -------------------------- AND NOW ARRAYS ---------------------------------------------------
 

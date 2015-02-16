@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_vel_fp_err.F,v 1.3 2014/09/09 23:01:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_vel_fp_err.F,v 1.4 2015/02/16 16:46:45 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -21,9 +21,7 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "STREAMICE.h"
 #include "STREAMICE_CG.h"
-!#ifdef ALLOW_PETSC
-!#include "finclude/petsc.h"
-!#endif
+
 
 C     !INPUT/OUTPUT ARGUMENTS
       _RL err_max

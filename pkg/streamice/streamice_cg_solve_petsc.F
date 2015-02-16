@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve_petsc.F,v 1.2 2014/09/05 14:25:11 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve_petsc.F,v 1.3 2015/02/16 16:46:44 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -128,6 +128,8 @@ C     LOCAL VARIABLES
 !      call petscInitialize(PETSC_NULL_CHARACTER,ierr)
 
 !----------------------
+
+      CALL TIMER_START ('STREAMICE_PETSC_SETUP',myThid)
 
       call VecCreate(PETSC_COMM_WORLD, rhs, ierr)
       call VecSetSizes(rhs, local_dofs, global_dofs, ierr)
@@ -339,13 +341,30 @@ C     LOCAL VARIABLES
        CASE ('ILU')
        PRINT *, "PETSC PRECOND: SELECTED ILU"
        call PCSetType(pc, PCILU, ierr)
+
+       CASE ('GAMG')
+       PRINT *, "PETSC PRECOND: SELECTED GAMG"
+       call PCSetType(pc, PCGAMG, ierr)
+       call PCGAMGSetCoarseEqLim(pc,10000,ierr)
+       call PCGAMGSetSymGraph(pc, PETSC_TRUE,ierr)
+       call PCGAMGSetNSmooths(pc, 0,ierr)
+       call PCGAMGSetThreshold(pc, .001,ierr)
+!       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
+
        CASE DEFAULT
        PRINT *, "PETSC PRECOND: SELECTED DEFAULT"
        call PCSetType(pc, PCBJACOBI, ierr)
       END SELECT
 
 
+      CALL TIMER_STOP ('STREAMICE_PETSC_SETUP',myThid)
+
+      CALL TIMER_START ('STREAMICE_PETSC_SOLVE',myThid)
+
       call KSPSolve(ksp, rhs, solution, ierr)
+
+      CALL TIMER_STOP ('STREAMICE_PETSC_SOLVE',myThid)
+
       call KSPGetIterationNumber(ksp,iters,ierr)
 
       call VecGetValues(solution,local_dofs,indices,

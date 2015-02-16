@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.9 2014/09/09 23:09:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.10 2015/02/16 16:46:45 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -25,9 +25,7 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "STREAMICE.h"
 #include "STREAMICE_CG.h"
-!#ifdef ALLOW_PETSC
-!#include "finclude/petsc.h"
-!#endif
+
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -58,10 +56,7 @@ C     LOCAL VARIABLES
       _RL max_vel, tempu, tempv, err_lastchange, cgtol
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL CONVERGED
-#ifdef ALLOW_PETSC
-!      myThidTemp = myThid
-!      call streamice_initialize_petsc (myThidTemp)
-#endif
+
 !       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 !       _RL taudy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
@@ -323,10 +318,7 @@ C       but after convergence loop does nothing
        ENDIF ! (err_max .GT. streamice_nonlin_tol * err_init)
       ENDDO
 
-#ifdef ALLOW_PETSC
-!      call streamice_finalize_petsc (myThidTemp)
-!      call streamice_finalize_petsc (myThid)
-#endif
+
 
 C END NL ITER. LOOP
 C-------------------------------------------------------------------

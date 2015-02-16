@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_velmask_upd.F,v 1.8 2014/09/09 23:09:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_velmask_upd.F,v 1.9 2015/02/16 16:46:45 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -226,7 +226,9 @@ C     === Global variables ===
 
 #ifdef ALLOW_PETSC
       myThidCopy = myThid
+      if (streamice_use_petsc) then
       call streamice_petsc_numerate (myThidCopy)
+      endif
 #endif
 
 #endif

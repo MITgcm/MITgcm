@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_finalize_petsc.F,v 1.1 2013/08/24 20:32:03 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_finalize_petsc.F,v 1.2 2015/02/16 16:46:45 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -16,6 +16,11 @@ C     \============================================================/
       IMPLICIT NONE
 
 C     === Global variables ===
+#include "SIZE.h"
+#include "GRID.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "STREAMICE.h"
 #ifdef ALLOW_PETSC
 #include "finclude/petsc.h"
 #endif
@@ -27,8 +32,12 @@ C     !INPUT/OUTPUT ARGUMENTS
 #ifdef ALLOW_STREAMICE
 
 #ifdef ALLOW_PETSC
+
       PetscErrorCode ierr
+
+      if (streamice_use_petsc) then
       call PetscFinalize(ierr)
+      endif
 
 #endif
 

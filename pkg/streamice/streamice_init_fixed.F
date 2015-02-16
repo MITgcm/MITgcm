@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.9 2014/09/13 15:24:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.10 2015/02/16 16:46:45 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -46,7 +46,9 @@ C     === Local variables ===
 #endif
 
 #ifdef ALLOW_PETSC
+      if (streamice_use_petsc) then
       CALL STREAMICE_INITIALIZE_PETSC
+      endif
 #endif
 
 #ifdef ALLOW_MNC
