@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_control.F,v 1.13 2014/04/04 23:03:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_control.F,v 1.14 2015/02/17 14:31:42 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -96,7 +96,7 @@ C     !LOCAL VARIABLES:
       INTEGER il
       LOGICAL w_globFile
       _RS  dummyRS(1)
-      _RL  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
+      _RL  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 CEOP
 
 C     force 64-bit io
@@ -135,7 +135,7 @@ C     adjoint variable file. These files are tiled.
 
           CALL MDS_WRITE_FIELD(
      I                adfname, prec, globalFile, useCurrentDir,
-     I                'RL', myNr, 1, myNr,
+     I                'RL', Nr, 1, myNr,
      I                active_data_t, dummyRS,
      I                iRec, myOptimIter, myThid )
 
@@ -148,7 +148,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_FIELD(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr, 1, myNr,
+     I                'RL', Nr, 1, myNr,
      O                active_data_t, dummyRS,
      I                iRec, myThid )
 
@@ -170,7 +170,7 @@ C     Store the result on disk.
         w_globFile = .FALSE.
         CALL MDS_WRITE_FIELD(
      I                activeVar_file, prec, w_globFile, useCurrentDir,
-     I                'RL', myNr, 1, myNr,
+     I                'RL', Nr, 1, myNr,
      I                active_data_t, dummyRS,
      I                iRec, myOptimIter, myThid )
 
@@ -277,7 +277,7 @@ C     !LOCAL VARIABLES:
       INTEGER prec
       INTEGER il
       LOGICAL w_globFile
-      _RS  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
+      _RS  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  dummyRL(1)
 CEOP
 
@@ -317,7 +317,7 @@ C     adjoint variable file. These files are tiled.
 
           CALL MDS_WRITE_FIELD(
      I                adfname, prec, globalFile, useCurrentDir,
-     I                'RS', myNr, 1, myNr,
+     I                'RS', Nr, 1, myNr,
      I                dummyRL, active_data_t,
      I                iRec, myOptimIter, myThid )
 
@@ -330,7 +330,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_FIELD(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr, 1, myNr,
+     I                'RS', Nr, 1, myNr,
      O                dummyRL, active_data_t,
      I                iRec, myThid )
 
@@ -352,7 +352,7 @@ C     Store the result on disk.
         w_globFile = .FALSE.
         CALL MDS_WRITE_FIELD(
      I                activeVar_file, prec, w_globFile, useCurrentDir,
-     I                'RS', myNr, 1, myNr,
+     I                'RS', Nr, 1, myNr,
      I                dummyRL, active_data_t,
      I                iRec, myOptimIter, myThid )
 
@@ -445,7 +445,7 @@ C     !LOCAL VARIABLES:
       INTEGER  bi,bj
       INTEGER  prec
       _RS  dummyRS(1)
-      _RL  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
+      _RL  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 CEOP
 
 C     force 64-bit io
@@ -465,7 +465,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_FIELD(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr, 1, myNr,
+     I                'RL', Nr, 1, myNr,
      O                active_data_t, dummyRS,
      I                iRec, myThid )
 
@@ -485,7 +485,7 @@ C     Add active_var from appropriate location to data.
         ENDDO
         CALL MDS_WRITE_FIELD(
      I                activeVar_file, prec, globalFile, useCurrentDir,
-     I                'RL', myNr, 1, myNr,
+     I                'RL', Nr, 1, myNr,
      I                active_data_t, dummyRS,
      I                iRec, myOptimIter, myThid )
 
@@ -563,7 +563,7 @@ C     !LOCAL VARIABLES:
       INTEGER  i,j,k
       INTEGER  bi,bj
       INTEGER  prec
-      _RS  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
+      _RS  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  dummyRL(1)
 CEOP
 
@@ -584,7 +584,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_FIELD(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr, 1, myNr,
+     I                'RS', Nr, 1, myNr,
      O                dummyRL, active_data_t,
      I                iRec, myThid )
 
@@ -604,7 +604,7 @@ C     Add active_var from appropriate location to data.
         ENDDO
         CALL MDS_WRITE_FIELD(
      I                activeVar_file, prec, globalFile, useCurrentDir,
-     I                'RS', myNr, 1, myNr,
+     I                'RS', Nr, 1, myNr,
      I                dummyRL, active_data_t,
      I                iRec, myOptimIter, myThid )
 
