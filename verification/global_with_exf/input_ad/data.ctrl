@@ -1,0 +1,87 @@
+#
+#
+# *********************
+# ECCO controlvariables
+# *********************
+ &CTRL_NML
+# doSinglePrecTapelev=.TRUE.,
+# 
+ xx_hfluxstartdate1 = 19920101,
+ xx_hfluxstartdate2 = 000000,
+ xx_hfluxperiod     = 864000.0,
+#
+ xx_sfluxstartdate1 = 19920101,
+ xx_sfluxstartdate2 = 000000,
+ xx_sfluxperiod     = 864000.0,
+#
+ xx_tauustartdate1 = 19920101,
+ xx_tauustartdate2 = 000000,
+ xx_tauuperiod     = 864000.0,
+#
+ xx_tauvstartdate1 = 19920101,
+ xx_tauvstartdate2 = 000000,
+ xx_tauvperiod     = 864000.0,
+#
+ xx_atempstartdate1 = 19920101,
+ xx_atempstartdate2 = 000000,
+ xx_atempperiod     = 864000.0,
+#
+ xx_aqhstartdate1 = 19920101,
+ xx_aqhstartdate2 = 000000,
+ xx_aqhperiod     = 864000.0,
+#
+ xx_precipstartdate1 = 19920101,
+ xx_precipstartdate2 = 000000,
+ xx_precipperiod     = 864000.0,
+#
+ xx_swfluxstartdate1 = 19920101,
+ xx_swfluxstartdate2 = 000000,
+ xx_swfluxperiod     = 864000.0,
+#
+ xx_swdownstartdate1 = 19920101,
+ xx_swdownstartdate2 = 000000,
+ xx_swdownperiod     = 864000.0,
+#
+ xx_lwfluxstartdate1 = 19920101,
+ xx_lwfluxstartdate2 = 000000,
+ xx_lwfluxperiod     = 864000.0,
+#
+ xx_lwdownstartdate1 = 19920101,
+ xx_lwdownstartdate2 = 000000,
+ xx_lwdownperiod     = 864000.0,
+#
+ xx_evapstartdate1 = 19920101,
+ xx_evapstartdate2 = 000000,
+ xx_evapperiod     = 864000.0,
+#
+ xx_snowprecipstartdate1 = 19920101,
+ xx_snowprecipstartdate2 = 000000,
+ xx_snowprecipperiod     = 864000.0,
+#
+ xx_apressurestartdate1 = 19920101,
+ xx_apressurestartdate2 = 000000,
+ xx_apressureperiod     = 864000.0,
+#
+ xx_uwindstartdate1 = 19920101,
+ xx_uwindstartdate2 = 000000,
+ xx_uwindperiod     = 864000.0,
+#
+ xx_vwindstartdate1 = 19920101,
+ xx_vwindstartdate2 = 000000,
+ xx_vwindperiod     = 864000.0,
+#
+ xx_sststartdate1 = 19920101,
+ xx_sststartdate2 = 000000,
+ xx_sstperiod     = 864000.0,
+#
+ xx_sssstartdate1 = 19920101,
+ xx_sssstartdate2 = 000000,
+ xx_sssperiod     = 864000.0,
+#
+ &
+#
+# *********************
+# names for ctrl_pack/unpack
+# *********************
+ &CTRL_PACKNAMES
+ &

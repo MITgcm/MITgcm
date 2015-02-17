@@ -1,0 +1,8 @@
+# Packages
+ &PACKAGES
+  useEXF         = .TRUE.,
+  useGrdchk      = .TRUE.,
+  useGMRedi      = .TRUE.,
+##  useDiagnostics = .TRUE.,
+ &
+  
