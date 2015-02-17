@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.28 2014/10/22 14:59:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.29 2015/02/17 14:33:31 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -90,10 +90,11 @@ c     == local variables ==
       integer localrec, obsrec
       integer nrecloop
 
-      _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
-      _RL localdif   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
-      _RL difmask    (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
+      _RL localtmp   (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
+      _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
+      _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
+      _RL localdif   (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
+      _RL difmask    (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
 
       character*(128) fname1, fname2, fname3
 
@@ -119,9 +120,10 @@ c--   Initialise local variables.
           num_local(bi,bj) = 0. _d 0
         enddo
       enddo
-      call ecco_zero(localobs,nnzobs,zeroRL,myThid)
-      call ecco_zero(localdif,nnzobs,zeroRL,myThid)
-      call ecco_zero(difmask,nnzobs,zeroRL,myThid)
+      call ecco_zero(localtmp,Nr,zeroRL,myThid)
+      call ecco_zero(localobs,Nr,zeroRL,myThid)
+      call ecco_zero(localdif,Nr,zeroRL,myThid)
+      call ecco_zero(difmask,Nr,zeroRL,myThid)
 
 c--   Assign mask
       if ( ylocmask .EQ. 'C' .OR. ylocmask .EQ. 'c' ) then
@@ -153,11 +155,11 @@ c--     determine records and file names
 
 c--     load model average and observed average
         call ecco_zero(localbar,nnzbar,zeroRL,myThid)
-        call cost_genread( fname1, localbar, irec, nnzbar,
+        call cost_genread( fname1, localbar, localtmp, irec, nnzbar,
      &       nrecloc, preproc, preproc_c, preproc_i, preproc_r, 
      &       dummy, mythid )
 
-        call ecco_zero(localobs,nnzobs,spzeroloc,myThid)
+        call ecco_zero(localobs,Nr,spzeroloc,myThid)
         if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) )
      &  call mdsreadfield( fname2, cost_iprec, cost_yftype, nnzobs,
      &         localobs, localrec, mythid )
@@ -168,7 +170,8 @@ c--     Compute masked model-data difference
      &     localdif, difmask, myThid )
 
 #ifdef ALLOW_SMOOTH
-      if ( (useSMOOTH).AND.(posproc(1).EQ.'smooth') )
+      if ( (useSMOOTH).AND.(posproc(1).EQ.'smooth').AND.
+     &     (nnzbar.EQ.1).AND.(nnzobs.EQ.1) )
      &  call smooth_hetero2d(localdif,maskc,
      &     posproc_c(1),posproc_i(1),mythid)
 #endif
