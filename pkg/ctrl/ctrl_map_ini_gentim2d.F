@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.4 2015/01/23 18:57:44 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.5 2015/02/17 13:54:21 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -22,7 +22,6 @@ C     !USES:
       IMPLICIT NONE
 
 C     == global variables ==
-#ifndef ALLOW_OPENAD
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -41,13 +40,11 @@ C     == global variables ==
 #ifdef ALLOW_AUTODIFF
 #include "tamc.h"
 #endif
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
       INTEGER myThid
 
-#ifndef ALLOW_OPENAD
 #ifdef ALLOW_GENTIM2D_CONTROL
 C     !LOCAL VARIABLES:
 C     == local variables ==
@@ -55,6 +52,8 @@ C     == local variables ==
       integer smoothOpNb
       character*(80) fnamegenIn
       character*(80) fnamegenOut
+      character*(80) fnamebase
+      character*(80) fnamegeneric
       integer startrec
       integer endrec
       integer diffrec
@@ -82,9 +81,12 @@ C--   generic 2D control variables
        startrec=0
        endrec=0
 
+#ifndef ALLOW_OPENAD
        if (xx_gentim2d_weight(iarr).NE.' ') then
+#endif
 
-        call ctrl_init_rec ( xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
+        fnamebase = xx_gentim2d_file(iarr)
+        call ctrl_init_rec ( fnamebase,
      I       xx_gentim2d_startdate1(iarr),
      I       xx_gentim2d_startdate2(iarr),
      I       xx_gentim2d_period(iarr),
@@ -93,11 +95,12 @@ C--   generic 2D control variables
      O       diffrec, startrec, endrec,
      I       myThid )
 
-        ilgen=ilnblnk( xx_gentim2d_file(iarr) )
+        fnamebase = xx_gentim2d_file(iarr)
+        ilgen=ilnblnk( fnamebase )
         write(fnamegenIn(1:80),'(2a,i10.10)')
-     &       xx_gentim2d_file(iarr)(1:ilgen), '.', optimcycle
+     &       fnamebase(1:ilgen),'.',optimcycle
         write(fnamegenOut(1:80),'(2a,i10.10)')
-     &       xx_gentim2d_file(iarr)(1:ilgen),'.effective.',optimcycle
+     &       fnamebase(1:ilgen),'.effective.',optimcycle
 
         smoothOpNb=1
         do k2 = 1, maxCtrlProc
@@ -132,11 +135,13 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gentim2d_dummy(iarr) )
 
+#ifndef ALLOW_OPENAD
         do k2 = 1, maxCtrlProc
          if (xx_gentim2d_preproc(k2,iarr).EQ.'variaweight')
      &     call mdsreadfield( xx_gentim2d_weight(iarr), ctrlprec, 'RL',
      &     1, wgentim2d(1-Olx,1-Oly,1,1,iarr), irec, myThid )
         enddo
+#endif
 
 #ifdef ALLOW_SMOOTH
          IF ( ctrlSmoothCorrel2D ) THEN
@@ -186,13 +191,14 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
         ENDDO
         ENDDO
 
+#ifndef ALLOW_OPENAD
        endif
+#endif
 
 c-- end iarr loop
       ENDDO
 
 #endif /* ALLOW_GENTIM2D_CONTROL */
-#endif /* ALLOW_OPENAD */
 
       RETURN
       END
