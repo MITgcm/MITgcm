@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.40 2015/01/28 12:33:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.41 2015/02/18 12:31:10 heimbach Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -81,6 +81,7 @@ c     == local variables ==
       _RL tmpfldyz (1-oly:sny+oly,nr,nsx,nsy)
 #endif
       _RL loctmp2d (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL loctmp3d (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
 
       character*(80) fname
 
@@ -697,16 +698,16 @@ ce      --> this index does not exist yet.
 #endif
      &                                            ) then
 
-         call active_read_xyz( fname, tmpfld3d, 1,
+         call active_read_xyz( fname, loctmp3d, 1,
      &                         doglobalread, ladinit, optimcycle,
      &                         mythid, dummy)
          if ( myProcId .EQ. grdchkwhichproc )
-     &   xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
+     &   xx_comp_ref = loctmp3d( itilepos,jtilepos,layer,itile,jtile )
          if ( myProcId .EQ. grdchkwhichproc )
      &   xx_comp_pert = xx_comp_ref + localEps
          if ( myProcId .EQ. grdchkwhichproc )
-     &   tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
-         call active_write_xyz( fname, tmpfld3d, 1,
+     &   loctmp3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
+         call active_write_xyz( fname, loctmp3d, 1,
      &                          optimcycle,
      &                          mythid, dummy)
 

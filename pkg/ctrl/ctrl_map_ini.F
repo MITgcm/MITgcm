@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.44 2014/10/21 13:13:40 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.45 2015/02/18 12:31:10 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -124,14 +124,8 @@ c--   Temperature field.
      $          tmpfld3d(i,j,k,bi,bj)=
      $          sign(2.0/sqrt(wtheta(k,bi,bj)),tmpfld3d(i,j,k,bi,bj))
 #endif
-#ifdef ALLOW_OPENAD
-                theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj) +
-     &                               fac*xx_theta(i,j,k,bi,bj) +
-     &                               fac*tmpfld3d(i,j,k,bi,bj)
-#else
                 theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
-#endif
 #ifndef DISABLE_CTRL_THETA_LIMIT
                 if(theta(i,j,k,bi,bj).lt.-2.0)
      &               theta(i,j,k,bi,bj)= -2.0
@@ -164,14 +158,8 @@ c--   Temperature field.
      $          tmpfld3d(i,j,k,bi,bj)=
      $          sign(2.0/sqrt(wsalt(k,bi,bj)),tmpfld3d(i,j,k,bi,bj))
 #endif
-#ifdef ALLOW_OPENAD
-                salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj) +
-     &                               fac*xx_salt(i,j,k,bi,bj) +
-     &                               fac*tmpfld3d(i,j,k,bi,bj)
-#else
                 salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
-#endif
 
               enddo
             enddo
@@ -267,14 +255,8 @@ c--   diffkr.
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-#ifdef ALLOW_OPENAD
-                diffkr(i,j,k,bi,bj) = diffkr(i,j,k,bi,bj) +
-     &                                xx_diffkr(i,j,k,bi,bj) +
-     &                                tmpfld3d(i,j,k,bi,bj)
-#else
                 diffkr(i,j,k,bi,bj) = diffkr(i,j,k,bi,bj) +
      &                                tmpfld3d(i,j,k,bi,bj)
-#endif
               enddo
             enddo
           enddo
