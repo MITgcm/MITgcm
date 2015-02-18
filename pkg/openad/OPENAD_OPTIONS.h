@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/OPENAD_OPTIONS.h,v 1.2 2014/12/31 17:57:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/OPENAD_OPTIONS.h,v 1.3 2015/02/18 12:40:35 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -20,7 +20,9 @@ CEOP
 
 #ifdef ALLOW_OPENAD
 
-#undef ALLOW_OPENAD_ACTIVE_FILE
+#undef ALLOW_OPENAD_ACTIVE_READ_XY
+#undef ALLOW_OPENAD_ACTIVE_READ_XYZ
+#undef ALLOW_OPENAD_ACTIVE_WRITE
 
 #endif /* ALLOW_OPENAD */
 #endif /* OPENAD_OPTIONS_H */

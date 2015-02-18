@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/externalDummies.F,v 1.6 2015/02/11 00:09:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/externalDummies.F,v 1.7 2015/02/18 12:40:35 heimbach Exp $
 C $Name:  $
 
 #include "OPENAD_OPTIONS.h"
@@ -161,6 +161,35 @@ C ###########################################################
       end subroutine
 #endif /* ALLOW_STREAMICE */
 C ###########################################################
+      subroutine active_read_xyz(
+     I                           active_var_file,
+     O                           active_var,
+     I                           iRec,
+     I                           doglobalread,
+     I                           lAdInit,
+     I                           myOptimIter,
+     I                           myThid,
+     I                           dummy
+     &                         )
+! xxx template ad_template.active_read_xyz.f90
+        implicit none
+!     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+      CHARACTER*(80) active_var_file
+      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      INTEGER iRec
+      INTEGER myOptimIter
+      INTEGER myThid
+      LOGICAL doglobalread
+      LOGICAL lAdInit
+      _RL     dummy
+#ifdef ALLOW_OPENAD_ACTIVE_READ_XYZ
+      active_var = dummy + active_var
+      dummy = active_var(1,1,1,1,1) + dummy
+#endif /* ALLOW_OPENAD_ACTIVE_READ_XY */
+      end subroutine
+C ###########################################################
       subroutine active_read_xy(
      I                           active_var_file,
      O                           active_var,
@@ -171,7 +200,7 @@ C ###########################################################
      I                           myThid,
      I                           dummy
      &                         )
-! xxx template oad_template.active_read_xy.f90
+! xxx template ad_template.active_read_xy.f90
         implicit none
 !     == global variables ==
 #include "EEPARAMS.h"
@@ -184,10 +213,10 @@ C ###########################################################
       LOGICAL doglobalread
       LOGICAL lAdInit
       _RL     dummy
-#ifdef ALLOW_OPENAD_ACTIVE_FILE
+#ifdef ALLOW_OPENAD_ACTIVE_READ_XY
       active_var = dummy + active_var
       dummy = active_var(1,1,1,1) + dummy
-#endif /* ALLOW_OPENAD_ACTIVE_FILE */
+#endif /* ALLOW_OPENAD_ACTIVE_READ_XY */
       end subroutine
 C ###########################################################
       subroutine active_write_xy(

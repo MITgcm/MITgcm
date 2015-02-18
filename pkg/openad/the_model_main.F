@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.15 2015/02/11 00:09:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.16 2015/02/18 12:40:35 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -487,6 +487,7 @@ C     Temporarily change setting of writeBinaryPrec
       tmpprec = writeBinaryPrec
       writeBinaryPrec = ctrlprec
       WRITE(suff,'(I10.10)') optimcycle
+#   ifndef ALLOW_OPENAD_ACTIVE_READ_XYZ
 #   ifdef ALLOW_THETA0_CONTROL
       foo=xx_theta%d
       il=ilnblnk( xx_theta_file )
@@ -508,6 +509,8 @@ C     Temporarily change setting of writeBinaryPrec
      &     'ad',xx_diffkr_file(1:il),'.'
       call write_fld_xyz_rl(fname,suff,foo,myIter,1)
 #   endif
+#   endif /* ALLOW_OPENAD_ACTIVE_READ_XYZ */
+
 #   ifdef ALLOW_TAUU0_CONTROL
       foo2D=fu%d
       il=ilnblnk( xx_tauu_file )
@@ -550,7 +553,7 @@ C     Temporarily change setting of writeBinaryPrec
      &     'ad',xx_etan_file(1:il),'.'
       call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
 #   endif
-#   ifndef ALLOW_OPENAD_ACTIVE_FILE
+#   ifndef ALLOW_OPENAD_ACTIVE_READ_XY
 #    ifdef ALLOW_GENARR2D_CONTROL
       do ik = 1, maxCtrlArr2D
         foo2d=xx_genarr2d(:,:,:,:,ik)%d
@@ -565,7 +568,7 @@ C     Temporarily change setting of writeBinaryPrec
         call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
       enddo
 #    endif
-#   endif /* ALLOW_OPENAD_ACTIVE_FILE */
+#   endif /* ALLOW_OPENAD_ACTIVE_READ_XY */
 #   ifdef ALLOW_GENARR3D_CONTROL
       do ik = 1, maxCtrlArr3D
         foo=xx_genarr3d(:,:,:,:,:,ik)%d
