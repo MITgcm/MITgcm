@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2124 2015/02/15 17:54:23 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2125 2015/02/18 16:11:59 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/testreport:
+  - fix two non-POSIX sed statements so that there are no error messages
+    on Mac OS X 
+  - replace hostname -s with hostname | sed 's/\..*$//'
 o model/src/seawater.F:
   - simplify SW_TEMP to just calling SW_PTMP with P and PR exchanged
     (following the matlab code), which would have avoided the bug caught
