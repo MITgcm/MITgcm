@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/externalDummies.F,v 1.7 2015/02/18 12:40:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/externalDummies.F,v 1.8 2015/02/18 20:24:14 heimbach Exp $
 C $Name:  $
 
 #include "OPENAD_OPTIONS.h"
@@ -187,7 +187,7 @@ C ###########################################################
 #ifdef ALLOW_OPENAD_ACTIVE_READ_XYZ
       active_var = dummy + active_var
       dummy = active_var(1,1,1,1,1) + dummy
-#endif /* ALLOW_OPENAD_ACTIVE_READ_XY */
+#endif /* ALLOW_OPENAD_ACTIVE_READ_XYZ */
       end subroutine
 C ###########################################################
       subroutine active_read_xy(

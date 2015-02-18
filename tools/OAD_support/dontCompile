@@ -1,4 +1,3 @@
-external_forcing
 mom_u_implicit_r
 mom_v_implicit_r
 gad_som_advect
