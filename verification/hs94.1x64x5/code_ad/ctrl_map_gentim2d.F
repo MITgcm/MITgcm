@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/ctrl_map_gentim2d.F,v 1.4 2014/09/22 14:03:51 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/ctrl_map_gentim2d.F,v 1.5 2015/02/18 20:47:01 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -92,7 +92,7 @@ C--   generic - user-defined control vars
 C
        fnamebase = xx_gentim2d_file(iarr)
        CALL CTRL_GET_GEN (
-     I      fnamebase(1:MAX_LEN_FNAM),
+     I      xx_gentim2d_file(iarr),
      I      xx_gentim2d_startdate(1,iarr),
      I      xx_gentim2d_period(iarr),
      I      maskC,
