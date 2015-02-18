@@ -1,12 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2125 2015/02/18 16:11:59 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2126 2015/02/18 21:16:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification:
+  - reduce length of the AD test run by half for experiments
+    global_ocean.cs32x15 (std + thsice) and isomip
 o verification/testreport:
   - fix two non-POSIX sed statements so that there are no error messages
-    on Mac OS X 
+    on Mac OS X
   - replace hostname -s with hostname | sed 's/\..*$//'
 o model/src/seawater.F:
   - simplify SW_TEMP to just calling SW_PTMP with P and PR exchanged
@@ -21,7 +24,7 @@ o pkg/shelfice:
   - remove global variable recip_SHELFICElatentHeat and replace by a local
     variable recip_latentHeat
   - introduce diagnostics for friction velocity uStar (in case of
-    SHELFICEuseGammaFrict) 
+    SHELFICEuseGammaFrict)
   - change verification experiment isomip.htd:
     + start from pickup (as input_ad at nIter0=8640)
     + start from SHELFICEmassFile instead of SHELFICEloadAnomaly file
