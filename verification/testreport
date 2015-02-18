@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.198 2014/11/11 15:45:57 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.199 2015/02/18 16:11:31 mlosch Exp $
 #  $Name:  $
 #
 
@@ -1370,8 +1370,10 @@ BASE="tr_"$MACH"_"$DATE"_"
 if test "x$OUTDIR" != x ; then
     BASE="tr_"$OUTDIR"_"$DATE"_"
 else
-   #short_name=`hostname | sed 's/\..*$//'`
-    short_name=`hostname -s | tr '[:upper:]' '[:lower:]'`
+   #short_name=`hostname -s | tr '[:upper:]' '[:lower:]'`
+   # hostname -s is not universal (does work on AIX system)
+   short_name=`hostname | sed 's/\..*$//' | tr '[:upper:]' '[:lower:]'`
+   
     BASE="tr_"$short_name"_"$DATE"_"
 fi
 DNUM=0
@@ -1677,12 +1679,20 @@ for dir in $TESTDIRS ; do
 	if test -f $dir/$builddir/Makefile ; then
 	    mkOpt=`grep '^# OPTFILE=' $dir/$builddir/Makefile 2>/dev/null | head -1 | sed 's/^# //'`
 	    echo "from '$dir/$builddir/Makefile', extract:" > $DRESULTS/genmake_state
-	    sed -n '/^# executed by:/,+1 p' $dir/$builddir/Makefile >> $DRESULTS/genmake_state
+#	    sed -n '/^# executed by:/,+1 p' $dir/$builddir/Makefile >> $DRESULTS/genmake_state
+# bsd-sed cannot do the above code
+	    cat $dir/$builddir/Makefile | \
+		sed  -n '/^# executed by:/{N
+                                           p
+                                           }' >> $DRESULTS/genmake_state
 	    echo " $mkOpt" >> $DRESULTS/genmake_state
 	    if test "x$OPTFILE" = xNONE ; then
 		eval $mkOpt
-		sed "/^No \"OPTFILE\" was specified ; genmake2/a\  OPTFILE=${OPTFILE}"\
-			$SUMMARY > tmp.tr_log
+#		sed "/^No \"OPTFILE\" was specified ; genmake2/a\  OPTFILE=${OPTFILE}"\
+#			$SUMMARY > tmp.tr_log
+# bsd-sed requires a newline after "a\":
+		sed "/^No \"OPTFILE\" was specified ; genmake2/a\\
+                         OPTFILE=${OPTFILE}" $SUMMARY > tmp.tr_log
 		RETVAL=$?
 		if test "x$RETVAL" = x0 ; then
 		    cp -f tmp.tr_log $SUMMARY
