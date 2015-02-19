@@ -1,25 +1,29 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_diagnostics_init.F,v 1.3 2010/08/06 18:37:05 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_diagnostics_init.F,v 1.4 2015/02/19 15:44:12 mlosch Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
+CBOP 
 C !ROUTINE: GGL90_DIAGNOSTICS_INIT
-
 C !INTERFACE:
       SUBROUTINE GGL90_DIAGNOSTICS_INIT( myThid )
 
-C     !DESCRIPTION:
-C     Initialize list of all available diagnostics
+C     !DESCRIPTION: \bv
+C     *================================================================*
+C     | Initialize list of all available diagnostics
+C     *================================================================*
+C     \ev
 
 C     !USES:
       IMPLICIT NONE
+C     === Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GGL90.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
 C     myThid ::  my Thread Id number
       INTEGER myThid
 CEOP
@@ -40,7 +44,7 @@ c     INTEGER       diagMate
       CHARACTER*16  diagCode
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
-
+CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
         diagName  = 'GGL90TKE'
@@ -84,6 +88,87 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         diagCode  = 'SM      LR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GGL90flx'
+        diagTitle = 'Surface flux of TKE                       '
+        diagUnits = 'm^3/s^3         '
+        diagCode  = 'SM      L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+
+        diagName  = 'GGL90tau'
+        diagTitle = 'Work done by the wind                     '
+        diagUnits = 'm^3/s^3         '
+        diagCode  = 'SM      L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#ifdef ALLOW_GGL90_IDEMIX
+        diagName  = 'IDEMIX_E'
+        diagTitle = 'IDEMIX internal wave energy            '
+        diagUnits = 'm^2/s^2         '
+        diagCode  = 'SM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'IDEMIX_c'
+        diagTitle = 'IDEMIX vertical group velocity             '
+        diagUnits = 'm/s             '
+        diagCode  = 'SM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'IDEMIX_v'
+        diagTitle = 'IDEMIX horizontal group velocity           '
+        diagUnits = 'm/s             '
+        diagCode  = 'SM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'IDEMIX_t'  ! m^2/s^3 /(m^4/s^4)
+        diagTitle = 'IDEMIX dissipation constant                '
+        diagUnits = 's/m^2           '
+        diagCode  = 'SM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'IDEMIX_K'
+        diagTitle = 'IDEMIX vertical diffusivity                '
+        diagUnits = 'm^2/s           '
+        diagCode  = 'SM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'IDEMIX_F'
+        diagTitle = 'IDEMIX Forcing by gm                       '
+        diagUnits = 'm^2/s^3         '
+        diagCode  = 'SM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'IDEM_F_b'
+        diagTitle = 'Tidal forcing at bottom                    '
+        diagUnits = 'm^3/s^3         '
+        diagCode  = 'SM      L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'IDEM_F_s'
+        diagTitle = 'Wind forcing at surface                   '
+        diagUnits = 'm^3/s^3         '
+        diagCode  = 'SM      L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'IDEM_F_g'
+        diagTitle = 'Integrated GM forcing                     '
+        diagUnits = 'm^3/s^3         '
+        diagCode  = 'SM      L1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#endif
 
 #endif /* ALLOW_DIAGNOSTICS */
 

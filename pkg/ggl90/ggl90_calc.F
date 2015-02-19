@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.26 2014/08/14 16:42:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.27 2015/02/19 15:44:12 mlosch Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -51,7 +51,6 @@ C     myThid :: My Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEOP
 
 #ifdef ALLOW_GGL90
 
@@ -86,6 +85,7 @@ c     _RL     Nsquare
 c     _RL     SQRTTKE
       _RL     SQRTTKE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     RiNumber
+      _RL     IDEMIX_RiNumber
       _RL     TKEdissipation
       _RL     tempU, tempV, prTemp
       _RL     MaxLength, tmpmlx, tmpVisc
@@ -96,6 +96,9 @@ c     _RL     SQRTTKE
       _RL     KappaE           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     totalDepth       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     GGL90visctmp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#ifdef ALLOW_DIAGNOSTICS
+      _RL     surf_flx_tke     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif /* ALLOW_DIAGNOSTICS */
 C-    tri-diagonal matrix
       _RL     a3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     b3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -115,6 +118,7 @@ C     gTKE     :: right hand side of diffusion equation
 #endif /* ALLOW_GGL90_HORIZDIFF */
 #ifdef ALLOW_GGL90_SMOOTH
       _RL p4, p8, p16
+CEOP
       p4=0.25 _d 0
       p8=0.125 _d 0
       p16=0.0625 _d 0
@@ -156,6 +160,11 @@ C     Initialize local fields
         SQRTTKE(i,j,1) = SQRT( GGL90TKE(i,j,1,bi,bj) )
        ENDDO
       ENDDO
+
+#ifdef ALLOW_GGL90_IDEMIX
+      IF ( useIDEMIX) CALL GGL90_IDEMIX(
+     &   bi, bj, sigmaR, myTime, myIter, myThid )
+#endif /* ALLOW_GGL90_IDEMIX */
 
 C     start k-loop
       DO k = 2, Nr
@@ -378,11 +387,16 @@ C     ... across y-faces
 C     Compute divergence of fluxes
         DO j=1-OLy,sNy+OLy-1
          DO i=1-OLx,sNx+OLx-1
-          hFac = min(.5 _d 0,_hFacC(i,j,k-1,bi,bj) ) +
-     &          min(.5 _d 0,_hFacC(i,j,k  ,bi,bj) )
+#ifdef ALLOW_GGL90_IDEMIX
+          gTKE(i,j) = -recip_drC(k)*recip_rA(i,j,bi,bj)
+     &         *recip_hFacI(i,j,k,bi,bj)
+#else
+          hFac = MIN(.5 _d 0,_hFacC(i,j,k-1,bi,bj) ) +
+     &           MIN(.5 _d 0,_hFacC(i,j,k  ,bi,bj) )
           gTKE(i,j) = 0.0
-          if ( hFac .ne. 0.0 )
+          IF ( hFac .ne. 0.0 )
      &      gTKE(i,j) = -recip_drC(k)*recip_rA(i,j,bi,bj)/hFac
+#endif
      &         *((dfx(i+1,j)-dfx(i,j))
      &          +(dfy(i,j+1)-dfy(i,j)) )
          ENDDO
@@ -397,16 +411,16 @@ C     vertical shear term (dU/dz)^2+(dV/dz)^2
          tempU= .5 _d 0*( uVel(i,j,km1,bi,bj)+uVel(i+1,j,km1,bi,bj)
      &                 -( uVel(i,j,k  ,bi,bj)+uVel(i+1,j,k  ,bi,bj)) )
      &        *recip_drC(k)
+#ifdef ALLOW_GGL90_IDEMIX
+     &        *recip_hFacI(i,j,k,bi,bj)
+#endif
          tempV= .5 _d 0*( vVel(i,j,km1,bi,bj)+vVel(i,j+1,km1,bi,bj)
      &                 -( vVel(i,j,k  ,bi,bj)+vVel(i,j+1,k  ,bi,bj)) )
      &        *recip_drC(k)
+#ifdef ALLOW_GGL90_IDEMIX
+     &        *recip_hFacI(i,j,k,bi,bj)
+#endif
          verticalShear = tempU*tempU + tempV*tempV
-         RiNumber = MAX(Nsquare(i,j,k),0. _d 0)/(verticalShear+GGL90eps)
-C     compute Prandtl number (always greater than 0)
-         prTemp = 1. _d 0
-         IF ( RiNumber .GE. 0.2 _d 0 ) prTemp = 5. _d 0 * RiNumber
-         TKEPrandtlNumber(i,j,k) = MIN(10. _d 0,prTemp)
-c         TKEPrandtlNumber(i,j,k) = 1. _d 0
 
 C     viscosity and diffusivity
          KappaM = GGL90ck*GGL90mixingLength(i,j,k)*SQRTTKE(i,j,k)
@@ -415,6 +429,21 @@ C     viscosity and diffusivity
 c        note: storing GGL90visctmp like this, and using it later to compute
 c              GGL9rdiffKr etc. is robust in case of smoothing (e.g. see OPA)
          KappaM = MAX(KappaM,viscArNr(k)) * maskC(i,j,k,bi,bj)
+
+C     compute Prandtl number (always greater than 0)
+         RiNumber = MAX(Nsquare(i,j,k),0. _d 0)/(verticalShear+GGL90eps)
+CML         IDEMIX_RiNumber = 1./GGL90eps 
+#ifdef ALLOW_GGL90_IDEMIX
+         IDEMIX_RiNumber = MAX( KappaM*Nsquare(i,j,k), 0. _d 0)/
+     &    (GGL90eps+IDEMIX_tau_d(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)**2)
+         prTemp         = MIN(5.*RiNumber, 6.6*IDEMIX_RiNumber)
+#else
+         IF ( RiNumber .GE. 0.2 _d 0 ) prTemp = 5. _d 0 * RiNumber
+#endif /* ALLOW_GGL90_IDEMIX */
+         TKEPrandtlNumber(i,j,k) = MIN(10. _d 0,prTemp)
+         TKEPrandtlNumber(i,j,k) = MAX( 1. _d 0,TKEPrandtlNumber(i,j,k))
+
+c        diffusivity
          KappaH = KappaM/TKEPrandtlNumber(i,j,k)
          KappaE(i,j,k) = GGL90alpha * KappaM * maskC(i,j,k,bi,bj)
 
@@ -428,6 +457,9 @@ C     partial update with sum of explicit contributions
      &        + KappaM*verticalShear
      &        - KappaH*Nsquare(i,j,k)
      &        - TKEdissipation
+#ifdef ALLOW_GGL90_IDEMIX
+     &        + IDEMIX_tau_d(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)**2
+#endif
      &        )
         ENDDO
        ENDDO
@@ -469,6 +501,9 @@ C-    No need for maskC(k-1) with recip_hFacC(k-1)
      &        *recip_drF(k-1)*recip_hFacC(i,j,k-1,bi,bj)
      &        *.5 _d 0*(KappaE(i,j, k )+KappaE(i,j,km1))
      &        *recip_drC(k)*maskC(i,j,k,bi,bj)
+#ifdef ALLOW_GGL90_IDEMIX
+     &        *recip_hFacI(i,j,k,bi,bj)
+#endif
         ENDDO
        ENDDO
       ENDDO
@@ -489,9 +524,23 @@ C-    No need for maskC(k) with recip_hFacC(k)
      &        *recip_drF( k ) * recip_hFacC(i,j,k,bi,bj)
      &        *.5 _d 0*(KappaE(i,j,k)+KappaE(i,j,kp1))
      &        *recip_drC(k)*maskC(i,j,k-1,bi,bj)
+#ifdef ALLOW_GGL90_IDEMIX
+     &        *recip_hFacI(i,j,k,bi,bj)
+#endif
         ENDDO
        ENDDO
       ENDDO
+
+      IF (.NOT.GGL90_dirichlet) THEN
+C      Neumann bottom boundary condition for TKE: no flux from bottom
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         kBottom   = MAX(kLowC(i,j,bi,bj),1)
+         c3d(i,j,kBottom) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDIF
+
 C--   Center diagonal
       DO k=1,Nr
        km1 = MAX(k-1,1)
@@ -523,13 +572,20 @@ C     Dirichlet surface boundary condition for TKE
         GGL90TKE(i,j,kp1,bi,bj) = GGL90TKE(i,j,kp1,bi,bj)
      &               - a3d(i,j,kp1)*GGL90TKE(i,j,kSurf,bi,bj)
         a3d(i,j,kp1) = 0. _d 0
-C     Dirichlet bottom boundary condition for TKE = GGL90TKEbottom
-        kBottom   = MAX(kLowC(i,j,bi,bj),1)
-        GGL90TKE(i,j,kBottom,bi,bj) = GGL90TKE(i,j,kBottom,bi,bj)
-     &                              - GGL90TKEbottom*c3d(i,j,kBottom)
-        c3d(i,j,kBottom) = 0. _d 0
        ENDDO
       ENDDO
+
+      IF (GGL90_dirichlet) THEN
+C      Dirichlet bottom boundary condition for TKE = GGL90TKEbottom
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         kBottom   = MAX(kLowC(i,j,bi,bj),1)
+         GGL90TKE(i,j,kBottom,bi,bj) = GGL90TKE(i,j,kBottom,bi,bj)
+     &                              - GGL90TKEbottom*c3d(i,j,kBottom)
+         c3d(i,j,kBottom) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDIF
 
 C     solve tri-diagonal system
       CALL SOLVE_TRIDIAGONAL( iMin,iMax, jMin,jMax,
@@ -667,8 +723,38 @@ C     ===============================
      &                          0,Nr, 2, bi, bj, myThid )
          CALL DIAGNOSTICS_FILL( GGL90mixingLength,'GGL90Lmx',
      &                          0,Nr, 2, bi, bj, myThid )
+
+      kp1 = MIN(Nr,kSurf+1)
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+c        diagnose surface flux of TKE   
+         surf_flx_tke(i,j) =(GGL90TKE(i,j,kSurf,bi,bj)-
+     &                       GGL90TKE(i,j,kp1,bi,bj))
+     &        *recip_drF(kSurf)*recip_hFacC(i,j,kSurf,bi,bj)
+     &        *KappaE(i,j,kp1)
+
+       ENDDO
+      ENDDO
+      CALL DIAGNOSTICS_FILL(surf_flx_tke,'GGL90flx',
+     &                      0,1,1,bi,bj,myThid)
+
+      k=kSurf
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+c        diagnose work done by the wind
+         surf_flx_tke(i,j) =
+     &     .5 _d 0*( surfaceForcingU(i,  j,bi,bj)*uvel(i  ,j,k,bi,bj)
+     &              +surfaceForcingU(i+1,j,bi,bj)*uvel(i+1,j,k,bi,bj))
+     &  +  .5 _d 0*( surfaceForcingV(i,j,  bi,bj)*vvel(i,j  ,k,bi,bj)
+     &              +surfaceForcingV(i,j+1,bi,bj)*vvel(i,j+1,k,bi,bj))
+       ENDDO
+      ENDDO
+      CALL DIAGNOSTICS_FILL(surf_flx_tke,'GGL90tau',
+     &                      0,1,1,bi,bj,myThid)
+
+
       ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_GGL90 */
 

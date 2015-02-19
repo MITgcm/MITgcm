@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/GGL90.h,v 1.6 2012/08/08 22:22:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/GGL90.h,v 1.7 2015/02/19 15:44:12 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_GGL90
@@ -36,6 +36,13 @@ C     GGL90TKEFile    - File with initial field of TKE
 C     GGL90mixingLengthMin - Mininum mixing length
 C     mxlMaxFlag      - Flag for limiting mixing-length method (default=0)
 C     mxlSurfFlag     - Flag to force mixing near ocean surface (default=.FALSE.)
+C
+C     useIDEMIX       - turn on internal wave mixing contribution modeled by
+C                       IDEMIX:
+C                     - Olbers, D. and Eden, C. (2013) 
+C                       doi:10.1175/JPO-D-12-0207.1
+C                     - Eden, C. and Olbers, D. (2014) 
+C                       doi:10.1175/JPO-D-13-0224.1
 C
 C     GGL90dumpFreq   - analogue of dumpFreq (= default)
 C     GGL90taveFreq   - analogue of taveFreq (= default)
@@ -81,20 +88,60 @@ CEOP
       _RL GGL90viscArU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL GGL90viscArV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL GGL90diffKr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-c      _RL recip_hFacI(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#ifdef ALLOW_GGL90_IDEMIX
+      _RL       hFacI(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL recip_hFacI(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif /* ALLOW_GGL90_IDEMIX */
       COMMON /GGL90_FIELDS/ GGL90TKE,
      &     GGL90viscArU, GGL90viscArV, GGL90diffKr
-c     &     ,recip_hFacI
+#ifdef ALLOW_GGL90_IDEMIX
+     &     , recip_hFacI, hFacI
+#endif /* ALLOW_GGL90_IDEMIX */
 
       LOGICAL GGL90isOn, GGL90mixingMaps, GGL90writeState
-      LOGICAL mxlSurfFlag
+      LOGICAL GGL90_dirichlet, mxlSurfFlag, useIDEMIX
       COMMON /GGL90_PARMS_L/
      &     GGL90isOn, GGL90mixingMaps, GGL90writeState,
-     &     mxlSurfFlag
+     &     GGL90_dirichlet, mxlSurfFlag, useIDEMIX
 
 #ifdef ALLOW_GGL90_SMOOTH
       COMMON /GGL90_CORNER/ mskCor
       _RL mskCor(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
+
+
+#ifdef ALLOW_GGL90_IDEMIX
+c-----------------------------------------------------------------------
+c   IDEMIX parameter
+c-----------------------------------------------------------------------
+      _RL  IDEMIX_tau_v,IDEMIX_tau_h,IDEMIX_gamma, IDEMIX_jstar
+      _RL  IDEMIX_mu0, IDEMIX_diff_min
+      _RL  IDEMIX_mixing_efficiency, IDEMIX_diff_max
+      _RL  IDEMIX_frac_F_b, IDEMIX_frac_F_s
+c-----------------------------------------------------------------------
+c      IDEMIX 3-d fields
+c-----------------------------------------------------------------------
+      _RL IDEMIX_E    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL IDEMIX_V0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL IDEMIX_tau_d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+c-----------------------------------------------------------------------
+c      IDEMIX 2-d fields
+c-----------------------------------------------------------------------
+      _RL IDEMIX_F_B(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL IDEMIX_F_S(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      COMMON /GGL90_IDEMIX_01/ IDEMIX_E,IDEMIX_v0,IDEMIX_tau_d
+     &     ,IDEMIX_F_b,IDEMIX_F_S
+     &     ,IDEMIX_tau_v,IDEMIX_tau_h,IDEMIX_gamma,IDEMIX_jstar
+     &     ,IDEMIX_mu0,IDEMIX_mixing_efficiency,IDEMIX_diff_max 
+     &     ,IDEMIX_diff_min,IDEMIX_frac_F_b, IDEMIX_frac_F_s
+
+      CHARACTER*(MAX_LEN_FNAM) 
+     &               IDEMIX_tidal_file,IDEMIX_wind_file
+      logical :: IDEMIX_include_GM,IDEMIX_include_GM_bottom
+      COMMON /GLL90_IMIX_02/ 
+     &            IDEMIX_tidal_file,IDEMIX_wind_file,
+     &            IDEMIX_include_GM,IDEMIX_include_GM_bottom
+#endif /* ALLOW_GGL90_IDEMIX */
 
 #endif /* ALLOW_GGL90 */

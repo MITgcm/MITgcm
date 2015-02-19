@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_exchanges.F,v 1.2 2009/04/28 18:15:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_exchanges.F,v 1.3 2015/02/19 15:44:12 mlosch Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -9,24 +9,28 @@ C !ROUTINE: GGL90_EXCHANGES
 C !INTERFACE: ==========================================================
       SUBROUTINE GGL90_EXCHANGES( myThid )
 
-C !DESCRIPTION:
-C     Exchange data to update overlaps for GGL90TKE
+C !DESCRIPTION: \bv
+C     *================================================================*
+C     | S/R GGL90_EXCHANGES
+C     | Exchange data to update overlaps for GGL90TKE
+C     *================================================================*
+C \ev
 
 C !USES: ===============================================================
       IMPLICIT NONE
+C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "GGL90.h"
 
-C !INPUT PARAMETERS: ===================================================
+C     !INPUT/OUTPUT PARAMETERS: ========================================
+C     == Routine arguments ==
 C  myThid               :: thread number
       INTEGER myThid
 
-C !OUTPUT PARAMETERS: ==================================================
-C  none
-
 #ifdef ALLOW_GGL90
 C !LOCAL VARIABLES: ====================================================
+C     == Local variables ==
 CEOP
 
 #ifdef ALLOW_GGL90_HORIZDIFF
@@ -35,6 +39,12 @@ C Exchange overlaps
        _EXCH_XYZ_RL(GGL90TKE,myThid)
       ENDIF
 #endif /* ALLOW_GGL90_HORIZDIFF */
+#ifdef ALLOW_GGL90_IDEMIX
+      IF ( useIDEMIX ) THEN
+       _EXCH_XYZ_RL(IDEMIX_E,myThid)
+       _EXCH_XYZ_RL(IDEMIX_V0,myThid)
+      ENDIF
+#endif
 #endif /* ALLOW_GGL90 */
 
       RETURN

@@ -1,15 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.13 2014/05/27 23:41:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.14 2015/02/19 15:44:12 mlosch Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: GGL90_READPARMS
+C     !INTERFACE:
       SUBROUTINE GGL90_READPARMS( myThid )
+
+C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE GGL90_READPARMS                               |
 C     | o Routine to read in file data.ggl90                     |
 C     *==========================================================*
-      IMPLICIT NONE
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -17,16 +24,19 @@ C     === Global variables ===
 #include "GRID.h"
 #include "GGL90.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myThid -  Number of this instance of GGL90_READPARMS
       INTEGER myThid
 
 #ifdef ALLOW_GGL90
 
+C     !FUNCTIONS:
 C     === Functions ===
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
+C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     msgBuf      - Informational/error message buffer
 C     errIO       - IO error flag
@@ -42,8 +52,21 @@ C--   GGL90 vertical mixing parameters
      &     GGL90ck, GGL90ceps, GGL90alpha, GGL90m2,
      &     GGL90TKEmin, GGL90TKEsurfMin, GGL90TKEbottom,
      &     GGL90mixingLengthMin, mxlMaxFlag, mxlSurfFlag,
-     &     GGL90viscMax, GGL90diffMax, GGL90TKEFile
+     &     GGL90viscMax, GGL90diffMax, GGL90TKEFile,
+     &     GGL90_dirichlet, useIDEMIX
 
+#ifdef ALLOW_GGL90_IDEMIX
+c-----------------------------------------------------------------------
+c  IDEMIX
+c-----------------------------------------------------------------------
+      NAMELIST /GGL90_PARM02/
+     & IDEMIX_tau_v, IDEMIX_tau_h, IDEMIX_gamma, IDEMIX_jstar,
+     & IDEMIX_mu0,IDEMIX_tidal_file,IDEMIX_wind_file,
+     & IDEMIX_mixing_efficiency, IDEMIX_diff_max,
+     & IDEMIX_diff_min, IDEMIX_frac_F_b, IDEMIX_frac_F_s,
+     & IDEMIX_include_GM,IDEMIX_include_GM_bottom
+#endif /* ALLOW_GGL90_IDEMIX */
+CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( .NOT.useGGL90 ) THEN
@@ -86,8 +109,33 @@ C     Blanke and Delecluse (1993, JPO) use
       GGL90diffTKEh        = 0.0 _d 0
       GGL90mixingLengthMin = 1.0 _d -08
       mxlMaxFlag           = 0
-      mxlSurfFlag    = .FALSE.
+      mxlSurfFlag          = .FALSE.
       GGL90TKEFile         = ' '
+      GGL90_dirichlet      = .TRUE.
+      useIDEMIX            = .FALSE.
+
+#ifdef ALLOW_GGL90_IDEMIX
+C-----------------------------------------------------------------------
+C     set default parameter for IDEMIX
+C-----------------------------------------------------------------------
+      IDEMIX_tau_v      =  1.0*86400.0 _d 0
+      IDEMIX_tau_h      = 10.0*86400.0 _d 0
+      IDEMIX_gamma      = 1.57 _d 0
+      IDEMIX_jstar      = 10.0 _d 0
+      IDEMIX_mu0        = 4.0 _d 0/3.0 _d 0
+      IDEMIX_mixing_efficiency = 0.1666 _d 0
+      IDEMIX_diff_max   = 1.0 _d 0
+      IDEMIX_diff_min   = 1.0 _d -9
+      IDEMIX_frac_F_b   = 1.0 _d 0 
+      IDEMIX_frac_F_s   = 0.2 _d 0
+C     IDEMIX_tidal_file = 'tidal_energy.bin'
+C     IDEMIX_wind_file  = 'wind_energy.bin'
+      IDEMIX_tidal_file = ' '
+      IDEMIX_wind_file  = ' '
+      IDEMIX_include_GM = .FALSE.
+      IDEMIX_include_GM_bottom = .FALSE.
+#endif /* ALLOW_GGL90_IDEMIX */
+
 
 C-----------------------------------------------------------------------
 C define some non-dimensional constants and
@@ -98,7 +146,7 @@ C--   Read settings from model parameter file "data.ggl90".
       READ(UNIT=iUnit,NML=GGL90_PARM01,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
-     &  'S/R INI_PARMS'
+     &  'S/R GGL90_READPARMS'
        CALL PRINT_ERROR( msgBuf , 1)
        WRITE(msgBuf,'(A)')
      &  'Error reading numerical model '
@@ -113,6 +161,27 @@ C      CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R GGL90_READPARMS'
       ENDIF
 
+#ifdef ALLOW_GGL90_IDEMIX
+      IF (useIDEMIX) THEN
+       READ(Unit=iUnit,NML=GGL90_PARM02,IOSTAT=errIO)
+       IF ( errIO .LT. 0 ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'S/R GGL90_READPARMS'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &   'Error reading numerical model '
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &   'parameter file "data.ggl90"'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &   'Problem in namelist GGL90_PARM02'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R GGL90_READPARMS'
+       ENDIF
+      ENDIF
+#endif /* ALLOW_GGL90_IDEMIX */
+
       CLOSE(iUnit)
 
       WRITE(msgBuf,'(A)')
@@ -120,11 +189,25 @@ C      CALL MODELDATA_EXAMPLE( myThid )
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
+#ifdef ALLOW_GGL90_IDEMIX
+      IF ( useIDEMIX ) THEN
+       IF ( OLx .LT. 3 .or. OLy .lt. 3) THEN
+        WRITE(msgBuf,'(A)') 'OLx/OLy must be greater than 2'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R GGL90_READPARMS'
+       ENDIF
+      ENDIF
+#endif /* ALLOW_GGL90_IDEMIX */
+
 C Now set-up any remaining parameters that result from the input parameters
       IF ( GGL90TKEbottom .EQ. UNSET_RL ) THEN
        GGL90TKEbottom = GGL90TKEmin
       ENDIF
+#ifdef ALLOW_GGL90_IDEMIX
+      IF ( GGL90TKEmin .LT. 0. ) THEN   ! CE: changed le to lt  !!!
+#else
       IF ( GGL90TKEmin .LE. 0. ) THEN
+#endif
        WRITE(msgBuf,'(A)')
      &      'GGL90TKEmin must be greater than zero'
        CALL PRINT_ERROR( msgBuf , 1)
@@ -209,7 +292,47 @@ C--   print TKE vertical mixing parameters to stdout for better debugging
       WRITE(msgBuf,'(A,A)')'GGL90: GGL90TKEFile = ',GGL90TKEFile(1:iL)
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-
+      CALL WRITE_0D_L(GGL90_dirichlet,INDEX_NONE,
+     & 'GGL90writeState =', '   /* GGL90 Boundary condition flag. */')
+#ifdef ALLOW_GGL90_IDEMIX
+c-----------------------------------------------------------------------
+c-----------------------------------------------------------------------
+      CALL WRITE_0D_L(useIDEMIX,INDEX_NONE, 'useIDEMIX =', 
+     &     '   /* turn on IDEMIX contribution. */')
+C     
+      IF ( useIDEMIX ) THEN
+       CALL WRITE_0D_RL( IDEMIX_tau_v, INDEX_NONE,'IDEMIX_tau_v =',
+     &     '   /* IDEMIX vertical group speed parameter. */')
+       CALL WRITE_0D_RL( IDEMIX_tau_h, INDEX_NONE,'IDEMIX_tau_h =',
+     &     '   /* IDEMIX horizontal group speed parameter. */')
+       CALL WRITE_0D_RL( IDEMIX_gamma, INDEX_NONE,'IDEMIX_gamma =',
+     &     '   /* IDEMIX group speed parameter. */')
+       CALL WRITE_0D_RL( IDEMIX_jstar, INDEX_NONE,'IDEMIX_jstar =',
+     &     '   /* IDEMIX baroclinic mode bandwidth. */')
+       CALL WRITE_0D_RL( IDEMIX_mu0, INDEX_NONE,'IDEMIX_mu0 =',
+     &     '   /* IDEMIX dissipation parameter. */')
+       CALL WRITE_0D_RL( IDEMIX_mixing_efficiency,INDEX_NONE,
+     &     'IDEMIX_mixing_efficiency =',
+     &     '   /* IDEMIX mixing efficiency. */')
+       CALL WRITE_0D_RL( IDEMIX_diff_max,INDEX_NONE,'IDEMIX_diff_max =',
+     &     '   /* IDEMIX maximal diffusivity. */')
+       CALL WRITE_0D_RL( IDEMIX_diff_min,INDEX_NONE,'IDEMIX_diff_min =',
+     &     '   /* IDEMIX minimal diffusivity. */')
+       CALL WRITE_0D_RL( IDEMIX_frac_F_b,INDEX_NONE,'IDEMIX_frac_F_b =',
+     &     '   /* Fraction of F_b which enters IW field. */')
+       CALL WRITE_0D_RL( IDEMIX_frac_F_s,INDEX_NONE,'IDEMIX_frac_F_s =',
+     &     '   /* Fraction of F_s which enters IW field. */')
+       CALL WRITE_0D_L(IDEMIX_include_GM,INDEX_NONE,
+     & 'IDEMIX_include_GM =', '   /* IDEMIX GM flag */')
+       CALL WRITE_0D_L(IDEMIX_include_GM_bottom,INDEX_NONE,
+     & 'IDEMIX_include_GM_bottom =', '   /* IDEMIX GM flag */')
+C
+       CALL WRITE_0D_C( IDEMIX_tidal_file, -1, INDEX_NONE, 
+     &  'IDEMIX_tidal_file =', ' /* file name of tidal energy field */')
+       CALL WRITE_0D_C( IDEMIX_wind_file, -1, INDEX_NONE, 
+     &  'IDEMIX_wind_file  =', ' /* file name of wind energy field */')
+      ENDIF
+#endif /* ALLOW_GGL90_IDEMIX */
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
