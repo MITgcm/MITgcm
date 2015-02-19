@@ -1,9 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_ad/ctrl_map_ini_genarr.F,v 1.1 2013/06/24 21:33:19 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_ad/ctrl_map_ini_genarr.F,v 1.2 2015/02/19 16:52:03 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
 #include "STREAMICE_OPTIONS.h"
-
 
 CBOP
 C     !ROUTINE: CTRL_MAP_INI_GENARR
@@ -62,7 +61,9 @@ C     == local variables ==
 
       logical doglobalread
       logical ladinit
+      character*(MAX_LEN_FNAM) fnamebase
       character*( 80)   fnamegeneric
+      character*(MAX_LEN_MBUF) msgBuf
       _RL     fac
 CEOP
 
@@ -82,9 +83,10 @@ C--   to 3 generic 2D control arrays
 C--   generic - user-defined control vars
       DO iarr = 1, maxCtrlArr2D
 
-       il=ILNBLNK( xx_genarr2d_file(iarr) )
+       fnamebase = xx_genarr2d_file(iarr)
+       il=ILNBLNK( fnamebase )
        write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_genarr2d_file(iarr)(1:il),'.',optimcycle
+     &     fnamebase(1:il),'.',optimcycle
        CALL ACTIVE_READ_XY ( fnamegeneric, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      myThid, xx_genarr2d_dummy(iarr) )
@@ -93,17 +95,21 @@ C--   generic - user-defined control vars
           do j = jmin,jmax
             do i = imin,imax
 
-
                 if ( iarr .eq. 2 ) then
                   H_streamice(i,j,bi,bj) =
      &                  H_streamice(i,j,bi,bj)
      &                  + tmpfld2d(i,j,bi,bj)
-
+#ifdef ALLOW_OPENAD
+cph     &                  + xx_genarr2d(i,j,bi,bj,iarr)
+#endif
 
                 elseif (iarr.eq.1) then
                   B_glen(i,j,bi,bj) =
      &                  B_glen(i,j,bi,bj)
      &                  + tmpfld2d(i,j,bi,bj)
+#ifdef ALLOW_OPENAD
+cph     &                  + xx_genarr2d(i,j,bi,bj,iarr)
+#endif
 
 !                elseif (iarr.eq.5) then
 !                  BDOT_streamice(i,j,bi,bj) =
@@ -112,7 +118,6 @@ C--   generic - user-defined control vars
 
                 endif
 
-
             enddo
           enddo
         ENDDO
@@ -120,11 +125,9 @@ C--   generic - user-defined control vars
 C--   end iarr loop
       ENDDO
 
-
        _EXCH_XY_RL( H_streamice, myThid )
        _EXCH_XY_RL( R_low_si, myThid )
        _EXCH_XY_RL( C_basal_friction, myThid )
-
 
 #endif /* ALLOW_GENARR2D_CONTROL */
 
@@ -138,9 +141,10 @@ C--   to 3 generic 3D control arrays
 C--   generic - user-defined control vars
       DO iarr = 1, maxCtrlArr3D
 
-       il=ILNBLNK( xx_genarr3d_file(iarr) )
+       fnamebase = xx_genarr3d_file(iarr)
+       il=ILNBLNK( fnamebase )
        write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_genarr3d_file(iarr)(1:il),'.',optimcycle
+     &     fnamebase(1:il),'.',optimcycle
        CALL ACTIVE_READ_XYZ( fnamegeneric, tmpfld3d, 1,
      &                       doglobalread, ladinit, optimcycle,
      &                       myThid, xx_genarr3d_dummy(iarr) )

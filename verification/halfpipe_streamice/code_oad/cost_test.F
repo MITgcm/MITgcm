@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/cost_test.F,v 1.1 2013/12/17 19:08:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/cost_test.F,v 1.2 2015/02/19 16:52:03 heimbach Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -84,7 +84,8 @@ C--   Calculate cost function on tile of this instance
 
             if (streamice_hmask(i,j,bi,bj).eq.1.0) then
              objf_test (bi,bj) = objf_test (bi,bj) +
-     &       u_streamice(i,j,bi,bj)**2+v_streamice(i,j,bi,bj)**2
+     &       u_streamice(i,j,bi,bj)**2+v_streamice(i,j,bi,bj)**2+
+     &       h_streamice(i,j,bi,bj)**2
             endif
 
 

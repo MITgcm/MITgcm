@@ -13,5 +13,5 @@ jgloTile         = 1,
 nstep            = 2,
 nend             = 6,
 # xx_gen2d: 30
- grdchkvarindex   = 102
+ grdchkvarindex   = 301
  &

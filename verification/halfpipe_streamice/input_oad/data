@@ -29,7 +29,8 @@
 # pChkptFreq=2592000.,
 # chkptFreq=120000.,
 # dumpFreq=2592000.,
-  monitorFreq=0.,
+ monitorFreq=0.,
+ externForcingCycle=18921600.
  &
 
 # Gridding parameters

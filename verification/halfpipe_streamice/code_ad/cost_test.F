@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_ad/cost_test.F,v 1.1 2013/06/24 21:33:19 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_ad/cost_test.F,v 1.2 2015/02/19 16:52:03 heimbach Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -26,7 +26,6 @@ C     == Global variables ===
 #endif
 #ifdef ALLOW_COST
 #include "cost.h"
-#include "COST_OPTIONS.h"
 #endif
 
 
@@ -85,7 +84,8 @@ C--   Calculate cost function on tile of this instance
 
             if (streamice_hmask(i,j,bi,bj).eq.1.0) then
              objf_test (bi,bj) = objf_test (bi,bj) +
-     &       u_streamice(i,j,bi,bj)**2+v_streamice(i,j,bi,bj)**2
+     &       u_streamice(i,j,bi,bj)**2+v_streamice(i,j,bi,bj)**2+
+     &       h_streamice(i,j,bi,bj)**2
             endif
 
 

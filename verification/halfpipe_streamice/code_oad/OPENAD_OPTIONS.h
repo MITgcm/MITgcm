@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/OPENAD_OPTIONS.h,v 1.1 2015/01/30 19:19:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/OPENAD_OPTIONS.h,v 1.2 2015/02/19 16:52:03 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -20,7 +20,8 @@ CEOP
 
 #ifdef ALLOW_OPENAD
 
-#define ALLOW_OPENAD_ACTIVE_FILE
+#define ALLOW_OPENAD_ACTIVE_READ_XY
+#define ALLOW_OPENAD_ACTIVE_WRITE
 
 #endif /* ALLOW_OPENAD */
 #endif /* OPENAD_OPTIONS_H */

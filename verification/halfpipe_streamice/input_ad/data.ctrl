@@ -4,5 +4,6 @@
  &CTRL_PACKNAMES
  /
  &CTRL_NML_GENARR
+ xx_gentim2d_period = 6307200
 # genarr2dPrecond = 5 200
  /
