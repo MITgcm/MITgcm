@@ -1,12 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2127 2015/02/19 16:37:58 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2128 2015/02/19 20:57:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/genmake2:
+  - add option for an alternative Makefile (from Martin) where multiple
+    source files are sent to TAF (instead of all in one file).
 o pkg/ggl90: add IDEMIX (Olbers and Eden, 2013, Eden and Olbers, 2014)
   - code provided by Carsten Eden as an extension of ggl90
-  - so far the code is turned on within ggl90 by setting a CPP-flag at 
+  - so far the code is turned on within ggl90 by setting a CPP-flag at
     compile time; a runtime flag implementation is not yet complete
   - tested in new verification experiment global_ocean.90x40x15.idemix
 o verification:
