@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2126 2015/02/18 21:16:20 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2127 2015/02/19 16:37:58 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90: add IDEMIX (Olbers and Eden, 2013, Eden and Olbers, 2014)
+  - code provided by Carsten Eden as an extension of ggl90
+  - so far the code is turned on within ggl90 by setting a CPP-flag at 
+    compile time; a runtime flag implementation is not yet complete
+  - tested in new verification experiment global_ocean.90x40x15.idemix
 o verification:
   - reduce length of the AD test run by half for experiments
     global_ocean.cs32x15 (std + thsice) and isomip
