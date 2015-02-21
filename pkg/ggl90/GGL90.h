@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/GGL90.h,v 1.7 2015/02/19 15:44:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/GGL90.h,v 1.8 2015/02/21 01:43:14 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_GGL90
@@ -108,7 +108,6 @@ CEOP
       COMMON /GGL90_CORNER/ mskCor
       _RL mskCor(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
-
 
 #ifdef ALLOW_GGL90_IDEMIX
 c-----------------------------------------------------------------------
