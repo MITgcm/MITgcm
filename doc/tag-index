@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2129 2015/02/21 16:35:10 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2130 2015/02/21 20:26:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90 (idemix code):
+  - apply few fixes ; add some missing "_d 0" ; update output of exp.
+    global_ocean.90x40x15.idemix
 o OpenAD
   - enable active file I/O and begin removal of work-around code
     for OpenAD for handling control variables (memory vs. active files)
