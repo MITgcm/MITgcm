@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_frac.F,v 1.9 2014/05/21 10:46:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_frac.F,v 1.10 2015/02/21 20:49:45 jmc Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -25,14 +25,14 @@ C     | during freezing.
 C     | For example, if surface value is Saltplume0,
 C     | and each level gets equal fraction 1/5 down to SPDepth=5,
 C     | SALT_PLUME_FRAC will report plumek = 1/5,2/5,3/5,4/5,5/5 on
-C     | output if input plumek = 1,2,3,4,5. Else, output plumek = 0.                
+C     | output if input plumek = 1,2,3,4,5. Else, output plumek = 0.
 C     | Reference : Duffy et al, (GRL 1999)
 C     |
 C     | =====
 C     | Written by   : ATN (based on SWFRAC)
 C     | Date         : Sep 13, 2007
 C     | Modified     : Mar 16, 2014 by atn to improve/clean up
-C     | -> replace 1-[cummulative plumefrac] code which was based 
+C     | -> replace 1-[cummulative plumefrac] code which was based
 C     |    on swfrac with cleaner [cummulative plumefrac] on output
 C     |    in order to avoid 1-[1-[cummulative_plumefrac]] whenever
 C     |    SALT_PLUME_FRAC is called and used from outside.
@@ -68,7 +68,6 @@ C     plumek :: on output: saltplume contribution fraction
 CEOP
 
 #ifdef ALLOW_SALT_PLUME
-
 C     !LOCAL VARIABLES:
       _RL facz, dd, dd20
       INTEGER i, Npowerloc
@@ -126,7 +125,7 @@ C     crazy attempt to make the code faster and raise S to (Npower+1)
          So = recip_expOneM1       !So = exp(one)-one
          plumek(i) = max(zero,S*So)
 
-C     PlumeMethod = 3, distribute salt LINEARLY between SPDepth and 
+C     PlumeMethod = 3, distribute salt LINEARLY between SPDepth and
 C     SPDepth/SPovershoot
 C     (1-SPovershoot)percent has already been taken into account in
 C     SPDepth calculation, i.e., SPDepth = SPovershoot*SPDepth.
@@ -146,7 +145,7 @@ C     PlumeMethod = 5, dumping all salt at the top layer
          dd   = zero
          dd20 = one
          IF( (facz.GE.dd).AND.(facz.LT.dd20) ) THEN
-          plumek(i) = zero 
+          plumek(i) = zero
          ELSE
           plumek(i) = one
          ENDIF
@@ -183,12 +182,12 @@ C     crazy attempt to make the code faster and raise S to (Npower+1)
      &         three/dd20*facz - three/(dd20*dd20)*facz*facz + S/So)
          ENDIF
 #endif /* TARGET_NEC_SX */
-          
+
 catn: 15.Mar.2014
 catn: this is a new method by atn. After fixing adjoint compiling error,
-catn: will switch this on.  Currently commenting out for purpose of 
+catn: will switch this on.  Currently commenting out for purpose of
 catn: comparing old (1-abc) vs new (abc) way of coding
-c        ELSEIF (PlumeMethod .EQ. 7) THEN 
+c        ELSEIF (PlumeMethod .EQ. 7) THEN
 cC     PLumeMethod = 7, dump an offset parabolla with more salt at surface
 cC        tapered to zero at depth SPDepth/2, then increased until SPDepth
 cC        need input SPDepth, NPower = percentage of SPDepth
@@ -208,8 +207,9 @@ c     &             - (facz*facz)*dd20
 c     &             + (facz)     *dd20*dd20
 c         plumek(i) = max(zero,(S/So))
 c
-#ifndef TARGET_NEC_SX
         ELSE
+         plumek(i) = one
+#ifndef TARGET_NEC_SX
          WRITE(*,*) 'salt_plume_frac: PLumeMethod =', PLumeMethod,
      &        'not implemented'
          STOP 'ABNORMAL in S/R SALT_PLUME_FRAC'
@@ -219,7 +219,7 @@ c
         plumek(i) = one
        ENDIF
       ENDDO
-      
+
 #endif /* ALLOW_SALT_PLUME */
 
       RETURN
