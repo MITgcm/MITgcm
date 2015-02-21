@@ -1,0 +1,26 @@
+# EXCH2 Package: Wrapper-2 User Choice
+#--------------------
+#  preDefTopol   :: pre-defined Topology selector:
+#                :: = 0 : topology defined from processing "data.exch2";
+#                :: = 1 : simple, single facet topology;
+#                :: = 2 : customized topology (w2_set_myown_facets)
+#                :: = 3 : 6-facet Cube (3 face-dims: nRed, nGreen, nBlue).
+#  dimsFacets    :: facet pair of dimensions (n1x,n1y, n2x,n2y ...)
+#  facetEdgeLink :: Face-Edge connectivity map:
+#    facetEdgeLink(i,j)=XX.1 : face(j)-edge(i) (i=1,2,3,4 <==> N,S,E,W)
+#    is connected to Northern edge of face "XX" ; similarly,
+#    = XX.2 : to Southern.E, XX.3 = Eastern.E, XX.4 = Western.E of face "XX"
+#  blankList     :: List of "blank" tiles
+#  W2_mapIO      :: global map IO selector (-1 = old type ; 0 = 1 long line in X
+#                :: 1 = compact, mostly in Y dir)
+#  W2_printMsg   :: option for information messages printing
+#                :: <0 : write to log file ; =0 : minimum print ; 
+#                :: =1 : no duplicated print ; =2 : all processes do print
+#--------------------
+ &W2_EXCH2_PARM01
+# W2_printMsg= 1,
+# preDefTopol= 0,
+  W2_mapIO   = 1,
+  blankList  = 30,
+  dimsFacets = 90, 40,
+ &
