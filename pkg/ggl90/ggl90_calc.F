@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.28 2015/02/21 01:46:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.29 2015/02/21 17:13:20 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -440,25 +440,25 @@ C     viscosity and diffusivity
          KappaM = GGL90ck*GGL90mixingLength(i,j,k)*SQRTTKE(i,j,k)
          GGL90visctmp(i,j,k) = MAX(KappaM,diffKrNrT(k))
      &                            * maskC(i,j,k,bi,bj)
-c        note: storing GGL90visctmp like this, and using it later to compute
-c              GGL9rdiffKr etc. is robust in case of smoothing (e.g. see OPA)
+C        note: storing GGL90visctmp like this, and using it later to compute
+C              GGL9rdiffKr etc. is robust in case of smoothing (e.g. see OPA)
          KappaM = MAX(KappaM,viscArNr(k)) * maskC(i,j,k,bi,bj)
 
 C     compute Prandtl number (always greater than 0)
          RiNumber = MAX(Nsquare(i,j,k),0. _d 0)/(verticalShear+GGL90eps)
 #ifdef ALLOW_GGL90_IDEMIX
-CML         IDEMIX_RiNumber = 1./GGL90eps 
+CML         IDEMIX_RiNumber = 1./GGL90eps
          IDEMIX_RiNumber = MAX( KappaM*Nsquare(i,j,k), 0. _d 0)/
      &    (GGL90eps+IDEMIX_tau_d(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)**2)
          prTemp         = MIN(5.*RiNumber, 6.6*IDEMIX_RiNumber)
 #else
-         prTemp = 1. _d 0	 
+         prTemp = 1. _d 0
          IF ( RiNumber .GE. 0.2 _d 0 ) prTemp = 5. _d 0 * RiNumber
 #endif /* ALLOW_GGL90_IDEMIX */
          TKEPrandtlNumber(i,j,k) = MIN(10. _d 0,prTemp)
          TKEPrandtlNumber(i,j,k) = MAX( 1. _d 0,TKEPrandtlNumber(i,j,k))
 
-c        diffusivity
+C        diffusivity
          KappaH = KappaM/TKEPrandtlNumber(i,j,k)
          KappaE(i,j,k) = GGL90alpha * KappaM * maskC(i,j,k,bi,bj)
 
@@ -726,47 +726,45 @@ C     ===============================
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL( GGL90TKE   ,'GGL90TKE',
-     &                          0,Nr, 1, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( GGL90viscArU,'GGL90ArU',
-     &                          0,Nr, 1, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( GGL90viscArV,'GGL90ArV',
-     &                          0,Nr, 1, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( GGL90diffKr,'GGL90Kr ',
-     &                          0,Nr, 1, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( TKEPrandtlNumber ,'GGL90Prl',
-     &                          0,Nr, 2, bi, bj, myThid )
-         CALL DIAGNOSTICS_FILL( GGL90mixingLength,'GGL90Lmx',
-     &                          0,Nr, 2, bi, bj, myThid )
+        CALL DIAGNOSTICS_FILL( GGL90TKE   ,'GGL90TKE',
+     &                         0,Nr, 1, bi, bj, myThid )
+        CALL DIAGNOSTICS_FILL( GGL90viscArU,'GGL90ArU',
+     &                         0,Nr, 1, bi, bj, myThid )
+        CALL DIAGNOSTICS_FILL( GGL90viscArV,'GGL90ArV',
+     &                         0,Nr, 1, bi, bj, myThid )
+        CALL DIAGNOSTICS_FILL( GGL90diffKr,'GGL90Kr ',
+     &                         0,Nr, 1, bi, bj, myThid )
+        CALL DIAGNOSTICS_FILL( TKEPrandtlNumber ,'GGL90Prl',
+     &                         0,Nr, 2, bi, bj, myThid )
+        CALL DIAGNOSTICS_FILL( GGL90mixingLength,'GGL90Lmx',
+     &                         0,Nr, 2, bi, bj, myThid )
 
-      kp1 = MIN(Nr,kSurf+1)
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-c        diagnose surface flux of TKE   
-         surf_flx_tke(i,j) =(GGL90TKE(i,j,kSurf,bi,bj)-
-     &                       GGL90TKE(i,j,kp1,bi,bj))
+        kp1 = MIN(Nr,kSurf+1)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+C     diagnose surface flux of TKE
+          surf_flx_tke(i,j) =(GGL90TKE(i,j,kSurf,bi,bj)-
+     &                        GGL90TKE(i,j,kp1,bi,bj))
      &        *recip_drF(kSurf)*recip_hFacC(i,j,kSurf,bi,bj)
      &        *KappaE(i,j,kp1)
+         ENDDO
+        ENDDO
+        CALL DIAGNOSTICS_FILL( surf_flx_tke,'GGL90flx',
+     &                         0, 1, 2, bi, bj, myThid )
 
-       ENDDO
-      ENDDO
-      CALL DIAGNOSTICS_FILL(surf_flx_tke,'GGL90flx',
-     &                      0,1,1,bi,bj,myThid)
-
-      k=kSurf
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-c        diagnose work done by the wind
-         surf_flx_tke(i,j) =
-     &     .5 _d 0*( surfaceForcingU(i,  j,bi,bj)*uvel(i  ,j,k,bi,bj)
-     &              +surfaceForcingU(i+1,j,bi,bj)*uvel(i+1,j,k,bi,bj))
-     &  +  .5 _d 0*( surfaceForcingV(i,j,  bi,bj)*vvel(i,j  ,k,bi,bj)
-     &              +surfaceForcingV(i,j+1,bi,bj)*vvel(i,j+1,k,bi,bj))
-       ENDDO
-      ENDDO
-      CALL DIAGNOSTICS_FILL(surf_flx_tke,'GGL90tau',
-     &                      0,1,1,bi,bj,myThid)
-
+        k=kSurf
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+C     diagnose work done by the wind
+          surf_flx_tke(i,j) =
+     &      halfRL*( surfaceForcingU(i,  j,bi,bj)*uVel(i  ,j,k,bi,bj)
+     &              +surfaceForcingU(i+1,j,bi,bj)*uVel(i+1,j,k,bi,bj))
+     &    + halfRL*( surfaceForcingV(i,j,  bi,bj)*vVel(i,j  ,k,bi,bj)
+     &              +surfaceForcingV(i,j+1,bi,bj)*vVel(i,j+1,k,bi,bj))
+         ENDDO
+        ENDDO
+        CALL DIAGNOSTICS_FILL( surf_flx_tke,'GGL90tau',
+     &                         0, 1, 2, bi, bj, myThid )
 
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
