@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_init_varia.F,v 1.7 2015/02/19 15:44:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_init_varia.F,v 1.8 2015/02/21 20:10:08 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -45,8 +45,8 @@ C--   Over all tiles
 C-      3D arrays
         DO K=1,Nr
          Km1 = MAX(K-1,1)
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
            GGL90viscArU(I,J,K,bi,bj) = 0. _d 0
            GGL90viscArV(I,J,K,bi,bj) = 0. _d 0
            GGL90diffKr(I,J,K,bi,bj)  = 0. _d 0
@@ -74,8 +74,8 @@ C--   Over all tiles
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
         DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
            IDEMIX_E(I,J,K,bi,bj)     = 0. _d 0
            IDEMIX_V0(I,J,K,bi,bj)    = 0. _d 0
            IDEMIX_tau_d(I,J,K,bi,bj) = 0. _d 0
@@ -83,10 +83,10 @@ C--   Over all tiles
          ENDDO
         ENDDO
 
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-          IDEMIX_F_B(I,J,bi,bj) = 0
-          IDEMIX_F_S(I,J,bi,bj) = 0 
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
+          IDEMIX_F_B(I,J,bi,bj) = 0. _d 0
+          IDEMIX_F_S(I,J,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
 
@@ -101,28 +101,28 @@ c-----------------------------------------------------------------------
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
-           IDEMIX_F_b(i,j,bi,bj) = -MAX(0. _d 0, 
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
+           IDEMIX_F_b(i,j,bi,bj) = -MAX(0. _d 0,
      &          MIN(1. _d 0,IDEMIX_F_b(i,j,bi,bj)))
 C     fraction that enters IW field
            IDEMIX_F_b(i,j,bi,bj) = IDEMIX_frac_F_b*
 CML     &          IDEMIX_F_b(i,j,bi,bj)*recip_rhoConst
-     &          IDEMIX_F_b(i,j,bi,bj)/1024.
+     &          IDEMIX_F_b(i,j,bi,bj)/1024. _d 0
           ENDDO
          ENDDO
         ENDDO
        ENDDO
       ENDIF
-       
+
       IF ( useIDEMIX .AND. IDEMIX_wind_file .NE. ' ' ) THEN
        CALL READ_REC_XY_RL( IDEMIX_wind_file ,IDEMIX_F_s,1,0,myThid )
        _EXCH_XY_RL(IDEMIX_F_s,myThid)
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
-           IDEMIX_F_s(i,j,bi,bj) = MAX(0. _d 0, 
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
+           IDEMIX_F_s(i,j,bi,bj) = MAX(0. _d 0,
      &          MIN(1. _d 0,IDEMIX_F_s(i,j,bi,bj)))
 C     fraction that leaves mixed layer
            IDEMIX_F_s(i,j,bi,bj) = IDEMIX_frac_F_s*
