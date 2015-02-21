@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve.F,v 1.8 2015/02/16 16:46:44 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve.F,v 1.9 2015/02/21 19:09:53 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -507,6 +507,7 @@ c     if iters has reached max_iters there is no convergence
       IF (iters .lt. maxIter) THEN
        conv_flag = 1
       ENDIF
+      PRINT *, "GOT HERE CG ITERATIONS", iters
 
 !       DO bj = myByLo(myThid), myByHi(myThid)
 !        DO bi = myBxLo(myThid), myBxHi(myThid)

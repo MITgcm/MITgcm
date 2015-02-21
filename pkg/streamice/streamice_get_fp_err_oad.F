@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_vel_fp_err.F,v 1.5 2015/02/21 19:09:53 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_fp_err_oad.F,v 1.1 2015/02/21 19:09:53 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
-      SUBROUTINE STREAMICE_GET_VEL_FP_ERR ( err_max, myThid )
+      SUBROUTINE STREAMICE_GET_FP_ERR_OAD ( err_max, myThid )
 C     /============================================================\
 C     | SUBROUTINE                                                 |
 C     | o                                                          |
@@ -28,7 +28,7 @@ C     !INPUT/OUTPUT ARGUMENTS
       INTEGER myThid
 
 #ifdef ALLOW_STREAMICE
-
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
       INTEGER conv_flag, i, j, bi, bj
 
       INTEGER ikey_nl
@@ -46,11 +46,11 @@ C     !INPUT/OUTPUT ARGUMENTS
            err_tempv = 0. _d 0
            IF (STREAMICE_umask(i,j,bi,bj).eq.1) THEN
             err_tempu =
-     &       ABS (U_streamice(i,j,bi,bj)-u_old_SI(i,j,bi,bj))
+     &       ABS (U_streamice(i,j,bi,bj)-u_new_SI(i,j,bi,bj))
            ENDIF
            IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
             err_tempv = MAX( err_tempu,
-     &       ABS (V_streamice(i,j,bi,bj)-v_old_SI(i,j,bi,bj)))
+     &       ABS (V_streamice(i,j,bi,bj)-v_new_SI(i,j,bi,bj)))
            ENDIF
            IF (err_tempv .ge. err_max) err_max = err_tempv
           ENDDO
@@ -60,6 +60,7 @@ C     !INPUT/OUTPUT ARGUMENTS
 
        CALL GLOBAL_MAX_R8 (err_max, myThid)
 
+#endif
 #endif
       RETURN
       END

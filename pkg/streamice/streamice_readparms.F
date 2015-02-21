@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.10 2015/02/16 16:46:45 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.11 2015/02/21 19:09:53 dgoldberg Exp $
 C $Name:  $
 
 C this needs changes
@@ -41,6 +41,9 @@ C     iUnit      :: Work variable for IO unit number
      &     C_basal_fric_const, n_basal_friction,
      &     streamice_vel_update,streamice_cg_tol,streamice_nonlin_tol,
      &     streamice_nonlin_tol_fp,
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+     &     streamice_nonlin_tol_adjoint,
+#endif
      &     streamice_max_cg_iter, streamice_max_nl_iter,
      &     streamice_maxcgiter_cpl, streamice_maxnliter_cpl,
      &     STREAMICEthickInit,
@@ -183,6 +186,9 @@ C--   Default values for STREAMICE
       streamice_cg_tol = 1e-6
       streamice_nonlin_tol = 1e-6
       streamice_nonlin_tol_fp = 1.e-14
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+      streamice_nonlin_tol_adjoint = 1.e-14
+#endif
       streamice_max_cg_iter = 2000
       streamice_max_nl_iter = 100
       streamice_maxcgiter_cpl = 0

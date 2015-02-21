@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.14 2015/02/16 16:46:44 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.15 2015/02/21 19:09:53 dgoldberg Exp $
 C $Name:  $
 
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -14,6 +14,9 @@ C     & A_glen_isothermal, n_glen, eps_glen_min, eps_u_min,
      & C_basal_fric_const, n_basal_friction, streamice_input_flux_unif,
      & streamice_vel_update, streamice_cg_tol, streamice_nonlin_tol,
      & streamice_nonlin_tol_fp,
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+     & streamice_nonlin_tol_adjoint,
+#endif
      & streamice_CFL_factor, streamice_adjDump,
      & streamice_bg_surf_slope_x, streamice_bg_surf_slope_y,
      & streamice_kx_b_init, streamice_ky_b_init,
@@ -34,6 +37,9 @@ C      _RL A_glen_isothermal, n_glen, eps_glen_min, eps_u_min
       _RL streamice_vel_update
       _RL streamice_cg_tol, streamice_nonlin_tol
       _RL streamice_nonlin_tol_fp
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+      _RL streamice_nonlin_tol_adjoint
+#endif
       _RL streamice_CFL_factor
       _RL streamice_adjDump
       _RL streamice_bg_surf_slope_x, streamice_bg_surf_slope_y
@@ -84,6 +90,14 @@ C     -------------------------- INT PARAMS ------------------------------------
       INTEGER streamice_vel_upd_counter, streamice_nstep_velocity
       INTEGER streamice_maxcgiter_cpl, streamice_maxnliter_cpl
 !      INTEGER streamice_n_sub_regularize
+
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+      COMMON /STREAMICE_PARMS_I_OPENAD/
+     &     isinloop0, isinloop1, isinloop2
+     
+      INTEGER isinloop0, isinloop1, isinloop2
+
+#endif
 
 C     -------------------------- CHAR PARAMS ---------------------------------------------------
 
@@ -337,7 +351,8 @@ C     &     A_glen,
      &     B_glen,
      &     BDOT_streamice, ADOT_streamice,  BDOT_pert,! mass balances in meters per year
      &     streamice_sigma_coord, streamice_delsigma,
-     &     H_streamice_prev
+     &     H_streamice_prev,
+     &     u_new_si, v_new_si
 
 #ifdef ALLOW_STREAMICE_FLUX_CONTROL
       COMMON /STREAMICE_FLUX_CONTROL/
@@ -495,6 +510,8 @@ C     The following arrays are used for the hybrid stress balance
       _RL BDOT_streamice (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BDOT_pert (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL H_streamice_prev (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL v_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL u_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL STREAMICE_dummy_array (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
@@ -565,6 +582,34 @@ C        velocity initial guess, so they are kept
      & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER n_dofs_process (0:nPx*nPy-1)
 #endif
+
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+      COMMON /STREAMICE_OPENAD_PARMS/
+     &      streamice_oad_nonlin_tol_fp
+      _RL streamice_oad_nonlin_tol_fp
+
+      COMMON /STREAMICE_PHISTAGE_ARRS/
+     &      U_streamice_dvals,
+     &      V_streamice_dvals     
+      _RL U_streamice_dvals
+     & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL V_streamice_dvals
+     & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+     
+#ifdef STREAMICE_HYBRID_STRESS
+      COMMON /STREAMICE_PHISTAGE_ARRS_HYBRID/
+     & taubx_dvals, tauby_dvals,
+     & visc_full_dvals,
+     & taubx_new_si, tauby_new_si,
+     & visc_full_new_si
+      _RL taubx_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL taubx_dvals (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL tauby_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL tauby_dvals (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL visc_full_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL visc_full_dvals (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+#endif    
 
 #endif /* ALLOW_STREAMICE */
 

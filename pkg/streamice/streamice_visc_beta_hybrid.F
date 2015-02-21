@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_visc_beta_hybrid.F,v 1.5 2014/09/09 23:09:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_visc_beta_hybrid.F,v 1.6 2015/02/21 19:09:53 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -140,22 +140,38 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
      &            0.25 * streamice_vert_shear_vz(m)**2)
 
 #ifdef STREAMICE_3D_GLEN_CONST
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+            visc_full_new_si(i,j,m,bi,bj) =
+#else
             visc_streamice_full(i,j,m,bi,bj) =
+#endif
      &       .5 * B_glen(i,j,m,bi,bj)**2 *
      &        second_inv**((1-n_glen)/n_glen)
 #else
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+            visc_full_new_si(i,j,m,bi,bj) =
+#else
             visc_streamice_full(i,j,m,bi,bj) =
+#endif
      &       .5 * B_glen(i,j,bi,bj)**2 *
      &        second_inv**((1-n_glen)/n_glen)
 #endif
 
             visc_streamice (i,j,bi,bj) = visc_streamice (i,j,bi,bj) +
      &       H_streamice(i,j,bi,bj) * streamice_delsigma (m) *
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+     &       visc_full_new_si(i,j,m,bi,bj)
+#else
      &       visc_streamice_full(i,j,m,bi,bj)
+#endif
 
             omega_temp (m) = omega_temp(m+1) +
      &       streamice_sigma_coord(m) * streamice_delsigma(m) /
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+     &       visc_full_new_si(i,j,m,bi,bj)
+#else
      &       visc_streamice_full(i,j,m,bi,bj)
+#endif
 
             u_shear (m) = u_shear (m+1) +
      &       streamice_vert_shear_uz (m) * streamice_delsigma (m) *

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_timestep.F,v 1.3 2015/01/24 15:34:32 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_timestep.F,v 1.4 2015/02/21 19:09:53 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -107,9 +107,7 @@ c**************************************
 !#endif
 ! NEW DIRECTIVES - DNG
 
-!#ifdef ALLOW_GENTIM2D_CONTROL
-!      CALL CTRL_MAP_GENTIM2D (myTime, myIter, myThid)
-!#endif
+
 
       do_vel = DIFFERENT_MULTIPLE( streamice_vel_update,
      &                             myTime, deltaT )
@@ -122,29 +120,30 @@ c**************************************
 
       CALL STREAMICE_VELMASK_UPD (myThid)
 
-!#ifdef ALLOW_STREAMICE_FLUX_CONTROL
-!      CALL STREAMICE_APPLY_FLUX_CTRL ( myTime, myIter, myThid )
-!#endif
+
 
 #ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
       CALL STREAMICE_FIELDS_LOAD( myTime, myIter, myThid )
 #endif
 
+
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+
+       CALL STREAMICE_VEL_SOLVE_OPENAD ( myThid,
+     &                           streamice_max_nl_iter,
+     &                           streamice_max_cg_iter,
+     &                           myiter )
+
+#else
+
       if (streamice_maxnliter_cpl.eq.0 .OR. myIter.eq.0) then
 
-!       tmp_fpcheck = STREAMICE_chkfixedptconvergence
-!       tmp_residcheck = STREAMICE_chkresidconvergence
-
-!       STREAMICE_chkfixedptconvergence = .true.
-!       STREAMICE_chkresidconvergence = .true.
 
        CALL STREAMICE_VEL_SOLVE( myThid,
      &                           streamice_max_nl_iter,
      &                           streamice_max_cg_iter,
      &                           myiter )
 
-!       STREAMICE_chkfixedptconvergence = tmp_fpcheck
-!       STREAMICE_chkresidconvergence = tmp_residcheck
 
       elseif (do_vel) then
 
@@ -153,6 +152,8 @@ c**************************************
      &                           streamice_maxcgiter_cpl,
      &                           myiter )
       endif
+
+#endif
 
       if(.not.STREAMICE_diagnostic_only) THEN
 
