@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2128 2015/02/19 20:57:07 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2129 2015/02/21 16:35:10 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o OpenAD
+  - enable active file I/O and begin removal of work-around code
+    for OpenAD for handling control variables (memory vs. active files)
+  - new CPP options file OPENAD_OPTIONS.h
 o tools/genmake2:
   - add option for an alternative Makefile (from Martin) where multiple
     source files are sent to TAF (instead of all in one file).
@@ -15,6 +19,8 @@ o pkg/ggl90: add IDEMIX (Olbers and Eden, 2013, Eden and Olbers, 2014)
 o verification:
   - reduce length of the AD test run by half for experiments
     global_ocean.cs32x15 (std + thsice) and isomip
+  - enable active file I/O for OpenAD, adjust verifications accordingly
+  - halfpipe_streamice: change gradient check from genarr2d to gentim2d
 o verification/testreport:
   - fix two non-POSIX sed statements so that there are no error messages
     on Mac OS X
