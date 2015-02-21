@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_idemix.F,v 1.2 2015/02/21 15:05:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_idemix.F,v 1.3 2015/02/21 20:12:59 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -106,50 +106,49 @@ C     Initialize local fields
 c-----------------------------------------------------------------------
 c     allow for IW everywhere by limiting buoyancy freq.
 c-----------------------------------------------------------------------
-      do k=2,Nr
+      DO k=2,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
          Nsquare(i,j,k) = gravity*gravitySign*recip_rhoConst
      &                  * sigmaR(i,j,k)
-         fxb = max( 1. _d -6, abs( FCori(i,j,bi,bj) ))
-         Nsquare(i,j,k)= max((10*fxb)**2, Nsquare(i,j,k) )
-     &               *min(maskC(i,j,k,bi,bj),maskC(i,j,k-1,bi,bj))
-        enddo
-       enddo
-      enddo
+         fxb = max( 1. _d -6, abs( fCori(i,j,bi,bj) ))
+         Nsquare(i,j,k)= max( 100.*fxb*fxb, Nsquare(i,j,k) )
+     &                 *maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+        ENDDO
+       ENDDO
+      ENDDO
 c-----------------------------------------------------------------------
 c     vertically integrated N
 c-----------------------------------------------------------------------
-      do k=2,Nr
+      DO k=2,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
            bN0(i,j)=bN0(i,j)
-     &       +Nsquare(i,j,k)**0.5*drC(k)*hFacI(i,j,k,bi,bj)*
-     &               *min(maskC(i,j,k,bi,bj),maskC(i,j,k-1,bi,bj))
-        enddo
-       enddo
-      enddo
+     &       +SQRT(Nsquare(i,j,k))*drC(k)*hFacI(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+      ENDDO
 c-----------------------------------------------------------------------
 c     vertical and horizontal group velocities
 c     and constant for dissipation
 c-----------------------------------------------------------------------
-      do k=2,Nr
+      DO k=2,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-          fxb = max( 1. _d -6, abs( FCori(i,j,bi,bj) ))
-          fxa = Nsquare(i,j,k)**0.5/fxb
+          fxb = max( 1. _d -6, abs( fCori(i,j,bi,bj) ))
+          fxa = SQRT(Nsquare(i,j,k))/fxb
           cstar = bN0(i,j)/(pi*IDEMIX_jstar)
           c0(i,j,k)=max(0. _d 0,
      &             cstar*IDEMIX_gamma*IDEMIX_gofx2(fxa))
           IDEMIX_v0(i,j,k,bi,bj)=max(0. _d 0,
      &             cstar*IDEMIX_gamma*IDEMIX_hofx1(fxa))
           fxc = max( 1. _d 0 , fxa )
-          fxc = log( fxc + sqrt( fxc**2 -1.))
+          fxc = log( fxc + sqrt( fxc*fxc -1.))
           IDEMIX_tau_d(i,j,k,bi,bj) = IDEMIX_mu0*fxb*fxc*
      &         (IDEMIX_jstar*pi/(GGL90eps+bN0(i,j)) )**2
-        enddo
-       enddo
-      enddo
+        ENDDO
+       ENDDO
+      ENDDO
 c-----------------------------------------------------------------------
 c     forcing by mesoscale GM
 c-----------------------------------------------------------------------
@@ -158,51 +157,48 @@ c     vertically integrated forcing
 #ifdef ALLOW_GMREDI
       if (useGmredi) then
 #ifdef GM_EG_PROGNOSTIC
-       do k=1,Nr
+       DO k=1,Nr
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
            gm_forc(i,j) = gm_forc(i,j)
      &           +GM_EG_diss(i,j,k,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
-         enddo
-        enddo
-       enddo
+         ENDDO
+        ENDDO
+       ENDDO
 #else
-       do k=2,Nr
+       DO k=2,Nr
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
            gm_forc(i,j) = gm_forc(i,j)
-     &              +max(0. _d 0,Kwz(i,j,k,bi,bj)*
-     &               max(0. _d 0, Nsquare(i,j,k))  )
+     &              +max( 0. _d 0,Kwz(i,j,k,bi,bj)*Nsquare(i,j,k) )
      &               *drC(k)*hFacI(i,j,k,bi,bj)
-     &               *min(maskC(i,j,k,bi,bj),maskC(i,j,k-1,bi,bj))
-         enddo
-        enddo
-       enddo
+         ENDDO
+        ENDDO
+       ENDDO
 #endif
       endif
 
       if (IDEMIX_include_GM .and. useGmredi) then
 c      inject locally
 #ifdef GM_EG_PROGNOSTIC
-       do k=2,Nr
+       DO k=2,Nr
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           forc(i,j,k) = forc(i,j,k)
      &              +.5 _d 0*(GM_EG_diss(i,j,k,bi,bj)+
      &                        GM_EG_diss(i,j,k-1,bi,bj))
-         enddo
-        enddo
-       enddo
+         ENDDO
+        ENDDO
+       ENDDO
 #else
-       do k=2,Nr
+       DO k=2,Nr
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           forc(i,j,k) = forc(i,j,k)
-     &              +max(0. _d 0,Kwz(i,j,k,bi,bj)*
-     &               max(0. _d 0, Nsquare(i,j,k))  )
-         enddo
-        enddo
-       enddo
+     &              +max( 0. _d 0,Kwz(i,j,k,bi,bj)*Nsquare(i,j,k) )
+         ENDDO
+        ENDDO
+       ENDDO
 #endif
       endif
 
@@ -214,15 +210,15 @@ c      inject at bottom box only
          forc(i,j,kbottom)=forc(i,j,kbottom)
      &     + gm_forc(i,j)*recip_drC(kbottom)
      &                  *recip_hFacI(i,j,kbottom,bi,bj)
-        enddo
-       enddo
+        ENDDO
+       ENDDO
       endif
 #endif
 
 c-----------------------------------------------------------------------
 c     horizontal diffusion of IW energy
 c-----------------------------------------------------------------------
-       do k=2,Nr
+       DO k=2,Nr
         DO j=1-OLy,sNy+OLy
          dfx(1-OLx,j)=0. _d 0
          DO i=1-OLx+1,sNx+OLx
@@ -267,18 +263,18 @@ c-----------------------------------------------------------------------
      &         *maskC(i,j,k,bi,bj) ! paranoia setting
          ENDDO
         ENDDO
-       enddo ! k loop
+       ENDDO ! k loop
 c-----------------------------------------------------------------------
 c      add interior forcing e.g. by mesoscale GM
 c-----------------------------------------------------------------------
-      do k=2,Nr
+      DO k=2,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
           IDEMIX_E(i,j,k,bi,bj) = IDEMIX_E(i,j,k,bi,bj)
      &                      + forc(i,j,k)*deltaTggl90
-        enddo
-       enddo
-      enddo
+        ENDDO
+       ENDDO
+      ENDDO
 c-----------------------------------------------------------------------
 c      solve vertical diffusion implicitly
 c-----------------------------------------------------------------------
@@ -346,8 +342,8 @@ C--   Center diagonal
       DO j=jMin,jMax
        DO i=iMin,iMax
          b3d(i,j,1) = 1. _d 0
-       enddo
-      enddo
+       ENDDO
+      ENDDO
       DO k=2,Nr
        km1 = MAX(k-1,2)
        DO j=jMin,jMax
@@ -421,12 +417,13 @@ c     compute diffusivity due to internal wave breaking
 c     assuming local Osborn-Cox balance model
 c     kept for diagnostics only
 c-----------------------------------------------------------------------
-       do k=2,Nr
+       DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
-          osborn_diff(i,j,k) = IDEMIX_mixing_efficiency*
-     &      IDEMIX_tau_d(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)**2/
-     &      max(1. _d -12,Nsquare(i,j,k))*maskC(i,j,k,bi,bj)
+          osborn_diff(i,j,k) = IDEMIX_mixing_efficiency
+     &     *IDEMIX_tau_d(i,j,k,bi,bj)
+     &         *IDEMIX_E(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)
+     &     /max(1. _d -12,Nsquare(i,j,k))*maskC(i,j,k,bi,bj)
           osborn_diff(i,j,k) = min(IDEMIX_diff_max,osborn_diff(i,j,k))
          ENDDO
         ENDDO
@@ -461,18 +458,18 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IMPLICIT NONE
       _RL x,c,xx
       _RL pi
-      PARAMETER( pi = 3.14159265358979323846264338327950588 )
+      PARAMETER( pi = 3.14159265358979323846264338327950588d0 )
       x=MAX(3.d0,xx)
-      c= 1.-(2./pi)*ASIN(1./x)
-      IDEMIX_gofx2 = 2/pi/c*0.9*x**(-2./3.)*(1-EXP(-x/4.3))
+      c= 1.d0-(2.d0/pi)*ASIN(1.d0/x)
+      IDEMIX_gofx2 = 2.d0/pi/c*0.9d0*x**(-2.d0/3.d0)*(1.-EXP(-x/4.3d0))
       END
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       _RL FUNCTION IDEMIX_hofx1(x)
       IMPLICIT NONE
       _RL x
       _RL pi
-      PARAMETER( pi = 3.14159265358979323846264338327950588 )
-      IDEMIX_hofx1 = (2./pi)/(1.-(2./pi)*
-     &              ASIN(1./MAX(1.01d0,x)))*(x-1.)/(x+1.)
+      PARAMETER( pi = 3.14159265358979323846264338327950588d0 )
+      IDEMIX_hofx1 = (2.d0/pi)/(1.d0-(2.d0/pi)*
+     &              ASIN(1.d0/MAX(1.01d0,x)))*(x-1.d0)/(x+1.d0)
       END
 #endif /* ALLOW_GGL90_IDEMIX */
