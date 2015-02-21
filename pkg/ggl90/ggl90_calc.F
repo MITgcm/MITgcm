@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.27 2015/02/19 15:44:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.28 2015/02/21 01:46:39 mlosch Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -85,7 +85,9 @@ c     _RL     Nsquare
 c     _RL     SQRTTKE
       _RL     SQRTTKE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     RiNumber
+#ifdef ALLOW_GGL90_IDEMIX
       _RL     IDEMIX_RiNumber
+#endif
       _RL     TKEdissipation
       _RL     tempU, tempV, prTemp
       _RL     MaxLength, tmpmlx, tmpVisc
@@ -140,6 +142,9 @@ C     Initialize local fields
       DO k = 1, Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
+         rMixingLength(i,j,k)     = 0. _d 0
+         mxLength_Dn(i,j,k)       = 0. _d 0
+         GGL90visctmp(i,j,k)      = 0. _d 0
          KappaE(i,j,k)            = 0. _d 0
          TKEPrandtlNumber(i,j,k)  = 1. _d 0
          GGL90mixingLength(i,j,k) = GGL90mixingLengthMin
@@ -149,6 +154,8 @@ C     Initialize local fields
          b3d(i,j,k) = 1. _d 0
          c3d(i,j,k) = 0. _d 0
 #endif
+         Nsquare(i,j,k) = 0. _d 0
+         SQRTTKE(i,j,k) = 0. _d 0
         ENDDO
        ENDDO
       ENDDO
@@ -158,6 +165,13 @@ C     Initialize local fields
         rMixingLength(i,j,1) = 0. _d 0
         mxLength_Dn(i,j,1) = GGL90mixingLengthMin
         SQRTTKE(i,j,1) = SQRT( GGL90TKE(i,j,1,bi,bj) )
+#ifdef ALLOW_GGL90_HORIZDIFF
+        xA(i,j)  = 0. _d 0
+        yA(i,j)  = 0. _d 0
+        dfx(i,j) = 0. _d 0
+        dfy(i,j) = 0. _d 0
+        gTKE(i,j) = 0. _d 0
+#endif /* ALLOW_GGL90_HORIZDIFF */
        ENDDO
       ENDDO
 
@@ -432,12 +446,13 @@ c              GGL9rdiffKr etc. is robust in case of smoothing (e.g. see OPA)
 
 C     compute Prandtl number (always greater than 0)
          RiNumber = MAX(Nsquare(i,j,k),0. _d 0)/(verticalShear+GGL90eps)
-CML         IDEMIX_RiNumber = 1./GGL90eps 
 #ifdef ALLOW_GGL90_IDEMIX
+CML         IDEMIX_RiNumber = 1./GGL90eps 
          IDEMIX_RiNumber = MAX( KappaM*Nsquare(i,j,k), 0. _d 0)/
      &    (GGL90eps+IDEMIX_tau_d(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)**2)
          prTemp         = MIN(5.*RiNumber, 6.6*IDEMIX_RiNumber)
 #else
+         prTemp = 1. _d 0	 
          IF ( RiNumber .GE. 0.2 _d 0 ) prTemp = 5. _d 0 * RiNumber
 #endif /* ALLOW_GGL90_IDEMIX */
          TKEPrandtlNumber(i,j,k) = MIN(10. _d 0,prTemp)
