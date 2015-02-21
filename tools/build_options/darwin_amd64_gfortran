@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_amd64_gfortran,v 1.4 2013/07/22 18:40:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_amd64_gfortran,v 1.5 2015/02/21 02:05:05 mlosch Exp $
 # $Name:  $
 
 # tested on MacBook Pro with Snow Leopard & Snow Lion
@@ -70,8 +70,13 @@ if test "x$IEEE" = x ; then
     NOOPTFLAGS='-O2 -funroll-loops'
 #    NOOPTFILES='gad_c4_adv_x.F gad_u3_adv_x.F'
 else
-    FFLAGS="$FFLAGS -Wunused"
-    FOPTIM='-O0'
+    FFLAGS="$FFLAGS -Wall"
+    if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+	FOPTIM='-O0'
+    else                          #- development/check options:
+	FOPTIM='-O0 -g -fbounds-check'
+	FOPTIM="$FOPTIM -ffpe-trap=invalid,zero,overflow -finit-real=inf"
+    fi
 fi
 
 INCLUDEDIRS=''
