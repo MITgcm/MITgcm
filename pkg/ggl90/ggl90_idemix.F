@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_idemix.F,v 1.1 2015/02/19 15:44:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_idemix.F,v 1.2 2015/02/21 15:05:15 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -16,7 +16,7 @@ C     |
 C     | IDEMIX model as described in
 C     | - Olbers, D. and Eden, C. (2013), JPO, doi:10.1175/JPO-D-12-0207.1
 C     | - Eden, C. and Olbers, D. (2014), JPO, doi:10.1175/JPO-D-13-0224.1
-C     | in a nutshell: 
+C     | in a nutshell:
 C     | computes contribution of internal wave field to vertical mixing
 C     *==========================================================*
 C     \ev
@@ -31,7 +31,6 @@ C     === Global variables ===
 #include "GGL90.h"
 #include "FFIELDS.h"
 #include "GRID.h"
-
 
 #ifdef ALLOW_GMREDI
 #include "GMREDI_OPTIONS.h"
@@ -113,7 +112,7 @@ c-----------------------------------------------------------------------
          Nsquare(i,j,k) = gravity*gravitySign*recip_rhoConst
      &                  * sigmaR(i,j,k)
          fxb = max( 1. _d -6, abs( FCori(i,j,bi,bj) ))
-         Nsquare(i,j,k)= max((10*fxb)**2, Nsquare(i,j,k) )  
+         Nsquare(i,j,k)= max((10*fxb)**2, Nsquare(i,j,k) )
      &               *min(maskC(i,j,k,bi,bj),maskC(i,j,k-1,bi,bj))
         enddo
        enddo
@@ -138,7 +137,7 @@ c-----------------------------------------------------------------------
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
           fxb = max( 1. _d -6, abs( FCori(i,j,bi,bj) ))
-          fxa = Nsquare(i,j,k)**0.5/fxb  
+          fxa = Nsquare(i,j,k)**0.5/fxb
           cstar = bN0(i,j)/(pi*IDEMIX_jstar)
           c0(i,j,k)=max(0. _d 0,
      &             cstar*IDEMIX_gamma*IDEMIX_gofx2(fxa))
@@ -146,7 +145,7 @@ c-----------------------------------------------------------------------
      &             cstar*IDEMIX_gamma*IDEMIX_hofx1(fxa))
           fxc = max( 1. _d 0 , fxa )
           fxc = log( fxc + sqrt( fxc**2 -1.))
-          IDEMIX_tau_d(i,j,k,bi,bj) = IDEMIX_mu0*fxb*fxc*       
+          IDEMIX_tau_d(i,j,k,bi,bj) = IDEMIX_mu0*fxb*fxc*
      &         (IDEMIX_jstar*pi/(GGL90eps+bN0(i,j)) )**2
         enddo
        enddo
@@ -155,7 +154,7 @@ c-----------------------------------------------------------------------
 c     forcing by mesoscale GM
 c-----------------------------------------------------------------------
 
-c     vertically integrated forcing 
+c     vertically integrated forcing
 #ifdef ALLOW_GMREDI
       if (useGmredi) then
 #ifdef GM_EG_PROGNOSTIC
@@ -294,7 +293,7 @@ C     delta_k = dt tau_v /drF_k (c_k+c_k+1)/2
         ENDDO
        ENDDO
       ENDDO
-      DO j=jMin,jMax 
+      DO j=jMin,jMax
        DO i=iMin,iMax
          delta(i,j,1)  = 0. _d 0
          delta(i,j,Nr) = 0. _d 0
@@ -304,13 +303,13 @@ C     delta_k = dt tau_v /drF_k (c_k+c_k+1)/2
       ENDDO
 
 C--   Lower diagonal  for E_(k-1) : -delta_k-1 c_k-1/drC_k
-      DO j=jMin,jMax 
+      DO j=jMin,jMax
        DO i=iMin,iMax
          a3d(i,j,1) = 0. _d 0
          a3d(i,j,2) = 0. _d 0
        ENDDO
       ENDDO
-      DO k=3,Nr  
+      DO k=3,Nr
        km1=MAX(2,k-1)
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -322,7 +321,7 @@ C-       No need for maskC(k-1) with recip_hFacC(k-1) in delta(k-1)
        ENDDO
       ENDDO
 
-C--   Upper diagonal for E_(k+1):  delta_k c_k+1/drC_k 
+C--   Upper diagonal for E_(k+1):  delta_k c_k+1/drC_k
       DO k=2,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -344,7 +343,7 @@ C-       No need for maskC(k) with recip_hFacC(k) in delta(k)
       ENDDO
 
 C--   Center diagonal
-      DO j=jMin,jMax 
+      DO j=jMin,jMax
        DO i=iMin,iMax
          b3d(i,j,1) = 1. _d 0
        enddo
@@ -369,7 +368,7 @@ C-       No need for maskC(k-1) with recip_hFacC(k-1) in delta(k-1)
       ENDDO
 
 c     at surface and bottom
-      DO j=jMin,jMax 
+      DO j=jMin,jMax
        DO i=iMin,iMax
         k   = MAX(kLowC(i,j,bi,bj),1)
         km1 = MAX(k-1,2)
@@ -396,12 +395,12 @@ C     Apply flux boundary condition
       DO j=jMin,jMax
        DO i=iMin,iMax
         k=2
-        IDEMIX_E(i,j,k,bi,bj)  =  IDEMIX_E(i,j,k,bi,bj)  
+        IDEMIX_E(i,j,k,bi,bj)  =  IDEMIX_E(i,j,k,bi,bj)
      &      +deltaTggl90*IDEMIX_F_s(i,j,bi,bj)
      &        *recip_drC(k)*recip_hFacI(i,j,k,bi,bj)
      &        *maskC(i,j,k,bi,bj)
         k = MAX(kLowC(i,j,bi,bj),1)
-        IDEMIX_E(i,j,k,bi,bj) = IDEMIX_E(i,j,k,bi,bj) 
+        IDEMIX_E(i,j,k,bi,bj) = IDEMIX_E(i,j,k,bi,bj)
      &    -deltaTggl90*IDEMIX_F_b(i,j,bi,bj)
      &     *recip_drC(k)*recip_hFacI(i,j,k,bi,bj)
      &     *maskC(i,j,k,bi,bj)
@@ -414,7 +413,6 @@ C     solve tri-diagonal system
      U                        IDEMIX_E(1-OLx,1-OLy,1,bi,bj),
      O                        errCode,
      I                        bi, bj, myThid )
-
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
@@ -458,27 +456,23 @@ c-----------------------------------------------------------------------
 
 #ifdef ALLOW_GGL90_IDEMIX
 C     helper functions
-      _RL function IDEMIX_gofx2(xx)
-      implicit none
-      _RL :: x,c,xx
-      _RL, parameter :: pi = 3.14159265358979323846264338327950588
-      x=max(3.d0,xx)
-      c= 1.-(2./pi)*asin(1./x)
-      IDEMIX_gofx2 = 2/pi/c*0.9*x**(-2./3.)*(1-exp(-x/4.3))
-      end
-
-      _RL function IDEMIX_hofx1(x)
-      implicit none
-      _RL :: x
-      _RL, parameter :: pi = 3.14159265358979323846264338327950588
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      _RL FUNCTION IDEMIX_gofx2(xx)
+      IMPLICIT NONE
+      _RL x,c,xx
+      _RL pi
+      PARAMETER( pi = 3.14159265358979323846264338327950588 )
+      x=MAX(3.d0,xx)
+      c= 1.-(2./pi)*ASIN(1./x)
+      IDEMIX_gofx2 = 2/pi/c*0.9*x**(-2./3.)*(1-EXP(-x/4.3))
+      END
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      _RL FUNCTION IDEMIX_hofx1(x)
+      IMPLICIT NONE
+      _RL x
+      _RL pi
+      PARAMETER( pi = 3.14159265358979323846264338327950588 )
       IDEMIX_hofx1 = (2./pi)/(1.-(2./pi)*
-     &              asin(1./max(1.01d0,x)))*(x-1.)/(x+1.)
-      end
+     &              ASIN(1./MAX(1.01d0,x)))*(x-1.)/(x+1.)
+      END
 #endif /* ALLOW_GGL90_IDEMIX */
-
-
-
-
-
-
-
