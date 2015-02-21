@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/STREAMICE_OPTIONS.h,v 1.1 2013/12/17 19:08:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/STREAMICE_OPTIONS.h,v 1.2 2015/02/21 19:56:50 dgoldberg Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -17,13 +17,11 @@ C Use this file for selecting options within package "streamice"
 C Place CPP define/undef flag here
 
 #define STREAMICE_CONSTRUCT_MATRIX
-#define STREAMICE_HYBRID_STRESS
 #define USE_ALT_RLOW
-#undef STREAMICE_GEOM_FILE_SETUP
 #define STREAMICE_SMOOTH_FLOATATION
-#undef ALLOW_PETSC
-#undef ALLOW_STREAMICE_2DTRACER
-#undef STREAMICE_TRACER_AB
+#define STREAMICE_ALLOW_BGLEN_CONTROL
+#define ALLOW_STREAMICE_OAD_FP
+#define STREAMICE_HYBRID_STRESS
 
 #endif /* ALLOW_MYPACKAGE */
 #endif /* MYPACKAGE_OPTIONS_H */
