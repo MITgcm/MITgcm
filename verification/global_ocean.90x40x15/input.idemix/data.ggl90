@@ -7,22 +7,23 @@
  GGL90writeState=.FALSE.,
  GGL90ck=0.1,
  GGL90ceps = 0.7,
- GGL90alpha=30.0,
+ GGL90alpha=30.,
  GGL90m2 = 3.0,
  GGL90TKEmin = 0.e-6,
- GGL90TKEbottom=4e-6,
- GGL90TKEsurfMin=1e-4,
+ GGL90TKEbottom=4.e-6,
+ GGL90TKEsurfMin=1.e-4,
  GGL90mixingLengthMin=,
  mxlMaxFlag=2,
- GGL90viscMax=1e2,
- GGL90diffMax=1e2,
- GGL90TKEFile=
- GGL90_dirichlet=.false.,
+ GGL90viscMax=1.e2,
+ GGL90diffMax=1.e2,
+ GGL90TKEFile=,
+ GGL90_dirichlet=.FALSE.,
  useIDEMIX  = .TRUE.,
  &
+
  &GGL90_PARM02
- IDEMIX_include_GM_bottom = .false.,
- IDEMIX_include_GM        = .false.,
+ IDEMIX_include_GM_bottom = .FALSE.,
+ IDEMIX_include_GM        = .FALSE.,
  IDEMIX_tidal_file  = 'tidal_energy.bin',
  IDEMIX_wind_file   = 'wind_energy.bin',
  &
