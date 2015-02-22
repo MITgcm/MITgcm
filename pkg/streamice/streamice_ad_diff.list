@@ -29,3 +29,7 @@ streamice_read_pickup.f
 streamice_get_vel_resid_err.f
 streamice_get_vel_fp_err.f
 streamice_fields_load.f
+streamice_vel_solve_openad.f
+streamice_vel_phistage.f
+streamice_vel_phi.f
+streamice_get_fp_err_oad.f
