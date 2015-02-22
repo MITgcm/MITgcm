@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.199 2015/02/18 16:11:31 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.200 2015/02/22 22:48:18 jmc Exp $
 #  $Name:  $
 #
 
@@ -42,6 +42,7 @@ usage()
     echo "  (-bash|-b) STRING        preferred location of a \"bash\" or \"sh\" shell"
     echo "                             (DEF=\"\" for \"bash\")"
     echo "  (-ef) STRING             used as genmake2 \"-extra_flag\" argument"
+    echo "  (-ncad)                  used genmake2 option \"-nocat4ad\" (-ncad)"
     echo "  (-makedepend|-md) STRING command to use for \"makedepend\""
     echo "  (-make|-m) STRING        command to use for \"make\""
     echo "                             (DEF=\"make\")"
@@ -402,6 +403,9 @@ genmakemodel()
 	    if test "x$EXTRFLG" != x ; then
 		command="$command -extra_flag $EXTRFLG"
 	    fi
+	    if test "x$NOCATAD" = xt ; then
+		command="$command -nocat4ad"
+	    fi
 	    if test "x$TS" = xt ; then
 		command="$command -ts"
 	    fi
@@ -524,11 +528,7 @@ makemodel()
 	cd $1;
 	if test -r Makefile ; then
 	    printf 'make ... '
-	    if test "x$REPLMAKE" = x ; then
-		$MAKE $TARG >> make.tr_log 2>&1
-	    else
-		$REPLMAKE $TARG >> make.tr_log 2>&1
-	    fi
+	    $MAKE_CMD $TARG >> make.tr_log 2>&1
 	    RETVAL=$?
 	    if test "x$RETVAL" != x0 ; then
 		tail make.tr_log
@@ -1044,7 +1044,7 @@ MKDEPEND=
 if test "x$MAKE" = x ; then
     MAKE=make
 fi
-REPLMAKE=
+MAKE_CMD=
 if test "x$CC" = x ; then
     CC=cc
 fi
@@ -1057,6 +1057,7 @@ OUTDIR=
 DELDIR=
 USE_R4=
 EXTRFLG=
+NOCATAD=
 
 #- type of testing (KIND):
 #   KIND=0 : forward (= default) ;  KIND=1 : Tangent Linear with TAF ;
@@ -1116,8 +1117,8 @@ for ac_option ; do
 	-make | --make | -m | --m) ac_prev=MAKE ;;
 	-make=* | --make=* | -m=* | --m=*) MAKE=$ac_optarg ;;
 
-	-repl_mk | --repl_mk ) ac_prev=REPLMAKE ;;
-	-repl_mk=* | --repl_mk=*) REPLMAKE=$ac_optarg ;;
+	-repl_mk | --repl_mk ) ac_prev=MAKE_CMD ;;
+	-repl_mk=* | --repl_mk=*) MAKE_CMD=$ac_optarg ;;
 
 	-odir | --odir) ac_prev=OUTDIR ;;
 	-odir=* | --odir=*) OUTDIR=$ac_optarg ;;
@@ -1165,6 +1166,7 @@ for ac_option ; do
 	-oad) if test $KIND = 0 ; then KIND=4 ; NODEPEND=t ; else
 		echo "Error: '-tlm', '-adm' and '-oad' are exclusive" ; usage
 	      fi ;;
+	-ncad) NOCATAD=t ;;
 
 	-ieee)   echo "Warning: ignore option '-ieee' (already the default)"
 		 printf " ... " ;;
@@ -1184,7 +1186,7 @@ for ac_option ; do
 
 	-ts) TS=t;;
 	-papis) PAPIS=t;;
-	-pcls) PCL=t;;
+	-pcls) PCLS=t;;
 
 	-*) echo "Error: unrecognized option: "$ac_option
 	    usage ;;
@@ -1200,6 +1202,7 @@ if test "x$QUICK" = xt ; then
     NOCLEAN=t
     NODEPEND=t
 fi
+if test "x$MAKE_CMD" = x ; then MAKE_CMD=$MAKE ; fi
 
 #- check length of MPI machine file:
 if test "x$MPI" != x0 -a "x$MPI_MFILE" != x ; then
@@ -1238,12 +1241,12 @@ elif test $KIND = 4 ; then
     ref_outp="output_oadm.txt"
     EXECUTABLE="mitgcmuv_ad"
 else
-    if test "x$JOBS" != x ; then TARG="-j $JOBS $TARG" ; fi
     code_dir=code
     inputdir=input
     ref_outp="output.txt"
     EXECUTABLE="mitgcmuv"
 fi
+if test "x$JOBS" != x ; then TARG="-j $JOBS $TARG" ; fi
 
 xx=`echo $TESTDIRS | awk '{print $1}'`
 if test "x$TESTDIRS" = x ; then
@@ -1306,17 +1309,17 @@ fi
 
 echo "OK (COMMAND='$COMMAND')"
 
-TMP=./tr_$$
+#TMP=./tr_$$
 #- try to put temporary files in system-local /tmp dir
-#TMP=/tmp/tr_$$
-#touch $TMP ; retVal=$?
-#if [ $retVal -eq 0 ] ; then
-#  if test ! -r $TMP ; then TMP=./tr_$$ ; fi
-#else
-#  TMP=./tr_$$
-#fi
-#rm -f $TMP
-#if [ $verbose -gt 1 ]; then echo " temp files: $TMP" ; fi
+TMP=/tmp/tr_${USER}_$$
+touch $TMP ; retVal=$?
+if [ $retVal -eq 0 ] ; then
+  if test ! -r $TMP ; then TMP=./tr_$$ ; fi
+else
+  TMP=./tr_$$
+fi
+rm -f $TMP
+if [ $verbose -gt 1 ]; then echo " temp files: $TMP" ; fi
 
 # set the Default List of output variables to be checked:
 #  (use default or load experiment-specific list from file "tr_checklist")
@@ -1372,8 +1375,7 @@ if test "x$OUTDIR" != x ; then
 else
    #short_name=`hostname -s | tr '[:upper:]' '[:lower:]'`
    # hostname -s is not universal (does work on AIX system)
-   short_name=`hostname | sed 's/\..*$//' | tr '[:upper:]' '[:lower:]'`
-   
+    short_name=`hostname | sed 's/\..*$//' | tr '[:upper:]' '[:lower:]'`
     BASE="tr_"$short_name"_"$DATE"_"
 fi
 DNUM=0
