@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.20 2015/01/20 20:52:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.21 2015/02/22 01:52:18 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -115,8 +115,12 @@ C     Ubaro   :: Barotropic velocity (m/s)
       _RL N(      1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL BVint(  1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL Ubaro(  1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL ubar(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL vbar(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL ubar(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+
+      _RL tmpU(  1-Olx:sNx+Olx,1-Oly:sNy+Oly )
+      _RL tmpV(  1-Olx:sNx+Olx,1-Oly:sNy+Oly )
+      _RL uFldX( 1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr )
+      _RL vFldY( 1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr )
 
 C     Rmid     :: Rossby radius (m)
 C     KPV      :: Diffusivity (m**2/s)
@@ -353,20 +357,71 @@ C     initialise remaining 3d variables
       ENDDO
 
 C     Find the zonal velocity at the cell centre
-C     The logicals here are, in order: 1/ go from grid to north/east directions
-C     2/ go from C to A grid and 3/ apply the mask
 #ifdef ALLOW_EDDYPSI
       IF (GM_InMomAsStress) THEN
-        CALL ROTATE_UV2EN_RL( uEulerMean, vEulerMean, ubar, vbar,
-     &                        .TRUE., .TRUE., .TRUE., Nr, mythid )
+        DO k=1,Nr
+         DO i = 1-olx,snx+olx
+          DO j = 1-oly,sny+oly
+           uFldX(i,j,k) = uEulerMean(i,j,k,bi,bj)
+           vFldY(i,j,k) = vEulerMean(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
       ELSE
 #endif
-        CALL ROTATE_UV2EN_RL( uVel, vVel, ubar, vbar,
-     &                        .TRUE., .TRUE., .TRUE., Nr, mythid )
+        DO k=1,Nr
+         DO i = 1-olx,snx+olx
+          DO j = 1-oly,sny+oly
+           uFldX(i,j,k) = uVel(i,j,k,bi,bj)
+           vFldY(i,j,k) = vVel(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
 #ifdef ALLOW_EDDYPSI
       ENDIF
 #endif
 
+C     The following comes from rotate_uv2en_rl
+C     This code does two things:
+C     1) go from C grid velocity points to A grid velocity points
+C     2) go from model grid directions to east/west directions
+      DO k = 1,Nr
+       
+       DO i = 1-Olx,sNx+Olx
+        j=sNy+Oly
+        tmpU(i,j)=zeroRL
+        tmpV(i,j)=zeroRL
+       ENDDO
+       DO j = 1-Oly,sNy+Oly-1
+        i=sNx+Olx
+        tmpU(i,j)=zeroRL
+        tmpV(i,j)=zeroRL
+        DO i = 1-Olx,sNx+Olx-1
+         tmpU(i,j) = 0.5 _d 0
+     &        *( uFldX(i+1,j,k) + uFldX(i,j,k) )
+         tmpV(i,j) = 0.5 _d 0
+     &        *( vFldY(i,j+1,k) + vFldY(i,j,k) )
+         
+         tmpU(i,j) = tmpU(i,j) * maskC(i,j,k,bi,bj)
+         tmpV(i,j) = tmpV(i,j) * maskC(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+
+       DO j = 1-oly,sny+oly
+        DO i = 1-olx,snx+olx
+        ENDDO
+       ENDDO
+       
+C     rotation
+       DO j = 1-oly,sny+oly
+        DO i = 1-olx,snx+olx
+         ubar(i,j,k) = 
+     &        angleCosC(i,j,bi,bj)*tmpU(i,j)
+     &        -angleSinC(i,j,bi,bj)*tmpV(i,j)
+        ENDDO
+       ENDDO
+      ENDDO
+      
 C     Square of the buoyancy frequency at the top of a grid cell
       DO k=2,Nr
        DO j=1-Oly,sNy+Oly
@@ -402,8 +457,7 @@ C     Note that Ubaro is on the U grid.
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
          Ubaro(i,j) = Ubaro(i,j) +
-     &        maskW(i,j,k,bi,bj)*drF(k)*hfacC(i,j,k,bi,bj)
-     &                *ubar(i,j,k,bi,bj)
+     &        drF(k)*hfacC(i,j,k,bi,bj)*ubar(i,j,k)
         ENDDO
        ENDDO
       ENDDO
@@ -552,7 +606,7 @@ C       Calculate the estimated length scale
 
 C       Calculate the Doppler shifted long Rossby wave speed
 C       Ubaro is on the U grid so we must average onto the M grid.
-        cDopp(i,j) = op5*( Ubaro(i,j)+Ubaro(i+1,j) )
+        cDopp(i,j) = Ubaro(i,j)
      &                - gradf(i,j)*Rdef(i,j,bi,bj)*Rdef(i,j,bi,bj)
 C       Limit the wave speed to the namelist variable GM_K3D_maxC
         IF (ABS(cDopp(i,j)).GT.GM_K3D_maxC) THEN
@@ -578,7 +632,7 @@ C     Calculate the diffusivity (on the mass grid)
              IF (urms(i,j,k).EQ.0.0) THEN
                K3D(i,j,k,bi,bj) = GM_K3D_smallK
              ELSE
-               umc(i,j,k) =ubar(i,j,k,bi,bj) - cDopp(i,j)
+               umc(i,j,k) =ubar(i,j,k) - cDopp(i,j)
                supp(i,j,k)=1/(1+GM_K3D_b1*umc(i,j,k)**2/urms(i,j,1)**2)
 C              2*Rmix gives the diameter
                K3D(i,j,k,bi,bj) = GM_K3D_gamma*urms(i,j,k)
@@ -765,7 +819,7 @@ C              Use a constant K in the surface layer.
       ENDIF
 
 C     Calculate gradq
-      IF (GM_K3D_likeGM .OR. GM_K3D_beta_eq_0) THEN
+      IF (GM_K3D_beta_eq_0) THEN
 C       Ignore beta in the calculation of grad(q)
         DO k=1,Nr
          DO j=1-Oly+1,sNy+Oly
@@ -804,11 +858,11 @@ C     This is necessary to find the eigenvectors at those points
        ENDDO
       ENDDO
 
-C     If GM_K3D_likeGM=.TRUE., the diffusivity for the eddy transport is
+C     If GM_K3D_use_constK=.TRUE., the diffusivity for the eddy transport is
 C     set to a constant equal to GM_K3D_constK.
 C     If the diffusivity is constant the method here is the same as GM.
 C     If GM_K3D_constRedi=.TRUE. K3D will be set equal to GM_K3D_constK later.
-      IF(GM_K3D_likeGM) THEN
+      IF(GM_K3D_use_constK) THEN
         DO k=1,Nr
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx

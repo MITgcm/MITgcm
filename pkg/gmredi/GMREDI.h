@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.30 2014/05/18 02:58:39 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.31 2015/02/22 01:52:18 m_bates Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -22,11 +22,10 @@ C     GM_MNC           ::
 C     GM_MDSIO         ::
 C     GM_useK3D        :: use the 3 dimensional calculation for K
 C     GM_K3D_beta_eq_0 :: Ignores the beta term when calculating grad(q)
-C     GM_K3D_likeGM    :: Makes the PV closure similar to the GM closure by enforcing a
-C                      :: constant K and setting beta=0
 C     GM_K3D_ThickSheet:: Use a thick PV sheet
 C     GM_K3D_surfK     :: Imposes a constant K in the surface layer    
 C     GM_K3D_constRedi :: Imposes a constant K for the Redi isoneutral diffusivity
+C     GM_K3D_use_constK:: Imposes a constant K for the eddy transport
 C     GM_K3D_smooth    :: Expand PV closure in terms of baroclinic modes (=.FALSE. for debugging only!)
       LOGICAL GM_AdvForm
       LOGICAL GM_AdvSeparate
@@ -37,10 +36,10 @@ C     GM_K3D_smooth    :: Expand PV closure in terms of baroclinic modes (=.FALS
       LOGICAL GM_MNC
       LOGICAL GM_MDSIO
       LOGICAL GM_useK3D
-      LOGICAL GM_K3D_likeGM
       LOGICAL GM_K3D_ThickSheet
       LOGICAL GM_K3D_surfK
       LOGICAL GM_K3D_constRedi
+      LOGICAL GM_K3D_use_constK
       LOGICAL GM_K3D_beta_eq_0
       LOGICAL GM_K3D_smooth
       COMMON /GM_PARAMS_L/
@@ -48,7 +47,7 @@ C     GM_K3D_smooth    :: Expand PV closure in terms of baroclinic modes (=.FALS
      &                   GM_useBVP,  GM_useSubMeso,
      &                   GM_ExtraDiag, GM_MNC, GM_MDSIO,
      &                   GM_InMomAsStress,
-     &                   GM_useK3D, GM_K3D_likeGM, GM_K3D_smooth,
+     &                   GM_useK3D, GM_K3D_smooth, GM_K3D_use_constK,
      &                   GM_K3D_beta_eq_0, GM_K3D_ThickSheet, 
      &                   GM_K3D_surfK, GM_K3D_constRedi
 
@@ -101,7 +100,8 @@ C     GM_K3D_b1      :: an empirically determined constant of O(1)
 C     GM_K3D_EadyMinDepth :: upper depth for Eady calculation
 C     GM_K3D_EadyMaxDepth :: lower depth for Eady calculation
 C     GM_maxK3D      :: Upper bound on the diffusivity
-C     GM_K3D_constK  :: Constant diffusivity to use when GM_useK3D=.TRUE. and GM_K3D_likeGM=.TRUE.
+C     GM_K3D_constK  :: Constant diffusivity to use when GM_useK3D=.TRUE. and 
+C                       GM_K3D_use_constK=.TRUE. and/or GM_K3D_constRedi=.TRUE.
 C     GM_K3D_Rmax    :: Upper bound on the length scale used for calculating urms
 C     GM_K3D_Rmin    :: Lower bound on the length scale used for calculating the eddy radius
 C     GM_K3D_minCori :: minimum value for f (to stop things blowing up near the equator)

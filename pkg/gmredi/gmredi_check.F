@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.30 2014/05/18 02:49:52 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.31 2015/02/22 01:52:18 m_bates Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -166,10 +166,11 @@ C     Make sure we are not trying to use some arrays that are unavailable
         CALL WRITE_0D_L( GM_useK3D, INDEX_NONE,
      &   'GM_useK3D =', '     /* if TRUE => use K3D for diffusivity */')
         
-        IF ( GM_K3D_likeGM ) THEN
-          CALL WRITE_0D_L( GM_K3D_likeGM, INDEX_NONE,
-     &         'GM_K3D_likeGM =', 
-     &         '     /* if TRUE => Uses a GM-type closure */')
+        IF ( GM_K3D_use_constK ) THEN
+          CALL WRITE_0D_L( GM_K3D_use_constK, INDEX_NONE,
+     &         'GM_K3D_use_constK =', 
+     &         '     /* if TRUE => Uses a constant K for'//
+     &         ' the eddy transport colsure */')
         
           CALL WRITE_0D_L( GM_K3D_smooth, INDEX_NONE,
      &         'GM_K3D_smooth =', 
@@ -200,20 +201,6 @@ C     The skew form is not presently supported.
      &       ' GMREDI_CHECK: To use GM_useK3D set GM_AdvForm=.TRUE.'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP ' ABNORMAL END: S/R GMREDI_CHECK'
-      ENDIF
-
-      IF ( GM_useK3D) THEN
-C       Make sure that we use K3D without smoothing only when we specify
-C       a constant K should be used
-        IF ( .NOT. GM_K3D_likeGM .AND. .NOT. GM_K3D_smooth) THEN
-          WRITE(msgBuf,'(A)')
-     &  ' GMREDI_CHECK: GM_K3D_likeGM=.FALSE. and GM_K3D_smooth=.FALSE.'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          WRITE(msgBuf,'(A)')
-     &      ' GMREDI_CHECK: To have variable K set GM_K3D_smooth=.TRUE.'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          STOP ' ABNORMAL END: S/R GMREDI_CHECK'
-        ENDIF
       ENDIF
 
 #endif
