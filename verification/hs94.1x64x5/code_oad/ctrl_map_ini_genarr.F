@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/ctrl_map_ini_genarr.F,v 1.4 2015/01/28 12:36:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/ctrl_map_ini_genarr.F,v 1.5 2015/02/22 23:50:22 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -94,14 +94,9 @@ C--   generic - user-defined control vars
           do j = jmin,jmax
             do i = imin,imax
               if ( iarr .eq. 1 ) then
-# ifdef ALLOW_BOTTOMDRAG_CONTROL
-                bottomdragfld(i,j,bi,bj) = bottomdragfld(i,j,bi,bj)
-     &                                   + tmpfld2d(i,j,bi,bj)
-# endif
-              elseif ( iarr .eq. 2 ) then
                 theta(i,j,1,bi,bj) = theta(i,j,1,bi,bj)
      &                             + tmpfld2d(i,j,bi,bj)
-              elseif ( iarr .eq. 3 ) then
+              elseif ( iarr .eq. 2 ) then
                 salt(i,j,1,bi,bj) = salt(i,j,1,bi,bj)
      &                            + tmpfld2d(i,j,bi,bj)
               endif
@@ -111,9 +106,7 @@ C--   generic - user-defined control vars
        ENDDO
 C--   end iarr loop
       ENDDO
-#ifdef ALLOW_BOTTOMDRAG_CONTROL
-       _EXCH_XY_RL( bottomdragfld, myThid )
-#endif
+
        _EXCH_XYZ_RL( theta, myThid )
        _EXCH_XYZ_RL( salt, myThid )
 
@@ -141,25 +134,13 @@ C--   generic - user-defined control vars
           do k = 1,Nr
            do j = jmin,jmax
             do i = imin,imax
-#ifndef ALLOW_OPENAD
-              if ( iarr .eq. 1 ) then
-                theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj)
-     &                             + fac*tmpfld3d(i,j,k,bi,bj)
-              elseif ( iarr .eq. 2 ) then
-                salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj)
-     &                            + fac*tmpfld3d(i,j,k,bi,bj)
-              endif
-#else
-              if ( iarr .eq. 1 ) then
-                theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj)
-     &           + fac*xx_genarr3d(i,j,k,bi,bj,iarr)
-     &           + fac*tmpfld3d(i,j,k,bi,bj)
-              elseif ( iarr .eq. 2 ) then
-                salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj)
-     &           + fac*xx_genarr3d(i,j,k,bi,bj,iarr)
-     &           + fac*tmpfld3d(i,j,k,bi,bj)
-              endif
-#endif /* ALLOW_OPENAD */
+cc              if ( iarr .eq. 1 ) then
+cc                theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj)
+cc     &                             + fac*tmpfld3d(i,j,k,bi,bj)
+cc              elseif ( iarr .eq. 2 ) then
+cc                salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj)
+cc     &                            + fac*tmpfld3d(i,j,k,bi,bj)
+cc              endif
             enddo
            enddo
           enddo
@@ -167,8 +148,9 @@ C--   generic - user-defined control vars
        ENDDO
 C--   end iarr loop
       ENDDO
-       _EXCH_XYZ_RL( theta, myThid )
-       _EXCH_XYZ_RL( salt, myThid )
+
+cc       _EXCH_XYZ_RL( theta, myThid )
+cc       _EXCH_XYZ_RL( salt, myThid )
 
 #endif /* ALLOW_GENARR3D_CONTROL */
 

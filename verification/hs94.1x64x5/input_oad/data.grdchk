@@ -7,5 +7,5 @@
  nbeg             = 1,
  nstep            = 1,
  nend             = 4,
- grdchkvarindex   = 201,
+ grdchkvarindex   = 101,
  &

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/OPENAD_OPTIONS.h,v 1.2 2015/02/18 20:47:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/OPENAD_OPTIONS.h,v 1.3 2015/02/22 23:50:22 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -20,7 +20,7 @@ CEOP
 
 #ifdef ALLOW_OPENAD
 
-cph#define ALLOW_OPENAD_ACTIVE_READ_XYZ
+#undef ALLOW_OPENAD_ACTIVE_READ_XYZ
 #define ALLOW_OPENAD_ACTIVE_READ_XY
 #define ALLOW_OPENAD_ACTIVE_WRITE
 

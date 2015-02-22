@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.16 2015/02/18 12:40:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.17 2015/02/22 23:50:22 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -553,29 +553,27 @@ C     Temporarily change setting of writeBinaryPrec
      &     'ad',xx_etan_file(1:il),'.'
       call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
 #   endif
-#   ifndef ALLOW_OPENAD_ACTIVE_READ_XY
-#    ifdef ALLOW_GENARR2D_CONTROL
-      do ik = 1, maxCtrlArr2D
-        foo2d=xx_genarr2d(:,:,:,:,ik)%d
-        write(fname,'(A,I2.2,A)') 'adxx_genarr2d_',ik,'.'
-        call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
-      enddo
-#    endif
-#    ifdef ALLOW_GENTIM2D_CONTROL
-      do ik = 1, maxCtrlTim2D
-        foo2d=xx_gentim2d(:,:,:,:,ik)%d
-        write(fname,'(A,I2.2,A)') 'adxx_gentim2d_',ik,'.'
-        call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
-      enddo
-#    endif
-#   endif /* ALLOW_OPENAD_ACTIVE_READ_XY */
-#   ifdef ALLOW_GENARR3D_CONTROL
-      do ik = 1, maxCtrlArr3D
-        foo=xx_genarr3d(:,:,:,:,:,ik)%d
-        write(fname,'(A,I2.2,A)') 'adxx_genarr3d_',ik,'.'
-        call write_fld_xyz_rl(fname,suff,foo,myIter,1)
-      enddo
-#   endif
+cc#   ifdef ALLOW_GENARR2D_CONTROL
+cc      do ik = 1, maxCtrlArr2D
+cc        foo2d=xx_genarr2d(:,:,:,:,ik)%d
+cc        write(fname,'(A,I2.2,A)') 'adxx_genarr2d_',ik,'.'
+cc        call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
+cc      enddo
+cc#   endif
+cc#   ifdef ALLOW_GENTIM2D_CONTROL
+cc      do ik = 1, maxCtrlTim2D
+cc        foo2d=xx_gentim2d(:,:,:,:,ik)%d
+cc        write(fname,'(A,I2.2,A)') 'adxx_gentim2d_',ik,'.'
+cc        call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
+cc      enddo
+cc#   endif
+cc#   ifdef ALLOW_GENARR3D_CONTROL
+cc      do ik = 1, maxCtrlArr3D
+cc        foo=xx_genarr3d(:,:,:,:,:,ik)%d
+cc        write(fname,'(A,I2.2,A)') 'adxx_genarr3d_',ik,'.'
+cc        call write_fld_xyz_rl(fname,suff,foo,myIter,1)
+cc      enddo
+cc#   endif
 C     Change back to original writeBinaryPrec
       writeBinaryPrec = tmpprec
       our_rev_mode%plain=.TRUE.

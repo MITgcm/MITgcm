@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.76 2015/01/29 23:17:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.77 2015/02/22 23:50:22 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -199,9 +199,9 @@ c     Define unit weight as a placeholder
       _RL wunit     (nr,nsx,nsy)
       _RL wareaunit (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
-      common /controlvars_r/
-     &                        tmpfld2d
-     &                      , tmpfld3d
+cph      common /controlvars_r/
+cph     &                        tmpfld2d
+cph     &                      , tmpfld3d
       _RL tmpfld2d
      &    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL tmpfld3d

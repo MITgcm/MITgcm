@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint65a
-(PID.TID 0000.0001) // Build user:        jmc
-(PID.TID 0000.0001) // Build host:        baudelaire
-(PID.TID 0000.0001) // Build date:        Sun Aug  3 01:17:34 EDT 2014
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint65i
+(PID.TID 0000.0001) // Build user:        heimbach
+(PID.TID 0000.0001) // Build host:        GLACIER0.MIT.EDU
+(PID.TID 0000.0001) // Build date:        Sun Feb 22 11:04:56 EST 2015
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -101,7 +101,8 @@
 (PID.TID 0000.0001) > no_slip_sides=.FALSE.,
 (PID.TID 0000.0001) > no_slip_bottom=.FALSE.,
 (PID.TID 0000.0001) > bottomDragQuadratic=2.E-3,
-(PID.TID 0000.0001) > diffKrT=0.,
+(PID.TID 0000.0001) >#- diffKrT unused when compiled with ALLOW_3D_DIFFKR
+(PID.TID 0000.0001) >#diffKrT=0.,
 (PID.TID 0000.0001) > diffKhT=0.,
 (PID.TID 0000.0001) > diffK4T=0.,
 (PID.TID 0000.0001) > diffKrS=0.,
@@ -129,7 +130,7 @@
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Time stepping parameters
 (PID.TID 0000.0001) > &PARM03
-(PID.TID 0000.0001) > niter0=0,
+(PID.TID 0000.0001) > nIter0=0,
 (PID.TID 0000.0001) > nTimeSteps=10,
 (PID.TID 0000.0001) > abEps=0.1,
 (PID.TID 0000.0001) > deltaT=1200.0,
@@ -184,6 +185,7 @@
  --------  pkgs with a standard "usePKG" On/Off switch in "data.pkg":  --------
  pkg/shap_filt            compiled   and   used ( useSHAP_FILT             = T )
  pkg/grdchk               compiled   and   used ( useGrdchk                = T )
+ pkg/ctrl                 compiled   and   used ( useCTRL                  = T )
  pkg/diagnostics          compiled   and   used ( useDiagnostics           = T )
  pkg/mnc                  compiled but not used ( useMNC                   = F )
  pkg/mypackage            compiled   and   used ( useMYPACKAGE             = T )
@@ -198,7 +200,6 @@
  pkg/mdsio                compiled   and   used
  pkg/autodiff             compiled   and   used
  pkg/cost                 compiled   and   used
- pkg/ctrl                 compiled   and   used
 (PID.TID 0000.0001)  PACKAGES_BOOT: End of package Summary
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  SHAP_FILT_READPARMS: opening data.shap
@@ -325,17 +326,7 @@
 (PID.TID 0000.0001) ># ECCO control variables
 (PID.TID 0000.0001) ># *********************
 (PID.TID 0000.0001) > &CTRL_NML
-(PID.TID 0000.0001) > xx_theta_file      = 'xx_theta',
-(PID.TID 0000.0001) > xx_salt_file       = 'xx_salt',
-(PID.TID 0000.0001) > xx_tr1_file        = 'xx_tr1',
-(PID.TID 0000.0001) > xx_hflux_file      = 'xx_hflux',
-(PID.TID 0000.0001) > xx_sflux_file      = 'xx_sflux',
-(PID.TID 0000.0001) > xx_tauu_file       = 'xx_tauu',
-(PID.TID 0000.0001) > xx_tauv_file       = 'xx_tauv',
-(PID.TID 0000.0001) > xx_sst_file        = 'xx_sst',
-(PID.TID 0000.0001) > xx_sss_file        = 'xx_sss',
-(PID.TID 0000.0001) > xx_diffkr_file     = 'xx_diffkr',
-(PID.TID 0000.0001) > xx_kapgm_file      = 'xx_kapgm',
+(PID.TID 0000.0001) > ctrlUseGen=.TRUE.,
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >#
 (PID.TID 0000.0001) ># *********************
@@ -348,13 +339,13 @@
 (PID.TID 0000.0001) ># names for CTRL_GENARR, CTRL_GENTIM
 (PID.TID 0000.0001) ># *********************
 (PID.TID 0000.0001) > &CTRL_NML_GENARR
+(PID.TID 0000.0001) >##  xx_gentim2d_glosum(1)=.F.,
+(PID.TID 0000.0001) >##  xx_gentim2d_cumsum(1)=.F.,
+(PID.TID 0000.0001) >  xx_gentim2d_period(1)=864000,
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) CTRL_READPARMS: finished reading data.ctrl
-(PID.TID 0000.0001) useSmoothCorrel2DinAdMode = /* use ctrlSmoothCorrel2D in adjoint mode */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) COST_READPARMS: opening data.cost
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.cost
 (PID.TID 0000.0001) // =======================================================
@@ -386,7 +377,7 @@
 (PID.TID 0000.0001) > nbeg             = 1,
 (PID.TID 0000.0001) > nstep            = 1,
 (PID.TID 0000.0001) > nend             = 4,
-(PID.TID 0000.0001) > grdchkvarindex   = 201,
+(PID.TID 0000.0001) > grdchkvarindex   = 101,
 (PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) GRDCHK_READPARMS: finished reading data.grdchk
@@ -395,6 +386,7 @@
 (PID.TID 0000.0001) // Gradient check configuration  >>> START <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
+(PID.TID 0000.0001)   grdchkvarindex :                        101
 (PID.TID 0000.0001)   eps:                              0.100E-01
 (PID.TID 0000.0001)   First location:                           1
 (PID.TID 0000.0001)   Last location:                            4
@@ -493,6 +485,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001)  diagCG_resTarget = /* residual target for diag_cg2d */
 (PID.TID 0000.0001)                 1.000000000000000E-13
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  diagCG_pcOffDFac = /* preconditioner off-diagonal factor */
+(PID.TID 0000.0001)                 9.611687812379854E-01
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) -----------------------------------------------------
 (PID.TID 0000.0001)  DIAGNOSTICS_READPARMS: active diagnostics summary:
@@ -729,7 +724,7 @@
 (PID.TID 0000.0001) CTRL_INIT_REC: Getting record indices for xx_gentim2d_01
 (PID.TID 0000.0001) CTRL_INIT_REC: Record indices for xx_gentim2d_01:
 (PID.TID 0000.0001) CTRL_INIT_REC: startrec =          1, endrec =          1
-(PID.TID 0000.0001) ctrl-wet 1:    nvarlength =         1536
+(PID.TID 0000.0001) ctrl-wet 1:    nvarlength =          512
 (PID.TID 0000.0001) ctrl-wet 2: surface wet C =           32
 (PID.TID 0000.0001) ctrl-wet 3: surface wet W =           32
 (PID.TID 0000.0001) ctrl-wet 4: surface wet S =           31
@@ -749,7 +744,7 @@
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =    12           0
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =    13           0
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =    14           0
-(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    15           1
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =    15           0
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =    16           0
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =    17           0
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =    18           0
@@ -837,7 +832,7 @@
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =   100           0
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =   101           1
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =   102           1
-(PID.TID 0000.0001) ctrl-wet 6: no recs for i =   103           1
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =   103           0
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =   104           0
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =   105           0
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =   106           0
@@ -936,8 +931,8 @@
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =   199           0
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =   200           0
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =   201           1
-(PID.TID 0000.0001) ctrl-wet 6: no recs for i =   202           1
-(PID.TID 0000.0001) ctrl-wet 6: no recs for i =   203           1
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =   202           0
+(PID.TID 0000.0001) ctrl-wet 6: no recs for i =   203           0
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =   204           0
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =   205           0
 (PID.TID 0000.0001) ctrl-wet 6: no recs for i =   206           0
@@ -1138,7 +1133,7 @@
 (PID.TID 0000.0001) ctrl-wet 7: flux           320
 (PID.TID 0000.0001) ctrl-wet 8: atmos          320
 (PID.TID 0000.0001) ctrl-wet -------------------------------------------------
-(PID.TID 0000.0001) ctrl-wet 13: global nvarlength for Nr =    5        1536
+(PID.TID 0000.0001) ctrl-wet 13: global nvarlength for Nr =    5         512
 (PID.TID 0000.0001) ctrl-wet -------------------------------------------------
 (PID.TID 0000.0001) ctrl-wet 14: global nWet C/S/W/V k=    1          64          63          64           0
 (PID.TID 0000.0001) ctrl-wet 14: global nWet C/S/W/V k=    2          64          63          64           0
@@ -1148,8 +1143,31 @@
 (PID.TID 0000.0001) ctrl-wet -------------------------------------------------
 (PID.TID 0000.0001) ctrl-wet -------------------------------------------------
 (PID.TID 0000.0001) ctrl-wet -------------------------------------------------
-(PID.TID 0000.0001) ctrl_init: no. of control variables:            8
-(PID.TID 0000.0001) ctrl_init: control vector length:            1536
+(PID.TID 0000.0001) ctrl_init: no. of control variables:            4
+(PID.TID 0000.0001) ctrl_init: control vector length:             512
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // control vector configuration  >>> START <<<
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  Total number of ocean points per tile:
+(PID.TID 0000.0001)  --------------------------------------
+(PID.TID 0000.0001)  snx*sny*nr =      160
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  Number of ocean points per tile:
+(PID.TID 0000.0001)  --------------------------------
+(PID.TID 0000.0001)  bi,bj,#(c/s/w): 0001 0001 000160 000155 000160
+(PID.TID 0000.0001)  bi,bj,#(c/s/w): 0001 0002 000160 000160 000160
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  Settings of generic controls:
+(PID.TID 0000.0001)  -----------------------------
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  ctrlUseGen  =     T /* use generic controls */
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // control vector configuration  >>> END <<<
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
 (PID.TID 0000.0001) ------------------------------------------------------------
 (PID.TID 0000.0001) DIAGNOSTICS_SET_LEVELS: done
 (PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   199
@@ -1251,11 +1269,17 @@
 (PID.TID 0000.0001) no_slip_bottom =  /* Viscous BCs: No-slip bottom */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) bottomVisc_pCell = /* Partial-cell in bottom Visc. BC */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) bottomDragLinear = /* linear bottom-drag coefficient ( m/s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) bottomDragQuadratic = /* quadratic bottom-drag coefficient (-) */
 (PID.TID 0000.0001)                 2.000000000000000E-03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) selectBotDragQuadr = /* select quadratic bottom drag options */
+(PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) diffKhT =   /* Laplacian diffusion of heat laterally ( m^2/s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
@@ -1466,6 +1490,9 @@
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) implicitViscosity = /* Implicit viscosity on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) implBottomFriction= /* Implicit bottom friction on/off flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) metricTerms =  /* metric-Terms on/off flag */
@@ -2521,20 +2548,12 @@ listId=   1 ; file name: dynStDiag
     31 |WVEL    |     12 |      0 | 0.00000E+00 |
     26 |THETA   |     17 |      0 | 0.00000E+00 |
 ------------------------------------------------------------------------
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2594,10 +2613,10 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -1.21083698623181E-15  2.20223000091018E+00
 (PID.TID 0000.0001)      cg2d_init_res =   3.34521905279216E+00
@@ -3250,11 +3269,7 @@ objf_test      1880.6    1   38    1 TILE     1    6    1    2
 objf_test      2189.8    1   39    1 TILE     1    7    1    2
   early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.699882371972553D+02
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.243306148446508D+03
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.313294385643763D+03
  global fc =  0.313294385643763D+03
 (PID.TID 0000.0001)  MDS_READ_TAPE: opening file: tapelev3_1_the_main_loop_storedynvars2d.it0000.001.001.data
@@ -3263,10 +3278,10 @@ objf_test      2189.8    1   39    1 TILE     1    7    1    2
 (PID.TID 0000.0001)  MDS_READ_TAPE: opening file: tapelev3_5_the_main_loop_xx_gentim2d.it0000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_TAPE: opening file: tapelev3_6_the_main_loop_xx_gentim2d0.it0000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_TAPE: opening file: tapelev3_7_the_main_loop_xx_gentim2d1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -1.21083698623181E-15  2.20223000091018E+00
  cg2d: Sum(rhs),rhsMax =  -1.20042864537595E-15  4.64009439039048E+00
@@ -3285,10 +3300,10 @@ objf_test      2189.8    1   39    1 TILE     1    7    1    2
 (PID.TID 0000.0001)  MDS_READ_TAPE: opening file: tapelev2_5_the_main_loop_xx_gentim2d.it0000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_TAPE: opening file: tapelev2_6_the_main_loop_xx_gentim2d0.it0000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_TAPE: opening file: tapelev2_7_the_main_loop_xx_gentim2d1.it0000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -1.21083698623181E-15  2.20223000091018E+00
  cg2d: Sum(rhs),rhsMax =  -1.20042864537595E-15  4.64009439039048E+00
@@ -3692,10 +3707,10 @@ objf_test      2189.8    1   39    1 TILE     1    7    1    2
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
  cg2d: Sum(rhs),rhsMax =   2.22044604925031E-16  6.60554456011348E-13
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gentim2d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gentim2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gentim2d_01.effective.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gentim2d_01.effective.0000000000.001.002.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation ATMOSPHERIC
 (PID.TID 0000.0001) 
@@ -3737,90 +3752,12 @@ objf_test      2189.8    1   39    1 TILE     1    7    1    2
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr3d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr3d_03.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr3d_02.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr3d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr2d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr2d_03.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr2d_02.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr2d_02.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr2d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr2d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_diffkr.0000000000.001.002.data
  ph-pack: packing ecco_cost
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_diffkr.0000000000.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_genarr2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_genarr2d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_genarr2d_02.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_genarr2d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_genarr2d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_genarr2d_03.0000000000.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_genarr3d_02.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_genarr3d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_genarr3d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_genarr3d_03.0000000000.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_gentim2d_01.0000000000.001.002.data
  ph-pack: packing ecco_ctrl
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_diffkr.0000000000.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_genarr2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_genarr2d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_genarr2d_02.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_genarr2d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_genarr2d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_genarr2d_03.0000000000.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_genarr3d_02.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_genarr3d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_genarr3d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_genarr3d_03.0000000000.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskCtrlC.001.002.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: xx_gentim2d_01.0000000000.001.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient-check starts (grdchk_main)
 (PID.TID 0000.0001) // =======================================================
@@ -3829,39 +3766,31 @@ grad-res -------------------------------
  grad-res  proc    #    i    j    k   bi   bj iobc       fc ref            fc + eps           fc - eps
  grad-res  proc    #    i    j    k   bi   bj iobc      adj grad            fd grad          1 - fd/adj
 (PID.TID 0000.0001) ====== Starts gradient-check number   1 (=ichknum) =======
- ph-test icomp, ncvarcomp, ichknum            1         320           1
+ ph-test icomp, ncvarcomp, ichknum            1          64           1
  ph-grd _loc: bi, bj, icomptest, ichknum            1           1           0           1
  ph-grd -->hit<--            1           1           1           1
 (PID.TID 0000.0001) grdchk pos: i,j,k=    1    1    1 ; bi,bj=   1   1 ; iobc=  1 ; rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation ATMOSPHERIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -1.21083698623181E-15  2.20223000091018E+00
  cg2d: Sum(rhs),rhsMax =   1.16573417585641E-15  4.64009439039046E+00
@@ -3885,43 +3814,31 @@ objf_test      1880.6    1   38    1 TILE     1    6    1    2
 objf_test      2189.8    1   39    1 TILE     1    7    1    2
   early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.699882371973478D+02
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.243306148446569D+03
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.313294385643916D+03
  global fc =  0.313294385643916D+03
 (PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  3.13294385643916E+02
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation ATMOSPHERIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -1.21083698623181E-15  2.20223000091018E+00
  cg2d: Sum(rhs),rhsMax =   1.61676227961038E-15  4.64009439039050E+00
@@ -3945,16 +3862,12 @@ objf_test      1880.6    1   38    1 TILE     1    6    1    2
 objf_test      2189.8    1   39    1 TILE     1    7    1    2
   early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.699882371971628D+02
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.243306148446447D+03
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.313294385643610D+03
  global fc =  0.313294385643610D+03
 (PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  3.13294385643610E+02
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 grad-res -------------------------------
  grad-res     0    1    1    1    1    1    1    1   3.13294385644E+02  3.13294385644E+02  3.13294385644E+02
  grad-res     0    1    1    1    0    1    1    1   1.53218837742E-08  1.53193013830E-08  1.68542672385E-04
@@ -3963,39 +3876,31 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  ADM  finite-diff_grad       =  1.53193013829878E-08
 (PID.TID 0000.0001) ====== End of gradient-check number   1 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   2 (=ichknum) =======
- ph-test icomp, ncvarcomp, ichknum            2         320           2
+ ph-test icomp, ncvarcomp, ichknum            2          64           2
  ph-grd _loc: bi, bj, icomptest, ichknum            1           1           1           2
  ph-grd -->hit<--            1           2           1           1
 (PID.TID 0000.0001) grdchk pos: i,j,k=    1    2    1 ; bi,bj=   1   1 ; iobc=  1 ; rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation ATMOSPHERIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -2.09901540593194E-15  2.20223000091018E+00
  cg2d: Sum(rhs),rhsMax =  -7.63278329429795E-17  4.64009439039046E+00
@@ -4019,43 +3924,31 @@ objf_test      1880.6    1   38    1 TILE     1    6    1    2
 objf_test      2189.8    1   39    1 TILE     1    7    1    2
   early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.699882371975461D+02
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.243306148446702D+03
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.313294385644248D+03
  global fc =  0.313294385644248D+03
 (PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  3.13294385644248E+02
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation ATMOSPHERIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -1.21083698623181E-15  2.20223000091018E+00
  cg2d: Sum(rhs),rhsMax =  -3.12250225675825E-16  4.64009439039053E+00
@@ -4079,16 +3972,12 @@ objf_test      1880.6    1   38    1 TILE     1    6    1    2
 objf_test      2189.8    1   39    1 TILE     1    7    1    2
   early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.699882371969646D+02
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.243306148446314D+03
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.313294385643278D+03
  global fc =  0.313294385643278D+03
 (PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  3.13294385643278E+02
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 grad-res -------------------------------
  grad-res     0    2    1    2    1    1    1    1   3.13294385644E+02  3.13294385644E+02  3.13294385643E+02
  grad-res     0    2    2    2    0    1    1    1   4.85043348914E-08  4.85044893139E-08 -3.18368477781E-06
@@ -4097,39 +3986,31 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  ADM  finite-diff_grad       =  4.85044893139275E-08
 (PID.TID 0000.0001) ====== End of gradient-check number   2 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   3 (=ichknum) =======
- ph-test icomp, ncvarcomp, ichknum            3         320           3
+ ph-test icomp, ncvarcomp, ichknum            3          64           3
  ph-grd _loc: bi, bj, icomptest, ichknum            1           1           2           3
  ph-grd -->hit<--            1           3           1           1
 (PID.TID 0000.0001) grdchk pos: i,j,k=    1    3    1 ; bi,bj=   1   1 ; iobc=  1 ; rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation ATMOSPHERIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -1.21083698623181E-15  2.20223000091018E+00
  cg2d: Sum(rhs),rhsMax =  -7.42461647718073E-16  4.64009439039043E+00
@@ -4153,43 +4034,31 @@ objf_test      1880.6    1   38    1 TILE     1    6    1    2
 objf_test      2189.8    1   39    1 TILE     1    7    1    2
   early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.699882371978693D+02
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.243306148446929D+03
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.313294385644798D+03
  global fc =  0.313294385644798D+03
 (PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  3.13294385644798E+02
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation ATMOSPHERIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -1.21083698623181E-15  2.20223000091018E+00
  cg2d: Sum(rhs),rhsMax =   2.90739654573713E-15  4.64009439039065E+00
@@ -4213,16 +4082,12 @@ objf_test      1880.6    1   38    1 TILE     1    6    1    2
 objf_test      2189.8    1   39    1 TILE     1    7    1    2
   early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.699882371966414D+02
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.243306148446087D+03
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.313294385642728D+03
  global fc =  0.313294385642728D+03
 (PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  3.13294385642728E+02
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 grad-res -------------------------------
  grad-res     0    3    1    3    1    1    1    1   3.13294385644E+02  3.13294385645E+02  3.13294385643E+02
  grad-res     0    3    3    3    0    1    1    1   1.03473989145E-07  1.03474917523E-07 -8.97209387896E-06
@@ -4231,39 +4096,31 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  ADM  finite-diff_grad       =  1.03474917523272E-07
 (PID.TID 0000.0001) ====== End of gradient-check number   3 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   4 (=ichknum) =======
- ph-test icomp, ncvarcomp, ichknum            4         320           4
+ ph-test icomp, ncvarcomp, ichknum            4          64           4
  ph-grd _loc: bi, bj, icomptest, ichknum            1           1           3           4
  ph-grd -->hit<--            1           4           1           1
 (PID.TID 0000.0001) grdchk pos: i,j,k=    1    4    1 ; bi,bj=   1   1 ; iobc=  1 ; rec=   1
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_genarr2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation ATMOSPHERIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -1.21083698623181E-15  2.20223000091018E+00
  cg2d: Sum(rhs),rhsMax =  -7.35522753814166E-16  4.64009439039028E+00
@@ -4287,43 +4144,31 @@ objf_test      1880.6    1   38    1 TILE     1    6    1    2
 objf_test      2189.8    1   39    1 TILE     1    7    1    2
   early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.699882371983769D+02
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.243306148447303D+03
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.313294385645680D+03
  global fc =  0.313294385645680D+03
 (PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  3.13294385645680E+02
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation ATMOSPHERIC
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_diffkr.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_03.0000000000.001.002.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_02.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_03.0000000000.001.002.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gentim2d_01.effective.0000000000.001.002.data
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =  -1.21083698623181E-15  2.20223000091018E+00
  cg2d: Sum(rhs),rhsMax =   2.63677968348475E-16  4.64009439039084E+00
@@ -4347,16 +4192,12 @@ objf_test      1880.6    1   38    1 TILE     1    6    1    2
 objf_test      2189.8    1   39    1 TILE     1    7    1    2
   early fc =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.699882371961338D+02
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
  --> objf_test(bi,bj)   =  0.243306148445713D+03
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
   local fc =  0.313294385641847D+03
  global fc =  0.313294385641847D+03
 (PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  3.13294385641847E+02
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.001.data
-(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr3d_01.0000000000.001.002.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_genarr2d_01.0000000000.001.002.data
 grad-res -------------------------------
  grad-res     0    4    1    4    1    1    1    1   3.13294385644E+02  3.13294385646E+02  3.13294385642E+02
  grad-res     0    4    4    4    0    1    1    1   1.91669979080E-07  1.91664639715E-07  2.78570764632E-05
@@ -4398,177 +4239,177 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   2.5500000000000003
-(PID.TID 0000.0001)         System time:  2.99999999999999989E-002
-(PID.TID 0000.0001)     Wall clock time:   2.6019279956817627
+(PID.TID 0000.0001)           User time:   1.1699999999999999
+(PID.TID 0000.0001)         System time:  4.00000000000000008E-002
+(PID.TID 0000.0001)     Wall clock time:   1.4472610950469971
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  2.99999999999999989E-002
+(PID.TID 0000.0001)           User time:  4.00000000000000008E-002
 (PID.TID 0000.0001)         System time:  1.00000000000000002E-002
-(PID.TID 0000.0001)     Wall clock time:  4.81290817260742188E-002
+(PID.TID 0000.0001)     Wall clock time:  0.12451004981994629
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:  0.98999999999999999
+(PID.TID 0000.0001)           User time:  0.44000000000000000
 (PID.TID 0000.0001)         System time:  1.00000000000000002E-002
-(PID.TID 0000.0001)     Wall clock time:   1.0059762001037598
+(PID.TID 0000.0001)     Wall clock time:  0.53802585601806641
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [MAIN_DO_LOOP]":
-(PID.TID 0000.0001)           User time:   1.8500000000000023
-(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
-(PID.TID 0000.0001)     Wall clock time:   1.8599166870117188
+(PID.TID 0000.0001)           User time:  0.84000000000000052
+(PID.TID 0000.0001)         System time:  1.99999999999999969E-002
+(PID.TID 0000.0001)     Wall clock time:  0.90981101989746094
 (PID.TID 0000.0001)          No. starts:         100
 (PID.TID 0000.0001)           No. stops:         100
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  8.80002975463867188E-004
+(PID.TID 0000.0001)     Wall clock time:  8.12768936157226563E-004
 (PID.TID 0000.0001)          No. starts:          30
 (PID.TID 0000.0001)           No. stops:          30
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)           User time:  2.00000000000000178E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  7.60936737060546875E-003
+(PID.TID 0000.0001)     Wall clock time:  1.75173282623291016E-002
 (PID.TID 0000.0001)          No. starts:         100
 (PID.TID 0000.0001)           No. stops:         100
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.03187561035156250E-003
+(PID.TID 0000.0001)     Wall clock time:  1.45101547241210938E-003
 (PID.TID 0000.0001)          No. starts:         110
 (PID.TID 0000.0001)           No. stops:         110
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  9.19580459594726563E-004
+(PID.TID 0000.0001)     Wall clock time:  4.78792190551757813E-003
 (PID.TID 0000.0001)          No. starts:         100
 (PID.TID 0000.0001)           No. stops:         100
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)           User time:  4.00000000000000355E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.88329219818115234E-002
+(PID.TID 0000.0001)     Wall clock time:  1.17094516754150391E-002
 (PID.TID 0000.0001)          No. starts:         100
 (PID.TID 0000.0001)           No. stops:         100
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.47999999999999909
+(PID.TID 0000.0001)           User time:  0.23000000000000043
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.48989534378051758
+(PID.TID 0000.0001)     Wall clock time:  0.20797348022460938
 (PID.TID 0000.0001)          No. starts:         100
 (PID.TID 0000.0001)           No. stops:         100
 (PID.TID 0000.0001)   Seconds in section "SHAP_FILT_UV        [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.33000000000000052
+(PID.TID 0000.0001)           User time:  0.11999999999999966
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.33073592185974121
+(PID.TID 0000.0001)     Wall clock time:  0.13419365882873535
 (PID.TID 0000.0001)          No. starts:         100
 (PID.TID 0000.0001)           No. stops:         100
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.23999999999999932
+(PID.TID 0000.0001)           User time:  5.99999999999998312E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.22634339332580566
+(PID.TID 0000.0001)     Wall clock time:  9.60626602172851563E-002
 (PID.TID 0000.0001)          No. starts:         100
 (PID.TID 0000.0001)           No. stops:         100
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.00000000000002309E-002
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.66087150573730469E-002
+(PID.TID 0000.0001)     Wall clock time:  8.12244415283203125E-003
 (PID.TID 0000.0001)          No. starts:         100
 (PID.TID 0000.0001)           No. stops:         100
 (PID.TID 0000.0001)   Seconds in section "INTEGR_CONTINUITY   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.99999999999998046E-002
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.59976387023925781E-002
+(PID.TID 0000.0001)           User time:  3.00000000000000266E-002
+(PID.TID 0000.0001)         System time:  1.00000000000000019E-002
+(PID.TID 0000.0001)     Wall clock time:  1.11472606658935547E-002
 (PID.TID 0000.0001)          No. starts:         100
 (PID.TID 0000.0001)           No. stops:         100
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  5.99999999999996092E-002
+(PID.TID 0000.0001)           User time:  3.99999999999998135E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  5.93359470367431641E-002
+(PID.TID 0000.0001)     Wall clock time:  2.75197029113769531E-002
 (PID.TID 0000.0001)          No. starts:         200
 (PID.TID 0000.0001)           No. stops:         200
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.36000000000000254
+(PID.TID 0000.0001)           User time:  0.15000000000000013
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.34780001640319824
+(PID.TID 0000.0001)     Wall clock time:  0.17969727516174316
 (PID.TID 0000.0001)          No. starts:         100
 (PID.TID 0000.0001)           No. stops:         100
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.27000000000000135
+(PID.TID 0000.0001)           User time:  9.99999999999998668E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.28741383552551270
+(PID.TID 0000.0001)     Wall clock time:  0.12059164047241211
 (PID.TID 0000.0001)          No. starts:         100
 (PID.TID 0000.0001)           No. stops:         100
 (PID.TID 0000.0001)   Seconds in section "SHAP_FILT_TS       [TRC_CORR_STEP]":
-(PID.TID 0000.0001)           User time:  0.27000000000000135
+(PID.TID 0000.0001)           User time:  9.00000000000000799E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.27693939208984375
+(PID.TID 0000.0001)     Wall clock time:  0.11788058280944824
 (PID.TID 0000.0001)          No. starts:         100
 (PID.TID 0000.0001)           No. stops:         100
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.99999999999998046E-002
-(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
-(PID.TID 0000.0001)     Wall clock time:  1.45604610443115234E-002
+(PID.TID 0000.0001)           User time:  2.00000000000000178E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  1.21443271636962891E-002
 (PID.TID 0000.0001)          No. starts:         100
 (PID.TID 0000.0001)           No. stops:         100
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  3.00000000000002487E-002
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.06427669525146484E-002
+(PID.TID 0000.0001)     Wall clock time:  5.72538375854492188E-003
 (PID.TID 0000.0001)          No. starts:         100
 (PID.TID 0000.0001)           No. stops:         100
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.19314002990722656E-003
+(PID.TID 0000.0001)           User time:  1.00000000000000089E-002
+(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
+(PID.TID 0000.0001)     Wall clock time:  2.63485908508300781E-002
 (PID.TID 0000.0001)          No. starts:         100
 (PID.TID 0000.0001)           No. stops:         100
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.00000000000002309E-002
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.58731842041015625E-003
+(PID.TID 0000.0001)     Wall clock time:  2.23808288574218750E-002
 (PID.TID 0000.0001)          No. starts:         100
 (PID.TID 0000.0001)           No. stops:         100
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK           [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.82900238037109375E-003
+(PID.TID 0000.0001)     Wall clock time:  8.31842422485351563E-004
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK     [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  1.00000000000000089E-002
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.69405746459960938E-003
+(PID.TID 0000.0001)     Wall clock time:  9.96112823486328125E-004
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   1.5200000000000002
-(PID.TID 0000.0001)         System time:  9.99999999999999847E-003
-(PID.TID 0000.0001)     Wall clock time:   1.5402178764343262
+(PID.TID 0000.0001)           User time:  0.68999999999999995
+(PID.TID 0000.0001)         System time:  2.00000000000000004E-002
+(PID.TID 0000.0001)     Wall clock time:  0.78272604942321777
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
 (PID.TID 0000.0001)           User time:  2.00000000000000178E-002
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  2.49035358428955078E-002
+(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
+(PID.TID 0000.0001)     Wall clock time:  2.05109119415283203E-002
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   1.4900000000000002
-(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
-(PID.TID 0000.0001)     Wall clock time:   1.5064253807067871
+(PID.TID 0000.0001)           User time:  0.65999999999999992
+(PID.TID 0000.0001)         System time:  1.00000000000000019E-002
+(PID.TID 0000.0001)     Wall clock time:  0.69290304183959961
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001)   Seconds in section "MAIN_DO_LOOP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   1.4800000000000013
-(PID.TID 0000.0001)         System time:  9.99999999999999500E-003
-(PID.TID 0000.0001)     Wall clock time:   1.4853746891021729
+(PID.TID 0000.0001)           User time:  0.66000000000000036
+(PID.TID 0000.0001)         System time:  1.00000000000000019E-002
+(PID.TID 0000.0001)     Wall clock time:  0.68457055091857910
 (PID.TID 0000.0001)          No. starts:          80
 (PID.TID 0000.0001)           No. stops:          80
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  7.41720199584960938E-004
+(PID.TID 0000.0001)     Wall clock time:  8.74042510986328125E-004
 (PID.TID 0000.0001)          No. starts:           8
 (PID.TID 0000.0001)           No. stops:           8
 (PID.TID 0000.0001) // ======================================================
@@ -4597,9 +4438,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =          32196
+(PID.TID 0000.0001) //            No. barriers =          32092
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =          32196
+(PID.TID 0000.0001) //     Total barrier spins =          32092
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
 PROGRAM MAIN: Execution ended Normally
