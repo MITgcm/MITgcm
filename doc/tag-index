@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2130 2015/02/21 20:26:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2131 2015/02/22 22:51:52 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/testreport:
+  - fix typo in "-pcls" option ;
+  - put temp files in /tmp (instead of in local dir)
+  - add option "-ncad" to use genmake2 new option "-nocat4ad"
+  - allow to use "-j" option (for multi-procs make) for AD, OAD and TLM.
 o pkg/ggl90 (idemix code):
   - apply few fixes ; add some missing "_d 0" ; update output of exp.
     global_ocean.90x40x15.idemix
