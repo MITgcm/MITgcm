@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_init_varia.F,v 1.2 2009/10/08 20:08:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_init_varia.F,v 1.3 2015/02/23 21:20:15 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
@@ -40,7 +40,7 @@ C-----------------------------------------------------------------------
          DO j = 1-OLy, sNy+OLy
           DO i = 1-OLx, sNx+OLx
            PPviscAr (i,j,k,bi,bj) = viscArNr(k)
-           PPdiffKr (i,j,k,bi,bj) = diffKrNrT(k)
+           PPdiffKr (i,j,k,bi,bj) = diffKrNrS(k)
           ENDDO
          ENDDO
         ENDDO

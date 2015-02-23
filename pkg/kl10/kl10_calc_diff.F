@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_calc_diff.F,v 1.2 2014/11/17 14:13:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_calc_diff.F,v 1.3 2015/02/23 21:20:15 jmc Exp $
 C $Name:  $
 
 #include "KL10_OPTIONS.h"
@@ -57,7 +57,7 @@ C-    do all levels :
 #ifdef ALLOW_3D_DIFFKR
      &                     - diffKr(i,j,k,bi,bj) )
 #else
-     &                     - diffKrNrT(k) )
+     &                     - diffKrNrS(k) )
 #endif
           ENDDO
          ENDDO
@@ -72,7 +72,7 @@ C-    do level k=kArg only :
 #ifdef ALLOW_3D_DIFFKR
      &                     - diffKr(i,j,kArg,bi,bj) )
 #else
-     &                     - diffKrNrT(kArg) )
+     &                     - diffKrNrS(kArg) )
 #endif
           ENDDO
          ENDDO

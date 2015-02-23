@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_calc.F,v 1.4 2014/11/17 14:13:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_calc.F,v 1.5 2015/02/23 21:20:15 jmc Exp $
 C $Name:  $
 
 #include "KL10_OPTIONS.h"
@@ -117,13 +117,13 @@ c                    write(*,*) K,JJ,rhoS(K),rhoS(JJ)
 C RS-R is dz....
 C recip_drC=inverse distanance between centers,
 C first is between surface and first center
-C diffKrNrT(K) = viscArNr(K) = background value
+C diffKrNrS(K) = viscArNr(K) = background value
 
             KLdiffKr(I,J,1,bi,bj) = MAX(KLviscAr(I,J,1,bi,bj),
 #ifdef ALLOW_3D_DIFFKR
      &                                  diffKr(I,J,1,bi,bj) )
 #else
-     &                                  diffKrNrT(1) )
+     &                                  diffKrNrS(1) )
 #endif
 C N at surface = zero or uses gradient
             b0 = MAX(-gravity*mass2rUnit*
@@ -167,7 +167,7 @@ C explicit viscosity is C used (e.g. for nonhydrostatic case) SAL
 #ifdef ALLOW_3D_DIFFKR
      &                                        diffKr(I,J,K,bi,bj) )
 #else
-     &                                        diffKrNrT(K) )
+     &                                        diffKrNrS(K) )
 #endif
 
 C Compute Epsilon for diagnostics:

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_calc.F,v 1.7 2014/11/17 14:12:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_calc.F,v 1.8 2015/02/23 21:20:15 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
@@ -87,7 +87,7 @@ C     assign a minium ( = background ) value
 #ifdef ALLOW_3D_DIFFKR
      &                               diffKr(i,j,k,bi,bj) )
 #else
-     &                               diffKrNrT(k) )
+     &                               diffKrNrS(k) )
 #endif
 CML         if ( k.eq.2 .and. i.ge.1 .and. i.le.sNx .and. j.eq.1)
 CML     &        print '(A,3I3,5E14.5)', 'ml-pp81', I,J,K, RiLimit,

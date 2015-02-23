@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.30 2015/02/21 20:11:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.31 2015/02/23 21:20:15 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -438,7 +438,7 @@ C     vertical shear term (dU/dz)^2+(dV/dz)^2
 
 C     viscosity and diffusivity
          KappaM = GGL90ck*GGL90mixingLength(i,j,k)*SQRTTKE(i,j,k)
-         GGL90visctmp(i,j,k) = MAX(KappaM,diffKrNrT(k))
+         GGL90visctmp(i,j,k) = MAX(KappaM,diffKrNrS(k))
      &                            * maskC(i,j,k,bi,bj)
 C        note: storing GGL90visctmp like this, and using it later to compute
 C              GGL9rdiffKr etc. is robust in case of smoothing (e.g. see OPA)
@@ -652,7 +652,7 @@ C     ===============================
          tmpVisc = GGL90visctmp(i,j,k)
 #endif
          tmpVisc = MIN(tmpVisc/TKEPrandtlNumber(i,j,k),GGL90diffMax)
-         GGL90diffKr(i,j,k,bi,bj)= MAX( tmpVisc , diffKrNrT(k) )
+         GGL90diffKr(i,j,k,bi,bj)= MAX( tmpVisc , diffKrNrS(k) )
         ENDDO
        ENDDO
       ENDDO

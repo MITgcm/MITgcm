@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc_diff.F,v 1.4 2009/01/20 00:26:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc_diff.F,v 1.5 2015/02/23 21:20:15 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -35,7 +35,7 @@ C     KappaRx   :: vertical diffusivity array
 C     myThid    :: Instance number for this innvocation of MY82_CALC_DIFF
 
       INTEGER bi,bj,iMin,iMax,jMin,jMax,kArg,kSize
-      _RL KappaRx(1-Olx:sNx+Olx,1-Oly:sNy+Oly,kSize)
+      _RL KappaRx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize)
       INTEGER myThid
 
 #ifdef ALLOW_MY82
@@ -55,7 +55,7 @@ C-    do all levels :
 #ifdef ALLOW_3D_DIFFKR
      &                     - diffKr(i,j,k,bi,bj) )
 #else
-     &                     - diffKrNrT(k) )
+     &                     - diffKrNrS(k) )
 #endif
           ENDDO
          ENDDO
@@ -70,7 +70,7 @@ C-    do level k=kArg only :
 #ifdef ALLOW_3D_DIFFKR
      &                     - diffKr(i,j,kArg,bi,bj) )
 #else
-     &                     - diffKrNrT(kArg) )
+     &                     - diffKrNrS(kArg) )
 #endif
           ENDDO
          ENDDO

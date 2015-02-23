@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_init_varia.F,v 1.1 2014/07/30 03:28:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_init_varia.F,v 1.2 2015/02/23 21:20:15 jmc Exp $
 C $Name:  $
 
 #include "KL10_OPTIONS.h"
@@ -40,7 +40,7 @@ C-----------------------------------------------------------------------
          DO j = 1-OLy, sNy+OLy
           DO i = 1-OLx, sNx+OLx
            KLviscAr (i,j,k,bi,bj) = viscArNr(k)
-           KLdiffKr (i,j,k,bi,bj) = diffKrNrT(k)
+           KLdiffKr (i,j,k,bi,bj) = diffKrNrS(k)
           ENDDO
          ENDDO
         ENDDO

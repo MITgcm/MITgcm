@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc.F,v 1.8 2014/11/17 14:10:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc.F,v 1.9 2015/02/23 21:20:15 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -170,7 +170,7 @@ C     Set a minium (= background) value
 #ifdef ALLOW_3D_DIFFKR
      &                               diffKr(i,j,k,bi,bj) )
 #else
-     &                               diffKrNrT(k) )
+     &                               diffKrNrS(k) )
 #endif
 C     Set a maximum and mask land point
          MYviscAr(I,J,K,bi,bj) = MIN(MYviscAr(I,J,K,bi,bj),MYviscMax)
