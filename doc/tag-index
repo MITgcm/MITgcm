@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2131 2015/02/22 22:51:52 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2132 2015/02/23 00:32:41 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -16,6 +16,9 @@ o OpenAD
   - enable active file I/O and begin removal of work-around code
     for OpenAD for handling control variables (memory vs. active files)
   - new CPP options file OPENAD_OPTIONS.h
+  - revert to genarr2d gradient check for hs94.1x64x5
+  - (genarr3d tested by tutorial_global_oce_biogeo, tutorial_tracer_adjsens)
+  - gentim2d works for halfpipe_streamice but not yet hs94.1x64x5
 o tools/genmake2:
   - add option for an alternative Makefile (from Martin) where multiple
     source files are sent to TAF (instead of all in one file).
