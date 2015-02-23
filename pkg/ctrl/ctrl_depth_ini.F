@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_depth_ini.F,v 1.6 2012/08/10 19:38:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_depth_ini.F,v 1.7 2015/02/23 23:22:45 jmc Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -65,10 +65,10 @@ CEOP
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
 
       doglobalread = .false.
       ladinit      = .false.
@@ -91,8 +91,8 @@ C     Once hFacC is the control variable, and not its anomaly
 C     this will be no longer necessary
       do bj = jtlo,jthi
        do bi = itlo,ithi
-        do j = jmin,jmax
-         do i = imin,imax
+        do j = 1-oly,sny+oly
+         do i = 1-olx,snx+olx
           tmpfld2d(i,j,bi,bj) = 0. _d 0
          enddo
         enddo
@@ -102,8 +102,8 @@ C     this will be no longer necessary
 C--
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-oly,sny+oly
+            do i = 1-olx,snx+olx
               xx_r_low(i,j,bi,bj) = 0. _d 0
             enddo
           enddo
