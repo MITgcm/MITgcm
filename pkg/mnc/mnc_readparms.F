@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.35 2014/05/27 23:41:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.36 2015/02/23 21:27:49 jmc Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -95,8 +95,8 @@ C     Set default values for MNC run-time parameters
         mnc_outdir_date     =  .FALSE.
         mnc_outdir_num      =  .TRUE.
       mnc_use_name_ni0      =  .FALSE.
-      pickup_write_mnc      =  .TRUE.
-      pickup_read_mnc       =  .TRUE.
+      pickup_write_mnc      =  .FALSE.
+      pickup_read_mnc       =  .FALSE.
       mnc_use_indir         =  .FALSE.
         mnc_indir_str(1:4)  =  '    '
       monitor_mnc           =  .TRUE.
