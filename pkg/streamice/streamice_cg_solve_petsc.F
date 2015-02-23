@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve_petsc.F,v 1.3 2015/02/16 16:46:44 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve_petsc.F,v 1.4 2015/02/23 14:30:30 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -83,7 +83,9 @@ C     LOCAL VARIABLES
       INTEGER local_offset
       Mat matrix
       KSP ksp
+      KSP subksp(1)
       PC  pc
+      PC  subpc
       Vec rhs
       Vec solution
       PetscErrorCode ierr
@@ -335,6 +337,13 @@ C     LOCAL VARIABLES
        CASE ('BLOCKJACOBI')
        PRINT *, "PETSC PRECOND: SELECTED BJACOBI"
        call PCSetType(pc, PCBJACOBI, ierr)
+       call kspsetup (ksp, ierr)
+       call PCBJacobiGetSubKSP (pc,PETSC_NULL_INTEGER,
+     &                             PETSC_NULL_INTEGER,
+     &                             subksp,ierr);
+       call KSPGetPC (subksp, subpc, ierr)
+       call PCSetType (subpc, PCILU, ierr)
+!       call PCFactorSetLevels(subpc,0,ierr)
        CASE ('JACOBI')
        PRINT *, "PETSC PRECOND: SELECTED JACOBI"
        call PCSetType(pc, PCJACOBI, ierr)
