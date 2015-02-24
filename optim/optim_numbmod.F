@@ -77,6 +77,10 @@ cdfer#include "ecco.h"
 #include "ctrl.h"
 #include "optim.h"
 #include "minimization.h"
+#ifndef ECCO_CTRL_DEPRECATED
+# include "ctrl_local_params.h"
+# include "CTRL_OBCS.h"
+#endif
 
 c     == routine arguments ==
 
