@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.269 2015/02/19 20:48:43 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.270 2015/02/24 17:34:54 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -1590,7 +1590,7 @@ done
 
 #TMP=./genmk_$$
 #- try to put temporary files in system-local /tmp dir
-TMP=/tmp/genmk_$$
+TMP=/tmp/genmk_${USER}_$$
 touch $TMP ; retVal=$?
 if [ $retVal -eq 0 ] ; then
   if test ! -r $TMP ; then TMP=./genmk_$$ ; fi
@@ -3205,13 +3205,14 @@ ad_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) remove_comments
 	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) \$(FLOWFILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) adj_sed
-	\$(MAKE) -f \$(MAKEFILE) adobjfiles
 	cat \$(AD_FILES:.$FS=_ad.$FS) > ad_taf_output.$FS
 
 \$(EXE_AD): \$(SPECIAL_FILES) \$(H_SRC_FILES) ad_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
+	\$(MAKE) -f \$(MAKEFILE) adobjfiles
 	\$(LINK) -o \${EXE_AD} \$(FFLAGS) \$(FOPTIM) \$(AD_FILES:.$FS=_ad.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
-adobj: \$(AD_FILES:.$FS=_ad.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
+adobj: ad_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
+	\$(MAKE) -f \$(MAKEFILE) adobjfiles
 
 EOF
 fi
@@ -3284,10 +3285,10 @@ ftl_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) remove_comments
 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) \$(AD_FLOW_FILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) ftl_sed
-	\$(MAKE) -f \$(MAKEFILE) ftlobjfiles
 	cat \$(AD_FILES:.$FS=_tl.$FS) > ftl_taf_output.$FS
 
 \$(EXE_FTL): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
+	\$(MAKE) -f \$(MAKEFILE) ftlobjfiles
 	\$(LINK) -o \${EXE_FTL} \$(FFLAGS) \$(FOPTIM) \$(AD_FILES:.$FS=_tl.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
 EOF
