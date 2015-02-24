@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2133 2015/02/23 13:18:04 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2134 2015/02/24 20:02:55 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mnc:
+  - change default value of pickup_read/write_mnc params to FALSE
+    (since few features are missing in reading MNC pickup files).
+o model/src:
+  - change default (background) vertical diffusivity for salt to be the
+    temperature (background) vertical diffusivity.
+  - change background vertical diffusivity in vertical mixing pkgs ggl90,
+    kl10, my82 and pp81 from temperature diffusivity to salinity diffusivity.
+    This makes ptracers default diffusivity (that uses salt diffKr) more
+    consistent with vertical mixing schemes.
 o verification/testreport:
   - fix typo in "-pcls" option ;
   - put temp files in /tmp (instead of in local dir)
