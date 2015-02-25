@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_gnu.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_gnu.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mpi,v 1.22 2015/01/16 21:57:33 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mpi,v 1.23 2015/02/25 14:52:47 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -39,7 +39,7 @@ else
 fi
 
 sfx='gnu'
-addExp='global_ocean.gm_k3d'
+addExp='global_ocean.gm_k3d global_ocean.gm_res'
  module add gcc
  module add mvapich2
  OPTFILE="../tools/build_options/linux_amd64_gfortran"
