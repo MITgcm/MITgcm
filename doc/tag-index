@@ -1,12 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2135 2015/02/24 20:04:05 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2136 2015/02/25 14:36:14 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint65j (2015/02/25)
 o pkg/openad
-  - synchronize seawater.F with version in model/src: replace routine 
-    body of sw_temp by calling sw_ptmp and fix/add a few comments
+  - synchronize seawater.F with version in model/src: replace routine
+    body of sw_temp by calling sw_ptmp and fix/add a few comments.
 o pkg/mnc:
   - change default value of pickup_read/write_mnc params to FALSE
     (since few features are missing in reading MNC pickup files).
