@@ -1,10 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/seawater.F,v 1.10 2015/02/15 16:47:32 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/seawater.F,v 1.11 2015/02/26 17:17:56 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
 C--  File seawater.F: routines that compute quantities related to seawater.
 C--   Contents
+C     Seawater (SW) librabry routines
 C--   o SW_PTMP: function to compute potential temperature
 C--   o SW_TEMP: function to compute in-situ temperature from pot. temp.
 C--   o SW_ADTG: function to compute adiabatic temperature gradient
@@ -33,6 +34,7 @@ C     S  :: salinity    [psu      (PSS-78) ]
 C     T  :: temperature [degree C (IPTS-68)]
 C     P  :: pressure    [db]
 C     PR :: Reference pressure  [db]
+C     \ev
 
 C     !USES:
       IMPLICIT NONE
@@ -95,6 +97,7 @@ C     Bryden, H. 1973.
 C     New Polynomials for thermal expansion, adiabatic temperature gradient
 C     and potential temperature of sea water.
 C     DEEP-SEA RES., 1973, Vol20,401-408.
+C     \ev
 
 C     !USES:
       IMPLICIT NONE
@@ -133,6 +136,7 @@ C     *=============================================================*
 C
 C     started:
 C              Armin Koehl akoehl@ucsd.edu
+C     \ev
 
 C     !USES:
       IMPLICIT NONE
