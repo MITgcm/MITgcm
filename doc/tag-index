@@ -1,8 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2136 2015/02/25 14:36:14 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2137 2015/02/26 17:13:16 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/ggl90: make "useIDEMIX" useful
+  - re-organize code in s/r ggl90_calc a little to move computations that
+    are different for idemix into separate loops (changes verification 
+    experiment idemix at truncation level, 12 digits remain -> updated)
+  - requires 2 new 2D fields KappaM, verticalShear
+  - make hFacI and recip_hFacI local 3D variables that are passed to
+    s/r ggl90_idemix
+  - fix and improve some comments
 
 checkpoint65j (2015/02/25)
 o pkg/openad
