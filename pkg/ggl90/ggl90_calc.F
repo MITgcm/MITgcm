@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.31 2015/02/23 21:20:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.32 2015/02/26 16:45:24 mlosch Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -59,6 +59,7 @@ C Local constants
 C     iMin,iMax,jMin,jMax :: index boundaries of computation domain
 C     i, j, k, kp1,km1 :: array computation indices
 C     kSurf, kBottom   :: vertical indices of domain boundaries
+C     hFac/hFacI       :: fractional thickness of W-cell
 C     explDissFac      :: explicit Dissipation Factor (in [0-1])
 C     implDissFac      :: implicit Dissipation Factor (in [0-1])
 C     uStarSquare      :: square of friction velocity
@@ -77,8 +78,9 @@ C     TKEPrandtlNumber :: here, an empirical function of the Richardson number
       INTEGER i, j, k, kp1, km1, kSurf, kBottom
       _RL     explDissFac, implDissFac
       _RL     uStarSquare
-      _RL     verticalShear
-      _RL     KappaM, KappaH
+      _RL     verticalShear(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     KappaM(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     KappaH
 c     _RL     Nsquare
       _RL     Nsquare(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     deltaTggl90
@@ -101,17 +103,21 @@ c     _RL     SQRTTKE
 #ifdef ALLOW_DIAGNOSTICS
       _RL     surf_flx_tke     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_DIAGNOSTICS */
+C     hFac(I)  :: fractional thickness of W-cell
+      _RL       hFac
+#ifdef ALLOW_GGL90_IDEMIX
+      _RL       hFacI(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#endif /* ALLOW_GGL90_IDEMIX */
+      _RL recip_hFacI(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 C-    tri-diagonal matrix
       _RL     a3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     b3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     c3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER errCode
 #ifdef ALLOW_GGL90_HORIZDIFF
-C     hFac     :: fractional thickness of W-cell
 C     xA, yA   :: area of lateral faces
 C     dfx, dfy :: diffusive flux across lateral faces
 C     gTKE     :: right hand side of diffusion equation
-      _RL     hFac
       _RL     xA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     yA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     dfx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -138,6 +144,26 @@ C     explicit/implicit timestepping weights for dissipation
       explDissFac = 0. _d 0
       implDissFac = 1. _d 0 - explDissFac
 
+C     For nonlinear free surface and especially with r*-coordinates, the 
+C     hFacs change every timestep, so we need to update them here in the
+C     case of using IDEMIX.
+       DO K=1,Nr
+        Km1 = MAX(K-1,1)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          hFac = 
+     &         MIN(.5 _d 0,_hFacC(i,j,km1,bi,bj) ) +
+     &         MIN(.5 _d 0,_hFacC(i,j,k  ,bi,bj) ) 
+          recip_hFacI(I,J,K)=0. _d 0
+          IF ( hFac .NE. 0. _d 0 )
+     &         recip_hFacI(I,J,K)=1. _d 0/hFac
+#ifdef ALLOW_GGL90_IDEMIX
+          hFacI(i,j,k) = hFac
+#endif /* ALLOW_GGL90_IDEMIX */
+         ENDDO
+        ENDDO
+       ENDDO
+
 C     Initialize local fields
       DO k = 1, Nr
        DO j=1-OLy,sNy+OLy
@@ -161,6 +187,8 @@ C     Initialize local fields
       ENDDO
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
+        KappaM(i,j)        = 0. _d 0
+        verticalShear(i,j) = 0. _d 0
         totalDepth(i,j)    = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
         rMixingLength(i,j,1) = 0. _d 0
         mxLength_Dn(i,j,1) = GGL90mixingLengthMin
@@ -177,13 +205,10 @@ C     Initialize local fields
 
 #ifdef ALLOW_GGL90_IDEMIX
       IF ( useIDEMIX) CALL GGL90_IDEMIX(
-     &   bi, bj, sigmaR, myTime, myIter, myThid )
+     &   bi, bj, hFacI, recip_hFacI, sigmaR, myTime, myIter, myThid )
 #endif /* ALLOW_GGL90_IDEMIX */
 
-C     start k-loop
       DO k = 2, Nr
-c      km1 = k-1
-c      kp1 = MIN(Nr,k+1)
        DO j=jMin,jMax
         DO i=iMin,iMax
          SQRTTKE(i,j,k)=SQRT( GGL90TKE(i,j,k,bi,bj) )
@@ -191,19 +216,8 @@ c      kp1 = MIN(Nr,k+1)
 C     buoyancy frequency
          Nsquare(i,j,k) = gravity*gravitySign*recip_rhoConst
      &                  * sigmaR(i,j,k)
-cC     vertical shear term (dU/dz)^2+(dV/dz)^2
-c         tempU= .5 _d 0*( uVel(i,j,km1,bi,bj)+uVel(i+1,j,km1,bi,bj)
-c     &                 -( uVel(i,j,k  ,bi,bj)+uVel(i+1,j,k  ,bi,bj)) )
-c     &        *recip_drC(k)
-c         tempV= .5 _d 0*( vVel(i,j,km1,bi,bj)+vVel(i,j+1,km1,bi,bj)
-c     &                 -( vVel(i,j,k  ,bi,bj)+vVel(i,j+1,k  ,bi,bj)) )
-c     &        *recip_drC(k)
-c         verticalShear = tempU*tempU + tempV*tempV
-c         RiNumber   = MAX(Nsquare(i,j,k),0. _d 0)/(verticalShear+GGL90eps)
-cC     compute Prandtl number (always greater than 0)
-c         prTemp = 1. _d 0
-c         IF ( RiNumber .GE. 0.2 _d 0 ) prTemp = 5. _d 0 * RiNumber
-c         TKEPrandtlNumber(i,j,k) = MIN(10. _d 0,prTemp)
+C     vertical shear term (dU/dz)^2+(dV/dz)^2 is computed later
+C     to save some memory
 C     mixing length
          GGL90mixingLength(i,j,k) = SQRTTWO *
      &        SQRTTKE(i,j,k)/SQRT( MAX(Nsquare(i,j,k),GGL90eps) )
@@ -220,7 +234,8 @@ C- ensure mixing between first and second level
        ENDDO
       ENDIF
 
-C- Impose upper and lower bound for mixing length
+C--   Impose upper and lower bound for mixing length
+C--   Impose minimum mixing length to avoid division by zero
       IF ( mxlMaxFlag .EQ. 0 ) THEN
 
        DO k=2,Nr
@@ -342,17 +357,8 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
        STOP 'GGL90_CALC: Wrong mxlMaxFlag (mixing length limit)'
       ENDIF
 
-C- Impose minimum mixing length (to avoid division by zero)
-c      DO k=2,Nr
-c      DO j=jMin,jMax
-c       DO i=iMin,iMax
-c        GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
-c    &        GGL90mixingLengthMin)
-c        rMixingLength(i,j,k) = 1. _d 0 /GGL90mixingLength(i,j,k)
-c       ENDDO
-c      ENDDO
-c     ENDDO
-
+C     start "proper" k-loop (the code above was moved out and up to
+C     implemement various mixing parameters efficiently)
       DO k=2,Nr
        km1 = k-1
 
@@ -401,66 +407,78 @@ C     ... across y-faces
 C     Compute divergence of fluxes
         DO j=1-OLy,sNy+OLy-1
          DO i=1-OLx,sNx+OLx-1
-#ifdef ALLOW_GGL90_IDEMIX
           gTKE(i,j) = -recip_drC(k)*recip_rA(i,j,bi,bj)
-     &         *recip_hFacI(i,j,k,bi,bj)
-#else
-          hFac = MIN(.5 _d 0,_hFacC(i,j,k-1,bi,bj) ) +
-     &           MIN(.5 _d 0,_hFacC(i,j,k  ,bi,bj) )
-          gTKE(i,j) = 0.0
-          IF ( hFac .ne. 0.0 )
-     &      gTKE(i,j) = -recip_drC(k)*recip_rA(i,j,bi,bj)/hFac
-#endif
+     &         *recip_hFacI(i,j,k)
      &         *((dfx(i+1,j)-dfx(i,j))
-     &          +(dfy(i,j+1)-dfy(i,j)) )
+     &         + (dfy(i,j+1)-dfy(i,j)) )
          ENDDO
         ENDDO
-C      end if GGL90diffTKEh .eq. 0.
+C     end if GGL90diffTKEh .eq. 0.
        ENDIF
 #endif /* ALLOW_GGL90_HORIZDIFF */
 
+C     viscosity and diffusivity
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         KappaM(i,j) = GGL90ck*GGL90mixingLength(i,j,k)*SQRTTKE(i,j,k)
+         GGL90visctmp(i,j,k) = MAX(KappaM(i,j),diffKrNrS(k))
+     &                            * maskC(i,j,k,bi,bj)
+C        note: storing GGL90visctmp like this, and using it later to compute
+C              GGL9rdiffKr etc. is robust in case of smoothing (e.g. see OPA)
+         KappaM(i,j) = MAX(KappaM(i,j),viscArNr(k)) * maskC(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+
+C     compute Prandtl number (always greater than 0)
+#ifdef ALLOW_GGL90_IDEMIX
+       IF ( useIDEMIX ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
 C     vertical shear term (dU/dz)^2+(dV/dz)^2
          tempU= .5 _d 0*( uVel(i,j,km1,bi,bj)+uVel(i+1,j,km1,bi,bj)
      &                 -( uVel(i,j,k  ,bi,bj)+uVel(i+1,j,k  ,bi,bj)) )
+     &        *recip_drC(k)*recip_hFacI(i,j,k)
+         tempV= .5 _d 0*( vVel(i,j,km1,bi,bj)+vVel(i,j+1,km1,bi,bj)
+     &                 -( vVel(i,j,k  ,bi,bj)+vVel(i,j+1,k  ,bi,bj)) )
+     &        *recip_drC(k)*recip_hFacI(i,j,k)
+         verticalShear(i,j) = tempU*tempU + tempV*tempV
+         RiNumber = MAX(Nsquare(i,j,k),0. _d 0)
+     &        /(verticalShear(i,j)+GGL90eps)
+CML         IDEMIX_RiNumber = 1./GGL90eps
+         IDEMIX_RiNumber = MAX( KappaM(i,j)*Nsquare(i,j,k), 0. _d 0)/
+     &    (GGL90eps+IDEMIX_tau_d(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)**2)
+         prTemp         = MIN(5.*RiNumber, 6.6 _d 0*IDEMIX_RiNumber)
+         TKEPrandtlNumber(i,j,k) = MIN(10. _d 0,prTemp)
+         TKEPrandtlNumber(i,j,k) = MAX( 1. _d 0,TKEPrandtlNumber(i,j,k))
+        ENDDO
+       ENDDO
+       ELSE
+#else /* ndef ALLOW_GGL90_IDEMIX */
+       IF (.TRUE.) THEN
+#endif /* ALLOW_GGL90_IDEMIX */
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         tempU= .5 _d 0*( uVel(i,j,km1,bi,bj)+uVel(i+1,j,km1,bi,bj)
+     &                 -( uVel(i,j,k  ,bi,bj)+uVel(i+1,j,k  ,bi,bj)) )
      &        *recip_drC(k)
-#ifdef ALLOW_GGL90_IDEMIX
-     &        *recip_hFacI(i,j,k,bi,bj)
-#endif
          tempV= .5 _d 0*( vVel(i,j,km1,bi,bj)+vVel(i,j+1,km1,bi,bj)
      &                 -( vVel(i,j,k  ,bi,bj)+vVel(i,j+1,k  ,bi,bj)) )
      &        *recip_drC(k)
-#ifdef ALLOW_GGL90_IDEMIX
-     &        *recip_hFacI(i,j,k,bi,bj)
-#endif
-         verticalShear = tempU*tempU + tempV*tempV
-
-C     viscosity and diffusivity
-         KappaM = GGL90ck*GGL90mixingLength(i,j,k)*SQRTTKE(i,j,k)
-         GGL90visctmp(i,j,k) = MAX(KappaM,diffKrNrS(k))
-     &                            * maskC(i,j,k,bi,bj)
-C        note: storing GGL90visctmp like this, and using it later to compute
-C              GGL9rdiffKr etc. is robust in case of smoothing (e.g. see OPA)
-         KappaM = MAX(KappaM,viscArNr(k)) * maskC(i,j,k,bi,bj)
-
-C     compute Prandtl number (always greater than 0)
-         RiNumber = MAX(Nsquare(i,j,k),0. _d 0)/(verticalShear+GGL90eps)
-#ifdef ALLOW_GGL90_IDEMIX
-CML         IDEMIX_RiNumber = 1./GGL90eps
-         IDEMIX_RiNumber = MAX( KappaM*Nsquare(i,j,k), 0. _d 0)/
-     &    (GGL90eps+IDEMIX_tau_d(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)**2)
-         prTemp         = MIN(5.*RiNumber, 6.6 _d 0*IDEMIX_RiNumber)
-#else
+         verticalShear(i,j) = tempU*tempU + tempV*tempV
+         RiNumber = MAX(Nsquare(i,j,k),0. _d 0)
+     &        /(verticalShear(i,j)+GGL90eps)
          prTemp = 1. _d 0
          IF ( RiNumber .GE. 0.2 _d 0 ) prTemp = 5. _d 0 * RiNumber
-#endif /* ALLOW_GGL90_IDEMIX */
          TKEPrandtlNumber(i,j,k) = MIN(10. _d 0,prTemp)
-         TKEPrandtlNumber(i,j,k) = MAX( 1. _d 0,TKEPrandtlNumber(i,j,k))
+        ENDDO
+       ENDDO
+       ENDIF
 
+       DO j=jMin,jMax
+        DO i=iMin,iMax
 C        diffusivity
-         KappaH = KappaM/TKEPrandtlNumber(i,j,k)
-         KappaE(i,j,k) = GGL90alpha * KappaM * maskC(i,j,k,bi,bj)
+         KappaH = KappaM(i,j)/TKEPrandtlNumber(i,j,k)
+         KappaE(i,j,k) = GGL90alpha * KappaM(i,j) * maskC(i,j,k,bi,bj)
 
 C     dissipation term
          TKEdissipation = explDissFac*GGL90ceps
@@ -469,15 +487,26 @@ C     dissipation term
 C     partial update with sum of explicit contributions
          GGL90TKE(i,j,k,bi,bj) = GGL90TKE(i,j,k,bi,bj)
      &        + deltaTggl90*(
-     &        + KappaM*verticalShear
+     &        + KappaM(i,j)*verticalShear(i,j)
      &        - KappaH*Nsquare(i,j,k)
      &        - TKEdissipation
-#ifdef ALLOW_GGL90_IDEMIX
-     &        + IDEMIX_tau_d(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)**2
-#endif
      &        )
         ENDDO
        ENDDO
+
+#ifdef ALLOW_GGL90_IDEMIX
+       IF ( useIDEMIX ) THEN
+C     add IDEMIX contribution to the turbulent kinetic energy
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          GGL90TKE(i,j,k,bi,bj) = GGL90TKE(i,j,k,bi,bj)
+     &         + deltaTggl90*(
+     &         + IDEMIX_tau_d(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)**2
+     &         )
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* ALLOW_GGL90_IDEMIX */
 
 #ifdef ALLOW_GGL90_HORIZDIFF
        IF ( GGL90diffTKEh .GT. 0. _d 0 ) THEN
@@ -516,9 +545,6 @@ C-    No need for maskC(k-1) with recip_hFacC(k-1)
      &        *recip_drF(k-1)*recip_hFacC(i,j,k-1,bi,bj)
      &        *.5 _d 0*(KappaE(i,j, k )+KappaE(i,j,km1))
      &        *recip_drC(k)*maskC(i,j,k,bi,bj)
-#ifdef ALLOW_GGL90_IDEMIX
-     &        *recip_hFacI(i,j,k,bi,bj)
-#endif
         ENDDO
        ENDDO
       ENDDO
@@ -531,20 +557,30 @@ C--   Upper diagonal
       DO k=2,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
-          kp1=MAX(1,MIN(klowC(i,j,bi,bj),k+1))
+         kp1=MAX(1,MIN(klowC(i,j,bi,bj),k+1))
 C-    We keep recip_hFacC in the diffusive flux calculation,
 C-    but no hFacC in TKE volume control
 C-    No need for maskC(k) with recip_hFacC(k)
-          c3d(i,j,k) = -deltaTggl90
+         c3d(i,j,k) = -deltaTggl90
      &        *recip_drF( k ) * recip_hFacC(i,j,k,bi,bj)
      &        *.5 _d 0*(KappaE(i,j,k)+KappaE(i,j,kp1))
      &        *recip_drC(k)*maskC(i,j,k-1,bi,bj)
-#ifdef ALLOW_GGL90_IDEMIX
-     &        *recip_hFacI(i,j,k,bi,bj)
-#endif
         ENDDO
        ENDDO
       ENDDO
+
+#ifdef ALLOW_GGL90_IDEMIX
+      IF ( useIDEMIX ) THEN
+       DO k=2,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          a3d(i,j,k) = a3d(i,j,k)*recip_hFacI(i,j,k)
+          c3d(i,j,k) = c3d(i,j,k)*recip_hFacI(i,j,k)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* ALLOW_GGL90_IDEMIX */
 
       IF (.NOT.GGL90_dirichlet) THEN
 C      Neumann bottom boundary condition for TKE: no flux from bottom
@@ -561,11 +597,11 @@ C--   Center diagonal
        km1 = MAX(k-1,1)
        DO j=jMin,jMax
         DO i=iMin,iMax
-          b3d(i,j,k) = 1. _d 0 - c3d(i,j,k) - a3d(i,j,k)
+         b3d(i,j,k) = 1. _d 0 - c3d(i,j,k) - a3d(i,j,k)
      &        + implDissFac*deltaTggl90*GGL90ceps*SQRTTKE(i,j,k)
      &        * rMixingLength(i,j,k)
      &        * maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
-         ENDDO
+        ENDDO
        ENDDO
       ENDDO
 C     end set up matrix

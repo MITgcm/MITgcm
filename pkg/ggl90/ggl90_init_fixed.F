@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_init_fixed.F,v 1.5 2015/02/19 15:44:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_init_fixed.F,v 1.6 2015/02/26 16:45:24 mlosch Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -21,9 +21,6 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef ALLOW_GGL90_IDEMIX
-# include "GRID.h"
-#endif /*  ALLOW_GGL90_IDEMIX */
 #include "GGL90.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -32,11 +29,8 @@ C     myThid ::  my Thread Id number
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-#if defined ALLOW_GGL90_SMOOTH || defined ALLOW_GGL90_IDEMIX
+#ifdef ALLOW_GGL90_SMOOTH
       INTEGER i, j, bi, bj
-#endif
-#ifdef ALLOW_GGL90_IDEMIX
-      INTEGER k, km1
 #endif
 CEOP
 
@@ -68,30 +62,6 @@ C#endif /* ALLOW_MNC */
        ENDDO
       ENDDO
 #endif
-
-#ifdef ALLOW_GGL90_IDEMIX
-C
-C     hfacs for w (=tke) control volume
-C
-C     this is likely to move because it may vary with r*-coordinates
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO K=1,Nr
-         Km1 = MAX(K-1,1)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           hFacI(i,j,k,bi,bj) = 
-     &          MIN(.5 _d 0,_hFacC(i,j,km1,bi,bj) ) +
-     &          MIN(.5 _d 0,_hFacC(i,j,k  ,bi,bj) ) 
-           recip_hFacI(I,J,K,bi,bj)=0. _d 0
-           IF ( hFacI(I,J,K,bi,bj) .NE. 0. _d 0 )
-     &        recip_hFacI(I,J,K,bi,bj)=1. _d 0/hFacI(I,J,K,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* ALLOW_GGL90_IDEMIX */
 
       RETURN
       END

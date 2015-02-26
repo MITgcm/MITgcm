@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_idemix.F,v 1.4 2015/02/23 13:17:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_idemix.F,v 1.5 2015/02/26 16:45:24 mlosch Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: GGL90_IDEMIX
 C     !INTERFACE: ======================================================
       SUBROUTINE GGL90_IDEMIX(
-     &   bi, bj, sigmaR, myTime, myIter, myThid )
+     I     bi, bj, hFacI, recip_hFacI, sigmaR, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -39,11 +39,15 @@ C     === Global variables ===
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     bi, bj :: Current tile indices
+C     hFacI  :: thickness factors for w-cells (interface)
+C               with reciprocal of hFacI = recip_hFacI
 C     sigmaR :: Vertical gradient of iso-neutral density
 C     myTime :: Current time in simulation
 C     myIter :: Current time-step number
 C     myThid :: My Thread Id number
       INTEGER bi, bj
+      _RL       hFacI(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL recip_hFacI(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     sigmaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     myTime
       INTEGER myIter
@@ -123,7 +127,7 @@ c-----------------------------------------------------------------------
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
            bN0(i,j)=bN0(i,j)
-     &       +SQRT(Nsquare(i,j,k))*drC(k)*hFacI(i,j,k,bi,bj)
+     &       +SQRT(Nsquare(i,j,k))*drC(k)*hFacI(i,j,k)
         ENDDO
        ENDDO
       ENDDO
@@ -170,7 +174,7 @@ c     vertically integrated forcing
          DO i=1-OLx,sNx+OLx
            gm_forc(i,j) = gm_forc(i,j)
      &              +max( 0. _d 0,Kwz(i,j,k,bi,bj)*Nsquare(i,j,k) )
-     &               *drC(k)*hFacI(i,j,k,bi,bj)
+     &               *drC(k)*hFacI(i,j,k)
          ENDDO
         ENDDO
        ENDDO
@@ -208,7 +212,7 @@ c      inject at bottom box only
          kBottom   = MAX(kLowC(i,j,bi,bj),1)
          forc(i,j,kbottom)=forc(i,j,kbottom)
      &     + gm_forc(i,j)*recip_drC(kbottom)
-     &                  *recip_hFacI(i,j,kbottom,bi,bj)
+     &                  *recip_hFacI(i,j,kbottom)
         ENDDO
        ENDDO
       endif
@@ -257,7 +261,7 @@ c-----------------------------------------------------------------------
          DO i=iMin,iMax
           IDEMIX_E(i,j,k,bi,bj) = IDEMIX_E(i,j,k,bi,bj)
      &       + deltaTggl90*(-recip_drC(k)*recip_rA(i,j,bi,bj)
-     &                   *recip_hFacI(i,j,k,bi,bj)
+     &                   *recip_hFacI(i,j,k)
      &         *((dfx(i+1,j)-dfx(i,j))+(dfy(i,j+1)-dfy(i,j)) )  )
      &         *maskC(i,j,k,bi,bj) ! paranoia setting
          ENDDO
@@ -310,7 +314,7 @@ C--   Lower diagonal  for E_(k-1) : -delta_k-1 c_k-1/drC_k
         DO i=iMin,iMax
 C-       No need for maskC(k-1) with recip_hFacC(k-1) in delta(k-1)
          a3d(i,j,k) = -delta(i,j,k-1)*c0(i,j,km1)
-     &        *recip_drC(k)*recip_hFacI(i,j,k,bi,bj)
+     &        *recip_drC(k)*recip_hFacI(i,j,k)
      &        *maskC(i,j,k,bi,bj)!*maskC(i,j,km1,bi,bj)
         ENDDO
        ENDDO
@@ -323,7 +327,7 @@ C--   Upper diagonal for E_(k+1):  delta_k c_k+1/drC_k
 C-       No need for maskC(k) with recip_hFacC(k) in delta(k)
          kp1=MAX(1,MIN(klowC(i,j,bi,bj),k+1))
          c3d(i,j,k) = -delta(i,j,k)*c0(i,j,kp1)
-     &        *recip_drC(k)*recip_hFacI(i,j,k,bi,bj)
+     &        *recip_drC(k)*recip_hFacI(i,j,k)
      &        *maskC(i,j,k-1,bi,bj)
 !     &        *maskC(i,j,k,bi,bj)*maskC(i,j,kp1,bi,bj)
         ENDDO
@@ -352,11 +356,11 @@ C--   Center diagonal
      &         *maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
 C-       No need for maskC(k) with recip_hFacC(k) in delta(k)
           b3d(i,j,k) = b3d(i,j,k) + delta(i,j,k)*c0(i,j,k)
-     &        *recip_drC(k)*recip_hFacI(i,j,k,bi,bj)
+     &        *recip_drC(k)*recip_hFacI(i,j,k)
      &        *maskC(i,j,km1,bi,bj)
 C-       No need for maskC(k-1) with recip_hFacC(k-1) in delta(k-1)
           b3d(i,j,k) = b3d(i,j,k) + delta(i,j,km1)*c0(i,j,k)
-     &        *recip_drC(k)*recip_hFacI(i,j,k,bi,bj)
+     &        *recip_drC(k)*recip_hFacI(i,j,k)
      &         *maskC(i,j,k,bi,bj)
          ENDDO
        ENDDO
@@ -372,7 +376,7 @@ c     at surface and bottom
      &          *maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
 C-       No need for maskC(k-1) with recip_hFacC(k-1) in delta(k-1)
      &        + delta(i,j,km1 )*c0(i,j,k)
-     &          *recip_drC(k)*recip_hFacI(i,j,k,bi,bj)
+     &          *recip_drC(k)*recip_hFacI(i,j,k)
      &          *maskC(i,j,k,bi,bj)
         k=2
         b3d(i,j,k) = 1. _d 0 + deltaTggl90*IDEMIX_tau_d(i,j,k,bi,bj)
@@ -380,7 +384,7 @@ C-       No need for maskC(k-1) with recip_hFacC(k-1) in delta(k-1)
      &          *maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
 C-       No need for maskC(k) with recip_hFacC(k) in delta(k)
      &        + delta(i,j,k)*c0(i,j,k)
-     &          *recip_drC(k)*recip_hFacI(i,j,k,bi,bj)
+     &          *recip_drC(k)*recip_hFacI(i,j,k)
      &          *maskC(i,j,km1,bi,bj)
 
        ENDDO
@@ -392,12 +396,12 @@ C     Apply flux boundary condition
         k=2
         IDEMIX_E(i,j,k,bi,bj)  =  IDEMIX_E(i,j,k,bi,bj)
      &      +deltaTggl90*IDEMIX_F_s(i,j,bi,bj)
-     &        *recip_drC(k)*recip_hFacI(i,j,k,bi,bj)
+     &        *recip_drC(k)*recip_hFacI(i,j,k)
      &        *maskC(i,j,k,bi,bj)
         k = MAX(kLowC(i,j,bi,bj),1)
         IDEMIX_E(i,j,k,bi,bj) = IDEMIX_E(i,j,k,bi,bj)
      &    -deltaTggl90*IDEMIX_F_b(i,j,bi,bj)
-     &     *recip_drC(k)*recip_hFacI(i,j,k,bi,bj)
+     &     *recip_drC(k)*recip_hFacI(i,j,k)
      &     *maskC(i,j,k,bi,bj)
        ENDDO
       ENDDO
