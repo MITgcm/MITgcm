@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2137 2015/02/26 17:13:16 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2138 2015/02/26 17:21:14 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src: add new file gsw_teos10.F that contains
+    3 functions, more or less a copy of the gsw_toolbox.f90 of the TEOS-10
+    fortran interface, that are used to convert from conservative to
+    potential temperature. For now they are not called anywhere.
 o pkg/ggl90: make "useIDEMIX" useful
   - re-organize code in s/r ggl90_calc a little to move computations that
     are different for idemix into separate loops (changes verification 
