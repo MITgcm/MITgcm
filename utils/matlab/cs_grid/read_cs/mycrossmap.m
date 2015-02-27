@@ -1,6 +1,6 @@
 function mycrossmap(fld,cx,label,mask,col)
 
-% Function crossmap(fld,cx,label,mask,col)
+% Function mycrossmap(fld,cx,label,mask,col)
 % plot a cube sphere field as a cross
 % fixes a discontinuity at edges of cube faces
 % requires mypcolor.m
