@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/gsw_teos10.F,v 1.1 2015/02/26 17:19:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/gsw_teos10.F,v 1.2 2015/02/27 08:18:12 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -41,10 +41,11 @@ C     CT :: Conservative Temperature                        (deg C)
 
 C     !FUNCTIONS:
 C     == Functions ==
-      _RL gsw_gibbs
+CML      _RL gsw_gibbs
       _RL gsw_gibbs_pt0_pt0
       _RL gsw_ct_from_pt
-      EXTERNAL gsw_gibbs, gsw_gibbs_pt0_pt0, gsw_ct_from_pt
+CML      EXTERNAL gsw_gibbs, gsw_gibbs_pt0_pt0, gsw_ct_from_pt
+      EXTERNAL gsw_gibbs_pt0_pt0, gsw_ct_from_pt
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
