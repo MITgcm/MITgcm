@@ -32,6 +32,9 @@ do
     "OpenAD_streamice_get_fp_err_oad" )
       echo "c\$openad XXX Template ad_template.streamice_get_fp_err_oad.f" >> temp.sed
       ;;
+    "OpenAD_streamice_get_vel_resid_err_oad" )
+      echo "c\$openad XXX Template ad_template.streamice_get_vel_resid_err_oad.f" >> temp.sed
+      ;;
     "OpenAD_exch1_rl" |          \
     "OpenAD_exch1_rs" |          \
     "OpenAD_global_max_r8" |     \

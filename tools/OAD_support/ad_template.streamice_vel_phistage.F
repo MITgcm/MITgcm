@@ -14,6 +14,7 @@
 
       integer iaddr
       external iaddr
+      _RL err_max
 !<------------------Begin user declarations ---------------------->!
 ! Insert declarations of dummy variables for calling adjoint computation 
 ! without side effects, and storing adjoint variable iterates
@@ -62,6 +63,31 @@
           CALL print_message(MSGBUF,STANDARDMESSAGEUNIT,'R',1)
 
 !!!!!!!!!!!! conv check
+
+          if (STREAMICE_chkresidconvergence) then
+
+           CALL openad_STREAMICE_GET_VEL_RESID_ERR_OAD (err_max,myThid)
+
+           WRITE(msgBuf,'(A,E15.7)') 'err/err_init',
+     &                       err_max/err_init
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+
+           IF (err_max .LE. streamice_nonlin_tol * err_init) THEN
+            CONVERGED = .true.
+           ENDIF
+
+           IF (err_max<err_last_change*1.e-2 .and.
+     &      STREAMICE_lower_cg_tol) THEN
+            cgtol = cgtol * 5.e-2
+            err_last_change = err_max
+            WRITE(msgBuf,'(A,E15.7)') 'new cg tol: ',
+     &                       cgtol
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+           ENDIF
+
+          endif
           
           if (STREAMICE_chkfixedptconvergence) then
 
@@ -76,15 +102,6 @@
             CONVERGED = .true.
            ENDIF
 
-           IF (err_max_fp<err_last_change*1.e-2 .and.
-     &      STREAMICE_lower_cg_tol) THEN
-            cgtol = cgtol * 5.e-2
-            err_last_change = err_max_fp
-            WRITE(msgBuf,'(A,E15.7)') 'new cg tol: ',
-     &                       cgtol
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-           ENDIF
 
           endif
 
@@ -148,6 +165,31 @@
 
 !---- conv check
           
+          if (STREAMICE_chkresidconvergence) then
+
+           CALL openad_STREAMICE_GET_VEL_RESID_ERR_OAD (err_max,myThid)
+
+           WRITE(msgBuf,'(A,E15.7)') 'err/err_init',
+     &                       err_max/err_init
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+
+           IF (err_max .LE. streamice_nonlin_tol * err_init) THEN
+            CONVERGED = .true.
+           ENDIF
+
+           IF (err_max<err_last_change*1.e-2 .and.
+     &      STREAMICE_lower_cg_tol) THEN
+            cgtol = cgtol * 5.e-2
+            err_last_change = err_max
+            WRITE(msgBuf,'(A,E15.7)') 'new cg tol: ',
+     &                       cgtol
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+           ENDIF
+
+          endif
+
           if (STREAMICE_chkfixedptconvergence) then
 
            CALL openad_STREAMICE_GET_FP_ERR_OAD ( err_max_fp, myThid )
@@ -159,16 +201,6 @@
 
            IF (err_max_fp .LE. streamice_nonlin_tol_fp) THEN
             CONVERGED = .true.
-           ENDIF
-
-           IF (err_max_fp<err_last_change*1.e-2 .and.
-     &      STREAMICE_lower_cg_tol) THEN
-            cgtol = cgtol * 5.e-2
-            err_last_change = err_max_fp
-            WRITE(msgBuf,'(A,E15.7)') 'new cg tol: ',
-     &                       cgtol
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
            ENDIF
 
           endif
@@ -200,8 +232,8 @@
             our_rev_mode%plain=.false.
             our_rev_mode%tape=.true.
             our_rev_mode%adjoint=.false.
-            CALL OpenAD_streamice_vel_phi(MYTHID,MAXNLITER,MAXCGITER,CGTOL
-     +,CG_ITERS)
+            CALL OpenAD_streamice_vel_phi(MYTHID,MAXNLITER,MAXCGITER,CG
+     +TOL,CG_ITERS)
           end if 
         end if
       end if 
