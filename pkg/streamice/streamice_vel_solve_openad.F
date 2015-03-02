@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve_openad.F,v 1.1 2015/02/21 19:09:53 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve_openad.F,v 1.2 2015/03/02 18:11:58 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -98,6 +98,27 @@ C     LOCAL VARIABLES
          ENDDO
         ENDDO
        ENDDO
+
+#ifdef STREAMICE_HYBRID_STRESS
+       CALL STREAMICE_VISC_BETA_HYBRID ( myThid )
+#else
+       CALL STREAMICE_VISC_BETA ( myThid )
+#endif
+
+       if (STREAMICE_chkresidconvergence .or.
+     &    (streamice_maxnliter_cpl.eq.0 .and. myIter.eq.0)) then
+
+        CALL STREAMICE_GET_VEL_RESID_ERR_OAD ( err_init, myThid )
+
+        WRITE(msgBuf,'(A,E15.7)') 'initial nonlinear resid (error): ',
+     &                       err_init
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+
+       endif 
+
+
+
 #ifndef ALLOW_OPENAD
       CALL STREAMICE_VEL_PHISTAGE ( 
      I                   myThid, 
@@ -107,6 +128,7 @@ C     LOCAL VARIABLES
      O                   nL_iter,
      O                   CONVERGED,
      O                   err_last_change,
+     O                   err_init,
      I                   isinloop0)
 #else
       CALL STREAMICE_VEL_PHISTAGE ( 
@@ -119,6 +141,7 @@ C     LOCAL VARIABLES
      O                   CONVERGED,
      O                   ADJ_CONVERGED,
      O                   err_last_change,
+     O                   err_init,
      I                   isinloop0)
 #endif
 
@@ -138,6 +161,7 @@ C       but after convergence loop does nothing
      O                   nL_iter,
      O                   CONVERGED,
      O                   err_last_change,
+     O                   err_init,
      I                   isinloop1)
 #else
       CALL STREAMICE_VEL_PHISTAGE ( 
@@ -150,6 +174,7 @@ C       but after convergence loop does nothing
      O                   CONVERGED,
      O                   ADJ_CONVERGED,
      O                   err_last_change,
+     O                   err_init,
      I                   isinloop1)
 #endif
 
@@ -176,6 +201,7 @@ C       but after convergence loop does nothing
      O                   nL_iter,
      O                   CONVERGED,
      O                   err_last_change,
+     O                   err_init,
      I                   isinloop2)
 #else
       CALL STREAMICE_VEL_PHISTAGE ( 
@@ -188,6 +214,7 @@ C       but after convergence loop does nothing
      O                   CONVERGED,
      O                   ADJ_CONVERGED,
      O                   err_last_change,
+     O                   err_init,
      I                   isinloop2)
 #endif
 

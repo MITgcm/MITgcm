@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_phistage.F,v 1.1 2015/02/21 19:09:53 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_phistage.F,v 1.2 2015/03/02 18:11:58 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -18,6 +18,7 @@ CBOP
      O                   nL_iter,
      O                   CONVERGED,
      O                   err_last_change,
+     O                   err_init,
      I                   isinloop)
 #else
       SUBROUTINE STREAMICE_VEL_PHISTAGE ( 
@@ -30,6 +31,7 @@ CBOP
      O                   CONVERGED,
      O                   ADJ_CONVERGED,
      O                   err_last_change,
+     O                   err_init,
      I                   isinloop)
 #endif
 
@@ -59,6 +61,7 @@ C     !INPUT/OUTPUT ARGUMENTS
       INTEGER maxCGiter
       _RL     cgtol
       _RL     err_last_change
+      _RL     err_init
       INTEGER nL_iter
       LOGICAL CONVERGED
       INTEGER isinloop
