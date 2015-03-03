@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.201 2015/02/23 23:05:57 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.202 2015/03/03 15:55:51 mlosch Exp $
 #  $Name:  $
 #
 
@@ -131,7 +131,7 @@ testoutput_var()
 	echo testoutput_var: grep "$2" $1/$4/$OUTPUTFILE 1>&2
     fi
     if [ -r $1/$4/$OUTPUTFILE ]; then
-	grep "$2" $1/$4/$OUTPUTFILE | sed 's/.*=//' | cat -n > ${TMP}a.txt
+	grep "$2" $1/$4/$OUTPUTFILE | sed 's/.*=//' | nl > ${TMP}a.txt
 	lncntA=`wc -l ${TMP}a.txt | awk '{print $1}' `
 	if [ $lncntA -lt 2 ]; then
 	    if [ $verbose -gt 0 ]; then
@@ -146,7 +146,7 @@ testoutput_var()
     if [ $debug -gt 0 ]; then
 	echo testoutput_var: grep "$2" $1/$5 1>&2
     fi
-    grep "$2" $1/$5 | sed 's/.*=//' | cat -n > ${TMP}b.txt
+    grep "$2" $1/$5 | sed 's/.*=//' | nl > ${TMP}b.txt
     lncntB=`wc -l ${TMP}b.txt | awk '{print $1}' `
     if [ $lncntB -lt 2 ]; then
 	if [ $verbose -gt 0 ]; then
@@ -842,8 +842,15 @@ runmodel()
 	if test -f $OUTPUTFILE ; then
 	  grep '(PID\.TID 0000\.0001)      n.. =' $OUTPUTFILE \
 		| sed 's/(PID.TID 0000.0001)   //' >> $CDIR"/summary.txt"
-	  grep -A3 'Seconds in section "ALL' $OUTPUTFILE \
-		| sed 's/(PID.TID 0000.0001)   //' >> $CDIR"/summary.txt"
+#	  grep -A3 'Seconds in section "ALL' $OUTPUTFILE \
+#		| sed 's/(PID.TID 0000.0001)   //' >> $CDIR"/summary.txt"
+#         some implementations of grep cannot do contextual searches so we
+#         replace the above with a sed command
+	  cat $OUTPUTFILE | sed -n '/Seconds in section "ALL/{N
+	  N
+	  N
+	  p
+	  }' | sed 's/(PID.TID 0000.0001)   //' >> $CDIR"/summary.txt"
 	fi
 	if test -s STDERR.0000 ; then cp STDERR.0000 $CDIR"/STDERR.0000" ; fi
 	if [ $RETVAL -eq 0 -a $ENDVAL -gt 0 ] ; then
@@ -1684,9 +1691,9 @@ for dir in $TESTDIRS ; do
 #	    sed -n '/^# executed by:/,+1 p' $dir/$builddir/Makefile >> $DRESULTS/genmake_state
 # bsd-sed cannot do the above code
 	    cat $dir/$builddir/Makefile | \
-		sed  -n '/^# executed by:/{N
-                                           p
-                                           }' >> $DRESULTS/genmake_state
+		sed -n '/^# executed by:/{N
+                                          p
+                                          }' >> $DRESULTS/genmake_state
 	    echo " $mkOpt" >> $DRESULTS/genmake_state
 	    if test "x$OPTFILE" = xNONE ; then
 		eval $mkOpt
