@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2138 2015/02/26 17:21:14 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2139 2015/03/03 15:57:00 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/testreport:
+  - replace "grep -A3" with POSIX conformal sed command, because there are
+    implementations of grep that cannot do contextual searches
+  - replace "cat -n" by "nl" (two occurrences), because not all implementations
+    of "cat" have the option "-n"
 o model/src: add new file gsw_teos10.F that contains
     3 functions, more or less a copy of the gsw_toolbox.f90 of the TEOS-10
     fortran interface, that are used to convert from conservative to
