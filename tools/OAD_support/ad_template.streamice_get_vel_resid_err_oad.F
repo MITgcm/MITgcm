@@ -6,22 +6,23 @@
       use OAD_rev
 
      
-C
-C     **** Statements ****
-C
+!$TEMPLATE_PRAGMA_DECLARATIONS
 
+      integer testTape
       !logical isTape 
       !type(modeType) :: our_orig_mode
 
-!      if (our_rev_mode%plain .or. our_rev_mode%tape) then
-      if (our_rev_mode%plain) then
+      if (our_rev_mode%plain .or. our_rev_mode%tape) then
+!      if (our_rev_mode%plain) then
  
-!       if (our_rev_mode%tape) then
-!        isTape=.true.
-!        our_rev_mode%plain=.true.
-!        our_rev_mode%tape=.false.
-!        our_rev_mode%adjoint=.false.
-!      endif
+       if (our_rev_mode%tape) then
+        testTape=1
+        our_rev_mode%plain=.true.
+        our_rev_mode%tape=.false.
+        our_rev_mode%adjoint=.false.
+       else
+        testTape=0
+       endif
             
 
       err_max = 0. _d 0
@@ -46,8 +47,8 @@ C
         CALL openad_STREAMICE_CG_ACTION( myThid,
      O    Au_SI,
      O    Av_SI,
-     I    U_streamice,
-     I    V_streamice,
+     I    U_streamice%v,
+     I    V_streamice%v,
      I    0, sNx+1, 0, sNy+1 )
 
 
@@ -77,11 +78,11 @@ C
 
         CALL GLOBAL_MAX_R8 (err_max, myThid)
 
-!       if (isTape) then
-!        our_rev_mode%plain=.false.
-!        our_rev_mode%tape=.true.
-!        our_rev_mode%adjoint=.false.
-!       endif
+       if (testTape.eq.1) then
+        our_rev_mode%plain=.false.
+        our_rev_mode%tape=.true.
+        our_rev_mode%adjoint=.false.
+       endif
 
       end if
 
