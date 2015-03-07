@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.85 2014/11/02 21:22:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.86 2015/03/07 11:33:48 dgoldberg Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -487,7 +487,11 @@ C--   Initialise fixed array for Float pkg
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('STREAMICE_INIT_FIXED',myThid)
 # endif
+#ifndef ALLOW_OPENAD
        CALL STREAMICE_INIT_FIXED( myThid )
+#else
+       CALL OPENAD_STREAMICE_INIT_FIXED( myThid )
+#endif
       ENDIF
 #endif /* ALLOW_STREAMICE */
 
