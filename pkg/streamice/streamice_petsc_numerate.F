@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_petsc_numerate.F,v 1.3 2014/03/26 17:49:51 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_petsc_numerate.F,v 1.4 2015/03/07 11:30:52 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -23,9 +23,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "STREAMICE.h"
 #ifdef ALLOW_PETSC
-# ifdef ALLOW_USE_MPI
-#  include "EESUPPORT.h"
-# endif
+#ifdef ALLOW_USE_MPI
+#include "EESUPPORT.h"
+#endif
 #endif
 
       INTEGER myThid
