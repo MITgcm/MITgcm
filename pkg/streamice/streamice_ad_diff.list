@@ -6,6 +6,7 @@ streamice_cg_functions.f
 streamice_driving_stress.f
 streamice_driving_stress_ppm.f
 streamice_init_varia.f
+streamice_init_fixed.f
 streamice_timestep.f
 streamice_upd_ffrac_uncoupled.f
 streamice_vel_solve.f
