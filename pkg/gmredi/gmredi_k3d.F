@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.21 2015/02/22 01:52:18 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.22 2015/03/12 15:56:02 dfer Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -49,7 +49,7 @@ C     === Functions ====
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER i,j,k,kk,m
+      INTEGER i,j,k,kk,m,kp1
 
 C     update_modes :: Whether to update the eigenmodes
       LOGICAL update_modes
@@ -85,12 +85,12 @@ C     small  :: a small number (to avoid floating point exceptions)
       _RL M4onN2(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL maxDRhoDz
       _RL sigx, sigy, sigz
-      _RL hsurf
+      _RL hsurf, mskp1
       _RL small
 
-C     dfdy    :: gradient of the Coriolis paramter, df/dy, 1/(m*s)
-C     dfdx    :: gradient of the Coriolis paramter, df/dx, 1/(m*s)
-C     gradf   :: gradient of the Coriolis paramter at a cell centre, 1/(m*s)
+C     dfdy    :: gradient of the Coriolis paramater, df/dy, 1/(m*s)
+C     dfdx    :: gradient of the Coriolis paramater, df/dx, 1/(m*s)
+C     gradf   :: gradient of the Coriolis paramater at a cell centre, 1/(m*s)
 C     Rurms  :: a local mixing length used in calculation of urms (m)
 C     RRhines :: The Rhines scale (m)
 C     Rmix    :: Mixing length
@@ -292,11 +292,20 @@ C       Not limited
         fCoriV(i,j) = op5*( fCori(i,j,bi,bj)+fCori(i,j-1,bi,bj) )
        ENDDO
       ENDDO
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        gradf(i,j) = recip_rSphere*fCoriCos(i,j,bi,bj)
+C     Computing beta
+      IF ( selectCoriMap.EQ.1 ) THEN
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         gradf(i,j) =  beta
+        ENDDO
        ENDDO
-      ENDDO
+      ELSEIF ( selectCoriMap.EQ.2 ) THEN
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         gradf(i,j) = recip_rSphere*fCoriCos(i,j,bi,bj)
+        ENDDO
+       ENDDO 
+      ENDIF
 C     Some dummy values at the edges
       i=1-Olx
       DO j=1-Oly,sNy+Oly
@@ -386,7 +395,7 @@ C     This code does two things:
 C     1) go from C grid velocity points to A grid velocity points
 C     2) go from model grid directions to east/west directions
       DO k = 1,Nr
-       
+
        DO i = 1-Olx,sNx+Olx
         j=sNy+Oly
         tmpU(i,j)=zeroRL
@@ -401,7 +410,7 @@ C     2) go from model grid directions to east/west directions
      &        *( uFldX(i+1,j,k) + uFldX(i,j,k) )
          tmpV(i,j) = 0.5 _d 0
      &        *( vFldY(i,j+1,k) + vFldY(i,j,k) )
-         
+
          tmpU(i,j) = tmpU(i,j) * maskC(i,j,k,bi,bj)
          tmpV(i,j) = tmpV(i,j) * maskC(i,j,k,bi,bj)
         ENDDO
@@ -411,40 +420,34 @@ C     2) go from model grid directions to east/west directions
         DO i = 1-olx,snx+olx
         ENDDO
        ENDDO
-       
+
 C     rotation
        DO j = 1-oly,sny+oly
         DO i = 1-olx,snx+olx
-         ubar(i,j,k) = 
+         ubar(i,j,k) =
      &        angleCosC(i,j,bi,bj)*tmpU(i,j)
      &        -angleSinC(i,j,bi,bj)*tmpV(i,j)
         ENDDO
        ENDDO
       ENDDO
-      
+
 C     Square of the buoyancy frequency at the top of a grid cell
+C     Enforce a minimum N2
+C     Mask N2, so it is zero at bottom
       DO k=2,Nr
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
          N2(i,j,k) = -gravity*recip_rhoConst*sigmaR(i,j,k)
+         N2(i,j,k) = MAX(N2(i,j,k),GM_K3D_minN2)*maskC(i,j,k,bi,bj)
+         N(i,j,k)  = SQRT(N2(i,j,k))
         ENDDO
        ENDDO
       ENDDO
 C     N2(k=1) is always zero
-      k=1
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        N2(i,j,k) = zeroRL
-        N(i,j,k)  = zeroRL
-       ENDDO
-      ENDDO
-C     Enforce a minimum N2
-      DO k=2,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         IF (N2(i,j,k).LT.GM_K3D_minN2) N2(i,j,k)=GM_K3D_minN2
-         N(i,j,k) = SQRT(N2(i,j,k))
-        ENDDO
+        N2(i,j,1) = zeroRL
+        N(i,j,1)  = zeroRL
        ENDDO
       ENDDO
 C     Calculate the minimum drho/dz
@@ -452,7 +455,7 @@ C     Calculate the minimum drho/dz
 
 C     Calculate the barotropic velocity by vertically integrating
 C     and the dividing by the depth of the water column
-C     Note that Ubaro is on the U grid.
+C     Note that Ubaro is at the C-point.
       DO k=1,Nr
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
@@ -471,22 +474,16 @@ C         The minus sign is because r_Low<0
       ENDDO
 
 C     Integrate the buoyancy frequency vertically using the trapezoidal method.
+C     Assume that N(z=-H)=0
       DO k=1,Nr
+       kp1 = min(k+1,Nr)
+       mskp1 = oneRL
+       IF ( k.EQ.Nr ) mskp1 = zeroRL
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
-         IF (k.LT.kLow_C(i,j)) THEN
            BVint(i,j) = BVint(i,j) + hFacC(i,j,k,bi,bj)*drF(k)
-     &                               *(N(i,j,k)+N(i,j,k+1))
-         ELSEIF (k.EQ.kLow_C(i,j)) THEN
-C          Assume that N(z=-H)=0
-           BVint(i,j) = BVint(i,j) + hFacC(i,j,k,bi,bj)*drF(k)*N(i,j,k)
-         ENDIF
+     &                         *op5*(N(i,j,k)+mskp1*N(i,j,kp1))
         ENDDO
-       ENDDO
-      ENDDO
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        BVint(i,j) = op5*BVint(i,j)
        ENDDO
       ENDDO
 
@@ -524,15 +521,15 @@ C     Calculate the Eady growth rate
 C     ===============================
       DO k=1,Nr
 
+       kp1 = min(k+1,Nr)
+       mskp1 = oneRL
+       IF ( k.EQ.Nr ) mskp1 = zeroRL
+
        DO j=1-Oly,sNy+Oly-1
         DO i=1-Olx,sNx+Olx-1
          M4loc(i,j,k) = g_reciprho_sq*( dSigmaDx(i,j,k)**2
      &                                 +dSigmaDy(i,j,k)**2 )
-         IF (k.NE.kLow_C(i,j)) THEN
-           N2loc(i,j,k) = op5*(N2(i,j,k)+N2(i,j,k+1))
-         ELSE
-           N2loc(i,j,k) = op5*N2(i,j,k)
-         ENDIF
+         N2loc(i,j,k) = op5*(N2(i,j,k)+mskp1*N2(i,j,kp1))
         ENDDO
        ENDDO
 C      The bottom of the grid cell is shallower than the top
@@ -605,7 +602,7 @@ C       Calculate the estimated length scale
         Rmix(i,j) = MAX(Rmix(i,j),GM_K3D_Rmin)
 
 C       Calculate the Doppler shifted long Rossby wave speed
-C       Ubaro is on the U grid so we must average onto the M grid.
+C       Ubaro is at the C-point.
         cDopp(i,j) = Ubaro(i,j)
      &                - gradf(i,j)*Rdef(i,j,bi,bj)*Rdef(i,j,bi,bj)
 C       Limit the wave speed to the namelist variable GM_K3D_maxC
@@ -632,18 +629,16 @@ C     Calculate the diffusivity (on the mass grid)
              IF (urms(i,j,k).EQ.0.0) THEN
                K3D(i,j,k,bi,bj) = GM_K3D_smallK
              ELSE
-               umc(i,j,k) =ubar(i,j,k) - cDopp(i,j)
-               supp(i,j,k)=1/(1+GM_K3D_b1*umc(i,j,k)**2/urms(i,j,1)**2)
+              umc(i,j,k) =ubar(i,j,k) - cDopp(i,j)
+              supp(i,j,k)=1./(1.+GM_K3D_b1*umc(i,j,k)**2/urms(i,j,1)**2)
 C              2*Rmix gives the diameter
-               K3D(i,j,k,bi,bj) = GM_K3D_gamma*urms(i,j,k)
-     &                            *2*Rmix(i,j)*supp(i,j,k)
+              K3D(i,j,k,bi,bj) = GM_K3D_gamma*urms(i,j,k)
+     &                           *2.*Rmix(i,j)*supp(i,j,k)
              ENDIF
 
 C            Enforce lower and upper bounds on the diffusivity
-             IF (K3D(i,j,k,bi,bj).LT.GM_K3D_smallK)
-     &            K3D(i,j,k,bi,bj) = GM_K3D_smallK
-             IF (K3D(i,j,k,bi,bj).GT.GM_maxK3D)
-     &            K3D(i,j,k,bi,bj) = GM_maxK3D
+             K3D(i,j,k,bi,bj) = MIN(K3D(i,j,k,bi,bj),GM_maxK3D)
+             K3D(i,j,k,bi,bj) = MAX(K3D(i,j,k,bi,bj),GM_K3D_smallK)
            ENDIF
          ENDIF
         ENDDO
@@ -1172,6 +1167,9 @@ C     Diagnostics
         CALL DIAGNOSTICS_FILL(M4onN2, 'GM_M4_N2',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(slopeC, 'GM_SLOPE',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(Renorm, 'GM_RENRM',0, 1,2,bi,bj,myThid)
+#ifdef GM_K3D_PASSIVE
+        CALL DIAGNOSTICS_FILL(psistar,'GM_PSTAR',0,Nr,2,bi,bj,myThid)
+#endif
       ENDIF
 #endif
 
