@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.31 2014/06/05 15:37:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.32 2015/03/13 14:16:36 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -86,9 +86,9 @@ C     msgBuf      :: Informational/error message buffer
       PARAMETER ( threeSixtyRS = 360. )
       PARAMETER ( yPole = 90. )
       INTEGER  nxd2
-      LOGICAL  xIsPeriodic, poleSymmetry
+      LOGICAL  xIsPeriodic, poleSymmetry, latFromS2N
 #ifdef ALLOW_DEBUG
-      LOGICAL  debugFlag
+      LOGICAL  debugFlag, gridNotRight
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RS      prtPole(-1:4)
 #endif
@@ -173,6 +173,8 @@ C-    Add 2 row @ northern end; if one is beyond N.pole, put one @ N.pole
 #endif
        ENDIF
       ENDIF
+C     store orientation of latitude
+      latFromS2N = y_in(0) .LT. y_in(nyIn+1)
 
 C--   Enlarge boundary
       IF ( xIsPeriodic ) THEN
@@ -300,10 +302,22 @@ C--   Check validity of input/output coordinates
         IF ( debugFlag ) THEN
          DO j=1,sNy
           DO i=1,sNx
-           IF ( xG(i,j,bi,bj) .LT. x_in(0)        .OR.
-     &          xG(i,j,bi,bj) .GE. x_in(nxIn+1)   .OR.
-     &          yG(i,j,bi,bj) .LT. y_in(0)        .OR.
-     &          yG(i,j,bi,bj) .GE. y_in(nyIn+1) ) THEN
+           IF ( latFromS2N ) THEN
+C     y_in(0) is the southern edge
+            gridNotRight = (
+     &           xG(i,j,bi,bj) .LT. x_in(0)        .OR.
+     &           xG(i,j,bi,bj) .GE. x_in(nxIn+1)   .OR.
+     &           yG(i,j,bi,bj) .LT. y_in(0)        .OR.
+     &           yG(i,j,bi,bj) .GE. y_in(nyIn+1) ) 
+           ELSE
+C     y_in(0) is the northern edge
+            gridNotRight = (
+     &           xG(i,j,bi,bj) .LT. x_in(0)        .OR.
+     &           xG(i,j,bi,bj) .GE. x_in(nxIn+1)   .OR.
+     &           yG(i,j,bi,bj) .GE. y_in(0)        .OR.
+     &           yG(i,j,bi,bj) .LT. y_in(nyIn+1) ) 
+           ENDIF
+           IF ( gridNotRight ) THEN
             l = ILNBLNK(inFile)
             WRITE(msgBuf,'(3A,I6)')
      &        'EXF_INTERP: file="', inFile(1:l), '", rec=', irecord
@@ -329,48 +343,82 @@ C--   Check validity of input/output coordinates
        ENDDO
       ENDDO
 
+C--   Compute interpolation lon & lat index mapping
+C     # of pts = nyIn+2 ; # of interval = nyIn+1 ; evaluate nLoop as
+C     1 + truncated log2(# interval -1); add epsil=1.e-3 for safey
+      tmpVar = nyIn + 1. _d -3
+      nLoop = 1 + INT( LOG(tmpVar)/LOG(2. _d 0) )
+C
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
-C--   Compute interpolation lon & lat index mapping
-C--     latitude index
-        DO j=1,sNy
-         DO i=1,sNx
-          s_ind(i,j) = 0
-          w_ind(i,j) = nyIn+1
-         ENDDO
-        ENDDO
-C       # of pts = nyIn+2 ; # of interval = nyIn+1 ; evaluate nLoop as
-C       1 + truncated log2(# interval -1); add epsil=1.e-3 for safey
-        tmpVar = nyIn + 1. _d -3
-        nLoop = 1 + INT( LOG(tmpVar)/LOG(2. _d 0) )
-        DO l=1,nLoop
+        IF ( latFromS2N ) THEN
+C--   Case 1: y_in(0) is the southern edge
+C--      latitude index
          DO j=1,sNy
           DO i=1,sNx
-           IF ( w_ind(i,j).GT.s_ind(i,j)+1 ) THEN
-            k = NINT( (s_ind(i,j)+w_ind(i,j))*0.5 )
-            IF ( yG(i,j,bi,bj) .LT. y_in(k) ) THEN
-              w_ind(i,j) = k
-            ELSE
-              s_ind(i,j) = k
-            ENDIF
-           ENDIF
+           s_ind(i,j) = 0
+           w_ind(i,j) = nyIn+1
           ENDDO
          ENDDO
-        ENDDO
+         DO l=1,nLoop
+          DO j=1,sNy
+           DO i=1,sNx
+            IF ( w_ind(i,j).GT.s_ind(i,j)+1 ) THEN
+             k = NINT( (s_ind(i,j)+w_ind(i,j))*0.5 )
+             IF ( yG(i,j,bi,bj) .LT. y_in(k) ) THEN
+              w_ind(i,j) = k
+             ELSE
+              s_ind(i,j) = k
+             ENDIF
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ELSE
+C--   Case 2: y_in(0) is the northern edge
+C--   In this case the roles of s_ind and w_ind are exchanged: now
+C--   s_ind is the index on the northern side grid box
+C--      latitude index
+         DO j=1,sNy
+          DO i=1,sNx
+           s_ind(i,j) = nyIn+1
+           w_ind(i,j) = 0
+          ENDDO
+         ENDDO
+         DO l=1,nLoop
+          DO j=1,sNy
+           DO i=1,sNx
+            IF ( s_ind(i,j).GT.w_ind(i,j)+1 ) THEN
+             k = NINT( (s_ind(i,j)+w_ind(i,j))*0.5 )
+             IF ( yG(i,j+1,bi,bj) .GT. y_in(k) ) THEN
+              s_ind(i,j) = k
+             ELSE
+              w_ind(i,j) = k
+             ENDIF
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
 #ifdef ALLOW_DEBUG
         IF ( debugFlag ) THEN
 C-      Check that we found the right lat. index
          DO j=1,sNy
           DO i=1,sNx
-           IF ( w_ind(i,j).NE.s_ind(i,j)+1 ) THEN
+           IF ( latFromS2N ) THEN
+            gridNotRight = w_ind(i,j).NE.s_ind(i,j)+1
+           ELSE
+            gridNotRight = s_ind(i,j).NE.w_ind(i,j)+1
+           ENDIF
+           IF ( gridNotRight ) THEN
             l = ILNBLNK(inFile)
             WRITE(msgBuf,'(3A,I4,A,I4)')
      &        'EXF_INTERP: file="', inFile(1:l), '", rec=', irecord,
      &        ', nLoop=', nLoop
             CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(A)')
-     &        'EXF_INTERP: did not found Latitude index for grid-pt:'
+     &        'EXF_INTERP: did not find Latitude index for grid-pt:'
             CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(A,2I8,2I6,A,1PE16.8)')
      &        'EXF_INTERP: i,j,bi,bj=',i,j,bi,bj,' , yG=',yG(i,j,bi,bj)
