@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.28 2014/11/02 22:31:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.29 2015/03/23 21:10:04 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -499,9 +499,14 @@ cgf =======================================================
 
       do irec = 1, ndaysrec
 
+#ifdef ALLOW_AUTODIFF
         call active_read_xy( fname, etaday, irec, doglobalread,
      &                       ladinit, eccoiter, mythid,
      &                       gencost_dummy(igen_etaday) )
+#else
+        CALL READ_REC_XY_RL( fname, etaday, iRec, 1, myThid )
+#endif
+
 
         if (.NOT.useEtaMean) 
      &  CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,
@@ -858,9 +863,13 @@ c ------------------------------------------------------
 
         krec=irec+jrec-1
 
+#ifdef ALLOW_AUTODIFF
         call active_read_xy( fname, etaday, krec, doglobalread,
      &                       ladinit, eccoiter, mythid,
      &                       gencost_dummy(igen_etaday) )
+#else
+        CALL READ_REC_XY_RL( fname, etaday, kRec, 1, myThid )
+#endif
 
         if (.NOT.useEtaMean)
      &  CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,
@@ -1137,9 +1146,13 @@ cgf =======================================================
 c time associated with this ndaysrec mean
         krec = irec + (ndaysave/2)
 
+#ifdef ALLOW_AUTODIFF
         call active_read_xy( fname, etaday, krec, doglobalread,
      &                       ladinit, eccoiter, mythid,
      &                       gencost_dummy(igen_etaday) )
+#else
+        CALL READ_REC_XY_RL( fname, etaday, kRec, 1, myThid )
+#endif
 
         if (.NOT.useEtaMean)
      &  CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,

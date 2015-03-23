@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.6 2014/12/09 15:51:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.7 2015/03/23 21:10:04 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -594,6 +594,7 @@ CEOP
       doglobalread = .false.
       ladinit      = .false.
 
+#ifdef ALLOW_AUTODIFF
         if ( nnzbar .EQ. 1 ) then
            call active_read_xy( active_var_file, active_var,
      &                      irec, doglobalread,
@@ -605,6 +606,15 @@ CEOP
      &                       ladinit, eccoiter, mythid,
      &                       dummy )
         endif
+#else
+        if ( nnzbar .EQ. 1 ) then
+           CALL READ_REC_XY_RL( active_var_file, active_var,
+     &                          iRec, 1, myThid )
+        else
+           CALL READ_REC_XYZ_RL( active_var_file, active_var,
+     &                          iRec, 1, myThid )
+        endif
+#endif
 
 #endif /* ALLOW_ECCO */
 

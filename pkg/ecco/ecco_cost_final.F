@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.76 2014/10/20 03:16:12 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.77 2015/03/23 21:10:04 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -1272,7 +1272,7 @@ C     only master thread of master CPU open and write to file
         write(standardmessageunit,'(A,D22.15)')
      &           ' --> fc               =', locfc
 
-        write(cfname,'(A,i4.4)') 'costfunction',optimcycle
+        write(cfname,'(A,i4.4)') 'costfunction',eccoiter
         open(unit=ifc,file=cfname)
 
 #ifdef ALLOW_ECCO_OLD_FC_PRINT

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.11 2014/09/29 16:46:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.12 2015/03/23 21:10:04 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -173,9 +173,13 @@ c ------------------------------------------------------
            krec=irec+jrec-1
 
 c get modeled sst:
+#ifdef ALLOW_AUTODIFF
              call active_read_xy( fname, mybar, krec, doglobalread,
      &                       ladinit, eccoiter, mythid,
      &                       mydummy )
+#else
+             CALL READ_REC_XY_RL( fname, mybar, kRec, 1, myThid )
+#endif
 
 c get observed sst:
              daytime = FLOAT(secondsperday*(krec-1)) + modelstart
@@ -325,9 +329,13 @@ cgf =======================================================
       do irec = 1, ndaysrec
 
 c get modeled sst:
+#ifdef ALLOW_AUTODIFF
         call active_read_xy( fname, mybar, irec, doglobalread,
      &                       ladinit, eccoiter, mythid,
      &                       mydummy )
+#else
+        CALL READ_REC_XY_RL( fname, mybar, iRec, 1, myThid )
+#endif
 
 c get observed sst:
              daytime = FLOAT(secondsperday*(irec-1)) + modelstart

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.6 2014/10/18 14:17:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.7 2015/03/23 21:10:04 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -127,10 +127,15 @@ c main loop where cost is computed and time series is displayed
       do irec = 1,nmonsrec
 
 c read bar field
+#ifdef ALLOW_AUTODIFF
         call active_read_xyz( myfname, mybar, irec,
      &                        doglobalread, ladinit,
      &                        eccoiter, mythid,
      &                        mydummy )
+#else
+        CALL READ_REC_XYZ_RL( myfname, mybar,
+     &                        iRec, 1, myThid )
+#endif
 
 c read mask for averaging (3d, time series)
         call mdsreadfield( gencost_errfile(kgen),

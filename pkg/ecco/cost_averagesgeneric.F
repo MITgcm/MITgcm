@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesgeneric.F,v 1.9 2014/10/22 13:28:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesgeneric.F,v 1.10 2015/03/23 21:10:04 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -128,6 +128,7 @@ c--     Save ...bar on file.
         il=ilnblnk( localbarfile )
         write(fname,'(2a,i10.10)')
      &       localbarfile(1:il), '.', eccoiter
+#ifdef ALLOW_AUTODIFF
         if ( nnz .EQ. 1 ) then
            call active_write_xy( fname, localbar, locrec, eccoiter,
      &          mythid, xx_localbar_mean_dummy )
@@ -135,6 +136,14 @@ c--     Save ...bar on file.
            call active_write_xyz( fname, localbar, locrec, eccoiter,
      &          mythid, xx_localbar_mean_dummy )
         endif
+#else
+        if ( nnz .EQ. 1 ) then
+           CALL WRITE_REC_XY_RL( fname, localbar, locrec, 1, myThid )
+        else
+           CALL WRITE_REC_XYZ_RL( fname, localbar, locrec, 1, myThid )
+        endif
+#endif
+
       elseif (first .or. startofloc) then
 c--     Assign the first value to the array holding the average.
         do bj = jtlo,jthi
@@ -169,6 +178,7 @@ c--     Save ...bar on file.
         il=ilnblnk( localbarfile )
         write(fname,'(2a,i10.10)')
      &       localbarfile(1:il), '.', eccoiter
+#ifdef ALLOW_AUTODIFF
         if ( nnz .EQ. 1 ) then
            call active_write_xy( fname, localbar, locrec, eccoiter,
      &          mythid, xx_localbar_mean_dummy )
@@ -176,6 +186,13 @@ c--     Save ...bar on file.
            call active_write_xyz( fname, localbar, locrec, eccoiter,
      &          mythid, xx_localbar_mean_dummy )
         endif
+#else
+        if ( nnz .EQ. 1 ) then
+           CALL WRITE_REC_XY_RL( fname, localbar, locrec, 1, myThid )
+        else
+           CALL WRITE_REC_XYZ_RL( fname, localbar, locrec, 1, myThid )
+        endif
+#endif
       else if (       (       inloc        ) .and.
      &          .not. (first .or. startofloc) .and.
      &          .not. (last  .or. endofloc  )       ) then
