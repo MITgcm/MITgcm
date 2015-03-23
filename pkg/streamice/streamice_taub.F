@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_taub.F,v 1.2 2015/02/21 19:09:53 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_taub.F,v 1.3 2015/03/23 14:07:16 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -66,15 +66,23 @@ cph)
              umid = umid + 0.25 * 
      &        dxG(i,j+l,bi,bj)*dyG(i+k,j,bi,bj) * 
      &        recip_rA(i,j,bi,bj) *
+#if (defined (ALLOW_STREAMICE_OAD_FP))
+     &        U_new_si(i+k,j+l,bi,bj) 
+#else
      &        U_streamice(i+k,j+l,bi,bj) 
+#endif
              vmid = vmid + 0.25 * 
      &        dxG(i,j+l,bi,bj)*dyG(i+k,j,bi,bj) * 
      &        recip_rA(i,j,bi,bj) *
+#if (defined (ALLOW_STREAMICE_OAD_FP))
+     &        V_new_si(i+k,j+l,bi,bj)
+#else
      &        V_streamice(i+k,j+l,bi,bj)
+#endif
             ENDDO
            ENDDO
   
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#if (defined (ALLOW_STREAMICE_OAD_FP))
            taubx_new_si (i,j,bi,bj) = 
      &      tau_beta_eff_streamice(i,j,bi,bj) * umid
            tauby_new_si (i,j,bi,bj) = 

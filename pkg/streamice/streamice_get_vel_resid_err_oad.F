@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_vel_resid_err_oad.F,v 1.1 2015/03/02 18:11:58 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_vel_resid_err_oad.F,v 1.2 2015/03/23 14:07:16 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -29,11 +29,14 @@ C     === Global variables ===
 C     !INPUT/OUTPUT ARGUMENTS
       _RL err_max
       INTEGER myThid
+      Real*8 u_dummy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      Real*8 v_dummy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_STREAMICE
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#if (defined (ALLOW_STREAMICE_OAD_FP))
 
       INTEGER conv_flag, i, j, bi, bj, myIter
+
 
       INTEGER ikey_nl
       _RL err_tempu, err_tempv
@@ -41,19 +44,16 @@ C     !INPUT/OUTPUT ARGUMENTS
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL isTape
 
-!#ifdef ALLOW_AUTODIFF_TAMC
-!!$TAF STORE U_streamice = comlev1_stream_nl, key=ikey_nl
-!!$TAF STORE V_streamice = comlev1_stream_nl, key=ikey_nl
-!#endif
-
-        err_max = 0. _d 0
+      err_max = 0. _d 0
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
+          DO j=1-oly,sNy+oly
+           DO i=1-olx,sNx+olx
             Au_SI (i,j,bi,bj) = 0. _d 0
             Av_SI (i,j,bi,bj) = 0. _d 0
+            u_dummy (i,j,bi,bj) = u_streamice(i,j,bi,bj)
+            v_dummy (i,j,bi,bj) = v_streamice(i,j,bi,bj)
             ubd_SI (i,j,bi,bj) = 0. _d 0
             vbd_SI (i,j,bi,bj) = 0. _d 0
            ENDDO
@@ -65,22 +65,13 @@ C     !INPUT/OUTPUT ARGUMENTS
      O    ubd_SI,
      O    vbd_SI)
 
-!#ifdef ALLOW_AUTODIFF_TAMC
-!!$TAF STORE U_streamice = comlev1_stream_nl, key=ikey_nl
-!!$TAF STORE V_streamice = comlev1_stream_nl, key=ikey_nl
-!#endif
-
         CALL STREAMICE_CG_ACTION( myThid,
      O    Au_SI,
      O    Av_SI,
-     I    U_streamice,
-     I    V_streamice,
+     I    U_dummy,
+     I    V_dummy,
      I    0, sNx+1, 0, sNy+1 )
 
-!#ifdef ALLOW_AUTODIFF_TAMC
-!!$TAF STORE U_streamice = comlev1_stream_nl, key=ikey_nl
-!!$TAF STORE V_streamice = comlev1_stream_nl, key=ikey_nl
-!#endif
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -106,10 +97,9 @@ C     !INPUT/OUTPUT ARGUMENTS
          ENDDO
         ENDDO
 
+
+
         CALL GLOBAL_MAX_R8 (err_max, myThid)
-!#ifdef ALLOW_AUTODIFF_TAMC
-!!$TAF STORE err_max = comlev1_stream_nl, key=ikey_dynamics
-!#endif
 
 #endif
 #endif

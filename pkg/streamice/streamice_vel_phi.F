@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_phi.F,v 1.1 2015/02/21 19:09:53 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_phi.F,v 1.2 2015/03/23 14:07:17 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -14,7 +14,8 @@ CBOP
      I           maxNLIter, 
      I           maxCGiter, 
      I           cgtol, 
-     O           cg_iters)
+     O           cg_iters,
+     O           max_err)
 C     /============================================================\
 C     | SUBROUTINE                                                 |
 C     | o                                                          |
@@ -44,13 +45,17 @@ C     !INPUT/OUTPUT ARGUMENTS
       INTEGER i,j,bi,bj
       _RL cgtol
       INTEGER cg_iters
+      _RL max_err
 
 #ifdef ALLOW_STREAMICE
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#if (defined (ALLOW_STREAMICE_OAD_FP))
 
 C     LOCAL VARIABLES
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+      _EXCH_XY_RL( U_streamice , myThid )
+      _EXCH_XY_RL( V_streamice , myThid )
 
 #ifdef STREAMICE_HYBRID_STRESS
        CALL STREAMICE_VISC_BETA_HYBRID ( myThid )
@@ -60,6 +65,9 @@ C     LOCAL VARIABLES
 
       _EXCH_XY_RL( tau_beta_eff_streamice , myThid )
       _EXCH_XY_RL( visc_streamice , myThid )
+
+       CALL STREAMICE_GET_VEL_RESID_ERR_OAD (max_err,myThid)
+
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)

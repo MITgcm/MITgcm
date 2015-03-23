@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_timestep.F,v 1.4 2015/02/21 19:09:53 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_timestep.F,v 1.5 2015/03/23 14:07:16 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -127,7 +127,7 @@ c**************************************
 #endif
 
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#if (defined (ALLOW_STREAMICE_OAD_FP))
 
        CALL STREAMICE_VEL_SOLVE_OPENAD ( myThid,
      &                           streamice_max_nl_iter,

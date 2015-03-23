@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_phistage.F,v 1.2 2015/03/02 18:11:58 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_phistage.F,v 1.3 2015/03/23 14:07:17 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -62,6 +62,7 @@ C     !INPUT/OUTPUT ARGUMENTS
       _RL     cgtol
       _RL     err_last_change
       _RL     err_init
+      _RL     err_max
       INTEGER nL_iter
       LOGICAL CONVERGED
       INTEGER isinloop
@@ -71,12 +72,12 @@ C     !INPUT/OUTPUT ARGUMENTS
 #endif
 
 #ifdef ALLOW_STREAMICE
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#if (defined (ALLOW_STREAMICE_OAD_FP))
 
 C     LOCAL VARIABLES
 
       INTEGER i, j, bi, bj, cg_iters, m
-      _RL err_max_fp
+      _RL err_max_fp, errmax
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       
 #ifdef ALLOW_OPENAD
@@ -96,7 +97,7 @@ C     LOCAL VARIABLES
      I           maxNLIter, 
      I           maxCGiter, 
      I           cgtol, 
-     O           cg_iters)
+     O           cg_iters,err_max)
 
 !---------------------------give num iters--------------------------------
        WRITE(msgBuf,'(A,I5,A,I4,A)') 'streamice linear solve number',
@@ -121,17 +122,33 @@ C     LOCAL VARIABLES
          CONVERGED = .true.
         ENDIF
 
-        IF (err_max_fp<err_last_change*1.e-2 .and.
-     &   STREAMICE_lower_cg_tol) THEN
-         cgtol = cgtol * 5.e-2
-         err_last_change = err_max_fp
-         WRITE(msgBuf,'(A,E15.7)') 'new cg tol: ',
-     &                       cgtol
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-        ENDIF
 
        endif
+
+       if (STREAMICE_chkresidconvergence) then
+
+
+           WRITE(msgBuf,'(A,E15.7)') 'err/err_init',
+     &                       err_max/err_init
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+
+           IF (err_max .LE. streamice_nonlin_tol * err_init) THEN
+            CONVERGED = .true.
+           ENDIF
+
+           IF (err_max<err_last_change*1.e-2 .and.
+     &      STREAMICE_lower_cg_tol) THEN
+            cgtol = cgtol / 20.
+            err_last_change = err_max_fp
+            WRITE(msgBuf,'(A,E15.7)') 'new cg tol: ',
+     &                       cgtol
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+           ENDIF
+
+       endif
+
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)

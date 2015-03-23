@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.13 2015/02/21 19:09:53 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.14 2015/03/23 14:07:16 dgoldberg Exp $
 C $Name:  $
 
 c#ifdef ALLOW_COST
@@ -563,25 +563,19 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
 !     TO AVOID POSSIBLE ADJOINT INSTABILITIES
 !     IT IS WRITTEN OVER IN FIRST TIMESTEP
 
-#ifdef ALLOW_AUTODIFF
+#if (defined (ALLOW_AUTODIFF))
+#ifndef ALLOW_STREAMICE_OAD_FP
 
        CALL STREAMICE_UPD_FFRAC_UNCOUPLED ( myThid )
        CALL STREAMICE_VELMASK_UPD (myThid)
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
 
-       CALL STREAMICE_VEL_SOLVE_OPENAD ( myThid,
+       CALL STREAMICE_VEL_SOLVE ( myThid,
      &                           streamice_max_nl_iter,
      &                           streamice_max_cg_iter,
      &                           0 )
 
-#else
 
-       CALL STREAMICE_VEL_SOLVE(
-     &     myThid,
-     &     streamice_max_nl_iter,
-     &     streamice_max_cg_iter,
-     &     0 )
 
 #endif
 #endif
