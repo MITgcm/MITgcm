@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.78 2015/01/14 18:40:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.79 2015/03/23 21:00:30 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -160,7 +160,7 @@ C--   Initialise model forcing fields.
 
 #ifdef ALLOW_AUTODIFF
 C--   Initialise active fields to help TAMC
-      CALL AUTODIFF_INIT_VARIA( myThid )
+      if (useAUTODIFF) CALL AUTODIFF_INIT_VARIA( myThid )
 #endif
 
 C--   Initialize variable data for packages

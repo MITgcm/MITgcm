@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.68 2015/01/14 00:51:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.69 2015/03/23 21:00:30 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,6 +64,7 @@ C     data.pkg namelists
      &          useBulkForce,
      &          useEBM,
      &          useCheapAML,
+     &          useAUTODIFF,
      &          useGrdchk,
      &          useSMOOTH,
      &          usePROFILES,
@@ -127,6 +128,7 @@ c     useGAD          =.FALSE.
       useBulkForce    =.FALSE.
       useEBM          =.FALSE.
       useCheapAML     =.FALSE.
+      useAUTODIFF     =.FALSE.
       useGrdchk       =.FALSE.
       useSMOOTH       =.FALSE.
       usePROFILES     =.FALSE.
@@ -162,6 +164,7 @@ c     useGAD          =.FALSE.
 
 C-    Adjust default to account for pkgs without run-time On/Off switch
 #ifdef ALLOW_AUTODIFF
+      useAUTODIFF     =.TRUE.
 # ifdef ALLOW_ECCO
       useECCO         =.TRUE.
 # endif
@@ -277,6 +280,9 @@ C----- pkgs with a standard "usePKG" On/Off switch in "data.pkg":
 #endif
 #ifdef ALLOW_CHEAPAML
       CALL PACKAGES_PRINT_MSG( useCheapAML,   'CheapAML',    ' ' )
+#endif
+#ifdef ALLOW_AUTODIFF
+      CALL PACKAGES_PRINT_MSG( useAUTODIFF,   'AUTODIFF',    ' ' )
 #endif
 #ifdef ALLOW_GRDCHK
       CALL PACKAGES_PRINT_MSG( useGrdchk,     'Grdchk',      ' ' )

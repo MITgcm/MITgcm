@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.47 2014/08/12 17:36:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.48 2015/03/23 21:00:30 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -208,7 +208,7 @@ C       belonging to the core dynamical model
 #endif /* ALLOW_MNC */
 
 #ifdef ALLOW_AUTODIFF
-        CALL AUTODIFF_INI_MODEL_IO( myThid )
+        if (useAUTODIFF) CALL AUTODIFF_INI_MODEL_IO( myThid )
 #endif
 
 #ifdef ALLOW_PROFILES
