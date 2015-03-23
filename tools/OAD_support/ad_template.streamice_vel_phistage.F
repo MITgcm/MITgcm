@@ -14,7 +14,6 @@
 
       integer iaddr
       external iaddr
-      _RL err_max
 !<------------------Begin user declarations ---------------------->!
 ! Insert declarations of dummy variables for calling adjoint computation 
 ! without side effects, and storing adjoint variable iterates
@@ -49,13 +48,13 @@
       IF(ISINLOOP .eq. 0) THEN
         CONVERGED = .FALSE.
         ADJ_CONVERGED = .FALSE.
-        ERR_LAST_CHANGE = 10.
+        !ERR_LAST_CHANGE = 10.
       end if
       IF(ISINLOOP .ne. 0) THEN
         IF(.NOT. CONVERGED) THEN
           NL_ITER = (NL_ITER + 1)
           CALL OpenAD_streamice_vel_phi(MYTHID,MAXNLITER,MAXCGITER,CGTOL
-     +,CG_ITERS)
+     +,CG_ITERS,err_max)
 
           WRITE(MSGBUF,'(A,I5,A,I4,A)') 'streamice linear solve number',
      +NL_ITER,' ',CG_ITERS,' iterations '
@@ -66,7 +65,6 @@
 
           if (STREAMICE_chkresidconvergence) then
 
-           CALL openad_STREAMICE_GET_VEL_RESID_ERR_OAD (err_max,myThid)
 
            WRITE(msgBuf,'(A,E15.7)') 'err/err_init',
      &                       err_max/err_init
@@ -88,7 +86,7 @@
            ENDIF
 
           endif
-          
+
           if (STREAMICE_chkfixedptconvergence) then
 
            CALL openad_STREAMICE_GET_FP_ERR_OAD ( err_max_fp, myThid )
@@ -105,7 +103,6 @@
 
           endif
 
-!!!!!!!!!!!! end conv check
 
           DO bj = myByLo(myThid), myByHi(myThid)
            DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -125,6 +122,9 @@
             ENDDO
            ENDDO
           ENDDO
+
+!!!!!!!!!!!! end conv check
+
 
         end if        
       end if
@@ -154,7 +154,7 @@
           our_rev_mode%tape=.false.
           our_rev_mode%adjoint=.false.
           CALL OpenAD_streamice_vel_phi(MYTHID,MAXNLITER,MAXCGITER,CGTOL
-     +,CG_ITERS)
+     +,CG_ITERS,err_max)
 
 !---- write out number of cg iters
 
@@ -167,7 +167,6 @@
           
           if (STREAMICE_chkresidconvergence) then
 
-           CALL openad_STREAMICE_GET_VEL_RESID_ERR_OAD (err_max,myThid)
 
            WRITE(msgBuf,'(A,E15.7)') 'err/err_init',
      &                       err_max/err_init
@@ -205,8 +204,6 @@
 
           endif
 
-!--------conv check done
-
           DO bj = myByLo(myThid), myByHi(myThid)
             DO bi = myBxLo(myThid), myBxHi(myThid)
               DO j=1-OLy,sNy+OLy
@@ -227,20 +224,27 @@
               ENDDO
             ENDDO
           ENDDO
+
+
+
+
+
+!--------conv check done
+
           if (converged .OR. nl_iter.eq.MAXNLITER) then
             !Run once in tape mode if this is the last time 
             our_rev_mode%plain=.false.
             our_rev_mode%tape=.true.
             our_rev_mode%adjoint=.false.
             CALL OpenAD_streamice_vel_phi(MYTHID,MAXNLITER,MAXCGITER,CG
-     +TOL,CG_ITERS)
+     +TOL,CG_ITERS,err_max)
           end if 
         end if
       end if 
       if(isinloop.eq.2 ) then
 
         CALL OpenAD_streamice_vel_phi(MYTHID,MAXNLITER,MAXCGITER,CGTOL
-     +,CG_ITERS)
+     +,CG_ITERS,err_max)
 
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -306,7 +310,7 @@
         ENDDO
 
         CALL OpenAD_streamice_vel_phi(MYTHID,MAXNLITER,MAXCGITER,CGTOL
-     +,CG_ITERS)
+     +,CG_ITERS,err_max)
 
         DO BJ = MYBYLO(MYTHID), MYBYHI(MYTHID), 1
           DO BI = MYBXLO(MYTHID), MYBXHI(MYTHID), 1
@@ -449,7 +453,7 @@
 
 
           CALL OpenAD_streamice_vel_phi(MYTHID,MAXNLITER,MAXCGITER,CGTOL
-     +,CG_ITERS)
+     +,CG_ITERS,err_max)
 
           DO BJ = MYBYLO(MYTHID), MYBYHI(MYTHID), 1
             DO BI = MYBXLO(MYTHID), MYBXHI(MYTHID), 1
@@ -569,7 +573,8 @@
 
       if(isinloop.eq.0) then
 
-          CALL OpenAD_streamice_vel_phi(MYTHID,MAXNLITER,MAXCGITER,CGTOL,CG_ITERS)
+          CALL OpenAD_streamice_vel_phi(MYTHID,MAXNLITER,MAXCGITER,CGTOL
+     +,CG_ITERS,err_max)
 
           DO BJ = MYBYLO(MYTHID), MYBYHI(MYTHID), 1
             DO BI = MYBXLO(MYTHID), MYBXHI(MYTHID), 1

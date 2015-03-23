@@ -29,10 +29,12 @@
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
+          DO j=1-oly,sNy+oly
+           DO i=1-olx,sNx+olx
             Au_SI (i,j,bi,bj) = 0. _d 0
             Av_SI (i,j,bi,bj) = 0. _d 0
+            u_dummy (i,j,bi,bj) = u_streamice(i,j,bi,bj)%v
+            v_dummy (i,j,bi,bj) = v_streamice(i,j,bi,bj)%v
             ubd_SI (i,j,bi,bj)%v = 0. _d 0
             vbd_SI (i,j,bi,bj)%v = 0. _d 0
            ENDDO
@@ -47,8 +49,8 @@
         CALL openad_STREAMICE_CG_ACTION( myThid,
      O    Au_SI,
      O    Av_SI,
-     I    U_streamice%v,
-     I    V_streamice%v,
+     I    U_dummy,
+     I    V_dummy,
      I    0, sNx+1, 0, sNy+1 )
 
 
