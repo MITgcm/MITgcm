@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_sss.F,v 1.9 2014/10/20 03:20:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_sss.F,v 1.10 2015/03/23 21:04:59 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -80,6 +80,8 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) localobsfile
 
 #if (defined (ALLOW_ECCO) && defined (ALLOW_COST))
+#ifdef ALLOW_SEAICE_COST_SMR_AREA
+
 c     == local variables ==
 
       integer bi,bj
@@ -368,6 +370,8 @@ c--   End of second loop over records.
 
 c--   End of mult_local or localobsfile
       endif
+
+#endif /* ALLOW_SEAICE_COST_SMR_AREA */
 #endif /* ifdef ALLOW_COST */
 
       end

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_varia.F,v 1.8 2012/07/06 23:07:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_varia.F,v 1.9 2015/03/23 21:04:59 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -34,6 +34,8 @@ c     == routine arguments ==
       integer mythid
 
 #ifdef ALLOW_COST
+#if (defined(ALLOW_SEAICE_COST_SMR_AREA) || defined(ALLOW_COST_ICE))
+
 c     == local variables ==
 
       integer bi,bj
@@ -89,6 +91,7 @@ c
 
       _BARRIER
 
+#endif
 #endif
 
       return

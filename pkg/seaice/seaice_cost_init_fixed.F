@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_fixed.F,v 1.6 2012/04/19 23:00:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_fixed.F,v 1.7 2015/03/23 21:04:59 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -36,6 +36,8 @@ C     == routine arguments ==
       integer mythid
 
 #ifdef ALLOW_COST
+#ifdef ALLOW_COST_ICE
+
 C     == local variables ==
       integer tempDate1(4)
       integer tempDate2(4)
@@ -105,6 +107,7 @@ cph         call seaice_cost_init_barfiles( mythid )
 
       _BARRIER
 
+#endif /* ALLOW_COST_ICE */
 #endif /* ALLOW_COST */
 
       RETURN

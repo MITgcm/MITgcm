@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_accumulate_mean.F,v 1.7 2012/03/06 16:45:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_accumulate_mean.F,v 1.8 2015/03/23 21:04:59 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -30,6 +30,8 @@ C     myThid - Thread number for this instance of the routine.
       INTEGER myThid
 
 #ifdef ALLOW_COST
+#ifdef ALLOW_SEAICE_COST_EXPORT
+
 C     == Local variables
       INTEGER bi, bj
       INTEGER i, j
@@ -40,8 +42,6 @@ C     == Local variables
       jthi = myByHi(myThid)
       itlo = myBxLo(myThid)
       ithi = myBxHi(myThid)
-
-#ifdef ALLOW_SEAICE_COST_EXPORT
 
       IF ( myTime .GT. (EndTime - lastinterval) ) THEN
 
