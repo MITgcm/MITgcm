@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.34 2014/11/09 13:10:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.35 2015/03/23 21:07:37 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -131,9 +131,13 @@ cc        call oad_active_read_xy( fnamegen, xx_gen1, gencount0,
 cc     &                       doglobalread, ladinit, optimcycle,
 cc     &                       mythid, xx_gen_dummy )
 cc#else
+#ifdef ALLOW_AUTODIFF
         call active_read_xy( fnamegen, xx_gen1, gencount0,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
+#else
+      CALL READ_REC_XY_RL( fnamegen, xx_gen1, gencount0, 1, myThid )
+#endif
 cc#endif /* ALLOW_OPENAD */
 
 #ifdef ECCO_CTRL_DEPRECATED
@@ -164,9 +168,13 @@ cc        call oad_active_read_xy( fnamegen, xx_gen1 , gencount1,
 cc     &                       doglobalread, ladinit, optimcycle,
 cc     &                       mythid, xx_gen_dummy )
 cc#else
+#ifdef ALLOW_AUTODIFF
         call active_read_xy( fnamegen, xx_gen1 , gencount1,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
+#else
+        CALL READ_REC_XY_RL( fnamegen, xx_gen1, gencount1, 1, myThid )
+#endif
 cc#endif /* ALLOW_OPENAD */
 #ifdef ECCO_CTRL_DEPRECATED
 #ifdef ALLOW_CTRL_SMOOTH

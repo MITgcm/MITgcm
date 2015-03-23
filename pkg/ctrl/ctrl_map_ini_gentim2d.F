@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.5 2015/02/17 13:54:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.6 2015/03/23 21:07:37 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -53,7 +53,6 @@ C     == local variables ==
       character*(80) fnamegenIn
       character*(80) fnamegenOut
       character*(80) fnamebase
-      character*(80) fnamegeneric
       integer startrec
       integer endrec
       integer diffrec
@@ -131,9 +130,13 @@ C--   generic 2D control variables
 CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
 
+#ifdef ALLOW_AUTODIFF
          call active_read_xy( fnamegenIn, xx_gen, irec,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gentim2d_dummy(iarr) )
+#else
+      CALL READ_REC_XY_RL( fnamegenIn, xx_gen, iRec, 1, myThid )
+#endif
 
 #ifndef ALLOW_OPENAD
         do k2 = 1, maxCtrlProc
@@ -169,8 +172,13 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
          ENDIF
 #endif /* ALLOW_SMOOTH */
 
+
+#ifdef ALLOW_AUTODIFF
          call active_write_xy( fnamegenOut, xx_gen, irec, optimcycle,
      &       mythid, xx_gentim2d_dummy(iarr) )
+#else
+         CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
+#endif
 
 c-- end irec loop
         ENDDO
@@ -182,11 +190,19 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
         krec=replicated_nrec*(jrec-1)+irec
         IF (krec.LE.endrec) THEN
+#ifdef ALLOW_AUTODIFF
          call active_read_xy( fnamegenOut, xx_gen, irec,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gentim2d_dummy(iarr) )
+#else
+         CALL READ_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
+#endif
+#ifdef ALLOW_AUTODIFF
          call active_write_xy( fnamegenOut, xx_gen, krec, optimcycle,
      &       mythid, xx_gentim2d_dummy(iarr) )
+#else
+         CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
+#endif
         ENDIF
         ENDDO
         ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.17 2015/02/18 12:31:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.18 2015/03/23 21:07:37 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -609,6 +609,7 @@ c
          enddo
       enddo
 
+#ifdef ALLOW_AUTODIFF
 c     write masks and weights to files to be read by a master process
 c
 c#ifdef REAL4_IS_SLOW
@@ -636,6 +637,7 @@ c#else
      I                          1, .FALSE., 0, mythid, dummyRS )
 c#endif
 #endif
+#endif /* ALLOW_AUTODIFF */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xyz.F,v 1.26 2013/08/06 20:57:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xyz.F,v 1.27 2015/03/23 21:07:37 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -323,12 +323,20 @@ c     == end of interface ==
 c-- part 1: preliminary reads and definitions
 
 #ifdef CTRL_PACK_PRECISE
+#ifdef ALLOW_AUTODIFF
       call active_read_xyz(weighttype, wei3d, 1,
      &    .FALSE., .FALSE., 0 , mythid, dummy)
+#else
+      CALL READ_REC_XYZ_RL( weighttype, wei3d, 1, 1, myThid )
+#endif
 #endif
 
+#ifdef ALLOW_AUTODIFF
       call active_read_xyz(masktype, msk3d, 1,
      &    .FALSE., .FALSE., 0 , mythid, dummy)
+#else
+      CALL READ_REC_XYZ_RL( masktype, msk3d, 1, 1, myThid )
+#endif
 
       if ( doPackDiag ) then
          write(cfile2(1:80),'(80a)') ' '

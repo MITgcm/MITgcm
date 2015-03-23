@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xy.F,v 1.32 2013/08/06 20:57:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xy.F,v 1.33 2015/03/23 21:07:37 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -443,12 +443,20 @@ c     == end of interface ==
 c-- part 1: preliminary reads and definitions
 
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
+#ifdef ALLOW_AUTODIFF
       call active_read_xy(weighttype, wei2d, 1,
      &    .FALSE., .FALSE., 0 , mythid, dummy)
+#else
+      CALL READ_REC_XY_RL( weighttype, wei2d, 1, 1, myThid )
+#endif
 #endif
 
+#ifdef ALLOW_AUTODIFF
       call active_read_xyz(masktype, msk3d, 1,
      &    .FALSE., .FALSE., 0 , mythid, dummy)
+#else
+      CALL READ_REC_XYZ_RL( masktype, msk3d, 1, 1, myThid )
+#endif
 
       if ( doPackDiag ) then
          write(cfile2(1:80),'(80a)') ' '

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_mask_set_yz.F,v 1.10 2014/10/09 00:49:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_mask_set_yz.F,v 1.11 2015/03/23 21:07:37 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -121,6 +121,7 @@ c--               South mask for V
         enddo
       enddo
 
+#ifdef ALLOW_AUTODIFF
       il=ilnblnk( ymaskobcs )
       write(fname(1:80),'(80a)') ' '
       write(fname(1:80),'(a)') ymaskobcs
@@ -137,6 +138,7 @@ c--               South mask for V
         enddo
         call active_write_yz( fname, gg, iobcs, 0, mythid, dummy)
       enddo
+#endif
 
       _END_MASTER( mythid )
 

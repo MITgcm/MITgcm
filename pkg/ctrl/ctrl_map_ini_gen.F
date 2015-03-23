@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.23 2014/10/11 19:04:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.24 2015/03/23 21:07:37 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -104,8 +104,12 @@ c--   only do interior, and exchange outside
       il=ilnblnk( xxFileCur )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xxFileCur(1:il),'.',optimcycle
+#ifdef ALLOW_AUTODIFF
       call active_read_xyz( fnamegeneric, xxFld3d, 1,
      & doglobalread, ladinit, optimcycle, mythid, xxDummyCur )
+#else
+      CALL READ_REC_XYZ_RL( fnamegeneric, xxFld3d, 1, 1, myThid )
+#endif
 
       IF ( .NOT.ctrlSmoothCorrel3D ) THEN
 
@@ -299,8 +303,12 @@ c--   only do interior, and exchange outside
       il=ilnblnk( xxFileCur )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xxFileCur(1:il),'.',optimcycle
+#ifdef ALLOW_AUTODIFF
       call active_read_xy( fnamegeneric, xxFld2d, 1,
      & doglobalread, ladinit, optimcycle, mythid, xxDummyCur )
+#else
+      CALL READ_REC_XY_RL( fnamegeneric, xxFld2d, 1, 1, myThid )
+#endif
 
       IF ( .NOT.ctrlSmoothCorrel2D ) THEN
 

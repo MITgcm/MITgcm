@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_gen.F,v 1.7 2014/11/09 17:23:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_gen.F,v 1.8 2015/03/23 21:07:37 gforget Exp $
 C $Name:  $
 
 c ----------------------------------------------------------------
@@ -163,9 +163,13 @@ c--   >>> Loop 1 to compute mean forcing:
       IF ( .NOT.ctrlSmoothCorrel2D ) THEN
       do irec = 1,nrec
 
+#ifdef ALLOW_AUTODIFF
         call active_read_xy(
      &        fnamefld, tmpfld2d, irec, doglobalread,
      &        ladinit, optimcycle, myThid, xx_gen_dummy )
+#else
+        CALL READ_REC_XY_RL( fnamefld, tmpfld2d, iRec, 1, myThid )
+#endif
 
 c--     Loop over this thread tiles.
         do bj = jtlo,jthi
@@ -218,9 +222,13 @@ c--     Determine the weights to be used.
 c--   >>> Loop 2 over records.
       do irec = 1,nrec
 
+#ifdef ALLOW_AUTODIFF
         call active_read_xy(
      &        fnamefld, tmpfld2d, irec, doglobalread,
      &        ladinit, optimcycle, myThid, xx_gen_dummy )
+#else
+        CALL READ_REC_XY_RL( fnamefld, tmpfld2d, iRec, 1, myThid )
+#endif
 
 c--     Loop over this thread tiles.
         do bj = jtlo,jthi
@@ -278,9 +286,13 @@ c--   End of loop over records.
 c--   >>> Loop 2 over records.
       do irec = 1,nrec
 
+#ifdef ALLOW_AUTODIFF
         call active_read_xy(
      &        fnamefld, tmpfld2d, irec, doglobalread,
      &        ladinit, optimcycle, myThid, xx_gen_dummy )
+#else
+        CALL READ_REC_XY_RL( fnamefld, tmpfld2d, iRec, 1, myThid )
+#endif
 
         _EXCH_XY_RL(tmpfld2d, myThid)
 
@@ -445,9 +457,13 @@ c--   >>> Loop 1 to compute mean forcing:
         enddo
       enddo
 
+#ifdef ALLOW_AUTODIFF
       call active_read_xyz( fnamefld, tmpfld3d, irec, doglobalread,
      &                       ladinit, optimcycle, myThid
      &        , xx_gen_dummy )
+#else
+        CALL READ_REC_XYZ_RL( fnamefld, tmpfld3d, iRec, 1, myThid )
+#endif
 
 c--     Loop over this thread tiles.
         do bj = jtlo,jthi
