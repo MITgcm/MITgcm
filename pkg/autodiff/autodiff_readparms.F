@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.11 2014/06/28 22:41:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_readparms.F,v 1.12 2015/03/23 21:06:13 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -41,6 +41,16 @@ C     iUnit      :: Work variable for IO unit number
      &       useSEAICEinAdMode, useSmoothCorrel2DinAdMode,
      &       inAdExact, SEAICEapproxLevInAd, viscFacInAd,
      &       SEAICEuseFREEDRIFTswitchInAd, SEAICEuseDYNAMICSswitchInAd
+
+      IF ( .NOT.useAUTODIFF ) THEN
+C-    pkg AUTODIFF is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+C     print a (weak) warning if data.autodiff is found
+         CALL PACKAGES_UNUSED_MSG( 'useAUTODIFF', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
 
       _BEGIN_MASTER(myThid)
       errCount = 0
