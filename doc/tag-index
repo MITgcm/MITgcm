@@ -1,13 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2141 2015/03/24 14:29:37 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2142 2015/03/24 18:29:42 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 
-o pkg/ecco: use eccoiter in place of optimcycle. if autodiff is not 
-    compiled then use READ_REC_XY_RL/READ_REC_XYZ_RL instead of 
-    active read/write
+o pkg/ecco: fix missing cosphi initialization; use eccoiter in 
+    place of optimcycle; if autodiff is not compiled then use 
+    READ_REC_XY_RL/READ_REC_XYZ_RL instead of active read/write
 o pkg/ctrl: if autodiff is not compiled then use 
     READ_REC_XY_RL/READ_REC_XYZ_RL instead of active read/write
 o pkg/autodiff: make autodiff_readparms.F and autodiff_whtapeio_sync.F 
