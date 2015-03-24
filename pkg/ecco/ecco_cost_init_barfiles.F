@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.35 2015/03/23 21:10:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.36 2015/03/24 14:27:55 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -70,6 +70,11 @@ c     == local variables ==
       character*(128) adfname_gencostbar(NGENCOST)
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
+#ifndef ALLOW_CTRL
+      _RL tmpfld2d (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL tmpfld3d (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
+
 #ifdef ECCO_CTRL_DEPRECATED
       character*(128) fnamepsbar
       character*(128) fnametbar
@@ -127,9 +132,6 @@ c     == end of interface ==
       imin = 1
       imax = snx
 
-#ifdef ECCO_CTRL_DEPRECATED
-
-#ifdef ALLOW_CTRL
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do j = jmin,jmax
@@ -150,8 +152,9 @@ c     == end of interface ==
           enddo
         enddo
       enddo
-#endif
 
+#ifdef ECCO_CTRL_DEPRECATED
+#
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
       IF (using_cost_altim) THEN
 c--   Save psbar on file.
