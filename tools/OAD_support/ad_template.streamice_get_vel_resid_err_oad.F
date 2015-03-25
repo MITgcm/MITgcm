@@ -12,6 +12,8 @@
       !logical isTape 
       !type(modeType) :: our_orig_mode
 
+#if (defined (ALLOW_STREAMICE_OAD_FP))
+
       if (our_rev_mode%plain .or. our_rev_mode%tape) then
 !      if (our_rev_mode%plain) then
  
@@ -89,5 +91,5 @@
       end if
 
 
-
+#endif
       end subroutine template

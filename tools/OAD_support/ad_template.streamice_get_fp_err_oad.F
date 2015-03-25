@@ -11,7 +11,7 @@ C
 C
 C     **** Parameters and Result ****
 C
-     
+#if (defined (ALLOW_STREAMICE_OAD_FP)) 
 
 
       if (our_rev_mode%plain) then
@@ -97,4 +97,5 @@ C
        CALL GLOBAL_MAX_R8 (err_max, myThid)
 
       end if
+#endif
       end subroutine template

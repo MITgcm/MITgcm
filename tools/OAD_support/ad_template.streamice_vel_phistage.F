@@ -160,8 +160,8 @@
 
           WRITE(MSGBUF,'(A,I5,A,I4,A)') 'streamice linear solve number',
      +NL_ITER,' ',CG_ITERS,' iterations '
-          OAD_CTMP0 = 1
-          CALL print_message(MSGBUF,STANDARDMESSAGEUNIT,'R',OAD_CTMP0)
+!          OAD_CTMP0 = 1
+          CALL print_message(MSGBUF,STANDARDMESSAGEUNIT,'R',1)
 
 !---- conv check
           
@@ -484,8 +484,8 @@
 
           WRITE(MSGBUF,'(A,I5)') 'streamice adjoint solve number'
      +,ADJ_ITER
-          OAD_CTMP0 = 1
-          CALL print_message(MSGBUF,STANDARDMESSAGEUNIT,'R',OAD_CTMP0)
+!          OAD_CTMP0 = 1
+          CALL print_message(MSGBUF,STANDARDMESSAGEUNIT,'R',1)
 
 !---- end write out number of cg iters
 
