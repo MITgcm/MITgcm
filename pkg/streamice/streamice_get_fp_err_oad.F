@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_fp_err_oad.F,v 1.1 2015/02/21 19:09:53 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_fp_err_oad.F,v 1.2 2015/03/25 17:36:42 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -28,7 +28,7 @@ C     !INPUT/OUTPUT ARGUMENTS
       INTEGER myThid
 
 #ifdef ALLOW_STREAMICE
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#if (defined (ALLOW_STREAMICE_OAD_FP))
       INTEGER conv_flag, i, j, bi, bj
 
       INTEGER ikey_nl
