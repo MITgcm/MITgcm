@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.29 2015/02/17 14:33:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.30 2015/03/26 14:52:42 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_PROFILES
+# include "PROFILES_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -42,6 +45,11 @@ c     == global variables ==
 #endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE_COST.h"
+#endif
+#ifdef ALLOW_PROFILES
+#ifdef ALLOW_PROFILES_ANOM_COST
+# include "profiles.h"
+#endif
 #endif
 
 c     == routine arguments ==
@@ -95,8 +103,13 @@ c     == local variables ==
       _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
       _RL localdif   (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
       _RL difmask    (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
+      _RL localbarmean   (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
+      _RL localbarnum   (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
+      _RL localobsmean   (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
+      _RL localobsnum   (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
 
       character*(128) fname1, fname2, fname3
+      character*200 msgbuf
 
       logical exst
 
@@ -125,6 +138,11 @@ c--   Initialise local variables.
       call ecco_zero(localdif,Nr,zeroRL,myThid)
       call ecco_zero(difmask,Nr,zeroRL,myThid)
 
+      call ecco_zero(localbarmean,Nr,zeroRL,myThid)
+      call ecco_zero(localbarnum,Nr,zeroRL,myThid)
+      call ecco_zero(localobsmean,Nr,zeroRL,myThid)
+      call ecco_zero(localobsnum,Nr,zeroRL,myThid)
+
 c--   Assign mask
       if ( ylocmask .EQ. 'C' .OR. ylocmask .EQ. 'c' ) then
         call ecco_cprsrl(maskC,nr,localmask,nr,myThid)
@@ -139,11 +157,112 @@ c--   Assign mask
 c-- set nrecloop to nrecloc
       nrecloop=nrecloc
 
+C Extra time loop to compute time-mean fields and costs
+      if ( (.NOT. ( localobsfile.EQ.' ' ) ) 
+     &   .AND. ( preproc(1) .EQ. 'mean' .OR.
+     &           preproc(1) .EQ. 'anom' .OR.
+     &     (preproc(1) .EQ. 'clim' .AND. preproc(2) .EQ. 'anom'))) then
+c--   loop over obsfile records
+      do irec = 1, nrecloop
+
+c--     determine records and file names
+        exst=.FALSE.
+        call cost_gencal(localbarfile, localobsfile,
+     &     irec, localstartdate, localperiod, fname1,
+     &     fname2, localrec, obsrec, exst, mythid )
+
+c--     load model average and observed average
+        call ecco_zero(localbar,nnzbar,zeroRL,myThid)
+        call cost_genread( fname1, localbar, localtmp, irec, nnzbar,
+     &       nrecloc, preproc(2), preproc_c(2), 
+     &       preproc_i(2), preproc_r(2), 
+     &       dummy, mythid )
+
+        call ecco_zero(localobs,Nr,spzeroloc,myThid)
+        if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) )
+     &  call mdsreadfield( fname2, cost_iprec, cost_yftype, nnzobs,
+     &         localobs, localrec, mythid )
+
+        call ecco_zero(localdif,nnzbar,spzeroloc,myThid)
+C mask the model field is observation if out-of-bound or missing.
+        call ecco_obsmsk( localbar, nnzbar, localobs, nnzobs,
+     &     localmask, spminloc, spmaxloc, spzeroloc, 
+     &     localdif, difmask, myThid )
+C Accumulate the model fields to compute time-mean at end of the loop.
+        call ecco_addmask(localdif,difmask, nnzbar,localbarmean, 
+     &    localbarnum, nnzbar,myThid)
+
+        call ecco_zero(localdif,nnzobs,spzeroloc,myThid)
+C Accumulate the observation fields to compute time-mean at end of the loop.
+        call ecco_obsmsk( localobs, nnzobs, localobs, nnzobs,
+     &     localmask, spminloc, spmaxloc, spzeroloc, 
+     &     localdif, difmask, myThid )
+        call ecco_addmask(localdif,difmask, nnzobs,localobsmean, 
+     &    localobsnum, nnzobs,myThid)
+      enddo
+C Compute the time-mean fields 
+      call ecco_divfield(localbarmean,nnzbar,localbarnum,myThid)
+      call ecco_divfield(localobsmean,nnzobs,localobsnum,myThid)
+
+C Here only computes time-mean costs.
+      if ( preproc(1) .EQ. 'mean') then
+c--     Compute masked model-data difference
+
+C Saving time-mean TS to be used as the reference in
+C computing the profile TS anomalies. May need to add 
+C TAF tags to reduce re-computation.
+#ifdef ALLOW_PROFILES
+#ifdef ALLOW_PROFILES_ANOM_COST
+      if( usePROFILES ) then
+      if ( outname .EQ. 'thetamean') then
+        call ecco_cp(localbarmean,nnzbar,prof_theta_mean,nnzbar,myThid)
+        call ecco_cp(localobsmean,nnzobs,prof_tdat_mean,nnzobs,myThid)
+      endif
+      if ( outname .EQ. 'saltmean') then
+        call ecco_cp(localbarmean,nnzbar,prof_salt_mean,nnzbar,myThid)
+        call ecco_cp(localobsmean,nnzobs,prof_sdat_mean,nnzobs,myThid)
+      endif
+      endif
+#endif
+#endif
+
+        call ecco_diffmsk( localbarmean, nnzbar, localobsmean, nnzobs,
+     &     localmask, spminloc, spmaxloc, spzeroloc, 
+     &     localdif, difmask, myThid )
+
+#ifdef ALLOW_SMOOTH
+      if ( (useSMOOTH).AND.(posproc(1).EQ.'smooth').AND.
+     &     (nnzbar.EQ.1).AND.(nnzobs.EQ.1) )
+     &  call smooth_hetero2d(localdif,maskc,
+     &     posproc_c(1),posproc_i(1),mythid)
+#endif
+
+c--     Compute normalized model-obs cost function
+        call ecco_addcost(
+     I                   localdif, localweight, difmask, nnzobs,
+     I                   objf_local, num_local,
+     I                   myThid
+     &                   )
+
+c--     output model-data difference to disk
+        if ( outlev.GT.0 ) then
+          il=ilnblnk(outname)
+          write(fname3(1:128),'(2a)') 'misfit_', outname(1:il)
+          if ( nnzobs.EQ.1 ) CALL
+     &    WRITE_REC_XY_RL( fname3, localdif,1, eccoiter, mythid )
+          if ( nnzobs.EQ.nr ) CALL
+     &    WRITE_REC_XYZ_RL( fname3, localdif,1, eccoiter, mythid )
+        endif
+       endif
+      endif
+c 
+C The main time loop to compute costs
 c-- reset nrecloop, if needed, according to preproc
       if ( preproc(1) .EQ. 'clim') nrecloop=MIN(nrecloop,preproc_i(1))
 
       if ( .NOT. ( localobsfile.EQ.' ' ) ) then
 
+      if ( preproc(1) .NE. 'mean') then
 c--   loop over obsfile records
       do irec = 1, nrecloop
 
@@ -163,11 +282,18 @@ c--     load model average and observed average
         if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) )
      &  call mdsreadfield( fname2, cost_iprec, cost_yftype, nnzobs,
      &         localobs, localrec, mythid )
-
-c--     Compute masked model-data difference
+      if ( preproc(1) .EQ. 'anom' .OR. preproc(2) .EQ. 'anom') then 
+c--     Compute masked time-anomaly model-data difference
+        call ecco_diffanommsk( localbar, localbarmean, nnzbar, 
+     &     localobs, localobsmean, nnzobs,
+     &     localmask, spminloc, spmaxloc, spzeroloc, 
+     &     localdif, difmask, myThid )
+      else 
+c--     Compute masked (total) model-data difference
         call ecco_diffmsk( localbar, nnzbar, localobs, nnzobs,
      &     localmask, spminloc, spmaxloc, spzeroloc, 
      &     localdif, difmask, myThid )
+      endif
 
 #ifdef ALLOW_SMOOTH
       if ( (useSMOOTH).AND.(posproc(1).EQ.'smooth').AND.
@@ -196,6 +322,7 @@ c--     output model-data difference to disk
       enddo
 c--   End of loop over obsfile records.
 
+      endif /* if preproc(1) .NE. 'mean' */
       endif
 
 #endif /* ALLOW_ECCO */

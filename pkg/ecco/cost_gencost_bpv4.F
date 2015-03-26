@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_bpv4.F,v 1.4 2015/03/23 21:10:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_bpv4.F,v 1.5 2015/03/26 14:52:42 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -157,7 +157,6 @@ c--     Compute the mean over all bpdat records.
      &                       iRec, 1, myThid )
 #endif
 
-
         call cost_bp_read( gencost_datafile(kgen), 
      &       gencost_startdate(1,kgen),
      &       locbpdat, locbpmask, irec, mythid )
@@ -202,7 +201,6 @@ c--   ==========
 
 c--   Loop over records for the second time.
       do irec = 1, nmonsrec
-
 #ifdef ALLOW_AUTODIFF
         call active_read_xy( fname, locbpbar, irec, doglobalread,
      &                       ladinit, eccoiter, mythid,
@@ -285,13 +283,13 @@ c--    Smooth field of anomalies
 
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH )
-     &  call smooth_basic2D(bpdifanom,maskc,750000. _d 0,5000,mythid)
+     &  call smooth_basic2D(bpdifanom,maskc,500000. _d 0,5000,mythid)
 #endif
 
       if (gencost_outputlevel(kgen).GT.0) then
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH ) 
-     &  call smooth_basic2D(bpdatanom,maskc,750000. _d 0,5000,mythid)
+     &  call smooth_basic2D(bpdatanom,maskc,500000. _d 0,5000,mythid)
 #endif
 
       write(fname4test(1:80),'(1a)') 'bpdifanom_smooth'

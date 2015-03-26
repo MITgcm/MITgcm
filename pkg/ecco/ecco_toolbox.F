@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.7 2015/03/23 21:10:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.8 2015/03/26 14:52:42 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -9,10 +9,15 @@ C--   o ecco_zero
 C--   o ecco_cp
 C--   o ecco_cprsrl
 C--   o ecco_diffmsk
+C--   o ecco_diffanommsk
+C--   o ecco_obsmsk
 C--   o ecco_addcost
 C--   o ecco_add
+C--   o ecco_addmask
 C--   o ecco_div
+C--   o ecco_divfield
 C--   o ecco_readbar
+C--   o ecco_readwei
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -160,6 +165,195 @@ c--     Determine the model-data difference mask
                 endif
                localdif(i,j,k,bi,bj) = difmask(i,j,k,bi,bj)*
      &             (localbar(i,j,k,bi,bj)-localobs(i,j,k,bi,bj))
+              enddo
+             enddo
+            enddo
+          enddo
+        enddo
+
+#endif /* ALLOW_ECCO */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ecco_diffanommsk
+C     !INTERFACE:
+      subroutine ecco_diffanommsk(
+     I                   localbar, localbarmean, nnzbar, 
+     I                   localobs, localobsmean, nnzobs, 
+     I                   localmask,
+     I                   spminloc, spmaxloc, spzeroloc,
+     O                   localdif, difmask,
+     I                   myThid
+     &                   )
+
+C     !DESCRIPTION: \bv
+C     compute masked difference between time-anomaly model and observations
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
+
+c     == routine arguments ==
+
+      INTEGER myThid
+      INTEGER nnzobs, nnzbar
+
+      _RL localbar   (1-olx:snx+olx,1-oly:sny+oly,nnzbar,nsx,nsy)
+      _RL localbarmean (1-olx:snx+olx,1-oly:sny+oly,nnzbar,nsx,nsy)
+      _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
+      _RL localobsmean (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
+      _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL localdif   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
+      _RL difmask    (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
+
+      _RL spminloc, spmaxloc, spzeroloc
+
+#ifdef ALLOW_ECCO
+
+c     == local variables ==
+
+      integer bi,bj
+      integer i,j,k
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+
+CEOP
+
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
+
+
+c--     Determine the model-data difference mask
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nnzobs
+             do j = jmin,jmax
+              do i = imin,imax
+#ifdef ECCO_CTRL_DEPRECATED
+               difmask(i,j,k,bi,bj) = cosphi(i,j,bi,bj)*
+     &                           localmask(i,j,k,bi,bj)
+#else
+               difmask(i,j,k,bi,bj) = localmask(i,j,k,bi,bj)
+#endif
+                if ( localobs(i,j,k,bi,bj) .lt. spminloc .or.
+     &               localobs(i,j,k,bi,bj) .gt. spmaxloc .or.
+     &               localobs(i,j,k,bi,bj) .eq. spzeroloc ) then
+                   difmask(i,j,k,bi,bj) = 0. _d 0
+                endif
+               localdif(i,j,k,bi,bj) = difmask(i,j,k,bi,bj)*
+     &           ( (localbar(i,j,k,bi,bj)-localbarmean(i,j,k,bi,bj))
+     &            -(localobs(i,j,k,bi,bj)-localobsmean(i,j,k,bi,bj)) )
+              enddo
+             enddo
+            enddo
+          enddo
+        enddo
+
+#endif /* ALLOW_ECCO */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ecco_obsmsk
+C     !INTERFACE:
+      subroutine ecco_obsmsk(
+     I                   localbar, nnzbar, localobs, nnzobs, localmask,
+     I                   spminloc, spmaxloc, spzeroloc,
+     O                   localout, obsmask,
+     I                   myThid
+     &                   )
+
+C     !DESCRIPTION: \bv
+C     mask (model) fieds if observation is out-of-bound or missing. 
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
+
+c     == routine arguments ==
+
+      INTEGER myThid
+      INTEGER nnzobs, nnzbar
+
+      _RL localbar   (1-olx:snx+olx,1-oly:sny+oly,nnzbar,nsx,nsy)
+      _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
+      _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL localout   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
+      _RL obsmask    (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
+
+      _RL spminloc, spmaxloc, spzeroloc
+
+#ifdef ALLOW_ECCO
+
+c     == local variables ==
+
+      integer bi,bj
+      integer i,j,k
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+
+CEOP
+
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
+
+
+c--     Determine the model-data difference mask
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nnzobs
+             do j = jmin,jmax
+              do i = imin,imax
+#ifdef ECCO_CTRL_DEPRECATED
+               obsmask(i,j,k,bi,bj) = cosphi(i,j,bi,bj)*
+     &                           localmask(i,j,k,bi,bj)
+#else
+               obsmask(i,j,k,bi,bj) = localmask(i,j,k,bi,bj)
+#endif
+                if ( localobs(i,j,k,bi,bj) .lt. spminloc .or.
+     &               localobs(i,j,k,bi,bj) .gt. spmaxloc .or.
+     &               localobs(i,j,k,bi,bj) .eq. spzeroloc ) then
+                   obsmask(i,j,k,bi,bj) = 0. _d 0
+                endif
+               localout(i,j,k,bi,bj) = obsmask(i,j,k,bi,bj)*
+     &             localbar(i,j,k,bi,bj)
               enddo
              enddo
             enddo
@@ -483,6 +677,87 @@ c--     Determine the model-data difference mask
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
+C     !ROUTINE: ecco_addmask
+C     !INTERFACE:
+      subroutine ecco_addmask(
+     I                   fldIn, fldInmask, nzIn, fldOut, fldOutnum, 
+     I                   nzOut, myThid
+     &                   )
+
+C     !DESCRIPTION: \bv
+C     add a field to another array only grids where the mask is non-zero.
+C     Also increase the counter by one one those girds.   
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
+
+c     == routine arguments ==
+
+      INTEGER myThid
+      INTEGER nzOut, nzIn
+
+      _RL fldIn   (1-olx:snx+olx,1-oly:sny+oly,nzIn,nsx,nsy)
+      _RL fldInmask   (1-olx:snx+olx,1-oly:sny+oly,nzIn,nsx,nsy)
+      _RL fldOut   (1-olx:snx+olx,1-oly:sny+oly,nzOut,nsx,nsy)
+      _RL fldOutnum   (1-olx:snx+olx,1-oly:sny+oly,nzOut,nsx,nsy)
+
+#ifdef ALLOW_ECCO
+
+c     == local variables ==
+
+      integer bi,bj
+      integer i,j,k
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+
+CEOP
+
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
+
+
+c--     Determine the model-data difference mask
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nzOut
+             do j = jmin,jmax
+              do i = imin,imax
+               if(fldInmask(i,j,k,bi,bj) .NE. 0. _d 0) then
+                fldOut(i,j,k,bi,bj) = fldOut(i,j,k,bi,bj)
+     &                              + fldIn(i,j,k,bi,bj)
+                fldOutnum(i,j,k,bi,bj) = fldOutnum(i,j,k,bi,bj)
+     &           + 1. _d 0
+               endif
+              enddo
+             enddo
+            enddo
+          enddo
+        enddo
+
+#endif /* ALLOW_ECCO */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
 C     !ROUTINE: ecco_div
 C     !INTERFACE:
       subroutine ecco_div( fld, nnzloc, numerloc, myThid )
@@ -532,6 +807,73 @@ CEOP
              do j = jmin,jmax
               do i = imin,imax
                 fld(i,j,k,bi,bj) = fld(i,j,k,bi,bj)/numerloc
+              enddo
+             enddo
+            enddo
+          enddo
+        enddo
+
+#endif /* ALLOW_ECCO */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ecco_divfield
+C     !INTERFACE:
+      subroutine ecco_divfield( fld, nnzloc, flddenom, myThid )
+C     !DESCRIPTION: \bv
+C     divide a field by another field
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+
+c     == routine arguments ==
+
+      INTEGER myThid
+      INTEGER nnzloc
+      _RL fld   (1-olx:snx+olx,1-oly:sny+oly,nnzloc,nsx,nsy)
+      _RL flddenom (1-olx:snx+olx,1-oly:sny+oly,nnzloc,nsx,nsy)
+
+#ifdef ALLOW_ECCO
+
+c     == local variables ==
+
+      integer bi,bj
+      integer i,j,k
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+
+CEOP
+
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
+      jmin = 1-oly
+      jmax = sny+oly
+      imin = 1-olx
+      imax = snx+olx
+
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nnzloc
+             do j = jmin,jmax
+              do i = imin,imax
+                if(flddenom(i,j,k,bi,bj) .NE. 0. _d 0) then
+                 fld(i,j,k,bi,bj) = fld(i,j,k,bi,bj)/
+     &                   flddenom(i,j,k,bi,bj)
+                else 
+                 fld(i,j,k,bi,bj) = 0. _d 0
+                endif
               enddo
              enddo
             enddo
