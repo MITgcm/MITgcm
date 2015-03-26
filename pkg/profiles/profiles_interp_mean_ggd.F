@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/Attic/profiles_interp_mean_gg.F,v 1.3 2015/03/26 14:53:58 gforget Exp $
-C $Name:  $
-
 #include "PROFILES_OPTIONS.h"
 
 C     o==========================================================o
@@ -10,7 +7,7 @@ C     |   for netcdf profiles data                               |
 C     | started: Gael Forget 15-March-2006                       |
 C     o==========================================================o
 
-      SUBROUTINE profiles_interp_mean_gg(
+      SUBROUTINE profiles_interp_mean_ggd(
      O traj_cur_out,
      I i_cur,
      I j_cur,
@@ -70,21 +67,21 @@ c--   == end of interface ==
         pondsSUM=0
        do q=1,NUM_INTERP_POINTS
 
-       if (type_cur.EQ.6) then
-               tab_coeffs1(q)=prof_etan_mean(i_cur(q),j_cur(q),bi,bj)
-               tab_coeffs3(q)=maskC(i_cur(q),j_cur(q),1,bi,bj)
-#ifdef ALLOW_PROFILES_ANOM_COST
-       elseif (type_cur.EQ.1) then
-               tab_coeffs1(q)=prof_theta_mean(i_cur(q),j_cur(q),k,bi,bj)
-               tab_coeffs3(q)=maskC(i_cur(q),j_cur(q),k,bi,bj)
+C      if (type_cur.EQ.6) then
+C              tab_coeffs1(q)=prof_etan_mean(i_cur(q),j_cur(q),bi,bj) 
+C              tab_coeffs3(q)=maskC(i_cur(q),j_cur(q),1,bi,bj) 
+Cow only works for TS
+       if (type_cur.EQ.1) then
+               tab_coeffs1(q)=prof_tdat_mean(i_cur(q),j_cur(q),k,bi,bj) 
+               tab_coeffs3(q)=maskC(i_cur(q),j_cur(q),k,bi,bj) 
        elseif (type_cur.EQ.2) then
-               tab_coeffs1(q)=prof_salt_mean(i_cur(q),j_cur(q),k,bi,bj)
-               tab_coeffs3(q)=maskC(i_cur(q),j_cur(q),k,bi,bj)
-#endif
+               tab_coeffs1(q)=prof_sdat_mean(i_cur(q),j_cur(q),k,bi,bj) 
+               tab_coeffs3(q)=maskC(i_cur(q),j_cur(q),k,bi,bj) 
        else
                tab_coeffs1(q)=0.
                tab_coeffs3(q)=0.
        endif
+       if(tab_coeffs1(q).EQ.0. _d 0) tab_coeffs3(q) = 0. _d 0
 
         ponderations(q)=tab_coeffs3(q)*weights_cur(q)
         pondsSUM=pondsSUM+ponderations(q)
@@ -97,6 +94,10 @@ c--   == end of interface ==
        traj_cur(k)=traj_cur(k)+tab_coeffs1(q)*ponderations(q)/pondsSUM
          enddo
         else
+         traj_cur(k)=0
+         mask_cur(k)=0
+        endif
+        if(k.GE.2.AND.mask_cur(k-1).EQ.0)then
          traj_cur(k)=0
          mask_cur(k)=0
         endif
