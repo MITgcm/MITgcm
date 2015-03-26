@@ -1,3 +1,4 @@
+#include "STREAMICE_OPTIONS.h"
 
       SUBROUTINE template()
       use OAD_cp
