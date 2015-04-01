@@ -1,34 +1,39 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2142 2015/03/24 18:29:42 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2143 2015/04/01 14:18:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-
-o pkg/ecco: fix missing cosphi initialization; use eccoiter in 
-    place of optimcycle; if autodiff is not compiled then use 
-    READ_REC_XY_RL/READ_REC_XYZ_RL instead of active read/write
-o pkg/ctrl: if autodiff is not compiled then use 
-    READ_REC_XY_RL/READ_REC_XYZ_RL instead of active read/write
-o pkg/autodiff: make autodiff_readparms.F and autodiff_whtapeio_sync.F 
+checkpoint65k (2015/04/01)
+o pkg/ecco:
+    fix missing cosphi initialization; use eccoiter in place of optimcycle;
+    if autodiff is not compiled then use READ_REC_XY_RL/READ_REC_XYZ_RL
+    instead of active read/write
+o pkg/ctrl:
+    if autodiff is not compiled then use READ_REC_XY_RL/READ_REC_XYZ_RL
+    instead of active read/write.
+o pkg/autodiff: make autodiff_readparms.F and autodiff_whtapeio_sync.F
     return if .NOT.useAUTODIFF
 o pkg/seaice: add CPP brackets (cost function related).
-o model/src: add useAUTODIFF run time switch.
-o pkg/exf/exf_interp.F: add code to allow input grids with latitude
-    starting in the north (i.e. when j=1 corresponds to northern edge of
-    field); modify global_with_exf to test this feature
+o model/src:
+    add useAUTODIFF run time switch.
+o pkg/exf/exf_interp.F:
+    add code to allow input grids with latitude starting in the north (i.e. when
+    j=1 corresponds to northern edge of field); modify global_with_exf to test
+    this feature.
 o verification/testreport:
   - replace "grep -A3" with POSIX conformal sed command, because there are
     implementations of grep that cannot do contextual searches
   - replace "cat -n" by "nl" (two occurrences), because not all implementations
     of "cat" have the option "-n"
-o model/src: add new file gsw_teos10.F that contains
-    3 functions, more or less a copy of the gsw_toolbox.f90 of the TEOS-10
-    fortran interface, that are used to convert from conservative to
-    potential temperature. For now they are not called anywhere.
+o model/src:
+    add new file gsw_teos10.F that contains 3 functions, more or less a copy
+    of the gsw_toolbox.f90 of the TEOS-10 fortran interface, that are used to
+    convert from conservative to potential temperature. For now they are not
+    called anywhere.
 o pkg/ggl90: make "useIDEMIX" useful
   - re-organize code in s/r ggl90_calc a little to move computations that
-    are different for idemix into separate loops (changes verification 
+    are different for idemix into separate loops (changes verification
     experiment idemix at truncation level, 12 digits remain -> updated)
   - requires 2 new 2D fields KappaM, verticalShear
   - make hFacI and recip_hFacI local 3D variables that are passed to
