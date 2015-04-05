@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.35 2015/03/23 21:07:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.36 2015/04/05 07:08:16 dgoldberg Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -135,6 +135,11 @@ cc#else
         call active_read_xy( fnamegen, xx_gen1, gencount0,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
+        if (.false.) then
+        call active_read_xy( fnamegen, xx_gen0, gencount0,
+     &                       doglobalread, ladinit, optimcycle,
+     &                       mythid, xx_gen_dummy )
+        endif
 #else
       CALL READ_REC_XY_RL( fnamegen, xx_gen1, gencount0, 1, myThid )
 #endif
