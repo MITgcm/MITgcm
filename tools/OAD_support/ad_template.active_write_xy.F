@@ -1,4 +1,4 @@
-! $Header: /u/gcmpack/MITgcm/tools/OAD_support/ad_template.active_write_xy.F,v 1.2 2015/02/14 23:56:59 heimbach Exp $
+! $Header: /u/gcmpack/MITgcm/tools/OAD_support/ad_template.active_write_xy.F,v 1.3 2015/04/05 07:06:45 dgoldberg Exp $
 ! $Name:  $
 
 #include "OPENAD_OPTIONS.h"
@@ -62,6 +62,8 @@ C     !FUNCTIONS
       if (our_rev_mode%tape) then
 ! taping
          our_orig_mode=our_rev_mode
+! original function
+         active_var_p = active_var%v
          our_rev_mode%arg_store=.FALSE.
          our_rev_mode%arg_restore=.FALSE.
          our_rev_mode%plain=.TRUE.
@@ -74,10 +76,12 @@ C     !FUNCTIONS
          oad_it(oad_it_ptr) = iRec
          oad_it_ptr = oad_it_ptr+1 
          call ACTIVE_WRITE_3D_RL(
-     &        active_var_file, active_var, globalFile,
+     &        active_var_file, active_var_p, globalFile,
      &        useCurrentDir, iRec, myNr,
      &        FORWARD_SIMULATION, myOptimIter, myThid )
          our_rev_mode=our_orig_mode
+! copy back
+         active_var%v = active_var_p
       end if
 
       if (our_rev_mode%adjoint) then
