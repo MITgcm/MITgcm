@@ -1,0 +1,39 @@
+#!/bin/bash
+#
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_archer,v 1.1 2015/04/06 20:15:59 dfer Exp $
+# $Name:  $
+
+# To be used with the suite of cray compilers (PrgEnv-cray).
+# To get netcdf, add:
+# module load cray-hdf5-parallel/1.8.13
+# module load cray-netcdf-hdf5parallel/4.3.2
+
+CC='cc'
+FC='ftn'
+F90C='ftn'
+
+
+#DEFINES='-DWORDLENGTH=4 -DTARGET_CRAYXT -DNML_EXTENDED_F77'
+DEFINES='-DWORDLENGTH=4 -D_BYTESWAPIO -DHAVE_LAPACK'
+CPP='cpp -traditional -P'
+EXTENDED_SRC_FLAG='-Mextend'
+GET_FC_VERSION="-V"
+CHECK_FOR_LAPACK=t
+
+INCLUDES='-I/opt/cray/netcdf-hdf5parallel/4.3.2/cray/83/include -I/opt/cray/mpt/7.0.3/gni/mpich2-cray/83/include'
+LIBS='-L/opt/cray/netcdf-hdf5parallel/4.3.2/cray/83/lib -L/opt/cray/mpt/7.0.3/gni/mpich2-cray/83/lib'
+
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
+
+if test "x$IEEE" = x ; then   #- with optimisation:
+#   FOPTIM='-O3 -hfp0 -hflex_mp=intolerant'
+    FOPTIM='-O3 -hfp2'
+else
+    FOPTIM='-O0'
+fi
+
+#- For big executable, this could help:
+#FFLAGS='-h pic -dynamic'
+#CFLAGS='-h pic -dynamic'
+
