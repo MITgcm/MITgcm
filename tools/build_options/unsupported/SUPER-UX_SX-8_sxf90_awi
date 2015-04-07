@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/SUPER-UX_SX-8_sxf90_awi,v 1.8 2015/03/02 07:57:13 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/SUPER-UX_SX-8_sxf90_awi,v 1.1 2015/04/07 15:08:23 mlosch Exp $
 # $Name:  $
 
 # for cross compiling on sx8.awi.de
