@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.202 2015/03/03 15:55:51 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.203 2015/04/07 15:30:41 mlosch Exp $
 #  $Name:  $
 #
 
@@ -42,7 +42,8 @@ usage()
     echo "  (-bash|-b) STRING        preferred location of a \"bash\" or \"sh\" shell"
     echo "                             (DEF=\"\" for \"bash\")"
     echo "  (-ef) STRING             used as genmake2 \"-extra_flag\" argument"
-    echo "  (-ncad)                  used genmake2 option \"-nocat4ad\" (-ncad)"
+    echo "  (-ncad)                  use genmake2 option \"-nocat4ad\" (-ncad)"
+    echo "  (-small_f)               make target small_f before making target all"
     echo "  (-makedepend|-md) STRING command to use for \"makedepend\""
     echo "  (-make|-m) STRING        command to use for \"make\""
     echo "                             (DEF=\"make\")"
@@ -527,6 +528,21 @@ makemodel()
     else
 	cd $1;
 	if test -r Makefile ; then
+	    if test "x$MKSMALLF" = xt ; then
+		printf 'make small_f ... '
+		$MAKE_CMD small_f >> make.tr_log 2>&1
+		RETVAL=$?
+		if test "x$RETVAL" != x0 ; then
+		    tail make.tr_log
+		    echo failed
+		    cp genmake.log genmake.tr_log $CDIR
+		    tail -$NBLINES_MKLOG make.tr_log > $CDIR"/make.tr_log_tail"
+		    rm -f $EXECUTABLE
+		    mk_fail=1
+		else
+		    echo successful
+		fi
+	    fi
 	    printf 'make ... '
 	    $MAKE_CMD $TARG >> make.tr_log 2>&1
 	    RETVAL=$?
@@ -1065,6 +1081,7 @@ DELDIR=
 USE_R4=
 EXTRFLG=
 NOCATAD=
+MKSMALLF=
 
 #- type of testing (KIND):
 #   KIND=0 : forward (= default) ;  KIND=1 : Tangent Linear with TAF ;
@@ -1174,6 +1191,7 @@ for ac_option ; do
 		echo "Error: '-tlm', '-adm' and '-oad' are exclusive" ; usage
 	      fi ;;
 	-ncad) NOCATAD=t ;;
+	-small_f) MKSMALLF=t ;;
 
 	-ieee)   echo "Warning: ignore option '-ieee' (already the default)"
 		 printf " ... " ;;
