@@ -1,8 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2143 2015/04/01 14:18:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2144 2015/04/07 15:43:21 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o verification/testreport
+  - add new option -small_f
+    with this option testreport first makes the target small_f (*.f files)
+    before running make (all). This is useful for explicit inlining when 
+    all sources need to be full available.
 
 checkpoint65k (2015/04/01)
 o pkg/ecco:
