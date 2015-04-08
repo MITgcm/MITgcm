@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/SUPER-UX_SX-ACE_sxf90_awi,v 1.1 2015/04/07 15:09:13 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/SUPER-UX_SX-ACE_sxf90_awi,v 1.2 2015/04/08 07:30:01 mlosch Exp $
 # $Name:  $
 
 # for cross compiling on stan1.awi.de
@@ -30,7 +30,7 @@ RMFILES='*.L'
 FFLAGS='-Pstack -sxace'
 # automatic inlining for routines < 50 lines (default) and in the same file
 # where they are to be inlined (we do not have too many of those)
-FFLAGS=$FFLAGS' -pi'
+FFLAGS="$FFLAGS -pi"
 
 # This is how you inline external routines if they are longer than 50 lines
 # and live in a separate file (the actual routines depend on the packages
@@ -40,7 +40,7 @@ FFLAGS=$FFLAGS' -pi'
 FEXTRAFLAGS='-pi auto fullmsg exp=barrier,ucase,timestep_tracer,ilnblnk,ifnblnk,cycle_tracer,pressure_for_eos,sw_temp,sw_ptmp,gsw_pt_from_ct rexp=fool_the_compiler,fool_the_compiler_r8,bar2,sw_adtg,gsw_ct_from_pt,gsw_gibbs_pt0_pt0 expin=barrier.f,timestep_tracer.f,fool_the_compiler.f,bar2.f,utils.f,cycle_tracer.f,pressure_for_eos.f,seawater.f,gsw_teos10.f'
 # additional candidates for inlining are parts of packages that are not
 # always used, therefore use this at your own risk:
-#FEXTRAFLAGS=${FEXTRAFLAGS}' -pi fullmsg exp= expin='
+#FEXTRAFLAGS="${FEXTRAFLAGS} -pi fullmsg exp= expin="
 #
 # Note: explicit inlining requires that all files (*.f) are already
 # available, so that the building sequence should be 
@@ -49,7 +49,7 @@ FEXTRAFLAGS='-pi auto fullmsg exp=barrier,ucase,timestep_tracer,ilnblnk,ifnblnk,
 #-- additional options:
 # include a formated code listing and a listing of compiler transformations
 # in *.L files
-#FFLAGS=$FFLAGS' -R2'
+#FFLAGS="$FFLAGS -R2"
 # assume a loop count of 5,000,000 instead of estimating it from field
 # declarations and include details messages about vectorization (if -R2
 # specified)
@@ -59,22 +59,32 @@ FEXTRAFLAGS='-pi auto fullmsg exp=barrier,ucase,timestep_tracer,ilnblnk,ifnblnk,
 # default automatic optimization level
 #FOPTIM='-C vopt'
 
+# these files require lower optimization
+NOOPTFILES='ini_forcing.F mom_calc_visc.F'
+NOOPTFILES="$NOOPTFILES ptracers_dyn_state_data_mod.F ptracers_dyn_state_mod.F"
 if test "x$IEEE" = x ; then
- # highest automatic optimization level, handle with care
- FOPTIM='-C hopt'
- # these files require lower optimization
- NOOPTFILES='ini_forcing.F mom_calc_visc.F'
- NOOPTFLAGS='-C vopt'
+    # highest automatic optimization level, handle with care
+    FOPTIM='-C hopt'
+    NOOPTFLAGS='-C vopt'
 else
- FOPTIM='-C vsafe'
+    if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+	FOPTIM='-C vsafe'
+	NOOPTFLAGS=$FOPTIM
+    else                          #- development/check options:
+	# enable runtime checking of array bounds and arguments of routines
+	FOPTIM='-C vsafe -g -eC -eP'
+	NOOPTFLAGS=$FOPTIM
+        # remove extra flags and explicit inlining
+	FEXTRAFLAGS=
+    fi
 fi
 
-# awi specific paths and stuff (available only after "module load sxnetcdf")
-INCLUDES="-I/SX/usr/include -I${SX_NETCDF_INC}"
+# awi specific paths and stuff, available only after "module load sxnetcdf"
+INCLUDES="-I${SX_NETCDF_INC}"
 LIBS="-L${SX_NETCDF_LIB} -lnetcdf"
 
 if test "x$MPI" = xtrue ; then
-    # this is needed for compiling on the compute nodes
+    # path to mpi header files, available only after "module load sxmpi"
     INCLUDES="$INCLUDES -I${SX_BASE_MPI}/include"
 fi
 
