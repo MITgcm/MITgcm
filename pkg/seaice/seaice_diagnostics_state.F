@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.30 2014/11/14 15:05:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.31 2015/04/09 16:35:06 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -128,7 +128,8 @@ C     division by zero is not possible
        CALL DIAGNOSTICS_FILL(deltaC ,'SIdelta ',0,1 ,0,1,1,myThid)
 #ifdef SEAICE_CGRID
        IF ( DIAGNOSTICS_IS_ON('SIsigI  ',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIsigII ',myThid) ) THEN
+     &      DIAGNOSTICS_IS_ON('SIsigII ',myThid) .OR.
+     &      DIAGNOSTICS_IS_ON('SIshear ',myThid) ) THEN
 #ifdef SEAICE_ALLOW_EVP
         IF ( SEAICEuseEVP ) THEN
 C     for EVP compute principle stress components from recent
@@ -194,6 +195,23 @@ C     principle stress components
          ENDDO
 C     endif SEAICEuseEVP
         ENDIF
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1,sNy
+           DO i=1,sNx
+            sig1 = e11(I,J,bi,bj)
+            sig2 = e22(I,J,bi,bj)
+            sig12 = 
+     &           ( e12(I,  J,  bi,bj)**2 + e12(I+1,J,  bi,bj)**2
+     &           + e12(I+1,J+1,bi,bj)**2 + e12(I  ,J+1,bi,bj)**2 )
+C     shear deformation as sqrt((e11-e22)**2 + 4*e12**2); the 4 pulled into
+C     the average
+            sigI(I,J) = sqrt((sig1-sig2)*(sig1-sig2) + sig12)
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(sigI ,'SIshear ',0,1,2,bi,bj,myThid)
+         ENDDO
+        ENDDO
 C     endif DIAGNOSTICS_IS_ON(SIsigI/II)
        ENDIF
 #endif /* SEAICE_CGRID */
