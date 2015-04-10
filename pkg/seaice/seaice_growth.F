@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.208 2015/01/28 15:14:35 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.209 2015/04/10 10:49:41 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1093,7 +1093,9 @@ C     following the idea of SEAICE_areaLossFormula == 1:
      &         a_QbyATM_open(i,j) .LT.ZERO .OR.
      &         a_QbyOCN(i,j)      .LT.ZERO) THEN
 C     lateral melt rate as suggested by Perovich, 1983 (PhD thesis)
-            latMeltRate(i,j,it) = 1.6 _d -6 * tmpscal1**1.36
+C           latMeltRate(i,j,it) = 1.6 _d -6 * tmpscal1**1.36
+C     The following for does the same, but is faster
+            latMeltRate(i,j,it) = 1.6 _d -6 * exp(1.36*log(tmpscal1))
 C     lateral melt rate as suggested by Maykut and Perovich, 1987
 C     (JGR 92(C7)), Equ. 24
 c           latMeltRate(i,j,it) = 13.5 _d -6 * tmpscal2 * tmpscal1**1.3
