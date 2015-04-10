@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2144 2015/04/07 15:43:21 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2145 2015/04/10 10:51:16 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_growth.F (in case of SEAICE_ITD)
+  - replace tmpscal1**1.36 by faster exp(1.36*log(tmpscal1))
 o verification/testreport
   - add new option -small_f
     with this option testreport first makes the target small_f (*.f files)
