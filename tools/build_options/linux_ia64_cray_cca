@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_cca,v 1.1 2015/01/27 17:02:30 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_cca,v 1.2 2015/04/15 15:47:28 mlosch Exp $
 # $Name:  $
 
 # Tested on cca at ecmwf.int: 
@@ -58,10 +58,10 @@ FFLAGS="$FFLAGS"
 #FFLAGS="$FFLAGS -r8" ???
 
 if test "x$IEEE" = x ; then     #- with optimisation:
-# this is the default anyway
-    FOPTIM='-O2'
-# more aggressive
-#    FOPTIM='-O3 -hfp3'
+# this is the default
+#   FOPTIM='-O2'
+# more aggressive (and recommended in some only document)
+    FOPTIM='-O3 -hfp3'
 else
   if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
     FOPTIM='-O0 -hfp0'
