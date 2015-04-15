@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.270 2015/02/24 17:34:54 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.271 2015/04/15 15:49:12 mlosch Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -2901,8 +2901,8 @@ CPPINCLUDES = ${CPPINCLUDES}
 KFLAGS1 = ${KFLAGS1}
 KFLAGS2 = ${KFLAGS2}
 # Optim./debug for FC
-FFLAGS = ${FFLAGS} ${FEXTRAFLAGS}
-FOPTIM = ${FOPTIM}
+FFLAGS = ${FFLAGS}
+FOPTIM = ${FOPTIM} ${FEXTRAFLAGS}
 # Optim./debug for FC
 F90FLAGS = ${F90FLAGS}
 F90OPTIM = ${F90OPTIM}
