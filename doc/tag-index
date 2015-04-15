@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2145 2015/04/10 10:51:16 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2146 2015/04/15 15:51:23 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/genmake2: move FEXTRAFLAGS from FFLAGS to FOPTIM to avoid a problem
+  with modules in ptracers, when using testreport option "-small_f"
 o pkg/seaice/seaice_growth.F (in case of SEAICE_ITD)
   - replace tmpscal1**1.36 by faster exp(1.36*log(tmpscal1))
 o verification/testreport
