@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.10 2015/01/15 17:34:08 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.11 2015/04/20 14:26:38 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -54,6 +54,8 @@ C     === Global variables ===
       _RL hflux_y_SI(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+      CALL TIMER_START ('STREAMICE_ADVECT_THICKNESS',myThid)
 
       sec_per_year = 365.*86400.
 
@@ -363,6 +365,7 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
       WRITE(msgBuf,'(A)') 'END STREAMICE_ADVECT_THICKNESS'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , 1)
+      CALL TIMER_STOP ('STREAMICE_ADVECT_THICKNESS',myThid)
 
 #endif
       RETURN
