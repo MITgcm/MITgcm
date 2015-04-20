@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/adstreamice_invert_surf_forthick.F,v 1.4 2014/07/09 16:09:48 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/adstreamice_invert_surf_forthick.F,v 1.5 2015/04/20 14:23:45 dgoldberg Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -19,6 +19,7 @@ C $Name:  $
       INTEGER myThid
 
 #ifdef ALLOW_STREAMICE
+#ifdef ALLOW_AUTODIFF
 
       _RL resid, f, fp, hf, htmp
       _RL rhoi, rhow, r, i_r, delta
@@ -88,7 +89,7 @@ C $Name:  $
         enddo
       enddo
 
-
+#endif
 #endif
       RETURN
       END
