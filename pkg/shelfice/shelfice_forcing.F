@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_forcing.F,v 1.5 2014/07/09 17:00:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_forcing.F,v 1.6 2015/04/22 13:12:19 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -75,6 +75,7 @@ C--   Forcing term
           kp1 = MIN(kLev+1,Nr)
           drLoc = drF(kLev)*( 1. _d 0 - _hFacC(I,J,kLev,bi,bj) )
           drLoc = MIN( drLoc, drF(Kp1) * _hFacC(I,J,Kp1,bi,bj) )
+          drLoc = MAX( drLoc, 0. _d 0)
           gTloc = shelficeForcingT(i,j,bi,bj)
      &         /( drF(kLev)*_hFacC(I,J,kLev,bi,bj)+drLoc )
           gT_arr(i,j) = gT_arr(i,j) + gTloc
@@ -82,6 +83,7 @@ C--   Forcing term
           km1 = MAX(kLev-1,1)
           drLoc = drF(km1)*( 1. _d 0 - _hFacC(I,J,km1,bi,bj) )
           drLoc = MIN( drLoc, drF(kLev) * _hFacC(I,J,kLev,bi,bj) )
+          drLoc = MAX( drLoc, 0. _d 0)
           gTloc = shelficeForcingT(i,j,bi,bj)
      &         /( drF(km1)*_hFacC(I,J,km1,bi,bj)+drLoc )
 C     The following is shorthand for the averaged tendency:
@@ -165,6 +167,7 @@ C--   Forcing term
           kp1 = MIN(kLev+1,Nr)
           drLoc = drF(kLev)*( 1. _d 0 - _hFacC(I,J,kLev,bi,bj) )
           drLoc = MIN( drLoc, drF(Kp1) * _hFacC(I,J,Kp1,bi,bj) )
+          drLoc = MAX( drLoc, 0. _d 0)
           gSloc = shelficeForcingS(i,j,bi,bj)
      &         /( drF(kLev)*_hFacC(I,J,kLev,bi,bj)+drLoc )
           gS_arr(i,j) = gS_arr(i,j) + gSloc
@@ -172,6 +175,7 @@ C--   Forcing term
           km1 = MAX(kLev-1,1)
           drLoc = drF(km1)*( 1. _d 0 - _hFacC(I,J,km1,bi,bj) )
           drLoc = MIN( drLoc, drF(kLev) * _hFacC(I,J,kLev,bi,bj) )
+          drLoc = MAX( drLoc, 0. _d 0)
           gSloc = shelficeForcingS(i,j,bi,bj)
      &         /( drF(km1)*_hFacC(I,J,km1,bi,bj)+drLoc )
 C     The following is shorthand for the averaged tendency:
