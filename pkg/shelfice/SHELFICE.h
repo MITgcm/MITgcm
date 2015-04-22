@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.19 2015/02/15 00:19:35 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.20 2015/04/22 21:33:58 dgoldberg Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -28,6 +28,8 @@ C                                 following Jenkins et al. (2001, JPO), def: F
 C     SHELFICEMassStepping     :: flag to step forward ice shelf mass/thickness
 C                                 accounts for melting/freezing & dynamics
 C                                 (from file or from coupling), def: F
+C     SHELFICEDynMassOnly      :: step ice mass ONLY with Shelficemassdyntendency
+C                                 (not melting/freezing) def: F
 C     SHELFICEboundaryLayer    :: turn on vertical merging of cells to for a
 C                                 boundary layer of drF thickness, def: F
 C     SHELFICEadvDiffHeatFlux  :: use advective-diffusive heat flux into the
@@ -160,6 +162,7 @@ CEOP
       LOGICAL SHELFICEadvDiffHeatFlux
       LOGICAL SHELFICEuseGammaFrict
       LOGICAL SHELFICEMassStepping
+      LOGICAL SHELFICEDynMassOnly
       COMMON /SHELFICE_PARMS_L/
      &     SHELFICEisOn,
      &     useISOMIPTD,
@@ -173,7 +176,8 @@ CEOP
      &     SHELFICE_tave_mnc,
      &     SHELFICEadvDiffHeatFlux,
      &     SHELFICEuseGammaFrict,
-     &     SHELFICEMassStepping
+     &     SHELFICEMassStepping,
+     &     SHELFICEDynMassOnly
 
       CHARACTER*(MAX_LEN_FNAM) SHELFICEloadAnomalyFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICEmassFile

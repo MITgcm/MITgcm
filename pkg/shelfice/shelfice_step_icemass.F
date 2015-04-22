@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_step_icemass.F,v 1.4 2015/01/12 17:35:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_step_icemass.F,v 1.5 2015/04/22 21:33:58 dgoldberg Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -73,8 +73,10 @@ C  i,j                  :: loop indices
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
 
+           IF (.NOT. SHELFICEDynMassOnly) then
             shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj)
      &      + shelfIceFreshWaterFlux(I,J,bi,bj) * deltaT
+           ENDIF
 
             shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj)
      &      + shelfIceMassDynTendency(I,J,bi,bj)*deltaT
