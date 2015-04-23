@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_pgi.stderr
 #PBS -o /home/jmc/test_aces/output/tst_pgi.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.39 2014/12/31 23:05:13 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.40 2015/04/23 15:14:00 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: MPI test using PGI (pgf77) compiler & mpich
@@ -50,7 +50,7 @@ addExp=''
 #options="$options -skd tutorial_advection_in_gyre"
  EXE="mpirun -machinefile TR_MFILE -v -np TR_NPROC ./mitgcmuv"
 
-checkOut=1 ; options="$options -do" ; dblRun=9 ;
+checkOut=1 ; options="$options -do" ; dblRun=19 ;
 #options="$options -nc" ; checkOut=0 ; dblRun=0 ;
 #options="$options -q"  ; checkOut=0 ; dblRun=0 ;
 
@@ -144,8 +144,8 @@ if [ $dblRun -ge 1 ] ; then
    exeNb=`ls */$bldDir/$gcmExe | wc -l`
    expNb=`echo $listD | wc -w`
    difNb=`expr $expNb - $exeNb`
-   printf "  Exe=%3i , Exp=%3i , Fail=%3i , Total # of Obj= %i\n" \
-             $exeNb    $expNb    $difNb    $totObj
+   printf " %2i : Exe=%3i , Exp=%3i , Fail=%3i , Total # of Obj= %i\n" \
+            $iRun $exeNb    $expNb    $difNb    $totObj
  #----
  nFail=$difNb
  while test $nFail != $pFail ; do
@@ -161,8 +161,8 @@ if [ $dblRun -ge 1 ] ; then
    done
    exeNb=`ls */$bldDir/$gcmExe | wc -l`
    difNb=`expr $expNb - $exeNb`
-   printf "  Exe=%3i , Exp=%3i , Fail=%3i , Total # of Obj= %i\n" \
-             $exeNb    $expNb    $difNb    $totObj
+   printf " %2i : Exe=%3i , Exp=%3i , Fail=%3i , Total # of Obj= %i\n" \
+            $iRun $exeNb    $expNb    $difNb    $totObj
    if [ $iRun -lt $dblRun ] ; then
     nFail=$difNb
     if [ $nFail -eq 0 ] ; then pFail=0 ; fi
