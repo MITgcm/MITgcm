@@ -1,8 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2146 2015/04/15 15:51:23 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2147 2015/04/27 15:57:13 dgoldberg Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/shelfice:
+  - in shelfice_thermodynamics.F, if SHELFICEBoundaryLayer=.true., then set 
+    factor drKp1 to zero where it is negative (ie. do not use 
+    SHELFICEBoundaryLayer if hFacC>1)
+  - the same for factor drLoc in shelfice_forcing.F
 
 o tools/genmake2: move FEXTRAFLAGS from FFLAGS to FOPTIM to avoid a problem
   with modules in ptracers, when using testreport option "-small_f"
