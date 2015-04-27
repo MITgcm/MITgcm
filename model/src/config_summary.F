@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.148 2015/01/03 23:56:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.149 2015/04/27 15:44:37 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -254,14 +254,17 @@ C-    Vertical viscosity parameters:
         CALL WRITE_0D_RL( rhoNil,  INDEX_NONE, 'rhoNil    =',
      &  ' /* Reference density for Linear EOS ( kg/m^3 ) */')
       ENDIF
-      IF ( eosType .EQ. 'POLY3' ) THEN
+      IF ( eosType .EQ. 'POLY3 ' ) THEN
         WRITE(msgBuf,'(A)')
-     &   '// Polynomial EQS parameters ( from POLY3.COEFFS ) '
+     &   'Polynomial EQS parameters ( from POLY3.COEFFS ):'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         DO k = 1, Nr
          WRITE(msgBuf,'(I3,13F8.3)')
      &   k,eosRefT(k),eosRefS(k),eosSig0(k), (eosC(i,k),i=1,9)
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         ENDDO
+        WRITE(msgBuf,'(A)') '    ;'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       ENDIF
       IF ( fluidIsWater ) THEN
        CALL WRITE_0D_RL( HeatCapacity_Cp, INDEX_NONE,
