@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_aces/output/tst_pgi.stderr
 #PBS -o /home/jmc/test_aces/output/tst_pgi.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.42 2015/04/25 15:26:36 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.43 2015/04/30 20:22:23 jmc Exp $
 # $Name:  $
 
 # ACES-grid PBS-batch script: MPI test using PGI (pgf77) compiler & mpich
@@ -72,9 +72,9 @@ fi
 if [ $checkOut -eq 1 ] ; then
   if test -d $gcmDIR/CVS ; then
 #- remove previous output tar files and tar & remove previous output-dir
-    /bin/rm -f $gcmDIR/verification/??_${dNam}-${sfx}_????????_?.tar.gz
+    /bin/rm -f $gcmDIR/verification/??_${dNam}-${sfx}_????????_*.tar.gz
     ( cd $gcmDIR/verification
-      listD=`ls -1 -d ??_${dNam}-${sfx}_????????_? 2> /dev/null`
+      listD=`ls -1 -d ??_${dNam}-${sfx}_????????_*[0-9] 2> /dev/null`
       for dd in $listD
       do
         if test -d $dd ; then
@@ -133,7 +133,7 @@ if [ $dblRun -ge 1 ] ; then
  ./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx
  test -f tr_cmpnum.sav && mv -f tr_cmpnum.sav tr_cmpnum
 
- iRun=0 ; nFail=0 ; pFail=$nFail ; totObj=0
+ iRun=0 ; nFail=0 ; totObj=0 ; prevNb=0
  #- counts executables and number of Object files:
    bldDir='build' ; gcmExe='mitgcmuv'
    listD=`ls */$bldDir/Makefile | sed "s/\/$bldDir\/Makefile//g"`
@@ -143,36 +143,34 @@ if [ $dblRun -ge 1 ] ; then
    done
    exeNb=`ls */$bldDir/$gcmExe | wc -l`
    expNb=`echo $listD | wc -w`
-   difNb=`expr $expNb - $exeNb`
+   nFail=`expr $expNb - $exeNb`
    printf " %2i : Exe=%3i , Exp=%3i , Fail=%3i , Total # of Obj= %i\n" \
-            $iRun $exeNb    $expNb    $difNb    $totObj
+            $iRun $exeNb    $expNb    $nFail    $totObj
  #----
- nFail=$difNb
- while test $nFail != $pFail ; do
+ reRun=$nFail
+ while test $reRun != 0 ; do
    iRun=`expr $iRun + 1`
-   printf "  fails=%3i , prev=%3i ==> Re-run (run #%2i ):\n" $nFail $pFail $iRun
+   printf "  fails=%3i , prev=%3i ==> Re-run (run #%2i ):\n" $nFail $prevNb $iRun
    echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx -q
    ./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx -q
    #- update counts:
-   pFail=$nFail ; totObj=0
+   prevNb=$totObj ; totObj=0
    for yy in $listD ; do
      objNb=`( cd $yy/$bldDir ; ls *.o | wc -l)`
      totObj=`expr $totObj + $objNb`
    done
    exeNb=`ls */$bldDir/$gcmExe | wc -l`
-   difNb=`expr $expNb - $exeNb`
+   nFail=`expr $expNb - $exeNb`
    printf " %2i : Exe=%3i , Exp=%3i , Fail=%3i , Total # of Obj= %i\n" \
-            $iRun $exeNb    $expNb    $difNb    $totObj
-   if [ $iRun -lt $dblRun ] ; then
-    nFail=$difNb
-    if [ $nFail -eq 0 ] ; then pFail=0 ; fi
-   fi
+            $iRun $exeNb    $expNb    $nFail    $totObj
+   if test $nFail = 0 -o $totObj = $prevNb ; then reRun=0 ; fi
+   if [ $iRun -ge $dblRun ] ; then reRun=0 ; fi
  done
 
  #-- send output (adapted from testreport):
  outpSum=`ls -t tr_${dNam}-${sfx}_????????_*/summary.txt | head -1`
  #- only if converge within "dblRun" attempt
- if test $difNb != 0 -a $difNb != $nFail ; then outpSum='' ; fi
+ if test $nFail != 0 -a $totObj != $prevNb ; then outpSum='' ; fi
  if test "x$outpSum" != x ; then
    dirRes=`echo $outpSum | sed 's/\/summary.txt$//'`
    tar -cf ${SavD}/${dirRes}".tar" $dirRes > /dev/null 2>&1 \
