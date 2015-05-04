@@ -200,7 +200,7 @@ _typesuffixes = {'float32':'f4',
 
 def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
           returnmeta=False,astype=float,region=None,lev=(),
-          usememmap=False,mm=False,squeeze=True):
+          usememmap=False,mm=False,squeeze=True,verbose=False):
     """ a     = rdmds(fname,...)
     a     = rdmds(fname,itrs,...)
     a,its,meta = rdmds(fname,...,returnmeta=True)
@@ -274,16 +274,16 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
     if itrs is np.nan:
         # all iterations
         itrs = scanforfiles(fnamearg)
-        warning('Reading {0} time levels: '.format(len(itrs)), *itrs)
+        if verbose: warning('Reading {0} time levels: '.format(len(itrs)), *itrs)
         returnits = True
         itrsislist = True
     elif itrs is np.inf:
         # last iteration
         itrs = scanforfiles(fnamearg)
         if len(itrs):
-            warning('Found {0} time levels, reading'.format(len(itrs)), itrs[-1])
+            if verbose: warning('Found {0} time levels, reading'.format(len(itrs)), itrs[-1])
         else:
-            warning('Found 0 time levels for {}'.format(fnamearg))
+            if verbose: warning('Found 0 time levels for {}'.format(fnamearg))
         itrs = itrs[-1:]
         returnits = True
         itrsislist = False
@@ -329,7 +329,7 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
         if len(metafiles) == 0:
             raise IOError('No files found for ' + fname + '.meta')
 
-        warning(metafiles[0])
+        if verbose: warning(metafiles[0])
 
         if debug: warning('Found',len(metafiles),'metafiles for iteration',it)
 
