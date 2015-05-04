@@ -1,24 +1,26 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2147 2015/04/27 15:57:13 dgoldberg Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2148 2015/05/04 12:28:00 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint65l (2015/05/04)
 o pkg/shelfice:
-  - in shelfice_thermodynamics.F, if SHELFICEBoundaryLayer=.true., then set 
-    factor drKp1 to zero where it is negative (ie. do not use 
+  - in shelfice_thermodynamics.F, if SHELFICEBoundaryLayer=.true., then set
+    factor drKp1 to zero where it is negative (ie. do not use
     SHELFICEBoundaryLayer if hFacC>1)
   - the same for factor drLoc in shelfice_forcing.F
-
 o tools/genmake2: move FEXTRAFLAGS from FFLAGS to FOPTIM to avoid a problem
-  with modules in ptracers, when using testreport option "-small_f"
+    with modules in ptracers, when using testreport option "-small_f"
 o pkg/seaice/seaice_growth.F (in case of SEAICE_ITD)
   - replace tmpscal1**1.36 by faster exp(1.36*log(tmpscal1))
 o verification/testreport
   - add new option -small_f
     with this option testreport first makes the target small_f (*.f files)
-    before running make (all). This is useful for explicit inlining when 
+    before running make (all). This is useful for explicit inlining when
     all sources need to be full available.
+o pkg/exf/exf_interp.F:
+    remove previous changes related to reverse (decreasing) input grids latitude
 
 checkpoint65k (2015/04/01)
 o pkg/ecco:
