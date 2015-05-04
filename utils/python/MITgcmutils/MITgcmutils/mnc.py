@@ -252,7 +252,7 @@ def calcstrides(slices, dims):
     return tuple(strides), tuple(shape), tuple(fullshape)
 
 
-class MNCVariable:
+class MNCVariable(object):
     def __init__(self, mnc, name):
         self._name = name
         self.nc = mnc.nc
