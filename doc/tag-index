@@ -1,8 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2148 2015/05/04 12:28:00 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2149 2015/05/05 16:11:26 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice: 
+  - seaice_calc_viscosity.F: change computation of deltaC**2 to ensure
+    positiveness, modify a few comments and improve variable names, 
+  - the changed computation of deltaC affects most seaice-related 
+    experiments at the truncation level. 
+    seaice_itd.thermo is affected by far the most, with
+    only 7 digits of agreement remaining; update experiments.
 
 checkpoint65l (2015/05/04)
 o pkg/shelfice:
