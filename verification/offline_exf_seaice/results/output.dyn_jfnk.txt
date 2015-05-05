@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint65a
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint65l
 (PID.TID 0000.0001) // Build user:        mlosch
-(PID.TID 0000.0001) // Build host:        csysl24
-(PID.TID 0000.0001) // Build date:        Tue Jul 29 17:30:33 CEST 2014
+(PID.TID 0000.0001) // Build host:        baudelaire
+(PID.TID 0000.0001) // Build date:        Tue May  5 08:10:47 EDT 2015
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -581,6 +581,9 @@
 (PID.TID 0000.0001)  diagCG_resTarget = /* residual target for diag_cg2d */
 (PID.TID 0000.0001)                 1.000000000000000E-12
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  diagCG_pcOffDFac = /* preconditioner off-diagonal factor */
+(PID.TID 0000.0001)                 9.611687812379854E-01
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) -----------------------------------------------------
 (PID.TID 0000.0001)  DIAGNOSTICS_READPARMS: active diagnostics summary:
 (PID.TID 0000.0001) -----------------------------------------------------
@@ -1127,6 +1130,9 @@
 (PID.TID 0000.0001) model grid type   = /* type of sea ice model grid */
 (PID.TID 0000.0001)               'C-GRID'
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICEuseStrImpCpl = /* use strongly implicit coupling */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICEuseEVP      = /* use EVP solver rather than LSR */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
@@ -1156,6 +1162,12 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICE_strength   = /* sea-ice strength Pstar */
 (PID.TID 0000.0001)                 2.678000000000000E+04
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_cStar      = /* sea-ice strength parameter cStar */
+(PID.TID 0000.0001)                 2.000000000000000E+01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) SEAICE_tensilFac  = /* sea-ice tensile strength factor */
+(PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SEAICEpresH0   = /* sea-ice strength Heff threshold */
 (PID.TID 0000.0001)                 1.000000000000000E+00
@@ -1349,14 +1361,14 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) ------------------------------------------------------------
 (PID.TID 0000.0001) DIAGNOSTICS_SET_LEVELS: done
-(PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   243
+(PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   245
 (PID.TID 0000.0001)  write list of available Diagnostics to file: available_diagnostics.log
 (PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   153 SIuice
 (PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   154 SIvice
 (PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   147 SIheff
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   211 SI_Fract
-(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   212 SI_Thick
-(PID.TID 0000.0001) - NOTE - SETDIAG: Counter-mate #   211 SI_Fract is already set
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   213 SI_Fract
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #   214 SI_Thick
+(PID.TID 0000.0001) - NOTE - SETDIAG: Counter-mate #   213 SI_Fract is already set
 (PID.TID 0000.0001)   space allocated for all diagnostics:       5 levels
 (PID.TID 0000.0001)   set mate pointer for diag #   153  SIuice   , Parms: UU      M1 , mate:   154
 (PID.TID 0000.0001)   set mate pointer for diag #   154  SIvice   , Parms: VV      M1 , mate:   153
@@ -1366,9 +1378,9 @@
 (PID.TID 0000.0001) ------------------------------------------------------------
 (PID.TID 0000.0001) DIAGSTATS_SET_REGIONS: define no region
 (PID.TID 0000.0001) ------------------------------------------------------------
-(PID.TID 0000.0001) SETDIAG: Allocate  1 Levels for Stats-Diag #   211 SI_Fract
-(PID.TID 0000.0001) SETDIAG: Allocate  1 Levels for Stats-Diag #   212 SI_Thick
-(PID.TID 0000.0001) - NOTE - SETDIAG: Counter Diagnostic #   211 SI_Fract has already been set
+(PID.TID 0000.0001) SETDIAG: Allocate  1 Levels for Stats-Diag #   213 SI_Fract
+(PID.TID 0000.0001) SETDIAG: Allocate  1 Levels for Stats-Diag #   214 SI_Thick
+(PID.TID 0000.0001) - NOTE - SETDIAG: Counter Diagnostic #   213 SI_Fract has already been set
 (PID.TID 0000.0001) SETDIAG: Allocate  1 Levels for Stats-Diag #   144 SIarea
 (PID.TID 0000.0001) SETDIAG: Allocate  1 Levels for Stats-Diag #   147 SIheff
 (PID.TID 0000.0001) SETDIAG: Allocate  1 Levels for Stats-Diag #   153 SIuice
@@ -1451,11 +1463,17 @@
 (PID.TID 0000.0001) no_slip_bottom =  /* Viscous BCs: No-slip bottom */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) bottomVisc_pCell = /* Partial-cell in bottom Visc. BC */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) bottomDragLinear = /* linear bottom-drag coefficient ( m/s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) bottomDragQuadratic = /* quadratic bottom-drag coefficient (-) */
 (PID.TID 0000.0001)                 5.000000000000000E-03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) selectBotDragQuadr = /* select quadratic bottom drag options */
+(PID.TID 0000.0001)                      -1
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) diffKhT =   /* Laplacian diffusion of heat laterally ( m^2/s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
@@ -1654,6 +1672,9 @@
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) implicitViscosity = /* Implicit viscosity on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) implBottomFriction= /* Implicit bottom friction on/off flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) metricTerms =  /* metric-Terms on/off flag */
@@ -2193,8 +2214,8 @@ listId=    1 ; file name: snapshot
    153 |SIuice  |      1 |      2 |   1 |       0 |       0 |
    154 |SIvice  |      2 |      1 |   1 |       0 |       0 |
    147 |SIheff  |      3 |      0 |   1 |       0 |
-   211 |SI_Fract|      4 |      0 |   1 |       0 |
-   212 |SI_Thick|      5 |      4 |   1 |       0 |       0 |
+   213 |SI_Fract|      4 |      0 |   1 |       0 |
+   214 |SI_Thick|      5 |      4 |   1 |       0 |       0 |
 ------------------------------------------------------------------------
 Global & Regional Statistics diagnostics: Number of lists:     1
 ------------------------------------------------------------------------
@@ -2203,8 +2224,8 @@ listId=   1 ; file name: iceStDiag
     6  |    6  |      7200.000000      1800.000000 |
  Regions:   0
  diag# | name   |   ipt  |  iMate |    Volume   |   mate-Vol. |         
-   211 |SI_Fract|      1 |      0 | 0.00000E+00 |
-   212 |SI_Thick|      2 |      1 | 0.00000E+00 | 0.00000E+00 |
+   213 |SI_Fract|      1 |      0 | 0.00000E+00 |
+   214 |SI_Thick|      2 |      1 | 0.00000E+00 | 0.00000E+00 |
    144 |SIarea  |      3 |      0 | 0.00000E+00 |
    147 |SIheff  |      4 |      0 | 0.00000E+00 |
    153 |SIuice  |      5 |      0 | 0.00000E+00 |
@@ -2432,10 +2453,10 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      20      1 0.10000E+01 0.41207E-01 0.65955E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      21     21 0.87469E+00 0.37689E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     21 /     21, Nb. of FGMRES iterations =      3
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      22     22 0.78624E+00 0.32106E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      22     22 0.78625E+00 0.32106E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     22 /     22, Nb. of FGMRES iterations =      5
 (PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      22      1 0.10000E+01 0.32106E-01 0.91546E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      22      2-0.50000E+00 0.32106E-01 0.60762E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      22      2-0.50000E+00 0.32106E-01 0.60763E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      23     23 0.82859E+00 0.28323E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     23 /     23, Nb. of FGMRES iterations =      4
 (PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      23      1 0.10000E+01 0.28323E-01 0.52653E-01
@@ -2456,42 +2477,42 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     27 /     27, Nb. of FGMRES iterations =      3
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      28     28 0.97725E+00 0.21610E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     28 /     28, Nb. of FGMRES iterations =      1
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      29     29 0.86263E+00 0.19583E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      29     29 0.86264E+00 0.19583E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     29 /     29, Nb. of FGMRES iterations =      4
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      29      1 0.10000E+01 0.19583E-01 0.30684E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      29      1 0.10000E+01 0.19583E-01 0.30695E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      30     30 0.84144E+00 0.17454E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     30 /     30, Nb. of FGMRES iterations =      4
 (PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      30      1 0.10000E+01 0.17454E-01 0.21396E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      31     31 0.75171E+00 0.14430E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      31     31 0.75171E+00 0.14429E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     31 /     31, Nb. of FGMRES iterations =      4
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      31      1 0.10000E+01 0.14430E-01 0.22900E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      32     32 0.75090E+00 0.11921E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      31      1 0.10000E+01 0.14429E-01 0.22899E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      32     32 0.75091E+00 0.11921E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     32 /     32, Nb. of FGMRES iterations =      5
 (PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      32      1 0.10000E+01 0.11921E-01 0.27058E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      33     33 0.69240E+00 0.93299E-02
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      33     33 0.69240E+00 0.93300E-02
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     33 /     33, Nb. of FGMRES iterations =      6
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      33      1 0.10000E+01 0.93299E-02 0.23743E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      34     34 0.70235E+00 0.73719E-02
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      33      1 0.10000E+01 0.93300E-02 0.23743E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      34     34 0.70235E+00 0.73720E-02
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     34 /     34, Nb. of FGMRES iterations =      5
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      35     35 0.62325E+00 0.53789E-02
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     35 /     35, Nb. of FGMRES iterations =      5
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      36     36 0.54012E+00 0.35674E-02
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      36     36 0.54009E+00 0.35673E-02
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     36 /     36, Nb. of FGMRES iterations =      8
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      37     37 0.36111E+00 0.18090E-02
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      37     37 0.36110E+00 0.18089E-02
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     37 /     37, Nb. of FGMRES iterations =     10
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      38     38 0.20549E+00 0.62994E-03
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      38     38 0.20549E+00 0.62992E-03
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     38 /     38, Nb. of FGMRES iterations =     14
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      39     39 0.10000E+00 0.13160E-03
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      39     39 0.10000E+00 0.13161E-03
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     39 /     39, Nb. of FGMRES iterations =     21
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      40     40 0.10000E+00 0.13797E-04
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      40     40 0.10000E+00 0.13800E-04
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     40 /     40, Nb. of FGMRES iterations =     22
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      41     41 0.10000E+00 0.12789E-05
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      41     41 0.10000E+00 0.12793E-05
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     41 /     41, Nb. of FGMRES iterations =     22
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      42     42 0.10000E+00 0.11714E-06
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      42     42 0.10000E+00 0.11732E-06
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     42 /     42, Nb. of FGMRES iterations =     21
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      43     43 0.10000E+00 0.11371E-07
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      43     43 0.10000E+00 0.11387E-07
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     43 /     43, Nb. of FGMRES iterations =     22
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      44     44 0.10000E+00 0.11198E-08
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      44     44 0.10000E+00 0.11230E-08
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     44 /     44, Nb. of FGMRES iterations =     21
 (PID.TID 0000.0001)  // =======================================================
 (PID.TID 0000.0001)  // Begin JFNK statistics
@@ -2511,16 +2532,16 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     1
 (PID.TID 0000.0001) %MON seaice_time_sec              =   1.8000000000000E+03
-(PID.TID 0000.0001) %MON seaice_uice_max              =   6.4816187450377E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   3.0300019016181E-01
-(PID.TID 0000.0001) %MON seaice_uice_mean             =   5.0874070098432E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   7.3259575928442E-02
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   6.3141827993404E-05
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.2130119038656E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.0358180143549E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -7.0273686107938E-04
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   4.4541964913407E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   3.4677486815358E-05
+(PID.TID 0000.0001) %MON seaice_uice_max              =   6.4816187450368E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   3.0300019016182E-01
+(PID.TID 0000.0001) %MON seaice_uice_mean             =   5.0874070098428E-01
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   7.3259575928414E-02
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   6.3141827993396E-05
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.2130119038645E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.0358180143545E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -7.0273686107722E-04
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   4.4541964913401E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   3.4677486815330E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2535,7 +2556,7 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0041663963417E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0001766726050E-01
 (PID.TID 0000.0001) %MON thSI_IceH_max_S              =   2.2797689206746E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0012237212622E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0012237212623E-01
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
@@ -2566,9 +2587,9 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
- Compute Stats, Diag. #    211  SI_Fract  vol(   0 ): 6.950E+10  Parms: SM P    M1      
- Compute Stats, Diag. #    212  SI_Thick  vol(   0 ): 6.950E+10  Parms: SM PC   M1      
-    use Counter Mate  #    211  SI_Fract  vol(   0 ): 6.950E+10 integral 6.950E+10
+ Compute Stats, Diag. #    213  SI_Fract  vol(   0 ): 6.950E+10  Parms: SM P    M1      
+ Compute Stats, Diag. #    214  SI_Thick  vol(   0 ): 6.950E+10  Parms: SM PC   M1      
+    use Counter Mate  #    213  SI_Fract  vol(   0 ): 6.950E+10 integral 6.950E+10
  Compute Stats, Diag. #    144  SIarea    vol(   0 ): 6.950E+10  Parms: SM      M1      
  Compute Stats, Diag. #    147  SIheff    vol(   0 ): 6.950E+10  Parms: SM      M1      
  Compute Stats, Diag. #    153  SIuice    vol(   0 ): 6.900E+10  Parms: UU      M1      
@@ -2579,7 +2600,7 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      2 /    202, Nb. of FGMRES iterations =      2
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       3    203 0.99000E+00 0.53486E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      3 /    203, Nb. of FGMRES iterations =      3
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =       3      1 0.10000E+01 0.53486E-01 0.59621E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =       3      1 0.10000E+01 0.53486E-01 0.59622E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       4    204 0.99000E+00 0.52179E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      4 /    204, Nb. of FGMRES iterations =      3
 (PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =       4      1 0.10000E+01 0.52179E-01 0.52567E-01
@@ -2613,112 +2634,112 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     16 /    216, Nb. of FGMRES iterations =      2
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      17    217 0.99000E+00 0.41994E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     17 /    217, Nb. of FGMRES iterations =      3
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      17      1 0.10000E+01 0.41994E-01 0.63787E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      17      1 0.10000E+01 0.41994E-01 0.63783E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      18    218 0.99000E+00 0.35678E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     18 /    218, Nb. of FGMRES iterations =      3
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      18      1 0.10000E+01 0.35678E-01 0.49209E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      18      1 0.10000E+01 0.35678E-01 0.49215E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      19    219 0.99000E+00 0.34047E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     19 /    219, Nb. of FGMRES iterations =      1
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      20    220 0.99000E+00 0.33692E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      20    220 0.99000E+00 0.33691E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     20 /    220, Nb. of FGMRES iterations =      3
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      20      1 0.10000E+01 0.33692E-01 0.62541E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      20      2-0.50000E+00 0.33692E-01 0.46966E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      21    221 0.99000E+00 0.31892E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      20      1 0.10000E+01 0.33691E-01 0.62548E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      20      2-0.50000E+00 0.33691E-01 0.46969E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      21    221 0.99000E+00 0.31895E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     21 /    221, Nb. of FGMRES iterations =      3
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      21      1 0.10000E+01 0.31892E-01 0.45637E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      21      2-0.50000E+00 0.31892E-01 0.33525E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      22    222 0.99000E+00 0.29634E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      21      1 0.10000E+01 0.31895E-01 0.45628E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      21      2-0.50000E+00 0.31895E-01 0.33521E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      22    222 0.99000E+00 0.29636E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     22 /    222, Nb. of FGMRES iterations =      3
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      22      1 0.10000E+01 0.29634E-01 0.49391E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      22      2-0.50000E+00 0.29634E-01 0.31307E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      23    223 0.88716E+00 0.27361E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      22      1 0.10000E+01 0.29636E-01 0.49400E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      22      2-0.50000E+00 0.29636E-01 0.31309E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      23    223 0.88714E+00 0.27362E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     23 /    223, Nb. of FGMRES iterations =      3
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      23      1 0.10000E+01 0.27361E-01 0.72096E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      23      2-0.50000E+00 0.27361E-01 0.29534E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      24    224 0.87367E+00 0.25005E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      23      1 0.10000E+01 0.27362E-01 0.72130E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      23      2-0.50000E+00 0.27362E-01 0.29534E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      24    224 0.87363E+00 0.25005E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     24 /    224, Nb. of FGMRES iterations =      3
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      24      1 0.10000E+01 0.25005E-01 0.35963E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      25    225 0.84650E+00 0.22376E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      24      1 0.10000E+01 0.25005E-01 0.35947E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      25    225 0.84646E+00 0.22376E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     25 /    225, Nb. of FGMRES iterations =      4
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      25      1 0.10000E+01 0.22376E-01 0.73015E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      25      2-0.50000E+00 0.22376E-01 0.49008E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      26    226 0.87198E+00 0.20423E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      25      1 0.10000E+01 0.22376E-01 0.73032E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      25      2-0.50000E+00 0.22376E-01 0.49010E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      26    226 0.87238E+00 0.20429E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     26 /    226, Nb. of FGMRES iterations =      1
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      27    227 0.77341E+00 0.17208E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      27    227 0.77297E+00 0.17206E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     27 /    227, Nb. of FGMRES iterations =      5
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      27      1 0.10000E+01 0.17208E-01 0.74337E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      27      2-0.50000E+00 0.17208E-01 0.45806E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      28    228 0.75538E+00 0.14272E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      27      1 0.10000E+01 0.17206E-01 0.74341E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      27      2-0.50000E+00 0.17206E-01 0.45805E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      28    228 0.75531E+00 0.14270E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     28 /    228, Nb. of FGMRES iterations =      5
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      28      1 0.10000E+01 0.14272E-01 0.66327E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      28      2-0.50000E+00 0.14272E-01 0.22343E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      29    229 0.77637E+00 0.12056E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      28      1 0.10000E+01 0.14270E-01 0.66377E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      28      2-0.50000E+00 0.14270E-01 0.22428E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      29    229 0.77620E+00 0.12053E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     29 /    229, Nb. of FGMRES iterations =      4
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      29      1 0.10000E+01 0.12056E-01 0.15808E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      30    230 0.76276E+00 0.10065E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      29      1 0.10000E+01 0.12053E-01 0.15720E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      30    230 0.76323E+00 0.10066E-01
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     30 /    230, Nb. of FGMRES iterations =      5
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      30      1 0.10000E+01 0.10065E-01 0.19049E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      31    231 0.73695E+00 0.82116E-02
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      30      1 0.10000E+01 0.10066E-01 0.19125E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      31    231 0.73740E+00 0.82159E-02
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     31 /    231, Nb. of FGMRES iterations =      5
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      31      1 0.10000E+01 0.82116E-02 0.12732E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      32    232 0.70670E+00 0.65150E-02
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      31      1 0.10000E+01 0.82159E-02 0.12666E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      32    232 0.70611E+00 0.65149E-02
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     32 /    232, Nb. of FGMRES iterations =      6
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      32      1 0.10000E+01 0.65150E-02 0.26025E-01
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      33    233 0.59176E+00 0.45921E-02
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      32      1 0.10000E+01 0.65149E-02 0.26054E-01
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      33    233 0.59229E+00 0.45947E-02
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     33 /    233, Nb. of FGMRES iterations =      7
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      34    234 0.79567E+00 0.39431E-02
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      34    234 0.78682E+00 0.39160E-02
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     34 /    234, Nb. of FGMRES iterations =      1
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      35    235 0.42027E+00 0.22124E-02
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      35    235 0.42330E+00 0.22077E-02
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     35 /    235, Nb. of FGMRES iterations =      9
-(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      35      1 0.10000E+01 0.22124E-02 0.76035E-02
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      36    236 0.49692E+00 0.13880E-02
+(PID.TID 0000.0001)  S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, facLS, JFNKresidual, resLoc =      35      1 0.10000E+01 0.22077E-02 0.75717E-02
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      36    236 0.49640E+00 0.13841E-02
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     36 /    236, Nb. of FGMRES iterations =      7
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      37    237 0.40354E+00 0.75794E-03
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      37    237 0.40373E+00 0.75606E-03
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     37 /    237, Nb. of FGMRES iterations =     10
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      38    238 0.40327E+00 0.41371E-03
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     38 /    238, Nb. of FGMRES iterations =      3
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      39    239 0.28063E+00 0.17733E-03
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     39 /    239, Nb. of FGMRES iterations =     10
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      40    240 0.14334E+00 0.48570E-04
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      38    238 0.39914E+00 0.40986E-03
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     38 /    238, Nb. of FGMRES iterations =      4
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      39    239 0.25082E+00 0.16301E-03
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     39 /    239, Nb. of FGMRES iterations =     11
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      40    240 0.10000E+00 0.26109E-04
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     40 /    240, Nb. of FGMRES iterations =     14
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      41    241 0.10000E+00 0.61475E-05
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     41 /    241, Nb. of FGMRES iterations =     16
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      42    242 0.10000E+00 0.56446E-06
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      41    241 0.10000E+00 0.26037E-05
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     41 /    241, Nb. of FGMRES iterations =     17
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      42    242 0.10000E+00 0.18670E-06
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     42 /    242, Nb. of FGMRES iterations =     18
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      43    243 0.10000E+00 0.53735E-07
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      43    243 0.10000E+00 0.17018E-07
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     43 /    243, Nb. of FGMRES iterations =     19
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      44    244 0.10000E+00 0.42439E-08
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     44 /    244, Nb. of FGMRES iterations =     20
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      45    245 0.10000E+00 0.40129E-09
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     45 /    245, Nb. of FGMRES iterations =     20
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      44    244 0.10000E+00 0.13513E-08
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     44 /    244, Nb. of FGMRES iterations =     19
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      45    245 0.10000E+00 0.12840E-09
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     45 /    245, Nb. of FGMRES iterations =     21
 (PID.TID 0000.0001)  // =======================================================
 (PID.TID 0000.0001)  // Begin JFNK statistics
 (PID.TID 0000.0001)  // =======================================================
 (PID.TID 0000.0001)  %JFNK_MON: time step              =          2
 (PID.TID 0000.0001)  %JFNK_MON: Nb. of time steps      =          1
 (PID.TID 0000.0001)  %JFNK_MON: Nb. of Newton steps    =         46
-(PID.TID 0000.0001)  %JFNK_MON: Nb. of Krylov steps    =        255
+(PID.TID 0000.0001)  %JFNK_MON: Nb. of Krylov steps    =        258
 (PID.TID 0000.0001)  %JFNK_MON: Nb. of Newton failures =          0
 (PID.TID 0000.0001)  %JFNK_MON: Nb. of Krylov failures =          0
 (PID.TID 0000.0001)  // =======================================================
 (PID.TID 0000.0001)  // End JFNK statistics
 (PID.TID 0000.0001)  // =======================================================
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Total number FGMRES iterations =    255 in timestep          2
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Total number FGMRES iterations =    258 in timestep          2
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     2
 (PID.TID 0000.0001) %MON seaice_time_sec              =   3.6000000000000E+03
-(PID.TID 0000.0001) %MON seaice_uice_max              =   6.9218916329216E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   3.1952670175952E-01
-(PID.TID 0000.0001) %MON seaice_uice_mean             =   5.3262176925422E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   7.8434465329077E-02
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   7.5559013623993E-05
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.4518920903032E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.2472689331905E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -1.5035419355982E-03
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.2307487244309E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   4.5930926889084E-05
+(PID.TID 0000.0001) %MON seaice_uice_max              =   6.9218916329154E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   3.1952670175884E-01
+(PID.TID 0000.0001) %MON seaice_uice_mean             =   5.3262176925472E-01
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   7.8434465329239E-02
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   7.5559013624014E-05
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.4518920902968E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.2472689331888E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -1.5035419355558E-03
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.2307487244104E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   4.5930926888809E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2728,12 +2749,12 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_time_sec                =   3.6000000000000E+03
 (PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   6.9369945264242E+10
 (PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   2.9376760896339E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.9993184367902E+10
+(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.9993184367903E+10
 (PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0037495989153E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0083976004580E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0003354364242E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   2.5248085303995E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0023507835372E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   2.5248085304017E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0023507835391E-01
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
@@ -2786,23 +2807,23 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     10 /    410, Nb. of FGMRES iterations =      4
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      11    411 0.55621E+00 0.16336E-02
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     11 /    411, Nb. of FGMRES iterations =      7
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12    412 0.43552E+00 0.93862E-03
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12    412 0.43551E+00 0.93861E-03
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     12 /    412, Nb. of FGMRES iterations =      6
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13    413 0.29343E+00 0.41447E-03
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13    413 0.29344E+00 0.41448E-03
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     13 /    413, Nb. of FGMRES iterations =     10
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      14    414 0.13100E+00 0.10691E-03
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     14 /    414, Nb. of FGMRES iterations =     14
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      15    415 0.10000E+00 0.12310E-04
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      15    415 0.10000E+00 0.12311E-04
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     15 /    415, Nb. of FGMRES iterations =     18
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      16    416 0.10000E+00 0.10226E-05
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      16    416 0.10000E+00 0.10227E-05
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     16 /    416, Nb. of FGMRES iterations =     20
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      17    417 0.10000E+00 0.99106E-07
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      17    417 0.10000E+00 0.99086E-07
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     17 /    417, Nb. of FGMRES iterations =     20
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      18    418 0.10000E+00 0.96112E-08
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      18    418 0.10000E+00 0.96114E-08
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     18 /    418, Nb. of FGMRES iterations =     21
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      19    419 0.10000E+00 0.92240E-09
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      19    419 0.10000E+00 0.92125E-09
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     19 /    419, Nb. of FGMRES iterations =     21
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      20    420 0.10000E+00 0.90576E-10
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      20    420 0.10000E+00 0.90543E-10
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     20 /    420, Nb. of FGMRES iterations =     21
 (PID.TID 0000.0001)  // =======================================================
 (PID.TID 0000.0001)  // Begin JFNK statistics
@@ -2822,16 +2843,16 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     3
 (PID.TID 0000.0001) %MON seaice_time_sec              =   5.4000000000000E+03
-(PID.TID 0000.0001) %MON seaice_uice_max              =   6.9617980516468E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   2.8016533581223E-01
-(PID.TID 0000.0001) %MON seaice_uice_mean             =   5.3335364276800E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   7.9646549378390E-02
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.0278038392960E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.5445588658580E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.2864322475812E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -1.4256785932942E-03
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.3970954804835E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   5.5662090763960E-05
+(PID.TID 0000.0001) %MON seaice_uice_max              =   6.9617980516464E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   2.8016533581283E-01
+(PID.TID 0000.0001) %MON seaice_uice_mean             =   5.3335364276802E-01
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   7.9646549378395E-02
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.0278038392946E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.5445588658555E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.2864322475808E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -1.4256785932965E-03
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.3970954804809E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   5.5662090763852E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2841,12 +2862,12 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_time_sec                =   5.4000000000000E+03
 (PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   6.9305420385758E+10
 (PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   2.9315569980585E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.9989850405172E+10
+(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.9989850405173E+10
 (PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0056151340879E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0126021681264E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0004931122939E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   2.7290322030991E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0034527036245E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   2.7290322031011E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0034527036263E-01
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
@@ -2882,9 +2903,9 @@ listId=   1 ; file name: iceStDiag
  Computing Diagnostic #    154  SIvice       Counter:       1   Parms: VV      M1      
            Vector  Mate for  SIvice       Diagnostic #    153  SIuice   exists 
  Computing Diagnostic #    147  SIheff       Counter:       1   Parms: SM      M1      
- Computing Diagnostic #    211  SI_Fract     Counter:       1   Parms: SM P    M1      
- Computing Diagnostic #    212  SI_Thick     Counter:       1   Parms: SM PC   M1      
-       use Counter Mate for  SI_Thick     Diagnostic #    211  SI_Fract
+ Computing Diagnostic #    213  SI_Fract     Counter:       1   Parms: SM P    M1      
+ Computing Diagnostic #    214  SI_Thick     Counter:       1   Parms: SM PC   M1      
+       use Counter Mate for  SI_Thick     Diagnostic #    213  SI_Fract
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       1    601 0.99000E+00 0.93912E-02
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      1 /    601, Nb. of FGMRES iterations =      1
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       2    602 0.99000E+00 0.55560E-02
@@ -2899,17 +2920,17 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      6 /    606, Nb. of FGMRES iterations =      9
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       7    607 0.13016E+00 0.13080E-03
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      7 /    607, Nb. of FGMRES iterations =     13
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       8    608 0.10000E+00 0.14599E-04
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       8    608 0.10000E+00 0.14597E-04
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      8 /    608, Nb. of FGMRES iterations =     15
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       9    609 0.10000E+00 0.12280E-05
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       9    609 0.10000E+00 0.12281E-05
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      9 /    609, Nb. of FGMRES iterations =     21
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      10    610 0.10000E+00 0.10779E-06
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     10 /    610, Nb. of FGMRES iterations =     19
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      11    611 0.10000E+00 0.97955E-08
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      11    611 0.10000E+00 0.97909E-08
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     11 /    611, Nb. of FGMRES iterations =     22
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12    612 0.10000E+00 0.89342E-09
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12    612 0.10000E+00 0.89132E-09
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     12 /    612, Nb. of FGMRES iterations =     21
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13    613 0.10000E+00 0.78734E-10
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13    613 0.10000E+00 0.78666E-10
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     13 /    613, Nb. of FGMRES iterations =     21
 (PID.TID 0000.0001)  // =======================================================
 (PID.TID 0000.0001)  // Begin JFNK statistics
@@ -2929,16 +2950,16 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     4
 (PID.TID 0000.0001) %MON seaice_time_sec              =   7.2000000000000E+03
-(PID.TID 0000.0001) %MON seaice_uice_max              =   6.9777354529192E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   2.4378900754002E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   6.9777354529194E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   2.4378900754030E-01
 (PID.TID 0000.0001) %MON seaice_uice_mean             =   5.3306497215013E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.0650992759462E-02
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.3744620180041E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.6615517344658E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.2985971778899E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -1.2590577372924E-03
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.4704441160009E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   6.7571353934748E-05
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.0650992759466E-02
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.3744620180043E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.6615517344634E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.2985971778898E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -1.2590577372965E-03
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.4704441160004E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   6.7571353934693E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2947,13 +2968,13 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON thSI_time_sec                =   7.2000000000000E+03
 (PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   6.9241328624349E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   2.9254712955699E+10
+(PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   2.9254712955698E+10
 (PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.9986615668651E+10
 (PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0074715890290E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0167920125151E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0006526495125E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   2.9021308896766E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0046801091700E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   2.9021308896792E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0046801091701E-01
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
@@ -2998,19 +3019,19 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      6 /    806, Nb. of FGMRES iterations =      7
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       7    807 0.14521E+00 0.11641E-03
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      7 /    807, Nb. of FGMRES iterations =     12
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       8    808 0.10000E+00 0.16370E-04
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       8    808 0.10000E+00 0.16371E-04
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      8 /    808, Nb. of FGMRES iterations =     18
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       9    809 0.10000E+00 0.15377E-05
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       9    809 0.10000E+00 0.15378E-05
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      9 /    809, Nb. of FGMRES iterations =     19
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      10    810 0.10000E+00 0.15212E-06
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      10    810 0.10000E+00 0.15211E-06
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     10 /    810, Nb. of FGMRES iterations =     21
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      11    811 0.10000E+00 0.11897E-07
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     11 /    811, Nb. of FGMRES iterations =     22
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12    812 0.10000E+00 0.11325E-08
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12    812 0.10000E+00 0.11326E-08
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     12 /    812, Nb. of FGMRES iterations =     22
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13    813 0.10000E+00 0.96674E-10
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13    813 0.10000E+00 0.96744E-10
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     13 /    813, Nb. of FGMRES iterations =     21
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      14    814 0.10000E+00 0.92546E-11
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      14    814 0.10000E+00 0.93065E-11
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     14 /    814, Nb. of FGMRES iterations =     22
 (PID.TID 0000.0001)  // =======================================================
 (PID.TID 0000.0001)  // Begin JFNK statistics
@@ -3030,16 +3051,16 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     5
 (PID.TID 0000.0001) %MON seaice_time_sec              =   9.0000000000000E+03
-(PID.TID 0000.0001) %MON seaice_uice_max              =   6.9929152662333E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   2.1612239319957E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   6.9929152662335E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   2.1612239319969E-01
 (PID.TID 0000.0001) %MON seaice_uice_mean             =   5.3276463943221E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.1569266814914E-02
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.6490218087589E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.7606317466440E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.3070713185636E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -1.1138781107009E-03
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.5212013101635E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   8.2560950068442E-05
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.1569266814917E-02
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.6490218087594E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.7606317466432E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.3070713185635E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -1.1138781107049E-03
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.5212013101631E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   8.2560950068441E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3052,9 +3073,9 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.9983447862079E+10
 (PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0093216622148E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0209736022282E-01
-(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0008139362328E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   3.0542139608434E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0068712441863E-01
+(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0008139362327E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   3.0542139608458E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0068712441864E-01
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
@@ -3085,9 +3106,9 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
- Compute Stats, Diag. #    211  SI_Fract  vol(   0 ): 2.780E+11  Parms: SM P    M1      
- Compute Stats, Diag. #    212  SI_Thick  vol(   0 ): 2.774E+11  Parms: SM PC   M1      
-    use Counter Mate  #    211  SI_Fract  vol(   0 ): 2.780E+11 integral 2.774E+11
+ Compute Stats, Diag. #    213  SI_Fract  vol(   0 ): 2.780E+11  Parms: SM P    M1      
+ Compute Stats, Diag. #    214  SI_Thick  vol(   0 ): 2.774E+11  Parms: SM PC   M1      
+    use Counter Mate  #    213  SI_Fract  vol(   0 ): 2.780E+11 integral 2.774E+11
  Compute Stats, Diag. #    144  SIarea    vol(   0 ): 2.780E+11  Parms: SM      M1      
  Compute Stats, Diag. #    147  SIheff    vol(   0 ): 2.780E+11  Parms: SM      M1      
  Compute Stats, Diag. #    153  SIuice    vol(   0 ): 2.760E+11  Parms: UU      M1      
@@ -3102,7 +3123,7 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      4 /   1004, Nb. of FGMRES iterations =      4
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       5   1005 0.19849E+00 0.48927E-03
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      5 /   1005, Nb. of FGMRES iterations =      8
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       6   1006 0.14612E+00 0.13574E-03
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       6   1006 0.14612E+00 0.13573E-03
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      6 /   1006, Nb. of FGMRES iterations =     11
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       7   1007 0.10000E+00 0.17787E-04
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      7 /   1007, Nb. of FGMRES iterations =     18
@@ -3110,13 +3131,13 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      8 /   1008, Nb. of FGMRES iterations =     19
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       9   1009 0.10000E+00 0.17245E-06
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      9 /   1009, Nb. of FGMRES iterations =     20
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      10   1010 0.10000E+00 0.14103E-07
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      10   1010 0.10000E+00 0.14104E-07
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     10 /   1010, Nb. of FGMRES iterations =     22
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      11   1011 0.10000E+00 0.12196E-08
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     11 /   1011, Nb. of FGMRES iterations =     21
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12   1012 0.10000E+00 0.11687E-09
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12   1012 0.10000E+00 0.11682E-09
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     12 /   1012, Nb. of FGMRES iterations =     22
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13   1013 0.10000E+00 0.10418E-10
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13   1013 0.10000E+00 0.10393E-10
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     13 /   1013, Nb. of FGMRES iterations =     22
 (PID.TID 0000.0001)  // =======================================================
 (PID.TID 0000.0001)  // Begin JFNK statistics
@@ -3136,16 +3157,16 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     6
 (PID.TID 0000.0001) %MON seaice_time_sec              =   1.0800000000000E+04
-(PID.TID 0000.0001) %MON seaice_uice_max              =   7.0058372539791E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   1.9490193978700E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   7.0058372539792E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   1.9490193978662E-01
 (PID.TID 0000.0001) %MON seaice_uice_mean             =   5.3249225617726E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.2398772124651E-02
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.8344780992943E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.8412279321134E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.3175749375298E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -9.8313864019676E-04
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.5630628163779E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   1.0075385183141E-04
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.2398772124659E-02
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.8344780992997E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.8412279321156E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.3175749375297E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -9.8313864020007E-04
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.5630628163776E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   1.0075385183161E-04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3155,12 +3176,12 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_time_sec                =   1.0800000000000E+04
 (PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   6.9114108892856E+10
 (PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   2.9133797136144E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.9980311756711E+10
+(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.9980311756712E+10
 (PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0111667823929E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0251501878507E-01
-(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0009770244852E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   3.1921700487835E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0096439775010E-01
+(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0009770244851E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   3.1921700487846E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0096439775011E-01
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
@@ -3205,17 +3226,17 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      6 /   1206, Nb. of FGMRES iterations =     11
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       7   1207 0.10000E+00 0.25981E-04
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      7 /   1207, Nb. of FGMRES iterations =     19
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       8   1208 0.10000E+00 0.19495E-05
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       8   1208 0.10000E+00 0.19494E-05
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      8 /   1208, Nb. of FGMRES iterations =     19
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       9   1209 0.10000E+00 0.18329E-06
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       9   1209 0.10000E+00 0.18331E-06
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      9 /   1209, Nb. of FGMRES iterations =     20
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      10   1210 0.10000E+00 0.16169E-07
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      10   1210 0.10000E+00 0.16166E-07
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     10 /   1210, Nb. of FGMRES iterations =     20
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      11   1211 0.10000E+00 0.15597E-08
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      11   1211 0.10000E+00 0.15592E-08
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     11 /   1211, Nb. of FGMRES iterations =     21
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12   1212 0.10000E+00 0.96345E-10
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12   1212 0.10000E+00 0.97542E-10
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     12 /   1212, Nb. of FGMRES iterations =     18
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13   1213 0.10000E+00 0.93097E-11
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13   1213 0.10000E+00 0.94300E-11
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     13 /   1213, Nb. of FGMRES iterations =     19
 (PID.TID 0000.0001)  // =======================================================
 (PID.TID 0000.0001)  // Begin JFNK statistics
@@ -3235,16 +3256,16 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     7
 (PID.TID 0000.0001) %MON seaice_time_sec              =   1.2600000000000E+04
-(PID.TID 0000.0001) %MON seaice_uice_max              =   7.0168988160318E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   1.7750371275303E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   7.0168988160319E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   1.7750371275305E-01
 (PID.TID 0000.0001) %MON seaice_uice_mean             =   5.3223317177438E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.3185450665108E-02
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.9805848968308E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.9076480282560E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.3514402125002E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -8.5979763852937E-04
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.5999998073506E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   1.2228719938585E-04
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.3185450665105E-02
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   1.9805848968266E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.9076480282565E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.3514402125008E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -8.5979763853196E-04
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.5999998073504E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   1.2228719938575E-04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3254,12 +3275,12 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_time_sec                =   1.2600000000000E+04
 (PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   6.9050906290980E+10
 (PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   2.9073712937910E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.9977193353070E+10
+(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.9977193353071E+10
 (PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0130076123006E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0293236281931E-01
-(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0011416676817E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   3.3195093810544E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0127944314717E-01
+(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0011416676816E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   3.3195093810552E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0127944314719E-01
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
@@ -3300,21 +3321,21 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      4 /   1404, Nb. of FGMRES iterations =      6
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       5   1405 0.25460E+00 0.38163E-03
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      5 /   1405, Nb. of FGMRES iterations =      6
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       6   1406 0.15354E+00 0.10942E-03
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       6   1406 0.15354E+00 0.10943E-03
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      6 /   1406, Nb. of FGMRES iterations =     15
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       7   1407 0.10000E+00 0.15751E-04
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      7 /   1407, Nb. of FGMRES iterations =     18
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       8   1408 0.10000E+00 0.11856E-05
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       8   1408 0.10000E+00 0.11858E-05
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      8 /   1408, Nb. of FGMRES iterations =     17
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       9   1409 0.10000E+00 0.10573E-06
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       9   1409 0.10000E+00 0.10574E-06
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      9 /   1409, Nb. of FGMRES iterations =     20
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      10   1410 0.10000E+00 0.99359E-08
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      10   1410 0.10000E+00 0.99361E-08
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     10 /   1410, Nb. of FGMRES iterations =     21
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      11   1411 0.10000E+00 0.96997E-09
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      11   1411 0.10000E+00 0.97004E-09
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     11 /   1411, Nb. of FGMRES iterations =     22
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12   1412 0.10000E+00 0.96359E-10
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12   1412 0.10000E+00 0.96376E-10
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     12 /   1412, Nb. of FGMRES iterations =     22
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13   1413 0.10000E+00 0.84344E-11
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13   1413 0.10000E+00 0.84051E-11
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     13 /   1413, Nb. of FGMRES iterations =     22
 (PID.TID 0000.0001)  // =======================================================
 (PID.TID 0000.0001)  // Begin JFNK statistics
@@ -3334,16 +3355,16 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     8
 (PID.TID 0000.0001) %MON seaice_time_sec              =   1.4400000000000E+04
-(PID.TID 0000.0001) %MON seaice_uice_max              =   7.0265281997559E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   1.6339454128091E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   7.0265281997562E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   1.6339454128113E-01
 (PID.TID 0000.0001) %MON seaice_uice_mean             =   5.3199106983369E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.3915965515422E-02
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   2.0753569910291E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   1.9648170297261E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.4089172597871E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -7.4737925181558E-04
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.6344755011118E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   1.4068255024033E-04
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.3915965515424E-02
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   2.0753569910281E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   1.9648170297255E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.4089172597874E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -7.4737925181914E-04
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.6344755011114E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   1.4068255024021E-04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3357,8 +3378,8 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0148452624714E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0334961328460E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0013081613447E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   3.4380632567035E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0162864217829E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   3.4380632567045E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0162864217831E-01
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
@@ -3397,23 +3418,23 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      3 /   1603, Nb. of FGMRES iterations =      2
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       4   1604 0.40367E+00 0.81223E-03
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      4 /   1604, Nb. of FGMRES iterations =      7
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       5   1605 0.22911E+00 0.30411E-03
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       5   1605 0.22911E+00 0.30412E-03
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      5 /   1605, Nb. of FGMRES iterations =     11
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       6   1606 0.14050E+00 0.82192E-04
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      6 /   1606, Nb. of FGMRES iterations =     12
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       7   1607 0.10000E+00 0.96805E-05
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       7   1607 0.10000E+00 0.96817E-05
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      7 /   1607, Nb. of FGMRES iterations =     18
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       8   1608 0.10000E+00 0.67113E-06
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       8   1608 0.10000E+00 0.67129E-06
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      8 /   1608, Nb. of FGMRES iterations =     19
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       9   1609 0.10000E+00 0.56969E-07
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       9   1609 0.10000E+00 0.56964E-07
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      9 /   1609, Nb. of FGMRES iterations =     22
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      10   1610 0.10000E+00 0.51132E-08
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      10   1610 0.10000E+00 0.51110E-08
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     10 /   1610, Nb. of FGMRES iterations =     21
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      11   1611 0.10000E+00 0.48727E-09
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      11   1611 0.10000E+00 0.48764E-09
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     11 /   1611, Nb. of FGMRES iterations =     23
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12   1612 0.10000E+00 0.40403E-10
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12   1612 0.10000E+00 0.40168E-10
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     12 /   1612, Nb. of FGMRES iterations =     22
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13   1613 0.10000E+00 0.41775E-11
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13   1613 0.10000E+00 0.41156E-11
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     13 /   1613, Nb. of FGMRES iterations =     22
 (PID.TID 0000.0001)  // =======================================================
 (PID.TID 0000.0001)  // Begin JFNK statistics
@@ -3433,16 +3454,16 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                     9
 (PID.TID 0000.0001) %MON seaice_time_sec              =   1.6200000000000E+04
-(PID.TID 0000.0001) %MON seaice_uice_max              =   7.0353897084067E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   1.5141077709942E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   7.0353897084071E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   1.5141077709935E-01
 (PID.TID 0000.0001) %MON seaice_uice_mean             =   5.3176458297072E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.4594070390077E-02
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   2.1234510279817E-04
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.4594070390079E-02
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   2.1234510279812E-04
 (PID.TID 0000.0001) %MON seaice_vice_max              =   2.0132104546863E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.4559283031478E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -6.4987452247666E-04
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.6665203725164E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   1.5127692936932E-04
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.4559283031479E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -6.4987452248013E-04
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.6665203725161E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   1.5127692936917E-04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3451,13 +3472,13 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON thSI_time_sec                =   1.6200000000000E+04
 (PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   6.8925146045772E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   2.8954147160140E+10
+(PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   2.8954147160139E+10
 (PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.9970998885633E+10
 (PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0166805291597E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0376688513394E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0014770319749E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   3.5495566667378E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0201049288875E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   3.5495566667388E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0201049288876E-01
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
@@ -3488,9 +3509,9 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
- Compute Stats, Diag. #    211  SI_Fract  vol(   0 ): 2.780E+11  Parms: SM P    M1      
- Compute Stats, Diag. #    212  SI_Thick  vol(   0 ): 2.763E+11  Parms: SM PC   M1      
-    use Counter Mate  #    211  SI_Fract  vol(   0 ): 2.780E+11 integral 2.763E+11
+ Compute Stats, Diag. #    213  SI_Fract  vol(   0 ): 2.780E+11  Parms: SM P    M1      
+ Compute Stats, Diag. #    214  SI_Thick  vol(   0 ): 2.763E+11  Parms: SM PC   M1      
+    use Counter Mate  #    213  SI_Fract  vol(   0 ): 2.780E+11 integral 2.763E+11
  Compute Stats, Diag. #    144  SIarea    vol(   0 ): 2.780E+11  Parms: SM      M1      
  Compute Stats, Diag. #    147  SIheff    vol(   0 ): 2.780E+11  Parms: SM      M1      
  Compute Stats, Diag. #    153  SIuice    vol(   0 ): 2.760E+11  Parms: UU      M1      
@@ -3505,22 +3526,22 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      4 /   1804, Nb. of FGMRES iterations =      7
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       5   1805 0.22979E+00 0.28291E-03
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      5 /   1805, Nb. of FGMRES iterations =     13
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       6   1806 0.12548E+00 0.70907E-04
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       6   1806 0.12547E+00 0.70906E-04
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      6 /   1806, Nb. of FGMRES iterations =     12
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       7   1807 0.10000E+00 0.73495E-05
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       7   1807 0.10000E+00 0.73500E-05
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      7 /   1807, Nb. of FGMRES iterations =     17
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       8   1808 0.10000E+00 0.60238E-06
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       8   1808 0.10000E+00 0.60231E-06
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      8 /   1808, Nb. of FGMRES iterations =     20
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       9   1809 0.10000E+00 0.52912E-07
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       9   1809 0.10000E+00 0.52916E-07
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      9 /   1809, Nb. of FGMRES iterations =     22
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      10   1810 0.10000E+00 0.52589E-08
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      10   1810 0.10000E+00 0.52585E-08
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     10 /   1810, Nb. of FGMRES iterations =     23
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      11   1811 0.10000E+00 0.45989E-09
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     11 /   1811, Nb. of FGMRES iterations =     21
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12   1812 0.10000E+00 0.45973E-10
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      11   1811 0.10000E+00 0.45995E-09
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     11 /   1811, Nb. of FGMRES iterations =     22
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12   1812 0.10000E+00 0.42220E-10
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     12 /   1812, Nb. of FGMRES iterations =     22
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13   1813 0.10000E+00 0.45343E-11
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     13 /   1813, Nb. of FGMRES iterations =     23
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13   1813 0.10000E+00 0.44070E-11
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     13 /   1813, Nb. of FGMRES iterations =     22
 (PID.TID 0000.0001)  // =======================================================
 (PID.TID 0000.0001)  // Begin JFNK statistics
 (PID.TID 0000.0001)  // =======================================================
@@ -3539,16 +3560,16 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                    10
 (PID.TID 0000.0001) %MON seaice_time_sec              =   1.8000000000000E+04
-(PID.TID 0000.0001) %MON seaice_uice_max              =   7.0439128075745E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   1.4094325323956E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   7.0439128075748E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   1.4094325323997E-01
 (PID.TID 0000.0001) %MON seaice_uice_mean             =   5.3154980496786E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.5234325107379E-02
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   2.1448492481268E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   2.0545421644876E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.4917117554213E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -5.6665647476857E-04
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.6966394891171E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   1.5615399364609E-04
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.5234325107380E-02
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   2.1448492481247E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   2.0545421644897E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.4917117554219E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -5.6665647477091E-04
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.6966394891168E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   1.5615399364590E-04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3560,10 +3581,10 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   2.8894633453277E+10
 (PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.9967912195113E+10
 (PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0185138189594E-01
-(PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0418426635682E-01
+(PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0418426635683E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0016483291993E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   3.6553682748321E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0242123648970E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   3.6553682748326E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0242123648972E-01
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
@@ -3604,21 +3625,21 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      4 /   2004, Nb. of FGMRES iterations =      5
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       5   2005 0.26096E+00 0.30594E-03
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      5 /   2005, Nb. of FGMRES iterations =     10
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       6   2006 0.13862E+00 0.81944E-04
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       6   2006 0.13862E+00 0.81943E-04
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      6 /   2006, Nb. of FGMRES iterations =     14
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       7   2007 0.10000E+00 0.83091E-05
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       7   2007 0.10000E+00 0.83092E-05
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      7 /   2007, Nb. of FGMRES iterations =     17
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       8   2008 0.10000E+00 0.68441E-06
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       8   2008 0.10000E+00 0.68437E-06
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      8 /   2008, Nb. of FGMRES iterations =     22
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       9   2009 0.10000E+00 0.57524E-07
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       9   2009 0.10000E+00 0.57525E-07
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      9 /   2009, Nb. of FGMRES iterations =     21
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      10   2010 0.10000E+00 0.54508E-08
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      10   2010 0.10000E+00 0.54477E-08
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     10 /   2010, Nb. of FGMRES iterations =     23
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      11   2011 0.10000E+00 0.45924E-09
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      11   2011 0.10000E+00 0.45748E-09
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     11 /   2011, Nb. of FGMRES iterations =     23
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12   2012 0.10000E+00 0.44367E-10
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12   2012 0.10000E+00 0.44184E-10
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     12 /   2012, Nb. of FGMRES iterations =     22
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13   2013 0.10000E+00 0.45451E-11
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      13   2013 0.10000E+00 0.44647E-11
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     13 /   2013, Nb. of FGMRES iterations =     23
 (PID.TID 0000.0001)  // =======================================================
 (PID.TID 0000.0001)  // Begin JFNK statistics
@@ -3638,16 +3659,16 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                    11
 (PID.TID 0000.0001) %MON seaice_time_sec              =   1.9800000000000E+04
-(PID.TID 0000.0001) %MON seaice_uice_max              =   7.0521874835325E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   1.3169456055659E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   7.0521874835328E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   1.3169456055658E-01
 (PID.TID 0000.0001) %MON seaice_uice_mean             =   5.3134430290149E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.5845342435750E-02
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   2.1582373956479E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   2.0901517975712E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.5183175287796E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -4.9507898547819E-04
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.7254536214986E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   1.5832171783931E-04
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.5845342435756E-02
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   2.1582373956449E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   2.0901517975709E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.5183175287797E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -4.9507898548158E-04
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.7254536214982E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   1.5832171783897E-04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3656,13 +3677,13 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON thSI_time_sec                =   1.9800000000000E+04
 (PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   6.8800116157599E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   2.8835291024115E+10
+(PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   2.8835291024114E+10
 (PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.9964825133485E+10
 (PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0203454261850E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0460183308998E-01
-(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0018219952326E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   3.7563976479681E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0286004850011E-01
+(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0018219952325E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   3.7563976479687E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0286004850012E-01
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
@@ -3703,19 +3724,19 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      4 /   2204, Nb. of FGMRES iterations =      6
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       5   2205 0.21026E+00 0.22526E-03
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      5 /   2205, Nb. of FGMRES iterations =     12
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       6   2206 0.10085E+00 0.48805E-04
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       6   2206 0.10084E+00 0.48804E-04
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      6 /   2206, Nb. of FGMRES iterations =     15
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       7   2207 0.10000E+00 0.44281E-05
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       7   2207 0.10000E+00 0.44278E-05
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      7 /   2207, Nb. of FGMRES iterations =     18
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       8   2208 0.10000E+00 0.39441E-06
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       8   2208 0.10000E+00 0.39440E-06
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      8 /   2208, Nb. of FGMRES iterations =     22
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       9   2209 0.10000E+00 0.35375E-07
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =       9   2209 0.10000E+00 0.35372E-07
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =      9 /   2209, Nb. of FGMRES iterations =     23
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      10   2210 0.10000E+00 0.28878E-08
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      10   2210 0.10000E+00 0.28883E-08
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     10 /   2210, Nb. of FGMRES iterations =     22
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      11   2211 0.10000E+00 0.27259E-09
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      11   2211 0.10000E+00 0.27272E-09
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     11 /   2211, Nb. of FGMRES iterations =     23
-(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12   2212 0.10000E+00 0.22654E-10
+(PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total, JFNKgamma_lin, initial norm =      12   2212 0.10000E+00 0.22593E-10
 (PID.TID 0000.0001)  S/R SEAICE_JFNK: Newton iterate / total =     12 /   2212, Nb. of FGMRES iterations =     21
 (PID.TID 0000.0001)  // =======================================================
 (PID.TID 0000.0001)  // Begin JFNK statistics
@@ -3735,16 +3756,16 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON seaice_tsnumber              =                    12
 (PID.TID 0000.0001) %MON seaice_time_sec              =   2.1600000000000E+04
-(PID.TID 0000.0001) %MON seaice_uice_max              =   7.0602148913458E-01
-(PID.TID 0000.0001) %MON seaice_uice_min              =   1.2347910931384E-01
+(PID.TID 0000.0001) %MON seaice_uice_max              =   7.0602148913462E-01
+(PID.TID 0000.0001) %MON seaice_uice_min              =   1.2347910931363E-01
 (PID.TID 0000.0001) %MON seaice_uice_mean             =   5.3114668036107E-01
-(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.6431976663909E-02
-(PID.TID 0000.0001) %MON seaice_uice_del2             =   2.1838191506697E-04
-(PID.TID 0000.0001) %MON seaice_vice_max              =   2.1209429325145E-01
-(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.5375140279608E-01
-(PID.TID 0000.0001) %MON seaice_vice_mean             =  -4.3160097842071E-04
-(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.7532926017501E-02
-(PID.TID 0000.0001) %MON seaice_vice_del2             =   1.5885329063153E-04
+(PID.TID 0000.0001) %MON seaice_uice_sd               =   8.6431976663911E-02
+(PID.TID 0000.0001) %MON seaice_uice_del2             =   2.1838191506632E-04
+(PID.TID 0000.0001) %MON seaice_vice_max              =   2.1209429325128E-01
+(PID.TID 0000.0001) %MON seaice_vice_min              =  -1.5375140279607E-01
+(PID.TID 0000.0001) %MON seaice_vice_mean             =  -4.3160097842394E-04
+(PID.TID 0000.0001) %MON seaice_vice_sd               =   5.7532926017499E-02
+(PID.TID 0000.0001) %MON seaice_vice_del2             =   1.5885329063089E-04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3752,14 +3773,14 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // Begin MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON thSI_time_sec                =   2.1600000000000E+04
-(PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   6.8737842136369E+10
+(PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   6.8737842136370E+10
 (PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   2.8776110435520E+10
-(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.9961731700849E+10
+(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   3.9961731700850E+10
 (PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0221757867266E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   2.0501969013793E-01
 (PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0019980152574E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   3.8532602367338E-01
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0332415570866E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   3.8532602367349E-01
+(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   2.0332415570868E-01
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   0.0000000000000E+00
@@ -3790,9 +3811,9 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
- Compute Stats, Diag. #    211  SI_Fract  vol(   0 ): 2.085E+11  Parms: SM P    M1      
- Compute Stats, Diag. #    212  SI_Thick  vol(   0 ): 2.066E+11  Parms: SM PC   M1      
-    use Counter Mate  #    211  SI_Fract  vol(   0 ): 2.085E+11 integral 2.066E+11
+ Compute Stats, Diag. #    213  SI_Fract  vol(   0 ): 2.085E+11  Parms: SM P    M1      
+ Compute Stats, Diag. #    214  SI_Thick  vol(   0 ): 2.066E+11  Parms: SM PC   M1      
+    use Counter Mate  #    213  SI_Fract  vol(   0 ): 2.085E+11 integral 2.066E+11
  Compute Stats, Diag. #    144  SIarea    vol(   0 ): 2.085E+11  Parms: SM      M1      
  Compute Stats, Diag. #    147  SIheff    vol(   0 ): 2.085E+11  Parms: SM      M1      
  Compute Stats, Diag. #    153  SIuice    vol(   0 ): 2.070E+11  Parms: UU      M1      
@@ -3800,135 +3821,135 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) DIAGSTATS_CLOSE_IO: close file: iceStDiag.0000000000.txt , unit=     9
 (PID.TID 0000.0001) %CHECKPOINT        12 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   46.259999999999998
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   46.413558006286621
+(PID.TID 0000.0001)           User time:   63.000000000000000
+(PID.TID 0000.0001)         System time:  2.00000000000000004E-002
+(PID.TID 0000.0001)     Wall clock time:   63.173552989959717
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:  2.99999999999999989E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.26330661773681641E-002
+(PID.TID 0000.0001)     Wall clock time:  3.90319824218750000E-002
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   46.229999999999997
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   46.380891084671021
+(PID.TID 0000.0001)           User time:   62.969999999999999
+(PID.TID 0000.0001)         System time:  2.00000000000000004E-002
+(PID.TID 0000.0001)     Wall clock time:   63.134490966796875
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  2.00000000000000039E-002
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.71558856964111328E-002
+(PID.TID 0000.0001)           User time:  1.00000000000000019E-002
+(PID.TID 0000.0001)         System time:  1.00000000000000002E-002
+(PID.TID 0000.0001)     Wall clock time:  2.25629806518554688E-002
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   46.210000000000001
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   46.363711833953857
+(PID.TID 0000.0001)           User time:   62.960000000000001
+(PID.TID 0000.0001)         System time:  1.00000000000000002E-002
+(PID.TID 0000.0001)     Wall clock time:   63.111901998519897
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN_DO_LOOP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   46.210000000000008
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   46.363620519638062
+(PID.TID 0000.0001)           User time:   62.960000000000001
+(PID.TID 0000.0001)         System time:  9.99999999999999847E-003
+(PID.TID 0000.0001)     Wall clock time:   63.111791849136353
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [MAIN_DO_LOOP]":
-(PID.TID 0000.0001)           User time:   46.210000000000008
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   46.363451957702637
+(PID.TID 0000.0001)           User time:   62.960000000000001
+(PID.TID 0000.0001)         System time:  9.99999999999999847E-003
+(PID.TID 0000.0001)     Wall clock time:   63.111580848693848
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  9.99999999999801048E-003
+(PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.59337234497070313E-003
+(PID.TID 0000.0001)     Wall clock time:  1.15511417388916016E-002
 (PID.TID 0000.0001)          No. starts:          36
 (PID.TID 0000.0001)           No. stops:          36
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  6.00000000000022737E-002
+(PID.TID 0000.0001)           User time:  3.99999999999920419E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.94911766052246094E-002
+(PID.TID 0000.0001)     Wall clock time:  5.22370338439941406E-002
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  6.00000000000022737E-002
+(PID.TID 0000.0001)           User time:  3.99999999999920419E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.91440391540527344E-002
+(PID.TID 0000.0001)     Wall clock time:  5.18088340759277344E-002
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  8.86917114257812500E-005
+(PID.TID 0000.0001)     Wall clock time:  1.09910964965820313E-004
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  8.58306884765625000E-005
+(PID.TID 0000.0001)     Wall clock time:  1.06334686279296875E-004
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   46.109999999999999
+(PID.TID 0000.0001)           User time:   62.859999999999978
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   46.277872800827026
+(PID.TID 0000.0001)     Wall clock time:   62.991929531097412
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "THSICE_MAIN     [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)           User time:  1.99999999999960210E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  6.41083717346191406E-003
+(PID.TID 0000.0001)     Wall clock time:  8.51416587829589844E-003
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL    [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:   46.109999999999999
+(PID.TID 0000.0001)           User time:   62.829999999999998
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   46.267626047134399
+(PID.TID 0000.0001)     Wall clock time:   62.977968215942383
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "SEAICE_DYNSOLVER   [SEAICE_MODEL]":
-(PID.TID 0000.0001)           User time:   46.059999999999988
+(PID.TID 0000.0001)           User time:   62.770000000000010
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   46.212353944778442
+(PID.TID 0000.0001)     Wall clock time:   62.906050205230713
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.46508216857910156E-003
+(PID.TID 0000.0001)     Wall clock time:  2.08234786987304688E-003
 (PID.TID 0000.0001)          No. starts:          24
 (PID.TID 0000.0001)           No. stops:          24
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.49464607238769531E-003
+(PID.TID 0000.0001)     Wall clock time:  1.92975997924804688E-003
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  9.03606414794921875E-005
+(PID.TID 0000.0001)     Wall clock time:  1.12295150756835938E-004
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  9.01222229003906250E-005
+(PID.TID 0000.0001)     Wall clock time:  1.13010406494140625E-004
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  3.00000000000011369E-002
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.33909988403320313E-002
+(PID.TID 0000.0001)           User time:  5.00000000000042633E-002
+(PID.TID 0000.0001)         System time:  9.99999999999999847E-003
+(PID.TID 0000.0001)     Wall clock time:  4.49531078338623047E-002
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)           User time:  9.99999999999801048E-003
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.65090370178222656E-003
+(PID.TID 0000.0001)     Wall clock time:  5.05328178405761719E-003
 (PID.TID 0000.0001)          No. starts:          12
 (PID.TID 0000.0001)           No. stops:          12
 (PID.TID 0000.0001) // ======================================================
@@ -3979,9 +4000,9 @@ listId=   1 ; file name: iceStDiag
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =          48686
+(PID.TID 0000.0001) //            No. barriers =          48756
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =          48686
+(PID.TID 0000.0001) //     Total barrier spins =          48756
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
 PROGRAM MAIN: Execution ended Normally
