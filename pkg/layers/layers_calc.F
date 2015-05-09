@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.23 2014/07/08 19:02:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.24 2015/05/09 18:53:46 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -178,15 +178,13 @@ C--   Direct Snap-shot output
      &                           layers_VH, myIter, myThid )
 #ifdef LAYERS_THICKNESS
           CALL WRITE_FLD_3D_RL( 'layers_Hs.', suff, Nlayers,
-     &                           layers_Hw, myIter, myThid )
+     &                           layers_Hs, myIter, myThid )
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 #ifdef LAYERS_PRHO_REF
           IF ( layers_num(1).EQ.3 ) THEN
            CALL WRITE_FLD_3D_RL( 'layers_prho.', suff, Nr,
      &                           prho, myIter, myThid )
-          CALL WRITE_FLD_3D_RL( 'layers_.', suff, Nlayers,
-     &                           layers_Hs, myIter, myThid )
           ENDIF
 #endif /* LAYERS_PRHO_REF */
 #ifdef LAYERS_THERMODYNAMCS
