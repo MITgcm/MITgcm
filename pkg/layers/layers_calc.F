@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.24 2015/05/09 18:53:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.25 2015/05/11 23:32:53 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -182,7 +182,7 @@ C--   Direct Snap-shot output
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 #ifdef LAYERS_PRHO_REF
-          IF ( layers_num(1).EQ.3 ) THEN
+          IF ( layers_num(iLa).EQ.3 ) THEN
            CALL WRITE_FLD_3D_RL( 'layers_prho.', suff, Nr,
      &                           prho, myIter, myThid )
           ENDIF
@@ -239,6 +239,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Fill-in diagnostics
        IF ( useDiagnostics .AND. layers_num(iLa).NE.0 ) THEN
 
+#ifdef LAYERS_PRHO_REF
+         IF ( layers_num(iLa).EQ.3 ) THEN
+          WRITE(diagName,'(A4,I1,A3)') 'LaTr',iLa,layers_name(iLa)
+          CALL DIAGNOSTICS_FILL( prho,
+     &                           diagName, 0, Nr, 0, 1, 1, myThid )
+         ENDIF
+#endif /* LAYERS_PRHO_REF */
+
 #ifdef LAYERS_UFLUX
          WRITE(diagName,'(A4,I1,A3)') 'LaUH',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_UH,
@@ -274,7 +282,6 @@ C--   Fill-in diagnostics
 #endif /* LAYERS_VFLUX */
 
 #ifdef LAYERS_THERMODYNAMICS
-
          WRITE(diagName,'(A4,I1,A3)') 'LaHc',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_Hc,
      &                          diagName,0,Nlayers, 0, 1, 1, myThid )
@@ -306,7 +313,6 @@ C--   Fill-in diagnostics
          WRITE(diagName,'(A4,I1,A3)') 'LaSr',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_StendDiffr,
      &                          diagName,0,Nlayers, 0, 1, 1, myThid )
-
 #endif /* LAYERS_THERMODYNAMICS */
 
        ENDIF
