@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.10 2014/06/04 14:48:32 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.11 2015/05/11 21:33:48 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -124,15 +124,19 @@ C     Reset the arrays
        DO j = 1-OLy,sNy+OLy
         DO i = 1-OLx,sNx+OLx
 #ifdef LAYERS_UFLUX
-         UH(i,j,kg,bi,bj) = 0. _d 0
+         UH (i,j,kg,bi,bj) = 0. _d 0
 #ifdef LAYERS_THICKNESS
-         Hw(i,j,kg,bi,bj) = 0. _d 0
+         Hw (i,j,kg,bi,bj) = 0. _d 0
+         PIw(i,j,kg,bi,bj) = 0. _d 0
+         U  (i,j,kg,bi,bj) = 0. _d 0
 #endif /* LAYERS_THICKNESS */
 #endif /* UH */
 #ifdef LAYERS_VFLUX
-         VH(i,j,kg,bi,bj) = 0. _d 0
+         VH (i,j,kg,bi,bj) = 0. _d 0
 #ifdef LAYERS_THICKNESS
-         Hs(i,j,kg,bi,bj) = 0. _d 0
+         Hs (i,j,kg,bi,bj) = 0. _d 0
+         PIs(i,j,kg,bi,bj) = 0. _d 0
+         V  (i,j,kg,bi,bj) = 0. _d 0
 #endif /* LAYERS_THICKNESS */
 #endif /* VH */
         ENDDO
@@ -153,10 +157,10 @@ C     Reset the arrays
 
 C ------ Find theta at the U point (west) on the fine Z grid
          kp1=k+1
-         IF (hFacW(i,j,kp1,bi,bj) .EQ. 0.) kp1=k
+         IF (maskW(i,j,kp1,bi,bj).EQ.zeroRS) kp1=k
          TatU(i,j) = MapFact(kk) *
      &    0.5 _d 0 * (tracer(i-1,j,k,bi,bj)+tracer(i,j,k,bi,bj)) +
-     &    (1-MapFact(kk)) *
+     &    (1. _d 0 -MapFact(kk)) *
      &    0.5 _d 0 * (tracer(i-1,j,kp1,bi,bj)+tracer(i,j,kp1,bi,bj))
 
         ENDDO
@@ -232,10 +236,10 @@ C ------ Augment the bin values
         DO i = 1,sNx+1
 C ------ Find theta at the V point (south) on the fine Z grid
          kp1=k+1
-         IF (hFacS(i,j,kp1,bi,bj) .EQ. 0.) kp1=k
+         IF (maskS(i,j,kp1,bi,bj).EQ.zeroRS) kp1=k
          TatV(i,j) = MapFact(kk) *
      &    0.5 _d 0 * (tracer(i,j-1,k,bi,bj)+tracer(i,j,k,bi,bj)) +
-     &    (1-MapFact(kk)) *
+     &    (1. _d 0 -MapFact(kk)) *
      &    0.5 _d 0 * (tracer(i,j-1,kp1,bi,bj)+tracer(i,j,kp1,bi,bj))
 
         ENDDO
@@ -369,10 +373,10 @@ C !INPUT PARAMETERS:
 C     myThid    :: my Thread Id number
 C     tracer    :: potential temperature, salt or potential density prho
 C     iLa       :: layer coordinate index
-C     TtendSurf :: temperature tendency due to surface forcing times thickness 
+C     TtendSurf :: temperature tendency due to surface forcing times thickness
 C     TtendDiffh:: temperature tendency due to horiz. diffusion times thickness
 C     TtendDiffr:: temperature tendency due to vert. diffusion times thickness
-C     TtendSurf :: salinity tendency due to surface forcing times thickness 
+C     TtendSurf :: salinity tendency due to surface forcing times thickness
 C     TtendDiffh:: salinity tendency due to horiz. diffusion times thickness
 C     TtendDiffr:: salinity tendency due to vert. diffusion times thickness
 C     Hc        :: Layer thickness at the tracer point (m)
@@ -381,10 +385,10 @@ C     PIw       :: 1 if layer exists, 0 otherwise (at tracer point)
       _RL tracer    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,     nSx,nSy)
       _RL TtendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL TtendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL TtendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)  
+      _RL TtendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL StendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL StendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL StendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)  
+      _RL StendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL Hc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL PIc       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
 CEOP
@@ -411,7 +415,6 @@ C     TatC     :: temperature at C point
       LOGICAL errorFlag
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
- 
 C     compute maximum number of steps for bisection method (approx.
 C     log2(Nlayers)) as log2(Nlayers) + 1 for safety
       mSteps = int(log10(dble(Nlayers))/log10(2. _d 0))+1
@@ -441,9 +444,9 @@ C     Reset the arrays
          TtendDiffr(i,j,kg,bi,bj) = 0. _d 0
          StendSurf (i,j,kg,bi,bj) = 0. _d 0
          StendDiffh(i,j,kg,bi,bj) = 0. _d 0
-         StendDiffr(i,j,kg,bi,bj) = 0. _d 0  
+         StendDiffr(i,j,kg,bi,bj) = 0. _d 0
          Hc(i,j,kg,bi,bj) = 0. _d 0
-         PIc(i,j,kg,bi,bj) = 0. _d 0       
+         PIc(i,j,kg,bi,bj) = 0. _d 0
         ENDDO
        ENDDO
       ENDDO
@@ -481,20 +484,20 @@ C     check for failures
         IF ( errorFlag ) STOP 'ABNORMAL END: S/R LAYERS_DIAPYCNAL'
        ENDIF
 #endif /* ndef TARGET_NEC_SX */
-C 
+C
 
-C ------ Augment the bin values  
+C ------ Augment the bin values
        DO j = 1,sNy+1
         DO i = 1,sNx+1
-         dzfac = dZZf(kk) * hFacC(i,j,kci,bi,bj) 
+         dzfac = dZZf(kk) * hFacC(i,j,kci,bi,bj)
          kloc = kgc(i,j)
          IF (kci.EQ.1) THEN
 C ------- We are in the surface layer
           TtendSurf(i,j,kloc,bi,bj) =
-     &     TtendSurf(i,j,kloc,bi,bj) + 
+     &     TtendSurf(i,j,kloc,bi,bj) +
      &     dzfac * layers_surfflux(i,j,1,1,bi,bj)
           StendSurf(i,j,kloc,bi,bj) =
-     &     StendSurf(i,j,kloc,bi,bj) + 
+     &     StendSurf(i,j,kloc,bi,bj) +
      &     dzfac * layers_surfflux(i,j,1,2,bi,bj)
          ENDIF
          TtendDiffh(i,j,kloc,bi,bj) =
@@ -502,14 +505,14 @@ C ------- We are in the surface layer
      &    (layers_dfx(i,j,kci,1,bi,bi)+
      &     layers_dfy(i,j,kci,1,bi,bi))
          TtendDiffr(i,j,kloc,bi,bj) =
-     &     TtendDiffr(i,j,kloc,bi,bj) + 
+     &     TtendDiffr(i,j,kloc,bi,bj) +
      &     dzfac * layers_dfr(i,j,kci,1,bi,bi)
          StendDiffh(i,j,kloc,bi,bj) =
      &     StendDiffh(i,j,kloc,bi,bj) + dzfac *
      &    (layers_dfx(i,j,kci,2,bi,bi)+
      &     layers_dfy(i,j,kci,2,bi,bi))
          StendDiffr(i,j,kloc,bi,bj) =
-     &     StendDiffr(i,j,kloc,bi,bj) + 
+     &     StendDiffr(i,j,kloc,bi,bj) +
      &     dzfac * layers_dfr(i,j,kci,2,bi,bi)
          Hc(i,j,kloc,bi,bj) = Hc(i,j,kloc,bi,bj)
      &     + dzfac
@@ -517,7 +520,7 @@ C ------- We are in the surface layer
         ENDDO
        ENDDO
       ENDDO
-      
+
 C--   Now that we know the thicknesses, compute the heaviside function
 C--   (Needs another loop through Ng)
       DO kg=1,Nlayers
