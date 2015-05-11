@@ -1,14 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2149 2015/05/05 16:11:26 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2150 2015/05/11 23:39:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: 
+o pkg/layers:
+  - fix snap-shot output of layer thickness @ V.pt and output of pot.density
+  - fix calculation of layer non-weighted velocity and layer probability
+  - add diagnostics for pot.density used for layer averaging
+o pkg/seaice:
   - seaice_calc_viscosity.F: change computation of deltaC**2 to ensure
-    positiveness, modify a few comments and improve variable names, 
-  - the changed computation of deltaC affects most seaice-related 
-    experiments at the truncation level. 
+    positiveness, modify a few comments and improve variable names,
+  - the changed computation of deltaC affects most seaice-related
+    experiments at the truncation level.
     seaice_itd.thermo is affected by far the most, with
     only 7 digits of agreement remaining; update experiments.
 
