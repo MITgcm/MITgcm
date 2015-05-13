@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2150 2015/05/11 23:39:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2151 2015/05/13 21:39:51 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/layers:
+  - shift potential density field "prho" by -1000 for density layer averaging so
+    that it corresponds to usual "sigma" definition (i.e., rho(p=const)-1000);
+    Note that density bin boundaries (layers_bounds in data.layers) have
+    to be set accordingly (i.e., shifted, in sigma scale).
 o pkg/layers:
   - fix snap-shot output of layer thickness @ V.pt and output of pot.density
   - fix calculation of layer non-weighted velocity and layer probability
