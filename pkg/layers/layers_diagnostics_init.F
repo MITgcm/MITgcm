@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_diagnostics_init.F,v 1.7 2015/05/11 23:31:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_diagnostics_init.F,v 1.8 2015/05/13 21:29:56 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -45,6 +45,10 @@ C     !LOCAL VARIABLES:
       CHARACTER*16   diagUnits
       CHARACTER*(80) diagTitle
       CHARACTER*2    rUnit2c
+#ifdef LAYERS_PRHO_REF
+      INTEGER kLoc
+      _RL     rLoc
+#endif
 CEOP
 
 c     IF ( useDiagnostics ) THEN
@@ -62,10 +66,15 @@ c     IF ( useDiagnostics ) THEN
 #ifdef LAYERS_PRHO_REF
        IF ( layers_num(iLa).EQ.3 ) THEN
         WRITE(diagName,'(A4,I1,A3)') 'LaTr',iLa,layers_name(iLa)
-        WRITE(diagTitle,'(A,I4,A,F9.2,A)')
-     &     'Potential density (k=',
-     &        layers_krho(iLa), ', z=', rC(layers_krho(iLa)),
-     &     ') used for layer averaging'
+        rLoc = 0.
+        kLoc = layers_krho(iLa)
+        IF ( kLoc.GE.1 .AND. kLoc.LE.Nr ) THEN
+          rLoc = rC(kLoc)
+        ELSE
+          kLoc = 0
+        ENDIF
+        WRITE(diagTitle,'(2A,F9.2,A,I4)') 'Pot. density (minus 1000)',
+     &    ' for layer averaging, ref_z=', rLoc, ',', kLoc
         diagUnits = 'kg/m^3          '
         diagCode  = 'SMR     MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
