@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.11 2015/05/11 21:33:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.12 2015/05/13 21:33:43 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -59,14 +59,30 @@ C      iLa  :: layer coordinate index
       _RL uVel   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,     nSx,nSy)
       _RL vVel   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,     nSx,nSy)
       _RL tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,     nSx,nSy)
+#ifdef LAYERS_UFLUX
       _RL UH     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL VH     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+# ifdef LAYERS_THICKNESS
       _RL Hw     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL Hs     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL PIw    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL PIs    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL U      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+# else
+      _RL Hw(1), PIw(1), U(1)
+# endif
+#else
+      _RL UH(1), Hw(1), PIw(1), U(1)
+#endif
+#ifdef LAYERS_VFLUX
+      _RL VH     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+# ifdef LAYERS_THICKNESS
+      _RL Hs     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL PIs    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL V      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+# else
+      _RL Hs(1), PIs(1), V(1)
+# endif
+#else
+      _RL VH(1), Hs(1), PIs(1), V(1)
+#endif
       INTEGER iLa
 CEOP
 
@@ -82,7 +98,7 @@ C     kk       :: vertical index for ZZ (fine) grid
 C     kgu,kgv  :: vertical index for isopycnal grid
 C     kloc     :: local copy of kgu/v to reduce accesses to index arrays
 C     mSteps   :: maximum number of steps for bisection method
-C     prho     :: potential density referenced to layers_krho pressure
+C     prho     :: pot. density (less 1000) referenced to layers_krho pressure
 C     TatU     :: temperature at U point
 C     TatV     :: temperature at V point
 
