@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.25 2015/05/11 23:32:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.26 2015/05/13 21:28:43 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -56,6 +56,7 @@ C     k        :: vertical index for model grid
       CHARACTER*(MAX_LEN_MBUF) suff
 #ifdef LAYERS_PRHO_REF
       INTEGER i, j, k
+      _RL rhoShift
 #endif
 #ifdef LAYERS_THERMODYNAMICS
       INTEGER iTracer
@@ -122,8 +123,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
        ELSEIF ( layers_num(iLa) .EQ. 3 ) THEN
 #ifdef LAYERS_PRHO_REF
-C     For layers_num(iLa) = 3, calculate the potential density referenced to
-C     the model level given by layers_krho.
+C     For layers_num(iLa) = 3, calculate the potential density (minus 1000)
+C     referenced to the model level given by layers_krho.
+        rhoShift = rhoConst - 1000. _d 0
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO k = 1,Nr
@@ -135,7 +137,7 @@ C     the model level given by layers_krho.
      &                       k, bi, bj, myThid )
            DO j = 1-OLy,sNy+OLy
             DO i = 1-OLx,sNx+OLx
-             prho(i,j,k,bi,bj) = rhoConst + prho(i,j,k,bi,bj)
+             prho(i,j,k,bi,bj) = prho(i,j,k,bi,bj) + rhoShift
             ENDDO
            ENDDO
           ENDDO
