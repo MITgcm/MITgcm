@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.58 2014/11/02 21:23:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.59 2015/05/22 23:13:23 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -391,6 +391,23 @@ C     Runoff temperature
      &     myTime, myIter, myThid )
 #endif /* ALLOW_RUNOFTEMP */
 
+#ifdef ALLOW_ROTATE_UV_CONTROLS
+      if ( useCTRL ) then
+        DO bj = myByLo(myThid),myByHi(myThid)
+         DO bi = myBxLo(myThid),mybxhi(myThid)
+          DO j = 1-OLy,sNy+OLy
+           DO i = 1-OLx,sNx+OLx
+             tmpUE(i,j,bi,bj) = 0. _d 0
+             tmpVN(i,j,bi,bj) = 0. _d 0
+             tmpUX(i,j,bi,bj) = 0. _d 0
+             tmpVY(i,j,bi,bj) = 0. _d 0
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      endif
+#endif
+
 # if (!defined (ALLOW_ECCO) || defined (ECCO_CTRL_DEPRECATED))
 
 C-- Control variables for atmos. state
@@ -505,19 +522,6 @@ C-- Control variables for atmos. state
 #else
 
 #if defined(ALLOW_UWIND_CONTROL) && defined(ALLOW_VWIND_CONTROL)
-        DO bj = myByLo(myThid),myByHi(myThid)
-         DO bi = myBxLo(myThid),mybxhi(myThid)
-          DO j = 1-OLy,sNy+OLy
-           DO i = 1-OLx,sNx+OLx
-             tmpUE(i,j,bi,bj) = 0. _d 0
-             tmpVN(i,j,bi,bj) = 0. _d 0
-             tmpUX(i,j,bi,bj) = 0. _d 0
-             tmpVY(i,j,bi,bj) = 0. _d 0
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-
       CALL CTRL_GET_GEN (
      &     xx_uwind_file, xx_uwindstartdate, xx_uwindperiod,
      &     maskc, tmpUE, xx_uwind0, xx_uwind1, xx_uwind_dummy,
@@ -613,11 +617,43 @@ cdm #endif
            if (xx_gentim2d_file(iarr).EQ.'xx_precip')
      &       precip(i,j,bi,bj)=precip(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
+#ifndef ALLOW_ROTATE_UV_CONTROLS
+           if (xx_gentim2d_file(iarr).EQ.'xx_uwind')
+     &       uwind(i,j,bi,bj)=uwind(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr).EQ.'xx_vwind')
+     &       vwind(i,j,bi,bj)=vwind(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+#else
+           if (xx_gentim2d_file(iarr).EQ.'xx_uwind')
+     &       uwind(i,j,bi,bj)=uwind(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr).EQ.'xx_vwind')
+     &       vwind(i,j,bi,bj)=vwind(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+
+#endif
            enddo
          ENDDO
         ENDDO
        ENDDO
       ENDDO
+#ifdef ALLOW_ROTATE_UV_CONTROLS
+      CALL ROTATE_UV2EN_RL(tmpUX,tmpVY,tmpUE,tmpVN,
+     &     .FALSE.,.FALSE.,.TRUE.,1,myThid)
+
+       DO bj = myByLo(myThid),myByHi(myThid)
+         DO bi = myBxLo(myThid),mybxhi(myThid)
+          DO j = 1,sNy
+           DO i = 1,sNx
+             uwind(i,j,bi,bj)=uwind(i,j,bi,bj)+tmpUX(i,j,bi,bj)
+             vwind(i,j,bi,bj)=vwind(i,j,bi,bj)+tmpVY(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+       ENDDO
+#endif /* ALLOW_ROTATE_UV_CONTROLS */
+
       endif !if (ctrlUseGen) then
 #endif
 
