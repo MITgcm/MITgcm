@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.6 2015/03/23 21:07:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.7 2015/05/25 01:09:44 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -94,13 +94,6 @@ C--   generic 2D control variables
      O       diffrec, startrec, endrec,
      I       myThid )
 
-        fnamebase = xx_gentim2d_file(iarr)
-        ilgen=ilnblnk( fnamebase )
-        write(fnamegenIn(1:80),'(2a,i10.10)')
-     &       fnamebase(1:ilgen),'.',optimcycle
-        write(fnamegenOut(1:80),'(2a,i10.10)')
-     &       fnamebase(1:ilgen),'.effective.',optimcycle
-
         smoothOpNb=1
         do k2 = 1, maxCtrlProc
           if (xx_gentim2d_preproc(k2,iarr).EQ.'smooth') then
@@ -125,7 +118,45 @@ C--   generic 2D control variables
          endif
         enddo
 
+        fnamebase = xx_gentim2d_file(iarr)
+        ilgen=ilnblnk( fnamebase )
+        write(fnamegenIn(1:80),'(2a,i10.10)')
+     &       fnamebase(1:ilgen),'.',optimcycle
+        write(fnamegenOut(1:80),'(2a,i10.10)')
+     &       fnamebase(1:ilgen),'.effective.',optimcycle
+
+        DO jrec = 1, replicated_ntimes+1
         DO irec = 1, replicated_nrec
+#ifdef ALLOW_AUTODIFF
+CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+#endif
+        krec=replicated_nrec*(jrec-1)+irec
+        IF (krec.LE.endrec) THEN
+#ifdef ALLOW_AUTODIFF
+         call active_read_xy( fnamegenIn, xx_gen, irec,
+     &                       doglobalread, ladinit, optimcycle,
+     &                       mythid, xx_gentim2d_dummy(iarr) )
+#else
+         CALL READ_REC_XY_RL( fnamegenIn, xx_gen, iRec, 1, myThid )
+#endif
+#ifdef ALLOW_AUTODIFF
+         call active_write_xy( fnamegenOut, xx_gen, krec, optimcycle,
+     &       mythid, xx_gentim2d_dummy(iarr) )
+#else
+         CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
+#endif
+        ENDIF
+        ENDDO
+        ENDDO
+
+        fnamebase = xx_gentim2d_file(iarr)
+        ilgen=ilnblnk( fnamebase )
+        write(fnamegenIn(1:80),'(2a,i10.10)')
+     &       fnamebase(1:ilgen),'.effective.',optimcycle
+        write(fnamegenOut(1:80),'(2a,i10.10)')
+     &       fnamebase(1:ilgen),'.effective.',optimcycle
+
+        DO irec = 1, endrec
 #ifdef ALLOW_AUTODIFF
 CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
@@ -139,11 +170,12 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
 
 #ifndef ALLOW_OPENAD
+      jrec=1
         do k2 = 1, maxCtrlProc
-         if (xx_gentim2d_preproc(k2,iarr).EQ.'variaweight')
-     &     call mdsreadfield( xx_gentim2d_weight(iarr), ctrlprec, 'RL',
-     &     1, wgentim2d(1-Olx,1-Oly,1,1,iarr), irec, myThid )
+         if (xx_gentim2d_preproc(k2,iarr).EQ.'variaweight') jrec=irec
         enddo
+           call mdsreadfield( xx_gentim2d_weight(iarr), ctrlprec, 'RL',
+     &     1, wgentim2d(1-Olx,1-Oly,1,1,iarr), jrec, myThid )
 #endif
 
 #ifdef ALLOW_SMOOTH
@@ -181,30 +213,6 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
 
 c-- end irec loop
-        ENDDO
-
-        DO jrec = 1, replicated_ntimes
-        DO irec = 1, replicated_nrec
-#ifdef ALLOW_AUTODIFF
-CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
-#endif
-        krec=replicated_nrec*(jrec-1)+irec
-        IF (krec.LE.endrec) THEN
-#ifdef ALLOW_AUTODIFF
-         call active_read_xy( fnamegenOut, xx_gen, irec,
-     &                       doglobalread, ladinit, optimcycle,
-     &                       mythid, xx_gentim2d_dummy(iarr) )
-#else
-         CALL READ_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
-#endif
-#ifdef ALLOW_AUTODIFF
-         call active_write_xy( fnamegenOut, xx_gen, krec, optimcycle,
-     &       mythid, xx_gentim2d_dummy(iarr) )
-#else
-         CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
-#endif
-        ENDIF
-        ENDDO
         ENDDO
 
 #ifndef ALLOW_OPENAD
