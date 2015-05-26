@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.63 2015/05/26 01:38:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.64 2015/05/26 21:33:38 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -874,6 +874,15 @@ C
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
         write(fnamegen(1:MAX_LEN_FNAM),'(2a)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.effective'
+        call ctrl_init_ctrlvar (
+     &       fnamegen(1:MAX_LEN_FNAM),
+     &       300+iarr, 400+iarr,
+     &       diffrecFull, startrec, endrecFull,
+     &       snx, sny, 1, 'c', 'xy', myThid )
+C
+        ilgen=ilnblnk( xx_gentim2d_file(iarr) )
+        write(fnamegen(1:MAX_LEN_FNAM),'(2a)')
+     &       xx_gentim2d_file(iarr)(1:ilgen),'.tmp'
         call ctrl_init_ctrlvar (
      &       fnamegen(1:MAX_LEN_FNAM),
      &       300+iarr, 400+iarr,

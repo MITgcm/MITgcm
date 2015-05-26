@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.7 2015/05/25 01:09:44 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.8 2015/05/26 21:34:42 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -52,6 +52,7 @@ C     == local variables ==
       integer smoothOpNb
       character*(80) fnamegenIn
       character*(80) fnamegenOut
+      character*(80) fnamegenTmp
       character*(80) fnamebase
       integer startrec
       integer endrec
@@ -62,6 +63,11 @@ C     == local variables ==
       logical doglobalread
       logical ladinit
       _RL     xx_gen(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#ifdef ALLOW_ECCO
+      _RL     xx_gen_tmp(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      integer nyearsINT
+      _RL     nyearsRL
+#endif
       integer bi,bj
       integer i,j,k2
       INTEGER  ILNBLNK
@@ -102,6 +108,17 @@ C--   generic 2D control variables
           endif
         enddo
 
+        fnamebase = xx_gentim2d_file(iarr)
+        ilgen=ilnblnk( fnamebase )
+        write(fnamegenIn(1:80),'(2a,i10.10)')
+     &       fnamebase(1:ilgen),'.',optimcycle
+        write(fnamegenOut(1:80),'(2a,i10.10)')
+     &       fnamebase(1:ilgen),'.effective.',optimcycle
+        write(fnamegenTmp(1:80),'(2a,i10.10)')
+     &       fnamebase(1:ilgen),'.tmp.',optimcycle
+
+c-- cycle
+
         replicated_nrec=endrec
         replicated_ntimes=0
         do k2 = 1, maxCtrlProc
@@ -117,13 +134,6 @@ C--   generic 2D control variables
            endif
          endif
         enddo
-
-        fnamebase = xx_gentim2d_file(iarr)
-        ilgen=ilnblnk( fnamebase )
-        write(fnamegenIn(1:80),'(2a,i10.10)')
-     &       fnamebase(1:ilgen),'.',optimcycle
-        write(fnamegenOut(1:80),'(2a,i10.10)')
-     &       fnamebase(1:ilgen),'.effective.',optimcycle
 
         DO jrec = 1, replicated_ntimes+1
         DO irec = 1, replicated_nrec
@@ -149,12 +159,106 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
         ENDDO
         ENDDO
 
-        fnamebase = xx_gentim2d_file(iarr)
-        ilgen=ilnblnk( fnamebase )
-        write(fnamegenIn(1:80),'(2a,i10.10)')
-     &       fnamebase(1:ilgen),'.effective.',optimcycle
-        write(fnamegenOut(1:80),'(2a,i10.10)')
-     &       fnamebase(1:ilgen),'.effective.',optimcycle
+c-- rmcycle
+#ifdef ALLOW_ECCO
+        replicated_nrec=endrec
+        replicated_ntimes=0
+        do k2 = 1, maxCtrlProc
+         if (xx_gentim2d_preproc(k2,iarr).EQ.'rmcycle') then
+           if (xx_gentim2d_preproc_i(k2,iarr).NE.0) then
+            replicated_nrec=min(endrec,xx_gentim2d_preproc_i(k2,iarr))
+            replicated_ntimes=
+     &       int(float(endrec)/float(replicated_nrec))
+            if (replicated_ntimes*replicated_nrec.LT.endrec)
+     &      replicated_ntimes=replicated_ntimes+1
+            if (replicated_ntimes*replicated_nrec.GT.endrec)
+     &      replicated_ntimes=replicated_ntimes-1
+           endif
+         endif
+        enddo
+
+        print*,'endrec',endrec,replicated_ntimes,replicated_nrec
+
+        IF (replicated_ntimes.GT.0) THEN
+
+c create cyclic average
+
+        nyearsINT=1+int((endrec-replicated_nrec)/replicated_nrec)
+        nyearsRL=float(nyearsINT)
+
+        print*,'nyearsINT',nyearsINT,nyearsRL
+
+        DO irec = 1, replicated_nrec
+
+         call ecco_zero(xx_gen,1,zeroRL,myThid)
+
+         do jrec=1,nyearsINT
+#ifdef ALLOW_AUTODIFF
+CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+#endif
+           krec=irec+(jrec-1)*replicated_nrec
+#ifdef ALLOW_AUTODIFF
+           call active_read_xy( fnamegenOut, xx_gen_tmp, krec,
+     &                       doglobalread, ladinit, optimcycle,
+     &                       mythid, xx_gentim2d_dummy(iarr) )
+#else
+           CALL READ_REC_XY_RL( fnamegenOut, xx_gen_tmp, krec, 1, myThid )
+#endif
+           call ecco_add(xx_gen_tmp,1,xx_gen,1,myThid)
+         enddo
+
+         call ecco_div(xx_gen,1,nyearsRL,myThid)
+
+#ifdef ALLOW_AUTODIFF
+CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+#endif
+
+#ifdef ALLOW_AUTODIFF
+         call active_write_xy( fnamegenTmp, xx_gen, iRec, optimcycle,
+     &       mythid, xx_gentim2d_dummy(iarr) )
+#else
+         CALL WRITE_REC_XY_RL( fnamegenTmp, xx_gen, iRec, 1, myThid )
+#endif
+
+        ENDDO
+
+c subtract cyclic average
+        DO jrec = 1, replicated_ntimes+1
+        DO irec = 1, replicated_nrec
+#ifdef ALLOW_AUTODIFF
+CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+#endif
+        krec=replicated_nrec*(jrec-1)+irec
+        IF (krec.LE.endrec) THEN
+#ifdef ALLOW_AUTODIFF
+         CALL active_read_xy( fnamegenOut, xx_gen, kRec,
+     &                       doglobalread, ladinit, optimcycle,
+     &                       mythid, xx_gentim2d_dummy(iarr) )
+#else
+         CALL READ_REC_XY_RL( fnamegenOut, xx_gen, kRec, 1, myThid )
+#endif
+#ifdef ALLOW_AUTODIFF
+         CALL active_read_xy( fnamegenTmp, xx_gen_tmp, iRec,
+     &                       doglobalread, ladinit, optimcycle,
+     &                       mythid, xx_gentim2d_dummy(iarr) )
+#else
+         CALL READ_REC_XY_RL( fnamegenTmp, xx_gen_tmp, iRec, 1, myThid )
+#endif
+         CALL ecco_subtract(xx_gen_tmp,1,xx_gen,1,myThid)
+#ifdef ALLOW_AUTODIFF
+         CALL active_write_xy( fnamegenOut, xx_gen, kRec, optimcycle,
+     &       mythid, xx_gentim2d_dummy(iarr) )
+#else
+         CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, kRec, 1, myThid )
+#endif
+        ENDIF
+        ENDDO
+        ENDDO
+
+        ENDIF
+#endif /* ifdef ALLOW_ECCO */
+
+c-- scaling and smoothing
 
         DO irec = 1, endrec
 #ifdef ALLOW_AUTODIFF
@@ -162,11 +266,11 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
 
 #ifdef ALLOW_AUTODIFF
-         call active_read_xy( fnamegenIn, xx_gen, irec,
+         call active_read_xy( fnamegenOut, xx_gen, irec,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gentim2d_dummy(iarr) )
 #else
-      CALL READ_REC_XY_RL( fnamegenIn, xx_gen, iRec, 1, myThid )
+      CALL READ_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
 #endif
 
 #ifndef ALLOW_OPENAD
