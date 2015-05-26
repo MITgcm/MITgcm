@@ -1,4 +1,5 @@
 
+#include "CTRL_OPTIONS.h"
 
       subroutine simul(
      I                  indic,

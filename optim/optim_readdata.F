@@ -1,4 +1,11 @@
 
+#ifdef ALLOW_OBCS
+c Include ECCO_CPPOPTIONS because ecco,ctrl,cost files have headers with options for OBCS masks.
+# include "ECCO_CPPOPTIONS.h"
+#else
+# include "CTRL_OPTIONS.h"
+#endif
+
       subroutine optim_readdata(
      I                      nn,
      I                      dfile,
@@ -33,10 +40,6 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
-cgg   Include ECCO_CPPOPTIONS because the ecco_ctrl,cost files 
-cgg   have headers with options for OBCS masks.
-#include "ECCO_CPPOPTIONS.h"
-
 #include "ctrl.h"
 #include "optim.h"
 #include "minimization.h"

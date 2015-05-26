@@ -1,4 +1,6 @@
 
+#include "CTRL_OPTIONS.h"
+
 cph #ifdef TARGET_CRAY_VECTOR
 cph #  define NML_OPTIM ECCO_OPTIM
 cph #  define NML_ECCO  ECCO_PARMS

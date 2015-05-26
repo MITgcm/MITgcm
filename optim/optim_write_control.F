@@ -1,4 +1,6 @@
 
+#include "CTRL_OPTIONS.h"
+
       subroutine optim_write_control(
      I                          nv,
      I                          xx
