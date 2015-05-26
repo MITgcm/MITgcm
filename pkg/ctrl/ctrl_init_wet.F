@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.18 2015/03/23 21:07:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.19 2015/05/26 23:53:06 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -51,7 +51,6 @@ c     == local variables ==
 #endif
       _RL dummy
       _RS dummyRS
-      _RL loctmp3d (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
 
       character*(80) ymaskobcs
       character*(max_len_mbuf) msgbuf
@@ -592,23 +591,6 @@ c
 
       _END_MASTER( mythid )
 
-c     Set unit weight to 1
-c
-      do bj=1,nSy
-         do bi=1,nSx
-            do k=1, nr
-               wunit(k,bi,bj) = 1. _d 0
-            enddo
-            do k=1,Nr
-             do j=1-oly,sNy+oly
-              do i=1-olx,sNx+olx
-               loctmp3d(i,j,k,bi,bj) = 1. _d 0
-              enddo
-             enddo
-            enddo
-         enddo
-      enddo
-
 #ifdef ALLOW_AUTODIFF
 c     write masks and weights to files to be read by a master process
 c
@@ -628,7 +610,6 @@ c#endif
 #if (defined (ALLOW_EFLUXP0_CONTROL))
       call active_write_xyz( 'maskhFacV', hFacV, 1, 0, mythid, dummy)
 #endif
-      call active_write_xyz( 'wunit', loctmp3d, 1, 0, mythid, dummy)
 #ifdef ALLOW_SHIFWFLX_CONTROL
 c#ifdef REAL4_IS_SLOW
 c     call active_write_xyz( 'maskCtrlI', maskSHI, 1, 0, mythid, dummy)

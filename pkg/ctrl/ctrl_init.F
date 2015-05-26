@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.64 2015/05/26 21:33:38 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.65 2015/05/26 23:53:06 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -52,7 +52,7 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer bi,bj
-      integer i,j
+      integer i,j,k
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
@@ -63,6 +63,9 @@ c     == local variables ==
       integer endrec
       integer diffrec
       integer iarr
+
+      _RL dummy
+      _RL loctmp3d (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
 
 #ifdef ALLOW_OBCS_CONTROL_MODES
       INTEGER  k,length_of_rec,dUnit
@@ -100,6 +103,24 @@ c--     Set default values.
        ncvarnrmax(ivar) =  0
        ncvargrd(ivar)   = '?'
       enddo
+
+c     Set unit weight to 1
+c
+
+      do bj=1,nSy
+         do bi=1,nSx
+            do k=1,Nr
+             wunit(k,bi,bj) = 1. _d 0
+             do j=1-oly,sNy+oly
+              do i=1-olx,sNx+olx
+               loctmp3d(i,j,k,bi,bj) = 1. _d 0
+              enddo
+             enddo
+            enddo
+         enddo
+      enddo
+
+      call active_write_xyz( 'wunit', loctmp3d, 1, 0, mythid, dummy)
 
       _BARRIER
 
@@ -795,11 +816,6 @@ c--
 
 c----------------------------------------------------------------------
 c--
-
-      call ctrl_init_wet( myThid )
-
-c----------------------------------------------------------------------
-c--
 #ifdef ALLOW_GENARR2D_CONTROL
        do iarr = 1, maxCtrlArr2D
 #ifndef ALLOW_OPENAD
@@ -901,6 +917,11 @@ C
 C
        enddo
 #endif /* ALLOW_GENTIM2D_CONTROL */
+
+c----------------------------------------------------------------------
+c----------------------------------------------------------------------
+
+      call ctrl_init_wet( myThid )
 
 c----------------------------------------------------------------------
 c----------------------------------------------------------------------
