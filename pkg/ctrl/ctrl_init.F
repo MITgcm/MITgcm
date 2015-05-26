@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.62 2014/11/27 13:29:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.63 2015/05/26 01:38:32 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -795,12 +795,23 @@ c--
 
 c----------------------------------------------------------------------
 c--
+
+      call ctrl_init_wet( myThid )
+
+c----------------------------------------------------------------------
+c--
 #ifdef ALLOW_GENARR2D_CONTROL
        do iarr = 1, maxCtrlArr2D
+#ifndef ALLOW_OPENAD
+        if (xx_genarr2d_weight(iarr).NE.' ')
+     &  call ctrl_init_ctrlvar (
+#else
         call ctrl_init_ctrlvar (
+#endif
      &       xx_genarr2d_file(iarr)(1:MAX_LEN_FNAM),
      &       100+iarr, 200+iarr, 1, 1, 1,
      &       snx, sny, 1, 'c', 'xy', myThid )
+
        enddo
 #endif /* ALLOW_GENARR2D_CONTROL */
 
@@ -808,7 +819,12 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_GENARR3D_CONTROL
        do iarr = 1, maxCtrlArr3D
+#ifndef ALLOW_OPENAD
+        if (xx_genarr3d_weight(iarr).NE.' ')
+     &  call ctrl_init_ctrlvar (
+#else
         call ctrl_init_ctrlvar (
+#endif
      &       xx_genarr3d_file(iarr)(1:MAX_LEN_FNAM),
      &       200+iarr, 300+iarr, 1, 1, 1,
      &       snx, sny, nr, 'c', '3d', myThid )
@@ -841,6 +857,9 @@ c--
      I       myThid )
 C
 
+#ifndef ALLOW_OPENAD
+        if (xx_gentim2d_weight(iarr).NE.' ') then
+#endif
         diffrecFull=diffrec
         endrecFull=endrec
         do k2 = 1, maxCtrlProc
@@ -867,13 +886,12 @@ C
      &       diffrec, startrec, endrec,
      &       snx, sny, 1, 'c', 'xy', myThid )
 C
+#ifndef ALLOW_OPENAD
+       endif
+#endif
+C
        enddo
 #endif /* ALLOW_GENTIM2D_CONTROL */
-
-c----------------------------------------------------------------------
-c----------------------------------------------------------------------
-
-      call ctrl_init_wet( myThid )
 
 c----------------------------------------------------------------------
 c----------------------------------------------------------------------
