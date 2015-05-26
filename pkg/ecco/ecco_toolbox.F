@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.8 2015/03/26 14:52:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.9 2015/05/26 17:09:29 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -13,6 +13,7 @@ C--   o ecco_diffanommsk
 C--   o ecco_obsmsk
 C--   o ecco_addcost
 C--   o ecco_add
+C--   o ecco_subtract
 C--   o ecco_addmask
 C--   o ecco_div
 C--   o ecco_divfield
@@ -611,7 +612,7 @@ C     !INTERFACE:
      &                   )
 
 C     !DESCRIPTION: \bv
-C     add a field to another array
+C     add a field (fldIn) to another field (fldOut)
 C     \ev
 
 C     !USES:
@@ -664,6 +665,78 @@ c--     Determine the model-data difference mask
               do i = imin,imax
                fldOut(i,j,k,bi,bj) = fldOut(i,j,k,bi,bj)
      &                             + fldIn(i,j,k,bi,bj)
+              enddo
+             enddo
+            enddo
+          enddo
+        enddo
+
+#endif /* ALLOW_ECCO */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ecco_subtract
+C     !INTERFACE:
+      subroutine ecco_subtract(
+     I                   fldIn, nzIn, fldOut, nzOut,
+     I                   myThid
+     &                   )
+
+C     !DESCRIPTION: \bv
+C     subtract a field (fldIn) from another field (fldOut)
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
+
+c     == routine arguments ==
+
+      INTEGER myThid
+      INTEGER nzOut, nzIn
+
+      _RL fldIn   (1-olx:snx+olx,1-oly:sny+oly,nzIn,nsx,nsy)
+      _RL fldOut   (1-olx:snx+olx,1-oly:sny+oly,nzOut,nsx,nsy)
+
+#ifdef ALLOW_ECCO
+
+c     == local variables ==
+
+      integer bi,bj
+      integer i,j,k
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+
+CEOP
+
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
+
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nzOut
+             do j = jmin,jmax
+              do i = imin,imax
+               fldOut(i,j,k,bi,bj) = fldOut(i,j,k,bi,bj)
+     &                             - fldIn(i,j,k,bi,bj)
               enddo
              enddo
             enddo
