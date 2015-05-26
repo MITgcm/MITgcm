@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.23 2014/11/09 17:24:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.24 2015/05/26 17:08:45 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -110,17 +110,17 @@ c     == end of interface ==
          DO i = 1,sNx
            do iarr = 1, maxCtrlTim2D
 #ifndef ALLOW_ROTATE_UV_CONTROLS
-           if (xx_gentim2d_file(iarr).EQ.'xx_tauu')
+           if (xx_gentim2d_file(iarr)(1:7).EQ.'xx_tauu')
      &       ustress(i,j,bi,bj)=ustress(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
-           if (xx_gentim2d_file(iarr).EQ.'xx_tauv')
+           if (xx_gentim2d_file(iarr)(1:7).EQ.'xx_tauv')
      &       vstress(i,j,bi,bj)=vstress(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
 #else
-           if (xx_gentim2d_file(iarr).EQ.'xx_tauu')
+           if (xx_gentim2d_file(iarr)(1:7).EQ.'xx_tauu')
      &       tmpUE(i,j,bi,bj)=tmpUE(i,j,bi,bj)
      &          +xx_gentim2d(i,j,bi,bj,iarr)
-           if (xx_gentim2d_file(iarr).EQ.'xx_tauv')
+           if (xx_gentim2d_file(iarr)(1:7).EQ.'xx_tauv')
      &       tmpVN(i,j,bi,bj)=tmpVN(i,j,bi,bj)
      &          +xx_gentim2d(i,j,bi,bj,iarr)
 #endif
