@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.13 2014/11/15 22:07:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.14 2015/05/27 18:33:43 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -492,30 +492,42 @@ c allow for switching off correl2d in adjoint
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
-        write(msgbuf,'(a,L5)')
-     &'      cumsum     = ',xx_gentim2d_cumsum(iarr)
-        call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-
-        write(msgbuf,'(a,L5)')
-     &'      glosum     = ',xx_gentim2d_glosum(iarr)
-        call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-
          do jarr=1,maxCtrlProc
           if (xx_gentim2d_preproc(jarr,iarr).NE.' ') then
             il = ilnblnk(xx_gentim2d_preproc(jarr,iarr))
-            write(msgbuf,'(a,a)') ' preprocess = ',
-     &                            xx_gentim2d_preproc(jarr,iarr)(1:il)
+            write(msgbuf,'(a,a)') '      preprocess = ',
+     &                        xx_gentim2d_preproc(jarr,iarr)(1:il)
             call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
+C
+          if (xx_gentim2d_preproc_c(jarr,iarr).NE.' ') then
+            il = ilnblnk(xx_gentim2d_preproc_c(jarr,iarr))
+            write(msgbuf,'(a,a)') '        param. (text)= ',
+     &                        xx_gentim2d_preproc_c(jarr,iarr)(1:il)
+            call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          endif
+C
+          if (xx_gentim2d_preproc_i(jarr,iarr).NE.0) then
+            write(msgbuf,'(a,i6)') '        param. (int.)= ',
+     &                        xx_gentim2d_preproc_i(jarr,iarr)
+            call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          endif
+C
+          if (xx_gentim2d_preproc_r(jarr,iarr).NE.0. _d 0) then
+            write(msgbuf,'(a,e10.3)') '        param. (real)= ',
+     &                        xx_gentim2d_preproc_r(jarr,iarr)
+            call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          endif
+
           endif
          enddo
 
        endif
       enddo
 #endif
-
 
 #endif
 

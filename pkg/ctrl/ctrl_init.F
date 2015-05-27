@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.66 2015/05/27 01:43:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.67 2015/05/27 18:33:43 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -876,10 +876,19 @@ C
 #ifndef ALLOW_OPENAD
         if (xx_gentim2d_weight(iarr).NE.' ') then
 #endif
+        do k2 = 1, maxCtrlProc
+         if (xx_gentim2d_preproc(k2,iarr).EQ.'replicate')
+     &   xx_gentim2d_preproc(k2,iarr)='docycle'
+         if (xx_gentim2d_preproc(k2,iarr).EQ.'doglomean')
+     &   xx_gentim2d_glosum(iarr)     = .TRUE.
+         if (xx_gentim2d_preproc(k2,iarr).EQ.'documul')
+     &   xx_gentim2d_cumsum(iarr)     = .TRUE.
+        enddo
+C
         diffrecFull=diffrec
         endrecFull=endrec
         do k2 = 1, maxCtrlProc
-         if (xx_gentim2d_preproc(k2,iarr).EQ.'replicate') then
+         if (xx_gentim2d_preproc(k2,iarr).EQ.'docycle') then
            if (xx_gentim2d_preproc_i(k2,iarr).NE.0) then
             diffrec=min(diffrec,xx_gentim2d_preproc_i(k2,iarr))
             endrec=min(endrec,xx_gentim2d_preproc_i(k2,iarr))
