@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.65 2015/05/26 23:53:06 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.66 2015/05/27 01:43:53 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -68,7 +68,7 @@ c     == local variables ==
       _RL loctmp3d (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
 
 #ifdef ALLOW_OBCS_CONTROL_MODES
-      INTEGER  k,length_of_rec,dUnit
+      INTEGER  length_of_rec,dUnit
       INTEGER  MDS_RECLEN
       EXTERNAL MDS_RECLEN
 #endif
