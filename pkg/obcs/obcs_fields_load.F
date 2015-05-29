@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_fields_load.F,v 1.4 2011/06/07 22:23:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_fields_load.F,v 1.5 2015/05/29 21:47:01 heimbach Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -107,6 +107,7 @@ C--   Now calculate whether it is time to update the forcing arrays
       bi = myBxLo(myThid)
       bj = myByLo(myThid)
 #ifdef ALLOW_DEBUG
+# ifndef ALLOW_AUTODIFF
       IF ( debugLevel.GE.debLevB ) THEN
         _BEGIN_MASTER(myThid)
         WRITE(standardMessageUnit,'(A,I10,A,4I5,A,2F14.10)')
@@ -115,21 +116,23 @@ C--   Now calculate whether it is time to update the forcing arrays
      &   ' ; Wght=', bWght, aWght
         _END_MASTER(myThid)
       ENDIF
+# endif
 #endif /* ALLOW_DEBUG */
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 C-    assuming that we call S/R OBCS_FIELDS_LOAD at each time-step and
 C     with increasing time, this will catch when we need to load new records;
 C     But with Adjoint run, this is not always the case => might end-up using
 C     the wrong time-records
       IF ( iRec0.NE.iRecP .OR. myIter.EQ.nIter0 ) THEN
-#else /* ALLOW_AUTODIFF_TAMC */
+#else /* ALLOW_AUTODIFF */
 C-    Make no assumption on sequence of calls to OBCS_FIELDS_LOAD ;
 C     This is the correct formulation (works in Adjoint run).
 C     Unfortunatly, produces many recomputations <== not used until it is fixed
       IF ( iRec1.NE.OBCS_ldRec(bi,bj) ) THEN
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
+# ifndef ALLOW_AUTODIFF
 C--   If the above condition is met then we need to read in
 C     data for the period ahead and the period behind myTime.
        IF ( debugLevel.GE.debLevZero ) THEN
@@ -140,6 +143,7 @@ C     data for the period ahead and the period behind myTime.
      &    ' (prev=', iRecP, OBCS_ldRec(bi,bj), ' )'
         _END_MASTER(myThid)
        ENDIF
+# endif /* ALLOW_AUTODIFF */
 
 #ifndef ALLOW_MDSIO
        STOP 'ABNORMAL END: OBCS_FIELDS_LOAD: NEEDS MSDIO PKG'
@@ -271,6 +275,7 @@ C     Southern boundary
       ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_SOUTH */
+
 #ifdef ALLOW_PTRACERS
       IF (usePTRACERS) THEN
 C     read boundary values for passive tracers
@@ -324,12 +329,14 @@ C     are exchanged after the open boundary conditions have been
 C     applied. (in DYNAMICS and DO_FIELDS_BLOCKING_EXCHANGES)
        _BARRIER
 
+# ifndef ALLOW_AUTODIFF
 C-    save newly loaded time-record
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
            OBCS_ldRec(bi,bj) = iRec1
          ENDDO
         ENDDO
+# endif /* ALLOW_AUTODIFF */
 
 C     end if time to read new data
       ENDIF
