@@ -1,8 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final_store.F,v 1.4 2012/08/10 19:36:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final_store.F,v 1.5 2015/05/29 02:54:22 heimbach Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
-
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
       subroutine cost_final_store ( mythid, lastdiva )
 
