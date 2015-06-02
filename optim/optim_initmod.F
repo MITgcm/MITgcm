@@ -1,6 +1,4 @@
 
-#include "CTRL_OPTIONS.h"
-
       subroutine optim_initmod(
      I                    nn,
      O                    xx

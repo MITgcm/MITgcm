@@ -1,10 +1,11 @@
 
-#ifdef ALLOW_OBCS
-c Include ECCO_CPPOPTIONS because ecco,ctrl,cost files have headers with options for OBCS masks.
-# include "ECCO_CPPOPTIONS.h"
-#else
-# include "CTRL_OPTIONS.h"
-#endif
+c ECCO_CPPOPTIONS used to affect maxcvars 
+c and def ALLOW_OBCSN_CONTROL etc (OBCS masks etc)
+c#include ECCO_CPPOPTIONS.h
+
+c CTRL_OPTIONS affects maxcvars and may def 
+c ALLOW_OBCSN_CONTROL etc (OBCS masks etc)
+#include "CTRL_OPTIONS.h"
 
       subroutine optim_readdata(
      I                      nn,
