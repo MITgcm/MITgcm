@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2151 2015/05/13 21:39:51 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2152 2015/06/02 21:21:52 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics:
+  - add few (threads) _BARRIER around any update of "diag_pkgStatus".
 o pkg/layers:
   - shift potential density field "prho" by -1000 for density layer averaging so
     that it corresponds to usual "sigma" definition (i.e., rho(p=const)-1000);
