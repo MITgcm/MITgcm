@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.18 2013/08/14 00:57:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.19 2015/06/02 20:58:22 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -70,6 +70,7 @@ C     !LOCAL VARIABLES:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+      _BARRIER
       _BEGIN_MASTER( myThid )
 
       DO n=1,ndiagMax

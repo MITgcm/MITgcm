@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_varia.F,v 1.13 2013/08/14 00:57:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_varia.F,v 1.14 2015/06/02 20:58:22 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -30,10 +30,12 @@ C     !LOCAL VARIABLES:
       INTEGER i,j,k,bi,bj
 
 C--   Track diagnostics pkg activation status:
+      _BARRIER
       _BEGIN_MASTER( myThid )
 c      IF ( diag_pkgStatus.NE.3 ) STOP
        diag_pkgStatus = 10
       _END_MASTER( myThid )
+      _BARRIER
 
 C--   Zero out the qdiag array which accumulates during integration
       DO bj = myByLo(myThid), myByHi(myThid)

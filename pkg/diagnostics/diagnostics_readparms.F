@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.37 2014/11/18 23:53:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.38 2015/06/02 20:58:22 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -112,6 +112,7 @@ C-    Track diagnostics pkg activation status:
 C     print a (weak) warning if data.diagnostics is found
          CALL PACKAGES_UNUSED_MSG( 'useDiagnostics', ' ', ' ' )
         _END_MASTER(myThid)
+        _BARRIER
         RETURN
       ENDIF
 
