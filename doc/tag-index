@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2152 2015/06/02 21:21:52 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2153 2015/06/03 19:11:49 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ptracers:
+  - add capability of stepping a passive tracer forward 
+    without advection by setting PTRACERS_advScheme to 0.
 o pkg/diagnostics:
   - add few (threads) _BARRIER around any update of "diag_pkgStatus".
 o pkg/layers:
