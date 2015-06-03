@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.13 2014/08/14 16:46:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.14 2015/06/03 13:39:22 rpa Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -425,6 +425,12 @@ C--  consistent with rescaling of tendencies (in FREESURF_RESCALE_G):
          diagName = 'ADVy'//diagSufx
          CALL DIAGNOSTICS_FILL(afy,diagName, k,1, 2,bi,bj, myThid )
        ENDIF
+#ifdef ALLOW_LAYERS
+       IF ( useLayers ) THEN
+         CALL LAYERS_FILL(afx,tracerIdentity,'AFX',k,1,2,bi,bj,myThid)
+         CALL LAYERS_FILL(afy,tracerIdentity,'AFY',k,1,2,bi,bj,myThid)
+       ENDIF
+#endif /* ALLOW_LAYERS */
 #endif
 
 #ifdef ALLOW_DEBUG
@@ -598,6 +604,12 @@ C    inaccurate linFSConserveTr and "surfExpan_" monitor.
          CALL DIAGNOSTICS_FILL( afr,
      &                          diagName, k,1, 2,bi,bj, myThid )
         ENDIF
+#ifdef ALLOW_LAYERS
+        IF ( useLayers ) THEN
+          CALL LAYERS_FILL(afr,tracerIdentity,'AFR',
+     &                     k,1,2,bi,bj,myThid)
+        ENDIF
+#endif /* ALLOW_LAYERS */
 #endif
 
 C--   End of k loop for vertical flux

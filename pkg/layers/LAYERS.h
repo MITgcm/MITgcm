@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.14 2014/06/04 14:48:32 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.15 2015/06/03 13:39:22 rpa Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAYERS
@@ -90,9 +90,13 @@ C
 C      layers_TtendSurf  :: Temperature tendency from surface forcing (m deg/s)
 C      layers_TtendDiffh :: Temperature tendency from horizontal mixing (m deg/s)
 C      layers_TtendDiffr :: Temperature tendency from vertical mixing (m deg/s)
+C      layers_TtendAdvh :: Temperature tendency from horizontal advection (m deg/s)
+C      layers_TtendAdvr :: Temperature tendency from vertical advection (m deg/s)
 C      layers_StendSurf  :: Salinity tendency from surface forcing (m PSU/s)
 C      layers_StendDiffh :: Salinity tendency from horizontal mixing (m PSU/s)
 C      layers_StendDiffr :: Salinity tendency from vertical mixing (m PSU/s)
+C      layers_StendAdvh :: Salinity tendency from horizontal advection (m PSU/s)
+C      layers_StendAdvr :: Salinity tendency from vertical advection (m PSU/s)
 C  -- The following are temporary arrays that need to be stored.
 C  -- They are in regular vertical coordinates.
 C  -- The fourth index is tracer id: 1 for T and 2 for S
@@ -100,26 +104,54 @@ C      layers_surfflux   :: surface temperature flux (same as diagnostics TFLUX 
 C      layers_dfx        :: zonal diffusive flux of T / S
 C      layers_dfy        :: meridional diffusive flux of T / S
 C      layers_dfr        :: vertical diffusive flux of T / S
+C      layers_afx        :: zonal advective flux of T / S
+C      layers_afy        :: meridional advective flux of T / S
+C      layers_afr        :: vertical advective flux of T / S
 C  -- to save memory, the same arrays are converted in place to divergences
+C
+C  -- We also need the thermal / saline expansion coefficients for diapycnal fluxes
+C      layers_alpha      :: alpha factor for density eqn (-drhodT/rho)
+C      layers_beta       :: alpha factor for density eqn (-drhodS/rho)
 
 # ifdef LAYERS_THERMODYNAMICS
       COMMON /LAYERS_VAR_THERMODYNAMICS/
+     &    layers_bounds_w, layers_recip_delta,
      &    layers_TtendSurf, layers_TtendDiffh, layers_TtendDiffr,
+     &    layers_TtendAdvh, layers_TtendAdvr, layers_Ttendtot,
      &    layers_StendSurf, layers_StendDiffh, layers_StendDiffr,
+     &    layers_StendAdvh, layers_StendAdvr, layers_Stendtot,
      &    layers_Hc, layers_PIc,
-     &    layers_surfflux, layers_dfx, layers_dfy, layers_dfr
+     &    layers_Hcw,
+     &    layers_surfflux, layers_dfx, layers_dfy, layers_dfr,
+     &    layers_afx, layers_afy, layers_afr, layers_tottend
+      _RL layers_bounds_w(nLayers, layers_maxNum)
+      _RL layers_recip_delta(nLayers-1, layers_maxNum)
       _RL layers_TtendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers,nSx,nSy)
+     &                                         Nlayers-1,nSx,nSy)
+      _RL layers_Ttendtot(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                         Nlayers-1,nSx,nSy)
       _RL layers_TtendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers,nSx,nSy)
+     &                                         Nlayers-1,nSx,nSy)
       _RL layers_TtendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers,nSx,nSy)
+     &                                         Nlayers-1,nSx,nSy)
+      _RL layers_TtendAdvh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                         Nlayers-1,nSx,nSy)
+      _RL layers_TtendAdvr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                         Nlayers-1,nSx,nSy)
       _RL layers_StendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers,nSx,nSy)
+     &                                         Nlayers-1,nSx,nSy)
+      _RL layers_Stendtot(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                         Nlayers-1,nSx,nSy)
       _RL layers_StendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers,nSx,nSy)
+     &                                         Nlayers-1,nSx,nSy)
       _RL layers_StendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers,nSx,nSy)      
+     &                                         Nlayers-1,nSx,nSy)      
+      _RL layers_StendAdvh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                         Nlayers-1,nSx,nSy)
+      _RL layers_StendAdvr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                         Nlayers-1,nSx,nSy)      
+      _RL layers_Hcw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                                         Nlayers-1,nSx,nSy) 
       _RL layers_Hc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
      &                                         Nlayers,nSx,nSy)      
       _RL layers_PIc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
@@ -128,6 +160,23 @@ C  -- to save memory, the same arrays are converted in place to divergences
       _RL layers_dfx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
       _RL layers_dfy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
       _RL layers_dfr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
+      _RL layers_afx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
+      _RL layers_afy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
+      _RL layers_afr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
+      _RL layers_tottend(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
+
+#ifdef SHORTWAVE_HEATING
+      COMMON /LAYERS_SW/ layers_sw
+      _RL layers_sw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,1,nSx,nSy)
+#endif /* LAYERS_SHORTWAVE */
+
+#ifdef LAYERS_PRHO_REF
+      COMMON /LAYERS_VAR_THERMODYNAMICS_PRHO/
+     & layers_alpha, layers_beta
+      _RL layers_alpha(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL layers_beta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+
 # endif /* LAYERS_THERMODYAMICS */
 
 #ifdef ALLOW_TIMEAVE

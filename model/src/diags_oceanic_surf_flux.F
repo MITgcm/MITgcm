@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_oceanic_surf_flux.F,v 1.15 2014/06/05 16:18:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_oceanic_surf_flux.F,v 1.16 2015/06/03 13:39:21 rpa Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -142,7 +142,7 @@ C-    TFLUX (=total heat flux, match heat-content variations, [W/m2])
        CALL DIAGNOSTICS_FILL( tmp1k,'TFLUX   ',0,1,0,1,1,myThid )
 #ifdef ALLOW_LAYERS
        IF ( useLayers ) THEN
-        CALL LAYERS_FILL_SURFACE_FLUX( tmp1k, 1, 0,1,0,1,1,myThid )
+        CALL LAYERS_FILL( tmp1k, 1, 'SUR', 0,1,0,1,1,myThid )
        ENDIF
 #endif /* ALLOW_LAYERS */
       ENDIF
@@ -176,7 +176,7 @@ C-    SFLUX (=total salt flux, match salt-content variations [g/m2/s])
        CALL DIAGNOSTICS_FILL( tmp1k,'SFLUX   ',0,1,0,1,1,myThid )
 #ifdef ALLOW_LAYERS
        IF ( useLayers ) THEN
-        CALL LAYERS_FILL_SURFACE_FLUX( tmp1k, 2, 0,1,0,1,1,myThid )
+        CALL LAYERS_FILL( tmp1k, 2, 'SUR', 0,1,0,1,1,myThid )
        ENDIF
 #endif /* ALLOW_LAYERS */
       ENDIF

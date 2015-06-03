@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.157 2015/01/22 18:21:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.158 2015/06/03 13:39:22 rpa Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -127,6 +127,13 @@ CADJ STORE theta,salt,wvel = comlev1, key = ikey_dynamics, byte=isbyte
        CALL CALC_WSURF_TR( theta, salt, wVel,
      &                     myTime, myIter, myThid )
       ENDIF
+#ifdef ALLOW_LAYERS
+       IF ( useLayers ) THEN
+          CALL LAYERS_WSURF_TR( theta, salt, wVel,
+     &                     myTime, myIter, myThid )
+       ENDIF
+#endif /* ALLOW_LAYERS */
+
 
 #ifdef DO_PTRACERS_HERE
       IF ( PTRACERS_calcSurfCor ) THEN

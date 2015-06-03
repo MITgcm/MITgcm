@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_diagnostics_init.F,v 1.8 2015/05/13 21:29:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_diagnostics_init.F,v 1.9 2015/06/03 13:39:22 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -65,7 +65,12 @@ c     IF ( useDiagnostics ) THEN
 
 #ifdef LAYERS_PRHO_REF
        IF ( layers_num(iLa).EQ.3 ) THEN
-        WRITE(diagName,'(A4,I1,A3)') 'LaTr',iLa,layers_name(iLa)
+C ------- This diagnostic used to be called 'LaTr', but that name
+C         conflicts with a new layers_thermodynamics variable.
+C         I renamed it simply 'La', and the whole name will be
+C         something like La1RHO, which shold be obvious enough.
+C         -RPA
+        WRITE(diagName,'(A4,I1,A3)') 'La',iLa,layers_name(iLa)
         rLoc = 0.
         kLoc = layers_krho(iLa)
         IF ( kLoc.GE.1 .AND. kLoc.LE.Nr ) THEN
@@ -168,60 +173,6 @@ C --- U, V
 
 #ifdef LAYERS_THERMODYNAMICS
 
-        WRITE(diagName,'(A4,I1,A3)') 'LaTs',iLa,layers_name(iLa)
-        diagTitle = 'Layer THETA transformation from surf. forc.'
-        diagUnits = 'm deg./s        '
-        diagCode  = 'SM      MX      '
-        diagMate  = 0
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
-
-        WRITE(diagName,'(A4,I1,A3)') 'LaTh',iLa,layers_name(iLa)
-        diagTitle = 'Layer THETA transformation from horiz. diff.'
-        diagUnits = 'm deg./s        '
-        diagCode  = 'SM      MX      '
-        diagMate  = 0
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
-
-        WRITE(diagName,'(A4,I1,A3)') 'LaTr',iLa,layers_name(iLa)
-        diagTitle = 'Layer THETA transformation from vert. diff.'
-        diagUnits = 'm deg./s        '
-        diagCode  = 'SM      MX      '
-        diagMate  = 0
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
-
-        WRITE(diagName,'(A4,I1,A3)') 'LaSs',iLa,layers_name(iLa)
-        diagTitle = 'Layer SALT transformation from surf. forc.'
-        diagUnits = 'm PSU/s        '
-        diagCode  = 'SM      MX      '
-        diagMate  = 0
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
-
-        WRITE(diagName,'(A4,I1,A3)') 'LaSh',iLa,layers_name(iLa)
-        diagTitle = 'Layer SALT transformation from horiz. diff.'
-        diagUnits = 'm PSU/s        '
-        diagCode  = 'SM      MX      '
-        diagMate  = 0
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
-
-        WRITE(diagName,'(A4,I1,A3)') 'LaSr',iLa,layers_name(iLa)
-        diagTitle = 'Layer SALT transformation from vert. diff.'
-        diagUnits = 'm PSU/s        '
-        diagCode  = 'SM      MX      '
-        diagMate  = 0
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
-
         WRITE(diagName,'(A4,I1,A3)') 'LaHc',iLa,layers_name(iLa)
         diagTitle = 'Layer Thickness at tracer points (m)'
         diagUnits = DIAGS_MK_UNITS( rUnit2c, myThid )
@@ -231,6 +182,114 @@ C --- U, V
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
         CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers , myThid )
 
+        WRITE(diagName,'(A4,I1,A3)') 'LaTs',iLa,layers_name(iLa)
+        diagTitle = 'Layer THETA transformation from surf. forc.'
+        diagUnits = 'm deg./s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers-1 , myThid )
+
+        WRITE(diagName,'(A4,I1,A3)') 'LaTh',iLa,layers_name(iLa)
+        diagTitle = 'Layer THETA transformation from horiz. diff.'
+        diagUnits = 'm deg./s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers-1 , myThid )
+
+        WRITE(diagName,'(A4,I1,A3)') 'LaTr',iLa,layers_name(iLa)
+        diagTitle = 'Layer THETA transformation from vert. diff.'
+        diagUnits = 'm deg./s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers-1 , myThid )
+
+        WRITE(diagName,'(A4,I1,A3)') 'LTha',iLa,layers_name(iLa)
+        diagTitle = 'Layer THETA transformation from horiz. adv.'
+        diagUnits = 'm deg./s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers-1 , myThid )
+
+        WRITE(diagName,'(A4,I1,A3)') 'LTra',iLa,layers_name(iLa)
+        diagTitle = 'Layer THETA transformation from vert. adv.'
+        diagUnits = 'm deg./s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers-1 , myThid )
+
+        WRITE(diagName,'(A4,I1,A3)') 'LTto',iLa,layers_name(iLa)
+        diagTitle = 'Layer THETA transformation from total tend'
+        diagUnits = 'm deg./s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers-1 , myThid )
+
+        WRITE(diagName,'(A4,I1,A3)') 'LaSs',iLa,layers_name(iLa)
+        diagTitle = 'Layer SALT transformation from surf. forc.'
+        diagUnits = 'm PSU/s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers-1 , myThid )
+
+        WRITE(diagName,'(A4,I1,A3)') 'LaSh',iLa,layers_name(iLa)
+        diagTitle = 'Layer SALT transformation from horiz. diff.'
+        diagUnits = 'm PSU/s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers-1 , myThid )
+
+        WRITE(diagName,'(A4,I1,A3)') 'LaSr',iLa,layers_name(iLa)
+        diagTitle = 'Layer SALT transformation from vert. diff.'
+        diagUnits = 'm PSU/s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers-1 , myThid )
+
+        WRITE(diagName,'(A4,I1,A3)') 'LSha',iLa,layers_name(iLa)
+        diagTitle = 'Layer SALT transformation from horiz. adv.'
+        diagUnits = 'm PSU/s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers-1 , myThid )
+
+        WRITE(diagName,'(A4,I1,A3)') 'LSra',iLa,layers_name(iLa)
+        diagTitle = 'Layer SALT transformation from vert. adv.'
+        diagUnits = 'm PSU/s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers-1 , myThid )
+
+        WRITE(diagName,'(A4,I1,A3)') 'LSto',iLa,layers_name(iLa)
+        diagTitle = 'Layer SALT transformation from total tend'
+        diagUnits = 'm PSU/s        '
+        diagCode  = 'SM      MX      '
+        diagMate  = 0
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers-1 , myThid )
+        
 C --- PI
         WRITE(diagName,'(A4,I1,A3)') 'LaPc',iLa,layers_name(iLa)
         diagTitle = 'Layer Probability at tracer points [-]'

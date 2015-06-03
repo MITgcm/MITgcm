@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_thermodynamics.F,v 1.3 2014/07/08 19:03:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_thermodynamics.F,v 1.4 2015/06/03 13:39:22 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -28,6 +28,7 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "FFIELDS.h"
 #include "LAYERS_SIZE.h"
 #include "LAYERS.h"
 
@@ -48,8 +49,11 @@ C     fluxfac  :: scaling factor for converting diffusive flux to tendency
 C     downfac  :: mask for lower point
 
       INTEGER bi, bj
-      INTEGER i,j,k,kdown,iTracer
-      _RL fluxfac(2), downfac, tmpfac
+      INTEGER i,j,k,kdown,iTracer,kp1
+      _RL fluxfac(2), downfac, tmpfac, swfracb(2)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RL minusone
+      PARAMETER (minusOne=-1.)
 
 C --  These factors convert the units of TFLUX and SFLUX diagnostics
 C --  back to surfaceForcingT and surfaceForcingS units
@@ -58,17 +62,30 @@ C --  back to surfaceForcingT and surfaceForcingS units
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
+           
           DO iTracer = 1,2
-           k = 1
+           k = 1 
 C --       Loop for surface fluxes
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
+
+#ifdef SHORTWAVE_HEATING
+C --      Have to remove the shortwave from the surface flux because it is added later
+             IF (iTracer.EQ.1) THEN
+               layers_surfflux(i,j,k,iTracer,bi,bj) =
+     &           layers_surfflux(i,j,k,iTracer,bi,bj)
+C --      Sign convention for Qsw means we have to add it to subtract it
+     &           +Qsw(i,j,bi,bj)
+             ENDIF
+#endif /* SHORTWAVE_HEATING */   
+
              layers_surfflux(i,j,k,iTracer,bi,bj) =
      &       layers_surfflux(i,j,k,iTracer,bi,bj)
      &       *recip_drF(1)*_recip_hFacC(i,j,1,bi,bj)
      &       *fluxfac(iTracer)
             ENDDO
            ENDDO
+  
 C --       Loop for diffusive fluxes
 C --       If done correctly, we can overwrite the flux array in place
 C --       with its own divergence
@@ -79,8 +96,9 @@ C --       with its own divergence
             ELSE
               downfac = 1. _d 0
             ENDIF
-            DO j=1-OLy,sNy+OLy
-             DO i=1-OLx,sNx+OLx
+            DO j=1-OLy,sNy+OLy-1
+             DO i=1-OLx,sNx+OLx-1
+C -- Diffusion
               tmpfac = -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &          *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)*recip_rhoFacC(k)
               layers_dfx(i,j,k,iTracer,bi,bj) = maskInC(i,j,bi,bj) *
@@ -92,6 +110,50 @@ C --       with its own divergence
               layers_dfr(i,j,k,iTracer,bi,bj) = tmpfac * rkSign *
      &        ( layers_dfr(i,j,kdown,iTracer,bi,bj)*downfac -
      &          layers_dfr(i,j,k,iTracer,bi,bj) )
+C -- Advection
+              layers_afx(i,j,k,iTracer,bi,bj) = maskInC(i,j,bi,bj) *
+     &         tmpfac * ( layers_afx(i+1,j,k,iTracer,bi,bj) -
+     &          layers_afx(i,j,k,iTracer,bi,bj) )
+              layers_afy(i,j,k,iTracer,bi,bj) = maskInC(i,j,bi,bj) *
+     &         tmpfac * ( layers_afy(i,j+1,k,iTracer,bi,bj) -
+     &          layers_afy(i,j,k,iTracer,bi,bj) )
+              layers_afr(i,j,k,iTracer,bi,bj) = tmpfac * rkSign *
+     &        ( layers_afr(i,j,kdown,iTracer,bi,bj)*downfac -
+     &          layers_afr(i,j,k,iTracer,bi,bj) )
+
+#ifdef SHORTWAVE_HEATING
+              IF (iTracer.EQ.1) THEN 
+                swfracb(1)=abs(rF(k))
+                swfracb(2)=abs(rF(k+1))
+                CALL SWFRAC(
+     I             2, minusOne,
+     U             swfracb,
+     I             1.0, 1, myThid )
+C  ----- debuggin
+C                IF ((i.EQ.0).AND.(j.EQ.0)) THEN
+C                  WRITE(msgBuf,'(2A,I3,A,F6.2,A,F6.2)')
+C     &             'S/R LAYERS_THERMODYNAMICS:',
+C     &             ' k=', k,
+C     &             ' swfracb(1)=', swfracb(1),
+C     &             ' swfracb(2)=', swfracb(2)
+C                  CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+C     &                         SQUEEZE_RIGHT, myThid )
+C                ENDIF
+C            --- kdown == kp1
+C                kp1 = k+1
+                IF (k.EQ.Nr) THEN
+C                  kp1 = k
+                  swfracb(2)=0. _d 0
+                ENDIF
+                layers_sw(i,j,k,iTracer,bi,bj) =
+     &            layers_sw(i,j,k,iTracer,bi,bj)
+     &            -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,k,bi,bj)
+     &                      -swfracb(2)*maskC(i,j,kdown,bi,bj))
+     &            *fluxfac(1)
+     &            *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+              ENDIF
+#endif /* SHORTWAVE_HEATING */            
+     
              ENDDO
             ENDDO
            ENDDO

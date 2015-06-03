@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.12 2015/05/13 21:33:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.13 2015/06/03 13:39:22 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -17,7 +17,7 @@ C     !ROUTINE: LAYERS_FLUXCALC
 C     !INTERFACE:
       SUBROUTINE LAYERS_FLUXCALC(
      I                  uVel,vVel,tracer,iLa,
-     O                  UH,VH,Hw,Hs,PIw,PIs,U,V,
+     O                  UH,VH,Hw,Hs,PIw,PIs,Uw,Vs,
      I                  myThid )
 
 C     !DESCRIPTION: \bv
@@ -52,8 +52,8 @@ C      Hw   :: Layer thickness at the U point (m)
 C      Hs   :: Layer thickness at the V point (m)
 C      PIw  :: 1 if layer exists, 0 otherwise (at U point)
 C      PIs  :: 1 if layer exists, 0 otherwise (at V point)
-C      U    :: average U over layer (m/s)
-C      V    :: average V over layer (m/s)
+C      Uw   :: average U over layer (m/s)
+C      Vs   :: average V over layer (m/s)
 C      iLa  :: layer coordinate index
       INTEGER myThid
       _RL uVel   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,     nSx,nSy)
@@ -64,9 +64,9 @@ C      iLa  :: layer coordinate index
 # ifdef LAYERS_THICKNESS
       _RL Hw     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL PIw    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL U      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL Uw     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
 # else
-      _RL Hw(1), PIw(1), U(1)
+      _RL Hw(1), PIw(1), Uw(1)
 # endif
 #else
       _RL UH(1), Hw(1), PIw(1), U(1)
@@ -76,12 +76,12 @@ C      iLa  :: layer coordinate index
 # ifdef LAYERS_THICKNESS
       _RL Hs     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL PIs    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL V      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL Vs     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
 # else
-      _RL Hs(1), PIs(1), V(1)
+      _RL Hs(1), PIs(1), Vs(1)
 # endif
 #else
-      _RL VH(1), Hs(1), PIs(1), V(1)
+      _RL VH(1), Hs(1), PIs(1), Vs(1)
 #endif
       INTEGER iLa
 CEOP
@@ -101,12 +101,15 @@ C     mSteps   :: maximum number of steps for bisection method
 C     prho     :: pot. density (less 1000) referenced to layers_krho pressure
 C     TatU     :: temperature at U point
 C     TatV     :: temperature at V point
+C     dzfac    :: temporary sublayer thickness 
+C     Tloc,Tp1 :: horizontally interpolated tracer values
 
       INTEGER bi, bj
       INTEGER i,j,k,kk,kg,kci,kp1,kloc
       INTEGER mSteps
       INTEGER kgu(sNx+1,sNy+1), kgv(sNx+1,sNy+1)
       _RL TatU(sNx+1,sNy+1), TatV(sNx+1,sNy+1)
+      _RL mfac, dzfac, Tloc, Tp1
 #ifdef ALLOW_GMREDI
       INTEGER kcip1
       _RL delPsi, maskp1
@@ -142,17 +145,17 @@ C     Reset the arrays
 #ifdef LAYERS_UFLUX
          UH (i,j,kg,bi,bj) = 0. _d 0
 #ifdef LAYERS_THICKNESS
-         Hw (i,j,kg,bi,bj) = 0. _d 0
+         Hw(i,j,kg,bi,bj) = 0. _d 0
          PIw(i,j,kg,bi,bj) = 0. _d 0
-         U  (i,j,kg,bi,bj) = 0. _d 0
+         Uw(i,j,kg,bi,bj) = 0. _d 0
 #endif /* LAYERS_THICKNESS */
 #endif /* UH */
 #ifdef LAYERS_VFLUX
          VH (i,j,kg,bi,bj) = 0. _d 0
 #ifdef LAYERS_THICKNESS
-         Hs (i,j,kg,bi,bj) = 0. _d 0
+         Hs(i,j,kg,bi,bj) = 0. _d 0
          PIs(i,j,kg,bi,bj) = 0. _d 0
-         V  (i,j,kg,bi,bj) = 0. _d 0
+         Vs(i,j,kg,bi,bj) = 0. _d 0
 #endif /* LAYERS_THICKNESS */
 #endif /* VH */
         ENDDO
@@ -173,11 +176,36 @@ C     Reset the arrays
 
 C ------ Find theta at the U point (west) on the fine Z grid
          kp1=k+1
-         IF (maskW(i,j,kp1,bi,bj).EQ.zeroRS) kp1=k
-         TatU(i,j) = MapFact(kk) *
-     &    0.5 _d 0 * (tracer(i-1,j,k,bi,bj)+tracer(i,j,k,bi,bj)) +
-     &    (1. _d 0 -MapFact(kk)) *
-     &    0.5 _d 0 * (tracer(i-1,j,kp1,bi,bj)+tracer(i,j,kp1,bi,bj))
+         IF (hFacW(i,j,k,bi,bj) .NE. 0.) THEN
+C ------ First interpolate tracer in the horizontal, accounting
+C        for mask properly. Do both this point and the one below
+           Tloc = (hFacC(i,j,k,bi,bj)*tracer(i,j,k,bi,bj) +
+     &             hFacC(i-1,j,k,bi,bj)*tracer(i-1,j,k,bi,bj)) /
+     &            (hFacC(i,j,k,bi,bj) + hFacC(i-1,j,k,bi,bj))
+           IF (hFacC(i,j,kp1,bi,bj) .NE. 0) THEN
+             Tp1 = (hFacC(i,j,kp1,bi,bj)*tracer(i,j,kp1,bi,bj) +
+     &            hFacC(i-1,j,kp1,bi,bj)*tracer(i-1,j,kp1,bi,bj)) /
+     &           (hFacC(i,j,kp1,bi,bj) + hFacC(i-1,j,kp1,bi,bj))
+           ELSE
+             Tp1 = Tloc
+           ENDIF
+
+C ------ This interpolation is not exactly correct for hFacC(k+1) < 1.0
+C        To fix it, however, we would need to recompute MapFact.
+C        What it does is gradually de-weight the lower cell as the
+C        lower cell thickness approaches zero. Seems reasonable.
+           mfac = 1.0 - hFacW(i,j,k+1,bi,bj)*(MapFact(kk) - 1.0)
+           TatU(i,j) = mfac*Tloc + (1.0 - mfac)*Tp1
+         ELSE
+           TatU(i,j) = -999. _d 0
+         ENDIF
+
+C ------ old way
+C         IF (hFacW(i,j,kp1,bi,bj) .EQ. 0.) kp1=k
+C         TatU(i,j) = MapFact(kk) *
+C     &    0.5 _d 0 * (tracer(i-1,j,k,bi,bj)+tracer(i,j,k,bi,bj)) +
+C     &    (1-MapFact(kk)) *
+C     &    0.5 _d 0 * (tracer(i-1,j,kp1,bi,bj)+tracer(i,j,kp1,bi,bj))
 
         ENDDO
        ENDDO
@@ -252,12 +280,35 @@ C ------ Augment the bin values
         DO i = 1,sNx+1
 C ------ Find theta at the V point (south) on the fine Z grid
          kp1=k+1
-         IF (maskS(i,j,kp1,bi,bj).EQ.zeroRS) kp1=k
-         TatV(i,j) = MapFact(kk) *
-     &    0.5 _d 0 * (tracer(i,j-1,k,bi,bj)+tracer(i,j,k,bi,bj)) +
-     &    (1. _d 0 -MapFact(kk)) *
-     &    0.5 _d 0 * (tracer(i,j-1,kp1,bi,bj)+tracer(i,j,kp1,bi,bj))
+         IF (hFacS(i,j,k,bi,bj) .NE. 0.) THEN
+C         IF (hFacS(i,j,kp1,bi,bj) .EQ. 0.) kp1=k
 
+C ------ First interpolate tracer in the horizontal, accounting
+C        for mask properly. Do both this point and the one below
+           Tloc = (hFacC(i,j,k,bi,bj)*tracer(i,j,k,bi,bj) +
+     &             hFacC(i,j-1,k,bi,bj)*tracer(i,j-1,k,bi,bj)) /
+     &            (hFacC(i,j,k,bi,bj) + hFacC(i,j-1,k,bi,bj))
+           IF (hFacC(i,j,kp1,bi,bj) .NE. 0) THEN
+             Tp1 = (hFacC(i,j,kp1,bi,bj)*tracer(i,j,kp1,bi,bj) +
+     &            hFacC(i,j-1,kp1,bi,bj)*tracer(i,j-1,kp1,bi,bj)) /
+     &           (hFacC(i,j,kp1,bi,bj) + hFacC(i,j-1,kp1,bi,bj))
+           ELSE
+             Tp1 = Tloc
+           ENDIF
+
+C ------ This interpolation is not exactly correct for hFacC(k+1) < 1.0
+C        To fix it, however, we would need to recompute MapFact.
+C        What it does is gradually de-weight the lower cell as the
+C        lower cell thickness approaches zero. Seems reasonable.
+           mfac = 1.0 - hFacS(i,j,k+1,bi,bj)*(MapFact(kk) - 1.0)
+           TatV(i,j) = mfac*Tloc + (1.0 - mfac)*Tp1
+C         TatV(i,j) = MapFact(kk) *
+C     &    0.5 _d 0 * (tracer(i,j-1,k,bi,bj)+tracer(i,j,k,bi,bj)) +
+C     &    (1-MapFact(kk)) *
+C     &    0.5 _d 0 * (tracer(i,j-1,kp1,bi,bj)+tracer(i,j,kp1,bi,bj))
+         ELSE
+           TatV(i,j) = -999. _d 0
+         ENDIF
         ENDDO
        ENDDO
 C ------ Now that we know T everywhere, determine the binning.
@@ -289,10 +340,21 @@ C
         DO i = 1,sNx+1
 
          kloc = kgv(i,j)
+         dzfac = dZZf(kk) * hFacS(i,j,kci,bi,bj)
+
+C ------ debugging stuff
+C         IF (i.EQ.10 .AND. j.EQ.10) THEN
+C           WRITE(msgBuf,'(A,I3,A,F10.2,A,F6.2)')
+C     &          '    kloc=', kloc,
+C     &          ', TatV=',TatV(i,j),
+C     &          ', dzfac=',dzfac
+C           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+C     &                         SQUEEZE_RIGHT, myThid )
+C         ENDIF
+
 C ------ Augment the bin values
          VH(i,j,kloc,bi,bj) =
-     &    VH(i,j,kloc,bi,bj)
-     &    + dZZf(kk) * vVel(i,j,kci,bi,bj) * hFacS(i,j,kci,bi,bj)
+     &    VH(i,j,kloc,bi,bj) + dzfac * vVel(i,j,kci,bi,bj)
 
 #ifdef ALLOW_GMREDI
          IF ( layers_bolus(iLa) ) THEN
@@ -313,13 +375,12 @@ C ------ Augment the bin values
            ENDIF
            VH(i,j,kloc,bi,bj) = VH(i,j,kloc,bi,bj)
      &      + delPsi*recip_drF(kci)*_recip_hFacS(i,j,kci,bi,bj)
-     &      * dZZf(kk)*hFacS(i,j,kci,bi,bj)
+     &      * dzfac
          ENDIF
 #endif /* ALLOW_GMREDI */
 
 #ifdef LAYERS_THICKNESS
-         Hs(i,j,kloc,bi,bj) = Hs(i,j,kloc,bi,bj)
-     &    + dZZf(kk) * hFacS(i,j,kci,bi,bj)
+         Hs(i,j,kloc,bi,bj) = Hs(i,j,kloc,bi,bj) + dzfac
 #endif /* LAYERS_THICKNESS */
 
         ENDDO
@@ -336,14 +397,14 @@ C--   (Needs another loop through Ng)
 #ifdef LAYERS_UFLUX
          IF (Hw(i,j,kg,bi,bj) .GT. 0.) THEN
           PIw(i,j,kg,bi,bj) = 1. _d 0
-          U(i,j,kg,bi,bj) =
+          Uw(i,j,kg,bi,bj) =
      &        UH(i,j,kg,bi,bj) / Hw(i,j,kg,bi,bj)
          ENDIF
 #endif /* LAYERS_UFLUX */
 #ifdef LAYERS_VFLUX
          IF (Hs(i,j,kg,bi,bj) .GT. 0.) THEN
           PIs(i,j,kg,bi,bj) = 1. _d 0
-          V(i,j,kg,bi,bj) =
+          Vs(i,j,kg,bi,bj) =
      &        VH(i,j,kg,bi,bj) / Hs(i,j,kg,bi,bj)
          ENDIF
 #endif /* LAYERS_VFLUX */
@@ -366,7 +427,9 @@ C     !INTERFACE:
       SUBROUTINE LAYERS_DIAPYCNAL(
      I                  tracer,iLa,
      O                  TtendSurf, TtendDiffh, TtendDiffr,
+     O                  TtendAdvh, TtendAdvr, Ttendtot,
      O                  StendSurf, StendDiffh, StendDiffr,
+     O                  StendAdvh, StendAdvr, Stendtot,
      O                  Hc, PIc,
      I                  myThid )
 
@@ -392,21 +455,32 @@ C     iLa       :: layer coordinate index
 C     TtendSurf :: temperature tendency due to surface forcing times thickness
 C     TtendDiffh:: temperature tendency due to horiz. diffusion times thickness
 C     TtendDiffr:: temperature tendency due to vert. diffusion times thickness
-C     TtendSurf :: salinity tendency due to surface forcing times thickness
-C     TtendDiffh:: salinity tendency due to horiz. diffusion times thickness
-C     TtendDiffr:: salinity tendency due to vert. diffusion times thickness
+C     TtendAdvh:: salinity tendency due to horiz. advection times thickness
+C     TtendAdvr:: salinity tendency due to vert. advection times thickness
+C     StendSurf :: salinity tendency due to surface forcing times thickness 
+C     StendDiffh:: salinity tendency due to horiz. diffusion times thickness
+C     StendDiffr:: salinity tendency due to vert. diffusion times thickness
+C     StendAdvh :: salinity tendency due to horiz. advection times thickness
+C     StendAdvr :: salinity tendency due to vert. advection times thickness
 C     Hc        :: Layer thickness at the tracer point (m)
 C     PIw       :: 1 if layer exists, 0 otherwise (at tracer point)
       INTEGER iLa, myThid
       _RL tracer    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,     nSx,nSy)
-      _RL TtendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL TtendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL TtendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL StendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL StendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL StendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL Hc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL PIc       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL Hcw       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
+      _RL TtendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
+      _RL TtendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
+      _RL TtendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)  
+      _RL TtendAdvh (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
+      _RL TtendAdvr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)  
+      _RL Ttendtot  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)  
+      _RL StendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
+      _RL StendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
+      _RL StendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)  
+      _RL StendAdvh (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
+      _RL StendAdvr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)  
+      _RL Stendtot  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy) 
 CEOP
 
 #ifdef LAYERS_THERMODYNAMICS
@@ -427,10 +501,18 @@ C     TatC     :: temperature at C point
       INTEGER i,j,k,kk,kg,kci,kloc
       INTEGER mSteps
       INTEGER kgc(sNx+1,sNy+1)
-      _RL TatC(sNx+1,sNy+1), dzfac
+      INTEGER kgcw(sNx+1,sNy+1)      
+      _RL TatC(sNx+1,sNy+1), dzfac, mfac, Tfac, Sfac
       LOGICAL errorFlag
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
+C --  for interpolation with partial cells
+      mfac = 1. _d 0
+
+C --  constants for T and S forcing, gets reset later for rho
+      Tfac = 1. _d 0
+      Sfac = 1. _d 0
+ 
 C     compute maximum number of steps for bisection method (approx.
 C     log2(Nlayers)) as log2(Nlayers) + 1 for safety
       mSteps = int(log10(dble(Nlayers))/log10(2. _d 0))+1
@@ -448,19 +530,35 @@ C       The temperature index (layer_G) goes from cold to warm.
 C       The water column goes from warm (k=1) to cold (k=Nr).
 C       So initialize the search with the warmest value.
           kgc(i,j) = Nlayers
+          kgcw(i,j) = Nlayers-1
         ENDDO
       ENDDO
 
 C     Reset the arrays
-      DO kg=1,Nlayers
+C --- These are at the w point
+      DO kg=1,Nlayers-1
        DO j = 1-OLy,sNy+OLy
         DO i = 1-OLx,sNx+OLx
          TtendSurf (i,j,kg,bi,bj) = 0. _d 0
          TtendDiffh(i,j,kg,bi,bj) = 0. _d 0
          TtendDiffr(i,j,kg,bi,bj) = 0. _d 0
+         TtendAdvh(i,j,kg,bi,bj)  = 0. _d 0
+         TtendAdvr(i,j,kg,bi,bj)  = 0. _d 0
+         Ttendtot(i,j,kg,bi,bj)   = 0. _d 0
          StendSurf (i,j,kg,bi,bj) = 0. _d 0
          StendDiffh(i,j,kg,bi,bj) = 0. _d 0
-         StendDiffr(i,j,kg,bi,bj) = 0. _d 0
+         StendDiffr(i,j,kg,bi,bj) = 0. _d 0  
+         StendAdvh(i,j,kg,bi,bj)  = 0. _d 0
+         StendAdvr(i,j,kg,bi,bj)  = 0. _d 0  
+         Stendtot(i,j,kg,bi,bj)   = 0. _d 0
+         Hcw(i,j,kg,bi,bj) = 0. _d 0       
+        ENDDO
+       ENDDO
+      ENDDO
+C --- These are at the c point
+      DO kg=1,Nlayers
+       DO j = 1-OLy,sNy+OLy
+        DO i = 1-OLx,sNx+OLx 
          Hc(i,j,kg,bi,bj) = 0. _d 0
          PIc(i,j,kg,bi,bj) = 0. _d 0
         ENDDO
@@ -472,12 +570,20 @@ C     Reset the arrays
        kci = CellIndex(kk)
        DO j = 1,sNy+1
         DO i = 1,sNx+1
-         TatC(i,j) = MapFact(kk) *  tracer(i,j,k,bi,bj) +
-     &    (1.0-MapFact(kk)) *  tracer(i,j,k+1,bi,bj)
+         IF (hFacC(i,j,k,bi,bj)>0.0) THEN
+C ------ This interpolation is not exactly correct for hFacC(k+1) < 1.0
+C        To fix it, however, we would need to recompute MapFact.
+C        What it does is gradually de-weight the lower cell as the
+C        lower cell thickness approaches zero. Seems reasonable.
+           mfac = 1.0 - hFacC(i,j,k+1,bi,bj)*(MapFact(kk) - 1.0)
+             TatC(i,j) =
+     &         mfac*tracer(i,j,k,bi,bj) +
+     &         (1.0 - mfac)*tracer(i,j,k+1,bi,bj)
+         ENDIF
         ENDDO
        ENDDO
 C ------ Now that we know T everywhere, determine the binning.
-C        find the layer indices kgu
+C        find the layer indices kgc for the center point
        CALL LAYERS_LOCATE(
      I      layers_bounds(1,iLa),Nlayers,mSteps,sNx,sNy,TatC,
      O      kgc,
@@ -500,39 +606,104 @@ C     check for failures
         IF ( errorFlag ) STOP 'ABNORMAL END: S/R LAYERS_DIAPYCNAL'
        ENDIF
 #endif /* ndef TARGET_NEC_SX */
-C
+
+C        find the layer indices kgcw for the w point
+       CALL LAYERS_LOCATE(
+     I      layers_bounds_w(1,iLa),Nlayers-1,mSteps,sNx,sNy,TatC,
+     O      kgcw,
+     I      myThid )
+#ifndef TARGET_NEC_SX
+C     check for failures
+       IF ( debugLevel .GE. debLevC ) THEN
+        errorFlag = .FALSE.
+        DO j = 1,sNy+1
+         DO i = 1,sNx+1
+          IF ( kgcw(i,j) .LE. 0 ) THEN
+           WRITE(msgBuf,'(2A,I3,A,I3,A,1E14.6)')
+     &          'S/R LAYERS_LOCATE: Could not find a bin in ',
+     &          'layers_bounds for TatC(',i,',',j,',)=',TatC(i,j)
+           CALL PRINT_ERROR( msgBuf, myThid )
+           errorFlag = .TRUE.
+          ENDIF
+         ENDDO
+        ENDDO
+        IF ( errorFlag ) STOP 'ABNORMAL END: S/R LAYERS_DIAPYCNAL'
+       ENDIF
+#endif /* ndef TARGET_NEC_SX */
 
 C ------ Augment the bin values
        DO j = 1,sNy+1
         DO i = 1,sNx+1
-         dzfac = dZZf(kk) * hFacC(i,j,kci,bi,bj)
-         kloc = kgc(i,j)
+         dzfac = dZZf(kk) * hFacC(i,j,kci,bi,bj) 
+         kloc = kgcw(i,j)
+
+C ------- Thickness at w point
+         Hcw(i,j,kloc,bi,bj) = Hcw(i,j,kloc,bi,bj)
+     &     + dzfac
+C ------- Thickness at c point
+         Hc(i,j,kgc(i,j),bi,bj) = Hc(i,j,kgc(i,j),bi,bj)
+     &     + dzfac
+     
+C ------- Now rescale dzfac to include the layer coordinate spacing
+         dzfac = dzfac * layers_recip_delta(kloc,iLa)
+
+         IF ( layers_num(iLa) .EQ. 3 ) THEN
+           Tfac = layers_alpha(i,j,kci,bi,bj)
+           Sfac = layers_beta(i,j,kci,bi,bj)
+         ENDIF
          IF (kci.EQ.1) THEN
 C ------- We are in the surface layer
           TtendSurf(i,j,kloc,bi,bj) =
-     &     TtendSurf(i,j,kloc,bi,bj) +
-     &     dzfac * layers_surfflux(i,j,1,1,bi,bj)
+     &     TtendSurf(i,j,kloc,bi,bj) + 
+     &     Tfac * dzfac * layers_surfflux(i,j,1,1,bi,bj)
           StendSurf(i,j,kloc,bi,bj) =
-     &     StendSurf(i,j,kloc,bi,bj) +
-     &     dzfac * layers_surfflux(i,j,1,2,bi,bj)
+     &     StendSurf(i,j,kloc,bi,bj) + 
+     &     Sfac * dzfac * layers_surfflux(i,j,1,2,bi,bj)
          ENDIF
-         TtendDiffh(i,j,kloc,bi,bj) =
-     &     TtendDiffh(i,j,kloc,bi,bj) + dzfac *
-     &    (layers_dfx(i,j,kci,1,bi,bi)+
-     &     layers_dfy(i,j,kci,1,bi,bi))
-         TtendDiffr(i,j,kloc,bi,bj) =
-     &     TtendDiffr(i,j,kloc,bi,bj) +
-     &     dzfac * layers_dfr(i,j,kci,1,bi,bi)
-         StendDiffh(i,j,kloc,bi,bj) =
-     &     StendDiffh(i,j,kloc,bi,bj) + dzfac *
-     &    (layers_dfx(i,j,kci,2,bi,bi)+
-     &     layers_dfy(i,j,kci,2,bi,bi))
-         StendDiffr(i,j,kloc,bi,bj) =
-     &     StendDiffr(i,j,kloc,bi,bj) +
-     &     dzfac * layers_dfr(i,j,kci,2,bi,bi)
-         Hc(i,j,kloc,bi,bj) = Hc(i,j,kloc,bi,bj)
-     &     + dzfac
 
+#ifdef SHORTWAVE_HEATING         
+          TtendSurf(i,j,kloc,bi,bj) =
+     &     TtendSurf(i,j,kloc,bi,bj) +
+     &     Tfac * dzfac * layers_sw(i,j,kci,1,bi,bj)
+#endif /* SHORTWAVE_HEATING */
+
+C ------- Diffusion
+         TtendDiffh(i,j,kloc,bi,bj) =
+     &     TtendDiffh(i,j,kloc,bi,bj) + dzfac * Tfac *
+     &    (layers_dfx(i,j,kci,1,bi,bj)+
+     &     layers_dfy(i,j,kci,1,bi,bj))
+         TtendDiffr(i,j,kloc,bi,bj) =
+     &     TtendDiffr(i,j,kloc,bi,bj) + 
+     &     dzfac * Tfac * layers_dfr(i,j,kci,1,bi,bj)
+         StendDiffh(i,j,kloc,bi,bj) =
+     &     StendDiffh(i,j,kloc,bi,bj) + dzfac * Sfac *
+     &    (layers_dfx(i,j,kci,2,bi,bj)+
+     &     layers_dfy(i,j,kci,2,bi,bj))
+         StendDiffr(i,j,kloc,bi,bj) =
+     &     StendDiffr(i,j,kloc,bi,bj) + 
+     &     dzfac * Sfac * layers_dfr(i,j,kci,2,bi,bj)
+C ------- Advection
+         TtendAdvh(i,j,kloc,bi,bj) =
+     &     TtendAdvh(i,j,kloc,bi,bj) + dzfac * Tfac *
+     &    (layers_afx(i,j,kci,1,bi,bj)+
+     &     layers_afy(i,j,kci,1,bi,bj))
+         TtendAdvr(i,j,kloc,bi,bj) =
+     &     TtendAdvr(i,j,kloc,bi,bj) + 
+     &     dzfac * Tfac * layers_afr(i,j,kci,1,bi,bj)
+         StendAdvh(i,j,kloc,bi,bj) =
+     &     StendAdvh(i,j,kloc,bi,bj) + dzfac * Sfac *
+     &    (layers_afx(i,j,kci,2,bi,bj)+
+     &     layers_afy(i,j,kci,2,bi,bj))
+         StendAdvr(i,j,kloc,bi,bj) =
+     &     StendAdvr(i,j,kloc,bi,bj) + 
+     &     dzfac * Sfac * layers_afr(i,j,kci,2,bi,bj)
+C -------- Total Tendency
+         Ttendtot(i,j,kloc,bi,bj) = 
+     &     Ttendtot(i,j,kloc,bi,bj) + 
+     &     dzfac * Tfac * layers_tottend(i,j,kci,1,bi,bj)
+         Stendtot(i,j,kloc,bi,bj) = 
+     &     Stendtot(i,j,kloc,bi,bj) + 
+     &     dzfac * Sfac * layers_tottend(i,j,kci,2,bi,bj)
         ENDDO
        ENDDO
       ENDDO

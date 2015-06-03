@@ -1,35 +1,30 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_save.F,v 1.2 2014/07/08 19:04:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_save.F,v 1.3 2015/06/03 13:39:22 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
 C--  File layers_save.F:
 C--   Contents
-C--   o LAYERS_FILL_SURFACE_FLUX
-C--   o LAYERS_FILL_DFX
-C--   o LAYERS_FILL_DFY
-C--   o LAYERS_FILL_DFR
+C--   o LAYERS_FILL
+C--   o LAYERS_FILL_FIELD
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: LAYERS_FILL_TFLUX
-C     !INTERFACE:
-      SUBROUTINE LAYERS_FILL_SURFACE_FLUX(
-     I               surfflux, trIdentity,
+
+      SUBROUTINE LAYERS_FILL(
+     I               df, trIdentity, fluxid,
      I               kLev, nLevs, bibjFlg, biArg, bjArg, myThid )
-      IMPLICIT NONE
-C     == Global variables ===
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE LAYERS_FILL
+C     | "Remember" the merid. advective flux for use later in layers_thermodynamics
+C     *==========================================================*
+       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "LAYERS_SIZE.h"
 #include "LAYERS.h"
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE LAYERS_FULL_SURFACE_FLUX
-C     | "Remember" the surface fluxes for use later in layers_thermodynamics
-C     *==========================================================*
-C     \ev
 C***********************************************************************
 C   This is designed to look and work exactly like the a regular
 C   diagnostics_fill call.
@@ -42,10 +37,8 @@ C                  > 0 (any integer): WHICH single level to increment in qdiag.
 C                  0,-1 to increment "nLevs" levels in qdiag,
 C                  0 : fill-in in the same order as the input array
 C                  -1: fill-in in reverse order.
-C                   this is a DUMMY ARGUMENT here. Not used!
 C     nLevs     :: indicates Number of levels of the input field array
 C                  (whether to fill-in all the levels (kLev<1) or just one (kLev>0))
-C                   this is a DUMMY ARGUMENT here. Not used!
 C     bibjFlg   :: Integer flag to indicate instructions for bi bj loop
 C                  0 indicates that the bi-bj loop must be done here
 C                  1 indicates that the bi-bj loop is done OUTSIDE
@@ -57,243 +50,297 @@ C                     AND that the array has no overlap region (interior only)
 C                  NOTE - bibjFlg can be NEGATIVE to indicate not to increment counter
 C     biArg     :: X-direction tile number - used for bibjFlg=1-3
 C     bjArg     :: Y-direction tile number - used for bibjFlg=1-3
-C     myThid    :: my thread Id number
-C***********************************************************************
-C                  NOTE: User beware! If a local (1 tile only) array
-C                        is sent here, bibjFlg MUST NOT be set to 0
-C                        or there will be out of bounds problems!
-C***********************************************************************
 
-      _RL surfflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      INTEGER trIdentity, kLev, nLevs, bibjFlg, biArg, bjArg
+
+C       _RL df(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+       _RL df(*)
+       INTEGER trIdentity, kLev, nLevs, bibjFlg, biArg, bjArg
+       INTEGER myThid
+       CHARACTER*(3) fluxid
+
+#ifdef LAYERS_THERMODYNAMICS
+
+C !LOCAL VARIABLES: ====================================================
+C i,j              :: loop indices
+C msgBuf           :: error message buffer
+       CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+
+       IF ((trIdentity.EQ.1).OR.(trIdentity.EQ.2)) THEN
+
+       IF (fluxid.EQ.'SUR') THEN
+         CALL LAYERS_FILL_FIELD(df, trIdentity, 1, layers_surfflux,'M',
+     &           klev, nLevs, bibjFlg, biArg, bjArg, myThid)
+       ELSE IF (fluxid.EQ.'DFX') THEN
+         CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_dfx,'U',
+     &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
+       ELSE IF (fluxid.EQ.'DFY') THEN
+         CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_dfy,'V',
+     &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
+       ELSE IF (fluxid.EQ.'DFR') THEN
+         CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_dfr,'M',
+     &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
+       ELSE IF (fluxid.EQ.'AFX') THEN
+         CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_afx,'U',
+     &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
+       ELSE IF (fluxid.EQ.'AFY') THEN
+         CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_afy,'V',
+     &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
+       ELSE IF (fluxid.EQ.'AFR') THEN
+         CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_afr,'M',
+     &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)     
+       ELSE IF (fluxid.EQ.'TOT') THEN
+         CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_tottend,'M',
+     &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
+       ELSE
+         WRITE(msgBuf,'(2A)')
+     &          'S/R LAYERS_FILL: ',
+     &          'invalid flux ID'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R LAYERS_FILL'
+       ENDIF
+       
+       ELSE
+C  ---- Can't throw an error for different trIdentity
+C       because subroutine also gets called for ptracers.
+C       Just have to do nothing
+                    
+C         WRITE(msgBuf,'(5A,I2)')
+C     &          'S/R LAYERS_FILL: ',
+C     &          'only works on THETA (1) or SALT (2)',
+C     &          'fluxid=', fluxid, 'trId=',
+C     &          trIdentity
+C         CALL PRINT_ERROR( msgBuf, myThid )
+C         STOP 'ABNORMAL END: S/R LAYERS_FILL'   
+       ENDIF
+         
+#endif /* LAYERS_THERMODYNAMICS */
+
+      RETURN
+      END
+C end of S/R LAYERS_FILL
+
+
+      SUBROUTINE LAYERS_FILL_FIELD(
+     I               df, trIdentity, myNr,
+     U               layers_saved_flux,
+     I               fldType,
+     I               kLev, nLevs, bibjFlg, biArg, bjArg, myThid )
+
+       IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "LAYERS_SIZE.h"
+#include "LAYERS.h"
+
+       INTEGER trIdentity, myNr, kLev, nLevs, bibjFlg, biArg, bjArg
+       CHARACTER fldType
+       _RL layers_saved_flux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
+     &                       myNr,2,nSx,nSy)
+C       _RL df(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+       _RL df(*)
+       INTEGER myThid
+
+#ifdef LAYERS_THERMODYNAMICS
+
+C !LOCAL VARIABLES: ====================================================
+C i,j              :: loop indices
+C msgBuf           :: error message buffer
+      INTEGER sizI1,sizI2,sizJ1,sizJ2
+      INTEGER sizTx,sizTy
+      INTEGER iRun, jRun, k, bi, bj
+      INTEGER kFirst, kLast
+      INTEGER kd, kd0, ksgn
+C       CHARACTER*(MAX_LEN_MBUF) msgBuf
+       
+C-      select range for 1rst & 2nd indices to accumulate
+C         depending on variable location on C-grid,
+      IF ( fldType.EQ.'U' ) THEN
+       iRun = sNx+1
+       jRun = sNy
+      ELSEIF ( fldType.EQ.'V' ) THEN
+       iRun = sNx
+       jRun = sNy+1
+      ELSE
+       iRun = sNx
+       jRun = sNy
+      ENDIF
+C-      Dimension of the input array:
+      IF (abs(bibjFlg).EQ.3) THEN
+        sizI1 = 1
+        sizI2 = sNx
+        sizJ1 = 1
+        sizJ2 = sNy
+        iRun = sNx
+        jRun = sNy
+      ELSE
+        sizI1 = 1-OLx
+        sizI2 = sNx+OLx
+        sizJ1 = 1-OLy
+        sizJ2 = sNy+OLy
+      ENDIF
+      IF (abs(bibjFlg).GE.2) THEN
+        sizTx = 1
+        sizTy = 1
+      ELSE
+        sizTx = nSx
+        sizTy = nSy
+      ENDIF
+   
+C-      Which part of inpFld to add : k = 3rd index,
+C         and do the loop >> do k=kFirst,kLast <<
+      IF (kLev.LE.0) THEN
+        kFirst = 1
+        kLast  = nLevs
+      ELSEIF ( nLevs.EQ.1 ) THEN
+        kFirst = 1
+        kLast  = 1
+      ELSEIF ( kLev.LE.nLevs ) THEN
+        kFirst = kLev
+        kLast  = kLev
+      ELSE
+        STOP 'ABNORMAL END in LAYERS_SAVE: kLev > nLevs >0'
+      ENDIF
+C-      Which part of qdiag to update: kd = 3rd index,
+C         and do the loop >> do k=kFirst,kLast ; kd = kd0 + k*ksgn <<
+      IF ( kLev.EQ.-1 ) THEN
+        ksgn = -1
+        kd0 = 1 + nLevs
+      ELSEIF ( kLev.EQ.0 ) THEN
+        ksgn = 1
+        kd0 = 0
+      ELSE
+        ksgn = 0
+        kd0 = kLev 
+      ENDIF
+
+      IF ( bibjFlg.EQ.0 ) THEN
+
+       DO bj=myByLo(myThid), myByHi(myThid)
+        DO bi=myBxLo(myThid), myBxHi(myThid)
+         DO k = kFirst,kLast
+          kd = kd0 + ksgn*k
+          CALL LAYERS_CUMULATE(
+     U      layers_saved_flux(1-OLx,1-OLy,kd,trIdentity,bi,bj),
+     I      df,
+     I      sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
+     I      iRun,jRun,k,bi,bj,
+     I      myThid)
+         ENDDO
+        ENDDO
+       ENDDO
+      ELSE
+        bi = MIN(biArg,sizTx)
+        bj = MIN(bjArg,sizTy)
+        DO k = kFirst,kLast
+          kd = kd0 + ksgn*k
+          CALL LAYERS_CUMULATE(
+     U      layers_saved_flux(1-OLx,1-OLy,kd,trIdentity,biArg,bjArg),
+     I      df,
+     I      sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
+     I      iRun,jRun,k,bi,bj,
+     I      myThid)
+        ENDDO
+      ENDIF
+
+         
+C        IF (bibjFlg.EQ.2) THEN
+C C --   called INSIDE the bi-bj loop, with overlap present
+C         DO k = kstart,kend
+C          DO j = 1-OLy,sNy+OLy
+C           DO i = 1-OLx,sNx+OLx
+C            layers_saved_flux(i,j,k,trIdentity,biArg,bjArg) =
+C      &       layers_saved_flux(i,j,k,trIdentity,biArg,bjArg) +
+C      &        df(i,j,1,1)
+C           ENDDO
+C          ENDDO
+C         ENDDO
+C        ELSE IF (bibjFlg.EQ.0) THEN
+C C --   the bi-bj loop must be done here
+C         DO bj=myByLo(myThid), myByHi(myThid)
+C          DO bi=myBxLo(myThid), myBxHi(myThid)
+C           DO k = kstart,kend
+C            DO j = 1-OLy,sNy+OLy
+C             DO i = 1-OLx,sNx+OLx
+C               layers_saved_flux(i,j,k,trIdentity,bi,bj) =
+C      &          layers_saved_flux(i,j,k,trIdentity,bi,bj) +
+C      &          df(i,j,bi,bj)
+C             ENDDO
+C            ENDDO
+C           ENDDO
+C          ENDDO
+C         ENDDO
+C        ELSE
+C            WRITE(msgBuf,'(2A)')
+C      &          'S/R LAYERS_FILL_FIELD: ',
+C      &          'got unexpected bibjFlg'
+C            CALL PRINT_ERROR( msgBuf, myThid )
+C            STOP 'ABNORMAL END: S/R LAYERS_FILL_FIELD'
+C        ENDIF     
+
+#endif /* LAYERS_THERMODYNAMICS */
+
+      RETURN
+      END
+C end of S/R LAYERS_FILL_FIELD
+
+      SUBROUTINE LAYERS_CUMULATE(
+     U                  cumFld,
+     I                  inpFld,
+     I                  sizI1,sizI2,sizJ1,sizJ2,sizK,sizTx,sizTy,
+     I                  iRun,jRun,k,bi,bj,
+     I                  myThid )
+
+C     !DESCRIPTION:
+C     Update array cumFld
+C     by adding content of input field array inpFld
+C     over the range [1:iRun],[1:jRun]
+
+C     !USES:
+      IMPLICIT NONE
+
+#include "EEPARAMS.h"
+#include "SIZE.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine Arguments ==
+C     cumFld      :: cumulative array (updated)
+C     inpFld      :: input field array to add to cumFld
+C     sizI1,sizI2 :: size of inpFld array: 1rst index range (min,max)
+C     sizJ1,sizJ2 :: size of inpFld array: 2nd  index range (min,max)
+C     sizK        :: size of inpFld array: 3rd  dimension
+C     sizTx,sizTy :: size of inpFld array: tile dimensions
+C     iRun,jRun   :: range of 1rst & 2nd index
+C     k,bi,bj     :: level and tile indices of inFld array to add to cumFld array
+C     myThid      :: my Thread Id number
+      _RL cumFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER sizI1,sizI2,sizJ1,sizJ2
+      INTEGER sizK,sizTx,sizTy
+      _RL inpFld(sizI1:sizI2,sizJ1:sizJ2,sizK,sizTx,sizTy)
+      INTEGER iRun, jRun, k, bi, bj
       INTEGER myThid
 CEOP
 
-#ifdef LAYERS_THERMODYNAMICS
+C     !LOCAL VARIABLES:
+C     i,j    :: loop indices
+      INTEGER i, j
+C      _RL     tmpFact
 
-C !LOCAL VARIABLES: ====================================================
-C i,j              :: loop indices
-C msgBuf           :: error message buffer
-      INTEGER i,j,bi,bj
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C -- should be called as:
-C CALL LAYERS_FILL_TFLUX( tmp1k, 0,1,0,1,1,myThid )
-C
-C  This is to make the call look as much as possible like the diagnostics call.
-C  However, all of the arguments after tmp1k are NOT USED!
-C  This is potentially misleading. However it seems wise to keep in mind that
-C  diagnsostics are filled in all sorts of different ways.
-
-C -- only operate on T and S
-       IF ((trIdentity.EQ.1).OR.(trIdentity.EQ.2)) THEN
-
-        IF ( (kLev.EQ.0) .AND. (nLevs.EQ.1) .AND. (bibjFlg.EQ.0)
-     &       .AND. ((trIdentity.EQ.1) .OR. (trIdentity.EQ.2)) ) THEN
-         DO bj=myByLo(myThid), myByHi(myThid)
-          DO bi=myBxLo(myThid), myBxHi(myThid)
-C -- This is how the loops are computed in diagnostics_fill, where there is not
-C -- necessarily a halo in the variable
-C           DO j = 1,jRun
-C            DO i = 1,iRun
-C -- But here we need to explicitly fill the halo in order to compute flux divergence
-           DO j = 1-OLy,sNy+OLy
-            DO i = 1-OLx,sNx+OLx
-             layers_surfflux(i,j,1,trIdentity,bi,bj) =
-     &       layers_surfflux(i,j,1,trIdentity,bi,bj) +
-     &              surfflux(i,j,bi,bj)
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-        ELSE
-C -- raise an error if this gets called in an unexpected way
-         WRITE(msgBuf,'(2A)')
-     &          'S/R LAYERS_FILL_SURFACE_FLUX: ',
-     &          'was called in an unexpected way'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R LAYERS_FILL_SURFACE_FLUX'
-        ENDIF
-
-      ENDIF
-#endif /* LAYERS_THERMODYNAMICS */
+      DO j = 1,jRun
+       DO i = 1,iRun
+        cumFld(i,j) = cumFld(i,j) + inpFld(i,j,k,bi,bj)
+       ENDDO
+      ENDDO
 
       RETURN
       END
-C end of S/R LAYERS_FILL_SURFACE_FLUX
 
-      SUBROUTINE LAYERS_FILL_DFX(
-     I               df, trIdentity,
-     I               kLev, nLevs, bibjFlg, biArg, bjArg, myThid )
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE LAYERS_FILL_DFX
-C     | "Remember" the zonal diffusive flux for use later in layers_thermodynamics
-C     *==========================================================*
-      IMPLICIT NONE
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-#include "LAYERS_SIZE.h"
-#include "LAYERS.h"
 
-       _RL df(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-       INTEGER trIdentity, kLev, nLevs, bibjFlg, biArg, bjArg
-       INTEGER myThid
 
-#ifdef LAYERS_THERMODYNAMICS
 
-C !LOCAL VARIABLES: ====================================================
-C i,j              :: loop indices
-C msgBuf           :: error message buffer
-       INTEGER i,j
-       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-C    CALL LAYERS_FILL_DFX( df, trIdentity, k, 1, 2,bi,bj, myThid )
-C -- only operate on T and S
-       IF ((trIdentity.EQ.1).OR.(trIdentity.EQ.2)) THEN
-
-C -- expect to be called INSIDE the bi-bj loop, with overlap present (bibjFlg=2)
-
-       IF ( (nLevs.EQ.1) .AND. (bibjFlg.EQ.2)
-     &     .AND. ((trIdentity.EQ.1) .OR. (trIdentity.EQ.2)) ) THEN
-        DO j = 1-OLy,sNy+OLy
-         DO i = 1-OLx,sNx+OLx
-          layers_dfx(i,j,kLev,trIdentity,biArg,bjArg) =
-     &      layers_dfx(i,j,kLev,trIdentity,biArg,bjArg) +
-     &      df(i,j)
-         ENDDO
-        ENDDO
-       ELSE
-C -- raise an error if this gets called in an unexpected way
-        WRITE(msgBuf,'(2A)')
-     &          'S/R LAYERS_FILL_DFX: ',
-     &          'was called in an unexpected way'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R LAYERS_FILL_DFX'
-       ENDIF
-      ENDIF
-#endif /* LAYERS_THERMODYNAMICS */
-      RETURN
-      END
-C end of S/R LAYERS_FILL_DFX
-
-      SUBROUTINE LAYERS_FILL_DFY(
-     I               df, trIdentity,
-     I               kLev, nLevs, bibjFlg, biArg, bjArg, myThid )
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE LAYERS_FILL_DFY
-C     | "Remember" the merid. diffusive flux for use later in layers_thermodynamics
-C     *==========================================================*
-       IMPLICIT NONE
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-#include "LAYERS_SIZE.h"
-#include "LAYERS.h"
-
-       _RL df(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-       INTEGER trIdentity, kLev, nLevs, bibjFlg, biArg, bjArg
-       INTEGER myThid
-
-#ifdef LAYERS_THERMODYNAMICS
-
-C !LOCAL VARIABLES: ====================================================
-C i,j              :: loop indices
-C msgBuf           :: error message buffer
-       INTEGER i,j
-       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
-C    CALL LAYERS_FILL_DFY( df, trIdentity, k, 1, 2,bi,bj, myThid )
-C -- only operate on T and S
-       IF ((trIdentity.EQ.1).OR.(trIdentity.EQ.2)) THEN
-
-C -- expect to be called INSIDE the bi-bj loop, with overlap present (bibjFlg=2)
-
-       IF ( (nLevs.EQ.1) .AND. (bibjFlg.EQ.2)
-     &     .AND. ((trIdentity.EQ.1) .OR. (trIdentity.EQ.2)) ) THEN
-        DO j = 1-OLy,sNy+OLy
-         DO i = 1-OLx,sNx+OLx
-          layers_dfy(i,j,kLev,trIdentity,biArg,bjArg) =
-     &      layers_dfy(i,j,kLev,trIdentity,biArg,bjArg) +
-     &      df(i,j)
-         ENDDO
-        ENDDO
-       ELSE
-C -- raise an error if this gets called in an unexpected way
-        WRITE(msgBuf,'(2A)')
-     &          'S/R LAYERS_FILL_DFY: ',
-     &          'was called in an unexpected way'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R LAYERS_FILL_DFY'
-       ENDIF
-
-      ENDIF
-#endif /* LAYERS_THERMODYNAMICS */
-
-      RETURN
-      END
-C end of S/R LAYERS_FILL_DFY
-
-      SUBROUTINE LAYERS_FILL_DFR(
-     I               df, trIdentity,
-     I               kLev, nLevs, bibjFlg, biArg, bjArg, myThid )
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE LAYERS_FILL_DFR
-C     | "Remember" the vert. diffusive flux for use later in layers_thermodynamics
-C     *==========================================================*
-       IMPLICIT NONE
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-#include "LAYERS_SIZE.h"
-#include "LAYERS.h"
-
-       _RL df(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-       INTEGER trIdentity, kLev, nLevs, bibjFlg, biArg, bjArg
-       INTEGER myThid
-
-#ifdef LAYERS_THERMODYNAMICS
-
-C !LOCAL VARIABLES: ====================================================
-C i,j              :: loop indices
-C msgBuf           :: error message buffer
-       INTEGER i,j
-       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
-C    CALL LAYERS_FILL_DFY( df, trIdentity, k, 1, 2,bi,bj, myThid )
-C -- only operate on T and S
-       IF ((trIdentity.EQ.1).OR.(trIdentity.EQ.2)) THEN
-
-C -- expect to be called INSIDE the bi-bj loop, with overlap present (bibjFlg=2)
-
-       IF ( (nLevs.EQ.1) .AND. (bibjFlg.EQ.2)
-     &     .AND. ((trIdentity.EQ.1) .OR. (trIdentity.EQ.2)) ) THEN
-        DO j = 1-OLy,sNy+OLy
-         DO i = 1-OLx,sNx+OLx
-          layers_dfr(i,j,kLev,trIdentity,biArg,bjArg) =
-     &      layers_dfr(i,j,kLev,trIdentity,biArg,bjArg) +
-     &      df(i,j)
-         ENDDO
-        ENDDO
-       ELSE
-C -- raise an error if this gets called in an unexpected way
-        WRITE(msgBuf,'(2A)')
-     &          'S/R LAYERS_FILL_DFY: ',
-     &          'was called in an unexpected way'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R LAYERS_FILL_DFY'
-       ENDIF
-
-      ENDIF
-#endif /* LAYERS_THERMODYNAMICS */
-
-      RETURN
-      END
-C end of S/R LAYERS_FILL_DFR
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.75 2014/08/14 16:46:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.76 2015/06/03 13:39:22 rpa Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -780,6 +780,12 @@ C-    horizontal advection done; store intermediate result in 3D array:
           diagName = 'ADVy'//diagSufx
           CALL DIAGNOSTICS_FILL( afy, diagName, k,1, 2,bi,bj, myThid )
         ENDIF
+#ifdef ALLOW_LAYERS
+        IF ( useLayers ) THEN
+          CALL LAYERS_FILL(afx,trIdentity,'AFX',k,1,2,bi,bj,myThid)
+          CALL LAYERS_FILL(afy,trIdentity,'AFY',k,1,2,bi,bj,myThid)
+        ENDIF
+#endif /* ALLOW_LAYERS */
 #endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef ALLOW_DEBUG
@@ -948,6 +954,12 @@ C     and consistent with linFSConserveTr and "surfExpan_" monitor.
           CALL DIAGNOSTICS_FILL( fVerT(1-OLx,1-OLy,kUp),
      &                           diagName, k,1, 2,bi,bj, myThid )
         ENDIF
+#ifdef ALLOW_LAYERS
+        IF ( useLayers ) THEN
+          CALL LAYERS_FILL( fVerT(1-OLx,1-OLy,kUp), trIdentity,
+     &                      'AFR', k, 1, 2,bi,bj, myThid)
+        ENDIF
+#endif /* ALLOW_LAYERS */
 #endif /* ALLOW_DIAGNOSTICS */
 
 C--   End of K loop for vertical flux

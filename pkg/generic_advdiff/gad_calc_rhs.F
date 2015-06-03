@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.72 2014/09/11 17:56:32 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.73 2015/06/03 13:39:22 rpa Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -286,6 +286,12 @@ C-      replace advective flux with 1st order upwind scheme estimate
           diagName = 'ADVx'//diagSufx
           CALL DIAGNOSTICS_FILL( af, diagName, k,1, 2,bi,bj, myThid )
         ENDIF
+#ifdef ALLOW_LAYERS
+        IF ( useLayers ) THEN
+          CALL LAYERS_FILL( af, trIdentity, 'AFX', 
+     &                      k, 1, 2,bi,bj, myThid )
+        ENDIF
+#endif /* ENDIF */
 #endif
       ENDIF
 
@@ -331,7 +337,8 @@ C       excluding advective terms:
           CALL DIAGNOSTICS_FILL( df, diagName, k,1, 2,bi,bj, myThid )
 #ifdef ALLOW_LAYERS
           IF ( useLayers ) THEN
-           CALL LAYERS_FILL_DFX( df, trIdentity, k, 1, 2,bi,bj, myThid )
+           CALL LAYERS_FILL( df, trIdentity, 'DFX',
+     &                       k, 1, 2,bi,bj, myThid )
           ENDIF
 #endif /* ALLOW_LAYERS */
       ENDIF
@@ -419,6 +426,12 @@ C-      replace advective flux with 1st order upwind scheme estimate
           diagName = 'ADVy'//diagSufx
           CALL DIAGNOSTICS_FILL( af, diagName, k,1, 2,bi,bj, myThid )
         ENDIF
+#ifdef ALLOW_LAYERS
+        IF ( useLayers ) THEN
+          CALL LAYERS_FILL( af, trIdentity, 'AFY',
+     &                          k, 1, 2,bi,bj, myThid )
+        ENDIF
+#endif /* ALLOW_LAYES */
 #endif
       ENDIF
 
@@ -464,7 +477,8 @@ C       excluding advective terms:
           CALL DIAGNOSTICS_FILL( df, diagName, k,1, 2,bi,bj, myThid )
 #ifdef ALLOW_LAYERS
           IF ( useLayers ) THEN
-           CALL LAYERS_FILL_DFY( df, trIdentity,k, 1, 2,bi,bj, myThid )
+           CALL LAYERS_FILL( df, trIdentity, 'DFY',
+     &                           k, 1, 2,bi,bj, myThid )
           ENDIF
 #endif /* ALLOW_LAYERS */
       ENDIF
@@ -580,6 +594,11 @@ C-     add the advective flux to fVerT
 C- note: needs to explicitly increment the counter since DIAGNOSTICS_FILL
 C        does it only if k=1 (never the case here)
           IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT(diagName,bi,bj,myThid)
+#ifdef ALLOW_LAYERS
+          IF ( useLayers ) THEN
+            CALL LAYERS_FILL(af,trIdentity,'AFR',k,1,2,bi,bj,myThid)
+          ENDIF
+#endif /* ALLOW_LAYERS */
        ENDIF
 #endif
       ENDIF
@@ -627,7 +646,7 @@ C       Explicit terms only & excluding advective terms:
           CALL DIAGNOSTICS_FILL( df, diagName, k,1, 2,bi,bj, myThid )
 #ifdef ALLOW_LAYERS
           IF ( useLayers ) THEN
-           CALL LAYERS_FILL_DFR( df, trIdentity, k, 1, 2,bi,bj, myThid )
+           CALL LAYERS_FILL(df,trIdentity,'DFR',k,1,2,bi,bj,myThid)
           ENDIF
 #endif /* ALLOW_LAYERS */
       ENDIF
@@ -680,7 +699,7 @@ C        does it only if k=1 (never the case here)
          IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT(diagName,bi,bj,myThid)
 #ifdef ALLOW_LAYERS
          IF ( useLayers ) THEN
-          CALL LAYERS_FILL_DFR( df, trIdentity, k, 1, 2,bi,bj, myThid )
+          CALL LAYERS_FILL(df,trIdentity,'DFR',k,1,2,bi,bj,myThid)
          ENDIF
 #endif /* ALLOW_LAYERS */
        ENDIF
