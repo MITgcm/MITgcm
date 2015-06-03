@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.27 2015/06/03 13:39:22 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.28 2015/06/03 17:29:37 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -296,7 +296,7 @@ C--   Fill-in diagnostics
 
 #ifdef LAYERS_PRHO_REF
          IF ( layers_num(iLa).EQ.3 ) THEN
-          WRITE(diagName,'(A4,I1,A3)') 'La',iLa,layers_name(iLa)
+          WRITE(diagName,'(A4,I1,A3)') 'LaTr',iLa,layers_name(iLa)
           CALL DIAGNOSTICS_FILL( prho,
      &                           diagName, 0, Nr, 0, 1, 1, myThid )
          ENDIF
@@ -353,7 +353,7 @@ C--   Fill-in diagnostics
          CALL DIAGNOSTICS_FILL( layers_TtendDiffh,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
 
-         WRITE(diagName,'(A4,I1,A3)') 'LaTr',iLa,layers_name(iLa)
+         WRITE(diagName,'(A4,I1,A3)') 'LaTz',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_TtendDiffr,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
 
