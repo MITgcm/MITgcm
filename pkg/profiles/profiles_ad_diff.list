@@ -4,6 +4,4 @@ profiles_interp.f
 profiles_interp_gg.f
 profiles_interp_mean.f
 profiles_interp_mean_gg.f
-profiles_interp_meand.f
-profiles_interp_mean_ggd.f
 cost_profiles.f

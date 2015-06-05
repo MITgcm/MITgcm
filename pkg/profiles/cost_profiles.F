@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.22 2015/03/26 14:53:58 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.23 2015/06/05 02:23:25 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -47,7 +47,6 @@ C     ========= Local variables =======================
       _RL tmp_lon
       _RL prof_traj1D(NLEVELMAX), prof_traj1D_mean(NLEVELMAX)
       _RL prof_data1D(NLEVELMAX), prof_weights1D(NLEVELMAX)
-      _RL prof_data1D_mean(NLEVELMAX)
 #ifdef ALLOW_PROFILES_GENERICGRID
       integer prof_i1D(NUM_INTERP_POINTS),prof_j1D(NUM_INTERP_POINTS)
       _RL prof_w1D(NUM_INTERP_POINTS)
@@ -114,40 +113,24 @@ c
              prof_traj1D_mean(k)=0.
              prof_mask1D_cur(k,bi,bj)=0.
              prof_data1D(k)=0.
-             prof_data1D_mean(k)=0.
              prof_weights1D(k)=0.
             enddo
 
             if (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) then
 cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
-#if ( defined (ALLOW_PROFILES_ANOM_COST))
-             if ( .FALSE.
-     &           .OR. num_var.EQ.6
-     &           .OR. num_var .le. 2
-     &       ) then
+#ifdef ALLOW_SSH_COST_CONTRIBUTION
+             if (num_var.EQ.6) then
 #ifdef ALLOW_PROFILES_GENERICGRID
              if (profilesDoGenGrid) then
               call profiles_interp_mean_gg(prof_traj1D_mean,
      &         prof_i1D,prof_j1D,prof_w1D,
      &         num_var,num_file,mytime,bi,bj,myThid)
-              if(num_var .le. 2) then
-               call profiles_interp_mean_ggd(prof_data1D_mean,
-     &          prof_i1D,prof_j1D,prof_w1D,
-     &          num_var,num_file,mytime,bi,bj,myThid)
-              endif
              else
 #endif
               call profiles_interp_mean(prof_traj1D_mean,
      &         prof_lon(num_file,prof_num,bi,bj),
      &         prof_lat(num_file,prof_num,bi,bj),
      &         num_var,num_file,mytime,bi,bj,myThid)
-
-              if(num_var .le. 2) then
-               call profiles_interp_meand(prof_data1D_mean,
-     &          prof_lon(num_file,prof_num,bi,bj),
-     &          prof_lat(num_file,prof_num,bi,bj),
-     &          num_var,num_file,mytime,bi,bj,myThid)
-              endif
 #ifdef ALLOW_PROFILES_GENERICGRID
              endif
 #endif
@@ -155,9 +138,8 @@ cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
 #endif
               do K=1,ProfDepthNo(num_file,bi,bj)
                prof_traj1D_mean(K)=0.
-               prof_data1D_mean(K)=0.
               enddo
-#if (defined (ALLOW_SSH_COST_CONTRIBUTION) || defined (ALLOW_PROFILES_ANOM_COST))
+#ifdef ALLOW_SSH_COST_CONTRIBUTION
              endif
 #endif
 
@@ -176,24 +158,12 @@ cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
      &           prof_weights1D,bi,bj,myThid)
 
              do K=1,ProfDepthNo(num_file,bi,bj)
-               if (prof_weights1D(K).GT.0.
-#ifdef ALLOW_PROFILES_ANOM_COST
-     &             .AND. prof_data1D_mean(K).NE. 0. _d 0
-#endif
-     &            ) then
+               if (prof_weights1D(K).GT.0.) then
                  objf_profiles(num_file,num_var,bi,bj)=
      &             objf_profiles(num_file,num_var,bi,bj)
      &             +prof_weights1D(K)*prof_mask1D_cur(K,bi,bj)
-     &             *(prof_traj1D(K)-prof_data1D(K)-prof_traj1D_mean(K)
-#ifdef ALLOW_PROFILES_ANOM_COST
-     &               + prof_data1D_mean(K)
-#endif
-     &              )
-     &             *(prof_traj1D(K)-prof_data1D(K)-prof_traj1D_mean(K)
-#ifdef ALLOW_PROFILES_ANOM_COST
-     &               + prof_data1D_mean(K)
-#endif
-     &              )
+     &             *(prof_traj1D(K)-prof_data1D(K)-prof_traj1D_mean(K))
+     &             *(prof_traj1D(K)-prof_data1D(K)-prof_traj1D_mean(K))
                  num_profiles(num_file,num_var,bi,bj)=
      &               num_profiles(num_file,num_var,bi,bj)
      &               +prof_mask1D_cur(K,bi,bj)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.13 2015/03/26 14:53:58 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.14 2015/06/05 02:23:25 gforget Exp $
 C $Name:  $
 
 C============================================================
@@ -41,8 +41,6 @@ C===========================================================
       _RL prof_etan_mean(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL prof_theta_mean(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL prof_salt_mean(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL prof_tdat_mean(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL prof_sdat_mean(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
       integer profNo(NFILESPROFMAX,nsx,nsy)
       integer profDepthNo(NFILESPROFMAX,nsx,nsy)
@@ -72,8 +70,7 @@ C===========================================================
 
       COMMON /profiles_r/ prof_time, prof_lon, prof_lat,
      & prof_depth, prof_mask1D_cur, 
-     & prof_etan_mean, prof_theta_mean, prof_salt_mean,
-     & prof_tdat_mean, prof_sdat_mean
+     & prof_etan_mean, prof_theta_mean, prof_salt_mean
       COMMON /profiles_i/ prof_ind_glob, profNo, profDepthNo,
      & fidforward, fidadjoint, fidtangent, fiddata,
      & prof_num_var_tot, prof_num_var_cur

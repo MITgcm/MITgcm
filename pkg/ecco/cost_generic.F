@@ -1,10 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.30 2015/03/26 14:52:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.31 2015/06/05 02:22:48 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
-#ifdef ALLOW_PROFILES
-# include "PROFILES_OPTIONS.h"
-#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -45,11 +42,6 @@ c     == global variables ==
 #endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE_COST.h"
-#endif
-#ifdef ALLOW_PROFILES
-#ifdef ALLOW_PROFILES_ANOM_COST
-# include "profiles.h"
-#endif
 #endif
 
 c     == routine arguments ==
@@ -207,24 +199,6 @@ C Compute the time-mean fields
 C Here only computes time-mean costs.
       if ( preproc(1) .EQ. 'mean') then
 c--     Compute masked model-data difference
-
-C Saving time-mean TS to be used as the reference in
-C computing the profile TS anomalies. May need to add 
-C TAF tags to reduce re-computation.
-#ifdef ALLOW_PROFILES
-#ifdef ALLOW_PROFILES_ANOM_COST
-      if( usePROFILES ) then
-      if ( outname .EQ. 'thetamean') then
-        call ecco_cp(localbarmean,nnzbar,prof_theta_mean,nnzbar,myThid)
-        call ecco_cp(localobsmean,nnzobs,prof_tdat_mean,nnzobs,myThid)
-      endif
-      if ( outname .EQ. 'saltmean') then
-        call ecco_cp(localbarmean,nnzbar,prof_salt_mean,nnzbar,myThid)
-        call ecco_cp(localobsmean,nnzobs,prof_sdat_mean,nnzobs,myThid)
-      endif
-      endif
-#endif
-#endif
 
         call ecco_diffmsk( localbarmean, nnzbar, localobsmean, nnzobs,
      &     localmask, spminloc, spmaxloc, spzeroloc, 
