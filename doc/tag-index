@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2154 2015/06/03 19:19:08 rpa Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2155 2015/06/06 14:45:21 rpa Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/layers:
+  - reverted changes to interpolation to previous treatment; there
+    was never actually a problem
 o pkg/layers:
   - fix interpolation of layers tracers in the presence of partial cells
   - add lots of new functionality to compute water mass transformation

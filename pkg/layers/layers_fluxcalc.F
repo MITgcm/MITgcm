@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.14 2015/06/03 19:58:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.15 2015/06/06 14:45:21 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -109,7 +109,7 @@ C     Tloc,Tp1 :: horizontally interpolated tracer values
       INTEGER mSteps
       INTEGER kgu(sNx+1,sNy+1), kgv(sNx+1,sNy+1)
       _RL TatU(sNx+1,sNy+1), TatV(sNx+1,sNy+1)
-      _RL mfac, dzfac, Tloc, Tp1
+      _RL dzfac
 #ifdef ALLOW_GMREDI
       INTEGER kcip1
       _RL delPsi, maskp1
@@ -176,36 +176,11 @@ C     Reset the arrays
 
 C ------ Find theta at the U point (west) on the fine Z grid
          kp1=k+1
-         IF (hFacW(i,j,k,bi,bj) .NE. 0.) THEN
-C ------ First interpolate tracer in the horizontal, accounting
-C        for mask properly. Do both this point and the one below
-           Tloc = (hFacC(i,j,k,bi,bj)*tracer(i,j,k,bi,bj) +
-     &             hFacC(i-1,j,k,bi,bj)*tracer(i-1,j,k,bi,bj)) /
-     &            (hFacC(i,j,k,bi,bj) + hFacC(i-1,j,k,bi,bj))
-           IF (hFacC(i,j,kp1,bi,bj) .NE. 0) THEN
-             Tp1 = (hFacC(i,j,kp1,bi,bj)*tracer(i,j,kp1,bi,bj) +
-     &            hFacC(i-1,j,kp1,bi,bj)*tracer(i-1,j,kp1,bi,bj)) /
-     &           (hFacC(i,j,kp1,bi,bj) + hFacC(i-1,j,kp1,bi,bj))
-           ELSE
-             Tp1 = Tloc
-           ENDIF
-
-C ------ This interpolation is not exactly correct for hFacC(k+1) < 1.0
-C        To fix it, however, we would need to recompute MapFact.
-C        What it does is gradually de-weight the lower cell as the
-C        lower cell thickness approaches zero. Seems reasonable.
-           mfac = 1.0 - hFacW(i,j,k+1,bi,bj)*(MapFact(kk) - 1.0)
-           TatU(i,j) = mfac*Tloc + (1.0 - mfac)*Tp1
-         ELSE
-           TatU(i,j) = -999. _d 0
-         ENDIF
-
-C ------ old way
-C         IF (hFacW(i,j,kp1,bi,bj) .EQ. 0.) kp1=k
-C         TatU(i,j) = MapFact(kk) *
-C     &    0.5 _d 0 * (tracer(i-1,j,k,bi,bj)+tracer(i,j,k,bi,bj)) +
-C     &    (1-MapFact(kk)) *
-C     &    0.5 _d 0 * (tracer(i-1,j,kp1,bi,bj)+tracer(i,j,kp1,bi,bj))
+         IF (maskW(i,j,kp1,bi,bj).EQ.zeroRS) kp1=k
+         TatU(i,j) = MapFact(kk) *
+     &    0.5 _d 0 * (tracer(i-1,j,k,bi,bj)+tracer(i,j,k,bi,bj)) +
+     &    (1. _d 0 -MapFact(kk)) *
+     &    0.5 _d 0 * (tracer(i-1,j,kp1,bi,bj)+tracer(i,j,kp1,bi,bj))
 
         ENDDO
        ENDDO
@@ -238,10 +213,12 @@ C
         DO i = 1,sNx+1
 
          kloc = kgu(i,j)
+         dzfac = dZZf(kk) * hFacW(i,j,kci,bi,bj)
+
 C ------ Augment the bin values
          UH(i,j,kloc,bi,bj) =
      &    UH(i,j,kloc,bi,bj) +
-     &    dZZf(kk) * uVel(i,j,kci,bi,bj) * hFacW(i,j,kci,bi,bj)
+     &    dzfac * uVel(i,j,kci,bi,bj)
 
 #ifdef ALLOW_GMREDI
          IF ( layers_bolus(iLa)  ) THEN
@@ -262,13 +239,12 @@ C ------ Augment the bin values
            ENDIF
            UH(i,j,kloc,bi,bj) = UH(i,j,kloc,bi,bj)
      &      + delPsi*recip_drF(kci)*_recip_hFacW(i,j,kci,bi,bj)
-     &      * dZZf(kk)*hFacW(i,j,kci,bi,bj)
+     &      * dzfac
          ENDIF
 #endif /* ALLOW_GMREDI */
 
 #ifdef LAYERS_THICKNESS
-         Hw(i,j,kloc,bi,bj) = Hw(i,j,kloc,bi,bj)
-     &    + dZZf(kk) * hFacW(i,j,kci,bi,bj)
+         Hw(i,j,kloc,bi,bj) = Hw(i,j,kloc,bi,bj) + dzfac
 #endif /* LAYERS_THICKNESS */
 
         ENDDO
@@ -280,35 +256,12 @@ C ------ Augment the bin values
         DO i = 1,sNx+1
 C ------ Find theta at the V point (south) on the fine Z grid
          kp1=k+1
-         IF (hFacS(i,j,k,bi,bj) .NE. 0.) THEN
-C         IF (hFacS(i,j,kp1,bi,bj) .EQ. 0.) kp1=k
+         IF (maskS(i,j,kp1,bi,bj).EQ.zeroRS) kp1=k
+         TatV(i,j) = MapFact(kk) *
+     &    0.5 _d 0 * (tracer(i,j-1,k,bi,bj)+tracer(i,j,k,bi,bj)) +
+     &    (1. _d 0 -MapFact(kk)) *
+     &    0.5 _d 0 * (tracer(i,j-1,kp1,bi,bj)+tracer(i,j,kp1,bi,bj))
 
-C ------ First interpolate tracer in the horizontal, accounting
-C        for mask properly. Do both this point and the one below
-           Tloc = (hFacC(i,j,k,bi,bj)*tracer(i,j,k,bi,bj) +
-     &             hFacC(i,j-1,k,bi,bj)*tracer(i,j-1,k,bi,bj)) /
-     &            (hFacC(i,j,k,bi,bj) + hFacC(i,j-1,k,bi,bj))
-           IF (hFacC(i,j,kp1,bi,bj) .NE. 0) THEN
-             Tp1 = (hFacC(i,j,kp1,bi,bj)*tracer(i,j,kp1,bi,bj) +
-     &            hFacC(i,j-1,kp1,bi,bj)*tracer(i,j-1,kp1,bi,bj)) /
-     &           (hFacC(i,j,kp1,bi,bj) + hFacC(i,j-1,kp1,bi,bj))
-           ELSE
-             Tp1 = Tloc
-           ENDIF
-
-C ------ This interpolation is not exactly correct for hFacC(k+1) < 1.0
-C        To fix it, however, we would need to recompute MapFact.
-C        What it does is gradually de-weight the lower cell as the
-C        lower cell thickness approaches zero. Seems reasonable.
-           mfac = 1.0 - hFacS(i,j,k+1,bi,bj)*(MapFact(kk) - 1.0)
-           TatV(i,j) = mfac*Tloc + (1.0 - mfac)*Tp1
-C         TatV(i,j) = MapFact(kk) *
-C     &    0.5 _d 0 * (tracer(i,j-1,k,bi,bj)+tracer(i,j,k,bi,bj)) +
-C     &    (1-MapFact(kk)) *
-C     &    0.5 _d 0 * (tracer(i,j-1,kp1,bi,bj)+tracer(i,j,kp1,bi,bj))
-         ELSE
-           TatV(i,j) = -999. _d 0
-         ENDIF
         ENDDO
        ENDDO
 C ------ Now that we know T everywhere, determine the binning.
@@ -490,6 +443,7 @@ C !LOCAL VARIABLES:
 C     bi, bj   :: tile indices
 C     i,j      :: horizontal indices
 C     k        :: vertical index for model grid
+C     kp1      :: vertical index for model grid next cell
 C     kci      :: index from CellIndex
 C     kg       :: index for looping though layers_bounds
 C     kk       :: vertical index for ZZ (fine) grid
@@ -498,16 +452,13 @@ C     mSteps   :: maximum number of steps for bisection method
 C     TatC     :: temperature at C point
 
       INTEGER bi, bj
-      INTEGER i,j,k,kk,kg,kci,kloc
+      INTEGER i,j,k,kk,kg,kci,kloc,kp1
       INTEGER mSteps
       INTEGER kgc(sNx+1,sNy+1)
       INTEGER kgcw(sNx+1,sNy+1)
-      _RL TatC(sNx+1,sNy+1), dzfac, mfac, Tfac, Sfac
+      _RL TatC(sNx+1,sNy+1), dzfac, Tfac, Sfac
       LOGICAL errorFlag
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
-C --  for interpolation with partial cells
-      mfac = 1. _d 0
 
 C --  constants for T and S forcing, gets reset later for rho
       Tfac = 1. _d 0
@@ -570,16 +521,26 @@ C --- These are at the c point
        kci = CellIndex(kk)
        DO j = 1,sNy+1
         DO i = 1,sNx+1
-         IF (hFacC(i,j,k,bi,bj)>0.0) THEN
-C ------ This interpolation is not exactly correct for hFacC(k+1) < 1.0
-C        To fix it, however, we would need to recompute MapFact.
-C        What it does is gradually de-weight the lower cell as the
-C        lower cell thickness approaches zero. Seems reasonable.
-           mfac = 1.0 - hFacC(i,j,k+1,bi,bj)*(MapFact(kk) - 1.0)
-             TatC(i,j) =
-     &         mfac*tracer(i,j,k,bi,bj) +
-     &         (1.0 - mfac)*tracer(i,j,k+1,bi,bj)
-         ENDIF
+C ------ Find theta at the V point (south) on the fine Z grid
+         kp1=k+1
+         IF (maskC(i,j,kp1,bi,bj).EQ.zeroRS) kp1=k
+         TatC(i,j) = MapFact(kk) * tracer(i,j,k,bi,bj) +
+     &    (1. _d 0 -MapFact(kk)) * tracer(i,j,kp1,bi,bj)
+
+C ------ debugging stuff
+c         IF (i.EQ.38 .AND. j.EQ.4 .AND. bi.EQ.1 .AND. bj.EQ.1) THEN
+c           WRITE(msgBuf,
+c     &       '(A,I3,A,I3,A,I3,A,F7.2,A,F7.2,A,F7.2,A,F7.2,A,F3.1)')
+c     &          'LAYERS_DEBUG: iLa=', iLa,
+c     &          ', kk=', kk,
+c     &          ', k=', k,
+c     &          ', tracer=', tracer(i,j,k,bi,bj),
+c     &          ', TatC=',TatC(i,j),
+c     &          ', hFacC=',hFacC(i,j,k,bi,bj)
+c           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+c     &                         SQUEEZE_RIGHT, myThid )
+c         ENDIF
+
         ENDDO
        ENDDO
 C ------ Now that we know T everywhere, determine the binning.
