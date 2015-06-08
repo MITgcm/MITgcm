@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.15 2015/06/06 14:45:21 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.16 2015/06/08 16:26:12 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -516,6 +516,7 @@ C --- These are at the c point
        ENDDO
       ENDDO
 
+#ifdef LAYERS_FINEGRID_DIAPYCNAL
       DO kk=1,NZZ
        k = MapIndex(kk)
        kci = CellIndex(kk)
@@ -526,9 +527,23 @@ C ------ Find theta at the V point (south) on the fine Z grid
          IF (maskC(i,j,kp1,bi,bj).EQ.zeroRS) kp1=k
          TatC(i,j) = MapFact(kk) * tracer(i,j,k,bi,bj) +
      &    (1. _d 0 -MapFact(kk)) * tracer(i,j,kp1,bi,bj)
-
+        ENDDO
+       ENDDO
+#else
+      DO kk=1,Nr
+       k = kk
+       kci = kk
+       DO j = 1,sNy+1
+        DO i = 1,sNx+1
+         TatC(i,j) = tracer(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+#endif /* LAYERS_FINEGRID_DIAPYCNAL */
+ 
 C ------ debugging stuff
 c         IF (i.EQ.38 .AND. j.EQ.4 .AND. bi.EQ.1 .AND. bj.EQ.1) THEN
+c           i=38
+c           j=4
 c           WRITE(msgBuf,
 c     &       '(A,I3,A,I3,A,I3,A,F7.2,A,F7.2,A,F7.2,A,F7.2,A,F3.1)')
 c     &          'LAYERS_DEBUG: iLa=', iLa,
@@ -540,9 +555,6 @@ c     &          ', hFacC=',hFacC(i,j,k,bi,bj)
 c           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
 c     &                         SQUEEZE_RIGHT, myThid )
 c         ENDIF
-
-        ENDDO
-       ENDDO
 C ------ Now that we know T everywhere, determine the binning.
 C        find the layer indices kgc for the center point
        CALL LAYERS_LOCATE(
@@ -595,7 +607,11 @@ C     check for failures
 C ------ Augment the bin values
        DO j = 1,sNy+1
         DO i = 1,sNx+1
+#ifdef LAYERS_FINEGRID_DIAPYCNAL
          dzfac = dZZf(kk) * hFacC(i,j,kci,bi,bj)
+#else
+         dzfac = dRf(kci) * hFacC(i,j,kci,bi,bj)
+#endif /* LAYERS_FINEGRID_DIAPYCNAL */
          kloc = kgcw(i,j)
 
 C ------- Thickness at w point

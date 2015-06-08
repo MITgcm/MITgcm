@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2155 2015/06/06 14:45:21 rpa Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2156 2015/06/08 16:26:11 rpa Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/layers:
+  - added CPP flux LAYERS_FINEGRID_DIAPYCNAL to disable fine-grid binning
+    of diapycnal fluxes
 o pkg/layers:
   - reverted changes to interpolation to previous treatment; there
     was never actually a problem

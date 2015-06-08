@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS_OPTIONS.h,v 1.6 2014/06/04 14:48:32 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS_OPTIONS.h,v 1.7 2015/06/08 16:26:12 rpa Exp $
 C $Name:  $
 
 C CPP options file for LAYERS package
@@ -20,6 +20,8 @@ C Keep track of layer thicknesses?
 #define LAYERS_THICKNESS
 C Do water mass thermodynamics?
 #undef LAYERS_THERMODYNAMICS
+C Use refined grid for diapycnal terms? (gives worse results)
+#undef LAYERS_FINEGRID_DIAPYCNAL
 
 C The MNC stuff is too complicated
 #undef LAYERS_MNC
