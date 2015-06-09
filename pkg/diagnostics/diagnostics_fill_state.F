@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.42 2013/12/10 22:24:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.43 2015/06/09 16:31:45 rpa Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -370,6 +370,11 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
           ENDDO
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'TOTTTEND',0,Nr,0,1,1,myThid)
+#ifdef ALLOW_LAYERS
+         IF ( useLayers ) THEN
+           CALL LAYERS_FILL(tmpMk,1,'TOT',0,Nr,0,1,1,myThid)
+         ENDIF
+#endif /* ALLOW_LAYERS */         
         ENDIF
 
         IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) ) THEN
@@ -386,6 +391,11 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
           ENDDO
          ENDDO
          CALL DIAGNOSTICS_FILL(tmpMk,'TOTSTEND',0,Nr,0,1,1,myThid)
+#ifdef ALLOW_LAYERS
+         IF ( useLayers ) THEN
+           CALL LAYERS_FILL(tmpMk,2,'TOT',0,Nr,0,1,1,myThid)
+         ENDIF
+#endif /* ALLOW_LAYERS */
         ENDIF
 
 C--   fill momentum state-var diagnostics: end
@@ -662,6 +672,11 @@ C     (previous fill for these diagnostics DID allow counter to be incremented)
             ENDDO
            ENDDO
            CALL DIAGNOSTICS_FILL(tmpMk,'TOTTTEND',0,Nr,-1,bi,bj,myThid)
+#ifdef ALLOW_LAYERS
+           IF ( useLayers ) THEN
+             CALL LAYERS_FILL(tmpMk,1,'TOT',0,Nr,-1,bi,bj,myThid)
+           ENDIF
+#endif /* ALLOW_LAYERS */    
           ENDDO
          ENDDO
         ENDIF
@@ -678,6 +693,11 @@ C     (previous fill for these diagnostics DID allow counter to be incremented)
             ENDDO
            ENDDO
            CALL DIAGNOSTICS_FILL(tmpMk,'TOTSTEND',0,Nr,-1,bi,bj,myThid)
+#ifdef ALLOW_LAYERS
+           IF ( useLayers ) THEN
+            CALL LAYERS_FILL(tmpMk,2,'TOT',0,Nr,-1,bi,bj,myThid)
+           ENDIF
+#endif /* ALLOW_LAYERS */    
           ENDDO
          ENDDO
         ENDIF

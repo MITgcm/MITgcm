@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2156 2015/06/08 16:26:11 rpa Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2157 2015/06/09 16:31:45 rpa Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/layers:
+  - Added missing call to layers_fill for keeping track of tottend in
+    pkg/diagnostics/diagnostics_fill_state.F
 o pkg/layers:
   - added CPP flux LAYERS_FINEGRID_DIAPYCNAL to disable fine-grid binning
     of diapycnal fluxes
