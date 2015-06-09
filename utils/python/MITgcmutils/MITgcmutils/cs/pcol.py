@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 
-def pcol( x, y, data, **kwargs):
+def pcol( x, y, data, projection=None, vmin=None, vmax=None, **kwargs):
     """function h=pcol(x,y,v)
     function h=pcol(x,y,v, projection = mp )
     
-    plots 2D scalar fields v on the MITgcm cubed sphere grid with pcolor.
+    plots 2D scalar fields v on the MITgcm cubed sphere grid with pcolormesh.
     x,y are really 'xg', and 'yg', that is, they should be the coordinates
     of the points one half grid cell to the left and bottom, that is
     vorticity points for tracers, etc. 
@@ -58,8 +58,8 @@ def pcol( x, y, data, **kwargs):
     fig=plt.gcf()
 
     mapit = 0
-    if 'projection' in kwargs:
-        mp = kwargs['projection']
+    if projection!=None:
+        mp = projection
         if mp=='sphere': mapit=-1
         else: mapit = 1
 
@@ -70,6 +70,9 @@ def pcol( x, y, data, **kwargs):
     # determine range for color range
     cax = [data.min(),data.max()]
     if cax[1]-cax[0]==0: cax = [cax[0]-1,cax[1]+1]
+
+    if vmin!=None: cax[0]=vmin
+    if vmax!=None: cax[1]=vmax
 
     if mapit == -1:
         # set up 3D plot
@@ -163,8 +166,9 @@ def pcol( x, y, data, **kwargs):
                 if mapit==1: xx,yy = mp(xx,yy)
             
                 # now finally plot 4x6 tiles
-                ph = np.append(ph, plt.pcolor(xx, yy, ff,
-                                              vmin=cax[0], vmax=cax[1]))
+                ph = np.append(ph, plt.pcolormesh(xx, yy, ff,
+                                                  vmin=cax[0], vmax=cax[1],
+                                                  **kwargs))
 
     if mapit == -1: 
         ax.axis('image')
