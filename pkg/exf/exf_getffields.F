@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.60 2015/05/26 17:08:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.61 2015/06/09 21:25:11 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -626,10 +626,10 @@ cdm #endif
      &                         xx_gentim2d(i,j,bi,bj,iarr)
 #else
            if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_uwind')
-     &       uwind(i,j,bi,bj)=uwind(i,j,bi,bj)+
+     &       tmpUE(i,j,bi,bj)=tmpUE(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
            if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_vwind')
-     &       vwind(i,j,bi,bj)=vwind(i,j,bi,bj)+
+     &       tmpVN(i,j,bi,bj)=tmpVN(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
 
 #endif
