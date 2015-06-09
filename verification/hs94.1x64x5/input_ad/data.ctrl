@@ -15,9 +15,13 @@
 # names for CTRL_GENARR, CTRL_GENTIM
 # *********************
  &CTRL_NML_GENARR
+ xx_genarr2d_file(1)   = 'xx_genarr2d1',
  xx_genarr2d_weight(1) = 'wunit',
+ xx_genarr2d_file(2)   = 'xx_genarr2d2',
  xx_genarr2d_weight(2) = 'wunit',
+ xx_genarr3d_file(1)   = 'xx_genarr3d1',
  xx_genarr3d_weight(1) = 'wunit',
+ xx_gentim2d_file(1)   = 'xx_gentim2d1',
 ##  xx_gentim2d_glosum(1)=.F.,
 ##  xx_gentim2d_cumsum(1)=.F.,
  xx_gentim2d_period(1)=864000,

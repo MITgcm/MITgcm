@@ -16,6 +16,7 @@
 # names for CTRL_GENARR, CTRL_GENTIM
 # *********************
  &CTRL_NML_GENARR
+ xx_genarr3d_file(1)   = 'xx_genarr3d1',
  xx_genarr3d_weight(1) = 'wunit',
  &
 
