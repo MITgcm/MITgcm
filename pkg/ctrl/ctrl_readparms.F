@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.59 2014/11/15 21:38:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.60 2015/06/09 21:21:27 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -224,9 +224,12 @@ c
 
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
         do iarr = 1, maxCtrlArr2D
+         write(xx_genarr2d_file(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
+#ifdef ALLOW_OPENAD
          write(xx_genarr2d_file(iarr)(1:14),'(a,i2.2)')
      &        'xx_genarr2d_', iarr
          write(xx_genarr2d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
+#endif
          write(xx_genarr2d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          genarr2dPrecond(iarr) = 1. _d 0
          mult_genarr2d(iarr)         = 0. _d 0
@@ -242,9 +245,12 @@ c
         enddo
 c
         do iarr = 1, maxCtrlArr3D
+         write(xx_genarr3d_file(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
+#ifdef ALLOW_OPENAD
          write(xx_genarr3d_file(iarr)(1:14),'(a,i2.2)')
      &        'xx_genarr3d_', iarr
          write(xx_genarr3d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
+#endif
          write(xx_genarr3d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          genarr3dPrecond(iarr) = 1. _d 0
          mult_genarr3d(iarr)         = 0. _d 0
@@ -260,9 +266,12 @@ c
         enddo
 c
         do iarr = 1, maxCtrlTim2D
+         write(xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
+#ifdef ALLOW_OPENAD
          write(xx_gentim2d_file(iarr)(1:14),'(a,i2.2)')
      &        'xx_gentim2d_', iarr
          write(xx_gentim2d_file(iarr)(15:MAX_LEN_FNAM),'(a)') ' '
+#endif
          write(xx_gentim2d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          xx_gentim2d_startdate1(iarr) = 0
          xx_gentim2d_startdate2(iarr) = 0

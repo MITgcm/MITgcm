@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.17 2014/09/19 20:38:39 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.18 2015/06/09 21:21:27 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -23,6 +23,8 @@ C     === Global variables ===
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
 #endif
+#include "CTRL_SIZE.h"
+#include "CTRL_GENARR.h"
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance
@@ -32,6 +34,12 @@ C     === Local variables ===
 C     msgBuf      - Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL solve4Stress
+
+#ifndef ALLOW_OPENAD
+#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+      integer iarr
+#endif
+#endif
 
       WRITE(msgBuf,'(A)') 'CTRL_CHECK: ctrl package'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -59,6 +67,55 @@ C     Can not have both atmos. state and flux field as control
       STOP 'ABNORMAL END: S/R CTRL_CHECK'
       endif
 #endif
+
+#ifndef ALLOW_OPENAD
+
+#ifdef ALLOW_GENARR2D_CONTROL
+        do iarr = 1, maxCtrlArr2D
+          if (((xx_genarr2d_weight(iarr).NE.' ').AND.
+     &         (xx_genarr2d_file(iarr).EQ.' ')).OR.
+     &        ((xx_genarr2d_weight(iarr).EQ.' ').AND.
+     &         (xx_genarr2d_file(iarr).NE.' '))) then
+           WRITE(msgBuf,'(3A)') 'CTRL_CHECK : ',
+     &      'Cannot define xx_genarr2d_weight or xx_genarr2d_file ',
+     &      'separately'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R CTRL_CHECK'
+          endif
+        enddo
+#endif
+
+#ifdef ALLOW_GENARR3D_CONTROL
+        do iarr = 1, maxCtrlArr3D
+          if (((xx_genarr3d_weight(iarr).NE.' ').AND.
+     &         (xx_genarr3d_file(iarr).EQ.' ')).OR.
+     &        ((xx_genarr3d_weight(iarr).EQ.' ').AND.
+     &         (xx_genarr3d_file(iarr).NE.' '))) then
+           WRITE(msgBuf,'(3A)') 'CTRL_CHECK : ',
+     &      'Cannot define xx_genarr3d_weight or xx_genarr3d_file ',
+     &      'separately'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R CTRL_CHECK'
+          endif
+        enddo
+#endif
+
+#ifdef ALLOW_GENTIM2D_CONTROL
+        do iarr = 1, maxCtrlTim2D
+          if (((xx_gentim2d_weight(iarr).NE.' ').AND.
+     &         (xx_gentim2d_file(iarr).EQ.' ')).OR.
+     &        ((xx_gentim2d_weight(iarr).EQ.' ').AND.
+     &         (xx_gentim2d_file(iarr).NE.' '))) then
+           WRITE(msgBuf,'(3A)') 'CTRL_CHECK : ',
+     &      'Cannot define xx_gentim2d_weight or xx_gentim2d_file ',
+     &      'separately'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R CTRL_CHECK'
+          endif
+        enddo
+#endif
+
+#endif /* ALLOW_OPENAD */
 
 #ifdef ALLOW_DIFFKR_CONTROL
 C-    to use DIFFKR_CONTROL, needs to define ALLOW_3D_DIFFKR in CPP_OPTIONS.h
