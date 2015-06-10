@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_diagnostics_init.F,v 1.11 2015/06/03 19:19:08 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_diagnostics_init.F,v 1.12 2015/06/10 20:51:17 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -196,7 +196,7 @@ C --- U, V
         CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers-1 , myThid )
 
 C ------- This diagnostic used to be called 'LaTr', but that name
-C         conflicts with JMC's prho diagnostics.
+C         conflicts with JMC s prho diagnostics.
         WRITE(diagName,'(A4,I1,A3)') 'LaTz',iLa,layers_name(iLa)
         diagTitle = 'Layer THETA transformation from vert. diff.'
         diagUnits = 'm deg./s        '
@@ -286,7 +286,7 @@ C         conflicts with JMC's prho diagnostics.
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
         CALL DIAGNOSTICS_SETKLEV( diagName, Nlayers-1 , myThid )
-        
+
 C --- PI
         WRITE(diagName,'(A4,I1,A3)') 'LaPc',iLa,layers_name(iLa)
         diagTitle = 'Layer Probability at tracer points [-]'

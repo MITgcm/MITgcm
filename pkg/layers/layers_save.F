@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_save.F,v 1.3 2015/06/03 13:39:22 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_save.F,v 1.4 2015/06/10 20:51:17 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -51,7 +51,6 @@ C                  NOTE - bibjFlg can be NEGATIVE to indicate not to increment c
 C     biArg     :: X-direction tile number - used for bibjFlg=1-3
 C     bjArg     :: Y-direction tile number - used for bibjFlg=1-3
 
-
 C       _RL df(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
        _RL df(*)
        INTEGER trIdentity, kLev, nLevs, bibjFlg, biArg, bjArg
@@ -64,7 +63,6 @@ C !LOCAL VARIABLES: ====================================================
 C i,j              :: loop indices
 C msgBuf           :: error message buffer
        CHARACTER*(MAX_LEN_MBUF) msgBuf
-
 
        IF ((trIdentity.EQ.1).OR.(trIdentity.EQ.2)) THEN
 
@@ -88,7 +86,7 @@ C msgBuf           :: error message buffer
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
        ELSE IF (fluxid.EQ.'AFR') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_afr,'M',
-     &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)     
+     &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
        ELSE IF (fluxid.EQ.'TOT') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_tottend,'M',
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
@@ -99,27 +97,26 @@ C msgBuf           :: error message buffer
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R LAYERS_FILL'
        ENDIF
-       
+
        ELSE
-C  ---- Can't throw an error for different trIdentity
+C  ---- Cannot throw an error for different trIdentity
 C       because subroutine also gets called for ptracers.
 C       Just have to do nothing
-                    
+
 C         WRITE(msgBuf,'(5A,I2)')
 C     &          'S/R LAYERS_FILL: ',
 C     &          'only works on THETA (1) or SALT (2)',
 C     &          'fluxid=', fluxid, 'trId=',
 C     &          trIdentity
 C         CALL PRINT_ERROR( msgBuf, myThid )
-C         STOP 'ABNORMAL END: S/R LAYERS_FILL'   
+C         STOP 'ABNORMAL END: S/R LAYERS_FILL'
        ENDIF
-         
+
 #endif /* LAYERS_THERMODYNAMICS */
 
       RETURN
       END
 C end of S/R LAYERS_FILL
-
 
       SUBROUTINE LAYERS_FILL_FIELD(
      I               df, trIdentity, myNr,
@@ -154,7 +151,7 @@ C msgBuf           :: error message buffer
       INTEGER kFirst, kLast
       INTEGER kd, kd0, ksgn
 C       CHARACTER*(MAX_LEN_MBUF) msgBuf
-       
+
 C-      select range for 1rst & 2nd indices to accumulate
 C         depending on variable location on C-grid,
       IF ( fldType.EQ.'U' ) THEN
@@ -188,7 +185,7 @@ C-      Dimension of the input array:
         sizTx = nSx
         sizTy = nSy
       ENDIF
-   
+
 C-      Which part of inpFld to add : k = 3rd index,
 C         and do the loop >> do k=kFirst,kLast <<
       IF (kLev.LE.0) THEN
@@ -213,7 +210,7 @@ C         and do the loop >> do k=kFirst,kLast ; kd = kd0 + k*ksgn <<
         kd0 = 0
       ELSE
         ksgn = 0
-        kd0 = kLev 
+        kd0 = kLev
       ENDIF
 
       IF ( bibjFlg.EQ.0 ) THEN
@@ -245,7 +242,6 @@ C         and do the loop >> do k=kFirst,kLast ; kd = kd0 + k*ksgn <<
         ENDDO
       ENDIF
 
-         
 C        IF (bibjFlg.EQ.2) THEN
 C C --   called INSIDE the bi-bj loop, with overlap present
 C         DO k = kstart,kend
@@ -278,7 +274,7 @@ C      &          'S/R LAYERS_FILL_FIELD: ',
 C      &          'got unexpected bibjFlg'
 C            CALL PRINT_ERROR( msgBuf, myThid )
 C            STOP 'ABNORMAL END: S/R LAYERS_FILL_FIELD'
-C        ENDIF     
+C        ENDIF
 
 #endif /* LAYERS_THERMODYNAMICS */
 
@@ -338,9 +334,4 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       RETURN
       END
-
-
-
-
-
 
