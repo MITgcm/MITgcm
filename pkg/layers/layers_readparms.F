@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_readparms.F,v 1.9 2014/05/27 23:41:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_readparms.F,v 1.10 2015/06/12 16:21:31 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -26,6 +26,15 @@ C     iUnit      :: Work variable for IO unit number
 C     k          :: index
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit, k, iLa
+      INTEGER errCount
+
+C--   old pkg/layers parameter setting (only single tracer layers diagnostics):
+C      layers_G :: boundaries of tracer layers
+      INTEGER LAYER_nb, layers_kref
+      LOGICAL useBOLUS
+      _RL layers_G(Nlayers+1)
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       NAMELIST /LAYERS_PARM01/
      &       layers_G, layers_taveFreq, layers_diagFreq,
@@ -43,16 +52,18 @@ C     print a (weak) warning if data.layers is found
       ENDIF
 
       _BEGIN_MASTER(myThid)
+      errCount = 0
 
 C--   Default values for LAYERS
 
+      layers_taveFreq = taveFreq
+      layers_diagFreq = dumpFreq
 C     The MNC stuff is not working yet
       layers_MNC = .FALSE.
       layers_MDSIO = .TRUE.
 
       DO iLa=1,layers_maxNum
         layers_name(iLa) = ' '
-        layers_num(iLa) = 0
         layers_krho(iLa)= 1
         layers_bolus(iLa) = useGMRedi
         DO k=1,Nlayers+1
@@ -60,14 +71,13 @@ C     The MNC stuff is not working yet
         ENDDO
       ENDDO
 
-      DO k=1,Nlayers+1
-        layers_G(k) = UNSET_RL
-      ENDDO
-      layers_taveFreq = taveFreq
-      layers_diagFreq = dumpFreq
+C--   old params default:
       LAYER_nb = 0
       layers_kref = 1
       useBOLUS = useGMRedi
+      DO k=1,Nlayers+1
+        layers_G(k) = UNSET_RL
+      ENDDO
 
       WRITE(msgBuf,'(A)') 'LAYERS_READPARMS: opening data.layers'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -86,44 +96,62 @@ C     Read parameters from open data file
 C     Close the open data file
       CLOSE(iUnit)
 
-c revert to old approach
-c (unless I simply retore the old ways, I need a
-c  print statement or two as I override the new way)
-      IF ( LAYER_nb.NE.0 ) THEN
-        layers_num(1) = LAYER_nb
+C--   Process old params setting (single averaging tracer)
+      IF ( LAYER_nb.LT.0 .OR. LAYER_nb.GT.3 ) THEN
+        WRITE(msgBuf,'(2A,I2,A,I9)') 'LAYERS_READPARMS: ',
+     &    'Invalid LAYER_nb=', LAYER_nb
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( LAYER_nb.EQ.0 ) THEN
+        IF ( layers_kref.NE.1 )         errCount = errCount + 1
+        DO k=1,Nlayers+1
+         IF ( layers_G(k).NE.UNSET_RL ) errCount = errCount + 1
+        ENDDO
+      ELSE
+        DO iLa=1,layers_maxNum
+         IF ( layers_name(iLa).NE.' ' ) errCount = errCount + 1
+         IF ( layers_krho(iLa).NE.1 )   errCount = errCount + 1
+         DO k=1,Nlayers+1
+          IF ( layers_bounds(k,iLa).NE.UNSET_RL ) errCount = errCount+1
+         ENDDO
+        ENDDO
+C-    Transfert to new params setting:
+        IF ( LAYER_nb.EQ.1 ) layers_name(1) = 'TH '
+        IF ( LAYER_nb.EQ.2 ) layers_name(1) = 'SLT'
+        IF ( LAYER_nb.EQ.3 ) layers_name(1) = 'RHO'
         layers_krho(1) = layers_kref
         layers_bolus(1) = useBOLUS
         DO k=1,Nlayers+1
           layers_bounds(k,1) = layers_G(k)
         ENDDO
-        DO iLa=2,layers_maxNum
-          layers_num(iLa) = 0
-          layers_name(iLa) = ' '
-          layers_krho(iLa) = 1
-          layers_bolus(iLa) = useGMRedi
-          DO k=1,Nlayers+1
-            layers_bounds(k,iLa) = UNSET_RL
-          ENDDO
-        ENDDO
+      ENDIF
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(2A)') 'LAYERS_READPARMS: ',
+     &    'Cannot mix old params setting (LAYER_nb > 0)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'LAYERS_READPARMS: ',
+     &    ' with new params setting (layer_name(#)= ...)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A,I4,A)') 'LAYERS_READPARMS: ',
+     &    'Detected', errCount,' fatal error/conflict(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R LAYERS_READPARMS'
       ENDIF
 
-C--   ensure layers_name/layers_num setup consistency
+C--   Set layers_num according to layers_name:
       DO iLa=1,layers_maxNum
-        IF ( ( layers_name(iLa).EQ.'TH' ).OR.
-     &       ( layers_num(iLa).EQ.1 ) ) THEN
-          layers_name(iLa)='TH'
-          layers_num(iLa)=1
-        ELSEIF ( ( layers_name(iLa).EQ.'SLT' ).OR.
-     &       ( layers_num(iLa).EQ.2 ) ) THEN
-          layers_name(iLa)='SLT'
-          layers_num(iLa)=2
-        ELSEIF ( ( layers_name(iLa).EQ.'RHO' ).OR.
-     &       ( layers_num(iLa).EQ.3 ) ) THEN
-          layers_name(iLa)='RHO'
-          layers_num(iLa)=3
-        ELSE
-          layers_name(iLa)=' '
-          layers_num(iLa)=0
+        layers_num(iLa) = 0
+        IF ( layers_name(iLa).EQ.'TH ' ) layers_num(iLa) = 1
+        IF ( layers_name(iLa).EQ.'SLT' ) layers_num(iLa) = 2
+        IF ( layers_name(iLa).EQ.'RHO' ) layers_num(iLa) = 3
+        IF ( layers_name(iLa).NE.' ' .AND.
+     &       layers_num(iLa).EQ.0 ) THEN
+          WRITE(msgBuf,'(2A,I2,3A)') 'LAYERS_READPARMS: ',
+     &    'invalid layers_name(',iLa,')= "',layers_name(iLa),'"'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          errCount = errCount + 1
         ENDIF
 C--   bolus contribution only available if using GMRedi
         layers_bolus(iLa) = layers_bolus(iLa) .AND. useGMRedi
@@ -133,22 +161,11 @@ C--   Make sure the layers_bounds we just read is big enough
       DO iLa=1,layers_maxNum
        IF ( layers_num(iLa).NE.0 ) THEN
         DO k=1,Nlayers+1
-         IF ( layers_bounds(k,iLa) .EQ. UNSET_RL ) THEN
-          WRITE(msgBuf,'(2A,I4)')
-     &        'S/R LAYERS_READPARMS: ',
-     &        'No value for layers_bounds at k =', k
+         IF ( layers_bounds(k,iLa).EQ.UNSET_RL ) THEN
+          WRITE(msgBuf,'(2A,I4,A,I3,A)') 'LAYERS_READPARMS: ',
+     &        'No value for layers_bounds(k=',k,', iLa=', iLa, ')'
           CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R LAYERS_READPARMS'
-         ELSEIF ( k .EQ. 1 ) THEN
-C         Do nothing
-         ELSEIF ( layers_bounds(k,iLa) .LE.
-     &            layers_bounds(k-1,iLa) ) THEN
-C         Check to make sure layers_bounds is increasing
-          WRITE(msgBuf,'(2A,I4)')
-     &      'S/R LAYERS_READPARMS: ',
-     &      'layers_bounds is not increasing at k =', k
-          CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R LAYERS_READPARMS'
+          errCount = errCount + 1
          ENDIF
         ENDDO
        ENDIF
@@ -161,6 +178,14 @@ C     Fix to avoid running without getting any output:
       layers_MNC = .FALSE.
 #endif
       layers_MDSIO = (.NOT. layers_MNC) .OR. outputTypesInclusive
+
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &    'LAYERS_READPARMS: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R LAYERS_READPARMS'
+      ENDIF
 
       _END_MASTER(myThid)
 

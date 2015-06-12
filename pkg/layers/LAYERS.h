@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.15 2015/06/03 13:39:22 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.16 2015/06/12 16:21:31 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAYERS
@@ -6,33 +6,38 @@ C $Name:  $
 C--   Header for LAYERS package. By Ryan Abernathey.
 C--   For computing volume fluxes in isopyncal layers
 
-C --  Parms
-      INTEGER LAYER_nb, layers_kref
+C --  Parameters:
+C     layers_num      ::
+C     layers_krho     ::
+C     layers_name     ::
+C     layers_bolus    ::
+C     layers_MNC      ::
+C     layers_MDSIO    ::
+C     layers_taveFreq ::
+C     layers_diagFreq ::
+
       INTEGER layers_num(layers_maxNum), layers_krho(layers_maxNum)
-      COMMON /LAYERS_PARM_I/ layers_num,layers_krho,
-     &                       LAYER_nb, layers_kref
+      COMMON /LAYERS_PARM_I/ layers_num, layers_krho
 
       CHARACTER*(3) layers_name(layers_maxNum)
       COMMON /LAYERS_PARM_C/ layers_name
 
+      LOGICAL layers_MNC, layers_MDSIO
+      LOGICAL layers_bolus(layers_maxNum)
+      COMMON /LAYERS_PARM_L/ layers_MNC, layers_MDSIO,
+     &                       layers_bolus
+
       _RL layers_taveFreq, layers_diagFreq
       COMMON /LAYERS_PARM_RL/ layers_taveFreq, layers_diagFreq
 
-      LOGICAL layers_MNC, layers_MDSIO, useBOLUS
-      LOGICAL layers_bolus(layers_maxNum)
-      COMMON /LAYERS_PARM_L/ layers_MNC, layers_MDSIO,
-     & useBOLUS, layers_bolus
-
 C --  Isopycnal grid parameters:
 C      layers_bounds :: boundaries of tracer layers
-C      layers_G :: boundaries of tracer layers (retired)
 C      dZZf     :: height of fine grid cells
 C      NZZ      :: the number of levels to use in the fine grid
 C      MapIndex :: indices for mapping ZZ to Z
 C      MapFact  :: factors for interpolating T(Z) to T(ZZ)
 
-      _RL layers_G(nLayers+1)
-      _RL layers_bounds(nLayers+1,layers_maxNum)
+      _RL layers_bounds(Nlayers+1,layers_maxNum)
       _RL dZZf(FineGridMax)
       INTEGER MapIndex(FineGridMax), CellIndex(FineGridMax)
       _RL MapFact(FineGridMax)
@@ -40,9 +45,9 @@ C      MapFact  :: factors for interpolating T(Z) to T(ZZ)
       COMMON /LAYERS_VERT_GRID_I/
      &      NZZ, MapIndex, CellIndex
       COMMON /LAYERS_VERT_GRID_R/
-     &      layers_G, MapFact, dZZf, layers_bounds
+     &      MapFact, dZZf, layers_bounds
 
-C --  3D Layers fields. The vertical dimension in these fields is nLayers,
+C --  3D Layers fields. The vertical dimension in these fields is Nlayers,
 C     i.e. the isopycnal coordinate.
 C
 C      layers_UH :: U integrated over layer (m^2/s)
@@ -124,8 +129,8 @@ C      layers_beta       :: alpha factor for density eqn (-drhodS/rho)
      &    layers_Hcw,
      &    layers_surfflux, layers_dfx, layers_dfy, layers_dfr,
      &    layers_afx, layers_afy, layers_afr, layers_tottend
-      _RL layers_bounds_w(nLayers, layers_maxNum)
-      _RL layers_recip_delta(nLayers-1, layers_maxNum)
+      _RL layers_bounds_w(Nlayers, layers_maxNum)
+      _RL layers_recip_delta(Nlayers-1, layers_maxNum)
       _RL layers_TtendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
      &                                         Nlayers-1,nSx,nSy)
       _RL layers_Ttendtot(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
@@ -145,17 +150,17 @@ C      layers_beta       :: alpha factor for density eqn (-drhodS/rho)
       _RL layers_StendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
      &                                         Nlayers-1,nSx,nSy)
       _RL layers_StendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers-1,nSx,nSy)      
+     &                                         Nlayers-1,nSx,nSy)
       _RL layers_StendAdvh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
      &                                         Nlayers-1,nSx,nSy)
       _RL layers_StendAdvr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers-1,nSx,nSy)      
+     &                                         Nlayers-1,nSx,nSy)
       _RL layers_Hcw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers-1,nSx,nSy) 
+     &                                         Nlayers-1,nSx,nSy)
       _RL layers_Hc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers,nSx,nSy)      
+     &                                         Nlayers,nSx,nSy)
       _RL layers_PIc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                                         Nlayers,nSx,nSy)      
+     &                                         Nlayers,nSx,nSy)
       _RL layers_surfflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,2,nSx,nSy)
       _RL layers_dfx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
       _RL layers_dfy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
