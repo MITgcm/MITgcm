@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2157 2015/06/09 16:31:45 rpa Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2158 2015/06/12 18:01:05 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/layers:
+  - clean-up old parameters setting (from Sep 2012):
+    + remove old parameters setting from common block (declared locally);
+    + stop if any old parameter is mixed with new parameters;
+    + check for valid or consistent parameter setting (e.g., layers_name)
+  - check that layers_bounds for Pot.Density are in the right range;
+    this is supposed to catch un-updated setting after recently shifting
+    potential density field "prho" by -1000 (now in "sigma" scale).
 o pkg/layers:
   - Added missing call to layers_fill for keeping track of tottend in
     pkg/diagnostics/diagnostics_fill_state.F
@@ -21,8 +29,8 @@ o pkg/layers:
     thermodynamics.F, impldiff.F) and gad to save the necessary fields
     for layers_thermodynamics calculations
 o pkg/ptracers:
-  - add capability of stepping a passive tracer forward 
-    without advection by setting PTRACERS_advScheme to 0.
+  - add capability of stepping a passive tracer forward without advection
+    by setting PTRACERS_advScheme to 0.
 o pkg/diagnostics:
   - add few (threads) _BARRIER around any update of "diag_pkgStatus".
 o pkg/layers:
