@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.9 2015/05/27 18:33:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.10 2015/06/12 17:43:32 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -49,7 +49,7 @@ C     == routine arguments ==
 C     !LOCAL VARIABLES:
 C     == local variables ==
       integer iarr
-      integer smoothOpNb
+      integer numsmo
       character*(80) fnamegenIn
       character*(80) fnamegenOut
       character*(80) fnamegenTmp
@@ -62,6 +62,8 @@ C     == local variables ==
       integer replicated_ntimes
       logical doglobalread
       logical ladinit
+      logical dowc01
+      logical dosmooth
       _RL     xx_gen(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #ifdef ALLOW_ECCO
       _RL     xx_gen_tmp(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -100,11 +102,22 @@ C--   generic 2D control variables
      O       diffrec, startrec, endrec,
      I       myThid )
 
-        smoothOpNb=1
+        dosmooth=.false.
+        dowc01  = .false.
+        if (ctrlSmoothCorrel2D) dowc01=.TRUE.
+
+        numsmo=1
         do k2 = 1, maxCtrlProc
-          if (xx_gentim2d_preproc(k2,iarr).EQ.'smooth') then
-             if (xx_gentim2d_preproc_i(k2,iarr).NE.0) 
-     &           smoothOpNb=xx_gentim2d_preproc_i(k2,iarr)
+          if (xx_gentim2d_preproc(k2,iarr).EQ.'WC01') then
+             dowc01=.TRUE.
+             if (xx_gentim2d_preproc_i(k2,iarr).NE.0)
+     &           numsmo=xx_gentim2d_preproc_i(k2,iarr)
+          endif
+          if ((.NOT.dowc01).AND.
+     &        (xx_gentim2d_preproc(k2,iarr).EQ.'smooth')) then
+             dosmooth=.TRUE.
+             if (xx_gentim2d_preproc_i(k2,iarr).NE.0)
+     &           numsmo=xx_gentim2d_preproc_i(k2,iarr)
           endif
         enddo
 
@@ -270,44 +283,45 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gentim2d_dummy(iarr) )
 #else
-      CALL READ_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
+         CALL READ_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
 #endif
 
 #ifndef ALLOW_OPENAD
-      jrec=1
-        do k2 = 1, maxCtrlProc
-         if (xx_gentim2d_preproc(k2,iarr).EQ.'variaweight') jrec=irec
-        enddo
-           call mdsreadfield( xx_gentim2d_weight(iarr), ctrlprec, 'RL',
+         jrec=1
+         do k2 = 1, maxCtrlProc
+          if (xx_gentim2d_preproc(k2,iarr).EQ.'variaweight') jrec=irec
+         enddo
+         call mdsreadfield( xx_gentim2d_weight(iarr), ctrlprec, 'RL',
      &     1, wgentim2d(1-Olx,1-Oly,1,1,iarr), jrec, myThid )
-#endif
 
 #ifdef ALLOW_SMOOTH
-         IF ( ctrlSmoothCorrel2D ) THEN
-          IF ( useSMOOTH ) THEN
-           call smooth_correl2D(xx_gen,maskC,smoothOpNb,mythid)
-
-           DO bj=myByLo(myThid), myByHi(myThid)
-            DO bi=myBxLo(myThid), myBxHi(myThid)
-             DO j = 1,sNy
-              DO i = 1,sNx
-               if ((maskC(i,j,1,bi,bj).NE.0.).AND.
-     &           (wgentim2d(i,j,bi,bj,iarr).GT.0.)) then
-                xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)
-     &                  /sqrt(wgentim2d(i,j,bi,bj,iarr))
-               else
-                xx_gen(i,j,bi,bj)=0. _d 0
-               endif
-              ENDDO
-             ENDDO
-            ENDDO
-           ENDDO
-
-           CALL EXCH_XY_RL ( xx_gen , myThid )
-          ENDIF
+         IF (useSMOOTH) THEN
+          IF (dowc01) call smooth_correl2D(xx_gen,maskC,numsmo,mythid)
+          IF (dosmooth) call smooth2d(xx_gen,maskC,numsmo,mythid)
          ENDIF
 #endif /* ALLOW_SMOOTH */
 
+         DO bj=myByLo(myThid), myByHi(myThid)
+          DO bi=myBxLo(myThid), myBxHi(myThid)
+           DO j = 1,sNy
+            DO i = 1,sNx
+             if ((maskC(i,j,1,bi,bj).NE.0.).AND.
+     &           (wgentim2d(i,j,bi,bj,iarr).GT.0.)) then
+                xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)
+     &                  /sqrt(wgentim2d(i,j,bi,bj,iarr))
+             else
+                xx_gen(i,j,bi,bj)=0. _d 0
+             endif
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+#endif /* ALLOW_OPENAD */
+
+         CALL CTRL_BOUND_2D(xx_gen,maskC,
+     &        xx_gentim2d_bounds(1,iarr),myThid)
+
+         CALL EXCH_XY_RL ( xx_gen , myThid )
 
 #ifdef ALLOW_AUTODIFF
          call active_write_xy( fnamegenOut, xx_gen, irec, optimcycle,

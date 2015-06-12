@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.60 2015/06/09 21:21:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.61 2015/06/12 17:43:32 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -153,7 +153,7 @@ cHFLUXM_CONTROL
       namelist /ctrl_nml_genarr/
      &  xx_genarr2d_file, xx_genarr3d_file, xx_gentim2d_file,
      &  xx_genarr2d_weight, xx_genarr3d_weight, xx_gentim2d_weight,
-     &  xx_genarr2d_bounds, xx_genarr3d_bounds,
+     &  xx_genarr2d_bounds, xx_genarr3d_bounds, xx_gentim2d_bounds,
      &  genarr2dPrecond, genarr3dPrecond, gentim2dPrecond,
      &  mult_gentim2d,mult_genarr2d,mult_genarr3d,
      &  xx_genarr2d_preproc, xx_genarr2d_preproc_i,
@@ -286,6 +286,9 @@ c
          enddo
          mult_gentim2d(iarr)          = 0. _d 0
          gentim2dPrecond(iarr)        = 1. _d 0
+         do jarr = 1, 5
+           xx_gentim2d_bounds(jarr,iarr) = 0. _d 0
+         enddo
         enddo
 #endif
 c
