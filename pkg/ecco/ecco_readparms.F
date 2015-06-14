@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.79 2014/11/02 21:23:12 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.80 2015/06/14 14:17:20 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -641,6 +641,15 @@ c fully interactive generic cost terms
 C--   Check parameters:
       do k=1,NGENCOST
 
+cgf backward compatibility:
+        if (gencost_barfile(k).NE.' ') then
+        if (gencost_barfile(k)(1:2).NE.'m_') then
+          il=ilnblnk(gencost_barfile(k))
+          WRITE(msgBuf,'(A,A)') 'm_',gencost_barfile(k)(1:il)
+          gencost_barfile(k)=msgBuf(1:il+2)
+        endif
+        endif
+
         if ( (using_gencost(k)).AND.( gencost_flag(k).GE.1 ) ) then
 
           if ( gencost_name(k) .EQ. 'gencost' )
@@ -652,6 +661,8 @@ C--   Check parameters:
      &        gencost_avgperiod(k) .NE. 'MONTH' .AND.
      &        gencost_avgperiod(k) .NE. 'step' .AND.
      &        gencost_avgperiod(k) .NE. 'STEP' .AND.
+     &        gencost_avgperiod(k) .NE. 'const' .AND.
+     &        gencost_avgperiod(k) .NE. 'CONST' .AND.
      &        gencost_avgperiod(k) .NE. 'year ' .AND.
      &        gencost_avgperiod(k) .NE. 'YEAR ' ) then
 

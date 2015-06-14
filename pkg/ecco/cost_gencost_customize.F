@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.11 2014/10/22 13:28:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.12 2015/06/14 14:17:20 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -97,22 +97,22 @@ c rotated to EW/NS tracer point
         do j = jmin,jmax
          do i =  imin,imax
 
-         if (gencost_barfile(k)(1:3).EQ.'eta') then
+         if (gencost_barfile(k)(1:5).EQ.'m_eta') then
            gencost_modfld(i,j,bi,bj,k) = 
      &      etanFull(i,j,bi,bj)*maskC(i,j,1,bi,bj)
-         elseif (gencost_barfile(k)(1:3).EQ.'sst') then
+         elseif (gencost_barfile(k)(1:5).EQ.'m_sst') then
            gencost_modfld(i,j,bi,bj,k) = 
      &      THETA(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
-         elseif (gencost_barfile(k)(1:3).EQ.'sss') then
+         elseif (gencost_barfile(k)(1:5).EQ.'m_sss') then
            gencost_modfld(i,j,bi,bj,k) = 
      &      SALT(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
-         elseif (gencost_barfile(k)(1:2).EQ.'bp') then
+         elseif (gencost_barfile(k)(1:4).EQ.'m_bp') then
            gencost_modfld(i,j,bi,bj,k) = 
      &      phiHydLow(i,j,bi,bj)*maskC(i,j,1,bi,bj)
-         elseif (gencost_barfile(k)(1:6).EQ.'tauZon') then
+         elseif (gencost_barfile(k)(1:8).EQ.'m_tauZon') then
            gencost_modfld(i,j,bi,bj,k) = 
      &      tauZonC(i,j,bi,bj)*maskC(i,j,1,bi,bj)
-         elseif (gencost_barfile(k)(1:6).EQ.'tauMer') then
+         elseif (gencost_barfile(k)(1:8).EQ.'m_tauMer') then
            gencost_modfld(i,j,bi,bj,k) = 
      &      tauMerC(i,j,bi,bj)*maskC(i,j,1,bi,bj)
 #ifdef ALLOW_SEAICE
@@ -127,13 +127,13 @@ c rotated to EW/NS tracer point
      &      heff(i,j,bi,bj)*maskC(i,j,1,bi,bj)
 #endif
 #ifdef ALLOW_GENCOST3D
-         elseif (gencost_barfile(k)(1:5).EQ.'theta') then
+         elseif (gencost_barfile(k)(1:7).EQ.'m_theta') then
            kk=gencost_pointer3d(k)
            do k2=1,nr
             gencost_mod3d(i,j,k2,bi,bj,kk) =
      &       theta(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
            enddo
-         elseif (gencost_barfile(k)(1:4).EQ.'salt') then
+         elseif (gencost_barfile(k)(1:6).EQ.'m_salt') then
            kk=gencost_pointer3d(k)
            do k2=1,nr
             gencost_mod3d(i,j,k2,bi,bj,kk) =
