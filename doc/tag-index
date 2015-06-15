@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2159 2015/06/15 14:01:03 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2160 2015/06/15 15:22:24 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o coupler (atm & ocn _compon_interf):
+  - avoid using Exch2 IO mapping if not suitable.
 
 checkpoint65m (2015/06/15)
 o pkg/layers:
