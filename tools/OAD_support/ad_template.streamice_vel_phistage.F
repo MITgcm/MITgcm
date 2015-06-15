@@ -147,6 +147,9 @@
       end if
 
       if(isinloop.eq.1) then
+
+        CALL TIMER_START('STREAMICE TAPE FIXED POINT LOOP',myThid)
+
         IF (.not. (CONVERGED).AND. nl_iter.lt.MAXNLITER) THEN
           NL_ITER = (NL_ITER+1)
           !Run in plain mode while not converged
@@ -240,6 +243,7 @@
      +TOL,CG_ITERS,err_max)
           end if 
         end if
+        CALL TIMER_STOP('STREAMICE TAPE FIXED POINT LOOP',myThid)
       end if 
       if(isinloop.eq.2 ) then
 
@@ -360,18 +364,17 @@
         if((.NOT.ADJ_CONVERGED).AND.(adj_iter.lt.MAXNLITER)) then
 
           adj_iter = adj_iter + 1
+          if (adj_iter.eq.1) then
+           CALL TIMER_START('STREAMICE ADJ FIXED POINT LOOP0',myThid)
+          else
+           CALL TIMER_START('STREAMICE ADJ FIXED POINT LOOP',myThid)
+          endif
 
           DO BJ = MYBYLO(MYTHID), MYBYHI(MYTHID), 1
             DO BI = MYBXLO(MYTHID), MYBXHI(MYTHID), 1
               DO J = 1-OLy,sNy+OLy
                 DO I = 1-OLx,sNx+OLx
 
-!       Real*8 1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-!       Real*8 tauby_dummy_d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-!       Real*8 visc_full_dummy_d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-!       Real*8 taubx_new_dummy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-!       Real*8 tauby_new_dummy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-!       Real*8 visc_new_dummy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 
                   U_DUMMY_D(INT(I),INT(J),INT(BI),INT(BJ)) =
@@ -451,9 +454,33 @@
           temp_string_tape_pointer = oad_st_ptr
 
 
+#ifdef ALLOW_PETSC
+          IF (STREAMICE_OAD_petsc_reuse) then
+           if (adj_iter.eq.1) then
+            STREAMICE_need2createmat=.true.
+            STREAMICE_need2destroymat=.false.
+            PETSC_PRECOND_TMP = PETSC_PRECOND_TYPE
+            PETSC_PRECOND_TYPE = PETSC_PRECOND_OAD
+           else
+            STREAMICE_need2createmat=.false.
+            STREAMICE_need2destroymat=.false.
+           endif
+          ENDIF
+#endif
 
           CALL OpenAD_streamice_vel_phi(MYTHID,MAXNLITER,MAXCGITER,CGTOL
      +,CG_ITERS,err_max)
+
+#ifdef ALLOW_PETSC
+          IF (STREAMICE_OAD_petsc_reuse) then
+           if (adj_iter.eq.MAXNLITER) then
+            STREAMICE_need2createmat=.true.
+            STREAMICE_need2destroymat=.true.
+            CALL streamice_petscmatdestroy(mythid)             
+            PETSC_PRECOND_TYPE = PETSC_PRECOND_TMP
+           endif
+          ENDIF
+#endif
 
           DO BJ = MYBYLO(MYTHID), MYBYHI(MYTHID), 1
             DO BI = MYBXLO(MYTHID), MYBXHI(MYTHID), 1
@@ -500,8 +527,19 @@
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
-           IF (err_max_fp .LE. streamice_nonlin_tol_adjoint) THEN
+           IF(adj_iter.eq.1) then
+            err_init = err_max_fp
+           ELSEIF (err_max_fp .LE. 
+     &             streamice_nonlin_tol_adjoint*err_init) THEN
             ADJ_CONVERGED = .true.
+#ifdef ALLOW_PETSC
+           IF (STREAMICE_OAD_petsc_reuse) THEN
+            STREAMICE_need2createmat=.true.
+            STREAMICE_need2destroymat=.true.
+            CALL streamice_petscmatdestroy(mythid)             
+            PETSC_PRECOND_TYPE = PETSC_PRECOND_TMP
+           ENDIF
+#endif
            ENDIF
 
           endif
@@ -568,6 +606,11 @@
           oad_lt_ptr = temp_logical_tape_pointer   
           oad_st_ptr = temp_string_tape_pointer
 
+          if (adj_iter.eq.1) then
+           CALL TIMER_STOP('STREAMICE ADJ FIXED POINT LOOP0',myThid)
+          else
+           CALL TIMER_STOP('STREAMICE ADJ FIXED POINT LOOP',myThid)
+          endif
         end if
       end if
 
