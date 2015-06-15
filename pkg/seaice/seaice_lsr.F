@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.112 2015/06/15 15:08:51 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.113 2015/06/15 15:34:32 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1703,12 +1703,12 @@ C     === Local variables ===
 C     i,j  :: Loop counters
       INTEGER I,J,IM
       INTEGER jMinLoc, jStep
-#ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+#ifdef SEAICE_LSR_ZEBRA
       INTEGER K
       PARAMETER ( jStep = 2 )
 #else
       PARAMETER ( jStep = 1 )
-#endif
+#endif /* SEAICE_LSR_ZEBRA */
       _RL AA3, bet
       _RL URT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL CUU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -1720,12 +1720,12 @@ C     Need to initialize local arrays
         CUU(I,J) = 0. _d 0
        ENDDO
       ENDDO
-#ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+#ifdef SEAICE_LSR_ZEBRA
       DO K=0,1
       jMinLoc = jMin+K
 #else
       jMinLoc = jMin
-#endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
+#endif /* SEAICE_LSR_ZEBRA */
       DO J=jMinLoc,jMax,jStep
        DO I=iMin,iMax
         AA3 = 0. _d 0
@@ -1787,9 +1787,9 @@ C     go back to original order
      &       +WFAU*(URT(I,J)-uTmp(I,J,bi,bj))
        ENDDO
       ENDDO
-#ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+#ifdef SEAICE_LSR_ZEBRA
       ENDDO
-#endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
+#endif /* SEAICE_LSR_ZEBRA */
 
       RETURN
       END
@@ -1848,12 +1848,12 @@ C     === Local variables ===
 C     i,j  :: Loop counters
       INTEGER I,J,JM
       INTEGER iMinLoc, iStep
-#ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+#ifdef SEAICE_LSR_ZEBRA
       INTEGER K
       PARAMETER ( iStep = 2 )
 #else
       PARAMETER ( iStep = 1 )
-#endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
+#endif /* SEAICE_LSR_ZEBRA */
       _RL AA3, bet
       _RL VRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL CVV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -1865,12 +1865,12 @@ C     Need to initialize local arrays
         CVV(I,J) = 0. _d 0
        ENDDO
       ENDDO
-#ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+#ifdef SEAICE_LSR_ZEBRA
       DO K=0,1
       iMinLoc = iMin+K
 #else
       iMinLoc = iMin
-#endif /*  SEAICE_VECTORIZE_LSR_ZEBRA */
+#endif /*  SEAICE_LSR_ZEBRA */
 #ifdef SEAICE_VECTORIZE_LSR
       DO J=jMin,jMax
        DO I=iMinLoc,iMax,iStep
@@ -1940,9 +1940,9 @@ C     relaxation with WFAV
      &       +WFAV*(VRT(I,J)-vTmp(I,J,bi,bj))
        ENDDO
       ENDDO
-#ifdef SEAICE_VECTORIZE_LSR_ZEBRA
+#ifdef SEAICE_LSR_ZEBRA
       ENDDO
-#endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
+#endif /* SEAICE_LSR_ZEBRA */
 
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
