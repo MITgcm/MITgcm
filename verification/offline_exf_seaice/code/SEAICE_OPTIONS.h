@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/SEAICE_OPTIONS.h,v 1.24 2013/02/13 08:56:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/SEAICE_OPTIONS.h,v 1.25 2015/06/15 15:42:17 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -91,6 +91,11 @@ C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
 # define SEAICE_ZETA_SMOOTHREG
 C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
 # undef SEAICE_ALLOW_TEM
+C     option for modifying the LSR solver (also relevent if used as
+C     preconditioner for JFNK)
+# undef SEAICE_VECTORIZE_LSR
+C     use zebra-method (alternate lines) for line-successive-relaxation
+# undef SEAICE_LSR_ZEBRA
 #else /* not SEAICE_CGRID, but old B-grid */
 C--   By default for B-grid dynamics solver wind stress under sea-ice is
 C     set to the same value as it would be if there was no sea-ice.
