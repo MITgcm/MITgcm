@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_register.F,v 1.3 2013/11/27 21:54:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_register.F,v 1.4 2015/06/15 15:19:33 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,12 +45,52 @@ C     bi, bj    :: Tile indices
 C     j         :: Loop counter
 C     iG0, jG0  :: Base coordinates of a tile on the global grid.
 C     iReg      :: Array for passing attributes to the coupler
+C     x,ySize   :: expected size of the coupler 2-D maps
       INTEGER iG0, jG0
       INTEGER bi, bj
       INTEGER j, nTiles
       INTEGER iReg(6,nSx*nSy)
+c     INTEGER xSize, ySize
 #ifdef ALLOW_EXCH2
       INTEGER tN
+      LOGICAL useExch2LayOut
+#endif /* ALLOW_EXCH2 */
+
+C--   Set dimensions of coupler 2-D maps:
+c     xSize = Nx
+c     ySize = Ny
+
+#ifdef ALLOW_EXCH2
+C-- Note: current coupler mapping relies only on i0,j0,nx,ny ; this prevent to
+C     map tiles to Exch-2 global map when faces do not fit in global-IO-array
+C     (see, e.g., gather/scatter_2d routines in eesupp/src, case where
+C      iGjLoc <> 0 or jGjLoc <> 1 ).
+      useExch2LayOut = .FALSE.
+      IF ( W2_useE2ioLayOut ) THEN
+        useExch2LayOut = .TRUE.
+        DO tN=1,exch2_nTiles
+          IF   ( exch2_mydNx(tN) .GT. exch2_global_Nx ) THEN
+           useExch2LayOut = .FALSE.
+C-         face x-size larger than glob-size : fold it
+c              iGjLoc = 0
+c              jGjLoc = exch2_mydNx(tN) / xSize
+          ELSEIF ( exch2_tNy(tN) .GT. exch2_global_Ny ) THEN
+           useExch2LayOut = .FALSE.
+C-         tile y-size larger than glob-size : make a long line
+c              iGjLoc = exch2_mydNx(tN)
+c              jGjLoc = 0
+          ELSE
+C-          default (face fit into global-IO-array)
+c             iGjLoc = 0
+c             jGjLoc = 1
+          ENDIF
+        ENDDO
+      ENDIF
+c     IF ( useExch2LayOut ) THEN
+c       xSize = exch2_global_Nx
+c       ySize = exch2_global_Ny
+c     ENDIF
+C-- Note: should check that xSize,ySize match with coupler Nx_ocn,Ny_ocn
 #endif /* ALLOW_EXCH2 */
 
 C--   Register with the MIT coupler
@@ -61,7 +101,7 @@ C--   Register with the MIT coupler
         iG0 = myXGlobalLo+(bi-1)*sNx
         jG0 = myYGlobalLo+(bj-1)*sNy
 #ifdef ALLOW_EXCH2
-        IF ( W2_useE2ioLayOut ) THEN
+        IF ( useExch2LayOut ) THEN
           tN = W2_myTileList(bi,bj)
           iG0 = exch2_txGlobalo(tN)
           jG0 = exch2_tyGlobalo(tN)
