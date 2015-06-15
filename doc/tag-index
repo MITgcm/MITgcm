@@ -1,12 +1,31 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2160 2015/06/15 15:22:24 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2161 2015/06/15 15:48:41 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - Rename SEAICE_VECTORIZE_LSR_ZEBRA to SEAICE_LSR_ZEBRA and define it
+    in lab_sea forward experiment (changes results -> updated)
+o pkg/seaice: modify seaice_lsr.F in order to improve the gradient 
+  computations; for SEAICE_VECTORIZE_LSR
+  - move the loops over which the tridiagonal solvers (seaice_lsr_tridiagu/v)
+    sweep to the outside, 
+  - remove store directives and add "CADJ loop sequential" directives
+    in analogy to model/src/solve_tridiagonal.F
+  - replace many "#ifdef SEAICE_VECTORIZE_LSR_ZEBRA" by variable loop
+    boundaries to yield more readable code. This has also the charming side
+    effect that your can use SEAICE_VECTORIZE_LSR_ZEBRA without 
+    SEAICE_VECTORIZE_LSR (i.e. adjoint without recomputations in 
+    seaice_lsr_tridiagu/v now requires either of these flags, vectorization
+    still requires SEAICE_VECTORIZE_LSR with SEAICE_VECTORIZE_LSR_ZEBRA as
+    an additional option)
+  The tridiagonal solvers are now completely analoguous to solve_tridiagonal.F
+  but the adjoint gradients (which are affected by this change) still explode.
 o coupler (atm & ocn _compon_interf):
   - avoid using Exch2 IO mapping if not suitable.
 
+>>>>>>> 1.2160
 checkpoint65m (2015/06/15)
 o pkg/layers:
   - clean-up old parameters setting (from Sep 2012):
