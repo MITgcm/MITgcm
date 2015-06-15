@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.16 2015/03/23 14:07:16 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.17 2015/06/15 14:33:25 dgoldberg Exp $
 C $Name:  $
 
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -149,6 +149,10 @@ C     -------------------------- CHAR PARAMS -----------------------------------
 !     CHARACTER PARAMS FOR PETSC
       CHARACTER*(MAX_LEN_FNAM) PETSC_SOLVER_TYPE
       CHARACTER*(MAX_LEN_FNAM) PETSC_PRECOND_TYPE
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+      CHARACTER*(MAX_LEN_FNAM) PETSC_PRECOND_TMP
+      CHARACTER*(MAX_LEN_FNAM) PETSC_PRECOND_OAD
+#endif
 #endif
 
 #ifdef ALLOW_STREAMICE_2DTRACER
@@ -198,6 +202,9 @@ C     -------------------------- CHAR PARAMS -----------------------------------
       COMMON /PETSC_PARM_C/
      &     PETSC_SOLVER_TYPE,
      &     PETSC_PRECOND_TYPE
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+     &     ,PETSC_PRECOND_TMP, PETSC_PRECOND_OAD
+#endif
 #endif
 
 #ifdef ALLOW_STREAMICE_2DTRACER
@@ -225,6 +232,13 @@ C     -------------------------- LOGICAL PARAMS --------------------------------
       LOGICAL STREAMICE_chkresidconvergence
       LOGICAL STREAMICE_allow_cpl
       LOGICAL STREAMICE_use_petsc
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
+#ifdef ALLOW_PETSC
+      LOGICAL STREAMICE_need2createmat
+      LOGICAL STREAMICE_need2destroymat
+      LOGICAL STREAMICE_OAD_petsc_reuse
+#endif
+#endif
       
 
 C     The following parameters specify periodic boundary conditions.
@@ -251,6 +265,14 @@ C      LOGICAL STREAMICE_hybrid_stress
      & STREAMICE_chkfixedptconvergence,
      & STREAMICE_chkresidconvergence,
      & STREAMICE_allow_cpl, streamice_use_petsc
+
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
+#ifdef ALLOW_PETSC
+      COMMON /STREAMICE_PERSIST_PETSC_L
+     & STREAMICE_need2createmat, STREAMICE_need2destroymat,
+     & STREAMICE_OAD_petsc_reuse
+#endif
+#endif
 
 C     -------------------------- AND NOW ARRAYS ---------------------------------------------------
 
