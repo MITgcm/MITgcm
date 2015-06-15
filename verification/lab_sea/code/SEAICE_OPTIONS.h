@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.32 2012/12/27 23:00:58 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.33 2015/06/15 15:36:44 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -89,6 +89,18 @@ C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
 # undef SEAICE_ZETA_SMOOTHREG
 C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
 # undef SEAICE_ALLOW_TEM
+C     Use LSR vector code; not useful on non-vector machines, because it
+C     slows down convergence considerably, but the extra iterations are
+C     more than made up by the much faster code on vector machines. For
+C     the only regularly test vector machine these flags a specified
+C     in the build options file SUPER-UX_SX-8_sxf90_awi, so that we comment
+C     them out here.
+# undef SEAICE_VECTORIZE_LSR
+C     Use zebra-method (alternate lines) for line-successive-relaxation
+C     This modification improves the convergence of the vector code
+C     dramatically, so that is may actually be useful in general, but
+C     that needs to be tested. Can be used without vectorization options.
+# define SEAICE_LSR_ZEBRA
 #else /* not SEAICE_CGRID, but old B-grid */
 C--   By default for B-grid dynamics solver wind stress under sea-ice is
 C     set to the same value as it would be if there was no sea-ice.
