@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_thermodynamics.F,v 1.4 2015/06/03 13:39:22 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_thermodynamics.F,v 1.5 2015/06/15 21:34:07 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -49,11 +49,14 @@ C     fluxfac  :: scaling factor for converting diffusive flux to tendency
 C     downfac  :: mask for lower point
 
       INTEGER bi, bj
-      INTEGER i,j,k,kdown,iTracer,kp1
-      _RL fluxfac(2), downfac, tmpfac, swfracb(2)
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER i,j,k,kdown,iTracer
+      _RL fluxfac(2), downfac, tmpfac
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL minusone
       PARAMETER (minusOne=-1.)
+#ifdef SHORTWAVE_HEATING
+      _RL swfracb(2)
+#endif
 
 C --  These factors convert the units of TFLUX and SFLUX diagnostics
 C --  back to surfaceForcingT and surfaceForcingS units
@@ -62,9 +65,9 @@ C --  back to surfaceForcingT and surfaceForcingS units
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-           
+
           DO iTracer = 1,2
-           k = 1 
+           k = 1
 C --       Loop for surface fluxes
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
@@ -77,7 +80,7 @@ C --      Have to remove the shortwave from the surface flux because it is added
 C --      Sign convention for Qsw means we have to add it to subtract it
      &           +Qsw(i,j,bi,bj)
              ENDIF
-#endif /* SHORTWAVE_HEATING */   
+#endif /* SHORTWAVE_HEATING */
 
              layers_surfflux(i,j,k,iTracer,bi,bj) =
      &       layers_surfflux(i,j,k,iTracer,bi,bj)
@@ -85,7 +88,7 @@ C --      Sign convention for Qsw means we have to add it to subtract it
      &       *fluxfac(iTracer)
             ENDDO
            ENDDO
-  
+
 C --       Loop for diffusive fluxes
 C --       If done correctly, we can overwrite the flux array in place
 C --       with its own divergence
@@ -122,7 +125,7 @@ C -- Advection
      &          layers_afr(i,j,k,iTracer,bi,bj) )
 
 #ifdef SHORTWAVE_HEATING
-              IF (iTracer.EQ.1) THEN 
+              IF (iTracer.EQ.1) THEN
                 swfracb(1)=abs(rF(k))
                 swfracb(2)=abs(rF(k+1))
                 CALL SWFRAC(
@@ -152,8 +155,8 @@ C                  kp1 = k
      &            *fluxfac(1)
      &            *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
               ENDIF
-#endif /* SHORTWAVE_HEATING */            
-     
+#endif /* SHORTWAVE_HEATING */
+
              ENDDO
             ENDDO
            ENDDO

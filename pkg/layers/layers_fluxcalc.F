@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.16 2015/06/08 16:26:12 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.17 2015/06/15 21:34:07 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -421,7 +421,6 @@ C     PIw       :: 1 if layer exists, 0 otherwise (at tracer point)
       _RL tracer    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,     nSx,nSy)
       _RL Hc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
       _RL PIc       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
-      _RL Hcw       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL TtendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL TtendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL TtendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
@@ -450,15 +449,18 @@ C     kk       :: vertical index for ZZ (fine) grid
 C     kloc     :: local copy of kgu/v to reduce accesses to index arrays
 C     mSteps   :: maximum number of steps for bisection method
 C     TatC     :: temperature at C point
-
+      _RL Hcw       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       INTEGER bi, bj
-      INTEGER i,j,k,kk,kg,kci,kloc,kp1
+      INTEGER i,j,k,kk,kg,kci,kloc
       INTEGER mSteps
       INTEGER kgc(sNx+1,sNy+1)
       INTEGER kgcw(sNx+1,sNy+1)
       _RL TatC(sNx+1,sNy+1), dzfac, Tfac, Sfac
       LOGICAL errorFlag
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef LAYERS_FINEGRID_DIAPYCNAL
+      INTEGER kp1
+#endif
 
 C --  constants for T and S forcing, gets reset later for rho
       Tfac = 1. _d 0
@@ -539,7 +541,7 @@ C ------ Find theta at the V point (south) on the fine Z grid
         ENDDO
        ENDDO
 #endif /* LAYERS_FINEGRID_DIAPYCNAL */
- 
+
 C ------ debugging stuff
 c         IF (i.EQ.38 .AND. j.EQ.4 .AND. bi.EQ.1 .AND. bj.EQ.1) THEN
 c           i=38
