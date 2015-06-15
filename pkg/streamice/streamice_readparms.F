@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.11 2015/02/21 19:09:53 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.12 2015/06/15 14:31:59 dgoldberg Exp $
 C $Name:  $
 
 C this needs changes
@@ -41,9 +41,6 @@ C     iUnit      :: Work variable for IO unit number
      &     C_basal_fric_const, n_basal_friction,
      &     streamice_vel_update,streamice_cg_tol,streamice_nonlin_tol,
      &     streamice_nonlin_tol_fp,
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
-     &     streamice_nonlin_tol_adjoint,
-#endif
      &     streamice_max_cg_iter, streamice_max_nl_iter,
      &     streamice_maxcgiter_cpl, streamice_maxnliter_cpl,
      &     STREAMICEthickInit,
@@ -111,6 +108,15 @@ C     iUnit      :: Work variable for IO unit number
       NAMELIST /STREAMICE_PARMPETSC/
      &     PETSC_PRECOND_TYPE, PETSC_SOLVER_TYPE, 
      &     streamice_use_petsc
+#endif
+
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+      NAMELIST /STREAMICE_PARMOAD/ 
+     &     streamice_nonlin_tol_adjoint
+#ifdef ALLOW_PETSC
+     &     ,STREAMICE_OAD_petsc_reuse, 
+     &     PETSC_PRECOND_OAD
+#endif
 #endif
 
 !#ifdef ALLOW_STREAMICE_FLUX_CONTROL
@@ -188,6 +194,10 @@ C--   Default values for STREAMICE
       streamice_nonlin_tol_fp = 1.e-14
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
       streamice_nonlin_tol_adjoint = 1.e-14
+#ifdef ALLOW_PETSC
+      PETSC_PRECOND_OAD = 'MUMPS'
+      STREAMICE_OAD_petsc_reuse =.false.
+#endif
 #endif
       streamice_max_cg_iter = 2000
       streamice_max_nl_iter = 100
@@ -365,6 +375,14 @@ C     Read parameters from open data file
       READ(UNIT=iUnit,NML=STREAMICE_PARMPETSC)
       WRITE(msgBuf,'(A)')
      &    'STREAMICE_READPARMS: read petsc param block'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT , 1)
+#endif
+
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+      READ(UNIT=iUnit,NML=STREAMICE_PARMOAD)
+      WRITE(msgBuf,'(A)')
+     &    'STREAMICE_READPARMS: read oad parm block'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , 1)
 #endif
