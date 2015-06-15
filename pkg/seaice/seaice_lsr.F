@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.111 2014/12/11 20:15:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.112 2015/06/15 15:08:51 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1669,9 +1669,6 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -1705,19 +1702,17 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j  :: Loop counters
       INTEGER I,J,IM
+      INTEGER jMinLoc, jStep
 #ifdef SEAICE_VECTORIZE_LSR_ZEBRA
       INTEGER K
+      PARAMETER ( jStep = 2 )
+#else
+      PARAMETER ( jStep = 1 )
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ilockey
-#endif /* ALLOW_AUTODIFF_TAMC */
       _RL AA3, bet
       _RL URT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL CUU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ INIT comlev1_tridiagu = COMMON, (sNx+2*Olx)*(sNy+2*Oly)
-#endif /* ALLOW_AUTODIFF_TAMC */
 C     Need to initialize local arrays
       DO J = 1-OLy,sNy+OLy
        DO I = 1-OLx,sNx+OLx
@@ -1727,10 +1722,11 @@ C     Need to initialize local arrays
       ENDDO
 #ifdef SEAICE_VECTORIZE_LSR_ZEBRA
       DO K=0,1
-      DO J=jMin+K,jMax,2
+      jMinLoc = jMin+K
 #else
-      DO J=jMin,jMax
+      jMinLoc = jMin
 #endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
+      DO J=jMinLoc,jMax,jStep
        DO I=iMin,iMax
         AA3 = 0. _d 0
         IF (I.EQ.iMin) AA3 = AA3 - AU(I,J,bi,bj)*uIce(I-1,J,bi,bj)
@@ -1742,7 +1738,7 @@ C     Need to initialize local arrays
      &       + uRt2(I,J,bi,bj)*uIce(I,J+1,bi,bj)
         URT(I,J)=URT(I,J)* seaiceMaskU(I,J,bi,bj)
        ENDDO
-
+C     beginning of tridiagnoal solver
        DO I=iMin,iMax
         CUU(I,J)=CU(I,J,bi,bj)
        ENDDO
@@ -1751,46 +1747,41 @@ C     Need to initialize local arrays
 #ifdef SEAICE_VECTORIZE_LSR
       ENDDO
 C     start a new loop with reversed order to support automatic vectorization
+CADJ loop = sequential
       DO I=iMin+1,iMax
        IM=I-1
-# ifdef SEAICE_VECTORIZE_LSR_ZEBRA
-       DO J=jMin+K,jMax,2
-# else
-       DO J=jMin,jMax
-# endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
+       DO J=jMinLoc,jMax,jStep
 #else /* do not SEAICE_VECTORIZE_LSR */
+CADJ loop = sequential
        DO I=iMin+1,iMax
         IM=I-1
 #endif /* SEAICE_VECTORIZE_LSR */
-#ifdef ALLOW_AUTODIFF_TAMC
-        ilockey = 1 + I-iMin + (sNx+2*OLx)*(J-jMin)
-CADJ STORE urt(i,j),urt(im,j),cuu(i,j),cuu(im,j) = comlev1_tridiagu, 
-CADJ & kind=isbyte, key = ilockey
-C     appart from storing urt/cuu(i/im,j), it seems to be important to 
-C     rewrite the code: introduce abbreviate "bet"
-#endif /* ALLOW_AUTODIFF_TAC */
         bet      = BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J)
         CUU(I,J) = CUU(I,J)/bet
         URT(I,J) = (URT(I,J)-AU(I,J,bi,bj)*URT(IM,J))/bet
        ENDDO
 #ifdef SEAICE_VECTORIZE_LSR
       ENDDO
-C     go back to original order
-#ifdef SEAICE_VECTORIZE_LSR_ZEBRA
-      DO J=jMin+K,jMax,2
+CADJ loop = sequential
+      DO I=iMin,iMax-1
+       IM=iMax-I
+       DO J=jMinLoc,jMax,jStep
 #else
-      DO J=jMin,jMax
-#endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
-#endif /* SEAICE_VECTORIZE_LSR */
+CADJ loop = sequential
        DO I=iMin,iMax-1
         IM=iMax-I
-#ifdef ALLOW_AUTODIFF_TAMC
-        ilockey = 1 + I-iMin + (sNx+2*OLx)*(J-jMin)
-CADJ STORE urt(im,j),urt(im+1,j) = comlev1_tridiagu, 
-CADJ & kind=isbyte, key = ilockey
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* SEAICE_VECTORIZE_LSR */
         URT(IM,J)=URT(IM,J)-CUU(IM,J)*URT(IM+1,J)
        ENDDO
+#ifdef SEAICE_VECTORIZE_LSR
+      ENDDO
+#endif /* SEAICE_VECTORIZE_LSR */
+C     end of tridiagnoal solver, solution is URT
+C     relaxation with WFAU
+#ifdef SEAICE_VECTORIZE_LSR
+C     go back to original order
+      DO J=jMinLoc,jMax,jStep
+#endif /* SEAICE_VECTORIZE_LSR */
        DO I=iMin,iMax
         uIce(I,J,bi,bj)=uTmp(I,J,bi,bj)
      &       +WFAU*(URT(I,J)-uTmp(I,J,bi,bj))
@@ -1823,9 +1814,6 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -1859,19 +1847,17 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j  :: Loop counters
       INTEGER I,J,JM
+      INTEGER iMinLoc, iStep
 #ifdef SEAICE_VECTORIZE_LSR_ZEBRA
       INTEGER K
-#endif
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ilockey
-#endif /* ALLOW_AUTODIFF_TAMC */
+      PARAMETER ( iStep = 2 )
+#else
+      PARAMETER ( iStep = 1 )
+#endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
       _RL AA3, bet
       _RL VRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL CVV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ INIT comlev1_tridiagv = COMMON, (sNx+2*Olx)*(sNy+2*Oly)
-#endif /* ALLOW_AUTODIFF_TAMC */
 C     Need to initialize local arrays
       DO J = 1-OLy,sNy+OLy
        DO I = 1-OLx,sNx+OLx
@@ -1881,24 +1867,15 @@ C     Need to initialize local arrays
       ENDDO
 #ifdef SEAICE_VECTORIZE_LSR_ZEBRA
       DO K=0,1
-#endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
-#ifdef SEAICE_VECTORIZE_LSR
-# ifdef SEAICE_VECTORIZE_LSR_ZEBRA
-#  ifdef ALLOW_AUTODIFF_TAMC
-C     the order of the loop is relevant for TAF. We avoid having
-C     to store vice with this order
-      DO I=iMin+K,iMax,2
-       DO J=jMin,jMax
-#  else
-      DO J=jMin,jMax
-       DO I=iMin+K,iMax,2
-#  endif /* ALLOW_AUTODIFF_TAMC */
-# else
-      DO J=jMin,jMax
-       DO I=iMin,iMax
-# endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
+      iMinLoc = iMin+K
 #else
-      DO I=iMin,iMax
+      iMinLoc = iMin
+#endif /*  SEAICE_VECTORIZE_LSR_ZEBRA */
+#ifdef SEAICE_VECTORIZE_LSR
+      DO J=jMin,jMax
+       DO I=iMinLoc,iMax,iStep
+#else
+      DO I=iMinLoc,iMax,iStep
        DO J=jMin,jMax
 #endif /* SEAICE_VECTORIZE_LSR */
         AA3 = 0. _d 0
@@ -1911,39 +1888,27 @@ C     to store vice with this order
      &       + vRt2(I,J,bi,bj)*vIce(I+1,J,bi,bj)
         VRT(I,J)=VRT(I,J)* seaiceMaskV(I,J,bi,bj)
 
+C     beginning of tridiagnoal solver
         CVV(I,J)=CV(I,J,bi,bj)
        ENDDO
 #ifdef SEAICE_VECTORIZE_LSR
       ENDDO
-# ifdef SEAICE_VECTORIZE_LSR_ZEBRA
-      DO I=iMin+K,iMax,2
-# else
-      DO I=iMin,iMax
-# endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
+      DO I=iMinLoc,iMax,iStep
 #endif /* SEAICE_VECTORIZE_LSR */
        CVV(I,jMin)=CVV(I,jMin)/BV(I,jMin,bi,bj)
        VRT(I,jMin)=VRT(I,jMin)/BV(I,jMin,bi,bj)
 #ifdef SEAICE_VECTORIZE_LSR
       ENDDO
 C     start a new loop with reversed order to support automatic vectorization
+CADJ loop = sequential
       DO J=jMin+1,jMax
        JM=J-1
-# ifdef SEAICE_VECTORIZE_LSR_ZEBRA
-       DO I=iMin+K,iMax,2
-# else
-       DO I=iMin,iMax
-# endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
+       DO I=iMinLoc,iMax,iStep
 #else /* do not SEAICE_VECTORIZE_LSR */
+CADJ loop = sequential
        DO J=jMin+1,jMax
         JM=J-1
 #endif /* SEAICE_VECTORIZE_LSR */
-#ifdef ALLOW_AUTODIFF_TAMC
-        ilockey = 1 + J-jMin + (sNy+2*OLy)*(I-iMin)
-CADJ STORE vrt(i,j),vrt(i,jm),cvv(i,j),cvv(i,jm) = comlev1_tridiagv, 
-CADJ & kind=isbyte, key = ilockey
-C     appart from storing vrt/cvv(i,j/jm), it seems to be important to 
-C     rewrite the code: introduce abbreviate "bet"
-#endif /* ALLOW_AUTODIFF_TAMC */
         bet      = BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM)
         CVV(I,J) = CVV(I,J)/bet
         VRT(I,J) = (VRT(I,J)-AV(I,J,bi,bj)*VRT(I,JM))/bet
@@ -1951,22 +1916,26 @@ C     rewrite the code: introduce abbreviate "bet"
 #ifdef SEAICE_VECTORIZE_LSR
       ENDDO
 C     go back to original order
-# ifdef SEAICE_VECTORIZE_LSR_ZEBRA
-      DO I=iMin+K,iMax,2
-# else
-      DO I=iMin,iMax
-# endif /* SEAICE_VECTORIZE_LSR_ZEBRA */
-#endif /* SEAICE_VECTORIZE_LSR */
+CADJ loop = sequential
+      DO J=jMin,jMax-1
+       JM=jMax-J
+       DO I=iMinLoc,iMax,iStep
+#else
+CADJ loop = sequential
        DO J=jMin,jMax-1
         JM=jMax-J
-#ifdef ALLOW_AUTODIFF_TAMC
-        ilockey = 1 + J-jMin + (sNy+2*OLy)*(I-iMin)
-CADJ STORE vrt(i,jm), vrt(i,jm+1) = comlev1_tridiagv, 
-CADJ &                              kind=isbyte, key = ilockey
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* SEAICE_VECTORIZE_LSR */
         VRT(I,JM)=VRT(I,JM)-CVV(I,JM)*VRT(I,JM+1)
        ENDDO
+#ifdef SEAICE_VECTORIZE_LSR
+      ENDDO
+C     end of tridiagnoal solver, solution is VRT
+C     relaxation with WFAV
+      DO J=jMin,jMax
+       DO I=iMinLoc,iMax,iStep
+#else
        DO J=jMin,jMax
+#endif /* SEAICE_VECTORIZE_LSR */
         vIce(I,J,bi,bj)=vTmp(I,J,bi,bj)
      &       +WFAV*(VRT(I,J)-vTmp(I,J,bi,bj))
        ENDDO
