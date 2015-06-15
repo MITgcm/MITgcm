@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SEAICE_OPTIONS.h,v 1.27 2014/10/01 16:06:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SEAICE_OPTIONS.h,v 1.28 2015/06/15 15:39:50 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -89,9 +89,14 @@ C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
 # undef SEAICE_ZETA_SMOOTHREG
 C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
 # undef SEAICE_ALLOW_TEM
-C     The adjoint compiler TAF complains the least (and gives the best code)
-C     when SEAICE_VECTORIZE_LSR is defined, but this is a bit of a hack
-# define SEAICE_VECTORIZE_LSR
+C     Either SEAICE_VECTORIZE_LSR or SEAICE_LSR_ZEBRA 
+C     need to be defined to have an actual adjoint of the 
+C     seaice_lsr solver; not that this solution works, but at least TAF
+C     complains the least (and gives the best code)
+# undef SEAICE_VECTORIZE_LSR
+# define SEAICE_LSR_ZEBRA
+C     This flag is also required for an actual adjoint of seaice_lsr; 
+C     increases memory requirements a lot.
 # define SEAICE_LSR_ADJOINT_ITER
 #else /* not SEAICE_CGRID, but old B-grid */
 C--   By default for B-grid dynamics solver wind stress under sea-ice is
