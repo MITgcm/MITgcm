@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.11 2015/04/20 14:25:26 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.12 2015/06/15 14:35:14 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -546,6 +546,14 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
       Xquad (2) = .5 * (1.+1./sqrt(3.))
 
       CALL STREAMICE_INIT_PHI( myThid )
+
+
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
+#ifdef ALLOW_PETSC
+      STREAMICE_need2createmat = .true.
+      STREAMICE_need2destroymat = .true.
+#endif
+#endif
 
 #endif /* ALLOW_STREAMICE */
 
