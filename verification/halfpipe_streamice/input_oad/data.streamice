@@ -14,7 +14,6 @@
  STREAMICE_lower_cg_tol = .false.,
  streamice_nonlin_tol = 1.0e-20,
  streamice_nonlin_tol_fp = 1.e-7,
- streamice_nonlin_tol_adjoint = 1.e-4,
  streamice_max_cg_iter = 500,
  streamice_max_nl_iter = 100,
  STREAMICE_move_front = .false.,
@@ -29,10 +28,10 @@
  STREAMICEGlenConstConfig='UNIFORM',
  &
 
-#&STREAMICE_PARMPETSC
 #PETSC_SOLVER_TYPE = 'BICG',
 #PETSC_PRECOND_TYPE = 'BLOCKJACOBI',
 #&
+ 
 
  &STREAMICE_PARM02
  shelf_max_draft = 1300.0,
@@ -40,6 +39,10 @@
  shelf_edge_pos = 70.0e3,
  shelf_slope_scale = 62.0e3,
  shelf_flat_width = 20.0e3,
+ &
+
+ &STREAMICE_PARMOAD
+ streamice_nonlin_tol_adjoint = 1.e-8,
  &
 
  &STREAMICE_PARM03
