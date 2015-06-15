@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_varia.F,v 1.9 2015/06/03 13:39:22 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_varia.F,v 1.10 2015/06/15 21:40:49 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -25,9 +25,9 @@ C     myThid ::  my Thread Id number
 #ifdef ALLOW_LAYERS
 
 C     === Local variables ===
-      INTEGER i,j,kg,bi,bj
-c     INTEGER iLa
+      INTEGER bi, bj
 #ifdef LAYERS_THERMODYNAMICS
+      INTEGER i,j,kg
       INTEGER iTracer
 #endif
 
@@ -35,35 +35,15 @@ c     INTEGER iLa
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 C     Loop through 3D layers variables:
+#ifdef LAYERS_THERMODYNAMICS
         DO kg=1,Nlayers
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-
-#ifdef LAYERS_UFLUX
-           layers_UH (i,j,kg,bi,bj) = 0. _d 0
-#ifdef LAYERS_THICKNESS
-           layers_Hw (i,j,kg,bi,bj) = 0. _d 0
-           layers_PIw(i,j,kg,bi,bj) = 0. _d 0
-           layers_U  (i,j,kg,bi,bj) = 0. _d 0
-#endif /* LAYERS_THICKNESS */
-#endif /* LAYERS_UFLUX */
-
-#ifdef LAYERS_VFLUX
-           layers_VH (i,j,kg,bi,bj) = 0. _d 0
-#ifdef LAYERS_THICKNESS
-           layers_Hs (i,j,kg,bi,bj) = 0. _d 0
-           layers_PIs(i,j,kg,bi,bj) = 0. _d 0
-           layers_V  (i,j,kg,bi,bj) = 0. _d 0
-#endif /* LAYERS_THICKNESS */
-#endif /* LAYERS_VFLUX */
-#ifdef LAYERS_THERMODYNAMICS
            layers_Hc (i,j,kg,bi,bj) = 0. _d 0
            layers_PIc(i,j,kg,bi,bj) = 0. _d 0
-#endif /* LAYERS_THERMODYNAMICS */
           ENDDO
          ENDDO
         ENDDO
-#ifdef LAYERS_THERMODYNAMICS
         DO kg=1,Nlayers-1
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -81,24 +61,19 @@ C     Loop through 3D layers variables:
           ENDDO
          ENDDO
         ENDDO
-#endif /* LAYERS_THERMODYNAMICS */
 #ifdef LAYERS_PRHO_REF
         DO kg=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           prho(i,j,kg,bi,bj) = 0. _d 0
-#ifdef LAYERS_THERMODYNAMICS
            layers_alpha(i,j,kg,bi,bj) = 0. _d 0
            layers_beta(i,j,kg,bi,bj) = 0. _d 0
-#endif /* LAYERS_THERMODYNAMICS */           
           ENDDO
          ENDDO
         ENDDO
 #endif /* LAYERS_PRHO_REF */
 
-#ifdef LAYERS_THERMODYNAMICS
         DO iTracer = 1,2
-           DO j=1-OLy,sNy+OLy
+         DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            layers_surfflux(i,j,1,iTracer,bi,bj) = 0. _d 0
           ENDDO

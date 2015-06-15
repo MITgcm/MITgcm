@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.29 2015/06/03 19:19:08 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.30 2015/06/15 21:40:49 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -11,7 +11,7 @@ C !ROUTINE: LAYERS_CALC
 
 C !INTERFACE:
       SUBROUTINE LAYERS_CALC(
-     I                  myTime, myIter, myThid )
+     I                        myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C ===================================================================
@@ -48,18 +48,45 @@ C !FUNCTIONS:
       EXTERNAL DIFFERENT_MULTIPLE
 
 C !LOCAL VARIABLES:
+C --  3D Layers fields. The vertical dimension in these fields is Nlayers,
+C     i.e. the isopycnal coordinate.
+C      layers_UH  :: U integrated over layer (m^2/s)
+C      layers_VH  :: V integrated over layer (m^2/s)
+C      layers_Hw  :: Layer thickness at the U point (m)
+C      layers_Hs  :: Layer thickness at the V point (m)
+C      layers_PIw :: 1 if layer exists, 0 otherwise
+C      layers_PIs :: 1 if layer exists, 0 otherwise
+C      layers_U   :: mean zonal velocity in layer (only if layer exists) (m/s)
+C      layers_V   :: mean meridional velocity in layer (only if layer exists) (m/s)
+#ifdef LAYERS_UFLUX
+      _RL layers_UH (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+# ifdef LAYERS_THICKNESS
+      _RL layers_Hw (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL layers_PIw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL layers_U  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+# endif /* LAYERS_THICKNESS */
+#endif /* LAYERS_UFLUX */
+#ifdef LAYERS_VFLUX
+      _RL layers_VH (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+# ifdef LAYERS_THICKNESS
+      _RL layers_Hs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL layers_PIs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+      _RL layers_V  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers,nSx,nSy)
+# endif /* LAYERS_THICKNESS */
+#endif /* LAYERS_VFLUX */
+#ifdef LAYERS_PRHO_REF
+      _RL prho(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL rhoShift
+      INTEGER i, j, k
+#endif
+C --  other local variables:
 C     bi, bj   :: tile indices
 C     i,j      :: horizontal indices
-C     iLa      :: layer coordinate index
+C     iLa      :: layer-type index
 C     k        :: vertical index for model grid
-
       INTEGER bi, bj, iLa
       CHARACTER*(MAX_LEN_MBUF) suff
 
-#ifdef LAYERS_PRHO_REF
-      INTEGER i, j, k
-      _RL rhoShift
-#endif
 #ifdef LAYERS_THERMODYNAMICS
       INTEGER iTracer
 #endif
@@ -140,6 +167,14 @@ C     referenced to the model level given by layers_krho.
         rhoShift = rhoConst - 1000. _d 0
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
+C     Initialise layers variable prho:
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             prho(i,j,k,bi,bj) = 0. _d 0
+            ENDDO
+           ENDDO
+          ENDDO
           DO k = 1,Nr
            CALL FIND_RHO_2D( 1-OLx, sNx+OLx, 1-OLy, sNy+OLy,
      &                       layers_krho(iLa),
@@ -155,8 +190,8 @@ C    but to multiply the fluxes in place here
      &                      layers_alpha(1-OLx,1-OLy,k,bi,bj), myThid )
            CALL FIND_BETA(  bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy,
      &                      k, layers_krho(iLa),
-     &                      layers_beta(1-OLx,1-OLy,k,bi,bj), myThid )         
-#endif /* LAYERS_THERMODYNAMICS */   
+     &                      layers_beta(1-OLx,1-OLy,k,bi,bj), myThid )
+#endif /* LAYERS_THERMODYNAMICS */
            DO j = 1-OLy,sNy+OLy
             DO i = 1-OLx,sNx+OLx
              prho(i,j,k,bi,bj) = prho(i,j,k,bi,bj) + rhoShift
@@ -216,19 +251,17 @@ C--   Direct Snap-shot output
      &                           prho, myIter, myThid )
           ENDIF
 #endif /* LAYERS_PRHO_REF */
+
 #ifdef LAYERS_THERMODYNAMICS
-
-            CALL WRITE_FLD_3D_RL( 'layers_Ttottend.', suff, 2*Nr,
+          CALL WRITE_FLD_3D_RL( 'layers_Ttottend.', suff, 2*Nr,
      &       layers_tottend, myIter, myThid )
-
 #ifdef SHORTWAVE_HEATING
-            CALL WRITE_FLD_3D_RL( 'layers_sw.', suff, Nr,
+          CALL WRITE_FLD_3D_RL( 'layers_sw.', suff, Nr,
      &       layers_sw, myIter, myThid )
 #endif /* LAYERS_SHORTWAVE */
-
-           CALL WRITE_FLD_3D_RL( 'layers_surfflux.', suff, 2,
+          CALL WRITE_FLD_3D_RL( 'layers_surfflux.', suff, 2,
      &                           layers_surfflux, myIter, myThid )
-           CALL WRITE_FLD_3D_RL( 'layers_dfx.', suff, 2*Nr,
+          CALL WRITE_FLD_3D_RL( 'layers_dfx.', suff, 2*Nr,
      &                           layers_dfx, myIter, myThid )
           CALL WRITE_FLD_3D_RL( 'layers_dfy.', suff, 2*Nr,
      &                           layers_dfy, myIter, myThid )
@@ -260,8 +293,8 @@ c#endif /* ALLOW_MNC */
 
 #ifdef LAYERS_THERMODYNAMICS
 C--   Reset temporary flux arrays to zero
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
           DO iTracer = 1,2
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
@@ -285,8 +318,8 @@ C--   Reset temporary flux arrays to zero
             ENDDO
            ENDDO
           ENDDO
-         ENDDO
         ENDDO
+       ENDDO
 #endif /* LAYERS_THERMODYNAMICS */
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -340,61 +373,45 @@ C--   Fill-in diagnostics
          WRITE(diagName,'(A4,I1,A3)') 'LaHc',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_Hc,
      &                          diagName,0,Nlayers, 0, 1, 1, myThid )
-
          WRITE(diagName,'(A4,I1,A3)') 'LaPc',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_PIc,
      &                          diagName,0,Nlayers, 0, 1, 1, myThid )
-
          WRITE(diagName,'(A4,I1,A3)') 'LaTs',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_TtendSurf,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
-
          WRITE(diagName,'(A4,I1,A3)') 'LaTh',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_TtendDiffh,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
-
          WRITE(diagName,'(A4,I1,A3)') 'LaTz',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_TtendDiffr,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
-
          WRITE(diagName,'(A4,I1,A3)') 'LTha',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_TtendAdvh,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
-
          WRITE(diagName,'(A4,I1,A3)') 'LTza',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_TtendAdvr,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
-
          WRITE(diagName,'(A4,I1,A3)') 'LTto',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_Ttendtot,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
-
          WRITE(diagName,'(A4,I1,A3)') 'LaSs',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_StendSurf,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
-
          WRITE(diagName,'(A4,I1,A3)') 'LaSh',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_StendDiffh,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
-
          WRITE(diagName,'(A4,I1,A3)') 'LaSz',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_StendDiffr,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
-
          WRITE(diagName,'(A4,I1,A3)') 'LSha',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_StendAdvh,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
-
          WRITE(diagName,'(A4,I1,A3)') 'LSza',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_StendAdvr,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
-
-         WRITE(diagName,'(A4,I1,A3)') 'LSto',iLa,layers_name(iLa)         
+         WRITE(diagName,'(A4,I1,A3)') 'LSto',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_Stendtot,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
-
-
-
 #endif /* LAYERS_THERMODYNAMICS */
 
        ENDIF
