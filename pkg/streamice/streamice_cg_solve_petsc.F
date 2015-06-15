@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve_petsc.F,v 1.4 2015/02/23 14:30:30 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_cg_solve_petsc.F,v 1.5 2015/06/15 14:34:38 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -19,6 +19,7 @@ CBOP
      O                               iters,
      I                               maxIter,
      I                               myThid )
+
 C     /============================================================\
 C     | SUBROUTINE                                                 |   
 C     | o                                                          |
@@ -37,6 +38,7 @@ C     \============================================================/
 
 #ifdef ALLOW_PETSC
 #include "finclude/petsc.h"
+#include "STREAMICE_PETSC.h"
 ! UNCOMMENT IF V3.0
 !#include "finclude/petscvec.h"
 !#include "finclude/petscmat.h"
@@ -62,6 +64,10 @@ C     cg_Bu, cg_Bv - driving stress
      & A_uv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
      & A_vv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
 
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+       LOGICAL create_mat, destroy_mat
+#endif
+
 C     LOCAL VARIABLES
       INTEGER i, j, bi, bj, cg_halo, conv_flag
       INTEGER iter, is, js, ie, je, colx, coly, k
@@ -81,11 +87,11 @@ C     LOCAL VARIABLES
       INTEGER indices_col(18)
       INTEGER local_dofs, global_dofs, dof_index, dof_index_col
       INTEGER local_offset
-      Mat matrix
-      KSP ksp
-      KSP subksp(1)
-      PC  pc
+!      Mat matrix
+!      KSP ksp
+!      PC  pc
       PC  subpc
+      KSP subksp(1)
       Vec rhs
       Vec solution
       PetscErrorCode ierr
@@ -194,6 +200,13 @@ C     LOCAL VARIABLES
      &                  solution_values, INSERT_VALUES, ierr)
       call VecAssemblyBegin(solution, ierr)
       call VecAssemblyEnd(solution, ierr)
+
+
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_PETSC
+      if (STREAMICE_need2createmat) then
+#endif
+#endif
 
 !     IF USING v3.0 THEN
 !     call MatCreateMPIAIJ (PETSC_COMM_WORLD,
@@ -312,7 +325,10 @@ C     LOCAL VARIABLES
       call KSPSetOperators(ksp, matrix, matrix, 
      &                     DIFFERENT_NONZERO_PATTERN, ierr)
 
-      SELECT CASE (PETSC_SOLVER_TYPE)
+      IF (PETSC_PRECOND_TYPE.eq.'MUMPS') then
+       call KSPSetType(ksp,KSPPREONLY,ierr)
+      ELSE
+       SELECT CASE (PETSC_SOLVER_TYPE)
        CASE ('CG')
        PRINT *, "PETSC SOLVER: SELECTED CG"
        call KSPSetType(ksp, KSPCG, ierr)
@@ -325,7 +341,8 @@ C     LOCAL VARIABLES
        CASE DEFAULT
        PRINT *, "PETSC SOLVER: SELECTED DEFAULT"
        call KSPSetType(ksp, KSPCG, ierr)
-      END SELECT
+       END SELECT
+      ENDIF
 
       call KSPGetPC(ksp, pc, ierr)
       call KSPSetTolerances(ksp,tolerance,
@@ -359,6 +376,18 @@ C     LOCAL VARIABLES
        call PCGAMGSetNSmooths(pc, 0,ierr)
        call PCGAMGSetThreshold(pc, .001,ierr)
 !       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
+       call kspsetup (ksp, ierr)
+
+       CASE ('MUMPS')
+       PRINT *, "PETSC PRECOND: SELECTED MUMPS"
+       call PCSetType(pc,PCLU,ierr)
+       call PCFactorSetMatSolverPackage(pc,MATSOLVERMUMPS,ierr)
+       call PCFactorSetUpMatSolverPackage(pc,ierr)
+       call PCFactorGetMatrix(pc,mumpsFac,ierr)
+       call MatMumpsSetIcntl(mumpsfac,7,2,ierr)
+       call MatMumpsSetIcntl(mumpsfac,24,1,ierr)
+!       call MatMumpsSetCntl(mumpsfac,3,2.e-6,ierr)
+       call kspsetup (ksp, ierr)
 
        CASE DEFAULT
        PRINT *, "PETSC PRECOND: SELECTED DEFAULT"
@@ -367,6 +396,12 @@ C     LOCAL VARIABLES
 
 
       CALL TIMER_STOP ('STREAMICE_PETSC_SETUP',myThid)
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_PETSC
+      endif
+#endif
+#endif
+
 
       CALL TIMER_START ('STREAMICE_PETSC_SOLVE',myThid)
 
@@ -401,10 +436,16 @@ C     LOCAL VARIABLES
        ENDDO
       ENDDO
 
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+      if (streamice_need2destroymat) then
+#endif
       call KSPDestroy (ksp, ierr)
+      call MatDestroy (matrix, ierr)
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+      endif
+#endif
       call VecDestroy (rhs, ierr)
       call VecDestroy (solution, ierr)
-      call MatDestroy (matrix, ierr)
          
 
 !      call PetscFinalize(ierr)
