@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.14 2014/10/20 03:12:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.15 2015/06/16 20:22:10 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -74,7 +74,7 @@ c--     Set default values.
 
         do num_file=1,NFILESPROFMAX
          do num_var=1,NVARMAX
-          mult_profiles(num_file,num_var) = 0. _d 0
+          mult_profiles(num_file,num_var) = 1. _d 0
          enddo
         enddo
 
