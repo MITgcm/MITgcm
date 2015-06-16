@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.19 2015/06/12 17:43:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.20 2015/06/16 20:20:26 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -51,7 +51,7 @@ C     == local variables ==
       integer iarr
 #endif
 #ifdef ALLOW_GENARR2D_CONTROL
-      integer igen_etan0,igen_bdrag,igen_geoth
+      integer igen_etan,igen_bdrag,igen_geoth
 #endif /* ALLOW_GENARR2D_CONTROL */
 #ifdef ALLOW_GENARR3D_CONTROL
       integer igen_theta0, igen_salt0
@@ -63,19 +63,22 @@ CEOP
 
 C--   generic 2D control variables
 
-      igen_etan0=0
+      igen_etan=0
       igen_bdrag=0
       igen_geoth=0
       DO iarr = 1, maxCtrlArr2D
       if (xx_genarr2d_weight(iarr).NE.' ') then
-        if (xx_genarr2d_file(iarr).EQ.'xx_etan0') igen_etan0=iarr
-        if (xx_genarr2d_file(iarr).EQ.'xx_bottomdrag') igen_bdrag=iarr
-        if (xx_genarr2d_file(iarr).EQ.'xx_geothermal') igen_geoth=iarr
+        if (xx_genarr2d_file(iarr)(1:7).EQ.'xx_etan') 
+     &     igen_etan=iarr
+        if (xx_genarr2d_file(iarr)(1:13).EQ.'xx_bottomdrag') 
+     &     igen_bdrag=iarr
+        if (xx_genarr2d_file(iarr)(1:13).EQ.'xx_geothermal') 
+     &     igen_geoth=iarr
       endif
       ENDDO
 
-      if (igen_etan0.GT.0)
-     &      call ctrl_map_genarr2d(etaN,igen_etan0,myThid)
+      if (igen_etan.GT.0)
+     &      call ctrl_map_genarr2d(etaN,igen_etan,myThid)
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
       if (igen_bdrag.GT.0)
      &  call ctrl_map_genarr2d(bottomDragFld,igen_bdrag,myThid)
@@ -98,11 +101,16 @@ C--   generic 3D control variables
       igen_diffkr=0
       DO iarr = 1, maxCtrlArr3D
       if (xx_genarr3d_weight(iarr).NE.' ') then
-        if (xx_genarr3d_file(iarr).EQ.'xx_theta') igen_theta0=iarr
-        if (xx_genarr3d_file(iarr).EQ.'xx_salt') igen_salt0=iarr
-        if (xx_genarr3d_file(iarr).EQ.'xx_kapgm') igen_kapgm=iarr
-        if (xx_genarr3d_file(iarr).EQ.'xx_kapredi') igen_kapredi=iarr
-        if (xx_genarr3d_file(iarr).EQ.'xx_diffkr') igen_diffkr=iarr
+        if (xx_genarr3d_file(iarr)(1:8).EQ.'xx_theta') 
+     &     igen_theta0=iarr
+        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_salt') 
+     &     igen_salt0=iarr
+        if (xx_genarr3d_file(iarr)(1:8).EQ.'xx_kapgm') 
+     &     igen_kapgm=iarr
+        if (xx_genarr3d_file(iarr)(1:10).EQ.'xx_kapredi') 
+     &     igen_kapredi=iarr
+        if (xx_genarr3d_file(iarr)(1:9).EQ.'xx_diffkr') 
+     &     igen_diffkr=iarr
       endif
       ENDDO
 

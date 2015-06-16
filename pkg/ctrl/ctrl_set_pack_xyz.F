@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xyz.F,v 1.27 2015/03/23 21:07:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xyz.F,v 1.28 2015/06/16 20:20:26 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -76,6 +76,8 @@ c     == local variables ==
       integer cunit2, cunit3
       character*(80) cfile2, cfile3
 
+      LOGICAL doPackOld
+
 c     == external ==
 
       integer  ilnblnk
@@ -91,6 +93,8 @@ c     == end of interface ==
       jmax = sny
       imin = 1
       imax = snx
+
+      doPackOld = (.NOT.ctrlSmoothCorrel3D).AND.(.NOT.ctrlUseGen)
 
 #ifdef CTRL_DELZNORM
       delZnorm = 0.
@@ -211,7 +215,7 @@ cph(
                      globfldtmp3(i,bi,ip,j,bj,jp) =
      &                    globfld3d(i,bi,ip,j,bj,jp,k)
 cph)
-                  IF ( .NOT.ctrlSmoothCorrel3D ) THEN
+                  IF ( doPackOld ) THEN
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
                         cbuff(cbuffindex) = 1/delZnorm
@@ -236,9 +240,9 @@ cph)
 #else /* ALLOW_NONDIMENSIONAL_CONTROL_IO undef */
                      cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
 #endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
-                     ELSE !IF ( .NOT.ctrlSmoothCorrel3D ) THEN
+                     ELSE !IF ( doPackOld ) THEN
                      cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
-                     ENDIF !IF ( .NOT.ctrlSmoothCorrel3D ) THEN
+                     ENDIF !IF ( doPackOld ) THEN
 #ifdef ALLOW_ADMTLM
                      nveccount = nveccount + 1
                      phtmpadmtlm(nveccount) = cbuff(cbuffindex)
@@ -313,6 +317,8 @@ c     == local variables ==
       character*(80) cfile2, cfile3
       _RL dummy
 
+      LOGICAL doPackOld
+
 c     == external ==
 
       integer  ilnblnk
@@ -321,6 +327,8 @@ c     == external ==
 c     == end of interface ==
 
 c-- part 1: preliminary reads and definitions
+
+      doPackOld = (.NOT.ctrlSmoothCorrel3D).AND.(.NOT.ctrlUseGen)
 
 #ifdef CTRL_PACK_PRECISE
 #ifdef ALLOW_AUTODIFF
@@ -374,9 +382,9 @@ c-- 2.2: normalize field if needed
             fld3dDim(i,j,k,bi,bj)=0. _d 0
             fld3dNodim(i,j,k,bi,bj)=0. _d 0
            else
-           IF ( ctrlSmoothCorrel3D ) THEN
+           IF ( .NOT.doPackOld ) THEN
             fld3dNodim(i,j,k,bi,bj)=fld3dDim(i,j,k,bi,bj)
-           ELSE !IF ( ctrlSmoothCorrel3D ) THEN
+           ELSE !IF ( .NOT.doPackOld ) THEN
 # ifndef ALLOW_NONDIMENSIONAL_CONTROL_IO
             fld3dNodim(i,j,k,bi,bj) = fld3dDim(i,j,k,bi,bj)
 # else
@@ -398,7 +406,7 @@ c-- 2.2: normalize field if needed
 #  endif
             endif
 # endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
-           ENDIF !IF ( ctrlSmoothCorrel3D ) THEN
+           ENDIF !IF ( .NOT.doPackOld ) THEN
            endif
           ENDDO
          ENDDO
