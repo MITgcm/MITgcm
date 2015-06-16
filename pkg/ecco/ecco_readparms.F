@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.81 2015/06/14 16:29:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.82 2015/06/16 13:18:35 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -586,7 +586,7 @@ c--   Set default values.
          gencost_spmin(k)      = 0. _d 0
          gencost_spmax(k)      = 0. _d 0
          gencost_spzero(k)     = 9876. _d 0
-         mult_gencost(k)       = 0. _d 0
+         mult_gencost(k)       = 1. _d 0
          gencost_smooth2Ddiffnbt(k) = 300
          gencost_is3d(k)       = .FALSE.
          gencost_pointer3d(k)=0
@@ -630,7 +630,15 @@ c fully interactive generic cost terms
            using_gencost(k)=.TRUE.
          endif
 
-c fully interactive generic cost terms
+c identified three dimensional variables
+         if ( (gencost_barfile(k)(1:7).EQ.'m_theta').OR.
+     &        (gencost_barfile(k)(1:6).EQ.'m_salt').OR.
+     &        (gencost_barfile(k)(1:8).EQ.'m_diffkr').OR.
+     &        (gencost_barfile(k)(1:7).EQ.'m_kapgm').OR.
+     &        (gencost_barfile(k)(1:9).EQ.'m_kapredi') )  
+     &        gencost_is3d(k)=.TRUE.
+
+c assign a 3D storage array, then increment 3D variables counter
          if ( gencost_is3d(k) ) then
            gencost_pointer3d(k)=gencost_k3d
            gencost_k3d=gencost_k3d+1

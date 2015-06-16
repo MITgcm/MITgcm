@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.22 2015/01/29 17:07:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.23 2015/06/16 13:18:35 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -162,7 +162,7 @@ c check that one of the used gencost term defines etaday (needed in sshv4)
 
       igen_etaday=0
       do k=1,NGENCOST
-        if ( (gencost_barfile(k).EQ.'etaday').AND.
+        if ( (gencost_barfile(k)(1:5).EQ.'m_eta').AND.
      &       (using_gencost(k)) )  igen_etaday=k
       enddo
 

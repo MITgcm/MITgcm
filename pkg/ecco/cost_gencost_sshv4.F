@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.29 2015/03/23 21:10:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.30 2015/06/16 13:18:35 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -248,7 +248,8 @@ c tpfi, tpsta, tpper
        tpfi=gencost_datafile(igen_tp)(1:ilps)
        call cal_CopyDate(gencost_startdate(1,igen_tp),tpsta,mythid)
        tpper=gencost_period(igen_tp)
-       if (gencost_barfile(igen_tp).EQ.'etaday') igen_etaday=igen_tp
+       if (gencost_barfile(igen_tp)(1:5).EQ.'m_eta') 
+     &    igen_etaday=igen_tp
       endif
 c ersfi, erssta, ersper
       if (igen_ers.GT.0) then
@@ -256,7 +257,8 @@ c ersfi, erssta, ersper
        ersfi=gencost_datafile(igen_ers)(1:ilps)
        call cal_CopyDate(gencost_startdate(1,igen_ers),erssta,mythid)
        ersper=gencost_period(igen_ers)
-       if (gencost_barfile(igen_ers).EQ.'etaday') igen_etaday=igen_ers
+       if (gencost_barfile(igen_ers)(1:5).EQ.'m_eta') 
+     &    igen_etaday=igen_ers
       endif
 c gfofi, gfosta, gfoper
       if (igen_gfo.GT.0) then
@@ -264,7 +266,8 @@ c gfofi, gfosta, gfoper
        gfofi=gencost_datafile(igen_gfo)(1:ilps)
        call cal_CopyDate(gencost_startdate(1,igen_gfo),gfosta,mythid)
        gfoper=gencost_period(igen_gfo)
-       if (gencost_barfile(igen_gfo).EQ.'etaday') igen_etaday=igen_gfo
+       if (gencost_barfile(igen_gfo)(1:5).EQ.'m_eta') 
+     &    igen_etaday=igen_gfo
       endif
 
 c mdt_y0, mdt_y1
