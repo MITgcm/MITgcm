@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_fixed.F,v 1.11 2015/06/03 13:39:22 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_fixed.F,v 1.12 2015/06/16 21:43:10 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -162,7 +162,7 @@ C --- Set up layers "w-grid" for transformation calculation
         DO k=1,Nlayers-1
           layers_recip_delta(k,iLa) = 1.0 _d 0 / (
      &           layers_bounds_w(k+1,iLa) -
-     &           layers_bounds(k,iLa) )
+     &           layers_bounds_w(k,iLa) )
         ENDDO
        ENDIF
       ENDDO

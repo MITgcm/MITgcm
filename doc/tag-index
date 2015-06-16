@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2163 2015/06/16 16:27:40 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2164 2015/06/16 21:43:10 rpa Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/layers:
+  - move resetting of flux arrays to outside the iLa loop
+    (this caused layers_diapycnal to not work with more than one layer coord.)
+  - fix bug in calculation of layers_recip_delta in layers_init_fixed.F
 o pkg/layers:
   - remove from common block 3D layers fields (used to diagnose transport
     in tracer coords) and declare them as local arrays in layers_calc.F
