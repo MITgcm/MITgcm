@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.61 2015/06/12 17:43:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.62 2015/06/16 13:15:27 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -232,7 +232,7 @@ c
 #endif
          write(xx_genarr2d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          genarr2dPrecond(iarr) = 1. _d 0
-         mult_genarr2d(iarr)         = 0. _d 0
+         mult_genarr2d(iarr)   = 1. _d 0
          do jarr = 1, 5
            xx_genarr2d_bounds(jarr,iarr) = 0. _d 0
          enddo
@@ -253,7 +253,7 @@ c
 #endif
          write(xx_genarr3d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          genarr3dPrecond(iarr) = 1. _d 0
-         mult_genarr3d(iarr)         = 0. _d 0
+         mult_genarr3d(iarr)   = 1. _d 0
          do jarr = 1, 5
            xx_genarr3d_bounds(jarr,iarr) = 0. _d 0
          enddo
@@ -284,7 +284,7 @@ c
           xx_gentim2d_preproc_i(jarr,iarr) = 0
           xx_gentim2d_preproc_r(jarr,iarr) = 0. _d 0
          enddo
-         mult_gentim2d(iarr)          = 0. _d 0
+         mult_gentim2d(iarr)          = 1. _d 0
          gentim2dPrecond(iarr)        = 1. _d 0
          do jarr = 1, 5
            xx_gentim2d_bounds(jarr,iarr) = 0. _d 0

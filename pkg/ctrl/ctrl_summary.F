@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.14 2015/05/27 18:33:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.15 2015/06/16 13:15:27 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -339,21 +339,17 @@ c     == end of interface ==
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-#ifdef ALLOW_SMOOTH_CORREL3D
       write(msgbuf,'(a,L5,a)')
      &' ctrlSmoothCorrel3D        = ',ctrlSmoothCorrel3D,
      &' /* use 3D controls correlation */'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-#endif /* ALLOW_SMOOTH_CORREL3D */
 
-#ifdef ALLOW_SMOOTH_CORREL2D
       write(msgbuf,'(a,L5,a)')
      &' ctrlSmoothCorrel2D        = ',ctrlSmoothCorrel3D,
      &' /* use 2D controls correlation */'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-#endif /* ALLOW_SMOOTH_CORREL2D */
 
 #ifdef ALLOW_AUTODIFF
 c allow for switching off correl2d in adjoint
