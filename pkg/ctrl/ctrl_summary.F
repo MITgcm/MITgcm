@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.15 2015/06/16 13:15:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.16 2015/06/18 16:57:21 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -330,6 +330,7 @@ c     == end of interface ==
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
+#ifdef ECCO_CTRL_DEPRECATED
       write(msgbuf,'(a)')
      &' Settings of diffusion based correlation operators:'
       call print_message( msgbuf, standardmessageunit,
@@ -346,18 +347,21 @@ c     == end of interface ==
      &                    SQUEEZE_RIGHT , mythid)
 
       write(msgbuf,'(a,L5,a)')
-     &' ctrlSmoothCorrel2D        = ',ctrlSmoothCorrel3D,
+     &' ctrlSmoothCorrel2D        = ',ctrlSmoothCorrel2D,
      &' /* use 2D controls correlation */'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #ifdef ALLOW_AUTODIFF
+      if (ctrlSmoothCorrel2D.AND..NOT.useSmoothCorrel2DinAdMode) then
 c allow for switching off correl2d in adjoint
       write(msgbuf,'(a,L5,a)')
      &' useSmoothCorrel2DinAdMode = ',useSmoothCorrel2DinAdMode,
      &' /* use in adjoint mode */'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+      endif
 #endif
 
 #endif /* ALLOW_SMOOTH */
