@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.20 2014/12/31 20:09:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.21 2015/06/18 16:57:57 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -794,16 +794,20 @@ c
          il = ilnblnk(gencost_datafile(k))
          write(msgbuf,'(a,a)') ' data file = ',gencost_datafile(k)(1:il)
          call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
-         write(msgbuf,'(a)') ' starts and ends at : '
-         call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
-         CALL CAL_PRINTDATE(gencost_startdate(1,k),mythid)
-         CALL CAL_PRINTDATE(gencost_enddate(1,k),mythid)
-         write(msgbuf,'(a,i5)') ' no. of records = ',
-     &                           gencost_nrec(k)
-         call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
-         write(msgbuf,'(a,i5)') ' per. of repeat = ',
-     &                           gencost_nrecperiod(k)
-         call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
+         if (gencost_nrec(k).GT.1) then
+          write(msgbuf,'(a)') '  starts and ends at : '
+          call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
+          CALL CAL_PRINTDATE(gencost_startdate(1,k),mythid)
+          CALL CAL_PRINTDATE(gencost_enddate(1,k),mythid)
+          write(msgbuf,'(a,i5)') '  number of records = ',
+     &                            gencost_nrec(k)
+          call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
+         endif
+         if (gencost_nrecperiod(k).NE.gencost_nrec(k)) then
+          write(msgbuf,'(a,i5)') '  with repeat period = ',
+     &                            gencost_nrecperiod(k)
+          call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
+         endif
         endif
 c
          il = ilnblnk(gencost_barfile(k))
@@ -812,10 +816,12 @@ c
          il = ilnblnk(gencost_errfile(k))
          write(msgbuf,'(a,a)') ' error file = ',gencost_errfile(k)(1:il)
          call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
+         if (gencost_scalefile(k).NE.' ') then
          il = ilnblnk(gencost_scalefile(k))
          write(msgbuf,'(a,a)') ' scale file = ',
      &        gencost_scalefile(k)(1:il)
          call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
+         endif
          do k2 = 1, NGENPPROC
           if (gencost_preproc(k2,k).NE.' ') then
             il = ilnblnk(gencost_preproc(k2,k))
@@ -831,11 +837,27 @@ c
           endif
          enddo
 c
-         write(msgbuf,'(a,i2,L2,i2,L2,L2,i2,a)') ' flags etc. = ',
-     &        gencost_flag(k), gencost_is3d(k),gencost_pointer3d(k),
-     &        gencost_timevaryweight(k), gencost_barskip(k),
-     &        gencost_outputlevel(k)
+         write(msgbuf,'(a,L2)') ' gencost_flag = ',gencost_flag(k)
          call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
+         write(msgbuf,'(a,i2)') ' gencost_outputlevel = ',
+     &         gencost_outputlevel(k)
+         call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
+c
+         if (gencost_is3d(k)) then
+         write(msgbuf,'(a,i2)') ' gencost_pointer3d = ',
+     &         gencost_pointer3d(k)
+         call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
+         endif
+         if (gencost_timevaryweight(k)) then
+         write(msgbuf,'(a,L2)') ' time varia. weight = ',
+     &         gencost_timevaryweight(k)
+         call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
+         endif
+         if (gencost_barskip(k)) then
+         write(msgbuf,'(a,L2)') ' skip barfile write = ',
+     &         gencost_barskip(k)
+         call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
+         endif
 
         write(msgbuf,'(a)') ' '
         call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)

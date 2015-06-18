@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.15 2015/06/14 17:09:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.16 2015/06/18 16:57:57 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -10,6 +10,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
+#endif
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
 #endif
 
       subroutine cost_gencost_customize( mythid )
