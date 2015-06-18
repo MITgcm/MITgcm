@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_inadmode_unset_ad.F,v 1.12 2014/09/09 22:37:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_inadmode_unset_ad.F,v 1.13 2015/06/18 16:58:51 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -37,7 +37,7 @@ C     myThid :: my Thread Id number
       useSEAICE = useSEAICEinFwdMode
       useGGL90    = useGGL90inFwdMode
       useSALT_PLUME    = useSALT_PLUMEinFwdMode
-#ifdef ALLOW_CTRL
+#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
       ctrlSmoothCorrel2D    = useSmoothCorrel2DinFwdMode
 #endif
 #ifdef ALLOW_SEAICE
@@ -79,7 +79,7 @@ C     myThid :: my Thread Id number
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
 
-#ifdef ALLOW_CTRL
+#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
        WRITE(msgBuf,'(A,L5)')
      &      'S/R ADAUTODIFF_INADMODE_UNSET: ctrlSmoothCorrel2D    =',
      &       ctrlSmoothCorrel2D
