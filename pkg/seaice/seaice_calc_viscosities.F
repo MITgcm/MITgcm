@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.30 2015/05/05 15:12:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.31 2015/06/19 16:15:28 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -29,10 +29,6 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
-
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
 
 C     === Routine arguments ===
 C     iStep  :: Sub-time-step number
@@ -92,7 +88,11 @@ C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE e12Csqr = comlev1_dynsol, kind=isbyte, key = ikey_dynamics
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          e12Csqr(i,j) = 0. _d 0
+         ENDDO
+        ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     need to do this beforehand for easier vectorization after
 C     TAFization
