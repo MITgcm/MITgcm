@@ -170,10 +170,8 @@ c     == end of interface ==
      &  xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope, 
      &  xx_shifwflxstartdate1, xx_shifwflxstartdate2, xx_shifwflxperiod,
      &  doInitXX, doPackDiag, doZscaleUnpack, doZscalePack,
-     &  doMainUnpack, doMainPack, doAdmtlmBypassAD, delZexp
-cdfer
-     & ,xx_hfluxm_file
-cdfer
+     &  doMainUnpack, doMainPack, doAdmtlmBypassAD, delZexp,
+     &  xx_hfluxm_file, doSinglePrecTapelev
 
       namelist /CTRL_PACKNAMES/
      &  yadmark, yctrlid, yctrlposunpack, yctrlpospack,
