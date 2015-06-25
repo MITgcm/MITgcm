@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.52 2014/12/01 12:31:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.53 2015/06/25 16:12:36 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -108,7 +108,7 @@ C     auxilliary variables
 C     _RL zetaZ         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL deltaCreg, deltaZreg, pressZ
 #ifdef SEAICE_ALLOW_TEM
-      _RL etaDenC, zetaMaxC, etaDenZ, zetaMaxZ
+      _RL etaDenC, zetaMaxC, etaDenZ, zetaMaxZ, deltaMinSq
 #endif /* SEAICE_ALLOW_TEM */
 #ifdef SEAICE_ALLOW_CLIPZETA
       _RL zMaxZ, zMinZ, fac
@@ -126,6 +126,9 @@ C     abbreviation eccentricity squared
       ecc2=SEAICE_eccen**2
       recip_ecc2 = 0. _d 0
       IF ( ecc2 .NE. 0. _d 0 ) recip_ecc2=ONE/ecc2
+#ifdef SEAICE_ALLOW_TEM
+      deltaMinSq = SEAICE_deltaMin**2
+#endif /* SEAICE_ALLOW_TEM */
 C     determine number of internal time steps
       nEVPstep = INT(SEAICE_deltaTdyn/SEAICE_deltaTevp)
       IF ( SEAICEnEVPstarSteps.NE.UNSET_I ) nEVPstep=SEAICEnEVPstarSteps
@@ -276,8 +279,8 @@ C     avoid sqrt of 0
             deltaC(I,J,bi,bj) = SQRT(deltaC(I,J,bi,bj))
             deltaZ(I,J)       = SQRT(deltaZ(I,J))
 #endif /* ALLOW_AUTODIFF_TAMC */
-            deltaCreg   = MAX(deltaC(I,J,bi,bj),SEAICE_EPS)
-            deltaZreg   = MAX(deltaZ(I,J),SEAICE_EPS)
+            deltaCreg   = MAX(deltaC(I,J,bi,bj),SEAICE_deltaMin)
+            deltaZreg   = MAX(deltaZ(I,J),SEAICE_deltaMin)
 C     modify pressure (copied from seaice_calc_viscosities)
             zetaC(I,J)  = HALF*press0(I,J,bi,bj)/deltaCreg
             pressZ      = (deltaZ(I,J)/deltaZreg) * facZ
@@ -348,14 +351,14 @@ C     than squaring the averages
              etaDenC   = em(I,J)**2 +
      &            ( e12(I,  J,bi,bj)**2 + e12(I+1,J+1,bi,bj)**2
      &            + e12(I+1,J,bi,bj)**2 + e12(I,  J+1,bi,bj)**2 )
-             etaDenC  = SQRT(MAX(SEAICE_EPS_SQ,etaDenC))
+             etaDenC  = SQRT(MAX(deltaMinSq,etaDenC))
              zetaMaxC = ecc2*zetaC(I,J)
      &            *(deltaC(I,J,bi,bj)-ep(I,J))/etaDenC
              etaDenZ  =
      &            facZ * ( em(I,  J  )**2 + em(I-1,J-1)**2
      &                   + em(I-1,J  )**2 + em(I,  J-1)**2 )
      &            + 4. _d 0*e12(I,J,bi,bj)**2
-             etaDenZ  = SQRT(MAX(SEAICE_EPS_SQ,etaDenZ))
+             etaDenZ  = SQRT(MAX(deltaMinSq,etaDenZ))
              zetaMaxZ = ecc2*zetaZ(I,J,bi,bj) * ( deltaZ(I,J)
      &            - facZ * ( ep(I,J  ) + ep(I-1,J  )
      &                     + ep(I,J-1) + ep(I-1,J-1) )

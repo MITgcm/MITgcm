@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.122 2015/01/28 15:14:35 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.123 2015/06/25 16:12:36 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -369,6 +369,7 @@ C     SEAICE_PDF         :: prescribed sea-ice distribution within grid box
 C     SEAICEstressFactor :: factor by which ice affects wind stress (default=1)
 C     LSR_ERROR          :: sets accuracy of LSR solver
 C     DIFF1              :: parameter used in advect.F
+C     SEAICE_deltaMin    :: small number used to reduce singularities of Delta
 C     SEAICE_area_max    :: usually set to 1. Seeting areaMax below 1 specifies
 C                           the minimun amount of leads (1-areaMax) in the
 C                           ice pack.
@@ -429,6 +430,7 @@ C
       _RL JFNKgamma_nonlin, JFNKres_t, JFNKres_tFac
       _RL JFNKgamma_lin_min, JFNKgamma_lin_max, SEAICE_JFNKepsilon
       _RL SEAICE_JFNKphi, SEAICE_JFNKalpha
+      _RL SEAICE_deltaMin
       _RL SEAICE_area_reg, SEAICE_hice_reg
       _RL SEAICE_area_floor, SEAICE_area_max
       _RL SEAICE_airTurnAngle, SEAICE_waterTurnAngle
@@ -475,7 +477,7 @@ C
      &    JFNKgamma_nonlin, JFNKres_t, JFNKres_tFac,
      &    JFNKgamma_lin_min, JFNKgamma_lin_max, SEAICE_JFNKepsilon,
      &    SEAICE_JFNKphi, SEAICE_JFNKalpha,
-     &    SEAICE_area_reg, SEAICE_hice_reg,
+     &    SEAICE_deltaMin, SEAICE_area_reg, SEAICE_hice_reg,
      &    SEAICE_area_floor, SEAICE_area_max,
      &    SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow,
      &    SEAICEdiffKhSalt, SEAICE_tauAreaObsRelax,
@@ -488,7 +490,7 @@ C--   COMMON /SEAICE_BOUND_RL/ Various bounding values
 C     MIN_ATEMP         :: minimum air temperature   (deg C)
 C     MIN_LWDOWN        :: minimum downward longwave (W/m^2)
 C     MIN_TICE          :: minimum ice temperature   (deg C)
-C     SEAICE_EPS        :: small number used to reduce derivative singularities
+C     SEAICE_EPS        :: small number
 C     SEAICE_EPS_SQ     :: small number square
 C
       _RL MIN_ATEMP, MIN_LWDOWN, MIN_TICE

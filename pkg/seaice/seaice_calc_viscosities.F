@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.31 2015/06/19 16:15:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.32 2015/06/25 16:12:36 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -71,7 +71,7 @@ C     em            - e11-e22 (abbreviation)
       _RL recip_e2, deltaCreg, tmp, ep, em
       _RL e12Csqr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef SEAICE_ALLOW_TEM
-      _RL etaMax, etaDen
+      _RL etaMax, etaDen, deltaMinSq
 #endif /* SEAICE_ALLOW_TEM */
       INTEGER k
       _RL sumNorm, maskZ
@@ -84,6 +84,9 @@ C--   FIRST SET UP BASIC CONSTANTS
       k=1
       recip_e2=0. _d 0
       IF ( SEAICE_eccen .NE. 0. _d 0 ) recip_e2=ONE/(SEAICE_eccen**2)
+#ifdef SEAICE_ALLOW_TEM
+      deltaMinSq = SEAICE_deltaMin**2
+#endif /* SEAICE_ALLOW_TEM */
 C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -136,7 +139,7 @@ C     avoid sqrt of 0
 #else
           deltaC(I,J,bi,bj)    = SQRT(deltaC(I,J,bi,bj))
 #endif /* ALLOW_AUTODIFF_TAMC */
-          deltaCreg = MAX(deltaC(I,J,bi,bj),SEAICE_EPS)
+          deltaCreg = MAX(deltaC(I,J,bi,bj),SEAICE_deltaMin)
 #ifdef SEAICE_ZETA_SMOOTHREG
 C     regularize zeta to zmax with a smooth tanh-function instead
 C     of a min(zeta,zmax). This improves convergence of iterative
@@ -164,7 +167,7 @@ C     "replacement pressure"
            ep = e11(i,j,bi,bj)+e22(i,j,bi,bj)
            em = e11(i,j,bi,bj)-e22(i,j,bi,bj)
            etaDen = em*em + 4. _d 0 * e12Csqr(i,j)
-           etaDen = SQRT(MAX(SEAICE_EPS_SQ,etaDen))
+           etaDen = SQRT(MAX(deltaMinSq,etaDen))
            etaMax = ( 0.5 _d 0*press(I,J,bi,bj)-zeta(I,J,bi,bj)*ep
      &          )/etaDen
            eta(I,J,bi,bj) = MIN(eta(I,J,bi,bj),etaMax)

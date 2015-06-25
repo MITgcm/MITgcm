@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.162 2015/03/05 08:36:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.163 2015/06/25 16:12:36 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -147,7 +147,7 @@ C--   SEAICE parameters
      & SEAICE_availHeatFrac, SEAICE_availHeatFracFrz, SEAICE_PDF,
      & AreaFile, HeffFile, uIceFile, vIceFile, HsnowFile, HsaltFile,
      & SEAICEheatConsFix, SEAICE_multDim, SEAICE_useMultDimSnow,
-     & SEAICE_area_reg, SEAICE_hice_reg,
+     & SEAICE_deltaMin, SEAICE_area_reg, SEAICE_hice_reg,
      & SEAICE_area_floor, SEAICE_area_max, SEAICE_tauAreaObsRelax,
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
@@ -467,6 +467,7 @@ C     Euler time stepping scheme of Zhang+Hibler (1997)
       MIN_ATEMP         = -50.    _d 0
       MIN_LWDOWN        = 60.     _d 0
       MIN_TICE          = -50.    _d 0
+      SEAICE_deltaMin   = UNSET_RL
       SEAICE_EPS        = 1.      _d -10
       SEAICE_EPS_SQ     = -99999.
 
@@ -612,6 +613,9 @@ C nITD is set in SEAICE_SIZE.h
      &                    SQUEEZE_RIGHT , myThid)
 
 C--   Set default values (if not specified in data.seaice namelist)
+
+C--   Default for regularizing Delta to remain backward compatible
+      IF ( SEAICE_deltaMin .EQ. UNSET_RL ) SEAICE_deltaMin = SEAICE_EPS
 
 C--   If no PDF was prescribed use the default uniform pdf
       tmp = SEAICE_multDim
