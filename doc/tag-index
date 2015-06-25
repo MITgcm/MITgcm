@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2165 2015/06/19 16:19:51 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2166 2015/06/25 16:12:52 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: add new parameter SEAICE_deltaMin that is used ***only***
+  for regularizing Delta (and nothing else, like the parameter 
+  which is also used for all sorts of things SEAICE_EPS). Defaults to
+  SEAICE_EPS for backward compatibility only.
 o pkg/seaice: replace erroneously storing e12Csqr on the wrong tape with
   the wrong key by inialising it before use -> fixes a recomputation
   problem but does not fix the gradient
