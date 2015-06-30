@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.12 2015/06/15 14:31:59 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.13 2015/06/30 11:20:05 dgoldberg Exp $
 C $Name:  $
 
 C this needs changes
@@ -37,6 +37,7 @@ C     iUnit      :: Work variable for IO unit number
 
       NAMELIST /STREAMICE_PARM01/
      &     streamice_density, streamice_density_ocean_avg,
+     &     streamice_density_firn,
      &     B_glen_isothermal, n_glen, eps_glen_min, eps_u_min,
      &     C_basal_fric_const, n_basal_friction,
      &     streamice_vel_update,streamice_cg_tol,streamice_nonlin_tol,
@@ -92,6 +93,8 @@ C     iUnit      :: Work variable for IO unit number
      &     streamice_addl_backstress,
      &     streamice_smooth_gl_width,
      &     streamice_adot_uniform,
+     &     streamice_firn_correction,
+     &     STREAMICE_apply_firn_correction,
      &     STREAMICE_ADV_SCHEME, streamice_forcing_period,
      &     STREAMICE_chkfixedptconvergence,
      &     STREAMICE_chkresidconvergence,
@@ -182,6 +185,7 @@ C--   Default values for STREAMICE
 
       streamice_density = 917.
       streamice_density_ocean_avg = 1024.
+      streamice_density_firn = streamice_density  
       B_glen_isothermal = 9.461e-18   !  Pa (-1/3) a
       n_glen = 3.
       eps_glen_min = 1.0e-12
@@ -219,7 +223,9 @@ C--   Default values for STREAMICE
       streamice_smooth_gl_width = 0.0
       streamice_adot_uniform = 0.0
       streamice_forcing_period = 0
-
+      streamice_firn_correction = 0.
+      STREAMICE_apply_firn_correction = .false.
+      
       STREAMICEthickInit = 'FILE'
       STREAMICEthickFile = ' '
       STREAMICEcalveMaskFile = ' '

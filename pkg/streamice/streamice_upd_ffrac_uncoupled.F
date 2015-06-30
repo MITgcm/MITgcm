@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_upd_ffrac_uncoupled.F,v 1.2 2014/09/05 14:28:00 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_upd_ffrac_uncoupled.F,v 1.3 2015/06/30 11:20:05 dgoldberg Exp $
 C $Name:  $
 
 
@@ -28,12 +28,15 @@ CEOP
 #ifdef ALLOW_STREAMICE
 
       INTEGER bi, bj, i, j
-      _RL OD, rhoi, rhow, delta, r, h, hf, i_r
+      _RL OD, rhoi, rhow, delta, r, h, hf, i_r, rlo
 #ifdef STREAMICE_SMOOTH_FLOATATION
       _RL ETA_GL_STREAMICE
       external ETA_GL_STREAMICE
       _RL PHI_GL_STREAMICE
       external PHI_GL_STREAMICE
+#endif
+#ifdef STREAMICE_FIRN_CORRECTION
+      _RL firn_depth
 #endif
 
       rhoi = streamice_density
@@ -41,6 +44,11 @@ CEOP
       r=rhoi/rhow
       i_r = 1/r
       delta=1-r
+#ifdef STREAMICE_FIRN_CORRECTION
+      firn_depth = streamice_density * 
+     &    streamice_firn_correction
+     & / (streamice_density-streamice_density_firn)
+#endif
 
 
 #ifdef STREAMICE_SMOOTH_FLOATATION
@@ -87,43 +95,63 @@ CEOP
        ENDDO
       ENDDO
 
-#else
+#else 
+! STREAMICE_SMOOTH_FLOATATION
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
 # ifdef USE_ALT_RLOW
-          OD = -1.0 * R_low_si (i,j,bi,bj) - 
-     &     H_streamice(i,j,bi,bj) * rhoi/rhow
+          rlo = R_low_si (i,j,bi,bj)
 # else
-          OD = -1.0 * R_low (i,j,bi,bj) - 
-     &     H_streamice(i,j,bi,bj) * rhoi/rhow
-# endif
+          rlo = R_low (i,j,bi,bj)
+#endif
 
+#ifdef STREAMICE_FIRN_CORRECTION
+          if (STREAMICE_apply_firn_correction) then
+          h=h_streamice(i,j,bi,bj)
+          if (h.lt.firn_depth) then
+            OD = -1.0 * rlo - streamice_density_firn/rhow*h
+          else
+            OD = -1.0 * rlo - rhoi/rhow * (h-streamice_firn_correction)
+          endif
+          else
+#endif
+          OD = -1.0 * Rlo - 
+     &     H_streamice(i,j,bi,bj) * rhoi/rhow
+#ifdef STREAMICE_FIRN_CORRECTION
+          endif
+#endif
 
           IF (OD .ge. 0. _d 0) THEN          
 
 c         ice thickness does not take up whole ocean column -> floating
            float_frac_streamice(i,j,bi,bj) = 0.0
-# ifdef USE_ALT_RLOW
-           base_el_streamice(i,j,bi,bj) = R_low_si(i,j,bi,bj)+OD
-# else
-           base_el_streamice(i,j,bi,bj) = R_low(i,j,bi,bj)+OD
-# endif
+           base_el_streamice(i,j,bi,bj) = Rlo+OD
+#ifdef STREAMICE_FIRN_CORRECTION
+           if (STREAMICE_apply_firn_correction) then
+           if (h.lt.firn_depth) then
+            surf_el_streamice(i,j,bi,bj) = 
+     &      (1-streamice_density_firn/rhow)*h
+           else
+            surf_el_streamice(i,j,bi,bj) = 
+     &      (1-rhoi/rhow)*h + rhoi/rhow*streamice_firn_correction
+           endif
+           else
+#endif
            surf_el_streamice(i,j,bi,bj) = 
      &      (1-rhoi/rhow)*H_streamice(i,j,bi,bj)
+#ifdef STREAMICE_FIRN_CORRECTION
+           endif
+#endif
+
           ELSE
 
 
            float_frac_streamice(i,j,bi,bj) = 1.0
-# ifdef USE_ALT_RLOW
-           base_el_streamice(i,j,bi,bj) = R_low_si(i,j,bi,bj)
-           surf_el_streamice(i,j,bi,bj) = R_low_si(i,j,bi,bj)
-# else
-           base_el_streamice(i,j,bi,bj) = R_low(i,j,bi,bj)
-           surf_el_streamice(i,j,bi,bj) = R_low(i,j,bi,bj) 
-# endif
+           base_el_streamice(i,j,bi,bj) = Rlo
+           surf_el_streamice(i,j,bi,bj) = Rlo
      &      + H_streamice(i,j,bi,bj)
           ENDIF
          ENDDO

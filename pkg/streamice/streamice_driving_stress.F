@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_driving_stress.F,v 1.6 2015/01/19 18:32:28 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_driving_stress.F,v 1.7 2015/06/30 11:20:05 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -41,6 +41,13 @@ C     LOCAL VARIABLES
      &        at_north_bdry, at_south_bdry
       _RL grd_below_sl
       _RL sx, sy, diffx, diffy, geom_fac
+      _RL i_rhow
+      _RL avg_density
+     & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef STREAMICE_FIRN_CORRECTION
+      _RL firn_depth, h
+#endif
+      
       
       IF (myXGlobalLo.eq.1) at_west_bdry = .true.
       IF (myYGlobalLo.eq.1) at_south_bdry = .true.
@@ -48,6 +55,12 @@ C     LOCAL VARIABLES
      & at_east_bdry = .false.
       IF (myYGlobalLo-1+sNy*nSy.eq.Ny) 
      & at_north_bdry = .false.
+#ifdef STREAMICE_FIRN_CORRECTION
+      firn_depth = streamice_density * 
+     &    streamice_firn_correction
+     & / (streamice_density-streamice_density_firn)
+#endif
+      i_rhow = 1./streamice_density_ocean_avg
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -55,6 +68,23 @@ C     LOCAL VARIABLES
          DO i=1-OLx+1,sNx+OLx-1
           taudx_SI(i,j,bi,bj) = 0. _d 0
           taudy_SI(i,j,bi,bj) = 0. _d 0
+#ifdef STREAMICE_FIRN_CORRECTION
+          if (STREAMICE_apply_firn_correction) then
+           if (streamice_hmask(i,j,bi,bj).eq.1) then
+            h = h_streamice(i,j,bi,bj)
+            if (h.lt.firn_depth) then
+             avg_density(i,j,bi,bj) = streamice_density_firn
+            else
+             avg_density(i,j,bi,bj) = streamice_density * 
+     &        (h - streamice_firn_correction) / h
+            endif
+           endif
+          else
+#endif
+           avg_density(i,j,bi,bj) = streamice_density
+#ifdef STREAMICE_FIRN_CORRECTION
+          endif
+#endif
          ENDDO
         ENDDO
        ENDDO
@@ -82,18 +112,21 @@ C     LOCAL VARIABLES
 !             geom_fac = sqrt(rA(i-1,j,bi,bj)*recip_rA(i,j,bi,bj)*
 !      &        dxF(i,j,bi,bj)*recip_dxF(i-1,j,bi,bj))
 
+
             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) - 
      &       0.25 * dyG(i,j,bi,bj) *
-     &       streamice_density * gravity *
-     &       (H_streamice(i,j,bi,bj)+
-     &        H_streamice(i-1,j,bi,bj)) *
+     &       gravity *
+     &       (H_streamice(i,j,bi,bj)*avg_density(i,j,bi,bj)+
+     &        H_streamice(i-1,j,bi,bj)*avg_density(i-1,j,bi,bj)) *
      &       (surf_el_streamice(i,j,bi,bj)-
      &              surf_el_streamice(i-1,j,bi,bj))
 
+CCC
             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) -
      &       streamice_density * gravity * 
      &       streamice_bg_surf_slope_x * .25 * rA(i,j,bi,bj) *
      &       (H_streamice(i-1,j,bi,bj) + H_streamice(i,j,bi,bj))
+CCC
 
            ELSE IF (streamice_hmask(i-1,j,bi,bj).eq.1.0) THEN
 
@@ -112,7 +145,7 @@ C     LOCAL VARIABLES
              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
      &        0.25 * dyG(i,j,bi,bj) *
      &        gravity * 
-     &        (streamice_density * H_streamice(i-1,j,bi,bj)**2 -
+     &        (avg_density(i-1,j,bi,bj) * H_streamice(i-1,j,bi,bj)**2-
 #ifdef USE_ALT_RLOW
      &         streamice_density_ocean_avg * grd_below_sl * 
      &         R_low_si(i-1,j,bi,bj)**2)
@@ -123,11 +156,38 @@ C     LOCAL VARIABLES
 
             ELSE
 
+#ifdef STREAMICE_FIRN_CORRECTION
+            
+             if (STREAMICE_apply_firn_correction) then
+             if (H_streamice(i-1,j,bi,bj).lt.firn_depth) then
+              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &         0.25 * dyG(i,j,bi,bj) *
+     &         streamice_density_firn * gravity *
+     &         (1-streamice_density_firn*i_rhow) *
+     &         H_streamice(i-1,j,bi,bj)**2 
+             else
+              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &         0.25 * dyG(i,j,bi,bj) * gravity * (
+     &         streamice_density_firn * gravity * firn_depth**2 + 
+     &         (h_streamice(i-1,j,bi,bj)-firn_depth) *
+     &          (streamice_density_firn*firn_depth+streamice_density*
+     &          (h_streamice(i-1,j,bi,bj)-streamice_firn_correction)) -
+     &         streamice_density**2*i_rhow*
+     &          (h_streamice(i-1,j,bi,bj)-streamice_firn_correction)**2
+     &         ) 
+             endif
+             else
+
+#endif
              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
      &        0.25 * dyG(i,j,bi,bj) *
      &        streamice_density * gravity *
-     &        (1-streamice_density/streamice_density_ocean_avg) *
+     &        (1-streamice_density*i_rhow) *
      &         H_streamice(i-1,j,bi,bj)**2 
+
+#ifdef STREAMICE_FIRN_CORRECTION
+             endif
+#endif
 
             ENDIF
 
@@ -148,7 +208,7 @@ C     LOCAL VARIABLES
              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) -
      &        0.25 * dyG(i,j,bi,bj) *
      &        gravity *
-     &        (streamice_density * H_streamice(i,j,bi,bj)**2 -
+     &        (avg_density(i,j,bi,bj) * H_streamice(i,j,bi,bj)**2 -
 #ifdef USE_ALT_RLOW
      &         streamice_density_ocean_avg * grd_below_sl * 
      &         R_low_si(i,j,bi,bj)**2)
@@ -159,11 +219,38 @@ C     LOCAL VARIABLES
 
             ELSE
 
-             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) -
+#ifdef STREAMICE_FIRN_CORRECTION
+
+             if (STREAMICE_apply_firn_correction) then
+             if (H_streamice(i,j,bi,bj).lt.firn_depth) then
+              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &         0.25 * dyG(i,j,bi,bj) *
+     &         streamice_density_firn * gravity *
+     &         (1-streamice_density_firn*i_rhow) *
+     &         H_streamice(i,j,bi,bj)**2 
+             else
+              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &         0.25 * dyG(i,j,bi,bj) * gravity * (
+     &         streamice_density_firn * gravity * firn_depth**2 + 
+     &         (h_streamice(i,j,bi,bj)-firn_depth) *
+     &          (streamice_density_firn*firn_depth+streamice_density*
+     &          (h_streamice(i,j,bi,bj)-streamice_firn_correction)) -
+     &         streamice_density**2*i_rhow*
+     &          (h_streamice(i,j,bi,bj)-streamice_firn_correction)**2
+     &         ) 
+             endif
+             else
+
+#endif
+             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
      &        0.25 * dyG(i,j,bi,bj) *
      &        streamice_density * gravity *
-     &        (1-streamice_density/streamice_density_ocean_avg) *
-     &         H_streamice(i,j,bi,bj)**2
+     &        (1-streamice_density*i_rhow) *
+     &         H_streamice(i,j,bi,bj)**2 
+#ifdef STREAMICE_FIRN_CORRECTION
+             endif
+#endif
+
  
             END IF
            END IF
@@ -178,9 +265,9 @@ C     LOCAL VARIABLES
 
             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) - 
      &       0.25 * dyg(i,j-1,bi,bj) *
-     &       streamice_density * gravity *
-     &       (H_streamice(i,j-1,bi,bj)+
-     &        H_streamice(i-1,j-1,bi,bj)) *
+     &       gravity *
+     &       (H_streamice(i,j-1,bi,bj)*avg_density(i,j-1,bi,bj)+
+     &        H_streamice(i-1,j-1,bi,bj)*avg_density(i-1,j-1,bi,bj)) *
      &       (surf_el_streamice(i,j-1,bi,bj)-
      &              surf_el_streamice(i-1,j-1,bi,bj))
 
@@ -206,7 +293,7 @@ C     LOCAL VARIABLES
              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
      &        0.25 * dyg(i,j-1,bi,bj) *
      &        gravity * 
-     &        (streamice_density * H_streamice(i-1,j-1,bi,bj)**2 -
+     &        (avg_density(i-1,j-1,bi,bj)*H_streamice(i-1,j-1,bi,bj)**2-
 #ifdef USE_ALT_RLOW
      &         streamice_density_ocean_avg*grd_below_sl * 
      &         R_low_si(i-1,j-1,bi,bj)**2)
@@ -217,11 +304,39 @@ C     LOCAL VARIABLES
 
             ELSE
 
-             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
-     &        0.25 * dyg(i,j-1,bi,bj) *
-     &        streamice_density * gravity *
-     &        (1-streamice_density/streamice_density_ocean_avg) * 
+#ifdef STREAMICE_FIRN_CORRECTION
+
+             if (STREAMICE_apply_firn_correction) then
+             if (H_streamice(i-1,j-1,bi,bj).lt.firn_depth) then
+              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &         0.25 * dyG(i,j-1,bi,bj) *
+     &         streamice_density_firn * gravity *
+     &         (1-streamice_density_firn*i_rhow) *
      &         H_streamice(i-1,j-1,bi,bj)**2 
+             else
+              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &         0.25 * dyG(i,j-1,bi,bj) * gravity * (
+     &         streamice_density_firn * gravity * firn_depth**2 + 
+     &         (h_streamice(i-1,j-1,bi,bj)-firn_depth) *
+     &          (streamice_density_firn*firn_depth+streamice_density*
+     &          (h_streamice(i-1,j-1,bi,bj)-streamice_firn_correction))-
+     &         streamice_density**2*i_rhow*
+     &         (h_streamice(i-1,j-1,bi,bj)-streamice_firn_correction)**2
+     &         ) 
+             endif
+             else
+
+#endif
+             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &        0.25 * dyG(i,j-1,bi,bj) *
+     &        streamice_density * gravity *
+     &        (1-streamice_density*i_rhow) *
+     &         H_streamice(i-1,j-1,bi,bj)**2 
+#ifdef STREAMICE_FIRN_CORRECTION
+             endif
+#endif
+
+
 
             ENDIF
 
@@ -242,7 +357,7 @@ C     LOCAL VARIABLES
              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) -
      &        0.25 * dyg(i,j-1,bi,bj) *
      &        gravity *
-     &        (streamice_density * H_streamice(i,j-1,bi,bj)**2 -
+     &        (avg_density(i,j-1,bi,bj) * H_streamice(i,j-1,bi,bj)**2 -
 #ifdef USE_ALT_RLOW
      &         streamice_density_ocean_avg * grd_below_sl * 
      &         R_low_si(i,j-1,bi,bj)**2)
@@ -253,11 +368,37 @@ C     LOCAL VARIABLES
 
             ELSE
 
-             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) -
-     &        0.25 * dyg(i,j-1,bi,bj) *
+#ifdef STREAMICE_FIRN_CORRECTION
+             if (STREAMICE_apply_firn_correction) then
+             if (H_streamice(i,j-1,bi,bj).lt.firn_depth) then
+              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &         0.25 * dyG(i,j-1,bi,bj) *
+     &         streamice_density_firn * gravity *
+     &         (1-streamice_density_firn*i_rhow) *
+     &         H_streamice(i,j-1,bi,bj)**2 
+             else
+              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &         0.25 * dyG(i,j-1,bi,bj) * gravity * (
+     &         streamice_density_firn * gravity * firn_depth**2 + 
+     &         (h_streamice(i,j-1,bi,bj)-firn_depth) *
+     &          (streamice_density_firn*firn_depth+streamice_density*
+     &          (h_streamice(i,j-1,bi,bj)-streamice_firn_correction))-
+     &         streamice_density**2*i_rhow*
+     &         (h_streamice(i,j-1,bi,bj)-streamice_firn_correction)**2
+     &         ) 
+             endif
+             else
+
+#endif
+             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &        0.25 * dyG(i,j-1,bi,bj) *
      &        streamice_density * gravity *
-     &        (1-streamice_density/streamice_density_ocean_avg) *
-     &         H_streamice(i,j-1,bi,bj)**2
+     &        (1-streamice_density*i_rhow) *
+     &         H_streamice(i,j-1,bi,bj)**2 
+#ifdef STREAMICE_FIRN_CORRECTION
+             endif
+#endif
+
 
             END IF 
            END IF
@@ -275,9 +416,9 @@ C     LOCAL VARIABLES
 
             taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) - 
      &       0.25 * dxG(i,j,bi,bj) *
-     &       streamice_density * gravity *
-     &       (H_streamice(i,j,bi,bj)+
-     &        H_streamice(i,j-1,bi,bj)) *
+     &       gravity *
+     &       (H_streamice(i,j,bi,bj)*avg_density(i,j,bi,bj)+
+     &        H_streamice(i,j-1,bi,bj)*avg_density(i,j-1,bi,bj))*
      &       (surf_el_streamice(i,j,bi,bj)-
      &              surf_el_streamice(i,j-1,bi,bj))
 
@@ -303,7 +444,7 @@ C     LOCAL VARIABLES
              taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) +
      &        0.25 * dxG(i,j,bi,bj) *
      &        gravity * 
-     &        (streamice_density * H_streamice(i,j-1,bi,bj)**2 -
+     &        (avg_density(i,j-1,bi,bj) * H_streamice(i,j-1,bi,bj)**2 -
 #ifdef USE_ALT_RLOW
      &         streamice_density_ocean_avg * grd_below_sl * 
      &         R_low_si(i,j-1,bi,bj)**2)
@@ -314,11 +455,37 @@ C     LOCAL VARIABLES
 
             ELSE
 
-             taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) +
-     &        0.25 * dxG(i,j,bi,bj) *
-     &        streamice_density * gravity *
-     &        (1-streamice_density/streamice_density_ocean_avg) * 
+#ifdef STREAMICE_FIRN_CORRECTION
+             if (STREAMICE_apply_firn_correction) then
+             if (H_streamice(i,j-1,bi,bj).lt.firn_depth) then
+              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &         0.25 * dyG(i,j,bi,bj) *
+     &         streamice_density_firn * gravity *
+     &         (1-streamice_density_firn*i_rhow) *
      &         H_streamice(i,j-1,bi,bj)**2 
+             else
+              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &         0.25 * dyG(i,j,bi,bj) * gravity * (
+     &         streamice_density_firn * gravity * firn_depth**2 + 
+     &         (h_streamice(i,j-1,bi,bj)-firn_depth) *
+     &          (streamice_density_firn*firn_depth+streamice_density*
+     &          (h_streamice(i,j-1,bi,bj)-streamice_firn_correction))-
+     &         streamice_density**2*i_rhow*
+     &         (h_streamice(i,j-1,bi,bj)-streamice_firn_correction)**2
+     &         ) 
+             endif
+             else
+
+#endif
+             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &        0.25 * dyG(i,j,bi,bj) *
+     &        streamice_density * gravity *
+     &        (1-streamice_density*i_rhow) *
+     &         H_streamice(i,j-1,bi,bj)**2 
+#ifdef STREAMICE_FIRN_CORRECTION
+             endif
+#endif
+
 
             ENDIF
 
@@ -339,7 +506,7 @@ C     LOCAL VARIABLES
              taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
      &        0.25 * dxG(i,j,bi,bj) *
      &        gravity *
-     &        (streamice_density * H_streamice(i,j,bi,bj)**2 -
+     &        (avg_density(i,j,bi,bj) * H_streamice(i,j,bi,bj)**2 -
 #ifdef USE_ALT_RLOW
      &         streamice_density_ocean_avg * grd_below_sl * 
      &         R_low_si(i,j,bi,bj)**2)
@@ -350,11 +517,38 @@ C     LOCAL VARIABLES
 
             ELSE
 
-             taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
-     &        0.25 * dxG(i,j,bi,bj) *
+
+#ifdef STREAMICE_FIRN_CORRECTION
+             if (STREAMICE_apply_firn_correction) then
+             if (H_streamice(i,j,bi,bj).lt.firn_depth) then
+              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &         0.25 * dyG(i,j,bi,bj) *
+     &         streamice_density_firn * gravity *
+     &         (1-streamice_density_firn*i_rhow) *
+     &         H_streamice(i,j,bi,bj)**2 
+             else
+              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &         0.25 * dyG(i,j,bi,bj) * gravity * (
+     &         streamice_density_firn * gravity * firn_depth**2 + 
+     &         (h_streamice(i,j,bi,bj)-firn_depth) *
+     &          (streamice_density_firn*firn_depth+streamice_density*
+     &          (h_streamice(i,j,bi,bj)-streamice_firn_correction))-
+     &         streamice_density**2*i_rhow*
+     &         (h_streamice(i,j,bi,bj)-streamice_firn_correction)**2
+     &         ) 
+             endif
+             else
+
+#endif
+             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &        0.25 * dyG(i,j,bi,bj) *
      &        streamice_density * gravity *
-     &        (1-streamice_density/streamice_density_ocean_avg) *
-     &         H_streamice(i,j,bi,bj)**2
+     &        (1-streamice_density*i_rhow) *
+     &         H_streamice(i,j,bi,bj)**2 
+#ifdef STREAMICE_FIRN_CORRECTION
+             endif
+#endif
+
  
             END IF
            END IF
@@ -369,9 +563,9 @@ C     LOCAL VARIABLES
 
             taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
      &       0.25 * dxG(i-1,j,bi,bj) *
-     &       streamice_density * gravity *
-     &       (H_streamice(i-1,j,bi,bj)+
-     &        H_streamice(i-1,j-1,bi,bj)) *
+     &       gravity *
+     &       (H_streamice(i-1,j,bi,bj)*avg_density(i-1,j,bi,bj)+
+     &        H_streamice(i-1,j-1,bi,bj)*avg_density(i-1,j-1,bi,bj))*
      &       (surf_el_streamice(i-1,j,bi,bj)-
      &              surf_el_streamice(i-1,j-1,bi,bj))
 
@@ -398,7 +592,7 @@ C     LOCAL VARIABLES
              taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) +
      &        0.25 * dxG(i-1,j,bi,bj) *
      &        gravity * 
-     &        (streamice_density * H_streamice(i-1,j-1,bi,bj)**2 -
+     &        (avg_density(i-1,j-1,bi,bj)*H_streamice(i-1,j-1,bi,bj)**2-
 #ifdef USE_ALT_RLOW
      &         streamice_density_ocean_avg*grd_below_sl * 
      &         R_low_si(i-1,j-1,bi,bj)**2)
@@ -409,11 +603,37 @@ C     LOCAL VARIABLES
 
             ELSE
 
-             taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) +
-     &        0.25 * dxG(i-1,j,bi,bj) *
-     &        streamice_density * gravity *
-     &        (1-streamice_density/streamice_density_ocean_avg) * 
+#ifdef STREAMICE_FIRN_CORRECTION
+             if (STREAMICE_apply_firn_correction) then
+             if (H_streamice(i-1,j-1,bi,bj).lt.firn_depth) then
+              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &         0.25 * dyG(i-1,j,bi,bj) *
+     &         streamice_density_firn * gravity *
+     &         (1-streamice_density_firn*i_rhow) *
      &         H_streamice(i-1,j-1,bi,bj)**2 
+             else
+              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &         0.25 * dyG(i-1,j,bi,bj) * gravity * (
+     &         streamice_density_firn * gravity * firn_depth**2 + 
+     &         (h_streamice(i-1,j-1,bi,bj)-firn_depth) *
+     &          (streamice_density_firn*firn_depth+streamice_density*
+     &          (h_streamice(i-1,j-1,bi,bj)-streamice_firn_correction))-
+     &         streamice_density**2*i_rhow*
+     &        (h_streamice(i-1,j-1,bi,bj)-streamice_firn_correction)**2
+     &         ) 
+             endif
+             else
+#endif
+             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &        0.25 * dyG(i-1,j,bi,bj) *
+     &        streamice_density * gravity *
+     &        (1-streamice_density*i_rhow) *
+     &         H_streamice(i-1,j-1,bi,bj)**2 
+#ifdef STREAMICE_FIRN_CORRECTION
+             endif
+#endif
+
+
 
             ENDIF
 
@@ -434,7 +654,7 @@ C     LOCAL VARIABLES
              taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
      &        0.25 * dxG(i-1,j,bi,bj) *
      &        gravity *
-     &        (streamice_density * H_streamice(i-1,j,bi,bj)**2 -
+     &        (avg_density(i-1,j,bi,bj) * H_streamice(i-1,j,bi,bj)**2 -
 #ifdef USE_ALT_RLOW
      &         streamice_density_ocean_avg * grd_below_sl * 
      &         R_low_si(i-1,j,bi,bj)**2)
@@ -445,11 +665,36 @@ C     LOCAL VARIABLES
 
             ELSE
 
-             taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
-     &        0.25 * dxG(i-1,j,bi,bj) *
+#ifdef STREAMICE_FIRN_CORRECTION
+             if (STREAMICE_apply_firn_correction) then
+             if (H_streamice(i-1,j,bi,bj).lt.firn_depth) then
+              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &         0.25 * dyG(i-1,j,bi,bj) *
+     &         streamice_density_firn * gravity *
+     &         (1-streamice_density_firn*i_rhow) *
+     &         H_streamice(i-1,j,bi,bj)**2 
+             else
+              taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &         0.25 * dyG(i-1,j,bi,bj) * gravity * (
+     &         streamice_density_firn * gravity * firn_depth**2 + 
+     &         (h_streamice(i-1,j,bi,bj)-firn_depth) *
+     &          (streamice_density_firn*firn_depth+streamice_density*
+     &          (h_streamice(i-1,j,bi,bj)-streamice_firn_correction))-
+     &         streamice_density**2*i_rhow*
+     &        (h_streamice(i-1,j,bi,bj)-streamice_firn_correction)**2
+     &         ) 
+             endif
+             else
+#endif
+             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) +
+     &        0.25 * dyG(i-1,j,bi,bj) *
      &        streamice_density * gravity *
-     &        (1-streamice_density/streamice_density_ocean_avg) *
-     &         H_streamice(i-1,j,bi,bj)**2
+     &        (1-streamice_density*i_rhow) *
+     &         H_streamice(i-1,j,bi,bj)**2 
+#ifdef STREAMICE_FIRN_CORRECTION
+             endif
+#endif
+
 
             END IF 
            END IF
@@ -462,8 +707,8 @@ C     LOCAL VARIABLES
 
 !      taudx_SI (1,1,1,1) = taudx_SI (1,1,1,1) +
 !     & streamice_v_normal_pert (1,1,1,1)
-      call write_fld_xy_rl("TAUDX_SI","",taudx_si,0,mythid)
-      call write_fld_xy_rl("TAUDY_SI","",taudy_si,0,mythid)
+!       call write_fld_xy_rl("TAUDX_SI","",taudx_si,0,mythid)
+!       call write_fld_xy_rl("TAUDY_SI","",taudy_si,0,mythid)
 
 
 

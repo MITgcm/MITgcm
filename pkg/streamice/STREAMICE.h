@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.17 2015/06/15 14:33:25 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.18 2015/06/30 11:20:05 dgoldberg Exp $
 C $Name:  $
 
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -26,6 +26,7 @@ C     & A_glen_isothermal, n_glen, eps_glen_min, eps_u_min,
      & streamice_addl_backstress,
      & streamice_smooth_gl_width,
      & streamice_adot_uniform,
+     & streamice_firn_correction, streamice_density_firn,
      & streamice_forcing_period
 
       _RL streamice_density, streamice_density_ocean_avg
@@ -51,6 +52,8 @@ C      _RL A_glen_isothermal, n_glen, eps_glen_min, eps_u_min
       _RL streamice_smooth_gl_width
       _RL streamice_adot_uniform
       _RL streamice_forcing_period
+      _RL streamice_firn_correction
+      _RL streamice_density_firn
 
 C     parms for parameterized initial thickness
 C     SHELF_MAX_DRAFT: max thickness of ice in m
@@ -232,6 +235,7 @@ C     -------------------------- LOGICAL PARAMS --------------------------------
       LOGICAL STREAMICE_chkresidconvergence
       LOGICAL STREAMICE_allow_cpl
       LOGICAL STREAMICE_use_petsc
+      LOGICAL STREAMICE_apply_firn_correction
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
 #ifdef ALLOW_PETSC
       LOGICAL STREAMICE_need2createmat
@@ -264,7 +268,8 @@ C      LOGICAL STREAMICE_hybrid_stress
      & STREAMICE_h_ctrl_const_surf,
      & STREAMICE_chkfixedptconvergence,
      & STREAMICE_chkresidconvergence,
-     & STREAMICE_allow_cpl, streamice_use_petsc
+     & STREAMICE_allow_cpl, streamice_use_petsc,
+     & STREAMICE_apply_firn_correction
 
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
 #ifdef ALLOW_PETSC
