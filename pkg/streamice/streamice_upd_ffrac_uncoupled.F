@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_upd_ffrac_uncoupled.F,v 1.3 2015/06/30 11:20:05 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_upd_ffrac_uncoupled.F,v 1.4 2015/07/01 16:34:53 dgoldberg Exp $
 C $Name:  $
 
 
@@ -110,11 +110,13 @@ CEOP
 
 #ifdef STREAMICE_FIRN_CORRECTION
           if (STREAMICE_apply_firn_correction) then
-          h=h_streamice(i,j,bi,bj)
-          if (h.lt.firn_depth) then
-            OD = -1.0 * rlo - streamice_density_firn/rhow*h
+!           h=h_streamice(i,j,bi,bj)
+          if (h_streamice(i,j,bi,bj).lt.firn_depth) then
+            OD = -1.0 * rlo - streamice_density_firn/rhow *
+     &       h_streamice(i,j,bi,bj)
           else
-            OD = -1.0 * rlo - rhoi/rhow * (h-streamice_firn_correction)
+            OD = -1.0 * rlo - rhoi/rhow * 
+     &       (h_streamice(i,j,bi,bj)-streamice_firn_correction)
           endif
           else
 #endif
@@ -131,12 +133,13 @@ c         ice thickness does not take up whole ocean column -> floating
            base_el_streamice(i,j,bi,bj) = Rlo+OD
 #ifdef STREAMICE_FIRN_CORRECTION
            if (STREAMICE_apply_firn_correction) then
-           if (h.lt.firn_depth) then
+           if (h_streamice(i,j,bi,bj).lt.firn_depth) then
             surf_el_streamice(i,j,bi,bj) = 
-     &      (1-streamice_density_firn/rhow)*h
+     &      (1-streamice_density_firn/rhow)*h_streamice(i,j,bi,bj)
            else
             surf_el_streamice(i,j,bi,bj) = 
-     &      (1-rhoi/rhow)*h + rhoi/rhow*streamice_firn_correction
+     &      (1-rhoi/rhow)*h_streamice(i,j,bi,bj) + 
+     &        rhoi/rhow*streamice_firn_correction
            endif
            else
 #endif
