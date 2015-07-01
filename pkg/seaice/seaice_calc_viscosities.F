@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.32 2015/06/25 16:12:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.33 2015/07/01 12:26:48 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -68,10 +68,10 @@ C     recip_e2      - inverse of square of ratio of yield curve main axes
 C     ep            - e11+e22 (abbreviation)
 C     em            - e11-e22 (abbreviation)
       INTEGER i, j, bi, bj
-      _RL recip_e2, deltaCreg, tmp, ep, em
-      _RL e12Csqr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL recip_e2, deltaCreg, deltaCsq, deltaMinSq, tmp, ep, em
+      _RL e12Csq(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef SEAICE_ALLOW_TEM
-      _RL etaMax, etaDen, deltaMinSq
+      _RL etaMax, etaDen
 #endif /* SEAICE_ALLOW_TEM */
       INTEGER k
       _RL sumNorm, maskZ
@@ -84,16 +84,14 @@ C--   FIRST SET UP BASIC CONSTANTS
       k=1
       recip_e2=0. _d 0
       IF ( SEAICE_eccen .NE. 0. _d 0 ) recip_e2=ONE/(SEAICE_eccen**2)
-#ifdef SEAICE_ALLOW_TEM
       deltaMinSq = SEAICE_deltaMin**2
-#endif /* SEAICE_ALLOW_TEM */
 C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          e12Csqr(i,j) = 0. _d 0
+          e12Csq(i,j) = 0. _d 0
          ENDDO
         ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -105,7 +103,7 @@ C     TAFization
            tmp = 0.25 *
      &          ( e12(I,J  ,bi,bj) + e12(I+1,J  ,bi,bj)
      &          + e12(I,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
-           e12Csqr(i,j) = tmp*tmp
+           e12Csq(i,j) = tmp*tmp
           ENDDO
          ENDDO
         ELSEIF ( SEAICEetaZmethod .EQ. 3 ) THEN
@@ -113,7 +111,7 @@ C     TAFization
           DO i=1-OLx+1,sNx+OLx-1
 C     area weighted average of the squares of e12 is more accurate
 C     (and energy conserving)
-           e12Csqr(i,j) = 0.25 _d 0 * recip_rA(I,J,bi,bj) *
+           e12Csq(i,j) = 0.25 _d 0 * recip_rA(I,J,bi,bj) *
      &          ( rAz(I  ,J  ,bi,bj)*e12(I  ,J  ,bi,bj)**2
      &          + rAz(I+1,J  ,bi,bj)*e12(I+1,J  ,bi,bj)**2
      &          + rAz(I  ,J+1,bi,bj)*e12(I  ,J+1,bi,bj)**2
@@ -125,21 +123,29 @@ C     (and energy conserving)
          DO i=1-OLx+1,sNx+OLx-1
           ep = e11(i,j,bi,bj)+e22(i,j,bi,bj)
           em = e11(i,j,bi,bj)-e22(i,j,bi,bj)
-          deltaC(I,J,bi,bj)=ep*ep+recip_e2*(em*em+4. _d 0*e12Csqr(i,j))
+          deltaCsq = ep*ep+recip_e2*(em*em+4. _d 0*e12Csq(i,j))
 CML The old formulation does not ensure that deltaC**2 is always positive,
 CML but in case you need it to reproduce old results, here it is:
-CML          deltaC(I,J,bi,bj) = 
+CML          deltaCsq = 
 CML     &         (e11(i,j,bi,bj)**2+e22(i,j,bi,bj)**2)*(ONE+recip_e2)
-CML     &         + 4. _d 0*recip_e2*e12Csqr(i,j)
+CML     &         + 4. _d 0*recip_e2*e12Csq(i,j)
 CML     &         + 2. _d 0*e11(i,j,bi,bj)*e22(i,j,bi,bj)*(ONE-recip_e2)
 #ifdef ALLOW_AUTODIFF_TAMC
 C     avoid sqrt of 0
-          IF ( deltaC(I,J,bi,bj) .GT. 0. _d 0 ) 
-     &         deltaC(I,J,bi,bj) = SQRT(deltaC(I,J,bi,bj))
+          deltaC(I,J,bi,bj) = 0. _d 0
+          IF ( deltaCsq .GT. 0. _d 0 ) 
+     &         deltaC(I,J,bi,bj) = SQRT(deltaCsq)
 #else
-          deltaC(I,J,bi,bj)    = SQRT(deltaC(I,J,bi,bj))
+          deltaC(I,J,bi,bj) = SQRT(deltaCsq)
 #endif /* ALLOW_AUTODIFF_TAMC */
+#ifdef SEAICE_DELTA_SMOOTHREG
+C     smooth regularization (without max-function) of delta for
+C     better differentiability
+          deltaCreg = SQRT(deltaCsq + deltaMinSq)
+CML          deltaCreg = deltaC(I,J,bi,bj) + SEAICE_deltaMin
+#else
           deltaCreg = MAX(deltaC(I,J,bi,bj),SEAICE_deltaMin)
+#endif /* SEAICE_DELTA_SMOOTHREG */
 #ifdef SEAICE_ZETA_SMOOTHREG
 C     regularize zeta to zmax with a smooth tanh-function instead
 C     of a min(zeta,zmax). This improves convergence of iterative
@@ -166,7 +172,7 @@ C     "replacement pressure"
           DO i=1-OLx+1,sNx+OLx-1
            ep = e11(i,j,bi,bj)+e22(i,j,bi,bj)
            em = e11(i,j,bi,bj)-e22(i,j,bi,bj)
-           etaDen = em*em + 4. _d 0 * e12Csqr(i,j)
+           etaDen = em*em + 4. _d 0 * e12Csq(i,j)
            etaDen = SQRT(MAX(deltaMinSq,etaDen))
            etaMax = ( 0.5 _d 0*press(I,J,bi,bj)-zeta(I,J,bi,bj)*ep
      &          )/etaDen

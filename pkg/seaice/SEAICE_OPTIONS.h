@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.76 2015/06/15 15:34:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.77 2015/07/01 12:26:48 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -104,6 +104,9 @@ C--   When set use SEAICE_zetaMin and SEAICE_evpDampC to limit viscosities
 C     from below and above in seaice_evp: not necessary, and not recommended
 #  undef SEAICE_ALLOW_CLIPZETA
 # endif /* SEAICE_ALLOW_EVP */
+C     smooth regularization (without max-function) of delta for
+C     better differentiability
+# undef SEAICE_DELTA_SMOOTHREG
 C     regularize zeta to zmax with a smooth tanh-function instead
 C     of a min(zeta,zmax). This improves convergence of iterative
 C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
