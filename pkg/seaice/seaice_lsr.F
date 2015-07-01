@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.113 2015/06/15 15:34:32 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.114 2015/07/01 12:26:00 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -164,7 +164,8 @@ cph break artificial dependencies
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          press  (i,j,bi,bj )= 0. _d 0
+          deltaC (i,j,bi,bj) = 0. _d 0
+          press  (i,j,bi,bj) = 0. _d 0
           zeta   (i,j,bi,bj) = 0. _d 0
           zetaZ  (i,j,bi,bj) = 0. _d 0
           eta    (i,j,bi,bj) = 0. _d 0
@@ -277,10 +278,8 @@ C     That is an important one! Note, that
 C     * lsr is called multiple times (twice by default), thus the 
 C       ipass index is part of itmpkey
 C     * this storing is still outside the lsr iteration loop
-CADJ STORE uice = comlev1_dynsol, kind=isbyte,
-CADJ &     key = itmpkey
-CADJ STORE vice = comlev1_dynsol, kind=isbyte,
-CADJ &     key = itmpkey
+CADJ STORE uice = comlev1_dynsol, kind=isbyte, key = itmpkey
+CADJ STORE vice = comlev1_dynsol, kind=isbyte, key = itmpkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       CALL SEAICE_CALC_STRAINRATES(
