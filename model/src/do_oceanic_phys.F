@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.144 2014/11/02 21:21:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.145 2015/07/02 04:43:35 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -17,6 +17,9 @@ C $Name:  $
 #endif
 
 #ifdef ALLOW_AUTODIFF
+# ifdef ALLOW_GGL90
+#  include "GGL90_OPTIONS.h"
+# endif
 # ifdef ALLOW_GMREDI
 #  include "GMREDI_OPTIONS.h"
 # endif
@@ -143,14 +146,14 @@ C     == Global variables ===
 # include "FFIELDS.h"
 # include "SURFACE.h"
 # include "EOS.h"
+# ifdef ALLOW_GMREDI
+#  include "GMREDI.h"
+# endif
 # ifdef ALLOW_KPP
 #  include "KPP.h"
 # endif
 # ifdef ALLOW_GGL90
 #  include "GGL90.h"
-# endif
-# ifdef ALLOW_GMREDI
-#  include "GMREDI.h"
 # endif
 # ifdef ALLOW_EBM
 #  include "EBM.h"

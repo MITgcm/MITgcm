@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.232 2015/01/14 00:50:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.233 2015/07/02 04:43:36 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -9,6 +9,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD_OPTIONS.h"
+#endif
+#ifdef ALLOW_GGL90
+# include "GGL90_OPTIONS.h"
 #endif
 #ifdef ALLOW_GMREDI
 # include "GMREDI_OPTIONS.h"
@@ -24,9 +27,6 @@ C $Name:  $
 #endif
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_OPTIONS.h"
-#endif
-#ifdef ALLOW_GGL90
-# include "GGL90_OPTIONS.h"
 #endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
@@ -269,12 +269,25 @@ C     == Global variables ==
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 #  include "GRID.h"
 # endif
+# ifdef ALLOW_GMREDI
+#  include "GMREDI.h"
+# endif
 # ifdef ALLOW_EXF
 #  include "EXF_FIELDS.h"
 #  include "EXF_PARAM.h"
 #  ifdef ALLOW_BULKFORMULAE
 #   include "EXF_CONSTANTS.h"
 #  endif
+# endif
+# ifdef ALLOW_CD_CODE
+#  include "CD_CODE_VARS.h"
+# endif
+# ifdef ALLOW_GENERIC_ADVDIFF
+#  include "GAD.h"
+#  include "GAD_SOM_VARS.h"
+# endif
+# ifdef ALLOW_GGL90
+#  include "GGL90.h"
 # endif
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
@@ -292,10 +305,6 @@ C     == Global variables ==
 #  include "DIC_ATMOS.h"
 #  include "DIC_COST.h"
 # endif
-# ifdef ALLOW_GENERIC_ADVDIFF
-#  include "GAD.h"
-#  include "GAD_SOM_VARS.h"
-# endif
 # ifdef ALLOW_OBCS
 #  include "OBCS_PARAMS.h"
 #  include "OBCS_FIELDS.h"
@@ -303,9 +312,6 @@ C     == Global variables ==
 #  ifdef ALLOW_PTRACERS
 #   include "OBCS_PTRACERS.h"
 #  endif
-# endif
-# ifdef ALLOW_CD_CODE
-#  include "CD_CODE_VARS.h"
 # endif
 # ifdef ALLOW_THSICE
 #  include "THSICE_PARAMS.h"
@@ -336,12 +342,6 @@ C     == Global variables ==
 # endif
 # ifdef ALLOW_KPP
 #  include "KPP.h"
-# endif
-# ifdef ALLOW_GGL90
-#  include "GGL90.h"
-# endif
-# ifdef ALLOW_GMREDI
-#  include "GMREDI.h"
 # endif
 # ifdef ALLOW_RBCS
 #  include "RBCS_SIZE.h"
