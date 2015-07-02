@@ -28,6 +28,10 @@ c we may need these for the checkpointing
 #endif
       use GLOBAL_MAX_mod
       use GLOBAL_SUM_mod
+#ifdef ALLOW_GGL90
+      use GGL90_mod
+      use GGL90_TAVE_mod
+#endif
 #ifdef ALLOW_GMREDI
       use GMREDI_mod
       use GMREDI_TAVE_mod

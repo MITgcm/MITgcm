@@ -22,6 +22,9 @@ endif
 if ( ${fileName} == 'GAD' ) then
   echo '#include "GAD_OPTIONS.h"'    >> ${fileName}_temp
 endif
+if ( ${fileName} == 'GGL90' ) then
+  echo '#include "GGL90_OPTIONS.h"'    >> ${fileName}_temp
+endif
 if ( ${fileName} == 'GMREDI' ) then
   echo '#include "GMREDI_OPTIONS.h"'    >> ${fileName}_temp
 endif
