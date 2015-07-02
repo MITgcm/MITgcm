@@ -1,6 +1,8 @@
-ggl90_checkpoint.f
 ggl90_calc_diff.f
 ggl90_calc_visc.f
 ggl90_calc.f
 ggl90_exchanges.f
+ggl90_init_fixed.f
 ggl90_init_varia.f
+ggl90_read_pickup.f
+ggl90_write_pickup.f

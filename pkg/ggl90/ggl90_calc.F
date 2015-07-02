@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.32 2015/02/26 16:45:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.33 2015/07/02 04:42:43 heimbach Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -35,9 +35,9 @@ C !USES: ============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#include "GGL90.h"
 #include "FFIELDS.h"
 #include "GRID.h"
+#include "GGL90.h"
 
 C !INPUT PARAMETERS: ===================================================
 C Routine arguments
