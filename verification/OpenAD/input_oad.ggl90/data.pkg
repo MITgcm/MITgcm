@@ -4,7 +4,7 @@
 # ********
  &PACKAGES
  useGMRedi    = .TRUE.,
- useGGL90     = .FALSE.,
+ useGGL90     = .TRUE.,
  useKPP       = .FALSE.,
  useGrdchk    = .TRUE.,
  useMNC       = .FALSE.,
