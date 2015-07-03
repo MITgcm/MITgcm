@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.264 2015/02/23 21:16:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.265 2015/07/03 21:32:48 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -243,7 +243,7 @@ C--   Elliptic solver parameters
 
 C--   Time stepping parammeters
       NAMELIST /PARM03/
-     & nIter0, nTimeSteps, nEndIter,
+     & nIter0, nTimeSteps, nTimeSteps_l2, nEndIter,
      & baseTime, startTime, endTime,
      & deltaT, deltaTClock, deltaTMom,
      & deltaTtracer, dTtracerLev, deltaTFreeSurf,
@@ -965,6 +965,7 @@ C     o set base time from the 2 others
          baseTime = startTime - deltaTClock*float(nIter0)
       ENDIF
 
+      nTimeSteps_l2 = 4
 C     o nTimeSteps 1
       IF ( nTimeSteps .EQ. 0 .AND. nEndIter .NE. 0 )
      &     nTimeSteps = nEndIter-nIter0

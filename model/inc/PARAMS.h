@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.279 2015/03/23 21:00:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.280 2015/07/03 21:32:48 heimbach Exp $
 C $Name:  $
 C
 
@@ -159,6 +159,7 @@ C                            in con. grad solver.
 C     printResidualFreq   :: Frequency for printing residual in CG iterations
 C     nIter0              :: Start time-step number of for this run
 C     nTimeSteps          :: Number of timesteps to execute
+C     nTimeSteps_l2       :: Number of inner timesteps to execute per timestep
 C     writeStatePrec      :: Precision used for writing model state.
 C     writeBinaryPrec     :: Precision used for writing binary files
 C     readBinaryPrec      :: Precision used for reading binary files
@@ -201,7 +202,7 @@ C                            and statistics ; higher -> more writing
      &        cg2dPreCondFreq, cg2dUseMinResSol,
      &        cg3dMaxIters, cg3dChkResFreq,
      &        printResidualFreq,
-     &        nIter0, nTimeSteps, nEndIter,
+     &        nIter0, nTimeSteps, nTimeSteps_l2, nEndIter,
      &        writeStatePrec,
      &        writeBinaryPrec, readBinaryPrec,
      &        selectCoriMap,
@@ -224,6 +225,7 @@ C                            and statistics ; higher -> more writing
       INTEGER printResidualFreq
       INTEGER nIter0
       INTEGER nTimeSteps
+      INTEGER nTimeSteps_l2
       INTEGER nEndIter
       INTEGER writeStatePrec
       INTEGER writeBinaryPrec

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.174 2015/01/03 23:56:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.175 2015/07/03 21:32:48 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -298,6 +298,7 @@ C--   Time stepping parameters
       pickupSuff        = ' '
       pickupStrictlyMatch = .TRUE.
       nTimeSteps        = 0
+      nTimeSteps_l2     = 0
       nEndIter          = 0
       endTime           = 0. _d 0
       momForcingOutAB   = UNSET_I

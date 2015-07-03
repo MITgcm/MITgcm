@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.19 2015/07/03 21:32:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/inner_do_loop.F,v 1.1 2015/07/03 21:32:49 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -39,9 +39,9 @@ c# include "ECCO_OPTIONS.h"
 c#endif
 
 CBOP
-C     !ROUTINE: MAIN_DO_LOOP
+C     !ROUTINE: INNER_DO_LOOP
 C     !INTERFACE:
-      SUBROUTINE MAIN_DO_LOOP( iloop, myTime, myIter, myThid )
+      SUBROUTINE INNER_DO_LOOP( iloop, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *================================================================*
@@ -49,7 +49,7 @@ C     | SUBROUTINE the_loop_body
 C     | o Run the ocean model and evaluate the specified cost function.
 C     *================================================================*
 C     |
-C     | MAIN_DO_LOOP is the toplevel routine for the Tangent Linear and
+C     | INNER_DO_LOOP is the toplevel routine for the Tangent Linear and
 C     | Adjoint Model Compiler (TAMC).
 C     | For this purpose the initialization
 C     | of the model was split into two parts. Those parameters that do
@@ -197,70 +197,51 @@ C           updated.
 C     myTime :: time counter for this thread
 C     myIter :: iteration counter for this thread
 C     myThid :: thread number for this instance of the routine.
+      INTEGER iloop
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-
+#if (defined ALLOW_OPENAD) && (defined ALLOW_OPENAD_DIVA)
 C     !FUNCTIONS:
 C     == Functions ==
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER iloop
+      INTEGER iloop1
+      INTEGER prod
 CEOP
 
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_ENTER('MAIN_DO_LOOP',myThid)
+      IF (debugMode) CALL DEBUG_ENTER('INNER_DO_LOOP',myThid)
 #endif
 
 #ifdef ALLOW_OPENAD
 C     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-#ifdef ALLOW_OPENAD_DIVA
-      DO iloop = 1, nTimeSteps_l2
-#else
-      DO iloop = 1, nTimeSteps
-#endif
-
+      DO iloop1 = 1, nTimeSteps
+        prod = (iloop-1)*nTimeSteps_l2+iloop1
 #endif
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
 #endif
-
-#ifndef ALLOW_OPENAD
+      
 #ifdef ALLOW_ATM2D
-        CALL TIMER_START('FORWARD_STEP_ATM2D  [MAIN_DO_LOOP]',myThid)
+        CALL TIMER_START('FORWARD_STEP_ATM2D  [INNER_DO_LOOP]',myThid)
+#ifdef ALLOW_OPENAD
+        CALL FORWARD_STEP_ATM2D( prod, myTime, myIter, myThid )
+#else
         CALL FORWARD_STEP_ATM2D( iloop, myTime, myIter, myThid )
-        CALL TIMER_STOP ('FORWARD_STEP_ATM2D  [MAIN_DO_LOOP]',myThid)
+#endif
+        CALL TIMER_STOP ('FORWARD_STEP_ATM2D  [INNER_DO_LOOP]',myThid)
 #else
-        CALL TIMER_START('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
+        CALL TIMER_START('FORWARD_STEP        [INNER_DO_LOOP]',myThid)
+#ifdef ALLOW_OPENAD
+        CALL FORWARD_STEP( prod, myTime, myIter, myThid )
+#else
         CALL FORWARD_STEP( iloop, myTime, myIter, myThid )
-        CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
 #endif
-#else
-C#ifdef ALLOW_ATM2D
-C        CALL TIMER_START('INNER_DO_LOOP_ATM2D  [MAIN_DO_LOOP]',myThid)
-C        nTimeSteps_l2 = 2
-C        CALL INNER_DO_LOOP( iloop, myTime, myIter, myThid )
-C        CALL TIMER_STOP ('INNER_DO_LOOP_ATM2D  [MAIN_DO_LOOP]',myThid)
-C#else
-C        CALL TIMER_START('INNER_DO_LOOP        [MAIN_DO_LOOP]',myThid)
-C        nTimeSteps_l2 = 2
-C        CALL INNER_DO_LOOP( iloop, myTime, myIter, myThid )
-C        CALL TIMER_STOP ('INNER_DO_LOOP        [MAIN_DO_LOOP]',myThid)
-C#endif
-#ifdef ALLOW_OPENAD_DIVA
-       CALL TIMER_START('INNER_DO_LOOP       [MAIN_DO_LOOP]',myThid)
-       nTimeSteps_l2 = 2
-       CALL INNER_DO_LOOP( iloop, myTime, myIter, myThid )
-       CALL TIMER_STOP ('INNER_DO_LOOP       [MAIN_DO_LOOP]',myThid)
-#else
-       CALL TIMER_START('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
-       nTimeSteps_l2 = 2
-       CALL FORWARD_STEP( iloop, myTime, myIter, myThid )
-       CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
-#endif
+        CALL TIMER_STOP ('FORWARD_STEP        [INNER_DO_LOOP]',myThid)
 #endif
 
 #ifdef ALLOW_OPENAD
@@ -270,8 +251,9 @@ C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STOPS   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 #endif
 
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_LEAVE('MAIN_DO_LOOP',myThid)
+      IF (debugMode) CALL DEBUG_LEAVE('INNER_DO_LOOP',myThid)
 #endif
 
       RETURN
+#endif
       END
