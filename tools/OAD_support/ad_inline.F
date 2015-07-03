@@ -267,7 +267,7 @@ C $OpenAD$ INLINE DECLS
         double precision :: x
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write x ', x
+        !write(standardmessageunit,*)'OAD: cp write x ', x
 #endif
 	write(unit=cp_io_unit) x
       end subroutine 
@@ -280,7 +280,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
 	read(unit=cp_io_unit) x
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read x ', x
+        !write(standardmessageunit,*)'OAD: cp read x ', x
 #endif
       end subroutine 
 
@@ -292,7 +292,7 @@ C $OpenAD$ INLINE DECLS
         type(active) :: x
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write x ', x%v
+        !write(standardmessageunit,*)'OAD: cp write x ', x%v
 #endif
 	write(unit=cp_io_unit) x%v
       end subroutine 
@@ -306,7 +306,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
       	read(unit=cp_io_unit) x%v
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read x ', x%v
+        !write(standardmessageunit,*)'OAD: cp read x ', x%v
 #endif
       end subroutine 
 
@@ -317,7 +317,7 @@ C $OpenAD$ INLINE DECLS
         double precision, dimension(:) :: x
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write x ', x(1)
+        !write(standardmessageunit,*)'OAD: cp write x ', x(1)
 #endif
 	write(unit=cp_io_unit) x
       end subroutine 
@@ -330,7 +330,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
       	read(unit=cp_io_unit) x
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read x ', x(1)
+        !write(standardmessageunit,*)'OAD: cp read x ', x(1)
 #endif
       end subroutine 
 
@@ -342,7 +342,7 @@ C $OpenAD$ INLINE DECLS
         type(active), dimension(:) :: x
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write x ', x(1)%v
+        !write(standardmessageunit,*)'OAD: cp write x ', x(1)%v
 #endif
 	write(unit=cp_io_unit) x%v
       end subroutine 
@@ -356,7 +356,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
       	read(unit=cp_io_unit) x%v
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read x ', x(1)%v
+        !write(standardmessageunit,*)'OAD: cp read x ', x(1)%v
 #endif
       end subroutine 
 
@@ -367,7 +367,7 @@ C $OpenAD$ INLINE DECLS
         double precision, dimension(:,:) :: x
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write x ', x(1,1)
+        !write(standardmessageunit,*)'OAD: cp write x ', x(1,1)
 #endif
 	write(unit=cp_io_unit) x
       end subroutine 
@@ -380,7 +380,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
         read(unit=cp_io_unit) x
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read x ', x(1,1)
+        !write(standardmessageunit,*)'OAD: cp read x ', x(1,1)
 #endif
       end subroutine 
 
@@ -392,7 +392,7 @@ C $OpenAD$ INLINE DECLS
         type(active), dimension(:,:) :: x
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write x ', x(1,1)%v
+        !write(standardmessageunit,*)'OAD: cp write x ', x(1,1)%v
 #endif
 	write(unit=cp_io_unit) x%v
       end subroutine 
@@ -406,7 +406,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
       	read(unit=cp_io_unit) x%v
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read x ', x(1,1)%v
+        !write(standardmessageunit,*)'OAD: cp read x ', x(1,1)%v
 #endif
       end subroutine 
 
@@ -417,7 +417,7 @@ C $OpenAD$ INLINE DECLS
         double precision, dimension(:,:,:) :: x
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write x ', x(1,1,1)
+        !write(standardmessageunit,*)'OAD: cp write x ', x(1,1,1)
 #endif
 	write(unit=cp_io_unit) x
       end subroutine 
@@ -430,7 +430,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
       	read(unit=cp_io_unit) x
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read x ', x(1,1,1)
+        !write(standardmessageunit,*)'OAD: cp read x ', x(1,1,1)
 #endif
       end subroutine 
 
@@ -442,7 +442,7 @@ C $OpenAD$ INLINE DECLS
         type(active), dimension(:,:,:) :: x
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write x ', x(1,1,1)%v
+        !write(standardmessageunit,*)'OAD: cp write x ', x(1,1,1)%v
 #endif
 	write(unit=cp_io_unit) x%v
       end subroutine 
@@ -456,7 +456,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
       	read(unit=cp_io_unit) x%v
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read x ', x(1,1,1)%v
+        !write(standardmessageunit,*)'OAD: cp read x ', x(1,1,1)%v
 #endif
       end subroutine 
 
@@ -467,7 +467,7 @@ C $OpenAD$ INLINE DECLS
         double precision, dimension(:,:,:,:) :: x
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write x ', x(1,1,1,1)
+        !write(standardmessageunit,*)'OAD: cp write x ', x(1,1,1,1)
 #endif
 	write(unit=cp_io_unit) x
       end subroutine 
@@ -480,7 +480,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
 	read(unit=cp_io_unit) x
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read x ', x(1,1,1,1)
+        !write(standardmessageunit,*)'OAD: cp read x ', x(1,1,1,1)
 #endif
       end subroutine 
 
@@ -492,7 +492,7 @@ C $OpenAD$ INLINE DECLS
         type(active), dimension(:,:,:,:) :: x
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write x ', x(1,1,1,1)%v
+        !write(standardmessageunit,*)'OAD: cp write x ', x(1,1,1,1)%v
 #endif
 	write(unit=cp_io_unit) x%v
       end subroutine 
@@ -506,7 +506,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
 	read(unit=cp_io_unit) x%v
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read x ', x(1,1,1,1)%v
+        !write(standardmessageunit,*)'OAD: cp read x ', x(1,1,1,1)%v
 #endif 
       end subroutine
 
@@ -517,7 +517,7 @@ C $OpenAD$ INLINE DECLS
         double precision, dimension(:,:,:,:,:) :: x
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write x ', x(1,1,1,1,1)
+        !write(standardmessageunit,*)'OAD: cp write x ', x(1,1,1,1,1)
 #endif
 	write(unit=cp_io_unit) x
       end subroutine 
@@ -530,7 +530,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
 	read(unit=cp_io_unit) x
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read x ', x(1,1,1,1,1)
+        !write(standardmessageunit,*)'OAD: cp read x ', x(1,1,1,1,1)
 #endif
       end subroutine 
 
@@ -542,7 +542,7 @@ C $OpenAD$ INLINE DECLS
         type(active), dimension(:,:,:,:,:) :: x
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write x ', x(1,1,1,1,1)%v
+        !write(standardmessageunit,*)'OAD: cp write x ', x(1,1,1,1,1)%v
 #endif
 	write(unit=cp_io_unit) x%v
       end subroutine 
@@ -556,7 +556,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
 	read(unit=cp_io_unit) x%v
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read x ', x(1,1,1,1,1)%v
+        !write(standardmessageunit,*)'OAD: cp read x ', x(1,1,1,1,1)%v
 #endif
       end subroutine 
 
@@ -567,7 +567,7 @@ C $OpenAD$ INLINE DECLS
         double precision, dimension(:,:,:,:,:,:) :: x
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write x ', x(1,1,1,1,1,1)
+        !write(standardmessageunit,*)'OAD: cp write x ', x(1,1,1,1,1,1)
 #endif
 	write(unit=cp_io_unit) x
       end subroutine 
@@ -580,7 +580,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
 	read(unit=cp_io_unit) x
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read x ', x(1,1,1,1,1,1)
+        !write(standardmessageunit,*)'OAD: cp read x ', x(1,1,1,1,1,1)
 #endif
       end subroutine 
 
@@ -592,7 +592,7 @@ C $OpenAD$ INLINE DECLS
         type(active), dimension(:,:,:,:,:,:) :: x
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write x ', x(1,1,1,1,1,1)%v
+        !write(standardmessageunit,*)'OAD: cp write x ', x(1,1,1,1,1,1)%v
 #endif
 	write(unit=cp_io_unit) x%v
       end subroutine 
@@ -606,7 +606,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
 	read(unit=cp_io_unit) x%v
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read x ', x(1,1,1,1,1,1)%v
+        !write(standardmessageunit,*)'OAD: cp read x ', x(1,1,1,1,1,1)%v
 #endif
       end subroutine 
 
@@ -618,7 +618,7 @@ C $OpenAD$ INLINE DECLS
         integer :: i
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write i ', i
+        !write(standardmessageunit,*)'OAD: cp write i ', i
 #endif
 	write(unit=cp_io_unit) i
       end subroutine 
@@ -631,7 +631,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
 	read(unit=cp_io_unit) i
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read i ', i
+        !write(standardmessageunit,*)'OAD: cp read i ', i
 #endif
       end subroutine 
 
@@ -642,7 +642,7 @@ C $OpenAD$ INLINE DECLS
         integer, dimension(:) :: i
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write i ', i(1)
+        !write(standardmessageunit,*)'OAD: cp write i ', i(1)
 #endif
 	write(unit=cp_io_unit) i
       end subroutine 
@@ -655,7 +655,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
 	read(unit=cp_io_unit) i
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read i ', i(1)
+        !write(standardmessageunit,*)'OAD: cp read i ', i(1)
 #endif
       end subroutine 
 
@@ -666,7 +666,7 @@ C $OpenAD$ INLINE DECLS
         integer, dimension(:,:) :: i
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write i ', i(1,1)
+        !write(standardmessageunit,*)'OAD: cp write i ', i(1,1)
 #endif
 	write(unit=cp_io_unit) i
       end subroutine 
@@ -679,7 +679,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
 	read(unit=cp_io_unit) i
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read i ', i(1,1)
+        !write(standardmessageunit,*)'OAD: cp read i ', i(1,1)
 #endif
       end subroutine 
 
@@ -690,7 +690,7 @@ C $OpenAD$ INLINE DECLS
         integer, dimension(:,:,:) :: i
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write i ', i(1,1,1)
+        !write(standardmessageunit,*)'OAD: cp write i ', i(1,1,1)
 #endif
 	write(unit=cp_io_unit) i
       end subroutine 
@@ -703,7 +703,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
         read(unit=cp_io_unit) i
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read i ', i(1,1,1)
+        !write(standardmessageunit,*)'OAD: cp read i ', i(1,1,1)
 #endif
       end subroutine 
 
@@ -714,7 +714,7 @@ C $OpenAD$ INLINE DECLS
         integer, dimension(:,:,:,:) :: i
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write i ', i(1,1,1,1)
+        !write(standardmessageunit,*)'OAD: cp write i ', i(1,1,1,1)
 #endif
         write(unit=cp_io_unit) i
       end subroutine 
@@ -727,7 +727,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
         read(unit=cp_io_unit) i
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read i ', i(1,1,1,1)
+        !write(standardmessageunit,*)'OAD: cp read i ', i(1,1,1,1)
 #endif
       end subroutine 
 
@@ -738,7 +738,7 @@ C $OpenAD$ INLINE DECLS
         integer, dimension(:,:,:,:,:) :: i
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write i ', i(1,1,1,1,1)
+        !write(standardmessageunit,*)'OAD: cp write i ', i(1,1,1,1,1)
 #endif
         write(unit=cp_io_unit) i
       end subroutine 
@@ -751,7 +751,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
         read (unit=cp_io_unit) i
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read i ', i(1,1,1,1,1)
+        !write(standardmessageunit,*)'OAD: cp read i ', i(1,1,1,1,1)
 #endif
       end subroutine 
 
@@ -763,7 +763,7 @@ C $OpenAD$ INLINE DECLS
       character*(80) :: s
 C $OpenAD$ END DECLS 
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write s ', s
+        !write(standardmessageunit,*)'OAD: cp write s ', s
 #endif
         write(unit=cp_io_unit) s
       end subroutine 
@@ -776,7 +776,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
         read (unit=cp_io_unit) s
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read s ', s
+        !write(standardmessageunit,*)'OAD: cp read s ', s
 #endif
       end subroutine 
 
@@ -788,7 +788,7 @@ C $OpenAD$ INLINE DECLS
         logical :: b
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write b ', b
+        !write(standardmessageunit,*)'OAD: cp write b ', b
 #endif
         write(unit=cp_io_unit) b
       end subroutine 
@@ -801,7 +801,7 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
         read (unit=cp_io_unit) b
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read b ', b
+        !write(standardmessageunit,*)'OAD: cp read b ', b
 #endif
       end subroutine 
 
@@ -812,7 +812,7 @@ C $OpenAD$ INLINE DECLS
         logical, dimension(:,:) :: b
 C $OpenAD$ END DECLS
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp write b ', b(1,1)
+        !write(standardmessageunit,*)'OAD: cp write b ', b(1,1)
 #endif
 	write(unit=cp_io_unit) b
       end subroutine 
@@ -825,6 +825,189 @@ C $OpenAD$ INLINE DECLS
 C $OpenAD$ END DECLS
 	read(unit=cp_io_unit) b
 #ifdef OAD_DEBUG_CP
-        write(standardmessageunit,*)'OAD: cp read b ', b(1,1)
+        !write(standardmessageunit,*)'OAD: cp read b ', b(1,1)
+#endif
+      end subroutine
+
+C adjoints of active reals ----------------------------------
+      subroutine cp_arg_store_real_scalar_a_d(x)
+C $OpenAD$ INLINE DECLS
+        use OAD_active
+        use OAD_cp
+        implicit none
+        type(active) :: x
+C $OpenAD$ END DECLS
+#ifdef OAD_DEBUG_CP
+        !write(standardmessageunit,*)'OAD: cp write x%d ', x%d
+#endif
+	write(unit=cp_io_unit) x%d
+      end subroutine 
+
+      subroutine cp_arg_restore_real_scalar_a_d(x)
+C $OpenAD$ INLINE DECLS
+        use OAD_active
+        use OAD_cp
+        implicit none
+        type(active) :: x
+C $OpenAD$ END DECLS
+      	read(unit=cp_io_unit) x%d
+#ifdef OAD_DEBUG_CP
+        !write(standardmessageunit,*)'OAD: cp read x%d ', x%d
 #endif
       end subroutine 
+
+      subroutine cp_arg_store_real_vector_a_d(x)
+C $OpenAD$ INLINE DECLS
+        use OAD_active
+        use OAD_cp
+        implicit none
+        type(active), dimension(:) :: x
+C $OpenAD$ END DECLS
+#ifdef OAD_DEBUG_CP
+        !write(standardmessageunit,*)'OAD: cp write x%d ', x(1)%d
+#endif
+	write(unit=cp_io_unit) x%d
+      end subroutine 
+
+      subroutine cp_arg_restore_real_vector_a_d(x)
+C $OpenAD$ INLINE DECLS
+        use OAD_active
+        use OAD_cp
+        implicit none
+        type(active), dimension(:) :: x
+C $OpenAD$ END DECLS
+      	read(unit=cp_io_unit) x%d
+#ifdef OAD_DEBUG_CP
+        !write(standardmessageunit,*)'OAD: cp read x%d ', x(1)%d
+#endif
+      end subroutine  
+
+      subroutine cp_arg_store_real_matrix_a_d(x)
+C $OpenAD$ INLINE DECLS
+        use OAD_active
+        use OAD_cp
+        implicit none
+        type(active), dimension(:,:) :: x
+C $OpenAD$ END DECLS
+#ifdef OAD_DEBUG_CP
+        !write(standardmessageunit,*)'OAD: cp write x%d ', x(1,1)%d
+#endif
+	write(unit=cp_io_unit) x%d
+      end subroutine 
+
+      subroutine cp_arg_restore_real_matrix_a_d(x)
+C $OpenAD$ INLINE DECLS
+        use OAD_active
+        use OAD_cp
+        implicit none
+        type(active), dimension(:,:) :: x
+C $OpenAD$ END DECLS
+      	read(unit=cp_io_unit) x%d
+#ifdef OAD_DEBUG_CP
+        !write(standardmessageunit,*)'OAD: cp read x%d ', x(1,1)%d
+#endif
+      end subroutine 
+
+      subroutine cp_arg_store_real_three_tensor_a_d(x)
+C $OpenAD$ INLINE DECLS
+        use OAD_active
+        use OAD_cp
+        implicit none
+        type(active), dimension(:,:,:) :: x
+C $OpenAD$ END DECLS
+#ifdef OAD_DEBUG_CP
+        !write(standardmessageunit,*)'OAD: cp write x%d ', x(1,1,1)%d
+#endif
+	write(unit=cp_io_unit) x%d
+      end subroutine 
+
+      subroutine cp_arg_restore_real_three_tensor_a_d(x)
+C $OpenAD$ INLINE DECLS
+        use OAD_active
+        use OAD_cp
+        implicit none
+        type(active), dimension(:,:,:) :: x
+C $OpenAD$ END DECLS
+      	read(unit=cp_io_unit) x%d
+#ifdef OAD_DEBUG_CP
+        !write(standardmessageunit,*)'OAD: cp read x%d ', x(1,1,1)%d
+#endif
+      end subroutine 
+
+      subroutine cp_arg_store_real_four_tensor_a_d(x)
+C $OpenAD$ INLINE DECLS
+        use OAD_active
+        use OAD_cp
+        implicit none
+        type(active), dimension(:,:,:,:) :: x
+C $OpenAD$ END DECLS
+#ifdef OAD_DEBUG_CP
+        !write(standardmessageunit,*)'OAD: cp write x%d ', x(1,1,1,1)%d
+#endif
+	write(unit=cp_io_unit) x%d
+      end subroutine 
+
+      subroutine cp_arg_restore_real_four_tensor_a_d(x)
+C $OpenAD$ INLINE DECLS
+        use OAD_active
+        use OAD_cp
+        implicit none
+        type(active), dimension(:,:,:,:) :: x
+C $OpenAD$ END DECLS
+	read(unit=cp_io_unit) x%d
+#ifdef OAD_DEBUG_CP
+        !write(standardmessageunit,*)'OAD: cp read x%d ', x(1,1,1,1)%d
+#endif 
+      end subroutine
+
+      subroutine cp_arg_store_real_five_tensor_a_d(x)
+C $OpenAD$ INLINE DECLS
+        use OAD_active
+        use OAD_cp
+        implicit none
+        type(active), dimension(:,:,:,:,:) :: x
+C $OpenAD$ END DECLS
+#ifdef OAD_DEBUG_CP
+        !write(standardmessageunit,*)'OAD: cp write x%d ', x(1,1,1,1,1)%d
+#endif
+	write(unit=cp_io_unit) x%d
+      end subroutine 
+
+      subroutine cp_arg_restore_real_five_tensor_a_d(x)
+C $OpenAD$ INLINE DECLS
+        use OAD_active
+        use OAD_cp
+        implicit none
+        type(active), dimension(:,:,:,:,:) :: x
+C $OpenAD$ END DECLS
+	read(unit=cp_io_unit) x%d
+#ifdef OAD_DEBUG_CP
+        !write(standardmessageunit,*)'OAD: cp read x%d ', x(1,1,1,1,1)%d
+#endif
+      end subroutine 
+
+      subroutine cp_arg_store_real_six_tensor_a_d(x)
+C $OpenAD$ INLINE DECLS
+        use OAD_active
+        use OAD_cp
+        implicit none
+        type(active), dimension(:,:,:,:,:,:) :: x
+C $OpenAD$ END DECLS
+#ifdef OAD_DEBUG_CP
+        !write(standardmessageunit,*)'OAD: cp write x%d ', x(1,1,1,1,1,1)%d
+#endif
+	write(unit=cp_io_unit) x%d
+      end subroutine 
+
+      subroutine cp_arg_restore_real_six_tensor_a_d(x)
+C $OpenAD$ INLINE DECLS
+        use OAD_active
+        use OAD_cp
+        implicit none
+        type(active), dimension(:,:,:,:,:,:) :: x
+C $OpenAD$ END DECLS
+	read(unit=cp_io_unit) x%d
+#ifdef OAD_DEBUG_CP
+        !write(standardmessageunit,*)'OAD: cp read x%d ', x(1,1,1,1,1,1)%d
+#endif
+      end subroutine   

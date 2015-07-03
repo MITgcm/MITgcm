@@ -9,6 +9,13 @@ do
   echo "/^ *SUBROUTINE $srName(/i\\" >> temp.sed
   case "$srName" in
     "OpenAD_main_do_loop" )
+      if [ -z ${ALLOW_OPENAD_DIVA+x} ]; then
+        echo "c\$openad XXX Template ad_template.revolve.f" >> temp.sed
+      else
+        echo "c\$openad XXX Template ad_template.regular.f" >> temp.sed
+      fi
+      ;;
+    "OpenAD_inner_do_loop" )
       echo "c\$openad XXX Template ad_template.revolve.f" >> temp.sed
       ;;
     "OpenAD_cg2d" )
