@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_forced_buttress.F,v 1.3 2015/07/01 16:03:29 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_forced_buttress.F,v 1.4 2015/07/03 12:12:46 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -109,15 +109,15 @@ C     LOCAL VARIABLES
               unconf_stress = 
      &         streamice_density_firn * gravity *
      &         (1-streamice_density_firn*i_rhow) *
-     &         H_streamice(i-1,j,bi,bj)**2 
+     &         H_streamice(i,j,bi,bj)**2 
              else
               unconf_stress = gravity * (
      &         streamice_density_firn * firn_depth**2 + 
-     &         (h_streamice(i-1,j,bi,bj)-firn_depth) *
+     &         (h_streamice(i,j,bi,bj)-firn_depth) *
      &          (streamice_density_firn*firn_depth+streamice_density*
-     &          (h_streamice(i-1,j,bi,bj)-streamice_firn_correction)) -
+     &          (h_streamice(i,j,bi,bj)-streamice_firn_correction)) -
      &         streamice_density**2*i_rhow*
-     &          (h_streamice(i-1,j,bi,bj)-streamice_firn_correction)**2
+     &          (h_streamice(i,j,bi,bj)-streamice_firn_correction)**2
      &         ) 
              endif
              else
