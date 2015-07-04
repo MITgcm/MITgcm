@@ -38,6 +38,11 @@ c we may need these for the checkpointing
       use GMREDI_TAVE_mod
 #endif
       use GRID_mod
+#ifdef ALLOW_KPP
+      use KPP_mod
+      use KPP_PARAMS_mod
+      use KPP_TAVE_mod
+#endif
 #ifdef ALLOW_MOM_COMMON
       use MOM_VISC_mod
 #endif

@@ -28,6 +28,9 @@ endif
 if ( ${fileName} == 'GMREDI' ) then
   echo '#include "GMREDI_OPTIONS.h"'    >> ${fileName}_temp
 endif
+if ( ${fileName} == 'KPP' ) then
+  echo '#include "KPP_OPTIONS.h"'    >> ${fileName}_temp
+endif
 if ( ${fileName} == 'MOM_VISC' ) then
   echo '#include "MOM_COMMON_OPTIONS.h"'    >> ${fileName}_temp
 endif
