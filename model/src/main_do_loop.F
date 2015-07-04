@@ -1,9 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.19 2015/07/03 21:32:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.20 2015/07/04 17:58:26 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#include "OPENAD_OPTIONS.h"
+#ifdef ALLOW_OPENAD
+# include "OPENAD_OPTIONS.h"
+#endif
 c#ifdef ALLOW_AUTODIFF
 c# include "AUTODIFF_OPTIONS.h"
 c#endif
@@ -70,71 +72,6 @@ C     == Global variables ==
 
 c**************************************
 #ifdef ALLOW_OPENAD
-
-C-- The folowing header files are included in the_main_loop.F for TAF
-C    and might be needed here (where the iloop is done) for OpenAD
-c#  include "AUTODIFF_MYFIELDS.h"
-c#  include "GRID.h"
-c#  include "DYNVARS.h"
-c#  include "SURFACE.h"
-c#  include "FFIELDS.h"
-c#  include "EOS.h"
-c#  include "AUTODIFF.h"
-c#  ifdef ALLOW_GENERIC_ADVDIFF
-c#   include "GAD.h"
-c#   include "GAD_SOM_VARS.h"
-c#  endif
-c#  ifdef ALLOW_MOM_FLUXFORM
-c#   include "MOM_FLUXFORM.h"
-c#  endif
-c#  ifdef ALLOW_CD_CODE
-c#   include "CD_CODE_VARS.h"
-c#  endif
-c#  ifdef ALLOW_EXF
-c#   include "EXF_FIELDS.h"
-c#   ifdef ALLOW_BULKFORMULAE
-c#    include "EXF_CONSTANTS.h"
-c#   endif
-c#  endif /* ALLOW_EXF */
-c#  ifdef ALLOW_SEAICE
-c#   include "SEAICE_SIZE.h"
-c#   include "SEAICE.h"
-c#   include "SEAICE_PARAMS.h"
-c#   include "SEAICE_COST.h"
-c#   include "SEAICE_TRACER.h"
-c#  endif
-c#  ifdef ALLOW_SALT_PLUME
-c#   include "SALT_PLUME.h"
-c#  endif
-c#  ifdef ALLOW_THSICE
-c#   include "THSICE_SIZE.h"
-c#   include "THSICE_VARS.h"
-c#   include "THSICE_COST.h"
-c#  endif
-c#  ifdef ALLOW_EBM
-c#   include "EBM.h"
-c#  endif
-c#  ifdef ALLOW_RBCS
-c#   include "RBCS_SIZE.h"
-c#   include "RBCS_FIELDS.h"
-c#  endif
-c#  ifdef ALLOW_OFFLINE
-c#   include "OFFLINE.h"
-c#  endif
-c#  ifdef ALLOW_CG2D_NSA
-c#   include "CG2D.h"
-c#  endif
-c# ifdef ALLOW_GGL90
-c#  include "GGL90.h"
-c# endif
-c# ifdef ALLOW_PROFILES
-c#  include "profiles.h"
-c# endif
-c# ifdef ALLOW_ECCO_EVOLUTION
-c#  ifdef ALLOW_ECCO
-c#   include "ecco_cost.h"
-c#  endif
-c# endif
 
 # ifdef ALLOW_CTRL
 #  include "CTRL_SIZE.h"
@@ -216,58 +153,47 @@ CEOP
 #ifdef ALLOW_OPENAD
 C     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-#ifdef ALLOW_OPENAD_DIVA
+# ifdef ALLOW_OPENAD_DIVA
       DO iloop = 1, nTimeSteps_l2
-#else
+# else
       DO iloop = 1, nTimeSteps
-#endif
+# endif
 
-#endif
+#endif /* ALLOW_OPENAD */
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
 #endif
 
 #ifndef ALLOW_OPENAD
-#ifdef ALLOW_ATM2D
+# ifdef ALLOW_ATM2D
         CALL TIMER_START('FORWARD_STEP_ATM2D  [MAIN_DO_LOOP]',myThid)
         CALL FORWARD_STEP_ATM2D( iloop, myTime, myIter, myThid )
         CALL TIMER_STOP ('FORWARD_STEP_ATM2D  [MAIN_DO_LOOP]',myThid)
-#else
+# else
         CALL TIMER_START('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
         CALL FORWARD_STEP( iloop, myTime, myIter, myThid )
         CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
-#endif
+# endif
 #else
-C#ifdef ALLOW_ATM2D
-C        CALL TIMER_START('INNER_DO_LOOP_ATM2D  [MAIN_DO_LOOP]',myThid)
-C        nTimeSteps_l2 = 2
-C        CALL INNER_DO_LOOP( iloop, myTime, myIter, myThid )
-C        CALL TIMER_STOP ('INNER_DO_LOOP_ATM2D  [MAIN_DO_LOOP]',myThid)
-C#else
-C        CALL TIMER_START('INNER_DO_LOOP        [MAIN_DO_LOOP]',myThid)
-C        nTimeSteps_l2 = 2
-C        CALL INNER_DO_LOOP( iloop, myTime, myIter, myThid )
-C        CALL TIMER_STOP ('INNER_DO_LOOP        [MAIN_DO_LOOP]',myThid)
-C#endif
-#ifdef ALLOW_OPENAD_DIVA
+# ifdef ALLOW_OPENAD_DIVA
        CALL TIMER_START('INNER_DO_LOOP       [MAIN_DO_LOOP]',myThid)
        nTimeSteps_l2 = 2
        CALL INNER_DO_LOOP( iloop, myTime, myIter, myThid )
        CALL TIMER_STOP ('INNER_DO_LOOP       [MAIN_DO_LOOP]',myThid)
-#else
+# else
        CALL TIMER_START('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
        nTimeSteps_l2 = 2
        CALL FORWARD_STEP( iloop, myTime, myIter, myThid )
        CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
-#endif
-#endif
+# endif
+#endif /* ndef ALLOW_OPENAD */
 
 #ifdef ALLOW_OPENAD
       ENDDO
 C     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STOPS   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-#endif
+#endif /* ALLOW_OPENAD */
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('MAIN_DO_LOOP',myThid)
