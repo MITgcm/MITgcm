@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.54 2014/09/11 19:23:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.55 2015/07/05 01:54:11 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -152,7 +152,7 @@ c     Rib    (imt,Nr      ) - bulk Richardson number
       _RL sigma  (imt         )
       _RL Rib    (imt,Nr      )
 
-      integer i, k, md
+      integer i, k, md, kl
 
 c-----------------------------------------------------------------------
 c compute interior mixing coefficients everywhere, due to constant
@@ -434,8 +434,10 @@ c     initialize hbl and kbl to bottomed out values
 
       do i = 1, imt
          Rib(i,1) = 0. _d 0
-         kbl(i) = max(kmtj(i),1)
-         hbl(i) = -zgrid(kbl(i))
+         if (kmtj(i).LT.1) kmtj(i) = 1
+         kbl(i) = kmtj(i)
+         kl     = kbl(i)
+         hbl(i) = -zgrid(kl)
       end do
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -814,8 +816,9 @@ c determine caseA and caseB
 c-----------------------------------------------------------------------
 
       do i = 1, imt
+         kl = kbl(i)
          casea(i) = p5 +
-     1        sign(p5, -zgrid(kbl(i)) - p5*hwide(kbl(i)) - hbl(i))
+     1        sign(p5, -zgrid(kl) - p5*hwide(kl) - hbl(i))
       end do
 
 #endif /* ALLOW_KPP */
@@ -1338,7 +1341,7 @@ c     ws(imt), wm(imt)           turbulent velocity scales             (m/s)
       _RL gat1m(imt), gat1s(imt), gat1t(imt)
       _RL dat1m(imt), dat1s(imt), dat1t(imt)
       _RL ws(imt), wm(imt)
-      integer i, kn, ki
+      integer i, kn, ki, kl
       _RL R, dvdzup, dvdzdn, viscp
       _RL difsp, diftp, visch, difsh, difth
       _RL f1, sig, a1, a2, a3, delhat
@@ -1506,7 +1509,8 @@ c find diffusivities at kbl-1 grid level
 c-----------------------------------------------------------------------
 
       do i = 1, imt
-         sig      = -zgrid(kbl(i)-1) / hbl(i)
+         kl = kbl(i)
+         sig      = -zgrid(kl-1) / hbl(i)
          sigma(i) = stable(i) * sig
      &            + (1. - stable(i)) * min(sig,epsilon)
       end do
@@ -1527,7 +1531,8 @@ CADJ STORE ws = comlev1_kpp, key=ikppkey, kind=isbyte
 #endif
 
       do i = 1, imt
-         sig = -zgrid(kbl(i)-1) / hbl(i)
+         kl = kbl(i)
+         sig = -zgrid(kl-1) / hbl(i)
          a1 = sig - 2.
          a2 = 3. - 2. * sig
          a3 = sig - 1.
