@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2169 2015/07/03 21:36:38 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2170 2015/07/05 02:06:23 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -8,6 +8,8 @@ o OpenAD
  - Adding preliminary ggl90 test to OpenAD verification.
    Config. with ggl90 currently diverges after 64 time steps
    so will need more work to become more stable
+ - Adding preliminary kpp test to OpenAD verification.
+   required small tweakes in kpp_routines.F
  - Merge and update from Krishna Narayanan's contrib area:
    * Add one variable for preliminary OpenAD DIVA
    * Add replacement time-stepping for OpenAD DIVA
