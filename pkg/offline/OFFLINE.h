@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/OFFLINE.h,v 1.12 2013/07/07 22:24:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/OFFLINE.h,v 1.13 2015/07/16 21:21:18 jmc Exp $
 C $Name:  $
 
 #ifdef  ALLOW_OFFLINE
@@ -33,15 +33,15 @@ C-  Forcing files
 
       COMMON /OFFLINE_PARAMS_I/
      &       offlineLoadPrec,
-     &       offlineIter0, offlineOffsetIter
+     &       offlineIter0
       INTEGER offlineLoadPrec
       INTEGER offlineIter0
-      INTEGER offlineOffsetIter
 
       COMMON /OFFLINE_PARAMS_R/
-     &       deltaToffline,
+     &       deltaToffline, offlineTimeOffset,
      &       offlineForcingPeriod, offlineForcingCycle
       _RL deltaToffline
+      _RL offlineTimeOffset
       _RL offlineForcingPeriod
       _RL offlineForcingCycle
 

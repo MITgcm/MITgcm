@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.24 2013/08/20 20:20:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.25 2015/07/16 21:21:18 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -88,7 +88,7 @@ C--   First call requires that we initialize everything to zero for safety
 C      <= already done in OFFLINE_INIT_VARIA
 
 C--   Now calculate whether it is time to update the forcing arrays
-      locTime = myTime -offlineOffsetIter*deltaToffline
+      locTime = myTime - offlineTimeOffset
       CALL GET_PERIODIC_INTERVAL(
      O                  intimeP, intime0, intime1, bWght, aWght,
      I                  offlineForcingCycle, offlineForcingPeriod,
