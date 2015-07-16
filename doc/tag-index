@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2171 2015/07/16 21:22:40 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2172 2015/07/16 23:26:38 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -10,6 +10,7 @@ o pkg/offline:
     (offlineTimeOffset) to offset-iter x deltaToffline;
   - do not turn-off Temp & Salinity surface relaxation when using KPP (used
     in KPP as part of surface buoyancy forcing) in offline run.
+  - fix ptracers KPP non-local term in the case where KPP is re-computed.
 o OpenAD
   - Adding preliminary ggl90 test to OpenAD verification.
     Config. with ggl90 currently diverges after 64 time steps
