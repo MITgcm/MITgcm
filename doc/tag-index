@@ -1,34 +1,41 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2170 2015/07/05 02:06:23 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2171 2015/07/16 21:22:40 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/offline:
+  - change (rarely used) offset-iteration parameter to an offset time (in s):
+    can easily recover previous offset-iter effect by setting offset-time
+    (offlineTimeOffset) to offset-iter x deltaToffline;
+  - do not turn-off Temp & Salinity surface relaxation when using KPP (used
+    in KPP as part of surface buoyancy forcing) in offline run.
 o OpenAD
- - Adding preliminary ggl90 test to OpenAD verification.
-   Config. with ggl90 currently diverges after 64 time steps
-   so will need more work to become more stable
- - Adding preliminary kpp test to OpenAD verification.
-   required small tweakes in kpp_routines.F
- - Merge and update from Krishna Narayanan's contrib area:
-   * Add one variable for preliminary OpenAD DIVA
-   * Add replacement time-stepping for OpenAD DIVA
-   * genmake2 flag -diva (but only for OpenAD; preliminary)
-   * required modifs for OAD_support
-   successful preliminary test for tutorial_global_oce_biogeo/
+  - Adding preliminary ggl90 test to OpenAD verification.
+    Config. with ggl90 currently diverges after 64 time steps
+    so will need more work to become more stable
+  - Adding preliminary kpp test to OpenAD verification.
+    required small tweakes in kpp_routines.F
+  - Merge and update from Krishna Narayanan's contrib area:
+    * Add one variable for preliminary OpenAD DIVA
+    * Add replacement time-stepping for OpenAD DIVA
+    * genmake2 flag -diva (but only for OpenAD; preliminary)
+    * required modifs for OAD_support
+    successful preliminary test for tutorial_global_oce_biogeo/
 o pkg/seaice:
- - initialise deltaC in seaice_lsr, cosmetic changes in seaice_lsr
- - add cpp-flag SEAICE_DELTA_SMOOTHREG for option of regularising
-   delta with a smooth function in s/r seaice_calc_viscosity
-   (no effect on EVP)
- - rename local suffix "sqr" into "sq" for more consistent variable names
-o pkg/seaice: add new parameter SEAICE_deltaMin that is used ***only***
-  for regularizing Delta (and nothing else, like the parameter 
-  which is also used for all sorts of things SEAICE_EPS). Defaults to
-  SEAICE_EPS for backward compatibility only.
+  - initialise deltaC in seaice_lsr, cosmetic changes in seaice_lsr
+  - add cpp-flag SEAICE_DELTA_SMOOTHREG for option of regularising
+    delta with a smooth function in s/r seaice_calc_viscosity
+    (no effect on EVP)
+  - rename local suffix "sqr" into "sq" for more consistent variable names
+o pkg/seaice:
+    add new parameter SEAICE_deltaMin that is used ***only***
+    for regularizing Delta (and nothing else, like the parameter
+    which is also used for all sorts of things SEAICE_EPS).
+    Defaults to SEAICE_EPS for backward compatibility only.
 o pkg/seaice: replace erroneously storing e12Csqr on the wrong tape with
-  the wrong key by inialising it before use -> fixes a recomputation
-  problem but does not fix the gradient
+    the wrong key by inialising it before use -> fixes a recomputation
+    problem but does not fix the gradient
 o pkg/layers:
   - move resetting of flux arrays to outside the iLa loop
     (this caused layers_diapycnal to not work with more than one layer coord.)
@@ -40,8 +47,8 @@ o pkg/seaice:
   - Rename SEAICE_VECTORIZE_LSR_ZEBRA to SEAICE_LSR_ZEBRA and define it
     in lab_sea forward experiment (changes results -> updated)
   - update adjoint experiment lab_sea after cleaning up seaice_lsr_tridiagu/v
-o pkg/seaice: modify seaice_lsr.F in order to improve the gradient 
-  computations; for SEAICE_VECTORIZE_LSR
+o pkg/seaice: modify seaice_lsr.F in order to improve the gradient
+   computations; for SEAICE_VECTORIZE_LSR
   - move the loops over which the tridiagonal solvers (seaice_lsr_tridiagu/v)
     sweep to the outside,
   - remove store directives and add "CADJ loop sequential" directives
