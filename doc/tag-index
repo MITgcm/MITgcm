@@ -1,9 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2172 2015/07/16 23:26:38 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2173 2015/07/18 22:15:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/offline:
+  - change where Offline-Fields are loaded, from load_fields_driver.F to
+    directly within FORWARD_STEP, just after updating iter number and time;
+  - move setting of GM and KPP diffusivity out of OFFLINE_FIELDS_LOAD into new
+    S/R OFFLINE_GET_DIFFUS that is called towards the end of DO_OCEANIC_PHYS;
+   These changes allow:
+    a) to recover exactly on-line results using deltaToffline=deltaTClock,
+    tested (using offlineIter0= nIter0 -1 and offlineTimeOffset= -deltaT/2)
+    both with Lin & Non-Lin Free-Surf, both with staggerTimeStep & synchronous
+    time-step, both with GM & KPP files and with recomputing these fields;
+    b) no needs to switch on staggerTimeStep anymore;
+    c) simplify rescaling of offline horiz. velocity with Non-Lin Free-Surf.
+  - update output of experiments tutorial_cfc_offline (11 to 13 digits left)
+    and tutorial_dic_adjoffline (only 3 digits left).
 o pkg/offline:
   - change (rarely used) offset-iteration parameter to an offset time (in s):
     can easily recover previous offset-iter effect by setting offset-time
