@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.25 2015/07/16 21:21:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.26 2015/07/18 21:47:08 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -83,7 +83,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c      IF ( offlinePeriodicExternalLoad ) THEN
       IF ( .TRUE. ) THEN
 
-C First call requires that we initialize everything to zero for safety
 C--   First call requires that we initialize everything to zero for safety
 C      <= already done in OFFLINE_INIT_VARIA
 
@@ -349,91 +348,58 @@ C-    save newly loaded time-record
 C--   end if-block for loading new time-records
       ENDIF
 
-C--   Interpolate uvel, vvel, wvel
+C--   Save time-interpolation weights
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        offline_Wght(1,bi,bj) = bWght
-        offline_Wght(2,bi,bj) = aWght
-        DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           uVel(i,j,k,bi,bj) = bWght*uvel0(i,j,k,bi,bj)
-     &                       + aWght*uvel1(i,j,k,bi,bj)
-           vVel(i,j,k,bi,bj) = bWght*vvel0(i,j,k,bi,bj)
-     &                       + aWght*vvel1(i,j,k,bi,bj)
-           wVel(i,j,k,bi,bj) = bWght*wvel0(i,j,k,bi,bj)
-     &                       + aWght*wvel1(i,j,k,bi,bj)
-           theta(i,j,k,bi,bj)= bWght*tave0(i,j,k,bi,bj)
-     &                       + aWght*tave1(i,j,k,bi,bj)
-           salt(i,j,k,bi,bj) = bWght*save0(i,j,k,bi,bj)
-     &                       + aWght*save1(i,j,k,bi,bj)
-#ifdef ALLOW_GMREDI
-           Kwx(i,j,k,bi,bj)  = bWght*gmkx0(i,j,k,bi,bj)
-     &                       + aWght*gmkx1(i,j,k,bi,bj)
-           Kwy(i,j,k,bi,bj)  = bWght*gmky0(i,j,k,bi,bj)
-     &                       + aWght*gmky1(i,j,k,bi,bj)
-           Kwz(i,j,k,bi,bj)  = bWght*gmkz0(i,j,k,bi,bj)
-     &                       + aWght*gmkz1(i,j,k,bi,bj)
-#endif
-c          ConvectCount(i,j,k,bi,bj) = bWght*conv0(i,j,k,bi,bj)
-c    &                               + aWght*conv1(i,j,k,bi,bj)
-           IVDConvCount(i,j,k,bi,bj) = bWght*conv0(i,j,k,bi,bj)
-     &                               + aWght*conv1(i,j,k,bi,bj)
-#ifdef ALLOW_KPP
-           KPPdiffKzS(i,j,k,bi,bj) = bWght*kdfs0(i,j,k,bi,bj)
-     &                             + aWght*kdfs1(i,j,k,bi,bj)
-C-- Note: for convenience, the array KPPghat will contain
-C         the product ghat*diffKzS (and not ghat alone).
-           KPPghat(i,j,k,bi,bj) = bWght*kght0(i,j,k,bi,bj)
-     &                          + aWght*kght1(i,j,k,bi,bj)
-#endif
-          ENDDO
-         ENDDO
-        ENDDO
-#ifdef NONLIN_FRSURF
-        IF ( select_rStar.GT.0 .AND. staggerTimeStep ) THEN
-         DO k=1,Nr
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            uVel(i,j,k,bi,bj) = uVel(i,j,k,bi,bj)
-     &                        / rStarFacW(i,j,bi,bj)
-            vVel(i,j,k,bi,bj) = vVel(i,j,k,bi,bj)
-     &                        / rStarFacS(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ELSEIF ( select_rStar.GT.0 ) THEN
-         DO k=1,Nr
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            uVel(i,j,k,bi,bj) = uVel(i,j,k,bi,bj)
-     &                        / rStarFacNm1W(i,j,bi,bj)
-            vVel(i,j,k,bi,bj) = vVel(i,j,k,bi,bj)
-     &                        / rStarFacNm1S(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ELSEIF ( nonlinFreeSurf.GT.0 ) THEN
-          STOP 'OFFLINE_FIELDS_LOAD: r-Coord NLFS code missing'
-        ENDIF
-#endif /* NONLIN_FRSURF */
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-c          surfaceForcingT(i,j,bi,bj) = bWght*hflx0(i,j,bi,bj)
-c    &                                + aWght*hflx1(i,j,bi,bj)
-c          surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
-c    &                        *recip_Cp*mass2rUnit
-           surfaceForcingS(i,j,bi,bj) = bWght*sflx0(i,j,bi,bj)
-     &                                + aWght*sflx1(i,j,bi,bj)
-           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
-     &                                 *mass2rUnit
-c          ICEM(i,j,bi,bj) = bWght*icem0(i,j,bi,bj)
-c    &                     + aWght*icem1(i,j,bi,bj)
-         ENDDO
-        ENDDO
-C--   end bi,bj loops
+         offline_Wght(1,bi,bj) = bWght
+         offline_Wght(2,bi,bj) = aWght
        ENDDO
       ENDDO
+
+C--   Interpolate State Variables: uvel, vvel, wvel
+      IF ( myIter.NE.nIter0 .OR. nonlinFreeSurf.LE.0 ) THEN
+C     Skip initial (nIter0) setting of state vars if loaded from pickup-files
+C     (as it is the case when using Non-Lin Free-Surf)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+
+         DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             uVel(i,j,k,bi,bj) = bWght*uvel0(i,j,k,bi,bj)
+     &                         + aWght*uvel1(i,j,k,bi,bj)
+             vVel(i,j,k,bi,bj) = bWght*vvel0(i,j,k,bi,bj)
+     &                         + aWght*vvel1(i,j,k,bi,bj)
+             wVel(i,j,k,bi,bj) = bWght*wvel0(i,j,k,bi,bj)
+     &                         + aWght*wvel1(i,j,k,bi,bj)
+             theta(i,j,k,bi,bj)= bWght*tave0(i,j,k,bi,bj)
+     &                         + aWght*tave1(i,j,k,bi,bj)
+             salt(i,j,k,bi,bj) = bWght*save0(i,j,k,bi,bj)
+     &                         + aWght*save1(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+#ifdef NONLIN_FRSURF
+         IF ( select_rStar.GT.0 ) THEN
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              uVel(i,j,k,bi,bj) = uVel(i,j,k,bi,bj)
+     &                          / rStarFacW(i,j,bi,bj)
+              vVel(i,j,k,bi,bj) = vVel(i,j,k,bi,bj)
+     &                          / rStarFacS(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ELSEIF ( nonlinFreeSurf.GT.0 ) THEN
+          STOP 'OFFLINE_FIELDS_LOAD: r-Coord NLFS code missing'
+         ENDIF
+#endif /* NONLIN_FRSURF */
+
+C--   end bi,bj loops
+        ENDDO
+       ENDDO
+      ENDIF
 
 C-- Diagnostics
 C      IF (myThid.EQ.1 .AND. myTime.LT.62208000.) THEN
