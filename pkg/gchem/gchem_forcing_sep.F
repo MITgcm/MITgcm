@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.40 2014/12/08 22:58:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.41 2015/07/18 21:42:04 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -119,11 +119,6 @@ c find global surface averages
 c     ENDIF
 #endif
 ccccccccccccccccccccccccccccccccccccccccccc
-#ifdef ALLOW_OFFLINE
-      IF ( useOffLine ) THEN
-        CALL OFFLINE_GET_SURFFORCING( myTime, myIter, myThid )
-      ENDIF
-#endif /* ALLOW_OFFLINE */
 #endif /* ALLOW_OLD_VIRTUALFLUX */
 
 #ifdef ALLOW_DARWIN
