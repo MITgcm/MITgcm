@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_reset_parms.F,v 1.3 2013/07/11 22:58:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_reset_parms.F,v 1.4 2015/07/18 21:49:08 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -59,15 +59,6 @@ C--   Make sure we compute vertical velocity since it is not read from a file
           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
           exactConserv = .TRUE.
-        ENDIF
-        IF ( .NOT.staggerTimeStep ) THEN
-          WRITE(msgBuf,'(A,A)') '** WARNING ** OFFLINE_RESET_PARMS: ',
-     &    '=> turn on staggerTimeStep to use computed wVel'
-          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT, myThid )
-          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                        SQUEEZE_RIGHT, myThid )
-          staggerTimeStep = .TRUE.
         ENDIF
       ELSE
 C--   Vertical velocity is read from a file: make sure it is not re-computed
