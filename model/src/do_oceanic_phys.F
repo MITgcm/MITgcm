@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.145 2015/07/02 04:43:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.146 2015/07/18 21:45:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -109,6 +109,8 @@ C       |-- GMREDI_CALC_TENSOR_DUMMY
 C       |
 C       |-- DWNSLP_CALC_FLOW
 C       |-- DWNSLP_CALC_FLOW
+C       |
+C       |-- OFFLINE_GET_DIFFUS
 C       |
 C       |-- BBL_CALC_RHS
 C       |
@@ -569,9 +571,6 @@ C jmc: do not know precisely where to put this call (bf or af thSIce ?)
 
 C---  Determines forcing terms based on external fields
 C     relaxation terms, etc.
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('EXTERNAL_FORCING_SURF',myThid)
-#endif
 #ifdef ALLOW_AUTODIFF
 CADJ STORE salt, theta = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
@@ -580,6 +579,9 @@ C--   if fluid is not water, by-pass surfaceForcing, find_rho, gmredi
 C     and all vertical mixing schemes, but keep OBCS_CALC
       IF ( fluidIsWater ) THEN
 #endif /* ALLOW_AUTODIFF */
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('EXTERNAL_FORCING_SURF',myThid)
+#endif
         CALL EXTERNAL_FORCING_SURF(
      I             iMin, iMax, jMin, jMax,
      I             myTime, myIter, myThid )
@@ -1101,6 +1103,15 @@ C--   end bi,bj loops.
 C---  if fluid Is Water: end
       ENDIF
 #endif
+
+#ifdef ALLOW_OFFLINE
+      IF ( useOffLine ) THEN
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('OFFLINE_GET_DIFFUS',myThid)
+#endif /* ALLOW_DEBUG */
+        CALL OFFLINE_GET_DIFFUS( myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_OFFLINE */
 
 #ifdef ALLOW_BBL
       IF ( useBBL ) THEN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.233 2015/07/02 04:43:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.234 2015/07/18 21:45:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -160,6 +160,8 @@ C       |
 C       |-- DYNAMICS
 C       |
 C       |-- MNC_UPDATE_TIME
+C       |
+C       |-- OFFLINE_FIELDS_LOAD
 C       |
 C       |-- UPDATE_R_STAR
 C       |-- UPDATE_SIGMA
@@ -825,6 +827,18 @@ C     Update MNC time information
          CALL MNC_UPDATE_TIME( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_MNC */
+
+#ifdef ALLOW_OFFLINE
+C     Load new Offline fields and update state-variable
+      IF ( useOffLine ) THEN
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('OFFLINE_FIELDS_LOAD',myThid)
+#endif /* ALLOW_DEBUG */
+        CALL TIMER_START('OFFLINE_FLDS_LOAD   [FORWARD_STEP]',myThid)
+        CALL OFFLINE_FIELDS_LOAD( myTime, myIter, myThid )
+        CALL TIMER_STOP ('OFFLINE_FLDS_LOAD   [FORWARD_STEP]',myThid)
+      ENDIF
+#endif /* ALLOW_OFFLINE */
 
 C--   Update geometric factors:
 #ifdef NONLIN_FRSURF
