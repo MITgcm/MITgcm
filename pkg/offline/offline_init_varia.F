@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_init_varia.F,v 1.6 2013/08/20 20:20:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_init_varia.F,v 1.7 2015/07/18 21:48:38 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -73,12 +73,8 @@ C--   end bi,bj loops.
        ENDDO
       ENDDO
 
-C     Used to be called only when using pkg/dic. but since main state
-C     variables are nor read from pickup-files (when useOffLine),
-C     seems logical to always load them here from offline files.
-      IF ( nonlinFreeSurf.LE.0 ) THEN
-        CALL OFFLINE_FIELDS_LOAD( startTime, nIter0, myThid )
-      ENDIF
+C     Load offline fields from files (for beginning of first time-step)
+      CALL OFFLINE_FIELDS_LOAD( startTime, nIter0, myThid )
 
       RETURN
       END
