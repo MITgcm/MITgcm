@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2173 2015/07/18 22:15:07 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2174 2015/07/19 19:54:59 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -16,8 +16,7 @@ o pkg/offline:
     time-step, both with GM & KPP files and with recomputing these fields;
     b) no needs to switch on staggerTimeStep anymore;
     c) simplify rescaling of offline horiz. velocity with Non-Lin Free-Surf.
-  - update output of experiments tutorial_cfc_offline (11 to 13 digits left)
-    and tutorial_dic_adjoffline (only 3 digits left).
+  - update output of experiment tutorial_dic_adjoffline (only 3 digits left).
 o pkg/offline:
   - change (rarely used) offset-iteration parameter to an offset time (in s):
     can easily recover previous offset-iter effect by setting offset-time
