@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_get_diffus.F,v 1.1 2015/07/18 21:43:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_get_diffus.F,v 1.2 2015/07/19 18:17:49 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -79,6 +79,16 @@ C--   Interpolate Diffusivity Components:
         aWght = offline_Wght(2,bi,bj)
 #endif /* ndef ALLOW_AUTODIFF */
 
+        IF ( Wvelfile .NE. ' '  .AND. myIter.EQ.nIter0 ) THEN
+         DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            wVel(i,j,k,bi,bj) = bWght*wvel0(i,j,k,bi,bj)
+     &                        + aWght*wvel1(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
         IF ( offlineLoadConvec ) THEN
          DO k=1,Nr
           DO j=1-OLy,sNy+OLy
