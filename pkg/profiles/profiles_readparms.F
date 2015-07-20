@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.15 2015/06/16 20:22:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.16 2015/07/20 19:37:09 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -84,6 +84,12 @@ c--     Set default values.
       prof_names(4)='prof_V'
       prof_names(5)='prof_ptr'
       prof_names(6)='prof_ssh'
+      prof_namesmod(1)='theta'
+      prof_namesmod(2)='salt'
+      prof_namesmod(3)='uVel'
+      prof_namesmod(4)='vVel'
+      prof_namesmod(5)='pTracer'
+      prof_namesmod(6)='etaN'
       prof_namesmask(1)='prof_Tmask'
       prof_namesmask(2)='prof_Smask'
       prof_namesmask(3)='prof_Umask'

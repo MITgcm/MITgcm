@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.14 2015/06/05 02:23:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.15 2015/07/20 19:37:09 gforget Exp $
 C $Name:  $
 
 C============================================================
@@ -11,7 +11,7 @@ C============================================================
       INTEGER NVARMAX
       PARAMETER ( NVARMAX=6 )
       INTEGER NLEVELMAX
-      PARAMETER ( NLEVELMAX=100 )
+      PARAMETER ( NLEVELMAX=110 )
       INTEGER NUM_INTERP_POINTS
       PARAMETER (NUM_INTERP_POINTS = 1)
 
@@ -51,6 +51,7 @@ C===========================================================
      & fidtangent(NFILESPROFMAX,nsx,nsy)
       integer fiddata(NFILESPROFMAX,nsx,nsy)
       character*(8) prof_names(NVARMAX)
+      character*(8) prof_namesmod(NVARMAX)
       character*(12) prof_namesmask(NVARMAX)
       character*(14) prof_namesweight(NVARMAX)
 
@@ -76,7 +77,8 @@ C===========================================================
      & prof_num_var_tot, prof_num_var_cur
       COMMON /profiles_l/ vec_quantities, profilesDoNcOutput, 
      & profilesDoGenGrid
-      COMMON /profiles_c/ prof_names, prof_namesmask, prof_namesweight
+      COMMON /profiles_c/ prof_names, prof_namesmask,
+     & prof_namesweight, prof_namesmod
 
 #ifdef ALLOW_PROFILES_GENERICGRID
       COMMON /profiles_GenericGrid_r/ prof_interp_weights,

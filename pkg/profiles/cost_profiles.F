@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.23 2015/06/05 02:23:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.24 2015/07/20 19:37:09 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -39,7 +39,6 @@ c     == routine arguments ==
       integer mythid
 
 #ifdef ALLOW_PROFILES
-#ifdef ALLOW_COST
 
 C     ========= Local variables =======================
       integer K,num_file,num_var,prof_num
@@ -58,6 +57,11 @@ C     ========= Local variables =======================
       character*(80) profilesfile, fnameequinc
       integer IL, JL, err
 
+      _RL  objf_prof_tile (nSx,nSy)
+      _RL  objf_prof_glo
+      _RL  num_prof_tile (nSx,nSy)
+      _RL  num_prof_glo
+
 C     !FUNCTIONS
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
@@ -67,6 +71,13 @@ c     == end of interface ==
 #ifndef ALLOW_CTRL
       optimcycle = 0
 #endif
+
+      write(msgbuf,'(a)') ' '
+      call print_message( msgbuf,
+     &  standardmessageunit,SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)') '== cost_profiles: begin =='
+      call print_message( msgbuf,
+     &  standardmessageunit,SQUEEZE_RIGHT , mythid)
 
         _BEGIN_MASTER( mythid )
 
@@ -197,9 +208,41 @@ cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
 
       _END_MASTER( mythid )
 
+c print cost function values
+      do num_file=1,NFILESPROFMAX
+      do num_var=1,NVARMAX
+c
+      do bj = mybylo(mythid),mybyhi(mythid)
+        do bi = mybxlo(mythid),mybxhi(mythid)
+          objf_prof_tile(bi,bj) =
+     &             objf_profiles(num_file,num_var,bi,bj)
+          num_prof_tile(bi,bj) =
+     &             num_profiles(num_file,num_var,bi,bj)
+       enddo
+      enddo
+c
+      CALL GLOBAL_SUM_TILE_RL( objf_prof_tile, objf_prof_glo, myThid )
+      CALL GLOBAL_SUM_TILE_RL( num_prof_tile, num_prof_glo, myThid )
+c
+      write(msgbuf,'(a,I2,a,I2,a,2D12.5)')
+     &  ' cost_profiles(',num_file,',',num_var,')= ',
+     &  objf_prof_glo,num_prof_glo
+
+      IF ( num_prof_glo .GT. 0. ) call print_message( msgbuf,
+     &  standardmessageunit,SQUEEZE_RIGHT , mythid)
+c
+      enddo
+      enddo
+
+      write(msgbuf,'(a)') '== cost_profiles: end   =='
+      call print_message( msgbuf,
+     &  standardmessageunit,SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)') ' '
+      call print_message( msgbuf,
+     &  standardmessageunit,SQUEEZE_RIGHT , mythid)
+
 C===========================================================
 
-#endif
 #endif
 
       RETURN

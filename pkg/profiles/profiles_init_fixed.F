@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.26 2015/05/02 01:02:07 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.27 2015/07/20 19:37:09 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -539,74 +539,23 @@ c interpolation information consistent (self and with grid)
 c6) available variablesin the data set
 
       do k=1,NVARMAX
-      prof_num_var_cur(num_file,k,bi,bj)=0
+        prof_num_var_cur(num_file,k,bi,bj)=0
       enddo
       prof_num_var_tot(num_file,bi,bj)=0
 
-      err = NF_INQ_VARID(fid,'prof_T', varid1 )
-      if (err.EQ.NF_NOERR) then
-      vec_quantities(num_file,1,bi,bj)=.TRUE.
-      prof_num_var_tot(num_file,bi,bj)=
-     & prof_num_var_tot(num_file,bi,bj)+1
-      prof_num_var_cur(num_file,1,bi,bj)=
-     & prof_num_var_tot(num_file,bi,bj)
-      else
-      vec_quantities(num_file,1,bi,bj)=.FALSE.
-      endif
-      err = NF_INQ_VARID(fid,'prof_S', varid1 )
-      if (err.EQ.NF_NOERR) then
-      vec_quantities(num_file,2,bi,bj)=.TRUE.
-      prof_num_var_tot(num_file,bi,bj)=
-     & prof_num_var_tot(num_file,bi,bj)+1
-      prof_num_var_cur(num_file,2,bi,bj)=
-     & prof_num_var_tot(num_file,bi,bj)
-      else
-      vec_quantities(num_file,2,bi,bj)=.FALSE.
-      endif
-#ifndef ALLOW_PROFILES_GENERICGRID
-cgf This bloc wont work when model u/v are not
-cgf zonal/meridional components, while prof_U/V are.
-      err = NF_INQ_VARID(fid,'prof_U', varid1 )
-      if (err.EQ.NF_NOERR) then
-      vec_quantities(num_file,3,bi,bj)=.TRUE.
-      prof_num_var_tot(num_file,bi,bj)=
-     & prof_num_var_tot(num_file,bi,bj)+1
-      prof_num_var_cur(num_file,3,bi,bj)=
-     & prof_num_var_tot(num_file,bi,bj)
-      else
-      vec_quantities(num_file,3,bi,bj)=.FALSE.
-      endif
-      err = NF_INQ_VARID(fid,'prof_V', varid1 )
-      if (err.EQ.NF_NOERR) then
-      vec_quantities(num_file,4,bi,bj)=.TRUE.
-      prof_num_var_tot(num_file,bi,bj)=
-     & prof_num_var_tot(num_file,bi,bj)+1
-      prof_num_var_cur(num_file,4,bi,bj)=
-     & prof_num_var_tot(num_file,bi,bj)
-      else
-      vec_quantities(num_file,4,bi,bj)=.FALSE.
-      endif
-#endif
-      err = NF_INQ_VARID(fid,'prof_ptr', varid1 )
-      if (err.EQ.NF_NOERR) then
-      vec_quantities(num_file,5,bi,bj)=.TRUE.
-      prof_num_var_tot(num_file,bi,bj)=
-     & prof_num_var_tot(num_file,bi,bj)+1
-      prof_num_var_cur(num_file,5,bi,bj)=
-     & prof_num_var_tot(num_file,bi,bj)
-      else
-      vec_quantities(num_file,5,bi,bj)=.FALSE.
-      endif
-      err = NF_INQ_VARID(fid,'prof_ssh', varid1 )
-      if (err.EQ.NF_NOERR) then
-      vec_quantities(num_file,6,bi,bj)=.TRUE.
-      prof_num_var_tot(num_file,bi,bj)=
-     & prof_num_var_tot(num_file,bi,bj)+1
-      prof_num_var_cur(num_file,6,bi,bj)=
-     & prof_num_var_tot(num_file,bi,bj)
-      else
-      vec_quantities(num_file,6,bi,bj)=.FALSE.
-      endif
+      do k=1,NVARMAX
+        JL  = ILNBLNK( prof_names(k) )
+        err = NF_INQ_VARID(fid,prof_names(k)(1:JL), varid1 )
+        if (err.EQ.NF_NOERR) then
+          vec_quantities(num_file,k,bi,bj)=.TRUE.
+          prof_num_var_tot(num_file,bi,bj)=
+     &     prof_num_var_tot(num_file,bi,bj)+1
+          prof_num_var_cur(num_file,k,bi,bj)=
+     &     prof_num_var_tot(num_file,bi,bj)
+        else
+          vec_quantities(num_file,k,bi,bj)=.FALSE.
+        endif
+      enddo
 
       write(msgbuf,'(a,6L5)') '  incl. variables (T/F flags)'
      &,vec_quantities(num_file,1,bi,bj),vec_quantities(num_file,2,bi,bj)
