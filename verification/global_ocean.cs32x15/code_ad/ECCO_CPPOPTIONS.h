@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/ECCO_CPPOPTIONS.h,v 1.10 2014/10/16 20:09:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/ECCO_CPPOPTIONS.h,v 1.11 2015/07/22 20:58:09 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -37,6 +37,7 @@ C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
 
 #define ALLOW_AUTODIFF_WHTAPEIO
+#define AUTODIFF_USE_MDSFINDUNITS
 #define ALLOW_PACKUNPACK_METHOD2
 #define AUTODIFF_USE_OLDSTORE_3D
 #define AUTODIFF_USE_OLDSTORE_2D
