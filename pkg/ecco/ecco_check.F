@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.23 2015/06/16 13:18:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.24 2015/07/22 20:34:32 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -62,16 +62,6 @@ C     msgBuf      - Informational/error meesage buffer
      &                     SQUEEZE_RIGHT , myThid )
        CALL PRINT_ERROR( msgBuf , myThid )
        STOP 'ABNORMAL END: S/R ECCO_CHECK'
-      ENDIF
-#endif
-
-#ifdef ALLOW_PROFILES_CONTRIBUTION
-      IF ( .NOT.usePROFILES ) THEN
-       WRITE(msgBuf,'(3A)') '** WARNING ** S/R ECCO_CHECK: ', 
-     &        'ALLOW_PROFILES_CONTRIBUTION requires ',
-     &        'netcdf and usePROFILES to be .true.'
-       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                     SQUEEZE_RIGHT , myThid )
       ENDIF
 #endif
 

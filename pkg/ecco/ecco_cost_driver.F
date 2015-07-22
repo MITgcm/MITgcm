@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.15 2014/11/02 21:23:12 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.16 2015/07/22 20:34:32 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -213,10 +213,6 @@ c--   Compute user defined cost function contributions (elaborate)
       call timer_start('cost_gencost_all    [ECCO SPIN-DOWN]', myThid)
       call cost_gencost_all( myIter, myTime, myThid )
       call timer_stop ('cost_gencost_all    [ECCO SPIN-DOWN]', myThid)
-
-#if (defined (ALLOW_PROFILES) && defined (ALLOW_PROFILES_CONTRIBUTION))
-      if ( usePROFILES ) CALL cost_profiles( myiter, mytime, mythid)
-#endif
 
 #ifdef ALLOW_CTRL
       IF (useCTRL) THEN

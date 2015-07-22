@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.174 2015/02/22 23:50:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.175 2015/07/22 20:33:58 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -644,6 +644,8 @@ c--   Accumulate in-situ time averages of temperature, salinity, SSH.
         CALL TIMER_START('PROFILES_INLOOP    [THE_MAIN_LOOP]', myThid)
         CALL PROFILES_INLOOP( endtime, myThid )
         CALL TIMER_STOP ('PROFILES_INLOOP    [THE_MAIN_LOOP]', myThid)
+c--   Compute all profiles cost function contributions.
+        CALL cost_profiles( myiter, mytime, mythid)
       ENDIF
 #endif
 
