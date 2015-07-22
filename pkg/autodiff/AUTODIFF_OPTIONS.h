@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF_OPTIONS.h,v 1.9 2014/09/11 19:09:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF_OPTIONS.h,v 1.10 2015/07/22 20:54:42 gforget Exp $
 C $Name:  $
 
 CBOP
@@ -50,6 +50,7 @@ C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
 
 #undef ALLOW_AUTODIFF_WHTAPEIO
+#undef AUTODIFF_USE_MDSFINDUNITS
 #undef ALLOW_PACKUNPACK_METHOD2
 #undef AUTODIFF_USE_OLDSTORE_3D
 #undef AUTODIFF_USE_OLDSTORE_2D
