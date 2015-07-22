@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.78 2015/07/03 21:04:12 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.79 2015/07/22 22:45:38 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -1481,7 +1481,8 @@ C     only master thread of master CPU open and write to file
          IL  = ILNBLNK( profilesfiles(num_file) )
          IL  = max (IL,30)
          write(ifc,'(4A,2D22.15)')
-     &    profilesfiles(num_file)(1:IL),' ',prof_names(num_var), ' = ',
+     &    profilesfiles(num_file)(1:IL),' ',
+     &    prof_names(num_file,num_var), ' = ',
      &    f_profiles(num_file,num_var),
      &    no_profiles(num_file,num_var)
         endif
