@@ -3,6 +3,6 @@
   useEXF         = .TRUE.,
   useGMRedi      = .TRUE.,
   useDiagnostics = .TRUE.,
-# usePROFILES    = .TRUE.,
+  usePROFILES    = .TRUE.,
  &
   
