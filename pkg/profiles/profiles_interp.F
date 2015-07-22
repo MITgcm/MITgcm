@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.10 2015/07/20 19:37:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.11 2015/07/22 22:46:32 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -14,7 +14,8 @@ C     o==========================================================o
      O traj_cur_out,
      I lon_cur,
      I lat_cur,
-     I type_cur,
+     I var_cur,
+     I itr_cur,
      I file_cur,
      I mytime,
      I bi,
@@ -46,7 +47,8 @@ C ==================== Global Variables ===========================
 C ==================== Routine Variables ==========================
       _RL  mytime
       integer mythid
-      integer type_cur,file_cur 
+      integer file_cur, itr_cur
+      character*(8) var_cur
       _RL  traj_cur_out(NLEVELMAX)
       _RL  lon_cur,lat_cur
 
@@ -59,7 +61,6 @@ C ==================== Local Variables ==========================
       _RL traj_cur(nR),mask_cur(nR)
       integer prof_i,prof_j
       _RL lon_tmp1,lon_tmp2,lon_1,lon_2,lat_1,lat_2,tmp_coeff
-      character*(80) varname
       integer JL
 
 c     == external functions ==
@@ -67,9 +68,6 @@ c     == external functions ==
       EXTERNAL ILNBLNK
 
 c--   == end of interface ==
-
-        JL  = ILNBLNK( prof_namesmod(type_cur) )
-        write(varname(1:80),'(1a)') prof_namesmod(type_cur)(1:JL)
 
        prof_i=-10
        prof_j=-10
@@ -82,7 +80,7 @@ c--   == end of interface ==
          DO i=1,sNx+1
 
 cgf value of j, south of the data point:
-      if (varname.NE.'vVel') then
+      if (var_cur.NE.'vVel') then
         if ((yC(i,j,bi,bj).LE.lat_cur).AND.
      &  (yC(i,j+1,bi,bj).GT.lat_cur)) then
           prof_j=j
@@ -107,7 +105,7 @@ cgf value of j, south of the data point:
       endif
 
 cgf value of i, west of the data point:
-      if (varname.NE.'uVel') then
+      if (var_cur.NE.'uVel') then
          if (xC(i+1,j,bi,bj).LT.xC(1,j,bi,bj)) then
          lon_tmp2=xC(i+1,j,bi,bj)+360
          else
@@ -156,7 +154,7 @@ cgf) spatial interpolation
         tab_coeffs2(2,2)=distance2*distance1
 
        do k=1,nr
-       if (varname.EQ.'theta') then
+       if (var_cur.EQ.'theta') then
                tab_coeffs1(1,1)=theta(prof_i,prof_j,k,bi,bj) !SO
                tab_coeffs1(1,2)=theta(prof_i+1,prof_j,k,bi,bj) !SE
                tab_coeffs1(2,1)=theta(prof_i,prof_j+1,k,bi,bj) !NO
@@ -165,7 +163,7 @@ cgf) spatial interpolation
                tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,k,bi,bj) !SE
                tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,k,bi,bj) !NO
                tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,k,bi,bj) !NZ
-       elseif (varname.EQ.'salt') then
+       elseif (var_cur.EQ.'salt') then
                tab_coeffs1(1,1)=salt(prof_i,prof_j,k,bi,bj) !SO
                tab_coeffs1(1,2)=salt(prof_i+1,prof_j,k,bi,bj) !SE
                tab_coeffs1(2,1)=salt(prof_i,prof_j+1,k,bi,bj) !NO
@@ -174,7 +172,7 @@ cgf) spatial interpolation
                tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,k,bi,bj) !SE
                tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,k,bi,bj) !NO
                tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,k,bi,bj) !NZ
-       elseif (varname.EQ.'uVel') then
+       elseif (var_cur.EQ.'uVel') then
                tab_coeffs1(1,1)=uVel(prof_i,prof_j,k,bi,bj) !SO
                tab_coeffs1(1,2)=uVel(prof_i+1,prof_j,k,bi,bj) !SE
                tab_coeffs1(2,1)=uVel(prof_i,prof_j+1,k,bi,bj) !NO
@@ -183,7 +181,7 @@ cgf) spatial interpolation
                tab_coeffs3(1,2)=maskW(prof_i+1,prof_j,k,bi,bj) !SE
                tab_coeffs3(2,1)=maskW(prof_i,prof_j+1,k,bi,bj) !NO
                tab_coeffs3(2,2)=maskW(prof_i+1,prof_j+1,k,bi,bj) !NZ 
-       elseif (varname.EQ.'vVel') then
+       elseif (var_cur.EQ.'vVel') then
                tab_coeffs1(1,1)=vVel(prof_i,prof_j,k,bi,bj) !SO
                tab_coeffs1(1,2)=vVel(prof_i+1,prof_j,k,bi,bj) !SE
                tab_coeffs1(2,1)=vVel(prof_i,prof_j+1,k,bi,bj) !NO
@@ -192,14 +190,18 @@ cgf) spatial interpolation
                tab_coeffs3(1,2)=maskS(prof_i+1,prof_j,k,bi,bj) !SE
                tab_coeffs3(2,1)=maskS(prof_i,prof_j+1,k,bi,bj) !NO
                tab_coeffs3(2,2)=maskS(prof_i+1,prof_j+1,k,bi,bj) !NZ 
-       elseif (varname.EQ.'pTracer') then
+       elseif (var_cur.EQ.'pTracer') then
 #ifdef ALLOW_PTRACERS
 cgf if this gets used, an additional common block could be defined, containing
 cgf the pTracer number (now 1, hard-coded), that would be read from the .nc input file
-               tab_coeffs1(1,1)=pTracer(prof_i,prof_j,k,bi,bj,1) !SO
-               tab_coeffs1(1,2)=pTracer(prof_i+1,prof_j,k,bi,bj,1) !SE
-               tab_coeffs1(2,1)=pTracer(prof_i,prof_j+1,k,bi,bj,1) !NO
-               tab_coeffs1(2,2)=pTracer(prof_i+1,prof_j+1,k,bi,bj,1) !NZ
+               tab_coeffs1(1,1)=pTracer(prof_i,prof_j,k,bi,bj,
+     &            itr_cur) !SO
+               tab_coeffs1(1,2)=pTracer(prof_i+1,prof_j,k,bi,bj,
+     &            itr_cur) !SE
+               tab_coeffs1(2,1)=pTracer(prof_i,prof_j+1,k,bi,bj,
+     &            itr_cur) !NO
+               tab_coeffs1(2,2)=pTracer(prof_i+1,prof_j+1,k,bi,bj,
+     &            itr_cur) !NZ
 #else
                tab_coeffs1(1,1)=0 !SO
                tab_coeffs1(1,2)=0 !SE
@@ -210,7 +212,7 @@ cgf the pTracer number (now 1, hard-coded), that would be read from the .nc inpu
                tab_coeffs3(1,2)=maskC(prof_i+1,prof_j,k,bi,bj) !SE
                tab_coeffs3(2,1)=maskC(prof_i,prof_j+1,k,bi,bj) !NO
                tab_coeffs3(2,2)=maskC(prof_i+1,prof_j+1,k,bi,bj) !NZ
-       elseif (varname.EQ.'etaN') then
+       elseif (var_cur.EQ.'etaN') then
                tab_coeffs1(1,1)=etan(prof_i,prof_j,bi,bj) !SO
                tab_coeffs1(1,2)=etan(prof_i+1,prof_j,bi,bj) !SE
                tab_coeffs1(2,1)=etan(prof_i,prof_j+1,bi,bj) !NO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/active_file_control_profiles.F,v 1.7 2012/06/22 22:07:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/active_file_control_profiles.F,v 1.8 2015/07/22 22:46:32 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -76,12 +76,13 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       vec_count(1)=nactive_var
       vec_count(2)=1
 
-      err = NF_INQ_VARID(fid,prof_names(active_varnum), varid1 )
+      err = NF_INQ_VARID(fid,prof_names(active_num_file,active_varnum),
+     &  varid1 )
       err = NF_GET_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
      & active_var)
 
-      err = NF_INQ_VARID(fid,prof_namesmask(active_varnum)
-     & ,varid1)
+      err = NF_INQ_VARID(fid,prof_namesmask(active_num_file,
+     & active_varnum), varid1)
       err = NF_GET_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
      & prof_mask1D_cur(1,bi,bj))
 
@@ -127,7 +128,8 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       vec_count(1)=nactive_var
       vec_count(2)=1
 
-      err = NF_INQ_VARID(fid,prof_names(active_varnum), varid1 )
+      err = NF_INQ_VARID(fid,prof_names(active_num_file,active_varnum), 
+     & varid1 )
       err = NF_GET_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
      & active_data_t)
 
@@ -141,7 +143,8 @@ c       Store the result on disk.
       vec_count(1)=nactive_var
       vec_count(2)=1
 
-      err = NF_INQ_VARID(fid,prof_names(active_varnum), varid1 )
+      err = NF_INQ_VARID(fid,prof_names(active_num_file,active_varnum),
+     & varid1 )
       err = NF_PUT_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
      & active_data_t)
 
@@ -205,7 +208,8 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       vec_count(1)=nactive_var
       vec_count(2)=1
 
-      err = NF_INQ_VARID(fid,prof_names(active_varnum), varid1 )
+      err = NF_INQ_VARID(fid,prof_names(active_num_file,active_varnum),
+     & varid1 )
       err = NF_GET_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
      & active_var)
 
@@ -304,12 +308,13 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       vec_count(1)=nactive_var
       vec_count(2)=1
 
-      err = NF_INQ_VARID(fid,prof_names(active_varnum), varid1 )
+      err = NF_INQ_VARID(fid,prof_names(active_num_file,active_varnum),
+     & varid1 )
       err = NF_PUT_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
      & active_var)
 
-      err = NF_INQ_VARID(fid,prof_namesmask(active_varnum),
-     & varid1 )
+      err = NF_INQ_VARID(fid,prof_namesmask(active_num_file,
+     & active_varnum), varid1 )
       err = NF_PUT_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
      & prof_mask1D_cur(1,bi,bj))
 
@@ -362,7 +367,8 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       vec_start(2)=irec
       vec_count(1)=nactive_var
       vec_count(2)=1
-      err = NF_INQ_VARID(fid,prof_names(active_varnum) , varid1 )
+      err = NF_INQ_VARID(fid,prof_names(active_num_file,active_varnum),
+     & varid1 )
       err = NF_GET_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
      & active_data_t)
 
@@ -377,7 +383,8 @@ c       Add active_var to data.
       vec_count(1)=nactive_var
       vec_count(2)=1
 
-      err = NF_INQ_VARID(fid,prof_names(active_varnum), varid1 )
+      err = NF_INQ_VARID(fid,prof_names(active_num_file,active_varnum),
+     & varid1 )
       err = NF_PUT_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
      & active_data_t)
 
@@ -433,7 +440,8 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       vec_count(1)=nactive_var
       vec_count(2)=1
 
-      err = NF_INQ_VARID(fid, prof_names(active_varnum), varid1 )
+      err = NF_INQ_VARID(fid, prof_names(active_num_file,active_varnum),
+     & varid1 )
       err = NF_PUT_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
      & active_var)
 

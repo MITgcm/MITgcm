@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.16 2015/07/20 19:37:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.17 2015/07/22 22:46:32 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -50,6 +50,9 @@ c--   Read the namelist input.
      &                   profilesDir,
      &                   profilesfiles,
      &                   mult_profiles,
+     &                   prof_names,
+     &                   prof_namesmod,
+     &                   prof_itracer,
      &                   profilesDoNcOutput,
      &                   profilesDoGenGrid
 
@@ -66,42 +69,39 @@ C     print a (weak) warning if data.profiles is found
       _BEGIN_MASTER( myThid )
 
 c--     Set default values.
-        profilesDir=' '
+      profilesDir=' '
 
-        do num_file=1,NFILESPROFMAX
+      do num_file=1,NFILESPROFMAX
           profilesfiles(num_file)      =    ' '
-        enddo
+      enddo
 
-        do num_file=1,NFILESPROFMAX
-         do num_var=1,NVARMAX
-          mult_profiles(num_file,num_var) = 1. _d 0
-         enddo
-        enddo
+      do num_file=1,NFILESPROFMAX
+       do num_var=1,NVARMAX
+        mult_profiles(num_file,num_var) = 1. _d 0
+       enddo
+      enddo
 
-      prof_names(1)='prof_T'
-      prof_names(2)='prof_S'
-      prof_names(3)='prof_U'
-      prof_names(4)='prof_V'
-      prof_names(5)='prof_ptr'
-      prof_names(6)='prof_ssh'
-      prof_namesmod(1)='theta'
-      prof_namesmod(2)='salt'
-      prof_namesmod(3)='uVel'
-      prof_namesmod(4)='vVel'
-      prof_namesmod(5)='pTracer'
-      prof_namesmod(6)='etaN'
-      prof_namesmask(1)='prof_Tmask'
-      prof_namesmask(2)='prof_Smask'
-      prof_namesmask(3)='prof_Umask'
-      prof_namesmask(4)='prof_Vmask'
-      prof_namesmask(5)='prof_ptrmask'
-      prof_namesmask(6)='prof_sshmask'
-      prof_namesweight(1)='prof_Tweight'
-      prof_namesweight(2)='prof_Sweight'
-      prof_namesweight(3)='prof_Uweight'
-      prof_namesweight(4)='prof_Vweight'
-      prof_namesweight(5)='prof_ptrweight'
-      prof_namesweight(6)='prof_sshweight'
+      do num_file=1,NFILESPROFMAX
+       prof_names(num_file,1)='prof_T'
+       prof_names(num_file,2)='prof_S'
+       prof_names(num_file,3)='prof_U'
+       prof_names(num_file,4)='prof_V'
+       prof_names(num_file,5)='prof_ptr'
+       prof_names(num_file,6)='prof_ssh'
+       prof_itracer(num_file,1)=1
+       prof_itracer(num_file,2)=1
+       prof_itracer(num_file,3)=1
+       prof_itracer(num_file,4)=1
+       prof_itracer(num_file,5)=1
+       prof_itracer(num_file,6)=1
+       prof_namesmod(num_file,1)='theta'
+       prof_namesmod(num_file,2)='salt'
+       prof_namesmod(num_file,3)='uVel'
+       prof_namesmod(num_file,4)='vVel'
+       prof_namesmod(num_file,5)='pTracer'
+       prof_namesmod(num_file,6)='etaN'
+      enddo
+
       profilesDoNcOutput=.false.
 #ifdef ALLOW_PROFILES_GENERICGRID
       profilesDoGenGrid=.true.
@@ -136,6 +136,15 @@ c--     Next, read the cost data file.
         CLOSE( iUnit )
 
         do num_file=1,NFILESPROFMAX
+
+          do num_var=1,NVARMAX
+            IL  = ILNBLNK( prof_names(num_file,num_var) )
+            WRITE(prof_namesmask(num_file,num_var),'(2A)')
+     &        prof_names(num_file,num_var)(1:IL),'mask'
+            WRITE(prof_namesweight(num_file,num_var),'(2A)')
+     &        prof_names(num_file,num_var)(1:IL),'weight'
+          enddo
+
           if ( profilesfiles(num_file) .NE. ' ' ) then
             IL  = ILNBLNK( profilesfiles(num_file) )
             fname = profilesfiles(num_file)(1:IL)//'.nc'

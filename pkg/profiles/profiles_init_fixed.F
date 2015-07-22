@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.28 2015/07/22 20:56:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.29 2015/07/22 22:46:32 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -544,8 +544,8 @@ c6) available variablesin the data set
       prof_num_var_tot(num_file,bi,bj)=0
 
       do k=1,NVARMAX
-        JL  = ILNBLNK( prof_names(k) )
-        err = NF_INQ_VARID(fid,prof_names(k)(1:JL), varid1 )
+        JL  = ILNBLNK( prof_names(num_file,k) )
+        err = NF_INQ_VARID(fid,prof_names(num_file,k)(1:JL), varid1 )
         if (err.EQ.NF_NOERR) then
           vec_quantities(num_file,k,bi,bj)=.TRUE.
           prof_num_var_tot(num_file,bi,bj)=

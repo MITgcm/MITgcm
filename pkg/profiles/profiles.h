@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.15 2015/07/20 19:37:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.16 2015/07/22 22:46:32 gforget Exp $
 C $Name:  $
 
 C============================================================
@@ -50,10 +50,11 @@ C===========================================================
      & fidadjoint(NFILESPROFMAX,nsx,nsy), 
      & fidtangent(NFILESPROFMAX,nsx,nsy)
       integer fiddata(NFILESPROFMAX,nsx,nsy)
-      character*(8) prof_names(NVARMAX)
-      character*(8) prof_namesmod(NVARMAX)
-      character*(12) prof_namesmask(NVARMAX)
-      character*(14) prof_namesweight(NVARMAX)
+      character*(8) prof_names(NFILESPROFMAX,NVARMAX)
+      character*(8) prof_namesmod(NFILESPROFMAX,NVARMAX)
+      character*(12) prof_namesmask(NFILESPROFMAX,NVARMAX)
+      character*(14) prof_namesweight(NFILESPROFMAX,NVARMAX)
+      integer prof_itracer(NFILESPROFMAX,NVARMAX)
 
       _RL profiles_data_buff(NLEVELMAX,1000,NVARMAX,nsx,nsy)
       _RL profiles_weight_buff(NLEVELMAX,1000,NVARMAX,nsx,nsy)
@@ -74,7 +75,7 @@ C===========================================================
      & prof_etan_mean, prof_theta_mean, prof_salt_mean
       COMMON /profiles_i/ prof_ind_glob, profNo, profDepthNo,
      & fidforward, fidadjoint, fidtangent, fiddata,
-     & prof_num_var_tot, prof_num_var_cur
+     & prof_num_var_tot, prof_num_var_cur, prof_itracer
       COMMON /profiles_l/ vec_quantities, profilesDoNcOutput, 
      & profilesDoGenGrid
       COMMON /profiles_c/ prof_names, prof_namesmask,

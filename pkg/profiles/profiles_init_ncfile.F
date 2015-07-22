@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_ncfile.F,v 1.10 2012/12/10 00:01:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_ncfile.F,v 1.11 2015/07/22 22:46:32 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -47,14 +47,14 @@ c1) creation :
       err = NF_PUT_ATT_INT(fid2,varid(1),'_FillValue',NF_INT,1,0)
 
       do num_var=1,NVARMAX
-      err = NF_INQ_VARID(fid1,prof_names(num_var), varid0 )
+      err = NF_INQ_VARID(fid1,prof_names(num_file,num_var), varid0 )
       if (err.EQ.NF_NOERR) then
 
-      err = NF_DEF_VAR (fid2,prof_names(num_var), NF_DOUBLE,
+      err = NF_DEF_VAR (fid2,prof_names(num_file,num_var), NF_DOUBLE,
      & 2,vecid,varid(2+(num_var-1)*2))
       err = NF_PUT_ATT_DOUBLE(fid2, varid(2+(num_var-1)*2),'_FillValue',
      & NF_DOUBLE,1, 0. _d 0 )
-      err = NF_DEF_VAR (fid2,prof_namesmask(num_var),
+      err = NF_DEF_VAR (fid2,prof_namesmask(num_file,num_var),
      & NF_DOUBLE, 2,vecid, varid(3+(num_var-1)*2))
       err = NF_PUT_ATT_DOUBLE(fid2,varid(3+(num_var-1)*2),'_FillValue',
      & NF_DOUBLE,1, 0. _d 0)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.24 2015/07/20 19:37:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.25 2015/07/22 22:46:32 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -194,7 +194,8 @@ cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
      &      ProfNo(num_file,bi,bj),num_var
            call print_message(
      &      msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
-           write(msgbuf,'(a,D22.15,D22.15)') prof_names(num_var),
+           write(msgbuf,'(a,D22.15,D22.15)') 
+     &      prof_names(num_file,num_var),
      &      objf_profiles(num_file,num_var,bi,bj),
      &      num_profiles(num_file,num_var,bi,bj)
           enddo !do num_var...
