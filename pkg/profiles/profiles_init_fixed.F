@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.27 2015/07/20 19:37:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.28 2015/07/22 20:56:57 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -612,30 +612,34 @@ C===========================================================
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
 
       inquire( file=fnameequinc, exist=exst )
-         fidforward(num_file,bi,bj)=
-     &     2000+(num_file-1)*nSx*nSx+(bi-1)*nSy+bj
+#ifdef PROFILES_USE_MDSFINDUNITS
+      call MDSFINDUNIT( fidforward(num_file,bi,bj) , mythid )
+#else
+      call PROFILES_FINDUNIT( fidforward(num_file,bi,bj) , mythid )
+#endif
       if (.NOT.exst) then
         call profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
      &   fnameequinc,fidforward(num_file,bi,bj),
      &   ProfNo(num_file,bi,bj),ProfDepthNo(num_file,bi,bj),
      &   bi,bj,myThid)
       else
-c        call MDSFINDUNIT( fidforward(num_file,bi,bj) , mythid )
          open( fidforward(num_file,bi,bj),file=fnameequinc,
      &   form ='unformatted',status='unknown', access='direct',
      &   recl=  (ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
       endif
 #ifdef ALLOW_ADJOINT_RUN
       inquire( file=adfnameequinc, exist=exst )
-         fidadjoint(num_file,bi,bj)=
-     &     4000+(num_file-1)*nSx*nSx+(bi-1)*nSy+bj
+#ifdef PROFILES_USE_MDSFINDUNITS
+      call MDSFINDUNIT( fidadjoint(num_file,bi,bj) , mythid )
+#else
+      call PROFILES_FINDUNIT( fidadjoint(num_file,bi,bj) , mythid )
+#endif
       if (.NOT.exst) then
         call profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
      &   adfnameequinc, fidadjoint(num_file,bi,bj),
      &   ProfNo(num_file,bi,bj),ProfDepthNo(num_file,bi,bj),
      &   bi,bj, myThid)
       else
-c        call MDSFINDUNIT( fidadjoint(num_file,bi,bj) , mythid )
          open( fidadjoint(num_file,bi,bj),file=adfnameequinc,
      &   form ='unformatted',status='unknown', access='direct',
      &   recl=  (ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
