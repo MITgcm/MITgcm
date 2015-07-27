@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.16 2015/07/22 22:46:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.17 2015/07/27 21:08:25 gforget Exp $
 C $Name:  $
 
 C============================================================
@@ -13,7 +13,11 @@ C============================================================
       INTEGER NLEVELMAX
       PARAMETER ( NLEVELMAX=110 )
       INTEGER NUM_INTERP_POINTS
+#ifndef ALLOW_PROFILES_GENERICGRID
+      PARAMETER (NUM_INTERP_POINTS = 4)
+#else
       PARAMETER (NUM_INTERP_POINTS = 1)
+#endif
 
 C===========================================================
 C variables
@@ -22,7 +26,6 @@ C===========================================================
      & prof_lon(NFILESPROFMAX,NOBSGLOB,nsx,nsy),
      & prof_lat(NFILESPROFMAX,NOBSGLOB,nsx,nsy)
 
-#ifdef ALLOW_PROFILES_GENERICGRID
       _RL prof_interp_xC11(NFILESPROFMAX,NOBSGLOB,nsx,nsy)
       _RL prof_interp_yC11(NFILESPROFMAX,NOBSGLOB,nsx,nsy)
       _RL prof_interp_xCNINJ(NFILESPROFMAX,NOBSGLOB,nsx,nsy)
@@ -33,7 +36,6 @@ C===========================================================
      &     NUM_INTERP_POINTS,nsx,nsy)
       integer prof_interp_j(NFILESPROFMAX,NOBSGLOB,
      &     NUM_INTERP_POINTS,nsx,nsy)
-#endif
 
       integer prof_ind_glob(NFILESPROFMAX,NOBSGLOB,nsx,nsy)
       _RL prof_depth(NFILESPROFMAX,NLEVELMAX,nsx,nsy)
@@ -81,13 +83,11 @@ C===========================================================
       COMMON /profiles_c/ prof_names, prof_namesmask,
      & prof_namesweight, prof_namesmod
 
-#ifdef ALLOW_PROFILES_GENERICGRID
       COMMON /profiles_GenericGrid_r/ prof_interp_weights,
      & prof_interp_xC11, prof_interp_yC11,
      & prof_interp_xCNINJ, prof_interp_yCNINJ  
       COMMON /profiles_GenericGrid_i/ 
      & prof_interp_i, prof_interp_j
-#endif
 
       COMMON /profiles_buff_r/ profiles_data_buff, profiles_weight_buff
       COMMON /profiles_buff_i/
