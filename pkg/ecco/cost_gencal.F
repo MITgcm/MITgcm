@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencal.F,v 1.2 2014/10/22 13:28:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencal.F,v 1.3 2015/07/28 18:54:27 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -85,6 +85,7 @@ CEOP
         if ( localperiod.EQ.dTtracerLev(1) ) then
            localrec = irec
            obsrec = irec
+           yday = 0
         elseif ( localperiod .EQ. 86400. ) then
 c-- assume daily fields
            obsrec = irec
