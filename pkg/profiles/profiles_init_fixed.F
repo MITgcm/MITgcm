@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.30 2015/07/27 21:08:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.31 2015/07/28 18:53:53 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -421,6 +421,7 @@ c now determine value of i,j to the south-ouest of data point
        lat_1=-10
        lat_2=-10
 
+       if (profIsInRunTime.EQ.1) then
         DO j=1,sNy+1
          DO i=1,sNx+1
 
@@ -452,6 +453,7 @@ c value of i, west of the data point:
 
         ENDDO
        ENDDO
+      endif
 
       if ((prof_i.EQ.-10).OR.(prof_j.EQ.-10)) profIsInRunTime=0
 
