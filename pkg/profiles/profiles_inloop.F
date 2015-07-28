@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_inloop.F,v 1.14 2015/07/27 21:08:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_inloop.F,v 1.15 2015/07/28 01:00:39 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -85,6 +85,10 @@ c     == end of interface ==
      &        prof_namesmod(num_file,num_var),
      &        prof_itracer(num_file,num_var),
      &        num_file,mytime,bi,bj,myThid)
+        do k=1,NLEVELMAX
+          prof_traj1D(k)=prof_traj1D(k)*
+     &                   prof_facmod(num_file,num_var)
+        enddo
         call active_write_profile(num_file,
      &      ProfDepthNo(num_file,bi,bj),prof_traj1D,num_var,
      &      prof_num,optimcycle,bi,bj,mythid,

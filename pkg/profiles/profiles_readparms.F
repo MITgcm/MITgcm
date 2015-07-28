@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.17 2015/07/22 22:46:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.18 2015/07/28 01:00:39 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -50,6 +50,7 @@ c--   Read the namelist input.
      &                   profilesDir,
      &                   profilesfiles,
      &                   mult_profiles,
+     &                   prof_facmod,
      &                   prof_names,
      &                   prof_namesmod,
      &                   prof_itracer,
@@ -78,6 +79,7 @@ c--     Set default values.
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
         mult_profiles(num_file,num_var) = 1. _d 0
+        prof_facmod(num_file,num_var)  = 1. _d 0
        enddo
       enddo
 
