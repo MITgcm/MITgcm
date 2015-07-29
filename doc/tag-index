@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2174 2015/07/19 19:54:59 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2175 2015/07/29 15:05:41 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint65n (2015/07/29)
+o pkg/thsice:
+  - add a warning when used with pkg/aim but without updating SST
+    (stepFwd_oceMxL=F & useCoupler=F & tauRelax_MxL<>-1 ).
 o pkg/offline:
   - change where Offline-Fields are loaded, from load_fields_driver.F to
     directly within FORWARD_STEP, just after updating iter number and time;
