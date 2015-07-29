@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.14 2013/07/18 20:00:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.15 2015/07/29 00:43:17 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -44,7 +44,6 @@ C-- Sea-Ice package
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
-#include "THSICE_TAVE.h"
       INTEGER siLo, siHi, sjLo, sjHi
       PARAMETER ( siLo = 1-OLx , siHi = sNx+OLx )
       PARAMETER ( sjLo = 1-OLy , sjHi = sNy+OLy )
