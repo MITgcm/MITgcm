@@ -1187,6 +1187,7 @@ if __name__ == '__main__':
     import glob
     import fnmatch
     from getopt import gnu_getopt as getopt
+    from getopt import GetoptError
     try:
         from collections import OrderedDict
     except ImportError:
@@ -1198,20 +1199,23 @@ if __name__ == '__main__':
 
     # parse command-line arguments
     try:
-        optlist,args = getopt(sys.argv[1:], '2qo:v:', ['many', 'verbose'])
-        opts = dict(optlist)
-        assert '-o' in opts
-        fnames = args
-        assert len(fnames) > 0
-    except (ValueError, AssertionError):
-        sys.exit(__doc__)
+        optlist,fnames = getopt(sys.argv[1:], '2qo:v:', ['many', 'verbose'])
+    except GetoptError as e:
+        sys.exit('Error: ' + str(e) + '\n\n' + __doc__)
 
+    if not fnames:
+        sys.exit('You need to specify at least one input file.')
+
+    opts = dict(optlist)
     outname = opts.get('-o')
     version = '-2' in opts and 2 or 1
     progress = '-q' not in opts
     verbose = '--verbose' in opts
     manytiles = '--many' in opts
     tname = 'T'
+
+    if outname is None:
+        sys.exit('You need to specify an output file using the -o option.')
 
     # turn into list of compiled regular expressions
     varpatt = opts.get('-v', '').split(',')
