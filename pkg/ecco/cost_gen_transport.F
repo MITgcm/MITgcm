@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_gen_transport.F,v 1.8 2014/10/18 18:15:44 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_gen_transport.F,v 1.9 2015/08/05 20:55:37 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -33,9 +33,6 @@ c     == global variables ==
 #include "ctrl.h"
 #include "optim.h"
 #include "DYNVARS.h"
-#ifdef ALLOW_PROFILES
-#include "profiles.h"
-#endif
 #endif
 
 c     == routine arguments ==

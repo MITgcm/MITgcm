@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.24 2015/07/22 20:34:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.25 2015/08/05 20:55:37 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -33,9 +33,6 @@ C     === Global variables ===
 #endif
 #ifdef ALLOW_ECCO
 # include "ecco_cost.h"
-#endif
-#ifdef ALLOW_PROFILES
-# include "profiles.h"
 #endif
 
 C     === Routine arguments ===
@@ -90,8 +87,6 @@ c check for missing data files
       CALL ECCO_CHECK_FILES( using_cost_scat,'scat',
      & scatydatfile, scatystartdate(1), myThid )
 #endif
-
-c left for later : slightly different treatment would apply to profiles and gencost
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       do k=1,NGENCOST
