@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.18 2015/07/28 01:00:39 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.19 2015/08/05 15:04:26 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -110,13 +110,6 @@ c--     Set default values.
 #else
       profilesDoGenGrid=.false.
 #endif
-
-      if (NVARMAX.GT.6) then
-        WRITE(msgBuf,'(A)')
-     & 'PROFILES_READPARMS: you need to define variables 7 to NVARMAX'
-        CALL PRINT_ERROR( msgBuf, myThid)
-        STOP 'ABNORMAL END: S/R PROFILES_READPARMS'
-      endif
 
 c--     Next, read the cost data file.
         WRITE(msgBuf,'(A)') 'PROFILES_READPARMS: opening data.profiles'
