@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.73 2015/06/03 13:39:22 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.74 2015/08/05 20:12:44 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -288,7 +288,7 @@ C-      replace advective flux with 1st order upwind scheme estimate
         ENDIF
 #ifdef ALLOW_LAYERS
         IF ( useLayers ) THEN
-          CALL LAYERS_FILL( af, trIdentity, 'AFX', 
+          CALL LAYERS_FILL( af, trIdentity, 'AFX',
      &                      k, 1, 2,bi,bj, myThid )
         ENDIF
 #endif /* ENDIF */
@@ -641,7 +641,8 @@ C-    GM/Redi flux in R
 C-    Diagnostics of Tracer flux in R dir (mainly Diffusive terms),
 C       Explicit terms only & excluding advective terms:
       IF ( useDiagnostics .AND.
-     &    (.NOT.implicitDiffusion .OR. trUseGMRedi) ) THEN
+     &    (.NOT.implicitDiffusion .OR. trUseDiffKr4 .OR. trUseGMRedi)
+     &   ) THEN
           diagName = 'DFrE'//diagSufx
           CALL DIAGNOSTICS_FILL( df, diagName, k,1, 2,bi,bj, myThid )
 #ifdef ALLOW_LAYERS
