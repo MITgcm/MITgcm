@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.175 2015/07/22 20:33:58 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.176 2015/08/06 15:49:52 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,6 +35,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_ECCO
 # include "ECCO_OPTIONS.h"
+#endif
+#ifdef ALLOW_PROFILES
+# include "PROFILES_OPTIONS.h"
 #endif
 
 CBOP
@@ -175,6 +178,7 @@ c They provide the fields to be stored.
 #  include "GGL90.h"
 # endif
 # ifdef ALLOW_PROFILES
+#  include "PROFILES_SIZE.h"
 #  include "profiles.h"
 # endif
 
