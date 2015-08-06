@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.17 2015/08/06 15:48:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.18 2015/08/06 20:33:20 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -25,14 +25,6 @@ c     == global variables ==
 #ifdef ALLOW_ECCO
 # include "ecco.h"
 #endif
-
-c     == routine arguments ==
-      integer myThid
-      integer myIter
-      _RL     myTime
-
-#ifdef ALLOW_ECCO_EVOLUTION
-
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_SSH_COST_CONTRIBUTION
 #  ifdef ALLOW_PROFILES
@@ -41,6 +33,11 @@ c     == routine arguments ==
 #  endif
 # endif
 #endif
+
+c     == routine arguments ==
+      integer myThid
+      integer myIter
+      _RL     myTime
 
 #ifdef ECCO_CTRL_DEPRECATED
 
@@ -225,8 +222,6 @@ c--   Compute user defined cost function contributions (elaborate)
       call timer_stop ('ctrl_cost_driver [ECCO SPIN-DOWN]', myThid)
       ENDIF
 #endif
-
-#endif /* ALLOW_ECCO_EVOLUTION */
 
       return
       end

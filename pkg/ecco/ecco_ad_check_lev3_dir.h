@@ -1,10 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_ad_check_lev3_dir.h,v 1.5 2014/09/29 16:45:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_ad_check_lev3_dir.h,v 1.6 2015/08/06 20:33:20 gforget Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 3
 c
 
-#ifdef ALLOW_ECCO_EVOLUTION
 #ifdef ALLOW_COST_ATLANTIC
 CADJ STORE theta = tapelev3, key=ilev_3
 CADJ STORE vVel  = tapelev3, key=ilev_3
@@ -12,7 +11,6 @@ CADJ STORE vVel  = tapelev3, key=ilev_3
 CADJ STORE hFacS  = tapelev3, key=ilev_3
 # endif
 #endif
-#endif /* ALLOW_ECCO_EVOLUTION */
 
 #ifdef ALLOW_ECCO_BARSTORES
 
