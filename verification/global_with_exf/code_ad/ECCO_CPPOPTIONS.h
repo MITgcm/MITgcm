@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code_ad/ECCO_CPPOPTIONS.h,v 1.1 2015/02/17 12:35:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code_ad/ECCO_CPPOPTIONS.h,v 1.2 2015/08/06 20:35:13 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -28,8 +28,6 @@ cph#define  ALLOW_ECCO_FORWARD_RUN
 
 C       >>> Do a long protocol.
 #undef ECCO_VERBOSE
-
-#define ALLOW_ECCO_EVOLUTION
 
 C ********************************************************************
 C ***                  Adjoint Support Package                     ***
