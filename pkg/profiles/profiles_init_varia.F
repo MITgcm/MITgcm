@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_varia.F,v 1.8 2012/06/22 22:07:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_varia.F,v 1.9 2015/08/06 15:48:20 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -30,7 +30,8 @@ c     == global variables ==
 #include "GRID.h"
 
 #ifdef ALLOW_PROFILES
-#include "profiles.h"
+# include "PROFILES_SIZE.h"
+# include "profiles.h"
 #endif
 
 c     == routine arguments ==

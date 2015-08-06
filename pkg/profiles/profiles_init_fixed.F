@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.31 2015/07/28 18:53:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.32 2015/08/06 15:48:20 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -25,6 +25,7 @@ C ==================== Global Variables ===========================
 #include "cal.h"
 #endif
 #ifdef ALLOW_PROFILES
+# include "PROFILES_SIZE.h"
 # include "profiles.h"
 # include "netcdf.inc"
 #endif

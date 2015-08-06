@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readvector.F,v 1.11 2015/07/22 22:46:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readvector.F,v 1.12 2015/08/06 15:48:20 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -21,8 +21,9 @@ C ==================== Global Variables ===========================
 #include "GRID.h"
 #include "DYNVARS.h"
 #ifdef ALLOW_PROFILES
-#include "netcdf.inc"
-#include "profiles.h"
+# include "netcdf.inc"
+# include "PROFILES_SIZE.h"
+# include "profiles.h"
 #endif
 C ==================== Routine Variables ==========================
       integer vec_loc_length, vNb, k, kk, kkk,bi,bj

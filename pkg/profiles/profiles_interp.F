@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.12 2015/07/27 21:08:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.13 2015/08/06 15:48:20 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -36,6 +36,7 @@ C ==================== Global Variables ===========================
 #include "cal.h"
 #endif
 #ifdef ALLOW_PROFILES
+# include "PROFILES_SIZE.h"
 # include "profiles.h"
 #else
       integer NLEVELMAX

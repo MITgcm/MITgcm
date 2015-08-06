@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.25 2015/07/22 22:46:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.26 2015/08/06 15:48:20 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -23,14 +23,15 @@ C     ======== Global data ============================
 #include "GRID.h"
 #include "DYNVARS.h"
 #ifdef ALLOW_CAL
-#include "cal.h"
+# include "cal.h"
 #endif
 #ifdef ALLOW_PROFILES
-#include "profiles.h"
-#include "netcdf.inc"
+# include "PROFILES_SIZE.h"
+# include "profiles.h"
+# include "netcdf.inc"
 #endif
 #ifdef ALLOW_CTRL
-#include "optim.h"
+# include "optim.h"
 #endif
 
 c     == routine arguments ==
@@ -241,6 +242,9 @@ c
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf,
      &  standardmessageunit,SQUEEZE_RIGHT , mythid)
+
+
+c     call profiles_make_ncfile(mythid)
 
 C===========================================================
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/active_file_profiles_g.F,v 1.6 2007/10/09 00:07:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/active_file_profiles_g.F,v 1.7 2015/08/06 15:48:20 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -46,7 +46,8 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_PROFILES
-#include "profiles.h"
+# include "PROFILES_SIZE.h"
+# include "profiles.h"
 #endif
 
 c     == routine arguments ==
@@ -121,7 +122,8 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_PROFILES
-#include "profiles.h"
+# include "PROFILES_SIZE.h"
+# include "profiles.h"
 #endif
 
 c     == routine arguments ==

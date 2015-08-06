@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_ini_io.F,v 1.1 2011/05/20 22:23:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_ini_io.F,v 1.2 2015/08/06 15:48:20 gforget Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -23,6 +23,7 @@ C     \ev
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "PARAMS.h"
+#include "PROFILES_SIZE.h"
 #include "profiles.h"
 
 C     !INPUT/OUTPUT PARAMETERS:

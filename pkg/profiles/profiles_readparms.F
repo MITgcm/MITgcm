@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.19 2015/08/05 15:04:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.20 2015/08/06 15:48:20 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -25,6 +25,7 @@ c     == global variables ==
 #include "GRID.h"
 #include "PARAMS.h"
 
+#include "PROFILES_SIZE.h"
 #include "profiles.h"
 
 c     == routine arguments ==

@@ -1,23 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.18 2015/07/28 01:00:39 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.19 2015/08/06 15:48:20 gforget Exp $
 C $Name:  $
-
-C============================================================
-C NOBSMAX : maximal number of profiles
-C============================================================
-      INTEGER  NOBSGLOB
-      PARAMETER ( NOBSGLOB = 200000  )
-      INTEGER NFILESPROFMAX
-      PARAMETER ( NFILESPROFMAX=20 )
-      INTEGER NVARMAX
-      PARAMETER ( NVARMAX=6 )
-      INTEGER NLEVELMAX
-      PARAMETER ( NLEVELMAX=110 )
-      INTEGER NUM_INTERP_POINTS
-#ifndef ALLOW_PROFILES_GENERICGRID
-      PARAMETER (NUM_INTERP_POINTS = 4)
-#else
-      PARAMETER (NUM_INTERP_POINTS = 1)
-#endif
 
 C===========================================================
 C variables
