@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.30 2015/06/16 13:18:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.31 2015/08/06 15:48:59 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -47,10 +47,11 @@ c     == global variables ==
 # include "ecco.h"
 #endif
 #ifdef ALLOW_PROFILES
-#include "profiles.h"
+# include "PROFILES_SIZE.h"
+# include "profiles.h"
 #endif
 #ifdef ALLOW_SMOOTH
-#include "SMOOTH.h"
+# include "SMOOTH.h"
 #endif
 
 c     == routine arguments ==

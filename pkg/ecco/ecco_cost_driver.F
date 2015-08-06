@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.16 2015/07/22 20:34:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.17 2015/08/06 15:48:59 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -36,6 +36,7 @@ c     == routine arguments ==
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_SSH_COST_CONTRIBUTION
 #  ifdef ALLOW_PROFILES
+#   include "PROFILES_SIZE.h"
 #   include "profiles.h"
 #  endif
 # endif

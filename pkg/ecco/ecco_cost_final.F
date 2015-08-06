@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.79 2015/07/22 22:45:38 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.80 2015/08/06 15:48:59 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -44,6 +44,7 @@ c     == global variables ==
 # include "CTRL_OBCS.h"
 #endif
 #ifdef ALLOW_PROFILES
+# include "PROFILES_SIZE.h"
 # include "profiles.h"
 #endif
 

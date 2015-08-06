@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_new.F,v 1.11 2014/10/18 18:15:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_new.F,v 1.12 2015/08/06 15:48:59 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -48,7 +48,8 @@ c     == global variables ==
 #include "optim.h"
 #include "DYNVARS.h"
 #ifdef ALLOW_PROFILES
-#include "profiles.h"
+# include "PROFILES_SIZE.h"
+# include "profiles.h"
 #endif
 #endif
 
