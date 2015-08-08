@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.32 2015/08/06 15:48:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.33 2015/08/08 18:36:19 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -55,11 +55,11 @@ C ==================== Routine Variables ==========================
       integer vec_start(2), vec_count(2), profno_div1000, kk
       character*(80) profilesfile, fnamedatanc
       character*(80) fnameequinc, adfnameequinc
-      integer IL, JL, err
+      integer IL, JL, KL, err
       logical  exst
 
       integer varid_intp1, varid_intp2, varid_intp11 , varid_intp22
-      integer varid_intp3, varid_intp4, varid_intp5, q
+      integer varid_intp3, varid_intp4, varid_intp5, q, iINTERP
       _RL tmp_i(1000,NUM_INTERP_POINTS)
       _RL tmp_j(1000,NUM_INTERP_POINTS)
       _RL tmp_weights(1000,NUM_INTERP_POINTS),tmp_sum_weights
@@ -166,22 +166,16 @@ c--   == end of interface ==
 
         do num_file=1,NFILESPROFMAX
 
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-
+      profilesfile=' '
       IL  = ILNBLNK( profilesfiles(num_file) )
       if (IL.NE.0) then
         write(profilesfile(1:80),'(1a)')
      &     profilesfiles(num_file)(1:IL)
+        write(msgbuf,'(a)') ' '
+        call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a,i3,a,a)')
      &     'profiles file ',num_file,' is ', profilesfile(1:80)
-        call print_message(
-     &     msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
-      else
-        write(profilesfile(1:80),'(1a)') ' '
-        write(msgbuf,'(a,i3,a,a)')
-     &     'profiles file ',num_file,' is ',' (empty) '
         call print_message(
      &     msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
       endif
@@ -194,9 +188,6 @@ c open data files and read information
 C===========================================================
 
       write(fnamedatanc(1:80),'(2a)') profilesfile(1:IL),'.nc'
-      write(msgbuf,'(a,a)') '  opening ', fnamedatanc(1:80)
-      call print_message(
-     &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
       err = NF_OPEN(fnamedatanc, 0, fiddata(num_file,bi,bj))
 
 c1)  read the number of profiles :
@@ -208,17 +199,23 @@ c1)  read the number of profiles :
         err = NF_INQ_DIMID(fid,'Z', dimid )
       endif
       err = NF_INQ_DIMLEN(fid, dimid, ProfDepthNo(num_file,bi,bj) )
+      err = NF_INQ_DIMID(fid,'iINTERP', dimid )
+      if (err.EQ.NF_NOERR) then
+        err = NF_INQ_DIMLEN(fid, dimid, iINTERP )
+      else
+        iINTERP=NUM_INTERP_POINTS
+      endif
 
-      write(msgbuf,'(a,i9)')
-     &   '  file ID is        ', fid
+      write(msgbuf,'(a,i3,a,i3)')
+     &   '  local tile is bi=', bi,' bj=',bj
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,i5)')
-     &   '  no. of depth levels   ',ProfDepthNo(num_file,bi,bj)
+     &   '  # of depth levels     =',ProfDepthNo(num_file,bi,bj)
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,i9)')
-     &   '  no. of profiles   ', ProfNo(num_file,bi,bj)
+     &   '  total # of profiles   =', ProfNo(num_file,bi,bj)
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
 
@@ -284,9 +281,9 @@ c4) default values
       prof_lat(num_file,k,bi,bj)=-999. _d 0
       prof_ind_glob(num_file,k,bi,bj)=0
       do q = 1,NUM_INTERP_POINTS
-         prof_interp_i(num_file,k,q,bi,bj) = 0
-         prof_interp_j(num_file,k,q,bi,bj) = 0
-         prof_interp_weights(num_file,k,q,bi,bj) = -999. _d 0
+         prof_interp_i(num_file,k,q,bi,bj) = 1
+         prof_interp_j(num_file,k,q,bi,bj) = 1
+         prof_interp_weights(num_file,k,q,bi,bj) = 0. _d 0
       enddo
       prof_interp_xC11(num_file,k,bi,bj)=-999. _d 0
       prof_interp_yC11(num_file,k,bi,bj)=-999. _d 0
@@ -349,7 +346,7 @@ c if profilesDoGenGrid then also read in the interpolation coeffs and indices
      & vec_count(2), tmp_xCNINJ)
       err = NF_GET_VARA_DOUBLE(fid,varid_intp22,vec_start(2),
      & vec_count(2), tmp_yCNINJ)
-      do q=1,NUM_INTERP_POINTS
+      do q=1,iINTERP
         vec_start2(1)=q
         vec_start2(2)=1+1000*(kk-1)
         vec_count2(1)=1
@@ -509,7 +506,7 @@ c if yes then store prof_time and interpolation coeffs and indices:
        prof_interp_xCNINJ(num_file,length_for_tile,bi,bj)=tmp_xCNINJ(k)
        prof_interp_yCNINJ(num_file,length_for_tile,bi,bj)=tmp_yCNINJ(k)
        tmp_sum_weights=0. _d 0
-        do q = 1,NUM_INTERP_POINTS
+        do q = 1,iINTERP
              prof_interp_weights(num_file,length_for_tile,q,bi,bj)
      &       =tmp_weights(k,q)
              prof_interp_i(num_file,length_for_tile,q,bi,bj)
@@ -587,7 +584,7 @@ c check that maximum size was not reached:
       ProfNo(num_file,bi,bj)=length_for_tile
 
       write(msgbuf,'(a,i9)')
-     &   '  within tile & run ', ProfNo(num_file,bi,bj)
+     &   '  local # of profiles   =', ProfNo(num_file,bi,bj)
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
 
@@ -612,12 +609,24 @@ c6) available variablesin the data set
         endif
       enddo
 
-      write(msgbuf,'(a,6L5)') '  incl. variables (T/F flags)'
-     &,vec_quantities(num_file,1,bi,bj),vec_quantities(num_file,2,bi,bj)
-     &,vec_quantities(num_file,3,bi,bj),vec_quantities(num_file,4,bi,bj)
-     &,vec_quantities(num_file,5,bi,bj),vec_quantities(num_file,6,bi,bj)
-      call print_message(
-     &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
+      do k=1,NVARMAX
+        if (vec_quantities(num_file,k,bi,bj)) then
+          KL  = ILNBLNK( prof_names(num_file,k) )
+          JL  = ILNBLNK( prof_namesmod(num_file,k) )
+          if (prof_namesmod(num_file,k).EQ.'pTracer') then
+      write(msgbuf,'(a,I3,5a,I3)') '  variable #',k,' is ' ,
+     & prof_names(num_file,k)(1:KL),' and ',
+     & prof_namesmod(num_file,k)(1:JL),' #',
+     & prof_itracer(num_file,k)
+          else
+      write(msgbuf,'(a,I3,4a)') '  variable #',k,' is ' ,
+     & prof_names(num_file,k)(1:KL),' and ',
+     & prof_namesmod(num_file,k)(1:JL)
+          endif
+          call print_message(msgbuf,
+     &       standardmessageunit, SQUEEZE_RIGHT , mythid)
+        endif
+      enddo
 
 C===========================================================
 c create files for model counterparts to observations
@@ -720,9 +729,9 @@ C===========================================================
       prof_lat(num_file,k,bi,bj)=-999. _d 0
       prof_ind_glob(num_file,k,bi,bj)=0
       do q = 1,NUM_INTERP_POINTS
-         prof_interp_i(num_file,k,q,bi,bj) = 0
-         prof_interp_j(num_file,k,q,bi,bj) = 0
-         prof_interp_weights(num_file,k,q,bi,bj) = -999. _d 0
+         prof_interp_i(num_file,k,q,bi,bj) = 1
+         prof_interp_j(num_file,k,q,bi,bj) = 1
+         prof_interp_weights(num_file,k,q,bi,bj) = 0. _d 0
       enddo
       prof_interp_xC11(num_file,k,bi,bj)=-999. _d 0
       prof_interp_yC11(num_file,k,bi,bj)=-999. _d 0

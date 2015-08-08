@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.20 2015/08/06 15:48:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.21 2015/08/08 18:36:19 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -37,7 +37,7 @@ C     msgBuf      - Informational/error message buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit, num_file, num_var, IL
-      LOGICAL exst
+      LOGICAL exst, specifiedNames
       character*(128) fname
 
 C     !FUNCTIONS
@@ -81,28 +81,10 @@ c--     Set default values.
        do num_var=1,NVARMAX
         mult_profiles(num_file,num_var) = 1. _d 0
         prof_facmod(num_file,num_var)  = 1. _d 0
+        prof_names(num_file,num_var)='empty'
+        prof_itracer(num_file,num_var)=1
+        prof_namesmod(num_file,num_var)='empty'
        enddo
-      enddo
-
-      do num_file=1,NFILESPROFMAX
-       prof_names(num_file,1)='prof_T'
-       prof_names(num_file,2)='prof_S'
-       prof_names(num_file,3)='prof_U'
-       prof_names(num_file,4)='prof_V'
-       prof_names(num_file,5)='prof_ptr'
-       prof_names(num_file,6)='prof_ssh'
-       prof_itracer(num_file,1)=1
-       prof_itracer(num_file,2)=1
-       prof_itracer(num_file,3)=1
-       prof_itracer(num_file,4)=1
-       prof_itracer(num_file,5)=1
-       prof_itracer(num_file,6)=1
-       prof_namesmod(num_file,1)='theta'
-       prof_namesmod(num_file,2)='salt'
-       prof_namesmod(num_file,3)='uVel'
-       prof_namesmod(num_file,4)='vVel'
-       prof_namesmod(num_file,5)='pTracer'
-       prof_namesmod(num_file,6)='etaN'
       enddo
 
       profilesDoNcOutput=.false.
@@ -132,6 +114,33 @@ c--     Next, read the cost data file.
         CLOSE( iUnit )
 
         do num_file=1,NFILESPROFMAX
+
+          specifiedNames=.FALSE.
+          do num_var=1,NVARMAX
+            if (prof_names(num_file,num_var).NE.'empty')
+     &         specifiedNames=.TRUE.
+          enddo
+
+          if (.NOT.specifiedNames) then
+            prof_names(num_file,1)='prof_T'
+            prof_names(num_file,2)='prof_S'
+            prof_namesmod(num_file,1)='theta'
+            prof_namesmod(num_file,2)='salt'
+          endif
+
+          do num_var=1,NVARMAX
+            if (((prof_names(num_file,num_var).NE.'empty').AND.
+     &           (prof_namesmod(num_file,num_var).EQ.'empty')).OR.
+     &          ((prof_names(num_file,num_var).EQ.'empty').AND.
+     &           (prof_namesmod(num_file,num_var).NE.'empty'))) then
+             print*,'prof_names=',prof_names(num_file,num_var),' ',
+     &         prof_namesmod(num_file,num_var),' ',num_file,num_var
+             WRITE(errorMessageUnit,'(2A)')
+     &         'ERROR in PROFILES_READPARMS: inconsistent ',
+     &         'prof_names and prof_namesmod'
+             STOP 'ABNORMAL END: S/R PROFILES_READPARMS'
+            endif
+          enddo
 
           do num_var=1,NVARMAX
             IL  = ILNBLNK( prof_names(num_file,num_var) )
