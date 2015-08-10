@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.13 2015/08/06 15:48:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.14 2015/08/10 01:18:56 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
+#endif
 
 C     o==========================================================o
 C     | subroutine profiles_interp                               |
@@ -33,14 +36,14 @@ C ==================== Global Variables ===========================
 #include "DYNVARS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_CAL
-#include "cal.h"
+# include "cal.h"
+#endif
+#ifdef ALLOW_ECCO
+# include "ecco.h"
 #endif
 #ifdef ALLOW_PROFILES
 # include "PROFILES_SIZE.h"
 # include "profiles.h"
-#else
-      integer NLEVELMAX
-      parameter (NLEVELMAX=1)
 #endif
 #ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
@@ -51,12 +54,15 @@ C ==================== Routine Variables ==========================
       integer mythid
       integer file_cur, itr_cur
       character*(8) var_cur
+#ifndef ALLOW_PROFILES
+      _RL  traj_cur_out, weights_cur
+      integer  i_cur, j_cur
+#else
       _RL  traj_cur_out(NLEVELMAX)
       _RL  weights_cur(NUM_INTERP_POINTS)
       integer  i_cur(NUM_INTERP_POINTS)
       integer  j_cur(NUM_INTERP_POINTS)
-
-#ifdef ALLOW_PROFILES
+#endif
 
 C ==================== Local Variables ==========================
       _RL tab_coeffs1(NUM_INTERP_POINTS)
@@ -87,8 +93,14 @@ c horizontal interpolation:
 #else
                tab_coeffs1(q)=0. _d 0
 #endif
-        elseif (var_cur.EQ.'etaN') then
-               tab_coeffs1(q)=etaN(i_cur(q),j_cur(q),bi,bj)
+#ifdef ALLOW_ECCO
+        elseif (var_cur.EQ.'eta') then
+               tab_coeffs1(q)=m_eta(i_cur(q),j_cur(q),bi,bj)
+        elseif (var_cur.EQ.'UE') then
+               tab_coeffs1(q)=m_UE(i_cur(q),j_cur(q),k,bi,bj)
+        elseif (var_cur.EQ.'VN') then
+               tab_coeffs1(q)=m_VN(i_cur(q),j_cur(q),k,bi,bj)
+#endif
         else
                tab_coeffs1(q)=0. _d 0
         endif
