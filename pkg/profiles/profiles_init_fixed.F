@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.33 2015/08/08 18:36:19 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.34 2015/08/16 14:48:34 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -124,14 +124,6 @@ c--   == end of interface ==
       else
         write(msgbuf,'(a,a)') '  profilesDir ','./'
       endif
-      call print_message(
-     &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,a)') '  ALLOW_PROFILES_GENERICGRID ',
-#ifdef ALLOW_PROFILES_GENERICGRID
-     &   'was compiled'
-#else
-     &   'was NOT compiled'
-#endif
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,l5)') '  profilesDoGenGrid  ',profilesDoGenGrid

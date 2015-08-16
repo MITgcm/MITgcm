@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.26 2015/08/06 15:48:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.27 2015/08/16 14:48:34 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -47,10 +47,6 @@ C     ========= Local variables =======================
       _RL tmp_lon
       _RL prof_traj1D(NLEVELMAX), prof_traj1D_mean(NLEVELMAX)
       _RL prof_data1D(NLEVELMAX), prof_weights1D(NLEVELMAX)
-#ifdef ALLOW_PROFILES_GENERICGRID
-      integer prof_i1D(NUM_INTERP_POINTS),prof_j1D(NUM_INTERP_POINTS)
-      _RL prof_w1D(NUM_INTERP_POINTS)
-#endif
 #ifndef ALLOW_CTRL
       integer optimcycle
 #endif
@@ -110,13 +106,12 @@ c
          do prof_num=1,NOBSGLOB
           if (prof_num.LE.ProfNo(num_file,bi,bj)) then
 
-#ifdef ALLOW_PROFILES_GENERICGRID
-           do k=1,NUM_INTERP_POINTS
-            prof_i1D(k)= prof_interp_i(num_file,prof_num,k,bi,bj)
-            prof_j1D(k)= prof_interp_j(num_file,prof_num,k,bi,bj)
-            prof_w1D(k)= prof_interp_weights(num_file,prof_num,k,bi,bj)
-           enddo
-#endif
+c would be needed to call profiles_interp to e.g. get time averages
+c          do k=1,NUM_INTERP_POINTS
+c           prof_i1D(k)= prof_interp_i(num_file,prof_num,k,bi,bj)
+c           prof_j1D(k)= prof_interp_j(num_file,prof_num,k,bi,bj)
+c           prof_w1D(k)= prof_interp_weights(num_file,prof_num,k,bi,bj)
+c          enddo
 
            do num_var=1,NVARMAX
 
@@ -129,31 +124,6 @@ c
             enddo
 
             if (vec_quantities(num_file,num_var,bi,bj).EQV..TRUE.) then
-cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
-#ifdef ALLOW_SSH_COST_CONTRIBUTION
-             if (num_var.EQ.6) then
-#ifdef ALLOW_PROFILES_GENERICGRID
-             if (profilesDoGenGrid) then
-              call profiles_interp_mean_gg(prof_traj1D_mean,
-     &         prof_i1D,prof_j1D,prof_w1D,
-     &         num_var,num_file,mytime,bi,bj,myThid)
-             else
-#endif
-              call profiles_interp_mean(prof_traj1D_mean,
-     &         prof_lon(num_file,prof_num,bi,bj),
-     &         prof_lat(num_file,prof_num,bi,bj),
-     &         num_var,num_file,mytime,bi,bj,myThid)
-#ifdef ALLOW_PROFILES_GENERICGRID
-             endif
-#endif
-             else
-#endif
-              do K=1,ProfDepthNo(num_file,bi,bj)
-               prof_traj1D_mean(K)=0.
-              enddo
-#ifdef ALLOW_SSH_COST_CONTRIBUTION
-             endif
-#endif
 
              call active_read_profile(num_file,
      &           ProfDepthNo(num_file,bi,bj),prof_traj1D,num_var,

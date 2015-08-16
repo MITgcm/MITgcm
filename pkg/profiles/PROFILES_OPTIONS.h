@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/PROFILES_OPTIONS.h,v 1.7 2015/07/22 20:56:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/PROFILES_OPTIONS.h,v 1.8 2015/08/16 14:48:34 gforget Exp $
 C $Name:  $
 
 C CPP options file for PROFILES package
@@ -11,11 +11,6 @@ C Use this file for selecting options within the PROFILES package
 
 #ifdef ALLOW_PROFILES
 C     Package-specific Options & Macros go here
-
-C Unless one uses a straight cartesian grid, the user needs 
-C to provide grid dependent interpolation points/coeffs, define
-C ALLOW_PROFILES_GENERICGRID, and set profilesDoGenGrid to TRUE
-# undef ALLOW_PROFILES_GENERICGRID
 
 C To use file units between 9 and 99 (seems to conflict
 C with NF_OPEN some times, but is needed when using g77)
