@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.14 2015/08/10 01:18:56 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.15 2015/08/19 13:04:24 jmc Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -129,14 +129,14 @@ c vertical interpolation:
          prof_mask1D_cur(kk,bi,bj)=0
       enddo
       do kk=1,ProfDepthNo(file_cur,bi,bj)
-c case 1: above first grid center=> first grid center value 
+c case 1: above first grid center=> first grid center value
         if (prof_depth(file_cur,kk,bi,bj).LT.-rC(1)) then
           traj_cur_out(kk)=traj_cur(1)
           prof_mask1D_cur(kk,bi,bj)=mask_cur(1)
 c case 2: just below last grid center=> last cell value
         elseif (prof_depth(file_cur,kk,bi,bj).GE.-rC(nr)) then
-          if ( prof_depth(file_cur,kk,bi,bj) .LT. 
-     &    (-rC(nr)+drC(nr)/2) ) then  
+          if ( prof_depth(file_cur,kk,bi,bj) .LT.
+     &    (-rC(nr)+drC(nr)/2) ) then
             traj_cur_out(kk)=traj_cur(nr)
             prof_mask1D_cur(kk,bi,bj)=mask_cur(nr)
           endif
@@ -174,8 +174,5 @@ c  subcase 2: only 1 wet point just above=>upper cell value
         endif
       enddo
 
-
-#endif
-
-      end
-
+      RETURN
+      END
