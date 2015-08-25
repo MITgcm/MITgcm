@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/ideal_2D_oce/code/CPP_EEOPTIONS.h,v 1.4 2010/03/04 22:28:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/ideal_2D_oce/code/CPP_EEOPTIONS.h,v 1.5 2015/08/25 21:11:50 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -83,6 +83,12 @@ C--   Alternative formulation of BYTESWAP, faster than
 C     compiler flag -byteswapio on the Altix.
 #undef FAST_BYTESWAP
 
+C--   Flag defined for eeboot_minimal.F, eeset_parms.F and open_copy_data_file.F
+C     to write STDOUT, STDERR and scratch files from process 0 only.
+C WARNING: to use only when absolutely confident that the setup is working
+C     since any message (error/warning/print) from any proc <> 0 will be lost.
+#undef SINGLE_DISK_IO
+
 C=== MPI, EXCH and GLOBAL_SUM related options ===
 C--   Flag turns off MPI_SEND ready_to_receive polling in the
 C     gather_* subroutines to speed up integrations.
@@ -108,13 +114,20 @@ C           filled in some way.
 #define CAN_PREVENT_X_PERIODICITY
 #define CAN_PREVENT_Y_PERIODICITY
 
+C--   disconnect tiles (no exchange between tiles, just fill-in edges
+C     assuming locally periodic subdomain)
+#undef DISCONNECTED_TILES
+
+C--   Always cumulate tile local-sum in the same order by applying MPI allreduce
+C     to array of tiles ; can get slower with large number of tiles (big set-up)
+#undef GLOBAL_SUM_ORDER_TILES
+
 C--   Alternative way of doing global sum without MPI allreduce call
-C     but instead, explicit MPI send & recv calls.
+C     but instead, explicit MPI send & recv calls. Expected to be slower.
 #define GLOBAL_SUM_SEND_RECV
 
 C--   Alternative way of doing global sum on a single CPU
-C     to eliminate tiling-dependent roundoff errors.
-C     Note: This is slow.
+C     to eliminate tiling-dependent roundoff errors. Note: This is slow.
 #define CG2D_SINGLECPU_SUM
 
 C=== Other options (to add/remove pieces of code) ===
