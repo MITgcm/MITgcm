@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.39 2014/08/27 21:46:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.40 2015/08/25 20:29:33 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -113,13 +113,6 @@ C     Under MPI selects/deselects "blocking" sends and receives.
 #define ALLOW_SYNC_COMMUNICATION
 #undef  ALWAYS_USE_SYNC_COMMUNICATION
 
-C--   Control use of JAM routines for Artic network
-C     These invoke optimized versions of "exchange" and "sum" that
-C     utilize the programmable aspect of Artic cards.
-CXXX No longer supported ; started to remove JAM routines.
-CXXX #undef  LETS_MAKE_JAM
-CXXX #undef  JAM_WITH_TWO_PROCS_PER_NODE
-
 C--   Control XY periodicity in processor to grid mappings
 C     Note: Model code does not need to know whether a domain is
 C           periodic because it has overlap regions for every box.
@@ -134,13 +127,16 @@ C--   disconnect tiles (no exchange between tiles, just fill-in edges
 C     assuming locally periodic subdomain)
 #undef DISCONNECTED_TILES
 
+C--   Always cumulate tile local-sum in the same order by applying MPI allreduce
+C     to array of tiles ; can get slower with large number of tiles (big set-up)
+#undef GLOBAL_SUM_ORDER_TILES
+
 C--   Alternative way of doing global sum without MPI allreduce call
-C     but instead, explicit MPI send & recv calls.
+C     but instead, explicit MPI send & recv calls. Expected to be slower.
 #undef GLOBAL_SUM_SEND_RECV
 
 C--   Alternative way of doing global sum on a single CPU
-C     to eliminate tiling-dependent roundoff errors.
-C     Note: This is slow.
+C     to eliminate tiling-dependent roundoff errors. Note: This is slow.
 #undef  CG2D_SINGLECPU_SUM
 
 C=== Other options (to add/remove pieces of code) ===
