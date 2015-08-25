@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum_tile.F,v 1.4 2012/09/03 19:36:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum_tile.F,v 1.5 2015/08/25 20:26:38 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -59,6 +59,10 @@ C         all 4 needs to have the same length as MPI_DOUBLE_PRECISION
       INTEGER lbuff, idest, itag, ready_to_receive
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       Real*8  localBuf (nSx,nSy)
+      Real*8  globalBuf(nSx*nPx,nSy*nPy)
+#elif defined (GLOBAL_SUM_ORDER_TILES)
+      INTEGER biG, bjG, lbuff
+      Real*8  localBuf (nSx*nPx,nSy*nPy)
       Real*8  globalBuf(nSx*nPx,nSy*nPy)
 #endif
       INTEGER mpiRC
@@ -157,9 +161,42 @@ C       End if/else mpiMyId = 0
         ENDIF
 
       ELSE
-#else /* not (GLOBAL_SUM_SEND_RECV & ALLOW_USE_MPI) */
+#elif (defined (GLOBAL_SUM_ORDER_TILES) && defined (ALLOW_USE_MPI) )
+      IF ( usingMPI ) THEN
+
+C--   Initialise local buffer
+        DO bjG=1,nSy*nPy
+         DO biG=1,nSx*nPx
+           localBuf(biG,bjG) = 0.
+         ENDDO
+        ENDDO
+
+C--   Put my own data in local buffer
+        DO bj=1,nSy
+         DO bi=1,nSx
+           biG = (myXGlobalLo-1)/sNx+bi
+           bjG = (myYGlobalLo-1)/sNy+bj
+           localBuf(biG,bjG) = shareBufGSR8(bi,bj)
+         ENDDO
+        ENDDO
+
+C--   Collect data from all procs
+        lbuff = nSx*nPx*nSy*nPy
+        CALL MPI_Allreduce( localBuf, globalBuf, lbuff,
+     &           MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_MODEL, mpiRC )
+
+C--   Sum over all tiles:
+         sumAllP = 0.
+         DO bjG = 1,nSy*nPy
+          DO biG = 1,nSx*nPx
+           sumAllP = sumAllP + globalBuf(biG,bjG)
+          ENDDO
+         ENDDO
+
+      ELSE
+#else /* not ((GLOBAL_SUM_SEND_RECV | GLOBAL_SUM_ORDER_TILES) & ALLOW_USE_MPI) */
       IF ( .TRUE. ) THEN
-#endif /* not (GLOBAL_SUM_SEND_RECV & ALLOW_USE_MPI) */
+#endif /* not ((GLOBAL_SUM_SEND_RECV | GLOBAL_SUM_ORDER_TILES) & ALLOW_USE_MPI) */
 
 C--   Sum over all tiles (of the same process) first
         sumMyPr = 0.
@@ -169,7 +206,7 @@ C--   Sum over all tiles (of the same process) first
          ENDDO
         ENDDO
 
-C       in case MPI is not used:
+C     in case MPI is not used:
         sumAllP = sumMyPr
 
 #ifdef ALLOW_USE_MPI
@@ -181,7 +218,7 @@ C       in case MPI is not used:
 
       ENDIF
 
-C--    Write solution to shared buffer (all threads can see it)
+C--   Write solution to shared buffer (all threads can see it)
 c     shareBufGSR8(1,1) = sumAllP
       phiGSR8(1,0) = sumAllP
 
