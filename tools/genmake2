@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.272 2015/07/03 21:33:55 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.273 2015/09/01 19:39:56 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -1332,7 +1332,6 @@ FS90=
 
 AUTODIFF_PKG_USED=f
 OPENAD=
-OPENAD_DIVA=
 AD_OPTFILE=
 CAT_SRC_FOR_TAF=1
 TAF=
@@ -1424,9 +1423,6 @@ for ac_option in "$@" ; do
 	    ac_prev=AD_OPTFILE ;;
 	-adoptfile=* | --adoptfile=* | -adof=* | --adof=*)
 	    AD_OPTFILE=$ac_optarg ;;
-
-	-diva | --diva)
-	    OPENAD_DIVA="ALLOW_OPENAD_DIVA=" ;;
 
 	-pdepend | --pdepend)
 	    ac_prev=PKG_DEPEND ;;
@@ -2894,7 +2890,6 @@ F90C = ${F90C}
 CC = ${CC}
 # Link editor
 LINK = ${LINK} ${LDADD}
-export $OPENAD_DIVA
 
 # Defines for CPP
 DEFINES = ${DEFINES}
