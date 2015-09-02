@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_diagnostics_state.F,v 1.5 2015/02/06 21:53:19 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_diagnostics_state.F,v 1.6 2015/09/02 12:08:08 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -35,6 +35,8 @@ C     === Global variables ===
 
       _RL u_streamice_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_streamice_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL u_surf_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL v_surf_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL h_streamice_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL area_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL float_frac_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -64,6 +66,8 @@ C     === Global variables ===
      $         streamice_taubx(i,j,bi,bj)%v
            streamice_tauby_diag(i,j,bi,bj) =
      $         streamice_tauby(i,j,bi,bj)%v
+           u_surf_diag(i,j,bi,bj) = streamice_u_surf(i,j,bi,bj)%v
+           v_surf_diag(i,j,bi,bj) = streamice_v_surf(i,j,bi,bj)%v
 #endif
 #ifdef ALLOW_STREAMICE_2DTRACER
            trac2d_diag(i,j,bi,bj)=trac2d(i,j,bi,bj)%v
@@ -116,10 +120,6 @@ C     === Global variables ===
        CALL DIAGNOSTICS_FILL_RS(STREAMICE_hmask,'SI_hmask',
      &      0,1,0,1,1,myThid)
 #ifdef STREAMICE_HYBRID_STRESS
-       CALL DIAGNOSTICS_FILL(streamice_u_surf,'SI_usurf',
-     &      0,1,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(STREAMICE_v_surf,'SI_vsurf',
-     &      0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(streamice_u_bed,'SI_ubase',
      &      0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(STREAMICE_v_bed,'SI_vbase',
@@ -130,10 +130,18 @@ C     === Global variables ===
      &      0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(STREAMICE_tauby_diag,'SI_tauby',
      &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(u_surf_diag,'SI_usurf',
+     &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(v_surf_diag,'SI_vsurf',
+     &      0,1,0,1,1,myThid)
 #else
        CALL DIAGNOSTICS_FILL(streamice_taubx,'SI_taubx',
      &      0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(STREAMICE_tauby,'SI_tauby',
+     &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(streamice_u_surf,'SI_usurf',
+     &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(streamice_v_surf,'SI_vsurf',
      &      0,1,0,1,1,myThid)
 #endif
 
