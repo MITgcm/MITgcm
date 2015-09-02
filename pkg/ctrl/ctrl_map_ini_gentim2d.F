@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.10 2015/06/12 17:43:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.11 2015/09/02 06:01:10 mmazloff Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -215,7 +215,8 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gentim2d_dummy(iarr) )
 #else
-           CALL READ_REC_XY_RL( fnamegenOut, xx_gen_tmp, krec, 1, myThid )
+           CALL READ_REC_XY_RL( fnamegenOut, xx_gen_tmp, krec, 
+     &                       1, myThid )
 #endif
            call ecco_add(xx_gen_tmp,1,xx_gen,1,myThid)
          enddo
