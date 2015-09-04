@@ -6,6 +6,7 @@
   useHB87stressCoupling = .TRUE.,
   SEAICE_no_slip     = .TRUE.,
   SEAICE_drag        = 0.001,
+  SEAICEetaZmethod   = 3,
 # Depending on vertical resolution this angle should have a value > 0
 #  (e.g., 25deg for drF(1)=10m)
 # SEAICE_waterTurnAngle = 0.0,
