@@ -1,9 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2176 2015/08/26 13:50:38 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2177 2015/09/04 08:08:41 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: revise EVP code (seaice_evp.F) in preparation for a more 
+    efficient EVP method.
+  - introduce area-weighted averages for e12 (analogously to 
+    seaice_calc_viscosities.F); this totally changes lab_sea.hb87 (2 digits
+    remain, but also changing the order of terms in the previous average
+    changed the results as much) -> update experiment
+  - add SEAICE_DELTA_SMOOTHREG code
+  - disentangle computation of zetaC/deltaC and zetaZ/deltaZ, also for 
+    TEM-code
+  - adjust loop bounds so that only required fields are computed
+  - add new averaging code for zetaZ/deltaZ (again similar to 
+    seaice_calc_viscosities.F), inactive by default for now (will change
+    results again), but will replace old code eventually
 o eesupp/src:
   - add an other alternative for multi-proc GLOBAL_SUM (in global_sum_tile.F)
     to always cumulate tile local-sum in the same order
