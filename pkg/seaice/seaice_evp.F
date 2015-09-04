@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.54 2015/09/04 08:05:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.55 2015/09/04 14:46:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -109,7 +109,7 @@ C     auxilliary variables
 C     _RL zetaZ         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL deltaCreg, deltaZreg, deltaSq, deltaMinSq, pressZ, tmp
 #ifdef SEAICE_ALLOW_TEM
-      _RL etaDenC, zetaMaxC, etaDenZ, zetaMaxZ, deltaMinSq
+      _RL etaDenC, zetaMaxC, etaDenZ, zetaMaxZ
 #endif /* SEAICE_ALLOW_TEM */
 #ifdef SEAICE_ALLOW_CLIPZETA
       _RL zMaxZ, zMinZ, fac
@@ -127,9 +127,7 @@ C     abbreviation eccentricity squared
       ecc2=SEAICE_eccen**2
       recip_ecc2 = 0. _d 0
       IF ( ecc2 .NE. 0. _d 0 ) recip_ecc2=ONE/ecc2
-#ifdef SEAICE_ALLOW_TEM
       deltaMinSq = SEAICE_deltaMin**2
-#endif /* SEAICE_ALLOW_TEM */
 C     determine number of internal time steps
       nEVPstep = INT(SEAICE_deltaTdyn/SEAICE_deltaTevp)
       IF ( SEAICEnEVPstarSteps.NE.UNSET_I ) nEVPstep=SEAICEnEVPstarSteps
@@ -571,7 +569,7 @@ C     the staggering of uIce and vIce can cause stripes in the open ocean
 C     solution when the turning angle is non-zero (SINWAT.NE.0); 
 C     we mask this term here in order to avoid the stripes and because
 C     over open ocean, u/vIce do not advect anything, so that the associated
-C     error is small and most likely only confinded to the ice edge but may
+C     error is small and most likely only confined to the ice edge but may
 C     propagate into the ice covered regions.
             locMaskU = seaiceMassU(I,J,bi,bj)
             locMaskV = seaiceMassV(I,J,bi,bj)
