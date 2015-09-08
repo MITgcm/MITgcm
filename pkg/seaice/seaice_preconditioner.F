@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.29 2014/12/17 17:57:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.30 2015/09/08 09:42:08 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -477,6 +477,7 @@ CEOP
 C     !LOCAL VARIABLES:
       INTEGER I,J,K
       _RL zeros(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL areaW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     surface level
       k = 1
@@ -494,6 +495,19 @@ C     set dummy pressure to zero
 
 C     neglected for preconditioning step
       IF ( fricFac+coriFac .NE. 0. _d 0 ) THEN
+       IF ( SEAICEscaleSurfStress ) THEN
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          areaW(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I-1,J,bi,bj))
+         ENDDO
+        ENDDO
+       ELSE
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          areaW(I,J) = 1. _d 0
+         ENDDO
+        ENDDO
+       ENDIF
        DO J=jMin,jMax
         DO I=iMin,iMax
          rhsU(I,J,bi,bj) = rhsU(I,J,bi,bj)
@@ -504,7 +518,7 @@ C     neglected for preconditioning step
      &        + dwatPre(I-1,J,bi,bj) * 0.5 _d 0 *
      &        (vVel(I-1,J  ,k,bi,bj)-vIceLoc(I-1,J  ,bi,bj)
      &        +vVel(I-1,J+1,k,bi,bj)-vIceLoc(I-1,J+1,bi,bj))
-     &        ) * fricFac
+     &        ) * fricFac * areaW(I,J)
 C-    add Coriolis term
          rhsU(I,J,bi,bj) = rhsU(I,J,bi,bj) + 0.5 _d 0 *
      &        ( seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
@@ -568,6 +582,7 @@ CEOP
 C     !LOCAL VARIABLES:
       INTEGER I,J,K
       _RL zeros(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL areaS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     surface level
       k = 1
@@ -585,6 +600,19 @@ C     set dummy pressure to zero
 
 C     neglected for preconditioning step
       IF ( fricFac+coriFac .NE. 0. _d 0 ) THEN
+       IF ( SEAICEscaleSurfStress ) THEN
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          areaS(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-J,bi,bj))
+         ENDDO
+        ENDDO
+       ELSE
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          areaS(I,J) = 1. _d 0
+         ENDDO
+        ENDDO
+       ENDIF
        DO J=jMin,jMax
         DO I=iMin,iMax
          rhsV(I,J,bi,bj) = rhsV(I,J,bi,bj)
@@ -595,7 +623,7 @@ C     neglected for preconditioning step
      &        + dwatPre(I,J-1,bi,bj) * 0.5 _d 0 *
      &        (uVel(I  ,J-1,k,bi,bj)-uIceLoc(I  ,J-1,bi,bj)
      &        +uVel(I+1,J-1,k,bi,bj)-uIceLoc(I+1,J-1,bi,bj))
-     &        ) * fricFac
+     &        ) * fricFac * areaS(I,J)
 C-    add Coriolis term
          rhsV(I,J,bi,bj) = rhsV(I,J,bi,bj) - 0.5 _d 0 *
      &        ( seaiceMassC(I,J  ,bi,bj) * _fCori(I,J  ,bi,bj)

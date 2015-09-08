@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.9 2014/10/20 03:20:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.10 2015/09/08 09:42:08 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -82,6 +82,9 @@ C     components of symmetric stress tensor
       _RL sig11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig22(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C     fractional area at velocity points
+      _RL areaW(1:sNx,1:sNy)
+      _RL areaS(1:sNx,1:sNy)
 CEOP
 
       k=1
@@ -98,6 +101,14 @@ C     backward difference extrapolation factor
         bdfAlpha = 1.5 _d 0
        ENDIF
       ENDIF
+
+C     initialise fractional areas at velocity points
+      DO J=1,sNy
+       DO I=1,sNx
+        areaW(I,J) = 1. _d 0
+        areaS(I,J) = 1. _d 0
+       ENDDO
+      ENDDO
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -146,6 +157,14 @@ C
          ENDDO
         ENDDO
 C     compute lhs side of momentum equations
+        IF ( SEAICEscaleSurfStress ) THEN
+         DO J=1,sNy
+          DO I=1,sNx
+           areaW(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I-1,J,bi,bj))
+           areaS(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-J,bi,bj))
+          ENDDO
+         ENDDO
+        ENDIF
         DO J=1,sNy
          DO I=1,sNx
 C     mass*(uIce)/deltaT - dsigma/dx

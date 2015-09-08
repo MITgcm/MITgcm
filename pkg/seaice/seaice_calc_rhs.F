@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_rhs.F,v 1.7 2013/04/04 07:02:51 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_rhs.F,v 1.8 2015/09/08 09:42:08 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -56,6 +56,9 @@ C     i,j,bi,bj,kSrf :: loop indices
       INTEGER kSrf
       _RS     SINWAT
       _RL     COSWAT
+C     fractional area at velocity points
+      _RL areaW(1:sNx,1:sNy)
+      _RL areaS(1:sNx,1:sNy)
 CEOP
 
       kSrf=1
@@ -63,8 +66,24 @@ C--   introduce turning angles
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
 
+C     initialise fractional areas at velocity points
+      DO J=1,sNy
+       DO I=1,sNx
+        areaW(I,J) = 1. _d 0
+        areaS(I,J) = 1. _d 0
+       ENDDO
+      ENDDO
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+        IF ( SEAICEscaleSurfStress ) THEN
+         DO J=1,sNy
+          DO I=1,sNx
+           areaW(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I-1,J,bi,bj))
+           areaS(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-J,bi,bj))
+          ENDDO
+         ENDDO
+        ENDIF
         DO J=1,sNy
          DO I=1,sNx
 C     ice-velocity independent contribution to drag terms
@@ -78,7 +97,7 @@ C     ( remember to average to correct velocity points )
      &          ( vVel(I  ,J,kSrf,bi,bj)+vVel(I  ,J+1,kSrf,bi,bj) )
      &         + DWATN(I-1,J,bi,bj) * 0.5 _d 0 *
      &          ( vVel(I-1,J,kSrf,bi,bj)+vVel(I-1,J+1,kSrf,bi,bj) )
-     &         ) )
+     &         ) )*areaW(I,J)
           vIceRHS(I,J,bi,bj) = FORCEY(I,J,bi,bj) + (
      &         0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
      &         COSWAT * vVel(I,J,kSrf,bi,bj)
@@ -87,7 +106,7 @@ C     ( remember to average to correct velocity points )
      &          ( uVel(I,J  ,kSrf,bi,bj)+uVel(I+1,J  ,kSrf,bi,bj))
      &         + DWATN(I,J-1,bi,bj) * 0.5 _d 0 *
      &          ( uVel(I,J-1,kSrf,bi,bj)+uVel(I+1,J-1,kSrf,bi,bj))
-     &         ) )
+     &         ) )*areaS(I,J)
 C     apply masks for interior (important when we have open boundaries)
           uIceRHS(I,J,bi,bj) = uIceRHS(I,J,bi,bj)*maskinW(I,J,bi,bj)
           vIceRHS(I,J,bi,bj) = vIceRHS(I,J,bi,bj)*maskinS(I,J,bi,bj)

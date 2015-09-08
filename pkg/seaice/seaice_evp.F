@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.55 2015/09/04 14:46:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.56 2015/09/08 09:42:08 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -99,6 +99,9 @@ C     sig11, sig22   :: sum and difference of diagonal terms of stress tensor
       _RL seaice_shear  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig11         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig22         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C     fractional area at velocity points
+      _RL areaW         (1:sNx,1:sNy)
+      _RL areaS         (1:sNx,1:sNy)
 C     auxilliary variables
       _RL ep            (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL em            (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -114,7 +117,7 @@ C     _RL zetaZ         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef SEAICE_ALLOW_CLIPZETA
       _RL zMaxZ, zMinZ, fac
 #endif /* SEAICE_ALLOW_CLIPZETA */
-      _RL denom1, denom2, facZ
+      _RL denom1, denom2, facZ, denomU, denomV
       _RL locMaskU, locMaskV
 
 C     surface level
@@ -158,6 +161,13 @@ C     explicit terms
 #ifndef ALLOW_AUTODIFF_TAMC
       nEVPstepMax = nEVPstep
 #endif
+C     initialise fractional areas at velocity points
+      DO J=1,sNy
+       DO I=1,sNx
+        areaW(I,J) = 1. _d 0
+        areaS(I,J) = 1. _d 0
+       ENDDO
+      ENDDO
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -561,6 +571,14 @@ C
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
+          IF ( SEAICEscaleSurfStress ) THEN
+           DO J=1,sNy
+            DO I=1,sNx
+             areaW(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I-1,J,bi,bj))
+             areaS(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-J,bi,bj))
+            ENDDO
+           ENDDO
+          ENDIF
           DO J=1,sNy
            DO I=1,sNx
 C     over open water, all terms that contain sea ice mass drop out and
@@ -581,7 +599,7 @@ C           locMaskV = 1. _d 0
 C     set up anti symmetric drag force and add in ice ocean stress
 C     ( remember to average to correct velocity points )
             FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+
-     &           0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
+     &           ( 0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
      &           COSWAT * uVel(I,J,kSrf,bi,bj)
      &           - SIGN(SINWAT, _fCori(I,J,bi,bj))* 0.5 _d 0 *
      &           ( DWATN(I  ,J,bi,bj) * 0.5 _d 0 *
@@ -590,9 +608,9 @@ C     ( remember to average to correct velocity points )
      &           + DWATN(I-1,J,bi,bj) * 0.5 _d 0 *
      &            (vVel(I-1,J  ,kSrf,bi,bj)-vIce(I-1,J  ,bi,bj)
      &            +vVel(I-1,J+1,kSrf,bi,bj)-vIce(I-1,J+1,bi,bj))
-     &           )*locMaskU
+     &           )*locMaskU ) * areaW(I,J)
             FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+
-     &           0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
+     &           ( 0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
      &           COSWAT * vVel(I,J,kSrf,bi,bj)
      &           + SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 *
      &           ( DWATN(I,J  ,bi,bj) * 0.5 _d 0 *
@@ -601,7 +619,7 @@ C     ( remember to average to correct velocity points )
      &           + DWATN(I,J-1,bi,bj) * 0.5 _d 0 *
      &            (uVel(I  ,J-1,kSrf,bi,bj)-uIce(I  ,J-1,bi,bj)
      &            +uVel(I+1,J-1,kSrf,bi,bj)-uIce(I+1,J-1,bi,bj))
-     &           )*locMaskV
+     &           )*locMaskV ) * areaS(I,J)
 C     coriols terms
             FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj) + 0.5 _d 0*(
      &             seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
@@ -622,28 +640,28 @@ C     step momentum equations with ice-ocean stress term treated implicitly
 C
           DO J=1,sNy
            DO I=1,sNx
+            denomU = seaiceMassU(I,J,bi,bj)*betaFacP1
+     &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I-1,J,bi,bj) )
+     &           * COSWAT * areaW(I,J)
+            denomV = seaiceMassV(I,J,bi,bj)*betaFacP1
+     &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I,J-1,bi,bj) )
+     &           * COSWAT * areaS(I,J)
+            IF ( denomU .EQ. 0. _d 0 ) denomU = 1. _d 0
+            IF ( denomV .EQ. 0. _d 0 ) denomV = 1. _d 0
             uIce(I,J,bi,bj) = seaiceMaskU(I,J,bi,bj) *
      &           ( seaiceMassU(I,J,bi,bj)*betaFac
      &           * uIce(I,J,bi,bj)
      &           + seaiceMassU(I,J,bi,bj)*recip_deltaT*evpStarFac
      &           * uIceNm1(I,J,bi,bj)
      &           + FORCEX(I,J,bi,bj)
-     &           + stressDivergenceX(I,J,bi,bj) )
-     &           /( 1. _d 0 - seaiceMaskU(I,J,bi,bj)
-     &           + seaiceMassU(I,J,bi,bj)*betaFacP1
-     &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I-1,J,bi,bj) )
-     &           * COSWAT )
+     &           + stressDivergenceX(I,J,bi,bj) ) / denomU
             vIce(I,J,bi,bj) = seaiceMaskV(I,J,bi,bj) *
      &           ( seaiceMassV(I,J,bi,bj)*betaFac
      &           * vIce(I,J,bi,bj)
      &           + seaiceMassV(I,J,bi,bj)*recip_deltaT*evpStarFac
      &           * vIceNm1(I,J,bi,bj)
      &           + FORCEY(I,J,bi,bj)
-     &           + stressDivergenceY(I,J,bi,bj) )
-     &           /( 1. _d 0 - seaiceMaskV(I,J,bi,bj)
-     &           + seaiceMassV(I,J,bi,bj)*betaFacP1
-     &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I,J-1,bi,bj) )
-     &           * COSWAT )
+     &           + stressDivergenceY(I,J,bi,bj) ) / denomV
 C--   to change results  of lab_sea.hb87 test exp. (only preserve 2 digits for cg2d)
 c           uIce(i,j,bi,bj) = uIceNm1(i,j,bi,bj)
 c    &                       +( uIce(i,j,bi,bj) - uIceNm1(i,j,bi,bj) )
