@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.163 2015/06/25 16:12:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.164 2015/09/08 09:35:52 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -125,7 +125,7 @@ C--   SEAICE parameters
      & SEAICE_areaGainFormula, SEAICE_areaLossFormula,
      & SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
      & SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
-     & SEAICE_cpAir,
+     & SEAICE_cpAir, SEAICEscaleSurfStress,
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
      & SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb, HO,
      & SEAICE_drag_south, SEAICE_waterDrag_south,
@@ -219,6 +219,7 @@ C--   set default sea ice parameters
       SEAICE_salinityTracer = .FALSE.
       SEAICE_ageTracer      = .FALSE.
       useHB87stressCoupling = .FALSE.
+      SEAICEscaleSurfStress = .FALSE.
       usePW79thermodynamics = .TRUE.
 C     start of ridging parameters
       useHibler79IceStrength= .TRUE.

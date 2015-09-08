@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.123 2015/06/25 16:12:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.124 2015/09/08 09:35:52 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -48,6 +48,9 @@ C     useHibler79IceStrength :: if true original ice strength parameterization
 C                          other use Rothrock (1975) parameterization based
 C                          on energetics and an ice thickness distribution
 C                          (default = .true.)
+C     SEAICEscaleSurfStress :: if TRUE, scale ice-ocean and ice-atmosphere
+C                          stress on ice by concenration (AREA) following
+C                          Connolley et al. (2004), JPO. (default = .false.)
 C     SEAICEsimpleRidging :: use Hibler(1979) ridging (default=.true.)
 C - advection:
 C     SEAICEuseFluxForm :: use flux form for advection and diffusion
@@ -99,7 +102,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
-     &     SEAICE_no_slip, SEAICE_maskRHS,
+     &     SEAICE_no_slip, SEAICE_maskRHS, SEAICEscaleSurfStress,
      &     SEAICE_clipVelocities, useHB87stressCoupling,
      &     SEAICEuseFluxForm, SEAICEadvHeff, SEAICEadvArea,
      &     SEAICEadvSnow, SEAICEadvSalt,
@@ -120,7 +123,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2, 
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
-     &     SEAICE_no_slip, SEAICE_maskRHS,
+     &     SEAICE_no_slip, SEAICE_maskRHS, SEAICEscaleSurfStress,
      &     SEAICE_clipVelocities, useHB87stressCoupling,
      &     SEAICEuseFluxForm, SEAICEadvHeff, SEAICEadvArea,
      &     SEAICEadvSnow, SEAICEadvSalt,
