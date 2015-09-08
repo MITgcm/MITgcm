@@ -1,9 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2177 2015/09/04 08:08:41 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2178 2015/09/08 09:45:55 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: introduce new parameter SEAICEscaleSurfStress (default = .FALSE.)
+  - if TRUE scale ice-ocean and ice-atmosphere stress acting on sea ice
+    by AREA according to Connelly et al. (2004), JPO.
+  - For EVP and the LSR solver, the implicit part of the drag term is
+    the only non-zero term in the denominator when there is no ice (which 
+    prevented running the model with zero ice-ocean drag). If
+    SEAICEscaleSurfStress = .TRUE., this results in a division by zero
+    (or zero main diagonals BU/BV) which need to be caught. A practical
+    consequence is that for open water, the momentum equation reduce
+    to trivially 0 = 0 + 0 (for EVP). For LSR, BU/BV are reset to 1, if 
+    they happen to be zero, often leading to a non-zero solution over
+    open water.
 o pkg/seaice: revise EVP code (seaice_evp.F) in preparation for a more 
     efficient EVP method.
   - introduce area-weighted averages for e12 (analogously to 
