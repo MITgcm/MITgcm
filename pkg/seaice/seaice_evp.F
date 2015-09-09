@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.56 2015/09/08 09:42:08 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.57 2015/09/09 08:00:13 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -100,8 +100,8 @@ C     sig11, sig22   :: sum and difference of diagonal terms of stress tensor
       _RL sig11         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig22         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     fractional area at velocity points
-      _RL areaW         (1:sNx,1:sNy)
-      _RL areaS         (1:sNx,1:sNy)
+      _RL areaW         (1:sNx,1:sNy,nSx,nSy)
+      _RL areaS         (1:sNx,1:sNy,nSx,nSy)
 C     auxilliary variables
       _RL ep            (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL em            (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -161,13 +161,6 @@ C     explicit terms
 #ifndef ALLOW_AUTODIFF_TAMC
       nEVPstepMax = nEVPstep
 #endif
-C     initialise fractional areas at velocity points
-      DO J=1,sNy
-       DO I=1,sNx
-        areaW(I,J) = 1. _d 0
-        areaS(I,J) = 1. _d 0
-       ENDDO
-      ENDDO
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -182,6 +175,24 @@ C     initialise strain rates
           e12  (I,J,bi,bj)   = 0. _d 0
          ENDDO
         ENDDO
+C     initialise fractional areas at velocity points
+        IF ( SEAICEscaleSurfStress ) THEN
+         DO J=1,sNy
+          DO I=1,sNx
+           areaW(I,J,bi,bj) = 
+     &          0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I-1,J,bi,bj))
+           areaS(I,J,bi,bj) = 
+     &          0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-J,bi,bj))
+          ENDDO
+         ENDDO
+        ELSE
+         DO J=1,sNy
+          DO I=1,sNx
+           areaW(I,J,bi,bj) = 1. _d 0
+           areaS(I,J,bi,bj) = 1. _d 0
+          ENDDO
+         ENDDO
+        ENDIF
        ENDDO
       ENDDO
 #ifdef SEAICE_ALLOW_CLIPZETA
@@ -301,7 +312,6 @@ CML            deltaCreg  = deltaC(I,J,bi,bj) + SEAICE_deltaMin
 #else
             deltaCreg  = MAX(deltaC(I,J,bi,bj),SEAICE_deltaMin)
 #endif /* SEAICE_DELTA_SMOOTHREG */
-C     modify pressure (copied from seaice_calc_viscosities)
             zetaC(I,J) = HALF*press0(I,J,bi,bj)/deltaCreg
            ENDDO
           ENDDO
@@ -571,14 +581,6 @@ C
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          IF ( SEAICEscaleSurfStress ) THEN
-           DO J=1,sNy
-            DO I=1,sNx
-             areaW(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I-1,J,bi,bj))
-             areaS(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-J,bi,bj))
-            ENDDO
-           ENDDO
-          ENDIF
           DO J=1,sNy
            DO I=1,sNx
 C     over open water, all terms that contain sea ice mass drop out and
@@ -608,7 +610,7 @@ C     ( remember to average to correct velocity points )
      &           + DWATN(I-1,J,bi,bj) * 0.5 _d 0 *
      &            (vVel(I-1,J  ,kSrf,bi,bj)-vIce(I-1,J  ,bi,bj)
      &            +vVel(I-1,J+1,kSrf,bi,bj)-vIce(I-1,J+1,bi,bj))
-     &           )*locMaskU ) * areaW(I,J)
+     &           )*locMaskU ) * areaW(I,J,bi,bj)
             FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+
      &           ( 0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
      &           COSWAT * vVel(I,J,kSrf,bi,bj)
@@ -619,7 +621,7 @@ C     ( remember to average to correct velocity points )
      &           + DWATN(I,J-1,bi,bj) * 0.5 _d 0 *
      &            (uVel(I  ,J-1,kSrf,bi,bj)-uIce(I  ,J-1,bi,bj)
      &            +uVel(I+1,J-1,kSrf,bi,bj)-uIce(I+1,J-1,bi,bj))
-     &           )*locMaskV ) * areaS(I,J)
+     &           )*locMaskV ) * areaS(I,J,bi,bj)
 C     coriols terms
             FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj) + 0.5 _d 0*(
      &             seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
@@ -642,10 +644,10 @@ C
            DO I=1,sNx
             denomU = seaiceMassU(I,J,bi,bj)*betaFacP1
      &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I-1,J,bi,bj) )
-     &           * COSWAT * areaW(I,J)
+     &           * COSWAT * areaW(I,J,bi,bj)
             denomV = seaiceMassV(I,J,bi,bj)*betaFacP1
      &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I,J-1,bi,bj) )
-     &           * COSWAT * areaS(I,J)
+     &           * COSWAT * areaS(I,J,bi,bj)
             IF ( denomU .EQ. 0. _d 0 ) denomU = 1. _d 0
             IF ( denomV .EQ. 0. _d 0 ) denomV = 1. _d 0
             uIce(I,J,bi,bj) = seaiceMaskU(I,J,bi,bj) *
