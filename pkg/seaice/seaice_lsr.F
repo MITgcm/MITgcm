@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.115 2015/09/08 09:42:08 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.116 2015/09/09 08:00:56 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -129,8 +129,8 @@ C     auxillary fields
       _RL uTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     fractional area at velocity points
-      _RL areaW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL areaS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL areaW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL areaS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER itmpkey, itmpkey2, itmpkey3
 #endif
@@ -184,10 +184,24 @@ cph break artificial dependencies
 #endif
 
 C     initialise fractional areas at velocity points
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        areaW(I,J) = 1. _d 0
-        areaS(I,J) = 1. _d 0
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          areaW(I,J,bi,bj) = 1. _d 0
+          areaS(I,J,bi,bj) = 1. _d 0
+         ENDDO
+        ENDDO
+        IF ( SEAICEscaleSurfStress ) THEN
+         DO J=jMin,jMax
+          DO I=iMin,iMax
+           areaW(I,J,bi,bj) =
+     &          0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I-1,J,bi,bj))
+           areaS(I,J,bi,bj) =
+     &          0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-J,bi,bj))
+          ENDDO
+         ENDDO
+        ENDIF
        ENDDO
       ENDDO
 
@@ -326,14 +340,6 @@ C     Set up of right hand sides of momentum equations starts here
 C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        IF ( SEAICEscaleSurfStress ) THEN
-         DO J=jMin,jMax
-          DO I=iMin,iMax
-           areaW(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I-1,J,bi,bj))
-           areaS(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-J,bi,bj))
-          ENDDO
-         ENDDO
-        ENDIF
         DO J=jMin,jMax
          DO I=iMin,iMax
 C     set up anti symmetric drag force and add in current force
@@ -348,7 +354,7 @@ C     ( remember to average to correct velocity points )
      &         + DWATN(I-1,J,bi,bj) * 0.5 _d 0 *
      &          (vVel(I-1,J  ,kSrf,bi,bj)-vIceC(I-1,J  ,bi,bj)
      &          +vVel(I-1,J+1,kSrf,bi,bj)-vIceC(I-1,J+1,bi,bj))
-     &         ) ) * areaW(I,J)
+     &         ) ) * areaW(I,J,bi,bj)
           FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+
      &         ( 0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
      &         COSWAT * vVel(I,J,kSrf,bi,bj)
@@ -359,7 +365,7 @@ C     ( remember to average to correct velocity points )
      &         + DWATN(I,J-1,bi,bj) * 0.5 _d 0 *
      &          (uVel(I  ,J-1,kSrf,bi,bj)-uIceC(I  ,J-1,bi,bj)
      &          +uVel(I+1,J-1,kSrf,bi,bj)-uIceC(I+1,J-1,bi,bj))
-     &         ) ) * areaS(I,J)
+     &         ) ) * areaS(I,J,bi,bj)
          ENDDO
         ENDDO
         DO j=jMin,jMax
@@ -486,34 +492,19 @@ C--   Calculate initial residual of the linearised system
        IF ( LSR_mixIniGuess.GE.1 ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-CML          IF ( SEAICEscaleSurfStress ) THEN
-CML           DO J=jMin,jMax
-CML            DO I=iMin,iMax
-CML             areaW(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I-1,J,bi,bj))
-CML             areaS(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-J,bi,bj))
-CML            ENDDO
-CML           ENDDO
-CML          ELSE
-           DO J=jMin,jMax
-            DO I=iMin,iMax
-             areaW(I,J) = 1. _d 0
-             areaS(I,J) = 1. _d 0
-            ENDDO
-           ENDDO
-CML          ENDIF
           DO j=jMin,jMax
            DO i=iMin,iMax
             uIce_fd(i,j,bi,bj) = FORCEX(i,j,bi,bj)
      &         / ( 1. _d 0 - seaiceMaskU(i,j,bi,bj)
      &           + seaiceMassU(i,j,bi,bj)/SEAICE_deltaTdyn
      &           + HALF*( DWATN(i,j,bi,bj) + DWATN(i-1,j,bi,bj) )*COSWAT
-     &                 * areaW(i,j)
+     &                 * areaW(i,j,bi,bj)
      &           )
             vIce_fd(i,j,bi,bj) = FORCEY(i,j,bi,bj)
      &         / ( 1. _d 0 - seaiceMaskV(i,j,bi,bj)
      &           + seaiceMassV(i,j,bi,bj)/SEAICE_deltaTdyn
      &           + HALF*( DWATN(i,j,bi,bj) + DWATN(i,j-1,bi,bj) )*COSWAT
-     &                 * areaS(i,j)
+     &                 * areaS(i,j,bi,bj)
      &           )
            ENDDO
           ENDDO
