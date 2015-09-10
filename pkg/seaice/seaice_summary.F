@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.80 2015/06/25 16:12:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.81 2015/09/10 15:48:50 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -147,6 +147,8 @@ C--  Seaice-Dynamics parameters
      & 'SEAICE_cStar      =', ' /* sea-ice strength parameter cStar */')
       CALL WRITE_0D_RL( SEAICE_tensilFac   ,INDEX_NONE,
      & 'SEAICE_tensilFac  =', ' /* sea-ice tensile strength factor */')
+      CALL WRITE_0D_RL( SEAICE_tensilDepth ,INDEX_NONE,
+     & 'SEAICE_tensilDepth=', ' /* crit. depth for tensile strength */')
       CALL WRITE_0D_RL( SEAICEpresH0   ,INDEX_NONE,
      & 'SEAICEpresH0   =', ' /* sea-ice strength Heff threshold */')
        CALL WRITE_0D_I ( SEAICEpresPow0,    INDEX_NONE,
@@ -173,6 +175,9 @@ C--  Seaice-Dynamics parameters
      & 'SEAICE_clipVeloctities =', ' /* impose max. vels. */')
       CALL WRITE_0D_L ( useHB87stressCoupling, INDEX_NONE,
      & 'useHB87stressCoupling  =', ' /* altern. ice-ocean stress */')
+      CALL WRITE_0D_L ( SEAICEscaleSurfStress, INDEX_NONE,
+     & 'SEAICEscaleSurfStress  =', 
+     & ' /* scale atm. and ocean-surface stress with AREA */')
       CALL WRITE_0D_L ( SEAICE_maskRHS, INDEX_NONE,
      & 'SEAICE_maskRHS    =', ' /* mask RHS of solver */')
       IF (.NOT.SEAICEuseEVP) THEN

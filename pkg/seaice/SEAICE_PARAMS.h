@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.124 2015/09/08 09:35:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.125 2015/09/10 15:48:50 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -340,6 +340,7 @@ C     SEAICE_waterAlbedo :: water albedo
 C     SEAICE_strength    :: sea-ice strength Pstar
 C     SEAICE_cStar       :: sea-ice strength paramter C* (def: 20)
 C     SEAICE_tensilFac   :: sea-ice tensile strength factor, values in [0,1]
+C     SEAICE_tensilDepth :: crtical depth for sea-ice tensile strength (def 0.)
 C     SEAICE_eccen       :: sea-ice eccentricity of the elliptical yield curve
 C     SEAICE_lhFusion    :: latent heat of fusion for ice and snow (J/kg)
 C     SEAICE_lhEvap      :: latent heat of evaporation for water (J/kg)
@@ -416,7 +417,7 @@ C
       _RL SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south
       _RL SEAICE_wetAlbTemp, SEAICE_waterAlbedo
       _RL SEAICE_strength, SEAICE_cStar
-      _RL SEAICE_tensilFac, SEAICE_eccen
+      _RL SEAICE_tensilFac, SEAICE_tensilDepth, SEAICE_eccen
       _RL SEAICE_lhFusion, SEAICE_lhEvap
       _RL SEAICE_dalton
       _RL SEAICE_iceConduct, SEAICE_snowConduct
@@ -464,7 +465,8 @@ C
      &    SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
      &    SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
      &    SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
-     &    SEAICE_strength, SEAICE_cStar, SEAICE_tensilFac, SEAICE_eccen,
+     &    SEAICE_strength, SEAICE_cStar, SEAICE_eccen,
+     &    SEAICE_tensilFac, SEAICE_tensilDepth, 
      &    SEAICE_lhFusion, SEAICE_lhEvap,
      &    SEAICE_dalton, SEAICE_cpAir,
      &    SEAICE_iceConduct, SEAICE_snowConduct,
