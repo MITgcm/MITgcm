@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.31 2015/04/09 16:35:06 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.32 2015/09/10 15:56:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -127,6 +127,8 @@ C     division by zero is not possible
        CALL DIAGNOSTICS_FILL(press  ,'SIpress ',0,1 ,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(deltaC ,'SIdelta ',0,1 ,0,1,1,myThid)
 #ifdef SEAICE_CGRID
+       CALL DIAGNOSTICS_FILL(tensileStrength,
+     &                               'SItensil',0,1 ,0,1,1,myThid)
        IF ( DIAGNOSTICS_IS_ON('SIsigI  ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIsigII ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIshear ',myThid) ) THEN
