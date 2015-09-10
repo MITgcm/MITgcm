@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2178 2015/09/08 09:45:55 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2179 2015/09/10 15:58:25 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: introduce fast ice parameterisation following Itkin et al. (2015)
+  and Koenig-Beatty+Holland (2012)
+  - two new parameters SEAICE_tensilFac and SEAICE_tensilDepth
+  - global 2D field tensileStrength, computed in seaice_calc_ice_strength
+  - requires an extra input argument for S/R seaice_calc_viscosities
+  - tensileStrength's depth dependence is different from Itkin et al. (2015)
+    (to be changed and played with, for now exponential)
 o pkg/seaice: introduce new parameter SEAICEscaleSurfStress (default = .FALSE.)
   - if TRUE scale ice-ocean and ice-atmosphere stress acting on sea ice
     by AREA according to Connelly et al. (2004), JPO.
