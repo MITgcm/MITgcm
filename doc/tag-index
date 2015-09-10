@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2179 2015/09/10 15:58:25 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2180 2015/09/10 18:12:23 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom_vecinv & mom_common:
+  - add deep-atmosphere geometry factor in mom_calc_visc.F + in routines
+    called from there.
+  - add anelastic and deep-atmosphere geometry factor in pkg/mom_vecinv ; this
+    allows to use Vector-Invariant form in deep atmos and anelastic formulation
 o pkg/seaice: introduce fast ice parameterisation following Itkin et al. (2015)
   and Koenig-Beatty+Holland (2012)
   - two new parameters SEAICE_tensilFac and SEAICE_tensilDepth
@@ -15,25 +20,25 @@ o pkg/seaice: introduce new parameter SEAICEscaleSurfStress (default = .FALSE.)
   - if TRUE scale ice-ocean and ice-atmosphere stress acting on sea ice
     by AREA according to Connelly et al. (2004), JPO.
   - For EVP and the LSR solver, the implicit part of the drag term is
-    the only non-zero term in the denominator when there is no ice (which 
+    the only non-zero term in the denominator when there is no ice (which
     prevented running the model with zero ice-ocean drag). If
     SEAICEscaleSurfStress = .TRUE., this results in a division by zero
     (or zero main diagonals BU/BV) which need to be caught. A practical
     consequence is that for open water, the momentum equation reduce
-    to trivially 0 = 0 + 0 (for EVP). For LSR, BU/BV are reset to 1, if 
+    to trivially 0 = 0 + 0 (for EVP). For LSR, BU/BV are reset to 1, if
     they happen to be zero, often leading to a non-zero solution over
     open water.
-o pkg/seaice: revise EVP code (seaice_evp.F) in preparation for a more 
+o pkg/seaice: revise EVP code (seaice_evp.F) in preparation for a more
     efficient EVP method.
-  - introduce area-weighted averages for e12 (analogously to 
+  - introduce area-weighted averages for e12 (analogously to
     seaice_calc_viscosities.F); this totally changes lab_sea.hb87 (2 digits
     remain, but also changing the order of terms in the previous average
     changed the results as much) -> update experiment
   - add SEAICE_DELTA_SMOOTHREG code
-  - disentangle computation of zetaC/deltaC and zetaZ/deltaZ, also for 
+  - disentangle computation of zetaC/deltaC and zetaZ/deltaZ, also for
     TEM-code
   - adjust loop bounds so that only required fields are computed
-  - add new averaging code for zetaZ/deltaZ (again similar to 
+  - add new averaging code for zetaZ/deltaZ (again similar to
     seaice_calc_viscosities.F), inactive by default for now (will change
     results again), but will replace old code eventually
 o eesupp/src:
