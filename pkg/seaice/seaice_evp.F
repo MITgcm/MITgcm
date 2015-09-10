@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.57 2015/09/09 08:00:13 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.58 2015/09/10 15:57:57 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -312,7 +312,9 @@ CML            deltaCreg  = deltaC(I,J,bi,bj) + SEAICE_deltaMin
 #else
             deltaCreg  = MAX(deltaC(I,J,bi,bj),SEAICE_deltaMin)
 #endif /* SEAICE_DELTA_SMOOTHREG */
-            zetaC(I,J) = HALF*press0(I,J,bi,bj)/deltaCreg
+            zetaC(I,J) = HALF*( press0(I,J,bi,bj) 
+     &           + tensileStrength(I,J,bi,bj) 
+     &           )/deltaCreg
            ENDDO
           ENDDO
           IF (.TRUE.) THEN
@@ -399,6 +401,7 @@ C     recompute pressure
           DO j=0,sNy+1
            DO i=0,sNx+1
             pressC(I,J) = TWO*zetaC(I,J)*deltaC(I,J,bi,bj)
+     &           - 2. _d 0 * tensileStrength(I,J,bi,bj)
            ENDDO
           ENDDO
 #ifdef ALLOW_DIAGNOSTICS

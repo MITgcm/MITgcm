@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.33 2015/07/01 12:26:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.34 2015/09/10 15:57:57 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -9,7 +9,7 @@ C $Name:  $
 CBOP
 CStartOfInterface
       SUBROUTINE SEAICE_CALC_VISCOSITIES(
-     I     e11, e22, e12, zMin, zMax, hEffM, press0,
+     I     e11, e22, e12, zMin, zMax, hEffM, press0, tensil,
      O     eta, etaZ, zeta, zetaZ, press, deltaC,
      I     iStep, myTime, myIter, myThid )
 C     *==========================================================*
@@ -52,6 +52,7 @@ C
       _RL press (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C
       _RL deltaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL tensil(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     bulk viscosity
       _RL  eta  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  etaZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -154,7 +155,9 @@ C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
           zeta (I,J,bi,bj) = ZMAX(I,J,bi,bj)
      &         *(1. _d 0 - argTmp)/(1. _d 0 + argTmp)
 #else
-          zeta (I,J,bi,bj) = HALF*press0(I,J,bi,bj)/deltaCreg
+          zeta (I,J,bi,bj) = HALF*( press0(I,J,bi,bj) 
+     &         + tensil(I,J,bi,bj) 
+     &         )/deltaCreg
 C     put min and max viscosities in
           zeta (I,J,bi,bj) = MIN(ZMAX(I,J,bi,bj),zeta(I,J,bi,bj))
 #endif /*  SEAICE_ZETA_SMOOTHREG */
@@ -164,6 +167,7 @@ C     set viscosities to zero at hEffM flow pts
           eta  (I,J,bi,bj) = recip_e2*zeta(I,J,bi,bj)
 C     "replacement pressure"
           press(I,J,bi,bj) = TWO *zeta(I,J,bi,bj)*deltaC(I,J,bi,bj)
+     &         - 2. _d 0 * tensil(I,J,bi,bj)
          ENDDO
         ENDDO
 #ifdef SEAICE_ALLOW_TEM

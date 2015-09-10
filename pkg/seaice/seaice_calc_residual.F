@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_residual.F,v 1.6 2014/12/01 12:31:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_residual.F,v 1.7 2015/09/10 15:57:57 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -85,7 +85,7 @@ C     viscosities are required
      O     e11, e22, e12,
      I     krylovIter, myTime, myIter, myThid )
       CALL SEAICE_CALC_VISCOSITIES(
-     I     e11, e22, e12, zMin, zMax, hEffM, press0,
+     I     e11, e22, e12, zMin, zMax, hEffM, press0, tensileStrength,
      O     eta, etaZ, zeta, zetaZ, press, deltaC,
      I     krylovIter, myTime, myIter, myThid )
 
