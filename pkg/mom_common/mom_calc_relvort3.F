@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_relvort3.F,v 1.10 2014/04/04 20:08:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_relvort3.F,v 1.11 2015/09/10 17:53:04 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -8,7 +8,7 @@ C $Name:  $
      I        bi,bj,k,
      I        uFld, vFld, hFacZ,
      O        vort3,
-     I        myThid)
+     I        myThid )
       IMPLICIT NONE
 C     *==========================================================*
 C     | S/R MOM_CALC_RELVORT3
@@ -60,7 +60,7 @@ C       Horizontal curl of flow field - ignoring lopping factors
      &       -vFld(I-1,J)*dyC(I-1,J,bi,bj) )
      &     -( uFld(I,J)*dxC(I,J,bi,bj)
      &       -uFld(I,J-1)*dxC(I,J-1,bi,bj) )
-     &                           )
+     &                           )*recip_deepFacC(k)
 
 C       Horizontal curl of flow field - including lopping factors
 c       IF (hFacZ(i,j).NE.0.) THEN
@@ -119,14 +119,14 @@ C     do (1+2)+3, and always in the same order (exch3 convention order):
      &      ( vFld(I,J)*dyC(I,J,bi,bj)
      &       -uFld(I,J)*dxC(I,J,bi,bj) )
      &      + uFld(I,J-1)*dxC(I,J-1,bi,bj)
-     &     )
+     &     )*recip_deepFacC(k)
 C-    the quick way, but do not get the same truncation on the 3 faces:
 c        vort3(I,J)=
 c    &     +recip_rAz(I,J,bi,bj)*(
 c    &      vFld(I,J)*dyC(I,J,bi,bj)
 c    &     -uFld(I,J)*dxC(I,J,bi,bj)
 c    &     +uFld(I,J-1)*dxC(I,J-1,bi,bj)
-c    &     )
+c    &     )*recip_deepFacC(k)
 #ifdef CALC_CS_CORNER_EXTENDED
          vort3(I-1,J)=
      &      recip_rAz(I-1,J,bi,bj)*(
@@ -134,7 +134,7 @@ c    &     )
      &     -vFld(I-2,J)*dyC(I-2,J,bi,bj)
      &     -uFld(I-1,J)*dxC(I-1,J,bi,bj)
      &     +vFld(I+0,J-1)*dyC(I+0,J-1,bi,bj)
-     &                             )
+     &                             )*recip_deepFacC(k)
      &     *maskS(i-1,j,k,bi,bj)*maskS(i-2,j,k,bi,bj)
      &     *maskW(i-1,j,k,bi,bj)*maskS(i,j-1,k,bi,bj)
          vort3(I,J-1)=vort3(I-1,J)
@@ -161,21 +161,21 @@ C      (exch3 convention order):
      &      (-uFld(I,J)*dxC(I,J,bi,bj)
      &       -vFld(I-1,J)*dyC(I-1,J,bi,bj) )
      &      + uFld(I,J-1)*dxC(I,J-1,bi,bj)
-     &     )
+     &     )*recip_deepFacC(k)
          ELSEIF ( myFace.EQ.4 ) THEN
           vort3(I,J)=
      &     +recip_rAz(I,J,bi,bj)*(
      &      (-vFld(I-1,J)*dyC(I-1,J,bi,bj)
      &       +uFld(I,J-1)*dxC(I,J-1,bi,bj) )
      &      - uFld(I,J)*dxC(I,J,bi,bj)
-     &     )
+     &     )*recip_deepFacC(k)
          ELSE
           vort3(I,J)=
      &     +recip_rAz(I,J,bi,bj)*(
      &      (+uFld(I,J-1)*dxC(I,J-1,bi,bj)
      &       -uFld(I,J)*dxC(I,J,bi,bj)     )
      &      - vFld(I-1,J)*dyC(I-1,J,bi,bj)
-     &     )
+     &     )*recip_deepFacC(k)
          ENDIF
 C-    the quick way, but do not get the same truncation on the 3 faces:
 c        vort3(I,J)=
@@ -183,7 +183,7 @@ c    &     +recip_rAz(I,J,bi,bj)*(
 c    &     -vFld(I-1,J)*dyC(I-1,J,bi,bj)
 c    &     -uFld(I,J)*dxC(I,J,bi,bj)
 c    &     +uFld(I,J-1)*dxC(I,J-1,bi,bj)
-c    &     )
+c    &     )*recip_deepFacC(k)
 #ifdef CALC_CS_CORNER_EXTENDED
          vort3(I+1,J)=
      &      recip_rAz(I+1,J,bi,bj)*(
@@ -191,7 +191,7 @@ c    &     )
      &     -vFld(I-0,J)*dyC(I-0,J,bi,bj)
      &     -uFld(I+1,J)*dxC(I+1,J,bi,bj)
      &     -vFld(I-1,J-1)*dyC(I-1,J-1,bi,bj)
-     &                           )
+     &                           )*recip_deepFacC(k)
      &     *maskS(i+1,j,k,bi,bj)*maskS(i-0,j,k,bi,bj)
      &     *maskW(i+1,j,k,bi,bj)*maskS(i-1,j-1,k,bi,bj)
          vort3(I,J-1)=vort3(I+1,J)
@@ -218,21 +218,21 @@ C      (exch3 convention order):
      &      (+uFld(I,J-1)*dxC(I,J-1,bi,bj)
      &       +vFld(I,J)*dyC(I,J,bi,bj)     )
      &       -uFld(I,J)*dxC(I,J,bi,bj)
-     &     )
+     &     )*recip_deepFacC(k)
          ELSEIF ( myFace.EQ.3 ) THEN
           vort3(I,J)=
      &     +recip_rAz(I,J,bi,bj)*(
      &      (-uFld(I,J)*dxC(I,J,bi,bj)
      &       +uFld(I,J-1)*dxC(I,J-1,bi,bj) )
      &      + vFld(I,J)*dyC(I,J,bi,bj)
-     &     )
+     &     )*recip_deepFacC(k)
          ELSE
           vort3(I,J)=
      &     +recip_rAz(I,J,bi,bj)*(
      &      (+vFld(I,J)*dyC(I,J,bi,bj)
      &       -uFld(I,J)*dxC(I,J,bi,bj)     )
      &      + uFld(I,J-1)*dxC(I,J-1,bi,bj)
-     &     )
+     &     )*recip_deepFacC(k)
          ENDIF
 C-    the quick way, but do not get the same truncation on the 3 faces:
 c        vort3(I,J)=
@@ -240,7 +240,7 @@ c    &     +recip_rAz(I,J,bi,bj)*(
 c    &      vFld(I,J)*dyC(I,J,bi,bj)
 c    &     -uFld(I,J)*dxC(I,J,bi,bj)
 c    &     +uFld(I,J-1)*dxC(I,J-1,bi,bj)
-c    &     )
+c    &     )*recip_deepFacC(k)
 #ifdef CALC_CS_CORNER_EXTENDED
          vort3(I-1,J)=
      &      recip_rAz(I-1,J,bi,bj)*(
@@ -248,7 +248,7 @@ c    &     )
      &     -vFld(I-2,J)*dyC(I-2,J,bi,bj)
      &     +vFld(I-0,J+1)*dyC(I-0,J+1,bi,bj)
      &     +uFld(I-1,J-1)*dxC(I-1,J-1,bi,bj)
-     &                           )
+     &                           )*recip_deepFacC(k)
      &     *maskS(i-1,j,k,bi,bj)*maskS(i-2,j,k,bi,bj)
      &     *maskS(i,j+1,k,bi,bj)*maskW(i-1,j-1,k,bi,bj)
          vort3(I,J+1)=vort3(I-1,J)
@@ -275,14 +275,14 @@ C      (exch3 convention order):
      &      (-uFld(I,J)*dxC(I,J,bi,bj)
      &       -vFld(I-1,J)*dyC(I-1,J,bi,bj) )
      &      + uFld(I,J-1)*dxC(I,J-1,bi,bj)
-     &     )
+     &     )*recip_deepFacC(k)
          ELSE
           vort3(I,J)=
      &     +recip_rAz(I,J,bi,bj)*(
      &      (+uFld(I,J-1)*dxC(I,J-1,bi,bj)
      &       -uFld(I,J)*dxC(I,J,bi,bj)     )
      &      - vFld(I-1,J)*dyC(I-1,J,bi,bj)
-     &     )
+     &     )*recip_deepFacC(k)
          ENDIF
 C-    the quick way, but do not get the same truncation on the 3 faces:
 c        vort3(I,J)=
@@ -290,7 +290,7 @@ c    &     +recip_rAz(I,J,bi,bj)*(
 c    &     -vFld(I-1,J)*dyC(I-1,J,bi,bj)
 c    &     -uFld(I,J)*dxC(I,J,bi,bj)
 c    &     +uFld(I,J-1)*dxC(I,J-1,bi,bj)
-c    &     )
+c    &     )*recip_deepFacC(k)
 #ifdef CALC_CS_CORNER_EXTENDED
          vort3(I+1,J)=
      &      recip_rAz(I+1,J,bi,bj)*(
@@ -298,7 +298,7 @@ c    &     )
      &     -vFld(I-0,J)*dyC(I-0,J,bi,bj)
      &     -vFld(I-1,J+1)*dyC(I-1,J+1,bi,bj)
      &     +uFld(I+1,J-1)*dxC(I+1,J-1,bi,bj)
-     &                           )
+     &                           )*recip_deepFacC(k)
      &     *maskS(i+1,j,k,bi,bj)*maskS(i-0,j,k,bi,bj)
      &     *maskS(i-1,j+1,k,bi,bj)*maskW(i+1,j-1,k,bi,bj)
          vort3(I,J+1)=vort3(I+1,J)

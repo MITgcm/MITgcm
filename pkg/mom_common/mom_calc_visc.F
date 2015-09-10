@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.48 2014/06/28 22:36:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.49 2015/09/10 17:53:04 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -114,7 +114,8 @@ C     !LOCAL VARIABLES:
       _RL leith2fac, leith4fac
       _RL leithD2fac, leithD4fac
       _RL viscAhRe_max, viscA4Re_max
-      _RL Alin,grdVrt,grdDiv, keZpt
+      _RL Alin, grdVrt,grdDiv, keZpt
+      _RL deepFac3, deepFac4
       _RL L2, L3, L5, L2rdt, L4rdt, recip_dt
       _RL Uscl,U4scl
       _RL divDx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -166,6 +167,8 @@ C---- variable viscosity :
 
        recip_dt = 1. _d 0
        IF ( deltaTMom.NE.0. ) recip_dt = 1. _d 0/deltaTMom
+       deepFac3 = deepFac2C(k)*deepFacC(k)
+       deepFac4 = deepFac2C(k)*deepFac2C(k)
 
        IF ( useHarmonicVisc .AND. viscAhReMax.NE.0. ) THEN
         viscAhRe_max=SQRT(2. _d 0)/viscAhReMax
@@ -262,7 +265,8 @@ C        to compute d/dx(hDiv), fill corners with appropriate values:
          ENDIF
          DO j=2-OLy,sNy+OLy-1
           DO i=2-OLx,sNx+OLx-1
-            divDx(i,j) = (hDiv(i,j)-hDiv(i-1,j))*recip_dxC(i,j,bi,bj)
+            divDx(i,j) = (hDiv(i,j)-hDiv(i-1,j))
+     &                  *recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
           ENDDO
          ENDDO
 
@@ -274,7 +278,8 @@ C        to compute d/dy(hDiv), fill corners with appropriate values:
          ENDIF
          DO j=2-OLy,sNy+OLy-1
           DO i=2-OLx,sNx+OLx-1
-            divDy(i,j) = (hDiv(i,j)-hDiv(i,j-1))*recip_dyC(i,j,bi,bj)
+            divDy(i,j) = (hDiv(i,j)-hDiv(i,j-1))
+     &                  *recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
           ENDDO
          ENDDO
 
@@ -283,7 +288,7 @@ C-       gradient in x direction:
          DO j=2-OLy,sNy+OLy
           DO i=2-OLx,sNx+OLx-1
             vrtDx(i,j) = (vort3(i+1,j)-vort3(i,j))
-     &                  *recip_dxG(i,j,bi,bj)
+     &                  *recip_dxG(i,j,bi,bj)*recip_deepFacC(k)
      &                  *maskS(i,j,k,bi,bj)
 #ifdef ALLOW_OBCS
      &                  *maskInS(i,j,bi,bj)
@@ -294,7 +299,7 @@ C-       gradient in y direction:
          DO j=2-OLy,sNy+OLy-1
           DO i=2-OLx,sNx+OLx
             vrtDy(i,j) = (vort3(i,j+1)-vort3(i,j))
-     &                  *recip_dyG(i,j,bi,bj)
+     &                  *recip_dyG(i,j,bi,bj)*recip_deepFacC(k)
      &                  *maskW(i,j,k,bi,bj)
 #ifdef ALLOW_OBCS
      &                  *maskInW(i,j,bi,bj)
@@ -321,10 +326,10 @@ CADJ &     = comlev1_mom_ijk_loop , key=lockey_2, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C These are (powers of) length scales
-         L2 = L2_D(i,j,bi,bj)
+         L2 = L2_D(i,j,bi,bj)*deepFac2C(k)
          L2rdt = 0.25 _d 0*recip_dt*L2
-         L3 = L3_D(i,j,bi,bj)
-         L4rdt = L4rdt_D(i,j,bi,bj)
+         L3 = L3_D(i,j,bi,bj)*deepFac3
+         L4rdt = L4rdt_D(i,j,bi,bj)*deepFac4
          L5 = (L2*L3)
 
 #ifndef AUTODIFF_DISABLE_REYNOLDS_SCALE
@@ -429,10 +434,10 @@ C  BiHarmonic on Div.u points
 
 CCCCCCCCCCCCC Vorticity Point CalculationsCCCCCCCCCCCCCCCCCC
 C These are (powers of) length scales
-         L2 = L2_Z(i,j,bi,bj)
+         L2 = L2_Z(i,j,bi,bj)*deepFac2C(k)
          L2rdt = 0.25 _d 0*recip_dt*L2
-         L3 = L3_Z(i,j,bi,bj)
-         L4rdt = L4rdt_Z(i,j,bi,bj)
+         L3 = L3_Z(i,j,bi,bj)*deepFac3
+         L4rdt = L4rdt_Z(i,j,bi,bj)*deepFac4
          L5 = (L2*L3)
 
 #ifndef AUTODIFF_DISABLE_REYNOLDS_SCALE

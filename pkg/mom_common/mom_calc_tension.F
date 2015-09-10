@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_tension.F,v 1.4 2011/05/03 19:27:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_tension.F,v 1.5 2015/09/10 17:53:04 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -11,7 +11,7 @@ C !INTERFACE: ==========================================================
      I        bi,bj,k,
      I        uFld, vFld,
      O        tension,
-     I        myThid)
+     I        myThid )
 C !DESCRIPTION:
 C Calculates the tension of the horizontal flow field (at tracer points):
 C \begin{equation*}
@@ -46,8 +46,8 @@ C  i,j                  :: loop indices
       INTEGER i,j
 CEOP
 
-      DO j=1-Oly,sNy+Oly-1
-       DO i=1-Olx,sNx+Olx-1
+      DO j=1-OLy,sNy+OLy-1
+       DO i=1-OLx,sNx+OLx-1
 
 C Calculate tension of horizontal flow (ignoring lopping factors)
 C *NOTE* that masking is implicit in the contents of the (u,v) fields.
@@ -56,10 +56,11 @@ C *NOTE* that masking is implicit in the contents of the (u,v) fields.
      &     -dyG( i , j ,bi,bj)*uFld( i , j )
      &     -dxG( i ,j+1,bi,bj)*vFld( i ,j+1)
      &     +dxG( i , j ,bi,bj)*vFld( i , j )
-     &    )*recip_rA(i,j,bi,bj)
+     &    )*recip_rA(i,j,bi,bj)*recip_deepFacC(k)
 #ifdef ALLOW_OBCS
      &     *maskInC(i,j,bi,bj)
 #endif
+c       tension(i,j)=
 c    &    (dyF(i,j,bi,bj)*recip_dxF(i,j,bi,bj))
 c    &   *( uFld(i+1, j )*recip_dyG(i+1, j ,bi,bj)
 c    &     -uFld( i , j )*recip_dyG( i , j ,bi,bj) )

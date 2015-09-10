@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_strain.F,v 1.4 2005/10/12 00:58:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_strain.F,v 1.5 2015/09/10 17:53:04 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -7,11 +7,11 @@ CBOP
 C !ROUTINE: MOM_CALC_STRAIN
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE MOM_CALC_STRAIN( 
+      SUBROUTINE MOM_CALC_STRAIN(
      I        bi,bj,k,
      I        uFld, vFld, hFacZ,
      O        strain,
-     I        myThid)
+     I        myThid )
 
 C !DESCRIPTION:
 C Calculates the strain of the horizontal flow field (at vorticity points):
@@ -50,31 +50,33 @@ C  i,j                  :: loop indices
       INTEGER i,j
 CEOP
 
-      DO J=2-Oly,sNy+Oly
-       DO I=2-Olx,sNx+Olx
+      DO j=2-OLy,sNy+OLy
+       DO i=2-OLx,sNx+OLx
 
 C       Strain of horizontal flow field (ignoring lopping factors)
-        strain(I,J)=
-     &    ( dyc( i , j ,bi,bj)*vFld( i , j )
-     &     -dyc(i-1, j ,bi,bj)*vFld(i-1, j )
-     &     +dxc( i , j ,bi,bj)*uFld( i , j )
-     &     -dxc( i ,j-1,bi,bj)*uFld( i ,j-1) )*recip_rAz(i,j,bi,bj)
-c    &    dyu(I,J,bi,bj)*recip_dxv(I,J,bi,bj)*(
-c    &              vFld( I , J )*recip_dyc( I , J ,bi,bj)
-c    &             -vFld(I-1, J )*recip_dyc(I-1, J ,bi,bj) )
-c    &   +dxv(I,J,bi,bj)*recip_dyu(I,J,bi,bj)*(
-c    &             +uFld( I , J )*recip_dxc( I , J ,bi,bj)
-c    &             -uFld( I ,J-1)*recip_dxc( I ,J-1,bi,bj) )
+        strain(i,j)=
+     &    ( dyC( i , j ,bi,bj)*vFld( i , j )
+     &     -dyC(i-1, j ,bi,bj)*vFld(i-1, j )
+     &     +dxC( i , j ,bi,bj)*uFld( i , j )
+     &     -dxC( i ,j-1,bi,bj)*uFld( i ,j-1)
+     &    )*recip_rAz(i,j,bi,bj)*recip_deepFacC(k)
+c       strain(i,j)=
+c    &    dyU(i,j,bi,bj)*recip_dxV(i,j,bi,bj)*(
+c    &              vFld( i , j )*recip_dyC( i , j ,bi,bj)
+c    &             -vFld(i-1, j )*recip_dyC(i-1, j ,bi,bj) )
+c    &   +dxV(i,j,bi,bj)*recip_dyU(i,j,bi,bj)*(
+c    &             +uFld( i , j )*recip_dxC( i , j ,bi,bj)
+c    &             -uFld( i ,j-1)*recip_dxC( i ,j-1,bi,bj) )
 
 C       Set strain to zero on boundaries (free-slip)
 C       mask is now applied afterwards, outside this S/R.
 c       IF (hFacZ(i,j).EQ.0.) THEN
-c        strain(I,J)=0.
+c        strain(i,j)=0.
 c       ENDIF
 
        ENDDO
       ENDDO
-        
+
 C     Special stuff for Cubed Sphere
       IF (useCubedSphereExchange) THEN
 c      STOP 'S/R MOM_CALC_STRAIN: We should not use strain on the cube!'
