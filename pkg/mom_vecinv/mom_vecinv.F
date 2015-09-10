@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.76 2015/01/03 23:58:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.77 2015/09/10 18:08:51 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -59,7 +59,7 @@ C     bi,bj   :: current tile indices
 C     k       :: current vertical level
 C     iMin,iMax,jMin,jMax :: loop ranges
 C     fVerU   :: Flux of momentum in the vertical direction, out of the upper
-C     fVerV   :: face of a cell K ( flux into the cell above ).
+C     fVerV   :: face of a cell k ( flux into the cell above ).
 C     fVerUkm :: vertical viscous flux of U, interface above (k-1/2)
 C     fVerVkm :: vertical viscous flux of V, interface above (k-1/2)
 C     fVerUkp :: vertical viscous flux of U, interface below (k+1/2)
@@ -138,7 +138,7 @@ C     xxxFac :: On-off tracer parameters used for switching terms off.
 #ifdef ALLOW_AUTODIFF
 C--   only the kDown part of fverU/V is set in this subroutine
 C--   the kUp is still required
-C--   In the case of mom_fluxform Kup is set as well
+C--   In the case of mom_fluxform kUp is set as well
 C--   (at least in part)
       fVerUkm(1,1) = fVerUkm(1,1)
       fVerVkm(1,1) = fVerVkm(1,1)
@@ -366,12 +366,14 @@ C     Combine fluxes
         ENDDO
        ENDDO
 C--   Tendency is minus divergence of the fluxes
+C     vert.visc.flx is scaled by deepFac2F (deep-atmos) and rhoFac (anelastic)
        DO j=jMin,jMax
         DO i=iMin,iMax
          guDiss(i,j) = guDiss(i,j)
      &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
      &   *recip_rAw(i,j,bi,bj)
      &   *( fVerUkp(i,j) - fVerUkm(i,j) )*rkSign
+     &   *recip_deepFac2C(k)*recip_rhoFacC(k)
         ENDDO
        ENDDO
       ENDIF
@@ -431,12 +433,14 @@ C     Combine fluxes -> fVerV
         ENDDO
        ENDDO
 C--   Tendency is minus divergence of the fluxes
+C     vert.visc.flx is scaled by deepFac2F (deep-atmos) and rhoFac (anelastic)
        DO j=jMin,jMax
         DO i=iMin,iMax
          gvDiss(i,j) = gvDiss(i,j)
      &   -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
      &   *recip_rAs(i,j,bi,bj)
      &   *( fVerVkp(i,j) - fVerVkm(i,j) )*rkSign
+     &   *recip_deepFac2C(k)*recip_rhoFacC(k)
         ENDDO
        ENDDO
       ENDIF
@@ -504,9 +508,9 @@ C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvecti
      &     .NOT.( useCDscheme .OR. useAbsVorticity.AND.momAdvection )
      &   ) THEN
        IF (useAbsVorticity) THEN
-        CALL MOM_VI_U_CORIOLIS(bi,bj,K,vFld,omega3,hFacZ,r_hFacZ,
+        CALL MOM_VI_U_CORIOLIS(bi,bj,k,vFld,omega3,hFacZ,r_hFacZ,
      &                         uCf,myThid)
-        CALL MOM_VI_V_CORIOLIS(bi,bj,K,uFld,omega3,hFacZ,r_hFacZ,
+        CALL MOM_VI_V_CORIOLIS(bi,bj,k,uFld,omega3,hFacZ,r_hFacZ,
      &                         vCf,myThid)
        ELSE
         CALL MOM_VI_CORIOLIS(bi,bj,k,uFld,vFld,hFacZ,r_hFacZ,
@@ -557,7 +561,7 @@ C--   Horizontal advection of relative (or absolute) vorticity
         CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,vFld,vort3, r_hFacZ,
      &                         uCf,myThid)
        ELSEIF ( useAbsVorticity ) THEN
-        CALL MOM_VI_U_CORIOLIS(bi,bj,K,vFld,omega3,hFacZ,r_hFacZ,
+        CALL MOM_VI_U_CORIOLIS(bi,bj,k,vFld,omega3,hFacZ,r_hFacZ,
      &                         uCf,myThid)
        ELSE
         CALL MOM_VI_U_CORIOLIS(bi,bj,k,vFld,vort3, hFacZ,r_hFacZ,
@@ -570,13 +574,13 @@ C--   Horizontal advection of relative (or absolute) vorticity
        ENDDO
        IF ( (highOrderVorticity.OR.upwindVorticity)
      &     .AND.useAbsVorticity ) THEN
-        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,K,uFld,omega3,r_hFacZ,
+        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,k,uFld,omega3,r_hFacZ,
      &                         vCf,myThid)
        ELSEIF ( (highOrderVorticity.OR.upwindVorticity) ) THEN
-        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,K,uFld,vort3, r_hFacZ,
+        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,k,uFld,vort3, r_hFacZ,
      &                         vCf,myThid)
        ELSEIF ( useAbsVorticity ) THEN
-        CALL MOM_VI_V_CORIOLIS(bi,bj,K,uFld,omega3,hFacZ,r_hFacZ,
+        CALL MOM_VI_V_CORIOLIS(bi,bj,k,uFld,omega3,hFacZ,r_hFacZ,
      &                         vCf,myThid)
        ELSE
         CALL MOM_VI_V_CORIOLIS(bi,bj,k,uFld,vort3, hFacZ,r_hFacZ,
@@ -620,13 +624,13 @@ C--   Horizontal advection of relative (or absolute) vorticity
 
 C--   Vertical shear terms (-w*du/dr & -w*dv/dr)
        IF ( .NOT. momImplVertAdv ) THEN
-        CALL MOM_VI_U_VERTSHEAR(bi,bj,K,uVel,wVel,uCf,myThid)
+        CALL MOM_VI_U_VERTSHEAR(bi,bj,k,uVel,wVel,uCf,myThid)
         DO j=jMin,jMax
          DO i=iMin,iMax
           gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
          ENDDO
         ENDDO
-        CALL MOM_VI_V_VERTSHEAR(bi,bj,K,vVel,wVel,vCf,myThid)
+        CALL MOM_VI_V_VERTSHEAR(bi,bj,k,vVel,wVel,vCf,myThid)
         DO j=jMin,jMax
          DO i=iMin,iMax
           gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
@@ -641,13 +645,13 @@ C--   Vertical shear terms (-w*du/dr & -w*dv/dr)
        ENDIF
 
 C--   Bernoulli term
-       CALL MOM_VI_U_GRAD_KE(bi,bj,K,KE,uCf,myThid)
+       CALL MOM_VI_U_GRAD_KE(bi,bj,k,KE,uCf,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
         ENDDO
        ENDDO
-       CALL MOM_VI_V_GRAD_KE(bi,bj,K,KE,vCf,myThid)
+       CALL MOM_VI_V_GRAD_KE(bi,bj,k,KE,vCf,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)

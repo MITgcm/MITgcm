@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_vertshear.F,v 1.10 2006/06/07 01:55:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_vertshear.F,v 1.11 2015/09/10 18:08:51 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -53,8 +53,8 @@ C-    Area-weighted average either in KE or in vert. advection:
       mask_Km1=1.
       IF (K.EQ.1) mask_Km1=0.
 
-      DO J=2-Oly,sNy+Oly
-       DO I=1-Olx,sNx+Olx
+      DO J=2-OLy,sNy+OLy
+       DO I=1-OLx,sNx+OLx
 
 c       vmask_K=_maskS(i,j,k,bi,bj)
 
@@ -68,27 +68,27 @@ C       Transport at interface k : Area weighted average
         wBarYm=0.5*(
      &    wFld(I,J,K,bi,bj)*rA(i,j,bi,bj)*maskC(i,j,Km1,bi,bj)
      &   +wFld(I,J-1,K,bi,bj)*rA(i,j-1,bi,bj)*maskC(i,j-1,Km1,bi,bj)
-     &             )*mask_Km1
+     &             )*mask_Km1*deepFac2F(K)*rhoFacF(K)
      &              *recip_rAs(i,j,bi,bj)
 
 C       Transport at interface k+1 (here wFld is already masked)
         wBarYp=0.5*(
      &    wFld(I,J,Kp1,bi,bj)*rA(i,j,bi,bj)
      &   +wFld(I,J-1,Kp1,bi,bj)*rA(i,j-1,bi,bj)
-     &             )*mask_Kp1
+     &             )*mask_Kp1*deepFac2F(Kp1)*rhoFacF(Kp1)
      &              *recip_rAs(i,j,bi,bj)
        ELSE
 C       Transport at interface k : simple average
         wBarYm=0.5*(
      &    wFld(I,J,K,bi,bj)*maskC(i,j,Km1,bi,bj)
      &   +wFld(I,J-1,K,bi,bj)*maskC(i,j-1,Km1,bi,bj)
-     &             )*mask_Km1
+     &             )*mask_Km1*deepFac2F(K)*rhoFacF(K)
 
 C       Transport at interface k+1 (here wFld is already masked)
         wBarYp=0.5*(
      &    wFld(I,J,Kp1,bi,bj)
      &   +wFld(I,J-1,Kp1,bi,bj)
-     &             )*mask_Kp1
+     &             )*mask_Kp1*deepFac2F(Kp1)*rhoFacF(Kp1)
        ENDIF
 
 C delta_Z( V )  @ interface k
@@ -125,12 +125,12 @@ c2   &                  *_maskS(I,J,K,bi,bj)
      &                        +(ABS(wBarYp)*vZp-ABS(wBarYm)*vZm)
      &                   )*_recip_hFacS(i,j,k,bi,bj)
      &                    * recip_drF(K)
-c3   &                    * recip_rAs(i,j,bi,bj)
+     &                    * recip_deepFac2C(K)*recip_rhoFacC(K)
         ELSE
           vShearTerm(I,J)=-0.5*(wBarYp*vZp+wBarYm*vZm)
      &                    *_recip_hFacS(i,j,k,bi,bj)
      &                    * recip_drF(K)
-c3   &                    * recip_rAs(i,j,bi,bj)
+     &                    * recip_deepFac2C(K)*recip_rhoFacC(K)
         ENDIF
        ENDDO
       ENDDO

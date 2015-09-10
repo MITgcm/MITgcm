@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_del2uv.F,v 1.16 2011/05/03 19:36:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_del2uv.F,v 1.17 2015/09/10 18:08:51 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -33,8 +33,8 @@ c     _RL Zip,Zij,Zpj,Dim,Dij,Dmj,uDij
 
 C     - bi-harmonic viscosity :
 
-c     DO j=2-Oly,sNy+Oly-1
-c      DO i=2-Olx,sNx+Olx-1
+c     DO j=2-OLy,sNy+OLy-1
+c      DO i=2-OLx,sNx+OLx-1
 
 c       Dim=dyF( i ,j-1,bi,bj)*hFacC( i ,j-1,k,bi,bj)*hDiv( i ,j-1)
 c       Dij=dyF( i , j ,bi,bj)*hFacC( i , j ,k,bi,bj)*hDiv( i , j )
@@ -52,7 +52,6 @@ c       Zpj=dxV(i+1, j ,bi,bj)*hFacZ(i+1, j )*vort3(i+1, j )
 c       Zip=                   hFacZ( i ,j+1)*vort3( i ,j+1)
 c       Zij=                   hFacZ( i , j )*vort3( i , j )
 c       Zpj=                   hFacZ(i+1, j )*vort3(i+1, j )
-
 
 c       del2u(i,j) = recip_rAw(i,j,bi,bj)*(
 c    &   +recip_hFacW(i,j,k,bi,bj)*( Dij-Dmj )
@@ -88,14 +87,14 @@ C     to compute d/dx(hDiv), fill corners with appropriate values:
 cph-exch2#endif
 c     DO j=1,sNy
 c      DO i=1,sNx+1
-      DO j=2-Oly,sNy+Oly-1
-       DO i=2-Olx,sNx+Olx-1
+      DO j=2-OLy,sNy+OLy-1
+       DO i=2-OLx,sNx+OLx-1
         del2u(i,j) =
      &      (  ( hDiv(i,j) - hDiv(i-1,j) )*recip_dxC(i,j,bi,bj)
      &        -_recip_hFacW(i,j,k,bi,bj)*
      &         ( hFacZ(i,j+1)*vort3(i,j+1) - hFacZ(i,j)*vort3(i,j) )
      &                                    *recip_dyG(i,j,bi,bj)
-     &      )*maskW(i,j,k,bi,bj)
+     &      )*maskW(i,j,k,bi,bj)*recip_deepFacC(k)
 #ifdef ALLOW_OBCS
      &       *maskInW(i,j,bi,bj)
 #endif
@@ -113,14 +112,14 @@ C     to compute d/dy(hDiv), fill corners with appropriate values:
 cph-exch2#endif
 c     DO j=1,sNy+1
 c      DO i=1,sNx
-      DO j=2-Oly,sNy+Oly-1
-       DO i=2-Olx,sNx+Olx-1
+      DO j=2-OLy,sNy+OLy-1
+       DO i=2-OLx,sNx+OLx-1
         del2v(i,j) =
      &      (  ( hDiv(i,j) - hDiv(i,j-1) )*recip_dyC(i,j,bi,bj)
      &        +_recip_hFacS(i,j,k,bi,bj)*
      &         ( hFacZ(i+1,j)*vort3(i+1,j) - hFacZ(i,j)*vort3(i,j) )
      &                                    *recip_dxG(i,j,bi,bj)
-     &      )*maskS(i,j,k,bi,bj)
+     &      )*maskS(i,j,k,bi,bj)*recip_deepFacC(k)
 #ifdef ALLOW_OBCS
      &       *maskInS(i,j,bi,bj)
 #endif
