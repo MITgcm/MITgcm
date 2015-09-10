@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_ice_strength.F,v 1.9 2015/01/07 13:27:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_ice_strength.F,v 1.10 2015/09/10 15:51:30 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -35,10 +35,6 @@ C !USES: ===============================================================
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
-
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C     === Routine arguments ===
@@ -78,6 +74,10 @@ C     hActual    :: HEFFITD/AREAITD
       _RL ridgeRatio      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
       _RL hActual         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
 #endif /* SEAICE_ITD */
+#ifdef SEAICE_CGRID
+C     compute tensile strength
+      _RL recip_tensilDepth
+#endif /* SEAICE_CGRID */
 CEOP
 
 C     loop boundaries
@@ -178,6 +178,21 @@ C
        ENDDO
 #endif /* SEAICE_ITD */
       ENDIF
+
+#ifdef SEAICE_CGRID
+C     compute tensile strength
+      IF ( SEAICE_tensilFac .NE. 0. _d 0 ) THEN
+       recip_tensilDepth = 0. _d 0
+       IF ( SEAICE_tensilDepth .GT. 0. _d 0 ) 
+     &      recip_tensilDepth = 1. _d 0 / SEAICE_tensilDepth
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         tensileStrength(i,j,bi,bj)=PRESS0(I,J,bi,bj)*SEAICE_tensilFac
+     &        *exp(-ABS(R_low(I,J,bi,bj))*recip_tensilDepth)
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* SEAICE_CGRID */
 
       RETURN
       END
