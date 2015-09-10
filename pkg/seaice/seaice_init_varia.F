@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.89 2015/01/07 13:27:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.90 2015/09/10 15:50:52 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -40,7 +40,6 @@ C     === Local variables ===
 C     i,j,k,bi,bj :: Loop counters
 
       INTEGER i, j, bi, bj
-      _RL PSTAR
       INTEGER kSurface
       _RS  mask_uice
       INTEGER k
@@ -281,6 +280,7 @@ C
           seaiceMassC(i,j,bi,bj)=0. _d 0
           seaiceMassU(i,j,bi,bj)=0. _d 0
           seaiceMassV(i,j,bi,bj)=0. _d 0
+          tensileStrength  (i,j,bi,bj) = 0. _d 0
           stressDivergenceX(i,j,bi,bj) = 0. _d 0
           stressDivergenceY(i,j,bi,bj) = 0. _d 0
 # ifdef SEAICE_ALLOW_EVP
@@ -664,14 +664,13 @@ C     S/R PACKAGES_INIT_FIXED, so we move this computation here.
 #endif /* SEAICE_ALLOW_JFNK */
 
 C---  Complete initialization
-      PSTAR = SEAICE_strength
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           ZETA(i,j,bi,bj)   = HEFF(i,j,bi,bj)*(1.0 _d 11)
           ETA(i,j,bi,bj)    = ZETA(i,j,bi,bj)/SEAICE_eccen**2
-          PRESS0(i,j,bi,bj) = PSTAR*HEFF(i,j,bi,bj)
+          PRESS0(i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
      &         *EXP(-SEAICE_cStar*(ONE-AREA(i,j,bi,bj)))
           ZMAX(I,J,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
           ZMIN(i,j,bi,bj)   = SEAICE_zetaMin
