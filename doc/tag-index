@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2180 2015/09/10 18:12:23 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2181 2015/09/14 22:14:27 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint65o (2015/09/14)
 o pkg/mom_vecinv & mom_common:
   - add deep-atmosphere geometry factor in mom_calc_visc.F + in routines
     called from there.
@@ -49,11 +50,11 @@ o eesupp/src:
     and should be faster than GLOBAL_SUM_SEND_RECV code.
   - switch almost all verification experiments that use GLOBAL_SUM_SEND_RECV
     (defined in CPP_EEOPTIONS.h_mpi) to GLOBAL_SUM_ORDER_TILES instead.
-  - add CPP_EEOPTIONS.h_mpi with GLOBAL_SUM_ORDER_TILES defined in 13 more exp.:
+  - add CPP_EEOPTIONS.h_mpi with GLOBAL_SUM_ORDER_TILES defined in 14 more exp.:
      aim.5l_cs, cheapAML_box, deep_anelastic, dome, fizhi-cs-32x32x40,
-     fizhi-cs-aqualev20, global_ocean_ebm, matrix_example, natl_box,
-     solid-body.cs-32x32x1, tutorial_advection_in_gyre, tutorial_baroclinic_gyre
-     and tutorial_held_suarez_cs.
+     fizhi-cs-aqualev20, fizhi-gridalt-hs, global_ocean_ebm, matrix_example,
+     natl_box, solid-body.cs-32x32x1, tutorial_advection_in_gyre,
+     tutorial_baroclinic_gyre and tutorial_held_suarez_cs.
 
 checkpoint65n (2015/07/29)
 o pkg/thsice:
