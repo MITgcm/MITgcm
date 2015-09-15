@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.58 2015/09/10 15:57:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.59 2015/09/15 13:21:01 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -295,7 +295,7 @@ C     (and energy conserving)
           DO j=0,sNy+1
            DO i=0,sNx+1
             deltaSq = ep(I,J)**2 + recip_ecc2 * em(I,J)**2 
-     &           + recip_ecc2 * e12Csq(I,J)
+     &           + recip_ecc2 * 4. _d 0 * e12Csq(I,J)
 #ifdef ALLOW_AUTODIFF_TAMC
 C     avoid sqrt of 0
             deltaC(I,J,bi,bj) = 0. _d 0
@@ -425,7 +425,7 @@ C     P * ( D_s/Delta     ) = 2*zeta*D_s
           IF ( SEAICEuseTEM ) THEN
            DO j=0,sNy
             DO i=0,sNx
-             etaDenC   = em(I,J)**2 + e12Csq(I,J)
+             etaDenC   = em(I,J)**2 + 4. _d 0 * e12Csq(I,J)
              etaDenC  = SQRT(MAX(deltaMinSq,etaDenC))
              zetaMaxC = ecc2*zetaC(I,J)
      &            *(deltaC(I,J,bi,bj)-ep(I,J))/etaDenC
