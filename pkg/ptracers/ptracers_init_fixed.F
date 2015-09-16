@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.14 2015/06/02 20:09:22 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.15 2015/09/16 16:50:49 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -60,8 +60,8 @@ C--   Loop over tracers
 
 C-    Check for valid advection-scheme number
         IF ( PTRACERS_advScheme(iTracer).NE.0 ) THEN
-        minSize = GAD_ADVSCHEME_GET( PTRACERS_advScheme(iTracer) )
-        IF ( minSize.LT.0 ) THEN
+         minSize = GAD_ADVSCHEME_GET( PTRACERS_advScheme(iTracer) )
+         IF ( minSize.LT.0 ) THEN
           WRITE(msgBuf,'(2A,I6)') 'PTRACERS_INIT_FIXED: ',
      &    'invalid Adv. Scheme number=', PTRACERS_advScheme(iTracer)
           CALL PRINT_ERROR( msgBuf, myThid )
@@ -69,12 +69,12 @@ C-    Check for valid advection-scheme number
      &    'for tracer #', iTracer
           CALL PRINT_ERROR( msgBuf, myThid )
           errCount = errCount + 1
+         ENDIF
+        ELSE
+         minSize = 1
         ENDIF
 C     Overlap minimum size consistent with ptracers advection
         tracMinSize = MAX( tracMinSize, minSize )
-        ELSE
-        tracMinSize = 1
-        ENDIF
 
         IF (
      &       PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND .OR.
