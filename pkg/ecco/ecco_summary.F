@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.21 2015/06/18 16:57:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.22 2015/09/18 19:50:14 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -837,7 +837,7 @@ c
           endif
          enddo
 c
-         write(msgbuf,'(a,L2)') ' gencost_flag = ',gencost_flag(k)
+         write(msgbuf,'(a,i2)') ' gencost_flag = ',gencost_flag(k)
          call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
          write(msgbuf,'(a,i2)') ' gencost_outputlevel = ',
      &         gencost_outputlevel(k)
