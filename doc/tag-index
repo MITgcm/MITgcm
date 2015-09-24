@@ -1,9 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2182 2015/09/23 06:43:58 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2183 2015/09/24 08:17:32 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_evp.F: introduce "adaptive EVP" by Madlen Kimmritz
+  - this is an intermediate state of a truely converging EVP that has
+    the potential of outperforming implicit VP methods, I do not recommend
+    using it yet.
+  - for now, "adaptive EVP" is turned on by setting SEAICE_EVP_USE_ADAPTATION
+    and all parameters are hardwired
+  - for convergence it still requires very smooth regularisations, that means,
+    if SEAICE_DELTA_SMOOTHREG is defined, deltaCreg=deltaC+deltaMin, which is
+    different from the VP case with deltaCreg=sqrt(deltaC**2+deltaMin**2); also
+    specific averaging appears to be required, still subject to tuning
+  - still needs cleaning and I need to turn parameter into runtime parameters
+  - add code to compute and print residuals of iteration, compile with
+    defining ALLOW_SEAICE_EVP_RESIDUAL to enable it
 o pkg/seaice/seaice_evp.F: fix a bug (factor of four in front of e12Csq)
   that entered with r1.54 on Sep04, 2015, -> update results
 
