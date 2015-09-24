@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.22 2015/03/12 15:56:02 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.23 2015/09/24 21:31:35 dfer Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -416,11 +416,6 @@ C     2) go from model grid directions to east/west directions
         ENDDO
        ENDDO
 
-       DO j = 1-oly,sny+oly
-        DO i = 1-olx,snx+olx
-        ENDDO
-       ENDDO
-
 C     rotation
        DO j = 1-oly,sny+oly
         DO i = 1-olx,snx+olx
@@ -707,16 +702,16 @@ C          Calculate the meridional slope at the southern cell face (V grid)
        ENDDO
       ENDDO
 
-C     Calculate the thickness flux and diffusivity.  These may be altered later
-C     depending on namelist options.
+C     Calculate gradients of PV stretching term and PV diffusivity.
+C     These may be altered later depending on namelist options.
 C     Enforce a zero slope bottom boundary condition for the bottom most cells (k=Nr)
       k=Nr
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-C          Zonal thickness flux at the western cell face
+C          Zonal gradient of PV stretching term: at the western cell face
            tfluxX(i,j,k) = -fCoriU(i,j)*SlopeX(i,j,k)
      &                      *recip_drF(k)*recip_hFacW(i,j,k,bi,bj)
-C          Meridional thickness flux at the southern cell face
+C     Meridional gradient of PV stretching term: at the southern cell face
            tfluxY(i,j,k) = -fCoriV(i,j)*SlopeY(i,j,k)
      &                     *recip_drF(k)*recip_hFacS(i,j,k,bi,bj)
 
@@ -727,16 +722,15 @@ C          constant diffusivity KPV is overwritten later
        ENDDO
       ENDDO
 
-C     Calculate the thickness flux and diffusivity and for other cells (k<Nr)
+C     Calculate gradients of PV stretching term and PV diffusivity: for other cells (k<Nr)
       DO k=Nr-1,1,-1
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
-C        Zonal thickness flux at the western cell face
+C          Zonal gradient of PV stretching term: at the western cell face
          tfluxX(i,j,k)=-fCoriU(i,j)*(SlopeX(i,j,k)-SlopeX(i,j,k+1))
      &        *recip_drF(k)*recip_hFacW(i,j,k,bi,bj)
      &        *maskW(i,j,k,bi,bj)
-
-C        Meridional thickness flux at the southern cell face
+C     Meridional gradient of PV stretching term: at the southern cell face
          tfluxY(i,j,k)=-fCoriV(i,j)*(SlopeY(i,j,k)-SlopeY(i,j,k+1))
      &        *recip_drF(k)*recip_hFacS(i,j,k,bi,bj)
      &        *maskS(i,j,k,bi,bj)

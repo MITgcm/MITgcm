@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.31 2015/02/22 01:52:18 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.32 2015/09/24 21:31:35 dfer Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -165,17 +165,17 @@ C     Make sure we are not trying to use some arrays that are unavailable
       IF ( GM_useK3D) THEN
         CALL WRITE_0D_L( GM_useK3D, INDEX_NONE,
      &   'GM_useK3D =', '     /* if TRUE => use K3D for diffusivity */')
-        
+
         IF ( GM_K3D_use_constK ) THEN
           CALL WRITE_0D_L( GM_K3D_use_constK, INDEX_NONE,
-     &         'GM_K3D_use_constK =', 
+     &         'GM_K3D_use_constK =',
      &         '     /* if TRUE => Uses a constant K for'//
-     &         ' the eddy transport colsure */')
-        
+     &         ' the eddy transport closure */')
+
           CALL WRITE_0D_L( GM_K3D_smooth, INDEX_NONE,
-     &         'GM_K3D_smooth =', 
+     &         'GM_K3D_smooth =',
      &         ' /* if TRUE => Expands in terms of baroclinic modes */')
-        
+
           IF ( GM_K3D_smooth ) THEN
             CALL WRITE_0D_I( GM_K3D_NModes, INDEX_NONE,
      &           'GM_K3D_NModes =',

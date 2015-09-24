@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.31 2015/02/22 01:52:18 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.32 2015/09/24 21:31:35 dfer Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -23,7 +23,7 @@ C     GM_MDSIO         ::
 C     GM_useK3D        :: use the 3 dimensional calculation for K
 C     GM_K3D_beta_eq_0 :: Ignores the beta term when calculating grad(q)
 C     GM_K3D_ThickSheet:: Use a thick PV sheet
-C     GM_K3D_surfK     :: Imposes a constant K in the surface layer    
+C     GM_K3D_surfK     :: Imposes a constant K in the surface layer
 C     GM_K3D_constRedi :: Imposes a constant K for the Redi isoneutral diffusivity
 C     GM_K3D_use_constK:: Imposes a constant K for the eddy transport
 C     GM_K3D_smooth    :: Expand PV closure in terms of baroclinic modes (=.FALSE. for debugging only!)
@@ -48,7 +48,7 @@ C     GM_K3D_smooth    :: Expand PV closure in terms of baroclinic modes (=.FALS
      &                   GM_ExtraDiag, GM_MNC, GM_MDSIO,
      &                   GM_InMomAsStress,
      &                   GM_useK3D, GM_K3D_smooth, GM_K3D_use_constK,
-     &                   GM_K3D_beta_eq_0, GM_K3D_ThickSheet, 
+     &                   GM_K3D_beta_eq_0, GM_K3D_ThickSheet,
      &                   GM_K3D_surfK, GM_K3D_constRedi
 
 C--   GM/Redi Integer-type parameters
@@ -100,7 +100,7 @@ C     GM_K3D_b1      :: an empirically determined constant of O(1)
 C     GM_K3D_EadyMinDepth :: upper depth for Eady calculation
 C     GM_K3D_EadyMaxDepth :: lower depth for Eady calculation
 C     GM_maxK3D      :: Upper bound on the diffusivity
-C     GM_K3D_constK  :: Constant diffusivity to use when GM_useK3D=.TRUE. and 
+C     GM_K3D_constK  :: Constant diffusivity to use when GM_useK3D=.TRUE. and
 C                       GM_K3D_use_constK=.TRUE. and/or GM_K3D_constRedi=.TRUE.
 C     GM_K3D_Rmax    :: Upper bound on the length scale used for calculating urms
 C     GM_K3D_Rmin    :: Lower bound on the length scale used for calculating the eddy radius
@@ -160,10 +160,10 @@ C     GM_K3D_maxRenorm:: maximum value for the renormalisation factor
      &                   GM_Visbeck_depth,
      &                   GM_Visbeck_minDepth, GM_Visbeck_maxSlope,
      &                   GM_Visbeck_minVal_K, GM_Visbeck_maxVal_K,
-     &                   GM_K3D_gamma, GM_K3D_b1, GM_K3D_EadyMinDepth, 
+     &                   GM_K3D_gamma, GM_K3D_b1, GM_K3D_EadyMinDepth,
      &                   GM_K3D_EadyMaxDepth, GM_K3D_Lambda,
      &                   GM_K3D_smallK, GM_K3D_maxC,
-     &                   GM_maxK3D, GM_K3D_minCori, GM_K3D_minN2, 
+     &                   GM_maxK3D, GM_K3D_minCori, GM_K3D_minN2,
      &                   GM_K3D_surfMinDepth, GM_K3D_Rmax, GM_K3D_Rmin,
      &                   GM_K3D_constK, GM_K3D_vecFreq,
      &                   GM_K3D_minRenorm, GM_K3D_maxRenorm,

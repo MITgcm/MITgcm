@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.21 2014/11/24 10:12:15 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.22 2015/09/24 21:31:35 dfer Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -262,7 +262,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_KPV  '
         diagTitle = '3D eddy transport diffusivity'
         diagUnits = 'm**2/s          '
@@ -270,7 +270,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_K3D_T'
         diagTitle = '3D Redi diffusivity'
         diagUnits = 'm**2/s          '
@@ -278,7 +278,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
 #ifdef HAVE_LAPACK
         diagName  = 'GM_A3D'
         diagTitle = '3D lower diagona'
@@ -287,7 +287,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_B3D'
         diagTitle = '3D lower diagona'
         diagUnits = '1/m**2          '
@@ -295,7 +295,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_C3D'
         diagTitle = '3D lower diagona'
         diagUnits = '1/m**2          '
@@ -304,7 +304,7 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 #endif
-        
+
         diagName  = 'GM_MODEC'
         diagTitle = 'Eigen vector for the first barcolinic mode'
         diagUnits = 'dimensionless   '
@@ -312,7 +312,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_URMS'
         diagTitle = 'rms Eddy Velocity'
         diagUnits = 'm/s             '
@@ -320,7 +320,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_UMC  '
         diagTitle = 'ubar-c'
         diagUnits = 'm/s             '
@@ -328,7 +328,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_SFLYR'
         diagTitle = 'mixed layer depth'
         diagUnits = 'm               '
@@ -336,7 +336,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_USTAR'
         diagTitle = 'u^*'
         diagUnits = 'm/s         '
@@ -344,7 +344,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_VSTAR'
         diagTitle = 'v^*'
         diagUnits = 'm/s         '
@@ -352,7 +352,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_RDEF'
         diagTitle = 'Deformation Radius'
         diagUnits = 'm               '
@@ -360,16 +360,16 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_RURMS'
-        diagTitle = 
+        diagTitle =
      I      'Mixing length for calculating u_rms: MIN(Rdef,GM_K3D_Rmax)'
         diagUnits = 'm               '
         diagCode  = 'SM P    M1      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_RRHNS'
         diagTitle = 'Rhines scale: sqrt(urms/beta)'
         diagUnits = 'm               '
@@ -377,7 +377,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_RMIX'
         diagTitle = 'Unmodulated Mixing Length: MIN(Rdef, RRhines)'
         diagUnits = 'm               '
@@ -385,7 +385,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_SUPP'
         diagTitle = 'Suppression Factor for K3D'
         diagUnits = 'none            '
@@ -393,7 +393,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_dqdx '
         diagTitle = 'dq/dx'
         diagUnits = '1/(m*s)         '
@@ -401,7 +401,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_dqdy '
         diagTitle = 'dq/dy'
         diagUnits = '1/(m*s)         '
@@ -409,7 +409,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_Kdqdx'
         diagTitle = 'K*dq/dx'
         diagUnits = 'm/s*2           '
@@ -417,7 +417,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_Kdqdy'
         diagTitle = 'K*dq/dy'
         diagUnits = 'm/s**2          '
@@ -425,7 +425,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_Xix  '
         diagTitle = '-k dq/dx expansion'
         diagUnits = 'm/s**2          '
@@ -433,7 +433,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_Xiy  '
         diagTitle = '-k dq/dy expansion'
         diagUnits = 'm/s**2          '
@@ -441,7 +441,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_Sx   '
         diagTitle = 'Zonal isopycnal slope'
         diagUnits = 'none            '
@@ -449,7 +449,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_Sy   '
         diagTitle = 'Meridional isopycnal slope'
         diagUnits = 'none            '
@@ -457,7 +457,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_TFLXX'
         diagTitle = 'Zonal thickness flux'
         diagUnits = '1/(m*s)           '
@@ -465,7 +465,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_TFLXY'
         diagTitle = 'meridional thickness flux'
         diagUnits = '1/(m*s)         '
@@ -473,7 +473,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_C'
         diagTitle = 'Doppler shifted long Rossby wave speed'
         diagUnits = 'm/s             '
@@ -481,7 +481,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_UBARO'
         diagTitle = 'Barotropic velocity'
         diagUnits = 'm/s             '
@@ -489,7 +489,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_EADY '
         diagTitle = 'Eady Growth rate'
         diagUnits = '1/s             '
@@ -497,7 +497,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_UBAR '
         diagTitle = 'Mean zonal velocity'
         diagUnits = 'm/s             '
@@ -505,7 +505,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_M4   '
         diagTitle = 'M**4'
         diagUnits = '1/s**4          '
@@ -513,7 +513,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_N2   '
         diagTitle = 'N**2'
         diagUnits = '1/s**2          '
@@ -521,7 +521,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_M4_N2'
         diagTitle = 'M**4/N**2'
         diagUnits = '1/s**2          '
@@ -529,7 +529,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_SLOPE'
         diagTitle = 'SLOPE'
         diagUnits = 'm/m             '
@@ -537,7 +537,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
         diagName  = 'GM_RENRM'
         diagTitle = 'renormalisation factor'
         diagUnits = 'none            '
@@ -545,7 +545,7 @@ c     IF ( useDiagnotics ) THEN
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-        
+
 #ifdef GM_K3D_PASSIVE
         diagName  = 'GM_PSTAR'
         diagTitle = 'Diagnosed bolus streamfunction: V component'
