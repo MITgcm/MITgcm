@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.45 2015/04/22 13:12:19 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.46 2015/10/02 01:02:41 dimitri Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -261,10 +261,10 @@ C--   underneath the ice
 c         pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*1. _d -4
           tLoc(I,J) = theta(I,J,K,bi,bj)
           sLoc(I,J) = MAX(salt(I,J,K,bi,bj), zeroRL)
-          uLoc(I,J) = recip_hFacC(I,J,K,bi,bj) *
+          uLoc(I,J) = recip_hFacC(I,J,K,bi,bj) * halfRL *
      &         ( uVel(I,  J,K,bi,bj) * _hFacW(I,  J,K,bi,bj)
      &         + uVel(I+1,J,K,bi,bj) * _hFacW(I+1,J,K,bi,bj) )
-          vLoc(I,J) = recip_hFacC(I,J,K,bi,bj) *
+          vLoc(I,J) = recip_hFacC(I,J,K,bi,bj) * halfRL *
      &         ( vVel(I,J,  K,bi,bj) * _hFacS(I,J,  K,bi,bj)
      &         + vVel(I,J+1,K,bi,bj) * _hFacS(I,J+1,K,bi,bj) )
          ENDDO
@@ -290,12 +290,12 @@ C--   lower cell may not be as thick as required
      &           + MAX(salt(I,J,Kp1,bi,bj), zeroRL) * drKp1 )
      &           * recip_drLoc
             uLoc(I,J) = ( uLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
-     &           + drKp1 * recip_hFacC(I,J,Kp1,bi,bj) *
+     &           + drKp1 * recip_hFacC(I,J,Kp1,bi,bj) * halfRL *
      &           ( uVel(I,  J,Kp1,bi,bj) * _hFacW(I,  J,Kp1,bi,bj)
      &           + uVel(I+1,J,Kp1,bi,bj) * _hFacW(I+1,J,Kp1,bi,bj) )
      &           ) * recip_drLoc
             vLoc(I,J) = ( vLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
-     &           + drKp1 * recip_hFacC(I,J,Kp1,bi,bj) *
+     &           + drKp1 * recip_hFacC(I,J,Kp1,bi,bj) * halfRL *
      &           ( vVel(I,J,  Kp1,bi,bj) * _hFacS(I,J,  Kp1,bi,bj)
      &           + vVel(I,J+1,Kp1,bi,bj) * _hFacS(I,J+1,Kp1,bi,bj) )
      &           ) * recip_drLoc
@@ -323,7 +323,7 @@ C--   to the surface
            K = kTopC(I,J,bi,bj)
            IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
             ustarSq = shiCdrag * MAX( 1.D-6,
-     &           0.25 _d 0 *(uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)) )
+     &             (uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)) )
             ustar   = SQRT(ustarSq)
 #ifdef ALLOW_DIAGNOSTICS
             uStarDiag(I,J,bi,bj) = ustar

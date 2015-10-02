@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2183 2015/09/24 08:17:32 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2184 2015/10/02 01:02:41 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice/shelfice_thermodynamics.F
+  - redefining uLoc/vLoc to u/v, instead of 2u/v
 o pkg/seaice/seaice_evp.F: introduce "adaptive EVP" by Madlen Kimmritz
   - this is an intermediate state of a truely converging EVP that has
     the potential of outperforming implicit VP methods, I do not recommend
