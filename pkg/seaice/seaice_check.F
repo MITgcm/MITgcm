@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.92 2015/01/07 08:50:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.93 2015/10/07 12:38:02 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -699,21 +699,18 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
-      IF ( SEAICE_deltaTevp .EQ. UNSET_RL .AND.
-     &     SEAICEnEVPstarSteps.NE.UNSET_I ) THEN
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEnEVPstarSteps is '//
-     &      'set, but SEAICE_deltaTevp is unset (EVP is not turned on)'
+#else
+      IF ( SEAICEuseEVP ) THEN
+       WRITE(msgBuf,'(A)') 
+     &      'SEAICE_CHECK: SEAICEuseEVP = .TRUE., so EVP is turned on'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)') 
+     &      'SEAICE_CHECK: by setting appropriate runtime parameters,'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: but cpp-flag '//
+     &      'SEAICE_ALLOW_EVP is not defined in SEAICE_OPTIONS.h'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
-#else
-      IF ( SEAICE_deltaTevp .NE. UNSET_RL ) THEN
-        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_deltaTevp is set'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: but cpp-flag '//
-     &       'SEAICE_ALLOW_EVP is not defined in SEAICE_OPTIONS.h'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif
 
