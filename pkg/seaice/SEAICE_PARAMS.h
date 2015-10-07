@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.125 2015/09/10 15:48:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.126 2015/10/07 12:04:10 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -287,6 +287,12 @@ C     SEAICE_evpTauRelax :: relaxation timescale tau                    (s)
 C     SEAICE_evpDampC    :: evp damping constant (Hunke,JCP,2001)       (kg/m^2)
 C     SEAICE_evpAlpha    :: dimensionless parameter 2*evpTauRelax/deltaTevp
 C     SEAICE_evpBeta     :: dimensionless parameter deltaTdyn/deltaTevp
+C     SEAICEaEVPcoeff    :: main coefficent for adaptive EVP (largest
+C                           stabilized frequency)
+C     SEAICEaEVPcStar    :: multiple of stabilty factor: alpha*beta=cstar*gamma
+C     SEAICEaEVPalphaMin :: lower limit of alpha and beta, regularisation
+C                           to prevent singularities of system matrix, 
+C                           e.g. when ice concentration is too low.
 C     JFNKgamma_nonlin   :: non-linear tolerance parameter for JFNK solver
 C     JFNKgamma_lin_min/max :: tolerance parameters for linear JFNK solver
 C     JFNKres_t          :: tolerance parameter for FGMRES residual
@@ -441,6 +447,7 @@ C
       _RL SEAICE_elasticParm, SEAICE_evpTauRelax
       _RL SEAICE_evpAlpha, SEAICE_evpBeta
       _RL SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac
+      _RL SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin
       _RL SEAICEpresH0
       _RL SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow
       _RL SEAICEdiffKhSalt
@@ -454,6 +461,7 @@ C
      &    SEAICE_LSRrelaxU, SEAICE_LSRrelaxV,
      &    SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
      &    SEAICE_evpAlpha, SEAICE_evpBeta,
+     &    SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin,
      &    SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
      &    SEAICEpresH0,
      &    SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
