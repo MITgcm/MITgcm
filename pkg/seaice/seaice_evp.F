@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.60 2015/09/24 08:14:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.61 2015/10/07 12:06:54 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -80,12 +80,12 @@ C                       /divided by Delta
 C     sig11, sig22   :: sum and difference of diagonal terms of stress tensor
 C     modification for adaptive alpha and beta 
 C               (see Kimmritz, Danilov, Losch 2015 for gamma << alpha beta)
-C     evp_cstar      :: multiple of stabilty factor: alpha*beta = cstar*gamma
-C     evp_cfac       :: largest stabilized frequence according to
+C     EVPcFac        :: SEAICE_deltaTdyn*SEAICEaEVPcStar*(SEAICEaEVPcoeff*PI)**2
+C                        with
+C     SEAICEaEVPcStar:: multiple of stabilty factor: alpha*beta = cstar*gamma
+C     SEAICEaEVPcoeff:: largest stabilized frequency according to
 C                        gamma = zeta * (cfac/cellarea)*deltaT/m
 C                                with   (cfac/cellarea) <= pi**2/cellarea
-C     rec_mC         :: auxiliary variable for inverse of sea ice mass on 
-C                        C points, defined as  1/MAX(seaiceMassC, 0.0001)
 C     evpAlphaC/Z    :: alpha field on C points and on Z points 
 C                        := sqrt(cstar gamma)
 C     evpBetaU/V     :: beta field on u and on v points 
@@ -135,20 +135,18 @@ C     _RL zetaZ         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef SEAICE_ALLOW_CLIPZETA
       _RL zMaxZ, zMinZ, fac
 #endif /* SEAICE_ALLOW_CLIPZETA */
-      _RL denom1, denom2, facZ, denomU, denomV
+      _RL denom1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy) 
+      _RL denom2   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL facZ, denomU, denomV
       _RL locMaskU, locMaskV
-      _RL evp_cfac
-      _RL evp_cstar
+      _RL EVPcFac
       _RL evpAlphaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL evpAlphaZ
-#ifdef SEAICE_EVP_USE_ADAPTATION 
-      _RL rec_mC
-#endif
-      _RL evpAlphaMin
-      _RL evpBetaU
-      _RL evpBetaV
+      _RL evpAlphaZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL evpBetaU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL evpBetaV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL betaFacP1U,  betaFacP1V
       _RL betaFacU,    betaFacV
+      LOGICAL useAdaptiveEVP
 
 #ifdef ALLOW_SEAICE_EVP_RESIDUAL  
       _RL resTile(nSx,nSy)
@@ -167,10 +165,13 @@ C     !FUNCTIONS:
 #endif /* ALLOW_SEAICE_EVP_RESIDUAL */
 CEOP
 
-C     set tuning parameters for adaptive EVP*
-      evp_cfac      = (0.5 * PI)**2
-      evp_cstar     = 4. _d 0 
-      evpAlphaMin   = 5. _d 0 
+C     set tuning parameters for adaptive EVP
+      useAdaptiveEVP = .FALSE.
+      IF ( SEAICEaEvpCoeff .NE. UNSET_RL ) useAdaptiveEVP = .TRUE.
+      EVPcFac = 0. _d 0
+      IF ( useAdaptiveEVP )
+     &     EVPcFac = SEAICE_deltaTdyn*SEAICEaEVPcStar
+     &                * (SEAICEaEvpCoeff * PI)**2
 
 #ifdef ALLOW_SEAICE_EVP_RESIDUAL        
       printResidual = debugLevel.GE.debLevA
@@ -191,9 +192,16 @@ C     determine number of internal time steps
       nEVPstep = INT(SEAICE_deltaTdyn/SEAICE_deltaTevp)
       IF ( SEAICEnEVPstarSteps.NE.UNSET_I ) nEVPstep=SEAICEnEVPstarSteps
 C     SEAICE_evpAlpha = 2. * SEAICE_evpTauRelax/SEAICE_deltaTevp
-      denom1 = 1. _d 0 / ( SEAICE_evpAlpha + 1. _d 0 )
-      denom2 = 1. _d 0 / ( SEAICE_evpAlpha + ecc2 )
-
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
+          denom1(I,J,bi,bj) = 1. _d 0 / ( SEAICE_evpAlpha + 1. _d 0 )
+          denom2(I,J,bi,bj) = 1. _d 0 / ( SEAICE_evpAlpha + ecc2 )
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
       recip_deltaT = 1. _d 0 / SEAICE_deltaTdyn
       recip_evpAlpha = 0. _d 0
       IF ( SEAICE_evpAlpha .GT. 0. _d 0 ) 
@@ -208,8 +216,16 @@ C     explicit terms
        evpRevFac       = 1. _d 0
        evpStarFac      = 1. _d 0
        recip_evpRevFac = recip_ecc2
-       denom1          = 1. _d 0 / SEAICE_evpAlpha
-       denom2          = denom1
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
+           denom1(I,J,bi,bj)     = 1. _d 0 / SEAICE_evpAlpha
+           denom2(I,J,bi,bj)     = denom1(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
       ENDIF
 C
       betaFac    = SEAICE_evpBeta*recip_deltaT
@@ -222,9 +238,6 @@ C
 #ifndef ALLOW_AUTODIFF_TAMC
       nEVPstepMax = nEVPstep
 #endif
-      evpBetaU   = SEAICE_evpBeta
-      evpBetaV   = SEAICE_evpBeta
-      evpAlphaZ  = SEAICE_evpAlpha
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -237,8 +250,11 @@ C     initialise strain rates
           e11  (I,J,bi,bj)     = 0. _d 0
           e22  (I,J,bi,bj)     = 0. _d 0
           e12  (I,J,bi,bj)     = 0. _d 0
-C     initialise evpAlphaC
+C     initialise adative-EVP-specific fields
           evpAlphaC(I,J,bi,bj) = SEAICE_evpAlpha
+          evpAlphaZ(I,J,bi,bj) = SEAICE_evpAlpha
+          evpBetaU (I,J,bi,bj) = SEAICE_evpBeta
+          evpBetaV (I,J,bi,bj) = SEAICE_evpBeta
          ENDDO
         ENDDO
 C     initialise fractional areas at velocity points
@@ -287,16 +303,15 @@ C
 #ifdef ALLOW_AUTODIFF_TAMC
         ikeyloc = iEVPstep +
      &      (ikey_dynamics-1)*nEVPstepMax
-CADJ STORE uice  = comlev1_evp,
-CADJ &     key = ikeyloc, byte = isbyte
-CADJ STORE vice  = comlev1_evp,
-CADJ &     key = ikeyloc, byte = isbyte
-CADJ STORE seaice_sigma1  = comlev1_evp,
-CADJ &     key = ikeyloc, byte = isbyte
-CADJ STORE seaice_sigma2  = comlev1_evp,
-CADJ &     key = ikeyloc, byte = isbyte
-CADJ STORE seaice_sigma12 = comlev1_evp,
-CADJ &     key = ikeyloc, byte = isbyte
+CADJ STORE uice           = comlev1_evp, key = ikeyloc, byte = isbyte
+CADJ STORE vice           = comlev1_evp, key = ikeyloc, byte = isbyte
+CADJ STORE seaice_sigma1  = comlev1_evp, key = ikeyloc, byte = isbyte
+CADJ STORE seaice_sigma2  = comlev1_evp, key = ikeyloc, byte = isbyte
+CADJ STORE seaice_sigma12 = comlev1_evp, key = ikeyloc, byte = isbyte
+CADJ STORE evpAlphaC      = comlev1_evp, key = ikeyloc, byte = isbyte
+CADJ STORE evpAlphaZ      = comlev1_evp, key = ikeyloc, byte = isbyte
+CADJ STORE evpBetaU       = comlev1_evp, key = ikeyloc, byte = isbyte
+CADJ STORE evpBetaV       = comlev1_evp, key = ikeyloc, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C
 C     first calculate strain rates and bulk moduli/viscosities
@@ -307,9 +322,9 @@ C
      I       iEVPstep, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE e11  = comlev1_evp,key = ikeyloc, byte = isbyte
-CADJ STORE e12  = comlev1_evp,key = ikeyloc, byte = isbyte
-CADJ STORE e22  = comlev1_evp,key = ikeyloc, byte = isbyte
+CADJ STORE e11 = comlev1_evp,key = ikeyloc, byte = isbyte
+CADJ STORE e12 = comlev1_evp,key = ikeyloc, byte = isbyte
+CADJ STORE e22 = comlev1_evp,key = ikeyloc, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         DO bj=myByLo(myThid),myByHi(myThid)
@@ -397,20 +412,19 @@ CML            deltaCreg  = SQRT(deltaSq + deltaMinSq)
      &           )/deltaCreg
            ENDDO
           ENDDO
-#ifdef SEAICE_EVP_USE_ADAPTATION 
-          DO j=0,sNy+1
-           DO i=0,sNx+1
+          IF ( useAdaptiveEVP ) THEN
+           DO j=0,sNy+1
+            DO i=0,sNx+1
 CML   I do not like these hidden regularisations, why do we need to 
 CML   divide by mass?
-            rec_mC =  1. _d 0 /MAX(seaiceMassC(I,J,bi,bj), 1.D-04)
-            evpAlphaC(I,J,bi,bj) = SQRT(
-     &           zetaC(I,J)*evp_cfac*SEAICE_deltaTdyn
-     &           *recip_rA(I,J,bi,bj)*rec_mC*evp_cstar)
-     &           * maskC(I,J,kSrf,bi,bj)
-            evpAlphaC(I,J,bi,bj) = MAX(evpAlphaC(I,J,bi,bj),evpAlphaMin)
+             evpAlphaC(I,J,bi,bj) = SQRT(zetaC(I,J)
+     &            * EVPcFac / MAX(seaiceMassC(I,J,bi,bj), 1.D-04)
+     &            * recip_rA(I,J,bi,bj) ) * maskC(I,J,kSrf,bi,bj)
+             evpAlphaC(I,J,bi,bj) = 
+     &            MAX(evpAlphaC(I,J,bi,bj),SEAICEaEVPalphaMin)
+            ENDDO
            ENDDO
-          ENDDO
-#endif /* SEAICE_EVP_USE_ADAPTATION */
+          ENDIF
           IF (.TRUE.) THEN
 C     compute deltaZ and zetaZ separately
           DO j=1,sNy+1
@@ -584,22 +598,30 @@ C     than squaring the averages
 C
 C     first step stress equations
 C
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE denom1 = comlev1_evp, key = ikeyloc, byte = isbyte
+CADJ STORE denom2 = comlev1_evp, key = ikeyloc, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+          IF ( useAdaptiveEVP ) THEN
+           DO j=0,sNy
+            DO i=0,sNx
+             denom1(I,J,bi,bj) = 1. _d 0 /  evpAlphaC(I,J,bi,bj) 
+             denom2(I,J,bi,bj) = denom1(I,J,bi,bj)
+            ENDDO
+           ENDDO
+          ENDIF
           DO j=0,sNy
            DO i=0,sNx
 C     sigma1 and sigma2 are computed on C points
-#ifdef SEAICE_EVP_USE_ADAPTATION 
-            denom1 = 1. _d 0 /  evpAlphaC(I,J,bi,bj) 
-            denom2 = denom1
-#endif /* SEAICE_EVP_USE_ADAPTATION */
             seaice_sigma1 (I,J,bi,bj) = ( seaice_sigma1 (I,J,bi,bj)
      &           * ( evpAlphaC(I,J,bi,bj) - evpRevFac )
      &           + seaice_div(I,J)
-     &           ) * denom1
+     &           ) * denom1(I,J,bi,bj)
      &           *hEffM(I,J,bi,bj)
             seaice_sigma2 (I,J,bi,bj) = ( seaice_sigma2 (I,J,bi,bj)
      &           * ( evpAlphaC(I,J,bi,bj) - evpRevFac )
      &           + seaice_tension(I,J)*recip_evpRevFac
-     &           ) * denom2
+     &           ) * denom2(I,J,bi,bj)
      &         *hEffM(I,J,bi,bj)
 #ifdef SEAICE_EVP_ELIMINATE_UNDERFLOWS
 C     Code to avoid very small numbers that can degrade performance.
@@ -621,18 +643,22 @@ C     recover sigma11 and sigma22
           ENDDO
 
 C     sigma12 is computed on Z points
+          IF ( useAdaptiveEVP ) THEN
+           DO j=1,sNy+1
+            DO i=1,sNx+1
+             evpAlphaZ(I,J,bi,bj) = 0.25 _d 0 * 
+     &            ( evpAlphaC(I,  J,bi,bj)+evpAlphaC(I-1,J-1,bi,bj)
+     &            + evpAlphaC(I-1,J,bi,bj)+evpAlphaC(I,  J-1,bi,bj) )
+             denom2(I,J,bi,bj) = 1. _d 0 /  evpAlphaZ(I,J,bi,bj)
+            ENDDO
+           ENDDO
+          ENDIF
           DO j=1,sNy+1
            DO i=1,sNx+1
-#ifdef SEAICE_EVP_USE_ADAPTATION 
-            evpAlphaZ = 0.25 _d 0 * 
-     &           ( evpAlphaC(I,  J,bi,bj)+evpAlphaC(I-1,J-1,bi,bj)
-     &           + evpAlphaC(I-1,J,bi,bj)+evpAlphaC(I,  J-1,bi,bj) )
-            denom2 = 1. _d 0 /  evpAlphaZ
-#endif /* SEAICE_EVP_USE_ADAPTATION */
             seaice_sigma12(I,J,bi,bj) = ( seaice_sigma12(I,J,bi,bj)
-     &           * ( evpAlphaZ - evpRevFac )
+     &           * ( evpAlphaZ(I,J,bi,bj) - evpRevFac )
      &           + seaice_shear(I,J)*recip_evpRevFac
-     &           ) * denom2
+     &           ) * denom2(I,J,bi,bj)
 #ifdef SEAICE_EVP_ELIMINATE_UNDERFLOWS
             seaice_sigma12(I,J,bi,bj) = SIGN(MAX(
      &           ABS( seaice_sigma12(I,J,bi,bj) ), SEAICE_EPS ),
@@ -662,20 +688,14 @@ C
 #ifdef ALLOW_SEAICE_EVP_RESIDUAL  
           IF ( printResidual ) THEN
            resTile(bi,bj) = 0. _d 0
-           evpAlphaZ = SEAICE_evpAlpha
            DO j=1,sNy
             DO i=1,sNx
              sig11Pm1(i,j)  = seaice_sigma1(i,j,bi,bj)-sig11pm1(i,j)
              sig22Pm1(i,j)  = seaice_sigma2(i,j,bi,bj)-sig22pm1(i,j)
              sig12Pm1(i,j)  = seaice_sigma12(i,j,bi,bj)-sig12Pm1(i,j)
-#ifdef SEAICE_EVP_USE_ADAPTATION 
-             evpAlphaZ = 0.25 _d 0 * 
-     &            ( evpAlphaC(I,  J,bi,bj)+evpAlphaC(I-1,J-1,bi,bj)
-     &            + evpAlphaC(I-1,J,bi,bj)+evpAlphaC(I,  J-1,bi,bj) )
-#endif /* SEAICE_EVP_USE_ADAPTATION */
              sig11Pm1(i,j)  = evpAlphaC(I,J,bi,bj) * sig11Pm1(i,j)
              sig22Pm1(i,j)  = evpAlphaC(I,J,bi,bj) * sig22Pm1(i,j)
-             sig12Pm1(i,j)  = evpAlphaZ * sig12Pm1(i,j)
+             sig12Pm1(i,j)  = evpAlphaZ(I,J,bi,bj) * sig12Pm1(i,j)
              resTile(bi,bj) = resTile(bi,bj)
      &            + sig11Pm1(i,j)*sig11Pm1(i,j)
      &            + sig22Pm1(i,j)*sig22Pm1(i,j)
@@ -693,23 +713,19 @@ C
          CALL GLOBAL_SUM_TILE_RL( resTile, resloc, myThid )
          resloc = SQRT(resloc)
          WRITE(standardMessageUnit,'(A,1X,I6,1PE16.8)')
-     &        ' SEAICE_EVP: iEVPstep, residual5 = ', iEVPstep, resLoc
+     &   ' SEAICE_EVP: iEVPstep, residual sigma = ', iEVPstep, resLoc
         ENDIF
 #endif /* ALLOW_SEAICE_EVP_RESIDUAL */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE stressDivergenceX  = comlev1_evp,
+CADJ STORE stressDivergenceX = comlev1_evp, 
 CADJ &     key = ikeyloc, byte = isbyte
 CADJ STORE stressDivergenceY = comlev1_evp,
 CADJ &     key = ikeyloc, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-
-#ifdef ALLOW_AUTODIFF_TAMC
-#ifdef SEAICE_DYN_STABLE_ADJOINT
+# ifdef SEAICE_DYN_STABLE_ADJOINT
 Cgf zero out adjoint fields to stabilize pkg/seaice dyna. adjoint
       CALL ZERO_ADJ( 1, stressDivergenceX, myThid)
       CALL ZERO_ADJ( 1, stressDivergenceY, myThid)
-#endif
+# endif /* SEAICE_DYN_STABLE_ADJOINT */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C
@@ -781,22 +797,25 @@ C     coriols terms
 C
 C     step momentum equations with ice-ocean stress term treated implicitly
 C
+          IF ( useAdaptiveEVP ) THEN
+           DO J=1,sNy
+            DO I=1,sNx
+C     compute and adjust parameters that are constant otherwise
+             evpBetaU(I,J,bi,bj) = 0.5 _d 0*(evpAlphaC(I-1,J,bi,bj)
+     &                                      +evpAlphaC(I,  J,bi,bj))
+             evpBetaV(I,J,bi,bj) = 0.5 _d 0*(evpAlphaC(I,J-1,bi,bj)
+     &                                      +evpAlphaC(I,J,  bi,bj))
+
+            ENDDO
+           ENDDO
+          ENDIF
           DO J=1,sNy
            DO I=1,sNx
-#ifdef SEAICE_EVP_USE_ADAPTATION
-C     compute and adjust parameters that are constant otherwise
-            evpBetaU   = 0.5 _d 0*(evpAlphaC(I-1,J,bi,bj)
-     &                            +evpAlphaC(I,  J,bi,bj))
-            evpBetaV   = 0.5 _d 0*(evpAlphaC(I,J-1,bi,bj)
-     &                            +evpAlphaC(I,J,  bi,bj))
-
-            betaFacU   = evpBetaU*recip_deltaT
-            betaFacV   = evpBetaV*recip_deltaT
-
+            betaFacU   = evpBetaU(I,J,bi,bj)*recip_deltaT
+            betaFacV   = evpBetaV(I,J,bi,bj)*recip_deltaT
             tmp        = evpStarFac*recip_deltaT
             betaFacP1V = betaFacV + tmp
             betaFacP1U = betaFacU + tmp
-#endif /*SEAICE_EVP_USE_ADAPTATION*/
             denomU = seaiceMassU(I,J,bi,bj)*betaFacP1U
      &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I-1,J,bi,bj) )
      &           * COSWAT * areaW(I,J,bi,bj)
@@ -855,16 +874,12 @@ CADJ STORE vIce = comlev1_evp, key = ikeyloc, byte = isbyte
            resTile(bi,bj) = 0. _d 0
            DO J=1,sNy
             DO I=1,sNx
-#ifdef SEAICE_EVP_USE_ADAPTATION  
-            evpBetaU   = 0.5 _d 0*(evpAlphaC(I-1,J,bi,bj)
-     &                            +evpAlphaC(I,  J,bi,bj))
-            evpBetaV   = 0.5 _d 0*(evpAlphaC(I,J-1,bi,bj)
-     &                            +evpAlphaC(I,J,  bi,bj))
-#endif /* SEAICE_EVP_USE_ADAPTATION */
              uIcePm1(I,J,bi,bj) = seaiceMaskU(I,J,bi,bj) *
-     &            ( uIce(I,J,bi,bj)-uIcePm1(i,j,bi,bj) ) * evpBetaU
+     &            ( uIce(I,J,bi,bj)-uIcePm1(i,j,bi,bj) ) 
+     &            * evpBetaU(I,J,bi,bj)
              vIcePm1(I,J,bi,bj) = seaiceMaskV(I,J,bi,bj) *
-     &            ( vIce(I,J,bi,bj)-vIcePm1(i,j,bi,bj) ) * evpBetaV
+     &            ( vIce(I,J,bi,bj)-vIcePm1(i,j,bi,bj) )
+     &            * evpBetaV(I,J,bi,bj)
 
              resTile(bi,bj) = resTile(bi,bj)
      &            + uIcePm1(I,J,bi,bj)*uIcePm1(I,J,bi,bj)
@@ -877,7 +892,7 @@ CADJ STORE vIce = comlev1_evp, key = ikeyloc, byte = isbyte
          CALL GLOBAL_SUM_TILE_RL( resTile, resloc, myThid )
          resloc = SQRT(resloc)
          WRITE(standardMessageUnit,'(A,1X,I6,1PE16.8)')
-     &        ' SEAICE_EVP: iEVPstep, residual4 = ', iEVPstep, resLoc
+     &        ' SEAICE_EVP: iEVPstep, residual U = ', iEVPstep, resLoc
         ENDIF
 CML        WRITE(suff,'(I10.10)') myIter*100000+iEvpStep
 CML        CALL WRITE_FLD_XY_RL( 'DELTA.',suff,deltaC,
