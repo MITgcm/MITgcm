@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.81 2015/09/10 15:48:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.82 2015/10/07 12:35:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -245,6 +245,12 @@ C--  Seaice-Dynamics parameters
      & 'SEAICE_evpAlpha   =', ' /* EVP* parameter*/')
        CALL WRITE_0D_RL( SEAICE_evpBeta   ,INDEX_NONE,
      & 'SEAICE_evpBeta    =', ' /* EVP*  parameter */')
+       CALL WRITE_0D_RL( SEAICEaEVPcoeff ,INDEX_NONE,
+     & 'SEAICEaEVPcoeff   =', ' /* adaptive EVP parameter*/')
+       CALL WRITE_0D_RL( SEAICEaEVPcStar ,INDEX_NONE,
+     & 'SEAICEaEVPcStar   =', ' /* adaptive EVP parameter*/')
+       CALL WRITE_0D_RL( SEAICEaEVPalphaMin ,INDEX_NONE,
+     & 'SEAICEaEVPalphaMin=', ' /* adaptive EVP parameter*/')
        CALL WRITE_0D_I ( SEAICEnEVPstarSteps,  INDEX_NONE,
      & 'SEAICEnEVPstarSteps =', ' /* num. of EVP* steps */')
        CALL WRITE_0D_L ( SEAICEuseEVPpickup, INDEX_NONE,
