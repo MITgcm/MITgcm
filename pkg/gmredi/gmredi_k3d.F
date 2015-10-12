@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.23 2015/09/24 21:31:35 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.24 2015/10/12 20:41:26 dfer Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -90,7 +90,6 @@ C     small  :: a small number (to avoid floating point exceptions)
 
 C     dfdy    :: gradient of the Coriolis paramater, df/dy, 1/(m*s)
 C     dfdx    :: gradient of the Coriolis paramater, df/dx, 1/(m*s)
-C     gradf   :: gradient of the Coriolis paramater at a cell centre, 1/(m*s)
 C     Rurms  :: a local mixing length used in calculation of urms (m)
 C     RRhines :: The Rhines scale (m)
 C     Rmix    :: Mixing length
@@ -104,7 +103,6 @@ C     vbar    :: Meridional velocity on a tracer point (m/s)
 C     Ubaro   :: Barotropic velocity (m/s)
       _RL dfdy(   1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dfdx(   1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL gradf(  1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dummy(  1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL Rurms(  1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL RRhines(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -292,20 +290,6 @@ C       Not limited
         fCoriV(i,j) = op5*( fCori(i,j,bi,bj)+fCori(i,j-1,bi,bj) )
        ENDDO
       ENDDO
-C     Computing beta
-      IF ( selectCoriMap.EQ.1 ) THEN
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         gradf(i,j) =  beta
-        ENDDO
-       ENDDO
-      ELSEIF ( selectCoriMap.EQ.2 ) THEN
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         gradf(i,j) = recip_rSphere*fCoriCos(i,j,bi,bj)
-        ENDDO
-       ENDDO 
-      ENDIF
 C     Some dummy values at the edges
       i=1-Olx
       DO j=1-Oly,sNy+Oly
@@ -338,8 +322,6 @@ C     Zeroing some cumulative fields
 C     initialise remaining 2d variables
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        dfdy(i,j)=zeroRL
-        dfdy(i,j)=zeroRL
         Rurms(i,j)=zeroRL
         RRhines(i,j)=zeroRL
         Rmix(i,j)=zeroRL
@@ -416,7 +398,7 @@ C     2) go from model grid directions to east/west directions
         ENDDO
        ENDDO
 
-C     rotation
+C     Rotation
        DO j = 1-oly,sny+oly
         DO i = 1-olx,snx+olx
          ubar(i,j,k) =
@@ -494,7 +476,7 @@ C     Calculate the eigenvalues and eigenvectors
 C       Calculate the Rossby Radius
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
-          Req  = SQRT(BVint(i,j)/(2*pi*gradf(i,j)))
+          Req  = SQRT(BVint(i,j)/(2*pi*gradf(i,j,bi,bj)))
           Rdef(i,j,bi,bj) = MIN(Rmid(i,j),Req)
          ENDDO
         ENDDO
@@ -590,7 +572,7 @@ C       Set the bottom urms to zero
         IF (k.GT.0) urms(i,j,k) = 0.0
 
 C       Calculate the Rhines scale
-        RRhines(i,j) = SQRT(urms(i,j,1)/gradf(i,j))
+        RRhines(i,j) = SQRT(urms(i,j,1)/gradf(i,j,bi,bj))
 
 C       Calculate the estimated length scale
         Rmix(i,j) = MIN(Rdef(i,j,bi,bj), RRhines(i,j))
@@ -599,7 +581,7 @@ C       Calculate the estimated length scale
 C       Calculate the Doppler shifted long Rossby wave speed
 C       Ubaro is at the C-point.
         cDopp(i,j) = Ubaro(i,j)
-     &                - gradf(i,j)*Rdef(i,j,bi,bj)*Rdef(i,j,bi,bj)
+     &                - gradf(i,j,bi,bj)*Rdef(i,j,bi,bj)*Rdef(i,j,bi,bj)
 C       Limit the wave speed to the namelist variable GM_K3D_maxC
         IF (ABS(cDopp(i,j)).GT.GM_K3D_maxC) THEN
           cDopp(i,j) = MAX(GM_K3D_maxC, cDopp(i,j))

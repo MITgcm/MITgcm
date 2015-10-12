@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.32 2015/09/24 21:31:35 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.33 2015/10/12 20:41:26 dfer Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -256,6 +256,7 @@ C     modesC       :: First baroclinic mode at the centre of a tracer cell [-]
 C     modesW       :: First N baroclinic mode at the western face of a tracer cell [-]
 C     modesS       :: First N baroclinic mode at the southern face of a tracer cell [-]
 C     Rdef         :: Deformation radius [m]
+C     gradf        :: gradient of the Coriolis paramater at a cell centre, 1/(m*s)
 
       _RL K3D(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr,nSx,nSy)
       _RL modesC(1,1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr,nSx,nSy)
@@ -264,9 +265,9 @@ C     Rdef         :: Deformation radius [m]
       _RL modesS(GM_K3D_NModes,1-Olx:sNx+Olx,
      &     1-Oly:sNy+Oly,1:Nr,nSx,nSy)
       _RL Rdef(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL gradf(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
-
-      COMMON /GM_K3D/ K3D, modesC, modesW, modesS, Rdef
+      COMMON /GM_K3D/ K3D, modesC, modesW, modesS, Rdef, gradf
 #endif
 #endif /* ALLOW_GMREDI */
 
