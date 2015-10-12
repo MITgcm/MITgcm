@@ -38,9 +38,6 @@
 #
  hfluxfile    = 'ncep_qnet.bin',
 #sfluxfile    = 'ncep_emp.bin',
-# here we deviate from the general pattern and prescribe a forcing fiels
-# with (i,j)=(1,1) at the NW (.flipped) instead of the SW (.bin) corner
-# to test the correpsonding code, see also below
  ustressfile  = 'trenberth_taux.bin',
  vstressfile  = 'trenberth_tauy.bin',
  climsstfile  = 'lev_sst.bin',
@@ -68,9 +65,6 @@
  sflux_nlon    = 90,
  sflux_nlat    = 40,
 #
-# here we deviate from the general pattern and prescribe a forcing fiels
-# with (i,j)=(1,1) at the NW instead of the SW corner; the grid 
-# information has been change so that latitude now starts in the north
  ustress_lon0    = 0.,
  ustress_lon_inc = 4.,
  ustress_lat0    = -78.,
