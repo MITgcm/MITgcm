@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.29 2014/06/07 20:16:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.30 2015/10/13 22:07:44 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -115,7 +115,7 @@ C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
      O             count0, count1,
      I             myTime, myIter, myThid )
 
-        ELSEIF ( uvecperiod .LE. 0. ) THEN
+        ELSEIF ( uvecperiod .LT. 0. ) THEN
           j = ILNBLNK(uvecfile)
           WRITE(msgBuf,'(A,1PE16.8,2A)')
      &        'EXF_SET_UV: Invalid uvecperiod=', uvecperiod,
