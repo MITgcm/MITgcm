@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.32 2013/10/05 19:36:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.33 2015/10/13 22:09:59 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -59,13 +59,12 @@ C--   Initialise to zero intermediate fields (in common block)
       ENDDO
 
       IF ( .NOT.useAtmWind ) THEN
-
-      if ( useCubedSphereExchange
-     &     .and. ustressperiod .eq. 0
-     &     .and. ustressfile .NE. ' ' ) then
-         STOP 'CubedSphereExchange and ustressperiod=0 not supported'
-      endif
-      CALL EXF_INIT_GEN (
+C- Note: In case of constant-in-time wind-stress ( u,v stressperiod = 0 &
+C      u,v stressfile.NE.' ' ) interpolated from 2-component wind-stress field
+C      with ( usingCurvilinearGrid .OR. rotateGrid .OR. uvInterp_stress )
+C      this initial setting of ustress & vstress (+ ustress0,1 & vstress0,1)
+C      will be over-written at first time-step when calling EXF_SET_UV.
+       CALL EXF_INIT_GEN (
      &     ustressfile, ustressperiod, exf_inscal_ustress, ustressmask,
      &     ustressconst, ustress, ustress0, ustress1,
 #ifdef USE_EXF_INTERPOLATION
@@ -75,12 +74,7 @@ C--   Initialise to zero intermediate fields (in common block)
 #endif
      &     myThid )
 
-      if ( useCubedSphereExchange
-     &     .and. vstressperiod .eq. 0
-     &     .and. vstressfile .NE. ' ' ) then
-         STOP 'CubedSphereExchange and vstressperiod=0 not supported'
-      endif
-      CALL EXF_INIT_GEN (
+       CALL EXF_INIT_GEN (
      &     vstressfile, vstressperiod, exf_inscal_vstress, vstressmask,
      &     vstressconst, vstress, vstress0, vstress1,
 #ifdef USE_EXF_INTERPOLATION
@@ -91,26 +85,25 @@ C--   Initialise to zero intermediate fields (in common block)
      &     myThid )
 
       ELSE
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          uwind(i,j,bi,bj) = 0.
-          vwind(i,j,bi,bj) = 0.
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uwind(i,j,bi,bj) = 0.
+           vwind(i,j,bi,bj) = 0.
+          ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
       ENDIF
 
       IF ( useAtmWind ) THEN
-
-      if ( useCubedSphereExchange
-     &     .and. uwindperiod .eq. 0
-     &     .and. uwindfile .NE. ' ' ) then
-         STOP 'CubedSphereExchange and uwindperiod=0 not supported'
-      endif
-      CALL EXF_INIT_GEN (
+C- Note: In case of constant-in-time winds ( u,v windperiod = 0 &
+C      u,v windfile.NE.' ' ) interpolated from 2-component wind field
+C      with ( usingCurvilinearGrid .OR. rotateGrid .OR. uvInterp_wind )
+C      this initial setting of uwind & vwind (+ uwind0,1 & vwind0,1)
+C      will be over-written at first time-step when calling EXF_SET_UV.
+       CALL EXF_INIT_GEN (
      &     uwindfile, uwindperiod, exf_inscal_uwind, uwindmask,
      &     uwindconst, uwind, uwind0, uwind1,
 #ifdef USE_EXF_INTERPOLATION
@@ -120,12 +113,7 @@ C--   Initialise to zero intermediate fields (in common block)
 #endif
      &     myThid )
 
-      if ( useCubedSphereExchange
-     &     .and. vwindperiod .eq. 0
-     &     .and. vwindfile .NE. ' ' ) then
-         STOP 'CubedSphereExchange and vwindperiod=0 not supported'
-      endif
-      CALL EXF_INIT_GEN (
+       CALL EXF_INIT_GEN (
      &     vwindfile, vwindperiod, exf_inscal_vwind, vwindmask,
      &     vwindconst, vwind, vwind0, vwind1,
 #ifdef USE_EXF_INTERPOLATION
@@ -136,16 +124,16 @@ C--   Initialise to zero intermediate fields (in common block)
      &     myThid )
 
       ELSE
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          uwind(i,j,bi,bj) = 0.
-          vwind(i,j,bi,bj) = 0.
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uwind(i,j,bi,bj) = 0.
+           vwind(i,j,bi,bj) = 0.
+          ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
       ENDIF
 
       CALL EXF_INIT_GEN (
