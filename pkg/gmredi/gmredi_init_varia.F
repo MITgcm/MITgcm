@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_init_varia.F,v 1.4 2013/07/11 14:33:23 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_init_varia.F,v 1.5 2015/10/14 20:03:59 dfer Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -113,5 +113,50 @@ C--   write GM scaling factors to file:
         IF (GM_useK3D) CALL GMREDI_READ_PICKUP( niter0, myThid )
       ENDIF
 #endif
+
+#ifdef GM_K3D
+C This is put here, but really should be in gmredi_init_fixed.F. The problem is that
+C fCori, fCoriCos, etc are not initialized when gmredi_init_fixed.F is called. To be fixed.
+C     Computing beta = df/dy
+      IF ( selectCoriMap.EQ.1 ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           gradf(i,j,bi,bj) =  beta
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ELSEIF ( selectCoriMap.EQ.2 ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           gradf(i,j,bi,bj) = recip_rSphere*fCoriCos(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ELSE
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-Oly+1,sNy+Oly-1
+          DO i=1-Olx+1,sNx+Olx-1
+           gradf(i,j,bi,bj)  =  .5 _d 0*angleSinC(i,j,bi,bj)*(
+     &    (fCori(i+1,j,bi,bj)-fCori(i  ,j,bi,bj))*recip_dxC(i+1,j,bi,bj)
+     &   +(fCori(i  ,j,bi,bj)-fCori(i-1,j,bi,bj))*recip_dxC(i,j,bi,bj) )
+     &                       +  .5 _d 0*angleCosC(i,j,bi,bj)*(
+     &    (fCori(i,j+1,bi,bj)-fCori(i,j  ,bi,bj))*recip_dyC(i,j+1,bi,bj)
+     &   +(fCori(i,j  ,bi,bj)-fCori(i,j-1,bi,bj))*recip_dyC(i,j,bi,bj) )
+           gradf(i,j,bi,bj)=max(1. _d -18, gradf(i,j,bi,bj) )
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+      CALL EXCH_XY_RL( gradf, myThid)
+#endif
+
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.24 2015/10/12 20:41:26 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.25 2015/10/14 20:03:59 dfer Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -99,7 +99,6 @@ C     N2S     :: Square of the buoyancy frequency (1/s**2) averaged to south of 
 C     N       :: Buoyancy frequency, SQRT(N2)
 C     BVint   :: The vertical integral of N (m/s)
 C     ubar    :: Zonal velocity on a tracer point (m/s)
-C     vbar    :: Meridional velocity on a tracer point (m/s)
 C     Ubaro   :: Barotropic velocity (m/s)
       _RL dfdy(   1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dfdx(   1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -408,6 +407,26 @@ C     Rotation
        ENDDO
       ENDDO
 
+C     Calculate the barotropic velocity by vertically integrating
+C     and the dividing by the depth of the water column
+C     Note that Ubaro is at the C-point.
+      DO k=1,Nr
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         Ubaro(i,j) = Ubaro(i,j) +
+     &        drF(k)*hfacC(i,j,k,bi,bj)*ubar(i,j,k)
+        ENDDO
+       ENDDO
+      ENDDO
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+        IF (kLow_C(i,j).GT.0) THEN
+C         The minus sign is because r_Low<0
+          Ubaro(i,j) = -Ubaro(i,j)/r_Low(i,j,bi,bj)
+        ENDIF
+       ENDDO
+      ENDDO
+
 C     Square of the buoyancy frequency at the top of a grid cell
 C     Enforce a minimum N2
 C     Mask N2, so it is zero at bottom
@@ -429,26 +448,6 @@ C     N2(k=1) is always zero
       ENDDO
 C     Calculate the minimum drho/dz
       maxDRhoDz = -rhoConst*GM_K3D_minN2/gravity
-
-C     Calculate the barotropic velocity by vertically integrating
-C     and the dividing by the depth of the water column
-C     Note that Ubaro is at the C-point.
-      DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         Ubaro(i,j) = Ubaro(i,j) +
-     &        drF(k)*hfacC(i,j,k,bi,bj)*ubar(i,j,k)
-        ENDDO
-       ENDDO
-      ENDDO
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        IF (kLow_C(i,j).GT.0) THEN
-C         The minus sign is because r_Low<0
-          Ubaro(i,j) = -Ubaro(i,j)/r_Low(i,j,bi,bj)
-        ENDIF
-       ENDDO
-      ENDDO
 
 C     Integrate the buoyancy frequency vertically using the trapezoidal method.
 C     Assume that N(z=-H)=0
@@ -476,7 +475,7 @@ C     Calculate the eigenvalues and eigenvectors
 C       Calculate the Rossby Radius
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
-          Req  = SQRT(BVint(i,j)/(2*pi*gradf(i,j,bi,bj)))
+          Req  = SQRT(BVint(i,j)/(2. _d 0*pi*gradf(i,j,bi,bj)))
           Rdef(i,j,bi,bj) = MIN(Rmid(i,j),Req)
          ENDDO
         ENDDO
