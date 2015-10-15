@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/ECCO_CPPOPTIONS.h,v 1.14 2014/04/28 20:47:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/ECCO_CPPOPTIONS.h,v 1.15 2015/10/15 23:14:52 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -74,7 +74,9 @@ C       >>> Initial values.
 #undef ALLOW_SST0_CONTROL
 #define ALLOW_DIFFKR_CONTROL
 #define ALLOW_KAPGM_CONTROL
+#define ALLOW_KAPGM_CONTROL_OLD
 #define ALLOW_KAPREDI_CONTROL
+#define ALLOW_KAPREDI_CONTROL_OLD
 #define ALLOW_BOTTOMDRAG_CONTROL
 #define ALLOW_GENARR2D_CONTROL
 

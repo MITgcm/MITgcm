@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/CTRL_OPTIONS.h,v 1.3 2014/12/12 17:45:12 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/CTRL_OPTIONS.h,v 1.4 2015/10/15 23:14:52 gforget Exp $
 C $Name:  $
 
 CBOP
@@ -35,7 +35,9 @@ C-- Package-specific Options & Macros go here
 C       >>> Other Control.
 #define ALLOW_DIFFKR_CONTROL
 #define ALLOW_KAPGM_CONTROL
+#define ALLOW_KAPGM_CONTROL_OLD
 #define ALLOW_KAPREDI_CONTROL
+#define ALLOW_KAPREDI_CONTROL_OLD
 #define ALLOW_BOTTOMDRAG_CONTROL
 
 C       >>> Generic Control.
