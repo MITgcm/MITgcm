@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.13 2014/09/09 22:34:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.14 2015/10/15 23:06:36 gforget Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -146,7 +146,12 @@ C-  Compute the 2 stream-function Components ( GM bolus vel.)
         DO i=1-OLx+1,sNx+OLx
           GM_PsiX(i,j,k,bi,bj) = SlopeX(i,j)*taperX(i,j)
 #ifdef ALLOW_KAPGM_CONTROL
+#  ifdef ALLOW_KAPGM_CONTROL_OLD
      &     *( kapGM(i,j,k,bi,bj)
+#  else
+     &     *( op25*( kapGM(i-1,j,km1,bi,bj)+kapGM(i,j,km1,bi,bj)
+     &             + kapGM(i-1,j,k,bi,bj)+kapGM(i,j,k,bi,bj))
+#  endif
 #else
      &     *( half_K
      &          *(GM_bolFac2d(i-1,j,bi,bj)+GM_bolFac2d(i,j,bi,bj))
@@ -164,7 +169,12 @@ C-  Compute the 2 stream-function Components ( GM bolus vel.)
         DO i=1-OLx,sNx+OLx
          GM_PsiY(i,j,k,bi,bj) = SlopeY(i,j)*taperY(i,j)
 #ifdef ALLOW_KAPGM_CONTROL
+#  ifdef ALLOW_KAPGM_CONTROL_OLD
      &     *( kapGM(i,j,k,bi,bj)
+#  else
+     &     *( op25*( kapGM(i,j-1,km1,bi,bj)+kapGM(i,j,km1,bi,bj)
+     &             + kapGM(i,j-1,k,bi,bj)+kapGM(i,j,k,bi,bj))
+#  endif
 #else
      &     *( half_K
      &          *(GM_bolFac2d(i,j-1,bi,bj)+GM_bolFac2d(i,j,bi,bj))
