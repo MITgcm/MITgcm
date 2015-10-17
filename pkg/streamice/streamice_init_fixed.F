@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.12 2015/06/15 14:35:14 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.13 2015/10/17 18:41:43 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -435,7 +435,7 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
      &       (temp_hmask(i-1,j,bi,bj).eq.-1.0))) THEN
             STREAMICE_ufacemask_bdry (i,j,bi,bj) = 0.0
            ELSEIF (temp_hmask(i,j,bi,bj).eq.-1.0) THEN
-            STREAMICE_vfacemask_bdry (i,j,bi,bj) = 0.0
+            STREAMICE_ufacemask_bdry (i,j,bi,bj) = 0.0
            ELSE
             STREAMICE_ufacemask_bdry (i,j,bi,bj) = -1.0
            ENDIF
