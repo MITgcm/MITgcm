@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_driving_stress.F,v 1.9 2015/07/04 10:54:24 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_driving_stress.F,v 1.10 2015/10/18 14:37:49 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -459,13 +459,13 @@ CCC
              if (STREAMICE_apply_firn_correction) then
              if (H_streamice(i,j-1,bi,bj).lt.firn_depth) then
               taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) +
-     &         0.25 * dyG(i,j,bi,bj) *
+     &         0.25 * dxG(i,j,bi,bj) *
      &         streamice_density_firn * gravity *
      &         (1-streamice_density_firn*i_rhow) *
      &         H_streamice(i,j-1,bi,bj)**2 
              else
               taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) +
-     &         0.25 * dyG(i,j,bi,bj) * gravity * (
+     &         0.25 * dxG(i,j,bi,bj) * gravity * (
      &         streamice_density_firn * firn_depth**2 + 
      &         (h_streamice(i,j-1,bi,bj)-firn_depth) *
      &          (streamice_density_firn*firn_depth+streamice_density*
@@ -478,7 +478,7 @@ CCC
 
 #endif
              taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) +
-     &        0.25 * dyG(i,j,bi,bj) *
+     &        0.25 * dxG(i,j,bi,bj) *
      &        streamice_density * gravity *
      &        (1-streamice_density*i_rhow) *
      &         H_streamice(i,j-1,bi,bj)**2 
@@ -522,13 +522,13 @@ CCC
              if (STREAMICE_apply_firn_correction) then
              if (H_streamice(i,j,bi,bj).lt.firn_depth) then
               taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
-     &         0.25 * dyG(i,j,bi,bj) *
+     &         0.25 * dxG(i,j,bi,bj) *
      &         streamice_density_firn * gravity *
      &         (1-streamice_density_firn*i_rhow) *
      &         H_streamice(i,j,bi,bj)**2 
              else
               taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
-     &         0.25 * dyG(i,j,bi,bj) * gravity * (
+     &         0.25 * dxG(i,j,bi,bj) * gravity * (
      &         streamice_density_firn * firn_depth**2 + 
      &         (h_streamice(i,j,bi,bj)-firn_depth) *
      &          (streamice_density_firn*firn_depth+streamice_density*
@@ -541,7 +541,7 @@ CCC
 
 #endif
              taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
-     &        0.25 * dyG(i,j,bi,bj) *
+     &        0.25 * dxG(i,j,bi,bj) *
      &        streamice_density * gravity *
      &        (1-streamice_density*i_rhow) *
      &         H_streamice(i,j,bi,bj)**2 
@@ -607,13 +607,13 @@ CCC
              if (STREAMICE_apply_firn_correction) then
              if (H_streamice(i-1,j-1,bi,bj).lt.firn_depth) then
               taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) +
-     &         0.25 * dyG(i-1,j,bi,bj) *
+     &         0.25 * dxG(i-1,j,bi,bj) *
      &         streamice_density_firn * gravity *
      &         (1-streamice_density_firn*i_rhow) *
      &         H_streamice(i-1,j-1,bi,bj)**2 
              else
               taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) +
-     &         0.25 * dyG(i-1,j,bi,bj) * gravity * (
+     &         0.25 * dxG(i-1,j,bi,bj) * gravity * (
      &         streamice_density_firn * firn_depth**2 + 
      &         (h_streamice(i-1,j-1,bi,bj)-firn_depth) *
      &          (streamice_density_firn*firn_depth+streamice_density*
@@ -625,7 +625,7 @@ CCC
              else
 #endif
              taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) +
-     &        0.25 * dyG(i-1,j,bi,bj) *
+     &        0.25 * dxG(i-1,j,bi,bj) *
      &        streamice_density * gravity *
      &        (1-streamice_density*i_rhow) *
      &         H_streamice(i-1,j-1,bi,bj)**2 
@@ -669,13 +669,13 @@ CCC
              if (STREAMICE_apply_firn_correction) then
              if (H_streamice(i-1,j,bi,bj).lt.firn_depth) then
               taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
-     &         0.25 * dyG(i-1,j,bi,bj) *
+     &         0.25 * dxG(i-1,j,bi,bj) *
      &         streamice_density_firn * gravity *
      &         (1-streamice_density_firn*i_rhow) *
      &         H_streamice(i-1,j,bi,bj)**2 
              else
               taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
-     &         0.25 * dyG(i-1,j,bi,bj) * gravity * (
+     &         0.25 * dxG(i-1,j,bi,bj) * gravity * (
      &         streamice_density_firn * firn_depth**2 + 
      &         (h_streamice(i-1,j,bi,bj)-firn_depth) *
      &          (streamice_density_firn*firn_depth+streamice_density*
@@ -687,7 +687,7 @@ CCC
              else
 #endif
              taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
-     &        0.25 * dyG(i-1,j,bi,bj) *
+     &        0.25 * dxG(i-1,j,bi,bj) *
      &        streamice_density * gravity *
      &        (1-streamice_density*i_rhow) *
      &         H_streamice(i-1,j,bi,bj)**2 
