@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2186 2015/10/13 22:11:12 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2187 2015/10/18 14:51:08 dgoldberg Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/streamice:
+  - spotted bug in streamice_driving_stress using dyG where should have been 
+    dxG
 o pkg/exf:
   - remove STOP statement that prevented to use wind or (wind-)stress
     interpolation for constant-in-time forcing fields (wind/stress period = 0).
