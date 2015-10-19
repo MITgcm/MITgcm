@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_diva,v 1.17 2014/01/03 17:11:56 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_diva,v 1.18 2015/10/19 19:53:41 jmc Exp $
 #  $Name:  $
 #
 
@@ -32,7 +32,7 @@ SVD_TAF_FLAGS="-server fastopt.net $SVD_TAF_FLAGS"
 #- using DIVA, we need to show some MPI code to TAF:
 if test "x$MPI" != x ; then
   AD_TAF_FLAGS="$AD_TAF_FLAGS"' -mpi -include $(LOCAL_MPI_HEADERS) -I./mpi_headers/'
-  FLT_TAF_FLAGS="$FLT_TAF_FLAGS"' -mpi -include $(LOCAL_MPI_HEADERS) -I./mpi_headers/'
+  FTL_TAF_FLAGS="$FTL_TAF_FLAGS"' -mpi -include $(LOCAL_MPI_HEADERS) -I./mpi_headers/'
   SVD_TAF_FLAGS="$SVD_TAF_FLAGS"' -mpi -include $(LOCAL_MPI_HEADERS) -I./mpi_headers/'
 fi
 
