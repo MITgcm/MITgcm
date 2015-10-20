@@ -1,11 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2188 2015/10/20 13:41:04 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2189 2015/10/20 13:43:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o tools/adjoint_options/adjoint_diva:
-  - fix typo in Tang-Linear FLAGS setting for MPI + DIVA
+  - fix bug (typo) in Tang-Linear FLAGS setting for MPI + DIVA
 o pkg/streamice:
   - spotted bug in streamice_driving_stress using dyG where should have been dxG
 o pkg/exf:
