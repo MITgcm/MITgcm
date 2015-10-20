@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_timestep.F,v 1.5 2015/03/23 14:07:16 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_timestep.F,v 1.6 2015/10/20 22:42:23 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -48,6 +48,8 @@ C     === Global variables ===
 !       _RL local_v_max, time_step_int, min_time_step
       CHARACTER*(MAX_LEN_MBUF) msgBuf
        LOGICAL do_vel, tmp_residcheck, tmp_fpcheck
+       _RL sum_square_vel_tile (nSx,nSy)
+       _RL sum_square_vel
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c**************************************
@@ -144,6 +146,33 @@ c**************************************
      &                           streamice_max_cg_iter,
      &                           myiter )
 
+#ifdef STREAMICE_ECSECRYO_DOSUM
+
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         sum_square_vel_tile (bi,bj) = 0. _d 0
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           if (streamice_hmask(i,j,bi,bj).eq.1) then
+            sum_square_vel_tile (bi,bj) = 
+     &       sum_square_vel_tile (bi,bj) + 
+     &       U_streamice(i,j,bi,bj)**2 + 
+     &       V_streamice(i,j,bi,bj)**2
+           endif
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+       CALL GLOBAL_SUM_TILE_RL( 
+     &                sum_square_vel_tile, sum_square_vel, myThid ) 
+       WRITE(msgBuf,'(A,I3,A,1PE22.14)') 'ECSE_CRYO_SUM ', myIter, ', ',
+     &                       sum_square_vel
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+
+#endif
+
 
       elseif (do_vel) then
 
@@ -152,6 +181,8 @@ c**************************************
      &                           streamice_maxcgiter_cpl,
      &                           myiter )
       endif
+
+      
 
 #endif
 
