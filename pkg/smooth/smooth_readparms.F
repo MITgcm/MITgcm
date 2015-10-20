@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_readparms.F,v 1.5 2014/05/28 00:13:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_readparms.F,v 1.6 2015/10/20 21:53:41 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -89,7 +89,7 @@ c--     Set default values.
       ENDDO
 
 c--     Next, read the cost data file.
-        WRITE(msgBuf,'(A)') 'PROFILES_READPARMS: opening data.smooth'
+        WRITE(msgBuf,'(A)') 'SMOOTH_READPARMS: opening data.smooth'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
@@ -100,7 +100,7 @@ c--     Next, read the cost data file.
 
         READ(  iUnit, nml = smooth_nml )
 
-        WRITE(msgBuf,'(2A)') 'PROFILES_READPARMS: ',
+        WRITE(msgBuf,'(2A)') 'SMOOTH_READPARMS: ',
      &       'finished reading data.smooth'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                  SQUEEZE_RIGHT , 1)
