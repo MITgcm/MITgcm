@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.61 2015/10/07 12:06:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.62 2015/10/21 15:25:03 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -137,7 +137,7 @@ C     _RL zetaZ         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* SEAICE_ALLOW_CLIPZETA */
       _RL denom1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy) 
       _RL denom2   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL facZ, denomU, denomV
+      _RL sumNorm, denomU, denomV
       _RL locMaskU, locMaskV
       _RL EVPcFac
       _RL evpAlphaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -429,8 +429,8 @@ CML   divide by mass?
 C     compute deltaZ and zetaZ separately
           DO j=1,sNy+1
            DO i=1,sNx+1
-            facZ = 0.25 _d 0
-CML            facZ = 1.0 _d 0
+            sumNorm = 0.25 _d 0
+CML            sumNorm = 1.0 _d 0
 CML     &           / MAX(1.D0,maskC(I,  J,  kSrf,bi,bj)
 CML     &           +          maskC(I-1,J,  kSrf,bi,bj)
 CML     &           +          maskC(I,  J-1,kSrf,bi,bj)
@@ -438,7 +438,7 @@ CML     &           +          maskC(I-1,J-1,kSrf,bi,bj) )
 C     average strain rates to Z points
 C     Averaging the squares gives more accurate viscous-plastic behavior
 C     than squaring the averages
-            deltaSq = facZ *
+            deltaSq = sumNorm *
      &           ( ep(I,J  )**2 + ep(I-1,J  )**2
      &           + ep(I,J-1)**2 + ep(I-1,J-1)**2
      &           +(em(I,J  )**2 + em(I-1,J  )**2
@@ -461,7 +461,7 @@ CML            deltaZreg  = SQRT(deltaSq + deltaMinSq)
             deltaZreg   = MAX(deltaZ(I,J),SEAICE_deltaMin)
 #endif /* SEAICE_DELTA_SMOOTHREG */
 C     modify pressure
-            pressZ      = (deltaZ(I,J)/deltaZreg) * facZ
+            pressZ      = (deltaZ(I,J)/deltaZreg) * sumNorm
      &         * ( PRESS0(I,J  ,bi,bj) + PRESS0(I-1,J  ,bi,bj)
      &           + PRESS0(I,J-1,bi,bj) + PRESS0(I-1,J-1,bi,bj) )
             zetaZ(I,J,bi,bj) = HALF/deltaZreg * pressZ
@@ -472,10 +472,13 @@ C     compute zetaZ and deltaZ by simple averaging (following
 C     Bouillon et al., 2013)
           DO J=1,sNy+1
            DO I=1,sNx+1
-            zetaZ(I,J,bi,bj) = 0.25 _d 0 * 
+            sumNorm = maskC(I,J,  kSrf,bi,bj)+maskC(I-1,J,  kSrf,bi,bj)
+     &              + maskC(I,J-1,kSrf,bi,bj)+maskC(I-1,J-1,kSrf,bi,bj)
+            IF ( sumNorm.GT.0. _d 0 ) sumNorm = 1. _d 0 / sumNorm
+            zetaZ(I,J,bi,bj) = sumNorm * 
      &           ( zetaC(I,  J) + zetaC(I-1,J-1)
      &           + zetaC(I-1,J) + zetaC(I,  J-1) )
-            deltaZ(I,J) = 0.25 _d 0 * 
+            deltaZ(I,J) = sumNorm * 
      &           ( deltaC(I,  J,bi,bj) + deltaC(I-1,J-1,bi,bj)
      &           + deltaC(I-1,J,bi,bj) + deltaC(I,  J-1,bi,bj) )
            ENDDO
@@ -550,8 +553,8 @@ C     save new eta for diagnostics
            ENDDO
            DO j=1,sNy+1
             DO i=1,sNx+1
-             facZ = 0.25 _d 0
-CML            facZ = 1.0 _d 0
+             sumNorm = 0.25 _d 0
+CML            sumNorm = 1.0 _d 0
 CML     &           / MAX(1.D0,maskC(I,  J,  kSrf,bi,bj)
 CML     &           +          maskC(I-1,J,  kSrf,bi,bj)
 CML     &           +          maskC(I,  J-1,kSrf,bi,bj)
@@ -559,7 +562,7 @@ CML     &           +          maskC(I-1,J-1,kSrf,bi,bj) )
 C     Averaging the squares gives more accurate viscous-plastic behavior
 C     than squaring the averages
              etaDenZ  =
-     &            facZ * recip_rAz(I,J,bi,bj) *
+     &            sumNorm * recip_rAz(I,J,bi,bj) *
      &                    ( _rA(I  ,J  ,bi,bj) * em(I,  J  )**2 
      &                    + _rA(I-1,J-1,bi,bj) * em(I-1,J-1)**2
      &                    + _rA(I-1,J  ,bi,bj) * em(I-1,J  )**2 
@@ -567,8 +570,8 @@ C     than squaring the averages
      &                    + 4. _d 0*e12(I,J,bi,bj)**2
              etaDenZ  = SQRT(MAX(deltaMinSq,etaDenZ))
              zetaMaxZ = ecc2*zetaZ(I,J,bi,bj) * ( deltaZ(I,J)
-     &            - facZ * ( ep(I,J  ) + ep(I-1,J  )
-     &                     + ep(I,J-1) + ep(I-1,J-1) )
+     &            - sumNorm * ( ep(I,J  ) + ep(I-1,J  )
+     &                        + ep(I,J-1) + ep(I-1,J-1) )
      &            )/etaDenZ
              seaice_shear  (I,J) = 
      &            2. _d 0*MIN(zetaZ(I,J,bi,bj),zetaMaxZ)
