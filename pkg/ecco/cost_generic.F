@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.31 2015/06/05 02:22:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.32 2015/10/22 02:06:01 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -9,8 +9,8 @@ C     !ROUTINE: cost_generic
 C     !INTERFACE:
       subroutine cost_generic(
      &     nnzbar, localbarfile, localbar, dummy,
-     &     nnzobs, localobsfile, mult_local,
-     &     nrecloc, nrecobs,
+     &     nnzobs, localobsfile, localerrfile,
+     &     mult_local, nrecloc, nrecobs,
      &     localstartdate, localperiod,
      &     ylocmask, localweight,
      &     spminloc, spmaxloc, spzeroloc,
@@ -72,6 +72,7 @@ c     == routine arguments ==
       character*(1) ylocmask
       character*(MAX_LEN_FNAM) localbarfile
       character*(MAX_LEN_FNAM) localobsfile
+      character*(MAX_LEN_FNAM) localerrfile
       character*(MAX_LEN_FNAM) preproc(NGENPPROC)
       character*(MAX_LEN_FNAM) preproc_c(NGENPPROC)
       character*(MAX_LEN_FNAM) posproc(NGENPPROC)
@@ -85,7 +86,7 @@ c     == local variables ==
       integer bi,bj
       integer itlo,ithi
       integer jtlo,jthi
-      integer irec
+      integer irec, jrec
       integer  il
       integer localrec, obsrec
       integer nrecloop
@@ -125,10 +126,14 @@ c--   Initialise local variables.
           num_local(bi,bj) = 0. _d 0
         enddo
       enddo
+
       call ecco_zero(localtmp,Nr,zeroRL,myThid)
       call ecco_zero(localobs,Nr,zeroRL,myThid)
       call ecco_zero(localdif,Nr,zeroRL,myThid)
       call ecco_zero(difmask,Nr,zeroRL,myThid)
+
+      call ecco_zero(localbar,nnzbar,zeroRL,myThid)
+      call ecco_zero(localweight,nnzobs,zeroRL,myThid)
 
       call ecco_zero(localbarmean,Nr,zeroRL,myThid)
       call ecco_zero(localbarnum,Nr,zeroRL,myThid)
@@ -156,6 +161,17 @@ C Extra time loop to compute time-mean fields and costs
      &     (preproc(1) .EQ. 'clim' .AND. preproc(2) .EQ. 'anom'))) then
 c--   loop over obsfile records
       do irec = 1, nrecloop
+
+c--     load weights
+        exst=.FALSE.
+        jrec=1
+        if(preproc(1).EQ.'variaweight') jrec = irec
+        call cost_gencal(localbarfile, localerrfile,
+     &     jrec, localstartdate, localperiod, fname1,
+     &     fname3, localrec, obsrec, exst, mythid )
+        call ecco_zero(localweight,nnzobs,zeroRL,myThid)
+        if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) )
+     &  call ecco_readwei(fname3,localweight,localrec,nnzobs,mythid)
 
 c--     determine records and file names
         exst=.FALSE.
@@ -239,6 +255,17 @@ c-- reset nrecloop, if needed, according to preproc
       if ( preproc(1) .NE. 'mean') then
 c--   loop over obsfile records
       do irec = 1, nrecloop
+
+c--     load weights
+        exst=.FALSE.
+        jrec=1
+        if(preproc(1).EQ.'variaweight') jrec = irec
+        call cost_gencal(localbarfile, localerrfile,
+     &     jrec, localstartdate, localperiod, fname1,
+     &     fname3, localrec, obsrec, exst, mythid )
+        call ecco_zero(localweight,nnzobs,zeroRL,myThid)
+        if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) )
+     &  call ecco_readwei(fname3,localweight,localrec,nnzobs,mythid)
 
 c--     determine records and file names
         exst=.FALSE.

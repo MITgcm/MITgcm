@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.18 2014/10/06 14:09:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.19 2015/10/22 02:06:01 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -70,8 +70,8 @@ c     == end of interface ==
          call cost_generic(
      &     nnzbar, gencost_barfile(k),
      &     gencost_barfld(1-Olx,1-Oly,1,1,k), gencost_dummy(k),
-     &     nnzobs, gencost_datafile(k), mult_gencost(k),
-     &     nrecloc, nrecperiodloc,
+     &     nnzobs, gencost_datafile(k), gencost_errfile(k),
+     &     mult_gencost(k), nrecloc, nrecperiodloc,
      &     gencost_startdate(1,k), gencost_period(k),
      &     gencost_mask(k), gencost_weight(1-Olx,1-Oly,1,1,k),
      &     gencost_spmin(k), gencost_spmax(k), gencost_spzero(k), 
@@ -104,8 +104,8 @@ c     == end of interface ==
      &     nnzbar, gencost_barfile(k),
      &     gencost_bar3d(1-Olx,1-Oly,1,1,1,kk),
      &     gencost_dummy(k),
-     &     nnzobs, gencost_datafile(k), mult_gencost(k),
-     &     nrecloc, nrecperiodloc,
+     &     nnzobs, gencost_datafile(k), gencost_errfile(k),
+     &     mult_gencost(k), nrecloc, nrecperiodloc,
      &     gencost_startdate(1,k), gencost_period(k),
      &     gencost_mask(k), gencost_wei3d(1-Olx,1-Oly,1,1,1,kk),
      &     gencost_spmin(k), gencost_spmax(k), gencost_spzero(k),

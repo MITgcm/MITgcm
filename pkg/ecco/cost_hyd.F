@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.35 2014/10/18 18:15:44 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.36 2015/10/22 02:06:01 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -81,7 +81,7 @@ c     == end of interface ==
       nmonsloc=nmonsrec
       call cost_generic(
      &     nnzbar, tbarfile, tbar, xx_tbar_mean_dummy,
-     &     nnzobs, sstdatfile, mult_sst,
+     &     nnzobs, sstdatfile, ssterrfile, mult_sst,
      &     nmonsloc, nmonsloc, sststartdate, localperiod,
      &     'C', wsst, spminloc, spmaxloc, spzeroloc,
      &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r, 
@@ -104,7 +104,7 @@ c
       nmonsloc=nmonsrec
       call cost_generic(
      &     nnzbar, sstbarfile, sstbar, xx_sstbar_mean_dummy,
-     &     nnzobs, sstdatfile, mult_sst,
+     &     nnzobs, sstdatfile, ssterrfile, mult_sst,
      &     nrecloc, nmonsloc, sststartdate, localperiod,
      &     'C', wsst, spminloc, spmaxloc, spzeroloc, 
      &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
@@ -150,7 +150,7 @@ cph      call cost_sst   ( myiter, mytime, mythid )
       nmonsloc=nmonsrec
       call cost_generic(
      &     nnzbar, tbarfile, tbar, xx_tbar_mean_dummy,
-     &     nnzobs, tmidatfile, mult_tmi,
+     &     nnzobs, tmidatfile, ssterrfile, mult_tmi,
      &     nmonsloc, nmonsloc, tmistartdate, localperiod,
      &     'C', wsst, spminloc, spmaxloc, spzeroloc, 
      &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
@@ -174,7 +174,7 @@ cph      call cost_tmi( myiter, mytime, mythid )
       nmonsloc=nmonsrec
       call cost_generic(
      &     nnzbar, sbarfile, sbar, xx_sbar_mean_dummy,
-     &     nnzobs, sssdatfile, mult_sss,
+     &     nnzobs, sssdatfile, ssterrfile, mult_sss,
      &     nmonsloc, nmonsloc, sssstartdate, localperiod,
      &     'C', wsss, spminloc, spmaxloc, spzeroloc, 
      &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
