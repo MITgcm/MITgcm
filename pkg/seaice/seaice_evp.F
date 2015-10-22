@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.62 2015/10/21 15:25:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.63 2015/10/22 15:51:16 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -309,7 +309,6 @@ CADJ STORE seaice_sigma1  = comlev1_evp, key = ikeyloc, byte = isbyte
 CADJ STORE seaice_sigma2  = comlev1_evp, key = ikeyloc, byte = isbyte
 CADJ STORE seaice_sigma12 = comlev1_evp, key = ikeyloc, byte = isbyte
 CADJ STORE evpAlphaC      = comlev1_evp, key = ikeyloc, byte = isbyte
-CADJ STORE evpAlphaZ      = comlev1_evp, key = ikeyloc, byte = isbyte
 CADJ STORE evpBetaU       = comlev1_evp, key = ikeyloc, byte = isbyte
 CADJ STORE evpBetaV       = comlev1_evp, key = ikeyloc, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -329,6 +328,18 @@ CADJ STORE e22 = comlev1_evp,key = ikeyloc, byte = isbyte
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikeyloc - 1
+          iicekey = (act1 + 1) + act2*max1
+     &                         + act3*max1*max2
+     &                         + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef ALLOW_SEAICE_EVP_RESIDUAL
 C     save previous (p-1) iteration
           IF ( printResidual ) THEN
@@ -486,8 +497,10 @@ C     Bouillon et al., 2013)
           ENDIF
 #ifdef SEAICE_ALLOW_CLIPZETA
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE zetac            = comlev1_evp, key = ikeyloc, byte = isbyte
-CADJ STORE zetaz(:,:,bi,bj) = comlev1_evp, key = ikeyloc, byte = isbyte
+CADJ STORE zetac            = comlev1_bibj_evp,
+CADJ &     key = iiceloc, byte = isbyte
+CADJ STORE zetaz(:,:,bi,bj) = comlev1_bibj_evp,
+CADJ &     key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     regularize zeta if necessary
           DO j=0,sNy+1
@@ -602,8 +615,10 @@ C
 C     first step stress equations
 C
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE denom1 = comlev1_evp, key = ikeyloc, byte = isbyte
-CADJ STORE denom2 = comlev1_evp, key = ikeyloc, byte = isbyte
+CADJ STORE denom1(:,:,bi,bj) = comlev1_bibj_evp,
+CADJ &     key=iicekey, byte=isbyte
+CADJ STORE denom2(:,:,bi,bj) = comlev1_bibj_evp,
+CADJ &     key=iicekey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           IF ( useAdaptiveEVP ) THEN
            DO j=0,sNy
@@ -645,6 +660,12 @@ C     recover sigma11 and sigma22
            ENDDO
           ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE denom2   (:,:,bi,bj) = comlev1_bibj_evp,
+CADJ &     key=iicekey, byte=isbyte
+CADJ STORE evpAlphaZ(:,:,bi,bj) = comlev1_bibj_evp,
+CADJ &     key=iicekey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 C     sigma12 is computed on Z points
           IF ( useAdaptiveEVP ) THEN
            DO j=1,sNy+1
