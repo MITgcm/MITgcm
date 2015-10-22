@@ -23,6 +23,7 @@
  sststartdate1        = 19790101,
  sststartdate2        = 00000,
  sstdatfile           = 'labsea_SST_fields',
+ ssterrfile           = 'sigma_sst.bin',
  tdatfile             = 'labsea_Lev.ptmp',
  sdatfile             = 'labsea_Lev.salt',
  ssh_errfile          = 'labsea_ssh.err',
