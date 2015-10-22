@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.177 2015/08/06 20:32:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.178 2015/10/22 15:49:47 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -473,6 +473,8 @@ CADJ &  nsx*nsy*nthreads_chkpt*nchklev_1*MPSEUDOTIMESTEPS
 #    endif
 #    ifdef SEAICE_ALLOW_EVP
 CADJ INIT comlev1_evp = COMMON,nEVPstepMax*nchklev_1
+CADJ INIT comlev1_bibj_evp = COMMON,
+CADJ &  nsx*nsy*nthreads_chkpt*nEVPstepMax*nchklev_1
 #    endif
 CML#   ifdef SEAICE_MULTICATEGORY
 CMLCADJ INIT comlev1_multdim
