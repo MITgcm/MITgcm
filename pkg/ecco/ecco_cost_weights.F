@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.60 2014/10/20 03:16:12 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.61 2015/10/22 16:02:58 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -374,7 +374,7 @@ c--
       defined (ALLOW_WSALTLEV))
       lwsaltLevInUse = .true.
       if ( salt0errfile .NE. ' ' ) then
-         call mdsreadfield( salt0errfile, 32, 'RL', Nr,
+         call mdsreadfield( salt0errfile, cost_iprec, cost_yftype, Nr,
      &         wsaltLev, 1, mythid)
          do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -417,7 +417,7 @@ c--           Test for missing values.
      defined (ALLOW_WTHETALEV))
       lwthetaLevInUse = .true.
       if ( temp0errfile .NE. ' ' ) then
-         call mdsreadfield( temp0errfile, 32, 'RL', Nr,
+         call mdsreadfield( temp0errfile, cost_iprec, cost_yftype, Nr,
      &         wthetaLev, 1, mythid)
          do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -462,8 +462,8 @@ c--           Test for missing values.
 
       lwsalt2InUse = .true.
       if ( salterrfile .NE. ' ' ) then
-         call mdsreadfield( salterrfile, 32, 'RL', Nr, wsalt2, 1,
-     &                      mythid)
+         call mdsreadfield( salterrfile, cost_iprec, cost_yftype, Nr,
+     &                      wsalt2, 1, mythid)
 
          do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -510,8 +510,8 @@ c--           Test for missing values.
 
       lwtheta2InUse = .true.
       if ( temperrfile .NE. ' ' ) then
-         call mdsreadfield( temperrfile, 32, 'RL', Nr, wtheta2, 1,
-     &                      mythid)
+         call mdsreadfield( temperrfile, cost_iprec, cost_yftype, Nr,
+     &                      wtheta2, 1, mythid)
          do bj = jtlo,jthi
           do bi = itlo,ithi
            do k = 1,nr
@@ -553,13 +553,13 @@ c--           Test for missing values.
 
 #if (defined (ALLOW_SST_COST_CONTRIBUTION) || defined (ALLOW_SST_CONTROL))
       if ( ( using_cost_sst ).AND.( ssterrfile .NE. ' ' ) )
-     &   call mdsreadfield( ssterrfile, 32, 'RL', 1, wsst, 1,
-     &                      mythid)
+     &   call mdsreadfield( ssterrfile, cost_iprec, cost_yftype, 1,
+     &                      wsst, 1, mythid)
 #endif
 #if (defined (ALLOW_SSS_COST_CONTRIBUTION) || defined (ALLOW_SSS_CONTROL))
       if ( ssserrfile .NE. ' ' )
-     &   call mdsreadfield( ssserrfile, 32, 'RL', 1, wsss, 1,
-     &                      mythid)
+     &   call mdsreadfield( ssserrfile, cost_iprec, cost_yftype, 1,
+     &                      wsss, 1, mythid)
 #endif
 
       k = 1
@@ -778,7 +778,7 @@ cph-indonesian)
       if ( sshv4cost_errfile(num_var) .NE. ' ' ) then
 c--   read error standard deviation
       call mdsreadfield( sshv4cost_errfile(num_var),
-     &    32, 'RL', 1, wsshv4tmp, 1, mythid)
+     &    cost_iprec, cost_yftype, 1, wsshv4tmp, 1, mythid)
 c--   convert to units of meters
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -827,8 +827,8 @@ c--   convert to units of meters
 #ifdef ALLOW_BP_COST_CONTRIBUTION
       IF (using_cost_bp) THEN
       if ( bperrfile .NE. ' ' )
-     &   call mdsreadfield( bperrfile, 32, 'RL', 1, wbp, 1,
-     &                      mythid)
+     &   call mdsreadfield( bperrfile, cost_iprec, cost_yftype, 1,
+     &                      wbp, 1, mythid)
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -848,8 +848,8 @@ c--   convert to units of meters
 
 #ifdef ALLOW_IESTAU_COST_CONTRIBUTION
       if ( ieserrfile .NE. ' ' )
-     &   call mdsreadfield( ieserrfile, 32, 'RL', 1, wies, 1,
-     &                      mythid)
+     &   call mdsreadfield( ieserrfile, cost_iprec, cost_yftype, 1,
+     &                      wies, 1, mythid)
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1624,7 +1624,7 @@ c--           Test for missing values.
 
 #if (defined (ALLOW_ETAN0_COST_CONTRIBUTION) || defined (ALLOW_ETAN0_CONTROL))
       if ( etan0errfile .NE. ' ' ) then
-         call mdsreadfield( etan0errfile, 32, 'RL', 1,
+         call mdsreadfield( etan0errfile, cost_iprec, cost_yftype, 1,
      &         wetan, 1, mythid)
          do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -1662,9 +1662,9 @@ c--           Test for missing values.
 #if (defined (ALLOW_VVEL0_COST_CONTRIBUTION) || defined (ALLOW_VVEL0_CONTROL))
 
       if ( uvel0errfile .NE. ' ' .AND. vvel0errfile .NE. ' ' ) then
-         call mdsreadfield( uvel0errfile, 32, 'RL', Nr,
+         call mdsreadfield( uvel0errfile, cost_iprec, cost_yftype, Nr,
      &         wuvel3d, 1, mythid)
-         call mdsreadfield( vvel0errfile, 32, 'RL', Nr,
+         call mdsreadfield( vvel0errfile, cost_iprec, cost_yftype, Nr,
      &         wvvel3d, 1, mythid)
          do bj = jtlo,jthi
           do bi = itlo,ithi
