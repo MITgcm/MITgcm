@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_OPTIONS.h,v 1.4 2014/09/11 19:11:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_OPTIONS.h,v 1.5 2015/10/23 18:48:14 gforget Exp $
 C $Name:  $
 
 CBOP
@@ -63,6 +63,10 @@ C       >>> Other Control.
 #undef ALLOW_KAPGM_CONTROL
 #undef ALLOW_KAPREDI_CONTROL
 #undef ALLOW_BOTTOMDRAG_CONTROL
+
+C       >>> Backward compatibility option (before checkpoint 65p)
+#undef ALLOW_KAPGM_CONTROL_OLD
+#undef ALLOW_KAPREDI_CONTROL_OLD
 
 C       >>> Generic Control.
 #undef ALLOW_GENARR2D_CONTROL
