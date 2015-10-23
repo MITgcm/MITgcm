@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.11 2015/09/02 06:01:10 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.12 2015/10/23 23:09:44 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -190,7 +190,7 @@ c-- rmcycle
          endif
         enddo
 
-        print*,'endrec',endrec,replicated_ntimes,replicated_nrec
+c       print*,'endrec',endrec,replicated_ntimes,replicated_nrec
 
         IF (replicated_ntimes.GT.0) THEN
 
@@ -199,7 +199,7 @@ c create cyclic average
         nyearsINT=1+int((endrec-replicated_nrec)/replicated_nrec)
         nyearsRL=float(nyearsINT)
 
-        print*,'nyearsINT',nyearsINT,nyearsRL
+c       print*,'nyearsINT',nyearsINT,nyearsRL
 
         DO irec = 1, replicated_nrec
 
