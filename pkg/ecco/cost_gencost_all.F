@@ -1,6 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.19 2015/10/22 02:06:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.20 2015/10/23 14:26:16 gforget Exp $
 C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
 
@@ -43,7 +42,7 @@ c     == local variables ==
       character*(max_len_mbuf) msgbuf
       integer nnzbar
       integer nnzobs
-      integer k, kk
+      integer k
       integer nrecloc, nrecperiodloc
 
 c     == external functions ==
@@ -52,29 +51,33 @@ c     == end of interface ==
 
       do k = 1, NGENCOST
 
-         if ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 )
-     &   .AND.( .NOT.gencost_is3d(k) ) ) then
+         if ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 ) ) then
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevD ) THEN
-         write(msgbuf,'(a,x,i2.2)') 'gencost #', k
-         call print_message( msgbuf, standardmessageunit,
+         IF ( debugLevel .GE. debLevD ) THEN
+           write(msgbuf,'(a,x,i2.2)') 'gencost #', k
+           call print_message( msgbuf, standardmessageunit,
      &        SQUEEZE_RIGHT , mythid)
-      ENDIF
+         ENDIF
 #endif
 
-         nnzbar = 1
-         nnzobs = 1
+         if ( .NOT.gencost_is3d(k) ) then
+           nnzbar = 1
+           nnzobs = 1
+         else
+           nnzbar = nr
+           nnzobs = nr
+         endif
+
          nrecloc= gencost_nrec(k)
          nrecperiodloc= gencost_nrecperiod(k)
+
          call cost_generic(
-     &     nnzbar, gencost_barfile(k),
-     &     gencost_barfld(1-Olx,1-Oly,1,1,k), gencost_dummy(k),
+     &     nnzbar, gencost_barfile(k), gencost_dummy(k),
      &     nnzobs, gencost_datafile(k), gencost_errfile(k),
      &     mult_gencost(k), nrecloc, nrecperiodloc,
-     &     gencost_startdate(1,k), gencost_period(k),
-     &     gencost_mask(k), gencost_weight(1-Olx,1-Oly,1,1,k),
-     &     gencost_spmin(k), gencost_spmax(k), gencost_spzero(k), 
+     &     gencost_startdate(1,k), gencost_period(k), gencost_mask(k),
+     &     gencost_spmin(k), gencost_spmax(k), gencost_spzero(k),
      &     gencost_preproc(1,k), gencost_preproc_c(1,k),
      &     gencost_preproc_i(1,k), gencost_preproc_r(1,k),
      &     gencost_posproc(1,k), gencost_posproc_c(1,k), 
@@ -83,42 +86,7 @@ c     == end of interface ==
      &     objf_gencost(1,1,k), num_gencost(1,1,k),
      &     myiter, mytime, mythid )
 
-#ifdef ALLOW_GENCOST3D
-         elseif ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 )
-     &   .AND.( gencost_is3d(k) ) ) then
-
-#ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevD ) THEN
-         write(msgbuf,'(a,x,i2.2)') 'gencost #', k
-         call print_message( msgbuf, standardmessageunit,
-     &        SQUEEZE_RIGHT , mythid)
-      ENDIF
-#endif
-
-         nnzbar = nr
-         nnzobs = nr
-         kk=gencost_pointer3d(k)
-         nrecloc= gencost_nrec(k)
-         nrecperiodloc= gencost_nrecperiod(k)
-         call cost_generic(
-     &     nnzbar, gencost_barfile(k),
-     &     gencost_bar3d(1-Olx,1-Oly,1,1,1,kk),
-     &     gencost_dummy(k),
-     &     nnzobs, gencost_datafile(k), gencost_errfile(k),
-     &     mult_gencost(k), nrecloc, nrecperiodloc,
-     &     gencost_startdate(1,k), gencost_period(k),
-     &     gencost_mask(k), gencost_wei3d(1-Olx,1-Oly,1,1,1,kk),
-     &     gencost_spmin(k), gencost_spmax(k), gencost_spzero(k),
-     &     gencost_preproc(1,k), gencost_preproc_c(1,k),
-     &     gencost_preproc_i(1,k), gencost_preproc_r(1,k),
-     &     gencost_posproc(1,k), gencost_posproc_c(1,k),
-     &     gencost_posproc_i(1,k), gencost_posproc_r(1,k),
-     &     gencost_outputlevel(k), gencost_name(k),
-     &     objf_gencost(1,1,k), num_gencost(1,1,k),
-     &     myiter, mytime, mythid )
-#endif
-
-         endif
+         endif ! if ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 ) ) then
 
       end do
 

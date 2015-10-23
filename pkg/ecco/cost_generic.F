@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.32 2015/10/22 02:06:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.33 2015/10/23 14:26:16 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -8,12 +8,11 @@ CBOP
 C     !ROUTINE: cost_generic
 C     !INTERFACE:
       subroutine cost_generic(
-     &     nnzbar, localbarfile, localbar, dummy,
+     &     nnzbar, localbarfile, dummy,
      &     nnzobs, localobsfile, localerrfile,
      &     mult_local, nrecloc, nrecobs,
      &     localstartdate, localperiod,
-     &     ylocmask, localweight,
-     &     spminloc, spmaxloc, spzeroloc,
+     &     ylocmask, spminloc, spmaxloc, spzeroloc,
      &     preproc, preproc_c, preproc_i, preproc_r,
      &     posproc, posproc_c, posproc_i, posproc_r,
      &     outlev, outname,
@@ -57,8 +56,6 @@ c     == routine arguments ==
 
       _RL objf_local(nsx,nsy)
       _RL num_local(nsx,nsy)
-      _RL localbar   (1-olx:snx+olx,1-oly:sny+oly,nnzbar,nsx,nsy)
-      _RL localweight(1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
       _RL dummy
       _RL mult_local
       _RL mytime
@@ -91,6 +88,8 @@ c     == local variables ==
       integer localrec, obsrec
       integer nrecloop
 
+      _RL localbar   (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
+      _RL localweight(1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
       _RL localtmp   (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
       _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
       _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
@@ -132,8 +131,8 @@ c--   Initialise local variables.
       call ecco_zero(localdif,Nr,zeroRL,myThid)
       call ecco_zero(difmask,Nr,zeroRL,myThid)
 
-      call ecco_zero(localbar,nnzbar,zeroRL,myThid)
-      call ecco_zero(localweight,nnzobs,zeroRL,myThid)
+      call ecco_zero(localbar,Nr,zeroRL,myThid)
+      call ecco_zero(localweight,Nr,zeroRL,myThid)
 
       call ecco_zero(localbarmean,Nr,zeroRL,myThid)
       call ecco_zero(localbarnum,Nr,zeroRL,myThid)
