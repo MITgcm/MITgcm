@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.62 2014/12/01 16:36:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.63 2015/10/23 02:22:20 atn Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -119,7 +119,7 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
 # ifdef ALLOW_SSS0_CONTROL
          call adexch_xy_rl( myThid,adsss )
 # endif
-# ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
+# ifdef ALLOW_BOTTOMDRAG_CONTROL
          call adexch_xy_rl( myThid,adbottomdragfld)
 # endif
 
@@ -153,7 +153,7 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
 # ifdef ALLOW_SSS0_CONTROL
          CALL ADEXCH_XY_RS( adSSS, myThid )
 # endif
-# ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
+# ifdef ALLOW_BOTTOMDRAG_CONTROL
          CALL ADEXCH_3D_RL( adBottomDragFld, 1 , myThid )
 # endif
 
@@ -223,7 +223,7 @@ c    &                             adGGL90DiffKr, myIter, myThid )
 #ifdef ALLOW_SSS0_CONTROL
           CALL WRITE_FLD_XY_RS( 'ADJsss.',suff, adSSS, myIter, myThid )
 #endif
-#ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
           CALL WRITE_FLD_XY_RL ( 'ADJbottomdrag.', suff,
      &                           adBottomDragFld, myIter, myThid )
 #endif
@@ -290,7 +290,7 @@ c    &         adGGL90DiffKr, dumpAdRecMn, myIter, myThid )
           CALL WRITE_REC_XY_RS( 'ADJsss',
      &         adSSS, dumpAdRecMn, myIter, myThid )
 #endif
-#ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
           CALL WRITE_REC_XY_RL ( 'ADJbottomdrag',
      &         adBottomDragFld, dumpAdRecMn, myIter, myThid )
 #endif
@@ -411,7 +411,7 @@ C       case dumpAdVarExch = 2
           IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJsss',
      &                           var2Du,dumpAdRecMn, myIter,myThid )
 #endif
-#ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
           CALL COPY_ADVAR_OUTP( dumRS, adBottomDragFld,
      &                                        var2Du, 1, 12, myThid )
           IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJbottomdrag.',
@@ -462,7 +462,7 @@ C       end if dumpAdVarExch = 2
           CALL COPY_ADVAR_OUTP( adSSS, dumRL, var2Du, 1, 11, myThid )
           CALL MNC_CW_RL_W('D','adstate',0,0,'adSSS', var2Du, myThid)
 #endif
-#ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
           CALL COPY_ADVAR_OUTP( dumRS, adBottomDragFld,
      &                                        var2Du, 1, 12, myThid )
           CALL MNC_CW_RL_W('D','adstate',0,0,
@@ -503,7 +503,7 @@ C     dumpAdVarExch.NE.2
 #ifdef ALLOW_SSS0_CONTROL
           CALL MNC_CW_RS_W('D','adstate',0,0,'adSSS', adsss, myThid)
 #endif
-#ifdef ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adBottomDrag', adbottomdragfld, myThid)
 #endif
