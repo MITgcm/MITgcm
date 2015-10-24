@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_add_tendency.F,v 1.11 2014/09/06 19:31:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_add_tendency.F,v 1.12 2015/10/24 21:20:09 jmc Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -48,68 +48,67 @@ C  myThid         :: my Thread Id number
 C !LOCAL VARIABLES: ====================================================
 C  i,j            :: loop indices
       INTEGER i,j
+      INTEGER irbc
       _RL rbcsVanishingFac
+      _RL rec_tauRlx
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer
-      INTEGER irbc
 #endif
 CEOP
 
 #ifdef ALLOW_RBCS
 
-      if (rbcsVanishingTime.GT.0. _d 0) then
+      IF ( rbcsVanishingTime.GT.0. _d 0 ) THEN
         rbcsVanishingFac =
-     &  MAX( 0. _d 0 , 1. _d 0 - myTime / rbcsVanishingTime )
-      else
+     &      MAX( 0. _d 0 , 1. _d 0 - myTime / rbcsVanishingTime )
+      ELSE
         rbcsVanishingFac = 1. _d 0
-      endif
+      ENDIF
 
 #ifndef DISABLE_RBCS_MOM
       IF ( tracerNum.EQ.-1 .AND. useRBCuVel ) THEN
+        rec_tauRlx = rbcsVanishingFac/tauRelaxU
         DO j=0,sNy+1
          DO i=0,sNx+1
           gTendency(i,j) = gTendency(i,j)
-     &       - RBC_maskU(i,j,k,bi,bj)/tauRelaxU
+     &       - RBC_maskU(i,j,k,bi,bj)*rec_tauRlx
      &        *( uVel(i,j,k,bi,bj)- RBCuVel(i,j,k,bi,bj) )
-c    &        *maskW(i,j,k,bi,bj)
-     &        *rbcsVanishingFac
          ENDDO
         ENDDO
       ENDIF
       IF ( tracerNum.EQ.-2 .AND. useRBCvVel ) THEN
+        rec_tauRlx = rbcsVanishingFac/tauRelaxV
         DO j=0,sNy+1
          DO i=0,sNx+1
           gTendency(i,j) = gTendency(i,j)
-     &       - RBC_maskV(i,j,k,bi,bj)/tauRelaxV
+     &       - RBC_maskV(i,j,k,bi,bj)*rec_tauRlx
      &        *( vVel(i,j,k,bi,bj)- RBCvVel(i,j,k,bi,bj) )
-c    &        *maskS(i,j,k,bi,bj)
-     &        *rbcsVanishingFac
          ENDDO
         ENDDO
       ENDIF
 #endif /* DISABLE_RBCS_MOM */
 
       IF ( tracerNum.EQ.1 .AND. useRBCtemp ) THEN
+        irbc = MIN(maskLEN,tracerNum)
+        rec_tauRlx = rbcsVanishingFac/tauRelaxT
         DO j=0,sNy+1
          DO i=0,sNx+1
           gTendency(i,j) = gTendency(i,j)
-     &       - RBC_mask(i,j,k,bi,bj,1)/tauRelaxT
+     &       - RBC_mask(i,j,k,bi,bj,irbc)*rec_tauRlx
      &        *( theta(i,j,k,bi,bj)- RBCtemp(i,j,k,bi,bj) )
-c    &        *maskC(i,j,k,bi,bj)
-     &        *rbcsVanishingFac
 
          ENDDO
         ENDDO
       ENDIF
 
       IF ( tracerNum.EQ.2 .AND. useRBCsalt ) THEN
+        irbc = MIN(maskLEN,tracerNum)
+        rec_tauRlx = rbcsVanishingFac/tauRelaxS
         DO j=0,sNy+1
          DO i=0,sNx+1
           gTendency(i,j) = gTendency(i,j)
-     &       - RBC_mask(i,j,k,bi,bj,2)/tauRelaxS
+     &       - RBC_mask(i,j,k,bi,bj,irbc)*rec_tauRlx
      &        *( salt(i,j,k,bi,bj)- RBCsalt(i,j,k,bi,bj) )
-c    &        *maskC(i,j,k,bi,bj)
-     &        *rbcsVanishingFac
          ENDDO
         ENDDO
       ENDIF
@@ -117,16 +116,15 @@ c    &        *maskC(i,j,k,bi,bj)
 #ifdef ALLOW_PTRACERS
       IF ( usePTRACERS .AND. tracerNum.GT.2 ) THEN
        iTracer = tracerNum-2
-       irbc = MIN(maskLEN,tracerNum)
        IF ( useRBCpTrNum(iTracer) ) THEN
+        irbc = MIN(maskLEN,tracerNum)
+        rec_tauRlx = rbcsVanishingFac/tauRelaxPTR(iTracer)
         DO j=0,sNy+1
          DO i=0,sNx+1
           gTendency(i,j) = gTendency(i,j)
-     &       - RBC_mask(i,j,k,bi,bj,irbc)/tauRelaxPTR(iTracer)
+     &       - RBC_mask(i,j,k,bi,bj,irbc)*rec_tauRlx
      &        *( pTracer(i,j,k,bi,bj,iTracer)
      &           - RBC_ptracers(i,j,k,bi,bj,iTracer) )
-c    &        *maskC(i,j,k,bi,bj)
-     &        *rbcsVanishingFac
          ENDDO
         ENDDO
        ENDIF
