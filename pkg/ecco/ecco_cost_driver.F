@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.18 2015/08/06 20:33:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.19 2015/10/24 18:49:43 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -73,11 +73,7 @@ c--   Compute cost function contribution of SSH.
 # ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('cost_ssh',myThid)
 # endif
-# if (defined(ALLOW_SSHV4_COST))
-      call timer_start('cost_sshv4         [ECCO SPIN-DOWN]', myThid)
-      call cost_sshv4( myIter, myTime, myThid )
-      call timer_stop ('cost_sshv4         [ECCO SPIN-DOWN]', myThid)
-# elif (defined(ALLOW_NEW_SSH_COST))
+# if (defined(ALLOW_NEW_SSH_COST))
       call timer_start('cost_ssh_new       [ECCO SPIN-DOWN]', myThid)
       call cost_ssh_new( myIter, myTime, myThid )
       call timer_stop ('cost_ssh_new       [ECCO SPIN-DOWN]', myThid)
@@ -98,8 +94,18 @@ CADJ STORE prof_etan_mean = tapelev_init, key=1
 c--   Compute bottom pressure cost
       IF (using_cost_bp) THEN
       call timer_start('cost_bp    [ECCO SPIN-DOWN]', myThid)
-      call cost_bp( myIter, myTime, myThid )
+      no_preproc(1)='anom'
+      call cost_generic(
+     &     1, bpfile, xx_bpbar_mean_dummy,
+     &     1, bpdatfile, bperrfile, mult_bp,
+     &     nmonsrec, nmonsrec, bpstartdate, 0. _d 0,
+     &     'C', -1. _d 2, 1. _d 2, 0. _d 0,
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r, 
+     &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
+     &     0, bpdatfile, objf_bp, num_bp,
+     &     myiter, mytime, mythid )
       call timer_stop ('cost_bp    [ECCO SPIN-DOWN]', myThid)
+      no_preproc(1)=' '
       ENDIF
 #endif
 
@@ -199,11 +205,6 @@ c--   Internal Parameter controls cost terms:
       call cost_internal_params( myIter, myTime, myThid )
       call timer_stop ('cost_internal_params  [ECCO SPIN-DOWN]', myThid)
       _BARRIER
-
-c--   Compute user defined cost function contributions (basic)
-      call timer_start('cost_usercost_all    [ECCO SPIN-DOWN]', myThid)
-      call cost_usercost_all( myIter, myTime, myThid )
-      call timer_stop ('cost_usercost_all    [ECCO SPIN-DOWN]', myThid)
 
 #endif /* ECCO_CTRL_DEPRECATED */
 

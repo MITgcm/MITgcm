@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_new.F,v 1.12 2015/08/06 15:48:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_new.F,v 1.13 2015/10/24 18:49:43 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -40,6 +40,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#include "GRID.h"
 
 #include "ecco_cost.h"
 #include "CTRL_SIZE.h"
@@ -152,7 +153,28 @@ c--   ============
       enddo
 
 c--   Read mean field and generate mask
-      call cost_ReadTopexMean( mythid )
+#ifdef ALLOW_SSH_MEAN_COST_CONTRIBUTION
+      call mdsreadfield( mdtdatfile, cost_iprec, cost_yftype, 1,
+     &                   mdt, 1, mythid )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              mdtmask(i,j,bi,bj)=maskC(i,j,1,bi,bj)
+              if (mdt(i,j,bi,bj) .lt. -9990. _d 0) then
+                mdtmask(i,j,bi,bj) = 0. _d 0
+              endif
+              if ( R_low(i,j,bi,bj) .GT. -200. ) then
+                mdtmask(i,j,bi,bj) = 0. _d 0
+              endif
+              mdt(i,j,bi,bj) = mdt(i,j,bi,bj)*
+     &                            mdtmask(i,j,bi,bj)*0.01 _d 0
+            enddo
+          enddo
+        enddo
+      enddo
+#endif /* ALLOW_SSH_MEAN_COST_CONTRIBUTION */
 
 c--   Loop over records for the first time.
       do irec = 1, ndaysrec
@@ -165,17 +187,26 @@ c--     Compute the mean over all psbar records.
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
 cph these if would be more efficient, but need recomputations
 c        if ( tpTimeMask(irec) .NE. 0. )
-        call cost_readtopex( irec, mythid )
+      call cost_sla_read( topexfile, topexstartdate, topexperiod,
+     &                topexintercept, topexslope,
+     &                tpobs, tpmask,
+     &                irec, mythid )
 #endif
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
 cph these if would be more efficient, but need recomputations
 c        if ( ersTimeMask(irec) .NE. 0. )
-        call cost_readers( irec, mythid )
+      call cost_sla_read( ersfile, ersstartdate, ersperiod,
+     &                ersintercept, ersslope,
+     &                ersobs, ersmask,
+     &                irec, mythid )
 #endif
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
 cph these if would be more efficient, but need recomputations
 c        if ( gfoTimeMask(irec) .NE. 0. )
-        call cost_readgfo( irec, mythid )
+      call cost_sla_read( gfofile, gfostartdate, gfoperiod,
+     &                gfointercept, gfoslope,
+     &                gfoobs, gfomask,
+     &                irec, mythid )
 #endif
 
         do bj = jtlo,jthi
@@ -309,14 +340,22 @@ c--   ==========
 c--      Mean
 c--   ==========
 c--   compute mean ssh difference cost contribution
-      call cost_ssh_mean(
-     I                    psmean, offset
-     O                  , costmean
-     I                  , mythid
-     &                  )
-
-
-      objf_hmean = costmean
+      objf_hmean = 0. _d 0
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              junk = psmean(i,j,bi,bj) - mdt(i,j,bi,bj) + offset
+              objf_hmean = objf_hmean + junk*junk
+     &                    * wp(i,j,bi,bj)*mdtmask(i,j,bi,bj)
+              if ( wp(i,j,bi,bj)*mdtmask(i,j,bi,bj) .ne. 0. )
+     &             num_hmean = num_hmean + 1.D0
+            enddo
+          enddo
+        enddo
+      enddo
+      CALL GLOBAL_SUM_R8 (  objf_hmean,  mythid  )
+      CALL GLOBAL_SUM_R8 (  num_hmean,  mythid  )
 #endif /* ALLOW_SSH_TOT */
 #endif /* ALLOW_SSH_MEAN_COST_CONTRIBUTION */
 
@@ -332,13 +371,22 @@ c--   Loop over records for the second time.
      &                       xx_psbar_mean_dummy )
 
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-        call cost_readtopex( irec, mythid )
+      call cost_sla_read( topexfile, topexstartdate, topexperiod,
+     &                topexintercept, topexslope,
+     &                tpobs, tpmask,
+     &                irec, mythid )
 #endif
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-        call cost_readers( irec, mythid )
+      call cost_sla_read( ersfile, ersstartdate, ersperiod,
+     &                ersintercept, ersslope,
+     &                ersobs, ersmask,
+     &                irec, mythid )
 #endif
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-        call cost_readgfo( irec, mythid )
+      call cost_sla_read( gfofile, gfostartdate, gfoperiod,
+     &                gfointercept, gfoslope,
+     &                gfoobs, gfomask,
+     &                irec, mythid )
 #endif
 
         do bj = jtlo,jthi

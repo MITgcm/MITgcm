@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.37 2015/10/23 14:26:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.38 2015/10/24 18:49:43 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -119,21 +119,66 @@ cph      call cost_sst   ( myiter, mytime, mythid )
       write(msgbuf,'(a)') 'ph-cost call cost_argo_theta'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      call cost_argo_theta ( myiter, mytime, mythid )
+      nnzbar = Nr
+      nnzobs = Nr
+      spminloc = -1.8
+      spmaxloc = 40.
+      spzeroloc = 0.
+      localperiod = 0.
+      nmonsloc=nmonsrec
+      call cost_generic(
+     &     nnzbar, tbarfile, xx_tbar_mean_dummy,
+     &     nnzobs, argotfile, temperrfile, mult_argot,
+     &     nmonsloc, nmonsloc, argotstartdate, localperiod,
+     &     'C', spminloc, spmaxloc, spzeroloc,
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r, 
+     &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
+     &     0, argotfile, objf_argot, num_argot,
+     &     myiter, mytime, mythid )
 #endif
 
 #ifdef ALLOW_CTDT_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_ctdt'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      call cost_ctdt  ( myiter, mytime, mythid )
+      nnzbar = Nr
+      nnzobs = Nr
+      spminloc = -1.8
+      spmaxloc = 40.
+      spzeroloc = 0.
+      localperiod = 0.
+      nmonsloc=nmonsrec
+      call cost_generic(
+     &     nnzbar, tbarfile, xx_tbar_mean_dummy,
+     &     nnzobs, ctdtfile, temperrfile, mult_ctdt,
+     &     nmonsloc, nmonsloc, ctdtstartdate, localperiod,
+     &     'C', spminloc, spmaxloc, spzeroloc,
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r, 
+     &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
+     &     0, ctdtfile, objf_ctdt, num_ctdt,
+     &     myiter, mytime, mythid )
 #endif
 
 #ifdef ALLOW_XBT_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_xbt'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      call cost_xbt   ( myiter, mytime, mythid )
+      nnzbar = Nr
+      nnzobs = Nr
+      spminloc = -1.8
+      spmaxloc = 40.
+      spzeroloc = 0.
+      localperiod = 0.
+      nmonsloc=nmonsrec
+      call cost_generic(
+     &     nnzbar, tbarfile, xx_tbar_mean_dummy,
+     &     nnzobs, xbtfile, temperrfile, mult_xbt,
+     &     nmonsloc, nmonsloc, xbtstartdate, localperiod,
+     &     'C', spminloc, spmaxloc, spzeroloc,
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r, 
+     &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
+     &     0, xbtfile, objf_xbt, num_xbt,
+     &     myiter, mytime, mythid )
 #endif
 
       IF (using_cost_sst) THEN
@@ -188,14 +233,44 @@ cph      call cost_sss   ( myiter, mytime, mythid )
       write(msgbuf,'(a)') 'ph-cost call cost_ctds'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      call cost_ctds  ( myiter, mytime, mythid )
+      nnzbar = Nr
+      nnzobs = Nr
+      spminloc = 20.
+      spmaxloc = 40.
+      spzeroloc = 0.
+      localperiod = 0.
+      nmonsloc=nmonsrec
+      call cost_generic(
+     &     nnzbar, sbarfile, xx_sbar_mean_dummy,
+     &     nnzobs, ctdsfile, salterrfile, mult_ctds,
+     &     nmonsloc, nmonsloc, ctdsstartdate, localperiod,
+     &     'C', spminloc, spmaxloc, spzeroloc,
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r, 
+     &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
+     &     0, ctdsfile, objf_ctds, num_ctds,
+     &     myiter, mytime, mythid )
 #endif
 
 #ifdef ALLOW_ARGO_SALT_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_argo_salt'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      call cost_argo_salt ( myiter, mytime, mythid )
+      nnzbar = Nr
+      nnzobs = Nr
+      spminloc = 20.
+      spmaxloc = 40.
+      spzeroloc = 0.
+      localperiod = 0.
+      nmonsloc=nmonsrec
+      call cost_generic(
+     &     nnzbar, sbarfile, xx_sbar_mean_dummy,
+     &     nnzobs, argosfile, salterrfile, mult_argos,
+     &     nmonsloc, nmonsloc, argosstartdate, localperiod,
+     &     'C', spminloc, spmaxloc, spzeroloc,
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r, 
+     &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
+     &     0, argosfile, objf_argos, num_argos,
+     &     myiter, mytime, mythid )
 #endif
 
 #ifdef ALLOW_THETA0_COST_CONTRIBUTION
@@ -220,14 +295,52 @@ cph      call cost_sss   ( myiter, mytime, mythid )
       write(msgbuf,'(a)') 'ph-cost call cost_theta'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      call cost_theta ( myiter, mytime, mythid )
+      nnzbar = Nr
+      nnzobs = Nr
+      spminloc = -1.8
+      spmaxloc = 40.
+      spzeroloc = 0.
+      localperiod = 0.
+      nmonsloc=nmonsrec
+      no_preproc(1)='clim'
+      no_preproc_i(1)=12
+      call cost_generic(
+     &     nnzbar, tbarfile, xx_tbar_mean_dummy,
+     &     nnzobs, tdatfile, temperrfile, mult_temp,
+     &     nmonsloc, nmonsloc, modelstartdate, localperiod,
+     &     'C', spminloc, spmaxloc, spzeroloc,
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
+     &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
+     &     0, tdatfile, objf_temp, num_temp,
+     &     myiter, mytime, mythid )
+      no_preproc(1)=' '
+      no_preproc_i(1)=0
 #endif
 
 #ifdef ALLOW_SALT_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_salt'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      call cost_salt  ( myiter, mytime, mythid )
+      nnzbar = Nr
+      nnzobs = Nr
+      spminloc = 25.
+      spmaxloc = 40.
+      spzeroloc = 0.
+      localperiod = 0.
+      nmonsloc=nmonsrec
+      no_preproc(1)='clim'
+      no_preproc_i(1)=12
+      call cost_generic(
+     &     nnzbar, sbarfile, xx_sbar_mean_dummy,
+     &     nnzobs, sdatfile, salterrfile, mult_salt,
+     &     nmonsloc, nmonsloc, modelstartdate, localperiod,
+     &     'C', spminloc, spmaxloc, spzeroloc,
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
+     &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
+     &     0, sdatfile, objf_salt, num_salt,
+     &     myiter, mytime, mythid )
+      no_preproc(1)=' '
+      no_preproc_i(1)=0
 #endif
 
 #ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
