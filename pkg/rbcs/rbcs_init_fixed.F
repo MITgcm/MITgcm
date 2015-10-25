@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_fixed.F,v 1.8 2013/12/31 22:28:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_fixed.F,v 1.9 2015/10/25 16:30:38 jmc Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -17,7 +17,8 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_PTRACERS
-#include "PTRACERS_SIZE.h"
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS_PARAMS.h"
 #endif
 #include "RBCS_SIZE.h"
 #include "RBCS_PARAMS.h"
@@ -29,15 +30,163 @@ C  myThid               :: my Thread Id number
 CEOP
 
 #ifdef ALLOW_RBCS
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
 C     i,j,k,bi,bj,irbc  :: loop indices
 C     msgBuf      :: Informational/error message buffer
       INTEGER i,j,k,bi,bj
-      INTEGER irbc
-#ifndef DISABLE_RBCS_MOM
+      INTEGER irbc, iLen
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-#endif
       CHARACTER*(12) filName
+#ifdef ALLOW_PTRACERS
+      INTEGER iTr
+#endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     Report RBCS mask setting
+
+      _BEGIN_MASTER(myThid)
+
+      WRITE(msgBuf,'(2A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(2A)') ' ---  RBCS_INIT_FIXED:',
+     &                     ' setting RBCS mask  ---'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+
+      IF ( useRBCtemp ) THEN
+        irbc = MIN(maskLEN,1)
+        IF ( relaxMaskFile(irbc).EQ.' ' ) THEN
+         WRITE(msgBuf,'(2A,I3,2A)') '** WARNING ** RBCS_INIT_FIXED:',
+     &     ' relaxMaskFile(irbc=', irbc, ') unset ==> No relaxation',
+     &     ' for Temp'
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+         WRITE(msgBuf,'(2A,I3,2A)') 'Warning:',
+     &     ' relaxMaskFile(irbc=', irbc, ') unset ==> No relaxation',
+     &     ' for Temp'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ELSE
+         iLen = ILNBLNK(relaxMaskFile(irbc))
+         WRITE(msgBuf,'(A,I3,3A)') 'Use relaxMaskFile(irbc=', irbc,
+     &     ') = "', relaxMaskFile(irbc)(1:iLen), '"'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+         WRITE(msgBuf,'(A,1PE21.13)')
+     &     ' for Temp  relaxation with tauRelaxT =', tauRelaxT
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
+      ENDIF
+      IF ( useRBCsalt ) THEN
+        irbc = MIN(maskLEN,2)
+        IF ( relaxMaskFile(irbc).EQ.' ' ) THEN
+         WRITE(msgBuf,'(2A,I3,2A)') '** WARNING ** RBCS_INIT_FIXED:',
+     &     ' relaxMaskFile(irbc=', irbc, ') unset ==> No relaxation',
+     &     ' for Salt'
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+         WRITE(msgBuf,'(2A,I3,2A)') 'Warning:',
+     &     ' relaxMaskFile(irbc=', irbc, ') unset ==> No relaxation',
+     &     ' for Salt'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ELSE
+         iLen = ILNBLNK(relaxMaskFile(irbc))
+         WRITE(msgBuf,'(A,I3,3A)') 'Use relaxMaskFile(irbc=', irbc,
+     &     ') = "', relaxMaskFile(irbc)(1:iLen), '"'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+         WRITE(msgBuf,'(A,1PE21.13)')
+     &     ' for Salt  relaxation with tauRelaxS =', tauRelaxS
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
+      ENDIF
+      IF ( useRBCuVel ) THEN
+        IF ( relaxMaskUFile.EQ. ' ' ) THEN
+         WRITE(msgBuf,'(2A,I3,2A)') '** WARNING ** RBCS_INIT_FIXED:',
+     &     ' relaxMaskUFile unset ==> use Temp mask instead'
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+         WRITE(msgBuf,'(2A,I3,2A)') 'Warning:',
+     &     ' relaxMaskUFile unset ==> use Temp mask instead'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ELSE
+         iLen = ILNBLNK(relaxMaskUFile)
+         WRITE(msgBuf,'(A,I3,3A)') 'Use relaxMaskUFile',
+     &     ' = "', relaxMaskUFile(1:iLen), '"'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
+         WRITE(msgBuf,'(A,1PE21.13)')
+     &     ' for U-Vel relaxation with tauRelaxU =', tauRelaxU
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ENDIF
+      IF ( useRBCvVel ) THEN
+        IF ( relaxMaskVFile.EQ. ' ' ) THEN
+         WRITE(msgBuf,'(2A,I3,2A)') '** WARNING ** RBCS_INIT_FIXED:',
+     &     ' relaxMaskVFile unset ==> use Temp mask instead'
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+         WRITE(msgBuf,'(2A,I3,2A)') 'Warning:',
+     &     ' relaxMaskVFile unset ==> use Temp mask instead'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ELSE
+         iLen = ILNBLNK(relaxMaskVFile)
+         WRITE(msgBuf,'(A,I3,3A)') 'Use relaxMaskUFile',
+     &     ' = "', relaxMaskVFile(1:iLen), '"'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
+         WRITE(msgBuf,'(A,1PE21.13)')
+     &     ' for V-Vel relaxation with tauRelaxV =', tauRelaxV
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ENDIF
+#ifdef ALLOW_PTRACERS
+      IF ( usePTRACERS .AND. PTRACERS_numInUse.GE.1 ) THEN
+       DO iTr=1,PTRACERS_numInUse
+        IF ( useRBCpTrNum(iTr) ) THEN
+         irbc = MIN(maskLEN,2+iTr)
+         IF ( relaxMaskFile(irbc).EQ.' ' ) THEN
+          WRITE(msgBuf,'(2A,I3,2A,I3)')
+     &     '** WARNING ** RBCS_INIT_FIXED:',
+     &     ' relaxMaskFile(irbc=', irbc, ') unset ==> No relaxation',
+     &     ' for pTr=', iTr
+          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+          WRITE(msgBuf,'(2A,I3,2A,I3)') 'Warning:',
+     &     ' relaxMaskFile(irbc=', irbc, ') unset ==> No relaxation',
+     &     ' for pTr=', iTr
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+         ELSE
+          iLen = ILNBLNK(relaxMaskFile(irbc))
+          WRITE(msgBuf,'(A,I3,3A)') 'Use relaxMaskFile(irbc=', irbc,
+     &     ') = "', relaxMaskFile(irbc)(1:iLen), '"'
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+          WRITE(msgBuf,'(A,I3,A,1PE21.13)')
+     &     ' for pTr=', iTr, ' relaxation, tauRelaxPTR =',
+     &                          tauRelaxPTR(iTr)
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+         ENDIF
+        ENDIF
+       ENDDO
+      ENDIF
+#endif /* ALLOW_PTRACERS */
+
+      _END_MASTER(myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -110,10 +259,6 @@ C--   Apply mask:
       IF ( useRBCuVel .AND. relaxMaskUFile.NE. ' ' ) THEN
         CALL READ_FLD_XYZ_RS(relaxMaskUFile,' ',RBC_maskU, 0, myThid)
       ELSEIF( useRBCuVel ) THEN
-        WRITE(msgBuf,'(2A)') '** WARNING ** RBCS_INIT_FIXED: ',
-     &     'no relaxMaskUFile => use Temp mask instead'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
@@ -131,10 +276,6 @@ C--   Apply mask:
       IF ( useRBCvVel .AND. relaxMaskVFile.NE. ' ' ) THEN
         CALL READ_FLD_XYZ_RS(relaxMaskVFile,' ',RBC_maskV, 0, myThid)
       ELSEIF( useRBCvVel ) THEN
-        WRITE(msgBuf,'(2A)') '** WARNING ** RBCS_INIT_FIXED: ',
-     &     'no relaxMaskVFile => use Temp mask instead'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
            DO k=1,Nr
@@ -172,6 +313,13 @@ C--   Apply mask:
          ENDIF
       ENDIF
 #endif /* DISABLE_RBCS_MOM */
+
+      _BEGIN_MASTER(myThid)
+      WRITE(msgBuf,'(2A)') ' ---  RBCS_INIT_FIXED:',
+     &                     ' setting RBCS mask done'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      _END_MASTER(myThid)
 
 #endif /* ALLOW_RBCS */
 
