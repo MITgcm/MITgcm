@@ -6,7 +6,7 @@
  tbarfile        = 'tbar',
 #
  temp0errfile    = 'errorTtot.err',
-#  temperrfile     = 'errorTtot.err',
+ temperrfile     = 'errorTtot.err',
  tdatfile        = 'FinalThetaObs.bin',
 #
 #
