@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.61 2015/06/09 21:25:11 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.62 2015/10/25 23:23:06 atn Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -616,6 +616,9 @@ cdm #endif
      &                         xx_gentim2d(i,j,bi,bj,iarr)
            if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_precip')
      &       precip(i,j,bi,bj)=precip(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_runoff')
+     &       runoff(i,j,bi,bj)=runoff(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
 #ifndef ALLOW_ROTATE_UV_CONTROLS
            if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_uwind')
