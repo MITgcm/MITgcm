@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.28 2014/04/04 23:03:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.29 2015/10/25 21:04:54 atn Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -299,7 +299,16 @@ c
       CALL MNC_CW_ADD_VATTR_TEXT('adprecip',
      &     'coordinates','XC YC RC iter', myThid)
 # endif
-
+# ifdef ALLOW_RUNOFF
+      CALL MNC_CW_ADD_VNAME('adrunoff', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adrunoff',
+     &     'units','[cost]/[m/s]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adrunoff','long_name',
+     &     'adjoint runoff', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adrunoff',
+     &     'coordinates','XC YC RC iter', myThid)
+# endif
+# ifdef ALLOW_ATM_WIND
       IF ( useAtmWind ) THEN
       CALL MNC_CW_ADD_VNAME('aduwind', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('aduwind',
@@ -317,7 +326,7 @@ c
       CALL MNC_CW_ADD_VATTR_TEXT('advwind',
      &     'coordinates','XC YC RC iter', myThid)
       ENDIF
-
+# endif
 # ifdef ALLOW_DOWNWARD_RADIATION
       CALL MNC_CW_ADD_VNAME('adswdown', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adswdown',

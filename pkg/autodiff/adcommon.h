@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.34 2014/04/30 02:46:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.35 2015/10/25 21:04:54 atn Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -135,6 +135,11 @@ C--   heimbach@mit.edu 11-Jan-2001
 
       _RL adwspeed(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /adexf_wspeed_r/ adwspeed
+
+# ifdef ALLOW_RUNOFF
+      _RL adrunoff    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /adexf_runoff_r/ adrunoff
+# endif
 
 # ifdef ALLOW_ATM_TEMP
       _RL adatemp     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
