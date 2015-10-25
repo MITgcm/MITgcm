@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.11 2014/04/03 10:00:58 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.12 2015/10/25 23:24:20 atn Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 #include "AD_CONFIG.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: adexf_adjoint_snapshots
@@ -36,10 +39,12 @@ C     == Global variables ===
 # include "MNC_PARAMS.h"
 #endif
 #include "GRID.h"
+#ifdef ALLOW_AUTODIFF
 #ifdef ALLOW_AUTODIFF_MONITOR
 # include "AUTODIFF_PARAMS.h"
 # include "AUTODIFF.h"
 # include "adcommon.h"
+#endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -115,12 +120,18 @@ c#endif
         CALL WRITE_FLD_XY_RL ( 'ADJprecip.',
      &       suff, adprecip, myIter, myThid)
 # endif
+# ifdef ALLOW_RUNOFF
+        CALL WRITE_FLD_XY_RL ( 'ADJrunoff.',
+     &       suff, adrunoff, myIter, myThid)
+# endif
+# ifdef ALLOW_ATM_WIND
       IF ( useAtmWind ) THEN
         CALL WRITE_FLD_XY_RL ( 'ADJuwind.',
      &       suff, aduwind, myIter, myThid)
         CALL WRITE_FLD_XY_RL ( 'ADJvwind.',
      &       suff, advwind, myIter, myThid)
       ENDIF
+# endif
 # ifdef ALLOW_DOWNWARD_RADIATION
         CALL WRITE_FLD_XY_RL ( 'ADJswdown.',
      &       suff, adswdown, myIter, myThid)
@@ -171,12 +182,18 @@ c#endif
         CALL WRITE_REC_XY_RL ( 'ADJprecip',
      &       adprecip, dumpAdRecEx, myIter, myThid)
 # endif
+# ifdef ALLOW_RUNOFF
+        CALL WRITE_REC_XY_RL ( 'ADJrunoff',
+     &       adrunoff, dumpAdRecEx, myIter, myThid)
+# endif
+# ifdef ALLOW_ATM_WIND
       IF ( useAtmWind ) THEN
         CALL WRITE_REC_XY_RL ( 'ADJuwind',
      &       aduwind, dumpAdRecEx, myIter, myThid)
         CALL WRITE_REC_XY_RL ( 'ADJvwind',
      &       advwind, dumpAdRecEx, myIter, myThid)
       ENDIF
+# endif
 # ifdef ALLOW_DOWNWARD_RADIATION
         CALL WRITE_REC_XY_RL ( 'ADJswdown',
      &       adswdown, dumpAdRecEx, myIter, myThid)
@@ -240,12 +257,18 @@ c
           CALL MNC_CW_RL_W('D','adexf',0,0,'adprecip',
      &         adprecip, myThid)
 # endif
+# ifdef ALLOW_RUNOFF
+          CALL MNC_CW_RL_W('D','adexf',0,0,'adrunoff',
+     &         adrunoff, myThid)
+# endif
+# ifdef ALLOW_ATM_WIND
       IF ( useAtmWind ) THEN
           CALL MNC_CW_RL_W('D','adexf',0,0,'aduwind',
      &         aduwind, myThid)
           CALL MNC_CW_RL_W('D','adexf',0,0,'advwind',
      &         advwind, myThid)
       ENDIF
+# endif
 # ifdef ALLOW_DOWNWARD_RADIATION
           CALL MNC_CW_RL_W('D','adexf',0,0,'adswdown',
      &         adswdown, myThid)

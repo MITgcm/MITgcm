@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_dump.F,v 1.6 2012/08/29 02:14:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_dump.F,v 1.7 2015/10/25 23:24:20 atn Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -108,6 +108,12 @@ C <<==  uncomment the line above
      &       'ADJprecip.'//suff, writeBinaryPrec, 1,
      &        adprecip, 1, myIter, myThid )
 # endif
+# ifdef ALLOW_RUNOFF
+        CALL WRITE_REC_3D_RL(
+     &       'ADJrunoff.'//suff, writeBinaryPrec, 1,
+     &        adrunoff, 1, myIter, myThid )
+# endif
+# ifdef ALLOW_ATM_WIND
       IF ( useAtmWind ) THEN
         CALL WRITE_REC_3D_RL(
      &       'ADJuwind.'//suff, writeBinaryPrec, 1,
@@ -116,6 +122,7 @@ C <<==  uncomment the line above
      &       'ADJvwind.'//suff, writeBinaryPrec, 1,
      &        advwind, 1, myIter, myThid )
       ENDIF
+# endif
 # ifdef ALLOW_DOWNWARD_RADIATION
         CALL WRITE_REC_3D_RL(
      &       'ADJswdown.'//suff, writeBinaryPrec, 1,

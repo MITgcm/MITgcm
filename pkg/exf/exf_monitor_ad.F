@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor_ad.F,v 1.7 2013/10/05 19:36:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor_ad.F,v 1.8 2015/10/25 23:24:20 atn Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -127,12 +130,14 @@ C       Print some statistics about input forcing fields
 
         ELSEIF ( iwhen .EQ.2 ) THEN
 
+#ifdef ALLOW_ATM_WIND
       IF ( useAtmWind ) THEN
         CALL MON_WRITESTATS_RL( 1, aduwind,   '_aduwind',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
         CALL MON_WRITESTATS_RL( 1, advwind,   '_advwind',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
       ENDIF
+#endif /* ALLOW_ATM_WIND */
 #ifdef ALLOW_ATM_TEMP
         CALL MON_WRITESTATS_RL( 1, adatemp,   '_adatemp',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
@@ -158,8 +163,8 @@ cph        CALL MON_WRITESTATS_RL( 1,adapressure,'_adapressure',
 cph     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif
 #ifdef ALLOW_RUNOFF
-cph        CALL MON_WRITESTATS_RL( 1, adrunoff,  '_adrunoff',
-cph     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+        CALL MON_WRITESTATS_RL( 1, adrunoff,  '_adrunoff',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif
 #ifdef EXF_SEAICE_FRACTION
 cph        CALL MON_WRITESTATS_RL( 1, areamask,'_areamask',
