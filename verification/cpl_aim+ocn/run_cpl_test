@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.22 2014/07/19 22:54:20 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.23 2015/10/26 21:04:35 jmc Exp $
 # $Name:  $
 
 #- default:
@@ -89,42 +89,69 @@ then
  cd build_cpl
  echo ' --- genmake2 (cpl):'
  ../../../tools/genmake2 -of $OPTFILE -mpi $GMKopt >  TTT.genmake.$$ 2>&1
- tail -5 TTT.genmake.$$
+ RetVal=$? ; tail -5 TTT.genmake.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in genmake2 (cpl)" ; exit 11
+ fi
  echo ' --- make depend (cpl):'
  make depend > TTT.mkdepend.$$ 2>&1
- tail -5 TTT.mkdepend.$$
+ RetVal=$? ; tail -5 TTT.mkdepend.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in mkdepend (cpl)" ; exit 12
+ fi
  echo ' --- make (cpl):' ; touch TTT.make.$$
 #do_make_syntax.sh obj > TTT.make.$$ 2>&1
  make >> TTT.make.$$ 2>&1
- tail -10 TTT.make.$$
+ RetVal=$? ; tail -10 TTT.make.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in make     (cpl)" ; exit 13
+ fi
  echo ' ' ; cd $dir
 
  echo '==== compile OGCM:'
  cd build_ocn
  echo ' --- genmake2 (ocn):'
  ../../../tools/genmake2 -of $OPTFILE -mpi $MTHo $GMKopt >  TTT.genmake.$$ 2>&1
- tail -5 TTT.genmake.$$
+ RetVal=$? ; tail -5 TTT.genmake.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in genmake2 (ocn)" ; exit 21
+ fi
  echo ' --- make depend (ocn):'
  make depend > TTT.mkdepend.$$ 2>&1
- tail -10 TTT.mkdepend.$$
+ RetVal=$? ; tail -10 TTT.mkdepend.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in mkdepend (ocn)" ; exit 22
+ fi
  echo ' --- make (ocn):' ; touch TTT.make.$$
 #do_make_syntax.sh obj > TTT.make.$$ 2>&1
  make >> TTT.make.$$ 2>&1
- tail -10 TTT.make.$$
+ RetVal=$? ; tail -10 TTT.make.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in make     (ocn)" ; exit 23
+ fi
  echo ' ' ; cd $dir
 
  echo '==== compile AGCM:'
  cd build_atm
  echo ' --- genmake2 (atm):'
  ../../../tools/genmake2 -of $OPTFILE -mpi $MTHa $GMKopt >  TTT.genmake.$$ 2>&1
- tail -5 TTT.genmake.$$
+ RetVal=$? ; tail -5 TTT.genmake.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in genmake2 (atm)" ; exit 31
+ fi
  echo ' --- make depend (atm):'
  make depend > TTT.mkdepend.$$ 2>&1
- tail -10 TTT.mkdepend.$$
+ RetVal=$? ; tail -10 TTT.mkdepend.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in mkdepend (atm)" ; exit 32
+ fi
  echo ' --- make (atm):' ; touch TTT.make.$$
 #do_make_syntax.sh obj > TTT.make.$$ 2>&1
  make >> TTT.make.$$ 2>&1
- tail -10 TTT.make.$$
+ RetVal=$? ; tail -10 TTT.make.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in make     (atm)" ; exit 33
+ fi
  echo ' ' ; cd $dir
 
  ls -l build_???/mitgcmuv
