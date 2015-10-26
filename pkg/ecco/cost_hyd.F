@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.38 2015/10/24 18:49:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.39 2015/10/26 03:22:17 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -278,7 +278,9 @@ cph      call cost_sss   ( myiter, mytime, mythid )
       write(msgbuf,'(a)') 'ph-cost call cost_theta0'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      call cost_theta0 ( myiter, mytime, mythid )
+      call ctrl_cost_gen3d (
+     &     xx_theta_file,xx_theta_dummy, wthetaLev,
+     &     num_temp0, objf_temp0, maskC, myThid )
       endif
 #endif
 
@@ -287,7 +289,9 @@ cph      call cost_sss   ( myiter, mytime, mythid )
       write(msgbuf,'(a)') 'ph-cost call cost_salt0'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      call cost_salt0  ( myiter, mytime, mythid )
+      call ctrl_cost_gen3d (
+     &     xx_salt_file,xx_salt_dummy, wsaltLev,
+     &     num_salt0, objf_salt0, maskC, myThid )
       endif
 #endif
 
@@ -361,20 +365,31 @@ cph      call cost_sss   ( myiter, mytime, mythid )
       write(msgbuf,'(a)') 'ph-cost call cost_etan0'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      call cost_etan0 ( myiter, mytime, mythid )
+      call ctrl_cost_gen2d (
+     &     1,1,xx_etan_file,xx_etan_dummy,zeroRL,
+     &     wetan, num_etan0, objf_etan0,
+#ifdef ECCO_CTRL_DEPRECATED
+     &     zeroRL, num_zero_mean, objf_zero_mean,
+     &     objf_zero_smoo, zeroRL, zeroRL,
+#endif /* ECCO_CTRL_DEPRECATED */
+     &     maskC, myThid )
 #endif
 
 #ifdef ALLOW_UVEL0_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_uvel0'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      call cost_uvel0 ( myiter, mytime, mythid )
+      call ctrl_cost_gen3d (
+     &     xx_uvel_file,xx_uvel_dummy, wuvel3d,
+     &     num_uvel0, objf_uvel0, maskW, myThid )
 #endif
 #ifdef ALLOW_VVEL0_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_vvel0'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      call cost_vvel0 ( myiter, mytime, mythid )
+      call ctrl_cost_gen3d (
+     &     xx_vvel_file,xx_vvel_dummy, wvvel3d,
+     &     num_vvel0, objf_vvel0, maskS, myThid )
 #endif
 
 #ifdef ALLOW_SEAICE_COST_SMR_AREA
