@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/initialise.F,v 1.4 2013/12/02 21:55:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/initialise.F,v 1.5 2015/10/26 13:11:32 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -56,6 +56,10 @@ C     only be one coupler participant all others are "component" participants.
       CALL CPL_READ_PARAMS( msgUnit )
 
       CALL SET_RUNOFFMAP( msgUnit )
+
+C--   Initialise Coupler field arrays
+      CALL CPL_INIT_ATM_VARS( msgUnit )
+      CALL CPL_INIT_OCN_VARS( msgUnit )
 
       RETURN
       END
