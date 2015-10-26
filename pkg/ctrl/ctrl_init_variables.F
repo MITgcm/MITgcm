@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_variables.F,v 1.19 2014/12/02 13:08:11 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_variables.F,v 1.20 2015/10/26 03:21:27 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -59,6 +59,16 @@ c     == end of interface ==
       jmax = sNy+OLy
       imin = 1-OLx
       imax = sNx+OLx
+
+#ifdef ECCO_CTRL_DEPRECATED
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          num_zero_mean(bi,bj) = 0. _d 0
+          objf_zero_mean(bi,bj) = 0. _d 0
+          objf_zero_smoo(bi,bj) = 0. _d 0
+        enddo
+      enddo
+#endif
 
 #ifdef ALLOW_HFLUX_CONTROL
       do bj = jtlo,jthi
@@ -393,8 +403,13 @@ C-    Needs to be called after few {PKG}_init_varia (e.g., PTRACERS_INIT_VARIA)
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do k=1,maxCtrlTim2D
-            objf_gentim2d(bi,bj,k)    = 0. _d 0
-            num_gentim2d(bi,bj,k)    = 0. _d 0
+            objf_gentim2d(bi,bj,k)     = 0. _d 0
+            num_gentim2d(bi,bj,k)      = 0. _d 0
+#ifdef ECCO_CTRL_DEPRECATED
+            num_gentim2dm(bi,bj,k)     = 0. _d 0
+            objf_gentim2dm(bi,bj,k)    = 0. _d 0
+            objf_gentim2dsmoo(bi,bj,k) = 0. _d 0
+#endif /* ECCO_CTRL_DEPRECATED */
           enddo
         enddo
       enddo

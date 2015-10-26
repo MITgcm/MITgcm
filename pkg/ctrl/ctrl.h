@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.77 2015/02/22 23:50:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.78 2015/10/26 03:21:27 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -236,6 +236,14 @@ cph     &                      , tmpfld3d
 
       common /admtlm_r/ phtmpadmtlm
       double precision phtmpadmtlm(maxn)
+#endif
+
+#ifdef ECCO_CTRL_DEPRECATED
+      _RL num_zero_mean (nsx,nsy)
+      _RL objf_zero_mean (nsx,nsy)
+      _RL objf_zero_smoo (nsx,nsy)
+      common /ctrl_zero_r/ num_zero_mean, 
+     & objf_zero_mean, objf_zero_smoo
 #endif
 
 #ifndef ALLOW_ECCO

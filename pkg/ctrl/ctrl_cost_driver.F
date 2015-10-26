@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_driver.F,v 1.7 2015/10/20 21:52:21 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_driver.F,v 1.8 2015/10/26 03:21:27 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -72,11 +72,8 @@ c--   Evaluate the individual cost function contributions.
      &     num_gentim2d(1,1,iarr),
      &     objf_gentim2d(1,1,iarr),
 #ifdef ECCO_CTRL_DEPRECATED
-     &     0. _d 0,
-     &     num_gentim2dm(1,1,iarr),
-     &     objf_gentim2dm(1,1,iarr),
-     &     objf_gentim2dsmoo(1,1,iarr),
-     &     0. _d 0, 0. _d 0,
+     &     zeroRL, num_gentim2dm(1,1,iarr), objf_gentim2dm(1,1,iarr),
+     &     objf_gentim2dsmoo(1,1,iarr), zeroRL, zeroRL,
 #endif /* ECCO_CTRL_DEPRECATED */
      &     maskC, myThid )
       endif
@@ -91,9 +88,12 @@ c--   Evaluate the individual cost function contributions.
       call ctrl_cost_gen2d (
      &     1,1,
      &     xx_genarr2d_file(iarr),xx_genarr2d_dummy(iarr),
-     &     zeroRL,
-     &     wgenarr2d(1-Olx,1-Oly,1,1,iarr),
+     &     zeroRL, wgenarr2d(1-Olx,1-Oly,1,1,iarr),
      &     num_genarr2d(1,1,iarr), objf_genarr2d(1,1,iarr),
+#ifdef ECCO_CTRL_DEPRECATED
+     &     zeroRL, num_zero_mean, objf_zero_mean,
+     &     objf_zero_smoo, zeroRL, zeroRL,
+#endif /* ECCO_CTRL_DEPRECATED */
      &     maskC, myThid )
       endif
 
