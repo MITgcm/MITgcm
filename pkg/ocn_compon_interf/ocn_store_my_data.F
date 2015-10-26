@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_store_my_data.F,v 1.6 2013/07/18 20:02:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_store_my_data.F,v 1.7 2015/10/26 14:41:29 jmc Exp $
 C $Name:  $
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 C     !ROUTINE: OCN_STORE_MY_DATA
 C     !INTERFACE:
       SUBROUTINE OCN_STORE_MY_DATA(
-     I                     myTime, myIter, bi,bj, myThid )
+     I                     myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -40,11 +40,9 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
 C     myTime     :: Current time in simulation
 C     myIter     :: Current timestep number
-C     bi,bj      :: Current tile indices
 C     myThid     :: my Thread Id. number
       _RL     myTime
       INTEGER myIter
-      INTEGER bi,bj
       INTEGER myThid
 CEOP
 
@@ -53,62 +51,72 @@ c     INTEGER ILNBLNK
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     i,j :: Loop variables
-      INTEGER i,j
+C     bi,bj      :: Current tile indices
+C     i, j       :: Loop indices
+      INTEGER bi,bj
+      INTEGER i, j
 
-       DO j=1,sNy
-        DO i=1,sNx
-          SSTocn2cpl(i,j,bi,bj) = theta(i,j,1,bi,bj)
-          SSSocn2cpl(i,j,bi,bj) = salt (i,j,1,bi,bj)
-        ENDDO
-       ENDDO
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+C--   bi,bj loop over my tiles
+
+         DO j=1,sNy
+          DO i=1,sNx
+            SSTocn2cpl(i,j,bi,bj) = theta(i,j,1,bi,bj)
+            SSSocn2cpl(i,j,bi,bj) = salt (i,j,1,bi,bj)
+          ENDDO
+         ENDDO
 #ifdef NONLIN_FRSURF
-      IF ( nonlinFreeSurf.GT.0 .AND. staggerTimeStep ) THEN
-       IF ( select_rStar.GT.0 ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-           ocMxlD2cpl(i,j,bi,bj) =
-     &          h0FacC(i,j,1,bi,bj)*rStarFacC(i,j,bi,bj)*drF(1)
-         ENDDO
-        ENDDO
-       ELSE
-        DO j=1,sNy
-         DO i=1,sNx
-           ocMxlD2cpl(i,j,bi,bj) = hFac_surfC(i,j,bi,bj)*drF(1)
-         ENDDO
-        ENDDO
-       ENDIF
-      ELSE
+        IF ( nonlinFreeSurf.GT.0 .AND. staggerTimeStep ) THEN
+         IF ( select_rStar.GT.0 ) THEN
+          DO j=1,sNy
+           DO i=1,sNx
+            ocMxlD2cpl(i,j,bi,bj) =
+     &           h0FacC(i,j,1,bi,bj)*rStarFacC(i,j,bi,bj)*drF(1)
+           ENDDO
+          ENDDO
+         ELSE
+          DO j=1,sNy
+           DO i=1,sNx
+            ocMxlD2cpl(i,j,bi,bj) = hFac_surfC(i,j,bi,bj)*drF(1)
+           ENDDO
+          ENDDO
+         ENDIF
+        ELSE
 #else /* NONLIN_FRSURF */
-      IF (.TRUE.) THEN
+        IF (.TRUE.) THEN
 #endif /* NONLIN_FRSURF */
-       DO j=1,sNy
-        DO i=1,sNx
-           ocMxlD2cpl(i,j,bi,bj) = hFacC(i,j,1,bi,bj)*drF(1)
-        ENDDO
-       ENDDO
-      ENDIF
+         DO j=1,sNy
+          DO i=1,sNx
+            ocMxlD2cpl(i,j,bi,bj) = hFacC(i,j,1,bi,bj)*drF(1)
+          ENDDO
+         ENDDO
+        ENDIF
 
-       DO j=1,sNy
-        DO i=1,sNx
-          vSqocn2cpl(i,j,bi,bj) =
+         DO j=1,sNy
+          DO i=1,sNx
+            vSqocn2cpl(i,j,bi,bj) =
      &              ( uVel(i , j,1,bi,bj)*uVel(i , j,1,bi,bj)
      &              + uVel(i+1,j,1,bi,bj)*uVel(i+1,j,1,bi,bj)
      &              + vVel(i,j+1,1,bi,bj)*vVel(i,j+1,1,bi,bj)
      &              + vVel(i,j , 1,bi,bj)*vVel(i,j , 1,bi,bj)
      &              )*0.5 _d 0
-        ENDDO
-       ENDDO
+          ENDDO
+         ENDDO
 
 c#ifdef ALLOW_DIC
-c      IF ( ocnCpl_exchange_DIC ) THEN
+c       IF ( ocnCpl_exchange_DIC ) THEN
 c        DO j=1,sNy
 c         DO i=1,sNx
-c            fluxCO2cpl(i,j,bi,bj) = fluxCO2(i,j,bi,bj)
+c           fluxCO2cpl(i,j,bi,bj) = fluxCO2(i,j,bi,bj)
 c         ENDDO
 c        ENDDO
-c      ENDIF
+c       ENDIF
 c#endif
+
+C--   end bi,bj loops
+       ENDDO
+      ENDDO
 
       RETURN
       END
