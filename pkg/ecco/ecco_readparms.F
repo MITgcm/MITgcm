@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.82 2015/06/16 13:18:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.83 2015/10/26 13:26:43 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -549,7 +549,11 @@ c     =========================
        no_posproc_c(k2) = ' '
        no_posproc_i(k2) = 0
        no_posproc_r(k2) = 0. _d 0
+       clim_preproc(k2)   = ' '
+       clim_preproc_i(k2) = 0
       enddo
+      clim_preproc(1)   = 'clim'
+      clim_preproc_i(1) = 12
       _END_MASTER( myThid )
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.39 2015/10/26 03:22:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.40 2015/10/26 13:26:43 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -306,19 +306,15 @@ cph      call cost_sss   ( myiter, mytime, mythid )
       spzeroloc = 0.
       localperiod = 0.
       nmonsloc=nmonsrec
-      no_preproc(1)='clim'
-      no_preproc_i(1)=12
       call cost_generic(
      &     nnzbar, tbarfile, xx_tbar_mean_dummy,
      &     nnzobs, tdatfile, temperrfile, mult_temp,
      &     nmonsloc, nmonsloc, modelstartdate, localperiod,
      &     'C', spminloc, spmaxloc, spzeroloc,
-     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
+     &     clim_preproc, no_preproc_c, clim_preproc_i, no_preproc_r,
      &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
      &     0, tdatfile, objf_temp, num_temp,
      &     myiter, mytime, mythid )
-      no_preproc(1)=' '
-      no_preproc_i(1)=0
 #endif
 
 #ifdef ALLOW_SALT_COST_CONTRIBUTION
@@ -332,19 +328,15 @@ cph      call cost_sss   ( myiter, mytime, mythid )
       spzeroloc = 0.
       localperiod = 0.
       nmonsloc=nmonsrec
-      no_preproc(1)='clim'
-      no_preproc_i(1)=12
       call cost_generic(
      &     nnzbar, sbarfile, xx_sbar_mean_dummy,
      &     nnzobs, sdatfile, salterrfile, mult_salt,
      &     nmonsloc, nmonsloc, modelstartdate, localperiod,
      &     'C', spminloc, spmaxloc, spzeroloc,
-     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
+     &     clim_preproc, no_preproc_c, clim_preproc_i, no_preproc_r,
      &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
      &     0, sdatfile, objf_salt, num_salt,
      &     myiter, mytime, mythid )
-      no_preproc(1)=' '
-      no_preproc_i(1)=0
 #endif
 
 #ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
