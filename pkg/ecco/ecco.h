@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.11 2015/10/26 13:26:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.12 2015/10/26 14:10:18 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -177,12 +177,14 @@ c     =========================
      &       no_preproc_c,
      &       no_posproc,
      &       no_posproc_c,
-     &       clim_preproc
+     &       clim_preproc,
+     &       anom_preproc
       character*(MAX_LEN_FNAM) no_preproc(NGENPPROC)
       character*(MAX_LEN_FNAM) no_preproc_c(NGENPPROC)
       character*(MAX_LEN_FNAM) no_posproc(NGENPPROC)
       character*(MAX_LEN_FNAM) no_posproc_c(NGENPPROC)
       character*(MAX_LEN_FNAM) clim_preproc(NGENPPROC)
+      character*(MAX_LEN_FNAM) anom_preproc(NGENPPROC)
 
       common /ecco_nogencost_r/
      &       no_preproc_r, no_posproc_r

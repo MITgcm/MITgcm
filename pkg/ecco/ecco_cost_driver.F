@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.19 2015/10/24 18:49:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.20 2015/10/26 14:10:18 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -94,13 +94,12 @@ CADJ STORE prof_etan_mean = tapelev_init, key=1
 c--   Compute bottom pressure cost
       IF (using_cost_bp) THEN
       call timer_start('cost_bp    [ECCO SPIN-DOWN]', myThid)
-      no_preproc(1)='anom'
       call cost_generic(
      &     1, bpfile, xx_bpbar_mean_dummy,
      &     1, bpdatfile, bperrfile, mult_bp,
      &     nmonsrec, nmonsrec, bpstartdate, 0. _d 0,
      &     'C', -1. _d 2, 1. _d 2, 0. _d 0,
-     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r, 
+     &     anom_preproc, no_preproc_c, no_preproc_i, no_preproc_r, 
      &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
      &     0, bpdatfile, objf_bp, num_bp,
      &     myiter, mytime, mythid )
