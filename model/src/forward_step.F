@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.234 2015/07/18 21:45:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.235 2015/10/26 22:38:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -131,8 +131,7 @@ C       |
 C       |-- CTRL_MAP_FORCING
 C       |-- DUMMY_IN_STEPPING
 C       |
-C       |-- CPL_EXPORT_MY_DATA
-C       |-- CPL_IMPORT_EXTERNAL_DATA
+C       |-- CPL_EXPORT_IMPORT_DATA
 C       |
 C       |-- OASIS_PUT
 C       |-- OASIS_GET
@@ -536,8 +535,7 @@ C--   Add control vector for forcing and parameter fields
 C      Post coupling data that I export.
 C      Read in coupling data that I import.
          CALL TIMER_START('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
-         CALL CPL_EXPORT_MY_DATA(       myTime, myIter, myThid )
-         CALL CPL_IMPORT_EXTERNAL_DATA( myTime, myIter, myThid )
+         CALL CPL_EXPORT_IMPORT_DATA( myTime, myIter, myThid )
          CALL TIMER_STOP ('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
       ENDIF
 #endif /* COMPONENT_MODULE */
