@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2193 2015/10/25 16:34:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2194 2015/10/27 23:59:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/atm_compon_interf & ocn_compon_interf:
+  - combine into 1 (new) S/R CPL_EXPORT_IMPORT_DATA the two previous
+    S/R CPL_EXPORT_MY_DATA & CPL_IMPORT_EXTERNAL_DATA
+  - move bi,bj loops inside S/R OCN_STORE_MY_DATA
+o pkg/atm_ocn_coupler:
+  - initialise to zero ATMVARS.h & OCNVARS.h arrays.
 o pkg/rbcs:
   - select RBCS-mask for Temp & Salt the same way as for pTracer ; this allows
     to compile with maskLEN=1 when all tracers use the same RBCS-mask.
