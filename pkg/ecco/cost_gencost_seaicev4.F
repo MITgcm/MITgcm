@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.12 2015/03/23 21:10:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.13 2015/10/27 02:37:46 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -161,6 +161,11 @@ c-- detect the relevant gencost indices
 
       if ((igen_conc.NE.0).AND.(igen_deconc.NE.0)
      &    .AND.(igen_exconc.NE.0)) then
+
+      call ecco_zero(gencost_weight(:,:,1,1,igen_conc),1,zeroRL,myThid)
+      if ( gencost_errfile(igen_conc) .NE. ' ' ) 
+     &  call ecco_readwei(gencost_errfile(igen_conc),
+     &  gencost_weight(:,:,1,1,igen_conc),1,1,mythid)
 
 c--   Initialise local variables.
 

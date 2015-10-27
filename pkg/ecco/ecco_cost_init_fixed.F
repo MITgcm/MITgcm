@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.44 2015/06/14 14:17:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.45 2015/10/27 02:37:46 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -231,26 +231,6 @@ c--    set observation start/enddate
      &     gencost_enddate(1,k),mythid)
        endif
 
-c--   set weights
-      if ( gencost_errfile(k) .NE. ' ' ) then
-
-        kk=gencost_pointer3d(k)
-        il = ilnblnk(gencost_errfile(k))
-        inquire( file=gencost_errfile(k)(1:il), exist=exst )
-
-        if ( (.NOT.gencost_is3d(k)).AND.(exst) ) then
-          call ecco_readwei(gencost_errfile(k),
-     &         gencost_weight(:,:,1,1,k), 1, 1, myThid )
-#ifdef ALLOW_GENCOST3D
-        elseif ( (kk.LE.NGENCOST3D).AND.(exst) ) then
-          call ecco_readwei(gencost_errfile(k),
-     &         gencost_wei3d(:,:,1,1,1,kk), 1, nr, myThid )
-#endif /* ALLOW_GENCOST3D */
-        else
-          using_gencost(k)=.FALSE.
-        endif
-
-      endif !if ( gencost_errfile(k) .NE. ' ' ) then
       enddo !do k = 1, NGENCOST
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 

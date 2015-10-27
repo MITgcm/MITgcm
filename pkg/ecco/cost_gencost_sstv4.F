@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.12 2015/03/23 21:10:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.13 2015/10/27 02:37:46 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -127,6 +127,15 @@ c-- detect the relevant gencost indices
 
       if (kgen.NE.0) then
 c ------ 
+
+      call ecco_zero(gencost_weight(:,:,1,1,kgen),1,zeroRL,myThid)
+      call ecco_zero(gencost_weight(:,:,1,1,kgen_lsc),1,zeroRL,myThid)
+      if ( gencost_errfile(kgen) .NE. ' ' )
+     &     call ecco_readwei(gencost_errfile(kgen),
+     &     gencost_weight(:,:,1,1,kgen),1,1,mythid)
+      if ( gencost_errfile(kgen_lsc) .NE. ' ' )
+     &     call ecco_readwei(gencost_errfile(kgen_lsc),
+     &     gencost_weight(:,:,1,1,kgen_lsc),1,1,mythid)
 
       call cal_FullDate(19920101,0,locstartdate,mythid)
 

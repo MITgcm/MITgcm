@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.25 2015/08/05 20:55:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.26 2015/10/27 02:37:46 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -43,8 +43,14 @@ C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      INTEGER k, igen_etaday
+      INTEGER k, igen_etaday, il
+      LOGICAL exst
 #endif
+
+c     == external functions ==
+
+      integer  ilnblnk
+      external ilnblnk
 
       _BEGIN_MASTER(myThid)
 
@@ -104,6 +110,25 @@ c check for missing data files
 
            CALL ECCO_CHECK_FILES( using_gencost(k), 'gencost',
      &       gencost_datafile(k), gencost_startdate1(k), myThid )
+
+c--
+           if ( (gencost_preproc(1,k).EQ.'variaweight').AND.
+     &          ( gencost_errfile(k) .NE. ' ' ) ) then
+             CALL ECCO_CHECK_FILES( using_gencost(k), 'gencost',
+     &         gencost_errfile(k), gencost_startdate1(k), myThid )
+           elseif ( gencost_errfile(k) .NE. ' ' ) then
+             il = ilnblnk(gencost_errfile(k))
+             inquire( file=gencost_errfile(k)(1:il), exist=exst )
+             if (.NOT.exst) then
+               using_gencost(k)=.FALSE.
+               il = ilnblnk(gencost_name(k))
+               WRITE(msgBuf,'(4A)')
+     &           '** WARNING ** ECCO_CHECK_FILES: missing error file',
+     &           ' so ',gencost_name(k)(1:il),' gets switched off'
+               CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+             endif
+           endif
 
 c altimetry related checks
          if (gencost_name(k).EQ.'sshv4-tp') using_tpj=using_gencost(k)

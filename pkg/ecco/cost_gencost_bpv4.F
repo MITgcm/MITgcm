@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_bpv4.F,v 1.6 2015/06/16 13:18:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_bpv4.F,v 1.7 2015/10/27 02:37:46 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -95,6 +95,11 @@ c     == end of interface ==
       enddo
 
       if (kgen.GT.0) then
+
+      call ecco_zero(gencost_weight(:,:,1,1,kgen),1,zeroRL,myThid)
+      if ( gencost_errfile(kgen) .NE. ' ' )
+     &     call ecco_readwei(gencost_errfile(kgen),
+     &     gencost_weight(:,:,1,1,kgen),1,1,mythid)
 
 c-- initialise local variables
 cgf convert phibot from m2/s2 to cm
