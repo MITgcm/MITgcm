@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.35 2015/10/26 13:26:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.36 2015/10/29 15:08:26 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -80,26 +80,13 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-      integer bi,bj
+      integer bi,bj,k2
       integer itlo,ithi
       integer jtlo,jthi
-      integer irec, jrec
-      integer  il
-      integer localrec, obsrec
-      integer nrecloop
+      logical domean, doanom
 
       _RL localdifmean1  (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
       _RL localdifmean2  (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
-
-      character*(128) fname1, fname2, fname3
-      character*200 msgbuf
-
-      logical exst
-
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
 
 CEOP
 
@@ -120,10 +107,16 @@ c--   Initialise local variables.
       call ecco_zero(localdifmean1,Nr,zeroRL,myThid)
       call ecco_zero(localdifmean2,Nr,zeroRL,myThid)
 
+      domean=.FALSE.
+      doanom=.FALSE.
+      do k2 = 1, NGENPPROC
+          if (preproc(k2).EQ.'mean') domean=.TRUE.
+          if (preproc(k2).EQ.'anom') doanom=.TRUE.
+      enddo
+
 C Extra time loop to compute time-mean fields and costs
       if ( (.NOT. ( localobsfile.EQ.' ' ) ) 
-     &   .AND. ( preproc(1) .EQ. 'mean' .OR.
-     &           preproc(1) .EQ. 'anom' ) ) then
+     &   .AND. ( domean .OR. doanom ) ) then
         call cost_genloop(
      &     localdifmean1,localdifmean2,.FALSE.,
      &     nnzbar, localbarfile, dummy,
@@ -140,7 +133,7 @@ C Extra time loop to compute time-mean fields and costs
 
       call ecco_zero(localdifmean1,Nr,zeroRL,myThid)
 
-      if ((.NOT.(localobsfile.EQ.' ')).AND.(preproc(1).NE.'mean')) then
+      if ((.NOT.(localobsfile.EQ.' ')).AND.(.NOT.domean)) then
         call cost_genloop(
      &     localdifmean2,localdifmean1,.TRUE.,
      &     nnzbar, localbarfile, dummy,
@@ -244,9 +237,10 @@ c     == local variables ==
       integer itlo,ithi
       integer jtlo,jthi
       integer irec, jrec
-      integer  il
+      integer il, k2
       integer localrec, obsrec
-      integer nrecloop
+      integer nrecloop, nrecclim, k2smooth
+      logical domean, doanom, dovarwei, doclim, dosmooth
 
       _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
 
@@ -286,6 +280,27 @@ CEOP
       call ecco_zero(localdifsum,Nr,zeroRL,myThid)
       call ecco_zero(localdifnum,Nr,zeroRL,myThid)
 
+      domean=.FALSE.
+      doanom=.FALSE.
+      dovarwei=.FALSE.
+      dosmooth=.FALSE.
+      k2smooth=1
+      doclim=.FALSE.
+      nrecclim=nrecloc
+      do k2 = 1, NGENPPROC
+          if (preproc(k2).EQ.'mean') domean=.TRUE.
+          if (preproc(k2).EQ.'anom') doanom=.TRUE.
+          if (preproc(k2).EQ.'variaweight') dovarwei=.TRUE.
+          if (posproc(k2).EQ.'smooth') then
+            dosmooth=.TRUE.
+            k2smooth=k2
+          endif
+          if (preproc(k2).EQ.'clim') then
+            doclim=.TRUE.
+            nrecclim=preproc_i(k2)
+          endif
+      enddo
+
 c--   Assign mask
       if ( ylocmask .EQ. 'C' .OR. ylocmask .EQ. 'c' ) then
         call ecco_cprsrl(maskC,nr,localmask,nr,myThid)
@@ -301,7 +316,7 @@ c-- set nrecloop to nrecloc
       nrecloop=nrecloc
 
 c-- reset nrecloop, if needed, according to preproc
-      if ( preproc(1) .EQ. 'clim') nrecloop=MIN(nrecloop,preproc_i(1))
+      if ( doclim ) nrecloop=MIN(nrecloop,nrecclim)
 
 c--   loop over obsfile records
       do irec = 1, nrecloop
@@ -309,7 +324,7 @@ c--   loop over obsfile records
 c--     load weights
         exst=.FALSE.
         jrec=1
-        if(preproc(1).EQ.'variaweight') jrec = irec
+        if( dovarwei ) jrec = irec
         call cost_gencal(localbarfile, localerrfile,
      &     jrec, localstartdate, localperiod, fname1,
      &     fname3, localrec, obsrec, exst, mythid )
@@ -339,20 +354,20 @@ c--     Compute masked model-data difference
      &     localmask, spminloc, spmaxloc, spzeroloc, 
      &     localdif, difmask, myThid )
 
-        if (preproc(1).EQ.'anom') call ecco_subtract( localdifmeanIn,
+        if ( doanom ) call ecco_subtract( localdifmeanIn,
      &     nnzobs, localdif, nnzobs, myThid )
 
-        if ( (preproc(1).EQ.'mean').OR.(preproc(1).EQ.'anom') )
+        if ( domean.OR.doanom )
      &    call ecco_addmask(localdif,difmask, nnzobs,localdifsum,
      &    localdifnum, nnzobs,myThid)
 
         if (addVariaCost) then
 
 #ifdef ALLOW_SMOOTH
-      if ( (useSMOOTH).AND.(posproc(1).EQ.'smooth').AND.
+        if ( useSMOOTH.AND.dosmooth.AND.
      &     (nnzbar.EQ.1).AND.(nnzobs.EQ.1) )
      &  call smooth_hetero2d(localdif,maskc,
-     &     posproc_c(1),posproc_i(1),mythid)
+     &     posproc_c(k2smooth),posproc_i(k2smooth),mythid)
 #endif
 
 c--     Compute normalized model-obs cost function
@@ -372,7 +387,7 @@ c--     output model-data difference to disk
      &    WRITE_REC_XYZ_RL( fname3, localdif,irec, eccoiter, mythid )
         endif
 
-        endif      ! if (preproc(1).NE.'mean') then
+        endif
 
       enddo
 c--   End of loop over obsfile records.
@@ -383,7 +398,7 @@ c--   End of loop over obsfile records.
       call ecco_cp(localdifnum,nnzobs,localdifmsk,nnzobs,myThid)
       call ecco_divfield(localdifmsk,nnzobs,localdifnum,myThid)
 
-      if (preproc(1).EQ.'mean') then
+      if ( domean ) then
 c--     Compute normalized model-obs cost function
         call ecco_addcost(
      I       localdifmeanOut, localweight, localdifmsk, nnzobs,
