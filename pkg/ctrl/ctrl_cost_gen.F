@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_gen.F,v 1.8 2015/03/23 21:07:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_gen.F,v 1.9 2015/10/29 03:43:59 gforget Exp $
 C $Name:  $
 
 c ----------------------------------------------------------------
@@ -24,6 +24,7 @@ C     !INTERFACE:
      I                       xx_gen_dummy,
      I                       xx_gen_period,
      I                       xx_gen_weight,
+     I                       dodimensionalcost,
      O                       num_gen_anom,
      O                       objf_gen_anom,
 #ifdef ECCO_CTRL_DEPRECATED
@@ -67,6 +68,7 @@ c     == routine arguments ==
       _RL xx_gen_dummy
       _RL xx_gen_period
       _RL xx_gen_weight(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      logical dodimensionalcost
       _RL num_gen_anom(nsx,nsy)
       _RL objf_gen_anom(nsx,nsy)
 #ifdef ECCO_CTRL_DEPRECATED
@@ -159,8 +161,54 @@ c--   >>> Loop 1 to compute mean forcing:
         enddo
       enddo
 
-#ifdef ECCO_CTRL_DEPRECATED
-      IF ( .NOT.ctrlSmoothCorrel2D ) THEN
+#ifndef ECCO_CTRL_DEPRECATED
+c--   >>> Loop over records.
+      do irec = 1,nrec
+
+#ifdef ALLOW_AUTODIFF
+        call active_read_xy(
+     &        fnamefld, tmpfld2d, irec, doglobalread,
+     &        ladinit, optimcycle, myThid, xx_gen_dummy )
+#else
+        CALL READ_REC_XY_RL( fnamefld, tmpfld2d, iRec, 1, myThid )
+#endif
+
+c--     Loop over this thread tiles.
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+
+c--         Determine the weights to be used.
+            kk = 1
+            fctile = 0. _d 0
+            do j = jmin,jmax
+              do i = imin,imax
+                if (xx_gen_mask(i,j,kk,bi,bj) .ne. 0. _d 0) then
+
+                tmpx = tmpfld2d(i,j,bi,bj)
+                IF ( dodimensionalcost ) THEN
+                  fctile = fctile + xx_gen_weight(i,j,bi,bj)*tmpx*tmpx
+                ELSE
+                  fctile = fctile + tmpx*tmpx
+                ENDIF
+                if ( xx_gen_weight(i,j,bi,bj) .ne. 0. _d 0 )
+     &            num_gen_anom(bi,bj) = num_gen_anom(bi,bj)
+     &            + 1. _d 0
+                endif
+
+              enddo
+            enddo
+
+            objf_gen_anom(bi,bj) = objf_gen_anom(bi,bj) + fctile
+
+          enddo
+        enddo
+
+c--   End of loop over records.
+      enddo
+
+#else /* ECCO_CTRL_DEPRECATED */
+
+      IF ( dodimensionalcost ) THEN
       do irec = 1,nrec
 
 #ifdef ALLOW_AUTODIFF
@@ -216,8 +264,7 @@ c--     Determine the weights to be used.
         enddo
        enddo
       endif
-      ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
-#endif /* ECCO_CTRL_DEPRECATED */
+      ENDIF !IF ( dodimensionalcost ) THEN
 
 c--   >>> Loop 2 over records.
       do irec = 1,nrec
@@ -240,13 +287,12 @@ c--         Determine the weights to be used.
             do j = jmin,jmax
               do i = imin,imax
                 if (xx_gen_mask(i,j,kk,bi,bj) .ne. 0. _d 0) then
-                IF ( .NOT.ctrlSmoothCorrel2D ) THEN
+
+                IF ( dodimensionalcost ) THEN
                   tmpx = tmpfld2d(i,j,bi,bj)
-#ifdef ECCO_CTRL_DEPRECATED
      &                   - xx_mean(i,j,bi,bj)
      &                   - ( xx_gen_remo_intercept +
      &                       xx_gen_remo_slope*(irec-1)*xx_gen_period )
-#endif /* ECCO_CTRL_DEPRECATED */
 #ifdef ALLOW_ECCO
                   if ( ABS(R_low(i,j,bi,bj)) .LT. 100. _d 0 )
      &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100. _d 0
@@ -255,10 +301,10 @@ c--         Determine the weights to be used.
 #else
                   fctile = fctile + xx_gen_weight(i,j,bi,bj)*tmpx*tmpx
 #endif
-                ELSE !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
+                ELSE !IF ( dodimensionalcost ) THEN
                   tmpx = tmpfld2d(i,j,bi,bj)
                   fctile = fctile + tmpx*tmpx
-                ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
+                ENDIF !IF ( dodimensionalcost ) THEN
 #ifdef ALLOW_ECCO
                   if ( xx_gen_weight(i,j,bi,bj)
      &                *cosphi(i,j,bi,bj) .ne. 0. _d 0 )
@@ -267,7 +313,9 @@ c--         Determine the weights to be used.
 #endif
      &                 num_gen_anom(bi,bj) = num_gen_anom(bi,bj)
      &                 + 1. _d 0
+
                 endif
+
               enddo
             enddo
 
@@ -279,8 +327,7 @@ c--         Determine the weights to be used.
 c--   End of loop over records.
       enddo
 
-#ifdef ECCO_CTRL_DEPRECATED
-      IF ( .NOT.ctrlSmoothCorrel2D ) THEN
+      IF ( dodimensionalcost ) THEN
 #ifdef ALLOW_SMOOTH_BC_COST_CONTRIBUTION
 
 c--   >>> Loop 2 over records.
@@ -347,7 +394,8 @@ c--   End of loop over records.
       enddo
 
 #endif /* ALLOW_SMOOTH_BC_COST_CONTRIBUTION */
-      ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
+      ENDIF !IF ( dodimensionalcost ) THEN
+
 #endif /* ECCO_CTRL_DEPRECATED */
 
 #endif /* ALLOW_CTRL */
@@ -363,6 +411,7 @@ C     !INTERFACE:
      I                       xx_gen_file,
      I                       xx_gen_dummy,
      I                       xx_gen_weight,
+     I                       dodimensionalcost,
      O                       num_gen,
      O                       objf_gen,
      I                       xx_gen_mask,
@@ -395,6 +444,7 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) xx_gen_file
       _RL xx_gen_dummy
       _RL xx_gen_weight(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      logical dodimensionalcost
       _RL num_gen(nsx,nsy)
       _RL objf_gen(nsx,nsy)
       _RS xx_gen_mask(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -440,14 +490,11 @@ c--   Read state record from global file.
       doglobalread = .false.
       ladinit      = .false.
 
-      irec = 1
-
       if (optimcycle .ge. 0) then
         ilfld = ilnblnk( xx_gen_file )
         write(fnamefld(1:80),'(2a,i10.10)')
      &       xx_gen_file(1:ilfld),'.',optimcycle
       endif
-
 
 c--   >>> Loop 1 to compute mean forcing:
       do bj = jtlo,jthi
@@ -456,6 +503,8 @@ c--   >>> Loop 1 to compute mean forcing:
           objf_gen(bi,bj) = 0. _d 0
         enddo
       enddo
+
+      irec = 1
 
 #ifdef ALLOW_AUTODIFF
       call active_read_xyz( fnamefld, tmpfld3d, irec, doglobalread,
@@ -477,14 +526,15 @@ c--     Loop over this thread tiles.
               do i = imin,imax
                 if (xx_gen_mask(i,j,k,bi,bj) .ne. 0. _d 0) then
                   tmpx = tmpfld3d(i,j,k,bi,bj)
-                IF ( .NOT.ctrlSmoothCorrel3D ) THEN
+                IF ( dodimensionalcost ) THEN
                   objf_gen(bi,bj) = objf_gen(bi,bj)
      &                 + xx_gen_weight(i,j,k,bi,bj)
      &                 *tmpx*tmpx
-                ELSE !IF ( .NOT.ctrlSmoothCorrel3D ) THEN
+                ELSE
                   objf_gen(bi,bj) = objf_gen(bi,bj) + tmpx*tmpx
-                ENDIF !IF ( .NOT.ctrlSmoothCorrel3D ) THEN
-                num_gen(bi,bj) = num_gen(bi,bj) + 1. _d 0
+                ENDIF
+                if ( xx_gen_weight(i,j,k,bi,bj) .ne. 0. _d 0 )
+     &            num_gen(bi,bj) = num_gen(bi,bj) + 1. _d 0
                 endif
               enddo
             enddo

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.12 2015/10/23 23:09:44 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.13 2015/10/29 03:43:59 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -64,6 +64,7 @@ C     == local variables ==
       logical ladinit
       logical dowc01
       logical dosmooth
+      logical doscaling
       _RL     xx_gen(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #ifdef ALLOW_ECCO
       _RL     xx_gen_tmp(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -105,6 +106,7 @@ C--   generic 2D control variables
         dosmooth=.false.
         dowc01  = .false.
         if (ctrlSmoothCorrel2D) dowc01=.TRUE.
+        doscaling=.true.
 
         numsmo=1
         do k2 = 1, maxCtrlProc
@@ -118,6 +120,9 @@ C--   generic 2D control variables
              dosmooth=.TRUE.
              if (xx_gentim2d_preproc_i(k2,iarr).NE.0)
      &           numsmo=xx_gentim2d_preproc_i(k2,iarr)
+          endif
+          if (xx_gentim2d_preproc(k2,iarr).EQ.'noscaling') then
+             doscaling=.FALSE.
           endif
         enddo
 
@@ -302,6 +307,7 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
          ENDIF
 #endif /* ALLOW_SMOOTH */
 
+         IF (doscaling) then
          DO bj=myByLo(myThid), myByHi(myThid)
           DO bi=myBxLo(myThid), myBxHi(myThid)
            DO j = 1,sNy
@@ -317,6 +323,7 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
            ENDDO
           ENDDO
          ENDDO
+         ENDIF ! IF (doscaling) then
 #endif /* ALLOW_OPENAD */
 
          CALL CTRL_BOUND_2D(xx_gen,maskC,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_driver.F,v 1.8 2015/10/26 03:21:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_driver.F,v 1.9 2015/10/29 03:43:59 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -40,19 +40,28 @@ c     == local variables ==
 #ifdef ALLOW_GENTIM2D_CONTROL
       integer startrec
       integer endrec
-      integer k2
 #endif
 
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
       integer iarr
+      logical dodimensionalcost
+      integer k2
 #endif
 
 c     == end of interface ==
 
 c--   Evaluate the individual cost function contributions.
 
+
 #ifdef ALLOW_GENTIM2D_CONTROL
       do iarr = 1, maxCtrlTim2D
+
+      dodimensionalcost=.FALSE.
+      do k2 = 1, maxCtrlProc
+       if (xx_gentim2d_preproc(k2,iarr).EQ.'noscaling') then
+         dodimensionalcost=.TRUE.
+       endif
+      enddo
 
       if (xx_gentim2d_weight(iarr).NE.' ') then
       startrec = ncvarrecstart(300+iarr)
@@ -69,6 +78,7 @@ c--   Evaluate the individual cost function contributions.
      &     xx_gentim2d_file(iarr),xx_gentim2d_dummy(iarr),
      &     xx_gentim2d_period(iarr),
      &     wgentim2d(1-Olx,1-Oly,1,1,iarr),
+     &     dodimensionalcost,
      &     num_gentim2d(1,1,iarr),
      &     objf_gentim2d(1,1,iarr),
 #ifdef ECCO_CTRL_DEPRECATED
@@ -84,11 +94,19 @@ c--   Evaluate the individual cost function contributions.
 #ifdef ALLOW_GENARR2D_CONTROL
       do iarr = 1, maxCtrlArr2D
 
+      dodimensionalcost=.FALSE.
+      do k2 = 1, maxCtrlProc
+       if (xx_genarr2d_preproc(k2,iarr).EQ.'noscaling') then
+         dodimensionalcost=.TRUE.
+       endif
+      enddo
+
       if (xx_genarr2d_weight(iarr).NE.' ') then
       call ctrl_cost_gen2d (
      &     1,1,
      &     xx_genarr2d_file(iarr),xx_genarr2d_dummy(iarr),
      &     zeroRL, wgenarr2d(1-Olx,1-Oly,1,1,iarr),
+     &     dodimensionalcost,
      &     num_genarr2d(1,1,iarr), objf_genarr2d(1,1,iarr),
 #ifdef ECCO_CTRL_DEPRECATED
      &     zeroRL, num_zero_mean, objf_zero_mean,
@@ -104,10 +122,18 @@ c--   Evaluate the individual cost function contributions.
 #ifdef ALLOW_GENARR3D_CONTROL
       do iarr = 1, maxCtrlArr3D
 
+      dodimensionalcost=.FALSE.
+      do k2 = 1, maxCtrlProc
+       if (xx_genarr3d_preproc(k2,iarr).EQ.'noscaling') then
+         dodimensionalcost=.TRUE.
+       endif
+      enddo
+
       if (xx_genarr3d_weight(iarr).NE.' ') then
       call ctrl_cost_gen3d (
      &     xx_genarr3d_file(iarr),xx_genarr3d_dummy(iarr),
      &     wgenarr3d(1-Olx,1-Oly,1,1,1,iarr),
+     &     dodimensionalcost,
      &     num_genarr3d(1,1,iarr), objf_genarr3d(1,1,iarr),
      &     maskC, myThid )
       endif

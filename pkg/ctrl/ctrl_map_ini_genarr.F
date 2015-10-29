@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.20 2015/06/16 20:20:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.21 2015/10/29 03:43:59 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -183,6 +183,7 @@ C     == local variables ==
       integer numsmo, k2
       logical dowc01
       logical dosmooth
+      logical doscaling
       _RL xx_gen  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       character*(80) fnamegenIn
       character*(80) fnamegenOut
@@ -201,6 +202,7 @@ c--   Now, read the control vector.
       dosmooth=.false.
       dowc01  = .false.
       if (ctrlSmoothCorrel2d) dowc01=.TRUE.
+      doscaling=.true.
 
       numsmo=1
       do k2 = 1, maxCtrlProc
@@ -214,6 +216,9 @@ c--   Now, read the control vector.
              dosmooth=.TRUE.
              if (xx_genarr2d_preproc_i(k2,iarr).NE.0)
      &           numsmo=xx_genarr2d_preproc_i(k2,iarr)
+          endif
+          if (xx_genarr2d_preproc(k2,iarr).EQ.'noscaling') then
+             doscaling=.FALSE.
           endif
       enddo
 
@@ -242,6 +247,7 @@ c--   Now, read the control vector.
             DO j = 1,sNy
               DO i = 1,sNx
 c scale param adjustment
+                IF (doscaling) then
                 if ( (maskC(i,j,1,bi,bj).NE.0.).AND.
      &               (wgenarr2d(i,j,bi,bj,iarr).GT.0.) ) then
                   xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)
@@ -249,6 +255,7 @@ c scale param adjustment
                 else
                   xx_gen(i,j,bi,bj)=0.
                 endif
+                ENDIF
 c add to model parameter
                 fld(i,j,bi,bj)=fld(i,j,bi,bj)+xx_gen(i,j,bi,bj)
               enddo
@@ -263,6 +270,7 @@ c avoid param out of [boundsVec(1) boundsVec(4)]
 
       CALL mdswritefield(fnamegenOut,ctrlprec,.FALSE.,'RL',
      &    1, fld, 1, optimcycle, mythid)
+
 
 #endif /* ALLOW_GENARR2D_CONTROL */
 
@@ -314,6 +322,7 @@ C     == local variables ==
       integer numsmo,k2
       logical dowc01
       logical dosmooth
+      logical doscaling
       _RL xx_gen  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       character*(80) fnamegenIn
       character*(80) fnamegenOut
@@ -332,6 +341,7 @@ c--   Now, read the control vector.
       dosmooth=.false.
       dowc01  = .false.
       if (ctrlSmoothCorrel3D) dowc01=.TRUE.
+      doscaling=.true.
 
       numsmo=1
       do k2 = 1, maxCtrlProc
@@ -345,6 +355,9 @@ c--   Now, read the control vector.
              dosmooth=.TRUE.
              if (xx_genarr3d_preproc_i(k2,iarr).NE.0)
      &           numsmo=xx_genarr3d_preproc_i(k2,iarr)
+          endif
+          if (xx_genarr3d_preproc(k2,iarr).EQ.'noscaling') then
+             doscaling=.FALSE.
           endif
       enddo
 
@@ -374,6 +387,7 @@ c--   Now, read the control vector.
             DO j = 1,sNy
               DO i = 1,sNx
 c scale param adjustment
+                IF (doscaling) then
                 if ( (maskC(i,j,k,bi,bj).NE.0.).AND.
      &               (wgenarr3d(i,j,k,bi,bj,iarr).GT.0.) ) then
                   xx_gen(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
@@ -381,6 +395,7 @@ c scale param adjustment
                 else
                   xx_gen(i,j,k,bi,bj)=0.
                 endif
+                ENDIF
 c add to model parameter
                 fld(i,j,k,bi,bj)=fld(i,j,k,bi,bj)+xx_gen(i,j,k,bi,bj)
               enddo
