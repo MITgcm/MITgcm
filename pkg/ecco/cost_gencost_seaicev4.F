@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.14 2015/10/29 00:13:06 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.15 2015/10/29 00:21:58 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -43,8 +43,8 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-      integer nnzsiv4
-      parameter (nnzsiv4 = 1 )
+      integer nnzsiv4, nnzbar
+      parameter (nnzsiv4 = 1 , nnzbar = 1)
       integer nrecloc
       integer localstartdate(4)
 
@@ -56,9 +56,7 @@ c old:sst  -> model has deficiency in iceconc -> new:deconc
       _RL exconcbbbar  (1-olx:snx+olx,1-oly:sny+oly,1,nsx,nsy)
       _RL deconcbbbar  (1-olx:snx+olx,1-oly:sny+oly,1,nsx,nsy)
       _RL localweight(1-olx:snx+olx,1-oly:sny+oly,1,nsx,nsy)
-      _RL xx_areabbbar_mean_dummy
-      _RL xx_exconcbbbar_mean_dummy
-      _RL xx_deconcbbbar_mean_dummy
+      _RL dummy
       _RL localperiod
       _RL spminloc
       _RL spmaxloc
@@ -77,42 +75,28 @@ c old:sst  -> model has deficiency in iceconc -> new:deconc
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-      integer irec
+      integer irec, jrec
       integer  il
       integer localrec
       integer obsrec
 
-      logical doglobalread
-      logical ladinit
+      integer preproc_i(NGENPPROC)
+      _RL preproc_r(NGENPPROC)
+      character*(MAX_LEN_FNAM) preproc(NGENPPROC)
+      character*(MAX_LEN_FNAM) preproc_c(NGENPPROC)
 
-      _RL spval
-      parameter (spval = -9999. )
       _RL localwww
       _RL junk
 
       _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nnzsiv4,nsx,nsy)
-      _RL cmask (1-olx:snx+olx,1-oly:sny+oly,nnzsiv4)
+      _RL localtmp   (1-olx:snx+olx,1-oly:sny+oly,nnzsiv4,nsx,nsy)
+      _RL localdif   (1-olx:snx+olx,1-oly:sny+oly,nnzsiv4,nsx,nsy)
+      _RL difmask    (1-olx:snx+olx,1-oly:sny+oly,nnzsiv4,nsx,nsy)
 
-      character*(128) fname0, fname1, fname2, fname3
+      character*(128) fname0, fname0w, fname1
 
-#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
       character*(MAX_LEN_FNAM) localobswfile
-      character*(128) fname0w
-      _RL localobsweight (1-olx:snx+olx,1-oly:sny+oly,nnzsiv4,nsx,nsy)
-      _RL tmpobsweight (1-olx:snx+olx,1-oly:sny+oly,nnzsiv4,nsx,nsy)
-#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
-
-      _RL daytime
-      _RL diffsecs
-      integer dayiter
-      integer daydate(4)
-      integer difftime(4)
-      integer middate(4)
-      integer yday, ymod
-      integer md, dd, sd, ld, wd
-      integer mody, modm
-      integer beginmodel, beginlocal
       logical exst
 
 c     == external functions ==
@@ -162,58 +146,35 @@ c-- detect the relevant gencost indices
       if ((igen_conc.NE.0).AND.(igen_deconc.NE.0)
      &    .AND.(igen_exconc.NE.0)) then
 
+c-- initialize objf and num:
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          objf_gencost(bi,bj,igen_conc) = 0. _d 0
+          objf_gencost(bi,bj,igen_exconc) = 0. _d 0
+          objf_gencost(bi,bj,igen_deconc) = 0. _d 0
+
+          num_gencost(bi,bj,igen_conc) = 0. _d 0
+          num_gencost(bi,bj,igen_exconc) = 0. _d 0
+          num_gencost(bi,bj,igen_deconc) = 0. _d 0
+        enddo
+      enddo
+
       call ecco_zero(gencost_weight(:,:,1,1,igen_conc),1,zeroRL,myThid)
       if ( gencost_errfile(igen_conc) .NE. ' ' ) 
      &  call ecco_readwei(gencost_errfile(igen_conc),
      &  gencost_weight(:,:,1,1,igen_conc),1,1,mythid)
 
 c--   Initialise local variables.
-
       localwww = 0. _d 0
       nrecloc=0
       localperiod=0.
-
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nnzsiv4
-            do j = jmin,jmax
-              do i = imin,imax
-                localobs(i,j,k,bi,bj) = 0. _d 0
-#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
-                if(gencost_timevaryweight(igen_conc)) then
-                  localobsweight(i,j,k,bi,bj) = 0. _d 0
-                  tmpobsweight(i,j,k,bi,bj) = 0. _d 0
-                endif
-#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-
-c--   Assign mask
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,Nr
-            do j = 1-oly,sny+oly
-              do i = 1-olx,snx+olx
-         localmask(i,j,k,bi,bj) = maskC(i,j,k,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
 
       areabbbarfile=gencost_barfile(igen_conc)
       exconcbbbarfile=gencost_barfile(igen_exconc)
       deconcbbbarfile=gencost_barfile(igen_deconc)
       localobsfile=gencost_datafile(igen_conc)
-#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
       localobswfile=gencost_errfile(igen_conc)
-#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
-      xx_areabbbar_mean_dummy=gencost_dummy(igen_conc)
-      xx_exconcbbbar_mean_dummy=gencost_dummy(igen_exconc)
-      xx_deconcbbbar_mean_dummy=gencost_dummy(igen_deconc)
+      dummy=gencost_dummy(igen_conc)
       localstartdate(1)=modelstartdate(1)
       localstartdate(2)=modelstartdate(2)
       localstartdate(3)=modelstartdate(3)
@@ -224,199 +185,98 @@ c--   Assign mask
 c-atn need to set local period, else always enter monthly avg
       localperiod=gencost_period(igen_conc)
       nrecloc=gencost_nrec(igen_conc)
+
+      preproc(1)=gencost_preproc(1,igen_conc)
+      preproc_i(1)=gencost_preproc_i(1,igen_conc)
+      preproc_c(1)=gencost_preproc_c(1,igen_conc)
+      preproc_r(1)=gencost_preproc_r(1,igen_conc)
 c-atn
-
-c--   First, read tiled data.
-      doglobalread = .false.
-      ladinit      = .false.
-
-      write(fname1(1:128),'(80a)') ' '
-      il=ilnblnk( areabbbarfile )
-      write(fname1(1:128),'(2a,i10.10)')
-     &     areabbbarfile(1:il),'.',eccoiter
-
-      il=ilnblnk( exconcbbbarfile )
-      write(fname2(1:128),'(2a,i10.10)')
-     &     exconcbbbarfile(1:il),'.',eccoiter
-
-      il=ilnblnk( deconcbbbarfile )
-      write(fname3(1:128),'(2a,i10.10)')
-     &     deconcbbbarfile(1:il),'.',eccoiter
+      call ecco_zero(localobs,1,spzeroloc,myThid)
+      call ecco_zero(localweight,1,zeroRL,myThid)
+      call ecco_zero(localmask,Nr,zeroRL,myThid)
+      call ecco_cprsrl(maskC,Nr,localmask,Nr,myThid)
 
       if ( .NOT. ( localobsfile.EQ.' ' ) ) then
 
 c--   Loop over records for the second time.
       do irec = 1, nrecloc
 
-#ifdef ALLOW_AUTODIFF
-           call active_read_xy( fname1, areabbbar, irec, doglobalread,
-     &                      ladinit, eccoiter, mythid,
-     &                      xx_areabbbar_mean_dummy )
-
-           call active_read_xy( fname2, exconcbbbar, irec,doglobalread,
-     &                      ladinit, eccoiter, mythid,
-     &                      xx_exconcbbbar_mean_dummy )
-
-           call active_read_xy( fname3, deconcbbbar, irec,doglobalread,
-     &                      ladinit, eccoiter, mythid,
-     &                      xx_deconcbbbar_mean_dummy )
-#else
-           CALL READ_REC_XY_RL( fname1, areabbbar,
-     &                          iRec, 1, myThid )
-
-           CALL READ_REC_XY_RL( fname2, exconcbbbar,
-     &                          iRec, 1, myThid )
-
-           CALL READ_REC_XY_RL( fname3, deconcbbbar,
-     &                          iRec, 1, myThid )
-#endif
-
-        if ( localperiod .EQ. 86400. ) then
-c-- assume daily fields
-           obsrec = irec
-           daytime = FLOAT(secondsperday*(irec-1))
-           dayiter = hoursperday*(irec-1)
-           call cal_getdate( dayiter, daytime, daydate, mythid )
-           call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
-           ymod = localstartdate(1)/10000
-           if ( ymod .EQ. yday ) then
-              middate(1) = modelstartdate(1)
-           else
-              middate(1) = yday*10000+100+1
-           endif
-           middate(2) = 0
-           middate(3) = modelstartdate(3)
-           middate(4) = modelstartdate(4)
-           call cal_TimePassed( middate, daydate, difftime, mythid )
-           call cal_ToSeconds( difftime, diffsecs, mythid )
-           localrec = int(diffsecs/localperiod) + 1
+c-- read weights
+        exst=.FALSE.
+        jrec=1
+        if(preproc(1).EQ.'variaweight') jrec = irec
+        call cost_gencal(areabbbarfile,gencost_errfile(igen_conc),
+     &     jrec, localstartdate, localperiod, fname1,
+     &     fname0w, localrec, obsrec, exst, mythid)
+        call ecco_zero(localweight,nnzsiv4,zeroRL,myThid)
+        if ( (localrec. GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
+          call ecco_readwei(fname0w,localweight,localrec,nnzsiv4,mythid)
         else
-c-- assume monthly fields
-           beginlocal = localstartdate(1)/10000
-           beginmodel = modelstartdate(1)/10000
-           obsrec =
-     &           ( beginmodel - beginlocal )*nmonthyear
-     &         + ( mod(modelstartdate(1)/100,100)
-     &            -mod(localstartdate(1)/100,100) )
-     &         + irec
-           mody   = modelstartdate(1)/10000
-           modm   = modelstartdate(1)/100 - mody*100
-           yday   = mody + INT((modm-1+irec-1)/12)
-           localrec = 1 + MOD(modm-1+irec-1,12)
+          WRITE(standardMessageUnit,'(A)')
+     &     'siv4cost WARNING: ALL WEIGHTS ZEROS! NO CONTRIBUTION'
         endif
 
-        il=ilnblnk(localobsfile)
-        write(fname0(1:128),'(2a,i4)')
-     &       localobsfile(1:il), '_', yday
-        inquire( file=fname0, exist=exst )
-        if (.NOT. exst) then
-           write(fname0(1:128),'(a)') localobsfile(1:il)
-c to use the data in a repreated cycle, comment next line?
-           localrec = obsrec
-        endif
+c-- read barfiles
+c-- sea-ice concentration barfile
+        exst=.FALSE.
+        call cost_gencal(areabbbarfile,gencost_datafile(igen_conc),
+     &   irec, localstartdate, localperiod, fname1,
+     &   fname0, localrec, obsrec, exst, mythid)
+        call ecco_zero(areabbbar,nnzbar,zeroRL,myThid)
+        call cost_genread( fname1, areabbbar, localtmp, irec, nnzbar,
+     &       nrecloc, preproc, preproc_c, preproc_i, preproc_r, 
+     &       dummy, mythid )
 
-        if ( localrec .GT. 0 ) then
+c-- heff as proxy for exconc barfile
+        exst=.FALSE.
+        call cost_gencal(exconcbbbarfile,gencost_datafile(igen_conc),
+     &   irec, localstartdate, localperiod, fname1,
+     &   fname0, localrec, obsrec, exst, mythid)
+        call ecco_zero(exconcbbbar,nnzbar,zeroRL,myThid)
+        call cost_genread( fname1, exconcbbbar, localtmp, irec, nnzbar,
+     &       nrecloc, preproc, preproc_c, preproc_i, preproc_r, 
+     &       dummy, mythid )
+
+c-- sst as proxy for deconc barfile
+        exst=.FALSE.
+        call cost_gencal(deconcbbbarfile,gencost_datafile(igen_conc),
+     &   irec, localstartdate, localperiod, fname1,
+     &   fname0, localrec, obsrec, exst, mythid)
+        call ecco_zero(deconcbbbar,nnzbar,zeroRL,myThid)
+        call cost_genread( fname1, deconcbbbar, localtmp, irec, nnzbar,
+     &       nrecloc, preproc, preproc_c, preproc_i, preproc_r, 
+     &       dummy, mythid )
+
+c-- read in data, first initialize to spzerloc = -9999.
+        call ecco_zero(localobs,nnzsiv4,spzeroloc,mythid)
+        if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
           call mdsreadfield( fname0, cost_iprec, cost_yftype, nnzsiv4,
      &         localobs, localrec, mythid )
         else
-          do bj = jtlo,jthi
-            do bi = itlo,ithi
-              do k = 1,nnzsiv4
-                do j = jmin,jmax
-                  do i = imin,imax
-                     localobs(i,j,k,bi,bj) = spval
-c not sure why this is not spzeroloc
-                  enddo
-                enddo
-              enddo
-            enddo
-          enddo
+          il=ilnblnk( fname0 )
+          WRITE(standardMessageUnit,'(2A)')
+     &     'siv4cost WARNING: DATA MISING! NO CONTRIBUTION, ',
+     &     fname0(1:il)
         endif
 
-#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
-catn--- reading time-variable weights -----------
-cph        if(gencost_timevaryweight(igen_conc)) then
-
-          il=ilnblnk(localobswfile)
-          write(fname0w(1:128),'(2a,i4)')
-     &       localobswfile(1:il), '_', yday
-          inquire( file=fname0w, exist=exst )
-
-          if (.NOT. exst) then
-           write(fname0w(1:128),'(a)') localobswfile(1:il)
-c to use the data in a repreated cycle, comment next line?
-           localrec = obsrec
-          endif
-
-          if ( localrec .GT. 0 ) then
-          call mdsreadfield( fname0w, cost_iprec, cost_yftype, nnzsiv4,
-     &         tmpobsweight, localrec, mythid )
-          else
-          WRITE(standardMessageUnit,'(A)')
-     &     'siv4cost WARNING: ALL WEIGHTS ZEROS! NO CONTRIBUTION'
-          do bj = jtlo,jthi
-            do bi = itlo,ithi
-              do k = 1,nnzsiv4
-                do j = jmin,jmax
-                  do i = imin,imax
-                     tmpobsweight(i,j,k,bi,bj) = 0. _d 0
-                  enddo
-                enddo
-              enddo
-            enddo
-          enddo
-          endif
-cph        endif
-catn---------------------------------------------
-#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
+c compute obs minus bar (localdif) and mask (difmask) 
+        call ecco_zero(localdif,nnzsiv4,zeroRL,mythid)
+        call ecco_zero(difmask,nnzsiv4,zeroRL,mythid)
+        call ecco_diffmsk(
+     I     areabbbar, nnzbar, localobs, nnzsiv4, localmask,
+     I     spminloc, spmaxloc, spzeroloc,
+     O     localdif, difmask,
+     I     myThid )
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
-
-c--           Determine the mask on weights
-            do k = 1,nnzsiv4
-             do j = jmin,jmax
-              do i = imin,imax
-               cmask(i,j,k) = localmask(i,j,k,bi,bj)
-                if ( localobs(i,j,k,bi,bj) .lt. spminloc .or.
-     &               localobs(i,j,k,bi,bj) .gt. spmaxloc .or.
-     &               localobs(i,j,k,bi,bj) .eq. spzeroloc ) then
-                   cmask(i,j,k) = 0. _d 0
-                endif
-catn----------------------------------------------
-#ifdef ALLOW_GENCOST_TIMEVARY_WEIGHT
-                if (gencost_timevaryweight(igen_conc)) then
-c--    Test for missing values.
-                  if (tmpobsweight(i,j,k,bi,bj) .lt. -9900.) then
-                    tmpobsweight(i,j,k,bi,bj) = 0. _d 0
-                  endif
-                  if (tmpobsweight(i,j,k,bi,bj) .ne. 0.) then
-                    localweight(i,j,k,bi,bj) =
-     &                1./tmpobsweight(i,j,k,bi,bj)/
-     &                   tmpobsweight(i,j,k,bi,bj)
-                  else
-                    localweight(i,j,k,bi,bj) = 0.0 _d 0
-                  endif
-                else
-                  localweight(i,j,k,bi,bj)=
-     &              gencost_weight(i,j,bi,bj,igen_conc)
-                endif
-#else  /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
-                localweight(i,j,k,bi,bj)=
-     &            gencost_weight(i,j,bi,bj,igen_conc)
-#endif /* ALLOW_GENCOST_TIMEVARY_WEIGHT */
-catn----------------------------------------------
-              enddo
-             enddo
-            enddo
-c--
             do k = 1,nnzsiv4
              do j = jmin,jmax
               do i = imin,imax
 
 c area term
-                localwww  = localweight(i,j,k,bi,bj)*cmask(i,j,k)
-                junk      = ( areabbbar(i,j,k,bi,bj) -
+                localwww = localweight(i,j,k,bi,bj)*difmask(i,j,k,bi,bj)
+                junk     = ( areabbbar(i,j,k,bi,bj) -
      &                        localobs(i,j,k,bi,bj) )
                 objf_gencost(bi,bj,igen_conc) =
      &            objf_gencost(bi,bj,igen_conc) + junk*junk*localwww
@@ -436,8 +296,8 @@ c cost(Model-data)^2
      &            .AND.
      &              (exconcbbbar(i,j,k,bi,bj) .GT. SEAICE_cutoff_heff))
      &             then
-c                   junk=1. _d 0 *cmask(i,j,k)*
-                 localwww=localnorm*localnorm*cmask(i,j,k)
+
+                 localwww=localnorm*localnorm*difmask(i,j,k,bi,bj)
                  junk=
      &              (( (deconcbbbar(i,j,k,bi,bj)-SEAICE_freeze)*
      &                 HeatCapacity_Cp*rhoNil*drF(1)
@@ -467,8 +327,8 @@ c E_target  = -(HEFF_target*SEAICE_lhFusion*SEAICE_rhoIce)
 c cost=(Model-data)^2
                 if ( (areabbbar(i,j,1,bi,bj) .LE. 0.).AND.
      &               (localobs(i,j,1,bi,bj) .GT. 0.) ) then
-c                 junk=1. _d 0 *cmask(i,j,k)*
-                 localwww=localnorm*localnorm*cmask(i,j,k)
+
+                 localwww=localnorm*localnorm*difmask(i,j,k,bi,bj)
                  junk=
      &               (( (deconcbbbar(i,j,k,bi,bj)-SEAICE_freeze)*
      &                  HeatCapacity_Cp*rhoNil*drF(1) )
