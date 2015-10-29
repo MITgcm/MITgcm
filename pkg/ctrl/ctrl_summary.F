@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.16 2015/06/18 16:57:21 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.17 2015/10/29 17:03:38 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -126,7 +126,7 @@ c     == end of interface ==
         enddo
       enddo
 
-#ifndef PHASE_OUT_OUT_CODES
+#ifdef ECCO_CTRL_DEPRECATED
 
 #ifdef ALLOW_THETA0_CONTROL
       write(msgbuf,'(a)')
@@ -321,16 +321,16 @@ c     == end of interface ==
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
-#endif /* PHASE_OUT_OUT_CODES */
+#endif /* ECCO_CTRL_DEPRECATED */
 
 
 #ifdef ALLOW_SMOOTH
+#ifdef ECCO_CTRL_DEPRECATED
 
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-#ifdef ECCO_CTRL_DEPRECATED
       write(msgbuf,'(a)')
      &' Settings of diffusion based correlation operators:'
       call print_message( msgbuf, standardmessageunit,
@@ -351,7 +351,6 @@ c     == end of interface ==
      &' /* use 2D controls correlation */'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-#endif /* ECCO_CTRL_DEPRECATED */
 
 #ifdef ALLOW_AUTODIFF
       if (ctrlSmoothCorrel2D.AND..NOT.useSmoothCorrel2DinAdMode) then
@@ -364,6 +363,7 @@ c allow for switching off correl2d in adjoint
       endif
 #endif
 
+#endif /* ECCO_CTRL_DEPRECATED */
 #endif /* ALLOW_SMOOTH */
 
 

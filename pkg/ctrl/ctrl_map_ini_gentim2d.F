@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.13 2015/10/29 03:43:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.14 2015/10/29 17:03:38 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -105,7 +105,6 @@ C--   generic 2D control variables
 
         dosmooth=.false.
         dowc01  = .false.
-        if (ctrlSmoothCorrel2D) dowc01=.TRUE.
         doscaling=.true.
 
         numsmo=1

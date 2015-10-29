@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.67 2015/05/27 18:33:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.68 2015/10/29 17:03:38 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -851,10 +851,6 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_GENTIM2D_CONTROL
        do iarr = 1, maxCtrlTim2D
-
-        if (xx_gentim2d_weight(iarr).NE.' ')
-     &   call mdsreadfield( xx_gentim2d_weight(iarr), ctrlprec, 'RL',
-     &      1, wgentim2d(1-Olx,1-Oly,1,1,iarr), 1, myThid )
 
 #ifdef ALLOW_CAL
         if (xx_gentim2d_startdate1(iarr).EQ.0) then
