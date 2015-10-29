@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.16 2015/10/29 00:31:20 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.17 2015/10/29 00:35:26 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -86,6 +86,7 @@ c old:sst  -> model has deficiency in iceconc -> new:deconc
       character*(MAX_LEN_FNAM) preproc_c(NGENPPROC)
 
       _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+
       _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nnzsiv4,nsx,nsy)
       _RL localtmp   (1-olx:snx+olx,1-oly:sny+oly,nnzsiv4,nsx,nsy)
       _RL localdif   (1-olx:snx+olx,1-oly:sny+oly,nnzsiv4,nsx,nsy)
@@ -103,25 +104,6 @@ c     == external functions ==
       external ilnblnk
 
 c     == end of interface ==
-
-C- jmc: params SEAICE_freeze has been retired; set it locally until someone
-C       who knows what this cost-cointribution means fix it.
-C- atn: also adding 1 normalizing factor same order of magnitude as
-C       rhoNil*HeatCapacity_cp*dz = SEAICE_rhoice*SEAICE_lhFusion*heff 
-C       = 1e3*1e3*1e1=1e7
-C- atn: lastly, define 2 cutoff values for cost to be read in from data.seaice
-C      and initialized in seaice_readparms: SEAICE_cutoff_[area,heff]
-C      Reason: some iceconc data set have "bogus" mask with area>0
-C      at climatological max locations -> not real data.  So either need
-C      to clean up the data or take SEAICE_cutoff_area>=0.15 for example.
-C      Might need to migrate into pkg/ecco instead of in pkg/seaice.
-      _RL SEAICE_freeze, epsilonTemp, epsilonHEFF
-      _RL localnorm, localnormsq
-      SEAICE_freeze  = -1.96  _d 0
-      epsilonTemp = 0.0001 _d 0
-      epsilonHEFF = 0.01 _d 0
-      localnorm = 1. _d -07
-      localnormsq=localnorm*localnorm
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -270,36 +252,14 @@ c area term:
         call ecco_zero(difmask1,nnzsiv4,zeroRL,mythid)
         call ecco_zero(localdif,nnzsiv4,zeroRL,mythid)
         call ecco_zero(localtmp,nnzsiv4,zeroRL,mythid)
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nnzsiv4
-             do j = jmin,jmax
-              do i = imin,imax
 
 catn-- old: heff and sst term, new: exconc
 c Removing ice: model_A > 0 but obs_A==0, calc enthalpy E:
-c E_current = [(deconcbbbar-SEAICE_freeze)*HeatCapacity_Cp*rhoNil*drF(1)
-c            - (exconcbbbar * SEAICE_lhFusion * SEAICE_rhoIce) 
-c            - (HSNOW * SEAICE_lhFusion * SEAICE_rhoSnow)]
-c E_target = (epsilonTemp) * HeatCapacity_Cp * rhoNil * drF(1)
-c cost(Model-data)^2
-                if ((localobs(i,j,k,bi,bj) .LE. SEAICE_cutoff_area).AND.
-     &          (exconcbbbar(i,j,k,bi,bj) .GT. SEAICE_cutoff_heff)) then
-                  difmask1(i,j,k,bi,bj)= 1. _d 0 * difmask(i,j,k,bi,bj)
-                  localtmp(i,j,k,bi,bj)=localnormsq
-
-                  localdif(i,j,k,bi,bj)=
-     &              (( (deconcbbbar(i,j,k,bi,bj)-SEAICE_freeze)*
-     &                 HeatCapacity_Cp*rhoNil*drF(1)
-     &              - exconcbbbar(i,j,k,bi,bj)*
-     &                 SEAICE_lhFusion*SEAICE_rhoIce )
-     &              - (epsilonTemp*HeatCapacity_Cp*rhoNil*drF(1)))
-                endif
-              enddo
-             enddo
-            enddo
-          enddo
-        enddo
+        call get_exconc_deconc(
+     I    localobs,nnzsiv4,areabbbar,exconcbbbar,deconcbbbar,nnzbar,
+     I    difmask,'ex',
+     O    localdif,difmask1,localtmp,
+     I    myThid )
         call ecco_addcost(
      I      localdif,localtmp,difmask1,nnzsiv4,
      O      objf_gencost(1,1,igen_exconc),num_gencost(1,1,igen_exconc),
@@ -307,35 +267,15 @@ c cost(Model-data)^2
 
 catn-- old: sst term, new: deconc
 c Add ice: model_A==0 but obs_A > 0, calc enthalpy E:
-c E_current = (deconcbbbar(i,j,k,bi,bj)-SEAICE_freeze)
-c             *HeatCapacity_Cp*rhoNil*drF(1)
-c HEFF_target = epsilon_HEFF [m]
-c E_target  = -(HEFF_target*SEAICE_lhFusion*SEAICE_rhoIce)
-c cost=(Model-data)^2
         call ecco_zero(difmask1,nnzsiv4,zeroRL,mythid)
         call ecco_zero(localdif,nnzsiv4,zeroRL,mythid)
         call ecco_zero(localtmp,nnzsiv4,zeroRL,mythid)
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nnzsiv4
-             do j = jmin,jmax
-              do i = imin,imax
-                if ( (areabbbar(i,j,1,bi,bj) .LE. 0.).AND.
-     &               (localobs(i,j,1,bi,bj) .GT. 0.) ) then
-                  difmask1(i,j,k,bi,bj)=difmask(i,j,k,bi,bj)
-                  localtmp(i,j,k,bi,bj)=localnormsq
-
-                  localdif(i,j,k,bi,bj)=
-     &               (( (deconcbbbar(i,j,k,bi,bj)-SEAICE_freeze)*
-     &                  HeatCapacity_Cp*rhoNil*drF(1) )
-     &               - (-1. _d 0 *epsilonHEFF*
-     &                  SEAICE_lhFusion*SEAICE_rhoIce))
-                endif
-              enddo
-             enddo
-            enddo
-          enddo
-        enddo
+ 
+        call get_exconc_deconc(
+     I    localobs,nnzsiv4,areabbbar,exconcbbbar,deconcbbbar,nnzbar,
+     I    difmask,'de',
+     O    localdif,difmask1,localtmp,
+     I    myThid )
         call ecco_addcost(
      I      localdif,localtmp,difmask1,nnzsiv4,
      O      objf_gencost(1,1,igen_deconc),num_gencost(1,1,igen_deconc),
@@ -349,4 +289,176 @@ c cost=(Model-data)^2
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 #endif /* ALLOW_SEAICE */
 
+      RETURN
       end
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#include "ECCO_OPTIONS.h"
+
+      subroutine get_exconc_deconc(
+     I    localobs,nnzobs,concbar,exconcbar,deconcbar,nnzbar,
+     I    localmask,flag_exconc_deconc,
+     O    localfld,localfldmsk,localfldweight,
+     I    myThid )
+
+C     !DESCRIPTION: \bv
+c     Routine to calculate Enthalpy for the case of 
+c     defficient/excessive model seaice
+C     \ev
+
+C     !USES:
+      implicit none
+
+c     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#ifdef ALLOW_SEAICE
+# include "SEAICE_SIZE.h"
+# include "SEAICE_COST.h"
+# include "SEAICE_PARAMS.h"
+#endif
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
+
+c     == routine arguments ==
+
+      integer mythid, nnzbar, nnzobs
+      _RL localmask     (1-olx:snx+olx,1-oly:sny+oly,1,nsx,nsy)
+
+      _RL localobs      (1-olx:snx+olx,1-oly:sny+oly,1,nsx,nsy)
+      _RL concbar       (1-olx:snx+olx,1-oly:sny+oly,1,nsx,nsy)
+      _RL deconcbar     (1-olx:snx+olx,1-oly:sny+oly,1,nsx,nsy)
+      _RL exconcbar     (1-olx:snx+olx,1-oly:sny+oly,1,nsx,nsy)
+      _RL localfld      (1-olx:snx+olx,1-oly:sny+oly,1,nsx,nsy)
+      _RL localfldmsk   (1-olx:snx+olx,1-oly:sny+oly,1,nsx,nsy)
+      _RL localfldweight(1-olx:snx+olx,1-oly:sny+oly,1,nsx,nsy)
+
+      character*2 flag_exconc_deconc
+
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+#ifdef ALLOW_SEAICE
+
+c    == local variables ==
+      integer bi,bj
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+      integer i,j,k
+
+C- jmc: params SEAICE_freeze has been retired; set it locally until someone
+C       who knows what this cost-cointribution means fix it.
+C- atn: also adding 1 normalizing factor same order of magnitude as
+C       rhoNil*HeatCapacity_cp*dz = SEAICE_rhoice*SEAICE_lhFusion*heff 
+C       = 1e3*1e3*1e1=1e7
+C- atn: lastly, define 2 cutoff values for cost to be read in from data.seaice
+C      and initialized in seaice_readparms: SEAICE_cutoff_[area,heff]
+C      Reason: some iceconc data set have "bogus" mask with area>0
+C      at climatological max locations -> not real data.  So either need
+C      to clean up the data or take SEAICE_cutoff_area>=0.15 for example.
+C      Might need to migrate into pkg/ecco instead of in pkg/seaice.
+      _RL SEAICE_freeze, epsilonTemp, epsilonHEFF
+      _RL localnorm, localnormsq
+      _RL const1,const2
+CEOP
+
+      SEAICE_freeze  = -1.96  _d 0
+      epsilonTemp = 0.0001 _d 0
+      epsilonHEFF = 0.01 _d 0
+      localnorm = 1. _d -07
+      localnormsq=localnorm*localnorm
+
+      const1=HeatCapacity_Cp*rhoNil*drF(1)
+      const2=SEAICE_lhFusion*SEAICE_rhoIce
+
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
+      jmin = 1-oly
+      jmax = sny+oly
+      imin = 1-olx
+      imax = snx+olx
+
+c intialize
+      call ecco_zero(localfld,nnzobs,zeroRL,myThid)
+      call ecco_zero(localfldmsk,nnzobs,zeroRL,myThid)
+      call ecco_zero(localfldweight,nnzobs,zeroRL,myThid)
+
+c----------------------EXCONC-------------------------------
+catn-- old: heff and sst term, new: exconc
+c needs localconcbar, localsstbar, and localheffbar
+c Removing ice: model_A > 0 but obs_A==0, calc enthalpy E:
+c E_current = [(deconcbar-SEAICE_freeze)*HeatCapacity_Cp*rhoNil*drF(1)
+c            - (exconcbar * SEAICE_lhFusion * SEAICE_rhoIce) 
+c            - (HSNOW * SEAICE_lhFusion * SEAICE_rhoSnow)]
+c E_target = (epsilonTemp) * HeatCapacity_Cp * rhoNil * drF(1)
+c cost(Model-data)^2
+
+      if(flag_exconc_deconc.EQ.'ex') then
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+           do k = 1,nnzobs
+            do j = jmin,jmax
+             do i = imin,imax
+
+              if ((localobs(i,j,k,bi,bj) .LE. SEAICE_cutoff_area).AND.
+     &        (exconcbar(i,j,k,bi,bj) .GT. SEAICE_cutoff_heff)) then
+
+               localfldmsk(i,j,k,bi,bj) = localmask(i,j,k,bi,bj)
+               localfldweight(i,j,k,bi,bj) = localnormsq
+     
+               localfld(i,j,k,bi,bj) = 
+     &        ( (deconcbar(i,j,k,bi,bj)-SEAICE_freeze)*const1
+     &         - exconcbar(i,j,k,bi,bj)*const2 ) - (epsilonTemp*const1)
+              endif
+             enddo
+            enddo
+           enddo
+          enddo
+        enddo
+      endif
+
+c----------------------DECONC-------------------------------
+catn-- old: sst term, new: deconc
+c needs localconcbar and localsstbar
+c Add ice: model_A==0 but obs_A > 0, calc enthalpy E:
+c E_current = (deconcbar(i,j,k,bi,bj)-Tfreeze)
+c             *HeatCapacity_Cp*rhoNil*drF(1)
+c HEFF_target = epsilon_HEFF [m]
+c E_target  = -(HEFF_target*SEAICE_lhFusion*SEAICE_rhoIce)
+c cost=(Model-data)^2 
+      if(flag_exconc_deconc.EQ.'de') then
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+           do k = 1,nnzobs
+            do j = jmin,jmax
+             do i = imin,imax
+
+              if ( (concbar(i,j,k,bi,bj) .LE. 0.).AND.
+     &               (localobs(i,j,k,bi,bj) .GT. 0.) ) then
+
+               localfldmsk(i,j,k,bi,bj) = localmask(i,j,k,bi,bj)
+               localfldweight(i,j,k,bi,bj) = localnormsq
+
+               localfld(i,j,k,bi,bj) =
+     &          (deconcbar(i,j,k,bi,bj)-SEAICE_freeze)*const1
+     &               - (-1. _d 0 *epsilonHEFF*const2)
+              endif
+             enddo
+            enddo
+           enddo
+          enddo
+        enddo
+      endif
+
+#endif /* ALLOW_GENCOST_CONTRIBUTION */
+#endif /* ALLOW_SEAICE */
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
