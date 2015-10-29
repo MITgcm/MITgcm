@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.13 2015/10/27 02:37:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.14 2015/10/29 00:13:06 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -436,23 +436,27 @@ c cost(Model-data)^2
      &            .AND.
      &              (exconcbbbar(i,j,k,bi,bj) .GT. SEAICE_cutoff_heff))
      &             then
-                   junk=1. _d 0 *cmask(i,j,k)*
+c                   junk=1. _d 0 *cmask(i,j,k)*
+                 localwww=localnorm*localnorm*cmask(i,j,k)
+                 junk=
      &              (( (deconcbbbar(i,j,k,bi,bj)-SEAICE_freeze)*
      &                 HeatCapacity_Cp*rhoNil*drF(1)
      &              - exconcbbbar(i,j,k,bi,bj)*
      &                 SEAICE_lhFusion*SEAICE_rhoIce )
      &              - (epsilonTemp*HeatCapacity_Cp*rhoNil*drF(1)))
-                     num_gencost(bi,bj,igen_exconc) =
+                  if( localwww .ne. 0. )
+     &               num_gencost(bi,bj,igen_exconc) =
      &                 num_gencost(bi,bj,igen_exconc) + 1. _d 0
                 else
                    junk = 0. _d 0
+                   localwww = 0. _d 0
                      num_gencost(bi,bj,igen_exconc) =
      &                 num_gencost(bi,bj,igen_exconc) + 0. _d 0
                 endif
 
                 objf_gencost(bi,bj,igen_exconc) =
      &            objf_gencost(bi,bj,igen_exconc) + 
-     &            junk*junk*localnorm*localnorm
+     &            junk*junk*localwww
 
 catn-- old: sst term, new: deconc
 c Add ice: model_A==0 but obs_A > 0, calc enthalpy E:
@@ -463,22 +467,26 @@ c E_target  = -(HEFF_target*SEAICE_lhFusion*SEAICE_rhoIce)
 c cost=(Model-data)^2
                 if ( (areabbbar(i,j,1,bi,bj) .LE. 0.).AND.
      &               (localobs(i,j,1,bi,bj) .GT. 0.) ) then
-                 junk=1. _d 0 *cmask(i,j,k)*
+c                 junk=1. _d 0 *cmask(i,j,k)*
+                 localwww=localnorm*localnorm*cmask(i,j,k)
+                 junk=
      &               (( (deconcbbbar(i,j,k,bi,bj)-SEAICE_freeze)*
      &                  HeatCapacity_Cp*rhoNil*drF(1) )
      &               - (-1. _d 0 *epsilonHEFF*
      &                  SEAICE_lhFusion*SEAICE_rhoIce))
-                     num_gencost(bi,bj,igen_deconc) =
+                 if( localwww .ne. 0. )
+     &               num_gencost(bi,bj,igen_deconc) =
      &                 num_gencost(bi,bj,igen_deconc) + 1. _d 0
                 else
                  junk = 0. _d 0
+                 localwww = 0. _d 0
                      num_gencost(bi,bj,igen_deconc) =
      &                 num_gencost(bi,bj,igen_deconc) + 0. _d 0
                 endif
 
                 objf_gencost(bi,bj,igen_deconc) =
      &            objf_gencost(bi,bj,igen_deconc) + 
-     &            junk*junk*localnorm*localnorm
+     &            junk*junk*localwww
 
               enddo
              enddo
