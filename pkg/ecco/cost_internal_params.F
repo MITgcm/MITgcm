@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_internal_params.F,v 1.9 2015/10/26 03:22:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_internal_params.F,v 1.10 2015/10/29 03:41:06 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -49,14 +49,19 @@ c     == routine arguments ==
       integer mythid
 
 #ifdef ECCO_CTRL_DEPRECATED
+
+      logical dodimensionalcost2D, dodimensionalcost3D
+
 c     == end of interface ==
 
+      dodimensionalcost2D=.NOT.ctrlSmoothCorrel2D
+      dodimensionalcost3D=.NOT.ctrlSmoothCorrel3D
 
 c--   Eddy stress penalty term
 #ifdef ALLOW_EDDYPSI_COST_CONTRIBUTION
       call timer_start('cost_tau_eddy      [ECCO SPIN-DOWN]', mythid)
-      call ctrl_cost_gen3d (
-     &     xx_edtaux_file,xx_edtaux_dummy, wedtauxFld,
+      call ctrl_cost_gen3d ( xx_edtaux_file,
+     &     xx_edtaux_dummy, wedtauxFld, dodimensionalcost3D,
      &     num_zero_mean, objf_eddytau, maskC, myThid )
       call ctrl_cost_gen3d (
      &     xx_edtauy_file,xx_edtauy_dummy, wedtauyFld,
@@ -70,8 +75,8 @@ c--   Eddy stress penalty term
 c--   GM coeffs penalty term
 #ifdef ALLOW_diffkr_COST_CONTRIBUTION
       call timer_start('cost_kapgm      [ECCO SPIN-DOWN]', mythid)
-      call ctrl_cost_gen3d (
-     &     xx_kapgm_file,xx_kapgm_dummy, wkapgmFld,
+      call ctrl_cost_gen3d ( xx_kapgm_file,
+     &     xx_kapgm_dummy, wkapgmFld, dodimensionalcost3D,
      &     num_kapgm, objf_kapgm, maskC, myThid )
       call timer_stop ('cost_kapgm      [ECCO SPIN-DOWN]', mythid)
 #endif
@@ -80,8 +85,8 @@ c--   GM coeffs penalty term
 c--   REDI coeffs penalty term
 #ifdef ALLOW_KAPREDI_COST_CONTRIBUTION
       call timer_start('cost_kapredi      [ECCO SPIN-DOWN]', mythid)
-      call ctrl_cost_gen3d (
-     &     xx_kapredi_file,xx_kapredi_dummy, wkaprediFld,
+      call ctrl_cost_gen3d ( xx_kapredi_file,
+     &     xx_kapredi_dummy, wkaprediFld, dodimensionalcost3D,
      &     num_kapredi, objf_kapredi, maskC, myThid )
       call timer_stop ('cost_kapredi      [ECCO SPIN-DOWN]', mythid)
 #endif
@@ -90,8 +95,8 @@ c--   REDI coeffs penalty term
 c--   DIFFKR coeffs penalty term
 #ifdef ALLOW_DIFFKR_COST_CONTRIBUTION
       call timer_start('cost_diffkr      [ECCO SPIN-DOWN]', mythid)
-      call ctrl_cost_gen3d (
-     &     xx_diffkr_file,xx_diffkr_dummy, wdiffkrFld,
+      call ctrl_cost_gen3d ( xx_diffkr_file,
+     &     xx_diffkr_dummy, wdiffkrFld, dodimensionalcost3D,
      &     num_diffkr, objf_diffkr, maskC, myThid )
       call timer_stop ('cost_diffkr      [ECCO SPIN-DOWN]', mythid)
 #endif
@@ -102,9 +107,9 @@ c--   DIFFKR coeffs penalty term
 c--   Bottom Drag penalty term
 #ifdef ALLOW_BOTTOMDRAG_COST_CONTRIBUTION
       call timer_start('cost_bottomdrag      [ECCO SPIN-DOWN]', mythid)
-      call ctrl_cost_gen2d (
-     &     1,1,xx_bottomdrag_file,xx_bottomdrag_dummy,zeroRL,
-     &     wbottomdrag, num_bottomdrag, objf_bottomdrag,
+      call ctrl_cost_gen2d ( 1, 1, xx_bottomdrag_file,
+     &     xx_bottomdrag_dummy, zeroRL, wbottomdrag,
+     &     dodimensionalcost2D, num_bottomdrag, objf_bottomdrag,
 #ifdef ECCO_CTRL_DEPRECATED
      &     zeroRL, num_zero_mean, objf_zero_mean,
      &     objf_zero_smoo, zeroRL, zeroRL,

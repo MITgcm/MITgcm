@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.40 2015/10/26 13:26:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.41 2015/10/29 03:41:06 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -64,8 +64,12 @@ c     == local variables ==
       _RL spzeroloc
       _RL localperiod
 
+      logical dodimensionalcost2D, dodimensionalcost3D
+
 c     == end of interface ==
 
+      dodimensionalcost2D=.NOT.ctrlSmoothCorrel2D
+      dodimensionalcost3D=.NOT.ctrlSmoothCorrel3D
 
       IF (using_cost_sst) THEN
 #if (defined (ALLOW_SST_COST_CONTRIBUTION))
@@ -278,8 +282,8 @@ cph      call cost_sss   ( myiter, mytime, mythid )
       write(msgbuf,'(a)') 'ph-cost call cost_theta0'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      call ctrl_cost_gen3d (
-     &     xx_theta_file,xx_theta_dummy, wthetaLev,
+      call ctrl_cost_gen3d ( xx_theta_file,
+     &     xx_theta_dummy, wthetaLev, dodimensionalcost3D,
      &     num_temp0, objf_temp0, maskC, myThid )
       endif
 #endif
@@ -289,8 +293,8 @@ cph      call cost_sss   ( myiter, mytime, mythid )
       write(msgbuf,'(a)') 'ph-cost call cost_salt0'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      call ctrl_cost_gen3d (
-     &     xx_salt_file,xx_salt_dummy, wsaltLev,
+      call ctrl_cost_gen3d ( xx_salt_file,
+     &     xx_salt_dummy, wsaltLev, dodimensionalcost3D,
      &     num_salt0, objf_salt0, maskC, myThid )
       endif
 #endif
@@ -359,7 +363,7 @@ cph      call cost_sss   ( myiter, mytime, mythid )
      &     SQUEEZE_RIGHT , mythid)
       call ctrl_cost_gen2d (
      &     1,1,xx_etan_file,xx_etan_dummy,zeroRL,
-     &     wetan, num_etan0, objf_etan0,
+     &     wetan, dodimensionalcost2D, num_etan0, objf_etan0,
 #ifdef ECCO_CTRL_DEPRECATED
      &     zeroRL, num_zero_mean, objf_zero_mean,
      &     objf_zero_smoo, zeroRL, zeroRL,
@@ -372,7 +376,7 @@ cph      call cost_sss   ( myiter, mytime, mythid )
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
       call ctrl_cost_gen3d (
-     &     xx_uvel_file,xx_uvel_dummy, wuvel3d,
+     &     xx_uvel_file,xx_uvel_dummy, wuvel3d, dodimensionalcost3D,
      &     num_uvel0, objf_uvel0, maskW, myThid )
 #endif
 #ifdef ALLOW_VVEL0_COST_CONTRIBUTION
@@ -380,7 +384,7 @@ cph      call cost_sss   ( myiter, mytime, mythid )
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
       call ctrl_cost_gen3d (
-     &     xx_vvel_file,xx_vvel_dummy, wvvel3d,
+     &     xx_vvel_file,xx_vvel_dummy, wvvel3d, dodimensionalcost3D,
      &     num_vvel0, objf_vvel0, maskS, myThid )
 #endif
 
