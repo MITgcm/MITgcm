@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.13 2014/12/05 01:44:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.14 2015/10/29 17:53:05 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -124,7 +124,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        KPO4        = 5. _d -4
        KFE         = 1.2 _d -7
        alpfe       = 0.01 _d 0
-       fesedflux_pcm = 6.8 _d -4 * 106. _d 0
+       fesedflux_pcm = 6.8 _d -4 / 106. _d 0
        FeIntSec    = 0.5 _d -6 / 86400. _d 0
        freefemax   = 3. _d -7
        KScav       = 0.19 _d 0/(360. _d 0*86400. _d 0)
