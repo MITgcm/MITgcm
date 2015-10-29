@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.15 2015/10/29 00:21:58 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.16 2015/10/29 00:31:20 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -85,14 +85,12 @@ c old:sst  -> model has deficiency in iceconc -> new:deconc
       character*(MAX_LEN_FNAM) preproc(NGENPPROC)
       character*(MAX_LEN_FNAM) preproc_c(NGENPPROC)
 
-      _RL localwww
-      _RL junk
-
       _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nnzsiv4,nsx,nsy)
       _RL localtmp   (1-olx:snx+olx,1-oly:sny+oly,nnzsiv4,nsx,nsy)
       _RL localdif   (1-olx:snx+olx,1-oly:sny+oly,nnzsiv4,nsx,nsy)
       _RL difmask    (1-olx:snx+olx,1-oly:sny+oly,nnzsiv4,nsx,nsy)
+      _RL difmask1   (1-olx:snx+olx,1-oly:sny+oly,nnzsiv4,nsx,nsy)
 
       character*(128) fname0, fname0w, fname1
 
@@ -118,11 +116,12 @@ C      at climatological max locations -> not real data.  So either need
 C      to clean up the data or take SEAICE_cutoff_area>=0.15 for example.
 C      Might need to migrate into pkg/ecco instead of in pkg/seaice.
       _RL SEAICE_freeze, epsilonTemp, epsilonHEFF
-      _RL localnorm
+      _RL localnorm, localnormsq
       SEAICE_freeze  = -1.96  _d 0
       epsilonTemp = 0.0001 _d 0
       epsilonHEFF = 0.01 _d 0
       localnorm = 1. _d -07
+      localnormsq=localnorm*localnorm
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -159,13 +158,7 @@ c-- initialize objf and num:
         enddo
       enddo
 
-      call ecco_zero(gencost_weight(:,:,1,1,igen_conc),1,zeroRL,myThid)
-      if ( gencost_errfile(igen_conc) .NE. ' ' ) 
-     &  call ecco_readwei(gencost_errfile(igen_conc),
-     &  gencost_weight(:,:,1,1,igen_conc),1,1,mythid)
-
 c--   Initialise local variables.
-      localwww = 0. _d 0
       nrecloc=0
       localperiod=0.
 
@@ -268,22 +261,20 @@ c compute obs minus bar (localdif) and mask (difmask)
      O     localdif, difmask,
      I     myThid )
 
+c area term:
+        call ecco_addcost(
+     I     localdif,localweight,difmask,nnzsiv4,
+     O     objf_gencost(1,1,igen_conc),num_gencost(1,1,igen_conc),
+     I     mythid)
+
+        call ecco_zero(difmask1,nnzsiv4,zeroRL,mythid)
+        call ecco_zero(localdif,nnzsiv4,zeroRL,mythid)
+        call ecco_zero(localtmp,nnzsiv4,zeroRL,mythid)
         do bj = jtlo,jthi
           do bi = itlo,ithi
             do k = 1,nnzsiv4
              do j = jmin,jmax
               do i = imin,imax
-
-c area term
-                localwww = localweight(i,j,k,bi,bj)*difmask(i,j,k,bi,bj)
-                junk     = ( areabbbar(i,j,k,bi,bj) -
-     &                        localobs(i,j,k,bi,bj) )
-                objf_gencost(bi,bj,igen_conc) =
-     &            objf_gencost(bi,bj,igen_conc) + junk*junk*localwww
-
-                if ( localwww .ne. 0. )
-     &               num_gencost(bi,bj,igen_conc) =
-     &                 num_gencost(bi,bj,igen_conc) + 1. _d 0
 
 catn-- old: heff and sst term, new: exconc
 c Removing ice: model_A > 0 but obs_A==0, calc enthalpy E:
@@ -292,31 +283,27 @@ c            - (exconcbbbar * SEAICE_lhFusion * SEAICE_rhoIce)
 c            - (HSNOW * SEAICE_lhFusion * SEAICE_rhoSnow)]
 c E_target = (epsilonTemp) * HeatCapacity_Cp * rhoNil * drF(1)
 c cost(Model-data)^2
-                if ((localobs(i,j,k,bi,bj) .LE. SEAICE_cutoff_area)
-     &            .AND.
-     &              (exconcbbbar(i,j,k,bi,bj) .GT. SEAICE_cutoff_heff))
-     &             then
+                if ((localobs(i,j,k,bi,bj) .LE. SEAICE_cutoff_area).AND.
+     &          (exconcbbbar(i,j,k,bi,bj) .GT. SEAICE_cutoff_heff)) then
+                  difmask1(i,j,k,bi,bj)= 1. _d 0 * difmask(i,j,k,bi,bj)
+                  localtmp(i,j,k,bi,bj)=localnormsq
 
-                 localwww=localnorm*localnorm*difmask(i,j,k,bi,bj)
-                 junk=
+                  localdif(i,j,k,bi,bj)=
      &              (( (deconcbbbar(i,j,k,bi,bj)-SEAICE_freeze)*
      &                 HeatCapacity_Cp*rhoNil*drF(1)
      &              - exconcbbbar(i,j,k,bi,bj)*
      &                 SEAICE_lhFusion*SEAICE_rhoIce )
      &              - (epsilonTemp*HeatCapacity_Cp*rhoNil*drF(1)))
-                  if( localwww .ne. 0. )
-     &               num_gencost(bi,bj,igen_exconc) =
-     &                 num_gencost(bi,bj,igen_exconc) + 1. _d 0
-                else
-                   junk = 0. _d 0
-                   localwww = 0. _d 0
-                     num_gencost(bi,bj,igen_exconc) =
-     &                 num_gencost(bi,bj,igen_exconc) + 0. _d 0
                 endif
-
-                objf_gencost(bi,bj,igen_exconc) =
-     &            objf_gencost(bi,bj,igen_exconc) + 
-     &            junk*junk*localwww
+              enddo
+             enddo
+            enddo
+          enddo
+        enddo
+        call ecco_addcost(
+     I      localdif,localtmp,difmask1,nnzsiv4,
+     O      objf_gencost(1,1,igen_exconc),num_gencost(1,1,igen_exconc),
+     I      mythid)
 
 catn-- old: sst term, new: deconc
 c Add ice: model_A==0 but obs_A > 0, calc enthalpy E:
@@ -325,35 +312,34 @@ c             *HeatCapacity_Cp*rhoNil*drF(1)
 c HEFF_target = epsilon_HEFF [m]
 c E_target  = -(HEFF_target*SEAICE_lhFusion*SEAICE_rhoIce)
 c cost=(Model-data)^2
+        call ecco_zero(difmask1,nnzsiv4,zeroRL,mythid)
+        call ecco_zero(localdif,nnzsiv4,zeroRL,mythid)
+        call ecco_zero(localtmp,nnzsiv4,zeroRL,mythid)
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nnzsiv4
+             do j = jmin,jmax
+              do i = imin,imax
                 if ( (areabbbar(i,j,1,bi,bj) .LE. 0.).AND.
      &               (localobs(i,j,1,bi,bj) .GT. 0.) ) then
+                  difmask1(i,j,k,bi,bj)=difmask(i,j,k,bi,bj)
+                  localtmp(i,j,k,bi,bj)=localnormsq
 
-                 localwww=localnorm*localnorm*difmask(i,j,k,bi,bj)
-                 junk=
+                  localdif(i,j,k,bi,bj)=
      &               (( (deconcbbbar(i,j,k,bi,bj)-SEAICE_freeze)*
      &                  HeatCapacity_Cp*rhoNil*drF(1) )
      &               - (-1. _d 0 *epsilonHEFF*
      &                  SEAICE_lhFusion*SEAICE_rhoIce))
-                 if( localwww .ne. 0. )
-     &               num_gencost(bi,bj,igen_deconc) =
-     &                 num_gencost(bi,bj,igen_deconc) + 1. _d 0
-                else
-                 junk = 0. _d 0
-                 localwww = 0. _d 0
-                     num_gencost(bi,bj,igen_deconc) =
-     &                 num_gencost(bi,bj,igen_deconc) + 0. _d 0
                 endif
-
-                objf_gencost(bi,bj,igen_deconc) =
-     &            objf_gencost(bi,bj,igen_deconc) + 
-     &            junk*junk*localwww
-
               enddo
              enddo
             enddo
-
           enddo
         enddo
+        call ecco_addcost(
+     I      localdif,localtmp,difmask1,nnzsiv4,
+     O      objf_gencost(1,1,igen_deconc),num_gencost(1,1,igen_deconc),
+     I      mythid)
 
       enddo
 
